@@ -249,7 +249,6 @@ describe("generatePerQueryDataFiles", () => {
                 rid: "rid.query.1",
                 version: "0",
                 apiName: "doThing",
-                typeReferences: {},
                 parameters: {
                   foo: {
                     dataType: { type: "string" },
@@ -615,15 +614,17 @@ describe("generatePerQueryDataFiles", () => {
         import { $osdkMetadata } from '../../OntologyMetadata.js';
 
         export namespace queryWithRecursiveType {
-          namespace $CustomTypes {
-            export interface TreeNode {
-              readonly children: ReadonlyArray<$CustomTypes.TreeNode>;
+          namespace CustomTypes {
+            export type Expand<T> = T extends infer O ? { [K in keyof O]: O[K] } : never;
+
+            export interface $tree_node_type_id {
+              readonly children: ReadonlyArray<CustomTypes.$tree_node_type_id>;
 
               readonly value: QueryParam.PrimitiveType<'string'>;
             }
 
-            export interface queryWithRecursiveTypeOutput {
-              children: Array<$CustomTypes.queryWithRecursiveTypeOutput>;
+            export interface $tree_node_type_id_Output {
+              children: Array<CustomTypes.$tree_node_type_id_Output>;
 
               value: QueryResult.PrimitiveType<'string'>;
             }
@@ -637,10 +638,10 @@ describe("generatePerQueryDataFiles", () => {
             /**
              *   description: A recursive tree node parameter
              */
-            readonly treeNode: $CustomTypes.TreeNode;
+            readonly treeNode: CustomTypes.Expand<CustomTypes.$tree_node_type_id>;
           }
 
-          export type ReturnType = Array<$CustomTypes.queryWithRecursiveTypeOutput>;
+          export type ReturnType = Array<CustomTypes.Expand<CustomTypes.$tree_node_type_id_Output>>;
         }
 
         export interface queryWithRecursiveType
@@ -825,33 +826,35 @@ describe("generatePerQueryDataFiles", () => {
         import { $osdkMetadata } from '../../OntologyMetadata.js';
 
         export namespace queryWithMultipleTypeRefs {
-          namespace $CustomTypes {
-            export interface BinaryTree {
-              readonly left?: $CustomTypes.BinaryTree;
+          namespace CustomTypes {
+            export type Expand<T> = T extends infer O ? { [K in keyof O]: O[K] } : never;
 
-              readonly right?: $CustomTypes.BinaryTree;
+            export interface $binary_tree_id {
+              readonly left?: CustomTypes.$binary_tree_id;
+
+              readonly right?: CustomTypes.$binary_tree_id;
 
               readonly value: QueryParam.PrimitiveType<'integer'>;
             }
 
-            export interface LinkedList {
+            export interface $linked_list_id {
               readonly data: QueryParam.PrimitiveType<'string'>;
 
-              readonly next?: $CustomTypes.LinkedList;
+              readonly next?: CustomTypes.$linked_list_id;
             }
 
-            export interface queryWithMultipleTypeRefsOutput {
-              left?: $CustomTypes.queryWithMultipleTypeRefsOutput;
+            export interface $binary_tree_id_Output {
+              left?: CustomTypes.$binary_tree_id_Output;
 
-              right?: $CustomTypes.queryWithMultipleTypeRefsOutput;
+              right?: CustomTypes.$binary_tree_id_Output;
 
               value: QueryResult.PrimitiveType<'integer'>;
             }
 
-            export interface queryWithMultipleTypeRefsOutput_1 {
+            export interface $linked_list_id_Output {
               data: QueryResult.PrimitiveType<'string'>;
 
-              next?: $CustomTypes.queryWithMultipleTypeRefsOutput_1;
+              next?: CustomTypes.$linked_list_id_Output;
             }
           }
 
@@ -863,18 +866,18 @@ describe("generatePerQueryDataFiles", () => {
             /**
              *   description: A binary tree parameter
              */
-            readonly binaryTree: $CustomTypes.BinaryTree;
+            readonly binaryTree: CustomTypes.Expand<CustomTypes.$binary_tree_id>;
 
             /**
              *   description: A linked list parameter
              */
-            readonly linkedList: $CustomTypes.LinkedList;
+            readonly linkedList: CustomTypes.Expand<CustomTypes.$linked_list_id>;
           }
 
           export interface ReturnType {
-            list: $CustomTypes.queryWithMultipleTypeRefsOutput_1;
+            list: CustomTypes.Expand<CustomTypes.$linked_list_id_Output>;
 
-            tree: $CustomTypes.queryWithMultipleTypeRefsOutput;
+            tree: CustomTypes.Expand<CustomTypes.$binary_tree_id_Output>;
           }
         }
 
@@ -1046,15 +1049,17 @@ describe("generatePerQueryDataFiles", () => {
         import { $osdkMetadata } from '../../OntologyMetadata.js';
 
         export namespace queryWithOutputOnlyTypeRef {
-          namespace $CustomTypes {
-            export interface queryWithOutputOnlyTypeRefOutput {
+          namespace CustomTypes {
+            export type Expand<T> = T extends infer O ? { [K in keyof O]: O[K] } : never;
+
+            export interface $metadata_type_id {
               createdAt: QueryResult.PrimitiveType<'timestamp'>;
 
               updatedAt: QueryResult.PrimitiveType<'timestamp'>;
             }
 
-            export interface queryWithOutputOnlyTypeRefOutput_1 {
-              nested: $CustomTypes.queryWithOutputOnlyTypeRefOutput_1;
+            export interface $data_type_id {
+              nested: CustomTypes.$data_type_id;
 
               value: QueryResult.PrimitiveType<'string'>;
             }
@@ -1072,9 +1077,9 @@ describe("generatePerQueryDataFiles", () => {
           }
 
           export interface ReturnType {
-            data: $CustomTypes.queryWithOutputOnlyTypeRefOutput_1;
+            data: CustomTypes.Expand<CustomTypes.$data_type_id>;
 
-            metadata: $CustomTypes.queryWithOutputOnlyTypeRefOutput;
+            metadata: CustomTypes.Expand<CustomTypes.$metadata_type_id>;
           }
         }
 
@@ -1129,68 +1134,5 @@ describe("generatePerQueryDataFiles", () => {
         };
         "
       `);
-  });
-
-  it("throws error when parameter is named 'output'", async () => {
-    const helper = createMockMinimalFiles();
-    const BASE_PATH = "/foo";
-
-    await expect(
-      generatePerQueryDataFilesV2(
-        {
-          fs: helper.minimalFiles,
-          ontology: enhanceOntology({
-            sanitized: {
-              actionTypes: {},
-              interfaceTypes: {},
-              objectTypes: {},
-              ontology: {
-                apiName: "foo",
-                description: "foo",
-                displayName: "foo",
-                rid: "ri.foo",
-              },
-              queryTypes: {
-                queryWithOutputParam: {
-                  rid: "rid.query.conflict",
-                  version: "1.0.0",
-                  apiName: "queryWithOutputParam",
-                  parameters: {
-                    output: {
-                      dataType: {
-                        type: "typeReference",
-                        typeId: "some-type-id",
-                      },
-                    },
-                  },
-                  output: { type: "string" },
-                  typeReferences: {
-                    "some-type-id": {
-                      type: "struct",
-                      fields: [
-                        { name: "value", fieldType: { type: "string" } },
-                      ],
-                    },
-                  },
-                },
-              },
-              sharedPropertyTypes: {},
-              valueTypes: {},
-            },
-            importExt: ".js",
-            externalObjects: new Map(),
-            externalInterfaces: new Map(),
-            externalSpts: new Map(),
-          }),
-          outDir: BASE_PATH,
-          importExt: ".js",
-          forInternalUse: true,
-          fixedVersionQueryTypes: [],
-        },
-        true,
-      ),
-    ).rejects.toThrow(
-      /parameter named "output" which conflicts with the output type naming convention/,
-    );
   });
 });

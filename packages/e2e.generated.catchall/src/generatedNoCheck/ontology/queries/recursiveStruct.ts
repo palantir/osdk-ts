@@ -3,58 +3,52 @@ import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 
 export namespace recursiveStruct {
-  interface Person {
-    readonly age: QueryParam.PrimitiveType<'integer'>;
+  namespace CustomTypes {
+    export type Expand<T> = T extends infer O ? { [K in keyof O]: O[K] } : never;
 
-    readonly allFriends?: ReadonlyArray<Person>;
+    export interface $1225e6a4_41d2_4081_9b3c_9b7dd0db5390 {
+      readonly age: QueryParam.PrimitiveType<'integer'>;
 
-    readonly bestFriend?: Person;
+      readonly allFriends?: ReadonlyArray<CustomTypes.$1225e6a4_41d2_4081_9b3c_9b7dd0db5390>;
 
-    readonly name: QueryParam.PrimitiveType<'string'>;
+      readonly bestFriend?: CustomTypes.$1225e6a4_41d2_4081_9b3c_9b7dd0db5390;
 
-    readonly pet?: Person_1;
-  }
+      readonly name: QueryParam.PrimitiveType<'string'>;
 
-  interface Person_1 {
-    readonly breed: QueryParam.PrimitiveType<'string'>;
+      readonly pet?: CustomTypes.$5f239c87_040a_4dd6_b50a_bcec78f6c6fc;
+    }
 
-    readonly dad?: Person_1;
+    export interface $5f239c87_040a_4dd6_b50a_bcec78f6c6fc {
+      readonly breed: QueryParam.PrimitiveType<'string'>;
 
-    readonly mom?: Person_1;
+      readonly dad?: CustomTypes.$5f239c87_040a_4dd6_b50a_bcec78f6c6fc;
 
-    readonly siblings?: ReadonlyArray<Person_1>;
-  }
+      readonly mom?: CustomTypes.$5f239c87_040a_4dd6_b50a_bcec78f6c6fc;
 
-  interface Pet {
-    readonly breed: QueryParam.PrimitiveType<'string'>;
+      readonly siblings?: ReadonlyArray<CustomTypes.$5f239c87_040a_4dd6_b50a_bcec78f6c6fc>;
+    }
 
-    readonly dad?: Pet;
+    export interface $1225e6a4_41d2_4081_9b3c_9b7dd0db5390_Output {
+      age: QueryResult.PrimitiveType<'integer'>;
 
-    readonly mom?: Pet;
+      allFriends?: Array<CustomTypes.$1225e6a4_41d2_4081_9b3c_9b7dd0db5390_Output>;
 
-    readonly siblings?: ReadonlyArray<Pet>;
-  }
+      bestFriend?: CustomTypes.$1225e6a4_41d2_4081_9b3c_9b7dd0db5390_Output;
 
-  interface recursiveStructOutput {
-    age: QueryResult.PrimitiveType<'integer'>;
+      name: QueryResult.PrimitiveType<'string'>;
 
-    allFriends?: Array<recursiveStructOutput>;
+      pet?: CustomTypes.$5f239c87_040a_4dd6_b50a_bcec78f6c6fc_Output;
+    }
 
-    bestFriend?: recursiveStructOutput;
+    export interface $5f239c87_040a_4dd6_b50a_bcec78f6c6fc_Output {
+      breed: QueryResult.PrimitiveType<'string'>;
 
-    name: QueryResult.PrimitiveType<'string'>;
+      dad?: CustomTypes.$5f239c87_040a_4dd6_b50a_bcec78f6c6fc_Output;
 
-    pet?: recursiveStructOutput_1;
-  }
+      mom?: CustomTypes.$5f239c87_040a_4dd6_b50a_bcec78f6c6fc_Output;
 
-  interface recursiveStructOutput_1 {
-    breed: QueryResult.PrimitiveType<'string'>;
-
-    dad?: recursiveStructOutput_1;
-
-    mom?: recursiveStructOutput_1;
-
-    siblings?: Array<recursiveStructOutput_1>;
+      siblings?: Array<CustomTypes.$5f239c87_040a_4dd6_b50a_bcec78f6c6fc_Output>;
+    }
   }
 
   export interface Signature {
@@ -65,15 +59,15 @@ export namespace recursiveStruct {
     /**
      * (no ontology metadata)
      */
-    readonly person: Person;
+    readonly person: CustomTypes.Expand<CustomTypes.$1225e6a4_41d2_4081_9b3c_9b7dd0db5390>;
 
     /**
      * (no ontology metadata)
      */
-    readonly pet: Pet;
+    readonly pet: CustomTypes.Expand<CustomTypes.$5f239c87_040a_4dd6_b50a_bcec78f6c6fc>;
   }
 
-  export type ReturnType = recursiveStructOutput;
+  export type ReturnType = CustomTypes.Expand<CustomTypes.$1225e6a4_41d2_4081_9b3c_9b7dd0db5390_Output>;
 }
 
 export interface recursiveStruct

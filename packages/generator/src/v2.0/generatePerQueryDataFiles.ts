@@ -168,18 +168,13 @@ async function generateV2QueryFile(
           stringify(query.parameters, {
             "*": (parameter, formatter, apiName) => {
               const q = paramToDef(parameter);
-              const paramContext = typeRefContext.paramContexts.get(apiName);
               return [
                 `
                 ${
                   queryParamJsDoc(paramToDef(parameter), { apiName })
                 }readonly "${apiName}"${q.nullable ? "?" : ""}`,
-                getQueryParamType(
-                  ontology,
-                  q,
-                  "Param",
-                  paramContext,
-                  false,
+                wrapExpand(
+                  getQueryParamType(ontology, q, "Param", typeRefContext),
                 ),
               ];
             },
@@ -190,37 +185,16 @@ async function generateV2QueryFile(
     }
 
             ${
-      query.output.type === "struct"
-        ? `
-            export interface ReturnType
-            ${
-          getQueryParamType(
-            ontology,
-            paramToDef({ dataType: query.output }),
-            "Result",
-            typeRefContext.outputContext,
-            false,
-          )
+      (() => {
+        const outputDef = paramToDef({ dataType: query.output });
+        const outputType = wrapExpand(
+          getQueryParamType(ontology, outputDef, "Result", typeRefContext),
+        );
+        if (query.output.type === "struct") {
+          return `export interface ReturnType ${outputType}`;
         }
-        `
-        : query.output.type === "typeReference"
-        ? `export type ReturnType = ${
-          typeRefContext.outputContext.typeIdToInterfaceName.get(
-            query.output.typeId,
-          )
-            ?? `unknown /* typeRef: ${query.output.typeId} */`
-        };`
-        : `
-        export type ReturnType = ${
-          getQueryParamType(
-            ontology,
-            paramToDef({ dataType: query.output }),
-            "Result",
-            typeRefContext.outputContext,
-            false,
-          )
-        }
-          `
+        return `export type ReturnType = ${outputType};`;
+      })()
     }
       }
 
@@ -317,26 +291,20 @@ function getQueryParamType(
   enhancedOntology: EnhancedOntologyDefinition,
   input: QueryDataTypeDefinition,
   type: "Param" | "Result",
-  paramContext?: ParameterTypeRefContext,
+  typeRefContext?: TypeRefContext,
   isMapKey = false,
 ): string {
-  let paramType = `unknown /* ${input.type} */`;
+  const recurse = (child: QueryDataTypeDefinition, mapKey = false) =>
+    getQueryParamType(enhancedOntology, child, type, typeRefContext, mapKey);
 
   switch (input.type) {
     case "array":
-      paramType = `${type === "Param" ? "Readonly" : ""}Array<${
-        getQueryParamType(
-          enhancedOntology,
-          input.array,
-          type,
-          paramContext,
-          false,
-        )
+      return `${type === "Param" ? "Readonly" : ""}Array<${
+        recurse(input.array)
       }>`;
-      break;
+
     case "date":
-      paramType = `Query${type}.PrimitiveType<${JSON.stringify("datetime")}>`;
-      break;
+      return `Query${type}.PrimitiveType<${JSON.stringify("datetime")}>`;
 
     case "attachment":
     case "boolean":
@@ -346,42 +314,36 @@ function getQueryParamType(
     case "long":
     case "string":
     case "timestamp":
-      paramType = `Query${type}.PrimitiveType<${JSON.stringify(input.type)}>`;
-      break;
+      return `Query${type}.PrimitiveType<${JSON.stringify(input.type)}>`;
+
     case "mediaReference":
-      if (type === "Param") {
-        paramType = `Query${type}.PrimitiveType<${JSON.stringify(input.type)}>`;
-      } else {
-        paramType = `Query${type}.MediaType`;
-      }
-      break;
+      return type === "Param"
+        ? `Query${type}.PrimitiveType<${JSON.stringify(input.type)}>`
+        : `Query${type}.MediaType`;
+
     case "struct":
-      paramType = `{
+      return `{
             ${
         stringify(input.struct, {
-          "*": (p, formatter, apiName) => {
-            return [
-              `
-                ${type === "Param" ? "readonly " : ""}"${apiName}"${
-                p.nullable ? "?" : ""
-              }`,
-              getQueryParamType(enhancedOntology, p, type, paramContext, false),
-            ];
-          },
+          "*": (p, formatter, apiName) => [
+            `\n${type === "Param" ? "readonly " : ""}"${apiName}"${
+              p.nullable ? "?" : ""
+            }`,
+            recurse(p),
+          ],
         })
       }
             }`;
-      break;
+
     case "twoDimensionalAggregation":
-      paramType = `Query${type}.TwoDimensionalAggregationType<${
+      return `Query${type}.TwoDimensionalAggregationType<${
         input.twoDimensionalAggregation.keyType === "range"
           ? `Query${type}.RangeKey<"${input.twoDimensionalAggregation.keySubtype}">`
           : `"${input.twoDimensionalAggregation.keyType}"`
       }, "${input.twoDimensionalAggregation.valueType}">`;
-      break;
 
     case "threeDimensionalAggregation":
-      paramType = `Query${type}.ThreeDimensionalAggregationType<${
+      return `Query${type}.ThreeDimensionalAggregationType<${
         input.threeDimensionalAggregation.keyType === "range"
           ? `Query${type}.RangeKey<"${input.threeDimensionalAggregation.keySubtype}">`
           : `"${input.threeDimensionalAggregation.keyType}"`
@@ -391,136 +353,95 @@ function getQueryParamType(
           : `"${input.threeDimensionalAggregation.valueType.keyType}"`
       },
         "${input.threeDimensionalAggregation.valueType.valueType}">`;
-      break;
+
     case "object":
       if (isMapKey) {
-        paramType = `ObjectSpecifier<${
+        return `ObjectSpecifier<${
           enhancedOntology.requireObjectType(input.object)
             .getImportedDefinitionIdentifier(true)
         }>`;
-        break;
       }
-      paramType = `Query${type}.ObjectType<${
+      return `Query${type}.ObjectType<${
         enhancedOntology.requireObjectType(input.object)
           .getImportedDefinitionIdentifier(true)
       }>`;
-      break;
+
     case "interface":
-      paramType = `Query${type}.InterfaceType<${
+      return `Query${type}.InterfaceType<${
         enhancedOntology.requireInterfaceType(input.interface)
           .getImportedDefinitionIdentifier(true)
       }>`;
-      break;
 
     case "objectSet":
-      paramType = `Query${type}.ObjectSetType<${
+      return `Query${type}.ObjectSetType<${
         enhancedOntology.requireObjectType(input.objectSet)
           .getImportedDefinitionIdentifier(true)
       }>`;
-      break;
 
     case "interfaceObjectSet":
-      paramType = `Query${type}.ObjectSetType<${
+      return `Query${type}.ObjectSetType<${
         enhancedOntology.requireInterfaceType(input.objectSet)
           .getImportedDefinitionIdentifier(true)
       }>`;
-      break;
 
     case "set":
-      paramType = `${type === "Param" ? "Readonly" : ""}Set<${
-        getQueryParamType(
-          enhancedOntology,
-          input.set,
-          type,
-          paramContext,
-          false,
-        )
-      }>`;
-      break;
+      return `${type === "Param" ? "Readonly" : ""}Set<${recurse(input.set)}>`;
 
     case "union":
-      paramType = input.union.map((u) =>
-        getQueryParamType(enhancedOntology, u, type, paramContext, false)
-      ).join(" | ");
-      break;
+      return input.union.map((u) => recurse(u)).join(" | ");
 
     case "map":
-      paramType = `Partial<Record<${
-        getQueryParamType(
-          enhancedOntology,
-          input.keyType,
-          type,
-          paramContext,
-          true,
-        )
-      }, ${
-        getQueryParamType(
-          enhancedOntology,
-          input.valueType,
-          type,
-          paramContext,
-          false,
-        )
+      return `Partial<Record<${recurse(input.keyType, true)}, ${
+        recurse(input.valueType)
       }>>`;
-      break;
 
     case "typeReference": {
-      const interfaceName = paramContext?.typeIdToInterfaceName.get(
+      const sanitizedName = typeRefContext?.typeIdToSanitizedName.get(
         input.typeId,
       );
-      paramType = interfaceName
-        ? interfaceName
-        : `unknown /* typeRef: ${input.typeId} */`;
-      break;
+      if (!sanitizedName) {
+        return `unknown /* typeRef: ${input.typeId} */`;
+      }
+      const suffix = type === "Result"
+          && typeRefContext?.paramTypeIds.has(input.typeId)
+        ? "_Output"
+        : "";
+      return `CustomTypes.${sanitizedName}${suffix}`;
     }
   }
-
-  return paramType;
 }
 
-interface ParameterTypeRefContext {
-  rootInterfaceName: string;
-  typeIdToInterfaceName: Map<string, string>;
-  counter: number;
+function wrapExpand(typeStr: string): string {
+  return typeStr.replace(
+    /CustomTypes\.(\$[a-zA-Z0-9_]+)/g,
+    "CustomTypes.Expand<CustomTypes.$1>",
+  );
 }
 
 interface TypeRefContext {
-  paramContexts: Map<string, ParameterTypeRefContext>;
-  outputContext: ParameterTypeRefContext;
-  queryName: string;
+  paramTypeIds: Set<string>;
+  outputTypeIds: Set<string>;
+  typeIdToSanitizedName: Map<string, string>;
 }
 
-function toPascalCase(str: string): string {
-  return str.charAt(0).toUpperCase() + str.slice(1);
+function sanitizeTypeId(typeId: string): string {
+  return `$${typeId.replace(/-/g, "_")}`;
 }
 
-function collectTypeRefsFromDataType(
+function collectTypeIdsFromDataType(
   dataType: QueryDataType,
-  paramContext: ParameterTypeRefContext,
+  collected: Set<string>,
   typeReferences: Record<string, QueryDataType>,
 ): void {
   if (dataType.type === "typeReference") {
-    if (paramContext.typeIdToInterfaceName.has(dataType.typeId)) {
+    if (collected.has(dataType.typeId)) {
       return;
     }
-
-    let interfaceName: string;
-    if (paramContext.counter === 0) {
-      interfaceName = paramContext.rootInterfaceName;
-    } else {
-      interfaceName =
-        `${paramContext.rootInterfaceName}_${paramContext.counter}`;
-    }
-    paramContext.counter++;
-    paramContext.typeIdToInterfaceName.set(dataType.typeId, interfaceName);
+    collected.add(dataType.typeId);
 
     const referencedType = typeReferences[dataType.typeId];
     if (referencedType) {
-      collectTypeRefsFromDataType(
-        referencedType,
-        paramContext,
-        typeReferences,
-      );
+      collectTypeIdsFromDataType(referencedType, collected, typeReferences);
     }
     return;
   }
@@ -528,39 +449,35 @@ function collectTypeRefsFromDataType(
   switch (dataType.type) {
     case "array":
     case "set":
-      collectTypeRefsFromDataType(
+      collectTypeIdsFromDataType(
         dataType.subType,
-        paramContext,
+        collected,
         typeReferences,
       );
       break;
     case "struct":
       for (const field of dataType.fields) {
-        collectTypeRefsFromDataType(
+        collectTypeIdsFromDataType(
           field.fieldType,
-          paramContext,
+          collected,
           typeReferences,
         );
       }
       break;
     case "union":
       for (const unionType of dataType.unionTypes) {
-        collectTypeRefsFromDataType(
-          unionType,
-          paramContext,
-          typeReferences,
-        );
+        collectTypeIdsFromDataType(unionType, collected, typeReferences);
       }
       break;
     case "entrySet":
-      collectTypeRefsFromDataType(
+      collectTypeIdsFromDataType(
         dataType.keyType,
-        paramContext,
+        collected,
         typeReferences,
       );
-      collectTypeRefsFromDataType(
+      collectTypeIdsFromDataType(
         dataType.valueType,
-        paramContext,
+        collected,
         typeReferences,
       );
       break;
@@ -570,48 +487,23 @@ function collectTypeRefsFromDataType(
 function buildTypeRefContext(query: QueryTypeV2): TypeRefContext {
   const typeReferences = query.typeReferences ?? {};
 
-  const paramContexts = new Map<string, ParameterTypeRefContext>();
-
-  for (const [paramName, param] of Object.entries(query.parameters)) {
-    if (paramName.toLowerCase() === "output") {
-      throw new Error(
-        `Query "${query.apiName}" has a parameter named "${paramName}" which conflicts with the output type naming convention. Please rename the parameter.`,
-      );
-    }
-
-    const paramContext: ParameterTypeRefContext = {
-      rootInterfaceName: toPascalCase(paramName),
-      typeIdToInterfaceName: new Map(),
-      counter: 0,
-    };
-
-    collectTypeRefsFromDataType(
-      param.dataType,
-      paramContext,
-      typeReferences,
-    );
-
-    if (paramContext.typeIdToInterfaceName.size > 0) {
-      paramContexts.set(paramName, paramContext);
-    }
+  const paramTypeIds = new Set<string>();
+  for (const param of Object.values(query.parameters)) {
+    collectTypeIdsFromDataType(param.dataType, paramTypeIds, typeReferences);
   }
 
-  const outputContext: ParameterTypeRefContext = {
-    rootInterfaceName: query.apiName + "Output",
-    typeIdToInterfaceName: new Map(),
-    counter: 0,
-  };
+  const outputTypeIds = new Set<string>();
+  collectTypeIdsFromDataType(query.output, outputTypeIds, typeReferences);
 
-  collectTypeRefsFromDataType(
-    query.output,
-    outputContext,
-    typeReferences,
-  );
+  const typeIdToSanitizedName = new Map<string, string>();
+  for (const typeId of new Set([...paramTypeIds, ...outputTypeIds])) {
+    typeIdToSanitizedName.set(typeId, sanitizeTypeId(typeId));
+  }
 
   return {
-    paramContexts,
-    outputContext,
-    queryName: query.apiName,
+    paramTypeIds,
+    outputTypeIds,
+    typeIdToSanitizedName,
   };
 }
 
@@ -622,47 +514,39 @@ function generateTypeReferenceInterfaces(
 ): string {
   const interfaces: string[] = [];
 
-  for (const [, paramContext] of context.paramContexts) {
-    for (const [typeId, interfaceName] of paramContext.typeIdToInterfaceName) {
-      const dataType = typeReferences[typeId];
-      if (!dataType) {
-        continue;
-      }
+  for (const typeId of context.paramTypeIds) {
+    const dataType = typeReferences[typeId];
+    if (!dataType) continue;
 
-      const converted = wireQueryDataTypeToQueryDataTypeDefinition(dataType);
-      const typeString = getQueryParamType(
-        ontology,
-        converted,
-        "Param",
-        paramContext,
-        false,
+    const sanitizedName = context.typeIdToSanitizedName.get(typeId)!;
+    const converted = wireQueryDataTypeToQueryDataTypeDefinition(dataType);
+    const typeString = getQueryParamType(ontology, converted, "Param", context);
+
+    if (converted.type === "struct") {
+      interfaces.push(
+        `export interface ${sanitizedName} ${typeString}`,
       );
-
-      if (converted.type === "struct") {
-        interfaces.push(`interface ${interfaceName} ${typeString}`);
-      }
     }
   }
 
-  for (
-    const [typeId, interfaceName] of context.outputContext.typeIdToInterfaceName
-  ) {
+  for (const typeId of context.outputTypeIds) {
     const dataType = typeReferences[typeId];
-    if (!dataType) {
-      continue;
-    }
+    if (!dataType) continue;
 
+    const sanitizedName = context.typeIdToSanitizedName.get(typeId)!;
+    const suffix = context.paramTypeIds.has(typeId) ? "_Output" : "";
     const converted = wireQueryDataTypeToQueryDataTypeDefinition(dataType);
     const typeString = getQueryParamType(
       ontology,
       converted,
       "Result",
-      context.outputContext,
-      false,
+      context,
     );
 
     if (converted.type === "struct") {
-      interfaces.push(`interface ${interfaceName} ${typeString}`);
+      interfaces.push(
+        `export interface ${sanitizedName}${suffix} ${typeString}`,
+      );
     }
   }
 
@@ -670,5 +554,9 @@ function generateTypeReferenceInterfaces(
     return "";
   }
 
-  return interfaces.join("\n\n");
+  return `namespace CustomTypes {
+    export type Expand<T> = T extends infer O ? { [K in keyof O]: O[K] } : never;
+
+    ${interfaces.join("\n\n")}
+  }`;
 }
