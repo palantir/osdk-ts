@@ -207,6 +207,12 @@ describe("ActionForm", () => {
         <ActionForm actionDefinition={TestAction} onSuccess={onSuccess} />,
       );
 
+      // Fill required field before submitting
+      const nameInput = document.getElementById("name");
+      if (nameInput != null) {
+        fireEvent.change(nameInput, { target: { value: "Alice" } });
+      }
+
       fireEvent.click(screen.getByRole("button", { name: /submit/i }));
 
       await vi.waitFor(() => {
@@ -220,6 +226,12 @@ describe("ActionForm", () => {
       mockApplyAction.mockRejectedValue(error);
 
       render(<ActionForm actionDefinition={TestAction} onError={onError} />);
+
+      // Fill required field before submitting
+      const nameInput = document.getElementById("name");
+      if (nameInput != null) {
+        fireEvent.change(nameInput, { target: { value: "Alice" } });
+      }
 
       fireEvent.click(screen.getByRole("button", { name: /submit/i }));
 

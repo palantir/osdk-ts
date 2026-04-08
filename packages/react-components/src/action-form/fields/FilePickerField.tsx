@@ -26,9 +26,10 @@ export const FilePickerField: React.FC<FilePickerProps> = memo(
     id,
     value,
     onChange,
+    error,
     isMulti,
     accept,
-    // TODO: implement maxSize validation in a follow-up
+    // maxSize is enforced by form-level validation (extractValidationRules)
     maxSize: _maxSize,
     text = "No file chosen",
     buttonText = "Browse",
@@ -98,6 +99,7 @@ export const FilePickerField: React.FC<FilePickerProps> = memo(
         aria-label="Choose file"
         onClick={openFileDialog}
         onKeyDown={handleKeyDown}
+        data-invalid={error != null || undefined}
       >
         <input
           ref={inputRef}

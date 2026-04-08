@@ -53,4 +53,8 @@
     cursor: not-allowed;
     opacity: var(--osdk-input-disabled-opacity);
   }
+
+  &[data-invalid] {
+    border-color: var(--osdk-input-border-color-error);
+  }
 }

@@ -23,6 +23,7 @@ interface FormFieldProps {
   isRequired?: boolean;
   helperText?: string;
   error?: string;
+  onBlur?: () => void;
   children: React.ReactNode;
 }
 
@@ -33,10 +34,11 @@ export const FormField: React.FC<FormFieldProps> = memo(
     isRequired,
     helperText,
     error,
+    onBlur,
     children,
   }: FormFieldProps): React.ReactElement {
     return (
-      <div className={styles.osdkFormField}>
+      <div className={styles.osdkFormField} onBlur={onBlur}>
         {label != null && (
           <label className={styles.osdkFormFieldLabel} htmlFor={fieldKey}>
             {label}

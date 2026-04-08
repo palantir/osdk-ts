@@ -16,13 +16,16 @@
 
 import classNames from "classnames";
 import React, { memo, useCallback, useMemo } from "react";
+import type { RegisterOptions } from "react-hook-form";
 import { useForm } from "react-hook-form";
 import { ActionButton } from "../base-components/action-button/ActionButton.js";
+import { Tooltip } from "../base-components/tooltip/Tooltip.js";
 import type { BaseFormProps } from "./ActionFormApi.js";
 import styles from "./BaseForm.module.css";
 import { FieldBridge } from "./fields/FieldBridge.js";
 import type { RendererFieldDefinition } from "./FormFieldApi.js";
 import { FormHeader } from "./FormHeader.js";
+import { extractValidationRules } from "./utils/extractValidationRules.js";
 
 export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
   formTitle,
@@ -42,11 +45,34 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
     [fieldDefinitions],
   );
 
-  const { control, handleSubmit: rhfHandleSubmit } = useForm<
-    Record<string, unknown>
-  >({
-    ...(isControlled ? { values: controlledFormState } : { defaultValues }),
-  });
+  const validationRules = useMemo(
+    () => buildValidationRules(fieldDefinitions),
+    [fieldDefinitions],
+  );
+
+  const { control, handleSubmit: rhfHandleSubmit, formState: { errors } } =
+    useForm<
+      Record<string, unknown>
+    >({
+      // Validate on blur first, then revalidate on change after the first
+      // error. This gives the user a chance to finish typing before seeing
+      // errors, while staying responsive once an error is surfaced.
+      mode: "onTouched",
+      ...(isControlled ? { values: controlledFormState } : { defaultValues }),
+    });
+
+  const errorKeys = Object.keys(errors);
+  const hasValidationErrors = errorKeys.length > 0;
+
+  const errorSummary = useMemo(() => {
+    if (!hasValidationErrors) {
+      return "";
+    }
+    const labelMap = new Map(
+      fieldDefinitions.map((d) => [d.fieldKey, d.label]),
+    );
+    return errorKeys.map((key) => labelMap.get(key) ?? key).join(", ");
+  }, [hasValidationErrors, errorKeys, fieldDefinitions]);
 
   const onFormSubmit = useCallback(
     (rhfValues: Record<string, unknown>) => {
@@ -75,22 +101,23 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
             key={fieldDef.fieldKey}
             fieldDef={fieldDef}
             control={control}
+            rules={validationRules[fieldDef.fieldKey]}
             onExternalChange={onFieldValueChange}
           />
         ))}
       </div>
       <div className={styles.osdkFormFooter}>
-        <ActionButton
-          type="submit"
-          variant="primary"
-          disabled={isSubmitDisabled || isPending}
-        >
-          {isPending ? "Submitting…" : "Submit"}
-        </ActionButton>
+        <SubmitButton
+          isPending={isPending}
+          isSubmitDisabled={isSubmitDisabled}
+          errorSummary={hasValidationErrors ? errorSummary : undefined}
+        />
       </div>
     </form>
   );
 });
+
+type RhfRules = RegisterOptions<Record<string, unknown>, string>;
 
 function buildDefaultValues(
   fieldDefinitions: ReadonlyArray<RendererFieldDefinition>,
@@ -101,3 +128,65 @@ function buildDefaultValues(
   }
   return values;
 }
+
+function buildValidationRules(
+  fieldDefinitions: ReadonlyArray<RendererFieldDefinition>,
+): Record<string, RhfRules> {
+  const rules: Record<string, RhfRules> = {};
+  for (const def of fieldDefinitions) {
+    rules[def.fieldKey] = extractValidationRules(def);
+  }
+  return rules;
+}
+
+interface SubmitButtonProps {
+  isPending: boolean;
+  isSubmitDisabled: boolean;
+  errorSummary: string | undefined;
+}
+
+const SubmitButton: React.FC<SubmitButtonProps> = memo(
+  function SubmitButtonFn({
+    isPending,
+    isSubmitDisabled,
+    errorSummary,
+  }: SubmitButtonProps): React.ReactElement {
+    const buttonLabel = isPending ? "Submitting\u2026" : "Submit";
+
+    if (errorSummary != null) {
+      return (
+        <Tooltip.Root>
+          <Tooltip.Trigger
+            render={
+              <ActionButton
+                type="submit"
+                variant="primary"
+                disabled={isPending}
+              >
+                {buttonLabel}
+              </ActionButton>
+            }
+          />
+          <Tooltip.Portal>
+            <Tooltip.Positioner>
+              <Tooltip.Popup>
+                <Tooltip.Arrow />
+                {`Fix errors in: ${errorSummary}`}
+              </Tooltip.Popup>
+            </Tooltip.Positioner>
+          </Tooltip.Portal>
+        </Tooltip.Root>
+      );
+    }
+
+    return (
+      <ActionButton
+        type="submit"
+        variant="primary"
+        disabled={isSubmitDisabled || isPending}
+      >
+        {buttonLabel}
+      </ActionButton>
+    );
+  },
+);
