@@ -35,8 +35,8 @@ export async function transformAndWaitInternal(
   token: string | undefined,
   options?: TransformOptions,
 ): Promise<Response> {
-  const pollIntervalMs = options?.pollIntervalMs ?? 3000;
-  const pollTimeoutMs = options?.pollTimeoutMs ?? 30000;
+  const pollIntervalMs = Math.max(options?.pollIntervalMs ?? 3000, 100);
+  const pollTimeoutMs = Math.max(options?.pollTimeoutMs ?? 30000, 1000);
 
   const headerParams = token ? { Token: token } : undefined;
 

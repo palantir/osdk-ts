@@ -37,7 +37,7 @@ export interface TransformOptions {
  * and returns the transformed content.
  *
  * @param args.mediaReference - The media reference to transform
- * @param args.transformation - The transformation to apply (e.g. from `@osdk/foundry.mediasets`)
+ * @param args.transformation - The {@link MediaTransformation} to apply
  * @param args.options - Polling options (interval and timeout)
  *
  * @returns The transformed media content as a Response
