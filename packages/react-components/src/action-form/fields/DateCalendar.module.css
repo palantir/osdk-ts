@@ -51,7 +51,7 @@
   }
 }
 
-.calendarSelected .calendarDayButton {
+.calendarDayButton.calendarSelected {
   background: var(--osdk-datetime-calendar-selected-bg);
   color: var(--osdk-datetime-calendar-selected-color);
 
@@ -60,15 +60,15 @@
   }
 }
 
-.calendarToday .calendarDayButton {
+.calendarDayButton.calendarToday {
   font-weight: var(--osdk-datetime-calendar-today-font-weight);
 }
 
-.calendarOutside .calendarDayButton {
+.calendarDayButton.calendarOutside {
   color: var(--osdk-datetime-calendar-outside-color);
 }
 
-.calendarDisabled .calendarDayButton {
+.calendarDayButton.calendarDisabled {
   color: var(--osdk-datetime-calendar-disabled-color);
   cursor: default;
 
