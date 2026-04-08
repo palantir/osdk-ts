@@ -168,10 +168,21 @@ describe("aggregate", () => {
       },
     );
 
-    expectType<number>(notGrouped.string.approximateDistinct);
-    expectType<number>(notGrouped.string.exactDistinct);
-    expectType<number | undefined>(notGrouped.id.max);
-    expectType<number | undefined>(notGrouped.id.avg);
+    expectType<
+      { approximateDistinct: number; exactDistinct: number } | undefined
+    >(notGrouped.string);
+    if (notGrouped.string) {
+      expectType<number>(notGrouped.string.approximateDistinct);
+      expectType<number>(notGrouped.string.exactDistinct);
+    }
+    expectType<
+      { avg: number | undefined; max: number | undefined } | undefined
+    >(notGrouped.id);
+    if (notGrouped.id) {
+      expectType<number | undefined>(notGrouped.id.max);
+      expectType<number | undefined>(notGrouped.id.avg);
+    }
+
     expectType<number>(notGrouped.$count);
     expectType<
       TypeOf<
@@ -207,8 +218,13 @@ describe("aggregate", () => {
     );
     expectType<Array<any>>(grouped);
     expectType<string | undefined>(grouped[0].$group.string);
-    expectType<number>(grouped[0].id.approximateDistinct);
-    expectType<number>(grouped[0].id.exactDistinct);
+    expectType<
+      { approximateDistinct: number; exactDistinct: number } | undefined
+    >(grouped[0].id);
+    if (grouped[0].id) {
+      expectType<number>(grouped[0].id.approximateDistinct);
+      expectType<number>(grouped[0].id.exactDistinct);
+    }
     expectType<number>(grouped[0].$group.id);
     expectType<number>(grouped[0].$count);
     expectType<{ startValue: number; endValue: number }>(
@@ -429,10 +445,22 @@ describe("aggregate", () => {
       },
     );
 
-    expectType<number>(notGrouped.string.approximateDistinct);
-    expectType<number>(notGrouped.id.exactDistinct);
-    expectType<number>(notGrouped.id.max);
-    expectType<number>(notGrouped.id.avg);
+    expectType<{ approximateDistinct: number } | undefined>(notGrouped.string);
+    if (notGrouped.string) {
+      expectType<number>(notGrouped.string.approximateDistinct);
+    }
+    expectType<
+      {
+        exactDistinct: number;
+        avg: number | undefined;
+        max: number | undefined;
+      } | undefined
+    >(notGrouped.id);
+    if (notGrouped.id) {
+      expectType<number>(notGrouped.id.exactDistinct);
+      expectType<number | undefined>(notGrouped.id.max);
+      expectType<number | undefined>(notGrouped.id.avg);
+    }
     expectType<number>(notGrouped.$count);
     expectType<
       TypeOf<
@@ -499,12 +527,21 @@ describe("aggregate", () => {
         headers: expect.anything(),
       },
     );
-
-    expectType<number>(grouped[0].string.approximateDistinct);
-    expectType<number>(grouped[0].id.max);
-    expectType<number>(grouped[0].id.avg);
+    expectType<
+      { approximateDistinct: number; exactDistinct: number } | undefined
+    >(grouped[0].string);
+    if (grouped[0].string) {
+      expectType<number>(grouped[0].string.approximateDistinct);
+      expectType<number>(grouped[0].string.exactDistinct);
+    }
+    expectType<
+      { max: number | undefined; avg: number | undefined } | undefined
+    >(grouped[0].id);
+    if (grouped[0].id) {
+      expectType<number | undefined>(grouped[0].id.max);
+      expectType<number | undefined>(grouped[0].id.avg);
+    }
     expectType<number>(grouped[0].$count);
-    expectType<number>(grouped[0].string.exactDistinct);
     expectType<
       TypeOf<
         {

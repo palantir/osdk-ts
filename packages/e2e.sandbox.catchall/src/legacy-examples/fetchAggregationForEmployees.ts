@@ -59,13 +59,13 @@ fetchAggregationForEmployees()
       max: number | undefined;
       avg: number | undefined;
       min: number | undefined;
-    };
+    } | undefined;
     locationCity: {
       approximateDistinct: number;
-    };
+    } | undefined;
     locationName: {
       approximateDistinct: number;
-    };
+    } | undefined;
   }>(result);
 
   // adUsername shouldn't be present
@@ -90,5 +90,7 @@ fetchAggregationForEmployees()
       && "locationCity" in result,
     "The keys should be the expected ones",
   );
-  invariant(Object.keys(result.employeeNumber).length === 3);
+  if (result.employeeNumber) {
+    invariant(Object.keys(result.employeeNumber).length === 3);
+  }
 }
