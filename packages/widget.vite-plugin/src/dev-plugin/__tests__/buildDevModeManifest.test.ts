@@ -122,116 +122,20 @@ describe("buildDevModeManifest", () => {
     ]);
   });
 
-  test("includes full widget metadata", async () => {
+  test("passes widget config and pluginOptions to buildWidgetManifestConfig", async () => {
     const result = await buildDevModeManifest(
       MOCK_SERVER,
       MOCK_CODE_ENTRYPOINTS,
       MOCK_CONFIG_FILE_TO_ENTRYPOINT,
       "http://localhost:5173/",
+      { defaults: { refreshHostDataOnAction: true } },
     );
 
     const widget = result.devSettings.widgets.widgetId;
+    // Verify buildWidgetManifestConfig was called with config and options
     expect(widget.name).toBe("Widget Name");
-    expect(widget.description).toBe("A test widget");
     expect(widget.type).toBe("workshopWidgetV1");
-    expect(widget.parameters).toEqual({
-      stringParam: { type: "string", displayName: "String Parameter" },
-    });
-    expect(widget.events).toEqual({
-      updateParameters: {
-        displayName: "Update Parameters",
-        parameterUpdateIds: ["stringParam"],
-      },
-    });
-    expect(widget.permissions).toEqual(["camera"]);
-    expect(widget.entrypointCss).toEqual([]);
-  });
-
-  test("handles optional description", async () => {
-    vi.mocked(extractWidgetConfig).mockResolvedValue({
-      ...MOCK_WIDGET_CONFIG,
-      description: undefined,
-    });
-
-    const result = await buildDevModeManifest(
-      MOCK_SERVER,
-      MOCK_CODE_ENTRYPOINTS,
-      MOCK_CONFIG_FILE_TO_ENTRYPOINT,
-      "http://localhost:5173/",
-    );
-
-    const widget = result.devSettings.widgets.widgetId;
-    expect(widget.description).toBeUndefined();
-  });
-
-  test("converts object set parameters correctly", async () => {
-    vi.mocked(extractWidgetConfig).mockResolvedValue({
-      ...MOCK_WIDGET_CONFIG,
-      parameters: {
-        objectSetParam: {
-          type: "objectSet",
-          displayName: "Object Set Parameter",
-          allowedType: {
-            type: "object",
-            apiName: "employee",
-            internalDoNotUseMetadata: {
-              rid: "ri.ontology.main.object-type.employee",
-            },
-          },
-        },
-      },
-    });
-
-    const result = await buildDevModeManifest(
-      MOCK_SERVER,
-      MOCK_CODE_ENTRYPOINTS,
-      MOCK_CONFIG_FILE_TO_ENTRYPOINT,
-      "http://localhost:5173/",
-    );
-
-    expect(
-      result.devSettings.widgets.widgetId.parameters.objectSetParam,
-    ).toEqual({
-      type: "objectSet",
-      displayName: "Object Set Parameter",
-      objectTypeRids: ["ri.ontology.main.object-type.employee"],
-      allowedType: "ri.ontology.main.object-type.employee",
-    });
-  });
-
-  test("converts interface set parameters correctly", async () => {
-    vi.mocked(extractWidgetConfig).mockResolvedValue({
-      ...MOCK_WIDGET_CONFIG,
-      parameters: {
-        interfaceSetParam: {
-          type: "objectSet",
-          displayName: "Interface Set Parameter",
-          allowedType: {
-            type: "interface",
-            apiName: "MyInterface",
-            internalDoNotUseMetadata: {
-              rid: "ri.ontology.main.interface.my-interface",
-            },
-          },
-        },
-      },
-    });
-
-    const result = await buildDevModeManifest(
-      MOCK_SERVER,
-      MOCK_CODE_ENTRYPOINTS,
-      MOCK_CONFIG_FILE_TO_ENTRYPOINT,
-      "http://localhost:5173/",
-    );
-
-    expect(
-      result.devSettings.widgets.widgetId.parameters.interfaceSetParam,
-    ).toEqual({
-      type: "objectSet",
-      displayName: "Interface Set Parameter",
-      objectTypeRids: [],
-      allowedType: "ri.ontology.main.interface.my-interface",
-    });
+    expect(widget.refreshHostDataOnAction).toBe(true);
   });
 
   test("includes inputSpec from getWidgetSetInputSpec", async () => {
@@ -246,37 +150,6 @@ describe("buildDevModeManifest", () => {
     expect(vi.mocked(getWidgetSetInputSpec)).toHaveBeenCalledWith(
       "/project/package.json",
     );
-  });
-
-  test("applies refreshHostDataOnAction default from pluginOptions", async () => {
-    const result = await buildDevModeManifest(
-      MOCK_SERVER,
-      MOCK_CODE_ENTRYPOINTS,
-      MOCK_CONFIG_FILE_TO_ENTRYPOINT,
-      "http://localhost:5173/",
-      { defaults: { refreshHostDataOnAction: true } },
-    );
-
-    const widget = result.devSettings.widgets.widgetId;
-    expect(widget.refreshHostDataOnAction).toBe(true);
-  });
-
-  test("widget-level refreshHostDataOnAction overrides plugin default", async () => {
-    vi.mocked(extractWidgetConfig).mockResolvedValue({
-      ...MOCK_WIDGET_CONFIG,
-      refreshHostDataOnAction: false,
-    });
-
-    const result = await buildDevModeManifest(
-      MOCK_SERVER,
-      MOCK_CODE_ENTRYPOINTS,
-      MOCK_CONFIG_FILE_TO_ENTRYPOINT,
-      "http://localhost:5173/",
-      { defaults: { refreshHostDataOnAction: true } },
-    );
-
-    const widget = result.devSettings.widgets.widgetId;
-    expect(widget.refreshHostDataOnAction).toBe(false);
   });
 
   test("multiple widgets from multiple config files", async () => {

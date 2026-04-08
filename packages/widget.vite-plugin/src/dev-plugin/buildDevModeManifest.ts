@@ -20,7 +20,7 @@ import type {
 } from "@osdk/widget.api";
 import path from "node:path";
 import type { ViteDevServer } from "vite";
-import { convertParameters } from "../build-plugin/buildWidgetSetManifest.js";
+import { buildWidgetManifestConfig } from "../build-plugin/buildWidgetSetManifest.js";
 import { getWidgetSetInputSpec } from "../build-plugin/getWidgetSetInputSpec.js";
 import { VITE_INJECTIONS_PATH } from "../common/constants.js";
 import { extractWidgetConfig } from "../common/extractWidgetConfig.js";
@@ -60,22 +60,15 @@ export async function buildDevModeManifest(
           entrypointRelativePath.slice(1),
         ];
 
-        const manifest: WidgetManifestConfig = {
-          id: widgetConfig.id,
-          name: widgetConfig.name,
-          description: widgetConfig.description,
-          type: "workshopWidgetV1",
-          entrypointJs: scriptPaths.map((p) => ({
+        const manifest = buildWidgetManifestConfig(
+          widgetConfig,
+          scriptPaths.map((p) => ({
             path: `${baseHref}${p}`,
             type: "module" as const,
           })),
-          entrypointCss: [],
-          parameters: convertParameters(widgetConfig.parameters),
-          events: widgetConfig.events,
-          permissions: widgetConfig.permissions,
-          refreshHostDataOnAction: widgetConfig.refreshHostDataOnAction
-            ?? pluginOptions?.defaults?.refreshHostDataOnAction,
-        };
+          [],
+          pluginOptions,
+        );
 
         return [widgetConfig.id, manifest];
       }),
