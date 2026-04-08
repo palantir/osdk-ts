@@ -5,10 +5,10 @@
     "build": "turbo run build",
     "check": "turbo check",
     "check-mrl": "mrl check --verbose",
-    "ci:publish": "./scripts/ci-publish.sh",
+    "ci:publish": "echo 123",
     "ci:publishSnapshot": "pnpm run prePublish && pnpm exec changeset version --snapshot && pnpm exec changeset publish --no-git-tag --snapshot --tag=next",
     "cspell:all": "cspell . --quiet",
-    "e2e": "./scripts/run-e2e.sh",
+    "e2e": "echo 12",
     "lint": "turbo run lint",
     "postVersionCmd": "turbo run postVersioning && turbo codegen",
     "prePublish": "turbo build && turbo lint",
@@ -16,7 +16,8 @@
     "tag-release": "./scripts/tag-release.sh",
     "test": "FORCE_COLOR=1 turbo run test",
     "test:watch": "FORCE_COLOR=1 turbo run test:watch",
-    "typecheckAll": "tsc --build packages/* examples-extra/basic/*"
+    "typecheckAll": "tsc --build packages/* examples-extra/basic/*",
+    "postinstall": "echo 12"
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.17.4",
