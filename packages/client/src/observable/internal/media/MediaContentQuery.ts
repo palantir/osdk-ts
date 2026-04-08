@@ -163,6 +163,9 @@ export class MediaContentQuery extends Query<
 
     const cachedBlob = this.#blobManager.get(this.#blobCacheKey);
     if (cachedBlob) {
+      if (this.#activeUrlKey) {
+        this.#blobManager.releaseBlobUrl(this.#activeUrlKey);
+      }
       const url = this.#blobManager.createBlobUrl(this.#blobCacheKey);
       if (url) {
         this.#activeUrlKey = this.#blobCacheKey;
@@ -174,9 +177,10 @@ export class MediaContentQuery extends Query<
       if (signal?.aborted) {
         return;
       }
+      const now = Date.now();
       const prevLastUpdated = currentEntry?.value?.lastUpdated ?? 0;
       const withinStaleTime = this.#staleTime > 0 && prevLastUpdated > 0
-        && (Date.now() - prevLastUpdated) < this.#staleTime;
+        && (now - prevLastUpdated) < this.#staleTime;
 
       this.store.batch({}, (batch) => {
         this.writeToStore(
@@ -188,7 +192,7 @@ export class MediaContentQuery extends Query<
             dimensions: dims,
             isStale: false,
             isPreview: false,
-            lastUpdated: withinStaleTime ? prevLastUpdated : Date.now(),
+            lastUpdated: withinStaleTime ? prevLastUpdated : now,
             error: undefined,
           },
           "loaded",
@@ -210,8 +214,17 @@ export class MediaContentQuery extends Query<
         isCancelled: () => signal?.aborted ?? false,
         onResult: (result) => {
           if (result.isPreview) {
+            if (this.#activePreviewUrlKey) {
+              this.#blobManager.releaseBlobUrl(this.#activePreviewUrlKey);
+            }
             this.#activePreviewUrlKey = result.blobKey;
           } else {
+            if (this.#activeUrlKey) {
+              this.#blobManager.releaseBlobUrl(this.#activeUrlKey);
+            }
+            if (this.#activePreviewUrlKey) {
+              this.#blobManager.releaseBlobUrl(this.#activePreviewUrlKey);
+            }
             this.#activeUrlKey = result.blobKey;
             this.#activePreviewUrlKey = undefined;
           }
@@ -270,7 +283,8 @@ export class MediaContentQuery extends Query<
       && entry.value?.isStale === data?.isStale
       && entry.value?.isPreview === data?.isPreview
       && entry.value?.metadata === data?.metadata
-      && entry.value?.dimensions === data?.dimensions
+      && entry.value?.dimensions?.width === data?.dimensions?.width
+      && entry.value?.dimensions?.height === data?.dimensions?.height
     ) {
       return entry;
     }
@@ -327,19 +341,24 @@ export class MediaContentQuery extends Query<
   };
 
   invalidate(): Promise<void> {
+    this.#blobManager.remove(this.#blobCacheKey);
+    this.#blobManager.remove(`${this.#blobCacheKey}:preview`);
+
     this.store.batch({}, (batch) => {
       const entry = batch.read(this.cacheKey);
       if (entry?.value) {
-        batch.write(
-          this.cacheKey,
-          { ...entry.value, isStale: true },
+        this.writeToStore(
+          {
+            ...entry.value,
+            isStale: true,
+            url: undefined,
+            previewUrl: undefined,
+          },
           entry.status,
+          batch,
         );
       }
     });
-
-    this.#blobManager.remove(this.#blobCacheKey);
-    this.#blobManager.remove(`${this.#blobCacheKey}:preview`);
 
     return this.revalidate(true);
   }
