@@ -50,6 +50,11 @@ import type {
   Observer,
   Status,
 } from "./ObservableClient/common.js";
+import type {
+  MediaMetadataObserveOptions,
+  MediaMetadataPayload,
+} from "./ObservableClient/MediaObservableTypes.js";
+import type { MediaPropertyLocation } from "./ObservableClient/MediaTypes.js";
 import type { ObserveLinks } from "./ObservableClient/ObserveLink.js";
 import type { OptimisticBuilder } from "./OptimisticBuilder.js";
 
@@ -539,6 +544,12 @@ export interface ObservableClient extends ObserveLinks {
   canonicalizeOptions: <OS, T extends CanonicalizeOptionsInput<OS>>(
     options: T,
   ) => CanonicalizedOptions<T>;
+
+  observeMediaMetadata(
+    coords: MediaPropertyLocation,
+    options: MediaMetadataObserveOptions,
+    observer: Observer<MediaMetadataPayload>,
+  ): Unsubscribable;
 }
 
 export interface CanonicalizeOptionsInput<OS = ObjectSet<any, any>> {
