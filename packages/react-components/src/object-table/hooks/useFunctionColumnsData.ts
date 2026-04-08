@@ -36,6 +36,7 @@ import {
   type AsyncCellData,
   createAsyncCellData,
 } from "../utils/AsyncCellData.js";
+import { stripDerivedPropertiesFromParams } from "../utils/stripDerivedPropertiesFromParams.js";
 
 export interface FunctionColumnData {
   [columnId: string]: {
@@ -105,7 +106,9 @@ export function useFunctionColumnsData<
         (config): FunctionQueryParams<QueryDefinition<unknown>> => ({
           queryDefinition: config.queryDefinition,
           options: {
-            params: config.getParams(stableObjectSet),
+            params: stripDerivedPropertiesFromParams(
+              config.getParams(stableObjectSet),
+            ),
             dedupeIntervalMs: config.dedupeIntervalMs
               ?? DEFAULT_DEDUPE_INTERVAL_MS,
           } as FunctionQueryParams<QueryDefinition<unknown>>["options"],
