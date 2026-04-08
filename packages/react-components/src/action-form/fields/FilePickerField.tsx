@@ -17,7 +17,7 @@
 import { Button } from "@base-ui/react/button";
 import { Cross } from "@blueprintjs/icons";
 import classnames from "classnames";
-import React, { memo, useCallback, useRef } from "react";
+import React, { memo, useCallback, useMemo, useRef } from "react";
 import type { FilePickerProps } from "../FormFieldApi.js";
 import styles from "./FilePickerField.module.css";
 
@@ -78,9 +78,12 @@ export const FilePickerField: React.FC<FilePickerProps> = memo(
       [openFileDialog],
     );
 
-    const displayText = getDisplayText(value);
+    const displayText = useMemo(() => getDisplayText(value), [value]);
     const hasValue = displayText != null;
-    const acceptString = normalizeAccept(accept);
+    const acceptString = useMemo(
+      () => normalizeAccept(accept),
+      [accept],
+    );
     return (
       // The entire component is a single tab stop (tabIndex={0}).
       // Text and Browse are <span>s (not buttons) so they don't create
@@ -92,6 +95,7 @@ export const FilePickerField: React.FC<FilePickerProps> = memo(
         className={styles.osdkFilePickerTrigger}
         tabIndex={0}
         role="button"
+        aria-label="Choose file"
         onClick={openFileDialog}
         onKeyDown={handleKeyDown}
       >
