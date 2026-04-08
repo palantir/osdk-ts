@@ -53,6 +53,13 @@ interface MockReturnType extends UseOsdkListResult<TestObject> {
   };
 }
 
+vi.mock("@osdk/client/unstable-do-not-use", () => ({
+  getWireObjectSet: vi.fn((objectSet: unknown) => ({
+    type: "base",
+    objectType: (objectSet as any)?.$objectSetInternals?.def?.apiName,
+  })),
+}));
+
 vi.mock("@osdk/react/experimental", () => ({
   useOsdkObjects: vi.fn((objectType, options): MockReturnType => {
     return {
@@ -108,11 +115,16 @@ describe(useObjectTableData, () => {
   const fakeClient = {} as unknown as Client;
   const wrapper = createWrapper(fakeClient);
 
-  const mockObjectSet = {
-    $objectSetInternals: {
-      def: TestObjectType,
-    },
-  } as unknown as ObjectSet<TestObject>;
+  const createMockObjectSet = () => {
+    const os: Record<string, unknown> = {
+      $objectSetInternals: { def: TestObjectType },
+    };
+    os.union = (..._args: unknown[]) => os;
+    os.intersect = (..._args: unknown[]) => os;
+    os.subtract = (..._args: unknown[]) => os;
+    return os as unknown as ObjectSet<TestObject>;
+  };
+  const mockObjectSet = createMockObjectSet();
 
   it("calls useOsdkObjects with filter clause and orderBy provided", () => {
     const filterClause = {
@@ -587,7 +599,7 @@ describe(useObjectTableData, () => {
     );
 
     expect(useFunctionColumnsData).toHaveBeenCalledWith(
-      mockObjectSet,
+      { type: "base", objectType: "TestObject" },
       mockBaseData,
       columnDefinitions,
     );

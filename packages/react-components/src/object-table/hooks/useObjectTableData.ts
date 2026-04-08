@@ -23,6 +23,7 @@ import type {
   SimplePropertyDef,
   WhereClause,
 } from "@osdk/api";
+import { getWireObjectSet } from "@osdk/client/unstable-do-not-use";
 import type { UseOsdkListResult } from "@osdk/react/experimental";
 import { useObjectSet, useOsdkObjects } from "@osdk/react/experimental";
 import type { SortingState } from "@tanstack/react-table";
@@ -150,9 +151,28 @@ export function useObjectTableData<
   // Get the result from the appropriate hook
   const baseResult = shouldUseObjectSet ? objectSetResult : osdkObjectsResult;
 
+  // Compose wire objectSet from base + set operations (omitting withProperties
+  // which causes errors when present in function query parameters)
+  const wireObjectSet = useMemo(() => {
+    if (!objectSet) {
+      return undefined;
+    }
+    let result: ObjectSet<Q> = objectSet as ObjectSet<Q>;
+    if (objectSetOptions?.union?.length) {
+      result = result.union(...objectSetOptions.union);
+    }
+    if (objectSetOptions?.intersect?.length) {
+      result = result.intersect(...objectSetOptions.intersect);
+    }
+    if (objectSetOptions?.subtract?.length) {
+      result = result.subtract(...objectSetOptions.subtract);
+    }
+    return getWireObjectSet(result);
+  }, [objectSet, objectSetOptions]);
+
   // Call useFunctionColumnsData to get function column data
   const functionColumnData = useFunctionColumnsData<Q, RDPs, FunctionColumns>(
-    objectSetResult.objectSet,
+    wireObjectSet,
     baseResult.data,
     columnDefinitions,
   );
