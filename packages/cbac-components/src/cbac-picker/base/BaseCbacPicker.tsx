@@ -22,6 +22,7 @@ import type {
   MarkingSelectionState,
   RequiredMarkingGroup,
 } from "../types.js";
+import { formatCbacError } from "../utils/errorMessages.js";
 import { BaseCbacBanner } from "./BaseCbacBanner.js";
 import styles from "./BaseCbacPicker.module.css";
 import { CategoryMarkingGroup } from "./CategoryMarkingGroup.js";
@@ -57,6 +58,7 @@ export function BaseCbacPicker({
   error,
   className,
 }: BaseCbacPickerProps): React.ReactElement {
+  const errorMessage = error != null ? formatCbacError(error) : undefined;
   const showInitialLoading = isLoading === true && categories.length === 0;
   const showValidationWarning = isValid === false
     && requiredMarkingGroups != null
@@ -76,13 +78,14 @@ export function BaseCbacPicker({
           className={styles.innerBanner}
         />
       )}
-      {error != null
+      {errorMessage !== undefined
         ? (
           <div
             className={styles.statusMessage}
             role="alert"
           >
-            {error.message}
+            <p>{errorMessage.title}</p>
+            {errorMessage.remediation && <p>{errorMessage.remediation}</p>}
           </div>
         )
         : showInitialLoading

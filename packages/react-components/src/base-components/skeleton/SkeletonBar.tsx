@@ -18,7 +18,7 @@ import classnames from "classnames";
 import React from "react";
 import styles from "./SkeletonBar.module.css";
 
-interface SkeletonBarProps {
+export interface SkeletonBarProps {
   width?: string | number;
   height?: string | number;
   maxWidth?: string | number;
