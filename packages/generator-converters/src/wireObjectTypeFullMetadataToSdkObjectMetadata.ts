@@ -66,7 +66,7 @@ export function wireObjectTypeFullMetadataToSdkObjectMetadata(
             for (
               const [iptApiName, implementation] of Object.entries(
                 impl.propertiesV2,
-              ).sort(([a], [b]) => a.localeCompare(b))
+              )
             ) {
               if (implementation.type === "localPropertyImplementation") {
                 propMap[iptApiName] = implementation.propertyApiName;

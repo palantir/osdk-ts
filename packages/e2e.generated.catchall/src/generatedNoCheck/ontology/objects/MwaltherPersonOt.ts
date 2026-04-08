@@ -88,14 +88,14 @@ export interface MwaltherPersonOt extends $ObjectTypeDefinition {
     ];
     interfaceMap: {
       'com.palantirfoundry.swirl.esong.MwaltherTest': {
-        'com.palantirfoundry.swirl.esong.mwaltherName': 'name';
         mwaltherVtInputTest: 'name';
+        'com.palantirfoundry.swirl.esong.mwaltherName': 'name';
       };
       'com.palantirfoundry.swirl.esong.MwaltherTestIdp': {
-        'com.palantirfoundry.swirl.esong.mwaltherName': 'name';
+        newProperty1: 'name';
         idpAge: 'age';
         mwaltherNam: 'id';
-        newProperty1: 'name';
+        'com.palantirfoundry.swirl.esong.mwaltherName': 'name';
       };
       MwaltherPersonV2: {
         mwaltherNam: 'id';
@@ -106,10 +106,10 @@ export interface MwaltherPersonOt extends $ObjectTypeDefinition {
     };
     inverseInterfaceMap: {
       'com.palantirfoundry.swirl.esong.MwaltherTest': {
-        name: 'mwaltherVtInputTest';
+        name: 'com.palantirfoundry.swirl.esong.mwaltherName';
       };
       'com.palantirfoundry.swirl.esong.MwaltherTestIdp': {
-        name: 'newProperty1';
+        name: 'com.palantirfoundry.swirl.esong.mwaltherName';
         age: 'idpAge';
         id: 'mwaltherNam';
       };
