@@ -1,6 +1,7 @@
 ---
-"@osdk/generator-converters.ontologyir": minor
-"@osdk/vite-plugin-superrepo": minor
+"@osdk/generator-converters.ontologyir": patch
+"@osdk/generator": patch
+"@osdk/vite-plugin-superrepo": patch
 ---
 
-Fix Python edit function detection
+Resolve Python objectSet/object UUID references recursively and detect edit functions via output dataType when ontologyProvenance is absent

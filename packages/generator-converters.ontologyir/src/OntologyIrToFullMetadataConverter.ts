@@ -503,11 +503,12 @@ export class OntologyIrToFullMetadataConverter {
       // to handle nested types (e.g. list[seller] produces
       // {type: "list", list: {elementsType: {type: "object", object: "<uuid>"}}}).
       function resolveDataType(dt: IDataType): IDataType {
-        if (
-          dt.type === "object"
-          && typeof dt.object === "string"
-          && objectTypes?.[dt.object]
-        ) {
+        if (dt.type === "object" && typeof dt.object === "string") {
+          if (!objectTypes?.[dt.object]) {
+            throw new Error(
+              `Could not resolve object UUID "${dt.object}" — not present in objectTypes map`,
+            );
+          }
           return {
             ...dt,
             object: {
@@ -515,11 +516,12 @@ export class OntologyIrToFullMetadataConverter {
             },
           };
         }
-        if (
-          dt.type === "objectSet"
-          && typeof dt.objectSet === "string"
-          && objectSetTypes?.[dt.objectSet]
-        ) {
+        if (dt.type === "objectSet" && typeof dt.objectSet === "string") {
+          if (!objectSetTypes?.[dt.objectSet]) {
+            throw new Error(
+              `Could not resolve objectSet UUID "${dt.objectSet}" — not present in objectSetTypes map`,
+            );
+          }
           return {
             ...dt,
             objectSet: {
@@ -553,6 +555,27 @@ export class OntologyIrToFullMetadataConverter {
             const resolved = resolveDataType(optData.wrappedType);
             if (resolved !== optData.wrappedType) {
               return { ...dt, optionalType: { wrappedType: resolved } };
+            }
+          }
+        }
+        if (dt.type === "functionCustomType") {
+          const typeId = dt.functionCustomType as string;
+          const customType = customTypes[typeId] as
+            | IPythonCustomType
+            | undefined;
+          if (customType?.fields) {
+            let changed = false;
+            const resolvedFields: Record<string, IDataType> = {};
+            for (const [key, fieldDt] of Object.entries(customType.fields)) {
+              const resolved = resolveDataType(fieldDt);
+              if (resolved !== fieldDt) changed = true;
+              resolvedFields[key] = resolved;
+            }
+            if (changed) {
+              customTypes[typeId] = {
+                ...customType,
+                fields: resolvedFields,
+              };
             }
           }
         }

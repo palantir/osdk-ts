@@ -374,20 +374,12 @@ export function getQueryParamType(
       }>`;
       break;
 
-    case "objectSet": {
-      // The objectSet API name may come from different fields depending on
-      // the source: gateway API uses objectApiName/objectTypeApiName, while
-      // the SDK output type uses objectSet.
-      const inputAny = input as any;
-      const objectSetApiName: string = inputAny.objectSet
-        ?? inputAny.objectTypeApiName
-        ?? inputAny.objectApiName;
+    case "objectSet":
       paramType = `Query${type}.ObjectSetType<${
-        enhancedOntology.requireObjectType(objectSetApiName)
+        enhancedOntology.requireObjectType(input.objectSet)
           .getImportedDefinitionIdentifier(true)
       }>`;
       break;
-    }
 
     case "interfaceObjectSet":
       paramType = `Query${type}.ObjectSetType<${
