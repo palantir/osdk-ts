@@ -5,6 +5,15 @@ import { $osdkMetadata } from '../../OntologyMetadata.js';
 export namespace recursiveStruct {
   namespace CustomTypes {
     export type Expand<T> = T extends infer O ? { [K in keyof O]: O[K] } : never;
+    export interface $5f239c87_040a_4dd6_b50a_bcec78f6c6fc {
+      readonly breed: QueryParam.PrimitiveType<'string'>;
+
+      readonly dad?: CustomTypes.$5f239c87_040a_4dd6_b50a_bcec78f6c6fc;
+
+      readonly mom?: CustomTypes.$5f239c87_040a_4dd6_b50a_bcec78f6c6fc;
+
+      readonly siblings?: ReadonlyArray<CustomTypes.$5f239c87_040a_4dd6_b50a_bcec78f6c6fc>;
+    }
 
     export interface $1225e6a4_41d2_4081_9b3c_9b7dd0db5390 {
       readonly age: QueryParam.PrimitiveType<'integer'>;
@@ -16,38 +25,6 @@ export namespace recursiveStruct {
       readonly name: QueryParam.PrimitiveType<'string'>;
 
       readonly pet?: CustomTypes.$5f239c87_040a_4dd6_b50a_bcec78f6c6fc;
-    }
-
-    export interface $5f239c87_040a_4dd6_b50a_bcec78f6c6fc {
-      readonly breed: QueryParam.PrimitiveType<'string'>;
-
-      readonly dad?: CustomTypes.$5f239c87_040a_4dd6_b50a_bcec78f6c6fc;
-
-      readonly mom?: CustomTypes.$5f239c87_040a_4dd6_b50a_bcec78f6c6fc;
-
-      readonly siblings?: ReadonlyArray<CustomTypes.$5f239c87_040a_4dd6_b50a_bcec78f6c6fc>;
-    }
-
-    export interface $1225e6a4_41d2_4081_9b3c_9b7dd0db5390_Output {
-      age: QueryResult.PrimitiveType<'integer'>;
-
-      allFriends?: Array<CustomTypes.$1225e6a4_41d2_4081_9b3c_9b7dd0db5390_Output>;
-
-      bestFriend?: CustomTypes.$1225e6a4_41d2_4081_9b3c_9b7dd0db5390_Output;
-
-      name: QueryResult.PrimitiveType<'string'>;
-
-      pet?: CustomTypes.$5f239c87_040a_4dd6_b50a_bcec78f6c6fc_Output;
-    }
-
-    export interface $5f239c87_040a_4dd6_b50a_bcec78f6c6fc_Output {
-      breed: QueryResult.PrimitiveType<'string'>;
-
-      dad?: CustomTypes.$5f239c87_040a_4dd6_b50a_bcec78f6c6fc_Output;
-
-      mom?: CustomTypes.$5f239c87_040a_4dd6_b50a_bcec78f6c6fc_Output;
-
-      siblings?: Array<CustomTypes.$5f239c87_040a_4dd6_b50a_bcec78f6c6fc_Output>;
     }
   }
 
@@ -67,7 +44,7 @@ export namespace recursiveStruct {
     readonly pet: CustomTypes.Expand<CustomTypes.$5f239c87_040a_4dd6_b50a_bcec78f6c6fc>;
   }
 
-  export type ReturnType = CustomTypes.Expand<CustomTypes.$1225e6a4_41d2_4081_9b3c_9b7dd0db5390_Output>;
+  export type ReturnType = CustomTypes.Expand<CustomTypes.$1225e6a4_41d2_4081_9b3c_9b7dd0db5390>;
 }
 
 export interface recursiveStruct

@@ -616,17 +616,10 @@ describe("generatePerQueryDataFiles", () => {
         export namespace queryWithRecursiveType {
           namespace CustomTypes {
             export type Expand<T> = T extends infer O ? { [K in keyof O]: O[K] } : never;
-
             export interface $tree_node_type_id {
               readonly children: ReadonlyArray<CustomTypes.$tree_node_type_id>;
 
               readonly value: QueryParam.PrimitiveType<'string'>;
-            }
-
-            export interface $tree_node_type_id_Output {
-              children: Array<CustomTypes.$tree_node_type_id_Output>;
-
-              value: QueryResult.PrimitiveType<'string'>;
             }
           }
 
@@ -641,7 +634,7 @@ describe("generatePerQueryDataFiles", () => {
             readonly treeNode: CustomTypes.Expand<CustomTypes.$tree_node_type_id>;
           }
 
-          export type ReturnType = Array<CustomTypes.Expand<CustomTypes.$tree_node_type_id_Output>>;
+          export type ReturnType = Array<CustomTypes.Expand<CustomTypes.$tree_node_type_id>>;
         }
 
         export interface queryWithRecursiveType
@@ -828,7 +821,6 @@ describe("generatePerQueryDataFiles", () => {
         export namespace queryWithMultipleTypeRefs {
           namespace CustomTypes {
             export type Expand<T> = T extends infer O ? { [K in keyof O]: O[K] } : never;
-
             export interface $binary_tree_id {
               readonly left?: CustomTypes.$binary_tree_id;
 
@@ -841,20 +833,6 @@ describe("generatePerQueryDataFiles", () => {
               readonly data: QueryParam.PrimitiveType<'string'>;
 
               readonly next?: CustomTypes.$linked_list_id;
-            }
-
-            export interface $binary_tree_id_Output {
-              left?: CustomTypes.$binary_tree_id_Output;
-
-              right?: CustomTypes.$binary_tree_id_Output;
-
-              value: QueryResult.PrimitiveType<'integer'>;
-            }
-
-            export interface $linked_list_id_Output {
-              data: QueryResult.PrimitiveType<'string'>;
-
-              next?: CustomTypes.$linked_list_id_Output;
             }
           }
 
@@ -875,9 +853,9 @@ describe("generatePerQueryDataFiles", () => {
           }
 
           export interface ReturnType {
-            list: CustomTypes.Expand<CustomTypes.$linked_list_id_Output>;
+            list: CustomTypes.Expand<CustomTypes.$linked_list_id>;
 
-            tree: CustomTypes.Expand<CustomTypes.$binary_tree_id_Output>;
+            tree: CustomTypes.Expand<CustomTypes.$binary_tree_id>;
           }
         }
 
@@ -1051,7 +1029,6 @@ describe("generatePerQueryDataFiles", () => {
         export namespace queryWithOutputOnlyTypeRef {
           namespace CustomTypes {
             export type Expand<T> = T extends infer O ? { [K in keyof O]: O[K] } : never;
-
             export interface $metadata_type_id {
               createdAt: QueryResult.PrimitiveType<'timestamp'>;
 
