@@ -192,6 +192,4 @@
   *::after {
     box-sizing: border-box;
   }
-
-  isolation: isolate;
 }

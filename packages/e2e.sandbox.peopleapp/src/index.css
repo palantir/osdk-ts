@@ -11,3 +11,7 @@
 
 /* Tailwind for utility classes */
 @import "tailwindcss" layer(tailwind);
+
+#root {
+  isolation: isolate;
+}

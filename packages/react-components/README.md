@@ -50,7 +50,7 @@ function App() {
 
 ### CSS Setup
 
-Add the OSDK style import to your application's entry CSS file (e.g., `index.css`). This single import includes both design tokens and component styles, along with portal isolation for Base UI.
+Add the OSDK style import to your application's entry CSS file (e.g., `index.css`). This single import includes both design tokens and component styles.
 
 #### Understanding CSS Layers
 
@@ -90,18 +90,15 @@ To add your own brand overrides on top:
 @import "./user-brand.css" layer(user.brand);
 ```
 
-#### Portal isolation
-Portal isolation is included automatically in `styles.css`. This is required for Base UI portals. See https://base-ui.com/react/overview/quick-start#portals
+#### Portal isolation (required)
 
-If your app uses a different root element selector, you may need to add `isolation: isolate` to it manually.
+Add `isolation: isolate` to your app's root element. This is required for Base UI portals. See https://base-ui.com/react/overview/quick-start#portals
 
 ```css
-.root {
+#root {
   isolation: isolate;
 }
 ```
-
-The `.root` isolation is required for Base UI portals. See https://base-ui.com/react/overview/quick-start#portals
 
 ## Components
 
