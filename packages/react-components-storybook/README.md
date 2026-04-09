@@ -4,14 +4,15 @@ This package contains Storybook stories showcasing the components from `@osdk/re
 
 ## Development
 
-To run the Storybook locally:
-
 ```bash
 pnpm install
+pnpm turbo transpileBrowser --filter=@osdk/react-components  # one-time, generates styles.css
 pnpm dev
 ```
 
 The Storybook will be available at http://localhost:6006
+
+Changes to `@osdk/react`, `@osdk/react-components`, and `@osdk/api` source files are picked up automatically via HMR.
 
 ## Features
 

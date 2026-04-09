@@ -17,6 +17,9 @@ export default defineConfig(({ mode }) => {
       }) as unknown as PluginOption,
       tailwindcss(),
     ],
+    resolve: {
+      conditions: ["source"],
+    },
     server: {
       port: 8080,
       proxy: {

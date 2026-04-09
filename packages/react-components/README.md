@@ -287,6 +287,8 @@ pnpm --filter @osdk/e2e.sandbox.peopleapp transpileAllDeps
 pnpm --filter @osdk/e2e.sandbox.peopleapp dev
 ```
 
+Changes to `@osdk/react`, `@osdk/react-components`, and `@osdk/api` source files are picked up automatically via HMR. Changes to `@osdk/client` require a manual rebuild (`pnpm turbo transpileBrowser --filter=@osdk/client`).
+
 ## Why this package?
 
 **OSDK-native.** These components understand Foundry concepts like Objects, Object Sets, and Actions. They are purpose-built for Ontology data.

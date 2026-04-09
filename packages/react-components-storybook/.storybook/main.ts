@@ -49,6 +49,7 @@ const config: StorybookConfig = {
     // Ensure proper resolution of workspace packages
     config.resolve = {
       ...config.resolve,
+      conditions: ["source", ...(config.resolve?.conditions ?? [])],
       alias: {
         ...config.resolve?.alias,
         // Polyfill Node.js modules for browser
