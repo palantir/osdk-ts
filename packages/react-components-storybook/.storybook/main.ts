@@ -19,11 +19,13 @@ import type { StorybookConfig } from "@storybook/react-vite";
 const config: StorybookConfig = {
   stories: ["../src/**/*.stories.@(js|jsx|ts|tsx|mdx)"],
   addons: [
+    "@storybook/addon-a11y",
     "@storybook/addon-docs",
     "@storybook/addon-links",
     "@storybook/addon-themes",
     "@storybook/addon-mcp",
     "msw-storybook-addon",
+    "storybook-addon-tag-badges",
   ],
   framework: {
     name: "@storybook/react-vite",

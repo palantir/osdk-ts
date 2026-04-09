@@ -23,9 +23,12 @@ import type {
   PdfViewerProps,
 } from "@osdk/react-components/experimental";
 import { BasePdfViewer, PdfViewer } from "@osdk/react-components/experimental";
+import { useOsdkObject } from "@osdk/react/experimental";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { delay, http } from "msw";
 import { fn } from "storybook/test";
+import { MEDIA_EMPLOYEE_PK } from "../../../mocks/fauxFoundry.js";
+import { Employee } from "../../../types/Employee.js";
 
 const SAMPLE_PDF_URL =
   `${import.meta.env.BASE_URL}compressed.tracemonkey-pldi-09.pdf`;
@@ -65,7 +68,8 @@ const mockBookmarkedMedia = createMockMedia(
 );
 
 const meta: Meta<PdfViewerMediaProps> = {
-  title: "Components/PdfViewer/Features",
+  title: "Experimental/PdfViewer/Features",
+  tags: ["experimental"],
   component: PdfViewer,
   args: {
     media: mockMedia,
@@ -415,6 +419,36 @@ export const InteractiveForm: StoryObj<PdfViewerProps> = {
   onFormChange={(fieldName, value) => console.log(fieldName, value)}
   onFormSubmit={(data) => console.log("Form submitted:", data)}
 />`,
+      },
+    },
+  },
+};
+
+export const WithOsdkMedia: Story = {
+  render: () => {
+    const { object: employee, isLoading } = useOsdkObject(
+      Employee,
+      MEDIA_EMPLOYEE_PK,
+    );
+
+    if (isLoading || !employee?.employeeDocuments) {
+      return <div style={{ height: "600px" }}>Loading OSDK media…</div>;
+    }
+
+    return (
+      <div style={{ height: "600px" }}>
+        <PdfViewer media={employee.employeeDocuments} />
+      </div>
+    );
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `import { PdfViewer } from "@osdk/react-components/experimental";
+
+// Access media from an OSDK object's media reference property
+const employee = useOsdkObject(Employee, employeePk);
+<PdfViewer media={employee.employeeDocuments} />`,
       },
     },
   },

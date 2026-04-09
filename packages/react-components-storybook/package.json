@@ -28,6 +28,7 @@
     "@osdk/react": "workspace:*",
     "@osdk/react-components": "workspace:*",
     "@osdk/react-components-styles": "workspace:*",
+    "@storybook/addon-a11y": "^10.2.10",
     "@storybook/addon-docs": "^10.2.10",
     "@storybook/addon-links": "^10.2.10",
     "@storybook/addon-mcp": "^0.2.3",
@@ -44,6 +45,7 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "storybook": "^10.2.10",
+    "storybook-addon-tag-badges": "^3.1.0",
     "typescript": "~5.5.4",
     "vite": "^6.0.6"
   },
