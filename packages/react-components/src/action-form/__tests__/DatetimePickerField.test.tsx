@@ -33,22 +33,22 @@ afterEach(cleanup);
 
 describe("DatetimePickerField", () => {
   describe("rendering", () => {
-    it("renders a button with formatted date value", () => {
+    it("renders an input with formatted date value", () => {
       render(
         <DatetimePickerField
           value={new Date(2024, 0, 15)}
           onChange={vi.fn()}
         />,
       );
-      const button = screen.getByRole("button");
-      expect(button).toBeDefined();
-      expect(button.textContent).toBe("2024-01-15");
+      const input = screen.getByRole("combobox") as HTMLInputElement;
+      expect(input).toBeDefined();
+      expect(input.value).toBe("2024-01-15");
     });
 
-    it("renders empty button when value is null", () => {
+    it("renders empty input when value is null", () => {
       render(<DatetimePickerField value={null} onChange={vi.fn()} />);
-      const button = screen.getByRole("button");
-      expect(button.textContent).toBe("");
+      const input = screen.getByRole("combobox") as HTMLInputElement;
+      expect(input.value).toBe("");
     });
 
     it("renders with datetime format when showTime is true", () => {
@@ -59,8 +59,8 @@ describe("DatetimePickerField", () => {
           showTime={true}
         />,
       );
-      const button = screen.getByRole("button");
-      expect(button.textContent).toBe("2024-01-15 14:30");
+      const input = screen.getByRole("combobox") as HTMLInputElement;
+      expect(input.value).toBe("2024-01-15 14:30");
     });
 
     it("renders placeholder when value is null and placeholder is set", () => {
@@ -71,8 +71,8 @@ describe("DatetimePickerField", () => {
           placeholder="Pick a date"
         />,
       );
-      const button = screen.getByRole("button");
-      expect(button.textContent).toBe("Pick a date");
+      const input = screen.getByRole("combobox") as HTMLInputElement;
+      expect(input.placeholder).toBe("Pick a date");
     });
   });
 
@@ -85,8 +85,8 @@ describe("DatetimePickerField", () => {
           onChange={onChange}
         />,
       );
-      const button = screen.getByRole("button");
-      fireEvent.click(button);
+      const input = screen.getByRole("combobox");
+      fireEvent.focus(input);
 
       const dayButton = screen.getByText("20");
       fireEvent.click(dayButton);
@@ -107,8 +107,8 @@ describe("DatetimePickerField", () => {
           showTime={true}
         />,
       );
-      const button = screen.getByRole("button");
-      fireEvent.click(button);
+      const input = screen.getByRole("combobox");
+      fireEvent.focus(input);
 
       const dayButton = screen.getByText("20");
       fireEvent.click(dayButton);
@@ -130,8 +130,8 @@ describe("DatetimePickerField", () => {
           showTime={true}
         />,
       );
-      const button = screen.getByRole("button");
-      fireEvent.click(button);
+      const input = screen.getByRole("combobox");
+      fireEvent.focus(input);
 
       const timeInput = document.querySelector(
         "input[type=\"time\"]",
@@ -149,8 +149,8 @@ describe("DatetimePickerField", () => {
           showTime={true}
         />,
       );
-      const button = screen.getByRole("button");
-      fireEvent.click(button);
+      const input = screen.getByRole("combobox");
+      fireEvent.focus(input);
 
       const timeInput = document.querySelector(
         "input[type=\"time\"]",
@@ -166,7 +166,7 @@ describe("DatetimePickerField", () => {
   });
 
   describe("custom format", () => {
-    it("uses custom formatDate for display", () => {
+    it("uses custom formatDate for display when not editing", () => {
       render(
         <DatetimePickerField
           value={new Date(2024, 0, 15)}
@@ -175,8 +175,163 @@ describe("DatetimePickerField", () => {
             `${d.getMonth() + 1}/${d.getDate()}/${d.getFullYear()}`}
         />,
       );
-      const button = screen.getByRole("button");
-      expect(button.textContent).toBe("1/15/2024");
+      const input = screen.getByRole("combobox") as HTMLInputElement;
+      expect(input.value).toBe("1/15/2024");
+    });
+  });
+
+  describe("text input editing", () => {
+    it("commits a valid typed date on blur", () => {
+      const onChange = vi.fn();
+      render(
+        <DatetimePickerField
+          value={null}
+          onChange={onChange}
+        />,
+      );
+      const input = screen.getByRole("combobox") as HTMLInputElement;
+      fireEvent.focus(input);
+      fireEvent.change(input, { target: { value: "2024-03-20" } });
+      fireEvent.blur(input);
+
+      expect(onChange).toHaveBeenCalledTimes(1);
+      const calledDate: Date = onChange.mock.calls[0][0];
+      expect(calledDate.getFullYear()).toBe(2024);
+      expect(calledDate.getMonth()).toBe(2);
+      expect(calledDate.getDate()).toBe(20);
+    });
+
+    it("does not call onChange for invalid input on blur", () => {
+      const onChange = vi.fn();
+      render(
+        <DatetimePickerField
+          value={new Date(2024, 0, 15)}
+          onChange={onChange}
+        />,
+      );
+      const input = screen.getByRole("combobox") as HTMLInputElement;
+      fireEvent.focus(input);
+      fireEvent.change(input, { target: { value: "not-a-date" } });
+      fireEvent.blur(input);
+
+      expect(onChange).not.toHaveBeenCalled();
+    });
+
+    it("fires onChange(null) when input is cleared and blurred", () => {
+      const onChange = vi.fn();
+      render(
+        <DatetimePickerField
+          value={new Date(2024, 0, 15)}
+          onChange={onChange}
+        />,
+      );
+      const input = screen.getByRole("combobox") as HTMLInputElement;
+      fireEvent.focus(input);
+      fireEvent.change(input, { target: { value: "" } });
+      fireEvent.blur(input);
+
+      expect(onChange).toHaveBeenCalledWith(null);
+    });
+
+    it("commits on Enter key and closes popover", () => {
+      const onChange = vi.fn();
+      render(
+        <DatetimePickerField
+          value={null}
+          onChange={onChange}
+        />,
+      );
+      const input = screen.getByRole("combobox") as HTMLInputElement;
+      fireEvent.focus(input);
+      fireEvent.change(input, { target: { value: "2024-06-01" } });
+      fireEvent.keyDown(input, { key: "Enter" });
+
+      expect(onChange).toHaveBeenCalledTimes(1);
+      const calledDate: Date = onChange.mock.calls[0][0];
+      expect(calledDate.getMonth()).toBe(5);
+      expect(calledDate.getDate()).toBe(1);
+    });
+
+    it("reverts on Escape key", () => {
+      render(
+        <DatetimePickerField
+          value={new Date(2024, 0, 15)}
+          onChange={vi.fn()}
+        />,
+      );
+      const input = screen.getByRole("combobox") as HTMLInputElement;
+      fireEvent.focus(input);
+      fireEvent.change(input, { target: { value: "2099-12-31" } });
+      fireEvent.keyDown(input, { key: "Escape" });
+
+      // After Escape, the input should display the original value's format
+      // Since we blurred, the display format is used (not edit format)
+      expect(input.value).toBe("2024-01-15");
+    });
+
+    it("does not call onChange for out-of-range date on blur", () => {
+      const onChange = vi.fn();
+      render(
+        <DatetimePickerField
+          value={null}
+          onChange={onChange}
+          min={new Date(2024, 0, 1)}
+          max={new Date(2024, 11, 31)}
+        />,
+      );
+      const input = screen.getByRole("combobox") as HTMLInputElement;
+      fireEvent.focus(input);
+      fireEvent.change(input, { target: { value: "2025-06-15" } });
+      fireEvent.blur(input);
+
+      expect(onChange).not.toHaveBeenCalled();
+    });
+
+    it("uses custom parseDate prop", () => {
+      const onChange = vi.fn();
+      render(
+        <DatetimePickerField
+          value={null}
+          onChange={onChange}
+          formatDate={(d) =>
+            `${d.getMonth() + 1}/${d.getDate()}/${d.getFullYear()}`}
+          parseDate={(text) => {
+            const [m, d, y] = text.split("/").map(Number);
+            if (m == null || d == null || y == null) return undefined;
+            const date = new Date(y, m - 1, d);
+            return isNaN(date.getTime()) ? undefined : date;
+          }}
+        />,
+      );
+      const input = screen.getByRole("combobox") as HTMLInputElement;
+      fireEvent.focus(input);
+      fireEvent.change(input, { target: { value: "3/20/2024" } });
+      fireEvent.blur(input);
+
+      expect(onChange).toHaveBeenCalledTimes(1);
+      const calledDate: Date = onChange.mock.calls[0][0];
+      expect(calledDate.getMonth()).toBe(2);
+      expect(calledDate.getDate()).toBe(20);
+    });
+  });
+
+  describe("accessibility", () => {
+    it("has combobox role and aria attributes", () => {
+      render(
+        <DatetimePickerField value={null} onChange={vi.fn()} />,
+      );
+      const input = screen.getByRole("combobox");
+      expect(input.getAttribute("aria-haspopup")).toBe("dialog");
+      expect(input.getAttribute("aria-expanded")).toBe("false");
+    });
+
+    it("sets aria-expanded to true when popover is open", () => {
+      render(
+        <DatetimePickerField value={null} onChange={vi.fn()} />,
+      );
+      const input = screen.getByRole("combobox");
+      fireEvent.focus(input);
+      expect(input.getAttribute("aria-expanded")).toBe("true");
     });
   });
 });

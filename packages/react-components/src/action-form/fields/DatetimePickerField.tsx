@@ -16,12 +16,14 @@
 
 import { Input } from "@base-ui/react/input";
 import { Popover } from "@base-ui/react/popover";
-import classnames from "classnames";
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useId, useMemo, useRef, useState } from "react";
 import {
   formatDateForInput,
   formatDatetimeForDisplay,
   formatTime,
+  isDateInRange,
+  parseDateFromInput,
+  parseDatetimeFromDisplay,
 } from "../../shared/dateUtils.js";
 import type { DatetimePickerFieldProps } from "../FormFieldApi.js";
 import styles from "./DatetimePickerField.module.css";
@@ -42,21 +44,131 @@ export function DatetimePickerField({
   max,
   placeholder,
   formatDate,
+  parseDate,
   showTime = false,
   closeOnSelection,
 }: DatetimePickerFieldProps): React.ReactElement {
   const shouldCloseOnSelection = closeOnSelection ?? !showTime;
+  const popoverId = useId();
+  const inputRef = useRef<HTMLInputElement>(null);
+  const popoverRef = useRef<HTMLDivElement>(null);
+
   const [isOpen, setIsOpen] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [inputValue, setInputValue] = useState("");
 
-  const formatFn = formatDate
-    ?? (showTime ? formatDatetimeForDisplay : formatDateForInput);
+  // Format/parse: pick between date-only and datetime variants
+  const editFormatFn = showTime ? formatDatetimeForDisplay : formatDateForInput;
+  const displayFormatFn = formatDate ?? editFormatFn;
+  const parseFn = parseDate
+    ?? (showTime ? parseDatetimeFromDisplay : parseDateFromInput);
 
-  const formattedValue = value != null ? formatFn(value) : "";
+  // Sync inputValue when external value changes (e.g. parent resets)
+  const prevValueTimeRef = useRef<number | null>(value?.getTime() ?? null);
+  const currentValueTime = value?.getTime() ?? null;
+  if (prevValueTimeRef.current !== currentValueTime) {
+    prevValueTimeRef.current = currentValueTime;
+    if (!isEditing) {
+      setInputValue(value != null ? editFormatFn(value) : "");
+    }
+  }
+
+  const displayedValue = isEditing
+    ? inputValue
+    : (value != null ? displayFormatFn(value) : "");
+
+  // --- Shared commit logic ---
+
+  const commitInputValue = useCallback(() => {
+    if (inputValue === "") {
+      onChange?.(null);
+      return;
+    }
+    const parsed = parseFn(inputValue);
+    if (parsed != null && isDateInRange(parsed, min, max)) {
+      onChange?.(parsed);
+    }
+  }, [inputValue, parseFn, min, max, onChange]);
+
+  // --- Input event handlers ---
+
+  const handleFocus = useCallback(() => {
+    setIsEditing(true);
+    setIsOpen(true);
+    setInputValue(value != null ? editFormatFn(value) : "");
+  }, [value, editFormatFn]);
+
+  const handleBlur = useCallback(
+    (e: React.FocusEvent<HTMLInputElement>) => {
+      // If focus moved to the popover (e.g. clicking a calendar day), skip commit —
+      // the calendar select handler owns the onChange in that case.
+      const relatedTarget = e.relatedTarget ?? document.activeElement;
+      if (popoverRef.current?.contains(relatedTarget as Node)) {
+        return;
+      }
+      commitInputValue();
+      setIsEditing(false);
+    },
+    [commitInputValue],
+  );
+
+  const handleInputChange = useCallback((newValue: string) => {
+    setInputValue(newValue);
+  }, []);
+
+  const handleInputClick = useCallback(
+    (e: React.MouseEvent<HTMLInputElement>) => {
+      // Prevent Popover.Trigger's internal click handler from toggling the
+      // popover closed when the user clicks the already-open input.
+      e.stopPropagation();
+    },
+    [],
+  );
+
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        commitInputValue();
+        setIsEditing(false);
+        setIsOpen(false);
+      } else if (e.key === "Escape") {
+        e.preventDefault();
+        setInputValue(value != null ? editFormatFn(value) : "");
+        setIsEditing(false);
+        setIsOpen(false);
+        inputRef.current?.blur();
+      } else if (e.key === "Tab" && !e.shiftKey && isOpen) {
+        const firstFocusable = popoverRef.current?.querySelector(
+          "button",
+        ) as HTMLElement | null;
+        if (firstFocusable != null) {
+          e.preventDefault();
+          firstFocusable.focus();
+        }
+      } else if (e.key === "Tab" && e.shiftKey) {
+        setIsOpen(false);
+      }
+    },
+    [commitInputValue, value, editFormatFn, isOpen],
+  );
+
+  // --- Popover handlers ---
+
+  const handleOpenChange = useCallback((nextOpen: boolean) => {
+    setIsOpen(nextOpen);
+    if (!nextOpen) {
+      setIsEditing(false);
+    }
+  }, []);
+
+  // --- Calendar handlers ---
 
   const handleCalendarSelect = useCallback(
     (selected: Date | undefined) => {
       if (selected == null) {
         onChange?.(null);
+        setInputValue("");
         return;
       }
 
@@ -66,12 +178,14 @@ export function DatetimePickerField({
       }
 
       onChange?.(date);
+      setInputValue(editFormatFn(date));
 
       if (shouldCloseOnSelection) {
         setIsOpen(false);
+        setIsEditing(false);
       }
     },
-    [onChange, showTime, value, shouldCloseOnSelection],
+    [onChange, showTime, value, shouldCloseOnSelection, editFormatFn],
   );
 
   const handleTimeChange = useCallback(
@@ -88,10 +202,42 @@ export function DatetimePickerField({
     [value, onChange],
   );
 
-  const displayText = formattedValue !== ""
-    ? formattedValue
-    : (placeholder ?? "");
-  const hasValue = formattedValue !== "";
+  // --- Focus boundary handlers ---
+
+  const handleStartFocusBoundary = useCallback(
+    (e: React.FocusEvent<HTMLDivElement>) => {
+      const relatedTarget = e.relatedTarget ?? document.activeElement;
+      if (popoverRef.current?.contains(relatedTarget as Node)) {
+        inputRef.current?.focus();
+      } else {
+        const firstFocusable = popoverRef.current?.querySelector(
+          "button",
+        ) as HTMLElement | null;
+        firstFocusable?.focus();
+      }
+    },
+    [],
+  );
+
+  const handleEndFocusBoundary = useCallback(
+    (e: React.FocusEvent<HTMLDivElement>) => {
+      const relatedTarget = e.relatedTarget ?? document.activeElement;
+      if (popoverRef.current?.contains(relatedTarget as Node)) {
+        inputRef.current?.focus();
+        setIsOpen(false);
+        setIsEditing(false);
+      } else {
+        const buttons = popoverRef.current?.querySelectorAll("button");
+        const lastFocusable = buttons?.[buttons.length - 1] as
+          | HTMLElement
+          | null;
+        lastFocusable?.focus();
+      }
+    },
+    [],
+  );
+
+  // --- Time footer ---
 
   const timeValue = extractTime(value);
   const footer = useMemo(
@@ -113,26 +259,56 @@ export function DatetimePickerField({
   );
 
   return (
-    <Popover.Root open={isOpen} onOpenChange={setIsOpen}>
+    <Popover.Root open={isOpen} onOpenChange={handleOpenChange}>
       <Popover.Trigger
-        id={id}
-        className={classnames(
-          styles.triggerButton,
-          !hasValue && styles.triggerButtonPlaceholder,
-        )}
-        aria-label={hasValue ? undefined : "Select date"}
-      >
-        {displayText}
-      </Popover.Trigger>
+        nativeButton={false}
+        render={
+          <Input
+            ref={inputRef}
+            id={id}
+            className={styles.osdkDatetimeInput}
+            type="text"
+            value={displayedValue}
+            onValueChange={handleInputChange}
+            onFocus={handleFocus}
+            onBlur={handleBlur}
+            onClick={handleInputClick}
+            onKeyDown={handleKeyDown}
+            placeholder={placeholder}
+            role="combobox"
+            aria-expanded={isOpen}
+            aria-controls={popoverId}
+            aria-haspopup="dialog"
+          />
+        }
+      />
       <Popover.Portal>
         <Popover.Positioner sideOffset={4}>
-          <Popover.Popup className={styles.popover}>
+          <Popover.Popup
+            ref={popoverRef}
+            className={styles.popover}
+            id={popoverId}
+            role="dialog"
+            aria-label="date picker"
+          >
+            <div
+              onFocus={handleStartFocusBoundary}
+              tabIndex={0}
+              aria-label="Start of date picker dialog"
+              className={styles.osdkFocusBoundary}
+            />
             <LazyDateCalendar
               dateSelected={value ?? undefined}
               onSelect={handleCalendarSelect}
               min={min}
               max={max}
               footer={footer}
+            />
+            <div
+              onFocus={handleEndFocusBoundary}
+              tabIndex={0}
+              aria-label="End of date picker dialog"
+              className={styles.osdkFocusBoundary}
             />
           </Popover.Popup>
         </Popover.Positioner>

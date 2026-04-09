@@ -1,9 +1,9 @@
-/* DatetimePickerField — button trigger + popover + time input */
+/* DatetimePickerField — text input trigger + popover + time input */
 
-/* Trigger button — styled to look like an input */
-.triggerButton {
+/* Text input styled with datetime tokens */
+.osdkDatetimeInput {
+  display: block;
   width: 100%;
-  text-align: left;
   font-family: var(--osdk-datetime-input-font-family);
   font-size: var(--osdk-datetime-input-font-size);
   padding: var(--osdk-datetime-input-padding);
@@ -11,19 +11,18 @@
   border-radius: var(--osdk-datetime-input-border-radius);
   background: var(--osdk-datetime-input-bg);
   color: var(--osdk-datetime-input-color);
-  cursor: pointer;
   box-sizing: border-box;
+
+  &::placeholder {
+    color: var(--osdk-datetime-input-placeholder-color, currentColor);
+    opacity: var(--osdk-datetime-input-placeholder-opacity);
+  }
 
   &:focus-visible {
     border-color: var(--osdk-datetime-input-focus-border-color);
     outline: var(--osdk-datetime-input-focus-outline);
     outline-offset: var(--osdk-datetime-input-focus-outline-offset);
   }
-}
-
-.triggerButtonPlaceholder {
-  color: var(--osdk-datetime-input-placeholder-color, currentColor);
-  opacity: var(--osdk-datetime-input-placeholder-opacity);
 }
 
 /* Popover */
@@ -33,6 +32,18 @@
   z-index: var(--osdk-datetime-popover-z-index);
   border: var(--osdk-datetime-popover-border);
   border-radius: var(--osdk-datetime-popover-border-radius);
+}
+
+/* Visually-hidden focus boundary for Tab cycling between input and popover.
+   Stays in tab order (tabIndex=0) but invisible to sighted users. Empty
+   content means screen readers have nothing to announce. */
+.osdkFocusBoundary {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
 }
 
 /* Time input footer — negative horizontal margin counters the popover padding

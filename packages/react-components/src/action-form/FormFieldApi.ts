@@ -172,8 +172,20 @@ export interface DatetimePickerFieldProps extends BaseFormFieldProps<Date> {
    */
   placeholder?: string;
 
-  /** Formats a Date for display in the trigger button. */
+  /**
+   * Formats a Date for display in the input field when not editing.
+   * When typing, the input shows the parsable format (YYYY-MM-DD or YYYY-MM-DD HH:mm).
+   * Provide a matching `parseDate` if using a custom format.
+   */
   formatDate?: (date: Date) => string;
+
+  /**
+   * Parses a user-typed string back into a Date.
+   * Must be the inverse of `formatDate` — if `formatDate(d)` produces string `s`,
+   * then `parseDate(s)` must return an equivalent Date.
+   * When omitted, defaults to parsing "YYYY-MM-DD" (date-only) or "YYYY-MM-DD HH:mm" (with time).
+   */
+  parseDate?: (text: string) => Date | undefined;
 }
 
 /**

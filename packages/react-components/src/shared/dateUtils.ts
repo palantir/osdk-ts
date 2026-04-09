@@ -101,6 +101,17 @@ export function parseDatetimeFromDisplay(
   return isNaN(date.getTime()) ? undefined : date;
 }
 
+/** Returns true if `date` falls within [min, max] (inclusive). */
+export function isDateInRange(
+  date: Date,
+  min: Date | undefined,
+  max: Date | undefined,
+): boolean {
+  if (min != null && date.getTime() < min.getTime()) return false;
+  if (max != null && date.getTime() > max.getTime()) return false;
+  return true;
+}
+
 export function parseDateFromISO(
   value: string | Date | undefined | null,
 ): Date | undefined {

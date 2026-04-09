@@ -21,6 +21,7 @@ import {
   formatDatetimeForDisplay,
   formatDatetimeForInput,
   formatTime,
+  isDateInRange,
   parseDateFromInput,
   parseDateFromISO,
   parseDatetimeFromDisplay,
@@ -123,6 +124,37 @@ describe("formatDatetimeForDisplay", () => {
   it("returns empty string for null or undefined", () => {
     expect(formatDatetimeForDisplay(null)).toBe("");
     expect(formatDatetimeForDisplay(undefined)).toBe("");
+  });
+});
+
+describe("isDateInRange", () => {
+  it("returns true when no min/max constraints", () => {
+    expect(isDateInRange(new Date(2024, 5, 15), undefined, undefined)).toBe(
+      true,
+    );
+  });
+
+  it("returns true when date is within range", () => {
+    const min = new Date(2024, 0, 1);
+    const max = new Date(2024, 11, 31);
+    expect(isDateInRange(new Date(2024, 5, 15), min, max)).toBe(true);
+  });
+
+  it("returns true when date equals min or max (inclusive)", () => {
+    const min = new Date(2024, 0, 1);
+    const max = new Date(2024, 11, 31);
+    expect(isDateInRange(min, min, max)).toBe(true);
+    expect(isDateInRange(max, min, max)).toBe(true);
+  });
+
+  it("returns false when date is before min", () => {
+    const min = new Date(2024, 5, 1);
+    expect(isDateInRange(new Date(2024, 4, 31), min, undefined)).toBe(false);
+  });
+
+  it("returns false when date is after max", () => {
+    const max = new Date(2024, 5, 30);
+    expect(isDateInRange(new Date(2024, 6, 1), undefined, max)).toBe(false);
   });
 });
 
