@@ -18,7 +18,6 @@ import type {
   DerivedProperty,
   ObjectOrInterfaceDefinition,
   ObjectSet,
-  ObjectTypeDefinition,
   PropertyKeys,
   QueryDefinition,
   SimplePropertyDef,
@@ -73,14 +72,10 @@ export function useObjectTableData<
   sorting?: SortingState,
   objectSet?: ObjectSet<Q>,
   objectSetOptions?: ObjectSetOptions<Q>,
-  dedupeIntervalMs?: number,
+  dedupeIntervalMs: number = DEFAULT_OBJECT_TABLE_DEDUPE_INTERVAL_MS,
   maxConcurrentRequests?: number,
-  pageSize?: number,
+  pageSize: number = DEFAULT_PAGE_SIZE,
 ): UseObjectTableDataResult<Q, RDPs> {
-  const resolvedPageSize = pageSize ?? DEFAULT_PAGE_SIZE;
-  const resolvedDedupeIntervalMs = dedupeIntervalMs
-    ?? DEFAULT_OBJECT_TABLE_DEDUPE_INTERVAL_MS;
-
   const orderBy = useMemo(() => {
     if (!sorting || sorting.length === 0) {
       return undefined;
@@ -138,9 +133,9 @@ export function useObjectTableData<
       >,
       where: filter,
       orderBy,
-      pageSize: resolvedPageSize,
+      pageSize,
       enabled: shouldUseObjectSet,
-      dedupeIntervalMs: resolvedDedupeIntervalMs,
+      dedupeIntervalMs,
     },
   );
 
@@ -151,11 +146,11 @@ export function useObjectTableData<
     objectOrInterfaceType,
     {
       withProperties,
-      pageSize: resolvedPageSize,
+      pageSize,
       where: filter,
       orderBy,
       enabled: !shouldUseObjectSet,
-      dedupeIntervalMs: resolvedDedupeIntervalMs,
+      dedupeIntervalMs,
     },
   );
 
@@ -163,18 +158,18 @@ export function useObjectTableData<
   const baseResult = shouldUseObjectSet ? objectSetResult : osdkObjectsResult;
 
   const primaryKeyApiName = objectOrInterfaceType.type === "object"
-    ? (objectOrInterfaceType as ObjectTypeDefinition).primaryKeyApiName
+    ? objectOrInterfaceType.primaryKeyApiName
     : undefined;
 
   // Call useFunctionColumnsData to get function column data
-  const functionColumnData = useFunctionColumnsData<Q, RDPs, FunctionColumns>(
-    baseResult.objectSet,
-    baseResult.data,
+  const functionColumnData = useFunctionColumnsData<Q, RDPs, FunctionColumns>({
+    objectSet: baseResult.objectSet,
+    objects: baseResult.data,
     columnDefinitions,
     primaryKeyApiName,
     maxConcurrentRequests,
-    resolvedPageSize,
-  );
+    pageSize,
+  });
 
   // Merge function column data into each object
   const mergedData = useMemo(() => {

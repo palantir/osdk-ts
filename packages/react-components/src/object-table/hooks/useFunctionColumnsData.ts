@@ -28,6 +28,7 @@ import {
   useOsdkFunctions,
   type UseOsdkFunctionsResult,
 } from "@osdk/react/experimental";
+import { chunk } from "lodash-es";
 import { useMemo, useRef } from "react";
 import type {
   ColumnDefinition,
@@ -50,20 +51,23 @@ export interface FunctionColumnData {
   };
 }
 
-type FunctionColumnEntry<
+export interface UseFunctionColumnsDataOptions<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
-> = {
-  columnId: string;
-  getValue?: (cellData: unknown) => unknown;
-  getKey: (
-    object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
-  ) => string;
-};
-
-// Re-export for backward compatibility
-export const DEFAULT_DEDUPE_INTERVAL_MS: number =
-  DEFAULT_FUNCTION_COLUMN_DEDUPE_INTERVAL_MS;
+  FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
+    string,
+    never
+  >,
+> {
+  objectSet: ObjectSet<Q, RDPs> | undefined;
+  objects:
+    | Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>[]
+    | undefined;
+  columnDefinitions?: Array<ColumnDefinition<Q, RDPs, FunctionColumns>>;
+  primaryKeyApiName?: string;
+  maxConcurrentRequests?: number;
+  pageSize?: number;
+}
 
 export function useFunctionColumnsData<
   Q extends ObjectOrInterfaceDefinition,
@@ -73,147 +77,86 @@ export function useFunctionColumnsData<
     never
   >,
 >(
-  objectSet: ObjectSet<Q, RDPs> | undefined,
-  objects:
-    | Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>[]
-    | undefined,
-  columnDefinitions?: Array<ColumnDefinition<Q, RDPs, FunctionColumns>>,
-  primaryKeyApiName?: string,
-  maxConcurrentRequests?: number,
-  pageSize?: number,
+  {
+    objectSet,
+    objects,
+    columnDefinitions,
+    primaryKeyApiName,
+    maxConcurrentRequests,
+    pageSize = DEFAULT_PAGE_SIZE,
+  }: UseFunctionColumnsDataOptions<Q, RDPs, FunctionColumns>,
 ): FunctionColumnData {
   const prevDataRef = useRef<FunctionColumnData>({});
-  const resolvedPageSize = pageSize ?? DEFAULT_PAGE_SIZE;
 
   const stableObjects = useStableObjects(objects);
-
   // TODO: replace with useDeepEqual when it's added
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const stableObjectSet = useMemo(() => objectSet, [JSON.stringify(objectSet)]);
 
-  // Chunk objects into pages and create a filtered object set per page.
-  // When a new page loads, only the new page's query fires — old pages
-  // hit the dedupeIntervalMs cache since their params are unchanged.
-  const pagedObjectSets = useMemo(() => {
-    if (!stableObjectSet || !stableObjects?.length) return [];
-
-    if (!primaryKeyApiName) {
-      return [stripDerivedPropertiesFromParams(stableObjectSet)];
-    }
-
-    const pages = chunk(stableObjects ?? [], resolvedPageSize);
-    return pages.map(page => {
-      const whereClause = {
-        [primaryKeyApiName]: {
-          $in: page.map(obj => obj.$primaryKey),
-        },
-      } as WhereClause<Q, RDPs>;
-
-      return stripDerivedPropertiesFromParams(
-        addFilterClauseToObjectSet(stableObjectSet, whereClause),
-      );
-    });
-  }, [primaryKeyApiName, stableObjectSet, stableObjects, resolvedPageSize]);
-
-  // Column entries depend only on columnDefinitions, keeping a stable reference
-  // across page changes so prevDataRef is preserved during loading
-  const columnEntries = useMemo(
-    () => {
-      if (!columnDefinitions) return [];
-
-      const entries: FunctionColumnEntry<Q, RDPs>[] = [];
-      for (const colDef of columnDefinitions) {
-        if (colDef.locator.type !== "function") continue;
-
-        const locator = colDef.locator as FunctionColumnLocator<
-          Q,
-          RDPs,
-          FunctionColumns
-        >;
-
-        entries.push({
-          columnId: String(locator.id),
-          getValue: locator.getValue,
-          getKey: locator.getKey,
-        });
-      }
-      return entries;
-    },
+  const functionColDefs = useMemo(
+    () => extractFunctionLocators<Q, RDPs, FunctionColumns>(columnDefinitions),
     [columnDefinitions],
   );
 
   const disabled = !stableObjectSet || !stableObjects?.length
-    || columnEntries.length === 0;
+    || functionColDefs.length === 0;
 
-  // Build queries: one per (page, column) pair.
-  // Layout: [page0_col0, page0_col1, ..., page1_col0, page1_col1, ...]
-  const queries = useMemo(
-    () => {
-      if (disabled || !columnDefinitions || pagedObjectSets.length === 0) {
-        return [];
-      }
+  // When a new page loads, only that page's queries fire — old pages
+  // hit the dedupeIntervalMs cache since their params are unchanged.
+  const pagedObjectSets = useMemo(() => {
+    if (!stableObjectSet || !stableObjects?.length) return [];
+    return buildPagedObjectSets(
+      stableObjectSet,
+      stableObjects,
+      primaryKeyApiName,
+      pageSize,
+    );
+  }, [stableObjectSet, stableObjects, primaryKeyApiName, pageSize]);
 
-      const resultQueries: FunctionQueryParams<QueryDefinition<unknown>>[] = [];
+  const queryGrid = useMemo(() => {
+    if (pagedObjectSets.length === 0 || functionColDefs.length === 0) {
+      return EMPTY_QUERY_GRID;
+    }
+    return buildQueryGrid<Q, RDPs, FunctionColumns>(
+      pagedObjectSets,
+      functionColDefs,
+    );
+  }, [pagedObjectSets, functionColDefs]);
 
-      for (const pagedObjectSet of pagedObjectSets) {
-        for (const colDef of columnDefinitions) {
-          if (colDef.locator.type !== "function") continue;
+  const results = useOsdkFunctions({
+    queries: queryGrid.queries,
+    enabled: !disabled,
+    maxConcurrent: maxConcurrentRequests,
+  });
 
-          const locator = colDef.locator as FunctionColumnLocator<
-            Q,
-            RDPs,
-            FunctionColumns
-          >;
-
-          resultQueries.push({
-            queryDefinition: locator.queryDefinition,
-            options: {
-              params: stripDerivedPropertiesFromParams(
-                locator.getFunctionParams(
-                  pagedObjectSet as ObjectSet<Q, RDPs>,
-                ),
-              ),
-              dedupeIntervalMs: locator.dedupeIntervalMs
-                ?? DEFAULT_FUNCTION_COLUMN_DEDUPE_INTERVAL_MS,
-            } as FunctionQueryParams<QueryDefinition<unknown>>["options"],
-          });
-        }
-      }
-
-      return resultQueries;
-    },
-    [disabled, columnDefinitions, pagedObjectSets],
-  );
-
-  const results = useOsdkFunctions(
-    {
-      queries,
-      enabled: !disabled,
-      maxConcurrent: maxConcurrentRequests,
-    },
-  );
-
-  // Merge paged results back into one result per column.
-  // Results are laid out as [page0_col0, page0_col1, ..., page1_col0, ...]
-  // Each column's page results are merged into a single functionsMap.
   const mergedResults = useMemo(
-    () => mergePagedResults(results, columnEntries.length),
-    [results, columnEntries.length],
+    () => mergePagedResults(results, queryGrid.numColumns),
+    [results, queryGrid.numColumns],
   );
 
   const data = useMemo(() => {
     const columnData = buildFunctionColumnData(
       mergedResults,
-      columnEntries,
+      functionColDefs,
       stableObjects,
       disabled,
       prevDataRef.current,
     );
     prevDataRef.current = columnData;
     return columnData;
-  }, [mergedResults, columnEntries, stableObjects, disabled]);
+  }, [mergedResults, functionColDefs, stableObjects, disabled]);
 
   return data;
+}
+
+/**
+ * Pairs a flat queries array with the layout metadata needed to recover per-column
+ * results back into per-column groups. The numColumns value is produced by
+ * the same function that builds the queries, so the two are always in sync.
+ */
+interface QueryGrid {
+  queries: FunctionQueryParams<QueryDefinition<unknown>>[];
+  numColumns: number;
 }
 
 interface MergedResult {
@@ -222,10 +165,102 @@ interface MergedResult {
   functionsMap: Record<string, unknown>;
 }
 
+const EMPTY_QUERY_GRID: QueryGrid = { queries: [], numColumns: 0 };
+
+/** Filters columnDefinitions down to only function-backed locators. */
+function extractFunctionLocators<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
+    string,
+    never
+  >,
+>(
+  columnDefinitions:
+    | Array<ColumnDefinition<Q, RDPs, FunctionColumns>>
+    | undefined,
+): FunctionColumnLocator<Q, RDPs, FunctionColumns>[] {
+  if (!columnDefinitions) return [];
+
+  return columnDefinitions
+    .filter(colDef => colDef.locator.type === "function")
+    .map(colDef =>
+      colDef.locator as FunctionColumnLocator<Q, RDPs, FunctionColumns>
+    );
+}
+
+/** Chunks objects into pages and creates a filtered ObjectSet per page. */
+function buildPagedObjectSets<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+>(
+  objectSet: ObjectSet<Q, RDPs>,
+  objects: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>[],
+  primaryKeyApiName: string | undefined,
+  pageSize: number,
+): unknown[] {
+  if (!primaryKeyApiName) {
+    return [stripDerivedPropertiesFromParams(objectSet)];
+  }
+
+  return chunk(objects, pageSize).map(page => {
+    const whereClause = {
+      [primaryKeyApiName]: {
+        $in: page.map(obj => obj.$primaryKey),
+      },
+    } as WhereClause<Q, RDPs>;
+
+    return stripDerivedPropertiesFromParams(
+      addFilterClauseToObjectSet(objectSet, whereClause),
+    );
+  });
+}
+
+/**
+ * Builds a flat query array and the layout metadata needed to recover per-column results.
+ *
+ * Layout: [page0_col0, page0_col1, ..., page1_col0, page1_col1, ...]
+ * Page-first ordering ensures first concurrent queries prioritizes the first page,
+ * so visible rows get all their columns populated before later pages.
+ */
+function buildQueryGrid<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
+    string,
+    never
+  >,
+>(
+  pagedObjectSets: unknown[],
+  functionColDefs: FunctionColumnLocator<Q, RDPs, FunctionColumns>[],
+): QueryGrid {
+  const queries: FunctionQueryParams<QueryDefinition<unknown>>[] = [];
+
+  for (const pagedObjectSet of pagedObjectSets) {
+    for (const locator of functionColDefs) {
+      queries.push({
+        queryDefinition: locator.queryDefinition,
+        options: {
+          params: locator.getFunctionParams(
+            pagedObjectSet as ObjectSet<Q, RDPs>,
+          ),
+          dedupeIntervalMs: locator.dedupeIntervalMs
+            ?? DEFAULT_FUNCTION_COLUMN_DEDUPE_INTERVAL_MS,
+        } as FunctionQueryParams<QueryDefinition<unknown>>["options"],
+      });
+    }
+  }
+
+  return { queries, numColumns: functionColDefs.length };
+}
+
 /**
  * Merges paged results into one merged result per column.
  * Each column has results spread across pages — this combines their
  * functionsMaps so buildFunctionColumnData can look up any object by key.
+ *
+ * Relies on QueryGrid layout: results[i] belongs to column (i % numColumns).
+ * i.e. the first N results are the first page of each column, the next N results are the second page, etc.
  */
 function mergePagedResults(
   results: UseOsdkFunctionsResult,
@@ -260,9 +295,13 @@ function mergePagedResults(
 function buildFunctionColumnData<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
+    string,
+    never
+  >,
 >(
-  mergedResults: MergedResult[],
-  columnEntries: FunctionColumnEntry<Q, RDPs>[],
+  results: MergedResult[],
+  functionColDefs: FunctionColumnLocator<Q, RDPs, FunctionColumns>[],
   objects:
     | Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>[]
     | undefined,
@@ -273,11 +312,11 @@ function buildFunctionColumnData<
 
   if (disabled || !objects) return columnData;
 
-  mergedResults.forEach((merged, index) => {
-    const entry = columnEntries[index];
-    if (!entry) return;
+  results.forEach((result, index) => {
+    const locator = functionColDefs[index];
+    if (!locator) return;
 
-    const { columnId, getValue, getKey: columnGetKey } = entry;
+    const columnId = String(locator.id);
 
     columnData[columnId] = {};
 
@@ -287,9 +326,9 @@ function buildFunctionColumnData<
 
       columnData[columnId][key] = createAsyncCellData(
         resolveCell(
-          merged,
-          columnGetKey(obj),
-          getValue,
+          result,
+          locator.getKey(obj),
+          locator.getValue,
           prevData,
         ),
       );
@@ -301,28 +340,21 @@ function buildFunctionColumnData<
 
 /** Resolves the cell state: error, loaded, or loading with previous data. */
 function resolveCell(
-  merged: MergedResult,
+  result: MergedResult,
   objectKey: string,
   getValue: ((cellData: unknown) => unknown) | undefined,
   prevData: unknown,
 ): Omit<AsyncCellData, "__asyncCell"> {
-  if (merged.error) {
-    return { isLoading: false, error: merged.error };
+  if (result.error) {
+    return { isLoading: false, error: result.error };
   }
-  if (objectKey in merged.functionsMap) {
-    const rawData = merged.functionsMap[objectKey];
+  if (objectKey in result.functionsMap) {
+    const rawData = result.functionsMap[objectKey];
     return { isLoading: false, data: getValue ? getValue(rawData) : rawData };
   }
   // Key not in results — still loading, or query returned no data for this object
-  return { isLoading: merged.isLoading, data: prevData };
-}
-
-function chunk<T>(array: T[], size: number): T[][] {
-  const result: T[][] = [];
-  for (let i = 0; i < array.length; i += size) {
-    result.push(array.slice(i, i + size));
-  }
-  return result;
+  // Return with previous data
+  return { isLoading: result.isLoading, data: prevData };
 }
 
 const useStableObjects = <

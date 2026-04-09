@@ -36,8 +36,9 @@ import { useTableSorting } from "./hooks/useTableSorting.js";
 import type { ObjectTableProps } from "./ObjectTableApi.js";
 import { BaseTable } from "./Table.js";
 import type { HeaderMenuFeatureFlags } from "./TableHeaderWithPopover.js";
-import { EMPTY_ARRAY } from "./utils/constants.js";
 import { getRowId } from "./utils/getRowId.js";
+
+const EMPTY_ARRAY: [] = [];
 import type { EditableConfig } from "./utils/types.js";
 
 /**

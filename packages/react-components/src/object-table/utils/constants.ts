@@ -35,17 +35,3 @@ export const DEFAULT_OBJECT_TABLE_DEDUPE_INTERVAL_MS = 60_000;
 export const DEFAULT_FUNCTION_COLUMN_DEDUPE_INTERVAL_MS = 300_000;
 
 export const SELECTION_COLUMN_WIDTH = 50;
-
-export const NUMBER_TYPES: readonly string[] = [
-  "double",
-  "integer",
-  "long",
-  "float",
-  "decimal",
-  "byte",
-  "short",
-];
-
-export const VALIDATION_ERROR_MESSAGE = "Validation error";
-
-export const EMPTY_ARRAY: [] = [];

@@ -21,8 +21,19 @@ import classNames from "classnames";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Tooltip } from "../base-components/tooltip/Tooltip.js";
 import styles from "./EditableCell.module.css";
-import { NUMBER_TYPES, VALIDATION_ERROR_MESSAGE } from "./utils/constants.js";
 import type { CellEditInfo } from "./utils/types.js";
+
+const NUMBER_TYPES: readonly string[] = [
+  "double",
+  "integer",
+  "long",
+  "float",
+  "decimal",
+  "byte",
+  "short",
+];
+
+const VALIDATION_ERROR_MESSAGE = "Validation error";
 
 export interface EditableCellProps<TData extends RowData, CellValue = unknown> {
   initialValue: CellValue;
