@@ -36,6 +36,7 @@ import { useTableSorting } from "./hooks/useTableSorting.js";
 import type { ObjectTableProps } from "./ObjectTableApi.js";
 import { BaseTable } from "./Table.js";
 import type { HeaderMenuFeatureFlags } from "./TableHeaderWithPopover.js";
+import { EMPTY_ARRAY } from "./utils/constants.js";
 import { getRowId } from "./utils/getRowId.js";
 import type { EditableConfig } from "./utils/types.js";
 
@@ -47,8 +48,6 @@ import type { EditableConfig } from "./utils/types.js";
  * <ObjectTable objectType={MyObjectType} />
  * ```
  */
-
-const EMPTY_ARRAY: [] = [];
 
 export function ObjectTable<
   Q extends ObjectOrInterfaceDefinition,

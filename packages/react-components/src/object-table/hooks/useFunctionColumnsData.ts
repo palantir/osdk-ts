@@ -38,6 +38,10 @@ import {
   type AsyncCellData,
   createAsyncCellData,
 } from "../utils/AsyncCellData.js";
+import {
+  DEFAULT_FUNCTION_COLUMN_DEDUPE_INTERVAL_MS,
+  DEFAULT_PAGE_SIZE,
+} from "../utils/constants.js";
 import { stripDerivedPropertiesFromParams } from "../utils/stripDerivedPropertiesFromParams.js";
 
 export interface FunctionColumnData {
@@ -57,10 +61,9 @@ type FunctionColumnEntry<
   ) => string;
 };
 
-// Function column data is readOnly and can be cached aggressively,
-// so we set a longer dedupe interval to maximize cache hits
-export const DEFAULT_DEDUPE_INTERVAL_MS = 300_000; // 5 minutes
-const DEFAULT_PAGE_SIZE = 50;
+// Re-export for backward compatibility
+export const DEFAULT_DEDUPE_INTERVAL_MS: number =
+  DEFAULT_FUNCTION_COLUMN_DEDUPE_INTERVAL_MS;
 
 export function useFunctionColumnsData<
   Q extends ObjectOrInterfaceDefinition,
@@ -171,7 +174,7 @@ export function useFunctionColumnsData<
                 ),
               ),
               dedupeIntervalMs: locator.dedupeIntervalMs
-                ?? DEFAULT_DEDUPE_INTERVAL_MS,
+                ?? DEFAULT_FUNCTION_COLUMN_DEDUPE_INTERVAL_MS,
             } as FunctionQueryParams<QueryDefinition<unknown>>["options"],
           });
         }

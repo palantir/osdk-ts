@@ -21,6 +21,7 @@ import classNames from "classnames";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Tooltip } from "../base-components/tooltip/Tooltip.js";
 import styles from "./EditableCell.module.css";
+import { NUMBER_TYPES, VALIDATION_ERROR_MESSAGE } from "./utils/constants.js";
 import type { CellEditInfo } from "./utils/types.js";
 
 export interface EditableCellProps<TData extends RowData, CellValue = unknown> {
@@ -40,16 +41,6 @@ export interface EditableCellProps<TData extends RowData, CellValue = unknown> {
   columnId: string;
   validateEdit?: (value: unknown) => Promise<string | undefined>;
 }
-
-const NUMBER_TYPES: string[] = [
-  "double",
-  "integer",
-  "long",
-  "float",
-  "decimal",
-  "byte",
-  "short",
-];
 
 function valueToString(value: unknown): string {
   if (value == null) {
@@ -82,8 +73,6 @@ function parseValueByType(
 
   return parsedNumber;
 }
-
-const VALIDATION_ERROR_MESSAGE = "Validation error";
 
 function EditableCellInner<TData extends RowData, CellValue = unknown>({
   initialValue,

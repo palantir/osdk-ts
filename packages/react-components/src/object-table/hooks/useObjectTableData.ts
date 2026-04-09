@@ -30,10 +30,11 @@ import type { SortingState } from "@tanstack/react-table";
 import { useMemo } from "react";
 import type { ColumnDefinition, ObjectSetOptions } from "../ObjectTableApi.js";
 import type { AsyncCellData } from "../utils/AsyncCellData.js";
+import {
+  DEFAULT_OBJECT_TABLE_DEDUPE_INTERVAL_MS,
+  DEFAULT_PAGE_SIZE,
+} from "../utils/constants.js";
 import { useFunctionColumnsData } from "./useFunctionColumnsData.js";
-
-const DEFAULT_PAGE_SIZE = 50;
-const DEFAULT_DEDUPE_INTERVAL_MS = 60_000;
 
 type WithProperties<
   Q extends ObjectOrInterfaceDefinition,
@@ -78,7 +79,7 @@ export function useObjectTableData<
 ): UseObjectTableDataResult<Q, RDPs> {
   const resolvedPageSize = pageSize ?? DEFAULT_PAGE_SIZE;
   const resolvedDedupeIntervalMs = dedupeIntervalMs
-    ?? DEFAULT_DEDUPE_INTERVAL_MS;
+    ?? DEFAULT_OBJECT_TABLE_DEDUPE_INTERVAL_MS;
 
   const orderBy = useMemo(() => {
     if (!sorting || sorting.length === 0) {
