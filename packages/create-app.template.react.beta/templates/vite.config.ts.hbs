@@ -13,6 +13,22 @@ export default defineConfig(({ mode }) => {
     },
     server: {
       port: 8080,
+      {{#if authless}}
+      proxy: {
+        "^/.*api-proxy.*": {
+          target: "{{applicationUrl}}",
+          changeOrigin: true,
+          secure: true,
+          rewrite: (path) => {
+            const match = path.match(/\/api-proxy(.*)$/);
+            if (match) {
+              return `/proxy${match[1]}`;
+            }
+            return path;
+          },
+        },
+      },
+      {{else}}
       {{#if corsProxy}}
       proxy: {
         "^(/multipass/api|/api)": {
@@ -21,6 +37,7 @@ export default defineConfig(({ mode }) => {
           secure: true,
         },
       },
+      {{/if}}
       {{/if}}
     },
     define: {

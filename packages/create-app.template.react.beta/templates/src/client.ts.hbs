@@ -1,3 +1,30 @@
+{{#if authless}}
+{{#if osdkPackage}}
+import { createClient, type Client } from "@osdk/client";
+{{else}}
+import { createPlatformClient, type PlatformClient } from "@osdk/client";
+{{/if}}
+import { createAuthlessClient } from "@osdk/oauth";
+
+const foundryUrl = import.meta.env.VITE_FOUNDRY_API_URL;
+{{#if osdkPackage}}
+const ontologyRid = import.meta.env.VITE_FOUNDRY_ONTOLOGY_RID;
+{{/if}}
+
+{{#if osdkPackage}}
+/**
+ * Initialize the client to interact with the Ontology and Platform SDKs
+ */
+export const client: Client = createClient(foundryUrl, ontologyRid, createAuthlessClient());
+{{else}}
+/**
+ * Initialize the client to interact with the Platform SDK
+ */
+export const client: PlatformClient = createPlatformClient(foundryUrl, createAuthlessClient());
+{{/if}}
+
+export default client;
+{{else}}
 {{#if osdkPackage}}
 import { createClient, type Client } from "@osdk/client";
 {{else}}
@@ -56,7 +83,7 @@ export const client: Client = createClient(foundryUrl, ontologyRid, auth);
 /**
  * Initialize the client to interact with the Platform SDK
  *
- * If you later add an Ontology SDK to your application, follow the steps in 
+ * If you later add an Ontology SDK to your application, follow the steps in
  * {{foundryUrl}}/docs/foundry/ontology-sdk/add-osdk-to-bootstrapped-repository/
  * to correctly set it up in this project.
  */
@@ -64,3 +91,4 @@ export const client: PlatformClient = createPlatformClient(foundryUrl, auth);
 {{/if}}
 
 export default client;
+{{/if}}

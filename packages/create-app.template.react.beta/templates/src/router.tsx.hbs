@@ -1,3 +1,17 @@
+{{#if authless}}
+import Home from "@/Home";
+import { createBrowserRouter } from "react-router-dom";
+
+export const router = createBrowserRouter(
+  [
+    {
+      path: "/",
+      element: <Home />,
+    },
+  ],
+  { basename: import.meta.env.BASE_URL },
+);
+{{else}}
 import AuthCallback from "@/AuthCallback";
 import Home from "@/Home";
 import { createBrowserRouter } from "react-router-dom";
@@ -16,3 +30,4 @@ export const router = createBrowserRouter(
   ],
   { basename: import.meta.env.BASE_URL },
 );
+{{/if}}

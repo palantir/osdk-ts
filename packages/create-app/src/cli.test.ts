@@ -92,7 +92,46 @@ describe.each(TEMPLATES.filter(template => !template.hidden))(
   },
 );
 
+describe.each(
+  TEMPLATES.filter(template =>
+    !template.hidden && template.id === "template-react"
+  ),
+)(
+  "template $id",
+  (template) => {
+    test(`CLI creates ${template.id} with authless`, async () => {
+      await runTest({
+        project: `expected-${template.id}-authless`,
+        template,
+        corsProxy: false,
+        sdkVersion: "2.x",
+        skipOsdk: false,
+        ontology: "ri.ontology.main.ontology.fake",
+        osdkPackage: "@fake/sdk",
+        osdkRegistryUrl:
+          "https://example.palantirfoundry.com/artifacts/api/repositories/ri.artifacts.main.repository.fake/contents/release/npm",
+        authless: true,
+      });
+    });
+  },
+);
+
 const VISIBLE_TEMPLATE = TEMPLATES.filter(template => !template.hidden)[0];
+
+test(`CLI rejects authless with 1.x`, async () => {
+  await expect(runTest({
+    project: `expected-${VISIBLE_TEMPLATE.id}-authless-1x`,
+    template: VISIBLE_TEMPLATE,
+    corsProxy: false,
+    sdkVersion: "1.x",
+    skipOsdk: false,
+    ontology: "ri.ontology.main.ontology.fake",
+    osdkPackage: "@fake/sdk",
+    osdkRegistryUrl:
+      "https://example.palantirfoundry.com/artifacts/api/repositories/ri.artifacts.main.repository.fake/contents/release/npm",
+    authless: true,
+  })).rejects.toThrowError();
+});
 
 test(`CLI rejects no OSDK with 1.x`, async () => {
   await expect(runTest({
@@ -114,12 +153,14 @@ async function runTest(
     ontology,
     osdkPackage,
     osdkRegistryUrl,
+    authless,
   }:
     & {
       project: string;
       template: Template;
       corsProxy: boolean;
       sdkVersion: string;
+      authless?: boolean;
     }
     & (
       | {
@@ -149,15 +190,23 @@ async function runTest(
     "https://app.example.palantirfoundry.com",
     "--application",
     "ri.third-party-applications.main.application.fake",
-    "--clientId",
-    "123",
-    "--corsProxy",
-    corsProxy.toString(),
     "--sdkVersion",
     sdkVersion,
-    "--scopes",
-    "api:read-data",
   ];
+
+  if (authless) {
+    args.push("--authless");
+  } else {
+    args.push(
+      "--no-authless",
+      "--clientId",
+      "123",
+      "--corsProxy",
+      corsProxy.toString(),
+      "--scopes",
+      "api:read-data",
+    );
+  }
 
   if (!skipOsdk) {
     args.push("--ontology", ontology);
@@ -194,5 +243,29 @@ async function runTest(
     expect(packageJson.dependencies["@osdk/client"]).toBe(
       undefined,
     );
+  }
+
+  if (authless) {
+    // AuthCallback should not exist in authless mode
+    expect(
+      fs.existsSync(
+        path.join(process.cwd(), project, "src", "AuthCallback.tsx"),
+      ),
+    ).toBe(false);
+
+    // .env.development should use api-proxy and not contain CLIENT_ID
+    const envDev = fs.readFileSync(
+      path.join(process.cwd(), project, ".env.development"),
+      "utf-8",
+    );
+    expect(envDev).toContain("api-proxy");
+    expect(envDev).not.toContain("CLIENT_ID");
+
+    // client.ts should use createAuthlessClient
+    const clientTs = fs.readFileSync(
+      path.join(process.cwd(), project, "src", "client.ts"),
+      "utf-8",
+    );
+    expect(clientTs).toContain("createAuthlessClient");
   }
 }
