@@ -56,6 +56,15 @@ function hasEntries(o: unknown): boolean {
     && Object.keys(o as Record<string, unknown>).length > 0;
 }
 
+function outputContainsOntologyEdit(func: FunctionSpec): boolean {
+  const dt = func?.output?.single?.dataType;
+  if (!dt) return false;
+  if (dt.type === "ontologyEdit") return true;
+  if (dt.type === "list") return dt.list?.elementsType?.type === "ontologyEdit";
+  if (dt.type === "set") return dt.set?.elementsType?.type === "ontologyEdit";
+  return false;
+}
+
 function isOsdkObject(
   value: unknown,
 ): value is { $apiName: string; $primaryKey: unknown } {
@@ -219,6 +228,15 @@ interface FunctionSpec {
     editedLinks?: Record<string, unknown>;
     editedInterfaces?: Record<string, unknown>;
   };
+  output?: {
+    single?: {
+      dataType?: {
+        type: string;
+        list?: { elementsType?: { type: string } };
+        set?: { elementsType?: { type: string } };
+      };
+    };
+  };
 }
 
 interface RuntimeSpecs {
@@ -298,19 +316,26 @@ interface FunctionInfo {
 async function discoverFunctions(): Promise<Map<string, FunctionInfo>> {
   const map = new Map<string, FunctionInfo>();
 
+  function detectEditFunction(func: FunctionSpec, isPython: boolean): boolean {
+    const prov = func.ontologyProvenance;
+    return hasEntries(prov?.editedObjects)
+      || hasEntries(prov?.editedLinks)
+      || hasEntries(prov?.editedInterfaces)
+      // Fallback: the Python runtime may not populate ontologyProvenance,
+      // but edit functions return list[OntologyEdit] which shows up in the
+      // output data type.
+      || (isPython && outputContainsOntologyEdit(func));
+  }
+
   const tsSpecs = await fetchSpecs(TS_RUNTIME);
   if (tsSpecs?.functions) {
     for (const func of tsSpecs.functions) {
       const functionName = func.locator?.typescript?.functionName;
       if (functionName) {
-        const prov = func.ontologyProvenance;
-        const isEditFunction = hasEntries(prov?.editedObjects)
-          || hasEntries(prov?.editedLinks)
-          || hasEntries(prov?.editedInterfaces);
         map.set(functionName, {
           runtime: TS_RUNTIME,
           specs: tsSpecs,
-          isEditFunction,
+          isEditFunction: detectEditFunction(func, false),
         });
       }
     }
@@ -321,14 +346,10 @@ async function discoverFunctions(): Promise<Map<string, FunctionInfo>> {
     for (const func of pySpecs.functions) {
       const functionName = func.locator?.python?.functionName;
       if (functionName) {
-        const prov = func.ontologyProvenance;
-        const isEditFunction = hasEntries(prov?.editedObjects)
-          || hasEntries(prov?.editedLinks)
-          || hasEntries(prov?.editedInterfaces);
         map.set(functionName, {
           runtime: PY_RUNTIME,
           specs: pySpecs,
-          isEditFunction,
+          isEditFunction: detectEditFunction(func, true),
         });
       }
     }

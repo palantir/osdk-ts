@@ -16,7 +16,7 @@
 
 import React from "react";
 import { BaseCbacPicker } from "./base/BaseCbacPicker.js";
-import { useCbacPickerState } from "./useCbacPickerState.js";
+import { useCbacSelection } from "./useCbacSelection.js";
 import { EMPTY_ARRAY } from "./utils/cbacPickerUtils.js";
 import { toggleMarking } from "./utils/selectionLogic.js";
 
@@ -33,18 +33,9 @@ export function CbacPicker({
   readOnly,
   className,
 }: CbacPickerProps): React.ReactElement {
-  const [selectedIds, setSelectedIds] = React.useState<string[]>(
-    initialMarkingIds ?? EMPTY_ARRAY,
-  );
-
-  // Reset local state when initialMarkingIds changes (e.g. external update)
-  const [prevInitialIds, setPrevInitialIds] = React.useState(initialMarkingIds);
-  if (initialMarkingIds !== prevInitialIds) {
-    setPrevInitialIds(initialMarkingIds);
-    setSelectedIds(initialMarkingIds ?? EMPTY_ARRAY);
-  }
-
   const {
+    selectedIdsRef,
+    setSelectedIds,
     categoryGroups,
     markingStates,
     banner,
@@ -52,7 +43,7 @@ export function CbacPicker({
     isValid,
     isLoading,
     error,
-  } = useCbacPickerState(selectedIds);
+  } = useCbacSelection(initialMarkingIds);
 
   const handleMarkingToggle = React.useCallback(
     (markingId: string) => {
@@ -61,13 +52,13 @@ export function CbacPicker({
       }
       const newSelection = toggleMarking(
         markingId,
-        selectedIds,
+        selectedIdsRef.current,
         categoryGroups,
       );
       setSelectedIds(newSelection);
       onChange(newSelection);
     },
-    [readOnly, selectedIds, categoryGroups, onChange],
+    [readOnly, categoryGroups, onChange],
   );
 
   const handleDismiss = React.useCallback(() => {

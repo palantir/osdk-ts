@@ -112,8 +112,10 @@
   --osdk-cbac-popover-pill-border-radius: var(--osdk-surface-border-radius);
 
   /* Popover Skeleton */
-  --osdk-cbac-skeleton-bg: var(--osdk-surface-background-color-default-hover);
-  --osdk-cbac-skeleton-border-radius: var(--osdk-surface-border-radius);
+  --osdk-cbac-skeleton-pill-width: 120px;
+  --osdk-cbac-skeleton-pill-height: 24px;
+  --osdk-cbac-skeleton-line-height: 16px;
+  --osdk-cbac-skeleton-line-narrow-width: 80%;
 
   /* Popover Warning Callout */
   --osdk-cbac-warning-callout-bg: var(--osdk-intent-warning-subtle);

@@ -104,6 +104,7 @@ export function convertDataType(
       return {
         type: "objectSet",
         objectApiName: objectSetData.objectSet.objectTypeId,
+        objectTypeApiName: objectSetData.objectSet.objectTypeId,
       };
     }
     case "list": {

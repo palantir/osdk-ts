@@ -1,0 +1,45 @@
+/*
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.osdkObjectSetField {
+  display: flex;
+  align-items: center;
+  gap: var(--osdk-object-set-gap);
+  min-height: var(--osdk-object-set-min-height);
+  padding: var(--osdk-object-set-padding);
+  color: var(--osdk-object-set-color);
+  font-family: var(--osdk-object-set-font-family);
+  font-size: var(--osdk-object-set-font-size);
+  line-height: var(--osdk-object-set-line-height);
+}
+
+.osdkObjectSetFieldEmpty {
+  color: var(--osdk-object-set-placeholder-color);
+}
+
+.osdkObjectSetFieldError {
+  color: var(--osdk-object-set-error-color);
+}
+
+.osdkObjectSetIconSkeleton {
+  width: var(--osdk-object-set-icon-skeleton-width);
+  align-self: stretch;
+}
+
+.osdkObjectSetLabelSkeleton {
+  width: var(--osdk-object-set-label-skeleton-width);
+  align-self: stretch;
+}

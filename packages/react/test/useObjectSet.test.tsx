@@ -416,6 +416,41 @@ describe(useObjectSet, () => {
     });
   });
 
+  describe("orderBy deduplication", () => {
+    it("should only call observeObjectSet once when rerendered with the same orderBy", () => {
+      const canonicalizedOrderBy = { name: "asc" as const };
+      const observableClient = {
+        observeObjectSet: mockObserveObjectSet,
+        canonicalizeOptions: vitest.fn((_opts) => ({
+          ..._opts,
+          orderBy: canonicalizedOrderBy,
+        })),
+        invalidateObjectType: mockInvalidateObjectType,
+      } as any;
+
+      const wrapper = ({ children }: React.PropsWithChildren) => (
+        <OsdkContext2.Provider value={{ observableClient }}>
+          {children}
+        </OsdkContext2.Provider>
+      );
+
+      const { rerender } = renderHook(
+        ({ orderBy }) => useObjectSet(mockObjectSet, { orderBy }),
+        {
+          wrapper,
+          initialProps: { orderBy: { name: "asc" as const } },
+        },
+      );
+
+      expect(mockObserveObjectSet).toHaveBeenCalledTimes(1);
+
+      // Rerender with a new object that is structurally identical
+      rerender({ orderBy: { name: "asc" as const } });
+
+      expect(mockObserveObjectSet).toHaveBeenCalledTimes(1);
+    });
+  });
+
   describe("undefined objectSet", () => {
     it("should not call observeObjectSet when objectSet is undefined", () => {
       const wrapper = createWrapper();

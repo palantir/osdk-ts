@@ -960,7 +960,7 @@ describe("generator", () => {
             /**
              * (no ontology metadata)
              */
-            readonly array: ('a' | 'b' | 'c')[] | undefined;
+            readonly array: ('a' | 'b"c' | "d'e")[] | undefined;
             /**
              *   display name: 'Body',
              *
@@ -1651,7 +1651,7 @@ describe("generator", () => {
             /**
              * (no ontology metadata)
              */
-            readonly array: ('a' | 'b' | 'c')[] | undefined;
+            readonly array: ('a' | 'b"c' | "d'e")[] | undefined;
             /**
              *   display name: 'Body',
              *
