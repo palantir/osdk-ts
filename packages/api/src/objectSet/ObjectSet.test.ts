@@ -277,6 +277,42 @@ describe("ObjectSet", () => {
         .toEqualTypeOf<number>();
     });
 
+    test("interface types", async () => {
+      const fauxInterfaceObjectSet = createMockObjectSet<
+        FooInterfaceApiTest
+      >();
+
+      const withInterfaceProperty = fauxInterfaceObjectSet.withProperties({
+        "derivedProp": (base) => base.selectProperty("name"),
+      });
+
+      expectTypeOf(withInterfaceProperty).toEqualTypeOf<
+        $ObjectSet<FooInterfaceApiTest, {
+          derivedProp: "string" | undefined;
+        }>
+      >();
+
+      const withInterfacePropertyResults = await withInterfaceProperty
+        .fetchPage();
+
+      expectTypeOf<typeof withInterfacePropertyResults["data"][0]>()
+        .toEqualTypeOf<
+          Osdk.Instance<
+            FooInterfaceApiTest,
+            never,
+            PropertyKeys<FooInterfaceApiTest>,
+            {
+              derivedProp: "string" | undefined;
+            }
+          >
+        >();
+
+      expectTypeOf<
+        typeof withInterfacePropertyResults["data"][0]["derivedProp"]
+      >()
+        .toEqualTypeOf<string | undefined>();
+    });
+
     it("can be sub-selected", () => {
       const objectWithUndefinedRdp = fauxObjectSet.withProperties({
         "derivedPropertyName": (base) =>
