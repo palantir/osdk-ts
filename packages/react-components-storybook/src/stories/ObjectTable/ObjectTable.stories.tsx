@@ -31,7 +31,7 @@ import { Employee } from "../../types/Employee.js";
 type EmployeeTableProps = ObjectTableProps<typeof Employee>;
 
 const meta: Meta<EmployeeTableProps> = {
-  title: "Components/ObjectTable/Features",
+  title: "Experimental/ObjectTable/Features",
   tags: ["experimental"],
   component: ObjectTable,
   parameters: {

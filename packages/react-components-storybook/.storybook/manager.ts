@@ -51,7 +51,7 @@ function redirectToObjectTableIfAtRoot() {
     && window.location.pathname === "/"
   ) {
     window.location.href =
-      "/?path=/story/components-objecttable-features--default";
+      "/?path=/story/experimental-objecttable-features--default";
   }
 }
 
