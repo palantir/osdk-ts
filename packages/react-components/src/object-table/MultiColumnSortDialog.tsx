@@ -37,7 +37,7 @@ export interface SortColumnItem extends ColumnOption {
   direction: "asc" | "desc";
 }
 
-interface MultiColumnSortDialogProps {
+export interface MultiColumnSortDialogProps {
   isOpen: boolean;
   onClose: () => void;
   onApply: (sortColumns: SortingState) => void;
