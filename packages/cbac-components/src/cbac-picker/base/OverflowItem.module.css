@@ -30,7 +30,7 @@
   background: transparent;
 }
 
-.overflowItem:hover:not(:disabled) {
+.overflowItem:hover:not(:disabled):not([aria-disabled="true"]) {
   background: var(--osdk-surface-background-color-default-hover);
 }
 
@@ -48,10 +48,6 @@
   color: var(--osdk-cbac-marking-button-color-disallowed);
   cursor: not-allowed;
   opacity: var(--osdk-cbac-disabled-opacity);
-}
-
-.tooltipTriggerWrapper {
-  display: contents;
 }
 
 .tooltip {

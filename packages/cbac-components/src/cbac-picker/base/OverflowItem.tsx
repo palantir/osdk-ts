@@ -56,7 +56,8 @@ export const OverflowItem: React.MemoExoticComponent<
 
   const tooltipText = getTooltipText(selectionState);
   const hasDescription = description !== undefined && description.length > 0;
-  const hasTooltip = hasDescription || tooltipText != null;
+  const showTooltip = hasDescription || tooltipText != null;
+  const isItemDisabled = disabled ?? disallowed;
 
   const button = (
     <Button
@@ -65,25 +66,22 @@ export const OverflowItem: React.MemoExoticComponent<
         (isSelected || implied) && styles.overflowItemSelected,
         disallowed && styles.overflowItemDisabled,
       )}
-      onClick={handleClick}
-      disabled={disabled ?? disallowed}
+      onClick={isItemDisabled ? undefined : handleClick}
+      disabled={showTooltip ? undefined : isItemDisabled}
+      aria-disabled={showTooltip ? isItemDisabled : undefined}
       aria-pressed={isSelected || implied}
     >
       {getDisplayLabel(label, selectionState)}
     </Button>
   );
 
-  if (!hasTooltip) {
+  if (!showTooltip) {
     return button;
   }
 
   return (
     <Tooltip.Root>
-      <Tooltip.Trigger
-        render={<span className={styles.tooltipTriggerWrapper} />}
-      >
-        {button}
-      </Tooltip.Trigger>
+      <Tooltip.Trigger render={button} />
       <Tooltip.Portal>
         <Tooltip.Positioner side="right" sideOffset={4}>
           <Tooltip.Popup className={styles.tooltip}>

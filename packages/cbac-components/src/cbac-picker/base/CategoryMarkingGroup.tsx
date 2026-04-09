@@ -27,7 +27,7 @@ const DEFAULT_MARKING_STATE: MarkingSelectionState = "NONE";
 
 export interface CategoryMarkingGroupProps {
   categoryName: string;
-  markings: ReadonlyArray<{ id: string; name: string }>;
+  markings: ReadonlyArray<{ id: string; name: string; description?: string }>;
   markingStates: Map<string, MarkingSelectionState>;
   readOnly?: boolean;
   onMarkingToggle: (markingId: string) => void;
@@ -49,6 +49,7 @@ export const CategoryMarkingGroup: React.MemoExoticComponent<
       markings.map((marking) => ({
         id: marking.id,
         label: marking.name,
+        description: marking.description,
         selectionState: markingStates.get(marking.id) ?? DEFAULT_MARKING_STATE,
         disabled: readOnly,
       })),
@@ -87,6 +88,7 @@ export const CategoryMarkingGroup: React.MemoExoticComponent<
             key={marking.id}
             id={marking.id}
             label={marking.label}
+            description={marking.description}
             selectionState={marking.selectionState}
             disabled={marking.disabled}
             onToggle={onMarkingToggle}
@@ -113,6 +115,7 @@ export const CategoryMarkingGroup: React.MemoExoticComponent<
 interface MarkingButtonItemProps {
   id: string;
   label: string;
+  description?: string;
   selectionState: MarkingSelectionState;
   disabled?: boolean;
   onToggle: (markingId: string) => void;
@@ -121,6 +124,7 @@ interface MarkingButtonItemProps {
 const MarkingButtonItem = React.memo(function MarkingButtonItem({
   id,
   label,
+  description,
   selectionState,
   disabled,
   onToggle,
@@ -132,6 +136,7 @@ const MarkingButtonItem = React.memo(function MarkingButtonItem({
   return (
     <MarkingButton
       label={label}
+      description={description}
       selectionState={selectionState}
       onToggle={handleToggle}
       disabled={disabled}
