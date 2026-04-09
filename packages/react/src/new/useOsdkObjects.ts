@@ -36,8 +36,9 @@ import { extractPayloadError, isPayloadLoading } from "./hookUtils.js";
 import { devToolsMetadata, makeExternalStore } from "./makeExternalStore.js";
 import {
   getClientId,
+  getSuspenseExternalStore,
   isSuspenseOption,
-  setupSuspenseStore,
+  throwIfSuspenseNeeded,
 } from "./makeSuspenseExternalStore.js";
 import { OsdkContext2 } from "./OsdkContext2.js";
 
@@ -500,9 +501,8 @@ export function useOsdkObjects<
     ],
   );
 
-  let { subscribe, getSnapShot } = baseStore;
-  if (isSuspense) {
-    const cacheKey = JSON.stringify([
+  const cacheKey = isSuspense
+    ? JSON.stringify([
       getClientId(observableClient),
       "list",
       type.apiName,
@@ -518,16 +518,28 @@ export function useOsdkObjects<
       pivotTo ?? null,
       canonOptions.$select ?? null,
       $loadPropertySecurityMetadata ?? null,
-    ]);
+    ])
+    : null;
 
-    ({ subscribe, getSnapShot } = setupSuspenseStore<
-      ObserveObjectsCallbackArgs<Q, RDPs>
-    >(
+  const hasListData = (
+    p: ObserveObjectsCallbackArgs<Q, RDPs> | undefined,
+  ): boolean => p?.resolvedList != null;
+
+  const suspenseStore = React.useMemo(() => {
+    if (cacheKey === null) {
+      return undefined;
+    }
+    return getSuspenseExternalStore<ObserveObjectsCallbackArgs<Q, RDPs>>(
       cacheKey,
       observationFactory,
-      undefined,
-      (p) => p?.resolvedList != null,
-    ));
+      hasListData,
+    );
+  }, [cacheKey]);
+
+  let { subscribe, getSnapShot } = baseStore;
+  if (suspenseStore) {
+    throwIfSuspenseNeeded(suspenseStore, hasListData);
+    ({ subscribe, getSnapShot } = suspenseStore);
   }
 
   const listPayload = React.useSyncExternalStore(subscribe, getSnapShot);

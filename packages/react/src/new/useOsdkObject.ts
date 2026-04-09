@@ -34,8 +34,9 @@ import {
 } from "./makeExternalStore.js";
 import {
   getClientId,
+  getSuspenseExternalStore,
   isSuspenseOption,
-  setupSuspenseStore,
+  throwIfSuspenseNeeded,
 } from "./makeSuspenseExternalStore.js";
 import { OsdkContext2 } from "./OsdkContext2.js";
 import { parseObjectArgs } from "./parseObjectArgs.js";
@@ -272,9 +273,8 @@ export function useOsdkObject<
     ],
   );
 
-  let { subscribe, getSnapShot } = baseStore;
-  if (isSuspense) {
-    const cacheKey = JSON.stringify([
+  const cacheKey = isSuspense
+    ? JSON.stringify([
       getClientId(observableClient),
       "obj",
       apiNameString,
@@ -282,15 +282,29 @@ export function useOsdkObject<
       mode ?? null,
       stableSelect ?? null,
       loadPropertySecurityMetadata ?? null,
-    ]);
-    ({ subscribe, getSnapShot } = setupSuspenseStore<
-      ObserveObjectCallbackArgs<Q>
-    >(
+    ])
+    : null;
+
+  const hasObjectData = (
+    p: ObserveObjectCallbackArgs<Q> | undefined,
+  ): boolean => p?.object != null;
+
+  const suspenseStore = React.useMemo(() => {
+    if (cacheKey === null) {
+      return undefined;
+    }
+    return getSuspenseExternalStore<ObserveObjectCallbackArgs<Q>>(
       cacheKey,
       observationFactory,
+      hasObjectData,
       observableClient.peekObjectData<Q>(typeOrApiName, primaryKey),
-      (p) => p?.object != null,
-    ));
+    );
+  }, [cacheKey]);
+
+  let { subscribe, getSnapShot } = baseStore;
+  if (suspenseStore) {
+    throwIfSuspenseNeeded(suspenseStore, hasObjectData);
+    ({ subscribe, getSnapShot } = suspenseStore);
   }
 
   const payload = React.useSyncExternalStore(subscribe, getSnapShot);
