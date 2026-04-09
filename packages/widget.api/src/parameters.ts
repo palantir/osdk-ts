@@ -14,7 +14,22 @@
  * limitations under the License.
  */
 
+import type { InterfaceDefinition, ObjectTypeDefinition } from "@osdk/api";
 import type { AsyncValue } from "./utils/asyncValue.js";
+
+interface ObjectType extends ObjectTypeDefinition {
+  internalDoNotUseMetadata?: {
+    rid: string;
+  };
+}
+
+interface InterfaceType extends InterfaceDefinition {
+  internalDoNotUseMetadata?: {
+    rid: string;
+  };
+}
+
+export type AllowedObjectSetParameterType = ObjectType | InterfaceType;
 
 /**
  * Map of the name of the type to the corresponding JavaScript type.
@@ -24,6 +39,8 @@ type PrimitiveParameterTypes = {
   /** Formatted as an ISO date string, e.g. YYYY-MM-DD */
   date: string;
   number: number;
+  /** Formatted as a Scenario RID */
+  scenario: string;
   string: string;
   /** Formatted as an ISO datetime string */
   timestamp: string;
@@ -33,6 +50,15 @@ type PrimitiveParameterType = keyof PrimitiveParameterTypes;
 export interface AbstractParameterValue<T extends PrimitiveParameterType> {
   type: T;
   value: AsyncValue<PrimitiveParameterTypes[T]>;
+}
+
+export interface ObjectSetParameterValue<
+  T extends AllowedObjectSetParameterType,
+> {
+  type: "objectSet";
+  value: AsyncValue<{
+    objectSetRid: string;
+  }>;
 }
 
 export interface GenericArrayParameterValue<T extends PrimitiveParameterType> {
@@ -50,18 +76,24 @@ export namespace ParameterValue {
   export type Boolean = AbstractParameterValue<"boolean">;
   export type Date = AbstractParameterValue<"date">;
   export type Timestamp = AbstractParameterValue<"timestamp">;
+  export type Scenario = AbstractParameterValue<"scenario">;
+  export type ObjectSet<
+    T extends AllowedObjectSetParameterType = AllowedObjectSetParameterType,
+  > = ObjectSetParameterValue<T>;
 
   export type StringArray = GenericArrayParameterValue<"string">;
   export type NumberArray = GenericArrayParameterValue<"number">;
   export type BooleanArray = GenericArrayParameterValue<"boolean">;
   export type DateArray = GenericArrayParameterValue<"date">;
   export type TimestampArray = GenericArrayParameterValue<"timestamp">;
+  export type ScenarioArray = GenericArrayParameterValue<"scenario">;
   export type Array =
     | StringArray
     | NumberArray
     | BooleanArray
     | DateArray
-    | TimestampArray;
+    | TimestampArray
+    | ScenarioArray;
 
   export type Type = ParameterValue["type"];
   export type PrimitiveType = PrimitiveParameterType;
@@ -72,4 +104,6 @@ export type ParameterValue =
   | ParameterValue.Boolean
   | ParameterValue.Date
   | ParameterValue.Timestamp
+  | ParameterValue.Scenario
+  | ParameterValue.ObjectSet
   | ParameterValue.Array;

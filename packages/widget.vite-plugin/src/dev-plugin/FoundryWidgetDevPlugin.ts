@@ -29,12 +29,14 @@ import {
   VITE_INJECTIONS_PATH,
 } from "../common/constants.js";
 import { getInputHtmlEntrypoints } from "../common/getInputHtmlEntrypoints.js";
-import { standardizeFileExtension } from "../common/standardizeFileExtension.js";
+import { standardizePathAndFileExtension } from "../common/standardizePathAndFileExtension.js";
+import { isCodeWorkspacesMode } from "./codeWorkspacesMode.js";
 import { extractInjectedScripts } from "./extractInjectedScripts.js";
 import { getBaseHref } from "./getBaseHref.js";
 import { getFoundryToken } from "./getFoundryToken.js";
 import { getWidgetIdOverrideMap } from "./getWidgetIdOverrideMap.js";
 import { publishDevModeSettings } from "./publishDevModeSettings.js";
+import { warnIfWrongDevCommand } from "./validateDevEnvironment.js";
 
 // Location of the setup page assets
 const DIR_DIST: string = typeof __dirname !== "undefined"
@@ -73,7 +75,8 @@ export function FoundryWidgetDevPlugin(): Plugin {
     /**
      * Check for the required token environment variable in dev mode.
      */
-    config(resolvedConfig) {
+    configResolved(resolvedConfig) {
+      warnIfWrongDevCommand(resolvedConfig.mode, resolvedConfig.logger);
       getFoundryToken(resolvedConfig.mode);
     },
 
@@ -138,11 +141,36 @@ export function FoundryWidgetDevPlugin(): Plugin {
        */
       server.middlewares.use(
         serverPath(server, FINISH_PATH),
-        async (_, res) => {
+        async (req, res) => {
+          // Check for too many attempts
+          if (req.url == null) {
+            throw new Error("Request URL is undefined");
+          }
+          const url = new URL(req.url, `http://${req.headers.host}`);
+          const numAttempts = parseInt(url.searchParams.get("attempt") ?? "0");
+          if (numAttempts >= 10) {
+            const errorMessage =
+              "Timed out waiting for widget config files to be parsed. Are you sure a widget config is imported?";
+            server.config.logger.error(errorMessage);
+            res.setHeader("Content-Type", "application/json");
+            res.statusCode = 500;
+            res.end(
+              JSON.stringify({
+                status: "error",
+                error: errorMessage,
+              }),
+            );
+            return;
+          }
+
           // Wait for the setup page to trigger the parsing of the config files
           const numEntrypoints = htmlEntrypoints.length;
           const numConfigFiles = Object.keys(configFileToEntrypoint).length;
           if (numConfigFiles < numEntrypoints) {
+            server.config.logger.info(
+              `Waiting for widget config files to be parsed, found ${numConfigFiles} config files out of`
+                + ` ${numEntrypoints} HTML entrypoints.`,
+            );
             res.setHeader("Content-Type", "application/json");
             res.end(JSON.stringify({ status: "pending" }));
             return;
@@ -190,15 +218,22 @@ export function FoundryWidgetDevPlugin(): Plugin {
       }
 
       // Standardize the source file extension and get the full path
-      const standardizedSource = standardizeFileExtension(
-        getFullSourcePath(source.slice(1), importer),
+      const standardizedSource = standardizePathAndFileExtension(
+        getFullSourcePath(
+          // If the source path is absolute, resolve it against the current working directory
+          source.startsWith("/") ? path.join(process.cwd(), source) : source,
+          importer,
+        ),
       );
       // Importers are already full paths, so just standardize the extension
-      const standardizedImporter = standardizeFileExtension(importer);
+      const standardizedImporter = standardizePathAndFileExtension(importer);
 
       // In dev mode all entrypoints have a generic HTML importer value
       if (
         importer.endsWith("index.html") && !standardizedSource.includes("@fs")
+        // In a cold start, Vite may try to resolve files (e.g. a widget.html) before the user even accesses the dev mode server.
+        // These files are not valid code entrypoints, so we ignore them here.
+        && path.extname(standardizedSource) !== ".html"
       ) {
         // Store the fully resolved path and the relative path, as we need the former for mapping
         // config files to entrypoints and the latter as a dev mode override script
@@ -206,14 +241,29 @@ export function FoundryWidgetDevPlugin(): Plugin {
       }
 
       // Look for config files that are imported from an entrypoint file
+      // Also check the config file being imported is in src to avoid picking up imports for other
+      // project files like foundry.config.json / eslint.config.mjs when tailwind is used.
       if (
         standardizedSource.replace(/\.[^/.]+$/, "").endsWith(CONFIG_FILE_SUFFIX)
+        && standardizedSource.includes("/src/")
         && codeEntrypoints[standardizedImporter] != null
       ) {
-        const fullSourcePath = standardizeFileExtension(
+        const fullSourcePath = standardizePathAndFileExtension(
           getFullSourcePath(source, standardizedImporter),
         );
         configFileToEntrypoint[fullSourcePath] = standardizedImporter;
+      }
+    },
+
+    handleHotUpdate({ file, server }) {
+      const standardizedFile = standardizePathAndFileExtension(file);
+      if (configFileToEntrypoint[standardizedFile] != null) {
+        server.config.logger.warn(
+          color.yellow(
+            `Detected a change to widget config file ${file}. Make sure to publish your changes in order to use the changes you've made.`,
+          ),
+        );
+        return [];
       }
     },
   };
@@ -227,14 +277,25 @@ function getFullSourcePath(source: string, importer: string): string {
 }
 
 function serverPath(server: ViteDevServer, subPath: string): string {
-  return path.resolve(server.config.base, subPath);
+  // Don't use Windows-style paths when constructing URL paths for the HTTP server
+  return path.posix.resolve(server.config.base, subPath);
 }
 
 function printSetupPageUrl(server: ViteDevServer) {
-  const setupRoute = `${getBaseHref(server)}${SETUP_PATH}/`;
-  server.config.logger.info(
-    `  ${color.green("➜")}  ${
-      color.bold("Click to enter developer mode for your widget set")
-    }: ${color.green(setupRoute)}`,
-  );
+  if (isCodeWorkspacesMode(server.config.mode)) {
+    server.config.logger.info(
+      `  ${color.green("➜")}  ${
+        color.bold(
+          "Select a widget from the preview panel to enter developer mode",
+        )
+      }`,
+    );
+  } else {
+    const setupRoute = `${getBaseHref(server)}${SETUP_PATH}/`;
+    server.config.logger.info(
+      `  ${color.green("➜")}  ${
+        color.bold("Click to enter developer mode for your widget set")
+      }: ${color.green(setupRoute)}`,
+    );
+  }
 }

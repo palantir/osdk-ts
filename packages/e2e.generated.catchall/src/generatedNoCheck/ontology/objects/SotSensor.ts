@@ -61,6 +61,8 @@ export interface SotSensor extends $ObjectTypeDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'object';
   apiName: 'SotSensor';
+  primaryKeyApiName: 'seriesId';
+  primaryKeyType: 'string';
   __DefinitionMetadata?: {
     objectSet: SotSensor.ObjectSet;
     props: SotSensor.Props;
@@ -111,8 +113,13 @@ export interface SotSensor extends $ObjectTypeDefinition {
   };
 }
 
-export const SotSensor: SotSensor = {
+export const SotSensor = {
   type: 'object',
   apiName: 'SotSensor',
   osdkMetadata: $osdkMetadata,
-};
+  primaryKeyApiName: 'seriesId',
+  primaryKeyType: 'string',
+  internalDoNotUseMetadata: {
+    rid: 'rid.a.b.c.d',
+  },
+} satisfies SotSensor & { internalDoNotUseMetadata: { rid: string } } as SotSensor;

@@ -1,5 +1,669 @@
 # @osdk/generator
 
+## 2.8.0
+
+### Minor Changes
+
+- 322c5bc: Simulated release
+- 4bb9769: Add primaryKeyApiName and primaryKeyType to object type const for runtime access
+- abb0e0f: Bump Platform SDK dependencies
+- 1706c79: Relax interface creation validation.
+- 4ef6adc: Fix interface links off of objects
+- 60b5ffb: Add `platformApiName` field to actions to preserve the original API name used by the Foundry platform
+- 35f2f1a: Add Media inputs/outputs for Queries
+- d607557: Allow generating when value type has 0 constraints
+- 60531c9: Add JS Docs to query const
+- 46f0a47: Update platform SDK to 2.57.0 and handle new typeReference query data type
+- 7775359: Generate a valid OSDK package for TS
+- 4470c0d: Add support to execute queries on branches.
+
+### Patch Changes
+
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [4bb9769]
+- Updated dependencies [abb0e0f]
+- Updated dependencies [f294f5a]
+- Updated dependencies [0df859a]
+- Updated dependencies [d284bf2]
+- Updated dependencies [4ef6adc]
+- Updated dependencies [60b5ffb]
+- Updated dependencies [8c30908]
+- Updated dependencies [4a856cb]
+- Updated dependencies [b68cebd]
+- Updated dependencies [35f2f1a]
+- Updated dependencies [46f0a47]
+- Updated dependencies [4470c0d]
+- Updated dependencies [61e33ab]
+  - @osdk/api@2.8.0
+  - @osdk/generator-converters@2.8.0
+
+## 2.8.0-beta.32
+
+### Minor Changes
+
+- d607557: Allow generating when value type has 0 constraints
+- 46f0a47: Update platform SDK to 2.57.0 and handle new typeReference query data type
+
+### Patch Changes
+
+- Updated dependencies [46f0a47]
+  - @osdk/generator-converters@2.8.0-beta.32
+  - @osdk/api@2.8.0-beta.32
+
+## 2.8.0-beta.31
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.31
+- @osdk/generator-converters@2.8.0-beta.31
+
+## 2.8.0-beta.30
+
+### Minor Changes
+
+- 4ef6adc: Fix interface links off of objects
+
+### Patch Changes
+
+- Updated dependencies [4ef6adc]
+  - @osdk/api@2.8.0-beta.30
+  - @osdk/generator-converters@2.8.0-beta.30
+
+## 2.8.0-beta.29
+
+### Patch Changes
+
+- Updated dependencies [4a856cb]
+  - @osdk/api@2.8.0-beta.29
+  - @osdk/generator-converters@2.8.0-beta.29
+
+## 2.8.0-beta.28
+
+### Patch Changes
+
+- Updated dependencies [f294f5a]
+- Updated dependencies [d284bf2]
+- Updated dependencies [b68cebd]
+  - @osdk/api@2.8.0-beta.28
+  - @osdk/generator-converters@2.8.0-beta.28
+
+## 2.8.0-beta.27
+
+### Minor Changes
+
+- 7775359: Generate a valid OSDK package for TS
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.27
+- @osdk/generator-converters@2.8.0-beta.27
+
+## 2.8.0-beta.26
+
+### Minor Changes
+
+- 60b5ffb: Add `platformApiName` field to actions to preserve the original API name used by the Foundry platform
+
+### Patch Changes
+
+- Updated dependencies [60b5ffb]
+- Updated dependencies [61e33ab]
+  - @osdk/api@2.8.0-beta.26
+  - @osdk/generator-converters@2.8.0-beta.26
+
+## 2.8.0-beta.25
+
+### Patch Changes
+
+- Updated dependencies [0df859a]
+  - @osdk/api@2.8.0-beta.25
+  - @osdk/generator-converters@2.8.0-beta.25
+
+## 2.8.0-beta.24
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.24
+- @osdk/generator-converters@2.8.0-beta.24
+
+## 2.8.0-beta.23
+
+### Minor Changes
+
+- 4bb9769: Add primaryKeyApiName and primaryKeyType to object type const for runtime access
+
+### Patch Changes
+
+- Updated dependencies [4bb9769]
+  - @osdk/api@2.8.0-beta.23
+  - @osdk/generator-converters@2.8.0-beta.23
+
+## 2.8.0-beta.22
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.22
+- @osdk/generator-converters@2.8.0-beta.22
+
+## 2.8.0-beta.21
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.21
+- @osdk/generator-converters@2.8.0-beta.21
+
+## 2.8.0-beta.20
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.20
+- @osdk/generator-converters@2.8.0-beta.20
+
+## 2.8.0-beta.19
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.19
+- @osdk/generator-converters@2.8.0-beta.19
+
+## 2.8.0-beta.18
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.18
+- @osdk/generator-converters@2.8.0-beta.18
+
+## 2.8.0-beta.17
+
+### Patch Changes
+
+- Updated dependencies [8c30908]
+  - @osdk/api@2.8.0-beta.17
+  - @osdk/generator-converters@2.8.0-beta.17
+
+## 2.8.0-beta.16
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.16
+- @osdk/generator-converters@2.8.0-beta.16
+
+## 2.8.0-beta.15
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.15
+- @osdk/generator-converters@2.8.0-beta.15
+
+## 2.8.0-beta.14
+
+### Minor Changes
+
+- 35f2f1a: Add Media inputs/outputs for Queries
+
+### Patch Changes
+
+- Updated dependencies [35f2f1a]
+  - @osdk/api@2.8.0-beta.14
+  - @osdk/generator-converters@2.8.0-beta.14
+
+## 2.8.0-beta.13
+
+### Minor Changes
+
+- 4470c0d: Add support to execute queries on branches.
+
+### Patch Changes
+
+- Updated dependencies [4470c0d]
+  - @osdk/generator-converters@2.8.0-beta.13
+  - @osdk/api@2.8.0-beta.13
+
+## 2.8.0-beta.12
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.12
+- @osdk/generator-converters@2.8.0-beta.12
+
+## 2.8.0-beta.11
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.11
+- @osdk/generator-converters@2.8.0-beta.11
+
+## 2.8.0-beta.10
+
+### Minor Changes
+
+- 60531c9: Add JS Docs to query const
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.10
+- @osdk/generator-converters@2.8.0-beta.10
+
+## 2.8.0-beta.9
+
+### Minor Changes
+
+- abb0e0f: Bump Platform SDK dependencies
+
+### Patch Changes
+
+- Updated dependencies [abb0e0f]
+  - @osdk/generator-converters@2.8.0-beta.9
+  - @osdk/api@2.8.0-beta.9
+
+## 2.8.0-beta.8
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.8
+- @osdk/generator-converters@2.8.0-beta.8
+
+## 2.8.0-beta.7
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.7
+- @osdk/generator-converters@2.8.0-beta.7
+
+## 2.8.0-beta.6
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.6
+- @osdk/generator-converters@2.8.0-beta.6
+
+## 2.8.0-beta.5
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.5
+- @osdk/generator-converters@2.8.0-beta.5
+
+## 2.8.0-beta.4
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.4
+- @osdk/generator-converters@2.8.0-beta.4
+
+## 2.8.0-beta.3
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.3
+- @osdk/generator-converters@2.8.0-beta.3
+
+## 2.8.0-beta.2
+
+### Minor Changes
+
+- 1706c79: Relax interface creation validation.
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.2
+- @osdk/generator-converters@2.8.0-beta.2
+
+## 2.7.0-beta.14
+
+### Patch Changes
+
+- @osdk/api@2.7.0-beta.14
+- @osdk/generator-converters@2.7.0-beta.14
+
+## 2.7.0-beta.13
+
+### Patch Changes
+
+- Updated dependencies [fb83808]
+  - @osdk/api@2.7.0-beta.13
+  - @osdk/generator-converters@2.7.0-beta.13
+
+## 2.7.0-beta.12
+
+### Patch Changes
+
+- Updated dependencies [bb9d25c]
+  - @osdk/api@2.7.0-beta.12
+  - @osdk/generator-converters@2.7.0-beta.12
+
+## 2.7.0-beta.11
+
+### Minor Changes
+
+- 211cb0d: Add internalDoNotUseMetadata.rid to interfaces
+- d5cfc38: Add null option to actions to allow clearing data
+
+### Patch Changes
+
+- Updated dependencies [d5cfc38]
+  - @osdk/api@2.7.0-beta.11
+  - @osdk/generator-converters@2.7.0-beta.11
+
+## 2.7.0-beta.10
+
+### Patch Changes
+
+- Updated dependencies [db44f6b]
+- Updated dependencies [24a1e29]
+  - @osdk/api@2.7.0-beta.10
+  - @osdk/generator-converters@2.7.0-beta.10
+
+## 2.7.0-beta.9
+
+### Patch Changes
+
+- @osdk/api@2.7.0-beta.9
+- @osdk/generator-converters@2.7.0-beta.9
+
+## 2.7.0-beta.8
+
+### Patch Changes
+
+- @osdk/api@2.7.0-beta.8
+- @osdk/generator-converters@2.7.0-beta.8
+
+## 2.7.0-beta.7
+
+### Patch Changes
+
+- @osdk/api@2.7.0-beta.7
+- @osdk/generator-converters@2.7.0-beta.7
+
+## 2.7.0-beta.6
+
+### Patch Changes
+
+- Updated dependencies [c9ca08d]
+  - @osdk/api@2.7.0-beta.6
+  - @osdk/generator-converters@2.7.0-beta.6
+
+## 2.7.0-beta.5
+
+### Minor Changes
+
+- dc33f68: Add Transaction ID to Queries
+
+### Patch Changes
+
+- Updated dependencies [dc33f68]
+  - @osdk/generator-converters@2.7.0-beta.5
+  - @osdk/api@2.7.0-beta.5
+
+## 2.7.0-beta.4
+
+### Patch Changes
+
+- Updated dependencies [1e3c147]
+  - @osdk/api@2.7.0-beta.4
+  - @osdk/generator-converters@2.7.0-beta.4
+
+## 2.7.0-beta.3
+
+### Patch Changes
+
+- Updated dependencies [448763f]
+- Updated dependencies [f0a57a5]
+  - @osdk/api@2.7.0-beta.3
+  - @osdk/generator-converters@2.7.0-beta.3
+
+## 2.7.0-beta.2
+
+### Minor Changes
+
+- 03db734: Move platform SDK deps to pnpm catalog
+
+### Patch Changes
+
+- @osdk/api@2.7.0-beta.2
+- @osdk/generator-converters@2.7.0-beta.2
+
+## 2.6.0-beta.13
+
+### Minor Changes
+
+- 84f0eef: Bumping OSDK apis
+- 486ef7e: Deprecate multiplicity in query params/outputs
+
+### Patch Changes
+
+- Updated dependencies [84f0eef]
+- Updated dependencies [486ef7e]
+- Updated dependencies [ea077c6]
+  - @osdk/generator-converters@2.6.0-beta.13
+  - @osdk/api@2.6.0-beta.13
+
+## 2.6.0-beta.12
+
+### Patch Changes
+
+- @osdk/api@2.6.0-beta.12
+- @osdk/generator-converters@2.6.0-beta.12
+
+## 2.6.0-beta.11
+
+### Patch Changes
+
+- @osdk/api@2.6.0-beta.11
+- @osdk/generator-converters@2.6.0-beta.11
+
+## 2.6.0-beta.10
+
+### Minor Changes
+
+- 3fbb596: Pipe through transactionId to endpoints that load data via object sets
+
+### Patch Changes
+
+- Updated dependencies [3fbb596]
+  - @osdk/generator-converters@2.6.0-beta.10
+  - @osdk/api@2.6.0-beta.10
+
+## 2.6.0-beta.9
+
+### Patch Changes
+
+- Updated dependencies [b307201]
+  - @osdk/api@2.6.0-beta.9
+  - @osdk/generator-converters@2.6.0-beta.9
+
+## 2.6.0-beta.8
+
+### Minor Changes
+
+- a1ffb20: Use new ephemeral media upload endpoint.
+
+### Patch Changes
+
+- Updated dependencies [a1ffb20]
+- Updated dependencies [e62c692]
+  - @osdk/generator-converters@2.6.0-beta.8
+  - @osdk/api@2.6.0-beta.8
+
+## 2.6.0-beta.7
+
+### Patch Changes
+
+- @osdk/api@2.6.0-beta.7
+- @osdk/generator-converters@2.6.0-beta.7
+
+## 2.6.0-beta.6
+
+### Minor Changes
+
+- b959085: Fix nested array query param type handling
+
+### Patch Changes
+
+- Updated dependencies [b959085]
+  - @osdk/generator-converters@2.6.0-beta.6
+  - @osdk/api@2.6.0-beta.6
+
+## 2.6.0-beta.5
+
+### Patch Changes
+
+- Updated dependencies [2556c64]
+  - @osdk/api@2.6.0-beta.5
+  - @osdk/generator-converters@2.6.0-beta.5
+
+## 2.6.0-beta.4
+
+### Patch Changes
+
+- Updated dependencies [e7bf02a]
+  - @osdk/api@2.6.0-beta.4
+  - @osdk/generator-converters@2.6.0-beta.4
+
+## 2.6.0-beta.3
+
+### Patch Changes
+
+- @osdk/api@2.6.0-beta.3
+- @osdk/generator-converters@2.6.0-beta.3
+
+## 2.6.0-beta.2
+
+### Minor Changes
+
+- 84e61fc: Add propertyValueFormatting type to property metadata
+
+### Patch Changes
+
+- Updated dependencies [84e61fc]
+- Updated dependencies [c4f8529]
+- Updated dependencies [f7ae38a]
+  - @osdk/generator-converters@2.6.0-beta.2
+  - @osdk/api@2.6.0-beta.2
+
+## 2.5.0-beta.15
+
+### Patch Changes
+
+- @osdk/api@2.5.0-beta.15
+- @osdk/generator-converters@2.5.0-beta.15
+
+## 2.5.2
+
+### Patch Changes
+
+- @osdk/api@2.5.2
+- @osdk/generator-converters@2.5.2
+
+## 2.5.1
+
+### Patch Changes
+
+- 099b4d8: Fix nested array query param type handling
+- Updated dependencies [099b4d8]
+  - @osdk/generator-converters@2.5.1
+  - @osdk/api@2.5.1
+
+## 2.5.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- 4b4a458: Allow exporting rid for object types
+- 7cdab1d: Update platform sdk dependencies
+- a00d2ed: Update Platform SDK dependencies
+- d29cdfb: Fixes query generation with disallowed javascript identifiers.
+- a6f49e9: experimentalDoNotUseMetadata -> internalDoNotUseMetadata
+- 7bdac45: Update Platform SDK dependency
+- a96d89e: Update Platform SDK dependencies
+- 78be29f: mark deprecated properties with JSDoc for interface types
+- 7bdac45: Support value type enum generation for strings and booleans
+- cbcf2ad: Add branching support
+- 4248b80: Temporarily remove NullValue type from codegen
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [7160276]
+- Updated dependencies [7cdab1d]
+- Updated dependencies [a00d2ed]
+- Updated dependencies [7bdac45]
+- Updated dependencies [37eb75b]
+- Updated dependencies [7b97128]
+- Updated dependencies [76905f5]
+- Updated dependencies [a96d89e]
+- Updated dependencies [7bdac45]
+- Updated dependencies [20962bc]
+- Updated dependencies [cbcf2ad]
+- Updated dependencies [052a96b]
+- Updated dependencies [ca1fabe]
+- Updated dependencies [e48be06]
+  - @osdk/api@2.5.0
+  - @osdk/generator-converters@2.5.0
+
+## 2.5.0-rc.15
+
+### Patch Changes
+
+- Updated dependencies [37eb75b]
+  - @osdk/api@2.5.0-rc.15
+  - @osdk/generator-converters@2.5.0-rc.15
+
+## 2.5.0-beta.14
+
+### Minor Changes
+
+- 6ddb3ed: experimentalDoNotUseMetadata -> internalDoNotUseMetadata
+
+### Patch Changes
+
+- Updated dependencies [b7edfb5]
+  - @osdk/api@2.5.0-beta.14
+  - @osdk/generator-converters@2.5.0-beta.14
+
+## 2.5.0-beta.13
+
+### Patch Changes
+
+- @osdk/api@2.5.0-beta.13
+- @osdk/generator-converters@2.5.0-beta.13
+
+## 2.5.0-beta.12
+
+### Minor Changes
+
+- 4b4a458: Allow exporting rid for object types
+
+### Patch Changes
+
+- @osdk/api@2.5.0-beta.12
+- @osdk/generator-converters@2.5.0-beta.12
+
+## 2.5.0-beta.11
+
+### Patch Changes
+
+- Updated dependencies [7b97128]
+  - @osdk/api@2.5.0-beta.11
+  - @osdk/generator-converters@2.5.0-beta.11
+
+## 2.5.0-beta.10
+
+### Patch Changes
+
+- @osdk/api@2.5.0-beta.10
+- @osdk/generator-converters@2.5.0-beta.10
+
+## 2.5.0-beta.9
+
+### Minor Changes
+
+- d29cdfb: Fixes query generation with disallowed javascript identifiers.
+
+### Patch Changes
+
+- @osdk/api@2.5.0-beta.9
+- @osdk/generator-converters@2.5.0-beta.9
+
 ## 2.5.0-beta.8
 
 ### Minor Changes

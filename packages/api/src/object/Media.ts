@@ -27,6 +27,21 @@ export interface Media {
    * Returns the media reference
    */
   getMediaReference(): MediaReference;
+  /**
+   * Returns the source location of this media (object type, primary key, property name).
+   *
+   * Optional because not all media has a source location (e.g., transient/uploaded media).
+   */
+  getMediaSourceLocation?(): MediaPropertyLocation;
+}
+
+/**
+ * Location of a media property on an object.
+ */
+export interface MediaPropertyLocation {
+  objectType: string;
+  primaryKey: string | number;
+  propertyName: string;
 }
 
 /**
@@ -40,6 +55,8 @@ export interface MediaReference {
       mediaItemRid: string;
       mediaSetRid: string;
       mediaSetViewRid: string;
+      token?: string;
+      /** @deprecated Use `token` instead */
       readToken?: string;
     };
   };
@@ -49,7 +66,7 @@ export interface MediaReference {
  * Object for uploading Media
  */
 export interface MediaUpload {
-  readonly path: string;
+  readonly fileName: string;
   readonly data: Blob;
 }
 

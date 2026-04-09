@@ -27,7 +27,7 @@
         "tsconfig.json"
       ],
       "outputs": [],
-      "dependsOn": ["//#global-eslint-config", "//#dprint", "typecheck"]
+      "dependsOn": ["//#global-eslint-config", "//#dprint", "codegen", "^transpileTypes"]
     },
 
     /* Psuedo task to let us depend on dprint config */
@@ -123,11 +123,23 @@
     "@osdk/version-updater#postVersioning": {
       "inputs": [
         "scripts/postVersioning.mjs",
+        "scripts/parseChangelog.mjs",
+        "scripts/determineMinVersion.mjs",
+        "scripts/generatePeerRange.mjs",
         "../client/package.json",
         "../client/src/Client.ts",
-        "../generator/src/v2.0/generateMetadata.ts"
+        "../generator/src/v2.0/generateMetadata.ts",
+        "../react/CHANGELOG.md",
+        "../react/package.json",
+        "../react-components/CHANGELOG.md",
+        "../react-components/package.json"
       ],
-      "outputs": ["../client/src/Client.ts", "../generator/src/v2.0/generateMetadata.ts"]
+      "outputs": [
+        "../client/src/Client.ts",
+        "../generator/src/v2.0/generateMetadata.ts",
+        "../react/package.json",
+        "../react-components/package.json"
+      ]
     },
 
     "@osdk/monorepo.tsconfig#typecheck": {

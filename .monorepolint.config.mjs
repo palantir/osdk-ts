@@ -86,6 +86,7 @@ const archetypeRules = archetypes(
       "@osdk/client",
       "@osdk/api",
       "@osdk/functions",
+      "@osdk/functions-testing.experimental",
     ],
     {
       ...LIBRARY_RULES,
@@ -109,7 +110,10 @@ const archetypeRules = archetypes(
     [
       "@osdk/e2e.generated.1.1.x",
       "@osdk/examples.*",
+      "@psdk/examples.*",
       "@osdk/monorepo.*",
+      "@osdk/react-components-storybook",
+      "@osdk/react-devtools",
     ],
     {
       ...LIBRARY_RULES,
@@ -122,7 +126,9 @@ const archetypeRules = archetypes(
     [
       "@osdk/foundry-config-json",
       "@osdk/generator-converters",
+      "@osdk/language-models",
       "@osdk/generator-converters.ontologyir",
+      "@osdk/generator-converters.preview",
       "@osdk/generator-utils",
       "@osdk/generator",
       "@osdk/maker",
@@ -132,11 +138,14 @@ const archetypeRules = archetypes(
       "@osdk/shared.net.errors",
       "@osdk/shared.net.fetch",
       "@osdk/shared.net",
+      "@osdk/react-sdk-docs",
       "@osdk/typescript-sdk-docs",
       "@osdk/widget.api",
       "@osdk/widget.client",
       "@osdk/vite-plugin-oac",
+      "@osdk/vite-plugin-superrepo",
       "@osdk/faux",
+      "@osdk/osdk-docs-context",
     ],
     {
       ...LIBRARY_RULES,
@@ -161,6 +170,22 @@ const archetypeRules = archetypes(
     },
   )
   .addArchetype(
+    "consumerCliWithSite",
+    [
+      "@osdk/ontology-explorer-server",
+    ],
+    {
+      ...LIBRARY_RULES,
+      output: {
+        browser: undefined,
+        cjs: undefined,
+        esm: "bundle",
+      },
+      fixedDepsOnly: true,
+      extraPublishFiles: ["build/site"],
+    },
+  )
+  .addArchetype(
     "forceBundle",
     [
       "@osdk/client.unstable",
@@ -177,7 +202,9 @@ const archetypeRules = archetypes(
       "@osdk/create-app.template-packager",
       "@osdk/example-generator",
       "@osdk/tool.*",
+      "@osdk/typescript-docs-example-generator",
       "@osdk/version-updater",
+      "@osdk/osdk-docs-context-generator",
     ],
     {
       ...INTERNAL_LIBRARY_RULES,
@@ -195,6 +222,18 @@ const archetypeRules = archetypes(
     ],
     {
       ...INTERNAL_LIBRARY_RULES,
+    },
+  )
+  .addArchetype(
+    "internal libraries / templates with modern tooling ES2023",
+    [
+      "@osdk/typescript-sdk-docs-examples",
+    ],
+    {
+      ...INTERNAL_LIBRARY_RULES,
+      extraTsConfigCompilerOptions: {
+        "lib": ["ES2023", "DOM", "ESNEXT.Array"],
+      },
     },
   )
   .addArchetype("publishedSandboxes", [
@@ -224,6 +263,7 @@ const archetypeRules = archetypes(
   .addArchetype(
     "viteSandboxes",
     [
+      "@osdk/e2e.sandbox.officenetwork",
       "@osdk/e2e.sandbox.todowidget",
       "@osdk/e2e.sandbox.todoapp",
       "@osdk/e2e.sandbox.peopleapp",
@@ -235,6 +275,23 @@ const archetypeRules = archetypes(
       react: true,
       extraTsConfigCompilerOptions: {
         "isolatedDeclarations": false,
+      },
+    },
+  )
+  .addArchetype(
+    "viteReactAppsWithScss",
+    [
+      "@osdk/ontology-explorer-app",
+    ],
+    {
+      ...INTERNAL_LIBRARY_RULES,
+      skipTypes: true,
+      react: true,
+      extraTsConfigCompilerOptions: {
+        "isolatedDeclarations": false,
+        "plugins": [{ "name": "typescript-plugin-css-modules" }],
+        "rootDirs": ["./src", "./build/scss-types"],
+        "allowArbitraryExtensions": true,
       },
     },
   )
@@ -275,11 +332,57 @@ const archetypeRules = archetypes(
     "reactLibrary",
     [
       "@osdk/widget.client-react",
+    ],
+    {
+      ...LIBRARY_RULES,
+      react: true,
+    },
+  )
+  .addArchetype(
+    "reactLibraryWithCss",
+    [
+      "@osdk/cbac-components",
+      "@osdk/react-components",
+    ],
+    {
+      ...LIBRARY_RULES,
+      react: true,
+      cssExport: true,
+      extraPublishFiles: ["AGENTS.md"],
+    },
+  )
+  .addArchetype(
+    "reactLibraryWithDocs",
+    [
       "@osdk/react",
     ],
     {
       ...LIBRARY_RULES,
       react: true,
+      extraPublishFiles: ["AGENTS.md", "docs", "experimental"],
+    },
+  )
+  .addArchetype(
+    "docs",
+    [
+      "@osdk/docs",
+    ],
+    {
+      ...LIBRARY_RULES,
+      minimalChangesOnly: true,
+      private: true,
+    },
+  )
+  .addArchetype(
+    "cssOnlyPackage",
+    [
+      "@osdk/react-components-styles",
+    ],
+    {
+      repositoryUrl: "https://github.com/palantir/osdk-ts.git",
+      private: false,
+      output: OUTPUT_NONE,
+      minimalChangesOnly: true,
     },
   );
 
@@ -383,6 +486,7 @@ const fixedDepsOnly = createRuleFactory({
 
       for (const [dep, version] of Object.entries(deps)) {
         if (version === "workspace:*") continue;
+        if (version === "catalog:foundry-platform-typescript") continue;
         if (version[0] >= "0" && version[0] <= "9") continue;
         if (dep === "typescript" && version[0] === "~") continue;
 
@@ -437,7 +541,8 @@ async function dirExists(dirPath) {
 /**
  * @type {import("@monorepolint/rules").RuleFactoryFn< {
  *   browser?: boolean,
- *   cjs?: boolean
+ *   cjs?: boolean,
+ *   cssExport?: boolean
  * }>}
  */
 const ourExportsConvention = createRuleFactory({
@@ -498,14 +603,22 @@ const ourExportsConvention = createRuleFactory({
         const q of await fs.readdir(publicPath, {
           withFileTypes: true,
           encoding: "utf8",
+          recursive: true,
         })
       ) {
         if (!q.isFile()) continue;
         if (!q.name.endsWith(".ts")) continue;
 
-        const b = path.basename(q.name, ".ts");
+        const fullPath = path.join(q.parentPath, q.name);
+        const rel = path.relative(publicPath, fullPath);
+        const b = rel.replace(/\.ts$/, "");
         expectedExports.exports["./" + b] = makeExport(b);
       }
+    }
+
+    // add CSS export if enabled (must come before the wildcard)
+    if (options.cssExport) {
+      expectedExports.exports["./styles.css"] = "./build/browser/styles.css";
     }
 
     // include the fallback for the * for now, as it will make development easier
@@ -745,6 +858,7 @@ function minimalPackageRules(shared, options) {
  * @property { boolean } [minimalChangesOnly]
  * @property { "vite" | undefined } [framework]
  * @property { import("typescript").CompilerOptions} [extraTsConfigCompilerOptions]
+ * @property { boolean } [cssExport]
  */
 
 /**
@@ -833,7 +947,9 @@ function standardPackageRules(shared, options) {
           "check-spelling": "cspell --quiet .",
           "check-attw": options.skipAttw
             ? DELETE_SCRIPT_ENTRY
-            : `attw${options.output.cjs ? "" : " --profile esm-only"} --pack .`,
+            : `attw${options.output.cjs ? "" : " --profile esm-only"} --pack .${
+              options.cssExport ? " --exclude-entrypoints ./styles.css" : ""
+            }`,
           lint: "eslint . && dprint check  --config $(find-up dprint.json)",
           "fix-lint":
             "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
@@ -842,7 +958,9 @@ function standardPackageRules(shared, options) {
             ? `monorepo.tool.transpile -f esm -m ${options.output.esm} -t node`
             : DELETE_SCRIPT_ENTRY,
           transpileBrowser: options.output.browser
-            ? `monorepo.tool.transpile -f esm -m ${options.output.esm} -t browser`
+            ? `monorepo.tool.transpile -f esm -m ${options.output.esm} -t browser${
+              options.cssExport ? " && node scripts/build-css.mjs" : ""
+            }`
             : DELETE_SCRIPT_ENTRY,
           transpileCjs: options.output.cjs === "bundle"
             ? "monorepo.tool.transpile -f cjs -m bundle -t node"
@@ -860,6 +978,7 @@ function standardPackageRules(shared, options) {
       options: {
         cjs: !!options.output.cjs,
         browser: !!options.output.browser,
+        cssExport: !!options.cssExport,
       },
     }),
     packageEntry({
@@ -912,6 +1031,7 @@ function standardPackageRules(shared, options) {
     }),
     fileContents({
       ...shared,
+      excludePackages: ["@osdk/maker"],
       options: {
         file: "vitest.config.mts",
         generator: formattedGeneratorHelper(

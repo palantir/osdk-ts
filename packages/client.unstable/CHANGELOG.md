@@ -1,5 +1,201 @@
 # @osdk/client.unstable
 
+## 2.8.0
+
+### Minor Changes
+
+- 322c5bc: Simulated release
+- f487a6a: Maker experimental
+- e462938: Support PSGs in OAC
+- 6499ff9: Support reducers and struct main values in oac
+- 034081a: oac direct datasources
+- 35f2f1a: Add Media inputs/outputs for Queries
+- 972bda6: Support assumed markings for oac PSGs
+- 6941b4f: extendsInterfaceMetadata on the IR to fix interface impl
+
+## 2.8.0-beta.32
+
+## 2.8.0-beta.31
+
+## 2.8.0-beta.30
+
+## 2.8.0-beta.29
+
+## 2.8.0-beta.28
+
+## 2.8.0-beta.27
+
+## 2.8.0-beta.26
+
+## 2.8.0-beta.25
+
+## 2.8.0-beta.24
+
+## 2.8.0-beta.23
+
+## 2.8.0-beta.22
+
+## 2.8.0-beta.21
+
+## 2.8.0-beta.20
+
+## 2.8.0-beta.19
+
+## 2.8.0-beta.18
+
+## 2.8.0-beta.17
+
+## 2.8.0-beta.16
+
+### Minor Changes
+
+- 6941b4f: extendsInterfaceMetadata on the IR to fix interface impl
+
+## 2.8.0-beta.15
+
+## 2.8.0-beta.14
+
+### Minor Changes
+
+- 35f2f1a: Add Media inputs/outputs for Queries
+
+## 2.8.0-beta.13
+
+## 2.8.0-beta.12
+
+## 2.8.0-beta.11
+
+### Minor Changes
+
+- f487a6a: Maker experimental
+
+## 2.8.0-beta.10
+
+### Minor Changes
+
+- 972bda6: Support assumed markings for oac PSGs
+
+## 2.8.0-beta.9
+
+## 2.8.0-beta.8
+
+## 2.8.0-beta.7
+
+### Minor Changes
+
+- 034081a: oac direct datasources
+
+## 2.8.0-beta.6
+
+## 2.8.0-beta.5
+
+### Minor Changes
+
+- 6499ff9: Support reducers and struct main values in oac
+
+## 2.8.0-beta.4
+
+## 2.8.0-beta.3
+
+## 2.8.0-beta.2
+
+### Minor Changes
+
+- e462938: Support PSGs in OAC
+
+## 2.7.0-beta.14
+
+## 2.7.0-beta.13
+
+## 2.7.0-beta.12
+
+## 2.7.0-beta.11
+
+## 2.7.0-beta.10
+
+## 2.7.0-beta.9
+
+### Minor Changes
+
+- 8381ac2: Alias and render hint overrides for oac
+- c95f3bc: Support IDPs in OAC
+
+## 2.7.0-beta.8
+
+## 2.7.0-beta.7
+
+## 2.7.0-beta.6
+
+## 2.7.0-beta.5
+
+## 2.7.0-beta.4
+
+## 2.7.0-beta.3
+
+## 2.7.0-beta.2
+
+## 2.6.0-beta.13
+
+## 2.6.0-beta.12
+
+## 2.6.0-beta.11
+
+## 2.6.0-beta.10
+
+## 2.6.0-beta.9
+
+## 2.6.0-beta.8
+
+## 2.6.0-beta.7
+
+## 2.6.0-beta.6
+
+## 2.6.0-beta.5
+
+## 2.6.0-beta.4
+
+### Minor Changes
+
+- 7fd788b: Support derived properties
+
+## 2.6.0-beta.3
+
+## 2.6.0-beta.2
+
+## 2.5.0-beta.15
+
+## 2.5.2
+
+## 2.5.1
+
+## 2.5.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- a6f49e9: Intermediary links in oac
+- a6f49e9: Fix Maker Rid Generation
+- 04fe946: Use block data type for imports
+
+## 2.5.0-rc.15
+
+## 2.5.0-beta.14
+
+### Minor Changes
+
+- 9dd5a63: Intermediary links in oac
+- e62408b: Fix Maker Rid Generation
+
+## 2.5.0-beta.13
+
+## 2.5.0-beta.12
+
+## 2.5.0-beta.11
+
+## 2.5.0-beta.10
+
+## 2.5.0-beta.9
+
 ## 2.5.0-beta.8
 
 ## 2.5.0-beta.7

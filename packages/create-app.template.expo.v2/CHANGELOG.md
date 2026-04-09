@@ -1,5 +1,189 @@
 # @osdk/create-app.template.expo.v2
 
+## 2.8.0
+
+### Minor Changes
+
+- 322c5bc: Simulated release
+- 12dcb6a: Bump node and vite versions
+- c22dcac: Bump @types/node to 24.10.13
+- 0ff602a: Bump vite to ^7.3.1
+- e22f91c: Make template a11y compatible
+- 5f9fb46: Bump @types/node
+- 35f2f1a: Add Media inputs/outputs for Queries
+- 001c64c: Link to guide on how to add OSDK to templates
+- 6260835: Revert node bump
+
+## 2.8.0-beta.32
+
+## 2.8.0-beta.31
+
+## 2.8.0-beta.30
+
+## 2.8.0-beta.29
+
+## 2.8.0-beta.28
+
+### Minor Changes
+
+- 5f9fb46: Bump @types/node
+
+## 2.8.0-beta.27
+
+## 2.8.0-beta.26
+
+## 2.8.0-beta.25
+
+## 2.8.0-beta.24
+
+## 2.8.0-beta.23
+
+### Minor Changes
+
+- 001c64c: Link to guide on how to add OSDK to templates
+
+## 2.8.0-beta.22
+
+## 2.8.0-beta.21
+
+## 2.8.0-beta.20
+
+## 2.8.0-beta.19
+
+## 2.8.0-beta.18
+
+## 2.8.0-beta.17
+
+## 2.8.0-beta.16
+
+### Minor Changes
+
+- 0ff602a: Bump vite to ^7.3.1
+- e22f91c: Make template a11y compatible
+
+## 2.8.0-beta.15
+
+## 2.8.0-beta.14
+
+### Minor Changes
+
+- c22dcac: Bump @types/node to 24.10.13
+- 35f2f1a: Add Media inputs/outputs for Queries
+- 6260835: Revert node bump
+
+## 2.8.0-beta.13
+
+## 2.8.0-beta.12
+
+## 2.8.0-beta.11
+
+## 2.8.0-beta.10
+
+## 2.8.0-beta.9
+
+## 2.8.0-beta.8
+
+### Minor Changes
+
+- 12dcb6a: Bump node and vite versions
+
+## 2.8.0-beta.7
+
+## 2.8.0-beta.6
+
+## 2.8.0-beta.5
+
+## 2.8.0-beta.4
+
+## 2.8.0-beta.3
+
+## 2.8.0-beta.2
+
+## 2.7.0-beta.14
+
+## 2.7.0-beta.13
+
+## 2.7.0-beta.12
+
+## 2.7.0-beta.11
+
+## 2.7.0-beta.10
+
+## 2.7.0-beta.9
+
+## 2.7.0-beta.8
+
+## 2.7.0-beta.7
+
+## 2.7.0-beta.6
+
+## 2.7.0-beta.5
+
+## 2.7.0-beta.4
+
+### Minor Changes
+
+- 5ba2346: Add `osdk/foundry` to `create-app` templates
+
+## 2.7.0-beta.3
+
+## 2.7.0-beta.2
+
+### Minor Changes
+
+- 935b7ac: Allow CLI template bootstrapping without an OSDK
+- 4e96d14: Update create-app React, Vue, and Expo templates
+
+## 2.6.0-beta.13
+
+## 2.6.0-beta.12
+
+## 2.6.0-beta.11
+
+## 2.6.0-beta.10
+
+## 2.6.0-beta.9
+
+## 2.6.0-beta.8
+
+## 2.6.0-beta.7
+
+## 2.6.0-beta.6
+
+## 2.6.0-beta.5
+
+## 2.6.0-beta.4
+
+## 2.6.0-beta.3
+
+## 2.6.0-beta.2
+
+## 2.5.2
+
+## 2.5.1
+
+## 2.5.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+
+## 2.5.0-rc.15
+
+## 2.5.0-beta.15
+
+## 2.5.0-beta.14
+
+## 2.5.0-beta.13
+
+## 2.5.0-beta.12
+
+## 2.5.0-beta.11
+
+## 2.5.0-beta.10
+
+## 2.5.0-beta.9
+
 ## 2.5.0-beta.8
 
 ## 2.5.0-beta.7

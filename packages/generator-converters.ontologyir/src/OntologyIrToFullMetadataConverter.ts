@@ -28,9 +28,213 @@ import type {
   OntologyIrType,
 } from "@osdk/client.unstable";
 import type * as Ontologies from "@osdk/foundry.ontologies";
+
+import { consola } from "consola";
+import * as fs from "fs";
+import { spawnSync } from "node:child_process";
 import { hash } from "node:crypto";
+import { accessSync, constants } from "node:fs";
+import { createRequire } from "node:module";
+import * as path from "node:path";
+import { pathToFileURL } from "node:url";
 import invariant from "tiny-invariant";
+import * as ts from "typescript";
 import type { ApiName } from "./ApiName.js";
+import { convertDataType } from "./convertDataType.js";
+
+// Type definitions for optional function discovery dependencies
+// These are declared inline to avoid compile-time dependency on optional packages
+export interface IDataType {
+  type: string;
+  [key: string]: unknown;
+}
+
+interface IDiscoveredFunction {
+  locator: { type: string; typescriptOsdk?: { functionName: string } };
+  inputs: Array<{ name: string; dataType: IDataType }>;
+  output: { single: { dataType: IDataType } };
+  customTypes: Record<string, unknown>;
+}
+
+interface IFunctionDiscoverer {
+  discover(): { discoveredFunctions: IDiscoveredFunction[] };
+}
+
+interface IFunctionDiscovererConstructor {
+  new(
+    program: ts.Program,
+    entryPointPath: string,
+    fullFilePath: string,
+    entityMetadataMapping?: unknown,
+  ): IFunctionDiscoverer;
+}
+
+// Python discovery output uses the same format as IDataType with type field at top level
+interface IPythonDiscoveredFunction {
+  locator: {
+    type: "python3";
+    python3: { moduleName: string; functionName: string };
+  };
+  inputs: Array<{ name: string; dataType: IDataType; required?: boolean }>;
+  output: { type: "single"; single: { dataType: IDataType } };
+  customTypes?: Record<string, IPythonCustomType>;
+  objectTypes?: Record<string, { objectApiName: string }>;
+  objectSetTypes?: Record<string, { objectApiName: string }>;
+}
+
+interface IPythonCustomType {
+  fieldMetadata: Record<string, { required?: boolean }>;
+  fields: Record<string, IDataType>;
+}
+
+interface IPythonDiscoveryResult {
+  functions: IPythonDiscoveredFunction[];
+  errors?: Array<unknown>;
+}
+
+function discoverPythonFunctions(
+  srcDir: string,
+  rootProjectDir: string,
+  pythonBinary: string,
+): IPythonDiscoveryResult | null {
+  const pythonPath = pythonBinary;
+  try {
+    accessSync(
+      pythonPath,
+      process.platform === "win32" ? constants.R_OK : constants.X_OK,
+    );
+  } catch {
+    throw new Error(
+      `Python binary not found or not executable at ${pythonPath}`,
+    );
+  }
+
+  const result = spawnSync(
+    pythonPath,
+    [
+      "-m",
+      "functions.bin",
+      "parse",
+      "--src-dir",
+      srcDir,
+      "--root-project-dir",
+      rootProjectDir,
+      "--handle-errors",
+    ],
+    {
+      cwd: rootProjectDir,
+      encoding: "utf-8",
+      maxBuffer: 50 * 1024 * 1024, // 50MB buffer - function discovery can produce large JSON output
+    },
+  );
+
+  if (result.error) {
+    consola.warn(
+      `Python function discovery spawn error: ${result.error.message}`,
+    );
+    return null;
+  }
+
+  if (result.status !== 0) {
+    // Parse error - could log stderr but return null for now
+    consola.error(
+      `Python function discovery failed: ${result.stderr || result.stdout}`,
+    );
+    return null;
+  }
+
+  try {
+    // The Python command may output log lines before the JSON on stdout.
+    // Try parsing JSON from each line boundary starting from the end,
+    // which is more robust than matching a specific marker string.
+    // Use a regex split to handle both \n (Unix) and \r\n (Windows) line endings.
+    const stdout = result.stdout;
+    const lines = stdout.split(/\r?\n/);
+    for (let i = lines.length - 1; i >= 0; i--) {
+      const line = lines[i].trimStart();
+      if (line.startsWith("{")) {
+        const candidate = lines.slice(i).join("\n");
+        try {
+          const parsed = JSON.parse(candidate) as IPythonDiscoveryResult;
+          if ("functions" in parsed) {
+            return parsed;
+          }
+        } catch {
+          // Not valid JSON from this line, try earlier
+        }
+      }
+    }
+    consola.error(
+      `No valid JSON found in Python discovery output: ${stdout.slice(0, 500)}`,
+    );
+    return null;
+  } catch (e: unknown) {
+    consola.error(
+      `Failed to parse Python discovery output: ${
+        e instanceof Error ? e.message : e
+      }`,
+    );
+    return null;
+  }
+}
+
+interface FunctionDiscoveryModules {
+  FunctionDiscoverer: IFunctionDiscovererConstructor;
+  typescript: typeof ts;
+}
+
+// Lazy-loaded function discovery modules, keyed by nodeModulesPath
+const discoveryModulesCache = new Map<
+  string | undefined,
+  FunctionDiscoveryModules
+>();
+
+async function loadFunctionDiscoverer(
+  nodeModulesPath?: string,
+): Promise<FunctionDiscoveryModules> {
+  const cached = discoveryModulesCache.get(nodeModulesPath);
+  if (cached) {
+    return cached;
+  }
+  try {
+    let modules: FunctionDiscoveryModules;
+    if (nodeModulesPath) {
+      // Use createRequire to load from the specified node_modules path
+      // Both FunctionDiscoverer and TypeScript must be from the same node_modules
+      // to ensure version compatibility (TypeScript versions must match for
+      // program/typechecker interoperability)
+      const requireFromPath = createRequire(
+        pathToFileURL(path.join(nodeModulesPath, "package.json")).href,
+      );
+      const module = requireFromPath(
+        "@foundry/functions-typescript-osdk-discovery",
+      );
+      modules = {
+        FunctionDiscoverer: module.FunctionDiscoverer,
+        typescript: requireFromPath("typescript"),
+      };
+    } else {
+      // Use dynamic import to avoid compile-time dependency on optional package
+      const modulePath = "@foundry/functions-typescript-osdk-discovery";
+      const module = await import(/* @vite-ignore */ modulePath);
+      modules = {
+        FunctionDiscoverer: module.FunctionDiscoverer,
+        typescript: ts, // Use the bundled TypeScript
+      };
+    }
+    discoveryModulesCache.set(nodeModulesPath, modules);
+    return modules;
+  } catch (e: unknown) {
+    const message = e instanceof Error ? e.message : String(e);
+    consola.error(
+      `Failed to load TypeScript function discovery modules: ${message}\n`
+        + `Ensure @foundry/functions-typescript-osdk-discovery is installed in ${
+          nodeModulesPath ?? "node_modules"
+        }`,
+    );
+    throw e;
+  }
+}
 
 /**
  * TypeScript equivalent of OntologyIrToFullMetadataConverter.java
@@ -71,6 +275,393 @@ export class OntologyIrToFullMetadataConverter {
     };
   }
 
+  static async getOsdkQueryTypes(
+    pythonBinary?: string,
+    functionsDir?: string,
+    nodeModulesPath?: string,
+    pythonFunctionsDir?: string,
+    pythonRootProjectDir?: string,
+    irOutputFile?: string,
+    previewMetadata?: Pick<
+      Ontologies.OntologyFullMetadata,
+      "ontology" | "objectTypes" | "interfaceTypes"
+    >,
+  ): Promise<
+    Record<Ontologies.VersionedQueryTypeApiName, Ontologies.QueryTypeV2>
+  > {
+    const queries: Ontologies.QueryTypeV2[] = [];
+
+    if (functionsDir) {
+      const tsQueries = await this.discoverTypeScriptFunctions(
+        functionsDir,
+        nodeModulesPath,
+        irOutputFile,
+        previewMetadata,
+      );
+      queries.push(...tsQueries);
+    }
+
+    if (pythonFunctionsDir && pythonRootProjectDir) {
+      if (!pythonBinary) {
+        throw new Error(
+          "pythonBinary is required when pythonFunctionsDir is specified",
+        );
+      }
+      const pyQueries = this.discoverPythonQueryTypes(
+        pythonFunctionsDir,
+        pythonRootProjectDir,
+        pythonBinary,
+      );
+      queries.push(...pyQueries);
+    }
+
+    return queries.reduce<
+      Record<
+        Ontologies.VersionedQueryTypeApiName,
+        Ontologies.QueryTypeV2
+      >
+    >(
+      (acc, query) => {
+        acc[query.apiName as string] = query;
+        return acc;
+      },
+      {},
+    );
+  }
+
+  private static async discoverTypeScriptFunctions(
+    functionsDir: string,
+    nodeModulesPath?: string,
+    irOutputFile?: string,
+    previewMetadata?: Pick<
+      Ontologies.OntologyFullMetadata,
+      "ontology" | "objectTypes" | "interfaceTypes"
+    >,
+  ): Promise<Ontologies.QueryTypeV2[]> {
+    consola.info(`Discovering TypeScript functions in ${functionsDir}...`);
+    const discoveryModules = await loadFunctionDiscoverer(nodeModulesPath);
+
+    const { FunctionDiscoverer, typescript: discoveryTs } = discoveryModules;
+    const { tsConfigPath, projectDir } = discoverComponentRoot(
+      discoveryTs,
+      functionsDir,
+    );
+
+    const program = this.createProgram(
+      tsConfigPath,
+      projectDir,
+      discoveryTs,
+    );
+
+    // Construct entity metadata mapping from preview metadata so FunctionDiscoverer
+    // can resolve ontology types (Client, Osdk.Instance, ontology edits, etc.)
+    let entityMetadataMapping: unknown;
+    if (previewMetadata) {
+      if (!previewMetadata.ontology?.rid) {
+        throw new Error("previewMetadata.ontology.rid is required");
+      }
+      const ontologyRid = previewMetadata.ontology.rid;
+      const objectTypesMap: Record<
+        string,
+        {
+          objectTypeId: string;
+          linkTypes: Record<string, { linkTypeId: string }>;
+        }
+      > = {};
+      if (previewMetadata.objectTypes) {
+        for (
+          const [apiName, objData] of Object.entries(
+            previewMetadata.objectTypes,
+          )
+        ) {
+          const linkTypesMap: Record<string, { linkTypeId: string }> = {};
+          if (objData.linkTypes) {
+            for (const lt of objData.linkTypes) {
+              linkTypesMap[lt.apiName] = {
+                linkTypeId: lt.linkTypeRid || lt.apiName,
+              };
+            }
+          }
+          objectTypesMap[apiName] = {
+            objectTypeId: apiName,
+            linkTypes: linkTypesMap,
+          };
+        }
+      }
+      const interfaceTypesMap: Record<
+        string,
+        { interfaceTypeRid: string }
+      > = {};
+      if (previewMetadata.interfaceTypes) {
+        for (const apiName of Object.keys(previewMetadata.interfaceTypes)) {
+          interfaceTypesMap[apiName] = { interfaceTypeRid: apiName };
+        }
+      }
+      entityMetadataMapping = {
+        ontologies: {
+          [ontologyRid]: {
+            objectTypes: objectTypesMap,
+            interfaceTypes: interfaceTypesMap,
+          },
+        },
+      };
+    }
+
+    // Normalize to forward slashes to match TypeScript's internal path format
+    const normalizedFunctionsDir = functionsDir.replace(/\\/g, "/");
+    const fd = new FunctionDiscoverer(
+      program,
+      projectDir,
+      normalizedFunctionsDir,
+      entityMetadataMapping,
+    );
+    const functions = fd.discover();
+
+    if (irOutputFile) {
+      fs.mkdirSync(path.dirname(irOutputFile), { recursive: true });
+      fs.writeFileSync(irOutputFile, JSON.stringify(functions));
+    }
+
+    const tsFunctions = functions.discoveredFunctions.filter(
+      (func: IDiscoveredFunction) => func.locator.type === "typescriptOsdk",
+    );
+
+    if (tsFunctions.length === 0) {
+      consola.warn(
+        `No TypeScript OSDK functions discovered in ${functionsDir}. `
+          + `Found ${functions.discoveredFunctions.length} total function(s) `
+          + `but none with locator type "typescriptOsdk".`,
+      );
+    } else {
+      consola.info(
+        `Discovered ${tsFunctions.length} TypeScript function(s): ${
+          tsFunctions
+            .map(
+              (f: IDiscoveredFunction) =>
+                f.locator.typescriptOsdk!.functionName,
+            )
+            .join(", ")
+        }`,
+      );
+    }
+
+    if (irOutputFile) {
+      fs.writeFileSync(irOutputFile, JSON.stringify(functions));
+    }
+
+    return tsFunctions.map((func: IDiscoveredFunction) => {
+      const functionName = func.locator.typescriptOsdk!.functionName;
+      return {
+        apiName: functionName,
+        rid: `ri.function-registry.main.function.${functionName}`,
+        version: "0.0.0",
+        parameters: func.inputs.reduce<
+          Record<ApiName, Ontologies.QueryParameterV2>
+        >((acc, input) => {
+          acc[input.name] = {
+            dataType: convertDataType(input.dataType, func.customTypes),
+          };
+          return acc;
+        }, {}),
+        output: convertDataType(
+          func.output.single.dataType,
+          func.customTypes,
+        ),
+        typeReferences: {},
+      } satisfies Ontologies.QueryTypeV2;
+    });
+  }
+
+  private static discoverPythonQueryTypes(
+    pythonFunctionsDir: string,
+    pythonRootProjectDir: string,
+    pythonBinary: string,
+  ): Ontologies.QueryTypeV2[] {
+    const pythonResult = discoverPythonFunctions(
+      pythonFunctionsDir,
+      pythonRootProjectDir,
+      pythonBinary,
+    );
+
+    if (!pythonResult) {
+      return [];
+    }
+
+    const queries: Ontologies.QueryTypeV2[] = [];
+    for (const func of pythonResult.functions) {
+      const functionName = func.locator.python3.functionName;
+      const customTypes = func.customTypes ?? {};
+      const objectTypes = func.objectTypes;
+      const objectSetTypes = func.objectSetTypes;
+
+      // Resolve Python discovery UUID references to the format expected by
+      // convertDataType. Python discovery returns:
+      //   - object params as {type: "object", object: "<uuid>"}
+      //   - objectSet params as {type: "objectSet", objectSet: "<uuid>"}
+      // These UUIDs map to the function's objectTypes / objectSetTypes fields
+      // which carry the actual objectApiName. The resolution must be recursive
+      // to handle nested types (e.g. list[seller] produces
+      // {type: "list", list: {elementsType: {type: "object", object: "<uuid>"}}}).
+      function resolveDataType(dt: IDataType): IDataType {
+        if (dt.type === "object" && typeof dt.object === "string") {
+          if (!objectTypes?.[dt.object]) {
+            throw new Error(
+              `Could not resolve object UUID "${dt.object}" — not present in objectTypes map`,
+            );
+          }
+          return {
+            ...dt,
+            object: {
+              objectTypeId: objectTypes[dt.object].objectApiName,
+            },
+          };
+        }
+        if (dt.type === "objectSet" && typeof dt.objectSet === "string") {
+          if (!objectSetTypes?.[dt.objectSet]) {
+            throw new Error(
+              `Could not resolve objectSet UUID "${dt.objectSet}" — not present in objectSetTypes map`,
+            );
+          }
+          return {
+            ...dt,
+            objectSet: {
+              objectTypeId: objectSetTypes[dt.objectSet].objectApiName,
+            },
+          };
+        }
+        if (dt.type === "list") {
+          const listData = dt.list as { elementsType: IDataType } | undefined;
+          if (listData?.elementsType) {
+            const resolved = resolveDataType(listData.elementsType);
+            if (resolved !== listData.elementsType) {
+              return { ...dt, list: { elementsType: resolved } };
+            }
+          }
+        }
+        if (dt.type === "set") {
+          const setData = dt.set as { elementsType: IDataType } | undefined;
+          if (setData?.elementsType) {
+            const resolved = resolveDataType(setData.elementsType);
+            if (resolved !== setData.elementsType) {
+              return { ...dt, set: { elementsType: resolved } };
+            }
+          }
+        }
+        if (dt.type === "optionalType") {
+          const optData = dt.optionalType as
+            | { wrappedType: IDataType }
+            | undefined;
+          if (optData?.wrappedType) {
+            const resolved = resolveDataType(optData.wrappedType);
+            if (resolved !== optData.wrappedType) {
+              return { ...dt, optionalType: { wrappedType: resolved } };
+            }
+          }
+        }
+        if (dt.type === "functionCustomType") {
+          const typeId = dt.functionCustomType as string;
+          const customType = customTypes[typeId] as
+            | IPythonCustomType
+            | undefined;
+          if (customType?.fields) {
+            let changed = false;
+            const resolvedFields: Record<string, IDataType> = {};
+            for (const [key, fieldDt] of Object.entries(customType.fields)) {
+              const resolved = resolveDataType(fieldDt);
+              if (resolved !== fieldDt) changed = true;
+              resolvedFields[key] = resolved;
+            }
+            if (changed) {
+              customTypes[typeId] = {
+                ...customType,
+                fields: resolvedFields,
+              };
+            }
+          }
+        }
+        return dt;
+      }
+
+      const resolvedInputs = func.inputs.map((input) => ({
+        ...input,
+        dataType: resolveDataType(input.dataType),
+      }));
+
+      const resolvedOutput = resolveDataType(func.output.single.dataType);
+
+      const queryType: Ontologies.QueryTypeV2 = {
+        apiName: functionName,
+        rid: `ri.function-registry.main.function.${functionName}`,
+        version: "0.0.0",
+        parameters: resolvedInputs.reduce<
+          Record<ApiName, Ontologies.QueryParameterV2>
+        >((acc, input) => {
+          acc[input.name] = {
+            dataType: convertDataType(
+              input.dataType,
+              customTypes,
+              input.required,
+            ),
+          };
+          return acc;
+        }, {}),
+        output: convertDataType(
+          resolvedOutput,
+          customTypes,
+        ),
+        typeReferences: {},
+      };
+      queries.push(queryType);
+    }
+    return queries;
+  }
+
+  static createProgram(
+    tsConfigFilePath: string,
+    projectDir: string,
+    typescript: typeof ts = ts,
+  ): ts.Program {
+    const configFile = typescript.readConfigFile(
+      tsConfigFilePath,
+      typescript.sys.readFile,
+    );
+    if (configFile.error) {
+      throw new Error(
+        `Failed to read tsconfig at ${tsConfigFilePath}: ${
+          typescript.flattenDiagnosticMessageText(
+            configFile.error.messageText,
+            "\n",
+          )
+        }`,
+      );
+    }
+    const { options, fileNames, errors } = typescript
+      .parseJsonConfigFileContent(
+        configFile.config,
+        typescript.sys,
+        projectDir,
+      );
+    if (errors.length > 0) {
+      const messages = errors
+        .map((d) =>
+          typescript.flattenDiagnosticMessageText(d.messageText, "\n")
+        )
+        .join("\n");
+      consola.warn(`tsconfig diagnostics in ${projectDir}:\n${messages}`);
+    }
+    if (fileNames.length === 0) {
+      consola.warn(
+        `tsconfig at ${tsConfigFilePath} resolved 0 files `
+          + `(projectDir: ${projectDir}). TypeScript function discovery will find nothing.`,
+      );
+    }
+    return typescript.createProgram({
+      options,
+      rootNames: fileNames,
+      configFileParsingDiagnostics: errors,
+    });
+  }
+
   /**
    * Convert IR object types to OSDK format
    */
@@ -95,11 +686,22 @@ export class OntologyIrToFullMetadataConverter {
         throw new Error("Object must have exactly 1 primary key");
       }
 
-      const primaryKey = object.primaryKeys[0];
-      const titleProperty = object.titlePropertyTypeRid;
+      // Build a mapping from property RID to apiName for resolving references
+      const propRidToApiName: Record<string, string> = {};
+      for (const [propRid, prop] of Object.entries(object.propertyTypes)) {
+        propRidToApiName[propRid] = prop.apiName;
+      }
+
+      // Resolve primaryKey and titleProperty from RID to apiName
+      const primaryKeyRid = object.primaryKeys[0];
+      const primaryKey = propRidToApiName[primaryKeyRid] ?? primaryKeyRid;
+      const titlePropertyRid = object.titlePropertyTypeRid;
+      const titleProperty = propRidToApiName[titlePropertyRid]
+        ?? titlePropertyRid;
 
       const properties: Record<ApiName, Ontologies.PropertyV2> = {};
-      for (const [propKey, prop] of Object.entries(object.propertyTypes)) {
+      for (const [propRid, prop] of Object.entries(object.propertyTypes)) {
+        const propApiName = prop.apiName;
         const visibility = prop.displayMetadata.visibility;
         let visibilityEnum: "NORMAL" | "PROMINENT" | "HIDDEN" = "NORMAL";
 
@@ -125,16 +727,19 @@ export class OntologyIrToFullMetadataConverter {
         if (dataType) {
           const status = {
             type: prop.status.type,
-            ...((prop.status as any)[prop.status.type] ?? {}),
+            ...((prop.status as unknown as Record<string, unknown>)[
+              prop.status.type
+            ] ?? {}),
           } as unknown as Ontologies.PropertyTypeStatus;
 
-          properties[propKey] = {
+          properties[propApiName] = {
             displayName: prop.displayMetadata.displayName,
-            rid: `ri.${object.apiName}.${propKey}`,
+            rid: `ri.${object.apiName}.${propApiName}`,
             status,
             description: prop.displayMetadata.description ?? undefined,
             visibility: visibilityEnum,
             dataType,
+            typeClasses: [],
           };
         }
       }
@@ -176,6 +781,7 @@ export class OntologyIrToFullMetadataConverter {
 
         implementsInterfaces2[interfaceApiName] = {
           properties: propertyMappings,
+          propertiesV2: {},
           links: {},
         };
       }
@@ -603,6 +1209,7 @@ export class OntologyIrToFullMetadataConverter {
         description: irParameter.displayMetadata.description,
         required: isParameterRequired(action, paramKey),
         dataType,
+        typeClasses: [],
       };
     }
 
@@ -638,6 +1245,7 @@ export class OntologyIrToFullMetadataConverter {
             description: spt.displayMetadata.description ?? undefined,
             dataType,
             required: false, // Default to false for now - this should come from IR if available
+            typeClasses: [],
           };
         }
       }
@@ -647,6 +1255,8 @@ export class OntologyIrToFullMetadataConverter {
         rid: `ri.interface.${interfaceType.apiName}`,
         properties,
         allProperties: properties, // Same as properties for now
+        propertiesV2: {},
+        allPropertiesV2: {},
         extendsInterfaces: interfaceType.extendsInterfaces.map(val => val),
         allExtendsInterfaces: interfaceType.extendsInterfaces.map(val => val), // Same as extendsInterfaces for now
         implementedByObjectTypes: [], // Empty for now
@@ -739,6 +1349,7 @@ export class OntologyIrToFullMetadataConverter {
           description: spt.sharedPropertyType.displayMetadata.description
             ?? undefined,
           dataType,
+          typeClasses: [],
         };
 
         result[sharedPropertyType.apiName] = sharedPropertyType;
@@ -764,7 +1375,7 @@ export class OntologyIrToFullMetadataConverter {
       case "array": {
         const value = type.array;
         const subType = this.getOsdkPropertyType(value.subtype);
-        return subType ? { type: "array", subType } : null;
+        return subType ? { type: "array", subType, reducers: [] } : null;
       }
       case "boolean":
         return { type: "boolean" };
@@ -824,6 +1435,7 @@ export class OntologyIrToFullMetadataConverter {
               apiName: field.apiName,
               rid: `${ridBase}.${field.apiName}`,
               dataType: fieldDataType,
+              typeClasses: [],
             };
           }),
         };
@@ -885,6 +1497,29 @@ export class OntologyIrToFullMetadataConverter {
         throw new Error(`Unknown link type status: ${status}`);
     }
   }
+}
+
+function discoverComponentRoot(
+  typescript: typeof ts,
+  functionsDir: string,
+): { tsConfigPath: string; projectDir: string } {
+  // Find tsconfig.json - try functionsDir first, then parent directory
+  let tsConfigPath = path.join(functionsDir, "tsconfig.json");
+  let projectDir = functionsDir;
+  const configResult = typescript.readConfigFile(
+    tsConfigPath,
+    typescript.sys.readFile,
+  );
+  if (configResult.error) {
+    tsConfigPath = path.join(path.dirname(functionsDir), "tsconfig.json");
+    projectDir = path.dirname(functionsDir);
+  }
+  // Normalize to forward slashes for cross-platform consistency with
+  // TypeScript's internal path representation (which always uses '/').
+  return {
+    tsConfigPath: tsConfigPath.replace(/\\/g, "/"),
+    projectDir: projectDir.replace(/\\/g, "/"),
+  };
 }
 
 function isParameterRequired(

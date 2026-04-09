@@ -35,8 +35,15 @@ import type {
 import WebSocket from "isomorphic-ws";
 import invariant from "tiny-invariant";
 import type { ClientCacheKey, MinimalClient } from "../MinimalClientContext.js";
+import { ExponentialBackoff } from "../util/exponentialBackoff.js";
 
 const MINIMUM_RECONNECT_DELAY_MS = 5 * 1000;
+const EXPONENTIAL_BACKOFF_INITIAL_DELAY_MS = 1000;
+const EXPONENTIAL_BACKOFF_MAX_DELAY_MS = 60000;
+const EXPONENTIAL_BACKOFF_MULTIPLIER = 2;
+const EXPONENTIAL_BACKOFF_JITTER_FACTOR = 0.3;
+const WEBSOCKET_IDLE_DISCONNECT_DELAY_MS = 15000;
+const WEBSOCKET_HEARTBEAT_INTERVAL_MS = 45 * 1000;
 
 /** Noop function to reduce conditional checks */
 function doNothing() {}
@@ -47,14 +54,15 @@ function doNothing() {}
 function fillOutListener<
   Q extends ObjectOrInterfaceDefinition,
   P extends PropertyKeys<Q>,
+  R extends boolean = false,
 >(
   {
     onChange = doNothing,
     onError = doNothing,
     onOutOfDate = doNothing,
     onSuccessfulSubscription = doNothing,
-  }: ObjectSetSubscription.Listener<Q, P>,
-): Required<ObjectSetSubscription.Listener<Q, P>> {
+  }: ObjectSetSubscription.Listener<Q, P, R>,
+): Required<ObjectSetSubscription.Listener<Q, P, R>> {
   return { onChange, onError, onOutOfDate, onSuccessfulSubscription };
 }
 
@@ -79,6 +87,7 @@ interface Subscription<
 
   interfaceApiName?: string;
   primaryKeyPropertyName?: string;
+  loadRids: boolean;
 }
 
 function isReady<
@@ -120,6 +129,8 @@ export class ObjectSetListenerWebsocket {
   #ws: WebSocket | undefined;
   #lastWsConnect = 0;
   #client: MinimalClient;
+  #backoff: ExponentialBackoff;
+  #isFirstConnection = true;
 
   #logger?: Logger;
 
@@ -145,6 +156,7 @@ export class ObjectSetListenerWebsocket {
   >();
 
   #maybeDisconnectTimeout: ReturnType<typeof setTimeout> | undefined;
+  #heartbeatInterval: ReturnType<typeof setInterval> | undefined;
 
   // DO NOT CONSTRUCT DIRECTLY. ONLY EXPOSED AS A TESTING SEAM
   constructor(
@@ -155,6 +167,12 @@ export class ObjectSetListenerWebsocket {
   ) {
     this.MINIMUM_RECONNECT_DELAY_MS = minimumReconnectDelayMs;
     this.#client = client;
+    this.#backoff = new ExponentialBackoff({
+      initialDelayMs: EXPONENTIAL_BACKOFF_INITIAL_DELAY_MS,
+      maxDelayMs: EXPONENTIAL_BACKOFF_MAX_DELAY_MS,
+      multiplier: EXPONENTIAL_BACKOFF_MULTIPLIER,
+      jitterFactor: EXPONENTIAL_BACKOFF_JITTER_FACTOR,
+    });
     this.#logger = client.logger?.child({}, {
       msgPrefix: "<OSW> ",
     });
@@ -173,6 +191,7 @@ export class ObjectSetListenerWebsocket {
     objectSet: ObjectSet,
     listener: ObjectSetSubscription.Listener<Q, P>,
     properties: Array<P> = [],
+    shouldLoadRids: boolean = false,
   ): Promise<() => void> {
     const objOrInterfaceDef = objectType.type === "object"
       ? await this.#client.ontologyProvider.getObjectDefinition(
@@ -190,11 +209,13 @@ export class ObjectSetListenerWebsocket {
     }
 
     objectProperties = properties.filter((p) =>
-      objOrInterfaceDef.properties[p].type !== "geotimeSeriesReference"
+      p in objOrInterfaceDef.properties
+      && objOrInterfaceDef.properties[p].type !== "geotimeSeriesReference"
     );
 
     referenceProperties = properties.filter((p) =>
-      objOrInterfaceDef.properties[p].type === "geotimeSeriesReference"
+      p in objOrInterfaceDef.properties
+      && objOrInterfaceDef.properties[p].type === "geotimeSeriesReference"
     );
 
     const sub: Subscription<Q, P> = {
@@ -212,6 +233,7 @@ export class ObjectSetListenerWebsocket {
       interfaceApiName: objOrInterfaceDef.type === "object"
         ? undefined
         : objOrInterfaceDef.apiName,
+      loadRids: shouldLoadRids,
     };
 
     this.#subscriptions.set(sub.subscriptionId, sub);
@@ -262,6 +284,11 @@ export class ObjectSetListenerWebsocket {
     if (process.env.NODE_ENV !== "production") {
       this.#logger?.debug("#sendSubscribeMessage()");
     }
+
+    if (this.#ws?.readyState !== WebSocket.OPEN) {
+      return;
+    }
+
     // If two calls to `.subscribe()` happen at once (or if the connection is reset),
     // we may have multiple subscriptions that don't have a subscriptionId yet,
     // so we filter those out.
@@ -284,9 +311,10 @@ export class ObjectSetListenerWebsocket {
         },
       ) => {
         return {
-          objectSet: objectSet,
+          objectSet,
           propertySet: requestedProperties,
           referenceSet: requestedReferenceProperties,
+          objectLoadingResponseOptions: { shouldLoadObjectRids: true },
         };
       }),
     };
@@ -297,7 +325,7 @@ export class ObjectSetListenerWebsocket {
         "sending subscribe message",
       );
     }
-    this.#ws?.send(JSON.stringify(subscribe));
+    this.#ws.send(JSON.stringify(subscribe));
   }
 
   #unsubscribe<Q extends ObjectOrInterfaceDefinition>(
@@ -339,7 +367,7 @@ export class ObjectSetListenerWebsocket {
       if (this.#subscriptions.size === 0) {
         this.#cycleWebsocket();
       }
-    }, 15_000 /* ms */);
+    }, WEBSOCKET_IDLE_DISCONNECT_DELAY_MS);
   }
 
   async #ensureWebsocket() {
@@ -355,13 +383,17 @@ export class ObjectSetListenerWebsocket {
       // tokenProvider is async, there could potentially be a race to create the websocket.
       // Only the first call to reach here will find a null this.#ws, the rest will bail out
       if (this.#ws == null) {
-        // TODO this can probably be exponential backoff with jitter
-        // don't reconnect more quickly than MINIMUM_RECONNECT_DELAY
-        const nextConnectTime = (this.#lastWsConnect ?? 0)
-          + this.MINIMUM_RECONNECT_DELAY_MS;
-        if (nextConnectTime > Date.now()) {
+        // Only apply exponential backoff delay on reconnection attempts, not the first connection
+        if (!this.#isFirstConnection) {
+          const delay = this.#backoff.calculateDelay();
+          if (process.env.NODE_ENV !== "production") {
+            this.#logger?.debug(
+              { delay, attempt: this.#backoff.getAttempt() },
+              "Waiting before reconnect",
+            );
+          }
           await new Promise((resolve) => {
-            setTimeout(resolve, nextConnectTime - Date.now());
+            setTimeout(resolve, delay);
           });
         }
 
@@ -394,7 +426,7 @@ export class ObjectSetListenerWebsocket {
           }
           function error(evt: unknown) {
             cleanup();
-            reject(evt);
+            reject(new Error(String(evt)));
           }
           ws.addEventListener("open", open);
           ws.addEventListener("error", error);
@@ -405,12 +437,26 @@ export class ObjectSetListenerWebsocket {
   }
 
   #onOpen = () => {
+    // Mark that we've successfully connected at least once
+    this.#isFirstConnection = false;
+    // Reset backoff on successful connection
+    this.#backoff.reset();
     // resubscribe all of the listeners
     this.#sendSubscribeMessage();
+
+    // Start heartbeat to keep connection alive
+    if (this.#heartbeatInterval) {
+      clearInterval(this.#heartbeatInterval);
+    }
+    this.#heartbeatInterval = setInterval(() => {
+      if (this.#ws?.readyState === WebSocket.OPEN) {
+        this.#sendSubscribeMessage();
+      }
+    }, WEBSOCKET_HEARTBEAT_INTERVAL_MS);
   };
 
   #onMessage = async (message: WebSocket.MessageEvent): Promise<void> => {
-    const data = JSON.parse(message.data.toString()) as StreamMessage;
+    const data = JSON.parse(String(message.data)) as StreamMessage;
     if (process.env.NODE_ENV !== "production") {
       this.#logger?.debug({ payload: data }, "received message from ws");
     }
@@ -464,6 +510,7 @@ export class ObjectSetListenerWebsocket {
           }],
           sub.interfaceApiName,
           {},
+          undefined,
           false,
           undefined,
           false,
@@ -506,6 +553,7 @@ export class ObjectSetListenerWebsocket {
         [o.object],
         sub.interfaceApiName,
         {},
+        undefined,
         false,
         undefined,
         false,
@@ -515,11 +563,20 @@ export class ObjectSetListenerWebsocket {
         ),
       ) as Array<Osdk.Instance<any>>;
       const singleOsdkObject = osdkObjectArray[0] ?? undefined;
+
+      const rid = singleOsdkObject.$rid as string | undefined;
+
       return singleOsdkObject != null
-        ? {
-          object: singleOsdkObject,
-          state: o.state,
-        }
+        ? rid === undefined
+          ? {
+            object: singleOsdkObject,
+            state: o.state,
+          }
+          : {
+            object: singleOsdkObject,
+            state: o.state,
+            rid,
+          }
         : undefined;
     }));
 
@@ -628,11 +685,16 @@ export class ObjectSetListenerWebsocket {
     if (process.env.NODE_ENV !== "production") {
       this.#logger?.debug({ event }, "Received close event from ws", event);
     }
-    // TODO we should probably throttle this so we don't abuse the backend
     this.#cycleWebsocket();
   };
 
   #cycleWebsocket = () => {
+    // Clear heartbeat interval
+    if (this.#heartbeatInterval) {
+      clearInterval(this.#heartbeatInterval);
+      this.#heartbeatInterval = undefined;
+    }
+
     if (this.#ws) {
       this.#ws.removeEventListener("open", this.#onOpen);
       this.#ws.removeEventListener("message", this.#onMessage);
@@ -674,7 +736,7 @@ export class ObjectSetListenerWebsocket {
     error: any,
   ) => {
     try {
-      sub.listener.onError({ subscriptionClosed: subscriptionClosed, error });
+      sub.listener.onError({ subscriptionClosed, error });
     } catch (onErrorError) {
       // eslint-disable-next-line no-console
       console.error(

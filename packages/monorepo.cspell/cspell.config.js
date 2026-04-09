@@ -65,6 +65,11 @@ const cspell = {
     "*.snap",
     "typedoc.jsonc",
 
+    // Storybook setup
+    "mockServiceWorker.js",
+    "**/.storybook/**",
+    "packages/react-components-storybook/src/mocks/**",
+
     // Dictionary files have words that are only used in certain contexts so they implicitly
     // won't pass the generic case.
     "dict.*.txt",
@@ -120,6 +125,7 @@ const cspell = {
     "foundry-words",
     "normal-dev-words",
     "oauth",
+    "css",
   ],
   words: ["todoapp"],
   suggestWords: [],
@@ -137,6 +143,18 @@ const cspell = {
       filename: ["**/*.{mts,cts,ts,tsx}"],
       dictionaries: ["osdk-code"],
       words: [
+        // react-devtools words
+        "DEDUP",
+        "Keymap",
+        "reactroot",
+        "reentrancy",
+        "refetches",
+        "revalidations",
+        "unregisters",
+        "unsub",
+        "unsuppress",
+        "visx",
+
         // used in a regex
         "0123456789bcdefghjkmnpqrstuvwxyz",
 
@@ -210,6 +228,11 @@ const cspell = {
         "Dherlihy",
         "Mnayan",
         "Matthewvs",
+        "hier",
+        "nums",
+        "carto",
+        "emps",
+        "officenetwork",
       ],
     },
   ],

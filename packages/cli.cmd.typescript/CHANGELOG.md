@@ -1,5 +1,178 @@
 # @osdk/cli.cmd.typescript
 
+## 0.32.0
+
+### Minor Changes
+
+- 322c5bc: Simulated release
+- 9eb20ee: Filter out queries that are ontology edit functions before generating.
+- 35f2f1a: Add Media inputs/outputs for Queries
+- 46f0a47: Update platform SDK to 2.57.0 and handle new typeReference query data type
+
+### Patch Changes
+
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [4bb9769]
+- Updated dependencies [abb0e0f]
+- Updated dependencies [1706c79]
+- Updated dependencies [4ef6adc]
+- Updated dependencies [60b5ffb]
+- Updated dependencies [35f2f1a]
+- Updated dependencies [d607557]
+- Updated dependencies [60531c9]
+- Updated dependencies [46f0a47]
+- Updated dependencies [7775359]
+- Updated dependencies [4470c0d]
+  - @osdk/cli.common@0.32.0
+  - @osdk/generator@2.8.0
+  - @osdk/shared.client.impl@1.8.0
+
+## 0.32.0-beta.5
+
+### Minor Changes
+
+- 46f0a47: Update platform SDK to 2.57.0 and handle new typeReference query data type
+
+### Patch Changes
+
+- Updated dependencies [d607557]
+- Updated dependencies [46f0a47]
+  - @osdk/generator@2.8.0-beta.32
+  - @osdk/cli.common@0.32.0-beta.5
+
+## 0.32.0-beta.4
+
+### Minor Changes
+
+- 9eb20ee: Filter out queries that are ontology edit functions before generating.
+
+### Patch Changes
+
+- Updated dependencies [7775359]
+  - @osdk/generator@2.8.0-beta.27
+  - @osdk/cli.common@0.32.0-beta.4
+
+## 0.32.0-beta.3
+
+### Minor Changes
+
+- 35f2f1a: Add Media inputs/outputs for Queries
+
+### Patch Changes
+
+- Updated dependencies [35f2f1a]
+  - @osdk/cli.common@0.32.0-beta.3
+  - @osdk/generator@2.8.0-beta.14
+  - @osdk/shared.client.impl@1.8.0-beta.2
+
+## 0.32.0-beta.2
+
+### Patch Changes
+
+- @osdk/cli.common@0.32.0-beta.2
+
+## 0.31.0-beta.2
+
+### Minor Changes
+
+- 03db734: Move platform SDK deps to pnpm catalog
+
+### Patch Changes
+
+- Updated dependencies [03db734]
+  - @osdk/generator@2.7.0-beta.2
+  - @osdk/cli.common@0.31.0-beta.2
+
+## 0.30.0-beta.5
+
+### Minor Changes
+
+- 84f0eef: Bumping OSDK apis
+
+### Patch Changes
+
+- Updated dependencies [84f0eef]
+- Updated dependencies [486ef7e]
+  - @osdk/generator@2.6.0-beta.13
+  - @osdk/cli.common@0.30.0-beta.5
+
+## 0.30.0-beta.4
+
+### Minor Changes
+
+- 3fbb596: Pipe through transactionId to endpoints that load data via object sets
+
+### Patch Changes
+
+- Updated dependencies [3fbb596]
+  - @osdk/generator@2.6.0-beta.10
+  - @osdk/cli.common@0.30.0-beta.4
+
+## 0.30.0-beta.3
+
+### Minor Changes
+
+- a1ffb20: Use new ephemeral media upload endpoint.
+
+### Patch Changes
+
+- Updated dependencies [a1ffb20]
+  - @osdk/generator@2.6.0-beta.8
+  - @osdk/cli.common@0.30.0-beta.3
+
+## 0.30.0-beta.2
+
+### Minor Changes
+
+- 84e61fc: Add propertyValueFormatting type to property metadata
+
+### Patch Changes
+
+- Updated dependencies [84e61fc]
+  - @osdk/generator@2.6.0-beta.2
+  - @osdk/cli.common@0.30.0-beta.2
+
+## 0.29.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- 7cdab1d: Update platform sdk dependencies
+- a00d2ed: Update Platform SDK dependencies
+- 7bdac45: Update Platform SDK dependency
+- 37eb75b: remove features not supported for RC
+- 34129f4: Add a flag to skip updating the package json
+- a96d89e: Update Platform SDK dependencies
+- cbcf2ad: Add branching support
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [4b4a458]
+- Updated dependencies [badfbc4]
+- Updated dependencies [7cdab1d]
+- Updated dependencies [a00d2ed]
+- Updated dependencies [d29cdfb]
+- Updated dependencies [a6f49e9]
+- Updated dependencies [7bdac45]
+- Updated dependencies [a96d89e]
+- Updated dependencies [78be29f]
+- Updated dependencies [7bdac45]
+- Updated dependencies [cbcf2ad]
+- Updated dependencies [4248b80]
+  - @osdk/cli.common@0.29.0
+  - @osdk/generator@2.5.0
+  - @osdk/shared.client.impl@1.5.0
+
+## 0.29.0-rc.6
+
+### Patch Changes
+
+- 37eb75b: remove features not supported for RC
+  - @osdk/generator@2.5.0-rc.15
+  - @osdk/cli.common@0.29.0-rc.6
+
 ## 0.29.0-beta.5
 
 ### Minor Changes

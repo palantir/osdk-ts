@@ -71,12 +71,17 @@ export async function extractObjectOrInterfaceType(
       return { type: "interface", apiName: objectSet.interfaceType };
     case "filter":
     case "asBaseObjectTypes":
-    case "asType":
     case "nearestNeighbors":
       return extractObjectOrInterfaceType(
         clientCtx,
         objectSet.objectSet,
       );
+    case "asType":
+      return {
+        type:
+          clientCtx.narrowTypeInterfaceOrObjectMapping[objectSet.entityType],
+        apiName: objectSet.entityType,
+      };
     case "intersect": {
       const objectSets = objectSet.objectSets;
       const objectSetTypes = await Promise.all(

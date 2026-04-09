@@ -45,6 +45,7 @@ export const TYPESCRIPT_OSDK_SNIPPETS: SdkSnippets<typeof OSDK_SNIPPETS_SPEC> =
       propertiesV2: handlePropertiesV2,
       primaryKeyPropertyV1: handlePrimaryKeyPropertyV1,
       primaryKeyPropertyV2: handlePrimaryKeyPropertyV2,
+      primaryKeyPropertyValueV2: handlePrimaryKeyPropertyValueV2,
       linkedPropertiesV1: handleLinkedPropertiesV1,
       linkedPropertiesV2: handleLinkedPropertiesV2,
       linkedPrimaryKeyPropertyV1: handleLinkedPrimaryKeyPropertyV1,
@@ -193,6 +194,18 @@ function handlePrimaryKeyPropertyV2(
     apiName: rawPrimaryKeyProperty.apiName,
     value: renderPropertyValue(rawPrimaryKeyProperty.value, SdkMajorVersion.V2),
   };
+}
+
+function handlePrimaryKeyPropertyValueV2({
+  rawPrimaryKeyProperty,
+}: {
+  rawPrimaryKeyProperty?: PropertySampleIR;
+}) {
+  if (rawPrimaryKeyProperty == null) {
+    throw new Error("Cannot render with null rawPrimaryKeyProperty");
+  }
+
+  return renderPropertyValue(rawPrimaryKeyProperty.value, SdkMajorVersion.V2);
 }
 
 function handleLinkedPropertiesV1(
@@ -361,14 +374,24 @@ function renderType(
         ? "\"primaryKeyValue\""
         : "primaryKeyValue";
       if (context === "actionParameter") {
-        return majorVersion >= SdkMajorVersion.V2
-          ? `{ $primaryKey: ${primaryKeyValue}, /* other properties */ }`
-          : `{ __primaryKey: ${primaryKeyValue}, /* other properties */ }`;
+        return `${primaryKeyValue} // or myObjectInstance`;
       }
       return primaryKeyValue;
+    case "objectSet":
+      return `client(${type.objectTypeApiName}).where({ /* filter conditions */ })`;
     case "anonymousCustomType":
-    case "customType":
+    case "customType": {
+      const entries = Object.entries(type.parameters ?? {});
+      if (entries.length > 0) {
+        const rendered = entries
+          .map(([name, value]) =>
+            `"${name}": ${renderType(value, majorVersion, context)}`
+          )
+          .join(`,${indentedNewLine(8)}`);
+        return `{${indentedNewLine(8)}${rendered}${indentedNewLine(4)}}`;
+      }
       return "{}";
+    }
     case "attachment":
       return type.hasAttachments ? "attachment" : "{}";
     case "interface":
@@ -376,7 +399,7 @@ function renderType(
       return "{}";
     case "mediaReference":
       return context === "actionParameter"
-        ? "mediaReference"
+        ? "mediaUpload"
         : "mediaReferenceRid";
     case "objectType":
       return `"${type.objectTypeApiName}"`;

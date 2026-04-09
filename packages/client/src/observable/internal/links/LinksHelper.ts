@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import type { CompileTimeMetadata, ObjectTypeDefinition } from "@osdk/api";
+import type {
+  CompileTimeMetadata,
+  ObjectOrInterfaceDefinition,
+} from "@osdk/api";
 import type { SpecificLinkPayload } from "../../LinkPayload.js";
 
 import type { Observer } from "../../ObservableClient/common.js";
@@ -24,6 +27,7 @@ import type { CacheKeys } from "../CacheKeys.js";
 import type { KnownCacheKey } from "../KnownCacheKey.js";
 import type { OrderByCanonicalizer } from "../OrderByCanonicalizer.js";
 import type { QuerySubscription } from "../QuerySubscription.js";
+import type { SelectCanonicalizer } from "../SelectCanonicalizer.js";
 import type { Store } from "../Store.js";
 import type { WhereClauseCanonicalizer } from "../WhereClauseCanonicalizer.js";
 import type { SpecificLinkCacheKey } from "./SpecificLinkCacheKey.js";
@@ -31,7 +35,7 @@ import { SpecificLinkQuery } from "./SpecificLinkQuery.js";
 
 export interface LinksHelper {
   observe<
-    T extends ObjectTypeDefinition,
+    T extends ObjectOrInterfaceDefinition,
     L extends keyof CompileTimeMetadata<T>["links"] & string,
   >(
     options: ObserveLinks.Options<T, L>,
@@ -39,35 +43,38 @@ export interface LinksHelper {
   ): QuerySubscription<SpecificLinkQuery>;
 
   getQuery<
-    T extends ObjectTypeDefinition,
+    T extends ObjectOrInterfaceDefinition,
     L extends keyof CompileTimeMetadata<T>["links"] & string,
   >(options: ObserveLinks.Options<T, L>): SpecificLinkQuery;
 }
 
 export class LinksHelper extends AbstractHelper<
   SpecificLinkQuery,
-  ObserveLinks.Options<ObjectTypeDefinition, string>
+  ObserveLinks.Options<ObjectOrInterfaceDefinition, string>
 > {
   whereCanonicalizer: WhereClauseCanonicalizer;
   orderByCanonicalizer: OrderByCanonicalizer;
+  selectCanonicalizer: SelectCanonicalizer;
 
   constructor(
     store: Store,
     cacheKeys: CacheKeys<KnownCacheKey>,
     whereCanonicalizer: WhereClauseCanonicalizer,
     orderByCanonicalizer: OrderByCanonicalizer,
+    selectCanonicalizer: SelectCanonicalizer,
   ) {
     super(store, cacheKeys);
 
     this.whereCanonicalizer = whereCanonicalizer;
     this.orderByCanonicalizer = orderByCanonicalizer;
+    this.selectCanonicalizer = selectCanonicalizer;
   }
 
   getQuery<
-    T extends ObjectTypeDefinition,
+    T extends ObjectOrInterfaceDefinition,
     L extends keyof CompileTimeMetadata<T>["links"] & string,
   >(options: ObserveLinks.Options<T, L>): SpecificLinkQuery {
-    const { apiName } = options.srcType;
+    const { apiName, type: sourceTypeKind } = options.srcType;
 
     const canonWhere = this.whereCanonicalizer.canonicalize(
       options.where ?? {},
@@ -75,13 +82,19 @@ export class LinksHelper extends AbstractHelper<
     const canonOrderBy = this.orderByCanonicalizer.canonicalize(
       options.orderBy ?? {},
     );
+    const canonSelect = options.select && options.select.length > 0
+      ? this.selectCanonicalizer.canonicalize(options.select)
+      : undefined;
     const linkCacheKey = this.cacheKeys.get<SpecificLinkCacheKey>(
       "specificLink",
       apiName,
+      sourceTypeKind,
+      options.sourceUnderlyingObjectType,
       options.pk,
       options.linkName,
       canonWhere,
       canonOrderBy,
+      canonSelect,
     );
 
     return this.store.queries.get(linkCacheKey, () => {

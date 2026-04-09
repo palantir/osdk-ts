@@ -22,7 +22,6 @@ export type {
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from "./actions/Actions.js";
-export { NULL_VALUE } from "./actions/NullValue.js";
 export type { ValidAggregationKeys } from "./aggregate/AggregatableKeys.js";
 export type { AggregateOpts } from "./aggregate/AggregateOpts.js";
 export type { AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy } from "./aggregate/AggregateOptsThatErrors.js";
@@ -31,10 +30,14 @@ export type { AggregationResultsWithoutGroups } from "./aggregate/AggregationRes
 export type { AggregationClause } from "./aggregate/AggregationsClause.js";
 export type { AggregationsResults } from "./aggregate/AggregationsResults.js";
 export type { GeoFilterOptions } from "./aggregate/GeoFilter.js";
+export type { IntervalRule } from "./aggregate/IntervalRule.js";
 export { DistanceUnitMapping } from "./aggregate/WhereClause.js";
 export type {
+  AndWhereClause,
   GeoFilter_Intersects,
   GeoFilter_Within,
+  NotWhereClause,
+  OrWhereClause,
   PossibleWhereClauseFilters,
   WhereClause,
 } from "./aggregate/WhereClause.js";
@@ -46,7 +49,7 @@ export type {
   OsdkObjectLinksObject,
   SingleLinkAccessor,
 } from "./definitions/LinkDefinitions.js";
-export type { DerivedProperty } from "./derivedProperties/DerivedProperty.js";
+export { type DerivedProperty } from "./derivedProperties/DerivedProperty.js";
 export { DurationMapping } from "./groupby/GroupByClause.js";
 export type {
   AllGroupByValues,
@@ -63,7 +66,11 @@ export type {
 export type {
   PropertyValueWireToClient,
 } from "./mapping/PropertyValueMapping.js";
-export type { Attachment, AttachmentUpload } from "./object/Attachment.js";
+export type {
+  Attachment,
+  AttachmentMetadata,
+  AttachmentUpload,
+} from "./object/Attachment.js";
 export type {
   AsyncIterArgs,
   Augment,
@@ -81,13 +88,23 @@ export type {
 export type {
   Media,
   MediaMetadata,
+  MediaPropertyLocation,
   MediaReference,
   MediaUpload,
 } from "./object/Media.js";
+export type {
+  PropertyMarkings,
+  PropertySecurity,
+} from "./object/PropertySecurity.js";
 export { isOk } from "./object/Result.js";
 export type { Result } from "./object/Result.js";
 export type { BaseObjectSet } from "./objectSet/BaseObjectSet.js";
 export type { ObjectSet } from "./objectSet/ObjectSet.js";
+export type {
+  FetchLinksPageResult,
+  LinkTypeApiNamesFor,
+  MinimalDirectedObjectLinkInstance,
+} from "./objectSet/ObjectSetLinks.js";
 export type { ObjectSetSubscription } from "./objectSet/ObjectSetListener.js";
 export type {
   ActionDefinition,
@@ -122,6 +139,54 @@ export type {
   ThreeDimensionalQueryAggregationDefinition,
   TwoDimensionalQueryAggregationDefinition,
 } from "./ontology/QueryDefinition.js";
+export type { SimplePropertyDef } from "./ontology/SimplePropertyDef.js";
+export type { PropertyBooleanFormattingRule } from "./ontology/valueFormatting/PropertyBooleanFormattingRule.js";
+export type {
+  DatetimeFormat,
+  DatetimeLocalizedFormat,
+  DatetimeLocalizedFormatType,
+  DatetimeStringFormat,
+  DatetimeTimezone,
+  DatetimeTimezoneStatic,
+  DatetimeTimezoneUser,
+  PropertyDateFormattingRule,
+  PropertyTimestampFormattingRule,
+} from "./ontology/valueFormatting/PropertyDateAndTimestampFormattingRule.js";
+export type {
+  KnownType,
+  PropertyKnownTypeFormattingRule,
+} from "./ontology/valueFormatting/PropertyKnownTypeFormattingRule.js";
+export type {
+  Affix,
+  DurationBaseValue,
+  DurationFormatStyle,
+  DurationPrecision,
+  HumanReadableFormat,
+  NumberFormatAffix,
+  NumberFormatCurrency,
+  NumberFormatCurrencyStyle,
+  NumberFormatCustomUnit,
+  NumberFormatDuration,
+  NumberFormatFixedValues,
+  NumberFormatNotation,
+  NumberFormatOptions,
+  NumberFormatRatio,
+  NumberFormatScale,
+  NumberFormatStandard,
+  NumberFormatStandardUnit,
+  NumberRatioType,
+  NumberRoundingMode,
+  NumberScaleType,
+  PropertyNumberFormattingRule,
+  PropertyNumberFormattingRuleType,
+  TimeCodeFormat,
+} from "./ontology/valueFormatting/PropertyNumberFormattingRule.js";
+export type { PropertyValueFormattingRule } from "./ontology/valueFormatting/PropertyValueFormattingRule.js";
+export type {
+  PropertyTypeReference,
+  PropertyTypeReferenceOrStringConstant,
+  StringConstant,
+} from "./ontology/valueFormatting/PropertyValueFormattingUtils.js";
 export type {
   BaseWirePropertyTypes,
   WirePropertyTypes,

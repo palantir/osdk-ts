@@ -26,12 +26,13 @@ export type Snapshot<X> =
 
 export function makeExternalStore<X>(
   createObservation: (callback: Observer<X | undefined>) => Unsubscribable,
-  name?: string,
+  _name?: string,
+  initialValue?: Snapshot<X>,
 ): {
   subscribe: (notifyUpdate: () => void) => () => void;
   getSnapShot: () => Snapshot<X>;
 } {
-  let lastResult: Snapshot<X>;
+  let lastResult: Snapshot<X> = initialValue;
 
   function getSnapShot(): Snapshot<X> {
     return lastResult;
@@ -55,6 +56,82 @@ export function makeExternalStore<X>(
 
     return (): void => {
       obs.unsubscribe();
+    };
+  }
+
+  return {
+    subscribe,
+    getSnapShot,
+  };
+}
+
+/**
+ * Like makeExternalStore but for async subscription creation.
+ *
+ * Uses an isActive flag to handle race conditions:
+ * If cleanup runs before promise resolves, the stale subscription is
+ * immediately unsubscribed when it eventually resolves
+ */
+export function makeExternalStoreAsync<X>(
+  createObservation: (
+    callback: Observer<X | undefined>,
+  ) => Promise<Unsubscribable>,
+  _name?: string,
+  initialValue?: Snapshot<X>,
+): {
+  subscribe: (notifyUpdate: () => void) => () => void;
+  getSnapShot: () => Snapshot<X>;
+} {
+  let lastResult: Snapshot<X> = initialValue;
+
+  function getSnapShot(): Snapshot<X> {
+    return lastResult;
+  }
+
+  function subscribe(notifyUpdate: () => void) {
+    let isActive = true;
+    let currentSubscription: Unsubscribable | undefined;
+
+    const subscriptionPromise = createObservation({
+      next: (payload) => {
+        if (isActive) {
+          lastResult = payload as Snapshot<X>;
+          notifyUpdate();
+        }
+      },
+      error: (error: unknown) => {
+        if (isActive) {
+          lastResult = {
+            ...(lastResult ?? {}),
+            error: error instanceof Error ? error : new Error(String(error)),
+          } as Snapshot<X>;
+          notifyUpdate();
+        }
+      },
+      complete: () => {},
+    });
+
+    subscriptionPromise.then((sub) => {
+      if (isActive) {
+        currentSubscription = sub;
+      } else {
+        sub.unsubscribe();
+      }
+    }).catch((error: unknown) => {
+      if (isActive) {
+        lastResult = {
+          ...(lastResult ?? {}),
+          error: error instanceof Error ? error : new Error(String(error)),
+        } as Snapshot<X>;
+        notifyUpdate();
+      }
+    });
+
+    return (): void => {
+      isActive = false;
+      if (currentSubscription) {
+        currentSubscription.unsubscribe();
+      }
     };
   }
 

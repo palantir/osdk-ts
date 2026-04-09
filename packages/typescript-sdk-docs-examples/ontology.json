@@ -1,0 +1,1214 @@
+{
+  "ontology": {
+    "rid": "ri.ontology.main.ontology.a35bb7f9-2c57-4199-a1cd-af461d88bd6e",
+    "apiName": "ontology-d097f725-ab77-46cf-83c0-e3cb9186bff1",
+    "description": "",
+    "displayName": ""
+  },
+  "actionTypes": {
+    "promoteEmployee": {
+      "apiName": "promote-employee",
+      "description": "Update an employee's title and compensation",
+      "parameters": {
+        "employeeId": {
+          "dataType": {
+            "type": "integer"
+          },
+          "required": true
+        },
+        "newTitle": {
+          "dataType": {
+            "type": "string"
+          },
+          "required": true
+        },
+        "newCompensation": {
+          "dataType": {
+            "type": "double"
+          },
+          "required": true
+        },
+        "promotionDocument": {
+          "description": "The signed promotion document",
+          "dataType": {
+            "type": "attachment"
+          },
+          "required": false
+        }
+      },
+      "rid": "ri.ontology.main.action-type.7ed72754-7491-428a-bb18-4d7296eb2167",
+      "operations": [{
+        "type": "modifyObject",
+        "objectTypeApiName": "Employee"
+      }],
+      "status": "ACTIVE"
+    },
+    "promoteEmployeeObject": {
+      "apiName": "promote-employee-object",
+      "description": "Update an employee's title and compensation",
+      "parameters": {
+        "employee": {
+          "dataType": {
+            "type": "object",
+            "objectApiName": "Employee",
+            "objectTypeApiName": "Employee"
+          },
+          "required": true
+        },
+        "newTitle": {
+          "dataType": {
+            "type": "string"
+          },
+          "required": true
+        },
+        "newCompensation": {
+          "dataType": {
+            "type": "double"
+          },
+          "required": true
+        }
+      },
+      "rid": "ri.ontology.main.action-type.7ed72754-7491-428a-bb18-4d7296eb2168",
+      "operations": [{
+        "type": "modifyObject",
+        "objectTypeApiName": "Employee"
+      }],
+      "status": "ACTIVE"
+    },
+    "createOffice": {
+      "apiName": "create-office",
+      "description": "Create an office",
+      "parameters": {
+        "officeId": {
+          "dataType": {
+            "type": "string"
+          },
+          "required": true
+        },
+        "address": {
+          "description": "The office's physical address (not necessarily shipping address)",
+          "dataType": {
+            "type": "string"
+          },
+          "required": false
+        },
+        "capacity": {
+          "description": "The maximum seated-at-desk capacity of the office (maximum fire-safe capacity may be higher)",
+          "dataType": {
+            "type": "integer"
+          },
+          "required": false
+        },
+        "officeNames": {
+          "description": "A list of all office names",
+          "dataType": {
+            "type": "array",
+            "subType": {
+              "type": "string"
+            }
+          },
+          "required": false
+        },
+        "floorPlanAttachment": {
+          "description": "The floor plan document for the new office",
+          "dataType": {
+            "type": "attachment"
+          },
+          "required": false
+        }
+      },
+      "rid": "ri.ontology.main.action-type.9f84017d-cf17-4fa8-84c3-8e01e5d594f1",
+      "operations": [{
+        "type": "createObject",
+        "objectTypeApiName": "Office"
+      }],
+      "status": "ACTIVE"
+    },
+    "createOfficeAndEmployee": {
+      "apiName": "create-office-and-employee",
+      "description": "Create an office and employee",
+      "parameters": {
+        "officeId": {
+          "dataType": {
+            "type": "string"
+          },
+          "required": true
+        },
+        "address": {
+          "description": "The office's physical address (not necessarily shipping address)",
+          "dataType": {
+            "type": "string"
+          },
+          "required": false
+        },
+        "capacity": {
+          "description": "The maximum seated-at-desk capacity of the office (maximum fire-safe capacity may be higher)",
+          "dataType": {
+            "type": "integer"
+          },
+          "required": false
+        },
+        "officeNames": {
+          "description": "A list of all office names",
+          "dataType": {
+            "type": "array",
+            "subType": {
+              "type": "string"
+            }
+          },
+          "required": false
+        },
+        "employeeId": {
+          "description": "New employee Id",
+          "dataType": {
+            "type": "integer"
+          },
+          "required": true
+        }
+      },
+      "rid": "ri.ontology.main.action-type.9f84017d-cf17-4fa8-84c3-8e01e5d594f2",
+      "operations": [
+        { "type": "createObject", "objectTypeApiName": "Office" },
+        { "type": "createObject", "objectTypeApiName": "Employee" }
+      ],
+      "status": "ACTIVE"
+    },
+    "moveOffice": {
+      "apiName": "move-office",
+      "description": "Update an office's physical location",
+      "parameters": {
+        "officeId": {
+          "dataType": {
+            "type": "string"
+          },
+          "required": true
+        },
+        "newAddress": {
+          "description": "The office's new physical address (not necessarily shipping address)",
+          "dataType": {
+            "type": "string"
+          },
+          "required": false
+        },
+        "newCapacity": {
+          "description": "The maximum seated-at-desk capacity of the new office (maximum fire-safe capacity may be higher)",
+          "dataType": {
+            "type": "integer"
+          },
+          "required": false
+        },
+        "officeNames": {
+          "description": "A list of all office names",
+          "dataType": {
+            "type": "array",
+            "subType": {
+              "type": "integer"
+            }
+          },
+          "required": false
+        }
+      },
+      "rid": "ri.ontology.main.action-type.9f84017d-cf17-4fa8-84c3-8e01e5d594f2",
+      "operations": [{
+        "type": "modifyObject",
+        "objectTypeApiName": "Office"
+      }],
+      "status": "ACTIVE"
+    },
+    "assignEquipment": {
+      "apiName": "assign-equipment",
+      "description": "Assign equipment to an employee",
+      "parameters": {
+        "equipmentId": {
+          "dataType": {
+            "type": "string"
+          },
+          "required": true
+        },
+        "employeeId": {
+          "dataType": {
+            "type": "integer"
+          },
+          "required": true
+        },
+        "assignmentDate": {
+          "dataType": {
+            "type": "timestamp"
+          },
+          "required": true
+        },
+        "notes": {
+          "dataType": {
+            "type": "string"
+          },
+          "required": false
+        },
+        "signatureAttachment": {
+          "description": "Digital signature or scanned signature document for equipment receipt",
+          "dataType": {
+            "type": "attachment"
+          },
+          "required": false
+        }
+      },
+      "rid": "ri.ontology.main.action-type.9f84017d-cf17-4fa8-84c3-8e01e5d594f3",
+      "operations": [{
+        "type": "modifyObject",
+        "objectTypeApiName": "Equipment"
+      }],
+      "status": "ACTIVE"
+    },
+    "recordTraining": {
+      "apiName": "record-training",
+      "description": "Record completion of employee training",
+      "parameters": {
+        "employeeId": {
+          "dataType": {
+            "type": "integer"
+          },
+          "required": true
+        },
+        "trainingName": {
+          "dataType": {
+            "type": "string"
+          },
+          "required": true
+        },
+        "completionDate": {
+          "dataType": {
+            "type": "date"
+          },
+          "required": true
+        },
+        "score": {
+          "dataType": {
+            "type": "double"
+          },
+          "required": false
+        },
+        "certificate": {
+          "description": "Training completion certificate",
+          "dataType": {
+            "type": "attachment"
+          },
+          "required": false
+        },
+        "trainingVideo": {
+          "description": "Reference to the training video completed",
+          "dataType": {
+            "type": "mediaReference"
+          },
+          "required": false
+        }
+      },
+      "rid": "ri.ontology.main.action-type.9f84017d-cf17-4fa8-84c3-8e01e5d594f4",
+      "operations": [{
+        "type": "modifyObject",
+        "objectTypeApiName": "Employee"
+      }],
+      "status": "ACTIVE"
+    },
+    "documentEquipment": {
+      "apiName": "document-equipment",
+      "description": "Add documentation for equipment",
+      "parameters": {
+        "equipmentId": {
+          "dataType": {
+            "type": "string"
+          },
+          "required": true
+        },
+        "documentType": {
+          "dataType": {
+            "type": "string"
+          },
+          "required": false
+        },
+        "documentDate": {
+          "dataType": {
+            "type": "date"
+          },
+          "required": false
+        },
+        "documentFile": {
+          "description": "The equipment documentation file",
+          "dataType": {
+            "type": "attachment"
+          },
+          "required": false
+        },
+        "instructionalVideo": {
+          "description": "Reference to related instructional video for the equipment",
+          "dataType": {
+            "type": "mediaReference"
+          },
+          "required": false
+        }
+      },
+      "rid": "ri.ontology.main.action-type.9f84017d-cf17-4fa8-84c3-8e01e5d594f5",
+      "operations": [{
+        "type": "modifyObject",
+        "objectTypeApiName": "Equipment"
+      }],
+      "status": "ACTIVE"
+    },
+    "refreshData": {
+      "apiName": "refresh-data",
+      "description": "Refresh all cached data in the system",
+      "parameters": {},
+      "rid": "ri.ontology.main.action-type.refresh-data-12345",
+      "operations": [],
+      "status": "ACTIVE"
+    }
+  },
+  "objectTypes": {
+    "Employee": {
+      "objectType": {
+        "apiName": "Employee",
+        "description": "A full-time or part-time employee of our firm",
+        "primaryKey": "employeeId",
+        "properties": {
+          "employeeId": {
+            "dataType": {
+              "type": "integer"
+            },
+            "description": "Unique identifier for the employee"
+          },
+          "class": {
+            "dataType": {
+              "type": "string"
+            },
+            "description": "Employee classification (e.g., Full-time, Part-time, Contract)"
+          },
+          "fullName": {
+            "dataType": {
+              "type": "string"
+            },
+            "description": "Full name of the employee"
+          },
+          "firstName": {
+            "dataType": {
+              "type": "string"
+            },
+            "description": "First name of the employee"
+          },
+          "lastName": {
+            "dataType": {
+              "type": "string"
+            },
+            "description": "Last name of the employee"
+          },
+          "email": {
+            "dataType": {
+              "type": "string"
+            },
+            "description": "Work email address of the employee"
+          },
+          "phoneNumber": {
+            "dataType": {
+              "type": "string"
+            },
+            "description": "Contact phone number"
+          },
+          "office": {
+            "description": "The unique ID of the employee's assigned office",
+            "dataType": {
+              "type": "integer"
+            }
+          },
+          "startDate": {
+            "description": "The date the employee was hired (most recently, if they were re-hired)",
+            "dataType": {
+              "type": "date"
+            }
+          },
+          "employeeStatus": {
+            "description": "TimeSeries of the status of the employee",
+            "dataType": {
+              "type": "timeseries",
+              "itemType": { "type": "string" }
+            }
+          },
+          "birthDate": {
+            "description": "Employee's date of birth",
+            "dataType": {
+              "type": "date"
+            }
+          },
+          "title": {
+            "dataType": {
+              "type": "string"
+            },
+            "description": "Job title of the employee"
+          },
+          "department": {
+            "dataType": {
+              "type": "string"
+            },
+            "description": "Department the employee belongs to"
+          },
+          "salary": {
+            "dataType": {
+              "type": "double"
+            },
+            "description": "Annual base salary"
+          },
+          "hourlyRate": {
+            "dataType": {
+              "type": "double"
+            },
+            "description": "Hourly rate for contractors or part-time employees"
+          },
+          "performanceRating": {
+            "dataType": {
+              "type": "float"
+            },
+            "description": "Performance rating on a scale from 1.0 to 5.0"
+          },
+          "yearsOfService": {
+            "dataType": {
+              "type": "short"
+            },
+            "description": "Number of years employed"
+          },
+          "isActive": {
+            "dataType": {
+              "type": "boolean"
+            },
+            "description": "Whether the employee is currently active"
+          },
+          "avatarImage": {
+            "dataType": {
+              "type": "attachment"
+            },
+            "description": "Employee profile photo"
+          },
+          "securityClearance": {
+            "dataType": {
+              "type": "marking"
+            },
+            "description": "Security clearance level"
+          },
+          "trainingVideos": {
+            "dataType": {
+              "type": "mediaReference"
+            },
+            "description": "References to training videos completed"
+          },
+          "skillVector": {
+            "dataType": {
+              "type": "vector"
+            },
+            "description": "Vector representation of employee skills for matching"
+          },
+          "travelHistory": {
+            "dataType": {
+              "type": "geotimeSeriesReference"
+            },
+            "description": "History of employee business travel locations"
+          },
+          "contactInfo": {
+            "dataType": {
+              "type": "struct",
+              "structFieldTypes": [
+                {
+                  "apiName": "phone",
+                  "dataType": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "apiName": "email",
+                  "dataType": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "apiName": "address",
+                  "dataType": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "apiName": "houseNumber",
+                  "dataType": {
+                    "type": "integer"
+                  }
+                },
+                {
+                  "apiName": "entrance",
+                  "dataType": {
+                    "type": "geopoint"
+                  }
+                }
+              ]
+            },
+            "description": "Structured contact information"
+          },
+          "certifications": {
+            "dataType": {
+              "type": "array",
+              "subType": {
+                "type": "string"
+              }
+            },
+            "description": "List of professional certifications"
+          },
+          "previousTitles": {
+            "dataType": {
+              "type": "array",
+              "subType": {
+                "type": "string"
+              }
+            },
+            "description": "Previous job titles at the company"
+          },
+          "managedEmployeeIds": {
+            "dataType": {
+              "type": "array",
+              "subType": {
+                "type": "integer"
+              }
+            },
+            "description": "IDs of employees managed by this employee"
+          },
+          "skillScores": {
+            "dataType": {
+              "type": "array",
+              "subType": {
+                "type": "double"
+              }
+            },
+            "description": "Numerical scores for various skills"
+          }
+        },
+        "icon": {
+          "type": "blueprint",
+          "name": "employee",
+          "color": "blue"
+        },
+        "displayName": "Employee",
+        "pluralDisplayName": "Employees",
+        "titleProperty": "fullName",
+        "rid": "ri.ontology.main.object-type.401ac022-89eb-4591-8b7e-0aa912b9efb44",
+        "status": "ACTIVE"
+      },
+      "linkTypes": [
+        {
+          "apiName": "lead",
+          "cardinality": "ONE",
+          "displayName": "Lead",
+          "objectTypeApiName": "Employee",
+          "status": "ACTIVE",
+          "foreignKeyPropertyApiName": "employeeId"
+        },
+        {
+          "apiName": "peeps",
+          "cardinality": "MANY",
+          "displayName": "Peeps",
+          "objectTypeApiName": "Employee",
+          "status": "ACTIVE",
+          "foreignKeyPropertyApiName": "employeeId"
+        },
+        {
+          "apiName": "manager",
+          "cardinality": "ONE",
+          "displayName": "Manager",
+          "objectTypeApiName": "Employee",
+          "status": "ACTIVE",
+          "foreignKeyPropertyApiName": "employeeId"
+        },
+        {
+          "apiName": "assignedEquipment",
+          "cardinality": "MANY",
+          "displayName": "Assigned Equipment",
+          "objectTypeApiName": "Equipment",
+          "status": "ACTIVE",
+          "foreignKeyPropertyApiName": "equipmentId"
+        },
+        {
+          "apiName": "primaryOffice",
+          "cardinality": "ONE",
+          "displayName": "Primary Office",
+          "objectTypeApiName": "Office",
+          "status": "ACTIVE",
+          "foreignKeyPropertyApiName": "officeId"
+        }
+      ]
+    },
+    "Office": {
+      "objectType": {
+        "apiName": "Office",
+        "description": "A office in our Company",
+        "primaryKey": "officeId",
+        "properties": {
+          "officeId": {
+            "dataType": {
+              "type": "string"
+            },
+            "description": "Unique identifier for the office"
+          },
+          "entrance": {
+            "dataType": {
+              "type": "geopoint"
+            },
+            "description": "Geographic coordinates of the main entrance"
+          },
+          "occupiedArea": {
+            "description": "The occupied area of the Office",
+            "dataType": {
+              "type": "geoshape"
+            }
+          },
+          "name": {
+            "description": "The Name of the Office",
+            "dataType": {
+              "type": "string"
+            }
+          },
+          "meetingRooms": {
+            "description": "The Names of meetings rooms in the office",
+            "dataType": {
+              "type": "array",
+              "subType": {
+                "type": "string"
+              }
+            }
+          },
+          "meetingRoomCapacities": {
+            "description": "The individual capacities of meetings rooms in the office",
+            "dataType": {
+              "type": "array",
+              "subType": {
+                "type": "integer"
+              }
+            }
+          },
+          "address": {
+            "dataType": {
+              "type": "string"
+            },
+            "description": "Full address of the office"
+          },
+          "city": {
+            "dataType": {
+              "type": "string"
+            },
+            "description": "City where the office is located"
+          },
+          "country": {
+            "dataType": {
+              "type": "string"
+            },
+            "description": "Country where the office is located"
+          },
+          "postalCode": {
+            "dataType": {
+              "type": "string"
+            },
+            "description": "Postal/ZIP code of the office"
+          },
+          "phoneNumber": {
+            "dataType": {
+              "type": "string"
+            },
+            "description": "Main phone number for the office"
+          },
+          "capacity": {
+            "dataType": {
+              "type": "integer"
+            },
+            "description": "Total capacity of the office"
+          },
+          "squareFootage": {
+            "dataType": {
+              "type": "long"
+            },
+            "description": "Total square footage of the office space"
+          },
+          "constructionYear": {
+            "dataType": {
+              "type": "short"
+            },
+            "description": "Year the office building was constructed"
+          },
+          "leaseExpirationDate": {
+            "dataType": {
+              "type": "date"
+            },
+            "description": "Date when the current lease expires"
+          },
+          "lastRenovationDate": {
+            "dataType": {
+              "type": "date"
+            },
+            "description": "Date of the last major renovation"
+          },
+          "monthlyRent": {
+            "dataType": {
+              "type": "decimal"
+            },
+            "description": "Monthly rent cost with precise decimal representation"
+          },
+          "utilityCost": {
+            "dataType": {
+              "type": "double"
+            },
+            "description": "Average monthly utility cost"
+          },
+          "temperatureC": {
+            "dataType": {
+              "type": "float"
+            },
+            "description": "Current office temperature in Celsius"
+          },
+          "isActive": {
+            "dataType": {
+              "type": "boolean"
+            },
+            "description": "Whether the office is currently in use"
+          },
+          "floorPlan": {
+            "dataType": {
+              "type": "attachment"
+            },
+            "description": "Office floor plan document"
+          },
+          "securityLevel": {
+            "dataType": {
+              "type": "marking"
+            },
+            "description": "Security level classification for the office"
+          },
+          "tourVideo": {
+            "dataType": {
+              "type": "mediaReference"
+            },
+            "description": "Reference to office tour video"
+          },
+          "utilityUsage": {
+            "dataType": {
+              "type": "timeseries",
+              "itemType": {
+                "type": "double"
+              }
+            },
+            "description": "Time series of utility usage readings"
+          },
+          "amenities": {
+            "dataType": {
+              "type": "struct",
+              "structFieldTypes": [
+                {
+                  "apiName": "hasGym",
+                  "dataType": {
+                    "type": "boolean"
+                  }
+                },
+                {
+                  "apiName": "hasCafeteria",
+                  "dataType": {
+                    "type": "boolean"
+                  }
+                },
+                {
+                  "apiName": "parkingSpaces",
+                  "dataType": {
+                    "type": "integer"
+                  }
+                }
+              ]
+            },
+            "description": "Structured data about office amenities"
+          },
+          "nearbyAttractions": {
+            "dataType": {
+              "type": "array",
+              "subType": {
+                "type": "string"
+              }
+            },
+            "description": "List of attractions near the office"
+          },
+          "floorNumbers": {
+            "dataType": {
+              "type": "array",
+              "subType": {
+                "type": "byte"
+              }
+            },
+            "description": "List of floor numbers occupied"
+          },
+          "satelliteOfficeIds": {
+            "dataType": {
+              "type": "array",
+              "subType": {
+                "type": "string"
+              }
+            },
+            "description": "IDs of satellite offices managed by this office"
+          }
+        },
+        "icon": {
+          "type": "blueprint",
+          "name": "office",
+          "color": "blue"
+        },
+        "titleProperty": "name",
+        "displayName": "Office",
+        "pluralDisplayName": "Offices",
+        "rid": "ri.ontology.main.object-type.404ac022-89eb-4591-8b7e-1a912b9efb45",
+        "status": "ACTIVE"
+      },
+      "linkTypes": [
+        {
+          "apiName": "employees",
+          "cardinality": "MANY",
+          "displayName": "Employees",
+          "objectTypeApiName": "Employee",
+          "status": "ACTIVE",
+          "foreignKeyPropertyApiName": "employeeId"
+        },
+        {
+          "apiName": "inventory",
+          "cardinality": "MANY",
+          "displayName": "Office Inventory",
+          "objectTypeApiName": "Equipment",
+          "status": "ACTIVE",
+          "foreignKeyPropertyApiName": "equipmentId"
+        }
+      ]
+    },
+    "Equipment": {
+      "objectType": {
+        "apiName": "Equipment",
+        "description": "Physical assets owned by the company and assigned to employees or offices",
+        "primaryKey": "equipmentId",
+        "properties": {
+          "equipmentId": {
+            "dataType": {
+              "type": "string"
+            },
+            "description": "Unique identifier for the equipment"
+          },
+          "type": {
+            "dataType": {
+              "type": "string"
+            },
+            "description": "Type of equipment (e.g., Laptop, Phone, Monitor)"
+          },
+          "manufacturer": {
+            "dataType": {
+              "type": "string"
+            },
+            "description": "Manufacturer of the equipment"
+          },
+          "model": {
+            "dataType": {
+              "type": "string"
+            },
+            "description": "Model number or name"
+          },
+          "serialNumber": {
+            "dataType": {
+              "type": "string"
+            },
+            "description": "Serial number of the equipment"
+          },
+          "purchaseDate": {
+            "dataType": {
+              "type": "date"
+            },
+            "description": "Date the equipment was purchased"
+          },
+          "lastMaintenanceDate": {
+            "dataType": {
+              "type": "date"
+            },
+            "description": "Date of last maintenance or service"
+          },
+          "assignedEmployeeId": {
+            "dataType": {
+              "type": "integer"
+            },
+            "description": "ID of the employee the equipment is assigned to"
+          },
+          "assignedOfficeId": {
+            "dataType": {
+              "type": "string"
+            },
+            "description": "ID of the office where the equipment is located"
+          },
+          "purchasePrice": {
+            "dataType": {
+              "type": "decimal"
+            },
+            "description": "Original purchase price with precise decimal representation"
+          },
+          "currentValue": {
+            "dataType": {
+              "type": "double"
+            },
+            "description": "Current estimated value after depreciation"
+          },
+          "warrantyLengthMonths": {
+            "dataType": {
+              "type": "short"
+            },
+            "description": "Length of warranty in months"
+          },
+          "maintenanceCost": {
+            "dataType": {
+              "type": "float"
+            },
+            "description": "Average monthly maintenance cost"
+          },
+          "weight": {
+            "dataType": {
+              "type": "float"
+            },
+            "description": "Weight of the equipment in kg"
+          },
+          "isActive": {
+            "dataType": {
+              "type": "boolean"
+            },
+            "description": "Whether the equipment is currently in use"
+          },
+          "invoice": {
+            "dataType": {
+              "type": "attachment"
+            },
+            "description": "Attached invoice document"
+          },
+          "usageMetrics": {
+            "dataType": {
+              "type": "timeseries",
+              "itemType": {
+                "type": "double"
+              }
+            },
+            "description": "Time series of usage metrics"
+          },
+          "lastKnownLocation": {
+            "dataType": {
+              "type": "geopoint"
+            },
+            "description": "Last known geographic coordinates for tracking"
+          },
+          "movementHistory": {
+            "dataType": {
+              "type": "geotimeSeriesReference"
+            },
+            "description": "History of equipment movement locations"
+          },
+          "securityClassification": {
+            "dataType": {
+              "type": "marking"
+            },
+            "description": "Security classification of equipment"
+          },
+          "trainingMaterial": {
+            "dataType": {
+              "type": "mediaReference"
+            },
+            "description": "Reference to training videos for this equipment"
+          },
+          "specifications": {
+            "dataType": {
+              "type": "struct",
+              "structFieldTypes": [
+                {
+                  "apiName": "processor",
+                  "dataType": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "apiName": "memory",
+                  "dataType": {
+                    "type": "integer"
+                  }
+                },
+                {
+                  "apiName": "storage",
+                  "dataType": {
+                    "type": "integer"
+                  }
+                }
+              ]
+            },
+            "description": "Structured technical specifications"
+          },
+          "accessories": {
+            "dataType": {
+              "type": "array",
+              "subType": {
+                "type": "string"
+              }
+            },
+            "description": "List of accessories included with the equipment"
+          },
+          "maintenanceHistory": {
+            "dataType": {
+              "type": "array",
+              "subType": {
+                "type": "string"
+              }
+            },
+            "description": "History of maintenance events"
+          },
+          "previousOwners": {
+            "dataType": {
+              "type": "array",
+              "subType": {
+                "type": "integer"
+              }
+            },
+            "description": "List of employee IDs who previously owned this equipment"
+          }
+        },
+        "icon": {
+          "type": "blueprint",
+          "name": "equipment",
+          "color": "blue"
+        },
+        "displayName": "Equipment",
+        "pluralDisplayName": "Equipment",
+        "titleProperty": "model",
+        "rid": "ri.ontology.main.object-type.808ac022-89eb-4591-8b7e-1a912b9efb45",
+        "status": "ACTIVE"
+      },
+      "linkTypes": [
+        {
+          "apiName": "assignedTo",
+          "cardinality": "ONE",
+          "displayName": "Assigned To",
+          "objectTypeApiName": "Employee",
+          "status": "ACTIVE",
+          "foreignKeyPropertyApiName": "employeeId"
+        },
+        {
+          "apiName": "locatedAt",
+          "cardinality": "ONE",
+          "displayName": "Located At",
+          "objectTypeApiName": "Office",
+          "status": "ACTIVE",
+          "foreignKeyPropertyApiName": "officeId"
+        }
+      ]
+    }
+  },
+  "queryTypes": {
+    "getTotalEmployeeCount": {
+      "apiName": "getTotalEmployeeCount",
+      "displayName": "Get Total Employee Count",
+      "description": "Returns the total number of active employees in the system",
+      "output": {
+        "type": "integer"
+      },
+      "parameters": {
+        "departmentId": {
+          "description": "The department to count employees for",
+          "dataType": {
+            "type": "string"
+          },
+          "required": false
+        }
+      },
+      "rid": "ri.function-registry.main.function.employee-count-12345",
+      "version": "1.0.0"
+    },
+    "calculateTotal": {
+      "apiName": "calculateTotal",
+      "displayName": "Calculate Total from Document",
+      "description": "Processes an uploaded document to calculate total values",
+      "output": {
+        "type": "string"
+      },
+      "parameters": {
+        "documentFile": {
+          "dataType": {
+            "type": "attachment"
+          },
+          "description": "The document to process for calculations",
+          "required": false
+        },
+        "includeMetadata": {
+          "dataType": {
+            "type": "boolean"
+          },
+          "description": "Whether to include metadata in the calculation"
+        }
+      },
+      "rid": "ri.function-registry.main.function.calculate-total-67890",
+      "version": "1.0.0"
+    }
+  },
+  "interfaceTypes": {
+    "HasAddress": {
+      "rid": "ri.ontology.main.interface.has-address-12345",
+      "apiName": "HasAddress",
+      "displayName": "Has Address",
+      "description": "Interface for objects that have address information",
+      "properties": {
+        "address": {
+          "rid": "ri.ontology.main.shared-property.address-67890",
+          "apiName": "address",
+          "displayName": "Address",
+          "dataType": {
+            "type": "string"
+          },
+          "required": true
+        },
+        "city": {
+          "rid": "ri.ontology.main.shared-property.city-67891",
+          "apiName": "city",
+          "displayName": "City",
+          "dataType": {
+            "type": "string"
+          },
+          "required": false
+        },
+        "contactInfo": {
+          "dataType": {
+            "type": "struct",
+            "structFieldTypes": [
+              {
+                "apiName": "phone",
+                "dataType": {
+                  "type": "string"
+                }
+              },
+              {
+                "apiName": "email",
+                "dataType": {
+                  "type": "string"
+                }
+              },
+              {
+                "apiName": "address",
+                "dataType": {
+                  "type": "string"
+                }
+              },
+              {
+                "apiName": "houseNumber",
+                "dataType": {
+                  "type": "integer"
+                }
+              },
+              {
+                "apiName": "entrance",
+                "dataType": {
+                  "type": "geopoint"
+                }
+              }
+            ]
+          },
+          "description": "Structured contact information"
+        }
+      }
+    }
+  }
+}

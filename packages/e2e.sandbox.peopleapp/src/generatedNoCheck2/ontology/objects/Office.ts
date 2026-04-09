@@ -68,6 +68,8 @@ export interface Office extends $ObjectTypeDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'object';
   apiName: 'Office';
+  primaryKeyApiName: 'primaryKey_';
+  primaryKeyType: 'string';
   __DefinitionMetadata?: {
     objectSet: Office.ObjectSet;
     props: Office.Props;
@@ -124,8 +126,13 @@ export interface Office extends $ObjectTypeDefinition {
   };
 }
 
-export const Office: Office = {
+export const Office = {
   type: 'object',
   apiName: 'Office',
   osdkMetadata: $osdkMetadata,
-};
+  primaryKeyApiName: 'primaryKey_',
+  primaryKeyType: 'string',
+  internalDoNotUseMetadata: {
+    rid: 'ri.ontology.main.object-type.bbca9c02-5c6a-4d3a-8bf1-e4db0177ab5f',
+  },
+} satisfies Office & { internalDoNotUseMetadata: { rid: string } } as Office;

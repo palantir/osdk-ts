@@ -41,8 +41,10 @@ export function createMinimalClient(
   tokenProvider: () => Promise<string>,
   options: OntologyCachingOptions & {
     logger?: Logger;
-    transactionRid?: string;
+    transactionId?: string;
+    flushEdits?: () => Promise<void>;
     branch?: string;
+    headers?: Record<string, string>;
   } = {},
   fetchFn: (
     input: Request | URL | string,
@@ -75,16 +77,18 @@ export function createMinimalClient(
       tokenProvider,
       USER_AGENT,
       fetchFn,
+      options.headers,
     ),
     objectSetFactory,
     objectFactory: convertWireToOsdkObjects,
     objectFactory2: convertWireToOsdkObjects2,
     ontologyRid: metadata.ontologyRid,
     logger: options.logger,
-    transactionRid: options.transactionRid,
+    transactionId: options.transactionId,
     clientCacheKey: {} as ClientCacheKey,
     requestContext: {},
     branch: options.branch,
+    narrowTypeInterfaceOrObjectMapping: {},
   } satisfies Omit<
     MinimalClient,
     "ontologyProvider"

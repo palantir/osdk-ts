@@ -14,32 +14,41 @@
  * limitations under the License.
  */
 
+import type { InterfaceTypeStatus } from "@osdk/client.unstable";
 import invariant from "tiny-invariant";
+import { API_NAME_PATTERN, isValidApiName } from "../util/ApiNameValidator.js";
+import { cloneDefinition } from "./cloneDefinition.js";
+import type { BlueprintIcon } from "./common/BlueprintIcons.js";
+import { OntologyEntityTypeEnum } from "./common/OntologyEntityTypeEnum.js";
 import {
   namespace,
   ontologyDefinition,
   updateOntology,
   withoutNamespace,
 } from "./defineOntology.js";
-import { defineSharedPropertyType } from "./defineSpt.js";
-import type { BlueprintIcon } from "./iconNames.js";
 import {
-  type InterfaceType,
-  type InterfaceTypeStatus,
-  OntologyEntityTypeEnum,
-  type PropertyTypeType,
-  type SharedPropertyType,
-} from "./types.js";
+  type InterfaceDefinedProperty,
+  type InterfacePropertyType,
+  isInterfaceSharedPropertyType,
+} from "./interface/InterfacePropertyType.js";
+import { type InterfaceType } from "./interface/InterfaceType.js";
+import { mapSimplifiedStatusToInterfaceTypeStatus } from "./interface/mapSimplifiedStatusToInterfaceTypeStatus.js";
+import { combineApiNamespaceIfMissing } from "./namespace/combineApiNamespaceIfMissing.js";
+import { isExotic, isPropertyTypeType } from "./properties/PropertyTypeType.js";
+import { type SharedPropertyType } from "./properties/SharedPropertyType.js";
 
-type SimplifiedInterfaceTypeStatus =
+export type SimplifiedInterfaceTypeStatus =
   | { type: "deprecated"; message: string; deadline: string }
   | { type: "active" }
-  | { type: "experimental" };
+  | { type: "experimental" }
+  | { type: "example" };
 
-type PropertyBase = SharedPropertyType | PropertyTypeType;
-type PropertyWithOptional = {
+type PropertyBase =
+  | SharedPropertyType
+  | InterfaceDefinedProperty;
+type SptWithOptional = {
   required: boolean;
-  propertyDefinition: PropertyBase;
+  sharedPropertyType: SharedPropertyType;
 };
 
 export type InterfaceTypeDefinition = {
@@ -50,15 +59,16 @@ export type InterfaceTypeDefinition = {
   status?: SimplifiedInterfaceTypeStatus;
   properties?: Record<
     string,
-    PropertyBase | PropertyWithOptional
+    PropertyBase | SptWithOptional
   >;
   extends?: InterfaceType | InterfaceType[];
   searchable?: boolean;
 };
 
 export function defineInterface(
-  interfaceDef: InterfaceTypeDefinition,
+  interfaceDefInput: InterfaceTypeDefinition,
 ): InterfaceType {
+  const interfaceDef = cloneDefinition(interfaceDefInput);
   const apiName = namespace + interfaceDef.apiName;
   invariant(
     ontologyDefinition[OntologyEntityTypeEnum.INTERFACE_TYPE][apiName]
@@ -66,32 +76,76 @@ export function defineInterface(
     `Interface ${apiName} already exists`,
   );
 
-  const properties = Object.fromEntries(
-    Object.entries(interfaceDef.properties ?? {}).map<
+  invariant(
+    isValidApiName(interfaceDef.apiName),
+    `Invalid API name ${interfaceDef.apiName}. API names must match the regex ${API_NAME_PATTERN}.`,
+  );
+
+  // legacy support for propertiesV2 (only SPTs)
+  const spts: Record<string, SptWithOptional> = Object.fromEntries(
+    Object.entries(interfaceDef.properties ?? {}).filter(([_name, prop]) => {
+      return isInterfaceSharedPropertyType(prop) || "apiName" in prop;
+    }).map(([s, spt]) => {
+      const required = isInterfaceSharedPropertyType(spt) ? spt.required : true;
+      return [s, {
+        sharedPropertyType: (isInterfaceSharedPropertyType(spt)
+          ? spt.sharedPropertyType
+          : spt) as SharedPropertyType,
+        required,
+      }];
+    }),
+  );
+  const propertiesV2 = Object.fromEntries(
+    Object.entries(spts).map<
       [string, { required: boolean; sharedPropertyType: SharedPropertyType }]
     >(
-      ([propApiName, type]) => {
-        if (typeof type === "object" && "propertyDefinition" in type) {
-          return [namespace + propApiName, {
-            required: type.required,
-            sharedPropertyType: unifyBasePropertyDefinition(
-              namespace,
-              propApiName,
-              type.propertyDefinition,
-            ),
-          }];
-        }
-
-        return [namespace + propApiName, {
-          required: true,
-          sharedPropertyType: unifyBasePropertyDefinition(
+      ([propName, type]) => {
+        const sptApiName = combineApiNamespaceIfMissing(
+          namespace,
+          type.sharedPropertyType.apiName,
+        );
+        return [sptApiName, {
+          required: type.required,
+          sharedPropertyType: verifyBasePropertyDefinition(
             namespace,
-            propApiName,
-            type,
+            propName,
+            type.sharedPropertyType,
           ),
         }];
       },
     ),
+  );
+
+  const propertiesV3 = Object.fromEntries(
+    Object.entries(interfaceDef.properties ?? {}).map<
+      [string, InterfacePropertyType]
+    >(([apiName, prop]) => {
+      invariant(
+        isValidApiName(apiName),
+        `Invalid API name ${apiName} for property on interface ${interfaceDef.apiName}. API names must match the regex ${API_NAME_PATTERN}.`,
+      );
+      const required =
+        (typeof prop === "object" && isInterfaceSharedPropertyType(prop))
+          ? prop.required
+          : true;
+      const propertyBase: PropertyBase =
+        (typeof prop === "object" && isInterfaceSharedPropertyType(prop))
+          ? prop.sharedPropertyType
+          : prop;
+      if (
+        typeof propertyBase === "object"
+        && "nonNameSpacedApiName" in propertyBase
+      ) {
+        // SPT
+        return [apiName, {
+          required,
+          sharedPropertyType: propertyBase,
+        }];
+      } else {
+        // IDP
+        return [apiName, propertyBase];
+      }
+    }),
   );
 
   const extendsInterfaces = interfaceDef.extends
@@ -129,7 +183,8 @@ export function defineInterface(
     extendsInterfaces,
     links: [],
     status,
-    propertiesV2: properties,
+    propertiesV2,
+    propertiesV3,
     searchable: interfaceDef.searchable ?? true,
     __type: OntologyEntityTypeEnum.INTERFACE_TYPE,
   };
@@ -138,78 +193,24 @@ export function defineInterface(
   return fullInterface;
 }
 
-function isPropertyTypeType(
-  v: PropertyTypeType,
-): v is PropertyTypeType {
-  return v === "boolean" || v === "byte"
-    || v === "date" || v === "decimal" || v === "double"
-    || v === "float" || v === "geopoint" || v === "geoshape"
-    || v === "integer" || v === "long"
-    || (typeof v === "object" && v.type === "marking")
-    || v === "short" || v === "string"
-    || v === "timestamp";
-}
-
-function mapSimplifiedStatusToInterfaceTypeStatus(
-  status: SimplifiedInterfaceTypeStatus,
-): InterfaceTypeStatus {
-  switch (status.type) {
-    case "deprecated":
-      return {
-        type: "deprecated",
-        deprecated: {
-          message: status.message,
-          deadline: status.deadline,
-          replacedBy: undefined,
-        },
-      };
-    case "active":
-      return {
-        type: "active",
-        active: {},
-      };
-    case "experimental":
-      return {
-        type: "experimental",
-        experimental: {},
-      };
-    default:
-      throw new Error(`Invalid status type: ${(status as any).type}`);
-  }
-}
-
-function unifyBasePropertyDefinition(
+function verifyBasePropertyDefinition(
   namespace: string,
   apiName: string,
-  type: PropertyBase,
+  type: SharedPropertyType,
 ): SharedPropertyType {
-  if (
-    typeof type === "string"
-    || (typeof type === "object" && !("apiName" in type))
-  ) {
-    invariant(
-      isPropertyTypeType(type),
-      `Invalid data type ${
-        JSON.stringify(type)
-      } for property ${apiName} on InterfaceType ${apiName}`,
-    );
-
-    const spt = defineSharedPropertyType({
-      apiName,
-      displayName: apiName,
-      type,
-      array: false,
-    });
-    return spt;
-  } else {
-    const unNamespacedTypeApiName = withoutNamespace(type.apiName);
-    invariant(
-      namespace + apiName === type.apiName
-        || apiName === unNamespacedTypeApiName,
-      `property key and it's apiName must be identical. ${
-        JSON.stringify({ key: apiName, apiName: type.apiName })
-      }`,
-    );
-    return type;
-  }
+  const unNamespacedTypeApiName = withoutNamespace(type.apiName);
+  invariant(
+    isPropertyTypeType(type.type) || isExotic(type.type),
+    `Invalid data type ${
+      JSON.stringify(type)
+    } for property ${apiName} on InterfaceType ${apiName}`,
+  );
+  invariant(
+    namespace + apiName === type.apiName
+      || apiName === unNamespacedTypeApiName,
+    `property key and it's apiName must be identical. ${
+      JSON.stringify({ key: apiName, apiName: type.apiName })
+    }`,
+  );
+  return type;
 }

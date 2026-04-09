@@ -53,6 +53,8 @@ export interface BuilderDeploymentState extends $ObjectTypeDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'object';
   apiName: 'BuilderDeploymentState';
+  primaryKeyApiName: 'skuId';
+  primaryKeyType: 'string';
   __DefinitionMetadata?: {
     objectSet: BuilderDeploymentState.ObjectSet;
     props: BuilderDeploymentState.Props;
@@ -95,8 +97,13 @@ export interface BuilderDeploymentState extends $ObjectTypeDefinition {
   };
 }
 
-export const BuilderDeploymentState: BuilderDeploymentState = {
+export const BuilderDeploymentState = {
   type: 'object',
   apiName: 'BuilderDeploymentState',
   osdkMetadata: $osdkMetadata,
-};
+  primaryKeyApiName: 'skuId',
+  primaryKeyType: 'string',
+  internalDoNotUseMetadata: {
+    rid: 'rid.a.b.c.d',
+  },
+} satisfies BuilderDeploymentState & { internalDoNotUseMetadata: { rid: string } } as BuilderDeploymentState;

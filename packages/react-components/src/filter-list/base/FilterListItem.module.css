@@ -1,0 +1,211 @@
+/*
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.filterItem {
+  display: flex;
+  flex-direction: column;
+  gap: var(--osdk-filter-item-gap);
+  border-radius: var(--osdk-filter-item-border-radius);
+  padding: var(--osdk-filter-item-padding);
+}
+
+.itemHeader {
+  display: flex;
+  align-items: center;
+}
+
+.itemLabel {
+  flex: 1;
+  font-family: var(--osdk-filter-item-label-font-family);
+  font-size: var(--osdk-filter-item-label-font-size);
+  font-weight: var(--osdk-filter-item-label-font-weight);
+  color: var(--osdk-filter-item-label-color);
+}
+
+.itemContent {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.dragHandle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--osdk-filter-item-drag-handle-padding);
+  margin-right: var(--osdk-surface-spacing);
+  border: none;
+  background: var(--osdk-filter-item-drag-handle-bg);
+  cursor: var(--osdk-drag-handle-cursor);
+  border-radius: var(--osdk-filter-item-drag-handle-border-radius);
+  color: var(--osdk-filter-item-drag-handle-color);
+  touch-action: none;
+
+  &:hover {
+    color: var(--osdk-filter-item-drag-handle-color-hover);
+    background: var(--osdk-filter-item-drag-handle-bg-hover);
+  }
+
+  &:active {
+    cursor: var(--osdk-drag-handle-cursor-active);
+  }
+
+  &:focus-visible {
+    outline: var(--osdk-filter-input-focus-outline-width) solid var(--osdk-filter-item-drag-handle-focus-outline-color);
+    outline-offset: var(--osdk-filter-input-focus-outline-offset);
+  }
+}
+
+.headerActionButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--osdk-filter-item-header-action-padding);
+  margin-left: calc(var(--osdk-surface-spacing) * 0.5);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  border-radius: var(--osdk-filter-item-header-action-border-radius);
+  color: var(--osdk-filter-item-header-action-color);
+  opacity: 0;
+  transition: opacity var(--osdk-filter-header-button-transition),
+    background-color var(--osdk-filter-header-button-transition);
+
+  &:hover {
+    color: var(--osdk-typography-color-default-rest);
+    background: var(--osdk-filter-item-header-action-bg-hover);
+  }
+
+  &:focus-visible {
+    opacity: 1;
+    outline: var(--osdk-filter-input-focus-outline-width) solid var(--osdk-filter-input-focus-outline-color);
+    outline-offset: var(--osdk-filter-input-focus-outline-offset);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+.filterItem:hover .headerActionButton {
+  opacity: 1;
+}
+
+.headerActionButton[data-popup-open],
+.headerActionButton[aria-pressed="true"] {
+  opacity: 1;
+}
+
+.searchRow {
+  display: flex;
+  align-items: center;
+  background: var(--osdk-filter-input-bg);
+  border: var(--osdk-filter-input-border);
+  border-radius: var(--osdk-filter-input-border-radius);
+  padding: var(--osdk-filter-input-padding);
+  gap: var(--osdk-filter-input-gap);
+}
+
+.searchInput {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-family: var(--osdk-filter-input-font-family);
+  font-size: var(--osdk-filter-input-font-size);
+  color: var(--osdk-filter-input-color);
+  outline: none;
+
+  &::placeholder {
+    color: var(--osdk-filter-input-placeholder-color);
+  }
+}
+
+.searchClearButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--osdk-filter-input-clear-padding);
+  border: none;
+  background: var(--osdk-filter-input-clear-bg);
+  color: var(--osdk-filter-input-icon-color);
+  cursor: pointer;
+  border-radius: var(--osdk-filter-input-clear-border-radius);
+  transition: background-color var(--osdk-filter-input-transition);
+
+  &:hover {
+    background: var(--osdk-filter-input-clear-bg-hover);
+  }
+
+  &:active {
+    background: var(--osdk-filter-input-clear-bg-active);
+  }
+
+  &:focus-visible {
+    outline: var(--osdk-filter-input-focus-outline-width) solid var(--osdk-filter-input-focus-outline-color);
+    outline-offset: var(--osdk-filter-input-focus-outline-offset);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+.excludeRow {
+  display: flex;
+  align-items: center;
+  opacity: 0;
+  height: 0;
+  overflow: hidden;
+  transition: opacity var(--osdk-filter-header-button-transition),
+    height var(--osdk-filter-header-button-transition);
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+.excludeRowVisible {
+  opacity: 1;
+  height: auto;
+  overflow: visible;
+}
+
+.excludeCountLabel {
+  font-family: var(--osdk-filter-item-exclude-dropdown-font-family);
+  font-size: var(--osdk-filter-item-exclude-dropdown-font-size);
+  color: var(--osdk-filter-item-exclude-dropdown-color);
+  margin-left: calc(var(--osdk-surface-spacing) * 0.5);
+}
+
+.clearAllButton {
+  margin-left: auto;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: var(--osdk-filter-item-exclude-dropdown-font-family);
+  font-size: var(--osdk-filter-item-exclude-dropdown-font-size);
+  color: var(--osdk-filter-item-exclude-dropdown-color);
+  padding: 0;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.dragging {
+  opacity: var(--osdk-filter-item-dragging-opacity);
+}

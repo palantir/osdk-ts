@@ -55,6 +55,7 @@ const fauxObject: Osdk.Instance<objectTypeWithAllPropertyTypes> = {
   shortArray: [],
   string: "Hi there",
   stringArray: [],
+  vector: [],
 } satisfies objectTypeWithAllPropertyTypes.Props as unknown as Osdk.Instance<
   objectTypeWithAllPropertyTypes
 >;
@@ -75,6 +76,16 @@ const whereClauses = {
   stringStartsWithBye: {
     string: {
       $startsWith: "Bye",
+    },
+  },
+  integerInArray: {
+    integer: {
+      $in: [6, 7, 8],
+    },
+  },
+  integerNotInArray: {
+    integer: {
+      $in: [1, 2, 3],
     },
   },
   mediaReferenceIsNull: {
@@ -135,6 +146,8 @@ const cases = [
   ["fauxObject", "booleanTrue", true, true],
   ["fauxObject", "stringStartsWithHi", true, true],
   ["fauxObject", "stringStartsWithBye", false, false],
+  ["fauxObject", "integerInArray", true, true],
+  ["fauxObject", "integerNotInArray", false, false],
   ["fauxObject", "mediaReferenceIsNull", true, true],
   ["fauxObject", "mediaReferenceNotIsNull", false, false],
   ["fauxObject", "geopointIntersects", false, true],

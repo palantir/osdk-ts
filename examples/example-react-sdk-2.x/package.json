@@ -9,17 +9,22 @@
   },
   "scripts": {
     "build": "tsc && vite build",
+    "check": "eslint . --report-unused-disable-directives --max-warnings 0 && tsc --noEmit && vitest run",
     "dev": "vite",
+    "format": "prettier --write src/",
     "lint": "eslint . --report-unused-disable-directives --max-warnings 0",
     "lint:fix": "eslint --report-unused-disable-directives --max-warnings 0 --fix",
     "preview": "vite preview",
     "test": "vitest run"
   },
   "dependencies": {
+    "@blueprintjs/core": "^6.10.0",
+    "@blueprintjs/icons": "^6.7.0",
     "@osdk/client": "workspace:*",
     "@osdk/e2e.generated.catchall": "workspace:*",
+    "@osdk/foundry": "latest",
     "@osdk/oauth": "workspace:*",
-    "@osdk/react": "workspace:*",
+    "normalize.css": "^8.0.1",
     "react": "^18",
     "react-dom": "^18",
     "react-router-dom": "^6.30.1"
@@ -27,8 +32,9 @@
   "devDependencies": {
     "@eslint/compat": "^1.3.2",
     "@eslint/js": "^9.35.0",
+    "@trivago/prettier-plugin-sort-imports": "^5.0.0",
     "@types/eslint-plugin-jsx-a11y": "^6.10.0",
-    "@types/node": "^18.0.0",
+    "@types/node": "^24.12.0",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "@typescript-eslint/eslint-plugin": "^8.43.0",
@@ -42,9 +48,10 @@
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.20",
     "globals": "^15.15.0",
+    "prettier": "^3.0.0",
     "typescript": "~5.5.4",
     "typescript-eslint": "^8.43.0",
-    "vite": "^6.3.6",
+    "vite": "^7.3.1",
     "vitest": "^3.2.4"
   },
   "type": "module"

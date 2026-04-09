@@ -14,7 +14,7 @@ The Maker package provides a type-safe, programmatic way to define ontologies, w
 - [Defining Links](#defining-links)
 - [Interface Link Constraints](#interface-link-constraints)
 - [Defining Actions](#defining-actions)
-- [Importing Ontology Entities](#importing-ontology-entities)
+- [Advanced](#advanced)
 
 ## Getting Started
 
@@ -97,6 +97,10 @@ const tagsProperty = defineSharedPropertyType({
   array: true,
   displayName: "Tags",
   description: "List of tags",
+  // optionally add a reducer
+  reducers: [{
+    direction: "descending",
+  }],
 });
 ```
 
@@ -119,6 +123,11 @@ const addressProperty = defineSharedPropertyType({
         },
       },
       country: "string",
+    },
+    // optionally add a main value
+    mainValue: {
+      fields: "street",
+      type: "string",
     },
   },
   displayName: "Address",
@@ -239,10 +248,10 @@ const personInterface = defineInterface({
   displayName: "Person",
   description: "Represents a person",
   properties: {
-    firstName: "string",
-    lastName: "string",
-    email: "string",
-    age: "integer",
+    firstName: { type: "string" }, // creates an interface defined property
+    lastName: { type: "string" },
+    email: { type: "string" },
+    age: { type: "integer" },
   },
 });
 
@@ -254,10 +263,10 @@ const employeeInterface = defineInterface({
   properties: {
     firstName: nameProperty, // Using previously defined SPT
     lastName: nameProperty, // Using previously defined SPT
-    employeeId: "string",
-    department: "string",
-    hireDate: "date",
-    isActive: "boolean",
+    employeeId: { type: "string" },
+    department: { type: "string" },
+    hireDate: { type: "date" },
+    isActive: { type: "boolean" },
   },
 });
 ```
@@ -269,12 +278,16 @@ const customerInterface = defineInterface({
   apiName: "Customer",
   displayName: "Customer",
   properties: {
-    name: "string",
-    email: "string",
-    // Define an optional property
+    // Define an optional interface defined property
+    name: {
+      type: "string",
+      required: false,
+    },
+    email: { type: "string" },
+    // Define an optional interface SPT
     phoneNumber: {
       required: false,
-      propertyDefinition: "string",
+      sharedPropertyType: phoneNumber, // Using previously defined SPT
     },
   },
 });
@@ -288,8 +301,8 @@ const managerInterface = defineInterface({
   apiName: "Manager",
   displayName: "Manager",
   properties: {
-    managementLevel: "string",
-    directReports: "integer",
+    managementLevel: { type: "string" },
+    directReports: { type: "integer" },
   },
   extends: [employeeInterface], // Extends the Employee interface
 });
@@ -299,7 +312,7 @@ const executiveInterface = defineInterface({
   apiName: "Executive",
   displayName: "Executive",
   properties: {
-    stockOptions: "boolean",
+    stockOptions: { type: "boolean" },
   },
   extends: ["Manager"], // Extends using apiName
 });
@@ -316,9 +329,9 @@ const productInterface = defineInterface({
     color: "#007bff",
   },
   properties: {
-    name: "string",
-    sku: "string",
-    price: "decimal",
+    name: { type: "string" },
+    sku: { type: "string" },
+    price: { type: "decimal" },
   },
 });
 ```
@@ -330,8 +343,8 @@ const legacyInterface = defineInterface({
   apiName: "LegacySystem",
   displayName: "Legacy System",
   properties: {
-    systemName: "string",
-    version: "string",
+    systemName: { type: "string" },
+    version: { type: "string" },
   },
   status: {
     type: "deprecated",
@@ -344,8 +357,8 @@ const experimentalInterface = defineInterface({
   apiName: "ExperimentalFeature",
   displayName: "Experimental Feature",
   properties: {
-    featureName: "string",
-    enabled: "boolean",
+    featureName: { type: "string" },
+    enabled: { type: "boolean" },
   },
   status: {
     type: "experimental",
@@ -434,6 +447,11 @@ const customerObject = defineObject({
           zipCode: "string",
           country: "string",
         },
+        // optionally add a main value
+        mainValue: {
+          fields: "street",
+          type: "string",
+        },
       },
       displayName: "Address",
     },
@@ -441,7 +459,7 @@ const customerObject = defineObject({
 });
 ```
 
-### Object with Datasource
+### Object with Custom Datasources
 
 ```typescript
 // Stream-backed object with retention period
@@ -456,27 +474,62 @@ const eventObject = defineObject({
     "eventName": { type: "string", displayName: "Event Name" },
     "timestamp": { type: "timestamp" },
   },
-  datasource: {
+  datasources: [{
     type: "stream",
     retentionPeriod: "P90D", // 90 days retention (ISO 8601 duration format)
-  },
+  }],
 });
+```
 
-// Dataset-backed object
-const productObject = defineObject({
-  apiName: "product",
-  displayName: "Product",
-  pluralDisplayName: "Products",
+### Object with Property Security Groups
+
+```typescript
+const object = defineObject({
+  apiName: "person",
+  displayName: "Person",
+  pluralDisplayName: "Persons",
   titlePropertyApiName: "name",
-  primaryKeyPropertyApiName: "id",
+  primaryKeyPropertyApiName: "name",
   properties: {
-    "id": { type: "string", displayName: "ID" },
-    "name": { type: "string" },
-    "price": { type: "decimal" },
+    "name": { type: "string", displayName: "Name" },
+    "protectedProperty": { type: "string", displayName: "Event Name" },
+    "markingProperty": {
+      type: {
+        type: "marking",
+        markingType: "MANDATORY",
+        markingInputGroupName: "myMarking",
+      },
+    },
   },
-  datasource: {
+  datasources: [{
     type: "dataset",
-  },
+    // you can optionally define an objectSecurityPolicy here as well
+    propertySecurityGroups: [
+      {
+        name: "myPsg",
+        properties: ["protectedProperty"],
+        granularPolicy: {
+          type: "and",
+          conditions: [
+            {
+              type: "markingProperty",
+              property: "markingProperty",
+            },
+            {
+              type: "group",
+              name: "myInputGroup",
+            },
+          ],
+        },
+        appliedMarkings: {
+          "myCbacMarking": "CBAC",
+        },
+        assumedMarkings: {
+          "myMandatoryMarking": "MANDATORY",
+        },
+      },
+    ],
+  }],
 });
 ```
 
@@ -495,18 +548,18 @@ const departmentToEmployeesLink = defineLink({
   one: {
     object: departmentObject, // The "one" side of the relationship
     metadata: {
-      apiName: "department",
-      displayName: "Department",
-      pluralDisplayName: "Departments",
+      apiName: "employees",
+      displayName: "Employee",
+      pluralDisplayName: "Employees",
       visibility: "NORMAL",
     },
   },
   toMany: {
     object: employeeObject, // The "many" side of the relationship
     metadata: {
-      apiName: "employees",
-      displayName: "Employee",
-      pluralDisplayName: "Employees",
+      apiName: "department",
+      displayName: "Department",
+      pluralDisplayName: "Departments",
       visibility: "NORMAL",
     },
   },
@@ -523,21 +576,53 @@ const productToCategoriesLink = defineLink({
   many: {
     object: productObject, // One side of the many-to-many relationship
     metadata: {
-      apiName: "products",
-      displayName: "Product",
-      pluralDisplayName: "Products",
-      visibility: "NORMAL",
-    },
-  },
-  toMany: {
-    object: categoryObject, // Other side of the many-to-many relationship
-    metadata: {
       apiName: "categories",
       displayName: "Category",
       pluralDisplayName: "Categories",
       visibility: "NORMAL",
     },
   },
+  toMany: {
+    object: categoryObject, // Other side of the many-to-many relationship
+    metadata: {
+      apiName: "products",
+      displayName: "Product",
+      pluralDisplayName: "Products",
+      visibility: "NORMAL",
+    },
+  },
+});
+```
+
+### Intermediary Link
+
+```typescript
+// Define an object-backed link type between aircraft and flights using a manifest
+const manifest = defineObject(...); // define an intermediary object
+const aircraftToManifestLink = defineLink(...); // define a one-to-many link between aircraft and intermediary object
+const flightsToManifestLink = defineLink(...); // define a one-to-many link between flights and intermediary object
+
+const aircraftToFlightsLink = defineLink({
+  apiName: "aircraftToFlights",
+  many: {
+    object: aircraft,
+    metadata: {
+      displayName: "Flight",
+      pluralDisplayName: "Flights",
+      apiName: "flights",
+    },
+    linkToIntermediary: aircraftToManifestLink,
+  },
+  toMany: {
+    object: flight,
+    metadata: {
+      displayName: "Aircraft",
+      pluralDisplayName: "Aircraft",
+      apiName: "aircraft",
+    },
+    linkToIntermediary: flightsToManifestLink,
+  },
+  intermediaryObjectType: manifest,
 });
 ```
 
@@ -609,7 +694,9 @@ import {
 } from "@osdk/maker";
 
 // Define an action to create objects implementing an interface
-const createPersonAction = defineCreateInterfaceObjectAction(personInterface);
+const createPersonAction = defineCreateInterfaceObjectAction({
+  interfaceType: personInterface,
+});
 
 // Define an action for a specific object type that implements an interface
 const createEmployeePersonAction = defineCreateInterfaceObjectAction(
@@ -618,13 +705,23 @@ const createEmployeePersonAction = defineCreateInterfaceObjectAction(
 );
 
 // Define an action to modify objects implementing an interface
-const modifyPersonAction = defineModifyInterfaceObjectAction(personInterface);
+const modifyPersonAction = defineModifyInterfaceObjectAction({
+  interfaceType: personInterface,
+});
+
+// Define a more complex interface action
+const modifyPersonAction = defineModifyInterfaceObjectAction({
+  interfaceType: personInterface,
+  excludedProperties: ["primaryKey"],
+});
 ```
 
-### Custom Action
+## Advanced
+
+### Custom Actions
 
 More customization such as security/submission criteria, constraints on parameter values, parameter overrides, etc.
-can also be added.
+can be added to actions.
 
 ```typescript
 import {
@@ -698,4 +795,82 @@ const modifyObjectActionType = defineModifyObjectAction(
     excludedProperties: ["experience"],
   },
 );
+```
+
+### Derived Properties
+
+Objects can have derived properties, which are computed at runtime from other linked objects. Properties can be mapped directly, or an aggregation function (e.g. `collectList`, `avg`, `max`, etc.) can be used.
+
+```typescript
+const passenger = defineObject({
+  displayName: "Passenger",
+  pluralDisplayName: "Passengers",
+  apiName: "passenger",
+  primaryKeyPropertyApiName: "name",
+  titlePropertyApiName: "name",
+  properties: {
+    name: {
+      type: "string",
+      displayName: "Name",
+    },
+    flight_id: {
+      type: "string",
+      displayName: "Flight ID",
+    },
+  },
+});
+const flightToPassengers = defineLink({
+  apiName: "flightToPassengersLink",
+  one: {
+    // because the object has not been created yet,
+    // reference it by its fully qualified API name manually
+    object: "com.palantir.flight",
+    metadata: {
+      apiName: "flightFromPassengers",
+    },
+  },
+  toMany: {
+    object: passenger.apiName,
+    metadata: {
+      apiName: "passengersFromFlight",
+    },
+  },
+  manyForeignKeyProperty: "flight_id",
+});
+const flight = defineObject({
+  displayName: "Flight",
+  pluralDisplayName: "Flights",
+  apiName: "flight",
+  primaryKeyPropertyApiName: "id",
+  titlePropertyApiName: "id",
+  properties: {
+    id: {
+      type: "string",
+      displayName: "ID",
+    },
+    passengersList: {
+      type: "string",
+      array: true,
+      displayName: "Passengers",
+    },
+  },
+  datasources: [
+    // the dataset will back all of the properties not specified in other datasources
+    { type: "dataset" },
+    {
+      type: "derived",
+      // multi-hop link traversals are also supported, just extend this list!
+      linkDefinition: [{
+        linkType: flightToPassengers,
+      }],
+      propertyMapping: {
+        passengersList: {
+          type: "collectList",
+          property: "name",
+          limit: 100,
+        },
+      },
+    },
+  ],
+});
 ```

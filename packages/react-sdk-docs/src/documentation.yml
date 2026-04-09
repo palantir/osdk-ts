@@ -1,0 +1,1969 @@
+kind: sdk
+versions:
+  "2.0.0":
+    snippets:
+      reactProviderSetup:
+        - template: |-
+            import { OsdkProvider2 } from "@osdk/react/experimental";
+            import { createClient } from "@osdk/client";
+
+            const client = createClient(
+              "https://your-stack.palantirfoundry.com",
+              "{{{packageName}}}",
+              async () => "your-token"
+            );
+
+            function App() {
+              return (
+                <OsdkProvider2 client={client}>
+                  <YourApp />
+                </OsdkProvider2>
+              );
+            }
+
+      reactUseOsdkObjectsBasic:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+            import { useOsdkObjects } from "@osdk/react/experimental";
+
+            function {{objectType}}List() {
+              const { data, isLoading, error, fetchMore } = useOsdkObjects({{objectType}});
+
+              return (
+                <div>
+                  {error && <div className="error-banner">Error: {error.message}</div>}
+                  {isLoading && !data && <div className="skeleton">Loading...</div>}
+                  <ul>
+                    {data?.map(obj => (
+                      <li key={obj.$primaryKey}>{obj.{{titleProperty}}}</li>
+                    ))}
+                  </ul>
+                  {isLoading && data && <span className="refresh-indicator">Refreshing...</span>}
+                  {fetchMore && <button onClick={fetchMore}>Load more</button>}
+                </div>
+              );
+            }
+
+      reactUseOsdkObjectsFilter:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+            import { useOsdkObjects } from "@osdk/react/experimental";
+
+            function Filtered{{objectType}}List() {
+              const { data, isLoading, error } = useOsdkObjects({{objectType}}, {
+                where: {
+                  {{titleProperty}}: { $isNotNull: true }
+                }
+              });
+
+              return (
+                <div>
+                  {error && <div className="error-banner">Error: {error.message}</div>}
+                  {isLoading && !data && <div className="skeleton">Loading...</div>}
+                  <ul>
+                    {data?.map(obj => (
+                      <li key={obj.$primaryKey}>{obj.{{titleProperty}}}</li>
+                    ))}
+                  </ul>
+                </div>
+              );
+            }
+
+      reactUseOsdkObjectByPrimaryKey:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+            import { useOsdkObject } from "@osdk/react/experimental";
+
+            function {{objectType}}Detail({ primaryKey }: { primaryKey: string }) {
+              const { object, isLoading, error } = useOsdkObject({{objectType}}, primaryKey);
+
+              return (
+                <div>
+                  {error && <div className="error-banner">Error: {error.message}</div>}
+                  {isLoading && !object && <div className="skeleton">Loading...</div>}
+                  {object && (
+                    <div>
+                      <h2>{object.{{titleProperty}}}</h2>
+                    </div>
+                  )}
+                </div>
+              );
+            }
+
+      reactUseLinksBasic:
+        - template: |-
+            import { {{sourceObjectType}} } from "{{{packageName}}}";
+            import { useLinks } from "@osdk/react/experimental";
+
+            function Linked{{linkedObjectType}}({ source }: { source: {{sourceObjectType}}.OsdkInstance }) {
+              const { links, isLoading, error } = useLinks(source, "{{linkApiName}}");
+
+              return (
+                <div>
+                  {error && <div className="error-banner">Error: {error.message}</div>}
+                  {isLoading && !links && <div className="skeleton">Loading...</div>}
+                  <ul>
+                    {links?.map(linked => (
+                      <li key={linked.$primaryKey}>{linked.$primaryKey}</li>
+                    ))}
+                  </ul>
+                </div>
+              );
+            }
+
+      reactUseOsdkActionBasic:
+        - template: |-
+            import { {{actionApiName}} } from "{{{packageName}}}";
+            import { useOsdkAction } from "@osdk/react/experimental";
+
+            function {{actionApiName}}Button() {
+              const { applyAction, isPending, error } = useOsdkAction({{actionApiName}});
+
+              const handleClick = async () => {
+                await applyAction({
+                  {{#actionParameterSampleValuesV2}}
+                  {{key}}: {{value}}{{^last}},{{/last}}
+                  {{/actionParameterSampleValuesV2}}
+                });
+              };
+
+              return (
+                <div>
+                  {error && <div className="error-banner">Error: {String(error.unknown ?? error.actionValidation)}</div>}
+                  <button onClick={handleClick} disabled={isPending}>
+                    {isPending ? "Applying..." : "Apply {{actionApiName}}"}
+                  </button>
+                </div>
+              );
+            }
+          computedVariables:
+            - actionParameterSampleValuesV2
+
+      reactUseOsdkAggregationBasic:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+            import { useOsdkAggregation } from "@osdk/react/experimental";
+
+            function {{objectType}}Count() {
+              const { data, isLoading, error } = useOsdkAggregation({{objectType}}, {
+                aggregate: { $select: { $count: "unordered" } }
+              });
+
+              return (
+                <div>
+                  {error && <div className="error-banner">Error: {error.message}</div>}
+                  {isLoading && data == null && <div className="skeleton">Loading...</div>}
+                  {data != null && <span>Total: {data}</span>}
+                </div>
+              );
+            }
+
+      reactUseOsdkObjectsEnabled:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+            import { useOsdkObjects } from "@osdk/react/experimental";
+
+            function Conditional{{objectType}}List({ shouldFetch }: { shouldFetch: boolean }) {
+              const { data, isLoading, error } = useOsdkObjects({{objectType}}, {
+                enabled: shouldFetch
+              });
+
+              return (
+                <div>
+                  {!shouldFetch && <div>Select criteria to load data</div>}
+                  {error && <div className="error-banner">Error: {error.message}</div>}
+                  {isLoading && !data && <div className="skeleton">Loading...</div>}
+                  <ul>
+                    {data?.map(obj => (
+                      <li key={obj.$primaryKey}>{obj.{{titleProperty}}}</li>
+                    ))}
+                  </ul>
+                </div>
+              );
+            }
+
+      loadSingleObjectGuide:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+            import { useOsdkObject } from "@osdk/react/experimental";
+
+            function {{objectType}}Detail({ primaryKey }: { primaryKey: string }) {
+              const { object, isLoading, error } = useOsdkObject({{objectType}}, primaryKey);
+
+              return (
+                <div>
+                  {error && <div>Error: {error.message}</div>}
+                  {isLoading && !object && <div>Loading...</div>}
+                  {object && <div>{object.{{titleProperty}}}</div>}
+                </div>
+              );
+            }
+      loadObjectPageGuide:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+            import { useOsdkObjects } from "@osdk/react/experimental";
+
+            function {{objectType}}List() {
+              const { data, isLoading, error, fetchMore } = useOsdkObjects({{objectType}}, {
+                pageSize: 30
+              });
+
+              return (
+                <div>
+                  {error && <div>Error: {error.message}</div>}
+                  {isLoading && !data && <div>Loading...</div>}
+                  <ul>
+                    {data?.map(obj => <li key={obj.$primaryKey}>{obj.{{titleProperty}}}</li>)}
+                  </ul>
+                  {fetchMore && <button onClick={fetchMore}>Load more</button>}
+                </div>
+              );
+            }
+      orderObjectsGuide:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+            import { useOsdkObjects } from "@osdk/react/experimental";
+
+            function Sorted{{objectType}}List() {
+              const { data, isLoading, error } = useOsdkObjects({{objectType}}, {
+                orderBy: { {{titleProperty}}: "asc" }
+              });
+
+              return (
+                <div>
+                  {error && <div>Error: {error.message}</div>}
+                  {isLoading && !data && <div>Loading...</div>}
+                  <ul>
+                    {data?.map(obj => <li key={obj.$primaryKey}>{obj.{{titleProperty}}}</li>)}
+                  </ul>
+                </div>
+              );
+            }
+      searchObjectsGuide:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+            import { useOsdkObjects } from "@osdk/react/experimental";
+
+            function Filtered{{objectType}}List() {
+              const { data, isLoading, error } = useOsdkObjects({{objectType}}, {
+                where: {
+                  {{titleProperty}}: { $isNotNull: true }
+                }
+              });
+
+              return (
+                <div>
+                  {error && <div>Error: {error.message}</div>}
+                  {isLoading && !data && <div>Loading...</div>}
+                  <ul>
+                    {data?.map(obj => <li key={obj.$primaryKey}>{obj.{{titleProperty}}}</li>)}
+                  </ul>
+                </div>
+              );
+            }
+      loadSingleObjectReference:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+            import { useOsdkObject } from "@osdk/react/experimental";
+
+            function {{objectType}}Detail({ primaryKey }: { primaryKey: string }) {
+              const { object, isLoading, error } = useOsdkObject({{objectType}}, primaryKey);
+
+              return (
+                <div>
+                  {error && <div>Error: {error.message}</div>}
+                  {isLoading && !object && <div>Loading...</div>}
+                  {object && <div>{object.{{titleProperty}}}</div>}
+                </div>
+              );
+            }
+      loadObjectsReference:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+            import { useOsdkObjects } from "@osdk/react/experimental";
+
+            function {{objectType}}List() {
+              const { data, isLoading, error, fetchMore } = useOsdkObjects({{objectType}}, {
+                pageSize: 30
+              });
+
+              return (
+                <div>
+                  {error && <div>Error: {error.message}</div>}
+                  {isLoading && !data && <div>Loading...</div>}
+                  <ul>
+                    {data?.map(obj => <li key={obj.$primaryKey}>{obj.{{titleProperty}}}</li>)}
+                  </ul>
+                  {fetchMore && <button onClick={fetchMore}>Load more</button>}
+                </div>
+              );
+            }
+      loadAllObjectsReference:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+            import { useOsdkObjects } from "@osdk/react/experimental";
+
+            // Note: For large datasets, consider using pagination with fetchMore
+            function All{{objectType}}List() {
+              const { data, isLoading, error, fetchMore } = useOsdkObjects({{objectType}});
+
+              return (
+                <div>
+                  {error && <div>Error: {error.message}</div>}
+                  {isLoading && !data && <div>Loading...</div>}
+                  <ul>
+                    {data?.map(obj => <li key={obj.$primaryKey}>{obj.{{titleProperty}}}</li>)}
+                  </ul>
+                  {fetchMore && <button onClick={fetchMore}>Load more</button>}
+                </div>
+              );
+            }
+      loadLinkedObjectReference:
+        - template: |-
+            import { {{sourceObjectType}} } from "{{{packageName}}}";
+            import { useLinks } from "@osdk/react/experimental";
+
+            function {{linkedObjectType}}Detail({ source }: { source: {{sourceObjectType}}.OsdkInstance }) {
+              const { links, isLoading, error } = useLinks(source, "{{linkApiName}}");
+              const linkedObject = links?.[0];
+
+              return (
+                <div>
+                  {error && <div>Error: {error.message}</div>}
+                  {isLoading && !links && <div>Loading...</div>}
+                  {linkedObject && <div>{linkedObject.$primaryKey}</div>}
+                </div>
+              );
+            }
+      loadLinkedObjectsReference:
+        - template: |-
+            import { {{sourceObjectType}} } from "{{{packageName}}}";
+            import { useLinks } from "@osdk/react/experimental";
+
+            function Linked{{linkedObjectType}}List({ source }: { source: {{sourceObjectType}}.OsdkInstance }) {
+              const { links, isLoading, error, fetchMore } = useLinks(source, "{{linkApiName}}");
+
+              return (
+                <div>
+                  {error && <div>Error: {error.message}</div>}
+                  {isLoading && !links && <div>Loading...</div>}
+                  <ul>
+                    {links?.map(obj => <li key={obj.$primaryKey}>{obj.$primaryKey}</li>)}
+                  </ul>
+                  {fetchMore && <button onClick={fetchMore}>Load more</button>}
+                </div>
+              );
+            }
+      aggregationTemplate:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+            import { useOsdkAggregation } from "@osdk/react/experimental";
+
+            function {{objectType}}Aggregation() {
+              const { data, isLoading, error } = useOsdkAggregation({{objectType}}, {
+                where: { {{property}}: { $isNull: false } },
+                aggregate: {
+                  $select: { $count: "unordered" },
+                  $groupBy: { {{property}}: "exact" }
+                }
+              });
+
+              return (
+                <div>
+                  {error && <div>Error: {error.message}</div>}
+                  {isLoading && data == null && <div>Loading...</div>}
+                  {data != null && <pre>{JSON.stringify(data, null, 2)}</pre>}
+                </div>
+              );
+            }
+      countAggregationTemplate:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+            import { useOsdkAggregation } from "@osdk/react/experimental";
+
+            function {{objectType}}Count() {
+              const { data, isLoading, error } = useOsdkAggregation({{objectType}}, {
+                aggregate: { $select: { $count: "unordered" } }
+              });
+
+              return (
+                <div>
+                  {error && <div>Error: {error.message}</div>}
+                  {isLoading && data == null && <div>Loading...</div>}
+                  {data != null && <span>Total: {data}</span>}
+                </div>
+              );
+            }
+      approximateDistinctAggregationTemplate:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+            import { useOsdkAggregation } from "@osdk/react/experimental";
+
+            function {{objectType}}DistinctCount() {
+              const { data, isLoading, error } = useOsdkAggregation({{objectType}}, {
+                aggregate: { $select: { "{{property}}:approximateDistinct": "unordered" } }
+              });
+
+              return (
+                <div>
+                  {error && <div>Error: {error.message}</div>}
+                  {isLoading && data == null && <div>Loading...</div>}
+                  {data != null && <span>Distinct count: {data}</span>}
+                </div>
+              );
+            }
+      exactDistinctAggregationTemplate:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+            import { useOsdkAggregation } from "@osdk/react/experimental";
+
+            function {{objectType}}ExactDistinctCount() {
+              const { data, isLoading, error } = useOsdkAggregation({{objectType}}, {
+                aggregate: { $select: { "{{property}}:exactDistinct": "unordered" } }
+              });
+
+              return (
+                <div>
+                  {error && <div>Error: {error.message}</div>}
+                  {isLoading && data == null && <div>Loading...</div>}
+                  {data != null && <span>Exact distinct count: {data}</span>}
+                </div>
+              );
+            }
+      numericAggregationTemplate:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+            import { useOsdkAggregation } from "@osdk/react/experimental";
+
+            function {{objectType}}{{operation}}() {
+              const { data, isLoading, error } = useOsdkAggregation({{objectType}}, {
+                aggregate: { $select: { "{{property}}:{{operation}}": "unordered" } }
+              });
+
+              return (
+                <div>
+                  {error && <div>Error: {error.message}</div>}
+                  {isLoading && data == null && <div>Loading...</div>}
+                  {data != null && <span>{{operation}}: {data}</span>}
+                </div>
+              );
+            }
+      fixedWidthGroupByTemplate:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+            import { useOsdkAggregation } from "@osdk/react/experimental";
+
+            function {{objectType}}GroupedByFixedWidth() {
+              const { data, isLoading, error } = useOsdkAggregation({{objectType}}, {
+                aggregate: {
+                  $select: { $count: "unordered" },
+                  $groupBy: { {{property}}: { $fixedWidth: 10 } }
+                }
+              });
+
+              return (
+                <div>
+                  {error && <div>Error: {error.message}</div>}
+                  {isLoading && data == null && <div>Loading...</div>}
+                  {data != null && <pre>{JSON.stringify(data, null, 2)}</pre>}
+                </div>
+              );
+            }
+      durationGroupByTemplate:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+            import { useOsdkAggregation } from "@osdk/react/experimental";
+
+            function {{objectType}}GroupedByDuration() {
+              const { data, isLoading, error } = useOsdkAggregation({{objectType}}, {
+                aggregate: {
+                  $select: { $count: "unordered" },
+                  $groupBy: { {{property}}: { $duration: [{{#durationText}}{{arg}}{{/durationText}}, "{{#durationText}}{{unit}}{{/durationText}}"] } }
+                }
+              });
+
+              return (
+                <div>
+                  {error && <div>Error: {error.message}</div>}
+                  {isLoading && data == null && <div>Loading...</div>}
+                  {data != null && <pre>{JSON.stringify(data, null, 2)}</pre>}
+                </div>
+              );
+            }
+      exactGroupByTemplate:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+            import { useOsdkAggregation } from "@osdk/react/experimental";
+
+            function {{objectType}}GroupedByExact() {
+              const { data, isLoading, error } = useOsdkAggregation({{objectType}}, {
+                aggregate: {
+                  $select: { $count: "unordered" },
+                  $groupBy: { {{property}}: "exact" }
+                }
+              });
+
+              return (
+                <div>
+                  {error && <div>Error: {error.message}</div>}
+                  {isLoading && data == null && <div>Loading...</div>}
+                  {data != null && <pre>{JSON.stringify(data, null, 2)}</pre>}
+                </div>
+              );
+            }
+      rangeGroupByTemplate:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+            import { useOsdkAggregation } from "@osdk/react/experimental";
+
+            function {{objectType}}GroupedByRange() {
+              const { data, isLoading, error } = useOsdkAggregation({{objectType}}, {
+                aggregate: {
+                  $select: { $count: "unordered" },
+                  $groupBy: { {{property}}: { $ranges: [[{{{propertyValueV2}}}, {{{propertyValueV2}}}]] } }
+                }
+              });
+
+              return (
+                <div>
+                  {error && <div>Error: {error.message}</div>}
+                  {isLoading && data == null && <div>Loading...</div>}
+                  {data != null && <pre>{JSON.stringify(data, null, 2)}</pre>}
+                </div>
+              );
+            }
+          computedVariables:
+            - propertyValueV2
+      applyAction:
+        - template: |-
+            import { {{actionApiName}} } from "{{{packageName}}}";
+            import { useOsdkAction } from "@osdk/react/experimental";
+
+            function {{actionApiName}}Button() {
+              const { applyAction, isPending, error } = useOsdkAction({{actionApiName}});
+
+              const handleClick = async () => {
+                await applyAction({
+                  {{#actionParameterSampleValuesV2}}
+                  {{key}}: {{value}}{{^last}},{{/last}}
+                  {{/actionParameterSampleValuesV2}}
+                });
+              };
+
+              return (
+                <div>
+                  {error && <div>Error: {String(error.unknown ?? error.actionValidation)}</div>}
+                  <button onClick={handleClick} disabled={isPending}>
+                    {isPending ? "Applying..." : "Apply"}
+                  </button>
+                </div>
+              );
+            }
+          computedVariables:
+            - actionParameterSampleValuesV2
+      applyActionResponse:
+        - template: |-
+            import { {{actionApiName}} } from "{{{packageName}}}";
+            import { useOsdkAction } from "@osdk/react/experimental";
+
+            function {{actionApiName}}WithResult() {
+              const { applyAction, isPending, error, data } = useOsdkAction({{actionApiName}});
+
+              const handleClick = async () => {
+                await applyAction({
+                  {{#actionParameterSampleValuesV2}}
+                  {{key}}: {{value}}{{^last}},{{/last}}
+                  {{/actionParameterSampleValuesV2}}
+                });
+              };
+
+              return (
+                <div>
+                  {error && <div className="error-banner">Error: {String(error.unknown ?? error.actionValidation)}</div>}
+                  {data && <div>Action completed successfully</div>}
+                  <button onClick={handleClick} disabled={isPending}>
+                    {isPending ? "Applying..." : "Apply {{actionApiName}}"}
+                  </button>
+                </div>
+              );
+            }
+          computedVariables:
+            - actionParameterSampleValuesV2
+      validateAction:
+        - template: |-
+            import { {{actionApiName}} } from "{{{packageName}}}";
+            import { useOsdkAction, useDebouncedCallback } from "@osdk/react/experimental";
+            import { useState } from "react";
+
+            function {{actionApiName}}WithValidation() {
+              const { validateAction, applyAction, isPending, validationResult } = useOsdkAction({{actionApiName}});
+              const [params, setParams] = useState<Record<string, string>>({});
+
+              const debouncedValidate = useDebouncedCallback(
+                (nextParams: Record<string, string>) => { validateAction(nextParams); },
+                300
+              );
+
+              const handleParamChange = (key: string, value: string) => {
+                const nextParams = { ...params, [key]: value };
+                setParams(nextParams);
+                debouncedValidate(nextParams);
+              };
+
+              return (
+                <div>
+                  <input
+                    placeholder="Parameter value"
+                    onChange={(e) => handleParamChange("paramName", e.target.value)}
+                  />
+                  {validationResult?.result === "INVALID" && (
+                    <div>Validation errors present</div>
+                  )}
+                  <button
+                    onClick={() => applyAction(params)}
+                    disabled={isPending || validationResult?.result === "INVALID"}
+                  >
+                    {isPending ? "Applying..." : "Apply"}
+                  </button>
+                </div>
+              );
+            }
+      batchApplyAction:
+        - template: |-
+            // Batch actions in React should be handled with multiple hook calls
+            // or by using the client directly for batch operations
+            import { {{actionApiName}} } from "{{{packageName}}}";
+            import { useOsdkAction } from "@osdk/react/experimental";
+
+            function Batch{{actionApiName}}() {
+              const { applyAction, isPending } = useOsdkAction({{actionApiName}});
+
+              const handleBatchApply = async (items: Array<Parameters<typeof applyAction>[0]>) => {
+                await Promise.all(items.map(item => applyAction(item)));
+              };
+
+              return (
+                <button onClick={() => handleBatchApply([])} disabled={isPending}>
+                  Apply Batch
+                </button>
+              );
+            }
+      clientSetup:
+        - template: |-
+            import { OsdkProvider2 } from "@osdk/react/experimental";
+            import { createClient } from "@osdk/client";
+
+            const client = createClient(
+              "https://your-stack.palantirfoundry.com",
+              "{{{packageName}}}",
+              async () => "your-token"
+            );
+
+            function App() {
+              return (
+                <OsdkProvider2 client={client}>
+                  <YourApp />
+                </OsdkProvider2>
+              );
+            }
+      callFunction:
+        - template: |-
+            import { {{funcApiName}} } from "{{{packageName}}}";
+            import { useOsdkFunction } from "@osdk/react/experimental";
+
+            function {{funcApiName}}Caller() {
+              const { data, isLoading, error, refetch } = useOsdkFunction({{funcApiName}}, {
+                params: { /* function parameters */ }
+              });
+
+              return (
+                <div>
+                  {error && <div>Error: {error.message}</div>}
+                  {isLoading && !data && <div>Loading...</div>}
+                  {data && <pre>{JSON.stringify(data, null, 2)}</pre>}
+                  <button onClick={refetch}>Refresh</button>
+                </div>
+              );
+            }
+      executeFunction:
+        - template: |-
+            import { {{funcApiName}} } from "{{{packageName}}}";
+            import { useOsdkFunction } from "@osdk/react/experimental";
+
+            function {{funcApiName}}Executor() {
+              const { data, isLoading, error, refetch } = useOsdkFunction({{funcApiName}}, {
+                params: { /* function parameters */ }
+              });
+
+              return (
+                <div>
+                  {error && <div>Error: {error.message}</div>}
+                  {isLoading && !data && <div>Loading...</div>}
+                  {data && <pre>{JSON.stringify(data, null, 2)}</pre>}
+                  <button onClick={refetch}>Refresh</button>
+                </div>
+              );
+            }
+      stringStartsWithTemplate:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+            import { useOsdkObjects } from "@osdk/react/experimental";
+
+            function {{objectType}}StartsWith() {
+              const { data, isLoading, error } = useOsdkObjects({{objectType}}, {
+                where: {
+                  {{property}}: { $startsWith: "foo" }
+                }
+              });
+
+              return (
+                <div>
+                  {error && <div>Error: {error.message}</div>}
+                  {isLoading && !data && <div>Loading...</div>}
+                  <ul>
+                    {data?.map(obj => <li key={obj.$primaryKey}>{obj.{{titleProperty}}}</li>)}
+                  </ul>
+                </div>
+              );
+            }
+      containsAnyTermTemplate:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+            import { useOsdkObjects } from "@osdk/react/experimental";
+
+            function {{objectType}}ContainsAnyTerm() {
+              const { data, isLoading, error } = useOsdkObjects({{objectType}}, {
+                where: {
+                  {{property}}: { $containsAnyTerm: "foo bar" }
+                }
+              });
+
+              return (
+                <div>
+                  {error && <div>Error: {error.message}</div>}
+                  {isLoading && !data && <div>Loading...</div>}
+                  <ul>
+                    {data?.map(obj => <li key={obj.$primaryKey}>{obj.{{titleProperty}}}</li>)}
+                  </ul>
+                </div>
+              );
+            }
+      containsAllTermsTemplate:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+            import { useOsdkObjects } from "@osdk/react/experimental";
+
+            function {{objectType}}ContainsAllTerms() {
+              const { data, isLoading, error } = useOsdkObjects({{objectType}}, {
+                where: {
+                  {{property}}: { $containsAllTerms: "foo bar" }
+                }
+              });
+
+              return (
+                <div>
+                  {error && <div>Error: {error.message}</div>}
+                  {isLoading && !data && <div>Loading...</div>}
+                  <ul>
+                    {data?.map(obj => <li key={obj.$primaryKey}>{obj.{{titleProperty}}}</li>)}
+                  </ul>
+                </div>
+              );
+            }
+      containsAllTermsInOrderTemplate:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+            import { useOsdkObjects } from "@osdk/react/experimental";
+
+            function {{objectType}}ContainsAllTermsInOrder() {
+              const { data, isLoading, error } = useOsdkObjects({{objectType}}, {
+                where: {
+                  {{property}}: { $containsAllTermsInOrder: "foo bar" }
+                }
+              });
+
+              return (
+                <div>
+                  {error && <div>Error: {error.message}</div>}
+                  {isLoading && !data && <div>Loading...</div>}
+                  <ul>
+                    {data?.map(obj => <li key={obj.$primaryKey}>{obj.{{titleProperty}}}</li>)}
+                  </ul>
+                </div>
+              );
+            }
+      containsTemplate:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+            import { useOsdkObjects } from "@osdk/react/experimental";
+
+            function {{objectType}}Contains() {
+              const { data, isLoading, error } = useOsdkObjects({{objectType}}, {
+                where: {
+                  {{property}}: { $contains: "value" }
+                }
+              });
+
+              return (
+                <div>
+                  {error && <div>Error: {error.message}</div>}
+                  {isLoading && !data && <div>Loading...</div>}
+                  <ul>
+                    {data?.map(obj => <li key={obj.$primaryKey}>{obj.{{titleProperty}}}</li>)}
+                  </ul>
+                </div>
+              );
+            }
+      equalityTemplate:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+            import { useOsdkObjects } from "@osdk/react/experimental";
+
+            function {{objectType}}Equality() {
+              const { data, isLoading, error } = useOsdkObjects({{objectType}}, {
+                where: {
+                  {{property}}: { $eq: {{{propertyValueV2}}} }
+                }
+              });
+
+              return (
+                <div>
+                  {error && <div>Error: {error.message}</div>}
+                  {isLoading && !data && <div>Loading...</div>}
+                  <ul>
+                    {data?.map(obj => <li key={obj.$primaryKey}>{obj.{{titleProperty}}}</li>)}
+                  </ul>
+                </div>
+              );
+            }
+          computedVariables:
+            - propertyValueV2
+      inFilterTemplate:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+            import { useOsdkObjects } from "@osdk/react/experimental";
+
+            function {{objectType}}InFilter() {
+              const { data, isLoading, error } = useOsdkObjects({{objectType}}, {
+                where: {
+                  {{property}}: { $in: [{{{propertyValueV2}}}] }
+                }
+              });
+
+              return (
+                <div>
+                  {error && <div>Error: {error.message}</div>}
+                  {isLoading && !data && <div>Loading...</div>}
+                  <ul>
+                    {data?.map(obj => <li key={obj.$primaryKey}>{obj.{{titleProperty}}}</li>)}
+                  </ul>
+                </div>
+              );
+            }
+          computedVariables:
+            - propertyValueV2
+      rangeTemplate:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+            import { useOsdkObjects } from "@osdk/react/experimental";
+
+            function {{objectType}}Range() {
+              const { data, isLoading, error } = useOsdkObjects({{objectType}}, {
+                where: {
+                  {{property}}: { ${{operation}}: {{{propertyValueV2}}} }
+                }
+              });
+
+              return (
+                <div>
+                  {error && <div>Error: {error.message}</div>}
+                  {isLoading && !data && <div>Loading...</div>}
+                  <ul>
+                    {data?.map(obj => <li key={obj.$primaryKey}>{obj.{{titleProperty}}}</li>)}
+                  </ul>
+                </div>
+              );
+            }
+          computedVariables:
+            - propertyValueV2
+      nullTemplate:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+            import { useOsdkObjects } from "@osdk/react/experimental";
+
+            function {{objectType}}NullFilter() {
+              const { data, isLoading, error } = useOsdkObjects({{objectType}}, {
+                where: {
+                  {{property}}: { $isNull: true }
+                }
+              });
+
+              return (
+                <div>
+                  {error && <div>Error: {error.message}</div>}
+                  {isLoading && !data && <div>Loading...</div>}
+                  <ul>
+                    {data?.map(obj => <li key={obj.$primaryKey}>{obj.{{titleProperty}}}</li>)}
+                  </ul>
+                </div>
+              );
+            }
+      andTemplate:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+            import { useOsdkObjects } from "@osdk/react/experimental";
+
+            function {{objectType}}AndFilter() {
+              const { data, isLoading, error } = useOsdkObjects({{objectType}}, {
+                where: {
+                  $and: [
+                    { $not: { {{primaryKeyPropertyV2.apiName}}: { $isNull: true } } },
+                    { {{property}}: { $eq: {{{propertyValueV2}}} } }
+                  ]
+                }
+              });
+
+              return (
+                <div>
+                  {error && <div>Error: {error.message}</div>}
+                  {isLoading && !data && <div>Loading...</div>}
+                  <ul>
+                    {data?.map(obj => <li key={obj.$primaryKey}>{obj.{{titleProperty}}}</li>)}
+                  </ul>
+                </div>
+              );
+            }
+          computedVariables:
+            - primaryKeyPropertyV2
+            - propertyValueV2
+      orTemplate:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+            import { useOsdkObjects } from "@osdk/react/experimental";
+
+            function {{objectType}}OrFilter() {
+              const { data, isLoading, error } = useOsdkObjects({{objectType}}, {
+                where: {
+                  $or: [
+                    { $not: { {{primaryKeyPropertyV2.apiName}}: { $isNull: true } } },
+                    { {{property}}: { $eq: {{{propertyValueV2}}} } }
+                  ]
+                }
+              });
+
+              return (
+                <div>
+                  {error && <div>Error: {error.message}</div>}
+                  {isLoading && !data && <div>Loading...</div>}
+                  <ul>
+                    {data?.map(obj => <li key={obj.$primaryKey}>{obj.{{titleProperty}}}</li>)}
+                  </ul>
+                </div>
+              );
+            }
+          computedVariables:
+            - primaryKeyPropertyV2
+            - propertyValueV2
+      notTemplate:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+            import { useOsdkObjects } from "@osdk/react/experimental";
+
+            function {{objectType}}NotFilter() {
+              const { data, isLoading, error } = useOsdkObjects({{objectType}}, {
+                where: {
+                  $not: { {{property}}: { $eq: {{{propertyValueV2}}} } }
+                }
+              });
+
+              return (
+                <div>
+                  {error && <div>Error: {error.message}</div>}
+                  {isLoading && !data && <div>Loading...</div>}
+                  <ul>
+                    {data?.map(obj => <li key={obj.$primaryKey}>{obj.{{titleProperty}}}</li>)}
+                  </ul>
+                </div>
+              );
+            }
+          computedVariables:
+            - propertyValueV2
+      withinDistanceTemplate:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+            import { useOsdkObjects } from "@osdk/react/experimental";
+
+            function {{objectType}}WithinDistance() {
+              const { data, isLoading, error } = useOsdkObjects({{objectType}}, {
+                where: {
+                  {{property}}: { $within: { $distance: [100, "{{distanceUnit}}"], $of: [-74.0060, 40.7128] } }
+                }
+              });
+
+              return (
+                <div>
+                  {error && <div>Error: {error.message}</div>}
+                  {isLoading && !data && <div>Loading...</div>}
+                  <ul>
+                    {data?.map(obj => <li key={obj.$primaryKey}>{obj.$primaryKey}</li>)}
+                  </ul>
+                </div>
+              );
+            }
+      withinBoundingBoxTemplate:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+            import { useOsdkObjects } from "@osdk/react/experimental";
+
+            function {{objectType}}WithinBoundingBox() {
+              const { data, isLoading, error } = useOsdkObjects({{objectType}}, {
+                where: {
+                  {{property}}: { $within: { $bbox: [-74.0060, 25.123, 80.4231, 40.7128] } }
+                }
+              });
+
+              return (
+                <div>
+                  {error && <div>Error: {error.message}</div>}
+                  {isLoading && !data && <div>Loading...</div>}
+                  <ul>
+                    {data?.map(obj => <li key={obj.$primaryKey}>{obj.$primaryKey}</li>)}
+                  </ul>
+                </div>
+              );
+            }
+      withinPolygonTemplate:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+            import { useOsdkObjects } from "@osdk/react/experimental";
+
+            function {{objectType}}WithinPolygon() {
+              const { data, isLoading, error } = useOsdkObjects({{objectType}}, {
+                where: {
+                  {{property}}: { $within: { type: "Polygon", coordinates: [[[10.0, 40.0], [20.0, 50.0], [20.0, 30.0], [10.0, 40.0]]] } }
+                }
+              });
+
+              return (
+                <div>
+                  {error && <div>Error: {error.message}</div>}
+                  {isLoading && !data && <div>Loading...</div>}
+                  <ul>
+                    {data?.map(obj => <li key={obj.$primaryKey}>{obj.$primaryKey}</li>)}
+                  </ul>
+                </div>
+              );
+            }
+      intersectsPolygonTemplate:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+            import { useOsdkObjects } from "@osdk/react/experimental";
+
+            function {{objectType}}IntersectsPolygon() {
+              const { data, isLoading, error } = useOsdkObjects({{objectType}}, {
+                where: {
+                  {{property}}: { $intersects: { type: "Polygon", coordinates: [[[10.0, 40.0], [20.0, 50.0], [20.0, 30.0], [10.0, 40.0]]] } }
+                }
+              });
+
+              return (
+                <div>
+                  {error && <div>Error: {error.message}</div>}
+                  {isLoading && !data && <div>Loading...</div>}
+                  <ul>
+                    {data?.map(obj => <li key={obj.$primaryKey}>{obj.$primaryKey}</li>)}
+                  </ul>
+                </div>
+              );
+            }
+      intersectsBboxTemplate:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+            import { useOsdkObjects } from "@osdk/react/experimental";
+
+            function {{objectType}}IntersectsBbox() {
+              const { data, isLoading, error } = useOsdkObjects({{objectType}}, {
+                where: {
+                  {{property}}: { $intersects: { $bbox: [-74.0060, 25.123, 80.4231, 40.7128] } }
+                }
+              });
+
+              return (
+                <div>
+                  {error && <div>Error: {error.message}</div>}
+                  {isLoading && !data && <div>Loading...</div>}
+                  <ul>
+                    {data?.map(obj => <li key={obj.$primaryKey}>{obj.$primaryKey}</li>)}
+                  </ul>
+                </div>
+              );
+            }
+      objectSetOperationsGuide:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+            import { useOsdkClient, useObjectSet } from "@osdk/react/experimental";
+            import { useMemo } from "react";
+
+            function {{objectType}}SetOperations() {
+              const client = useOsdkClient();
+              const combinedSet = useMemo(() => {
+                const setA = client({{objectType}}).where({ {{titleProperty}}: { $containsAnyTerm: "a" } });
+                const setB = client({{objectType}}).where({ {{titleProperty}}: { $containsAnyTerm: "b" } });
+                const setC = client({{objectType}}).where({ {{titleProperty}}: { $containsAnyTerm: "c" } });
+                return setA.intersect(setB).subtract(setC);
+              }, [client]);
+
+              const { data, isLoading, error } = useObjectSet(combinedSet);
+
+              return (
+                <div>
+                  {error && <div>Error: {error.message}</div>}
+                  {isLoading && !data && <div>Loading...</div>}
+                  <ul>
+                    {data?.map(obj => <li key={obj.$primaryKey}>{obj.{{titleProperty}}}</li>)}
+                  </ul>
+                </div>
+              );
+            }
+      objectSetOperationsUnion:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+            import { useOsdkClient, useObjectSet } from "@osdk/react/experimental";
+            import { useMemo } from "react";
+
+            function {{objectType}}Union() {
+              const client = useOsdkClient();
+              const unionSet = useMemo(() => {
+                const setA = client({{objectType}}).where({ {{titleProperty}}: { $containsAnyTerm: "a" } });
+                const setB = client({{objectType}}).where({ {{titleProperty}}: { $containsAnyTerm: "b" } });
+                const setC = client({{objectType}}).where({ {{titleProperty}}: { $containsAnyTerm: "c" } });
+                return setA.union(setB).union(setC);
+              }, [client]);
+
+              const { data, isLoading, error } = useObjectSet(unionSet);
+
+              return (
+                <div>
+                  {error && <div>Error: {error.message}</div>}
+                  {isLoading && !data && <div>Loading...</div>}
+                  <ul>
+                    {data?.map(obj => <li key={obj.$primaryKey}>{obj.{{titleProperty}}}</li>)}
+                  </ul>
+                </div>
+              );
+            }
+      objectSetOperationsSubtract:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+            import { useOsdkClient, useObjectSet } from "@osdk/react/experimental";
+            import { useMemo } from "react";
+
+            function {{objectType}}Subtract() {
+              const client = useOsdkClient();
+              const subtractedSet = useMemo(() => {
+                const setA = client({{objectType}}).where({ {{titleProperty}}: { $containsAnyTerm: "a" } });
+                const setB = client({{objectType}}).where({ {{titleProperty}}: { $containsAnyTerm: "b" } });
+                const setC = client({{objectType}}).where({ {{titleProperty}}: { $containsAnyTerm: "c" } });
+                return setA.subtract(setB).subtract(setC);
+              }, [client]);
+
+              const { data, isLoading, error } = useObjectSet(subtractedSet);
+
+              return (
+                <div>
+                  {error && <div>Error: {error.message}</div>}
+                  {isLoading && !data && <div>Loading...</div>}
+                  <ul>
+                    {data?.map(obj => <li key={obj.$primaryKey}>{obj.{{titleProperty}}}</li>)}
+                  </ul>
+                </div>
+              );
+            }
+      objectSetOperationsIntersect:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+            import { useOsdkClient, useObjectSet } from "@osdk/react/experimental";
+            import { useMemo } from "react";
+
+            function {{objectType}}Intersect() {
+              const client = useOsdkClient();
+              const intersectedSet = useMemo(() => {
+                const setA = client({{objectType}}).where({ {{titleProperty}}: { $containsAnyTerm: "a" } });
+                const setB = client({{objectType}}).where({ {{titleProperty}}: { $containsAnyTerm: "b" } });
+                const setC = client({{objectType}}).where({ {{titleProperty}}: { $containsAnyTerm: "c" } });
+                return setA.intersect(setB).intersect(setC);
+              }, [client]);
+
+              const { data, isLoading, error } = useObjectSet(intersectedSet);
+
+              return (
+                <div>
+                  {error && <div>Error: {error.message}</div>}
+                  {isLoading && !data && <div>Loading...</div>}
+                  <ul>
+                    {data?.map(obj => <li key={obj.$primaryKey}>{obj.{{titleProperty}}}</li>)}
+                  </ul>
+                </div>
+              );
+            }
+      derivedPropertyBaseExample:
+        - template: |-
+            import { {{sourceObjectType}} } from "{{{packageName}}}";
+            import { useOsdkClient, useObjectSet } from "@osdk/react/experimental";
+            import { useMemo } from "react";
+
+            function {{sourceObjectType}}DerivedProperty() {
+              const client = useOsdkClient();
+              const derivedSet = useMemo(() =>
+                client({{sourceObjectType}}).withProperties({
+                  "newPropertyName": (baseObjectSet) =>
+                    baseObjectSet.pivotTo("{{linkApiName}}").aggregate("$count")
+                }), [client]);
+
+              const { data, isLoading, error } = useObjectSet(derivedSet);
+
+              return (
+                <div>
+                  {error && <div>Error: {error.message}</div>}
+                  {isLoading && !data && <div>Loading...</div>}
+                  <ul>
+                    {data?.map(obj => <li key={obj.$primaryKey}>{obj.$primaryKey}</li>)}
+                  </ul>
+                </div>
+              );
+            }
+      derivedPropertyCountAggregation:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+            import { useOsdkClient, useObjectSet } from "@osdk/react/experimental";
+            import { useMemo } from "react";
+
+            function {{objectType}}DerivedCount() {
+              const client = useOsdkClient();
+              const derivedSet = useMemo(() =>
+                client({{objectType}}).withProperties({
+                  "newPropertyName": (baseObjectSet) =>
+                    baseObjectSet.pivotTo("{{linkApiName}}").aggregate("$count")
+                }), [client]);
+
+              const { data, isLoading, error } = useObjectSet(derivedSet);
+
+              return (
+                <div>
+                  {error && <div>Error: {error.message}</div>}
+                  {isLoading && !data && <div>Loading...</div>}
+                  <ul>
+                    {data?.map(obj => <li key={obj.$primaryKey}>{obj.$primaryKey}</li>)}
+                  </ul>
+                </div>
+              );
+            }
+      derivedPropertyNumericAggregation:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+            import { useOsdkClient, useObjectSet } from "@osdk/react/experimental";
+            import { useMemo } from "react";
+
+            function {{objectType}}DerivedNumeric() {
+              const client = useOsdkClient();
+              const derivedSet = useMemo(() =>
+                client({{objectType}}).withProperties({
+                  "newPropertyName": (baseObjectSet) =>
+                    baseObjectSet.pivotTo("{{linkApiName}}").aggregate("{{property}}:{{operation}}")
+                }), [client]);
+
+              const { data, isLoading, error } = useObjectSet(derivedSet);
+
+              return (
+                <div>
+                  {error && <div>Error: {error.message}</div>}
+                  {isLoading && !data && <div>Loading...</div>}
+                  <ul>
+                    {data?.map(obj => <li key={obj.$primaryKey}>{obj.$primaryKey}</li>)}
+                  </ul>
+                </div>
+              );
+            }
+      derivedPropertySelectPropertyAggregation:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+            import { useOsdkClient, useObjectSet } from "@osdk/react/experimental";
+            import { useMemo } from "react";
+
+            function {{objectType}}DerivedSelectProperty() {
+              const client = useOsdkClient();
+              const derivedSet = useMemo(() =>
+                client({{objectType}}).withProperties({
+                  "newPropertyName": (baseObjectSet) =>
+                    baseObjectSet.pivotTo("{{linkApiName}}").selectProperty("{{property}}")
+                }), [client]);
+
+              const { data, isLoading, error } = useObjectSet(derivedSet);
+
+              return (
+                <div>
+                  {error && <div>Error: {error.message}</div>}
+                  {isLoading && !data && <div>Loading...</div>}
+                  <ul>
+                    {data?.map(obj => <li key={obj.$primaryKey}>{obj.$primaryKey}</li>)}
+                  </ul>
+                </div>
+              );
+            }
+      derivedPropertyApproximateDistinctAggregation:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+            import { useOsdkClient, useObjectSet } from "@osdk/react/experimental";
+            import { useMemo } from "react";
+
+            function {{objectType}}DerivedApproxDistinct() {
+              const client = useOsdkClient();
+              const derivedSet = useMemo(() =>
+                client({{objectType}}).withProperties({
+                  "newPropertyName": (baseObjectSet) =>
+                    baseObjectSet.pivotTo("{{linkApiName}}").aggregate("{{property}}:approximateDistinct")
+                }), [client]);
+
+              const { data, isLoading, error } = useObjectSet(derivedSet);
+
+              return (
+                <div>
+                  {error && <div>Error: {error.message}</div>}
+                  {isLoading && !data && <div>Loading...</div>}
+                  <ul>
+                    {data?.map(obj => <li key={obj.$primaryKey}>{obj.$primaryKey}</li>)}
+                  </ul>
+                </div>
+              );
+            }
+      derivedPropertyExactDistinctAggregation:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+            import { useOsdkClient, useObjectSet } from "@osdk/react/experimental";
+            import { useMemo } from "react";
+
+            function {{objectType}}DerivedExactDistinct() {
+              const client = useOsdkClient();
+              const derivedSet = useMemo(() =>
+                client({{objectType}}).withProperties({
+                  "newPropertyName": (baseObjectSet) =>
+                    baseObjectSet.pivotTo("{{linkApiName}}").aggregate("{{property}}:exactDistinct")
+                }), [client]);
+
+              const { data, isLoading, error } = useObjectSet(derivedSet);
+
+              return (
+                <div>
+                  {error && <div>Error: {error.message}</div>}
+                  {isLoading && !data && <div>Loading...</div>}
+                  <ul>
+                    {data?.map(obj => <li key={obj.$primaryKey}>{obj.$primaryKey}</li>)}
+                  </ul>
+                </div>
+              );
+            }
+      derivedPropertyApproximatePercentileAggregation:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+            import { useOsdkClient, useObjectSet } from "@osdk/react/experimental";
+            import { useMemo } from "react";
+
+            function {{objectType}}DerivedPercentile() {
+              const client = useOsdkClient();
+              const derivedSet = useMemo(() =>
+                client({{objectType}}).withProperties({
+                  "newPropertyName": (baseObjectSet) =>
+                    baseObjectSet.pivotTo("{{linkApiName}}").aggregate("{{property}}:approximatePercentile", { percentile: 95 })
+                }), [client]);
+
+              const { data, isLoading, error } = useObjectSet(derivedSet);
+
+              return (
+                <div>
+                  {error && <div>Error: {error.message}</div>}
+                  {isLoading && !data && <div>Loading...</div>}
+                  <ul>
+                    {data?.map(obj => <li key={obj.$primaryKey}>{obj.$primaryKey}</li>)}
+                  </ul>
+                </div>
+              );
+            }
+      derivedPropertyCollectToListAggregation:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+            import { useOsdkClient, useObjectSet } from "@osdk/react/experimental";
+            import { useMemo } from "react";
+
+            function {{objectType}}DerivedCollectList() {
+              const client = useOsdkClient();
+              const maxObjectsInList = 75;
+              const derivedSet = useMemo(() =>
+                client({{objectType}}).withProperties({
+                  "newPropertyName": (baseObjectSet) =>
+                    baseObjectSet.pivotTo("{{linkApiName}}").aggregate("{{property}}:collectList", { limit: maxObjectsInList })
+                }), [client]);
+
+              const { data, isLoading, error } = useObjectSet(derivedSet);
+
+              return (
+                <div>
+                  {error && <div>Error: {error.message}</div>}
+                  {isLoading && !data && <div>Loading...</div>}
+                  <ul>
+                    {data?.map(obj => <li key={obj.$primaryKey}>{obj.$primaryKey}</li>)}
+                  </ul>
+                </div>
+              );
+            }
+      derivedPropertyCollectToSetAggregation:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+            import { useOsdkClient, useObjectSet } from "@osdk/react/experimental";
+            import { useMemo } from "react";
+
+            function {{objectType}}DerivedCollectSet() {
+              const client = useOsdkClient();
+              const maxObjectsInSet = 75;
+              const derivedSet = useMemo(() =>
+                client({{objectType}}).withProperties({
+                  "newPropertyName": (baseObjectSet) =>
+                    baseObjectSet.pivotTo("{{linkApiName}}").aggregate("{{property}}:collectSet", { limit: maxObjectsInSet })
+                }), [client]);
+
+              const { data, isLoading, error } = useObjectSet(derivedSet);
+
+              return (
+                <div>
+                  {error && <div>Error: {error.message}</div>}
+                  {isLoading && !data && <div>Loading...</div>}
+                  <ul>
+                    {data?.map(obj => <li key={obj.$primaryKey}>{obj.$primaryKey}</li>)}
+                  </ul>
+                </div>
+              );
+            }
+      loadObjectMetadataSnippet:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+            import { useOsdkMetadata } from "@osdk/react/experimental";
+
+            function {{objectType}}Metadata() {
+              const { loading, metadata, error } = useOsdkMetadata({{objectType}});
+
+              return (
+                <div>
+                  {error && <div className="error-banner">Error: {error}</div>}
+                  {loading && !metadata && <div className="skeleton">Loading...</div>}
+                  {metadata && (
+                    <div>
+                      <div>Description: {metadata.description}</div>
+                      <div>Visibility: {metadata.visibility}</div>
+                    </div>
+                  )}
+                </div>
+              );
+            }
+      loadInterfaceMetadataSnippet:
+        - template: |-
+            import { {{interfaceApiName}} } from "{{{packageName}}}";
+            import { useOsdkMetadata } from "@osdk/react/experimental";
+
+            function {{interfaceApiName}}Metadata() {
+              const { loading, metadata, error } = useOsdkMetadata({{interfaceApiName}});
+
+              return (
+                <div>
+                  {error && <div className="error-banner">Error: {error}</div>}
+                  {loading && !metadata && <div className="skeleton">Loading...</div>}
+                  {metadata && (
+                    <div>
+                      <div>RID: {metadata.rid}</div>
+                      <div>Implemented by: {metadata.implementedBy?.join(", ")}</div>
+                    </div>
+                  )}
+                </div>
+              );
+            }
+      loadInterfacesReference:
+        - template: |-
+            import { {{interfaceApiName}} } from "{{{packageName}}}";
+            import { useOsdkObjects } from "@osdk/react/experimental";
+
+            function {{interfaceApiName}}List() {
+              const { data, isLoading, error, fetchMore } = useOsdkObjects({{interfaceApiName}}, {
+                pageSize: 30
+              });
+
+              return (
+                <div>
+                  {error && <div>Error: {error.message}</div>}
+                  {isLoading && !data && <div>Loading...</div>}
+                  <ul>
+                    {data?.map(obj => <li key={obj.$primaryKey}>{obj.$primaryKey}</li>)}
+                  </ul>
+                  {fetchMore && <button onClick={fetchMore}>Load more</button>}
+                </div>
+              );
+            }
+      loadAllInterfacesReference:
+        - template: |-
+            import { {{interfaceApiName}} } from "{{{packageName}}}";
+            import { useOsdkObjects } from "@osdk/react/experimental";
+
+            function All{{interfaceApiName}}List() {
+              const { data, isLoading, error, fetchMore } = useOsdkObjects({{interfaceApiName}});
+
+              return (
+                <div>
+                  {error && <div>Error: {error.message}</div>}
+                  {isLoading && !data && <div>Loading...</div>}
+                  <ul>
+                    {data?.map(obj => <li key={obj.$primaryKey}>{obj.$primaryKey}</li>)}
+                  </ul>
+                  {fetchMore && <button onClick={fetchMore}>Load more</button>}
+                </div>
+              );
+            }
+      loadOrderedInterfacesReference:
+        - template: |-
+            import { {{interfaceApiName}} } from "{{{packageName}}}";
+            import { useOsdkObjects } from "@osdk/react/experimental";
+
+            function Ordered{{interfaceApiName}}List() {
+              const { data, isLoading, error } = useOsdkObjects({{interfaceApiName}}, {
+                orderBy: { {{property}}: "asc" },
+                pageSize: 30
+              });
+
+              return (
+                <div>
+                  {error && <div>Error: {error.message}</div>}
+                  {isLoading && !data && <div>Loading...</div>}
+                  <ul>
+                    {data?.map(obj => <li key={obj.$primaryKey}>{obj.$primaryKey}</li>)}
+                  </ul>
+                </div>
+              );
+            }
+      searchInterfacesReference:
+        - template: |-
+            import { {{interfaceApiName}} } from "{{{packageName}}}";
+            import { useOsdkObjects } from "@osdk/react/experimental";
+
+            function Search{{interfaceApiName}}() {
+              const { data, isLoading, error } = useOsdkObjects({{interfaceApiName}}, {
+                where: {
+                  {{property}}: { $startsWith: "foo" }
+                },
+                pageSize: 30
+              });
+
+              return (
+                <div>
+                  {error && <div>Error: {error.message}</div>}
+                  {isLoading && !data && <div>Loading...</div>}
+                  <ul>
+                    {data?.map(obj => <li key={obj.$primaryKey}>{obj.$primaryKey}</li>)}
+                  </ul>
+                </div>
+              );
+            }
+      castInterfaceToObjectReference:
+        - template: |-
+            import { {{objectTypeApiName}}, {{interfaceApiName}} } from "{{{packageName}}}";
+            import { useOsdkObjects } from "@osdk/react/experimental";
+
+            function CastInterface() {
+              const { data, isLoading, error } = useOsdkObjects({{interfaceApiName}}, {
+                pageSize: 10
+              });
+
+              return (
+                <div>
+                  {error && <div>Error: {error.message}</div>}
+                  {isLoading && !data && <div>Loading...</div>}
+                  <ul>
+                    {data?.map(obj => {
+                      const casted = obj.$as({{objectTypeApiName}});
+                      return <li key={casted.$primaryKey}>{casted.$primaryKey}</li>;
+                    })}
+                  </ul>
+                </div>
+              );
+            }
+      subscribeToObjectSetInstructions:
+        - template: |-
+            import { {{objectOrInterfaceApiName}} } from "{{{packageName}}}";
+            import { useOsdkObjects } from "@osdk/react/experimental";
+
+            function {{objectOrInterfaceApiName}}LiveList() {
+              const { data, isLoading, error } = useOsdkObjects({{objectOrInterfaceApiName}}, {
+                streamUpdates: true
+              });
+
+              return (
+                <div>
+                  {error && <div>Error: {error.message}</div>}
+                  {isLoading && !data && <div>Loading...</div>}
+                  <ul>
+                    {data?.map(obj => <li key={obj.$primaryKey}>{obj.$primaryKey}</li>)}
+                  </ul>
+                </div>
+              );
+            }
+      loadTimeSeriesPointsSnippet:
+        - template: |-
+            // Timeseries does not have a dedicated React hook yet.
+            // Use the client API directly with a loaded OSDK object.
+            import type { Osdk } from "@osdk/client";
+            import type { {{objectType}} } from "{{{packageName}}}";
+
+            async function getAllTimeSeriesPoints(obj: Osdk.Instance<typeof {{objectType}}>) {
+              return obj.{{property}}?.getAllPoints();
+            }
+      loadTimeSeriesFirstPointSnippet:
+        - template: |-
+            // Timeseries does not have a dedicated React hook yet.
+            // Use the client API directly with a loaded OSDK object.
+            import type { Osdk } from "@osdk/client";
+            import type { {{objectType}} } from "{{{packageName}}}";
+
+            async function getFirstTimeSeriesPoint(obj: Osdk.Instance<typeof {{objectType}}>) {
+              return obj.{{property}}?.getFirstPoint();
+            }
+      loadTimeSeriesLastPointSnippet:
+        - template: |-
+            // Timeseries does not have a dedicated React hook yet.
+            // Use the client API directly with a loaded OSDK object.
+            import type { Osdk } from "@osdk/client";
+            import type { {{objectType}} } from "{{{packageName}}}";
+
+            async function getLastTimeSeriesPoint(obj: Osdk.Instance<typeof {{objectType}}>) {
+              return obj.{{property}}?.getLastPoint();
+            }
+      loadAbsoluteTimeSeriesPointsSnippet:
+        - template: |-
+            // Timeseries does not have a dedicated React hook yet.
+            // Use the client API directly with a loaded OSDK object.
+            import type { Osdk } from "@osdk/client";
+            import type { {{objectType}} } from "{{{packageName}}}";
+
+            async function getAbsoluteTimeSeriesPoints(obj: Osdk.Instance<typeof {{objectType}}>) {
+              return obj.{{property}}?.getAllPoints({
+                $startTime: "2022-08-13T12:34:56Z",
+                $endTime: "2022-08-14T12:34:56Z",
+              });
+            }
+      loadRelativeTimeSeriesPointsSnippet:
+        - template: |-
+            // Timeseries does not have a dedicated React hook yet.
+            // Use the client API directly with a loaded OSDK object.
+            import type { Osdk } from "@osdk/client";
+            import type { {{objectType}} } from "{{{packageName}}}";
+
+            async function getRelativeTimeSeriesPoints(obj: Osdk.Instance<typeof {{objectType}}>) {
+              return obj.{{property}}?.getAllPoints({
+                $before: 1,
+                $unit: "{{timeUnit}}",
+              });
+            }
+      loadGeotimeSeriesPointsSnippet:
+        - template: |-
+            // Geo-time series does not have a dedicated React hook yet.
+            // Use the client API directly with a loaded OSDK object.
+            import type { Osdk } from "@osdk/client";
+            import type { {{objectType}} } from "{{{packageName}}}";
+
+            async function getAllGeotimeSeriesPoints(obj: Osdk.Instance<typeof {{objectType}}>) {
+              return obj.{{property}}?.getAllValues();
+            }
+      loadGeotimeSeriesLastPointSnippet:
+        - template: |-
+            // Geo-time series does not have a dedicated React hook yet.
+            // Use the client API directly with a loaded OSDK object.
+            import type { Osdk } from "@osdk/client";
+            import type { {{objectType}} } from "{{{packageName}}}";
+
+            async function getLatestGeotimeSeriesPoint(obj: Osdk.Instance<typeof {{objectType}}>) {
+              return obj.{{property}}?.getLatestValue();
+            }
+      loadAbsoluteGeotimeSeriesPointsSnippet:
+        - template: |-
+            // Geo-time series does not have a dedicated React hook yet.
+            // Use the client API directly with a loaded OSDK object.
+            import type { Osdk } from "@osdk/client";
+            import type { {{objectType}} } from "{{{packageName}}}";
+
+            async function getAbsoluteGeotimeSeriesPoints(obj: Osdk.Instance<typeof {{objectType}}>) {
+              return obj.{{property}}?.getAllValues({
+                $startTime: "2022-08-13T12:34:56Z",
+                $endTime: "2022-08-14T12:34:56Z",
+              });
+            }
+      loadRelativeGeotimeSeriesPointsSnippet:
+        - template: |-
+            // Geo-time series does not have a dedicated React hook yet.
+            // Use the client API directly with a loaded OSDK object.
+            import type { Osdk } from "@osdk/client";
+            import type { {{objectType}} } from "{{{packageName}}}";
+
+            async function getRelativeGeotimeSeriesPoints(obj: Osdk.Instance<typeof {{objectType}}>) {
+              return obj.{{property}}?.getAllValues({
+                $before: 1,
+                $unit: "{{timeUnit}}",
+              });
+            }
+      uploadAttachment:
+        - template: |-
+            import { useOsdkClient } from "@osdk/react/experimental";
+            import { createAttachmentUpload } from "@osdk/client";
+            import { {{actionApiName}} } from "{{{packageName}}}";
+
+            function AttachmentUploader() {
+              const client = useOsdkClient();
+
+              const handleUpload = async (file: File) => {
+                const attachment = createAttachmentUpload(file, file.name);
+                await client({{actionApiName}}).applyAction({
+                  {{primaryKeyPropertyV2.apiName}}: {{{propertyValueV2}}},
+                  {{property}}: attachment
+                });
+              };
+
+              return (
+                <input type="file" onChange={e => {
+                  const file = e.target.files?.[0];
+                  if (file) {
+                    handleUpload(file);
+                  }
+                }} />
+              );
+            }
+          computedVariables:
+            - propertyValueV2
+            - primaryKeyPropertyV2
+      readMedia:
+        - template: |-
+            // Media does not have a dedicated React hook yet.
+            // Use the client API directly with a loaded OSDK object.
+            import type { Osdk } from "@osdk/client";
+            import type { {{objectType}} } from "{{{packageName}}}";
+
+            async function readMediaContent(obj: Osdk.Instance<typeof {{objectType}}>) {
+              const contents = await obj.{{property}}?.fetchContents();
+              if (contents?.ok) {
+                return contents.blob();
+              }
+            }
+      uploadMedia:
+        - template: |-
+            import { useOsdkClient } from "@osdk/react/experimental";
+            import { __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference } from "@osdk/api/unstable";
+            import type { MediaReference } from "@osdk/api";
+            import { {{actionApiName}}, {{objectType}} } from "{{{packageName}}}";
+
+            function MediaUploader() {
+              const client = useOsdkClient();
+
+              const handleUpload = async (file: File) => {
+                const mediaReference: MediaReference = await client(
+                  __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference,
+                ).createMediaReference({
+                  data: file,
+                  fileName: file.name,
+                  objectType: {{objectType}},
+                  propertyType: "{{property}}",
+                });
+                await client({{actionApiName}}).applyAction({
+                  // Pass the required action parameters including the primary key
+                  {{mediaParameter}}: mediaReference
+                });
+              };
+
+              return (
+                <input type="file" onChange={e => {
+                  const file = e.target.files?.[0];
+                  if (file) {
+                    handleUpload(file);
+                  }
+                }} />
+              );
+            }
+      uploadMediaOntologyEdits:
+        - template: |-
+            import { useOsdkClient } from "@osdk/react/experimental";
+            import { {{objectType}} } from "{{{packageName}}}";
+            import { createEditBatch, uploadMedia } from "@osdk/functions";
+
+            function MediaOntologyEditsUploader() {
+              const client = useOsdkClient();
+
+              const handleUpload = async (file: File) => {
+                const batch = createEditBatch(client);
+                const mediaReference = await uploadMedia(client, { data: file, fileName: file.name });
+                // @ts-expect-error - batch.create types don't support media references yet
+                batch.create({{objectType}}, { {{property}}: mediaReference });
+                return batch.getEdits();
+              };
+
+              return (
+                <input type="file" onChange={e => {
+                  const file = e.target.files?.[0];
+                  if (file) {
+                    handleUpload(file);
+                  }
+                }} />
+              );
+            }
+      uploadMediaEphemeral:
+        - template: |-
+            // Ephemeral media upload is not yet supported in the React SDK
+      derivedPropertyNumericExpression:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+            import { useOsdkClient, useObjectSet } from "@osdk/react/experimental";
+            import { useMemo } from "react";
+
+            function {{objectType}}DerivedNumericExpression() {
+              const client = useOsdkClient();
+              const derivedSet = useMemo(() =>
+                client({{objectType}}).withProperties({
+                  {{^isUnary}}
+                  "newPropertyName": (baseObjectSet) =>
+                    baseObjectSet.pivotTo("{{linkApiName}}")
+                      .aggregate("{{property}}").{{operation}}(
+                        baseObjectSet.pivotTo("{{linkApiName}}").aggregate("$count"))
+                  {{/isUnary}}
+                  {{#isUnary}}
+                  "{{operation}}_{{property}}": (baseObjectSet) =>
+                    baseObjectSet.pivotTo("{{linkApiName}}")
+                      .selectProperty("{{property}}").{{operation}}()
+                  {{/isUnary}}
+                }), [client]);
+
+              const { data, isLoading, error } = useObjectSet(derivedSet);
+
+              return (
+                <div>
+                  {error && <div>Error: {error.message}</div>}
+                  {isLoading && !data && <div>Loading...</div>}
+                  <ul>
+                    {data?.map(obj => <li key={obj.$primaryKey}>{obj.$primaryKey}</li>)}
+                  </ul>
+                </div>
+              );
+            }
+      derivedPropertyDatetimeExpression:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+            import { useOsdkClient, useObjectSet } from "@osdk/react/experimental";
+            import { useMemo } from "react";
+
+            function {{objectType}}DerivedDatetimeExpression() {
+              const client = useOsdkClient();
+              const derivedSet = useMemo(() =>
+                client({{objectType}}).withProperties({
+                  {{^isExtractPart}}
+                  "derivedPropertyDatetime_{{operation}}": (baseObjectSet) =>
+                    baseObjectSet.pivotTo("{{linkApiName}}")
+                      .selectProperty("{{property}}")
+                      .{{operation}}(baseObjectSet.pivotTo("{{linkApiName}}").selectProperty("{{property}}"))
+                  {{/isExtractPart}}
+                  {{#isExtractPart}}
+                  "YEARS_part_of_{{property}}_of_{{linkApiName}}": (baseObjectSet) =>
+                    baseObjectSet.pivotTo("{{linkApiName}}")
+                      .selectProperty("{{property}}").extractPart("YEARS")
+                  {{/isExtractPart}}
+                }), [client]);
+
+              const { data, isLoading, error } = useObjectSet(derivedSet);
+
+              return (
+                <div>
+                  {error && <div>Error: {error.message}</div>}
+                  {isLoading && !data && <div>Loading...</div>}
+                  <ul>
+                    {data?.map(obj => <li key={obj.$primaryKey}>{obj.$primaryKey}</li>)}
+                  </ul>
+                </div>
+              );
+            }
+      nearestNeighborsTextQuery:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+            import { useOsdkClient, useObjectSet } from "@osdk/react/experimental";
+            import { useMemo } from "react";
+
+            function {{objectType}}NearestNeighborsText() {
+              const client = useOsdkClient();
+              const resultSet = useMemo(() =>
+                client({{objectType}}).nearestNeighbors("coffee", 5, "{{property}}"),
+              [client]);
+
+              const { data, isLoading, error } = useObjectSet(resultSet);
+
+              return (
+                <div>
+                  {error && <div>Error: {error.message}</div>}
+                  {isLoading && !data && <div>Loading...</div>}
+                  <ul>
+                    {data?.map(obj => <li key={obj.$primaryKey}>{obj.$primaryKey}</li>)}
+                  </ul>
+                </div>
+              );
+            }
+      nearestNeighborsVectorQuery:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+            import { useOsdkClient, useObjectSet } from "@osdk/react/experimental";
+            import { useMemo } from "react";
+
+            function {{objectType}}NearestNeighborsVector() {
+              const client = useOsdkClient();
+              // Note that this vector maps to an arbitrary string
+              // It must match the dimension of the "{{property}}" property: {{vectorDimensionSize}}
+              const vectorQuery = useMemo(() =>
+                Array.from({ length: {{vectorDimensionSize}} }, () => 0.3),
+              []);
+              const resultSet = useMemo(() =>
+                client({{objectType}}).nearestNeighbors(vectorQuery, 5, "{{property}}"),
+              [client, vectorQuery]);
+
+              const { data, isLoading, error } = useObjectSet(resultSet);
+
+              return (
+                <div>
+                  {error && <div>Error: {error.message}</div>}
+                  {isLoading && !data && <div>Loading...</div>}
+                  <ul>
+                    {data?.map(obj => <li key={obj.$primaryKey}>{obj.$primaryKey}</li>)}
+                  </ul>
+                </div>
+              );
+            }
+      searchAround:
+        - template: |-
+            import { {{sourceObjectType}} } from "{{{packageName}}}";
+            import { useOsdkClient, useObjectSet } from "@osdk/react/experimental";
+            import { useMemo } from "react";
+
+            function SearchAround{{linkedObjectType}}() {
+              const client = useOsdkClient();
+              const linkedSet = useMemo(() =>
+                client({{sourceObjectType}})
+                  .where({ {{rawLinkedPrimaryKeyProperty.apiName}}: { $in: ["a", "b", "c"] } })
+                  .pivotTo("{{linkApiName}}"),
+              [client]);
+
+              const { data, isLoading, error } = useObjectSet(linkedSet);
+
+              return (
+                <div>
+                  {error && <div>Error: {error.message}</div>}
+                  {isLoading && !data && <div>Loading...</div>}
+                  <ul>
+                    {data?.map(obj => <li key={obj.$primaryKey}>{obj.$primaryKey}</li>)}
+                  </ul>
+                </div>
+              );
+            }

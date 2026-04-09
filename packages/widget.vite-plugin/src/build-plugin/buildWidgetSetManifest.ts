@@ -15,18 +15,24 @@
  */
 
 import type {
+  ManifestParameterDefinition,
+  ParameterDefinition,
   WidgetManifestConfig,
   WidgetSetInputSpec,
   WidgetSetManifest,
 } from "@osdk/widget.api";
+import type { FoundryWidgetPluginOptions } from "../index.js";
 import type { WidgetBuildOutputs } from "./getWidgetBuildOutputs.js";
+import { validateWidgetSet } from "./validateWidgetSet.js";
 
 export function buildWidgetSetManifest(
   widgetSetRid: string,
   widgetSetVersion: string,
   widgetBuilds: WidgetBuildOutputs[],
   widgetSetInputSpec: WidgetSetInputSpec,
+  pluginOptions?: FoundryWidgetPluginOptions,
 ): WidgetSetManifest {
+  validateWidgetSet(widgetBuilds);
   return {
     manifestVersion: "1.0.0",
     widgetSet: {
@@ -34,7 +40,7 @@ export function buildWidgetSetManifest(
       version: widgetSetVersion,
       widgets: Object.fromEntries(
         widgetBuilds
-          .map(buildWidgetManifest)
+          .map((build) => buildWidgetManifest(build, pluginOptions))
           .map((widgetManifest) => [widgetManifest.id, widgetManifest]),
       ),
       inputSpec: widgetSetInputSpec,
@@ -44,6 +50,7 @@ export function buildWidgetSetManifest(
 
 function buildWidgetManifest(
   widgetBuild: WidgetBuildOutputs,
+  pluginOptions?: FoundryWidgetPluginOptions,
 ): WidgetManifestConfig {
   const widgetConfig = widgetBuild.widgetConfig;
   return {
@@ -58,9 +65,43 @@ function buildWidgetManifest(
     entrypointCss: widgetBuild.stylesheets.map((path) => ({
       path: trimLeadingSlash(path),
     })),
-    parameters: widgetConfig.parameters,
+    parameters: convertParameters(widgetConfig.parameters),
     events: widgetConfig.events,
+    permissions: widgetConfig.permissions,
+    refreshHostDataOnAction: widgetConfig.refreshHostDataOnAction
+      ?? pluginOptions?.defaults?.refreshHostDataOnAction,
   };
+}
+
+function convertParameters(
+  parameters: Record<string, ParameterDefinition>,
+): Record<string, ManifestParameterDefinition> {
+  return Object.fromEntries(
+    Object.entries(parameters).map(([key, param]) => [
+      key,
+      convertParameter(param),
+    ]),
+  );
+}
+
+function convertParameter(
+  parameter: ParameterDefinition,
+): ManifestParameterDefinition {
+  if (parameter.type === "objectSet") {
+    // Config has already been validated so rid must be present
+    if (parameter.allowedType.internalDoNotUseMetadata == null) {
+      throw new Error("Expected internal metadata to be present");
+    }
+    return {
+      type: "objectSet",
+      displayName: parameter.displayName,
+      objectTypeRids: parameter.allowedType.type === "object"
+        ? [parameter.allowedType.internalDoNotUseMetadata.rid]
+        : [],
+      allowedType: parameter.allowedType.internalDoNotUseMetadata.rid,
+    };
+  }
+  return parameter;
 }
 
 function trimLeadingSlash(path: string): string {

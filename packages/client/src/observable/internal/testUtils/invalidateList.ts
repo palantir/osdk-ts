@@ -38,6 +38,9 @@ export async function invalidateList<T extends ObjectTypeDefinition>(
     args.type.apiName,
     where,
     orderBy as Canonical<OrderBy<T>>,
+    undefined, // rdpConfig
+    undefined, // intersectWith
+    undefined, // pivotInfo
   );
 
   await store.queries.peek(cacheKey)?.revalidate(true);

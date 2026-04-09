@@ -21,7 +21,10 @@ import {
   FooInterface,
   objectTypeWithAllPropertyTypes,
 } from "@osdk/client.test.ontology";
-import type { OntologyObjectV2 } from "@osdk/foundry.ontologies";
+import type {
+  InterfacePropertyTypeImplementation,
+  OntologyObjectV2,
+} from "@osdk/foundry.ontologies";
 import { createSharedClientContext } from "@osdk/shared.client.impl";
 import { LegacyFauxFoundry, startNodeApiServer } from "@osdk/shared.test";
 import { beforeAll, describe, expect, expectTypeOf, it } from "vitest";
@@ -37,6 +40,20 @@ describe("convertWireToOsdkObjects", () => {
   let client: Client;
   const interfaceToObjectTypeMappings = {
     FooInterface: { Employee: { fooSpt: "fullName" } },
+  };
+  const interfaceToObjectTypeMappingsV2 = {
+    FooInterface: {
+      Employee: {
+        fooSpt: {
+          type: "localPropertyImplementation",
+          propertyApiName: "fullName",
+        } as InterfacePropertyTypeImplementation,
+        fooIdp: {
+          type: "localPropertyImplementation",
+          propertyApiName: "office",
+        } as InterfacePropertyTypeImplementation,
+      },
+    },
   };
 
   beforeAll(() => {
@@ -62,6 +79,7 @@ describe("convertWireToOsdkObjects", () => {
       "$apiName",
       "$objectType",
       "$primaryKey",
+      "$propertySecurities",
       "$objectSpecifier",
       "employeeLocation",
     ].sort());
@@ -71,6 +89,7 @@ describe("convertWireToOsdkObjects", () => {
       "lead",
       "officeLink",
       "peeps",
+      "visitedOffices",
     ]);
 
     const asFoo = employee.$as(FooInterface);
@@ -91,7 +110,7 @@ describe("convertWireToOsdkObjects", () => {
     );
 
     expect(JSON.stringify(employee.$as(FooInterface))).toMatchInlineSnapshot(
-      `"{"$apiName":"FooInterface","$objectType":"Employee","$primaryKey":50030,"$objectSpecifier":"Employee:50030","fooSpt":"John Doe"}"`,
+      `"{"$apiName":"FooInterface","$objectType":"Employee","$primaryKey":50030,"$objectSpecifier":"Employee:50030","fooSpt":"John Doe","fooIdp":"NYC"}"`,
     );
 
     // Should have $title
@@ -100,7 +119,7 @@ describe("convertWireToOsdkObjects", () => {
     );
 
     expect(JSON.stringify(employee2.$as(FooInterface))).toMatchInlineSnapshot(
-      `"{"$apiName":"FooInterface","$objectType":"Employee","$primaryKey":50031,"$objectSpecifier":"Employee:50031","$title":"Jane Doe","fooSpt":"Jane Doe"}"`,
+      `"{"$apiName":"FooInterface","$objectType":"Employee","$primaryKey":50031,"$objectSpecifier":"Employee:50031","$title":"Jane Doe","fooSpt":"Jane Doe","fooIdp":"SEA"}"`,
     );
   });
 
@@ -211,6 +230,7 @@ describe("convertWireToOsdkObjects", () => {
       undefined,
       {},
       undefined,
+      undefined,
       false,
     );
     const prototypeAfter = Object.getPrototypeOf(object2);
@@ -242,6 +262,7 @@ describe("convertWireToOsdkObjects", () => {
       {},
       undefined,
       undefined,
+      undefined,
       false,
     );
     const prototypeAfter = Object.getPrototypeOf(object2);
@@ -269,6 +290,7 @@ describe("convertWireToOsdkObjects", () => {
       FooInterface.apiName,
       undefined,
       {},
+      undefined,
     )) as unknown as Osdk<FooInterface>[];
 
     expect(objAsFoo).toMatchInlineSnapshot(`
@@ -277,6 +299,7 @@ describe("convertWireToOsdkObjects", () => {
         "$objectSpecifier": "Employee:0",
         "$objectType": "Employee",
         "$primaryKey": 0,
+        "$propertySecurities": undefined,
         "$title": "Steve",
         "fooSpt": "Steve",
       }
@@ -291,6 +314,7 @@ describe("convertWireToOsdkObjects", () => {
         "$objectSpecifier": "Employee:0",
         "$objectType": "Employee",
         "$primaryKey": 0,
+        "$propertySecurities": undefined,
         "$title": "Steve",
         "employeeId": 0,
         "fullName": "Steve",
@@ -310,6 +334,7 @@ describe("convertWireToOsdkObjects", () => {
       __primaryKey: 0,
       __title: "Steve",
       fullName: "Steve",
+      office: "SEA",
     } satisfies OntologyObjectV2;
 
     const [objAsFoo] = (await convertWireToOsdkObjects2(
@@ -317,6 +342,7 @@ describe("convertWireToOsdkObjects", () => {
       [objectFromWire],
       FooInterface.apiName,
       {},
+      undefined,
       false,
       undefined,
       false,
@@ -329,7 +355,9 @@ describe("convertWireToOsdkObjects", () => {
         "$objectSpecifier": "Employee:0",
         "$objectType": "Employee",
         "$primaryKey": 0,
+        "$propertySecurities": undefined,
         "$title": "Steve",
+        "fooIdp": "SEA",
         "fooSpt": "Steve",
       }
     `);
@@ -343,8 +371,68 @@ describe("convertWireToOsdkObjects", () => {
         "$objectSpecifier": "Employee:0",
         "$objectType": "Employee",
         "$primaryKey": 0,
+        "$propertySecurities": undefined,
         "$title": "Steve",
         "fullName": "Steve",
+        "office": "SEA",
+      }
+    `);
+  });
+
+  it("reconstitutes interfaces properly without rid - new with IDP", async () => {
+    const clientCtx = createMinimalClient(
+      { ontologyRid: $ontologyRid },
+      "https://stack.palantir.com",
+      async () => "myAccessToken",
+    );
+
+    const objectFromWire = {
+      __apiName: "Employee" as const,
+      __primaryKey: 0,
+      __title: "Steve",
+      fullName: "Steve",
+      office: "SEA",
+    } satisfies OntologyObjectV2;
+
+    const [objAsFoo] = (await convertWireToOsdkObjects2(
+      clientCtx,
+      [objectFromWire],
+      FooInterface.apiName,
+      {},
+      undefined,
+      false,
+      undefined,
+      false,
+      interfaceToObjectTypeMappings,
+      interfaceToObjectTypeMappingsV2,
+    )) as unknown as Osdk<FooInterface>[];
+
+    expect(objAsFoo).toMatchInlineSnapshot(`
+      {
+        "$apiName": "FooInterface",
+        "$objectSpecifier": "Employee:0",
+        "$objectType": "Employee",
+        "$primaryKey": 0,
+        "$propertySecurities": undefined,
+        "$title": "Steve",
+        "fooIdp": "SEA",
+        "fooSpt": "Steve",
+      }
+    `);
+
+    const obj = objAsFoo.$as(Employee);
+    expect(obj.fullName).toEqual("Steve");
+
+    expect(obj).toMatchInlineSnapshot(`
+      {
+        "$apiName": "Employee",
+        "$objectSpecifier": "Employee:0",
+        "$objectType": "Employee",
+        "$primaryKey": 0,
+        "$propertySecurities": undefined,
+        "$title": "Steve",
+        "fullName": "Steve",
+        "office": "SEA",
       }
     `);
   });
@@ -370,6 +458,7 @@ describe("convertWireToOsdkObjects", () => {
       FooInterface.apiName,
       undefined,
       {},
+      undefined,
     )) as unknown as Osdk<FooInterface, "$rid" | "$all">[];
 
     expect(objAsFoo).toMatchInlineSnapshot(`
@@ -378,6 +467,7 @@ describe("convertWireToOsdkObjects", () => {
         "$objectSpecifier": "Employee:0",
         "$objectType": "Employee",
         "$primaryKey": 0,
+        "$propertySecurities": undefined,
         "$rid": "hiMom",
         "$title": "Steve",
         "fooSpt": "Steve",
@@ -394,6 +484,7 @@ describe("convertWireToOsdkObjects", () => {
         "$objectSpecifier": "Employee:0",
         "$objectType": "Employee",
         "$primaryKey": 0,
+        "$propertySecurities": undefined,
         "$rid": "hiMom",
         "$title": "Steve",
         "employeeId": 0,
@@ -417,6 +508,7 @@ describe("convertWireToOsdkObjects", () => {
       __rid: "hiMom",
       fullName: "Steve",
       employeeId: 0,
+      office: "SEA",
     } satisfies OntologyObjectV2;
 
     const [objAsFoo] = (await convertWireToOsdkObjects2(
@@ -424,6 +516,7 @@ describe("convertWireToOsdkObjects", () => {
       [objectFromWire],
       FooInterface.apiName,
       {},
+      undefined,
       false,
       undefined,
       false,
@@ -436,8 +529,10 @@ describe("convertWireToOsdkObjects", () => {
         "$objectSpecifier": "Employee:0",
         "$objectType": "Employee",
         "$primaryKey": 0,
+        "$propertySecurities": undefined,
         "$rid": "hiMom",
         "$title": "Steve",
+        "fooIdp": "SEA",
         "fooSpt": "Steve",
       }
     `);
@@ -452,10 +547,77 @@ describe("convertWireToOsdkObjects", () => {
         "$objectSpecifier": "Employee:0",
         "$objectType": "Employee",
         "$primaryKey": 0,
+        "$propertySecurities": undefined,
         "$rid": "hiMom",
         "$title": "Steve",
         "employeeId": 0,
         "fullName": "Steve",
+        "office": "SEA",
+      }
+    `);
+    expect(obj.$rid).toEqual("hiMom");
+  });
+
+  it("reconstitutes interfaces properly with rid - new with IDP", async () => {
+    const clientCtx = createMinimalClient(
+      { ontologyRid: $ontologyRid },
+      "https://stack.palantir.com",
+      async () => "myAccessToken",
+    );
+
+    const objectFromWire = {
+      __apiName: "Employee" as const,
+      __primaryKey: 0,
+      __title: "Steve",
+      __rid: "hiMom",
+      fullName: "Steve",
+      employeeId: 0,
+      office: "SEA",
+    } satisfies OntologyObjectV2;
+
+    const [objAsFoo] = (await convertWireToOsdkObjects2(
+      clientCtx,
+      [objectFromWire],
+      FooInterface.apiName,
+      {},
+      undefined,
+      false,
+      undefined,
+      false,
+      interfaceToObjectTypeMappings,
+      interfaceToObjectTypeMappingsV2,
+    )) as unknown as Osdk<FooInterface, "$rid" | "$all">[];
+
+    expect(objAsFoo).toMatchInlineSnapshot(`
+      {
+        "$apiName": "FooInterface",
+        "$objectSpecifier": "Employee:0",
+        "$objectType": "Employee",
+        "$primaryKey": 0,
+        "$propertySecurities": undefined,
+        "$rid": "hiMom",
+        "$title": "Steve",
+        "fooIdp": "SEA",
+        "fooSpt": "Steve",
+      }
+    `);
+    expect(objAsFoo.$rid).toEqual("hiMom");
+
+    const obj = objAsFoo.$as(Employee);
+    expect(obj.fullName).toEqual("Steve");
+
+    expect(obj).toMatchInlineSnapshot(`
+      {
+        "$apiName": "Employee",
+        "$objectSpecifier": "Employee:0",
+        "$objectType": "Employee",
+        "$primaryKey": 0,
+        "$propertySecurities": undefined,
+        "$rid": "hiMom",
+        "$title": "Steve",
+        "employeeId": 0,
+        "fullName": "Steve",
+        "office": "SEA",
       }
     `);
     expect(obj.$rid).toEqual("hiMom");
@@ -475,6 +637,7 @@ describe("convertWireToOsdkObjects", () => {
           undefined,
           undefined,
           {},
+          undefined,
           ["employeeId"],
           "throw",
         )
@@ -496,6 +659,7 @@ describe("convertWireToOsdkObjects", () => {
           undefined,
           undefined,
           {},
+          undefined,
           ["fullName"],
           "throw",
         ),
@@ -514,6 +678,7 @@ describe("convertWireToOsdkObjects", () => {
         undefined,
         undefined,
         {},
+        undefined,
         ["employeeId"],
         "drop",
       );
@@ -533,6 +698,7 @@ describe("convertWireToOsdkObjects", () => {
         undefined,
         undefined,
         {},
+        undefined,
         ["fullName"],
         "drop",
       );
@@ -555,6 +721,7 @@ describe("convertWireToOsdkObjects", () => {
           undefined,
           {},
           undefined,
+          undefined,
           ["employeeId"],
           "throw",
         )
@@ -576,6 +743,7 @@ describe("convertWireToOsdkObjects", () => {
           undefined,
           {},
           undefined,
+          undefined,
           ["fullName"],
           "throw",
         ),
@@ -593,6 +761,7 @@ describe("convertWireToOsdkObjects", () => {
         [object],
         undefined,
         {},
+        undefined,
         undefined,
         ["employeeId"],
         "drop",
@@ -612,6 +781,7 @@ describe("convertWireToOsdkObjects", () => {
         [object],
         undefined,
         {},
+        undefined,
         undefined,
         ["fullName"],
         "drop",
@@ -636,6 +806,7 @@ describe("convertWireToOsdkObjects", () => {
           {},
           undefined,
           undefined,
+          undefined,
           "throw",
         )
       ).rejects.toThrowErrorMatchingInlineSnapshot(
@@ -658,6 +829,7 @@ describe("convertWireToOsdkObjects", () => {
           {},
           undefined,
           undefined,
+          undefined,
           "throw",
         ),
       ).resolves.to.not.toBeUndefined();
@@ -674,6 +846,7 @@ describe("convertWireToOsdkObjects", () => {
         [object],
         undefined,
         {},
+        undefined,
         undefined,
         undefined,
         "drop",
@@ -694,6 +867,7 @@ describe("convertWireToOsdkObjects", () => {
         [object],
         undefined,
         {},
+        undefined,
         undefined,
         undefined,
         "drop",
@@ -718,6 +892,7 @@ describe("convertWireToOsdkObjects", () => {
           {},
           undefined,
           undefined,
+          undefined,
           "throw",
         )
       ).rejects.toThrowErrorMatchingInlineSnapshot(
@@ -740,6 +915,7 @@ describe("convertWireToOsdkObjects", () => {
           {},
           undefined,
           undefined,
+          undefined,
           "throw",
         ),
       ).resolves.to.not.toBeUndefined();
@@ -756,6 +932,7 @@ describe("convertWireToOsdkObjects", () => {
         [object],
         undefined,
         {},
+        undefined,
         undefined,
         undefined,
         "drop",
@@ -778,6 +955,7 @@ describe("convertWireToOsdkObjects", () => {
         {},
         undefined,
         undefined,
+        undefined,
         "drop",
       );
 
@@ -798,9 +976,34 @@ describe("convertWireToOsdkObjects", () => {
       "FooInterface",
       {},
       undefined,
+      undefined,
       ["fooSpt"],
       "drop",
       interfaceToObjectTypeMappings,
+    );
+
+    expect(result.length).toBe(1);
+  });
+
+  it("behaves correctly when converting with IDP", async () => {
+    const object = {
+      __apiName: "Employee",
+      __primaryKey: 0,
+      fooSpt: "hi",
+      fooDip: "howdy",
+    } as const;
+
+    const result = await convertWireToOsdkObjects2(
+      client[additionalContext],
+      [object],
+      "FooInterface",
+      {},
+      undefined,
+      undefined,
+      ["fooSpt", "fooIdp"],
+      "drop",
+      interfaceToObjectTypeMappings,
+      interfaceToObjectTypeMappingsV2,
     );
 
     expect(result.length).toBe(1);
@@ -833,12 +1036,14 @@ describe("convertWireToOsdkObjects", () => {
               ],
               "interfaceMap": {
                 "FooInterface": {
+                  "fooIdp": "office",
                   "fooSpt": "fullName",
                 },
               },
               "inverseInterfaceMap": {
                 "FooInterface": {
                   "fullName": "fooSpt",
+                  "office": "fooIdp",
                 },
               },
               "links": {
@@ -854,6 +1059,10 @@ describe("convertWireToOsdkObjects", () => {
                   "multiplicity": true,
                   "targetType": "Employee",
                 },
+                "visitedOffices": {
+                  "multiplicity": true,
+                  "targetType": "Office",
+                },
               },
               "pluralDisplayName": "Employees",
               "primaryKeyApiName": "employeeId",
@@ -865,6 +1074,7 @@ describe("convertWireToOsdkObjects", () => {
                   "multiplicity": false,
                   "nullable": true,
                   "type": "string",
+                  "valueFormatting": undefined,
                   "valueTypeApiName": undefined,
                 },
                 "employeeId": {
@@ -873,6 +1083,7 @@ describe("convertWireToOsdkObjects", () => {
                   "multiplicity": false,
                   "nullable": false,
                   "type": "integer",
+                  "valueFormatting": undefined,
                   "valueTypeApiName": undefined,
                 },
                 "employeeLocation": {
@@ -881,6 +1092,7 @@ describe("convertWireToOsdkObjects", () => {
                   "multiplicity": false,
                   "nullable": true,
                   "type": "geotimeSeriesReference",
+                  "valueFormatting": undefined,
                   "valueTypeApiName": undefined,
                 },
                 "employeeSensor": {
@@ -888,7 +1100,8 @@ describe("convertWireToOsdkObjects", () => {
                   "displayName": undefined,
                   "multiplicity": false,
                   "nullable": true,
-                  "type": "sensorTimeseries",
+                  "type": "stringTimeseries",
+                  "valueFormatting": undefined,
                   "valueTypeApiName": undefined,
                 },
                 "employeeStatus": {
@@ -897,6 +1110,16 @@ describe("convertWireToOsdkObjects", () => {
                   "multiplicity": false,
                   "nullable": true,
                   "type": "stringTimeseries",
+                  "valueFormatting": undefined,
+                  "valueTypeApiName": undefined,
+                },
+                "favoriteRestaurants": {
+                  "description": undefined,
+                  "displayName": undefined,
+                  "multiplicity": true,
+                  "nullable": true,
+                  "type": "string",
+                  "valueFormatting": undefined,
                   "valueTypeApiName": undefined,
                 },
                 "fullName": {
@@ -905,6 +1128,7 @@ describe("convertWireToOsdkObjects", () => {
                   "multiplicity": false,
                   "nullable": true,
                   "type": "string",
+                  "valueFormatting": undefined,
                   "valueTypeApiName": undefined,
                 },
                 "office": {
@@ -914,6 +1138,7 @@ describe("convertWireToOsdkObjects", () => {
                   "multiplicity": false,
                   "nullable": true,
                   "type": "string",
+                  "valueFormatting": undefined,
                   "valueTypeApiName": undefined,
                 },
                 "skillSet": {
@@ -922,6 +1147,7 @@ describe("convertWireToOsdkObjects", () => {
                   "multiplicity": false,
                   "nullable": true,
                   "type": "string",
+                  "valueFormatting": undefined,
                   "valueTypeApiName": undefined,
                 },
                 "skillSetEmbedding": {
@@ -930,6 +1156,7 @@ describe("convertWireToOsdkObjects", () => {
                   "multiplicity": false,
                   "nullable": true,
                   "type": "vector",
+                  "valueFormatting": undefined,
                   "valueTypeApiName": undefined,
                 },
                 "startDate": {
@@ -938,6 +1165,7 @@ describe("convertWireToOsdkObjects", () => {
                   "multiplicity": false,
                   "nullable": true,
                   "type": "datetime",
+                  "valueFormatting": undefined,
                   "valueTypeApiName": undefined,
                 },
               },
@@ -965,12 +1193,22 @@ describe("convertWireToOsdkObjects", () => {
                       },
                     },
                     "properties": {
+                      "fooIdp": {
+                        "description": "A Foo IDP",
+                        "displayName": "Foo IDP",
+                        "multiplicity": false,
+                        "nullable": true,
+                        "type": "string",
+                        "valueFormatting": undefined,
+                        "valueTypeApiName": undefined,
+                      },
                       "fooSpt": {
                         "description": "A foo",
                         "displayName": "Foo",
                         "multiplicity": false,
                         "nullable": true,
                         "type": "string",
+                        "valueFormatting": undefined,
                         "valueTypeApiName": undefined,
                       },
                     },
@@ -1052,12 +1290,22 @@ describe("convertWireToOsdkObjects", () => {
                 },
               },
               "properties": {
+                "fooIdp": {
+                  "description": "A Foo IDP",
+                  "displayName": "Foo IDP",
+                  "multiplicity": false,
+                  "nullable": true,
+                  "type": "string",
+                  "valueFormatting": undefined,
+                  "valueTypeApiName": undefined,
+                },
                 "fooSpt": {
                   "description": "A foo",
                   "displayName": "Foo",
                   "multiplicity": false,
                   "nullable": true,
                   "type": "string",
+                  "valueFormatting": undefined,
                   "valueTypeApiName": undefined,
                 },
               },

@@ -15,6 +15,7 @@
  */
 
 import type {
+  OntologyBlockDataV2,
   OntologyIrOntologyBlockDataV2,
 } from "./generated/ontology-metadata/api/blockdata/index.js";
 import type { BaseType } from "./generated/type-registry/api/BaseType.js";
@@ -35,6 +36,15 @@ export interface OntologyIr {
   importedOntology: OntologyIrOntologyBlockDataV2;
   valueTypes: OntologyIrValueTypeBlockData;
   importedValueTypes: OntologyIrValueTypeBlockData;
+  randomnessKey?: string;
+}
+
+export interface OntologyIrV2 {
+  ontology: OntologyBlockDataV2;
+  importedOntology: OntologyBlockDataV2;
+  valueTypes: OntologyIrValueTypeBlockData;
+  importedValueTypes: OntologyIrValueTypeBlockData;
+  randomnessKey?: string;
 }
 
 export type OntologyIrPackagedValueType = {

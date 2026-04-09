@@ -15,8 +15,15 @@
  */
 
 import invariant from "tiny-invariant";
-import { namespace, sanitize, withoutNamespace } from "./defineOntology.js";
-import type { InterfaceType } from "./types.js";
+import { cloneDefinition } from "./cloneDefinition.js";
+import { OntologyEntityTypeEnum } from "./common/OntologyEntityTypeEnum.js";
+import {
+  importedTypes,
+  namespace,
+  withoutNamespace,
+} from "./defineOntology.js";
+import type { InterfaceType } from "./interface/InterfaceType.js";
+import { combineApiNamespaceIfMissing } from "./namespace/combineApiNamespaceIfMissing.js";
 
 type Meta = { apiName: string; displayName?: string; description?: string };
 type ApiNameOrInterfaceType = string | InterfaceType;
@@ -41,8 +48,16 @@ type One = {
 };
 
 export function defineInterfaceLinkConstraint(
-  linkDef: One | Many,
+  linkDefInput: One | Many,
 ): void {
+  const linkDef = cloneDefinition(linkDefInput);
+
+  invariant(
+    importedTypes[OntologyEntityTypeEnum.INTERFACE_TYPE][linkDef.from.apiName]
+      == null,
+    `Cannot define a link constraint from imported interface ${linkDef.from.apiName}. The "from" side must be a locally defined interface.`,
+  );
+
   const fromLinkMeta = getLinkMeta(linkDef);
 
   invariant(
@@ -68,7 +83,7 @@ function getLinkedType(t: string | InterfaceType) {
 
 function getLinkMeta(meta: One | Many): Required<Meta> {
   const { apiName, displayName, description } = meta;
-  const apiNameWithNamespace = sanitize(namespace, apiName);
+  const apiNameWithNamespace = combineApiNamespaceIfMissing(namespace, apiName);
   const apiNameWithoutNamespace = withoutNamespace(apiNameWithNamespace);
   return {
     apiName: apiNameWithNamespace,

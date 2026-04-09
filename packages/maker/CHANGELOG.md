@@ -1,5 +1,579 @@
 # @osdk/maker
 
+## 0.16.0
+
+### Minor Changes
+
+- 322c5bc: Simulated release
+- cc7f505: Add maximum length validation (100 characters) for API names to match server-side constraints
+- 8f92197: update code snippet to have interface dependent properties
+- 963626f: Add function discovery support (TypeScript and Python) and generate intermediate OSDK from CLI for use by function definitions
+- f487a6a: Maker experimental
+- e462938: Support PSGs in OAC
+- 6499ff9: Support reducers and struct main values in oac
+- 0e45a37: Add better api name validation for OAC
+- fcf81ba: Validate link api names
+- ab50d31: Remove propertiesV2 from code-snippets
+- 034081a: oac direct datasources
+- 77aa4a9: Detect imported objects for OAC links
+- fd3f6d3: Add support for empty backing datasources
+- 9ee82f4: Dedupe many-to-many PK property names in datasource
+- 5b938ef: Enforce OT and prop statuses match
+- 7fa6de3: Revert breaking change
+- 2b15836: Disallow ILCs on imported interfaces
+- 684b6c6: Always use valid import path
+- acb4ed6: Support custom decimal types
+- e8ca289: Fix key resolution
+- 35f2f1a: Add Media inputs/outputs for Queries
+- e0ba9eb: Shallow clone arrays in definition when passed in to defineFoo methods
+- 972bda6: Support assumed markings for oac PSGs
+- 6941b4f: extendsInterfaceMetadata on the IR to fix interface impl
+- e9f9f58: Allow primitive struct main values to be title props
+- eac64f4: Link backing dataset generation
+
+### Patch Changes
+
+- Updated dependencies [322c5bc]
+- Updated dependencies [150da1a]
+- Updated dependencies [776ae8a]
+- Updated dependencies [4bb9769]
+- Updated dependencies [abb0e0f]
+- Updated dependencies [4762f4b]
+- Updated dependencies [beba0cd]
+- Updated dependencies [8561a8b]
+- Updated dependencies [f294f5a]
+- Updated dependencies [908b519]
+- Updated dependencies [c4d7052]
+- Updated dependencies [0df859a]
+- Updated dependencies [d284bf2]
+- Updated dependencies [4ef6adc]
+- Updated dependencies [60b5ffb]
+- Updated dependencies [8c30908]
+- Updated dependencies [4a856cb]
+- Updated dependencies [b68cebd]
+- Updated dependencies [35f2f1a]
+- Updated dependencies [cde6b85]
+- Updated dependencies [32c6a0c]
+- Updated dependencies [12fe33f]
+- Updated dependencies [46f0a47]
+- Updated dependencies [61e33ab]
+  - @osdk/api@2.8.0
+  - @osdk/generator-converters.ontologyir@2.8.0
+  - @osdk/typescript-sdk-docs@0.7.0
+
+## 0.16.0-beta.15
+
+### Minor Changes
+
+- e8ca289: Fix key resolution
+
+## 0.16.0-beta.14
+
+### Minor Changes
+
+- 684b6c6: Always use valid import path
+
+### Patch Changes
+
+- Updated dependencies [f294f5a]
+- Updated dependencies [d284bf2]
+- Updated dependencies [b68cebd]
+- Updated dependencies [12fe33f]
+  - @osdk/api@2.8.0-beta.28
+  - @osdk/generator-converters.ontologyir@2.8.0-beta.28
+
+## 0.16.0-beta.13
+
+### Minor Changes
+
+- 9ee82f4: Dedupe many-to-many PK property names in datasource
+
+### Patch Changes
+
+- Updated dependencies [60b5ffb]
+- Updated dependencies [61e33ab]
+  - @osdk/api@2.8.0-beta.26
+  - @osdk/generator-converters.ontologyir@2.8.0-beta.26
+
+## 0.16.0-beta.12
+
+### Minor Changes
+
+- 77aa4a9: Detect imported objects for OAC links
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.24
+- @osdk/generator-converters.ontologyir@2.8.0-beta.24
+
+## 0.16.0-beta.11
+
+### Minor Changes
+
+- cc7f505: Add maximum length validation (100 characters) for API names to match server-side constraints
+- 0e45a37: Add better api name validation for OAC
+- fcf81ba: Validate link api names
+- fd3f6d3: Add support for empty backing datasources
+
+### Patch Changes
+
+- Updated dependencies [4bb9769]
+- Updated dependencies [beba0cd]
+- Updated dependencies [c4d7052]
+- Updated dependencies [32c6a0c]
+  - @osdk/api@2.8.0-beta.23
+  - @osdk/typescript-sdk-docs@0.7.0-beta.3
+  - @osdk/generator-converters.ontologyir@2.8.0-beta.23
+
+## 0.16.0-beta.10
+
+### Minor Changes
+
+- 6941b4f: extendsInterfaceMetadata on the IR to fix interface impl
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.16
+- @osdk/generator-converters.ontologyir@2.8.0-beta.16
+
+## 0.16.0-beta.9
+
+### Minor Changes
+
+- 7fa6de3: Revert breaking change
+
+## 0.16.0-beta.8
+
+### Minor Changes
+
+- 35f2f1a: Add Media inputs/outputs for Queries
+
+### Patch Changes
+
+- Updated dependencies [35f2f1a]
+  - @osdk/api@2.8.0-beta.14
+  - @osdk/generator-converters.ontologyir@2.8.0-beta.14
+  - @osdk/typescript-sdk-docs@0.7.0-beta.2
+
+## 0.16.0-beta.7
+
+### Minor Changes
+
+- f487a6a: Maker experimental
+- acb4ed6: Support custom decimal types
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.11
+- @osdk/generator-converters.ontologyir@2.8.0-beta.11
+
+## 0.16.0-beta.6
+
+### Minor Changes
+
+- 963626f: Add function discovery support (TypeScript and Python) and generate intermediate OSDK from CLI for use by function definitions
+- 972bda6: Support assumed markings for oac PSGs
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.10
+- @osdk/generator-converters.ontologyir@2.8.0-beta.10
+
+## 0.16.0-beta.5
+
+### Minor Changes
+
+- 034081a: oac direct datasources
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.7
+
+## 0.16.0-beta.4
+
+### Minor Changes
+
+- ab50d31: Remove propertiesV2 from code-snippets
+- 2b15836: Disallow ILCs on imported interfaces
+- e0ba9eb: Shallow clone arrays in definition when passed in to defineFoo methods
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.6
+
+## 0.16.0-beta.3
+
+### Minor Changes
+
+- 8f92197: update code snippet to have interface dependent properties
+- 6499ff9: Support reducers and struct main values in oac
+- 5b938ef: Enforce OT and prop statuses match
+- e9f9f58: Allow primitive struct main values to be title props
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.5
+
+## 0.16.0-beta.2
+
+### Minor Changes
+
+- e462938: Support PSGs in OAC
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.2
+
+## 0.15.0-beta.9
+
+### Minor Changes
+
+- ace2d68: Allow custom "then" configuration on visibility overrides
+- 044f478: Wire propertiesV2 to implementsInterface
+- 3693275: Add flag to add namespace prefix to value type api names
+
+## 0.15.0-beta.8
+
+### Minor Changes
+
+- c773e8f: Expose more status options on OAC
+
+### Patch Changes
+
+- Updated dependencies [bb9d25c]
+  - @osdk/api@2.7.0-beta.12
+
+## 0.15.0-beta.7
+
+### Minor Changes
+
+- 8381ac2: Alias and render hint overrides for oac
+- c95f3bc: Support IDPs in OAC
+
+### Patch Changes
+
+- @osdk/api@2.7.0-beta.9
+
+## 0.15.0-beta.6
+
+### Minor Changes
+
+- 2fd6f6e: Fix self-referential derived datasources
+
+## 0.15.0-beta.5
+
+### Minor Changes
+
+- 1cb0862: fix property parameter defaults
+
+## 0.15.0-beta.4
+
+### Minor Changes
+
+- 9088072: Add users from static groups as action parameters in OAC
+- bb8d059: Support customizations for delete object action parameters
+- 33e10e3: Implement user and group action parameters
+
+### Patch Changes
+
+- Updated dependencies [c9ca08d]
+  - @osdk/api@2.7.0-beta.6
+
+## 0.15.0-beta.3
+
+### Minor Changes
+
+- e743064: Expose icon param in actions
+
+### Patch Changes
+
+- Updated dependencies [1e3c147]
+- Updated dependencies [579e518]
+  - @osdk/api@2.7.0-beta.4
+  - @osdk/typescript-sdk-docs@0.6.0-beta.3
+
+## 0.15.0-beta.2
+
+### Minor Changes
+
+- 448caa8: Support formatting for SPTs
+
+### Patch Changes
+
+- Updated dependencies [03db734]
+  - @osdk/typescript-sdk-docs@0.6.0-beta.2
+  - @osdk/api@2.7.0-beta.2
+
+## 0.14.0-beta.15
+
+### Minor Changes
+
+- a26bfab: Remove import section from readme
+- 88ac696: Remove apiName field from user object property definitions
+
+### Patch Changes
+
+- Updated dependencies [823c756]
+- Updated dependencies [0e863aa]
+  - @osdk/typescript-sdk-docs@0.5.0-beta.5
+  - @osdk/api@2.6.0-beta.11
+
+## 0.14.0-beta.14
+
+### Minor Changes
+
+- 9e2d70a: Interface actions have the option to not include namespaces on parameters for Java OSDK generation
+
+### Patch Changes
+
+- Updated dependencies [a035fdc]
+  - @osdk/typescript-sdk-docs@0.5.0-beta.3
+
+## 0.14.0-beta.13
+
+### Minor Changes
+
+- 9ddb3b4: Update snippet names and get latest template
+
+### Patch Changes
+
+- Updated dependencies [b307201]
+  - @osdk/api@2.6.0-beta.9
+
+## 0.14.0-beta.12
+
+### Minor Changes
+
+- 5e4aabd: Add decimal property type customizations
+
+### Patch Changes
+
+- @osdk/api@2.6.0-beta.7
+
+## 0.14.0-beta.11
+
+### Minor Changes
+
+- 09242c5: Move mustache dependency
+
+## 0.14.0-beta.10
+
+### Minor Changes
+
+- 6532b54: Move osdk/typescript-sdk-docs from dev dependencies to normal dep
+
+### Patch Changes
+
+- Updated dependencies [b959085]
+  - @osdk/api@2.6.0-beta.6
+
+## 0.14.0-beta.9
+
+### Minor Changes
+
+- 55e104e: Add code snippet generation into osdk/maker
+- 949646b: Fix delete interface bug
+
+### Patch Changes
+
+- Updated dependencies [2556c64]
+  - @osdk/api@2.6.0-beta.5
+
+## 0.14.0-beta.8
+
+### Minor Changes
+
+- 296b34d: Add support for interface deletes
+
+## 0.14.0-beta.7
+
+### Minor Changes
+
+- 7fd788b: Support derived properties
+
+### Patch Changes
+
+- Updated dependencies [e7bf02a]
+  - @osdk/api@2.6.0-beta.4
+
+## 0.14.0-beta.6
+
+### Minor Changes
+
+- 04bfbfc: Add default format and table config options to OAC interface actions
+- 6ddabf4: Fix bug with action level validation on interface actions
+
+## 0.14.0-beta.5
+
+### Minor Changes
+
+- a03ea8d: Sections, submission metadata, layout switching for OAC interface actions
+
+### Patch Changes
+
+- @osdk/api@2.6.0-beta.3
+
+## 0.14.0-beta.4
+
+### Minor Changes
+
+- aca0e5d: Add parameter/property configuration for OAC interface actions
+- 878c2eb: Add display name, api name, status customizations to OAC interface actions
+
+### Patch Changes
+
+- Updated dependencies [84e61fc]
+- Updated dependencies [c4f8529]
+- Updated dependencies [f7ae38a]
+  - @osdk/api@2.6.0-beta.2
+
+## 0.14.0-beta.3
+
+### Minor Changes
+
+- 995064b: Make tests run synchronously
+
+## 0.14.0-beta.2
+
+### Minor Changes
+
+- 7601f9f: Fix condition validation
+
+## 0.13.0-beta.18
+
+### Minor Changes
+
+- 6dee3cc: Typechecks improvement
+- 242cdb7: Remove uuid import from maker
+
+## 0.13.0-beta.17
+
+### Minor Changes
+
+- 58e9f56: Add condition validations for oac actions
+
+## 0.13.0-beta.16
+
+### Minor Changes
+
+- 7f22c27: Finish wiring up randomness key
+
+### Patch Changes
+
+- @osdk/api@2.5.0-beta.15
+
+## 0.13.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- 6da8fd2: Write value type IR correctly
+- 37eb75b: readme update and missing changeset for wiring up randomness key
+- a6f49e9: Intermediary links in oac
+- a6f49e9: Fix Maker Rid Generation
+- f025f30: Fix semantic merge conflict
+- 1b60527: Remove foundry.ontologies dependency
+- 7cdab1d: Update platform sdk dependencies
+- a00d2ed: Update Platform SDK dependencies
+- 40d43c2: Make codegen TS compiler friendly
+- d815339: Allow interface props to be excluded from actions
+- f9b6dc4: Write value types to ontology IR file
+- 07083e1: Action submission conditions can have custom metadata
+- b1c99bf: Revert .js -> .ts extension for codegen
+- 11fd3fb: Add api name validation for object types
+- 5f72188: Fix object action param optionality for non-array props
+- 5fd12eb: Fix interface display metadata to include icon
+- 7bdac45: Update Platform SDK dependency
+- a96d89e: Update Platform SDK dependencies
+- f2dbc3d: Fix test from semantic merge conflict
+- cbcf2ad: Add branching support
+- 04fe946: Use block data type for imports
+- 7f0ad5c: Check extended interfaces when verifying interface actions
+- 712dfbe: Improve interface action validation
+- Updated dependencies [322c5bc]
+- Updated dependencies [7160276]
+- Updated dependencies [7bdac45]
+- Updated dependencies [37eb75b]
+- Updated dependencies [7b97128]
+- Updated dependencies [76905f5]
+- Updated dependencies [20962bc]
+- Updated dependencies [052a96b]
+- Updated dependencies [ca1fabe]
+- Updated dependencies [e48be06]
+  - @osdk/api@2.5.0
+
+## 0.13.0-beta.15
+
+### Minor Changes
+
+- 04e664e: readme update and missing changeset for wiring up randomness key
+
+## 0.13.0-beta.14
+
+### Minor Changes
+
+- 9dd5a63: Intermediary links in oac
+- e62408b: Fix Maker Rid Generation
+
+### Patch Changes
+
+- Updated dependencies [b7edfb5]
+  - @osdk/api@2.5.0-beta.14
+
+## 0.13.0-beta.13
+
+### Minor Changes
+
+- d815339: Allow interface props to be excluded from actions
+
+### Patch Changes
+
+- @osdk/api@2.5.0-beta.13
+
+## 0.13.0-beta.12
+
+### Minor Changes
+
+- f025f30: Fix semantic merge conflict
+- 7f0ad5c: Check extended interfaces when verifying interface actions
+
+### Patch Changes
+
+- @osdk/api@2.5.0-beta.12
+
+## 0.13.0-beta.11
+
+### Minor Changes
+
+- 5fd12eb: Fix interface display metadata to include icon
+- f2dbc3d: Fix test from semantic merge conflict
+- 712dfbe: Improve interface action validation
+
+### Patch Changes
+
+- Updated dependencies [7b97128]
+  - @osdk/api@2.5.0-beta.11
+
+## 0.13.0-beta.10
+
+### Minor Changes
+
+- 11fd3fb: Add api name validation for object types
+
+### Patch Changes
+
+- @osdk/api@2.5.0-beta.10
+
+## 0.13.0-beta.9
+
+### Minor Changes
+
+- 1b60527: Remove foundry.ontologies dependency
+
+### Patch Changes
+
+- @osdk/api@2.5.0-beta.9
+
 ## 0.13.0-beta.8
 
 ### Minor Changes

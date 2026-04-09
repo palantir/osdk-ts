@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,22 +14,31 @@
  * limitations under the License.
  */
 
-import type { Osdk, PageResult } from "@osdk/api";
+import type {
+  ObjectSet,
+  ObjectTypeDefinition,
+  Osdk,
+  PageResult,
+} from "@osdk/api";
 import deepEqual from "fast-deep-equal";
-import type { Connectable, Observable } from "rxjs";
+import type { Connectable, Observable, Subscription } from "rxjs";
 import type {
   CommonObserveOptions,
   Status,
 } from "../../ObservableClient/common.js";
 import type { BatchContext } from "../BatchContext.js";
 import { type CacheKey, DEBUG_ONLY__cacheKeysToString } from "../CacheKey.js";
+import type { Canonical } from "../Canonical.js";
 import { isObjectInstance } from "../isObjectInstance.js";
 import type { Entry } from "../Layer.js";
+import { RDP_IDX } from "../list/ListCacheKey.js";
 import { type ObjectCacheKey } from "../object/ObjectCacheKey.js";
 import { Query } from "../Query.js";
+import type { Rdp } from "../RdpCanonicalizer.js";
 import type { SortingStrategy } from "../sorting/SortingStrategy.js";
 import { NoOpSortingStrategy } from "../sorting/SortingStrategy.js";
 import type { SubjectPayload } from "../SubjectPayload.js";
+import type { ObjectUpdate } from "../types/ObjectUpdate.js";
 import type {
   CollectionConnectableParams,
   CollectionStorageData,
@@ -37,20 +46,62 @@ import type {
 import { createCollectionConnectable } from "./createCollectionConnectable.js";
 import { removeDuplicates } from "./removeDuplicates.js";
 
+export type ListUpdateMode =
+  | { type: "serverOrdered"; append: boolean }
+  | { type: "clientOrdered" };
+
+/**
+ * Base shape for list-like payloads (ListPayload, SpecificLinkPayload, etc.)
+ * Used to constrain PAYLOAD so we can safely access these properties
+ */
+export interface BaseListPayloadShape {
+  resolvedList: readonly unknown[] | undefined;
+  hasMore: boolean;
+  fetchMore: () => Promise<void>;
+  status: Status;
+}
+
+/**
+ * Options that include pageSize for list-like queries.
+ * This allows BaseListQuery to access pageSize without type casting.
+ */
+export interface BaseListQueryOptions extends CommonObserveOptions {
+  pageSize?: number;
+}
+
 /**
  * Base class for collection-based queries (lists and links)
  * Provides common functionality for working with collections of objects
  */
 export abstract class BaseListQuery<
   KEY extends CacheKey<any, CollectionStorageData, any, any>,
-  PAYLOAD,
-  O extends CommonObserveOptions,
+  PAYLOAD extends BaseListPayloadShape,
+  O extends BaseListQueryOptions,
 > extends Query<KEY, PAYLOAD, O> {
   /**
    * The sorting strategy to use for this collection
    * @protected
    */
   protected sortingStrategy: SortingStrategy = new NoOpSortingStrategy();
+
+  /**
+   * Get RDP configuration from the cache key
+   */
+  public get rdpConfig(): Canonical<Rdp> | null {
+    return this.cacheKey.otherKeys[RDP_IDX];
+  }
+
+  private _selectFieldSetMemo: ReadonlySet<string> | undefined;
+
+  protected abstract get rawSelect(): Canonical<readonly string[]> | undefined;
+
+  public get selectFieldSet(): ReadonlySet<string> | undefined {
+    const select = this.rawSelect;
+    if (select && !this._selectFieldSetMemo) {
+      this._selectFieldSetMemo = new Set(select);
+    }
+    return this._selectFieldSetMemo;
+  }
 
   // Collection-specific behavior is implemented by subclasses
   /**
@@ -65,6 +116,10 @@ export abstract class BaseListQuery<
    */
   protected pendingPageFetch?: Promise<void>;
 
+  protected currentTotalCount?: string;
+
+  #subscriberPageSizes: Map<string, number> = new Map();
+
   //
   // Shared Implementations
   //
@@ -76,20 +131,22 @@ export abstract class BaseListQuery<
    * @param items Objects or cache keys to add to the list
    * @param status Status to set for the list
    * @param batch Batch context to use
-   * @param append Whether to append to the existing list or replace it
+   * @param mode Controls ordering responsibility and append behavior
+   * @param totalCount Optional total count from API response
    * @returns The updated entry
    */
   public _updateList<T extends ObjectCacheKey | Osdk.Instance<any>>(
     items: T[],
     status: Status,
     batch: BatchContext,
-    append: boolean = false,
+    mode: ListUpdateMode = { type: "clientOrdered" },
+    totalCount?: string,
   ): Entry<KEY> {
     if (process.env.NODE_ENV !== "production") {
       this.logger
         ?.child({ methodName: "updateList" })
         .debug(
-          `{status: ${status}, append: ${append}}`,
+          `{status: ${status}, mode: ${JSON.stringify(mode)}}`,
           JSON.stringify(items, null, 2),
         );
     }
@@ -103,17 +160,26 @@ export abstract class BaseListQuery<
       objectCacheKeys = this.store.objects.storeOsdkInstances(
         items as Array<Osdk.Instance<any>>,
         batch,
+        this.rdpConfig,
+        this.selectFieldSet,
       );
     } else {
       // Items are already cache keys
       objectCacheKeys = items as ObjectCacheKey[];
     }
 
+    const append = mode.type === "serverOrdered" && mode.append;
     objectCacheKeys = this.#retainReleaseAppend(batch, append, objectCacheKeys);
-    objectCacheKeys = this._sortCacheKeys(objectCacheKeys, batch);
+    if (mode.type === "clientOrdered") {
+      objectCacheKeys = this._sortCacheKeys(objectCacheKeys, batch);
+    }
     objectCacheKeys = removeDuplicates(objectCacheKeys, batch);
 
-    return this.writeToStore({ data: objectCacheKeys }, status, batch);
+    return this.writeToStore(
+      { data: objectCacheKeys, totalCount },
+      status,
+      batch,
+    );
   }
 
   /**
@@ -238,6 +304,7 @@ export abstract class BaseListQuery<
       hasMore: this.nextPageToken != null,
       status: params.status,
       lastUpdated: params.lastUpdated,
+      totalCount: params.totalCount,
     } as unknown as PAYLOAD; // Type assertion needed since we don't know exact subtype
   }
 
@@ -276,9 +343,9 @@ export abstract class BaseListQuery<
     }
 
     if (this.pendingFetch) {
-      this.pendingPageFetch = new Promise(async (res) => {
-        await this.pendingFetch;
-        res(this.fetchMore());
+      this.pendingPageFetch = this.pendingFetch.then(() => {
+        this.pendingPageFetch = undefined;
+        return this.fetchMore();
       });
       return this.pendingPageFetch;
     }
@@ -295,10 +362,64 @@ export abstract class BaseListQuery<
       "loaded",
       this.abortController?.signal,
     ).then(() => void 0).finally(() => {
-      this.pendingPageFetch = undefined;
+      this.pendingFetch = undefined;
     });
     return this.pendingFetch;
   };
+
+  /**
+   * Register a subscriber's pageSize for fetch optimization.
+   * The query will fetch with the max pageSize across all subscribers.
+   */
+  registerFetchPageSize(viewId: string, pageSize: number): void {
+    this.#subscriberPageSizes.set(viewId, pageSize);
+  }
+
+  /**
+   * Unregister a subscriber's pageSize when they unsubscribe.
+   * Allows the effective pageSize to decrease when high-pageSize subscribers leave.
+   */
+  unregisterFetchPageSize(viewId: string): void {
+    this.#subscriberPageSizes.delete(viewId);
+  }
+
+  /**
+   * Get the effective fetch pageSize (max across all subscribers).
+   * Falls back to options.pageSize or 100 if no subscribers have registered.
+   */
+  getEffectiveFetchPageSize(): number {
+    if (this.#subscriberPageSizes.size > 0) {
+      return Math.max(...this.#subscriberPageSizes.values());
+    }
+    return this.options.pageSize ?? 100;
+  }
+
+  /**
+   * Get the current number of loaded items in the cache.
+   */
+  getLoadedCount(): number {
+    const { retVal } = this.store.batch({}, (batch) => {
+      return batch.read(this.cacheKey)?.value?.data.length ?? 0;
+    });
+    return retVal;
+  }
+
+  /**
+   * Check if there are more pages available on the server.
+   */
+  hasMorePages(): boolean {
+    return this.nextPageToken != null;
+  }
+
+  /**
+   * Notify all subscribers of a change (used when view limits change
+   * but no new data needs to be fetched).
+   */
+  notifySubscribers(): void {
+    this.store.batch({}, (batch) => {
+      this.registerCacheChanges(batch);
+    });
+  }
 
   /**
    * Minimum number of results to load initially
@@ -319,7 +440,6 @@ export abstract class BaseListQuery<
       );
     }
 
-    // Keep fetching pages until we have the minimum number of results or no more pages
     while (true) {
       const entry = await this.fetchPageAndUpdate(
         "loading",
@@ -327,22 +447,15 @@ export abstract class BaseListQuery<
       );
 
       if (!entry) {
-        // we were aborted
         return;
       }
 
-      // Check if we have enough results or no more pages
-      const count = entry.value?.data.length || 0;
-      if (count >= this.minResultsToLoad || this.nextPageToken == null) {
+      if (entry.status === "loaded" || entry.status === "error") {
         break;
       }
+
+      await Promise.resolve();
     }
-
-    this.store.batch({}, (batch) => {
-      this.setStatus("loaded", batch);
-    });
-
-    return Promise.resolve();
   }
 
   /**
@@ -369,8 +482,12 @@ export abstract class BaseListQuery<
     }
 
     try {
+      const hadPreviousPage = this.nextPageToken != null;
+
       // Call the subclass-specific implementation to fetch data
       const result = await this.fetchPageData(signal);
+
+      this.currentTotalCount = result.totalCount;
 
       // Check for abort again after fetch
       if (signal?.aborted) {
@@ -379,14 +496,33 @@ export abstract class BaseListQuery<
 
       // Store the fetched data using batch operations
       const { retVal } = this.store.batch({}, (batch) => {
-        const append = this.nextPageToken != null;
-        const finalStatus = result.nextPageToken ? status : "loaded";
+        const append = hadPreviousPage;
+        let finalStatus: Status = result.nextPageToken ? status : "loaded";
+
+        if (finalStatus !== "loaded") {
+          const existingEntry = batch.read(this.cacheKey);
+          const currentCount = existingEntry?.value?.data.length ?? 0;
+          const expectedCount = append
+            ? currentCount + result.data.length
+            : result.data.length;
+          if (expectedCount >= this.minResultsToLoad) {
+            finalStatus = "loaded";
+          }
+        }
+
+        const objectKeys = this.store.objects.storeOsdkInstances(
+          result.data,
+          batch,
+          this.rdpConfig,
+          this.selectFieldSet,
+        );
 
         return this._updateList(
-          this.store.objects.storeOsdkInstances(result.data, batch),
+          objectKeys,
           finalStatus,
           batch,
-          append,
+          { type: "serverOrdered", append },
+          this.currentTotalCount,
         );
       });
 
@@ -437,9 +573,12 @@ export abstract class BaseListQuery<
     _status: Status,
     batch: BatchContext,
   ): Entry<KEY> {
-    // Default implementation writes an empty list with error status
-    // Most subclasses should be able to use this
-    return this.writeToStore({ data: [] }, "error", batch);
+    const existingTotalCount = batch.read(this.cacheKey)?.value?.totalCount;
+    return this.writeToStore(
+      { data: [], totalCount: existingTotalCount },
+      "error",
+      batch,
+    );
   }
 
   /**
@@ -493,6 +632,8 @@ export abstract class BaseListQuery<
       objectCacheKeys = this.store.objects.storeOsdkInstances(
         items as Array<Osdk.Instance<any>>,
         batch,
+        this.rdpConfig,
+        this.selectFieldSet,
       );
     } else {
       // Items are already cache keys
@@ -513,6 +654,154 @@ export abstract class BaseListQuery<
     objectCacheKeys = removeDuplicates(objectCacheKeys, batch);
 
     // Step 5: Write to store
-    return this.writeToStore({ data: objectCacheKeys }, options.status, batch);
+    const existingTotalCount = batch.read(this.cacheKey)?.value?.totalCount;
+    return this.writeToStore(
+      { data: objectCacheKeys, totalCount: existingTotalCount },
+      options.status,
+      batch,
+    );
+  }
+
+  //
+  // Shared Websocket Subscription Methods
+  //
+
+  /**
+   * Create standard websocket subscription handlers for an ObjectSet.
+   * Subclasses can override individual handlers for custom behavior.
+   *
+   * @param objectSet The ObjectSet to subscribe to
+   * @param sub The parent subscription to add cleanup to
+   * @param methodName The method name for logging purposes
+   */
+  protected createWebsocketSubscription(
+    objectSet: ObjectSet<any>,
+    sub: Subscription,
+    methodName: string = "registerStreamUpdates",
+  ): void {
+    const logger = process.env.NODE_ENV !== "production"
+      ? this.logger?.child({ methodName })
+      : this.logger;
+
+    if (process.env.NODE_ENV !== "production") {
+      logger?.child({ methodName }).info("Subscribing from websocket");
+    }
+
+    try {
+      const websocketSubscription = objectSet.subscribe({
+        onChange: this.onOswChange.bind(this),
+        onError: this.onOswError.bind(this),
+        onOutOfDate: this.onOswOutOfDate.bind(this),
+        onSuccessfulSubscription: this.onOswSuccessfulSubscription.bind(this),
+      });
+
+      sub.add(() => {
+        if (process.env.NODE_ENV !== "production") {
+          logger?.child({ methodName }).info("Unsubscribing from websocket");
+        }
+        websocketSubscription.unsubscribe();
+      });
+    } catch (error) {
+      if (this.logger) {
+        this.logger.child({ methodName })
+          .error("Failed to register stream updates", error);
+      }
+      this.onOswError({ subscriptionClosed: true, error });
+    }
+  }
+
+  /**
+   * Handler called when websocket subscription is successfully established.
+   */
+  protected onOswSuccessfulSubscription(): void {
+    if (process.env.NODE_ENV !== "production") {
+      this.logger?.child({ methodName: "onSuccessfulSubscription" }).debug("");
+    }
+  }
+
+  /**
+   * Handler called when subscribed data becomes out of date.
+   */
+  protected onOswOutOfDate(): void {
+    if (process.env.NODE_ENV !== "production") {
+      this.logger?.child({ methodName: "onOutOfDate" }).debug("");
+    }
+  }
+
+  /**
+   * Handler called when websocket subscription encounters an error.
+   */
+  protected onOswError(errors: {
+    subscriptionClosed: boolean;
+    error: unknown;
+  }): void {
+    if (this.logger) {
+      this.logger?.child({ methodName: "onError" }).error(
+        "subscription errors",
+        errors,
+      );
+    }
+  }
+
+  /**
+   * Handler called when an object in the subscribed set is added or updated.
+   * Default implementation stores the object with RDP config if available.
+   *
+   * @param update The object update notification
+   */
+  protected onOswChange(
+    { object, state }: ObjectUpdate<ObjectTypeDefinition, string>,
+  ): void {
+    const logger = process.env.NODE_ENV !== "production"
+      ? this.logger?.child({ methodName: "registerStreamUpdates" })
+      : this.logger;
+
+    if (process.env.NODE_ENV !== "production") {
+      logger?.child({ methodName: "onChange" }).debug(
+        `Got an update of type: ${state}`,
+        object,
+      );
+    }
+
+    if (state === "ADDED_OR_UPDATED") {
+      this.store.batch({}, (batch) => {
+        this.store.objects.storeOsdkInstances(
+          [object as Osdk.Instance<ObjectTypeDefinition>],
+          batch,
+          this.rdpConfig, // Safe - null for queries without RDPs
+        );
+      });
+    } else if (state === "REMOVED") {
+      this.onOswRemoved(object);
+    }
+  }
+
+  /**
+   * Handler called when an object is removed from the subscribed set.
+   * Default implementation deletes the object from cache.
+   * ListQuery overrides this for list-specific removal logic.
+   *
+   * @param object The removed object
+   */
+  protected onOswRemoved(
+    object: Osdk.Instance<ObjectTypeDefinition, never, string, {}>,
+  ): void {
+    if (process.env.NODE_ENV !== "production") {
+      this.logger?.child({ methodName: "onRemoved" }).debug(
+        "Removing object",
+        object,
+      );
+    }
+
+    this.store.batch({}, (batch) => {
+      for (
+        const objectCacheKey of this.store.objectCacheKeyRegistry.getVariants(
+          object.$objectType ?? object.$apiName,
+          object.$primaryKey,
+        )
+      ) {
+        batch.delete(objectCacheKey, "loaded");
+      }
+    });
   }
 }

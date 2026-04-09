@@ -380,14 +380,15 @@ describe("Experimental Test Suite", () => {
                     },
                     "type": "datasetV2",
                   },
+                  "datasourceName": "com.palantir.foo",
                   "editsConfiguration": {
                     "onlyAllowPrivilegedEdits": false,
                   },
                   "redacted": false,
-                  "rid": "ri.ontology.main.datasource.com.palantir.foo",
                 },
               ],
               "entityMetadata": {
+                "aliases": [],
                 "arePatchesEnabled": false,
               },
               "objectType": {
@@ -534,6 +535,10 @@ describe("Experimental Test Suite", () => {
                 },
                 "titlePropertyTypeRid": "id",
               },
+              "propertySecurityGroupPackagingVersion": {
+                "type": "v2",
+                "v2": {},
+              },
             },
           },
           "sharedPropertyTypes": {},
@@ -570,14 +575,15 @@ describe("Experimental Test Suite", () => {
                     },
                     "type": "datasetV2",
                   },
+                  "datasourceName": "myImport",
                   "editsConfiguration": {
                     "onlyAllowPrivilegedEdits": false,
                   },
                   "redacted": false,
-                  "rid": "ri.ontology.main.datasource.myImport",
                 },
               ],
               "entityMetadata": {
+                "aliases": [],
                 "arePatchesEnabled": false,
               },
               "objectType": {
@@ -689,6 +695,10 @@ describe("Experimental Test Suite", () => {
                   "type": "active",
                 },
                 "titlePropertyTypeRid": "id",
+              },
+              "propertySecurityGroupPackagingVersion": {
+                "type": "v2",
+                "v2": {},
               },
             },
           },

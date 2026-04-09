@@ -1,0 +1,399 @@
+/*
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import type { ObjectOrInterfaceDefinition, Osdk } from "@osdk/api";
+import { act, renderHook } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
+import { getCellId } from "../../utils/getCellId.js";
+import { useEditableTable } from "../useEditableTable.js";
+
+type MockObjectDef = ObjectOrInterfaceDefinition;
+type MockInstance = Osdk.Instance<MockObjectDef, "$allBaseProperties", string>;
+
+function createMockObjectInstance(
+  id: string,
+  additionalProps = {},
+): MockInstance {
+  return {
+    $apiName: "mock-object" as const,
+    $primaryKey: id,
+    id,
+    ...additionalProps,
+  } as unknown as MockInstance;
+}
+
+describe("useEditableTable", () => {
+  it("adds cell to cellEdits when edited", () => {
+    const onCellValueChanged = vi.fn();
+    const { result } = renderHook(() =>
+      useEditableTable({ editMode: "always", onCellValueChanged })
+    );
+    const cellIdentifier = { rowId: "row-1", columnId: "col-1" };
+    const cellId = getCellId(cellIdentifier);
+    const mockRowData = createMockObjectInstance("row-1", { name: "Test" });
+
+    const editEvent = {
+      rowId: "row-1",
+      columnId: "col-1",
+      newValue: "new value",
+      oldValue: "old value",
+      originalRowData: mockRowData,
+    };
+
+    act(() => {
+      result.current.onCellEdit(cellId, editEvent);
+    });
+
+    expect(result.current.cellEdits).toEqual({
+      [cellId]: editEvent,
+    });
+    expect(onCellValueChanged).toHaveBeenCalledWith(editEvent);
+  });
+
+  it("removes cell from cellEdits when edited back to original value", () => {
+    const onCellValueChanged = vi.fn();
+    const { result } = renderHook(() =>
+      useEditableTable({ editMode: "always", onCellValueChanged })
+    );
+    const cellIdentifier = { rowId: "row-1", columnId: "col-1" };
+    const cellId = getCellId(cellIdentifier);
+    const mockRowData = createMockObjectInstance("row-1", { name: "Test" });
+
+    // First edit
+    const firstEdit = {
+      rowId: "row-1",
+      columnId: "col-1",
+      newValue: "new value",
+      oldValue: "original",
+      originalRowData: mockRowData,
+    };
+
+    act(() => {
+      result.current.onCellEdit(cellId, firstEdit);
+    });
+
+    expect(result.current.cellEdits).toEqual({
+      [cellId]: firstEdit,
+    });
+
+    // Edit back to original
+    const revertEdit = {
+      rowId: "row-1",
+      columnId: "col-1",
+      newValue: "original",
+      oldValue: "original",
+      originalRowData: mockRowData,
+    };
+
+    act(() => {
+      result.current.onCellEdit(cellId, revertEdit);
+    });
+
+    // Should remove the cell from cellEdits
+    expect(result.current.cellEdits).toEqual({});
+  });
+
+  it("handles multiple cell edits", () => {
+    const { result } = renderHook(() =>
+      useEditableTable({ editMode: "always" })
+    );
+    const cellId1 = getCellId({ rowId: "row-1", columnId: "col-1" });
+    const cellId2 = getCellId({ rowId: "row-2", columnId: "col-2" });
+    const cellId3 = getCellId({ rowId: "row-3", columnId: "col-3" });
+
+    const edit1 = {
+      rowId: "row-1",
+      columnId: "col-1",
+      newValue: "new1",
+      oldValue: "old1",
+      originalRowData: createMockObjectInstance("row-1"),
+    };
+
+    const edit2 = {
+      rowId: "row-2",
+      columnId: "col-2",
+      newValue: "new2",
+      oldValue: "old2",
+      originalRowData: createMockObjectInstance("row-2"),
+    };
+
+    const edit3 = {
+      rowId: "row-3",
+      columnId: "col-3",
+      newValue: "new3",
+      oldValue: "old3",
+      originalRowData: createMockObjectInstance("row-3"),
+    };
+
+    act(() => {
+      result.current.onCellEdit(cellId1, edit1);
+      result.current.onCellEdit(cellId2, edit2);
+      result.current.onCellEdit(cellId3, edit3);
+    });
+
+    expect(Object.keys(result.current.cellEdits).length).toBe(3);
+
+    // Edit one back to original
+    const revertEdit2 = {
+      rowId: "row-2",
+      columnId: "col-2",
+      newValue: "old2",
+      oldValue: "old2",
+      originalRowData: createMockObjectInstance("row-2"),
+    };
+
+    act(() => {
+      result.current.onCellEdit(cellId2, revertEdit2);
+    });
+
+    expect(Object.keys(result.current.cellEdits).length).toBe(2);
+    expect(result.current.cellEdits[cellId2]).toBeUndefined();
+  });
+
+  it("clears all edits", () => {
+    const { result } = renderHook(() =>
+      useEditableTable({ editMode: "always" })
+    );
+    const cellId1 = getCellId({ rowId: "row-1", columnId: "col-1" });
+    const cellId2 = getCellId({ rowId: "row-2", columnId: "col-2" });
+
+    const edit1 = {
+      rowId: "row-1",
+      columnId: "col-1",
+      newValue: "new1",
+      oldValue: "old1",
+      originalRowData: createMockObjectInstance("row-1"),
+    };
+
+    const edit2 = {
+      rowId: "row-2",
+      columnId: "col-2",
+      newValue: "new2",
+      oldValue: "old2",
+      originalRowData: createMockObjectInstance("row-2"),
+    };
+
+    act(() => {
+      result.current.onCellEdit(cellId1, edit1);
+      result.current.onCellEdit(cellId2, edit2);
+    });
+
+    act(() => {
+      result.current.clearEdits();
+    });
+
+    expect(result.current.cellEdits).toEqual({});
+  });
+
+  it("handles submit edits", async () => {
+    const onSubmitEdits = vi.fn();
+    const { result } = renderHook(() =>
+      useEditableTable({ editMode: "always", onSubmitEdits })
+    );
+    const cellId1 = getCellId({ rowId: "row-1", columnId: "col-1" });
+    const cellId2 = getCellId({ rowId: "row-2", columnId: "col-2" });
+
+    const edit1 = {
+      rowId: "row-1",
+      columnId: "col-1",
+      newValue: "new1",
+      oldValue: "old1",
+      originalRowData: createMockObjectInstance("row-1"),
+    };
+
+    const edit2 = {
+      rowId: "row-2",
+      columnId: "col-2",
+      newValue: "new2",
+      oldValue: "old2",
+      originalRowData: createMockObjectInstance("row-2"),
+    };
+
+    act(() => {
+      result.current.onCellEdit(cellId1, edit1);
+      result.current.onCellEdit(cellId2, edit2);
+    });
+
+    await act(async () => {
+      await result.current.onSubmitEdits?.();
+    });
+
+    expect(onSubmitEdits).toHaveBeenCalledWith([edit1, edit2]);
+  });
+
+  it("when submit edits is undefined, onSubmitEdits is undefined", async () => {
+    const { result } = renderHook(() =>
+      useEditableTable({
+        editMode: "always",
+        onSubmitEdits: undefined,
+      })
+    );
+
+    expect(result.current.onSubmitEdits).toBeUndefined();
+  });
+
+  it("when editMode is manual, isActive is false initially", () => {
+    const { result } = renderHook(() =>
+      useEditableTable({ editMode: "manual" })
+    );
+
+    expect(result.current.editModeState.type).toBe("manual");
+    if (result.current.editModeState.type === "manual") {
+      expect(result.current.editModeState.isActive).toBe(false);
+      expect(result.current.editModeState.setActive).toBeDefined();
+
+      act(() => {
+        result.current.editModeState.type === "manual"
+          && result.current.editModeState.setActive(true);
+      });
+
+      expect(
+        result.current.editModeState.type === "manual"
+          && result.current.editModeState.isActive,
+      ).toBe(true);
+
+      act(() => {
+        result.current.editModeState.type === "manual"
+          && result.current.editModeState.setActive(false);
+      });
+
+      expect(
+        result.current.editModeState.type === "manual"
+          && result.current.editModeState.isActive,
+      ).toBe(false);
+    }
+  });
+
+  it("when editMode is always, the type is always and isActive is true", () => {
+    const { result } = renderHook(() =>
+      useEditableTable({ editMode: "always" })
+    );
+
+    expect(result.current.editModeState.type).toBe("always");
+    expect(result.current.editModeState.isActive).toBe(true);
+  });
+
+  it("when editMode is manual with default settings, it starts as inactive", () => {
+    const { result } = renderHook(() =>
+      useEditableTable({ editMode: "manual" })
+    );
+
+    expect(result.current.editModeState.type).toBe("manual");
+    if (result.current.editModeState.type === "manual") {
+      expect(result.current.editModeState.isActive).toBe(false);
+    }
+  });
+
+  it("adds validation error when onCellValidationError is called", () => {
+    const { result } = renderHook(() =>
+      useEditableTable({ editMode: "always" })
+    );
+    const cellId = getCellId({ rowId: "row-1", columnId: "col-1" });
+    const errorMessage = "Value must be positive";
+
+    act(() => {
+      result.current.onCellValidationError(cellId, errorMessage);
+    });
+
+    expect(result.current.validationErrors.get(cellId)).toBe(errorMessage);
+  });
+
+  it("maintains validation errors for multiple cells", () => {
+    const { result } = renderHook(() =>
+      useEditableTable({ editMode: "always" })
+    );
+    const cellId1 = getCellId({ rowId: "row-1", columnId: "col-1" });
+    const cellId2 = getCellId({ rowId: "row-2", columnId: "col-2" });
+    const cellId3 = getCellId({ rowId: "row-3", columnId: "col-3" });
+
+    act(() => {
+      result.current.onCellValidationError(cellId1, "Error 1");
+      result.current.onCellValidationError(cellId2, "Error 2");
+      result.current.onCellValidationError(cellId3, "Error 3");
+    });
+
+    expect(result.current.validationErrors.size).toBe(3);
+    expect(result.current.validationErrors.get(cellId1)).toBe("Error 1");
+    expect(result.current.validationErrors.get(cellId2)).toBe("Error 2");
+    expect(result.current.validationErrors.get(cellId3)).toBe("Error 3");
+  });
+
+  it("clears all validation errors when clearEdits is called", () => {
+    const { result } = renderHook(() =>
+      useEditableTable({ editMode: "always" })
+    );
+    const cellId1 = getCellId({ rowId: "row-1", columnId: "col-1" });
+    const cellId2 = getCellId({ rowId: "row-2", columnId: "col-2" });
+
+    act(() => {
+      result.current.onCellValidationError(cellId1, "Error 1");
+      result.current.onCellValidationError(cellId2, "Error 2");
+    });
+
+    expect(result.current.validationErrors.size).toBe(2);
+
+    act(() => {
+      result.current.clearEdits();
+    });
+
+    expect(result.current.validationErrors.size).toBe(0);
+  });
+
+  it("replaces previous validation error with new one for same cell", () => {
+    const { result } = renderHook(() =>
+      useEditableTable({ editMode: "always" })
+    );
+    const cellId = getCellId({ rowId: "row-1", columnId: "col-1" });
+
+    act(() => {
+      result.current.onCellValidationError(cellId, "First error");
+    });
+
+    expect(result.current.validationErrors.get(cellId)).toBe("First error");
+
+    act(() => {
+      result.current.onCellValidationError(cellId, "Second error");
+    });
+
+    expect(result.current.validationErrors.get(cellId)).toBe("Second error");
+    expect(result.current.validationErrors.size).toBe(1);
+  });
+
+  it("clears specific validation error when clearCellValidationError is called", () => {
+    const { result } = renderHook(() =>
+      useEditableTable({ editMode: "always" })
+    );
+    const cellId1 = getCellId({ rowId: "row-1", columnId: "col-1" });
+    const cellId2 = getCellId({ rowId: "row-2", columnId: "col-2" });
+
+    // Add validation errors
+    act(() => {
+      result.current.onCellValidationError(cellId1, "Error 1");
+      result.current.onCellValidationError(cellId2, "Error 2");
+    });
+
+    expect(result.current.validationErrors.size).toBe(2);
+
+    // Clear specific error
+    act(() => {
+      result.current.clearCellValidationError(cellId1);
+    });
+
+    expect(result.current.validationErrors.size).toBe(1);
+    expect(result.current.validationErrors.has(cellId1)).toBe(false);
+    expect(result.current.validationErrors.has(cellId2)).toBe(true);
+  });
+});

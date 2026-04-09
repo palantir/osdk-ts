@@ -1,0 +1,106 @@
+/*
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.rangeInput {
+  display: flex;
+  flex-direction: column;
+  gap: var(--osdk-filter-range-gap);
+  min-width: 0;
+  transition: opacity var(--osdk-filter-content-fade-duration);
+}
+
+.rangeInput[data-loading="true"] {
+  opacity: 0.5;
+}
+
+.histogramContainer {
+  display: flex;
+  align-items: flex-end;
+  height: var(--osdk-filter-range-histogram-height);
+  gap: var(--osdk-filter-range-histogram-bar-gap);
+  padding-bottom: var(--osdk-filter-range-histogram-padding-bottom);
+  padding-inline: var(--osdk-filter-range-histogram-padding-inline);
+  overflow: hidden;
+}
+
+.histogramBar {
+  flex: 1;
+  background: var(--osdk-filter-range-histogram-bar-color);
+  min-width: var(--osdk-filter-range-histogram-bar-min-width);
+  transition: background-color var(--osdk-filter-range-histogram-bar-transition);
+}
+
+.histogramBar[data-in-range="true"] {
+  background: var(--osdk-filter-range-histogram-bar-active-color);
+}
+
+.rangeInputs {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--osdk-filter-range-inputs-gap);
+  min-width: 0;
+}
+
+.inputWrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--osdk-filter-range-input-wrapper-gap);
+  min-width: 0;
+}
+
+.inputLabel {
+  font-family: var(--osdk-filter-range-label-font-family);
+  font-size: var(--osdk-filter-range-label-font-size);
+  color: var(--osdk-filter-range-label-color);
+}
+
+.input {
+  font-family: var(--osdk-filter-input-font-family);
+  font-size: var(--osdk-filter-input-font-size);
+  padding: var(--osdk-filter-input-padding);
+  border: var(--osdk-filter-input-border);
+  border-radius: var(--osdk-filter-input-border-radius);
+  background: var(--osdk-filter-input-bg);
+  color: var(--osdk-filter-input-color);
+  min-width: 0;
+
+  &:focus {
+    border-color: var(--osdk-filter-input-focus-border);
+    outline: var(--osdk-filter-input-focus-outline-width) solid var(--osdk-filter-input-focus-outline-color);
+    outline-offset: var(--osdk-filter-input-focus-outline-offset);
+  }
+
+  &::placeholder {
+    color: var(--osdk-filter-input-placeholder-color);
+  }
+}
+
+.separator {
+  display: flex;
+  align-items: center;
+  height: calc(
+    var(--osdk-filter-input-font-size) + var(--osdk-filter-input-padding) * 2
+  );
+  color: var(--osdk-filter-range-separator-color);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .histogramContainer,
+  .rangeInput {
+    transition: none;
+  }
+}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,13 +15,15 @@
  */
 
 import type {
-  Logger,
+  DerivedProperty,
+  InterfaceDefinition,
   ObjectOrInterfaceDefinition,
   ObjectSet,
   ObjectTypeDefinition,
   Osdk,
   PageResult,
   PropertyKeys,
+  WhereClause,
 } from "@osdk/api";
 import type { Observable, Subscription } from "rxjs";
 import invariant from "tiny-invariant";
@@ -30,28 +32,43 @@ import type { InterfaceHolder } from "../../../object/convertWireToOsdkObjects/I
 import type {
   ObjectHolder,
 } from "../../../object/convertWireToOsdkObjects/ObjectHolder.js";
+import { getWireObjectSet } from "../../../objectSet/createObjectSet.js";
 import type { ListPayload } from "../../ListPayload.js";
 import type { Status } from "../../ObservableClient/common.js";
+import type { CollectionConnectableParams } from "../base-list/BaseCollectionQuery.js";
 import { BaseListQuery } from "../base-list/BaseListQuery.js";
 import type { BatchContext } from "../BatchContext.js";
 import { type CacheKey } from "../CacheKey.js";
 import type { Canonical } from "../Canonical.js";
 import { type Changes, DEBUG_ONLY__changesToString } from "../Changes.js";
+import { getObjectTypesThatInvalidate } from "../getObjectTypesThatInvalidate.js";
 import type { Entry } from "../Layer.js";
 import { type ObjectCacheKey } from "../object/ObjectCacheKey.js";
 import { objectSortaMatchesWhereClause as objectMatchesWhereClause } from "../objectMatchesWhereClause.js";
 import type { OptimisticId } from "../OptimisticId.js";
+import type { PivotInfo } from "../PivotCanonicalizer.js";
 import type { SimpleWhereClause } from "../SimpleWhereClause.js";
 import { OrderBySortingStrategy } from "../sorting/SortingStrategy.js";
 import type { Store } from "../Store.js";
 import type { SubjectPayload } from "../SubjectPayload.js";
-import type { ListCacheKey } from "./ListCacheKey.js";
+import {
+  INTERSECT_IDX,
+  type ListCacheKey,
+  ORDER_BY_IDX,
+  PIVOT_IDX,
+  RDP_IDX,
+  SELECT_IDX,
+  WHERE_IDX,
+} from "./ListCacheKey.js";
+export {
+  API_NAME_IDX,
+  INTERSECT_IDX,
+  PIVOT_IDX,
+  RDP_IDX,
+  RIDS_IDX,
+  SELECT_IDX,
+} from "./ListCacheKey.js";
 import type { ListQueryOptions } from "./ListQueryOptions.js";
-
-export const API_NAME_IDX = 1;
-export const TYPE_IDX = 0;
-export const WHERE_IDX = 2;
-export const ORDER_BY_IDX = 3;
 
 type ExtractRelevantObjectsResult = Record<"added" | "modified", {
   all: (ObjectHolder | InterfaceHolder)[];
@@ -76,9 +93,12 @@ export abstract class ListQuery extends BaseListQuery<
   protected apiName: string;
   #whereClause: Canonical<SimpleWhereClause>;
 
-  // Using base class minResultsToLoad instead of a private property
   #orderBy: Canonical<Record<string, "asc" | "desc" | undefined>>;
+  #select: Canonical<readonly string[]> | undefined;
+  #intersectWith: Canonical<Array<Canonical<SimpleWhereClause>>> | undefined;
+  #pivotInfo: Canonical<PivotInfo> | undefined;
   #objectSet: ObjectSet<ObjectTypeDefinition>;
+  #pivotIntersectApplied = false;
 
   /**
    * Register changes to the cache specific to ListQuery
@@ -91,8 +111,6 @@ export abstract class ListQuery extends BaseListQuery<
     store: Store,
     subject: Observable<SubjectPayload<ListCacheKey>>,
     apiName: string,
-    whereClause: Canonical<SimpleWhereClause>,
-    orderBy: Canonical<Record<string, "asc" | "desc" | undefined>>,
     cacheKey: ListCacheKey,
     opts: ListQueryOptions,
   ) {
@@ -113,25 +131,57 @@ export abstract class ListQuery extends BaseListQuery<
     );
 
     this.apiName = apiName;
-    this.#whereClause = whereClause;
-    this.#orderBy = orderBy;
+    this.#whereClause = cacheKey.otherKeys[WHERE_IDX];
+    this.#orderBy = cacheKey.otherKeys[ORDER_BY_IDX];
+    this.#select = cacheKey.otherKeys[SELECT_IDX];
+    this.#intersectWith = cacheKey.otherKeys[INTERSECT_IDX];
+    this.#pivotInfo = cacheKey.otherKeys[PIVOT_IDX];
+
     this.#objectSet = this.createObjectSet(store);
-    // Initialize the sorting strategy
-    this.sortingStrategy = new OrderBySortingStrategy(
-      this.apiName,
-      this.#orderBy,
-    );
-    // Initialize the minResultsToLoad inherited from BaseCollectionQuery
-    this.minResultsToLoad = 0;
+
+    // Only initialize the sorting strategy here if there's no pivotTo.
+    // When pivotTo is used, the target type differs from apiName, so we
+    // defer initialization to fetchPageData where we can resolve the actual type.
+    if (!this.#pivotInfo) {
+      this.sortingStrategy = new OrderBySortingStrategy(
+        this.apiName,
+        this.#orderBy,
+      );
+    }
   }
 
   get canonicalWhere(): Canonical<SimpleWhereClause> {
     return this.#whereClause;
   }
 
-  /**
-   * Create the ObjectSet for this query.
-   */
+  get canonicalSelect(): Canonical<readonly string[]> | undefined {
+    return this.#select;
+  }
+
+  protected get rawSelect(): Canonical<readonly string[]> | undefined {
+    return this.#select;
+  }
+
+  get canonicalIntersectWith():
+    | Canonical<Array<Canonical<SimpleWhereClause>>>
+    | undefined
+  {
+    return this.#intersectWith;
+  }
+
+  get canonicalPivotInfo(): Canonical<PivotInfo> | undefined {
+    return this.#pivotInfo;
+  }
+
+  protected createPayload(
+    params: CollectionConnectableParams,
+  ): ListPayload {
+    return {
+      ...super.createPayload(params),
+      objectSet: this.#objectSet,
+    } as ListPayload;
+  }
+
   protected abstract createObjectSet(
     store: Store,
   ): ObjectSet<ObjectTypeDefinition>;
@@ -143,14 +193,79 @@ export abstract class ListQuery extends BaseListQuery<
   protected async fetchPageData(
     signal: AbortSignal | undefined,
   ): Promise<PageResult<Osdk.Instance<any>>> {
-    // Fetch the data with pagination
+    const needsResultType = (Object.keys(this.#orderBy).length > 0
+      && !(this.sortingStrategy instanceof OrderBySortingStrategy))
+      || (this.#pivotInfo != null && this.#intersectWith != null
+        && this.#intersectWith.length > 0 && !this.#pivotIntersectApplied);
+
+    if (needsResultType) {
+      const wireObjectSet = getWireObjectSet(this.#objectSet);
+      const { resultType } = await getObjectTypesThatInvalidate(
+        this.store.client[additionalContext],
+        wireObjectSet,
+      );
+
+      if (
+        Object.keys(this.#orderBy).length > 0
+        && !(this.sortingStrategy instanceof OrderBySortingStrategy)
+      ) {
+        this.sortingStrategy = new OrderBySortingStrategy(
+          resultType.apiName,
+          this.#orderBy,
+        );
+      }
+
+      if (
+        this.#pivotInfo != null && this.#intersectWith != null
+        && this.#intersectWith.length > 0 && !this.#pivotIntersectApplied
+      ) {
+        const rdpConfig = this.cacheKey.otherKeys[RDP_IDX];
+        const intersectSets = this.#intersectWith.map(whereClause => {
+          if (resultType.type === "object") {
+            let objectSet = this.store.client({
+              type: "object",
+              apiName: resultType.apiName,
+            } as ObjectTypeDefinition);
+
+            if (rdpConfig != null) {
+              objectSet = objectSet.withProperties(
+                rdpConfig as DerivedProperty.Clause<ObjectTypeDefinition>,
+              );
+            }
+
+            return objectSet.where(whereClause as WhereClause<any>);
+          }
+
+          return this.store.client({
+            type: "interface",
+            apiName: resultType.apiName,
+          } as InterfaceDefinition).where(
+            whereClause as WhereClause<any>,
+          );
+        });
+
+        this.#objectSet = this.#objectSet.intersect(
+          ...intersectSets,
+        );
+        this.#pivotIntersectApplied = true;
+      }
+    }
+
+    // Fetch the data with pagination using effective pageSize (max of all subscribers)
     const resp = await this.#objectSet.fetchPage({
       $nextPageToken: this.nextPageToken,
-      $pageSize: this.options.pageSize,
+      $pageSize: this.getEffectiveFetchPageSize(),
+      $includeRid: true,
+      ...(this.#select && this.#select.length > 0
+        ? { $select: this.#select }
+        : {}),
       // For now this keeps the shared test code from falling apart
       // but shouldn't be needed ideally
       ...(Object.keys(this.#orderBy).length > 0
         ? { $orderBy: this.#orderBy }
+        : {}),
+      ...(this.options.$loadPropertySecurityMetadata
+        ? { $loadPropertySecurityMetadata: true }
         : {}),
     });
 
@@ -180,7 +295,12 @@ export abstract class ListQuery extends BaseListQuery<
 
     // We don't call super.handleFetchError because ListQuery has special error handling
     // but we still use writeToStore to create a properly structured Entry
-    return this.writeToStore({ data: [] }, "error", batch);
+    const existingTotalCount = batch.read(this.cacheKey)?.value?.totalCount;
+    return this.writeToStore(
+      { data: [], totalCount: existingTotalCount },
+      "error",
+      batch,
+    );
   }
 
   /**
@@ -203,7 +323,7 @@ export abstract class ListQuery extends BaseListQuery<
     objectType: string,
     changes: Changes | undefined,
   ): Promise<void> => {
-    if (this.cacheKey.otherKeys[1] === objectType) {
+    if (this.apiName === objectType) {
       // Only invalidate lists for the matching apiName
       changes?.modified.add(this.cacheKey);
       return this.revalidate(true);
@@ -273,11 +393,7 @@ export abstract class ListQuery extends BaseListQuery<
         // deal with the modified objects
         for (const obj of relevantObjects.modified.all) {
           if (relevantObjects.modified.strictMatches.has(obj)) {
-            const objectCacheKey = this.cacheKeys.get<ObjectCacheKey>(
-              "object",
-              obj.$objectType,
-              obj.$primaryKey,
-            );
+            const objectCacheKey = this.getObjectCacheKey(obj);
 
             if (!existingList.has(objectCacheKey)) {
               // object is new to the list
@@ -291,11 +407,7 @@ export abstract class ListQuery extends BaseListQuery<
             continue;
           } else {
             // object is no longer a strict match
-            const existingObjectCacheKey = this.cacheKeys.get<ObjectCacheKey>(
-              "object",
-              obj.$objectType,
-              obj.$primaryKey,
-            );
+            const existingObjectCacheKey = this.getObjectCacheKey(obj);
 
             toRemove.add(existingObjectCacheKey);
 
@@ -311,20 +423,16 @@ export abstract class ListQuery extends BaseListQuery<
           newList.push(key);
         }
         for (const obj of toAdd) {
-          newList.push(
-            this.cacheKeys.get<ObjectCacheKey>(
-              "object",
-              obj.$objectType,
-              obj.$primaryKey,
-            ),
-          );
+          newList.push(this.getObjectCacheKey(obj));
         }
 
+        const existingTotalCount = batch.read(this.cacheKey)?.value?.totalCount;
         this._updateList(
           newList,
           status,
           batch,
-          /* append */ false,
+          { type: "clientOrdered" },
+          existingTotalCount,
         );
       });
 
@@ -378,63 +486,7 @@ export abstract class ListQuery extends BaseListQuery<
   ): ExtractRelevantObjectsResult;
 
   registerStreamUpdates(sub: Subscription): void {
-    const logger = process.env.NODE_ENV !== "production"
-      ? this.logger?.child({ methodName: "registerStreamUpdates" })
-      : this.logger;
-
-    if (process.env.NODE_ENV !== "production") {
-      logger?.child({ methodName: "observeList" }).info(
-        "Subscribing from websocket",
-      );
-    }
-
-    // FIXME: We should only do this once. If we already have one we should probably
-    // just reuse it.
-
-    const websocketSubscription = this.#objectSet.subscribe({
-      onChange: this.onOswChange.bind(this),
-      onError: this.onOswError.bind(this),
-      onOutOfDate: this.onOswOutOfDate.bind(this),
-      onSuccessfulSubscription: this.onOswSuccessfulSubscription.bind(this),
-    });
-
-    sub.add(() => {
-      if (process.env.NODE_ENV !== "production") {
-        logger?.child({ methodName: "observeList" }).info(
-          "Unsubscribing from websocket",
-        );
-      }
-
-      websocketSubscription.unsubscribe();
-    });
-  }
-
-  protected onOswSuccessfulSubscription(): void {
-    if (process.env.NODE_ENV !== "production") {
-      this.logger?.child(
-        { methodName: "onSuccessfulSubscription" },
-      ).debug("");
-    }
-  }
-
-  protected onOswOutOfDate(): void {
-    if (process.env.NODE_ENV !== "production") {
-      this.logger?.child(
-        { methodName: "onOutOfDate" },
-      ).debug("");
-    }
-  }
-
-  protected onOswError(errors: {
-    subscriptionClosed: boolean;
-    error: any;
-  }): void {
-    if (this.logger) {
-      this.logger?.child({ methodName: "onError" }).error(
-        "subscription errors",
-        errors,
-      );
-    }
+    this.createWebsocketSubscription(this.#objectSet, sub, "observeList");
   }
 
   protected onOswChange(
@@ -461,17 +513,20 @@ export abstract class ListQuery extends BaseListQuery<
         this.store.objects.storeOsdkInstances(
           [object as Osdk.Instance<any>],
           batch,
+          this.rdpConfig,
         );
       });
     } else if (state === "REMOVED") {
-      this.onOswRemoved(objOrIface, logger);
+      this.onOswRemoved(objOrIface);
     }
   }
 
   protected onOswRemoved(
     objOrIface: Osdk.Instance<ObjectTypeDefinition, never, string, {}>,
-    logger: Logger | undefined,
   ): void {
+    const logger = process.env.NODE_ENV !== "production"
+      ? this.logger?.child({ methodName: "onOswRemoved" })
+      : this.logger;
     this.store.batch({}, (batch) => {
       // Read the truth layer (since not optimistic)
       const existing = batch.read(this.cacheKey);
@@ -480,11 +535,7 @@ export abstract class ListQuery extends BaseListQuery<
         "the truth value for our list should exist as we already subscribed",
       );
       if (existing.status === "loaded") {
-        const objectCacheKey = this.cacheKeys.get<ObjectCacheKey>(
-          "object",
-          objOrIface.$objectType,
-          objOrIface.$primaryKey,
-        );
+        const objectCacheKey = this.getObjectCacheKey(objOrIface);
         // remove the object from the list
         const newObjects = existing.value?.data.filter(
           (o) => o !== objectCacheKey,
@@ -494,9 +545,10 @@ export abstract class ListQuery extends BaseListQuery<
         // updated (or didn't exist, which is nonsensical)
         if (newObjects?.length !== existing.value?.data.length) {
           batch.changes.registerList(this.cacheKey);
+          const existingTotalCount = existing.value?.totalCount;
           batch.write(
             this.cacheKey,
-            { data: newObjects ?? [] },
+            { data: newObjects ?? [], totalCount: existingTotalCount },
             "loaded",
           );
           // Should there be an else for this case? Do we need to invalidate
@@ -528,6 +580,21 @@ export abstract class ListQuery extends BaseListQuery<
         }
       });
     });
+  }
+
+  /**
+   * Get cache key for object.
+   */
+  private getObjectCacheKey(
+    obj: { $objectType: string; $primaryKey: string | number },
+  ): ObjectCacheKey {
+    const pk = obj.$primaryKey;
+    return this.cacheKeys.get<ObjectCacheKey>(
+      "object",
+      obj.$objectType,
+      pk,
+      this.rdpConfig ?? undefined,
+    );
   }
 }
 

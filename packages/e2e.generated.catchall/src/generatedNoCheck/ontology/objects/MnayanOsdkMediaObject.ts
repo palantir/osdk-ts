@@ -53,6 +53,8 @@ export interface MnayanOsdkMediaObject extends $ObjectTypeDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'object';
   apiName: 'MnayanOsdkMediaObject';
+  primaryKeyApiName: 'id';
+  primaryKeyType: 'string';
   __DefinitionMetadata?: {
     objectSet: MnayanOsdkMediaObject.ObjectSet;
     props: MnayanOsdkMediaObject.Props;
@@ -95,8 +97,13 @@ export interface MnayanOsdkMediaObject extends $ObjectTypeDefinition {
   };
 }
 
-export const MnayanOsdkMediaObject: MnayanOsdkMediaObject = {
+export const MnayanOsdkMediaObject = {
   type: 'object',
   apiName: 'MnayanOsdkMediaObject',
   osdkMetadata: $osdkMetadata,
-};
+  primaryKeyApiName: 'id',
+  primaryKeyType: 'string',
+  internalDoNotUseMetadata: {
+    rid: 'rid.a.b.c.d',
+  },
+} satisfies MnayanOsdkMediaObject & { internalDoNotUseMetadata: { rid: string } } as MnayanOsdkMediaObject;

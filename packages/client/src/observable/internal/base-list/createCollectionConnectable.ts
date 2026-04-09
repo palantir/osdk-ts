@@ -27,36 +27,11 @@ import {
   scheduled,
   switchMap,
 } from "rxjs";
-import type { Status } from "../../ObservableClient/common.js";
 import type { CacheKey } from "../CacheKey.js";
 import type { ObjectCacheKey } from "../object/ObjectCacheKey.js";
 import type { SubjectPayload } from "../SubjectPayload.js";
 import type { Subjects } from "../Subjects.js";
-
-/**
- * Common parameters available for constructing a collection payload
- */
-interface CollectionConnectableParams {
-  /**
-   * Array of resolved objects
-   */
-  resolvedData: any[];
-
-  /**
-   * Whether the data is from an optimistic update
-   */
-  isOptimistic: boolean;
-
-  /**
-   * Current loading status
-   */
-  status: Status;
-
-  /**
-   * Timestamp of the last update
-   */
-  lastUpdated: number;
-}
+import type { CollectionConnectableParams } from "./BaseCollectionQuery.js";
 
 /**
  * Creates a connectable observable for a collection of objects
@@ -78,7 +53,8 @@ export function createCollectionConnectable<
     subject.pipe(
       switchMap(listEntry => {
         const resolvedData = listEntry?.value?.data == null
-            || listEntry.value.data.length === 0
+          ? of(undefined)
+          : listEntry.value.data.length === 0
           ? of([])
           : combineLatest(
             listEntry.value.data.map((cacheKey: ObjectCacheKey) =>
@@ -95,15 +71,19 @@ export function createCollectionConnectable<
             isOptimistic: of(listEntry.isOptimistic),
             status: of(listEntry.status),
             lastUpdated: of(listEntry.lastUpdated),
+            totalCount: of(listEntry?.value?.totalCount),
           }).pipe(
             map(params =>
               createPayload({
-                resolvedData: Array.isArray(params.resolvedData)
+                resolvedData: params.resolvedData === undefined
+                  ? undefined
+                  : Array.isArray(params.resolvedData)
                   ? params.resolvedData
                   : [],
                 isOptimistic: params.isOptimistic,
                 status: params.status,
                 lastUpdated: params.lastUpdated,
+                totalCount: params.totalCount,
               })
             ),
           ),

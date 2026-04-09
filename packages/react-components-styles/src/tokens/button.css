@@ -1,0 +1,17 @@
+:root {
+  /* Primary Button */
+  --osdk-button-primary-color: var(--osdk-intent-primary-foreground);
+  --osdk-button-primary-bg: var(--osdk-intent-primary-rest);
+  --osdk-button-primary-bg-hover: var(--osdk-intent-primary-hover);
+  --osdk-button-primary-bg-active: var(--osdk-intent-primary-active);
+
+  /* Secondary Button */
+  --osdk-button-secondary-color: var(--osdk-typography-color-default-rest);
+  --osdk-button-secondary-bg: var(--osdk-background-secondary);
+  --osdk-button-secondary-bg-hover: var(
+    --osdk-surface-background-color-default-hover
+  );
+  --osdk-button-secondary-bg-active: var(
+    --osdk-surface-background-color-default-active
+  );
+}

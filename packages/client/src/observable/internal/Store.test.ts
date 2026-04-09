@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { Osdk } from "@osdk/api";
+import type { ObjectSet, Osdk } from "@osdk/api";
 import {
   editTodo,
   Employee,
@@ -50,14 +50,19 @@ import { type Client } from "../../Client.js";
 import { createClient } from "../../createClient.js";
 import { TestLogger } from "../../logger/TestLogger.js";
 import type { ObjectHolder } from "../../object/convertWireToOsdkObjects/ObjectHolder.js";
+import type { SpecificLinkPayload } from "../LinkPayload.js";
+import type { ObjectSetPayload } from "../ObjectSetPayload.js";
 import type {
+  ObservableClient,
   ObserveListOptions,
   Unsubscribable,
 } from "../ObservableClient.js";
+import type { Observer } from "../ObservableClient/common.js";
 import { runOptimisticJob } from "./actions/OptimisticJob.js";
 import type { CacheKeys } from "./CacheKeys.js";
 import type { KnownCacheKey } from "./KnownCacheKey.js";
 import type { ObjectCacheKey } from "./object/ObjectCacheKey.js";
+import { ObservableClientImpl } from "./ObservableClientImpl.js";
 import { createOptimisticId } from "./OptimisticId.js";
 import { Store } from "./Store.js";
 import {
@@ -69,7 +74,9 @@ import {
   expectSingleListCallAndClear,
   expectSingleObjectCallAndClear,
   getObject,
+  mockLinkSubCallback,
   mockListSubCallback,
+  mockObserver,
   mockSingleSubCallback,
   objectPayloadContaining,
   updateList,
@@ -311,6 +318,7 @@ describe(Store, () => {
               "$objectSpecifier": "Employee:1",
               "$objectType": "Employee",
               "$primaryKey": 1,
+              "$propertySecurities": undefined,
               "$title": undefined,
               "employeeId": 1,
               "office": "101",
@@ -398,6 +406,401 @@ describe(Store, () => {
       expect(empSubFn.next).not.toHaveBeenCalled();
       expect(officeSubFn.next).not.toHaveBeenCalled();
     });
+
+    it("re-subscribing within dedupeInterval does not refetch", async () => {
+      const { payload: emp1Payload } = await expectStandardObserveObject({
+        cache,
+        type: Employee,
+        primaryKey: 2,
+      });
+      const emp2 = emp1Payload?.object;
+      invariant(emp2);
+
+      const linkSubFn1 = mockLinkSubCallback();
+      const sub1 = cache.links.observe({
+        linkName: "peeps",
+        srcType: { type: "object", apiName: emp2.$apiName },
+        sourceUnderlyingObjectType: emp2.$objectType,
+        pk: emp2.$primaryKey,
+        dedupeInterval: 60_000,
+      }, linkSubFn1);
+
+      await waitForCall(linkSubFn1);
+      expectSingleLinkCallAndClear(linkSubFn1, undefined, {
+        status: "loading",
+      });
+
+      await waitForCall(linkSubFn1);
+      expectSingleLinkCallAndClear(linkSubFn1, [], {
+        status: "loaded",
+      });
+
+      sub1.unsubscribe();
+
+      const linkSubFn2 = mockLinkSubCallback();
+      defer(cache.links.observe({
+        linkName: "peeps",
+        srcType: { type: "object", apiName: emp2.$apiName },
+        sourceUnderlyingObjectType: emp2.$objectType,
+        pk: emp2.$primaryKey,
+        dedupeInterval: 60_000,
+      }, linkSubFn2));
+
+      await waitForCall(linkSubFn2);
+      expectSingleLinkCallAndClear(linkSubFn2, [], {
+        status: "loaded",
+      });
+    });
+
+    it("forced revalidation bypasses dedupeInterval", async () => {
+      const { payload: emp1Payload } = await expectStandardObserveObject({
+        cache,
+        type: Employee,
+        primaryKey: 2,
+      });
+      const emp2 = emp1Payload?.object;
+      invariant(emp2);
+
+      const linkSubFn = mockLinkSubCallback();
+      defer(cache.links.observe({
+        linkName: "peeps",
+        srcType: { type: "object", apiName: emp2.$apiName },
+        sourceUnderlyingObjectType: emp2.$objectType,
+        pk: emp2.$primaryKey,
+        dedupeInterval: 60_000,
+      }, linkSubFn));
+
+      await waitForCall(linkSubFn);
+      expectSingleLinkCallAndClear(linkSubFn, undefined, {
+        status: "loading",
+      });
+
+      await waitForCall(linkSubFn);
+      expectSingleLinkCallAndClear(linkSubFn, [], {
+        status: "loaded",
+      });
+
+      const invalidatePromise = cache.invalidateObjectType(
+        "Employee",
+        undefined,
+      );
+
+      await waitForCall(linkSubFn);
+      expectSingleLinkCallAndClear(linkSubFn, [], {
+        status: "loading",
+      });
+
+      await invalidatePromise;
+
+      expectSingleLinkCallAndClear(linkSubFn, [], {
+        status: "loaded",
+      });
+    });
+
+    describe("multi-object observeLinks", () => {
+      function getLastPayload(
+        subFn: ReturnType<typeof mockLinkSubCallback>,
+      ): SpecificLinkPayload {
+        const calls = subFn.next.mock.calls;
+        return calls[calls.length - 1][0] as SpecificLinkPayload;
+      }
+
+      async function waitForLoaded(
+        subFn: ReturnType<typeof mockLinkSubCallback>,
+      ) {
+        await vi.waitFor(() => {
+          expect(getLastPayload(subFn)?.status).toBe("loaded");
+        }, { interval: 0 });
+      }
+
+      it("returns linked objects from all source objects", async () => {
+        const observableClient: ObservableClient = new ObservableClientImpl(
+          cache,
+        );
+
+        const { payload: emp1Payload } = await expectStandardObserveObject({
+          cache,
+          type: Employee,
+          primaryKey: 1,
+        });
+        const emp1 = emp1Payload?.object;
+        invariant(emp1);
+
+        const { payload: emp2Payload } = await expectStandardObserveObject({
+          cache,
+          type: Employee,
+          primaryKey: 2,
+        });
+        const emp2 = emp2Payload?.object;
+        invariant(emp2);
+
+        const linkSubFn = mockLinkSubCallback();
+
+        defer(
+          observableClient.observeLinks(
+            [emp1, emp2],
+            "officeLink",
+            { linkName: "officeLink" },
+            // @ts-expect-error crossing typed/untyped barrier for test
+            linkSubFn as unknown as Observer<SpecificLinkPayload>,
+          ),
+        );
+
+        await waitForLoaded(linkSubFn);
+        const lastPayload = getLastPayload(linkSubFn);
+
+        expect(lastPayload.resolvedList).toHaveLength(2);
+        expect(lastPayload.resolvedList).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({ $primaryKey: "101" }),
+            expect.objectContaining({ $primaryKey: "102" }),
+          ]),
+        );
+        expect(lastPayload.totalCount).toBe("2");
+        expect(lastPayload.linkedObjectsBySourcePrimaryKey.get(1)).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({ $primaryKey: "101" }),
+          ]),
+        );
+        expect(lastPayload.linkedObjectsBySourcePrimaryKey.get(2)).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({ $primaryKey: "102" }),
+          ]),
+        );
+      });
+
+      it("deduplicates when multiple sources link to the same target", async () => {
+        const dataStore = fauxFoundry.getDefaultDataStore();
+
+        // emp1 already links to office1; add emp3 -> office1 too
+        dataStore.registerLink(
+          { __apiName: "Employee", __primaryKey: 3 },
+          "officeLink",
+          { __apiName: "Office", __primaryKey: "101" },
+          "occupants",
+        );
+
+        try {
+          const observableClient: ObservableClient = new ObservableClientImpl(
+            cache,
+          );
+
+          const { payload: emp1Payload } = await expectStandardObserveObject({
+            cache,
+            type: Employee,
+            primaryKey: 1,
+          });
+          const emp1 = emp1Payload?.object;
+          invariant(emp1);
+
+          const { payload: emp3Payload } = await expectStandardObserveObject({
+            cache,
+            type: Employee,
+            primaryKey: 3,
+          });
+          const emp3 = emp3Payload?.object;
+          invariant(emp3);
+
+          const linkSubFn = mockLinkSubCallback();
+
+          defer(
+            observableClient.observeLinks(
+              [emp1, emp3],
+              "officeLink",
+              { linkName: "officeLink" },
+              // @ts-expect-error crossing typed/untyped barrier for test
+              linkSubFn as unknown as Observer<SpecificLinkPayload>,
+            ),
+          );
+
+          await waitForLoaded(linkSubFn);
+          const lastPayload = getLastPayload(linkSubFn);
+
+          expect(lastPayload.resolvedList).toHaveLength(1);
+          expect(lastPayload.resolvedList?.[0].$primaryKey).toBe("101");
+          expect(lastPayload.totalCount).toBe("1");
+          expect(lastPayload.linkedObjectsBySourcePrimaryKey.get(1)).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({ $primaryKey: "101" }),
+            ]),
+          );
+          expect(lastPayload.linkedObjectsBySourcePrimaryKey.get(3)).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({ $primaryKey: "101" }),
+            ]),
+          );
+        } finally {
+          dataStore.unregisterLink(
+            { __apiName: "Employee", __primaryKey: 3 },
+            "officeLink",
+            { __apiName: "Office", __primaryKey: "101" },
+            "occupants",
+          );
+        }
+      });
+
+      it("leaves totalCount undefined when sub-queries are still paginating", async () => {
+        const dataStore = fauxFoundry.getDefaultDataStore();
+
+        // Ensure emp1 has at least 2 peeps links (MANY cardinality).
+        // Prior tests may have removed the original johnDoe peep,
+        // so we register two fresh links to guarantee pagination with pageSize=1.
+        dataStore.registerLink(
+          { __apiName: "Employee", __primaryKey: 1 },
+          "peeps",
+          { __apiName: "Employee", __primaryKey: 3 },
+          "lead",
+        );
+        dataStore.registerLink(
+          { __apiName: "Employee", __primaryKey: 1 },
+          "peeps",
+          { __apiName: "Employee", __primaryKey: 4 },
+          "lead",
+        );
+
+        const observableClient: ObservableClient = new ObservableClientImpl(
+          cache,
+        );
+
+        const { payload: emp1Payload } = await expectStandardObserveObject({
+          cache,
+          type: Employee,
+          primaryKey: 1,
+        });
+        const emp1 = emp1Payload?.object;
+        invariant(emp1);
+
+        const { payload: emp2Payload } = await expectStandardObserveObject({
+          cache,
+          type: Employee,
+          primaryKey: 2,
+        });
+        const emp2 = emp2Payload?.object;
+        invariant(emp2);
+
+        const linkSubFn = mockLinkSubCallback();
+
+        // emp1 has 2 peeps but pageSize=1, so emp1's query has hasMore=true.
+        // emp2 has 0 peeps, so its query finishes immediately.
+        defer(
+          observableClient.observeLinks(
+            [emp1, emp2],
+            "peeps",
+            { linkName: "peeps", pageSize: 1 },
+            // @ts-expect-error crossing typed/untyped barrier for test
+            linkSubFn as unknown as Observer<SpecificLinkPayload>,
+          ),
+        );
+
+        await waitForLoaded(linkSubFn);
+        const lastPayload = getLastPayload(linkSubFn);
+
+        expect(lastPayload.hasMore).toBe(true);
+        expect(lastPayload.totalCount).toBeUndefined();
+      });
+
+      it("single object fast path still works", async () => {
+        const observableClient: ObservableClient = new ObservableClientImpl(
+          cache,
+        );
+
+        const { payload: emp1Payload } = await expectStandardObserveObject({
+          cache,
+          type: Employee,
+          primaryKey: 1,
+        });
+        const emp1 = emp1Payload?.object;
+        invariant(emp1);
+
+        const linkSubFn = mockLinkSubCallback();
+
+        defer(
+          observableClient.observeLinks(
+            emp1,
+            "officeLink",
+            { linkName: "officeLink" },
+            // @ts-expect-error crossing typed/untyped barrier for test
+            linkSubFn as unknown as Observer<SpecificLinkPayload>,
+          ),
+        );
+
+        await waitForCall(linkSubFn);
+        expectSingleLinkCallAndClear(linkSubFn, undefined, {
+          status: "loading",
+        });
+
+        await waitForCall(linkSubFn);
+        expectSingleLinkCallAndClear(
+          linkSubFn,
+          [expect.objectContaining({ $primaryKey: "101" })],
+          { status: "loaded" },
+        );
+      });
+    });
+
+    it("observeLinks correctly constructs query for interface instances", async () => {
+      const { payload: emp1Payload } = await expectStandardObserveObject({
+        cache,
+        type: Employee,
+        primaryKey: 1,
+      });
+      const emp1 = emp1Payload?.object;
+      invariant(emp1);
+
+      const fooInterfaceInstance = emp1.$as(FooInterface);
+
+      expect(fooInterfaceInstance.$apiName).toBe("FooInterface");
+      expect(fooInterfaceInstance.$objectType).toBe("Employee");
+
+      const linkSubFn = mockLinkSubCallback();
+
+      const subscription = cache.links.observe({
+        linkName: "toBar",
+        srcType: { type: "interface", apiName: fooInterfaceInstance.$apiName },
+        sourceUnderlyingObjectType: fooInterfaceInstance.$objectType,
+        pk: fooInterfaceInstance.$primaryKey,
+      }, linkSubFn);
+
+      await waitForCall(linkSubFn);
+      expect(linkSubFn.next).toHaveBeenCalled();
+
+      subscription.unsubscribe();
+
+      testStage("Interface link query construction verified");
+    });
+
+    it("invalidateObjectType correctly invalidates interface link queries when object implements source interface", async () => {
+      const { payload: emp1Payload } = await expectStandardObserveObject({
+        cache,
+        type: Employee,
+        primaryKey: 1,
+      });
+      const emp1 = emp1Payload?.object;
+      invariant(emp1);
+
+      const fooInterfaceInstance = emp1.$as(FooInterface);
+      const linkSubFn = mockLinkSubCallback();
+
+      const subscription = cache.links.observe({
+        linkName: "toBar",
+        srcType: { type: "interface", apiName: fooInterfaceInstance.$apiName },
+        sourceUnderlyingObjectType: fooInterfaceInstance.$objectType,
+        pk: fooInterfaceInstance.$primaryKey,
+      }, linkSubFn);
+
+      await waitForCall(linkSubFn);
+      linkSubFn.next.mockClear();
+
+      await cache.invalidateObjectType(Employee, undefined);
+
+      await waitForCall(linkSubFn);
+      expect(linkSubFn.next).toHaveBeenCalled();
+
+      subscription.unsubscribe();
+      testStage(
+        "Interface link invalidation via implementing object type verified",
+      );
+    });
   });
 
   describe("with mock server", () => {
@@ -419,7 +822,9 @@ describe(Store, () => {
       setupOntology(testSetup.fauxFoundry);
       setupSomeEmployees(testSetup.fauxFoundry);
 
-      employeesAsServerReturns = (await client(Employee).fetchPage()).data;
+      employeesAsServerReturns = (await client(Employee).fetchPage({
+        $includeRid: true,
+      })).data;
       mutatedEmployees = [
         employeesAsServerReturns[0],
         employeesAsServerReturns[1].$clone({
@@ -1057,13 +1462,13 @@ describe(Store, () => {
 
           expectSingleListCallAndClear(
             listSub1,
-            [],
+            undefined,
             { status: "loading" },
           );
 
           expectSingleListCallAndClear(
             ifaceSub,
-            [],
+            undefined,
             { status: "loading" },
           );
 
@@ -1079,7 +1484,13 @@ describe(Store, () => {
           await waitForCall(ifaceSub);
           expectSingleListCallAndClear(
             ifaceSub,
-            employeesAsServerReturns,
+            employeesAsServerReturns.map(e =>
+              expect.objectContaining({
+                $apiName: "FooInterface",
+                $objectType: "Employee",
+                $primaryKey: e.$primaryKey,
+              })
+            ),
             {
               status: "loaded",
             },
@@ -1092,6 +1503,73 @@ describe(Store, () => {
           expect(listSub1.error).not.toHaveBeenCalled();
           expect(ifaceSub.next).not.toHaveBeenCalled();
           expect(ifaceSub.error).not.toHaveBeenCalled();
+        });
+
+        it("cache stores raw objects when loading via interface", async () => {
+          defer(
+            cache.lists.observe({
+              type: FooInterface,
+              orderBy: {},
+              mode: "force",
+            }, ifaceSub),
+          );
+          await waitForCall(ifaceSub, 2);
+
+          const pk = employeesAsServerReturns[0].$primaryKey as number;
+          const cached = getObject(cache, "Employee", pk);
+          expect(cached?.$apiName).toBe("Employee");
+          expect(cached?.$objectType).toBe("Employee");
+        });
+
+        it("interface queries return interface view while cache stores raw object", async () => {
+          defer(
+            cache.lists.observe({
+              type: FooInterface,
+              orderBy: {},
+              mode: "force",
+            }, ifaceSub),
+          );
+          await waitForCall(ifaceSub, 2);
+
+          const ifacePayload = ifaceSub.next.mock.calls[1][0];
+          expect(ifacePayload?.resolvedList?.[0]?.$apiName).toBe(
+            "FooInterface",
+          );
+          expect(ifacePayload?.resolvedList?.[0]?.$objectType).toBe("Employee");
+
+          const pk = employeesAsServerReturns[0].$primaryKey as number;
+          const cached = getObject(cache, "Employee", pk);
+          expect(cached?.$apiName).toBe("Employee");
+        });
+
+        it("direct query after interface query preserves interface $apiName", async () => {
+          const objSub = mockSingleSubCallback();
+
+          defer(
+            cache.lists.observe({
+              type: FooInterface,
+              orderBy: {},
+              mode: "force",
+            }, ifaceSub),
+          );
+          await waitForCall(ifaceSub, 2);
+
+          expect(ifaceSub.next.mock.calls[1][0]?.resolvedList?.[0]?.$apiName)
+            .toBe("FooInterface");
+
+          defer(
+            cache.objects.observe({
+              apiName: Employee,
+              pk: employeesAsServerReturns[0].$primaryKey,
+              mode: "force",
+            }, objSub),
+          );
+          await waitForCall(objSub, 2);
+
+          expect(
+            ifaceSub.next.mock.calls.at(-1)?.[0]?.resolvedList?.[0]?.$apiName,
+          )
+            .toBe("FooInterface");
         });
 
         it("subsequent load", async () => {
@@ -1209,7 +1687,9 @@ describe(Store, () => {
         ));
 
         await waitForCall(listSub, 1);
-        expectSingleListCallAndClear(listSub, [], { status: "loading" });
+        expectSingleListCallAndClear(listSub, undefined, {
+          status: "loading",
+        });
 
         await waitForCall(listSub, 1);
         const { fetchMore } = listSub.next.mock.calls[0][0]!;
@@ -1232,6 +1712,80 @@ describe(Store, () => {
         expectSingleListCallAndClear(
           listSub,
           employeesAsServerReturns.slice(0, 2),
+          { status: "loaded" },
+        );
+      });
+
+      it("handles multiple sequential fetchMore calls", async () => {
+        const listSub = mockListSubCallback();
+        defer(cache.lists.observe(
+          {
+            type: Employee,
+            where: {},
+            orderBy: {},
+            mode: "force",
+            pageSize: 1,
+          },
+          listSub,
+        ));
+
+        await waitForCall(listSub, 1);
+        expectSingleListCallAndClear(listSub, undefined, {
+          status: "loading",
+        });
+
+        await waitForCall(listSub, 1);
+        let { fetchMore } = listSub.next.mock.calls[0][0]!;
+        expectSingleListCallAndClear(
+          listSub,
+          employeesAsServerReturns.slice(0, 1),
+          { status: "loaded" },
+        );
+
+        void fetchMore();
+        await waitForCall(listSub, 1);
+        expectSingleListCallAndClear(
+          listSub,
+          employeesAsServerReturns.slice(0, 1),
+          { status: "loading" },
+        );
+
+        await waitForCall(listSub, 1);
+        ({ fetchMore } = listSub.next.mock.calls[0][0]!);
+        expectSingleListCallAndClear(
+          listSub,
+          employeesAsServerReturns.slice(0, 2),
+          { status: "loaded" },
+        );
+
+        void fetchMore();
+        await waitForCall(listSub, 1);
+        expectSingleListCallAndClear(
+          listSub,
+          employeesAsServerReturns.slice(0, 2),
+          { status: "loading" },
+        );
+
+        await waitForCall(listSub, 1);
+        ({ fetchMore } = listSub.next.mock.calls[0][0]!);
+        expectSingleListCallAndClear(
+          listSub,
+          employeesAsServerReturns.slice(0, 3),
+          { status: "loaded" },
+        );
+
+        void fetchMore();
+        await waitForCall(listSub, 1);
+        expectSingleListCallAndClear(
+          listSub,
+          employeesAsServerReturns.slice(0, 3),
+          { status: "loading" },
+        );
+
+        await waitForCall(listSub, 1);
+        expectSingleListCallAndClear(
+          listSub,
+          employeesAsServerReturns.slice(0, 4),
           { status: "loaded" },
         );
       });
@@ -1282,7 +1836,7 @@ describe(Store, () => {
 
       // initial loading state
       expect(sub.next).toHaveBeenCalledOnce();
-      expectSingleListCallAndClear(sub, [], { status: "loading" });
+      expectSingleListCallAndClear(sub, undefined, { status: "loading" });
 
       await waitForCall(sub.error);
       expect(sub.error).toHaveBeenCalledOnce();
@@ -1474,7 +2028,7 @@ describe(Store, () => {
               text,
             });
 
-            return client(Todo).fetchOne(id);
+            return client(Todo).fetchOne(id, { $includeRid: true });
           }),
         );
       });
@@ -1506,7 +2060,9 @@ describe(Store, () => {
           }, subListUnordered),
         );
         await waitForCall(subListUnordered);
-        expectSingleListCallAndClear(subListUnordered, [], { status: "init" });
+        expectSingleListCallAndClear(subListUnordered, undefined, {
+          status: "init",
+        });
 
         defer(
           store.lists.observe({
@@ -1515,7 +2071,9 @@ describe(Store, () => {
           }, subListOrdered),
         );
         await waitForCall(subListOrdered);
-        expectSingleListCallAndClear(subListOrdered, [], { status: "init" });
+        expectSingleListCallAndClear(subListOrdered, undefined, {
+          status: "init",
+        });
       });
 
       it("invalidates the correct lists", async () => {
@@ -1744,7 +2302,9 @@ describe(Store, () => {
         const pkForD = (await pActionResult).addedObjects?.[0].primaryKey;
         invariant(typeof pkForD === "number");
         // load this without the cache for comparisons
-        const createdObjectD = await client(Todo).fetchOne(pkForD);
+        const createdObjectD = await client(Todo).fetchOne(pkForD, {
+          $includeRid: true,
+        });
 
         await waitForCall(subListUnordered, 1);
         expectSingleListCallAndClear(subListUnordered, [
@@ -1758,6 +2318,470 @@ describe(Store, () => {
           subListOrdered,
           [modifiedObjectA, fauxObjectB, createdObjectD],
           { isOptimistic: false },
+        );
+      });
+    });
+
+    it("works with pivotTo and orderBy on objectSets", async () => {
+      fauxFoundry.getDefaultDataStore().clear();
+
+      const officeA = fauxFoundry.getDefaultDataStore().registerObject(Office, {
+        $apiName: "Office",
+        officeId: "office-a",
+        name: "Zebra Office",
+      });
+      const officeB = fauxFoundry.getDefaultDataStore().registerObject(Office, {
+        $apiName: "Office",
+        officeId: "office-b",
+        name: "Alpha Office",
+      });
+
+      const emp1 = fauxFoundry.getDefaultDataStore().registerObject(Employee, {
+        $apiName: "Employee",
+        employeeId: 1,
+        fullName: "Test Employee",
+      });
+      const emp2 = fauxFoundry.getDefaultDataStore().registerObject(Employee, {
+        $apiName: "Employee",
+        employeeId: 2,
+        fullName: "Test Employee 2",
+      });
+
+      fauxFoundry.getDefaultDataStore().registerLink(
+        emp1,
+        "officeLink",
+        officeA,
+        "occupants",
+      );
+      fauxFoundry.getDefaultDataStore().registerLink(
+        emp2,
+        "officeLink",
+        officeB,
+        "occupants",
+      );
+
+      const sub = mockObserver<ObjectSetPayload | undefined>();
+      defer(
+        store.objectSets.observe({
+          baseObjectSet: client(Employee).pivotTo("officeLink"),
+          orderBy: { name: "asc" },
+        }, sub),
+      );
+
+      await vi.waitFor(
+        () => {
+          expect(sub.next).toHaveBeenLastCalledWith(
+            expect.objectContaining({
+              status: "loaded",
+            }),
+          );
+        },
+        { timeout: 5000 },
+      );
+
+      expect(sub.next).toHaveBeenLastCalledWith(
+        expect.objectContaining({
+          status: "loaded",
+          resolvedList: [
+            expect.objectContaining({ name: "Alpha Office" }),
+            expect.objectContaining({ name: "Zebra Office" }),
+          ],
+        }),
+      );
+
+      expect(sub.error).not.toHaveBeenCalled();
+    });
+
+    describe("ObjectSetQuery maybeUpdateAndRevalidate", () => {
+      it("should update list in-memory when strict-matching object is added", async () => {
+        fauxFoundry.getDefaultDataStore().clear();
+
+        fauxFoundry.getDefaultDataStore().registerObject(
+          Employee,
+          {
+            $apiName: "Employee",
+            employeeId: 100,
+            fullName: "Existing Employee",
+          },
+        );
+
+        const sub = mockObserver<ObjectSetPayload | undefined>();
+        defer(
+          store.objectSets.observe({
+            baseObjectSet: client(Employee) as ObjectSet<Employee>,
+          }, sub),
+        );
+
+        await vi.waitFor(
+          () => {
+            expect(sub.next).toHaveBeenLastCalledWith(
+              expect.objectContaining({
+                status: "loaded",
+              }),
+            );
+          },
+          { timeout: 5000 },
+        );
+
+        expect(sub.next).toHaveBeenLastCalledWith(
+          expect.objectContaining({
+            status: "loaded",
+            resolvedList: [
+              expect.objectContaining({ employeeId: 100 }),
+            ],
+          }),
+        );
+
+        fauxFoundry.getDefaultDataStore().registerObject(Employee, {
+          $apiName: "Employee",
+          employeeId: 200,
+          fullName: "New Employee",
+        });
+
+        await client(Employee).fetchOne(200, {
+          $includeRid: true,
+        });
+
+        sub.next.mockClear();
+
+        await store.invalidateObjectType(Employee, undefined);
+
+        await vi.waitFor(
+          () => {
+            expect(sub.next).toHaveBeenCalled();
+          },
+          { timeout: 5000 },
+        );
+
+        expect(sub.next).toHaveBeenLastCalledWith(
+          expect.objectContaining({
+            resolvedList: expect.arrayContaining([
+              expect.objectContaining({ employeeId: 100 }),
+              expect.objectContaining({ employeeId: 200 }),
+            ]),
+          }),
+        );
+      });
+
+      it("should trigger revalidation for complex ObjectSet with pivotTo", async () => {
+        fauxFoundry.getDefaultDataStore().clear();
+
+        const office = fauxFoundry.getDefaultDataStore().registerObject(
+          Office,
+          {
+            $apiName: "Office",
+            officeId: "office-pivot",
+            name: "Pivot Office",
+          },
+        );
+
+        const emp = fauxFoundry.getDefaultDataStore().registerObject(
+          Employee,
+          {
+            $apiName: "Employee",
+            employeeId: 300,
+            fullName: "Pivot Employee",
+          },
+        );
+
+        fauxFoundry.getDefaultDataStore().registerLink(
+          emp,
+          "officeLink",
+          office,
+          "occupants",
+        );
+
+        const sub = mockObserver<ObjectSetPayload | undefined>();
+        defer(
+          store.objectSets.observe({
+            baseObjectSet: client(Employee).pivotTo("officeLink"),
+          }, sub),
+        );
+
+        await vi.waitFor(
+          () => {
+            expect(sub.next).toHaveBeenLastCalledWith(
+              expect.objectContaining({
+                status: "loaded",
+              }),
+            );
+          },
+          { timeout: 5000 },
+        );
+
+        expect(sub.next).toHaveBeenLastCalledWith(
+          expect.objectContaining({
+            status: "loaded",
+            resolvedList: [
+              expect.objectContaining({ name: "Pivot Office" }),
+            ],
+          }),
+        );
+      });
+
+      it("should not modify list when no relevant object types changed", async () => {
+        fauxFoundry.getDefaultDataStore().clear();
+
+        fauxFoundry.getDefaultDataStore().registerObject(Employee, {
+          $apiName: "Employee",
+          employeeId: 400,
+          fullName: "Sole Employee",
+        });
+
+        const sub = mockObserver<ObjectSetPayload | undefined>();
+        defer(
+          store.objectSets.observe({
+            baseObjectSet: client(Employee) as ObjectSet<Employee>,
+          }, sub),
+        );
+
+        await vi.waitFor(
+          () => {
+            expect(sub.next).toHaveBeenLastCalledWith(
+              expect.objectContaining({
+                status: "loaded",
+              }),
+            );
+          },
+          { timeout: 5000 },
+        );
+
+        const callCountBefore = sub.next.mock.calls.length;
+
+        await store.invalidateObjectType(Office, undefined);
+
+        expect(sub.next.mock.calls.length).toBe(callCountBefore);
+      });
+
+      it("should remove modified object from list when it no longer matches where clause", async () => {
+        fauxFoundry.getDefaultDataStore().clear();
+
+        fauxFoundry.getDefaultDataStore().registerObject(Employee, {
+          $apiName: "Employee",
+          employeeId: 500,
+          fullName: "Matching Employee",
+        });
+
+        fauxFoundry.getDefaultDataStore().registerObject(Employee, {
+          $apiName: "Employee",
+          employeeId: 501,
+          fullName: "Other Employee",
+        });
+
+        const sub = mockObserver<ObjectSetPayload | undefined>();
+        defer(
+          store.objectSets.observe({
+            baseObjectSet: client(Employee) as ObjectSet<Employee>,
+            where: { fullName: { $eq: "Matching Employee" } },
+          }, sub),
+        );
+
+        await vi.waitFor(
+          () => {
+            expect(sub.next).toHaveBeenLastCalledWith(
+              expect.objectContaining({
+                status: "loaded",
+              }),
+            );
+          },
+          { timeout: 5000 },
+        );
+
+        expect(sub.next).toHaveBeenLastCalledWith(
+          expect.objectContaining({
+            status: "loaded",
+            resolvedList: [
+              expect.objectContaining({ employeeId: 500 }),
+            ],
+          }),
+        );
+
+        fauxFoundry.getDefaultDataStore().unregisterObjectOrThrow(
+          "Employee",
+          500,
+        );
+        fauxFoundry.getDefaultDataStore().registerObject(Employee, {
+          $apiName: "Employee",
+          employeeId: 500,
+          fullName: "No Longer Matching",
+        });
+
+        await client(Employee).fetchOne(500, {
+          $includeRid: true,
+        });
+
+        sub.next.mockClear();
+
+        await store.invalidateObjectType(Employee, undefined);
+
+        await vi.waitFor(
+          () => {
+            expect(sub.next).toHaveBeenCalled();
+          },
+          { timeout: 5000 },
+        );
+
+        expect(sub.next).toHaveBeenLastCalledWith(
+          expect.objectContaining({
+            resolvedList: [],
+          }),
+        );
+      });
+
+      it("should add modified object to list when it newly matches where clause", async () => {
+        fauxFoundry.getDefaultDataStore().clear();
+
+        fauxFoundry.getDefaultDataStore().registerObject(Employee, {
+          $apiName: "Employee",
+          employeeId: 600,
+          fullName: "Not Matching Yet",
+        });
+
+        const sub = mockObserver<ObjectSetPayload | undefined>();
+        defer(
+          store.objectSets.observe({
+            baseObjectSet: client(Employee) as ObjectSet<Employee>,
+            where: { fullName: { $eq: "Now Matching" } },
+          }, sub),
+        );
+
+        await vi.waitFor(
+          () => {
+            expect(sub.next).toHaveBeenLastCalledWith(
+              expect.objectContaining({
+                status: "loaded",
+              }),
+            );
+          },
+          { timeout: 5000 },
+        );
+
+        expect(sub.next).toHaveBeenLastCalledWith(
+          expect.objectContaining({
+            status: "loaded",
+            resolvedList: [],
+          }),
+        );
+
+        fauxFoundry.getDefaultDataStore().unregisterObjectOrThrow(
+          "Employee",
+          600,
+        );
+        fauxFoundry.getDefaultDataStore().registerObject(Employee, {
+          $apiName: "Employee",
+          employeeId: 600,
+          fullName: "Now Matching",
+        });
+
+        await client(Employee).fetchOne(600, {
+          $includeRid: true,
+        });
+
+        sub.next.mockClear();
+
+        await store.invalidateObjectType(Employee, undefined);
+
+        await vi.waitFor(
+          () => {
+            expect(sub.next).toHaveBeenCalled();
+          },
+          { timeout: 5000 },
+        );
+
+        expect(sub.next).toHaveBeenLastCalledWith(
+          expect.objectContaining({
+            resolvedList: [
+              expect.objectContaining({ employeeId: 600 }),
+            ],
+          }),
+        );
+      });
+
+      it("should trigger revalidation when object is deleted from complex ObjectSet", async () => {
+        fauxFoundry.getDefaultDataStore().clear();
+
+        const office = fauxFoundry.getDefaultDataStore().registerObject(
+          Office,
+          {
+            $apiName: "Office",
+            officeId: "office-del",
+            name: "Delete Test Office",
+          },
+        );
+
+        const emp = fauxFoundry.getDefaultDataStore().registerObject(
+          Employee,
+          {
+            $apiName: "Employee",
+            employeeId: 700,
+            fullName: "Delete Test Employee",
+          },
+        );
+
+        fauxFoundry.getDefaultDataStore().registerLink(
+          emp,
+          "officeLink",
+          office,
+          "occupants",
+        );
+
+        const sub = mockObserver<ObjectSetPayload | undefined>();
+        defer(
+          store.objectSets.observe({
+            baseObjectSet: client(Employee) as ObjectSet<Employee>,
+            pivotTo: "officeLink",
+          }, sub),
+        );
+
+        await vi.waitFor(
+          () => {
+            expect(sub.next).toHaveBeenLastCalledWith(
+              expect.objectContaining({
+                status: "loaded",
+              }),
+            );
+          },
+          { timeout: 5000 },
+        );
+
+        expect(sub.next).toHaveBeenLastCalledWith(
+          expect.objectContaining({
+            status: "loaded",
+            resolvedList: [
+              expect.objectContaining({ name: "Delete Test Office" }),
+            ],
+          }),
+        );
+
+        sub.next.mockClear();
+
+        fauxFoundry.getDefaultDataStore().unregisterObjectOrThrow(
+          "Employee",
+          700,
+        );
+
+        const objectCacheKey = store.cacheKeys.get<ObjectCacheKey>(
+          "object",
+          "Employee",
+          700,
+        );
+
+        store.batch({}, (batch) => {
+          batch.changes.deleteObject(objectCacheKey);
+          batch.delete(objectCacheKey, "loaded");
+        });
+
+        await vi.waitFor(
+          () => {
+            expect(sub.next).toHaveBeenCalled();
+          },
+          { timeout: 5000 },
+        );
+
+        expect(sub.next).toHaveBeenLastCalledWith(
+          expect.objectContaining({
+            resolvedList: [],
+          }),
         );
       });
     });

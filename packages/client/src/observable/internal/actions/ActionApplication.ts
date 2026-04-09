@@ -21,7 +21,6 @@ import type {
 } from "@osdk/api";
 import type { ActionSignatureFromDef } from "../../../actions/applyAction.js";
 import { type Changes } from "../Changes.js";
-import type { ObjectCacheKey } from "../object/ObjectCacheKey.js";
 import type { Store } from "../Store.js";
 import { runOptimisticJob } from "./OptimisticJob.js";
 
@@ -79,8 +78,9 @@ export class ActionApplication {
         if (process.env.NODE_ENV !== "production") {
           if (ACTION_DELAY > 0) {
             logger?.debug("action done, pausing", actionResults);
-            const delay = (await import("delay")).default;
-            await delay(ACTION_DELAY);
+            await new Promise<void>(resolve =>
+              setTimeout(resolve, ACTION_DELAY)
+            );
             logger?.debug("action done, pausing done");
           }
         }
@@ -99,9 +99,18 @@ export class ActionApplication {
   };
 
   #invalidateActionEditResponse = async (
-    { deletedObjects, modifiedObjects, addedObjects, editedObjectTypes, type }:
-      ActionEditResponse,
+    actionEditResponse: ActionEditResponse | undefined,
   ): Promise<void> => {
+    if (actionEditResponse == null) {
+      return;
+    }
+    const {
+      deletedObjects,
+      modifiedObjects,
+      addedObjects,
+      editedObjectTypes,
+      type,
+    } = actionEditResponse;
     let changes: Changes | undefined;
     if (type === "edits") {
       const promisesToWait: Promise<any>[] = [];
@@ -114,17 +123,20 @@ export class ActionApplication {
         }
       }
 
+      // Use the registry to find all RDP variant cache keys for each deleted object.
       this.store.batch({}, (batch) => {
         for (const { objectType, primaryKey } of deletedObjects ?? []) {
-          const cacheKey = this.store.cacheKeys.get<ObjectCacheKey>(
-            "object",
-            objectType,
-            primaryKey,
-          );
-          this.store.queries.peek(cacheKey)?.deleteFromStore(
-            "loaded", // this is probably not the best value to use
-            batch,
-          );
+          for (
+            const cacheKey of this.store.objectCacheKeyRegistry.getVariants(
+              objectType,
+              primaryKey,
+            )
+          ) {
+            this.store.queries.peek(cacheKey)?.deleteFromStore(
+              "loaded", // this is probably not the best value to use
+              batch,
+            );
+          }
         }
       });
       await Promise.all(promisesToWait);

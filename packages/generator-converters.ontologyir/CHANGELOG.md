@@ -1,5 +1,517 @@
 # @osdk/generator-converters.ontologyir
 
+## 2.8.0
+
+### Minor Changes
+
+- 150da1a: Simulated release
+- abb0e0f: Bump Platform SDK dependencies
+- 4762f4b: Rewrite link rids for preview compatibility
+- 908b519: Create folder for functions ir output
+- 35f2f1a: Add Media inputs/outputs for Queries
+- cde6b85: Write functions ir optionally
+- 32c6a0c: Fix functions discovery on Windows
+- 12fe33f: use block data instead of IR for preview generator
+- 46f0a47: Update platform SDK to 2.57.0 and handle new typeReference query data type
+
+### Patch Changes
+
+- Updated dependencies [322c5bc]
+- Updated dependencies [f487a6a]
+- Updated dependencies [e462938]
+- Updated dependencies [6499ff9]
+- Updated dependencies [034081a]
+- Updated dependencies [35f2f1a]
+- Updated dependencies [972bda6]
+- Updated dependencies [6941b4f]
+  - @osdk/client.unstable@2.8.0
+
+## 2.8.0-beta.32
+
+### Minor Changes
+
+- 46f0a47: Update platform SDK to 2.57.0 and handle new typeReference query data type
+
+### Patch Changes
+
+- @osdk/client.unstable@2.8.0-beta.32
+
+## 2.8.0-beta.31
+
+### Patch Changes
+
+- @osdk/client.unstable@2.8.0-beta.31
+
+## 2.8.0-beta.30
+
+### Patch Changes
+
+- @osdk/client.unstable@2.8.0-beta.30
+
+## 2.8.0-beta.29
+
+### Patch Changes
+
+- @osdk/client.unstable@2.8.0-beta.29
+
+## 2.8.0-beta.28
+
+### Minor Changes
+
+- 12fe33f: use block data instead of IR for preview generator
+
+### Patch Changes
+
+- @osdk/client.unstable@2.8.0-beta.28
+
+## 2.8.0-beta.27
+
+### Patch Changes
+
+- @osdk/client.unstable@2.8.0-beta.27
+
+## 2.8.0-beta.26
+
+### Patch Changes
+
+- @osdk/client.unstable@2.8.0-beta.26
+
+## 2.8.0-beta.25
+
+### Patch Changes
+
+- @osdk/client.unstable@2.8.0-beta.25
+
+## 2.8.0-beta.24
+
+### Patch Changes
+
+- @osdk/client.unstable@2.8.0-beta.24
+
+## 2.8.0-beta.23
+
+### Minor Changes
+
+- 32c6a0c: Fix functions discovery on Windows
+
+### Patch Changes
+
+- @osdk/client.unstable@2.8.0-beta.23
+
+## 2.8.0-beta.22
+
+### Patch Changes
+
+- @osdk/client.unstable@2.8.0-beta.22
+
+## 2.8.0-beta.21
+
+### Patch Changes
+
+- @osdk/client.unstable@2.8.0-beta.21
+
+## 2.8.0-beta.20
+
+### Patch Changes
+
+- @osdk/client.unstable@2.8.0-beta.20
+
+## 2.8.0-beta.19
+
+### Minor Changes
+
+- cde6b85: Write functions ir optionally
+
+### Patch Changes
+
+- @osdk/client.unstable@2.8.0-beta.19
+
+## 2.8.0-beta.18
+
+### Minor Changes
+
+- 4762f4b: Rewrite link rids for preview compatibility
+
+### Patch Changes
+
+- @osdk/client.unstable@2.8.0-beta.18
+
+## 2.8.0-beta.17
+
+### Patch Changes
+
+- @osdk/client.unstable@2.8.0-beta.17
+
+## 2.8.0-beta.16
+
+### Patch Changes
+
+- Updated dependencies [6941b4f]
+  - @osdk/client.unstable@2.8.0-beta.16
+
+## 2.8.0-beta.15
+
+### Patch Changes
+
+- @osdk/client.unstable@2.8.0-beta.15
+
+## 2.8.0-beta.14
+
+### Minor Changes
+
+- 35f2f1a: Add Media inputs/outputs for Queries
+
+### Patch Changes
+
+- Updated dependencies [35f2f1a]
+  - @osdk/client.unstable@2.8.0-beta.14
+
+## 2.8.0-beta.13
+
+### Patch Changes
+
+- @osdk/client.unstable@2.8.0-beta.13
+
+## 2.8.0-beta.12
+
+### Patch Changes
+
+- @osdk/client.unstable@2.8.0-beta.12
+
+## 2.8.0-beta.11
+
+### Patch Changes
+
+- Updated dependencies [f487a6a]
+  - @osdk/client.unstable@2.8.0-beta.11
+
+## 2.8.0-beta.10
+
+### Patch Changes
+
+- Updated dependencies [972bda6]
+  - @osdk/client.unstable@2.8.0-beta.10
+
+## 2.8.0-beta.9
+
+### Minor Changes
+
+- abb0e0f: Bump Platform SDK dependencies
+
+### Patch Changes
+
+- @osdk/client.unstable@2.8.0-beta.9
+
+## 2.8.0-beta.8
+
+### Patch Changes
+
+- @osdk/client.unstable@2.8.0-beta.8
+
+## 2.8.0-beta.7
+
+### Patch Changes
+
+- Updated dependencies [034081a]
+  - @osdk/client.unstable@2.8.0-beta.7
+
+## 2.8.0-beta.6
+
+### Patch Changes
+
+- @osdk/client.unstable@2.8.0-beta.6
+
+## 2.8.0-beta.5
+
+### Patch Changes
+
+- Updated dependencies [6499ff9]
+  - @osdk/client.unstable@2.8.0-beta.5
+
+## 2.8.0-beta.4
+
+### Patch Changes
+
+- @osdk/client.unstable@2.8.0-beta.4
+
+## 2.8.0-beta.3
+
+### Patch Changes
+
+- @osdk/client.unstable@2.8.0-beta.3
+
+## 2.8.0-beta.2
+
+### Patch Changes
+
+- Updated dependencies [e462938]
+  - @osdk/client.unstable@2.8.0-beta.2
+
+## 2.7.0-beta.14
+
+### Patch Changes
+
+- @osdk/client.unstable@2.7.0-beta.14
+
+## 2.7.0-beta.13
+
+### Patch Changes
+
+- @osdk/client.unstable@2.7.0-beta.13
+
+## 2.7.0-beta.12
+
+### Patch Changes
+
+- @osdk/client.unstable@2.7.0-beta.12
+
+## 2.7.0-beta.11
+
+### Patch Changes
+
+- @osdk/client.unstable@2.7.0-beta.11
+
+## 2.7.0-beta.10
+
+### Patch Changes
+
+- @osdk/client.unstable@2.7.0-beta.10
+
+## 2.7.0-beta.9
+
+### Minor Changes
+
+- 8381ac2: Alias and render hint overrides for oac
+
+### Patch Changes
+
+- Updated dependencies [8381ac2]
+- Updated dependencies [c95f3bc]
+  - @osdk/client.unstable@2.7.0-beta.9
+
+## 2.7.0-beta.8
+
+### Patch Changes
+
+- @osdk/client.unstable@2.7.0-beta.8
+
+## 2.7.0-beta.7
+
+### Patch Changes
+
+- @osdk/client.unstable@2.7.0-beta.7
+
+## 2.7.0-beta.6
+
+### Patch Changes
+
+- @osdk/client.unstable@2.7.0-beta.6
+
+## 2.7.0-beta.5
+
+### Minor Changes
+
+- dc33f68: Add Transaction ID to Queries
+
+### Patch Changes
+
+- @osdk/client.unstable@2.7.0-beta.5
+
+## 2.7.0-beta.4
+
+### Patch Changes
+
+- @osdk/client.unstable@2.7.0-beta.4
+
+## 2.7.0-beta.3
+
+### Patch Changes
+
+- @osdk/client.unstable@2.7.0-beta.3
+
+## 2.7.0-beta.2
+
+### Minor Changes
+
+- 03db734: Move platform SDK deps to pnpm catalog
+
+### Patch Changes
+
+- @osdk/client.unstable@2.7.0-beta.2
+
+## 2.6.0-beta.13
+
+### Minor Changes
+
+- 84f0eef: Bumping OSDK apis
+
+### Patch Changes
+
+- @osdk/client.unstable@2.6.0-beta.13
+
+## 2.6.0-beta.12
+
+### Patch Changes
+
+- @osdk/client.unstable@2.6.0-beta.12
+
+## 2.6.0-beta.11
+
+### Patch Changes
+
+- @osdk/client.unstable@2.6.0-beta.11
+
+## 2.6.0-beta.10
+
+### Minor Changes
+
+- 3fbb596: Pipe through transactionId to endpoints that load data via object sets
+
+### Patch Changes
+
+- @osdk/client.unstable@2.6.0-beta.10
+
+## 2.6.0-beta.9
+
+### Patch Changes
+
+- @osdk/client.unstable@2.6.0-beta.9
+
+## 2.6.0-beta.8
+
+### Minor Changes
+
+- a1ffb20: Use new ephemeral media upload endpoint.
+
+### Patch Changes
+
+- @osdk/client.unstable@2.6.0-beta.8
+
+## 2.6.0-beta.7
+
+### Patch Changes
+
+- @osdk/client.unstable@2.6.0-beta.7
+
+## 2.6.0-beta.6
+
+### Patch Changes
+
+- @osdk/client.unstable@2.6.0-beta.6
+
+## 2.6.0-beta.5
+
+### Patch Changes
+
+- @osdk/client.unstable@2.6.0-beta.5
+
+## 2.6.0-beta.4
+
+### Patch Changes
+
+- Updated dependencies [7fd788b]
+  - @osdk/client.unstable@2.6.0-beta.4
+
+## 2.6.0-beta.3
+
+### Patch Changes
+
+- @osdk/client.unstable@2.6.0-beta.3
+
+## 2.6.0-beta.2
+
+### Minor Changes
+
+- 84e61fc: Add propertyValueFormatting type to property metadata
+
+### Patch Changes
+
+- @osdk/client.unstable@2.6.0-beta.2
+
+## 2.5.0-beta.15
+
+### Patch Changes
+
+- @osdk/client.unstable@2.5.0-beta.15
+
+## 2.5.2
+
+### Patch Changes
+
+- @osdk/client.unstable@2.5.2
+
+## 2.5.1
+
+### Patch Changes
+
+- @osdk/client.unstable@2.5.1
+
+## 2.5.0
+
+### Patch Changes
+
+- 150da1a: Simulated release
+- a6f49e9: Fix Maker Rid Generation
+- 7cdab1d: Update platform sdk dependencies
+- a00d2ed: Update Platform SDK dependencies
+- 7bdac45: Update Platform SDK dependency
+- a96d89e: Update Platform SDK dependencies
+- 7bdac45: Support value type enum generation for strings and booleans
+- cbcf2ad: Add branching support
+- Updated dependencies [322c5bc]
+- Updated dependencies [a6f49e9]
+- Updated dependencies [a6f49e9]
+- Updated dependencies [04fe946]
+  - @osdk/client.unstable@2.5.0
+
+## 2.5.0-rc.15
+
+### Patch Changes
+
+- @osdk/client.unstable@2.5.0-rc.15
+
+## 2.5.0-beta.14
+
+### Minor Changes
+
+- e62408b: Fix Maker Rid Generation
+
+### Patch Changes
+
+- Updated dependencies [9dd5a63]
+- Updated dependencies [e62408b]
+  - @osdk/client.unstable@2.5.0-beta.14
+
+## 2.5.0-beta.13
+
+### Patch Changes
+
+- @osdk/client.unstable@2.5.0-beta.13
+
+## 2.5.0-beta.12
+
+### Patch Changes
+
+- @osdk/client.unstable@2.5.0-beta.12
+
+## 2.5.0-beta.11
+
+### Patch Changes
+
+- @osdk/client.unstable@2.5.0-beta.11
+
+## 2.5.0-beta.10
+
+### Patch Changes
+
+- @osdk/client.unstable@2.5.0-beta.10
+
+## 2.5.0-beta.9
+
+### Patch Changes
+
+- @osdk/client.unstable@2.5.0-beta.9
+
 ## 2.5.0-beta.8
 
 ### Patch Changes

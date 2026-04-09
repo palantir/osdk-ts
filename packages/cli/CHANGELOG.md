@@ -1,5 +1,47 @@
 # @osdk/cli
 
+## 0.32.0
+
+### Minor Changes
+
+- 322c5bc: Simulated release
+- ef0cd72: Handle ScanningInProgress error for site deploy command
+- 35f2f1a: Add Media inputs/outputs for Queries
+
+## 0.32.0-beta.5
+
+## 0.32.0-beta.4
+
+## 0.32.0-beta.3
+
+### Minor Changes
+
+- 35f2f1a: Add Media inputs/outputs for Queries
+
+## 0.32.0-beta.2
+
+### Minor Changes
+
+- ef0cd72: Handle ScanningInProgress error for site deploy command
+
+## 0.31.0-beta.2
+
+## 0.30.0-beta.5
+
+## 0.30.0-beta.4
+
+## 0.30.0-beta.3
+
+## 0.30.0-beta.2
+
+## 0.29.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+
+## 0.29.0-rc.6
+
 ## 0.29.0-beta.5
 
 ## 0.29.0-beta.4

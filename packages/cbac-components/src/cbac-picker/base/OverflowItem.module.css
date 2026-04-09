@@ -1,0 +1,51 @@
+/*
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.overflowItem {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  text-align: left;
+  padding: var(--osdk-surface-spacing)
+    calc(var(--osdk-surface-spacing) * 1.5);
+  font-size: var(--osdk-cbac-overflow-button-font-size);
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  border-radius: var(--osdk-surface-border-radius);
+  color: var(--osdk-cbac-marking-button-color-default);
+  background: transparent;
+}
+
+.overflowItem:hover:not(:disabled) {
+  background: var(--osdk-surface-background-color-default-hover);
+}
+
+.overflowItem:focus-visible {
+  outline: var(--osdk-focus-outline);
+  outline-offset: var(--osdk-focus-visible-outline-offset);
+}
+
+.overflowItemSelected {
+  color: var(--osdk-intent-primary-rest);
+  font-weight: var(--osdk-typography-weight-bold);
+}
+
+.overflowItemDisabled {
+  color: var(--osdk-cbac-marking-button-color-disallowed);
+  cursor: not-allowed;
+  opacity: var(--osdk-cbac-disabled-opacity);
+}

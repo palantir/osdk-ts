@@ -16,7 +16,7 @@
 
 import { createClientWithTransaction } from "@osdk/client/unstable-do-not-use";
 
-import type { Client } from "@osdk/client";
+import type { Client, createClient } from "@osdk/client";
 import type {
   AddLinkApiNames,
   AddLinkSources,
@@ -43,12 +43,16 @@ import { writeableClientContext } from "./WriteableClient.js";
 export function createWriteableClient<
   X extends AnyEdit = never,
 >(
-  ...args: Parameters<typeof createClientWithTransaction>
+  transactionId: string,
+  ...args: Parameters<typeof createClient>
 ): WriteableClient<X> {
-  const transactionRid = args[0];
-  const ontologyRid = args[2];
+  const ontologyRid = args[1];
 
-  const client = createClientWithTransaction(...args);
+  const client = createClientWithTransaction(
+    transactionId,
+    async () => {},
+    ...args,
+  ) as Client;
 
   const editRequestManager = new EditRequestManager(
     client as WriteableClient<any>, // This cast is safe because we create the writeable client properties below.
@@ -59,7 +63,7 @@ export function createWriteableClient<
     client,
     {
       link: {
-        value: function<
+        value<
           SOL extends AddLinkSources<X>,
           A extends AddLinkApiNames<X, SOL>,
         >(
@@ -93,7 +97,7 @@ export function createWriteableClient<
         },
       },
       unlink: {
-        value: function<
+        value<
           SOL extends RemoveLinkSources<X>,
           A extends RemoveLinkApiNames<X, SOL>,
         >(
@@ -124,24 +128,24 @@ export function createWriteableClient<
         },
       },
       create: {
-        value: async function<OTD extends CreatableObjectOrInterfaceTypes<X>>(
+        async value<OTD extends CreatableObjectOrInterfaceTypes<X>>(
           obj: OTD,
           properties: CreatableObjectOrInterfaceTypeProperties<X, OTD>,
         ): Promise<void> {
           const propertyMap: { [propertyName: string]: unknown } = {};
           for (const [key, value] of Object.entries(properties)) {
+            if (key.startsWith("$")) continue;
             propertyMap[key] = toPropertyDataValue(value);
           }
           return editRequestManager.postEdit({
             type: "addObject",
             objectType: obj.apiName,
-            primaryKey: obj.$primaryKey,
             properties: propertyMap,
           });
         },
       },
       update: {
-        value: function<
+        value<
           SOL extends UpdatableObjectOrInterfaceLocators<X>,
           OTD extends UpdatableObjectOrInterfaceLocatorProperties<X, SOL>,
         >(
@@ -150,6 +154,7 @@ export function createWriteableClient<
         ): Promise<void> {
           const propertyMap: { [propertyName: string]: unknown } = {};
           for (const [key, value] of Object.entries(properties)) {
+            if (key.startsWith("$")) continue;
             propertyMap[key] = toPropertyDataValue(value);
           }
           return editRequestManager.postEdit({
@@ -161,7 +166,7 @@ export function createWriteableClient<
         },
       },
       delete: {
-        value: function<OL extends DeletableObjectOrInterfaceLocators<X>>(
+        value<OL extends DeletableObjectOrInterfaceLocators<X>>(
           obj: OL,
         ): Promise<void> {
           return editRequestManager.postEdit({
@@ -174,7 +179,8 @@ export function createWriteableClient<
       [writeableClientContext]: {
         value: {
           ontologyRid,
-          transactionRid,
+          transactionId,
+          editRequestManager,
         } satisfies WriteableClientContext,
       },
     } satisfies Record<

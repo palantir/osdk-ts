@@ -1,5 +1,281 @@
 # @osdk/api
 
+## 2.8.0
+
+### Minor Changes
+
+- 322c5bc: Simulated release
+- 4bb9769: Add primaryKeyApiName and primaryKeyType to object type const for runtime access
+- f294f5a: Remove literal support before GA.
+- 0df859a: Read primaryKeyApiName from object type const instead of options, move links into options, and add createMockAttachment helper
+- d284bf2: add media types, caching, and metadata query
+- 4ef6adc: Fix interface links off of objects
+- 60b5ffb: Add `platformApiName` field to actions to preserve the original API name used by the Foundry platform
+- 8c30908: Add support for lt and gt strings.
+- 4a856cb: add shape builder and inline config converter
+- b68cebd: add shape type definitions with opaque internal fields and shapes-internal export path
+- 35f2f1a: Add Media inputs/outputs for Queries
+- 61e33ab: Add support for interval queries
+
+## 2.8.0-beta.32
+
+## 2.8.0-beta.31
+
+## 2.8.0-beta.30
+
+### Minor Changes
+
+- 4ef6adc: Fix interface links off of objects
+
+## 2.8.0-beta.29
+
+### Minor Changes
+
+- 4a856cb: add shape builder and inline config converter
+
+## 2.8.0-beta.28
+
+### Minor Changes
+
+- f294f5a: Remove literal support before GA.
+- d284bf2: add media types, caching, and metadata query
+- b68cebd: add shape type definitions with opaque internal fields and shapes-internal export path
+
+## 2.8.0-beta.27
+
+## 2.8.0-beta.26
+
+### Minor Changes
+
+- 60b5ffb: Add `platformApiName` field to actions to preserve the original API name used by the Foundry platform
+- 61e33ab: Add support for interval queries
+
+## 2.8.0-beta.25
+
+### Minor Changes
+
+- 0df859a: Read primaryKeyApiName from object type const instead of options, move links into options, and add createMockAttachment helper
+
+## 2.8.0-beta.24
+
+## 2.8.0-beta.23
+
+### Minor Changes
+
+- 4bb9769: Add primaryKeyApiName and primaryKeyType to object type const for runtime access
+
+## 2.8.0-beta.22
+
+## 2.8.0-beta.21
+
+## 2.8.0-beta.20
+
+## 2.8.0-beta.19
+
+## 2.8.0-beta.18
+
+## 2.8.0-beta.17
+
+### Minor Changes
+
+- 8c30908: Add support for lt and gt strings.
+
+## 2.8.0-beta.16
+
+## 2.8.0-beta.15
+
+## 2.8.0-beta.14
+
+### Minor Changes
+
+- 35f2f1a: Add Media inputs/outputs for Queries
+
+## 2.8.0-beta.13
+
+## 2.8.0-beta.12
+
+## 2.8.0-beta.11
+
+## 2.8.0-beta.10
+
+## 2.8.0-beta.9
+
+## 2.8.0-beta.8
+
+## 2.8.0-beta.7
+
+## 2.8.0-beta.6
+
+## 2.8.0-beta.5
+
+## 2.8.0-beta.4
+
+## 2.8.0-beta.3
+
+## 2.8.0-beta.2
+
+## 2.7.0-beta.14
+
+## 2.7.0-beta.13
+
+### Minor Changes
+
+- fb83808: Allow arrays to use all subtype filters
+
+## 2.7.0-beta.12
+
+### Minor Changes
+
+- bb9d25c: Allow requesting rids for OSW updates
+
+## 2.7.0-beta.11
+
+### Minor Changes
+
+- d5cfc38: Add null option to actions to allow clearing data
+
+## 2.7.0-beta.10
+
+### Minor Changes
+
+- db44f6b: Add property security metadata to objects when requested
+- 24a1e29: Remove multiplicity tag from query param types
+
+## 2.7.0-beta.9
+
+## 2.7.0-beta.8
+
+## 2.7.0-beta.7
+
+## 2.7.0-beta.6
+
+### Minor Changes
+
+- c9ca08d: Add TS docs for in filter
+
+## 2.7.0-beta.5
+
+## 2.7.0-beta.4
+
+### Minor Changes
+
+- 1e3c147: Add experimental_asyncIterLinks method on object sets
+
+## 2.7.0-beta.3
+
+### Minor Changes
+
+- 448763f: introduce new token field, note readToken as deprecated
+
+## 2.7.0-beta.2
+
+## 2.6.0-beta.13
+
+### Minor Changes
+
+- 486ef7e: Deprecate multiplicity in query params/outputs
+- ea077c6: Change asType to narrowToType
+
+## 2.6.0-beta.12
+
+## 2.6.0-beta.11
+
+## 2.6.0-beta.10
+
+## 2.6.0-beta.9
+
+### Minor Changes
+
+- b307201: Add edits support for media reference.
+
+## 2.6.0-beta.8
+
+### Minor Changes
+
+- a1ffb20: Use new ephemeral media upload endpoint.
+- e62c692: Allow all applicable filters for struct sub properties to be applied on struct arrays
+
+## 2.6.0-beta.7
+
+## 2.6.0-beta.6
+
+### Minor Changes
+
+- b959085: Fix nested array query param type handling
+
+## 2.6.0-beta.5
+
+### Minor Changes
+
+- 2556c64: Fix asType types to accept any interface when casting from an interface with no implementing object types
+
+## 2.6.0-beta.4
+
+### Minor Changes
+
+- e7bf02a: Add RDP support to React toolkit
+
+## 2.6.0-beta.3
+
+## 2.6.0-beta.2
+
+### Minor Changes
+
+- 84e61fc: Add propertyValueFormatting type to property metadata
+- c4f8529: Add stub for getFormattedValue in experimental mode
+- f7ae38a: Allow exact matching for arrays of structs
+
+## 2.5.0-beta.15
+
+## 2.5.2
+
+## 2.5.1
+
+### Patch Changes
+
+- 099b4d8: Fix nested array query param type handling
+
+## 2.5.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- 7160276: Add order by relevance support to nearest neighbors
+- 7bdac45: Update Platform SDK dependency
+- 37eb75b: remove features not supported for RC
+- 7b97128: add useObjectSet hook
+- 76905f5: Remove undefined type from aggregation $group value
+- 20962bc: Add a new experimental fetchPageByRidNoType method
+- 052a96b: Add $link support.
+- ca1fabe: Fix experimental metadata types for objects
+- e48be06: Fix casting types with fully qualified property names.
+
+## 2.5.0-rc.15
+
+### Patch Changes
+
+- 37eb75b: remove features not supported for RC
+
+## 2.5.0-beta.14
+
+### Minor Changes
+
+- b7edfb5: Add support for object type casts
+
+## 2.5.0-beta.13
+
+## 2.5.0-beta.12
+
+## 2.5.0-beta.11
+
+### Minor Changes
+
+- 7b97128: add useObjectSet hook
+
+## 2.5.0-beta.10
+
+## 2.5.0-beta.9
+
 ## 2.5.0-beta.8
 
 ### Minor Changes

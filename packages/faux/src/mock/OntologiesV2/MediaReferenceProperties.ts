@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { MediaSets } from "@osdk/foundry.mediasets";
 import { MediaReferenceProperties } from "@osdk/foundry.ontologies";
 import type { CallFactory } from "../../handlers/util/handleOpenApiCall.js";
 import { handleOpenApiCall } from "../../handlers/util/handleOpenApiCall.js";
@@ -43,9 +44,9 @@ export const upload: CallFactory<
 );
 
 export const uploadMedia: CallFactory<
-  "ontologyApiName" | "actionTypeApiName",
-  typeof MediaReferenceProperties.uploadMedia
+  never,
+  typeof MediaSets.uploadMedia
 > = handleOpenApiCall(
-  MediaReferenceProperties.uploadMedia,
-  ["ontologyApiName", "actionTypeApiName"],
+  MediaSets.uploadMedia,
+  [],
 );

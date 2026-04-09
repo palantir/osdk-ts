@@ -30,7 +30,7 @@ import type {
   DataValue,
   SyncApplyActionResponseV2,
 } from "@osdk/foundry.ontologies";
-import * as OntologiesV2 from "@osdk/foundry.ontologies";
+import * as Actions from "@osdk/foundry.ontologies/Action";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { addUserAgentAndRequestContextHeaders } from "../util/addUserAgentAndRequestContextHeaders.js";
 import { augmentRequestContext } from "../util/augmentRequestContext.js";
@@ -129,16 +129,18 @@ export async function applyAction<
     action,
   );
   if (Array.isArray(parameters)) {
-    const response = await OntologiesV2.Actions.applyBatch(
+    const response = await Actions.applyBatch(
       clientWithHeaders,
       await client.ontologyRid,
-      action.apiName,
+      action.unsanitizedApiName ?? action.apiName,
       {
         requests: parameters
           ? await remapBatchActionParams(
             parameters,
             client,
-            await client.ontologyProvider.getActionDefinition(action.apiName),
+            await client.ontologyProvider.getActionDefinition(
+              action.unsanitizedApiName ?? action.apiName,
+            ),
           )
           : [],
         options: {
@@ -153,17 +155,19 @@ export async function applyAction<
       ? edits?.type === "edits" ? remapActionResponse(response) : edits
       : undefined) as ActionReturnTypeForOptions<Op>;
   } else {
-    const response = await OntologiesV2.Actions.apply(
+    const response = await Actions.apply(
       clientWithHeaders,
       await client.ontologyRid,
-      action.apiName,
+      action.unsanitizedApiName ?? action.apiName,
       {
         parameters: await remapActionParams(
           parameters as OsdkActionParameters<
             CompileTimeActionMetadata<AD>["parameters"]
           >,
           client,
-          await client.ontologyProvider.getActionDefinition(action.apiName),
+          await client.ontologyProvider.getActionDefinition(
+            action.unsanitizedApiName ?? action.apiName,
+          ),
         ),
         options: {
           mode: (options as ApplyActionOptions)?.$validateOnly
@@ -175,7 +179,7 @@ export async function applyAction<
             : "NONE",
         },
       },
-      { branch: client.branch },
+      { branch: client.branch, transactionId: client.transactionId },
     );
 
     if ((options as ApplyActionOptions)?.$validateOnly) {

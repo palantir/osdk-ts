@@ -26,15 +26,18 @@ import {
   addOneQueryTypeOlderVersion,
   queryTypeAcceptsInterfaceObjectSet,
   queryTypeAcceptsInterfaces,
+  queryTypeAcceptsMediaReference,
   queryTypeAcceptsObjects,
   queryTypeAcceptsObjectSets,
   queryTypeAcceptsThreeDimensionalAggregation,
   queryTypeAcceptsTwoDimensionalAggregation,
   queryTypeOutputsInterfaceObjectSet,
   queryTypeReturnsArray,
+  queryTypeReturnsArrayOfObjects,
   queryTypeReturnsComplexStruct,
   queryTypeReturnsDate,
   queryTypeReturnsMap,
+  queryTypeReturnsMediaReference,
   queryTypeReturnsObject,
   queryTypeReturnsStruct,
   queryTypeReturnsTimestamp,
@@ -85,6 +88,25 @@ export const queryTypeReturnsStructResponse: ExecuteQueryResponse = {
     age: 43,
   },
 };
+
+export const queryTypeReturnsStructRequestReturnNull: ExecuteQueryRequest = {
+  parameters: {
+    person: {
+      firstName: "Joe",
+      lastName: "Joseph",
+      age: 54,
+    },
+  },
+};
+
+export const queryTypeReturnsStructRequestReturnNullResponse:
+  ExecuteQueryResponse = {
+    value: {
+      firstName: "Joe",
+      lastName: "Joseph",
+      age: null,
+    },
+  };
 
 export const queryTypeReturnsComplexStructRequest: ExecuteQueryRequest = {
   parameters: {
@@ -328,9 +350,42 @@ export const queryTypeReturnsMapResponse: ExecuteQueryResponse = {
   value: [{ key: "50030", value: "bye" }],
 };
 
+export const queryTypeReturnsArrayOfObjectsResponse: ExecuteQueryResponse = {
+  value: [
+    employee1.__primaryKey,
+  ],
+};
+
 export const emptyBody: string = JSON.stringify({
   parameters: {},
 });
+
+export const testMediaReference = {
+  mimeType: "image/png",
+  reference: {
+    type: "mediaSetViewItem" as const,
+    mediaSetViewItem: {
+      mediaItemRid: "ri.mio.main.media-item.test-item-rid",
+      mediaSetRid: "ri.mio.main.media-set.test-set-rid",
+      mediaSetViewRid: "ri.mio.main.media-set-view.test-view-rid",
+      token: "test-token",
+    },
+  },
+};
+
+export const queryTypeReturnsMediaReferenceResponse: ExecuteQueryResponse = {
+  value: testMediaReference,
+};
+
+export const queryTypeAcceptsMediaReferenceRequest: ExecuteQueryRequest = {
+  parameters: {
+    media: testMediaReference,
+  },
+};
+
+export const queryTypeAcceptsMediaReferenceResponse: ExecuteQueryResponse = {
+  value: testMediaReference,
+};
 
 const queryRequestHandlers: {
   [queryApiName: string]: {
@@ -353,6 +408,8 @@ const queryRequestHandlers: {
     [queryTypeReturnsStruct.version]: {
       [JSON.stringify(queryTypeReturnsStructRequest)]:
         queryTypeReturnsStructResponse,
+      [JSON.stringify(queryTypeReturnsStructRequestReturnNull)]:
+        queryTypeReturnsStructRequestReturnNullResponse,
     },
   },
   [queryTypeReturnsComplexStruct.apiName]: {
@@ -422,6 +479,12 @@ const queryRequestHandlers: {
         queryTypeReturnsArrayResponse,
     },
   },
+  [queryTypeReturnsArrayOfObjects.apiName]: {
+    [queryTypeReturnsArrayOfObjects.version]: {
+      [JSON.stringify(queryTypeReturnsArrayRequest)]:
+        queryTypeReturnsArrayOfObjectsResponse,
+    },
+  },
   [queryTypeReturnsMap.apiName]: {
     [queryTypeReturnsMap.version]: {
       [JSON.stringify(queryTypeReturnsMapRequest)]: queryTypeReturnsMapResponse,
@@ -437,6 +500,17 @@ const queryRequestHandlers: {
     [queryTypeOutputsInterfaceObjectSet.version]: {
       [JSON.stringify(queryTypeOutputsInterfaceObjectSetRequest)]:
         queryTypeOutputsInterfaceObjectSetResponse,
+    },
+  },
+  [queryTypeReturnsMediaReference.apiName]: {
+    [queryTypeReturnsMediaReference.version]: {
+      [emptyBody]: queryTypeReturnsMediaReferenceResponse,
+    },
+  },
+  [queryTypeAcceptsMediaReference.apiName]: {
+    [queryTypeAcceptsMediaReference.version]: {
+      [JSON.stringify(queryTypeAcceptsMediaReferenceRequest)]:
+        queryTypeAcceptsMediaReferenceResponse,
     },
   },
 };
@@ -461,6 +535,9 @@ export function registerLazyQueries(fauxOntology: FauxOntology): void {
     queryTypeAcceptsInterfaces,
     queryTypeAcceptsInterfaceObjectSet,
     queryTypeOutputsInterfaceObjectSet,
+    queryTypeReturnsArrayOfObjects,
+    queryTypeReturnsMediaReference,
+    queryTypeAcceptsMediaReference,
   ];
 
   for (const queryType of Object.values(queryTypes)) {

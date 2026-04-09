@@ -15,43 +15,50 @@
  */
 
 import type {
+  OntologyIrBaseFormatter,
   OntologyIrValueTypeReferenceWithMetadata,
   SharedPropertyTypeGothamMapping,
   Visibility,
 } from "@osdk/client.unstable";
 import invariant from "tiny-invariant";
+import { cloneDefinition } from "./cloneDefinition.js";
+import { OntologyEntityTypeEnum } from "./common/OntologyEntityTypeEnum.js";
 import {
   namespace,
   ontologyDefinition,
   updateOntology,
 } from "./defineOntology.js";
+import type { Nullability } from "./properties/Nullability.js";
+import { type PropertyTypeType } from "./properties/PropertyTypeType.js";
+import type { ReducerType } from "./properties/ReducerType.js";
+import { type SharedPropertyType } from "./properties/SharedPropertyType.js";
 import {
   defaultTypeClasses,
   getPropertyTypeName,
   hasRenderHints,
   shouldNotHaveRenderHints,
 } from "./propertyConversionUtils.js";
-import {
-  OntologyEntityTypeEnum,
-  type PropertyTypeType,
-  type SharedPropertyType,
-} from "./types.js";
 
 export interface SharedPropertyTypeDefinition {
   apiName: string;
   type: PropertyTypeType;
   array?: boolean;
+  reducers?: Array<ReducerType>;
   description?: string;
   displayName?: string;
   valueType?: OntologyIrValueTypeReferenceWithMetadata;
   visibility?: Visibility;
+  nullability?: Nullability;
   typeClasses?: SharedPropertyType["typeClasses"];
+  aliases?: Array<string>;
   gothamMapping?: SharedPropertyTypeGothamMapping;
+  baseFormatter?: OntologyIrBaseFormatter;
 }
 
 export function defineSharedPropertyType(
-  sptDef: SharedPropertyTypeDefinition,
+  sptDefInput: SharedPropertyTypeDefinition,
 ): SharedPropertyType {
+  const sptDef = cloneDefinition(sptDefInput);
   const apiName = namespace + sptDef.apiName;
   invariant(
     ontologyDefinition[OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE][apiName]

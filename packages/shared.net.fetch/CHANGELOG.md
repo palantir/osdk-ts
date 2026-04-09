@@ -1,5 +1,46 @@
 # @osdk/shared.net.fetch
 
+## 1.8.0
+
+### Minor Changes
+
+- 322c5bc: Simulated release
+- 4a79eb1: Support QoS-Retry-Hint response header
+- 35f2f1a: Add Media inputs/outputs for Queries
+
+### Patch Changes
+
+- Updated dependencies [322c5bc]
+- Updated dependencies [35f2f1a]
+  - @osdk/shared.net.errors@2.8.0
+
+## 1.8.0-beta.3
+
+### Minor Changes
+
+- 4a79eb1: Support QoS-Retry-Hint response header
+
+## 1.8.0-beta.2
+
+### Minor Changes
+
+- 35f2f1a: Add Media inputs/outputs for Queries
+
+### Patch Changes
+
+- Updated dependencies [35f2f1a]
+  - @osdk/shared.net.errors@2.8.0-beta.2
+
+## 1.5.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- badfbc4: Add errorDescription to PalantirApiError
+- Updated dependencies [322c5bc]
+- Updated dependencies [badfbc4]
+  - @osdk/shared.net.errors@2.5.0
+
 ## 1.5.0-beta.2
 
 ### Minor Changes

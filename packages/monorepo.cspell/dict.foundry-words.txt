@@ -11,7 +11,15 @@ ilts
 interfacelink
 jemma
 JEMMA
+mediaitem
 mediaReference
 mediasets
+mediasetview
+objectset
 Rdps
 writeback
+restrictedview
+typeclasses
+structfield
+blockset
+manifest

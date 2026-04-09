@@ -1,0 +1,23 @@
+/* Dialog Styling */
+:root {
+  --osdk-dialog-padding: calc(var(--osdk-surface-spacing) * 2)
+    calc(var(--osdk-surface-spacing) * 4);
+  --osdk-dialog-backdrop-bg: var(--osdk-background-backdrop);
+
+  /* Header */
+  --osdk-dialog-header-padding: var(--osdk-dialog-padding);
+  --osdk-dialog-title-font-size: var(--osdk-typography-size-body-medium);
+  --osdk-dialog-title-font-weight: var(--osdk-typography-weight-bold);
+
+  /* Body */
+  --osdk-dialog-bg: var(--osdk-background-primary);
+  --osdk-dialog-shadow: var(--osdk-surface-shadow-2);
+  --osdk-dialog-min-width: 500px;
+  --osdk-dialog-min-height: 300px;
+  --osdk-dialog-max-width: 1000px;
+  --osdk-dialog-max-height: 600px;
+  --osdk-dialog-body-padding: var(--osdk-dialog-padding);
+
+  /* Footer */
+  --osdk-dialog-footer-padding: var(--osdk-dialog-padding);
+}

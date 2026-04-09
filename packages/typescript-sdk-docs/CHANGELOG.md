@@ -1,5 +1,105 @@
 # @osdk/typescript-sdk-docs
 
+## 0.7.0
+
+### Minor Changes
+
+- 776ae8a: Simulated release
+- beba0cd: Simplify actionParameter docs generation code
+- 8561a8b: Render custom type fields in function doc snippets instead of empty `{}`
+- c4d7052: Fix OSDK docs showing invalid { \_\_primaryKey } format for object action parameters
+- 35f2f1a: Add Media inputs/outputs for Queries
+
+## 0.7.0-beta.4
+
+### Minor Changes
+
+- 8561a8b: Render custom type fields in function doc snippets instead of empty `{}`
+
+## 0.7.0-beta.3
+
+### Minor Changes
+
+- beba0cd: Simplify actionParameter docs generation code
+- c4d7052: Fix OSDK docs showing invalid { \_\_primaryKey } format for object action parameters
+
+## 0.7.0-beta.2
+
+### Minor Changes
+
+- 35f2f1a: Add Media inputs/outputs for Queries
+
+## 0.6.0-beta.5
+
+### Minor Changes
+
+- 7572644: Bump @osdk/docs-spec-core to 0.6.0
+
+## 0.6.0-beta.4
+
+### Minor Changes
+
+- 3bfde5a: Add rendering support for objectSet action parameters
+
+## 0.6.0-beta.3
+
+### Minor Changes
+
+- 579e518: Move new Media upload docs from 2.6 to 2.1
+
+## 0.6.0-beta.2
+
+### Minor Changes
+
+- 03db734: Move platform SDK deps to pnpm catalog
+
+## 0.5.0-beta.5
+
+### Minor Changes
+
+- 823c756: Update object parameter format in TypeScript SDK documentation to directly provide the primary key as a string
+- 0e863aa: Tweak media upload snippet
+
+## 0.5.0-beta.4
+
+### Minor Changes
+
+- dd8c385: Update upload media ontology edits docs
+
+## 0.5.0-beta.3
+
+### Minor Changes
+
+- a035fdc: Add draft of media upload docs
+
+## 0.5.0-beta.2
+
+### Minor Changes
+
+- 7cac2f8: Upgrade to latest spec and fix attachment template"
+
+## 0.4.0-beta.6
+
+### Minor Changes
+
+- 81af4c8: A set of compiled examples based on the documentation YAML
+
+## 0.4.0
+
+### Patch Changes
+
+- 776ae8a: Simulated release
+- e9239a1: Add pivot docs.
+- f38abb0: Nearest neighbor docs
+- 2bb698d: Fix knn doc snippet
+- 1796b98: Update load all objects snippet
+
+## 0.4.0-beta.5
+
+### Minor Changes
+
+- 1796b98: Update load all objects snippet
+
 ## 0.4.0-beta.4
 
 ### Minor Changes

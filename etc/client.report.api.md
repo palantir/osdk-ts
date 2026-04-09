@@ -17,6 +17,7 @@ import type { AttachmentUpload } from '@osdk/api';
 import { CompileTimeMetadata } from '@osdk/api';
 import type { DataValueClientToWire } from '@osdk/api';
 import type { DataValueWireToClient } from '@osdk/api';
+import { DerivedProperty } from '@osdk/api';
 import type { Experiment } from '@osdk/api/unstable';
 import type { ExperimentFns } from '@osdk/api/unstable';
 import { InterfaceDefinition } from '@osdk/api';
@@ -24,9 +25,11 @@ import { InterfaceMetadata } from '@osdk/api';
 import type { InterfaceQueryDataType } from '@osdk/api';
 import { isOk } from '@osdk/api';
 import { Logger } from '@osdk/api';
+import { MediaReference } from '@osdk/api';
+import { MediaUpload } from '@osdk/api';
 import type { MinimalObjectSet } from '@osdk/api/unstable';
-import { NULL_VALUE } from '@osdk/api';
 import { ObjectMetadata } from '@osdk/api';
+import type { ObjectOrInterfaceDefinition } from '@osdk/api';
 import type { ObjectQueryDataType } from '@osdk/api';
 import { ObjectSet } from '@osdk/api';
 import type { ObjectSetQueryDataType } from '@osdk/api';
@@ -58,6 +61,7 @@ import { TwoDimensionalAggregation } from '@osdk/api';
 import type { ValidateActionResponseV2 } from '@osdk/foundry.ontologies';
 import { VersionBound } from '@osdk/api';
 import { WhereClause } from '@osdk/api';
+import { ObjectSet as WireObjectSet } from '@osdk/foundry.ontologies';
 
 export { ActionDefinition }
 
@@ -114,7 +118,8 @@ export function createAttachmentUpload(data: Blob, name: string): AttachmentUplo
 // @public (undocumented)
 export const createClient: (baseUrl: string, ontologyRid: string | Promise<string>, tokenProvider: () => Promise<string>, options?: {
     	logger?: Logger
-    	branch?: string
+    	UNSTABLE_DO_NOT_USE_BRANCH?: string
+    	headers?: Record<string, string>
 } | undefined, fetchFn?: typeof fetch | undefined) => Client;
 
 // @public
@@ -127,6 +132,8 @@ export function createObjectSpecifierFromPrimaryKey<Q extends ObjectTypeDefiniti
 //
 // @public
 export function createPlatformClient(baseUrl: string, tokenProvider: () => Promise<string>, options?: undefined, fetchFn?: typeof globalThis.fetch): PlatformClient;
+
+export { DerivedProperty }
 
 // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 //
@@ -143,15 +150,28 @@ export const extractDateInLocalTime: (date: Date) => string;
 // @public
 export const extractDateInUTC: (date: Date) => string;
 
+// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+//
+// @public
+export function extractPrimaryKeyFromObjectSpecifier(ObjectSpecifier: ObjectSpecifier<any>): string;
+
+// @public (undocumented)
+export function getWireObjectSet(objectSet: ObjectSet<any> | MinimalObjectSet<any>): WireObjectSet;
+
 export { InterfaceDefinition }
 
 export { InterfaceMetadata }
+
+// @public (undocumented)
+export function isObjectSet(o: object): o is ObjectSet<ObjectOrInterfaceDefinition>;
 
 export { isOk }
 
 export { Logger }
 
-export { NULL_VALUE }
+export { MediaReference }
+
+export { MediaUpload }
 
 export { ObjectMetadata }
 
@@ -211,6 +231,8 @@ export { TwoDimensionalAggregation }
 export { VersionBound }
 
 export { WhereClause }
+
+export { WireObjectSet }
 
 // (No @packageDocumentation comment for this package)
 

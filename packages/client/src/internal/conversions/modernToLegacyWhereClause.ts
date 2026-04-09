@@ -15,150 +15,169 @@
  */
 
 import type {
-  GeoFilterOptions,
+  AndWhereClause,
+  NotWhereClause,
   ObjectOrInterfaceDefinition,
+  OrWhereClause,
   PossibleWhereClauseFilters,
+  SimplePropertyDef,
   WhereClause,
 } from "@osdk/api";
-import { DistanceUnitMapping } from "@osdk/api";
 
 import type {
   PropertyIdentifier,
   SearchJsonQueryV2,
 } from "@osdk/foundry.ontologies";
-import type { BBox, Position } from "geojson";
 import invariant from "tiny-invariant";
+import { fullyQualifyPropName } from "./fullyQualifyPropName.js";
+import { makeGeoFilterIntersects } from "./makeGeoFilterIntersects.js";
+import { makeGeoFilterWithin } from "./makeGeoFilterWithin.js";
+import { toIntervalQueryRule } from "./toIntervalQuery.js";
 
-export function extractNamespace(
-  fqApiName: string,
-): [string | undefined, string] {
-  const last = fqApiName.lastIndexOf(".");
-  if (last === -1) return [undefined, fqApiName];
-  return [fqApiName.slice(0, last), fqApiName.slice(last + 1)];
+type DropDollarSign<T extends `$${string}`> = T extends `$${infer U}` ? U
+  : never;
+
+function isAndClause<
+  T extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = {},
+>(
+  whereClause: WhereClause<T, RDPs>,
+): whereClause is AndWhereClause<T, RDPs> {
+  return "$and" in whereClause && whereClause.$and !== undefined;
+}
+
+function isOrClause<
+  T extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = {},
+>(
+  whereClause: WhereClause<T, RDPs>,
+): whereClause is OrWhereClause<T, RDPs> {
+  return "$or" in whereClause && whereClause.$or !== undefined;
+}
+
+function isNotClause<
+  T extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = {},
+>(
+  whereClause: WhereClause<T, RDPs>,
+): whereClause is NotWhereClause<T, RDPs> {
+  return "$not" in whereClause && whereClause.$not !== undefined;
 }
 
 /** @internal */
 export function modernToLegacyWhereClause<
   T extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = {},
 >(
-  whereClause: WhereClause<T>,
+  whereClause: WhereClause<T, RDPs>,
   objectOrInterface: T,
+  rdpNames?: Set<string>,
 ): SearchJsonQueryV2 {
-  if ("$and" in whereClause) {
-    return {
-      type: "and",
-      value: (whereClause.$and as WhereClause<T>[]).map(
-        (clause) => modernToLegacyWhereClause(clause, objectOrInterface),
-      ),
-    };
-  } else if ("$or" in whereClause) {
-    return {
-      type: "or",
-      value: (whereClause.$or as WhereClause<T>[]).map(
-        (clause) => modernToLegacyWhereClause(clause, objectOrInterface),
-      ),
-    };
-  } else if ("$not" in whereClause) {
-    return {
-      type: "not",
-      value: modernToLegacyWhereClause(
-        whereClause.$not as WhereClause<T>,
-        objectOrInterface,
-      ),
-    };
-  }
-
-  const parts = Object.entries(whereClause);
-
+  const parts = Object.entries(whereClause).map(([key, value]) => ({
+    [key]: value,
+  })) as WhereClause<T, RDPs>[];
   if (parts.length === 1) {
-    return handleWherePair(parts[0], objectOrInterface);
+    return modernToLegacyWhereClauseInner(
+      whereClause,
+      objectOrInterface,
+      rdpNames,
+    );
   }
-
   return {
     type: "and",
     value: parts.map<SearchJsonQueryV2>(
-      v => handleWherePair(v, objectOrInterface),
+      v => modernToLegacyWhereClauseInner(v, objectOrInterface, rdpNames),
     ),
   };
 }
 
-function makeGeoFilterBbox(
-  bbox: BBox,
-  filterType: "$within" | "$intersects",
-  propertyIdentifier?: PropertyIdentifier,
-  field?: string,
+/** @internal */
+export function modernToLegacyWhereClauseInner<
+  T extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = {},
+>(
+  whereClause: WhereClause<T, RDPs>,
+  objectOrInterface: T,
+  rdpNames?: Set<string>,
 ): SearchJsonQueryV2 {
-  return {
-    type: filterType === "$within"
-      ? "withinBoundingBox"
-      : "intersectsBoundingBox",
-    /**
-     * This is a bit ugly, but did this so that propertyIdentifier only shows up in the return object if its defined,
-     * this makes it so we don't need to go update our entire test bed either to include a field which may change in near future.
-     * Once we solidify that this is the way forward, I can remove field and clean this up
-     */
-    ...(propertyIdentifier != null && { propertyIdentifier }),
-    field,
-    value: {
-      topLeft: {
-        type: "Point",
-        coordinates: [bbox[0], bbox[3]],
-      },
-      bottomRight: {
-        type: "Point",
-        coordinates: [bbox[2], bbox[1]],
-      },
-    },
-  };
-}
+  const parts = Object.entries(whereClause);
 
-function makeGeoFilterPolygon(
-  coordinates: Position[][],
-  filterType: "intersectsPolygon" | "withinPolygon",
-  propertyIdentifier?: PropertyIdentifier,
-  field?: string,
-): SearchJsonQueryV2 {
-  return {
-    type: filterType,
-    ...(propertyIdentifier != null && { propertyIdentifier }),
-    field,
-    value: {
-      type: "Polygon",
-      coordinates,
-    },
-  };
+  invariant(parts.length === 1, "Invalid where clause provided.");
+
+  if (isAndClause(whereClause)) {
+    return {
+      type: "and",
+      value: (whereClause.$and as WhereClause<T, RDPs>[]).map(
+        (clause) =>
+          modernToLegacyWhereClause(clause, objectOrInterface, rdpNames),
+      ),
+    };
+  } else if (isOrClause(whereClause)) {
+    return {
+      type: "or",
+      value: (whereClause.$or as WhereClause<T, RDPs>[]).map(
+        (clause) =>
+          modernToLegacyWhereClause(clause, objectOrInterface, rdpNames),
+      ),
+    };
+  } else if (isNotClause(whereClause)) {
+    return {
+      type: "not",
+      value: modernToLegacyWhereClause(
+        whereClause.$not as WhereClause<T, RDPs>,
+        objectOrInterface,
+        rdpNames,
+      ),
+    };
+  }
+
+  return handleWherePair(parts[0], objectOrInterface, undefined, rdpNames);
 }
 
 function handleWherePair(
   [fieldName, filter]: [string, any],
   objectOrInterface: ObjectOrInterfaceDefinition,
   structFieldSelector?: { propertyApiName: string; structFieldApiName: string },
+  rdpNames?: Set<string>,
 ): SearchJsonQueryV2 {
   invariant(
     filter != null,
-    "Defined key values are only allowed when they are not undefined.",
+    `Cannot filter on property "${fieldName}" with an undefined or null value. `
+      + `If the value might be undefined, check it before adding to the where clause.`,
   );
 
-  const propertyIdentifier: PropertyIdentifier | undefined =
-    structFieldSelector != null
-      ? {
-        type: "structField",
-        ...structFieldSelector,
-        propertyApiName: fullyQualifyPropName(
-          structFieldSelector.propertyApiName,
-          objectOrInterface,
-        ),
-      }
-      : undefined;
-  const field = structFieldSelector == null
+  const isRdp = !structFieldSelector && rdpNames?.has(fieldName);
+
+  const propertyIdentifier: PropertyIdentifier | undefined = isRdp
+    ? {
+      type: "property",
+      apiName: fieldName,
+    }
+    : structFieldSelector != null
+    ? {
+      type: "structField",
+      ...structFieldSelector,
+      propertyApiName: fullyQualifyPropName(
+        structFieldSelector.propertyApiName,
+        objectOrInterface,
+      ),
+    }
+    : undefined;
+
+  const field = !isRdp && structFieldSelector == null
     ? fullyQualifyPropName(fieldName, objectOrInterface)
     : undefined;
+
+  invariant(
+    field == null
+      || propertyIdentifier == null && (field != null || isRdp != null),
+    "Encountered error constructing where clause: field and propertyIdentifier cannot both be defined",
+  );
 
   if (
     typeof filter === "string" || typeof filter === "number"
     || typeof filter === "boolean"
   ) {
-    propertyIdentifier;
     return {
       type: "eq",
       ...(propertyIdentifier != null
@@ -179,6 +198,7 @@ function handleWherePair(
     "A WhereClause Filter with multiple clauses/fields is not allowed. Instead, use an 'or'/'and' clause to combine multiple filters.",
   );
 
+  // Struct
   if (!hasDollarSign) {
     const structFilter = Object.entries(filter);
     invariant(
@@ -189,11 +209,39 @@ function handleWherePair(
     return handleWherePair(Object.entries(filter)[0], objectOrInterface, {
       propertyApiName: fieldName,
       structFieldApiName,
-    });
+    }, rdpNames);
   }
 
   const firstKey = keysOfFilter[0] as PossibleWhereClauseFilters;
   invariant(filter[firstKey] != null);
+
+  if (firstKey === "$contains" && filter[firstKey] instanceof Object) {
+    const containsValue = filter[firstKey];
+    const containsKeys = Object.keys(containsValue);
+
+    const isFilterObject = containsKeys.some(key => key.startsWith("$"));
+
+    if (isFilterObject) {
+      return handleWherePair(
+        [fieldName, containsValue],
+        objectOrInterface,
+        structFieldSelector,
+        rdpNames,
+      );
+    } else {
+      const structFilter: [string, any][] = Object.entries(containsValue);
+      invariant(
+        structFilter.length === 1,
+        "Cannot filter on more than one struct field in the same clause, need to use an and clause",
+      );
+      const structFieldApiName = structFilter[0][0];
+
+      return handleWherePair(structFilter[0], objectOrInterface, {
+        propertyApiName: fieldName,
+        structFieldApiName,
+      });
+    }
+  }
 
   if (firstKey === "$ne") {
     return {
@@ -208,78 +256,10 @@ function handleWherePair(
   }
 
   if (firstKey === "$within") {
-    const withinBody = filter[firstKey] as GeoFilterOptions["$within"];
-
-    if (Array.isArray(withinBody)) {
-      return makeGeoFilterBbox(withinBody, firstKey, propertyIdentifier, field);
-    } else if ("$bbox" in withinBody && withinBody.$bbox != null) {
-      return makeGeoFilterBbox(
-        withinBody.$bbox,
-        firstKey,
-        propertyIdentifier,
-        field,
-      );
-    } else if (
-      ("$distance" in withinBody && "$of" in withinBody)
-      && withinBody.$distance != null
-      && withinBody.$of != null
-    ) {
-      return {
-        type: "withinDistanceOf",
-        ...(propertyIdentifier != null && { propertyIdentifier }),
-        field,
-        value: {
-          center: Array.isArray(withinBody.$of)
-            ? {
-              type: "Point",
-              coordinates: withinBody.$of,
-            }
-            : withinBody.$of,
-          distance: {
-            value: withinBody.$distance[0],
-            unit: DistanceUnitMapping[withinBody.$distance[1]],
-          },
-        },
-      };
-    } else {
-      const coordinates = ("$polygon" in withinBody)
-        ? withinBody.$polygon
-        : withinBody.coordinates;
-      return makeGeoFilterPolygon(
-        coordinates,
-        "withinPolygon",
-        propertyIdentifier,
-        fieldName,
-      );
-    }
+    return makeGeoFilterWithin(filter[firstKey], propertyIdentifier, field);
   }
   if (firstKey === "$intersects") {
-    const intersectsBody = filter[firstKey] as GeoFilterOptions["$intersects"];
-    if (Array.isArray(intersectsBody)) {
-      return makeGeoFilterBbox(
-        intersectsBody,
-        firstKey,
-        propertyIdentifier,
-        field,
-      );
-    } else if ("$bbox" in intersectsBody && intersectsBody.$bbox != null) {
-      return makeGeoFilterBbox(
-        intersectsBody.$bbox,
-        firstKey,
-        propertyIdentifier,
-        field,
-      );
-    } else {
-      const coordinates = ("$polygon" in intersectsBody)
-        ? intersectsBody.$polygon
-        : intersectsBody.coordinates;
-      return makeGeoFilterPolygon(
-        coordinates,
-        "intersectsPolygon",
-        propertyIdentifier,
-        field,
-      );
-    }
+    return makeGeoFilterIntersects(filter[firstKey], propertyIdentifier, field);
   }
 
   if (firstKey === "$containsAllTerms" || firstKey === "$containsAnyTerm") {
@@ -289,10 +269,19 @@ function handleWherePair(
       field,
       value: typeof filter[firstKey] === "string"
         ? filter[firstKey]
-        : filter[firstKey]["term"],
+        : filter[firstKey].term,
       fuzzy: typeof filter[firstKey] === "string"
         ? false
-        : filter[firstKey]["fuzzySearch"] ?? false,
+        : filter[firstKey].fuzzySearch ?? false,
+    };
+  }
+
+  if (firstKey === "$interval") {
+    return {
+      type: "interval",
+      ...(propertyIdentifier != null && { propertyIdentifier }),
+      field,
+      rule: toIntervalQueryRule(filter[firstKey]),
     };
   }
 
@@ -302,21 +291,4 @@ function handleWherePair(
     field,
     value: filter[firstKey] as any,
   };
-}
-
-type DropDollarSign<T extends `$${string}`> = T extends `$${infer U}` ? U
-  : never;
-
-function fullyQualifyPropName(
-  fieldName: string,
-  objectOrInterface: ObjectOrInterfaceDefinition,
-) {
-  if (objectOrInterface.type === "interface") {
-    const [objApiNamespace] = extractNamespace(objectOrInterface.apiName);
-    const [fieldApiNamespace, fieldShortName] = extractNamespace(fieldName);
-    return (fieldApiNamespace == null && objApiNamespace != null)
-      ? `${objApiNamespace}.${fieldShortName}`
-      : fieldName;
-  }
-  return fieldName;
 }

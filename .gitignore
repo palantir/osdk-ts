@@ -6,6 +6,7 @@ node_modules/
 
 # Misc
 .DS_Store
+.env
 .env.local
 .env.development.local
 .env.test.local
@@ -32,7 +33,6 @@ packages/e2e.test.foundry-sdk-generator/src/generatedNoCheck
 
 .log
 pnpm-publish-summary.json
-.npmrc
 
 api-docs/
 temp/
@@ -43,3 +43,16 @@ vitest.config.mts.timestamp-*
 vitest.workspace.ts
 
 .memory/
+
+# IDE
+.idea/
+.project
+.settings
+.classpath
+*.iml
+*.ipr
+*.iws
+
+# Files with local extensions (dot-prefix only, to avoid matching package dirs like e2e.generated.api-namespace.local)
+.*.local
+.*.local.*

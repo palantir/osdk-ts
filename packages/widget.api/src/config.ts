@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import type { ParameterValue } from "./parameters.js";
+import type {
+  AllowedObjectSetParameterType,
+  ParameterValue,
+} from "./parameters.js";
+import type { BrowserPermission } from "./permissions.js";
 import type { AsyncValue } from "./utils/asyncValue.js";
 
 interface PrimitiveParameterDefinition<T extends ParameterValue.PrimitiveType> {
@@ -26,9 +30,34 @@ interface ArrayParameterDefinition<S extends ParameterValue.PrimitiveType> {
   displayName: string;
   subType: S;
 }
+interface ObjectSetParameterDefinition<
+  T extends AllowedObjectSetParameterType,
+> {
+  type: "objectSet";
+  displayName: string;
+  allowedType: T;
+  /** @deprecated Use allowedType instead */
+  objectType?: "\"objectType\" is deprecated, use \"allowedType\" instead";
+}
 export type ParameterDefinition =
   | PrimitiveParameterDefinition<ParameterValue.PrimitiveType>
-  | ArrayParameterDefinition<ParameterValue.PrimitiveType>;
+  | ArrayParameterDefinition<ParameterValue.PrimitiveType>
+  | ObjectSetParameterDefinition<AllowedObjectSetParameterType>;
+
+interface ManifestObjectSetParameterDefinition<
+  T extends AllowedObjectSetParameterType,
+> {
+  type: ObjectSetParameterDefinition<T>["type"];
+  displayName: string;
+  /** @deprecated Eventually stop writing this once the backend stops accepting it */
+  objectTypeRids: [string] | [];
+  allowedType: string;
+}
+
+export type ManifestParameterDefinition =
+  | PrimitiveParameterDefinition<ParameterValue.PrimitiveType>
+  | ArrayParameterDefinition<ParameterValue.PrimitiveType>
+  | ManifestObjectSetParameterDefinition<AllowedObjectSetParameterType>;
 
 export interface EventDefinition<P extends ParameterConfig> {
   displayName: string;
@@ -45,6 +74,8 @@ export interface WidgetConfig<P extends ParameterConfig> {
   type: "workshop";
   parameters: ParameterConfig;
   events: { [eventId: string]: EventDefinition<NoInfer<P>> };
+  permissions?: BrowserPermission[];
+  refreshHostDataOnAction?: boolean;
 }
 
 /**
@@ -71,6 +102,12 @@ export type AsyncParameterValueMap<C extends WidgetConfig<C["parameters"]>> = {
         value: AsyncValue<P>;
       }
     : never
+    : C["parameters"][K] extends ObjectSetParameterDefinition<infer T>
+      ? ParameterValue.ObjectSet<T>["value"] extends AsyncValue<infer P> ? {
+          type: "objectSet";
+          value: AsyncValue<P>;
+        }
+      : never
     : Extract<
       ParameterValue,
       { type: C["parameters"][K]["type"] }
@@ -94,6 +131,9 @@ export type ParameterValueMap<C extends WidgetConfig<C["parameters"]>> = {
       { type: C["parameters"][K]["type"]; subType: S }
     >["value"] extends AsyncValue<infer P> ? P
     : never
+    : C["parameters"][K] extends ObjectSetParameterDefinition<infer T>
+      ? ParameterValue.ObjectSet<T>["value"] extends AsyncValue<infer P> ? P
+      : never
     : Extract<
       ParameterValue,
       { type: C["parameters"][K]["type"] }

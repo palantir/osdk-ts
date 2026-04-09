@@ -1,5 +1,994 @@
 # @osdk/client
 
+## 2.8.0
+
+### Minor Changes
+
+- 322c5bc: Simulated release
+- c40444b: Add linkedObjectsBySourcePrimaryKey to link observation responses
+- 09e5659: add $select support to observable client and react hooks
+- abb0e0f: Bump Platform SDK dependencies
+- fceb4ce: Fix canonicalization for order-independent where clauses and orderBy keys, add ObjectSetArrayCanonicalizer for set operations, improve ObjectSetQuery with in-memory updates and deletion handling
+- 520398c: Add canonicalizeOptions API to ObservableClient for stable memo keys in React hooks, add objectSet to list payload
+- 73e617e: expose dedupeInterval on useLinks and fix forced revalidation bypassing dedupeInterval
+- cbfa135: Fix aggregation return type for empty object sets
+- c8384de: Add experimental branch param.
+- f294f5a: Remove literal support before GA.
+- dfc8019: Preserve derived property values when subscription updates write to RDP cache keys
+- 599426b: expose $loadPropertySecurityMetadata option in observable client and react hooks
+- e64bf0b: Expose getWireObjectSet, isObjectSet, and WireObjectSet type for reading wire object set definitions
+- 27a5902: Filter derived property keys from websocket object set subscriptions
+- f4604c2: fix aggregate endpoint errors crashing instead of surfacing server error
+- 642be5f: fix divide() sending wrong wire type and clean up list query view
+- baba327: return data=undefined during initial loading instead of data=[] to distinguish no data loaded yet from empty results
+- 8825f8c: fix InterfaceListQuery ignoring rids option when creating object sets
+- 2b01323: fix ObjectCacheKeyRegistry leak where unregister was never called during GC cleanup
+- 8c60682: Fix shared ListQuery pageSize not respected for late-joining views
+- dda14be: Fix pagination sort shuffling by using declarative update types
+- ffc6efe: Fix query map parsing to allow nullable values in map entries
+- 2855223: fix autoFetchMore not working when another subscriber creates the shared query first
+- 15e1686: support rids with pivotTo in observable list queries
+- 26cec61: Improves invalid where clause undefined key error message
+- d1ad4d1: Fix remapping query responses with structs that have null fields.
+- 0d174a2: useOsdkFunction typing updates
+- d284bf2: add media types, caching, and metadata query
+- 4ef6adc: Fix interface links off of objects
+- 2ebe62c: package and bundle size optimizations
+- 60b5ffb: Add `platformApiName` field to actions to preserve the original API name used by the Foundry platform
+- abb0e0f: Add transactionId to Actions.apply call
+- 8c30908: Add support for lt and gt strings.
+- 4cd7389: Remove delay dependency
+- 92e7297: add shape transformations, link resolution, and observable support
+- 35f2f1a: Add Media inputs/outputs for Queries
+- c9d954d: Add `tokenStorage` option to `createPublicOauthClient` to control refresh token storage. Supports `'localStorage'` (default), `'sessionStorage'` (recommended for shared devices), or `'none'` (most secure, re-authenticates on every page load).
+- 044eb80: unify RDP canonicalization between useOsdkObjects and useObjectSet
+- 9d234b9: support multi object usage in useLinks
+- f5f95e2: support interface link constraints
+- 46f0a47: Update platform SDK to 2.57.0 and handle new typeReference query data type
+- 4470c0d: Add support to execute queries on branches.
+- d80c234: add interface support to useOsdkObject
+- 61e33ab: Add support for interval queries
+- 71e28ef: Allow interface object sets in useObjectSet
+- 5848e3c: add a new View abstraction layer to fix a pageSize caching bug where multiple subscribers with different pageSize values would share cached data incorrectly
+
+### Patch Changes
+
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [4bb9769]
+- Updated dependencies [abb0e0f]
+- Updated dependencies [f294f5a]
+- Updated dependencies [4a79eb1]
+- Updated dependencies [f487a6a]
+- Updated dependencies [e462938]
+- Updated dependencies [6499ff9]
+- Updated dependencies [034081a]
+- Updated dependencies [0df859a]
+- Updated dependencies [d284bf2]
+- Updated dependencies [4ef6adc]
+- Updated dependencies [60b5ffb]
+- Updated dependencies [8c30908]
+- Updated dependencies [4a856cb]
+- Updated dependencies [b68cebd]
+- Updated dependencies [35f2f1a]
+- Updated dependencies [972bda6]
+- Updated dependencies [6941b4f]
+- Updated dependencies [46f0a47]
+- Updated dependencies [4470c0d]
+- Updated dependencies [61e33ab]
+  - @osdk/api@2.8.0
+  - @osdk/client.unstable@2.8.0
+  - @osdk/generator-converters@2.8.0
+  - @osdk/shared.client.impl@1.8.0
+  - @osdk/shared.net.errors@2.8.0
+  - @osdk/shared.net.fetch@1.8.0
+
+## 2.8.0-beta.32
+
+### Minor Changes
+
+- 46f0a47: Update platform SDK to 2.57.0 and handle new typeReference query data type
+
+### Patch Changes
+
+- Updated dependencies [46f0a47]
+  - @osdk/generator-converters@2.8.0-beta.32
+  - @osdk/api@2.8.0-beta.32
+  - @osdk/client.unstable@2.8.0-beta.32
+
+## 2.8.0-beta.31
+
+### Minor Changes
+
+- 2b01323: fix ObjectCacheKeyRegistry leak where unregister was never called during GC cleanup
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.31
+- @osdk/client.unstable@2.8.0-beta.31
+- @osdk/generator-converters@2.8.0-beta.31
+
+## 2.8.0-beta.30
+
+### Minor Changes
+
+- 4ef6adc: Fix interface links off of objects
+
+### Patch Changes
+
+- Updated dependencies [4ef6adc]
+  - @osdk/api@2.8.0-beta.30
+  - @osdk/client.unstable@2.8.0-beta.30
+  - @osdk/generator-converters@2.8.0-beta.30
+
+## 2.8.0-beta.29
+
+### Minor Changes
+
+- 520398c: Add canonicalizeOptions API to ObservableClient for stable memo keys in React hooks, add objectSet to list payload
+- ffc6efe: Fix query map parsing to allow nullable values in map entries
+
+### Patch Changes
+
+- Updated dependencies [4a856cb]
+  - @osdk/api@2.8.0-beta.29
+  - @osdk/client.unstable@2.8.0-beta.29
+  - @osdk/generator-converters@2.8.0-beta.29
+
+## 2.8.0-beta.28
+
+### Minor Changes
+
+- f294f5a: Remove literal support before GA.
+- 2855223: fix autoFetchMore not working when another subscriber creates the shared query first
+- d284bf2: add media types, caching, and metadata query
+
+### Patch Changes
+
+- Updated dependencies [f294f5a]
+- Updated dependencies [d284bf2]
+- Updated dependencies [b68cebd]
+  - @osdk/api@2.8.0-beta.28
+  - @osdk/client.unstable@2.8.0-beta.28
+  - @osdk/generator-converters@2.8.0-beta.28
+
+## 2.8.0-beta.27
+
+### Minor Changes
+
+- fceb4ce: Fix canonicalization for order-independent where clauses and orderBy keys, add ObjectSetArrayCanonicalizer for set operations, improve ObjectSetQuery with in-memory updates and deletion handling
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.27
+- @osdk/client.unstable@2.8.0-beta.27
+- @osdk/generator-converters@2.8.0-beta.27
+
+## 2.8.0-beta.26
+
+### Minor Changes
+
+- 599426b: expose $loadPropertySecurityMetadata option in observable client and react hooks
+- 60b5ffb: Add `platformApiName` field to actions to preserve the original API name used by the Foundry platform
+- 61e33ab: Add support for interval queries
+
+### Patch Changes
+
+- Updated dependencies [60b5ffb]
+- Updated dependencies [61e33ab]
+  - @osdk/api@2.8.0-beta.26
+  - @osdk/generator-converters@2.8.0-beta.26
+  - @osdk/client.unstable@2.8.0-beta.26
+
+## 2.8.0-beta.25
+
+### Patch Changes
+
+- Updated dependencies [0df859a]
+  - @osdk/api@2.8.0-beta.25
+  - @osdk/client.unstable@2.8.0-beta.25
+  - @osdk/generator-converters@2.8.0-beta.25
+
+## 2.8.0-beta.24
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.24
+- @osdk/client.unstable@2.8.0-beta.24
+- @osdk/generator-converters@2.8.0-beta.24
+
+## 2.8.0-beta.23
+
+### Patch Changes
+
+- Updated dependencies [4bb9769]
+  - @osdk/api@2.8.0-beta.23
+  - @osdk/client.unstable@2.8.0-beta.23
+  - @osdk/generator-converters@2.8.0-beta.23
+
+## 2.8.0-beta.22
+
+### Minor Changes
+
+- cbfa135: Fix aggregation return type for empty object sets
+- f4604c2: fix aggregate endpoint errors crashing instead of surfacing server error
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.22
+- @osdk/client.unstable@2.8.0-beta.22
+- @osdk/generator-converters@2.8.0-beta.22
+
+## 2.8.0-beta.21
+
+### Minor Changes
+
+- c40444b: Add linkedObjectsBySourcePrimaryKey to link observation responses
+- dda14be: Fix pagination sort shuffling by using declarative update types
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.21
+- @osdk/client.unstable@2.8.0-beta.21
+- @osdk/generator-converters@2.8.0-beta.21
+
+## 2.8.0-beta.20
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.20
+- @osdk/client.unstable@2.8.0-beta.20
+- @osdk/generator-converters@2.8.0-beta.20
+
+## 2.8.0-beta.19
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.19
+- @osdk/client.unstable@2.8.0-beta.19
+- @osdk/generator-converters@2.8.0-beta.19
+
+## 2.8.0-beta.18
+
+### Minor Changes
+
+- c8384de: Add experimental branch param.
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.18
+- @osdk/client.unstable@2.8.0-beta.18
+- @osdk/generator-converters@2.8.0-beta.18
+
+## 2.8.0-beta.17
+
+### Minor Changes
+
+- 8c30908: Add support for lt and gt strings.
+
+### Patch Changes
+
+- Updated dependencies [8c30908]
+  - @osdk/api@2.8.0-beta.17
+  - @osdk/client.unstable@2.8.0-beta.17
+  - @osdk/generator-converters@2.8.0-beta.17
+
+## 2.8.0-beta.16
+
+### Minor Changes
+
+- 09e5659: add $select support to observable client and react hooks
+- 2ebe62c: package and bundle size optimizations
+
+### Patch Changes
+
+- Updated dependencies [6941b4f]
+  - @osdk/client.unstable@2.8.0-beta.16
+  - @osdk/api@2.8.0-beta.16
+  - @osdk/generator-converters@2.8.0-beta.16
+
+## 2.8.0-beta.15
+
+### Minor Changes
+
+- dfc8019: Preserve derived property values when subscription updates write to RDP cache keys
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.15
+- @osdk/client.unstable@2.8.0-beta.15
+- @osdk/generator-converters@2.8.0-beta.15
+
+## 2.8.0-beta.14
+
+### Minor Changes
+
+- e64bf0b: Expose getWireObjectSet, isObjectSet, and WireObjectSet type for reading wire object set definitions
+- baba327: return data=undefined during initial loading instead of data=[] to distinguish no data loaded yet from empty results
+- d1ad4d1: Fix remapping query responses with structs that have null fields.
+- 35f2f1a: Add Media inputs/outputs for Queries
+- 71e28ef: Allow interface object sets in useObjectSet
+
+### Patch Changes
+
+- Updated dependencies [35f2f1a]
+  - @osdk/api@2.8.0-beta.14
+  - @osdk/client.unstable@2.8.0-beta.14
+  - @osdk/generator-converters@2.8.0-beta.14
+  - @osdk/shared.client.impl@1.8.0-beta.2
+  - @osdk/shared.net.errors@2.8.0-beta.2
+  - @osdk/shared.net.fetch@1.8.0-beta.2
+
+## 2.8.0-beta.13
+
+### Minor Changes
+
+- 4470c0d: Add support to execute queries on branches.
+
+### Patch Changes
+
+- Updated dependencies [4470c0d]
+  - @osdk/generator-converters@2.8.0-beta.13
+  - @osdk/api@2.8.0-beta.13
+  - @osdk/client.unstable@2.8.0-beta.13
+
+## 2.8.0-beta.12
+
+### Minor Changes
+
+- 8825f8c: fix InterfaceListQuery ignoring rids option when creating object sets
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.12
+- @osdk/client.unstable@2.8.0-beta.12
+- @osdk/generator-converters@2.8.0-beta.12
+
+## 2.8.0-beta.11
+
+### Minor Changes
+
+- 642be5f: fix divide() sending wrong wire type and clean up list query view
+- 525f277: update useOsdkAggregation to support composed object sets, async
+- f5f95e2: support interface link constraints
+- d80c234: add interface support to useOsdkObject
+
+### Patch Changes
+
+- Updated dependencies [f487a6a]
+  - @osdk/client.unstable@2.8.0-beta.11
+  - @osdk/api@2.8.0-beta.11
+  - @osdk/generator-converters@2.8.0-beta.11
+
+## 2.8.0-beta.10
+
+### Minor Changes
+
+- 27a5902: Filter derived property keys from websocket object set subscriptions
+
+### Patch Changes
+
+- Updated dependencies [972bda6]
+  - @osdk/client.unstable@2.8.0-beta.10
+  - @osdk/api@2.8.0-beta.10
+  - @osdk/generator-converters@2.8.0-beta.10
+
+## 2.8.0-beta.9
+
+### Minor Changes
+
+- abb0e0f: Bump Platform SDK dependencies
+- abb0e0f: Add transactionId to Actions.apply call
+
+### Patch Changes
+
+- Updated dependencies [abb0e0f]
+  - @osdk/generator-converters@2.8.0-beta.9
+  - @osdk/api@2.8.0-beta.9
+  - @osdk/client.unstable@2.8.0-beta.9
+
+## 2.8.0-beta.8
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.8
+- @osdk/client.unstable@2.8.0-beta.8
+- @osdk/generator-converters@2.8.0-beta.8
+
+## 2.8.0-beta.7
+
+### Minor Changes
+
+- 4cd7389: Remove delay dependency
+
+### Patch Changes
+
+- Updated dependencies [034081a]
+  - @osdk/client.unstable@2.8.0-beta.7
+  - @osdk/api@2.8.0-beta.7
+  - @osdk/generator-converters@2.8.0-beta.7
+
+## 2.8.0-beta.6
+
+### Minor Changes
+
+- 8c60682: Fix shared ListQuery pageSize not respected for late-joining views
+- 15e1686: support rids with pivotTo in observable list queries
+- c9d954d: Add `tokenStorage` option to `createPublicOauthClient` to control refresh token storage. Supports `'localStorage'` (default), `'sessionStorage'` (recommended for shared devices), or `'none'` (most secure, re-authenticates on every page load).
+- 044eb80: unify RDP canonicalization between useOsdkObjects and useObjectSet
+- 9d234b9: support multi object usage in useLinks
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.6
+- @osdk/client.unstable@2.8.0-beta.6
+- @osdk/generator-converters@2.8.0-beta.6
+
+## 2.8.0-beta.5
+
+### Patch Changes
+
+- Updated dependencies [6499ff9]
+  - @osdk/client.unstable@2.8.0-beta.5
+  - @osdk/api@2.8.0-beta.5
+  - @osdk/generator-converters@2.8.0-beta.5
+
+## 2.8.0-beta.4
+
+### Minor Changes
+
+- 73e617e: expose dedupeInterval on useLinks and fix forced revalidation bypassing dedupeInterval
+- 5848e3c: add a new View abstraction layer to fix a pageSize caching bug where multiple subscribers with different pageSize values would share cached data incorrectly
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.4
+- @osdk/client.unstable@2.8.0-beta.4
+- @osdk/generator-converters@2.8.0-beta.4
+
+## 2.8.0-beta.3
+
+### Minor Changes
+
+- 26cec61: Improves invalid where clause undefined key error message
+- 0d174a2: useOsdkFunction typing updates
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.3
+- @osdk/client.unstable@2.8.0-beta.3
+- @osdk/generator-converters@2.8.0-beta.3
+
+## 2.8.0-beta.2
+
+### Patch Changes
+
+- Updated dependencies [e462938]
+  - @osdk/client.unstable@2.8.0-beta.2
+  - @osdk/api@2.8.0-beta.2
+  - @osdk/generator-converters@2.8.0-beta.2
+
+## 2.7.0-beta.14
+
+### Minor Changes
+
+- 24730c7: fix rdp pivot behavior
+- ecd18e2: fix pivotTo with where usage
+
+### Patch Changes
+
+- @osdk/api@2.7.0-beta.14
+- @osdk/client.unstable@2.7.0-beta.14
+- @osdk/generator-converters@2.7.0-beta.14
+
+## 2.7.0-beta.13
+
+### Minor Changes
+
+- fb83808: Allow arrays to use all subtype filters
+
+### Patch Changes
+
+- Updated dependencies [fb83808]
+  - @osdk/api@2.7.0-beta.13
+  - @osdk/client.unstable@2.7.0-beta.13
+  - @osdk/generator-converters@2.7.0-beta.13
+
+## 2.7.0-beta.12
+
+### Minor Changes
+
+- 3fc5fe6: fix interface loading
+- bb9d25c: Allow requesting rids for OSW updates
+
+### Patch Changes
+
+- Updated dependencies [bb9d25c]
+  - @osdk/api@2.7.0-beta.12
+  - @osdk/client.unstable@2.7.0-beta.12
+  - @osdk/generator-converters@2.7.0-beta.12
+
+## 2.7.0-beta.11
+
+### Minor Changes
+
+- 6cfe14a: add new useOsdkFunction hook and supporting client infrastructure
+- ec6ad57: guard against empty ontology edits in actions
+- 38d5958: fix order by via key stabilization
+- d5cfc38: Add null option to actions to allow clearing data
+
+### Patch Changes
+
+- Updated dependencies [d5cfc38]
+  - @osdk/api@2.7.0-beta.11
+  - @osdk/client.unstable@2.7.0-beta.11
+  - @osdk/generator-converters@2.7.0-beta.11
+
+## 2.7.0-beta.10
+
+### Minor Changes
+
+- db44f6b: Add property security metadata to objects when requested
+- 266b901: Fix queries that return arrays of objects.
+
+### Patch Changes
+
+- Updated dependencies [db44f6b]
+- Updated dependencies [24a1e29]
+  - @osdk/api@2.7.0-beta.10
+  - @osdk/client.unstable@2.7.0-beta.10
+  - @osdk/generator-converters@2.7.0-beta.10
+
+## 2.7.0-beta.9
+
+### Minor Changes
+
+- 6b27d8a: fix sorting strategy initialization for ListQuery and ObjectSetQuery
+
+### Patch Changes
+
+- Updated dependencies [8381ac2]
+- Updated dependencies [c95f3bc]
+  - @osdk/client.unstable@2.7.0-beta.9
+  - @osdk/api@2.7.0-beta.9
+  - @osdk/generator-converters@2.7.0-beta.9
+
+## 2.7.0-beta.8
+
+### Minor Changes
+
+- c6124eb: Add ability to flush edits to transactions
+
+### Patch Changes
+
+- @osdk/api@2.7.0-beta.8
+- @osdk/client.unstable@2.7.0-beta.8
+- @osdk/generator-converters@2.7.0-beta.8
+
+## 2.7.0-beta.7
+
+### Minor Changes
+
+- adca853: fix fetchMore behavior
+- 0b0be9f: fix object spread related bug by using createOsdkObject
+
+### Patch Changes
+
+- @osdk/api@2.7.0-beta.7
+- @osdk/client.unstable@2.7.0-beta.7
+- @osdk/generator-converters@2.7.0-beta.7
+
+## 2.7.0-beta.6
+
+### Minor Changes
+
+- c332598: Adds experimental platform API hooks to fetch Foundry users
+- 0b2cd91: fix SimplePropertyDef issue, wire RDPs through, update names
+
+### Patch Changes
+
+- Updated dependencies [c9ca08d]
+  - @osdk/api@2.7.0-beta.6
+  - @osdk/client.unstable@2.7.0-beta.6
+  - @osdk/generator-converters@2.7.0-beta.6
+
+## 2.7.0-beta.5
+
+### Minor Changes
+
+- dc33f68: Add Transaction ID to Queries
+
+### Patch Changes
+
+- Updated dependencies [dc33f68]
+  - @osdk/generator-converters@2.7.0-beta.5
+  - @osdk/api@2.7.0-beta.5
+  - @osdk/client.unstable@2.7.0-beta.5
+
+## 2.7.0-beta.4
+
+### Minor Changes
+
+- 1e3c147: Add experimental_asyncIterLinks method on object sets
+
+### Patch Changes
+
+- Updated dependencies [1e3c147]
+  - @osdk/api@2.7.0-beta.4
+  - @osdk/client.unstable@2.7.0-beta.4
+  - @osdk/generator-converters@2.7.0-beta.4
+
+## 2.7.0-beta.3
+
+### Minor Changes
+
+- a23784c: wire action edit response types through for useOsdkAction
+- f0a57a5: Use new interface property fields to include interface property types in codegen
+
+### Patch Changes
+
+- Updated dependencies [448763f]
+- Updated dependencies [f0a57a5]
+  - @osdk/api@2.7.0-beta.3
+  - @osdk/generator-converters@2.7.0-beta.3
+  - @osdk/client.unstable@2.7.0-beta.3
+
+## 2.7.0-beta.2
+
+### Minor Changes
+
+- 03db734: Move platform SDK deps to pnpm catalog
+- c8da6b7: fix useLinks sorting strategy initialization
+
+### Patch Changes
+
+- @osdk/api@2.7.0-beta.2
+- @osdk/client.unstable@2.7.0-beta.2
+- @osdk/generator-converters@2.7.0-beta.2
+
+## 2.6.0-beta.13
+
+### Minor Changes
+
+- 84f0eef: Bumping OSDK apis
+- 486ef7e: Deprecate multiplicity in query params/outputs
+- ea077c6: Change asType to narrowToType
+
+### Patch Changes
+
+- Updated dependencies [84f0eef]
+- Updated dependencies [486ef7e]
+- Updated dependencies [ea077c6]
+  - @osdk/generator-converters@2.6.0-beta.13
+  - @osdk/api@2.6.0-beta.13
+  - @osdk/client.unstable@2.6.0-beta.13
+
+## 2.6.0-beta.12
+
+### Minor Changes
+
+- 9961f06: fix order by via key stabilization
+
+### Patch Changes
+
+- @osdk/api@2.6.0-beta.12
+- @osdk/client.unstable@2.6.0-beta.12
+- @osdk/generator-converters@2.6.0-beta.12
+
+## 2.6.0-beta.11
+
+### Minor Changes
+
+- c5a3815: Add new auto fetch more behavior to useOsdkObjects
+
+### Patch Changes
+
+- @osdk/api@2.6.0-beta.11
+- @osdk/client.unstable@2.6.0-beta.11
+- @osdk/generator-converters@2.6.0-beta.11
+
+## 2.6.0-beta.10
+
+### Minor Changes
+
+- 3fbb596: Pipe through transactionId to endpoints that load data via object sets
+
+### Patch Changes
+
+- Updated dependencies [3fbb596]
+  - @osdk/generator-converters@2.6.0-beta.10
+  - @osdk/api@2.6.0-beta.10
+  - @osdk/client.unstable@2.6.0-beta.10
+
+## 2.6.0-beta.9
+
+### Patch Changes
+
+- Updated dependencies [b307201]
+  - @osdk/api@2.6.0-beta.9
+  - @osdk/client.unstable@2.6.0-beta.9
+  - @osdk/generator-converters@2.6.0-beta.9
+
+## 2.6.0-beta.8
+
+### Minor Changes
+
+- a1ffb20: Use new ephemeral media upload endpoint.
+- e62c692: Allow all applicable filters for struct sub properties to be applied on struct arrays
+
+### Patch Changes
+
+- Updated dependencies [a1ffb20]
+- Updated dependencies [e62c692]
+  - @osdk/generator-converters@2.6.0-beta.8
+  - @osdk/api@2.6.0-beta.8
+  - @osdk/client.unstable@2.6.0-beta.8
+
+## 2.6.0-beta.7
+
+### Minor Changes
+
+- 507ec7f: Allows top level filters with an implied and clause to support a combination of a not and and clause
+
+### Patch Changes
+
+- @osdk/api@2.6.0-beta.7
+- @osdk/client.unstable@2.6.0-beta.7
+- @osdk/generator-converters@2.6.0-beta.7
+
+## 2.6.0-beta.6
+
+### Minor Changes
+
+- b959085: Fix nested array query param type handling
+
+### Patch Changes
+
+- Updated dependencies [b959085]
+  - @osdk/generator-converters@2.6.0-beta.6
+  - @osdk/api@2.6.0-beta.6
+  - @osdk/client.unstable@2.6.0-beta.6
+
+## 2.6.0-beta.5
+
+### Minor Changes
+
+- b48526f: fix ListQuery websocket subscription management
+
+### Patch Changes
+
+- Updated dependencies [2556c64]
+  - @osdk/api@2.6.0-beta.5
+  - @osdk/client.unstable@2.6.0-beta.5
+  - @osdk/generator-converters@2.6.0-beta.5
+
+## 2.6.0-beta.4
+
+### Minor Changes
+
+- 61eb5b0: Add heartbeat to object set subscriptions
+- e7bf02a: Add RDP support to React toolkit
+
+### Patch Changes
+
+- Updated dependencies [7fd788b]
+- Updated dependencies [e7bf02a]
+  - @osdk/client.unstable@2.6.0-beta.4
+  - @osdk/api@2.6.0-beta.4
+  - @osdk/generator-converters@2.6.0-beta.4
+
+## 2.6.0-beta.3
+
+### Minor Changes
+
+- 831a285: Added relative time formatting
+- 3fa28d4: Add support for date and time formatting
+
+### Patch Changes
+
+- @osdk/api@2.6.0-beta.3
+- @osdk/client.unstable@2.6.0-beta.3
+- @osdk/generator-converters@2.6.0-beta.3
+
+## 2.6.0-beta.2
+
+### Minor Changes
+
+- 84e61fc: Add propertyValueFormatting type to property metadata
+- c4f8529: Add stub for getFormattedValue in experimental mode
+- b762231: Add boolean formatting
+- f7ae38a: Allow exact matching for arrays of structs
+- f085283: Add support for numeric formatting
+
+### Patch Changes
+
+- Updated dependencies [84e61fc]
+- Updated dependencies [c4f8529]
+- Updated dependencies [f7ae38a]
+  - @osdk/generator-converters@2.6.0-beta.2
+  - @osdk/api@2.6.0-beta.2
+  - @osdk/client.unstable@2.6.0-beta.2
+
+## 2.5.0-beta.15
+
+### Minor Changes
+
+- b01375c: Fire and forget query metadata loads if no parameters
+- 6e60727: Export extractPrimaryKetFromObjectSpecifier from client
+
+### Patch Changes
+
+- @osdk/api@2.5.0-beta.15
+- @osdk/client.unstable@2.5.0-beta.15
+- @osdk/generator-converters@2.5.0-beta.15
+
+## 2.5.2
+
+### Patch Changes
+
+- @osdk/api@2.5.2
+- @osdk/client.unstable@2.5.2
+- @osdk/generator-converters@2.5.2
+
+## 2.5.1
+
+### Patch Changes
+
+- 099b4d8: Fix nested array query param type handling
+- Updated dependencies [099b4d8]
+  - @osdk/generator-converters@2.5.1
+  - @osdk/api@2.5.1
+  - @osdk/client.unstable@2.5.1
+
+## 2.5.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- b05075d: Add fix for interface links.
+- d797f0c: Falsy values other than undefined or null do not throw for query map responses
+- 7160276: Add order by relevance support to nearest neighbors
+- 7cdab1d: Update platform sdk dependencies
+- a00d2ed: Update Platform SDK dependencies
+- ab29baa: make dedupeIntervals dynamic
+- 85e8edb: Fix unhandled promise rejection error.
+- eeaf8eb: refactor ListQuery into InterfaceListQuery and ObjectListQuery
+- 3d7461d: Fix applyQuery for marketplace installations
+- 7bdac45: Update Platform SDK dependency
+- 37eb75b: remove features not supported for RC
+- 7b97128: add useObjectSet hook
+- b9e9a88: Refactor Observable Client with enhanced observer architecture
+  - Restructure observable implementation with dedicated observer classes (LinkObservers, ListObservers, ObjectObservers)
+  - Improve type safety for link observation operations with enhanced generic constraints
+  - Add QuerySubscription and UnsubscribableWrapper for better encapsulation
+  - Maintain API compatibility while improving internal architecture
+
+- 76905f5: Remove undefined type from aggregation $group value
+- 48d52b7: Parallelize network request for getting object metadata when doing simple object fetches.
+- a96d89e: Update Platform SDK dependencies
+- 48040a8: add exponential backoff behavior for ObjectSetListener websocket nextConnectTime
+- 20962bc: Add a new experimental fetchPageByRidNoType method
+- cbcf2ad: Add branching support
+- 052a96b: Add $link support.
+- f49171a: Remaps simple API names for orderby and select arguments to match expected fully qualified API names
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [badfbc4]
+- Updated dependencies [a6f49e9]
+- Updated dependencies [a6f49e9]
+- Updated dependencies [7160276]
+- Updated dependencies [7cdab1d]
+- Updated dependencies [a00d2ed]
+- Updated dependencies [7bdac45]
+- Updated dependencies [37eb75b]
+- Updated dependencies [7b97128]
+- Updated dependencies [76905f5]
+- Updated dependencies [a96d89e]
+- Updated dependencies [7bdac45]
+- Updated dependencies [20962bc]
+- Updated dependencies [cbcf2ad]
+- Updated dependencies [04fe946]
+- Updated dependencies [052a96b]
+- Updated dependencies [ca1fabe]
+- Updated dependencies [e48be06]
+  - @osdk/api@2.5.0
+  - @osdk/client.unstable@2.5.0
+  - @osdk/generator-converters@2.5.0
+  - @osdk/shared.client.impl@1.5.0
+  - @osdk/shared.net.errors@2.5.0
+  - @osdk/shared.net.fetch@1.5.0
+
+## 2.5.0-rc.15
+
+### Patch Changes
+
+- 37eb75b: remove features not supported for RC
+- Updated dependencies [37eb75b]
+  - @osdk/api@2.5.0-rc.15
+  - @osdk/client.unstable@2.5.0-rc.15
+  - @osdk/generator-converters@2.5.0-rc.15
+
+## 2.5.0-beta.14
+
+### Minor Changes
+
+- b7edfb5: Add support for object type casts
+
+### Patch Changes
+
+- Updated dependencies [9dd5a63]
+- Updated dependencies [e62408b]
+- Updated dependencies [b7edfb5]
+  - @osdk/client.unstable@2.5.0-beta.14
+  - @osdk/api@2.5.0-beta.14
+  - @osdk/generator-converters@2.5.0-beta.14
+
+## 2.5.0-beta.13
+
+### Patch Changes
+
+- @osdk/api@2.5.0-beta.13
+- @osdk/client.unstable@2.5.0-beta.13
+- @osdk/generator-converters@2.5.0-beta.13
+
+## 2.5.0-beta.12
+
+### Minor Changes
+
+- 85e8edb: Fix unhandled promise rejection error.
+
+### Patch Changes
+
+- @osdk/api@2.5.0-beta.12
+- @osdk/client.unstable@2.5.0-beta.12
+- @osdk/generator-converters@2.5.0-beta.12
+
+## 2.5.0-beta.11
+
+### Minor Changes
+
+- 7b97128: add useObjectSet hook
+
+### Patch Changes
+
+- Updated dependencies [7b97128]
+  - @osdk/api@2.5.0-beta.11
+  - @osdk/client.unstable@2.5.0-beta.11
+  - @osdk/generator-converters@2.5.0-beta.11
+
+## 2.5.0-beta.10
+
+### Minor Changes
+
+- 48040a8: add exponential backoff behavior for ObjectSetListener websocket nextConnectTime
+
+### Patch Changes
+
+- @osdk/api@2.5.0-beta.10
+- @osdk/client.unstable@2.5.0-beta.10
+- @osdk/generator-converters@2.5.0-beta.10
+
+## 2.5.0-beta.9
+
+### Minor Changes
+
+- eeaf8eb: refactor ListQuery into InterfaceListQuery and ObjectListQuery
+- f49171a: Remaps simple API names for orderby and select arguments to match expected fully qualified API names
+
+### Patch Changes
+
+- @osdk/api@2.5.0-beta.9
+- @osdk/client.unstable@2.5.0-beta.9
+- @osdk/generator-converters@2.5.0-beta.9
+
 ## 2.5.0-beta.8
 
 ### Patch Changes

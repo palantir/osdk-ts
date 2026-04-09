@@ -10,6 +10,8 @@ import type { CompileTimeMetadata } from '@osdk/client';
 import { Geometry } from 'geojson';
 import type { GroupId as GroupId_2 } from '@osdk/foundry.core';
 import type { InterfaceDefinition } from '@osdk/client';
+import { MediaReference } from '@osdk/client';
+import { MediaUpload } from '@osdk/client';
 import type { ObjectMetadata } from '@osdk/client';
 import type { ObjectTypeDefinition } from '@osdk/client';
 import type { Osdk } from '@osdk/client';
@@ -20,6 +22,15 @@ import { Range as Range_2 } from '@osdk/client';
 import { ThreeDimensionalAggregation } from '@osdk/client';
 import { TwoDimensionalAggregation } from '@osdk/client';
 import type { UserId as UserId_2 } from '@osdk/foundry.core';
+
+declare namespace Aliases {
+    export {
+        custom,
+        Custom,
+        model,
+        Model
+    }
+}
 
 export { Attachment }
 
@@ -32,6 +43,14 @@ export type ClassificationMarking<T extends string = string> = T & {
 //
 // @public (undocumented)
 export function createEditBatch<T extends AnyEdit = never>(_client: Client): EditBatch<T>;
+
+// @public (undocumented)
+type Custom = string & {
+    	readonly __brand: "Custom"
+};
+
+// @public (undocumented)
+function custom(alias: string): Custom;
 
 // @public (undocumented)
 export type DateISOString<T extends string = string> = T & {
@@ -142,6 +161,19 @@ export type MandatoryMarking<T extends string = string> = T & {
     	__markingBrand?: "mandatory"
 };
 
+export { MediaReference }
+
+export { MediaUpload }
+
+// @public (undocumented)
+interface Model {
+    	// (undocumented)
+    rid: string;
+}
+
+// @public (undocumented)
+function model(alias: string): Model;
+
 // @public (undocumented)
 interface Notification_2 {
     	// (undocumented)
@@ -209,6 +241,9 @@ export type TimestampISOString<T extends string = string> = T & {
 };
 
 export { TwoDimensionalAggregation }
+
+// @public (undocumented)
+export function uploadMedia(client: Client, mediaUpload: MediaUpload): Promise<MediaReference>;
 
 // @public (undocumented)
 export interface UrlLinkTarget {

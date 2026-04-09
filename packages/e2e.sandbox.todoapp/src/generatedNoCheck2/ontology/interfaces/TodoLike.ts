@@ -7,6 +7,7 @@ import type {
   ObjectSet as $ObjectSet,
   Osdk as $Osdk,
   PropertyValueWireToClient as $PropType,
+  SingleLinkAccessor as $SingleLinkAccessor,
 } from '@osdk/client';
 
 export type OsdkObjectLinks$TodoLike = {};
@@ -70,8 +71,11 @@ export interface TodoLike extends $InterfaceDefinition {
   };
 }
 
-export const TodoLike: TodoLike = {
+export const TodoLike = {
   type: 'interface',
   apiName: 'TodoLike',
   osdkMetadata: $osdkMetadata,
-};
+  internalDoNotUseMetadata: {
+    rid: 'ri.ontology.main.interface.fe6b2917-915d-4952-b89d-1231dad224e0',
+  },
+} satisfies TodoLike & { internalDoNotUseMetadata: { rid: string } } as TodoLike;

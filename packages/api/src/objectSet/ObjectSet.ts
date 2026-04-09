@@ -18,7 +18,7 @@ import type { AggregateOpts } from "../aggregate/AggregateOpts.js";
 import type { AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy } from "../aggregate/AggregateOptsThatErrors.js";
 import type { AggregationsResults } from "../aggregate/AggregationsResults.js";
 import type { WhereClause } from "../aggregate/WhereClause.js";
-import type { DerivedPropertyCreator } from "../derivedProperties/DerivedProperty.js";
+import type { DerivedProperty } from "../derivedProperties/DerivedProperty.js";
 import type {
   AsyncIterArgs,
   Augments,
@@ -28,6 +28,7 @@ import type {
   SelectArg,
 } from "../object/FetchPageArgs.js";
 import type { Result } from "../object/Result.js";
+import type { InterfaceDefinition } from "../ontology/InterfaceDefinition.js";
 import type {
   DerivedObjectOrInterfaceDefinition,
   ObjectOrInterfaceDefinition,
@@ -49,6 +50,10 @@ import type {
 import type { PageResult } from "../PageResult.js";
 import type { LinkedType, LinkNames } from "../util/LinkUtils.js";
 import type { BaseObjectSet } from "./BaseObjectSet.js";
+import type {
+  LinkTypeApiNamesFor,
+  MinimalDirectedObjectLinkInstance,
+} from "./ObjectSetLinks.js";
 import type { ObjectSetSubscription } from "./ObjectSetListener.js";
 
 type MergeObjectSet<
@@ -79,7 +84,7 @@ type SubSelectKeysHelper<
 
 type SubSelectKeys<
   Q extends ObjectOrInterfaceDefinition,
-  X extends SelectArg<Q, PropertyKeys<Q>, any, any> = never,
+  X extends SelectArg<Q, PropertyKeys<Q>, any, any, any, any> = never,
 > = SubSelectKeysHelper<Q, Extract$Select<X>>;
 
 type NOOP<T> = T extends (...args: any[]) => any ? T
@@ -106,7 +111,8 @@ export interface MinimalObjectSet<
   BaseObjectSet<Q>,
   FetchPage<Q, RDPs>,
   AsyncIter<Q, RDPs, ORDER_BY_OPTIONS>,
-  Where<Q, RDPs>
+  Where<Q, RDPs>,
+  AsyncIterLinks<Q>
 {
 }
 
@@ -186,14 +192,25 @@ interface FetchPageSignature<
     S extends NullabilityAdherence = NullabilityAdherence.Default,
     T extends boolean = false,
     ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<L> = {},
+    PROPERTY_SECURITIES extends boolean = false,
   >(
-    args?: FetchPageArgs<Q, L, R, A, S, T, never, ORDER_BY_OPTIONS>,
+    args?: FetchPageArgs<
+      Q,
+      L,
+      R,
+      A,
+      S,
+      T,
+      never,
+      ORDER_BY_OPTIONS,
+      PROPERTY_SECURITIES
+    >,
   ): Promise<
     PageResult<
       MaybeScore<
         Osdk.Instance<
           Q,
-          ExtractOptions<R, S, T>,
+          ExtractOptions<R, S, T, PROPERTY_SECURITIES>,
           NoInfer<SubSelectKeys<Q, NonNullable<typeof args>>>,
           SubSelectRDPs<RDPs, NonNullable<typeof args>>
         >,
@@ -227,6 +244,7 @@ interface NearestNeighbors<Q extends ObjectOrInterfaceDefinition> {
 interface FetchPageWithErrorsSignature<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
+  PROPERTY_SECURITIES extends boolean = false,
 > {
   /**
    * Gets a page of objects of this type, with a result wrapper
@@ -250,14 +268,24 @@ interface FetchPageWithErrorsSignature<
     T extends boolean = false,
     ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<L> = {},
   >(
-    args?: FetchPageArgs<Q, L, R, A, S, T, never, ORDER_BY_OPTIONS>,
+    args?: FetchPageArgs<
+      Q,
+      L,
+      R,
+      A,
+      S,
+      T,
+      never,
+      ORDER_BY_OPTIONS,
+      PROPERTY_SECURITIES
+    >,
   ): Promise<
     Result<
       PageResult<
         MaybeScore<
           Osdk.Instance<
             Q,
-            ExtractOptions<R, S, T>,
+            ExtractOptions<R, S, T, PROPERTY_SECURITIES>,
             NoInfer<SubSelectKeys<Q, NonNullable<typeof args>>>,
             SubSelectRDPs<RDPs, NonNullable<typeof args>>
           >,
@@ -292,6 +320,7 @@ interface AsyncIterSignature<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
   ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<PropertyKeys<Q>> = {},
+  PROPERTY_SECURITIES extends boolean = false,
 > {
   /**
    * Returns an async iterator to load all objects of this type
@@ -328,12 +357,22 @@ interface AsyncIterSignature<
     T extends boolean = false,
     ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<PropertyKeys<Q>> = {},
   >(
-    args?: AsyncIterArgs<Q, L, R, A, S, T, never, ORDER_BY_OPTIONS>,
+    args?: AsyncIterArgs<
+      Q,
+      L,
+      R,
+      A,
+      S,
+      T,
+      never,
+      ORDER_BY_OPTIONS,
+      PROPERTY_SECURITIES
+    >,
   ): AsyncIterableIterator<
     MaybeScore<
       Osdk.Instance<
         Q,
-        ExtractOptions<R, S, T>,
+        ExtractOptions<R, S, T, PROPERTY_SECURITIES>,
         NoInfer<SubSelectKeys<Q, NonNullable<typeof args>>>,
         SubSelectRDPs<RDPs, NonNullable<typeof args>>
       >,
@@ -357,7 +396,7 @@ interface WithProperties<
   readonly withProperties: <
     NEW extends Record<string, SimplePropertyDef>,
   >(
-    clause: { [K in keyof NEW]: DerivedPropertyCreator<Q, NEW[K]> },
+    clause: { [K in keyof NEW]: DerivedProperty.Creator<Q, NEW[K]> },
   ) => ObjectSet<
     Q,
     {
@@ -485,13 +524,14 @@ interface FetchOneSignature<
     const L extends PropertyKeys<Q> | (string & keyof RDPs),
     const R extends boolean,
     const S extends false | "throw" = NullabilityAdherence.Default,
+    PROPERTY_SECURITIES extends boolean = false,
   >(
     primaryKey: PrimaryKeyType<Q>,
-    options?: SelectArg<Q, L, R, S>,
+    options?: SelectArg<Q, L, R, S, never, PROPERTY_SECURITIES>,
   ): Promise<
     Osdk.Instance<
       Q,
-      ExtractOptions<R, S>,
+      ExtractOptions<R, S, false, PROPERTY_SECURITIES>,
       NoInfer<SubSelectKeys<Q, { $select: Array<L> }>>,
       SubSelectRDPs<RDPs, { $select: Array<L> }>
     >
@@ -509,14 +549,15 @@ interface FetchOneWithErrorsSignature<
     const L extends PropertyKeys<Q> | (string & keyof RDPs),
     const R extends boolean,
     const S extends false | "throw" = NullabilityAdherence.Default,
+    PROPERTY_SECURITIES extends boolean = false,
   >(
     primaryKey: PrimaryKeyType<Q>,
-    options?: SelectArg<Q, L, R, S>,
+    options?: SelectArg<Q, L, R, S, never, PROPERTY_SECURITIES>,
   ): Promise<
     Result<
       Osdk.Instance<
         Q,
-        ExtractOptions<R, S>,
+        ExtractOptions<R, S, false, PROPERTY_SECURITIES>,
         NoInfer<SubSelectKeys<Q, { $select: Array<L> }>>,
         SubSelectRDPs<RDPs, { $select: Array<L> }>
       >
@@ -546,10 +587,66 @@ interface Subscribe<
    */
   readonly subscribe: <
     const P extends PropertyKeys<Q>,
+    const R extends boolean = false,
   >(
-    listener: ObjectSetSubscription.Listener<Q, P>,
-    opts?: ObjectSetSubscription.Options<Q, P>,
+    listener: ObjectSetSubscription.Listener<Q, P, R>,
+    opts?: ObjectSetSubscription.Options<Q, P, R>,
   ) => { unsubscribe: () => void };
+}
+
+interface NarrowToType<Q extends ObjectOrInterfaceDefinition> {
+  /**
+   * Casts the object set to the specified object type or interface type.
+   * Any downstream object set operations (e.g. where, fetchPage, aggregate) will be
+   * performed on the specified type. Objects from the original object set that do not
+   * implement the specified interface or match the specified object set will be filtered out.
+   * @param type - The object type you want to cast to.
+   * @returns an object set of the specified type.
+   */
+  readonly narrowToType: <
+    CONVERT_TO extends RestrictToImplementingObjectTypes<Q>,
+  >(
+    type: CONVERT_TO,
+  ) => ObjectSet<CONVERT_TO>;
+}
+
+type RestrictToImplementingObjectTypes<T extends ObjectOrInterfaceDefinition> =
+  T extends ObjectTypeDefinition ? ExtractImplementedInterfaces<T>
+    : T extends InterfaceDefinition ? ExtractImplementingTypes<T>
+    : never;
+
+type ExtractImplementedInterfaces<T extends ObjectTypeDefinition> =
+  CompileTimeMetadata<T> extends { implements: ReadonlyArray<infer API_NAME> }
+    ? API_NAME extends string ? InterfaceDefinition & { apiName: API_NAME }
+    : never
+    : never;
+
+type ExtractImplementingTypes<T extends InterfaceDefinition> =
+  CompileTimeMetadata<T> extends
+    { implementedBy: ReadonlyArray<infer API_NAME extends string> }
+    ? (ObjectTypeDefinition & { apiName: API_NAME }) | InterfaceDefinition
+    : InterfaceDefinition;
+
+interface AsyncIterLinks<Q extends ObjectOrInterfaceDefinition> {
+  /**
+   * Batch load links on an object set. This is an experimental method that may change while in beta.
+   * Use this method in conjunction with `.asyncIter()` and `.pivotTo(...).asyncIter()` to build an
+   * object graph in memory.
+   *
+   * Please keep these limitations in mind:
+   * - Links returned may be stale. For example, primary keys returned by this endpoint may not exist anymore.
+   * - The backend API fetches pages of *n* objects at a time. If, for any page of *n* objects, there are more
+   *   than 100,000 links present, results are limited to 100,000 links and should be considered partial.
+   * - This method does not support OSv1 links and will throw an exception if links provided are backed by OSv1.
+   * - This method currently does not support interface links, but support will be added in the near future.
+   */
+  readonly experimental_asyncIterLinks: <
+    LINK_TYPE_API_NAME extends LinkTypeApiNamesFor<Q>,
+  >(
+    links: LINK_TYPE_API_NAME[],
+  ) => AsyncIterableIterator<
+    MinimalDirectedObjectLinkInstance<Q, LINK_TYPE_API_NAME>
+  >;
 }
 
 interface ObjectSetCleanedTypes<
@@ -565,6 +662,7 @@ interface ObjectSetCleanedTypes<
   PivotTo<Q>,
   FetchOne<Q, D>,
   Subscribe<MERGED>,
-  NearestNeighbors<Q>
+  NearestNeighbors<Q>,
+  NarrowToType<Q>
 {
 }

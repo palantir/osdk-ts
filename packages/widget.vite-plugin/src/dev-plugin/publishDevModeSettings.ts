@@ -24,6 +24,43 @@ import {
 } from "./codeWorkspacesMode.js";
 import { enableDevMode, setWidgetSetSettings } from "./network.js";
 
+class ResponseError extends Error {
+  // To avoid inspect() from logging the error response since it's already logged
+  #response: string;
+  #hint: string | undefined;
+
+  constructor(message: string, response: string) {
+    super(message);
+    try {
+      const parsed = JSON.parse(response);
+      this.#response = JSON.stringify(parsed, null, 4);
+      this.#hint = getHintForError(parsed);
+    } catch {
+      this.#response = response;
+    }
+  }
+
+  get response(): string {
+    return this.#response;
+  }
+
+  get hint(): string | undefined {
+    return this.#hint;
+  }
+}
+
+function getHintForError(
+  parsed: { errorName?: string },
+): string | undefined {
+  if (
+    parsed.errorName === "Api:WidgetIdNotFound"
+    || parsed.errorName === "WidgetIdNotFound"
+  ) {
+    return "You first need to publish changes to your widget configuration files before you can develop against them.\n\nSee: https://www.palantir.com/docs/foundry/custom-widgets/publish/";
+  }
+  return undefined;
+}
+
 /**
  * Finish the setup process by setting the widget overrides in Foundry and enabling dev mode.
  */
@@ -58,8 +95,9 @@ export async function publishDevModeSettings(
       );
       const responseContent = await settingsResponse.text();
       server.config.logger.warn(responseContent);
-      throw new Error(
+      throw new ResponseError(
         `Unable to set widget settings in Foundry: ${settingsResponse.statusText}`,
+        responseContent,
       );
     }
 
@@ -73,8 +111,9 @@ export async function publishDevModeSettings(
       );
       const responseContent = await enableResponse.text();
       server.config.logger.warn(responseContent);
-      throw new Error(
+      throw new ResponseError(
         `Unable to enable dev mode in Foundry: ${enableResponse.statusText}`,
+        responseContent,
       );
     }
 
@@ -93,7 +132,14 @@ export async function publishDevModeSettings(
     res.setHeader("Content-Type", "application/json");
     res.statusCode = 500;
     res.end(
-      JSON.stringify({ status: "error", error: inspect(error) }),
+      JSON.stringify(
+        {
+          status: "error",
+          error: inspect(error),
+          response: error instanceof ResponseError ? error.response : undefined,
+          hint: error instanceof ResponseError ? error.hint : undefined,
+        },
+      ),
     );
   }
 }

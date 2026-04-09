@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import type { ActionDefinition, ActionValidationResponse } from "@osdk/client";
+import type {
+  ActionDefinition,
+  ActionEditResponse,
+  ActionValidationResponse,
+} from "@osdk/client";
 import { ActionValidationError } from "@osdk/client";
 import type {
   ActionSignatureFromDef,
@@ -33,7 +37,7 @@ type ApplyActionParams<Q extends ActionDefinition<any>> =
 export interface UseOsdkActionResult<Q extends ActionDefinition<any>> {
   applyAction: (
     args: ApplyActionParams<Q> | Array<ApplyActionParams<Q>>,
-  ) => Promise<unknown>;
+  ) => Promise<ActionEditResponse | undefined>;
 
   error:
     | undefined
@@ -41,7 +45,7 @@ export interface UseOsdkActionResult<Q extends ActionDefinition<any>> {
       actionValidation: ActionValidationError;
       unknown: unknown;
     }>;
-  data: unknown;
+  data: ActionEditResponse | undefined;
 
   isPending: boolean;
   isValidating: boolean;
@@ -65,7 +69,7 @@ export function useOsdkAction<Q extends ActionDefinition<any>>(
 ): UseOsdkActionResult<Q> {
   const { observableClient } = React.useContext(OsdkContext2);
   const [error, setError] = React.useState<UseOsdkActionResult<Q>["error"]>();
-  const [data, setData] = React.useState<unknown>();
+  const [data, setData] = React.useState<ActionEditResponse | undefined>();
   const [isPending, setPending] = React.useState(false);
   const [isValidating, setValidating] = React.useState(false);
   const [validationResult, setValidationResult] = React.useState<
@@ -124,6 +128,7 @@ export function useOsdkAction<Q extends ActionDefinition<any>>(
       } else {
         setError({ unknown: e });
       }
+      throw e;
     } finally {
       setPending(false);
     }
@@ -139,9 +144,7 @@ export function useOsdkAction<Q extends ActionDefinition<any>>(
       }
 
       // Abort any existing validation
-      if (abortControllerRef.current) {
-        abortControllerRef.current.abort();
-      }
+      abortControllerRef.current?.abort();
 
       // Create new AbortController
       const abortController = new AbortController();
@@ -181,13 +184,11 @@ export function useOsdkAction<Q extends ActionDefinition<any>>(
   // Cleanup on unmount
   React.useEffect(() => {
     return () => {
-      if (abortControllerRef.current) {
-        abortControllerRef.current.abort();
-      }
+      abortControllerRef.current?.abort();
     };
   }, []);
 
-  return {
+  return React.useMemo(() => ({
     applyAction,
     validateAction,
     error,
@@ -195,5 +196,13 @@ export function useOsdkAction<Q extends ActionDefinition<any>>(
     isPending,
     isValidating,
     validationResult,
-  };
+  }), [
+    applyAction,
+    validateAction,
+    error,
+    data,
+    isPending,
+    isValidating,
+    validationResult,
+  ]);
 }

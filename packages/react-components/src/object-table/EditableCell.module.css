@@ -1,0 +1,70 @@
+.osdkEditableCell {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--osdk-surface-spacing);
+
+  padding: var(--osdk-surface-spacing) calc(var(--osdk-surface-spacing) * 3);
+  border-radius: var(--osdk-surface-border-radius);
+  border: var(--osdk-surface-border-width) solid transparent;
+  background: inherit;
+
+  tr[data-focused="true"] & {
+    border: var(--osdk-table-cell-editable-border);
+    background: var(--osdk-table-cell-editable-bg);
+
+    &.osdkEditedInput {
+      border: var(--osdk-table-cell-edited-border);
+    }
+
+    &:focus-within,
+    &.osdkEditedInput:focus-within {
+      border: var(--osdk-emphasis-focus-width) solid
+        var(--osdk-emphasis-focus-color);
+    }
+
+    &.error {
+      border: var(--osdk-table-cell-edited-border-error);
+
+      &:focus-within {
+        border: var(--osdk-emphasis-focus-width) solid
+          var(--osdk-intent-danger-rest);
+      }
+    }
+  }
+
+  &.error {
+    background: var(--osdk-table-cell-editable-bg);
+    border: var(--osdk-table-cell-edited-border-error);
+  }
+}
+
+.osdkEditableInput {
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: left;
+  background: inherit;
+  border: none;
+
+  &:focus {
+    outline: none;
+  }
+}
+
+.osdkEditedInput {
+  border: var(--osdk-table-cell-edited-border);
+  background: var(--osdk-table-cell-editable-bg);
+}
+
+.validationError {
+  display: flex;
+  align-items: center;
+  gap: var(--osdk-surface-spacing);
+}
+
+.errorIcon {
+  color: var(--osdk-intent-danger-rest);
+}

@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
+import type { OntologyEntityBase } from "./common/OntologyEntityBase.js";
+import { OntologyEntityTypeEnum } from "./common/OntologyEntityTypeEnum.js";
 import { importedTypes } from "./defineOntology.js";
-import type { OntologyEntityBase } from "./types.js";
-import { OntologyEntityTypeEnum } from "./types.js";
 
 export function importOntologyEntity<T extends OntologyEntityBase>(e: T): void {
   if (e.__type !== OntologyEntityTypeEnum.VALUE_TYPE) {

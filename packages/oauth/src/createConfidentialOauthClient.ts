@@ -59,6 +59,7 @@ export function createConfidentialOauthClient(
     undefined,
     undefined,
     joinedScopes,
+    undefined,
   );
 
   async function _signIn() {

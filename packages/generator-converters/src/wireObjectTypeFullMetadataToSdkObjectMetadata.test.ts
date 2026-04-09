@@ -37,13 +37,22 @@ describe(wireObjectTypeFullMetadataToSdkObjectMetadata, () => {
         icon: { type: "blueprint", name: "blueprint", color: "blue" },
         primaryKey: "primaryKey",
         properties: {
-          primaryKey: { dataType: { type: "string" }, "rid": "rid" },
+          primaryKey: {
+            dataType: { type: "string" },
+            "rid": "rid",
+            typeClasses: [],
+          },
           otherKey: {
             nullable: false,
             dataType: { type: "string" },
             rid: "rid",
+            typeClasses: [],
           },
-          defaulted: { dataType: { type: "string" }, rid: "rid" },
+          defaulted: {
+            dataType: { type: "string" },
+            rid: "rid",
+            typeClasses: [],
+          },
         },
         rid: "rid",
         status: "ACTIVE",
@@ -53,13 +62,13 @@ describe(wireObjectTypeFullMetadataToSdkObjectMetadata, () => {
     }, true);
 
     // PK is never nullable
-    expect(result.properties["primaryKey"].nullable).toBe(false);
+    expect(result.properties.primaryKey.nullable).toBe(false);
 
     // was specified above
-    expect(result.properties["otherKey"].nullable).toBe(false);
+    expect(result.properties.otherKey.nullable).toBe(false);
 
     // was unspecified, so should be nullable
-    expect(result.properties["defaulted"].nullable).toBe(true);
+    expect(result.properties.defaulted.nullable).toBe(true);
   });
 
   it("Is up to date with the enums from API", () => {
@@ -107,13 +116,22 @@ describe(wireObjectTypeFullMetadataToSdkObjectMetadata, () => {
         } as any,
         primaryKey: "primaryKey",
         properties: {
-          primaryKey: { dataType: { type: "string" }, "rid": "rid" },
+          primaryKey: {
+            dataType: { type: "string" },
+            "rid": "rid",
+            typeClasses: [],
+          },
           otherKey: {
             nullable: false,
             dataType: { type: "string" },
             rid: "rid",
+            typeClasses: [],
           },
-          defaulted: { dataType: { type: "string" }, rid: "rid" },
+          defaulted: {
+            dataType: { type: "string" },
+            rid: "rid",
+            typeClasses: [],
+          },
         },
         rid: "rid",
         status: "INVALID_NOT_IN_API" as any,
@@ -132,9 +150,9 @@ describe(wireObjectTypeFullMetadataToSdkObjectMetadata, () => {
     const result = wireObjectTypeFullMetadataToSdkObjectMetadata({
       implementsInterfaces: ["InterfaceZ", "InterfaceA", "InterfaceC"],
       implementsInterfaces2: {
-        "InterfaceZ": { properties: {}, links: {} },
-        "InterfaceA": { properties: {}, links: {} },
-        "InterfaceC": { properties: {}, links: {} },
+        "InterfaceZ": { properties: {}, propertiesV2: {}, links: {} },
+        "InterfaceA": { properties: {}, propertiesV2: {}, links: {} },
+        "InterfaceC": { properties: {}, propertiesV2: {}, links: {} },
       },
       linkTypes: [],
       objectType: {
@@ -145,7 +163,11 @@ describe(wireObjectTypeFullMetadataToSdkObjectMetadata, () => {
         icon: { type: "blueprint", name: "blueprint", color: "blue" },
         primaryKey: "primaryKey",
         properties: {
-          primaryKey: { dataType: { type: "string" }, "rid": "rid" },
+          primaryKey: {
+            dataType: { type: "string" },
+            "rid": "rid",
+            typeClasses: [],
+          },
         },
         rid: "rid",
         status: "ACTIVE",
@@ -200,7 +222,11 @@ describe(wireObjectTypeFullMetadataToSdkObjectMetadata, () => {
         icon: { type: "blueprint", name: "blueprint", color: "blue" },
         primaryKey: "primaryKey",
         properties: {
-          primaryKey: { dataType: { type: "string" }, "rid": "rid" },
+          primaryKey: {
+            dataType: { type: "string" },
+            "rid": "rid",
+            typeClasses: [],
+          },
         },
         rid: "rid",
         status: "ACTIVE",
@@ -229,7 +255,11 @@ describe(wireObjectTypeFullMetadataToSdkObjectMetadata, () => {
         icon: { type: "blueprint", name: "blueprint", color: "blue" },
         primaryKey: "primaryKey",
         properties: {
-          primaryKey: { dataType: { type: "string" }, "rid": "rid" },
+          primaryKey: {
+            dataType: { type: "string" },
+            "rid": "rid",
+            typeClasses: [],
+          },
         },
         rid: "rid",
         status: "ACTIVE",

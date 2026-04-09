@@ -95,7 +95,7 @@ export async function run({
     osdkPackage,
   };
   const processFiles = function(dir: string) {
-    fs.readdirSync(dir).forEach(function(file) {
+    fs.readdirSync(dir).forEach((file) => {
       file = dir + "/" + file;
       const stat = fs.statSync(file);
       if (stat.isDirectory()) {
@@ -126,7 +126,7 @@ export async function run({
         `Template ${template.id} requires OSDK package and registry URL`,
       );
     }
-    const npmRc = generateNpmRc({ osdkPackage, osdkRegistryUrl });
+    const npmRc = generateNpmRc({ osdkPackage, osdkRegistryUrl, foundryUrl });
     fs.writeFileSync(path.join(root, ".npmrc"), npmRc);
   }
 

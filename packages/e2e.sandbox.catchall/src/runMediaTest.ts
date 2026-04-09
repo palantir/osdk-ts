@@ -16,8 +16,13 @@
 
 import type { Media, MediaReference, MediaUpload } from "@osdk/api";
 import { __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference } from "@osdk/api/unstable";
-import { $Actions, MnayanOsdkMediaObject } from "@osdk/e2e.generated.catchall";
-import { client } from "./client.js";
+import {
+  $Actions,
+  $Queries,
+  MnayanOsdkMediaObject,
+} from "@osdk/e2e.generated.catchall";
+import { uploadMedia } from "@osdk/functions";
+import { client, mjClient } from "./client.js";
 
 async function runReadMediaTest(ref: Media): Promise<Blob> {
   const mediaMetadata = await ref.fetchMetadata();
@@ -57,7 +62,7 @@ async function runCreateMediaReferenceTest(
     __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference,
   )
     .createMediaReference({
-      data: data,
+      data,
       fileName: "test15.png",
       objectType: MnayanOsdkMediaObject,
       // @ts-expect-error
@@ -70,6 +75,10 @@ async function runCreateMediaReferenceTest(
       console.log("Request failed as expected");
     });
 
+  console.log("Now trying to upload directly to ephemeral ");
+  await uploadMedia(client, { fileName: "test15.png", data });
+  console.log("ephemeral upload success!");
+
   // should work
   return client(__EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference)
     .createMediaReference({
@@ -81,13 +90,53 @@ async function runCreateMediaReferenceTest(
 }
 
 async function runUploadMediaTest(data: Blob): Promise<void> {
-  const payload: MediaUpload = { data, path: "test15.png" };
+  const payload: MediaUpload = { data, fileName: "test15.png" };
 
   const result = await client($Actions.createUnstructuredImageExample)
     .applyAction({
       media_reference: payload,
       path: "test15.png",
     }, { $returnEdits: true });
+}
+
+async function runMediaQueryTest(): Promise<void> {
+  const fs = await import("node:fs/promises");
+  const path = await import("node:path");
+  const { findUp } = await import("find-up");
+
+  const workspaceRoot = path.dirname(
+    (await findUp("pnpm-workspace.yaml")) ?? "",
+  );
+  const imagePath = path.join(
+    workspaceRoot,
+    "packages/e2e.sandbox.catchall/src/images/palantir.png",
+  );
+  const imageBuffer = await fs.readFile(imagePath);
+  const data = new Blob([new Uint8Array(imageBuffer)], { type: "image/png" });
+
+  // Test Direct Upload
+  let output = await mjClient($Queries.kbnTsv2MediaReferenceParamOutput)
+    .executeFunction({
+      mediaReference: { data, fileName: "palantir.png" },
+    });
+  console.log(output.getMediaReference);
+  console.log((await output.fetchMetadata()).sizeBytes);
+
+  // Test Media Reference Upload
+  output = await mjClient($Queries.kbnTsv2MediaReferenceParamOutput)
+    .executeFunction({
+      mediaReference: output.getMediaReference(),
+    });
+  console.log(output.getMediaReference);
+  console.log((await output.fetchMetadata()).sizeBytes);
+
+  // Test Media Upload
+  output = await mjClient($Queries.kbnTsv2MediaReferenceParamOutput)
+    .executeFunction({
+      mediaReference: output,
+    });
+  console.log(output.getMediaReference);
+  console.log((await output.fetchMetadata()).sizeBytes);
 }
 
 export async function runMediaTest(): Promise<void> {
@@ -128,6 +177,10 @@ export async function runMediaTest(): Promise<void> {
   console.log("Testing Media Upload Type");
   await runUploadMediaTest(testImage);
   console.log("SUCCESS: Testing Media Upload Type");
+
+  console.log("Testing Media Query");
+  await runMediaQueryTest();
+  console.log("SUCCESS: Testing Media Query");
 }
 
 void runMediaTest();

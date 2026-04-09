@@ -14,21 +14,20 @@
  * limitations under the License.
  */
 
-import type { LinkedType, LinkNames } from "@osdk/api";
 import type {
-  InterfaceDefinition,
-  ObjectTypeDefinition,
-  Osdk,
-  PropertyKeys,
-  WhereClause,
-} from "@osdk/client";
+  LinkedType,
+  LinkNames,
+  ObjectOrInterfaceDefinition,
+} from "@osdk/api";
+import type { Osdk, PropertyKeys, WhereClause } from "@osdk/client";
 import type { ObserveLinks } from "@osdk/client/unstable-do-not-use";
 import React from "react";
+import { extractPayloadError, isPayloadLoading } from "./hookUtils.js";
 import { makeExternalStore } from "./makeExternalStore.js";
 import { OsdkContext2 } from "./OsdkContext2.js";
 
 export interface UseLinksOptions<
-  T extends ObjectTypeDefinition | InterfaceDefinition,
+  T extends ObjectOrInterfaceDefinition,
 > {
   /**
    * Standard OSDK Where clause for filtering linked objects
@@ -46,18 +45,65 @@ export interface UseLinksOptions<
   };
 
   /**
+   * Restrict which properties are returned for each linked object.
+   * When provided, only the specified properties will be fetched,
+   * reducing payload sizes for list views.
+   */
+  $select?: readonly PropertyKeys<T>[];
+
+  /**
    * The mode to use for fetching data.
    * - undefined: Fetch data if not already in cache
    * - "force": Always fetch fresh data
    * - "offline": Only use cached data, don't make network requests
    */
   mode?: "force" | "offline";
+
+  /**
+   * The number of milliseconds to wait after the last observed link change.
+   *
+   * Two uses of `useLinks` with the same parameters will only trigger one
+   * network request if the second is within `dedupeIntervalMs`.
+   */
+  dedupeIntervalMs?: number;
+
+  /**
+   * Enable or disable the query.
+   *
+   * When `false`, the query will not automatically execute. It will still
+   * return any cached data, but will not fetch from the server.
+   *
+   * This is useful for:
+   * - Lazy/on-demand queries that should wait for user interaction
+   * - Dependent queries that need data from another query first
+   * - Conditional queries based on component state
+   *
+   * @default true
+   * @example
+   * // Dependent query - wait for employee data
+   * const { object: employee } = useOsdkObject(Employee, employeeId);
+   * const { links: reports } = useLinks(employee, "reports", {
+   *   enabled: !!employee
+   * });
+   */
+  enabled?: boolean;
 }
 
 export interface UseLinksResult<
-  Q extends ObjectTypeDefinition | InterfaceDefinition,
+  Q extends ObjectOrInterfaceDefinition,
 > {
   links: Osdk.Instance<Q>[] | undefined;
+
+  /**
+   * Maps each source object's primary key to its linked object instances.
+   * Useful when observing links from multiple source objects to determine
+   * which source links to which targets.
+   */
+  linkedObjectsBySourcePrimaryKey: ReadonlyMap<
+    string | number,
+    ReadonlyArray<Osdk.Instance<Q>>
+  >;
+
   isLoading: boolean;
   error: Error | undefined;
 
@@ -78,6 +124,7 @@ export interface UseLinksResult<
 }
 
 const emptyArray = Object.freeze([]);
+const emptyMap: ReadonlyMap<string | number, ReadonlyArray<never>> = new Map();
 
 /**
  * Hook to observe links from an object or array of objects.
@@ -88,7 +135,7 @@ const emptyArray = Object.freeze([]);
  * @returns UseLinksResult with links data and metadata
  */
 export function useLinks<
-  T extends ObjectTypeDefinition,
+  T extends ObjectOrInterfaceDefinition,
   L extends LinkNames<T>,
 >(
   objects: Osdk.Instance<T> | Array<Osdk.Instance<T>> | undefined,
@@ -97,6 +144,20 @@ export function useLinks<
 ): UseLinksResult<LinkedType<T, L>> {
   const { observableClient } = React.useContext(OsdkContext2);
 
+  const { enabled = true, ...otherOptions } = options;
+
+  const canonOptions = observableClient.canonicalizeOptions({
+    where: otherOptions.where,
+    orderBy: otherOptions.orderBy,
+    $select: otherOptions.$select,
+  });
+
+  const objectsKey = React.useMemo(() => {
+    if (objects === undefined) return "";
+    const arr = Array.isArray(objects) ? objects : [objects];
+    return arr.map(obj => `${obj.$apiName}:${obj.$primaryKey}`).join(",");
+  }, [objects]);
+
   // Convert single object to array for consistent handling
   const objectsArray: ReadonlyArray<Osdk.Instance<T>> = React.useMemo(() => {
     return objects === undefined
@@ -104,10 +165,16 @@ export function useLinks<
       : Array.isArray(objects)
       ? objects
       : [objects];
-  }, [objects]);
+  }, [objectsKey, objects]);
 
   const { subscribe, getSnapShot } = React.useMemo(
     () => {
+      if (!enabled) {
+        return makeExternalStore<ObserveLinks.CallbackArgs<T>>(
+          () => ({ unsubscribe: () => {} }),
+          `links ${linkName} for ${objectsKey} [DISABLED]`,
+        );
+      }
       return makeExternalStore<ObserveLinks.CallbackArgs<T>>(
         (observer) =>
           observableClient.observeLinks(
@@ -115,28 +182,30 @@ export function useLinks<
             linkName,
             {
               linkName,
-              where: options.where,
-              pageSize: options.pageSize,
-              orderBy: options.orderBy,
-              mode: options.mode,
+              where: canonOptions.where,
+              pageSize: otherOptions.pageSize,
+              orderBy: canonOptions.orderBy,
+              mode: otherOptions.mode,
+              dedupeInterval: otherOptions.dedupeIntervalMs ?? 2_000,
+              ...(canonOptions.$select ? { select: canonOptions.$select } : {}),
             },
             observer,
           ),
-        `links ${linkName} for ${
-          objectsArray.map(obj => `${obj.$apiName}:${obj.$primaryKey}`).join(
-            ",",
-          )
-        }`,
+        `links ${linkName} for ${objectsKey}`,
       );
     },
     [
+      enabled,
       observableClient,
       objectsArray,
+      objectsKey,
       linkName,
-      options.where,
-      options.pageSize,
-      options.orderBy,
-      options.mode,
+      canonOptions.where,
+      otherOptions.pageSize,
+      canonOptions.orderBy,
+      otherOptions.mode,
+      otherOptions.dedupeIntervalMs,
+      canonOptions.$select,
     ],
   );
 
@@ -145,12 +214,14 @@ export function useLinks<
     getSnapShot,
   );
 
-  return {
+  return React.useMemo(() => ({
     links: payload?.resolvedList,
-    isLoading: payload?.status === "loading",
+    linkedObjectsBySourcePrimaryKey: payload?.linkedObjectsBySourcePrimaryKey
+      ?? emptyMap,
+    isLoading: isPayloadLoading(payload, enabled),
     isOptimistic: payload?.isOptimistic ?? false,
-    error: payload?.error,
-    fetchMore: payload?.fetchMore,
+    error: extractPayloadError(payload, "Failed to load links"),
+    fetchMore: payload?.hasMore ? payload?.fetchMore : undefined,
     hasMore: payload?.hasMore ?? false,
-  };
+  }), [payload, enabled]);
 }

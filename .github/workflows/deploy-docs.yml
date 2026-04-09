@@ -1,0 +1,57 @@
+name: Deploy Docs to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'docs/**'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build docs
+        run: pnpm --filter @osdk/docs build
+
+      - name: Deploy to gh-pages branch
+        run: |
+          # Clone existing gh-pages to get storybook content
+          git clone --branch gh-pages --single-branch --depth 1 https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git gh-pages-temp || echo "No existing gh-pages branch"
+          
+          # Copy storybook directory if it exists
+          if [ -d "gh-pages-temp/storybook" ]; then
+            mkdir docs/build/storybook
+            cp -r gh-pages-temp/storybook/* docs/build/storybook
+          fi
+          
+          # Clean up temp directory
+          rm -rf gh-pages-temp
+          
+          # Deploy from docs/build as before
+          cd docs/build
+          touch .nojekyll
+          git init
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Deploy docs"
+          git push -f https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git HEAD:gh-pages

@@ -264,18 +264,21 @@ const referencedOntology = {
               "type": "string",
             },
             "rid": "ridForTaskId",
+            typeClasses: [],
           },
           "body": {
             "dataType": {
               "type": "string",
             },
             "rid": "ridForBody",
+            typeClasses: [],
           },
           "shouldBeIgnored": {
             "dataType": {
               "type": "futureUnknownType",
             } as unknown as ObjectPropertyType,
             "rid": "ridForShouldBeIgnored",
+            typeClasses: [],
           },
         },
         "status": "ACTIVE",
@@ -300,8 +303,10 @@ const referencedOntology = {
           displayName: "Some Property",
           rid: "idk",
           required: true,
+          typeClasses: [],
         },
       },
+      propertiesV2: {},
       implementedByObjectTypes: [],
       links: {},
       allExtendsInterfaces: [],
@@ -315,6 +320,7 @@ const referencedOntology = {
           displayName: "Some Property",
           rid: "idk",
           required: true,
+          typeClasses: [],
         },
         "com.example.dep.spt2": {
           apiName: "com.example.dep.spt2",
@@ -324,8 +330,10 @@ const referencedOntology = {
           displayName: "Some Property 2",
           rid: "idk",
           required: true,
+          typeClasses: [],
         },
       },
+      allPropertiesV2: {},
     },
   },
   "sharedPropertyTypes": {
@@ -336,6 +344,7 @@ const referencedOntology = {
       },
       displayName: "Some Property",
       rid: "idk",
+      typeClasses: [],
     },
   },
   "branch": {
@@ -358,6 +367,7 @@ const referencingOntology: WireOntologyDefinition = {
             "objectTypeApiName": "com.example.dep.Task",
           },
           "required": true,
+          "typeClasses": [],
         },
         "body": {
           "displayName": "body",
@@ -365,6 +375,7 @@ const referencingOntology: WireOntologyDefinition = {
             "type": "string",
           },
           "required": true,
+          "typeClasses": [],
         },
       },
       "status": "ACTIVE",
@@ -390,6 +401,7 @@ const referencingOntology: WireOntologyDefinition = {
           properties: {
             "com.example.dep.spt": "body",
           },
+          propertiesV2: {},
         },
       },
       linkTypes: [],
@@ -405,12 +417,14 @@ const referencingOntology: WireOntologyDefinition = {
               type: "integer",
             },
             rid: "rid",
+            typeClasses: [],
           },
           "body": {
             dataType: {
               type: "string",
             },
             "rid": "rid",
+            typeClasses: [],
           },
         },
         rid: "ridForThing",
@@ -435,12 +449,14 @@ const referencingOntology: WireOntologyDefinition = {
               type: "integer",
             },
             rid: "rid",
+            typeClasses: [],
           },
           "body": {
             dataType: {
               type: "string",
             },
             rid: "rid",
+            typeClasses: [],
           },
         },
         rid: "theRid",
@@ -471,6 +487,7 @@ const referencingOntology: WireOntologyDefinition = {
       },
       rid: "ri.a.b.c",
       version: "0",
+      typeReferences: {},
     },
   },
   sharedPropertyTypes: {},
@@ -508,7 +525,7 @@ describe("generator", () => {
 
   test(
     "should be able to generate a project",
-    { timeout: 20_000 },
+    { timeout: 60_000 },
     async () => {
       await generateClientSdkVersionTwoPointZero(
         TodoWireOntology,
@@ -589,7 +606,7 @@ describe("generator", () => {
             /**
              * Todo(s) to be deleted
              */
-            readonly object?: ReadonlyArray<ActionParam.ObjectType<Todo>>;
+            readonly object?: ReadonlyArray<ActionParam.ObjectType<Todo>> | null;
           }
 
           // Represents a fqn of the action
@@ -611,6 +628,11 @@ describe("generator", () => {
 
         /**
          * An action which takes in an array of objects
+         *
+         * **Note on null values:** _For optional parameters, explicitly providing a null value instead of undefined
+         * can change the behavior of the applied action. If prefills are configured, null prevents them
+         * from being applied. If a parameter modifies an object's property, null will clear the data from
+         * the object, whereas undefined would not modify that property._
          * @param {ActionParam.ObjectType<Todo>} [object] Todo(s) to be deleted
          */
         export interface deleteTodos extends ActionDefinition<deleteTodos.Signatures> {
@@ -622,17 +644,20 @@ describe("generator", () => {
             rid: 'ri.ontology.main.action-type.8f94017d-cf17-4fa8-84c3-8e01e5d594f2';
             status: 'ACTIVE';
             type: 'action';
+            unsanitizedApiName: 'deleteTodos';
 
             signatures: deleteTodos.Signatures;
           };
           apiName: 'deleteTodos';
           type: 'action';
+          unsanitizedApiName: 'deleteTodos';
           osdkMetadata: typeof $osdkMetadata;
         }
 
         export const deleteTodos: deleteTodos = {
           apiName: 'deleteTodos',
           type: 'action',
+          unsanitizedApiName: 'deleteTodos',
           osdkMetadata: $osdkMetadata,
         };
         ",
@@ -665,7 +690,7 @@ describe("generator", () => {
             /**
              * A Todo to mark completed
              */
-            readonly object?: ActionParam.ObjectType<Todo>;
+            readonly object?: ActionParam.ObjectType<Todo> | null;
           }
 
           // Represents a fqn of the action
@@ -687,6 +712,11 @@ describe("generator", () => {
 
         /**
          * An action which takes different types of parameters
+         *
+         * **Note on null values:** _For optional parameters, explicitly providing a null value instead of undefined
+         * can change the behavior of the applied action. If prefills are configured, null prevents them
+         * from being applied. If a parameter modifies an object's property, null will clear the data from
+         * the object, whereas undefined would not modify that property._
          * @param {ActionParam.ObjectType<Todo>} [object] A Todo to mark completed
          */
         export interface markTodoCompleted extends ActionDefinition<markTodoCompleted.Signatures> {
@@ -703,17 +733,20 @@ describe("generator", () => {
             rid: 'ri.ontology.main.action-type.9f84017d-cf17-4fa8-84c3-8e01e5d594f2';
             status: 'ACTIVE';
             type: 'action';
+            unsanitizedApiName: 'markTodoCompleted';
 
             signatures: markTodoCompleted.Signatures;
           };
           apiName: 'markTodoCompleted';
           type: 'action';
+          unsanitizedApiName: 'markTodoCompleted';
           osdkMetadata: typeof $osdkMetadata;
         }
 
         export const markTodoCompleted: markTodoCompleted = {
           apiName: 'markTodoCompleted',
           type: 'action',
+          unsanitizedApiName: 'markTodoCompleted',
           osdkMetadata: $osdkMetadata,
         };
         ",
@@ -728,6 +761,7 @@ describe("generator", () => {
           ObjectSet as $ObjectSet,
           Osdk as $Osdk,
           PropertyValueWireToClient as $PropType,
+          SingleLinkAccessor as $SingleLinkAccessor,
         } from '@osdk/client';
 
         export type OsdkObjectLinks$SomeInterface = {};
@@ -787,11 +821,14 @@ describe("generator", () => {
           };
         }
 
-        export const SomeInterface: SomeInterface = {
+        export const SomeInterface = {
           type: 'interface',
           apiName: 'SomeInterface',
           osdkMetadata: $osdkMetadata,
-        };
+          internalDoNotUseMetadata: {
+            rid: 'idk',
+          },
+        } satisfies SomeInterface & { internalDoNotUseMetadata: { rid: string } } as SomeInterface;
         ",
           "/foo/ontology/objects.ts": "export { Person } from './objects/Person.js';
         export { Todo } from './objects/Todo.js';
@@ -846,6 +883,8 @@ describe("generator", () => {
           osdkMetadata: typeof $osdkMetadata;
           type: 'object';
           apiName: 'Person';
+          primaryKeyApiName: 'email';
+          primaryKeyType: 'string';
           __DefinitionMetadata?: {
             objectSet: Person.ObjectSet;
             props: Person.Props;
@@ -882,11 +921,16 @@ describe("generator", () => {
           };
         }
 
-        export const Person: Person = {
+        export const Person = {
           type: 'object',
           apiName: 'Person',
           osdkMetadata: $osdkMetadata,
-        };
+          primaryKeyApiName: 'email',
+          primaryKeyType: 'string',
+          internalDoNotUseMetadata: {
+            rid: 'ridForPerson',
+          },
+        } satisfies Person & { internalDoNotUseMetadata: { rid: string } } as Person;
         ",
           "/foo/ontology/objects/Todo.ts": "import type { PropertyDef as $PropertyDef } from '@osdk/client';
         import { $osdkMetadata } from '../../OntologyMetadata.js';
@@ -916,7 +960,7 @@ describe("generator", () => {
             /**
              * (no ontology metadata)
              */
-            readonly array: ('a' | 'b' | 'c')[] | undefined;
+            readonly array: ('a' | 'b"c' | "d'e")[] | undefined;
             /**
              *   display name: 'Body',
              *
@@ -952,6 +996,8 @@ describe("generator", () => {
           osdkMetadata: typeof $osdkMetadata;
           type: 'object';
           apiName: 'Todo';
+          primaryKeyApiName: 'id';
+          primaryKeyType: 'integer';
           __DefinitionMetadata?: {
             objectSet: Todo.ObjectSet;
             props: Todo.Props;
@@ -1010,11 +1056,16 @@ describe("generator", () => {
           };
         }
 
-        export const Todo: Todo = {
+        export const Todo = {
           type: 'object',
           apiName: 'Todo',
           osdkMetadata: $osdkMetadata,
-        };
+          primaryKeyApiName: 'id',
+          primaryKeyType: 'integer',
+          internalDoNotUseMetadata: {
+            rid: 'ridForTodo',
+          },
+        } satisfies Todo & { internalDoNotUseMetadata: { rid: string } } as Todo;
         ",
           "/foo/ontology/queries.ts": "export { getCount } from './queries/getCount.js';
         export { returnsTodo } from './queries/returnsTodo.js';
@@ -1246,7 +1297,7 @@ describe("generator", () => {
             /**
              * Todo(s) to be deleted
              */
-            readonly object?: ReadonlyArray<ActionParam.ObjectType<Todo>>;
+            readonly object?: ReadonlyArray<ActionParam.ObjectType<Todo>> | null;
           }
 
           // Represents a fqn of the action
@@ -1268,6 +1319,11 @@ describe("generator", () => {
 
         /**
          * An action which takes in an array of objects
+         *
+         * **Note on null values:** _For optional parameters, explicitly providing a null value instead of undefined
+         * can change the behavior of the applied action. If prefills are configured, null prevents them
+         * from being applied. If a parameter modifies an object's property, null will clear the data from
+         * the object, whereas undefined would not modify that property._
          * @param {ActionParam.ObjectType<Todo>} [object] Todo(s) to be deleted
          */
         export interface deleteTodos extends ActionDefinition<deleteTodos.Signatures> {
@@ -1279,17 +1335,20 @@ describe("generator", () => {
             rid: 'ri.ontology.main.action-type.8f94017d-cf17-4fa8-84c3-8e01e5d594f2';
             status: 'ACTIVE';
             type: 'action';
+            unsanitizedApiName: 'foo.bar.deleteTodos';
 
             signatures: deleteTodos.Signatures;
           };
           apiName: 'foo.bar.deleteTodos';
           type: 'action';
+          unsanitizedApiName: 'foo.bar.deleteTodos';
           osdkMetadata: typeof $osdkMetadata;
         }
 
         export const deleteTodos: deleteTodos = {
           apiName: 'foo.bar.deleteTodos',
           type: 'action',
+          unsanitizedApiName: 'foo.bar.deleteTodos',
           osdkMetadata: $osdkMetadata,
         };
         ",
@@ -1322,7 +1381,7 @@ describe("generator", () => {
             /**
              * A Todo to mark completed
              */
-            readonly object?: ActionParam.ObjectType<Todo>;
+            readonly object?: ActionParam.ObjectType<Todo> | null;
           }
 
           // Represents a fqn of the action
@@ -1344,6 +1403,11 @@ describe("generator", () => {
 
         /**
          * An action which takes different types of parameters
+         *
+         * **Note on null values:** _For optional parameters, explicitly providing a null value instead of undefined
+         * can change the behavior of the applied action. If prefills are configured, null prevents them
+         * from being applied. If a parameter modifies an object's property, null will clear the data from
+         * the object, whereas undefined would not modify that property._
          * @param {ActionParam.ObjectType<Todo>} [object] A Todo to mark completed
          */
         export interface markTodoCompleted extends ActionDefinition<markTodoCompleted.Signatures> {
@@ -1360,17 +1424,20 @@ describe("generator", () => {
             rid: 'ri.ontology.main.action-type.9f84017d-cf17-4fa8-84c3-8e01e5d594f2';
             status: 'ACTIVE';
             type: 'action';
+            unsanitizedApiName: 'foo.bar.markTodoCompleted';
 
             signatures: markTodoCompleted.Signatures;
           };
           apiName: 'foo.bar.markTodoCompleted';
           type: 'action';
+          unsanitizedApiName: 'foo.bar.markTodoCompleted';
           osdkMetadata: typeof $osdkMetadata;
         }
 
         export const markTodoCompleted: markTodoCompleted = {
           apiName: 'foo.bar.markTodoCompleted',
           type: 'action',
+          unsanitizedApiName: 'foo.bar.markTodoCompleted',
           osdkMetadata: $osdkMetadata,
         };
         ",
@@ -1385,6 +1452,7 @@ describe("generator", () => {
           ObjectSet as $ObjectSet,
           Osdk as $Osdk,
           PropertyValueWireToClient as $PropType,
+          SingleLinkAccessor as $SingleLinkAccessor,
         } from '@osdk/api';
 
         export type OsdkObjectLinks$SomeInterface = {};
@@ -1444,11 +1512,14 @@ describe("generator", () => {
           };
         }
 
-        export const SomeInterface: SomeInterface = {
+        export const SomeInterface = {
           type: 'interface',
           apiName: 'foo.bar.SomeInterface',
           osdkMetadata: $osdkMetadata,
-        };
+          internalDoNotUseMetadata: {
+            rid: 'idk',
+          },
+        } satisfies SomeInterface & { internalDoNotUseMetadata: { rid: string } } as SomeInterface;
         ",
           "/foo/ontology/objects.ts": "export { Person } from './objects/Person.js';
         export { Todo } from './objects/Todo.js';
@@ -1503,6 +1574,8 @@ describe("generator", () => {
           osdkMetadata: typeof $osdkMetadata;
           type: 'object';
           apiName: 'foo.bar.Person';
+          primaryKeyApiName: 'email';
+          primaryKeyType: 'string';
           __DefinitionMetadata?: {
             objectSet: Person.ObjectSet;
             props: Person.Props;
@@ -1539,11 +1612,16 @@ describe("generator", () => {
           };
         }
 
-        export const Person: Person = {
+        export const Person = {
           type: 'object',
           apiName: 'foo.bar.Person',
           osdkMetadata: $osdkMetadata,
-        };
+          primaryKeyApiName: 'email',
+          primaryKeyType: 'string',
+          internalDoNotUseMetadata: {
+            rid: 'ridForPerson',
+          },
+        } satisfies Person & { internalDoNotUseMetadata: { rid: string } } as Person;
         ",
           "/foo/ontology/objects/Todo.ts": "import type { PropertyDef as $PropertyDef } from '@osdk/api';
         import { $osdkMetadata } from '../../OntologyMetadata.js';
@@ -1573,7 +1651,7 @@ describe("generator", () => {
             /**
              * (no ontology metadata)
              */
-            readonly array: ('a' | 'b' | 'c')[] | undefined;
+            readonly array: ('a' | 'b"c' | "d'e")[] | undefined;
             /**
              *   display name: 'Body',
              *
@@ -1609,6 +1687,8 @@ describe("generator", () => {
           osdkMetadata: typeof $osdkMetadata;
           type: 'object';
           apiName: 'foo.bar.Todo';
+          primaryKeyApiName: 'id';
+          primaryKeyType: 'integer';
           __DefinitionMetadata?: {
             objectSet: Todo.ObjectSet;
             props: Todo.Props;
@@ -1667,11 +1747,16 @@ describe("generator", () => {
           };
         }
 
-        export const Todo: Todo = {
+        export const Todo = {
           type: 'object',
           apiName: 'foo.bar.Todo',
           osdkMetadata: $osdkMetadata,
-        };
+          primaryKeyApiName: 'id',
+          primaryKeyType: 'integer',
+          internalDoNotUseMetadata: {
+            rid: 'ridForTodo',
+          },
+        } satisfies Todo & { internalDoNotUseMetadata: { rid: string } } as Todo;
         ",
           "/foo/ontology/queries.ts": "export { getCount } from './queries/getCount.js';
         export { returnsTodo } from './queries/returnsTodo.js';
@@ -2031,6 +2116,8 @@ describe("generator", () => {
             osdkMetadata: typeof $osdkMetadata;
             type: 'object';
             apiName: 'UsesForeignSpt';
+            primaryKeyApiName: 'id';
+            primaryKeyType: 'integer';
             __DefinitionMetadata?: {
               objectSet: UsesForeignSpt.ObjectSet;
               props: UsesForeignSpt.Props;
@@ -2069,11 +2156,16 @@ describe("generator", () => {
             };
           }
 
-          export const UsesForeignSpt: UsesForeignSpt = {
+          export const UsesForeignSpt = {
             type: 'object',
             apiName: 'UsesForeignSpt',
             osdkMetadata: $osdkMetadata,
-          };
+            primaryKeyApiName: 'id',
+            primaryKeyType: 'integer',
+            internalDoNotUseMetadata: {
+              rid: 'theRid',
+            },
+          } satisfies UsesForeignSpt & { internalDoNotUseMetadata: { rid: string } } as UsesForeignSpt;
           "
         `);
     });
@@ -2162,17 +2254,20 @@ describe("generator", () => {
               rid: 'ri.a.b.c.d';
               status: 'ACTIVE';
               type: 'action';
+              unsanitizedApiName: 'setTaskBody';
 
               signatures: setTaskBody.Signatures;
             };
             apiName: 'setTaskBody';
             type: 'action';
+            unsanitizedApiName: 'setTaskBody';
             osdkMetadata: typeof $osdkMetadata;
           }
 
           export const setTaskBody: setTaskBody = {
             apiName: 'setTaskBody',
             type: 'action',
+            unsanitizedApiName: 'setTaskBody',
             osdkMetadata: $osdkMetadata,
           };
           "
@@ -2288,6 +2383,8 @@ describe("generator", () => {
           osdkMetadata: typeof $osdkMetadata;
           type: 'object';
           apiName: 'Person';
+          primaryKeyApiName: 'email';
+          primaryKeyType: 'string';
           __DefinitionMetadata?: {
             objectSet: Person.ObjectSet;
             props: Person.Props;
@@ -2324,11 +2421,16 @@ describe("generator", () => {
           };
         }
 
-        export const Person: Person = {
+        export const Person = {
           type: 'object',
           apiName: 'Person',
           osdkMetadata: $osdkMetadata,
-        };
+          primaryKeyApiName: 'email',
+          primaryKeyType: 'string',
+          internalDoNotUseMetadata: {
+            rid: 'ridForPerson',
+          },
+        } satisfies Person & { internalDoNotUseMetadata: { rid: string } } as Person;
         ",
           "/foo/ontology/objects/Todo.ts": "import type { PropertyDef as $PropertyDef } from '@osdk/client';
         import { $osdkMetadata } from '../../OntologyMetadata.js';
@@ -2394,6 +2496,8 @@ describe("generator", () => {
           osdkMetadata: typeof $osdkMetadata;
           type: 'object';
           apiName: 'Todo';
+          primaryKeyApiName: 'id';
+          primaryKeyType: 'integer';
           __DefinitionMetadata?: {
             objectSet: Todo.ObjectSet;
             props: Todo.Props;
@@ -2452,11 +2556,16 @@ describe("generator", () => {
           };
         }
 
-        export const Todo: Todo = {
+        export const Todo = {
           type: 'object',
           apiName: 'Todo',
           osdkMetadata: $osdkMetadata,
-        };
+          primaryKeyApiName: 'id',
+          primaryKeyType: 'integer',
+          internalDoNotUseMetadata: {
+            rid: 'ridForTodo',
+          },
+        } satisfies Todo & { internalDoNotUseMetadata: { rid: string } } as Todo;
         ",
           "/foo/ontology/queries.ts": "export { getCount } from './queries/getCount.js';
         export { returnsTodo } from './queries/returnsTodo.js';
@@ -2632,6 +2741,7 @@ describe("generator", () => {
           ObjectSet as $ObjectSet,
           Osdk as $Osdk,
           PropertyValueWireToClient as $PropType,
+          SingleLinkAccessor as $SingleLinkAccessor,
         } from '@osdk/client';
 
         export type OsdkObjectLinks$SomeInterface = {};
@@ -2695,11 +2805,14 @@ describe("generator", () => {
           };
         }
 
-        export const SomeInterface: SomeInterface = {
+        export const SomeInterface = {
           type: 'interface',
           apiName: 'com.example.dep.SomeInterface',
           osdkMetadata: $osdkMetadata,
-        };
+          internalDoNotUseMetadata: {
+            rid: 'idk2',
+          },
+        } satisfies SomeInterface & { internalDoNotUseMetadata: { rid: string } } as SomeInterface;
         ",
           "/foo/ontology/objects.ts": "export { Task } from './objects/Task.js';
         ",
@@ -2754,6 +2867,8 @@ describe("generator", () => {
           osdkMetadata: typeof $osdkMetadata;
           type: 'object';
           apiName: 'com.example.dep.Task';
+          primaryKeyApiName: 'taskId';
+          primaryKeyType: 'string';
           __DefinitionMetadata?: {
             objectSet: Task.ObjectSet;
             props: Task.Props;
@@ -2792,11 +2907,16 @@ describe("generator", () => {
           };
         }
 
-        export const Task: Task = {
+        export const Task = {
           type: 'object',
           apiName: 'com.example.dep.Task',
           osdkMetadata: $osdkMetadata,
-        };
+          primaryKeyApiName: 'taskId',
+          primaryKeyType: 'string',
+          internalDoNotUseMetadata: {
+            rid: 'ridForTask',
+          },
+        } satisfies Task & { internalDoNotUseMetadata: { rid: string } } as Task;
         ",
           "/foo/ontology/queries.ts": "export {};
         ",

@@ -15,17 +15,21 @@
  */
 
 import invariant from "tiny-invariant";
+import type { TokenStorageType } from "./common.js";
 import type { PublicOauthClientOptions } from "./createPublicOauthClient.js";
+import type { OauthLogger } from "./Logger.js";
 
 interface ProcessedPublicOauthClientOptions extends
   Omit<
     Required<PublicOauthClientOptions>,
-    "loginPage" | "refreshTokenMarker" | "scopes"
+    "loginPage" | "refreshTokenMarker" | "scopes" | "tokenStorage" | "logger"
   >
 {
   loginPage?: string;
   refreshTokenMarker?: string;
   joinedScopes: string;
+  tokenStorage: TokenStorageType;
+  logger?: OauthLogger;
 }
 
 export function processOptionsAndAssignDefaults(
@@ -78,5 +82,7 @@ export function processOptionsAndAssignDefaults(
     fetchFn: options.fetchFn ?? globalThis.fetch,
     ctxPath: options.ctxPath ?? "multipass",
     refreshTokenMarker: options.refreshTokenMarker,
+    tokenStorage: options.tokenStorage ?? "localStorage",
+    logger: options.logger,
   };
 }

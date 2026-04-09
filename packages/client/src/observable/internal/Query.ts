@@ -93,7 +93,24 @@ export abstract class Query<
   ): Subscription {
     this.#connectable ??= this._createConnectable(this.#subject);
     this.#subscription = this.#connectable.connect();
-    return this.#connectable.subscribe(observer);
+    const sub = this.#connectable.subscribe({
+      next: (value) => {
+        if (observer.next) {
+          observer.next(value);
+        }
+      },
+      error: (err) => {
+        if (observer.error) {
+          observer.error(err);
+        }
+      },
+      complete: () => {
+        if (observer.complete) {
+          observer.complete();
+        }
+      },
+    });
+    return sub;
   }
 
   /**
@@ -156,18 +173,20 @@ export abstract class Query<
       return;
     }
 
-    const minDedupeInterval = this.getMinimumDedupeInterval();
-    if (
-      minDedupeInterval > 0 && (
-        this.lastFetchStarted != null
-        && Date.now() - this.lastFetchStarted < minDedupeInterval
-      )
-    ) {
-      if (process.env.NODE_ENV !== "production") {
-        logger?.debug("Within dupeInterval, aborting revalidate");
-      }
+    if (!force) {
+      const minDedupeInterval = this.getMinimumDedupeInterval();
+      if (
+        minDedupeInterval > 0 && (
+          this.lastFetchStarted != null
+          && Date.now() - this.lastFetchStarted < minDedupeInterval
+        )
+      ) {
+        if (process.env.NODE_ENV !== "production") {
+          logger?.debug("Within dupeInterval, aborting revalidate");
+        }
 
-      return Promise.resolve();
+        return Promise.resolve();
+      }
     }
 
     if (process.env.NODE_ENV !== "production") {

@@ -1,5 +1,5 @@
 import type { Point } from "geojson";
-import { useActionState } from "react";
+import { useCallback, useState } from "react";
 import { Office } from "../generatedNoCheck2/index.js";
 
 // Define form state structure
@@ -19,7 +19,7 @@ export const initialFormState: FormState = {
 
 type UseOfficeFormActionOptions = {
   applyAction: (args: any) => Promise<unknown>;
-  formRef: React.RefObject<HTMLFormElement | null>;
+  formRef: React.RefObject<HTMLFormElement>;
   setShowSuccess: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
@@ -28,8 +28,13 @@ export function useOfficeFormAction({
   formRef,
   setShowSuccess,
 }: UseOfficeFormActionOptions) {
-  return useActionState<FormState, FormData>(
-    async (_prevState, formData) => {
+  const [formState, setFormState] = useState<FormState>(initialFormState);
+
+  const handleSubmit = useCallback(
+    async (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      const formData = new FormData(e.currentTarget);
+
       // Extract form values
       const name = formData.get("name") as string;
       const latitudeStr = formData.get("latitude") as string;
@@ -47,7 +52,8 @@ export function useOfficeFormAction({
       }
 
       if (Object.keys(errors).length > 0) {
-        return { success: false, errors };
+        setFormState({ success: false, errors });
+        return;
       }
 
       // Convert values
@@ -88,19 +94,21 @@ export function useOfficeFormAction({
           setShowSuccess(false);
         }, 3000);
 
-        return { success: true, errors: {} };
+        setFormState({ success: true, errors: {} });
       } catch (e) {
         // Error handling
         console.error("Failed to create office:", e);
         setShowSuccess(false);
-        return {
+        setFormState({
           success: false,
           errors: {
             name: "Failed to create office. Please try again.",
           },
-        };
+        });
       }
     },
-    initialFormState,
+    [applyAction, formRef, setShowSuccess],
   );
+
+  return [formState, handleSubmit] as const;
 }

@@ -27,9 +27,6 @@ type MaybeNullable<T extends ObjectMetadata.Property, U> = T["nullable"] extends
   true ? U | undefined
   : U;
 
-type Raw<T> = T extends Array<any> ? T[0] : T;
-type Converted<T> = T extends Array<any> ? T[1] : T;
-
 /**
  * @param {T} ObjectMetadata.Property in literal form
  * @param {STRICTLY_ENFORCE_NULLABLE}  S for strict. If false, always `|undefined`
@@ -38,11 +35,11 @@ export type OsdkObjectPropertyType<
   T extends ObjectMetadata.Property,
   STRICTLY_ENFORCE_NULLABLE extends boolean = true,
 > = STRICTLY_ENFORCE_NULLABLE extends false ?
-    | MaybeArray<T, Converted<GetClientPropertyValueFromWire<T["type"]>>>
+    | MaybeArray<T, GetClientPropertyValueFromWire<T["type"]>>
     | undefined
   : MaybeNullable<
     T,
-    MaybeArray<T, Converted<GetClientPropertyValueFromWire<T["type"]>>>
+    MaybeArray<T, GetClientPropertyValueFromWire<T["type"]>>
   >;
 
 /**
@@ -50,7 +47,7 @@ export type OsdkObjectPropertyType<
  */
 export type OsdkObjectPropertyTypeNotUndefined<
   T extends ObjectMetadata.Property,
-> = MaybeArray<T, Converted<GetClientPropertyValueFromWire<T["type"]>>>;
+> = MaybeArray<T, GetClientPropertyValueFromWire<T["type"]>>;
 
 /**
  * @param {T} ObjectMetadata.Property in literal form
@@ -60,15 +57,9 @@ export type OsdkObjectCreatePropertyType<
   T extends ObjectMetadata.Property,
   STRICTLY_ENFORCE_NULLABLE extends boolean = true,
 > = STRICTLY_ENFORCE_NULLABLE extends false ?
-    | MaybeArray<T, Converted<GetCreatePropertyValueFromWire<T["type"]>>>
+    | MaybeArray<T, GetCreatePropertyValueFromWire<T["type"]>>
     | undefined
   : MaybeNullable<
     T,
-    MaybeArray<T, Converted<GetCreatePropertyValueFromWire<T["type"]>>>
-  >;
-
-export type OsdkObjectRawPropertyType<T extends ObjectMetadata.Property> =
-  MaybeNullable<
-    T,
-    MaybeArray<T, Raw<GetClientPropertyValueFromWire<T["type"]>>>
+    MaybeArray<T, GetCreatePropertyValueFromWire<T["type"]>>
   >;

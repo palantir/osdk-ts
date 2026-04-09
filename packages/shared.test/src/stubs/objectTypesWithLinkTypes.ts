@@ -21,6 +21,7 @@ import {
   occupants,
   officeLinkType,
   peepsLinkType,
+  visitedOffices,
 } from "./linkTypes.js";
 import {
   BGaoNflPlayerObjectType,
@@ -36,12 +37,22 @@ import {
 
 export const employeeObjectWithLinkTypes: ObjectTypeFullMetadata = {
   objectType: employeeObjectType,
-  linkTypes: [peepsLinkType, leadLinkType, officeLinkType],
+  linkTypes: [peepsLinkType, leadLinkType, officeLinkType, visitedOffices],
   implementsInterfaces: ["FooInterface"],
   implementsInterfaces2: {
     FooInterface: {
       properties: {
         fooSpt: "fullName",
+      },
+      propertiesV2: {
+        fooSpt: {
+          type: "localPropertyImplementation",
+          propertyApiName: "fullName",
+        },
+        fooIdp: {
+          type: "localPropertyImplementation",
+          propertyApiName: "office",
+        },
       },
       links: {},
     },

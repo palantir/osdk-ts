@@ -1,5 +1,193 @@
 # @osdk/shared.test
 
+## 2.8.0
+
+### Minor Changes
+
+- 322c5bc: Simulated release
+- abb0e0f: Bump Platform SDK dependencies
+- d1ad4d1: Fix remapping query responses with structs that have null fields.
+- 35f2f1a: Add Media inputs/outputs for Queries
+- 46f0a47: Update platform SDK to 2.57.0 and handle new typeReference query data type
+
+### Patch Changes
+
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [4bb9769]
+- Updated dependencies [abb0e0f]
+- Updated dependencies [f294f5a]
+- Updated dependencies [0df859a]
+- Updated dependencies [d284bf2]
+- Updated dependencies [4ef6adc]
+- Updated dependencies [60b5ffb]
+- Updated dependencies [8c30908]
+- Updated dependencies [4a856cb]
+- Updated dependencies [b68cebd]
+- Updated dependencies [35f2f1a]
+- Updated dependencies [46f0a47]
+- Updated dependencies [4470c0d]
+- Updated dependencies [61e33ab]
+  - @osdk/api@2.8.0
+  - @osdk/generator-converters@2.8.0
+
+## 2.8.0-beta.4
+
+### Minor Changes
+
+- 46f0a47: Update platform SDK to 2.57.0 and handle new typeReference query data type
+
+### Patch Changes
+
+- Updated dependencies [46f0a47]
+  - @osdk/generator-converters@2.8.0-beta.32
+  - @osdk/api@2.8.0-beta.32
+
+## 2.8.0-beta.3
+
+### Minor Changes
+
+- d1ad4d1: Fix remapping query responses with structs that have null fields.
+- 35f2f1a: Add Media inputs/outputs for Queries
+
+### Patch Changes
+
+- Updated dependencies [35f2f1a]
+  - @osdk/api@2.8.0-beta.14
+  - @osdk/generator-converters@2.8.0-beta.14
+
+## 2.8.0-beta.2
+
+### Minor Changes
+
+- abb0e0f: Bump Platform SDK dependencies
+
+### Patch Changes
+
+- Updated dependencies [abb0e0f]
+  - @osdk/generator-converters@2.8.0-beta.9
+  - @osdk/api@2.8.0-beta.9
+
+## 2.7.0-beta.4
+
+### Minor Changes
+
+- db44f6b: Add property security metadata to objects when requested
+- 266b901: Fix queries that return arrays of objects.
+
+### Patch Changes
+
+- Updated dependencies [db44f6b]
+- Updated dependencies [24a1e29]
+  - @osdk/api@2.7.0-beta.10
+  - @osdk/generator-converters@2.7.0-beta.10
+
+## 2.7.0-beta.3
+
+### Minor Changes
+
+- dc33f68: Add Transaction ID to Queries
+
+### Patch Changes
+
+- Updated dependencies [dc33f68]
+  - @osdk/generator-converters@2.7.0-beta.5
+  - @osdk/api@2.7.0-beta.5
+
+## 2.7.0-beta.2
+
+### Minor Changes
+
+- 03db734: Move platform SDK deps to pnpm catalog
+
+### Patch Changes
+
+- @osdk/api@2.7.0-beta.2
+- @osdk/generator-converters@2.7.0-beta.2
+
+## 2.6.0-beta.5
+
+### Minor Changes
+
+- 84f0eef: Bumping OSDK apis
+
+### Patch Changes
+
+- Updated dependencies [84f0eef]
+- Updated dependencies [486ef7e]
+- Updated dependencies [ea077c6]
+  - @osdk/generator-converters@2.6.0-beta.13
+  - @osdk/api@2.6.0-beta.13
+
+## 2.6.0-beta.4
+
+### Minor Changes
+
+- 3fbb596: Pipe through transactionId to endpoints that load data via object sets
+
+### Patch Changes
+
+- Updated dependencies [3fbb596]
+  - @osdk/generator-converters@2.6.0-beta.10
+  - @osdk/api@2.6.0-beta.10
+
+## 2.6.0-beta.3
+
+### Minor Changes
+
+- a1ffb20: Use new ephemeral media upload endpoint.
+- e62c692: Allow all applicable filters for struct sub properties to be applied on struct arrays
+
+### Patch Changes
+
+- Updated dependencies [a1ffb20]
+- Updated dependencies [e62c692]
+  - @osdk/generator-converters@2.6.0-beta.8
+  - @osdk/api@2.6.0-beta.8
+
+## 2.6.0-beta.2
+
+### Minor Changes
+
+- 84e61fc: Add propertyValueFormatting type to property metadata
+
+### Patch Changes
+
+- Updated dependencies [84e61fc]
+- Updated dependencies [c4f8529]
+- Updated dependencies [f7ae38a]
+  - @osdk/generator-converters@2.6.0-beta.2
+  - @osdk/api@2.6.0-beta.2
+
+## 2.5.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- 7cdab1d: Update platform sdk dependencies
+- a00d2ed: Update Platform SDK dependencies
+- 7bdac45: Update Platform SDK dependency
+- a96d89e: Update Platform SDK dependencies
+- cbcf2ad: Add branching support
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [7160276]
+- Updated dependencies [7cdab1d]
+- Updated dependencies [a00d2ed]
+- Updated dependencies [7bdac45]
+- Updated dependencies [37eb75b]
+- Updated dependencies [7b97128]
+- Updated dependencies [76905f5]
+- Updated dependencies [a96d89e]
+- Updated dependencies [7bdac45]
+- Updated dependencies [20962bc]
+- Updated dependencies [cbcf2ad]
+- Updated dependencies [052a96b]
+- Updated dependencies [ca1fabe]
+- Updated dependencies [e48be06]
+  - @osdk/api@2.5.0
+  - @osdk/generator-converters@2.5.0
+
 ## 2.5.0-beta.5
 
 ### Minor Changes

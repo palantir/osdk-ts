@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { NULL_VALUE } from "@osdk/api";
-import type { ActionMetadata, MediaUpload } from "@osdk/api";
+import type { ActionMetadata, Media, MediaUpload } from "@osdk/api";
 import { Employee, Task } from "@osdk/client.test.ontology";
 import type { MediaReference } from "@osdk/foundry.core";
 import type { SetupServer } from "@osdk/shared.test";
@@ -219,7 +218,7 @@ describe(toDataValue, () => {
       ], {
         type: "application/json",
       }),
-      path: "file.txt",
+      fileName: "file.txt",
     };
 
     // TODO: Mock MediaUpload properly in FauxFoundry
@@ -268,24 +267,44 @@ describe(toDataValue, () => {
     expect(converted).toEqual(mediaReference);
   });
 
-  it("Converts NULL_VALUE to null", async () => {
+  it("passes through nulls correctly", async () => {
     const converted = await toDataValue(
-      NULL_VALUE,
+      null,
       clientCtx,
       mockActionMetadata,
     );
     expect(converted).toBeNull();
   });
 
-  it("Converts NULL_VALUE equivalents to null", async () => {
-    const clearData = Symbol.for("NULL_VALUE") as symbol & {
-      __type: "NULL_VALUE";
+  it("converts Media type directly to MediaReference", async () => {
+    const expectedMediaReference: MediaReference = {
+      mimeType: "image/png",
+      reference: {
+        type: "mediaSetViewItem",
+        mediaSetViewItem: {
+          mediaItemRid: "test-media-item-rid",
+          mediaSetRid: "test-media-set-rid",
+          mediaSetViewRid: "test-media-set-view-rid",
+        },
+      },
     };
+
+    const mockMedia: Media = {
+      fetchMetadata: async () => ({
+        sizeBytes: 1024,
+        mediaType: "image/png",
+      }),
+      fetchContents: async () => new Response(),
+      getMediaReference: () => expectedMediaReference,
+    };
+
     const converted = await toDataValue(
-      clearData,
+      mockMedia,
       clientCtx,
       mockActionMetadata,
     );
-    expect(converted).toEqual(null);
+
+    expect(converted).toEqual(expectedMediaReference);
+    expect(isMediaReference(converted)).toBe(true);
   });
 });

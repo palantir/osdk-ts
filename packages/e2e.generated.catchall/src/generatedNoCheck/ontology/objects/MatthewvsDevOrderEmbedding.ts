@@ -57,6 +57,8 @@ export interface MatthewvsDevOrderEmbedding extends $ObjectTypeDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'object';
   apiName: 'MatthewvsDevOrderEmbedding';
+  primaryKeyApiName: 'orderId';
+  primaryKeyType: 'string';
   __DefinitionMetadata?: {
     objectSet: MatthewvsDevOrderEmbedding.ObjectSet;
     props: MatthewvsDevOrderEmbedding.Props;
@@ -103,8 +105,13 @@ export interface MatthewvsDevOrderEmbedding extends $ObjectTypeDefinition {
   };
 }
 
-export const MatthewvsDevOrderEmbedding: MatthewvsDevOrderEmbedding = {
+export const MatthewvsDevOrderEmbedding = {
   type: 'object',
   apiName: 'MatthewvsDevOrderEmbedding',
   osdkMetadata: $osdkMetadata,
-};
+  primaryKeyApiName: 'orderId',
+  primaryKeyType: 'string',
+  internalDoNotUseMetadata: {
+    rid: 'rid.a.b.c.d',
+  },
+} satisfies MatthewvsDevOrderEmbedding & { internalDoNotUseMetadata: { rid: string } } as MatthewvsDevOrderEmbedding;

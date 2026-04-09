@@ -7,6 +7,7 @@ import type {
   ObjectSet as $ObjectSet,
   Osdk as $Osdk,
   PropertyValueWireToClient as $PropType,
+  SingleLinkAccessor as $SingleLinkAccessor,
 } from '@osdk/client';
 
 export type OsdkObjectLinks$InterfaceNoProps = {};
@@ -52,8 +53,11 @@ export interface InterfaceNoProps extends $InterfaceDefinition {
   };
 }
 
-export const InterfaceNoProps: InterfaceNoProps = {
+export const InterfaceNoProps = {
   type: 'interface',
   apiName: 'InterfaceNoProps',
   osdkMetadata: $osdkMetadata,
-};
+  internalDoNotUseMetadata: {
+    rid: 'ri.ontology.main.interface-type.1b1b1b1b-1b1b-1b1b-1b1b-1b1b1b1b1b1b',
+  },
+} satisfies InterfaceNoProps & { internalDoNotUseMetadata: { rid: string } } as InterfaceNoProps;

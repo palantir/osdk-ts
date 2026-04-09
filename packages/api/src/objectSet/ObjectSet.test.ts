@@ -19,6 +19,7 @@ import { describe, expectTypeOf, it, test, vi } from "vitest";
 import type {
   DerivedProperty,
   NullabilityAdherence,
+  ObjectIdentifiers,
   ObjectOrInterfaceDefinition,
   ObjectSet as $ObjectSet,
   Osdk,
@@ -26,14 +27,24 @@ import type {
   PropertyKeys,
 } from "../index.js";
 import type { DerivedObjectOrInterfaceDefinition } from "../ontology/ObjectOrInterface.js";
-import type { EmployeeApiTest } from "../test/EmployeeApiTest.js";
+import { EmployeeApiTest } from "../test/EmployeeApiTest.js";
+import { FooInterfaceApiTest } from "../test/FooInterfaceApiTest.js";
+
+async function* asyncIterateLinkOnce() {
+  const obj = { $apiName: undefined, $primaryKey: undefined };
+  yield Promise.resolve({
+    source: obj,
+    target: obj,
+    linkTypeApiName: undefined,
+  });
+}
 
 export function createMockObjectSet<
   Q extends ObjectOrInterfaceDefinition,
 >(): $ObjectSet<Q, never> {
-  let fauxObject: Osdk.Instance<Q>,
-    fauxResults: any,
-    fauxObjectSet: $ObjectSet<Q>;
+  let fauxObject: Osdk.Instance<Q>;
+  let fauxResults: any;
+  let fauxObjectSet: $ObjectSet<Q>;
 
   // eslint-disable-next-line prefer-const
   fauxObject = {
@@ -72,6 +83,7 @@ export function createMockObjectSet<
     nearestNeighbors: vi.fn(() => {
       return fauxObjectSet;
     }),
+    experimental_asyncIterLinks: vi.fn(asyncIterateLinkOnce),
   } as any as $ObjectSet<Q>;
 
   return fauxObjectSet;
@@ -79,6 +91,8 @@ export function createMockObjectSet<
 
 describe("ObjectSet", () => {
   const fauxObjectSet = createMockObjectSet<EmployeeApiTest>();
+
+  const interfaceObjectSet = createMockObjectSet<FooInterfaceApiTest>();
 
   describe("normal", () => {
     test("select none", async () => {
@@ -1106,34 +1120,6 @@ describe("ObjectSet", () => {
         });
       });
 
-      it("allows adding literals via base.constant", () => {
-        const objectSet = fauxObjectSet.withProperties({
-          "myProp1": (base) => {
-            const plus = base.pivotTo("lead").selectProperty("employeeId")
-              .add(base.constant.double(1));
-            expectTypeOf(plus).toEqualTypeOf<
-              DerivedProperty.NumericPropertyDefinition<
-                "double",
-                EmployeeApiTest
-              >
-            >();
-
-            const intPlusIntReturnsInt = base.pivotTo("lead").selectProperty(
-              "employeeId",
-            )
-              .add(base.constant.integer(1));
-            expectTypeOf(intPlusIntReturnsInt).toEqualTypeOf<
-              DerivedProperty.NumericPropertyDefinition<
-                "integer",
-                EmployeeApiTest
-              >
-            >();
-
-            return plus;
-          },
-        });
-      });
-
       it("allows correctly typed nested property definitions", () => {
         const objectSet = fauxObjectSet.withProperties({
           "myProp1": (base) => {
@@ -1227,36 +1213,6 @@ describe("ObjectSet", () => {
             >();
 
             return max;
-          },
-        });
-      });
-
-      it("allows adding literals via base.constant", () => {
-        const objectSet = fauxObjectSet.withProperties({
-          "myProp1": (base) => {
-            const dateAndDateReturnDate = base.pivotTo("lead").selectProperty(
-              "dateOfJoining",
-            )
-              .min(base.constant.datetime("2025-01-01T00:00:00Z"));
-            expectTypeOf(dateAndDateReturnDate).toEqualTypeOf<
-              DerivedProperty.DatetimePropertyDefinition<
-                "datetime",
-                EmployeeApiTest
-              >
-            >();
-
-            const dateAndTimeReturnTime = base.pivotTo("lead").selectProperty(
-              "dateOfJoining",
-            )
-              .min(base.constant.timestamp("2025-01-01T00:00:00Z"));
-            expectTypeOf(dateAndTimeReturnTime).toEqualTypeOf<
-              DerivedProperty.DatetimePropertyDefinition<
-                "timestamp",
-                EmployeeApiTest
-              >
-            >();
-
-            return dateAndTimeReturnTime;
           },
         });
       });
@@ -1448,6 +1404,95 @@ describe("ObjectSet", () => {
 
       expectTypeOf(nearestNeighborsObjectSetWithErrors.value?.data[0]).not
         .toHaveProperty("$score");
+    });
+  });
+  describe("narrowToType", () => {
+    it("restricts casting from interface to object type", () => {
+      const objectSet = { narrowToType: () => {} } as unknown as $ObjectSet<
+        FooInterfaceApiTest
+      >;
+
+      objectSet.narrowToType(EmployeeApiTest);
+
+      objectSet.narrowToType(FooInterfaceApiTest);
+
+      objectSet.narrowToType({ type: "interface", apiName: "AnyInterface :)" });
+
+      // @ts-expect-error
+      objectSet.narrowToType({ type: "object", apiName: "NotImplemented" });
+
+      // Interfaces that don't have any implementedBy fields should still accept any interface
+      const objectSet2 = { narrowToType: () => {} } as unknown as $ObjectSet<
+        FooInterfaceApiTest & { __DefinitionMetadata: { implementedBy: [] } }
+      >;
+
+      objectSet2.narrowToType({ type: "interface", apiName: "NotImplemented" });
+    });
+    it("restricts casting from object type to interface", () => {
+      const objectSet = {} as $ObjectSet<EmployeeApiTest>;
+      type narrowToTypeAllowedInterfaceTypes = Parameters<
+        typeof objectSet.narrowToType
+      >[0]["apiName"];
+      type narrowToTypeAllowedTypes = Parameters<
+        typeof objectSet.narrowToType
+      >[0]["type"];
+
+      expectTypeOf<narrowToTypeAllowedTypes>().toEqualTypeOf<"interface">();
+
+      expectTypeOf<narrowToTypeAllowedInterfaceTypes>().toEqualTypeOf<
+        "FooInterface"
+      >();
+    });
+  });
+
+  describe("asyncIterLinks", async () => {
+    it("typechecks self-referential one link", async () => {
+      for await (
+        const { source, target, linkType } of fauxObjectSet
+          .experimental_asyncIterLinks([
+            "lead",
+          ])
+      ) {
+        expectTypeOf(source).toEqualTypeOf<
+          ObjectIdentifiers<EmployeeApiTest>
+        >();
+
+        expectTypeOf(target).toEqualTypeOf<
+          ObjectIdentifiers<EmployeeApiTest>
+        >();
+
+        expectTypeOf(source.$apiName).toBeString();
+        expectTypeOf(target.$apiName).toBeString();
+        expectTypeOf(source.$primaryKey).toBeNumber();
+        expectTypeOf(target.$primaryKey).toBeNumber();
+
+        expectTypeOf(linkType).toEqualTypeOf<"lead">();
+      }
+    });
+
+    it("typechecks self-referential multiple links", async () => {
+      for await (
+        const { source, target, linkType } of fauxObjectSet
+          .experimental_asyncIterLinks([
+            "lead",
+            "peeps",
+          ])
+      ) {
+        expectTypeOf(source).toEqualTypeOf<
+          ObjectIdentifiers<EmployeeApiTest>
+        >();
+
+        expectTypeOf(target).toEqualTypeOf<
+          ObjectIdentifiers<EmployeeApiTest>
+        >();
+
+        expectTypeOf(source.$apiName).toBeString();
+        expectTypeOf(target.$apiName).toBeString();
+        expectTypeOf(source.$primaryKey).toBeNumber();
+        expectTypeOf(target.$primaryKey).toBeNumber();
+
+        expectTypeOf(linkType).toEqualTypeOf<"lead" | "peeps">();
+      }
     });
   });
 });

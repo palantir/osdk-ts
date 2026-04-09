@@ -64,9 +64,9 @@ type NotOptionalParams<
   [K in keyof T]: MaybeArrayType<T[K]>;
 };
 
-type MaybeArrayType<T extends QueryDataTypeDefinition> =
-  T["multiplicity"] extends true ? ReadonlyArray<QueryBaseType<T>>
-    : QueryBaseType<T>;
+type MaybeArrayType<T extends QueryDataTypeDefinition> = "array" extends
+  T["type"] ? ReadonlyArray<QueryBaseType<T>>
+  : QueryBaseType<T>;
 
 type QueryBaseType<T extends QueryDataTypeDefinition> = T extends
   ObjectQueryDataType<infer TTargetType> ? QueryParam.ObjectType<TTargetType>

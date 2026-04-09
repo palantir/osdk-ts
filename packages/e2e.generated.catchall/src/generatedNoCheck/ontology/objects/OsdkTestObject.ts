@@ -15,7 +15,7 @@ import type {
 } from '@osdk/client';
 
 export namespace OsdkTestObject {
-  export type PropertyKeys = 'description' | 'osdkObjectName' | 'primaryKey_' | 'stringProperty';
+  export type PropertyKeys = 'structArray' | 'description' | 'osdkObjectName' | 'primaryKey_' | 'stringProperty';
 
   export type Links = {};
 
@@ -35,7 +35,21 @@ export namespace OsdkTestObject {
     /**
      *   display name: 'String Property'
      */
-    readonly stringProperty: 'brown' | 'found.com' | undefined;
+    readonly stringProperty: 'brown' | 'found.com' | 'it\'s "cool"' | undefined;
+    /**
+     * @experimental
+     *
+     *   property status: experimental
+     *
+     *   display name: 'StructArray'
+     */
+    readonly structArray:
+      | {
+          string1: $PropType['string'] | undefined;
+          string2: $PropType['string'] | undefined;
+          number: $PropType['integer'] | undefined;
+        }[]
+      | undefined;
   }
   export type StrictProps = Props;
 
@@ -57,6 +71,8 @@ export interface OsdkTestObject extends $ObjectTypeDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'object';
   apiName: 'OsdkTestObject';
+  primaryKeyApiName: 'primaryKey_';
+  primaryKeyType: 'string';
   __DefinitionMetadata?: {
     objectSet: OsdkTestObject.ObjectSet;
     props: OsdkTestObject.Props;
@@ -110,6 +126,14 @@ export interface OsdkTestObject extends $ObjectTypeDefinition {
        *   display name: 'String Property'
        */
       stringProperty: $PropertyDef<'string', 'nullable', 'single'>;
+      /**
+       * @experimental
+       *
+       *   property status: experimental
+       *
+       *   display name: 'StructArray'
+       */
+      structArray: $PropertyDef<{ string1: 'string'; string2: 'string'; number: 'integer' }, 'nullable', 'array'>;
     };
     rid: 'ri.ontology.main.object-type.ba4a949c-547a-45de-9c78-b772bb55acfb';
     status: 'EXPERIMENTAL';
@@ -119,8 +143,13 @@ export interface OsdkTestObject extends $ObjectTypeDefinition {
   };
 }
 
-export const OsdkTestObject: OsdkTestObject = {
+export const OsdkTestObject = {
   type: 'object',
   apiName: 'OsdkTestObject',
   osdkMetadata: $osdkMetadata,
-};
+  primaryKeyApiName: 'primaryKey_',
+  primaryKeyType: 'string',
+  internalDoNotUseMetadata: {
+    rid: 'ri.ontology.main.object-type.ba4a949c-547a-45de-9c78-b772bb55acfb',
+  },
+} satisfies OsdkTestObject & { internalDoNotUseMetadata: { rid: string } } as OsdkTestObject;

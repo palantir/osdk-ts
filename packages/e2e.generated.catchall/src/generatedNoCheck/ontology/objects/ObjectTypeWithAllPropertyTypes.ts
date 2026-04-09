@@ -197,6 +197,8 @@ export interface ObjectTypeWithAllPropertyTypes extends $ObjectTypeDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'object';
   apiName: 'ObjectTypeWithAllPropertyTypes';
+  primaryKeyApiName: 'id';
+  primaryKeyType: 'integer';
   __DefinitionMetadata?: {
     objectSet: ObjectTypeWithAllPropertyTypes.ObjectSet;
     props: ObjectTypeWithAllPropertyTypes.Props;
@@ -351,8 +353,15 @@ export interface ObjectTypeWithAllPropertyTypes extends $ObjectTypeDefinition {
   };
 }
 
-export const ObjectTypeWithAllPropertyTypes: ObjectTypeWithAllPropertyTypes = {
+export const ObjectTypeWithAllPropertyTypes = {
   type: 'object',
   apiName: 'ObjectTypeWithAllPropertyTypes',
   osdkMetadata: $osdkMetadata,
-};
+  primaryKeyApiName: 'id',
+  primaryKeyType: 'integer',
+  internalDoNotUseMetadata: {
+    rid: 'rid.a.b.c.d',
+  },
+} satisfies ObjectTypeWithAllPropertyTypes & {
+  internalDoNotUseMetadata: { rid: string };
+} as ObjectTypeWithAllPropertyTypes;

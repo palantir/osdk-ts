@@ -21,7 +21,6 @@ import type {
   MediaType,
 } from "@osdk/foundry.core";
 import type * as OntologiesV2 from "@osdk/foundry.ontologies";
-import { DefaultMap, MultiMap } from "mnemonist";
 import * as crypto from "node:crypto";
 import { randomUUID } from "node:crypto";
 import { inspect } from "node:util";
@@ -37,6 +36,8 @@ import {
   type BaseServerObject,
   isBaseServerObject,
 } from "./BaseServerObject.js";
+import { DefaultMap } from "./collections/DefaultMap.js";
+import { SetMultiMap } from "./collections/SetMultiMap.js";
 import type { FauxAttachmentStore } from "./FauxAttachmentStore.js";
 import { FauxDataStoreBatch } from "./FauxDataStoreBatch.js";
 import type { FauxOntology } from "./FauxOntology.js";
@@ -54,7 +55,8 @@ export interface MediaMetadataAndContent {
 }
 
 type ObjectTypeCreatableWithoutApiName<T extends ObjectTypeDefinition> =
-  OrUndefinedToOptional<JustProps<T>>;
+  & OrUndefinedToOptional<JustProps<T>>
+  & { $rid?: string };
 
 /**
  * Represents the properties needed to create an object, specifically,
@@ -62,7 +64,9 @@ type ObjectTypeCreatableWithoutApiName<T extends ObjectTypeDefinition> =
  */
 type ObjectTypeCreatable<T extends ObjectTypeDefinition> =
   & ObjectTypeCreatableWithoutApiName<T>
-  & { $apiName: CompileTimeMetadata<T>["apiName"] };
+  & {
+    $apiName: CompileTimeMetadata<T>["apiName"];
+  };
 
 /**
  * Helper type for converting `foo: string | undefined` into `foo?: string`
@@ -100,9 +104,12 @@ export class FauxDataStore {
   #objects = new DefaultMap<
     OntologiesV2.ObjectTypeApiName,
     Map<string, BaseServerObject>
-  >(
-    (key) => new Map(),
-  );
+  >((key) => new Map());
+
+  #objectsWithSecurities = new DefaultMap<
+    OntologiesV2.ObjectTypeApiName,
+    Map<string, BaseServerObject>
+  >((key) => new Map());
 
   #singleLinks = new DefaultMap(
     (_objectLocator: ObjectLocator) =>
@@ -110,7 +117,7 @@ export class FauxDataStore {
   );
 
   #manyLinks = new DefaultMap(
-    (_objectLocator: ObjectLocator) => new MultiMap<string, ObjectLocator>(Set),
+    (_objectLocator: ObjectLocator) => new SetMultiMap<string, ObjectLocator>(),
   );
 
   #fauxOntology: FauxOntology;
@@ -119,11 +126,18 @@ export class FauxDataStore {
 
   #timeSeriesData = new DefaultMap(
     (_objectType: OntologiesV2.ObjectTypeApiName) =>
-      new DefaultMap((_pk: string) =>
-        new DefaultMap((_property: OntologiesV2.PropertyApiName) =>
-          [] as Array<OntologiesV2.TimeSeriesPoint>
-        )
+      new DefaultMap(
+        (_pk: string) =>
+          new DefaultMap(
+            (_property: OntologiesV2.PropertyApiName) =>
+              [] as Array<OntologiesV2.TimeSeriesPoint>,
+          ),
       ),
+  );
+
+  #propertySecurities = new DefaultMap(
+    (_objectLocator: ObjectLocator) =>
+      [{}] as Array<OntologiesV2.PropertySecurities>,
   );
 
   #media = new DefaultMap(
@@ -188,6 +202,8 @@ export class FauxDataStore {
             objectType,
             primaryKey: String(primaryKey),
           },
+          errorDescription:
+            "The object the user is attempting to create already exists.",
         } satisfies OntologiesV2.ObjectAlreadyExists,
       );
     }
@@ -222,7 +238,7 @@ export class FauxDataStore {
         "Internal overload should only pass one argument",
       );
       invariant(
-        !Object.keys(objectType).some(s => s.startsWith("$")),
+        !Object.keys(objectType).some((s) => s.startsWith("$")),
         "Object should not have any keys starting with $ if it has __apiName",
       );
       bso = objectType;
@@ -230,7 +246,7 @@ export class FauxDataStore {
       invariant(false, "should not be possible due to overloads");
     } else if (isBaseServerObject(anyObj)) {
       invariant(
-        !Object.keys(anyObj).some(s => s.startsWith("$")),
+        !Object.keys(anyObj).some((s) => s.startsWith("$")),
         "Object should not have any keys starting with $ if it has __apiName",
       );
       bso = anyObj;
@@ -248,15 +264,10 @@ export class FauxDataStore {
         "$apiName" in bso && "$primaryKey" in bso,
         "Object should have (__apiName and __primaryKey) or ($apiName and $primaryKey)",
       );
-      const { $apiName, $primaryKey, ...others } = bso as
-        & {
-          $apiName: OntologiesV2.ObjectTypeApiName;
-          $primaryKey: string | number | boolean;
-        }
-        & Record<
-          string,
-          unknown
-        >;
+      const { $apiName, $primaryKey, ...others } = bso as {
+        $apiName: OntologiesV2.ObjectTypeApiName;
+        $primaryKey: string | number | boolean;
+      } & Record<string, unknown>;
       bso = {
         __apiName: $apiName,
         __primaryKey: $primaryKey,
@@ -265,12 +276,32 @@ export class FauxDataStore {
     }
     this.#assertObjectDoesNotExist(bso.__apiName, bso.__primaryKey);
     const frozenBso = Object.freeze({ ...bso });
-    this.#objects.get(bso.__apiName).set(
-      String(bso.__primaryKey),
-      frozenBso,
-    );
+    this.#objects.get(bso.__apiName).set(String(bso.__primaryKey), frozenBso);
+
+    if (this.#strict) {
+      // registers links
+      this.replaceObjectOrThrow(frozenBso);
+    }
 
     return frozenBso;
+  }
+
+  registerObjectWithPropertySecurities(
+    regularObject: BaseServerObject,
+    securedObject: BaseServerObject,
+    propertySecurities: OntologiesV2.PropertySecurities[],
+  ): BaseServerObject {
+    const registeredObj = this.registerObject(regularObject);
+
+    this.#objectsWithSecurities.get(registeredObj.__apiName).set(
+      String(registeredObj.__primaryKey),
+      Object.freeze({ ...securedObject }),
+    );
+    this.#propertySecurities.set(
+      objectLocator(registeredObj),
+      propertySecurities,
+    );
+    return registeredObj;
   }
 
   #osdkCreatableToBso(
@@ -286,9 +317,7 @@ export class FauxDataStore {
     }
     const { $apiName, $primaryKey, ...others } = anyObj;
 
-    const meta = this.ontology.getObjectTypeFullMetadataOrThrow(
-      objectType,
-    );
+    const meta = this.ontology.getObjectTypeFullMetadataOrThrow(objectType);
     const realPrimaryKey = anyObj[meta.objectType.primaryKey] as
       | string
       | number
@@ -323,14 +352,12 @@ export class FauxDataStore {
     );
     const oldObject = this.getObjectOrThrow(x.__apiName, x.__primaryKey);
 
-    const linksToUpdate: Array<
-      {
-        srcSide: OntologiesV2.LinkTypeSideV2;
-        srcLocator: ObjectLocator;
-        dstSide: OntologiesV2.LinkTypeSideV2;
-        dstLocator: ObjectLocator;
-      }
-    > = [];
+    const linksToUpdate: Array<{
+      srcSide: OntologiesV2.LinkTypeSideV2;
+      srcLocator: ObjectLocator;
+      dstSide: OntologiesV2.LinkTypeSideV2;
+      dstLocator: ObjectLocator;
+    }> = [];
 
     const linksToRemove: Array<{
       srcSide: OntologiesV2.LinkTypeSideV2;
@@ -344,7 +371,10 @@ export class FauxDataStore {
         invariant(
           this.#strict && linkDef.foreignKeyPropertyApiName,
           `Error examining ${objectType.objectType.apiName}.${linkDef.apiName}: ONE side of links should have a foreign key. ${
-            inspect(linkDef, { colors: false })
+            inspect(
+              linkDef,
+              { colors: false },
+            )
           }`,
         );
 
@@ -352,61 +382,49 @@ export class FauxDataStore {
         const fkValue = x[fkName];
         const oldFkValue = oldObject[fkName];
 
-        if (oldObject[fkName] !== x[fkName]) {
-          const dstSide = this.ontology.getOtherLinkTypeSideV2OrThrow(
-            objectType.objectType.apiName,
-            linkDef.apiName,
+        const dstSide = this.ontology.getOtherLinkTypeSideV2OrThrow(
+          objectType.objectType.apiName,
+          linkDef.apiName,
+        );
+        const dstLocator = objectLocator({
+          __apiName: linkDef.objectTypeApiName,
+          __primaryKey: fkValue,
+        });
+
+        const target = this.getObject(linkDef.objectTypeApiName, fkValue);
+
+        if (fkValue != null && !target) {
+          // eslint-disable-next-line no-console
+          console.log(
+            `WARNING! Setting a FK value to a non-existent object: ${dstLocator}`,
           );
-          const dstLocator = objectLocator({
-            __apiName: linkDef.objectTypeApiName,
-            __primaryKey: fkValue,
+        }
+
+        if (fkValue != null) {
+          linksToUpdate.push({
+            dstSide,
+            dstLocator,
+            srcSide: linkDef,
+            srcLocator: objectLocator(x),
           });
-
-          const target = this.getObject(linkDef.objectTypeApiName, fkValue);
-
-          if (fkValue != null && !target) {
-            // eslint-disable-next-line no-console
-            console.log(
-              `WARNING! Setting a FK value to a non-existent object: ${dstLocator}`,
-            );
-          }
-
-          if (fkValue != null) {
-            linksToUpdate.push({
-              dstSide,
-              dstLocator,
-              srcSide: linkDef,
-              srcLocator: objectLocator(x),
-            });
-          } else {
-            linksToRemove.push({
-              srcLocator: objectLocator(x),
-              srcSide: linkDef,
-              dstLocator: objectLocator({
-                __apiName: linkDef.objectTypeApiName,
-                __primaryKey: oldFkValue,
-              }),
-              dstSide,
-            });
-          }
+        } else if (oldFkValue != null) {
+          linksToRemove.push({
+            srcLocator: objectLocator(x),
+            srcSide: linkDef,
+            dstLocator: objectLocator({
+              __apiName: linkDef.objectTypeApiName,
+              __primaryKey: oldFkValue,
+            }),
+            dstSide,
+          });
         }
       }
     }
 
     this.#objects.get(x.__apiName).set(String(x.__primaryKey), x);
     for (const { srcSide, srcLocator, dstSide, dstLocator } of linksToUpdate) {
-      this.#updateSingleLinkSide(
-        srcSide,
-        srcLocator,
-        dstSide,
-        dstLocator,
-      );
-      this.#updateSingleLinkSide(
-        dstSide,
-        dstLocator,
-        srcSide,
-        srcLocator,
-      );
+      this.#updateSingleLinkSide(srcSide, srcLocator, dstSide, dstLocator);
+      this.#updateSingleLinkSide(dstSide, dstLocator, srcSide, srcLocator);
     }
 
     for (const { srcSide, srcLocator, dstSide, dstLocator } of linksToRemove) {
@@ -457,9 +475,9 @@ export class FauxDataStore {
         ? { object: dst, link: dstSide }
         : undefined;
       const manySide = oneSide
-        ? (srcSide.cardinality === "MANY"
+        ? srcSide.cardinality === "MANY"
           ? { object: src, link: srcSide }
-          : { object: dst, link: dstSide })
+          : { object: dst, link: dstSide }
         : undefined;
 
       if (oneSide && manySide) {
@@ -480,18 +498,8 @@ export class FauxDataStore {
       }
     }
 
-    this.#updateSingleLinkSide(
-      srcSide,
-      srcLocator,
-      dstSide,
-      dstLocator,
-    );
-    this.#updateSingleLinkSide(
-      dstSide,
-      dstLocator,
-      srcSide,
-      srcLocator,
-    );
+    this.#updateSingleLinkSide(srcSide, srcLocator, dstSide, dstLocator);
+    this.#updateSingleLinkSide(dstSide, dstLocator, srcSide, srcLocator);
   }
 
   unregisterLink(
@@ -555,10 +563,10 @@ export class FauxDataStore {
         || def.objectType.properties[property].dataType.type
           === "geotimeSeriesReference",
     );
-    this.#timeSeriesData.get(objectType).get(String(primaryKey)).set(
-      property,
-      data,
-    );
+    this.#timeSeriesData
+      .get(objectType)
+      .get(String(primaryKey))
+      .set(property, data);
   }
 
   getTimeSeriesData(
@@ -568,10 +576,10 @@ export class FauxDataStore {
     filter?: OntologiesV2.StreamTimeSeriesPointsRequest,
   ): OntologiesV2.TimeSeriesPoint[] {
     this.getObjectOrThrow(objectType, primaryKey);
-    const allData = this.#timeSeriesData.get(objectType).get(String(primaryKey))
-      .get(
-        property,
-      );
+    const allData = this.#timeSeriesData
+      .get(objectType)
+      .get(String(primaryKey))
+      .get(property);
     if (!filter) return allData;
     return filterTimeSeriesData(allData, filter);
   }
@@ -589,11 +597,7 @@ export class FauxDataStore {
 
       if (oldLocator && oldLocator !== dstLocator) {
         // we need to remove the other side's old value
-        this.#removeSingleSideOfLink(
-          oldLocator,
-          dstSide,
-          srcLocator,
-        );
+        this.#removeSingleSideOfLink(oldLocator, dstSide, srcLocator);
       }
       linkNameToObj.set(srcLinkName, dstLocator);
     } else if (srcSide.cardinality === "MANY") {
@@ -627,18 +631,21 @@ export class FauxDataStore {
       }),
     });
 
-    this.#media.get(objectType).get(property).set(
-      mediaItemRid,
-      Object.freeze({
-        content,
-        mediaRef,
-        metaData: Object.freeze({
-          mediaType,
-          path,
-          sizeBytes: String(content.byteLength),
+    this.#media
+      .get(objectType)
+      .get(property)
+      .set(
+        mediaItemRid,
+        Object.freeze({
+          content,
+          mediaRef,
+          metaData: Object.freeze({
+            mediaType,
+            path,
+            sizeBytes: String(content.byteLength),
+          }),
         }),
-      }),
-    );
+      );
 
     return mediaRef;
   }
@@ -650,8 +657,8 @@ export class FauxDataStore {
   ): MediaMetadataAndContent {
     const obj = this.getObjectOrThrow(objectType, primaryKey);
     const propertyDef =
-      this.ontology.getObjectTypeFullMetadataOrThrow(objectType)
-        .objectType.properties[property];
+      this.ontology.getObjectTypeFullMetadataOrThrow(objectType).objectType
+        .properties[property];
 
     if (!propertyDef) {
       // This should be the correct error, per
@@ -666,6 +673,8 @@ export class FauxDataStore {
             objectType,
             properties: [property],
           },
+          errorDescription:
+            "The requested properties are not found on the object type.",
         } satisfies OntologiesV2.PropertiesNotFound,
       );
     }
@@ -682,6 +691,8 @@ export class FauxDataStore {
             property,
             propertyBaseType: propertyDef.dataType.type,
           },
+          errorDescription:
+            "The given property type is not of the expected type.",
         } satisfies OntologiesV2.InvalidPropertyType,
       );
     }
@@ -700,6 +711,8 @@ export class FauxDataStore {
             propertyBaseType: propertyDef.dataType.type,
             propertyValue: rid,
           },
+          errorDescription:
+            "The value of the given property is invalid. See the documentation of PropertyValue for details on how properties are represented.",
         } satisfies OntologiesV2.InvalidPropertyValue,
       );
     }
@@ -723,9 +736,13 @@ export class FauxDataStore {
       invariant(
         links.get(destLinkName) === expectedPriorValue,
         `Failed to remove link: expected ${
-          JSON.stringify(expectedPriorValue)
+          JSON.stringify(
+            expectedPriorValue,
+          )
         } but found ${
-          JSON.stringify(links.get(destLinkName))
+          JSON.stringify(
+            links.get(destLinkName),
+          )
         } for link ${destLinkName} on ${JSON.stringify(locator)}`,
       );
       links.delete(destLinkName);
@@ -734,7 +751,9 @@ export class FauxDataStore {
       invariant(
         links.get(destLinkName)?.has(expectedPriorValue),
         `Failed to remove link: expected collection to contain ${
-          JSON.stringify(expectedPriorValue)
+          JSON.stringify(
+            expectedPriorValue,
+          )
         } for link ${destLinkName} on ${JSON.stringify(locator)}`,
       );
       links.remove(destLinkName, expectedPriorValue);
@@ -745,9 +764,7 @@ export class FauxDataStore {
     apiName: string,
     primaryKey: string | number | boolean,
   ): BaseServerObject | undefined {
-    return this.#objects
-      .get(apiName)
-      .get(String(primaryKey));
+    return this.#objects.get(apiName).get(String(primaryKey));
   }
 
   getObjectOrThrow(
@@ -763,6 +780,13 @@ export class FauxDataStore {
       );
     }
     return object;
+  }
+
+  getObjectWithSecurities(
+    apiName: string,
+    primaryKey: string | number | boolean,
+  ): BaseServerObject | undefined {
+    return this.#objectsWithSecurities.get(apiName).get(String(primaryKey));
   }
 
   getObjectByRid(rid: string): BaseServerObject | undefined {
@@ -802,12 +826,11 @@ export class FauxDataStore {
         .get(objectLocator(object))
         .get(linkApiName);
 
-      return Array.from(locators ?? [])
-        .map((a) => {
-          const [objectType, primaryKey] = a.split(":") ?? [];
-          invariant(objectType && primaryKey, "Invalid locator format");
-          return this.getObjectOrThrow(objectType, primaryKey);
-        });
+      return Array.from(locators ?? []).map((a) => {
+        const [objectType, primaryKey] = a.split(":") ?? [];
+        invariant(objectType && primaryKey, "Invalid locator format");
+        return this.getObjectOrThrow(objectType, primaryKey);
+      });
     }
   }
 
@@ -818,8 +841,9 @@ export class FauxDataStore {
     targetPrimaryKey: string | number | boolean,
   ): BaseServerObject {
     const allLinks = this.getLinksOrThrow(objectType, primaryKey, linkType);
-    const object =
-      allLinks.filter(l => String(l.__primaryKey) === targetPrimaryKey)[0];
+    const object = allLinks.filter(
+      (l) => String(l.__primaryKey) === targetPrimaryKey,
+    )[0];
 
     if (!object) {
       throw new OpenApiCallError(
@@ -835,9 +859,7 @@ export class FauxDataStore {
 
   getObjectsOfType(apiName: string): Iterable<BaseServerObject> {
     this.ontology.getObjectTypeFullMetadataOrThrow(apiName);
-    return this.#objects
-      .get(apiName)
-      .values();
+    return this.#objects.get(apiName).values();
   }
 
   getObjectsFromObjectSet(
@@ -846,15 +868,30 @@ export class FauxDataStore {
       | OntologiesV2.LoadObjectSetRequestV2,
   ): PagedBodyResponseWithTotal<BaseServerObject> {
     const selected = parsedBody.select;
+    const loadPropertySecurities = parsedBody.loadPropertySecurities ?? false;
     // when we have interfaces in here, we have a little trick for
     // caching off the important properties
     let objects = getObjectsFromSet(this, parsedBody.objectSet, undefined);
 
+    if (loadPropertySecurities) {
+      invariant(
+        objects.length === 1,
+        "Loading property securities is only supported when loading a single object",
+      );
+
+      objects = [
+        this.getObjectWithSecurities(
+          objects[0].__apiName,
+          objects[0].__primaryKey,
+        )!,
+      ];
+    }
     if (!objects || objects.length === 0) {
       return {
         data: [],
         totalCount: "0",
         nextPageToken: undefined,
+        propertySecurities: [],
       };
     }
 
@@ -869,14 +906,17 @@ export class FauxDataStore {
       objects,
       getPaginationParamsFromRequest(parsedBody),
       false,
+      loadPropertySecurities
+        ? this.#propertySecurities.get(
+          objectLocator(objects[0]),
+        )
+        : undefined,
     );
 
     if (!page) {
       throw new OpenApiCallError(
         404,
-        InvalidRequest(
-          `No objects found for ${JSON.stringify(parsedBody)}`,
-        ),
+        InvalidRequest(`No objects found for ${JSON.stringify(parsedBody)}`),
       );
     }
     const ret = subSelectProperties(
@@ -938,10 +978,8 @@ export class FauxDataStore {
         submissionCriteria: [],
       },
       edits: req.options?.mode === "VALIDATE_AND_EXECUTE"
-          && (
-            req.options.returnEdits === "ALL"
-            || req.options.returnEdits === "ALL_V2_WITH_DELETIONS"
-          )
+          && (req.options.returnEdits === "ALL"
+            || req.options.returnEdits === "ALL_V2_WITH_DELETIONS")
         ? {
           type: "edits",
           ...batch.objectEdits,
@@ -960,17 +998,14 @@ export class FauxDataStore {
     for (const req of batchReq.requests) {
       const result = validateAction(req, actionDef, this);
       if (result.result === "INVALID") {
-        throw new OpenApiCallError(
-          500,
-          {
-            errorCode: "INVALID_ARGUMENT",
-            errorName: "ActionValidationFailed",
-            errorInstanceId: "faux-foundry",
-            parameters: {
-              actionType: actionTypeApiName,
-            },
-          } as OntologiesV2.ActionValidationFailed,
-        );
+        throw new OpenApiCallError(500, {
+          errorCode: "INVALID_ARGUMENT",
+          errorName: "ActionValidationFailed",
+          errorInstanceId: "faux-foundry",
+          parameters: {
+            actionType: actionTypeApiName,
+          },
+        } as OntologiesV2.ActionValidationFailed);
       }
     }
 
@@ -998,7 +1033,8 @@ export class FauxDataStore {
       const editedObjectTypes = new Set<OntologiesV2.ObjectTypeApiName>();
       for (const edit of batch.objectEdits.edits) {
         if (
-          edit.type === "modifyObject" || edit.type === "addObject"
+          edit.type === "modifyObject"
+          || edit.type === "addObject"
           || edit.type === "deleteObject"
         ) {
           editedObjectTypes.add(edit.objectType);
@@ -1017,8 +1053,8 @@ export class FauxDataStore {
       edits: {
         type: "edits",
         ...batch.objectEdits,
-        edits: batch.objectEdits.edits.filter(x =>
-          x.type !== "deleteObject" && x.type !== "deleteLink"
+        edits: batch.objectEdits.edits.filter(
+          (x) => x.type !== "deleteObject" && x.type !== "deleteLink",
         ),
       },
     };
@@ -1036,9 +1072,9 @@ function extractOneManySide(
     ? { object: dst, link: dstSide }
     : undefined;
   const manySide = oneSide
-    ? (srcSide.cardinality === "MANY"
+    ? srcSide.cardinality === "MANY"
       ? { object: src, link: srcSide }
-      : { object: dst, link: dstSide })
+      : { object: dst, link: dstSide }
     : undefined;
   return { oneSide, manySide };
 }

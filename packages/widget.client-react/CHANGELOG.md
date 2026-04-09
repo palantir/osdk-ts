@@ -1,5 +1,609 @@
 # @osdk/widget.client-react
 
+## 3.5.0
+
+### Minor Changes
+
+- 7901ae0: Simulated release
+- cbd657f: Fix widget.client-react peer dependency
+- 727fd0e: fix dual @types/react version mismatch
+- b9066dd: Support interfaces in object set parameters
+- 35f2f1a: Add Media inputs/outputs for Queries
+
+### Patch Changes
+
+- Updated dependencies [322c5bc]
+- Updated dependencies [7901ae0]
+- Updated dependencies [c40444b]
+- Updated dependencies [09e5659]
+- Updated dependencies [abb0e0f]
+- Updated dependencies [fceb4ce]
+- Updated dependencies [520398c]
+- Updated dependencies [73e617e]
+- Updated dependencies [cbfa135]
+- Updated dependencies [c8384de]
+- Updated dependencies [f294f5a]
+- Updated dependencies [dfc8019]
+- Updated dependencies [599426b]
+- Updated dependencies [e64bf0b]
+- Updated dependencies [27a5902]
+- Updated dependencies [f4604c2]
+- Updated dependencies [642be5f]
+- Updated dependencies [baba327]
+- Updated dependencies [8825f8c]
+- Updated dependencies [2b01323]
+- Updated dependencies [8c60682]
+- Updated dependencies [dda14be]
+- Updated dependencies [ffc6efe]
+- Updated dependencies [2855223]
+- Updated dependencies [15e1686]
+- Updated dependencies [26cec61]
+- Updated dependencies [d1ad4d1]
+- Updated dependencies [0d174a2]
+- Updated dependencies [d284bf2]
+- Updated dependencies [4ef6adc]
+- Updated dependencies [2ebe62c]
+- Updated dependencies [60b5ffb]
+- Updated dependencies [abb0e0f]
+- Updated dependencies [8c30908]
+- Updated dependencies [4cd7389]
+- Updated dependencies [92e7297]
+- Updated dependencies [35f2f1a]
+- Updated dependencies [c9d954d]
+- Updated dependencies [044eb80]
+- Updated dependencies [9d234b9]
+- Updated dependencies [f5f95e2]
+- Updated dependencies [46f0a47]
+- Updated dependencies [4470c0d]
+- Updated dependencies [d80c234]
+- Updated dependencies [61e33ab]
+- Updated dependencies [71e28ef]
+- Updated dependencies [5848e3c]
+  - @osdk/client@2.8.0
+  - @osdk/widget.client@3.5.0
+
+## 3.5.0-beta.32
+
+### Patch Changes
+
+- Updated dependencies [46f0a47]
+  - @osdk/client@2.8.0-beta.32
+  - @osdk/widget.client@3.5.0-beta.32
+
+## 3.5.0-beta.31
+
+### Patch Changes
+
+- Updated dependencies [2b01323]
+  - @osdk/client@2.8.0-beta.31
+  - @osdk/widget.client@3.5.0-beta.31
+
+## 3.5.0-beta.30
+
+### Patch Changes
+
+- Updated dependencies [4ef6adc]
+  - @osdk/client@2.8.0-beta.30
+  - @osdk/widget.client@3.5.0-beta.30
+
+## 3.5.0-beta.29
+
+### Patch Changes
+
+- Updated dependencies [520398c]
+- Updated dependencies [ffc6efe]
+  - @osdk/client@2.8.0-beta.29
+  - @osdk/widget.client@3.5.0-beta.29
+
+## 3.5.0-beta.28
+
+### Patch Changes
+
+- Updated dependencies [f294f5a]
+- Updated dependencies [2855223]
+- Updated dependencies [d284bf2]
+  - @osdk/client@2.8.0-beta.28
+  - @osdk/widget.client@3.5.0-beta.28
+
+## 3.5.0-beta.27
+
+### Patch Changes
+
+- Updated dependencies [fceb4ce]
+  - @osdk/client@2.8.0-beta.27
+  - @osdk/widget.client@3.5.0-beta.27
+
+## 3.5.0-beta.26
+
+### Patch Changes
+
+- Updated dependencies [599426b]
+- Updated dependencies [60b5ffb]
+- Updated dependencies [61e33ab]
+  - @osdk/client@2.8.0-beta.26
+  - @osdk/widget.client@3.5.0-beta.26
+
+## 3.5.0-beta.25
+
+### Patch Changes
+
+- @osdk/client@2.8.0-beta.25
+- @osdk/widget.client@3.5.0-beta.25
+
+## 3.5.0-beta.24
+
+### Patch Changes
+
+- @osdk/client@2.8.0-beta.24
+- @osdk/widget.client@3.5.0-beta.24
+
+## 3.5.0-beta.23
+
+### Patch Changes
+
+- @osdk/client@2.8.0-beta.23
+- @osdk/widget.client@3.5.0-beta.23
+
+## 3.5.0-beta.22
+
+### Patch Changes
+
+- Updated dependencies [cbfa135]
+- Updated dependencies [f4604c2]
+  - @osdk/client@2.8.0-beta.22
+  - @osdk/widget.client@3.5.0-beta.22
+
+## 3.5.0-beta.21
+
+### Patch Changes
+
+- Updated dependencies [c40444b]
+- Updated dependencies [dda14be]
+  - @osdk/client@2.8.0-beta.21
+  - @osdk/widget.client@3.5.0-beta.21
+
+## 3.5.0-beta.20
+
+### Patch Changes
+
+- @osdk/client@2.8.0-beta.20
+- @osdk/widget.client@3.5.0-beta.20
+
+## 3.5.0-beta.19
+
+### Patch Changes
+
+- @osdk/client@2.8.0-beta.19
+- @osdk/widget.client@3.5.0-beta.19
+
+## 3.5.0-beta.18
+
+### Patch Changes
+
+- Updated dependencies [c8384de]
+  - @osdk/client@2.8.0-beta.18
+  - @osdk/widget.client@3.5.0-beta.18
+
+## 3.5.0-beta.17
+
+### Patch Changes
+
+- Updated dependencies [8c30908]
+  - @osdk/client@2.8.0-beta.17
+  - @osdk/widget.client@3.5.0-beta.17
+
+## 3.5.0-beta.16
+
+### Patch Changes
+
+- Updated dependencies [09e5659]
+- Updated dependencies [2ebe62c]
+  - @osdk/client@2.8.0-beta.16
+  - @osdk/widget.client@3.5.0-beta.16
+
+## 3.5.0-beta.15
+
+### Patch Changes
+
+- Updated dependencies [dfc8019]
+  - @osdk/client@2.8.0-beta.15
+  - @osdk/widget.client@3.5.0-beta.15
+
+## 3.5.0-beta.14
+
+### Minor Changes
+
+- 35f2f1a: Add Media inputs/outputs for Queries
+
+### Patch Changes
+
+- Updated dependencies [e64bf0b]
+- Updated dependencies [baba327]
+- Updated dependencies [d1ad4d1]
+- Updated dependencies [35f2f1a]
+- Updated dependencies [71e28ef]
+  - @osdk/client@2.8.0-beta.14
+  - @osdk/widget.client@3.5.0-beta.14
+
+## 3.5.0-beta.13
+
+### Patch Changes
+
+- Updated dependencies [4470c0d]
+  - @osdk/client@2.8.0-beta.13
+  - @osdk/widget.client@3.5.0-beta.13
+
+## 3.5.0-beta.12
+
+### Patch Changes
+
+- Updated dependencies [8825f8c]
+  - @osdk/client@2.8.0-beta.12
+  - @osdk/widget.client@3.5.0-beta.12
+
+## 3.5.0-beta.11
+
+### Patch Changes
+
+- Updated dependencies [642be5f]
+- Updated dependencies [525f277]
+- Updated dependencies [f5f95e2]
+- Updated dependencies [d80c234]
+  - @osdk/client@2.8.0-beta.11
+  - @osdk/widget.client@3.5.0-beta.11
+
+## 3.5.0-beta.10
+
+### Patch Changes
+
+- Updated dependencies [27a5902]
+  - @osdk/client@2.8.0-beta.10
+  - @osdk/widget.client@3.5.0-beta.10
+
+## 3.5.0-beta.9
+
+### Patch Changes
+
+- Updated dependencies [abb0e0f]
+- Updated dependencies [abb0e0f]
+  - @osdk/client@2.8.0-beta.9
+  - @osdk/widget.client@3.5.0-beta.9
+
+## 3.5.0-beta.8
+
+### Patch Changes
+
+- @osdk/client@2.8.0-beta.8
+- @osdk/widget.client@3.5.0-beta.8
+
+## 3.5.0-beta.7
+
+### Patch Changes
+
+- Updated dependencies [4cd7389]
+  - @osdk/client@2.8.0-beta.7
+  - @osdk/widget.client@3.5.0-beta.7
+
+## 3.5.0-beta.6
+
+### Minor Changes
+
+- 727fd0e: fix dual @types/react version mismatch
+
+### Patch Changes
+
+- Updated dependencies [8c60682]
+- Updated dependencies [15e1686]
+- Updated dependencies [c9d954d]
+- Updated dependencies [044eb80]
+- Updated dependencies [9d234b9]
+  - @osdk/client@2.8.0-beta.6
+  - @osdk/widget.client@3.5.0-beta.6
+
+## 3.5.0-beta.5
+
+### Patch Changes
+
+- @osdk/client@2.8.0-beta.5
+- @osdk/widget.client@3.5.0-beta.5
+
+## 3.5.0-beta.4
+
+### Patch Changes
+
+- Updated dependencies [73e617e]
+- Updated dependencies [5848e3c]
+  - @osdk/client@2.8.0-beta.4
+  - @osdk/widget.client@3.5.0-beta.4
+
+## 3.5.0-beta.3
+
+### Minor Changes
+
+- cbd657f: Fix widget.client-react peer dependency
+- b9066dd: Support interfaces in object set parameters
+
+### Patch Changes
+
+- Updated dependencies [26cec61]
+- Updated dependencies [0d174a2]
+  - @osdk/client@2.8.0-beta.3
+  - @osdk/widget.client@3.5.0-beta.3
+
+## 3.5.0-beta.2
+
+### Patch Changes
+
+- @osdk/client@2.8.0-beta.2
+- @osdk/widget.client@3.5.0-beta.2
+
+## 3.4.0-beta.14
+
+### Patch Changes
+
+- Updated dependencies [24730c7]
+- Updated dependencies [ecd18e2]
+  - @osdk/client@2.7.0-beta.14
+  - @osdk/widget.client@3.4.0-beta.14
+
+## 3.4.0-beta.13
+
+### Patch Changes
+
+- Updated dependencies [fb83808]
+  - @osdk/client@2.7.0-beta.13
+  - @osdk/widget.client@3.4.0-beta.13
+
+## 3.4.0-beta.12
+
+### Patch Changes
+
+- Updated dependencies [3fc5fe6]
+- Updated dependencies [bb9d25c]
+  - @osdk/client@2.7.0-beta.12
+  - @osdk/widget.client@3.4.0-beta.12
+
+## 3.4.0-beta.11
+
+### Patch Changes
+
+- Updated dependencies [6cfe14a]
+- Updated dependencies [ec6ad57]
+- Updated dependencies [38d5958]
+- Updated dependencies [d5cfc38]
+  - @osdk/client@2.7.0-beta.11
+  - @osdk/widget.client@3.4.0-beta.11
+
+## 3.4.0-beta.10
+
+### Patch Changes
+
+- Updated dependencies [db44f6b]
+- Updated dependencies [266b901]
+  - @osdk/client@2.7.0-beta.10
+  - @osdk/widget.client@3.4.0-beta.10
+
+## 3.4.0-beta.9
+
+### Patch Changes
+
+- Updated dependencies [6b27d8a]
+  - @osdk/client@2.7.0-beta.9
+  - @osdk/widget.client@3.4.0-beta.9
+
+## 3.4.0-beta.8
+
+### Patch Changes
+
+- Updated dependencies [c6124eb]
+  - @osdk/client@2.7.0-beta.8
+  - @osdk/widget.client@3.4.0-beta.8
+
+## 3.4.0-beta.7
+
+### Patch Changes
+
+- Updated dependencies [adca853]
+- Updated dependencies [0b0be9f]
+  - @osdk/client@2.7.0-beta.7
+  - @osdk/widget.client@3.4.0-beta.7
+
+## 3.4.0-beta.6
+
+### Patch Changes
+
+- Updated dependencies [c332598]
+- Updated dependencies [0b2cd91]
+  - @osdk/client@2.7.0-beta.6
+  - @osdk/widget.client@3.4.0-beta.6
+
+## 3.4.0-beta.5
+
+### Minor Changes
+
+- ee3af16: Improved object set write path
+
+### Patch Changes
+
+- Updated dependencies [dc33f68]
+  - @osdk/client@2.7.0-beta.5
+  - @osdk/widget.client@3.4.0-beta.5
+
+## 3.4.0-beta.4
+
+### Patch Changes
+
+- Updated dependencies [1e3c147]
+  - @osdk/client@2.7.0-beta.4
+  - @osdk/widget.client@3.4.0-beta.4
+
+## 3.4.0-beta.3
+
+### Patch Changes
+
+- Updated dependencies [a23784c]
+- Updated dependencies [f0a57a5]
+  - @osdk/client@2.7.0-beta.3
+  - @osdk/widget.client@3.4.0-beta.3
+
+## 3.4.0-beta.2
+
+### Patch Changes
+
+- Updated dependencies [03db734]
+- Updated dependencies [907bc6a]
+- Updated dependencies [c8da6b7]
+  - @osdk/client@2.7.0-beta.2
+  - @osdk/widget.client@3.4.0-beta.2
+
+## 3.3.0-beta.11
+
+### Minor Changes
+
+- a8802b3: Add error boundary for custom widgets
+- 8d7b8db: Expand ErrorBoundary to catch all errors
+
+### Patch Changes
+
+- Updated dependencies [84f0eef]
+- Updated dependencies [486ef7e]
+- Updated dependencies [ea077c6]
+  - @osdk/client@2.6.0-beta.13
+  - @osdk/widget.client@3.3.0-beta.11
+
+## 3.3.0-beta.10
+
+### Patch Changes
+
+- Updated dependencies [9961f06]
+  - @osdk/client@2.6.0-beta.12
+  - @osdk/widget.client@3.3.0-beta.10
+
+## 3.3.0-beta.9
+
+### Patch Changes
+
+- Updated dependencies [c5a3815]
+  - @osdk/client@2.6.0-beta.11
+  - @osdk/widget.client@3.3.0-beta.9
+
+## 3.3.0-beta.8
+
+### Patch Changes
+
+- Updated dependencies [3fbb596]
+  - @osdk/client@2.6.0-beta.10
+  - @osdk/widget.client@3.3.0-beta.8
+
+## 3.3.0-beta.7
+
+### Patch Changes
+
+- @osdk/client@2.6.0-beta.9
+- @osdk/widget.client@3.3.0-beta.7
+
+## 3.3.0-beta.6
+
+### Patch Changes
+
+- Updated dependencies [a1ffb20]
+- Updated dependencies [e62c692]
+  - @osdk/client@2.6.0-beta.8
+  - @osdk/widget.client@3.3.0-beta.6
+
+## 3.3.0-beta.5
+
+### Patch Changes
+
+- Updated dependencies [507ec7f]
+  - @osdk/client@2.6.0-beta.7
+  - @osdk/widget.client@3.3.0-beta.5
+
+## 3.3.0-beta.4
+
+### Patch Changes
+
+- Updated dependencies [b959085]
+  - @osdk/client@2.6.0-beta.6
+  - @osdk/widget.client@3.3.0-beta.4
+
+## 3.3.0-beta.3
+
+### Patch Changes
+
+- Updated dependencies [b48526f]
+  - @osdk/client@2.6.0-beta.5
+  - @osdk/widget.client@3.3.0-beta.3
+
+## 3.3.0-beta.2
+
+### Minor Changes
+
+- 4d37e98: Improved support for object set parameters in widget.client-react
+
+### Patch Changes
+
+- @osdk/widget.client@3.3.0-beta.2
+
+## 3.2.5
+
+### Patch Changes
+
+- 71f33ca: Add error boundary for custom widgets
+- a2df5ba: Introduce widget resize message for automatic heights
+- 71f33ca: Expand ErrorBoundary to catch all errors
+- Updated dependencies [a2df5ba]
+  - @osdk/widget.client@3.2.5
+
+## 3.2.4
+
+### Patch Changes
+
+- @osdk/widget.client@3.2.4
+
+## 3.2.3
+
+### Patch Changes
+
+- @osdk/widget.client@3.2.3
+
+## 3.2.2
+
+### Patch Changes
+
+- @osdk/widget.client@3.2.2
+
+## 3.2.1
+
+### Patch Changes
+
+- 77475e6: Improved support for object set parameters in widget.client-react
+  - @osdk/widget.client@3.2.1
+
+## 3.2.0
+
+### Patch Changes
+
+- 7901ae0: Simulated release
+- Updated dependencies [7901ae0]
+  - @osdk/widget.client@3.2.0
+
+## 3.2.0-beta.5
+
+### Patch Changes
+
+- Updated dependencies [b7edfb5]
+  - @osdk/client@2.5.0-beta.14
+  - @osdk/widget.client@3.2.0-beta.5
+
+## 3.2.0-beta.4
+
+### Patch Changes
+
+- Updated dependencies [7b97128]
+  - @osdk/client@2.5.0-beta.11
+  - @osdk/widget.client@3.2.0-beta.4
+
 ## 3.2.0-beta.3
 
 ### Patch Changes

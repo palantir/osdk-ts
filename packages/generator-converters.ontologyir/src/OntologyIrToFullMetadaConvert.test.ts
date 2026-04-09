@@ -168,8 +168,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
               },
               "datasources": [
                 {
-                  "rid":
-                    "ri.ontology.main.datasource.Dc3DistributionCenterProposal",
+                  "datasourceName": "Dc3DistributionCenterProposal",
                   "datasource": {
                     "type": "datasetV2",
                     "datasetV2": {
@@ -202,6 +201,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
               ],
               "entityMetadata": {
                 "arePatchesEnabled": false,
+                "aliases": [],
               },
             },
             "Dc3Restaurant": {
@@ -347,7 +347,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
               },
               "datasources": [
                 {
-                  "rid": "ri.ontology.main.datasource.Dc3Restaurant",
+                  "datasourceName": "Dc3Restaurant",
                   "datasource": {
                     "type": "datasetV2",
                     "datasetV2": {
@@ -380,6 +380,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
               ],
               "entityMetadata": {
                 "arePatchesEnabled": false,
+                "aliases": [],
               },
             },
             "Dc3DistributionRouteAnalysis": {
@@ -533,8 +534,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
               },
               "datasources": [
                 {
-                  "rid":
-                    "ri.ontology.main.datasource.Dc3DistributionRouteAnalysis",
+                  "datasourceName": "Dc3DistributionRouteAnalysis",
                   "datasource": {
                     "type": "datasetV2",
                     "datasetV2": {
@@ -567,6 +567,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
               ],
               "entityMetadata": {
                 "arePatchesEnabled": false,
+                "aliases": [],
               },
             },
           },
@@ -2731,6 +2732,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                 "description": "",
                 "displayName": "Name",
                 "required": true,
+                "typeClasses": [],
               },
               "price": {
                 "dataType": {
@@ -2739,6 +2741,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                 "description": "",
                 "displayName": "Price",
                 "required": true,
+                "typeClasses": [],
               },
               "primaryKey_": {
                 "dataType": {
@@ -2747,6 +2750,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                 "description": "",
                 "displayName": "Primary Key",
                 "required": true,
+                "typeClasses": [],
               },
               "proposedLocation": {
                 "dataType": {
@@ -2755,6 +2759,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                 "description": "",
                 "displayName": "Proposed Location",
                 "required": true,
+                "typeClasses": [],
               },
             },
             "rid": "ri.action.create-object-dc3distribution-center-proposal",
@@ -2778,6 +2783,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                 "description": "",
                 "displayName": "Distribution Proposal",
                 "required": true,
+                "typeClasses": [],
               },
               "primaryKey_": {
                 "dataType": {
@@ -2786,6 +2792,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                 "description": "",
                 "displayName": "Primary Key",
                 "required": true,
+                "typeClasses": [],
               },
               "restaurant": {
                 "dataType": {
@@ -2794,6 +2801,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                 "description": "",
                 "displayName": "Restaurant",
                 "required": true,
+                "typeClasses": [],
               },
               "timeMinutes": {
                 "dataType": {
@@ -2802,6 +2810,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                 "description": "",
                 "displayName": "Time (Minutes)",
                 "required": true,
+                "typeClasses": [],
               },
             },
             "rid": "ri.action.create-object-dc3distribution-route-analysis",
@@ -2825,6 +2834,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                 "description": "",
                 "displayName": "Location",
                 "required": true,
+                "typeClasses": [],
               },
               "name": {
                 "dataType": {
@@ -2833,6 +2843,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                 "description": "",
                 "displayName": "Name",
                 "required": true,
+                "typeClasses": [],
               },
               "primaryKey_": {
                 "dataType": {
@@ -2841,6 +2852,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                 "description": "",
                 "displayName": "Primary Key",
                 "required": true,
+                "typeClasses": [],
               },
               "rating": {
                 "dataType": {
@@ -2849,6 +2861,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                 "description": "",
                 "displayName": "Rating",
                 "required": true,
+                "typeClasses": [],
               },
             },
             "rid": "ri.action.create-object-dc3restaurant",
@@ -2874,6 +2887,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                 "description": "",
                 "displayName": "Delete object",
                 "required": true,
+                "typeClasses": [],
               },
             },
             "rid": "ri.action.delete-object-dc3distribution-center-proposal",
@@ -2899,6 +2913,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                 "description": "",
                 "displayName": "Delete object",
                 "required": true,
+                "typeClasses": [],
               },
             },
             "rid": "ri.action.delete-object-dc3distribution-route-analysis",
@@ -2924,6 +2939,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                 "description": "",
                 "displayName": "Delete object",
                 "required": true,
+                "typeClasses": [],
               },
             },
             "rid": "ri.action.delete-object-dc3restaurant",
@@ -2947,6 +2963,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                 "description": "",
                 "displayName": "Name",
                 "required": true,
+                "typeClasses": [],
               },
               "objectToModifyParameter": {
                 "dataType": {
@@ -2957,6 +2974,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                 "description": "",
                 "displayName": "Modify object",
                 "required": true,
+                "typeClasses": [],
               },
               "price": {
                 "dataType": {
@@ -2965,6 +2983,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                 "description": "",
                 "displayName": "Price",
                 "required": true,
+                "typeClasses": [],
               },
               "primaryKey_": {
                 "dataType": {
@@ -2973,6 +2992,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                 "description": "",
                 "displayName": "Primary Key",
                 "required": true,
+                "typeClasses": [],
               },
               "proposedLocation": {
                 "dataType": {
@@ -2981,6 +3001,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                 "description": "",
                 "displayName": "Proposed Location",
                 "required": true,
+                "typeClasses": [],
               },
             },
             "rid": "ri.action.modify-object-dc3distribution-center-proposal",
@@ -3004,6 +3025,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                 "description": "",
                 "displayName": "Distribution Proposal",
                 "required": true,
+                "typeClasses": [],
               },
               "objectToModifyParameter": {
                 "dataType": {
@@ -3014,6 +3036,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                 "description": "",
                 "displayName": "Modify object",
                 "required": true,
+                "typeClasses": [],
               },
               "primaryKey_": {
                 "dataType": {
@@ -3022,6 +3045,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                 "description": "",
                 "displayName": "Primary Key",
                 "required": true,
+                "typeClasses": [],
               },
               "restaurant": {
                 "dataType": {
@@ -3030,6 +3054,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                 "description": "",
                 "displayName": "Restaurant",
                 "required": true,
+                "typeClasses": [],
               },
               "timeMinutes": {
                 "dataType": {
@@ -3038,6 +3063,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                 "description": "",
                 "displayName": "Time (Minutes)",
                 "required": true,
+                "typeClasses": [],
               },
             },
             "rid": "ri.action.modify-object-dc3distribution-route-analysis",
@@ -3061,6 +3087,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                 "description": "",
                 "displayName": "Location",
                 "required": true,
+                "typeClasses": [],
               },
               "name": {
                 "dataType": {
@@ -3069,6 +3096,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                 "description": "",
                 "displayName": "Name",
                 "required": true,
+                "typeClasses": [],
               },
               "objectToModifyParameter": {
                 "dataType": {
@@ -3079,6 +3107,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                 "description": "",
                 "displayName": "Modify object",
                 "required": true,
+                "typeClasses": [],
               },
               "primaryKey_": {
                 "dataType": {
@@ -3087,6 +3116,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                 "description": "",
                 "displayName": "Primary Key",
                 "required": true,
+                "typeClasses": [],
               },
               "rating": {
                 "dataType": {
@@ -3095,6 +3125,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                 "description": "",
                 "displayName": "Rating",
                 "required": true,
+                "typeClasses": [],
               },
             },
             "rid": "ri.action.modify-object-dc3restaurant",
@@ -3138,6 +3169,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                   "status": {
                     "type": "active",
                   },
+                  "typeClasses": [],
                   "visibility": "NORMAL",
                 },
                 "price": {
@@ -3150,6 +3182,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                   "status": {
                     "type": "active",
                   },
+                  "typeClasses": [],
                   "visibility": "NORMAL",
                 },
                 "primaryKey_": {
@@ -3162,6 +3195,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                   "status": {
                     "type": "active",
                   },
+                  "typeClasses": [],
                   "visibility": "NORMAL",
                 },
                 "proposedLocation": {
@@ -3174,6 +3208,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                   "status": {
                     "type": "active",
                   },
+                  "typeClasses": [],
                   "visibility": "NORMAL",
                 },
               },
@@ -3228,6 +3263,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                   "status": {
                     "type": "active",
                   },
+                  "typeClasses": [],
                   "visibility": "NORMAL",
                 },
                 "primaryKey_": {
@@ -3240,6 +3276,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                   "status": {
                     "type": "active",
                   },
+                  "typeClasses": [],
                   "visibility": "NORMAL",
                 },
                 "restaurant": {
@@ -3252,6 +3289,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                   "status": {
                     "type": "active",
                   },
+                  "typeClasses": [],
                   "visibility": "NORMAL",
                 },
                 "timeMinutes": {
@@ -3264,6 +3302,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                   "status": {
                     "type": "active",
                   },
+                  "typeClasses": [],
                   "visibility": "NORMAL",
                 },
               },
@@ -3308,6 +3347,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                   "status": {
                     "type": "active",
                   },
+                  "typeClasses": [],
                   "visibility": "NORMAL",
                 },
                 "name": {
@@ -3320,6 +3360,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                   "status": {
                     "type": "active",
                   },
+                  "typeClasses": [],
                   "visibility": "NORMAL",
                 },
                 "primaryKey_": {
@@ -3332,6 +3373,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                   "status": {
                     "type": "active",
                   },
+                  "typeClasses": [],
                   "visibility": "NORMAL",
                 },
                 "rating": {
@@ -3344,6 +3386,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                   "status": {
                     "type": "active",
                   },
+                  "typeClasses": [],
                   "visibility": "NORMAL",
                 },
               },

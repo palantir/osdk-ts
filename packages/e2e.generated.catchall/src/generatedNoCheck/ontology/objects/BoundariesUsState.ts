@@ -59,6 +59,8 @@ export interface BoundariesUsState extends $ObjectTypeDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'object';
   apiName: 'BoundariesUsState';
+  primaryKeyApiName: 'usState';
+  primaryKeyType: 'string';
   __DefinitionMetadata?: {
     objectSet: BoundariesUsState.ObjectSet;
     props: BoundariesUsState.Props;
@@ -107,8 +109,13 @@ export interface BoundariesUsState extends $ObjectTypeDefinition {
   };
 }
 
-export const BoundariesUsState: BoundariesUsState = {
+export const BoundariesUsState = {
   type: 'object',
   apiName: 'BoundariesUsState',
   osdkMetadata: $osdkMetadata,
-};
+  primaryKeyApiName: 'usState',
+  primaryKeyType: 'string',
+  internalDoNotUseMetadata: {
+    rid: 'ri.a.b.c.d',
+  },
+} satisfies BoundariesUsState & { internalDoNotUseMetadata: { rid: string } } as BoundariesUsState;

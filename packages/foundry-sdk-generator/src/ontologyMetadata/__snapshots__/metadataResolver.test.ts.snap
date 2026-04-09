@@ -18,6 +18,7 @@ exports[`Load Ontologies Metadata > Loads action types with media refs, interfac
             },
             "displayName": "Media Reference",
             "required": true,
+            "typeClasses": [],
           },
         },
         "rid": "ri.ontology.main.action-type.9f84017d-cf17-4fa8-84c3-8e01e5d594f3",
@@ -57,6 +58,7 @@ exports[`Load Ontologies Metadata > Loads action types with media refs, interfac
             },
             "displayName": "Address",
             "required": false,
+            "typeClasses": [],
           },
           "name": {
             "dataType": {
@@ -64,6 +66,7 @@ exports[`Load Ontologies Metadata > Loads action types with media refs, interfac
             },
             "displayName": "Name",
             "required": true,
+            "typeClasses": [],
           },
         },
         "rid": "ri.ontology.main.action-type.9f24017d-cf17-4fa8-84c3-8e01e5d594f2",
@@ -86,6 +89,7 @@ exports[`Load Ontologies Metadata > Loads action types with media refs, interfac
             },
             "displayName": "Deleted Interface",
             "required": true,
+            "typeClasses": [],
           },
         },
         "rid": "ri.actions.main.action-type.3828bab4-49c7-4fdf-a780-6ccbc359d817",
@@ -107,6 +111,7 @@ exports[`Load Ontologies Metadata > Loads action types with media refs, interfac
             },
             "displayName": "Employee ID",
             "required": true,
+            "typeClasses": [],
           },
           "newCompensation": {
             "dataType": {
@@ -114,6 +119,7 @@ exports[`Load Ontologies Metadata > Loads action types with media refs, interfac
             },
             "displayName": "New Compensation",
             "required": true,
+            "typeClasses": [],
           },
           "newTitle": {
             "dataType": {
@@ -121,6 +127,7 @@ exports[`Load Ontologies Metadata > Loads action types with media refs, interfac
             },
             "displayName": "New Title",
             "required": true,
+            "typeClasses": [],
           },
         },
         "rid": "ri.ontology.main.action-type.7ed72754-7491-428a-bb18-4d7296eb2167",
@@ -153,6 +160,31 @@ exports[`Load Ontologies Metadata > Loads action types with media refs, interfac
             "displayName": "Foo",
             "required": true,
             "rid": "ri.sharedPropertyType.main.sharedPropertyType.1",
+            "typeClasses": [],
+          },
+        },
+        "allPropertiesV2": {
+          "fooIdp": {
+            "apiName": "fooIdp",
+            "dataType": {
+              "type": "string",
+            },
+            "description": "A Foo IDP",
+            "displayName": "Foo IDP",
+            "requireImplementation": true,
+            "rid": "ri.interfacePropertyType.main.interfacePropertyType.1",
+            "typeClasses": [],
+          },
+          "fooSpt": {
+            "apiName": "fooSpt",
+            "dataType": {
+              "type": "string",
+            },
+            "description": "A foo",
+            "displayName": "Foo",
+            "requireImplementation": true,
+            "rid": "ri.sharedPropertyType.main.sharedPropertyType.1",
+            "typeClasses": [],
           },
         },
         "apiName": "FooInterface",
@@ -186,6 +218,33 @@ exports[`Load Ontologies Metadata > Loads action types with media refs, interfac
             "displayName": "Foo",
             "required": true,
             "rid": "ri.sharedPropertyType.main.sharedPropertyType.1",
+            "typeClasses": [],
+          },
+        },
+        "propertiesV2": {
+          "fooIdp": {
+            "apiName": "fooIdp",
+            "dataType": {
+              "type": "string",
+            },
+            "description": "A Foo IDP",
+            "displayName": "Foo IDP",
+            "requireImplementation": true,
+            "rid": "ri.interfacePropertyType.main.interfacePropertyType.1",
+            "type": "interfaceDefinedPropertyType",
+            "typeClasses": [],
+          },
+          "fooSpt": {
+            "apiName": "fooSpt",
+            "dataType": {
+              "type": "string",
+            },
+            "description": "A foo",
+            "displayName": "Foo",
+            "required": true,
+            "rid": "ri.sharedPropertyType.main.sharedPropertyType.1",
+            "type": "interfaceSharedPropertyType",
+            "typeClasses": [],
           },
         },
         "rid": "ri.interface.main.interface.1",
@@ -201,6 +260,16 @@ exports[`Load Ontologies Metadata > Loads action types with media refs, interfac
             "links": {},
             "properties": {
               "fooSpt": "fullName",
+            },
+            "propertiesV2": {
+              "fooIdp": {
+                "propertyApiName": "office",
+                "type": "localPropertyImplementation",
+              },
+              "fooSpt": {
+                "propertyApiName": "fullName",
+                "type": "localPropertyImplementation",
+              },
             },
           },
         },
@@ -225,12 +294,14 @@ exports[`Load Ontologies Metadata > Loads action types with media refs, interfac
               },
               "description": "",
               "rid": "rid",
+              "typeClasses": [],
             },
             "employeeId": {
               "dataType": {
                 "type": "integer",
               },
               "rid": "rid",
+              "typeClasses": [],
             },
             "employeeLocation": {
               "dataType": {
@@ -238,13 +309,18 @@ exports[`Load Ontologies Metadata > Loads action types with media refs, interfac
               },
               "description": "Geotime series reference of the location of the employee",
               "rid": "rid",
+              "typeClasses": [],
             },
             "employeeSensor": {
               "dataType": {
+                "itemType": {
+                  "type": "string",
+                },
                 "type": "timeseries",
               },
               "description": "TimeSeries sensor of the status of the employee",
               "rid": "rid",
+              "typeClasses": [],
             },
             "employeeStatus": {
               "dataType": {
@@ -255,12 +331,25 @@ exports[`Load Ontologies Metadata > Loads action types with media refs, interfac
               },
               "description": "TimeSeries of the status of the employee",
               "rid": "rid",
+              "typeClasses": [],
+            },
+            "favoriteRestaurants": {
+              "dataType": {
+                "reducers": [],
+                "subType": {
+                  "type": "string",
+                },
+                "type": "array",
+              },
+              "rid": "rid",
+              "typeClasses": [],
             },
             "fullName": {
               "dataType": {
                 "type": "string",
               },
               "rid": "rid",
+              "typeClasses": [],
             },
             "office": {
               "dataType": {
@@ -269,6 +358,7 @@ exports[`Load Ontologies Metadata > Loads action types with media refs, interfac
               "description": "The unique "ID" of the employee's \\"primary\\" assigned office.
  This is some more text.",
               "rid": "rid",
+              "typeClasses": [],
             },
             "skillSet": {
               "dataType": {
@@ -276,6 +366,7 @@ exports[`Load Ontologies Metadata > Loads action types with media refs, interfac
               },
               "description": "The skills of the employee",
               "rid": "rid",
+              "typeClasses": [],
             },
             "skillSetEmbedding": {
               "dataType": {
@@ -293,6 +384,7 @@ exports[`Load Ontologies Metadata > Loads action types with media refs, interfac
               },
               "description": "Vectorized skill set",
               "rid": "rid",
+              "typeClasses": [],
             },
             "startDate": {
               "dataType": {
@@ -300,6 +392,7 @@ exports[`Load Ontologies Metadata > Loads action types with media refs, interfac
               },
               "description": "The date the employee was hired (most recently, if they were re-hired)",
               "rid": "rid",
+              "typeClasses": [],
             },
           },
           "rid": "ri.ontology.main.object-type.401ac022-89eb-4591-8b7e-0a912b9efb44",
@@ -333,12 +426,14 @@ exports[`Load Ontologies Metadata > Loads action types with media refs, interfac
               },
               "description": "The capacity of the Office",
               "rid": "rid",
+              "typeClasses": [],
             },
             "entrance": {
               "dataType": {
                 "type": "geopoint",
               },
               "rid": "rid",
+              "typeClasses": [],
             },
             "name": {
               "dataType": {
@@ -346,6 +441,7 @@ exports[`Load Ontologies Metadata > Loads action types with media refs, interfac
               },
               "description": "The Name of the Office",
               "rid": "rid",
+              "typeClasses": [],
             },
             "occupiedArea": {
               "dataType": {
@@ -353,12 +449,14 @@ exports[`Load Ontologies Metadata > Loads action types with media refs, interfac
               },
               "description": "The occupied area of the Office",
               "rid": "rid",
+              "typeClasses": [],
             },
             "officeId": {
               "dataType": {
                 "type": "string",
               },
               "rid": "rid",
+              "typeClasses": [],
             },
           },
           "rid": "ri.ontology.main.object-type.404ac022-89eb-4591-8b7e-1a912b9efb45",
@@ -404,6 +502,7 @@ exports[`Load Ontologies Metadata > Loads object and action types using only spe
             },
             "displayName": "Employee ID",
             "required": true,
+            "typeClasses": [],
           },
           "newCompensation": {
             "dataType": {
@@ -411,6 +510,7 @@ exports[`Load Ontologies Metadata > Loads object and action types using only spe
             },
             "displayName": "New Compensation",
             "required": true,
+            "typeClasses": [],
           },
           "newTitle": {
             "dataType": {
@@ -418,6 +518,7 @@ exports[`Load Ontologies Metadata > Loads object and action types using only spe
             },
             "displayName": "New Title",
             "required": true,
+            "typeClasses": [],
           },
         },
         "rid": "ri.ontology.main.action-type.7ed72754-7491-428a-bb18-4d7296eb2167",
@@ -435,6 +536,16 @@ exports[`Load Ontologies Metadata > Loads object and action types using only spe
             "links": {},
             "properties": {
               "fooSpt": "fullName",
+            },
+            "propertiesV2": {
+              "fooIdp": {
+                "propertyApiName": "office",
+                "type": "localPropertyImplementation",
+              },
+              "fooSpt": {
+                "propertyApiName": "fullName",
+                "type": "localPropertyImplementation",
+              },
             },
           },
         },
@@ -477,12 +588,14 @@ exports[`Load Ontologies Metadata > Loads object and action types using only spe
               },
               "description": "",
               "rid": "rid",
+              "typeClasses": [],
             },
             "employeeId": {
               "dataType": {
                 "type": "integer",
               },
               "rid": "rid",
+              "typeClasses": [],
             },
             "employeeLocation": {
               "dataType": {
@@ -490,13 +603,18 @@ exports[`Load Ontologies Metadata > Loads object and action types using only spe
               },
               "description": "Geotime series reference of the location of the employee",
               "rid": "rid",
+              "typeClasses": [],
             },
             "employeeSensor": {
               "dataType": {
+                "itemType": {
+                  "type": "string",
+                },
                 "type": "timeseries",
               },
               "description": "TimeSeries sensor of the status of the employee",
               "rid": "rid",
+              "typeClasses": [],
             },
             "employeeStatus": {
               "dataType": {
@@ -507,12 +625,25 @@ exports[`Load Ontologies Metadata > Loads object and action types using only spe
               },
               "description": "TimeSeries of the status of the employee",
               "rid": "rid",
+              "typeClasses": [],
+            },
+            "favoriteRestaurants": {
+              "dataType": {
+                "reducers": [],
+                "subType": {
+                  "type": "string",
+                },
+                "type": "array",
+              },
+              "rid": "rid",
+              "typeClasses": [],
             },
             "fullName": {
               "dataType": {
                 "type": "string",
               },
               "rid": "rid",
+              "typeClasses": [],
             },
             "office": {
               "dataType": {
@@ -521,6 +652,7 @@ exports[`Load Ontologies Metadata > Loads object and action types using only spe
               "description": "The unique "ID" of the employee's \\"primary\\" assigned office.
  This is some more text.",
               "rid": "rid",
+              "typeClasses": [],
             },
             "skillSet": {
               "dataType": {
@@ -528,6 +660,7 @@ exports[`Load Ontologies Metadata > Loads object and action types using only spe
               },
               "description": "The skills of the employee",
               "rid": "rid",
+              "typeClasses": [],
             },
             "skillSetEmbedding": {
               "dataType": {
@@ -545,6 +678,7 @@ exports[`Load Ontologies Metadata > Loads object and action types using only spe
               },
               "description": "Vectorized skill set",
               "rid": "rid",
+              "typeClasses": [],
             },
             "startDate": {
               "dataType": {
@@ -552,6 +686,7 @@ exports[`Load Ontologies Metadata > Loads object and action types using only spe
               },
               "description": "The date the employee was hired (most recently, if they were re-hired)",
               "rid": "rid",
+              "typeClasses": [],
             },
           },
           "rid": "ri.ontology.main.object-type.401ac022-89eb-4591-8b7e-0a912b9efb44",
@@ -585,12 +720,14 @@ exports[`Load Ontologies Metadata > Loads object and action types using only spe
               },
               "description": "The capacity of the Office",
               "rid": "rid",
+              "typeClasses": [],
             },
             "entrance": {
               "dataType": {
                 "type": "geopoint",
               },
               "rid": "rid",
+              "typeClasses": [],
             },
             "name": {
               "dataType": {
@@ -598,6 +735,7 @@ exports[`Load Ontologies Metadata > Loads object and action types using only spe
               },
               "description": "The Name of the Office",
               "rid": "rid",
+              "typeClasses": [],
             },
             "occupiedArea": {
               "dataType": {
@@ -605,12 +743,14 @@ exports[`Load Ontologies Metadata > Loads object and action types using only spe
               },
               "description": "The occupied area of the Office",
               "rid": "rid",
+              "typeClasses": [],
             },
             "officeId": {
               "dataType": {
                 "type": "string",
               },
               "rid": "rid",
+              "typeClasses": [],
             },
           },
           "rid": "ri.ontology.main.object-type.404ac022-89eb-4591-8b7e-1a912b9efb45",
@@ -656,6 +796,7 @@ exports[`Load Ontologies Metadata > Loads object, action, interface types withou
             },
             "displayName": "Employee ID",
             "required": true,
+            "typeClasses": [],
           },
           "newCompensation": {
             "dataType": {
@@ -663,6 +804,7 @@ exports[`Load Ontologies Metadata > Loads object, action, interface types withou
             },
             "displayName": "New Compensation",
             "required": true,
+            "typeClasses": [],
           },
           "newTitle": {
             "dataType": {
@@ -670,6 +812,7 @@ exports[`Load Ontologies Metadata > Loads object, action, interface types withou
             },
             "displayName": "New Title",
             "required": true,
+            "typeClasses": [],
           },
         },
         "rid": "ri.ontology.main.action-type.7ed72754-7491-428a-bb18-4d7296eb2167",
@@ -702,6 +845,31 @@ exports[`Load Ontologies Metadata > Loads object, action, interface types withou
             "displayName": "Foo",
             "required": true,
             "rid": "ri.sharedPropertyType.main.sharedPropertyType.1",
+            "typeClasses": [],
+          },
+        },
+        "allPropertiesV2": {
+          "fooIdp": {
+            "apiName": "fooIdp",
+            "dataType": {
+              "type": "string",
+            },
+            "description": "A Foo IDP",
+            "displayName": "Foo IDP",
+            "requireImplementation": true,
+            "rid": "ri.interfacePropertyType.main.interfacePropertyType.1",
+            "typeClasses": [],
+          },
+          "fooSpt": {
+            "apiName": "fooSpt",
+            "dataType": {
+              "type": "string",
+            },
+            "description": "A foo",
+            "displayName": "Foo",
+            "requireImplementation": true,
+            "rid": "ri.sharedPropertyType.main.sharedPropertyType.1",
+            "typeClasses": [],
           },
         },
         "apiName": "FooInterface",
@@ -735,6 +903,33 @@ exports[`Load Ontologies Metadata > Loads object, action, interface types withou
             "displayName": "Foo",
             "required": true,
             "rid": "ri.sharedPropertyType.main.sharedPropertyType.1",
+            "typeClasses": [],
+          },
+        },
+        "propertiesV2": {
+          "fooIdp": {
+            "apiName": "fooIdp",
+            "dataType": {
+              "type": "string",
+            },
+            "description": "A Foo IDP",
+            "displayName": "Foo IDP",
+            "requireImplementation": true,
+            "rid": "ri.interfacePropertyType.main.interfacePropertyType.1",
+            "type": "interfaceDefinedPropertyType",
+            "typeClasses": [],
+          },
+          "fooSpt": {
+            "apiName": "fooSpt",
+            "dataType": {
+              "type": "string",
+            },
+            "description": "A foo",
+            "displayName": "Foo",
+            "required": true,
+            "rid": "ri.sharedPropertyType.main.sharedPropertyType.1",
+            "type": "interfaceSharedPropertyType",
+            "typeClasses": [],
           },
         },
         "rid": "ri.interface.main.interface.1",
@@ -750,6 +945,16 @@ exports[`Load Ontologies Metadata > Loads object, action, interface types withou
             "links": {},
             "properties": {
               "fooSpt": "fullName",
+            },
+            "propertiesV2": {
+              "fooIdp": {
+                "propertyApiName": "office",
+                "type": "localPropertyImplementation",
+              },
+              "fooSpt": {
+                "propertyApiName": "fullName",
+                "type": "localPropertyImplementation",
+              },
             },
           },
         },
@@ -774,12 +979,14 @@ exports[`Load Ontologies Metadata > Loads object, action, interface types withou
               },
               "description": "",
               "rid": "rid",
+              "typeClasses": [],
             },
             "employeeId": {
               "dataType": {
                 "type": "integer",
               },
               "rid": "rid",
+              "typeClasses": [],
             },
             "employeeLocation": {
               "dataType": {
@@ -787,13 +994,18 @@ exports[`Load Ontologies Metadata > Loads object, action, interface types withou
               },
               "description": "Geotime series reference of the location of the employee",
               "rid": "rid",
+              "typeClasses": [],
             },
             "employeeSensor": {
               "dataType": {
+                "itemType": {
+                  "type": "string",
+                },
                 "type": "timeseries",
               },
               "description": "TimeSeries sensor of the status of the employee",
               "rid": "rid",
+              "typeClasses": [],
             },
             "employeeStatus": {
               "dataType": {
@@ -804,12 +1016,25 @@ exports[`Load Ontologies Metadata > Loads object, action, interface types withou
               },
               "description": "TimeSeries of the status of the employee",
               "rid": "rid",
+              "typeClasses": [],
+            },
+            "favoriteRestaurants": {
+              "dataType": {
+                "reducers": [],
+                "subType": {
+                  "type": "string",
+                },
+                "type": "array",
+              },
+              "rid": "rid",
+              "typeClasses": [],
             },
             "fullName": {
               "dataType": {
                 "type": "string",
               },
               "rid": "rid",
+              "typeClasses": [],
             },
             "office": {
               "dataType": {
@@ -818,6 +1043,7 @@ exports[`Load Ontologies Metadata > Loads object, action, interface types withou
               "description": "The unique "ID" of the employee's \\"primary\\" assigned office.
  This is some more text.",
               "rid": "rid",
+              "typeClasses": [],
             },
             "skillSet": {
               "dataType": {
@@ -825,6 +1051,7 @@ exports[`Load Ontologies Metadata > Loads object, action, interface types withou
               },
               "description": "The skills of the employee",
               "rid": "rid",
+              "typeClasses": [],
             },
             "skillSetEmbedding": {
               "dataType": {
@@ -842,6 +1069,7 @@ exports[`Load Ontologies Metadata > Loads object, action, interface types withou
               },
               "description": "Vectorized skill set",
               "rid": "rid",
+              "typeClasses": [],
             },
             "startDate": {
               "dataType": {
@@ -849,6 +1077,7 @@ exports[`Load Ontologies Metadata > Loads object, action, interface types withou
               },
               "description": "The date the employee was hired (most recently, if they were re-hired)",
               "rid": "rid",
+              "typeClasses": [],
             },
           },
           "rid": "ri.ontology.main.object-type.401ac022-89eb-4591-8b7e-0a912b9efb44",

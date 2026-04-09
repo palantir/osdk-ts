@@ -765,6 +765,125 @@ describe(modernToLegacyWhereClause, () => {
         }
       `);
       });
+      it("converts $interval $match", () => {
+        expect(modernToLegacyWhereClause<ObjAllProps>({
+          string: {
+            $interval: {
+              $match: "test phrase",
+              $maxGaps: 1,
+              $ordered: true,
+            },
+          },
+        }, objectTypeWithAllPropertyTypes)).toMatchInlineSnapshot(`
+        {
+          "field": "string",
+          "rule": {
+            "maxGaps": 1,
+            "ordered": true,
+            "query": "test phrase",
+            "type": "match",
+          },
+          "type": "interval",
+        }
+      `);
+      });
+      it("converts $interval $prefixOnLastTerm", () => {
+        expect(modernToLegacyWhereClause<ObjAllProps>({
+          string: {
+            $interval: {
+              $match: "test phr",
+              $prefixOnLastTerm: true,
+            },
+          },
+        }, objectTypeWithAllPropertyTypes)).toMatchInlineSnapshot(`
+        {
+          "field": "string",
+          "rule": {
+            "query": "test phr",
+            "type": "prefixOnLastToken",
+          },
+          "type": "interval",
+        }
+      `);
+      });
+      it("converts $interval $and", () => {
+        expect(modernToLegacyWhereClause<ObjAllProps>({
+          string: {
+            $interval: {
+              $and: [{
+                $match: "test",
+                $ordered: true,
+              }, {
+                $match: "phrase",
+                $ordered: true,
+              }],
+              $maxGaps: 0,
+              $ordered: true,
+            },
+          },
+        }, objectTypeWithAllPropertyTypes)).toMatchInlineSnapshot(`
+          {
+            "field": "string",
+            "rule": {
+              "maxGaps": 0,
+              "ordered": true,
+              "rules": [
+                {
+                  "maxGaps": undefined,
+                  "ordered": true,
+                  "query": "test",
+                  "type": "match",
+                },
+                {
+                  "maxGaps": undefined,
+                  "ordered": true,
+                  "query": "phrase",
+                  "type": "match",
+                },
+              ],
+              "type": "allOf",
+            },
+            "type": "interval",
+          }
+        `);
+      });
+      it("converts $interval $or", () => {
+        expect(modernToLegacyWhereClause<ObjAllProps>({
+          string: {
+            $interval: {
+              $or: [{
+                $match: "test",
+                $ordered: true,
+              }, {
+                $match: "phrase",
+                $ordered: true,
+              }],
+            },
+          },
+        }, objectTypeWithAllPropertyTypes)).toMatchInlineSnapshot(`
+          {
+            "field": "string",
+            "rule": {
+              "rules": [
+                {
+                  "maxGaps": undefined,
+                  "ordered": true,
+                  "query": "test",
+                  "type": "match",
+                },
+                {
+                  "maxGaps": undefined,
+                  "ordered": true,
+                  "query": "phrase",
+                  "type": "match",
+                },
+              ],
+              "type": "anyOf",
+            },
+            "type": "interval",
+          }
+        `);
+      });
       it("converts struct where clauses correctly", () => {
         expect(modernToLegacyWhereClause<structObj>({
           address: { state: { $eq: "NJ" } },
@@ -855,6 +974,130 @@ describe(modernToLegacyWhereClause, () => {
       }
     `);
       });
+      it("converts struct arrays correctly", () => {
+        expect(
+          modernToLegacyWhereClause<structObj>({
+            $and: [{
+              addressArray: { $contains: { zipCode: { $gte: 10001 } } },
+            }, {
+              addressArray: {
+                $contains: {
+                  location: {
+                    $within: [1, 2, 3, 4],
+                  },
+                },
+              },
+            }],
+          }, BgaoNflPlayer),
+        )
+          .toMatchInlineSnapshot(`
+            {
+              "type": "and",
+              "value": [
+                {
+                  "field": undefined,
+                  "propertyIdentifier": {
+                    "propertyApiName": "addressArray",
+                    "structFieldApiName": "zipCode",
+                    "type": "structField",
+                  },
+                  "type": "gte",
+                  "value": 10001,
+                },
+                {
+                  "field": undefined,
+                  "propertyIdentifier": {
+                    "propertyApiName": "addressArray",
+                    "structFieldApiName": "location",
+                    "type": "structField",
+                  },
+                  "type": "withinBoundingBox",
+                  "value": {
+                    "bottomRight": {
+                      "coordinates": [
+                        3,
+                        2,
+                      ],
+                      "type": "Point",
+                    },
+                    "topLeft": {
+                      "coordinates": [
+                        1,
+                        4,
+                      ],
+                      "type": "Point",
+                    },
+                  },
+                },
+              ],
+            }
+          `);
+      });
+
+      it("converts primitive arrays with nested filters correctly", () => {
+        expect(
+          modernToLegacyWhereClause<ObjAllProps>({
+            integerArray: { $contains: { $lt: 5 } },
+          }, objectTypeWithAllPropertyTypes),
+        ).toMatchInlineSnapshot(`
+          {
+            "field": "integerArray",
+            "type": "lt",
+            "value": 5,
+          }
+        `);
+
+        expect(
+          modernToLegacyWhereClause<ObjAllProps>({
+            stringArray: { $contains: { $startsWith: "test" } },
+          }, objectTypeWithAllPropertyTypes),
+        ).toMatchInlineSnapshot(`
+          {
+            "field": "stringArray",
+            "type": "startsWith",
+            "value": "test",
+          }
+        `);
+
+        expect(
+          modernToLegacyWhereClause<ObjAllProps>({
+            booleanArray: { $contains: { $eq: true } },
+          }, objectTypeWithAllPropertyTypes),
+        ).toMatchInlineSnapshot(`
+          {
+            "field": "booleanArray",
+            "type": "eq",
+            "value": true,
+          }
+        `);
+      });
+
+      it("converts primitive arrays with multiple nested filter conditions", () => {
+        expect(
+          modernToLegacyWhereClause<ObjAllProps>({
+            $and: [
+              { integerArray: { $contains: { $gte: 1 } } },
+              { integerArray: { $contains: { $lt: 10 } } },
+            ],
+          }, objectTypeWithAllPropertyTypes),
+        ).toMatchInlineSnapshot(`
+          {
+            "type": "and",
+            "value": [
+              {
+                "field": "integerArray",
+                "type": "gte",
+                "value": 1,
+              },
+              {
+                "field": "integerArray",
+                "type": "lt",
+                "value": 10,
+              },
+            ],
+          }
+        `);
+      });
     });
 
     describe("multiple checks", () => {
@@ -941,6 +1184,278 @@ describe(modernToLegacyWhereClause, () => {
             }
           `);
       });
+    });
+  });
+
+  describe("mixed $ operators and regular properties", () => {
+    it("should handle $not operator with regular properties at top level", () => {
+      const whereClause: WhereClause<ObjAllProps> = {
+        integer: { $eq: 5 },
+        $not: { string: { $in: ["a", "b", "c"] } },
+      };
+
+      const result = modernToLegacyWhereClause(
+        whereClause,
+        objectTypeWithAllPropertyTypes,
+      );
+
+      expect(result).toMatchInlineSnapshot(`
+        {
+          "type": "and",
+          "value": [
+            {
+              "field": "integer",
+              "type": "eq",
+              "value": 5,
+            },
+            {
+              "type": "not",
+              "value": {
+                "field": "string",
+                "type": "in",
+                "value": [
+                  "a",
+                  "b",
+                  "c",
+                ],
+              },
+            },
+          ],
+        }
+      `);
+    });
+
+    it("should handle multiple regular properties with $not at top level", () => {
+      const whereClause: WhereClause<ObjAllProps> = {
+        integer: 5,
+        boolean: true,
+        $not: { string: { $eq: "excluded" } },
+      };
+
+      const result = modernToLegacyWhereClause(
+        whereClause,
+        objectTypeWithAllPropertyTypes,
+      );
+
+      expect(result).toMatchInlineSnapshot(`
+        {
+          "type": "and",
+          "value": [
+            {
+              "field": "integer",
+              "type": "eq",
+              "value": 5,
+            },
+            {
+              "field": "boolean",
+              "type": "eq",
+              "value": true,
+            },
+            {
+              "type": "not",
+              "value": {
+                "field": "string",
+                "type": "eq",
+                "value": "excluded",
+              },
+            },
+          ],
+        }
+      `);
+    });
+  });
+
+  describe("RDP properties", () => {
+    type TestRDPs = {
+      reportCount: "integer";
+      managerName: "string";
+    };
+
+    const mockObjectType = {
+      type: "object" as const,
+      apiName: "TestObject",
+      __DefinitionMetadata: {
+        type: "object" as const,
+        apiName: "TestObject",
+        displayName: "Test Object",
+        description: undefined,
+        properties: {
+          department: { type: "string" as const },
+          status: { type: "string" as const },
+        },
+        rid: "test-rid",
+        primaryKeyApiName: "id",
+        titleProperty: "department",
+        links: {},
+        primaryKeyType: "string" as const,
+        icon: undefined,
+        visibility: undefined,
+        pluralDisplayName: "Test Objects",
+        status: undefined,
+        interfaceMap: {},
+        inverseInterfaceMap: {},
+      },
+    };
+
+    it("should handle RDP properties at top level", () => {
+      const whereClause: WhereClause<typeof mockObjectType, TestRDPs> = {
+        department: "Engineering",
+        reportCount: { $gte: 5 },
+        managerName: "John",
+      };
+
+      const rdpNames = new Set(["reportCount", "managerName"]);
+
+      const result = modernToLegacyWhereClause(
+        whereClause,
+        mockObjectType,
+        rdpNames,
+      );
+
+      expect(result).toMatchInlineSnapshot(`
+        {
+          "type": "and",
+          "value": [
+            {
+              "field": "department",
+              "type": "eq",
+              "value": "Engineering",
+            },
+            {
+              "field": undefined,
+              "propertyIdentifier": {
+                "apiName": "reportCount",
+                "type": "property",
+              },
+              "type": "gte",
+              "value": 5,
+            },
+            {
+              "field": undefined,
+              "propertyIdentifier": {
+                "apiName": "managerName",
+                "type": "property",
+              },
+              "type": "eq",
+              "value": "John",
+            },
+          ],
+        }
+      `);
+    });
+
+    it("should handle RDP properties in $and clauses", () => {
+      const whereClause: WhereClause<typeof mockObjectType, TestRDPs> = {
+        $and: [
+          { department: "Engineering" },
+          { reportCount: { $gte: 5 } },
+        ],
+      };
+
+      const rdpNames = new Set(["reportCount"]);
+
+      const result = modernToLegacyWhereClause(
+        whereClause,
+        mockObjectType,
+        rdpNames,
+      );
+
+      expect(result).toMatchInlineSnapshot(`
+        {
+          "type": "and",
+          "value": [
+            {
+              "field": "department",
+              "type": "eq",
+              "value": "Engineering",
+            },
+            {
+              "field": undefined,
+              "propertyIdentifier": {
+                "apiName": "reportCount",
+                "type": "property",
+              },
+              "type": "gte",
+              "value": 5,
+            },
+          ],
+        }
+      `);
+    });
+
+    it("should handle complex nested structures with RDP", () => {
+      const whereClause: WhereClause<typeof mockObjectType, TestRDPs> = {
+        department: "Engineering",
+        $and: [
+          {
+            $or: [
+              { status: "active" },
+              { reportCount: { $gte: 10 } },
+            ],
+          },
+          {
+            managerName: { $ne: "Admin" },
+          },
+        ],
+      };
+
+      const rdpNames = new Set(["reportCount", "managerName"]);
+
+      const result = modernToLegacyWhereClause(
+        whereClause,
+        mockObjectType,
+        rdpNames,
+      );
+
+      // The actual structure flattens the nested $and differently
+      expect(result).toMatchInlineSnapshot(`
+        {
+          "type": "and",
+          "value": [
+            {
+              "field": "department",
+              "type": "eq",
+              "value": "Engineering",
+            },
+            {
+              "type": "and",
+              "value": [
+                {
+                  "type": "or",
+                  "value": [
+                    {
+                      "field": "status",
+                      "type": "eq",
+                      "value": "active",
+                    },
+                    {
+                      "field": undefined,
+                      "propertyIdentifier": {
+                        "apiName": "reportCount",
+                        "type": "property",
+                      },
+                      "type": "gte",
+                      "value": 10,
+                    },
+                  ],
+                },
+                {
+                  "type": "not",
+                  "value": {
+                    "field": undefined,
+                    "propertyIdentifier": {
+                      "apiName": "managerName",
+                      "type": "property",
+                    },
+                    "type": "eq",
+                    "value": "Admin",
+                  },
+                },
+              ],
+            },
+          ],
+        }
+      `);
     });
   });
 });

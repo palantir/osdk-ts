@@ -18,12 +18,16 @@ import type {
   AsyncIterArgs,
   Augments,
   FetchPageResult,
+  InterfaceDefinition,
   LinkedType,
   LinkNames,
+  LinkTypeApiNamesFor,
+  MinimalDirectedObjectLinkInstance,
   NullabilityAdherence,
   ObjectOrInterfaceDefinition,
   ObjectSet,
   ObjectSetArgs,
+  ObjectSetSubscription,
   ObjectTypeDefinition,
   Osdk,
   PrimaryKeyType,
@@ -38,6 +42,7 @@ import type {
   ObjectSet as WireObjectSet,
   PropertyApiName,
 } from "@osdk/foundry.ontologies";
+import invariant from "tiny-invariant";
 import { createWithPropertiesObjectSet } from "../derivedProperties/createWithPropertiesObjectSet.js";
 import { modernToLegacyWhereClause } from "../internal/conversions/modernToLegacyWhereClause.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
@@ -50,21 +55,38 @@ import { fetchSingle, fetchSingleWithErrors } from "../object/fetchSingle.js";
 import { augmentRequestContext } from "../util/augmentRequestContext.js";
 import { resolveBaseObjectSetType } from "../util/objectSetUtils.js";
 import { isWireObjectSet } from "../util/WireObjectSet.js";
-import { ObjectSetListenerWebsocket } from "./ObjectSetListenerWebsocket.js";
+import { fetchLinksPage } from "./fetchLinksPage.js";
 
+const a: WireObjectSet = {
+  "type": "interfaceLinkSearchAround",
+  "interfaceLink": "lead",
+  "objectSet": {
+    "type": "asType",
+    "entityType": "Person",
+    "objectSet": {
+      "type": "filter",
+      "objectSet": { "type": "base", "objectType": "Employee" },
+      "where": {
+        "type": "eq",
+        "field": "employeeNumber",
+        "value": "657495107",
+      },
+    },
+  },
+};
 function isObjectTypeDefinition(
   def: ObjectOrInterfaceDefinition,
 ): def is ObjectTypeDefinition {
   return def.type === "object";
 }
 
-/* @internal */
-export function isObjectSet(o: any): o is ObjectSet<any> {
+export function isObjectSet(
+  o: object,
+): o is ObjectSet<ObjectOrInterfaceDefinition> {
   return o != null && typeof o === "object"
     && isWireObjectSet(objectSetDefinitions.get(o));
 }
 
-/** @internal */
 export function getWireObjectSet(
   objectSet: ObjectSet<any> | MinimalObjectSet<any>,
 ): WireObjectSet {
@@ -111,12 +133,12 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
     where: (clause) => {
       return clientCtx.objectSetFactory(objectType, clientCtx, {
         type: "filter",
-        objectSet: objectSet,
+        objectSet,
         where: modernToLegacyWhereClause(clause, objectType),
       });
     },
 
-    pivotTo: function<L extends LinkNames<Q>>(
+    pivotTo<L extends LinkNames<Q>>(
       type: L,
     ): ObjectSet<LinkedType<Q, L>> {
       return createSearchAround(type)();
@@ -172,7 +194,7 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
       ) as ObjectSet<Q>;
     },
 
-    asyncIter: async function*<
+    async *asyncIter<
       L extends PropertyKeys<Q>,
       R extends boolean,
       const A extends Augments,
@@ -184,7 +206,7 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
     ): AsyncIterableIterator<
       SingleOsdkResult<Q, L, R, S, {}, T, ORDER_BY_OPTIONS>
     > {
-      let $nextPageToken: string | undefined = undefined;
+      let $nextPageToken: string | undefined;
       do {
         const result: FetchPageResult<
           Q,
@@ -260,14 +282,17 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
       listener,
       opts,
     ) => {
-      const pendingSubscribe = ObjectSetListenerWebsocket.getInstance(
-        clientCtx,
-      ).subscribe(
-        objectType,
-        objectSet,
-        listener,
-        opts?.properties,
-      );
+      const pendingSubscribe = import("./ObjectSetListenerWebsocket.js")
+        .then(({ ObjectSetListenerWebsocket }) =>
+          ObjectSetListenerWebsocket.getInstance(clientCtx)
+            .subscribe(
+              objectType,
+              objectSet,
+              listener as ObjectSetSubscription.Listener<Q, any>,
+              opts?.properties,
+              opts?.includeRid,
+            )
+        );
 
       return { unsubscribe: async () => (await pendingSubscribe)() };
     },
@@ -294,10 +319,59 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
         clientCtx,
         {
           type: "withProperties",
-          derivedProperties: derivedProperties,
-          objectSet: objectSet,
+          derivedProperties,
+          objectSet,
         },
       );
+    },
+
+    narrowToType: (
+      objectTypeDef: ObjectTypeDefinition | InterfaceDefinition,
+    ) => {
+      const existingMapping =
+        clientCtx.narrowTypeInterfaceOrObjectMapping[objectTypeDef.apiName];
+      invariant(
+        !existingMapping || existingMapping === objectTypeDef.type,
+        `${objectTypeDef.apiName} was previously used as an ${existingMapping}, but now used as a ${objectTypeDef.type}.`,
+      );
+      clientCtx.narrowTypeInterfaceOrObjectMapping[objectTypeDef.apiName] =
+        objectTypeDef.type;
+
+      return clientCtx.objectSetFactory(
+        objectTypeDef,
+        clientCtx,
+        {
+          type: "asType",
+          objectSet,
+          entityType: objectTypeDef.apiName,
+        },
+      );
+    },
+
+    async *experimental_asyncIterLinks<
+      LINK_TYPE_API_NAME extends LinkTypeApiNamesFor<Q>,
+    >(
+      links: LINK_TYPE_API_NAME[],
+    ): AsyncIterableIterator<
+      MinimalDirectedObjectLinkInstance<Q, LINK_TYPE_API_NAME>
+    > {
+      let $nextPageToken: string | undefined;
+      do {
+        const result = await fetchLinksPage(
+          augmentRequestContext(
+            clientCtx,
+            _ => ({ finalMethodCall: "asyncIterLinks" }),
+          ),
+          objectType,
+          objectSet,
+          links,
+        );
+        $nextPageToken = result.nextPageToken;
+
+        for (const obj of result.data) {
+          yield obj;
+        }
+      } while ($nextPageToken != null);
     },
 
     $objectSetInternals: {
@@ -344,7 +418,7 @@ async function createWithPk(
 
   const withPk: WireObjectSet = {
     type: "filter",
-    objectSet: objectSet,
+    objectSet,
     where: {
       type: "eq",
       field: objDef.primaryKeyApiName,

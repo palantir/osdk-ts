@@ -106,6 +106,8 @@ export interface Employee extends $ObjectTypeDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'object';
   apiName: 'Employee';
+  primaryKeyApiName: 'id';
+  primaryKeyType: 'string';
   __DefinitionMetadata?: {
     objectSet: Employee.ObjectSet;
     props: Employee.Props;
@@ -198,8 +200,13 @@ export interface Employee extends $ObjectTypeDefinition {
   };
 }
 
-export const Employee: Employee = {
+export const Employee = {
   type: 'object',
   apiName: 'Employee',
   osdkMetadata: $osdkMetadata,
-};
+  primaryKeyApiName: 'id',
+  primaryKeyType: 'string',
+  internalDoNotUseMetadata: {
+    rid: 'rid.a.b.c.d',
+  },
+} satisfies Employee & { internalDoNotUseMetadata: { rid: string } } as Employee;

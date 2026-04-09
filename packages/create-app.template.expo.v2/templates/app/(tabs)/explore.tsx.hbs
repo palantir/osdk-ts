@@ -6,12 +6,16 @@ import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { IconSymbol } from '@/components/ui/IconSymbol';
+{{#if osdkPackage}}
 import { $Actions, $Objects, $Queries } from "{{osdkPackage}}";
+{{/if}}
 
 export default function TabTwoScreen() {
+  {{#if osdkPackage}}
   const objectApiNames = Object.keys($Objects);
   const actionApiNames = Object.keys($Actions);
   const queryApiNames = Object.keys($Queries);
+  {{/if}}
   const colors = { light: '#D0D0D0', dark: '#353636' };
   return (
     <ParallaxScrollView
@@ -28,6 +32,7 @@ export default function TabTwoScreen() {
         <ThemedText type="title">Explore</ThemedText>
       </ThemedView>
       <ThemedText>This app includes example code to help you get started.</ThemedText>
+      {{#if osdkPackage}}
       <Collapsible title="Ontology SDK" open={true}>
         <ThemedText>
           This app is based on the default Expo template, enriched with the Ontology SDK.
@@ -59,6 +64,17 @@ export default function TabTwoScreen() {
           ))}
         </ThemedView>
       </Collapsible>
+      {{else}}
+      <Collapsible title="Ontology and Platform SDKs" open={true}>
+        <ThemedText>
+          Use the Ontology SDK to interact with your Ontology and the Platform
+          SDK to access Foundry APIs. Configure your SDKs from the{" "}
+          <ThemedText type="defaultSemiBold">Ontology SDK</ThemedText> and{" "}
+          <ThemedText type="defaultSemiBold">Platform SDK</ThemedText> tabs in
+          Developer Console.
+        </ThemedText>
+      </Collapsible>
+      {{/if}}
       <Collapsible title="Expo default examples">
         <Collapsible title="File-based routing">
           <ThemedText>

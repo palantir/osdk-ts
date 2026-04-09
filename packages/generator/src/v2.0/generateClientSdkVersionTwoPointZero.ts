@@ -17,7 +17,6 @@
 import { enhanceOntology } from "../GenerateContext/enhanceOntology.js";
 import type { GenerateContext } from "../GenerateContext/GenerateContext.js";
 import type { MinimalFs } from "../MinimalFs.js";
-import { sanitizeMetadata } from "../shared/sanitizeMetadata.js";
 import { verifyOutDir } from "../util/verifyOutDir.js";
 import type { WireOntologyDefinition } from "../WireOntologyDefinition.js";
 import { generateOntologyMetadataFile } from "./generateMetadata.js";
@@ -46,11 +45,9 @@ export async function generateClientSdkVersionTwoPointZero(
 
   await verifyOutDir(outDir, fs);
 
-  const sanitizedOntology = sanitizeMetadata(ontology);
-
   await fs.mkdir(outDir, { recursive: true });
   const enhancedOntology = enhanceOntology({
-    sanitized: sanitizedOntology,
+    sanitized: ontology,
     importExt,
     externalObjects,
     externalInterfaces,
@@ -58,7 +55,6 @@ export async function generateClientSdkVersionTwoPointZero(
   });
 
   const ctx: GenerateContext = {
-    sanitizedOntology,
     ontology: enhancedOntology,
     importExt,
     fs,

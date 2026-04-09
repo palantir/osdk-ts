@@ -54,7 +54,27 @@ export function wireObjectTypeFullMetadataToSdkObjectMetadata(
   const interfaceMap = objectTypeWithLink.implementsInterfaces2
     ? Object.fromEntries(
       Object.entries(objectTypeWithLink.implementsInterfaces2).map(
-        ([interfaceApiName, impl]) => [interfaceApiName, impl.properties],
+        ([interfaceApiName, impl]) => {
+          // prefer V2 if available and non-empty
+          if (
+            impl.propertiesV2
+            && Object.keys(impl.propertiesV2).length > 0
+          ) {
+            const propMap: Record<string, string> = {};
+            for (
+              const [iptApiName, implementation] of Object.entries(
+                impl.propertiesV2,
+              )
+            ) {
+              if (implementation.type === "localPropertyImplementation") {
+                propMap[iptApiName] = implementation.propertyApiName;
+              }
+            }
+            return [interfaceApiName, propMap];
+          }
+          // fall back to V1
+          return [interfaceApiName, impl.properties];
+        },
       ),
     )
     : {};

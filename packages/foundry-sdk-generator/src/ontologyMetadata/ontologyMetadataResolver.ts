@@ -29,6 +29,29 @@ import type {
 import { createSharedClientContext } from "@osdk/shared.client.impl";
 import { Result } from "./Result.js";
 
+/**
+ * Parses a link type string in the format "ObjectTypeApiName.linkTypeApiName".
+ * Handles object type API names that contain dots (e.g., "com.foo.ObjectName.myLink").
+ *
+ * @param linkType - The link type string to parse
+ * @returns A tuple of [objectTypeApiName, linkTypeApiName]
+ * @throws Error if the link type string doesn't contain a dot
+ */
+export function parseLinkType(
+  linkType: string,
+): [objectTypeApiName: string, linkTypeApiName: string] {
+  const lastDotIndex = linkType.lastIndexOf(".");
+  if (lastDotIndex === -1) {
+    throw new Error(
+      `Invalid link type format: "${linkType}". Expected format: "ObjectTypeApiName.linkTypeApiName"`,
+    );
+  }
+  return [
+    linkType.slice(0, lastDotIndex),
+    linkType.slice(lastDotIndex + 1),
+  ];
+}
+
 type PackageInfo = Map<string, {
   sdkPackage: SdkPackage;
   sdk: Sdk;
@@ -202,7 +225,7 @@ export class OntologyMetadataResolver {
       const ontologyFullMetadata = await OntologiesV2.getFullMetadata(
         this.getClientContext(),
         ontology.rid as OntologyIdentifier,
-        { branch: branch },
+        { branch },
       );
 
       if ((ontologyFullMetadata as any).errorName != null) {
@@ -270,9 +293,7 @@ export class OntologyMetadataResolver {
       const interfaceTypes = new Set(entities.interfaceTypesApiNamesToLoad);
 
       for (const linkType of entities.linkTypesApiNamesToLoad ?? []) {
-        const [objectTypeApiName, linkTypeApiName] = linkType.split(
-          ".",
-        );
+        const [objectTypeApiName, linkTypeApiName] = parseLinkType(linkType);
         if (!linkTypes.has(objectTypeApiName)) {
           linkTypes.set(objectTypeApiName, new Set());
         }
@@ -324,9 +345,7 @@ export class OntologyMetadataResolver {
       const linkTypes = new Map<string, Set<string>>();
 
       for (const linkType of entities.linkTypesApiNamesToLoad ?? []) {
-        const [objectTypeApiName, linkTypeApiName] = linkType.split(
-          ".",
-        );
+        const [objectTypeApiName, linkTypeApiName] = parseLinkType(linkType);
         if (!linkTypes.has(objectTypeApiName)) {
           linkTypes.set(objectTypeApiName, new Set());
         }
@@ -365,7 +384,7 @@ export class OntologyMetadataResolver {
         },
         {
           preview: true,
-          branch: branch,
+          branch,
         },
       );
 
@@ -475,6 +494,17 @@ export class OntologyMetadataResolver {
         }`,
       );
     }
+
+    for (const [objectApiName, linkNames] of expectedEntities.linkTypes) {
+      if (!expectedEntities.objectTypes.has(objectApiName)) {
+        errors.push(
+          `Link types were specified for Object Type ${objectApiName} (${
+            [...linkNames].join(", ")
+          }), but it was not included in --objectTypes. Please add --objectTypes ${objectApiName}`,
+        );
+      }
+    }
+
     const missingInterfaceTypes: string[] = [];
     for (const expectedInterface of expectedEntities.interfaceTypes) {
       if (!loadedInterfaceTypes[expectedInterface]) {
@@ -706,11 +736,15 @@ export class OntologyMetadataResolver {
       case "float":
       case "integer":
       case "long":
+      case "mediaReference":
       case "threeDimensionalAggregation":
       case "timestamp":
       case "twoDimensionalAggregation":
       case "null":
+      case "void":
         return Result.ok({});
+      case "mediaReference":
+      case "typeReference":
       case "unsupported":
         return Result.err([
           `Unable to load query ${queryApiName} because it takes an unsupported parameter type: ${
@@ -739,6 +773,13 @@ export class OntologyMetadataResolver {
   ): Result<{}, string[]> {
     switch (actionTypeParameter.type) {
       case "array":
+        if (
+          actionTypeParameter.subType.type === "array"
+        ) {
+          return Result.err([
+            `Unable to load action ${actionApiName} because it takes a nested array as a parameter`,
+          ]);
+        }
         return this.isSupportedActionTypeParameter(
           actionApiName,
           actionTypeParameter.subType,

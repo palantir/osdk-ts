@@ -25,11 +25,13 @@ import type {
   PrimaryKeyType,
   QueryDataTypeDefinition,
   QueryDefinition,
+  QueryMetadata,
   QueryParameterDefinition,
 } from "@osdk/api";
 import type { DataValue } from "@osdk/foundry.ontologies";
-import * as OntologiesV2 from "@osdk/foundry.ontologies";
+import * as Queries from "@osdk/foundry.ontologies/Query";
 import invariant from "tiny-invariant";
+import { createMediaFromReference } from "../createMediaFromReference.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { createObjectSet } from "../objectSet/createObjectSet.js";
 import { hydrateAttachmentFromRidInternal } from "../public-utils/hydrateAttachmentFromRid.js";
@@ -52,12 +54,17 @@ export async function applyQuery<
 ): Promise<
   QueryReturnType<CompileTimeMetadata<QD>["output"]>
 > {
-  const qd = await client.ontologyProvider.getQueryDefinition(
+  // We fire and forget so if a function has no parameters we don't unnecessarily load all metadata
+  const qd: Promise<QueryMetadata> = client.ontologyProvider.getQueryDefinition(
     query.apiName,
     query.isFixedVersion ? query.version : undefined,
   );
 
-  const response = await OntologiesV2.Queries.execute(
+  if (client.flushEdits != null) {
+    await client.flushEdits();
+  }
+
+  const response = await Queries.execute(
     addUserAgentAndRequestContextHeaders(
       augmentRequestContext(client, _ => ({ finalMethodCall: "applyQuery" })),
       query,
@@ -69,16 +76,24 @@ export async function applyQuery<
         ? await remapQueryParams(
           params as { [parameterId: string]: any },
           client,
-          qd.parameters,
+          (await qd).parameters,
         )
         : {},
     },
-    { version: query.isFixedVersion ? query.version : undefined },
+    {
+      version: query.isFixedVersion ? query.version : undefined,
+      transactionId: client.transactionId,
+      branch: client.branch,
+    },
   );
-  const objectOutputDefs = await getRequiredDefinitions(qd.output, client);
+
+  const objectOutputDefs = await getRequiredDefinitions(
+    (await qd).output,
+    client,
+  );
   const remappedResponse = await remapQueryResponse(
     client,
-    qd.output,
+    (await qd).output,
     response.value,
     objectOutputDefs,
   );
@@ -119,25 +134,22 @@ async function remapQueryResponse<
     }
   }
 
-  if (
-    responseDataType.multiplicity != null
-    && responseDataType.multiplicity
-  ) {
-    const withoutMultiplicity = { ...responseDataType, multiplicity: false };
-    for (let i = 0; i < responseValue.length; i++) {
-      responseValue[i] = await remapQueryResponse(
-        client,
-        withoutMultiplicity,
-        responseValue[i],
-        definitions,
-      );
-    }
-    return responseValue as QueryReturnType<typeof responseDataType>;
-  }
-
   switch (responseDataType.type) {
     case "union": {
       throw new Error("Union return types are not yet supported");
+    }
+
+    case "array": {
+      for (let i = 0; i < responseValue.length; i++) {
+        responseValue[i] = await remapQueryResponse(
+          client,
+          responseDataType.array,
+          responseValue[i],
+          definitions,
+        );
+      }
+
+      return responseValue as QueryReturnType<typeof responseDataType>;
     }
 
     case "set": {
@@ -161,6 +173,16 @@ async function remapQueryResponse<
         typeof responseDataType
       >;
     }
+
+    case "mediaReference": {
+      return createMediaFromReference(
+        client,
+        responseValue,
+      ) as unknown as QueryReturnType<
+        typeof responseDataType
+      >;
+    }
+
     case "object": {
       const def = definitions.get(responseDataType.object);
       if (!def || def.type !== "object") {
@@ -217,10 +239,11 @@ async function remapQueryResponse<
         typeof responseDataType
       >;
     }
+
     case "struct": {
       // figure out what keys need to be fixed up
       for (const [key, subtype] of Object.entries(responseDataType.struct)) {
-        if (requiresConversion(subtype)) {
+        if (requiresConversion(subtype) || responseValue[key] == null) {
           responseValue[key] = await remapQueryResponse(
             client,
             subtype,
@@ -239,7 +262,10 @@ async function remapQueryResponse<
       invariant(Array.isArray(responseValue), "Expected array entry");
       for (const entry of responseValue) {
         invariant(entry.key != null, "Expected key");
-        invariant(entry.value != null, "Expected value");
+        invariant(
+          responseDataType.valueType.nullable || entry.value != null,
+          "Expected value",
+        );
         const key = responseDataType.keyType.type === "object"
           ? getObjectSpecifier(
             entry.key,
@@ -301,6 +327,13 @@ async function getRequiredDefinitions(
       result.set(dataType.objectSet, objectDef);
       break;
     }
+    case "interfaceObjectSet": {
+      const interfaceDef = await client.ontologyProvider.getInterfaceDefinition(
+        dataType.objectSet,
+      );
+      result.set(dataType.objectSet, interfaceDef);
+      break;
+    }
     case "object": {
       const objectDef = await client.ontologyProvider.getObjectDefinition(
         dataType.object,
@@ -319,6 +352,9 @@ async function getRequiredDefinitions(
 
     case "set": {
       return getRequiredDefinitions(dataType.set, client);
+    }
+    case "array": {
+      return getRequiredDefinitions(dataType.array, client);
     }
 
     case "map": {
@@ -357,12 +393,17 @@ async function getRequiredDefinitions(
     case "float":
     case "integer":
     case "long":
+    case "mediaReference":
     case "string":
     case "threeDimensionalAggregation":
     case "timestamp":
     case "twoDimensionalAggregation":
     case "union":
       break;
+    default: {
+      const _: never = dataType;
+      break;
+    }
   }
 
   return result;
@@ -389,6 +430,7 @@ function requiresConversion(dataType: QueryDataTypeDefinition) {
       return requiresConversion(dataType.set);
 
     case "attachment":
+    case "mediaReference":
     case "objectSet":
     case "twoDimensionalAggregation":
     case "threeDimensionalAggregation":

@@ -66,12 +66,14 @@ describe("FetchMetadata", () => {
         ],
         "interfaceMap": {
           "FooInterface": {
+            "fooIdp": "office",
             "fooSpt": "fullName",
           },
         },
         "inverseInterfaceMap": {
           "FooInterface": {
             "fullName": "fooSpt",
+            "office": "fooIdp",
           },
         },
         "links": {
@@ -87,6 +89,10 @@ describe("FetchMetadata", () => {
             "multiplicity": true,
             "targetType": "Employee",
           },
+          "visitedOffices": {
+            "multiplicity": true,
+            "targetType": "Office",
+          },
         },
         "pluralDisplayName": "Employees",
         "primaryKeyApiName": "employeeId",
@@ -98,6 +104,7 @@ describe("FetchMetadata", () => {
             "multiplicity": false,
             "nullable": true,
             "type": "string",
+            "valueFormatting": undefined,
             "valueTypeApiName": undefined,
           },
           "employeeId": {
@@ -106,6 +113,7 @@ describe("FetchMetadata", () => {
             "multiplicity": false,
             "nullable": false,
             "type": "integer",
+            "valueFormatting": undefined,
             "valueTypeApiName": undefined,
           },
           "employeeLocation": {
@@ -114,6 +122,7 @@ describe("FetchMetadata", () => {
             "multiplicity": false,
             "nullable": true,
             "type": "geotimeSeriesReference",
+            "valueFormatting": undefined,
             "valueTypeApiName": undefined,
           },
           "employeeSensor": {
@@ -121,7 +130,8 @@ describe("FetchMetadata", () => {
             "displayName": undefined,
             "multiplicity": false,
             "nullable": true,
-            "type": "sensorTimeseries",
+            "type": "stringTimeseries",
+            "valueFormatting": undefined,
             "valueTypeApiName": undefined,
           },
           "employeeStatus": {
@@ -130,6 +140,16 @@ describe("FetchMetadata", () => {
             "multiplicity": false,
             "nullable": true,
             "type": "stringTimeseries",
+            "valueFormatting": undefined,
+            "valueTypeApiName": undefined,
+          },
+          "favoriteRestaurants": {
+            "description": undefined,
+            "displayName": undefined,
+            "multiplicity": true,
+            "nullable": true,
+            "type": "string",
+            "valueFormatting": undefined,
             "valueTypeApiName": undefined,
           },
           "fullName": {
@@ -138,6 +158,7 @@ describe("FetchMetadata", () => {
             "multiplicity": false,
             "nullable": true,
             "type": "string",
+            "valueFormatting": undefined,
             "valueTypeApiName": undefined,
           },
           "office": {
@@ -147,6 +168,7 @@ describe("FetchMetadata", () => {
             "multiplicity": false,
             "nullable": true,
             "type": "string",
+            "valueFormatting": undefined,
             "valueTypeApiName": undefined,
           },
           "skillSet": {
@@ -155,6 +177,7 @@ describe("FetchMetadata", () => {
             "multiplicity": false,
             "nullable": true,
             "type": "string",
+            "valueFormatting": undefined,
             "valueTypeApiName": undefined,
           },
           "skillSetEmbedding": {
@@ -163,6 +186,7 @@ describe("FetchMetadata", () => {
             "multiplicity": false,
             "nullable": true,
             "type": "vector",
+            "valueFormatting": undefined,
             "valueTypeApiName": undefined,
           },
           "startDate": {
@@ -171,6 +195,7 @@ describe("FetchMetadata", () => {
             "multiplicity": false,
             "nullable": true,
             "type": "datetime",
+            "valueFormatting": undefined,
             "valueTypeApiName": undefined,
           },
         },
@@ -210,12 +235,22 @@ describe("FetchMetadata", () => {
           },
         },
         "properties": {
+          "fooIdp": {
+            "description": "A Foo IDP",
+            "displayName": "Foo IDP",
+            "multiplicity": false,
+            "nullable": true,
+            "type": "string",
+            "valueFormatting": undefined,
+            "valueTypeApiName": undefined,
+          },
           "fooSpt": {
             "description": "A foo",
             "displayName": "Foo",
             "multiplicity": false,
             "nullable": true,
             "type": "string",
+            "valueFormatting": undefined,
             "valueTypeApiName": undefined,
           },
         },
@@ -272,6 +307,7 @@ describe("FetchMetadata", () => {
         "rid": "ri.ontology.main.action-type.9f84017d-cf17-4fa8-84c3-8e01e5d594f2",
         "status": "ACTIVE",
         "type": "action",
+        "unsanitizedApiName": "moveOffice",
       }
     `);
   });

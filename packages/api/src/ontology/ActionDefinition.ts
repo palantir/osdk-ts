@@ -24,6 +24,7 @@ import type {
 export interface ActionMetadata {
   type: "action";
   apiName: string;
+  unsanitizedApiName?: string;
   description?: string;
   displayName?: string;
   parameters: Record<any, ActionMetadata.Parameter<any>>;
@@ -108,6 +109,7 @@ export interface ActionDefinition<
 > {
   type: "action";
   apiName: string;
+  unsanitizedApiName?: string;
   osdkMetadata?: OsdkMetadata;
   __DefinitionMetadata?:
     & ActionCompileTimeMetadata<T_signatures>

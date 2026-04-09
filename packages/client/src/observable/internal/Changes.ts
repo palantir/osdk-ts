@@ -14,30 +14,59 @@
  * limitations under the License.
  */
 
-import { MultiMap } from "mnemonist";
 import type { ObjectHolder } from "../../object/convertWireToOsdkObjects/ObjectHolder.js";
+import type { AggregationCacheKey } from "./aggregation/AggregationCacheKey.js";
 import type { CacheKey } from "./CacheKey.js";
 import { DEBUG_ONLY__cacheKeyToString } from "./CacheKey.js";
+import { MultiMap } from "./collections/MultiMap.js";
+import type { FunctionCacheKey } from "./function/FunctionCacheKey.js";
 import type { SpecificLinkCacheKey } from "./links/SpecificLinkCacheKey.js";
 import type { ListCacheKey } from "./list/ListCacheKey.js";
+import type { MediaMetadataCacheKey } from "./media/MediaMetadataCacheKey.js";
 import type { ObjectCacheKey } from "./object/ObjectCacheKey.js";
+import type { ObjectSetCacheKey } from "./objectset/ObjectSetCacheKey.js";
 
 export class Changes {
   modifiedObjects: MultiMap<string, ObjectHolder> = new MultiMap();
   addedObjects: MultiMap<string, ObjectHolder> = new MultiMap();
 
-  added: Set<ListCacheKey | ObjectCacheKey | SpecificLinkCacheKey> = new Set();
-  modified: Set<ListCacheKey | ObjectCacheKey | SpecificLinkCacheKey> =
-    new Set();
-  deleted: Set<ListCacheKey | ObjectCacheKey | SpecificLinkCacheKey> =
-    new Set();
+  added: Set<
+    | AggregationCacheKey
+    | FunctionCacheKey
+    | ListCacheKey
+    | MediaMetadataCacheKey
+    | ObjectCacheKey
+    | SpecificLinkCacheKey
+    | ObjectSetCacheKey
+  > = new Set();
+  modified: Set<
+    | AggregationCacheKey
+    | FunctionCacheKey
+    | ListCacheKey
+    | MediaMetadataCacheKey
+    | ObjectCacheKey
+    | SpecificLinkCacheKey
+    | ObjectSetCacheKey
+  > = new Set();
+  deleted: Set<
+    | AggregationCacheKey
+    | FunctionCacheKey
+    | ListCacheKey
+    | MediaMetadataCacheKey
+    | ObjectCacheKey
+    | SpecificLinkCacheKey
+    | ObjectSetCacheKey
+  > = new Set();
 
   registerObject = (
     cacheKey: ObjectCacheKey,
     data: ObjectHolder,
     isNew: boolean,
   ): void => {
-    this[isNew ? "addedObjects" : "modifiedObjects"].set(data.$apiName, data);
+    this[isNew ? "addedObjects" : "modifiedObjects"].set(
+      data.$objectType ?? data.$apiName,
+      data,
+    );
     this[isNew ? "added" : "modified"].add(cacheKey);
   };
 
@@ -55,6 +84,14 @@ export class Changes {
 
   deleteLink = (cacheKey: SpecificLinkCacheKey): void => {
     this.deleted.add(cacheKey);
+  };
+
+  registerObjectSet = (key: ObjectSetCacheKey): void => {
+    this.modified.add(key);
+  };
+
+  registerFunction = (key: FunctionCacheKey): void => {
+    this.modified.add(key);
   };
 
   isEmpty(): boolean {

@@ -15,7 +15,7 @@
  */
 
 import type { Attachment, AttachmentUpload } from "../object/Attachment.js";
-import type { Media } from "../object/Media.js";
+import type { Media, MediaReference } from "../object/Media.js";
 import type {
   GeotimeSeriesProperty,
   TimeSeriesProperty,
@@ -105,7 +105,7 @@ export interface PropertyValueWireToCreate {
   integer: number;
   long: string;
   marking: string;
-  mediaReference: Media;
+  mediaReference: Media | MediaReference;
   short: number;
   string: string;
   timestamp: string;

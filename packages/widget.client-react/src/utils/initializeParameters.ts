@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import type { AsyncParameterValueMap, WidgetConfig } from "@osdk/widget.client";
+import type { WidgetConfig } from "@osdk/widget.client";
+import type { ExtendedAsyncParameterValueMap } from "../context.js";
 
 /**
  * Utility function to initialize a map of parameter values to either a loading or not-started loading state
@@ -22,11 +23,11 @@ import type { AsyncParameterValueMap, WidgetConfig } from "@osdk/widget.client";
 export function initializeParameters<C extends WidgetConfig<C["parameters"]>>(
   config: C,
   initialLoadingState: "loading" | "not-started",
-): AsyncParameterValueMap<C> {
+): ExtendedAsyncParameterValueMap<C> {
   return Object.fromEntries(
     Object.entries(config.parameters).map(([key, parameterConfig]) => [
       key,
       { type: parameterConfig.type, value: { type: initialLoadingState } },
     ]),
-  ) as AsyncParameterValueMap<C>;
+  ) as ExtendedAsyncParameterValueMap<C>;
 }

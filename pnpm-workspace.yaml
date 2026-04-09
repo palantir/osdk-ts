@@ -5,3 +5,29 @@ packages:
   - "examples-extra/basic/*"
   - "tests/*"
   - "benchmarks/*/*"
+  - "docs"
+
+# WARNING: Changesets does not detect catalog version bumps as changes to
+# consuming packages (https://github.com/changesets/changesets/issues/1707).
+# When bumping versions here, you must manually create a changeset for each
+# package that depends on the bumped catalog entry, or those packages will
+# not get a new release.
+#
+# Do not add dependencies here that contain frequent material runtime changes.
+# If a catalog dependency is bumped without a changeset, consuming packages
+# will not be released with the new version, and users will silently miss
+# runtime changes. Adding dependencies to the catalog should be heavily
+# considered and is best suited for internal packages with stable APIs.
+catalogs:
+  foundry-platform-typescript:
+    "@osdk/docs-spec-core": 0.6.0
+    "@osdk/docs-spec-sdk": 0.17.0
+    "@osdk/foundry": 2.57.0
+    "@osdk/foundry.core": 2.57.0
+    "@osdk/foundry.datasets": ~2.5.0
+    "@osdk/foundry.geo": 2.57.0
+    "@osdk/foundry.admin": 2.57.0
+    "@osdk/foundry.mediasets": 2.57.0
+    "@osdk/foundry.ontologies": 2.57.0
+    "@osdk/foundry.thirdpartyapplications": 2.57.0
+    "@osdk/internal.foundry.ontologies": 2.57.0

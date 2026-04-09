@@ -119,11 +119,19 @@ export namespace queryTakesAllParameterTypes {
      *   description: a union of strings and integers but its optional
      */
     readonly unionNullable?: QueryParam.PrimitiveType<'string'> | QueryParam.PrimitiveType<'integer'>;
+
+    /**
+     * (no ontology metadata)
+     */
+    readonly 'with spaces': QueryParam.PrimitiveType<'float'>;
   }
 
   export type ReturnType = QueryResult.PrimitiveType<'string'>;
 }
 
+/**
+ * description of the query that takes all parameter types
+ */
 export interface queryTakesAllParameterTypes
   extends QueryDefinition<queryTakesAllParameterTypes.Signature>,
     VersionBound<$ExpectedClientVersion> {
@@ -140,10 +148,13 @@ export interface queryTakesAllParameterTypes
        *   description: an array of strings
        */
       array: {
+        array: {
+          type: 'string';
+          nullable: false;
+        };
         description: 'an array of strings';
-        multiplicity: true;
         nullable: false;
-        type: 'string';
+        type: 'array';
       };
       /**
        * (no ontology metadata)
@@ -351,6 +362,13 @@ export interface queryTakesAllParameterTypes
           },
         ];
       };
+      /**
+       * (no ontology metadata)
+       */
+      'with spaces': {
+        nullable: false;
+        type: 'float';
+      };
     };
     output: {
       nullable: false;
@@ -364,6 +382,9 @@ export interface queryTakesAllParameterTypes
   osdkMetadata: typeof $osdkMetadata;
 }
 
+/**
+ * description of the query that takes all parameter types
+ */
 export const queryTakesAllParameterTypes: queryTakesAllParameterTypes = {
   apiName: 'queryTakesAllParameterTypes',
   type: 'query',

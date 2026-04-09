@@ -1,5 +1,180 @@
 # @osdk/create-widget.template.react.v2
 
+## 3.5.0
+
+### Minor Changes
+
+- 322c5bc: Simulated release
+- 12dcb6a: Bump node and vite versions
+- 0ff602a: Bump vite to ^7.3.1
+- 9011069: Remove unused react-router-dom dependency from widget templates
+- 35f2f1a: Add Media inputs/outputs for Queries
+- 6260835: Revert node bump
+
+## 3.5.0-beta.32
+
+## 3.5.0-beta.31
+
+## 3.5.0-beta.30
+
+## 3.5.0-beta.29
+
+## 3.5.0-beta.28
+
+## 3.5.0-beta.27
+
+## 3.5.0-beta.26
+
+## 3.5.0-beta.25
+
+## 3.5.0-beta.24
+
+## 3.5.0-beta.23
+
+## 3.5.0-beta.22
+
+## 3.5.0-beta.21
+
+## 3.5.0-beta.20
+
+## 3.5.0-beta.19
+
+## 3.5.0-beta.18
+
+## 3.5.0-beta.17
+
+## 3.5.0-beta.16
+
+### Minor Changes
+
+- 0ff602a: Bump vite to ^7.3.1
+
+## 3.5.0-beta.15
+
+## 3.5.0-beta.14
+
+### Minor Changes
+
+- 35f2f1a: Add Media inputs/outputs for Queries
+- 6260835: Revert node bump
+
+## 3.5.0-beta.13
+
+## 3.5.0-beta.12
+
+## 3.5.0-beta.11
+
+## 3.5.0-beta.10
+
+## 3.5.0-beta.9
+
+## 3.5.0-beta.8
+
+### Minor Changes
+
+- 12dcb6a: Bump node and vite versions
+
+## 3.5.0-beta.7
+
+## 3.5.0-beta.6
+
+### Minor Changes
+
+- 9011069: Remove unused react-router-dom dependency from widget templates
+
+## 3.5.0-beta.5
+
+## 3.5.0-beta.4
+
+## 3.5.0-beta.3
+
+## 3.5.0-beta.2
+
+## 3.4.0-beta.14
+
+## 3.4.0-beta.13
+
+## 3.4.0-beta.12
+
+### Minor Changes
+
+- cbd0725: Widget template dark mode support
+
+## 3.4.0-beta.11
+
+## 3.4.0-beta.10
+
+## 3.4.0-beta.9
+
+## 3.4.0-beta.8
+
+## 3.4.0-beta.7
+
+## 3.4.0-beta.6
+
+## 3.4.0-beta.5
+
+## 3.4.0-beta.4
+
+## 3.4.0-beta.3
+
+## 3.4.0-beta.2
+
+### Minor Changes
+
+- 265b09b: Update generated `.npmrc` file
+
+## 3.3.0-beta.11
+
+### Minor Changes
+
+- eead244: Remove minimal widget template margin
+- 02fb0ac: Bump widget template dependency versions on widget libraries
+
+## 3.3.0-beta.10
+
+## 3.3.0-beta.9
+
+## 3.3.0-beta.8
+
+## 3.3.0-beta.7
+
+## 3.3.0-beta.6
+
+## 3.3.0-beta.5
+
+## 3.3.0-beta.4
+
+## 3.3.0-beta.3
+
+## 3.3.0-beta.2
+
+## 3.2.5
+
+### Patch Changes
+
+- a2df5ba: Introduce widget resize message for automatic heights
+- 71f33ca: Remove minimal widget template margin
+- 71f33ca: Bump widget template dependency versions on widget libraries
+
+## 3.2.4
+
+## 3.2.3
+
+## 3.2.2
+
+## 3.2.1
+
+## 3.2.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+
+## 3.2.0-beta.5
+
+## 3.2.0-beta.4
+
 ## 3.2.0-beta.3
 
 ## 3.2.0-beta.2

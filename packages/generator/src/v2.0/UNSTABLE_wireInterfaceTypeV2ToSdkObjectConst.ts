@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { InterfaceMetadata } from "@osdk/api";
 import { __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition } from "@osdk/generator-converters";
 import consola from "consola";
 import fastDeepEqual from "fast-deep-equal";
@@ -127,26 +128,27 @@ export function __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(
     propertyKeysIdentifier,
   };
 
-  if (interfaceDef.apiNamespace) {
-    const badProperties = Object.keys(definition.properties).filter(apiName =>
-      extractNamespace(apiName)[0] == null
+  const maybeBadProperties = getInvalidInterfaceProperties(
+    interfaceDef,
+    definition,
+  );
+  if (maybeBadProperties.length > 0) {
+    throw new Error(
+      `Property name collision in interface "${interfaceDef.fullApiName}": ${
+        maybeBadProperties.join(", ")
+      }.  +
+Cannot have both an unqualified property and a namespaced property with matching root name when the namespace matches the interface.`,
     );
-    if (badProperties.length > 0) {
-      throw new Error(
-        `Interfaces with fully qualified api names MUST NOT have any properties with an unqualified api name. Interface: ${interfaceDef.fullApiName}, properties: ${
-          badProperties.join(", ")
-        }`,
-      );
-    }
   }
 
   function getV2Types(forInternalUse: boolean = false) {
     return `import type {
       InterfaceDefinition as $InterfaceDefinition,
       InterfaceMetadata as $InterfaceMetadata,
-      ObjectSet as $ObjectSet, 
+      ObjectSet as $ObjectSet,
       Osdk as $Osdk,
       PropertyValueWireToClient as $PropType,
+      SingleLinkAccessor as $SingleLinkAccessor,
     } from "${forInternalUse ? "@osdk/api" : "@osdk/client"}";
     
         ${
@@ -170,7 +172,7 @@ ${
                 return `${
                   definition.multiplicity
                     ? `${linkTarget}.ObjectSet`
-                    : `${linkTarget}.ObjectSet`
+                    : `$SingleLinkAccessor<${linkTarget}>`
                 }
           `;
               },
@@ -212,9 +214,37 @@ ${
   return `${imports}
     ${v2 ? getV2Types(forInternalUse) : ""}
 
-    export const ${interfaceDef.shortApiName}: ${interfaceDef.shortApiName} = {
+    export const ${interfaceDef.shortApiName} = {
       type: "interface",
       apiName: "${interfaceDef.fullApiName}",
       osdkMetadata: $osdkMetadata,
-       };`;
+      internalDoNotUseMetadata: {
+        rid: "${definition.rid}",
+      },
+    } satisfies ${interfaceDef.shortApiName} & { internalDoNotUseMetadata: { rid: string } } as ${interfaceDef.shortApiName};`;
+}
+/** @internal */
+export function getInvalidInterfaceProperties(
+  interfaceDef: EnhancedInterfaceType,
+  definition: InterfaceMetadata,
+): string[] {
+  if (interfaceDef.apiNamespace == null) {
+    return [];
+  }
+  const unqualifiedPropNames = new Set(
+    Object.keys(definition.properties)
+      .map(apiName => extractNamespace(apiName))
+      .filter(([namespace]) => namespace == null)
+      .map(([, rootName]) => rootName),
+  );
+
+  // Find namespaced properties whose namespace matches the interface
+  // AND whose root name conflicts with an un-namespaced property
+  const badProperties = Object.keys(definition.properties).filter(apiName => {
+    const [ns, rootName] = extractNamespace(apiName);
+    return ns === interfaceDef.apiNamespace
+      && unqualifiedPropNames.has(rootName);
+  });
+
+  return badProperties;
 }

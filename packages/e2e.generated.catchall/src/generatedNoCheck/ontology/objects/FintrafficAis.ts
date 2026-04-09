@@ -69,6 +69,8 @@ export interface FintrafficAis extends $ObjectTypeDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'object';
   apiName: 'FintrafficAis';
+  primaryKeyApiName: 'mmsi';
+  primaryKeyType: 'string';
   __DefinitionMetadata?: {
     objectSet: FintrafficAis.ObjectSet;
     props: FintrafficAis.Props;
@@ -127,8 +129,13 @@ export interface FintrafficAis extends $ObjectTypeDefinition {
   };
 }
 
-export const FintrafficAis: FintrafficAis = {
+export const FintrafficAis = {
   type: 'object',
   apiName: 'FintrafficAis',
   osdkMetadata: $osdkMetadata,
-};
+  primaryKeyApiName: 'mmsi',
+  primaryKeyType: 'string',
+  internalDoNotUseMetadata: {
+    rid: 'ri.a.b.c.d',
+  },
+} satisfies FintrafficAis & { internalDoNotUseMetadata: { rid: string } } as FintrafficAis;

@@ -18,7 +18,6 @@ import type {
   ActionDefinition,
   ActionEditResponse,
   FetchPageArgs,
-  InterfaceDefinition,
   Logger,
   ObjectOrInterfaceDefinition,
   ObjectSet,
@@ -220,6 +219,7 @@ export function createClientMockHelper(): MockClientHelper {
     clientCacheKey: {} as any,
     requestContext: {},
     logger,
+    narrowTypeInterfaceOrObjectMapping: {},
   };
   client.fetchMetadata = vitest.fn();
 
@@ -359,12 +359,14 @@ export function expectSingleLinkCallAndClear<T extends ObjectTypeDefinition>(
     vitest.runOnlyPendingTimers();
   }
   expect(subFn.next).toHaveBeenCalledExactlyOnceWith(
-    linkPayloadContaining({
-      ...payloadOptions,
-      resolvedList: resolvedList as unknown as Array<
-        ObjectHolder
-      >,
-    }),
+    expect.objectContaining(
+      linkPayloadContaining({
+        ...payloadOptions,
+        resolvedList: resolvedList as unknown as Array<
+          ObjectHolder
+        >,
+      }),
+    ),
   );
 
   const ret = subFn.next.mock.calls[0][0];
@@ -374,21 +376,25 @@ export function expectSingleLinkCallAndClear<T extends ObjectTypeDefinition>(
 
 export function expectSingleListCallAndClear<T extends ObjectTypeDefinition>(
   subFn: MockedObject<Observer<ListPayload | undefined>>,
-  resolvedList: ObjectHolder[] | Osdk.Instance<T>[],
+  resolvedList: ObjectHolder[] | Osdk.Instance<T>[] | undefined,
   payloadOptions: Omit<Partial<ListPayload>, "resolvedList"> = {},
-): void {
+): ListPayload | undefined {
   if (vitest.isFakeTimers()) {
     vitest.runOnlyPendingTimers();
   }
   expect(subFn.next).toHaveBeenCalledExactlyOnceWith(
-    listPayloadContaining({
-      ...payloadOptions,
-      resolvedList: resolvedList as unknown as Array<
-        ObjectHolder
-      >,
-    }),
+    expect.objectContaining(
+      listPayloadContaining({
+        ...payloadOptions,
+        resolvedList: resolvedList as unknown as Array<
+          ObjectHolder
+        >,
+      }),
+    ),
   );
+  const ret = subFn.next.mock.calls[0][0];
   subFn.next.mockClear();
+  return ret;
 }
 
 /**
@@ -440,6 +446,19 @@ export async function waitForCall(
     // only in this file
   }
   expect(subFn).toHaveBeenCalledTimes(times);
+}
+
+export async function waitForPayload<T>(
+  observer: MockedObject<Observer<T>>,
+  predicate: (payload: T) => boolean,
+): Promise<T> {
+  await vi.waitFor(() => {
+    const calls = observer.next.mock.calls;
+    expect(calls.length).toBeGreaterThan(0);
+    const last = calls[calls.length - 1][0];
+    expect(predicate(last)).toBe(true);
+  }, { interval: 0 });
+  return observer.next.mock.calls[observer.next.mock.calls.length - 1][0];
 }
 
 export function expectNoMoreCalls(
@@ -576,11 +595,14 @@ export function listPayloadContaining(
   return {
     fetchMore: x.fetchMore ?? expect.any(Function),
     hasMore: x.hasMore ?? expect.any(Boolean),
-    resolvedList: x.resolvedList ?? expect.anything(),
+    resolvedList: "resolvedList" in x
+      ? x.resolvedList
+      : expect.anything(),
     isOptimistic: expect.any(Boolean),
     status: x.status ?? expect.anything(),
     lastUpdated: x.lastUpdated ?? expect.anything(),
-  };
+    objectSet: x.objectSet ?? expect.anything(),
+  } as ListPayload;
 }
 
 export function linkPayloadContaining(
@@ -589,10 +611,17 @@ export function linkPayloadContaining(
   return {
     fetchMore: x.fetchMore ?? expect.any(Function),
     hasMore: x.hasMore ?? expect.any(Boolean),
-    resolvedList: x.resolvedList ?? expect.anything(),
+    resolvedList: "resolvedList" in x
+      ? x.resolvedList
+      : expect.anything(),
     isOptimistic: expect.any(Boolean),
     status: x.status ?? expect.anything(),
     lastUpdated: x.lastUpdated ?? expect.anything(),
+    ...("totalCount" in x
+      ? { totalCount: x.totalCount }
+      : {}),
+    linkedObjectsBySourcePrimaryKey: x.linkedObjectsBySourcePrimaryKey
+      ?? expect.anything(),
   };
 }
 
@@ -632,9 +661,7 @@ declare module "vitest" {
  * @param param4
  * @param opts
  */
-export function updateList<
-  T extends ObjectTypeDefinition | InterfaceDefinition,
->(
+export function updateList<T extends ObjectOrInterfaceDefinition>(
   store: Store,
   {
     type,
@@ -647,7 +674,7 @@ export function updateList<
   },
   objects: ObjectHolder[] | Osdk.Instance<T>[],
   { optimisticId }: { optimisticId?: OptimisticId } = {},
-  opts: ListQueryOptions = { dedupeInterval: 0 },
+  opts: ListQueryOptions<T> = { dedupeInterval: 0 },
 ): void {
   if (process.env.NODE_ENV !== "production") {
     store.logger?.child({ methodName: "updateList" }).info(
@@ -664,11 +691,15 @@ export function updateList<
   });
 
   store.batch({ optimisticId }, (batch) => {
+    const rdpConfig = query.rdpConfig;
     const objectCacheKeys = store.objects.storeOsdkInstances(
       objects,
       batch,
+      rdpConfig,
     );
-    query._updateList(objectCacheKeys, "loaded", batch, false);
+    query._updateList(objectCacheKeys, "loaded", batch, {
+      type: "clientOrdered",
+    });
   });
 }
 
@@ -690,7 +721,7 @@ export function updateObject<T extends ObjectOrInterfaceDefinition>(
   const query = store.objects.getQuery({
     apiName: value.$apiName,
     pk: value.$primaryKey,
-  });
+  }, undefined);
 
   store.batch({ optimisticId }, (batch) => {
     return query.writeToStore(

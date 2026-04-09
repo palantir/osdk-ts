@@ -1,5 +1,414 @@
 # @osdkkit/react
 
+## 0.10.0
+
+### Minor Changes
+
+- 322c5bc: Simulated release
+- 9720083: Add AGENTS.md files for AI IDE context
+- c40444b: Add linkedObjectsBySourcePrimaryKey to link observation responses
+- 09e5659: add $select support to observable client and react hooks
+- 993c023: ObjectTable supports objectSet input
+- 32c27d7: Added useOsdkFunctions to @osdk/react to execute multiple functions in parallel. This is used by ObjectTable to fetch function-backed columns
+- dbbfb6f: Add experimental ActionForm component with field renderers, form state hook, and tests
+- b1e8bba: add cbac admin hooks for markings, categories, and restrictions
+- 73e617e: expose dedupeInterval on useLinks and fix forced revalidation bypassing dedupeInterval
+- f294f5a: Remove literal support before GA.
+- 9156827: Preserve object set data between loads
+- 599426b: expose $loadPropertySecurityMetadata option in observable client and react hooks
+- 46dfbec: fix useOsdkAction applyAction to re-throw errors instead of silently swallowing them
+- a027f3c: stabilize subscription deps in useOsdkObjects and useOsdkAggregation
+- 0d174a2: useOsdkFunction typing updates
+- 727fd0e: fix dual @types/react version mismatch
+- 8a82492: Move admin hooks to @osdk/react/experimental/admin subpath to avoid bundler crash when @osdk/foundry.admin is not installed
+- 2ebe62c: package and bundle size optimizations
+- 6019278: auto-compute peer dependency ranges from changelog history for react and react-components
+- 35f2f1a: Add Media inputs/outputs for Queries
+- b0930e4: Show helpful error message when hooks are used without OsdkProvider2
+- d80c234: add interface support to useOsdkObject
+- 996d8e4: memoize hook responses
+- 71e28ef: Allow interface object sets in useObjectSet
+
+## 0.10.0-beta.15
+
+### Minor Changes
+
+- 32c27d7: Added useOsdkFunctions to @osdk/react to execute multiple functions in parallel. This is used by ObjectTable to fetch function-backed columns
+- 6019278: auto-compute peer dependency ranges from changelog history for react and react-components
+
+## 0.10.0-beta.14
+
+### Minor Changes
+
+- b0930e4: Show helpful error message when hooks are used without OsdkProvider2
+
+### Patch Changes
+
+- Updated dependencies [520398c]
+- Updated dependencies [ffc6efe]
+- Updated dependencies [4a856cb]
+  - @osdk/client@2.8.0-beta.29
+  - @osdk/api@2.8.0-beta.29
+
+## 0.10.0-beta.13
+
+### Minor Changes
+
+- f294f5a: Remove literal support before GA.
+
+### Patch Changes
+
+- Updated dependencies [f294f5a]
+- Updated dependencies [2855223]
+- Updated dependencies [d284bf2]
+- Updated dependencies [b68cebd]
+  - @osdk/client@2.8.0-beta.28
+  - @osdk/api@2.8.0-beta.28
+
+## 0.10.0-beta.12
+
+### Minor Changes
+
+- 46dfbec: fix useOsdkAction applyAction to re-throw errors instead of silently swallowing them
+
+## 0.10.0-beta.11
+
+### Minor Changes
+
+- b1e8bba: add cbac admin hooks for markings, categories, and restrictions
+- 599426b: expose $loadPropertySecurityMetadata option in observable client and react hooks
+
+### Patch Changes
+
+- Updated dependencies [599426b]
+- Updated dependencies [60b5ffb]
+- Updated dependencies [61e33ab]
+  - @osdk/client@2.8.0-beta.26
+  - @osdk/api@2.8.0-beta.26
+
+## 0.10.0-beta.10
+
+### Minor Changes
+
+- dbbfb6f: Add experimental ActionForm component with field renderers, form state hook, and tests
+
+### Patch Changes
+
+- Updated dependencies [cbfa135]
+- Updated dependencies [f4604c2]
+  - @osdk/client@2.8.0-beta.22
+  - @osdk/api@2.8.0-beta.22
+
+## 0.10.0-beta.9
+
+### Minor Changes
+
+- c40444b: Add linkedObjectsBySourcePrimaryKey to link observation responses
+
+### Patch Changes
+
+- Updated dependencies [c40444b]
+- Updated dependencies [dda14be]
+  - @osdk/client@2.8.0-beta.21
+  - @osdk/api@2.8.0-beta.21
+
+## 0.10.0-beta.8
+
+### Minor Changes
+
+- 9720083: Add AGENTS.md files for AI IDE context
+- 09e5659: add $select support to observable client and react hooks
+- 8a82492: Move admin hooks to @osdk/react/experimental/admin subpath to avoid bundler crash when @osdk/foundry.admin is not installed
+- 2ebe62c: package and bundle size optimizations
+
+### Patch Changes
+
+- Updated dependencies [09e5659]
+- Updated dependencies [2ebe62c]
+  - @osdk/client@2.8.0-beta.16
+  - @osdk/api@2.8.0-beta.16
+
+## 0.10.0-beta.7
+
+### Minor Changes
+
+- 9156827: Preserve object set data between loads
+- 35f2f1a: Add Media inputs/outputs for Queries
+- 71e28ef: Allow interface object sets in useObjectSet
+
+### Patch Changes
+
+- Updated dependencies [e64bf0b]
+- Updated dependencies [baba327]
+- Updated dependencies [d1ad4d1]
+- Updated dependencies [35f2f1a]
+- Updated dependencies [71e28ef]
+  - @osdk/client@2.8.0-beta.14
+  - @osdk/api@2.8.0-beta.14
+
+## 0.10.0-beta.6
+
+### Minor Changes
+
+- 993c023: ObjectTable supports objectSet input
+
+### Patch Changes
+
+- Updated dependencies [8825f8c]
+  - @osdk/client@2.8.0-beta.12
+  - @osdk/api@2.8.0-beta.12
+
+## 0.10.0-beta.5
+
+### Minor Changes
+
+- 525f277: update useOsdkAggregation to support composed object sets, async
+- d80c234: add interface support to useOsdkObject
+- 996d8e4: memoize hook responses
+
+### Patch Changes
+
+- Updated dependencies [642be5f]
+- Updated dependencies [525f277]
+- Updated dependencies [f5f95e2]
+- Updated dependencies [d80c234]
+  - @osdk/client@2.8.0-beta.11
+  - @osdk/api@2.8.0-beta.11
+
+## 0.10.0-beta.4
+
+### Minor Changes
+
+- 727fd0e: fix dual @types/react version mismatch
+
+### Patch Changes
+
+- Updated dependencies [8c60682]
+- Updated dependencies [15e1686]
+- Updated dependencies [c9d954d]
+- Updated dependencies [044eb80]
+- Updated dependencies [9d234b9]
+  - @osdk/client@2.8.0-beta.6
+  - @osdk/api@2.8.0-beta.6
+
+## 0.10.0-beta.3
+
+### Minor Changes
+
+- 73e617e: expose dedupeInterval on useLinks and fix forced revalidation bypassing dedupeInterval
+- a027f3c: stabilize subscription deps in useOsdkObjects and useOsdkAggregation
+
+### Patch Changes
+
+- Updated dependencies [73e617e]
+- Updated dependencies [5848e3c]
+  - @osdk/client@2.8.0-beta.4
+  - @osdk/api@2.8.0-beta.4
+
+## 0.10.0-beta.2
+
+### Minor Changes
+
+- 0d174a2: useOsdkFunction typing updates
+
+### Patch Changes
+
+- Updated dependencies [26cec61]
+- Updated dependencies [0d174a2]
+  - @osdk/client@2.8.0-beta.3
+  - @osdk/api@2.8.0-beta.3
+
+## 0.9.0-beta.10
+
+### Minor Changes
+
+- db28747: rdp typing improvements
+
+## 0.9.0-beta.9
+
+### Minor Changes
+
+- 43d342e: Fix fetchMore in useObjectSet and useLinks
+- ecd18e2: fix pivotTo with where usage
+
+### Patch Changes
+
+- Updated dependencies [24730c7]
+- Updated dependencies [ecd18e2]
+  - @osdk/client@2.7.0-beta.14
+  - @osdk/api@2.7.0-beta.14
+
+## 0.9.0-beta.8
+
+### Minor Changes
+
+- 74e3ba7: Preserve aggregate option literal types in useOsdkAggregation using const type parameter
+
+### Patch Changes
+
+- Updated dependencies [3fc5fe6]
+- Updated dependencies [bb9d25c]
+  - @osdk/client@2.7.0-beta.12
+  - @osdk/api@2.7.0-beta.12
+
+## 0.9.0-beta.7
+
+### Minor Changes
+
+- acf6331: Include AGENTS.md and docs directory in published package for improved AI assistant support
+- 6cfe14a: add new useOsdkFunction hook and supporting client infrastructure
+- 38d5958: fix order by via key stabilization
+- 56ba08f: support interfaces for osdk react hooks
+
+### Patch Changes
+
+- Updated dependencies [6cfe14a]
+- Updated dependencies [ec6ad57]
+- Updated dependencies [38d5958]
+- Updated dependencies [d5cfc38]
+  - @osdk/client@2.7.0-beta.11
+  - @osdk/api@2.7.0-beta.11
+
+## 0.9.0-beta.6
+
+### Minor Changes
+
+- ba3159c: improve loading logic to make loading state consistent / reduce flashing
+- 0395d4b: Pins Foundry core and admin packages to monorepo version
+
+### Patch Changes
+
+- Updated dependencies [6b27d8a]
+  - @osdk/client@2.7.0-beta.9
+  - @osdk/api@2.7.0-beta.9
+
+## 0.9.0-beta.5
+
+### Minor Changes
+
+- adca853: fix fetchMore behavior
+
+### Patch Changes
+
+- Updated dependencies [adca853]
+- Updated dependencies [0b0be9f]
+  - @osdk/client@2.7.0-beta.7
+  - @osdk/api@2.7.0-beta.7
+
+## 0.9.0-beta.4
+
+### Minor Changes
+
+- 0b2cd91: fix SimplePropertyDef issue, wire RDPs through, update names
+
+### Patch Changes
+
+- Updated dependencies [c9ca08d]
+- Updated dependencies [c332598]
+- Updated dependencies [0b2cd91]
+  - @osdk/api@2.7.0-beta.6
+  - @osdk/client@2.7.0-beta.6
+
+## 0.9.0-beta.3
+
+### Minor Changes
+
+- a23784c: wire action edit response types through for useOsdkAction
+
+### Patch Changes
+
+- Updated dependencies [448763f]
+- Updated dependencies [a23784c]
+- Updated dependencies [f0a57a5]
+  - @osdk/api@2.7.0-beta.3
+  - @osdk/client@2.7.0-beta.3
+
+## 0.9.0-beta.2
+
+### Minor Changes
+
+- ddef59f: update docs
+
+### Patch Changes
+
+- Updated dependencies [03db734]
+- Updated dependencies [c8da6b7]
+  - @osdk/client@2.7.0-beta.2
+  - @osdk/api@2.7.0-beta.2
+
+## 0.8.0-beta.5
+
+### Minor Changes
+
+- 4b13323: update OSDK toolkit docs
+
+### Patch Changes
+
+- Updated dependencies [84f0eef]
+- Updated dependencies [486ef7e]
+- Updated dependencies [ea077c6]
+  - @osdk/client@2.6.0-beta.13
+  - @osdk/api@2.6.0-beta.13
+
+## 0.8.0-beta.4
+
+### Minor Changes
+
+- 9961f06: fix order by via key stabilization
+
+### Patch Changes
+
+- Updated dependencies [9961f06]
+  - @osdk/client@2.6.0-beta.12
+  - @osdk/api@2.6.0-beta.12
+
+## 0.8.0-beta.3
+
+### Minor Changes
+
+- c5a3815: Add new auto fetch more behavior to useOsdkObjects
+
+### Patch Changes
+
+- Updated dependencies [c5a3815]
+  - @osdk/client@2.6.0-beta.11
+  - @osdk/api@2.6.0-beta.11
+
+## 0.8.0-beta.2
+
+### Minor Changes
+
+- e7bf02a: Add RDP support to React toolkit
+
+### Patch Changes
+
+- Updated dependencies [61eb5b0]
+- Updated dependencies [e7bf02a]
+  - @osdk/client@2.6.0-beta.4
+  - @osdk/api@2.6.0-beta.4
+
+## 0.7.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- 2348ddc: Make useOsdkAction validate less restrictive
+- 46ae415: improve useOsdkObject, useOsdkObjects error handling
+- 7b97128: add useObjectSet hook
+- ccc85a3: Export useOsdkMetadata hook experimentally
+
+## 0.7.0-beta.5
+
+### Minor Changes
+
+- 7b97128: add useObjectSet hook
+
+### Patch Changes
+
+- Updated dependencies [7b97128]
+  - @osdk/client@2.5.0-beta.11
+  - @osdk/api@2.5.0-beta.11
+
 ## 0.7.0-beta.4
 
 ### Minor Changes

@@ -24,7 +24,11 @@ import {
   type ParameterId,
   type ParameterValueMap,
 } from "./config.js";
-import type { ParameterValue } from "./parameters.js";
+import type {
+  AllowedObjectSetParameterType,
+  ParameterValue,
+} from "./parameters.js";
+import type { AsyncValue } from "./utils/asyncValue.js";
 
 describe("WidgetConfig", () => {
   describe("ParameterConfigId", () => {
@@ -278,6 +282,48 @@ describe("WidgetConfig", () => {
       >().toMatchTypeOf<{
         test: boolean[];
         test2: string[];
+      }>();
+    });
+
+    it("should support objectSet parameter types with generic object type", () => {
+      const Employee = {
+        type: "object",
+        apiName: "employee",
+        internalDoNotUseMetadata: {
+          rid: "ri.object-type.employee",
+        },
+      } as const satisfies AllowedObjectSetParameterType;
+
+      type Employee = typeof Employee;
+
+      const test = defineConfig({
+        id: "widgetId",
+        name: "Widget Name",
+        description: "Widget Description",
+        type: "workshop",
+        parameters: {
+          myObjectSet: {
+            displayName: "My Object Set",
+            type: "objectSet",
+            allowedType: Employee,
+          },
+        },
+        events: {},
+      });
+
+      expectTypeOf<ParameterValueMap<typeof test>>().toEqualTypeOf<{
+        myObjectSet: {
+          objectSetRid: string;
+        };
+      }>();
+
+      expectTypeOf<AsyncParameterValueMap<typeof test>>().toEqualTypeOf<{
+        myObjectSet: {
+          type: "objectSet";
+          value: AsyncValue<{
+            objectSetRid: string;
+          }>;
+        };
       }>();
     });
   });

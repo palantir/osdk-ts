@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,9 +23,9 @@ import type {
 } from "../__components.js";
 
 /**
- * Moves the specified entities to the target project.
- * - The project must exist in the same namespace as the ontology.
- * - The user must be owner of the requested entities and have write permissions on the project.
+ * Moves the specified entities to the target folder.
+ * - The folder must exist in the same namespace as the ontology.
+ * - The user must be owner of the requested entities and have write permissions on the folder.
  * - At most 50 projects per request
  * - At most 2000 entities per project
  */

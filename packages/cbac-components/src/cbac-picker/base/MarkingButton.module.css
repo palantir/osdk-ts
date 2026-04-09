@@ -1,0 +1,76 @@
+/*
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.markingButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: var(--osdk-cbac-marking-button-padding);
+  border-radius: var(--osdk-cbac-marking-button-border-radius);
+  font-size: var(--osdk-cbac-marking-button-font-size);
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  border-right: 1px solid var(--osdk-cbac-marking-button-border-color-default);
+  border-bottom: 1px solid var(--osdk-cbac-marking-button-border-color-default);
+  color: var(--osdk-cbac-marking-button-color-default);
+  background: var(--osdk-cbac-marking-button-bg-default);
+  transition: background var(--osdk-emphasis-transition-duration)
+      var(--osdk-emphasis-ease-default),
+    border-color var(--osdk-emphasis-transition-duration)
+      var(--osdk-emphasis-ease-default),
+    color var(--osdk-emphasis-transition-duration)
+      var(--osdk-emphasis-ease-default);
+}
+
+.markingButton:hover:not(:disabled):not(.disallowed):not(.impliedDisallowed) {
+  background: var(--osdk-surface-background-color-default-hover);
+}
+
+.selected {
+  color: var(--osdk-cbac-marking-button-color-selected);
+  background: var(--osdk-cbac-marking-button-bg-selected);
+  border-color: var(--osdk-cbac-marking-button-border-color-selected);
+}
+
+.selected:hover:not(:disabled) {
+  background: var(--osdk-intent-primary-hover);
+}
+
+.implied {
+  color: var(--osdk-cbac-marking-button-color-implied);
+  background: var(--osdk-cbac-marking-button-bg-implied);
+  border-color: var(--osdk-cbac-marking-button-border-color-implied);
+}
+
+.disallowed,
+.impliedDisallowed {
+  color: var(--osdk-cbac-marking-button-color-disallowed);
+  background: var(--osdk-cbac-marking-button-bg-disallowed);
+  border-color: var(--osdk-cbac-marking-button-border-color-disallowed);
+  cursor: not-allowed;
+  opacity: var(--osdk-cbac-disabled-opacity);
+}
+
+.markingButton:focus-visible {
+  outline: var(--osdk-focus-outline);
+  outline-offset: var(--osdk-focus-visible-outline-offset);
+}
+
+.markingButton:disabled {
+  cursor: not-allowed;
+}

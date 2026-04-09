@@ -23,7 +23,7 @@ export class OrderByCanonicalizer {
   #trie = new WeakRefTrie(
     (array: Array<string>) => {
       const pairs = array.reduce<Array<[string, "asc" | "desc"]>>(
-        function(result, _, index, array) {
+        (result, _, index, array) => {
           if (index % 2 === 0 && array[index] != null) {
             result.push(
               array.slice(index, index + 2) as [string, "asc" | "desc"],
@@ -33,24 +33,27 @@ export class OrderByCanonicalizer {
         },
         [],
       );
-      let data = Object.fromEntries(pairs) satisfies Record<
+      const data = Object.fromEntries(pairs) satisfies Record<
         string,
         "asc" | "desc"
       > as Canonical<OrderBy<ObjectTypeDefinition>>;
-
-      if (process.env.NODE_ENV !== "production") {
-        data = Object.freeze(data);
-      }
       return data;
     },
   );
 
-  canonicalize: (
+  canonicalize(
     orderBy: Record<string, "asc" | "desc" | undefined>,
-  ) => Canonical<Record<string, "asc" | "desc" | undefined>> = (
-    orderBy,
-  ) => {
+  ): Canonical<Record<string, "asc" | "desc" | undefined>>;
+  canonicalize(
+    orderBy: Record<string, "asc" | "desc" | undefined> | undefined,
+  ): Canonical<Record<string, "asc" | "desc" | undefined>> | undefined;
+  canonicalize(
+    orderBy: Record<string, "asc" | "desc" | undefined> | undefined,
+  ): Canonical<Record<string, "asc" | "desc" | undefined>> | undefined {
+    if (orderBy == null) {
+      return undefined;
+    }
     const strings = Object.entries(orderBy).flat();
     return this.#trie.lookupArray(strings);
-  };
+  }
 }

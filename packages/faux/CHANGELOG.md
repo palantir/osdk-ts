@@ -1,5 +1,245 @@
 # @osdk/shared.test
 
+## 0.6.0
+
+### Minor Changes
+
+- 150da1a: Simulated release
+- abb0e0f: Bump Platform SDK dependencies
+- 4da867d: Add filter list storybook stories and fix histogram bar rendering
+- b68cebd: add shape type definitions with opaque internal fields and shapes-internal export path
+- 35f2f1a: Add Media inputs/outputs for Queries
+- 46f0a47: Update platform SDK to 2.57.0 and handle new typeReference query data type
+- 4470c0d: Add support to execute queries on branches.
+
+### Patch Changes
+
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [4bb9769]
+- Updated dependencies [abb0e0f]
+- Updated dependencies [f294f5a]
+- Updated dependencies [0df859a]
+- Updated dependencies [d284bf2]
+- Updated dependencies [4ef6adc]
+- Updated dependencies [60b5ffb]
+- Updated dependencies [8c30908]
+- Updated dependencies [4a856cb]
+- Updated dependencies [b68cebd]
+- Updated dependencies [35f2f1a]
+- Updated dependencies [46f0a47]
+- Updated dependencies [4470c0d]
+- Updated dependencies [61e33ab]
+  - @osdk/api@2.8.0
+  - @osdk/generator-converters@2.8.0
+
+## 0.6.0-beta.7
+
+### Minor Changes
+
+- 46f0a47: Update platform SDK to 2.57.0 and handle new typeReference query data type
+
+### Patch Changes
+
+- Updated dependencies [46f0a47]
+  - @osdk/generator-converters@2.8.0-beta.32
+  - @osdk/api@2.8.0-beta.32
+
+## 0.6.0-beta.6
+
+### Minor Changes
+
+- b68cebd: add shape type definitions with opaque internal fields and shapes-internal export path
+
+### Patch Changes
+
+- Updated dependencies [f294f5a]
+- Updated dependencies [d284bf2]
+- Updated dependencies [b68cebd]
+  - @osdk/api@2.8.0-beta.28
+  - @osdk/generator-converters@2.8.0-beta.28
+
+## 0.6.0-beta.5
+
+### Minor Changes
+
+- 4da867d: Add filter list storybook stories and fix histogram bar rendering
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.19
+- @osdk/generator-converters@2.8.0-beta.19
+
+## 0.6.0-beta.4
+
+### Minor Changes
+
+- 35f2f1a: Add Media inputs/outputs for Queries
+
+### Patch Changes
+
+- Updated dependencies [35f2f1a]
+  - @osdk/api@2.8.0-beta.14
+  - @osdk/generator-converters@2.8.0-beta.14
+
+## 0.6.0-beta.3
+
+### Minor Changes
+
+- 4470c0d: Add support to execute queries on branches.
+
+### Patch Changes
+
+- Updated dependencies [4470c0d]
+  - @osdk/generator-converters@2.8.0-beta.13
+  - @osdk/api@2.8.0-beta.13
+
+## 0.6.0-beta.2
+
+### Minor Changes
+
+- abb0e0f: Bump Platform SDK dependencies
+
+### Patch Changes
+
+- Updated dependencies [abb0e0f]
+  - @osdk/generator-converters@2.8.0-beta.9
+  - @osdk/api@2.8.0-beta.9
+
+## 0.5.0-beta.4
+
+### Minor Changes
+
+- ab1957f: Added FauxAdmin support
+- 862910e: Adds support for wider variety of query filters
+
+### Patch Changes
+
+- Updated dependencies [fb83808]
+  - @osdk/api@2.7.0-beta.13
+  - @osdk/generator-converters@2.7.0-beta.13
+
+## 0.5.0-beta.3
+
+### Minor Changes
+
+- db44f6b: Add property security metadata to objects when requested
+
+### Patch Changes
+
+- Updated dependencies [db44f6b]
+- Updated dependencies [24a1e29]
+  - @osdk/api@2.7.0-beta.10
+  - @osdk/generator-converters@2.7.0-beta.10
+
+## 0.5.0-beta.2
+
+### Minor Changes
+
+- 03db734: Move platform SDK deps to pnpm catalog
+
+### Patch Changes
+
+- @osdk/api@2.7.0-beta.2
+- @osdk/generator-converters@2.7.0-beta.2
+
+## 0.4.0-beta.6
+
+### Minor Changes
+
+- 84f0eef: Bumping OSDK apis
+
+### Patch Changes
+
+- Updated dependencies [84f0eef]
+- Updated dependencies [486ef7e]
+- Updated dependencies [ea077c6]
+  - @osdk/generator-converters@2.6.0-beta.13
+  - @osdk/api@2.6.0-beta.13
+
+## 0.4.0-beta.5
+
+### Minor Changes
+
+- 3fbb596: Pipe through transactionId to endpoints that load data via object sets
+
+### Patch Changes
+
+- Updated dependencies [3fbb596]
+  - @osdk/generator-converters@2.6.0-beta.10
+  - @osdk/api@2.6.0-beta.10
+
+## 0.4.0-beta.4
+
+### Minor Changes
+
+- a1ffb20: Use new ephemeral media upload endpoint.
+
+### Patch Changes
+
+- Updated dependencies [a1ffb20]
+- Updated dependencies [e62c692]
+  - @osdk/generator-converters@2.6.0-beta.8
+  - @osdk/api@2.6.0-beta.8
+
+## 0.4.0-beta.3
+
+### Minor Changes
+
+- 98cdfee: Added more object type validation
+
+### Patch Changes
+
+- Updated dependencies [e7bf02a]
+  - @osdk/api@2.6.0-beta.4
+  - @osdk/generator-converters@2.6.0-beta.4
+
+## 0.4.0-beta.2
+
+### Minor Changes
+
+- 84e61fc: Add propertyValueFormatting type to property metadata
+
+### Patch Changes
+
+- Updated dependencies [84e61fc]
+- Updated dependencies [c4f8529]
+- Updated dependencies [f7ae38a]
+  - @osdk/generator-converters@2.6.0-beta.2
+  - @osdk/api@2.6.0-beta.2
+
+## 0.3.0
+
+### Patch Changes
+
+- 150da1a: Simulated release
+- 9c9110c: Fixes strict link association between different object types and improves error messages.
+- 7cdab1d: Update platform sdk dependencies
+- a00d2ed: Update Platform SDK dependencies
+- 3d7461d: Fix applyQuery for marketplace installations
+- 7bdac45: Update Platform SDK dependency
+- f194536: Fixes strict link association.
+- a96d89e: Update Platform SDK dependencies
+- cbcf2ad: Add branching support
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [7160276]
+- Updated dependencies [7cdab1d]
+- Updated dependencies [a00d2ed]
+- Updated dependencies [7bdac45]
+- Updated dependencies [37eb75b]
+- Updated dependencies [7b97128]
+- Updated dependencies [76905f5]
+- Updated dependencies [a96d89e]
+- Updated dependencies [7bdac45]
+- Updated dependencies [20962bc]
+- Updated dependencies [cbcf2ad]
+- Updated dependencies [052a96b]
+- Updated dependencies [ca1fabe]
+- Updated dependencies [e48be06]
+  - @osdk/api@2.5.0
+  - @osdk/generator-converters@2.5.0
+
 ## 0.3.0-beta.6
 
 ### Minor Changes

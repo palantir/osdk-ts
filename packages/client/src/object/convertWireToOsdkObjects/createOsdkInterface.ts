@@ -15,7 +15,7 @@
  */
 
 import type { InterfaceMetadata } from "@osdk/api";
-import { extractNamespace } from "../../internal/conversions/modernToLegacyWhereClause.js";
+import { extractNamespace } from "../../internal/conversions/extractNamespace.js";
 import type { FetchedObjectTypeDefinition } from "../../ontology/OntologyProvider.js";
 import { get$linkForInterface } from "./getDollarLink.js";
 import type { InterfaceHolder } from "./InterfaceHolder.js";
@@ -69,6 +69,10 @@ export function createOsdkInterface<
         value: clone,
         enumerable: false,
       },
+      "$propertySecurities": {
+        value: underlying.$propertySecurities,
+        enumerable: "$propertySecurities" in underlying,
+      },
       "$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata": {
         value: {
           "ObjectMetadata": underlying[ObjectDefRef],
@@ -76,9 +80,13 @@ export function createOsdkInterface<
         },
         enumerable: false,
       },
+      "$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue": {
+        value: underlying.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue,
+        enumerable: false,
+      },
 
       "$link": {
-        get: function(this: InterfaceHolder) {
+        get(this: InterfaceHolder) {
           return get$linkForInterface(this);
         },
       },

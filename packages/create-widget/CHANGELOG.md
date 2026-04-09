@@ -1,5 +1,148 @@
 # @osdk/create-widget
 
+## 3.5.0
+
+### Minor Changes
+
+- 322c5bc: Simulated release
+- 35f2f1a: Add Media inputs/outputs for Queries
+
+## 3.5.0-beta.32
+
+## 3.5.0-beta.31
+
+## 3.5.0-beta.30
+
+## 3.5.0-beta.29
+
+## 3.5.0-beta.28
+
+## 3.5.0-beta.27
+
+## 3.5.0-beta.26
+
+## 3.5.0-beta.25
+
+## 3.5.0-beta.24
+
+## 3.5.0-beta.23
+
+## 3.5.0-beta.22
+
+## 3.5.0-beta.21
+
+## 3.5.0-beta.20
+
+## 3.5.0-beta.19
+
+## 3.5.0-beta.18
+
+## 3.5.0-beta.17
+
+## 3.5.0-beta.16
+
+## 3.5.0-beta.15
+
+## 3.5.0-beta.14
+
+### Minor Changes
+
+- 35f2f1a: Add Media inputs/outputs for Queries
+
+## 3.5.0-beta.13
+
+## 3.5.0-beta.12
+
+## 3.5.0-beta.11
+
+## 3.5.0-beta.10
+
+## 3.5.0-beta.9
+
+## 3.5.0-beta.8
+
+## 3.5.0-beta.7
+
+## 3.5.0-beta.6
+
+## 3.5.0-beta.5
+
+## 3.5.0-beta.4
+
+## 3.5.0-beta.3
+
+## 3.5.0-beta.2
+
+## 3.4.0-beta.14
+
+## 3.4.0-beta.13
+
+## 3.4.0-beta.12
+
+## 3.4.0-beta.11
+
+## 3.4.0-beta.10
+
+## 3.4.0-beta.9
+
+## 3.4.0-beta.8
+
+## 3.4.0-beta.7
+
+## 3.4.0-beta.6
+
+## 3.4.0-beta.5
+
+## 3.4.0-beta.4
+
+## 3.4.0-beta.3
+
+## 3.4.0-beta.2
+
+### Minor Changes
+
+- 265b09b: Update generated `.npmrc` file
+
+## 3.3.0-beta.11
+
+## 3.3.0-beta.10
+
+## 3.3.0-beta.9
+
+## 3.3.0-beta.8
+
+## 3.3.0-beta.7
+
+## 3.3.0-beta.6
+
+## 3.3.0-beta.5
+
+## 3.3.0-beta.4
+
+## 3.3.0-beta.3
+
+## 3.3.0-beta.2
+
+## 3.2.5
+
+## 3.2.4
+
+## 3.2.3
+
+## 3.2.2
+
+## 3.2.1
+
+## 3.2.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+
+## 3.2.0-beta.5
+
+## 3.2.0-beta.4
+
 ## 3.2.0-beta.3
 
 ## 3.2.0-beta.2

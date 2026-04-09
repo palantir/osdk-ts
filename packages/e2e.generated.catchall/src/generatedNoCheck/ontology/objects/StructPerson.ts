@@ -49,6 +49,8 @@ export interface StructPerson extends $ObjectTypeDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'object';
   apiName: 'StructPerson';
+  primaryKeyApiName: 'name';
+  primaryKeyType: 'string';
   __DefinitionMetadata?: {
     objectSet: StructPerson.ObjectSet;
     props: StructPerson.Props;
@@ -87,8 +89,13 @@ export interface StructPerson extends $ObjectTypeDefinition {
   };
 }
 
-export const StructPerson: StructPerson = {
+export const StructPerson = {
   type: 'object',
   apiName: 'StructPerson',
   osdkMetadata: $osdkMetadata,
-};
+  primaryKeyApiName: 'name',
+  primaryKeyType: 'string',
+  internalDoNotUseMetadata: {
+    rid: 'ri.a.b.c.d',
+  },
+} satisfies StructPerson & { internalDoNotUseMetadata: { rid: string } } as StructPerson;

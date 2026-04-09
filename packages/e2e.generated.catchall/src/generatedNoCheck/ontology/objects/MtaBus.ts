@@ -57,6 +57,8 @@ export interface MtaBus extends $ObjectTypeDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'object';
   apiName: 'MtaBus';
+  primaryKeyApiName: 'vehicleId';
+  primaryKeyType: 'string';
   __DefinitionMetadata?: {
     objectSet: MtaBus.ObjectSet;
     props: MtaBus.Props;
@@ -103,8 +105,13 @@ export interface MtaBus extends $ObjectTypeDefinition {
   };
 }
 
-export const MtaBus: MtaBus = {
+export const MtaBus = {
   type: 'object',
   apiName: 'MtaBus',
   osdkMetadata: $osdkMetadata,
-};
+  primaryKeyApiName: 'vehicleId',
+  primaryKeyType: 'string',
+  internalDoNotUseMetadata: {
+    rid: 'ri.a.b.c.d',
+  },
+} satisfies MtaBus & { internalDoNotUseMetadata: { rid: string } } as MtaBus;

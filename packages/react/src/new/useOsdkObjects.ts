@@ -15,88 +15,164 @@
  */
 
 import type {
-  InterfaceDefinition,
-  ObjectTypeDefinition,
+  DerivedProperty,
+  LinkedType,
+  LinkNames,
+  ObjectOrInterfaceDefinition,
+  ObjectSet,
   Osdk,
   PropertyKeys,
+  SimplePropertyDef,
   WhereClause,
-} from "@osdk/client";
-import type { ObserveObjectsArgs } from "@osdk/client/unstable-do-not-use";
+} from "@osdk/api";
+import type { ObserveObjectsCallbackArgs } from "@osdk/client/unstable-do-not-use";
 import React from "react";
+import { extractPayloadError, isPayloadLoading } from "./hookUtils.js";
 import { makeExternalStore } from "./makeExternalStore.js";
 import { OsdkContext2 } from "./OsdkContext2.js";
 
 export interface UseOsdkObjectsOptions<
-  T extends ObjectTypeDefinition | InterfaceDefinition,
+  T extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = {},
 > {
   /**
-   * Standard OSDK Where
+   * Fetch objects by their RIDs (Resource Identifiers).
+   * When provided, starts with a static objectset containing these RIDs.
+   * Can be combined with `where` to filter the RID set, and with `orderBy` to sort results.
+   *
+   * @example
+   * // Fetch specific objects by RID
+   * useOsdkObjects(Employee, { rids: ['ri.foo.123', 'ri.foo.456'] })
+   *
+   * @example
+   * // Fetch specific objects by RID, filtered by status
+   * useOsdkObjects(Employee, {
+   *   rids: ['ri.foo.123', 'ri.foo.456', 'ri.foo.789'],
+   *   where: { status: 'active' }
+   * })
    */
-  where?: WhereClause<T>;
+  rids?: readonly string[];
 
   /**
-   *  The preferred page size for the list.
+   * Standard OSDK Where clause with RDP support.
+   * When used with `rids`, filters the RID set.
+   * When used alone, filters all objects of the type.
    */
-  pageSize?: number;
+  where?: WhereClause<T, RDPs>;
 
-  /** */
+  /**
+   * Sort results by one or more properties.
+   */
   orderBy?: {
     [K in PropertyKeys<T>]?: "asc" | "desc";
   };
 
   /**
-   * Causes the list to automatically fetch more as soon as the previous page
-   * has been loaded. If a number is provided, it will continue to automatically
-   * fetch more until the list is at least that long.
+   * The preferred page size for the list.
    */
-  // autoFetchMore?: boolean | number;
+  pageSize?: number;
 
   /**
-   * Upon a list being revalidated, this option determines how the component
-   * will be re-rendered with the data.
-   *
-   * An example to help understand the options:
-   *
-   * Suppose pageSize is 10 and we have called `fetchMore()` twice. The list is
-   * now 30 items long.
-   *
-   * Upon revalidation, we get the first 10 items of the list. The options behave
-   * as follows:
-   *
-   * - `"in-place"`: The first 10 items of the list are replaced with the new 10
-   *   items. The list is now 30 items long, but only the first 10 items are valid.
-   * - `"wait"`: The old list is returned until after the next 20 items are loaded
-   *   (which will happen automatically). The list is now 30 items long.
-   * - `"reset"`: The entire list is replaced with the new 10 items. The list is
-   *   now 10 items long.
+   * Define derived properties (RDPs) to be computed server-side and attached to each object.
+   * These properties will be available on the returned objects alongside their regular properties.
    */
-  // invalidationMode?: "in-place" | "wait" | "reset";
+  withProperties?: { [K in keyof RDPs]: DerivedProperty.Creator<T, RDPs[K]> };
 
   /**
    * The number of milliseconds to wait after the last observed list change.
    *
-   * Two uses of `useOsdkObjects` with the where clause will only trigger one
+   * Two uses of `useOsdkObjects` with the same parameters will only trigger one
    * network request if the second is within `dedupeIntervalMs`.
    */
   dedupeIntervalMs?: number;
 
   /**
-   * If provided, the list will be considered this length for the purposes of
-   * `invalidationMode` when using the `wait` option. If not provided,
-   * the internal expectedLength will be determined by the number of times
-   * `fetchMore` has been called.
+   * Enable or disable the query.
+   *
+   * When `false`, the query will not automatically execute. It will still
+   * return any cached data, but will not fetch from the server.
+   *
+   * @default true
    */
-  // expectedLength?: number | undefined;
+  enabled?: boolean;
+
+  /**
+   * Intersect the results with additional object sets.
+   * Each element defines a where clause for an object set to intersect with.
+   * The final result will only include objects that match ALL conditions.
+   */
+  intersectWith?: Array<{
+    where: WhereClause<T, RDPs>;
+  }>;
+
+  /**
+   * Pivot to related objects through a link.
+   * This changes the return type from T to the linked object type.
+   */
+  pivotTo?: LinkNames<T>;
+
+  /**
+   * Causes the list to automatically fetch more as soon as the previous page
+   * has been loaded. If a number is provided, it will continue to automatically
+   * fetch more until the list is at least that long.
+   *
+   * - `true`: Fetch all available pages automatically
+   * - `number`: Fetch pages until at least this many items are loaded
+   * - `undefined` (default): Only fetch the first page, user must call fetchMore()
+   */
+  autoFetchMore?: boolean | number;
 
   streamUpdates?: boolean;
+
+  /**
+   * Restrict which properties are returned for each object.
+   * When provided, only the specified properties will be fetched,
+   * reducing payload sizes for list views.
+   *
+   * @example
+   * // Only fetch name and status properties
+   * useOsdkObjects(Employee, { $select: ["name", "status"] })
+   */
+  $select?: readonly PropertyKeys<T>[];
+
+  /**
+   * When true, loads per-property security metadata (marking requirements)
+   * alongside each object. The returned objects will have `$propertySecurities`
+   * populated with conjunctive/disjunctive marking requirements per property.
+   */
+  $loadPropertySecurityMetadata?: boolean;
 }
 
 export interface UseOsdkListResult<
-  T extends ObjectTypeDefinition | InterfaceDefinition,
+  T extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = {},
+  EXTRA_OPTIONS extends never | "$rid" = never,
 > {
-  fetchMore: (() => Promise<unknown>) | undefined;
-  data: Osdk.Instance<T>[] | undefined;
+  /**
+   * Function to fetch more pages (undefined if no more pages)
+   */
+  fetchMore: (() => Promise<void>) | undefined;
+
+  /**
+   * The fetched data with derived properties
+   */
+  data:
+    | Osdk.Instance<
+      T,
+      "$allBaseProperties" | EXTRA_OPTIONS,
+      PropertyKeys<T>,
+      RDPs
+    >[]
+    | undefined;
+
+  /**
+   * Whether data is currently being loaded
+   */
   isLoading: boolean;
+
+  /**
+   * Any error that occurred during fetching
+   */
   error: Error | undefined;
 
   /**
@@ -107,6 +183,17 @@ export interface UseOsdkListResult<
    * do that on a per object basis with useOsdkObject
    */
   isOptimistic: boolean;
+
+  /**
+   * The total count of objects matching the query (if available from the API)
+   */
+  totalCount?: string;
+
+  hasMore: boolean;
+
+  objectSet: ObjectSet<T, RDPs> | undefined;
+
+  refetch: () => Promise<void>;
 }
 
 declare const process: {
@@ -116,58 +203,158 @@ declare const process: {
 };
 
 export function useOsdkObjects<
-  Q extends ObjectTypeDefinition | InterfaceDefinition,
+  Q extends ObjectOrInterfaceDefinition,
+  L extends LinkNames<Q>,
 >(
   type: Q,
-  {
-    pageSize,
-    orderBy,
-    dedupeIntervalMs,
-    where = {},
-    streamUpdates,
-  }: UseOsdkObjectsOptions<Q> = {},
-): UseOsdkListResult<Q> {
+  options: UseOsdkObjectsOptions<Q> & { pivotTo: L; rids: readonly string[] },
+): UseOsdkListResult<LinkedType<Q, L>, {}, "$rid">;
+
+export function useOsdkObjects<
+  Q extends ObjectOrInterfaceDefinition,
+  L extends LinkNames<Q>,
+>(
+  type: Q,
+  options: UseOsdkObjectsOptions<Q> & { pivotTo: L },
+): UseOsdkListResult<LinkedType<Q, L>>;
+
+export function useOsdkObjects<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = {},
+>(
+  type: Q,
+  options: UseOsdkObjectsOptions<Q, RDPs> & { rids: readonly string[] },
+): UseOsdkListResult<Q, RDPs, "$rid">;
+
+export function useOsdkObjects<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = {},
+>(
+  type: Q,
+  options?: UseOsdkObjectsOptions<Q, RDPs>,
+): UseOsdkListResult<Q, RDPs>;
+
+export function useOsdkObjects<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = {},
+>(
+  type: Q,
+  options?: UseOsdkObjectsOptions<Q, RDPs>,
+):
+  | UseOsdkListResult<Q, RDPs>
+  | UseOsdkListResult<Q, RDPs, "$rid">
+  | UseOsdkListResult<LinkedType<Q, LinkNames<Q>>>
+  | UseOsdkListResult<LinkedType<Q, LinkNames<Q>>, {}, "$rid">
+{
   const { observableClient } = React.useContext(OsdkContext2);
 
-  /*  We want the canonical where clause so that the use of `React.useMemo`
-      is stable. No real added cost as we canonicalize internal to
-      the ObservableClient anyway.
-   */
-  const canonWhere = observableClient.canonicalizeWhereClause(where ?? {});
+  const {
+    pageSize,
+    dedupeIntervalMs,
+    withProperties,
+    enabled = true,
+    rids,
+    where,
+    orderBy,
+    streamUpdates,
+    autoFetchMore,
+    intersectWith,
+    pivotTo,
+    $select,
+    $loadPropertySecurityMetadata,
+  } = options ?? {};
+
+  const canonOptions = observableClient.canonicalizeOptions({
+    where,
+    withProperties,
+    orderBy,
+    intersectWith,
+    $select,
+  });
+
+  const stableRids = React.useMemo(
+    () => rids,
+    [JSON.stringify(rids)],
+  );
 
   const { subscribe, getSnapShot } = React.useMemo(
-    () =>
-      makeExternalStore<ObserveObjectsArgs<Q>>(
+    () => {
+      if (!enabled) {
+        return makeExternalStore<
+          ObserveObjectsCallbackArgs<Q, RDPs>
+        >(
+          () => ({ unsubscribe: () => {} }),
+          process.env.NODE_ENV !== "production"
+            ? `list ${type.apiName} [DISABLED]`
+            : void 0,
+        );
+      }
+
+      return makeExternalStore<
+        ObserveObjectsCallbackArgs<Q, RDPs>
+      >(
         (observer) =>
           observableClient.observeList({
             type,
-            where: canonWhere,
+            rids: stableRids,
+            where: canonOptions.where,
             dedupeInterval: dedupeIntervalMs ?? 2_000,
             pageSize,
-            orderBy,
+            orderBy: canonOptions.orderBy,
             streamUpdates,
+            withProperties: canonOptions.withProperties,
+            autoFetchMore,
+            ...(canonOptions.intersectWith
+              ? { intersectWith: canonOptions.intersectWith }
+              : {}),
+            ...(pivotTo ? { pivotTo } : {}),
+            ...(canonOptions.$select ? { select: canonOptions.$select } : {}),
+            ...($loadPropertySecurityMetadata
+              ? { $loadPropertySecurityMetadata }
+              : {}),
           }, observer),
         process.env.NODE_ENV !== "production"
-          ? `list ${type.apiName} ${JSON.stringify(canonWhere)}`
+          ? `list ${type.apiName} ${
+            stableRids ? `[${stableRids.length} rids]` : ""
+          } ${JSON.stringify(canonOptions.where)}`
           : void 0,
-      ),
-    [observableClient, type, canonWhere, dedupeIntervalMs],
+      );
+    },
+    [
+      enabled,
+      observableClient,
+      type.apiName,
+      type.type,
+      stableRids,
+      canonOptions.where,
+      dedupeIntervalMs,
+      pageSize,
+      canonOptions.orderBy,
+      streamUpdates,
+      canonOptions.withProperties,
+      autoFetchMore,
+      canonOptions.intersectWith,
+      pivotTo,
+      canonOptions.$select,
+      $loadPropertySecurityMetadata,
+    ],
   );
 
   const listPayload = React.useSyncExternalStore(subscribe, getSnapShot);
 
-  let error: Error | undefined;
-  if (listPayload && "error" in listPayload && listPayload.error) {
-    error = listPayload.error;
-  } else if (listPayload?.status === "error") {
-    error = new Error("Failed to load objects");
-  }
+  const refetch = React.useCallback(async () => {
+    await observableClient.invalidateObjectType(type.apiName);
+  }, [observableClient, type.apiName]);
 
-  return {
-    fetchMore: listPayload?.fetchMore,
-    error,
-    data: listPayload?.resolvedList as Osdk.Instance<Q>[],
-    isLoading: listPayload?.status === "loading",
+  return React.useMemo(() => ({
+    fetchMore: listPayload?.hasMore ? listPayload.fetchMore : undefined,
+    error: extractPayloadError(listPayload, "Failed to load objects"),
+    data: listPayload?.resolvedList,
+    isLoading: isPayloadLoading(listPayload, enabled),
     isOptimistic: listPayload?.isOptimistic ?? false,
-  };
+    totalCount: listPayload?.totalCount,
+    hasMore: listPayload?.hasMore ?? false,
+    objectSet: listPayload?.objectSet,
+    refetch,
+  }), [listPayload, enabled, refetch]);
 }

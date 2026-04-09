@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -124,6 +124,13 @@ export type {
   OntologyIrObjectReferenceType,
   OntologyIrObjectSetRidType,
   OntologyIrObjectTypeValue,
+  OntologyIrStructFieldBaseParameterType,
+  OntologyIrStructFieldDataValue,
+  OntologyIrStructListType,
+  OntologyIrStructListValue,
+  OntologyIrStructParameterField,
+  OntologyIrStructType,
+  OntologyIrStructValue,
   OntologyIrTimeDependentPropertyValue,
   OntologyIrTimeSeriesReferenceValue,
   ParameterDisabled,
@@ -138,6 +145,8 @@ export type {
   Radio,
   RelationSide,
   ResourcePicker,
+  ScenarioReferenceType,
+  ScenarioReferenceValue,
   SectionHidden,
   SectionVisibility,
   SectionVisible,

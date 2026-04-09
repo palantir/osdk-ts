@@ -18,6 +18,7 @@ export type {
   AsyncParameterValueMap,
   EventId,
   EventParameterValueMap,
+  ManifestParameterDefinition,
   ParameterConfig,
   ParameterDefinition,
   ParameterValueMap,
@@ -40,10 +41,15 @@ export {
 export {
   isWidgetEmitEventMessage,
   isWidgetReadyMessage,
+  isWidgetResizeMessage,
   visitWidgetMessage,
 } from "./messages/widgetMessages.js";
 export type { WidgetMessage } from "./messages/widgetMessages.js";
-export type { ParameterValue } from "./parameters.js";
+export type {
+  AllowedObjectSetParameterType,
+  ParameterValue,
+} from "./parameters.js";
+export { BrowserPermission } from "./permissions.js";
 export type {
   AsyncFailedValue,
   AsyncLoadedValue,

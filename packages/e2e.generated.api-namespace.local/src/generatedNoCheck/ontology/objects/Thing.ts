@@ -49,6 +49,8 @@ export interface Thing extends $ObjectTypeDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'object';
   apiName: 'Thing';
+  primaryKeyApiName: 'id';
+  primaryKeyType: 'integer';
   __DefinitionMetadata?: {
     objectSet: Thing.ObjectSet;
     props: Thing.Props;
@@ -95,8 +97,13 @@ export interface Thing extends $ObjectTypeDefinition {
   };
 }
 
-export const Thing: Thing = {
+export const Thing = {
   type: 'object',
   apiName: 'Thing',
   osdkMetadata: $osdkMetadata,
-};
+  primaryKeyApiName: 'id',
+  primaryKeyType: 'integer',
+  internalDoNotUseMetadata: {
+    rid: 'ridForThing',
+  },
+} satisfies Thing & { internalDoNotUseMetadata: { rid: string } } as Thing;

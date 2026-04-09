@@ -63,10 +63,10 @@ export type QueryDataTypeDefinition<
   | StructQueryDataType
   | TwoDimensionalAggregationDataType
   | ThreeDimensionalAggregationDataType
-  | MapDataType;
+  | MapDataType
+  | ArrayQueryDataType;
 
 export type BaseQueryDataTypeDefinition<T extends string> = {
-  multiplicity?: boolean;
   nullable?: boolean;
   type: T;
 };
@@ -80,7 +80,8 @@ export type WireQueryDataTypes =
   | "string"
   | "date"
   | "timestamp"
-  | "attachment";
+  | "attachment"
+  | "mediaReference";
 
 export type PrimitiveDataType<
   Q extends WireQueryDataTypes = WireQueryDataTypes,
@@ -118,6 +119,11 @@ export interface SetQueryDataType extends BaseQueryDataTypeDefinition<"set"> {
   set: QueryDataTypeDefinition;
 }
 
+export interface ArrayQueryDataType
+  extends BaseQueryDataTypeDefinition<"array">
+{
+  array: QueryDataTypeDefinition;
+}
 export interface UnionQueryDataType
   extends BaseQueryDataTypeDefinition<"union">
 {

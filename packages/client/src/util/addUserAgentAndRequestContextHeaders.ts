@@ -15,6 +15,7 @@
  */
 
 import type { ObjectOrInterfaceDefinition } from "@osdk/api";
+import { USER_AGENT_HEADER } from "@osdk/shared.client.impl";
 import { createFetchHeaderMutator } from "@osdk/shared.net.fetch";
 import type { MinimalClient } from "../MinimalClientContext.js";
 
@@ -33,8 +34,11 @@ export const addUserAgentAndRequestContextHeaders = (
 
       if (withMetadata.osdkMetadata) {
         headers.set(
-          "Fetch-User-Agent",
-          withMetadata.osdkMetadata.extraUserAgent,
+          USER_AGENT_HEADER,
+          [
+            headers.get(USER_AGENT_HEADER),
+            withMetadata.osdkMetadata.extraUserAgent,
+          ].filter(x => x && x?.length > 0).join(" "),
         );
       }
       return headers;

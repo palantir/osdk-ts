@@ -20,7 +20,7 @@ import type { MockedFunction } from "vitest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { metadataCacheClient } from "./__unstable/ConjureSupport.js";
 import type { Client } from "./Client.js";
-import { createClient } from "./createClient.js";
+import { createClient, createClientWithTransaction } from "./createClient.js";
 import * as MakeConjureContext from "./ontology/makeConjureContext.js";
 import { USER_AGENT } from "./util/UserAgent.js";
 
@@ -82,6 +82,34 @@ describe(createClient, () => {
         USER_AGENT,
       ]);
     });
+
+    it("includes custom Fetch-User-Agent from headers option", async () => {
+      const customFetch = vi.fn<typeof globalThis.fetch>();
+      mockFetchResponse(customFetch, { data: [] });
+
+      const clientWithHeaders = createClient(
+        "https://mock.com",
+        ontologyRid,
+        async () => "Token",
+        { headers: { "Fetch-User-Agent": "my-app/1.0" } },
+        customFetch,
+      );
+
+      await clientWithHeaders(BarInterface).fetchPage();
+      expect(customFetch).toHaveBeenCalledTimes(1);
+
+      const userAgent = (customFetch.mock.calls[0][1]?.headers as Headers).get(
+        "Fetch-User-Agent",
+      );
+      const parts = userAgent?.split(" ") ?? [];
+      expect(parts).toEqual([
+        ...BarInterface.osdkMetadata!
+          .extraUserAgent
+          .split(" "),
+        USER_AGENT,
+        "my-app/1.0",
+      ]);
+    });
   });
 
   describe("check url formatting", () => {
@@ -136,9 +164,38 @@ describe(createClient, () => {
       );
 
       expect(
-        conjureContextSpy.mock.results[0].value["baseUrl"]
-          + conjureContextSpy.mock.results[0].value["servicePath"],
+        conjureContextSpy.mock.results[0].value.baseUrl
+          + conjureContextSpy.mock.results[0].value.servicePath,
       ).toBe("https://mock4.com/ontology-metadata/api");
+    });
+  });
+
+  describe("client created with transactionId forwards to requests", () => {
+    it("forwards transactionId in fetchPage", async () => {
+      const transactionId = "test-transaction-id";
+      const clientWithTransaction = createClientWithTransaction(
+        transactionId,
+        async () => {},
+        "https://mock.com",
+        ontologyRid,
+        async () => "Token",
+        {},
+        fetchFunction,
+      );
+
+      mockFetchResponse(fetchFunction, { data: [] });
+
+      await clientWithTransaction(BarInterface).fetchPage();
+
+      expect(fetchFunction).toHaveBeenCalledTimes(1);
+      const url = fetchFunction.mock.calls[0][0];
+      expect(url).toBeDefined();
+
+      const parsedUrl = new URL(url as string, "https://mock.com");
+      const someParam = parsedUrl.searchParams.get("transactionId");
+
+      // Example: Assert a param
+      expect(someParam).toBe(transactionId);
     });
   });
 });

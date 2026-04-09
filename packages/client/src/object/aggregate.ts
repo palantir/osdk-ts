@@ -26,7 +26,7 @@ import type {
   AggregateObjectsResponseV2,
   ObjectSet,
 } from "@osdk/foundry.ontologies";
-import * as OntologiesV2 from "@osdk/foundry.ontologies";
+import * as OntologyObjectSets from "@osdk/foundry.ontologies/OntologyObjectSet";
 import invariant from "tiny-invariant";
 import { legacyToModernSingleAggregationResult } from "../internal/conversions/legacyToModernSingleAggregationResult.js";
 import { modernToLegacyAggregationClause } from "../internal/conversions/modernToLegacyAggregationClause.js";
@@ -59,7 +59,11 @@ export async function aggregate<
     body.groupBy = modernToLegacyGroupByClause(req.$groupBy);
   }
 
-  const result = await OntologiesV2.OntologyObjectSets.aggregate(
+  if (clientCtx.flushEdits != null) {
+    await clientCtx.flushEdits();
+  }
+
+  const result = await OntologyObjectSets.aggregate(
     addUserAgentAndRequestContextHeaders(clientCtx, objectType),
     await clientCtx.ontologyRid,
     {
@@ -67,8 +71,14 @@ export async function aggregate<
       groupBy: body.groupBy,
       aggregation: body.aggregation,
     },
-    { branch: clientCtx.branch },
+    { branch: clientCtx.branch, transactionId: clientCtx.transactionId },
   );
+
+  if (!result.data || !Array.isArray(result.data)) {
+    throw new Error(
+      `Aggregation request failed: ${JSON.stringify(result)}`,
+    );
+  }
 
   if (!req.$groupBy) {
     invariant(
@@ -80,6 +90,7 @@ export async function aggregate<
       ...aggregationToCountResult(result.data[0]),
       ...legacyToModernSingleAggregationResult(
         result.data[0],
+        req.$select,
       ),
     } as any;
   }
@@ -89,7 +100,7 @@ export async function aggregate<
       return {
         $group: entry.group as any,
         ...aggregationToCountResult(entry),
-        ...legacyToModernSingleAggregationResult(entry),
+        ...legacyToModernSingleAggregationResult(entry, req.$select),
       };
     }) as any; // fixme
 

@@ -1,0 +1,15 @@
+{
+  "extends": ["//"],
+  "tasks": {
+    "typecheck": {
+      "dependsOn": [
+        "@osdk/typescript-sdk-docs-examples#transpileTypes"
+      ]
+    },
+    "transpileEsm": {
+      "dependsOn": [
+        "@osdk/typescript-sdk-docs-examples#transpileTypes"
+      ]
+    }
+  }
+}

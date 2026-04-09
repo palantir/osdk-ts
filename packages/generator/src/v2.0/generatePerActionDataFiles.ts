@@ -27,13 +27,12 @@ import type { GenerateContext } from "../GenerateContext/GenerateContext.js";
 import { getObjectImports } from "../shared/getObjectImports.js";
 import { deleteUndefineds } from "../util/deleteUndefineds.js";
 import { stringify } from "../util/stringify.js";
-import { stringUnionFrom } from "../util/stringUnionFrom.js";
 import { formatTs } from "../util/test/formatTs.js";
 import { getDescriptionIfPresent } from "./getDescriptionIfPresent.js";
 
 export async function generatePerActionDataFiles(
   {
-    sanitizedOntology: ontology,
+    ontology,
     fs,
     outDir: rootOutDir,
     importExt = "",
@@ -41,7 +40,6 @@ export async function generatePerActionDataFiles(
     forInternalUse = false,
   }: Pick<
     GenerateContext,
-    | "sanitizedOntology"
     | "fs"
     | "outDir"
     | "importExt"
@@ -60,15 +58,11 @@ export async function generatePerActionDataFiles(
         `${action.shortApiName}.ts`,
       );
 
-      const uniqueApiNamesArray = extractReferencedObjectsFromAction(
-        action.raw,
-      );
-      const uniqueApiNames = new Set(uniqueApiNamesArray);
-
-      const uniqueApiNamesString = stringUnionFrom([...uniqueApiNames]);
-
       const fullActionDef = deleteUndefineds(
-        wireActionTypeV2ToSdkActionMetadata(action.raw),
+        wireActionTypeV2ToSdkActionMetadata(
+          action.raw,
+          action.unsanitizedApiName,
+        ),
       );
 
       function createParamsDef() {
@@ -156,6 +150,26 @@ export async function generatePerActionDataFiles(
         const jsDocBlock = ["/**"];
         if (action.description != null) {
           jsDocBlock.push(`* ${action.description}`);
+
+          // Add note about null values to the action description if there are nullable parameters
+          const hasNullableParams = Object.values(
+            fullActionDef.parameters || {},
+          ).some(param => param.nullable === true);
+          if (hasNullableParams) {
+            jsDocBlock.push(`* `);
+            jsDocBlock.push(
+              `* **Note on null values:** _For optional parameters, explicitly providing a null value instead of undefined`,
+            );
+            jsDocBlock.push(
+              `* can change the behavior of the applied action. If prefills are configured, null prevents them`,
+            );
+            jsDocBlock.push(
+              `* from being applied. If a parameter modifies an object's property, null will clear the data from`,
+            );
+            jsDocBlock.push(
+              `* the object, whereas undefined would not modify that property._`,
+            );
+          }
         }
         // the params must be a `type` to align properly with the `ActionDefinition` interface
         // this way we can generate a strict type for the function itself and reference it from the Action Definition
@@ -172,13 +186,14 @@ export async function generatePerActionDataFiles(
               const key = `${getDescriptionIfPresent(ogValue.description)}
                   readonly "${ogKey}"${ogValue.nullable ? "?" : ""}`;
 
-              const value = ogValue.multiplicity
+              const value = (ogValue.multiplicity
                 ? `ReadonlyArray<${getActionParamType(ogValue.type)}>`
-                : `${getActionParamType(ogValue.type)}`;
+                : `${getActionParamType(ogValue.type)}`)
+                + (ogValue.nullable ? " | null" : "");
               jsDocBlock.push(
                 `* @param {${getActionParamType(ogValue.type)}} ${
                   ogValue.nullable ? `[${ogKey}]` : ogKey
-                } ${ogValue.description ?? ""} `,
+                } ${ogValue.description ?? ""}`,
               );
               return [key, value];
             },

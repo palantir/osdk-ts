@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ import type {
 } from "../__components.js";
 
 /**
- * Resolves an ontology entity (object or link type) to a suitable delegate dataset for Spark input.
+ * Resolves an ontology entity (object or link type) to a suitable delegate source for Spark input.
  */
 export async function getEntityDelegateDataset(
   ctx: ConjureContext,

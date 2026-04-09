@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,10 +27,14 @@ import type {
   ActionTypeLogic as _api_ActionTypeLogic,
   ActionTypeRichTextComponent as _api_ActionTypeRichTextComponent,
   ActionTypeRid as _api_ActionTypeRid,
+  ActionTypeScenarioSettings as _api_ActionTypeScenarioSettings,
   ActionTypeStatus as _api_ActionTypeStatus,
   ActionTypeVersion as _api_ActionTypeVersion,
+  BaseFormatter as _api_BaseFormatter,
   ButtonDisplayMetadata as _api_ButtonDisplayMetadata,
   ColumnName as _api_ColumnName,
+  DataNullability as _api_DataNullability,
+  DataNullabilityV2 as _api_DataNullabilityV2,
   DatasourceRid as _api_DatasourceRid,
   FormContent as _api_FormContent,
   FunctionRid as _api_FunctionRid,
@@ -41,7 +45,10 @@ import type {
   InterfaceLinkTypeApiName as _api_InterfaceLinkTypeApiName,
   InterfaceLinkTypeRid as _api_InterfaceLinkTypeRid,
   InterfacePropertyTypeApiName as _api_InterfacePropertyTypeApiName,
+  InterfacePropertyTypeDisplayMetadata
+    as _api_InterfacePropertyTypeDisplayMetadata,
   InterfacePropertyTypeRid as _api_InterfacePropertyTypeRid,
+  InterfacePropertyTypeType as _api_InterfacePropertyTypeType,
   InterfaceSharedPropertyType as _api_InterfaceSharedPropertyType,
   InterfaceTypeApiName as _api_InterfaceTypeApiName,
   InterfaceTypeRid as _api_InterfaceTypeRid,
@@ -64,7 +71,10 @@ import type {
   OntologyIrActionTypeRichTextComponent
     as _api_OntologyIrActionTypeRichTextComponent,
   OntologyIrActionTypeStatus as _api_OntologyIrActionTypeStatus,
+  OntologyIrBaseFormatter as _api_OntologyIrBaseFormatter,
   OntologyIrFormContent as _api_OntologyIrFormContent,
+  OntologyIrInterfacePropertyTypeType
+    as _api_OntologyIrInterfacePropertyTypeType,
   OntologyIrInterfaceSharedPropertyType
     as _api_OntologyIrInterfaceSharedPropertyType,
   OntologyIrLinkedEntityTypeId as _api_OntologyIrLinkedEntityTypeId,
@@ -80,6 +90,7 @@ import type {
   Parameter as _api_Parameter,
   ParameterId as _api_ParameterId,
   ParameterRid as _api_ParameterRid,
+  PrimaryKeyConstraint as _api_PrimaryKeyConstraint,
   PropertyId as _api_PropertyId,
   PropertyTypeId as _api_PropertyTypeId,
   PropertyTypeRid as _api_PropertyTypeRid,
@@ -91,6 +102,7 @@ import type {
   SharedPropertyTypeRid as _api_SharedPropertyTypeRid,
   TimeSeriesSyncRid as _api_TimeSeriesSyncRid,
   TypeClass as _api_TypeClass,
+  ValueTypeReference as _api_ValueTypeReference,
   ValueTypeRid as _api_ValueTypeRid,
   ValueTypeVersionId as _api_ValueTypeVersionId,
   WebhookRid as _api_WebhookRid,
@@ -101,6 +113,7 @@ import type {
   EditsHistory as _api_entitymetadata_EditsHistory,
   EditsResolutionStrategies as _api_entitymetadata_EditsResolutionStrategies,
   EntityConfig as _api_entitymetadata_EntityConfig,
+  InterfaceSettings as _api_entitymetadata_InterfaceSettings,
   LinkTypeEntityMetadata as _api_entitymetadata_LinkTypeEntityMetadata,
   ObjectTypeAlias as _api_entitymetadata_ObjectTypeAlias,
   OntologyIrLinkTypeEntityMetadata
@@ -160,6 +173,11 @@ export interface DataFilter {
  * Ontology as code uses this as a stable ID for the datasource input
  */
 export type DataSetName = string;
+
+/**
+ * Ontology as code uses this as a stable ID for datasource rids
+ */
+export type DatasourceName = string;
 export interface DatasourcePredicate_or {
   type: "or";
   or: Array<DatasourcePredicate>;
@@ -211,6 +229,10 @@ export interface KnownMarketplaceIdentifiers {
   geotimeSeriesSyncs: Record<_api_GeotimeSeriesIntegrationRid, BlockInternalId>;
   groupIds: Record<_api_GroupId, BlockInternalId>;
   interfaceLinkTypes: Record<_api_InterfaceLinkTypeRid, BlockInternalId>;
+  interfacePropertyTypes: Record<
+    _api_InterfacePropertyTypeRid,
+    BlockInternalId
+  >;
   interfaceTypes: Record<_api_InterfaceTypeRid, BlockInternalId>;
   linkTypeIds: Record<_api_LinkTypeId, BlockInternalId>;
   linkTypes: Record<_api_LinkTypeRid, BlockInternalId>;
@@ -254,6 +276,8 @@ export interface MarketplaceActionType {
   metadata: MarketplaceActionTypeMetadata;
 }
 export interface MarketplaceActionTypeDisplayMetadata {
+  applyingMessage: Array<_api_ActionTypeRichTextComponent>;
+  applyingMessageEnabled?: boolean | null | undefined;
   configuration?:
     | _api_ActionTypeDisplayMetadataConfiguration
     | null
@@ -263,6 +287,8 @@ export interface MarketplaceActionTypeDisplayMetadata {
   icon?: _api_Icon | null | undefined;
   submitButtonDisplayMetadata?: _api_ButtonDisplayMetadata | null | undefined;
   successMessage: Array<_api_ActionTypeRichTextComponent>;
+  successMessageEnabled?: boolean | null | undefined;
+  toolDescription?: string | null | undefined;
   typeClasses: Array<_api_TypeClass>;
   undoButtonConfiguration?: boolean | null | undefined;
 }
@@ -291,6 +317,7 @@ export interface MarketplaceActionTypeMetadata {
     | null
     | undefined;
   rid: _api_ActionTypeRid;
+  scenarioSettings?: _api_ActionTypeScenarioSettings | null | undefined;
   sections: Record<_api_SectionId, _api_Section>;
   stagingMediaSetRid?: _api_MediaSetRid | null | undefined;
   status: _api_ActionTypeStatus;
@@ -302,6 +329,10 @@ export interface MarketplaceActionTypeMetadata {
 }
 export interface MarketplaceActiveInterfaceTypeStatus {
 }
+export interface MarketplaceDataConstraints {
+  nullability?: _api_DataNullability | null | undefined;
+  nullabilityV2?: _api_DataNullabilityV2 | null | undefined;
+}
 export interface MarketplaceDeprecatedInterfaceTypeStatus {
   deadline: string;
   message: string;
@@ -310,6 +341,22 @@ export interface MarketplaceDeprecatedInterfaceTypeStatus {
 export interface MarketplaceExampleInterfaceTypeStatus {
 }
 export interface MarketplaceExperimentalInterfaceTypeStatus {
+}
+export interface MarketplaceInterfaceDefinedPropertyType {
+  apiName: _api_InterfacePropertyTypeApiName;
+  baseFormatter?: _api_BaseFormatter | null | undefined;
+  constraints: MarketplaceInterfaceDefinedPropertyTypeConstraints;
+  displayMetadata: _api_InterfacePropertyTypeDisplayMetadata;
+  rid: _api_InterfacePropertyTypeRid;
+  type: _api_InterfacePropertyTypeType;
+}
+export interface MarketplaceInterfaceDefinedPropertyTypeConstraints {
+  dataConstraints?: MarketplaceDataConstraints | null | undefined;
+  indexedForSearch: boolean;
+  primaryKeyConstraint: _api_PrimaryKeyConstraint;
+  requireImplementation: boolean;
+  typeClasses: Array<_api_TypeClass>;
+  valueType?: _api_ValueTypeReference | null | undefined;
 }
 export interface MarketplaceInterfaceLinkType {
   cardinality: MarketplaceInterfaceLinkTypeCardinality;
@@ -328,8 +375,14 @@ export interface MarketplaceInterfacePropertyType_sharedPropertyBasedPropertyTyp
   type: "sharedPropertyBasedPropertyType";
   sharedPropertyBasedPropertyType: MarketplaceSharedPropertyBasedPropertyType;
 }
+
+export interface MarketplaceInterfacePropertyType_interfaceDefinedPropertyType {
+  type: "interfaceDefinedPropertyType";
+  interfaceDefinedPropertyType: MarketplaceInterfaceDefinedPropertyType;
+}
 export type MarketplaceInterfacePropertyType =
-  MarketplaceInterfacePropertyType_sharedPropertyBasedPropertyType;
+  | MarketplaceInterfacePropertyType_sharedPropertyBasedPropertyType
+  | MarketplaceInterfacePropertyType_interfaceDefinedPropertyType;
 
 export interface MarketplaceInterfaceType {
   apiName: _api_InterfaceTypeApiName;
@@ -400,6 +453,7 @@ export interface MarketplaceObjectTypeEntityMetadata {
     | undefined;
   entityConfig: _api_entitymetadata_EntityConfig;
   gothamMapping?: _api_typemapping_ObjectTypeGothamMapping | null | undefined;
+  interfaceSettings?: _api_entitymetadata_InterfaceSettings | null | undefined;
   patchApplicationStrategy?:
     | _api_entitymetadata_PatchApplicationStrategy
     | null
@@ -410,6 +464,7 @@ export interface MarketplaceObjectTypeEntityMetadata {
     | undefined;
   redacted?: boolean | null | undefined;
   targetStorageBackend: _api_entitymetadata_StorageBackend;
+  usesOnlyOsv2ObjectRids?: boolean | null | undefined;
 }
 export interface MarketplaceSharedPropertyBasedPropertyType {
   requireImplementation: boolean;
@@ -435,6 +490,10 @@ export interface ObjectTypeBlockDataV2 {
   datasources: Array<_api_ObjectTypeDatasource>;
   entityMetadata?: MarketplaceObjectTypeEntityMetadata | null | undefined;
   objectType: _api_ObjectType;
+  propertySecurityGroupPackagingVersion?:
+    | PropertySecurityGroupPackagingVersion
+    | null
+    | undefined;
   schemaMigrations?: SchemaMigrationBlockData | null | undefined;
   writebackDatasets: Array<ObjectsWritebackDataset>;
 }
@@ -491,6 +550,10 @@ export interface OntologyIrKnownMarketplaceIdentifiers {
   geotimeSeriesSyncs: Record<GeotimeSeriesIntegrationName, BlockInternalId>;
   groupIds: Record<_api_GroupId, BlockInternalId>;
   interfaceLinkTypes: Record<_api_InterfaceLinkTypeApiName, BlockInternalId>;
+  interfacePropertyTypes: Record<
+    _api_InterfacePropertyTypeApiName,
+    BlockInternalId
+  >;
   interfaceTypes: Record<_api_InterfaceTypeApiName, BlockInternalId>;
   linkTypeIds: Record<_api_LinkTypeId, BlockInternalId>;
   linkTypes: Record<_api_LinkTypeId, BlockInternalId>;
@@ -535,6 +598,7 @@ export interface OntologyIrMarketplaceActionTypeDisplayMetadata {
   icon?: _api_Icon | null | undefined;
   submitButtonDisplayMetadata?: _api_ButtonDisplayMetadata | null | undefined;
   successMessage: Array<_api_OntologyIrActionTypeRichTextComponent>;
+  toolDescription?: string | null | undefined;
   typeClasses: Array<_api_TypeClass>;
   undoButtonConfiguration?: boolean | null | undefined;
 }
@@ -552,6 +616,7 @@ export interface OntologyIrMarketplaceActionTypeMetadata {
   formContentOrdering: Array<_api_OntologyIrFormContent>;
   parameterOrdering: Array<_api_ParameterId>;
   parameters: Record<_api_ParameterId, _api_OntologyIrParameter>;
+  scenarioSettings?: _api_ActionTypeScenarioSettings | null | undefined;
   sections: Record<_api_SectionId, _api_OntologyIrSection>;
   stagingMediaSetRid?: _api_MediaSetRid | null | undefined;
   status: _api_OntologyIrActionTypeStatus;
@@ -560,6 +625,21 @@ export interface OntologyIrMarketplaceDeprecatedInterfaceTypeStatus {
   deadline: string;
   message: string;
   replacedBy?: _api_InterfaceTypeApiName | null | undefined;
+}
+export interface OntologyIrMarketplaceInterfaceDefinedPropertyType {
+  apiName: _api_InterfacePropertyTypeApiName;
+  baseFormatter?: _api_OntologyIrBaseFormatter | null | undefined;
+  constraints: OntologyIrMarketplaceInterfaceDefinedPropertyTypeConstraints;
+  displayMetadata: _api_InterfacePropertyTypeDisplayMetadata;
+  type: _api_OntologyIrInterfacePropertyTypeType;
+}
+export interface OntologyIrMarketplaceInterfaceDefinedPropertyTypeConstraints {
+  dataConstraints?: MarketplaceDataConstraints | null | undefined;
+  indexedForSearch: boolean;
+  primaryKeyConstraint: _api_PrimaryKeyConstraint;
+  requireImplementation: boolean;
+  typeClasses: Array<_api_TypeClass>;
+  valueType?: OntologyIrValueTypeReferenceWithMetadata | null | undefined;
 }
 export interface OntologyIrMarketplaceInterfaceLinkType {
   cardinality: MarketplaceInterfaceLinkTypeCardinality;
@@ -572,13 +652,21 @@ export interface OntologyIrMarketplaceInterfacePropertyType_sharedPropertyBasedP
   sharedPropertyBasedPropertyType:
     OntologyIrMarketplaceSharedPropertyBasedPropertyType;
 }
+
+export interface OntologyIrMarketplaceInterfacePropertyType_interfaceDefinedPropertyType {
+  type: "interfaceDefinedPropertyType";
+  interfaceDefinedPropertyType:
+    OntologyIrMarketplaceInterfaceDefinedPropertyType;
+}
 export type OntologyIrMarketplaceInterfacePropertyType =
-  OntologyIrMarketplaceInterfacePropertyType_sharedPropertyBasedPropertyType;
+  | OntologyIrMarketplaceInterfacePropertyType_sharedPropertyBasedPropertyType
+  | OntologyIrMarketplaceInterfacePropertyType_interfaceDefinedPropertyType;
 
 export interface OntologyIrMarketplaceInterfaceType {
   apiName: _api_InterfaceTypeApiName;
   displayMetadata: MarketplaceInterfaceTypeDisplayMetadata;
   extendsInterfaces: Array<_api_InterfaceTypeApiName>;
+  extendsInterfacesMetadata: Array<OntologyIrMarketplaceInterfaceType>;
   links: Array<OntologyIrMarketplaceInterfaceLinkType>;
   properties: Array<_api_OntologyIrSharedPropertyType>;
   propertiesV2: Record<
@@ -624,7 +712,9 @@ export type OntologyIrMarketplaceInterfaceTypeStatus =
  * runtime conversion with default value.
  */
 export interface OntologyIrMarketplaceObjectTypeEntityMetadata {
+  aliases: Array<_api_entitymetadata_ObjectTypeAlias>;
   arePatchesEnabled: boolean;
+  interfaceSettings?: _api_entitymetadata_InterfaceSettings | null | undefined;
 }
 export interface OntologyIrMarketplaceSharedPropertyBasedPropertyType {
   requireImplementation: boolean;
@@ -651,6 +741,10 @@ export interface OntologyIrObjectTypeBlockDataV2 {
     | null
     | undefined;
   objectType: _api_OntologyIrObjectType;
+  propertySecurityGroupPackagingVersion?:
+    | PropertySecurityGroupPackagingVersion
+    | null
+    | undefined;
 }
 export interface OntologyIrOntologyBlockDataV2 {
   actionTypes: Record<_api_ActionTypeApiName, OntologyIrActionTypeBlockDataV2>;
@@ -744,6 +838,29 @@ export type PropertyPredicate =
   | PropertyPredicate_hasRid;
 
 export type PropertyRid = string;
+
+/**
+ * This is the old approach to PSG packaging. It will still be kept around for existing installations.
+ */
+export interface PropertySecurityGroupPackagingV1 {
+}
+/**
+ * This is the new approach to PSG packaging. See this quip for more details - https://palantir.quip.com/Ros7ABfTeLSH
+ */
+export interface PropertySecurityGroupPackagingV2 {
+}
+export interface PropertySecurityGroupPackagingVersion_v1 {
+  type: "v1";
+  v1: PropertySecurityGroupPackagingV1;
+}
+
+export interface PropertySecurityGroupPackagingVersion_v2 {
+  type: "v2";
+  v2: PropertySecurityGroupPackagingV2;
+}
+export type PropertySecurityGroupPackagingVersion =
+  | PropertySecurityGroupPackagingVersion_v1
+  | PropertySecurityGroupPackagingVersion_v2;
 
 /**
  * Ontology as code uses this as a stable ID for the restricted view input

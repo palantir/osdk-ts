@@ -19,13 +19,15 @@ import type {
   SelectArg,
 } from "../object/FetchPageArgs.js";
 
-import type { PropertyKeys } from "../ontology/ObjectOrInterface.js";
-import type { ObjectTypeDefinition } from "../ontology/ObjectTypeDefinition.js";
+import type {
+  ObjectOrInterfaceDefinition,
+  PropertyKeys,
+} from "../ontology/ObjectOrInterface.js";
 import type { ExtractOptions, Osdk } from "../OsdkObjectFrom.js";
 import type { Experiment } from "./Experiment.js";
 
 type fetchOneByRidFn = <
-  Q extends ObjectTypeDefinition,
+  Q extends ObjectOrInterfaceDefinition,
   const L extends PropertyKeys<Q>,
   const R extends boolean,
   const S extends false | "throw" = NullabilityAdherence.Default,

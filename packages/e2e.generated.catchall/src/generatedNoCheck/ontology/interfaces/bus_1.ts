@@ -7,6 +7,7 @@ import type {
   ObjectSet as $ObjectSet,
   Osdk as $Osdk,
   PropertyValueWireToClient as $PropType,
+  SingleLinkAccessor as $SingleLinkAccessor,
 } from '@osdk/client';
 
 export type OsdkObjectLinks$bus_1 = {};
@@ -62,8 +63,11 @@ export interface bus_1 extends $InterfaceDefinition {
   };
 }
 
-export const bus_1: bus_1 = {
+export const bus_1 = {
   type: 'interface',
   apiName: 'bus_1',
   osdkMetadata: $osdkMetadata,
-};
+  internalDoNotUseMetadata: {
+    rid: 'ri.ontology.main.interface.13ac66ef-d94e-4020-ac20-3285557149dd',
+  },
+} satisfies bus_1 & { internalDoNotUseMetadata: { rid: string } } as bus_1;

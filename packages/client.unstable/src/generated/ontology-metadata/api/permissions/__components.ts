@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,11 +17,12 @@
 import type { WorkflowRid as _workflow_api_WorkflowRid } from "../../workflow/api/__components.js";
 import type {
   ActionTypeRid as _api_ActionTypeRid,
-  CompassProjectRid as _api_CompassProjectRid,
+  CompassFolderRid as _api_CompassFolderRid,
   DatasourceRid as _api_DatasourceRid,
   GroupId as _api_GroupId,
   InterfaceTypeRid as _api_InterfaceTypeRid,
   LinkTypeRid as _api_LinkTypeRid,
+  MarkingId as _api_MarkingId,
   ObjectTypeRid as _api_ObjectTypeRid,
   OntologyBranchRid as _api_OntologyBranchRid,
   OntologyPackageRid as _api_OntologyPackageRid,
@@ -80,7 +81,11 @@ export interface BulkUpdateEntityRolesResponse {
 export interface DatasourceDerived {
 }
 /**
- * The entity is fully visible to the org, but modifications are gated by datasource access.
+ * Permissions to edit the entity is primarily controlled by datasource access.
+ *
+ * The entity is viewable by users that satisfy the markings of the ontology and editable by users who have
+ * access to a datasource and Ontology Editor or Ontology Owner role on the ontology. Only users with the
+ * appropriate permissions can make view or edit the entity.
  */
 export interface EditRestrictedByDatasourcesPermissionModel {
 }
@@ -511,12 +516,20 @@ export interface ManyToManyLinkTypeDatasourcePermissions {
   canEdit: boolean;
 }
 export interface MigrateEntitiesToProjectsRequest {
-  entitiesToMove: Record<_api_CompassProjectRid, Array<_api_ProjectEntityRid>>;
+  entitiesToMove: Record<_api_CompassFolderRid, Array<_api_ProjectEntityRid>>;
+  entitiesToMoveV2: Record<
+    _api_CompassFolderRid,
+    Array<MigrateEntityToProjectRequest>
+  >;
 }
 /**
  * Response to MoveEntitiesToProjectsRequest. Intentionally left empty for future extensibility.
  */
 export interface MigrateEntitiesToProjectsResponse {
+}
+export interface MigrateEntityToProjectRequest {
+  markings: Array<_api_MarkingId>;
+  rid: _api_ProjectEntityRid;
 }
 /**
  * The operations the user has on a datasource.
@@ -574,8 +587,15 @@ export interface PackageParent {
   packageRid: _api_OntologyPackageRid;
 }
 /**
- * The entity is fully visible to the org and modifiable by users with roles on the specified package, as well as
- * ontology owners.
+ * Legacy implementation, a folder within the ontology which is "synced" to a project.
+ *
+ * The entity is viewable by users that satisfy the markings of the ontology and editable by users with roles on
+ * the specified package or users who have Ontology Owner role on the ontology. Packages represent folders within
+ * the ontology that are synchronized to external projects. Permissions are inherited from the package's role
+ * configuration rather than being directly assigned to the entity.
+ *
+ * Note: This model is deprecated. New entities should use PublicProjectPermissionModel for modern Compass
+ * project integration.
  */
 export interface PackagePermissionModel {
   packageRid: _api_OntologyPackageRid;
@@ -653,8 +673,13 @@ export type PermissionsOntologyEntity =
   | PermissionsOntologyEntity_typeGroup;
 
 /**
- * The entity is is fully visible to the org and modifiable by everyone who is in the editors group, as well
- * ass ontology owners.
+ * Legacy permission model before role-based access control.
+ *
+ * The entity is viewable by users that satisfy the markings of the ontology and editable by users who have
+ * Ontology Editor or Ontology Owner role on the ontology. This is a legacy permission model used primarily for
+ * action types that were created before the role-based permission system.
+ *
+ * Note: This model is deprecated.
  */
 export interface PreRolesPermissionModel {
 }
@@ -685,8 +710,14 @@ export interface PropertySecurityGroupPermissions {
   canEdit: boolean;
 }
 /**
- * The visibility and modifiability of the entity is entirely controlled by the Compass project it belongs to.
- * OMS does not keep track of which project an entity is in.
+ * Entities in Compass projects. Permissions are entirely delegated to Compass project.
+ *
+ * The entity's visibility and editability is entirely controlled by the Compass project it belongs to. OMS does
+ * not keep track of which project an entity is in; all permission resolution is delegated to Compass based on
+ * project membership and roles.
+ *
+ * This is the modern approach for organizing and securing ontology entities. Entities are managed within Compass
+ * projects, and permissions are determined by the user's access to those projects.
  */
 export interface PublicProjectPermissionModel {
 }
@@ -715,8 +746,12 @@ export interface RolesEnabled {
 export interface RolesEnforced {
 }
 /**
- * The entity is fully visible to the org and modifiable by users with the specified roles, as well as ontology
- * owners.
+ * Secured by role-based access control.
+ *
+ * The entity is viewable by users that satisfy the markings of the ontology and editable by users with the
+ * specified roles or users who have Ontology Owner role on the ontology. This is the standard permission model
+ * for entities where access is controlled through explicit role grants to users or groups. The entity is not
+ * restricted by datasource permissions.
  */
 export interface RolesPermissionModel {
 }
@@ -743,14 +778,7 @@ export interface TypeGroupPermissionModel_roles {
   type: "roles";
   roles: RolesPermissionModel;
 }
-
-export interface TypeGroupPermissionModel_publicProject {
-  type: "publicProject";
-  publicProject: PublicProjectPermissionModel;
-}
-export type TypeGroupPermissionModel =
-  | TypeGroupPermissionModel_roles
-  | TypeGroupPermissionModel_publicProject;
+export type TypeGroupPermissionModel = TypeGroupPermissionModel_roles;
 
 /**
  * Adds or removes the requested entities to/from a package. Removing means moving the resources to the default
@@ -800,7 +828,11 @@ export interface UserPrincipal {
   user: _api_UserId;
 }
 /**
- * All access to the entity is denied unless the user has access to at least one datasource
+ * Permissions to view or edit the entity is primarily controlled by datasource access.
+ *
+ * The entity is viewable by users that have access to a datasource and editable by users who have have access to
+ * a datasource *and* Ontology Editor or Ontology Owner role on the ontology. Only users with the appropriate
+ * permissions can make view or edit the entity.
  */
 export interface ViewRestrictedByDatasourcesPermissionModel {
 }

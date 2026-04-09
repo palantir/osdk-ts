@@ -67,6 +67,8 @@ export interface McAirportStruct extends $ObjectTypeDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'object';
   apiName: 'McAirportStruct';
+  primaryKeyApiName: 'airportName';
+  primaryKeyType: 'string';
   __DefinitionMetadata?: {
     objectSet: McAirportStruct.ObjectSet;
     props: McAirportStruct.Props;
@@ -117,8 +119,13 @@ export interface McAirportStruct extends $ObjectTypeDefinition {
   };
 }
 
-export const McAirportStruct: McAirportStruct = {
+export const McAirportStruct = {
   type: 'object',
   apiName: 'McAirportStruct',
   osdkMetadata: $osdkMetadata,
-};
+  primaryKeyApiName: 'airportName',
+  primaryKeyType: 'string',
+  internalDoNotUseMetadata: {
+    rid: 'rid.a.b.c.d',
+  },
+} satisfies McAirportStruct & { internalDoNotUseMetadata: { rid: string } } as McAirportStruct;

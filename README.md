@@ -1,5 +1,19 @@
 # TypeScript Ontology SDK
 
+A TypeScript library for interacting with Palantir's Ontology.
+
+## Documentation
+
+- [OSDK TypeScript Documentation](https://palantir.github.io/osdk-ts/)
+- [Ontology SDK Overview](https://www.palantir.com/docs/foundry/ontology-sdk/overview/)
+- [TypeScript OSDK Migration Guide](https://www.palantir.com/docs/foundry/ontology-sdk/typescript-osdk-migration)
+
+[![Node.js Version](https://img.shields.io/badge/node-%3E=18.19.0-brightgreen)](https://nodejs.org/)
+
+> **Note:** Supported Node versions are 18 (>=18.19.0), 20, 22, and 24. Node 25 is not supported.
+
+## Packages
+
 | Package | Version |
 |---------|---------|
 | @osdk/client | [![npm](https://img.shields.io/npm/v/@osdk/client.svg)](https://www.npmjs.com/package/@osdk/client) |
@@ -9,9 +23,7 @@
 
 ## Getting Started
 
-The TypeScript SDK is a library used for interacting with Palantir's Ontology.
-
-To get started, visit the developer console application on your Foundry stack, or visit [our public documentation](https://www.palantir.com/docs/foundry/ontology-sdk/overview/).
+To get started, visit the developer console application on your Foundry stack or see the [documentation](#documentation) above.
 
 Do you only want to hit specific APIs or don't need a generated SDK? Check out the [foundry-platform-typescript](https://github.com/palantir/foundry-platform-typescript) package, which provides standalone APIs to interact with Foundry directly without the need to generate ontology-specific SDKs.
 
@@ -109,3 +121,8 @@ For more details, refer to the [public docs](https://www.palantir.com/docs/found
 3. `pnpm install`
 4. `./scripts/createReleasePr.sh`
 5. Once your release PR has been merged, run `/scripts/tag-release.sh [COMMIT_SHA]` to tag your release.
+
+### Troubleshooting
+
+- If you run into errors when running `./scripts/createReleasePr.sh`, try running `pnpm install` first.
+- Make sure you are using a supported Node version (18, 20, 22, or 24). Node 22 is recommended. Node 25 is not supported.

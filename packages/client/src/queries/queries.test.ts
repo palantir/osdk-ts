@@ -14,7 +14,15 @@
  * limitations under the License.
  */
 
-import type { ObjectSet, ObjectSpecifier, Osdk, OsdkBase } from "@osdk/api";
+import type {
+  Media,
+  MediaReference,
+  MediaUpload,
+  ObjectSet,
+  ObjectSpecifier,
+  Osdk,
+  OsdkBase,
+} from "@osdk/api";
 import {
   $Queries,
   acceptsThreeDimensionalAggregationFunction,
@@ -26,8 +34,11 @@ import {
   incrementPersonAgeComplex,
   queryAcceptsInterface,
   queryAcceptsInterfaceObjectSet,
+  queryAcceptsMediaReference,
   queryAcceptsObject,
   queryAcceptsObjectSets,
+  queryReturnsMediaReference,
+  queryTypeReturnsArrayOfObjects,
   queryTypeReturnsMap,
   returnsDate,
   returnsTimestamp,
@@ -185,6 +196,22 @@ describe("queries", () => {
     expectTypeOf<ObjectSet<Employee>>().toMatchTypeOf<typeof result>();
   });
 
+  it("returns array of objects", async () => {
+    const result = await client(queryTypeReturnsArrayOfObjects).executeFunction(
+      {
+        people: ["Brad", "George", "Ryan"],
+      },
+    );
+
+    expect(result).toEqual([{
+      $apiName: "Employee",
+      $objectSpecifier: "Employee:50030",
+      $objectType: "Employee",
+      $primaryKey: 50030,
+      $title: undefined,
+    }]);
+  });
+
   it("no params work", async () => {
     const resultWithTimestamp = await client(returnsTimestamp)
       .executeFunction();
@@ -202,6 +229,17 @@ describe("queries", () => {
       firstName: "John",
       lastName: "Doe",
       age: 43,
+    });
+  });
+
+  it("returns and accepts structs property with nulls in response", async () => {
+    const result = await client(incrementPersonAge).executeFunction({
+      person: { firstName: "Joe", lastName: "Joseph", age: 54 },
+    });
+    expect(result).toEqual({
+      firstName: "Joe",
+      lastName: "Joseph",
+      age: undefined,
     });
   });
 
@@ -420,10 +458,13 @@ describe("queries", () => {
       "incrementPersonAgeComplex",
       "queryAcceptsInterface",
       "queryAcceptsInterfaceObjectSet",
+      "queryAcceptsMediaReference",
       "queryAcceptsObject",
       "queryAcceptsObjectSets",
       "queryOutputsInterface",
+      "queryReturnsMediaReference",
       "queryTypeReturnsArray",
+      "queryTypeReturnsArrayOfObjects",
       "queryTypeReturnsMap",
       "returnsDate",
       "returnsObject",
@@ -465,5 +506,92 @@ describe("queries", () => {
         n: 2,
       });
     expect(result2).toEqual(3);
+  });
+
+  describe("media reference queries", () => {
+    it("returns a hydrated Media object from query", async () => {
+      const result = await client(queryReturnsMediaReference).executeFunction();
+
+      expectTypeOf<typeof result>().toEqualTypeOf<Media>();
+
+      expect(typeof result.fetchContents).toBe("function");
+      expect(typeof result.fetchMetadata).toBe("function");
+      expect(typeof result.getMediaReference).toBe("function");
+
+      const mediaRef = result.getMediaReference();
+      expect(mediaRef.mimeType).toBe("image/png");
+      expect(mediaRef.reference.type).toBe("mediaSetViewItem");
+      expect(mediaRef.reference.mediaSetViewItem.mediaItemRid).toBe(
+        "ri.mio.main.media-item.test-item-rid",
+      );
+    });
+
+    it("accepts MediaReference as input", async () => {
+      const mediaRef: MediaReference = {
+        mimeType: "image/png",
+        reference: {
+          type: "mediaSetViewItem",
+          mediaSetViewItem: {
+            mediaItemRid: "ri.mio.main.media-item.test-item-rid",
+            mediaSetRid: "ri.mio.main.media-set.test-set-rid",
+            mediaSetViewRid: "ri.mio.main.media-set-view.test-view-rid",
+            token: "test-token",
+          },
+        },
+      };
+
+      const result = await client(queryAcceptsMediaReference).executeFunction({
+        media: mediaRef,
+      });
+
+      expectTypeOf<typeof result>().toEqualTypeOf<Media>();
+      expect(result.getMediaReference().mimeType).toBe("image/png");
+    });
+
+    it("accepts Media object as input (extracts MediaReference)", async () => {
+      const mediaRef: MediaReference = {
+        mimeType: "image/png",
+        reference: {
+          type: "mediaSetViewItem",
+          mediaSetViewItem: {
+            mediaItemRid: "ri.mio.main.media-item.test-item-rid",
+            mediaSetRid: "ri.mio.main.media-set.test-set-rid",
+            mediaSetViewRid: "ri.mio.main.media-set-view.test-view-rid",
+            token: "test-token",
+          },
+        },
+      };
+
+      const mockMedia: Media = {
+        fetchContents: async () => new Response(),
+        fetchMetadata: async () => ({
+          path: "/test.png",
+          sizeBytes: 1000,
+          mediaType: "image/png",
+        }),
+        getMediaReference: () => mediaRef,
+      };
+
+      const result = await client(queryAcceptsMediaReference).executeFunction({
+        media: mockMedia,
+      });
+
+      expectTypeOf<typeof result>().toEqualTypeOf<Media>();
+      expect(result.getMediaReference().mimeType).toBe("image/png");
+    });
+
+    it("query parameter type accepts Media, MediaReference, or MediaUpload", () => {
+      const clientBoundQueryFunction =
+        client(queryAcceptsMediaReference).executeFunction;
+      type InferredParamType = Parameters<typeof clientBoundQueryFunction>[0];
+
+      expectTypeOf<{ media: MediaReference }>().toMatchTypeOf<
+        InferredParamType
+      >();
+
+      expectTypeOf<{ media: Media }>().toMatchTypeOf<InferredParamType>();
+
+      expectTypeOf<{ media: MediaUpload }>().toMatchTypeOf<InferredParamType>();
+    });
   });
 });

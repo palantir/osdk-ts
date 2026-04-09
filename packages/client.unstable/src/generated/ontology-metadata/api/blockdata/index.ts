@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ export type {
   ColumnNameType,
   DataFilter,
   DataSetName,
+  DatasourceName,
   DatasourcePredicate,
   GeotimeSeriesIntegrationName,
   InstallLocationBlockShapeId,
@@ -40,9 +41,12 @@ export type {
   MarketplaceActionTypeDisplayMetadata,
   MarketplaceActionTypeMetadata,
   MarketplaceActiveInterfaceTypeStatus,
+  MarketplaceDataConstraints,
   MarketplaceDeprecatedInterfaceTypeStatus,
   MarketplaceExampleInterfaceTypeStatus,
   MarketplaceExperimentalInterfaceTypeStatus,
+  MarketplaceInterfaceDefinedPropertyType,
+  MarketplaceInterfaceDefinedPropertyTypeConstraints,
   MarketplaceInterfaceLinkType,
   MarketplaceInterfaceLinkTypeCardinality,
   MarketplaceInterfaceLinkTypeMetadata,
@@ -68,6 +72,8 @@ export type {
   OntologyIrMarketplaceActionTypeDisplayMetadata,
   OntologyIrMarketplaceActionTypeMetadata,
   OntologyIrMarketplaceDeprecatedInterfaceTypeStatus,
+  OntologyIrMarketplaceInterfaceDefinedPropertyType,
+  OntologyIrMarketplaceInterfaceDefinedPropertyTypeConstraints,
   OntologyIrMarketplaceInterfaceLinkType,
   OntologyIrMarketplaceInterfacePropertyType,
   OntologyIrMarketplaceInterfaceType,
@@ -90,6 +96,9 @@ export type {
   PostOntologyBlockDataResponse,
   PropertyPredicate,
   PropertyRid,
+  PropertySecurityGroupPackagingV1,
+  PropertySecurityGroupPackagingV2,
+  PropertySecurityGroupPackagingVersion,
   RestrictedViewName,
   SchemaConfiguration,
   SchemaMigrationBlockData,

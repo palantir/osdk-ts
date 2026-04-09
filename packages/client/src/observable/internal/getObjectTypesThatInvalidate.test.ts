@@ -279,8 +279,8 @@ describe(getObjectTypesThatInvalidate, () => {
 
     const { counts } = await helper(osdkObjectSet);
     // Employee should be counted multiple times
-    expect(counts["Employee"]).toBeGreaterThan(1);
-    expect(counts["Office"]).toBeGreaterThan(0);
+    expect(counts.Employee).toBeGreaterThan(1);
+    expect(counts.Office).toBeGreaterThan(0);
   });
 
   it("handles count adjustment for result type", async () => {
@@ -289,7 +289,7 @@ describe(getObjectTypesThatInvalidate, () => {
     const { resultType, counts, invalidationSet } = await helper(osdkObjectSet);
     // Result type should not be in invalidation set even if in counts
     expect(resultType).toEqual("Employee");
-    expect(counts["Employee"]).toBeDefined();
+    expect(counts.Employee).toBeDefined();
     expect([...invalidationSet]).not.toContain("Employee");
   });
 
@@ -310,7 +310,7 @@ describe(getObjectTypesThatInvalidate, () => {
       { type: "reference", objectType: "Employee", id: "123" },
       { type: "static", objects: [] },
       {
-        type: "asType",
+        type: "narrowToType",
         objectSet: { type: "base", objectType: "Employee" },
         targetType: "Office",
       },

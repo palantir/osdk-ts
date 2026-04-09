@@ -86,12 +86,13 @@ export async function expectStandardObserveLink<
     store.links.observe({
       linkName: srcLinkName,
       srcType: { type: "object", apiName: srcObject.$apiName },
+      sourceUnderlyingObjectType: srcObject.$objectType,
       pk: srcObject.$primaryKey,
     }, linkSubFn),
   );
 
   await waitForCall(linkSubFn);
-  expectSingleLinkCallAndClear(linkSubFn, [], { status: "loading" });
+  expectSingleLinkCallAndClear(linkSubFn, undefined, { status: "loading" });
 
   await waitForCall(linkSubFn);
 

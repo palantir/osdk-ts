@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,16 @@ import type { Canonical } from "../Canonical.js";
 import type { SimpleWhereClause } from "../SimpleWhereClause.js";
 import type { SpecificLinkQuery } from "./SpecificLinkQuery.js";
 
+// Index constants for accessing otherKeys array elements
+export const SOURCE_API_NAME_IDX = 0;
+export const SOURCE_TYPE_KIND_IDX = 1;
+export const SOURCE_UNDERLYING_OBJECT_TYPE_IDX = 2;
+export const SOURCE_PK_IDX = 3;
+export const LINK_NAME_IDX = 4;
+export const WHERE_CLAUSE_IDX = 5;
+export const ORDER_BY_CLAUSE_IDX = 6;
+export const SELECT_IDX = 7;
+
 /**
  * Storage data format for link query cache entries, similar to ListStorageData
  */
@@ -39,11 +49,14 @@ export interface SpecificLinkCacheKey extends
     LinkStorageData,
     SpecificLinkQuery,
     [
-      sourceObjectType: string,
+      sourceApiName: string,
+      sourceTypeKind: "object" | "interface",
+      sourceUnderlyingObjectType: string,
       sourcePk: PrimaryKeyType<ObjectTypeDefinition>,
       linkName: string,
       whereClause: Canonical<SimpleWhereClause>,
       orderByClause: Canonical<Record<string, "asc" | "desc" | undefined>>,
+      select?: Canonical<readonly string[]> | undefined,
     ]
   >
 {
