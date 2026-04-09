@@ -506,7 +506,7 @@ function isCollectible(property: ObjectPropertyTypeUserDefinition): boolean {
     "geoshape",
     "integer",
     "long",
-    "mediareference",
+    "mediaReference",
     "short",
     "string",
     "struct",
