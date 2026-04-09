@@ -439,13 +439,12 @@ LISTOGRAM and TEXT_TAGS filters support an exclude/include toggle. Hover a filte
 
 ## Styling
 
-FilterList uses CSS custom properties from `@osdk/react-components-styles` for theming. Override `--osdk-*` tokens to customize FilterList without affecting other components, or override `--bp-*` tokens for global theming.
+FilterList uses CSS custom properties included in `@osdk/react-components/styles.css` for theming. Override `--osdk-*` tokens to customize FilterList without affecting other components, or override `--bp-*` tokens for global theming.
 
 ```css
-@layer osdk.tokens, osdk.components, user.theme;
+@layer osdk.styles, user.theme;
 
-@import "@osdk/react-components/styles.css" layer(osdk.components);
-@import "@osdk/react-components-styles" layer(osdk.tokens);
+@import "@osdk/react-components/styles.css" layer(osdk.styles);
 
 @layer user.theme {
   :root {
@@ -465,7 +464,7 @@ Use the `className` prop for scoped styling:
 />
 ```
 
-For a full reference of CSS tokens, see the [@osdk/react-components-styles documentation](../../react-components-styles/README.md).
+For a full reference of CSS tokens, see the [CSS Variables documentation](./CssVariables.md).
 
 ## Best Practices
 
