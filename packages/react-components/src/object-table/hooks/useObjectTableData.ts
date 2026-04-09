@@ -18,6 +18,7 @@ import type {
   DerivedProperty,
   ObjectOrInterfaceDefinition,
   ObjectSet,
+  ObjectTypeDefinition,
   PropertyKeys,
   QueryDefinition,
   SimplePropertyDef,
@@ -72,6 +73,7 @@ export function useObjectTableData<
   objectSet?: ObjectSet<Q>,
   objectSetOptions?: ObjectSetOptions<Q>,
   dedupeIntervalMs?: number,
+  maxConcurrentRequests?: number,
 ): UseObjectTableDataResult<Q, RDPs> {
   const resolvedDedupeIntervalMs = dedupeIntervalMs
     ?? DEFAULT_DEDUPE_INTERVAL_MS;
@@ -157,11 +159,17 @@ export function useObjectTableData<
   // Get the result from the appropriate hook
   const baseResult = shouldUseObjectSet ? objectSetResult : osdkObjectsResult;
 
+  const primaryKeyApiName = objectOrInterfaceType.type === "object"
+    ? (objectOrInterfaceType as ObjectTypeDefinition).primaryKeyApiName
+    : undefined;
+
   // Call useFunctionColumnsData to get function column data
   const functionColumnData = useFunctionColumnsData<Q, RDPs, FunctionColumns>(
     baseResult.objectSet,
     baseResult.data,
     columnDefinitions,
+    primaryKeyApiName,
+    maxConcurrentRequests,
   );
 
   // Merge function column data into each object

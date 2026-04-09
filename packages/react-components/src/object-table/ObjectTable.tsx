@@ -67,6 +67,7 @@ export function ObjectTable<
   filter,
   objectSetOptions,
   dedupeIntervalMs,
+  maxConcurrentRequests,
   orderBy,
   defaultOrderBy,
   onOrderByChanged,
@@ -115,6 +116,7 @@ export function ObjectTable<
     objectSet,
     objectSetOptions,
     dedupeIntervalMs,
+    maxConcurrentRequests,
   );
 
   const { columns, loading: isColumnsLoading } = useColumnDefs<

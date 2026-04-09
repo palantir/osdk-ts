@@ -21,17 +21,18 @@ import type {
   PropertyKeys,
   QueryDefinition,
   SimplePropertyDef,
+  WhereClause,
 } from "@osdk/api";
 import {
   type FunctionQueryParams,
   useOsdkFunctions,
 } from "@osdk/react/experimental";
-
-import { useMemo } from "react";
+import { useMemo, useRef } from "react";
 import type {
   ColumnDefinition,
   FunctionColumnLocator,
 } from "../ObjectTableApi.js";
+import { addFilterClauseToObjectSet } from "../utils/addFilterClauseToObjectSet.js";
 import {
   type AsyncCellData,
   createAsyncCellData,
@@ -79,7 +80,11 @@ export function useFunctionColumnsData<
     | Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>[]
     | undefined,
   columnDefinitions?: Array<ColumnDefinition<Q, RDPs, FunctionColumns>>,
+  primaryKeyApiName?: string,
+  maxConcurrentRequests?: number,
 ): FunctionColumnData {
+  const prevDataRef = useRef<FunctionColumnData>({});
+
   // Function column configurations grouped by unique query definition
   const functionColumnConfigs = useMemo(
     () => getFunctionColumnConfigs(columnDefinitions),
@@ -91,6 +96,26 @@ export function useFunctionColumnsData<
   // TODO: replace with useDeepEqual when it's added
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const stableObjectSet = useMemo(() => objectSet, [JSON.stringify(objectSet)]);
+
+  const transformedObjectSet = useMemo(() => {
+    if (!stableObjectSet) {
+      return stableObjectSet;
+    }
+
+    if (!primaryKeyApiName) {
+      return stripDerivedPropertiesFromParams(stableObjectSet);
+    }
+
+    const whereClause = {
+      [primaryKeyApiName]: {
+        $in: stableObjects?.map(obj => obj.$primaryKey) ?? [],
+      },
+    } as WhereClause<Q, RDPs>;
+
+    return stripDerivedPropertiesFromParams(
+      addFilterClauseToObjectSet(stableObjectSet, whereClause),
+    );
+  }, [primaryKeyApiName, stableObjectSet, stableObjects]);
 
   const disabled = !stableObjectSet || !stableObjects?.length
     || functionColumnConfigs.length === 0;
@@ -107,7 +132,7 @@ export function useFunctionColumnsData<
           queryDefinition: config.queryDefinition,
           options: {
             params: stripDerivedPropertiesFromParams(
-              config.getParams(stableObjectSet),
+              config.getParams(transformedObjectSet as ObjectSet<Q, RDPs>),
             ),
             dedupeIntervalMs: config.dedupeIntervalMs
               ?? DEFAULT_DEDUPE_INTERVAL_MS,
@@ -115,13 +140,14 @@ export function useFunctionColumnsData<
         }),
       );
     },
-    [disabled, functionColumnConfigs, stableObjectSet],
+    [disabled, functionColumnConfigs, transformedObjectSet],
   );
 
   const results = useOsdkFunctions(
     {
       queries,
       enabled: !disabled,
+      maxConcurrent: maxConcurrentRequests,
     },
   );
 
@@ -145,29 +171,34 @@ export function useFunctionColumnsData<
           stableObjects.forEach(obj => {
             const key = String(obj.$primaryKey);
 
+            let cellFields: Omit<AsyncCellData, "__asyncCell">;
             if (result.isLoading) {
-              columnData[columnId][key] = createAsyncCellData({
-                isLoading: true,
-              });
+              const prevData = prevDataRef.current[columnId]?.[key]?.data;
+              cellFields = { isLoading: true, data: prevData };
             } else if (result.error) {
-              columnData[columnId][key] = createAsyncCellData({
-                error: result.error,
-                isLoading: false,
-              });
+              cellFields = { isLoading: false, error: result.error };
             } else if (functionsMap) {
-              const customKey = columnGetKey(obj);
-              const rawData = functionsMap[customKey];
-              const cellData = getValue ? getValue(rawData) : rawData;
-              columnData[columnId][key] = createAsyncCellData({
-                data: cellData,
+              const rawData = functionsMap[columnGetKey(obj)];
+              cellFields = {
                 isLoading: false,
-              });
+                data: getValue ? getValue(rawData) : rawData,
+              };
+            } else {
+              return;
+            }
+
+            const existing = columnData[columnId][key];
+            if (existing) {
+              Object.assign(existing, cellFields);
+            } else {
+              columnData[columnId][key] = createAsyncCellData(cellFields);
             }
           });
         },
       );
     });
 
+    prevDataRef.current = columnData;
     return columnData;
   }, [results, functionColumnConfigs, stableObjects, disabled]);
 
