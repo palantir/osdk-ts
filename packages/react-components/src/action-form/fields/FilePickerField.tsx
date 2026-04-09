@@ -29,7 +29,10 @@ export const FilePickerField: React.FC<FilePickerProps> = memo(
     error,
     isMulti,
     accept,
-    maxSize,
+    // maxSize is enforced by form-level validation (extractValidationRules),
+    // not here. Silently dropping oversized files would leave the user with
+    // no indication of why their selection disappeared.
+    maxSize: _maxSize,
     text = "No file chosen",
     buttonText = "Browse",
   }): React.ReactElement {
@@ -48,22 +51,19 @@ export const FilePickerField: React.FC<FilePickerProps> = memo(
         }
 
         const selected = Array.from(files);
-        const filtered = maxSize != null
-          ? selected.filter((f) => f.size <= maxSize)
-          : selected;
 
-        if (filtered.length === 0) {
+        if (selected.length === 0) {
           onChange?.(null);
           return;
         }
 
         if (isMulti) {
-          onChange?.(filtered);
+          onChange?.(selected);
         } else {
-          onChange?.(filtered[0] ?? null);
+          onChange?.(selected[0] ?? null);
         }
       },
-      [onChange, isMulti, maxSize],
+      [onChange, isMulti],
     );
 
     const handleClear = useCallback(

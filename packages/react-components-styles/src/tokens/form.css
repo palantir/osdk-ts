@@ -26,4 +26,8 @@
   /* Validation errors */
   --osdk-form-error-font-size: var(--osdk-typography-size-body-small);
   --osdk-form-error-color: var(--osdk-typography-color-danger-rest);
+
+  /* Form footer error indicator */
+  --osdk-form-footer-error-color: var(--osdk-form-error-color);
+  --osdk-form-footer-error-font-size: var(--osdk-form-error-font-size);
 }

@@ -130,6 +130,7 @@ const fieldDefinitions: ReadonlyArray<RendererFieldDefinition> = [
     label: "Resume",
     fieldComponentProps: {
       accept: [".pdf", ".doc", ".docx"],
+      maxSize: 100, // 100 bytes
     },
   },
   {
@@ -166,8 +167,8 @@ const fieldDefinitions: ReadonlyArray<RendererFieldDefinition> = [
     fieldKey: "rating",
     fieldComponent: "CUSTOM",
     label: "Rating",
-    defaultValue: 5,
     fieldComponentProps: {
+      defaultValue: 5,
       customRenderer: RatingSlider,
     },
   },
@@ -178,9 +179,14 @@ export function FormPage() {
     Record<string, unknown> | undefined
   >(undefined);
 
-  const handleSubmit = useCallback((formState: Record<string, unknown>) => {
-    setSubmittedState(formState);
-  }, []);
+  const handleSubmit = useCallback(
+    async (formState: Record<string, unknown>) => {
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      throw new Error("Server error: employee already exists");
+      // setSubmittedState(formState);
+    },
+    [],
+  );
 
   return (
     <div style={{ maxWidth: 480, width: "100%", textAlign: "left" }}>

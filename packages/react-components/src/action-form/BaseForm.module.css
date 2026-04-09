@@ -30,9 +30,40 @@
 .osdkFormFooter {
   display: flex;
   flex-direction: row;
-  justify-content: flex-end;
+  justify-content: space-between;
+  align-items: center;
   border-top: var(--osdk-surface-border-width) solid
     var(--osdk-form-footer-border-color);
   padding-block: var(--osdk-form-content-padding);
   padding-inline: var(--osdk-form-content-padding);
+}
+
+.osdkFormSubmitButton {
+  margin-inline-start: auto;
+}
+
+.osdkFormErrorIndicator {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--osdk-surface-spacing) * 2);
+  color: var(--osdk-form-footer-error-color);
+  font-size: var(--osdk-form-footer-error-font-size);
+  cursor: help;
+
+  /*
+ * FIX: The SVG icon appears truncated/invisible because the path coordinates
+ * (approx x:80, y:100) are far outside the defined viewBox="0 0 16 16".
+ * Since the SVG markup/viewBox cannot be modified directly, we force
+ * overflow: visible to allow the path to be rendered outside the
+ * clipping boundary of the SVG container.
+ */
+  & svg {
+    overflow: visible;
+  }
+}
+
+.osdkFormErrorList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
 }
