@@ -50,16 +50,23 @@ export interface FunctionColumnData {
   };
 }
 
-type FunctionColumnEntry<
+export interface UseFunctionColumnsDataOptions<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
-> = {
-  columnId: string;
-  getValue?: (cellData: unknown) => unknown;
-  getKey: (
-    object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
-  ) => string;
-};
+  FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
+    string,
+    never
+  >,
+> {
+  objectSet: ObjectSet<Q, RDPs> | undefined;
+  objects:
+    | Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>[]
+    | undefined;
+  columnDefinitions?: Array<ColumnDefinition<Q, RDPs, FunctionColumns>>;
+  primaryKeyApiName?: string;
+  maxConcurrentRequests?: number;
+  pageSize?: number;
+}
 
 // Re-export for backward compatibility
 export const DEFAULT_DEDUPE_INTERVAL_MS: number =
@@ -73,134 +80,72 @@ export function useFunctionColumnsData<
     never
   >,
 >(
-  objectSet: ObjectSet<Q, RDPs> | undefined,
-  objects:
-    | Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>[]
-    | undefined,
-  columnDefinitions?: Array<ColumnDefinition<Q, RDPs, FunctionColumns>>,
-  primaryKeyApiName?: string,
-  maxConcurrentRequests?: number,
-  pageSize?: number,
+  options: UseFunctionColumnsDataOptions<Q, RDPs, FunctionColumns>,
 ): FunctionColumnData {
+  const {
+    objectSet,
+    objects,
+    columnDefinitions,
+    primaryKeyApiName,
+    maxConcurrentRequests,
+    pageSize,
+  } = options;
   const prevDataRef = useRef<FunctionColumnData>({});
   const resolvedPageSize = pageSize ?? DEFAULT_PAGE_SIZE;
 
+  // 1. Stabilize inputs
   const stableObjects = useStableObjects(objects);
-
   // TODO: replace with useDeepEqual when it's added
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const stableObjectSet = useMemo(() => objectSet, [JSON.stringify(objectSet)]);
 
-  // Chunk objects into pages and create a filtered object set per page.
-  // When a new page loads, only the new page's query fires — old pages
-  // hit the dedupeIntervalMs cache since their params are unchanged.
-  const pagedObjectSets = useMemo(() => {
-    if (!stableObjectSet || !stableObjects?.length) return [];
-
-    if (!primaryKeyApiName) {
-      return [stripDerivedPropertiesFromParams(stableObjectSet)];
-    }
-
-    const pages = chunk(stableObjects ?? [], resolvedPageSize);
-    return pages.map(page => {
-      const whereClause = {
-        [primaryKeyApiName]: {
-          $in: page.map(obj => obj.$primaryKey),
-        },
-      } as WhereClause<Q, RDPs>;
-
-      return stripDerivedPropertiesFromParams(
-        addFilterClauseToObjectSet(stableObjectSet, whereClause),
-      );
-    });
-  }, [primaryKeyApiName, stableObjectSet, stableObjects, resolvedPageSize]);
-
-  // Column entries depend only on columnDefinitions, keeping a stable reference
-  // across page changes so prevDataRef is preserved during loading
+  // 2. Extract column metadata (stable across page changes so prevDataRef is preserved)
   const columnEntries = useMemo(
-    () => {
-      if (!columnDefinitions) return [];
-
-      const entries: FunctionColumnEntry<Q, RDPs>[] = [];
-      for (const colDef of columnDefinitions) {
-        if (colDef.locator.type !== "function") continue;
-
-        const locator = colDef.locator as FunctionColumnLocator<
-          Q,
-          RDPs,
-          FunctionColumns
-        >;
-
-        entries.push({
-          columnId: String(locator.id),
-          getValue: locator.getValue,
-          getKey: locator.getKey,
-        });
-      }
-      return entries;
-    },
+    () => extractColumnEntries<Q, RDPs, FunctionColumns>(columnDefinitions),
     [columnDefinitions],
   );
 
   const disabled = !stableObjectSet || !stableObjects?.length
     || columnEntries.length === 0;
 
-  // Build queries: one per (page, column) pair.
-  // Layout: [page0_col0, page0_col1, ..., page1_col0, page1_col1, ...]
-  const queries = useMemo(
-    () => {
-      if (disabled || !columnDefinitions || pagedObjectSets.length === 0) {
-        return [];
-      }
+  // 3. Paginate objects into filtered ObjectSets.
+  //    When a new page loads, only that page's queries fire — old pages
+  //    hit the dedupeIntervalMs cache since their params are unchanged.
+  const pagedObjectSets = useMemo(() => {
+    if (!stableObjectSet || !stableObjects?.length) return [];
+    return buildPagedObjectSets(
+      stableObjectSet,
+      stableObjects,
+      primaryKeyApiName,
+      resolvedPageSize,
+    );
+  }, [stableObjectSet, stableObjects, primaryKeyApiName, resolvedPageSize]);
 
-      const resultQueries: FunctionQueryParams<QueryDefinition<unknown>>[] = [];
+  // 4. Build query grid (flat array + layout metadata for recovering per-column groups from)
+  const queryGrid = useMemo(() => {
+    if (pagedObjectSets.length === 0 || !columnDefinitions) {
+      return EMPTY_QUERY_GRID;
+    }
+    return buildQueryGrid<Q, RDPs, FunctionColumns>(
+      pagedObjectSets,
+      columnDefinitions,
+    );
+  }, [pagedObjectSets, columnDefinitions]);
 
-      for (const pagedObjectSet of pagedObjectSets) {
-        for (const colDef of columnDefinitions) {
-          if (colDef.locator.type !== "function") continue;
+  // 5. Execute queries
+  const results = useOsdkFunctions({
+    queries: queryGrid.queries,
+    enabled: !disabled,
+    maxConcurrent: maxConcurrentRequests,
+  });
 
-          const locator = colDef.locator as FunctionColumnLocator<
-            Q,
-            RDPs,
-            FunctionColumns
-          >;
-
-          resultQueries.push({
-            queryDefinition: locator.queryDefinition,
-            options: {
-              params: stripDerivedPropertiesFromParams(
-                locator.getFunctionParams(
-                  pagedObjectSet as ObjectSet<Q, RDPs>,
-                ),
-              ),
-              dedupeIntervalMs: locator.dedupeIntervalMs
-                ?? DEFAULT_FUNCTION_COLUMN_DEDUPE_INTERVAL_MS,
-            } as FunctionQueryParams<QueryDefinition<unknown>>["options"],
-          });
-        }
-      }
-
-      return resultQueries;
-    },
-    [disabled, columnDefinitions, pagedObjectSets],
-  );
-
-  const results = useOsdkFunctions(
-    {
-      queries,
-      enabled: !disabled,
-      maxConcurrent: maxConcurrentRequests,
-    },
-  );
-
-  // Merge paged results back into one result per column.
-  // Results are laid out as [page0_col0, page0_col1, ..., page1_col0, ...]
-  // Each column's page results are merged into a single functionsMap.
+  // 6. Merge paged results back into one per column
   const mergedResults = useMemo(
-    () => mergePagedResults(results, columnEntries.length),
-    [results, columnEntries.length],
+    () => mergePagedResults(results, queryGrid.numColumns),
+    [results, queryGrid.numColumns],
   );
 
+  // 7. Build cell data with stale preservation
   const data = useMemo(() => {
     const columnData = buildFunctionColumnData(
       mergedResults,
@@ -216,16 +161,167 @@ export function useFunctionColumnsData<
   return data;
 }
 
+// ---------------------------------------------------------------------------
+// Types
+// ---------------------------------------------------------------------------
+
+/**
+ * Pairs a flat queries array with the layout metadata needed to recover per-column
+ * results back into per-column groups. The numColumns value is produced by
+ * the same function that builds the queries, so the two are always in sync.
+ */
+interface QueryGrid {
+  queries: FunctionQueryParams<QueryDefinition<unknown>>[];
+  numColumns: number;
+}
+
 interface MergedResult {
   isLoading: boolean;
   error: unknown;
   functionsMap: Record<string, unknown>;
 }
 
+type FunctionColumnEntry<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+> = {
+  columnId: string;
+  getValue?: (cellData: unknown) => unknown;
+  getKey: (
+    object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
+  ) => string;
+};
+
+// ---------------------------------------------------------------------------
+// Constants
+// ---------------------------------------------------------------------------
+
+const EMPTY_QUERY_GRID: QueryGrid = { queries: [], numColumns: 0 };
+
+// ---------------------------------------------------------------------------
+// Pure functions
+// ---------------------------------------------------------------------------
+
+/** Filters columnDefinitions to extract metadata for function-backed columns. */
+function extractColumnEntries<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
+    string,
+    never
+  >,
+>(
+  columnDefinitions:
+    | Array<ColumnDefinition<Q, RDPs, FunctionColumns>>
+    | undefined,
+): FunctionColumnEntry<Q, RDPs>[] {
+  if (!columnDefinitions) return [];
+
+  const entries: FunctionColumnEntry<Q, RDPs>[] = [];
+  for (const colDef of columnDefinitions) {
+    if (colDef.locator.type !== "function") continue;
+
+    const locator = colDef.locator as FunctionColumnLocator<
+      Q,
+      RDPs,
+      FunctionColumns
+    >;
+
+    entries.push({
+      columnId: String(locator.id),
+      getValue: locator.getValue,
+      getKey: locator.getKey,
+    });
+  }
+  return entries;
+}
+
+/** Chunks objects into pages and creates a filtered ObjectSet per page. */
+function buildPagedObjectSets<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+>(
+  objectSet: ObjectSet<Q, RDPs>,
+  objects: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>[],
+  primaryKeyApiName: string | undefined,
+  pageSize: number,
+): unknown[] {
+  if (!primaryKeyApiName) {
+    return [stripDerivedPropertiesFromParams(objectSet)];
+  }
+
+  return chunk(objects, pageSize).map(page => {
+    const whereClause = {
+      [primaryKeyApiName]: {
+        $in: page.map(obj => obj.$primaryKey),
+      },
+    } as WhereClause<Q, RDPs>;
+
+    return stripDerivedPropertiesFromParams(
+      addFilterClauseToObjectSet(objectSet, whereClause),
+    );
+  });
+}
+
+/**
+ * Builds a flat query array and the layout metadata needed to recover per-column results.
+ *
+ * Layout: [page0_col0, page0_col1, ..., page1_col0, page1_col1, ...]
+ * Page-first ordering ensures maxConcurrent prioritizes the first page,
+ * so visible rows get all their columns populated before later pages.
+ */
+function buildQueryGrid<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
+    string,
+    never
+  >,
+>(
+  pagedObjectSets: unknown[],
+  columnDefinitions: Array<ColumnDefinition<Q, RDPs, FunctionColumns>>,
+): QueryGrid {
+  const queries: FunctionQueryParams<QueryDefinition<unknown>>[] = [];
+
+  let numColumns = 0;
+  for (const colDef of columnDefinitions) {
+    if (colDef.locator.type === "function") numColumns++;
+  }
+
+  for (const pagedObjectSet of pagedObjectSets) {
+    for (const colDef of columnDefinitions) {
+      if (colDef.locator.type !== "function") continue;
+
+      const locator = colDef.locator as FunctionColumnLocator<
+        Q,
+        RDPs,
+        FunctionColumns
+      >;
+
+      queries.push({
+        queryDefinition: locator.queryDefinition,
+        options: {
+          params: stripDerivedPropertiesFromParams(
+            locator.getFunctionParams(
+              pagedObjectSet as ObjectSet<Q, RDPs>,
+            ),
+          ),
+          dedupeIntervalMs: locator.dedupeIntervalMs
+            ?? DEFAULT_FUNCTION_COLUMN_DEDUPE_INTERVAL_MS,
+        } as FunctionQueryParams<QueryDefinition<unknown>>["options"],
+      });
+    }
+  }
+
+  return { queries, numColumns };
+}
+
 /**
  * Merges paged results into one merged result per column.
  * Each column has results spread across pages — this combines their
  * functionsMaps so buildFunctionColumnData can look up any object by key.
+ *
+ * Relies on QueryGrid layout: results[i] belongs to column (i % numColumns).
  */
 function mergePagedResults(
   results: UseOsdkFunctionsResult,

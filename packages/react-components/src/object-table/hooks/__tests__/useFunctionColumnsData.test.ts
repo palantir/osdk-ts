@@ -114,7 +114,11 @@ describe("useFunctionColumnsData", () => {
     vi.mocked(useOsdkFunctions).mockReturnValue([]);
 
     const { result } = renderHook(
-      () => useFunctionColumnsData(undefined, mockObjects, undefined),
+      () =>
+        useFunctionColumnsData({
+          objectSet: undefined,
+          objects: mockObjects,
+        }),
     );
 
     expect(result.current).toEqual({});
@@ -128,7 +132,7 @@ describe("useFunctionColumnsData", () => {
     vi.mocked(useOsdkFunctions).mockReturnValue([]);
 
     const { result } = renderHook(
-      () => useFunctionColumnsData(mockObjectSet, [], undefined),
+      () => useFunctionColumnsData({ objectSet: mockObjectSet, objects: [] }),
     );
 
     expect(result.current).toEqual({});
@@ -156,7 +160,11 @@ describe("useFunctionColumnsData", () => {
 
     const { result, rerender } = renderHook(
       () =>
-        useFunctionColumnsData(mockObjectSet, mockObjects, columnDefinitions),
+        useFunctionColumnsData({
+          objectSet: mockObjectSet,
+          objects: mockObjects,
+          columnDefinitions,
+        }),
     );
 
     // Initially shows isLoading state
@@ -261,7 +269,11 @@ describe("useFunctionColumnsData", () => {
 
     const { result } = renderHook(
       () =>
-        useFunctionColumnsData(mockObjectSet, mockOneObject, columnDefinitions),
+        useFunctionColumnsData({
+          objectSet: mockObjectSet,
+          objects: mockOneObject,
+          columnDefinitions,
+        }),
     );
 
     expect(result.current).toEqual({
@@ -352,7 +364,11 @@ describe("useFunctionColumnsData", () => {
 
     const { result } = renderHook(
       () =>
-        useFunctionColumnsData(mockObjectSet, mockObjects, columnDefinitions),
+        useFunctionColumnsData({
+          objectSet: mockObjectSet,
+          objects: mockObjects,
+          columnDefinitions,
+        }),
     );
 
     expect(result.current).toEqual({
@@ -428,7 +444,11 @@ describe("useFunctionColumnsData", () => {
 
     const { result } = renderHook(
       () =>
-        useFunctionColumnsData(mockObjectSet, mockObjects, columnDefinitions),
+        useFunctionColumnsData({
+          objectSet: mockObjectSet,
+          objects: mockObjects,
+          columnDefinitions,
+        }),
     );
 
     expect(result.current).toEqual({
@@ -463,7 +483,11 @@ describe("useFunctionColumnsData", () => {
 
     const { result } = renderHook(
       () =>
-        useFunctionColumnsData(mockObjectSet, mockObjects, columnDefinitions),
+        useFunctionColumnsData({
+          objectSet: mockObjectSet,
+          objects: mockObjects,
+          columnDefinitions,
+        }),
     );
 
     expect(result.current).toEqual({
@@ -498,7 +522,11 @@ describe("useFunctionColumnsData", () => {
 
     renderHook(
       () =>
-        useFunctionColumnsData(mockObjectSet, mockObjects, nonFunctionColumns),
+        useFunctionColumnsData({
+          objectSet: mockObjectSet,
+          objects: mockObjects,
+          columnDefinitions: nonFunctionColumns,
+        }),
     );
 
     expect(useOsdkFunctions).toHaveBeenCalledWith({
@@ -520,7 +548,11 @@ describe("useFunctionColumnsData", () => {
 
     const { result, rerender } = renderHook(
       () =>
-        useFunctionColumnsData(mockObjectSet, mockObjects, columnDefinitions),
+        useFunctionColumnsData({
+          objectSet: mockObjectSet,
+          objects: mockObjects,
+          columnDefinitions,
+        }),
     );
 
     // Check initial loading state

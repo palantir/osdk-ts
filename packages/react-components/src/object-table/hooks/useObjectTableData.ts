@@ -167,14 +167,14 @@ export function useObjectTableData<
     : undefined;
 
   // Call useFunctionColumnsData to get function column data
-  const functionColumnData = useFunctionColumnsData<Q, RDPs, FunctionColumns>(
-    baseResult.objectSet,
-    baseResult.data,
+  const functionColumnData = useFunctionColumnsData<Q, RDPs, FunctionColumns>({
+    objectSet: baseResult.objectSet,
+    objects: baseResult.data,
     columnDefinitions,
     primaryKeyApiName,
     maxConcurrentRequests,
-    resolvedPageSize,
-  );
+    pageSize: resolvedPageSize,
+  });
 
   // Merge function column data into each object
   const mergedData = useMemo(() => {
