@@ -103,6 +103,16 @@
     --osdk-surface-border-color-default
   );
 
+  /* Danger Callout */
+  --osdk-cbac-danger-callout-bg: var(--osdk-intent-danger-subtle-bg, #fde8e8);
+  --osdk-cbac-danger-callout-color: var(--osdk-intent-danger-rest, #c23030);
+
+  /* Marking Tooltip */
+  --osdk-cbac-marking-tooltip-max-width: 280px;
+  --osdk-cbac-marking-tooltip-padding: calc(var(--osdk-surface-spacing) * 1.5);
+  --osdk-cbac-marking-tooltip-font-size: var(--osdk-typography-size-body-small);
+  --osdk-cbac-marking-tooltip-z-index: 50;
+
   /* Popover */
   --osdk-cbac-popover-max-width: 400px;
   --osdk-cbac-popover-padding: calc(var(--osdk-surface-spacing) * 3);

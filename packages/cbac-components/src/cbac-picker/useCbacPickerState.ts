@@ -41,8 +41,11 @@ export interface UseCbacPickerStateResult {
   banner: CbacBannerData | undefined;
   requiredMarkingGroups: RequiredMarkingGroup[];
   isValid: boolean;
+  userSatisfiesMarkings: boolean;
+  disallowedMarkingIds: readonly string[];
   isLoading: boolean;
   error: Error | undefined;
+  retry: () => void;
 }
 
 function useStableArray(arr: string[]): string[] {
@@ -64,27 +67,32 @@ export function useCbacPickerState(
     categories: rawCategories,
     isLoading: categoriesLoading,
     error: categoriesError,
+    refetch: refetchCategories,
   } = useMarkingCategories();
   const {
     markings: rawMarkings,
     isLoading: markingsLoading,
     error: markingsError,
+    refetch: refetchMarkings,
   } = useMarkings();
   const {
     banner,
     isLoading: bannerLoading,
     error: bannerError,
+    refetch: refetchBanner,
   } = useCbacBanner({ markingIds: stableSelectedIds });
   const {
     restrictions,
     isLoading: restrictionsLoading,
     error: restrictionsError,
+    refetch: refetchRestrictions,
   } = useCbacMarkingRestrictions({ markingIds: stableSelectedIds });
 
   const impliedMarkingIds = restrictions?.impliedMarkings ?? EMPTY_ARRAY;
   const disallowedMarkingIds = restrictions?.disallowedMarkings ?? EMPTY_ARRAY;
   const requiredMarkingGroups = restrictions?.requiredMarkings ?? EMPTY_GROUPS;
   const isValid = restrictions?.isValid ?? true;
+  const userSatisfiesMarkings = restrictions?.userSatisfiesMarkings ?? true;
 
   const isLoading = categoriesLoading || markingsLoading
     || restrictionsLoading || bannerLoading;
@@ -104,6 +112,13 @@ export function useCbacPickerState(
     }
     return errors[0];
   }, [categoriesError, markingsError, restrictionsError, bannerError]);
+
+  const retry = React.useCallback(() => {
+    refetchCategories();
+    refetchMarkings();
+    refetchBanner();
+    refetchRestrictions();
+  }, [refetchCategories, refetchMarkings, refetchBanner, refetchRestrictions]);
 
   const categoryGroups = React.useMemo(
     (): CategoryMarkingGroup[] => {
@@ -137,8 +152,11 @@ export function useCbacPickerState(
       banner,
       requiredMarkingGroups: resolvedRequiredGroups,
       isValid,
+      userSatisfiesMarkings,
+      disallowedMarkingIds,
       isLoading,
       error,
+      retry,
     }),
     [
       categoryGroups,
@@ -146,8 +164,11 @@ export function useCbacPickerState(
       banner,
       resolvedRequiredGroups,
       isValid,
+      userSatisfiesMarkings,
+      disallowedMarkingIds,
       isLoading,
       error,
+      retry,
     ],
   );
 }

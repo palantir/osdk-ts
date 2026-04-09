@@ -15,6 +15,7 @@
  */
 
 import { Button } from "@base-ui/react/button";
+import { Tooltip } from "@base-ui/react/tooltip";
 import classnames from "classnames";
 import React from "react";
 import type { MarkingSelectionState } from "../types.js";
@@ -23,6 +24,7 @@ import { getDisplayLabel, isDisallowed } from "./selectionStateHelpers.js";
 
 export interface MarkingButtonProps {
   label: string;
+  description?: string;
   selectionState: MarkingSelectionState;
   onToggle: () => void;
   disabled?: boolean;
@@ -39,24 +41,69 @@ const selectionStateClassMap: Record<
   NONE: undefined,
 };
 
+function getSelectionHint(state: MarkingSelectionState): string | undefined {
+  switch (state) {
+    case "SELECTED":
+      return "Click to deselect";
+    case "IMPLIED":
+      return "Implied by another marking";
+    case "DISALLOWED":
+    case "IMPLIED_DISALLOWED":
+      return "Not available with current selection. Deselect your current choice first.";
+    case "NONE":
+      return undefined;
+  }
+}
+
 export function MarkingButton({
   label,
+  description,
   selectionState,
   onToggle,
   disabled,
 }: MarkingButtonProps): React.ReactElement {
-  return (
+  const hasDescription = description !== undefined
+    && description.length > 0;
+  const isButtonDisabled = disabled ?? isDisallowed(selectionState);
+  const showTooltip = hasDescription || isDisallowed(selectionState);
+
+  const button = (
     <Button
       className={classnames(
         styles.markingButton,
         selectionStateClassMap[selectionState],
       )}
-      onClick={onToggle}
-      disabled={disabled ?? isDisallowed(selectionState)}
+      onClick={isButtonDisabled ? undefined : onToggle}
+      disabled={showTooltip ? undefined : isButtonDisabled}
+      aria-disabled={showTooltip ? isButtonDisabled : undefined}
       aria-pressed={selectionState === "SELECTED"
         || selectionState === "IMPLIED"}
+      title={showTooltip ? undefined : label}
     >
       {getDisplayLabel(label, selectionState)}
     </Button>
+  );
+
+  if (!showTooltip) {
+    return button;
+  }
+
+  return (
+    <Tooltip.Root>
+      <Tooltip.Trigger render={button} />
+      <Tooltip.Portal>
+        <Tooltip.Positioner side="top" sideOffset={4}>
+          <Tooltip.Popup className={styles.tooltip}>
+            <p className={styles.tooltipTitle}>{label}</p>
+            {hasDescription && (
+              <p className={styles.tooltipDescription}>{description}</p>
+            )}
+            <p className={styles.tooltipHint}>
+              {getSelectionHint(selectionState)}
+            </p>
+          </Tooltip.Popup>
+        </Tooltip.Positioner>
+      </Tooltip.Portal>
+    </Tooltip.Root>
   );
 }

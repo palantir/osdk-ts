@@ -49,3 +49,30 @@
   cursor: not-allowed;
   opacity: var(--osdk-cbac-disabled-opacity);
 }
+
+.tooltipTriggerWrapper {
+  display: contents;
+}
+
+.tooltip {
+  z-index: var(--osdk-cbac-marking-tooltip-z-index);
+  max-width: var(--osdk-cbac-marking-tooltip-max-width);
+  padding: var(--osdk-cbac-marking-tooltip-padding);
+  background-color: var(--osdk-surface-background-color-default);
+  border: 1px solid var(--osdk-surface-border-color-default);
+  border-radius: var(--osdk-surface-border-radius);
+  box-shadow: var(--osdk-surface-elevation-2);
+  font-size: var(--osdk-cbac-marking-tooltip-font-size);
+  line-height: 1.4;
+}
+
+.tooltipDescription {
+  margin: 0;
+  color: var(--osdk-typography-color-muted);
+}
+
+.tooltipHint {
+  margin: calc(var(--osdk-surface-spacing) * 0.25) 0 0;
+  font-style: italic;
+  color: var(--osdk-typography-color-muted);
+}

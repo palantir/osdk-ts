@@ -34,7 +34,12 @@ export type {
   CategoryMarkingGroup,
   CbacBannerData,
   MarkingSelectionState,
+  MaxClassificationConstraint,
   PickerMarking,
   PickerMarkingCategory,
   RequiredMarkingGroup,
 } from "../cbac-picker/types.js";
+
+// CBAC Picker - MaxClassificationField
+export { MaxClassificationField } from "../cbac-picker/base/MaxClassificationField.js";
+export type { MaxClassificationFieldProps } from "../cbac-picker/base/MaxClassificationField.js";

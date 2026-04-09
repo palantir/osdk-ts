@@ -15,12 +15,14 @@
  */
 
 import { Button } from "@base-ui/react/button";
+import { Tooltip } from "@base-ui/react/tooltip";
 import classnames from "classnames";
 import React from "react";
 import type { MarkingSelectionState } from "../types.js";
 import styles from "./OverflowItem.module.css";
 import {
   getDisplayLabel,
+  getTooltipText,
   isDisallowed,
   isImplied,
 } from "./selectionStateHelpers.js";
@@ -28,6 +30,7 @@ import {
 export interface OverflowItemProps {
   id: string;
   label: string;
+  description?: string;
   selectionState: MarkingSelectionState;
   disabled?: boolean;
   onToggle: (markingId: string) => void;
@@ -38,6 +41,7 @@ export const OverflowItem: React.MemoExoticComponent<
 > = React.memo(function OverflowItem({
   id,
   label,
+  description,
   selectionState,
   disabled,
   onToggle,
@@ -50,7 +54,11 @@ export const OverflowItem: React.MemoExoticComponent<
   const isSelected = selectionState === "SELECTED";
   const implied = isImplied(selectionState);
 
-  return (
+  const tooltipText = getTooltipText(selectionState);
+  const hasDescription = description !== undefined && description.length > 0;
+  const hasTooltip = hasDescription || tooltipText != null;
+
+  const button = (
     <Button
       className={classnames(
         styles.overflowItem,
@@ -63,5 +71,31 @@ export const OverflowItem: React.MemoExoticComponent<
     >
       {getDisplayLabel(label, selectionState)}
     </Button>
+  );
+
+  if (!hasTooltip) {
+    return button;
+  }
+
+  return (
+    <Tooltip.Root>
+      <Tooltip.Trigger
+        render={<span className={styles.tooltipTriggerWrapper} />}
+      >
+        {button}
+      </Tooltip.Trigger>
+      <Tooltip.Portal>
+        <Tooltip.Positioner side="right" sideOffset={4}>
+          <Tooltip.Popup className={styles.tooltip}>
+            {hasDescription && (
+              <p className={styles.tooltipDescription}>{description}</p>
+            )}
+            {tooltipText != null && (
+              <p className={styles.tooltipHint}>{tooltipText}</p>
+            )}
+          </Tooltip.Popup>
+        </Tooltip.Positioner>
+      </Tooltip.Portal>
+    </Tooltip.Root>
   );
 });
