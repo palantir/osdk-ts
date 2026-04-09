@@ -60,6 +60,7 @@ type FunctionColumnEntry<
 // Function column data is readOnly and can be cached aggressively,
 // so we set a longer dedupe interval to maximize cache hits
 export const DEFAULT_DEDUPE_INTERVAL_MS = 300_000; // 5 minutes
+const DEFAULT_PAGE_SIZE = 50;
 
 export function useFunctionColumnsData<
   Q extends ObjectOrInterfaceDefinition,
@@ -76,8 +77,10 @@ export function useFunctionColumnsData<
   columnDefinitions?: Array<ColumnDefinition<Q, RDPs, FunctionColumns>>,
   primaryKeyApiName?: string,
   maxConcurrentRequests?: number,
+  pageSize?: number,
 ): FunctionColumnData {
   const prevDataRef = useRef<FunctionColumnData>({});
+  const resolvedPageSize = pageSize ?? DEFAULT_PAGE_SIZE;
 
   const stableObjects = useStableObjects(objects);
 
@@ -85,25 +88,29 @@ export function useFunctionColumnsData<
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const stableObjectSet = useMemo(() => objectSet, [JSON.stringify(objectSet)]);
 
-  const transformedObjectSet = useMemo(() => {
-    if (!stableObjectSet) {
-      return stableObjectSet;
-    }
+  // Chunk objects into pages and create a filtered object set per page.
+  // When a new page loads, only the new page's query fires — old pages
+  // hit the dedupeIntervalMs cache since their params are unchanged.
+  const pagedObjectSets = useMemo(() => {
+    if (!stableObjectSet || !stableObjects?.length) return [];
 
     if (!primaryKeyApiName) {
-      return stripDerivedPropertiesFromParams(stableObjectSet);
+      return [stripDerivedPropertiesFromParams(stableObjectSet)];
     }
 
-    const whereClause = {
-      [primaryKeyApiName]: {
-        $in: stableObjects?.map(obj => obj.$primaryKey) ?? [],
-      },
-    } as WhereClause<Q, RDPs>;
+    const pages = chunk(stableObjects ?? [], resolvedPageSize);
+    return pages.map(page => {
+      const whereClause = {
+        [primaryKeyApiName]: {
+          $in: page.map(obj => obj.$primaryKey),
+        },
+      } as WhereClause<Q, RDPs>;
 
-    return stripDerivedPropertiesFromParams(
-      addFilterClauseToObjectSet(stableObjectSet, whereClause),
-    );
-  }, [primaryKeyApiName, stableObjectSet, stableObjects]);
+      return stripDerivedPropertiesFromParams(
+        addFilterClauseToObjectSet(stableObjectSet, whereClause),
+      );
+    });
+  }, [primaryKeyApiName, stableObjectSet, stableObjects, resolvedPageSize]);
 
   // Column entries depend only on columnDefinitions, keeping a stable reference
   // across page changes so prevDataRef is preserved during loading
@@ -135,39 +142,44 @@ export function useFunctionColumnsData<
   const disabled = !stableObjectSet || !stableObjects?.length
     || columnEntries.length === 0;
 
-  // Build queries from columnDefinitions and the current object set
+  // Build queries: one per (page, column) pair.
+  // Layout: [page0_col0, page0_col1, ..., page1_col0, page1_col1, ...]
   const queries = useMemo(
     () => {
-      if (disabled || !transformedObjectSet || !columnDefinitions) {
+      if (disabled || !columnDefinitions || pagedObjectSets.length === 0) {
         return [];
       }
 
       const resultQueries: FunctionQueryParams<QueryDefinition<unknown>>[] = [];
 
-      for (const colDef of columnDefinitions) {
-        if (colDef.locator.type !== "function") continue;
+      for (const pagedObjectSet of pagedObjectSets) {
+        for (const colDef of columnDefinitions) {
+          if (colDef.locator.type !== "function") continue;
 
-        const locator = colDef.locator as FunctionColumnLocator<
-          Q,
-          RDPs,
-          FunctionColumns
-        >;
+          const locator = colDef.locator as FunctionColumnLocator<
+            Q,
+            RDPs,
+            FunctionColumns
+          >;
 
-        resultQueries.push({
-          queryDefinition: locator.queryDefinition,
-          options: {
-            params: locator.getFunctionParams(
-              transformedObjectSet as ObjectSet<Q, RDPs>,
-            ),
-            dedupeIntervalMs: locator.dedupeIntervalMs
-              ?? DEFAULT_DEDUPE_INTERVAL_MS,
-          } as FunctionQueryParams<QueryDefinition<unknown>>["options"],
-        });
+          resultQueries.push({
+            queryDefinition: locator.queryDefinition,
+            options: {
+              params: stripDerivedPropertiesFromParams(
+                locator.getFunctionParams(
+                  pagedObjectSet as ObjectSet<Q, RDPs>,
+                ),
+              ),
+              dedupeIntervalMs: locator.dedupeIntervalMs
+                ?? DEFAULT_DEDUPE_INTERVAL_MS,
+            } as FunctionQueryParams<QueryDefinition<unknown>>["options"],
+          });
+        }
       }
 
       return resultQueries;
     },
-    [disabled, columnDefinitions, transformedObjectSet],
+    [disabled, columnDefinitions, pagedObjectSets],
   );
 
   const results = useOsdkFunctions(
@@ -178,9 +190,17 @@ export function useFunctionColumnsData<
     },
   );
 
+  // Merge paged results back into one result per column.
+  // Results are laid out as [page0_col0, page0_col1, ..., page1_col0, ...]
+  // Each column's page results are merged into a single functionsMap.
+  const mergedResults = useMemo(
+    () => mergePagedResults(results, columnEntries.length),
+    [results, columnEntries.length],
+  );
+
   const data = useMemo(() => {
     const columnData = buildFunctionColumnData(
-      results,
+      mergedResults,
       columnEntries,
       stableObjects,
       disabled,
@@ -188,16 +208,57 @@ export function useFunctionColumnsData<
     );
     prevDataRef.current = columnData;
     return columnData;
-  }, [results, columnEntries, stableObjects, disabled]);
+  }, [mergedResults, columnEntries, stableObjects, disabled]);
 
   return data;
+}
+
+interface MergedResult {
+  isLoading: boolean;
+  error: unknown;
+  functionsMap: Record<string, unknown>;
+}
+
+/**
+ * Merges paged results into one merged result per column.
+ * Each column has results spread across pages — this combines their
+ * functionsMaps so buildFunctionColumnData can look up any object by key.
+ */
+function mergePagedResults(
+  results: UseOsdkFunctionsResult,
+  numColumns: number,
+): MergedResult[] {
+  if (numColumns === 0) return [];
+
+  const merged: MergedResult[] = Array.from(
+    { length: numColumns },
+    () => ({ isLoading: false, error: undefined, functionsMap: {} }),
+  );
+
+  results.forEach((result, index) => {
+    const columnIndex = index % numColumns;
+    const entry = merged[columnIndex];
+
+    if (result.isLoading) {
+      entry.isLoading = true;
+    }
+    if (result.error) {
+      entry.error = result.error;
+    }
+    const pageData = result.data as Record<string, unknown> | undefined;
+    if (pageData) {
+      Object.assign(entry.functionsMap, pageData);
+    }
+  });
+
+  return merged;
 }
 
 function buildFunctionColumnData<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
 >(
-  results: UseOsdkFunctionsResult,
+  mergedResults: MergedResult[],
   columnEntries: FunctionColumnEntry<Q, RDPs>[],
   objects:
     | Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>[]
@@ -209,12 +270,11 @@ function buildFunctionColumnData<
 
   if (disabled || !objects) return columnData;
 
-  results.forEach((result, index) => {
+  mergedResults.forEach((merged, index) => {
     const entry = columnEntries[index];
     if (!entry) return;
 
     const { columnId, getValue, getKey: columnGetKey } = entry;
-    const functionsMap = result.data as Record<string, unknown> | undefined;
 
     columnData[columnId] = {};
 
@@ -224,8 +284,7 @@ function buildFunctionColumnData<
 
       columnData[columnId][key] = createAsyncCellData(
         resolveCell(
-          result,
-          functionsMap,
+          merged,
           columnGetKey(obj),
           getValue,
           prevData,
@@ -239,21 +298,28 @@ function buildFunctionColumnData<
 
 /** Resolves the cell state: error, loaded, or loading with previous data. */
 function resolveCell(
-  result: UseOsdkFunctionsResult[number],
-  functionsMap: Record<string, unknown> | undefined,
+  merged: MergedResult,
   objectKey: string,
   getValue: ((cellData: unknown) => unknown) | undefined,
   prevData: unknown,
 ): Omit<AsyncCellData, "__asyncCell"> {
-  if (result.error) {
-    return { isLoading: false, error: result.error };
+  if (merged.error) {
+    return { isLoading: false, error: merged.error };
   }
-  if (functionsMap) {
-    const rawData = functionsMap[objectKey];
+  if (objectKey in merged.functionsMap) {
+    const rawData = merged.functionsMap[objectKey];
     return { isLoading: false, data: getValue ? getValue(rawData) : rawData };
   }
-  // Loading or no result yet — retain previous data
-  return { isLoading: true, data: prevData };
+  // Key not in results — still loading, or query returned no data for this object
+  return { isLoading: merged.isLoading, data: prevData };
+}
+
+function chunk<T>(array: T[], size: number): T[][] {
+  const result: T[][] = [];
+  for (let i = 0; i < array.length; i += size) {
+    result.push(array.slice(i, i + size));
+  }
+  return result;
 }
 
 const useStableObjects = <

@@ -172,6 +172,7 @@ export function useObjectTableData<
     columnDefinitions,
     primaryKeyApiName,
     maxConcurrentRequests,
+    resolvedPageSize,
   );
 
   // Merge function column data into each object

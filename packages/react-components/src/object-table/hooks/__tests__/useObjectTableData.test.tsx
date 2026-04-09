@@ -496,6 +496,9 @@ describe(useObjectTableData, () => {
       undefined,
       mockBaseData,
       columnDefinitions,
+      undefined,
+      undefined,
+      50,
     );
     expect(result.current.data).toEqual([
       {
@@ -590,6 +593,9 @@ describe(useObjectTableData, () => {
       mockObjectSet,
       mockBaseData,
       columnDefinitions,
+      undefined,
+      undefined,
+      50,
     );
 
     expect(result.current.data).toEqual([
