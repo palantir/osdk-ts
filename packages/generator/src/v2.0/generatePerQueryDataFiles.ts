@@ -409,12 +409,14 @@ export function getQueryParamType(
       }>>`;
       break;
 
-    case "typeReference":
-      if (!typeRefNames?.has(input.typeId)) {
+    case "typeReference": {
+      const resolved = typeRefNames?.get(input.typeId);
+      if (resolved == null) {
         throw new Error(`Unknown typeReference: ${input.typeId}`);
       }
-      paramType = typeRefNames.get(input.typeId)!;
+      paramType = resolved;
       break;
+    }
   }
 
   return paramType;
@@ -426,6 +428,8 @@ function buildTypeRefNames(
 ): Map<string, string> {
   const names = new Map<string, string>();
   for (const id of Object.keys(typeRefs)) {
+    // We prefix with $ to ensure the name is a valid TypeScript identifier, and replace any dashes with underscores for the same reason
+    // An example ID looks like so "1225e6a4-41d2-4081-9b3c-9b7dd0db5390"
     const sanitized = `$${id.replace(/-/g, "_")}`;
     const qualName = `CustomTypes.${sanitized}`;
     names.set(id, expand ? `CustomTypes.Expand<${qualName}>` : qualName);
@@ -442,7 +446,11 @@ function generateCustomTypesNamespace(
 
   const interfaces: string[] = [];
   for (const [id, dt] of Object.entries(typeRefs)) {
-    if (dt.type !== "struct") continue;
+    if (dt.type !== "struct") {
+      throw new Error(
+        `Unsupported typeReference type "${dt.type}" for id "${id}": only struct type references are supported`,
+      );
+    }
     const sanitized = `$${id.replace(/-/g, "_")}`;
     const converted = wireQueryDataTypeToQueryDataTypeDefinition(dt);
     interfaces.push(

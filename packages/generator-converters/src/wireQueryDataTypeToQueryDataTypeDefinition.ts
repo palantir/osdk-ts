@@ -169,8 +169,6 @@ export function wireQueryDataTypeToQueryDataTypeDefinition<
 
     case "null":
     case "unsupported":
-    case "mediaReference":
-    case "typeReference":
     case "void":
       throw new Error(
         `Unable to process query because the server indicated an unsupported QueryDataType.type: ${input.type}. Please check that your query is using supported types.`,
