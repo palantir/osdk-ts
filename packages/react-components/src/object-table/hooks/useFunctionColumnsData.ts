@@ -26,6 +26,7 @@ import type {
 import {
   type FunctionQueryParams,
   useOsdkFunctions,
+  type UseOsdkFunctionsResult,
 } from "@osdk/react/experimental";
 import { useMemo, useRef } from "react";
 import type {
@@ -45,22 +46,15 @@ export interface FunctionColumnData {
   };
 }
 
-type FunctionColumnConfig<
+type FunctionColumnEntry<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
 > = {
-  queryDefinition: QueryDefinition<unknown>;
-  getParams: (
-    objectSet: ObjectSet<Q, RDPs>,
-  ) => unknown;
-  columnIds: Array<{
-    columnId: string;
-    getValue?: (cellData: unknown) => unknown;
-    getKey: (
-      object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
-    ) => string;
-  }>;
-  dedupeIntervalMs?: number;
+  columnId: string;
+  getValue?: (cellData: unknown) => unknown;
+  getKey: (
+    object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
+  ) => string;
 };
 
 // Function column data is readOnly and can be cached aggressively,
@@ -84,12 +78,6 @@ export function useFunctionColumnsData<
   maxConcurrentRequests?: number,
 ): FunctionColumnData {
   const prevDataRef = useRef<FunctionColumnData>({});
-
-  // Function column configurations grouped by unique query definition
-  const functionColumnConfigs = useMemo(
-    () => getFunctionColumnConfigs(columnDefinitions),
-    [columnDefinitions],
-  );
 
   const stableObjects = useStableObjects(objects);
 
@@ -117,30 +105,69 @@ export function useFunctionColumnsData<
     );
   }, [primaryKeyApiName, stableObjectSet, stableObjects]);
 
-  const disabled = !stableObjectSet || !stableObjects?.length
-    || functionColumnConfigs.length === 0;
+  // Column entries depend only on columnDefinitions, keeping a stable reference
+  // across page changes so prevDataRef is preserved during loading
+  const columnEntries = useMemo(
+    () => {
+      if (!columnDefinitions) return [];
 
-  // Prepare queries for useOsdkFunctions
+      const entries: FunctionColumnEntry<Q, RDPs>[] = [];
+      for (const colDef of columnDefinitions) {
+        if (colDef.locator.type !== "function") continue;
+
+        const locator = colDef.locator as FunctionColumnLocator<
+          Q,
+          RDPs,
+          FunctionColumns
+        >;
+
+        entries.push({
+          columnId: String(locator.id),
+          getValue: locator.getValue,
+          getKey: locator.getKey,
+        });
+      }
+      return entries;
+    },
+    [columnDefinitions],
+  );
+
+  const disabled = !stableObjectSet || !stableObjects?.length
+    || columnEntries.length === 0;
+
+  // Build queries from columnDefinitions and the current object set
   const queries = useMemo(
     () => {
-      if (disabled) {
+      if (disabled || !transformedObjectSet || !columnDefinitions) {
         return [];
       }
 
-      return functionColumnConfigs.map(
-        (config): FunctionQueryParams<QueryDefinition<unknown>> => ({
-          queryDefinition: config.queryDefinition,
+      const resultQueries: FunctionQueryParams<QueryDefinition<unknown>>[] = [];
+
+      for (const colDef of columnDefinitions) {
+        if (colDef.locator.type !== "function") continue;
+
+        const locator = colDef.locator as FunctionColumnLocator<
+          Q,
+          RDPs,
+          FunctionColumns
+        >;
+
+        resultQueries.push({
+          queryDefinition: locator.queryDefinition,
           options: {
-            params: stripDerivedPropertiesFromParams(
-              config.getParams(transformedObjectSet as ObjectSet<Q, RDPs>),
+            params: locator.getFunctionParams(
+              transformedObjectSet as ObjectSet<Q, RDPs>,
             ),
-            dedupeIntervalMs: config.dedupeIntervalMs
+            dedupeIntervalMs: locator.dedupeIntervalMs
               ?? DEFAULT_DEDUPE_INTERVAL_MS,
           } as FunctionQueryParams<QueryDefinition<unknown>>["options"],
-        }),
-      );
+        });
+      }
+
+      return resultQueries;
     },
-    [disabled, functionColumnConfigs, transformedObjectSet],
+    [disabled, columnDefinitions, transformedObjectSet],
   );
 
   const results = useOsdkFunctions(
@@ -152,122 +179,81 @@ export function useFunctionColumnsData<
   );
 
   const data = useMemo(() => {
-    const columnData: FunctionColumnData = {};
-
-    if (disabled || !stableObjects) return columnData;
-
-    results.forEach((result, index) => {
-      const config = functionColumnConfigs[index];
-      if (!config) return;
-
-      const functionsMap = result.data as Record<string, unknown> | undefined;
-
-      config.columnIds.forEach(
-        ({ columnId, getValue, getKey: columnGetKey }) => {
-          if (!columnData[columnId]) {
-            columnData[columnId] = {};
-          }
-
-          stableObjects.forEach(obj => {
-            const key = String(obj.$primaryKey);
-
-            let cellFields: Omit<AsyncCellData, "__asyncCell">;
-            if (result.isLoading) {
-              const prevData = prevDataRef.current[columnId]?.[key]?.data;
-              cellFields = { isLoading: true, data: prevData };
-            } else if (result.error) {
-              cellFields = { isLoading: false, error: result.error };
-            } else if (functionsMap) {
-              const rawData = functionsMap[columnGetKey(obj)];
-              cellFields = {
-                isLoading: false,
-                data: getValue ? getValue(rawData) : rawData,
-              };
-            } else {
-              return;
-            }
-
-            const existing = columnData[columnId][key];
-            if (existing) {
-              Object.assign(existing, cellFields);
-            } else {
-              columnData[columnId][key] = createAsyncCellData(cellFields);
-            }
-          });
-        },
-      );
-    });
-
+    const columnData = buildFunctionColumnData(
+      results,
+      columnEntries,
+      stableObjects,
+      disabled,
+      prevDataRef.current,
+    );
     prevDataRef.current = columnData;
     return columnData;
-  }, [results, functionColumnConfigs, stableObjects, disabled]);
+  }, [results, columnEntries, stableObjects, disabled]);
 
   return data;
 }
 
-function getFunctionColumnConfigs<
+function buildFunctionColumnData<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
-  FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
-    string,
-    never
-  >,
 >(
-  columnDefinitions?: Array<ColumnDefinition<Q, RDPs, FunctionColumns>>,
-): Array<FunctionColumnConfig<Q, RDPs>> {
-  if (!columnDefinitions) return [];
+  results: UseOsdkFunctionsResult,
+  columnEntries: FunctionColumnEntry<Q, RDPs>[],
+  objects:
+    | Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>[]
+    | undefined,
+  disabled: boolean,
+  prevColumnData: FunctionColumnData,
+): FunctionColumnData {
+  const columnData: FunctionColumnData = {};
 
-  // Group columns by their query definition apiName
-  const configsByApiName = new Map<
-    string,
-    FunctionColumnConfig<Q, RDPs>
-  >();
+  if (disabled || !objects) return columnData;
 
-  columnDefinitions.forEach((colDef) => {
-    if (colDef.locator.type === "function") {
-      const locator = colDef.locator as FunctionColumnLocator<
-        Q,
-        RDPs,
-        FunctionColumns
-      >;
+  results.forEach((result, index) => {
+    const entry = columnEntries[index];
+    if (!entry) return;
 
-      const apiName = locator.queryDefinition.apiName;
-      const existingConfig = configsByApiName.get(apiName);
+    const { columnId, getValue, getKey: columnGetKey } = entry;
+    const functionsMap = result.data as Record<string, unknown> | undefined;
 
-      if (existingConfig) {
-        // Add this column to the existing config
-        existingConfig.columnIds.push({
-          columnId: String(locator.id),
-          getValue: locator.getValue,
-          getKey: locator.getKey,
-        });
-        // When multiple columns share a query, use the shortest dedupe interval
-        if (locator.dedupeIntervalMs != null) {
-          existingConfig.dedupeIntervalMs = existingConfig.dedupeIntervalMs
-              != null
-            ? Math.min(
-              existingConfig.dedupeIntervalMs,
-              locator.dedupeIntervalMs,
-            )
-            : locator.dedupeIntervalMs;
-        }
-      } else {
-        // Create new config
-        configsByApiName.set(apiName, {
-          queryDefinition: locator.queryDefinition,
-          getParams: locator.getFunctionParams,
-          columnIds: [{
-            columnId: String(locator.id),
-            getValue: locator.getValue,
-            getKey: locator.getKey,
-          }],
-          dedupeIntervalMs: locator.dedupeIntervalMs,
-        });
-      }
-    }
+    columnData[columnId] = {};
+
+    objects.forEach(obj => {
+      const key = String(obj.$primaryKey);
+      const prevData = prevColumnData[columnId]?.[key]?.data;
+
+      columnData[columnId][key] = createAsyncCellData(
+        resolveCell(
+          result,
+          functionsMap,
+          columnGetKey(obj),
+          getValue,
+          prevData,
+        ),
+      );
+    });
   });
 
-  return Array.from(configsByApiName.values());
+  return columnData;
+}
+
+/** Resolves the cell state: error, loaded, or loading with previous data. */
+function resolveCell(
+  result: UseOsdkFunctionsResult[number],
+  functionsMap: Record<string, unknown> | undefined,
+  objectKey: string,
+  getValue: ((cellData: unknown) => unknown) | undefined,
+  prevData: unknown,
+): Omit<AsyncCellData, "__asyncCell"> {
+  if (result.error) {
+    return { isLoading: false, error: result.error };
+  }
+  if (functionsMap) {
+    const rawData = functionsMap[objectKey];
+    return { isLoading: false, data: getValue ? getValue(rawData) : rawData };
+  }
+  // Loading or no result yet — retain previous data
+  return { isLoading: true, data: prevData };
 }
 
 const useStableObjects = <
