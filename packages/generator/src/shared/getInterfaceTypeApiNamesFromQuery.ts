@@ -28,5 +28,11 @@ export function getInterfaceTypeApiNamesFromQuery(
   }
   getInterfaceTypesFromQueryDataType(query.output, types);
 
+  if (query.typeReferences) {
+    for (const typeRef of Object.values(query.typeReferences)) {
+      getInterfaceTypesFromQueryDataType(typeRef, types);
+    }
+  }
+
   return Array.from(types);
 }
