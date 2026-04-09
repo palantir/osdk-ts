@@ -48,7 +48,7 @@ function HeaderMenuItem({
 }: HeaderMenuItemProps): React.ReactElement {
   return (
     <Menu.Item
-      closeOnClick
+      closeOnClick={true}
       className={classNames(
         styles.osdkCenterContainer,
         styles.osdkContentGap,
