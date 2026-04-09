@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
-export * as CbacBanners from "./CbacBanners.js";
-export * as CbacMarkingRestrictions from "./CbacMarkingRestrictions.js";
-export * as MarkingCategories from "./MarkingCategories.js";
-export * as Markings from "./Markings.js";
-export * as Users from "./Users.js";
+import { CbacMarkingRestrictionsObjects } from "@osdk/foundry.admin";
+import type { CallFactory } from "../../handlers/util/handleOpenApiCall.js";
+import { handleOpenApiCall } from "../../handlers/util/handleOpenApiCall.js";
+
+export const applyGetCbacMarkingRestrictions: CallFactory<
+  never,
+  typeof CbacMarkingRestrictionsObjects.get
+> = handleOpenApiCall(CbacMarkingRestrictionsObjects.get, []);
