@@ -223,6 +223,13 @@ export interface ObjectTableProps<
   maxConcurrentRequests?: number;
 
   /**
+   * Number of objects to fetch per page.
+   *
+   * @default 50
+   */
+  pageSize?: number;
+
+  /**
    * Ordered list of column definitions to show in the table
    *
    * If not provided, all of the properties of the object type will be shown in default order.

@@ -32,7 +32,7 @@ import type { ColumnDefinition, ObjectSetOptions } from "../ObjectTableApi.js";
 import type { AsyncCellData } from "../utils/AsyncCellData.js";
 import { useFunctionColumnsData } from "./useFunctionColumnsData.js";
 
-const PAGE_SIZE = 50;
+const DEFAULT_PAGE_SIZE = 50;
 const DEFAULT_DEDUPE_INTERVAL_MS = 60_000;
 
 type WithProperties<
@@ -74,7 +74,9 @@ export function useObjectTableData<
   objectSetOptions?: ObjectSetOptions<Q>,
   dedupeIntervalMs?: number,
   maxConcurrentRequests?: number,
+  pageSize?: number,
 ): UseObjectTableDataResult<Q, RDPs> {
+  const resolvedPageSize = pageSize ?? DEFAULT_PAGE_SIZE;
   const resolvedDedupeIntervalMs = dedupeIntervalMs
     ?? DEFAULT_DEDUPE_INTERVAL_MS;
 
@@ -135,7 +137,7 @@ export function useObjectTableData<
       >,
       where: filter,
       orderBy,
-      pageSize: PAGE_SIZE,
+      pageSize: resolvedPageSize,
       enabled: shouldUseObjectSet,
       dedupeIntervalMs: resolvedDedupeIntervalMs,
     },
@@ -148,7 +150,7 @@ export function useObjectTableData<
     objectOrInterfaceType,
     {
       withProperties,
-      pageSize: PAGE_SIZE,
+      pageSize: resolvedPageSize,
       where: filter,
       orderBy,
       enabled: !shouldUseObjectSet,
