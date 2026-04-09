@@ -97,8 +97,8 @@ export interface FormFieldDefinition<
   validate?: (value: FieldValueType<Q, K>) => Promise<string | undefined>;
 
   /**
-   * The component props for the form field
-   * Excludes runtime props (value, onChange) which are managed by ActionForm
+   * The component props for the form field.
+   * Excludes runtime props (value, onChange) which are managed by ActionForm.
    */
   fieldComponentProps: Omit<
     FormFieldPropsByType[
@@ -106,7 +106,9 @@ export interface FormFieldDefinition<
         FieldDescriptorType<Q, K>
       >
     ],
-    "value" | "onChange"
+    FormManagedProps<
+      ValidFormFieldForPropertyType<FieldDescriptorType<Q, K>>
+    >
   >;
 }
 
@@ -345,8 +347,15 @@ export interface Option<V> {
  * Object set field displays the summary of the count of the given object set
  */
 export interface ObjectSetFieldProps<T extends ObjectTypeDefinition>
-  extends BaseFormFieldProps<ObjectSet<T>>
-{}
+  extends Pick<BaseFormFieldProps<ObjectSet<T>>, "id" | "value">
+{
+  /**
+   * Message displayed when no object set is provided.
+   *
+   * @default "Object set is not defined"
+   */
+  emptyMessage?: string;
+}
 
 /**
  * Custom field props for user-defined renderers
@@ -375,6 +384,12 @@ export interface BaseFormFieldProps<V> {
    * The value of the form field
    */
   value: V | null;
+
+  /**
+   * The default value of the form field.
+   */
+  defaultValue?: V;
+
   /**
    * Called when the field value changes.
    *
@@ -466,6 +481,16 @@ export type FieldType =
   | { type: "struct"; struct: Record<string, string> };
 
 /**
+ * Props managed by form state infrastructure (FieldBridge / RHF).
+ * Fields with onChange participate in form state → value and onChange are managed
+ * externally. Read-only fields (no onChange, e.g. ObjectSetField) keep value in
+ * fieldComponentProps so it bypasses form state cloning.
+ */
+type FormManagedProps<K extends FieldComponent> = "onChange" extends
+  keyof FormFieldPropsByType[K] ? "value" | "onChange"
+  : "onChange";
+
+/**
  * An OSDK-agnostic field definition used by BaseForm and FormFieldRenderer.
  * Contains only the information needed to render a single field — no generics,
  * no compile-time parameter constraints.
@@ -479,14 +504,13 @@ export type RendererFieldDefinition = {
     fieldComponent: K;
     fieldType?: FieldType;
     label: string;
-    defaultValue?: unknown;
     isRequired?: boolean;
     placeholder?: string;
     helperText?: string;
     helperTextPlacement?: "bottom" | "tooltip";
     validate?: (value: unknown) => Promise<string | undefined>;
     onValidationError?: (error: ValidationError) => string | undefined;
-    fieldComponentProps: Omit<FormFieldPropsByType[K], "value" | "onChange">;
+    fieldComponentProps: Omit<FormFieldPropsByType[K], FormManagedProps<K>>;
   };
 }[FieldComponent];
 

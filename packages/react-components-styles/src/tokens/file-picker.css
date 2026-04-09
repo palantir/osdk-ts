@@ -1,6 +1,6 @@
 :root {
   /* Trigger — styled to look like an input */
-  --osdk-file-picker-trigger-min-height: var(--osdk-input-min-height);
+  --osdk-file-picker-trigger-height: var(--osdk-input-min-height);
   --osdk-file-picker-trigger-padding: var(--osdk-input-padding);
   --osdk-file-picker-trigger-border-radius: var(--osdk-input-border-radius);
   --osdk-file-picker-trigger-border: var(--osdk-input-border-width) solid

@@ -201,6 +201,15 @@ export interface ObjectTableProps<
   objectSetOptions?: ObjectSetOptions<Q>;
 
   /**
+   * Minimum time between fetch requests in milliseconds.
+   * Increasing this value reduces redundant network calls when the same data
+   * is requested multiple times in quick succession.
+   *
+   * @default 60_000 1 minute
+   */
+  dedupeIntervalMs?: number;
+
+  /**
    * Ordered list of column definitions to show in the table
    *
    * If not provided, all of the properties of the object type will be shown in default order.

@@ -16,9 +16,7 @@
 
 import React from "react";
 import { BaseCbacPickerDialog } from "./base/BaseCbacPickerDialog.js";
-import { useCbacPickerState } from "./useCbacPickerState.js";
-import { EMPTY_ARRAY } from "./utils/cbacPickerUtils.js";
-import { toggleMarking } from "./utils/selectionLogic.js";
+import { useCbacSelection } from "./useCbacSelection.js";
 
 export interface CbacPickerDialogProps {
   isOpen: boolean;
@@ -33,18 +31,8 @@ export function CbacPickerDialog({
   onConfirm,
   initialMarkingIds,
 }: CbacPickerDialogProps): React.ReactElement {
-  const [selectedIds, setSelectedIds] = React.useState<string[]>(
-    initialMarkingIds ?? EMPTY_ARRAY,
-  );
-
-  // Reset local state when initialMarkingIds changes (e.g. external update)
-  const [prevInitialIds, setPrevInitialIds] = React.useState(initialMarkingIds);
-  if (initialMarkingIds !== prevInitialIds) {
-    setPrevInitialIds(initialMarkingIds);
-    setSelectedIds(initialMarkingIds ?? EMPTY_ARRAY);
-  }
-
   const {
+    selectedIds,
     categoryGroups,
     markingStates,
     banner,
@@ -52,14 +40,10 @@ export function CbacPickerDialog({
     isValid,
     isLoading,
     error,
-  } = useCbacPickerState(selectedIds);
-
-  const handleMarkingToggle = React.useCallback(
-    (markingId: string) => {
-      setSelectedIds((prev) => toggleMarking(markingId, prev, categoryGroups));
-    },
-    [categoryGroups],
-  );
+    toggle,
+    dismiss,
+    reset,
+  } = useCbacSelection(initialMarkingIds);
 
   // Parent controls dialog close on confirm (e.g. to show a loading state)
   const handleConfirm = React.useCallback(() => {
@@ -67,13 +51,9 @@ export function CbacPickerDialog({
   }, [onConfirm, selectedIds]);
 
   const handleCancel = React.useCallback(() => {
-    setSelectedIds(initialMarkingIds ?? EMPTY_ARRAY);
+    reset();
     onOpenChange(false);
-  }, [initialMarkingIds, onOpenChange]);
-
-  const handleDismiss = React.useCallback(() => {
-    setSelectedIds(EMPTY_ARRAY);
-  }, []);
+  }, [reset, onOpenChange]);
 
   const hasInitialMarkings = initialMarkingIds !== undefined
     && initialMarkingIds.length > 0;
@@ -98,8 +78,8 @@ export function CbacPickerDialog({
       categories={categoryGroups}
       markingStates={markingStates}
       banner={banner}
-      onMarkingToggle={handleMarkingToggle}
-      onDismissBanner={handleDismiss}
+      onMarkingToggle={toggle}
+      onDismissBanner={dismiss}
       requiredMarkingGroups={requiredMarkingGroups}
       isValid={isValid}
       submitDisabledReason={submitDisabledReason}

@@ -155,7 +155,10 @@ function buildDefaultValues(
 ): Record<string, unknown> {
   const values: Record<string, unknown> = {};
   for (const def of fieldDefinitions) {
-    values[def.fieldKey] = def.defaultValue;
+    const props: Record<string, unknown> = def.fieldComponentProps;
+    if ("defaultValue" in props) {
+      values[def.fieldKey] = props.defaultValue;
+    }
   }
   return values;
 }
