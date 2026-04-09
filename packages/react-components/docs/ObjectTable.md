@@ -1270,8 +1270,7 @@ Apply custom styles to specific ObjectTable instances using the `className` prop
 
 For a complete reference of all available CSS tokens for theming, see:
 
-- [@osdk/react-components-styles CSS Variables Documentation](../../react-components-styles/CSS_VARIABLES.md)
-- [@osdk/react-components-styles README](../../react-components-styles/README.md)
+- [CSS Variables Documentation](./CSSVariables.md)
 
 ### Accessibility Note
 

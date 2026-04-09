@@ -1,7 +1,5 @@
-@layer storybook, tokens, components, themes;
+@layer storybook, osdk.styles, themes;
 
 @import "../src/styles/storybook.css" layer(storybook);
-@import "@osdk/react-components/styles.css" layer(components);
-@import "@osdk/cbac-components/styles.css" layer(components);
-@import "@osdk/react-components-styles" layer(tokens);
+@import "@osdk/react-components/styles.css" layer(osdk.styles);
 @import "./themes.css" layer(themes);

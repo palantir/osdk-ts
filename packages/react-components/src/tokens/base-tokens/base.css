@@ -1,4 +1,4 @@
-@import "@blueprintjs/core/lib/css/blueprint-design-tokens.css";
+@import "./blueprint-design-tokens.css";
 
 /* Level 1 - Blueprint Tokens */
 :root {
@@ -192,4 +192,6 @@
   *::after {
     box-sizing: border-box;
   }
+
+  isolation: isolate;
 }

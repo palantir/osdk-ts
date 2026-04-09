@@ -1,6 +1,6 @@
 # CSS Variables API Reference
 
-Complete reference of all CSS custom properties (variables) available in `@osdk/react-components-styles`.
+Complete reference of all CSS custom properties (variables) used in `@osdk/react-components`.
 
 ## Table of Contents
 
@@ -234,7 +234,7 @@ Styling for dialog/modal components.
 | Variable                          | Default Value                                                                 | Description              |
 | --------------------------------- | ----------------------------------------------------------------------------- | ------------------------ |
 | `--osdk-dialog-padding`           | `calc(var(--osdk-surface-spacing) * 2) calc(var(--osdk-surface-spacing) * 4)` | Base dialog padding      |
-| `--osdk-dialog-backdrop-bg`       | `var(--osdk-background-backdrop)`                                           | Backdrop overlay color   |
+| `--osdk-dialog-backdrop-bg`       | `var(--osdk-background-backdrop)`                                             | Backdrop overlay color   |
 | `--osdk-dialog-header-padding`    | `var(--osdk-dialog-padding)`                                                  | Header section padding   |
 | `--osdk-dialog-title-font-size`   | `var(--osdk-typography-size-body-medium)`                                     | Dialog title font size   |
 | `--osdk-dialog-title-font-weight` | `var(--osdk-typography-weight-bold)`                                          | Dialog title font weight |
@@ -313,29 +313,29 @@ These variables define the purpose of each border type, making it easier to cust
 
 #### Cell Styling
 
-| Variable                     | Default Value                            | Description |
-| ---------------------------- | ---------------------------------------- | ----------- |
-| `--osdk-table-cell-padding`  | `0 calc(var(--osdk-surface-spacing) * 2)` | Cell padding |
-| `--osdk-table-cell-fontSize` | `var(--osdk-typography-size-body-medium)` | Cell text size |
+| Variable                     | Default Value                               | Description     |
+| ---------------------------- | ------------------------------------------- | --------------- |
+| `--osdk-table-cell-padding`  | `0 calc(var(--osdk-surface-spacing) * 2)`   | Cell padding    |
+| `--osdk-table-cell-fontSize` | `var(--osdk-typography-size-body-medium)`   | Cell text size  |
 | `--osdk-table-cell-color`    | `var(--osdk-typography-color-default-rest)` | Cell text color |
 
 #### Editable Cell Styling
 
-| Variable                               | Default Value                              | Description                                         |
-| -------------------------------------- | ------------------------------------------ | --------------------------------------------------- |
-| `--osdk-table-cell-editable-border`   | `var(--osdk-surface-border-width) solid var(--osdk-surface-border-color-strong)` | Border for editable cells in edit mode |
-| `--osdk-table-cell-edited-border`     | `var(--osdk-surface-border-width) solid var(--osdk-intent-primary-rest)` | Border for edited cells with pending changes |
-| `--osdk-table-cell-edited-border-error` | `var(--osdk-surface-border-width) solid var(--osdk-intent-danger-rest)` | Border for cells with validation errors |
-| `--osdk-table-cell-editable-bg`       | `var(--osdk-background-primary)`           | Background for editable cells |
+| Variable                                | Default Value                                                                    | Description                                  |
+| --------------------------------------- | -------------------------------------------------------------------------------- | -------------------------------------------- |
+| `--osdk-table-cell-editable-border`     | `var(--osdk-surface-border-width) solid var(--osdk-surface-border-color-strong)` | Border for editable cells in edit mode       |
+| `--osdk-table-cell-edited-border`       | `var(--osdk-surface-border-width) solid var(--osdk-intent-primary-rest)`         | Border for edited cells with pending changes |
+| `--osdk-table-cell-edited-border-error` | `var(--osdk-surface-border-width) solid var(--osdk-intent-danger-rest)`          | Border for cells with validation errors      |
+| `--osdk-table-cell-editable-bg`         | `var(--osdk-background-primary)`                                                 | Background for editable cells                |
 
 #### Edit Container
 
-| Variable                             | Default Value                                      | Description                                |
-| ------------------------------------ | -------------------------------------------------- | ------------------------------------------ |
-| `--osdk-table-edit-container-padding` | `calc(var(--osdk-surface-spacing) * 2) calc(var(--osdk-surface-spacing) * 4)` | Padding for the edit controls container |
-| `--osdk-table-edit-container-min-height` | `calc(var(--osdk-surface-spacing) * 12)`      | Minimum height for edit controls container |
-| `--osdk-table-cell-fontSize` | `var(--osdk-typography-size-body-medium)`   | Cell text size  |
-| `--osdk-table-cell-color`    | `var(--osdk-typography-color-default-rest)` | Cell text color |
+| Variable                                 | Default Value                                                                 | Description                                |
+| ---------------------------------------- | ----------------------------------------------------------------------------- | ------------------------------------------ |
+| `--osdk-table-edit-container-padding`    | `calc(var(--osdk-surface-spacing) * 2) calc(var(--osdk-surface-spacing) * 4)` | Padding for the edit controls container    |
+| `--osdk-table-edit-container-min-height` | `calc(var(--osdk-surface-spacing) * 12)`                                      | Minimum height for edit controls container |
+| `--osdk-table-cell-fontSize`             | `var(--osdk-typography-size-body-medium)`                                     | Cell text size                             |
+| `--osdk-table-cell-color`                | `var(--osdk-typography-color-default-rest)`                                   | Cell text color                            |
 
 #### Header Menu
 
@@ -356,17 +356,17 @@ Styling for the column header dropdown menu.
 
 Styling for column resize handles.
 
-| Variable                            | Default Value                            | Description                |
-| ----------------------------------- | ---------------------------------------- | -------------------------- |
+| Variable                            | Default Value                        | Description                |
+| ----------------------------------- | ------------------------------------ | -------------------------- |
 | `--osdk-table-resizer-color-hover`  | `var(--osdk-custom-color-primary-1)` | Resize handle hover color  |
-| `--osdk-table-resizer-color-active` | `var(--osdk-intent-primary-rest)`        | Resize handle active color |
+| `--osdk-table-resizer-color-active` | `var(--osdk-intent-primary-rest)`    | Resize handle active color |
 
 #### Skeleton Loading
 
-| Variable                             | Default Value                           | Description                                                |
-| ------------------------------------ | --------------------------------------- | ---------------------------------------------------------- |
-| `--osdk-table-skeleton-color-from`   | `var(--osdk-custom-color-light-gray-1)` | Skeleton animation start color (light gray at 40% opacity) |
-| `--osdk-table-skeleton-color-to`     | `var(--osdk-custom-color-gray-4)`       | Skeleton animation end color (medium gray at 40% opacity)  |
+| Variable                           | Default Value                           | Description                                                |
+| ---------------------------------- | --------------------------------------- | ---------------------------------------------------------- |
+| `--osdk-table-skeleton-color-from` | `var(--osdk-custom-color-light-gray-1)` | Skeleton animation start color (light gray at 40% opacity) |
+| `--osdk-table-skeleton-color-to`   | `var(--osdk-custom-color-gray-4)`       | Skeleton animation end color (medium gray at 40% opacity)  |
 
 #### Column Config Dialog
 
@@ -386,9 +386,9 @@ To create a custom theme, override the tokens at the appropriate level. You can 
 ### Example: Override OSDK Tokens
 
 ```css
-@layer osdk.tokens, custom.theme;
+@layer osdk.styles, custom.theme;
 
-@import "@osdk/react-components-styles" layer(osdk.tokens);
+@import "@osdk/react-components/styles.css" layer(osdk.styles);
 
 @layer custom.theme {
   :root {
@@ -416,9 +416,9 @@ To create a custom theme, override the tokens at the appropriate level. You can 
 For more comprehensive theming, override the Blueprint tokens that the OSDK tokens reference:
 
 ```css
-@layer osdk.tokens, custom.theme;
+@layer osdk.styles, custom.theme;
 
-@import "@osdk/react-components-styles" layer(osdk.tokens);
+@import "@osdk/react-components/styles.css" layer(osdk.styles);
 
 @layer custom.theme {
   :root {

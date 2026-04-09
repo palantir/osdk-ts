@@ -26,10 +26,6 @@
       "@osdk/widget.vite-plugin",
       "@osdk/create-widget",
       "@osdk/create-widget.template.*"
-    ],
-    [
-      "@osdk/react-components",
-      "@osdk/react-components-styles"
     ]
   ],
   "linked": [],

@@ -10,11 +10,8 @@ Built on top of [@osdk/react](../react), these components use OSDK hooks interna
 
 Run the command to install:
 
-- @osdk/react-components - The unstyled components from this package
-- @osdk/react-components-styles - The default styles for the components
-
 ```sh
-npm install @osdk/react-components@beta @osdk/react-components-styles@beta
+npm install @osdk/react-components
 ```
 
 **Peer Dependencies:**
@@ -53,28 +50,18 @@ function App() {
 
 ### CSS Setup
 
-Add the OSDK style imports to your application's entry CSS file (e.g., `index.css`).
+Add the OSDK style import to your application's entry CSS file (e.g., `index.css`). This single import includes both design tokens and component styles, along with portal isolation for Base UI.
 
 #### Understanding CSS Layers
 
 OSDK uses CSS [`@layer`](https://developer.mozilla.org/en-US/docs/Web/CSS/@layer) to make theming predictable. If you're not familiar with `@layer`, here's what you need to know:
 
 **What is `@layer`?** CSS `@layer` lets you group styles into named layers and control the order in which they apply. When two styles target the same element, the style in the _later_ layer always wins — regardless of selector specificity. This is what makes the theming system maintainable.
-
-**OSDK's layers:**
-
-| Layer             | Purpose                                                    |
-| ----------------- | ---------------------------------------------------------- |
-| `osdk.tokens`     | Design tokens (colors, spacing, typography) — the defaults |
-| `osdk.components` | Component structural styles (layout, borders, sizing)      |
-
-Because `osdk.components` is declared after `osdk.tokens`, component styles take priority over token defaults when they overlap.
-
 **Adding your own layer:** You can add a custom layer (e.g., `user.brand`) after the OSDK layers to override any token or component style. Later layers always win.
 
 **When styles conflict, CSS resolves them in this order:**
 
-1. **Layer order** — Later layers always win (`user.brand` > `osdk.components` > `osdk.tokens`)
+1. **Layer order** — Later layers always win (`osdk.components` < `user.brand`)
 2. **Selector specificity** — More specific selectors win _within the same layer_
 3. **Source order** — Later declarations win when specificity is equal
 
@@ -84,39 +71,29 @@ Because `osdk.components` is declared after `osdk.tokens`, component styles take
 
 ```css
 /* index.css */
-@layer tailwind, osdk.tokens, osdk.components, user.brand;
+@layer tailwind, osdk.styles, user.brand;
 
 @import "tailwindcss" layer(tailwind);
-
-@import "@osdk/react-components-styles" layer(osdk.tokens);
-@import "@osdk/react-components/styles.css" layer(osdk.components);
+@import "@osdk/react-components/styles.css" layer(osdk.styles);
 
 /* To add your own brand overrides on top, append a custom layer: */
 @import "./user-brand.css" layer(user.brand);
-```
-
-#### Without Tailwind CSS
-
-```css
-/* index.css */
-@layer osdk.tokens, osdk.components;
-
-@import "@osdk/react-components-styles" layer(osdk.tokens);
-@import "@osdk/react-components/styles.css" layer(osdk.components);
 ```
 
 To add your own brand overrides on top:
 
 ```css
 /* index.css */
-@layer osdk.tokens, osdk.components, user.brand;
+@layer osdk.styles, user.brand;
 
-@import "@osdk/react-components-styles" layer(osdk.tokens);
-@import "@osdk/react-components/styles.css" layer(osdk.components);
+@import "@osdk/react-components/styles.css" layer(osdk.styles);
 @import "./user-brand.css" layer(user.brand);
 ```
 
-#### Portal isolation (required)
+#### Portal isolation
+Portal isolation is included automatically in `styles.css`. This is required for Base UI portals. See https://base-ui.com/react/overview/quick-start#portals
+
+If your app uses a different root element selector, you may need to add `isolation: isolate` to it manually.
 
 ```css
 .root {
@@ -242,7 +219,7 @@ This package focuses on complex, Ontology-aware components with built-in data fe
 
 ## Custom Styling
 
-See `@osdk/react-components-styles` README on how to apply custom themes and styling to the components.
+See the [CSS Variables Reference](./docs/CSSVariables.md) on how to apply custom themes and styling to the components.
 
 ## Example Usage
 
