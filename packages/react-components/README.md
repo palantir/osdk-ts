@@ -6,6 +6,25 @@ React components for building Foundry applications. These components are Ontolog
 
 Built on top of [@osdk/react](../react), these components use OSDK hooks internally to provide ready-to-use UI elements. While @osdk/react gives you low-level hooks for data fetching, @osdk/react-components provides UI widgets for common patterns like tables and forms.
 
+## Table of Contents
+
+- [Installation](#installation)
+- [Setup](#setup)
+  - [App Setup](#app-setup)
+  - [CSS Setup](#css-setup)
+- [Components](#components)
+- [Component Architecture](#component-architecture)
+  - [Core layers](#core-layers-all-components)
+  - [Building blocks](#building-blocks-select-components)
+- [Folder Structure](#folder-structure)
+- [Custom Styling](#custom-styling)
+- [Example Usage](#example-usage)
+- [Contributing](#contributing)
+- [Development Workflow](#development-workflow)
+- [Why this package?](#why-this-package)
+- [What this package is (and isn't)](#what-this-package-is-and-isnt)
+- [License](#license)
+
 ## Installation
 
 Run the command to install:
@@ -260,6 +279,10 @@ function EmployeeDirectory() {
   );
 }
 ```
+
+## Contributing
+
+Looking to contribute to the codebase? Read the [contribution guidelines](./CONTRIBUTING.md)
 
 ## Development Workflow
 
