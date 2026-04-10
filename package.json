@@ -13,11 +13,11 @@
     "postVersionCmd": "turbo run postVersioning && turbo codegen",
     "prePublish": "turbo build && turbo lint",
     "prepare": "husky install",
+    "syncpack": "syncpack lint",
     "tag-release": "./scripts/tag-release.sh",
     "test": "FORCE_COLOR=1 turbo run test",
     "test:watch": "FORCE_COLOR=1 turbo run test:watch",
-    "typecheckAll": "tsc --build packages/* examples-extra/basic/*",
-    "syncpack": "syncpack lint"
+    "typecheckAll": "tsc --build packages/* examples-extra/basic/*"
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.17.4",
