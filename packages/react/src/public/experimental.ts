@@ -20,6 +20,7 @@
  * entry will be removed in a future major.
  */
 
+export { clearSuspenseErrors } from "../new/makeSuspenseExternalStore.js";
 /** @deprecated Import from `@osdk/react` instead. */
 export { useStableObjectSet } from "../new/core/useStableObjectSet.js";
 
