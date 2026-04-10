@@ -14,6 +14,7 @@ Thanks for your interest in contributing to `@osdk/react-components`! This docum
 - [Submitting a Pull Request](#submitting-a-pull-request)
 - [Code Review](#code-review)
 - [Changesets](#changesets)
+- [Contributing to @osdk/react](#contributing-to-osdkreact)
 
 ## Getting Started
 
@@ -229,6 +230,19 @@ Every PR that changes published package code needs **exactly one changeset** per
 3. Write a specific summary ("add drag-and-drop reordering to filter list", not "update filter list").
 4. Check `.changeset/` before creating — do not create duplicate changesets on the same branch.
 5. CI will fail if a changeset is missing for changed packages.
+
+## Contributing to @osdk/react
+
+`@osdk/react-components` is built on top of `@osdk/react`, which provides the core data-fetching hooks. When contributing hooks, choose the right package:
+
+| Hook type | Package | Example |
+| --------- | ------- | ------- |
+| Reusable, OSDK-aware hooks not tied to a specific component | `@osdk/react` | `useOsdkObjects`, `useOsdkAction`, `useDebouncedCallback` |
+| Hooks that manage a specific component's internal state or UI logic | `@osdk/react-components` | `useTableSelection`, `usePdfViewerState`, `useFilterDragAndDrop` |
+
+**Rule of thumb:** If a hook could be useful to application developers outside of any particular component, or could be shared across multiple components, it belongs in `@osdk/react`. If it is tightly coupled to a single component's rendering, interactions, or styling, it belongs in `@osdk/react-components`.
+
+For full guidelines on contributing hooks to `@osdk/react`, see the [`@osdk/react` CONTRIBUTING.md](../react/CONTRIBUTING.md).
 
 ## License
 
