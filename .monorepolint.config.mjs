@@ -100,10 +100,7 @@ const archetypeRules = archetypes(
     {
       ...LIBRARY_RULES,
       checkApi: true,
-      customTsconfigExcludes: [
-        "./src/**/*.test.ts",
-        "./src/intellisense.test.helpers/**",
-      ],
+      typecheckProject: "tsconfig.typecheck.json",
     },
   )
   .addArchetype(
@@ -873,6 +870,7 @@ function minimalPackageRules(shared, options) {
  * @property { "vite" | undefined } [framework]
  * @property { import("typescript").CompilerOptions} [extraTsConfigCompilerOptions]
  * @property { boolean } [cssExport]
+ * @property { string } [typecheckProject]
  */
 
 /**
@@ -983,7 +981,9 @@ function standardPackageRules(shared, options) {
           transpileTypes: options.skipTypes
             ? DELETE_SCRIPT_ENTRY
             : "monorepo.tool.transpile -f esm -m types -t node",
-          typecheck: "tsc --noEmit --emitDeclarationOnly false",
+          typecheck: options.typecheckProject
+            ? `tsc -p ${options.typecheckProject} --noEmit --emitDeclarationOnly false`
+            : "tsc --noEmit --emitDeclarationOnly false",
         },
       },
     }),
