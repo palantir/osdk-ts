@@ -9,6 +9,7 @@
 
 .calendarMonths {
   display: flex;
+  gap: calc(var(--osdk-surface-spacing) * 4);
 }
 
 .calendarMonthGrid {
@@ -96,20 +97,39 @@
   }
 }
 
+/* Range selection styles — applied to day buttons by react-day-picker mode="range" */
+.calendarRangeStart {
+  background: var(--osdk-datetime-calendar-selected-bg);
+  color: var(--osdk-datetime-calendar-selected-color);
+  border-radius: 50%;
+}
+
+.calendarRangeEnd {
+  background: var(--osdk-datetime-calendar-selected-bg);
+  color: var(--osdk-datetime-calendar-selected-color);
+  border-radius: 50%;
+}
+
+.calendarRangeMiddle {
+  background: var(--osdk-datetime-calendar-range-middle-bg);
+  border-radius: 0;
+
+  &:hover {
+    background: var(--osdk-datetime-calendar-range-middle-bg);
+  }
+}
+
 .calendarHidden {
   visibility: hidden;
 }
 
-/* Calendar navigation */
+/* Calendar navigation — spans the full width of the calendar root.
+   With numberOfMonths=1, prev is left and next is right of the single month.
+   With numberOfMonths=2, prev is left of first month, next is right of second. */
 .calendarNav {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  pointer-events: none;
 }
 
 .calendarNavButton {

@@ -58,6 +58,13 @@
     --osdk-intent-primary-rest
   );
 
+  /* Calendar range middle (days between start and end) */
+  --osdk-datetime-calendar-range-middle-bg: color-mix(
+    in srgb,
+    var(--osdk-intent-primary-rest) 15%,
+    transparent
+  );
+
   /* Calendar disabled */
   --osdk-datetime-calendar-disabled-color: var(--osdk-intent-default-disabled);
 

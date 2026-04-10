@@ -3381,6 +3381,9 @@ importers:
       '@blueprintjs/core':
         specifier: ^6.11.3
         version: 6.11.3(@types/react@18.3.24)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@blueprintjs/datetime':
+        specifier: ^6.0.23
+        version: 6.0.23(@types/react@18.3.24)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@blueprintjs/datetime2':
         specifier: ^3.0.21
         version: 3.0.21(@types/react@18.3.24)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)

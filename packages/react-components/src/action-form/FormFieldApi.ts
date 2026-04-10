@@ -127,6 +127,7 @@ type ValidationRule =
  * Maps field types to their corresponding props
  */
 export interface FormFieldPropsByType {
+  DATE_RANGE_INPUT: DateRangeInputFieldProps;
   DATETIME_PICKER: DatetimePickerFieldProps;
   DROPDOWN: DropdownFieldProps<unknown, boolean>;
   FILE_PICKER: FilePickerProps;
@@ -185,6 +186,46 @@ export interface DatetimePickerFieldProps extends BaseFormFieldProps<Date> {
    * then `parseDate(s)` must return an equivalent Date.
    * When omitted, defaults to parsing "YYYY-MM-DD" (date-only) or "YYYY-MM-DD HH:mm" (with time).
    */
+  parseDate?: (text: string) => Date | undefined;
+}
+
+/**
+ * A date range represented as a start/end tuple.
+ * Either element may be `null` when the range is partially selected.
+ */
+export type DateRange = [Date | null, Date | null];
+
+/**
+ * Date range input field props.
+ *
+ * Renders two text inputs (start / end) with a shared calendar popover
+ * that supports range selection.
+ */
+export interface DateRangeInputFieldProps
+  extends BaseFormFieldProps<DateRange>
+{
+  /** The earliest selectable date. */
+  min?: Date;
+
+  /** The latest selectable date. */
+  max?: Date;
+
+  /** Whether to show time pickers for both dates. */
+  showTime?: boolean;
+
+  /** Placeholder text for the start date input. */
+  placeholderStart?: string;
+
+  /** Placeholder text for the end date input. */
+  placeholderEnd?: string;
+
+  /** Whether to allow start and end on the same day. @default true */
+  allowSingleDayRange?: boolean;
+
+  /** Formats a Date for display. Defaults to "YYYY-MM-DD". */
+  formatDate?: (date: Date) => string;
+
+  /** Parses a user-typed string back into a Date. */
   parseDate?: (text: string) => Date | undefined;
 }
 
@@ -451,6 +492,7 @@ export type FieldDescriptorType<
  * Available form field component types
  */
 export type FieldComponent =
+  | "DATE_RANGE_INPUT"
   | "DATETIME_PICKER"
   | "DROPDOWN"
   | "FILE_PICKER"
