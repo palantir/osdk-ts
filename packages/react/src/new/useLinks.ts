@@ -18,6 +18,7 @@ import type {
   LinkedType,
   LinkNames,
   ObjectOrInterfaceDefinition,
+  ObjectTypeDefinition,
 } from "@osdk/api";
 import type { Osdk, PropertyKeys, WhereClause } from "@osdk/client";
 import type { ObserveLinks } from "@osdk/client/unstable-do-not-use";
@@ -87,6 +88,22 @@ export interface UseLinksOptions<
    * });
    */
   enabled?: boolean;
+
+  /**
+   * When the link target is an interface type, return full concrete
+   * object type instances instead of interface-narrowed views.
+   *
+   * By default, link queries return objects as provided by the API.
+   * With `resolveToObjectType: true`, objects are re-fetched by their
+   * concrete object type to include all properties.
+   *
+   * Pass an ObjectTypeDefinition to narrow the return type:
+   * `resolveToObjectType: Laptop` types results as `Osdk.Instance<Laptop>`.
+   * This is an unchecked assertion — the runtime does not filter by type.
+   *
+   * @default false
+   */
+  resolveToObjectType?: boolean | ObjectTypeDefinition;
 }
 
 export interface UseLinksResult<
@@ -137,14 +154,33 @@ const emptyMap: ReadonlyMap<string | number, ReadonlyArray<never>> = new Map();
 export function useLinks<
   T extends ObjectOrInterfaceDefinition,
   L extends LinkNames<T>,
+  R extends ObjectTypeDefinition,
+>(
+  objects: Osdk.Instance<T> | Array<Osdk.Instance<T>> | undefined,
+  linkName: L,
+  options: UseLinksOptions<LinkedType<T, L>> & { resolveToObjectType: R },
+): UseLinksResult<R>;
+
+export function useLinks<
+  T extends ObjectOrInterfaceDefinition,
+  L extends LinkNames<T>,
+>(
+  objects: Osdk.Instance<T> | Array<Osdk.Instance<T>> | undefined,
+  linkName: L,
+  options?: UseLinksOptions<LinkedType<T, L>>,
+): UseLinksResult<LinkedType<T, L>>;
+
+export function useLinks<
+  T extends ObjectOrInterfaceDefinition,
+  L extends LinkNames<T>,
 >(
   objects: Osdk.Instance<T> | Array<Osdk.Instance<T>> | undefined,
   linkName: L,
   options: UseLinksOptions<LinkedType<T, L>> = {},
-): UseLinksResult<LinkedType<T, L>> {
+): UseLinksResult<LinkedType<T, L>> | UseLinksResult<ObjectTypeDefinition> {
   const { observableClient } = React.useContext(OsdkContext2);
 
-  const { enabled = true, ...otherOptions } = options;
+  const { enabled = true, resolveToObjectType, ...otherOptions } = options;
 
   const canonOptions = observableClient.canonicalizeOptions({
     where: otherOptions.where,
@@ -188,6 +224,7 @@ export function useLinks<
               mode: otherOptions.mode,
               dedupeInterval: otherOptions.dedupeIntervalMs ?? 2_000,
               ...(canonOptions.$select ? { select: canonOptions.$select } : {}),
+              ...(resolveToObjectType ? { resolveToObjectType: true } : {}),
             },
             observer,
           ),
@@ -206,6 +243,7 @@ export function useLinks<
       otherOptions.mode,
       otherOptions.dedupeIntervalMs,
       canonOptions.$select,
+      !!resolveToObjectType,
     ],
   );
 
