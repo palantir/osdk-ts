@@ -74,6 +74,14 @@
       "dependsOn": ["transpileTypes", "@osdk/monorepo.api-extractor#check-api"]
     },
 
+    // This must stay in root turbo.json (not a package-level turbo.json)
+    // because the global check-api task above depends on it. Moving it to a
+    // package-level config would cause a circular dependency since the package
+    // would inherit the global check-api's dependsOn which references itself.
+    "@osdk/monorepo.api-extractor#check-api": {
+      "inputs": ["base.json"]
+    },
+
     "api-docs": {
       "outputLogs": "new-only",
       "inputs": ["temp/**/*"],
