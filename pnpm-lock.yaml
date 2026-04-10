@@ -2033,6 +2033,22 @@ importers:
 
   packages/create-app:
     dependencies:
+      '@osdk/generator-utils':
+        specifier: workspace:*
+        version: link:../generator-utils
+      consola:
+        specifier: 3.4.2
+        version: 3.4.2
+      find-up:
+        specifier: 7.0.0
+        version: 7.0.0
+      handlebars:
+        specifier: 4.7.8
+        version: 4.7.8
+      yargs:
+        specifier: 17.7.2
+        version: 17.7.2
+    devDependencies:
       '@osdk/create-app.template.expo.v2':
         specifier: workspace:*
         version: link:../create-app.template.expo.v2
@@ -2060,22 +2076,6 @@ importers:
       '@osdk/create-app.template.vue.v2':
         specifier: workspace:*
         version: link:../create-app.template.vue.v2
-      '@osdk/generator-utils':
-        specifier: workspace:*
-        version: link:../generator-utils
-      consola:
-        specifier: 3.4.2
-        version: 3.4.2
-      find-up:
-        specifier: 7.0.0
-        version: 7.0.0
-      handlebars:
-        specifier: 4.7.8
-        version: 4.7.8
-      yargs:
-        specifier: 17.7.2
-        version: 17.7.2
-    devDependencies:
       '@osdk/monorepo.api-extractor':
         specifier: workspace:~
         version: link:../monorepo.api-extractor
@@ -2875,12 +2875,6 @@ importers:
 
   packages/create-widget:
     dependencies:
-      '@osdk/create-widget.template.minimal-react.v2':
-        specifier: workspace:*
-        version: link:../create-widget.template.minimal-react.v2
-      '@osdk/create-widget.template.react.v2':
-        specifier: workspace:*
-        version: link:../create-widget.template.react.v2
       '@osdk/generator-utils':
         specifier: workspace:*
         version: link:../generator-utils
@@ -2897,6 +2891,12 @@ importers:
         specifier: 17.7.2
         version: 17.7.2
     devDependencies:
+      '@osdk/create-widget.template.minimal-react.v2':
+        specifier: workspace:*
+        version: link:../create-widget.template.minimal-react.v2
+      '@osdk/create-widget.template.react.v2':
+        specifier: workspace:*
+        version: link:../create-widget.template.react.v2
       '@osdk/monorepo.api-extractor':
         specifier: workspace:~
         version: link:../monorepo.api-extractor
