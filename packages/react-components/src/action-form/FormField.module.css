@@ -35,6 +35,19 @@
   color: var(--osdk-form-error-color);
 }
 
+.osdkFormFieldLabelRow {
+  display: flex;
+  align-items: center;
+  gap: var(--osdk-form-label-row-gap);
+}
+
+.osdkFormFieldInfoIcon {
+  width: var(--osdk-form-info-icon-size);
+  height: var(--osdk-form-info-icon-size);
+  color: var(--osdk-form-info-icon-color);
+  flex-shrink: 0;
+}
+
 .osdkFormFieldHelperText {
   font-size: var(--osdk-typography-size-body-small);
   color: var(--osdk-typography-color-muted);

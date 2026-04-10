@@ -165,6 +165,67 @@ describe("BaseForm", () => {
     });
   });
 
+  describe("helper text", () => {
+    it("renders helper text below the field when placement is bottom", () => {
+      render(
+        <BaseForm
+          fieldDefinitions={[
+            makeDef("name", {
+              helperText: "Enter your full name",
+              helperTextPlacement: "bottom",
+            }),
+          ]}
+          onSubmit={vi.fn()}
+        />,
+      );
+
+      expect(screen.getByText("Enter your full name")).toBeDefined();
+    });
+
+    it("renders an info icon trigger when placement is tooltip", () => {
+      render(
+        <BaseForm
+          fieldDefinitions={[
+            makeDef("name", {
+              helperText: "Enter your full name",
+              helperTextPlacement: "tooltip",
+            }),
+          ]}
+          onSubmit={vi.fn()}
+        />,
+      );
+
+      expect(screen.getByLabelText("Info about name")).toBeDefined();
+      expect(screen.queryByText("Enter your full name")).toBeNull();
+    });
+
+    it("renders an info icon trigger when placement is omitted (default)", () => {
+      render(
+        <BaseForm
+          fieldDefinitions={[
+            makeDef("name", {
+              helperText: "Enter your full name",
+            }),
+          ]}
+          onSubmit={vi.fn()}
+        />,
+      );
+
+      expect(screen.getByLabelText("Info about name")).toBeDefined();
+    });
+
+    it("does not render helper text or icon when helperText is absent", () => {
+      render(
+        <BaseForm
+          fieldDefinitions={[makeDef("name")]}
+          onSubmit={vi.fn()}
+        />,
+      );
+
+      expect(screen.queryByLabelText("Info about name")).toBeNull();
+    });
+  });
+
   describe("controlled mode", () => {
     it("calls onFieldValueChange when a field is edited", () => {
       const onFieldValueChange = vi.fn();

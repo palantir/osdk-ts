@@ -15,6 +15,7 @@
  */
 
 import React, { memo } from "react";
+import { Tooltip, TooltipArrow } from "../base-components/tooltip/index.js";
 import styles from "./FormField.module.css";
 
 interface FormFieldProps {
@@ -22,6 +23,7 @@ interface FormFieldProps {
   label?: string;
   isRequired?: boolean;
   helperText?: string;
+  helperTextPlacement?: "bottom" | "tooltip";
   error?: string;
   children: React.ReactNode;
 }
@@ -32,34 +34,81 @@ export const FormField: React.FC<FormFieldProps> = memo(
     label,
     isRequired,
     helperText,
+    helperTextPlacement = "tooltip",
     error,
     children,
   }: FormFieldProps): React.ReactElement {
+    const showTooltip = helperText != null && helperTextPlacement === "tooltip";
+    const showBottomText = helperText != null
+      && helperTextPlacement === "bottom";
+
+    const labelElement = label != null
+      ? (
+        <label className={styles.osdkFormFieldLabel} htmlFor={fieldKey}>
+          {label}
+          {isRequired === true && (
+            <span
+              className={styles.osdkFormFieldRequired}
+              aria-label="required"
+            >
+              {" "}*
+            </span>
+          )}
+        </label>
+      )
+      : null;
+
     return (
       <div className={styles.osdkFormField}>
-        {label != null && (
-          <label className={styles.osdkFormFieldLabel} htmlFor={fieldKey}>
-            {label}
-            {isRequired === true && (
-              <span
-                className={styles.osdkFormFieldRequired}
-                aria-label="required"
-              >
-                {" "}*
-              </span>
-            )}
-          </label>
-        )}
+        {showTooltip
+          ? (
+            <div className={styles.osdkFormFieldLabelRow}>
+              {labelElement}
+              <Tooltip.Root>
+                <Tooltip.Trigger
+                  aria-label={`Info about ${label}`}
+                >
+                  <InfoIcon />
+                </Tooltip.Trigger>
+                <Tooltip.Portal>
+                  <Tooltip.Positioner sideOffset={4}>
+                    <Tooltip.Popup>
+                      {helperText}
+                      <TooltipArrow />
+                    </Tooltip.Popup>
+                  </Tooltip.Positioner>
+                </Tooltip.Portal>
+              </Tooltip.Root>
+            </div>
+          )
+          : labelElement}
         {children}
         {error != null && (
           <div className={styles.osdkFormFieldError} role="alert">
             {error}
           </div>
         )}
-        {helperText != null && (
+        {showBottomText && (
           <div className={styles.osdkFormFieldHelperText}>{helperText}</div>
         )}
       </div>
     );
   },
 );
+
+function InfoIcon(): React.ReactElement {
+  return (
+    <svg
+      className={styles.osdkFormFieldInfoIcon}
+      viewBox="0 0 16 16"
+      fill="currentColor"
+      aria-hidden="true"
+    >
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1ZM7 7a1 1 0 0 1 2 0v4a1 1 0 1 1-2 0V7Zm1-2.5a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z"
+      />
+    </svg>
+  );
+}
