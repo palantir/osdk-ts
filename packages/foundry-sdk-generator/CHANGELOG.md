@@ -1,5 +1,29 @@
 # @osdk/foundry-sdk-generator
 
+## 2.9.0
+
+### Minor Changes
+
+- cbc8e9c: Add recursive query support
+
+### Patch Changes
+
+- Updated dependencies [f8b9f12]
+- Updated dependencies [bcf359f]
+- Updated dependencies [0b349bd]
+- Updated dependencies [cbc8e9c]
+- Updated dependencies [e8d14a0]
+- Updated dependencies [51ccca8]
+- Updated dependencies [fb85818]
+- Updated dependencies [3390ea2]
+- Updated dependencies [48e0cab]
+  - @osdk/client@2.9.0
+  - @osdk/shared.client.impl@1.9.0
+  - @osdk/generator@2.9.0
+  - @osdk/api@2.9.0
+  - @osdk/client.unstable@2.9.0
+  - @osdk/generator-utils@2.9.0
+
 ## 2.8.0
 
 ### Minor Changes

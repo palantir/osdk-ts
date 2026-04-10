@@ -1,5 +1,13 @@
 # @osdk/example-generator
 
+## 0.17.0
+
+### Patch Changes
+
+- Updated dependencies [4794c87]
+  - @osdk/create-widget@4.0.0
+  - @osdk/create-app@2.9.0
+
 ## 0.16.0
 
 ### Minor Changes

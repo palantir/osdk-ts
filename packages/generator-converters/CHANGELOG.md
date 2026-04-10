@@ -1,5 +1,17 @@
 # @osdk/generator-converters
 
+## 2.9.0
+
+### Minor Changes
+
+- cbc8e9c: Add recursive query support
+
+### Patch Changes
+
+- Updated dependencies [cbc8e9c]
+- Updated dependencies [e8d14a0]
+  - @osdk/api@2.9.0
+
 ## 2.8.0
 
 ### Minor Changes

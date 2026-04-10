@@ -1,5 +1,12 @@
 # @osdkkit/react
 
+## 0.11.0
+
+### Minor Changes
+
+- f8b9f12: Cache results from useOsdkFunctions
+- 51ccca8: Refactor hooks to use canonicalizeOptions for stable memo keys, add objectSet/hasMore/refetch to useOsdkObjects return, support undefined objectSet in useObjectSet
+
 ## 0.10.0
 
 ### Minor Changes

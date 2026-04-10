@@ -1,5 +1,26 @@
 # @osdk/react-components
 
+## 0.3.0
+
+### Minor Changes
+
+- bb087ce: Ship docs folder in npm package and use relative paths in AGENTS.md
+- f8b9f12: Cache results from useOsdkFunctions
+- 236a88b: Downgrade react-day-picker from v9 to ^8.10.0
+- 0b349bd: Fix returned objectSet in ObjectSetQuery
+- 89def41: minor bump associated with BlueprintJS upgrade
+- 86d0bce: Add ObjectSetField component for action forms
+- 79b001e: Add FilePickerField component for attachment and media reference form fields
+- b2b512e: Address FilePickerField PR review comments: memoize computed values, add aria-label, rename CSS token, add keyboard interaction tests
+- 3617bab: Export MultiColumnSortDialog as a building block
+- 6786113: Add dedupeIntervalMs prop to ObjectTable to configure the dedupe interval for caching network requests
+
+### Patch Changes
+
+- Updated dependencies [f8b9f12]
+- Updated dependencies [51ccca8]
+  - @osdk/react@0.11.0
+
 ## 0.2.0
 
 ### Minor Changes

@@ -1,5 +1,13 @@
 # @osdk/cbac-components
 
+## 0.2.0
+
+### Minor Changes
+
+- cbecef8: add cbac banner and popover components
+- f913bf7: add cbac storybook demos and faux admin mocks
+- 89def41: minor bump associated with BlueprintJS upgrade
+
 ## 0.1.0
 
 ### Minor Changes

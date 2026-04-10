@@ -1,5 +1,20 @@
 # @osdk/maker
 
+## 0.17.0
+
+### Minor Changes
+
+- b90fb8e: Fix typo
+- 492db18: Expand the set of types acceptable in references
+
+### Patch Changes
+
+- Updated dependencies [cbc8e9c]
+- Updated dependencies [e8d14a0]
+- Updated dependencies [3390ea2]
+  - @osdk/api@2.9.0
+  - @osdk/generator-converters.ontologyir@2.9.0
+
 ## 0.16.0
 
 ### Minor Changes

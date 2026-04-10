@@ -1,5 +1,18 @@
 # @osdk/shared.test
 
+## 0.7.0
+
+### Minor Changes
+
+- e8d14a0: Expose an experimental helper to add media transformation capabilities via transformAndWait
+
+### Patch Changes
+
+- Updated dependencies [cbc8e9c]
+- Updated dependencies [e8d14a0]
+  - @osdk/generator-converters@2.9.0
+  - @osdk/api@2.9.0
+
 ## 0.6.0
 
 ### Minor Changes

@@ -1,5 +1,16 @@
 # @osdk/react-components-storybook
 
+## 0.3.0
+
+### Minor Changes
+
+- 3617bab: Add experimental tag and accessible plugins
+
+### Patch Changes
+
+- Updated dependencies [e8d14a0]
+  - @osdk/faux@0.7.0
+
 ## 0.2.0
 
 ### Minor Changes

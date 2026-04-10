@@ -1,5 +1,15 @@
 # @osdk/create-widget
 
+## 4.0.0
+
+### Minor Changes
+
+- 4794c87: We are fixing unexported devDependencies by adding them as dependencies
+
+### Patch Changes
+
+- @osdk/generator-utils@2.9.0
+
 ## 3.5.0
 
 ### Minor Changes

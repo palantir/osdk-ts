@@ -1,5 +1,15 @@
 # @osdk/widget.vite-plugin
 
+## 4.0.0
+
+### Minor Changes
+
+- 89def41: minor bump associated with BlueprintJS upgrade
+
+### Patch Changes
+
+- @osdk/widget.api@4.0.0
+
 ## 3.5.0
 
 ### Minor Changes
