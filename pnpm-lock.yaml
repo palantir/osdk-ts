@@ -2881,6 +2881,9 @@ importers:
       '@osdk/create-widget.template.react.v2':
         specifier: workspace:*
         version: link:../create-widget.template.react.v2
+      '@osdk/generator-utils':
+        specifier: workspace:*
+        version: link:../generator-utils
       consola:
         specifier: 3.4.2
         version: 3.4.2
@@ -2894,9 +2897,6 @@ importers:
         specifier: 17.7.2
         version: 17.7.2
     devDependencies:
-      '@osdk/generator-utils':
-        specifier: workspace:*
-        version: link:../generator-utils
       '@osdk/monorepo.api-extractor':
         specifier: workspace:~
         version: link:../monorepo.api-extractor
