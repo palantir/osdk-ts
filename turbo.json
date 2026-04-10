@@ -60,28 +60,6 @@
       "cache": false
     },
 
-    "@osdk/e2e.generated.1.1.x#typecheck": {
-      "outputLogs": "new-only",
-      "inputs": [
-        "bin/**",
-        "src/**",
-        "src/**/*.{mts,cts,ts,tsx}",
-        "tsconfig.json",
-        "typecheck.sh",
-        "tsconfig.cjs.json",
-        "*.d.ts"
-      ],
-      "outputs": [
-        "build/{esm,cjs,browser}/**/*.{ts,cjs,ts.map,cts.map}"
-      ],
-      "dependsOn": [
-        "@osdk/monorepo.tsconfig#typecheck",
-        "^typecheck",
-        "^transpile",
-        "codegen"
-      ]
-    },
-
     "typecheck": {
       "dependsOn": [
         "codegen",
@@ -89,25 +67,11 @@
       ]
     },
 
-    "@osdk/tests.verify-fallback-package-v2#typecheck": {
-      "dependsOn": ["^transpileCjs"]
-    },
-
-    "@osdk/monorepo.tsup#typecheck": {
-      "outputLogs": "new-only",
-      "inputs": ["tsup.mjs"]
-    },
-
     "check-api": {
       "outputLogs": "new-only",
       "inputs": ["api-extractor.json", "build/esm/**/*", "api-extractor.json"],
       "outputs": ["etc/*.report.api.md", "build/api-extractor/**/*"],
       "dependsOn": ["transpileTypes", "@osdk/monorepo.api-extractor#check-api"]
-    },
-
-    // Doesn't do anything, just a virtual task to depend on the base.json file
-    "@osdk/monorepo.api-extractor#check-api": {
-      "inputs": ["base.json"]
     },
 
     "api-docs": {
@@ -118,33 +82,6 @@
     },
 
     "postVersioning": {
-    },
-
-    "@osdk/version-updater#postVersioning": {
-      "inputs": [
-        "scripts/postVersioning.mjs",
-        "scripts/parseChangelog.mjs",
-        "scripts/determineMinVersion.mjs",
-        "scripts/generatePeerRange.mjs",
-        "../client/package.json",
-        "../client/src/Client.ts",
-        "../generator/src/v2.0/generateMetadata.ts",
-        "../react/CHANGELOG.md",
-        "../react/package.json",
-        "../react-components/CHANGELOG.md",
-        "../react-components/package.json"
-      ],
-      "outputs": [
-        "../client/src/Client.ts",
-        "../generator/src/v2.0/generateMetadata.ts",
-        "../react/package.json",
-        "../react-components/package.json"
-      ]
-    },
-
-    "@osdk/monorepo.tsconfig#typecheck": {
-      "outputLogs": "new-only",
-      "inputs": ["tsconfig.base.json"]
     },
 
     "build": {
@@ -185,11 +122,6 @@
 
     "benchmark": {
       "dependsOn": ["bundle"]
-    },
-
-    "@osdk/e2e.sandbox.todoapp#build": {
-      "inputs": ["src/**/*", "vite.config.ts", "index.html"],
-      "dependsOn": ["transpile", "typecheck"]
     },
 
     "transpile": {
@@ -288,22 +220,6 @@
       "outputLogs": "new-only",
       "env": ["FORCE_COLOR"],
       "dependsOn": ["^transpileEsm"]
-    },
-
-    "@osdk/client#test": {
-      "outputLogs": "new-only",
-      "env": ["FORCE_COLOR"],
-      "dependsOn": [
-        "^transpileEsm",
-        "@osdk/client.test.ontology#transpileTypes",
-        "@osdk/shared.test#transpileTypes"
-      ]
-    },
-
-    "@osdk/react#test": {
-      "outputLogs": "new-only",
-      "env": ["FORCE_COLOR"],
-      "dependsOn": ["^transpileEsm", "@osdk/client.test.ontology#transpileTypes"]
     },
 
     "//#check-mrl": {
