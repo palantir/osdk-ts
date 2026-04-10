@@ -32,6 +32,7 @@ import type { AsyncCellData } from "../utils/AsyncCellData.js";
 import { useFunctionColumnsData } from "./useFunctionColumnsData.js";
 
 const PAGE_SIZE = 50;
+const DEFAULT_DEDUPE_INTERVAL_MS = 60_000;
 
 type WithProperties<
   Q extends ObjectOrInterfaceDefinition,
@@ -70,7 +71,11 @@ export function useObjectTableData<
   sorting?: SortingState,
   objectSet?: ObjectSet<Q>,
   objectSetOptions?: ObjectSetOptions<Q>,
+  dedupeIntervalMs?: number,
 ): UseObjectTableDataResult<Q, RDPs> {
+  const resolvedDedupeIntervalMs = dedupeIntervalMs
+    ?? DEFAULT_DEDUPE_INTERVAL_MS;
+
   const orderBy = useMemo(() => {
     if (!sorting || sorting.length === 0) {
       return undefined;
@@ -130,6 +135,7 @@ export function useObjectTableData<
       orderBy,
       pageSize: PAGE_SIZE,
       enabled: shouldUseObjectSet,
+      dedupeIntervalMs: resolvedDedupeIntervalMs,
     },
   );
 
@@ -144,6 +150,7 @@ export function useObjectTableData<
       where: filter,
       orderBy,
       enabled: !shouldUseObjectSet,
+      dedupeIntervalMs: resolvedDedupeIntervalMs,
     },
   );
 
@@ -152,7 +159,7 @@ export function useObjectTableData<
 
   // Call useFunctionColumnsData to get function column data
   const functionColumnData = useFunctionColumnsData<Q, RDPs, FunctionColumns>(
-    objectSetResult.objectSet,
+    baseResult.objectSet,
     baseResult.data,
     columnDefinitions,
   );

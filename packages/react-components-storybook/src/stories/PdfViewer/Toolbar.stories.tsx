@@ -20,7 +20,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { fn } from "storybook/test";
 
 const meta: Meta<PdfViewerToolbarProps> = {
-  title: "Components/PdfViewer/Building Blocks/Toolbar",
+  title: "Experimental/PdfViewer/Building Blocks/Toolbar",
   component: PdfViewerToolbar,
   args: {
     currentPage: 1,

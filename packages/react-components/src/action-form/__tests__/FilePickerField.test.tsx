@@ -86,6 +86,59 @@ describe("FilePickerField", () => {
     });
   });
 
+  describe("keyboard interaction", () => {
+    it("opens file dialog on Enter key", () => {
+      render(<FilePickerField value={null} />);
+
+      const trigger = screen.getByRole("button", { name: "Choose file" });
+      // Mock click to prevent infinite recursion — HappyDOM has no native
+      // file dialog to absorb the event, so the click bubbles back up.
+      const clickSpy = vi.spyOn(getFileInput(), "click")
+        .mockImplementation(() => {});
+
+      fireEvent.keyDown(trigger, { key: "Enter" });
+
+      expect(clickSpy).toHaveBeenCalledOnce();
+    });
+
+    it("opens file dialog on Space key", () => {
+      render(<FilePickerField value={null} />);
+
+      const trigger = screen.getByRole("button", { name: "Choose file" });
+      const clickSpy = vi.spyOn(getFileInput(), "click")
+        .mockImplementation(() => {});
+
+      fireEvent.keyDown(trigger, { key: " " });
+
+      expect(clickSpy).toHaveBeenCalledOnce();
+    });
+
+    it("trigger is focusable via tabIndex", () => {
+      render(<FilePickerField value={null} />);
+
+      const trigger = screen.getByRole("button", { name: "Choose file" });
+
+      expect(trigger.getAttribute("tabindex")).toBe("0");
+    });
+
+    it("clear button is a separate tab stop", () => {
+      const file = new File(["content"], "report.pdf");
+      render(<FilePickerField value={file} />);
+
+      const clearButton = screen.getByRole("button", {
+        name: "Clear selection",
+      });
+
+      expect(clearButton.tagName).toBe("BUTTON");
+    });
+
+    it("hidden file input is not tabbable", () => {
+      render(<FilePickerField value={null} />);
+
+      expect(getFileInput().getAttribute("tabindex")).toBe("-1");
+    });
+  });
+
   describe("file input", () => {
     it("passes accept attribute to the hidden input", () => {
       render(<FilePickerField value={null} accept={[".pdf", "image/*"]} />);

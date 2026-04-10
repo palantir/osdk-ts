@@ -15,7 +15,7 @@ import type {
 } from '@osdk/client';
 
 export namespace BoundariesUsState {
-  export type PropertyKeys = 'usState' | 'name' | 'wikipedia' | 'latitude' | 'longitude' | 'geometry10M';
+  export type PropertyKeys = 'geometry10M' | 'latitude' | 'longitude' | 'name' | 'usState' | 'wikipedia';
 
   export type Links = {};
 
