@@ -17,9 +17,16 @@ export default defineConfig(({ mode }) => {
       }) as unknown as PluginOption,
       tailwindcss(),
     ],
+    // Resolve workspace packages to .ts source for instant HMR during dev.
+    // The "source" condition is a custom export condition defined in each package's
+    // package.json. It has no effect on production builds or npm consumers — only
+    // tooling that explicitly opts in via resolve.conditions will use it.
     resolve: {
       conditions: ["source"],
     },
+    // @osdk/client uses process.env.PACKAGE_VERSION and process.env.MODE which are
+    // normally injected by Babel during transpilation. When resolving to source via
+    // the "source" condition, Babel doesn't run, so we provide them here.
     define: {
       "process.env.PACKAGE_VERSION": JSON.stringify("dev"),
       "process.env.MODE": JSON.stringify("development"),

@@ -46,7 +46,10 @@ const config: StorybookConfig = {
       config.base = "/osdk-ts/storybook/";
     }
 
-    // Ensure proper resolution of workspace packages
+    // Resolve workspace packages to .ts source for instant HMR during dev.
+    // The "source" condition is a custom export condition defined in each package's
+    // package.json. It has no effect on production builds or npm consumers — only
+    // tooling that explicitly opts in via resolve.conditions will use it.
     config.resolve = {
       ...config.resolve,
       conditions: ["source", ...(config.resolve?.conditions ?? [])],
@@ -68,6 +71,8 @@ const config: StorybookConfig = {
       ...config.define,
       "import.meta.env.SSR": false,
       global: "globalThis",
+      // @osdk/client uses these env vars via Babel transforms at build time.
+      // When resolving to source, Babel doesn't run, so we provide them here.
       "process.env.PACKAGE_VERSION": JSON.stringify("dev"),
       "process.env.MODE": JSON.stringify("development"),
     };
