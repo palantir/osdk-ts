@@ -217,7 +217,7 @@ export const CacheInspectorTab: React.FC<CacheInspectorTabProps> = (
             placeholder="Search cache entries..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            fill
+            fill={true}
           />
         </div>
 
@@ -303,7 +303,7 @@ export const CacheInspectorTab: React.FC<CacheInspectorTabProps> = (
                     className={styles.expandIcon}
                   />
                   <Tag
-                    minimal
+                    minimal={true}
                     intent={getTypeColor(entry.type)}
                     className={styles.typeTag}
                   >
@@ -312,7 +312,7 @@ export const CacheInspectorTab: React.FC<CacheInspectorTabProps> = (
                   <span className={styles.objectType}>{entry.objectType}</span>
                   {entry.metadata.isOptimistic && (
                     <Tooltip content="Has optimistic updates">
-                      <Tag minimal intent="warning" icon="time">
+                      <Tag minimal={true} intent="warning" icon="time">
                         Optimistic
                       </Tag>
                     </Tooltip>
@@ -322,7 +322,7 @@ export const CacheInspectorTab: React.FC<CacheInspectorTabProps> = (
                 <div className={styles.entryHeaderRight}>
                   <Tooltip content={`Status: ${entry.metadata.status}`}>
                     <Tag
-                      minimal
+                      minimal={true}
                       intent={getStatusColor(entry.metadata.status)}
                       icon={getStatusIcon(entry.metadata.status)}
                     >
@@ -364,12 +364,29 @@ export const CacheInspectorTab: React.FC<CacheInspectorTabProps> = (
                     </CopyableCodeBlock>
                   </div>
 
-                  {entry.queryParams
-                    && Object.keys(entry.queryParams).length > 0 && (
+                  {entry.type === "list"
+                    && (entry.where != null || entry.orderBy != null) && (
                     <div className={styles.section}>
                       <h4>Query Parameters</h4>
                       <CopyableCodeBlock className={styles.codeBlock}>
-                        {JSON.stringify(entry.queryParams, null, 2)}
+                        {JSON.stringify(
+                          {
+                            where: entry.where,
+                            orderBy: entry.orderBy,
+                            pageSize: entry.pageSize,
+                          },
+                          null,
+                          2,
+                        )}
+                      </CopyableCodeBlock>
+                    </div>
+                  )}
+
+                  {entry.type === "link" && entry.linkName != null && (
+                    <div className={styles.section}>
+                      <h4>Link</h4>
+                      <CopyableCodeBlock className={styles.codeBlock}>
+                        {entry.linkName}
                       </CopyableCodeBlock>
                     </div>
                   )}
