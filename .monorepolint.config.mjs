@@ -83,7 +83,6 @@ const archetypeRules = archetypes(
   .addArchetype(
     "checkApiPackages",
     [
-      "@osdk/client",
       "@osdk/api",
       "@osdk/functions",
       "@osdk/functions-testing.experimental",
@@ -91,6 +90,20 @@ const archetypeRules = archetypes(
     {
       ...LIBRARY_RULES,
       checkApi: true,
+    },
+  )
+  .addArchetype(
+    "clientPackage",
+    [
+      "@osdk/client",
+    ],
+    {
+      ...LIBRARY_RULES,
+      checkApi: true,
+      customTsconfigExcludes: [
+        "./src/**/*.test.ts",
+        "./src/intellisense.test.helpers/**",
+      ],
     },
   )
   .addArchetype(

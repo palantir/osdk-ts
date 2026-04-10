@@ -7,5 +7,9 @@
   "include": [
     "./src/**/*"
   ],
+  "exclude": [
+    "./src/**/*.test.ts",
+    "./src/intellisense.test.helpers/**"
+  ],
   "references": []
 }
