@@ -109,14 +109,17 @@ try {
     }
   }
 
-  // Run each bin entry with --help in the isolated temp dir
+  // Run each bin entry in the isolated temp dir (no args).
+  // Module resolution happens at import time, so if any dependency
+  // is missing, Node will crash with ERR_MODULE_NOT_FOUND before
+  // the CLI even starts executing.
   let failed = false;
   for (const [name, binPath] of Object.entries(binEntries)) {
     const fullBinPath = path.join(tempDir, /** @type {string} */ (binPath));
     console.log(`Checking bin "${name}" -> ${binPath}`);
 
     try {
-      execFileSync(process.execPath, [fullBinPath, "--help"], {
+      execFileSync(process.execPath, [fullBinPath], {
         cwd: tempDir,
         timeout: 15_000,
         stdio: ["ignore", "pipe", "pipe"],
@@ -142,8 +145,7 @@ try {
         console.error(output);
         failed = true;
       } else {
-        // Non-zero exit for other reasons (e.g. yargs prints help to stdout
-        // and exits 0, but some CLIs might exit 1 for --help)
+        // Non-zero exit is expected — CLI with no args will print usage and exit 1
         console.log(`  PASS`);
       }
     }
