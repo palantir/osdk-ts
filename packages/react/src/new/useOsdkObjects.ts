@@ -19,7 +19,7 @@ import type {
   LinkedType,
   LinkNames,
   ObjectOrInterfaceDefinition,
-  ObjectSet,
+  ObjectTypeDefinition,
   Osdk,
   PropertyKeys,
   SimplePropertyDef,
@@ -27,7 +27,6 @@ import type {
 } from "@osdk/api";
 import type { ObserveObjectsCallbackArgs } from "@osdk/client/unstable-do-not-use";
 import React from "react";
-import { extractPayloadError, isPayloadLoading } from "./hookUtils.js";
 import { makeExternalStore } from "./makeExternalStore.js";
 import { OsdkContext2 } from "./OsdkContext2.js";
 
@@ -141,6 +140,31 @@ export interface UseOsdkObjectsOptions<
    * populated with conjunctive/disjunctive marking requirements per property.
    */
   $loadPropertySecurityMetadata?: boolean;
+
+  /**
+   * When loading objects via an interface type, return the full concrete
+   * object type instances instead of interface views.
+   *
+   * By default, interface queries return objects narrowed to interface
+   * properties only. With `resolveToObjectType: true`, returned objects
+   * include all properties from the implementing object type (e.g. `$title`,
+   * custom properties not on the interface).
+   *
+   * Only has an effect when the type parameter is an interface.
+   *
+   * Pass an ObjectTypeDefinition to narrow the return type:
+   * `resolveToObjectType: Laptop` types results as `Osdk.Instance<Laptop>`.
+   * This is an unchecked assertion — the runtime does not filter by type.
+   *
+   * @default false
+   *
+   * @example
+   * useOsdkObjects(MyInterface, {
+   *   pivotTo: "linkedItems",
+   *   resolveToObjectType: true,
+   * })
+   */
+  resolveToObjectType?: boolean | ObjectTypeDefinition;
 }
 
 export interface UseOsdkListResult<
@@ -156,14 +180,12 @@ export interface UseOsdkListResult<
   /**
    * The fetched data with derived properties
    */
-  data:
-    | Osdk.Instance<
-      T,
-      "$allBaseProperties" | EXTRA_OPTIONS,
-      PropertyKeys<T>,
-      RDPs
-    >[]
-    | undefined;
+  data: Osdk.Instance<
+    T,
+    "$allBaseProperties" | EXTRA_OPTIONS,
+    PropertyKeys<T>,
+    RDPs
+  >[] | undefined;
 
   /**
    * Whether data is currently being loaded
@@ -188,19 +210,53 @@ export interface UseOsdkListResult<
    * The total count of objects matching the query (if available from the API)
    */
   totalCount?: string;
-
-  hasMore: boolean;
-
-  objectSet: ObjectSet<T, RDPs> | undefined;
-
-  refetch: () => Promise<void>;
 }
+
+const EMPTY_WHERE = {};
 
 declare const process: {
   env: {
     NODE_ENV: "development" | "production";
   };
 };
+
+export function useOsdkObjects<
+  Q extends ObjectOrInterfaceDefinition,
+  L extends LinkNames<Q>,
+  R extends ObjectTypeDefinition,
+>(
+  type: Q,
+  options:
+    & UseOsdkObjectsOptions<Q>
+    & { pivotTo: L; resolveToObjectType: R; rids: readonly string[] },
+): UseOsdkListResult<R, {}, "$rid">;
+
+export function useOsdkObjects<
+  Q extends ObjectOrInterfaceDefinition,
+  R extends ObjectTypeDefinition,
+>(
+  type: Q,
+  options:
+    & UseOsdkObjectsOptions<Q>
+    & { resolveToObjectType: R; rids: readonly string[] },
+): UseOsdkListResult<R, {}, "$rid">;
+
+export function useOsdkObjects<
+  Q extends ObjectOrInterfaceDefinition,
+  L extends LinkNames<Q>,
+  R extends ObjectTypeDefinition,
+>(
+  type: Q,
+  options: UseOsdkObjectsOptions<Q> & { pivotTo: L; resolveToObjectType: R },
+): UseOsdkListResult<R>;
+
+export function useOsdkObjects<
+  Q extends ObjectOrInterfaceDefinition,
+  R extends ObjectTypeDefinition,
+>(
+  type: Q,
+  options: UseOsdkObjectsOptions<Q> & { resolveToObjectType: R },
+): UseOsdkListResult<R>;
 
 export function useOsdkObjects<
   Q extends ObjectOrInterfaceDefinition,
@@ -245,6 +301,8 @@ export function useOsdkObjects<
   | UseOsdkListResult<Q, RDPs, "$rid">
   | UseOsdkListResult<LinkedType<Q, LinkNames<Q>>>
   | UseOsdkListResult<LinkedType<Q, LinkNames<Q>>, {}, "$rid">
+  | UseOsdkListResult<ObjectTypeDefinition>
+  | UseOsdkListResult<ObjectTypeDefinition, {}, "$rid">
 {
   const { observableClient } = React.useContext(OsdkContext2);
 
@@ -262,99 +320,112 @@ export function useOsdkObjects<
     pivotTo,
     $select,
     $loadPropertySecurityMetadata,
+    resolveToObjectType,
   } = options ?? {};
 
-  const canonOptions = observableClient.canonicalizeOptions({
-    where,
-    withProperties,
-    orderBy,
-    intersectWith,
-    $select,
-  });
-
-  const stableRids = React.useMemo(
-    () => rids,
-    [JSON.stringify(rids)],
+  const canonWhere = observableClient.canonicalizeWhereClause<Q, RDPs>(
+    where ?? EMPTY_WHERE,
   );
 
-  const { subscribe, getSnapShot } = React.useMemo(
-    () => {
-      if (!enabled) {
-        return makeExternalStore<
-          ObserveObjectsCallbackArgs<Q, RDPs>
-        >(
-          () => ({ unsubscribe: () => {} }),
-          process.env.NODE_ENV !== "production"
-            ? `list ${type.apiName} [DISABLED]`
-            : void 0,
-        );
-      }
+  const stableCanonWhere = React.useMemo(() => canonWhere, [
+    JSON.stringify(canonWhere),
+  ]);
 
-      return makeExternalStore<
-        ObserveObjectsCallbackArgs<Q, RDPs>
-      >(
-        (observer) =>
-          observableClient.observeList({
+  const stableRids = React.useMemo(() => rids, [JSON.stringify(rids)]);
+
+  const stableWithProperties = React.useMemo(() => withProperties, [
+    JSON.stringify(withProperties),
+  ]);
+
+  const stableIntersectWith = React.useMemo(() => intersectWith, [
+    JSON.stringify(intersectWith),
+  ]);
+
+  const stableOrderBy = React.useMemo(() => orderBy, [JSON.stringify(orderBy)]);
+
+  const stableSelect = React.useMemo(() => $select, [JSON.stringify($select)]);
+
+  const { subscribe, getSnapShot } = React.useMemo(() => {
+    if (!enabled) {
+      return makeExternalStore<ObserveObjectsCallbackArgs<Q, RDPs>>(
+        () => ({ unsubscribe: () => {} }),
+        process.env.NODE_ENV !== "production"
+          ? `list ${type.apiName} [DISABLED]`
+          : void 0,
+      );
+    }
+
+    return makeExternalStore<ObserveObjectsCallbackArgs<Q, RDPs>>(
+      (observer) =>
+        observableClient.observeList(
+          {
             type,
             rids: stableRids,
-            where: canonOptions.where,
+            where: stableCanonWhere,
             dedupeInterval: dedupeIntervalMs ?? 2_000,
             pageSize,
-            orderBy: canonOptions.orderBy,
+            orderBy: stableOrderBy,
             streamUpdates,
-            withProperties: canonOptions.withProperties,
+            withProperties: stableWithProperties,
             autoFetchMore,
-            ...(canonOptions.intersectWith
-              ? { intersectWith: canonOptions.intersectWith }
+            ...(stableIntersectWith
+              ? { intersectWith: stableIntersectWith }
               : {}),
             ...(pivotTo ? { pivotTo } : {}),
-            ...(canonOptions.$select ? { select: canonOptions.$select } : {}),
+            ...(stableSelect ? { select: stableSelect } : {}),
             ...($loadPropertySecurityMetadata
               ? { $loadPropertySecurityMetadata }
               : {}),
-          }, observer),
-        process.env.NODE_ENV !== "production"
-          ? `list ${type.apiName} ${
-            stableRids ? `[${stableRids.length} rids]` : ""
-          } ${JSON.stringify(canonOptions.where)}`
-          : void 0,
-      );
-    },
-    [
-      enabled,
-      observableClient,
-      type.apiName,
-      type.type,
-      stableRids,
-      canonOptions.where,
-      dedupeIntervalMs,
-      pageSize,
-      canonOptions.orderBy,
-      streamUpdates,
-      canonOptions.withProperties,
-      autoFetchMore,
-      canonOptions.intersectWith,
-      pivotTo,
-      canonOptions.$select,
-      $loadPropertySecurityMetadata,
-    ],
-  );
+            ...(resolveToObjectType ? { resolveToObjectType: true } : {}),
+          },
+          observer,
+        ),
+      process.env.NODE_ENV !== "production"
+        ? `list ${type.apiName} ${
+          stableRids ? `[${stableRids.length} rids]` : ""
+        } ${JSON.stringify(stableCanonWhere)}`
+        : void 0,
+    );
+  }, [
+    enabled,
+    observableClient,
+    type.apiName,
+    type.type,
+    stableRids,
+    stableCanonWhere,
+    dedupeIntervalMs,
+    pageSize,
+    stableOrderBy,
+    streamUpdates,
+    stableWithProperties,
+    autoFetchMore,
+    stableIntersectWith,
+    pivotTo,
+    stableSelect,
+    $loadPropertySecurityMetadata,
+    !!resolveToObjectType,
+  ]);
 
   const listPayload = React.useSyncExternalStore(subscribe, getSnapShot);
 
-  const refetch = React.useCallback(async () => {
-    await observableClient.invalidateObjectType(type.apiName);
-  }, [observableClient, type.apiName]);
+  return React.useMemo(() => {
+    let error: Error | undefined;
+    if (listPayload && "error" in listPayload && listPayload.error) {
+      error = listPayload.error;
+    } else if (listPayload?.status === "error") {
+      error = new Error("Failed to load objects");
+    }
 
-  return React.useMemo(() => ({
-    fetchMore: listPayload?.hasMore ? listPayload.fetchMore : undefined,
-    error: extractPayloadError(listPayload, "Failed to load objects"),
-    data: listPayload?.resolvedList,
-    isLoading: isPayloadLoading(listPayload, enabled),
-    isOptimistic: listPayload?.isOptimistic ?? false,
-    totalCount: listPayload?.totalCount,
-    hasMore: listPayload?.hasMore ?? false,
-    objectSet: listPayload?.objectSet,
-    refetch,
-  }), [listPayload, enabled, refetch]);
+    return {
+      fetchMore: listPayload?.hasMore ? listPayload.fetchMore : undefined,
+      error,
+      data: listPayload?.resolvedList,
+      isLoading: enabled
+        ? listPayload?.status === "loading" || listPayload?.status === "init"
+          || !listPayload
+        : false,
+      isOptimistic: listPayload?.isOptimistic ?? false,
+      totalCount: listPayload?.totalCount,
+    };
+  }, [listPayload, enabled]);
 }

@@ -36,4 +36,5 @@ export interface ListQueryOptions<
   }>;
   pivotTo?: string;
   $loadPropertySecurityMetadata?: boolean;
+  resolveToObjectType?: boolean;
 }

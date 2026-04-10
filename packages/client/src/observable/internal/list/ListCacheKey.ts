@@ -33,6 +33,7 @@ export const PIVOT_IDX = 6;
 export const RIDS_IDX = 7;
 export const SELECT_IDX = 8;
 export const LOAD_PROPERTY_SECURITY_IDX = 9;
+export const RESOLVE_TO_OBJECT_TYPE_IDX = 10;
 
 export interface ListStorageData extends CollectionStorageData {}
 
@@ -54,6 +55,7 @@ export interface ListCacheKey extends
       rids?: Canonical<string[]> | undefined,
       select?: Canonical<readonly string[]> | undefined,
       loadPropertySecurity?: true | undefined,
+      resolveToObjectType?: true | undefined,
     ]
   >
 {

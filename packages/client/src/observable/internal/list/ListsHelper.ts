@@ -94,6 +94,7 @@ export class ListsHelper extends AbstractHelper<
       rids,
       select,
       $loadPropertySecurityMetadata,
+      resolveToObjectType,
     } = options;
     const { apiName, type } = typeDefinition;
 
@@ -131,6 +132,7 @@ export class ListsHelper extends AbstractHelper<
       canonRids,
       canonSelect,
       $loadPropertySecurityMetadata ? true : undefined,
+      resolveToObjectType ? true : undefined,
     );
 
     return this.store.queries.get(listCacheKey, () => {
