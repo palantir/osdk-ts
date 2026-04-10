@@ -23,7 +23,7 @@ interface FormFieldProps {
   isRequired?: boolean;
   helperText?: string;
   error?: string;
-  onBlur?: () => void;
+  onBlur?: (e: React.FocusEvent<HTMLDivElement>) => void;
   children: React.ReactNode;
 }
 

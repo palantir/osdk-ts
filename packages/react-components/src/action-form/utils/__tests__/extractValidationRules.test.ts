@@ -30,6 +30,16 @@ function makeFieldDef(
   } as RendererFieldDefinition;
 }
 
+type ValidateFn = (v: unknown) => string | true;
+type AsyncValidateFn = (v: unknown) => Promise<string | true>;
+
+function getValidateFns(
+  fieldDef: Partial<RendererFieldDefinition>,
+): Record<string, ValidateFn> {
+  const rules = extractValidationRules(makeFieldDef(fieldDef));
+  return rules.validate as Record<string, ValidateFn>;
+}
+
 describe("extractValidationRules", () => {
   describe("required", () => {
     it("adds required rule when isRequired is true", () => {
@@ -49,42 +59,30 @@ describe("extractValidationRules", () => {
 
   describe("NUMBER_INPUT", () => {
     it("adds min validate function", () => {
-      const rules = extractValidationRules(makeFieldDef({
+      const validate = getValidateFns({
         fieldComponent: "NUMBER_INPUT",
         fieldComponentProps: { min: 5 },
-      }));
-      const validate = rules.validate as Record<
-        string,
-        (v: unknown) => string | true
-      >;
+      });
       expect(validate.min(3)).toBe("Must be at least 5");
       expect(validate.min(5)).toBe(true);
       expect(validate.min(10)).toBe(true);
     });
 
     it("adds max validate function", () => {
-      const rules = extractValidationRules(makeFieldDef({
+      const validate = getValidateFns({
         fieldComponent: "NUMBER_INPUT",
         fieldComponentProps: { max: 100 },
-      }));
-      const validate = rules.validate as Record<
-        string,
-        (v: unknown) => string | true
-      >;
+      });
       expect(validate.max(101)).toBe("Must be at most 100");
       expect(validate.max(100)).toBe(true);
       expect(validate.max(50)).toBe(true);
     });
 
     it("returns true for non-number values", () => {
-      const rules = extractValidationRules(makeFieldDef({
+      const validate = getValidateFns({
         fieldComponent: "NUMBER_INPUT",
         fieldComponentProps: { min: 5 },
-      }));
-      const validate = rules.validate as Record<
-        string,
-        (v: unknown) => string | true
-      >;
+      });
       expect(validate.min(null)).toBe(true);
     });
   });
@@ -133,73 +131,63 @@ describe("extractValidationRules", () => {
   describe("DATETIME_PICKER", () => {
     it("adds min validate function for dates", () => {
       const minDate = new Date(2024, 0, 1);
-      const rules = extractValidationRules(makeFieldDef({
+      const validate = getValidateFns({
         fieldComponent: "DATETIME_PICKER",
         fieldComponentProps: { min: minDate },
-      }));
-      const validate = rules.validate as Record<
-        string,
-        (v: unknown) => string | true
-      >;
+      });
       const earlyDate = new Date(2023, 11, 31);
       const lateDate = new Date(2024, 5, 1);
-      expect(validate.min(earlyDate)).toContain("Must be at least");
+      expect(validate.min(earlyDate)).toBe(
+        `Must be at least ${minDate.toLocaleDateString()}`,
+      );
       expect(validate.min(lateDate)).toBe(true);
     });
 
     it("adds max validate function for dates", () => {
       const maxDate = new Date(2025, 11, 31);
-      const rules = extractValidationRules(makeFieldDef({
+      const validate = getValidateFns({
         fieldComponent: "DATETIME_PICKER",
         fieldComponentProps: { max: maxDate },
-      }));
-      const validate = rules.validate as Record<
-        string,
-        (v: unknown) => string | true
-      >;
+      });
       const lateDate = new Date(2026, 0, 1);
       const earlyDate = new Date(2025, 5, 1);
-      expect(validate.max(lateDate)).toContain("Must be at most");
+      expect(validate.max(lateDate)).toBe(
+        `Must be at most ${maxDate.toLocaleDateString()}`,
+      );
       expect(validate.max(earlyDate)).toBe(true);
     });
   });
 
   describe("FILE_PICKER", () => {
     it("adds maxSize validate function for single file", () => {
-      const rules = extractValidationRules(makeFieldDef({
+      const validate = getValidateFns({
         fieldComponent: "FILE_PICKER",
         fieldComponentProps: { maxSize: 1024 },
-      }));
-      const validate = rules.validate as Record<
-        string,
-        (v: unknown) => string | true
-      >;
+      });
       const smallFile = new File(["a"], "small.txt");
       Object.defineProperty(smallFile, "size", { value: 512 });
       const bigFile = new File(["a"], "big.txt");
       Object.defineProperty(bigFile, "size", { value: 2048 });
 
       expect(validate.maxSize(smallFile)).toBe(true);
-      expect(validate.maxSize(bigFile)).toContain("File must be smaller than");
+      expect(validate.maxSize(bigFile)).toBe(
+        "File must be smaller than 1.0 KB",
+      );
     });
 
     it("adds maxSize validate function for file array", () => {
-      const rules = extractValidationRules(makeFieldDef({
+      const validate = getValidateFns({
         fieldComponent: "FILE_PICKER",
         fieldComponentProps: { maxSize: 1024 },
-      }));
-      const validate = rules.validate as Record<
-        string,
-        (v: unknown) => string | true
-      >;
+      });
       const smallFile = new File(["a"], "small.txt");
       Object.defineProperty(smallFile, "size", { value: 512 });
       const bigFile = new File(["a"], "big.txt");
       Object.defineProperty(bigFile, "size", { value: 2048 });
 
       expect(validate.maxSize([smallFile])).toBe(true);
-      expect(validate.maxSize([smallFile, bigFile])).toContain(
-        "File must be smaller than",
+      expect(validate.maxSize([smallFile, bigFile])).toBe(
+        "File must be smaller than 1.0 KB",
       );
     });
   });
@@ -226,31 +214,23 @@ describe("extractValidationRules", () => {
   });
 
   describe("custom validate", () => {
-    it("wires user-provided validate function", async () => {
+    it("returns true when user validate resolves to undefined", async () => {
       const userValidate = vi.fn().mockResolvedValue(undefined);
       const rules = extractValidationRules(makeFieldDef({
         validate: userValidate,
       }));
-      const validate = rules.validate as Record<
-        string,
-        (v: unknown) => Promise<string | true>
-      >;
-      const result = await validate.custom("test");
-      expect(result).toBe(true);
+      const validate = rules.validate as Record<string, AsyncValidateFn>;
+      expect(await validate.custom("test")).toBe(true);
       expect(userValidate).toHaveBeenCalledWith("test");
     });
 
-    it("returns custom error message from validate", async () => {
+    it("returns the error string when user validate resolves to a message", async () => {
       const userValidate = vi.fn().mockResolvedValue("Custom error");
       const rules = extractValidationRules(makeFieldDef({
         validate: userValidate,
       }));
-      const validate = rules.validate as Record<
-        string,
-        (v: unknown) => Promise<string | true>
-      >;
-      const result = await validate.custom("test");
-      expect(result).toBe("Custom error");
+      const validate = rules.validate as Record<string, AsyncValidateFn>;
+      expect(await validate.custom("test")).toBe("Custom error");
     });
   });
 

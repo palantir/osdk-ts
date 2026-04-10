@@ -50,17 +50,10 @@ export const FilePickerField: React.FC<FilePickerProps> = memo(
           return;
         }
 
-        const selected = Array.from(files);
-
-        if (selected.length === 0) {
-          onChange?.(null);
-          return;
-        }
-
         if (isMulti) {
-          onChange?.(selected);
+          onChange?.(Array.from(files));
         } else {
-          onChange?.(selected[0] ?? null);
+          onChange?.(files[0] ?? null);
         }
       },
       [onChange, isMulti],
