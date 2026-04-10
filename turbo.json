@@ -290,6 +290,12 @@
       "dependsOn": ["^transpileEsm"]
     },
 
+    "@osdk/react#test": {
+      "outputLogs": "new-only",
+      "env": ["FORCE_COLOR"],
+      "dependsOn": ["^transpileEsm", "@osdk/client.test.ontology#transpileTypes"]
+    },
+
     "//#check-mrl": {
       "inputs": [
         "package.json",
