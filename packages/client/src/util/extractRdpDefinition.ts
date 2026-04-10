@@ -25,11 +25,27 @@ export async function extractRdpDefinition(
 ): Promise<
   DerivedPropertyRuntimeMetadata
 > {
+  if (!hasWithProperties(objectSet)) {
+    return {};
+  }
   return (await extractRdpDefinitionInternal(
     clientCtx,
     objectSet,
     undefined,
   )).definitions;
+}
+
+function hasWithProperties(objectSet: ObjectSet): boolean {
+  if (objectSet.type === "withProperties") {
+    return true;
+  }
+  if ("objectSet" in objectSet && objectSet.objectSet != null) {
+    return hasWithProperties(objectSet.objectSet);
+  }
+  if ("objectSets" in objectSet && objectSet.objectSets != null) {
+    return objectSet.objectSets.some(hasWithProperties);
+  }
+  return false;
 }
 
 /* @internal

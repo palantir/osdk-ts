@@ -18,10 +18,12 @@ import type {
   CompileTimeMetadata,
   LinkedType,
   LinkNames,
+  ObjectSet,
   ObjectTypeDefinition,
   Osdk,
 } from "@osdk/api";
 import invariant from "tiny-invariant";
+import { isMockObjectSet } from "./createMockObjectSet.js";
 
 /**
  * Options for customizing mock object creation.
@@ -41,8 +43,9 @@ export interface MockOsdkObjectOptions<
 
 type LinkStubs<Q extends ObjectTypeDefinition> = {
   [LINK_NAME in LinkNames<Q>]?:
-    CompileTimeMetadata<Q>["links"][LINK_NAME]["multiplicity"] extends true
-      ? Array<Osdk.Instance<LinkedType<Q, LINK_NAME>>>
+    CompileTimeMetadata<Q>["links"][LINK_NAME]["multiplicity"] extends true ?
+        | Array<Osdk.Instance<LinkedType<Q, LINK_NAME>>>
+        | ObjectSet<LinkedType<Q, LINK_NAME>>
       : Osdk.Instance<LinkedType<Q, LINK_NAME>>;
 };
 
@@ -227,7 +230,9 @@ export function createMockOsdkObject<
         if (linkValue == null) {
           continue;
         }
-        if (Array.isArray(linkValue)) {
+        if (isMockObjectSet(linkValue)) {
+          linkAccessors[linkName] = linkValue;
+        } else if (Array.isArray(linkValue)) {
           linkAccessors[linkName] = createManyLinkStub(
             linkValue as Array<Osdk.Instance<ObjectTypeDefinition>>,
           );

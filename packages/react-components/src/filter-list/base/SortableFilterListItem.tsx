@@ -17,7 +17,7 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import classnames from "classnames";
-import React, { useMemo } from "react";
+import React, { memo, useMemo } from "react";
 import type { FilterState } from "../FilterListItemApi.js";
 import type { RenderFilterInput } from "./BaseFilterListApi.js";
 import { FilterListItem } from "./FilterListItem.js";
@@ -37,7 +37,7 @@ interface SortableFilterListItemProps<D> {
   renderInput: RenderFilterInput<D>;
 }
 
-export function SortableFilterListItem<D>({
+function SortableFilterListItemInner<D>({
   id,
   definition,
   filterKey,
@@ -81,3 +81,7 @@ export function SortableFilterListItem<D>({
     </div>
   );
 }
+
+export const SortableFilterListItem = memo(
+  SortableFilterListItemInner,
+) as typeof SortableFilterListItemInner;

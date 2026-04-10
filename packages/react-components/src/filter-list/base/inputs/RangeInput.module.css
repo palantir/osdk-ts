@@ -31,13 +31,9 @@
   align-items: flex-end;
   height: var(--osdk-filter-range-histogram-height);
   gap: var(--osdk-filter-range-histogram-bar-gap);
+  padding-bottom: var(--osdk-filter-range-histogram-padding-bottom);
+  padding-inline: var(--osdk-filter-range-histogram-padding-inline);
   overflow: hidden;
-  opacity: 0;
-  transition: opacity var(--osdk-filter-content-fade-duration);
-}
-
-.histogramContainer:not([data-empty="true"]) {
-  opacity: 1;
 }
 
 .histogramBar {
@@ -94,7 +90,11 @@
 }
 
 .separator {
-  padding-bottom: calc(var(--osdk-filter-range-inputs-gap) * 0.75);
+  display: flex;
+  align-items: center;
+  height: calc(
+    var(--osdk-filter-input-font-size) + var(--osdk-filter-input-padding) * 2
+  );
   color: var(--osdk-filter-range-separator-color);
 }
 

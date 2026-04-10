@@ -28,6 +28,7 @@ import {
   updateObject,
   waitForCall,
 } from "../testUtils.js";
+import type { ObjectCacheKey } from "./ObjectCacheKey.js";
 
 function createFakeRdpConfig(...fields: string[]): Canonical<Rdp> {
   const rdp: Rdp = {};
@@ -374,5 +375,141 @@ describe("ObjectsHelper.isKeyActive", () => {
     );
 
     sub2.unsubscribe();
+  });
+});
+
+describe("Two variants with different RDP configs - GC of one should not affect other", () => {
+  let client: Client;
+  let store: Store;
+  let emp: Osdk.Instance<Employee>;
+
+  beforeAll(async () => {
+    const testSetup = startNodeApiServer(
+      new FauxFoundry("https://stack.palantir.com/"),
+      createClient,
+    );
+    client = testSetup.client;
+
+    const fauxOntology = testSetup.fauxFoundry.getDefaultOntology();
+    ontologies.addEmployeeOntology(fauxOntology);
+
+    testSetup.fauxFoundry.getDefaultDataStore().registerObject(Employee, {
+      employeeId: 1,
+      fullName: "Alice",
+    });
+
+    emp = await client(Employee).fetchOne(1, { $includeRid: true });
+
+    return () => {
+      testSetup.apiServer.close();
+    };
+  });
+
+  beforeEach(() => {
+    store = new Store(client);
+    return () => {
+      store = undefined!;
+    };
+  });
+
+  // Mirrors Store.#cleanupCacheKey (see Store.ts ~line 201)
+  function simulateGc(key: ObjectCacheKey) {
+    store.subjects.delete(key);
+    store.queries.delete(key);
+    store.objectCacheKeyRegistry.unregister(key);
+  }
+
+  it("GC of variant B preserves A's data and cleans up B's registry entry", () => {
+    const rdpConfigA = createFakeRdpConfig("fieldA");
+    const rdpConfigAB = createFakeRdpConfig("fieldA", "fieldB");
+
+    const queryA = store.objects.getQuery({
+      apiName: Employee,
+      pk: 1,
+    }, rdpConfigA);
+    const queryB = store.objects.getQuery({
+      apiName: Employee,
+      pk: 1,
+    }, rdpConfigAB);
+
+    store.batch({}, (batch) => {
+      queryA.writeToStore(emp as any, "loaded", batch);
+    });
+    store.batch({}, (batch) => {
+      queryB.writeToStore(emp as any, "loaded", batch);
+    });
+
+    expect(store.objectCacheKeyRegistry.getVariantCount(
+      "Employee",
+      1,
+    )).toBe(2);
+
+    simulateGc(queryB.cacheKey);
+
+    // A's data should be intact
+    const valueA = store.getValue(queryA.cacheKey);
+    expect(valueA?.value).toEqual(
+      expect.objectContaining({ $primaryKey: 1, fullName: "Alice" }),
+    );
+    expect(valueA?.status).toBe("loaded");
+
+    // A's subject should still be alive
+    const subjectA = store.subjects.peek(queryA.cacheKey);
+    expect(subjectA).toBeDefined();
+    expect(subjectA?.closed).toBe(false);
+
+    // B's subject should be gone
+    expect(store.subjects.peek(queryB.cacheKey)).toBeUndefined();
+
+    // Registry should only have A
+    expect(store.objectCacheKeyRegistry.getVariantCount(
+      "Employee",
+      1,
+    )).toBe(1);
+    const variants = store.objectCacheKeyRegistry.getVariants("Employee", 1);
+    expect(variants.has(queryA.cacheKey)).toBe(true);
+    expect(variants.has(queryB.cacheKey)).toBe(false);
+  });
+
+  it("propagateWrite still works for A after B is GC'd", () => {
+    const rdpConfigA = createFakeRdpConfig("fieldA");
+    const rdpConfigAB = createFakeRdpConfig("fieldA", "fieldB");
+
+    const queryA = store.objects.getQuery({
+      apiName: Employee,
+      pk: 1,
+    }, rdpConfigA);
+    const queryB = store.objects.getQuery({
+      apiName: Employee,
+      pk: 1,
+    }, rdpConfigAB);
+
+    store.batch({}, (batch) => {
+      queryA.writeToStore(emp as any, "loaded", batch);
+    });
+    store.batch({}, (batch) => {
+      queryB.writeToStore(emp as any, "loaded", batch);
+    });
+
+    // Subscribe A so it's observed
+    store.cacheKeys.retain(queryA.cacheKey);
+    store.subjects.get(queryA.cacheKey).subscribe(() => {});
+
+    simulateGc(queryB.cacheKey);
+
+    expect(store.objectCacheKeyRegistry.getVariantCount(
+      "Employee",
+      1,
+    )).toBe(1);
+
+    // Update via base variant — should still propagate to A
+    updateObject(store, emp.$clone({ fullName: "Bob" }));
+
+    const valueA = store.getValue(queryA.cacheKey);
+    expect(valueA?.value).toEqual(
+      expect.objectContaining({ $primaryKey: 1, fullName: "Bob" }),
+    );
+
+    store.cacheKeys.release(queryA.cacheKey);
   });
 });

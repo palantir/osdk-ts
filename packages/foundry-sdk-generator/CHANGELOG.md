@@ -1,5 +1,146 @@
 # @osdk/foundry-sdk-generator
 
+## 2.8.0
+
+### Minor Changes
+
+- 322c5bc: Simulated release
+- abb0e0f: Bump Platform SDK dependencies
+- c8384de: Add experimental branch param.
+- 16e5112: Update package lock
+- ad0bf7d: Fix generator
+- 4df8696: Validate --linkTypes references missing object types in foundry-sdk-generator
+- 35f2f1a: Add Media inputs/outputs for Queries
+- 46f0a47: Update platform SDK to 2.57.0 and handle new typeReference query data type
+- 4470c0d: Add support to execute queries on branches.
+
+### Patch Changes
+
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [c40444b]
+- Updated dependencies [4bb9769]
+- Updated dependencies [09e5659]
+- Updated dependencies [abb0e0f]
+- Updated dependencies [fceb4ce]
+- Updated dependencies [520398c]
+- Updated dependencies [73e617e]
+- Updated dependencies [cbfa135]
+- Updated dependencies [c8384de]
+- Updated dependencies [f294f5a]
+- Updated dependencies [dfc8019]
+- Updated dependencies [599426b]
+- Updated dependencies [e64bf0b]
+- Updated dependencies [f487a6a]
+- Updated dependencies [27a5902]
+- Updated dependencies [e462938]
+- Updated dependencies [f4604c2]
+- Updated dependencies [642be5f]
+- Updated dependencies [baba327]
+- Updated dependencies [8825f8c]
+- Updated dependencies [2b01323]
+- Updated dependencies [8c60682]
+- Updated dependencies [dda14be]
+- Updated dependencies [ffc6efe]
+- Updated dependencies [2855223]
+- Updated dependencies [6499ff9]
+- Updated dependencies [15e1686]
+- Updated dependencies [034081a]
+- Updated dependencies [1706c79]
+- Updated dependencies [26cec61]
+- Updated dependencies [0df859a]
+- Updated dependencies [d1ad4d1]
+- Updated dependencies [0d174a2]
+- Updated dependencies [d284bf2]
+- Updated dependencies [4ef6adc]
+- Updated dependencies [2ebe62c]
+- Updated dependencies [60b5ffb]
+- Updated dependencies [abb0e0f]
+- Updated dependencies [8c30908]
+- Updated dependencies [4cd7389]
+- Updated dependencies [4a856cb]
+- Updated dependencies [92e7297]
+- Updated dependencies [b68cebd]
+- Updated dependencies [35f2f1a]
+- Updated dependencies [c9d954d]
+- Updated dependencies [d607557]
+- Updated dependencies [044eb80]
+- Updated dependencies [9d234b9]
+- Updated dependencies [f5f95e2]
+- Updated dependencies [972bda6]
+- Updated dependencies [6941b4f]
+- Updated dependencies [60531c9]
+- Updated dependencies [46f0a47]
+- Updated dependencies [7775359]
+- Updated dependencies [4470c0d]
+- Updated dependencies [d80c234]
+- Updated dependencies [61e33ab]
+- Updated dependencies [71e28ef]
+- Updated dependencies [5848e3c]
+  - @osdk/api@2.8.0
+  - @osdk/client@2.8.0
+  - @osdk/client.unstable@2.8.0
+  - @osdk/client.unstable.tpsa@0.10.0
+  - @osdk/generator@2.8.0
+  - @osdk/generator-utils@2.8.0
+  - @osdk/shared.client.impl@1.8.0
+
+## 2.8.0-beta.32
+
+### Minor Changes
+
+- 46f0a47: Update platform SDK to 2.57.0 and handle new typeReference query data type
+
+### Patch Changes
+
+- Updated dependencies [d607557]
+- Updated dependencies [46f0a47]
+  - @osdk/generator@2.8.0-beta.32
+  - @osdk/client@2.8.0-beta.32
+  - @osdk/api@2.8.0-beta.32
+  - @osdk/client.unstable@2.8.0-beta.32
+  - @osdk/generator-utils@2.8.0-beta.32
+
+## 2.8.0-beta.31
+
+### Patch Changes
+
+- Updated dependencies [2b01323]
+  - @osdk/client@2.8.0-beta.31
+  - @osdk/api@2.8.0-beta.31
+  - @osdk/client.unstable@2.8.0-beta.31
+  - @osdk/generator-utils@2.8.0-beta.31
+  - @osdk/generator@2.8.0-beta.31
+
+## 2.8.0-beta.30
+
+### Patch Changes
+
+- Updated dependencies [4ef6adc]
+  - @osdk/generator@2.8.0-beta.30
+  - @osdk/client@2.8.0-beta.30
+  - @osdk/api@2.8.0-beta.30
+  - @osdk/client.unstable@2.8.0-beta.30
+  - @osdk/generator-utils@2.8.0-beta.30
+
+## 2.8.0-beta.29
+
+### Patch Changes
+
+- Updated dependencies [520398c]
+- Updated dependencies [ffc6efe]
+- Updated dependencies [4a856cb]
+  - @osdk/client@2.8.0-beta.29
+  - @osdk/api@2.8.0-beta.29
+  - @osdk/client.unstable@2.8.0-beta.29
+  - @osdk/generator-utils@2.8.0-beta.29
+  - @osdk/generator@2.8.0-beta.29
+
 ## 2.8.0-beta.28
 
 ### Patch Changes

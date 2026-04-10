@@ -15,6 +15,7 @@
  */
 
 import type {
+  CompileTimeMetadata,
   DerivedProperty,
   ObjectOrInterfaceDefinition,
   ObjectSet,
@@ -22,10 +23,10 @@ import type {
   PrimaryKeyType,
   PropertyKeys,
   QueryDefinition,
-  QueryMetadata,
   SimplePropertyDef,
   WhereClause,
 } from "@osdk/api";
+import type { QueryParameterType } from "@osdk/client/unstable-do-not-use";
 import type * as React from "react";
 import type { CellEditInfo } from "./utils/types.js";
 
@@ -90,10 +91,10 @@ export type ColumnDefinition<
 };
 
 export type ExtractQueryParameters<
-  TQueryDef extends QueryDefinition,
-> = TQueryDef["__DefinitionMetadata"] extends QueryMetadata
-  ? TQueryDef["__DefinitionMetadata"]["parameters"]
-  : never;
+  Q extends QueryDefinition,
+> = CompileTimeMetadata<Q>["parameters"] extends Record<string, never>
+  ? undefined
+  : QueryParameterType<CompileTimeMetadata<Q>["parameters"]>;
 
 export interface PropertyColumnLocator<Q extends ObjectOrInterfaceDefinition> {
   type: "property";
@@ -122,7 +123,7 @@ export interface FunctionColumnLocator<
    * @returns - The function's input parameters including the object set.
    */
   getFunctionParams: (
-    objectSet: ObjectSet<Q>,
+    objectSet: ObjectSet<Q, RDPs>,
   ) => ExtractQueryParameters<FunctionColumns[keyof FunctionColumns]>;
 
   /**
@@ -140,7 +141,14 @@ export interface FunctionColumnLocator<
    * @param cellData - The raw data returned by the function for this object
    * @returns - The value to display in the cell
    */
-  getValue?: (cellData: unknown) => unknown;
+  getValue?: (cellData?: unknown) => unknown;
+
+  /**
+   * Minimum time between re-fetches of the same function with the same parameters, in milliseconds.
+   * Defaults to 5 minutes to maximize cache hits
+   * @default 300_000 (5 minutes)
+   */
+  dedupeIntervalMs?: number;
 }
 
 export interface RdpColumnLocator<
@@ -191,6 +199,15 @@ export interface ObjectTableProps<
   objectSet?: ObjectSet<Q>;
 
   objectSetOptions?: ObjectSetOptions<Q>;
+
+  /**
+   * Minimum time between fetch requests in milliseconds.
+   * Increasing this value reduces redundant network calls when the same data
+   * is requested multiple times in quick succession.
+   *
+   * @default 60_000 1 minute
+   */
+  dedupeIntervalMs?: number;
 
   /**
    * Ordered list of column definitions to show in the table

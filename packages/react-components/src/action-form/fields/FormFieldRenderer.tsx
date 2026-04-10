@@ -16,15 +16,16 @@
 
 import React, { memo } from "react";
 import { FormField } from "../FormField.js";
-import type { Option, RendererFieldDefinition } from "../FormFieldApi.js";
+import type { RendererFieldDefinition } from "../FormFieldApi.js";
+import { CustomField } from "./CustomField.js";
 import { DatetimePickerField } from "./DatetimePickerField.js";
 import { DropdownField } from "./DropdownField.js";
+import { FilePickerField } from "./FilePickerField.js";
+import { NumberInputField } from "./NumberInputField.js";
+import { ObjectSetField } from "./ObjectSetField.js";
 import { RadioButtonsField } from "./RadioButtonsField.js";
 import { TextAreaField } from "./TextAreaField.js";
 import { TextInputField } from "./TextInputField.js";
-
-const EMPTY_ITEMS: unknown[] = [];
-const EMPTY_OPTIONS: Option<never>[] = [];
 
 export interface FormFieldRendererProps {
   fieldDefinition: RendererFieldDefinition;
@@ -81,15 +82,12 @@ function renderFieldComponent(
         />
       );
     case "DROPDOWN": {
-      const { items = EMPTY_ITEMS, ...dropdownProps } =
-        fieldDefinition.fieldComponentProps ?? {};
       return (
         <DropdownField
           value={value}
           onChange={onChange}
-          items={items}
           placeholder={fieldDefinition.placeholder}
-          {...dropdownProps}
+          {...fieldDefinition.fieldComponentProps}
         />
       );
     }
@@ -104,28 +102,69 @@ function renderFieldComponent(
           {...fieldDefinition.fieldComponentProps}
         />
       );
-    case "RADIO_BUTTONS": {
-      const { options = EMPTY_OPTIONS, ...radioProps } =
-        fieldDefinition.fieldComponentProps ?? {};
+    case "RADIO_BUTTONS":
       return (
         <RadioButtonsField
           id={fieldDefinition.fieldKey}
           value={value}
           onChange={onChange}
-          options={options}
-          {...radioProps}
+          {...fieldDefinition.fieldComponentProps}
         />
       );
-    }
-    case "NUMBER_INPUT":
-    case "FILE_PICKER":
-    case "OBJECT_SET":
     case "CUSTOM":
-      return <div>Unsupported field type: {fieldDefinition.fieldComponent}
-      </div>;
+      return (
+        <CustomField
+          id={fieldDefinition.fieldKey}
+          value={value}
+          onChange={onChange}
+          {...fieldDefinition.fieldComponentProps}
+        />
+      );
+    case "NUMBER_INPUT":
+      // TODO: Use coerceFieldValue
+      return (
+        <NumberInputField
+          id={fieldDefinition.fieldKey}
+          value={typeof value === "number" ? value : null}
+          onChange={onChange}
+          placeholder={fieldDefinition.placeholder}
+          {...fieldDefinition.fieldComponentProps}
+        />
+      );
+    case "FILE_PICKER":
+      return (
+        <FilePickerField
+          id={fieldDefinition.fieldKey}
+          value={coerceToFileValue(value)}
+          onChange={onChange}
+          {...fieldDefinition.fieldComponentProps}
+        />
+      );
+    case "OBJECT_SET":
+      return (
+        <ObjectSetField
+          id={fieldDefinition.fieldKey}
+          {...fieldDefinition.fieldComponentProps}
+        />
+      );
     default:
       return assertUnreachableFieldComponent(fieldDefinition);
   }
+}
+
+// TODO: Move and share with `coerceFieldValue`
+function isFileArray(value: unknown[]): value is File[] {
+  return value.every((v) => v instanceof File);
+}
+
+function coerceToFileValue(value: unknown): File | File[] | null {
+  if (value instanceof File) {
+    return value;
+  }
+  if (Array.isArray(value) && isFileArray(value)) {
+    return value;
+  }
+  return null;
 }
 
 function assertUnreachableFieldComponent(value: never): never {

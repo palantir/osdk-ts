@@ -1622,9 +1622,10 @@ export interface PropertyValueWireToClient {
 // Warning: (ae-forgotten-export) The symbol "ThreeDimensionalAggregationDataType" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "MapDataType" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "ArrayQueryDataType" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "TypeReferenceQueryDataType" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
-export type QueryDataTypeDefinition<T_Target extends ObjectOrInterfaceDefinition = any> = PrimitiveDataType | ObjectQueryDataType<T_Target> | InterfaceQueryDataType<T_Target> | ObjectSetQueryDataType<T_Target> | InterfaceObjectSetQueryDataType<T_Target> | SetQueryDataType | UnionQueryDataType | StructQueryDataType | TwoDimensionalAggregationDataType | ThreeDimensionalAggregationDataType | MapDataType | ArrayQueryDataType;
+export type QueryDataTypeDefinition<T_Target extends ObjectOrInterfaceDefinition = any> = PrimitiveDataType | ObjectQueryDataType<T_Target> | InterfaceQueryDataType<T_Target> | ObjectSetQueryDataType<T_Target> | InterfaceObjectSetQueryDataType<T_Target> | SetQueryDataType | UnionQueryDataType | StructQueryDataType | TwoDimensionalAggregationDataType | ThreeDimensionalAggregationDataType | MapDataType | ArrayQueryDataType | TypeReferenceQueryDataType;
 
 // @public (undocumented)
 export interface QueryDefinition<T = any> {
@@ -1660,6 +1661,8 @@ export interface QueryMetadata {
     rid: string;
     	// (undocumented)
     type: "query";
+    	// (undocumented)
+    typeReferences?: Record<string, QueryDataTypeDefinition>;
     	// (undocumented)
     version: string;
 }
@@ -1810,7 +1813,7 @@ export namespace SimplePropertyDef {
 }
 
 // @public (undocumented)
-export interface SingleLinkAccessor<T extends ObjectTypeDefinition> {
+export interface SingleLinkAccessor<T extends ObjectOrInterfaceDefinition> {
     	fetchOne: <const A extends SelectArg<T, PropertyKeys<T>, boolean>>(options?: A) => Promise<A extends FetchPageArgs<T, infer L, infer R, any, infer S> ? Osdk.Instance<T, ExtractOptions<R, S>, L & PropertyKeys<T>> : Osdk.Instance<T>>;
     	fetchOneWithErrors: <const A extends SelectArg<T, PropertyKeys<T>, boolean>>(options?: A) => Promise<Result<A extends FetchPageArgs<T, infer L, infer R, any, infer S> ? Osdk.Instance<T, ExtractOptions<R, S>, L> : Osdk.Instance<T>>>;
 }

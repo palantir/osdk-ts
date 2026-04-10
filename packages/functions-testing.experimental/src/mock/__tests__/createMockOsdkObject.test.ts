@@ -16,6 +16,8 @@
 
 import { Employee, Office } from "@osdk/client.test.ontology";
 import { describe, expect, it } from "vitest";
+import { createMockClient } from "../createMockClient.js";
+import { createMockObjectSet } from "../createMockObjectSet.js";
 import { createMockOsdkObject } from "../createMockOsdkObject.js";
 
 describe("createMockOsdkObject", () => {
@@ -312,6 +314,58 @@ describe("createMockOsdkObject", () => {
         expect(() => mockEmployee.$link.peeps.aggregate({} as any)).toThrow(
           "aggregate is not supported on mock link stubs.",
         );
+      });
+    });
+
+    describe("many links with ObjectSet", () => {
+      it("uses a standalone mock object set as a many link value", async () => {
+        const mockClient = createMockClient();
+        const peepsSet = createMockObjectSet(Employee);
+        const p1 = createMockOsdkObject(Employee, {
+          employeeId: 10,
+          fullName: "Alice",
+        });
+        const p2 = createMockOsdkObject(Employee, {
+          employeeId: 11,
+          fullName: "Bob",
+        });
+
+        mockClient.whenObjectSet(peepsSet, (os) => os.fetchPage())
+          .thenReturnObjects([p1, p2]);
+
+        const mockEmployee = createMockOsdkObject(
+          Employee,
+          { employeeId: 1 },
+          { links: { peeps: peepsSet } },
+        );
+
+        const page = await mockEmployee.$link.peeps.fetchPage();
+        expect(page.data).toHaveLength(2);
+        expect(page.data[0].fullName).toBe("Alice");
+        expect(page.data[1].fullName).toBe("Bob");
+      });
+
+      it("supports aggregate on ObjectSet many link", async () => {
+        const mockClient = createMockClient();
+        const peepsSet = createMockObjectSet(Employee);
+
+        mockClient
+          .whenObjectSet(
+            peepsSet,
+            (os) => os.aggregate({ $select: { $count: "unordered" } }),
+          )
+          .thenReturnAggregation({ $count: 3 });
+
+        const mockEmployee = createMockOsdkObject(
+          Employee,
+          { employeeId: 1 },
+          { links: { peeps: peepsSet } },
+        );
+
+        const result = await mockEmployee.$link.peeps.aggregate({
+          $select: { $count: "unordered" },
+        });
+        expect(result.$count).toBe(3);
       });
     });
   });

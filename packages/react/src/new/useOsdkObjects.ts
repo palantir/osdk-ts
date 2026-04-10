@@ -19,6 +19,7 @@ import type {
   LinkedType,
   LinkNames,
   ObjectOrInterfaceDefinition,
+  ObjectSet,
   Osdk,
   PropertyKeys,
   SimplePropertyDef,
@@ -26,6 +27,7 @@ import type {
 } from "@osdk/api";
 import type { ObserveObjectsCallbackArgs } from "@osdk/client/unstable-do-not-use";
 import React from "react";
+import { extractPayloadError, isPayloadLoading } from "./hookUtils.js";
 import { makeExternalStore } from "./makeExternalStore.js";
 import { OsdkContext2 } from "./OsdkContext2.js";
 
@@ -186,9 +188,13 @@ export interface UseOsdkListResult<
    * The total count of objects matching the query (if available from the API)
    */
   totalCount?: string;
-}
 
-const EMPTY_WHERE = {};
+  hasMore: boolean;
+
+  objectSet: ObjectSet<T, RDPs> | undefined;
+
+  refetch: () => Promise<void>;
+}
 
 declare const process: {
   env: {
@@ -258,39 +264,17 @@ export function useOsdkObjects<
     $loadPropertySecurityMetadata,
   } = options ?? {};
 
-  const canonWhere = observableClient.canonicalizeWhereClause<
-    Q,
-    RDPs
-  >(where ?? EMPTY_WHERE);
-
-  const stableCanonWhere = React.useMemo(
-    () => canonWhere,
-    [JSON.stringify(canonWhere)],
-  );
+  const canonOptions = observableClient.canonicalizeOptions({
+    where,
+    withProperties,
+    orderBy,
+    intersectWith,
+    $select,
+  });
 
   const stableRids = React.useMemo(
     () => rids,
     [JSON.stringify(rids)],
-  );
-
-  const stableWithProperties = React.useMemo(
-    () => withProperties,
-    [JSON.stringify(withProperties)],
-  );
-
-  const stableIntersectWith = React.useMemo(
-    () => intersectWith,
-    [JSON.stringify(intersectWith)],
-  );
-
-  const stableOrderBy = React.useMemo(
-    () => orderBy,
-    [JSON.stringify(orderBy)],
-  );
-
-  const stableSelect = React.useMemo(
-    () => $select,
-    [JSON.stringify($select)],
   );
 
   const { subscribe, getSnapShot } = React.useMemo(
@@ -313,18 +297,18 @@ export function useOsdkObjects<
           observableClient.observeList({
             type,
             rids: stableRids,
-            where: stableCanonWhere,
+            where: canonOptions.where,
             dedupeInterval: dedupeIntervalMs ?? 2_000,
             pageSize,
-            orderBy: stableOrderBy,
+            orderBy: canonOptions.orderBy,
             streamUpdates,
-            withProperties: stableWithProperties,
+            withProperties: canonOptions.withProperties,
             autoFetchMore,
-            ...(stableIntersectWith
-              ? { intersectWith: stableIntersectWith }
+            ...(canonOptions.intersectWith
+              ? { intersectWith: canonOptions.intersectWith }
               : {}),
             ...(pivotTo ? { pivotTo } : {}),
-            ...(stableSelect ? { select: stableSelect } : {}),
+            ...(canonOptions.$select ? { select: canonOptions.$select } : {}),
             ...($loadPropertySecurityMetadata
               ? { $loadPropertySecurityMetadata }
               : {}),
@@ -332,7 +316,7 @@ export function useOsdkObjects<
         process.env.NODE_ENV !== "production"
           ? `list ${type.apiName} ${
             stableRids ? `[${stableRids.length} rids]` : ""
-          } ${JSON.stringify(stableCanonWhere)}`
+          } ${JSON.stringify(canonOptions.where)}`
           : void 0,
       );
     },
@@ -342,40 +326,35 @@ export function useOsdkObjects<
       type.apiName,
       type.type,
       stableRids,
-      stableCanonWhere,
+      canonOptions.where,
       dedupeIntervalMs,
       pageSize,
-      stableOrderBy,
+      canonOptions.orderBy,
       streamUpdates,
-      stableWithProperties,
+      canonOptions.withProperties,
       autoFetchMore,
-      stableIntersectWith,
+      canonOptions.intersectWith,
       pivotTo,
-      stableSelect,
+      canonOptions.$select,
       $loadPropertySecurityMetadata,
     ],
   );
 
   const listPayload = React.useSyncExternalStore(subscribe, getSnapShot);
 
-  return React.useMemo(() => {
-    let error: Error | undefined;
-    if (listPayload && "error" in listPayload && listPayload.error) {
-      error = listPayload.error;
-    } else if (listPayload?.status === "error") {
-      error = new Error("Failed to load objects");
-    }
+  const refetch = React.useCallback(async () => {
+    await observableClient.invalidateObjectType(type.apiName);
+  }, [observableClient, type.apiName]);
 
-    return {
-      fetchMore: listPayload?.hasMore ? listPayload.fetchMore : undefined,
-      error,
-      data: listPayload?.resolvedList,
-      isLoading: enabled
-        ? (listPayload?.status === "loading" || listPayload?.status === "init"
-          || !listPayload)
-        : false,
-      isOptimistic: listPayload?.isOptimistic ?? false,
-      totalCount: listPayload?.totalCount,
-    };
-  }, [listPayload, enabled]);
+  return React.useMemo(() => ({
+    fetchMore: listPayload?.hasMore ? listPayload.fetchMore : undefined,
+    error: extractPayloadError(listPayload, "Failed to load objects"),
+    data: listPayload?.resolvedList,
+    isLoading: isPayloadLoading(listPayload, enabled),
+    isOptimistic: listPayload?.isOptimistic ?? false,
+    totalCount: listPayload?.totalCount,
+    hasMore: listPayload?.hasMore ?? false,
+    objectSet: listPayload?.objectSet,
+    refetch,
+  }), [listPayload, enabled, refetch]);
 }

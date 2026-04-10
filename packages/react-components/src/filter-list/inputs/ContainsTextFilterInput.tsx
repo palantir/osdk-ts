@@ -48,7 +48,7 @@ function ContainsTextFilterInputInner({
     <ContainsTextInput
       value={value}
       onChange={handleChange}
-      placeholder={`Search ${propertyKey}...`}
+      placeholder="Search..."
     />
   );
 }

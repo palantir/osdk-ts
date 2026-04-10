@@ -19,7 +19,6 @@ export {
   formatDateForInput,
   parseDateFromInput,
 } from "../../../shared/dateUtils.js";
-export { CheckboxListInput } from "./CheckboxListInput.js";
 export { ContainsTextInput } from "./ContainsTextInput.js";
 export { DateRangeInput } from "./DateRangeInput.js";
 export { NullValueWrapper } from "./NullValueWrapper.js";

@@ -1,7 +1,7 @@
 {
   "name": "@osdk/react-components-storybook",
   "private": true,
-  "version": "0.2.0-beta.10",
+  "version": "0.2.0",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -22,11 +22,13 @@
   },
   "devDependencies": {
     "@osdk/api": "workspace:*",
+    "@osdk/cbac-components": "workspace:*",
     "@osdk/client": "workspace:*",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@osdk/react": "workspace:*",
     "@osdk/react-components": "workspace:*",
     "@osdk/react-components-styles": "workspace:*",
+    "@storybook/addon-a11y": "^10.2.10",
     "@storybook/addon-docs": "^10.2.10",
     "@storybook/addon-links": "^10.2.10",
     "@storybook/addon-mcp": "^0.2.3",
@@ -43,6 +45,7 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "storybook": "^10.2.10",
+    "storybook-addon-tag-badges": "^3.1.0",
     "typescript": "~5.5.4",
     "vite": "^6.0.6"
   },

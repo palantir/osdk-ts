@@ -25,6 +25,12 @@ export type {
   UseOsdkFunctionResult,
 } from "../new/useOsdkFunction.js";
 export { useOsdkFunction } from "../new/useOsdkFunction.js";
+export { useOsdkFunctions } from "../new/useOsdkFunctions.js";
+export type {
+  FunctionQueryParams,
+  UseOsdkFunctionsProps,
+  UseOsdkFunctionsResult,
+} from "../new/useOsdkFunctions.js";
 export { useOsdkObject } from "../new/useOsdkObject.js";
 export type {
   UseOsdkListResult,

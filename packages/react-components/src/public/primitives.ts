@@ -20,6 +20,10 @@ export {
 } from "../base-components/action-button/ActionButton.js";
 export { Dialog, type DialogProps } from "../base-components/dialog/Dialog.js";
 export {
+  SkeletonBar,
+  type SkeletonBarProps,
+} from "../base-components/skeleton/SkeletonBar.js";
+export {
   Tooltip,
   TooltipArrow,
   type TooltipProps,

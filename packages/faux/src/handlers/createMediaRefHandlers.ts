@@ -16,9 +16,16 @@
 
 /* eslint-disable @typescript-eslint/require-await */
 
+import { randomUUID } from "node:crypto";
 import { OntologiesV2 } from "../mock/index.js";
 import type { FauxFoundryHandlersFactory } from "./createFauxFoundryHandlers.js";
 import { requireSearchParams } from "./util/requireSearchParams.js";
+
+/** In-memory store for mock transformation jobs */
+const transformationJobs = new Map<
+  string,
+  { status: "PENDING" | "SUCCESSFUL" | "FAILED"; content: ArrayBuffer }
+>();
 
 export const createMediaRefHandlers: FauxFoundryHandlersFactory = (
   baseUrl,
@@ -72,6 +79,54 @@ export const createMediaRefHandlers: FauxFoundryHandlersFactory = (
           request.headers.get("Content-Type") ?? "application/octet-stream",
           mediaItemPath,
         );
+    },
+  ),
+
+  /**
+   * Initiate a media transformation job
+   */
+  OntologiesV2.MediaReferenceProperties.transform(
+    baseUrl,
+    async () => {
+      const jobId = randomUUID();
+      transformationJobs.set(jobId, {
+        status: "SUCCESSFUL",
+        content: new TextEncoder().encode("transformed-content").buffer,
+      });
+      return {
+        jobId,
+        status: "SUCCESSFUL" as const,
+      };
+    },
+  ),
+
+  /**
+   * Get transformation job status
+   */
+  OntologiesV2.MediaReferenceProperties.getTransformStatus(
+    baseUrl,
+    async ({ params: { transformationJobId } }) => {
+      const job = transformationJobs.get(transformationJobId);
+      if (!job) {
+        return { jobId: transformationJobId, status: "FAILED" as const };
+      }
+      return { jobId: transformationJobId, status: job.status };
+    },
+  ),
+
+  /**
+   * Get transformation job result
+   */
+  OntologiesV2.MediaReferenceProperties.getTransformResult(
+    baseUrl,
+    async ({ params: { transformationJobId } }) => {
+      const job = transformationJobs.get(transformationJobId);
+      if (!job) {
+        return new Response("Not found", { status: 404 });
+      }
+      return new Response(job.content, {
+        headers: { "Content-Type": "application/octet-stream" },
+      });
     },
   ),
 ];

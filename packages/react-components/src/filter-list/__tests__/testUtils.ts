@@ -89,11 +89,11 @@ export function createLinkedPropertyFilterDef(
     type: "LINKED_PROPERTY",
     linkName,
     linkedPropertyKey,
-    linkedFilterComponent: "CHECKBOX_LIST",
-    linkedFilterState: { type: "SELECT", selectedValues: [] },
+    linkedFilterComponent: "LISTOGRAM",
+    linkedFilterState: { type: "EXACT_MATCH", values: [] },
     filterState: {
       type: "linkedProperty",
-      linkedFilterState: { type: "SELECT", selectedValues: [] },
+      linkedFilterState: { type: "EXACT_MATCH", values: [] },
     },
   } as FilterDefinitionUnion<typeof MockObjectType>;
 }

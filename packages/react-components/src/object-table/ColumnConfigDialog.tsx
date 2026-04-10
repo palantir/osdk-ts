@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { Button } from "@base-ui/react/button";
 import { Collapsible } from "@base-ui/react/collapsible";
 import { CaretDown, Cog, SmallInfoSign } from "@blueprintjs/icons";
 import { arrayMove } from "@dnd-kit/sortable";
@@ -312,16 +311,18 @@ function AvailableColumnsList({
         aria-label="Search available columns"
         className={styles.searchContainer}
       />
-      <Collapsible.Root defaultOpen className={styles.propertiesList}>
+      <Collapsible.Root defaultOpen={true} className={styles.propertiesList}>
         <div className={styles.categoryHeader}>
-          <Checkbox
-            checked={allFilteredSelected}
-            indeterminate={someFilteredSelected && !allFilteredSelected}
-            onCheckedChange={handleSelectAllClick}
-            className={styles.checkbox}
-          />
+          <label className={styles.selectAllLabel}>
+            <Checkbox
+              checked={allFilteredSelected}
+              indeterminate={someFilteredSelected && !allFilteredSelected}
+              onCheckedChange={handleSelectAllClick}
+              className={styles.checkbox}
+            />
+            All Columns
+          </label>
           <Collapsible.Trigger className={styles.categoryTrigger}>
-            <span className={styles.categoryTitle}>All Columns</span>
             <span className={styles.categoryCount}>
               {selectedCount}/{totalCount}
             </span>
@@ -370,17 +371,16 @@ function PropertyItem({
 
   return (
     <div className={styles.propertyItem}>
-      <Checkbox
-        checked={isSelected}
-        onCheckedChange={handleClick}
-        className={styles.checkbox}
-      />
-      <Button
-        onClick={handleClick}
-        className={styles.propertyName}
-      >
-        {column.label}
-      </Button>
+      <label className={styles.propertyLabel}>
+        <Checkbox
+          checked={isSelected}
+          onCheckedChange={handleClick}
+          className={styles.checkbox}
+        />
+        <span className={styles.propertyName}>
+          {column.label}
+        </span>
+      </label>
       {showInfoIcon && <SmallInfoSign className={styles.infoIcon} />}
     </div>
   );

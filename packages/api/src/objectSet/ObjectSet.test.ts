@@ -42,9 +42,9 @@ async function* asyncIterateLinkOnce() {
 export function createMockObjectSet<
   Q extends ObjectOrInterfaceDefinition,
 >(): $ObjectSet<Q, never> {
-  let fauxObject: Osdk.Instance<Q>,
-    fauxResults: any,
-    fauxObjectSet: $ObjectSet<Q>;
+  let fauxObject: Osdk.Instance<Q>;
+  let fauxResults: any;
+  let fauxObjectSet: $ObjectSet<Q>;
 
   // eslint-disable-next-line prefer-const
   fauxObject = {

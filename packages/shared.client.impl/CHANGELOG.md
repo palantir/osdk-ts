@@ -1,5 +1,21 @@
 # @osdk/shared.client.impl
 
+## 1.8.0
+
+### Minor Changes
+
+- 322c5bc: Simulated release
+- 35f2f1a: Add Media inputs/outputs for Queries
+
+### Patch Changes
+
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [4a79eb1]
+- Updated dependencies [35f2f1a]
+  - @osdk/shared.net.errors@2.8.0
+  - @osdk/shared.net.fetch@1.8.0
+
 ## 1.8.0-beta.2
 
 ### Minor Changes

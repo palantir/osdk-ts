@@ -1,5 +1,21 @@
 # @osdk/create-app
 
+## 2.8.0
+
+### Minor Changes
+
+- 322c5bc: Simulated release
+- 2d6652c: Change sdkVersion default value to be latest compatible template instead of earliest
+- 35f2f1a: Add Media inputs/outputs for Queries
+
+## 2.8.0-beta.32
+
+## 2.8.0-beta.31
+
+## 2.8.0-beta.30
+
+## 2.8.0-beta.29
+
 ## 2.8.0-beta.28
 
 ## 2.8.0-beta.27

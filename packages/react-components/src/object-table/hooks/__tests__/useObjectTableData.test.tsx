@@ -32,6 +32,7 @@ import { renderHook } from "@testing-library/react";
 import * as React from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { ColumnDefinition } from "../../ObjectTableApi.js";
+import { useFunctionColumnsData } from "../useFunctionColumnsData.js";
 import { useObjectTableData } from "../useObjectTableData.js";
 
 const TestObjectType = {
@@ -60,6 +61,9 @@ vi.mock("@osdk/react/experimental", () => ({
       error: undefined,
       fetchMore: undefined,
       isOptimistic: false,
+      hasMore: false,
+      objectSet: undefined,
+      refetch: vi.fn(),
       // Return the options to verify they were passed correctly
       _testOptions: options,
     };
@@ -71,11 +75,18 @@ vi.mock("@osdk/react/experimental", () => ({
       error: undefined,
       fetchMore: vi.fn(),
       totalCount: undefined,
+      isOptimistic: false,
+      hasMore: false,
+      objectSet: undefined,
+      refetch: vi.fn(),
       // Return the options to verify they were passed correctly
       _testOptions: options,
-      isOptimistic: false,
     };
   }),
+}));
+
+vi.mock("../useFunctionColumnsData.js", () => ({
+  useFunctionColumnsData: vi.fn(() => ({})),
 }));
 
 const TestInterfaceType = {
@@ -433,5 +444,177 @@ describe(useObjectTableData, () => {
         subtract: objectSetOptions.subtract,
       }),
     );
+  });
+
+  it("when function columns are defined without objectSet, should call useFunctionColumnsData with undefined objectSet", () => {
+    const mockBaseData = [
+      { $primaryKey: "1", $apiName: "TestObject", name: "Object 1" },
+      { $primaryKey: "2", $apiName: "TestObject", name: "Object 2" },
+    ];
+
+    vi.mocked(useOsdkObjects).mockReturnValue({
+      data: mockBaseData,
+      isLoading: false,
+      error: undefined,
+      fetchMore: vi.fn(),
+      isOptimistic: false,
+      _testOptions: { pageSize: 50, enabled: true },
+    } as any);
+
+    const columnDefinitions: Array<
+      ColumnDefinition<TestObject, {}, { fn1: any; fn2: any }>
+    > = [
+      {
+        locator: { type: "property", id: "name" as TestObjectKeys },
+      },
+      {
+        locator: {
+          type: "function",
+          id: "fn1",
+          queryDefinition: { apiName: "fn1" } as any,
+          getFunctionParams: () => ({}),
+          getKey: (obj) => String(obj.$primaryKey),
+        },
+      },
+      {
+        locator: {
+          type: "function",
+          id: "fn2",
+          queryDefinition: { apiName: "fn2" } as any,
+          getFunctionParams: () => ({}),
+          getKey: (obj) => String(obj.$primaryKey),
+        },
+      },
+    ];
+
+    const { result } = renderHook(
+      () => useObjectTableData(TestObjectType, columnDefinitions),
+      { wrapper },
+    );
+
+    expect(useFunctionColumnsData).toHaveBeenCalledWith(
+      undefined,
+      mockBaseData,
+      columnDefinitions,
+    );
+    expect(result.current.data).toEqual([
+      {
+        $primaryKey: "1",
+        $apiName: "TestObject",
+        name: "Object 1",
+      },
+      {
+        $primaryKey: "2",
+        $apiName: "TestObject",
+        name: "Object 2",
+      },
+    ]);
+  });
+
+  it("when function columns are defined with objectSet, should call useFunctionColumnsData and returns the merged data", () => {
+    const mockBaseData = [
+      { $primaryKey: "1", $apiName: "TestObject", name: "Object 1" },
+      { $primaryKey: "2", $apiName: "TestObject", name: "Object 2" },
+    ];
+
+    const mockFunctionColumnData = {
+      fn1: {
+        "1": {
+          __asyncCell: true as const,
+          data: "Function result A",
+          isLoading: false,
+        },
+        "2": {
+          __asyncCell: true as const,
+          data: "Function result B",
+          isLoading: false,
+        },
+      },
+      fn2: {
+        "1": { __asyncCell: true as const, data: 100, isLoading: false },
+        "2": { __asyncCell: true as const, data: 200, isLoading: false },
+      },
+    };
+
+    vi.mocked(useObjectSet).mockReturnValue({
+      data: mockBaseData,
+      isLoading: false,
+      error: undefined,
+      fetchMore: vi.fn(),
+      isOptimistic: false,
+      objectSet: mockObjectSet,
+      _testOptions: { pageSize: 50, enabled: true },
+    } as any);
+
+    vi.mocked(useFunctionColumnsData).mockReturnValue(mockFunctionColumnData);
+
+    const columnDefinitions: Array<
+      ColumnDefinition<TestObject, {}, { fn1: any; fn2: any }>
+    > = [
+      {
+        locator: { type: "property", id: "name" as TestObjectKeys },
+      },
+      {
+        locator: {
+          type: "function",
+          id: "fn1",
+          queryDefinition: { apiName: "fn1" } as any,
+          getFunctionParams: () => ({}),
+          getKey: (obj) => String(obj.$primaryKey),
+        },
+      },
+      {
+        locator: {
+          type: "function",
+          id: "fn2",
+          queryDefinition: { apiName: "fn2" } as any,
+          getFunctionParams: () => ({}),
+          getKey: (obj) => String(obj.$primaryKey),
+        },
+      },
+    ];
+
+    const { result } = renderHook(
+      () =>
+        useObjectTableData(
+          TestObjectType,
+          columnDefinitions,
+          undefined,
+          undefined,
+          mockObjectSet,
+        ),
+      { wrapper },
+    );
+
+    expect(useFunctionColumnsData).toHaveBeenCalledWith(
+      mockObjectSet,
+      mockBaseData,
+      columnDefinitions,
+    );
+
+    expect(result.current.data).toEqual([
+      {
+        $primaryKey: "1",
+        $apiName: "TestObject",
+        name: "Object 1",
+        fn1: {
+          __asyncCell: true as const,
+          data: "Function result A",
+          isLoading: false,
+        },
+        fn2: { __asyncCell: true as const, data: 100, isLoading: false },
+      },
+      {
+        $primaryKey: "2",
+        $apiName: "TestObject",
+        name: "Object 2",
+        fn1: {
+          __asyncCell: true as const,
+          data: "Function result B",
+          isLoading: false,
+        },
+        fn2: { __asyncCell: true as const, data: 200, isLoading: false },
+      },
+    ]);
   });
 });

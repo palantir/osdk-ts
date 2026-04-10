@@ -1,5 +1,83 @@
 # @osdk/generator
 
+## 2.8.0
+
+### Minor Changes
+
+- 322c5bc: Simulated release
+- 4bb9769: Add primaryKeyApiName and primaryKeyType to object type const for runtime access
+- abb0e0f: Bump Platform SDK dependencies
+- 1706c79: Relax interface creation validation.
+- 4ef6adc: Fix interface links off of objects
+- 60b5ffb: Add `platformApiName` field to actions to preserve the original API name used by the Foundry platform
+- 35f2f1a: Add Media inputs/outputs for Queries
+- d607557: Allow generating when value type has 0 constraints
+- 60531c9: Add JS Docs to query const
+- 46f0a47: Update platform SDK to 2.57.0 and handle new typeReference query data type
+- 7775359: Generate a valid OSDK package for TS
+- 4470c0d: Add support to execute queries on branches.
+
+### Patch Changes
+
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [4bb9769]
+- Updated dependencies [abb0e0f]
+- Updated dependencies [f294f5a]
+- Updated dependencies [0df859a]
+- Updated dependencies [d284bf2]
+- Updated dependencies [4ef6adc]
+- Updated dependencies [60b5ffb]
+- Updated dependencies [8c30908]
+- Updated dependencies [4a856cb]
+- Updated dependencies [b68cebd]
+- Updated dependencies [35f2f1a]
+- Updated dependencies [46f0a47]
+- Updated dependencies [4470c0d]
+- Updated dependencies [61e33ab]
+  - @osdk/api@2.8.0
+  - @osdk/generator-converters@2.8.0
+
+## 2.8.0-beta.32
+
+### Minor Changes
+
+- d607557: Allow generating when value type has 0 constraints
+- 46f0a47: Update platform SDK to 2.57.0 and handle new typeReference query data type
+
+### Patch Changes
+
+- Updated dependencies [46f0a47]
+  - @osdk/generator-converters@2.8.0-beta.32
+  - @osdk/api@2.8.0-beta.32
+
+## 2.8.0-beta.31
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.31
+- @osdk/generator-converters@2.8.0-beta.31
+
+## 2.8.0-beta.30
+
+### Minor Changes
+
+- 4ef6adc: Fix interface links off of objects
+
+### Patch Changes
+
+- Updated dependencies [4ef6adc]
+  - @osdk/api@2.8.0-beta.30
+  - @osdk/generator-converters@2.8.0-beta.30
+
+## 2.8.0-beta.29
+
+### Patch Changes
+
+- Updated dependencies [4a856cb]
+  - @osdk/api@2.8.0-beta.29
+  - @osdk/generator-converters@2.8.0-beta.29
+
 ## 2.8.0-beta.28
 
 ### Patch Changes

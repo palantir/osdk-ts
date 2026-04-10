@@ -127,7 +127,7 @@ export interface UseOsdkFunctionResult<Q extends QueryDefinition<unknown>> {
    * Manually refetch the function.
    * Useful for "pull to refresh" or retry patterns.
    */
-  refetch: () => void;
+  refetch: () => Promise<void>;
 }
 
 declare const process: {
@@ -249,8 +249,8 @@ export function useOsdkFunction<Q extends QueryDefinition<unknown>>(
 
   const payload = React.useSyncExternalStore(subscribe, getSnapShot);
 
-  const refetch = React.useCallback(() => {
-    void observableClient.invalidateFunction(queryDef, paramsForApi);
+  const refetch = React.useCallback(async () => {
+    await observableClient.invalidateFunction(queryDef, paramsForApi);
   }, [observableClient, queryDef, paramsForApi]);
 
   return React.useMemo(() => {

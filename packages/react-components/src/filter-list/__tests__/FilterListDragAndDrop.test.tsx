@@ -24,7 +24,7 @@ import type { FilterState } from "../FilterListItemApi.js";
 import { getFilterKey } from "../utils/getFilterKey.js";
 import { getFilterLabel } from "../utils/getFilterLabel.js";
 import type { MockObjectType } from "./testUtils.js";
-import { createPropertyFilterDef, createSelectState } from "./testUtils.js";
+import { createPropertyFilterDef } from "./testUtils.js";
 
 afterEach(cleanup);
 
@@ -36,7 +36,10 @@ const stubRenderInput: RenderFilterInput<TestDef> = ({
 
 function createDefinitions() {
   return [
-    createPropertyFilterDef("name", "CHECKBOX_LIST", createSelectState([])),
+    createPropertyFilterDef("name", "LISTOGRAM", {
+      type: "EXACT_MATCH",
+      values: [],
+    }),
     createPropertyFilterDef("age", "NUMBER_RANGE", {
       type: "NUMBER_RANGE",
       minValue: undefined,
@@ -127,8 +130,8 @@ describe("FilterList drag and drop", () => {
       {
         ...createPropertyFilterDef(
           "name",
-          "CHECKBOX_LIST",
-          createSelectState([]),
+          "LISTOGRAM",
+          { type: "EXACT_MATCH", values: [] },
         ),
         label: "Full Name",
       } as FilterDefinitionUnion<typeof MockObjectType>,

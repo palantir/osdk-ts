@@ -28,26 +28,33 @@ import {
   validateActionParameters,
   validateParameterOrdering,
 } from "./defineAction.js";
+import {
+  getProperty,
+  getPropertyKeys,
+  toPropertyMap,
+} from "./object/objectPropertyHelpers.js";
 import { isStruct } from "./properties/PropertyTypeType.js";
 
 export function defineCreateObjectAction(
   defInput: ActionTypeUserDefinition,
 ): ActionType {
   const def = cloneDefinition(defInput);
+  const propertyKeys = getPropertyKeys(def.objectType);
+
   validateActionParameters(
     def,
-    Object.keys(def.objectType.properties ?? {}),
+    propertyKeys,
     def.objectType.apiName,
   );
   const propertiesWithDerivedDatasources = (def.objectType.datasources ?? [])
     .filter(ds => ds.type === "derived").flatMap(ds =>
       Object.keys(ds.propertyMapping)
     );
-  const propertyParameters = Object.keys(def.objectType.properties ?? {})
+  const propertyParameters = propertyKeys
     .filter(
       id =>
-        isPropertyParameter(def, id, def.objectType.properties?.[id].type!)
-        && !isStruct(def.objectType.properties?.[id].type!)
+        isPropertyParameter(def, id, getProperty(def.objectType, id)?.type!)
+        && !isStruct(getProperty(def.objectType, id)?.type!)
         && !propertiesWithDerivedDatasources.includes(id),
     );
   const parameterNames = new Set(propertyParameters);
@@ -67,7 +74,7 @@ export function defineCreateObjectAction(
   }
   const parameters = createParameters(
     def,
-    def.objectType.properties ?? {},
+    toPropertyMap(def.objectType),
     parameterNames,
   );
   const mappings = Object.fromEntries(
@@ -79,7 +86,7 @@ export function defineCreateObjectAction(
   return defineAction({
     apiName: actionApiName,
     displayName: def.displayName ?? `Create ${def.objectType.displayName}`,
-    parameters: parameters,
+    parameters,
     status: def.status ?? "active",
     entities: {
       affectedInterfaceTypes: [],
@@ -105,7 +112,7 @@ export function defineCreateObjectAction(
     parameterOrdering: def.parameterOrdering
       ?? createDefaultParameterOrdering(
         def,
-        Object.keys(def.objectType.properties ?? {}),
+        propertyKeys,
         parameters,
       ),
     ...(def.actionLevelValidation

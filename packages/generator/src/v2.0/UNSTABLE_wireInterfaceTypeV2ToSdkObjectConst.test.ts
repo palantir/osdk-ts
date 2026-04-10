@@ -139,6 +139,7 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
         ObjectSet as $ObjectSet,
         Osdk as $Osdk,
         PropertyValueWireToClient as $PropType,
+        SingleLinkAccessor as $SingleLinkAccessor,
       } from "@osdk/api";
 
       export type OsdkObjectLinks$Bar = {};
@@ -239,6 +240,7 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
         ObjectSet as $ObjectSet,
         Osdk as $Osdk,
         PropertyValueWireToClient as $PropType,
+        SingleLinkAccessor as $SingleLinkAccessor,
       } from "@osdk/api";
 
       export type OsdkObjectLinks$Foo = {};
@@ -342,6 +344,7 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
         ObjectSet as $ObjectSet,
         Osdk as $Osdk,
         PropertyValueWireToClient as $PropType,
+        SingleLinkAccessor as $SingleLinkAccessor,
       } from "@osdk/api";
 
       export type OsdkObjectLinks$Foo = {};
@@ -457,6 +460,7 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
         ObjectSet as $ObjectSet,
         Osdk as $Osdk,
         PropertyValueWireToClient as $PropType,
+        SingleLinkAccessor as $SingleLinkAccessor,
       } from "@osdk/api";
 
       export type OsdkObjectLinks$Foo = {};

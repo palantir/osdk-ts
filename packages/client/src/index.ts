@@ -32,6 +32,8 @@ export type {
   InterfaceDefinition,
   InterfaceMetadata,
   Logger,
+  Media,
+  MediaMetadata,
   MediaReference,
   MediaUpload,
   ObjectMetadata,

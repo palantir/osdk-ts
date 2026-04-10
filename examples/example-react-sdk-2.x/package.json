@@ -18,8 +18,8 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@blueprintjs/core": "^6.9.1",
-    "@blueprintjs/icons": "^6.6.0",
+    "@blueprintjs/core": "^6.10.0",
+    "@blueprintjs/icons": "^6.7.0",
     "@osdk/client": "workspace:*",
     "@osdk/e2e.generated.catchall": "workspace:*",
     "@osdk/foundry": "latest",

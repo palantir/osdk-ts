@@ -56,6 +56,7 @@ import {
   RDP_IDX as LIST_RDP_IDX,
 } from "./list/ListCacheKey.js";
 import { ListsHelper } from "./list/ListsHelper.js";
+import { MediaHelper } from "./media/MediaHelper.js";
 import {
   API_NAME_IDX as OBJECT_API_NAME_IDX,
   RDP_CONFIG_IDX as OBJECT_RDP_CONFIG_IDX,
@@ -144,6 +145,7 @@ export class Store {
   readonly lists: ListsHelper;
   readonly objects: ObjectsHelper;
   readonly links: LinksHelper;
+  readonly media: MediaHelper;
   readonly objectSets: ObjectSetHelper;
 
   constructor(client: Client) {
@@ -183,6 +185,7 @@ export class Store {
       this.orderByCanonicalizer,
       this.selectCanonicalizer,
     );
+    this.media = new MediaHelper(this, this.cacheKeys);
     this.objectSets = new ObjectSetHelper(
       this,
       this.cacheKeys,
@@ -220,6 +223,10 @@ export class Store {
 
     this.subjects.delete(key);
     this.queries.delete(key);
+
+    if (key.type === "object") {
+      this.objectCacheKeyRegistry.unregister(key);
+    }
   };
 
   applyAction: <Q extends ActionDefinition<any>>(

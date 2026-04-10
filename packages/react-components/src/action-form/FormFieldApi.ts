@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,9 +39,8 @@ export interface FormFieldDefinition<
 
   /**
    * Display label for the field
-   * If not provided, the form field will not show any label.
    */
-  label?: string;
+  label: string;
 
   /**
    * Default value of the field
@@ -98,16 +97,18 @@ export interface FormFieldDefinition<
   validate?: (value: FieldValueType<Q, K>) => Promise<boolean>;
 
   /**
-   * The component props for the form field
-   * Excludes runtime props (key, onChange) which are managed by ActionForm
+   * The component props for the form field.
+   * Excludes runtime props (value, onChange) which are managed by ActionForm.
    */
-  fieldComponentProps?: Omit<
+  fieldComponentProps: Omit<
     FormFieldPropsByType[
       ValidFormFieldForPropertyType<
         FieldDescriptorType<Q, K>
       >
     ],
-    "key" | "onChange"
+    FormManagedProps<
+      ValidFormFieldForPropertyType<FieldDescriptorType<Q, K>>
+    >
   >;
 }
 
@@ -236,6 +237,20 @@ export interface FilePickerProps extends BaseFormFieldProps<File | File[]> {
    * Maximum file size in bytes
    */
   maxSize?: number;
+
+  /**
+   * The text displayed when no file is selected.
+   *
+   * @default "No file chosen"
+   */
+  text?: string;
+
+  /**
+   * The text displayed on the browse button.
+   *
+   * @default "Browse"
+   */
+  buttonText?: string;
 }
 
 /**
@@ -280,21 +295,29 @@ export interface TextInputFieldProps extends
 /**
  * Number input field props
  */
-export interface NumberInputFieldProps extends
-  BaseFormFieldProps<number>,
-  Pick<
-    React.InputHTMLAttributes<HTMLInputElement>,
-    /**
-     * If provided, this will be added to the field validation
-     */
-    | "min"
-    /**
-     * If provided, this will be added to the field validation
-     */
-    | "max"
-    | "step"
-  >
-{}
+export interface NumberInputFieldProps extends BaseFormFieldProps<number> {
+  /**
+   * Minimum allowed value.
+   */
+  min?: number;
+
+  /**
+   * Maximum allowed value.
+   */
+  max?: number;
+
+  /**
+   * Step increment for the input. Used by the stepper buttons and ArrowUp/ArrowDown keyboard stepping.
+   *
+   * @default 1
+   */
+  step?: number;
+
+  /**
+   * Placeholder text shown when the input is empty.
+   */
+  placeholder?: string;
+}
 
 /**
  * Radio buttons field props
@@ -322,8 +345,15 @@ export interface Option<V> {
  * Object set field displays the summary of the count of the given object set
  */
 export interface ObjectSetFieldProps<T extends ObjectTypeDefinition>
-  extends BaseFormFieldProps<ObjectSet<T>>
-{}
+  extends Pick<BaseFormFieldProps<ObjectSet<T>>, "id" | "value">
+{
+  /**
+   * Message displayed when no object set is provided.
+   *
+   * @default "Object set is not defined"
+   */
+  emptyMessage?: string;
+}
 
 /**
  * Custom field props for user-defined renderers
@@ -346,6 +376,12 @@ export interface BaseFormFieldProps<V> {
    * The value of the form field
    */
   value: V | null;
+
+  /**
+   * The default value of the form field.
+   */
+  defaultValue?: V;
+
   /**
    * Called when the field value changes.
    *
@@ -437,6 +473,16 @@ export type FieldType =
   | { type: "struct"; struct: Record<string, string> };
 
 /**
+ * Props managed by form state infrastructure (FieldBridge / RHF).
+ * Fields with onChange participate in form state → value and onChange are managed
+ * externally. Read-only fields (no onChange, e.g. ObjectSetField) keep value in
+ * fieldComponentProps so it bypasses form state cloning.
+ */
+type FormManagedProps<K extends FieldComponent> = "onChange" extends
+  keyof FormFieldPropsByType[K] ? "value" | "onChange"
+  : "onChange";
+
+/**
  * An OSDK-agnostic field definition used by BaseForm and FormFieldRenderer.
  * Contains only the information needed to render a single field — no generics,
  * no compile-time parameter constraints.
@@ -449,13 +495,12 @@ export type RendererFieldDefinition = {
     fieldKey: string;
     fieldComponent: K;
     fieldType?: FieldType;
-    label?: string;
-    defaultValue?: unknown;
+    label: string;
     isRequired?: boolean;
     placeholder?: string;
     helperText?: string;
     helperTextPlacement?: "bottom" | "tooltip";
-    fieldComponentProps?: Omit<FormFieldPropsByType[K], "value" | "onChange">;
+    fieldComponentProps: Omit<FormFieldPropsByType[K], FormManagedProps<K>>;
   };
 }[FieldComponent];
 
