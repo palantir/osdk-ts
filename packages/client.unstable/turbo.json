@@ -1,12 +1,11 @@
 {
   "extends": ["//"],
   "tasks": {
-    "codegen": {
-      "inputs": ["codegen.mjs"],
-      "outputs": ["src/generatedNoCheck/**/*"]
-    },
     "transpileEsm": {
       "dependsOn": ["^transpileEsm"]
+    },
+    "transpileBrowser": {
+      "dependsOn": ["^transpileBrowser"]
     }
   }
 }
