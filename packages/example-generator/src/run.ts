@@ -154,6 +154,7 @@ async function generateCreateAppExamples(
     osdkRegistryUrl: osdkArgs?.registryUrl,
     corsProxy: false,
     scopes: ["api:ontologies-read", "api:ontologies-write"],
+    authless: false,
   });
 
   await mutateFiles(tmpDir, exampleId, template, sdkVersion, osdkArgs != null);
