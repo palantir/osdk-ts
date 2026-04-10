@@ -55,7 +55,7 @@ describe("BaseForm", () => {
         />,
       );
 
-      const nameInput = screen.getByRole("textbox", { name: "name" });
+      const nameInput = screen.getByRole("textbox", { name: /name/ });
       fireEvent.change(nameInput, { target: { value: "Alice" } });
 
       fireEvent.click(screen.getByRole("button", { name: /submit/i }));
@@ -103,7 +103,7 @@ describe("BaseForm", () => {
         />,
       );
 
-      const nameInput = screen.getByRole("textbox", { name: "name" });
+      const nameInput = screen.getByRole("textbox", { name: /name/ });
       fireEvent.change(nameInput, { target: { value: "Typed" } });
 
       fireEvent.click(screen.getByRole("button", { name: /submit/i }));
@@ -184,7 +184,7 @@ describe("BaseForm", () => {
         />,
       );
 
-      const nameInput = screen.getByRole("textbox", { name: "name" });
+      const nameInput = screen.getByRole("textbox", { name: /name/ });
       fireEvent.change(nameInput, { target: { value: "Updated" } });
 
       expect(onFieldValueChange).toHaveBeenCalledWith("name", "Updated");
@@ -239,7 +239,7 @@ describe("BaseForm", () => {
 
       render(<ControlledWrapper />);
 
-      const nameInput = screen.getByRole("textbox", { name: "name" });
+      const nameInput = screen.getByRole("textbox", { name: /name/ });
       fireEvent.change(nameInput, { target: { value: "Updated" } });
 
       fireEvent.click(screen.getByRole("button", { name: /submit/i }));
@@ -266,7 +266,7 @@ describe("BaseForm", () => {
         />,
       );
 
-      const nameInput = screen.getByRole("textbox", { name: "name" });
+      const nameInput = screen.getByRole("textbox", { name: /name/ });
       fireEvent.change(nameInput, { target: { value: "User Typed This" } });
 
       fireEvent.click(screen.getByRole("button", { name: /submit/i }));
@@ -288,7 +288,7 @@ describe("BaseForm", () => {
         />,
       );
 
-      const input = document.getElementById("name")!;
+      const input = screen.getByRole("textbox", { name: /name/ });
       fireEvent.focus(input);
       fireEvent.blur(input);
 
@@ -312,7 +312,7 @@ describe("BaseForm", () => {
         />,
       );
 
-      const input = document.getElementById("name")!;
+      const input = screen.getByRole("textbox", { name: /name/ });
       fireEvent.change(input, { target: { value: "ab" } });
       fireEvent.blur(input);
 
@@ -331,7 +331,7 @@ describe("BaseForm", () => {
         />,
       );
 
-      const input = document.getElementById("name")!;
+      const input = screen.getByRole("textbox", { name: /name/ });
       fireEvent.focus(input);
       fireEvent.blur(input);
 
@@ -373,7 +373,9 @@ describe("BaseForm", () => {
       );
 
       const getSubmitButton = () =>
-        document.querySelector("button[type='submit']") as HTMLButtonElement;
+        document.querySelector(
+          "button[type='submit']",
+        ) as HTMLButtonElement;
 
       expect(getSubmitButton().disabled).toBe(false);
 
@@ -393,10 +395,12 @@ describe("BaseForm", () => {
       );
 
       const getSubmitButton = () =>
-        document.querySelector("button[type='submit']") as HTMLButtonElement;
+        document.querySelector(
+          "button[type='submit']",
+        ) as HTMLButtonElement;
 
       // Touch the field first so RHF tracks it for revalidation
-      const input = document.getElementById("name")!;
+      const input = screen.getByRole("textbox", { name: /name/ });
       fireEvent.focus(input);
       fireEvent.blur(input);
 
@@ -456,7 +460,7 @@ describe("BaseForm", () => {
         expect(screen.getByText("Server error")).toBeDefined();
       });
 
-      const input = screen.getByRole("textbox", { name: "name" });
+      const input = screen.getByRole("textbox", { name: /name/ });
       fireEvent.change(input, { target: { value: "Alice" } });
 
       await waitFor(() => {

@@ -115,6 +115,62 @@ describe("useAsyncAction", () => {
     expect(result.current.error).toBeUndefined();
   });
 
+  it("does not update state after unmount", async () => {
+    let resolve: () => void;
+    const action = vi.fn(
+      () =>
+        new Promise<void>((r) => {
+          resolve = r;
+        }),
+    );
+
+    const { result, unmount } = renderHook(() => useAsyncAction(action));
+
+    let promise: Promise<void>;
+    act(() => {
+      promise = result.current.execute();
+    });
+
+    expect(result.current.isPending).toBe(true);
+
+    unmount();
+
+    await act(async () => {
+      resolve!();
+      await promise!;
+    });
+
+    // After unmount + resolve, isPending should still be true
+    // because the finally block skipped the state update
+    expect(result.current.isPending).toBe(true);
+  });
+
+  it("does not set error state after unmount", async () => {
+    let reject: (err: Error) => void;
+    const action = vi.fn(
+      () =>
+        new Promise<void>((_resolve, rej) => {
+          reject = rej;
+        }),
+    );
+
+    const { result, unmount } = renderHook(() => useAsyncAction(action));
+
+    let promise: Promise<void>;
+    act(() => {
+      promise = result.current.execute();
+    });
+
+    unmount();
+
+    await act(async () => {
+      reject!(new Error("boom"));
+      await promise!;
+    });
+
+    expect(result.current.error).toBeUndefined();
+  });
+
   it("handles synchronous (void) actions", async () => {
     const action = vi.fn();
 

@@ -106,9 +106,14 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
 
   const isFormPending = isPending || isSubmitting;
 
+  const labelByFieldKey = useMemo(
+    () => new Map(fieldDefinitions.map((d) => [d.fieldKey, d.label])),
+    [fieldDefinitions],
+  );
+
   // RHF reuses the same errors object reference across renders so we cannot memoize errorEntries
   const errorEntries = Object.entries(errors).map(([key, entry]) => ({
-    label: fieldDefinitions.find((d) => d.fieldKey === key)?.label ?? key,
+    label: labelByFieldKey.get(key) ?? key,
     message: entry?.message ?? "Invalid",
   }));
   const areErrorsPresent = errorEntries.length > 0;
@@ -215,7 +220,8 @@ interface ErrorIndicatorProps {
   errorEntries: ReadonlyArray<ErrorEntry>;
 }
 
-const ErrorIndicator = memo(function ErrorIndicatorFn({
+// memo omitted: errorEntries is always a new array (RHF reuses the same errors ref)
+function ErrorIndicator({
   errorEntries,
 }: ErrorIndicatorProps): React.ReactElement | null {
   if (errorEntries.length === 0) {
@@ -248,4 +254,4 @@ const ErrorIndicator = memo(function ErrorIndicatorFn({
       </Tooltip.Portal>
     </Tooltip.Root>
   );
-});
+}
