@@ -89,13 +89,15 @@ interface CacheEntryBase {
 }
 
 export type CacheEntry =
-  | CacheEntryBase & { type: "object"; queryParams?: undefined }
+  | CacheEntryBase & { type: "object" }
   | CacheEntryBase & {
     type: "list";
-    queryParams?: { where?: unknown; orderBy?: unknown; pageSize?: number };
+    where?: unknown;
+    orderBy?: unknown;
+    pageSize?: number;
   }
-  | CacheEntryBase & { type: "link"; queryParams?: { linkName?: string } }
-  | CacheEntryBase & { type: "objectSet"; queryParams?: undefined };
+  | CacheEntryBase & { type: "link"; linkName?: string }
+  | CacheEntryBase & { type: "objectSet" };
 
 export interface ObserveObjectOptions<
   T extends ObjectOrInterfaceDefinition,
