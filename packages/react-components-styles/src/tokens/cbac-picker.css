@@ -24,6 +24,8 @@
   --osdk-cbac-banner-border-radius: var(--osdk-surface-border-radius);
 
   --osdk-cbac-banner-border-color: var(--osdk-surface-border-color-default);
+  --osdk-cbac-banner-placeholder-bg: var(--osdk-intent-default-disabled);
+  --osdk-cbac-banner-placeholder-color: var(--osdk-typography-color-default-rest);
 
   /* Marking Button */
   --osdk-cbac-marking-button-padding: calc(var(--osdk-surface-spacing) * 0.5)
@@ -127,6 +129,10 @@
   --osdk-cbac-skeleton-line-height: 16px;
   --osdk-cbac-skeleton-line-narrow-width: 80%;
 
+  /* Danger Callout */
+  --osdk-cbac-danger-callout-bg: var(--osdk-intent-danger-subtle-bg, #fde8e8);
+  --osdk-cbac-danger-callout-color: var(--osdk-intent-danger-rest, #c23030);
+
   /* Popover Warning Callout */
   --osdk-cbac-warning-callout-bg: var(--osdk-intent-warning-subtle);
   --osdk-cbac-warning-callout-color: var(--osdk-intent-warning-rest);
@@ -136,6 +142,20 @@
   --osdk-cbac-warning-callout-font-size: var(
     --osdk-typography-size-body-small
   );
+
+  /* Marking Tooltip */
+  --osdk-cbac-marking-tooltip-max-width: 280px;
+  --osdk-cbac-marking-tooltip-padding: calc(var(--osdk-surface-spacing) * 1.5);
+  --osdk-cbac-marking-tooltip-font-size: var(--osdk-typography-size-body-small);
+  --osdk-cbac-marking-tooltip-z-index: var(--osdk-surface-z-index-4);
+
+  /* Marking Button Selected Hover */
+  --osdk-cbac-marking-button-bg-selected-hover: var(
+    --osdk-cbac-marking-button-bg-selected
+  );
+
+  /* Expand Icon */
+  --osdk-cbac-expand-icon-color: var(--osdk-typography-color-muted);
 
   /* Disabled State */
   --osdk-cbac-disabled-opacity: 0.6;

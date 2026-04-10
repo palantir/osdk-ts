@@ -144,6 +144,7 @@ const archetypeRules = archetypes(
       "@osdk/widget.client",
       "@osdk/vite-plugin-oac",
       "@osdk/vite-plugin-superrepo",
+      "@osdk/vite-plugin-status-reporter",
       "@osdk/faux",
       "@osdk/osdk-docs-context",
     ],
@@ -348,7 +349,7 @@ const archetypeRules = archetypes(
       ...LIBRARY_RULES,
       react: true,
       cssExport: true,
-      extraPublishFiles: ["AGENTS.md"],
+      extraPublishFiles: ["AGENTS.md", "docs"],
     },
   )
   .addArchetype(

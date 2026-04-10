@@ -15,7 +15,11 @@
  */
 
 import type { Media, MediaReference, MediaUpload } from "@osdk/api";
-import { __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference } from "@osdk/api/unstable";
+import {
+  __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference,
+  __EXPERIMENTAL__NOT_SUPPORTED_YET__transformAndWait,
+  type MediaTransformation,
+} from "@osdk/api/unstable";
 import {
   $Actions,
   $Queries,
@@ -62,7 +66,7 @@ async function runCreateMediaReferenceTest(
     __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference,
   )
     .createMediaReference({
-      data: data,
+      data,
       fileName: "test15.png",
       objectType: MnayanOsdkMediaObject,
       // @ts-expect-error
@@ -139,6 +143,97 @@ async function runMediaQueryTest(): Promise<void> {
   console.log((await output.fetchMetadata()).sizeBytes);
 }
 
+// ─── Example transformations ──────────────────────────────────────────────────
+// One canonical example per structural category, exercising the new sub-types.
+
+const imageResize: MediaTransformation = {
+  $image: {
+    $encoding: "png",
+    $operations: [{ $resize: { $width: 50, $height: 50 } }],
+  },
+};
+
+const videoTranscode: MediaTransformation = {
+  $video: { $encoding: "mp4", $operation: { $transcode: {} } },
+};
+
+const ocrTransformation: MediaTransformation = {
+  $imageToText: {
+    $operation: {
+      $ocr: {
+        $parameters: {
+          $outputFormat: { $text: {} },
+          $languages: [{ $language: "EN" }],
+        },
+      },
+    },
+  },
+};
+
+const transcribeAudio: MediaTransformation = {
+  $audioToText: {
+    $operation: {
+      $transcribe: {
+        $language: "EN",
+        $outputFormat: { $plainTextNoSegmentData: { $addTimestamps: true } },
+        $performanceMode: "MORE_ECONOMICAL",
+      },
+    },
+  },
+};
+
+const extractDocText: MediaTransformation = {
+  $documentToText: {
+    $operation: {
+      $extractLayoutAwareTextV2: {
+        $pageRange: { $startPageInclusive: 0, $endPageExclusive: 5 },
+        $config: {
+          $format: "MARKDOWN",
+          $mode: "AUTO",
+          $languages: [{ $language: "EN" }],
+        },
+      },
+    },
+  },
+};
+
+const slicePdf: MediaTransformation = {
+  $documentToDocument: {
+    $encoding: "pdf",
+    $operation: {
+      $slicePdfRange: {
+        $startPageInclusive: 0,
+        $endPageExclusive: 10,
+      },
+    },
+  },
+};
+
+async function runTransformAndWaitTest(
+  mediaReference: MediaReference,
+): Promise<void> {
+  const transformation = imageResize;
+
+  console.log("Input transformation:", JSON.stringify(transformation, null, 2));
+  const result = await client(
+    __EXPERIMENTAL__NOT_SUPPORTED_YET__transformAndWait,
+  ).transformAndWait({
+    mediaReference,
+    transformation,
+  });
+
+  if (!result.ok) {
+    const body = await result.text();
+    throw new Error(
+      `transformAndWait failed with status ${result.status}: ${body}`,
+    );
+  }
+
+  const blob = await result.blob();
+  console.log("Transformed blob size:", blob.size, "bytes");
+  console.log("Transformed blob type:", blob.type);
+}
+
 export async function runMediaTest(): Promise<void> {
   const result = await client(MnayanOsdkMediaObject).fetchOne(
     "7c2aa4e0-9cd6-48c1-9d09-653249feb4e7",
@@ -181,6 +276,10 @@ export async function runMediaTest(): Promise<void> {
   console.log("Testing Media Query");
   await runMediaQueryTest();
   console.log("SUCCESS: Testing Media Query");
+
+  console.log("Testing transformAndWait");
+  await runTransformAndWaitTest(result.mediaReference.getMediaReference());
+  console.log("SUCCESS: Testing transformAndWait");
 }
 
 void runMediaTest();

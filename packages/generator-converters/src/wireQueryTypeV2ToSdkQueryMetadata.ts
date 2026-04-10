@@ -36,6 +36,15 @@ export function wireQueryTypeV2ToSdkQueryMetadata(
     ),
     output: wireQueryDataTypeToQueryDataTypeDefinition(input.output),
     rid: input.rid,
+    typeReferences: input.typeReferences
+        && Object.keys(input.typeReferences).length > 0
+      ? Object.fromEntries(
+        Object.entries(input.typeReferences).map(([typeId, dataType]) => [
+          typeId,
+          wireQueryDataTypeToQueryDataTypeDefinition(dataType),
+        ]),
+      )
+      : undefined,
   };
 }
 
