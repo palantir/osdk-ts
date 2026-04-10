@@ -10,6 +10,7 @@
   },
   "exports": {
     ".": {
+      "source": "./src/index.ts",
       "browser": "./build/browser/index.js",
       "import": {
         "types": "./build/types/index.d.ts",
@@ -19,6 +20,7 @@
       "default": "./build/browser/index.js"
     },
     "./experimental": {
+      "source": "./src/public/experimental.ts",
       "browser": "./build/browser/public/experimental.js",
       "import": {
         "types": "./build/types/public/experimental.d.ts",
@@ -28,6 +30,7 @@
       "default": "./build/browser/public/experimental.js"
     },
     "./internal": {
+      "source": "./src/public/internal.ts",
       "browser": "./build/browser/public/internal.js",
       "import": {
         "types": "./build/types/public/internal.d.ts",
@@ -37,6 +40,7 @@
       "default": "./build/browser/public/internal.js"
     },
     "./unstable-do-not-use": {
+      "source": "./src/public/unstable-do-not-use.ts",
       "browser": "./build/browser/public/unstable-do-not-use.js",
       "import": {
         "types": "./build/types/public/unstable-do-not-use.d.ts",
@@ -46,6 +50,7 @@
       "default": "./build/browser/public/unstable-do-not-use.js"
     },
     "./*": {
+      "source": "./src/public/*.ts",
       "browser": "./build/browser/public/*.js",
       "import": {
         "types": "./build/types/public/*.d.ts",

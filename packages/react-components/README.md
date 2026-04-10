@@ -287,7 +287,7 @@ pnpm --filter @osdk/e2e.sandbox.peopleapp transpileAllDeps
 pnpm --filter @osdk/e2e.sandbox.peopleapp dev
 ```
 
-Changes to `@osdk/react`, `@osdk/react-components`, and `@osdk/api` source files are picked up automatically via HMR. Changes to `@osdk/client` require a manual rebuild (`pnpm turbo transpileBrowser --filter=@osdk/client`).
+Changes to `@osdk/react`, `@osdk/react-components`, `@osdk/api`, and `@osdk/client` source files are picked up automatically via HMR.
 
 ## Why this package?
 

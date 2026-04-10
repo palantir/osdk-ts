@@ -20,6 +20,10 @@ export default defineConfig(({ mode }) => {
     resolve: {
       conditions: ["source"],
     },
+    define: {
+      "process.env.PACKAGE_VERSION": JSON.stringify("dev"),
+      "process.env.MODE": JSON.stringify("development"),
+    },
     server: {
       port: 8080,
       proxy: {

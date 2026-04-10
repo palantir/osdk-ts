@@ -68,6 +68,8 @@ const config: StorybookConfig = {
       ...config.define,
       "import.meta.env.SSR": false,
       global: "globalThis",
+      "process.env.PACKAGE_VERSION": JSON.stringify("dev"),
+      "process.env.MODE": JSON.stringify("development"),
     };
 
     // Configure build options

@@ -84,18 +84,9 @@ const archetypeRules = archetypes(
     "checkApiPackages",
     [
       "@osdk/client",
+      "@osdk/api",
       "@osdk/functions",
       "@osdk/functions-testing.experimental",
-    ],
-    {
-      ...LIBRARY_RULES,
-      checkApi: true,
-    },
-  )
-  .addArchetype(
-    "checkApiPackagesWithSource",
-    [
-      "@osdk/api",
     ],
     {
       ...LIBRARY_RULES,
@@ -352,17 +343,6 @@ const archetypeRules = archetypes(
     "reactLibraryWithCss",
     [
       "@osdk/cbac-components",
-    ],
-    {
-      ...LIBRARY_RULES,
-      react: true,
-      cssExport: true,
-      extraPublishFiles: ["AGENTS.md", "docs"],
-    },
-  )
-  .addArchetype(
-    "reactLibraryWithCssAndSource",
-    [
       "@osdk/react-components",
     ],
     {
