@@ -107,7 +107,7 @@ const CUSTOM_ANNOTATIONS: PdfAnnotation[] = [
 ];
 
 const meta: Meta<PdfViewerProps> = {
-  title: "Components/PdfViewer/Recipes",
+  title: "Experimental/PdfViewer/Recipes",
   component: BasePdfViewer,
   args: {
     src: SAMPLE_PDF_URL,

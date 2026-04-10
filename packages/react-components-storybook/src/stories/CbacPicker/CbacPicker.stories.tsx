@@ -17,9 +17,9 @@
 import {
   BaseCbacBanner,
   BaseCbacPicker,
-  BaseCbacPickerDialog,
+  CbacPicker,
+  CbacPickerDialog,
   computeMarkingStates,
-  toggleMarking,
 } from "@osdk/cbac-components/experimental";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useCallback, useMemo, useState } from "react";
@@ -32,7 +32,8 @@ import {
 } from "./mockData.js";
 
 const meta: Meta<typeof BaseCbacPicker> = {
-  title: "Components/CbacPicker",
+  title: "Experimental/CbacPicker",
+  tags: ["experimental"],
   component: BaseCbacPicker,
   parameters: {
     controls: {
@@ -53,8 +54,6 @@ const BANNER_ROW_STYLE = {
 } as const;
 
 const EMPTY_SELECTED: string[] = [];
-const EMPTY_IMPLIED: string[] = [];
-const EMPTY_DISALLOWED: string[] = [];
 
 function InteractivePicker(
   { initialSelection }: { initialSelection?: string[] },
@@ -63,31 +62,11 @@ function InteractivePicker(
     initialSelection ?? EMPTY_SELECTED,
   );
 
-  const markingStates = useMemo(
-    () =>
-      computeMarkingStates(
-        selectedIds,
-        EMPTY_IMPLIED,
-        EMPTY_DISALLOWED,
-      ),
-    [selectedIds],
-  );
-
-  const handleToggle = useCallback(
-    (markingId: string) => {
-      setSelectedIds((prev) =>
-        toggleMarking(markingId, prev, mockCategoryGroups)
-      );
-    },
-    [],
-  );
-
   return (
     <div style={PICKER_STYLE}>
-      <BaseCbacPicker
-        categories={mockCategoryGroups}
-        markingStates={markingStates}
-        onMarkingToggle={handleToggle}
+      <CbacPicker
+        initialMarkingIds={selectedIds}
+        onChange={setSelectedIds}
       />
     </div>
   );
@@ -106,25 +85,11 @@ export const WithInitialSelection: Story = {
 };
 
 function ReadOnlyPicker() {
-  const selectedIds = useMemo(() => ["m-secret", "m-alpha", "m-rel-usa"], []);
-  const markingStates = useMemo(
-    () =>
-      computeMarkingStates(
-        selectedIds,
-        EMPTY_IMPLIED,
-        EMPTY_DISALLOWED,
-      ),
-    [selectedIds],
-  );
-  const noop = useCallback(() => {}, []);
-
   return (
     <div style={PICKER_STYLE}>
-      <BaseCbacPicker
-        categories={mockCategoryGroups}
-        markingStates={markingStates}
-        banner={mockBannerSecret}
-        onMarkingToggle={noop}
+      <CbacPicker
+        initialMarkingIds={["m-secret", "m-alpha", "m-rel-usa"]}
+        onChange={() => {}}
         readOnly={true}
       />
     </div>
@@ -140,32 +105,11 @@ function WithBannerPicker() {
     ["m-top-secret", "m-alpha", "m-bravo", "m-no-foreign"],
   );
 
-  const markingStates = useMemo(
-    () =>
-      computeMarkingStates(
-        selectedIds,
-        EMPTY_IMPLIED,
-        EMPTY_DISALLOWED,
-      ),
-    [selectedIds],
-  );
-
-  const handleToggle = useCallback(
-    (markingId: string) => {
-      setSelectedIds((prev) =>
-        toggleMarking(markingId, prev, mockCategoryGroups)
-      );
-    },
-    [],
-  );
-
   return (
     <div style={PICKER_STYLE}>
-      <BaseCbacPicker
-        categories={mockCategoryGroups}
-        markingStates={markingStates}
-        banner={mockBannerTopSecret}
-        onMarkingToggle={handleToggle}
+      <CbacPicker
+        initialMarkingIds={selectedIds}
+        onChange={setSelectedIds}
       />
     </div>
   );
@@ -211,51 +155,25 @@ function InDialogPicker() {
   const [isOpen, setIsOpen] = useState(true);
   const [selectedIds, setSelectedIds] = useState<string[]>(EMPTY_SELECTED);
 
-  const markingStates = useMemo(
-    () =>
-      computeMarkingStates(
-        selectedIds,
-        EMPTY_IMPLIED,
-        EMPTY_DISALLOWED,
-      ),
-    [selectedIds],
-  );
+  const handleConfirm = useCallback((ids: string[]) => {
+    setSelectedIds(ids);
+    setIsOpen(false);
+  }, []);
 
-  const handleToggle = useCallback(
-    (markingId: string) => {
-      setSelectedIds((prev) =>
-        toggleMarking(markingId, prev, mockCategoryGroups)
-      );
-    },
-    [],
-  );
-
-  const handleOpenChange = useCallback(() => {
+  const handleOpen = useCallback(() => {
     setIsOpen((prev) => !prev);
-  }, []);
-
-  const handleConfirm = useCallback(() => {
-    setIsOpen(false);
-  }, []);
-
-  const handleCancel = useCallback(() => {
-    setSelectedIds(EMPTY_SELECTED);
-    setIsOpen(false);
   }, []);
 
   return (
     <div>
-      <button type="button" onClick={handleOpenChange}>
+      <button type="button" onClick={handleOpen}>
         Open Classification Picker
       </button>
-      <BaseCbacPickerDialog
+      <CbacPickerDialog
         isOpen={isOpen}
-        onOpenChange={handleOpenChange}
+        onOpenChange={setIsOpen}
         onConfirm={handleConfirm}
-        onCancel={handleCancel}
-        categories={mockCategoryGroups}
-        markingStates={markingStates}
-        onMarkingToggle={handleToggle}
+        initialMarkingIds={selectedIds}
       />
     </div>
   );

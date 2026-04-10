@@ -14,7 +14,14 @@
  * limitations under the License.
  */
 
-import type { ListUsersResponse, User } from "@osdk/foundry.admin";
+import type {
+  CbacBanner,
+  CbacMarkingRestrictions,
+  ListMarkingCategoriesResponse,
+  ListMarkingsResponse,
+  ListUsersResponse,
+  User,
+} from "@osdk/foundry.admin";
 import { InvalidArgument, InvalidRequest } from "../errors.js";
 import { Admin } from "../mock/index.js";
 import type { FauxFoundryHandlersFactory } from "./createFauxFoundryHandlers.js";
@@ -24,6 +31,38 @@ export const createAdminHandlers: FauxFoundryHandlersFactory = (
   baseUrl,
   fauxFoundry,
 ) => [
+  Admin.Markings.applyListMarkings(
+    baseUrl,
+    (): ListMarkingsResponse => {
+      return fauxFoundry.getAdmin().listMarkings();
+    },
+  ),
+
+  Admin.MarkingCategories.applyListMarkingCategories(
+    baseUrl,
+    (): ListMarkingCategoriesResponse => {
+      return fauxFoundry.getAdmin().listMarkingCategories();
+    },
+  ),
+
+  Admin.CbacBanners.applyGetCbacBanner(
+    baseUrl,
+    ({ request }): CbacBanner => {
+      const url = new URL(request.url);
+      const markingIds = url.searchParams.getAll("markingIds");
+      return fauxFoundry.getAdmin().getCbacBanner(markingIds);
+    },
+  ),
+
+  Admin.CbacMarkingRestrictions.applyGetCbacMarkingRestrictions(
+    baseUrl,
+    ({ request }): CbacMarkingRestrictions => {
+      const url = new URL(request.url);
+      const markingIds = url.searchParams.getAll("markingIds");
+      return fauxFoundry.getAdmin().getCbacMarkingRestrictions(markingIds);
+    },
+  ),
+
   Admin.Users.applyGetCurrent(baseUrl, (): User => {
     return fauxFoundry.getAdmin().getCurrentUser();
   }),

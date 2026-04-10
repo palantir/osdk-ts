@@ -60,12 +60,10 @@ export function getInterfaceTypesFromQueryDataType(
     case "threeDimensionalAggregation":
     case "timestamp":
     case "twoDimensionalAggregation":
-    case "entrySet":
+    case "typeReference":
     case "unsupported":
     case "object":
     case "objectSet":
-    case "mediaReference":
-    case "typeReference":
     case "void":
       /* complete no-op */
       return;
