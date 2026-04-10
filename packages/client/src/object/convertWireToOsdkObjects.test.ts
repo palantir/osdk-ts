@@ -110,7 +110,7 @@ describe("convertWireToOsdkObjects", () => {
     );
 
     expect(JSON.stringify(employee.$as(FooInterface))).toMatchInlineSnapshot(
-      `"{"$apiName":"FooInterface","$objectType":"Employee","$primaryKey":50030,"$objectSpecifier":"Employee:50030","fooSpt":"John Doe","fooIdp":"NYC"}"`,
+      `"{"$apiName":"FooInterface","$objectType":"Employee","$primaryKey":50030,"$objectSpecifier":"Employee:50030","fooIdp":"NYC","fooSpt":"John Doe"}"`,
     );
 
     // Should have $title
@@ -119,7 +119,7 @@ describe("convertWireToOsdkObjects", () => {
     );
 
     expect(JSON.stringify(employee2.$as(FooInterface))).toMatchInlineSnapshot(
-      `"{"$apiName":"FooInterface","$objectType":"Employee","$primaryKey":50031,"$objectSpecifier":"Employee:50031","$title":"Jane Doe","fooSpt":"Jane Doe","fooIdp":"SEA"}"`,
+      `"{"$apiName":"FooInterface","$objectType":"Employee","$primaryKey":50031,"$objectSpecifier":"Employee:50031","$title":"Jane Doe","fooIdp":"SEA","fooSpt":"Jane Doe"}"`,
     );
   });
 
