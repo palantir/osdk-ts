@@ -38,14 +38,14 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
+    "@osdk/create-widget.template.minimal-react.v2": "workspace:*",
+    "@osdk/create-widget.template.react.v2": "workspace:*",
     "consola": "3.4.2",
     "find-up": "7.0.0",
     "handlebars": "4.7.8",
     "yargs": "17.7.2"
   },
   "devDependencies": {
-    "@osdk/create-widget.template.minimal-react.v2": "workspace:*",
-    "@osdk/create-widget.template.react.v2": "workspace:*",
     "@osdk/generator-utils": "workspace:*",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
