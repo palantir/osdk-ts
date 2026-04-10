@@ -17,9 +17,11 @@
 import { cleanup } from "@testing-library/react";
 import * as React from "react";
 import { vitest } from "vitest";
-import { _clearSuspenseCache } from "../src/new/makeSuspenseExternalStore.js";
+import {
+  _clearSuspenseCache,
+  clearSuspenseErrors,
+} from "../src/new/makeSuspenseExternalStore.js";
 import { OsdkContext2 } from "../src/new/OsdkContext2.js";
-import { OsdkErrorBoundary } from "../src/new/OsdkErrorBoundary.js";
 
 export function mockObjectPayload(name: string, pk: string) {
   return {
@@ -49,6 +51,42 @@ export function mockListPayload(
   };
 }
 
+interface TestErrorBoundaryProps {
+  children: React.ReactNode;
+  fallback: (error: Error, retry: () => void) => React.ReactNode;
+}
+
+interface TestErrorBoundaryState {
+  error: Error | undefined;
+}
+
+class TestErrorBoundary
+  extends React.Component<TestErrorBoundaryProps, TestErrorBoundaryState>
+{
+  constructor(props: TestErrorBoundaryProps) {
+    super(props);
+    this.state = { error: undefined };
+  }
+
+  static getDerivedStateFromError(error: unknown): TestErrorBoundaryState {
+    return {
+      error: error instanceof Error ? error : new Error(String(error)),
+    };
+  }
+
+  private retry = (): void => {
+    clearSuspenseErrors();
+    this.setState({ error: undefined });
+  };
+
+  render(): React.ReactNode {
+    if (this.state.error) {
+      return this.props.fallback(this.state.error, this.retry);
+    }
+    return this.props.children;
+  }
+}
+
 export function TestSuspenseWrapper(
   { children, observableClient }: {
     children: React.ReactNode;
@@ -60,7 +98,7 @@ export function TestSuspenseWrapper(
     // @ts-expect-error - test mock provides only observableClient, not client
     { value: { observableClient } },
     React.createElement(
-      OsdkErrorBoundary,
+      TestErrorBoundary,
       {
         fallback: (error: Error, _retry: () => void) =>
           React.createElement(

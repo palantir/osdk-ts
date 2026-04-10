@@ -270,8 +270,8 @@ export function setupSuspenseStore<X>(
   return suspenseStore;
 }
 
-/** @internal - called by OsdkErrorBoundary retry to clear errored entries */
-export function _clearErroredSuspenseEntries(): void {
+/** Clear all errored suspense cache entries so error boundary retry starts fresh. */
+export function clearSuspenseErrors(): void {
   for (const [key, entry] of suspenseCache) {
     if (entry.hasErrored) {
       entry.observation?.unsubscribe();

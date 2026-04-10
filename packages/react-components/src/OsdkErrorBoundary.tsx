@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
+import { clearSuspenseErrors } from "@osdk/react/experimental";
 import React from "react";
-import { _clearErroredSuspenseEntries } from "./makeSuspenseExternalStore.js";
 
 export interface OsdkErrorBoundaryProps {
   children: React.ReactNode;
@@ -23,6 +23,7 @@ export interface OsdkErrorBoundaryProps {
     | React.ReactNode
     | ((error: Error, retry: () => void) => React.ReactNode);
   onError?: (error: Error) => void;
+  onRetry?: () => void;
 }
 
 interface OsdkErrorBoundaryState {
@@ -51,7 +52,7 @@ export class OsdkErrorBoundary
   }
 
   private retry = (): void => {
-    _clearErroredSuspenseEntries();
+    (this.props.onRetry ?? clearSuspenseErrors)();
     this.setState({ error: undefined });
   };
 
