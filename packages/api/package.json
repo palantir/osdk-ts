@@ -10,6 +10,7 @@
   },
   "exports": {
     ".": {
+      "source": "./src/index.ts",
       "browser": "./build/browser/index.js",
       "import": {
         "types": "./build/types/index.d.ts",
@@ -19,6 +20,7 @@
       "default": "./build/browser/index.js"
     },
     "./shapes-internal": {
+      "source": "./src/public/shapes-internal.ts",
       "browser": "./build/browser/public/shapes-internal.js",
       "import": {
         "types": "./build/types/public/shapes-internal.d.ts",
@@ -28,6 +30,7 @@
       "default": "./build/browser/public/shapes-internal.js"
     },
     "./unstable": {
+      "source": "./src/public/unstable.ts",
       "browser": "./build/browser/public/unstable.js",
       "import": {
         "types": "./build/types/public/unstable.d.ts",
@@ -37,6 +40,7 @@
       "default": "./build/browser/public/unstable.js"
     },
     "./*": {
+      "source": "./src/public/*.ts",
       "browser": "./build/browser/public/*.js",
       "import": {
         "types": "./build/types/public/*.d.ts",

@@ -1,28 +1,18 @@
 /* Datetime Picker Styling */
 :root {
-  /* Input */
-  --osdk-datetime-input-font-family: var(--osdk-typography-family-default);
-  --osdk-datetime-input-font-size: var(--osdk-typography-size-body-medium);
-  --osdk-datetime-input-padding: var(--osdk-surface-spacing)
-    calc(var(--osdk-surface-spacing) * 2);
-  --osdk-datetime-input-border: var(--osdk-surface-border);
-  --osdk-datetime-input-border-radius: var(--osdk-surface-border-radius);
-  --osdk-datetime-input-bg: var(--osdk-background-primary);
-  --osdk-datetime-input-color: var(--osdk-typography-color-default-rest);
-  --osdk-datetime-input-focus-border-color: var(--osdk-intent-primary-rest);
-  --osdk-datetime-input-focus-outline: var(--osdk-focus-outline);
-  --osdk-datetime-input-focus-outline-offset: var(
-    --osdk-focus-visible-outline-offset
-  );
+  /* Input error */
   --osdk-datetime-input-error-border-color: var(--osdk-intent-danger-rest);
   --osdk-datetime-input-error-color: var(--osdk-typography-color-danger-rest);
 
   /* Popover */
   --osdk-datetime-popover-bg: var(--osdk-background-primary);
-  --osdk-datetime-popover-border: var(--osdk-surface-border);
+  --osdk-datetime-popover-border: var(--osdk-surface-border-width) solid
+    var(--osdk-surface-border-color-strong);
   --osdk-datetime-popover-border-radius: var(--osdk-surface-border-radius);
   --osdk-datetime-popover-padding: calc(var(--osdk-surface-spacing) * 2);
   --osdk-datetime-popover-z-index: var(--osdk-surface-z-index-3);
+  --osdk-datetime-popover-shadow: 0 4px 20px rgba(0, 0, 0, 0.2),
+    0 1px 4px rgba(0, 0, 0, 0.1);
 
   /* Calendar */
   --osdk-datetime-calendar-font-family: var(--osdk-typography-family-default);
@@ -44,8 +34,8 @@
     --osdk-typography-size-body-x-small
   );
 
-  /* Calendar day cells */
-  --osdk-datetime-calendar-day-border-radius: var(--osdk-surface-border-radius);
+  /* Calendar day cells — circular like Blueprint */
+  --osdk-datetime-calendar-day-border-radius: 50%;
   --osdk-datetime-calendar-day-hover-bg: var(
     --osdk-surface-background-color-default-hover
   );
@@ -63,6 +53,9 @@
   /* Calendar today */
   --osdk-datetime-calendar-today-font-weight: var(
     --osdk-typography-weight-bold
+  );
+  --osdk-datetime-calendar-today-indicator-color: var(
+    --osdk-intent-primary-rest
   );
 
   /* Calendar disabled */

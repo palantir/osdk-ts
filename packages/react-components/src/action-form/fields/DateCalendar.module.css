@@ -62,6 +62,25 @@
 
 .calendarDayButton.calendarToday {
   font-weight: var(--osdk-datetime-calendar-today-font-weight);
+  position: relative;
+}
+
+/* Today indicator dot */
+.calendarDayButton.calendarToday::after {
+  content: "";
+  position: absolute;
+  bottom: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--osdk-datetime-calendar-today-indicator-color);
+}
+
+/* Hide the dot when today is selected (white-on-blue is hard to see) */
+.calendarDayButton.calendarToday.calendarSelected::after {
+  background: var(--osdk-datetime-calendar-selected-color);
 }
 
 .calendarDayButton.calendarOutside {
@@ -118,9 +137,48 @@
   min-height: var(--osdk-datetime-calendar-nav-button-size);
 }
 
+/* Hide the static label when dropdown-buttons captionLayout renders both label and selects */
 .calendarCaptionLabel {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+
+/* Caption dropdowns container */
+.calendarCaptionDropdowns {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: calc(var(--osdk-surface-spacing) * 1);
+}
+
+/* Shared dropdown styling for month/year selects */
+.calendarDropdown {
+  font-family: var(--osdk-datetime-calendar-font-family);
   font-size: var(--osdk-datetime-calendar-caption-font-size);
   font-weight: var(--osdk-datetime-calendar-caption-font-weight);
+  color: inherit;
+  background: transparent;
+  border: none;
+  padding: 2px calc(var(--osdk-surface-spacing) * 1);
+  cursor: pointer;
+  border-radius: var(--osdk-input-border-radius);
+
+  &:focus-visible {
+    outline: var(--osdk-input-focus-width) solid var(--osdk-input-focus-color);
+    outline-offset: var(--osdk-input-focus-offset);
+  }
+}
+
+.calendarDropdownMonth {
+  composes: calendarDropdown;
+}
+
+.calendarDropdownYear {
+  composes: calendarDropdown;
 }
 
 .calendarChevron {

@@ -16,6 +16,8 @@
 
 import { Input } from "@base-ui/react/input";
 import { Popover } from "@base-ui/react/popover";
+import { Calendar } from "@blueprintjs/icons";
+import classnames from "classnames";
 import React, { useCallback, useId, useMemo, useRef, useState } from "react";
 import {
   formatDateForInput,
@@ -31,6 +33,8 @@ import { LazyDateCalendar } from "./LazyDateCalendar.js";
 
 /** Midnight fallback so `extractTime` can reuse `formatTime` when no date is selected. */
 const DATE_ZERO = new Date(2000, 0, 1, 0, 0, 0, 0);
+
+const CALENDAR_ICON_SIZE = 16;
 
 function extractTime(date: Date | null): string {
   return formatTime(date ?? DATE_ZERO);
@@ -76,6 +80,23 @@ export function DatetimePickerField({
   const displayedValue = isEditing
     ? inputValue
     : (value != null ? displayFormatFn(value) : "");
+
+  // --- Derived error state (no useEffect) ---
+  const inputError: "invalid" | "out-of-range" | null = (() => {
+    if (!isEditing || inputValue === "") return null;
+    const parsed = parseFn(inputValue);
+    if (parsed == null) return "invalid";
+    if (!isDateInRange(parsed, min, max)) return "out-of-range";
+    return null;
+  })();
+
+  // --- Derived preview date for type-ahead calendar sync ---
+  const previewDate: Date | undefined = (() => {
+    if (!isEditing || inputValue === "") return undefined;
+    const parsed = parseFn(inputValue);
+    if (parsed != null && isDateInRange(parsed, min, max)) return parsed;
+    return undefined;
+  })();
 
   // --- Shared commit logic ---
 
@@ -140,7 +161,7 @@ export function DatetimePickerField({
         inputRef.current?.blur();
       } else if (e.key === "Tab" && !e.shiftKey && isOpen) {
         const firstFocusable = popoverRef.current?.querySelector(
-          "button",
+          "button, select",
         ) as HTMLElement | null;
         if (firstFocusable != null) {
           e.preventDefault();
@@ -211,7 +232,7 @@ export function DatetimePickerField({
         inputRef.current?.focus();
       } else {
         const firstFocusable = popoverRef.current?.querySelector(
-          "button",
+          "button, select",
         ) as HTMLElement | null;
         firstFocusable?.focus();
       }
@@ -227,11 +248,13 @@ export function DatetimePickerField({
         setIsOpen(false);
         setIsEditing(false);
       } else {
-        const buttons = popoverRef.current?.querySelectorAll("button");
-        const lastFocusable = buttons?.[buttons.length - 1] as
+        const buttons = popoverRef.current?.querySelectorAll(
+          "button, select",
+        );
+        const lastButton = buttons?.[buttons.length - 1] as
           | HTMLElement
           | null;
-        lastFocusable?.focus();
+        lastButton?.focus();
       }
     },
     [],
@@ -244,12 +267,12 @@ export function DatetimePickerField({
     () =>
       showTime
         ? (
-          <div className={styles.timeFooter}>
+          <div className={styles.osdkDatetimeTimeFooter}>
             <Input
               type="time"
               value={timeValue}
               onValueChange={handleTimeChange}
-              className={styles.timeInput}
+              className={styles.osdkDatetimeTimeInput}
               aria-label="Time"
             />
           </div>
@@ -258,35 +281,43 @@ export function DatetimePickerField({
     [showTime, timeValue, handleTimeChange],
   );
 
+  const wrapperClassName = classnames(
+    styles.osdkDatetimeInputWrapper,
+    inputError != null && styles.osdkDatetimeInputWrapperError,
+  );
+
   return (
     <Popover.Root open={isOpen} onOpenChange={handleOpenChange}>
       <Popover.Trigger
         nativeButton={false}
-        render={
-          <Input
-            ref={inputRef}
-            id={id}
-            className={styles.osdkDatetimeInput}
-            type="text"
-            value={displayedValue}
-            onValueChange={handleInputChange}
-            onFocus={handleFocus}
-            onBlur={handleBlur}
-            onClick={handleInputClick}
-            onKeyDown={handleKeyDown}
-            placeholder={placeholder}
-            role="combobox"
-            aria-expanded={isOpen}
-            aria-controls={popoverId}
-            aria-haspopup="dialog"
-          />
-        }
-      />
+        render={<div className={wrapperClassName} />}
+      >
+        <Input
+          ref={inputRef}
+          id={id}
+          className={styles.osdkDatetimeInputField}
+          type="text"
+          value={displayedValue}
+          onValueChange={handleInputChange}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
+          onClick={handleInputClick}
+          onKeyDown={handleKeyDown}
+          placeholder={placeholder}
+          role="combobox"
+          aria-expanded={isOpen}
+          aria-controls={popoverId}
+          aria-haspopup="dialog"
+        />
+        <div className={styles.osdkDatetimeInputIcon}>
+          <Calendar size={CALENDAR_ICON_SIZE} />
+        </div>
+      </Popover.Trigger>
       <Popover.Portal>
         <Popover.Positioner sideOffset={4}>
           <Popover.Popup
             ref={popoverRef}
-            className={styles.popover}
+            className={styles.osdkDatetimePopover}
             id={popoverId}
             role="dialog"
             aria-label="date picker"
@@ -295,10 +326,11 @@ export function DatetimePickerField({
               onFocus={handleStartFocusBoundary}
               tabIndex={0}
               aria-label="Start of date picker dialog"
-              className={styles.osdkFocusBoundary}
+              className={styles.osdkDatetimeFocusBoundary}
             />
             <LazyDateCalendar
               dateSelected={value ?? undefined}
+              previewDate={previewDate}
               onSelect={handleCalendarSelect}
               min={min}
               max={max}
@@ -308,7 +340,7 @@ export function DatetimePickerField({
               onFocus={handleEndFocusBoundary}
               tabIndex={0}
               aria-label="End of date picker dialog"
-              className={styles.osdkFocusBoundary}
+              className={styles.osdkDatetimeFocusBoundary}
             />
           </Popover.Popup>
         </Popover.Positioner>

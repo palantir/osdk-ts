@@ -8,6 +8,7 @@ To run the Storybook locally:
 
 ```bash
 pnpm install
+pnpm turbo transpileBrowser --filter=@osdk/react-components  # one-time, generates styles.css
 pnpm dev
 ```
 

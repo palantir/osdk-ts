@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useMemo, useRef, useState } from "react";
 import type {
   ClassNames,
   DateAfter,
@@ -42,11 +42,19 @@ const CLASS_NAMES: ClassNames = {
   nav_button_next: styles.calendarNavButton,
   caption: styles.calendarMonthCaption,
   caption_label: styles.calendarCaptionLabel,
+  caption_dropdowns: styles.calendarCaptionDropdowns,
+  dropdown: styles.calendarDropdown,
+  dropdown_month: styles.calendarDropdownMonth,
+  dropdown_year: styles.calendarDropdownYear,
   nav_icon: styles.calendarChevron,
 };
 
+const DEFAULT_FROM_YEAR = new Date().getFullYear() - 100;
+const DEFAULT_TO_YEAR = new Date().getFullYear() + 10;
+
 export interface DateCalendarProps {
   dateSelected: Date | undefined;
+  previewDate?: Date | undefined;
   onSelect: (date: Date | undefined) => void;
   min?: Date;
   max?: Date;
@@ -55,6 +63,7 @@ export interface DateCalendarProps {
 
 export default function DateCalendar({
   dateSelected,
+  previewDate,
   onSelect,
   min,
   max,
@@ -80,15 +89,42 @@ export default function DateCalendar({
     [onSelect],
   );
 
+  // Month navigation: previewDate controls when typing, user can manually navigate
+  const [userMonth, setUserMonth] = useState<Date | undefined>(undefined);
+  const displayMonth = previewDate ?? userMonth ?? dateSelected;
+
+  const handleMonthChange = useCallback((month: Date) => {
+    setUserMonth(month);
+  }, []);
+
+  // Reset user-controlled month when previewDate takes over
+  const prevPreviewRef = useRef<Date | undefined>(undefined);
+  if (previewDate !== prevPreviewRef.current) {
+    prevPreviewRef.current = previewDate;
+    if (previewDate != null) {
+      setUserMonth(undefined);
+    }
+  }
+
+  const fromYear = min != null ? min.getFullYear() : DEFAULT_FROM_YEAR;
+  const toYear = max != null ? max.getFullYear() : DEFAULT_TO_YEAR;
+
   return (
     <DayPicker
       mode="single"
       selected={dateSelected}
       onSelect={handleSelect}
       disabled={disabled}
+      month={displayMonth}
+      onMonthChange={handleMonthChange}
       defaultMonth={dateSelected}
       classNames={CLASS_NAMES}
       footer={footer}
+      captionLayout="dropdown-buttons"
+      fromYear={fromYear}
+      toYear={toYear}
+      showOutsideDays={true}
+      fixedWeeks={true}
     />
   );
 }
