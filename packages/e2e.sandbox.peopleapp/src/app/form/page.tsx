@@ -184,9 +184,7 @@ export function FormPage() {
 
   const handleSubmit = useCallback(
     async (formState: Record<string, unknown>) => {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      throw new Error("Server error: employee already exists");
-      // setSubmittedState(formState);
+      setSubmittedState(formState);
     },
     [],
   );
