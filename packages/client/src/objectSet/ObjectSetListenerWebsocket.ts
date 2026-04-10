@@ -426,7 +426,12 @@ export class ObjectSetListenerWebsocket {
           }
           function error(evt: unknown) {
             cleanup();
-            reject(new Error(String(evt)));
+            const message = evt instanceof Error
+              ? evt.message
+              : typeof evt === "object" && evt != null && "message" in evt
+                ? String((evt as Record<string, unknown>).message)
+                : JSON.stringify(evt);
+            reject(new Error(message));
           }
           ws.addEventListener("open", open);
           ws.addEventListener("error", error);
