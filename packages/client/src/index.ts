@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-/* eslint-disable @typescript-eslint/no-deprecated */
+ 
 
 export { isOk } from "@osdk/api";
 export type {
@@ -32,6 +32,8 @@ export type {
   InterfaceDefinition,
   InterfaceMetadata,
   Logger,
+  Media,
+  MediaMetadata,
   MediaReference,
   MediaUpload,
   ObjectMetadata,

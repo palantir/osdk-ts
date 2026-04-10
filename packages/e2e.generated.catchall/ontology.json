@@ -5507,6 +5507,156 @@
       },
       "rid": "ri.function-registry.main.function.3c154359-8f43-4684-b108-ddb947949349",
       "version": "1.1.0"
+    },
+    "recursiveStruct": {
+      "apiName": "recursiveStruct",
+      "displayName": "recursiveStruct",
+      "parameters": {
+        "person": {
+          "dataType": {
+            "type": "typeReference",
+            "typeId": "1225e6a4-41d2-4081-9b3c-9b7dd0db5390"
+          }
+        },
+        "pet": {
+          "dataType": {
+            "type": "typeReference",
+            "typeId": "5f239c87-040a-4dd6-b50a-bcec78f6c6fc"
+          }
+        }
+      },
+      "output": {
+        "type": "typeReference",
+        "typeId": "1225e6a4-41d2-4081-9b3c-9b7dd0db5390"
+      },
+      "rid": "ri.function-registry.main.function.3a82a7fe-abf0-4596-9e06-167583f7987b",
+      "version": "2.0.1",
+      "typeReferences": {
+        "5f239c87-040a-4dd6-b50a-bcec78f6c6fc": {
+          "type": "struct",
+          "fields": [
+            {
+              "name": "breed",
+              "fieldType": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "mom",
+              "fieldType": {
+                "type": "union",
+                "unionTypes": [
+                  {
+                    "type": "typeReference",
+                    "typeId": "5f239c87-040a-4dd6-b50a-bcec78f6c6fc"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "dad",
+              "fieldType": {
+                "type": "union",
+                "unionTypes": [
+                  {
+                    "type": "typeReference",
+                    "typeId": "5f239c87-040a-4dd6-b50a-bcec78f6c6fc"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "siblings",
+              "fieldType": {
+                "type": "union",
+                "unionTypes": [
+                  {
+                    "type": "array",
+                    "subType": {
+                      "type": "typeReference",
+                      "typeId": "5f239c87-040a-4dd6-b50a-bcec78f6c6fc"
+                    }
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "1225e6a4-41d2-4081-9b3c-9b7dd0db5390": {
+          "type": "struct",
+          "fields": [
+            {
+              "name": "name",
+              "fieldType": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "age",
+              "fieldType": {
+                "type": "integer"
+              }
+            },
+            {
+              "name": "bestFriend",
+              "fieldType": {
+                "type": "union",
+                "unionTypes": [
+                  {
+                    "type": "typeReference",
+                    "typeId": "1225e6a4-41d2-4081-9b3c-9b7dd0db5390"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "allFriends",
+              "fieldType": {
+                "type": "union",
+                "unionTypes": [
+                  {
+                    "type": "array",
+                    "subType": {
+                      "type": "typeReference",
+                      "typeId": "1225e6a4-41d2-4081-9b3c-9b7dd0db5390"
+                    }
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "pet",
+              "fieldType": {
+                "type": "union",
+                "unionTypes": [
+                  {
+                    "type": "typeReference",
+                    "typeId": "5f239c87-040a-4dd6-b50a-bcec78f6c6fc"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      }
     }
   },
   "interfaceTypes": {
