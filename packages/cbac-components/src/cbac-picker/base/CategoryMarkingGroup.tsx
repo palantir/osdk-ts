@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { Tooltip } from "@base-ui/react/tooltip";
+import { InfoSign } from "@blueprintjs/icons";
 import React from "react";
 import type { MarkingSelectionState } from "../types.js";
 import styles from "./CategoryMarkingGroup.module.css";
@@ -27,6 +29,7 @@ const DEFAULT_MARKING_STATE: MarkingSelectionState = "NONE";
 
 export interface CategoryMarkingGroupProps {
   categoryName: string;
+  categoryDescription?: string;
   markings: ReadonlyArray<{ id: string; name: string; description?: string }>;
   markingStates: Map<string, MarkingSelectionState>;
   readOnly?: boolean;
@@ -37,6 +40,7 @@ export const CategoryMarkingGroup: React.MemoExoticComponent<
   (props: CategoryMarkingGroupProps) => React.ReactElement
 > = React.memo(function CategoryMarkingGroup({
   categoryName,
+  categoryDescription,
   markings,
   markingStates,
   readOnly,
@@ -81,7 +85,30 @@ export const CategoryMarkingGroup: React.MemoExoticComponent<
       role="group"
       aria-labelledby={headingId}
     >
-      <h3 id={headingId} className={styles.categoryName}>{categoryName}</h3>
+      <div className={styles.categoryHeader}>
+        <h3 id={headingId} className={styles.categoryName}>{categoryName}</h3>
+        {categoryDescription != null && categoryDescription.length > 0 && (
+          <Tooltip.Root>
+            <Tooltip.Trigger
+              render={
+                <span
+                  className={styles.infoIcon}
+                  aria-label={categoryDescription}
+                >
+                  <InfoSign size={12} />
+                </span>
+              }
+            />
+            <Tooltip.Portal>
+              <Tooltip.Positioner side="top" sideOffset={4}>
+                <Tooltip.Popup className={styles.infoTooltip}>
+                  {categoryDescription}
+                </Tooltip.Popup>
+              </Tooltip.Positioner>
+            </Tooltip.Portal>
+          </Tooltip.Root>
+        )}
+      </div>
       <div className={styles.markingGrid}>
         {visibleMarkings.map((marking) => (
           <MarkingButtonItem

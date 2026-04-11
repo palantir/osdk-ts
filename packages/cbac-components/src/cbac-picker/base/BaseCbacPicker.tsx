@@ -106,6 +106,7 @@ export function BaseCbacPicker({
               <CategoryMarkingGroup
                 key={group.category.id}
                 categoryName={group.category.name}
+                categoryDescription={group.category.description}
                 markings={group.markings}
                 markingStates={markingStates}
                 readOnly={readOnly}

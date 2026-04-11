@@ -56,7 +56,9 @@ describe("getSubmitDisabledReason", () => {
       ...validBase,
       isValid: false,
       userSatisfiesMarkings: false,
-    })).toBe("Invalid configuration of markings.");
+    })).toBe(
+      "Invalid configuration of markings. Please ensure that you have permission to use all selected markings.",
+    );
   });
 
   it("returns generic fallback when invalid with no specific reason", () => {
@@ -93,7 +95,9 @@ describe("getSubmitDisabledReason", () => {
       selectedIds: ["m1"],
       disallowedMarkingIds: ["m2"],
       userSatisfiesMarkings: false,
-    })).toBe("Invalid configuration of markings.");
+    })).toBe(
+      "Invalid configuration of markings. Please ensure that you have permission to use all selected markings.",
+    );
   });
 
   it("returns undefined when isValid is true even if userSatisfiesMarkings is false", () => {

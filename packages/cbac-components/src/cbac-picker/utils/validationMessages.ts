@@ -41,7 +41,7 @@ export function getSubmitDisabledReason(
     return "Selections include disallowed markings.";
   }
   if (!ctx.userSatisfiesMarkings) {
-    return "Invalid configuration of markings.";
+    return "Invalid configuration of markings. Please ensure that you have permission to use all selected markings.";
   }
   return "Invalid marking selection.";
 }

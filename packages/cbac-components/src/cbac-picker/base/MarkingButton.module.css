@@ -31,7 +31,7 @@
   background-color: var(--osdk-cbac-marking-button-bg-default, transparent);
 }
 
-.markingButton:hover:not(:disabled):not(.disallowed):not(.impliedDisallowed) {
+.markingButton:hover:not(:disabled):not(.disallowed):not(.impliedDisallowed):not(.selected):not(.implied) {
   background-color: var(--osdk-surface-background-color-default-hover);
 }
 
