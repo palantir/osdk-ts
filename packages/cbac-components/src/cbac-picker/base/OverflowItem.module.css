@@ -48,6 +48,7 @@
   color: var(--osdk-cbac-marking-button-color-disallowed);
   cursor: not-allowed;
   opacity: var(--osdk-cbac-disabled-opacity);
+  text-decoration: line-through;
 }
 
 .tooltip {

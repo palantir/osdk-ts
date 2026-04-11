@@ -2,4 +2,4 @@
 "@osdk/cbac-components": minor
 ---
 
-add MaxClassificationConstraint support, validationCallouts slot, enhanced validation messages, and disallowed marking tooltips
+add cbac picker with constraint validation, marking tooltips, storybook demos, and visual fixes

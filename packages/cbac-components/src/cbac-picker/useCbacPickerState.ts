@@ -76,11 +76,17 @@ export function useCbacPickerState(
     refetch: refetchMarkings,
   } = useMarkings();
   const {
-    banner,
+    banner: latestBanner,
     isLoading: bannerLoading,
     error: bannerError,
     refetch: refetchBanner,
   } = useCbacBanner({ markingIds: stableSelectedIds });
+
+  const bannerRef = React.useRef(latestBanner);
+  if (latestBanner != null) {
+    bannerRef.current = latestBanner;
+  }
+  const banner = latestBanner ?? bannerRef.current;
   const {
     restrictions,
     isLoading: restrictionsLoading,

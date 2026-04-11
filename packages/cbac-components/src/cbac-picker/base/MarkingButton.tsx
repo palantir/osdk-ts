@@ -98,9 +98,11 @@ export function MarkingButton({
             {hasDescription && (
               <p className={styles.tooltipDescription}>{description}</p>
             )}
-            <p className={styles.tooltipHint}>
-              {getSelectionHint(selectionState)}
-            </p>
+            {getSelectionHint(selectionState) != null && (
+              <p className={styles.tooltipHint}>
+                {getSelectionHint(selectionState)}
+              </p>
+            )}
           </Tooltip.Popup>
         </Tooltip.Positioner>
       </Tooltip.Portal>

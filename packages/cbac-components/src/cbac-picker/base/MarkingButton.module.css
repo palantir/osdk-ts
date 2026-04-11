@@ -29,14 +29,6 @@
   border-bottom: 1px solid var(--osdk-cbac-marking-button-border-color-default);
   color: var(--osdk-cbac-marking-button-color-default);
   background-color: var(--osdk-cbac-marking-button-bg-default, transparent);
-  transition: background-color var(--osdk-emphasis-transition-duration)
-      var(--osdk-emphasis-ease-default),
-    border-color var(--osdk-emphasis-transition-duration)
-      var(--osdk-emphasis-ease-default),
-    color var(--osdk-emphasis-transition-duration)
-      var(--osdk-emphasis-ease-default),
-    filter var(--osdk-emphasis-transition-duration)
-      var(--osdk-emphasis-ease-default);
 }
 
 .markingButton:hover:not(:disabled):not(.disallowed):not(.impliedDisallowed) {
@@ -70,6 +62,7 @@
   border-color: var(--osdk-cbac-marking-button-border-color-disallowed);
   cursor: not-allowed;
   opacity: var(--osdk-cbac-disabled-opacity);
+  text-decoration: line-through;
 }
 
 .markingButton:focus-visible {
@@ -79,10 +72,6 @@
 
 .markingButton:disabled {
   cursor: not-allowed;
-}
-
-.tooltipTriggerWrapper {
-  display: contents;
 }
 
 .tooltip {
