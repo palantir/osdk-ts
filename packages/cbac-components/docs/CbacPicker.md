@@ -347,11 +347,13 @@ interface ClassificationViewerProps {
   markingIds: string[];
 }
 
+const NOOP = () => {};
+
 function ClassificationViewer({ markingIds }: ClassificationViewerProps) {
   return (
     <CbacPicker
       initialMarkingIds={markingIds}
-      onChange={() => {}}
+      onChange={NOOP}
       readOnly={true}
     />
   );
