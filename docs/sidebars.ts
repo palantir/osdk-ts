@@ -33,6 +33,22 @@ const sidebars: SidebarsConfig = {
     },
     {
       type: "category",
+      label: "@osdk/react-components",
+      items: [
+        "react-components/ObjectTable",
+        "react-components/FilterList",
+        "react-components/PdfViewer",
+      ],
+    },
+    {
+      type: "category",
+      label: "@osdk/cbac-components",
+      items: [
+        "cbac-components/CbacPicker",
+      ],
+    },
+    {
+      type: "category",
       label: "Guides",
       items: ["guides/vite"],
     },
