@@ -1,0 +1,56 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "extends": ["//"],
+  "tasks": {
+    "transpileEsm": {
+      "dependsOn": [
+        "//#babel-config",
+        "@osdk/monorepo.tsconfig#typecheck",
+        "@osdk/api#transpileEsm",
+        "@osdk/client#transpileEsm",
+        "codegen"
+      ]
+    },
+    "transpileCjs": {
+      "dependsOn": [
+        "//#babel-config",
+        "@osdk/monorepo.tsconfig#typecheck",
+        "@osdk/api#transpileCjs",
+        "@osdk/client#transpileCjs",
+        "@osdk/api#transpileTypes",
+        "@osdk/client#transpileTypes",
+        "codegen"
+      ]
+    },
+    "transpileBrowser": {
+      "dependsOn": [
+        "//#babel-config",
+        "@osdk/monorepo.tsconfig#typecheck",
+        "@osdk/api#transpileBrowser",
+        "@osdk/client#transpileBrowser",
+        "codegen"
+      ]
+    },
+    "transpile": {
+      "dependsOn": [
+        "@osdk/monorepo.tsconfig#typecheck",
+        "@osdk/api#typecheck",
+        "@osdk/client#typecheck",
+        "@osdk/api#transpile",
+        "@osdk/client#transpile",
+        "codegen",
+        "transpileCjs",
+        "transpileEsm",
+        "transpileBrowser"
+      ]
+    },
+    "typecheck": {
+      "dependsOn": [
+        "@osdk/api#transpileTypes",
+        "@osdk/client#transpileTypes",
+        "@osdk/client.test.ontology#transpileTypes",
+        "codegen"
+      ]
+    }
+  }
+}
