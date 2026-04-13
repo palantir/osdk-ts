@@ -129,23 +129,9 @@ export class InterfaceListQuery extends ListQuery {
   protected createPayload(
     params: CollectionConnectableParams,
   ): ListPayload {
-    const resolvedList = params.resolvedData?.map((obj: ObjectHolder) => {
-      if (process.env.NODE_ENV !== "production") {
-        const missing = !obj || !(ObjectDefRef in obj);
-        if (missing) {
-          // eslint-disable-next-line no-console
-          console.error(
-            `[@osdk/client] InterfaceListQuery.createPayload: object missing ObjectDefRef`,
-            {
-              apiName: this.apiName,
-              objectType: (obj as ObjectHolder | undefined)?.$objectType,
-              primaryKey: (obj as ObjectHolder | undefined)?.$primaryKey,
-            },
-          );
-        }
-      }
-      return obj.$as(this.apiName);
-    });
+    const resolvedList = params.resolvedData?.map((obj: ObjectHolder) =>
+      obj.$as(this.apiName)
+    );
 
     return {
       ...super.createPayload(params),
