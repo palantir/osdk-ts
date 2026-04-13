@@ -18,7 +18,6 @@ import type { Attachment, Media, MediaMetadata } from "@osdk/api";
 import type {
   MediaContentObserveOptions,
   MediaContentPayload,
-  MediaPropertyLocation,
 } from "@osdk/client/unstable-do-not-use";
 import React from "react";
 import { makeExternalStore } from "./makeExternalStore.js";
@@ -48,7 +47,7 @@ export interface UseOsdkMediaResult {
 }
 
 export function useOsdkMedia(
-  source?: Media | Attachment | MediaPropertyLocation,
+  source?: Media | Attachment,
   options: UseOsdkMediaOptions = {},
 ): UseOsdkMediaResult {
   const { observableClient } = React.useContext(OsdkContext2);
@@ -95,9 +94,6 @@ export function useOsdkMedia(
   const sourceKey = React.useMemo(() => {
     if (!source) {
       return undefined;
-    }
-    if ("objectType" in source) {
-      return `media ${source.objectType} ${source.primaryKey} ${source.propertyName}`;
     }
     if ("rid" in source) {
       return `attachment ${source.rid}`;
