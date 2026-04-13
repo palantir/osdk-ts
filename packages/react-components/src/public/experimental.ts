@@ -165,6 +165,10 @@ export {
   type PdfViewerMediaProps,
 } from "../pdf-viewer/PdfRenderer.js";
 
+// TiffRenderer
+export { TiffRenderer } from "../images/tiff-renderer/TiffRenderer.js";
+export type { TiffRendererProps } from "../images/tiff-renderer/types.js";
+
 export { ActionForm } from "../action-form/ActionForm.js";
 export type {
   ActionFormProps,
