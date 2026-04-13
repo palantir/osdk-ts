@@ -58,7 +58,7 @@ import type {
   MediaMetadataObserveOptions,
   MediaMetadataPayload,
 } from "./ObservableClient/MediaObservableTypes.js";
-import type { MediaPropertyLocation } from "./ObservableClient/MediaTypes.js";
+
 import type { ObserveLinks } from "./ObservableClient/ObserveLink.js";
 import type { OptimisticBuilder } from "./OptimisticBuilder.js";
 
@@ -624,23 +624,20 @@ export interface ObservableClient extends ObserveLinks {
     options: T,
   ) => CanonicalizedOptions<T>;
 
-  /**
-   * Observe media metadata with automatic updates.
-   */
   observeMediaMetadata(
-    coords: MediaPropertyLocation,
+    source: Media,
     options: MediaMetadataObserveOptions,
     observer: Observer<MediaMetadataPayload>,
   ): Unsubscribable;
 
   observeMedia(
-    source: Media | Attachment | MediaPropertyLocation,
+    source: Media | Attachment,
     options: MediaContentObserveOptions,
     observer: Observer<MediaContentPayload>,
   ): Unsubscribable;
 
   invalidateMedia(
-    source: Media | Attachment | MediaPropertyLocation,
+    source: Media | Attachment,
   ): void;
 }
 
