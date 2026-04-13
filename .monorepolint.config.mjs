@@ -168,7 +168,6 @@ const archetypeRules = archetypes(
       "@osdk/cli",
       "@osdk/create-app",
       "@osdk/create-widget",
-      "@osdk/foundry-sdk-generator",
     ],
     {
       ...LIBRARY_RULES,
@@ -178,6 +177,21 @@ const archetypeRules = archetypes(
         esm: "bundle",
       },
       fixedDepsOnly: true,
+    },
+  )
+  .addArchetype(
+    "consumerCliPackagesWithoutFixedDeps",
+    [
+      "@osdk/foundry-sdk-generator",
+    ],
+    {
+      ...LIBRARY_RULES,
+      output: {
+        browser: undefined,
+        cjs: undefined,
+        esm: "bundle",
+      },
+      fixedDepsOnly: false,
     },
   )
   .addArchetype(
@@ -489,7 +503,7 @@ const disallowWorkspaceCaret = createRuleFactory({
 // of typescript which broke code formatting. This rule is to make sure we don't experience that again.
 // (note devDeps are only happening at buildtime so they should be fine)
 const fixedDepsOnly = createRuleFactory({
-  name: "disallowWorkspaceCaret",
+  name: "fixedDepsOnly",
   check: async (context) => {
     const packageJson = context.getPackageJson();
 
