@@ -148,6 +148,7 @@ export abstract class ListQuery extends BaseListQuery<
     this.#pivotInfo = cacheKey.otherKeys[PIVOT_IDX];
 
     this.#objectSet = this.createObjectSet(store);
+    this.#objectTypesCache = new Set([this.apiName]);
 
     // Only initialize the sorting strategy here if there's no pivotTo.
     // When pivotTo is used, the target type differs from apiName, so we
@@ -187,6 +188,13 @@ export abstract class ListQuery extends BaseListQuery<
     return this.#objectTypesCache ?? new Set([this.apiName]);
   }
 
+  #updateFetchedObjectType(fetchedApiName: string): void {
+    this.#fetchedObjectType = fetchedApiName;
+    this.#objectTypesCache = fetchedApiName !== this.apiName
+      ? new Set([this.apiName, fetchedApiName])
+      : new Set([this.apiName]);
+  }
+
   protected createPayload(
     params: CollectionConnectableParams,
   ): ListPayload {
@@ -219,10 +227,7 @@ export abstract class ListQuery extends BaseListQuery<
         wireObjectSet,
       );
 
-      this.#fetchedObjectType = resultType.apiName;
-      this.#objectTypesCache = this.#fetchedObjectType !== this.apiName
-        ? new Set([this.apiName, this.#fetchedObjectType])
-        : new Set([this.apiName]);
+      this.#updateFetchedObjectType(resultType.apiName);
 
       if (
         Object.keys(this.#orderBy).length > 0
@@ -282,13 +287,9 @@ export abstract class ListQuery extends BaseListQuery<
           this.store.client[additionalContext],
           wireObjectSet,
         );
-        this.#fetchedObjectType = resultType.apiName;
-        this.#objectTypesCache = this.#fetchedObjectType !== this.apiName
-          ? new Set([this.apiName, this.#fetchedObjectType])
-          : new Set([this.apiName]);
+        this.#updateFetchedObjectType(resultType.apiName);
       } catch {
-        this.#fetchedObjectType = this.apiName;
-        this.#objectTypesCache = new Set([this.apiName]);
+        this.#updateFetchedObjectType(this.apiName);
       }
     }
 

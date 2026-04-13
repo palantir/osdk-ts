@@ -422,6 +422,7 @@ export class Store {
   ): boolean {
     if (cacheKey.type === "objectSet" || cacheKey.type === "list") {
       const query = this.queries.peek(cacheKey);
+      // Both ObjectSetQuery and ListQuery expose objectTypes: ReadonlySet<string>
       if (query && "objectTypes" in query) {
         for (
           const objectType of (query as { objectTypes: ReadonlySet<string> })
