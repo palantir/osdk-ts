@@ -80,9 +80,15 @@ const config: Config = {
       items: [
         {
           type: "docSidebar",
-          sidebarId: "docs",
+          sidebarId: "general",
           position: "left",
           label: "Docs",
+        },
+        {
+          type: "docSidebar",
+          sidebarId: "react",
+          position: "left",
+          label: "osdk-react",
         },
         {
           type: "docSidebar",
@@ -92,11 +98,9 @@ const config: Config = {
           label: "Components",
         },
         {
-          type: "docSidebar",
-          sidebarId: "docs",
-          docsPluginId: "cbac-components",
-          position: "left",
-          label: "CBAC",
+          href: "https://palantir.github.io/osdk-ts/storybook/",
+          label: "Storybook",
+          position: "right",
         },
         {
           href: "https://github.com/palantir/osdk-ts",
