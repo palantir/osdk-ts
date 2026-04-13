@@ -103,12 +103,7 @@
       "@types/react-dom": "^18.3.7",
       "@cspell/dict-css": "^4.0.18",
       "@cspell/dict-html": "^4.0.12",
-      "@cspell/dict-html-symbol-entities": "^4.0.4",
-      "minimatch@>=5.0.0 <5.1.8": "^5.1.8",
-      "minimatch@>=7.0.0 <7.4.8": "^7.4.8",
-      "picomatch@>=2.0.0 <2.3.2": "^2.3.2",
-      "picomatch@>=4.0.0 <4.0.4": "^4.0.4",
-      "rollup@>=3.0.0 <3.30.0": "^3.30.0"
+      "@cspell/dict-html-symbol-entities": "^4.0.4"
     }
   },
   "engines": {
