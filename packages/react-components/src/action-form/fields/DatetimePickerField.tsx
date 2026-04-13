@@ -16,7 +16,6 @@
 
 import { Input } from "@base-ui/react/input";
 import { Popover } from "@base-ui/react/popover";
-import { Calendar } from "@blueprintjs/icons";
 import classnames from "classnames";
 import React, { useCallback, useId, useRef, useState } from "react";
 import {
@@ -28,11 +27,11 @@ import {
   parseTimeString,
 } from "../../shared/dateUtils.js";
 import type { DatetimePickerFieldProps } from "../FormFieldApi.js";
-import { CALENDAR_ICON_SIZE, stopPropagation } from "./calendarShared.js";
+import { stopPropagation } from "./calendarShared.js";
 import commonStyles from "./DatePickerCommon.module.css";
 import styles from "./DatetimePickerField.module.css";
 import { LazyDateCalendar } from "./LazyDateCalendar.js";
-import { TimeFooter } from "./TimeFooter.js";
+import { TimePicker } from "./TimePicker.js";
 import { useDateEditState } from "./useDateEditState.js";
 
 export function DatetimePickerField({
@@ -61,14 +60,13 @@ export function DatetimePickerField({
     ?? (showTime ? parseDatetimeFromDisplay : parseDateFromInput);
 
   const {
-    inputValue: editInputValue,
+    inputValue,
     displayedValue,
     inputError,
-    previewDate,
+    validatedDate,
     startEditing,
     stopEditing,
-    setInputValue: setEditInputValue,
-    commitValue,
+    setInputValue,
   } = useDateEditState({
     value,
     displayFormatFn,
@@ -87,46 +85,43 @@ export function DatetimePickerField({
 
   const handleBlur = useCallback(
     (e: React.FocusEvent<HTMLInputElement>) => {
-      // If focus moved to the popover (e.g. clicking a calendar day), skip commit —
-      // the calendar select handler owns the onChange in that case.
+      // If focus moved to the popover (e.g. clicking a calendar day), skip —
+      // the calendar's onSelect handler owns the onChange call in that case.
       const relatedTarget = e.relatedTarget ?? document.activeElement;
       if (popoverRef.current?.contains(relatedTarget as Node)) {
         return;
       }
-      if (editInputValue === "") {
+      if (inputValue === "") {
         onChange?.(null);
-      } else {
-        const committed = commitValue();
-        if (committed != null) {
-          onChange?.(committed);
-        }
+      } else if (validatedDate != null) {
+        onChange?.(validatedDate);
       }
       stopEditing();
     },
-    [editInputValue, commitValue, stopEditing, onChange],
+    [inputValue, validatedDate, stopEditing, onChange],
   );
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => {
       if (e.key === "Enter") {
         e.preventDefault();
-        if (editInputValue === "") {
+        if (inputValue === "") {
           onChange?.(null);
-        } else {
-          const committed = commitValue();
-          if (committed != null) {
-            onChange?.(committed);
-          }
+        } else if (validatedDate != null) {
+          onChange?.(validatedDate);
         }
         stopEditing();
         setIsOpen(false);
       } else if (e.key === "Escape") {
         e.preventDefault();
-        setEditInputValue(value != null ? editFormatFn(value) : "");
+        setInputValue(value != null ? editFormatFn(value) : "");
         stopEditing();
         setIsOpen(false);
         inputRef.current?.blur();
       } else if (e.key === "Tab" && !e.shiftKey && isOpen) {
+        // Move focus from the text input into the calendar popover.
+        // The popover doesn't auto-focus on open (to keep the cursor in the input),
+        // so Tab manually bridges focus to the first interactive calendar element.
         const firstFocusable = popoverRef.current?.querySelector(
           "button, select",
         ) as HTMLElement | null;
@@ -139,10 +134,10 @@ export function DatetimePickerField({
       }
     },
     [
-      editInputValue,
-      commitValue,
+      inputValue,
+      validatedDate,
       stopEditing,
-      setEditInputValue,
+      setInputValue,
       value,
       editFormatFn,
       isOpen,
@@ -152,13 +147,18 @@ export function DatetimePickerField({
 
   // --- Popover handlers ---
 
-  const handleOpenChange = useCallback((nextOpen: boolean) => {
-    setIsOpen(nextOpen);
-    if (!nextOpen) {
-      stopEditing();
-      inputRef.current?.blur();
-    }
-  }, [stopEditing]);
+  // Called by base-ui when the popover opens or closes (e.g. click outside, Escape).
+  // On close, reset editing state and return focus to the input.
+  const handleOpenChange = useCallback(
+    (nextOpen: boolean) => {
+      setIsOpen(nextOpen);
+      if (!nextOpen) {
+        stopEditing();
+        inputRef.current?.blur();
+      }
+    },
+    [stopEditing],
+  );
 
   // --- Calendar handlers ---
 
@@ -166,7 +166,7 @@ export function DatetimePickerField({
     (selected: Date | undefined) => {
       if (selected == null) {
         onChange?.(null);
-        setEditInputValue("");
+        setInputValue("");
         return;
       }
 
@@ -176,7 +176,7 @@ export function DatetimePickerField({
       }
 
       onChange?.(date);
-      setEditInputValue(editFormatFn(date));
+      setInputValue(editFormatFn(date));
 
       if (shouldCloseOnSelection) {
         setIsOpen(false);
@@ -190,7 +190,7 @@ export function DatetimePickerField({
       value,
       shouldCloseOnSelection,
       editFormatFn,
-      setEditInputValue,
+      setInputValue,
       stopEditing,
     ],
   );
@@ -206,13 +206,13 @@ export function DatetimePickerField({
   );
 
   // --- Focus boundary handlers ---
+  // Visually-hidden elements at the start/end of the popover that trap Tab
+  // cycling between the text input and calendar. Without these, Tab would
+  // escape the popover into the page behind it.
 
-  const handleStartFocusBoundary = useCallback(
-    () => {
-      inputRef.current?.focus();
-    },
-    [],
-  );
+  const handleStartFocusBoundary = useCallback(() => {
+    inputRef.current?.focus();
+  }, []);
 
   const handleEndFocusBoundary = useCallback(
     (e: React.FocusEvent<HTMLDivElement>) => {
@@ -222,25 +222,21 @@ export function DatetimePickerField({
         setIsOpen(false);
         stopEditing();
       } else {
-        const buttons = popoverRef.current?.querySelectorAll(
-          "button, select",
-        );
-        const lastButton = buttons?.[buttons.length - 1] as
-          | HTMLElement
-          | null;
+        const buttons = popoverRef.current?.querySelectorAll("button, select");
+        const lastButton = buttons?.[buttons.length - 1] as HTMLElement | null;
         lastButton?.focus();
       }
     },
     [stopEditing],
   );
 
-  // --- Time footer ---
+  // --- Time picker ---
 
-  const timeFooter = showTime
+  const timePicker = showTime
     ? (
-      <TimeFooter
-        startTimeValue={getTimeValue(value)}
-        onStartTimeChange={handleTimeChange}
+      <TimePicker
+        value={getTimeValue(value)}
+        onChange={handleTimeChange}
       />
     )
     : undefined;
@@ -262,7 +258,7 @@ export function DatetimePickerField({
           className={commonStyles.osdkDatePickerInput}
           type="text"
           value={displayedValue}
-          onValueChange={setEditInputValue}
+          onValueChange={setInputValue}
           onFocus={handleFocus}
           onBlur={handleBlur}
           onClick={stopPropagation}
@@ -273,9 +269,6 @@ export function DatetimePickerField({
           aria-controls={popoverId}
           aria-haspopup="dialog"
         />
-        <div className={commonStyles.osdkDatePickerIcon}>
-          <Calendar size={CALENDAR_ICON_SIZE} />
-        </div>
       </Popover.Trigger>
       <Popover.Portal>
         <Popover.Positioner sideOffset={4}>
@@ -294,11 +287,10 @@ export function DatetimePickerField({
             />
             <LazyDateCalendar
               dateSelected={value ?? undefined}
-              previewDate={previewDate}
               onSelect={handleCalendarSelect}
               min={min}
               max={max}
-              footer={timeFooter}
+              footer={timePicker}
             />
             <div
               onFocus={handleEndFocusBoundary}

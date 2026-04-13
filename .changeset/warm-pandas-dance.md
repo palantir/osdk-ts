@@ -9,4 +9,4 @@
 "@osdk/cbac-components": patch
 ---
 
-Improve DatetimePickerField: Blueprint-style input wrapper with calendar icon, error states, type-ahead calendar sync, circular day cells, month/year dropdowns, today indicator, and source export condition for dev HMR
+Rename/improve DateTimePickerField and introduce DateRangeInputField

@@ -1,4 +1,6 @@
-/* DateCalendar — DayPicker classNames */
+/* DateCalendar — DayPicker classNames.
+   All values reference --osdk-datetime-calendar-* tokens defined in
+   react-components-styles/tokens/datetime-picker.css. */
 
 .calendar {
   position: relative;
@@ -9,7 +11,7 @@
 
 .calendarMonths {
   display: flex;
-  gap: calc(var(--osdk-surface-spacing) * 4);
+  gap: var(--osdk-datetime-calendar-months-gap);
 }
 
 .calendarMonthGrid {
@@ -52,7 +54,7 @@
   }
 
   &:focus-visible {
-    outline: 1px solid var(--osdk-input-border-color-focus);
+    outline: var(--osdk-datetime-calendar-focus-outline);
     outline-offset: -2px;
   }
 }
@@ -71,7 +73,7 @@
   position: relative;
 }
 
-/* Today indicator dot */
+/* Today indicator dot — decorative sub-unit sizes (2px, 4px) are acceptable */
 .calendarDayButton.calendarToday::after {
   content: "";
   position: absolute;
@@ -91,7 +93,7 @@
 
 .calendarDayButton.calendarOutside {
   color: var(--osdk-datetime-calendar-outside-color);
-  opacity: 0.4;
+  opacity: var(--osdk-datetime-calendar-outside-opacity);
 }
 
 .calendarDayButton.calendarDisabled {
@@ -164,7 +166,7 @@
   }
 
   &:disabled {
-    color: var(--osdk-typography-color-muted);
+    color: var(--osdk-datetime-calendar-nav-disabled-color);
     cursor: default;
     opacity: 1; /* Override browser default disabled opacity */
 
@@ -174,7 +176,7 @@
   }
 
   &:focus-visible {
-    outline: 1px solid var(--osdk-input-border-color-focus);
+    outline: var(--osdk-datetime-calendar-focus-outline);
     outline-offset: -1px;
   }
 }
@@ -184,7 +186,8 @@
   display: none;
 }
 
-/* Thin CSS chevron — prev (points left) */
+/* Thin CSS chevron — prev (points left).
+   Decorative sizes (6px, 1.5px, 2px) are sub-unit and acceptable. */
 .calendarNavPrev {
   composes: calendarNavButton;
   order: -1;
@@ -224,8 +227,8 @@
   min-height: var(--osdk-datetime-calendar-nav-button-size);
 }
 
-/* Hide the static label — dropdown-buttons renders both label and selects */
-.calendarCaptionLabel {
+/* Visually hidden — used for accessibility-only text (caption label, dropdown labels) */
+.calendarVhidden {
   position: absolute;
   width: 1px;
   height: 1px;
@@ -234,12 +237,17 @@
   white-space: nowrap;
 }
 
+/* Hide the static label — dropdown-buttons renders both label and selects */
+.calendarCaptionLabel {
+  composes: calendarVhidden;
+}
+
 /* Caption dropdowns container */
 .calendarCaptionDropdowns {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: calc(var(--osdk-surface-spacing) * 1);
+  gap: var(--osdk-datetime-calendar-caption-gap);
 }
 
 /* Month/year selects — borderless, matching caption text weight */
@@ -250,12 +258,12 @@
   color: inherit;
   background: transparent;
   border: none;
-  padding: 2px calc(var(--osdk-surface-spacing) * 1);
+  padding: var(--osdk-datetime-calendar-dropdown-padding);
   cursor: pointer;
-  border-radius: var(--osdk-input-border-radius);
+  border-radius: var(--osdk-datetime-calendar-dropdown-border-radius);
 
   &:focus-visible {
-    outline: 1px solid var(--osdk-input-border-color-focus);
+    outline: var(--osdk-datetime-calendar-focus-outline);
     outline-offset: 1px;
   }
 }
@@ -266,6 +274,13 @@
 
 .calendarDropdownYear {
   composes: calendarDropdown;
+}
+
+/* Footer (e.g. TimePicker) — separator between calendar grid and footer content */
+.calendarFooter {
+  padding-top: var(--osdk-datetime-time-padding-top);
+  margin-top: var(--osdk-datetime-time-margin-top);
+  border-top: var(--osdk-datetime-time-border-top);
 }
 
 /* Calendar fallback / loading */

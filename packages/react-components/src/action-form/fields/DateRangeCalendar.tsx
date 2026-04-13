@@ -51,10 +51,7 @@ export default function DateRangeCalendar({
   max,
   footer,
 }: DateRangeCalendarProps): React.ReactElement {
-  const disabled = useMemo(
-    () => buildDisabledMatchers(min, max),
-    [min, max],
-  );
+  const disabled = useMemo(() => buildDisabledMatchers(min, max), [min, max]);
 
   const fromYear = min != null ? min.getFullYear() : DEFAULT_FROM_YEAR;
   const toYear = max != null ? max.getFullYear() : DEFAULT_TO_YEAR;

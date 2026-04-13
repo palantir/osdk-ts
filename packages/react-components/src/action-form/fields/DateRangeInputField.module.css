@@ -44,3 +44,12 @@
     border-color: var(--osdk-datetime-input-error-border-color);
   }
 }
+
+/* Two TimePickers side-by-side, each centered under its calendar month */
+.osdkDateRangeTimeRow {
+  display: flex;
+  gap: var(--osdk-datetime-time-gap);
+  padding-top: var(--osdk-datetime-time-padding-top);
+  margin-top: var(--osdk-datetime-time-margin-top);
+  border-top: var(--osdk-datetime-time-border-top);
+}

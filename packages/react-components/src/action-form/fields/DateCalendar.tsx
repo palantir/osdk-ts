@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useMemo, useRef, useState } from "react";
+import React, { useMemo } from "react";
 import type { ClassNames } from "react-day-picker";
 import { DayPicker } from "react-day-picker";
 import {
@@ -46,11 +46,12 @@ export const CLASS_NAMES: ClassNames = {
   dropdown_month: styles.calendarDropdownMonth,
   dropdown_year: styles.calendarDropdownYear,
   nav_icon: styles.calendarChevron,
+  vhidden: styles.calendarVhidden,
+  tfoot: styles.calendarFooter,
 };
 
 export interface DateCalendarProps {
   dateSelected: Date | undefined;
-  previewDate?: Date | undefined;
   onSelect: (date: Date | undefined) => void;
   min?: Date;
   max?: Date;
@@ -59,29 +60,12 @@ export interface DateCalendarProps {
 
 export default function DateCalendar({
   dateSelected,
-  previewDate,
   onSelect,
   min,
   max,
   footer,
 }: DateCalendarProps): React.ReactElement {
-  const disabled = useMemo(
-    () => buildDisabledMatchers(min, max),
-    [min, max],
-  );
-
-  // Month navigation: previewDate controls when typing, user can manually navigate
-  const [userMonth, setUserMonth] = useState<Date | undefined>(undefined);
-  const displayMonth = userMonth ?? previewDate ?? dateSelected;
-
-  // Reset user-controlled month when previewDate takes over
-  const prevPreviewRef = useRef<Date | undefined>(undefined);
-  if (previewDate !== prevPreviewRef.current) {
-    prevPreviewRef.current = previewDate;
-    if (previewDate != null) {
-      setUserMonth(undefined);
-    }
-  }
+  const disabled = useMemo(() => buildDisabledMatchers(min, max), [min, max]);
 
   const fromYear = min != null ? min.getFullYear() : DEFAULT_FROM_YEAR;
   const toYear = max != null ? max.getFullYear() : DEFAULT_TO_YEAR;
@@ -92,15 +76,16 @@ export default function DateCalendar({
       selected={dateSelected}
       onSelect={onSelect}
       disabled={disabled}
-      month={displayMonth}
-      onMonthChange={setUserMonth}
       defaultMonth={dateSelected}
       classNames={CLASS_NAMES}
       footer={footer}
+      // Render month/year as dropdown selects + prev/next arrows,
+      // so users can jump directly to any month/year without paging.
       captionLayout="dropdown-buttons"
       fromYear={fromYear}
       toYear={toYear}
       showOutsideDays={true}
+      // Always render 6 rows so the calendar height doesn't jump between months.
       fixedWeeks={true}
     />
   );

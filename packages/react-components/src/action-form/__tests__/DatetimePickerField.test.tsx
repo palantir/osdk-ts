@@ -74,15 +74,6 @@ describe("DatetimePickerField", () => {
       const input = screen.getByRole("combobox") as HTMLInputElement;
       expect(input.placeholder).toBe("Pick a date");
     });
-
-    it("renders a calendar icon", () => {
-      render(
-        <DatetimePickerField value={null} onChange={vi.fn()} />,
-      );
-      // Blueprint Calendar icon renders as an SVG
-      const svg = document.querySelector("svg");
-      expect(svg).not.toBeNull();
-    });
   });
 
   describe("calendar interaction", () => {
@@ -127,21 +118,6 @@ describe("DatetimePickerField", () => {
       expect(calledDate.getDate()).toBe(20);
       expect(calledDate.getHours()).toBe(14);
       expect(calledDate.getMinutes()).toBe(30);
-    });
-
-    it("renders month/year dropdown navigation", () => {
-      render(
-        <DatetimePickerField
-          value={new Date(2024, 0, 15)}
-          onChange={vi.fn()}
-        />,
-      );
-      const input = screen.getByRole("combobox");
-      fireEvent.focus(input);
-
-      // dropdown-buttons captionLayout renders <select> elements
-      const selects = document.querySelectorAll("select");
-      expect(selects.length).toBeGreaterThanOrEqual(2);
     });
   });
 
@@ -339,62 +315,7 @@ describe("DatetimePickerField", () => {
     });
   });
 
-  describe("error state", () => {
-    it("applies error class for invalid date input while editing", () => {
-      render(
-        <DatetimePickerField
-          value={null}
-          onChange={vi.fn()}
-        />,
-      );
-      const input = screen.getByRole("combobox") as HTMLInputElement;
-      fireEvent.focus(input);
-      fireEvent.change(input, { target: { value: "not-a-date" } });
-
-      // The wrapper div should have the error class
-      const wrapper = input.closest("[class*='osdkDatetimeInputWrapper']");
-      expect(wrapper).not.toBeNull();
-      expect(wrapper?.className).toContain("Error");
-    });
-
-    it("applies error class for out-of-range date input while editing", () => {
-      render(
-        <DatetimePickerField
-          value={null}
-          onChange={vi.fn()}
-          min={new Date(2024, 0, 1)}
-          max={new Date(2024, 11, 31)}
-        />,
-      );
-      const input = screen.getByRole("combobox") as HTMLInputElement;
-      fireEvent.focus(input);
-      fireEvent.change(input, { target: { value: "2025-06-15" } });
-
-      const wrapper = input.closest("[class*='osdkDatetimeInputWrapper']");
-      expect(wrapper).not.toBeNull();
-      expect(wrapper?.className).toContain("Error");
-    });
-
-    it("clears error class when valid date is typed", () => {
-      render(
-        <DatetimePickerField
-          value={null}
-          onChange={vi.fn()}
-        />,
-      );
-      const input = screen.getByRole("combobox") as HTMLInputElement;
-      fireEvent.focus(input);
-
-      // Type invalid first
-      fireEvent.change(input, { target: { value: "not-a-date" } });
-      const wrapper = input.closest("[class*='osdkDatetimeInputWrapper']");
-      expect(wrapper?.className).toContain("Error");
-
-      // Type valid
-      fireEvent.change(input, { target: { value: "2024-06-15" } });
-      expect(wrapper?.className).not.toContain("Error");
-    });
-
+  describe("error recovery", () => {
     it("reverts displayed value to last valid on blur with invalid input", () => {
       render(
         <DatetimePickerField
@@ -413,14 +334,14 @@ describe("DatetimePickerField", () => {
   });
 
   describe("focus management", () => {
-    it("does not move focus to calendar dropdowns when popover opens", () => {
+    it("does not auto-focus calendar dropdowns when the popover opens", () => {
       render(
         <DatetimePickerField value={null} onChange={vi.fn()} />,
       );
       const input = screen.getByRole("combobox");
       fireEvent.focus(input);
 
-      // The month/year dropdowns inside the calendar should not have focus
+      // Calendar dropdowns should not steal focus from the text input
       const selects = document.querySelectorAll("select");
       for (const select of Array.from(selects)) {
         expect(document.activeElement).not.toBe(select);

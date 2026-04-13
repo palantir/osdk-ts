@@ -14,14 +14,22 @@
  * limitations under the License.
  */
 
+/**
+ * Shared constants and utilities for DateCalendar, DateRangeCalendar,
+ * DatetimePickerField, and DateRangeInputField.
+ */
+
 import type React from "react";
 import type { DateAfter, DateBefore, Matcher } from "react-day-picker";
 
-export const DEFAULT_FROM_YEAR: number = new Date().getFullYear() - 100;
+/** Fallback year range for the month/year dropdown when no min/max is provided. */
+export const DEFAULT_FROM_YEAR: number = new Date().getFullYear() - 10;
 export const DEFAULT_TO_YEAR: number = new Date().getFullYear() + 10;
 
-export const CALENDAR_ICON_SIZE = 16;
-
+/**
+ * Builds the `disabled` matcher array for react-day-picker from optional
+ * min/max date constraints. Dates before min or after max are disabled.
+ */
 export function buildDisabledMatchers(
   min: Date | undefined,
   max: Date | undefined,
@@ -38,6 +46,11 @@ export function buildDisabledMatchers(
   return matchers;
 }
 
+/**
+ * Stable click handler that stops event propagation. Used on date inputs
+ * inside Popover.Trigger to prevent the trigger's click handler from
+ * toggling the popover closed when the user clicks the already-open input.
+ */
 export const stopPropagation: (e: React.MouseEvent) => void = (e) => {
   e.stopPropagation();
 };

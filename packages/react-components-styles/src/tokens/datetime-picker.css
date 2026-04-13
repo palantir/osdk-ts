@@ -85,9 +85,52 @@
   /* Calendar chevron — small to match dropdown caret size */
   --osdk-datetime-calendar-chevron-size: calc(var(--osdk-surface-spacing) * 2.5);
 
-  /* Time input footer */
+  /* Calendar focus ring */
+  --osdk-datetime-calendar-focus-outline: 1px solid
+    var(--osdk-input-border-color-focus);
+
+  /* Calendar months gap (also used by range time row) */
+  --osdk-datetime-calendar-months-gap: calc(var(--osdk-surface-spacing) * 4);
+
+  /* Calendar nav disabled */
+  --osdk-datetime-calendar-nav-disabled-color: var(
+    --osdk-typography-color-muted
+  );
+
+  /* Calendar dropdown */
+  --osdk-datetime-calendar-dropdown-padding: 2px
+    calc(var(--osdk-surface-spacing) * 1);
+  --osdk-datetime-calendar-dropdown-border-radius: var(
+    --osdk-input-border-radius
+  );
+
+  /* Calendar caption dropdowns gap */
+  --osdk-datetime-calendar-caption-gap: calc(var(--osdk-surface-spacing) * 1);
+
+  /* Calendar outside day opacity */
+  --osdk-datetime-calendar-outside-opacity: 0.4;
+
+  /* Time input footer — shared by single and range layouts */
+  --osdk-datetime-time-margin-top: calc(var(--osdk-surface-spacing) * 2);
   --osdk-datetime-time-padding-top: calc(var(--osdk-surface-spacing) * 2);
   --osdk-datetime-time-border-top: var(--osdk-surface-border);
+  --osdk-datetime-time-gap: calc(var(--osdk-surface-spacing) * 4);
+  --osdk-datetime-time-input-font-family: var(--osdk-input-font-family);
+  --osdk-datetime-time-input-font-size: var(--osdk-input-font-size);
+  --osdk-datetime-time-input-padding: var(--osdk-input-padding);
+  --osdk-datetime-time-input-padding-range: calc(var(--osdk-surface-spacing) * 1)
+    calc(var(--osdk-surface-spacing) * 2);
+  --osdk-datetime-time-input-border: var(--osdk-input-border-width) solid
+    var(--osdk-input-border-color);
+  --osdk-datetime-time-input-border-radius: var(--osdk-input-border-radius);
+  --osdk-datetime-time-input-bg: var(--osdk-input-bg);
+  --osdk-datetime-time-input-color: var(--osdk-input-color);
+  --osdk-datetime-time-input-border-color-focus: var(
+    --osdk-input-border-color-focus
+  );
+  --osdk-datetime-time-input-focus-outline: var(--osdk-input-focus-width) solid
+    var(--osdk-input-focus-color);
+  --osdk-datetime-time-input-focus-offset: var(--osdk-input-focus-offset);
 
   /* Placeholder */
   --osdk-datetime-input-placeholder-opacity: 0.6;
