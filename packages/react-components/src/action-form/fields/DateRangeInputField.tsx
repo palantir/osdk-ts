@@ -360,9 +360,6 @@ export function DateRangeInputField({
         ? (
           <div className={styles.osdkDateRangeTimeFooter}>
             <div className={styles.osdkDateRangeTimeGroup}>
-              <label className={styles.osdkDateRangeTimeLabel}>
-                Start time
-              </label>
               <Input
                 type="time"
                 value={startTimeValue}
@@ -372,9 +369,6 @@ export function DateRangeInputField({
               />
             </div>
             <div className={styles.osdkDateRangeTimeGroup}>
-              <label className={styles.osdkDateRangeTimeLabel}>
-                End time
-              </label>
               <Input
                 type="time"
                 value={endTimeValue}
