@@ -2,4 +2,4 @@
 "@osdk/foundry-sdk-generator": patch
 ---
 
-Add overrides for minimatch, picomatch, and rollup CVEs
+Bump rollup dep with ^
