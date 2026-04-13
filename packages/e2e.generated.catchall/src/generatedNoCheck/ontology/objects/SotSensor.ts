@@ -15,7 +15,7 @@ import type {
 } from '@osdk/client';
 
 export namespace SotSensor {
-  export type PropertyKeys = 'isEnum' | 'timeSeriesProperty' | 'sensorName' | 'seriesId' | 'wellId';
+  export type PropertyKeys = 'isEnum' | 'sensorName' | 'seriesId' | 'timeSeriesProperty' | 'wellId';
 
   export type Links = {};
 

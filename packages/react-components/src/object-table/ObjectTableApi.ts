@@ -145,7 +145,9 @@ export interface FunctionColumnLocator<
 
   /**
    * Minimum time between re-fetches of the same function with the same parameters, in milliseconds.
-   * Defaults to 5 minutes to maximize cache hits
+   * Defaults to 5 minutes as it is expensive to fetch function columns for a large object set
+   * and they are expected to be relatively static in the context of an object table
+   *
    * @default 300_000 (5 minutes)
    */
   dedupeIntervalMs?: number;
@@ -208,6 +210,13 @@ export interface ObjectTableProps<
    * @default 60_000 1 minute
    */
   dedupeIntervalMs?: number;
+
+  /**
+   * Number of objects to fetch per page.
+   *
+   * @default 50
+   */
+  pageSize?: number;
 
   /**
    * Ordered list of column definitions to show in the table

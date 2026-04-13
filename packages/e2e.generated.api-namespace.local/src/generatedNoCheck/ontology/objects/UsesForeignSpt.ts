@@ -15,7 +15,7 @@ import type {
 } from '@osdk/client';
 
 export namespace UsesForeignSpt {
-  export type PropertyKeys = 'id' | 'body';
+  export type PropertyKeys = 'body' | 'id';
 
   export type Links = {};
 

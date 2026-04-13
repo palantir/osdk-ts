@@ -45,7 +45,6 @@ const columnDefinitions: Array<
       getFunctionParams: (objectSet: any) => ({ employees: objectSet }),
       getKey: (obj: any) => `${obj.$objectType}:${obj.$primaryKey}`,
       getValue: (data: { daysSinceStart: any }) => data?.daysSinceStart,
-      dedupeIntervalMs: 10_000, // Short dedupe for sandbox testing
     } as any,
     columnName: "Days Since Start",
     width: 150,
@@ -118,7 +117,7 @@ export function EmployeesTable() {
   return (
     <div
       style={{
-        height: "500px",
+        height: "200px",
         overflow: "hidden",
       }}
     >
@@ -133,6 +132,7 @@ export function EmployeesTable() {
         }]}
         onSubmitEdits={handleSubmitEdits}
         editMode="manual"
+        pageSize={5}
       />
     </div>
   );
