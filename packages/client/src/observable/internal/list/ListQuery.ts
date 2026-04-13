@@ -43,7 +43,10 @@ import type { Canonical } from "../Canonical.js";
 import { type Changes, DEBUG_ONLY__changesToString } from "../Changes.js";
 import { getObjectTypesThatInvalidate } from "../getObjectTypesThatInvalidate.js";
 import type { Entry } from "../Layer.js";
-import { type ObjectCacheKey } from "../object/ObjectCacheKey.js";
+import {
+  API_NAME_IDX as OBJECT_API_NAME_IDX,
+  type ObjectCacheKey,
+} from "../object/ObjectCacheKey.js";
 import { objectSortaMatchesWhereClause as objectMatchesWhereClause } from "../objectMatchesWhereClause.js";
 import type { OptimisticId } from "../OptimisticId.js";
 import type { PivotInfo } from "../PivotCanonicalizer.js";
@@ -105,6 +108,7 @@ export abstract class ListQuery extends BaseListQuery<
   // For transformed queries (e.g. link traversal) it may differ -- e.g.
   // Employee.pivotTo(Office) has apiName "Employee" but fetches Office objects.
   #fetchedObjectType: string | undefined;
+  #objectTypesCache: ReadonlySet<string> | undefined;
 
   /**
    * Register changes to the cache specific to ListQuery
@@ -180,13 +184,7 @@ export abstract class ListQuery extends BaseListQuery<
   }
 
   get objectTypes(): ReadonlySet<string> {
-    if (
-      this.#fetchedObjectType != null
-      && this.#fetchedObjectType !== this.apiName
-    ) {
-      return new Set([this.apiName, this.#fetchedObjectType]);
-    }
-    return new Set([this.apiName]);
+    return this.#objectTypesCache ?? new Set([this.apiName]);
   }
 
   protected createPayload(
@@ -222,6 +220,9 @@ export abstract class ListQuery extends BaseListQuery<
       );
 
       this.#fetchedObjectType = resultType.apiName;
+      this.#objectTypesCache = this.#fetchedObjectType !== this.apiName
+        ? new Set([this.apiName, this.#fetchedObjectType])
+        : new Set([this.apiName]);
 
       if (
         Object.keys(this.#orderBy).length > 0
@@ -282,8 +283,12 @@ export abstract class ListQuery extends BaseListQuery<
           wireObjectSet,
         );
         this.#fetchedObjectType = resultType.apiName;
+        this.#objectTypesCache = this.#fetchedObjectType !== this.apiName
+          ? new Set([this.apiName, this.#fetchedObjectType])
+          : new Set([this.apiName]);
       } catch {
         this.#fetchedObjectType = this.apiName;
+        this.#objectTypesCache = new Set([this.apiName]);
       }
     }
 
@@ -404,10 +409,15 @@ export abstract class ListQuery extends BaseListQuery<
       this.#fetchedObjectType != null
       && this.#fetchedObjectType !== this.apiName
     ) {
+      const fetchedType = this.#fetchedObjectType;
       const hasResultTypeChanges =
-        (changes.addedObjects.get(this.#fetchedObjectType)?.length ?? 0) > 0
-        || (changes.modifiedObjects.get(this.#fetchedObjectType)?.length ?? 0)
-          > 0;
+        (changes.addedObjects.get(fetchedType)?.length ?? 0) > 0
+        || (changes.modifiedObjects.get(fetchedType)?.length ?? 0) > 0
+        || Array.from(changes.deleted).some(
+          key =>
+            key.type === "object"
+            && key.otherKeys[OBJECT_API_NAME_IDX] === fetchedType,
+        );
 
       if (hasResultTypeChanges) {
         return this.revalidate(true);
