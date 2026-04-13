@@ -41,6 +41,7 @@ export interface BaseCbacPickerProps {
   readOnly?: boolean;
   isLoading?: boolean;
   error?: Error;
+  validationCallouts?: React.ReactNode;
   className?: string;
 }
 
@@ -56,6 +57,7 @@ export function BaseCbacPicker({
   readOnly,
   isLoading,
   error,
+  validationCallouts,
   className,
 }: BaseCbacPickerProps): React.ReactElement {
   const errorMessage = error != null ? formatCbacError(error) : undefined;
@@ -104,6 +106,7 @@ export function BaseCbacPicker({
               <CategoryMarkingGroup
                 key={group.category.id}
                 categoryName={group.category.name}
+                categoryDescription={group.category.description}
                 markings={group.markings}
                 markingStates={markingStates}
                 readOnly={readOnly}
@@ -112,6 +115,7 @@ export function BaseCbacPicker({
             ))}
           </div>
         )}
+      {validationCallouts}
       {showValidationWarning && (
         <ValidationWarning requiredMarkingGroups={requiredMarkingGroups} />
       )}

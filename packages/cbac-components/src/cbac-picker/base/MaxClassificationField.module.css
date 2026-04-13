@@ -14,34 +14,26 @@
  * limitations under the License.
  */
 
-.picker {
+.container {
   display: flex;
   flex-direction: column;
-  gap: var(--osdk-cbac-picker-category-gap);
-  padding: var(--osdk-cbac-picker-padding);
-  width: 100%;
+  gap: var(--osdk-cbac-marking-button-gap);
 }
 
-.categoriesContainer {
-  display: flex;
-  flex-direction: column;
-  gap: var(--osdk-cbac-picker-category-gap);
-  overflow-y: auto;
+.label {
+  font-size: var(--osdk-cbac-picker-category-title-font-size);
+  font-weight: var(--osdk-cbac-picker-category-title-font-weight);
+  color: var(--osdk-cbac-picker-category-title-color);
+  letter-spacing: var(--osdk-cbac-picker-category-title-letter-spacing);
+  margin: 0;
 }
 
-.innerBanner {
-  border: 1px solid var(--osdk-cbac-banner-border-color);
+.bannerWrapper {
+  pointer-events: none;
 }
 
-.statusMessage {
-  display: flex;
-  flex-direction: column;
-  gap: calc(var(--osdk-surface-spacing) * 0.5);
-  padding: calc(var(--osdk-surface-spacing) * 3) 0;
+.helperText {
+  font-size: var(--osdk-typography-size-body-small);
   color: var(--osdk-typography-color-muted);
-  font-style: italic;
-}
-
-.statusMessage p {
   margin: 0;
 }
