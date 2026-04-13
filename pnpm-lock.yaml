@@ -213,6 +213,9 @@ importers:
       size-limit:
         specifier: ^12.0.1
         version: 12.0.1(jiti@2.5.1)
+      syncpack:
+        specifier: ^14.2.1
+        version: 14.2.1
       tsc-absolute:
         specifier: ^1.0.1
         version: 1.0.1(typescript@5.5.4)
@@ -1852,6 +1855,9 @@ importers:
       '@osdk/api':
         specifier: workspace:~
         version: link:../api
+      '@osdk/client.test.ontology':
+        specifier: workspace:~
+        version: link:../client.test.ontology
       '@osdk/client.unstable':
         specifier: workspace:*
         version: link:../client.unstable
@@ -1882,6 +1888,9 @@ importers:
       '@osdk/shared.net.fetch':
         specifier: workspace:~
         version: link:../shared.net.fetch
+      '@osdk/shared.test':
+        specifier: workspace:~
+        version: link:../shared.test
       '@types/geojson':
         specifier: ^7946.0.16
         version: 7946.0.16
@@ -1919,18 +1928,12 @@ importers:
       '@microsoft/api-extractor':
         specifier: ^7.52.11
         version: 7.52.11(@types/node@24.12.0)
-      '@osdk/client.test.ontology':
-        specifier: workspace:~
-        version: link:../client.test.ontology
       '@osdk/monorepo.api-extractor':
         specifier: workspace:~
         version: link:../monorepo.api-extractor
       '@osdk/monorepo.tsconfig':
         specifier: workspace:~
         version: link:../monorepo.tsconfig
-      '@osdk/shared.test':
-        specifier: workspace:~
-        version: link:../shared.test
       '@types/ws':
         specifier: ^8.18.1
         version: 8.18.1
@@ -4476,6 +4479,9 @@ importers:
 
   packages/react:
     dependencies:
+      '@osdk/client.test.ontology':
+        specifier: workspace:*
+        version: link:../client.test.ontology
       react-dom:
         specifier: ^17 || ^18 || ^19
         version: 18.3.1(react@18.3.1)
@@ -4486,9 +4492,6 @@ importers:
       '@osdk/client':
         specifier: workspace:*
         version: link:../client
-      '@osdk/client.test.ontology':
-        specifier: workspace:*
-        version: link:../client.test.ontology
       '@osdk/foundry.admin':
         specifier: catalog:foundry-platform-typescript
         version: 2.57.0
@@ -19440,6 +19443,51 @@ packages:
   synckit@0.11.11:
     resolution: {integrity: sha512-MeQTA1r0litLUf0Rp/iisCaL8761lKAZHaimlbGK4j0HysC4PLfqygQj9srcs0m2RdtDYnF8UuYyKpbjHYp7Jw==}
     engines: {node: ^14.18.0 || >=16.0.0}
+
+  syncpack-darwin-arm64@14.2.1:
+    resolution: {integrity: sha512-SGrC163UWiL68TRo8rmPQFgbT83ieT7zQ1GKyoPZ3TAGNQ+6a/3GMXlZQ+HKV3ydVyB2t60H5CsQFlz13QHTqA==}
+    cpu: [arm64]
+    os: [darwin]
+
+  syncpack-darwin-x64@14.2.1:
+    resolution: {integrity: sha512-ZqAJb4FEez3zpuOHUKZNSBWiYGH4FqmN5pI/AzM2N81oSGTYLaI+H4Wmi6rtZdQXRX2ZzQRs4lQrLTdmVv7oQg==}
+    cpu: [x64]
+    os: [darwin]
+
+  syncpack-linux-arm64-musl@14.2.1:
+    resolution: {integrity: sha512-vfopyN7ne++jnV4uAsoH8NHbio/6+yfdc9VfXt+9ZQiuR1AxtjT2Hylv6re5e6c1j0MPWaCRtaZBZhDUi0ZPdA==}
+    cpu: [arm64]
+    os: [linux]
+
+  syncpack-linux-arm64@14.2.1:
+    resolution: {integrity: sha512-yjyG1v1lYBmWaD+aGXt4eovZ3k+d/nwHU8AZkFJh2jxBy6He2qTclR7+eI/BFcmiAehncbGNksYhL2h2RlC0Rg==}
+    cpu: [arm64]
+    os: [linux]
+
+  syncpack-linux-x64-musl@14.2.1:
+    resolution: {integrity: sha512-2/LMs6nFWPV2P0XOmMo63Erzv8OQ9skszXdalrhU2ilBO7f6B4sup6NsMKIXJeYHNso94TcLdAxyiGQ4sCdmTw==}
+    cpu: [x64]
+    os: [linux]
+
+  syncpack-linux-x64@14.2.1:
+    resolution: {integrity: sha512-rfDzLxiJng7XIVShO7ygrAvrGdCloaKhMm2c4Q8blxVTHgSNcmL4cHRP/Zcvj7pmYGkwok6DtAetgxV47XpoGA==}
+    cpu: [x64]
+    os: [linux]
+
+  syncpack-windows-arm64@14.2.1:
+    resolution: {integrity: sha512-T+qP9ERY8dg6HWAgFtxNKxp67EJ7CIstHeQ8jQAiSmKGNt+HEzzVCipSGMb9yu9SGjVQHuvn2wAf33LppYfivA==}
+    cpu: [arm64]
+    os: [win32]
+
+  syncpack-windows-x64@14.2.1:
+    resolution: {integrity: sha512-yoK6eHbzTgKuaL4dU/AFNaIHqRletqR8w5aBGBzdAY39n2MrNbfGVBUeDglRBYnSoE+PgLtqwbHULIlhPratPw==}
+    cpu: [x64]
+    os: [win32]
+
+  syncpack@14.2.1:
+    resolution: {integrity: sha512-9CE0+MCThNPt0/yXD5cFaJQw2jxslaB3Ck1ASeP9uFji+lE3KWmfGRBzy8x5sjhygUz6Vt+a84w+ycIzATQicA==}
+    engines: {node: '>=14.17.0'}
+    hasBin: true
 
   tabbable@6.4.0:
     resolution: {integrity: sha512-05PUHKSNE8ou2dwIxTngl4EzcnsCDZGJ/iCLtDflR/SHB/ny14rXc+qU5P4mG9JkusiV7EivzY9Mhm55AzAvCg==}
@@ -38635,6 +38683,41 @@ snapshots:
   synckit@0.11.11:
     dependencies:
       '@pkgr/core': 0.2.9
+
+  syncpack-darwin-arm64@14.2.1:
+    optional: true
+
+  syncpack-darwin-x64@14.2.1:
+    optional: true
+
+  syncpack-linux-arm64-musl@14.2.1:
+    optional: true
+
+  syncpack-linux-arm64@14.2.1:
+    optional: true
+
+  syncpack-linux-x64-musl@14.2.1:
+    optional: true
+
+  syncpack-linux-x64@14.2.1:
+    optional: true
+
+  syncpack-windows-arm64@14.2.1:
+    optional: true
+
+  syncpack-windows-x64@14.2.1:
+    optional: true
+
+  syncpack@14.2.1:
+    optionalDependencies:
+      syncpack-darwin-arm64: 14.2.1
+      syncpack-darwin-x64: 14.2.1
+      syncpack-linux-arm64: 14.2.1
+      syncpack-linux-arm64-musl: 14.2.1
+      syncpack-linux-x64: 14.2.1
+      syncpack-linux-x64-musl: 14.2.1
+      syncpack-windows-arm64: 14.2.1
+      syncpack-windows-x64: 14.2.1
 
   tabbable@6.4.0: {}
 
