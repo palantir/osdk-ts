@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { QueryDefinition } from "@osdk/api";
+import type { ObjectTypeDefinition, Osdk, QueryDefinition } from "@osdk/api";
 import type { Client } from "@osdk/client";
 import type { ObservableClient } from "@osdk/client/unstable-do-not-use";
 import { act, renderHook } from "@testing-library/react";
@@ -36,6 +36,22 @@ const MOCK_QUERY_DEF_2: QueryDefinition<unknown> = {
   apiName: "getReports",
   version: "1.0.0",
 };
+
+const MOCK_QUERY_DEF_3: QueryDefinition<unknown> = {
+  type: "query",
+  apiName: "getSummary",
+  version: "1.0.0",
+};
+
+const TestObjectType = {
+  type: "object",
+  apiName: "TestObject",
+} as const satisfies ObjectTypeDefinition;
+
+const testObject = {
+  $apiName: TestObjectType.apiName,
+  $primaryKey: 123,
+} as Osdk.Instance<typeof TestObjectType>;
 
 type Observer = {
   next: (payload: unknown) => void;
@@ -537,12 +553,16 @@ describe("useOsdkFunctions", () => {
     expect(result.current[0].error?.message).toBe("string error");
   });
 
-  it("should use custom dedupeIntervalMs per query", () => {
+  it("should use custom options per query", () => {
     const props: UseOsdkFunctionsProps = {
       queries: [
         {
           queryDefinition: MOCK_QUERY_DEF_1,
-          options: { dedupeIntervalMs: 5000 },
+          options: {
+            dedupeIntervalMs: 5000,
+            dependsOn: [TestObjectType],
+            dependsOnObjects: [testObject],
+          },
         },
       ],
     };
@@ -555,8 +575,239 @@ describe("useOsdkFunctions", () => {
     expect(mockObservableClient.observeFunction).toHaveBeenCalledWith(
       MOCK_QUERY_DEF_1,
       undefined,
-      { dedupeInterval: 5000 },
+      {
+        dedupeInterval: 5000,
+        dependsOn: [TestObjectType],
+        dependsOnObjects: [testObject],
+      },
       expect.objectContaining({ next: expect.any(Function) }),
     );
+  });
+
+  describe("maxConcurrent", () => {
+    it("should only subscribe to maxConcurrent queries initially", () => {
+      const observers = captureObservers(mockObservableClient);
+      const props: UseOsdkFunctionsProps = {
+        queries: [
+          { queryDefinition: MOCK_QUERY_DEF_1 },
+          { queryDefinition: MOCK_QUERY_DEF_2 },
+          { queryDefinition: MOCK_QUERY_DEF_3 },
+        ],
+        maxConcurrent: 1,
+      };
+
+      renderHook(
+        () => useOsdkFunctions(props),
+        { wrapper: createWrapper(mockObservableClient) },
+      );
+
+      // Only the first query should be subscribed
+      expect(mockObservableClient.observeFunction).toHaveBeenCalledTimes(1);
+      expect(mockObservableClient.observeFunction).toHaveBeenCalledWith(
+        MOCK_QUERY_DEF_1,
+        undefined,
+        expect.anything(),
+        expect.anything(),
+      );
+      expect(observers).toHaveLength(1);
+    });
+
+    it("should subscribe to next query when current one completes", () => {
+      const observers = captureObservers(mockObservableClient);
+      const props: UseOsdkFunctionsProps = {
+        queries: [
+          { queryDefinition: MOCK_QUERY_DEF_1 },
+          { queryDefinition: MOCK_QUERY_DEF_2 },
+          { queryDefinition: MOCK_QUERY_DEF_3 },
+        ],
+        maxConcurrent: 1,
+      };
+
+      const { result } = renderHook(
+        () => useOsdkFunctions(props),
+        { wrapper: createWrapper(mockObservableClient) },
+      );
+
+      expect(observers).toHaveLength(1);
+
+      // Complete the first query — should trigger subscription to second
+      act(() => {
+        observers[0].next({
+          result: { value: 1 },
+          status: "loaded",
+          lastUpdated: 1000,
+        });
+      });
+
+      expect(result.current[0].data).toEqual({ value: 1 });
+      expect(observers).toHaveLength(2);
+      expect(mockObservableClient.observeFunction).toHaveBeenCalledWith(
+        MOCK_QUERY_DEF_2,
+        undefined,
+        expect.anything(),
+        expect.anything(),
+      );
+
+      // Complete the second query — should trigger subscription to third
+      act(() => {
+        observers[1].next({
+          result: { value: 2 },
+          status: "loaded",
+          lastUpdated: 2000,
+        });
+      });
+
+      expect(result.current[1].data).toEqual({ value: 2 });
+      expect(observers).toHaveLength(3);
+      expect(mockObservableClient.observeFunction).toHaveBeenCalledWith(
+        MOCK_QUERY_DEF_3,
+        undefined,
+        expect.anything(),
+        expect.anything(),
+      );
+
+      // Complete the third query
+      act(() => {
+        observers[2].next({
+          result: { value: 3 },
+          status: "loaded",
+          lastUpdated: 3000,
+        });
+      });
+
+      expect(result.current[2].data).toEqual({ value: 3 });
+      // No more subscriptions
+      expect(observers).toHaveLength(3);
+    });
+
+    it("should advance queue on error", () => {
+      const observers = captureObservers(mockObservableClient);
+      const props: UseOsdkFunctionsProps = {
+        queries: [
+          { queryDefinition: MOCK_QUERY_DEF_1 },
+          { queryDefinition: MOCK_QUERY_DEF_2 },
+        ],
+        maxConcurrent: 1,
+      };
+
+      const { result } = renderHook(
+        () => useOsdkFunctions(props),
+        { wrapper: createWrapper(mockObservableClient) },
+      );
+
+      expect(observers).toHaveLength(1);
+
+      // First query errors — should still start the second
+      act(() => {
+        observers[0].error(new Error("first failed"));
+      });
+
+      expect(result.current[0].error?.message).toBe("first failed");
+      expect(observers).toHaveLength(2);
+
+      // Second query succeeds
+      act(() => {
+        observers[1].next({
+          result: { value: 2 },
+          status: "loaded",
+          lastUpdated: 1000,
+        });
+      });
+
+      expect(result.current[1].data).toEqual({ value: 2 });
+    });
+
+    it("should run maxConcurrent:2 with 3 queries", () => {
+      const observers = captureObservers(mockObservableClient);
+      const props: UseOsdkFunctionsProps = {
+        queries: [
+          { queryDefinition: MOCK_QUERY_DEF_1 },
+          { queryDefinition: MOCK_QUERY_DEF_2 },
+          { queryDefinition: MOCK_QUERY_DEF_3 },
+        ],
+        maxConcurrent: 2,
+      };
+
+      const { result } = renderHook(
+        () => useOsdkFunctions(props),
+        { wrapper: createWrapper(mockObservableClient) },
+      );
+
+      // First two should be subscribed immediately
+      expect(observers).toHaveLength(2);
+
+      // Complete the first — third should start
+      act(() => {
+        observers[0].next({
+          result: { value: 1 },
+          status: "loaded",
+          lastUpdated: 1000,
+        });
+      });
+
+      expect(observers).toHaveLength(3);
+      expect(result.current[0].data).toEqual({ value: 1 });
+
+      // Complete the remaining two
+      act(() => {
+        observers[1].next({
+          result: { value: 2 },
+          status: "loaded",
+          lastUpdated: 2000,
+        });
+        observers[2].next({
+          result: { value: 3 },
+          status: "loaded",
+          lastUpdated: 3000,
+        });
+      });
+
+      expect(result.current[1].data).toEqual({ value: 2 });
+      expect(result.current[2].data).toEqual({ value: 3 });
+      expect(observers).toHaveLength(3);
+    });
+
+    it("should skip disabled queries in staggering queue", () => {
+      const observers = captureObservers(mockObservableClient);
+      const props: UseOsdkFunctionsProps = {
+        queries: [
+          { queryDefinition: MOCK_QUERY_DEF_1, options: { enabled: false } },
+          { queryDefinition: MOCK_QUERY_DEF_2 },
+          { queryDefinition: MOCK_QUERY_DEF_3 },
+        ],
+        maxConcurrent: 1,
+      };
+
+      renderHook(
+        () => useOsdkFunctions(props),
+        { wrapper: createWrapper(mockObservableClient) },
+      );
+
+      // First is disabled, so second should be the initial subscription
+      expect(observers).toHaveLength(1);
+      expect(mockObservableClient.observeFunction).toHaveBeenCalledWith(
+        MOCK_QUERY_DEF_2,
+        undefined,
+        expect.anything(),
+        expect.anything(),
+      );
+
+      // Complete second — third should start
+      act(() => {
+        observers[0].next({
+          result: { value: 2 },
+          status: "loaded",
+          lastUpdated: 1000,
+        });
+      });
+
+      expect(observers).toHaveLength(2);
+      expect(mockObservableClient.observeFunction).toHaveBeenCalledWith(
+        MOCK_QUERY_DEF_3,
+        undefined,
+        expect.anything(),
+        expect.anything(),
+      );
+    });
   });
 });

@@ -71,6 +71,7 @@
   "peerDependencies": {
     "@osdk/api": "^2.8.0",
     "@osdk/client": "^2.8.0",
+    "@osdk/client.test.ontology": "workspace:*",
     "@osdk/foundry.admin": "*",
     "@osdk/foundry.core": "*",
     "@types/react": "^17 || ^18 || ^19",
@@ -78,6 +79,9 @@
     "react-dom": "^17 || ^18 || ^19"
   },
   "peerDependenciesMeta": {
+    "@osdk/client.test.ontology": {
+      "optional": true
+    },
     "@osdk/foundry.admin": {
       "optional": true
     },
@@ -88,7 +92,6 @@
   "devDependencies": {
     "@osdk/api": "workspace:*",
     "@osdk/client": "workspace:*",
-    "@osdk/client.test.ontology": "workspace:*",
     "@osdk/foundry.admin": "catalog:foundry-platform-typescript",
     "@osdk/foundry.core": "catalog:foundry-platform-typescript",
     "@osdk/monorepo.api-extractor": "workspace:~",
