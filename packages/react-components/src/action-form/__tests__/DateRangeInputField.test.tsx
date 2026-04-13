@@ -58,8 +58,8 @@ describe("DateRangeInputField", () => {
         "Start date",
       ) as HTMLInputElement;
       const endInput = screen.getByLabelText("End date") as HTMLInputElement;
-      expect(startInput.value).toBe("2024-01-15");
-      expect(endInput.value).toBe("2024-06-30");
+      expect(startInput.value).toBe("Jan 15, 2024");
+      expect(endInput.value).toBe("Jun 30, 2024");
     });
 
     it("renders empty inputs when value is null", () => {
@@ -171,7 +171,7 @@ describe("DateRangeInputField", () => {
       fireEvent.change(startInput, { target: { value: "2099-12-31" } });
       fireEvent.keyDown(startInput, { key: "Escape" });
 
-      expect(startInput.value).toBe("2024-01-15");
+      expect(startInput.value).toBe("Jan 15, 2024");
     });
   });
 

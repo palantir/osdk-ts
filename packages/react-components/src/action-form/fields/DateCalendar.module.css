@@ -39,17 +39,20 @@
   width: var(--osdk-datetime-calendar-cell-size);
   height: var(--osdk-datetime-calendar-cell-size);
   border: none;
+  border-radius: var(--osdk-datetime-calendar-day-border-radius);
   background: transparent;
   cursor: pointer;
   font: inherit;
-  color: inherit;
+  color: var(--osdk-datetime-calendar-day-color);
 
   &:hover {
     background: var(--osdk-datetime-calendar-day-hover-bg);
+    color: var(--osdk-datetime-calendar-day-hover-color);
   }
 
   &:active {
     background: var(--osdk-datetime-calendar-day-active-bg);
+    color: var(--osdk-datetime-calendar-day-hover-color);
   }
 
   &:focus-visible {
@@ -58,12 +61,21 @@
   }
 }
 
+/* :not([disabled]) bumps specificity to (0,4,0) — matching rdp's default
+   .rdp-button:hover:not([disabled]):not(.rdp-day_selected) rule so our
+   styles win by source order. Without this, rdp overrides the selected
+   background on hover because we remap day_selected and its :not() always matches. */
 .calendarDayButton.calendarSelected {
   background: var(--osdk-datetime-calendar-selected-bg);
   color: var(--osdk-datetime-calendar-selected-color);
 
-  &:hover {
+  &:hover:not([disabled]) {
     background: var(--osdk-datetime-calendar-selected-hover-bg);
+    color: var(--osdk-datetime-calendar-selected-color);
+  }
+
+  &:active:not([disabled]) {
+    color: var(--osdk-datetime-calendar-selected-color);
   }
 }
 
@@ -108,10 +120,14 @@
 .calendarRangeEndpoint {
   background: var(--osdk-datetime-calendar-selected-bg);
   color: var(--osdk-datetime-calendar-selected-color);
-  border-radius: 50%;
 
-  &:hover {
+  &:hover:not([disabled]) {
     background: var(--osdk-datetime-calendar-selected-hover-bg);
+    color: var(--osdk-datetime-calendar-selected-color);
+  }
+
+  &:active:not([disabled]) {
+    color: var(--osdk-datetime-calendar-selected-color);
   }
 }
 
@@ -123,13 +139,21 @@
   composes: calendarRangeEndpoint;
 }
 
-.calendarRangeMiddle {
+/* Range-middle needs .calendarDayButton prefix to match specificity of
+   .calendarDayButton.calendarSelected (rdp applies both to range-middle days). */
+.calendarDayButton.calendarRangeMiddle {
   background: var(--osdk-datetime-calendar-range-middle-bg);
+  color: var(--osdk-datetime-calendar-day-color);
   border-radius: 0;
 
   &:hover {
     background: var(--osdk-datetime-calendar-range-middle-bg);
+    color: var(--osdk-datetime-calendar-day-hover-color);
     filter: brightness(0.95);
+  }
+
+  &:active {
+    color: var(--osdk-datetime-calendar-day-hover-color);
   }
 }
 

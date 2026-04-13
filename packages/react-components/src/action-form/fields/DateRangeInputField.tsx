@@ -20,6 +20,7 @@ import classnames from "classnames";
 import React, { useCallback, useId, useRef, useState } from "react";
 import type { DateRange as RdpDateRange } from "react-day-picker";
 import {
+  formatDateForDisplay,
   formatDateForInput,
   formatDatetimeForDisplay,
   getTimeValue,
@@ -61,8 +62,11 @@ export function DateRangeInputField({
 
   const [startDate, endDate] = value ?? EMPTY_RANGE;
 
+  // editFormatFn produces a parsable string for typing (e.g. "2024-01-15" or "2024-01-15 14:30").
+  // displayFormatFn produces a human-readable string for idle state (e.g. "Jan 15, 2024").
   const editFormatFn = showTime ? formatDatetimeForDisplay : formatDateForInput;
-  const displayFormatFn = formatDate ?? editFormatFn;
+  const displayFormatFn = formatDate
+    ?? (showTime ? formatDatetimeForDisplay : formatDateForDisplay);
   const parseFn = parseDate
     ?? (showTime ? parseDatetimeFromDisplay : parseDateFromInput);
 
@@ -324,8 +328,9 @@ export function DateRangeInputField({
         : new Date();
       base.setHours(hours, minutes, 0, 0);
       onChange?.([base, endDate ?? null]);
+      setStartInputValue(editFormatFn(base));
     },
-    [startDate, endDate, onChange],
+    [startDate, endDate, onChange, editFormatFn, setStartInputValue],
   );
 
   const handleEndTimeChange = useCallback(
@@ -334,8 +339,9 @@ export function DateRangeInputField({
       const base = endDate != null ? new Date(endDate.getTime()) : new Date();
       base.setHours(hours, minutes, 0, 0);
       onChange?.([startDate ?? null, base]);
+      setEndInputValue(editFormatFn(base));
     },
-    [startDate, endDate, onChange],
+    [startDate, endDate, onChange, editFormatFn, setEndInputValue],
   );
 
   // --- Focus boundary handlers ---
@@ -376,12 +382,14 @@ export function DateRangeInputField({
 
   const startWrapperClassName = classnames(
     styles.osdkDateRangeInputWrapper,
-    hasError && isEditingStart && styles.osdkDateRangeInputWrapperError,
+    (startInvalid || overlappingError != null)
+      && styles.osdkDateRangeInputWrapperError,
   );
 
   const endWrapperClassName = classnames(
     styles.osdkDateRangeInputWrapper,
-    hasError && isEditingEnd && styles.osdkDateRangeInputWrapperError,
+    (endInvalid || overlappingError != null)
+      && styles.osdkDateRangeInputWrapperError,
   );
 
   const timeFooter = showTime
@@ -401,6 +409,18 @@ export function DateRangeInputField({
     )
     : undefined;
 
+  // Shared props for both start/end inputs. role="combobox" because each input
+  // triggers a shared popup (the calendar popover) — matching WAI-ARIA combobox pattern.
+  const sharedInputProps = {
+    className: commonStyles.osdkDatePickerInput,
+    type: "text" as const,
+    onClick: stopPropagation,
+    autoComplete: "off" as const,
+    role: "combobox" as const,
+    "aria-controls": popoverId,
+    "aria-haspopup": "dialog" as const,
+  };
+
   return (
     <Popover.Root open={isOpen} onOpenChange={handleOpenChange}>
       <Popover.Trigger
@@ -411,42 +431,32 @@ export function DateRangeInputField({
           <Input
             ref={startInputRef}
             id={id != null ? `${id}-start` : undefined}
-            className={commonStyles.osdkDatePickerInput}
-            type="text"
             value={displayedStart}
             onValueChange={setStartInputValue}
             onFocus={handleStartFocus}
             onBlur={handleStartBlur}
-            onClick={stopPropagation}
             onKeyDown={handleStartKeyDown}
             placeholder={placeholderStart}
-            role="combobox"
             aria-expanded={isOpen && activeBoundary === "start"}
-            aria-controls={popoverId}
-            aria-haspopup="dialog"
             aria-label="Start date"
             aria-invalid={startInvalid || undefined}
+            {...sharedInputProps}
           />
         </div>
         <div className={endWrapperClassName}>
           <Input
             ref={endInputRef}
             id={id != null ? `${id}-end` : undefined}
-            className={commonStyles.osdkDatePickerInput}
-            type="text"
             value={displayedEnd}
             onValueChange={setEndInputValue}
             onFocus={handleEndFocus}
             onBlur={handleEndBlur}
-            onClick={stopPropagation}
             onKeyDown={handleEndKeyDown}
             placeholder={placeholderEnd}
-            role="combobox"
             aria-expanded={isOpen && activeBoundary === "end"}
-            aria-controls={popoverId}
-            aria-haspopup="dialog"
             aria-label="End date"
             aria-invalid={endInvalid || undefined}
+            {...sharedInputProps}
           />
         </div>
       </Popover.Trigger>

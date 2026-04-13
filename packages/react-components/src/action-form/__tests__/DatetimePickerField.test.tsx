@@ -33,7 +33,7 @@ afterEach(cleanup);
 
 describe("DatetimePickerField", () => {
   describe("rendering", () => {
-    it("renders an input with formatted date value", () => {
+    it("renders an input with locale-friendly date value", () => {
       render(
         <DatetimePickerField
           value={new Date(2024, 0, 15)}
@@ -42,7 +42,7 @@ describe("DatetimePickerField", () => {
       );
       const input = screen.getByRole("combobox") as HTMLInputElement;
       expect(input).toBeDefined();
-      expect(input.value).toBe("2024-01-15");
+      expect(input.value).toBe("Jan 15, 2024");
     });
 
     it("renders empty input when value is null", () => {
@@ -163,6 +163,27 @@ describe("DatetimePickerField", () => {
       expect(calledDate.getMinutes()).toBe(45);
       expect(calledDate.getDate()).toBe(15);
     });
+
+    it("updates input text when time changes", () => {
+      const onChange = vi.fn();
+      render(
+        <DatetimePickerField
+          value={new Date(2024, 0, 15, 14, 30)}
+          onChange={onChange}
+          showTime={true}
+        />,
+      );
+      const input = screen.getByRole("combobox") as HTMLInputElement;
+      fireEvent.focus(input);
+
+      const timeInput = document.querySelector(
+        "input[type=\"time\"]",
+      ) as HTMLInputElement;
+      fireEvent.change(timeInput, { target: { value: "16:45" } });
+
+      // The main input text should reflect the new time
+      expect(input.value).toBe("2024-01-15 16:45");
+    });
   });
 
   describe("custom format", () => {
@@ -183,12 +204,7 @@ describe("DatetimePickerField", () => {
   describe("text input editing", () => {
     it("commits a valid typed date on blur", () => {
       const onChange = vi.fn();
-      render(
-        <DatetimePickerField
-          value={null}
-          onChange={onChange}
-        />,
-      );
+      render(<DatetimePickerField value={null} onChange={onChange} />);
       const input = screen.getByRole("combobox") as HTMLInputElement;
       fireEvent.focus(input);
       fireEvent.change(input, { target: { value: "2024-03-20" } });
@@ -235,12 +251,7 @@ describe("DatetimePickerField", () => {
 
     it("commits on Enter key and closes popover", () => {
       const onChange = vi.fn();
-      render(
-        <DatetimePickerField
-          value={null}
-          onChange={onChange}
-        />,
-      );
+      render(<DatetimePickerField value={null} onChange={onChange} />);
       const input = screen.getByRole("combobox") as HTMLInputElement;
       fireEvent.focus(input);
       fireEvent.change(input, { target: { value: "2024-06-01" } });
@@ -264,9 +275,8 @@ describe("DatetimePickerField", () => {
       fireEvent.change(input, { target: { value: "2099-12-31" } });
       fireEvent.keyDown(input, { key: "Escape" });
 
-      // After Escape, the input should display the original value's format
-      // Since we blurred, the display format is used (not edit format)
-      expect(input.value).toBe("2024-01-15");
+      // After Escape, the locale-friendly display format is restored
+      expect(input.value).toBe("Jan 15, 2024");
     });
 
     it("does not call onChange for out-of-range date on blur", () => {
@@ -328,16 +338,14 @@ describe("DatetimePickerField", () => {
       fireEvent.change(input, { target: { value: "garbage" } });
       fireEvent.blur(input);
 
-      // Should revert to the formatted original value
-      expect(input.value).toBe("2024-01-15");
+      // Should revert to the locale-friendly formatted original value
+      expect(input.value).toBe("Jan 15, 2024");
     });
   });
 
   describe("focus management", () => {
     it("does not auto-focus calendar dropdowns when the popover opens", () => {
-      render(
-        <DatetimePickerField value={null} onChange={vi.fn()} />,
-      );
+      render(<DatetimePickerField value={null} onChange={vi.fn()} />);
       const input = screen.getByRole("combobox");
       fireEvent.focus(input);
 
@@ -378,9 +386,7 @@ describe("DatetimePickerField", () => {
       fireEvent.focus(input);
 
       // Calendar should show January 2024
-      const monthSelect = document.querySelector(
-        "select",
-      ) as HTMLSelectElement;
+      const monthSelect = document.querySelector("select") as HTMLSelectElement;
       expect(monthSelect.value).toBe("0"); // January = 0
 
       // Click next month
@@ -396,18 +402,14 @@ describe("DatetimePickerField", () => {
 
   describe("accessibility", () => {
     it("has combobox role and aria attributes", () => {
-      render(
-        <DatetimePickerField value={null} onChange={vi.fn()} />,
-      );
+      render(<DatetimePickerField value={null} onChange={vi.fn()} />);
       const input = screen.getByRole("combobox");
       expect(input.getAttribute("aria-haspopup")).toBe("dialog");
       expect(input.getAttribute("aria-expanded")).toBe("false");
     });
 
     it("sets aria-expanded to true when popover is open", () => {
-      render(
-        <DatetimePickerField value={null} onChange={vi.fn()} />,
-      );
+      render(<DatetimePickerField value={null} onChange={vi.fn()} />);
       const input = screen.getByRole("combobox");
       fireEvent.focus(input);
       expect(input.getAttribute("aria-expanded")).toBe("true");

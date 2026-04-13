@@ -35,11 +35,16 @@
     --osdk-typography-size-body-x-small
   );
 
+  --osdk-datetime-calendar-day-color: var(--osdk-typography-color-default);
   --osdk-datetime-calendar-day-hover-bg: var(
     --osdk-surface-background-color-default-hover
   );
+  --osdk-datetime-calendar-day-hover-color: var(--osdk-typography-color-default);
   --osdk-datetime-calendar-day-active-bg: var(
     --osdk-surface-background-color-default-active
+  );
+  --osdk-datetime-calendar-day-border-radius: var(
+    --osdk-surface-border-radius
   );
 
   /* Calendar selected day */

@@ -19,6 +19,7 @@ import { Popover } from "@base-ui/react/popover";
 import classnames from "classnames";
 import React, { useCallback, useId, useRef, useState } from "react";
 import {
+  formatDateForDisplay,
   formatDateForInput,
   formatDatetimeForDisplay,
   getTimeValue,
@@ -53,9 +54,12 @@ export function DatetimePickerField({
 
   const [isOpen, setIsOpen] = useState(false);
 
-  // Format/parse: pick between date-only and datetime variants
+  // Format/parse: pick between date-only and datetime variants.
+  // editFormatFn produces a parsable string for typing (e.g. "2024-01-15" or "2024-01-15 14:30").
+  // displayFormatFn produces a human-readable string for idle state (e.g. "Jan 15, 2024").
   const editFormatFn = showTime ? formatDatetimeForDisplay : formatDateForInput;
-  const displayFormatFn = formatDate ?? editFormatFn;
+  const displayFormatFn = formatDate
+    ?? (showTime ? formatDatetimeForDisplay : formatDateForDisplay);
   const parseFn = parseDate
     ?? (showTime ? parseDatetimeFromDisplay : parseDateFromInput);
 
@@ -201,8 +205,9 @@ export function DatetimePickerField({
       const base = value != null ? new Date(value.getTime()) : new Date();
       base.setHours(hours, minutes, 0, 0);
       onChange?.(base);
+      setInputValue(editFormatFn(base));
     },
-    [value, onChange],
+    [value, onChange, editFormatFn, setInputValue],
   );
 
   // --- Focus boundary handlers ---
@@ -269,6 +274,7 @@ export function DatetimePickerField({
           onClick={stopPropagation}
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
+          autoComplete="off"
           role="combobox"
           aria-expanded={isOpen}
           aria-controls={popoverId}
