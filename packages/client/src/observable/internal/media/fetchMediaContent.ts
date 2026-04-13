@@ -128,6 +128,7 @@ async function loadWithPreview(opts: FetchMediaContentOpts): Promise<void> {
     if (previewUrl) {
       blobManager.releaseBlobUrl(previewBlobKey);
     }
+    blobManager.remove(previewBlobKey);
     return;
   }
 
