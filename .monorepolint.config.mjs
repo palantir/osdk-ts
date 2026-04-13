@@ -158,20 +158,6 @@ const archetypeRules = archetypes(
       "@osdk/cli",
       "@osdk/create-app",
       "@osdk/create-widget",
-    ],
-    {
-      ...LIBRARY_RULES,
-      output: {
-        browser: undefined,
-        cjs: undefined,
-        esm: "bundle",
-      },
-      fixedDepsOnly: true,
-    },
-  )
-  .addArchetype(
-    "consumerCliPackagesWithoutFixedDeps",
-    [
       "@osdk/foundry-sdk-generator",
     ],
     {
@@ -181,7 +167,7 @@ const archetypeRules = archetypes(
         cjs: undefined,
         esm: "bundle",
       },
-      fixedDepsOnly: false,
+      fixedDepsOnly: true,
     },
   )
   .addArchetype(
@@ -504,6 +490,7 @@ const fixedDepsOnly = createRuleFactory({
         if (version === "catalog:foundry-platform-typescript") continue;
         if (version[0] >= "0" && version[0] <= "9") continue;
         if (dep === "typescript" && version[0] === "~") continue;
+        if (dep === "rollup" && version[0] === "^") continue; // we want rollup CVE fixes
 
         const message =
           `May only have fixed dependencies (found ${d}['${dep}'] == '${version}').`;
