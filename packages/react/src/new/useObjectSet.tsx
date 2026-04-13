@@ -31,7 +31,11 @@ import {
 } from "@osdk/client/unstable-do-not-use";
 import React from "react";
 import { extractPayloadError } from "./hookUtils.js";
-import { makeExternalStore, type Snapshot } from "./makeExternalStore.js";
+import {
+  devToolsMetadata,
+  makeExternalStore,
+  type Snapshot,
+} from "./makeExternalStore.js";
 import { OsdkContext2 } from "./OsdkContext2.js";
 
 export interface UseObjectSetOptions<
@@ -175,12 +179,6 @@ export interface UseObjectSetResult<
   refetch: () => Promise<void>;
 }
 
-declare const process: {
-  env: {
-    NODE_ENV: "development" | "production";
-  };
-};
-
 const OBJECT_TYPE_PLACEHOLDER = "$__OBJECT__TYPE__PLACEHOLDER";
 /**
  * React hook for observing and interacting with OSDK object sets.
@@ -249,9 +247,10 @@ export function useObjectSet<
       if (!enabled) {
         return makeExternalStore<ObserveObjectSetArgs<Q, RDPs>>(
           () => ({ unsubscribe: () => {} }),
-          process.env.NODE_ENV !== "production"
-            ? `objectSet [DISABLED]`
-            : void 0,
+          devToolsMetadata({
+            hookType: "useObjectSet",
+            objectType: objectTypeKey,
+          }),
         );
       }
 
@@ -284,9 +283,10 @@ export function useObjectSet<
           );
           return subscription;
         },
-        process.env.NODE_ENV !== "production"
-          ? `objectSet ${objectTypeKey}`
-          : void 0,
+        devToolsMetadata({
+          hookType: "useObjectSet",
+          objectType: objectTypeKey,
+        }),
         initialValue,
       );
     },

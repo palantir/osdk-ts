@@ -57,7 +57,11 @@ function createWrapper(observableClient: ObservableClient) {
   return function Wrapper({ children }: { children: React.ReactNode }) {
     return (
       <OsdkContext2.Provider
-        value={{ client: {} as Client, observableClient }}
+        value={{
+          client: {} as Client,
+          observableClient,
+          devtoolsEnabled: false,
+        }}
       >
         {children}
       </OsdkContext2.Provider>

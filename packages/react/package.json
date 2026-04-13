@@ -16,6 +16,15 @@
       "require": "./build/cjs/index.cjs",
       "default": "./build/browser/index.js"
     },
+    "./devtools-registry": {
+      "browser": "./build/browser/public/devtools-registry.js",
+      "import": {
+        "types": "./build/types/public/devtools-registry.d.ts",
+        "default": "./build/esm/public/devtools-registry.js"
+      },
+      "require": "./build/cjs/public/devtools-registry.cjs",
+      "default": "./build/browser/public/devtools-registry.js"
+    },
     "./experimental": {
       "browser": "./build/browser/public/experimental.js",
       "import": {
