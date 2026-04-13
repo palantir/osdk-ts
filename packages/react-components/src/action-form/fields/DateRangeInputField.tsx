@@ -38,6 +38,17 @@ import { useDateEditState } from "./useDateEditState.js";
 
 type ActiveBoundary = "start" | "end";
 
+// Shared props for both start/end inputs. role="combobox" because each input
+// triggers a shared popup (the calendar popover) — matching WAI-ARIA combobox pattern.
+const SHARED_INPUT_PROPS = {
+  className: commonStyles.osdkDatePickerInput,
+  type: "text" as const,
+  onClick: stopPropagation,
+  autoComplete: "off" as const,
+  role: "combobox" as const,
+  "aria-haspopup": "dialog" as const,
+} as const;
+
 export function DateRangeInputField({
   id,
   value,
@@ -128,10 +139,6 @@ export function DateRangeInputField({
     }
     return null;
   })();
-
-  const hasError = startInputError != null
-    || endInputError != null
-    || overlappingError != null;
 
   const startInvalid = isEditingStart
     && (startInputError != null || overlappingError != null);
@@ -409,16 +416,9 @@ export function DateRangeInputField({
     )
     : undefined;
 
-  // Shared props for both start/end inputs. role="combobox" because each input
-  // triggers a shared popup (the calendar popover) — matching WAI-ARIA combobox pattern.
   const sharedInputProps = {
-    className: commonStyles.osdkDatePickerInput,
-    type: "text" as const,
-    onClick: stopPropagation,
-    autoComplete: "off" as const,
-    role: "combobox" as const,
+    ...SHARED_INPUT_PROPS,
     "aria-controls": popoverId,
-    "aria-haspopup": "dialog" as const,
   };
 
   return (

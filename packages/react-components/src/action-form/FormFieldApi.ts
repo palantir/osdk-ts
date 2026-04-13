@@ -193,7 +193,7 @@ export interface DatetimePickerFieldProps extends BaseFormFieldProps<Date> {
  * A date range represented as a start/end tuple.
  * Either element may be `null` when the range is partially selected.
  */
-export type DateRange = [Date | null, Date | null];
+export type DateRange = readonly [Date | null, Date | null];
 
 /** Default empty range — both bounds are null. */
 export const EMPTY_RANGE: DateRange = [null, null];
