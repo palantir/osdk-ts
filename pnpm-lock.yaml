@@ -47,6 +47,7 @@ overrides:
   esbuild@^0.23.0: ^0.25.0
   esbuild@^0.24.0: ^0.25.0
   react-server-dom-webpack: '>=19.2.2'
+  webpackbar: ^7.0.0
   '@types/react': ^18.3.24
   '@types/react-dom': ^18.3.7
   '@cspell/dict-css': ^4.0.18
@@ -11978,6 +11979,10 @@ packages:
     resolution: {integrity: sha512-bN798gFfQX+viw3R7yrGWRqnrN2oRkEkUjjl4JNn4E8GxxbjtG3FbrEIIY3l8/hrwUwIeCZvi4QuOTP4MErVug==}
     engines: {node: '>=12'}
 
+  ansis@3.17.0:
+    resolution: {integrity: sha512-0qWUglt9JEqLFr3w1I1pbrChn1grhaiAR2ocX1PP/flRmxgtwTzPFFFnfIlD6aMOLQZgSuCRlidD70lvx8yhzg==}
+    engines: {node: '>=14'}
+
   any-promise@1.3.0:
     resolution: {integrity: sha512-7UvmKalWRt1wgjL1RrGxoSJW/0QZFIegpeGvZG9kjp8vrRu55XTHbwnqq2GpXm9uLbcuhxm3IqX9OB4MZR1b2A==}
 
@@ -12857,9 +12862,6 @@ packages:
   connect@3.7.0:
     resolution: {integrity: sha512-ZqRXc+tZukToSNmh5C2iWMSoV3X1YUcPbqEM4DkEG5tNQXrQUZCNVGGv3IuicnkMtPfGf3Xtp8WCXs295iQ1pQ==}
     engines: {node: '>= 0.10.0'}
-
-  consola@2.15.3:
-    resolution: {integrity: sha512-9vAdYbHj6x2fLKC4+oPH0kFzY/orMZyG2Aj+kNylHxKGJ/Ed4dpNyAQYwJOdqO4zdM7XpVHmyejQDcQHrnuXbw==}
 
   consola@3.4.2:
     resolution: {integrity: sha512-5IKcdX0nnYavi6G7TtOhwkYzyjfJlatbjMjuLSfE2kYT5pMDOilZ4OvMhi637CcDICTmz3wARPoyhqyX1Y+XvA==}
@@ -20724,11 +20726,17 @@ packages:
       webpack-cli:
         optional: true
 
-  webpackbar@5.0.2:
-    resolution: {integrity: sha512-BmFJo7veBDgQzfWXl/wwYXr/VFus0614qZ8i9znqcl9fnEdiVkdbi0TedLQ6xAK92HZHDJ0QmyQ0fmuZPAgCYQ==}
-    engines: {node: '>=12'}
+  webpackbar@7.0.0:
+    resolution: {integrity: sha512-aS9soqSO2iCHgqHoCrj4LbfGQUboDCYJPSFOAchEK+9psIjNrfSWW4Y0YEz67MKURNvMmfo0ycOg9d/+OOf9/Q==}
+    engines: {node: '>=14.21.3'}
     peerDependencies:
+      '@rspack/core': '*'
       webpack: 3 || 4 || 5
+    peerDependenciesMeta:
+      '@rspack/core':
+        optional: true
+      webpack:
+        optional: true
 
   websocket-driver@0.7.4:
     resolution: {integrity: sha512-b17KeDIQVjvb0ssuSDF2cYXSg2iztliJ4B9WdsuB6J952qCPKmnVq4DyW5motImXHDC1cBT/1UezrJVsKw5zjg==}
@@ -23172,7 +23180,7 @@ snapshots:
       webpack-bundle-analyzer: 4.10.2
       webpack-dev-server: 4.15.2(webpack@5.106.1(@swc/core@1.7.39)(esbuild@0.27.3))
       webpack-merge: 5.10.0
-      webpackbar: 5.0.2(webpack@5.106.1(@swc/core@1.7.39)(esbuild@0.27.3))
+      webpackbar: 7.0.0(@rspack/core@1.6.7)(webpack@5.106.1(@swc/core@1.7.39)(esbuild@0.27.3))
     transitivePeerDependencies:
       - '@docusaurus/types'
       - '@parcel/css'
@@ -29470,6 +29478,8 @@ snapshots:
 
   ansi-styles@6.2.1: {}
 
+  ansis@3.17.0: {}
+
   any-promise@1.3.0: {}
 
   anymatch@3.1.3:
@@ -30495,8 +30505,6 @@ snapshots:
       utils-merge: 1.0.1
     transitivePeerDependencies:
       - supports-color
-
-  consola@2.15.3: {}
 
   consola@3.4.2: {}
 
@@ -40807,12 +40815,14 @@ snapshots:
       - esbuild
       - uglify-js
 
-  webpackbar@5.0.2(webpack@5.106.1(@swc/core@1.7.39)(esbuild@0.27.3)):
+  webpackbar@7.0.0(@rspack/core@1.6.7)(webpack@5.106.1(@swc/core@1.7.39)(esbuild@0.27.3)):
     dependencies:
-      chalk: 4.1.2
-      consola: 2.15.3
+      ansis: 3.17.0
+      consola: 3.4.2
       pretty-time: 1.1.0
       std-env: 3.9.0
+    optionalDependencies:
+      '@rspack/core': 1.6.7
       webpack: 5.106.1(@swc/core@1.7.39)(esbuild@0.27.3)
 
   websocket-driver@0.7.4:
