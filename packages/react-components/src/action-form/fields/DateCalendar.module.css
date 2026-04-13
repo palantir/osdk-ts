@@ -112,13 +112,6 @@
   }
 }
 
-.calendarRangeStart {
-  composes: calendarRangeEndpoint;
-}
-
-.calendarRangeEnd {
-  composes: calendarRangeEndpoint;
-}
 
 /* Range-middle needs .calendarDayButton prefix to match specificity of
    .calendarDayButton.calendarSelected (rdp applies both to range-middle days). */
@@ -191,7 +184,6 @@
 /* Thin CSS chevron — prev (points left).
    Decorative sizes (6px, 1.5px, 2px) are sub-unit and acceptable. */
 .calendarNavPrev {
-  composes: calendarNavButton;
   order: -1;
 }
 
@@ -207,10 +199,6 @@
 }
 
 /* Thin CSS chevron — next (points right) */
-.calendarNavNext {
-  composes: calendarNavButton;
-}
-
 .calendarNavNext::after {
   content: "";
   display: block;
@@ -239,10 +227,6 @@
   white-space: nowrap;
 }
 
-/* Hide the static label — dropdown-buttons renders both label and selects */
-.calendarCaptionLabel {
-  composes: calendarVhidden;
-}
 
 /* Caption dropdowns container */
 .calendarCaptionDropdowns {
@@ -270,13 +254,6 @@
   }
 }
 
-.calendarDropdownMonth {
-  composes: calendarDropdown;
-}
-
-.calendarDropdownYear {
-  composes: calendarDropdown;
-}
 
 /* Footer — content rendered inside DayPicker's <tfoot> (constrained by the table). */
 .calendarFooter {

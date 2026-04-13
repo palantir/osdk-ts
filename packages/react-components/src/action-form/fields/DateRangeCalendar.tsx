@@ -31,9 +31,9 @@ import styles from "./DateCalendar.module.css";
 
 const CLASS_NAMES: ClassNames = {
   ...BASE_CLASS_NAMES,
-  day_range_start: styles.calendarRangeStart,
+  day_range_start: styles.calendarRangeEndpoint,
   day_range_middle: styles.calendarRangeMiddle,
-  day_range_end: styles.calendarRangeEnd,
+  day_range_end: styles.calendarRangeEndpoint,
 };
 
 export interface DateRangeCalendarProps {

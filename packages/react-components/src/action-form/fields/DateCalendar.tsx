@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import classnames from "classnames";
 import React, { useMemo } from "react";
 import type { ClassNames } from "react-day-picker";
 import { DayPicker } from "react-day-picker";
@@ -37,14 +38,17 @@ export const CLASS_NAMES: ClassNames = {
   day_disabled: styles.calendarDisabled,
   day_hidden: styles.calendarHidden,
   nav: styles.calendarNav,
-  nav_button_previous: styles.calendarNavPrev,
-  nav_button_next: styles.calendarNavNext,
+  nav_button_previous: classnames(
+    styles.calendarNavButton,
+    styles.calendarNavPrev,
+  ),
+  nav_button_next: classnames(styles.calendarNavButton, styles.calendarNavNext),
   caption: styles.calendarMonthCaption,
-  caption_label: styles.calendarCaptionLabel,
+  caption_label: styles.calendarVhidden,
   caption_dropdowns: styles.calendarCaptionDropdowns,
   dropdown: styles.calendarDropdown,
-  dropdown_month: styles.calendarDropdownMonth,
-  dropdown_year: styles.calendarDropdownYear,
+  dropdown_month: styles.calendarDropdown,
+  dropdown_year: styles.calendarDropdown,
   nav_icon: styles.calendarChevron,
   vhidden: styles.calendarVhidden,
   tfoot: styles.calendarFooter,
