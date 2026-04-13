@@ -1,5 +1,5 @@
 ---
-"@osdk/react-components-storybook": minor
+"@osdk/react-components-storybook": patch
 ---
 
 Add experimental tag and accessible plugins

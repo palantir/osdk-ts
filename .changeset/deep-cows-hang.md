@@ -1,6 +1,6 @@
 ---
-"@osdk/react-components": minor
-"@osdk/client": minor
+"@osdk/react-components": patch
+"@osdk/client": patch
 ---
 
 Fix returned objectSet in ObjectSetQuery

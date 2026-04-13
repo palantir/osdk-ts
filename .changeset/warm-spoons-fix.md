@@ -1,6 +1,6 @@
 ---
-"@osdk/maker-experimental": minor
-"@osdk/maker": minor
+"@osdk/maker-experimental": patch
+"@osdk/maker": patch
 ---
 
 Expand the set of types acceptable in references

@@ -1,5 +1,5 @@
 ---
-"@osdk/react-components": minor
+"@osdk/react-components": patch
 ---
 
 align FilterList API with ObjectTable: add required `objectType` prop, make `objectSet` optional
