@@ -180,6 +180,7 @@ export function DatetimePickerField({
     setIsOpen(nextOpen);
     if (!nextOpen) {
       setIsEditing(false);
+      inputRef.current?.blur();
     }
   }, []);
 
@@ -204,6 +205,7 @@ export function DatetimePickerField({
       if (shouldCloseOnSelection) {
         setIsOpen(false);
         setIsEditing(false);
+        inputRef.current?.blur();
       }
     },
     [onChange, showTime, value, shouldCloseOnSelection, editFormatFn],
@@ -226,16 +228,11 @@ export function DatetimePickerField({
   // --- Focus boundary handlers ---
 
   const handleStartFocusBoundary = useCallback(
-    (e: React.FocusEvent<HTMLDivElement>) => {
-      const relatedTarget = e.relatedTarget ?? document.activeElement;
-      if (popoverRef.current?.contains(relatedTarget as Node)) {
-        inputRef.current?.focus();
-      } else {
-        const firstFocusable = popoverRef.current?.querySelector(
-          "button, select",
-        ) as HTMLElement | null;
-        firstFocusable?.focus();
-      }
+    () => {
+      // Always redirect to the input. Tab from input into the calendar
+      // is handled directly by handleKeyDown, so this boundary only fires
+      // from auto-focus on open or Shift+Tab from the first calendar element.
+      inputRef.current?.focus();
     },
     [],
   );

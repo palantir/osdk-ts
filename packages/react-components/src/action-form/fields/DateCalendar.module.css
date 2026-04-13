@@ -50,6 +50,11 @@
   &:active {
     background: var(--osdk-datetime-calendar-day-active-bg);
   }
+
+  &:focus-visible {
+    outline: 1px solid var(--osdk-input-border-color-focus);
+    outline-offset: -2px;
+  }
 }
 
 .calendarDayButton.calendarSelected {
@@ -86,6 +91,7 @@
 
 .calendarDayButton.calendarOutside {
   color: var(--osdk-datetime-calendar-outside-color);
+  opacity: 0.4;
 }
 
 .calendarDayButton.calendarDisabled {
@@ -97,17 +103,25 @@
   }
 }
 
-/* Range selection styles — applied to day buttons by react-day-picker mode="range" */
+/* Range selection styles */
 .calendarRangeStart {
   background: var(--osdk-datetime-calendar-selected-bg);
   color: var(--osdk-datetime-calendar-selected-color);
   border-radius: 50%;
+
+  &:hover {
+    background: var(--osdk-datetime-calendar-selected-hover-bg);
+  }
 }
 
 .calendarRangeEnd {
   background: var(--osdk-datetime-calendar-selected-bg);
   color: var(--osdk-datetime-calendar-selected-color);
   border-radius: 50%;
+
+  &:hover {
+    background: var(--osdk-datetime-calendar-selected-hover-bg);
+  }
 }
 
 .calendarRangeMiddle {
@@ -116,6 +130,7 @@
 
   &:hover {
     background: var(--osdk-datetime-calendar-range-middle-bg);
+    filter: brightness(0.95);
   }
 }
 
@@ -123,15 +138,14 @@
   visibility: hidden;
 }
 
-/* Calendar navigation — spans the full width of the calendar root.
-   With numberOfMonths=1, prev is left and next is right of the single month.
-   With numberOfMonths=2, prev is left of first month, next is right of second. */
+/* Calendar navigation — dissolve the nav wrapper so buttons become
+   direct flex children of the caption row. This lets order: -1 move
+   the prev button before the dropdowns while next stays after. */
 .calendarNav {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  display: contents;
 }
 
+/* Shared nav button base — small, matching dropdown caret scale */
 .calendarNavButton {
   display: inline-flex;
   align-items: center;
@@ -143,11 +157,64 @@
   cursor: pointer;
   border-radius: var(--osdk-datetime-calendar-nav-button-border-radius);
   padding: 0;
-  pointer-events: auto;
+  color: inherit;
 
   &:hover {
     background: var(--osdk-datetime-calendar-nav-button-hover-bg);
   }
+
+  &:disabled {
+    color: var(--osdk-typography-color-muted);
+    cursor: default;
+    opacity: 1; /* Override browser default disabled opacity */
+
+    &:hover {
+      background: transparent;
+    }
+  }
+
+  &:focus-visible {
+    outline: 1px solid var(--osdk-input-border-color-focus);
+    outline-offset: -1px;
+  }
+}
+
+/* Hide the fat default SVG chevron icon */
+.calendarChevron {
+  display: none;
+}
+
+/* Thin CSS chevron — prev (points left) */
+.calendarNavPrev {
+  composes: calendarNavButton;
+  order: -1;
+}
+
+.calendarNavPrev::after {
+  content: "";
+  display: block;
+  width: 6px;
+  height: 6px;
+  border-left: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: rotate(45deg);
+  margin-left: 2px;
+}
+
+/* Thin CSS chevron — next (points right) */
+.calendarNavNext {
+  composes: calendarNavButton;
+}
+
+.calendarNavNext::after {
+  content: "";
+  display: block;
+  width: 6px;
+  height: 6px;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: rotate(-45deg);
+  margin-right: 2px;
 }
 
 .calendarMonthCaption {
@@ -157,7 +224,7 @@
   min-height: var(--osdk-datetime-calendar-nav-button-size);
 }
 
-/* Hide the static label when dropdown-buttons captionLayout renders both label and selects */
+/* Hide the static label — dropdown-buttons renders both label and selects */
 .calendarCaptionLabel {
   position: absolute;
   width: 1px;
@@ -175,7 +242,7 @@
   gap: calc(var(--osdk-surface-spacing) * 1);
 }
 
-/* Shared dropdown styling for month/year selects */
+/* Month/year selects — borderless, matching caption text weight */
 .calendarDropdown {
   font-family: var(--osdk-datetime-calendar-font-family);
   font-size: var(--osdk-datetime-calendar-caption-font-size);
@@ -188,8 +255,8 @@
   border-radius: var(--osdk-input-border-radius);
 
   &:focus-visible {
-    outline: var(--osdk-input-focus-width) solid var(--osdk-input-focus-color);
-    outline-offset: var(--osdk-input-focus-offset);
+    outline: 1px solid var(--osdk-input-border-color-focus);
+    outline-offset: 1px;
   }
 }
 
@@ -199,12 +266,6 @@
 
 .calendarDropdownYear {
   composes: calendarDropdown;
-}
-
-.calendarChevron {
-  width: var(--osdk-datetime-calendar-chevron-size);
-  height: var(--osdk-datetime-calendar-chevron-size);
-  fill: currentColor;
 }
 
 /* Calendar fallback / loading */

@@ -1,10 +1,13 @@
 /* DateRangeInputField — two separate bordered inputs + shared popover */
 
-/* Outer container that holds both inputs side by side */
+/* Outer container that holds both inputs side by side.
+   Acts as Popover.Trigger — suppress the focus ring when
+   focus returns here after the popover closes. */
 .osdkDateRangeContainer {
   display: flex;
   align-items: center;
   gap: calc(var(--osdk-surface-spacing) * 1);
+  outline: none;
 }
 
 /* Each input wrapper has its own border — matches Blueprint's two-input pattern */
@@ -88,7 +91,7 @@
   box-shadow: var(--osdk-datetime-popover-shadow);
 }
 
-/* Visually-hidden focus boundary */
+/* Visually-hidden focus boundary — outline: none is intentional */
 .osdkDateRangeFocusBoundary {
   position: absolute;
   width: 1px;
@@ -96,4 +99,5 @@
   overflow: hidden;
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
+  outline: none;
 }

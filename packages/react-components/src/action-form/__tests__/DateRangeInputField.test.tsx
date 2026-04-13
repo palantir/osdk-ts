@@ -249,6 +249,62 @@ describe("DateRangeInputField", () => {
     });
   });
 
+  describe("focus management", () => {
+    it("does not move focus to calendar dropdowns when popover opens via start", () => {
+      render(
+        <DateRangeInputField value={[null, null]} onChange={vi.fn()} />,
+      );
+      const startInput = screen.getByLabelText("Start date");
+      fireEvent.focus(startInput);
+
+      // The month/year dropdowns inside the calendar should not have focus
+      const selects = document.querySelectorAll("select");
+      for (const select of Array.from(selects)) {
+        expect(document.activeElement).not.toBe(select);
+      }
+    });
+
+    it("does not move focus to calendar dropdowns when popover opens via end", () => {
+      render(
+        <DateRangeInputField value={[null, null]} onChange={vi.fn()} />,
+      );
+      const endInput = screen.getByLabelText("End date");
+      fireEvent.focus(endInput);
+
+      const selects = document.querySelectorAll("select");
+      for (const select of Array.from(selects)) {
+        expect(document.activeElement).not.toBe(select);
+      }
+    });
+
+    it("closes popover on Escape from start input", () => {
+      render(
+        <DateRangeInputField value={[null, null]} onChange={vi.fn()} />,
+      );
+      const startInput = screen.getByLabelText("Start date");
+      fireEvent.focus(startInput);
+      expect(startInput.getAttribute("aria-expanded")).toBe("true");
+
+      fireEvent.keyDown(startInput, { key: "Escape" });
+      expect(startInput.getAttribute("aria-expanded")).toBe("false");
+    });
+
+    it("closes popover on Escape from end input", () => {
+      render(
+        <DateRangeInputField
+          value={[new Date(2024, 0, 1), null]}
+          onChange={vi.fn()}
+        />,
+      );
+      const endInput = screen.getByLabelText("End date");
+      fireEvent.focus(endInput);
+      expect(endInput.getAttribute("aria-expanded")).toBe("true");
+
+      fireEvent.keyDown(endInput, { key: "Escape" });
+      expect(endInput.getAttribute("aria-expanded")).toBe("false");
+    });
+  });
+
   describe("accessibility", () => {
     it("has combobox role and aria attributes on both inputs", () => {
       render(

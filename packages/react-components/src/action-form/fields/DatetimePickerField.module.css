@@ -1,6 +1,8 @@
 /* DatetimePickerField — wrapper + input + icon + popover */
 
-/* Wrapper mirrors NumberInputField wrapper: border, bg, hover, focus-within */
+/* Wrapper mirrors NumberInputField wrapper: border, bg, hover, focus-within.
+   Also acts as Popover.Trigger — suppress its own outline since :focus-within
+   handles the focus indicator when the inner input is focused. */
 .osdkDatetimeInputWrapper {
   display: flex;
   align-items: center;
@@ -13,6 +15,7 @@
     border-color var(--osdk-input-transition-duration)
       var(--osdk-input-transition-ease);
   cursor: text;
+  outline: none;
 
   &:hover {
     background-color: var(--osdk-input-bg-hover);
@@ -88,6 +91,7 @@
   overflow: hidden;
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
+  outline: none;
 }
 
 /* Time input footer */

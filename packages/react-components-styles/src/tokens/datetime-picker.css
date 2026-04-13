@@ -73,7 +73,7 @@
 
   /* Calendar nav buttons */
   --osdk-datetime-calendar-nav-button-size: calc(
-    var(--osdk-surface-spacing) * 7
+    var(--osdk-surface-spacing) * 5
   );
   --osdk-datetime-calendar-nav-button-border-radius: var(
     --osdk-surface-border-radius
@@ -82,8 +82,8 @@
     --osdk-surface-background-color-default-hover
   );
 
-  /* Calendar chevron */
-  --osdk-datetime-calendar-chevron-size: calc(var(--osdk-surface-spacing) * 4);
+  /* Calendar chevron — small to match dropdown caret size */
+  --osdk-datetime-calendar-chevron-size: calc(var(--osdk-surface-spacing) * 2.5);
 
   /* Time input footer */
   --osdk-datetime-time-padding-top: calc(var(--osdk-surface-spacing) * 2);

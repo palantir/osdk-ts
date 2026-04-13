@@ -279,6 +279,8 @@ export function DateRangeInputField({
     if (!nextOpen) {
       setIsEditingStart(false);
       setIsEditingEnd(false);
+      startInputRef.current?.blur();
+      endInputRef.current?.blur();
     }
   }, []);
 
@@ -298,10 +300,12 @@ export function DateRangeInputField({
         setActiveBoundary("end");
         endInputRef.current?.focus();
       } else if (newStart != null && newEnd != null) {
-        // Full range selected — close
+        // Full range selected — close and blur
         setIsOpen(false);
         setIsEditingStart(false);
         setIsEditingEnd(false);
+        startInputRef.current?.blur();
+        endInputRef.current?.blur();
       }
     },
     [onChange, formatFn],
@@ -310,19 +314,14 @@ export function DateRangeInputField({
   // --- Focus boundary handlers ---
 
   const handleStartFocusBoundary = useCallback(
-    (e: React.FocusEvent<HTMLDivElement>) => {
-      const related = e.relatedTarget ?? document.activeElement;
-      if (popoverRef.current?.contains(related as Node)) {
-        const activeRef = activeBoundary === "start"
-          ? startInputRef
-          : endInputRef;
-        activeRef.current?.focus();
-      } else {
-        const firstButton = popoverRef.current?.querySelector(
-          "button, select",
-        ) as HTMLElement | null;
-        firstButton?.focus();
-      }
+    () => {
+      // Always redirect to the active input. Tab into the calendar
+      // is handled by handleEndKeyDown, so this boundary only fires
+      // from auto-focus on open or Shift+Tab from the first calendar element.
+      const activeRef = activeBoundary === "start"
+        ? startInputRef
+        : endInputRef;
+      activeRef.current?.focus();
     },
     [activeBoundary],
   );

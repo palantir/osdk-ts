@@ -38,8 +38,8 @@ const CLASS_NAMES: ClassNames = {
   day_disabled: styles.calendarDisabled,
   day_hidden: styles.calendarHidden,
   nav: styles.calendarNav,
-  nav_button_previous: styles.calendarNavButton,
-  nav_button_next: styles.calendarNavButton,
+  nav_button_previous: styles.calendarNavPrev,
+  nav_button_next: styles.calendarNavNext,
   caption: styles.calendarMonthCaption,
   caption_label: styles.calendarCaptionLabel,
   caption_dropdowns: styles.calendarCaptionDropdowns,
@@ -91,7 +91,7 @@ export default function DateCalendar({
 
   // Month navigation: previewDate controls when typing, user can manually navigate
   const [userMonth, setUserMonth] = useState<Date | undefined>(undefined);
-  const displayMonth = previewDate ?? userMonth ?? dateSelected;
+  const displayMonth = userMonth ?? previewDate ?? dateSelected;
 
   const handleMonthChange = useCallback((month: Date) => {
     setUserMonth(month);

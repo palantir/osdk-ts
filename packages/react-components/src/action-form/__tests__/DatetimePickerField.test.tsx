@@ -412,6 +412,67 @@ describe("DatetimePickerField", () => {
     });
   });
 
+  describe("focus management", () => {
+    it("does not move focus to calendar dropdowns when popover opens", () => {
+      render(
+        <DatetimePickerField value={null} onChange={vi.fn()} />,
+      );
+      const input = screen.getByRole("combobox");
+      fireEvent.focus(input);
+
+      // The month/year dropdowns inside the calendar should not have focus
+      const selects = document.querySelectorAll("select");
+      for (const select of Array.from(selects)) {
+        expect(document.activeElement).not.toBe(select);
+      }
+    });
+
+    it("popover closes after selecting a date (closeOnSelection)", () => {
+      const onChange = vi.fn();
+      render(
+        <DatetimePickerField
+          value={new Date(2024, 0, 15)}
+          onChange={onChange}
+        />,
+      );
+      const input = screen.getByRole("combobox");
+      fireEvent.focus(input);
+      expect(input.getAttribute("aria-expanded")).toBe("true");
+
+      const dayButton = screen.getByText("20");
+      fireEvent.click(dayButton);
+
+      // Popover should be closed
+      expect(input.getAttribute("aria-expanded")).toBe("false");
+    });
+
+    it("allows month navigation after selecting a date", () => {
+      render(
+        <DatetimePickerField
+          value={new Date(2024, 0, 15)}
+          onChange={vi.fn()}
+        />,
+      );
+      const input = screen.getByRole("combobox");
+      fireEvent.focus(input);
+
+      // Calendar should show January 2024
+      const monthSelect = document.querySelector(
+        "select",
+      ) as HTMLSelectElement;
+      expect(monthSelect.value).toBe("0"); // January = 0
+
+      // Click next month
+      const nextButton = screen.getByRole("button", {
+        name: "Go to next month",
+      });
+      fireEvent.click(nextButton);
+
+      // Calendar should now show February
+      expect(monthSelect.value).toBe("1"); // February = 1
+    });
+  });
+
   describe("accessibility", () => {
     it("has combobox role and aria attributes", () => {
       render(
