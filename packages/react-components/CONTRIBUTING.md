@@ -235,9 +235,9 @@ Every PR that changes published package code needs **exactly one changeset** per
 
 `@osdk/react-components` is built on top of `@osdk/react`, which provides the core data-fetching hooks. When contributing hooks, choose the right package:
 
-| Hook type | Package | Example |
-| --------- | ------- | ------- |
-| Reusable, OSDK-aware hooks not tied to a specific component | `@osdk/react` | `useOsdkObjects`, `useOsdkAction`, `useDebouncedCallback` |
+| Hook type                                                           | Package                  | Example                                                          |
+| ------------------------------------------------------------------- | ------------------------ | ---------------------------------------------------------------- |
+| Reusable, OSDK-aware hooks not tied to a specific component         | `@osdk/react`            | `useOsdkObjects`, `useOsdkAction`, `useDebouncedCallback`        |
 | Hooks that manage a specific component's internal state or UI logic | `@osdk/react-components` | `useTableSelection`, `usePdfViewerState`, `useFilterDragAndDrop` |
 
 **Rule of thumb:** If a hook could be useful to application developers outside of any particular component, or could be shared across multiple components, it belongs in `@osdk/react`. If it is tightly coupled to a single component's rendering, interactions, or styling, it belongs in `@osdk/react-components`.
