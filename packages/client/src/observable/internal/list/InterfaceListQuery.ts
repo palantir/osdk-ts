@@ -103,14 +103,20 @@ export class InterfaceListQuery extends ListQuery {
     return objectSet.where(this.canonicalWhere);
   }
 
-  async revalidateObjectType(apiName: string): Promise<void> {
-    const objectMetadata = await this.store.client.fetchMetadata({
-      type: "object",
-      apiName,
-    });
+  async revalidateObjectType(objectType: string): Promise<boolean> {
+    if (await super.revalidateObjectType(objectType)) return true;
 
-    if (this.apiName in objectMetadata.interfaceMap) {
-      await this.revalidate(/* force */ true);
+    // For interface queries: also check if the invalidated concrete type
+    // implements this query's interface. e.g. invalidating "Employee"
+    // should revalidate a query for "Assignable" if Employee implements it.
+    try {
+      const objectMetadata = await this.store.client.fetchMetadata({
+        type: "object",
+        apiName: objectType,
+      });
+      return this.apiName in objectMetadata.interfaceMap;
+    } catch {
+      return true;
     }
   }
 
@@ -123,9 +129,23 @@ export class InterfaceListQuery extends ListQuery {
   protected createPayload(
     params: CollectionConnectableParams,
   ): ListPayload {
-    const resolvedList = params.resolvedData?.map((obj: ObjectHolder) =>
-      obj.$as(this.apiName)
-    );
+    const resolvedList = params.resolvedData?.map((obj: ObjectHolder) => {
+      if (process.env.NODE_ENV !== "production") {
+        const missing = !obj || !(ObjectDefRef in obj);
+        if (missing) {
+          // eslint-disable-next-line no-console
+          console.error(
+            `[@osdk/client] InterfaceListQuery.createPayload: object missing ObjectDefRef`,
+            {
+              apiName: this.apiName,
+              objectType: (obj as ObjectHolder | undefined)?.$objectType,
+              primaryKey: (obj as ObjectHolder | undefined)?.$primaryKey,
+            },
+          );
+        }
+      }
+      return obj.$as(this.apiName);
+    });
 
     return {
       ...super.createPayload(params),

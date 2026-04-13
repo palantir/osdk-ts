@@ -100,6 +100,12 @@ export abstract class ListQuery extends BaseListQuery<
   #objectSet: ObjectSet<ObjectTypeDefinition>;
   #pivotIntersectApplied = false;
 
+  // The actual type of objects this query returns, resolved on first fetch
+  // via getObjectTypesThatInvalidate. For simple queries this equals apiName.
+  // For transformed queries (e.g. link traversal) it may differ -- e.g.
+  // Employee.pivotTo(Office) has apiName "Employee" but fetches Office objects.
+  #fetchedObjectType: string | undefined;
+
   /**
    * Register changes to the cache specific to ListQuery
    */
@@ -173,6 +179,16 @@ export abstract class ListQuery extends BaseListQuery<
     return this.#pivotInfo;
   }
 
+  get objectTypes(): ReadonlySet<string> {
+    if (
+      this.#fetchedObjectType != null
+      && this.#fetchedObjectType !== this.apiName
+    ) {
+      return new Set([this.apiName, this.#fetchedObjectType]);
+    }
+    return new Set([this.apiName]);
+  }
+
   protected createPayload(
     params: CollectionConnectableParams,
   ): ListPayload {
@@ -204,6 +220,8 @@ export abstract class ListQuery extends BaseListQuery<
         this.store.client[additionalContext],
         wireObjectSet,
       );
+
+      this.#fetchedObjectType = resultType.apiName;
 
       if (
         Object.keys(this.#orderBy).length > 0
@@ -248,6 +266,24 @@ export abstract class ListQuery extends BaseListQuery<
           ...intersectSets,
         );
         this.#pivotIntersectApplied = true;
+      }
+    }
+
+    // Resolve the actual result type on first fetch so revalidateObjectType
+    // can match against it. For simple queries this equals apiName; for
+    // transformed queries (link traversal, etc.) it may differ.
+    // Some ObjectSet types (static, reference) don't support result type
+    // resolution, so we fall back to apiName.
+    if (this.#fetchedObjectType == null) {
+      try {
+        const wireObjectSet = getWireObjectSet(this.#objectSet);
+        const { resultType } = await getObjectTypesThatInvalidate(
+          this.store.client[additionalContext],
+          wireObjectSet,
+        );
+        this.#fetchedObjectType = resultType.apiName;
+      } catch {
+        this.#fetchedObjectType = this.apiName;
       }
     }
 
@@ -304,13 +340,17 @@ export abstract class ListQuery extends BaseListQuery<
   }
 
   /**
-   * Will revalidate the list if its query is affected by invalidating the
-   * apiName of the object type passed in.
-   *
-   * @param apiName to invalidate
-   * @returns
+   * Determines if this query's results are affected by changes to the
+   * given object type. Base checks apiName (source type) and
+   * fetchedObjectType (actual result type when they differ).
+   * Subclasses override to add type-specific logic (e.g. interface
+   * implementation checks).
    */
-  abstract revalidateObjectType(apiName: string): Promise<void>;
+  async revalidateObjectType(objectType: string): Promise<boolean> {
+    return this.apiName === objectType
+      || (this.#fetchedObjectType != null
+        && this.#fetchedObjectType === objectType);
+  }
 
   /**
    * Postprocess fetched data.
@@ -323,8 +363,7 @@ export abstract class ListQuery extends BaseListQuery<
     objectType: string,
     changes: Changes | undefined,
   ): Promise<void> => {
-    if (this.apiName === objectType) {
-      // Only invalidate lists for the matching apiName
+    if (await this.revalidateObjectType(objectType)) {
       changes?.modified.add(this.cacheKey);
       return this.revalidate(true);
     }
@@ -356,6 +395,24 @@ export abstract class ListQuery extends BaseListQuery<
     if (changes.modified.has(this.cacheKey)) return;
     // mark ourselves as updated so we don't infinite recurse.
     changes.modified.add(this.cacheKey);
+
+    // When the fetched object type differs from apiName (e.g. a query that
+    // traverses a link), we can't locally evaluate whether result-type
+    // changes affect this query -- that depends on link relationships the
+    // client doesn't have. Fall back to a full server revalidation.
+    if (
+      this.#fetchedObjectType != null
+      && this.#fetchedObjectType !== this.apiName
+    ) {
+      const hasResultTypeChanges =
+        (changes.addedObjects.get(this.#fetchedObjectType)?.length ?? 0) > 0
+        || (changes.modifiedObjects.get(this.#fetchedObjectType)?.length ?? 0)
+          > 0;
+
+      if (hasResultTypeChanges) {
+        return this.revalidate(true);
+      }
+    }
 
     try {
       const relevantObjects = this._extractAndCategorizeRelevantObjects(
