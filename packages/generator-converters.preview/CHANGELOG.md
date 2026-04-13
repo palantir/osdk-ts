@@ -1,5 +1,22 @@
 # @osdk/generator-converters.preview
 
+## 0.2.0
+
+### Minor Changes
+
+- 962a8f0: improvements(build): significant reduction in build task graphs
+
+### Patch Changes
+
+- Updated dependencies [cbc8e9c]
+- Updated dependencies [9171453]
+- Updated dependencies [962a8f0]
+- Updated dependencies [3390ea2]
+- Updated dependencies [48e0cab]
+  - @osdk/generator@2.9.0
+  - @osdk/generator-converters.ontologyir@2.9.0
+  - @osdk/client.unstable@2.9.0
+
 ## 0.1.0
 
 ### Minor Changes

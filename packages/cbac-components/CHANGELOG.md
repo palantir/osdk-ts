@@ -1,5 +1,16 @@
 # @osdk/cbac-components
 
+## 0.2.0
+
+### Minor Changes
+
+- cbecef8: add cbac banner and popover components
+- 8eba901: add package documentation (CLAUDE.md, AGENTS.md, README.md, docs/CbacPicker.md)
+- 7a5d75b: add cbac picker with constraint validation, marking tooltips, storybook demos, and visual fixes
+- f913bf7: add cbac storybook demos and faux admin mocks
+- 89def41: minor bump associated with BlueprintJS upgrade
+- 962a8f0: improvements(build): significant reduction in build task graphs
+
 ## 0.1.0
 
 ### Minor Changes

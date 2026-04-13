@@ -1,5 +1,28 @@
 # @osdk/functions-testing.experimental
 
+## 1.0.0
+
+### Minor Changes
+
+- 962a8f0: improvements(build): significant reduction in build task graphs
+- c08d97b: Rework mock client stubbing API: rename whenObjectSet to when, add standalone createMockObjectSet with whenObjectSet for registering stubs on object sets directly, and support ObjectSet as many-link value in createMockOsdkObject
+
+### Patch Changes
+
+- Updated dependencies [f8b9f12]
+- Updated dependencies [bcf359f]
+- Updated dependencies [0b349bd]
+- Updated dependencies [12f9b36]
+- Updated dependencies [cbc8e9c]
+- Updated dependencies [9171453]
+- Updated dependencies [962a8f0]
+- Updated dependencies [e8d14a0]
+- Updated dependencies [51ccca8]
+- Updated dependencies [fb85818]
+  - @osdk/client@2.9.0
+  - @osdk/api@2.9.0
+  - @osdk/functions@1.7.0
+
 ## 0.2.0
 
 ### Minor Changes

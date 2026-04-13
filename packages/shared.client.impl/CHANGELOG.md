@@ -1,5 +1,18 @@
 # @osdk/shared.client.impl
 
+## 1.9.0
+
+### Minor Changes
+
+- bcf359f: Add new headers options for OSDK clients
+- 962a8f0: improvements(build): significant reduction in build task graphs
+
+### Patch Changes
+
+- Updated dependencies [962a8f0]
+  - @osdk/shared.net.errors@2.9.0
+  - @osdk/shared.net.fetch@1.9.0
+
 ## 1.8.0
 
 ### Minor Changes

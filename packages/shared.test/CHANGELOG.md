@@ -1,5 +1,20 @@
 # @osdk/shared.test
 
+## 2.9.0
+
+### Minor Changes
+
+- 962a8f0: improvements(build): significant reduction in build task graphs
+
+### Patch Changes
+
+- Updated dependencies [cbc8e9c]
+- Updated dependencies [9171453]
+- Updated dependencies [962a8f0]
+- Updated dependencies [e8d14a0]
+  - @osdk/generator-converters@2.9.0
+  - @osdk/api@2.9.0
+
 ## 2.8.0
 
 ### Minor Changes

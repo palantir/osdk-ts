@@ -1,5 +1,11 @@
 # @osdk/typescript-sdk-docs
 
+## 0.8.0
+
+### Minor Changes
+
+- 962a8f0: improvements(build): significant reduction in build task graphs
+
 ## 0.7.0
 
 ### Minor Changes

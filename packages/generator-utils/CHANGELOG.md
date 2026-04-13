@@ -1,5 +1,11 @@
 # @osdk/generator-utils
 
+## 2.9.0
+
+### Minor Changes
+
+- 962a8f0: improvements(build): significant reduction in build task graphs
+
 ## 2.8.0
 
 ### Minor Changes

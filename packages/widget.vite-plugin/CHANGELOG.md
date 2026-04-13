@@ -1,5 +1,18 @@
 # @osdk/widget.vite-plugin
 
+## 4.0.0
+
+### Minor Changes
+
+- 89def41: minor bump associated with BlueprintJS upgrade
+- 962a8f0: improvements(build): significant reduction in build task graphs
+
+### Patch Changes
+
+- Updated dependencies [962a8f0]
+  - @osdk/foundry-config-json@1.8.0
+  - @osdk/widget.api@4.0.0
+
 ## 3.5.0
 
 ### Minor Changes

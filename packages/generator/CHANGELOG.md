@@ -1,5 +1,24 @@
 # @osdk/generator
 
+## 2.9.0
+
+### Minor Changes
+
+- cbc8e9c: Add recursive query support
+- 9171453: Alphabetize code generation for sdk.
+- 962a8f0: improvements(build): significant reduction in build task graphs
+- 3390ea2: Resolve Python objectSet/object UUID references recursively and detect edit functions via output dataType when ontologyProvenance is absent
+- 48e0cab: Escape double quotes and backlashes in value type enums
+
+### Patch Changes
+
+- Updated dependencies [cbc8e9c]
+- Updated dependencies [9171453]
+- Updated dependencies [962a8f0]
+- Updated dependencies [e8d14a0]
+  - @osdk/generator-converters@2.9.0
+  - @osdk/api@2.9.0
+
 ## 2.8.0
 
 ### Minor Changes

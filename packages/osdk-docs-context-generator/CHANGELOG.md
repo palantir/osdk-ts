@@ -1,5 +1,16 @@
 # @osdk/osdk-docs-context-generator
 
+## 0.5.0
+
+### Minor Changes
+
+- 962a8f0: improvements(build): significant reduction in build task graphs
+
+### Patch Changes
+
+- Updated dependencies [962a8f0]
+  - @osdk/typescript-sdk-docs-examples@1.0.0
+
 ## 0.4.0
 
 ### Minor Changes

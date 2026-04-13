@@ -1,5 +1,19 @@
 # @osdk/shared.net
 
+## 2.9.0
+
+### Minor Changes
+
+- 962a8f0: improvements(build): significant reduction in build task graphs
+
+### Patch Changes
+
+- Updated dependencies [bcf359f]
+- Updated dependencies [962a8f0]
+  - @osdk/shared.client.impl@1.9.0
+  - @osdk/shared.net.errors@2.9.0
+  - @osdk/shared.net.fetch@1.9.0
+
 ## 2.8.0
 
 ### Minor Changes

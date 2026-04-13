@@ -1,5 +1,15 @@
 # @osdk/react-components-styles
 
+## 0.3.0
+
+### Minor Changes
+
+- 89def41: minor bump associated with BlueprintJS upgrade
+- 962a8f0: improvements(build): significant reduction in build task graphs
+- 86d0bce: Add ObjectSetField component for action forms
+- 79b001e: Add FilePickerField component for attachment and media reference form fields
+- b2b512e: Address FilePickerField PR review comments: memoize computed values, add aria-label, rename CSS token, add keyboard interaction tests
+
 ## 0.2.0
 
 ### Minor Changes

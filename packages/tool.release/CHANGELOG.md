@@ -1,5 +1,12 @@
 # @osdk/tool.release
 
+## 0.14.0
+
+### Minor Changes
+
+- 962a8f0: improvements(build): significant reduction in build task graphs
+- 3d54d44: Add version number to title.
+
 ## 0.13.0
 
 ### Minor Changes

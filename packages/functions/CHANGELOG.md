@@ -1,5 +1,25 @@
 # @osdk/functions
 
+## 1.7.0
+
+### Minor Changes
+
+- 962a8f0: improvements(build): significant reduction in build task graphs
+
+### Patch Changes
+
+- Updated dependencies [f8b9f12]
+- Updated dependencies [bcf359f]
+- Updated dependencies [0b349bd]
+- Updated dependencies [12f9b36]
+- Updated dependencies [cbc8e9c]
+- Updated dependencies [9171453]
+- Updated dependencies [962a8f0]
+- Updated dependencies [e8d14a0]
+- Updated dependencies [51ccca8]
+- Updated dependencies [fb85818]
+  - @osdk/client@2.9.0
+
 ## 1.6.0
 
 ### Minor Changes

@@ -1,5 +1,36 @@
 # @osdk/client
 
+## 2.9.0
+
+### Minor Changes
+
+- f8b9f12: Cache results from useOsdkFunctions
+- bcf359f: Add new headers options for OSDK clients
+- 0b349bd: Fix returned objectSet in ObjectSetQuery
+- 12f9b36: add devtools interfaces and hook metadata for react-devtools integration
+- cbc8e9c: Add recursive query support
+- 9171453: Alphabetize code generation for sdk.
+- 962a8f0: improvements(build): significant reduction in build task graphs
+- e8d14a0: Expose an experimental helper to add media transformation capabilities via transformAndWait
+- 51ccca8: Refactor hooks to use canonicalizeOptions for stable memo keys, add objectSet/hasMore/refetch to useOsdkObjects return, support undefined objectSet in useObjectSet
+- fb85818: add MediaHelper and client media wiring
+
+### Patch Changes
+
+- Updated dependencies [bcf359f]
+- Updated dependencies [cbc8e9c]
+- Updated dependencies [9171453]
+- Updated dependencies [962a8f0]
+- Updated dependencies [e8d14a0]
+  - @osdk/shared.client.impl@1.9.0
+  - @osdk/generator-converters@2.9.0
+  - @osdk/api@2.9.0
+  - @osdk/client.test.ontology@2.9.0
+  - @osdk/shared.net.errors@2.9.0
+  - @osdk/shared.net.fetch@1.9.0
+  - @osdk/client.unstable@2.9.0
+  - @osdk/shared.test@2.9.0
+
 ## 2.8.0
 
 ### Minor Changes

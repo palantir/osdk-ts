@@ -1,5 +1,20 @@
 # @osdkkit/react
 
+## 0.11.0
+
+### Minor Changes
+
+- f8b9f12: Cache results from useOsdkFunctions
+- 12f9b36: add devtools interfaces and hook metadata for react-devtools integration
+- 962a8f0: improvements(build): significant reduction in build task graphs
+- 51ccca8: Refactor hooks to use canonicalizeOptions for stable memo keys, add objectSet/hasMore/refetch to useOsdkObjects return, support undefined objectSet in useObjectSet
+- f871d5c: Paginate objects for function queries and configure max concurrent requests to handle large dataset
+
+### Patch Changes
+
+- Updated dependencies [962a8f0]
+  - @osdk/client.test.ontology@2.9.0
+
 ## 0.10.0
 
 ### Minor Changes

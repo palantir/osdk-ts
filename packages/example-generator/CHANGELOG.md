@@ -1,5 +1,18 @@
 # @osdk/example-generator
 
+## 0.17.0
+
+### Minor Changes
+
+- 962a8f0: improvements(build): significant reduction in build task graphs
+
+### Patch Changes
+
+- Updated dependencies [962a8f0]
+- Updated dependencies [4794c87]
+  - @osdk/create-widget@4.0.0
+  - @osdk/create-app@2.9.0
+
 ## 0.16.0
 
 ### Minor Changes

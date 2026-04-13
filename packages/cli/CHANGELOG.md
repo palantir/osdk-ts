@@ -1,5 +1,20 @@
 # @osdk/cli
 
+## 0.33.0
+
+### Minor Changes
+
+- 962a8f0: improvements(build): significant reduction in build task graphs
+- 40fe279: Fix cli by making referenced packages bundled
+
+### Patch Changes
+
+- Updated dependencies [962a8f0]
+  - @osdk/foundry-config-json@1.8.0
+  - @osdk/shared.net.errors@2.9.0
+  - @osdk/shared.net.fetch@1.9.0
+  - @osdk/widget.api@4.0.0
+
 ## 0.32.0
 
 ### Minor Changes

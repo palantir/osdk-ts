@@ -1,5 +1,13 @@
 # @osdk/api
 
+## 2.9.0
+
+### Minor Changes
+
+- cbc8e9c: Add recursive query support
+- 962a8f0: improvements(build): significant reduction in build task graphs
+- e8d14a0: Expose an experimental helper to add media transformation capabilities via transformAndWait
+
 ## 2.8.0
 
 ### Minor Changes
