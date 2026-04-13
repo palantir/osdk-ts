@@ -1516,9 +1516,6 @@ importers:
       '@osdk/legacy-client':
         specifier: workspace:*
         version: link:../legacy-client
-      '@osdk/main-foundry-sdk-generator':
-        specifier: npm:@osdk/tmp-foundry-sdk-generator@2.0.1
-        version: '@osdk/tmp-foundry-sdk-generator@2.0.1'
       '@osdk/shared.client':
         specifier: workspace:*
         version: link:../shared.client
@@ -3747,58 +3744,6 @@ packages:
   '@open-draft/until@2.1.0':
     resolution: {integrity: sha512-U69T3ItWHvLwGg5eJ0n3I62nWuE6ilHlmz7zM0npLBRvPRd7e6NYmg54vvRtP5mZG7kZqZCFVdsTWo7BPtBujg==}
 
-  '@osdk/api@2.0.1':
-    resolution: {integrity: sha512-YO/E8CYJK+o6K7pK/uAQM/tKnYlw0dmNhpM5v/+BoXNKIeC87Mnu95NSXBHehKdcJC2Zs5GoLxwJskAhMAe2rw==}
-
-  '@osdk/client.unstable.osw@0.2.0':
-    resolution: {integrity: sha512-BPE+adWcHw/3V9SjMLbHlHVdMRhC+ZxPMqjj1FY/i1BhS+oCj3n1IsEp+AzFAj2yTaYUswuybKjW9iIPnKcEMA==}
-
-  '@osdk/client.unstable@2.0.1':
-    resolution: {integrity: sha512-xs7AavrCAjQELAX5vjqbArLKZckzIvKD82K+P1+6flv3zs8sLSVyGzo/19qUmnTyxzMvusMlk/nU8TiJ+LFQVw==}
-
-  '@osdk/client@2.0.1':
-    resolution: {integrity: sha512-vGMNGkHQ2hVWch7vpksLeyaquTvRjXLfaTGK8iGtiPbMOAv63cZ173atpZwjw3mNgX7UBv2S4Z68CDQh1UWADg==}
-
-  '@osdk/generator-converters@2.0.1':
-    resolution: {integrity: sha512-d5i0hYtjW1xsLCsgeDIVtJScoXIlQQd7dk+zQhFROKwTQuzAuGdav5B9ngUGhHYke7yygqnLXI3/I9Vgz8vNhQ==}
-
-  '@osdk/generator@2.0.1':
-    resolution: {integrity: sha512-eeLsm4FxecPiiQrOnWFbIQAsBYKEAzdbx/ftTMH9ZFUWenSi/3rNEjo3PGVuviX6UltOzbi2EKRuKsunJK+XWg==}
-
-  '@osdk/internal.foundry.core@0.2.1':
-    resolution: {integrity: sha512-dYa8GnJFDgLjZGlcj9cTY+mOue4gO/ZDGa45zHPSp5ptrEOYmQfpeJLFx5iNijwSrqcUJMKEjiqxTs1G5aczlw==}
-
-  '@osdk/internal.foundry.geo@0.1.1':
-    resolution: {integrity: sha512-8UOkTkI6K3pM7a6utyU/4BrQ0eib7c2VbPJSHJujvbsVZTEuJ/3qWMz6Zdf0yfV/qljO3WLalKcG4RGCe3twYg==}
-
-  '@osdk/internal.foundry.ontologies@0.2.1':
-    resolution: {integrity: sha512-yiEYI678+TXFSWn4ZAefHSEl2Z80B53LIx49nbsnoDe5TSbtNtaF6vDz2Ic8C7THRXstCsgVeOu9mltQrEVU1Q==}
-
-  '@osdk/internal.foundry.ontologiesv2@0.2.1':
-    resolution: {integrity: sha512-NgexHZDk4fqHUaidJQXA43QbRPlr9mxtWK5ExAiP8AovR+x0vsyEFXJoR4utRXc0ngc4EvoUKjbwYdQLYlXCmg==}
-
-  '@osdk/shared.client.impl@1.0.1':
-    resolution: {integrity: sha512-9EjkT+vhrGuCXGfX2U89ZoOuxMYrmZUkLjzdLPqXkph1elK3sQCS0tFTFKK+tz14oORGaEaH92pHtZSP+zYNeg==}
-
-  '@osdk/shared.client@1.0.1':
-    resolution: {integrity: sha512-yTH9nOn46SV2Vh8gtHI1DkNa7VatIaQdb3lp7LLREqviY7bjAQI9+IYK/oMSUYkHgB8uU1JIP1qgVETamhS7VA==}
-
-  '@osdk/shared.net.errors@2.0.0':
-    resolution: {integrity: sha512-1XIz+8axQRKGzRretUC9wBnNnCaXEQXxjbFh7Tde+95lv6FASbkpZbslrANy4iIFMl4BhStq0jZmK8KAtvFnxg==}
-
-  '@osdk/shared.net.fetch@1.0.0':
-    resolution: {integrity: sha512-3xd3VJpFZ5tnqFS6cNpq0BhWRt8KCydhx7dngOztef0ndXe7WXjbVb5TXK640M4kVZEf6iCxWCvscQrqiTTMkQ==}
-
-  '@osdk/shared.net.platformapi@0.3.1':
-    resolution: {integrity: sha512-5pJH/5abA2zm59SqJG5cLnZM/VKjTg/K/ULqlZun1K067rbIVt0G96+y84PbyE0nPgneCl9LSlbiA/hzt9KgCg==}
-
-  '@osdk/shared.net@2.0.1':
-    resolution: {integrity: sha512-ld3gSLI88VJkD69RDCEVt4tZfLxrdYLEH4HVdXuGq9nbafklUEEt82XiXLGuq6G6ZA0M+cAzSQIBNIB2W0khIA==}
-
-  '@osdk/tmp-foundry-sdk-generator@2.0.1':
-    resolution: {integrity: sha512-wg6t2emzLPV2wHCeX1Lh+/f7PmzfUL0I/cqOjq6FtxuexMmQZUSQunvxzf1kFay4hrKI/nh9bqyKawBHAV2xkQ==}
-    hasBin: true
-
   '@pkgjs/parseargs@0.11.0':
     resolution: {integrity: sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg==}
     engines: {node: '>=14'}
@@ -3860,15 +3805,6 @@ packages:
       rollup:
         optional: true
 
-  '@rollup/plugin-commonjs@28.0.0':
-    resolution: {integrity: sha512-BJcu+a+Mpq476DMXG+hevgPSl56bkUoi88dKT8t3RyUp8kGuOh+2bU8Gs7zXDlu+fyZggnJ+iOBGrb/O1SorYg==}
-    engines: {node: '>=16.0.0 || 14 >= 14.17'}
-    peerDependencies:
-      rollup: ^3.30.0
-    peerDependenciesMeta:
-      rollup:
-        optional: true
-
   '@rollup/plugin-inject@5.0.5':
     resolution: {integrity: sha512-2+DEJbNBoPROPkgTDNe8/1YXWcqxbN5DTjASVIOx8HS+pITXushyNiBV56RB08zuptzz8gT3YfkqriTBVycepg==}
     engines: {node: '>=14.0.0'}
@@ -3880,15 +3816,6 @@ packages:
 
   '@rollup/plugin-node-resolve@15.2.3':
     resolution: {integrity: sha512-j/lym8nf5E21LwBT4Df1VD6hRO2L2iwUeUmP7litikRsVp1H6NWx20NEp0Y7su+7XGc476GnXXc4kFeZNGmaSQ==}
-    engines: {node: '>=14.0.0'}
-    peerDependencies:
-      rollup: ^3.30.0
-    peerDependenciesMeta:
-      rollup:
-        optional: true
-
-  '@rollup/plugin-node-resolve@15.3.0':
-    resolution: {integrity: sha512-9eO5McEICxMzJpDW9OnMYSv4Sta3hmt7VtBFz5zR9273suNOydOyq/FrGeGy+KsTRFm8w0SLVhzig2ILFT63Ag==}
     engines: {node: '>=14.0.0'}
     peerDependencies:
       rollup: ^3.30.0
@@ -5462,14 +5389,6 @@ packages:
   fastq@1.17.1:
     resolution: {integrity: sha512-sRVD3lWVIXWg6By68ZN7vho9a1pQcN/WBFaAAsDDFzlJjvoGx0P8z7V1t72grFJfJhu3YPZBuu25f7Kaw2jN1w==}
 
-  fdir@6.4.0:
-    resolution: {integrity: sha512-3oB133prH1o4j/L5lLW7uOCF1PlD+/It2L0eL/iAqWMB91RBbqTewABqxhj0ibBd90EEmWZq7ntIWzVaWcXTGQ==}
-    peerDependencies:
-      picomatch: ^4.0.4
-    peerDependenciesMeta:
-      picomatch:
-        optional: true
-
   fetch-retry@6.0.0:
     resolution: {integrity: sha512-BUFj1aMubgib37I3v4q78fYo63Po7t4HUPTpQ6/QE6yK6cIQrP+W43FYToeTEyg5m2Y7eFUtijUuAv/PDlWuag==}
 
@@ -6808,11 +6727,6 @@ packages:
 
   prettier@3.2.5:
     resolution: {integrity: sha512-3/GWa9aOC0YeD7LUfvOG2NiDyhOWRvt1k+rcKhOuYnMY24iiCphgneUfJDyFXd6rZCAnuLBv6UeAULtrhT/F4A==}
-    engines: {node: '>=14'}
-    hasBin: true
-
-  prettier@3.3.3:
-    resolution: {integrity: sha512-i2tDNA0O5IrMO757lfrdQZCc2jPNDVntV0m/+4whiDfWaTKfMNgR7Qz0NAeGz/nRqF4m5/6CLzbP4/liHt12Ew==}
     engines: {node: '>=14'}
     hasBin: true
 
@@ -9335,134 +9249,6 @@ snapshots:
 
   '@open-draft/until@2.1.0': {}
 
-  '@osdk/api@2.0.1':
-    dependencies:
-      '@osdk/shared.net': 2.0.1
-      '@types/geojson': 7946.0.14
-      fetch-retry: 6.0.0
-      tiny-invariant: 1.3.3
-      type-fest: 4.18.2
-
-  '@osdk/client.unstable.osw@0.2.0':
-    dependencies:
-      conjure-lite: 0.4.4
-
-  '@osdk/client.unstable@2.0.1':
-    dependencies:
-      conjure-lite: 0.4.4
-
-  '@osdk/client@2.0.1':
-    dependencies:
-      '@osdk/api': 2.0.1
-      '@osdk/client.unstable': 2.0.1
-      '@osdk/client.unstable.osw': 0.2.0
-      '@osdk/generator-converters': 2.0.1
-      '@osdk/internal.foundry.core': 0.2.1
-      '@osdk/internal.foundry.ontologiesv2': 0.2.1
-      '@osdk/shared.client': 1.0.1
-      '@osdk/shared.client.impl': 1.0.1
-      '@osdk/shared.net.errors': 2.0.0
-      '@osdk/shared.net.fetch': 1.0.0
-      '@types/geojson': 7946.0.14
-      conjure-lite: 0.4.4
-      fast-deep-equal: 3.1.3
-      fetch-retry: 6.0.0
-      find-up: 7.0.0
-      isomorphic-ws: 5.0.0(ws@8.18.0)
-      tiny-invariant: 1.3.3
-      type-fest: 4.18.2
-      ws: 8.18.0
-    transitivePeerDependencies:
-      - bufferutil
-      - utf-8-validate
-
-  '@osdk/generator-converters@2.0.1':
-    dependencies:
-      '@osdk/api': 2.0.1
-      '@osdk/internal.foundry.core': 0.2.1
-
-  '@osdk/generator@2.0.1':
-    dependencies:
-      '@osdk/api': 2.0.1
-      '@osdk/generator-converters': 2.0.1
-      '@osdk/internal.foundry.core': 0.2.1
-      fast-deep-equal: 3.1.3
-      fetch-retry: 6.0.0
-      prettier: 3.3.3
-      tiny-invariant: 1.3.3
-
-  '@osdk/internal.foundry.core@0.2.1':
-    dependencies:
-      '@osdk/internal.foundry.geo': 0.1.1
-      '@osdk/shared.client': 1.0.1
-      '@osdk/shared.net.platformapi': 0.3.1
-
-  '@osdk/internal.foundry.geo@0.1.1':
-    dependencies:
-      '@osdk/shared.client': 1.0.1
-      '@osdk/shared.net.platformapi': 0.3.1
-
-  '@osdk/internal.foundry.ontologies@0.2.1':
-    dependencies:
-      '@osdk/internal.foundry.core': 0.2.1
-      '@osdk/shared.client': 1.0.1
-      '@osdk/shared.net.platformapi': 0.3.1
-
-  '@osdk/internal.foundry.ontologiesv2@0.2.1':
-    dependencies:
-      '@osdk/internal.foundry.core': 0.2.1
-      '@osdk/shared.client': 1.0.1
-      '@osdk/shared.net.platformapi': 0.3.1
-
-  '@osdk/shared.client.impl@1.0.1':
-    dependencies:
-      '@osdk/shared.client': 1.0.1
-      '@osdk/shared.net.errors': 2.0.0
-      '@osdk/shared.net.fetch': 1.0.0
-
-  '@osdk/shared.client@1.0.1': {}
-
-  '@osdk/shared.net.errors@2.0.0': {}
-
-  '@osdk/shared.net.fetch@1.0.0':
-    dependencies:
-      '@osdk/shared.net.errors': 2.0.0
-      fetch-retry: 6.0.0
-
-  '@osdk/shared.net.platformapi@0.3.1':
-    dependencies:
-      '@osdk/shared.client': 1.0.1
-      '@osdk/shared.net.errors': 2.0.0
-
-  '@osdk/shared.net@2.0.1':
-    dependencies:
-      '@osdk/shared.client': 1.0.1
-      '@osdk/shared.client.impl': 1.0.1
-      '@osdk/shared.net.errors': 2.0.0
-      '@osdk/shared.net.fetch': 1.0.0
-
-  '@osdk/tmp-foundry-sdk-generator@2.0.1':
-    dependencies:
-      '@osdk/api': 2.0.1
-      '@osdk/client': 2.0.1
-      '@osdk/generator': 2.0.1
-      '@osdk/internal.foundry.core': 0.2.1
-      '@osdk/internal.foundry.ontologies': 0.2.1
-      '@osdk/internal.foundry.ontologiesv2': 0.2.1
-      '@osdk/shared.net': 2.0.1
-      '@rollup/plugin-commonjs': 28.0.0(rollup@3.30.0)
-      '@rollup/plugin-node-resolve': 15.3.0(rollup@3.30.0)
-      consola: 3.2.3
-      find-up: 7.0.0
-      rollup: 3.30.0
-      rollup-plugin-polyfill-node: 0.13.0(rollup@3.30.0)
-      ts-morph: 19.0.0
-      typescript: 5.5.3
-      yargs: 17.7.2
-    transitivePeerDependencies:
-      - bufferutil
-      - utf-8-validate
-
   '@pkgjs/parseargs@0.11.0':
     optional: true
 
@@ -9533,18 +9319,6 @@ snapshots:
     optionalDependencies:
       rollup: 3.30.0
 
-  '@rollup/plugin-commonjs@28.0.0(rollup@3.30.0)':
-    dependencies:
-      '@rollup/pluginutils': 5.1.0(rollup@3.30.0)
-      commondir: 1.0.1
-      estree-walker: 2.0.2
-      fdir: 6.4.0(picomatch@2.3.2)
-      is-reference: 1.2.1
-      magic-string: 0.30.10
-      picomatch: 2.3.2
-    optionalDependencies:
-      rollup: 3.30.0
-
   '@rollup/plugin-inject@5.0.5(rollup@3.30.0)':
     dependencies:
       '@rollup/pluginutils': 5.1.0(rollup@3.30.0)
@@ -9559,16 +9333,6 @@ snapshots:
       '@types/resolve': 1.20.2
       deepmerge: 4.3.1
       is-builtin-module: 3.2.1
-      is-module: 1.0.0
-      resolve: 1.22.8
-    optionalDependencies:
-      rollup: 3.30.0
-
-  '@rollup/plugin-node-resolve@15.3.0(rollup@3.30.0)':
-    dependencies:
-      '@rollup/pluginutils': 5.1.0(rollup@3.30.0)
-      '@types/resolve': 1.20.2
-      deepmerge: 4.3.1
       is-module: 1.0.0
       resolve: 1.22.8
     optionalDependencies:
@@ -11670,10 +11434,6 @@ snapshots:
     dependencies:
       reusify: 1.0.4
 
-  fdir@6.4.0(picomatch@2.3.2):
-    optionalDependencies:
-      picomatch: 2.3.2
-
   fetch-retry@6.0.0: {}
 
   fflate@0.8.2: {}
@@ -12955,8 +12715,6 @@ snapshots:
   prettier@3.0.3: {}
 
   prettier@3.2.5: {}
-
-  prettier@3.3.3: {}
 
   pretty-format@29.7.0:
     dependencies:

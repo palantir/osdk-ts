@@ -45,10 +45,10 @@ export async function cli(args: string[] = process.argv) {
           if (argv.beta) {
             consola.warn("Beta flag is set, this feature may not be stable");
 
-            // lazy import to avoid loading the beta code path unless necessary
-            const { cli } = await import("@osdk/main-foundry-sdk-generator");
-
-            await cli(args);
+            consola.error(
+              "Generating with the --beta flag is no longer supported on 1.3.x. Please use @osdk/foundry-sdk-generator 2.x to use beta features.",
+            );
+            process.exit(1);
           } else {
             if (err) {
               // eslint-disable-next-line no-console
