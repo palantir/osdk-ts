@@ -14,12 +14,12 @@ export type OsdkObjectLinks$FooInterface = {};
 
 export namespace FooInterface {
   export type PropertyKeys =
-    | 'name'
-    | 'description'
-    | 'inheritedDescription'
-    | 'deprecatedName'
     | 'deprecatedDescription'
-    | 'experimentalProperty';
+    | 'deprecatedName'
+    | 'description'
+    | 'experimentalProperty'
+    | 'inheritedDescription'
+    | 'name';
 
   export interface Props {
     /**

@@ -30,7 +30,9 @@ export function wireQueryTypeV2ToSdkQueryMetadata(
     displayName: input.displayName,
     version: input.version,
     parameters: Object.fromEntries(
-      Object.entries(input.parameters).map((
+      Object.entries(input.parameters).sort(
+        ([a], [b]) => a.localeCompare(b),
+      ).map((
         [name, parameter],
       ) => [name, wireQueryParameterV2ToQueryParameterDefinition(parameter)]),
     ),
