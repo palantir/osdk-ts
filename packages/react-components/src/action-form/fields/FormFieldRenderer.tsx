@@ -16,7 +16,7 @@
 
 import React, { memo } from "react";
 import { FormField } from "../FormField.js";
-import type { RendererFieldDefinition , DateRange } from "../FormFieldApi.js";
+import type { DateRange, RendererFieldDefinition } from "../FormFieldApi.js";
 import { CustomField } from "./CustomField.js";
 import { DateRangeInputField } from "./DateRangeInputField.js";
 import { DatetimePickerField } from "./DatetimePickerField.js";

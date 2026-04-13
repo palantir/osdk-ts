@@ -1,4 +1,4 @@
-/* DatetimePickerField — wrapper + input + icon + popover */
+/* DatetimePickerField — wrapper + error state (component-specific layout) */
 
 /* Wrapper mirrors NumberInputField wrapper: border, bg, hover, focus-within.
    Also acts as Popover.Trigger — suppress its own outline since :focus-within
@@ -34,91 +34,5 @@
 
   &:focus-within {
     border-color: var(--osdk-datetime-input-error-border-color);
-  }
-}
-
-/* Bare input inside the wrapper */
-.osdkDatetimeInputField {
-  flex: 1;
-  min-width: 0;
-  min-height: var(--osdk-input-min-height);
-  padding: var(--osdk-input-padding);
-  border: none;
-  border-radius: var(--osdk-input-border-radius);
-  background: transparent;
-  color: var(--osdk-input-color);
-  font-family: var(--osdk-input-font-family);
-  font-size: var(--osdk-input-font-size);
-  line-height: var(
-    --osdk-input-line-height,
-    var(--osdk-typography-line-height-default)
-  );
-
-  &::placeholder {
-    color: var(--osdk-input-placeholder-color);
-  }
-
-  &:focus-visible {
-    outline: none;
-  }
-}
-
-/* Trailing calendar icon */
-.osdkDatetimeInputIcon {
-  display: flex;
-  align-items: center;
-  padding: 0 calc(var(--osdk-surface-spacing) * 2);
-  color: var(--osdk-typography-color-muted);
-  pointer-events: none;
-  flex-shrink: 0;
-}
-
-/* Popover */
-.osdkDatetimePopover {
-  background: var(--osdk-datetime-popover-bg);
-  padding: var(--osdk-datetime-popover-padding);
-  z-index: var(--osdk-datetime-popover-z-index);
-  border: var(--osdk-datetime-popover-border);
-  border-radius: var(--osdk-datetime-popover-border-radius);
-  box-shadow: var(--osdk-datetime-popover-shadow);
-}
-
-/* Visually-hidden focus boundary for Tab cycling between input and popover. */
-.osdkDatetimeFocusBoundary {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  outline: none;
-}
-
-/* Time input footer */
-.osdkDatetimeTimeFooter {
-  padding-top: var(--osdk-datetime-time-padding-top);
-  padding-left: var(--osdk-datetime-popover-padding);
-  padding-right: var(--osdk-datetime-popover-padding);
-  border-top: var(--osdk-datetime-time-border-top);
-  margin-top: var(--osdk-datetime-time-padding-top);
-  margin-left: calc(var(--osdk-datetime-popover-padding) * -1);
-  margin-right: calc(var(--osdk-datetime-popover-padding) * -1);
-}
-
-.osdkDatetimeTimeInput {
-  width: 100%;
-  font-family: var(--osdk-input-font-family);
-  font-size: var(--osdk-input-font-size);
-  padding: var(--osdk-input-padding);
-  border: var(--osdk-input-border-width) solid var(--osdk-input-border-color);
-  border-radius: var(--osdk-input-border-radius);
-  background: var(--osdk-input-bg);
-  color: var(--osdk-input-color);
-  box-sizing: border-box;
-
-  &:focus {
-    border-color: var(--osdk-input-border-color-focus);
-    outline: var(--osdk-input-focus-width) solid var(--osdk-input-focus-color);
-    outline-offset: var(--osdk-input-focus-offset);
   }
 }

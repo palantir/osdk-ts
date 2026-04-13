@@ -14,18 +14,17 @@
  * limitations under the License.
  */
 
-import React, { useCallback, useMemo, useRef, useState } from "react";
-import type {
-  ClassNames,
-  DateAfter,
-  DateBefore,
-  Matcher,
-  SelectSingleEventHandler,
-} from "react-day-picker";
+import React, { useMemo, useRef, useState } from "react";
+import type { ClassNames } from "react-day-picker";
 import { DayPicker } from "react-day-picker";
+import {
+  buildDisabledMatchers,
+  DEFAULT_FROM_YEAR,
+  DEFAULT_TO_YEAR,
+} from "./calendarShared.js";
 import styles from "./DateCalendar.module.css";
 
-const CLASS_NAMES: ClassNames = {
+export const CLASS_NAMES: ClassNames = {
   root: styles.calendar,
   months: styles.calendarMonths,
   table: styles.calendarMonthGrid,
@@ -49,9 +48,6 @@ const CLASS_NAMES: ClassNames = {
   nav_icon: styles.calendarChevron,
 };
 
-const DEFAULT_FROM_YEAR = new Date().getFullYear() - 100;
-const DEFAULT_TO_YEAR = new Date().getFullYear() + 10;
-
 export interface DateCalendarProps {
   dateSelected: Date | undefined;
   previewDate?: Date | undefined;
@@ -69,33 +65,14 @@ export default function DateCalendar({
   max,
   footer,
 }: DateCalendarProps): React.ReactElement {
-  const disabled = useMemo((): Matcher[] => {
-    const matchers: Matcher[] = [];
-    if (min != null) {
-      const before: DateBefore = { before: min };
-      matchers.push(before);
-    }
-    if (max != null) {
-      const after: DateAfter = { after: max };
-      matchers.push(after);
-    }
-    return matchers;
-  }, [min, max]);
-
-  const handleSelect = useCallback<SelectSingleEventHandler>(
-    (day) => {
-      onSelect(day);
-    },
-    [onSelect],
+  const disabled = useMemo(
+    () => buildDisabledMatchers(min, max),
+    [min, max],
   );
 
   // Month navigation: previewDate controls when typing, user can manually navigate
   const [userMonth, setUserMonth] = useState<Date | undefined>(undefined);
   const displayMonth = userMonth ?? previewDate ?? dateSelected;
-
-  const handleMonthChange = useCallback((month: Date) => {
-    setUserMonth(month);
-  }, []);
 
   // Reset user-controlled month when previewDate takes over
   const prevPreviewRef = useRef<Date | undefined>(undefined);
@@ -113,10 +90,10 @@ export default function DateCalendar({
     <DayPicker
       mode="single"
       selected={dateSelected}
-      onSelect={handleSelect}
+      onSelect={onSelect}
       disabled={disabled}
       month={displayMonth}
-      onMonthChange={handleMonthChange}
+      onMonthChange={setUserMonth}
       defaultMonth={dateSelected}
       classNames={CLASS_NAMES}
       footer={footer}

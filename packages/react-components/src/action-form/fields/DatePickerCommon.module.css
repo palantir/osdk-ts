@@ -1,0 +1,58 @@
+/* Shared styles for DatetimePickerField and DateRangeInputField */
+
+/* Bare input inside a date picker wrapper */
+.osdkDatePickerInput {
+  flex: 1;
+  min-width: 0;
+  min-height: var(--osdk-input-min-height);
+  padding: var(--osdk-input-padding);
+  border: none;
+  border-radius: var(--osdk-input-border-radius);
+  background: transparent;
+  color: var(--osdk-input-color);
+  font-family: var(--osdk-input-font-family);
+  font-size: var(--osdk-input-font-size);
+  line-height: var(
+    --osdk-input-line-height,
+    var(--osdk-typography-line-height-default)
+  );
+
+  &::placeholder {
+    color: var(--osdk-input-placeholder-color);
+  }
+
+  &:focus-visible {
+    outline: none;
+  }
+}
+
+/* Trailing calendar icon */
+.osdkDatePickerIcon {
+  display: flex;
+  align-items: center;
+  padding: 0 calc(var(--osdk-surface-spacing) * 2);
+  color: var(--osdk-typography-color-muted);
+  pointer-events: none;
+  flex-shrink: 0;
+}
+
+/* Popover container */
+.osdkDatePickerPopover {
+  background: var(--osdk-datetime-popover-bg);
+  padding: var(--osdk-datetime-popover-padding);
+  z-index: var(--osdk-datetime-popover-z-index);
+  border: var(--osdk-datetime-popover-border);
+  border-radius: var(--osdk-datetime-popover-border-radius);
+  box-shadow: var(--osdk-datetime-popover-shadow);
+}
+
+/* Visually-hidden focus boundary for Tab cycling between input and popover */
+.osdkDatePickerFocusBoundary {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  outline: none;
+}

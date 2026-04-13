@@ -21,11 +21,13 @@ import {
   formatDatetimeForDisplay,
   formatDatetimeForInput,
   formatTime,
+  getTimeValue,
   isDateInRange,
   parseDateFromInput,
   parseDateFromISO,
   parseDatetimeFromDisplay,
   parseDatetimeFromInput,
+  parseTimeString,
 } from "../dateUtils.js";
 
 describe("formatDateForInput", () => {
@@ -179,5 +181,29 @@ describe("parseDatetimeFromDisplay", () => {
     expect(parseDatetimeFromDisplay(null)).toBeUndefined();
     expect(parseDatetimeFromDisplay(undefined)).toBeUndefined();
     expect(parseDatetimeFromDisplay("not-a-date")).toBeUndefined();
+  });
+});
+
+describe("parseTimeString", () => {
+  it("parses HH:mm time string", () => {
+    expect(parseTimeString("14:30")).toEqual({ hours: 14, minutes: 30 });
+    expect(parseTimeString("09:05")).toEqual({ hours: 9, minutes: 5 });
+    expect(parseTimeString("00:00")).toEqual({ hours: 0, minutes: 0 });
+  });
+
+  it("defaults to 0 for missing parts", () => {
+    expect(parseTimeString("")).toEqual({ hours: 0, minutes: 0 });
+    expect(parseTimeString("14")).toEqual({ hours: 14, minutes: 0 });
+  });
+});
+
+describe("getTimeValue", () => {
+  it("returns formatted time for a date", () => {
+    expect(getTimeValue(new Date(2024, 0, 1, 14, 30))).toBe("14:30");
+    expect(getTimeValue(new Date(2024, 0, 1, 9, 5))).toBe("09:05");
+  });
+
+  it("returns 00:00 for null", () => {
+    expect(getTimeValue(null)).toBe("00:00");
   });
 });

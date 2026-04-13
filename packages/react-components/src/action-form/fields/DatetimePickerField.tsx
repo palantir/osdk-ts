@@ -18,27 +18,22 @@ import { Input } from "@base-ui/react/input";
 import { Popover } from "@base-ui/react/popover";
 import { Calendar } from "@blueprintjs/icons";
 import classnames from "classnames";
-import React, { useCallback, useId, useMemo, useRef, useState } from "react";
+import React, { useCallback, useId, useRef, useState } from "react";
 import {
   formatDateForInput,
   formatDatetimeForDisplay,
-  formatTime,
-  isDateInRange,
+  getTimeValue,
   parseDateFromInput,
   parseDatetimeFromDisplay,
+  parseTimeString,
 } from "../../shared/dateUtils.js";
 import type { DatetimePickerFieldProps } from "../FormFieldApi.js";
+import { CALENDAR_ICON_SIZE, stopPropagation } from "./calendarShared.js";
+import commonStyles from "./DatePickerCommon.module.css";
 import styles from "./DatetimePickerField.module.css";
 import { LazyDateCalendar } from "./LazyDateCalendar.js";
-
-/** Midnight fallback so `extractTime` can reuse `formatTime` when no date is selected. */
-const DATE_ZERO = new Date(2000, 0, 1, 0, 0, 0, 0);
-
-const CALENDAR_ICON_SIZE = 16;
-
-function extractTime(date: Date | null): string {
-  return formatTime(date ?? DATE_ZERO);
-}
+import { TimeFooter } from "./TimeFooter.js";
+import { useDateEditState } from "./useDateEditState.js";
 
 export function DatetimePickerField({
   id,
@@ -58,8 +53,6 @@ export function DatetimePickerField({
   const popoverRef = useRef<HTMLDivElement>(null);
 
   const [isOpen, setIsOpen] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
-  const [inputValue, setInputValue] = useState("");
 
   // Format/parse: pick between date-only and datetime variants
   const editFormatFn = showTime ? formatDatetimeForDisplay : formatDateForInput;
@@ -67,57 +60,30 @@ export function DatetimePickerField({
   const parseFn = parseDate
     ?? (showTime ? parseDatetimeFromDisplay : parseDateFromInput);
 
-  // Sync inputValue when external value changes (e.g. parent resets)
-  const prevValueTimeRef = useRef<number | null>(value?.getTime() ?? null);
-  const currentValueTime = value?.getTime() ?? null;
-  if (prevValueTimeRef.current !== currentValueTime) {
-    prevValueTimeRef.current = currentValueTime;
-    if (!isEditing) {
-      setInputValue(value != null ? editFormatFn(value) : "");
-    }
-  }
-
-  const displayedValue = isEditing
-    ? inputValue
-    : (value != null ? displayFormatFn(value) : "");
-
-  // --- Derived error state (no useEffect) ---
-  const inputError: "invalid" | "out-of-range" | null = (() => {
-    if (!isEditing || inputValue === "") return null;
-    const parsed = parseFn(inputValue);
-    if (parsed == null) return "invalid";
-    if (!isDateInRange(parsed, min, max)) return "out-of-range";
-    return null;
-  })();
-
-  // --- Derived preview date for type-ahead calendar sync ---
-  const previewDate: Date | undefined = (() => {
-    if (!isEditing || inputValue === "") return undefined;
-    const parsed = parseFn(inputValue);
-    if (parsed != null && isDateInRange(parsed, min, max)) return parsed;
-    return undefined;
-  })();
-
-  // --- Shared commit logic ---
-
-  const commitInputValue = useCallback(() => {
-    if (inputValue === "") {
-      onChange?.(null);
-      return;
-    }
-    const parsed = parseFn(inputValue);
-    if (parsed != null && isDateInRange(parsed, min, max)) {
-      onChange?.(parsed);
-    }
-  }, [inputValue, parseFn, min, max, onChange]);
+  const {
+    inputValue: editInputValue,
+    displayedValue,
+    inputError,
+    previewDate,
+    startEditing,
+    stopEditing,
+    setInputValue: setEditInputValue,
+    commitValue,
+  } = useDateEditState({
+    value,
+    displayFormatFn,
+    editFormatFn,
+    parseFn,
+    min,
+    max,
+  });
 
   // --- Input event handlers ---
 
   const handleFocus = useCallback(() => {
-    setIsEditing(true);
+    startEditing();
     setIsOpen(true);
-    setInputValue(value != null ? editFormatFn(value) : "");
-  }, [value, editFormatFn]);
+  }, [startEditing]);
 
   const handleBlur = useCallback(
     (e: React.FocusEvent<HTMLInputElement>) => {
@@ -127,36 +93,37 @@ export function DatetimePickerField({
       if (popoverRef.current?.contains(relatedTarget as Node)) {
         return;
       }
-      commitInputValue();
-      setIsEditing(false);
+      if (editInputValue === "") {
+        onChange?.(null);
+      } else {
+        const committed = commitValue();
+        if (committed != null) {
+          onChange?.(committed);
+        }
+      }
+      stopEditing();
     },
-    [commitInputValue],
-  );
-
-  const handleInputChange = useCallback((newValue: string) => {
-    setInputValue(newValue);
-  }, []);
-
-  const handleInputClick = useCallback(
-    (e: React.MouseEvent<HTMLInputElement>) => {
-      // Prevent Popover.Trigger's internal click handler from toggling the
-      // popover closed when the user clicks the already-open input.
-      e.stopPropagation();
-    },
-    [],
+    [editInputValue, commitValue, stopEditing, onChange],
   );
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => {
       if (e.key === "Enter") {
         e.preventDefault();
-        commitInputValue();
-        setIsEditing(false);
+        if (editInputValue === "") {
+          onChange?.(null);
+        } else {
+          const committed = commitValue();
+          if (committed != null) {
+            onChange?.(committed);
+          }
+        }
+        stopEditing();
         setIsOpen(false);
       } else if (e.key === "Escape") {
         e.preventDefault();
-        setInputValue(value != null ? editFormatFn(value) : "");
-        setIsEditing(false);
+        setEditInputValue(value != null ? editFormatFn(value) : "");
+        stopEditing();
         setIsOpen(false);
         inputRef.current?.blur();
       } else if (e.key === "Tab" && !e.shiftKey && isOpen) {
@@ -171,7 +138,16 @@ export function DatetimePickerField({
         setIsOpen(false);
       }
     },
-    [commitInputValue, value, editFormatFn, isOpen],
+    [
+      editInputValue,
+      commitValue,
+      stopEditing,
+      setEditInputValue,
+      value,
+      editFormatFn,
+      isOpen,
+      onChange,
+    ],
   );
 
   // --- Popover handlers ---
@@ -179,10 +155,10 @@ export function DatetimePickerField({
   const handleOpenChange = useCallback((nextOpen: boolean) => {
     setIsOpen(nextOpen);
     if (!nextOpen) {
-      setIsEditing(false);
+      stopEditing();
       inputRef.current?.blur();
     }
-  }, []);
+  }, [stopEditing]);
 
   // --- Calendar handlers ---
 
@@ -190,7 +166,7 @@ export function DatetimePickerField({
     (selected: Date | undefined) => {
       if (selected == null) {
         onChange?.(null);
-        setInputValue("");
+        setEditInputValue("");
         return;
       }
 
@@ -200,26 +176,30 @@ export function DatetimePickerField({
       }
 
       onChange?.(date);
-      setInputValue(editFormatFn(date));
+      setEditInputValue(editFormatFn(date));
 
       if (shouldCloseOnSelection) {
         setIsOpen(false);
-        setIsEditing(false);
+        stopEditing();
         inputRef.current?.blur();
       }
     },
-    [onChange, showTime, value, shouldCloseOnSelection, editFormatFn],
+    [
+      onChange,
+      showTime,
+      value,
+      shouldCloseOnSelection,
+      editFormatFn,
+      setEditInputValue,
+      stopEditing,
+    ],
   );
 
   const handleTimeChange = useCallback(
     (timeString: string) => {
-      const [hoursStr, minutesStr] = timeString.split(":");
-      const hours = parseInt(hoursStr ?? "0", 10);
-      const minutes = parseInt(minutesStr ?? "0", 10);
-
+      const { hours, minutes } = parseTimeString(timeString);
       const base = value != null ? new Date(value.getTime()) : new Date();
       base.setHours(hours, minutes, 0, 0);
-
       onChange?.(base);
     },
     [value, onChange],
@@ -229,9 +209,6 @@ export function DatetimePickerField({
 
   const handleStartFocusBoundary = useCallback(
     () => {
-      // Always redirect to the input. Tab from input into the calendar
-      // is handled directly by handleKeyDown, so this boundary only fires
-      // from auto-focus on open or Shift+Tab from the first calendar element.
       inputRef.current?.focus();
     },
     [],
@@ -243,7 +220,7 @@ export function DatetimePickerField({
       if (popoverRef.current?.contains(relatedTarget as Node)) {
         inputRef.current?.focus();
         setIsOpen(false);
-        setIsEditing(false);
+        stopEditing();
       } else {
         const buttons = popoverRef.current?.querySelectorAll(
           "button, select",
@@ -254,29 +231,19 @@ export function DatetimePickerField({
         lastButton?.focus();
       }
     },
-    [],
+    [stopEditing],
   );
 
   // --- Time footer ---
 
-  const timeValue = extractTime(value);
-  const footer = useMemo(
-    () =>
-      showTime
-        ? (
-          <div className={styles.osdkDatetimeTimeFooter}>
-            <Input
-              type="time"
-              value={timeValue}
-              onValueChange={handleTimeChange}
-              className={styles.osdkDatetimeTimeInput}
-              aria-label="Time"
-            />
-          </div>
-        )
-        : undefined,
-    [showTime, timeValue, handleTimeChange],
-  );
+  const timeFooter = showTime
+    ? (
+      <TimeFooter
+        startTimeValue={getTimeValue(value)}
+        onStartTimeChange={handleTimeChange}
+      />
+    )
+    : undefined;
 
   const wrapperClassName = classnames(
     styles.osdkDatetimeInputWrapper,
@@ -292,13 +259,13 @@ export function DatetimePickerField({
         <Input
           ref={inputRef}
           id={id}
-          className={styles.osdkDatetimeInputField}
+          className={commonStyles.osdkDatePickerInput}
           type="text"
           value={displayedValue}
-          onValueChange={handleInputChange}
+          onValueChange={setEditInputValue}
           onFocus={handleFocus}
           onBlur={handleBlur}
-          onClick={handleInputClick}
+          onClick={stopPropagation}
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
           role="combobox"
@@ -306,7 +273,7 @@ export function DatetimePickerField({
           aria-controls={popoverId}
           aria-haspopup="dialog"
         />
-        <div className={styles.osdkDatetimeInputIcon}>
+        <div className={commonStyles.osdkDatePickerIcon}>
           <Calendar size={CALENDAR_ICON_SIZE} />
         </div>
       </Popover.Trigger>
@@ -314,7 +281,7 @@ export function DatetimePickerField({
         <Popover.Positioner sideOffset={4}>
           <Popover.Popup
             ref={popoverRef}
-            className={styles.osdkDatetimePopover}
+            className={commonStyles.osdkDatePickerPopover}
             id={popoverId}
             role="dialog"
             aria-label="date picker"
@@ -323,7 +290,7 @@ export function DatetimePickerField({
               onFocus={handleStartFocusBoundary}
               tabIndex={0}
               aria-label="Start of date picker dialog"
-              className={styles.osdkDatetimeFocusBoundary}
+              className={commonStyles.osdkDatePickerFocusBoundary}
             />
             <LazyDateCalendar
               dateSelected={value ?? undefined}
@@ -331,13 +298,13 @@ export function DatetimePickerField({
               onSelect={handleCalendarSelect}
               min={min}
               max={max}
-              footer={footer}
+              footer={timeFooter}
             />
             <div
               onFocus={handleEndFocusBoundary}
               tabIndex={0}
               aria-label="End of date picker dialog"
-              className={styles.osdkDatetimeFocusBoundary}
+              className={commonStyles.osdkDatePickerFocusBoundary}
             />
           </Popover.Popup>
         </Popover.Positioner>

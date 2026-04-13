@@ -1,0 +1,58 @@
+/* TimeFooter — time input(s) below calendar */
+
+/* Single-input layout (DatetimePickerField) */
+.osdkTimeFooter {
+  padding-top: var(--osdk-datetime-time-padding-top);
+  padding-left: var(--osdk-datetime-popover-padding);
+  padding-right: var(--osdk-datetime-popover-padding);
+  border-top: var(--osdk-datetime-time-border-top);
+  margin-top: var(--osdk-datetime-time-padding-top);
+  margin-left: calc(var(--osdk-datetime-popover-padding) * -1);
+  margin-right: calc(var(--osdk-datetime-popover-padding) * -1);
+}
+
+/* Range layout — two time inputs side-by-side */
+.osdkTimeFooterRange {
+  display: flex;
+  gap: calc(var(--osdk-surface-spacing) * 4);
+  padding-top: calc(var(--osdk-surface-spacing) * 2);
+  margin-top: calc(var(--osdk-surface-spacing) * 2);
+  margin-left: calc(var(--osdk-datetime-popover-padding) * -1);
+  margin-right: calc(var(--osdk-datetime-popover-padding) * -1);
+  padding-left: var(--osdk-datetime-popover-padding);
+  padding-right: var(--osdk-datetime-popover-padding);
+}
+
+.osdkTimeFooterGroup {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.osdkTimeFooterInput {
+  font-family: var(--osdk-input-font-family);
+  font-size: var(--osdk-input-font-size);
+  padding: var(--osdk-input-padding);
+  border: var(--osdk-input-border-width) solid var(--osdk-input-border-color);
+  border-radius: var(--osdk-input-border-radius);
+  background: var(--osdk-input-bg);
+  color: var(--osdk-input-color);
+  box-sizing: border-box;
+
+  &:focus {
+    border-color: var(--osdk-input-border-color-focus);
+    outline: var(--osdk-input-focus-width) solid var(--osdk-input-focus-color);
+    outline-offset: var(--osdk-input-focus-offset);
+  }
+}
+
+/* Full-width for single mode */
+.osdkTimeFooterInputSingle {
+  width: 100%;
+}
+
+/* Centered for range mode */
+.osdkTimeFooterInputRange {
+  text-align: center;
+  padding: calc(var(--osdk-surface-spacing) * 1) calc(var(--osdk-surface-spacing) * 2);
+}

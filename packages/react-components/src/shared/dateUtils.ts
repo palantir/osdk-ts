@@ -120,3 +120,24 @@ export function parseDateFromISO(
   const date = new Date(value);
   return isNaN(date.getTime()) ? undefined : date;
 }
+
+/** Parses an "HH:mm" time string into hours and minutes. */
+export function parseTimeString(
+  timeString: string,
+): { hours: number; minutes: number } {
+  const [hoursStr, minutesStr] = timeString.split(":");
+  const hours = parseInt(hoursStr ?? "0", 10);
+  const minutes = parseInt(minutesStr ?? "0", 10);
+  return {
+    hours: isNaN(hours) ? 0 : hours,
+    minutes: isNaN(minutes) ? 0 : minutes,
+  };
+}
+
+/** Sentinel date used solely to produce "00:00" when no date is selected. */
+const MIDNIGHT_SENTINEL = new Date(2000, 0, 1, 0, 0, 0, 0);
+
+/** Returns the "HH:mm" time value for a date, defaulting to "00:00" when null. */
+export function getTimeValue(date: Date | null): string {
+  return formatTime(date ?? MIDNIGHT_SENTINEL);
+}

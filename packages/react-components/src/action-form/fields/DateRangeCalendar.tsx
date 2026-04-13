@@ -17,44 +17,24 @@
 import React, { useMemo } from "react";
 import type {
   ClassNames,
-  DateAfter,
-  DateBefore,
   DateRange as RdpDateRange,
-  Matcher,
   SelectRangeEventHandler,
 } from "react-day-picker";
 import { DayPicker } from "react-day-picker";
+import {
+  buildDisabledMatchers,
+  DEFAULT_FROM_YEAR,
+  DEFAULT_TO_YEAR,
+} from "./calendarShared.js";
+import { CLASS_NAMES as BASE_CLASS_NAMES } from "./DateCalendar.js";
 import styles from "./DateCalendar.module.css";
 
 const CLASS_NAMES: ClassNames = {
-  root: styles.calendar,
-  months: styles.calendarMonths,
-  table: styles.calendarMonthGrid,
-  head_cell: styles.calendarWeekday,
-  cell: styles.calendarDay,
-  day: styles.calendarDayButton,
-  day_selected: styles.calendarSelected,
-  day_today: styles.calendarToday,
-  day_outside: styles.calendarOutside,
-  day_disabled: styles.calendarDisabled,
-  day_hidden: styles.calendarHidden,
-  nav: styles.calendarNav,
-  nav_button_previous: styles.calendarNavPrev,
-  nav_button_next: styles.calendarNavNext,
-  caption: styles.calendarMonthCaption,
-  caption_label: styles.calendarCaptionLabel,
-  caption_dropdowns: styles.calendarCaptionDropdowns,
-  dropdown: styles.calendarDropdown,
-  dropdown_month: styles.calendarDropdownMonth,
-  dropdown_year: styles.calendarDropdownYear,
-  nav_icon: styles.calendarChevron,
+  ...BASE_CLASS_NAMES,
   day_range_start: styles.calendarRangeStart,
   day_range_middle: styles.calendarRangeMiddle,
   day_range_end: styles.calendarRangeEnd,
 };
-
-const DEFAULT_FROM_YEAR = new Date().getFullYear() - 100;
-const DEFAULT_TO_YEAR = new Date().getFullYear() + 10;
 
 export interface DateRangeCalendarProps {
   selected: RdpDateRange | undefined;
@@ -71,18 +51,10 @@ export default function DateRangeCalendar({
   max,
   footer,
 }: DateRangeCalendarProps): React.ReactElement {
-  const disabled = useMemo((): Matcher[] => {
-    const matchers: Matcher[] = [];
-    if (min != null) {
-      const before: DateBefore = { before: min };
-      matchers.push(before);
-    }
-    if (max != null) {
-      const after: DateAfter = { after: max };
-      matchers.push(after);
-    }
-    return matchers;
-  }, [min, max]);
+  const disabled = useMemo(
+    () => buildDisabledMatchers(min, max),
+    [min, max],
+  );
 
   const fromYear = min != null ? min.getFullYear() : DEFAULT_FROM_YEAR;
   const toYear = max != null ? max.getFullYear() : DEFAULT_TO_YEAR;
