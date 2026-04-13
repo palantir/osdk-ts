@@ -37,6 +37,8 @@ import type { ObjectTableProps } from "./ObjectTableApi.js";
 import { BaseTable } from "./Table.js";
 import type { HeaderMenuFeatureFlags } from "./TableHeaderWithPopover.js";
 import { getRowId } from "./utils/getRowId.js";
+
+const EMPTY_ARRAY: [] = [];
 import type { EditableConfig } from "./utils/types.js";
 
 /**
@@ -47,8 +49,6 @@ import type { EditableConfig } from "./utils/types.js";
  * <ObjectTable objectType={MyObjectType} />
  * ```
  */
-
-const EMPTY_ARRAY: [] = [];
 
 export function ObjectTable<
   Q extends ObjectOrInterfaceDefinition,
@@ -67,6 +67,7 @@ export function ObjectTable<
   filter,
   objectSetOptions,
   dedupeIntervalMs,
+  pageSize,
   orderBy,
   defaultOrderBy,
   onOrderByChanged,
@@ -115,6 +116,7 @@ export function ObjectTable<
     objectSet,
     objectSetOptions,
     dedupeIntervalMs,
+    pageSize,
   );
 
   const { columns, loading: isColumnsLoading } = useColumnDefs<
