@@ -34,6 +34,6 @@
 
 .helperText {
   font-size: var(--osdk-typography-size-body-small);
-  color: var(--osdk-typography-color-default-muted);
+  color: var(--osdk-typography-color-muted);
   margin: 0;
 }

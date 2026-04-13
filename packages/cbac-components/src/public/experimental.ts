@@ -15,6 +15,8 @@
  */
 
 // CBAC Picker - OSDK-aware components
+export { CbacBanner } from "../cbac-picker/CbacBanner.js";
+export { CbacBannerPopover } from "../cbac-picker/CbacBannerPopover.js";
 export { CbacPicker } from "../cbac-picker/CbacPicker.js";
 export { CbacPickerDialog } from "../cbac-picker/CbacPickerDialog.js";
 
