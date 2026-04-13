@@ -1,5 +1,13 @@
 # @osdk/shared.net.platformapi
 
+## 0.2.3
+
+### Patch Changes
+
+- 6de6c33: Add overrides for minimatch/picomatch/rollup for CVEs
+- Updated dependencies [6de6c33]
+  - @osdk/shared.net.errors@1.1.2
+
 ## 0.2.2
 
 ### Patch Changes

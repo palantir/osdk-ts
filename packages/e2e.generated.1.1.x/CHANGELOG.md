@@ -1,5 +1,17 @@
 # @osdk/e2e.generated.1.1.x
 
+## 0.2.7
+
+### Patch Changes
+
+- 6de6c33: Add overrides for minimatch/picomatch/rollup for CVEs
+- Updated dependencies [fb5c224]
+- Updated dependencies [6de6c33]
+- Updated dependencies [4c3c35a]
+  - @osdk/legacy-client@2.5.8
+  - @osdk/generator@1.13.7
+  - @osdk/api@1.9.4
+
 ## 0.2.6
 
 ### Patch Changes

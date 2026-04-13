@@ -1,5 +1,13 @@
 # @osdk/client.api
 
+## 0.21.4
+
+### Patch Changes
+
+- 6de6c33: Add overrides for minimatch/picomatch/rollup for CVEs
+- Updated dependencies [6de6c33]
+  - @osdk/api@1.9.4
+
 ## 0.21.3
 
 ### Patch Changes

@@ -1,5 +1,17 @@
 # @osdk/legacy-client
 
+## 2.5.8
+
+### Patch Changes
+
+- fb5c224: fix aggregate endpoint errors crashing instead of surfacing server error
+- 6de6c33: Add overrides for minimatch/picomatch/rollup for CVEs
+- 4c3c35a: Ensure .byYear() is available on timestamp properties
+- Updated dependencies [6de6c33]
+  - @osdk/shared.net@1.12.4
+  - @osdk/gateway@2.4.3
+  - @osdk/api@1.9.4
+
 ## 2.5.7
 
 ### Patch Changes

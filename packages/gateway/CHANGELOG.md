@@ -1,5 +1,11 @@
 # @osdk/gateway
 
+## 2.4.3
+
+### Patch Changes
+
+- 6de6c33: Add overrides for minimatch/picomatch/rollup for CVEs
+
 ## 2.4.2
 
 ### Patch Changes

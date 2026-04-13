@@ -1,5 +1,14 @@
 # @osdk/api
 
+## 1.9.4
+
+### Patch Changes
+
+- 6de6c33: Add overrides for minimatch/picomatch/rollup for CVEs
+- Updated dependencies [6de6c33]
+  - @osdk/shared.net@1.12.4
+  - @osdk/gateway@2.4.3
+
 ## 1.9.3
 
 ### Patch Changes

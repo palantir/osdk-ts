@@ -1,5 +1,15 @@
 # @osdk/cli.cmd.typescript
 
+## 0.5.7
+
+### Patch Changes
+
+- 6de6c33: Add overrides for minimatch/picomatch/rollup for CVEs
+- Updated dependencies [6de6c33]
+  - @osdk/shared.net@1.12.4
+  - @osdk/generator@1.13.7
+  - @osdk/gateway@2.4.3
+
 ## 0.5.6
 
 ### Patch Changes
