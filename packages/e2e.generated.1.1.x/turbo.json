@@ -1,28 +1,6 @@
 {
   "extends": ["//"],
   "tasks": {
-    "typecheck": {
-      "outputLogs": "new-only",
-      "inputs": [
-        "bin/**",
-        "src/**",
-        "src/**/*.{mts,cts,ts,tsx}",
-        "tsconfig.json",
-        "typecheck.sh",
-        "tsconfig.cjs.json",
-        "*.d.ts"
-      ],
-      "outputs": [
-        "build/{esm,cjs,browser}/**/*.{ts,cjs,ts.map,cts.map}"
-      ],
-      "dependsOn": [
-        "@osdk/monorepo.tsconfig#typecheck",
-        "^typecheck",
-        "^transpile",
-        "codegen"
-      ]
-    },
-
     "codegen": {
       "inputs": ["ontology.json"],
       "outputs": ["src/generatedNoCheck/**/*"],

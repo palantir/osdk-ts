@@ -32,6 +32,11 @@ interface StringFilterOptions extends BaseFilterOptions<string> {
   "$gte": string;
   "$lt": string;
   "$lte": string;
+  /**
+   * @beta
+   * For supported regex expressions, refer to https://www.palantir.com/docs/foundry/ontology/search-syntax
+   */
+  "$matchesRegex": string;
 }
 
 export namespace StringFilter {
@@ -60,6 +65,10 @@ export namespace StringFilter {
   export interface $gte extends Just<"$gte", StringFilterOptions> {}
   export interface $lt extends Just<"$lt", StringFilterOptions> {}
   export interface $lte extends Just<"$lte", StringFilterOptions> {}
+  export interface $matchesRegex
+    extends Just<"$matchesRegex", StringFilterOptions>
+  {
+  }
 }
 
 export type StringFilter =
@@ -76,7 +85,8 @@ export type StringFilter =
   | StringFilter.$gt
   | StringFilter.$gte
   | StringFilter.$lt
-  | StringFilter.$lte;
+  | StringFilter.$lte
+  | StringFilter.$matchesRegex;
 
 /** @internal */
 function _typeCheck() {

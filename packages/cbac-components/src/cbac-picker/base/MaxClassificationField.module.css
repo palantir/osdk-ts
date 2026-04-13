@@ -14,34 +14,26 @@
  * limitations under the License.
  */
 
-import type { SidebarsConfig } from "@docusaurus/plugin-content-docs";
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--osdk-cbac-marking-button-gap);
+}
 
-const sidebars: SidebarsConfig = {
-  docs: [
-    "Prerequisites",
-    {
-      type: "category",
-      label: "@osdk/react-components",
-      collapsed: false,
-      items: [
-        "ObjectTable",
-        "FilterList",
-        "PdfViewer",
-      ],
-    },
-    {
-      type: "category",
-      label: "@osdk/cbac-components",
-      collapsed: false,
-      items: [
-        {
-          type: "link",
-          label: "CbacPicker",
-          href: "/cbac-components/CbacPicker",
-        },
-      ],
-    },
-  ],
-};
+.label {
+  font-size: var(--osdk-cbac-picker-category-title-font-size);
+  font-weight: var(--osdk-cbac-picker-category-title-font-weight);
+  color: var(--osdk-cbac-picker-category-title-color);
+  letter-spacing: var(--osdk-cbac-picker-category-title-letter-spacing);
+  margin: 0;
+}
 
-export default sidebars;
+.bannerWrapper {
+  pointer-events: none;
+}
+
+.helperText {
+  font-size: var(--osdk-typography-size-body-small);
+  color: var(--osdk-typography-color-muted);
+  margin: 0;
+}
