@@ -10,7 +10,6 @@
   },
   "exports": {
     ".": {
-      "source": "./src/index.ts",
       "browser": "./build/browser/index.js",
       "import": {
         "types": "./build/types/index.d.ts",
@@ -20,7 +19,6 @@
       "default": "./build/browser/index.js"
     },
     "./experimental": {
-      "source": "./src/public/experimental.ts",
       "browser": "./build/browser/public/experimental.js",
       "import": {
         "types": "./build/types/public/experimental.d.ts",
@@ -30,7 +28,6 @@
       "default": "./build/browser/public/experimental.js"
     },
     "./*": {
-      "source": "./src/public/*.ts",
       "browser": "./build/browser/public/*.js",
       "import": {
         "types": "./build/types/public/*.d.ts",

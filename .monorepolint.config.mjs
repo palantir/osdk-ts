@@ -91,7 +91,6 @@ const archetypeRules = archetypes(
     {
       ...LIBRARY_RULES,
       checkApi: true,
-      source: true,
     },
   )
   .addArchetype(
@@ -145,6 +144,7 @@ const archetypeRules = archetypes(
       "@osdk/widget.client",
       "@osdk/vite-plugin-oac",
       "@osdk/vite-plugin-superrepo",
+      "@osdk/vite-plugin-status-reporter",
       "@osdk/faux",
       "@osdk/osdk-docs-context",
     ],
@@ -349,8 +349,7 @@ const archetypeRules = archetypes(
       ...LIBRARY_RULES,
       react: true,
       cssExport: true,
-      source: true,
-      extraPublishFiles: ["AGENTS.md"],
+      extraPublishFiles: ["AGENTS.md", "docs"],
     },
   )
   .addArchetype(
@@ -361,7 +360,6 @@ const archetypeRules = archetypes(
     {
       ...LIBRARY_RULES,
       react: true,
-      source: true,
       extraPublishFiles: ["AGENTS.md", "docs", "experimental"],
     },
   )
@@ -545,8 +543,7 @@ async function dirExists(dirPath) {
  * @type {import("@monorepolint/rules").RuleFactoryFn< {
  *   browser?: boolean,
  *   cjs?: boolean,
- *   cssExport?: boolean,
- *   source?: boolean
+ *   cssExport?: boolean
  * }>}
  */
 const ourExportsConvention = createRuleFactory({
@@ -562,7 +559,6 @@ const ourExportsConvention = createRuleFactory({
     const expectedExports = {
       exports: {
         ".": {
-          ...(options.source ? { "source": "./src/index.ts" } : {}),
           "browser": options.browser
             ? "./build/browser/index.js"
             : undefined,
@@ -585,9 +581,6 @@ const ourExportsConvention = createRuleFactory({
 
     function makeExport(fileName) {
       return {
-        ...(options.source
-          ? { "source": `./src/public/${fileName}.ts` }
-          : {}),
         ...(options.browser
           ? { "browser": `./build/browser/public/${fileName}.js` }
           : {}),
@@ -987,7 +980,6 @@ function standardPackageRules(shared, options) {
         cjs: !!options.output.cjs,
         browser: !!options.output.browser,
         cssExport: !!options.cssExport,
-        source: !!options.source,
       },
     }),
     packageEntry({

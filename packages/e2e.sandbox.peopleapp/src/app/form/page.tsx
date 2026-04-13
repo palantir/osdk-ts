@@ -54,16 +54,6 @@ const fieldDefinitions: ReadonlyArray<RendererFieldDefinition> = [
     fieldComponentProps: {},
   },
   {
-    fieldKey: "employmentPeriod",
-    fieldComponent: "DATE_RANGE_INPUT",
-    label: "Employment Period",
-    placeholder: "Start date",
-    fieldComponentProps: {
-      placeholderEnd: "End date",
-      showTime: true,
-    },
-  },
-  {
     fieldKey: "department",
     fieldComponent: "DROPDOWN",
     placeholder: "Select a department",
