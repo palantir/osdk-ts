@@ -99,6 +99,11 @@ const config: Config = {
           label: "CBAC",
         },
         {
+          href: "https://palantir.github.io/osdk-ts/storybook/",
+          label: "Storybook",
+          position: "right",
+        },
+        {
           href: "https://github.com/palantir/osdk-ts",
           label: "GitHub",
           position: "right",

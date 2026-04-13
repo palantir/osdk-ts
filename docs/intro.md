@@ -7,6 +7,8 @@ sidebar_position: 1
 
 Documentation for the OSDK TypeScript packages.
 
+**[Prerequisites](/prerequisites)** — common setup (OSDK client, OsdkProvider2, CSS layers) required before using any component package.
+
 ## Packages
 
 ### [@osdk/react](/react/getting-started)
