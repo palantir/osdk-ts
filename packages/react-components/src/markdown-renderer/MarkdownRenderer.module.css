@@ -1,0 +1,122 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  background-color: var(--osdk-markdown-renderer-bg);
+  border: var(--osdk-markdown-renderer-border);
+  border-radius: var(--osdk-surface-border-radius);
+  overflow: hidden;
+  position: relative;
+}
+
+.documentWrapper {
+  flex: 1;
+  overflow: auto;
+  padding: var(--osdk-markdown-renderer-padding);
+}
+
+.document {
+  font-family: var(--osdk-typography-family-default);
+  font-size: var(--osdk-typography-size-body-medium);
+  color: var(--osdk-typography-color-default-rest);
+  line-height: var(--osdk-markdown-renderer-line-height);
+}
+
+.document h1,
+.document h2,
+.document h3,
+.document h4,
+.document h5,
+.document h6 {
+  color: var(--osdk-typography-color-default-rest);
+  margin-top: var(--osdk-markdown-renderer-heading-margin-top);
+  margin-bottom: var(--osdk-markdown-renderer-heading-margin-bottom);
+}
+
+.document h1 {
+  font-size: var(--osdk-typography-size-heading-large);
+}
+
+.document h2 {
+  font-size: var(--osdk-typography-size-heading-medium);
+}
+
+.document h3 {
+  font-size: var(--osdk-typography-size-heading-small);
+}
+
+.document p {
+  margin-bottom: var(--osdk-markdown-renderer-paragraph-spacing);
+}
+
+.document a {
+  color: var(--osdk-intent-primary-rest);
+  text-decoration: none;
+}
+
+.document a:hover {
+  text-decoration: underline;
+}
+
+.document code {
+  background-color: var(--osdk-markdown-renderer-code-bg);
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-family: var(--osdk-typography-family-monospace);
+  font-size: 0.9em;
+}
+
+.document pre {
+  background-color: var(--osdk-markdown-renderer-code-bg);
+  padding: var(--osdk-surface-spacing);
+  border-radius: var(--osdk-surface-border-radius);
+  overflow-x: auto;
+}
+
+.document pre code {
+  background-color: transparent;
+  padding: 0;
+}
+
+.document blockquote {
+  border-left: 3px solid var(--osdk-intent-primary-rest);
+  margin-left: 0;
+  padding-left: var(--osdk-surface-spacing);
+  color: var(--osdk-typography-color-muted);
+}
+
+.document table {
+  border-collapse: collapse;
+  width: 100%;
+  margin-bottom: var(--osdk-markdown-renderer-paragraph-spacing);
+}
+
+.document th,
+.document td {
+  border: 1px solid var(--osdk-markdown-renderer-table-border);
+  padding: calc(var(--osdk-surface-spacing) / 2) var(--osdk-surface-spacing);
+  text-align: left;
+}
+
+.document th {
+  background-color: var(--osdk-markdown-renderer-code-bg);
+  font-weight: 600;
+}
+
+.document img {
+  max-width: 100%;
+  height: auto;
+}
+
+.document hr {
+  border: none;
+  border-top: 1px solid var(--osdk-markdown-renderer-table-border);
+  margin: var(--osdk-markdown-renderer-paragraph-spacing) 0;
+}
+
+.document ul,
+.document ol {
+  padding-left: 2em;
+  margin-bottom: var(--osdk-markdown-renderer-paragraph-spacing);
+}

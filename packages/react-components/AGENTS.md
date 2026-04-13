@@ -15,6 +15,7 @@ All components import from `@osdk/react-components/experimental`.
 | **ColumnConfigDialog** | Dialog for managing column visibility and drag-and-drop reordering.                                                                         |
 | **PdfViewer**          | PDF viewer for OSDK Media objects with toolbar, search, annotations, sidebar (thumbnails/outline), highlight mode, and form fields.         |
 | **BasePdfViewer**      | OSDK-agnostic base PDF viewer — accepts a URL or ArrayBuffer directly. Use when building custom data fetching on top of the viewer UI.      |
+| **MarkdownRenderer**   | Markdown renderer that accepts a markdown string and renders it with styled headings, code blocks, tables, and links.                       |
 
 ## Documentation
 
@@ -23,4 +24,5 @@ Before using any component, read the relevant doc from this package:
 - **Setup & installation**: Read [README.md](./README.md) for provider, CSS layers, and peer dependencies
 - **ObjectTable**: Read [docs/ObjectTable.md](./docs/ObjectTable.md) for props, column definitions, examples, theming, and troubleshooting
 - **PdfViewer**: Read [docs/PdfViewer.md](./docs/PdfViewer.md) for props, annotations, building blocks, hooks, examples, and theming
+- **MarkdownRenderer**: Read [docs/MarkdownRenderer.md](./docs/MarkdownRenderer.md) for props, examples, and theming
 - **FilterList**: Read [docs/FilterList.md](./docs/FilterList.md) for props, examples, and usage
