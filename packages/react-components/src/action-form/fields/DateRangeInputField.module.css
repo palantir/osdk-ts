@@ -6,7 +6,7 @@
 .osdkDateRangeContainer {
   display: flex;
   align-items: center;
-  gap: var(--osdk-surface-spacing);
+  gap: calc(var(--osdk-surface-spacing) * 2);
   outline: none;
 }
 

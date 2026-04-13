@@ -58,9 +58,6 @@
   --osdk-datetime-calendar-today-font-weight: var(
     --osdk-typography-weight-bold
   );
-  --osdk-datetime-calendar-today-indicator-color: var(
-    --osdk-intent-primary-rest
-  );
 
   /* Calendar range middle (days between start and end) */
   --osdk-datetime-calendar-range-middle-bg: color-mix(

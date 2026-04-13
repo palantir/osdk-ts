@@ -81,25 +81,6 @@
 
 .calendarDayButton.calendarToday {
   font-weight: var(--osdk-datetime-calendar-today-font-weight);
-  position: relative;
-}
-
-/* Today indicator dot — decorative sub-unit sizes (2px, 4px) are acceptable */
-.calendarDayButton.calendarToday::after {
-  content: "";
-  position: absolute;
-  bottom: 2px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-  background: var(--osdk-datetime-calendar-today-indicator-color);
-}
-
-/* Hide the dot when today is selected (white-on-blue is hard to see) */
-.calendarDayButton.calendarToday.calendarSelected::after {
-  background: var(--osdk-datetime-calendar-selected-color);
 }
 
 .calendarDayButton.calendarOutside {
