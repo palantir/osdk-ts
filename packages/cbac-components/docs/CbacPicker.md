@@ -55,7 +55,7 @@ function ClassificationForm() {
 }
 ```
 
-This renders a marking picker that fetches categories and markings from the OSDK, displays them grouped by category, shows a classification banner, and enforces marking restrictions (implied, disallowed, required markings).
+This renders a marking picker that fetches categories and markings via the OSDK, displays them grouped by category, shows a classification banner, and enforces marking restrictions (implied, disallowed, required markings).
 
 ### Picker in a Dialog
 
@@ -111,27 +111,6 @@ function ClassificationDialog() {
 | `initialMarkingIds` | `string[]`                       | No       | `[]`    | Initial set of selected marking IDs             |
 
 The dialog title automatically adjusts: "Add classification" when no initial markings are provided, "Edit classification" when editing existing markings. The confirm button is disabled with a tooltip when the selection is invalid (e.g., missing required markings).
-
-### CbacBanner (internal)
-
-> **Note:** `CbacBanner` and `CbacBannerPopover` are internal OSDK-aware components not currently exported from `./experimental`. They are documented here for reference but cannot be imported by consumers. Classification banner display is available via the exported `BaseCbacBanner` component.
-
-| Prop         | Type         | Required | Default | Description                                         |
-| ------------ | ------------ | -------- | ------- | --------------------------------------------------- |
-| `markingIds` | `string[]`   | Yes      | -       | Marking IDs to resolve into a classification banner |
-| `onClick`    | `() => void` | No       | -       | Called when the banner is clicked                   |
-| `onDismiss`  | `() => void` | No       | -       | Called when the dismiss button is clicked           |
-| `className`  | `string`     | No       | -       | CSS class for the banner                            |
-
-### CbacBannerPopover (internal)
-
-> **Note:** Not exported. The popover wraps a `CbacBanner` with a dropdown showing applied markings and an "Edit classification" button that opens a `CbacPickerDialog`.
-
-| Prop         | Type                             | Required | Default | Description                                                    |
-| ------------ | -------------------------------- | -------- | ------- | -------------------------------------------------------------- |
-| `markingIds` | `string[]`                       | Yes      | -       | Current marking IDs                                            |
-| `onChange`   | `(markingIds: string[]) => void` | Yes      | -       | Called when markings are changed via the popover's edit dialog |
-| `className`  | `string`                         | No       | -       | CSS class for the popover                                      |
 
 ## Base Components
 
@@ -452,14 +431,26 @@ function CustomClassificationPicker() {
 
 `@osdk/cbac-components` follows the same two-layer architecture as `@osdk/react-components`:
 
+### Server-Computed vs Client-Side
+
+The following data is **computed server-side** and cannot be customized on the frontend:
+
+- **Implied markings** — which markings are automatically included based on the current selection
+- **Disallowed markings** — which markings are blocked based on the current selection
+- **Required marking groups** — which additional markings must be selected for the classification to be valid
+- **Validation (`isValid`)** — whether the current selection satisfies all constraints
+- **Banner data** — the classification string, text color, and background colors
+
+The frontend handles **only UI concerns**: toggling selections (respecting conjunctive/disjunctive category types), grouping markings by category for display, and computing visual states (SELECTED, IMPLIED, DISALLOWED) from the server-provided data.
+
 ### OSDK Component Layer
 
 Components like `CbacPicker` and `CbacPickerDialog` handle data fetching using `@osdk/react` hooks:
 
 - `useMarkingCategories()` — fetches all marking categories
 - `useMarkings()` — fetches all markings
-- `useCbacBanner({ markingIds })` — resolves the classification string and colors
-- `useCbacMarkingRestrictions({ markingIds })` — computes implied, disallowed, and required markings
+- `useCbacBanner({ markingIds })` — resolves the classification string and colors (server-computed)
+- `useCbacMarkingRestrictions({ markingIds })` — fetches implied, disallowed, and required markings (server-computed)
 
 These components convert OSDK data into primitive props and pass them to the base layer.
 
@@ -498,7 +489,7 @@ Components like `BaseCbacPicker`, `BaseCbacBanner`, and `BaseCbacPickerDialog` a
 
 ### No markings appear
 
-- Confirm that marking categories and markings are configured in your Foundry environment
+- Confirm that marking categories and markings are configured in your environment
 - Check that the OSDK client's authentication token has the necessary permissions
 
 ### Banner shows default colors

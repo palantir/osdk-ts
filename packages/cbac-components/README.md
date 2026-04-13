@@ -1,6 +1,6 @@
 # @osdk/cbac-components
 
-React components for managing Classification-Based Access Control (CBAC) markings in Foundry applications. These components are OSDK-aware — pass in marking IDs, and they handle data loading, restriction computation, and banner display automatically.
+React components for managing Classification-Based Access Control (CBAC) markings. These components are OSDK-aware — pass in marking IDs, and they handle data loading, restriction computation, and banner display automatically.
 
 Built on top of [@osdk/react](../react), these components use OSDK hooks internally to fetch marking categories, compute restrictions, and resolve classification banners.
 
