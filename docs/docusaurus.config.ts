@@ -92,13 +92,6 @@ const config: Config = {
           label: "Components",
         },
         {
-          type: "docSidebar",
-          sidebarId: "docs",
-          docsPluginId: "cbac-components",
-          position: "left",
-          label: "CBAC",
-        },
-        {
           href: "https://palantir.github.io/osdk-ts/storybook/",
           label: "Storybook",
           position: "right",

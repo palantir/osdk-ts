@@ -18,9 +18,28 @@ import type { SidebarsConfig } from "@docusaurus/plugin-content-docs";
 
 const sidebars: SidebarsConfig = {
   docs: [
-    "ObjectTable",
-    "FilterList",
-    "PdfViewer",
+    {
+      type: "category",
+      label: "@osdk/react-components",
+      collapsed: false,
+      items: [
+        "ObjectTable",
+        "FilterList",
+        "PdfViewer",
+      ],
+    },
+    {
+      type: "category",
+      label: "@osdk/cbac-components",
+      collapsed: false,
+      items: [
+        {
+          type: "link",
+          label: "CbacPicker",
+          href: "/cbac-components/CbacPicker",
+        },
+      ],
+    },
   ],
 };
 
