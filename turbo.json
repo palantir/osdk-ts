@@ -60,11 +60,42 @@
       "cache": false
     },
 
+    "@osdk/e2e.generated.1.1.x#typecheck": {
+      "outputLogs": "new-only",
+      "inputs": [
+        "bin/**",
+        "src/**",
+        "src/**/*.{mts,cts,ts,tsx}",
+        "tsconfig.json",
+        "typecheck.sh",
+        "tsconfig.cjs.json",
+        "*.d.ts"
+      ],
+      "outputs": [
+        "build/{esm,cjs,browser}/**/*.{ts,cjs,ts.map,cts.map}"
+      ],
+      "dependsOn": [
+        "@osdk/monorepo.tsconfig#typecheck",
+        "^typecheck",
+        "^transpile",
+        "codegen"
+      ]
+    },
+
     "typecheck": {
       "dependsOn": [
         "codegen",
         "^transpileTypes"
       ]
+    },
+
+    "@osdk/tests.verify-fallback-package-v2#typecheck": {
+      "dependsOn": ["^transpileCjs"]
+    },
+
+    "@osdk/monorepo.tsup#typecheck": {
+      "outputLogs": "new-only",
+      "inputs": ["tsup.mjs"]
     },
 
     "check-api": {
@@ -74,10 +105,7 @@
       "dependsOn": ["transpileTypes", "@osdk/monorepo.api-extractor#check-api"]
     },
 
-    // This must stay in root turbo.json (not a package-level turbo.json)
-    // because the global check-api task above depends on it. Moving it to a
-    // package-level config would cause a circular dependency since the package
-    // would inherit the global check-api's dependsOn which references itself.
+    // Doesn't do anything, just a virtual task to depend on the base.json file
     "@osdk/monorepo.api-extractor#check-api": {
       "inputs": ["base.json"]
     },
@@ -92,8 +120,35 @@
     "postVersioning": {
     },
 
+    "@osdk/version-updater#postVersioning": {
+      "inputs": [
+        "scripts/postVersioning.mjs",
+        "scripts/parseChangelog.mjs",
+        "scripts/determineMinVersion.mjs",
+        "scripts/generatePeerRange.mjs",
+        "../client/package.json",
+        "../client/src/Client.ts",
+        "../generator/src/v2.0/generateMetadata.ts",
+        "../react/CHANGELOG.md",
+        "../react/package.json",
+        "../react-components/CHANGELOG.md",
+        "../react-components/package.json"
+      ],
+      "outputs": [
+        "../client/src/Client.ts",
+        "../generator/src/v2.0/generateMetadata.ts",
+        "../react/package.json",
+        "../react-components/package.json"
+      ]
+    },
+
+    "@osdk/monorepo.tsconfig#typecheck": {
+      "outputLogs": "new-only",
+      "inputs": ["tsconfig.base.json"]
+    },
+
     "build": {
-      "dependsOn": ["transpile", "transpileTypes", "^typecheck"],
+      "dependsOn": ["transpile", "transpileTypes", "typecheck"],
       "inputs": [
         "src/**/*",
 
@@ -132,10 +187,17 @@
       "dependsOn": ["bundle"]
     },
 
+    "@osdk/e2e.sandbox.todoapp#build": {
+      "inputs": ["src/**/*", "vite.config.ts", "index.html"],
+      "dependsOn": ["transpile", "typecheck"]
+    },
+
     "transpile": {
       "outputLogs": "new-only",
       "dependsOn": [
         "@osdk/monorepo.tsconfig#typecheck",
+        "^typecheck",
+        "^transpile",
         "codegen",
         "transpileCjs",
         "transpileEsm",
@@ -166,6 +228,12 @@
       "dependsOn": [
         "//#babel-config",
         "@osdk/monorepo.tsconfig#typecheck",
+
+        // Because some of these tasks bundle other projects we need to
+        // prepare their dependencies first. In the future we can decouple
+        // transpile from bundling which should allow us to remove this
+        // for everyone but the bundled packages
+        "^transpileEsm",
         "codegen"
       ],
       "inputs": [
@@ -185,6 +253,7 @@
       "dependsOn": [
         "//#babel-config",
         "@osdk/monorepo.tsconfig#typecheck",
+        "^transpileBrowser",
         "codegen"
       ],
       "inputs": [
@@ -227,7 +296,7 @@
     "test": {
       "outputLogs": "new-only",
       "env": ["FORCE_COLOR"],
-      "dependsOn": ["^transpileEsm"]
+      "dependsOn": ["^transpile"]
     },
 
     "//#check-mrl": {
@@ -249,8 +318,10 @@
       "dependsOn": [
         "//#check-mrl",
         "lint",
+        "transpile",
         "typecheck",
         "test",
+        "check-attw",
         "check-api",
         "check-spelling"
       ]
