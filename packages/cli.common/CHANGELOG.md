@@ -1,5 +1,11 @@
 # @osdk/cli.common
 
+## 0.33.0
+
+### Minor Changes
+
+- 40fe279: Fix cli by making referenced packages bundled
+
 ## 0.32.0
 
 ### Minor Changes
