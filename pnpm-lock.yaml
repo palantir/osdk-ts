@@ -6,11 +6,6 @@ settings:
 
 overrides:
   trim@0.0.1: 0.0.3
-  minimatch@>=5.0.0 <5.1.8: ^5.1.8
-  minimatch@>=7.0.0 <7.4.8: ^7.4.8
-  picomatch@>=2.0.0 <2.3.2: ^2.3.2
-  picomatch@>=4.0.0 <4.0.4: ^4.0.4
-  rollup@>=3.0.0 <3.30.0: ^3.30.0
 
 importers:
 
@@ -190,7 +185,7 @@ importers:
         version: 8.4.39
       rollup-plugin-visualizer:
         specifier: ^5.12.0
-        version: 5.12.0(rollup@3.30.0)
+        version: 5.12.0(rollup@4.19.0)
       tailwindcss:
         specifier: ^3.4.4
         version: 3.4.4(ts-node@10.9.2(@types/node@20.14.10)(typescript@5.4.5))
@@ -1377,7 +1372,7 @@ importers:
         version: 8.4.39
       rollup-plugin-visualizer:
         specifier: ^5.12.0
-        version: 5.12.0(rollup@3.30.0)
+        version: 5.12.0(rollup@4.19.0)
       tailwindcss:
         specifier: ^3.4.4
         version: 3.4.4(ts-node@10.9.2(@types/node@20.14.10)(typescript@5.5.3))
@@ -3800,7 +3795,7 @@ packages:
     resolution: {integrity: sha512-nEvcR+LRjEjsaSsc4x3XZfCCvZIaSMenZu/OiwOKGN2UhQpAYI7ru7czFvyWbErlpoGjnSX3D5Ch5FcMA3kRWQ==}
     engines: {node: '>=14.0.0'}
     peerDependencies:
-      rollup: ^3.30.0
+      rollup: ^2.68.0||^3.0.0||^4.0.0
     peerDependenciesMeta:
       rollup:
         optional: true
@@ -3809,7 +3804,7 @@ packages:
     resolution: {integrity: sha512-2+DEJbNBoPROPkgTDNe8/1YXWcqxbN5DTjASVIOx8HS+pITXushyNiBV56RB08zuptzz8gT3YfkqriTBVycepg==}
     engines: {node: '>=14.0.0'}
     peerDependencies:
-      rollup: ^3.30.0
+      rollup: ^1.20.0||^2.0.0||^3.0.0||^4.0.0
     peerDependenciesMeta:
       rollup:
         optional: true
@@ -3818,7 +3813,7 @@ packages:
     resolution: {integrity: sha512-j/lym8nf5E21LwBT4Df1VD6hRO2L2iwUeUmP7litikRsVp1H6NWx20NEp0Y7su+7XGc476GnXXc4kFeZNGmaSQ==}
     engines: {node: '>=14.0.0'}
     peerDependencies:
-      rollup: ^3.30.0
+      rollup: ^2.78.0||^3.0.0||^4.0.0
     peerDependenciesMeta:
       rollup:
         optional: true
@@ -3827,7 +3822,7 @@ packages:
     resolution: {integrity: sha512-XTIWOPPcpvyKI6L1NHo0lFlCyznUEyPmPY1mc3KpPVDYulHSTvyeLNVW00QTLIAFNhR3kYnJTQHeGqU4M3n09g==}
     engines: {node: '>=14.0.0'}
     peerDependencies:
-      rollup: ^3.30.0
+      rollup: ^1.20.0||^2.0.0||^3.0.0||^4.0.0
     peerDependenciesMeta:
       rollup:
         optional: true
@@ -6934,14 +6929,14 @@ packages:
   rollup-plugin-polyfill-node@0.13.0:
     resolution: {integrity: sha512-FYEvpCaD5jGtyBuBFcQImEGmTxDTPbiHjJdrYIp+mFIwgXiXabxvKUK7ZT9P31ozu2Tqm9llYQMRWsfvTMTAOw==}
     peerDependencies:
-      rollup: ^3.30.0
+      rollup: ^1.20.0 || ^2.0.0 || ^3.0.0 || ^4.0.0
 
   rollup-plugin-visualizer@5.12.0:
     resolution: {integrity: sha512-8/NU9jXcHRs7Nnj07PF2o4gjxmm9lXIrZ8r175bT9dK8qoLlvKTwRMArRCMgpMGlq8CTLugRvEmyMeMXIU2pNQ==}
     engines: {node: '>=14'}
     hasBin: true
     peerDependencies:
-      rollup: ^3.30.0
+      rollup: 2.x || 3.x || 4.x
     peerDependenciesMeta:
       rollup:
         optional: true
@@ -12958,14 +12953,14 @@ snapshots:
       '@rollup/plugin-inject': 5.0.5(rollup@3.30.0)
       rollup: 3.30.0
 
-  rollup-plugin-visualizer@5.12.0(rollup@3.30.0):
+  rollup-plugin-visualizer@5.12.0(rollup@4.19.0):
     dependencies:
       open: 8.4.2
       picomatch: 2.3.2
       source-map: 0.7.4
       yargs: 17.7.2
     optionalDependencies:
-      rollup: 3.30.0
+      rollup: 4.19.0
 
   rollup@3.30.0:
     optionalDependencies:
