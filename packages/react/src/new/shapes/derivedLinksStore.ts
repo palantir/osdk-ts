@@ -72,6 +72,20 @@ export {
   violationsToError,
 } from "./derivedLinksTypes.js";
 
+const NESTED_FLUSH_DELAY_MS = 25;
+
+function pruneStaleNestedEntries(
+  nestedByPk: Map<unknown, Map<string, LinkEntry>>,
+  currentPks: Set<unknown>,
+): void {
+  for (const [pk, nestedMap] of nestedByPk) {
+    if (!currentPks.has(pk)) {
+      cleanupNestedMap(nestedMap);
+      nestedByPk.delete(pk);
+    }
+  }
+}
+
 export function createDerivedLinksStore<
   S extends ShapeDefinition<ObjectOrInterfaceDefinition>,
 >(
@@ -119,20 +133,15 @@ export function createDerivedLinksStore<
       if (batch.length > 0) {
         startLinksInBatch(batch);
       }
-    }, 25);
+    }, NESTED_FLUSH_DELAY_MS);
   }
 
-  function handleNestedLinks(
+  function trackNestedLinksForObjects(
     parentEntry: LinkEntry,
     rawObjects: Osdk.Instance<ObjectOrInterfaceDefinition>[],
-  ): void {
+  ): Set<unknown> {
     const nestedDerivedLinks = parentEntry.linkDef.targetShape
       .__derivedLinks as readonly ShapeDerivedLinkDef[];
-    if (nestedDerivedLinks.length === 0) {
-      return;
-    }
-
-    const pendingBefore = pendingNestedEntries.length;
     const currentPks = new Set<unknown>();
 
     for (const rawObj of rawObjects) {
@@ -159,12 +168,22 @@ export function createDerivedLinksStore<
       }
     }
 
-    for (const [pk, nestedMap] of parentEntry.nestedByPk) {
-      if (!currentPks.has(pk)) {
-        cleanupNestedMap(nestedMap);
-        parentEntry.nestedByPk.delete(pk);
-      }
+    return currentPks;
+  }
+
+  function handleNestedLinks(
+    parentEntry: LinkEntry,
+    rawObjects: Osdk.Instance<ObjectOrInterfaceDefinition>[],
+  ): void {
+    const nestedDerivedLinks = parentEntry.linkDef.targetShape
+      .__derivedLinks as readonly ShapeDerivedLinkDef[];
+    if (nestedDerivedLinks.length === 0) {
+      return;
     }
+
+    const pendingBefore = pendingNestedEntries.length;
+    const currentPks = trackNestedLinksForObjects(parentEntry, rawObjects);
+    pruneStaleNestedEntries(parentEntry.nestedByPk, currentPks);
 
     if (pendingNestedEntries.length > pendingBefore) {
       scheduleNestedFlush();
