@@ -137,9 +137,6 @@ ${componentCss}
 
   await fs.writeFile(path.join(buildDir, "styles.css"), combinedCss, "utf8");
 
-  // Write standalone tokens.css for users who only want design tokens
-  await fs.writeFile(path.join(buildDir, "tokens.css"), tokenCss, "utf8");
-
   // Rewrite imports in JS files
   await rewriteCssImports();
 

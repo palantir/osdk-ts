@@ -348,7 +348,7 @@ const archetypeRules = archetypes(
     {
       ...LIBRARY_RULES,
       react: true,
-      cssExport: true,
+      cssExport: ["styles.css"],
       extraPublishFiles: ["AGENTS.md", "docs"],
     },
   )
@@ -531,7 +531,7 @@ async function dirExists(dirPath) {
  * @type {import("@monorepolint/rules").RuleFactoryFn< {
  *   browser?: boolean,
  *   cjs?: boolean,
- *   cssExport?: boolean
+ *   cssExports?: string[]
  * }>}
  */
 const ourExportsConvention = createRuleFactory({
@@ -605,9 +605,9 @@ const ourExportsConvention = createRuleFactory({
       }
     }
 
-    // add CSS export if enabled (must come before the wildcard)
-    if (options.cssExport) {
-      expectedExports.exports["./styles.css"] = "./build/browser/styles.css";
+    // add CSS exports if any (must come before the wildcard)
+    for (const cssFile of options.cssExports ?? []) {
+      expectedExports.exports[`./${cssFile}`] = `./build/browser/${cssFile}`;
     }
 
     // include the fallback for the * for now, as it will make development easier
@@ -847,7 +847,7 @@ function minimalPackageRules(shared, options) {
  * @property { boolean } [minimalChangesOnly]
  * @property { "vite" | undefined } [framework]
  * @property { import("typescript").CompilerOptions} [extraTsConfigCompilerOptions]
- * @property { boolean } [cssExport]
+ * @property { string[] } [cssExport]
  */
 
 /**
@@ -856,6 +856,9 @@ function minimalPackageRules(shared, options) {
  * @returns {import("@monorepolint/config").RuleModule[]}
  */
 function standardPackageRules(shared, options) {
+  /** @type {string[]} */
+  const cssExports = options.cssExport ?? [];
+
   options = {
     ...options,
     vitestEnvironment: options.vitestEnvironment
@@ -937,7 +940,11 @@ function standardPackageRules(shared, options) {
           "check-attw": options.skipAttw
             ? DELETE_SCRIPT_ENTRY
             : `attw${options.output.cjs ? "" : " --profile esm-only"} --pack .${
-              options.cssExport ? " --exclude-entrypoints ./styles.css" : ""
+              cssExports.length > 0
+                ? ` --exclude-entrypoints ${
+                  cssExports.map(f => `./${f}`).join(" ")
+                }`
+                : ""
             }`,
           lint: "eslint . && dprint check  --config $(find-up dprint.json)",
           "fix-lint":
@@ -948,7 +955,7 @@ function standardPackageRules(shared, options) {
             : DELETE_SCRIPT_ENTRY,
           transpileBrowser: options.output.browser
             ? `monorepo.tool.transpile -f esm -m ${options.output.esm} -t browser${
-              options.cssExport ? " && node scripts/build-css.mjs" : ""
+              cssExports.length > 0 ? " && node scripts/build-css.mjs" : ""
             }`
             : DELETE_SCRIPT_ENTRY,
           transpileCjs: options.output.cjs === "bundle"
@@ -967,7 +974,7 @@ function standardPackageRules(shared, options) {
       options: {
         cjs: !!options.output.cjs,
         browser: !!options.output.browser,
-        cssExport: !!options.cssExport,
+        cssExports,
       },
     }),
     packageEntry({

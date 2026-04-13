@@ -19,5 +19,3 @@ Design tokens and component styles are now bundled in a single package. The `@os
    /* After */
    @import "@osdk/react-components/styles.css" layer(osdk.styles);
    ```
-
-A standalone `@osdk/react-components/tokens.css` export is also available for users who only need design tokens.
