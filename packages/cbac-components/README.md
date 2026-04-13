@@ -1,8 +1,10 @@
 # @osdk/cbac-components
 
-React components for managing Classification-Based Access Control (CBAC) markings. These components are OSDK-aware — pass in marking IDs, and they handle data loading, restriction computation, and banner display automatically.
+> **Beta Release**: This package is currently in beta. Please use the latest beta version for the most up-to-date features and fixes.
 
-Built on top of [@osdk/react](../react), these components use OSDK hooks internally to fetch marking categories, compute restrictions, and resolve classification banners.
+React components for managing [classification-based access control (CBAC)](https://www.palantir.com/docs/foundry/security/classification-based-access-controls/) markings. CBAC markings control who can access data — each piece of data can be tagged with markings from different categories, and the combination determines its access restrictions.
+
+These components are OSDK-aware — pass in marking IDs, and they handle data loading, restriction computation, and banner display automatically. Built on top of [@osdk/react](../react).
 
 ## Installation
 

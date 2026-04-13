@@ -1,6 +1,8 @@
 # CbacPicker
 
-A comprehensive guide for using the CBAC (Classification-Based Access Control) components from `@osdk/cbac-components`.
+Components for managing [classification-based access control (CBAC)](https://www.palantir.com/docs/foundry/security/classification-based-access-controls/) markings. CBAC markings control who can access data — each piece of data can be tagged with markings from different categories, and the combination determines its access restrictions.
+
+The picker lets users select markings grouped by category. Some categories are **disjunctive** (pick exactly one, like a sensitivity level) and others are **conjunctive** (pick any combination, like access groups). The server enforces which combinations are valid, which markings are implied by others, and which are disallowed.
 
 ## Prerequisites
 
@@ -55,7 +57,7 @@ function ClassificationForm() {
 }
 ```
 
-This renders a marking picker that fetches categories and markings via the OSDK, displays them grouped by category, shows a classification banner, and enforces marking restrictions (implied, disallowed, required markings).
+This renders a marking picker that fetches categories and markings via the OSDK, displays them grouped by category, and shows a classification banner. The server enforces marking restrictions automatically — the picker reflects which markings are implied, disallowed, or required based on the current selection.
 
 ### Picker in a Dialog
 
@@ -114,7 +116,9 @@ The dialog title automatically adjusts: "Add classification" when no initial mar
 
 ## Base Components
 
-The base components are OSDK-agnostic — they accept primitive data directly instead of fetching from the OSDK. Use these when you want to supply your own data or build a custom data fetching layer.
+Most users should use `CbacPicker` or `CbacPickerDialog` above — they handle all data fetching automatically.
+
+The base components below are for advanced use cases where you need to supply your own marking data (e.g., you already have the data from a different source, or you're building a custom integration). They accept primitive props and have no OSDK dependency.
 
 ### BaseCbacPicker
 
@@ -367,7 +371,6 @@ import {
   BaseCbacPicker,
   type CategoryMarkingGroup,
   computeMarkingStates,
-  type MarkingSelectionState,
   toggleMarking,
 } from "@osdk/cbac-components/experimental";
 import { useCallback, useMemo, useState } from "react";
@@ -429,11 +432,9 @@ function CustomClassificationPicker() {
 
 ## Architecture
 
-`@osdk/cbac-components` follows the same two-layer architecture as `@osdk/react-components`:
+### What the server controls
 
-### Server-Computed vs Client-Side
-
-The following data is **computed server-side** and cannot be customized on the frontend:
+The following data is **computed server-side** and cannot be changed by the frontend:
 
 - **Implied markings** — which markings are automatically included based on the current selection
 - **Disallowed markings** — which markings are blocked based on the current selection
@@ -443,41 +444,12 @@ The following data is **computed server-side** and cannot be customized on the f
 
 The frontend handles **only UI concerns**: toggling selections (respecting conjunctive/disjunctive category types), grouping markings by category for display, and computing visual states (SELECTED, IMPLIED, DISALLOWED) from the server-provided data.
 
-### OSDK Component Layer
+### Two-layer architecture
 
-Components like `CbacPicker` and `CbacPickerDialog` handle data fetching using `@osdk/react` hooks:
+`@osdk/cbac-components` follows the same pattern as `@osdk/react-components`:
 
-- `useMarkingCategories()` — fetches all marking categories
-- `useMarkings()` — fetches all markings
-- `useCbacBanner({ markingIds })` — resolves the classification string and colors (server-computed)
-- `useCbacMarkingRestrictions({ markingIds })` — fetches implied, disallowed, and required markings (server-computed)
-
-These components convert OSDK data into primitive props and pass them to the base layer.
-
-### Base Component Layer
-
-Components like `BaseCbacPicker`, `BaseCbacBanner`, and `BaseCbacPickerDialog` are pure UI components with no OSDK imports. They accept primitive data (strings, arrays, Maps) and handle all rendering, interactions, and styling.
-
-### Data Flow
-
-```
-  useCbacPickerState (hook)
-  ├── useMarkingCategories() → categories
-  ├── useMarkings() → markings
-  ├── useCbacBanner() → banner data
-  └── useCbacMarkingRestrictions() → implied, disallowed, required
-
-  useCbacSelection (hook)
-  ├── manages selectedIds state
-  ├── calls useCbacPickerState
-  └── provides toggle, dismiss, reset callbacks
-
-  CbacPicker / CbacPickerDialog (OSDK layer)
-  └── BaseCbacPicker / BaseCbacPickerDialog (base layer)
-      ├── CategoryMarkingGroup → MarkingButton
-      ├── BaseCbacBanner
-      └── ValidationWarning
-```
+- **OSDK layer** (`CbacPicker`, `CbacPickerDialog`) — fetches data using `@osdk/react` hooks, converts it to primitive props, passes to the base layer
+- **Base layer** (`BaseCbacPicker`, `BaseCbacBanner`, `BaseCbacPickerDialog`) — pure UI with no OSDK dependency, accepts primitive data directly
 
 ## Troubleshooting
 
