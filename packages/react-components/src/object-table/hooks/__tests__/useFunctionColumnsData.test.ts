@@ -30,6 +30,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { ColumnDefinition } from "../../ObjectTableApi.js";
 import {
   DEFAULT_FUNCTION_COLUMN_DEDUPE_INTERVAL_MS,
+  DEFAULT_MAX_CONCURRENT_REQUESTS,
   DEFAULT_PAGE_SIZE,
 } from "../../utils/constants.js";
 import { useFunctionColumnsData } from "../useFunctionColumnsData.js";
@@ -140,6 +141,7 @@ describe("useFunctionColumnsData", () => {
     expect(useOsdkFunctions).toHaveBeenCalledWith({
       queries: [],
       enabled: false,
+      maxConcurrent: DEFAULT_MAX_CONCURRENT_REQUESTS,
     });
   });
 
@@ -154,6 +156,7 @@ describe("useFunctionColumnsData", () => {
     expect(useOsdkFunctions).toHaveBeenCalledWith({
       queries: [],
       enabled: false,
+      maxConcurrent: DEFAULT_MAX_CONCURRENT_REQUESTS,
     });
   });
 
@@ -240,6 +243,7 @@ describe("useFunctionColumnsData", () => {
         },
       ],
       enabled: true,
+      maxConcurrent: DEFAULT_MAX_CONCURRENT_REQUESTS,
     });
   });
 
@@ -424,6 +428,7 @@ describe("useFunctionColumnsData", () => {
         },
       ],
       enabled: true,
+      maxConcurrent: DEFAULT_MAX_CONCURRENT_REQUESTS,
     });
   });
 
@@ -547,6 +552,7 @@ describe("useFunctionColumnsData", () => {
     expect(useOsdkFunctions).toHaveBeenCalledWith({
       queries: [],
       enabled: false,
+      maxConcurrent: DEFAULT_MAX_CONCURRENT_REQUESTS,
     });
   });
 
