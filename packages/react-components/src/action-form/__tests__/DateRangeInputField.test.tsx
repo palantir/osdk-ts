@@ -305,6 +305,128 @@ describe("DateRangeInputField", () => {
     });
   });
 
+  describe("time picker (showTime)", () => {
+    it("renders time inputs when showTime is true", () => {
+      render(
+        <DateRangeInputField
+          value={[new Date(2024, 0, 15, 10, 30), new Date(2024, 0, 20, 14, 0)]}
+          onChange={vi.fn()}
+          showTime={true}
+        />,
+      );
+      const startInput = screen.getByLabelText("Start date");
+      fireEvent.focus(startInput);
+
+      const timeInputs = document.querySelectorAll("input[type=\"time\"]");
+      expect(timeInputs.length).toBe(2);
+    });
+
+    it("does not render time inputs when showTime is false", () => {
+      render(
+        <DateRangeInputField
+          value={[new Date(2024, 0, 15), null]}
+          onChange={vi.fn()}
+        />,
+      );
+      const startInput = screen.getByLabelText("Start date");
+      fireEvent.focus(startInput);
+
+      const timeInputs = document.querySelectorAll("input[type=\"time\"]");
+      expect(timeInputs.length).toBe(0);
+    });
+
+    it("calls onChange with updated start time", () => {
+      const onChange = vi.fn();
+      render(
+        <DateRangeInputField
+          value={[new Date(2024, 0, 15, 10, 0), new Date(2024, 0, 20)]}
+          onChange={onChange}
+          showTime={true}
+        />,
+      );
+      const startInput = screen.getByLabelText("Start date");
+      fireEvent.focus(startInput);
+
+      const startTimeInput = document.querySelector(
+        "input[aria-label='Start time']",
+      ) as HTMLInputElement;
+      fireEvent.change(startTimeInput, { target: { value: "14:30" } });
+
+      expect(onChange).toHaveBeenCalledTimes(1);
+      const [start] = onChange.mock.calls[0][0];
+      expect(start?.getHours()).toBe(14);
+      expect(start?.getMinutes()).toBe(30);
+      expect(start?.getDate()).toBe(15);
+    });
+
+    it("calls onChange with updated end time", () => {
+      const onChange = vi.fn();
+      render(
+        <DateRangeInputField
+          value={[new Date(2024, 0, 15), new Date(2024, 0, 20, 9, 0)]}
+          onChange={onChange}
+          showTime={true}
+        />,
+      );
+      const startInput = screen.getByLabelText("Start date");
+      fireEvent.focus(startInput);
+
+      const endTimeInput = document.querySelector(
+        "input[aria-label='End time']",
+      ) as HTMLInputElement;
+      fireEvent.change(endTimeInput, { target: { value: "16:45" } });
+
+      expect(onChange).toHaveBeenCalledTimes(1);
+      const [, end] = onChange.mock.calls[0][0];
+      expect(end?.getHours()).toBe(16);
+      expect(end?.getMinutes()).toBe(45);
+      expect(end?.getDate()).toBe(20);
+    });
+
+    it("shows datetime format in inputs when showTime is true", () => {
+      render(
+        <DateRangeInputField
+          value={[new Date(2024, 0, 15, 10, 30), new Date(2024, 0, 20, 14, 0)]}
+          onChange={vi.fn()}
+          showTime={true}
+        />,
+      );
+      const startInput = screen.getByLabelText(
+        "Start date",
+      ) as HTMLInputElement;
+      const endInput = screen.getByLabelText("End date") as HTMLInputElement;
+      expect(startInput.value).toBe("2024-01-15 10:30");
+      expect(endInput.value).toBe("2024-01-20 14:00");
+    });
+
+    it("keeps popover open after range selection when showTime is true", () => {
+      render(
+        <DateRangeInputField
+          value={[null, null]}
+          onChange={vi.fn()}
+          showTime={true}
+        />,
+      );
+      const startInput = screen.getByLabelText("Start date");
+      fireEvent.focus(startInput);
+      expect(startInput.getAttribute("aria-expanded")).toBe("true");
+
+      // Select start day (use first match — two-month calendar has duplicates)
+      const day15s = screen.getAllByText("15");
+      fireEvent.click(day15s[0]);
+
+      // Select end day
+      const day20s = screen.getAllByText("20");
+      fireEvent.click(day20s[0]);
+
+      // Popover should still be open since showTime is true
+      const endInput = screen.getByLabelText("End date");
+      const startExpanded = startInput.getAttribute("aria-expanded");
+      const endExpanded = endInput.getAttribute("aria-expanded");
+      expect(startExpanded === "true" || endExpanded === "true").toBe(true);
+    });
+  });
+
   describe("accessibility", () => {
     it("has combobox role and aria attributes on both inputs", () => {
       render(

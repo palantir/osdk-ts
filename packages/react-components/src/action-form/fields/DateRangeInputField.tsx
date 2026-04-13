@@ -18,12 +18,15 @@ import { Input } from "@base-ui/react/input";
 import { Popover } from "@base-ui/react/popover";
 import { Calendar } from "@blueprintjs/icons";
 import classnames from "classnames";
-import React, { useCallback, useId, useRef, useState } from "react";
+import React, { useCallback, useId, useMemo, useRef, useState } from "react";
 import type { DateRange as RdpDateRange } from "react-day-picker";
 import {
   formatDateForInput,
+  formatDatetimeForDisplay,
+  formatTime,
   isDateInRange,
   parseDateFromInput,
+  parseDatetimeFromDisplay,
 } from "../../shared/dateUtils.js";
 import type { DateRange, DateRangeInputFieldProps } from "../FormFieldApi.js";
 import styles from "./DateRangeInputField.module.css";
@@ -33,6 +36,7 @@ type ActiveBoundary = "start" | "end";
 
 const EMPTY_RANGE: DateRange = [null, null];
 const CALENDAR_ICON_SIZE = 16;
+const DATE_ZERO = new Date(2000, 0, 1, 0, 0, 0, 0);
 
 export function DateRangeInputField({
   id,
@@ -43,9 +47,11 @@ export function DateRangeInputField({
   placeholderStart,
   placeholderEnd,
   allowSingleDayRange = true,
+  showTime = false,
   formatDate,
   parseDate,
 }: DateRangeInputFieldProps): React.ReactElement {
+  const shouldCloseOnSelection = !showTime;
   const popoverId = useId();
   const startInputRef = useRef<HTMLInputElement>(null);
   const endInputRef = useRef<HTMLInputElement>(null);
@@ -62,8 +68,10 @@ export function DateRangeInputField({
 
   const [startDate, endDate] = value ?? EMPTY_RANGE;
 
-  const formatFn = formatDate ?? formatDateForInput;
-  const parseFn = parseDate ?? parseDateFromInput;
+  const editFormatFn = showTime ? formatDatetimeForDisplay : formatDateForInput;
+  const formatFn = formatDate ?? editFormatFn;
+  const editParseFn = showTime ? parseDatetimeFromDisplay : parseDateFromInput;
+  const parseFn = parseDate ?? editParseFn;
 
   // Sync input values when external value changes
   const prevStartTimeRef = useRef<number | null>(
@@ -299,7 +307,7 @@ export function DateRangeInputField({
         // Start selected, advance to end
         setActiveBoundary("end");
         endInputRef.current?.focus();
-      } else if (newStart != null && newEnd != null) {
+      } else if (newStart != null && newEnd != null && shouldCloseOnSelection) {
         // Full range selected — close and blur
         setIsOpen(false);
         setIsEditingStart(false);
@@ -308,7 +316,83 @@ export function DateRangeInputField({
         endInputRef.current?.blur();
       }
     },
-    [onChange, formatFn],
+    [onChange, formatFn, shouldCloseOnSelection],
+  );
+
+  // --- Time handlers ---
+
+  const handleStartTimeChange = useCallback(
+    (timeString: string) => {
+      const [hoursStr, minutesStr] = timeString.split(":");
+      const hours = parseInt(hoursStr ?? "0", 10);
+      const minutes = parseInt(minutesStr ?? "0", 10);
+      const base = startDate != null
+        ? new Date(startDate.getTime())
+        : new Date();
+      base.setHours(hours, minutes, 0, 0);
+      onChange?.([base, endDate ?? null]);
+    },
+    [startDate, endDate, onChange],
+  );
+
+  const handleEndTimeChange = useCallback(
+    (timeString: string) => {
+      const [hoursStr, minutesStr] = timeString.split(":");
+      const hours = parseInt(hoursStr ?? "0", 10);
+      const minutes = parseInt(minutesStr ?? "0", 10);
+      const base = endDate != null
+        ? new Date(endDate.getTime())
+        : new Date();
+      base.setHours(hours, minutes, 0, 0);
+      onChange?.([startDate ?? null, base]);
+    },
+    [startDate, endDate, onChange],
+  );
+
+  // --- Time footer ---
+
+  const startTimeValue = formatTime(startDate ?? DATE_ZERO);
+  const endTimeValue = formatTime(endDate ?? DATE_ZERO);
+
+  const footer = useMemo(
+    () =>
+      showTime
+        ? (
+          <div className={styles.osdkDateRangeTimeFooter}>
+            <div className={styles.osdkDateRangeTimeGroup}>
+              <label className={styles.osdkDateRangeTimeLabel}>
+                Start time
+              </label>
+              <Input
+                type="time"
+                value={startTimeValue}
+                onValueChange={handleStartTimeChange}
+                className={styles.osdkDateRangeTimeInput}
+                aria-label="Start time"
+              />
+            </div>
+            <div className={styles.osdkDateRangeTimeGroup}>
+              <label className={styles.osdkDateRangeTimeLabel}>
+                End time
+              </label>
+              <Input
+                type="time"
+                value={endTimeValue}
+                onValueChange={handleEndTimeChange}
+                className={styles.osdkDateRangeTimeInput}
+                aria-label="End time"
+              />
+            </div>
+          </div>
+        )
+        : undefined,
+    [
+      showTime,
+      startTimeValue,
+      endTimeValue,
+      handleStartTimeChange,
+      handleEndTimeChange,
+    ],
   );
 
   // --- Focus boundary handlers ---
@@ -440,6 +524,7 @@ export function DateRangeInputField({
               min={min}
               max={max}
             />
+            {footer}
             <div
               onFocus={handleEndFocusBoundary}
               tabIndex={0}
