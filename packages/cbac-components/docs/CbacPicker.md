@@ -6,7 +6,7 @@ The picker lets users select markings grouped by category. Some categories are *
 
 ## Prerequisites
 
-Before using CBAC components, make sure you have completed the library setup described in the [README](../README.md#setup), including:
+Before using CBAC components, make sure you have completed the library setup described in the [README](https://github.com/palantir/osdk-ts/blob/main/packages/cbac-components/README.md#setup), including:
 
 - Installing the required dependencies
 - Wrapping your app with `OsdkProvider2`
@@ -351,11 +351,13 @@ interface ClassificationViewerProps {
   markingIds: string[];
 }
 
+const NOOP = () => {};
+
 function ClassificationViewer({ markingIds }: ClassificationViewerProps) {
   return (
     <CbacPicker
       initialMarkingIds={markingIds}
-      onChange={() => {}}
+      onChange={NOOP}
       readOnly={true}
     />
   );
@@ -486,8 +488,8 @@ The frontend handles **only UI concerns**: toggling selections (respecting conju
 
 ## Additional Resources
 
-- [CbacPicker Implementation](../src/cbac-picker/CbacPicker.tsx)
-- [CbacPickerDialog Implementation](../src/cbac-picker/CbacPickerDialog.tsx)
-- [Selection Logic](../src/cbac-picker/utils/selectionLogic.ts)
-- [Type Definitions](../src/cbac-picker/types.ts)
-- [@osdk/react Documentation](../../docs/react/getting-started.md)
+- [CbacPicker Implementation](https://github.com/palantir/osdk-ts/blob/main/packages/cbac-components/src/cbac-picker/CbacPicker.tsx)
+- [CbacPickerDialog Implementation](https://github.com/palantir/osdk-ts/blob/main/packages/cbac-components/src/cbac-picker/CbacPickerDialog.tsx)
+- [Selection Logic](https://github.com/palantir/osdk-ts/blob/main/packages/cbac-components/src/cbac-picker/utils/selectionLogic.ts)
+- [Type Definitions](https://github.com/palantir/osdk-ts/blob/main/packages/cbac-components/src/cbac-picker/types.ts)
+- [@osdk/react Documentation](https://github.com/palantir/osdk-ts/blob/main/docs/react/getting-started.md)
