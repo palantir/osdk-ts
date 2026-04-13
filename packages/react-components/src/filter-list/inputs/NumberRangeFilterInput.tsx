@@ -28,7 +28,7 @@ import {
 
 interface NumberRangeFilterInputProps<Q extends ObjectTypeDefinition> {
   objectType: Q;
-  objectSet: ObjectSet<Q>;
+  objectSet?: ObjectSet<Q>;
   propertyKey: string;
   filterState: FilterState | undefined;
   onFilterStateChanged: (state: FilterState) => void;
@@ -80,7 +80,10 @@ function NumberRangeFilterInputInner<Q extends ObjectTypeDefinition>({
   );
 
   const histogramArgs = useMemo(
-    () => ({ aggregate: aggregateOptions, objectSet }),
+    () =>
+      objectSet != null
+        ? { aggregate: aggregateOptions, objectSet }
+        : { aggregate: aggregateOptions },
     [aggregateOptions, objectSet],
   );
 
@@ -122,11 +125,14 @@ function NumberRangeFilterInputInner<Q extends ObjectTypeDefinition>({
   );
 
   const nullCountArgs = useMemo(
-    () => ({
-      where: nullWhereClause,
-      aggregate: nullCountAggregateOptions,
-      objectSet,
-    }),
+    () =>
+      objectSet != null
+        ? {
+          where: nullWhereClause,
+          aggregate: nullCountAggregateOptions,
+          objectSet,
+        }
+        : { where: nullWhereClause, aggregate: nullCountAggregateOptions },
     [nullWhereClause, nullCountAggregateOptions, objectSet],
   );
 
