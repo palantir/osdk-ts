@@ -1,5 +1,18 @@
 # @osdk/client
 
+## 0.21.4
+
+### Patch Changes
+
+- 6de6c33: Add overrides for minimatch/picomatch/rollup for CVEs
+- Updated dependencies [6de6c33]
+  - @osdk/generator-converters@0.7.4
+  - @osdk/shared.client.impl@0.1.2
+  - @osdk/shared.net.errors@1.1.2
+  - @osdk/shared.net.fetch@0.1.2
+  - @osdk/client.api@0.21.4
+  - @osdk/api@1.9.4
+
 ## 0.21.3
 
 ### Patch Changes

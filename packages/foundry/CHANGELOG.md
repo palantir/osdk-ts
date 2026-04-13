@@ -1,5 +1,17 @@
 # @osdk/foundry
 
+## 2.0.4
+
+### Patch Changes
+
+- 6de6c33: Add overrides for minimatch/picomatch/rollup for CVEs
+- Updated dependencies [6de6c33]
+  - @osdk/foundry.thirdpartyapplications@2.0.4
+  - @osdk/shared.net.platformapi@0.2.3
+  - @osdk/foundry.datasets@2.0.4
+  - @osdk/foundry.admin@2.0.4
+  - @osdk/foundry.core@2.0.4
+
 ## 2.0.3
 
 ### Patch Changes

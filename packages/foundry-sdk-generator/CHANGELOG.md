@@ -1,5 +1,24 @@
 # @osdk/foundry-sdk-generator
 
+## 1.3.18
+
+### Patch Changes
+
+- 6de6c33: Add overrides for minimatch/picomatch/rollup for CVEs
+- 6de6c33: Remove --beta generation support with 2.0.x generator
+- Updated dependencies [fb5c224]
+- Updated dependencies [6de6c33]
+- Updated dependencies [4c3c35a]
+  - @osdk/legacy-client@2.5.8
+  - @osdk/shared.net.errors@1.1.2
+  - @osdk/shared.net.fetch@0.1.2
+  - @osdk/client.api@0.21.4
+  - @osdk/shared.net@1.12.4
+  - @osdk/generator@1.13.7
+  - @osdk/gateway@2.4.3
+  - @osdk/client@0.21.4
+  - @osdk/api@1.9.4
+
 ## 1.3.17
 
 ### Patch Changes

@@ -1,5 +1,14 @@
 # @osdk/e2e.sandbox.oauth
 
+## 0.2.5
+
+### Patch Changes
+
+- 6de6c33: Add overrides for minimatch/picomatch/rollup for CVEs
+- Updated dependencies [6de6c33]
+  - @osdk/client@0.21.4
+  - @osdk/oauth@0.3.2
+
 ## 0.2.4
 
 ### Patch Changes

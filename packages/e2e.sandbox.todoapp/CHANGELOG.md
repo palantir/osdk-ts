@@ -1,5 +1,16 @@
 # @osdk/e2e.sandbox.todoappapp
 
+## 2.0.5
+
+### Patch Changes
+
+- 6de6c33: Add overrides for minimatch/picomatch/rollup for CVEs
+- Updated dependencies [6de6c33]
+  - @osdk/client.api@0.21.4
+  - @osdk/client@0.21.4
+  - @osdk/oauth@0.3.2
+  - @osdk/api@1.9.4
+
 ## 2.0.4
 
 ### Patch Changes
