@@ -10,4 +10,5 @@ Momentjs
 monorepolint
 ngeohash
 npmjs
+picomatch
 tsup
