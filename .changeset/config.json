@@ -50,7 +50,7 @@
   ],
   "bumpVersionsWithWorkspaceProtocolOnly": true,
   "snapshot": {
-    "useCalculatedVersion": true
-  },
-  "prereleaseTemplate": "{tag}-{datetime}-{commit}"
+    "useCalculatedVersion": true,
+    "prereleaseTemplate": "{tag}-{commit}"
+  }
 }

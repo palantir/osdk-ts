@@ -23,6 +23,18 @@ import { Tooltip } from "../base-components/tooltip/Tooltip.js";
 import styles from "./EditableCell.module.css";
 import type { CellEditInfo } from "./utils/types.js";
 
+const NUMBER_TYPES: readonly string[] = [
+  "double",
+  "integer",
+  "long",
+  "float",
+  "decimal",
+  "byte",
+  "short",
+];
+
+const VALIDATION_ERROR_MESSAGE = "Validation error";
+
 export interface EditableCellProps<TData extends RowData, CellValue = unknown> {
   initialValue: CellValue;
   currentValue: CellValue;
@@ -40,16 +52,6 @@ export interface EditableCellProps<TData extends RowData, CellValue = unknown> {
   columnId: string;
   validateEdit?: (value: unknown) => Promise<string | undefined>;
 }
-
-const NUMBER_TYPES: string[] = [
-  "double",
-  "integer",
-  "long",
-  "float",
-  "decimal",
-  "byte",
-  "short",
-];
 
 function valueToString(value: unknown): string {
   if (value == null) {
@@ -82,8 +84,6 @@ function parseValueByType(
 
   return parsedNumber;
 }
-
-const VALIDATION_ERROR_MESSAGE = "Validation error";
 
 function EditableCellInner<TData extends RowData, CellValue = unknown>({
   initialValue,

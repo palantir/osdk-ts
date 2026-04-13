@@ -740,6 +740,7 @@ export class OntologyMetadataResolver {
       case "threeDimensionalAggregation":
       case "timestamp":
       case "twoDimensionalAggregation":
+      case "typeReference":
       case "null":
       case "void":
         return Result.ok({});

@@ -164,8 +164,8 @@ describe(createClient, () => {
       );
 
       expect(
-        conjureContextSpy.mock.results[0].value["baseUrl"]
-          + conjureContextSpy.mock.results[0].value["servicePath"],
+        conjureContextSpy.mock.results[0].value.baseUrl
+          + conjureContextSpy.mock.results[0].value.servicePath,
       ).toBe("https://mock4.com/ontology-metadata/api");
     });
   });

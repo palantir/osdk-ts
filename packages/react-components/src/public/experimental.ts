@@ -59,6 +59,12 @@ export type {
   ColumnConfigOptions,
 } from "../object-table/ColumnConfigDialog.js";
 
+export { MultiColumnSortDialog } from "../object-table/MultiColumnSortDialog.js";
+export type {
+  MultiColumnSortDialogProps,
+  SortColumnItem,
+} from "../object-table/MultiColumnSortDialog.js";
+
 // PdfViewer
 export { BasePdfViewer } from "../pdf-viewer/PdfViewer.js";
 export type {
