@@ -23,10 +23,11 @@ import styles from "./MarkingButton.module.css";
 import { getDisplayLabel, isDisallowed } from "./selectionStateHelpers.js";
 
 export interface MarkingButtonProps {
+  id: string;
   label: string;
   description?: string;
   selectionState: MarkingSelectionState;
-  onToggle: () => void;
+  onToggle: (markingId: string) => void;
   disabled?: boolean;
 }
 
@@ -55,17 +56,25 @@ function getSelectionHint(state: MarkingSelectionState): string | undefined {
   }
 }
 
-export function MarkingButton({
+export const MarkingButton: React.MemoExoticComponent<
+  (props: MarkingButtonProps) => React.ReactElement
+> = React.memo(function MarkingButton({
+  id,
   label,
   description,
   selectionState,
   onToggle,
   disabled,
 }: MarkingButtonProps): React.ReactElement {
+  const handleToggle = React.useCallback(() => {
+    onToggle(id);
+  }, [onToggle, id]);
+
   const hasDescription = description !== undefined
     && description.length > 0;
   const isButtonDisabled = disabled ?? isDisallowed(selectionState);
   const showTooltip = hasDescription || isDisallowed(selectionState);
+  const hint = getSelectionHint(selectionState);
 
   const button = (
     <Button
@@ -73,7 +82,7 @@ export function MarkingButton({
         styles.markingButton,
         selectionStateClassMap[selectionState],
       )}
-      onClick={isButtonDisabled ? undefined : onToggle}
+      onClick={isButtonDisabled ? undefined : handleToggle}
       disabled={showTooltip ? undefined : isButtonDisabled}
       aria-disabled={showTooltip ? isButtonDisabled : undefined}
       aria-pressed={selectionState === "SELECTED"
@@ -98,9 +107,9 @@ export function MarkingButton({
             {hasDescription && (
               <p className={styles.tooltipDescription}>{description}</p>
             )}
-            {getSelectionHint(selectionState) != null && (
+            {hint != null && (
               <p className={styles.tooltipHint}>
-                {getSelectionHint(selectionState)}
+                {hint}
               </p>
             )}
           </Tooltip.Popup>
@@ -108,4 +117,4 @@ export function MarkingButton({
       </Tooltip.Portal>
     </Tooltip.Root>
   );
-}
+});

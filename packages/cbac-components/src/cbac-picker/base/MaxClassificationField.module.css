@@ -37,18 +37,3 @@
   color: var(--osdk-typography-color-default-muted);
   margin: 0;
 }
-
-.dangerCallout {
-  display: flex;
-  align-items: center;
-  gap: calc(var(--osdk-surface-spacing) * 1.5);
-  padding: var(--osdk-cbac-validation-warning-padding);
-  background: var(--osdk-cbac-danger-callout-bg, var(--osdk-intent-danger-subtle-bg, #fde8e8));
-  color: var(--osdk-cbac-danger-callout-color, var(--osdk-intent-danger-rest, #c23030));
-  font-size: var(--osdk-cbac-validation-warning-font-size);
-  border-radius: var(--osdk-cbac-validation-warning-border-radius);
-}
-
-.dangerIcon {
-  flex-shrink: 0;
-}

@@ -93,7 +93,7 @@ export const CategoryMarkingGroup: React.MemoExoticComponent<
               render={
                 <span
                   className={styles.infoIcon}
-                  aria-label={categoryDescription}
+                  aria-label="Category description"
                 >
                   <InfoSign size={12} />
                 </span>
@@ -111,7 +111,7 @@ export const CategoryMarkingGroup: React.MemoExoticComponent<
       </div>
       <div className={styles.markingGrid}>
         {visibleMarkings.map((marking) => (
-          <MarkingButtonItem
+          <MarkingButton
             key={marking.id}
             id={marking.id}
             label={marking.label}
@@ -136,37 +136,5 @@ export const CategoryMarkingGroup: React.MemoExoticComponent<
         ))}
       </div>
     </div>
-  );
-});
-
-interface MarkingButtonItemProps {
-  id: string;
-  label: string;
-  description?: string;
-  selectionState: MarkingSelectionState;
-  disabled?: boolean;
-  onToggle: (markingId: string) => void;
-}
-
-const MarkingButtonItem = React.memo(function MarkingButtonItem({
-  id,
-  label,
-  description,
-  selectionState,
-  disabled,
-  onToggle,
-}: MarkingButtonItemProps): React.ReactElement {
-  const handleToggle = React.useCallback(() => {
-    onToggle(id);
-  }, [onToggle, id]);
-
-  return (
-    <MarkingButton
-      label={label}
-      description={description}
-      selectionState={selectionState}
-      onToggle={handleToggle}
-      disabled={disabled}
-    />
   );
 });

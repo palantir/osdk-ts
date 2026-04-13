@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { Error as ErrorIcon } from "@blueprintjs/icons";
 import classnames from "classnames";
 import React from "react";
 import { BaseCbacBanner } from "./BaseCbacBanner.js";
@@ -25,7 +24,6 @@ export interface MaxClassificationFieldProps {
   textColor: string;
   backgroundColors: string[];
   helperText?: string;
-  constraintViolated?: boolean;
   className?: string;
 }
 
@@ -34,7 +32,6 @@ export function MaxClassificationField({
   textColor,
   backgroundColors,
   helperText,
-  constraintViolated,
   className,
 }: MaxClassificationFieldProps): React.ReactElement {
   return (
@@ -48,15 +45,6 @@ export function MaxClassificationField({
         />
       </div>
       {helperText != null && <p className={styles.helperText}>{helperText}</p>}
-      {constraintViolated === true && (
-        <div className={styles.dangerCallout} role="alert">
-          <ErrorIcon className={styles.dangerIcon} size={14} />
-          <span>
-            The current selected classification exceeds the maximum allowed
-            classification.
-          </span>
-        </div>
-      )}
     </div>
   );
 }
