@@ -74,10 +74,6 @@ export interface UseDateEditState {
  *
  * Handles the two-phase display pattern where the input shows a formatted
  * display value when idle and switches to an editable format when focused.
- * Derives validation errors and a parsed date from the current input text
- * without useEffect.
- *
- * Used by DatetimePickerField (1 instance) and DateRangeInputField (2 instances).
  */
 export function useDateEditState({
   value,

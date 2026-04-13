@@ -54,6 +54,17 @@ const fieldDefinitions: ReadonlyArray<RendererFieldDefinition> = [
     fieldComponentProps: {},
   },
   {
+    fieldKey: "employmentDuration",
+    fieldComponent: "DATE_RANGE_INPUT",
+    label: "Employment Duration",
+    placeholder: "Enter employment duration",
+    isRequired: true,
+    fieldComponentProps: {
+      placeholderStart: "Start Date",
+      placeholderEnd: "End Date",
+    },
+  },
+  {
     fieldKey: "department",
     fieldComponent: "DROPDOWN",
     placeholder: "Select a department",
