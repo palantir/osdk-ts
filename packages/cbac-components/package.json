@@ -78,7 +78,6 @@
   },
   "files": [
     "AGENTS.md",
-    "docs",
     "build/cjs",
     "build/esm",
     "build/browser",
