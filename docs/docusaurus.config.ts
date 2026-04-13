@@ -1,5 +1,5 @@
-import type { Config } from "@docusaurus/types";
 import type * as Preset from "@docusaurus/preset-classic";
+import type { Config } from "@docusaurus/types";
 
 const config: Config = {
   title: "OSDK TypeScript",
@@ -25,7 +25,13 @@ const config: Config = {
         docs: {
           path: ".",
           include: ["**/*.md", "**/*.mdx"],
-          exclude: ["**/node_modules/**", "**/build/**", "**/.docusaurus/**", "**/src/**", "**/static/**"],
+          exclude: [
+            "**/node_modules/**",
+            "**/build/**",
+            "**/.docusaurus/**",
+            "**/src/**",
+            "**/static/**",
+          ],
           routeBasePath: "/",
           sidebarPath: "./sidebars.ts",
           editUrl: "https://github.com/palantir/osdk-ts/tree/main/docs/",
@@ -35,6 +41,31 @@ const config: Config = {
           customCss: "./src/css/custom.css",
         },
       } satisfies Preset.Options,
+    ],
+  ],
+
+  plugins: [
+    [
+      "@docusaurus/plugin-content-docs",
+      {
+        id: "react-components",
+        path: "../packages/react-components/docs",
+        routeBasePath: "/react-components",
+        sidebarPath: "./sidebarsReactComponents.ts",
+        editUrl:
+          "https://github.com/palantir/osdk-ts/tree/main/packages/react-components/docs/",
+      },
+    ],
+    [
+      "@docusaurus/plugin-content-docs",
+      {
+        id: "cbac-components",
+        path: "../packages/cbac-components/docs",
+        routeBasePath: "/cbac-components",
+        sidebarPath: "./sidebarsCbacComponents.ts",
+        editUrl:
+          "https://github.com/palantir/osdk-ts/tree/main/packages/cbac-components/docs/",
+      },
     ],
   ],
 
@@ -52,6 +83,20 @@ const config: Config = {
           sidebarId: "docs",
           position: "left",
           label: "Docs",
+        },
+        {
+          type: "docSidebar",
+          sidebarId: "docs",
+          docsPluginId: "react-components",
+          position: "left",
+          label: "Components",
+        },
+        {
+          type: "docSidebar",
+          sidebarId: "docs",
+          docsPluginId: "cbac-components",
+          position: "left",
+          label: "CBAC",
         },
         {
           href: "https://github.com/palantir/osdk-ts",
@@ -88,7 +133,9 @@ const config: Config = {
           ],
         },
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} Palantir Technologies.`,
+      copyright: `Copyright © ${
+        new Date().getFullYear()
+      } Palantir Technologies.`,
     },
   } satisfies Preset.ThemeConfig,
 };
