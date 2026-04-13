@@ -212,17 +212,6 @@ export interface ObjectTableProps<
   dedupeIntervalMs?: number;
 
   /**
-   * Maximum number of concurrent requests for function-backed columns.
-   * Limits the number of function queries that can run in parallel.
-   *
-   * If undefined, all function-backed column requests will run concurrently
-   * without a limit.
-   *
-   * @default undefined
-   */
-  maxConcurrentRequests?: number;
-
-  /**
    * Number of objects to fetch per page.
    *
    * @default 50

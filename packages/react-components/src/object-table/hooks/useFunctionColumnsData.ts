@@ -41,6 +41,7 @@ import {
 } from "../utils/AsyncCellData.js";
 import {
   DEFAULT_FUNCTION_COLUMN_DEDUPE_INTERVAL_MS,
+  DEFAULT_MAX_CONCURRENT_REQUESTS,
   DEFAULT_PAGE_SIZE,
 } from "../utils/constants.js";
 import { stripDerivedPropertiesFromParams } from "../utils/stripDerivedPropertiesFromParams.js";
@@ -65,7 +66,6 @@ export interface UseFunctionColumnsDataOptions<
     | undefined;
   columnDefinitions?: Array<ColumnDefinition<Q, RDPs, FunctionColumns>>;
   primaryKeyApiName?: string;
-  maxConcurrentRequests?: number;
   pageSize?: number;
 }
 
@@ -82,7 +82,6 @@ export function useFunctionColumnsData<
     objects,
     columnDefinitions,
     primaryKeyApiName,
-    maxConcurrentRequests,
     pageSize = DEFAULT_PAGE_SIZE,
   }: UseFunctionColumnsDataOptions<Q, RDPs, FunctionColumns>,
 ): FunctionColumnData {
@@ -126,7 +125,7 @@ export function useFunctionColumnsData<
   const results = useOsdkFunctions({
     queries: queryGrid.queries,
     enabled: !disabled,
-    maxConcurrent: maxConcurrentRequests,
+    maxConcurrent: DEFAULT_MAX_CONCURRENT_REQUESTS,
   });
 
   const mergedResults = useMemo(

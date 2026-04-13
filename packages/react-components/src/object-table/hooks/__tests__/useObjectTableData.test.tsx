@@ -497,7 +497,6 @@ describe(useObjectTableData, () => {
       objects: mockBaseData,
       columnDefinitions,
       primaryKeyApiName: undefined,
-      maxConcurrentRequests: undefined,
       pageSize: 50,
     });
     expect(result.current.data).toEqual([
@@ -594,7 +593,6 @@ describe(useObjectTableData, () => {
       objects: mockBaseData,
       columnDefinitions,
       primaryKeyApiName: undefined,
-      maxConcurrentRequests: undefined,
       pageSize: 50,
     });
 

@@ -34,4 +34,9 @@ export const DEFAULT_OBJECT_TABLE_DEDUPE_INTERVAL_MS = 60_000;
 
 export const DEFAULT_FUNCTION_COLUMN_DEDUPE_INTERVAL_MS = 300_000;
 
+// The main goal here is to split function executions into smaller pieces.
+// The executor should be happy to run several smaller pieces at once, so run
+// up to 10 at a time to improve performance.
+export const DEFAULT_MAX_CONCURRENT_REQUESTS = 10;
+
 export const SELECTION_COLUMN_WIDTH = 50;

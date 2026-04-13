@@ -73,7 +73,6 @@ export function useObjectTableData<
   objectSet?: ObjectSet<Q>,
   objectSetOptions?: ObjectSetOptions<Q>,
   dedupeIntervalMs: number = DEFAULT_OBJECT_TABLE_DEDUPE_INTERVAL_MS,
-  maxConcurrentRequests?: number,
   pageSize: number = DEFAULT_PAGE_SIZE,
 ): UseObjectTableDataResult<Q, RDPs> {
   const orderBy = useMemo(() => {
@@ -167,7 +166,6 @@ export function useObjectTableData<
     objects: baseResult.data,
     columnDefinitions,
     primaryKeyApiName,
-    maxConcurrentRequests,
     pageSize,
   });
 

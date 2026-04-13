@@ -67,7 +67,6 @@ export function ObjectTable<
   filter,
   objectSetOptions,
   dedupeIntervalMs,
-  maxConcurrentRequests,
   pageSize,
   orderBy,
   defaultOrderBy,
@@ -117,7 +116,6 @@ export function ObjectTable<
     objectSet,
     objectSetOptions,
     dedupeIntervalMs,
-    maxConcurrentRequests,
     pageSize,
   );
 
