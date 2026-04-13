@@ -1,5 +1,11 @@
 # @osdk/create-app.template.react
 
+## 2.9.0
+
+### Minor Changes
+
+- 89def41: patch bump associated with BlueprintJS upgrade
+
 ## 2.8.0
 
 ### Minor Changes

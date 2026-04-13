@@ -1,6 +1,6 @@
 {
   "name": "@osdk/react-components",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -75,7 +75,7 @@
   "peerDependencies": {
     "@osdk/api": "^2.8.0",
     "@osdk/client": "^2.8.0",
-    "@osdk/react": "^0.10.0",
+    "@osdk/react": "^0.11.0",
     "@types/react": "^17 || ^18 || ^19",
     "classnames": "^2.0.0",
     "react": "^17 || ^18 || ^19",
