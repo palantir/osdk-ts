@@ -1,10 +1,10 @@
 ---
-sidebar_position: 2
+sidebar_position: 1
 ---
 
 # Prerequisites
 
-Common setup required before using `@osdk/react-components` or `@osdk/cbac-components`.
+Setup required before using `@osdk/react-components` or `@osdk/cbac-components`.
 
 ## Install dependencies
 
@@ -36,11 +36,11 @@ function App() {
 }
 ```
 
-All OSDK components must be rendered inside an `OsdkProvider2`. Without it, data fetching hooks will throw.
+All component packages require an `OsdkProvider2` wrapping your app. Without it, data fetching hooks will throw.
 
 ## CSS setup
 
-OSDK components use CSS [`@layer`](https://developer.mozilla.org/en-US/docs/Web/CSS/@layer) for predictable theming. Add these imports to your application's entry CSS file (e.g., `index.css`).
+Components use CSS [`@layer`](https://developer.mozilla.org/en-US/docs/Web/CSS/@layer) for predictable theming. Add these imports to your application's entry CSS file (e.g., `index.css`).
 
 ### Layers
 
@@ -90,7 +90,7 @@ Add a custom layer after the OSDK layers to override any token:
 
 ### Portal isolation (required)
 
-OSDK components use [Base UI](https://base-ui.com) portals, which require stacking context isolation:
+Components use [Base UI](https://base-ui.com) portals, which require stacking context isolation:
 
 ```css
 .root {

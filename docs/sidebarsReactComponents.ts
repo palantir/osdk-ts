@@ -18,6 +18,7 @@ import type { SidebarsConfig } from "@docusaurus/plugin-content-docs";
 
 const sidebars: SidebarsConfig = {
   docs: [
+    "Prerequisites",
     {
       type: "category",
       label: "@osdk/react-components",

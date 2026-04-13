@@ -80,9 +80,15 @@ const config: Config = {
       items: [
         {
           type: "docSidebar",
-          sidebarId: "docs",
+          sidebarId: "general",
           position: "left",
           label: "Docs",
+        },
+        {
+          type: "docSidebar",
+          sidebarId: "react",
+          position: "left",
+          label: "osdk-react",
         },
         {
           type: "docSidebar",
