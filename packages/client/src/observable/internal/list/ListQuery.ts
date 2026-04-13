@@ -411,17 +411,19 @@ export abstract class ListQuery extends BaseListQuery<
       && this.#fetchedObjectType !== this.apiName
     ) {
       const fetchedType = this.#fetchedObjectType;
-      const hasResultTypeChanges =
+      if (
         (changes.addedObjects.get(fetchedType)?.length ?? 0) > 0
         || (changes.modifiedObjects.get(fetchedType)?.length ?? 0) > 0
-        || Array.from(changes.deleted).some(
-          key =>
-            key.type === "object"
-            && key.otherKeys[OBJECT_API_NAME_IDX] === fetchedType,
-        );
-
-      if (hasResultTypeChanges) {
+      ) {
         return this.revalidate(true);
+      }
+      for (const key of changes.deleted) {
+        if (
+          key.type === "object"
+          && key.otherKeys[OBJECT_API_NAME_IDX] === fetchedType
+        ) {
+          return this.revalidate(true);
+        }
       }
     }
 
