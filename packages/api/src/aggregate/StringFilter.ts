@@ -32,6 +32,10 @@ interface StringFilterOptions extends BaseFilterOptions<string> {
   "$gte": string;
   "$lt": string;
   "$lte": string;
+  /**
+   * @beta
+   * For supported regex expressions, refer to https://www.palantir.com/docs/foundry/ontology/search-syntax
+   */
   "$matchesRegex": string;
 }
 
