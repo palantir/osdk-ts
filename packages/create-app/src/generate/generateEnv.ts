@@ -70,6 +70,70 @@ ${envPrefix}FOUNDRY_CLIENT_ID=${clientId}
 ${ontologyEnvSection}`;
 }
 
+export function generateEnvDevelopmentAuthless({
+  envPrefix,
+  ontology,
+}: {
+  envPrefix: string;
+  ontology: string | undefined;
+}): string {
+  const ontologyEnvSection = ontology != null
+    ? `
+
+# This Ontology RID must match the Ontology RID your Developer Console is associated with.
+# You can check the Ontology on the "Ontology SDK" tab of Developer Console.
+# It typically does not need to be changed.
+
+${envPrefix}FOUNDRY_ONTOLOGY_RID=${ontology}
+`
+    : "";
+
+  return `# This env file is intended for developing on your local computer.
+# To deploy your application to production, see .env.production.
+
+
+# This URL is the local proxy that forwards requests to Foundry.
+# The Vite dev server proxies requests through /api-proxy to avoid CORS issues.
+
+${envPrefix}FOUNDRY_API_URL=http://localhost:8080/api-proxy
+${ontologyEnvSection}`;
+}
+
+export function generateEnvProductionAuthless({
+  envPrefix,
+  applicationUrl,
+  ontology,
+}: {
+  envPrefix: string;
+  applicationUrl: string | undefined;
+  ontology: string | undefined;
+}): string {
+  const applicationUrlOrDefault = applicationUrl
+    ?? "<Fill in your application's subdomain URL>";
+  const ontologyEnvSection = ontology != null
+    ? `
+
+# This Ontology RID must match the Ontology RID your Developer Console is associated with.
+# You can check the Ontology on the "Ontology SDK" tab of Developer Console.
+# It typically does not need to be changed.
+
+${envPrefix}FOUNDRY_ONTOLOGY_RID=${ontology}
+`
+    : "";
+
+  return `# This env file is intended for deploying your application to production.
+# To set up development on your local computer, see .env.development.
+
+
+# This URL is the Foundry proxy URL for your application.
+${
+    applicationUrl == null
+      ? "# "
+      : ""
+  }${envPrefix}FOUNDRY_API_URL=${applicationUrlOrDefault}/proxy
+${ontologyEnvSection}`;
+}
+
 export function generateEnvProduction({
   envPrefix,
   foundryUrl,

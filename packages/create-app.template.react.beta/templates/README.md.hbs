@@ -1,5 +1,36 @@
 # {{project}}
 
+{{#if authless}}
+{{#if osdkPackage}}
+This project was generated with [`@osdk/create-app`](https://www.npmjs.com/package/@osdk/create-app) in authless mode and demonstrates using the Ontology SDK package `{{osdkPackage}}` with React on top of Vite. Check out the [Vite](https://vitejs.dev/guide/) docs for further configuration.
+{{else}}
+This project was generated with [`@osdk/create-app`](https://www.npmjs.com/package/@osdk/create-app) in authless mode and demonstrates using the Platform SDK with React on top of Vite. Check out the [Vite](https://vitejs.dev/guide/) docs for further configuration.
+{{/if}}
+
+## Developing
+
+Run the following command or equivalent with your preferred package manager to start a local development server on `http://localhost:8080`:
+
+```sh
+npm run dev
+```
+
+Development configuration is stored in `.env.development`.
+
+A proxy is configured in `vite.config.ts` that forwards API requests through `/api-proxy` to Foundry's `/proxy` endpoint. This avoids CORS issues during local development.
+
+## Deploying
+
+Run the following command or equivalent with your preferred package manager to create a production build of your application:
+
+```sh
+npm run build
+```
+
+Production configuration is stored in `.env.production`. Update the `VITE_FOUNDRY_API_URL` to point to your application's subdomain proxy URL.
+
+A `foundry.config.json` file is included in the root of this project to make deploying to Foundry website hosting with [`@osdk/cli`](https://www.npmjs.com/package/@osdk/cli) easier. If you are not using Foundry website hosting for your application you may delete this file.
+{{else}}
 {{#if osdkPackage}}
 This project was generated with [`@osdk/create-app`](https://www.npmjs.com/package/@osdk/create-app) and demonstrates using the Ontology SDK package `{{osdkPackage}}` with React on top of Vite. Check out the [Vite](https://vitejs.dev/guide/) docs for further configuration.
 {{else}}
@@ -39,3 +70,4 @@ If you did not fill in the URL your production application will be hosted on you
 In order to make API requests to Foundry, CORS must be configured for the stack to allow the production origin to load resources. This will be automatically done for you if you are using Foundry website hosting. The configured OAuth client must also allow the production origin auth callback as a redirect URL.
 
 A `foundry.config.json` file is included in the root of this project to make deploying to Foundry website hosting with [`@osdk/cli`](https://www.npmjs.com/package/@osdk/cli) easier. If you are not using Foundry website hosting for your application you may delete this file.
+{{/if}}

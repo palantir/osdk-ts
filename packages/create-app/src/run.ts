@@ -23,7 +23,9 @@ import { fileURLToPath } from "node:url";
 import { consola } from "./consola.js";
 import {
   generateEnvDevelopment,
+  generateEnvDevelopmentAuthless,
   generateEnvProduction,
+  generateEnvProductionAuthless,
 } from "./generate/generateEnv.js";
 import { generateFoundryConfigJson } from "./generate/generateFoundryConfigJson.js";
 import { generateNpmRc } from "./generate/generateNpmRc.js";
@@ -44,6 +46,7 @@ interface RunArgs {
   osdkRegistryUrl: string | undefined;
   corsProxy: boolean;
   scopes: string[] | undefined;
+  authless: boolean;
 }
 
 export async function run(
@@ -61,6 +64,7 @@ export async function run(
     osdkRegistryUrl,
     corsProxy,
     scopes,
+    authless,
   }: RunArgs,
 ): Promise<void> {
   consola.log("");
@@ -134,9 +138,10 @@ export async function run(
     corsProxy,
     clientVersion: changeVersionPrefix(clientVersion, "^"),
     scopes,
+    authless,
   };
   const processFiles = function(dir: string) {
-    fs.readdirSync(dir).forEach(function(file) {
+    fs.readdirSync(dir).forEach((file) => {
       let fullPath = dir + "/" + file;
       const stat = fs.statSync(fullPath);
       if (stat.isDirectory()) {
@@ -172,6 +177,17 @@ export async function run(
         }
       }
 
+      // Files with the `.auth` extension are only kept if the application uses OAuth (not authless)
+      if (file.includes(".auth")) {
+        if (authless) {
+          fs.rmSync(fullPath);
+          return;
+        } else {
+          fs.renameSync(fullPath, fullPath.replace(".auth", ""));
+          fullPath = fullPath.replace(".auth", "");
+        }
+      }
+
       if (!fullPath.endsWith(".hbs")) {
         return;
       }
@@ -187,21 +203,32 @@ export async function run(
   const npmRc = generateNpmRc({ osdkPackage, osdkRegistryUrl, foundryUrl });
   fs.writeFileSync(path.join(root, ".npmrc"), npmRc);
 
-  const envDevelopment = generateEnvDevelopment({
-    envPrefix: template.envPrefix,
-    foundryUrl,
-    clientId,
-    corsProxy,
-    ontology,
-  });
+  const envDevelopment = authless
+    ? generateEnvDevelopmentAuthless({
+      envPrefix: template.envPrefix,
+      ontology,
+    })
+    : generateEnvDevelopment({
+      envPrefix: template.envPrefix,
+      foundryUrl,
+      clientId,
+      corsProxy,
+      ontology,
+    });
   fs.writeFileSync(path.join(root, ".env.development"), envDevelopment);
-  const envProduction = generateEnvProduction({
-    envPrefix: template.envPrefix,
-    foundryUrl,
-    applicationUrl,
-    clientId,
-    ontology,
-  });
+  const envProduction = authless
+    ? generateEnvProductionAuthless({
+      envPrefix: template.envPrefix,
+      applicationUrl,
+      ontology,
+    })
+    : generateEnvProduction({
+      envPrefix: template.envPrefix,
+      foundryUrl,
+      applicationUrl,
+      clientId,
+      ontology,
+    });
   fs.writeFileSync(path.join(root, ".env.production"), envProduction);
   const foundryConfigJson = generateFoundryConfigJson({
     foundryUrl,
