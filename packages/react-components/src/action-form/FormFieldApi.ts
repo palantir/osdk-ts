@@ -195,6 +195,9 @@ export interface DatetimePickerFieldProps extends BaseFormFieldProps<Date> {
  */
 export type DateRange = [Date | null, Date | null];
 
+/** Default empty range — both bounds are null. */
+export const EMPTY_RANGE: DateRange = [null, null];
+
 /**
  * Date range input field props.
  *

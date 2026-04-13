@@ -6,25 +6,27 @@
 .osdkDatetimeInputWrapper {
   display: flex;
   align-items: center;
-  border-radius: var(--osdk-input-border-radius);
-  border: var(--osdk-input-border-width) solid var(--osdk-input-border-color);
-  background-color: var(--osdk-input-bg);
+  border-radius: var(--osdk-datetime-input-border-radius);
+  border: var(--osdk-datetime-input-border-width) solid
+    var(--osdk-datetime-input-border-color);
+  background-color: var(--osdk-datetime-input-bg);
   transition:
-    background-color var(--osdk-input-transition-duration)
-      var(--osdk-input-transition-ease),
-    border-color var(--osdk-input-transition-duration)
-      var(--osdk-input-transition-ease);
+    background-color var(--osdk-datetime-input-transition-duration)
+      var(--osdk-datetime-input-transition-ease),
+    border-color var(--osdk-datetime-input-transition-duration)
+      var(--osdk-datetime-input-transition-ease);
   cursor: text;
   outline: none;
 
   &:hover {
-    background-color: var(--osdk-input-bg-hover);
+    background-color: var(--osdk-datetime-input-bg-hover);
   }
 
   &:focus-within {
-    outline: var(--osdk-input-focus-width) solid var(--osdk-input-focus-color);
-    outline-offset: var(--osdk-input-focus-offset);
-    border-color: var(--osdk-input-border-color-focus);
+    outline: var(--osdk-datetime-input-focus-width) solid
+      var(--osdk-datetime-input-focus-color);
+    outline-offset: var(--osdk-datetime-input-focus-offset);
+    border-color: var(--osdk-datetime-input-border-color-focus);
   }
 }
 
@@ -35,4 +37,16 @@
   &:focus-within {
     border-color: var(--osdk-datetime-input-error-border-color);
   }
+}
+
+/* Time footer — rendered as a popover sibling (not a DayPicker tfoot) so the
+   border-top can span the full popover width via negative margins. */
+.osdkDatetimeTimeFooter {
+  padding-top: var(--osdk-datetime-time-padding-top);
+  padding-left: var(--osdk-datetime-popover-padding);
+  padding-right: var(--osdk-datetime-popover-padding);
+  margin-top: var(--osdk-datetime-time-margin-top);
+  margin-left: calc(var(--osdk-datetime-popover-padding) * -1);
+  margin-right: calc(var(--osdk-datetime-popover-padding) * -1);
+  border-top: var(--osdk-datetime-time-border-top);
 }

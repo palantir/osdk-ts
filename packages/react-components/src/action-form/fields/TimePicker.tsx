@@ -15,7 +15,7 @@
  */
 
 import { Input } from "@base-ui/react/input";
-import React, { memo } from "react";
+import React from "react";
 import styles from "./TimePicker.module.css";
 
 interface TimePickerProps {
@@ -24,9 +24,7 @@ interface TimePickerProps {
   label?: string;
 }
 
-export const TimePicker: React.MemoExoticComponent<
-  (props: TimePickerProps) => React.ReactElement
-> = memo(function TimePicker({
+export function TimePicker({
   value,
   onChange,
   label = "Time",
@@ -40,4 +38,4 @@ export const TimePicker: React.MemoExoticComponent<
       aria-label={label}
     />
   );
-});
+}

@@ -27,7 +27,7 @@ import {
   parseDatetimeFromDisplay,
   parseTimeString,
 } from "../../shared/dateUtils.js";
-import type { DateRange, DateRangeInputFieldProps } from "../FormFieldApi.js";
+import { type DateRangeInputFieldProps, EMPTY_RANGE } from "../FormFieldApi.js";
 import { stopPropagation } from "./calendarShared.js";
 import commonStyles from "./DatePickerCommon.module.css";
 import styles from "./DateRangeInputField.module.css";
@@ -37,11 +37,9 @@ import { useDateEditState } from "./useDateEditState.js";
 
 type ActiveBoundary = "start" | "end";
 
-const EMPTY_RANGE: DateRange = [null, null];
-
 export function DateRangeInputField({
   id,
-  value = EMPTY_RANGE,
+  value,
   onChange,
   min,
   max,
@@ -70,6 +68,7 @@ export function DateRangeInputField({
 
   const {
     isEditing: isEditingStart,
+    inputValue: startInputRaw,
     parsedValue: startParsedValue,
     inputError: startInputError,
     validatedDate: startCommittedValue,
@@ -87,6 +86,7 @@ export function DateRangeInputField({
   });
   const {
     isEditing: isEditingEnd,
+    inputValue: endInputRaw,
     parsedValue: endParsedValue,
     inputError: endInputError,
     validatedDate: endCommittedValue,
@@ -129,6 +129,11 @@ export function DateRangeInputField({
     || endInputError != null
     || overlappingError != null;
 
+  const startInvalid = isEditingStart
+    && (startInputError != null || overlappingError != null);
+  const endInvalid = isEditingEnd
+    && (endInputError != null || overlappingError != null);
+
   // --- Focus handlers ---
 
   const handleStartFocus = useCallback(() => {
@@ -154,11 +159,14 @@ export function DateRangeInputField({
       ) {
         return;
       }
-      const newStart = startCommittedValue;
-      onChange?.([newStart, endDate ?? null]);
+      if (startInputRaw === "") {
+        onChange?.([null, endDate ?? null]);
+      } else if (startCommittedValue != null) {
+        onChange?.([startCommittedValue, endDate ?? null]);
+      }
       stopStartEditing();
     },
-    [startCommittedValue, stopStartEditing, endDate, onChange],
+    [startInputRaw, startCommittedValue, stopStartEditing, endDate, onChange],
   );
 
   const handleEndBlur = useCallback(
@@ -170,11 +178,14 @@ export function DateRangeInputField({
       ) {
         return;
       }
-      const newEnd = endCommittedValue;
-      onChange?.([startDate ?? null, newEnd]);
+      if (endInputRaw === "") {
+        onChange?.([startDate ?? null, null]);
+      } else if (endCommittedValue != null) {
+        onChange?.([startDate ?? null, endCommittedValue]);
+      }
       stopEndEditing();
     },
-    [endCommittedValue, stopEndEditing, startDate, onChange],
+    [endInputRaw, endCommittedValue, stopEndEditing, startDate, onChange],
   );
 
   // --- Keyboard handlers ---
@@ -183,8 +194,11 @@ export function DateRangeInputField({
     (e: React.KeyboardEvent<HTMLInputElement>) => {
       if (e.key === "Enter") {
         e.preventDefault();
-        const newStart = startCommittedValue;
-        onChange?.([newStart, endDate ?? null]);
+        if (startInputRaw === "") {
+          onChange?.([null, endDate ?? null]);
+        } else if (startCommittedValue != null) {
+          onChange?.([startCommittedValue, endDate ?? null]);
+        }
         stopStartEditing();
         // Auto-advance to end
         endInputRef.current?.focus();
@@ -199,6 +213,7 @@ export function DateRangeInputField({
       }
     },
     [
+      startInputRaw,
       startCommittedValue,
       stopStartEditing,
       setStartInputValue,
@@ -213,8 +228,11 @@ export function DateRangeInputField({
     (e: React.KeyboardEvent<HTMLInputElement>) => {
       if (e.key === "Enter") {
         e.preventDefault();
-        const newEnd = endCommittedValue;
-        onChange?.([startDate ?? null, newEnd]);
+        if (endInputRaw === "") {
+          onChange?.([startDate ?? null, null]);
+        } else if (endCommittedValue != null) {
+          onChange?.([startDate ?? null, endCommittedValue]);
+        }
         stopEndEditing();
         setIsOpen(false);
       } else if (e.key === "Escape") {
@@ -224,9 +242,9 @@ export function DateRangeInputField({
         setIsOpen(false);
         endInputRef.current?.blur();
       } else if (e.key === "Tab" && !e.shiftKey && isOpen) {
-        const firstButton = popoverRef.current?.querySelector(
+        const firstButton = popoverRef.current?.querySelector<HTMLElement>(
           "button, select",
-        ) as HTMLElement | null;
+        );
         if (firstButton != null) {
           e.preventDefault();
           firstButton.focus();
@@ -234,6 +252,7 @@ export function DateRangeInputField({
       }
     },
     [
+      endInputRaw,
       endCommittedValue,
       stopEndEditing,
       setEndInputValue,
@@ -338,8 +357,10 @@ export function DateRangeInputField({
         stopStartEditing();
         stopEndEditing();
       } else {
-        const buttons = popoverRef.current?.querySelectorAll("button, select");
-        const lastButton = buttons?.[buttons.length - 1] as HTMLElement | null;
+        const buttons = popoverRef.current?.querySelectorAll<HTMLElement>(
+          "button, select",
+        );
+        const lastButton = buttons?.[buttons.length - 1];
         lastButton?.focus();
       }
     },
@@ -404,6 +425,7 @@ export function DateRangeInputField({
             aria-controls={popoverId}
             aria-haspopup="dialog"
             aria-label="Start date"
+            aria-invalid={startInvalid || undefined}
           />
         </div>
         <div className={endWrapperClassName}>
@@ -424,6 +446,7 @@ export function DateRangeInputField({
             aria-controls={popoverId}
             aria-haspopup="dialog"
             aria-label="End date"
+            aria-invalid={endInvalid || undefined}
           />
         </div>
       </Popover.Trigger>

@@ -122,9 +122,9 @@ export function DatetimePickerField({
         // Move focus from the text input into the calendar popover.
         // The popover doesn't auto-focus on open (to keep the cursor in the input),
         // so Tab manually bridges focus to the first interactive calendar element.
-        const firstFocusable = popoverRef.current?.querySelector(
+        const firstFocusable = popoverRef.current?.querySelector<HTMLElement>(
           "button, select",
-        ) as HTMLElement | null;
+        );
         if (firstFocusable != null) {
           e.preventDefault();
           firstFocusable.focus();
@@ -222,22 +222,27 @@ export function DatetimePickerField({
         setIsOpen(false);
         stopEditing();
       } else {
-        const buttons = popoverRef.current?.querySelectorAll("button, select");
-        const lastButton = buttons?.[buttons.length - 1] as HTMLElement | null;
+        const buttons = popoverRef.current?.querySelectorAll<HTMLElement>(
+          "button, select",
+        );
+        const lastButton = buttons?.[buttons.length - 1];
         lastButton?.focus();
       }
     },
     [stopEditing],
   );
 
-  // --- Time picker ---
+  // --- Time picker (rendered as a popover sibling, not a DayPicker footer,
+  // so the border-top can span the full popover width via negative margins) ---
 
-  const timePicker = showTime
+  const timeFooter = showTime
     ? (
-      <TimePicker
-        value={getTimeValue(value)}
-        onChange={handleTimeChange}
-      />
+      <div className={styles.osdkDatetimeTimeFooter}>
+        <TimePicker
+          value={getTimeValue(value)}
+          onChange={handleTimeChange}
+        />
+      </div>
     )
     : undefined;
 
@@ -290,8 +295,8 @@ export function DatetimePickerField({
               onSelect={handleCalendarSelect}
               min={min}
               max={max}
-              footer={timePicker}
             />
+            {timeFooter}
             <div
               onFocus={handleEndFocusBoundary}
               tabIndex={0}

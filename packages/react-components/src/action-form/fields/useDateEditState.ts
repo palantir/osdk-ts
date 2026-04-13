@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { isDateInRange } from "../../shared/dateUtils.js";
 
 export interface UseDateEditStateConfig {
@@ -134,7 +134,7 @@ export function useDateEditState({
     setIsEditing(false);
   }, []);
 
-  return useMemo(() => ({
+  return {
     isEditing,
     inputValue,
     displayedValue,
@@ -144,15 +144,5 @@ export function useDateEditState({
     startEditing,
     stopEditing,
     setInputValue,
-  }), [
-    isEditing,
-    inputValue,
-    displayedValue,
-    inputError,
-    parsedValue,
-    validatedDate,
-    startEditing,
-    stopEditing,
-    setInputValue,
-  ]);
+  };
 }

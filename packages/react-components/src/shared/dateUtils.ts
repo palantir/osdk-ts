@@ -96,7 +96,7 @@ export function parseDatetimeFromDisplay(
   value: string | undefined | null,
 ): Date | undefined {
   if (!value) return undefined;
-  const normalized = value.includes("T") ? value : value.replace(" ", "T");
+  const normalized = value.includes("T") ? value : value.replace(/\s/, "T");
   const date = new Date(normalized);
   return isNaN(date.getTime()) ? undefined : date;
 }
@@ -134,10 +134,7 @@ export function parseTimeString(
   };
 }
 
-/** Sentinel date used solely to produce "00:00" when no date is selected. */
-const MIDNIGHT_SENTINEL = new Date(2000, 0, 1, 0, 0, 0, 0);
-
 /** Returns the "HH:mm" time value for a date, defaulting to "00:00" when null. */
 export function getTimeValue(date: Date | null): string {
-  return formatTime(date ?? MIDNIGHT_SENTINEL);
+  return date != null ? formatTime(date) : "00:00";
 }

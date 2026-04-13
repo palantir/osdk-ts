@@ -16,7 +16,11 @@
 
 import React, { memo } from "react";
 import { FormField } from "../FormField.js";
-import type { DateRange, RendererFieldDefinition } from "../FormFieldApi.js";
+import {
+  type DateRange,
+  EMPTY_RANGE,
+  type RendererFieldDefinition,
+} from "../FormFieldApi.js";
 import { CustomField } from "./CustomField.js";
 import { DateRangeInputField } from "./DateRangeInputField.js";
 import { DatetimePickerField } from "./DatetimePickerField.js";
@@ -162,8 +166,6 @@ function renderFieldComponent(
       return assertUnreachableFieldComponent(fieldDefinition);
   }
 }
-
-const EMPTY_RANGE: DateRange = [null, null];
 
 function coerceToDateRange(value: unknown): DateRange {
   if (!Array.isArray(value) || value.length !== 2) return EMPTY_RANGE;

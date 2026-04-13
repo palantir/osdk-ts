@@ -41,7 +41,6 @@
   border: none;
   background: transparent;
   cursor: pointer;
-  border-radius: var(--osdk-datetime-calendar-day-border-radius);
   font: inherit;
   color: inherit;
 
@@ -105,8 +104,8 @@
   }
 }
 
-/* Range selection styles */
-.calendarRangeStart {
+/* Range selection styles — shared base for start/end endpoints */
+.calendarRangeEndpoint {
   background: var(--osdk-datetime-calendar-selected-bg);
   color: var(--osdk-datetime-calendar-selected-color);
   border-radius: 50%;
@@ -116,14 +115,12 @@
   }
 }
 
-.calendarRangeEnd {
-  background: var(--osdk-datetime-calendar-selected-bg);
-  color: var(--osdk-datetime-calendar-selected-color);
-  border-radius: 50%;
+.calendarRangeStart {
+  composes: calendarRangeEndpoint;
+}
 
-  &:hover {
-    background: var(--osdk-datetime-calendar-selected-hover-bg);
-  }
+.calendarRangeEnd {
+  composes: calendarRangeEndpoint;
 }
 
 .calendarRangeMiddle {
@@ -233,7 +230,7 @@
   width: 1px;
   height: 1px;
   overflow: hidden;
-  clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
   white-space: nowrap;
 }
 
@@ -276,7 +273,7 @@
   composes: calendarDropdown;
 }
 
-/* Footer (e.g. TimePicker) — separator between calendar grid and footer content */
+/* Footer — content rendered inside DayPicker's <tfoot> (constrained by the table). */
 .calendarFooter {
   padding-top: var(--osdk-datetime-time-padding-top);
   margin-top: var(--osdk-datetime-time-margin-top);

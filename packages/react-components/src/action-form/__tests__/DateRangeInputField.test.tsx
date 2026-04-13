@@ -63,9 +63,7 @@ describe("DateRangeInputField", () => {
     });
 
     it("renders empty inputs when value is null", () => {
-      render(
-        <DateRangeInputField value={null} onChange={vi.fn()} />,
-      );
+      render(<DateRangeInputField value={null} onChange={vi.fn()} />);
       const startInput = screen.getByLabelText(
         "Start date",
       ) as HTMLInputElement;
@@ -73,30 +71,18 @@ describe("DateRangeInputField", () => {
       expect(startInput.value).toBe("");
       expect(endInput.value).toBe("");
     });
-
-    it("renders a calendar icon", () => {
-      render(
-        <DateRangeInputField value={[null, null]} onChange={vi.fn()} />,
-      );
-      const svg = document.querySelector("svg");
-      expect(svg).not.toBeNull();
-    });
   });
 
   describe("focus and popover", () => {
     it("opens popover when start input is focused", () => {
-      render(
-        <DateRangeInputField value={[null, null]} onChange={vi.fn()} />,
-      );
+      render(<DateRangeInputField value={[null, null]} onChange={vi.fn()} />);
       const startInput = screen.getByLabelText("Start date");
       fireEvent.focus(startInput);
       expect(startInput.getAttribute("aria-expanded")).toBe("true");
     });
 
     it("opens popover when end input is focused", () => {
-      render(
-        <DateRangeInputField value={[null, null]} onChange={vi.fn()} />,
-      );
+      render(<DateRangeInputField value={[null, null]} onChange={vi.fn()} />);
       const endInput = screen.getByLabelText("End date");
       fireEvent.focus(endInput);
       expect(endInput.getAttribute("aria-expanded")).toBe("true");
@@ -106,9 +92,7 @@ describe("DateRangeInputField", () => {
   describe("text input editing", () => {
     it("commits start date on blur", () => {
       const onChange = vi.fn();
-      render(
-        <DateRangeInputField value={[null, null]} onChange={onChange} />,
-      );
+      render(<DateRangeInputField value={[null, null]} onChange={onChange} />);
       const startInput = screen.getByLabelText(
         "Start date",
       ) as HTMLInputElement;
@@ -138,17 +122,15 @@ describe("DateRangeInputField", () => {
       fireEvent.blur(endInput);
 
       expect(onChange).toHaveBeenCalledTimes(1);
-      const [start, end] = onChange.mock.calls[0][0];
-      expect(start?.getDate()).toBe(1);
-      expect(end?.getMonth()).toBe(5);
+      const [, end] = onChange.mock.calls[0][0];
       expect(end?.getDate()).toBe(30);
+      expect(end?.getMonth()).toBe(5);
+      expect(end?.getFullYear()).toBe(2024);
     });
 
     it("does not commit invalid start input on blur", () => {
       const onChange = vi.fn();
-      render(
-        <DateRangeInputField value={[null, null]} onChange={onChange} />,
-      );
+      render(<DateRangeInputField value={[null, null]} onChange={onChange} />);
       const startInput = screen.getByLabelText(
         "Start date",
       ) as HTMLInputElement;
@@ -156,17 +138,13 @@ describe("DateRangeInputField", () => {
       fireEvent.change(startInput, { target: { value: "not-a-date" } });
       fireEvent.blur(startInput);
 
-      // Still called but with null (fallback to previous value)
-      expect(onChange).toHaveBeenCalledTimes(1);
-      const [start] = onChange.mock.calls[0][0];
-      expect(start).toBeNull();
+      // Invalid input is silently reverted — onChange is not called
+      expect(onChange).not.toHaveBeenCalled();
     });
 
     it("commits start on Enter and advances to end input", () => {
       const onChange = vi.fn();
-      render(
-        <DateRangeInputField value={[null, null]} onChange={onChange} />,
-      );
+      render(<DateRangeInputField value={[null, null]} onChange={onChange} />);
       const startInput = screen.getByLabelText(
         "Start date",
       ) as HTMLInputElement;
@@ -198,62 +176,45 @@ describe("DateRangeInputField", () => {
   });
 
   describe("error state", () => {
-    it("shows error class for invalid input", () => {
-      render(
-        <DateRangeInputField value={[null, null]} onChange={vi.fn()} />,
-      );
-      const startInput = screen.getByLabelText(
-        "Start date",
-      ) as HTMLInputElement;
+    it("marks input as invalid for unparsable text", () => {
+      render(<DateRangeInputField value={[null, null]} onChange={vi.fn()} />);
+      const startInput = screen.getByLabelText("Start date");
       fireEvent.focus(startInput);
       fireEvent.change(startInput, { target: { value: "garbage" } });
 
-      const wrapper = startInput.closest(
-        "[class*='osdkDateRangeInputWrapper']",
-      );
-      expect(wrapper?.className).toContain("Error");
+      expect(startInput.getAttribute("aria-invalid")).toBe("true");
     });
 
-    it("shows error class for overlapping dates (end < start)", () => {
+    it("marks input as invalid for overlapping dates (end < start)", () => {
       render(
         <DateRangeInputField
           value={[new Date(2024, 5, 15), null]}
           onChange={vi.fn()}
         />,
       );
-      const endInput = screen.getByLabelText("End date") as HTMLInputElement;
+      const endInput = screen.getByLabelText("End date");
       fireEvent.focus(endInput);
       fireEvent.change(endInput, { target: { value: "2024-01-01" } });
 
-      const wrapper = endInput.closest("[class*='osdkDateRangeInputWrapper']");
-      expect(wrapper?.className).toContain("Error");
+      expect(endInput.getAttribute("aria-invalid")).toBe("true");
     });
 
-    it("clears error when valid input is typed", () => {
-      render(
-        <DateRangeInputField value={[null, null]} onChange={vi.fn()} />,
-      );
-      const startInput = screen.getByLabelText(
-        "Start date",
-      ) as HTMLInputElement;
+    it("clears invalid state when valid input is typed", () => {
+      render(<DateRangeInputField value={[null, null]} onChange={vi.fn()} />);
+      const startInput = screen.getByLabelText("Start date");
       fireEvent.focus(startInput);
 
       fireEvent.change(startInput, { target: { value: "garbage" } });
-      const wrapper = startInput.closest(
-        "[class*='osdkDateRangeInputWrapper']",
-      );
-      expect(wrapper?.className).toContain("Error");
+      expect(startInput.getAttribute("aria-invalid")).toBe("true");
 
       fireEvent.change(startInput, { target: { value: "2024-06-15" } });
-      expect(wrapper?.className).not.toContain("Error");
+      expect(startInput.getAttribute("aria-invalid")).not.toBe("true");
     });
   });
 
   describe("focus management", () => {
     it("does not move focus to calendar dropdowns when popover opens via start", () => {
-      render(
-        <DateRangeInputField value={[null, null]} onChange={vi.fn()} />,
-      );
+      render(<DateRangeInputField value={[null, null]} onChange={vi.fn()} />);
       const startInput = screen.getByLabelText("Start date");
       fireEvent.focus(startInput);
 
@@ -265,9 +226,7 @@ describe("DateRangeInputField", () => {
     });
 
     it("does not move focus to calendar dropdowns when popover opens via end", () => {
-      render(
-        <DateRangeInputField value={[null, null]} onChange={vi.fn()} />,
-      );
+      render(<DateRangeInputField value={[null, null]} onChange={vi.fn()} />);
       const endInput = screen.getByLabelText("End date");
       fireEvent.focus(endInput);
 
@@ -278,9 +237,7 @@ describe("DateRangeInputField", () => {
     });
 
     it("closes popover on Escape from start input", () => {
-      render(
-        <DateRangeInputField value={[null, null]} onChange={vi.fn()} />,
-      );
+      render(<DateRangeInputField value={[null, null]} onChange={vi.fn()} />);
       const startInput = screen.getByLabelText("Start date");
       fireEvent.focus(startInput);
       expect(startInput.getAttribute("aria-expanded")).toBe("true");
@@ -429,9 +386,7 @@ describe("DateRangeInputField", () => {
 
   describe("accessibility", () => {
     it("has combobox role and aria attributes on both inputs", () => {
-      render(
-        <DateRangeInputField value={[null, null]} onChange={vi.fn()} />,
-      );
+      render(<DateRangeInputField value={[null, null]} onChange={vi.fn()} />);
       const startInput = screen.getByLabelText("Start date");
       const endInput = screen.getByLabelText("End date");
 

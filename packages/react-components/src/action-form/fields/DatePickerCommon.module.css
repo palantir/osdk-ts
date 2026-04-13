@@ -4,36 +4,23 @@
 .osdkDatePickerInput {
   flex: 1;
   min-width: 0;
-  min-height: var(--osdk-input-min-height);
-  padding: var(--osdk-input-padding);
+  min-height: var(--osdk-datetime-input-min-height);
+  padding: var(--osdk-datetime-input-padding);
   border: none;
-  border-radius: var(--osdk-input-border-radius);
+  border-radius: var(--osdk-datetime-input-border-radius);
   background: transparent;
-  color: var(--osdk-input-color);
-  font-family: var(--osdk-input-font-family);
-  font-size: var(--osdk-input-font-size);
-  line-height: var(
-    --osdk-input-line-height,
-    var(--osdk-typography-line-height-default)
-  );
+  color: var(--osdk-datetime-input-color);
+  font-family: var(--osdk-datetime-input-font-family);
+  font-size: var(--osdk-datetime-input-font-size);
+  line-height: var(--osdk-datetime-input-line-height);
 
   &::placeholder {
-    color: var(--osdk-input-placeholder-color);
+    color: var(--osdk-datetime-input-placeholder-color);
   }
 
   &:focus-visible {
     outline: none;
   }
-}
-
-/* Trailing calendar icon */
-.osdkDatePickerIcon {
-  display: flex;
-  align-items: center;
-  padding: 0 calc(var(--osdk-surface-spacing) * 2);
-  color: var(--osdk-typography-color-muted);
-  pointer-events: none;
-  flex-shrink: 0;
 }
 
 /* Popover container */
@@ -52,7 +39,7 @@
   width: 1px;
   height: 1px;
   overflow: hidden;
-  clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
   white-space: nowrap;
   outline: none;
 }
