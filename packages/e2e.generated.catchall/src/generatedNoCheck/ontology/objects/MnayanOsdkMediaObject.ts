@@ -15,7 +15,7 @@ import type {
 } from '@osdk/client';
 
 export namespace MnayanOsdkMediaObject {
-  export type PropertyKeys = 'id' | 'path' | 'mediaReference';
+  export type PropertyKeys = 'id' | 'mediaReference' | 'path';
 
   export type Links = {};
 

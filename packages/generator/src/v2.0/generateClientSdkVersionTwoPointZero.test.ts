@@ -950,7 +950,7 @@ describe("generator", () => {
         } from '@osdk/client';
 
         export namespace Todo {
-          export type PropertyKeys = 'id' | 'body' | 'complete' | 'array';
+          export type PropertyKeys = 'array' | 'body' | 'complete' | 'id';
 
           export interface Links {
             readonly Assignee: $SingleLinkAccessor<Person>;
@@ -1641,7 +1641,7 @@ describe("generator", () => {
         } from '@osdk/api';
 
         export namespace Todo {
-          export type PropertyKeys = 'id' | 'body' | 'complete' | 'array';
+          export type PropertyKeys = 'array' | 'body' | 'complete' | 'id';
 
           export interface Links {
             readonly Assignee: $SingleLinkAccessor<Person>;
@@ -2082,7 +2082,7 @@ describe("generator", () => {
           } from '@osdk/api';
 
           export namespace UsesForeignSpt {
-            export type PropertyKeys = 'id' | 'body';
+            export type PropertyKeys = 'body' | 'id';
 
             export type Links = {};
 
@@ -2450,7 +2450,7 @@ describe("generator", () => {
         } from '@osdk/client';
 
         export namespace Todo {
-          export type PropertyKeys = 'id' | 'body' | 'complete' | 'array';
+          export type PropertyKeys = 'array' | 'body' | 'complete' | 'id';
 
           export interface Links {
             readonly Assignee: $SingleLinkAccessor<Person>;
@@ -2833,7 +2833,7 @@ describe("generator", () => {
         } from '@osdk/client';
 
         export namespace Task {
-          export type PropertyKeys = 'taskId' | 'body';
+          export type PropertyKeys = 'body' | 'taskId';
 
           export type Links = {};
 
