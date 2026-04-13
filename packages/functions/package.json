@@ -74,7 +74,7 @@
     "@osdk/foundry.mediasets": "^2.44.0",
     "@osdk/foundry.ontologies": "^2.44.0",
     "@types/geojson": "^7946.0.16",
-    "yaml": "^2.8.1"
+    "yaml": "^2.8.3"
   },
   "peerDependencies": {
     "@osdk/client": "workspace:^"
