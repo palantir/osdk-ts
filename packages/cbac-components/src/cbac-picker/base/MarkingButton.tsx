@@ -101,7 +101,7 @@ export const MarkingButton: React.MemoExoticComponent<
     <Tooltip.Root>
       <Tooltip.Trigger render={button} />
       <Tooltip.Portal>
-        <Tooltip.Positioner side="top" sideOffset={4}>
+        <Tooltip.Positioner sideOffset={8}>
           <Tooltip.Popup className={styles.tooltip}>
             <p className={styles.tooltipTitle}>{label}</p>
             {hasDescription && (
