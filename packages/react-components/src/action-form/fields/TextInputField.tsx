@@ -23,6 +23,7 @@ export function TextInputField({
   id,
   value,
   onChange,
+  error,
   placeholder,
   minLength,
   maxLength,
@@ -37,6 +38,7 @@ export function TextInputField({
       placeholder={placeholder}
       minLength={minLength}
       maxLength={maxLength}
+      aria-invalid={error != null || undefined}
     />
   );
 }
