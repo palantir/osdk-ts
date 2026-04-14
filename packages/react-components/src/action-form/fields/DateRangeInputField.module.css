@@ -21,12 +21,12 @@
    spans the full width of the popover. */
 .osdkDateRangeTimeRow {
   display: flex;
-  gap: var(--osdk-datetime-time-gap);
-  padding-top: var(--osdk-datetime-time-padding-top);
+  gap: var(--osdk-time-picker-gap);
+  padding-top: var(--osdk-time-picker-padding-top);
   padding-left: var(--osdk-datetime-popover-padding);
   padding-right: var(--osdk-datetime-popover-padding);
-  margin-top: var(--osdk-datetime-time-margin-top);
+  margin-top: var(--osdk-time-picker-margin-top);
   margin-left: calc(var(--osdk-datetime-popover-padding) * -1);
   margin-right: calc(var(--osdk-datetime-popover-padding) * -1);
-  border-top: var(--osdk-datetime-time-border-top);
+  border-top: var(--osdk-time-picker-border-top);
 }

@@ -1,21 +1,21 @@
 /* Time Picker Styling */
 :root {
-  --osdk-datetime-time-margin-top: calc(var(--osdk-surface-spacing) * 2);
-  --osdk-datetime-time-padding-top: calc(var(--osdk-surface-spacing) * 2);
-  --osdk-datetime-time-border-top: var(--osdk-surface-border);
-  --osdk-datetime-time-gap: calc(var(--osdk-surface-spacing) * 4);
-  --osdk-datetime-time-input-font-family: var(--osdk-input-font-family);
-  --osdk-datetime-time-input-font-size: var(--osdk-input-font-size);
-  --osdk-datetime-time-input-padding: var(--osdk-input-padding);
-  --osdk-datetime-time-input-border: var(--osdk-input-border-width) solid
+  --osdk-time-picker-margin-top: calc(var(--osdk-surface-spacing) * 2);
+  --osdk-time-picker-padding-top: calc(var(--osdk-surface-spacing) * 2);
+  --osdk-time-picker-border-top: var(--osdk-surface-border);
+  --osdk-time-picker-gap: calc(var(--osdk-surface-spacing) * 4);
+  --osdk-time-picker-input-font-family: var(--osdk-input-font-family);
+  --osdk-time-picker-input-font-size: var(--osdk-input-font-size);
+  --osdk-time-picker-input-padding: var(--osdk-input-padding);
+  --osdk-time-picker-input-border: var(--osdk-input-border-width) solid
     var(--osdk-input-border-color);
-  --osdk-datetime-time-input-border-radius: var(--osdk-input-border-radius);
-  --osdk-datetime-time-input-bg: var(--osdk-input-bg);
-  --osdk-datetime-time-input-color: var(--osdk-input-color);
-  --osdk-datetime-time-input-border-color-focus: var(
+  --osdk-time-picker-input-border-radius: var(--osdk-input-border-radius);
+  --osdk-time-picker-input-bg: var(--osdk-input-bg);
+  --osdk-time-picker-input-color: var(--osdk-input-color);
+  --osdk-time-picker-input-border-color-focus: var(
     --osdk-input-border-color-focus
   );
-  --osdk-datetime-time-input-focus-outline: var(--osdk-input-focus-width) solid
+  --osdk-time-picker-input-focus-outline: var(--osdk-input-focus-width) solid
     var(--osdk-input-focus-color);
-  --osdk-datetime-time-input-focus-offset: var(--osdk-input-focus-offset);
+  --osdk-time-picker-input-focus-offset: var(--osdk-input-focus-offset);
 }

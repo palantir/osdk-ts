@@ -232,8 +232,8 @@
 
 /* Footer — content rendered inside DayPicker's <tfoot> (constrained by the table). */
 .calendarFooter {
-  padding-top: var(--osdk-datetime-time-padding-top);
-  margin-top: var(--osdk-datetime-time-margin-top);
-  border-top: var(--osdk-datetime-time-border-top);
+  padding-top: var(--osdk-time-picker-padding-top);
+  margin-top: var(--osdk-time-picker-margin-top);
+  border-top: var(--osdk-time-picker-border-top);
 }
 

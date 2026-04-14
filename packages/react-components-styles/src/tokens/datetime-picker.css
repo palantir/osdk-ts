@@ -117,15 +117,11 @@
   --osdk-datetime-input-placeholder-color: var(--osdk-input-placeholder-color);
   --osdk-datetime-input-border-width: var(--osdk-input-border-width);
   --osdk-datetime-input-border-color: var(--osdk-input-border-color);
-  --osdk-datetime-input-border-color-focus: var(
-    --osdk-input-border-color-focus
-  );
+  --osdk-datetime-input-border-color-focus: var(--osdk-input-border-color-focus);
   --osdk-datetime-input-focus-width: var(--osdk-input-focus-width);
   --osdk-datetime-input-focus-color: var(--osdk-input-focus-color);
   --osdk-datetime-input-focus-offset: var(--osdk-input-focus-offset);
-  --osdk-datetime-input-transition-duration: var(
-    --osdk-input-transition-duration
-  );
+  --osdk-datetime-input-transition-duration: var(--osdk-input-transition-duration);
   --osdk-datetime-input-transition-ease: var(--osdk-input-transition-ease);
 
   /* Calendar fallback / loading */
