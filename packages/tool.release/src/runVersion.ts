@@ -63,6 +63,7 @@ import * as fs from "node:fs";
 import path from "node:path";
 import type { Octokit } from "octokit";
 import { createOrUpdatePr } from "./createOrUpdatePr.js";
+import { demoteChangesetsForStableRelease } from "./demoteChangesetsForStableRelease.js";
 import { FailedWithUserMessage } from "./FailedWithUserMessage.js";
 import * as gitUtils from "./gitUtils.js";
 import { mutateReleasePlan } from "./mutateReleasePlan.js";
@@ -144,6 +145,12 @@ export async function runVersion({
     readChangesets(cwd),
     readPreState(cwd),
   ]);
+
+  const isPrerelease = preState != null && preState.mode === "pre";
+
+  if (isMainBranch && !isPrerelease) {
+    demoteChangesetsForStableRelease(changesets);
+  }
 
   const releaseConfig: Config = {
     ...config,
