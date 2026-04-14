@@ -27,9 +27,6 @@ import { FieldBridge } from "./fields/FieldBridge.js";
 import type { RendererFieldDefinition } from "./FormFieldApi.js";
 import { FormHeader } from "./FormHeader.js";
 
-// Using a lower trigger delay for tooltips in forms so the user can see the errors quickly
-const TOOLTIP_TRIGGER_DELAY_MS = 200;
-
 export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
   formTitle,
   fieldDefinitions,
@@ -201,7 +198,7 @@ const SubmitButton = memo(function SubmitButtonFn({
 
   return (
     <Tooltip.Root defaultOpen={true}>
-      <Tooltip.Trigger delay={TOOLTIP_TRIGGER_DELAY_MS}>
+      <Tooltip.Trigger>
         {button}
       </Tooltip.Trigger>
       <Tooltip.Portal>
@@ -232,7 +229,7 @@ function ErrorIndicator({
 
   return (
     <Tooltip.Root>
-      <Tooltip.Trigger delay={TOOLTIP_TRIGGER_DELAY_MS}>
+      <Tooltip.Trigger>
         <span className={styles.osdkFormErrorIndicator}>
           <ErrorIcon size={14} />
           {count === 1 ? "1 issue" : `${count} issues`}
