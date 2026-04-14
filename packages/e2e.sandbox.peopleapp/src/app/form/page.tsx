@@ -133,6 +133,7 @@ const fieldDefinitions: ReadonlyArray<RendererFieldDefinition> = [
     label: "Resume",
     fieldComponentProps: {
       accept: [".pdf", ".doc", ".docx"],
+      maxSize: 100, // 100 bytes
     },
   },
   {
@@ -181,9 +182,12 @@ export function FormPage() {
     Record<string, unknown> | undefined
   >(undefined);
 
-  const handleSubmit = useCallback((formState: Record<string, unknown>) => {
-    setSubmittedState(formState);
-  }, []);
+  const handleSubmit = useCallback(
+    async (formState: Record<string, unknown>) => {
+      setSubmittedState(formState);
+    },
+    [],
+  );
 
   const employeeObjectSet = useMemo(
     () => $(Employee) as ObjectSet<ObjectTypeDefinition>,

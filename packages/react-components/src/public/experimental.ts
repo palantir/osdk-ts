@@ -197,4 +197,5 @@ export type {
   RendererFieldDefinition,
   TextAreaFieldProps,
   TextInputFieldProps,
+  ValidationError,
 } from "../action-form/FormFieldApi.js";

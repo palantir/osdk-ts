@@ -51,7 +51,8 @@ export type PossibleWhereClauseFilters =
   | "$containsAllTermsInOrder"
   | "$containsAnyTerm"
   | "$containsAllTerms"
-  | "$interval";
+  | "$interval"
+  | "$matchesRegex";
 
 // the value side of this needs to match DistanceUnit from @osdk/foundry but we don't
 // want the dependency
