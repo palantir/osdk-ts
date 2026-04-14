@@ -49,17 +49,6 @@
   color: var(--osdk-form-footer-error-color);
   font-size: var(--osdk-form-footer-error-font-size);
   cursor: help;
-
-  /*
- * FIX: The SVG icon appears truncated/invisible because the path coordinates
- * (approx x:80, y:100) are far outside the defined viewBox="0 0 16 16".
- * Since the SVG markup/viewBox cannot be modified directly, we force
- * overflow: visible to allow the path to be rendered outside the
- * clipping boundary of the SVG container.
- */
-  & svg {
-    overflow: visible;
-  }
 }
 
 .osdkFormErrorList {
