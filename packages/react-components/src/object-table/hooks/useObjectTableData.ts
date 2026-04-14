@@ -29,10 +29,11 @@ import type { SortingState } from "@tanstack/react-table";
 import { useMemo } from "react";
 import type { ColumnDefinition, ObjectSetOptions } from "../ObjectTableApi.js";
 import type { AsyncCellData } from "../utils/AsyncCellData.js";
+import {
+  DEFAULT_OBJECT_TABLE_DEDUPE_INTERVAL_MS,
+  DEFAULT_PAGE_SIZE,
+} from "../utils/constants.js";
 import { useFunctionColumnsData } from "./useFunctionColumnsData.js";
-
-const PAGE_SIZE = 50;
-const DEFAULT_DEDUPE_INTERVAL_MS = 60_000;
 
 type WithProperties<
   Q extends ObjectOrInterfaceDefinition,
@@ -71,11 +72,9 @@ export function useObjectTableData<
   sorting?: SortingState,
   objectSet?: ObjectSet<Q>,
   objectSetOptions?: ObjectSetOptions<Q>,
-  dedupeIntervalMs?: number,
+  dedupeIntervalMs: number = DEFAULT_OBJECT_TABLE_DEDUPE_INTERVAL_MS,
+  pageSize: number = DEFAULT_PAGE_SIZE,
 ): UseObjectTableDataResult<Q, RDPs> {
-  const resolvedDedupeIntervalMs = dedupeIntervalMs
-    ?? DEFAULT_DEDUPE_INTERVAL_MS;
-
   const orderBy = useMemo(() => {
     if (!sorting || sorting.length === 0) {
       return undefined;
@@ -133,9 +132,9 @@ export function useObjectTableData<
       >,
       where: filter,
       orderBy,
-      pageSize: PAGE_SIZE,
+      pageSize,
       enabled: shouldUseObjectSet,
-      dedupeIntervalMs: resolvedDedupeIntervalMs,
+      dedupeIntervalMs,
     },
   );
 
@@ -146,23 +145,29 @@ export function useObjectTableData<
     objectOrInterfaceType,
     {
       withProperties,
-      pageSize: PAGE_SIZE,
+      pageSize,
       where: filter,
       orderBy,
       enabled: !shouldUseObjectSet,
-      dedupeIntervalMs: resolvedDedupeIntervalMs,
+      dedupeIntervalMs,
     },
   );
 
   // Get the result from the appropriate hook
   const baseResult = shouldUseObjectSet ? objectSetResult : osdkObjectsResult;
 
+  const primaryKeyApiName = objectOrInterfaceType.type === "object"
+    ? objectOrInterfaceType.primaryKeyApiName
+    : undefined;
+
   // Call useFunctionColumnsData to get function column data
-  const functionColumnData = useFunctionColumnsData<Q, RDPs, FunctionColumns>(
-    baseResult.objectSet,
-    baseResult.data,
+  const functionColumnData = useFunctionColumnsData<Q, RDPs, FunctionColumns>({
+    objectSet: baseResult.objectSet,
+    objects: baseResult.data,
     columnDefinitions,
-  );
+    primaryKeyApiName,
+    pageSize,
+  });
 
   // Merge function column data into each object
   const mergedData = useMemo(() => {
