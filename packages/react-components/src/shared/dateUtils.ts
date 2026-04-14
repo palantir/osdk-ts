@@ -91,7 +91,12 @@ export function formatDatetimeForDisplay(
   return `${formatDateForInput(date)} ${formatTime(date)}`;
 }
 
-/** Parses space-separated ("2024-06-15 14:30") or T-separated datetime strings. */
+/**
+ * Parses space-separated ("2024-06-15 14:30") or T-separated datetime strings.
+ * Inverse of `formatDatetimeForDisplay`, which joins date and time with a space
+ * for readability. Here we replace that space with "T" so `new Date()` parses
+ * it as a local datetime (e.g. "2024-06-15T14:30").
+ */
 export function parseDatetimeFromDisplay(
   value: string | undefined | null,
 ): Date | undefined {

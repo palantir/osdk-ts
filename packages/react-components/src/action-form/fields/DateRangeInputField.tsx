@@ -119,8 +119,8 @@ export function DateRangeInputField({
   });
 
   // --- Cross-input error: overlapping range ---
-  const overlappingError: "overlapping" | null = (() => {
-    if (!isEditingStart && !isEditingEnd) return null;
+  const hasOverlapError = (() => {
+    if (!isEditingStart && !isEditingEnd) return false;
     const parsedStart = isEditingStart
       ? startParsedValue
       : (startDate ?? undefined);
@@ -131,19 +131,19 @@ export function DateRangeInputField({
         !allowSingleDayRange
         && parsedEnd.getTime() === parsedStart.getTime()
       ) {
-        return "overlapping";
+        return true;
       }
       if (parsedEnd.getTime() < parsedStart.getTime()) {
-        return "overlapping";
+        return true;
       }
     }
-    return null;
+    return false;
   })();
 
   const startInvalid = isEditingStart
-    && (startInputError != null || overlappingError != null);
+    && (startInputError != null || hasOverlapError);
   const endInvalid = isEditingEnd
-    && (endInputError != null || overlappingError != null);
+    && (endInputError != null || hasOverlapError);
 
   // --- Focus handlers ---
 
@@ -389,13 +389,13 @@ export function DateRangeInputField({
 
   const startWrapperClassName = classnames(
     styles.osdkDateRangeInputWrapper,
-    (startInvalid || overlappingError != null)
+    (startInvalid || hasOverlapError)
       && styles.osdkDateRangeInputWrapperError,
   );
 
   const endWrapperClassName = classnames(
     styles.osdkDateRangeInputWrapper,
-    (endInvalid || overlappingError != null)
+    (endInvalid || hasOverlapError)
       && styles.osdkDateRangeInputWrapperError,
   );
 

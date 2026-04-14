@@ -11,9 +11,7 @@
   --osdk-datetime-popover-border-radius: var(--osdk-surface-border-radius);
   --osdk-datetime-popover-padding: calc(var(--osdk-surface-spacing) * 2);
   --osdk-datetime-popover-z-index: var(--osdk-surface-z-index-3);
-  /* TODO: replace with a shared --osdk-surface-shadow-* token for dark mode */
-  --osdk-datetime-popover-shadow: 0 4px 20px rgba(0, 0, 0, 0.2),
-    0 1px 4px rgba(0, 0, 0, 0.1);
+  --osdk-datetime-popover-shadow: var(--osdk-surface-shadow-2);
 
   /* Calendar */
   --osdk-datetime-calendar-font-family: var(--osdk-typography-family-default);
