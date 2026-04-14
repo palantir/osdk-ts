@@ -251,6 +251,25 @@ describe("DateRangeInputField", () => {
       }
     });
 
+    it("blurs end input after Enter key closes popover", () => {
+      const onChange = vi.fn();
+      render(
+        <DateRangeInputField
+          value={[new Date(2024, 0, 1), null]}
+          onChange={onChange}
+        />,
+      );
+      const endInput = screen.getByLabelText("End date") as HTMLInputElement;
+      endInput.focus();
+      fireEvent.focus(endInput);
+      expect(document.activeElement).toBe(endInput);
+
+      fireEvent.change(endInput, { target: { value: "2024-06-30" } });
+      fireEvent.keyDown(endInput, { key: "Enter" });
+
+      expect(document.activeElement).not.toBe(endInput);
+    });
+
     it("closes popover on Escape from start input", () => {
       render(<DateRangeInputField value={[null, null]} onChange={vi.fn()} />);
       const startInput = screen.getByLabelText("Start date");
@@ -261,6 +280,33 @@ describe("DateRangeInputField", () => {
       fireEvent.keyDown(startInput, { key: "Escape" });
       expect(startInput.getAttribute("aria-expanded")).toBe("false");
       expect(screen.queryByRole("dialog")).toBeNull();
+    });
+
+    it("blurs inputs when tabbing past end of popover", () => {
+      render(
+        <DateRangeInputField
+          value={[new Date(2024, 0, 15), null]}
+          onChange={vi.fn()}
+        />,
+      );
+      const startInput = screen.getByLabelText(
+        "Start date",
+      ) as HTMLInputElement;
+      startInput.focus();
+      fireEvent.focus(startInput);
+      expect(document.activeElement).toBe(startInput);
+
+      const dialog = screen.getByRole("dialog");
+      const endSentinel = dialog.querySelector(
+        "[aria-label='End of date range picker dialog']",
+      ) as HTMLElement;
+
+      // Simulate Tab reaching the sentinel from inside the popover.
+      fireEvent.focus(endSentinel, { relatedTarget: dialog });
+
+      expect(document.activeElement).not.toBe(startInput);
+      const endInput = screen.getByLabelText("End date");
+      expect(document.activeElement).not.toBe(endInput);
     });
 
     it("closes popover on Escape from end input", () => {

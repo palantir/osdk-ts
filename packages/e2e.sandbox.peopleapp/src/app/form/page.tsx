@@ -62,7 +62,6 @@ const fieldDefinitions: ReadonlyArray<RendererFieldDefinition> = [
     fieldComponentProps: {
       placeholderStart: "Start Date",
       placeholderEnd: "End Date",
-      showTime: true,
     },
   },
   {

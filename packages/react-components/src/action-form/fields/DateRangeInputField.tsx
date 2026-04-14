@@ -163,10 +163,13 @@ export const DateRangeInputField: React.NamedExoticComponent<
   const handleStartBlur = useCallback(
     (e: React.FocusEvent<HTMLInputElement>) => {
       const related = e.relatedTarget ?? document.activeElement;
-      if (
-        popoverRef.current?.contains(related as Node)
-        || endInputRef.current === related
-      ) {
+      if (popoverRef.current?.contains(related as Node)) {
+        // Focus moved into the popover portal — the field is still logically
+        // active, so suppress the blur from bubbling to parent containers.
+        e.stopPropagation();
+        return;
+      }
+      if (endInputRef.current === related) {
         return;
       }
       if (startInputRaw === "") {
@@ -182,10 +185,11 @@ export const DateRangeInputField: React.NamedExoticComponent<
   const handleEndBlur = useCallback(
     (e: React.FocusEvent<HTMLInputElement>) => {
       const related = e.relatedTarget ?? document.activeElement;
-      if (
-        popoverRef.current?.contains(related as Node)
-        || startInputRef.current === related
-      ) {
+      if (popoverRef.current?.contains(related as Node)) {
+        e.stopPropagation();
+        return;
+      }
+      if (startInputRef.current === related) {
         return;
       }
       if (endInputRaw === "") {
@@ -197,6 +201,18 @@ export const DateRangeInputField: React.NamedExoticComponent<
     },
     [endInputRaw, endCommittedValue, stopEndEditing, startDate, onChange],
   );
+
+  // --- Popover helpers ---
+
+  // Shared close sequence: dismiss the popover, reset both editing states,
+  // and blur both inputs so focus doesn't linger after the calendar disappears.
+  const closePopover = useCallback(() => {
+    setIsOpen(false);
+    stopStartEditing();
+    stopEndEditing();
+    startInputRef.current?.blur();
+    endInputRef.current?.blur();
+  }, [stopStartEditing, stopEndEditing]);
 
   // --- Keyboard handlers ---
 
@@ -214,9 +230,7 @@ export const DateRangeInputField: React.NamedExoticComponent<
         endInputRef.current?.focus();
       } else if (e.key === "Escape") {
         e.preventDefault();
-        stopStartEditing();
-        setIsOpen(false);
-        startInputRef.current?.blur();
+        closePopover();
       } else if (e.key === "Tab" && e.shiftKey) {
         setIsOpen(false);
       }
@@ -225,6 +239,7 @@ export const DateRangeInputField: React.NamedExoticComponent<
       startInputRaw,
       startCommittedValue,
       stopStartEditing,
+      closePopover,
       endDate,
       onChange,
     ],
@@ -239,13 +254,10 @@ export const DateRangeInputField: React.NamedExoticComponent<
         } else if (endCommittedValue != null) {
           onChange?.([startDate ?? null, endCommittedValue]);
         }
-        stopEndEditing();
-        setIsOpen(false);
+        closePopover();
       } else if (e.key === "Escape") {
         e.preventDefault();
-        stopEndEditing();
-        setIsOpen(false);
-        endInputRef.current?.blur();
+        closePopover();
       } else if (e.key === "Tab" && !e.shiftKey && isOpen) {
         // Tab from the end input bridges focus into the popover. The popover
         // doesn't auto-focus on open (to keep the cursor in the input for typing),
@@ -262,26 +274,23 @@ export const DateRangeInputField: React.NamedExoticComponent<
     [
       endInputRaw,
       endCommittedValue,
-      stopEndEditing,
+      closePopover,
       startDate,
       onChange,
       isOpen,
     ],
   );
 
-  // --- Popover handlers ---
-
+  // Called by base-ui when the popover opens or closes (e.g. click outside, Escape).
   const handleOpenChange = useCallback(
     (nextOpen: boolean) => {
-      setIsOpen(nextOpen);
-      if (!nextOpen) {
-        stopStartEditing();
-        stopEndEditing();
-        startInputRef.current?.blur();
-        endInputRef.current?.blur();
+      if (nextOpen) {
+        setIsOpen(true);
+      } else {
+        closePopover();
       }
     },
-    [stopStartEditing, stopEndEditing],
+    [closePopover],
   );
 
   // --- Calendar handlers ---
@@ -301,12 +310,7 @@ export const DateRangeInputField: React.NamedExoticComponent<
         endInputRef.current?.focus();
       } else if (newStart != null && newEnd != null && shouldCloseOnSelection) {
         // Full range selected — close and blur.
-        // displayedValue handles the display format after stopEditing.
-        setIsOpen(false);
-        stopStartEditing();
-        stopEndEditing();
-        startInputRef.current?.blur();
-        endInputRef.current?.blur();
+        closePopover();
       } else if (newStart != null && newEnd != null) {
         // Full range selected but popover stays open (showTime) —
         // inputs remain in editing mode, so update with editFormatFn.
@@ -317,8 +321,8 @@ export const DateRangeInputField: React.NamedExoticComponent<
     [
       onChange,
       shouldCloseOnSelection,
+      closePopover,
       stopStartEditing,
-      stopEndEditing,
       setStartDateValue,
       setEndDateValue,
     ],
@@ -363,20 +367,14 @@ export const DateRangeInputField: React.NamedExoticComponent<
 
   // End boundary (bottom): Two cases —
   // (1) Tab past the last calendar element (focus came from inside the popover)
-  //     → close the popover and return focus to the active input.
+  //     → close the popover and blur both inputs.
   // (2) Focus entered from outside the popover (e.g. reverse Tab from the page)
   //     → redirect to the last interactive element inside the popover.
   const handleEndFocusBoundary = useCallback(
     (e: React.FocusEvent<HTMLDivElement>) => {
       const related = e.relatedTarget ?? document.activeElement;
       if (popoverRef.current?.contains(related as Node)) {
-        const activeRef = activeBoundary === "start"
-          ? startInputRef
-          : endInputRef;
-        activeRef.current?.focus();
-        setIsOpen(false);
-        stopStartEditing();
-        stopEndEditing();
+        closePopover();
       } else {
         const buttons = popoverRef.current?.querySelectorAll<HTMLElement>(
           "button, select",
@@ -385,7 +383,7 @@ export const DateRangeInputField: React.NamedExoticComponent<
         lastButton?.focus();
       }
     },
-    [activeBoundary, stopStartEditing, stopEndEditing],
+    [closePopover],
   );
 
   // --- Calendar selected range ---
@@ -478,6 +476,9 @@ export const DateRangeInputField: React.NamedExoticComponent<
             id={popoverId}
             role="dialog"
             aria-label="date range picker"
+            // Disable base-ui's automatic focus restoration to the trigger on close.
+            // We manage focus ourselves via closePopover() which blurs the inputs.
+            finalFocus={false}
           >
             <div
               onFocus={handleStartFocusBoundary}

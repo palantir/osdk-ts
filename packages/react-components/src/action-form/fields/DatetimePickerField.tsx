@@ -97,6 +97,10 @@ export const DatetimePickerField: React.NamedExoticComponent<
       // the calendar's onSelect handler owns the onChange call in that case.
       const relatedTarget = e.relatedTarget ?? document.activeElement;
       if (popoverRef.current?.contains(relatedTarget as Node)) {
+        // Focus moved into the popover portal (e.g. clicking a calendar day).
+        // The field is still logically active, so suppress the blur from
+        // bubbling — parent containers should not treat this as a field exit.
+        e.stopPropagation();
         return;
       }
       if (inputValue === "") {
@@ -109,6 +113,14 @@ export const DatetimePickerField: React.NamedExoticComponent<
     [inputValue, validatedDate, stopEditing, onChange],
   );
 
+  // Shared close sequence: dismiss the popover, reset editing state, and
+  // blur the input so focus doesn't linger after the calendar disappears.
+  const closePopover = useCallback(() => {
+    setIsOpen(false);
+    stopEditing();
+    inputRef.current?.blur();
+  }, [stopEditing]);
+
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => {
       if (e.key === "Enter") {
@@ -118,13 +130,10 @@ export const DatetimePickerField: React.NamedExoticComponent<
         } else if (validatedDate != null) {
           onChange?.(validatedDate);
         }
-        stopEditing();
-        setIsOpen(false);
+        closePopover();
       } else if (e.key === "Escape") {
         e.preventDefault();
-        stopEditing();
-        setIsOpen(false);
-        inputRef.current?.blur();
+        closePopover();
       } else if (e.key === "Tab" && !e.shiftKey && isOpen) {
         // Move focus from the text input into the calendar popover.
         // The popover doesn't auto-focus on open (to keep the cursor in the input),
@@ -140,28 +149,21 @@ export const DatetimePickerField: React.NamedExoticComponent<
         setIsOpen(false);
       }
     },
-    [
-      inputValue,
-      validatedDate,
-      stopEditing,
-      isOpen,
-      onChange,
-    ],
+    [inputValue, validatedDate, closePopover, isOpen, onChange],
   );
 
   // --- Popover handlers ---
 
   // Called by base-ui when the popover opens or closes (e.g. click outside, Escape).
-  // On close, reset editing state and return focus to the input.
   const handleOpenChange = useCallback(
     (nextOpen: boolean) => {
-      setIsOpen(nextOpen);
-      if (!nextOpen) {
-        stopEditing();
-        inputRef.current?.blur();
+      if (nextOpen) {
+        setIsOpen(true);
+      } else {
+        closePopover();
       }
     },
-    [stopEditing],
+    [closePopover],
   );
 
   // --- Calendar handlers ---
@@ -183,9 +185,7 @@ export const DatetimePickerField: React.NamedExoticComponent<
       setDateValue(date);
 
       if (shouldCloseOnSelection) {
-        setIsOpen(false);
-        stopEditing();
-        inputRef.current?.blur();
+        closePopover();
       }
     },
     [
@@ -195,7 +195,7 @@ export const DatetimePickerField: React.NamedExoticComponent<
       shouldCloseOnSelection,
       setDateValue,
       setInputValue,
-      stopEditing,
+      closePopover,
     ],
   );
 
@@ -223,9 +223,7 @@ export const DatetimePickerField: React.NamedExoticComponent<
     (e: React.FocusEvent<HTMLDivElement>) => {
       const relatedTarget = e.relatedTarget ?? document.activeElement;
       if (popoverRef.current?.contains(relatedTarget as Node)) {
-        inputRef.current?.focus();
-        setIsOpen(false);
-        stopEditing();
+        closePopover();
       } else {
         const buttons = popoverRef.current?.querySelectorAll<HTMLElement>(
           "button, select",
@@ -234,7 +232,7 @@ export const DatetimePickerField: React.NamedExoticComponent<
         lastButton?.focus();
       }
     },
-    [stopEditing],
+    [closePopover],
   );
 
   // --- Time picker (rendered as a popover sibling, not a DayPicker footer,
@@ -243,10 +241,7 @@ export const DatetimePickerField: React.NamedExoticComponent<
   const timeFooter = showTime
     ? (
       <div className={styles.osdkDatetimeTimeFooter}>
-        <TimePicker
-          value={getTimeValue(value)}
-          onChange={handleTimeChange}
-        />
+        <TimePicker value={getTimeValue(value)} onChange={handleTimeChange} />
       </div>
     )
     : undefined;
@@ -290,6 +285,9 @@ export const DatetimePickerField: React.NamedExoticComponent<
             id={popoverId}
             role="dialog"
             aria-label="date picker"
+            // Disable base-ui's automatic focus restoration to the trigger on close.
+            // We manage focus ourselves via closePopover() which blurs the input.
+            finalFocus={false}
           >
             <div
               onFocus={handleStartFocusBoundary}

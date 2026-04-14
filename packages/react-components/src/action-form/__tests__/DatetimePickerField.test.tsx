@@ -379,6 +379,45 @@ describe("DatetimePickerField", () => {
       }
     });
 
+    it("blurs input after Enter key closes popover", () => {
+      render(<DatetimePickerField value={null} onChange={vi.fn()} />);
+      const input = screen.getByRole("combobox") as HTMLInputElement;
+      input.focus();
+      expect(document.activeElement).toBe(input);
+      fireEvent.change(input, { target: { value: "2024-06-01" } });
+      fireEvent.keyDown(input, { key: "Enter" });
+
+      expect(document.activeElement).not.toBe(input);
+    });
+
+    it("blurs input when tabbing past end of popover", () => {
+      render(
+        <DatetimePickerField
+          value={new Date(2024, 0, 15)}
+          onChange={vi.fn()}
+        />,
+      );
+      const input = screen.getByRole("combobox") as HTMLInputElement;
+
+      // Open popover via fireEvent (triggers React onFocus → setIsOpen(true)).
+      // Also use .focus() so document.activeElement tracks correctly.
+      input.focus();
+      fireEvent.focus(input);
+
+      const dialog = screen.getByRole("dialog");
+
+      // Find the end-of-popover focus sentinel inside the dialog.
+      const endSentinel = dialog.querySelector(
+        "[aria-label='End of date picker dialog']",
+      ) as HTMLElement;
+
+      // Simulate Tab reaching the sentinel from inside the popover.
+      // relatedTarget inside the popover triggers the "close" branch.
+      fireEvent.focus(endSentinel, { relatedTarget: dialog });
+
+      expect(document.activeElement).not.toBe(input);
+    });
+
     it("popover closes after selecting a date (closeOnSelection)", () => {
       const onChange = vi.fn();
       render(
