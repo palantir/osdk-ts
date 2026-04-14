@@ -36,6 +36,8 @@ export interface FormFieldRendererProps {
   fieldDefinition: RendererFieldDefinition;
   value: unknown;
   onFieldValueChange: (value: unknown) => void;
+  onBlur: (e: React.FocusEvent<HTMLDivElement>) => void;
+  error: string | undefined;
 }
 
 export const FormFieldRenderer: React.FC<FormFieldRendererProps> = memo(
@@ -43,6 +45,8 @@ export const FormFieldRenderer: React.FC<FormFieldRendererProps> = memo(
     fieldDefinition,
     value,
     onFieldValueChange,
+    onBlur,
+    error,
   }: FormFieldRendererProps): React.ReactElement {
     const { label, isRequired, helperText, helperTextPlacement } =
       fieldDefinition;
@@ -53,8 +57,15 @@ export const FormFieldRenderer: React.FC<FormFieldRendererProps> = memo(
         isRequired={isRequired}
         fieldKey={fieldDefinition.fieldKey}
         helperText={helperTextPlacement !== "tooltip" ? helperText : undefined}
+        error={error}
+        onBlur={onBlur}
       >
-        {renderFieldComponent(fieldDefinition, value, onFieldValueChange)}
+        {renderFieldComponent(
+          fieldDefinition,
+          value,
+          onFieldValueChange,
+          error,
+        )}
       </FormField>
     );
   },
@@ -64,6 +75,7 @@ function renderFieldComponent(
   fieldDefinition: RendererFieldDefinition,
   value: unknown,
   onChange: (value: unknown) => void,
+  error: string | undefined,
 ): React.ReactElement {
   switch (fieldDefinition.fieldComponent) {
     case "DATE_RANGE_INPUT":
@@ -83,6 +95,7 @@ function renderFieldComponent(
           value={value != null ? String(value) : ""}
           onChange={onChange}
           placeholder={fieldDefinition.placeholder}
+          error={error}
           {...fieldDefinition.fieldComponentProps}
         />
       );
@@ -93,6 +106,7 @@ function renderFieldComponent(
           value={value != null ? String(value) : ""}
           onChange={onChange}
           placeholder={fieldDefinition.placeholder}
+          error={error}
           {...fieldDefinition.fieldComponentProps}
         />
       );
@@ -102,6 +116,7 @@ function renderFieldComponent(
           value={value}
           onChange={onChange}
           placeholder={fieldDefinition.placeholder}
+          error={error}
           {...fieldDefinition.fieldComponentProps}
         />
       );
@@ -114,6 +129,7 @@ function renderFieldComponent(
           // TODO: Use coerceFieldValue
           value={value instanceof Date ? value : null}
           onChange={onChange}
+          error={error}
           {...fieldDefinition.fieldComponentProps}
         />
       );
@@ -123,6 +139,7 @@ function renderFieldComponent(
           id={fieldDefinition.fieldKey}
           value={value}
           onChange={onChange}
+          error={error}
           {...fieldDefinition.fieldComponentProps}
         />
       );
@@ -132,6 +149,7 @@ function renderFieldComponent(
           id={fieldDefinition.fieldKey}
           value={value}
           onChange={onChange}
+          error={error}
           {...fieldDefinition.fieldComponentProps}
         />
       );
@@ -143,6 +161,7 @@ function renderFieldComponent(
           value={typeof value === "number" ? value : null}
           onChange={onChange}
           placeholder={fieldDefinition.placeholder}
+          error={error}
           {...fieldDefinition.fieldComponentProps}
         />
       );
@@ -152,6 +171,7 @@ function renderFieldComponent(
           id={fieldDefinition.fieldKey}
           value={coerceToFileValue(value)}
           onChange={onChange}
+          error={error}
           {...fieldDefinition.fieldComponentProps}
         />
       );

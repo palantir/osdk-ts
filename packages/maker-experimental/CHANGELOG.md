@@ -1,5 +1,22 @@
 # @osdk/maker-experimental
 
+## 0.7.0
+
+### Minor Changes
+
+- 492db18: Expand the set of types acceptable in references
+
+### Patch Changes
+
+- Updated dependencies [b90fb8e]
+- Updated dependencies [cbc8e9c]
+- Updated dependencies [e8d14a0]
+- Updated dependencies [2394ca7]
+- Updated dependencies [492db18]
+  - @osdk/maker@0.17.0
+  - @osdk/api@2.9.0
+  - @osdk/client.unstable@2.9.0
+
 ## 0.6.0
 
 ### Minor Changes

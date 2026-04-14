@@ -68,7 +68,10 @@ export interface UseObjectSetOptions<
   subtract?: ObjectSet<Q>[];
 
   /**
-   * Link to pivot to (changes the type)
+   * Link to pivot to (changes the type).
+   *
+   * Cannot be combined with `streamUpdates`. The server does not support
+   * websocket subscriptions for link-traversal queries.
    */
   pivotTo?: LinkNames<Q>;
 
@@ -102,6 +105,9 @@ export interface UseObjectSetOptions<
    * Enable streaming updates via websocket subscription.
    * When true, the object set will automatically update when matching objects are
    * added, updated, or removed.
+   *
+   * Cannot be combined with `pivotTo`. The server does not support
+   * websocket subscriptions for link-traversal queries.
    *
    * @default false
    */
@@ -191,6 +197,30 @@ const OBJECT_TYPE_PLACEHOLDER = "$__OBJECT__TYPE__PLACEHOLDER";
  * @param options - Options for filtering, sorting, and adding new derived properties
  * @returns Object set data with both existing and new derived properties
  */
+// pivotTo overload: streamUpdates is forbidden (the server does not support
+// websocket subscriptions for link-traversal queries).
+export function useObjectSet<
+  Q extends ObjectOrInterfaceDefinition,
+  BaseRDPs extends Record<string, SimplePropertyDef> = never,
+  RDPs extends Record<string, SimplePropertyDef> = {},
+>(
+  baseObjectSet: ObjectSet<Q, BaseRDPs> | undefined,
+  options: UseObjectSetOptions<Q, RDPs> & {
+    pivotTo: LinkNames<Q>;
+    streamUpdates?: never;
+  },
+): UseObjectSetResult<Q, RDPs>;
+
+// Non-pivotTo overload: pivotTo is forbidden to prevent fallthrough.
+export function useObjectSet<
+  Q extends ObjectOrInterfaceDefinition,
+  BaseRDPs extends Record<string, SimplePropertyDef> = never,
+  RDPs extends Record<string, SimplePropertyDef> = {},
+>(
+  baseObjectSet: ObjectSet<Q, BaseRDPs> | undefined,
+  options?: UseObjectSetOptions<Q, RDPs> & { pivotTo?: never },
+): UseObjectSetResult<Q, RDPs>;
+
 export function useObjectSet<
   Q extends ObjectOrInterfaceDefinition,
   BaseRDPs extends Record<string, SimplePropertyDef> = never,

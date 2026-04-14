@@ -25,6 +25,7 @@ export function TextAreaField({
   id,
   value,
   onChange,
+  error,
   placeholder,
   rows,
   wrap,
@@ -48,6 +49,7 @@ export function TextAreaField({
       minLength={minLength}
       maxLength={maxLength}
       render={renderTextarea}
+      aria-invalid={error != null || undefined}
     />
   );
 }

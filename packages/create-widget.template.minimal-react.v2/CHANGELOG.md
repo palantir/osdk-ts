@@ -1,5 +1,11 @@
 # @osdk/create-widget.template.react.v2
 
+## 3.6.0
+
+### Minor Changes
+
+- 89def41: patch bump associated with BlueprintJS upgrade
+
 ## 3.5.0
 
 ### Minor Changes

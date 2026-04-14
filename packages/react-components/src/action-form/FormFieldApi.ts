@@ -81,20 +81,20 @@ export interface FormFieldDefinition<
   isDisabled?: boolean;
 
   /**
-   * A callback to return a custom error message if validation failed
+   * A callback to customize error messages when a built-in validation rule fails.
+   * Receives a discriminated union with the constraint data (e.g., the min value
+   * that was exceeded) so the message can reference the threshold.
    *
-   * @param validationRule the validation rule that failed with the error message
-   * @returns the error message to display
+   * Return a string to override the default message, or `undefined` to keep it.
    */
-  onValidationError?: (error: ValidationError) => string;
+  onValidationError?: (error: ValidationError) => string | undefined;
 
   /**
-   * Additional function to validate the field
+   * Additional function to validate the field.
    *
-   * @param value the current field value
-   * @returns a boolean promise indicating whether the value is valid
+   * Return `undefined` if valid, or an error message string if invalid.
    */
-  validate?: (value: FieldValueType<Q, K>) => Promise<boolean>;
+  validate?: (value: FieldValueType<Q, K>) => Promise<string | undefined>;
 
   /**
    * The component props for the form field.
@@ -112,16 +112,18 @@ export interface FormFieldDefinition<
   >;
 }
 
-type ValidationError = { type: ValidationRule; error: string };
-
-type ValidationRule =
-  | "required"
-  | "min"
-  | "max"
-  | "minLength"
-  | "maxLength"
-  | "pattern"
-  | "validate";
+/**
+ * A discriminated union describing which validation rule failed and the
+ * constraint data the user needs to build a meaningful error message.
+ */
+export type ValidationError =
+  | { type: "required" }
+  | { type: "min"; min: number | Date }
+  | { type: "max"; max: number | Date }
+  | { type: "minLength"; minLength: number }
+  | { type: "maxLength"; maxLength: number }
+  | { type: "maxSize"; maxSize: number }
+  | { type: "validate"; message: string };
 
 /**
  * Maps field types to their corresponding props
@@ -429,6 +431,12 @@ export interface BaseFormFieldProps<V> {
   id?: string;
 
   /**
+   * The validation error message for this field, if any.
+   * When set, the field should display a visual error state.
+   */
+  error?: string;
+
+  /**
    * The value of the form field
    */
   value: V | null;
@@ -557,6 +565,8 @@ export type RendererFieldDefinition = {
     placeholder?: string;
     helperText?: string;
     helperTextPlacement?: "bottom" | "tooltip";
+    validate?: (value: unknown) => Promise<string | undefined>;
+    onValidationError?: (error: ValidationError) => string | undefined;
     fieldComponentProps: Omit<FormFieldPropsByType[K], FormManagedProps<K>>;
   };
 }[FieldComponent];

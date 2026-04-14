@@ -83,6 +83,7 @@ const archetypeRules = archetypes(
   .addArchetype(
     "checkApiPackages",
     [
+      "@osdk/client",
       "@osdk/api",
       "@osdk/functions",
       "@osdk/functions-testing.experimental",
@@ -90,17 +91,6 @@ const archetypeRules = archetypes(
     {
       ...LIBRARY_RULES,
       checkApi: true,
-    },
-  )
-  .addArchetype(
-    "clientPackage",
-    [
-      "@osdk/client",
-    ],
-    {
-      ...LIBRARY_RULES,
-      checkApi: true,
-      typecheckProject: "tsconfig.typecheck.json",
     },
   )
   .addArchetype(
@@ -371,7 +361,6 @@ const archetypeRules = archetypes(
       ...LIBRARY_RULES,
       react: true,
       extraPublishFiles: ["AGENTS.md", "docs", "experimental"],
-      customTsconfigExcludes: ["./src/intellisense.test.helpers/**"],
     },
   )
   .addArchetype(
@@ -489,7 +478,7 @@ const disallowWorkspaceCaret = createRuleFactory({
 // of typescript which broke code formatting. This rule is to make sure we don't experience that again.
 // (note devDeps are only happening at buildtime so they should be fine)
 const fixedDepsOnly = createRuleFactory({
-  name: "disallowWorkspaceCaret",
+  name: "fixedDepsOnly",
   check: async (context) => {
     const packageJson = context.getPackageJson();
 
@@ -501,6 +490,7 @@ const fixedDepsOnly = createRuleFactory({
         if (version === "catalog:foundry-platform-typescript") continue;
         if (version[0] >= "0" && version[0] <= "9") continue;
         if (dep === "typescript" && version[0] === "~") continue;
+        if (dep === "rollup" && version[0] === "^") continue; // we want rollup CVE fixes
 
         const message =
           `May only have fixed dependencies (found ${d}['${dep}'] == '${version}').`;
@@ -871,7 +861,6 @@ function minimalPackageRules(shared, options) {
  * @property { "vite" | undefined } [framework]
  * @property { import("typescript").CompilerOptions} [extraTsConfigCompilerOptions]
  * @property { boolean } [cssExport]
- * @property { string } [typecheckProject]
  */
 
 /**
@@ -982,9 +971,7 @@ function standardPackageRules(shared, options) {
           transpileTypes: options.skipTypes
             ? DELETE_SCRIPT_ENTRY
             : "monorepo.tool.transpile -f esm -m types -t node",
-          typecheck: options.typecheckProject
-            ? `tsc -p ${options.typecheckProject} --noEmit --emitDeclarationOnly false`
-            : "tsc --noEmit --emitDeclarationOnly false",
+          typecheck: "tsc --noEmit --emitDeclarationOnly false",
         },
       },
     }),

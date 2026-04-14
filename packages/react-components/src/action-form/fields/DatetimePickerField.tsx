@@ -41,6 +41,7 @@ export const DatetimePickerField: React.NamedExoticComponent<
   id,
   value,
   onChange,
+  error,
   min,
   max,
   placeholder,

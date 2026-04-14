@@ -1448,7 +1448,7 @@ export interface PageResult<T> {
 }
 
 // @public (undocumented)
-export type PossibleWhereClauseFilters = "$gt" | "$eq" | "$ne" | "$isNull" | "$contains" | "$gte" | "$lt" | "$lte" | "$within" | "$in" | "$intersects" | "$startsWith" | "$containsAllTermsInOrder" | "$containsAnyTerm" | "$containsAllTerms" | "$interval";
+export type PossibleWhereClauseFilters = "$gt" | "$eq" | "$ne" | "$isNull" | "$contains" | "$gte" | "$lt" | "$lte" | "$within" | "$in" | "$intersects" | "$startsWith" | "$containsAllTermsInOrder" | "$containsAnyTerm" | "$containsAllTerms" | "$interval" | "$matchesRegex";
 
 // @public (undocumented)
 export type PrimaryKeyType<Q extends ObjectOrInterfaceDefinition> = (Q extends ObjectTypeDefinition ? OsdkObjectPrimaryKeyType<Q> : unknown) & PropertyValueWireToClient[PrimaryKeyTypes];
