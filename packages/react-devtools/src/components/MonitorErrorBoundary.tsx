@@ -15,6 +15,7 @@
  */
 
 import React from "react";
+import styles from "./MonitorErrorBoundary.module.scss";
 
 export interface MonitorErrorBoundaryProps {
   children: React.ReactNode;
@@ -51,44 +52,21 @@ export class MonitorErrorBoundary extends React.Component<
     if (this.state.hasError) {
       if (process.env.NODE_ENV === "development") {
         return (
-          <div
-            style={{
-              padding: "20px",
-              background: "#ff000020",
-              border: "1px solid red",
-              margin: "10px",
-              borderRadius: "4px",
-            }}
-          >
-            <h3 style={{ color: "red", margin: "0 0 10px 0" }}>
+          <div className={styles.container}>
+            <h3 className={styles.title}>
               Monitor Error
             </h3>
-            <p style={{ margin: "0 0 10px 0" }}>
+            <p className={styles.message}>
               An error occurred in the monitoring panel:
             </p>
-            <pre
-              style={{
-                background: "#00000010",
-                padding: "10px",
-                borderRadius: "4px",
-                overflow: "auto",
-                fontSize: "12px",
-              }}
-            >
+            <pre className={styles.stack}>
               {this.state.error?.message}
               {"\n"}
               {this.state.error?.stack}
             </pre>
             <button
               onClick={() => this.setState({ hasError: false, error: null })}
-              style={{
-                padding: "5px 10px",
-                background: "#007acc",
-                color: "white",
-                border: "none",
-                borderRadius: "4px",
-                cursor: "pointer",
-              }}
+              className={styles.retryButton}
             >
               Retry
             </button>

@@ -22,13 +22,12 @@ import { DevToolsContext } from "./DevToolsContext.js";
 import { safelyInstallDevToolsHook } from "./fiber/DevtoolsHook.js";
 import { MonitorStore } from "./store/MonitorStore.js";
 
-safelyInstallDevToolsHook();
-
 const isDev = typeof process !== "undefined"
   ? process.env?.NODE_ENV !== "production"
   : true;
 
 if (isDev) {
+  safelyInstallDevToolsHook();
   const globalMonitorStore = new MonitorStore();
   (globalThis as Record<string, unknown>).__OSDK_DEVTOOLS_MONITOR_STORE__ =
     globalMonitorStore;

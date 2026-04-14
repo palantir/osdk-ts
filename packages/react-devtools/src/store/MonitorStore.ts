@@ -81,6 +81,7 @@ export class MonitorStore {
   private readonly consoleLogStore: ConsoleLogStore;
   private monitor: ObservableClientMonitor | null = null;
   private originalGlobalFetch: typeof globalThis.fetch | null = null;
+  private interceptedGlobalFetch: typeof globalThis.fetch | null = null;
   private unsubscribeFiberCommit: (() => void) | null = null;
 
   constructor(config: Partial<MonitoringConfig> = {}) {
@@ -212,14 +213,21 @@ export class MonitorStore {
 
     this.originalGlobalFetch = globalThis.fetch;
     const interceptedFetch = this.computeMonitor.createInterceptedFetch();
+    this.interceptedGlobalFetch = interceptedFetch;
     globalThis.fetch = interceptedFetch;
   }
 
   private uninstallGlobalFetchInterceptor(): void {
-    if (this.originalGlobalFetch != null) {
-      globalThis.fetch = this.originalGlobalFetch;
-      this.originalGlobalFetch = null;
+    if (this.originalGlobalFetch == null) {
+      return;
     }
+
+    if (globalThis.fetch === this.interceptedGlobalFetch) {
+      globalThis.fetch = this.originalGlobalFetch;
+    }
+
+    this.originalGlobalFetch = null;
+    this.interceptedGlobalFetch = null;
   }
 
   getMetricsStore(): MetricsStore {

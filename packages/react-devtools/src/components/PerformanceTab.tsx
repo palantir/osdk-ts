@@ -25,13 +25,16 @@ import type { MetricsStore } from "../store/MetricsStore.js";
 import type { MonitorStore } from "../store/MonitorStore.js";
 import type { Operation } from "../types/index.js";
 import type { ActionStartEvent } from "../utils/EventTimeline.js";
-import { formatNumber, formatTime } from "../utils/format.js";
+import { formatTime } from "../utils/format.js";
 import type { Recommendation } from "../utils/PerformanceRecommendationEngine.js";
 import {
   buildRecommendationMap,
   getRecommendationsForOperation,
 } from "../utils/RecommendationMatcher.js";
+import { ActionMetrics } from "./ActionMetrics.js";
+import { CacheMetrics } from "./CacheMetrics.js";
 import styles from "./MonitoringPanel.module.scss";
+import { ObjectLoadingMetrics } from "./ObjectLoadingMetrics.js";
 
 const CACHE_OPERATION_TYPES = new Set<Operation["type"]>([
   "cache-hit",
@@ -46,13 +49,7 @@ const ACTION_OPERATION_TYPES = new Set<Operation["type"]>([
   "action-validation",
 ]);
 
-const UI_CONSTANTS = {
-  MAX_RECENT_OPERATIONS: 50,
-  CACHE_HIT_EXCELLENT: 0.8,
-  CACHE_HIT_GOOD: 0.5,
-  ROLLBACK_EXCELLENT: 0.1,
-  ROLLBACK_ACCEPTABLE: 0.25,
-};
+const MAX_RECENT_OPERATIONS = 50;
 
 export interface PerformanceTabProps {
   metricsStore: MetricsStore;
@@ -133,237 +130,6 @@ export const PerformanceTab: React.FC<PerformanceTabProps> = (
     return null;
   };
 
-  const renderObjectLoadingMetrics = () => {
-    if (analysisLoading || !unusedFieldReport) {
-      return (
-        <div className={styles.metric}>
-          <span className={styles.metricLabel}>Analyzing...</span>
-        </div>
-      );
-    }
-
-    const efficiencyPercent = ((unusedFieldReport.averageEfficiency ?? 0) * 100)
-      .toFixed(0);
-    const wasteKb = ((unusedFieldReport.totalWastedBytes ?? 0) / 1024).toFixed(
-      1,
-    );
-
-    return (
-      <>
-        <div className={styles.metric}>
-          <span className={styles.metricLabel}>Inefficient Queries</span>
-          <span
-            className={classNames(
-              styles.metricValue,
-              unusedFieldReport.inefficientComponents === 0
-                ? styles.success
-                : unusedFieldReport.inefficientComponents < 5
-                ? styles.warning
-                : styles.danger,
-            )}
-          >
-            {formatNumber(unusedFieldReport.inefficientComponents)} of{" "}
-            {formatNumber(unusedFieldReport.totalComponents)}
-          </span>
-          <span className={styles.metricSubtext}>
-            {efficiencyPercent}% efficient
-          </span>
-        </div>
-
-        <div className={styles.metric}>
-          <span className={styles.metricLabel}>Wasted Bandwidth</span>
-          <span className={styles.metricValue}>
-            {wasteKb}KB
-          </span>
-          <span className={styles.metricSubtext}>
-            unused fields loaded
-          </span>
-        </div>
-
-        <div className={styles.metric}>
-          <span className={styles.metricLabel}>Common Unused</span>
-          <span className={styles.metricValue}>
-            {formatNumber(unusedFieldReport.commonUnused.length)}
-          </span>
-          <span className={styles.metricSubtext}>
-            fields unused across queries
-          </span>
-        </div>
-      </>
-    );
-  };
-
-  const renderCacheMetrics = () => {
-    const totalObjects = metrics.aggregates.totalObjectsFromCache
-      + metrics.aggregates.totalObjectsFromNetwork;
-    const objectBasedRate = totalObjects > 0
-      ? metrics.aggregates.totalObjectsFromCache / totalObjects
-      : 0;
-    const rateClass = objectBasedRate >= UI_CONSTANTS.CACHE_HIT_EXCELLENT
-      ? styles.success
-      : objectBasedRate >= UI_CONSTANTS.CACHE_HIT_GOOD
-      ? styles.warning
-      : styles.danger;
-
-    return (
-      <>
-        <div className={styles.metric}>
-          <span className={styles.metricLabel}>Cache Hit Rate</span>
-          <span className={classNames(styles.metricValue, rateClass)}>
-            {(objectBasedRate * 100).toFixed(0)}%
-          </span>
-          <span className={styles.metricSubtext}>
-            {formatNumber(metrics.aggregates.totalObjectsFromCache)} /{" "}
-            {formatNumber(totalObjects)} objects
-          </span>
-        </div>
-
-        <div className={styles.metric}>
-          <span className={styles.metricLabel}>Cache Savings</span>
-          <span className={classNames(styles.metricValue, styles.success)}>
-            {formatNumber(
-              metrics.aggregates.cacheHits
-                + metrics.aggregates.revalidations
-                + metrics.aggregates.deduplications,
-            )} requests saved
-          </span>
-          <span className={styles.metricSubtext}>
-            {formatNumber(metrics.aggregates.deduplications)} deduped
-          </span>
-        </div>
-
-        <div className={styles.metric}>
-          <span className={styles.metricLabel}>Avg Response</span>
-          <span className={styles.metricValue}>
-            {formatTime(metrics.rates.averageResponseTime)}
-          </span>
-          <span className={styles.metricSubtext}>
-            Cache: {formatTime(metrics.rates.averageCachedResponseTime)}
-          </span>
-        </div>
-      </>
-    );
-  };
-
-  const renderActionMetrics = () => {
-    const totalActions = metrics.aggregates.actionCount;
-    const configuredActions = metrics.aggregates
-      .configuredOptimisticActionCount;
-    const observedOptimisticActions = metrics.aggregates
-      .optimisticActionCount;
-    const totalTimeSaved = metrics.aggregates.totalPerceivedSpeedup;
-    const avgTimeSaved = observedOptimisticActions > 0
-      ? totalTimeSaved / observedOptimisticActions
-      : 0;
-    const adoptionRate = metrics.rates.configuredOptimisticActionRate;
-    const effectiveness = configuredActions > 0
-      ? observedOptimisticActions / configuredActions
-      : 0;
-    const avgServerLatency = metrics.rates.averageServerRoundTripTime;
-    const avgOptimisticLatency = metrics.rates.averageOptimisticRenderTime;
-    const rollbackRate = metrics.rates.rollbackRate;
-    const validations = metrics.aggregates.validationCount;
-    const avgValidationTime = metrics.rates.averageValidationTime;
-    const validationSavings = metrics.rates.validationTimeSaved;
-    const waitingForOptimism = configuredActions > 0
-      && observedOptimisticActions === 0;
-
-    return (
-      <>
-        <div className={styles.metric}>
-          <span className={styles.metricLabel}>Time Saved (Optimistic)</span>
-          <span className={styles.metricValue}>
-            {observedOptimisticActions > 0
-              ? formatTime(avgTimeSaved)
-              : "—"}
-          </span>
-          <span className={styles.metricSubtext}>
-            {observedOptimisticActions > 0
-              ? `Total ${formatTime(totalTimeSaved)} across ${
-                formatNumber(observedOptimisticActions)
-              } actions`
-              : waitingForOptimism
-              ? "Optimistic handlers have not emitted yet"
-              : "No optimistic handlers observed"}
-          </span>
-        </div>
-
-        <div className={styles.metric}>
-          <span className={styles.metricLabel}>Optimistic Adoption</span>
-          <span className={styles.metricValue}>
-            {totalActions > 0 ? `${(adoptionRate * 100).toFixed(0)}%` : "—"}
-          </span>
-          <span className={styles.metricSubtext}>
-            {formatNumber(configuredActions)} / {formatNumber(totalActions)}
-            {" "}
-            actions
-          </span>
-        </div>
-
-        <div className={styles.metric}>
-          <span className={styles.metricLabel}>Optimistic Effectiveness</span>
-          <span className={styles.metricValue}>
-            {configuredActions > 0
-              ? `${(effectiveness * 100).toFixed(0)}%`
-              : "—"}
-          </span>
-          <span className={styles.metricSubtext}>
-            {configuredActions > 0
-              ? `${formatNumber(observedOptimisticActions)} emitted`
-              : "No optimistic handlers"}
-          </span>
-        </div>
-
-        <div className={styles.metric}>
-          <span className={styles.metricLabel}>Server Latency</span>
-          <span className={styles.metricValue}>
-            {formatTime(avgServerLatency)}
-          </span>
-          <span className={styles.metricSubtext}>
-            Optimistic {observedOptimisticActions > 0
-              ? formatTime(avgOptimisticLatency)
-              : "—"}
-          </span>
-        </div>
-
-        <div className={styles.metric}>
-          <span className={styles.metricLabel}>Rollback Rate</span>
-          <span
-            className={classNames(
-              styles.metricValue,
-              rollbackRate <= UI_CONSTANTS.ROLLBACK_EXCELLENT
-                ? styles.success
-                : rollbackRate <= UI_CONSTANTS.ROLLBACK_ACCEPTABLE
-                ? styles.warning
-                : styles.danger,
-            )}
-          >
-            {totalActions > 0
-              ? `${(rollbackRate * 100).toFixed(0)}%`
-              : "—"}
-          </span>
-          <span className={styles.metricSubtext}>
-            {formatNumber(metrics.aggregates.rollbackActionCount)} rollbacks
-          </span>
-        </div>
-
-        <div className={styles.metric}>
-          <span className={styles.metricLabel}>Validation</span>
-          <span className={styles.metricValue}>
-            {validations > 0 ? formatTime(avgValidationTime) : "—"}
-          </span>
-          <span className={styles.metricSubtext}>
-            {validations > 0
-              ? `${formatNumber(validations)} validations · saved ${
-                formatTime(validationSavings)
-              }`
-              : "No validations run"}
-          </span>
-        </div>
-      </>
-    );
-  };
-
   const filteredOperations = useMemo(() =>
     metrics.recent.filter((op) => {
       if (filter === "all") {
@@ -379,7 +145,7 @@ export const PerformanceTab: React.FC<PerformanceTabProps> = (
     }), [metrics.recent, filter]);
 
   const operations = filteredOperations.slice(
-    -UI_CONSTANTS.MAX_RECENT_OPERATIONS,
+    -MAX_RECENT_OPERATIONS,
   ).reverse();
 
   return (
@@ -388,19 +154,22 @@ export const PerformanceTab: React.FC<PerformanceTabProps> = (
         <div className={styles.metricGroup}>
           <h4 className={styles.metricGroupTitle}>Object Loading</h4>
           <div className={styles.metricGroupContent}>
-            {renderObjectLoadingMetrics()}
+            <ObjectLoadingMetrics
+              analysisLoading={analysisLoading}
+              unusedFieldReport={unusedFieldReport}
+            />
           </div>
         </div>
         <div className={styles.metricGroup}>
           <h4 className={styles.metricGroupTitle}>Actions</h4>
           <div className={styles.metricGroupContent}>
-            {renderActionMetrics()}
+            <ActionMetrics metrics={metrics} />
           </div>
         </div>
         <div className={styles.metricGroup}>
           <h4 className={styles.metricGroupTitle}>Caching</h4>
           <div className={styles.metricGroupContent}>
-            {renderCacheMetrics()}
+            <CacheMetrics metrics={metrics} />
           </div>
         </div>
       </div>
@@ -605,7 +374,7 @@ const OperationItem: React.FC<OperationItemProps> = (
       );
     }
   } else {
-    if (operation.responseTime) {
+    if (operation.responseTime != null) {
       metricBadges.push(
         <span key="response" className={styles.operationMetric}>
           {formatTime(operation.responseTime)}

@@ -216,6 +216,14 @@
   @include m.dt-tab-active;
 }
 
+.tabContentVisible {
+  display: contents;
+}
+
+.tabContentHidden {
+  display: none;
+}
+
 .metricsGrid {
   display: flex;
   flex-direction: column;

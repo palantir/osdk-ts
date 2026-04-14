@@ -68,11 +68,8 @@ function serializeValue(
   depth: number,
   seen: WeakSet<object>,
 ): string {
-  if (value === null) { // eslint-disable-line eqeqeq
-    return "null";
-  }
-  if (value === undefined) {
-    return "undefined";
+  if (value == null) {
+    return String(value);
   }
 
   const type = typeof value;

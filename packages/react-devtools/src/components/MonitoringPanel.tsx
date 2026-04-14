@@ -537,23 +537,33 @@ export const MonitoringPanel: React.FC<MonitoringPanelProps> = ({
         )}
 
         <div
-          style={{ display: activeTab === "performance" ? "contents" : "none" }}
+          className={activeTab === "performance"
+            ? styles.tabContentVisible
+            : styles.tabContentHidden}
         >
           <PerformanceTab
             metricsStore={metricsStore}
             monitorStore={monitorStore}
           />
         </div>
-        <div style={{ display: activeTab === "compute" ? "contents" : "none" }}>
+        <div
+          className={activeTab === "compute"
+            ? styles.tabContentVisible
+            : styles.tabContentHidden}
+        >
           <ComputeTab computeStore={computeStore} />
         </div>
         <div
-          style={{ display: activeTab === "intercept" ? "contents" : "none" }}
+          className={activeTab === "intercept"
+            ? styles.tabContentVisible
+            : styles.tabContentHidden}
         >
           <InterceptTab monitorStore={monitorStore} theme={resolvedTheme} />
         </div>
         <div
-          style={{ display: activeTab === "debugging" ? "contents" : "none" }}
+          className={activeTab === "debugging"
+            ? styles.tabContentVisible
+            : styles.tabContentHidden}
         >
           <DebuggingTab monitorStore={monitorStore} />
         </div>

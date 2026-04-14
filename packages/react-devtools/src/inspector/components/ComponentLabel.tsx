@@ -21,92 +21,9 @@ import {
   computeLabelPosition,
   OFFSCREEN_POSITION,
 } from "../utils/labelPositioning.js";
+import styles from "./ComponentLabel.module.scss";
 
 const ARROW_HEIGHT = 8;
-
-const labelStyles: React.CSSProperties = {
-  position: "fixed",
-  zIndex: 2147483647,
-  pointerEvents: "auto",
-  fontFamily:
-    "ui-monospace, SFMono-Regular, \"SF Mono\", Menlo, Consolas, monospace",
-  fontSize: "12px",
-  lineHeight: "1.4",
-  backgroundColor: "rgba(30, 30, 30, 0.95)",
-  color: "#fff",
-  borderRadius: "6px",
-  padding: "8px 12px",
-  boxShadow:
-    "0 4px 12px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1)",
-  maxWidth: "400px",
-  transition: "opacity 150ms ease-out",
-};
-
-const arrowStyles: React.CSSProperties = {
-  position: "absolute",
-  width: 0,
-  height: 0,
-  borderLeft: "8px solid transparent",
-  borderRight: "8px solid transparent",
-};
-
-const componentNameStyles: React.CSSProperties = {
-  fontWeight: 600,
-  color: "#7dd3fc",
-  marginBottom: "4px",
-};
-
-const sourceLocationStyles: React.CSSProperties = {
-  fontSize: "11px",
-  color: "#a1a1aa",
-  cursor: "pointer",
-  display: "flex",
-  alignItems: "center",
-  gap: "4px",
-};
-
-const sourceLocationHoverStyles: React.CSSProperties = {
-  ...sourceLocationStyles,
-  color: "#60a5fa",
-  textDecoration: "underline",
-};
-
-const hookBadgeStyles: React.CSSProperties = {
-  display: "inline-block",
-  fontSize: "10px",
-  backgroundColor: "rgba(124, 58, 237, 0.3)",
-  color: "#c4b5fd",
-  borderRadius: "4px",
-  padding: "2px 6px",
-  marginLeft: "8px",
-};
-
-const copyButtonStyles: React.CSSProperties = {
-  background: "none",
-  border: "none",
-  padding: "2px",
-  cursor: "pointer",
-  color: "#a1a1aa",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  borderRadius: "2px",
-  transition: "color 150ms ease-out, background-color 150ms ease-out",
-};
-
-const copyButtonHoverStyles: React.CSSProperties = {
-  ...copyButtonStyles,
-  color: "#60a5fa",
-  backgroundColor: "rgba(96, 165, 250, 0.1)",
-};
-
-const copiedTextStyles: React.CSSProperties = {
-  fontSize: "10px",
-  color: "#22c55e",
-  marginLeft: "4px",
-  fontWeight: 500,
-};
-
 const COPY_FEEDBACK_DURATION_MS = 1500;
 
 interface SizeSnapshot {
@@ -162,8 +79,6 @@ export function ComponentLabel({
 }: ComponentLabelProps): React.ReactElement | null {
   const containerRef = useRef<HTMLDivElement>(null);
   const measuredSize = useElementSize(containerRef);
-  const [isSourceHovered, setIsSourceHovered] = useState(false);
-  const [isCopyHovered, setIsCopyHovered] = useState(false);
   const [showCopied, setShowCopied] = useState(false);
   const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -215,7 +130,6 @@ export function ComponentLabel({
   }
 
   const arrowStyle: React.CSSProperties = {
-    ...arrowStyles,
     left: `${position.arrowLeft - 8}px`,
     ...(position.arrowPosition === "bottom"
       ? {
@@ -238,40 +152,30 @@ export function ComponentLabel({
   return (
     <div
       ref={containerRef}
-      data-osdk-devtools-ignore
+      data-osdk-devtools-ignore={true}
+      className={styles.label}
       style={{
-        ...labelStyles,
         left: `${position.left}px`,
         top: `${position.top}px`,
         opacity: visible && position.left > -9000 ? 1 : 0,
       }}
     >
-      <div style={arrowStyle} />
-      <div style={componentNameStyles}>
+      <div className={styles.arrow} style={arrowStyle} />
+      <div className={styles.componentName}>
         {"<"}
         {component.name}
         {" />"}
         {component.hookCount > 0 && (
-          <span style={hookBadgeStyles}>
+          <span className={styles.hookBadge}>
             {component.hookCount} hook{component.hookCount !== 1 ? "s" : ""}
           </span>
         )}
       </div>
       {component.sourceLocation && (
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "4px",
-          }}
-        >
+        <div className={styles.sourceRow}>
           <div
-            style={isSourceHovered
-              ? sourceLocationHoverStyles
-              : sourceLocationStyles}
+            className={styles.sourceLocation}
             onClick={handleSourceClick}
-            onMouseEnter={() => setIsSourceHovered(true)}
-            onMouseLeave={() => setIsSourceHovered(false)}
           >
             <svg
               width="12"
@@ -288,10 +192,8 @@ export function ComponentLabel({
           </div>
           <button
             type="button"
-            style={isCopyHovered ? copyButtonHoverStyles : copyButtonStyles}
+            className={styles.copyButton}
             onClick={handleCopySourceLocation}
-            onMouseEnter={() => setIsCopyHovered(true)}
-            onMouseLeave={() => setIsCopyHovered(false)}
             title="Copy source location"
           >
             {showCopied
@@ -321,7 +223,7 @@ export function ComponentLabel({
                 </svg>
               )}
           </button>
-          {showCopied && <span style={copiedTextStyles}>Copied!</span>}
+          {showCopied && <span className={styles.copiedText}>Copied!</span>}
         </div>
       )}
     </div>

@@ -15,6 +15,7 @@
  */
 
 import { Icon, InputGroup } from "@blueprintjs/core";
+import classNames from "classnames";
 import React, { useCallback, useMemo, useRef, useState } from "react";
 import { createPollingStore } from "../hooks/createPollingStore.js";
 import { useActiveComponents } from "../hooks/useActiveComponents.js";
@@ -245,7 +246,10 @@ export const DebuggingTab: React.FC<DebuggingTabProps> = ({ monitorStore }) => {
       <div className={styles.feed}>
         <div className={styles.section}>
           <div
-            className={`${styles.sectionHeader} ${styles.errorSectionHeader}`}
+            className={classNames(
+              styles.sectionHeader,
+              styles.errorSectionHeader,
+            )}
           >
             <Icon icon="error" size={14} color="var(--dt-red)" />
             <span>Errors</span>
