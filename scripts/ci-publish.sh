@@ -10,19 +10,21 @@ JQ=$(checkCommand "jq" "jq" "Try 'brew install jq'")
 # Default value for pnpm
 TAG="latest"
 
-BRANCH=$(git rev-parse --abbrev-ref HEAD)
-if [[ "$BRANCH" == release/* ]]; then
-    VERSION="${BRANCH#release/}"
-    TAG="latest-${VERSION}"
-elif [ -f "${SCRIPT_DIR}/../.changeset/pre.json" ]; then
+if [ -f "${SCRIPT_DIR}/../.changeset/pre.json" ]; then
     MODE=$($JQ --raw-output .mode "${SCRIPT_DIR}/../.changeset/pre.json")
-    
+
     if [ "$MODE" == "pre" ]; then
         TAG=$($JQ --raw-output .tag "${SCRIPT_DIR}/../.changeset/pre.json")
     else
         echo "Invalid mode for releasing: $MODE"
         exit 100
     fi
+fi
+
+BRANCH=$(git rev-parse --abbrev-ref HEAD)
+if [[ "$BRANCH" == release/* ]]; then
+    VERSION="${BRANCH#release/}"
+    TAG="latest-${VERSION}"
 fi
 
 echo "Publishing with tag: $TAG"
