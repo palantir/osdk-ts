@@ -27,6 +27,8 @@ export interface MarkdownRendererProps {
   className?: string;
 }
 
+const REMARK_PLUGINS = [remarkGfm];
+
 export function MarkdownRenderer({
   content,
   className,
@@ -37,7 +39,7 @@ export function MarkdownRenderer({
     <div className={rootClassName}>
       <div className={styles.documentWrapper}>
         <div className={styles.document}>
-          <Markdown remarkPlugins={[remarkGfm]}>{content}</Markdown>
+          <Markdown remarkPlugins={REMARK_PLUGINS}>{content}</Markdown>
         </div>
       </div>
     </div>

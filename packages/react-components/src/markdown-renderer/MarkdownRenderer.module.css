@@ -51,7 +51,7 @@
 }
 
 .document a {
-  color: var(--osdk-intent-primary-rest);
+  color: var(--osdk-markdown-renderer-link-color);
   text-decoration: none;
 }
 
@@ -61,8 +61,8 @@
 
 .document code {
   background-color: var(--osdk-markdown-renderer-code-bg);
-  padding: 2px 6px;
-  border-radius: 3px;
+  padding: var(--osdk-markdown-renderer-code-inline-padding);
+  border-radius: var(--osdk-markdown-renderer-code-inline-border-radius);
   font-family: var(--osdk-typography-family-monospace);
   font-size: 0.9em;
 }
@@ -80,7 +80,7 @@
 }
 
 .document blockquote {
-  border-left: 3px solid var(--osdk-intent-primary-rest);
+  border-left: var(--osdk-markdown-renderer-blockquote-border);
   margin-left: 0;
   padding-left: var(--osdk-surface-spacing);
   color: var(--osdk-typography-color-muted);
