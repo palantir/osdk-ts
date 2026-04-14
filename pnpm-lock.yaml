@@ -407,7 +407,7 @@ importers:
         specifier: workspace:*
         version: link:../../packages/e2e.generated.catchall
       '@osdk/foundry':
-        specifier: latest
+        specifier: catalog:foundry-platform-typescript
         version: 2.57.0
       '@osdk/oauth':
         specifier: workspace:*
@@ -597,7 +597,7 @@ importers:
         specifier: workspace:*
         version: link:../../packages/client
       '@osdk/foundry':
-        specifier: latest
+        specifier: catalog:foundry-platform-typescript
         version: 2.57.0
       '@osdk/oauth':
         specifier: workspace:*
@@ -860,7 +860,7 @@ importers:
         specifier: workspace:*
         version: link:../../packages/e2e.generated.catchall
       '@osdk/foundry':
-        specifier: latest
+        specifier: catalog:foundry-platform-typescript
         version: 2.57.0
       '@osdk/oauth':
         specifier: workspace:*
@@ -960,7 +960,7 @@ importers:
         specifier: workspace:*
         version: link:../../packages/client
       '@osdk/foundry':
-        specifier: latest
+        specifier: catalog:foundry-platform-typescript
         version: 2.57.0
       '@osdk/oauth':
         specifier: workspace:*
@@ -1383,7 +1383,7 @@ importers:
         specifier: workspace:*
         version: link:../../packages/e2e.generated.catchall
       '@osdk/foundry':
-        specifier: latest
+        specifier: catalog:foundry-platform-typescript
         version: 2.57.0
       '@osdk/oauth':
         specifier: workspace:*
@@ -1420,7 +1420,7 @@ importers:
         specifier: workspace:*
         version: link:../../packages/client
       '@osdk/foundry':
-        specifier: latest
+        specifier: catalog:foundry-platform-typescript
         version: 2.57.0
       '@osdk/oauth':
         specifier: workspace:*

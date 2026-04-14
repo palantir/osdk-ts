@@ -40,16 +40,16 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
-    "@osdk/api": "workspace:~",
-    "@osdk/e2e.generated.api-namespace.dep": "workspace:~"
+    "@osdk/api": "workspace:*",
+    "@osdk/e2e.generated.api-namespace.dep": "workspace:*"
   },
   "peerDependencies": {
     "@osdk/api": "workspace:~",
     "@osdk/client": "workspace:~"
   },
   "devDependencies": {
-    "@osdk/api": "workspace:~",
-    "@osdk/cli.cmd.typescript": "workspace:~",
+    "@osdk/api": "workspace:*",
+    "@osdk/cli.cmd.typescript": "workspace:*",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "typescript": "~5.5.4"

@@ -21,7 +21,7 @@
     "@blueprintjs/core": "^6.10.0",
     "@blueprintjs/icons": "^6.7.0",
     "@osdk/client": "workspace:*",
-    "@osdk/foundry": "latest",
+    "@osdk/foundry": "catalog:foundry-platform-typescript",
     "@osdk/oauth": "workspace:*",
     "normalize.css": "^8.0.1",
     "react": "^18",

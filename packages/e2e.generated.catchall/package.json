@@ -40,7 +40,7 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
-    "@osdk/client": "workspace:~"
+    "@osdk/client": "workspace:*"
   },
   "peerDependencies": {
     "@osdk/api": "workspace:~",
@@ -48,8 +48,8 @@
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.17.4",
-    "@osdk/api": "workspace:~",
-    "@osdk/cli.cmd.typescript": "workspace:~",
+    "@osdk/api": "workspace:*",
+    "@osdk/cli.cmd.typescript": "workspace:*",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "tslib": "^2.8.1",
