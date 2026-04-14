@@ -1,42 +1,8 @@
-/* DatetimePickerField — wrapper + error state (component-specific layout) */
-
-/* Wrapper mirrors NumberInputField wrapper: border, bg, hover, focus-within.
-   Also acts as Popover.Trigger — suppress its own outline since :focus-within
-   handles the focus indicator when the inner input is focused. */
+/* DatetimePickerField — component-specific overrides.
+   Wrapper doubles as Popover.Trigger — suppress its own outline since
+   :focus-within handles the focus indicator when the inner input is focused. */
 .osdkDatetimeInputWrapper {
-  display: flex;
-  align-items: center;
-  border-radius: var(--osdk-datetime-input-border-radius);
-  border: var(--osdk-datetime-input-border-width) solid
-    var(--osdk-datetime-input-border-color);
-  background-color: var(--osdk-datetime-input-bg);
-  transition:
-    background-color var(--osdk-datetime-input-transition-duration)
-      var(--osdk-datetime-input-transition-ease),
-    border-color var(--osdk-datetime-input-transition-duration)
-      var(--osdk-datetime-input-transition-ease);
-  cursor: text;
   outline: none;
-
-  &:hover {
-    background-color: var(--osdk-datetime-input-bg-hover);
-  }
-
-  &:focus-within {
-    outline: var(--osdk-datetime-input-focus-width) solid
-      var(--osdk-datetime-input-focus-color);
-    outline-offset: var(--osdk-datetime-input-focus-offset);
-    border-color: var(--osdk-datetime-input-border-color-focus);
-  }
-}
-
-/* Error state — red border */
-.osdkDatetimeInputWrapperError {
-  border-color: var(--osdk-datetime-input-error-border-color);
-
-  &:focus-within {
-    border-color: var(--osdk-datetime-input-error-border-color);
-  }
 }
 
 /* Time footer — rendered as a popover sibling (not a DayPicker tfoot) so the

@@ -2,7 +2,6 @@
 :root {
   /* Input error */
   --osdk-datetime-input-error-border-color: var(--osdk-intent-danger-rest);
-  --osdk-datetime-input-error-color: var(--osdk-typography-color-danger-rest);
 
   /* Popover */
   --osdk-datetime-popover-bg: var(--osdk-background-primary);
@@ -81,9 +80,6 @@
     --osdk-surface-background-color-default-hover
   );
 
-  /* Calendar chevron — small to match dropdown caret size */
-  --osdk-datetime-calendar-chevron-size: calc(var(--osdk-surface-spacing) * 2.5);
-
   /* Calendar focus ring */
   --osdk-datetime-calendar-focus-outline: 1px solid
     var(--osdk-input-border-color-focus);
@@ -109,28 +105,6 @@
   /* Calendar outside day opacity */
   --osdk-datetime-calendar-outside-opacity: 0.4;
 
-  /* Time picker — shared by single and range layouts */
-  --osdk-datetime-time-margin-top: calc(var(--osdk-surface-spacing) * 2);
-  --osdk-datetime-time-padding-top: calc(var(--osdk-surface-spacing) * 2);
-  --osdk-datetime-time-border-top: var(--osdk-surface-border);
-  --osdk-datetime-time-gap: calc(var(--osdk-surface-spacing) * 4);
-  --osdk-datetime-time-input-font-family: var(--osdk-input-font-family);
-  --osdk-datetime-time-input-font-size: var(--osdk-input-font-size);
-  --osdk-datetime-time-input-padding: var(--osdk-input-padding);
-  --osdk-datetime-time-input-padding-range: var(--osdk-surface-spacing)
-    calc(var(--osdk-surface-spacing) * 2);
-  --osdk-datetime-time-input-border: var(--osdk-input-border-width) solid
-    var(--osdk-input-border-color);
-  --osdk-datetime-time-input-border-radius: var(--osdk-input-border-radius);
-  --osdk-datetime-time-input-bg: var(--osdk-input-bg);
-  --osdk-datetime-time-input-color: var(--osdk-input-color);
-  --osdk-datetime-time-input-border-color-focus: var(
-    --osdk-input-border-color-focus
-  );
-  --osdk-datetime-time-input-focus-outline: var(--osdk-input-focus-width) solid
-    var(--osdk-input-focus-color);
-  --osdk-datetime-time-input-focus-offset: var(--osdk-input-focus-offset);
-
   /* Date input wrapper — indirection tokens for component isolation */
   --osdk-datetime-input-min-height: var(--osdk-input-min-height);
   --osdk-datetime-input-padding: var(--osdk-input-padding);
@@ -155,9 +129,6 @@
     --osdk-input-transition-duration
   );
   --osdk-datetime-input-transition-ease: var(--osdk-input-transition-ease);
-
-  /* Placeholder */
-  --osdk-datetime-input-placeholder-opacity: 0.6;
 
   /* Calendar fallback / loading */
   --osdk-datetime-calendar-fallback-width: 280px;

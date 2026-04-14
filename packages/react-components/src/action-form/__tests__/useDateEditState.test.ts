@@ -17,6 +17,7 @@
 import { act, renderHook } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import {
+  formatDateForDisplay,
   formatDateForInput,
   parseDateFromInput,
 } from "../../shared/dateUtils.js";
@@ -44,7 +45,7 @@ describe("useDateEditState", () => {
       expect(result.current.inputValue).toBe("");
       expect(result.current.displayedValue).toBe("");
       expect(result.current.inputError).toBeNull();
-      expect(result.current.parsedValue).toBeUndefined();
+      expect(result.current.dateValue).toBeUndefined();
       expect(result.current.validatedDate).toBeNull();
     });
 
@@ -77,37 +78,25 @@ describe("useDateEditState", () => {
     it("enters editing mode and populates inputValue with editFormatFn", () => {
       const { result } = renderHook(() =>
         useDateEditState(
-          makeConfig({ value: new Date(2024, 0, 15) }),
+          makeConfig({
+            value: new Date(2024, 0, 15),
+            displayFormatFn: formatDateForDisplay, // "Jan 15, 2024"
+            editFormatFn: formatDateForInput, // "2024-01-15"
+          }),
         )
       );
+
+      // Not editing: displayedValue uses displayFormatFn
+      expect(result.current.displayedValue).toBe("Jan 15, 2024");
 
       act(() => {
         result.current.startEditing();
       });
 
       expect(result.current.isEditing).toBe(true);
+      // Editing: inputValue uses editFormatFn
       expect(result.current.inputValue).toBe("2024-01-15");
-      expect(result.current.displayedValue).toBe("2024-01-15");
-    });
-
-    it("uses editFormatFn not displayFormatFn for input", () => {
-      const { result } = renderHook(() =>
-        useDateEditState(
-          makeConfig({
-            value: new Date(2024, 0, 15),
-            displayFormatFn: () => "Jan 15, 2024",
-            editFormatFn: formatDateForInput,
-          }),
-        )
-      );
-
-      act(() => {
-        result.current.startEditing();
-      });
-
-      // While editing, inputValue uses editFormatFn
-      expect(result.current.inputValue).toBe("2024-01-15");
-      // displayedValue shows the raw inputValue during editing
+      // displayedValue echoes inputValue while editing
       expect(result.current.displayedValue).toBe("2024-01-15");
     });
 
@@ -152,6 +141,28 @@ describe("useDateEditState", () => {
 
       expect(result.current.inputValue).toBe("2024-06-15");
       expect(result.current.displayedValue).toBe("2024-06-15");
+    });
+  });
+
+  describe("setDateValue", () => {
+    it("setDateValue formats with editFormatFn", () => {
+      const { result } = renderHook(() =>
+        useDateEditState(
+          makeConfig({
+            value: null,
+            editFormatFn: formatDateForInput,
+          }),
+        )
+      );
+
+      act(() => {
+        result.current.startEditing();
+      });
+      act(() => {
+        result.current.setDateValue(new Date(2024, 5, 15));
+      });
+
+      expect(result.current.inputValue).toBe("2024-06-15");
     });
   });
 
@@ -225,16 +236,7 @@ describe("useDateEditState", () => {
     });
   });
 
-  describe("parsedValue", () => {
-    it("is undefined when not editing", () => {
-      const { result } = renderHook(() =>
-        useDateEditState(
-          makeConfig({ value: new Date(2024, 0, 15) }),
-        )
-      );
-      expect(result.current.parsedValue).toBeUndefined();
-    });
-
+  describe("dateValue", () => {
     it("is undefined for empty input", () => {
       const { result } = renderHook(() => useDateEditState(makeConfig()));
 
@@ -242,7 +244,7 @@ describe("useDateEditState", () => {
         result.current.startEditing();
       });
 
-      expect(result.current.parsedValue).toBeUndefined();
+      expect(result.current.dateValue).toBeUndefined();
     });
 
     it("is undefined for invalid input", () => {
@@ -255,7 +257,7 @@ describe("useDateEditState", () => {
         result.current.setInputValue("garbage");
       });
 
-      expect(result.current.parsedValue).toBeUndefined();
+      expect(result.current.dateValue).toBeUndefined();
     });
 
     it("returns parsed date for valid input", () => {
@@ -268,9 +270,9 @@ describe("useDateEditState", () => {
         result.current.setInputValue("2024-06-15");
       });
 
-      expect(result.current.parsedValue).toBeInstanceOf(Date);
-      expect(result.current.parsedValue?.getMonth()).toBe(5);
-      expect(result.current.parsedValue?.getDate()).toBe(15);
+      expect(result.current.dateValue).toBeInstanceOf(Date);
+      expect(result.current.dateValue?.getMonth()).toBe(5);
+      expect(result.current.dateValue?.getDate()).toBe(15);
     });
   });
 
@@ -345,14 +347,26 @@ describe("useDateEditState", () => {
     it("updates displayedValue when external value changes while not editing", () => {
       const { result, rerender } = renderHook(
         (config: UseDateEditStateConfig) => useDateEditState(config),
-        { initialProps: makeConfig({ value: new Date(2024, 0, 15) }) },
+        {
+          initialProps: makeConfig({
+            value: new Date(2024, 0, 15),
+            displayFormatFn: formatDateForDisplay, // locale format
+            editFormatFn: formatDateForInput,
+          }),
+        },
       );
 
-      expect(result.current.displayedValue).toBe("2024-01-15");
+      expect(result.current.displayedValue).toBe("Jan 15, 2024");
 
-      rerender(makeConfig({ value: new Date(2024, 6, 20) }));
+      rerender(
+        makeConfig({
+          value: new Date(2024, 6, 20),
+          displayFormatFn: formatDateForDisplay,
+          editFormatFn: formatDateForInput,
+        }),
+      );
 
-      expect(result.current.displayedValue).toBe("2024-07-20");
+      expect(result.current.displayedValue).toBe("Jul 20, 2024");
     });
 
     it("does not overwrite inputValue when external value changes during editing", () => {
@@ -368,7 +382,8 @@ describe("useDateEditState", () => {
         result.current.setInputValue("2024-03-20");
       });
 
-      // Parent resets value while user is typing
+      // Intentional: user's unsaved edits are preserved when the parent
+      // value changes. The hook only syncs inputValue when not editing.
       rerender(makeConfig({ value: new Date(2024, 6, 20) }));
 
       // inputValue should NOT be overwritten

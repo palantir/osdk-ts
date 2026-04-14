@@ -176,38 +176,13 @@
   }
 }
 
-/* Hide the fat default SVG chevron icon */
+/* Hide the default SVG chevron icon — Blueprint icons rendered inline instead */
 .calendarChevron {
   display: none;
 }
 
-/* Thin CSS chevron — prev (points left).
-   Decorative sizes (6px, 1.5px, 2px) are sub-unit and acceptable. */
 .calendarNavPrev {
   order: -1;
-}
-
-.calendarNavPrev::after {
-  content: "";
-  display: block;
-  width: 6px;
-  height: 6px;
-  border-left: 1.5px solid currentColor;
-  border-bottom: 1.5px solid currentColor;
-  transform: rotate(45deg);
-  margin-left: 2px;
-}
-
-/* Thin CSS chevron — next (points right) */
-.calendarNavNext::after {
-  content: "";
-  display: block;
-  width: 6px;
-  height: 6px;
-  border-right: 1.5px solid currentColor;
-  border-bottom: 1.5px solid currentColor;
-  transform: rotate(-45deg);
-  margin-right: 2px;
 }
 
 .calendarMonthCaption {
@@ -262,8 +237,3 @@
   border-top: var(--osdk-datetime-time-border-top);
 }
 
-/* Calendar fallback / loading */
-.calendarFallback {
-  width: var(--osdk-datetime-calendar-fallback-width);
-  height: var(--osdk-datetime-calendar-fallback-height);
-}

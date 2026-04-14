@@ -21,10 +21,10 @@ import React, { useCallback, useId, useRef, useState } from "react";
 import {
   formatDateForDisplay,
   formatDateForInput,
-  formatDatetimeForDisplay,
+  formatDatetimeForInput,
   getTimeValue,
   parseDateFromInput,
-  parseDatetimeFromDisplay,
+  parseDatetimeFromInput,
   parseTimeString,
 } from "../../shared/dateUtils.js";
 import type { DatetimePickerFieldProps } from "../FormFieldApi.js";
@@ -35,7 +35,9 @@ import { LazyDateCalendar } from "./LazyDateCalendar.js";
 import { TimePicker } from "./TimePicker.js";
 import { useDateEditState } from "./useDateEditState.js";
 
-export function DatetimePickerField({
+export const DatetimePickerField: React.NamedExoticComponent<
+  DatetimePickerFieldProps
+> = React.memo(function DatetimePickerField({
   id,
   value,
   onChange,
@@ -46,7 +48,7 @@ export function DatetimePickerField({
   parseDate,
   showTime = false,
   closeOnSelection,
-}: DatetimePickerFieldProps): React.ReactElement {
+}: DatetimePickerFieldProps) {
   const shouldCloseOnSelection = closeOnSelection ?? !showTime;
   const popoverId = useId();
   const inputRef = useRef<HTMLInputElement>(null);
@@ -57,11 +59,11 @@ export function DatetimePickerField({
   // Format/parse: pick between date-only and datetime variants.
   // editFormatFn produces a parsable string for typing (e.g. "2024-01-15" or "2024-01-15 14:30").
   // displayFormatFn produces a human-readable string for idle state (e.g. "Jan 15, 2024").
-  const editFormatFn = showTime ? formatDatetimeForDisplay : formatDateForInput;
+  const editFormatFn = showTime ? formatDatetimeForInput : formatDateForInput;
   const displayFormatFn = formatDate
-    ?? (showTime ? formatDatetimeForDisplay : formatDateForDisplay);
+    ?? (showTime ? formatDatetimeForInput : formatDateForDisplay);
   const parseFn = parseDate
-    ?? (showTime ? parseDatetimeFromDisplay : parseDateFromInput);
+    ?? (showTime ? parseDatetimeFromInput : parseDateFromInput);
 
   const {
     inputValue,
@@ -71,6 +73,7 @@ export function DatetimePickerField({
     startEditing,
     stopEditing,
     setInputValue,
+    setDateValue,
   } = useDateEditState({
     value,
     displayFormatFn,
@@ -118,7 +121,6 @@ export function DatetimePickerField({
         setIsOpen(false);
       } else if (e.key === "Escape") {
         e.preventDefault();
-        setInputValue(value != null ? editFormatFn(value) : "");
         stopEditing();
         setIsOpen(false);
         inputRef.current?.blur();
@@ -141,9 +143,6 @@ export function DatetimePickerField({
       inputValue,
       validatedDate,
       stopEditing,
-      setInputValue,
-      value,
-      editFormatFn,
       isOpen,
       onChange,
     ],
@@ -180,7 +179,7 @@ export function DatetimePickerField({
       }
 
       onChange?.(date);
-      setInputValue(editFormatFn(date));
+      setDateValue(date);
 
       if (shouldCloseOnSelection) {
         setIsOpen(false);
@@ -193,7 +192,7 @@ export function DatetimePickerField({
       showTime,
       value,
       shouldCloseOnSelection,
-      editFormatFn,
+      setDateValue,
       setInputValue,
       stopEditing,
     ],
@@ -205,9 +204,9 @@ export function DatetimePickerField({
       const base = value != null ? new Date(value.getTime()) : new Date();
       base.setHours(hours, minutes, 0, 0);
       onChange?.(base);
-      setInputValue(editFormatFn(base));
+      setDateValue(base);
     },
-    [value, onChange, editFormatFn, setInputValue],
+    [value, onChange, setDateValue],
   );
 
   // --- Focus boundary handlers ---
@@ -252,8 +251,9 @@ export function DatetimePickerField({
     : undefined;
 
   const wrapperClassName = classnames(
+    commonStyles.osdkDatePickerInputWrapper,
     styles.osdkDatetimeInputWrapper,
-    inputError != null && styles.osdkDatetimeInputWrapperError,
+    inputError != null && commonStyles.osdkDatePickerInputWrapperError,
   );
 
   return (
@@ -314,4 +314,4 @@ export function DatetimePickerField({
       </Popover.Portal>
     </Popover.Root>
   );
-}
+});

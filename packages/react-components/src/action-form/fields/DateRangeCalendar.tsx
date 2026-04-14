@@ -26,7 +26,10 @@ import {
   DEFAULT_FROM_YEAR,
   DEFAULT_TO_YEAR,
 } from "./calendarShared.js";
-import { CLASS_NAMES as BASE_CLASS_NAMES } from "./DateCalendar.js";
+import {
+  CALENDAR_COMPONENTS,
+  CLASS_NAMES as BASE_CLASS_NAMES,
+} from "./DateCalendar.js";
 import styles from "./DateCalendar.module.css";
 
 const CLASS_NAMES: ClassNames = {
@@ -64,6 +67,7 @@ export default function DateRangeCalendar({
       disabled={disabled}
       defaultMonth={selected?.from}
       classNames={CLASS_NAMES}
+      components={CALENDAR_COMPONENTS}
       footer={footer}
       captionLayout="dropdown-buttons"
       fromYear={fromYear}

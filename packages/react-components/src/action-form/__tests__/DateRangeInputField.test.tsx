@@ -77,15 +77,19 @@ describe("DateRangeInputField", () => {
     it("opens popover when start input is focused", () => {
       render(<DateRangeInputField value={[null, null]} onChange={vi.fn()} />);
       const startInput = screen.getByLabelText("Start date");
+      expect(screen.queryByRole("dialog")).toBeNull();
       fireEvent.focus(startInput);
       expect(startInput.getAttribute("aria-expanded")).toBe("true");
+      expect(screen.getByRole("dialog")).toBeDefined();
     });
 
     it("opens popover when end input is focused", () => {
       render(<DateRangeInputField value={[null, null]} onChange={vi.fn()} />);
       const endInput = screen.getByLabelText("End date");
+      expect(screen.queryByRole("dialog")).toBeNull();
       fireEvent.focus(endInput);
       expect(endInput.getAttribute("aria-expanded")).toBe("true");
+      expect(screen.getByRole("dialog")).toBeDefined();
     });
   });
 
@@ -102,9 +106,7 @@ describe("DateRangeInputField", () => {
 
       expect(onChange).toHaveBeenCalledTimes(1);
       const [start, end] = onChange.mock.calls[0][0];
-      expect(start?.getFullYear()).toBe(2024);
-      expect(start?.getMonth()).toBe(2);
-      expect(start?.getDate()).toBe(20);
+      expect(start).toEqual(new Date(2024, 2, 20));
       expect(end).toBeNull();
     });
 
@@ -123,9 +125,7 @@ describe("DateRangeInputField", () => {
 
       expect(onChange).toHaveBeenCalledTimes(1);
       const [, end] = onChange.mock.calls[0][0];
-      expect(end?.getDate()).toBe(30);
-      expect(end?.getMonth()).toBe(5);
-      expect(end?.getFullYear()).toBe(2024);
+      expect(end).toEqual(new Date(2024, 5, 30));
     });
 
     it("does not commit invalid start input on blur", () => {
@@ -154,7 +154,9 @@ describe("DateRangeInputField", () => {
 
       expect(onChange).toHaveBeenCalledTimes(1);
       const [start] = onChange.mock.calls[0][0];
-      expect(start?.getDate()).toBe(15);
+      expect(start).toEqual(new Date(2024, 0, 15));
+      const endInput = screen.getByLabelText("End date");
+      expect(document.activeElement).toBe(endInput);
     });
 
     it("reverts on Escape key", () => {
@@ -199,6 +201,19 @@ describe("DateRangeInputField", () => {
       expect(endInput.getAttribute("aria-invalid")).toBe("true");
     });
 
+    it("does not show error on start input after selecting a start date via calendar", () => {
+      render(<DateRangeInputField value={[null, null]} onChange={vi.fn()} />);
+      const startInput = screen.getByLabelText("Start date");
+      fireEvent.focus(startInput);
+
+      // Select a start day on the calendar
+      const day15 = screen.getAllByText("15")[0];
+      fireEvent.click(day15);
+
+      // Start input should NOT be marked invalid — we're still picking the end date
+      expect(startInput.getAttribute("aria-invalid")).not.toBe("true");
+    });
+
     it("clears invalid state when valid input is typed", () => {
       render(<DateRangeInputField value={[null, null]} onChange={vi.fn()} />);
       const startInput = screen.getByLabelText("Start date");
@@ -241,9 +256,11 @@ describe("DateRangeInputField", () => {
       const startInput = screen.getByLabelText("Start date");
       fireEvent.focus(startInput);
       expect(startInput.getAttribute("aria-expanded")).toBe("true");
+      expect(screen.getByRole("dialog")).toBeDefined();
 
       fireEvent.keyDown(startInput, { key: "Escape" });
       expect(startInput.getAttribute("aria-expanded")).toBe("false");
+      expect(screen.queryByRole("dialog")).toBeNull();
     });
 
     it("closes popover on Escape from end input", () => {
@@ -256,9 +273,11 @@ describe("DateRangeInputField", () => {
       const endInput = screen.getByLabelText("End date");
       fireEvent.focus(endInput);
       expect(endInput.getAttribute("aria-expanded")).toBe("true");
+      expect(screen.getByRole("dialog")).toBeDefined();
 
       fireEvent.keyDown(endInput, { key: "Escape" });
       expect(endInput.getAttribute("aria-expanded")).toBe("false");
+      expect(screen.queryByRole("dialog")).toBeNull();
     });
   });
 
@@ -381,6 +400,51 @@ describe("DateRangeInputField", () => {
       const startExpanded = startInput.getAttribute("aria-expanded");
       const endExpanded = endInput.getAttribute("aria-expanded");
       expect(startExpanded === "true" || endExpanded === "true").toBe(true);
+    });
+  });
+
+  describe("custom format", () => {
+    it("uses custom formatDate for display when not editing", () => {
+      render(
+        <DateRangeInputField
+          value={[new Date(2024, 0, 15), null]}
+          onChange={vi.fn()}
+          formatDate={(d) =>
+            `${d.getMonth() + 1}/${d.getDate()}/${d.getFullYear()}`}
+        />,
+      );
+      const startInput = screen.getByLabelText(
+        "Start date",
+      ) as HTMLInputElement;
+      expect(startInput.value).toBe("1/15/2024");
+    });
+
+    it("uses custom parseDate for typed input", () => {
+      const onChange = vi.fn();
+      render(
+        <DateRangeInputField
+          value={[null, null]}
+          onChange={onChange}
+          formatDate={(d) =>
+            `${d.getMonth() + 1}/${d.getDate()}/${d.getFullYear()}`}
+          parseDate={(text) => {
+            const [m, d, y] = text.split("/").map(Number);
+            if (m == null || d == null || y == null) return undefined;
+            const date = new Date(y, m - 1, d);
+            return isNaN(date.getTime()) ? undefined : date;
+          }}
+        />,
+      );
+      const startInput = screen.getByLabelText(
+        "Start date",
+      ) as HTMLInputElement;
+      fireEvent.focus(startInput);
+      fireEvent.change(startInput, { target: { value: "3/20/2024" } });
+      fireEvent.blur(startInput);
+
+      expect(onChange).toHaveBeenCalledTimes(1);
+      const [start] = onChange.mock.calls[0][0];
+      expect(start).toEqual(new Date(2024, 2, 20));
     });
   });
 

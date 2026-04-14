@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { ChevronLeft, ChevronRight } from "@blueprintjs/icons";
 import classnames from "classnames";
 import React, { useMemo } from "react";
 import type { ClassNames } from "react-day-picker";
@@ -54,6 +55,21 @@ export const CLASS_NAMES: ClassNames = {
   tfoot: styles.calendarFooter,
 };
 
+const NAV_ICON_SIZE = 12;
+
+function IconLeft(): React.ReactElement {
+  return <ChevronLeft size={NAV_ICON_SIZE} />;
+}
+
+function IconRight(): React.ReactElement {
+  return <ChevronRight size={NAV_ICON_SIZE} />;
+}
+
+export const CALENDAR_COMPONENTS: {
+  IconLeft: () => React.ReactElement;
+  IconRight: () => React.ReactElement;
+} = { IconLeft, IconRight };
+
 export interface DateCalendarProps {
   dateSelected: Date | undefined;
   onSelect: (date: Date | undefined) => void;
@@ -82,6 +98,7 @@ export default function DateCalendar({
       disabled={disabled}
       defaultMonth={dateSelected}
       classNames={CLASS_NAMES}
+      components={CALENDAR_COMPONENTS}
       footer={footer}
       // Render month/year as dropdown selects + prev/next arrows,
       // so users can jump directly to any month/year without paging.

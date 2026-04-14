@@ -51,26 +51,6 @@ export function parseDateFromInput(
   return isNaN(date.getTime()) ? undefined : date;
 }
 
-export function formatDatetimeForInput(
-  date: Date | undefined | null,
-): string {
-  if (date == null) return "";
-  return `${formatDateForInput(date)}T${formatTime(date)}`;
-}
-
-/**
- * Parses a datetime-local input string (e.g. "2024-01-15T14:30") into a Date.
- * Delegates to `parseDateFromISO` since the parsing logic is identical for
- * string inputs — datetime-local strings already include the time component
- * and have no "Z" suffix, so `new Date()` parses them as local time.
- */
-export function parseDatetimeFromInput(
-  value: string | undefined | null,
-): Date | undefined {
-  if (!value) return undefined;
-  return parseDateFromISO(value);
-}
-
 export function formatDateForDisplay(
   date: Date | undefined | null,
   fallback: string = "",
@@ -83,8 +63,8 @@ export function formatDateForDisplay(
   });
 }
 
-/** Formats a Date as "2024-06-15 14:30" — space-separated, more readable than T. */
-export function formatDatetimeForDisplay(
+/** Formats a Date as "2024-06-15 14:30" — space-separated, parsable, for text input editing. */
+export function formatDatetimeForInput(
   date: Date | undefined | null,
 ): string {
   if (date == null) return "";
@@ -93,11 +73,11 @@ export function formatDatetimeForDisplay(
 
 /**
  * Parses space-separated ("2024-06-15 14:30") or T-separated datetime strings.
- * Inverse of `formatDatetimeForDisplay`, which joins date and time with a space
+ * Inverse of `formatDatetimeForInput`, which joins date and time with a space
  * for readability. Here we replace that space with "T" so `new Date()` parses
  * it as a local datetime (e.g. "2024-06-15T14:30").
  */
-export function parseDatetimeFromDisplay(
+export function parseDatetimeFromInput(
   value: string | undefined | null,
 ): Date | undefined {
   if (!value) return undefined;

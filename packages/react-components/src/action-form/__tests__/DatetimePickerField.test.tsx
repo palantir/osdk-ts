@@ -93,9 +93,7 @@ describe("DatetimePickerField", () => {
 
       expect(onChange).toHaveBeenCalledTimes(1);
       const calledDate: Date = onChange.mock.calls[0][0];
-      expect(calledDate.getFullYear()).toBe(2024);
-      expect(calledDate.getMonth()).toBe(0);
-      expect(calledDate.getDate()).toBe(20);
+      expect(calledDate).toEqual(new Date(2024, 0, 20));
     });
 
     it("preserves time when selecting a calendar day with showTime", () => {
@@ -212,9 +210,7 @@ describe("DatetimePickerField", () => {
 
       expect(onChange).toHaveBeenCalledTimes(1);
       const calledDate: Date = onChange.mock.calls[0][0];
-      expect(calledDate.getFullYear()).toBe(2024);
-      expect(calledDate.getMonth()).toBe(2);
-      expect(calledDate.getDate()).toBe(20);
+      expect(calledDate).toEqual(new Date(2024, 2, 20));
     });
 
     it("does not call onChange for invalid input on blur", () => {
@@ -255,12 +251,19 @@ describe("DatetimePickerField", () => {
       const input = screen.getByRole("combobox") as HTMLInputElement;
       fireEvent.focus(input);
       fireEvent.change(input, { target: { value: "2024-06-01" } });
+
+      // Popover is open before Enter
+      expect(screen.getByRole("dialog")).toBeDefined();
+
       fireEvent.keyDown(input, { key: "Enter" });
 
       expect(onChange).toHaveBeenCalledTimes(1);
       const calledDate: Date = onChange.mock.calls[0][0];
       expect(calledDate.getMonth()).toBe(5);
       expect(calledDate.getDate()).toBe(1);
+
+      // Popover is closed after Enter
+      expect(screen.queryByRole("dialog")).toBeNull();
     });
 
     it("reverts on Escape key", () => {
@@ -320,8 +323,28 @@ describe("DatetimePickerField", () => {
 
       expect(onChange).toHaveBeenCalledTimes(1);
       const calledDate: Date = onChange.mock.calls[0][0];
-      expect(calledDate.getMonth()).toBe(2);
-      expect(calledDate.getDate()).toBe(20);
+      expect(calledDate).toEqual(new Date(2024, 2, 20));
+    });
+
+    it("switches between display and edit format on focus/blur", () => {
+      render(
+        <DatetimePickerField
+          value={new Date(2024, 0, 15)}
+          onChange={vi.fn()}
+        />,
+      );
+      const input = screen.getByRole("combobox") as HTMLInputElement;
+
+      // Idle: locale-friendly display format
+      expect(input.value).toBe("Jan 15, 2024");
+
+      // Focus: switches to edit format (parsable by the input)
+      fireEvent.focus(input);
+      expect(input.value).toBe("2024-01-15");
+
+      // Blur: reverts to display format
+      fireEvent.blur(input);
+      expect(input.value).toBe("Jan 15, 2024");
     });
   });
 
@@ -411,8 +434,10 @@ describe("DatetimePickerField", () => {
     it("sets aria-expanded to true when popover is open", () => {
       render(<DatetimePickerField value={null} onChange={vi.fn()} />);
       const input = screen.getByRole("combobox");
+      expect(screen.queryByRole("dialog")).toBeNull();
       fireEvent.focus(input);
       expect(input.getAttribute("aria-expanded")).toBe("true");
+      expect(screen.getByRole("dialog")).toBeDefined();
     });
   });
 });

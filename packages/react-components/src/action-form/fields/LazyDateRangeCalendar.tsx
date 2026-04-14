@@ -15,7 +15,7 @@
  */
 
 import React, { Suspense } from "react";
-import styles from "./DateCalendar.module.css";
+import styles from "./DatePickerCommon.module.css";
 import type { DateRangeCalendarProps } from "./DateRangeCalendar.js";
 
 const DateRangeCalendarLazy = React.lazy(
@@ -26,7 +26,7 @@ export function LazyDateRangeCalendar(
   props: DateRangeCalendarProps,
 ): React.ReactElement {
   return (
-    <Suspense fallback={<div className={styles.calendarFallback} />}>
+    <Suspense fallback={<div className={styles.osdkDatePickerFallback} />}>
       <DateRangeCalendarLazy {...props} />
     </Suspense>
   );

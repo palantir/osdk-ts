@@ -50,15 +50,15 @@ export interface UseDateEditState {
   inputError: "invalid" | "out-of-range" | null;
   /**
    * Live parse of inputValue — the Date if parsable, undefined if empty/invalid.
-   * Re-derived every render. Only meaningful while isEditing is true.
+   * Re-derived every render from parseFn(inputValue).
    * Used for cross-input validation (e.g. DateRangeInputField's overlapping check).
    */
-  parsedValue: Date | undefined;
+  dateValue: Date | undefined;
   /**
    * The validated date ready to commit on blur/Enter: the parsed date when valid
    * and in range, null otherwise (invalid, out-of-range, or empty input).
    * Callers use this directly in blur/Enter handlers instead of manually checking
-   * parsedValue + inputError.
+   * dateValue + inputError.
    */
   validatedDate: Date | null;
   /** Enter editing mode: sets isEditing=true and populates inputValue from the current value. */
@@ -67,6 +67,12 @@ export interface UseDateEditState {
   stopEditing: () => void;
   /** Update the raw input text (stable useState setter). */
   setInputValue: (value: string) => void;
+  /**
+   * Set inputValue from a Date using editFormatFn. Use this instead of calling
+   * `setInputValue(editFormatFn(date))` manually — it removes the need for
+   * callers to know which format function to apply.
+   */
+  setDateValue: (date: Date | null) => void;
 }
 
 /**
@@ -96,29 +102,30 @@ export function useDateEditState({
     }
   }
 
-  // When editing, show the raw text for the user to edit; when idle, show the display-formatted value.
+  // During editing the user needs parsable text they can modify and that
+  // round-trips through parseFn (e.g. "2024-01-15"). When idle the input
+  // shows a locale-friendly string that may not be parsable (e.g. "Jan 15, 2024")
+  // but is more readable. displayedValue is the single source of truth
+  // for the input's visible text.
   const displayedValue = isEditing
     ? inputValue
     : (value != null ? displayFormatFn(value) : "");
 
   // Parse the input once per render and derive all validation state from it.
-  const parsedValue = (isEditing && inputValue !== "")
-    ? parseFn(inputValue)
-    : undefined;
+  const dateValue = inputValue !== "" ? parseFn(inputValue) : undefined;
 
   const inputError: "invalid" | "out-of-range" | null = (() => {
-    // Not editing: parsedValue is undefined (we skip parsing idle inputs), so
-    // without this guard we'd wrongly report "invalid" for a valid committed value.
+    // Not editing: no validation feedback.
     // Empty input: the user cleared the field — that means null, not invalid.
     if (!isEditing || inputValue === "") return null;
-    if (parsedValue == null) return "invalid";
-    if (!isDateInRange(parsedValue, min, max)) return "out-of-range";
+    if (dateValue == null) return "invalid";
+    if (!isDateInRange(dateValue, min, max)) return "out-of-range";
     return null;
   })();
 
-  // The validated date ready for onChange, derived from parsedValue + inputError.
-  const validatedDate = (inputError == null && parsedValue != null)
-    ? parsedValue
+  // The validated date ready for onChange, derived from dateValue + inputError.
+  const validatedDate = (inputError == null && dateValue != null)
+    ? dateValue
     : null;
 
   const startEditing = useCallback(() => {
@@ -130,15 +137,23 @@ export function useDateEditState({
     setIsEditing(false);
   }, []);
 
+  const setDateValue = useCallback(
+    (date: Date | null) => {
+      setInputValue(date != null ? editFormatFn(date) : "");
+    },
+    [editFormatFn],
+  );
+
   return {
     isEditing,
     inputValue,
     displayedValue,
     inputError,
-    parsedValue,
+    dateValue,
     validatedDate,
     startEditing,
     stopEditing,
     setInputValue,
+    setDateValue,
   };
 }
