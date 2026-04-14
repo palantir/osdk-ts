@@ -23,7 +23,10 @@ import type {
 import type { ColumnDef } from "@tanstack/react-table";
 import React, { useMemo, useRef } from "react";
 import { SelectionCell, SelectionHeaderCell } from "../SelectionCells.js";
-import { SELECTION_COLUMN_ID } from "../utils/constants.js";
+import {
+  SELECTION_COLUMN_ID,
+  SELECTION_COLUMN_WIDTH,
+} from "../utils/constants.js";
 
 interface UseSelectionColumnProps {
   selectionMode?: "single" | "multiple" | "none";
@@ -88,9 +91,9 @@ export const useSelectionColumn = <
           onToggleRow={onToggleRowRef.current}
         />
       ),
-      size: 50,
-      minSize: 50,
-      maxSize: 50,
+      size: SELECTION_COLUMN_WIDTH,
+      minSize: SELECTION_COLUMN_WIDTH,
+      maxSize: SELECTION_COLUMN_WIDTH,
       enableSorting: false,
       enableResizing: false,
       enablePinning: false,

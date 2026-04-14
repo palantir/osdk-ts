@@ -42,7 +42,9 @@ describe("useLinks enabled option", () => {
     } as any;
 
     return ({ children }: React.PropsWithChildren) => (
-      <OsdkContext2.Provider value={{ observableClient }}>
+      <OsdkContext2.Provider
+        value={{ observableClient, devtoolsEnabled: false }}
+      >
         {children}
       </OsdkContext2.Provider>
     );

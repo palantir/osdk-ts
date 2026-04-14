@@ -16,32 +16,32 @@ import type {
 
 export namespace MasonHeavyEquipment {
   export type PropertyKeys =
-    | 'serviceRequirement'
-    | 'area'
-    | 'id'
-    | 'sidc'
-    | 'classification'
-    | 'location'
-    | 'fullSize'
-    | 'weight'
-    | 'isCanonical'
-    | 'driverId'
-    | 'createdDatetime'
-    | 'driverName'
-    | 'resolvedTo'
-    | 'site'
-    | 'externalId'
-    | 'maker'
-    | 'badgeId'
     | 'age'
-    | 'lastModified'
+    | 'area'
     | 'backupDriverName'
-    | 'shortId'
+    | 'badgeId'
+    | 'classification'
+    | 'createdDatetime'
+    | 'driverId'
+    | 'driverName'
+    | 'externalId'
+    | 'fullSize'
+    | 'id'
+    | 'internalSize'
+    | 'isCanonical'
+    | 'lastModified'
+    | 'location'
+    | 'maker'
     | 'managerName'
-    | 'title'
-    | 'supervisorName'
     | 'musicPlayer'
-    | 'internalSize';
+    | 'resolvedTo'
+    | 'serviceRequirement'
+    | 'shortId'
+    | 'sidc'
+    | 'site'
+    | 'supervisorName'
+    | 'title'
+    | 'weight';
 
   export interface Links {
     readonly masonHeavyEquipment: $SingleLinkAccessor<MasonHeavyEquipment>;
@@ -79,13 +79,13 @@ export namespace MasonHeavyEquipment {
       | {
           createdBy: $PropType['string'] | undefined;
           createdTime: $PropType['timestamp'] | undefined;
-          value: $PropType['string'] | undefined;
-          startDatetime: $PropType['timestamp'] | undefined;
-          endDatetime: $PropType['timestamp'] | undefined;
           datasourceGid: $PropType['string'] | undefined;
           datasourceName: $PropType['string'] | undefined;
+          endDatetime: $PropType['timestamp'] | undefined;
           lastModifiedBy: $PropType['string'] | undefined;
           lastModifiedTime: $PropType['timestamp'] | undefined;
+          startDatetime: $PropType['timestamp'] | undefined;
+          value: $PropType['string'] | undefined;
         }[]
       | undefined;
     /**
@@ -157,10 +157,10 @@ export namespace MasonHeavyEquipment {
           createdTime: $PropType['timestamp'] | undefined;
           datasourceGid: $PropType['string'] | undefined;
           datasourceName: $PropType['string'] | undefined;
+          endDatetime: $PropType['timestamp'] | undefined;
           lastModifiedBy: $PropType['string'] | undefined;
           lastModifiedTime: $PropType['timestamp'] | undefined;
           startDatetime: $PropType['timestamp'] | undefined;
-          endDatetime: $PropType['timestamp'] | undefined;
           value: $PropType['string'] | undefined;
         }[]
       | undefined;
@@ -269,11 +269,11 @@ export namespace MasonHeavyEquipment {
           createdTime: $PropType['timestamp'] | undefined;
           datasourceGid: $PropType['string'] | undefined;
           datasourceName: $PropType['string'] | undefined;
+          endDatetime: $PropType['timestamp'] | undefined;
           lastModifiedBy: $PropType['string'] | undefined;
           lastModifiedTime: $PropType['timestamp'] | undefined;
           startDatetime: $PropType['timestamp'] | undefined;
           value: $PropType['geopoint'] | undefined;
-          endDatetime: $PropType['timestamp'] | undefined;
         }[]
       | undefined;
     /**
@@ -285,14 +285,14 @@ export namespace MasonHeavyEquipment {
      */
     readonly maker:
       | {
-          makerValue: $PropType['string'] | undefined;
           createdBy: $PropType['string'] | undefined;
           createdTime: $PropType['timestamp'] | undefined;
           datasourceGid: $PropType['string'] | undefined;
           datasourceName: $PropType['string'] | undefined;
+          endDatetime: $PropType['timestamp'] | undefined;
           lastModifiedBy: $PropType['string'] | undefined;
           lastModifiedTime: $PropType['timestamp'] | undefined;
-          endDatetime: $PropType['timestamp'] | undefined;
+          makerValue: $PropType['string'] | undefined;
           startDatetime: $PropType['timestamp'] | undefined;
         }[]
       | undefined;

@@ -119,10 +119,6 @@
   --osdk-cbac-skeleton-line-height: 16px;
   --osdk-cbac-skeleton-line-narrow-width: 80%;
 
-  /* Danger Callout */
-  --osdk-cbac-danger-callout-bg: var(--osdk-intent-danger-subtle-bg, #fde8e8);
-  --osdk-cbac-danger-callout-color: var(--osdk-intent-danger-rest, #c23030);
-
   /* Popover Warning Callout */
   --osdk-cbac-warning-callout-bg: var(--osdk-intent-warning-subtle);
   --osdk-cbac-warning-callout-color: var(--osdk-intent-warning-rest);
@@ -137,7 +133,7 @@
   --osdk-cbac-marking-tooltip-max-width: 280px;
   --osdk-cbac-marking-tooltip-padding: calc(var(--osdk-surface-spacing) * 1.5);
   --osdk-cbac-marking-tooltip-font-size: var(--osdk-typography-size-body-small);
-  --osdk-cbac-marking-tooltip-z-index: var(--osdk-surface-z-index-4);
+  --osdk-cbac-marking-tooltip-z-index: var(--osdk-tooltip-z-index);
 
   /* Marking Button Selected Hover */
   --osdk-cbac-marking-button-bg-selected-hover: var(

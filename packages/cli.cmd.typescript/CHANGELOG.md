@@ -1,5 +1,24 @@
 # @osdk/cli.cmd.typescript
 
+## 0.33.0
+
+### Minor Changes
+
+- 9171453: Alphabetize code generation for sdk.
+- 40fe279: Fix cli by making referenced packages bundled
+
+### Patch Changes
+
+- Updated dependencies [bcf359f]
+- Updated dependencies [cbc8e9c]
+- Updated dependencies [9171453]
+- Updated dependencies [40fe279]
+- Updated dependencies [3390ea2]
+- Updated dependencies [48e0cab]
+  - @osdk/shared.client.impl@1.9.0
+  - @osdk/generator@2.9.0
+  - @osdk/cli.common@0.33.0
+
 ## 0.32.0
 
 ### Minor Changes

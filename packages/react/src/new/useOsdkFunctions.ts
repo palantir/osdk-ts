@@ -15,9 +15,11 @@
  */
 
 import type { QueryDefinition } from "@osdk/api";
-import type { ObserveFunctionCallbackArgs } from "@osdk/client/unstable-do-not-use";
 import React from "react";
-import type { Snapshot } from "./makeExternalStore.js";
+import {
+  createCompositeExternalStore,
+  EMPTY_STORE,
+} from "./createCompositeExternalStore.js";
 import { OsdkContext2 } from "./OsdkContext2.js";
 import type {
   UseOsdkFunctionOptions,
@@ -30,10 +32,7 @@ export interface FunctionQueryParams<Q extends QueryDefinition<unknown>> {
    * Only allow params and enabled options at the query level,
    * other options are not yet supported in this batch context
    */
-  options?: Pick<
-    UseOsdkFunctionOptions<Q>,
-    "params" | "enabled" | "dedupeIntervalMs"
-  >;
+  options?: UseOsdkFunctionOptions<Q>;
 }
 
 export interface UseOsdkFunctionsProps {
@@ -48,13 +47,21 @@ export interface UseOsdkFunctionsProps {
    * @default true
    */
   enabled?: boolean;
+
+  /**
+   * Maximum number of queries to execute concurrently.
+   * When set, queries are subscribed in batches — the next query starts
+   * only after a running one completes (status "loaded" or "error").
+   * Useful for large payloads that may exceed server time limits.
+   *
+   * @default undefined (all queries run in parallel)
+   */
+  maxConcurrent?: number;
 }
 
 export type UseOsdkFunctionsResult = Array<
   UseOsdkFunctionResult<QueryDefinition<unknown>>
 >;
-
-type FunctionPayload = ObserveFunctionCallbackArgs<QueryDefinition<unknown>>;
 
 /**
  * React hook for executing multiple OSDK function queries in parallel.
@@ -70,99 +77,28 @@ type FunctionPayload = ObserveFunctionCallbackArgs<QueryDefinition<unknown>>;
  * @returns Array of results in the same order as input queries, each with the same shape as useOsdkFunction
  */
 export function useOsdkFunctions(
-  { queries, enabled = true }: UseOsdkFunctionsProps,
+  { queries, enabled = true, maxConcurrent }: UseOsdkFunctionsProps,
 ): UseOsdkFunctionsResult {
   const { observableClient } = React.useContext(OsdkContext2);
 
   const stableQueriesKey = JSON.stringify(queries.map(q => ({
     apiName: q.queryDefinition.apiName,
-    params: q.options?.params,
-    enabled: q.options?.enabled,
-    dedupeIntervalMs: q.options?.dedupeIntervalMs,
+    ...q.options,
   })));
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const stableQueries = React.useMemo(() => queries, [stableQueriesKey]);
 
-  // Create a composite external store that manages N subscriptions
-  // We can't reuse makeExternalStore directly because it wraps a
-  // single Observer, but we need N observers funneled into one useSyncExternalStore.
   const { subscribe, getSnapshot } = React.useMemo(
-    () => {
-      const count = stableQueries.length;
-
-      if (!enabled || count === 0) {
-        const empty: Array<Snapshot<FunctionPayload>> = [];
-        return {
-          subscribe: () => () => {},
-          getSnapshot: () => empty,
-        };
-      }
-
-      // Mutable snapshot array — replaced (never mutated in place) on each
-      // observer callback so that useSyncExternalStore sees a new reference.
-      let current: Array<Snapshot<FunctionPayload>> = stableQueries.map(
-        () => undefined,
-      );
-
-      const updateSlot = (
-        index: number,
-        value: Snapshot<FunctionPayload>,
-      ) => {
-        const next = [...current];
-        next[index] = value;
-        current = next;
-      };
-
-      return {
-        getSnapshot: () => current,
-        subscribe: (notifyUpdate: () => void) => {
-          const subscriptions: Array<{ unsubscribe: () => void }> = [];
-
-          stableQueries.forEach((query, index) => {
-            if (query.options?.enabled === false) {
-              return;
-            }
-
-            const params = query.options?.params as
-              | Record<string, unknown>
-              | undefined;
-
-            const sub = observableClient.observeFunction(
-              query.queryDefinition,
-              params,
-              { dedupeInterval: query.options?.dedupeIntervalMs ?? 2_000 },
-              {
-                next: (payload: FunctionPayload | undefined) => {
-                  updateSlot(
-                    index,
-                    payload as Snapshot<FunctionPayload>,
-                  );
-                  notifyUpdate();
-                },
-                error: (error: unknown) => {
-                  updateSlot(index, {
-                    ...(current[index] ?? {}),
-                    error: error instanceof Error
-                      ? error
-                      : new Error(String(error)),
-                  } as Snapshot<FunctionPayload>);
-                  notifyUpdate();
-                },
-                complete: () => {},
-              },
-            );
-
-            subscriptions.push(sub);
-          });
-
-          return () => {
-            subscriptions.forEach(sub => sub.unsubscribe());
-          };
-        },
-      };
-    },
-    [enabled, observableClient, stableQueries],
+    () =>
+      !enabled || stableQueries.length === 0
+        ? EMPTY_STORE
+        : createCompositeExternalStore(
+          stableQueries,
+          observableClient,
+          maxConcurrent,
+        ),
+    [enabled, maxConcurrent, observableClient, stableQueries],
   );
 
   const payloads = React.useSyncExternalStore(subscribe, getSnapshot);

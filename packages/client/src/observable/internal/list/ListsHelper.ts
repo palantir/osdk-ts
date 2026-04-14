@@ -76,7 +76,18 @@ export class ListsHelper extends AbstractHelper<
     const ret = super.observe(options, subFn);
 
     if (options.streamUpdates) {
-      ret.query.registerStreamUpdates(ret.subscription);
+      if (options.pivotTo) {
+        if (process.env.NODE_ENV !== "production") {
+          // eslint-disable-next-line no-console
+          console.warn(
+            "[@osdk/client] streamUpdates is not supported with pivotTo. "
+              + "The server does not support websocket subscriptions for "
+              + "link-traversal queries. Ignoring streamUpdates.",
+          );
+        }
+      } else {
+        ret.query.registerStreamUpdates(ret.subscription);
+      }
     }
     return ret;
   }
