@@ -1,5 +1,24 @@
 # @osdk/foundry-sdk-generator
 
+## 2.10.0
+
+### Minor Changes
+
+- f01a8f4: improvements(build): significant reduction in build task graphs
+
+### Patch Changes
+
+- Updated dependencies [0fb9c8a]
+- Updated dependencies [f01a8f4]
+- Updated dependencies [f34a1ce]
+  - @osdk/client@2.10.0
+  - @osdk/client.unstable.tpsa@0.11.0
+  - @osdk/shared.client.impl@1.10.0
+  - @osdk/client.unstable@2.10.0
+  - @osdk/generator-utils@2.10.0
+  - @osdk/generator@2.10.0
+  - @osdk/api@2.10.0
+
 ## 2.9.0
 
 ### Minor Changes

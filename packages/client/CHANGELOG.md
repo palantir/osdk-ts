@@ -1,5 +1,25 @@
 # @osdk/client
 
+## 2.10.0
+
+### Minor Changes
+
+- 0fb9c8a: fix invalidateObjectType to match queries where the result type differs from apiName (e.g. link traversal queries)
+- f01a8f4: improvements(build): significant reduction in build task graphs
+- f34a1ce: prevent streamUpdates from being used with pivotTo since the server does not support websocket subscriptions for link-traversal queries
+
+### Patch Changes
+
+- Updated dependencies [f01a8f4]
+  - @osdk/client.test.ontology@2.10.0
+  - @osdk/generator-converters@2.10.0
+  - @osdk/shared.client.impl@1.10.0
+  - @osdk/shared.net.errors@2.9.0
+  - @osdk/shared.net.fetch@1.9.0
+  - @osdk/client.unstable@2.10.0
+  - @osdk/shared.test@2.9.0
+  - @osdk/api@2.10.0
+
 ## 2.9.0
 
 ### Minor Changes

@@ -1,5 +1,19 @@
 # @osdk/widget.client-react
 
+## 3.7.0
+
+### Minor Changes
+
+- f01a8f4: improvements(build): significant reduction in build task graphs
+
+### Patch Changes
+
+- Updated dependencies [0fb9c8a]
+- Updated dependencies [f01a8f4]
+- Updated dependencies [f34a1ce]
+  - @osdk/client@2.10.0
+  - @osdk/widget.client@3.7.0
+
 ## 3.6.0
 
 ### Patch Changes

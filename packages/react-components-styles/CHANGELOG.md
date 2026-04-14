@@ -1,5 +1,12 @@
 # @osdk/react-components-styles
 
+## 0.4.0
+
+### Minor Changes
+
+- f01a8f4: improvements(build): significant reduction in build task graphs
+- c144b04: Add form field validation with onTouched mode, error display, and submit tooltip
+
 ## 0.3.0
 
 ### Minor Changes

@@ -1,5 +1,16 @@
 # @osdk/react-components-storybook
 
+## 0.4.0
+
+### Minor Changes
+
+- f01a8f4: improvements(build): significant reduction in build task graphs
+
+### Patch Changes
+
+- Updated dependencies [f01a8f4]
+  - @osdk/faux@0.8.0
+
 ## 0.3.0
 
 ### Minor Changes

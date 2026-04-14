@@ -1,5 +1,11 @@
 # @osdk/cli.common
 
+## 0.34.0
+
+### Minor Changes
+
+- f01a8f4: improvements(build): significant reduction in build task graphs
+
 ## 0.33.0
 
 ### Minor Changes

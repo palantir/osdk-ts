@@ -1,5 +1,11 @@
 # @osdk/foundry-config-json
 
+## 1.8.0
+
+### Minor Changes
+
+- f01a8f4: improvements(build): significant reduction in build task graphs
+
 ## 1.7.0
 
 ### Minor Changes

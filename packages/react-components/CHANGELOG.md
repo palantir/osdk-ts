@@ -1,5 +1,19 @@
 # @osdk/react-components
 
+## 0.4.0
+
+### Minor Changes
+
+- e572448: Set default tooltip trigger delay to 200ms in TooltipTrigger
+- f01a8f4: improvements(build): significant reduction in build task graphs
+- c144b04: Add form field validation with onTouched mode, error display, and submit tooltip
+
+### Patch Changes
+
+- Updated dependencies [f01a8f4]
+- Updated dependencies [f34a1ce]
+  - @osdk/react@0.12.0
+
 ## 0.3.0
 
 ### Minor Changes

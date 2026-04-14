@@ -1,5 +1,18 @@
 # @osdk/cli.cmd.typescript
 
+## 0.34.0
+
+### Minor Changes
+
+- f01a8f4: improvements(build): significant reduction in build task graphs
+
+### Patch Changes
+
+- Updated dependencies [f01a8f4]
+  - @osdk/shared.client.impl@1.10.0
+  - @osdk/cli.common@0.34.0
+  - @osdk/generator@2.10.0
+
 ## 0.33.0
 
 ### Minor Changes
