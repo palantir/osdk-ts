@@ -26,8 +26,6 @@
   background: var(--osdk-datetime-popover-bg);
   padding: var(--osdk-datetime-popover-padding);
   z-index: var(--osdk-datetime-popover-z-index);
-  border: var(--osdk-datetime-popover-border);
-  border-radius: var(--osdk-datetime-popover-border-radius);
   box-shadow: var(--osdk-datetime-popover-shadow);
 }
 

@@ -5,9 +5,6 @@
 
   /* Popover */
   --osdk-datetime-popover-bg: var(--osdk-background-primary);
-  --osdk-datetime-popover-border: var(--osdk-surface-border-width) solid
-    var(--osdk-surface-border-color-strong);
-  --osdk-datetime-popover-border-radius: var(--osdk-surface-border-radius);
   --osdk-datetime-popover-padding: calc(var(--osdk-surface-spacing) * 2);
   --osdk-datetime-popover-z-index: var(--osdk-surface-z-index-3);
   --osdk-datetime-popover-shadow: var(--osdk-surface-shadow-2);
@@ -36,13 +33,13 @@
   --osdk-datetime-calendar-day-hover-bg: var(
     --osdk-surface-background-color-default-hover
   );
-  --osdk-datetime-calendar-day-hover-color: var(--osdk-typography-color-default);
+  --osdk-datetime-calendar-day-hover-color: var(
+    --osdk-typography-color-default
+  );
   --osdk-datetime-calendar-day-active-bg: var(
     --osdk-surface-background-color-default-active
   );
-  --osdk-datetime-calendar-day-border-radius: var(
-    --osdk-surface-border-radius
-  );
+  --osdk-datetime-calendar-day-border-radius: var(--osdk-surface-border-radius);
 
   /* Calendar selected day */
   --osdk-datetime-calendar-selected-bg: var(--osdk-intent-primary-rest);
@@ -93,8 +90,7 @@
   );
 
   /* Calendar dropdown */
-  --osdk-datetime-calendar-dropdown-padding: 2px
-    var(--osdk-surface-spacing);
+  --osdk-datetime-calendar-dropdown-padding: 2px var(--osdk-surface-spacing);
   --osdk-datetime-calendar-dropdown-border-radius: var(
     --osdk-input-border-radius
   );
@@ -121,7 +117,9 @@
   --osdk-datetime-input-placeholder-color: var(--osdk-input-placeholder-color);
   --osdk-datetime-input-border-width: var(--osdk-input-border-width);
   --osdk-datetime-input-border-color: var(--osdk-input-border-color);
-  --osdk-datetime-input-border-color-focus: var(--osdk-input-border-color-focus);
+  --osdk-datetime-input-border-color-focus: var(
+    --osdk-input-border-color-focus
+  );
   --osdk-datetime-input-focus-width: var(--osdk-input-focus-width);
   --osdk-datetime-input-focus-color: var(--osdk-input-focus-color);
   --osdk-datetime-input-focus-offset: var(--osdk-input-focus-offset);
