@@ -443,7 +443,7 @@ export default tseslint.config(
       "examples/**/*",
       "packages/monorepo.*/**",
       "google-font-mocked-response.js",
-      ".lintstagedrc.mjs",
+      "lefthook.yml",
       "tests/",
     ],
   },

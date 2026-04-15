@@ -53,6 +53,9 @@ vitest.workspace.ts
 *.ipr
 *.iws
 
+# Lefthook local overrides
+lefthook.local.yml
+
 # Files with local extensions (dot-prefix only, to avoid matching package dirs like e2e.generated.api-namespace.local)
 .*.local
 .*.local.*
