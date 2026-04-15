@@ -35,8 +35,8 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
-    "@osdk/client": "workspace:~",
-    "@osdk/oauth": "workspace:~",
+    "@osdk/client": "workspace:*",
+    "@osdk/oauth": "workspace:*",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.30.1"

@@ -53,14 +53,14 @@
     "tiny-invariant": "^1.3.3"
   },
   "peerDependencies": {
-    "@osdk/api": "workspace:~",
-    "@osdk/client": "workspace:~"
+    "@osdk/api": "workspace:*",
+    "@osdk/client": "workspace:*"
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.17.4",
-    "@osdk/api": "workspace:~",
-    "@osdk/cli.cmd.typescript": "workspace:~",
-    "@osdk/foundry-sdk-generator": "workspace:~",
+    "@osdk/api": "workspace:*",
+    "@osdk/cli.cmd.typescript": "workspace:*",
+    "@osdk/foundry-sdk-generator": "workspace:*",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@tailwindcss/vite": "^4.1.13",

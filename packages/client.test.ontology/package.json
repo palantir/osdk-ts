@@ -38,10 +38,10 @@
   },
   "peerDependencies": {},
   "devDependencies": {
-    "@osdk/generator": "workspace:~",
+    "@osdk/generator": "workspace:*",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
-    "@osdk/shared.test": "workspace:~",
+    "@osdk/shared.test": "workspace:*",
     "typescript": "~5.5.4"
   },
   "publishConfig": {
