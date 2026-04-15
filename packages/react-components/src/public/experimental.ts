@@ -169,6 +169,12 @@ export {
 export { TiffRenderer } from "../images/tiff-renderer/TiffRenderer.js";
 export type { TiffRendererProps } from "../images/tiff-renderer/types.js";
 
+// MarkdownRenderer
+export {
+  MarkdownRenderer,
+  type MarkdownRendererProps,
+} from "../markdown-renderer/MarkdownRenderer.js";
+
 export { ActionForm } from "../action-form/ActionForm.js";
 export type {
   ActionFormProps,
