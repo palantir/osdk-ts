@@ -323,7 +323,8 @@ function checkExamples(
       {
         compareContent: true,
         filterHandler: gitIgnoreFilter(pathLeft, pathRight),
-        excludeFilter: "/.turbo",
+        // Exclude turbo cache and config since they differ between generated and checked-in examples
+        excludeFilter: "/.turbo,turbo.json",
       },
     );
     if (!compareResult.same) {
