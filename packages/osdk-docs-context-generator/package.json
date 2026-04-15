@@ -32,7 +32,7 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
-    "@osdk/typescript-sdk-docs-examples": "workspace:~"
+    "@osdk/typescript-sdk-docs-examples": "workspace:*"
   },
   "devDependencies": {
     "@osdk/monorepo.api-extractor": "workspace:~",

@@ -165,6 +165,12 @@ export {
   type PdfViewerMediaProps,
 } from "../pdf-viewer/PdfRenderer.js";
 
+// MarkdownRenderer
+export {
+  MarkdownRenderer,
+  type MarkdownRendererProps,
+} from "../markdown-renderer/MarkdownRenderer.js";
+
 export { ActionForm } from "../action-form/ActionForm.js";
 export type {
   ActionFormProps,
@@ -191,4 +197,5 @@ export type {
   RendererFieldDefinition,
   TextAreaFieldProps,
   TextInputFieldProps,
+  ValidationError,
 } from "../action-form/FormFieldApi.js";

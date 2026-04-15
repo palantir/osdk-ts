@@ -68,7 +68,7 @@
     "transpileCjs": "monorepo.tool.transpile -f cjs -m bundle -t node",
     "transpileEsm": "monorepo.tool.transpile -f esm -m normal -t node",
     "transpileTypes": "monorepo.tool.transpile -f esm -m types -t node",
-    "typecheck": "tsc --noEmit --emitDeclarationOnly false"
+    "typecheck": "tsc -p tsconfig.typecheck.json --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
     "@osdk/api": "workspace:~",
@@ -78,10 +78,10 @@
     "@osdk/foundry.ontologies": "catalog:foundry-platform-typescript",
     "@osdk/generator-converters": "workspace:*",
     "@osdk/shared.client": "^1.0.1",
-    "@osdk/shared.client.impl": "workspace:~",
+    "@osdk/shared.client.impl": "workspace:*",
     "@osdk/shared.client2": "^1.0.0",
-    "@osdk/shared.net.errors": "workspace:~",
-    "@osdk/shared.net.fetch": "workspace:~",
+    "@osdk/shared.net.errors": "workspace:*",
+    "@osdk/shared.net.fetch": "workspace:*",
     "@types/geojson": "^7946.0.16",
     "@wry/trie": "^0.5.0",
     "conjure-lite": "0.7.3",
@@ -93,13 +93,23 @@
     "type-fest": "^4.41.0",
     "ws": "^8.18.3"
   },
+  "peerDependencies": {
+    "@osdk/client.test.ontology": "workspace:~",
+    "@osdk/shared.test": "workspace:~"
+  },
+  "peerDependenciesMeta": {
+    "@osdk/client.test.ontology": {
+      "optional": true
+    },
+    "@osdk/shared.test": {
+      "optional": true
+    }
+  },
   "devDependencies": {
     "@microsoft/api-documenter": "^7.26.32",
     "@microsoft/api-extractor": "^7.52.11",
-    "@osdk/client.test.ontology": "workspace:~",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
-    "@osdk/shared.test": "workspace:~",
     "@types/geojson": "^7946.0.14",
     "@types/ws": "^8.18.1",
     "chalk": "^5.6.2",

@@ -70,7 +70,9 @@
     "lodash-es": "^4.17.21",
     "pdfjs-dist": "~4.8.69",
     "react-day-picker": "^8.10.0",
-    "react-hook-form": "^7.54.0"
+    "react-hook-form": "^7.54.0",
+    "react-markdown": "^10.1.0",
+    "remark-gfm": "^4.0.1"
   },
   "peerDependencies": {
     "@osdk/api": "^2.8.0",

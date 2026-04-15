@@ -34,8 +34,8 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
-    "@osdk/create-app": "workspace:~",
-    "@osdk/create-widget": "workspace:~",
+    "@osdk/create-app": "workspace:*",
+    "@osdk/create-widget": "workspace:*",
     "consola": "^3.4.2",
     "dir-compare": "^5.0.0",
     "find-up": "^7.0.0",

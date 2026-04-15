@@ -83,7 +83,6 @@ const archetypeRules = archetypes(
   .addArchetype(
     "checkApiPackages",
     [
-      "@osdk/client",
       "@osdk/api",
       "@osdk/functions",
       "@osdk/functions-testing.experimental",
@@ -91,6 +90,17 @@ const archetypeRules = archetypes(
     {
       ...LIBRARY_RULES,
       checkApi: true,
+    },
+  )
+  .addArchetype(
+    "clientPackage",
+    [
+      "@osdk/client",
+    ],
+    {
+      ...LIBRARY_RULES,
+      checkApi: true,
+      typecheckProject: "tsconfig.typecheck.json",
     },
   )
   .addArchetype(
@@ -362,6 +372,7 @@ const archetypeRules = archetypes(
       ...LIBRARY_RULES,
       react: true,
       extraPublishFiles: ["AGENTS.md", "docs", "experimental"],
+      customTsconfigExcludes: ["./src/intellisense.test.helpers/**"],
     },
   )
   .addArchetype(
@@ -863,6 +874,7 @@ function minimalPackageRules(shared, options) {
  * @property { "vite" | undefined } [framework]
  * @property { import("typescript").CompilerOptions} [extraTsConfigCompilerOptions]
  * @property { boolean } [cssExport]
+ * @property { string } [typecheckProject]
  */
 
 /**
@@ -973,7 +985,9 @@ function standardPackageRules(shared, options) {
           transpileTypes: options.skipTypes
             ? DELETE_SCRIPT_ENTRY
             : "monorepo.tool.transpile -f esm -m types -t node",
-          typecheck: "tsc --noEmit --emitDeclarationOnly false",
+          typecheck: options.typecheckProject
+            ? `tsc -p ${options.typecheckProject} --noEmit --emitDeclarationOnly false`
+            : "tsc --noEmit --emitDeclarationOnly false",
         },
       },
     }),
