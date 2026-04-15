@@ -3316,19 +3316,19 @@ importers:
   packages/e2e.sandbox.officenetwork:
     dependencies:
       '@osdk/api':
-        specifier: workspace:~
+        specifier: workspace:*
         version: link:../api
       '@osdk/client':
-        specifier: workspace:~
+        specifier: workspace:*
         version: link:../client
       '@osdk/oauth':
-        specifier: workspace:~
+        specifier: workspace:*
         version: link:../oauth
       '@osdk/react':
-        specifier: workspace:~
+        specifier: workspace:*
         version: link:../react
       '@osdk/react-components':
-        specifier: workspace:~
+        specifier: workspace:*
         version: link:../react-components
       maplibre-gl:
         specifier: ^5.7.1
@@ -3383,19 +3383,19 @@ importers:
   packages/e2e.sandbox.peopleapp:
     dependencies:
       '@osdk/api':
-        specifier: workspace:~
+        specifier: workspace:*
         version: link:../api
       '@osdk/client':
-        specifier: workspace:~
+        specifier: workspace:*
         version: link:../client
       '@osdk/oauth':
-        specifier: workspace:~
+        specifier: workspace:*
         version: link:../oauth
       '@osdk/react':
-        specifier: workspace:~
+        specifier: workspace:*
         version: link:../react
       '@osdk/react-components':
-        specifier: workspace:~
+        specifier: workspace:*
         version: link:../react-components
       core-js:
         specifier: ^3.45.1
