@@ -42,7 +42,7 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
-    "@osdk/widget.api": "workspace:*",
+    "@osdk/widget.api": "workspace:~",
     "tiny-invariant": "^1.3.3"
   },
   "devDependencies": {
