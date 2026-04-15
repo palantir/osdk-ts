@@ -1,6 +1,7 @@
 ---
 "@osdk/cbac-components": patch
 "@osdk/cli": patch
+"@osdk/cli.cmd.typescript": patch
 "@osdk/client": patch
 "@osdk/create-app": patch
 "@osdk/create-widget": patch
@@ -11,4 +12,4 @@
 "@osdk/widget.api": patch
 ---
 
-Standardize workspace dependency specifiers to workspace:~
+Standardize workspace dependency specifiers to workspace:*

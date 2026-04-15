@@ -43,8 +43,8 @@
     "@osdk/client": "workspace:*"
   },
   "peerDependencies": {
-    "@osdk/api": "workspace:~",
-    "@osdk/client": "workspace:~"
+    "@osdk/api": "workspace:*",
+    "@osdk/client": "workspace:*"
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.17.4",
