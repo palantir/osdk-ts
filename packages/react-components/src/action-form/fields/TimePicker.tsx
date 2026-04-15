@@ -14,16 +14,28 @@
  * limitations under the License.
  */
 
-import React, { Suspense } from "react";
-import type { DateCalendarProps } from "./DateCalendar.js";
-import styles from "./DatePickerCommon.module.css";
+import { Input } from "@base-ui/react/input";
+import React from "react";
+import styles from "./TimePicker.module.css";
 
-const DateCalendarLazy = React.lazy(() => import("./DateCalendar.js"));
+interface TimePickerProps {
+  value: string;
+  onChange: (timeString: string) => void;
+  label?: string;
+}
 
-export function LazyDateCalendar(props: DateCalendarProps): React.ReactElement {
+export function TimePicker({
+  value,
+  onChange,
+  label = "Time",
+}: TimePickerProps): React.ReactElement {
   return (
-    <Suspense fallback={<div className={styles.osdkDatePickerFallback} />}>
-      <DateCalendarLazy {...props} />
-    </Suspense>
+    <Input
+      type="time"
+      value={value}
+      onValueChange={onChange}
+      className={styles.osdkTimePickerInput}
+      aria-label={label}
+    />
   );
 }
