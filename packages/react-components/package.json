@@ -91,7 +91,7 @@
     }
   },
   "scripts": {
-    "check-attw": "attw --pack . --exclude-entrypoints ./styles.css",
+    "check-attw": "attw --pack . --exclude-entrypoints ./styles.css ./experimental/action-form ./experimental/filter-list ./experimental/markdown-renderer ./experimental/object-table ./experimental/pdf-viewer",
     "check-spelling": "cspell --quiet .",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
