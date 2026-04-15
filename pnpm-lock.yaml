@@ -4590,8 +4590,8 @@ importers:
         specifier: ^7.54.0
         version: 7.71.2(react@18.3.1)
       react-markdown:
-        specifier: ^10.1.0
-        version: 10.1.0(@types/react@18.3.24)(react@18.3.1)
+        specifier: ^9.0.3
+        version: 9.1.0(@types/react@18.3.24)(react@18.3.1)
       remark-gfm:
         specifier: ^4.0.1
         version: 4.0.1
@@ -18208,8 +18208,8 @@ packages:
       maplibre-gl:
         optional: true
 
-  react-markdown@10.1.0:
-    resolution: {integrity: sha512-qKxVopLT/TyA6BX3Ue5NwabOsAzm0Q7kAPwq6L+wWDwisYs7R8vZ0nRXqq6rkueboxpkjvLGU9fWifiX/ZZFxQ==}
+  react-markdown@9.1.0:
+    resolution: {integrity: sha512-xaijuJB0kzGiUdG7nc2MOMDUDBWPyGAjZtUrow9XxUeua8IqeP+VlIfAZ3bphpcLTnSZXz6z9jcVC/TCwbfgdw==}
     peerDependencies:
       '@types/react': ^18.3.24
       react: '>=18'
@@ -37506,7 +37506,7 @@ snapshots:
     optionalDependencies:
       maplibre-gl: 5.7.1
 
-  react-markdown@10.1.0(@types/react@18.3.24)(react@18.3.1):
+  react-markdown@9.1.0(@types/react@18.3.24)(react@18.3.1):
     dependencies:
       '@types/hast': 3.0.4
       '@types/mdast': 4.0.4
