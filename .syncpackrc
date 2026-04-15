@@ -20,6 +20,72 @@
   ],
   "versionGroups": [
     {
+      "label": "Ignore pinned semver ranges in e2e.generated.1.1.x (targets older API versions)",
+      "dependencies": [
+        "@osdk/api",
+        "@osdk/legacy-client"
+      ],
+      "packages": [
+        "@osdk/e2e.generated.1.1.x"
+      ],
+      "isIgnored": true
+    },
+    {
+      "label": "Ignore pinned semver range for typescript-sdk-docs in maker",
+      "dependencies": [
+        "@osdk/typescript-sdk-docs"
+      ],
+      "packages": [
+        "@osdk/maker"
+      ],
+      "isIgnored": true
+    },
+    {
+      "label": "@osdk/client uses workspace:~ for @osdk/api (MRL enforces this for stable releases)",
+      "dependencies": [
+        "@osdk/api"
+      ],
+      "packages": [
+        "@osdk/client"
+      ],
+      "pinVersion": "workspace:~"
+    },
+    {
+      "label": "Ignore link: protocol dependencies for @test-app2/osdk",
+      "dependencies": [
+        "@test-app2/osdk"
+      ],
+      "isIgnored": true
+    },
+    {
+      "label": "Ignore workspace:~ deps in functions (intentionally pinned)",
+      "packages": [
+        "@osdk/functions"
+      ],
+      "isIgnored": true
+    },
+    {
+      "label": "Ignore @osdk/foundry in examples (generator sets 'latest')",
+      "dependencies": [
+        "@osdk/foundry"
+      ],
+      "packages": [
+        "@osdk/examples.*",
+        "@psdk/examples.*"
+      ],
+      "isIgnored": true
+    },
+    {
+      "label": "Ignore @osdk peer dependencies (intentionally broad ranges)",
+      "dependencies": [
+        "@osdk/**"
+      ],
+      "dependencyTypes": [
+        "peer"
+      ],
+      "isIgnored": true
+    },
+    {
       "label": "Use workspace:~ for local @osdk/monorepo.* packages",
       "dependencies": [
         "@osdk/monorepo.*"
@@ -31,7 +97,7 @@
       "pinVersion": "workspace:~"
     },
     {
-      "label": "Use workspace protocol for all other local packages",
+      "label": "Use workspace:* for all other local packages",
       "dependencies": [
         "$LOCAL"
       ],
@@ -39,7 +105,7 @@
         "dev",
         "prod"
       ],
-      "pinVersion": "workspace:~"
+      "pinVersion": "workspace:*"
     }
   ]
 }

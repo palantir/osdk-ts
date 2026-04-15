@@ -43,10 +43,10 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
-    "@osdk/client.unstable": "workspace:~",
+    "@osdk/client.unstable": "workspace:*",
     "@osdk/foundry.ontologies": "catalog:foundry-platform-typescript",
-    "@osdk/generator": "workspace:~",
-    "@osdk/generator-converters.ontologyir": "workspace:~",
+    "@osdk/generator": "workspace:*",
+    "@osdk/generator-converters.ontologyir": "workspace:*",
     "consola": "^3.4.2",
     "yargs": "17.7.2"
   },
