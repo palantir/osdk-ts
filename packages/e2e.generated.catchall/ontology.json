@@ -2550,6 +2550,16 @@
               "type": "string"
             }
           },
+          "name": {
+            "dataType": {
+              "type": "string"
+            }
+          },
+          "wikipedia": {
+            "dataType": {
+              "type": "string"
+            }
+          },
           "latitude": {
             "dataType": {
               "type": "double"

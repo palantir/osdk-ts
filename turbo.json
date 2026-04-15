@@ -251,6 +251,7 @@
         "lint",
         "typecheck",
         "test",
+        "check-attw",
         "check-api",
         "check-spelling"
       ]
