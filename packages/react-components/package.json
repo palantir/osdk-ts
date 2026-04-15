@@ -34,6 +34,51 @@
       "require": "./build/cjs/public/primitives.cjs",
       "default": "./build/browser/public/primitives.js"
     },
+    "./experimental/action-form": {
+      "browser": "./build/browser/public/experimental/action-form.js",
+      "import": {
+        "types": "./build/types/public/experimental/action-form.d.ts",
+        "default": "./build/esm/public/experimental/action-form.js"
+      },
+      "require": "./build/cjs/public/experimental/action-form.cjs",
+      "default": "./build/browser/public/experimental/action-form.js"
+    },
+    "./experimental/filter-list": {
+      "browser": "./build/browser/public/experimental/filter-list.js",
+      "import": {
+        "types": "./build/types/public/experimental/filter-list.d.ts",
+        "default": "./build/esm/public/experimental/filter-list.js"
+      },
+      "require": "./build/cjs/public/experimental/filter-list.cjs",
+      "default": "./build/browser/public/experimental/filter-list.js"
+    },
+    "./experimental/markdown-renderer": {
+      "browser": "./build/browser/public/experimental/markdown-renderer.js",
+      "import": {
+        "types": "./build/types/public/experimental/markdown-renderer.d.ts",
+        "default": "./build/esm/public/experimental/markdown-renderer.js"
+      },
+      "require": "./build/cjs/public/experimental/markdown-renderer.cjs",
+      "default": "./build/browser/public/experimental/markdown-renderer.js"
+    },
+    "./experimental/object-table": {
+      "browser": "./build/browser/public/experimental/object-table.js",
+      "import": {
+        "types": "./build/types/public/experimental/object-table.d.ts",
+        "default": "./build/esm/public/experimental/object-table.js"
+      },
+      "require": "./build/cjs/public/experimental/object-table.cjs",
+      "default": "./build/browser/public/experimental/object-table.js"
+    },
+    "./experimental/pdf-viewer": {
+      "browser": "./build/browser/public/experimental/pdf-viewer.js",
+      "import": {
+        "types": "./build/types/public/experimental/pdf-viewer.d.ts",
+        "default": "./build/esm/public/experimental/pdf-viewer.js"
+      },
+      "require": "./build/cjs/public/experimental/pdf-viewer.cjs",
+      "default": "./build/browser/public/experimental/pdf-viewer.js"
+    },
     "./styles.css": "./build/browser/styles.css",
     "./*": {
       "browser": "./build/browser/public/*.js",
