@@ -65,6 +65,17 @@
       "isIgnored": true
     },
     {
+      "label": "Ignore @osdk/foundry in examples (generator sets 'latest')",
+      "dependencies": [
+        "@osdk/foundry"
+      ],
+      "packages": [
+        "@osdk/examples.*",
+        "@psdk/examples.*"
+      ],
+      "isIgnored": true
+    },
+    {
       "label": "Ignore @osdk peer dependencies (intentionally broad ranges)",
       "dependencies": [
         "@osdk/**"

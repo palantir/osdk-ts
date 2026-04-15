@@ -22,7 +22,7 @@
     "@blueprintjs/icons": "^6.7.0",
     "@osdk/client": "workspace:*",
     "@osdk/e2e.generated.catchall": "workspace:*",
-    "@osdk/foundry": "catalog:foundry-platform-typescript",
+    "@osdk/foundry": "latest",
     "@osdk/oauth": "workspace:*",
     "normalize.css": "^8.0.1",
     "react": "^18",
