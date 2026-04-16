@@ -21,7 +21,9 @@ import type {
 } from "@osdk/react-components/experimental";
 import { ActionForm } from "@osdk/react-components/experimental";
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import classnames from "classnames";
 import { useCallback, useState } from "react";
+import { expect, userEvent, within } from "storybook/test";
 import { fauxFoundry } from "../../mocks/fauxFoundry.js";
 import { StoryAction } from "../../types/StoryAction.js";
 
@@ -44,6 +46,14 @@ const FORM_CARD_STYLE = { maxWidth: FORM_MAX_WIDTH, width: "100%" } as const;
 const meta: Meta<ActionFormStoryProps> = {
   title: "Components/ActionForm",
   component: ActionForm,
+  args: {
+    actionDefinition: StoryAction,
+  },
+  render: (args) => (
+    <div className="osdkFormCard" style={FORM_CARD_STYLE}>
+      <ActionForm {...args} />
+    </div>
+  ),
   parameters: {
     msw: {
       handlers: [...fauxFoundry.handlers],
@@ -97,9 +107,6 @@ type SubmitResult =
 const IDLE_RESULT: SubmitResult = { type: "idle" };
 
 export const Default: Story = {
-  args: {
-    actionDefinition: StoryAction,
-  },
   parameters: {
     docs: {
       source: {
@@ -121,10 +128,7 @@ import { SubmitOrder } from "./ontology";
 
     return (
       <div className="osdkFormStoryLayout">
-        <div
-          className="osdkFormCard"
-          style={FORM_CARD_STYLE}
-        >
+        <div className="osdkFormCard" style={FORM_CARD_STYLE}>
           <ActionForm
             {...args}
             onSubmit={async (formState, applyAction) => {
@@ -132,9 +136,7 @@ import { SubmitOrder } from "./ontology";
               // applyAction accepts FormState values at runtime; the
               // ActionParameters<Q> type resolves to metadata shape which
               // is a known mismatch in the API types.
-              const apply = applyAction as (
-                state: unknown,
-              ) => Promise<unknown>;
+              const apply = applyAction as (state: unknown) => Promise<unknown>;
               try {
                 await apply(formState);
                 setResult({ type: "success", data });
@@ -156,20 +158,21 @@ import { SubmitOrder } from "./ontology";
           {result.type !== "idle" && (
             <>
               <div
-                className={result.type === "error"
-                  ? "osdkSubmitBanner osdkSubmitBannerError"
-                  : "osdkSubmitBanner osdkSubmitBannerSuccess"}
+                className={classnames("osdkSubmitBanner", {
+                  osdkSubmitBannerError: result.type === "error",
+                  osdkSubmitBannerSuccess: result.type === "success",
+                })}
               >
                 {result.type === "success" && "Action applied successfully"}
                 {result.type === "error" && result.message}
               </div>
-              <h4 className="osdkSubmitResultHeading">Action Definition</h4>
-              <pre className="osdkCodeOutput">
-                {JSON.stringify(ACTION_DEFINITION_SUMMARY, null, 2)}
-              </pre>
               <h4 className="osdkSubmitResultHeading">Submitted Data</h4>
               <pre className="osdkCodeOutput">
                 {JSON.stringify(result.data, fileReplacer, 2)}
+              </pre>
+              <h4 className="osdkSubmitResultHeading">Action Definition</h4>
+              <pre className="osdkCodeOutput">
+                {JSON.stringify(ACTION_DEFINITION_SUMMARY, null, 2)}
               </pre>
             </>
           )}
@@ -181,7 +184,6 @@ import { SubmitOrder } from "./ontology";
 
 export const WithCustomTitle: Story = {
   args: {
-    actionDefinition: StoryAction,
     formTitle: "Place New Order",
   },
   parameters: {
@@ -194,14 +196,6 @@ export const WithCustomTitle: Story = {
       },
     },
   },
-  render: (args) => (
-    <div
-      className="osdkFormCard"
-      style={FORM_CARD_STYLE}
-    >
-      <ActionForm {...args} />
-    </div>
-  ),
 };
 
 // fieldComponentProps uses {} to satisfy the widened union type — the
@@ -243,9 +237,6 @@ const customFieldDefinitions: ReadonlyArray<
 ];
 
 export const WithCustomFieldDefinitions: Story = {
-  args: {
-    actionDefinition: StoryAction,
-  },
   parameters: {
     docs: {
       source: {
@@ -297,10 +288,7 @@ export const WithCustomFieldDefinitions: Story = {
     },
   },
   render: (args) => (
-    <div
-      className="osdkFormCard"
-      style={FORM_CARD_STYLE}
-    >
+    <div className="osdkFormCard" style={FORM_CARD_STYLE}>
       <ActionForm {...args} formFieldDefinitions={customFieldDefinitions} />
     </div>
   ),
@@ -396,24 +384,20 @@ return (
       | { type: "submitting" }
       | { type: "success" }
       | { type: "error"; message: string }
-    >(
-      { type: "idle" },
-    );
+    >({ type: "idle" });
 
     const handleSuccess = useCallback(() => {
       setStatus({ type: "success" });
     }, []);
 
-    const handleError = useCallback(
-      (error: FormError) => {
-        setStatus({ type: "error", message: error.type });
-      },
-      [],
-    );
+    const handleError = useCallback((error: FormError) => {
+      setStatus({ type: "error", message: error.type });
+    }, []);
 
-    const bannerClass = status.type === "error"
-      ? "osdkSubmitBanner osdkSubmitBannerError"
-      : "osdkSubmitBanner osdkSubmitBannerSuccess";
+    const bannerClass = classnames("osdkSubmitBanner", {
+      osdkSubmitBannerError: status.type === "error",
+      osdkSubmitBannerSuccess: status.type === "success",
+    });
 
     return (
       <div style={FORM_CARD_STYLE}>
@@ -437,9 +421,6 @@ return (
 };
 
 export const WithValidation: Story = {
-  args: {
-    actionDefinition: StoryAction,
-  },
   parameters: {
     docs: {
       source: {
@@ -452,14 +433,25 @@ export const WithValidation: Story = {
       },
     },
   },
-  render: (args) => (
-    <div
-      className="osdkFormCard"
-      style={FORM_CARD_STYLE}
-    >
-      <ActionForm {...args} />
-    </div>
-  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    // Focus and blur the required "Product Name" field to trigger validation.
+    const nameInput = canvas.getByLabelText("Product Name");
+    await userEvent.click(nameInput);
+    await userEvent.tab();
+
+    await expect(canvas.getByText("This field is required")).toBeVisible();
+
+    // Typing a value should clear the error.
+    await userEvent.click(nameInput);
+    await userEvent.type(nameInput, "Widget");
+    await userEvent.tab();
+
+    await expect(
+      canvas.queryByText("This field is required"),
+    ).not.toBeInTheDocument();
+  },
 };
 
 function fileReplacer(_key: string, value: unknown): unknown {

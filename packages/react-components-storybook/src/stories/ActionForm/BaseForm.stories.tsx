@@ -20,6 +20,7 @@ import { BaseForm } from "@osdk/react-components/experimental";
 import { useOsdkClient } from "@osdk/react/experimental";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useCallback, useMemo, useState } from "react";
+import { expect, userEvent, within } from "storybook/test";
 import { fauxFoundry } from "../../mocks/fauxFoundry.js";
 import { Employee } from "../../types/Employee.js";
 
@@ -314,7 +315,6 @@ const fieldDefinitions = [
       },
     },
   },
-  render: (args) => <BaseForm {...args} />,
 };
 
 export const Controlled: Story = {
@@ -395,7 +395,6 @@ export const WithCustomTitle: Story = {
       },
     },
   },
-  render: (args) => <BaseForm {...args} />,
 };
 
 export const Loading: Story = {
@@ -415,7 +414,6 @@ export const Loading: Story = {
       },
     },
   },
-  render: (args) => <BaseForm {...args} />,
 };
 
 export const SubmitDisabled: Story = {
@@ -435,7 +433,6 @@ export const SubmitDisabled: Story = {
       },
     },
   },
-  render: (args) => <BaseForm {...args} />,
 };
 
 export const Pending: Story = {
@@ -455,7 +452,6 @@ export const Pending: Story = {
       },
     },
   },
-  render: (args) => <BaseForm {...args} />,
 };
 
 const validationFieldDefinitions: ReadonlyArray<RendererFieldDefinition> = [
@@ -563,7 +559,25 @@ export const WithValidation: Story = {
       },
     },
   },
-  render: (args) => <BaseForm {...args} />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    // Focus and blur the required "Name" field to trigger validation.
+    const nameInput = canvas.getByLabelText("Name");
+    await userEvent.click(nameInput);
+    await userEvent.tab();
+
+    await expect(canvas.getByText("This field is required")).toBeVisible();
+
+    // Typing a value should clear the error.
+    await userEvent.click(nameInput);
+    await userEvent.type(nameInput, "Alice");
+    await userEvent.tab();
+
+    await expect(
+      canvas.queryByText("This field is required"),
+    ).not.toBeInTheDocument();
+  },
 };
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -618,7 +632,6 @@ export const WithCustomValidation: Story = {
       },
     },
   },
-  render: (args) => <BaseForm {...args} />,
 };
 
 const customErrorFieldDefinitions: ReadonlyArray<RendererFieldDefinition> = [
@@ -698,7 +711,6 @@ export const WithCustomErrorMessages: Story = {
       },
     },
   },
-  render: (args) => <BaseForm {...args} />,
 };
 
 export const WithObjectSetField: Story = {
@@ -830,7 +842,6 @@ export const WithSearchableDropdown: Story = {
       },
     },
   },
-  render: (args) => <BaseForm {...args} />,
 };
 
 const multiSelectDropdownFieldDefinitions: ReadonlyArray<
@@ -896,7 +907,6 @@ export const WithMultiSelectDropdown: Story = {
       },
     },
   },
-  render: (args) => <BaseForm {...args} />,
 };
 
 const dateTimeFieldDefinitions: ReadonlyArray<RendererFieldDefinition> = [
@@ -956,7 +966,6 @@ export const WithDateTimePicker: Story = {
       },
     },
   },
-  render: (args) => <BaseForm {...args} />,
 };
 
 const multiFilePickerFieldDefinitions: ReadonlyArray<RendererFieldDefinition> =
@@ -1025,7 +1034,6 @@ export const WithMultiFilePicker: Story = {
       },
     },
   },
-  render: (args) => <BaseForm {...args} />,
 };
 
 const defaultValueFieldDefinitions: ReadonlyArray<RendererFieldDefinition> = [
@@ -1110,5 +1118,4 @@ export const WithDefaultValues: Story = {
       },
     },
   },
-  render: (args) => <BaseForm {...args} />,
 };
