@@ -38,7 +38,25 @@
     background: var(--osdk-table-cell-editable-bg);
     border: var(--osdk-table-cell-edited-border-error);
   }
+
+  /* Dropdown cell overrides */
+  &.osdkEditableCellDropdown {
+    padding: 0;
+
+    & > div {
+      width: 100%;
+    }
+
+    /* Never show focus outline on the outer cell for dropdowns */
+    tr[data-focused="true"] & {
+      &:focus-within,
+      &.osdkEditedInput:focus-within {
+        border: var(--osdk-table-cell-editable-border);
+      }
+    }
+  }
 }
+
 
 .osdkEditableInput {
   width: 100%;

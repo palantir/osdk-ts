@@ -28,7 +28,50 @@ import type {
 } from "@osdk/api";
 import type { QueryParameterType } from "@osdk/client/unstable-do-not-use";
 import type * as React from "react";
+import type { DropdownFieldProps } from "../action-form/FormFieldApi.js";
 import type { CellEditInfo } from "./utils/types.js";
+
+/**
+ * Props managed by the cell editor infrastructure.
+ * These are injected at render time and should not be provided by the user.
+ */
+type CellManagedProps = "value" | "onChange" | "id" | "defaultValue";
+
+/**
+ * Maps each supported editable field component to its user-facing props.
+ * Mirrors `FormFieldPropsByType` from ActionForm, omitting cell-managed props.
+ */
+export interface EditFieldPropsByType {
+  DROPDOWN: Omit<DropdownFieldProps<unknown, boolean>, CellManagedProps>;
+}
+
+/**
+ * Supported field component types for editable table cells.
+ */
+export type EditFieldComponent = keyof EditFieldPropsByType;
+
+/**
+ * Configuration for an editable cell's field component.
+ *
+ * Follows the same `fieldComponent` + `fieldComponentProps` pattern as
+ * `FormFieldDefinition` in ActionForm for consistency.
+ *
+ * @example
+ * ```ts
+ * editFieldConfig: {
+ *   fieldComponent: "DROPDOWN",
+ *   fieldComponentProps: {
+ *     items: ["Active", "Inactive", "Pending"],
+ *   },
+ * }
+ * ```
+ */
+export type EditFieldConfig = {
+  [K in EditFieldComponent]: {
+    fieldComponent: K;
+    fieldComponentProps: EditFieldPropsByType[K];
+  };
+}[EditFieldComponent];
 
 export type ColumnDefinition<
   Q extends ObjectOrInterfaceDefinition,
@@ -55,7 +98,19 @@ export type ColumnDefinition<
   resizable?: boolean;
   orderable?: boolean;
   filterable?: boolean;
+
   editable?: boolean;
+
+  /**
+   * Configuration for the cell editor component.
+   *
+   * When provided alongside `editable: true`, the column uses the specified
+   * field component (e.g. dropdown) instead of the default auto-detected
+   * text/number input.
+   *
+   * Has no effect when `editable` is `false` or omitted.
+   */
+  editFieldConfig?: EditFieldConfig;
 
   /**
    * Additional function to validate the cell value during edit

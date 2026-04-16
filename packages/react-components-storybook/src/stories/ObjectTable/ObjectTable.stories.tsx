@@ -1185,3 +1185,150 @@ return (
     </div>
   ),
 };
+
+export const EditableWithDropdown: Story = {
+  args: {
+    objectType: Employee,
+    columnDefinitions: [
+      {
+        locator: { type: "property", id: "fullName" },
+        editable: true,
+      },
+      {
+        locator: { type: "property", id: "department" },
+        editable: true,
+        editFieldConfig: {
+          fieldComponent: "DROPDOWN",
+          fieldComponentProps: {
+            items: [
+              "Engineering",
+              "Product",
+              "Design",
+              "Sales",
+              "Marketing",
+              "Finance",
+              "Human Resources",
+            ],
+          },
+        },
+      },
+      {
+        locator: { type: "property", id: "jobTitle" },
+        editable: true,
+        editFieldConfig: {
+          fieldComponent: "DROPDOWN",
+          fieldComponentProps: {
+            items: [
+              "Software Engineer",
+              "Senior Software Engineer",
+              "Staff Engineer",
+              "Engineering Manager",
+              "Product Manager",
+              "Designer",
+            ],
+            isSearchable: true,
+            placeholder: "Search job titles…",
+          },
+        },
+      },
+      {
+        locator: { type: "property", id: "emailPrimaryWork" },
+        editable: false,
+      },
+    ],
+    editMode: "always",
+    onSubmitEdits: async (edits: CellEditInfo<Osdk.Instance<Employee>>[]) => {
+      return true;
+    },
+  } as any,
+  parameters: {
+    docs: {
+      source: {
+        code: `const columnDefinitions = [
+  {
+    locator: { type: "property", id: "fullName" },
+    editable: true,
+  },
+  {
+    locator: { type: "property", id: "department" },
+    editable: true,
+    editFieldConfig: {
+      fieldComponent: "DROPDOWN",
+      fieldComponentProps: {
+        items: [
+          "Engineering",
+          "Product",
+          "Design",
+          "Sales",
+          "Marketing",
+          "Finance",
+          "Human Resources",
+        ],
+      },
+    },
+  },
+  {
+    locator: { type: "property", id: "jobTitle" },
+    editable: true,
+    editFieldConfig: {
+      fieldComponent: "DROPDOWN",
+      fieldComponentProps: {
+        items: [
+          "Software Engineer",
+          "Senior Software Engineer",
+          "Staff Engineer",
+          "Engineering Manager",
+          "Product Manager",
+          "Designer",
+        ],
+        isSearchable: true,
+        placeholder: "Search job titles…",
+      },
+    },
+  },
+  {
+    locator: { type: "property", id: "emailPrimaryWork" },
+    editable: false,
+  },
+];
+
+return (
+  <ObjectTable
+    objectType={Employee}
+    columnDefinitions={columnDefinitions}
+    editMode="always"
+    onSubmitEdits={async (edits) => {
+      return true;
+    }}
+  />
+);`,
+      },
+    },
+  },
+  render: (args) => (
+    <div className="object-table-container" style={{ height: "600px" }}>
+      <div
+        style={{
+          padding: "12px",
+          backgroundColor: "#fff3cd",
+          marginBottom: "8px",
+          borderRadius: "4px",
+        }}
+      >
+        Columns with dropdown editors:
+        <ul style={{ margin: "8px 0 0 20px" }}>
+          <li>
+            <strong>Department</strong> — simple dropdown with fixed options
+          </li>
+          <li>
+            <strong>Job Title</strong> — searchable dropdown with placeholder
+          </li>
+          <li>
+            <strong>Full Name</strong> — default text input (no editFieldConfig)
+          </li>
+        </ul>
+      </div>
+      <ObjectTable {...args} objectType={Employee} />
+    </div>
+  ),
+};

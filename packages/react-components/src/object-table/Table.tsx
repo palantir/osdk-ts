@@ -25,11 +25,16 @@ import React, {
 } from "react";
 import { LoadingStateTable } from "./LoadingStateTable.js";
 import { NonIdealState } from "./NonIdealState.js";
+import type { EditFieldConfig } from "./ObjectTableApi.js";
 import styles from "./Table.module.css";
 import { TableBody } from "./TableBody.js";
 import { TableEditContainer } from "./TableEditContainer.js";
 import { TableHeader } from "./TableHeader.js";
 import type { HeaderMenuFeatureFlags } from "./TableHeaderWithPopover.js";
+import {
+  PortalTrackerProvider,
+  usePortalTracker,
+} from "./utils/PortalTracker.js";
 import type { CellEditInfo, EditableConfig } from "./utils/types.js";
 
 declare module "@tanstack/react-table" {
@@ -39,6 +44,7 @@ declare module "@tanstack/react-table" {
     isVisible?: boolean;
     editable?: boolean;
     dataType?: string;
+    editFieldConfig?: EditFieldConfig;
     validateEdit?: (value: unknown) => Promise<string | undefined>;
   }
   interface TableMeta<TData extends RowData = unknown> {
@@ -54,6 +60,7 @@ declare module "@tanstack/react-table" {
     cellEdits?: Record<string, CellEditInfo<TData, unknown>>;
     isInEditMode?: boolean;
     validationErrors?: Map<string, string>;
+    focusedRowId?: string | null;
   }
 }
 
@@ -77,6 +84,16 @@ export interface BaseTableProps<
 
 export function BaseTable<
   TData extends RowData,
+>(props: BaseTableProps<TData>): ReactElement {
+  return (
+    <PortalTrackerProvider>
+      <BaseTableInner {...props} />
+    </PortalTrackerProvider>
+  );
+}
+
+function BaseTableInner<
+  TData extends RowData,
 >(
   {
     table,
@@ -94,6 +111,12 @@ export function BaseTable<
   const tableContainerRef = useRef<HTMLDivElement>(null);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [focusedRowId, setFocusedRowId] = useState<string | null>(null);
+  const portalTracker = usePortalTracker();
+
+  // Expose focusedRowId to cell renderers via table meta
+  if (table.options.meta) {
+    table.options.meta.focusedRowId = focusedRowId;
+  }
 
   // Using a ref to prevent duplicate fetches from rapid scroll events while a fetch is in-flight
   const fetchingRef = useRef(false);
@@ -142,9 +165,11 @@ export function BaseTable<
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Node;
       if (
         tableContainerRef.current
-        && !tableContainerRef.current.contains(event.target as Node)
+        && !tableContainerRef.current.contains(target)
+        && !portalTracker?.containsElement(target)
       ) {
         setFocusedRowId(null);
       }
@@ -154,7 +179,7 @@ export function BaseTable<
     return () => {
       document.removeEventListener("click", handleClickOutside);
     };
-  }, []);
+  }, [portalTracker]);
 
   return (
     <div className={classNames(styles.osdkTableWrapper, className)}>

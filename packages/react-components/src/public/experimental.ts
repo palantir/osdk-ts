@@ -42,6 +42,7 @@ export type {
   ColumnDefinition,
   ColumnDefinitionLocator,
   CustomColumnLocator,
+  EditFieldConfig,
   FunctionColumnLocator,
   ObjectTableProps,
   PropertyColumnLocator,
