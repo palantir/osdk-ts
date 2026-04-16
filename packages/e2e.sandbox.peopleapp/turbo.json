@@ -5,6 +5,12 @@
       "inputs": ["ontology.json"],
       "outputs": ["src/generatedNoCheck2/**/*"],
       "dependsOn": ["@osdk/cli.cmd.typescript#transpile"]
+    },
+    "build": {
+      "dependsOn": ["^transpileBrowser"]
+    },
+    "dev": {
+      "dependsOn": ["^transpileBrowser"]
     }
   }
 }

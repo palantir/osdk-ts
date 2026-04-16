@@ -166,6 +166,7 @@
       "dependsOn": [
         "//#babel-config",
         "@osdk/monorepo.tsconfig#typecheck",
+        "^transpileEsm",
         "codegen"
       ],
       "inputs": [
@@ -185,6 +186,7 @@
       "dependsOn": [
         "//#babel-config",
         "@osdk/monorepo.tsconfig#typecheck",
+        "^transpileBrowser",
         "codegen"
       ],
       "inputs": [

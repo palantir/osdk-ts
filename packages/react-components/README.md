@@ -264,8 +264,7 @@ function EmployeeDirectory() {
 ## Development Workflow
 
 1. In packages/react-components, run `pnpm install` to install the dependencies.
-2. Run `pnpm transpileAllDeps` to transpile all dependencies in this repo.
-3. To run tests, run `pnpm test`
+2. To run tests, run `pnpm test`
 
 ### Running the Example People App
 
@@ -275,16 +274,10 @@ The examples are added to `packages/e2e.sandbox.peopleapp`, so we need to run th
 
 1. Create a .env.local file based on `.env.local.sample` in packages/e2e.sandbox.peopleapp:
 
-2. Transpile all dependencies of peopleapp
+2. Run the people app (turbo handles transpiling all dependencies automatically)
 
 ```
-pnpm --filter @osdk/e2e.sandbox.peopleapp transpileAllDeps
-```
-
-4. Run the people app
-
-```
-pnpm --filter @osdk/e2e.sandbox.peopleapp dev
+pnpm turbo dev --filter @osdk/e2e.sandbox.peopleapp
 ```
 
 ## Why this package?

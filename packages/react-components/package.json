@@ -52,7 +52,6 @@
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
     "test": "vitest run",
-    "transpileAllDeps": "pnpm --filter @osdk/api --filter @osdk/client --filter @osdk/react run transpileBrowser",
     "transpileBrowser": "monorepo.tool.transpile -f esm -m normal -t browser && node scripts/build-css.mjs",
     "transpileCjs": "monorepo.tool.transpile -f cjs -m bundle -t node",
     "transpileEsm": "monorepo.tool.transpile -f esm -m normal -t node",

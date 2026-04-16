@@ -7,6 +7,7 @@
     "dev": {
       "dependsOn": [
         "@osdk/react-components#transpileBrowser",
+        "@osdk/cbac-components#transpileBrowser",
         "@osdk/react-components-styles#build"
       ],
       "cache": false,
@@ -15,6 +16,7 @@
     "build": {
       "dependsOn": [
         "@osdk/react-components#transpileBrowser",
+        "@osdk/cbac-components#transpileBrowser",
         "@osdk/react-components-styles#build"
       ],
       "outputs": [
