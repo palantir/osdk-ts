@@ -13,6 +13,7 @@
 @import "./tokens/table.css";
 @import "./tokens/tooltip.css";
 @import "./tokens/datetime-picker.css";
+@import "./tokens/timepicker.css";
 @import "./tokens/pdf-viewer.css";
 @import "./tokens/tiff-viewer.css";
 @import "./tokens/markdown-renderer.css";

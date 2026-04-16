@@ -16,8 +16,13 @@
 
 import React, { memo } from "react";
 import { FormField } from "../FormField.js";
-import type { RendererFieldDefinition } from "../FormFieldApi.js";
+import {
+  type DateRange,
+  EMPTY_RANGE,
+  type RendererFieldDefinition,
+} from "../FormFieldApi.js";
 import { CustomField } from "./CustomField.js";
+import { DateRangeInputField } from "./DateRangeInputField.js";
 import { DatetimePickerField } from "./DatetimePickerField.js";
 import { DropdownField } from "./DropdownField.js";
 import { FilePickerField } from "./FilePickerField.js";
@@ -73,6 +78,16 @@ function renderFieldComponent(
   error: string | undefined,
 ): React.ReactElement {
   switch (fieldDefinition.fieldComponent) {
+    case "DATE_RANGE_INPUT":
+      return (
+        <DateRangeInputField
+          id={fieldDefinition.fieldKey}
+          value={coerceToDateRange(value)}
+          onChange={onChange}
+          placeholderStart={fieldDefinition.placeholder}
+          {...fieldDefinition.fieldComponentProps}
+        />
+      );
     case "TEXT_INPUT":
       return (
         <TextInputField
@@ -170,6 +185,14 @@ function renderFieldComponent(
     default:
       return assertUnreachableFieldComponent(fieldDefinition);
   }
+}
+
+function coerceToDateRange(value: unknown): DateRange {
+  if (!Array.isArray(value) || value.length !== 2) return EMPTY_RANGE;
+  const start = value[0] instanceof Date ? value[0] : null;
+  const end = value[1] instanceof Date ? value[1] : null;
+  if (start == null && end == null) return EMPTY_RANGE;
+  return [start, end];
 }
 
 // TODO: Move and share with `coerceFieldValue`

@@ -360,6 +360,7 @@ const archetypeRules = archetypes(
       react: true,
       cssExport: true,
       extraPublishFiles: ["AGENTS.md", "docs"],
+      setupFiles: ["./src/test/setupPolyfills.ts"],
     },
   )
   .addArchetype(
@@ -860,6 +861,7 @@ function minimalPackageRules(shared, options) {
  * @property { string[] } [extraPublishFiles]
  * * @property { boolean } [skipBuildInFiles]
  * @property { "happy-dom" } [vitestEnvironment]
+ * @property { string[] } [setupFiles]
  * @property { boolean } [skipTsconfigReferences]
  * @property { boolean } [aliasConsola]
  * @property { Record<"esm" | "cjs" | "browser", "bundle" | "normal" | undefined>} output
@@ -1093,6 +1095,12 @@ function standardPackageRules(shared, options) {
               exclude: [...configDefaults.exclude, "**/build/**/*"],${
             options.vitestEnvironment
               ? `\n            environment: "${options.vitestEnvironment}",`
+              : ""
+          }${
+            options.setupFiles && options.setupFiles.length > 0
+              ? `\n            setupFiles: ${
+                JSON.stringify(options.setupFiles)
+              },`
               : ""
           }
               fakeTimers: {

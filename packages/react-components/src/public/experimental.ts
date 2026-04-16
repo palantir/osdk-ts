@@ -187,6 +187,8 @@ export type {
   ActionParameters,
   BaseFormFieldProps,
   CustomFieldProps,
+  DateRange,
+  DateRangeInputFieldProps,
   DatetimePickerFieldProps,
   DropdownFieldProps,
   FieldComponent,

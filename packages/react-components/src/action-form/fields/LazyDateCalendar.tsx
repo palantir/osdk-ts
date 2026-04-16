@@ -16,13 +16,13 @@
 
 import React, { Suspense } from "react";
 import type { DateCalendarProps } from "./DateCalendar.js";
-import styles from "./DateCalendar.module.css";
+import styles from "./DatePickerCommon.module.css";
 
 const DateCalendarLazy = React.lazy(() => import("./DateCalendar.js"));
 
 export function LazyDateCalendar(props: DateCalendarProps): React.ReactElement {
   return (
-    <Suspense fallback={<div className={styles.calendarFallback} />}>
+    <Suspense fallback={<div className={styles.osdkDatePickerFallback} />}>
       <DateCalendarLazy {...props} />
     </Suspense>
   );
