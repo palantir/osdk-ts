@@ -38,7 +38,7 @@
     "vue-router": "^4.5.1"
   },
   "devDependencies": {
-    "@osdk/create-app.template-packager": "workspace:*",
+    "@osdk/create-app.template-packager": "workspace:~",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@vitejs/plugin-vue": "^5.2.4",
