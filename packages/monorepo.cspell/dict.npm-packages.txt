@@ -19,6 +19,7 @@ ngeohash
 npmjs
 oxfmt
 oxlint
+oxlintrc
 tsgolint
 trivago
 tsup
