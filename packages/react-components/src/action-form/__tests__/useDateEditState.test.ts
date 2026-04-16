@@ -15,7 +15,7 @@
  */
 
 import { act, renderHook } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import {
   formatDateForDisplay,
   formatDateForInput,
@@ -42,11 +42,9 @@ describe("useDateEditState", () => {
       const { result } = renderHook(() => useDateEditState(makeConfig()));
 
       expect(result.current.isEditing).toBe(false);
-      expect(result.current.inputValue).toBe("");
       expect(result.current.displayedValue).toBe("");
       expect(result.current.inputError).toBeNull();
       expect(result.current.dateValue).toBeUndefined();
-      expect(result.current.validatedDate).toBeNull();
     });
 
     it("displays formatted value when not editing", () => {
@@ -75,7 +73,7 @@ describe("useDateEditState", () => {
   });
 
   describe("startEditing", () => {
-    it("enters editing mode and populates inputValue with editFormatFn", () => {
+    it("switches displayedValue from display format to edit format", () => {
       const { result } = renderHook(() =>
         useDateEditState(
           makeConfig({
@@ -94,13 +92,10 @@ describe("useDateEditState", () => {
       });
 
       expect(result.current.isEditing).toBe(true);
-      // Editing: inputValue uses editFormatFn
-      expect(result.current.inputValue).toBe("2024-01-15");
-      // displayedValue echoes inputValue while editing
       expect(result.current.displayedValue).toBe("2024-01-15");
     });
 
-    it("sets empty inputValue when value is null", () => {
+    it("sets empty displayedValue when value is null", () => {
       const { result } = renderHook(() => useDateEditState(makeConfig()));
 
       act(() => {
@@ -108,7 +103,7 @@ describe("useDateEditState", () => {
       });
 
       expect(result.current.isEditing).toBe(true);
-      expect(result.current.inputValue).toBe("");
+      expect(result.current.displayedValue).toBe("");
     });
   });
 
@@ -127,10 +122,13 @@ describe("useDateEditState", () => {
       expect(result.current.isEditing).toBe(false);
     });
 
-    it("resets inputValue to committed value's edit format", () => {
+    it("reverts displayedValue to the committed value", () => {
       const { result } = renderHook(() =>
         useDateEditState(
-          makeConfig({ value: new Date(2024, 0, 15) }),
+          makeConfig({
+            value: new Date(2024, 0, 15),
+            displayFormatFn: formatDateForDisplay,
+          }),
         )
       );
 
@@ -140,15 +138,115 @@ describe("useDateEditState", () => {
       act(() => {
         result.current.setInputValue("invalid-date");
       });
-      expect(result.current.inputValue).toBe("invalid-date");
+      expect(result.current.displayedValue).toBe("invalid-date");
 
       act(() => {
         result.current.stopEditing();
       });
 
-      // inputValue should be reset to the edit-formatted committed value,
-      // not retain the stale invalid text.
-      expect(result.current.inputValue).toBe("2024-01-15");
+      expect(result.current.displayedValue).toBe("Jan 15, 2024");
+    });
+
+    it("does not call onChange", () => {
+      const onChange = vi.fn();
+      const { result } = renderHook(() =>
+        useDateEditState(
+          makeConfig({ value: new Date(2024, 0, 15), onChange }),
+        )
+      );
+
+      act(() => {
+        result.current.startEditing();
+      });
+      act(() => {
+        result.current.setInputValue("2024-06-15");
+      });
+      act(() => {
+        result.current.stopEditing();
+      });
+
+      expect(onChange).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("commitAndStopEditing", () => {
+    it("calls onChange with validated date for valid input", () => {
+      const onChange = vi.fn();
+      const { result } = renderHook(() =>
+        useDateEditState(makeConfig({ onChange }))
+      );
+
+      act(() => {
+        result.current.startEditing();
+      });
+      act(() => {
+        result.current.setInputValue("2024-06-15");
+      });
+      act(() => {
+        result.current.commitAndStopEditing();
+      });
+
+      expect(onChange).toHaveBeenCalledTimes(1);
+      expect(onChange.mock.calls[0][0]).toEqual(new Date(2024, 5, 15));
+      expect(result.current.isEditing).toBe(false);
+    });
+
+    it("calls onChange with null for empty input", () => {
+      const onChange = vi.fn();
+      const { result } = renderHook(() =>
+        useDateEditState(
+          makeConfig({ value: new Date(2024, 0, 15), onChange }),
+        )
+      );
+
+      act(() => {
+        result.current.startEditing();
+      });
+      act(() => {
+        result.current.setInputValue("");
+      });
+      act(() => {
+        result.current.commitAndStopEditing();
+      });
+
+      expect(onChange).toHaveBeenCalledWith(null);
+      expect(result.current.isEditing).toBe(false);
+    });
+
+    it("does not call onChange for invalid input", () => {
+      const onChange = vi.fn();
+      const { result } = renderHook(() =>
+        useDateEditState(makeConfig({ onChange }))
+      );
+
+      act(() => {
+        result.current.startEditing();
+      });
+      act(() => {
+        result.current.setInputValue("garbage");
+      });
+      act(() => {
+        result.current.commitAndStopEditing();
+      });
+
+      expect(onChange).not.toHaveBeenCalled();
+      expect(result.current.isEditing).toBe(false);
+    });
+
+    it("does not throw when onChange is not provided", () => {
+      const { result } = renderHook(() => useDateEditState(makeConfig()));
+
+      act(() => {
+        result.current.startEditing();
+      });
+      act(() => {
+        result.current.setInputValue("2024-06-15");
+      });
+      act(() => {
+        result.current.commitAndStopEditing();
+      });
+
+      expect(result.current.isEditing).toBe(false);
     });
   });
 
@@ -163,7 +261,6 @@ describe("useDateEditState", () => {
         result.current.setInputValue("2024-06-15");
       });
 
-      expect(result.current.inputValue).toBe("2024-06-15");
       expect(result.current.displayedValue).toBe("2024-06-15");
     });
   });
@@ -186,7 +283,7 @@ describe("useDateEditState", () => {
         result.current.setDateValue(new Date(2024, 5, 15));
       });
 
-      expect(result.current.inputValue).toBe("2024-06-15");
+      expect(result.current.displayedValue).toBe("2024-06-15");
     });
   });
 
@@ -300,73 +397,6 @@ describe("useDateEditState", () => {
     });
   });
 
-  describe("validatedDate", () => {
-    it("is null when not editing", () => {
-      const { result } = renderHook(() =>
-        useDateEditState(makeConfig({ value: new Date(2024, 0, 15) }))
-      );
-      expect(result.current.validatedDate).toBeNull();
-    });
-
-    it("is null for empty input", () => {
-      const { result } = renderHook(() => useDateEditState(makeConfig()));
-
-      act(() => {
-        result.current.startEditing();
-      });
-
-      expect(result.current.validatedDate).toBeNull();
-    });
-
-    it("is null for invalid input", () => {
-      const { result } = renderHook(() => useDateEditState(makeConfig()));
-
-      act(() => {
-        result.current.startEditing();
-      });
-      act(() => {
-        result.current.setInputValue("garbage");
-      });
-
-      expect(result.current.validatedDate).toBeNull();
-    });
-
-    it("is null for out-of-range input", () => {
-      const { result } = renderHook(() =>
-        useDateEditState(
-          makeConfig({
-            min: new Date(2024, 0, 1),
-            max: new Date(2024, 11, 31),
-          }),
-        )
-      );
-
-      act(() => {
-        result.current.startEditing();
-      });
-      act(() => {
-        result.current.setInputValue("2025-06-15");
-      });
-
-      expect(result.current.validatedDate).toBeNull();
-    });
-
-    it("returns parsed date for valid in-range input", () => {
-      const { result } = renderHook(() => useDateEditState(makeConfig()));
-
-      act(() => {
-        result.current.startEditing();
-      });
-      act(() => {
-        result.current.setInputValue("2024-06-15");
-      });
-
-      expect(result.current.validatedDate).toBeInstanceOf(Date);
-      expect(result.current.validatedDate?.getMonth()).toBe(5);
-      expect(result.current.validatedDate?.getDate()).toBe(15);
-    });
-  });
-
   describe("external value sync", () => {
     it("updates displayedValue when external value changes while not editing", () => {
       const { result, rerender } = renderHook(
@@ -393,7 +423,7 @@ describe("useDateEditState", () => {
       expect(result.current.displayedValue).toBe("Jul 20, 2024");
     });
 
-    it("does not overwrite inputValue when external value changes during editing", () => {
+    it("does not overwrite user edits when external value changes during editing", () => {
       const { result, rerender } = renderHook(
         (config: UseDateEditStateConfig) => useDateEditState(config),
         { initialProps: makeConfig({ value: new Date(2024, 0, 15) }) },
@@ -407,11 +437,10 @@ describe("useDateEditState", () => {
       });
 
       // Intentional: user's unsaved edits are preserved when the parent
-      // value changes. The hook only syncs inputValue when not editing.
+      // value changes. The hook only syncs when not editing.
       rerender(makeConfig({ value: new Date(2024, 6, 20) }));
 
-      // inputValue should NOT be overwritten
-      expect(result.current.inputValue).toBe("2024-03-20");
+      expect(result.current.displayedValue).toBe("2024-03-20");
     });
   });
 });
