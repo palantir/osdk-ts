@@ -288,7 +288,8 @@ describe("BaseForm", () => {
         />,
       );
 
-      const input = document.getElementById("name")!;
+      // Regex because the accessible name includes "required" from aria-label
+      const input = screen.getByRole("textbox", { name: /name/ });
       fireEvent.focus(input);
       fireEvent.blur(input);
 
@@ -312,7 +313,7 @@ describe("BaseForm", () => {
         />,
       );
 
-      const input = document.getElementById("name")!;
+      const input = screen.getByRole("textbox", { name: /name/ });
       fireEvent.change(input, { target: { value: "ab" } });
       fireEvent.blur(input);
 
@@ -331,7 +332,7 @@ describe("BaseForm", () => {
         />,
       );
 
-      const input = document.getElementById("name")!;
+      const input = screen.getByRole("textbox", { name: /name/ });
       fireEvent.focus(input);
       fireEvent.blur(input);
 

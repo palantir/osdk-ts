@@ -39,6 +39,7 @@ interface ActionFormStoryProps {
 }
 
 const FORM_MAX_WIDTH = 480;
+const FORM_CARD_STYLE = { maxWidth: FORM_MAX_WIDTH, width: "100%" } as const;
 
 const meta: Meta<ActionFormStoryProps> = {
   title: "Components/ActionForm",
@@ -122,7 +123,7 @@ import { SubmitOrder } from "./ontology";
       <div className="osdkFormStoryLayout">
         <div
           className="osdkFormCard"
-          style={{ maxWidth: FORM_MAX_WIDTH, width: "100%" }}
+          style={FORM_CARD_STYLE}
         >
           <ActionForm
             {...args}
@@ -131,7 +132,9 @@ import { SubmitOrder } from "./ontology";
               // applyAction accepts FormState values at runtime; the
               // ActionParameters<Q> type resolves to metadata shape which
               // is a known mismatch in the API types.
-              const apply: Function = applyAction;
+              const apply = applyAction as (
+                state: unknown,
+              ) => Promise<unknown>;
               try {
                 await apply(formState);
                 setResult({ type: "success", data });
@@ -194,7 +197,7 @@ export const WithCustomTitle: Story = {
   render: (args) => (
     <div
       className="osdkFormCard"
-      style={{ maxWidth: FORM_MAX_WIDTH, width: "100%" }}
+      style={FORM_CARD_STYLE}
     >
       <ActionForm {...args} />
     </div>
@@ -296,7 +299,7 @@ export const WithCustomFieldDefinitions: Story = {
   render: (args) => (
     <div
       className="osdkFormCard"
-      style={{ maxWidth: FORM_MAX_WIDTH, width: "100%" }}
+      style={FORM_CARD_STYLE}
     >
       <ActionForm {...args} formFieldDefinitions={customFieldDefinitions} />
     </div>
@@ -337,7 +340,7 @@ return (
     });
 
     return (
-      <div style={{ maxWidth: FORM_MAX_WIDTH, width: "100%" }}>
+      <div style={FORM_CARD_STYLE}>
         <div style={{ marginBottom: "16px" }}>
           <strong>Current Form State:</strong>
           <pre className="osdkCodeOutput">
@@ -413,7 +416,7 @@ return (
       : "osdkSubmitBanner osdkSubmitBannerSuccess";
 
     return (
-      <div style={{ maxWidth: FORM_MAX_WIDTH, width: "100%" }}>
+      <div style={FORM_CARD_STYLE}>
         {status.type !== "idle" && (
           <div className={bannerClass} style={{ marginBottom: "16px" }}>
             {status.type === "submitting" && "Submitting order..."}
@@ -452,7 +455,7 @@ export const WithValidation: Story = {
   render: (args) => (
     <div
       className="osdkFormCard"
-      style={{ maxWidth: FORM_MAX_WIDTH, width: "100%" }}
+      style={FORM_CARD_STYLE}
     >
       <ActionForm {...args} />
     </div>

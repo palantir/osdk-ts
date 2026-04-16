@@ -164,7 +164,7 @@ const SubmitButton: React.FC<SubmitButtonProps> = memo(
               <ActionButton
                 type="submit"
                 variant="primary"
-                disabled={isPending}
+                disabled={isSubmitDisabled || isPending}
               >
                 {buttonLabel}
               </ActionButton>
