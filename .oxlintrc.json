@@ -46,9 +46,11 @@
     "no-extra-bind": "warn",
     "no-new-func": "warn",
     "no-new-wrappers": "warn",
+    "no-shadow": "warn",
     "no-sequences": "warn",
     "no-sparse-arrays": "warn",
     "no-template-curly-in-string": "warn",
+    "no-unused-expressions": "warn",
     "no-unsafe-finally": "warn",
     "no-unused-labels": "warn",
     "no-useless-escape": "warn",
@@ -57,6 +59,17 @@
     "prefer-object-spread": "warn",
     "radix": "warn",
     "use-isnan": "warn",
+    "no-unused-vars": [
+      "warn",
+      {
+        "ignoreRestSiblings": true,
+        "argsIgnorePattern": "^_",
+        "varsIgnorePattern": "^_",
+        "fix": {
+          "imports": "safe-fix"
+        }
+      }
+    ],
     "prefer-const": "warn",
 
     "react/rules-of-hooks": "warn",
@@ -84,6 +97,8 @@
     "typescript/prefer-reduce-type-parameter": "warn",
     "typescript/prefer-promise-reject-errors": "warn",
     "typescript/no-base-to-string": "warn",
+    "typescript/return-await": "warn",
+    "typescript/no-deprecated": "warn",
 
     "typescript/no-unnecessary-type-assertion": "off",
     "typescript/no-duplicate-type-constituents": "off",
@@ -129,6 +144,10 @@
     {
       "files": ["**/*.tsx"],
       "rules": {
+        "react/jsx-boolean-value": "warn",
+        "react/jsx-no-target-blank": "warn",
+        "react/self-closing-comp": "warn",
+
         "jsx-a11y/alt-text": "warn",
         "jsx-a11y/anchor-is-valid": "warn",
         "jsx-a11y/aria-props": "warn",
