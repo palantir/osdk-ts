@@ -28,33 +28,67 @@ import type {
 } from "@osdk/api";
 import type { QueryParameterType } from "@osdk/client/unstable-do-not-use";
 import type * as React from "react";
-import type { DropdownFieldProps } from "../action-form/FormFieldApi.js";
 import type { CellEditInfo } from "./utils/types.js";
 
 /**
- * Props managed by the cell editor infrastructure.
- * These are injected at render time and should not be provided by the user.
+ * User-facing configuration for a dropdown editor in a table cell.
+ *
+ * This is intentionally a standalone interface rather than re-exporting
+ * `DropdownFieldProps` from ActionForm, so the table API doesn't break
+ * when ActionForm's prop shape changes (e.g. adding form-specific fields).
  */
-type CellManagedProps = "value" | "onChange" | "id" | "defaultValue";
+export interface DropdownEditConfig<V = unknown> {
+  /**
+   * Available items for the dropdown.
+   */
+  items: V[];
 
-/**
- * Maps each supported editable field component to its user-facing props.
- * Mirrors `FormFieldPropsByType` from ActionForm, omitting cell-managed props.
- */
-export interface EditFieldPropsByType {
-  DROPDOWN: Omit<DropdownFieldProps<unknown, boolean>, CellManagedProps>;
+  /**
+   * Converts an item to a display string. Defaults to `String()`.
+   */
+  itemToStringLabel?: (item: V) => string;
+
+  /**
+   * Returns a unique string key for a list item. Used as the React `key`.
+   * Falls back to the item's index when not provided.
+   */
+  itemToKey?: (item: V) => string;
+
+  /**
+   * Custom equality check for item values. Defaults to `Object.is`.
+   * Required when items are objects to ensure correct selection matching.
+   */
+  isItemEqual?: (a: V, b: V) => boolean;
+
+  /**
+   * Whether the dropdown allows searching/filtering.
+   * When true, renders a Combobox with a search input.
+   * When false (default), renders a Select dropdown.
+   */
+  isSearchable?: boolean;
+
+  /**
+   * Placeholder text shown when no value is selected.
+   */
+  placeholder?: string;
+
+  /**
+   * Whether multiple values can be selected.
+   */
+  isMultiple?: boolean;
 }
 
 /**
- * Supported field component types for editable table cells.
+ * Maps each supported editable field component to its user-facing config.
  */
-export type EditFieldComponent = keyof EditFieldPropsByType;
+interface EditFieldPropsByType {
+  DROPDOWN: DropdownEditConfig;
+}
+
+type EditFieldComponent = keyof EditFieldPropsByType;
 
 /**
  * Configuration for an editable cell's field component.
- *
- * Follows the same `fieldComponent` + `fieldComponentProps` pattern as
- * `FormFieldDefinition` in ActionForm for consistency.
  *
  * @example
  * ```ts
@@ -80,7 +114,18 @@ export type ColumnDefinition<
     string,
     never
   >,
-> = {
+> =
+  | EditableColumnDefinition<Q, RDPs, FunctionColumns>
+  | ReadonlyColumnDefinition<Q, RDPs, FunctionColumns>;
+
+interface SharedColumnDefinition<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
+    string,
+    never
+  >,
+> {
   locator: ColumnDefinitionLocator<Q, RDPs, FunctionColumns>;
 
   /**
@@ -98,29 +143,6 @@ export type ColumnDefinition<
   resizable?: boolean;
   orderable?: boolean;
   filterable?: boolean;
-
-  editable?: boolean;
-
-  /**
-   * Configuration for the cell editor component.
-   *
-   * When provided alongside `editable: true`, the column uses the specified
-   * field component (e.g. dropdown) instead of the default auto-detected
-   * text/number input.
-   *
-   * Has no effect when `editable` is `false` or omitted.
-   */
-  editFieldConfig?: EditFieldConfig;
-
-  /**
-   * Additional function to validate the cell value during edit
-   *
-   * @param value the current cell value
-   * @returns a promise that resolves to an error message string if validation fails, or undefined if validation succeeds
-   */
-  validateEdit?: (
-    value: unknown,
-  ) => Promise<string | undefined>;
 
   renderCell?: (
     object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
@@ -143,7 +165,55 @@ export type ColumnDefinition<
    * When both columnName and renderHeader are provided, renderHeader will take precedence in the table header.
    */
   renderHeader?: () => React.ReactNode;
-};
+}
+
+/**
+ * Column definition for an editable column. Setting `editable: true`
+ * unlocks `editFieldConfig` and `validateEdit`.
+ */
+interface EditableColumnDefinition<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
+    string,
+    never
+  >,
+> extends SharedColumnDefinition<Q, RDPs, FunctionColumns> {
+  editable: true;
+
+  /**
+   * Configuration for the cell editor component.
+   *
+   * When provided, the column uses the specified field component
+   * (e.g. dropdown) instead of the default auto-detected text/number input.
+   */
+  editFieldConfig?: EditFieldConfig;
+
+  /**
+   * Additional function to validate the cell value during edit.
+   *
+   * @param value the current cell value
+   * @returns a promise that resolves to an error message string if validation fails, or undefined if validation succeeds
+   */
+  validateEdit?: (
+    value: unknown,
+  ) => Promise<string | undefined>;
+}
+
+/**
+ * Column definition for a read-only column (default).
+ * `editFieldConfig` and `validateEdit` are not available.
+ */
+interface ReadonlyColumnDefinition<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
+    string,
+    never
+  >,
+> extends SharedColumnDefinition<Q, RDPs, FunctionColumns> {
+  editable?: false;
+}
 
 export type ExtractQueryParameters<
   Q extends QueryDefinition,

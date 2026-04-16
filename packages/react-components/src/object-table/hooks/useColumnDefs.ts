@@ -107,11 +107,13 @@ function getColumnsFromColumnDefinitions<
       orderable,
       filterable,
       editable,
-      editFieldConfig,
       renderCell,
       renderHeader,
       columnName,
     } = col;
+
+    const editFieldConfig = col.editable ? col.editFieldConfig : undefined;
+    const validateEdit = col.editable ? col.validateEdit : undefined;
 
     const propertyMetadata = locator.type === "property"
       ? objectProperties?.[locator.id]
@@ -137,7 +139,7 @@ function getColumnsFromColumnDefinitions<
         editable,
         editFieldConfig,
         dataType,
-        validateEdit: col.validateEdit,
+        validateEdit,
       },
       size: width,
       ...(minWidth ? { minSize: minWidth } : {}),

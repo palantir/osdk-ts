@@ -23,6 +23,7 @@ import { DropdownField } from "../action-form/fields/DropdownField.js";
 import { Tooltip } from "../base-components/tooltip/Tooltip.js";
 import styles from "./EditableCell.module.css";
 import type { EditFieldConfig } from "./ObjectTableApi.js";
+import { useRegisterPortal } from "./utils/PortalTracker.js";
 import type { CellEditInfo } from "./utils/types.js";
 
 export interface EditableCellProps<TData extends RowData, CellValue = unknown> {
@@ -244,6 +245,7 @@ function EditableCellInner<TData extends RowData, CellValue = unknown>({
     : "text";
 
   const isDropdown = editFieldConfig?.fieldComponent === "DROPDOWN";
+  const portalRef = useRegisterPortal();
 
   const renderInputField = () => {
     if (isDropdown) {
@@ -252,32 +254,37 @@ function EditableCellInner<TData extends RowData, CellValue = unknown>({
           <div
             className={classNames(
               styles.osdkEditableCell,
-              styles.osdkEditableCellDropdown,
               {
                 [styles.error]: hasValidationError,
                 [styles.osdkEditedInput]: isEdited,
               },
             )}
           >
-            <span className={styles.osdkEditableInput}>
-              {valueToString(currentValue)}
-            </span>
+            <div
+              className={classNames(
+                styles.osdkEditableInput,
+                styles.osdkDropdownText,
+              )}
+            >
+              {inputValue}
+            </div>
           </div>
         );
       }
       return (
         <div
           className={classNames(
-            styles.osdkEditableCell,
             styles.osdkEditableCellDropdown,
             {
               [styles.error]: hasValidationError,
+              [styles.osdkEditedInput]: isEdited,
             },
           )}
         >
           <DropdownField
             {...editFieldConfig.fieldComponentProps}
-            value={currentValue}
+            portalRef={portalRef}
+            value={inputValue}
             onChange={handleDropdownChange}
           />
         </div>
@@ -306,7 +313,9 @@ function EditableCellInner<TData extends RowData, CellValue = unknown>({
   return (
     <Tooltip.Provider>
       <Tooltip.Root disabled={!hasValidationError}>
-        <Tooltip.Trigger>
+        <Tooltip.Trigger
+          className={styles.osdkEditableCellTrigger}
+        >
           {renderInputField()}
         </Tooltip.Trigger>
         <Tooltip.Portal>
