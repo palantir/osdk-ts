@@ -116,15 +116,24 @@ const archetypeRules = archetypes(standardPackageRules, {
     },
   )
   .addArchetype(
-    "standardLibraries",
+    "generatorLibraries",
     [
-      "@osdk/foundry-config-json",
       "@osdk/generator-converters",
-      "@osdk/language-models",
       "@osdk/generator-converters.ontologyir",
       "@osdk/generator-converters.preview",
       "@osdk/generator-utils",
       "@osdk/generator",
+    ],
+    {
+      ...LIBRARY_RULES,
+      keepEslint: true,
+    },
+  )
+  .addArchetype(
+    "standardLibraries",
+    [
+      "@osdk/foundry-config-json",
+      "@osdk/language-models",
       "@osdk/maker",
       "@osdk/maker-experimental",
       "@osdk/oauth",
@@ -148,12 +157,7 @@ const archetypeRules = archetypes(standardPackageRules, {
   )
   .addArchetype(
     "consumerCliPackages",
-    [
-      "@osdk/cli",
-      "@osdk/create-app",
-      "@osdk/create-widget",
-      "@osdk/foundry-sdk-generator",
-    ],
+    ["@osdk/cli", "@osdk/create-app", "@osdk/create-widget"],
     {
       ...LIBRARY_RULES,
       output: {
@@ -164,6 +168,16 @@ const archetypeRules = archetypes(standardPackageRules, {
       fixedDepsOnly: true,
     },
   )
+  .addArchetype("generatorCliPackages", ["@osdk/foundry-sdk-generator"], {
+    ...LIBRARY_RULES,
+    output: {
+      browser: undefined,
+      cjs: undefined,
+      esm: "bundle",
+    },
+    fixedDepsOnly: true,
+    keepEslint: true,
+  })
   .addArchetype("consumerCliWithSite", ["@osdk/ontology-explorer-server"], {
     ...LIBRARY_RULES,
     output: {
@@ -186,15 +200,25 @@ const archetypeRules = archetypes(standardPackageRules, {
     "internal clis",
     [
       "@osdk/create-app.template-packager",
-      "@osdk/example-generator",
       "@osdk/tool.*",
-      "@osdk/typescript-docs-example-generator",
       "@osdk/version-updater",
+    ],
+    {
+      ...INTERNAL_LIBRARY_RULES,
+      skipTypes: true,
+    },
+  )
+  .addArchetype(
+    "internal generator clis",
+    [
+      "@osdk/example-generator",
+      "@osdk/typescript-docs-example-generator",
       "@osdk/osdk-docs-context-generator",
     ],
     {
       ...INTERNAL_LIBRARY_RULES,
       skipTypes: true,
+      keepEslint: true,
     },
   )
   .addArchetype(
@@ -781,6 +805,7 @@ function minimalPackageRules(shared, options) {
  * @property { import("typescript").CompilerOptions} [extraTsConfigCompilerOptions]
  * @property { boolean } [cssExport]
  * @property { string } [typecheckProject]
+ * @property { boolean } [keepEslint]
  */
 
 /**
@@ -869,8 +894,10 @@ function standardPackageRules(shared, options) {
             : `attw${options.output.cjs ? "" : " --profile esm-only"} --pack .${
                 options.cssExport ? " --exclude-entrypoints ./styles.css" : ""
               }`,
-          lint: "eslint .",
-          "fix-lint": "eslint . --fix",
+          lint: options.keepEslint ? "eslint ." : DELETE_SCRIPT_ENTRY,
+          "fix-lint": options.keepEslint
+            ? "eslint . --fix"
+            : DELETE_SCRIPT_ENTRY,
           transpile: DELETE_SCRIPT_ENTRY,
           transpileEsm: options.output.esm
             ? `monorepo.tool.transpile -f esm -m ${options.output.esm} -t node`
