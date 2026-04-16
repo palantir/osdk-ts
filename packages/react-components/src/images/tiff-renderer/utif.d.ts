@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+// The `utif` package does not ship its own TypeScript declarations.
 declare module "utif" {
   interface IFD {
     width: number;
