@@ -83,7 +83,6 @@ const archetypeRules = archetypes(
   .addArchetype(
     "checkApiPackages",
     [
-      "@osdk/client",
       "@osdk/api",
       "@osdk/functions",
       "@osdk/functions-testing.experimental",
@@ -91,6 +90,17 @@ const archetypeRules = archetypes(
     {
       ...LIBRARY_RULES,
       checkApi: true,
+    },
+  )
+  .addArchetype(
+    "clientPackage",
+    [
+      "@osdk/client",
+    ],
+    {
+      ...LIBRARY_RULES,
+      checkApi: true,
+      typecheckProject: "tsconfig.typecheck.json",
     },
   )
   .addArchetype(
@@ -343,6 +353,18 @@ const archetypeRules = archetypes(
     "reactLibraryWithCss",
     [
       "@osdk/cbac-components",
+    ],
+    {
+      ...LIBRARY_RULES,
+      react: true,
+      cssExport: true,
+      extraPublishFiles: ["AGENTS.md", "docs"],
+      setupFiles: ["./src/test/setupPolyfills.ts"],
+    },
+  )
+  .addArchetype(
+    "reactComponentsLibrary",
+    [
       "@osdk/react-components",
     ],
     {
@@ -350,6 +372,14 @@ const archetypeRules = archetypes(
       react: true,
       cssExport: true,
       extraPublishFiles: ["AGENTS.md", "docs"],
+      attwExcludeEntrypoints: [
+        "./experimental/action-form",
+        "./experimental/filter-list",
+        "./experimental/markdown-renderer",
+        "./experimental/object-table",
+        "./experimental/pdf-viewer",
+      ],
+      setupFiles: ["./src/test/setupPolyfills.ts"],
     },
   )
   .addArchetype(
@@ -361,6 +391,7 @@ const archetypeRules = archetypes(
       ...LIBRARY_RULES,
       react: true,
       extraPublishFiles: ["AGENTS.md", "docs", "experimental"],
+      customTsconfigExcludes: ["./src/intellisense.test.helpers/**"],
     },
   )
   .addArchetype(
@@ -478,7 +509,7 @@ const disallowWorkspaceCaret = createRuleFactory({
 // of typescript which broke code formatting. This rule is to make sure we don't experience that again.
 // (note devDeps are only happening at buildtime so they should be fine)
 const fixedDepsOnly = createRuleFactory({
-  name: "disallowWorkspaceCaret",
+  name: "fixedDepsOnly",
   check: async (context) => {
     const packageJson = context.getPackageJson();
 
@@ -490,6 +521,7 @@ const fixedDepsOnly = createRuleFactory({
         if (version === "catalog:foundry-platform-typescript") continue;
         if (version[0] >= "0" && version[0] <= "9") continue;
         if (dep === "typescript" && version[0] === "~") continue;
+        if (dep === "rollup" && version[0] === "^") continue; // we want rollup CVE fixes
 
         const message =
           `May only have fixed dependencies (found ${d}['${dep}'] == '${version}').`;
@@ -848,6 +880,7 @@ function minimalPackageRules(shared, options) {
  * @property { string[] } [extraPublishFiles]
  * * @property { boolean } [skipBuildInFiles]
  * @property { "happy-dom" } [vitestEnvironment]
+ * @property { string[] } [setupFiles]
  * @property { boolean } [skipTsconfigReferences]
  * @property { boolean } [aliasConsola]
  * @property { Record<"esm" | "cjs" | "browser", "bundle" | "normal" | undefined>} output
@@ -860,6 +893,8 @@ function minimalPackageRules(shared, options) {
  * @property { "vite" | undefined } [framework]
  * @property { import("typescript").CompilerOptions} [extraTsConfigCompilerOptions]
  * @property { boolean } [cssExport]
+ * @property { string[] } [attwExcludeEntrypoints]
+ * @property { string } [typecheckProject]
  */
 
 /**
@@ -949,7 +984,15 @@ function standardPackageRules(shared, options) {
           "check-attw": options.skipAttw
             ? DELETE_SCRIPT_ENTRY
             : `attw${options.output.cjs ? "" : " --profile esm-only"} --pack .${
-              options.cssExport ? " --exclude-entrypoints ./styles.css" : ""
+              options.cssExport || options.attwExcludeEntrypoints?.length
+                ? ` --exclude-entrypoints${
+                  options.cssExport ? " ./styles.css" : ""
+                }${
+                  (options.attwExcludeEntrypoints ?? [])
+                    .map((e) => ` ${e}`)
+                    .join("")
+                }`
+                : ""
             }`,
           lint: "eslint . && dprint check  --config $(find-up dprint.json)",
           "fix-lint":
@@ -970,7 +1013,9 @@ function standardPackageRules(shared, options) {
           transpileTypes: options.skipTypes
             ? DELETE_SCRIPT_ENTRY
             : "monorepo.tool.transpile -f esm -m types -t node",
-          typecheck: "tsc --noEmit --emitDeclarationOnly false",
+          typecheck: options.typecheckProject
+            ? `tsc -p ${options.typecheckProject} --noEmit --emitDeclarationOnly false`
+            : "tsc --noEmit --emitDeclarationOnly false",
         },
       },
     }),
@@ -1078,6 +1123,12 @@ function standardPackageRules(shared, options) {
               exclude: [...configDefaults.exclude, "**/build/**/*"],${
             options.vitestEnvironment
               ? `\n            environment: "${options.vitestEnvironment}",`
+              : ""
+          }${
+            options.setupFiles && options.setupFiles.length > 0
+              ? `\n            setupFiles: ${
+                JSON.stringify(options.setupFiles)
+              },`
               : ""
           }
               fakeTimers: {

@@ -30,6 +30,7 @@ import { TableBody } from "./TableBody.js";
 import { TableEditContainer } from "./TableEditContainer.js";
 import { TableHeader } from "./TableHeader.js";
 import type { HeaderMenuFeatureFlags } from "./TableHeaderWithPopover.js";
+import { SCROLL_FETCH_THRESHOLD } from "./utils/constants.js";
 import {
   PortalTrackerProvider,
   usePortalTracker,
@@ -139,7 +140,7 @@ function BaseTableInner<
       if (containerRefElement && !fetchingRef.current && !isLoadingMore) {
         const { scrollHeight, scrollTop, clientHeight } = containerRefElement;
         if (
-          scrollHeight - scrollTop - clientHeight < 100
+          scrollHeight - scrollTop - clientHeight < SCROLL_FETCH_THRESHOLD
           && !isLoading && fetchNextPage != null
         ) {
           fetchingRef.current = true;

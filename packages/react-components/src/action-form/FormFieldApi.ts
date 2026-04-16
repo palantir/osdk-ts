@@ -81,20 +81,20 @@ export interface FormFieldDefinition<
   isDisabled?: boolean;
 
   /**
-   * A callback to return a custom error message if validation failed
+   * A callback to customize error messages when a built-in validation rule fails.
+   * Receives a discriminated union with the constraint data (e.g., the min value
+   * that was exceeded) so the message can reference the threshold.
    *
-   * @param validationRule the validation rule that failed with the error message
-   * @returns the error message to display
+   * Return a string to override the default message, or `undefined` to keep it.
    */
-  onValidationError?: (error: ValidationError) => string;
+  onValidationError?: (error: ValidationError) => string | undefined;
 
   /**
-   * Additional function to validate the field
+   * Additional function to validate the field.
    *
-   * @param value the current field value
-   * @returns a boolean promise indicating whether the value is valid
+   * Return `undefined` if valid, or an error message string if invalid.
    */
-  validate?: (value: FieldValueType<Q, K>) => Promise<boolean>;
+  validate?: (value: FieldValueType<Q, K>) => Promise<string | undefined>;
 
   /**
    * The component props for the form field.
@@ -112,21 +112,24 @@ export interface FormFieldDefinition<
   >;
 }
 
-type ValidationError = { type: ValidationRule; error: string };
-
-type ValidationRule =
-  | "required"
-  | "min"
-  | "max"
-  | "minLength"
-  | "maxLength"
-  | "pattern"
-  | "validate";
+/**
+ * A discriminated union describing which validation rule failed and the
+ * constraint data the user needs to build a meaningful error message.
+ */
+export type ValidationError =
+  | { type: "required" }
+  | { type: "min"; min: number | Date }
+  | { type: "max"; max: number | Date }
+  | { type: "minLength"; minLength: number }
+  | { type: "maxLength"; maxLength: number }
+  | { type: "maxSize"; maxSize: number }
+  | { type: "validate"; message: string };
 
 /**
  * Maps field types to their corresponding props
  */
 export interface FormFieldPropsByType {
+  DATE_RANGE_INPUT: DateRangeInputFieldProps;
   DATETIME_PICKER: DatetimePickerFieldProps;
   DROPDOWN: DropdownFieldProps<unknown, boolean>;
   FILE_PICKER: FilePickerProps;
@@ -172,8 +175,63 @@ export interface DatetimePickerFieldProps extends BaseFormFieldProps<Date> {
    */
   placeholder?: string;
 
-  /** Formats a Date for display in the trigger button. */
+  /**
+   * Formats a Date for display in the input field when not editing.
+   * When typing, the input shows the parsable format (YYYY-MM-DD or YYYY-MM-DD HH:mm).
+   * Provide a matching `parseDate` if using a custom format.
+   */
   formatDate?: (date: Date) => string;
+
+  /**
+   * Parses a user-typed string back into a Date.
+   * Must be the inverse of `formatDate` — if `formatDate(d)` produces string `s`,
+   * then `parseDate(s)` must return an equivalent Date.
+   * When omitted, defaults to parsing "YYYY-MM-DD" (date-only) or "YYYY-MM-DD HH:mm" (with time).
+   */
+  parseDate?: (text: string) => Date | undefined;
+}
+
+/**
+ * A date range represented as a start/end tuple.
+ * Either element may be `null` when the range is partially selected.
+ */
+export type DateRange = readonly [Date | null, Date | null];
+
+/** Default empty range — both bounds are null. */
+export const EMPTY_RANGE: DateRange = [null, null];
+
+/**
+ * Date range input field props.
+ *
+ * Renders two text inputs (start / end) with a shared calendar popover
+ * that supports range selection.
+ */
+export interface DateRangeInputFieldProps
+  extends BaseFormFieldProps<DateRange>
+{
+  /** The earliest selectable date. */
+  min?: Date;
+
+  /** The latest selectable date. */
+  max?: Date;
+
+  /** Whether to show time pickers for both dates. */
+  showTime?: boolean;
+
+  /** Placeholder text for the start date input. */
+  placeholderStart?: string;
+
+  /** Placeholder text for the end date input. */
+  placeholderEnd?: string;
+
+  /** Whether to allow start and end on the same day. @default true */
+  allowSingleDayRange?: boolean;
+
+  /** Formats a Date for display. Defaults to "YYYY-MM-DD". */
+  formatDate?: (date: Date) => string;
+
+  /** Parses a user-typed string back into a Date. */
+  parseDate?: (text: string) => Date | undefined;
 }
 
 /**
@@ -379,6 +437,12 @@ export interface BaseFormFieldProps<V> {
   id?: string;
 
   /**
+   * The validation error message for this field, if any.
+   * When set, the field should display a visual error state.
+   */
+  error?: string;
+
+  /**
    * The value of the form field
    */
   value: V | null;
@@ -445,6 +509,7 @@ export type FieldDescriptorType<
  * Available form field component types
  */
 export type FieldComponent =
+  | "DATE_RANGE_INPUT"
   | "DATETIME_PICKER"
   | "DROPDOWN"
   | "FILE_PICKER"
@@ -506,6 +571,8 @@ export type RendererFieldDefinition = {
     placeholder?: string;
     helperText?: string;
     helperTextPlacement?: "bottom" | "tooltip";
+    validate?: (value: unknown) => Promise<string | undefined>;
+    onValidationError?: (error: ValidationError) => string | undefined;
     fieldComponentProps: Omit<FormFieldPropsByType[K], FormManagedProps<K>>;
   };
 }[FieldComponent];

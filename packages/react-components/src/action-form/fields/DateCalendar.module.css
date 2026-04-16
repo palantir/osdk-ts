@@ -1,4 +1,6 @@
-/* DateCalendar — DayPicker classNames */
+/* DateCalendar — DayPicker classNames.
+   All values reference --osdk-datetime-calendar-* tokens defined in
+   react-components-styles/tokens/datetime-picker.css. */
 
 .calendar {
   position: relative;
@@ -9,6 +11,7 @@
 
 .calendarMonths {
   display: flex;
+  gap: var(--osdk-datetime-calendar-months-gap);
 }
 
 .calendarMonthGrid {
@@ -36,27 +39,43 @@
   width: var(--osdk-datetime-calendar-cell-size);
   height: var(--osdk-datetime-calendar-cell-size);
   border: none;
+  border-radius: var(--osdk-datetime-calendar-day-border-radius);
   background: transparent;
   cursor: pointer;
-  border-radius: var(--osdk-datetime-calendar-day-border-radius);
   font: inherit;
-  color: inherit;
+  color: var(--osdk-datetime-calendar-day-color);
 
   &:hover {
     background: var(--osdk-datetime-calendar-day-hover-bg);
+    color: var(--osdk-datetime-calendar-day-hover-color);
   }
 
   &:active {
     background: var(--osdk-datetime-calendar-day-active-bg);
+    color: var(--osdk-datetime-calendar-day-hover-color);
+  }
+
+  &:focus-visible {
+    outline: var(--osdk-datetime-calendar-focus-outline);
+    outline-offset: -2px;
   }
 }
 
+/* :not([disabled]) bumps specificity to (0,4,0) — matching rdp's default
+   .rdp-button:hover:not([disabled]):not(.rdp-day_selected) rule so our
+   styles win by source order. Without this, rdp overrides the selected
+   background on hover because we remap day_selected and its :not() always matches. */
 .calendarDayButton.calendarSelected {
   background: var(--osdk-datetime-calendar-selected-bg);
   color: var(--osdk-datetime-calendar-selected-color);
 
-  &:hover {
+  &:hover:not([disabled]) {
     background: var(--osdk-datetime-calendar-selected-hover-bg);
+    color: var(--osdk-datetime-calendar-selected-color);
+  }
+
+  &:active:not([disabled]) {
+    color: var(--osdk-datetime-calendar-selected-color);
   }
 }
 
@@ -66,6 +85,7 @@
 
 .calendarDayButton.calendarOutside {
   color: var(--osdk-datetime-calendar-outside-color);
+  opacity: var(--osdk-datetime-calendar-outside-opacity);
 }
 
 .calendarDayButton.calendarDisabled {
@@ -77,22 +97,52 @@
   }
 }
 
+/* Range selection styles — shared base for start/end endpoints */
+.calendarRangeEndpoint {
+  background: var(--osdk-datetime-calendar-selected-bg);
+  color: var(--osdk-datetime-calendar-selected-color);
+
+  &:hover:not([disabled]) {
+    background: var(--osdk-datetime-calendar-selected-hover-bg);
+    color: var(--osdk-datetime-calendar-selected-color);
+  }
+
+  &:active:not([disabled]) {
+    color: var(--osdk-datetime-calendar-selected-color);
+  }
+}
+
+
+/* Range-middle needs .calendarDayButton prefix to match specificity of
+   .calendarDayButton.calendarSelected (rdp applies both to range-middle days). */
+.calendarDayButton.calendarRangeMiddle {
+  background: var(--osdk-datetime-calendar-range-middle-bg);
+  color: var(--osdk-datetime-calendar-day-color);
+  border-radius: 0;
+
+  &:hover {
+    background: var(--osdk-datetime-calendar-range-middle-bg);
+    color: var(--osdk-datetime-calendar-day-hover-color);
+    filter: brightness(0.95);
+  }
+
+  &:active {
+    color: var(--osdk-datetime-calendar-day-hover-color);
+  }
+}
+
 .calendarHidden {
   visibility: hidden;
 }
 
-/* Calendar navigation */
+/* Calendar navigation — dissolve the nav wrapper so buttons become
+   direct flex children of the caption row. This lets order: -1 move
+   the prev button before the dropdowns while next stays after. */
 .calendarNav {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  pointer-events: none;
+  display: contents;
 }
 
+/* Shared nav button base — small, matching dropdown caret scale */
 .calendarNavButton {
   display: inline-flex;
   align-items: center;
@@ -104,11 +154,35 @@
   cursor: pointer;
   border-radius: var(--osdk-datetime-calendar-nav-button-border-radius);
   padding: 0;
-  pointer-events: auto;
+  color: inherit;
 
   &:hover {
     background: var(--osdk-datetime-calendar-nav-button-hover-bg);
   }
+
+  &:disabled {
+    color: var(--osdk-datetime-calendar-nav-disabled-color);
+    cursor: default;
+    opacity: 1; /* Override browser default disabled opacity */
+
+    &:hover {
+      background: transparent;
+    }
+  }
+
+  &:focus-visible {
+    outline: var(--osdk-datetime-calendar-focus-outline);
+    outline-offset: -1px;
+  }
+}
+
+/* Hide the default SVG chevron icon — Blueprint icons rendered inline instead */
+.calendarChevron {
+  display: none;
+}
+
+.calendarNavPrev {
+  order: -1;
 }
 
 .calendarMonthCaption {
@@ -118,19 +192,48 @@
   min-height: var(--osdk-datetime-calendar-nav-button-size);
 }
 
-.calendarCaptionLabel {
+/* Visually hidden — used for accessibility-only text (caption label, dropdown labels) */
+.calendarVhidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+
+/* Caption dropdowns container */
+.calendarCaptionDropdowns {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--osdk-datetime-calendar-caption-gap);
+}
+
+/* Month/year selects — borderless, matching caption text weight */
+.calendarDropdown {
+  font-family: var(--osdk-datetime-calendar-font-family);
   font-size: var(--osdk-datetime-calendar-caption-font-size);
   font-weight: var(--osdk-datetime-calendar-caption-font-weight);
+  color: inherit;
+  background: transparent;
+  border: none;
+  padding: var(--osdk-datetime-calendar-dropdown-padding);
+  cursor: pointer;
+  border-radius: var(--osdk-datetime-calendar-dropdown-border-radius);
+
+  &:focus-visible {
+    outline: var(--osdk-datetime-calendar-focus-outline);
+    outline-offset: 1px;
+  }
 }
 
-.calendarChevron {
-  width: var(--osdk-datetime-calendar-chevron-size);
-  height: var(--osdk-datetime-calendar-chevron-size);
-  fill: currentColor;
+
+/* Footer — content rendered inside DayPicker's <tfoot> (constrained by the table). */
+.calendarFooter {
+  padding-top: var(--osdk-time-picker-padding-top);
+  margin-top: var(--osdk-time-picker-margin-top);
+  border-top: var(--osdk-time-picker-border-top);
 }
 
-/* Calendar fallback / loading */
-.calendarFallback {
-  width: var(--osdk-datetime-calendar-fallback-width);
-  height: var(--osdk-datetime-calendar-fallback-height);
-}

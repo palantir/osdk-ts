@@ -4,7 +4,7 @@ A comprehensive guide for using the ObjectTable component from `@osdk/react-comp
 
 ## Prerequisites
 
-Before using ObjectTable, make sure you have completed the library setup described in the [README](../README.md#setup), including:
+Before using ObjectTable, make sure you have completed the library setup described in the [README](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/README.md#setup), including:
 
 - Installing the required dependencies
 - Wrapping your app with `OsdkProvider2`
@@ -1326,8 +1326,8 @@ Apply custom styles to specific ObjectTable instances using the `className` prop
 
 For a complete reference of all available CSS tokens for theming, see:
 
-- [@osdk/react-components-styles CSS Variables Documentation](../../react-components-styles/CSS_VARIABLES.md)
-- [@osdk/react-components-styles README](../../react-components-styles/README.md)
+- [@osdk/react-components-styles CSS Variables Documentation](https://github.com/palantir/osdk-ts/blob/main/packages/react-components-styles/CSS_VARIABLES.md)
+- [@osdk/react-components-styles README](https://github.com/palantir/osdk-ts/blob/main/packages/react-components-styles/README.md)
 
 ### Accessibility Note
 
@@ -1341,7 +1341,7 @@ The default tokens are designed to meet WCAG AA standards.
 
 ## Additional Resources
 
-- [ObjectTable API Reference](../src/object-table/ObjectTableApi.ts)
-- [ObjectTable Implementation](../src/object-table/ObjectTable.tsx)
-- [PeopleApp Examples](../../e2e.sandbox.peopleapp/src/app/employees/EmployeesTable.tsx)
-- [@osdk/react Documentation](../../docs/react/getting-started.md)
+- [ObjectTable API Reference](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/src/object-table/ObjectTableApi.ts)
+- [ObjectTable Implementation](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/src/object-table/ObjectTable.tsx)
+- [PeopleApp Examples](https://github.com/palantir/osdk-ts/blob/main/packages/e2e.sandbox.peopleapp/src/app/employees/EmployeesTable.tsx)
+- [@osdk/react Documentation](https://github.com/palantir/osdk-ts/blob/main/docs/react/getting-started.md)

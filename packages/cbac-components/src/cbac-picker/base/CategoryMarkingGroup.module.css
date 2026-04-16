@@ -20,12 +20,37 @@
   gap: var(--osdk-cbac-marking-button-gap);
 }
 
+.categoryHeader {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--osdk-surface-spacing) * 0.75);
+}
+
 .categoryName {
   font-size: var(--osdk-cbac-picker-category-title-font-size);
   font-weight: var(--osdk-cbac-picker-category-title-font-weight);
   color: var(--osdk-cbac-picker-category-title-color);
   letter-spacing: var(--osdk-cbac-picker-category-title-letter-spacing);
   margin: 0;
+}
+
+.infoIcon {
+  display: inline-flex;
+  color: var(--osdk-typography-color-muted);
+  cursor: help;
+}
+
+.infoTooltip {
+  z-index: var(--osdk-cbac-marking-tooltip-z-index);
+  max-width: var(--osdk-cbac-marking-tooltip-max-width);
+  padding: var(--osdk-cbac-marking-tooltip-padding);
+  background-color: var(--osdk-tooltip-bg);
+  border: 1px solid var(--osdk-tooltip-border-color);
+  border-radius: var(--osdk-surface-border-radius);
+  box-shadow: var(--osdk-tooltip-shadow);
+  font-size: var(--osdk-cbac-marking-tooltip-font-size);
+  line-height: 1.4;
+  color: var(--osdk-typography-color-muted);
 }
 
 .markingGrid {

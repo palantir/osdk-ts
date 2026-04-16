@@ -38,15 +38,14 @@ const VALID_NUMERIC_REGEX = /^[+-.]?(\d+\.?\d*|\d*\.?\d+)?([eE][+-]?\d*)?$/;
 const DEFAULT_STEP = 1;
 const CHEVRON_SIZE = 12;
 
-// TODO: Add min/max validation so the field can surface
-// out-of-range errors through the form validation system.
 export function NumberInputField({
   id,
   value,
   onChange,
+  error,
   placeholder,
-  min: _min,
-  max: _max,
+  min,
+  max,
   step,
 }: NumberInputFieldProps): React.ReactElement {
   const [displayValue, setDisplayValue] = useState<string>(() =>
@@ -81,12 +80,12 @@ export function NumberInputField({
     (direction: 1 | -1) => {
       const current = parseNumericValue(displayValue) ?? 0;
       const delta = direction * (step ?? DEFAULT_STEP);
-      const next = current + delta;
+      const next = clamp(current + delta, min, max);
       const formatted = formatNumberForDisplay(next);
       setDisplayValue(formatted);
       onChange?.(next);
     },
-    [displayValue, onChange, step],
+    [displayValue, onChange, step, min, max],
   );
 
   const handleKeyDown = useCallback(
@@ -109,7 +108,10 @@ export function NumberInputField({
   }, [applyStep]);
 
   return (
-    <div className={styles.osdkNumberInputWrapper}>
+    <div
+      className={styles.osdkNumberInputWrapper}
+      aria-invalid={error != null || undefined}
+    >
       <Input
         id={id}
         className={styles.osdkNumberInputField}
@@ -156,4 +158,14 @@ function parseNumericValue(text: string): number | null {
 
 function formatNumberForDisplay(value: number | null): string {
   return value != null ? String(value) : "";
+}
+
+function clamp(
+  value: number,
+  min: number | undefined,
+  max: number | undefined,
+): number {
+  if (min != null && value < min) return min;
+  if (max != null && value > max) return max;
+  return value;
 }

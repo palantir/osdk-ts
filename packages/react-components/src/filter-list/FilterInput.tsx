@@ -25,7 +25,7 @@ import { PropertyFilterInput } from "./inputs/PropertyFilterInput.js";
 
 interface FilterInputProps<Q extends ObjectTypeDefinition> {
   objectType: Q;
-  objectSet: ObjectSet<Q>;
+  objectSet?: ObjectSet<Q>;
   definition: FilterDefinitionUnion<Q>;
   filterState: FilterState | undefined;
   onFilterStateChanged: (state: FilterState) => void;
@@ -79,7 +79,10 @@ function FilterInputContent<Q extends ObjectTypeDefinition>({
         />
       );
 
-    case "LINKED_PROPERTY":
+    case "LINKED_PROPERTY": {
+      if (objectSet == null) {
+        return <></>;
+      }
       return (
         <LinkedPropertyInput
           objectSet={objectSet}
@@ -89,6 +92,7 @@ function FilterInputContent<Q extends ObjectTypeDefinition>({
           searchQuery={searchQuery}
         />
       );
+    }
 
     case "KEYWORD_SEARCH":
       return (
@@ -111,6 +115,7 @@ function FilterInputContent<Q extends ObjectTypeDefinition>({
       return (
         <>
           {definition.renderInput({
+            objectType,
             objectSet,
             filterState: customFilterState,
             onFilterStateChanged: (state) => onFilterStateChanged(state),

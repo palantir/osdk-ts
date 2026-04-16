@@ -54,6 +54,17 @@ const fieldDefinitions: ReadonlyArray<RendererFieldDefinition> = [
     fieldComponentProps: {},
   },
   {
+    fieldKey: "employmentDuration",
+    fieldComponent: "DATE_RANGE_INPUT",
+    label: "Employment Duration",
+    placeholder: "Enter employment duration",
+    isRequired: true,
+    fieldComponentProps: {
+      placeholderStart: "Start Date",
+      placeholderEnd: "End Date",
+    },
+  },
+  {
     fieldKey: "department",
     fieldComponent: "DROPDOWN",
     placeholder: "Select a department",
@@ -133,6 +144,7 @@ const fieldDefinitions: ReadonlyArray<RendererFieldDefinition> = [
     label: "Resume",
     fieldComponentProps: {
       accept: [".pdf", ".doc", ".docx"],
+      maxSize: 100, // 100 bytes
     },
   },
   {
@@ -181,9 +193,12 @@ export function FormPage() {
     Record<string, unknown> | undefined
   >(undefined);
 
-  const handleSubmit = useCallback((formState: Record<string, unknown>) => {
-    setSubmittedState(formState);
-  }, []);
+  const handleSubmit = useCallback(
+    async (formState: Record<string, unknown>) => {
+      setSubmittedState(formState);
+    },
+    [],
+  );
 
   const employeeObjectSet = useMemo(
     () => $(Employee) as ObjectSet<ObjectTypeDefinition>,

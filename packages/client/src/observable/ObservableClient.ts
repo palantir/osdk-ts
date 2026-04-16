@@ -122,6 +122,13 @@ export interface ObserveListOptions<
   orderBy?: OrderBy<Q>;
   invalidationMode?: InvalidationMode;
   expectedLength?: number;
+
+  /**
+   * Enable streaming updates via websocket subscription.
+   *
+   * Cannot be combined with `pivotTo`. The server does not support
+   * websocket subscriptions for link-traversal queries.
+   */
   streamUpdates?: boolean;
   withProperties?: DerivedProperty.Clause<Q>;
 
@@ -177,6 +184,12 @@ export interface ObserveListOptions<
   intersectWith?: Array<{
     where: WhereClause<Q, RDPs>;
   }>;
+
+  /**
+   * Traverse to linked objects. Cannot be combined with `streamUpdates`.
+   * The server does not support websocket subscriptions for link-traversal
+   * queries.
+   */
   pivotTo?: string;
 }
 
