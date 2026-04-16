@@ -93,12 +93,12 @@ body {
 
 .osdkSubmitBannerSuccess {
   background: #d4edda;
-  color: #155724;
+  color: var(--osdk-intent-success-foreground, #155724);
 }
 
 .osdkSubmitBannerError {
   background: #f8d7da;
-  color: #721c24;
+  color: var(--osdk-intent-danger-foreground, #721c24);
 }
 
 .osdkSubmitResult {
