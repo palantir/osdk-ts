@@ -166,7 +166,7 @@ describe("BaseForm", () => {
   });
 
   describe("helper text", () => {
-    it("renders helper text below the field when placement is bottom", () => {
+    it("renders helper text as visible text when placement is bottom", () => {
       render(
         <BaseForm
           fieldDefinitions={[
@@ -179,10 +179,13 @@ describe("BaseForm", () => {
         />,
       );
 
-      expect(screen.getByText("Enter your full name")).toBeDefined();
+      const helperEl = screen.getByText("Enter your full name");
+      expect(helperEl).toBeDefined();
+      // Bottom text should not be inside a tooltip — it's a sibling of the input
+      expect(screen.queryByLabelText("Info about name")).toBeNull();
     });
 
-    it("renders an info icon trigger when placement is tooltip", () => {
+    it("renders tooltip trigger without visible text when placement is tooltip", () => {
       render(
         <BaseForm
           fieldDefinitions={[
@@ -195,11 +198,12 @@ describe("BaseForm", () => {
         />,
       );
 
+      // Tooltip mode: icon trigger is present, text is hidden until hover
       expect(screen.getByLabelText("Info about name")).toBeDefined();
       expect(screen.queryByText("Enter your full name")).toBeNull();
     });
 
-    it("renders an info icon trigger when placement is omitted (default)", () => {
+    it("defaults to tooltip placement when helperTextPlacement is omitted", () => {
       render(
         <BaseForm
           fieldDefinitions={[
@@ -211,7 +215,9 @@ describe("BaseForm", () => {
         />,
       );
 
+      // Default is tooltip: icon trigger present, no visible text
       expect(screen.getByLabelText("Info about name")).toBeDefined();
+      expect(screen.queryByText("Enter your full name")).toBeNull();
     });
 
     it("does not render helper text or icon when helperText is absent", () => {

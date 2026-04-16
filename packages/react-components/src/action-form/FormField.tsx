@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { InfoSign } from "@blueprintjs/icons";
 import React, { memo } from "react";
 import { Tooltip, TooltipArrow } from "../base-components/tooltip/index.js";
 import styles from "./FormField.module.css";
@@ -66,9 +67,13 @@ export const FormField: React.FC<FormFieldProps> = memo(
               {labelElement}
               <Tooltip.Root>
                 <Tooltip.Trigger
-                  aria-label={`Info about ${label}`}
+                  aria-label={label != null
+                    ? `Info about ${label}`
+                    : "More information"}
                 >
-                  <InfoIcon />
+                  <InfoSign
+                    className={styles.osdkFormFieldInfoIcon}
+                  />
                 </Tooltip.Trigger>
                 <Tooltip.Portal>
                   <Tooltip.Positioner sideOffset={4}>
@@ -83,32 +88,16 @@ export const FormField: React.FC<FormFieldProps> = memo(
           )
           : labelElement}
         {children}
-        {error != null && (
-          <div className={styles.osdkFormFieldError} role="alert">
-            {error}
-          </div>
-        )}
-        {showBottomText && (
-          <div className={styles.osdkFormFieldHelperText}>{helperText}</div>
-        )}
+        {error != null
+          ? (
+            <div className={styles.osdkFormFieldError} role="alert">
+              {error}
+            </div>
+          )
+          : showBottomText
+          ? <div className={styles.osdkFormFieldHelperText}>{helperText}</div>
+          : null}
       </div>
     );
   },
 );
-
-function InfoIcon(): React.ReactElement {
-  return (
-    <svg
-      className={styles.osdkFormFieldInfoIcon}
-      viewBox="0 0 16 16"
-      fill="currentColor"
-      aria-hidden="true"
-    >
-      <path
-        fillRule="evenodd"
-        clipRule="evenodd"
-        d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1ZM7 7a1 1 0 0 1 2 0v4a1 1 0 1 1-2 0V7Zm1-2.5a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z"
-      />
-    </svg>
-  );
-}
