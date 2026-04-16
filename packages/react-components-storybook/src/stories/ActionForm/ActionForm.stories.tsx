@@ -40,9 +40,6 @@ interface ActionFormStoryProps {
   isSubmitDisabled?: boolean;
 }
 
-const FORM_MAX_WIDTH = 480;
-const FORM_CARD_STYLE = { maxWidth: FORM_MAX_WIDTH, width: "100%" } as const;
-
 const meta: Meta<ActionFormStoryProps> = {
   title: "Components/ActionForm",
   component: ActionForm,
@@ -50,7 +47,7 @@ const meta: Meta<ActionFormStoryProps> = {
     actionDefinition: StoryAction,
   },
   render: (args) => (
-    <div className="osdkFormCard" style={FORM_CARD_STYLE}>
+    <div className="osdkFormCard">
       <ActionForm {...args} />
     </div>
   ),
@@ -86,19 +83,6 @@ const meta: Meta<ActionFormStoryProps> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-const ACTION_DEFINITION_SUMMARY = {
-  apiName: "submitOrder",
-  displayName: "Submit Order",
-  parameters: {
-    name: { type: "string", required: true },
-    quantity: { type: "integer", required: true },
-    price: { type: "double", required: false },
-    isActive: { type: "boolean", required: false },
-    startDate: { type: "timestamp", required: false },
-    document: { type: "attachment", required: false },
-  },
-};
-
 type SubmitResult =
   | { type: "idle" }
   | { type: "success"; data: Record<string, unknown> }
@@ -111,10 +95,10 @@ export const Default: Story = {
     docs: {
       source: {
         code: `import { ActionForm } from "@osdk/react-components/experimental";
-import { SubmitOrder } from "./ontology";
+import { ModifyEmployee } from "./ontology";
 
 <ActionForm
-  actionDefinition={SubmitOrder}
+  actionDefinition={ModifyEmployee}
   onSubmit={async (formState, applyAction) => {
     await applyAction(formState);
     console.log("Submitted:", formState);
@@ -128,7 +112,7 @@ import { SubmitOrder } from "./ontology";
 
     return (
       <div className="osdkFormStoryLayout">
-        <div className="osdkFormCard" style={FORM_CARD_STYLE}>
+        <div className="osdkFormCard">
           <ActionForm
             {...args}
             onSubmit={async (formState, applyAction) => {
@@ -170,10 +154,6 @@ import { SubmitOrder } from "./ontology";
               <pre className="osdkCodeOutput">
                 {JSON.stringify(result.data, fileReplacer, 2)}
               </pre>
-              <h4 className="osdkSubmitResultHeading">Action Definition</h4>
-              <pre className="osdkCodeOutput">
-                {JSON.stringify(ACTION_DEFINITION_SUMMARY, null, 2)}
-              </pre>
             </>
           )}
         </div>
@@ -184,14 +164,14 @@ import { SubmitOrder } from "./ontology";
 
 export const WithCustomTitle: Story = {
   args: {
-    formTitle: "Place New Order",
+    formTitle: "Update Employee Profile",
   },
   parameters: {
     docs: {
       source: {
         code: `<ActionForm
-  actionDefinition={SubmitOrder}
-  formTitle="Place New Order"
+  actionDefinition={ModifyEmployee}
+  formTitle="Update Employee Profile"
 />`,
       },
     },
@@ -206,33 +186,35 @@ const customFieldDefinitions: ReadonlyArray<
   FormFieldDefinition<typeof StoryAction>
 > = [
   {
-    fieldKey: "name",
-    label: "Product Name",
-    fieldComponent: "TEXT_AREA",
-    helperText: "Enter a detailed product name",
+    fieldKey: "fullName",
+    label: "Full Name",
+    fieldComponent: "TEXT_INPUT",
+    isRequired: true,
+    fieldComponentProps: {},
+  },
+  {
+    fieldKey: "employeeNumber",
+    label: "Employee Number",
+    fieldComponent: "NUMBER_INPUT",
+    isRequired: true,
+    fieldComponentProps: {},
+  },
+  {
+    fieldKey: "department",
+    label: "Department",
+    fieldComponent: "TEXT_INPUT",
+    helperText: "e.g. Engineering, Marketing, Sales",
     helperTextPlacement: "bottom",
-    isRequired: true,
-    fieldComponentProps: {},
-  },
-  {
-    fieldKey: "price",
-    label: "Unit Price ($)",
-    fieldComponent: "NUMBER_INPUT",
-    fieldComponentProps: {},
-  },
-  {
-    fieldKey: "quantity",
-    label: "Order Quantity",
-    fieldComponent: "NUMBER_INPUT",
-    isRequired: true,
-    helperText: "Maximum 1000 units per order",
     fieldComponentProps: {},
   },
   {
     fieldKey: "isActive",
-    label: "Active Order",
+    label: "Active Employee",
     fieldComponent: "DROPDOWN",
-    fieldComponentProps: {},
+    fieldComponentProps: {
+      items: [true, false],
+      itemToStringLabel: (v: unknown) => (v === true ? "Yes" : "No"),
+    },
   },
 ];
 
@@ -242,34 +224,30 @@ export const WithCustomFieldDefinitions: Story = {
       source: {
         code: `const customFieldDefinitions = [
   {
-    fieldKey: "name",
-    label: "Product Name",
-    fieldComponent: "TEXT_AREA",
-    helperText: "Enter a detailed product name",
+    fieldKey: "fullName",
+    label: "Full Name",
+    fieldComponent: "TEXT_INPUT",
+    isRequired: true,
+    fieldComponentProps: { placeholder: "e.g. Jane Doe" },
+  },
+  {
+    fieldKey: "employeeNumber",
+    label: "Employee Number",
+    fieldComponent: "NUMBER_INPUT",
+    isRequired: true,
+    fieldComponentProps: { min: 1, step: 1 },
+  },
+  {
+    fieldKey: "department",
+    label: "Department",
+    fieldComponent: "TEXT_INPUT",
+    helperText: "e.g. Engineering, Marketing, Sales",
     helperTextPlacement: "bottom",
-    isRequired: true,
-    fieldComponentProps: {
-      rows: 2,
-      placeholder: "e.g. Premium Widget",
-    },
-  },
-  {
-    fieldKey: "price",
-    label: "Unit Price ($)",
-    fieldComponent: "NUMBER_INPUT",
-    fieldComponentProps: { min: 0, step: 0.01, placeholder: "0.00" },
-  },
-  {
-    fieldKey: "quantity",
-    label: "Order Quantity",
-    fieldComponent: "NUMBER_INPUT",
-    isRequired: true,
-    helperText: "Maximum 1000 units per order",
-    fieldComponentProps: { min: 1, max: 1000, step: 1 },
+    fieldComponentProps: {},
   },
   {
     fieldKey: "isActive",
-    label: "Active Order",
+    label: "Active Employee",
     fieldComponent: "RADIO_BUTTONS",
     fieldComponentProps: {
       options: [
@@ -281,14 +259,14 @@ export const WithCustomFieldDefinitions: Story = {
 ];
 
 <ActionForm
-  actionDefinition={SubmitOrder}
+  actionDefinition={ModifyEmployee}
   formFieldDefinitions={customFieldDefinitions}
 />`,
       },
     },
   },
   render: (args) => (
-    <div className="osdkFormCard" style={FORM_CARD_STYLE}>
+    <div className="osdkFormCard">
       <ActionForm {...args} formFieldDefinitions={customFieldDefinitions} />
     </div>
   ),
@@ -299,8 +277,8 @@ export const Controlled: Story = {
     docs: {
       source: {
         code: `const [formState, setFormState] = useState({
-  name: "Sample Product",
-  quantity: 10,
+  fullName: "Jane Doe",
+  employeeNumber: 12345,
 });
 
 return (
@@ -310,7 +288,7 @@ return (
       <pre>{JSON.stringify(formState, null, 2)}</pre>
     </div>
     <ActionForm
-      actionDefinition={SubmitOrder}
+      actionDefinition={ModifyEmployee}
       formState={formState}
       onFormStateChange={setFormState}
     />
@@ -323,13 +301,13 @@ return (
     type StoryFormState = FormState<typeof StoryAction>;
 
     const [formState, setFormState] = useState<StoryFormState>({
-      name: "Sample Product",
-      quantity: 10,
+      fullName: "Jane Doe",
+      employeeNumber: 12345,
     });
 
     return (
-      <div style={FORM_CARD_STYLE}>
-        <div style={{ marginBottom: "16px" }}>
+      <div className="osdkFormCard">
+        <div className="osdkFormStorySpacing">
           <strong>Current Form State:</strong>
           <pre className="osdkCodeOutput">
             {JSON.stringify(formState, null, 2)}
@@ -351,26 +329,20 @@ export const WithSubmitHandler: Story = {
   parameters: {
     docs: {
       source: {
-        code: `const [status, setStatus] = useState("idle");
+        code: `const [status, setStatus] = useState({ type: "idle" });
 
 return (
   <div>
-    {status !== "idle" && (
-      <div style={{ marginBottom: "16px", padding: "8px", borderRadius: "4px" }}>
-        {status}
-      </div>
+    {status.type !== "idle" && (
+      <div>{status.type === "success" ? "Employee updated!" : status.message}</div>
     )}
     <ActionForm
-      actionDefinition={SubmitOrder}
-      onSubmit={async (formState, applyAction) => {
-        setStatus("Submitting...");
-        return applyAction(formState);
-      }}
-      onSuccess={(results) => {
-        setStatus("Order submitted successfully!");
+      actionDefinition={ModifyEmployee}
+      onSuccess={() => {
+        setStatus({ type: "success" });
       }}
       onError={(error) => {
-        setStatus(\`Error: \${error.type}\`);
+        setStatus({ type: "error", message: error.type });
       }}
     />
   </div>
@@ -400,11 +372,11 @@ return (
     });
 
     return (
-      <div style={FORM_CARD_STYLE}>
+      <div className="osdkFormCard">
         {status.type !== "idle" && (
-          <div className={bannerClass} style={{ marginBottom: "16px" }}>
-            {status.type === "submitting" && "Submitting order..."}
-            {status.type === "success" && "Order submitted successfully!"}
+          <div className={classnames(bannerClass, "osdkFormStorySpacing")}>
+            {status.type === "submitting" && "Updating employee..."}
+            {status.type === "success" && "Employee updated successfully!"}
             {status.type === "error" && `Error: ${status.message}`}
           </div>
         )}
@@ -427,17 +399,17 @@ export const WithValidation: Story = {
         code: `// ActionForm auto-generates validation from metadata:
 // - Required fields show "This field is required" on blur
 // - Submit button shows error summary tooltip when invalid
-// In this example, "name" and "quantity" are required parameters.
+// In this example, "fullName" and "employeeNumber" are required parameters.
 
-<ActionForm actionDefinition={SubmitOrder} />`,
+<ActionForm actionDefinition={ModifyEmployee} />`,
       },
     },
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    // Focus and blur the required "Product Name" field to trigger validation.
-    const nameInput = canvas.getByLabelText("Product Name");
+    // Focus and blur the required "Full Name" field to trigger validation.
+    const nameInput = canvas.getByLabelText("Full Name");
     await userEvent.click(nameInput);
     await userEvent.tab();
 

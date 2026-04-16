@@ -24,25 +24,25 @@ import type { ActionDefinition } from "@osdk/api";
  * Record<any, Parameter<any>> from polluting keyof, which would cause
  * FieldValueType to resolve to `never`.
  */
-interface StoryActionDef extends ActionDefinition<unknown> {
+interface ModifyEmployeeDef extends ActionDefinition<unknown> {
   __DefinitionMetadata: {
     signatures: unknown;
     parameters: {
-      name: { type: "string" };
-      quantity: { type: "integer" };
-      price: { type: "double" };
+      fullName: { type: "string" };
+      employeeNumber: { type: "integer" };
+      department: { type: "string" };
       isActive: { type: "boolean" };
       startDate: { type: "datetime" };
-      document: { type: "attachment" };
+      employeeFile: { type: "attachment" };
     };
     type: "action";
-    apiName: "submitOrder";
+    apiName: "modifyEmployee";
     status: "ACTIVE";
     rid: string;
   };
 }
 
-export const StoryAction: StoryActionDef = {
+export const StoryAction: ModifyEmployeeDef = {
   type: "action",
-  apiName: "submitOrder",
-} as StoryActionDef;
+  apiName: "modifyEmployee",
+} as ModifyEmployeeDef;

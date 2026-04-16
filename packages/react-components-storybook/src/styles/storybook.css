@@ -51,6 +51,10 @@ body {
   width: 100%;
 }
 
+.osdkFormStoryLayout > .osdkFormCard {
+  flex-shrink: 0;
+}
+
 .osdkFormStoryResultPanel {
   flex: 1;
   min-width: 0;
@@ -76,6 +80,8 @@ body {
 .osdkFormCard {
   --osdk-form-label-font-size: var(--osdk-typography-size-body-small);
 
+  max-width: 480px;
+  width: 100%;
   background: var(--osdk-background-primary);
   border: var(--osdk-surface-border-width) solid
     var(--osdk-surface-border-color-default);
@@ -117,6 +123,20 @@ body {
   font-weight: 600;
   margin: 0 0 calc(var(--osdk-surface-spacing) * 2);
   color: var(--osdk-typography-color-default-rest);
+}
+
+.osdkFormStorySpacing {
+  margin-bottom: calc(var(--osdk-surface-spacing) * 4);
+}
+
+.osdkCustomTextarea {
+  width: 100%;
+  min-height: calc(var(--osdk-surface-spacing) * 15);
+  padding: calc(var(--osdk-surface-spacing) * 2);
+  border: var(--osdk-surface-border-width) solid
+    var(--osdk-surface-border-color-default);
+  border-radius: var(--osdk-surface-border-radius);
+  font-family: inherit;
 }
 
 .osdkCodeOutput {

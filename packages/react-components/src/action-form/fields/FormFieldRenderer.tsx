@@ -36,7 +36,7 @@ export interface FormFieldRendererProps {
   fieldDefinition: RendererFieldDefinition;
   value: unknown;
   onFieldValueChange: (value: unknown) => void;
-  onBlur: (e: React.FocusEvent<HTMLDivElement>) => void;
+  onBlur: () => void;
   error: string | undefined;
 }
 

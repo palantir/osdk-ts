@@ -130,14 +130,7 @@ const fieldDefinitions: ReadonlyArray<RendererFieldDefinition> = [
         <textarea
           value={props.value != null ? String(props.value) : ""}
           onChange={(e) => props.onChange?.(e.target.value)}
-          style={{
-            width: "100%",
-            minHeight: "60px",
-            padding: "8px",
-            border: "1px solid #ccc",
-            borderRadius: "4px",
-            fontFamily: "inherit",
-          }}
+          className="osdkCustomTextarea"
           placeholder="Custom rendered notes field"
         />
       ),
@@ -152,17 +145,12 @@ function handleSubmit(formState: Record<string, unknown>): void {
   console.log("Form submitted:", formState);
 }
 
-const FORM_MAX_WIDTH = 480;
-
 const meta: Meta<BaseFormStoryProps> = {
   title: "Components/ActionForm/Building Blocks/BaseForm",
   component: BaseForm,
   decorators: [
     (Story) => (
-      <div
-        className="osdkFormCard"
-        style={{ maxWidth: FORM_MAX_WIDTH, width: "100%" }}
-      >
+      <div className="osdkFormCard">
         <Story />
       </div>
     ),
@@ -356,7 +344,7 @@ return (
 
     return (
       <div>
-        <div style={{ marginBottom: "16px" }}>
+        <div className="osdkFormStorySpacing">
           <strong>Current Form State:</strong>
           <pre className="osdkCodeOutput">
             {JSON.stringify(

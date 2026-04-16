@@ -16,32 +16,31 @@
 
 import type { ActionTypeV2 } from "@osdk/foundry.ontologies";
 
-export const SubmitOrder: ActionTypeV2 = {
-  apiName: "submitOrder",
-  displayName: "Submit Order",
-  description: "Submit a new order with product details",
+export const ModifyEmployee: ActionTypeV2 = {
+  apiName: "modifyEmployee",
+  displayName: "Modify Employee",
+  description: "Update an employee's profile information",
   parameters: {
-    name: {
-      displayName: "Product Name",
+    fullName: {
+      displayName: "Full Name",
       dataType: {
         type: "string",
       },
       required: true,
       typeClasses: [],
     },
-    quantity: {
-      displayName: "Quantity",
+    employeeNumber: {
+      displayName: "Employee Number",
       dataType: {
         type: "integer",
       },
       required: true,
       typeClasses: [],
     },
-    price: {
-      displayName: "Price",
-      description: "Unit price of the product",
+    department: {
+      displayName: "Department",
       dataType: {
-        type: "double",
+        type: "string",
       },
       required: false,
       typeClasses: [],
@@ -62,9 +61,9 @@ export const SubmitOrder: ActionTypeV2 = {
       required: false,
       typeClasses: [],
     },
-    document: {
-      displayName: "Document",
-      description: "Supporting document for the order",
+    employeeFile: {
+      displayName: "Employee File",
+      description: "Supporting document for the employee",
       dataType: {
         type: "attachment",
       },
@@ -72,7 +71,7 @@ export const SubmitOrder: ActionTypeV2 = {
       typeClasses: [],
     },
   },
-  rid: "ri.ontology.main.action-type.storybook-submit-order",
+  rid: "ri.ontology.main.action-type.storybook-modify-employee",
   operations: [],
   status: "ACTIVE",
 };

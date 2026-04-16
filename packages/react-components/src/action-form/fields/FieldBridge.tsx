@@ -30,10 +30,7 @@ export interface FieldBridgeProps {
   onExternalChange?: (fieldKey: string, value: unknown) => void;
 }
 const SELECT_LIKE_FIELDS: ReadonlySet<FieldComponent> = new Set<FieldComponent>(
-  [
-    "RADIO_BUTTONS",
-    "DROPDOWN",
-  ],
+  ["RADIO_BUTTONS", "DROPDOWN"],
 );
 
 export const FieldBridge: React.FC<FieldBridgeProps> = memo(
@@ -42,10 +39,7 @@ export const FieldBridge: React.FC<FieldBridgeProps> = memo(
     control,
     onExternalChange,
   }: FieldBridgeProps): React.ReactElement {
-    const rules = useMemo(
-      () => extractValidationRules(fieldDef),
-      [fieldDef],
-    );
+    const rules = useMemo(() => extractValidationRules(fieldDef), [fieldDef]);
 
     const {
       field: { onChange, onBlur, value },
@@ -72,25 +66,12 @@ export const FieldBridge: React.FC<FieldBridgeProps> = memo(
       [onChange, onBlur, onExternalChange, fieldDef.fieldKey, isSelectLike],
     );
 
-    // Ignore blur events where focus stays within the field container
-    // (e.g. moving between radio buttons in a group). Only fire RHF's
-    // onBlur when focus truly leaves the field.
-    const handleBlur = useCallback(
-      (e: React.FocusEvent<HTMLDivElement>) => {
-        if (e.currentTarget.contains(e.relatedTarget)) {
-          return;
-        }
-        onBlur();
-      },
-      [onBlur],
-    );
-
     return (
       <FormFieldRenderer
         value={value}
         fieldDefinition={fieldDef}
         onFieldValueChange={handleChange}
-        onBlur={handleBlur}
+        onBlur={onBlur}
         error={fieldError?.message}
       />
     );

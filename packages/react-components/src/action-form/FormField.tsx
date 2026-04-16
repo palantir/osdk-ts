@@ -23,67 +23,66 @@ interface FormFieldProps {
   isRequired?: boolean;
   helperText?: string;
   error?: string;
-  onBlur?: (e: React.FocusEvent<HTMLDivElement>) => void;
+  onBlur?: () => void;
   children: React.ReactNode;
 }
 
-export const FormField: React.FC<FormFieldProps> = memo(
-  function FormFieldFn({
-    fieldKey,
-    label,
-    isRequired,
-    helperText,
-    error,
-    onBlur,
-    children,
-  }: FormFieldProps): React.ReactElement {
-    const containerRef = useRef<HTMLDivElement>(null);
+export const FormField: React.FC<FormFieldProps> = memo(function FormFieldFn({
+  fieldKey,
+  label,
+  isRequired,
+  helperText,
+  error,
+  onBlur,
+  children,
+}: FormFieldProps): React.ReactElement {
+  const containerRef = useRef<HTMLDivElement>(null);
 
-    // Only fire onBlur when focus leaves the field entirely, not when
-    // it moves between focusable children within the same field
-    // (e.g. tabbing from an input to a picker button).
-    const handleBlur = useCallback(
-      (e: React.FocusEvent) => {
-        if (
-          onBlur != null
-          && (e.relatedTarget == null
-            || !containerRef.current?.contains(e.relatedTarget))
-        ) {
-          onBlur();
-        }
-      },
-      [onBlur],
-    );
+  // Only fire onBlur when focus leaves the field entirely, not when
+  // it moves between focusable children within the same field
+  // (e.g. tabbing from an input to a picker button).
+  const handleBlur = useCallback(
+    (e: React.FocusEvent) => {
+      if (
+        onBlur != null
+        && (e.relatedTarget == null
+          || !containerRef.current?.contains(e.relatedTarget))
+      ) {
+        onBlur();
+      }
+    },
+    [onBlur],
+  );
 
-    return (
-      <div
-        ref={containerRef}
-        className={styles.osdkFormField}
-        onBlur={handleBlur}
-      >
-        {label != null && (
-          <label className={styles.osdkFormFieldLabel} htmlFor={fieldKey}>
-            {label}
-            {isRequired === true && (
-              <span
-                className={styles.osdkFormFieldRequired}
-                aria-label="required"
-              >
-                {" "}*
-              </span>
-            )}
-          </label>
-        )}
-        {children}
-        {error != null && (
-          <div className={styles.osdkFormFieldError} role="alert">
-            {error}
-          </div>
-        )}
-        {helperText != null && (
-          <div className={styles.osdkFormFieldHelperText}>{helperText}</div>
-        )}
-      </div>
-    );
-  },
-);
+  return (
+    <div
+      ref={containerRef}
+      className={styles.osdkFormField}
+      onBlur={handleBlur}
+    >
+      {label != null && (
+        <label className={styles.osdkFormFieldLabel} htmlFor={fieldKey}>
+          {label}
+          {isRequired === true && (
+            <span
+              className={styles.osdkFormFieldRequired}
+              aria-label="required"
+            >
+              {" "}
+              *
+            </span>
+          )}
+        </label>
+      )}
+      {children}
+      {error != null && (
+        <div className={styles.osdkFormFieldError} role="alert">
+          {error}
+        </div>
+      )}
+      {helperText != null && (
+        <div className={styles.osdkFormFieldHelperText}>{helperText}</div>
+      )}
+    </div>
+  );
+});
