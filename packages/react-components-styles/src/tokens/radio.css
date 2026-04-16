@@ -1,0 +1,13 @@
+:root {
+  --osdk-radio-size: calc(var(--osdk-surface-spacing) * 4);
+  --osdk-radio-indicator-size: calc(var(--osdk-surface-spacing) * 2);
+  --osdk-radio-gap: calc(var(--osdk-surface-spacing) * 2);
+  --osdk-radio-item-gap: calc(var(--osdk-surface-spacing) * 2);
+  --osdk-radio-border: var(--osdk-surface-border);
+  --osdk-radio-bg: transparent;
+  --osdk-radio-bg-hover: var(--osdk-surface-background-color-default-hover);
+  --osdk-radio-bg-checked: var(--osdk-intent-primary-rest);
+  --osdk-radio-bg-checked-hover: var(--osdk-intent-primary-hover);
+  --osdk-radio-bg-checked-active: var(--osdk-intent-primary-active);
+  --osdk-radio-indicator-color: var(--osdk-intent-primary-foreground);
+}

@@ -40,8 +40,8 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
-    "@osdk/api": "workspace:*",
-    "@osdk/generator-converters.ontologyir": "workspace:*",
+    "@osdk/api": "workspace:~",
+    "@osdk/generator-converters.ontologyir": "workspace:~",
     "@osdk/typescript-sdk-docs": "^0.2.0",
     "consola": "^3.4.2",
     "jiti": "^2.5.1",
@@ -52,7 +52,7 @@
     "yargs": "^17.7.2"
   },
   "devDependencies": {
-    "@osdk/client.unstable": "workspace:*",
+    "@osdk/client.unstable": "workspace:~",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@types/mustache": "^4.2.6",

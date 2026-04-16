@@ -67,12 +67,11 @@ export const DatetimePickerField: React.NamedExoticComponent<
     ?? (showTime ? parseDatetimeFromInput : parseDateFromInput);
 
   const {
-    inputValue,
     displayedValue,
     inputError,
-    validatedDate,
     startEditing,
     stopEditing,
+    commitAndStopEditing,
     setInputValue,
     setDateValue,
   } = useDateEditState({
@@ -82,6 +81,7 @@ export const DatetimePickerField: React.NamedExoticComponent<
     parseFn,
     min,
     max,
+    onChange,
   });
 
   // --- Input event handlers ---
@@ -93,8 +93,6 @@ export const DatetimePickerField: React.NamedExoticComponent<
 
   const handleBlur = useCallback(
     (e: React.FocusEvent<HTMLInputElement>) => {
-      // If focus moved to the popover (e.g. clicking a calendar day), skip —
-      // the calendar's onSelect handler owns the onChange call in that case.
       const relatedTarget = e.relatedTarget ?? document.activeElement;
       if (popoverRef.current?.contains(relatedTarget as Node)) {
         // Focus moved into the popover portal (e.g. clicking a calendar day).
@@ -103,18 +101,15 @@ export const DatetimePickerField: React.NamedExoticComponent<
         e.stopPropagation();
         return;
       }
-      if (inputValue === "") {
-        onChange?.(null);
-      } else if (validatedDate != null) {
-        onChange?.(validatedDate);
-      }
-      stopEditing();
+      commitAndStopEditing();
     },
-    [inputValue, validatedDate, stopEditing, onChange],
+    [commitAndStopEditing],
   );
 
   // Shared close sequence: dismiss the popover, reset editing state, and
   // blur the input so focus doesn't linger after the calendar disappears.
+  // Uses stopEditing (not commitAndStopEditing) to avoid double-firing
+  // onChange when called from calendar-select or after Enter already committed.
   const closePopover = useCallback(() => {
     setIsOpen(false);
     stopEditing();
@@ -125,12 +120,9 @@ export const DatetimePickerField: React.NamedExoticComponent<
     (e: React.KeyboardEvent<HTMLInputElement>) => {
       if (e.key === "Enter") {
         e.preventDefault();
-        if (inputValue === "") {
-          onChange?.(null);
-        } else if (validatedDate != null) {
-          onChange?.(validatedDate);
-        }
-        closePopover();
+        commitAndStopEditing();
+        setIsOpen(false);
+        inputRef.current?.blur();
       } else if (e.key === "Escape") {
         e.preventDefault();
         closePopover();
@@ -149,7 +141,7 @@ export const DatetimePickerField: React.NamedExoticComponent<
         setIsOpen(false);
       }
     },
-    [inputValue, validatedDate, closePopover, isOpen, onChange],
+    [commitAndStopEditing, closePopover, isOpen],
   );
 
   // --- Popover handlers ---

@@ -37,13 +37,17 @@ export interface UseDateEditStateConfig {
   min?: Date;
   /** Latest selectable date (inclusive). */
   max?: Date;
+  /**
+   * Called by `commitAndStopEditing` with the validated date, or null when the
+   * field is cleared. Not called when the input is invalid (silent revert) or
+   * when `stopEditing` is used directly (Escape/cancel).
+   */
+  onChange?: (date: Date | null) => void;
 }
 
 export interface UseDateEditState {
   /** Whether the user is currently typing in the input. */
   isEditing: boolean;
-  /** The raw text in the input during editing. */
-  inputValue: string;
   /** The value to show in the input: raw text when editing, formatted date otherwise. */
   displayedValue: string;
   /** Validation error for the current input text: null when valid or not editing. */
@@ -54,17 +58,12 @@ export interface UseDateEditState {
    * Used for cross-input validation (e.g. DateRangeInputField's overlapping check).
    */
   dateValue: Date | undefined;
-  /**
-   * The validated date ready to commit on blur/Enter: the parsed date when valid
-   * and in range, null otherwise (invalid, out-of-range, or empty input).
-   * Callers use this directly in blur/Enter handlers instead of manually checking
-   * dateValue + inputError.
-   */
-  validatedDate: Date | null;
   /** Enter editing mode: sets isEditing=true and populates inputValue from the current value. */
   startEditing: () => void;
-  /** Exit editing mode without committing. */
+  /** Exit editing mode without committing (Escape/cancel). */
   stopEditing: () => void;
+  /** Commit the current input via onChange, then exit editing mode (blur/Enter). */
+  commitAndStopEditing: () => void;
   /** Update the raw input text (stable useState setter). */
   setInputValue: (value: string) => void;
   /**
@@ -88,6 +87,7 @@ export function useDateEditState({
   parseFn,
   min,
   max,
+  onChange,
 }: UseDateEditStateConfig): UseDateEditState {
   const [isEditing, setIsEditing] = useState(false);
   const [inputValue, setInputValue] = useState("");
@@ -128,15 +128,6 @@ export function useDateEditState({
     ? dateValue
     : null;
 
-  const startEditing = useCallback(() => {
-    setIsEditing(true);
-    setInputValue(value != null ? editFormatFn(value) : "");
-  }, [value, editFormatFn]);
-
-  const stopEditing = useCallback(() => {
-    setIsEditing(false);
-  }, []);
-
   const setDateValue = useCallback(
     (date: Date | null) => {
       setInputValue(date != null ? editFormatFn(date) : "");
@@ -144,15 +135,41 @@ export function useDateEditState({
     [editFormatFn],
   );
 
+  const startEditing = useCallback(() => {
+    setIsEditing(true);
+    setDateValue(value);
+  }, [value, setDateValue]);
+
+  const stopEditing = useCallback(() => {
+    setIsEditing(false);
+    setDateValue(value);
+  }, [value, setDateValue]);
+
+  // Refs so commitAndStopEditing reads the latest derived values without
+  // closing over inputValue/validatedDate (which change every keystroke).
+  const inputValueRef = useRef(inputValue);
+  inputValueRef.current = inputValue;
+  const validatedDateRef = useRef(validatedDate);
+  validatedDateRef.current = validatedDate;
+
+  const commitAndStopEditing = useCallback(() => {
+    if (inputValueRef.current === "") {
+      onChange?.(null);
+    } else if (validatedDateRef.current != null) {
+      onChange?.(validatedDateRef.current);
+    }
+    setIsEditing(false);
+    setDateValue(value);
+  }, [onChange, setDateValue, value]);
+
   return {
     isEditing,
-    inputValue,
     displayedValue,
     inputError,
     dateValue,
-    validatedDate,
     startEditing,
     stopEditing,
+    commitAndStopEditing,
     setInputValue,
     setDateValue,
   };

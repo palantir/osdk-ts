@@ -67,11 +67,13 @@
     "@dnd-kit/utilities": "^3.2.2",
     "@tanstack/react-table": "^8.21.3",
     "@tanstack/react-virtual": "^3.13.13",
+    "date-fns": "^2.28.0",
+    "date-fns-tz": "^2.0.0",
     "lodash-es": "^4.17.21",
-    "pdfjs-dist": "^4.9.155",
+    "pdfjs-dist": "~4.8.69",
     "react-day-picker": "^8.10.0",
     "react-hook-form": "^7.54.0",
-    "react-markdown": "^10.1.0",
+    "react-markdown": "^9.0.3",
     "remark-gfm": "^4.0.1"
   },
   "peerDependencies": {

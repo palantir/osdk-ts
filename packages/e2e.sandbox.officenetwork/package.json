@@ -35,11 +35,12 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
-    "@osdk/api": "workspace:*",
-    "@osdk/client": "workspace:*",
-    "@osdk/oauth": "workspace:*",
-    "@osdk/react": "workspace:*",
-    "@osdk/react-components": "workspace:*",
+    "@osdk/api": "workspace:~",
+    "@osdk/client": "workspace:~",
+    "@osdk/oauth": "workspace:~",
+    "@osdk/react": "workspace:~",
+    "@osdk/react-components": "workspace:~",
+    "@osdk/react-components-styles": "workspace:~",
     "maplibre-gl": "^5.7.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
@@ -51,7 +52,7 @@
     "@osdk/client": "workspace:~"
   },
   "devDependencies": {
-    "@osdk/api": "workspace:*",
+    "@osdk/api": "workspace:~",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@tailwindcss/vite": "^4.1.13",

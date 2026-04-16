@@ -15,21 +15,21 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@osdk/api": "workspace:*",
-    "@osdk/client": "workspace:*",
+    "@osdk/api": "workspace:~",
+    "@osdk/client": "workspace:~",
     "@osdk/legacy-client": "^2.5.6",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "swr": "^2.3.6"
   },
   "peerDependencies": {
-    "@osdk/api": "workspace:*",
-    "@osdk/client": "workspace:*"
+    "@osdk/api": "workspace:~",
+    "@osdk/client": "workspace:~"
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.15.4",
-    "@osdk/api": "workspace:*",
-    "@osdk/cli.cmd.typescript": "workspace:*",
+    "@osdk/api": "workspace:~",
+    "@osdk/cli.cmd.typescript": "workspace:~",
     "@types/react": "^18.3.24",
     "@types/react-dom": "^18.3.7",
     "@typescript-eslint/eslint-plugin": "^8.43.0",

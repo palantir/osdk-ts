@@ -39,7 +39,7 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
-    "@osdk/shared.net.errors": "workspace:*",
+    "@osdk/shared.net.errors": "workspace:~",
     "fetch-retry": "^6.0.0"
   },
   "devDependencies": {

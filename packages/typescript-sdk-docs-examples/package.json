@@ -42,12 +42,12 @@
     "@osdk/functions": "workspace:~"
   },
   "devDependencies": {
-    "@osdk/api": "workspace:*",
-    "@osdk/cli.cmd.typescript": "workspace:*",
+    "@osdk/api": "workspace:~",
+    "@osdk/cli.cmd.typescript": "workspace:~",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
-    "@osdk/typescript-docs-example-generator": "workspace:*",
-    "@osdk/typescript-sdk-docs": "workspace:*",
+    "@osdk/typescript-docs-example-generator": "workspace:~",
+    "@osdk/typescript-sdk-docs": "workspace:~",
     "@types/node": "^20.8.0",
     "@typescript-eslint/eslint-plugin": "^6.7.0",
     "@typescript-eslint/parser": "^6.7.0",
