@@ -83,8 +83,8 @@ function ListogramInputInner({
   }, [stableValues, searchQuery]);
 
   const sortedValues = useMemo(() => {
-    const selected = filteredValues.filter(v => selectedSet.has(v.value));
-    const unselected = filteredValues.filter(v => !selectedSet.has(v.value));
+    const selected = filteredValues.filter((v) => selectedSet.has(v.value));
+    const unselected = filteredValues.filter((v) => !selectedSet.has(v.value));
     return [...selected, ...unselected];
   }, [filteredValues, selectedSet]);
 
@@ -112,9 +112,7 @@ function ListogramInputInner({
         <ListogramSkeleton />
       )}
       {!error && filteredValues.length === 0 && !isLoading && (
-        <div className={sharedStyles.emptyMessage}>
-          No values available
-        </div>
+        <div className={sharedStyles.emptyMessage}>No values available</div>
       )}
 
       {filteredValues.length > 0 && (
@@ -122,22 +120,24 @@ function ListogramInputInner({
           {displayValues.map(({ value, count }) => {
             const percentage = maxCount > 0 ? (count / maxCount) * 100 : 0;
             const perRowColor = colorMap?.[value];
+            const isEmpty = value === "";
 
             return (
               <Button
                 key={value}
                 className={styles.row}
+                // eslint-disable-next-line react/jsx-no-bind
                 onClick={() => toggleValue(value)}
                 aria-pressed={selectedSet.has(value)}
                 style={perRowColor || percentage > 0
-                  ? {
+                  ? ({
                     "--osdk-filter-listogram-bar-fill-scale": percentage / 100,
                     ...(perRowColor
                       ? {
                         "--osdk-filter-listogram-row-bar-color": perRowColor,
                       }
                       : undefined),
-                  } as React.CSSProperties
+                  } as React.CSSProperties)
                   : undefined}
               >
                 <span
@@ -146,21 +146,23 @@ function ListogramInputInner({
                 >
                   <Checkbox
                     checked={selectedSet.has(value)}
+                    // eslint-disable-next-line react/jsx-no-bind
                     onCheckedChange={() => toggleValue(value)}
                     isExcluding={isExcluding}
                   />
                 </span>
                 <span
-                  className={styles.label}
+                  className={classnames(
+                    styles.label,
+                    isEmpty && styles.emptyLabel,
+                  )}
                   data-excluding={(isExcluding && selectedSet.has(value))
                     || undefined}
                 >
-                  {value}
+                  {isEmpty ? "No value" : value}
                 </span>
                 {displayMode !== "minimal" && (
-                  <span className={styles.count}>
-                    {count.toLocaleString()}
-                  </span>
+                  <span className={styles.count}>{count.toLocaleString()}</span>
                 )}
                 {displayMode === "full" && (
                   <span className={styles.bar}>
@@ -175,6 +177,7 @@ function ListogramInputInner({
             <Button
               type="button"
               className={styles.viewAllButton}
+              // eslint-disable-next-line react/jsx-no-bind
               onClick={() => setIsExpanded(true)}
             >
               View all ({sortedValues.length})
