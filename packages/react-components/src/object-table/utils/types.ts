@@ -59,3 +59,80 @@ export interface EditableConfig<
   validationErrors: Map<string, string>;
   clearCellValidationError: (cellId: string) => void;
 }
+
+/**
+ * User-facing configuration for a dropdown editor in a table cell.
+ *
+ * This is intentionally a standalone interface rather than re-exporting
+ * `DropdownFieldProps` from ActionForm, so the table API doesn't break
+ * when ActionForm's prop shape changes (e.g. adding form-specific fields).
+ */
+export interface DropdownEditConfig<V = unknown> {
+  /**
+   * Available items for the dropdown.
+   */
+  items: V[];
+
+  /**
+   * Converts an item to a display string. Defaults to `String()`.
+   */
+  itemToStringLabel?: (item: V) => string;
+
+  /**
+   * Returns a unique string key for a list item. Used as the React `key`.
+   * Falls back to the item's index when not provided.
+   */
+  itemToKey?: (item: V) => string;
+
+  /**
+   * Custom equality check for item values. Defaults to `Object.is`.
+   * Required when items are objects to ensure correct selection matching.
+   */
+  isItemEqual?: (a: V, b: V) => boolean;
+
+  /**
+   * Whether the dropdown allows searching/filtering.
+   * When true, renders a Combobox with a search input.
+   * When false (default), renders a Select dropdown.
+   */
+  isSearchable?: boolean;
+
+  /**
+   * Placeholder text shown when no value is selected.
+   */
+  placeholder?: string;
+
+  /**
+   * Whether multiple values can be selected.
+   */
+  isMultiple?: boolean;
+}
+
+/**
+ * Maps each supported editable field component to its user-facing config.
+ */
+interface EditFieldPropsByType {
+  DROPDOWN: DropdownEditConfig;
+}
+
+type EditFieldComponent = keyof EditFieldPropsByType;
+
+/**
+ * Configuration for an editable cell's field component.
+ *
+ * @example
+ * ```ts
+ * editFieldConfig: {
+ *   fieldComponent: "DROPDOWN",
+ *   fieldComponentProps: {
+ *     items: ["Active", "Inactive", "Pending"],
+ *   },
+ * }
+ * ```
+ */
+export type EditFieldConfig = {
+  [K in EditFieldComponent]: {
+    fieldComponent: K;
+    fieldComponentProps: EditFieldPropsByType[K];
+  };
+}[EditFieldComponent];

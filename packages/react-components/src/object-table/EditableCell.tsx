@@ -14,17 +14,15 @@
  * limitations under the License.
  */
 
-import { Input } from "@base-ui/react/input";
 import { Error } from "@blueprintjs/icons";
 import type { RowData } from "@tanstack/react-table";
-import classNames from "classnames";
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { DropdownField } from "../action-form/fields/DropdownField.js";
 import { Tooltip } from "../base-components/tooltip/Tooltip.js";
+import { DropdownCellField } from "./components/DropdownCellField.js";
+import { TextInputCellField } from "./components/TextInputCellField.js";
 import styles from "./EditableCell.module.css";
-import type { EditFieldConfig } from "./ObjectTableApi.js";
 import { useRegisterPortal } from "./utils/PortalTracker.js";
-import type { CellEditInfo } from "./utils/types.js";
+import type { CellEditInfo, EditFieldConfig } from "./utils/types.js";
 
 export interface EditableCellProps<TData extends RowData, CellValue = unknown> {
   initialValue: CellValue;
@@ -247,76 +245,37 @@ function EditableCellInner<TData extends RowData, CellValue = unknown>({
   const isDropdown = editFieldConfig?.fieldComponent === "DROPDOWN";
   const portalRef = useRegisterPortal();
 
-  const renderInputField = () => {
-    if (isDropdown) {
-      if (!isRowFocused) {
-        return (
-          <div
-            className={classNames(
-              styles.osdkEditableCell,
-              {
-                [styles.error]: hasValidationError,
-                [styles.osdkEditedInput]: isEdited,
-              },
-            )}
-          >
-            <div
-              className={classNames(
-                styles.osdkEditableInput,
-                styles.osdkDropdownText,
-              )}
-            >
-              {inputValue}
-            </div>
-          </div>
-        );
-      }
-      return (
-        <div
-          className={classNames(
-            styles.osdkEditableCellDropdown,
-            {
-              [styles.error]: hasValidationError,
-              [styles.osdkEditedInput]: isEdited,
-            },
-          )}
-        >
-          <DropdownField
-            {...editFieldConfig.fieldComponentProps}
-            portalRef={portalRef}
-            value={inputValue}
-            onChange={handleDropdownChange}
-          />
-        </div>
-      );
-    }
-    return (
-      <div
-        className={classNames(styles.osdkEditableCell, {
-          [styles.error]: hasValidationError,
-          [styles.osdkEditedInput]: isEdited,
-        })}
-      >
-        <Input
-          type={inputType}
-          value={inputValue}
-          className={styles.osdkEditableInput}
-          onValueChange={handleInputChange}
-          onBlur={handleBlur}
-          onKeyDown={handleKeyDown}
-          aria-invalid={hasValidationError}
-        />
-        {hasValidationError && <Error className={styles.errorIcon} />}
-      </div>
-    );
-  };
   return (
     <Tooltip.Provider>
       <Tooltip.Root disabled={!hasValidationError}>
         <Tooltip.Trigger
           className={styles.osdkEditableCellTrigger}
         >
-          {renderInputField()}
+          {isDropdown
+            ? (
+              <DropdownCellField
+                editFieldConfig={editFieldConfig as EditFieldConfig & {
+                  fieldComponent: "DROPDOWN";
+                }}
+                isRowFocused={isRowFocused ?? false}
+                inputValue={inputValue}
+                hasValidationError={hasValidationError}
+                isEdited={isEdited}
+                onChange={handleDropdownChange}
+                portalRef={portalRef}
+              />
+            )
+            : (
+              <TextInputCellField
+                inputType={inputType}
+                inputValue={inputValue}
+                hasValidationError={hasValidationError}
+                isEdited={isEdited}
+                onValueChange={handleInputChange}
+                onBlur={handleBlur}
+                onKeyDown={handleKeyDown}
+              />
+            )}
         </Tooltip.Trigger>
         <Tooltip.Portal>
           <Tooltip.Positioner sideOffset={4} side={"bottom"}>

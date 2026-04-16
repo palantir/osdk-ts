@@ -25,7 +25,6 @@ import React, {
 } from "react";
 import { LoadingStateTable } from "./LoadingStateTable.js";
 import { NonIdealState } from "./NonIdealState.js";
-import type { EditFieldConfig } from "./ObjectTableApi.js";
 import styles from "./Table.module.css";
 import { TableBody } from "./TableBody.js";
 import { TableEditContainer } from "./TableEditContainer.js";
@@ -35,7 +34,11 @@ import {
   PortalTrackerProvider,
   usePortalTracker,
 } from "./utils/PortalTracker.js";
-import type { CellEditInfo, EditableConfig } from "./utils/types.js";
+import type {
+  CellEditInfo,
+  EditableConfig,
+  EditFieldConfig,
+} from "./utils/types.js";
 
 declare module "@tanstack/react-table" {
   interface ColumnMeta<TData extends RowData = unknown, TValue = unknown> {

@@ -49,7 +49,10 @@ export function renderDefaultCell<TData extends RowData>(
 
   const cellEdits = meta.cellEdits;
   const editedValue = cellEdits?.[cellId];
-  const currentValue = editedValue?.newValue ?? cellValue;
+  // If newValue is explicitly set to null, treat it as null. Otherwise, fall back to the original cell value.
+  const currentValue = editedValue?.newValue === undefined
+    ? cellValue
+    : editedValue?.newValue;
   const validationError = meta.validationErrors?.get(cellId);
   const isRowFocused = meta.focusedRowId === rowId;
 

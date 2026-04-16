@@ -37,43 +37,6 @@ const columnDefinitions: Array<
     },
     editable: true,
   },
-  {
-    locator: { type: "property", id: "department" },
-    editable: true,
-    editFieldConfig: {
-      fieldComponent: "DROPDOWN",
-      fieldComponentProps: {
-        items: [
-          "Engineering",
-          "Product",
-          "Design",
-          "Sales",
-          "Marketing",
-          "Finance",
-          "Human Resources",
-        ],
-      },
-    },
-  },
-  {
-    locator: { type: "property", id: "jobTitle" },
-    editable: true,
-    editFieldConfig: {
-      fieldComponent: "DROPDOWN",
-      fieldComponentProps: {
-        items: [
-          "Software Engineer",
-          "Senior Software Engineer",
-          "Staff Engineer",
-          "Engineering Manager",
-          "Product Manager",
-          "Designer",
-        ],
-        isSearchable: true,
-        placeholder: "Search job titles…",
-      },
-    },
-  },
   // Function-backed column
   {
     locator: {
