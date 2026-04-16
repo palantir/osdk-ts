@@ -25,7 +25,7 @@
         ".oxlintrc.json",
         "plugins/oxlint-plugin-header.js"
       ],
-      "dependsOn": ["//#oxfmt", "codegen"]
+      "dependsOn": ["//#oxfmt"]
     },
 
     // lint only runs for generator packages (they still use ESLint)
