@@ -5566,9 +5566,7 @@ describe("Action Types", () => {
       ).toThrowErrorMatchingInlineSnapshot(
         `[Error: Invariant failed: Shared property type com.palantir.other.invalid.spt does not exist in interface type com.palantir.interfaceType]`,
       );
-      expect(() =>
-        defineCreateInterfaceObjectAction({ interfaceType })
-      ).not
+      expect(() => defineCreateInterfaceObjectAction({ interfaceType })).not
         .toThrow();
     });
 
