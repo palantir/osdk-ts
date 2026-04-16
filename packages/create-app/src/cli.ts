@@ -17,7 +17,6 @@
 import type { Argv } from "yargs";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
-
 import { promptApplicationRid } from "./prompts/promptApplicationRid.js";
 import { promptApplicationUrl } from "./prompts/promptApplicationUrl.js";
 import { promptClientId } from "./prompts/promptClientId.js";
@@ -135,8 +134,8 @@ export async function cli(args: string[] = process.argv): Promise<void> {
           })
           .check((argv) => {
             if (
-              argv.skipOsdk
-              && (argv.sdkVersion == null || argv.sdkVersion.startsWith("1."))
+              argv.skipOsdk &&
+              (argv.sdkVersion == null || argv.sdkVersion.startsWith("1."))
             ) {
               throw new Error(
                 "The --skipOsdk flag is only allowed when sdkVersion is 2.x. Please set --sdkVersion to 2.x or remove the --skipOsdk flag.",
@@ -159,9 +158,10 @@ export async function cli(args: string[] = process.argv): Promise<void> {
   const application: string = await promptApplicationRid(parsed);
   const clientId: string = await promptClientId(parsed);
   const { osdkPackage, ontology, osdkRegistryUrl } =
-    await promptOntologyAndOsdkPackageAndOsdkRegistryUrl(
-      { ...parsed, sdkVersion },
-    );
+    await promptOntologyAndOsdkPackageAndOsdkRegistryUrl({
+      ...parsed,
+      sdkVersion,
+    });
   const corsProxy: boolean = await promptCorsProxy(parsed);
   const scopes: string[] | undefined = await promptScopes(parsed);
 

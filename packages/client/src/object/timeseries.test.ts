@@ -39,13 +39,11 @@ describe("Timeseries", () => {
   ];
 
   beforeAll(() => {
-    const testSetup = startNodeApiServer(
-      new LegacyFauxFoundry(),
-      createClient,
-    );
+    const testSetup = startNodeApiServer(new LegacyFauxFoundry(), createClient);
     ({ client } = testSetup);
 
-    testSetup.fauxFoundry.getDefaultDataStore()
+    testSetup.fauxFoundry
+      .getDefaultDataStore()
       .registerTimeSeriesData(
         "Employee",
         "50030",
@@ -53,7 +51,8 @@ describe("Timeseries", () => {
         statusTimeseriesData,
       );
 
-    testSetup.fauxFoundry.getDefaultDataStore()
+    testSetup.fauxFoundry
+      .getDefaultDataStore()
       .registerTimeSeriesData(
         "Employee",
         "50030",

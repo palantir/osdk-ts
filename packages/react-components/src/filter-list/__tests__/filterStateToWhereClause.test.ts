@@ -18,6 +18,7 @@ import { describe, expect, it } from "vitest";
 import type { FilterDefinitionUnion } from "../FilterListApi.js";
 import type { FilterState } from "../FilterListItemApi.js";
 import { buildWhereClause } from "../utils/filterStateToWhereClause.js";
+import type { PropertyTypeInfo } from "../utils/filterStateToWhereClause.js";
 import { getFilterKey } from "../utils/getFilterKey.js";
 import type { MockObjectType } from "./testUtils.js";
 import {
@@ -30,8 +31,6 @@ import {
   createPropertyFilterDef,
   createToggleState,
 } from "./testUtils.js";
-
-import type { PropertyTypeInfo } from "../utils/filterStateToWhereClause.js";
 
 const mockPropertyTypes = new Map<string, PropertyTypeInfo>([
   ["id", { type: "string", multiplicity: false }],
@@ -53,35 +52,33 @@ function stateMap(
 
 describe("buildWhereClause", () => {
   it("returns empty object for undefined definitions", () => {
-    const result = buildWhereClause(
-      undefined,
-      new Map<string, FilterState>(),
-    );
+    const result = buildWhereClause(undefined, new Map<string, FilterState>());
     expect(result).toEqual({});
   });
 
   it("builds $in clause for LISTOGRAM", () => {
-    const def = createPropertyFilterDef(
-      "name",
-      "LISTOGRAM",
+    const def = createPropertyFilterDef("name", "LISTOGRAM", {
+      type: "EXACT_MATCH",
+      values: ["a", "b"],
+    });
+    const filterStates = stateMap([
+      def,
       { type: "EXACT_MATCH", values: ["a", "b"] },
-    );
-    const filterStates = stateMap(
-      [def, { type: "EXACT_MATCH", values: ["a", "b"] }],
-    );
+    ]);
     const result = buildWhereClause([def], filterStates);
     expect(result).toEqual({ name: { $in: ["a", "b"] } });
   });
 
   it("wraps with $not when LISTOGRAM isExcluding", () => {
-    const def = createPropertyFilterDef(
-      "name",
-      "LISTOGRAM",
+    const def = createPropertyFilterDef("name", "LISTOGRAM", {
+      type: "EXACT_MATCH",
+      values: ["a"],
+      isExcluding: true,
+    });
+    const filterStates = stateMap([
+      def,
       { type: "EXACT_MATCH", values: ["a"], isExcluding: true },
-    );
-    const filterStates = stateMap(
-      [def, { type: "EXACT_MATCH", values: ["a"], isExcluding: true }],
-    );
+    ]);
     const result = buildWhereClause([def], filterStates);
     expect(result).toEqual({ $not: { name: "a" } });
   });
@@ -92,9 +89,7 @@ describe("buildWhereClause", () => {
       "CONTAINS_TEXT",
       createContainsTextState("test"),
     );
-    const filterStates = stateMap(
-      [def, createContainsTextState("test")],
-    );
+    const filterStates = stateMap([def, createContainsTextState("test")]);
     const result = buildWhereClause([def], filterStates);
     expect(result).toEqual({ name: { $containsAnyTerm: "test" } });
   });
@@ -105,9 +100,7 @@ describe("buildWhereClause", () => {
       "TOGGLE",
       createToggleState(true),
     );
-    const filterStates = stateMap(
-      [def, createToggleState(true)],
-    );
+    const filterStates = stateMap([def, createToggleState(true)]);
     const result = buildWhereClause([def], filterStates);
     expect(result).toEqual({ active: true });
   });
@@ -118,9 +111,7 @@ describe("buildWhereClause", () => {
       "NUMBER_RANGE",
       createNumberRangeState(18, undefined),
     );
-    const filterStates = stateMap(
-      [def, createNumberRangeState(18, undefined)],
-    );
+    const filterStates = stateMap([def, createNumberRangeState(18, undefined)]);
     const result = buildWhereClause([def], filterStates);
     expect(result).toEqual({ age: { $gte: 18 } });
   });
@@ -131,9 +122,7 @@ describe("buildWhereClause", () => {
       "NUMBER_RANGE",
       createNumberRangeState(18, 65),
     );
-    const filterStates = stateMap(
-      [def, createNumberRangeState(18, 65)],
-    );
+    const filterStates = stateMap([def, createNumberRangeState(18, 65)]);
     const result = buildWhereClause([def], filterStates);
     expect(result).toEqual({
       $and: [{ age: { $gte: 18 } }, { age: { $lte: 65 } }],
@@ -146,9 +135,10 @@ describe("buildWhereClause", () => {
       "NUMBER_RANGE",
       createNumberRangeState(18, undefined, { includeNull: true }),
     );
-    const filterStates = stateMap(
-      [def, createNumberRangeState(18, undefined, { includeNull: true })],
-    );
+    const filterStates = stateMap([
+      def,
+      createNumberRangeState(18, undefined, { includeNull: true }),
+    ]);
     const result = buildWhereClause([def], filterStates);
     expect(result).toEqual({
       $or: [{ age: { $gte: 18 } }, { age: { $isNull: true } }],
@@ -163,9 +153,10 @@ describe("buildWhereClause", () => {
       "DATE_RANGE",
       createDateRangeState(minDate, maxDate),
     );
-    const filterStates = stateMap(
-      [def, createDateRangeState(minDate, maxDate)],
-    );
+    const filterStates = stateMap([
+      def,
+      createDateRangeState(minDate, maxDate),
+    ]);
     const result = buildWhereClause([def], filterStates);
     expect(result).toEqual({
       $and: [
@@ -176,11 +167,10 @@ describe("buildWhereClause", () => {
   });
 
   it("combines multiple filters with $and", () => {
-    const nameDef = createPropertyFilterDef(
-      "name",
-      "LISTOGRAM",
-      { type: "EXACT_MATCH", values: ["John"] },
-    );
+    const nameDef = createPropertyFilterDef("name", "LISTOGRAM", {
+      type: "EXACT_MATCH",
+      values: ["John"],
+    });
     const activeDef = createPropertyFilterDef(
       "active",
       "TOGGLE",
@@ -197,64 +187,63 @@ describe("buildWhereClause", () => {
   });
 
   it("returns single clause without wrapper for one filter", () => {
-    const nameDef = createPropertyFilterDef(
-      "name",
-      "LISTOGRAM",
-      { type: "EXACT_MATCH", values: ["John"] },
-    );
+    const nameDef = createPropertyFilterDef("name", "LISTOGRAM", {
+      type: "EXACT_MATCH",
+      values: ["John"],
+    });
     const activeDef = createPropertyFilterDef(
       "active",
       "TOGGLE",
       createToggleState(false),
     );
-    const filterStates = stateMap(
-      [nameDef, { type: "EXACT_MATCH", values: ["John"] }],
-    );
+    const filterStates = stateMap([
+      nameDef,
+      { type: "EXACT_MATCH", values: ["John"] },
+    ]);
     const result = buildWhereClause([nameDef, activeDef], filterStates);
     expect(result).toEqual({ name: "John" });
   });
 
   it("builds $isNotNull for hasLink filter", () => {
     const def = createHasLinkFilterDef("employees");
-    const filterStates = stateMap(
-      [def, { type: "hasLink", hasLink: true }],
-    );
+    const filterStates = stateMap([def, { type: "hasLink", hasLink: true }]);
     const result = buildWhereClause([def], filterStates);
     expect(result).toEqual({ employees: { $isNotNull: true } });
   });
 
   it("emits no clause for hasLink filter when hasLink is false", () => {
     const def = createHasLinkFilterDef("employees");
-    const filterStates = stateMap(
-      [def, { type: "hasLink", hasLink: false }],
-    );
+    const filterStates = stateMap([def, { type: "hasLink", hasLink: false }]);
     const result = buildWhereClause([def], filterStates);
     expect(result).toEqual({});
   });
 
   it("builds $containsAllTerms for keywordSearch filter with AND operator", () => {
     const def = createKeywordSearchFilterDef(["name"]);
-    const filterStates = stateMap(
-      [def, { type: "keywordSearch", searchTerm: "test", operator: "AND" }],
-    );
+    const filterStates = stateMap([
+      def,
+      { type: "keywordSearch", searchTerm: "test", operator: "AND" },
+    ]);
     const result = buildWhereClause([def], filterStates);
     expect(result).toEqual({ name: { $containsAllTerms: "test" } });
   });
 
   it("builds $containsAnyTerm for keywordSearch filter with OR operator", () => {
     const def = createKeywordSearchFilterDef(["name"]);
-    const filterStates = stateMap(
-      [def, { type: "keywordSearch", searchTerm: "test", operator: "OR" }],
-    );
+    const filterStates = stateMap([
+      def,
+      { type: "keywordSearch", searchTerm: "test", operator: "OR" },
+    ]);
     const result = buildWhereClause([def], filterStates);
     expect(result).toEqual({ name: { $containsAnyTerm: "test" } });
   });
 
   it("builds $or for multi-property keywordSearch filter", () => {
     const def = createKeywordSearchFilterDef(["name", "email"]);
-    const filterStates = stateMap(
-      [def, { type: "keywordSearch", searchTerm: "test", operator: "OR" }],
-    );
+    const filterStates = stateMap([
+      def,
+      { type: "keywordSearch", searchTerm: "test", operator: "OR" },
+    ]);
     const result = buildWhereClause([def], filterStates);
     expect(result).toEqual({
       $or: [
@@ -266,17 +255,15 @@ describe("buildWhereClause", () => {
 
   it("builds $not wrapper for keywordSearch filter with isExcluding", () => {
     const def = createKeywordSearchFilterDef(["name"]);
-    const filterStates = stateMap(
-      [
-        def,
-        {
-          type: "keywordSearch",
-          searchTerm: "test",
-          operator: "AND",
-          isExcluding: true,
-        },
-      ],
-    );
+    const filterStates = stateMap([
+      def,
+      {
+        type: "keywordSearch",
+        searchTerm: "test",
+        operator: "AND",
+        isExcluding: true,
+      },
+    ]);
     const result = buildWhereClause([def], filterStates);
     expect(result).toEqual({ $not: { name: { $containsAllTerms: "test" } } });
   });
@@ -287,9 +274,10 @@ describe("buildWhereClause", () => {
       ...baseDef,
       toWhereClause: () => ({ customProp: { $eq: "test" } }),
     };
-    const filterStates = stateMap(
-      [def, { type: "custom", customState: { value: "test" } }],
-    );
+    const filterStates = stateMap([
+      def,
+      { type: "custom", customState: { value: "test" } },
+    ]);
     const result = buildWhereClause([def], filterStates);
     expect(result).toEqual({ customProp: { $eq: "test" } });
   });
@@ -302,14 +290,11 @@ describe("buildWhereClause", () => {
       "DATE_RANGE",
       createDateRangeState(minDate, maxDate),
     );
-    const filterStates = stateMap(
-      [def, createDateRangeState(minDate, maxDate)],
-    );
-    const result = buildWhereClause(
-      [def],
-      filterStates,
-      mockPropertyTypes,
-    );
+    const filterStates = stateMap([
+      def,
+      createDateRangeState(minDate, maxDate),
+    ]);
+    const result = buildWhereClause([def], filterStates, mockPropertyTypes);
     const clause = result as Record<string, unknown[]>;
     const andConditions = clause.$and as Array<
       Record<string, Record<string, string>>
@@ -324,9 +309,10 @@ describe("buildWhereClause", () => {
       "NUMBER_RANGE",
       createNumberRangeState(18, 65, { includeNull: true }),
     );
-    const filterStates = stateMap(
-      [def, createNumberRangeState(18, 65, { includeNull: true })],
-    );
+    const filterStates = stateMap([
+      def,
+      createNumberRangeState(18, 65, { includeNull: true }),
+    ]);
     const result = buildWhereClause([def], filterStates);
     expect(result).toEqual({
       $or: [
@@ -342,14 +328,11 @@ describe("buildWhereClause", () => {
       "NUMBER_RANGE",
       createNumberRangeState(5_000_000_000, undefined),
     );
-    const filterStates = stateMap(
-      [def, createNumberRangeState(5_000_000_000, undefined)],
-    );
-    const result = buildWhereClause(
-      [def],
-      filterStates,
-      mockPropertyTypes,
-    );
+    const filterStates = stateMap([
+      def,
+      createNumberRangeState(5_000_000_000, undefined),
+    ]);
+    const result = buildWhereClause([def], filterStates, mockPropertyTypes);
     expect(result).toEqual({ age: { $gte: 2_147_483_647 } });
   });
 
@@ -359,9 +342,10 @@ describe("buildWhereClause", () => {
       "NUMBER_RANGE",
       createNumberRangeState(18, 65, { isExcluding: true }),
     );
-    const filterStates = stateMap(
-      [def, createNumberRangeState(18, 65, { isExcluding: true })],
-    );
+    const filterStates = stateMap([
+      def,
+      createNumberRangeState(18, 65, { isExcluding: true }),
+    ]);
     const result = buildWhereClause([def], filterStates);
     expect(result).toEqual({
       $not: { $and: [{ age: { $gte: 18 } }, { age: { $lte: 65 } }] },
@@ -369,11 +353,10 @@ describe("buildWhereClause", () => {
   });
 
   it("preserves state when filters are reordered", () => {
-    const nameDef = createPropertyFilterDef(
-      "name",
-      "LISTOGRAM",
-      { type: "EXACT_MATCH", values: ["John"] },
-    );
+    const nameDef = createPropertyFilterDef("name", "LISTOGRAM", {
+      type: "EXACT_MATCH",
+      values: ["John"],
+    });
     const activeDef = createPropertyFilterDef(
       "active",
       "TOGGLE",

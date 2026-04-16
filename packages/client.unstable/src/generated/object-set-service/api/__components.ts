@@ -17,8 +17,7 @@
 /**
  * The aggregation result is accurate.
  */
-export interface AccurateAggregateResultAccuracy {
-}
+export interface AccurateAggregateResultAccuracy {}
 /**
  * A derived property that references an aggregation on a set of linked objects.
  * The linked object is specified by a LinkDefinition.
@@ -181,15 +180,13 @@ export type AggregationName = string;
 /**
  * Use all properties.
  */
-export interface AllPropertiesPropertySet {
-}
+export interface AllPropertiesPropertySet {}
 /**
  * DEPRECATED
  *
  * Use all properties, including runtime derived properties.
  */
-export interface AllPropertiesPropertySetV2 {
-}
+export interface AllPropertiesPropertySetV2 {}
 /**
  * An object matches this filter iff it matches all of the contained filters.
  */
@@ -206,8 +203,7 @@ export interface AndFilter {
 /**
  * The aggregation result is approximate.
  */
-export interface ApproximateAggregateResultAccuracy {
-}
+export interface ApproximateAggregateResultAccuracy {}
 /**
  * An object matches an ApproximateLinkPresenceFilter iff it contains a link to any object along the provided RelationId
  * and if the starting object is on the provided RelationSide of the relation.
@@ -1546,8 +1542,7 @@ export interface LinkedCollection {
 /**
  * Total count of objects
  */
-export interface LinkedCountMetric {
-}
+export interface LinkedCountMetric {}
 /**
  * A property to compute a dispersion metric for.
  */
@@ -1815,8 +1810,7 @@ export interface MediaViewItemReference {
  *
  * An attempt to compute such object-set in object loading or aggregation endpoints will end up with an error.
  */
-export interface MethodInputObjectSet {
-}
+export interface MethodInputObjectSet {}
 /**
  * Defines links computed at runtime based on the supplied object set method.
  */
@@ -1992,8 +1986,7 @@ export type MultipassAttributeKey = string;
 /**
  * The current user's Multipass user id.
  */
-export interface MultipassUserId {
-}
+export interface MultipassUserId {}
 /**
  * Defines links based on the supplied relation identifier.
  */
@@ -2022,15 +2015,13 @@ export interface NotAggregationFilter {
 export interface NotFilter {
   filter: ObjectSetFilter;
 }
-export interface NotSupported {
-}
+export interface NotSupported {}
 /**
  * Variant representing a null value. Null values are currently expected to only be returned inside array
  * property values - no property value will be otherwise returned for properties that do not have a value, or
  * where that value is null.
  */
-export interface NullPropertyValue {
-}
+export interface NullPropertyValue {}
 /**
  * A bucket that data was grouped into and the aggregations computed for the data in that bucket. This bucket  does not have a key and represents aggregations computed for data with null value for the corresponding field.
  */
@@ -2342,8 +2333,7 @@ export type ObjectSet =
 
 export interface ObjectSetBlockCreationError_multipassAttributesNotSupported {
   type: "multipassAttributesNotSupported";
-  multipassAttributesNotSupported:
-    ObjectSetBlockCreationErrorMultipassAttributeKeysNotSupported;
+  multipassAttributesNotSupported: ObjectSetBlockCreationErrorMultipassAttributeKeysNotSupported;
 }
 
 export interface ObjectSetBlockCreationError_notFound {
@@ -2353,20 +2343,17 @@ export interface ObjectSetBlockCreationError_notFound {
 
 export interface ObjectSetBlockCreationError_referencedObjectSetNotFound {
   type: "referencedObjectSetNotFound";
-  referencedObjectSetNotFound:
-    ObjectSetBlockCreationErrorReferencedObjectSetNotFound;
+  referencedObjectSetNotFound: ObjectSetBlockCreationErrorReferencedObjectSetNotFound;
 }
 
 export interface ObjectSetBlockCreationError_staticObjectSetsNotSupported {
   type: "staticObjectSetsNotSupported";
-  staticObjectSetsNotSupported:
-    ObjectSetBlockCreationErrorStaticObjectSetsNotSupported;
+  staticObjectSetsNotSupported: ObjectSetBlockCreationErrorStaticObjectSetsNotSupported;
 }
 
 export interface ObjectSetBlockCreationError_runtimeDerivedPropertiesNotSupported {
   type: "runtimeDerivedPropertiesNotSupported";
-  runtimeDerivedPropertiesNotSupported:
-    ObjectSetBlockCreationErrorRuntimeDerivedPropertiesNotSupported;
+  runtimeDerivedPropertiesNotSupported: ObjectSetBlockCreationErrorRuntimeDerivedPropertiesNotSupported;
 }
 export type ObjectSetBlockCreationError =
   | ObjectSetBlockCreationError_multipassAttributesNotSupported
@@ -2375,18 +2362,15 @@ export type ObjectSetBlockCreationError =
   | ObjectSetBlockCreationError_staticObjectSetsNotSupported
   | ObjectSetBlockCreationError_runtimeDerivedPropertiesNotSupported;
 
-export interface ObjectSetBlockCreationErrorMultipassAttributeKeysNotSupported {
-}
+export interface ObjectSetBlockCreationErrorMultipassAttributeKeysNotSupported {}
 export interface ObjectSetBlockCreationErrorNotFound {
   objectSetRid: ObjectSetRid;
 }
 export interface ObjectSetBlockCreationErrorReferencedObjectSetNotFound {
   objectSetRid: ObjectSetRid;
 }
-export interface ObjectSetBlockCreationErrorRuntimeDerivedPropertiesNotSupported {
-}
-export interface ObjectSetBlockCreationErrorStaticObjectSetsNotSupported {
-}
+export interface ObjectSetBlockCreationErrorRuntimeDerivedPropertiesNotSupported {}
+export interface ObjectSetBlockCreationErrorStaticObjectSetsNotSupported {}
 export interface ObjectSetBlockData_v1 {
   type: "v1";
   v1: ObjectSetBlockDataV1;
@@ -2933,8 +2917,7 @@ export interface PrefixOnLastTokenSuggestInput {
 /**
  * Specifies the primary key property of an object type which is present on all object types.
  */
-export interface PrimaryKeyProperty {
-}
+export interface PrimaryKeyProperty {}
 /**
  * API name of a property type or shared property type.
  */
@@ -3421,8 +3404,7 @@ export type RelativeTimeUnit = "DAY" | "WEEK" | "MONTH" | "YEAR";
  * present in an object set.
  * Please note that no such guarantees are provided whenever an object set contains objects of multiple types.
  */
-export interface RelevancyResultOrdering {
-}
+export interface RelevancyResultOrdering {}
 /**
  * A resolved filter parameter.
  */
@@ -3973,8 +3955,7 @@ export interface TemplatedDerivedPropertyDefinition_linkedObjectProperty {
 
 export interface TemplatedDerivedPropertyDefinition_linkedObjectsAggregationProperty {
   type: "linkedObjectsAggregationProperty";
-  linkedObjectsAggregationProperty:
-    TemplatedLinkedObjectsAggregationPropertyDefinition;
+  linkedObjectsAggregationProperty: TemplatedLinkedObjectsAggregationPropertyDefinition;
 }
 
 export interface TemplatedDerivedPropertyDefinition_calculatedProperty {
@@ -5048,9 +5029,8 @@ export interface TemplatedTermsFilter {
  * the same PropertyIdentifier to multiple object types. We do not enforce that these derived properties should
  * share the same definition or indeed the same data type.
  */
-export type TemplatedTypedDerivedProperties = Array<
-  TemplatedTypedDerivedPropertiesEntry
->;
+export type TemplatedTypedDerivedProperties =
+  Array<TemplatedTypedDerivedPropertiesEntry>;
 
 /**
  * A collection of derived properties acting on a single interface or object type.
@@ -5223,8 +5203,7 @@ export type TimeZoneId = string;
 /**
  * Specifies the title property of an object type which is present on all object types.
  */
-export interface TitleProperty {
-}
+export interface TitleProperty {}
 /**
  * The identifier of a transaction in a foundry dataset
  */
@@ -5284,8 +5263,7 @@ export type UnresolvedFilterParameterId = string;
  * Consider using this whenever there's no need to have the results be returned in any specific ordering as it
  * can cause the request to complete faster.
  */
-export interface UnspecifiedResultOrdering {
-}
+export interface UnspecifiedResultOrdering {}
 export interface UpdateLatestVersionRequest {
   currentLatestVersion?: ObjectSetVersion | null | undefined;
   objectSet: ObjectSet;

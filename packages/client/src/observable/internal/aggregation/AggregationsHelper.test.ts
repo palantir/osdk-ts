@@ -84,7 +84,8 @@ describe("aggregation ObjectSet support", () => {
 
     await query.ensureInvalidationTypesReady();
 
-    const revalidateSpy = vi.spyOn(query, "revalidate")
+    const revalidateSpy = vi
+      .spyOn(query, "revalidate")
       .mockResolvedValue(undefined);
 
     await query.invalidateObjectType("Employee", undefined);
@@ -98,7 +99,8 @@ describe("aggregation ObjectSet support", () => {
       aggregate: { $select: { $count: "unordered" } },
     });
 
-    const revalidateSpy = vi.spyOn(query, "revalidate")
+    const revalidateSpy = vi
+      .spyOn(query, "revalidate")
       .mockResolvedValue(undefined);
 
     await query.invalidateObjectType("Employee", undefined);

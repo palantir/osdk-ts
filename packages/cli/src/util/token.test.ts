@@ -31,9 +31,7 @@ describe("loadToken", () => {
   });
 
   it("should load a valid token from a file", async () => {
-    vi.mocked(fsPromises.readFile).mockResolvedValue(
-      validToken,
-    );
+    vi.mocked(fsPromises.readFile).mockResolvedValue(validToken);
     const token = await loadToken(undefined, "valid-token.txt");
     expect(token).toBe(validToken);
   });
@@ -64,14 +62,16 @@ describe("loadToken", () => {
 
 describe("loadTokenFile", () => {
   it("should throw an error if the token file is not found", async () => {
-    await expect(() => loadTokenFile("does-not-exist.txt"))
-      .rejects.toThrow(`Unable to read token file "does-not-exist.txt"`);
+    await expect(() => loadTokenFile("does-not-exist.txt")).rejects.toThrow(
+      `Unable to read token file "does-not-exist.txt"`,
+    );
   });
 });
 
 describe("validate", () => {
   it("should throw an error if the token is invalid", () => {
-    expect(() => validate("token"))
-      .toThrow(`Token does not appear to be a JWT`);
+    expect(() => validate("token")).toThrow(
+      `Token does not appear to be a JWT`,
+    );
   });
 });

@@ -44,7 +44,7 @@ describe("parseLinkType", () => {
 
   it("throws error for link type without any dot", () => {
     expect(() => parseLinkType("InvalidLinkType")).toThrow(
-      "Invalid link type format: \"InvalidLinkType\". Expected format: \"ObjectTypeApiName.linkTypeApiName\"",
+      'Invalid link type format: "InvalidLinkType". Expected format: "ObjectTypeApiName.linkTypeApiName"',
     );
   });
 

@@ -21,7 +21,7 @@ import { useAsyncAction } from "../useAsyncAction.js";
 describe("useAsyncAction", () => {
   it("starts with isPending false and no error", () => {
     const { result } = renderHook(() =>
-      useAsyncAction(vi.fn().mockResolvedValue(undefined))
+      useAsyncAction(vi.fn().mockResolvedValue(undefined)),
     );
     expect(result.current.isPending).toBe(false);
     expect(result.current.error).toBeUndefined();
@@ -82,7 +82,8 @@ describe("useAsyncAction", () => {
   });
 
   it("clears previous error on next execute", async () => {
-    const action = vi.fn()
+    const action = vi
+      .fn()
       .mockRejectedValueOnce(new Error("first"))
       .mockResolvedValueOnce(undefined);
 

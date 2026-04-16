@@ -17,10 +17,8 @@
 import { type ConjureContext, conjureFetch } from "conjure-lite";
 import type { OntologyRid as _api_OntologyRid } from "../../__components.js";
 import type {
-  GetModificationHistoryRequest
-    as _api_modification_GetModificationHistoryRequest,
-  GetModificationHistoryResponse
-    as _api_modification_GetModificationHistoryResponse,
+  GetModificationHistoryRequest as _api_modification_GetModificationHistoryRequest,
+  GetModificationHistoryResponse as _api_modification_GetModificationHistoryResponse,
 } from "../../modification/__components.js";
 
 /**

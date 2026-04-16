@@ -43,15 +43,15 @@ export function List<T extends ObjectTypeDefinition>({
         <ErrorMessage message={`Error loading items: ${error.message}`} />
       )}
 
-      {!data || data.length === 0
-        ? (
-          <div className={"text-sm italic mt-2"}>
-            {!error && !isLoading ? "None found." : "Loading..."}
-          </div>
-        )
-        : (
-          <ul className={className}>
-            {data.filter(item => item != null).map(item => (
+      {!data || data.length === 0 ? (
+        <div className={"text-sm italic mt-2"}>
+          {!error && !isLoading ? "None found." : "Loading..."}
+        </div>
+      ) : (
+        <ul className={className}>
+          {data
+            .filter((item) => item != null)
+            .map((item) => (
               <Component
                 key={item.$primaryKey}
                 item={item}
@@ -59,8 +59,8 @@ export function List<T extends ObjectTypeDefinition>({
                 onSelect={() => onSelect(item)}
               />
             ))}
-          </ul>
-        )}
+        </ul>
+      )}
     </div>
   );
 }

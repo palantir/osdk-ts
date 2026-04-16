@@ -19,61 +19,70 @@ import { __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition } from "./__UNSTABL
 
 describe("__UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition", () => {
   it("sorts the implements array for stable output", () => {
-    const result = __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition({
-      apiName: "TestInterface",
-      rid: "testRid",
-      displayName: "Test Interface",
-      description: "A test interface",
-      properties: {},
-      allProperties: {},
-      propertiesV2: {},
-      allPropertiesV2: {},
-      extendsInterfaces: ["ParentZ", "ParentA", "ParentC"],
-      allExtendsInterfaces: ["ParentZ", "ParentA", "ParentC"],
-      implementedByObjectTypes: [],
-      links: {},
-      allLinks: {},
-    }, true);
+    const result = __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition(
+      {
+        apiName: "TestInterface",
+        rid: "testRid",
+        displayName: "Test Interface",
+        description: "A test interface",
+        properties: {},
+        allProperties: {},
+        propertiesV2: {},
+        allPropertiesV2: {},
+        extendsInterfaces: ["ParentZ", "ParentA", "ParentC"],
+        allExtendsInterfaces: ["ParentZ", "ParentA", "ParentC"],
+        implementedByObjectTypes: [],
+        links: {},
+        allLinks: {},
+      },
+      true,
+    );
 
     expect(result.implements).toEqual(["ParentA", "ParentC", "ParentZ"]);
   });
 
   it("sorts the implementedBy array for stable output", () => {
-    const result = __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition({
-      apiName: "TestInterface",
-      rid: "testRid",
-      displayName: "Test Interface",
-      description: "A test interface",
-      properties: {},
-      allProperties: {},
-      propertiesV2: {},
-      allPropertiesV2: {},
-      extendsInterfaces: [],
-      allExtendsInterfaces: [],
-      implementedByObjectTypes: ["ObjectZ", "ObjectA", "ObjectC"],
-      links: {},
-      allLinks: {},
-    }, true);
+    const result = __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition(
+      {
+        apiName: "TestInterface",
+        rid: "testRid",
+        displayName: "Test Interface",
+        description: "A test interface",
+        properties: {},
+        allProperties: {},
+        propertiesV2: {},
+        allPropertiesV2: {},
+        extendsInterfaces: [],
+        allExtendsInterfaces: [],
+        implementedByObjectTypes: ["ObjectZ", "ObjectA", "ObjectC"],
+        links: {},
+        allLinks: {},
+      },
+      true,
+    );
 
     expect(result.implementedBy).toEqual(["ObjectA", "ObjectC", "ObjectZ"]);
   });
 
   it("preserves empty arrays", () => {
-    const result = __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition({
-      apiName: "TestInterface",
-      rid: "testRid",
-      displayName: "Test Interface",
-      description: "A test interface",
-      properties: {},
-      allProperties: {},
-      propertiesV2: {},
-      allPropertiesV2: {},
-      extendsInterfaces: [],
-      allExtendsInterfaces: [],
-      implementedByObjectTypes: [],
-      links: {},
-      allLinks: {},
-    }, true);
+    const result = __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition(
+      {
+        apiName: "TestInterface",
+        rid: "testRid",
+        displayName: "Test Interface",
+        description: "A test interface",
+        properties: {},
+        allProperties: {},
+        propertiesV2: {},
+        allPropertiesV2: {},
+        extendsInterfaces: [],
+        allExtendsInterfaces: [],
+        implementedByObjectTypes: [],
+        links: {},
+        allLinks: {},
+      },
+      true,
+    );
 
     // Empty arrays should remain as empty arrays
     expect(result.implements).toEqual([]);

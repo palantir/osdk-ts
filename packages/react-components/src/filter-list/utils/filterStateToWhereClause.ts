@@ -56,10 +56,7 @@ function clampToPropertyBounds(
   return Math.max(bounds.min, Math.min(bounds.max, value));
 }
 
-function formatDateValue(
-  date: Date,
-  propertyType: string | undefined,
-): string {
+function formatDateValue(date: Date, propertyType: string | undefined): string {
   if (propertyType === "datetime") {
     return formatDateForInput(date);
   }
@@ -165,7 +162,7 @@ function filterStateToPropertyFilter(
         (v) =>
           v instanceof Date
             ? formatDateValue(v, propertyType)
-            : v as string | number | boolean,
+            : (v as string | number | boolean),
       );
       return values.length === 1 ? values[0] : { $in: values };
     }
@@ -250,18 +247,18 @@ export function buildWhereClause<Q extends ObjectTypeDefinition>(
 
     switch (definition.type) {
       case "PROPERTY": {
-        const propertyType = propertyTypes?.get(definition.key as string)
-          ?.type;
+        const propertyType = propertyTypes?.get(definition.key as string)?.type;
         const filter = filterStateToPropertyFilter(state, propertyType);
         if (filter !== undefined) {
           const isExcluding = "isExcluding" in state && state.isExcluding;
           if (isCompoundFilter(filter)) {
-            const fieldClauses = filter.conditions.map(c => ({
+            const fieldClauses = filter.conditions.map((c) => ({
               [definition.key]: c,
             }));
-            let rangeClause: Record<string, unknown> = fieldClauses.length === 1
-              ? fieldClauses[0]
-              : { $and: fieldClauses };
+            let rangeClause: Record<string, unknown> =
+              fieldClauses.length === 1
+                ? fieldClauses[0]
+                : { $and: fieldClauses };
             if (filter.includeNull) {
               rangeClause = {
                 $or: [rangeClause, { [definition.key]: { $isNull: true } }],
@@ -349,9 +346,8 @@ export function buildWhereClause<Q extends ObjectTypeDefinition>(
           break;
         }
 
-        const containsOp = state.operator === "AND"
-          ? "$containsAllTerms"
-          : "$containsAnyTerm";
+        const containsOp =
+          state.operator === "AND" ? "$containsAllTerms" : "$containsAnyTerm";
 
         const propertySearches = propertiesToSearch.map((prop) => ({
           [prop]: { [containsOp]: searchTerm },
@@ -363,9 +359,7 @@ export function buildWhereClause<Q extends ObjectTypeDefinition>(
         } else {
           searchClause = { $or: propertySearches };
         }
-        clauses.push(
-          state.isExcluding ? { $not: searchClause } : searchClause,
-        );
+        clauses.push(state.isExcluding ? { $not: searchClause } : searchClause);
         break;
       }
 

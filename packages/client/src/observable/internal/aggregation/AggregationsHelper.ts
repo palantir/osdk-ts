@@ -43,13 +43,13 @@ import { ObjectAggregationQuery } from "./ObjectAggregationQuery.js";
 
 type AggregationOptions =
   | ObserveAggregationOptions<
-    ObjectOrInterfaceDefinition,
-    AggregateOpts<ObjectOrInterfaceDefinition>
-  >
+      ObjectOrInterfaceDefinition,
+      AggregateOpts<ObjectOrInterfaceDefinition>
+    >
   | ObserveAggregationOptionsWithObjectSet<
-    ObjectOrInterfaceDefinition,
-    AggregateOpts<ObjectOrInterfaceDefinition>
-  >;
+      ObjectOrInterfaceDefinition,
+      AggregateOpts<ObjectOrInterfaceDefinition>
+    >;
 
 export class AggregationsHelper extends AbstractHelper<
   AggregationQuery,
@@ -94,20 +94,14 @@ export class AggregationsHelper extends AbstractHelper<
   ): Promise<QuerySubscription<AggregationQuery>> {
     const query = this.getQueryWithObjectSet(options);
     await query.ensureInvalidationTypesReady();
-    return this._subscribe(
-      query,
-      options as AggregationOptions,
-      subFn,
-    );
+    return this._subscribe(query, options as AggregationOptions, subFn);
   }
 
   getQuery<
     T extends ObjectOrInterfaceDefinition,
     A extends AggregateOpts<T>,
     RDPs extends Record<string, SimplePropertyDef> = {},
-  >(
-    options: ObserveAggregationOptions<T, A, RDPs>,
-  ): AggregationQuery {
+  >(options: ObserveAggregationOptions<T, A, RDPs>): AggregationQuery {
     return this.getOrCreateQuery(options as AggregationOptions, undefined);
   }
 
@@ -139,9 +133,10 @@ export class AggregationsHelper extends AbstractHelper<
     const canonRdp = withProperties
       ? this.rdpCanonicalizer.canonicalize(withProperties)
       : undefined;
-    const canonIntersect = intersectWith && intersectWith.length > 0
-      ? this.intersectCanonicalizer.canonicalize(intersectWith)
-      : undefined;
+    const canonIntersect =
+      intersectWith && intersectWith.length > 0
+        ? this.intersectCanonicalizer.canonicalize(intersectWith)
+        : undefined;
 
     const canonAggregate = this.canonicalizeAggregate(aggregate);
 
@@ -174,9 +169,7 @@ export class AggregationsHelper extends AbstractHelper<
   private canonicalizeAggregate<
     T extends ObjectOrInterfaceDefinition,
     A extends AggregateOpts<T>,
-  >(
-    aggregate: A,
-  ): Canonical<A> {
+  >(aggregate: A): Canonical<A> {
     return JSON.parse(JSON.stringify(aggregate)) as Canonical<A>;
   }
 }

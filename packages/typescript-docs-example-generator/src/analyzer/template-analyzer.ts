@@ -220,7 +220,7 @@ export class TemplateAnalyzer {
    */
   private extractTokenContent(tokens: MustacheToken[]): string {
     return tokens
-      .map(token => {
+      .map((token) => {
         switch (TokenAccessor.getType(token)) {
           case "text":
             return TokenAccessor.getText(token as any);
@@ -232,17 +232,17 @@ export class TemplateAnalyzer {
             const sectionToken = token as any;
             const name = TokenAccessor.getName(sectionToken);
             const children = TokenAccessor.getChildren(sectionToken);
-            return `{{#${name}}}${
-              this.extractTokenContent(children)
-            }}{{/${name}}}`;
+            return `{{#${name}}}${this.extractTokenContent(
+              children,
+            )}}{{/${name}}}`;
           }
           case "^": {
             const invertedToken = token as any;
             const name = TokenAccessor.getName(invertedToken);
             const children = TokenAccessor.getChildren(invertedToken);
-            return `{{^${name}}}${
-              this.extractTokenContent(children)
-            }}{{/${name}}}`;
+            return `{{^${name}}}${this.extractTokenContent(
+              children,
+            )}}{{/${name}}}`;
           }
           default:
             return "";
@@ -263,16 +263,19 @@ export class TemplateAnalyzer {
 
     // Boolean indicators
     if (
-      name.startsWith("has") || name.startsWith("is")
-      || name.startsWith("should")
+      name.startsWith("has") ||
+      name.startsWith("is") ||
+      name.startsWith("should")
     ) {
       return "boolean";
     }
 
     // Number indicators
     if (
-      name.includes("Count") || name.includes("Size") || name.includes("Index")
-      || name.includes("Value") && name.includes("Incremented")
+      name.includes("Count") ||
+      name.includes("Size") ||
+      name.includes("Index") ||
+      (name.includes("Value") && name.includes("Incremented"))
     ) {
       return "number";
     }
@@ -307,13 +310,11 @@ export class TemplateAnalyzer {
       "needsImports",
       "isUnary",
       "isExtractPart",
-    ].forEach(
-      name => this.variableTypeCache.set(name, "boolean"),
-    );
+    ].forEach((name) => this.variableTypeCache.set(name, "boolean"));
 
     // Numbers
-    ["propertyValueIncrementedV2", "vectorDimensionSize"].forEach(
-      name => this.variableTypeCache.set(name, "number"),
+    ["propertyValueIncrementedV2", "vectorDimensionSize"].forEach((name) =>
+      this.variableTypeCache.set(name, "number"),
     );
 
     // Objects
@@ -325,8 +326,6 @@ export class TemplateAnalyzer {
       "rawLinkedPrimaryKeyProperty",
       "propertyNames",
       "actionParameterSampleValuesV2",
-    ].forEach(
-      name => this.variableTypeCache.set(name, "object"),
-    );
+    ].forEach((name) => this.variableTypeCache.set(name, "object"));
   }
 }

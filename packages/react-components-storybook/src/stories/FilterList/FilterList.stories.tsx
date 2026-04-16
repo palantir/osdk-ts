@@ -226,12 +226,12 @@ const meta: Meta<EmployeeFilterListProps> = {
     },
     addFilterMode: {
       description:
-        "Controls how filter add/remove is managed. \"uncontrolled\" manages visibility internally; \"controlled\" leaves it to the consumer.",
+        'Controls how filter add/remove is managed. "uncontrolled" manages visibility internally; "controlled" leaves it to the consumer.',
       control: "select",
       options: ["controlled", "uncontrolled"],
       table: {
         category: "Advanced",
-        defaultValue: { summary: "\"uncontrolled\"" },
+        defaultValue: { summary: '"uncontrolled"' },
       },
     },
     renderAddFilterButton: {
@@ -294,18 +294,22 @@ function AddFilterModeStory(args: Partial<EmployeeFilterListProps>) {
     (): FilterDefinitionUnion<Employee>[] => [
       departmentFilter,
       teamFilter,
-      { ...fullNameFilter, isVisible: false } as FilterDefinitionUnion<
-        Employee
-      >,
-      { ...startDateFilter, isVisible: false } as FilterDefinitionUnion<
-        Employee
-      >,
-      { ...employeeNumberFilter, isVisible: false } as FilterDefinitionUnion<
-        Employee
-      >,
-      { ...locationCityFilter, isVisible: false } as FilterDefinitionUnion<
-        Employee
-      >,
+      {
+        ...fullNameFilter,
+        isVisible: false,
+      } as FilterDefinitionUnion<Employee>,
+      {
+        ...startDateFilter,
+        isVisible: false,
+      } as FilterDefinitionUnion<Employee>,
+      {
+        ...employeeNumberFilter,
+        isVisible: false,
+      } as FilterDefinitionUnion<Employee>,
+      {
+        ...locationCityFilter,
+        isVisible: false,
+      } as FilterDefinitionUnion<Employee>,
     ],
     [],
   );
@@ -382,8 +386,9 @@ export const WithAllFilterTypes: Story = {
   parameters: {
     docs: {
       description: {
-        story: "All filter component types with a controlled where clause. "
-          + "Hover filter items to reveal search and exclude actions.",
+        story:
+          "All filter component types with a controlled where clause. " +
+          "Hover filter items to reveal search and exclude actions.",
       },
       source: {
         code: `<FilterList
@@ -545,8 +550,9 @@ export const CollapsiblePanel: Story = {
   parameters: {
     docs: {
       description: {
-        story: "Click the collapse button to minimize the filter panel. "
-          + "Active filter count is shown in the collapsed state.",
+        story:
+          "Click the collapse button to minimize the filter panel. " +
+          "Active filter count is shown in the collapsed state.",
       },
       source: {
         code: `const [collapsed, setCollapsed] = useState(false);
@@ -831,9 +837,10 @@ export const WithCheckbox: Story = {
   parameters: {
     docs: {
       description: {
-        story: "Listogram rows always include a checkbox for multi-select. "
-          + "Selecting values checks the checkbox and highlights the row. "
-          + "Use the exclude toggle (three-dot menu) to invert selections.",
+        story:
+          "Listogram rows always include a checkbox for multi-select. " +
+          "Selecting values checks the checkbox and highlights the row. " +
+          "Use the exclude toggle (three-dot menu) to invert selections.",
       },
       source: {
         code: `<FilterList
@@ -849,9 +856,7 @@ export const WithCheckbox: Story = {
   render: (args) => <WithCheckboxStory {...args} />,
 };
 
-function CombinedWithObjectTableStory(
-  args: Partial<EmployeeFilterListProps>,
-) {
+function CombinedWithObjectTableStory(args: Partial<EmployeeFilterListProps>) {
   const [filterClause, setFilterClause] = useState<
     WhereClause<Employee> | undefined
   >(undefined);
@@ -928,7 +933,7 @@ function WithRemovableFiltersStory(args: Partial<EmployeeFilterListProps>) {
           return def.key !== filterKey;
         }
         return true;
-      })
+      }),
     );
   }, []);
 
@@ -954,12 +959,11 @@ export const WithRemovableFilters: Story = {
     docs: {
       description: {
         story:
-          "When `onFilterRemoved` is provided, each filter item shows a remove button (X) on hover. "
-          + "Clicking it removes the filter from the list.",
+          "When `onFilterRemoved` is provided, each filter item shows a remove button (X) on hover. " +
+          "Clicking it removes the filter from the list.",
       },
       source: {
-        code:
-          `const [definitions, setDefinitions] = useState(filterDefinitions);
+        code: `const [definitions, setDefinitions] = useState(filterDefinitions);
 
 const handleFilterRemoved = (filterKey) => {
   setDefinitions(prev => prev.filter(def => def.key !== filterKey));
@@ -996,7 +1000,7 @@ function FullFeaturedStory(
           return def.key !== filterKey;
         }
         return true;
-      })
+      }),
     );
   }, []);
 
@@ -1037,13 +1041,12 @@ export const FullFeatured: Story = {
     docs: {
       description: {
         story:
-          "Demonstrates all filter list features together: collapse, reset, active count, sorting, "
-          + "removable filters, per-filter search, exclude toggle, and controlled where clause "
-          + "driving an ObjectTable.",
+          "Demonstrates all filter list features together: collapse, reset, active count, sorting, " +
+          "removable filters, per-filter search, exclude toggle, and controlled where clause " +
+          "driving an ObjectTable.",
       },
       source: {
-        code:
-          `// All features combined: collapse, sort, search, exclude, remove, reset
+        code: `// All features combined: collapse, sort, search, exclude, remove, reset
 
 <FilterList
   objectType={Employee}

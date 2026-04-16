@@ -31,17 +31,16 @@ export async function runNearestNeighborsTest(): Promise<void> {
   const EMBEDDING_PROPERTY_VECTOR_SIZE = 1536;
 
   // Fetch 10 orders related to 'coffee'
-  const result = await client(MatthewvsDevOrderEmbedding).nearestNeighbors(
-    "coffee",
-    10,
-    "embedding",
-  ).fetchPage();
-  result.data.forEach(s => console.log(s.orderTitle));
+  const result = await client(MatthewvsDevOrderEmbedding)
+    .nearestNeighbors("coffee", 10, "embedding")
+    .fetchPage();
+  result.data.forEach((s) => console.log(s.orderTitle));
   validateCount(10, result.data);
 
   // Fetch page with errors
   const { value: resultWithErrors } = await client(MatthewvsDevOrderEmbedding)
-    .nearestNeighbors("coffee", 10, "embedding").fetchPageWithErrors();
+    .nearestNeighbors("coffee", 10, "embedding")
+    .fetchPageWithErrors();
   invariant(
     resultWithErrors !== undefined,
     "Expected resultWithErrors to be defined",
@@ -50,7 +49,8 @@ export async function runNearestNeighborsTest(): Promise<void> {
 
   // Ensure regular ordering still works
   const { data: resultOrdered } = await client(MatthewvsDevOrderEmbedding)
-    .nearestNeighbors("coffee", 10, "embedding").fetchPage({
+    .nearestNeighbors("coffee", 10, "embedding")
+    .fetchPage({
       $orderBy: { "orderTitle": "desc" },
     });
   validateCount(10, resultOrdered);
@@ -61,7 +61,8 @@ export async function runNearestNeighborsTest(): Promise<void> {
       Array.from({ length: EMBEDDING_PROPERTY_VECTOR_SIZE }, () => 0.3),
       10,
       "embedding",
-    ).fetchPage();
+    )
+    .fetchPage();
   validateCount(10, vectorQuery);
 
   // nested nearest neighbors
@@ -76,11 +77,8 @@ export async function runNearestNeighborsTest(): Promise<void> {
 
   // relevancy ordering tests
   const { data: resOrdered } = await client(MatthewvsDevOrderEmbedding)
-    .nearestNeighbors(
-      "coffee",
-      10,
-      "embedding",
-    ).fetchPage({ $orderBy: "relevance" });
+    .nearestNeighbors("coffee", 10, "embedding")
+    .fetchPage({ $orderBy: "relevance" });
 
   let prevValueOrdered = 1.0;
   for (const obj of resOrdered) {
@@ -90,11 +88,9 @@ export async function runNearestNeighborsTest(): Promise<void> {
     prevValueOrdered = currentValue;
   }
 
-  const asyncIter = client(MatthewvsDevOrderEmbedding).nearestNeighbors(
-    "coffee",
-    10,
-    "embedding",
-  ).asyncIter();
+  const asyncIter = client(MatthewvsDevOrderEmbedding)
+    .nearestNeighbors("coffee", 10, "embedding")
+    .asyncIter();
 
   const asyncRes = [];
   for await (const obj of asyncIter) {
@@ -105,11 +101,8 @@ export async function runNearestNeighborsTest(): Promise<void> {
   validateCount(10, asyncRes);
 
   const asyncIterOrderedByRelevance = client(MatthewvsDevOrderEmbedding)
-    .nearestNeighbors(
-      "coffee",
-      12,
-      "embedding",
-    ).asyncIter({ $orderBy: "relevance" });
+    .nearestNeighbors("coffee", 12, "embedding")
+    .asyncIter({ $orderBy: "relevance" });
 
   const asyncResOrdered = [];
   let prevValue = 1.0;
@@ -126,34 +119,32 @@ export async function runNearestNeighborsTest(): Promise<void> {
   await assertThrowsExpectedError(
     "PropertyTypeDoesNotSupportNearestNeighbors",
     () =>
-      client(MatthewvsDevOrderEmbedding).nearestNeighbors(
-        "coffee",
-        10,
-        // @ts-expect-error
-        "orderTitle",
-      ).fetchPage(),
+      client(MatthewvsDevOrderEmbedding)
+        .nearestNeighbors(
+          "coffee",
+          10,
+          // @ts-expect-error
+          "orderTitle",
+        )
+        .fetchPage(),
   );
 
   // Querying too many neighbors
-  await assertThrowsExpectedError(
-    "TooManyNearestNeighborsRequested",
-    () =>
-      client(MatthewvsDevOrderEmbedding).nearestNeighbors(
-        "coffee",
-        MAX_NEIGHBORS + 1,
-        "embedding",
-      ).fetchPage(),
+  await assertThrowsExpectedError("TooManyNearestNeighborsRequested", () =>
+    client(MatthewvsDevOrderEmbedding)
+      .nearestNeighbors("coffee", MAX_NEIGHBORS + 1, "embedding")
+      .fetchPage(),
   );
 
   // Invalid query vector
-  await assertThrowsExpectedError(
-    "InvalidVectorDimension",
-    () =>
-      client(MatthewvsDevOrderEmbedding).nearestNeighbors(
+  await assertThrowsExpectedError("InvalidVectorDimension", () =>
+    client(MatthewvsDevOrderEmbedding)
+      .nearestNeighbors(
         Array.from({ length: EMBEDDING_PROPERTY_VECTOR_SIZE - 1 }, () => 0.3),
         10,
         "embedding",
-      ).fetchPage(),
+      )
+      .fetchPage(),
   );
 }
 

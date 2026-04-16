@@ -73,9 +73,7 @@ export function LinkTypeNotFound(
   };
 }
 
-export function OntologyNotFoundError(
-  ontology: string,
-): OntologyNotFound {
+export function OntologyNotFoundError(ontology: string): OntologyNotFound {
   return {
     errorCode: "NOT_FOUND",
     errorName: "OntologyNotFound",
@@ -219,14 +217,12 @@ export const GetUserNotFoundError = (userId: string): UserNotFound => ({
   errorName: "UserNotFound",
   errorInstanceId,
   parameters: {
-    userId: userId,
+    userId,
   },
   errorDescription: "The given User could not be found.",
 });
 
-export const GetUserDeletedStatusError = (
-  userId: string,
-): UserDeleted => ({
+export const GetUserDeletedStatusError = (userId: string): UserDeleted => ({
   errorCode: "INVALID_ARGUMENT",
   errorName: "UserDeleted",
   errorInstanceId,
@@ -236,9 +232,7 @@ export const GetUserDeletedStatusError = (
   errorDescription: "The user is deleted.",
 });
 
-export const GetUserActiveStatusError = (
-  userId: string,
-): UserIsActive => ({
+export const GetUserActiveStatusError = (userId: string): UserIsActive => ({
   errorCode: "INVALID_ARGUMENT",
   errorName: "UserIsActive",
   errorInstanceId,
@@ -254,7 +248,7 @@ export const GetInvalidPageTokenError = (
   errorCode: "INVALID_ARGUMENT",
   errorName: "InvalidPageToken",
   errorDescription: "The provided page token is invalid.",
-  errorInstanceId: errorInstanceId,
+  errorInstanceId,
   parameters: {
     pageToken,
   },

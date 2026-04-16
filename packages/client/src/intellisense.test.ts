@@ -46,17 +46,19 @@ const rootLogger = await vi.hoisted(async (): Promise<Logger> => {
       console.log(a);
     }
   }
-  return Promise.resolve(pino(
-    { level: "info" },
-    (pinoPretty.build)({
-      sync: true,
-      timestampKey: undefined,
-      errorLikeObjectKeys: ["error", "err", "exception"],
-      errorProps: "stack,cause,properties",
-      ignore: "time,hostname,pid",
-      destination: new PinoConsoleLogDestination(),
-    }),
-  ));
+  return Promise.resolve(
+    pino(
+      { level: "info" },
+      pinoPretty.build({
+        sync: true,
+        timestampKey: undefined,
+        errorLikeObjectKeys: ["error", "err", "exception"],
+        errorProps: "stack,cause,properties",
+        ignore: "time,hostname,pid",
+        destination: new PinoConsoleLogDestination(),
+      }),
+    ),
+  );
 });
 
 describe("intellisense", () => {
@@ -69,10 +71,7 @@ describe("intellisense", () => {
     });
     console.log({ clientsPackageJson });
     invariant(clientsPackageJson != null);
-    packagesDir = path.join(
-      path.dirname(clientsPackageJson),
-      "..",
-    );
+    packagesDir = path.join(path.dirname(clientsPackageJson), "..");
 
     clientPackagePath = path.join(packagesDir, "client");
   });
@@ -130,7 +129,7 @@ describe("intellisense", () => {
       offset: 15,
       triggerKind: ts.CompletionTriggerKind.Invoked,
     });
-    expect(resp.body?.entries.map(e => e.name)).toEqual([
+    expect(resp.body?.entries.map((e) => e.name)).toEqual([
       "class",
       "employeeId",
       "employeeLocation",
@@ -159,8 +158,6 @@ describe("intellisense", () => {
       triggerKind: ts.CompletionTriggerKind.Invoked,
     });
 
-    expect(resp3.body?.entries.map(e => e.name)).toEqual([
-      "relevance",
-    ]);
+    expect(resp3.body?.entries.map((e) => e.name)).toEqual(["relevance"]);
   });
 });

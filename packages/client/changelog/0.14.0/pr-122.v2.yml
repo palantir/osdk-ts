@@ -2,4 +2,4 @@ type: feature
 feature:
   description: Add groupby functions for dates and timestamps
   links:
-  - https://github.com/palantir/osdk-ts/pull/122
+    - https://github.com/palantir/osdk-ts/pull/122

@@ -132,7 +132,7 @@ describe("DatetimePickerField", () => {
       fireEvent.focus(input);
 
       const timeInput = document.querySelector(
-        "input[type=\"time\"]",
+        'input[type="time"]',
       ) as HTMLInputElement;
       expect(timeInput).not.toBeNull();
       expect(timeInput.value).toBe("14:30");
@@ -151,7 +151,7 @@ describe("DatetimePickerField", () => {
       fireEvent.focus(input);
 
       const timeInput = document.querySelector(
-        "input[type=\"time\"]",
+        'input[type="time"]',
       ) as HTMLInputElement;
       fireEvent.change(timeInput, { target: { value: "16:45" } });
 
@@ -175,7 +175,7 @@ describe("DatetimePickerField", () => {
       fireEvent.focus(input);
 
       const timeInput = document.querySelector(
-        "input[type=\"time\"]",
+        'input[type="time"]',
       ) as HTMLInputElement;
       fireEvent.change(timeInput, { target: { value: "16:45" } });
 
@@ -191,7 +191,8 @@ describe("DatetimePickerField", () => {
           value={new Date(2024, 0, 15)}
           onChange={vi.fn()}
           formatDate={(d) =>
-            `${d.getMonth() + 1}/${d.getDate()}/${d.getFullYear()}`}
+            `${d.getMonth() + 1}/${d.getDate()}/${d.getFullYear()}`
+          }
         />,
       );
       const input = screen.getByRole("combobox") as HTMLInputElement;
@@ -307,7 +308,8 @@ describe("DatetimePickerField", () => {
           value={null}
           onChange={onChange}
           formatDate={(d) =>
-            `${d.getMonth() + 1}/${d.getDate()}/${d.getFullYear()}`}
+            `${d.getMonth() + 1}/${d.getDate()}/${d.getFullYear()}`
+          }
           parseDate={(text) => {
             const [m, d, y] = text.split("/").map(Number);
             if (m == null || d == null || y == null) return undefined;

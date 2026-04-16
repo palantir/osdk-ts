@@ -23,9 +23,7 @@ import {
   getOpenAiBaseUrl,
 } from "./utils.js";
 
-function createMockClient(
-  overrides?: Partial<PlatformClient>,
-): PlatformClient {
+function createMockClient(overrides?: Partial<PlatformClient>): PlatformClient {
   return {
     baseUrl: "https://example.palantirfoundry.com",
     tokenProvider: async () => "test-token-abc",

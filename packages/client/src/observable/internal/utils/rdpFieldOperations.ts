@@ -107,10 +107,12 @@ export function mergeSelectFields(
   selectFields: ReadonlySet<string>,
   existingValue: ObjectHolder,
 ): ObjectHolder {
-  const sourceUnderlying =
-    sourceValue[UnderlyingOsdkObject] as SimpleOsdkProperties;
-  const existingUnderlying =
-    existingValue[UnderlyingOsdkObject] as SimpleOsdkProperties;
+  const sourceUnderlying = sourceValue[
+    UnderlyingOsdkObject
+  ] as SimpleOsdkProperties;
+  const existingUnderlying = existingValue[
+    UnderlyingOsdkObject
+  ] as SimpleOsdkProperties;
   const objectDef = sourceValue[ObjectDefRef];
 
   const newProps: SimpleOsdkProperties = {
@@ -153,8 +155,9 @@ export function mergeObjectFields(
     return filterToRdpFields(sourceValue, targetRdpFields, sourceRdpFields);
   }
 
-  const sourceUnderlying =
-    sourceValue[UnderlyingOsdkObject] as SimpleOsdkProperties;
+  const sourceUnderlying = sourceValue[
+    UnderlyingOsdkObject
+  ] as SimpleOsdkProperties;
   const objectDef = sourceValue[ObjectDefRef];
 
   const newProps: SimpleOsdkProperties = {
@@ -167,34 +170,28 @@ export function mergeObjectFields(
 
   for (const key of Object.keys(sourceUnderlying)) {
     if (
-      key in objectDef.properties
-      && (!sourceRdpFields.has(key) || targetRdpFields.has(key))
+      key in objectDef.properties &&
+      (!sourceRdpFields.has(key) || targetRdpFields.has(key))
     ) {
       newProps[key] = sourceUnderlying[key];
     }
   }
 
   if (targetCurrentValue) {
-    const targetUnderlying =
-      targetCurrentValue[UnderlyingOsdkObject] as SimpleOsdkProperties;
+    const targetUnderlying = targetCurrentValue[
+      UnderlyingOsdkObject
+    ] as SimpleOsdkProperties;
     for (const field of targetRdpFields) {
       if (field in targetUnderlying) {
         // Preserve target's value when:
         // 1. Source doesn't have this RDP field at all, OR
         // 2. Source hasn't provided the value (undefined)
-        if (
-          !sourceRdpFields.has(field)
-          || newProps[field] === undefined
-        ) {
+        if (!sourceRdpFields.has(field) || newProps[field] === undefined) {
           newProps[field] = targetUnderlying[field];
         }
       }
     }
   }
 
-  return createOsdkObject(
-    sourceValue[ClientRef],
-    objectDef,
-    newProps,
-  );
+  return createOsdkObject(sourceValue[ClientRef], objectDef, newProps);
 }

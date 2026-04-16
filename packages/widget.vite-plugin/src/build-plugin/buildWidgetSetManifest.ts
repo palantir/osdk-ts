@@ -68,8 +68,9 @@ function buildWidgetManifest(
     parameters: convertParameters(widgetConfig.parameters),
     events: widgetConfig.events,
     permissions: widgetConfig.permissions,
-    refreshHostDataOnAction: widgetConfig.refreshHostDataOnAction
-      ?? pluginOptions?.defaults?.refreshHostDataOnAction,
+    refreshHostDataOnAction:
+      widgetConfig.refreshHostDataOnAction ??
+      pluginOptions?.defaults?.refreshHostDataOnAction,
   };
 }
 
@@ -95,9 +96,10 @@ function convertParameter(
     return {
       type: "objectSet",
       displayName: parameter.displayName,
-      objectTypeRids: parameter.allowedType.type === "object"
-        ? [parameter.allowedType.internalDoNotUseMetadata.rid]
-        : [],
+      objectTypeRids:
+        parameter.allowedType.type === "object"
+          ? [parameter.allowedType.internalDoNotUseMetadata.rid]
+          : [],
       allowedType: parameter.allowedType.internalDoNotUseMetadata.rid,
     };
   }

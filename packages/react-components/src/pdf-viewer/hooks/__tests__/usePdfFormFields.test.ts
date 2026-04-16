@@ -76,9 +76,7 @@ describe("toFormFieldValue", () => {
   });
 
   it("should return string for radiobutton fields", () => {
-    expect(toFormFieldValue("option1", "radiobutton")).toBe(
-      "option1",
-    );
+    expect(toFormFieldValue("option1", "radiobutton")).toBe("option1");
   });
 
   it("should return string for combobox fields", () => {
@@ -86,10 +84,7 @@ describe("toFormFieldValue", () => {
   });
 
   it("should return array for array values", () => {
-    expect(toFormFieldValue(["a", "b"], "listbox")).toEqual([
-      "a",
-      "b",
-    ]);
+    expect(toFormFieldValue(["a", "b"], "listbox")).toEqual(["a", "b"]);
   });
 });
 

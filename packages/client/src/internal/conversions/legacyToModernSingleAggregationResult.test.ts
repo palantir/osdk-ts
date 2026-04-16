@@ -51,9 +51,10 @@ describe("legacyToModernSingleAggregationResult", () => {
       "age:min": "unordered",
     } as const;
 
-    const wireMetrics = modernToLegacyAggregationClause(select).map(
-      (agg) => ({ name: agg.name!, value: 42 }),
-    );
+    const wireMetrics = modernToLegacyAggregationClause(select).map((agg) => ({
+      name: agg.name!,
+      value: 42,
+    }));
 
     const result = legacyToModernSingleAggregationResult(
       { group: {}, metrics: wireMetrics },

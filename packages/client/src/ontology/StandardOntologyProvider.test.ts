@@ -20,9 +20,7 @@ import { beforeAll, describe, expect, it } from "vitest";
 import { createMinimalClientHelper } from "../createMinimalClientHelper.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { fetchPage } from "../object/fetchPage.js";
-import {
-  createStandardOntologyProviderFactory,
-} from "./StandardOntologyProvider.js";
+import { createStandardOntologyProviderFactory } from "./StandardOntologyProvider.js";
 
 describe(createStandardOntologyProviderFactory, () => {
   let client: MinimalClient;

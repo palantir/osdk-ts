@@ -2,4 +2,4 @@ type: improvement
 improvement:
   description: Set @osdk/create-app to public and being publishing to NPM
   links:
-  - https://github.com/palantir/osdk-ts/pull/33
+    - https://github.com/palantir/osdk-ts/pull/33

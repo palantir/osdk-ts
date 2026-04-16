@@ -29,8 +29,8 @@
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
     "codegen": "vite build --mode codegen",
     "dev": "vite",
-    "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
-    "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
+    "fix-lint": "eslint . --fix",
+    "lint": "eslint .",
     "preview": "vite preview",
     "transpileEsm": "monorepo.tool.transpile -f esm -m normal -t node",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"

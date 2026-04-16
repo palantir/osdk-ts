@@ -93,9 +93,10 @@ describe("EditRequestManager", () => {
     await editRequestManager.postEdit(addLinkEdit);
 
     expect(mockedRequestHandler).toHaveBeenCalledTimes(1);
-    expect(await mockedRequestHandler.mock.calls[0][0].request.json())
-      .toMatchInlineSnapshot(
-        `
+    expect(
+      await mockedRequestHandler.mock.calls[0][0].request.json(),
+    ).toMatchInlineSnapshot(
+      `
         {
           "edits": [
             {
@@ -108,14 +109,15 @@ describe("EditRequestManager", () => {
           ],
         }
       `,
-      );
+    );
 
     await editRequestManager.postEdit(addObjectEdit);
 
     expect(mockedRequestHandler).toHaveBeenCalledTimes(2);
-    expect(await mockedRequestHandler.mock.calls[1][0].request.json())
-      .toMatchInlineSnapshot(
-        `
+    expect(
+      await mockedRequestHandler.mock.calls[1][0].request.json(),
+    ).toMatchInlineSnapshot(
+      `
         {
           "edits": [
             {
@@ -126,7 +128,7 @@ describe("EditRequestManager", () => {
           ],
         }
       `,
-      );
+    );
   });
 
   it("stages multiple edits from the same tick in one request in order", async () => {
@@ -135,9 +137,10 @@ describe("EditRequestManager", () => {
     await editRequestManager.postEdit(addObjectEdit);
 
     expect(mockedRequestHandler).toHaveBeenCalledTimes(1);
-    expect(await mockedRequestHandler.mock.calls[0][0].request.json())
-      .toMatchInlineSnapshot(
-        `
+    expect(
+      await mockedRequestHandler.mock.calls[0][0].request.json(),
+    ).toMatchInlineSnapshot(
+      `
         {
           "edits": [
             {
@@ -160,7 +163,7 @@ describe("EditRequestManager", () => {
           ],
         }
       `,
-      );
+    );
 
     await editRequestManager.postEdit(addLinkEdit);
     expect(mockedRequestHandler).toHaveBeenCalledTimes(2);
@@ -182,22 +185,20 @@ describe("EditRequestManager", () => {
 
   it("handles edits posted while a request is in flight", async () => {
     maybeDeferServer = pDefer();
-    void editRequestManager.postEdit(
-      addLinkEdit,
-    );
-    await new Promise(resolve => setTimeout(resolve, 0)); // Ensure the initial request is in flight
-    const secondPromise: Promise<void> = editRequestManager.postEdit(
-      addObjectEdit,
-    );
+    void editRequestManager.postEdit(addLinkEdit);
+    await new Promise((resolve) => setTimeout(resolve, 0)); // Ensure the initial request is in flight
+    const secondPromise: Promise<void> =
+      editRequestManager.postEdit(addObjectEdit);
     void editRequestManager.postEdit(addObjectEdit);
     maybeDeferServer.resolve();
 
     await secondPromise; // Awaiting the second edit should ensure the first resolves first and should also resolve the third since it was dispatched in the same tick
 
     expect(mockedRequestHandler).toHaveBeenCalledTimes(2);
-    expect(await mockedRequestHandler.mock.calls[0][0].request.json())
-      .toMatchInlineSnapshot(
-        `
+    expect(
+      await mockedRequestHandler.mock.calls[0][0].request.json(),
+    ).toMatchInlineSnapshot(
+      `
         {
           "edits": [
             {
@@ -210,7 +211,7 @@ describe("EditRequestManager", () => {
           ],
         }
       `,
-      );
+    );
     expect(await mockedRequestHandler.mock.calls[1][0].request.json())
       .toMatchInlineSnapshot(`
         {
@@ -264,7 +265,7 @@ describe("EditRequestManager", () => {
     it("waits for in-flight and queued requests to complete", async () => {
       maybeDeferServer = pDefer();
       const firstEdit = editRequestManager.postEdit(addLinkEdit);
-      await new Promise(resolve => setTimeout(resolve, 0));
+      await new Promise((resolve) => setTimeout(resolve, 0));
 
       const secondEdit = editRequestManager.postEdit(addObjectEdit);
 
@@ -340,10 +341,10 @@ describe("EditRequestManager", () => {
     it("ensures all requests complete when multiple edits are queued", async () => {
       maybeDeferServer = pDefer();
       const firstEdit = editRequestManager.postEdit(addLinkEdit);
-      await new Promise(resolve => setTimeout(resolve, 0));
+      await new Promise((resolve) => setTimeout(resolve, 0));
 
       const secondEdit = editRequestManager.postEdit(addObjectEdit);
-      await new Promise(resolve => setTimeout(resolve, 0));
+      await new Promise((resolve) => setTimeout(resolve, 0));
 
       const thirdEdit = editRequestManager.postEdit(addLinkEdit);
 

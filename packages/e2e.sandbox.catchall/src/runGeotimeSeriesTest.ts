@@ -38,24 +38,22 @@ export async function runGeotimeSeriesReferenceTests(): Promise<void> {
   });
   console.log(allPoints![0].value);
 
-  const secondResult = await dsClient(RhemmingsObjectWithGtsrProperty2)
-    .fetchOne("track-id");
+  const secondResult = await dsClient(
+    RhemmingsObjectWithGtsrProperty2,
+  ).fetchOne("track-id");
 
-  for await (
-    const t of secondResult.gtsr!.asyncIterValues({
-      $startTime: "2015-01-28T01:07:00Z",
-      $endTime: "2025-01-28T01:33:00Z",
-    })
-  ) {
+  for await (const t of secondResult.gtsr!.asyncIterValues({
+    $startTime: "2015-01-28T01:07:00Z",
+    $endTime: "2025-01-28T01:33:00Z",
+  })) {
     console.log(t);
   }
 
-  const resultWithNoData = await dsClient(GtfsTripTrackObject).fetchOne(
-    "wmata_35356020",
-  );
+  const resultWithNoData =
+    await dsClient(GtfsTripTrackObject).fetchOne("wmata_35356020");
 
-  const noDataPoint = await resultWithNoData.geotimeSeriesReferences
-    ?.getLatestValue();
+  const noDataPoint =
+    await resultWithNoData.geotimeSeriesReferences?.getLatestValue();
 
   console.log("GTSR with no data should be undefined: ", noDataPoint);
 }

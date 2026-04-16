@@ -11,4 +11,3 @@ While the api-extract can be used for generating rolled up `.d.ts` files, we do 
 The `api-extractor` has a "local" and a non-local (CI) mode. In the "local" mode, it will automatically update the file we commit for the api report. The intent of the tool is to error in CI if the file that is committed doesn't match the output, however the behavior of the tool is to exit with a non-zero code when there are warnings in the non-local mode. This makes adoption of the tool expensive at best and at worst removes the ability to have granular information.
 
 As such, we run the tool in CI in "local" mode so that we do not get non-zero exits for warnings. Our existing build infrastructure already fails the build if any changes happen to committed files during CI and as such we can rely on that mechanism to be sure that developers have updated the api report that gets committed.
-

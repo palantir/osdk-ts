@@ -8,7 +8,6 @@
   overflow: hidden;
 }
 
-
 .scrollContainer {
   flex: 1;
   overflow-y: auto;
@@ -36,7 +35,10 @@
 }
 
 .outlineItem:hover {
-  background-color: var(--osdk-pdf-viewer-outline-item-hover-bg, rgba(0, 0, 0, 0.06));
+  background-color: var(
+    --osdk-pdf-viewer-outline-item-hover-bg,
+    rgba(0, 0, 0, 0.06)
+  );
 }
 
 .outlineItem:focus-visible {
@@ -45,8 +47,14 @@
 }
 
 .outlineItemActive {
-  background-color: var(--osdk-pdf-viewer-outline-item-active-bg, rgba(45, 114, 210, 0.1));
-  color: var(--osdk-pdf-viewer-outline-item-active-color, var(--osdk-intent-primary));
+  background-color: var(
+    --osdk-pdf-viewer-outline-item-active-bg,
+    rgba(45, 114, 210, 0.1)
+  );
+  color: var(
+    --osdk-pdf-viewer-outline-item-active-color,
+    var(--osdk-intent-primary)
+  );
   font-weight: var(--osdk-typography-weight-semibold);
 }
 
@@ -86,4 +94,3 @@
   font-size: var(--osdk-typography-size-body-small);
   color: var(--osdk-typography-color-muted);
 }
-

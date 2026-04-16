@@ -37,7 +37,7 @@ export function useOrgTree(
 
   const level1Employees = React.useMemo(() => {
     if (!level0.reports) return [];
-    return level0.reports.filter(r => expandedNodes.has(r.employeeNumber));
+    return level0.reports.filter((r) => expandedNodes.has(r.employeeNumber));
   }, [level0.reports, expandedNodes]);
 
   const level1a = useReportsLevel(
@@ -101,9 +101,9 @@ export function useOrgTree(
 
       let childNodes: OrgTreeNode[] = [];
       if (reports && isExpanded && depth < maxDepth) {
-        childNodes = reports.map(r => {
-          const level1Index = level1Employees.findIndex(e =>
-            e.employeeNumber === r.employeeNumber
+        childNodes = reports.map((r) => {
+          const level1Index = level1Employees.findIndex(
+            (e) => e.employeeNumber === r.employeeNumber,
           );
           const level1Result =
             level1Index >= 0 && level1Index < MAX_EXPANDED_REPORTS
@@ -127,9 +127,9 @@ export function useOrgTree(
       };
     };
 
-    const rootReports = level0.reports.map(r => {
-      const level1Index = level1Employees.findIndex(e =>
-        e.employeeNumber === r.employeeNumber
+    const rootReports = level0.reports.map((r) => {
+      const level1Index = level1Employees.findIndex(
+        (e) => e.employeeNumber === r.employeeNumber,
       );
       const level1Result =
         level1Index >= 0 && level1Index < MAX_EXPANDED_REPORTS
@@ -168,13 +168,13 @@ export function useOrgTree(
   const getMaxDepth = React.useCallback(
     (node: OrgTreeNode | null, current: number = 1): number => {
       if (!node || node.reports.length === 0) return current;
-      return Math.max(...node.reports.map(r => getMaxDepth(r, current + 1)));
+      return Math.max(...node.reports.map((r) => getMaxDepth(r, current + 1)));
     },
     [],
   );
 
   const toggleExpand = React.useCallback((employeeNumber: number) => {
-    setExpandedNodes(prev => {
+    setExpandedNodes((prev) => {
       const next = new Set(prev);
       if (next.has(employeeNumber)) {
         next.delete(employeeNumber);
@@ -187,7 +187,7 @@ export function useOrgTree(
 
   const totalCount = Math.max(0, countNodes(tree) - 1);
   const currentMaxDepth = tree ? getMaxDepth(tree) : 0;
-  const isLoading = level0.isLoading || level1Results.some(r => r.isLoading);
+  const isLoading = level0.isLoading || level1Results.some((r) => r.isLoading);
 
   return {
     tree,

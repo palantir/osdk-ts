@@ -84,9 +84,7 @@ describe("PdfViewerAnnotationLayer", () => {
       />,
     );
 
-    const item = container.querySelector(
-      "[data-annotation-id]",
-    ) as HTMLElement;
+    const item = container.querySelector("[data-annotation-id]") as HTMLElement;
     // top = (pageHeight - y - height) * scale = (792 - 500 - 20) * 1.0 = 272
     expect(item.style.top).toBe("272px");
     expect(item.style.left).toBe("100px");
@@ -107,9 +105,7 @@ describe("PdfViewerAnnotationLayer", () => {
       />,
     );
 
-    const item = container.querySelector(
-      "[data-annotation-id]",
-    ) as HTMLElement;
+    const item = container.querySelector("[data-annotation-id]") as HTMLElement;
     // top = (792 - 500 - 20) * 2.0 = 544
     expect(item.style.top).toBe("544px");
     expect(item.style.left).toBe("200px");
@@ -174,9 +170,7 @@ describe("PdfViewerAnnotationLayer", () => {
       />,
     );
 
-    const item = container.querySelector(
-      "[data-annotation-id]",
-    ) as HTMLElement;
+    const item = container.querySelector("[data-annotation-id]") as HTMLElement;
     fireEvent.keyDown(item, { key: "Tab" });
 
     expect(onClick).not.toHaveBeenCalled();
@@ -193,9 +187,7 @@ describe("PdfViewerAnnotationLayer", () => {
       />,
     );
 
-    const item = container.querySelector(
-      "[data-annotation-id]",
-    ) as HTMLElement;
+    const item = container.querySelector("[data-annotation-id]") as HTMLElement;
     expect(item.title).toBe("My Note");
   });
 
@@ -210,9 +202,7 @@ describe("PdfViewerAnnotationLayer", () => {
       />,
     );
 
-    const item = container.querySelector(
-      "[data-annotation-id]",
-    ) as HTMLElement;
+    const item = container.querySelector("[data-annotation-id]") as HTMLElement;
     expect(item.style.getPropertyValue("--osdk-pdf-annotation-color")).toBe(
       "#ff0000",
     );
@@ -229,9 +219,7 @@ describe("PdfViewerAnnotationLayer", () => {
       />,
     );
 
-    const item = container.querySelector(
-      "[data-annotation-id]",
-    ) as HTMLElement;
+    const item = container.querySelector("[data-annotation-id]") as HTMLElement;
     expect(item.style.getPropertyValue("--osdk-pdf-annotation-color")).toBe("");
   });
 
@@ -246,9 +234,7 @@ describe("PdfViewerAnnotationLayer", () => {
       />,
     );
 
-    const item = container.querySelector(
-      "[data-annotation-id]",
-    ) as HTMLElement;
+    const item = container.querySelector("[data-annotation-id]") as HTMLElement;
     expect(item.getAttribute("role")).toBe("button");
     expect(item.getAttribute("tabindex")).toBe("0");
   });
@@ -264,9 +250,7 @@ describe("PdfViewerAnnotationLayer", () => {
       />,
     );
 
-    const item = container.querySelector(
-      "[data-annotation-id]",
-    ) as HTMLElement;
+    const item = container.querySelector("[data-annotation-id]") as HTMLElement;
     // Should not throw
     fireEvent.click(item);
     fireEvent.keyDown(item, { key: "Enter" });
@@ -274,13 +258,13 @@ describe("PdfViewerAnnotationLayer", () => {
 
   it("should render custom annotation with render function", () => {
     const renderFn = vi.fn(
-      (
-        { scale }: {
-          annotation: PdfAnnotation;
-          scale: number;
-          pageHeight: number;
-        },
-      ) => <span data-testid="custom-content">Scaled: {scale}</span>,
+      ({
+        scale,
+      }: {
+        annotation: PdfAnnotation;
+        scale: number;
+        pageHeight: number;
+      }) => <span data-testid="custom-content">Scaled: {scale}</span>,
     );
     const annotation = createAnnotation({
       id: "custom-1",

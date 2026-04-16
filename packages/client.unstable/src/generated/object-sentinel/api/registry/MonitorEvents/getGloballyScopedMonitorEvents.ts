@@ -20,8 +20,7 @@ import type {
   MonitorRid as _api_MonitorRid,
 } from "../../__components.js";
 import type {
-  GetGloballyScopedMonitorEventsResponse
-    as _api_registry_GetGloballyScopedMonitorEventsResponse,
+  GetGloballyScopedMonitorEventsResponse as _api_registry_GetGloballyScopedMonitorEventsResponse,
   PageToken as _api_registry_PageToken,
 } from "../__components.js";
 

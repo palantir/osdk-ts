@@ -29,10 +29,10 @@ function isFirstMinorRelease(oldVersion: string, newVersion: string): boolean {
     );
   }
   return (
-    oldSemver.prerelease.length > 0
-    && newSemver.prerelease.length === 0
-    && oldSemver.compareMain(newSemver) === 0
-    && newSemver.patch === 0
+    oldSemver.prerelease.length > 0 &&
+    newSemver.prerelease.length === 0 &&
+    oldSemver.compareMain(newSemver) === 0 &&
+    newSemver.patch === 0
   );
 }
 
@@ -52,8 +52,8 @@ function isPatchVersionOrFirstMinorRelease(
   if (releaseForChangeset.type === "minor") {
     // Find the matching release entry in the overall release plan
     const releaseName = releaseForChangeset.name;
-    const matchingReleases = releasePlan.releases.filter((r) =>
-      r.name === releaseForChangeset.name
+    const matchingReleases = releasePlan.releases.filter(
+      (r) => r.name === releaseForChangeset.name,
     );
     if (matchingReleases.length !== 1) {
       throw new FailedWithUserMessage(
@@ -78,24 +78,22 @@ export function mutateReleasePlan(
       if (releaseType === "main" && release.type === "patch") {
         release.type = "minor";
       } else if (
-        releaseType === "release branch"
-        && (!isPatchVersionOrFirstMinorRelease(releasePlan, release))
-        && (release.type !== "none")
+        releaseType === "release branch" &&
+        !isPatchVersionOrFirstMinorRelease(releasePlan, release) &&
+        release.type !== "none"
       ) {
         if (!errorStarted) {
-          bulkErrorMsg = `\n${
-            chalk.cyan(
-              path.relative(
-                cwd,
-                `${path.join(cwd, ".changeset", changeSet.id)}.md`,
-              ),
-            )
-          }:\n`;
+          bulkErrorMsg = `\n${chalk.cyan(
+            path.relative(
+              cwd,
+              `${path.join(cwd, ".changeset", changeSet.id)}.md`,
+            ),
+          )}:\n`;
           errorStarted = true;
         }
-        bulkErrorMsg += `  - ${
-          chalk.red(`${release.name}: ${release.type}`)
-        }\n`;
+        bulkErrorMsg += `  - ${chalk.red(
+          `${release.name}: ${release.type}`,
+        )}\n`;
       }
 
       if (release.type === "major") {
@@ -108,10 +106,10 @@ export function mutateReleasePlan(
 
   if (bulkErrorMsg.length > 0) {
     throw new FailedWithUserMessage(
-      `Unable to create a release for the stable branch.\n\n`
-        + `Our branching model requires that we only release patch changes on a stable branch `
-        + `to avoid version number collisions with main and the other release branches. `
-        + `Problems:\n${bulkErrorMsg}`,
+      `Unable to create a release for the stable branch.\n\n` +
+        `Our branching model requires that we only release patch changes on a stable branch ` +
+        `to avoid version number collisions with main and the other release branches. ` +
+        `Problems:\n${bulkErrorMsg}`,
     );
   }
 

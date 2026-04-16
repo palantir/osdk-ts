@@ -26,18 +26,14 @@ export async function publishRelease(
   zipFile: ReadableStream | Blob | BufferSource,
 ): Promise<void> {
   const fetch = createFetch(ctx.tokenProvider);
-  const url =
-    `${ctx.foundryUrl}/api/v2/widgets/repositories/${repositoryRid}/publish?preview=true&repositoryVersion=${repositoryVersion}`;
+  const url = `${ctx.foundryUrl}/api/v2/widgets/repositories/${repositoryRid}/publish?preview=true&repositoryVersion=${repositoryVersion}`;
 
-  await fetch(
-    url,
-    {
-      method: "POST",
-      body: zipFile,
-      headers: {
-        "Content-Type": "application/octet-stream",
-      },
-      duplex: "half", // Node hates me
-    } satisfies RequestInit & { duplex: "half" } as any,
-  );
+  await fetch(url, {
+    method: "POST",
+    body: zipFile,
+    headers: {
+      "Content-Type": "application/octet-stream",
+    },
+    duplex: "half", // Node hates me
+  } satisfies RequestInit & { duplex: "half" } as any);
 }

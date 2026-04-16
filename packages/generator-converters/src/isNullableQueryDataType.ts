@@ -21,7 +21,7 @@ export function isNullableQueryDataType(input: QueryDataType): boolean {
     return true;
   }
   if (input.type === "union") {
-    return input.unionTypes.some(t => isNullableQueryDataType(t));
+    return input.unionTypes.some((t) => isNullableQueryDataType(t));
   }
   return false;
 }

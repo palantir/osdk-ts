@@ -40,16 +40,18 @@ export interface TH_ActionDefinition<
 export interface TH_ActionMetadata<
   X extends TH_ActionTypeV2<Record<ParameterId, ActionParameterV2>>,
 > extends ActionMetadata {
-  parameters: X extends TH_ActionTypeV2<infer P> ? {
-      [K in keyof P]: P[K] extends TH_ActionParameterV2<infer APT, infer R>
-        ? (APT extends "string" | "integer" ? {
-            multiplicity: false;
-            nullable: R extends true ? false : true;
-            type: APT;
-          }
-          : never)
-        : never;
-    }
+  parameters: X extends TH_ActionTypeV2<infer P>
+    ? {
+        [K in keyof P]: P[K] extends TH_ActionParameterV2<infer APT, infer R>
+          ? APT extends "string" | "integer"
+            ? {
+                multiplicity: false;
+                nullable: R extends true ? false : true;
+                type: APT;
+              }
+            : never
+          : never;
+      }
     : never;
 
   // not part of ActionMetadata but used for types in @osdk/client
@@ -61,36 +63,33 @@ interface Signatures<X extends Record<any, ActionMetadata.Parameter<any>>> {
   batchApplyAction: <
     A extends OsdkActionParameters<X>[],
     OP extends ApplyBatchActionOptions,
-  >(args: A, options?: OP) => Promise<ActionReturnTypeForOptions<OP>>;
+  >(
+    args: A,
+    options?: OP,
+  ) => Promise<ActionReturnTypeForOptions<OP>>;
 }
 type BaseType<APD extends Pick<ActionMetadata.Parameter<any>, "type">> =
   APD["type"] extends ActionMetadata.DataType.Object<infer TTargetType>
     ? ActionParam.ObjectType<TTargetType>
     : APD["type"] extends ActionMetadata.DataType.ObjectSet<infer TTargetType>
       ? ActionParam.ObjectSetType<TTargetType>
-    : APD["type"] extends ActionMetadata.DataType.Struct<infer TStructType>
-      ? ActionParam.StructType<TStructType>
-    : APD["type"] extends keyof DataValueClientToWire
-      ? ActionParam.PrimitiveType<APD["type"]>
-    : never;
-type ActionSignature<
-  X extends Record<any, ActionMetadata.Parameter<any>>,
-> = <
+      : APD["type"] extends ActionMetadata.DataType.Struct<infer TStructType>
+        ? ActionParam.StructType<TStructType>
+        : APD["type"] extends keyof DataValueClientToWire
+          ? ActionParam.PrimitiveType<APD["type"]>
+          : never;
+type ActionSignature<X extends Record<any, ActionMetadata.Parameter<any>>> = <
   A extends OsdkActionParameters<X>,
   OP extends ApplyActionOptions,
 >(
   args: A,
   options?: OP,
-) => Promise<
-  ActionReturnTypeForOptions<OP>
+) => Promise<ActionReturnTypeForOptions<OP>>;
+type ActionParametersDefinition = Record<any, ActionMetadata.Parameter<any>>;
+type OsdkActionParameters<X extends ActionParametersDefinition> = PartialBy<
+  FullParams<X>,
+  NullableParamKeys<X>
 >;
-type ActionParametersDefinition = Record<
-  any,
-  ActionMetadata.Parameter<any>
->;
-type OsdkActionParameters<
-  X extends ActionParametersDefinition,
-> = PartialBy<FullParams<X>, NullableParamKeys<X>>;
 type NullableParamKeys<T extends Record<string, { nullable?: boolean }>> =
   keyof {
     [K in keyof T as T[K]["nullable"] extends true ? K : never]: "";

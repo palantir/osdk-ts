@@ -36,8 +36,8 @@ export namespace ObjectSetArgs {
 
   export type OrderByOptions<L extends string> =
     | {
-      [K in L]?: "asc" | "desc";
-    }
+        [K in L]?: "asc" | "desc";
+      }
     | "relevance";
 
   export interface OrderBy<
@@ -53,7 +53,8 @@ export namespace ObjectSetArgs {
     T extends boolean = false,
     RDP_KEYS extends string = never,
     ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<K> = never,
-  > extends Select<K, RDP_KEYS>, OrderBy<ORDER_BY_OPTIONS, K> {
+  >
+    extends Select<K, RDP_KEYS>, OrderBy<ORDER_BY_OPTIONS, K> {
     $__UNSTABLE_useOldInterfaceApis?: boolean;
     $includeAllBaseObjectProperties?: PropertyKeys<Q> extends K ? T : never;
   }
@@ -87,15 +88,17 @@ export interface OrderByArg<
   Q extends ObjectOrInterfaceDefinition,
   L extends string = PropertyKeys<Q>,
   ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<L> = never,
-> extends ObjectSetArgs.OrderBy<ORDER_BY_OPTIONS, L> {
-}
+> extends ObjectSetArgs.OrderBy<ORDER_BY_OPTIONS, L> {}
 
 export type SelectArgToKeys<
   Q extends ObjectOrInterfaceDefinition,
   A extends SelectArg<Q, any, any>,
-> = A extends SelectArg<Q, never> ? PropertyKeys<Q>
-  : A["$select"] extends readonly string[] ? A["$select"][number]
-  : PropertyKeys<Q>;
+> =
+  A extends SelectArg<Q, never>
+    ? PropertyKeys<Q>
+    : A["$select"] extends readonly string[]
+      ? A["$select"][number]
+      : PropertyKeys<Q>;
 
 export interface FetchPageArgs<
   Q extends ObjectOrInterfaceDefinition,
@@ -107,19 +110,17 @@ export interface FetchPageArgs<
   RDP_KEYS extends string = never,
   ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<K> = {},
   PROPERTY_SECURITIES extends boolean = false,
-> extends
-  AsyncIterArgs<
-    Q,
-    K,
-    R,
-    A,
-    S,
-    T,
-    RDP_KEYS,
-    ORDER_BY_OPTIONS,
-    PROPERTY_SECURITIES
-  >
-{
+> extends AsyncIterArgs<
+  Q,
+  K,
+  R,
+  A,
+  S,
+  T,
+  RDP_KEYS,
+  ORDER_BY_OPTIONS,
+  PROPERTY_SECURITIES
+> {
   $nextPageToken?: string;
   $pageSize?: number;
 }
@@ -134,17 +135,16 @@ export interface AsyncIterArgs<
   RDP_KEYS extends string = never,
   ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<K> = never,
   PROPERTY_SECURITIES extends boolean = false,
-> extends
-  SelectArg<Q, K, R, S, RDP_KEYS, PROPERTY_SECURITIES>,
-  OrderByArg<Q, PropertyKeys<Q> | RDP_KEYS, ORDER_BY_OPTIONS>
-{
+>
+  extends
+    SelectArg<Q, K, R, S, RDP_KEYS, PROPERTY_SECURITIES>,
+    OrderByArg<Q, PropertyKeys<Q> | RDP_KEYS, ORDER_BY_OPTIONS> {
   $__UNSTABLE_useOldInterfaceApis?: boolean;
   $includeAllBaseObjectProperties?: PropertyKeys<Q> extends K ? T : never;
 }
 
-export type Augment<
-  X extends ObjectOrInterfaceDefinition,
-  T extends string,
-> = { [K in CompileTimeMetadata<X>["apiName"]]: T[] };
+export type Augment<X extends ObjectOrInterfaceDefinition, T extends string> = {
+  [K in CompileTimeMetadata<X>["apiName"]]: T[];
+};
 
 export type Augments = Record<string, string[]>;

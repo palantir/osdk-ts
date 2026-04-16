@@ -19,8 +19,10 @@ export function startsWithApiNamespace(
   ontologyApiNamespace: string | undefined,
 ): boolean {
   if (ontologyApiNamespace) {
-    return name.startsWith(`${ontologyApiNamespace}.`)
-      && !name.slice(ontologyApiNamespace.length + 1).includes(".");
+    return (
+      name.startsWith(`${ontologyApiNamespace}.`) &&
+      !name.slice(ontologyApiNamespace.length + 1).includes(".")
+    );
   } else {
     return !name.includes(".");
   }

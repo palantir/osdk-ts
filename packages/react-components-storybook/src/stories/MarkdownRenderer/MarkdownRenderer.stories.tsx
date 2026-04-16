@@ -143,8 +143,7 @@ export const MinimalContent: Story = {
   parameters: {
     docs: {
       source: {
-        code:
-          `import { MarkdownRenderer } from "@osdk/react-components/experimental";
+        code: `import { MarkdownRenderer } from "@osdk/react-components/experimental";
 
 <MarkdownRenderer content="# Hello World\\n\\nA simple paragraph with **bold** and *italic*." />`,
       },

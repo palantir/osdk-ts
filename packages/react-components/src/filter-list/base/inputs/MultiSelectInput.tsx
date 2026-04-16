@@ -51,10 +51,7 @@ function MultiSelectInputInner({
     [onChange],
   );
 
-  const items = useMemo(
-    () => values.map(({ value }) => value),
-    [values],
-  );
+  const items = useMemo(() => values.map(({ value }) => value), [values]);
 
   const countByValue = useMemo(
     () => new Map(values.map(({ value, count }) => [value, count])),
@@ -78,10 +75,7 @@ function MultiSelectInputInner({
     (selectedItems: string[]) => (
       <>
         {selectedItems.map((value) => (
-          <Combobox.Chip
-            key={value}
-            aria-label={value}
-          >
+          <Combobox.Chip key={value} aria-label={value}>
             {value}
             <Combobox.ChipRemove />
           </Combobox.Chip>
@@ -121,9 +115,7 @@ function MultiSelectInputInner({
           items={items}
         >
           {isLoading && (
-            <div className={sharedStyles.loadingMessage}>
-              Updating...
-            </div>
+            <div className={sharedStyles.loadingMessage}>Updating...</div>
           )}
 
           <Combobox.Chips>

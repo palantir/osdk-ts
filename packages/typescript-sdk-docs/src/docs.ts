@@ -99,15 +99,19 @@ function handleActionParameterSampleValuesV2({
   );
 }
 
-function handlePropertyValueV1(
-  { rawPropertyValue }: { rawPropertyValue?: PropertySampleValueTypeIR },
-) {
+function handlePropertyValueV1({
+  rawPropertyValue,
+}: {
+  rawPropertyValue?: PropertySampleValueTypeIR;
+}) {
   return renderPropertyValue(rawPropertyValue, SdkMajorVersion.V1);
 }
 
-function handlePropertyValueV2(
-  { rawPropertyValue }: { rawPropertyValue?: PropertySampleValueTypeIR },
-) {
+function handlePropertyValueV2({
+  rawPropertyValue,
+}: {
+  rawPropertyValue?: PropertySampleValueTypeIR;
+}) {
   return renderPropertyValue(rawPropertyValue, SdkMajorVersion.V2);
 }
 
@@ -127,9 +131,11 @@ function handlePropertyValueIncrementedV2({
   return renderPropertyValue(rawPropertyValueIncremented, SdkMajorVersion.V2);
 }
 
-function handleArrayElementValue(
-  { rawPropertyValue }: { rawPropertyValue?: PropertySampleValueTypeIR },
-) {
+function handleArrayElementValue({
+  rawPropertyValue,
+}: {
+  rawPropertyValue?: PropertySampleValueTypeIR;
+}) {
   return renderArrayElementPropertyValue(rawPropertyValue, SdkMajorVersion.V2);
 }
 
@@ -144,35 +150,41 @@ function renderArrayElementPropertyValue(
   return renderType(propertyValue, majorVersion, "arraySubType");
 }
 
-function handlePropertiesV1(
-  { rawProperties }: { rawProperties?: PropertySampleIR[] },
-) {
+function handlePropertiesV1({
+  rawProperties,
+}: {
+  rawProperties?: PropertySampleIR[];
+}) {
   if (rawProperties == null) {
     throw new Error("Cannot render with null rawProperties");
   }
 
-  return rawProperties.map(prop => ({
+  return rawProperties.map((prop) => ({
     apiName: prop.apiName,
     value: renderPropertyValue(prop.value, SdkMajorVersion.V1),
   }));
 }
 
-function handlePropertiesV2(
-  { rawProperties }: { rawProperties?: PropertySampleIR[] },
-) {
+function handlePropertiesV2({
+  rawProperties,
+}: {
+  rawProperties?: PropertySampleIR[];
+}) {
   if (rawProperties == null) {
     throw new Error("Cannot render with null rawProperties");
   }
 
-  return rawProperties.map(prop => ({
+  return rawProperties.map((prop) => ({
     apiName: prop.apiName,
     value: renderPropertyValue(prop.value, SdkMajorVersion.V2),
   }));
 }
 
-function handlePrimaryKeyPropertyV1(
-  { rawPrimaryKeyProperty }: { rawPrimaryKeyProperty?: PropertySampleIR },
-) {
+function handlePrimaryKeyPropertyV1({
+  rawPrimaryKeyProperty,
+}: {
+  rawPrimaryKeyProperty?: PropertySampleIR;
+}) {
   if (rawPrimaryKeyProperty == null) {
     throw new Error("Cannot render with null rawPrimaryKeyProperty");
   }
@@ -183,9 +195,11 @@ function handlePrimaryKeyPropertyV1(
   };
 }
 
-function handlePrimaryKeyPropertyV2(
-  { rawPrimaryKeyProperty }: { rawPrimaryKeyProperty?: PropertySampleIR },
-) {
+function handlePrimaryKeyPropertyV2({
+  rawPrimaryKeyProperty,
+}: {
+  rawPrimaryKeyProperty?: PropertySampleIR;
+}) {
   if (rawPrimaryKeyProperty == null) {
     throw new Error("Cannot render with null rawPrimaryKeyProperty");
   }
@@ -208,27 +222,31 @@ function handlePrimaryKeyPropertyValueV2({
   return renderPropertyValue(rawPrimaryKeyProperty.value, SdkMajorVersion.V2);
 }
 
-function handleLinkedPropertiesV1(
-  { rawLinkedProperties }: { rawLinkedProperties?: PropertySampleIR[] },
-) {
+function handleLinkedPropertiesV1({
+  rawLinkedProperties,
+}: {
+  rawLinkedProperties?: PropertySampleIR[];
+}) {
   if (rawLinkedProperties == null) {
     throw new Error("Cannot render with null rawLinkedProperties");
   }
 
-  return rawLinkedProperties.map(prop => ({
+  return rawLinkedProperties.map((prop) => ({
     apiName: prop.apiName,
     value: renderPropertyValue(prop.value, SdkMajorVersion.V1),
   }));
 }
 
-function handleLinkedPropertiesV2(
-  { rawLinkedProperties }: { rawLinkedProperties?: PropertySampleIR[] },
-) {
+function handleLinkedPropertiesV2({
+  rawLinkedProperties,
+}: {
+  rawLinkedProperties?: PropertySampleIR[];
+}) {
   if (rawLinkedProperties == null) {
     throw new Error("Cannot render with null rawLinkedProperties");
   }
 
-  return rawLinkedProperties.map(prop => ({
+  return rawLinkedProperties.map((prop) => ({
     apiName: prop.apiName,
     value: renderPropertyValue(prop.value, SdkMajorVersion.V2),
   }));
@@ -294,13 +312,12 @@ function renderFunctionInputValues(
 
   return outdent`
     {
-        ${
-    Object.entries(rawFunctionInputValues.parameters)
-      .map(([key, value]) =>
-        `"${key}": ${renderType(value, majorVersion, "functionInput")}`
-      )
-      .join(`,${indentedNewLine(4)}`)
-  }
+        ${Object.entries(rawFunctionInputValues.parameters)
+          .map(
+            ([key, value]) =>
+              `"${key}": ${renderType(value, majorVersion, "functionInput")}`,
+          )
+          .join(`,${indentedNewLine(4)}`)}
     }`;
 }
 
@@ -370,9 +387,10 @@ function renderType(
     case "timestamp":
       return getTimestampParameter(majorVersion, type.daysOffset);
     case "object":
-      const primaryKeyValue = type.primaryKeyType === "string"
-        ? "\"primaryKeyValue\""
-        : "primaryKeyValue";
+      const primaryKeyValue =
+        type.primaryKeyType === "string"
+          ? '"primaryKeyValue"'
+          : "primaryKeyValue";
       if (context === "actionParameter") {
         return `${primaryKeyValue} // or myObjectInstance`;
       }
@@ -384,8 +402,9 @@ function renderType(
       const entries = Object.entries(type.parameters ?? {});
       if (entries.length > 0) {
         const rendered = entries
-          .map(([name, value]) =>
-            `"${name}": ${renderType(value, majorVersion, context)}`
+          .map(
+            ([name, value]) =>
+              `"${name}": ${renderType(value, majorVersion, context)}`,
           )
           .join(`,${indentedNewLine(8)}`);
         return `{${indentedNewLine(8)}${rendered}${indentedNewLine(4)}}`;
@@ -405,19 +424,19 @@ function renderType(
       return `"${type.objectTypeApiName}"`;
     case "map":
       if (type.keyType.type === "object") {
-        return `{[${
-          getMapKeyObjectName(type.keyType.apiName)
-        }.$objectSpecifier]: ${
-          renderType(type.valueType, majorVersion, context)
-        }}`;
-      }
-      return `{${
-        renderType(
+        return `{[${getMapKeyObjectName(
+          type.keyType.apiName,
+        )}.$objectSpecifier]: ${renderType(
           type.valueType,
           majorVersion,
           context,
-        )
-      }: ${renderType(type.valueType, majorVersion, context)}}`;
+        )}}`;
+      }
+      return `{${renderType(
+        type.valueType,
+        majorVersion,
+        context,
+      )}: ${renderType(type.valueType, majorVersion, context)}}`;
 
     case "string":
     case "unknown":
@@ -435,7 +454,7 @@ function getMapKeyObjectName(apiName?: string) {
 
 function getDisplayName(input: string): string {
   const tokens = input.split(/[_-]|(?<=[a-z])(?=[A-Z])/);
-  const result = tokens.map(token => titleCase(token.toLowerCase())).join("");
+  const result = tokens.map((token) => titleCase(token.toLowerCase())).join("");
   return result.charAt(0).toLowerCase() + result.slice(1);
 }
 

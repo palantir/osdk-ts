@@ -69,13 +69,14 @@ export class ObjectQuery extends Query<
       opts,
       cacheKey,
       process.env.NODE_ENV !== "production"
-        ? (
-          store.client[additionalContext].logger?.child({}, {
-            msgPrefix: `ObjectQuery<${
-              cacheKey.otherKeys.map(x => JSON.stringify(x)).join(", ")
-            }>`,
-          })
-        )
+        ? store.client[additionalContext].logger?.child(
+            {},
+            {
+              msgPrefix: `ObjectQuery<${cacheKey.otherKeys
+                .map((x) => JSON.stringify(x))
+                .join(", ")}>`,
+            },
+          )
         : undefined,
     );
     this.#apiName = type;
@@ -113,9 +114,9 @@ export class ObjectQuery extends Query<
 
   async _fetchAndStore(): Promise<void> {
     if (process.env.NODE_ENV !== "production") {
-      this.logger?.child({ methodName: "_fetchAndStore" }).debug(
-        "calling _fetchAndStore",
-      );
+      this.logger
+        ?.child({ methodName: "_fetchAndStore" })
+        .debug("calling _fetchAndStore");
     }
 
     // TODO: In the future, implement tracking of network requests to ensure
@@ -132,32 +133,28 @@ export class ObjectQuery extends Query<
         apiName: this.#apiName,
       } as ObjectTypeDefinition;
 
-      const fetched = await this.store.client(miniDef)
+      const fetched = await this.store
+        .client(miniDef)
         .withProperties(
           rdpConfig as DerivedProperty.Clause<ObjectTypeDefinition>,
         )
-        .fetchOne(
-          this.#pk as PrimaryKeyType<ObjectTypeDefinition>,
-          {
-            $includeRid: true,
-            ...(this.#select && this.#select.length > 0
-              ? { $select: this.#select }
-              : {}),
-            $loadPropertySecurityMetadata: this
-              .#loadPropertySecurityMetadata,
-          },
-        );
+        .fetchOne(this.#pk as PrimaryKeyType<ObjectTypeDefinition>, {
+          $includeRid: true,
+          ...(this.#select && this.#select.length > 0
+            ? { $select: this.#select }
+            : {}),
+          $loadPropertySecurityMetadata: this.#loadPropertySecurityMetadata,
+        });
       obj = fetched as ObjectHolder;
     } else {
       // Use batched loader for non-RDP objects (efficient batching)
-      obj = await getBulkObjectLoader(this.store.client)
-        .fetch(
-          this.#apiName,
-          this.#pk,
-          this.#defType,
-          this.#select,
-          this.#loadPropertySecurityMetadata,
-        );
+      obj = await getBulkObjectLoader(this.store.client).fetch(
+        this.#apiName,
+        this.#pk,
+        this.#defType,
+        this.#select,
+        this.#loadPropertySecurityMetadata,
+      );
     }
 
     this.store.batch({}, (batch) => {
@@ -210,12 +207,7 @@ export class ObjectQuery extends Query<
       rdpConfig,
     );
 
-    this.store.objects.propagateWrite(
-      this.cacheKey,
-      tombstone,
-      status,
-      batch,
-    );
+    this.store.objects.propagateWrite(this.cacheKey, tombstone, status, batch);
 
     return batch.read(this.cacheKey);
   }

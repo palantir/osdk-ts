@@ -1,19 +1,20 @@
-import { PropsWithChildren, useState } from "react";
-import { StyleSheet, TouchableOpacity } from "react-native";
-
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { IconSymbol } from "@/components/ui/IconSymbol";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
+import { PropsWithChildren, useState } from "react";
+import { StyleSheet, TouchableOpacity } from "react-native";
 
 interface CollapsibleProps {
   title: string;
   open?: boolean;
 }
-export function Collapsible(
-  { children, title, open: maybeOpen }: PropsWithChildren & CollapsibleProps,
-) {
+export function Collapsible({
+  children,
+  title,
+  open: maybeOpen,
+}: PropsWithChildren & CollapsibleProps) {
   const [isOpen, setIsOpen] = useState(maybeOpen ?? false);
   const theme = useColorScheme() ?? "light";
 

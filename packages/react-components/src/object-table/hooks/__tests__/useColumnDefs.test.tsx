@@ -66,11 +66,7 @@ const mockMetadata = {
 describe(useColumnDefs, () => {
   const createWrapper = (client: Client) => {
     return ({ children }: React.PropsWithChildren) => {
-      return (
-        <OsdkProvider client={client}>
-          {children}
-        </OsdkProvider>
-      );
+      return <OsdkProvider client={client}>{children}</OsdkProvider>;
     };
   };
 
@@ -82,10 +78,9 @@ describe(useColumnDefs, () => {
 
     const wrapper = createWrapper(fakeClient);
 
-    const { result } = renderHook(
-      () => useColumnDefs(TestObjectType),
-      { wrapper },
-    );
+    const { result } = renderHook(() => useColumnDefs(TestObjectType), {
+      wrapper,
+    });
 
     expect(result.current.loading).toBe(true);
     expect(result.current.columns).toEqual([]);
@@ -101,10 +96,9 @@ describe(useColumnDefs, () => {
 
       const wrapper = createWrapper(fakeClient);
 
-      const { result } = renderHook(
-        () => useColumnDefs(TestObjectType),
-        { wrapper },
-      );
+      const { result } = renderHook(() => useColumnDefs(TestObjectType), {
+        wrapper,
+      });
 
       expect(result.current.loading).toBe(true);
 
@@ -141,10 +135,9 @@ describe(useColumnDefs, () => {
 
       const wrapper = createWrapper(fakeClient);
 
-      const { result } = renderHook(
-        () => useColumnDefs(TestObjectType),
-        { wrapper },
-      );
+      const { result } = renderHook(() => useColumnDefs(TestObjectType), {
+        wrapper,
+      });
 
       deferred.resolve({
         ...mockMetadata,
@@ -166,10 +159,9 @@ describe(useColumnDefs, () => {
 
       const wrapper = createWrapper(fakeClient);
 
-      const { result } = renderHook(
-        () => useColumnDefs(TestObjectType),
-        { wrapper },
-      );
+      const { result } = renderHook(() => useColumnDefs(TestObjectType), {
+        wrapper,
+      });
 
       deferred.resolve({
         ...mockMetadata,
@@ -341,9 +333,11 @@ describe(useColumnDefs, () => {
 
       const wrapper = createWrapper(fakeClient);
 
-      const customRenderCell = vitest.fn((
-        object: Osdk.Instance<TestObject>,
-      ) => <div>Custom: {(object as unknown as { name: string }).name}</div>);
+      const customRenderCell = vitest.fn(
+        (object: Osdk.Instance<TestObject>) => (
+          <div>Custom: {(object as unknown as { name: string }).name}</div>
+        ),
+      );
 
       const columnDefinitions: Array<ColumnDefinition<TestObject, {}, {}>> = [
         {
@@ -367,24 +361,24 @@ describe(useColumnDefs, () => {
       expect(nameColumn.cell).toBeDefined();
 
       // Test the cell renderer
-      const mockObject = { name: "John" } as unknown as Osdk.Instance<
-        TestObject
-      >;
+      const mockObject = {
+        name: "John",
+      } as unknown as Osdk.Instance<TestObject>;
       const mockCellContext = {
         row: { original: mockObject },
         getValue: () => "John",
       };
 
       if (typeof nameColumn.cell === "function") {
-        (nameColumn.cell as unknown as (
-          ctx: typeof mockCellContext,
-        ) => unknown)(mockCellContext);
+        (
+          nameColumn.cell as unknown as (ctx: typeof mockCellContext) => unknown
+        )(mockCellContext);
       }
 
-      expect(customRenderCell).toHaveBeenCalledWith(
-        mockObject,
-        { type: "property", id: "name" },
-      );
+      expect(customRenderCell).toHaveBeenCalledWith(mockObject, {
+        type: "property",
+        id: "name",
+      });
     });
 
     it("defaults to getValue when renderCell is not provided", async () => {
@@ -415,9 +409,9 @@ describe(useColumnDefs, () => {
       const nameColumn = result.current.columns[0];
       expect(nameColumn.cell).toBeDefined();
 
-      const mockObject = { name: "John" } as unknown as Osdk.Instance<
-        TestObject
-      >;
+      const mockObject = {
+        name: "John",
+      } as unknown as Osdk.Instance<TestObject>;
       const mockGetValue = vitest.fn(() => "John");
       const mockCellContext = {
         row: { original: mockObject, id: "row-1" },
@@ -433,15 +427,11 @@ describe(useColumnDefs, () => {
       let cellResult: unknown;
 
       if (typeof nameColumn.cell === "function") {
-        cellResult = (nameColumn.cell as unknown as (
-          ctx: typeof mockCellContext,
-        ) => unknown)(mockCellContext);
+        cellResult = (
+          nameColumn.cell as unknown as (ctx: typeof mockCellContext) => unknown
+        )(mockCellContext);
       }
-      expect(cellResult).toEqual(
-        <React.Fragment>
-          John
-        </React.Fragment>,
-      );
+      expect(cellResult).toEqual(<React.Fragment>John</React.Fragment>);
       expect(mockGetValue).toHaveBeenCalled();
     });
 
@@ -554,8 +544,8 @@ describe(useColumnDefs, () => {
 
       type ColDefs =
         | Array<
-          ColumnDefinition<TestObject, Record<string, SimplePropertyDef>, {}>
-        >
+            ColumnDefinition<TestObject, Record<string, SimplePropertyDef>, {}>
+          >
         | undefined;
 
       const { result, rerender } = renderHook(
@@ -605,10 +595,9 @@ describe(useColumnDefs, () => {
 
     const wrapper = createWrapper(fakeClient);
 
-    const { result } = renderHook(
-      () => useColumnDefs(TestObjectType),
-      { wrapper },
-    );
+    const { result } = renderHook(() => useColumnDefs(TestObjectType), {
+      wrapper,
+    });
 
     const error = new Error("Failed to fetch metadata");
     deferred.reject(error);

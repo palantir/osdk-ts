@@ -2,4 +2,4 @@ type: improvement
 improvement:
   description: Refactors to improve devx
   links:
-  - https://github.com/palantir/osdk-ts/pull/143
+    - https://github.com/palantir/osdk-ts/pull/143

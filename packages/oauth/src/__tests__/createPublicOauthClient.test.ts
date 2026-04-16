@@ -43,17 +43,16 @@ type ProcessedPublicOauthClientOptionsReturn = ReturnType<
 
 describe("createPublicOauthClient", () => {
   it("should return the same processed options for both client creation methods", async () => {
-    const mockProcessOptionsAndAssignDefaults = vi.fn<
-      (
-        ...args: ProcessedPublicOauthClientOptionsParams
-      ) => ProcessedPublicOauthClientOptionsReturn
-    >();
+    const mockProcessOptionsAndAssignDefaults =
+      vi.fn<
+        (
+          ...args: ProcessedPublicOauthClientOptionsParams
+        ) => ProcessedPublicOauthClientOptionsReturn
+      >();
 
     // Mock processOptionsAndAssignDefaults to call the mock function
     vi.spyOn(utilsModule, "processOptionsAndAssignDefaults").mockImplementation(
-      (
-        ...args: ProcessedPublicOauthClientOptionsParams
-      ) => {
+      (...args: ProcessedPublicOauthClientOptionsParams) => {
         mockProcessOptionsAndAssignDefaults(...args);
         return utilsModule.processOptionsAndAssignDefaults(...args);
       },
@@ -61,9 +60,7 @@ describe("createPublicOauthClient", () => {
 
     // Mock createPublicOauthClient to call both the mock and the original function
     vi.spyOn(oauthModule, "createPublicOauthClient").mockImplementation(
-      (
-        ...args: CreatePublicOauthClientParams
-      ) => {
+      (...args: CreatePublicOauthClientParams) => {
         const [_client_id, ...rest] = args;
         mockProcessOptionsAndAssignDefaults(...rest);
         return originalCreatePublicOauthClient(...args);

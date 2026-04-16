@@ -28,12 +28,13 @@ export class Logger {
   #level: Level;
   #viteLogger: ViteLogger;
 
-  constructor(
-    { level, viteLogger }: {
-      level: Level | keyof typeof Level;
-      viteLogger: ViteLogger;
-    },
-  ) {
+  constructor({
+    level,
+    viteLogger,
+  }: {
+    level: Level | keyof typeof Level;
+    viteLogger: ViteLogger;
+  }) {
     this.#level = typeof level === "string" ? Level[level] : level;
     this.#viteLogger = viteLogger;
   }

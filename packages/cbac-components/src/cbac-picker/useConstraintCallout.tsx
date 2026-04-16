@@ -23,8 +23,8 @@ import { EMPTY_ARRAY, resolveBannerDisplay } from "./utils/cbacPickerUtils.js";
 export function useConstraintCallout(
   maxClassificationConstraint: MaxClassificationConstraint | undefined,
 ): React.ReactNode {
-  const constraintMarkingIds = maxClassificationConstraint?.markingIds
-    ?? EMPTY_ARRAY;
+  const constraintMarkingIds =
+    maxClassificationConstraint?.markingIds ?? EMPTY_ARRAY;
   const { banner: constraintBanner } = useCbacBanner({
     markingIds: constraintMarkingIds,
     enabled: maxClassificationConstraint != null,
@@ -37,8 +37,9 @@ export function useConstraintCallout(
     const resolved = resolveBannerDisplay(constraintBanner);
     return (
       <MaxClassificationField
-        classificationString={maxClassificationConstraint
-          .bannerClassificationString}
+        classificationString={
+          maxClassificationConstraint.bannerClassificationString
+        }
         textColor={resolved.textColor}
         backgroundColors={resolved.backgroundColors}
         helperText={maxClassificationConstraint.helperText}

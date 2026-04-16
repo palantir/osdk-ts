@@ -96,12 +96,7 @@ import { useState } from "react";
 function ClassificationForm() {
   const [markingIds, setMarkingIds] = useState<string[]>([]);
 
-  return (
-    <CbacPicker
-      initialMarkingIds={markingIds}
-      onChange={setMarkingIds}
-    />
-  );
+  return <CbacPicker initialMarkingIds={markingIds} onChange={setMarkingIds} />;
 }
 ```
 

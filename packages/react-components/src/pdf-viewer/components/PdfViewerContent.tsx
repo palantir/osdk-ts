@@ -80,19 +80,25 @@ export function PdfViewerContent({
   onScaleChangeRef.current = onScaleChangeProp;
   const isInitialMountRef = useRef(true);
 
-  useEffect(function notifyPageChange() {
-    if (isInitialMountRef.current) {
-      return;
-    }
-    onPageChangeRef.current?.(viewer.currentPage);
-  }, [viewer.currentPage]);
+  useEffect(
+    function notifyPageChange() {
+      if (isInitialMountRef.current) {
+        return;
+      }
+      onPageChangeRef.current?.(viewer.currentPage);
+    },
+    [viewer.currentPage],
+  );
 
-  useEffect(function notifyScaleChange() {
-    if (isInitialMountRef.current) {
-      return;
-    }
-    onScaleChangeRef.current?.(viewer.scale);
-  }, [viewer.scale]);
+  useEffect(
+    function notifyScaleChange() {
+      if (isInitialMountRef.current) {
+        return;
+      }
+      onScaleChangeRef.current?.(viewer.scale);
+    },
+    [viewer.scale],
+  );
 
   useEffect(function clearInitialMount() {
     isInitialMountRef.current = false;
@@ -136,8 +142,8 @@ export function PdfViewerContent({
         <div ref={viewer.containerRef} className={styles.scrollContainer}>
           <div ref={viewer.viewerRef} className="pdfViewer" />
           {viewer.portalTargets.map((target) => {
-            const pageAnnotations = annotationsByPage[target.pageNumber]
-              ?? EMPTY_ANNOTATION_ARRAY;
+            const pageAnnotations =
+              annotationsByPage[target.pageNumber] ?? EMPTY_ANNOTATION_ARRAY;
             if (pageAnnotations.length === 0) {
               return null;
             }

@@ -24,10 +24,7 @@ import type {
 
 export const getRowId = <
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<
-    string,
-    never
-  >,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
 >(
   row: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
 ): string => {

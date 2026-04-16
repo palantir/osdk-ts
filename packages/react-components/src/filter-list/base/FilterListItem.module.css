@@ -65,7 +65,8 @@
   }
 
   &:focus-visible {
-    outline: var(--osdk-filter-input-focus-outline-width) solid var(--osdk-filter-item-drag-handle-focus-outline-color);
+    outline: var(--osdk-filter-input-focus-outline-width) solid
+      var(--osdk-filter-item-drag-handle-focus-outline-color);
     outline-offset: var(--osdk-filter-input-focus-outline-offset);
   }
 }
@@ -82,7 +83,8 @@
   border-radius: var(--osdk-filter-item-header-action-border-radius);
   color: var(--osdk-filter-item-header-action-color);
   opacity: 0;
-  transition: opacity var(--osdk-filter-header-button-transition),
+  transition:
+    opacity var(--osdk-filter-header-button-transition),
     background-color var(--osdk-filter-header-button-transition);
 
   &:hover {
@@ -92,7 +94,8 @@
 
   &:focus-visible {
     opacity: 1;
-    outline: var(--osdk-filter-input-focus-outline-width) solid var(--osdk-filter-input-focus-outline-color);
+    outline: var(--osdk-filter-input-focus-outline-width) solid
+      var(--osdk-filter-input-focus-outline-color);
     outline-offset: var(--osdk-filter-input-focus-outline-offset);
   }
 
@@ -155,7 +158,8 @@
   }
 
   &:focus-visible {
-    outline: var(--osdk-filter-input-focus-outline-width) solid var(--osdk-filter-input-focus-outline-color);
+    outline: var(--osdk-filter-input-focus-outline-width) solid
+      var(--osdk-filter-input-focus-outline-color);
     outline-offset: var(--osdk-filter-input-focus-outline-offset);
   }
 
@@ -170,7 +174,8 @@
   opacity: 0;
   height: 0;
   overflow: hidden;
-  transition: opacity var(--osdk-filter-header-button-transition),
+  transition:
+    opacity var(--osdk-filter-header-button-transition),
     height var(--osdk-filter-header-button-transition);
 
   @media (prefers-reduced-motion: reduce) {

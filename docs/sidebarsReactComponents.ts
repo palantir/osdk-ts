@@ -23,11 +23,7 @@ const sidebars: SidebarsConfig = {
       type: "category",
       label: "@osdk/react-components",
       collapsed: false,
-      items: [
-        "ObjectTable",
-        "FilterList",
-        "PdfViewer",
-      ],
+      items: ["ObjectTable", "FilterList", "PdfViewer"],
     },
     {
       type: "category",

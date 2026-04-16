@@ -1,8 +1,9 @@
-html, body {
-    margin: 0;
+html,
+body {
+  margin: 0;
 }
 
 :root {
-    --white: #ffffff;
-    --dark-gray3: #2f343c;
+  --white: #ffffff;
+  --dark-gray3: #2f343c;
 }

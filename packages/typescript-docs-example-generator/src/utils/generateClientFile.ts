@@ -25,9 +25,10 @@ import { generateFileHeader } from "./generateFileHeader.js";
  * @returns FileContent object with the client file
  */
 export function generateClientFile(version: string): FileContent {
-  const clientTemplate = `${
-    generateFileHeader("client", "Client setup for examples")
-  }
+  const clientTemplate = `${generateFileHeader(
+    "client",
+    "Client setup for examples",
+  )}
 import { createClient, type Client } from "@osdk/client";
 import { $ontologyRid } from "../../../generatedNoCheck/index.js";
 

@@ -28,10 +28,7 @@ export async function getWidgetIdOverrideMap(
   const widgetIdToEntrypoint: Record<string, string> = Object.fromEntries(
     await Promise.all(
       Object.keys(configFileToEntrypoint).map(async (configFile) => {
-        const widgetConfig = await extractWidgetConfig(
-          configFile,
-          server,
-        );
+        const widgetConfig = await extractWidgetConfig(configFile, server);
         const entrypointFile = configFileToEntrypoint[configFile];
         const entrypointRelativePath = codeEntrypoints[entrypointFile];
         return [widgetConfig.id, entrypointRelativePath];
@@ -42,20 +39,17 @@ export async function getWidgetIdOverrideMap(
   const injectedScripts = await extractInjectedScripts(server);
   const widgetIdToOverrides = Object.entries(widgetIdToEntrypoint).reduce<
     Record<string, string[]>
-  >(
-    (acc, [widgetId, entrypoint]) => {
-      const overrides = [
-        VITE_INJECTIONS_PATH,
-        ...injectedScripts.scriptSources.map((script) =>
-          removeBasePath(script, baseHref)
-        ),
-        entrypoint.slice(1),
-      ];
-      acc[widgetId] = overrides.map((override) => `${baseHref}${override}`);
-      return acc;
-    },
-    {},
-  );
+  >((acc, [widgetId, entrypoint]) => {
+    const overrides = [
+      VITE_INJECTIONS_PATH,
+      ...injectedScripts.scriptSources.map((script) =>
+        removeBasePath(script, baseHref),
+      ),
+      entrypoint.slice(1),
+    ];
+    acc[widgetId] = overrides.map((override) => `${baseHref}${override}`);
+    return acc;
+  }, {});
 
   return widgetIdToOverrides;
 }

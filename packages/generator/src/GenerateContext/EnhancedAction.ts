@@ -20,7 +20,10 @@ import { EnhancedBase } from "./EnhancedBase.js";
 
 export class EnhancedAction extends EnhancedBase<ActionTypeV2> {
   #unsanitizedApiName?: string;
-  constructor(common: EnhanceCommon, public raw: ActionTypeV2) {
+  constructor(
+    common: EnhanceCommon,
+    public raw: ActionTypeV2,
+  ) {
     const unsanitizedApiName = raw.apiName;
     raw = { ...raw, apiName: camelize(raw.apiName) };
     super(common, raw, raw.apiName, "./ontology/actions");
@@ -57,5 +60,5 @@ export class EnhancedAction extends EnhancedBase<ActionTypeV2> {
 }
 
 function camelize(name: string) {
-  return name.replace(/-./g, segment => segment[1]!.toUpperCase());
+  return name.replace(/-./g, (segment) => segment[1]!.toUpperCase());
 }

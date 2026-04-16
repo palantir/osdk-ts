@@ -24,9 +24,9 @@ export function model(alias: string): Model {
   if (!(alias in resolvedAliases.models)) {
     const available = Object.keys(resolvedAliases.models);
     throw new Error(
-      `Model alias '${alias}' not found. Available aliases: [${
-        available.join(", ")
-      }]`,
+      `Model alias '${alias}' not found. Available aliases: [${available.join(
+        ", ",
+      )}]`,
     );
   }
 

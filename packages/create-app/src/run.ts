@@ -46,23 +46,21 @@ interface RunArgs {
   scopes: string[] | undefined;
 }
 
-export async function run(
-  {
-    project,
-    overwrite,
-    template,
-    sdkVersion,
-    foundryUrl,
-    applicationUrl,
-    application,
-    ontology,
-    clientId,
-    osdkPackage,
-    osdkRegistryUrl,
-    corsProxy,
-    scopes,
-  }: RunArgs,
-): Promise<void> {
+export async function run({
+  project,
+  overwrite,
+  template,
+  sdkVersion,
+  foundryUrl,
+  applicationUrl,
+  application,
+  ontology,
+  clientId,
+  osdkPackage,
+  osdkRegistryUrl,
+  corsProxy,
+  scopes,
+}: RunArgs): Promise<void> {
   consola.log("");
   consola.start(
     `Creating project ${green(project)} using template ${green(template.id)}`,
@@ -103,10 +101,7 @@ export async function run(
     await fs.promises.mkdir(dirPath, { recursive: true });
     await fs.promises.writeFile(
       finalPath,
-      Buffer.from(
-        contents.body,
-        contents.type === "raw" ? "utf-8" : "base64",
-      ),
+      Buffer.from(contents.body, contents.type === "raw" ? "utf-8" : "base64"),
     );
   }
 
@@ -118,8 +113,8 @@ export async function run(
     ? JSON.parse(fs.readFileSync(ourPackageJsonPath, "utf-8")).version
     : undefined;
 
-  const clientVersion = process.env.PACKAGE_CLIENT_VERSION
-    ?? ourPackageJsonVersion;
+  const clientVersion =
+    process.env.PACKAGE_CLIENT_VERSION ?? ourPackageJsonVersion;
 
   if (clientVersion === undefined) {
     throw new Error("Could not determine current @osdk/client version");
@@ -135,8 +130,8 @@ export async function run(
     clientVersion: changeVersionPrefix(clientVersion, "^"),
     scopes,
   };
-  const processFiles = function(dir: string) {
-    fs.readdirSync(dir).forEach(function(file) {
+  const processFiles = function (dir: string) {
+    fs.readdirSync(dir).forEach((file) => {
       let fullPath = dir + "/" + file;
       const stat = fs.statSync(fullPath);
       if (stat.isDirectory()) {
@@ -214,12 +209,13 @@ export async function run(
 
   const cdRelative = path.relative(cwd, root);
   consola.box({
-    message: `Done! Run the following commands to get started:\n`
-      + `\n`
-      + `  \`cd ${cdRelative}\`\n`
-      + `  \`export FOUNDRY_TOKEN=<token>\`\n`
-      + `  \`npm install\`\n`
-      + `  \`npm run dev\``,
+    message:
+      `Done! Run the following commands to get started:\n` +
+      `\n` +
+      `  \`cd ${cdRelative}\`\n` +
+      `  \`export FOUNDRY_TOKEN=<token>\`\n` +
+      `  \`npm install\`\n` +
+      `  \`npm run dev\``,
     style: {
       padding: 2,
       borderColor: "green",

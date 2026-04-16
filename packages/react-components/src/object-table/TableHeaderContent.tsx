@@ -23,15 +23,17 @@ interface TableHeaderContentProps<TData extends RowData> {
   header: Header<TData, unknown>;
 }
 
-export function TableHeaderContent<TData extends RowData>(
-  { header }: TableHeaderContentProps<TData>,
-): React.ReactElement {
+export function TableHeaderContent<TData extends RowData>({
+  header,
+}: TableHeaderContentProps<TData>): React.ReactElement {
   return (
     <div className={styles.osdkHeaderContent}>
-      {flexRender(
-        header.column.columnDef.header,
-        header.getContext(),
-      ) as ReactNode}
+      {
+        flexRender(
+          header.column.columnDef.header,
+          header.getContext(),
+        ) as ReactNode
+      }
     </div>
   );
 }

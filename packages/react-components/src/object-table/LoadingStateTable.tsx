@@ -48,16 +48,15 @@ export function LoadingStateTable<TData extends RowData>({
   const enableRowSelection = table.options.enableRowSelection;
   const minHeaderCount = enableRowSelection ? 1 : 0;
   const headers = useMemo(
-    () => headerGroups.length > 0 ? headerGroups[0].headers : [],
+    () => (headerGroups.length > 0 ? headerGroups[0].headers : []),
     [headerGroups],
   );
   const hasHeadersLoaded = headers.length > minHeaderCount;
 
   const headerRef = useRef<HTMLTableSectionElement>(null);
   const bodyRef = useRef<HTMLTableSectionElement>(null);
-  const [loadingRowCount, setLoadingRowCount] = useState<number>(
-    MIN_LOADING_ROWS,
-  );
+  const [loadingRowCount, setLoadingRowCount] =
+    useState<number>(MIN_LOADING_ROWS);
   const [loadingColumnCount, setLoadingColumnCount] = useState<number>(
     headers.length,
   );
@@ -91,36 +90,32 @@ export function LoadingStateTable<TData extends RowData>({
 
   return (
     <>
-      {hasHeadersLoaded
-        ? <TableHeader table={table} />
-        : (
-          <thead className={headerStyles.osdkTableHeader} ref={headerRef}>
-            <tr className={headerStyles.osdkTableHeaderRow}>
-              {Array.from({ length: loadingColumnCount }).map((
-                _,
-                index,
-              ) => {
-                const width = headers.length > index
-                  ? headers[index].getSize()
-                  : columnWidth;
-                return (
-                  <th
-                    key={`loading-header-${index}`}
-                    className={headerStyles.osdkTableHeaderCell}
-                    style={{ width }}
-                  >
-                    <SkeletonBar
-                      className={classNames(
-                        headerStyles.osdkLoadingHeaderCell,
-                        loadingStyles.osdkCellSkeleton,
-                      )}
-                    />
-                  </th>
-                );
-              })}
-            </tr>
-          </thead>
-        )}
+      {hasHeadersLoaded ? (
+        <TableHeader table={table} />
+      ) : (
+        <thead className={headerStyles.osdkTableHeader} ref={headerRef}>
+          <tr className={headerStyles.osdkTableHeaderRow}>
+            {Array.from({ length: loadingColumnCount }).map((_, index) => {
+              const width =
+                headers.length > index ? headers[index].getSize() : columnWidth;
+              return (
+                <th
+                  key={`loading-header-${index}`}
+                  className={headerStyles.osdkTableHeaderCell}
+                  style={{ width }}
+                >
+                  <SkeletonBar
+                    className={classNames(
+                      headerStyles.osdkLoadingHeaderCell,
+                      loadingStyles.osdkCellSkeleton,
+                    )}
+                  />
+                </th>
+              );
+            })}
+          </tr>
+        </thead>
+      )}
       <tbody className={bodyStyles.osdkTableBody} ref={bodyRef}>
         {Array.from({ length: loadingRowCount }).map((_, index) => (
           <LoadingRow

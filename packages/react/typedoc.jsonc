@@ -10,9 +10,16 @@
     "**/packages/client/**",
     "**/packages/api/**",
   ],
-  "projectDocuments": [
-    "./docs/getting_started.md",
-  ],
+  "projectDocuments": ["./docs/getting_started.md"],
   "collapseInternalModule": true,
-  "groupOrder": ["Functions", "Classes", "Interfaces", "Enums", "Type aliases", "Variables", "Namespace", "Module"],
+  "groupOrder": [
+    "Functions",
+    "Classes",
+    "Interfaces",
+    "Enums",
+    "Type aliases",
+    "Variables",
+    "Namespace",
+    "Module",
+  ],
 }

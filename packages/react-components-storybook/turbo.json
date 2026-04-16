@@ -1,8 +1,6 @@
 {
   "$schema": "https://turbo.build/schema.json",
-  "extends": [
-    "//"
-  ],
+  "extends": ["//"],
   "tasks": {
     "dev": {
       "dependsOn": [
@@ -17,9 +15,7 @@
         "@osdk/react-components#transpileBrowser",
         "@osdk/react-components-styles#build"
       ],
-      "outputs": [
-        "storybook-static/**"
-      ]
+      "outputs": ["storybook-static/**"]
     }
   }
 }

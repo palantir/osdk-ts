@@ -29,9 +29,7 @@ export function renderDefaultCell<TData extends RowData>(
 
   const cellValue = cellContext.getValue();
 
-  const asyncCellData = isAsyncCellData(cellValue)
-    ? cellValue
-    : undefined;
+  const asyncCellData = isAsyncCellData(cellValue) ? cellValue : undefined;
 
   // Function-backed columns are read-only: the value is server-computed
   // and cannot be edited in the table. Return the async cell directly.

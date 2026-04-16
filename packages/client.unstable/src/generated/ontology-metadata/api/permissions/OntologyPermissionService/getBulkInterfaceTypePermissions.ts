@@ -16,10 +16,8 @@
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
 import type {
-  GetBulkInterfaceTypePermissionsRequest
-    as _api_permissions_GetBulkInterfaceTypePermissionsRequest,
-  GetBulkInterfaceTypePermissionsResponse
-    as _api_permissions_GetBulkInterfaceTypePermissionsResponse,
+  GetBulkInterfaceTypePermissionsRequest as _api_permissions_GetBulkInterfaceTypePermissionsRequest,
+  GetBulkInterfaceTypePermissionsResponse as _api_permissions_GetBulkInterfaceTypePermissionsResponse,
 } from "../__components.js";
 
 /**

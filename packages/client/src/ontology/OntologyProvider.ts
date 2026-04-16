@@ -52,9 +52,7 @@ export interface OntologyProvider {
    * @param apiName
    * @returns
    */
-  getInterfaceDefinition: (
-    apiName: string,
-  ) => Promise<InterfaceMetadata>;
+  getInterfaceDefinition: (apiName: string) => Promise<InterfaceMetadata>;
 
   getQueryDefinition: (
     apiName: string,
@@ -66,6 +64,4 @@ export interface OntologyProvider {
 
 export type OntologyProviderFactory<
   T extends OntologyProvider = OntologyProvider,
-> = (
-  client: MinimalClient,
-) => T;
+> = (client: MinimalClient) => T;

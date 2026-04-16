@@ -31,13 +31,13 @@ export async function extractWidgetConfig(
     }
 
     if (
-      typeof config !== "object"
-      || (config["id"] == null && config["name"] == null)
+      typeof config !== "object" ||
+      (config.id == null && config.name == null)
     ) {
       server.config.logger.warn(
-        `Config object does not look like a widget config: ${
-          JSON.stringify(config)
-        }`,
+        `Config object does not look like a widget config: ${JSON.stringify(
+          config,
+        )}`,
       );
     }
 
@@ -45,9 +45,9 @@ export async function extractWidgetConfig(
     return config as WidgetConfig<ParameterConfig>;
   } catch (error) {
     throw new Error(
-      `Encountered error: '${(error instanceof Error
-        ? error.message
-        : error)}' while loading widget config from ${moduleId}`,
+      `Encountered error: '${
+        error instanceof Error ? error.message : error
+      }' while loading widget config from ${moduleId}`,
       { cause: error },
     );
   }

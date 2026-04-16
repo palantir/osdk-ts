@@ -38,15 +38,16 @@ export class Layers {
 
   readonly subjects: Subjects;
 
-  constructor(
-    { logger, onRevalidate }: {
-      logger?: Logger;
-      onRevalidate: (
-        changes: Changes,
-        optimisticId?: OptimisticId,
-      ) => Promise<void>;
-    },
-  ) {
+  constructor({
+    logger,
+    onRevalidate,
+  }: {
+    logger?: Logger;
+    onRevalidate: (
+      changes: Changes,
+      optimisticId?: OptimisticId,
+    ) => Promise<void>;
+  }) {
     this.logger = logger;
     this.#topLayer = this.#truthLayer;
     this.subjects = new Subjects({ logger, layers: this });
@@ -93,19 +94,19 @@ export class Layers {
         // We are going to be pretty lazy here and just re-emit the value.
         // In the future it may benefit us to deep equal check her but I think
         // the subjects are effectively doing this anyway.
-        this.subjects.peek(k)?.next(
-          {
-            ...newEntry,
-            isOptimistic:
-              currentEntry?.value !== this.#truthLayer.get(k)?.value,
-          },
-        );
+        this.subjects.peek(k)?.next({
+          ...newEntry,
+          isOptimistic: currentEntry?.value !== this.#truthLayer.get(k)?.value,
+        });
       }
     }
   }
 
   public batch<X>(
-    { optimisticId, changes }: {
+    {
+      optimisticId,
+      changes,
+    }: {
       optimisticId?: OptimisticId;
       changes: Changes;
     },
@@ -127,7 +128,7 @@ export class Layers {
 
     const retVal = batchFn(batchContext);
 
-    this.#onRevalidate(changes, optimisticId).catch(e => {
+    this.#onRevalidate(changes, optimisticId).catch((e) => {
       // we don't want batch() to return a promise,
       // so we settle for logging an error here instead of
       // dropping it on the floor.
@@ -142,17 +143,18 @@ export class Layers {
 
     return {
       batchResult: batchContext,
-      retVal: retVal,
+      retVal,
       changes: batchContext.changes,
     };
   }
 
-  #createBatchContext(
-    { optimisticId, changes }: {
-      optimisticId?: OptimisticId;
-      changes: Changes;
-    },
-  ): BatchContext {
+  #createBatchContext({
+    optimisticId,
+    changes,
+  }: {
+    optimisticId?: OptimisticId;
+    changes: Changes;
+  }): BatchContext {
     let needsLayer = optimisticId !== undefined;
 
     const batchContext: BatchContext = {
@@ -169,9 +171,7 @@ export class Layers {
 
         if (optimisticId) batchContext.createLayerIfNeeded();
 
-        const writeLayer = optimisticId
-          ? this.#topLayer
-          : this.#truthLayer;
+        const writeLayer = optimisticId ? this.#topLayer : this.#truthLayer;
         const newValue: Entry<typeof cacheKey> = {
           cacheKey,
           value,

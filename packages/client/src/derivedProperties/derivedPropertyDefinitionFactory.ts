@@ -32,92 +32,111 @@ export function derivedPropertyDefinitionFactory(
     [K in keyof T as K extends symbol ? never : K]: T[K];
   };
 
-  const definition:
-    & RemoveSymbolKeys<DerivedProperty.NumericPropertyDefinition<any, any>>
-    & {
-      extractPart: DerivedProperty.DatetimePropertyDefinition<
-        any,
-        any
-      >["extractPart"];
-    } = {
-      abs() {
-        return derivedPropertyDefinitionFactory({
+  const definition: RemoveSymbolKeys<
+    DerivedProperty.NumericPropertyDefinition<any, any>
+  > & {
+    extractPart: DerivedProperty.DatetimePropertyDefinition<
+      any,
+      any
+    >["extractPart"];
+  } = {
+    abs() {
+      return derivedPropertyDefinitionFactory(
+        {
           type: "absoluteValue",
           property: wireDefinition,
-        }, definitionMap);
-      },
-      negate() {
-        return derivedPropertyDefinitionFactory({
+        },
+        definitionMap,
+      );
+    },
+    negate() {
+      return derivedPropertyDefinitionFactory(
+        {
           type: "negate",
           property: wireDefinition,
-        }, definitionMap);
-      },
-      max(value) {
-        return derivedPropertyDefinitionFactory({
+        },
+        definitionMap,
+      );
+    },
+    max(value) {
+      return derivedPropertyDefinitionFactory(
+        {
           type: "greatest",
           properties: [
             wireDefinition,
             getDefinitionFromMap(value, definitionMap),
           ],
-        }, definitionMap);
-      },
-      min(value) {
-        return derivedPropertyDefinitionFactory({
+        },
+        definitionMap,
+      );
+    },
+    min(value) {
+      return derivedPropertyDefinitionFactory(
+        {
           type: "least",
           properties: [
             wireDefinition,
             getDefinitionFromMap(value, definitionMap),
           ],
-        }, definitionMap);
-      },
-      add(
-        value,
-      ) {
-        return derivedPropertyDefinitionFactory({
+        },
+        definitionMap,
+      );
+    },
+    add(value) {
+      return derivedPropertyDefinitionFactory(
+        {
           type: "add",
           properties: [
             wireDefinition,
             getDefinitionFromMap(value, definitionMap),
           ],
-        }, definitionMap);
-      },
-      subtract(
-        value,
-      ) {
-        return derivedPropertyDefinitionFactory({
+        },
+        definitionMap,
+      );
+    },
+    subtract(value) {
+      return derivedPropertyDefinitionFactory(
+        {
           "type": "subtract",
           "left": wireDefinition,
           "right": getDefinitionFromMap(value, definitionMap),
-        }, definitionMap);
-      },
-      multiply(
-        value,
-      ) {
-        return derivedPropertyDefinitionFactory({
+        },
+        definitionMap,
+      );
+    },
+    multiply(value) {
+      return derivedPropertyDefinitionFactory(
+        {
           type: "multiply",
           properties: [
             wireDefinition,
             getDefinitionFromMap(value, definitionMap),
           ],
-        }, definitionMap);
-      },
-      divide(
-        value,
-      ) {
-        return derivedPropertyDefinitionFactory({
+        },
+        definitionMap,
+      );
+    },
+    divide(value) {
+      return derivedPropertyDefinitionFactory(
+        {
           "type": "divide",
           "left": wireDefinition,
           "right": getDefinitionFromMap(value, definitionMap),
-        }, definitionMap);
-      },
-      extractPart: (part) => {
-        return derivedPropertyDefinitionFactory({
+        },
+        definitionMap,
+      );
+    },
+    extractPart: (part) => {
+      return derivedPropertyDefinitionFactory(
+        {
           type: "extract",
           part,
           property: wireDefinition,
-        }, definitionMap);
-      },
-    };
+        },
+        definitionMap,
+      );
+    },
+  };
 
   definitionMap.set(definition, wireDefinition);
   return definition as any;

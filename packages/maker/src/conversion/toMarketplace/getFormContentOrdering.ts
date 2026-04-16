@@ -24,15 +24,15 @@ export function getFormContentOrdering(
   if (!action.sections) return [];
   const parametersToSection = Object.fromEntries(
     Object.entries(action.sections).flatMap(([sectionId, section]) =>
-      section.parameters.map(param => [param, sectionId])
+      section.parameters.map((param) => [param, sectionId]),
     ),
   );
   const seenIds = new Set<string>();
   const formContentOrdering: OntologyIrFormContent[] = [];
-  parameterOrdering.forEach(param => {
+  parameterOrdering.forEach((param) => {
     if (
-      param in parametersToSection
-      && !(seenIds.has(parametersToSection[param]))
+      param in parametersToSection &&
+      !seenIds.has(parametersToSection[param])
     ) {
       formContentOrdering.push({
         type: "sectionId",

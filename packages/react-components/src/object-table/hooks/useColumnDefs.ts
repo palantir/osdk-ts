@@ -46,10 +46,7 @@ interface UseColumnDefsResult<
  */
 export function useColumnDefs<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<
-    string,
-    never
-  >,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
   FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
     string,
     never
@@ -81,10 +78,7 @@ export function useColumnDefs<
 
 function getColumnsFromColumnDefinitions<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<
-    string,
-    never
-  >,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
   FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
     string,
     never
@@ -112,9 +106,8 @@ function getColumnsFromColumnDefinitions<
       columnName,
     } = col;
 
-    const propertyMetadata = locator.type === "property"
-      ? objectProperties?.[locator.id]
-      : undefined;
+    const propertyMetadata =
+      locator.type === "property" ? objectProperties?.[locator.id] : undefined;
 
     const colKey = locator.id as string;
 
@@ -166,10 +159,7 @@ function getColumnsFromColumnDefinitions<
 
 function getDefaultColumns<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<
-    string,
-    never
-  >,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
 >(
   objectProperties?: Record<any, ObjectMetadata.Property>,
 ): Array<

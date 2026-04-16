@@ -32,88 +32,106 @@ describe("getSubmitDisabledReason", () => {
   });
 
   it("returns required markings message when required groups exist", () => {
-    expect(getSubmitDisabledReason({
-      ...validBase,
-      isValid: false,
-      requiredMarkingGroups: [{ markingNames: ["A", "B"] }],
-      disallowedMarkingIds: ["m1"],
-      userSatisfiesMarkings: false,
-    })).toBe("Selected markings do not include all required markings.");
+    expect(
+      getSubmitDisabledReason({
+        ...validBase,
+        isValid: false,
+        requiredMarkingGroups: [{ markingNames: ["A", "B"] }],
+        disallowedMarkingIds: ["m1"],
+        userSatisfiesMarkings: false,
+      }),
+    ).toBe("Selected markings do not include all required markings.");
   });
 
   it("returns disallowed message when selected markings are disallowed", () => {
-    expect(getSubmitDisabledReason({
-      ...validBase,
-      isValid: false,
-      selectedIds: ["m1", "m2"],
-      disallowedMarkingIds: ["m2"],
-      userSatisfiesMarkings: false,
-    })).toBe("Selections include disallowed markings.");
+    expect(
+      getSubmitDisabledReason({
+        ...validBase,
+        isValid: false,
+        selectedIds: ["m1", "m2"],
+        disallowedMarkingIds: ["m2"],
+        userSatisfiesMarkings: false,
+      }),
+    ).toBe("Selections include disallowed markings.");
   });
 
   it("returns user satisfaction message when userSatisfiesMarkings is false", () => {
-    expect(getSubmitDisabledReason({
-      ...validBase,
-      isValid: false,
-      userSatisfiesMarkings: false,
-    })).toBe(
+    expect(
+      getSubmitDisabledReason({
+        ...validBase,
+        isValid: false,
+        userSatisfiesMarkings: false,
+      }),
+    ).toBe(
       "Invalid configuration of markings. Please ensure that you have permission to use all selected markings.",
     );
   });
 
   it("returns generic fallback when invalid with no specific reason", () => {
-    expect(getSubmitDisabledReason({
-      ...validBase,
-      isValid: false,
-    })).toBe("Invalid marking selection.");
+    expect(
+      getSubmitDisabledReason({
+        ...validBase,
+        isValid: false,
+      }),
+    ).toBe("Invalid marking selection.");
   });
 
   it("prioritizes required markings over disallowed", () => {
-    expect(getSubmitDisabledReason({
-      ...validBase,
-      isValid: false,
-      requiredMarkingGroups: [{ markingNames: ["A"] }],
-      selectedIds: ["m1"],
-      disallowedMarkingIds: ["m1"],
-    })).toBe("Selected markings do not include all required markings.");
+    expect(
+      getSubmitDisabledReason({
+        ...validBase,
+        isValid: false,
+        requiredMarkingGroups: [{ markingNames: ["A"] }],
+        selectedIds: ["m1"],
+        disallowedMarkingIds: ["m1"],
+      }),
+    ).toBe("Selected markings do not include all required markings.");
   });
 
   it("prioritizes disallowed over userSatisfiesMarkings", () => {
-    expect(getSubmitDisabledReason({
-      ...validBase,
-      isValid: false,
-      selectedIds: ["m1"],
-      disallowedMarkingIds: ["m1"],
-      userSatisfiesMarkings: false,
-    })).toBe("Selections include disallowed markings.");
+    expect(
+      getSubmitDisabledReason({
+        ...validBase,
+        isValid: false,
+        selectedIds: ["m1"],
+        disallowedMarkingIds: ["m1"],
+        userSatisfiesMarkings: false,
+      }),
+    ).toBe("Selections include disallowed markings.");
   });
 
   it("does not flag disallowed markings that are not selected", () => {
-    expect(getSubmitDisabledReason({
-      ...validBase,
-      isValid: false,
-      selectedIds: ["m1"],
-      disallowedMarkingIds: ["m2"],
-      userSatisfiesMarkings: false,
-    })).toBe(
+    expect(
+      getSubmitDisabledReason({
+        ...validBase,
+        isValid: false,
+        selectedIds: ["m1"],
+        disallowedMarkingIds: ["m2"],
+        userSatisfiesMarkings: false,
+      }),
+    ).toBe(
       "Invalid configuration of markings. Please ensure that you have permission to use all selected markings.",
     );
   });
 
   it("returns undefined when isValid is true even if userSatisfiesMarkings is false", () => {
-    expect(getSubmitDisabledReason({
-      ...validBase,
-      isValid: true,
-      userSatisfiesMarkings: false,
-    })).toBeUndefined();
+    expect(
+      getSubmitDisabledReason({
+        ...validBase,
+        isValid: true,
+        userSatisfiesMarkings: false,
+      }),
+    ).toBeUndefined();
   });
 
   it("returns generic fallback with empty selectedIds and disallowed markings", () => {
-    expect(getSubmitDisabledReason({
-      ...validBase,
-      isValid: false,
-      selectedIds: [],
-      disallowedMarkingIds: ["m1"],
-    })).toBe("Invalid marking selection.");
+    expect(
+      getSubmitDisabledReason({
+        ...validBase,
+        isValid: false,
+        selectedIds: [],
+        disallowedMarkingIds: ["m1"],
+      }),
+    ).toBe("Invalid marking selection.");
   });
 });

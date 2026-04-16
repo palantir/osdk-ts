@@ -369,39 +369,49 @@ describe("Miscellaneous Tests", () => {
       `);
     });
     it("Export files are generated correctly", async () => {
-      const generatedDir = path.resolve(path.join(
-        __dirname,
-        "..",
-        "generatedNoCheck",
-        "export_files_are_generated_correctly",
-      ));
-      await defineOntology("com.my.package.", () => {
-        const mySpt = defineSharedPropertyType({
-          apiName: "mySpt",
-          type: "string",
-        });
-        const myInterface = defineInterface({
-          apiName: "myInterface",
-          properties: {
-            mySpt,
-          },
-        });
-        const myObject = defineObject({
-          titlePropertyApiName: "bar",
-          displayName: "My Object",
-          pluralDisplayName: "myObjects",
-          apiName: "myObject",
-          primaryKeyPropertyApiName: "bar",
-          properties: { "bar": { type: "string" } },
-          implementsInterfaces: [{
-            implements: myInterface,
-            propertyMapping: [{
-              interfaceProperty: "com.my.package.mySpt",
-              mapsTo: "bar",
-            }],
-          }],
-        });
-      }, generatedDir);
+      const generatedDir = path.resolve(
+        path.join(
+          __dirname,
+          "..",
+          "generatedNoCheck",
+          "export_files_are_generated_correctly",
+        ),
+      );
+      await defineOntology(
+        "com.my.package.",
+        () => {
+          const mySpt = defineSharedPropertyType({
+            apiName: "mySpt",
+            type: "string",
+          });
+          const myInterface = defineInterface({
+            apiName: "myInterface",
+            properties: {
+              mySpt,
+            },
+          });
+          const myObject = defineObject({
+            titlePropertyApiName: "bar",
+            displayName: "My Object",
+            pluralDisplayName: "myObjects",
+            apiName: "myObject",
+            primaryKeyPropertyApiName: "bar",
+            properties: { "bar": { type: "string" } },
+            implementsInterfaces: [
+              {
+                implements: myInterface,
+                propertyMapping: [
+                  {
+                    interfaceProperty: "com.my.package.mySpt",
+                    mapsTo: "bar",
+                  },
+                ],
+              },
+            ],
+          });
+        },
+        generatedDir,
+      );
 
       expect(
         fs.readFileSync(
@@ -616,35 +626,41 @@ describe("Miscellaneous Tests", () => {
       });
     });
     it("Extended interfaces are propagated to the static objects", async () => {
-      const generatedDir = path.resolve(path.join(
-        __dirname,
-        "..",
-        "generatedNoCheck",
-        "extended_interfaces_are_propagated_to_the_static_objects",
-      ));
-      await defineOntology("com.palantir.", () => {
-        const property1 = defineSharedPropertyType({
-          apiName: "property1",
-          type: "string",
-        });
-        const property2 = defineSharedPropertyType({
-          apiName: "property2",
-          type: "string",
-        });
-        const parentInterface = defineInterface({
-          apiName: "parentInterface",
-          properties: {
-            property1: property1,
-          },
-        });
-        const childInterface = defineInterface({
-          apiName: "childInterface",
-          properties: {
-            property2: property2,
-          },
-          extends: [parentInterface],
-        });
-      }, generatedDir);
+      const generatedDir = path.resolve(
+        path.join(
+          __dirname,
+          "..",
+          "generatedNoCheck",
+          "extended_interfaces_are_propagated_to_the_static_objects",
+        ),
+      );
+      await defineOntology(
+        "com.palantir.",
+        () => {
+          const property1 = defineSharedPropertyType({
+            apiName: "property1",
+            type: "string",
+          });
+          const property2 = defineSharedPropertyType({
+            apiName: "property2",
+            type: "string",
+          });
+          const parentInterface = defineInterface({
+            apiName: "parentInterface",
+            properties: {
+              property1,
+            },
+          });
+          const childInterface = defineInterface({
+            apiName: "childInterface",
+            properties: {
+              property2,
+            },
+            extends: [parentInterface],
+          });
+        },
+        generatedDir,
+      );
 
       expect(
         fs.readFileSync(
@@ -797,13 +813,13 @@ describe("Miscellaneous Tests", () => {
       const parentInterface = defineInterface({
         apiName: "parentInterface",
         properties: {
-          iProperty1: iProperty1,
+          iProperty1,
         },
       });
       const childInterface = defineInterface({
         apiName: "childInterface",
         properties: {
-          iProperty2: iProperty2,
+          iProperty2,
         },
         extends: [parentInterface],
       });
@@ -1429,12 +1445,14 @@ describe("Miscellaneous Tests", () => {
 
   describe("Dependencies", () => {
     it("Correctly adds dependencies", async () => {
-      const generatedDir = path.resolve(path.join(
-        __dirname,
-        "..",
-        "generatedNoCheck",
-        "correctly_adds_dependencies",
-      ));
+      const generatedDir = path.resolve(
+        path.join(
+          __dirname,
+          "..",
+          "generatedNoCheck",
+          "correctly_adds_dependencies",
+        ),
+      );
       await defineOntology(
         "com.palantir.",
         () => {
@@ -1468,10 +1486,9 @@ describe("Miscellaneous Tests", () => {
 
       expect(
         fs.readFileSync(path.join(generatedDir, "index.ts"), "utf8"),
-      )
-        .toContain(
-          `addDependency("com.palantir", new URL(import.meta.url).pathname);`,
-        );
+      ).toContain(
+        `addDependency("com.palantir", new URL(import.meta.url).pathname);`,
+      );
 
       fs.rmSync(path.join(generatedDir, ".."), {
         recursive: true,

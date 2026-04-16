@@ -576,10 +576,7 @@ export const employeeMetadata: TH_ObjectTypeFullMetadata<Employee> = {
         "ri.ontology.main.relation.a5c9bbf2-f26b-40c3-bfbd-e45df4691d88",
     },
   ],
-  "implementsInterfaces": [
-    "Worker",
-    "Person",
-  ],
+  "implementsInterfaces": ["Worker", "Person"],
   "implementsInterfaces2": {
     "Person": {
       "apiName": "Person",

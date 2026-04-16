@@ -30,9 +30,7 @@ import type {
 import invariant from "tiny-invariant";
 import type { DerivedPropertyRuntimeMetadata } from "../derivedProperties/derivedPropertyRuntimeMetadata.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
-import {
-  type FetchedObjectTypeDefinition,
-} from "../ontology/OntologyProvider.js";
+import { type FetchedObjectTypeDefinition } from "../ontology/OntologyProvider.js";
 import { createOsdkObject } from "./convertWireToOsdkObjects/createOsdkObject.js";
 import type { InterfaceHolder } from "./convertWireToOsdkObjects/InterfaceHolder.js";
 import type { ObjectHolder } from "./convertWireToOsdkObjects/ObjectHolder.js";
@@ -209,8 +207,8 @@ export async function convertWireToOsdkObjects2(
   const effectiveMappings =
     Object.keys(interfaceToObjectTypeMappingsV2).length > 0
       ? convertInterfaceToObjectTypeMappingsV2ToV1(
-        interfaceToObjectTypeMappingsV2,
-      )
+          interfaceToObjectTypeMappingsV2,
+        )
       : interfaceToObjectTypeMappings;
 
   const isInterfaceScoped = Object.keys(effectiveMappings).length > 0;
@@ -221,24 +219,24 @@ export async function convertWireToOsdkObjects2(
     );
     invariant(objectDef, `Missing definition for '${rawObj.$apiName}'`);
 
-    const interfaceToObjMapping = (interfaceApiName && isInterfaceScoped)
-      ? effectiveMappings[interfaceApiName as InterfaceTypeApiName][
-        rawObj.$apiName
-      ]
-      : undefined;
+    const interfaceToObjMapping =
+      interfaceApiName && isInterfaceScoped
+        ? effectiveMappings[interfaceApiName as InterfaceTypeApiName][
+            rawObj.$apiName
+          ]
+        : undefined;
 
-    const ifaceSelected = interfaceApiName && interfaceToObjMapping
-      ? (selectedProps
-        ? Object.keys(interfaceToObjMapping).filter(
-          val => {
-            selectedProps?.includes(interfaceToObjMapping[val]);
-          },
-        )
-        : [
-          ...Object.values(interfaceToObjMapping),
-          objectDef.primaryKeyApiName,
-        ])
-      : undefined;
+    const ifaceSelected =
+      interfaceApiName && interfaceToObjMapping
+        ? selectedProps
+          ? Object.keys(interfaceToObjMapping).filter((val) => {
+              selectedProps?.includes(interfaceToObjMapping[val]);
+            })
+          : [
+              ...Object.values(interfaceToObjMapping),
+              objectDef.primaryKeyApiName,
+            ]
+        : undefined;
 
     // default value for when we are checking an object
     let objProps;
@@ -269,9 +267,8 @@ export async function convertWireToOsdkObjects2(
       derivedPropertyTypeByName,
       propertySecurities,
     );
-    if (
-      interfaceApiName && isInterfaceScoped
-    ) osdkObject = osdkObject.$as(interfaceApiName);
+    if (interfaceApiName && isInterfaceScoped)
+      osdkObject = osdkObject.$as(interfaceApiName);
 
     ret.push(osdkObject);
   }
@@ -290,8 +287,8 @@ export function convertInterfacePropNamesToObjectPropNames(
   interfaceApiName: string,
   ifacePropsToMap: readonly string[],
 ): string[] {
-  return ifacePropsToMap.map((ifaceProp) =>
-    objectDef.interfaceMap[interfaceApiName][ifaceProp]
+  return ifacePropsToMap.map(
+    (ifaceProp) => objectDef.interfaceMap[interfaceApiName][ifaceProp],
   );
 }
 
@@ -309,11 +306,9 @@ function reframeAsObjectInPlace(
   rawObj: OntologyObjectV2,
 ) {
   const newProps: Record<string, any> = {};
-  for (
-    const [sptProp, regularProp] of Object.entries(
-      objectDef.interfaceMap[interfaceApiName],
-    )
-  ) {
+  for (const [sptProp, regularProp] of Object.entries(
+    objectDef.interfaceMap[interfaceApiName],
+  )) {
     if (sptProp in rawObj) {
       const value = rawObj[sptProp];
       delete rawObj[sptProp];
@@ -331,24 +326,23 @@ function reframeAsObjectInPlace(
 
 function isConforming(
   client: MinimalClient,
-  def:
-    | InterfaceMetadata
-    | ObjectMetadata,
+  def: InterfaceMetadata | ObjectMetadata,
   obj: OntologyObjectV2,
   propsToCheck: readonly string[],
 ) {
   for (const propName of propsToCheck) {
     if (
-      propName in def.properties && def.properties[propName].nullable === false
-      && obj[propName] == null
+      propName in def.properties &&
+      def.properties[propName].nullable === false &&
+      obj[propName] == null
     ) {
       if (process.env.NODE_ENV !== "production") {
         client.logger?.debug(
           {
             obj: {
-              $apiName: obj["$apiName"],
-              $objectType: obj["$objectType"],
-              $primaryKey: obj["$primaryKey"],
+              $apiName: obj.$apiName,
+              $objectType: obj.$objectType,
+              $primaryKey: obj.$primaryKey,
             },
           },
           `Found object that does not conform to its definition. Expected ${def.apiName}'s ${propName} to not be null.`,
@@ -424,28 +418,28 @@ function convertInterfaceToObjectTypeMappingsV2ToV1(
   mappingsV2: Record<InterfaceTypeApiName, InterfaceToObjectTypeMappingsV2>,
 ): Record<InterfaceTypeApiName, InterfaceToObjectTypeMappings> {
   return Object.fromEntries(
-    Object.entries(mappingsV2).map((
-      [interfaceApiName, objectTypeMappingsV2],
-    ) => [
-      interfaceApiName,
-      Object.fromEntries(
-        Object.entries(objectTypeMappingsV2).map((
-          [objectTypeName, propertyMappings],
-        ) => [
-          objectTypeName,
-          Object.fromEntries(
-            Object.entries(propertyMappings)
-              .filter(([, impl]) => impl.type === "localPropertyImplementation")
-              .map((
-                [interfaceProp, impl],
-              ) => [
-                interfaceProp,
-                (impl as InterfacePropertyLocalPropertyImplementation)
-                  .propertyApiName,
-              ]),
+    Object.entries(mappingsV2).map(
+      ([interfaceApiName, objectTypeMappingsV2]) => [
+        interfaceApiName,
+        Object.fromEntries(
+          Object.entries(objectTypeMappingsV2).map(
+            ([objectTypeName, propertyMappings]) => [
+              objectTypeName,
+              Object.fromEntries(
+                Object.entries(propertyMappings)
+                  .filter(
+                    ([, impl]) => impl.type === "localPropertyImplementation",
+                  )
+                  .map(([interfaceProp, impl]) => [
+                    interfaceProp,
+                    (impl as InterfacePropertyLocalPropertyImplementation)
+                      .propertyApiName,
+                  ]),
+              ),
+            ],
           ),
-        ]),
-      ),
-    ]),
+        ),
+      ],
+    ),
   );
 }

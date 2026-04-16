@@ -8,7 +8,7 @@ This guide covers all the ways to fetch data from the server using OSDK React ho
 
 ## useOsdkObjects
 
-*Experimental - import from `@osdk/react/experimental`*
+_Experimental - import from `@osdk/react/experimental`_
 
 Retrieve and observe collections of objects with automatic cache management.
 
@@ -37,7 +37,9 @@ function TodoList() {
   return (
     <div>
       {isLoading && <div>Refreshing data</div>}
-      {data.map(todo => <TodoView key={todo.$primaryKey} todo={todo} />)}
+      {data.map((todo) => (
+        <TodoView key={todo.$primaryKey} todo={todo} />
+      ))}
     </div>
   );
 }
@@ -74,7 +76,7 @@ function SelectedEmployees({ selectedRids }: { selectedRids: string[] }) {
 
   return (
     <div>
-      {data?.map(employee => (
+      {data?.map((employee) => (
         <div key={employee.$primaryKey}>{employee.fullName}</div>
       ))}
     </div>
@@ -121,7 +123,9 @@ With fuzzy matching enabled, minor typos are tolerated:
 
 ```ts
 const { data } = useOsdkObjects(Article, {
-  where: { content: { $containsAnyTerm: { term: "react", fuzzySearch: true } } },
+  where: {
+    content: { $containsAnyTerm: { term: "react", fuzzySearch: true } },
+  },
 });
 // Fuzzy matching handles common typos automatically
 ```
@@ -143,7 +147,9 @@ With fuzzy matching:
 
 ```ts
 const { data } = useOsdkObjects(Article, {
-  where: { content: { $containsAllTerms: { term: "react hooks", fuzzySearch: true } } },
+  where: {
+    content: { $containsAllTerms: { term: "react hooks", fuzzySearch: true } },
+  },
 });
 ```
 
@@ -161,12 +167,12 @@ const { data } = useOsdkObjects(Document, {
 
 #### Search Filter Comparison
 
-| Filter | Match Requirement | Use Case |
-|--------|-------------------|----------|
-| `$startsWith` | Begins with prefix | Autocomplete, prefix search |
-| `$containsAnyTerm` | Any term present | Broad keyword search |
-| `$containsAllTerms` | All terms present (any order) | Precise multi-keyword search |
-| `$containsAllTermsInOrder` | All terms in exact order | Phrase/exact match search |
+| Filter                     | Match Requirement             | Use Case                     |
+| -------------------------- | ----------------------------- | ---------------------------- |
+| `$startsWith`              | Begins with prefix            | Autocomplete, prefix search  |
+| `$containsAnyTerm`         | Any term present              | Broad keyword search         |
+| `$containsAllTerms`        | All terms present (any order) | Precise multi-keyword search |
+| `$containsAllTermsInOrder` | All terms in exact order      | Phrase/exact match search    |
 
 #### Search Example: Building a Search Box
 
@@ -180,7 +186,9 @@ function ArticleSearch() {
 
   const { data, isLoading } = useOsdkObjects(Article, {
     where: searchQuery
-      ? { title: { $containsAnyTerm: { term: searchQuery, fuzzySearch: true } } }
+      ? {
+          title: { $containsAnyTerm: { term: searchQuery, fuzzySearch: true } },
+        }
       : undefined,
     enabled: searchQuery.length >= 2,
   });
@@ -191,12 +199,12 @@ function ArticleSearch() {
         type="text"
         placeholder="Search articles..."
         value={searchQuery}
-        onChange={e => setSearchQuery(e.target.value)}
+        onChange={(e) => setSearchQuery(e.target.value)}
       />
 
       {isLoading && <div>Searching...</div>}
 
-      {data?.map(article => (
+      {data?.map((article) => (
         <div key={article.$primaryKey}>{article.title}</div>
       ))}
     </div>
@@ -224,7 +232,9 @@ function TodoList() {
 
   return (
     <div>
-      {data?.map(todo => <TodoView key={todo.$primaryKey} todo={todo} />)}
+      {data?.map((todo) => (
+        <TodoView key={todo.$primaryKey} todo={todo} />
+      ))}
 
       {fetchMore && (
         <button onClick={() => fetchMore()} disabled={isLoading}>
@@ -281,7 +291,9 @@ function ConditionalTodoFetch() {
       </button>
 
       {shouldFetch && isLoading && !data && <div>Loading...</div>}
-      {data?.map(todo => <div key={todo.$primaryKey}>{todo.title}</div>)}
+      {data?.map((todo) => (
+        <div key={todo.$primaryKey}>{todo.title}</div>
+      ))}
     </div>
   );
 }
@@ -314,10 +326,12 @@ function LiveTodoList() {
   return (
     <div>
       <h2>Live Todo List ({data?.length})</h2>
-      {data?.map(todo => (
+      {data?.map((todo) => (
         <div key={todo.$primaryKey}>
           <span>{todo.title}</span>
-          {isLoading && <span style={{ fontSize: "0.8em" }}>(Updating...)</span>}
+          {isLoading && (
+            <span style={{ fontSize: "0.8em" }}>(Updating...)</span>
+          )}
         </div>
       ))}
     </div>
@@ -356,7 +370,7 @@ function EmployeesIntersection() {
   return (
     <div>
       <h3>Senior Engineers with High Salary ({data?.length})</h3>
-      {data?.map(employee => (
+      {data?.map((employee) => (
         <div key={employee.$primaryKey}>{employee.fullName}</div>
       ))}
     </div>
@@ -385,7 +399,7 @@ function ManagerReports() {
   return (
     <div>
       <h3>John Smith's Direct Reports ({data?.length})</h3>
-      {data?.map(report => (
+      {data?.map((report) => (
         <div key={report.$primaryKey}>{report.fullName}</div>
       ))}
     </div>
@@ -399,7 +413,10 @@ function ManagerReports() {
 const { data, isLoading, isOptimistic, fetchMore, error } = useOsdkObjects(
   Todo,
   {
-    rids: ["ri.phonograph2-objects.main.object.abc123", "ri.phonograph2-objects.main.object.def456"],
+    rids: [
+      "ri.phonograph2-objects.main.object.abc123",
+      "ri.phonograph2-objects.main.object.def456",
+    ],
     where: { isComplete: false },
     pageSize: 20,
     orderBy: { createdAt: "desc" },
@@ -408,7 +425,9 @@ const { data, isLoading, isOptimistic, fetchMore, error } = useOsdkObjects(
     autoFetchMore: 100,
     enabled: true,
     intersectWith: [{ where: { priority: "high" } }],
-    withProperties: { /* see advanced-queries */ },
+    withProperties: {
+      /* see advanced-queries */
+    },
   },
 );
 ```
@@ -423,7 +442,7 @@ still fetch data normally but won't receive real-time updates.
 
 ## useOsdkObject
 
-*Experimental - import from `@osdk/react/experimental`*
+_Experimental - import from `@osdk/react/experimental`_
 
 Retrieve and observe a single object.
 
@@ -487,7 +506,7 @@ function TodoLoader({ todoId }: { todoId: string }) {
 
 ## useLinks
 
-*Experimental - import from `@osdk/react/experimental`*
+_Experimental - import from `@osdk/react/experimental`_
 
 Observe and navigate relationships between objects.
 
@@ -515,7 +534,9 @@ function EmployeeReports({ employee }: { employee: Employee.OsdkInstance }) {
   return (
     <div>
       <h3>Reports ({links?.length})</h3>
-      {links?.map(report => <div key={report.$primaryKey}>{report.name}</div>)}
+      {links?.map((report) => (
+        <div key={report.$primaryKey}>{report.name}</div>
+      ))}
 
       {hasMore && (
         <button onClick={() => fetchMore?.()} disabled={isLoading}>
@@ -538,7 +559,9 @@ function TeamMembers({ employees }: { employees: Employee.OsdkInstance[] }) {
   return (
     <div>
       <h3>All Team Reports</h3>
-      {links?.map(report => <div key={report.$primaryKey}>{report.name}</div>)}
+      {links?.map((report) => (
+        <div key={report.$primaryKey}>{report.name}</div>
+      ))}
     </div>
   );
 }
@@ -551,7 +574,11 @@ import { Employee } from "@my/osdk";
 import { useLinks } from "@osdk/react/experimental";
 import { useState } from "react";
 
-function OptionalReportsList({ employee }: { employee: Employee.OsdkInstance }) {
+function OptionalReportsList({
+  employee,
+}: {
+  employee: Employee.OsdkInstance;
+}) {
   const [showReports, setShowReports] = useState(false);
 
   const { links, isLoading } = useLinks(employee, "reports", {
@@ -565,7 +592,9 @@ function OptionalReportsList({ employee }: { employee: Employee.OsdkInstance }) 
       </button>
 
       {showReports && isLoading && !links && <div>Loading...</div>}
-      {links?.map(report => <div key={report.$primaryKey}>{report.name}</div>)}
+      {links?.map((report) => (
+        <div key={report.$primaryKey}>{report.name}</div>
+      ))}
     </div>
   );
 }
@@ -611,7 +640,7 @@ const { links } = useLinks(employee, "reports", {
 
 ## useOsdkClient
 
-*Stable - available from both `@osdk/react` and `@osdk/react/experimental`*
+_Stable - available from both `@osdk/react` and `@osdk/react/experimental`_
 
 Access the OSDK client directly for custom queries.
 
@@ -662,7 +691,9 @@ function TodoList() {
 
   return (
     <div>
-      {data?.map(todo => <TodoView key={todo.$primaryKey} todo={todo} />)}
+      {data?.map((todo) => (
+        <TodoView key={todo.$primaryKey} todo={todo} />
+      ))}
     </div>
   );
 }
@@ -697,7 +728,7 @@ function TodoWithDetails({ todoId }: { todoId: string }) {
 
       <h3>Comments ({comments?.length || 0})</h3>
       {commentsLoading && <div>Loading comments...</div>}
-      {comments?.map(comment => (
+      {comments?.map((comment) => (
         <div key={comment.$primaryKey}>{comment.text}</div>
       ))}
     </div>

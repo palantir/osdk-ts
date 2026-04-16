@@ -27,13 +27,18 @@
         "tsconfig.json"
       ],
       "outputs": [],
-      "dependsOn": ["//#global-eslint-config", "//#dprint", "codegen", "^transpileTypes"]
+      "dependsOn": [
+        "//#global-eslint-config",
+        "//#oxfmt",
+        "codegen",
+        "^transpileTypes"
+      ]
     },
 
-    /* Psuedo task to let us depend on dprint config */
-    "//#dprint": {
+    /* Psuedo task to let us depend on oxfmt config */
+    "//#oxfmt": {
       "outputLogs": "new-only",
-      "inputs": ["dprint.json"]
+      "inputs": [".oxfmtrc.json"]
     },
 
     "check-attw": {
@@ -61,10 +66,7 @@
     },
 
     "typecheck": {
-      "dependsOn": [
-        "codegen",
-        "^transpileTypes"
-      ]
+      "dependsOn": ["codegen", "^transpileTypes"]
     },
 
     "check-api": {
@@ -89,8 +91,7 @@
       "dependsOn": ["check-api"]
     },
 
-    "postVersioning": {
-    },
+    "postVersioning": {},
 
     "build": {
       "dependsOn": ["transpile", "transpileTypes"],
@@ -146,19 +147,9 @@
 
     "transpileTypes": {
       "outputLogs": "new-only",
-      "dependsOn": [
-        "@osdk/monorepo.tsconfig#typecheck",
-        "codegen"
-      ],
-      "inputs": [
-        "bin/**",
-        "src/**",
-        "templates/**",
-        "tsconfig.json"
-      ],
-      "outputs": [
-        "build/types/**"
-      ]
+      "dependsOn": ["@osdk/monorepo.tsconfig#typecheck", "codegen"],
+      "inputs": ["bin/**", "src/**", "templates/**", "tsconfig.json"],
+      "outputs": ["build/types/**"]
     },
 
     "transpileEsm": {
@@ -175,9 +166,7 @@
         "tsup.config.js",
         "tsconfig.json"
       ],
-      "outputs": [
-        "build/esm/**"
-      ]
+      "outputs": ["build/esm/**"]
     },
 
     "transpileBrowser": {
@@ -187,15 +176,8 @@
         "@osdk/monorepo.tsconfig#typecheck",
         "codegen"
       ],
-      "inputs": [
-        "bin/**",
-        "src/**",
-        "templates/**",
-        "tsconfig.json"
-      ],
-      "outputs": [
-        "build/browser/**"
-      ]
+      "inputs": ["bin/**", "src/**", "templates/**", "tsconfig.json"],
+      "outputs": ["build/browser/**"]
     },
 
     // This one both transpiles to CJS and it creates the .d.ts files
@@ -219,9 +201,7 @@
         "tsup.config.js",
         "tsconfig.json"
       ],
-      "outputs": [
-        "build/cjs/**"
-      ]
+      "outputs": ["build/cjs/**"]
     },
 
     "test": {

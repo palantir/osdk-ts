@@ -60,19 +60,21 @@ function createMockClient(): {
   const unsubscribes: ReturnType<typeof vi.fn>[] = [];
 
   const client = {
-    observeFunction: vi.fn().mockImplementation(
-      (
-        _def: unknown,
-        _params: unknown,
-        _opts: unknown,
-        observer: Observer,
-      ) => {
-        observers.push(observer);
-        const unsub = vi.fn();
-        unsubscribes.push(unsub);
-        return { unsubscribe: unsub };
-      },
-    ),
+    observeFunction: vi
+      .fn()
+      .mockImplementation(
+        (
+          _def: unknown,
+          _params: unknown,
+          _opts: unknown,
+          observer: Observer,
+        ) => {
+          observers.push(observer);
+          const unsub = vi.fn();
+          unsubscribes.push(unsub);
+          return { unsubscribe: unsub };
+        },
+      ),
   } as unknown as ObservableClient;
 
   return { client, observers, unsubscribes };
@@ -205,10 +207,7 @@ describe("createCompositeExternalStore", () => {
 
   it("should skip disabled queries", () => {
     const store = createCompositeExternalStore(
-      [
-        makeQuery(QUERY_DEF_A, { enabled: false }),
-        makeQuery(QUERY_DEF_B),
-      ],
+      [makeQuery(QUERY_DEF_A, { enabled: false }), makeQuery(QUERY_DEF_B)],
       mock.client,
       undefined,
     );
@@ -491,11 +490,7 @@ describe("createCompositeExternalStore", () => {
   });
 
   it("should handle empty queries array", () => {
-    const store = createCompositeExternalStore(
-      [],
-      mock.client,
-      undefined,
-    );
+    const store = createCompositeExternalStore([], mock.client, undefined);
 
     expect(store.getSnapshot()).toEqual([]);
 

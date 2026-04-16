@@ -82,27 +82,27 @@ class ErrorBoundary extends React.Component<
 }
 
 function App() {
-  const [selectedOffice, setSelectedOffice] = React.useState<
-    Office.OsdkInstance | null
-  >(null);
-  const [selectedEmployee, setSelectedEmployee] = React.useState<
-    Employee.OsdkInstance | null
-  >(null);
+  const [selectedOffice, setSelectedOffice] =
+    React.useState<Office.OsdkInstance | null>(null);
+  const [selectedEmployee, setSelectedEmployee] =
+    React.useState<Employee.OsdkInstance | null>(null);
   const [lensMode, setLensMode] = React.useState<LensMode>("offices");
-  const [filteredLevel, setFilteredLevel] = React.useState<
-    HierarchyLevel | null
-  >(null);
+  const [filteredLevel, setFilteredLevel] =
+    React.useState<HierarchyLevel | null>(null);
   const [searchQuery, setSearchQuery] = React.useState("");
   const [employeeWhereClause, setEmployeeWhereClause] = React.useState<
     WhereClause<typeof Employee> | undefined
   >();
 
-  const { data: offices, isLoading: officesLoading, error: officesError } =
-    useOsdkObjects(Office, {
-      pageSize: 100,
-      orderBy: { name: "asc" },
-      withProperties: officeWithRdps,
-    });
+  const {
+    data: offices,
+    isLoading: officesLoading,
+    error: officesError,
+  } = useOsdkObjects(Office, {
+    pageSize: 100,
+    orderBy: { name: "asc" },
+    withProperties: officeWithRdps,
+  });
 
   const {
     data: employees,
@@ -129,13 +129,10 @@ function App() {
     console.error("Error loading employees:", employeesError);
   }
 
-  const handleSelectOffice = React.useCallback(
-    (office: OfficeWithRdps) => {
-      setSelectedOffice(office);
-      setSelectedEmployee(null);
-    },
-    [],
-  );
+  const handleSelectOffice = React.useCallback((office: OfficeWithRdps) => {
+    setSelectedOffice(office);
+    setSelectedEmployee(null);
+  }, []);
 
   const handleSelectEmployee = React.useCallback(
     (employee: Employee.OsdkInstance) => {
@@ -155,8 +152,8 @@ function App() {
         setFilteredLevel(null);
         const employeeOfficeId = employee.primaryOfficeId;
         if (employeeOfficeId && offices) {
-          const office = offices.find((o) =>
-            o.primaryKey_ === employeeOfficeId
+          const office = offices.find(
+            (o) => o.primaryKey_ === employeeOfficeId,
           );
           if (office) {
             setSelectedOffice(office);
@@ -205,11 +202,12 @@ function App() {
     window.location.reload();
   }, []);
 
-  const hasActiveFilters = employeeWhereClause !== undefined
-    && Object.keys(employeeWhereClause).length > 0;
+  const hasActiveFilters =
+    employeeWhereClause !== undefined &&
+    Object.keys(employeeWhereClause).length > 0;
 
-  const showOfficePanel = selectedOffice && !selectedEmployee
-    && lensMode === "offices";
+  const showOfficePanel =
+    selectedOffice && !selectedEmployee && lensMode === "offices";
   const showEmployeePanel = selectedEmployee;
   const showReorgWizard = lensMode === "reorg";
   return (
@@ -233,62 +231,58 @@ function App() {
 
         {/* Map Area */}
         <div className="flex-1 relative">
-          {offices && offices.length > 0
-            ? (
-              <OfficeMap
-                offices={offices}
-                employees={employees ?? []}
-                selectedOffice={selectedOffice}
-                selectedEmployee={selectedEmployee}
-                onSelectOffice={handleSelectOffice}
-                onSelectEmployee={handleSelectEmployeeWithOffice}
-                lensMode={lensMode}
-                filteredLevel={filteredLevel}
-                onFilterLevelChange={handleFilterLevelChange}
-                freezeMap={lensMode === "reorg"}
-                hasActiveFilters={hasActiveFilters}
-              />
-            )
-            : !officesLoading
-            ? (
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="text-center">
-                  <div className="text-lg text-[var(--officenetwork-text-muted)] text-balance">
-                    No offices found
-                  </div>
-                  <div className="text-xs text-[var(--officenetwork-text-muted)] mt-2 text-pretty">
-                    Click "Generate Data" to create sample data
-                  </div>
+          {offices && offices.length > 0 ? (
+            <OfficeMap
+              offices={offices}
+              employees={employees ?? []}
+              selectedOffice={selectedOffice}
+              selectedEmployee={selectedEmployee}
+              onSelectOffice={handleSelectOffice}
+              onSelectEmployee={handleSelectEmployeeWithOffice}
+              lensMode={lensMode}
+              filteredLevel={filteredLevel}
+              onFilterLevelChange={handleFilterLevelChange}
+              freezeMap={lensMode === "reorg"}
+              hasActiveFilters={hasActiveFilters}
+            />
+          ) : !officesLoading ? (
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="text-center">
+                <div className="text-lg text-[var(--officenetwork-text-muted)] text-balance">
+                  No offices found
+                </div>
+                <div className="text-xs text-[var(--officenetwork-text-muted)] mt-2 text-pretty">
+                  Click "Generate Data" to create sample data
                 </div>
               </div>
-            )
-            : (
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="flex items-center gap-2 text-[var(--officenetwork-text-muted)]">
-                  <svg
-                    className="size-5 animate-spin"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    aria-hidden="true"
-                  >
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                    />
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    />
-                  </svg>
-                  <span className="text-sm">Loading data...</span>
-                </div>
+            </div>
+          ) : (
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="flex items-center gap-2 text-[var(--officenetwork-text-muted)]">
+                <svg
+                  className="size-5 animate-spin"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  aria-hidden="true"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  />
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  />
+                </svg>
+                <span className="text-sm">Loading data...</span>
               </div>
-            )}
+            </div>
+          )}
 
           {/* Error indicators */}
           {(officesError || employeesError) && (

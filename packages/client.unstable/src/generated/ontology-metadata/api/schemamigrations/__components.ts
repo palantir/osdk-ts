@@ -92,8 +92,7 @@ export interface DeleteTransitionModification {
 /**
  * Migration to drop all patches applied to the ObjectType.
  */
-export interface DropAllPatchesMigration {
-}
+export interface DropAllPatchesMigration {}
 /**
  * Migration to drop the given datasource.
  */
@@ -154,8 +153,7 @@ export interface InitializePatchesMigrationModification {
 /**
  * Type that represents the latest schema version
  */
-export interface LatestSchemaVersion {
-}
+export interface LatestSchemaVersion {}
 /**
  * Update the edits resolution strategy of an object type from latest timestamp to edits always win.
  */
@@ -415,8 +413,7 @@ export interface OntologyIrSchemaMigrationInstruction_nonRevertible {
 
 export interface OntologyIrSchemaMigrationInstruction_updateEditsResolutionStrategy {
   type: "updateEditsResolutionStrategy";
-  updateEditsResolutionStrategy:
-    OntologyIrUpdateEditsResolutionStrategyMigration;
+  updateEditsResolutionStrategy: OntologyIrUpdateEditsResolutionStrategyMigration;
 }
 /**
  * One out of potentially many instructions on how to transition from one version to another.
@@ -483,13 +480,11 @@ export interface PatchBackup {
 /**
  * A migration that will permanently delete patches applied on an object type. This is a required migration to be present if changing or modifying the primary key of an object type that has received edits.
  */
-export interface PermanentlyDeletePatchesMigration {
-}
+export interface PermanentlyDeletePatchesMigration {}
 /**
  * Migration that can be used to hard delete patches on an object type.
  */
-export interface PermanentlyDeletePatchesMigrationModification {
-}
+export interface PermanentlyDeletePatchesMigrationModification {}
 export interface PrimaryKeyRenames_objectType {
   type: "objectType";
   objectType: ObjectTypePrimaryKeyRename;
@@ -547,8 +542,7 @@ export interface RenameStructFieldMigrationModification {
   sourceStructField: _api_StructFieldRid;
   targetStructField: _api_StructFieldApiNameOrRid;
 }
-export interface ResetSchemaMigrationsAndDropEditParameters {
-}
+export interface ResetSchemaMigrationsAndDropEditParameters {}
 /**
  * Revert a previous migration.
  */

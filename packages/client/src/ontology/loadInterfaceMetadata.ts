@@ -29,8 +29,7 @@ export async function loadInterfaceMetadata(
     { preview: true, branch: client.branch },
   );
 
-  const { __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition } = await import(
-    "@osdk/generator-converters"
-  );
+  const { __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition } =
+    await import("@osdk/generator-converters");
   return __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition(r, true);
 }

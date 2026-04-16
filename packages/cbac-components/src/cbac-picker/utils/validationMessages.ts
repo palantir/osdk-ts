@@ -34,8 +34,8 @@ export function getSubmitDisabledReason(
     return "Selected markings do not include all required markings.";
   }
   const selectedSet = new Set(ctx.selectedIds);
-  const hasDisallowedSelected = ctx.disallowedMarkingIds.some(
-    (id) => selectedSet.has(id),
+  const hasDisallowedSelected = ctx.disallowedMarkingIds.some((id) =>
+    selectedSet.has(id),
   );
   if (hasDisallowedSelected) {
     return "Selections include disallowed markings.";

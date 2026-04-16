@@ -57,7 +57,7 @@ documentation.yml    baseContext.ts      example files      pnpm typecheck
 
 ```handlebars
 {{#hasProperty}}
-const property = "{{propertyName}}";
+  const property = "{{propertyName}}";
 {{/hasProperty}}
 ```
 

@@ -69,26 +69,20 @@ export class FauxAdmin {
 
   getCurrentUser(): User {
     if (this.#currentUserId == null) {
-      throw new OpenApiCallError(
-        403,
-        CurrentUserPermissionDeniedError,
-      );
+      throw new OpenApiCallError(403, CurrentUserPermissionDeniedError);
     }
 
     const user = this.getUser(this.#currentUserId, "ACTIVE");
 
     if (user == null) {
-      throw new OpenApiCallError(
-        403,
-        CurrentUserPermissionDeniedError,
-      );
+      throw new OpenApiCallError(403, CurrentUserPermissionDeniedError);
     }
 
     return user;
   }
 
   getUser(userId: string, status: UserStatus): User {
-    const user = this.#users.find(user => user.id === userId);
+    const user = this.#users.find((user) => user.id === userId);
 
     if (user == null) {
       throw new OpenApiCallError(404, GetUserNotFoundError(userId));
@@ -111,19 +105,18 @@ export class FauxAdmin {
     pageToken: string | undefined,
     status: UserStatus | undefined,
   ): { users: User[]; nextPageToken: string } {
-    const filteredUsers = status != null
-      ? this.#users.filter(user => user.status === status)
-      : this.#users;
+    const filteredUsers =
+      status != null
+        ? this.#users.filter((user) => user.status === status)
+        : this.#users;
 
-    const startIndex = pageToken != null
-      ? filteredUsers.findIndex(user => user.id === pageToken)
-      : 0;
+    const startIndex =
+      pageToken != null
+        ? filteredUsers.findIndex((user) => user.id === pageToken)
+        : 0;
 
     if (pageToken != null && startIndex === -1) {
-      throw new OpenApiCallError(
-        400,
-        GetInvalidPageTokenError(pageToken),
-      );
+      throw new OpenApiCallError(400, GetInvalidPageTokenError(pageToken));
     }
 
     return {

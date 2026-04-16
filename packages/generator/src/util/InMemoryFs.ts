@@ -26,8 +26,7 @@ export function createInMemoryFs(): InMemoryFs {
     writeFile: async (path, contents) => {
       files[path] = contents;
     },
-    mkdir: async (path, options) => {
-    },
+    mkdir: async (path, options) => {},
     getFiles: () => files,
     getFile: (path) => files[path],
     readdir: async (path) => {

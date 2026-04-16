@@ -40,30 +40,46 @@ export async function runStructsTest(): Promise<void> {
 
   const airportFilteredShouldHaveData = await dsClient(McAirportStruct)
     .where({
-      $and: [{ airportStruct: { code: { $startsWith: "D" } } }, {
-        airportStruct: { timestamp: { $startsWith: "173" } },
-      }, { airportName: { $containsAnyTerm: "Reagan" } }],
-    }).fetchPage();
+      $and: [
+        { airportStruct: { code: { $startsWith: "D" } } },
+        {
+          airportStruct: { timestamp: { $startsWith: "173" } },
+        },
+        { airportName: { $containsAnyTerm: "Reagan" } },
+      ],
+    })
+    .fetchPage();
   const airportFilteredShouldNotHaveData = await dsClient(McAirportStruct)
     .where({
-      $and: [{ airportStruct: { code: { $startsWith: "B" } } }, {
-        airportStruct: { timestamp: { $startsWith: "173" } },
-      }],
-    }).fetchPage();
+      $and: [
+        { airportStruct: { code: { $startsWith: "B" } } },
+        {
+          airportStruct: { timestamp: { $startsWith: "173" } },
+        },
+      ],
+    })
+    .fetchPage();
   console.log("Full With Data :", airportFilteredShouldHaveData);
   console.log(airportFilteredShouldHaveData.data[0].airportStruct);
   console.log("Full Without Data :", airportFilteredShouldNotHaveData);
   console.log(airportFilteredShouldNotHaveData.data[0]);
 
-  const filteredArrayOfStruct = await client(OsdkTestObject).where({
-    structArray: { $contains: { string1: { $containsAnyTerm: "Nope" } } },
-  }).fetchPage();
+  const filteredArrayOfStruct = await client(OsdkTestObject)
+    .where({
+      structArray: { $contains: { string1: { $containsAnyTerm: "Nope" } } },
+    })
+    .fetchPage();
 
-  const filteredArrayOfStructWith2 = await client(OsdkTestObject).where({
-    $or: [{ structArray: { $contains: { string1: { $eq: "Nope" } } } }, {
-      structArray: { $contains: { number: { $gt: 5 } } },
-    }],
-  }).fetchPage();
+  const filteredArrayOfStructWith2 = await client(OsdkTestObject)
+    .where({
+      $or: [
+        { structArray: { $contains: { string1: { $eq: "Nope" } } } },
+        {
+          structArray: { $contains: { number: { $gt: 5 } } },
+        },
+      ],
+    })
+    .fetchPage();
 
   console.log(
     "Filtered Array of Structs: ",

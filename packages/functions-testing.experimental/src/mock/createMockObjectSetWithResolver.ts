@@ -33,16 +33,12 @@ export type Stub = { calls: Call[]; value: unknown };
 
 export function createMockObjectSetWithResolver<
   Q extends ObjectOrInterfaceDefinition,
->(
-  objectType: Q,
-  resolver: Resolver,
-  calls: Call[] = [],
-): ObjectSet<Q> {
+>(objectType: Q, resolver: Resolver, calls: Call[] = []): ObjectSet<Q> {
   const chain = (method: string, args: unknown): ObjectSet<Q> =>
-    createMockObjectSetWithResolver(objectType, resolver, [...calls, [
-      method,
-      args,
-    ]]);
+    createMockObjectSetWithResolver(objectType, resolver, [
+      ...calls,
+      [method, args],
+    ]);
 
   const terminal = <T>(method: string, args: unknown): T =>
     resolver([...calls, [method, args]]) as T;
@@ -76,9 +72,8 @@ export function createMockObjectSetWithResolver<
         return { type: "error" as const, error };
       }
     },
-    fetchOne:
-      (async (pk: unknown) =>
-        terminal<Osdk.Instance<Q>>("fetchOne", pk)) as any,
+    fetchOne: (async (pk: unknown) =>
+      terminal<Osdk.Instance<Q>>("fetchOne", pk)) as any,
     fetchOneWithErrors: (async (pk: unknown) => {
       try {
         return {
@@ -96,7 +91,7 @@ export function createMockObjectSetWithResolver<
       ) as any,
     asyncIter: (args?: unknown) => {
       const data = terminal<Osdk.Instance<Q>[]>("asyncIter", args);
-      return (async function*() {
+      return (async function* () {
         for (const item of data) yield item;
       })();
     },
@@ -122,8 +117,8 @@ export function resolveStub(
   for (const stub of stubs) {
     if (stub.calls.length !== calls.length) continue;
     if (
-      stub.calls.every(([m, a], i) =>
-        calls[i][0] === m && deepEqual(a, calls[i][1])
+      stub.calls.every(
+        ([m, a], i) => calls[i][0] === m && deepEqual(a, calls[i][1]),
       )
     ) {
       const terminal = calls[calls.length - 1][0];
@@ -149,7 +144,7 @@ export function deepEqual(a: unknown, b: unknown): boolean {
     const bKeys = Object.keys(b as object);
     if (aKeys.length !== bKeys.length) return false;
     return aKeys.every((k) =>
-      deepEqual((a as any)[k], (b as Record<string, unknown>)[k])
+      deepEqual((a as any)[k], (b as Record<string, unknown>)[k]),
     );
   }
   return false;

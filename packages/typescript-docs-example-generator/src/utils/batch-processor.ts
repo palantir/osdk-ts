@@ -87,9 +87,8 @@ export class BatchProcessor {
           }
         }
       } catch (error) {
-        const generatorError = error instanceof Error
-          ? error
-          : new Error(String(error));
+        const generatorError =
+          error instanceof Error ? error : new Error(String(error));
         errors.push({ id: item.id, error: generatorError });
 
         if (errors.length >= maxErrors || !continueOnError) {
@@ -132,14 +131,14 @@ export class BatchProcessor {
           const result = await processor(item);
           return { item, result };
         } catch (error) {
-          const generatorError = error instanceof Error
-            ? error
-            : new Error(String(error));
+          const generatorError =
+            error instanceof Error ? error : new Error(String(error));
           return {
             item,
-            result: { success: false, error: generatorError } as Result<
-              TOutput
-            >,
+            result: {
+              success: false,
+              error: generatorError,
+            } as Result<TOutput>,
           };
         }
       });
@@ -172,7 +171,7 @@ export class BatchProcessor {
     }>,
   ): Promise<Result<Map<string, T>>> {
     const items: Array<BatchItem<() => Result<T> | Promise<Result<T>>>> =
-      validators.map(v => ({
+      validators.map((v) => ({
         id: v.name,
         data: v.validate,
       }));
@@ -195,7 +194,7 @@ export class BatchProcessor {
     prefix: string,
   ): Result<never> {
     const errorMessage = errors
-      .map(e => `${e.id}: ${e.error.message}`)
+      .map((e) => `${e.id}: ${e.error.message}`)
       .join("\n");
 
     return toErrorResult(new Error(`${prefix}:\n${errorMessage}`));

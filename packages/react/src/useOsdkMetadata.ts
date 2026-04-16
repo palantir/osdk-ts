@@ -30,11 +30,14 @@ type MetadataFetchableDefinition =
   | ObjectOrInterfaceDefinition
   | ActionDefinition<any>;
 
-type MetadataFor<T extends MetadataFetchableDefinition> = T extends
-  ObjectTypeDefinition ? ObjectMetadata
-  : T extends InterfaceDefinition ? InterfaceMetadata
-  : T extends ActionDefinition<any> ? ActionMetadata
-  : never;
+type MetadataFor<T extends MetadataFetchableDefinition> =
+  T extends ObjectTypeDefinition
+    ? ObjectMetadata
+    : T extends InterfaceDefinition
+      ? InterfaceMetadata
+      : T extends ActionDefinition<any>
+        ? ActionMetadata
+        : never;
 
 export interface UseOsdkMetadataResult<T extends MetadataFetchableDefinition> {
   loading: boolean;
@@ -46,20 +49,22 @@ export function useOsdkMetadata<T extends MetadataFetchableDefinition>(
   type: T,
 ): UseOsdkMetadataResult<T> {
   const client = useOsdkClient();
-  const [metadata, setMetadata] = React.useState<
-    MetadataFor<T> | undefined
-  >(undefined);
+  const [metadata, setMetadata] = React.useState<MetadataFor<T> | undefined>(
+    undefined,
+  );
   const [error, setError] = React.useState<UseOsdkMetadataResult<T>["error"]>();
 
   if (!metadata && !error) {
-    client.fetchMetadata(type).then((fetchedMetadata) => {
-      setMetadata(fetchedMetadata as MetadataFor<T>);
-    }).catch((error: unknown) => {
-      const errorMessage = error instanceof Error
-        ? error.message
-        : String(error);
-      setError(errorMessage);
-    });
+    client
+      .fetchMetadata(type)
+      .then((fetchedMetadata) => {
+        setMetadata(fetchedMetadata as MetadataFor<T>);
+      })
+      .catch((error: unknown) => {
+        const errorMessage =
+          error instanceof Error ? error.message : String(error);
+        setError(errorMessage);
+      });
     return { loading: true };
   }
 

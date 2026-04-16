@@ -16,9 +16,7 @@
 
 import type { QueryMetadata, QueryParameterDefinition } from "@osdk/api";
 import type { QueryParameterV2, QueryTypeV2 } from "@osdk/foundry.ontologies";
-import {
-  wireQueryDataTypeToQueryDataTypeDefinition,
-} from "./wireQueryDataTypeToQueryDataTypeDefinition.js";
+import { wireQueryDataTypeToQueryDataTypeDefinition } from "./wireQueryDataTypeToQueryDataTypeDefinition.js";
 
 export function wireQueryTypeV2ToSdkQueryMetadata(
   input: QueryTypeV2,
@@ -30,23 +28,24 @@ export function wireQueryTypeV2ToSdkQueryMetadata(
     displayName: input.displayName,
     version: input.version,
     parameters: Object.fromEntries(
-      Object.entries(input.parameters).sort(
-        ([a], [b]) => a.localeCompare(b),
-      ).map((
-        [name, parameter],
-      ) => [name, wireQueryParameterV2ToQueryParameterDefinition(parameter)]),
+      Object.entries(input.parameters)
+        .sort(([a], [b]) => a.localeCompare(b))
+        .map(([name, parameter]) => [
+          name,
+          wireQueryParameterV2ToQueryParameterDefinition(parameter),
+        ]),
     ),
     output: wireQueryDataTypeToQueryDataTypeDefinition(input.output),
     rid: input.rid,
-    typeReferences: input.typeReferences
-        && Object.keys(input.typeReferences).length > 0
-      ? Object.fromEntries(
-        Object.entries(input.typeReferences).map(([typeId, dataType]) => [
-          typeId,
-          wireQueryDataTypeToQueryDataTypeDefinition(dataType),
-        ]),
-      )
-      : undefined,
+    typeReferences:
+      input.typeReferences && Object.keys(input.typeReferences).length > 0
+        ? Object.fromEntries(
+            Object.entries(input.typeReferences).map(([typeId, dataType]) => [
+              typeId,
+              wireQueryDataTypeToQueryDataTypeDefinition(dataType),
+            ]),
+          )
+        : undefined,
   };
 }
 

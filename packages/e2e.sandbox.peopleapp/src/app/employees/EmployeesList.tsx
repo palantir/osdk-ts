@@ -13,9 +13,11 @@ interface EmployeeListItemProps {
   onSelect: (employee: Employee.OsdkInstance) => void;
 }
 
-function EmployeeListItem(
-  { item, isSelected, onSelect }: EmployeeListItemProps,
-) {
+function EmployeeListItem({
+  item,
+  isSelected,
+  onSelect,
+}: EmployeeListItemProps) {
   return (
     <ListItem
       isSelected={isSelected}

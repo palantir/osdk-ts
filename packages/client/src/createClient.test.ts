@@ -62,10 +62,9 @@ describe(createClient, () => {
 
   describe("user agent passing", () => {
     function getUserAgentPartsFromMockedFetch() {
-      const userAgent = (fetchFunction.mock.calls[0][1]?.headers as Headers)
-        .get(
-          "Fetch-User-Agent",
-        );
+      const userAgent = (
+        fetchFunction.mock.calls[0][1]?.headers as Headers
+      ).get("Fetch-User-Agent");
       const parts = userAgent?.split(" ") ?? [];
       return parts;
     }
@@ -76,9 +75,7 @@ describe(createClient, () => {
 
       const parts = getUserAgentPartsFromMockedFetch();
       expect(parts).toEqual([
-        ...BarInterface.osdkMetadata!
-          .extraUserAgent
-          .split(" "),
+        ...BarInterface.osdkMetadata!.extraUserAgent.split(" "),
         USER_AGENT,
       ]);
     });
@@ -103,9 +100,7 @@ describe(createClient, () => {
       );
       const parts = userAgent?.split(" ") ?? [];
       expect(parts).toEqual([
-        ...BarInterface.osdkMetadata!
-          .extraUserAgent
-          .split(" "),
+        ...BarInterface.osdkMetadata!.extraUserAgent.split(" "),
         USER_AGENT,
         "my-app/1.0",
       ]);
@@ -156,16 +151,14 @@ describe(createClient, () => {
         "makeConjureContext",
       );
 
-      void metadataCacheClient(
-        {
-          baseUrl: "https://mock4.com/",
-          ontologyProvider: { getObjectDefinition: async () => ({}) },
-        } as any,
-      );
+      void metadataCacheClient({
+        baseUrl: "https://mock4.com/",
+        ontologyProvider: { getObjectDefinition: async () => ({}) },
+      } as any);
 
       expect(
-        conjureContextSpy.mock.results[0].value.baseUrl
-          + conjureContextSpy.mock.results[0].value.servicePath,
+        conjureContextSpy.mock.results[0].value.baseUrl +
+          conjureContextSpy.mock.results[0].value.servicePath,
       ).toBe("https://mock4.com/ontology-metadata/api");
     });
   });

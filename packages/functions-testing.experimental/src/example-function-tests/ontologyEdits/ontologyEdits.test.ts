@@ -44,32 +44,39 @@ describe("ontologyEdits", () => {
       | Edits.Object<Employee>
       | Edits.Link<Employee, "peeps">
       | Edits.Interface<FooInterface>;
-    const expectedEdits: editsType[] = [{
-      type: "createObject",
-      obj: Employee,
-      properties: { employeeId: 1, fullName: "John Doe" },
-    }, {
-      type: "updateObject",
-      obj: { $apiName: "Employee", $primaryKey: 1 },
-      properties: { favoriteRestaurants: ["McDonald's"] },
-    }, {
-      type: "deleteObject",
-      obj: { $apiName: "Employee", $primaryKey: 1 },
-    }, {
-      type: "addLink",
-      apiName: "peeps",
-      source: { $apiName: "Employee", $primaryKey: 1 },
-      target: { $apiName: "Employee", $primaryKey: 1 },
-    }, {
-      type: "removeLink",
-      apiName: "peeps",
-      source: { $apiName: "Employee", $primaryKey: 1 },
-      target: { $apiName: "Employee", $primaryKey: 1 },
-    }, {
-      type: "createObjectForInterface",
-      int: FooInterface,
-      properties: { $objectType: "Employee", fooIdp: "bar" },
-    }];
+    const expectedEdits: editsType[] = [
+      {
+        type: "createObject",
+        obj: Employee,
+        properties: { employeeId: 1, fullName: "John Doe" },
+      },
+      {
+        type: "updateObject",
+        obj: { $apiName: "Employee", $primaryKey: 1 },
+        properties: { favoriteRestaurants: ["McDonald's"] },
+      },
+      {
+        type: "deleteObject",
+        obj: { $apiName: "Employee", $primaryKey: 1 },
+      },
+      {
+        type: "addLink",
+        apiName: "peeps",
+        source: { $apiName: "Employee", $primaryKey: 1 },
+        target: { $apiName: "Employee", $primaryKey: 1 },
+      },
+      {
+        type: "removeLink",
+        apiName: "peeps",
+        source: { $apiName: "Employee", $primaryKey: 1 },
+        target: { $apiName: "Employee", $primaryKey: 1 },
+      },
+      {
+        type: "createObjectForInterface",
+        int: FooInterface,
+        properties: { $objectType: "Employee", fooIdp: "bar" },
+      },
+    ];
     expect(edits).toMatchObject(expectedEdits);
     // Option 2: Check that each edit in the edits array matches the expected edit using toMatchObject for partial matching
     expect(edits[0]).toEqual({

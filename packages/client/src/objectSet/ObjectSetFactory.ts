@@ -22,8 +22,4 @@ import type { MinimalClient } from "../MinimalClientContext.js";
 export type ObjectSetFactory<
   Q extends ObjectOrInterfaceDefinition,
   R extends ObjectSet<Q>,
-> = (
-  type: Q,
-  clientCtx: MinimalClient,
-  objectSet?: WireObjectSet,
-) => R;
+> = (type: Q, clientCtx: MinimalClient, objectSet?: WireObjectSet) => R;

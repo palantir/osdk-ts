@@ -38,8 +38,7 @@ export function createFetchOrThrow(fetchFn: typeof fetch = fetch) {
     }
 
     if (!response.ok) {
-      const fallbackMessage =
-        `Failed to fetch ${response.status} ${response.statusText}`;
+      const fallbackMessage = `Failed to fetch ${response.status} ${response.statusText}`;
 
       if (response.headers.get("Content-Type") === "text/plain") {
         throw unknownError(await response.text(), response.status);
@@ -49,7 +48,7 @@ export function createFetchOrThrow(fetchFn: typeof fetch = fetch) {
         throw unknownError(
           fallbackMessage,
           response.status,
-          new Error("Received HTML error page: " + await response.text()),
+          new Error("Received HTML error page: " + (await response.text())),
         );
       }
 
@@ -65,8 +64,7 @@ export function createFetchOrThrow(fetchFn: typeof fetch = fetch) {
       }
 
       throw new PalantirApiError(
-        body?.message
-          ?? fallbackMessage,
+        body?.message ?? fallbackMessage,
         body?.errorName,
         body?.errorCode,
         body?.errorDescription,

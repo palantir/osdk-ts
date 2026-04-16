@@ -339,7 +339,7 @@ describe("DateRangeInputField", () => {
       const startInput = screen.getByLabelText("Start date");
       fireEvent.focus(startInput);
 
-      const timeInputs = document.querySelectorAll("input[type=\"time\"]");
+      const timeInputs = document.querySelectorAll('input[type="time"]');
       expect(timeInputs.length).toBe(2);
     });
 
@@ -353,7 +353,7 @@ describe("DateRangeInputField", () => {
       const startInput = screen.getByLabelText("Start date");
       fireEvent.focus(startInput);
 
-      const timeInputs = document.querySelectorAll("input[type=\"time\"]");
+      const timeInputs = document.querySelectorAll('input[type="time"]');
       expect(timeInputs.length).toBe(0);
     });
 
@@ -456,7 +456,8 @@ describe("DateRangeInputField", () => {
           value={[new Date(2024, 0, 15), null]}
           onChange={vi.fn()}
           formatDate={(d) =>
-            `${d.getMonth() + 1}/${d.getDate()}/${d.getFullYear()}`}
+            `${d.getMonth() + 1}/${d.getDate()}/${d.getFullYear()}`
+          }
         />,
       );
       const startInput = screen.getByLabelText(
@@ -472,7 +473,8 @@ describe("DateRangeInputField", () => {
           value={[null, null]}
           onChange={onChange}
           formatDate={(d) =>
-            `${d.getMonth() + 1}/${d.getDate()}/${d.getFullYear()}`}
+            `${d.getMonth() + 1}/${d.getDate()}/${d.getFullYear()}`
+          }
           parseDate={(text) => {
             const [m, d, y] = text.split("/").map(Number);
             if (m == null || d == null || y == null) return undefined;

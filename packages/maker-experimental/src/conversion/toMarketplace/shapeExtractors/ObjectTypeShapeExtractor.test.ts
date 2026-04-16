@@ -192,8 +192,7 @@ describe("ObjectTypeShapeExtractor", () => {
           ],
           propertyTypes: {
             "ri.ontology.main.property-type.employee.id": {
-              rid:
-                "ri.ontology.main.property-type.employee.id" as PropertyTypeRid,
+              rid: "ri.ontology.main.property-type.employee.id" as PropertyTypeRid,
               apiName: "id",
               displayMetadata: {
                 displayName: "ID",
@@ -210,8 +209,7 @@ describe("ObjectTypeShapeExtractor", () => {
               typeClasses: [],
             },
             "ri.ontology.main.property-type.employee.name": {
-              rid:
-                "ri.ontology.main.property-type.employee.name" as PropertyTypeRid,
+              rid: "ri.ontology.main.property-type.employee.name" as PropertyTypeRid,
               apiName: "name",
               displayMetadata: {
                 displayName: "Name",
@@ -279,9 +277,7 @@ describe("ObjectTypeShapeExtractor", () => {
       // Output shapes will include object type + any properties that have readable IDs
       expect(result.outputShapes.size).toBeGreaterThanOrEqual(1);
 
-      const objectTypeShape = result.outputShapes.get(
-        "employee" as ReadableId,
-      );
+      const objectTypeShape = result.outputShapes.get("employee" as ReadableId);
       expect(objectTypeShape).toBeDefined();
       expect(objectTypeShape?.type).toBe("objectType");
       if (objectTypeShape?.type === "objectType") {
@@ -314,8 +310,7 @@ describe("ObjectTypeShapeExtractor", () => {
           ],
           propertyTypes: {
             "ri.ontology.main.property-type.person.id": {
-              rid:
-                "ri.ontology.main.property-type.person.id" as PropertyTypeRid,
+              rid: "ri.ontology.main.property-type.person.id" as PropertyTypeRid,
               apiName: "id",
               displayMetadata: {
                 displayName: "ID",
@@ -389,16 +384,18 @@ describe("ObjectTypeShapeExtractor", () => {
             ],
           ]) as any,
         getDatasourceLocators: () =>
-          new MockBiMap<ReadableId, DatasourceLocator>([[
-            "person-dataset" as ReadableId,
-            datasetLocator,
-          ]]) as any,
+          new MockBiMap<ReadableId, DatasourceLocator>([
+            ["person-dataset" as ReadableId, datasetLocator],
+          ]) as any,
         getColumnShapes: () =>
           new MockBiMap<ReadableId, ResolvedDatasourceColumnShape>([
-            ["person-dataset.person_id" as ReadableId, {
-              datasource: datasetLocator,
-              name: "person_id",
-            }],
+            [
+              "person-dataset.person_id" as ReadableId,
+              {
+                datasource: datasetLocator,
+                name: "person_id",
+              },
+            ],
           ]) as any,
       });
 
@@ -411,9 +408,7 @@ describe("ObjectTypeShapeExtractor", () => {
 
       // Should have input shapes for dataset
       expect(result.inputShapes.size).toBeGreaterThan(0);
-      expect(result.inputShapes.has("person-dataset" as ReadableId)).toBe(
-        true,
-      );
+      expect(result.inputShapes.has("person-dataset" as ReadableId)).toBe(true);
 
       const datasetShape = result.inputShapes.get(
         "person-dataset" as ReadableId,
@@ -525,16 +520,18 @@ describe("ObjectTypeShapeExtractor", () => {
             ],
           ]) as any,
         getDatasourceLocators: () =>
-          new MockBiMap<ReadableId, DatasourceLocator>([[
-            "event-stream" as ReadableId,
-            streamLocator,
-          ]]) as any,
+          new MockBiMap<ReadableId, DatasourceLocator>([
+            ["event-stream" as ReadableId, streamLocator],
+          ]) as any,
         getColumnShapes: () =>
           new MockBiMap<ReadableId, ResolvedDatasourceColumnShape>([
-            ["event-stream.event_id" as ReadableId, {
-              datasource: streamLocator,
-              name: "event_id",
-            }],
+            [
+              "event-stream.event_id" as ReadableId,
+              {
+                datasource: streamLocator,
+                name: "event_id",
+              },
+            ],
           ]) as any,
       });
 
@@ -548,9 +545,7 @@ describe("ObjectTypeShapeExtractor", () => {
       // Should have input shapes for stream
       expect(result.inputShapes.has("event-stream" as ReadableId)).toBe(true);
 
-      const streamShape = result.inputShapes.get(
-        "event-stream" as ReadableId,
-      );
+      const streamShape = result.inputShapes.get("event-stream" as ReadableId);
       expect(streamShape).toBeDefined();
       expect(streamShape?.type).toBe("tabularDatasource");
       if (streamShape?.type === "tabularDatasource") {
@@ -641,9 +636,7 @@ describe("ObjectTypeShapeExtractor", () => {
       expect(taskShape).toBeDefined();
       if (taskShape?.type === "objectType") {
         // Property type references should include randomness key if there are properties
-        const propertyShape = result.outputShapes.get(
-          "task.id" as ReadableId,
-        );
+        const propertyShape = result.outputShapes.get("task.id" as ReadableId);
         if (propertyShape && propertyShape.type === "property") {
           // Check that the property reference in object type includes randomness key
           const propertyRefs = taskShape.objectType.propertyTypes;
@@ -762,9 +755,7 @@ describe("ObjectTypeShapeExtractor", () => {
         ridGenerator,
       );
 
-      const objectTypeShape = result.outputShapes.get(
-        "readonly" as ReadableId,
-      );
+      const objectTypeShape = result.outputShapes.get("readonly" as ReadableId);
       expect(objectTypeShape).toBeDefined();
       if (objectTypeShape?.type === "objectType") {
         expect(objectTypeShape.objectType.editsSupport).toBe("EDITS_DISABLED");

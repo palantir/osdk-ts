@@ -43,16 +43,12 @@ function getValidateFns(
 describe("extractValidationRules", () => {
   describe("required", () => {
     it("adds required rule when isRequired is true", () => {
-      const rules = extractValidationRules(
-        makeFieldDef({ isRequired: true }),
-      );
+      const rules = extractValidationRules(makeFieldDef({ isRequired: true }));
       expect(rules.required).toBe("This field is required");
     });
 
     it("does not add required rule when isRequired is false", () => {
-      const rules = extractValidationRules(
-        makeFieldDef({ isRequired: false }),
-      );
+      const rules = extractValidationRules(makeFieldDef({ isRequired: false }));
       expect(rules.required).toBeUndefined();
     });
   });
@@ -89,10 +85,12 @@ describe("extractValidationRules", () => {
 
   describe("TEXT_INPUT", () => {
     it("adds minLength rule", () => {
-      const rules = extractValidationRules(makeFieldDef({
-        fieldComponent: "TEXT_INPUT",
-        fieldComponentProps: { minLength: 3 },
-      }));
+      const rules = extractValidationRules(
+        makeFieldDef({
+          fieldComponent: "TEXT_INPUT",
+          fieldComponentProps: { minLength: 3 },
+        }),
+      );
       expect(rules.minLength).toEqual({
         value: 3,
         message: "Must be at least 3 characters",
@@ -100,10 +98,12 @@ describe("extractValidationRules", () => {
     });
 
     it("adds maxLength rule", () => {
-      const rules = extractValidationRules(makeFieldDef({
-        fieldComponent: "TEXT_INPUT",
-        fieldComponentProps: { maxLength: 50 },
-      }));
+      const rules = extractValidationRules(
+        makeFieldDef({
+          fieldComponent: "TEXT_INPUT",
+          fieldComponentProps: { maxLength: 50 },
+        }),
+      );
       expect(rules.maxLength).toEqual({
         value: 50,
         message: "Must be at most 50 characters",
@@ -113,10 +113,12 @@ describe("extractValidationRules", () => {
 
   describe("TEXT_AREA", () => {
     it("adds minLength and maxLength rules", () => {
-      const rules = extractValidationRules(makeFieldDef({
-        fieldComponent: "TEXT_AREA",
-        fieldComponentProps: { minLength: 10, maxLength: 500 },
-      }));
+      const rules = extractValidationRules(
+        makeFieldDef({
+          fieldComponent: "TEXT_AREA",
+          fieldComponentProps: { minLength: 10, maxLength: 500 },
+        }),
+      );
       expect(rules.minLength).toEqual({
         value: 10,
         message: "Must be at least 10 characters",
@@ -194,20 +196,24 @@ describe("extractValidationRules", () => {
 
   describe("fields without constraints", () => {
     it("returns empty rules for DROPDOWN", () => {
-      const rules = extractValidationRules(makeFieldDef({
-        fieldComponent: "DROPDOWN",
-        fieldComponentProps: { items: [] },
-      }));
+      const rules = extractValidationRules(
+        makeFieldDef({
+          fieldComponent: "DROPDOWN",
+          fieldComponentProps: { items: [] },
+        }),
+      );
       expect(rules.required).toBeUndefined();
       expect(rules.validate).toBeUndefined();
     });
 
     it("returns only required for RADIO_BUTTONS when isRequired", () => {
-      const rules = extractValidationRules(makeFieldDef({
-        fieldComponent: "RADIO_BUTTONS",
-        isRequired: true,
-        fieldComponentProps: { options: [] },
-      }));
+      const rules = extractValidationRules(
+        makeFieldDef({
+          fieldComponent: "RADIO_BUTTONS",
+          isRequired: true,
+          fieldComponentProps: { options: [] },
+        }),
+      );
       expect(rules.required).toBe("This field is required");
       expect(rules.validate).toBeUndefined();
     });
@@ -216,9 +222,11 @@ describe("extractValidationRules", () => {
   describe("custom validate", () => {
     it("returns true when user validate resolves to undefined", async () => {
       const userValidate = vi.fn().mockResolvedValue(undefined);
-      const rules = extractValidationRules(makeFieldDef({
-        validate: userValidate,
-      }));
+      const rules = extractValidationRules(
+        makeFieldDef({
+          validate: userValidate,
+        }),
+      );
       const validate = rules.validate as Record<string, AsyncValidateFn>;
       expect(await validate.custom("test")).toBe(true);
       expect(userValidate).toHaveBeenCalledWith("test");
@@ -226,9 +234,11 @@ describe("extractValidationRules", () => {
 
     it("returns the error string when user validate resolves to a message", async () => {
       const userValidate = vi.fn().mockResolvedValue("Custom error");
-      const rules = extractValidationRules(makeFieldDef({
-        validate: userValidate,
-      }));
+      const rules = extractValidationRules(
+        makeFieldDef({
+          validate: userValidate,
+        }),
+      );
       const validate = rules.validate as Record<string, AsyncValidateFn>;
       expect(await validate.custom("test")).toBe("Custom error");
     });
@@ -236,33 +246,39 @@ describe("extractValidationRules", () => {
 
   describe("onValidationError override", () => {
     it("uses custom message from onValidationError", () => {
-      const rules = extractValidationRules(makeFieldDef({
-        isRequired: true,
-        onValidationError: (error) => {
-          if (error.type === "required") {
-            return "Please fill this in";
-          }
-          return undefined;
-        },
-      }));
+      const rules = extractValidationRules(
+        makeFieldDef({
+          isRequired: true,
+          onValidationError: (error) => {
+            if (error.type === "required") {
+              return "Please fill this in";
+            }
+            return undefined;
+          },
+        }),
+      );
       expect(rules.required).toBe("Please fill this in");
     });
 
     it("falls back to default when onValidationError returns undefined", () => {
-      const rules = extractValidationRules(makeFieldDef({
-        isRequired: true,
-        onValidationError: () => undefined,
-      }));
+      const rules = extractValidationRules(
+        makeFieldDef({
+          isRequired: true,
+          onValidationError: () => undefined,
+        }),
+      );
       expect(rules.required).toBe("This field is required");
     });
 
     it("passes constraint data to onValidationError", () => {
       const onValidationError = vi.fn().mockReturnValue(undefined);
-      extractValidationRules(makeFieldDef({
-        fieldComponent: "NUMBER_INPUT",
-        fieldComponentProps: { min: 10 },
-        onValidationError,
-      }));
+      extractValidationRules(
+        makeFieldDef({
+          fieldComponent: "NUMBER_INPUT",
+          fieldComponentProps: { min: 10 },
+          onValidationError,
+        }),
+      );
       expect(onValidationError).toHaveBeenCalledWith({
         type: "min",
         min: 10,

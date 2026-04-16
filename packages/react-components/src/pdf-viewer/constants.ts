@@ -27,9 +27,8 @@ export const MAX_SCALE = 5.0;
 export const DEFAULT_PAGE_HEIGHT = 792;
 export const THUMBNAIL_GAP = 12;
 export const THUMBNAIL_SCALE = 0.2;
-export const DEVICE_PIXEL_RATIO: number = typeof window !== "undefined"
-  ? window.devicePixelRatio || 1
-  : 1;
+export const DEVICE_PIXEL_RATIO: number =
+  typeof window !== "undefined" ? window.devicePixelRatio || 1 : 1;
 
 // Outline heading extraction
 /** Text must be at least 15% larger than the most common font size to be considered a heading. */

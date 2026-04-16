@@ -39,28 +39,28 @@ export function useFullChain(
   const level0 = useChainLevel(employee ?? undefined, !!employee);
   const level1 = useChainLevel(
     level0.manager,
-    !!level0.manager
-      && level0.manager.employeeNumber !== employee?.employeeNumber,
+    !!level0.manager &&
+      level0.manager.employeeNumber !== employee?.employeeNumber,
   );
   const level2 = useChainLevel(
     level1.manager,
-    !!level1.manager
-      && level1.manager.employeeNumber !== level0.manager?.employeeNumber,
+    !!level1.manager &&
+      level1.manager.employeeNumber !== level0.manager?.employeeNumber,
   );
   const level3 = useChainLevel(
     level2.manager,
-    !!level2.manager
-      && level2.manager.employeeNumber !== level1.manager?.employeeNumber,
+    !!level2.manager &&
+      level2.manager.employeeNumber !== level1.manager?.employeeNumber,
   );
   const level4 = useChainLevel(
     level3.manager,
-    !!level3.manager
-      && level3.manager.employeeNumber !== level2.manager?.employeeNumber,
+    !!level3.manager &&
+      level3.manager.employeeNumber !== level2.manager?.employeeNumber,
   );
   const level5 = useChainLevel(
     level4.manager,
-    !!level4.manager
-      && level4.manager.employeeNumber !== level3.manager?.employeeNumber,
+    !!level4.manager &&
+      level4.manager.employeeNumber !== level3.manager?.employeeNumber,
   );
 
   React.useEffect(() => {
@@ -69,9 +69,7 @@ export function useFullChain(
       return;
     }
 
-    const newChain: ChainNode[] = [
-      { employee, isLoading: level0.isLoading },
-    ];
+    const newChain: ChainNode[] = [{ employee, isLoading: level0.isLoading }];
 
     const levels = [
       { manager: level0.manager, isLoading: level1.isLoading },
@@ -111,21 +109,26 @@ export function useFullChain(
     level5.isLoading,
   ]);
 
-  const isLoading = level0.isLoading || level1.isLoading || level2.isLoading
-    || level3.isLoading || level4.isLoading || level5.isLoading;
+  const isLoading =
+    level0.isLoading ||
+    level1.isLoading ||
+    level2.isLoading ||
+    level3.isLoading ||
+    level4.isLoading ||
+    level5.isLoading;
 
   const lastNode = chain[chain.length - 1];
   const lastEmployee = lastNode?.employee;
-  const isTopOfChain = lastEmployee !== undefined && (
-    lastEmployee.leadEmployeeNumber === lastEmployee.employeeNumber
-    || lastEmployee.leadEmployeeNumber === undefined
-    || lastEmployee.leadEmployeeNumber == null
-    || lastEmployee.jobTitle?.toLowerCase().includes("ceo")
-    || lastEmployee.jobTitle?.toLowerCase().includes("chief executive")
-  );
+  const isTopOfChain =
+    lastEmployee !== undefined &&
+    (lastEmployee.leadEmployeeNumber === lastEmployee.employeeNumber ||
+      lastEmployee.leadEmployeeNumber === undefined ||
+      lastEmployee.leadEmployeeNumber == null ||
+      lastEmployee.jobTitle?.toLowerCase().includes("ceo") ||
+      lastEmployee.jobTitle?.toLowerCase().includes("chief executive"));
   const reachedMaxDepth = chain.length >= 6;
-  const isComplete = !isLoading && chain.length > 0
-    && (isTopOfChain || reachedMaxDepth);
+  const isComplete =
+    !isLoading && chain.length > 0 && (isTopOfChain || reachedMaxDepth);
 
   return {
     chain,

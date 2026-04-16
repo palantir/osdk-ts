@@ -61,11 +61,12 @@ export function PdfViewerSearchBar({
     [onNext, onPrev, onClose],
   );
 
-  const matchDisplay = totalMatches > 0
-    ? `${currentMatchIndex + 1} of ${totalMatches}`
-    : query.length > 0
-    ? "No results"
-    : "";
+  const matchDisplay =
+    totalMatches > 0
+      ? `${currentMatchIndex + 1} of ${totalMatches}`
+      : query.length > 0
+        ? "No results"
+        : "";
 
   return (
     <div className={styles.searchBar}>

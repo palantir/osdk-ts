@@ -74,8 +74,6 @@ export function getObjectTypesFromQueryDataType(
 
     default:
       const _: never = dataType;
-      throw new Error(
-        `Unknown query data type ${(dataType as any).type}`,
-      );
+      throw new Error(`Unknown query data type ${(dataType as any).type}`);
   }
 }

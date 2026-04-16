@@ -33,9 +33,10 @@ export class ForeignType extends AbstractImportable {
   }
 
   getImportedDefinitionIdentifier(v2: boolean) {
-    return `$Imported$${
-      this.apiNamespace?.replace(/\./g, "$")
-    }$${this.shortApiName}`;
+    return `$Imported$${this.apiNamespace?.replace(
+      /\./g,
+      "$",
+    )}$${this.shortApiName}`;
   }
 
   getDefinitionIdentifier(v2: boolean): string {

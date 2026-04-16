@@ -16,9 +16,8 @@
 
 // @ts-check
 
-import { createMemoryTest, neverOptimizeFunction } from "../helpers.js";
-
 import { createClient } from "@osdk/client";
+import { createMemoryTest, neverOptimizeFunction } from "../helpers.js";
 
 const REPEAT_REQUESTS = 100;
 const WARMUP_REQUESTS = 10;
@@ -38,22 +37,28 @@ const client = createClient(
 );
 
 for (let i = 0; i < WARMUP_REQUESTS; i++) {
-  const page = await client({ type: "object", apiName: "Employee" })
-    .fetchPage();
+  const page = await client({
+    type: "object",
+    apiName: "Employee",
+  }).fetchPage();
   // something to keep the runtime from optimizing away the fetch
   console.log(page.data.length);
 }
 
-const r = await createMemoryTest(neverOptimizeFunction(async () => {
-  const pages = [];
-  for (let i = 0; i < REPEAT_REQUESTS; i++) {
-    const page = await client({ type: "object", apiName: "Employee" })
-      .fetchPage();
-    pages.push(page);
-  }
+const r = await createMemoryTest(
+  neverOptimizeFunction(async () => {
+    const pages = [];
+    for (let i = 0; i < REPEAT_REQUESTS; i++) {
+      const page = await client({
+        type: "object",
+        apiName: "Employee",
+      }).fetchPage();
+      pages.push(page);
+    }
 
-  return pages;
-}));
+    return pages;
+  }),
+);
 
 // eslint-disable-next-line no-console
 console.log(r);

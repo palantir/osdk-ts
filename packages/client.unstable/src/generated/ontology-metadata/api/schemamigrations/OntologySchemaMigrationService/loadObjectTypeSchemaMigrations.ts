@@ -16,10 +16,8 @@
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
 import type {
-  LoadObjectTypeSchemaMigrationsRequest
-    as _api_schemamigrations_LoadObjectTypeSchemaMigrationsRequest,
-  LoadObjectTypeSchemaMigrationsResponse
-    as _api_schemamigrations_LoadObjectTypeSchemaMigrationsResponse,
+  LoadObjectTypeSchemaMigrationsRequest as _api_schemamigrations_LoadObjectTypeSchemaMigrationsRequest,
+  LoadObjectTypeSchemaMigrationsResponse as _api_schemamigrations_LoadObjectTypeSchemaMigrationsResponse,
 } from "../__components.js";
 
 /**

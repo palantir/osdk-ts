@@ -52,9 +52,7 @@ export function createObjectSpecifierFromInterfaceSpecifier<
     primaryKeyValue: PrimaryKeyType<Q>;
   },
 ): ObjectSpecifier<Q> {
-  return `${interfaceSpecifier.objectTypeApiName}:${interfaceSpecifier.primaryKeyValue}` as ObjectSpecifier<
-    Q
-  >;
+  return `${interfaceSpecifier.objectTypeApiName}:${interfaceSpecifier.primaryKeyValue}` as ObjectSpecifier<Q>;
 }
 
 /**

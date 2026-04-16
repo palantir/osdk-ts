@@ -66,12 +66,13 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
     execute: executeSubmit,
     clearError,
   } = useAsyncAction(onSubmit);
-  const submissionErrorMessage = submissionError != null
-    ? submissionError instanceof Error
-      ? submissionError.message
-      // TODO: provide better error message
-      : "Submission failed"
-    : undefined;
+  const submissionErrorMessage =
+    submissionError != null
+      ? submissionError instanceof Error
+        ? submissionError.message
+        : // TODO: provide better error message
+          "Submission failed"
+      : undefined;
 
   const handleFormSubmit = useCallback(
     async (e: React.FormEvent) => {
@@ -142,8 +143,9 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
         <div className={styles.osdkFormSubmitButton}>
           <SubmitButton
             isPending={isFormPending}
-            isSubmitDisabled={isSubmitDisabled
-              || (hasAttemptedSubmit && areErrorsPresent)}
+            isSubmitDisabled={
+              isSubmitDisabled || (hasAttemptedSubmit && areErrorsPresent)
+            }
             errorMessage={buttonErrorMessage}
           />
         </div>
@@ -198,9 +200,7 @@ const SubmitButton = memo(function SubmitButtonFn({
 
   return (
     <Tooltip.Root defaultOpen={true}>
-      <Tooltip.Trigger>
-        {button}
-      </Tooltip.Trigger>
+      <Tooltip.Trigger>{button}</Tooltip.Trigger>
       <Tooltip.Portal>
         <Tooltip.Positioner>
           <Tooltip.Popup>

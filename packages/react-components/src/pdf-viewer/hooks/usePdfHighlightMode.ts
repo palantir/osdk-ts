@@ -42,9 +42,9 @@ export function rgbArrayToHex(color: number[]): string {
   const r = Math.round(color[0] * 255);
   const g = Math.round(color[1] * 255);
   const b = Math.round(color[2] * 255);
-  return `#${r.toString(16).padStart(2, "0")}${
-    g.toString(16).padStart(2, "0")
-  }${b.toString(16).padStart(2, "0")}`;
+  return `#${r.toString(16).padStart(2, "0")}${g
+    .toString(16)
+    .padStart(2, "0")}${b.toString(16).padStart(2, "0")}`;
 }
 
 /**
@@ -56,9 +56,7 @@ export function rgbArrayToHex(color: number[]): string {
  *   (x1,y1)=top-left, (x2,y2)=top-right, (x3,y3)=bottom-left, (x4,y4)=bottom-right
  * We derive the bounding rect from x1, y1 (top), x2 (right edge), y3 (bottom).
  */
-export function quadPointsToRects(
-  quadPoints: Float32Array,
-): PdfRect[] {
+export function quadPointsToRects(quadPoints: Float32Array): PdfRect[] {
   const rects: PdfRect[] = [];
   for (let i = 0; i < quadPoints.length; i += 8) {
     const x1 = quadPoints[i];
@@ -95,172 +93,193 @@ export function usePdfHighlightMode({
   const editorEventsRef = useRef<Map<string, PdfTextHighlightEvent>>(new Map());
 
   // Keep callback refs in sync
-  useEffect(function syncCallbackRef() {
-    onTextHighlightRef.current = onTextHighlight;
-    onHighlightDeleteRef.current = onHighlightDelete;
-  }, [onTextHighlight, onHighlightDelete]);
+  useEffect(
+    function syncCallbackRef() {
+      onTextHighlightRef.current = onTextHighlight;
+      onHighlightDeleteRef.current = onHighlightDelete;
+    },
+    [onTextHighlight, onHighlightDelete],
+  );
 
   // Toggle the PDF.js annotation editor mode
-  useEffect(function syncHighlightMode() {
-    const pdfViewer = pdfViewerRef.current;
-    if (pdfViewer == null || document == null) {
-      return;
-    }
-
-    try {
-      if (highlightModeActive && enabled) {
-        pdfViewer.annotationEditorMode = {
-          mode: AnnotationEditorType.HIGHLIGHT,
-        };
-      } else {
-        pdfViewer.annotationEditorMode = {
-          mode: AnnotationEditorType.NONE,
-        };
+  useEffect(
+    function syncHighlightMode() {
+      const pdfViewer = pdfViewerRef.current;
+      if (pdfViewer == null || document == null) {
+        return;
       }
-    } catch {
-      // AnnotationEditorUIManager may not be initialized yet
-    }
-  }, [pdfViewerRef, document, highlightModeActive, enabled]);
+
+      try {
+        if (highlightModeActive && enabled) {
+          pdfViewer.annotationEditorMode = {
+            mode: AnnotationEditorType.HIGHLIGHT,
+          };
+        } else {
+          pdfViewer.annotationEditorMode = {
+            mode: AnnotationEditorType.NONE,
+          };
+        }
+      } catch {
+        // AnnotationEditorUIManager may not be initialized yet
+      }
+    },
+    [pdfViewerRef, document, highlightModeActive, enabled],
+  );
 
   // Deactivate highlight mode when the feature is disabled
-  useEffect(function deactivateOnDisable() {
-    if (!enabled) {
-      setHighlightModeActive(false);
-    }
-  }, [enabled]);
+  useEffect(
+    function deactivateOnDisable() {
+      if (!enabled) {
+        setHighlightModeActive(false);
+      }
+    },
+    [enabled],
+  );
 
   // Clear tracked editors when the document changes (but not on highlight toggle)
   const prevDocumentRef = useRef<PDFDocumentProxy | undefined>(undefined);
-  useEffect(function clearOnDocumentChange() {
-    if (document !== prevDocumentRef.current) {
-      knownEditorIdsRef.current.clear();
-      editorEventsRef.current.clear();
-      prevDocumentRef.current = document;
-    }
-  }, [document]);
+  useEffect(
+    function clearOnDocumentChange() {
+      if (document !== prevDocumentRef.current) {
+        knownEditorIdsRef.current.clear();
+        editorEventsRef.current.clear();
+        prevDocumentRef.current = document;
+      }
+    },
+    [document],
+  );
 
   // Listen for new highlights being added to annotation storage
-  useEffect(function listenForHighlights() {
-    if (document == null || !highlightModeActive || !enabled) {
-      return;
-    }
-
-    const storage = document.annotationStorage;
-    const previousOnAnnotationEditor = storage.onAnnotationEditor;
-
-    // Monkey-patch storage.remove to detect highlight deletions.
-    // This is fragile but necessary because PDF.js does not emit events
-    // when editors are removed. Restore the original on cleanup.
-    const originalRemove = storage.remove.bind(storage);
-    storage.remove = (key: string) => {
-      const savedEvent = editorEventsRef.current.get(key);
-      if (savedEvent != null) {
-        editorEventsRef.current.delete(key);
-        knownEditorIdsRef.current.delete(key);
-        onHighlightDeleteRef.current?.(savedEvent);
-      }
-      originalRemove(key);
-    };
-
-    storage.onAnnotationEditor = (type: string | number | null) => {
-      // onAnnotationEditor fires with the editor's static _type (string "highlight")
-      if (type !== "highlight") {
+  useEffect(
+    function listenForHighlights() {
+      if (document == null || !highlightModeActive || !enabled) {
         return;
       }
 
-      // Find new editors in storage
-      const allEntries = storage.getAll();
-      if (allEntries == null) {
-        return;
-      }
+      const storage = document.annotationStorage;
+      const previousOnAnnotationEditor = storage.onAnnotationEditor;
 
-      for (const [id, entry] of Object.entries(allEntries)) {
-        if (knownEditorIdsRef.current.has(id)) {
-          continue;
+      // Monkey-patch storage.remove to detect highlight deletions.
+      // This is fragile but necessary because PDF.js does not emit events
+      // when editors are removed. Restore the original on cleanup.
+      const originalRemove = storage.remove.bind(storage);
+      storage.remove = (key: string) => {
+        const savedEvent = editorEventsRef.current.get(key);
+        if (savedEvent != null) {
+          editorEventsRef.current.delete(key);
+          knownEditorIdsRef.current.delete(key);
+          onHighlightDeleteRef.current?.(savedEvent);
+        }
+        originalRemove(key);
+      };
+
+      storage.onAnnotationEditor = (type: string | number | null) => {
+        // onAnnotationEditor fires with the editor's static _type (string "highlight")
+        if (type !== "highlight") {
+          return;
         }
 
-        // Check if this is a highlight editor with serializable data
-        if (
-          typeof entry === "object" && entry != null
-          && "serialize" in entry
-          && typeof entry.serialize === "function"
-        ) {
-          knownEditorIdsRef.current.add(id);
-          const serialized = entry.serialize(false);
+        // Find new editors in storage
+        const allEntries = storage.getAll();
+        if (allEntries == null) {
+          return;
+        }
+
+        for (const [id, entry] of Object.entries(allEntries)) {
+          if (knownEditorIdsRef.current.has(id)) {
+            continue;
+          }
+
+          // Check if this is a highlight editor with serializable data
           if (
-            serialized == null
-            || serialized.annotationType !== AnnotationEditorType.HIGHLIGHT
+            typeof entry === "object" &&
+            entry != null &&
+            "serialize" in entry &&
+            typeof entry.serialize === "function"
           ) {
-            continue;
+            knownEditorIdsRef.current.add(id);
+            const serialized = entry.serialize(false);
+            if (
+              serialized == null ||
+              serialized.annotationType !== AnnotationEditorType.HIGHLIGHT
+            ) {
+              continue;
+            }
+
+            const rects =
+              serialized.quadPoints != null
+                ? quadPointsToRects(serialized.quadPoints)
+                : [];
+
+            if (rects.length === 0) {
+              continue;
+            }
+
+            const color = Array.isArray(serialized.color)
+              ? rgbArrayToHex(serialized.color)
+              : "#fff066";
+
+            // Extract text from the editor's aria-label (stores selected text)
+            const selectedText =
+              typeof entry.div?.getAttribute === "function"
+                ? (entry.div.getAttribute("aria-label") ?? "")
+                : "";
+
+            const event: PdfTextHighlightEvent = {
+              editorId: id,
+              page: serialized.pageIndex + 1,
+              rects,
+              selectedText,
+              color,
+            };
+
+            // Store the event so we can provide it back on delete
+            editorEventsRef.current.set(id, event);
+
+            onTextHighlightRef.current?.(event);
           }
-
-          const rects = serialized.quadPoints != null
-            ? quadPointsToRects(serialized.quadPoints)
-            : [];
-
-          if (rects.length === 0) {
-            continue;
-          }
-
-          const color = Array.isArray(serialized.color)
-            ? rgbArrayToHex(serialized.color)
-            : "#fff066";
-
-          // Extract text from the editor's aria-label (stores selected text)
-          const selectedText = typeof entry.div?.getAttribute === "function"
-            ? entry.div.getAttribute("aria-label") ?? ""
-            : "";
-
-          const event: PdfTextHighlightEvent = {
-            editorId: id,
-            page: serialized.pageIndex + 1,
-            rects,
-            selectedText,
-            color,
-          };
-
-          // Store the event so we can provide it back on delete
-          editorEventsRef.current.set(id, event);
-
-          onTextHighlightRef.current?.(event);
         }
-      }
-    };
+      };
 
-    return () => {
-      storage.onAnnotationEditor = previousOnAnnotationEditor;
-      storage.remove = originalRemove;
-    };
-  }, [document, highlightModeActive, enabled]);
+      return () => {
+        storage.onAnnotationEditor = previousOnAnnotationEditor;
+        storage.remove = originalRemove;
+      };
+    },
+    [document, highlightModeActive, enabled],
+  );
 
   const toggleHighlightMode = useCallback(() => {
     setHighlightModeActive((prev) => !prev);
   }, []);
 
-  const deleteHighlight = useCallback((editorId: string) => {
-    if (document == null) return;
-    const storage = document.annotationStorage;
+  const deleteHighlight = useCallback(
+    (editorId: string) => {
+      if (document == null) return;
+      const storage = document.annotationStorage;
 
-    // Fire the delete callback directly. The monkey-patch on storage.remove
-    // only exists while highlight mode is active, so we handle it here to
-    // ensure the callback fires regardless of highlight mode state.
-    // Clean up refs first so the monkey-patch (if active) won't double-fire.
-    const savedEvent = editorEventsRef.current.get(editorId);
-    if (savedEvent != null) {
-      editorEventsRef.current.delete(editorId);
-      knownEditorIdsRef.current.delete(editorId);
-      onHighlightDeleteRef.current?.(savedEvent);
-    }
+      // Fire the delete callback directly. The monkey-patch on storage.remove
+      // only exists while highlight mode is active, so we handle it here to
+      // ensure the callback fires regardless of highlight mode state.
+      // Clean up refs first so the monkey-patch (if active) won't double-fire.
+      const savedEvent = editorEventsRef.current.get(editorId);
+      if (savedEvent != null) {
+        editorEventsRef.current.delete(editorId);
+        knownEditorIdsRef.current.delete(editorId);
+        onHighlightDeleteRef.current?.(savedEvent);
+      }
 
-    // Remove the editor's DOM element if it exists
-    const allEntries = storage.getAll() as Record<string, unknown> | null;
-    const entry = allEntries?.[editorId];
-    if (hasDiv(entry) && entry.div instanceof HTMLElement) {
-      entry.div.remove();
-    }
+      // Remove the editor's DOM element if it exists
+      const allEntries = storage.getAll() as Record<string, unknown> | null;
+      const entry = allEntries?.[editorId];
+      if (hasDiv(entry) && entry.div instanceof HTMLElement) {
+        entry.div.remove();
+      }
 
-    storage.remove(editorId);
-  }, [document]);
+      storage.remove(editorId);
+    },
+    [document],
+  );
 
   return {
     highlightModeActive,

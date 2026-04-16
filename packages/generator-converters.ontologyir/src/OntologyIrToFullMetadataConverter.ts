@@ -28,7 +28,6 @@ import type {
   OntologyIrType,
 } from "@osdk/client.unstable";
 import type * as Ontologies from "@osdk/foundry.ontologies";
-
 import { consola } from "consola";
 import * as fs from "fs";
 import { spawnSync } from "node:child_process";
@@ -61,7 +60,7 @@ interface IFunctionDiscoverer {
 }
 
 interface IFunctionDiscovererConstructor {
-  new(
+  new (
     program: ts.Program,
     entryPointPath: string,
     fullFilePath: string,
@@ -227,8 +226,8 @@ async function loadFunctionDiscoverer(
   } catch (e: unknown) {
     const message = e instanceof Error ? e.message : String(e);
     consola.error(
-      `Failed to load TypeScript function discovery modules: ${message}\n`
-        + `Ensure @foundry/functions-typescript-osdk-discovery is installed in ${
+      `Failed to load TypeScript function discovery modules: ${message}\n` +
+        `Ensure @foundry/functions-typescript-osdk-discovery is installed in ${
           nodeModulesPath ?? "node_modules"
         }`,
     );
@@ -316,17 +315,11 @@ export class OntologyIrToFullMetadataConverter {
     }
 
     return queries.reduce<
-      Record<
-        Ontologies.VersionedQueryTypeApiName,
-        Ontologies.QueryTypeV2
-      >
-    >(
-      (acc, query) => {
-        acc[query.apiName as string] = query;
-        return acc;
-      },
-      {},
-    );
+      Record<Ontologies.VersionedQueryTypeApiName, Ontologies.QueryTypeV2>
+    >((acc, query) => {
+      acc[query.apiName as string] = query;
+      return acc;
+    }, {});
   }
 
   private static async discoverTypeScriptFunctions(
@@ -347,11 +340,7 @@ export class OntologyIrToFullMetadataConverter {
       functionsDir,
     );
 
-    const program = this.createProgram(
-      tsConfigPath,
-      projectDir,
-      discoveryTs,
-    );
+    const program = this.createProgram(tsConfigPath, projectDir, discoveryTs);
 
     // Construct entity metadata mapping from preview metadata so FunctionDiscoverer
     // can resolve ontology types (Client, Osdk.Instance, ontology edits, etc.)
@@ -369,11 +358,9 @@ export class OntologyIrToFullMetadataConverter {
         }
       > = {};
       if (previewMetadata.objectTypes) {
-        for (
-          const [apiName, objData] of Object.entries(
-            previewMetadata.objectTypes,
-          )
-        ) {
+        for (const [apiName, objData] of Object.entries(
+          previewMetadata.objectTypes,
+        )) {
           const linkTypesMap: Record<string, { linkTypeId: string }> = {};
           if (objData.linkTypes) {
             for (const lt of objData.linkTypes) {
@@ -388,10 +375,8 @@ export class OntologyIrToFullMetadataConverter {
           };
         }
       }
-      const interfaceTypesMap: Record<
-        string,
-        { interfaceTypeRid: string }
-      > = {};
+      const interfaceTypesMap: Record<string, { interfaceTypeRid: string }> =
+        {};
       if (previewMetadata.interfaceTypes) {
         for (const apiName of Object.keys(previewMetadata.interfaceTypes)) {
           interfaceTypesMap[apiName] = { interfaceTypeRid: apiName };
@@ -428,20 +413,17 @@ export class OntologyIrToFullMetadataConverter {
 
     if (tsFunctions.length === 0) {
       consola.warn(
-        `No TypeScript OSDK functions discovered in ${functionsDir}. `
-          + `Found ${functions.discoveredFunctions.length} total function(s) `
-          + `but none with locator type "typescriptOsdk".`,
+        `No TypeScript OSDK functions discovered in ${functionsDir}. ` +
+          `Found ${functions.discoveredFunctions.length} total function(s) ` +
+          `but none with locator type "typescriptOsdk".`,
       );
     } else {
       consola.info(
-        `Discovered ${tsFunctions.length} TypeScript function(s): ${
-          tsFunctions
-            .map(
-              (f: IDiscoveredFunction) =>
-                f.locator.typescriptOsdk!.functionName,
-            )
-            .join(", ")
-        }`,
+        `Discovered ${tsFunctions.length} TypeScript function(s): ${tsFunctions
+          .map(
+            (f: IDiscoveredFunction) => f.locator.typescriptOsdk!.functionName,
+          )
+          .join(", ")}`,
       );
     }
 
@@ -463,10 +445,7 @@ export class OntologyIrToFullMetadataConverter {
           };
           return acc;
         }, {}),
-        output: convertDataType(
-          func.output.single.dataType,
-          func.customTypes,
-        ),
+        output: convertDataType(func.output.single.dataType, func.customTypes),
         typeReferences: {},
       } satisfies Ontologies.QueryTypeV2;
     });
@@ -605,10 +584,7 @@ export class OntologyIrToFullMetadataConverter {
           };
           return acc;
         }, {}),
-        output: convertDataType(
-          resolvedOutput,
-          customTypes,
-        ),
+        output: convertDataType(resolvedOutput, customTypes),
         typeReferences: {},
       };
       queries.push(queryType);
@@ -627,16 +603,14 @@ export class OntologyIrToFullMetadataConverter {
     );
     if (configFile.error) {
       throw new Error(
-        `Failed to read tsconfig at ${tsConfigFilePath}: ${
-          typescript.flattenDiagnosticMessageText(
-            configFile.error.messageText,
-            "\n",
-          )
-        }`,
+        `Failed to read tsconfig at ${tsConfigFilePath}: ${typescript.flattenDiagnosticMessageText(
+          configFile.error.messageText,
+          "\n",
+        )}`,
       );
     }
-    const { options, fileNames, errors } = typescript
-      .parseJsonConfigFileContent(
+    const { options, fileNames, errors } =
+      typescript.parseJsonConfigFileContent(
         configFile.config,
         typescript.sys,
         projectDir,
@@ -644,15 +618,15 @@ export class OntologyIrToFullMetadataConverter {
     if (errors.length > 0) {
       const messages = errors
         .map((d) =>
-          typescript.flattenDiagnosticMessageText(d.messageText, "\n")
+          typescript.flattenDiagnosticMessageText(d.messageText, "\n"),
         )
         .join("\n");
       consola.warn(`tsconfig diagnostics in ${projectDir}:\n${messages}`);
     }
     if (fileNames.length === 0) {
       consola.warn(
-        `tsconfig at ${tsConfigFilePath} resolved 0 files `
-          + `(projectDir: ${projectDir}). TypeScript function discovery will find nothing.`,
+        `tsconfig at ${tsConfigFilePath} resolved 0 files ` +
+          `(projectDir: ${projectDir}). TypeScript function discovery will find nothing.`,
       );
     }
     return typescript.createProgram({
@@ -696,8 +670,8 @@ export class OntologyIrToFullMetadataConverter {
       const primaryKeyRid = object.primaryKeys[0];
       const primaryKey = propRidToApiName[primaryKeyRid] ?? primaryKeyRid;
       const titlePropertyRid = object.titlePropertyTypeRid;
-      const titleProperty = propRidToApiName[titlePropertyRid]
-        ?? titlePropertyRid;
+      const titleProperty =
+        propRidToApiName[titlePropertyRid] ?? titlePropertyRid;
 
       const properties: Record<ApiName, Ontologies.PropertyV2> = {};
       for (const [propRid, prop] of Object.entries(object.propertyTypes)) {
@@ -771,9 +745,9 @@ export class OntologyIrToFullMetadataConverter {
         const interfaceApiName = ii.interfaceTypeApiName;
         const propertyMappings: Record<ApiName, ApiName> = {};
 
-        for (
-          const [sharedPropKey, propMapping] of Object.entries(ii.properties)
-        ) {
+        for (const [sharedPropKey, propMapping] of Object.entries(
+          ii.properties,
+        )) {
           const propertyApiName = propMapping.propertyTypeRid;
           propertyMappings[sharedPropKey] = propertyApiName;
           sharedPropertyTypeMappings[sharedPropKey] = propertyApiName;
@@ -817,19 +791,17 @@ export class OntologyIrToFullMetadataConverter {
           const linkDef = linkType.definition.manyToMany;
           const sideA: Ontologies.LinkTypeSideV2 = {
             apiName: linkDef.objectTypeAToBLinkMetadata.apiName ?? "",
-            displayName: linkDef.objectTypeAToBLinkMetadata
-              .displayMetadata.displayName,
+            displayName:
+              linkDef.objectTypeAToBLinkMetadata.displayMetadata.displayName,
             cardinality: "MANY",
             objectTypeApiName: linkDef.objectTypeRidB,
-            linkTypeRid:
-              `ri.${linkDef.objectTypeRidA}.${linkType.id}.${linkDef.objectTypeRidB}`,
+            linkTypeRid: `ri.${linkDef.objectTypeRidA}.${linkType.id}.${linkDef.objectTypeRidB}`,
             status: linkStatus,
           };
 
           const sideB: Ontologies.LinkTypeSideV2 = {
             ...sideA,
-            apiName: linkDef.objectTypeBToALinkMetadata.apiName
-              ?? "",
+            apiName: linkDef.objectTypeBToALinkMetadata.apiName ?? "",
             objectTypeApiName: linkDef.objectTypeRidA,
           };
 
@@ -847,8 +819,7 @@ export class OntologyIrToFullMetadataConverter {
           );
 
           const common = {
-            linkTypeRid:
-              `ri.${linkDef.objectTypeRidOneSide}.${linkType.id}.${linkDef.objectTypeRidManySide}`,
+            linkTypeRid: `ri.${linkDef.objectTypeRidOneSide}.${linkType.id}.${linkDef.objectTypeRidManySide}`,
             status: linkStatus,
           };
 
@@ -862,8 +833,7 @@ export class OntologyIrToFullMetadataConverter {
             // This should only exist on the one side and it should be the property on this object
             // that points to the PK on the other object
             foreignKeyPropertyApiName:
-              linkDef.oneSidePrimaryKeyToManySidePropertyMapping[0].to
-                .apiName,
+              linkDef.oneSidePrimaryKeyToManySidePropertyMapping[0].to.apiName,
           };
 
           const oneSide: Ontologies.LinkTypeSideV2 = {
@@ -929,7 +899,7 @@ export class OntologyIrToFullMetadataConverter {
   static getOsdkActionOperations(
     action: OntologyIrActionTypeBlockDataV2,
   ): Ontologies.LogicRule[] {
-    return action.actionType.actionTypeLogic.logic.rules.map(irLogic => {
+    return action.actionType.actionTypeLogic.logic.rules.map((irLogic) => {
       switch (irLogic.type) {
         case "addInterfaceRule": {
           const r = irLogic.addInterfaceRule;
@@ -981,8 +951,10 @@ export class OntologyIrToFullMetadataConverter {
         }
         case "modifyInterfaceRule": {
           const r = irLogic.modifyInterfaceRule;
-          const parameter = action.actionType.metadata
-            .parameters[r.interfaceObjectToModifyParameter];
+          const parameter =
+            action.actionType.metadata.parameters[
+              r.interfaceObjectToModifyParameter
+            ];
           if (!parameter) {
             throw new Error("Could not find interface type api name");
           }
@@ -1040,11 +1012,9 @@ export class OntologyIrToFullMetadataConverter {
   ): Record<string, Ontologies.ActionParameterV2> {
     const result: Record<string, Ontologies.ActionParameterV2> = {};
 
-    for (
-      const [paramKey, irParameter] of Object.entries(
-        action.actionType.metadata.parameters,
-      )
-    ) {
+    for (const [paramKey, irParameter] of Object.entries(
+      action.actionType.metadata.parameters,
+    )) {
       let dataType: Ontologies.ActionParameterType;
       switch (irParameter.type.type) {
         case "attachment":
@@ -1232,9 +1202,9 @@ export class OntologyIrToFullMetadataConverter {
         ApiName,
         Ontologies.InterfaceSharedPropertyType
       > = {};
-      for (
-        const [propKey, propValue] of Object.entries(interfaceType.propertiesV2)
-      ) {
+      for (const [propKey, propValue] of Object.entries(
+        interfaceType.propertiesV2,
+      )) {
         const spt = propValue.sharedPropertyType;
         const dataType = this.getOsdkPropertyType(spt.type);
         if (dataType) {
@@ -1257,8 +1227,8 @@ export class OntologyIrToFullMetadataConverter {
         allProperties: properties, // Same as properties for now
         propertiesV2: {},
         allPropertiesV2: {},
-        extendsInterfaces: interfaceType.extendsInterfaces.map(val => val),
-        allExtendsInterfaces: interfaceType.extendsInterfaces.map(val => val), // Same as extendsInterfaces for now
+        extendsInterfaces: interfaceType.extendsInterfaces.map((val) => val),
+        allExtendsInterfaces: interfaceType.extendsInterfaces.map((val) => val), // Same as extendsInterfaces for now
         implementedByObjectTypes: [], // Empty for now
         displayName: interfaceType.displayMetadata.displayName,
         description: interfaceType.displayMetadata.description ?? undefined,
@@ -1315,8 +1285,7 @@ export class OntologyIrToFullMetadataConverter {
       }
 
       const interfaceLinkType: Ontologies.InterfaceLinkType = {
-        rid:
-          `ri.interfacelink.${linkedEntityApiName.apiName}.${ilt.metadata.apiName}`,
+        rid: `ri.interfacelink.${linkedEntityApiName.apiName}.${ilt.metadata.apiName}`,
         apiName: ilt.metadata.apiName,
         displayName: ilt.metadata.displayName,
         description: ilt.metadata.description,
@@ -1346,8 +1315,8 @@ export class OntologyIrToFullMetadataConverter {
           rid: `ri.spt.${spt.sharedPropertyType.apiName}`,
           apiName: spt.sharedPropertyType.apiName,
           displayName: spt.sharedPropertyType.displayMetadata.displayName,
-          description: spt.sharedPropertyType.displayMetadata.description
-            ?? undefined,
+          description:
+            spt.sharedPropertyType.displayMetadata.description ?? undefined,
           dataType,
           typeClasses: [],
         };
@@ -1355,9 +1324,9 @@ export class OntologyIrToFullMetadataConverter {
         result[sharedPropertyType.apiName] = sharedPropertyType;
       } else {
         throw new Error(
-          `Unsupported property type '${
-            JSON.stringify(spt.sharedPropertyType.type)
-          }' for spt '${spt.sharedPropertyType.apiName}'`,
+          `Unsupported property type '${JSON.stringify(
+            spt.sharedPropertyType.type,
+          )}' for spt '${spt.sharedPropertyType.apiName}'`,
         );
       }
     }
@@ -1419,12 +1388,13 @@ export class OntologyIrToFullMetadataConverter {
         return null;
       case "struct": {
         const value = type.struct;
-        const ridBase = `ri.struct.${
-          hash("sha256", JSON.stringify(type)).slice(0, 10)
-        }`;
+        const ridBase = `ri.struct.${hash("sha256", JSON.stringify(type)).slice(
+          0,
+          10,
+        )}`;
         return {
           type: "struct",
-          structFieldTypes: value.structFields.map(field => {
+          structFieldTypes: value.structFields.map((field) => {
             const fieldDataType = this.getOsdkPropertyType(field.fieldType);
             if (!fieldDataType) {
               throw new Error(
@@ -1526,7 +1496,8 @@ function isParameterRequired(
   action: OntologyIrActionTypeBlockDataV2,
   paramKey: string,
 ): boolean {
-  return action.actionType.actionTypeLogic.validation
-    .parameterValidations[paramKey].defaultValidation.validation.required.type
-    === "required";
+  return (
+    action.actionType.actionTypeLogic.validation.parameterValidations[paramKey]
+      .defaultValidation.validation.required.type === "required"
+  );
 }

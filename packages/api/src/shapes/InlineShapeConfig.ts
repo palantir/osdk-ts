@@ -25,9 +25,7 @@ import type {
   ShapeLinkBuilder,
 } from "./ShapeDefinition.js";
 
-export interface InlineShapeConfig<
-  BASE extends ObjectOrInterfaceDefinition,
-> {
+export interface InlineShapeConfig<BASE extends ObjectOrInterfaceDefinition> {
   readonly require?: readonly PropertyKeys<BASE>[];
   readonly select?: readonly PropertyKeys<BASE>[];
   readonly dropIfNull?: readonly PropertyKeys<BASE>[];
@@ -42,9 +40,7 @@ export interface InlineShapeConfig<
   readonly links?: Record<string, InlineLinkConfig<BASE>>;
 }
 
-export interface InlineLinkConfig<
-  SOURCE extends ObjectOrInterfaceDefinition,
-> {
+export interface InlineLinkConfig<SOURCE extends ObjectOrInterfaceDefinition> {
   readonly via: (
     builder: ShapeLinkBuilder<SOURCE, SOURCE>,
   ) => ShapeLinkBuilder<SOURCE, ObjectOrInterfaceDefinition>;
@@ -59,48 +55,44 @@ type ArrayElement<T> = T extends readonly (infer E)[] ? E : never;
 export type InferInlineProps<
   BASE extends ObjectOrInterfaceDefinition,
   C extends InlineShapeConfig<BASE>,
-> =
-  & {
-    [K in ArrayElement<C["require"]> & PropertyKeys<BASE>]: RequiredProperty<
-      PropertyType<BASE, K>
-    >;
-  }
-  & {
-    [K in ArrayElement<C["select"]> & PropertyKeys<BASE>]: PropertyType<
-      BASE,
-      K
-    >;
-  }
-  & {
-    [K in ArrayElement<C["dropIfNull"]> & PropertyKeys<BASE>]: RequiredProperty<
-      PropertyType<BASE, K>
-    >;
-  }
-  & {
-    [K in keyof C["defaults"] & PropertyKeys<BASE>]: NonNullable<
-      PropertyType<BASE, K>
-    >;
-  }
-  & {
-    [K in keyof C["transforms"] & PropertyKeys<BASE>]: C["transforms"] extends
-      Record<K, (v: PropertyType<BASE, K>) => infer R> ? R : never;
-  };
+> = {
+  [K in ArrayElement<C["require"]> & PropertyKeys<BASE>]: RequiredProperty<
+    PropertyType<BASE, K>
+  >;
+} & {
+  [K in ArrayElement<C["select"]> & PropertyKeys<BASE>]: PropertyType<BASE, K>;
+} & {
+  [K in ArrayElement<C["dropIfNull"]> & PropertyKeys<BASE>]: RequiredProperty<
+    PropertyType<BASE, K>
+  >;
+} & {
+  [K in keyof C["defaults"] & PropertyKeys<BASE>]: NonNullable<
+    PropertyType<BASE, K>
+  >;
+} & {
+  [K in keyof C["transforms"] &
+    PropertyKeys<BASE>]: C["transforms"] extends Record<
+    K,
+    (v: PropertyType<BASE, K>) => infer R
+  >
+    ? R
+    : never;
+};
 
 export type InferInlineLinks<
   BASE extends ObjectOrInterfaceDefinition,
   C extends InlineShapeConfig<BASE>,
-> = C["links"] extends Record<string, InlineLinkConfig<BASE>> ? {
-    [K in keyof C["links"] & string]: C["links"][K]["target"] extends
-      ShapeDefinition<ObjectOrInterfaceDefinition> ? C["links"][K]["target"]
-      : ShapeDefinition<ObjectOrInterfaceDefinition>;
-  }
-  : {};
+> =
+  C["links"] extends Record<string, InlineLinkConfig<BASE>>
+    ? {
+        [K in keyof C["links"] &
+          string]: C["links"][K]["target"] extends ShapeDefinition<ObjectOrInterfaceDefinition>
+          ? C["links"][K]["target"]
+          : ShapeDefinition<ObjectOrInterfaceDefinition>;
+      }
+    : {};
 
 export type InferShapeDefinition<
   BASE extends ObjectOrInterfaceDefinition,
   C extends InlineShapeConfig<BASE>,
-> = ShapeDefinition<
-  BASE,
-  InferInlineProps<BASE, C>,
-  InferInlineLinks<BASE, C>
->;
+> = ShapeDefinition<BASE, InferInlineProps<BASE, C>, InferInlineLinks<BASE, C>>;

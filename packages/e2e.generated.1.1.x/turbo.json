@@ -12,9 +12,7 @@
         "tsconfig.cjs.json",
         "*.d.ts"
       ],
-      "outputs": [
-        "build/{esm,cjs,browser}/**/*.{ts,cjs,ts.map,cts.map}"
-      ],
+      "outputs": ["build/{esm,cjs,browser}/**/*.{ts,cjs,ts.map,cts.map}"],
       "dependsOn": [
         "@osdk/monorepo.tsconfig#typecheck",
         "^typecheck",
@@ -37,7 +35,14 @@
         "transpileLegacy",
         "codegen"
       ],
-      "inputs": ["bin/**", "src/**", "tsup.config.js", "tsconfig.json", "tsconfig.cjs.json", "transpile.sh"],
+      "inputs": [
+        "bin/**",
+        "src/**",
+        "tsup.config.js",
+        "tsconfig.json",
+        "tsconfig.cjs.json",
+        "transpile.sh"
+      ],
       "outputs": ["dist/**", "lib/**", "build/**/*.{js,cjs,js.map,cjs.map}"]
     },
 
@@ -58,11 +63,7 @@
         "tsconfig.json",
         "tsconfig.cjs.json"
       ],
-      "outputs": [
-        "dist/**",
-        "lib/**",
-        "build/{esm,cjs,browser}/*"
-      ]
+      "outputs": ["dist/**", "lib/**", "build/{esm,cjs,browser}/*"]
     }
   }
 }

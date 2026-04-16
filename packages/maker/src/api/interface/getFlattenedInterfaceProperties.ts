@@ -36,7 +36,7 @@ export function getFlattenedInterfaceProperties(
       properties[apiName] = spt;
     }
   });
-  interfaceType.extendsInterfaces.forEach(ext => {
+  interfaceType.extendsInterfaces.forEach((ext) => {
     properties = {
       ...getFlattenedInterfaceProperties(ext),
       ...properties,

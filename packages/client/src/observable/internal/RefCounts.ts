@@ -23,8 +23,10 @@ export class RefCounts<T extends {}> {
   // needed which is good for quick clicks across tabs.
   private gcMap = new Map<T, number /* death time */>();
 
-  constructor(private keepAlive: number, private cleanup: (key: T) => void) {
-  }
+  constructor(
+    private keepAlive: number,
+    private cleanup: (key: T) => void,
+  ) {}
 
   register<X extends T>(key: X): X {
     if (!this.refCounts.has(key)) {

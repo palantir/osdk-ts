@@ -22,9 +22,13 @@ import { formatTs } from "../util/test/formatTs.js";
 import { __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst } from "./UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst.js";
 
 /** @internal */
-export async function generatePerInterfaceDataFiles(
-  { fs, outDir, ontology, importExt, forInternalUse }: GenerateContext,
-) {
+export async function generatePerInterfaceDataFiles({
+  fs,
+  outDir,
+  ontology,
+  importExt,
+  forInternalUse,
+}: GenerateContext) {
   const interfacesDir = path.join(outDir, "ontology", "interfaces");
   await fs.mkdir(interfacesDir, {
     recursive: true,
@@ -43,18 +47,16 @@ export async function generatePerInterfaceDataFiles(
       path.join(interfacesDir, `${obj.shortApiName}.ts`),
       await formatTs(`
         import type { PropertyDef as $PropertyDef } from "${
-        forInternalUse ? "@osdk/api" : "@osdk/client"
-      }";
+          forInternalUse ? "@osdk/api" : "@osdk/client"
+        }";
         import { $osdkMetadata } from "../../OntologyMetadata${importExt}";
-      ${
-        __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(
-          obj,
-          ontology,
-          true,
-          forInternalUse,
-          relPath,
-        )
-      }
+      ${__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(
+        obj,
+        ontology,
+        true,
+        forInternalUse,
+        relPath,
+      )}
     `),
     );
   }
@@ -62,18 +64,14 @@ export async function generatePerInterfaceDataFiles(
   await fs.writeFile(
     interfacesDir + ".ts",
     await formatTs(`
-    ${
-      Object.values(ontology.interfaceTypes).filter(i =>
-        i instanceof EnhancedInterfaceType
-      ).map(interfaceType =>
-        `export {${interfaceType.shortApiName}} from "./interfaces/${interfaceType.shortApiName}${importExt}";`
-      ).join("\n")
-    }
-    ${
-      Object.keys(ontology.interfaceTypes).length === 0
-        ? "export {}"
-        : ""
-    }
+    ${Object.values(ontology.interfaceTypes)
+      .filter((i) => i instanceof EnhancedInterfaceType)
+      .map(
+        (interfaceType) =>
+          `export {${interfaceType.shortApiName}} from "./interfaces/${interfaceType.shortApiName}${importExt}";`,
+      )
+      .join("\n")}
+    ${Object.keys(ontology.interfaceTypes).length === 0 ? "export {}" : ""}
     `),
   );
 }

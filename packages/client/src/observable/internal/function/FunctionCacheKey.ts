@@ -34,15 +34,13 @@ export interface FunctionCacheValue {
   error?: Error;
 }
 
-export interface FunctionCacheKey extends
-  CacheKey<
-    "function",
-    FunctionCacheValue,
-    FunctionQuery,
-    [
-      apiName: string,
-      version: string | undefined,
-      canonicalParams: Canonical<CanonicalFunctionParams> | undefined,
-    ]
-  >
-{}
+export interface FunctionCacheKey extends CacheKey<
+  "function",
+  FunctionCacheValue,
+  FunctionQuery,
+  [
+    apiName: string,
+    version: string | undefined,
+    canonicalParams: Canonical<CanonicalFunctionParams> | undefined,
+  ]
+> {}

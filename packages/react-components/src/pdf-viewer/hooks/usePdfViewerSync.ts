@@ -42,41 +42,47 @@ export function usePdfViewerSync({
   const lastScaleRef = useRef(scale);
 
   // Sync React scale → PDFViewer
-  useEffect(function syncScaleToViewer() {
-    const pdfViewer = pdfViewerRef.current;
-    if (pdfViewer == null) {
-      return;
-    }
-    if (Math.abs(lastScaleRef.current - scale) > 0.001) {
-      lastScaleRef.current = scale;
-      pdfViewer.currentScale = scale;
-    }
-  }, [pdfViewerRef, scale]);
+  useEffect(
+    function syncScaleToViewer() {
+      const pdfViewer = pdfViewerRef.current;
+      if (pdfViewer == null) {
+        return;
+      }
+      if (Math.abs(lastScaleRef.current - scale) > 0.001) {
+        lastScaleRef.current = scale;
+        pdfViewer.currentScale = scale;
+      }
+    },
+    [pdfViewerRef, scale],
+  );
 
   // Listen to PDFViewer events → React state
-  useEffect(function subscribeViewerEvents() {
-    const eventBus = eventBusRef.current;
-    if (eventBus == null) {
-      return;
-    }
+  useEffect(
+    function subscribeViewerEvents() {
+      const eventBus = eventBusRef.current;
+      if (eventBus == null) {
+        return;
+      }
 
-    const handlePageChanging = (evt: { pageNumber: number }) => {
-      onPageChange(evt.pageNumber);
-    };
+      const handlePageChanging = (evt: { pageNumber: number }) => {
+        onPageChange(evt.pageNumber);
+      };
 
-    const handleScaleChanging = (evt: { scale: number }) => {
-      lastScaleRef.current = evt.scale;
-      onScaleChange(evt.scale);
-    };
+      const handleScaleChanging = (evt: { scale: number }) => {
+        lastScaleRef.current = evt.scale;
+        onScaleChange(evt.scale);
+      };
 
-    eventBus.on(PAGE_CHANGING_EVENT, handlePageChanging);
-    eventBus.on(SCALE_CHANGING_EVENT, handleScaleChanging);
+      eventBus.on(PAGE_CHANGING_EVENT, handlePageChanging);
+      eventBus.on(SCALE_CHANGING_EVENT, handleScaleChanging);
 
-    return () => {
-      eventBus.off(PAGE_CHANGING_EVENT, handlePageChanging);
-      eventBus.off(SCALE_CHANGING_EVENT, handleScaleChanging);
-    };
-  }, [eventBusRef, document, onPageChange, onScaleChange]);
+      return () => {
+        eventBus.off(PAGE_CHANGING_EVENT, handlePageChanging);
+        eventBus.off(SCALE_CHANGING_EVENT, handleScaleChanging);
+      };
+    },
+    [eventBusRef, document, onPageChange, onScaleChange],
+  );
 
   const scrollToPage = useCallback(
     (page: number) => {

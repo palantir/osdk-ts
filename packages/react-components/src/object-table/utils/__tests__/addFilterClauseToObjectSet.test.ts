@@ -21,8 +21,9 @@ import { addFilterClauseToObjectSet } from "../addFilterClauseToObjectSet.js";
 
 vi.mock("@osdk/client", () => ({
   isObjectSet: (value: unknown) =>
-    value != null && typeof value === "object"
-    && (value as Record<string, unknown>).__isObjectSet === true,
+    value != null &&
+    typeof value === "object" &&
+    (value as Record<string, unknown>).__isObjectSet === true,
 }));
 
 type TestObjectSet = ObjectSet<ObjectOrInterfaceDefinition>;

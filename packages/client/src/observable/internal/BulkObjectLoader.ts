@@ -23,9 +23,7 @@ import { PalantirApiError } from "@osdk/shared.net.errors";
 import type { DeferredPromise } from "p-defer";
 import pDefer from "p-defer";
 import { additionalContext, type Client } from "../../Client.js";
-import type {
-  ObjectHolder,
-} from "../../object/convertWireToOsdkObjects/ObjectHolder.js";
+import type { ObjectHolder } from "../../object/convertWireToOsdkObjects/ObjectHolder.js";
 import type { DefType } from "../../util/interfaceUtils.js";
 import { DefaultMap } from "./collections/DefaultMap.js";
 import { DefaultWeakMap } from "./collections/DefaultWeakMap.js";
@@ -43,8 +41,8 @@ interface Accumulator {
   loadPropertySecurityMetadata?: boolean;
 }
 
-const weakCache = new DefaultWeakMap<Client, BulkObjectLoader>(c =>
-  new BulkObjectLoader(c)
+const weakCache = new DefaultWeakMap<Client, BulkObjectLoader>(
+  (c) => new BulkObjectLoader(c),
 );
 
 export function getBulkObjectLoader(client: Client): BulkObjectLoader {
@@ -79,9 +77,10 @@ export class BulkObjectLoader {
     const deferred = pDefer<ObjectHolder>();
 
     const securitySuffix = loadPropertySecurityMetadata ? "\0sec" : "";
-    const selectKey = select && select.length > 0
-      ? `${apiName}\0${[...select].sort().join(",")}${securitySuffix}`
-      : `${apiName}${securitySuffix}`;
+    const selectKey =
+      select && select.length > 0
+        ? `${apiName}\0${[...select].sort().join(",")}${securitySuffix}`
+        : `${apiName}${securitySuffix}`;
     const entry = this.#m.get(selectKey);
     entry.data.push({
       primaryKey: primaryKey as string,
@@ -135,24 +134,26 @@ export class BulkObjectLoader {
     loadPropertySecurityMetadata?: boolean,
   ) {
     const securitySuffix = loadPropertySecurityMetadata ? "\0sec" : "";
-    const selectKey = select && select.length > 0
-      ? `${apiName}\0${[...select].sort().join(",")}${securitySuffix}`
-      : `${apiName}${securitySuffix}`;
+    const selectKey =
+      select && select.length > 0
+        ? `${apiName}\0${[...select].sort().join(",")}${securitySuffix}`
+        : `${apiName}${securitySuffix}`;
     this.#m.delete(selectKey);
 
-    const loadFn = defType === "interface"
-      ? this.#loadInterfaceObjects(
-        apiName,
-        arr,
-        select,
-        loadPropertySecurityMetadata,
-      )
-      : this.#loadObjectTypeObjects(
-        apiName,
-        arr,
-        select,
-        loadPropertySecurityMetadata,
-      );
+    const loadFn =
+      defType === "interface"
+        ? this.#loadInterfaceObjects(
+            apiName,
+            arr,
+            select,
+            loadPropertySecurityMetadata,
+          )
+        : this.#loadObjectTypeObjects(
+            apiName,
+            arr,
+            select,
+            loadPropertySecurityMetadata,
+          );
 
     loadFn.catch((e: unknown) => {
       this.#logger?.error("Unhandled exception", e);
@@ -176,26 +177,26 @@ export class BulkObjectLoader {
     const objectDef = { type: "object", apiName } as ObjectTypeDefinition;
     const objMetadata = await this.#client.fetchMetadata(objectDef);
 
-    const pks = arr.map(x => x.primaryKey);
+    const pks = arr.map((x) => x.primaryKey);
 
     // Use $eq for single object fetches (this is for public app compatibility)
     // Use $in for batch fetches
-    const whereClause = pks.length === 1
-      ? { [objMetadata.primaryKeyApiName]: { $eq: pks[0] } }
-      : { [objMetadata.primaryKeyApiName]: { $in: pks } };
+    const whereClause =
+      pks.length === 1
+        ? { [objMetadata.primaryKeyApiName]: { $eq: pks[0] } }
+        : { [objMetadata.primaryKeyApiName]: { $in: pks } };
 
     const { data } = await this.#client(objectDef)
-      .where(whereClause).fetchPage({
+      .where(whereClause)
+      .fetchPage({
         $pageSize: pks.length,
         $includeRid: true,
-        ...(select && select.length > 0
-          ? { $select: select }
-          : {}),
+        ...(select && select.length > 0 ? { $select: select } : {}),
         $loadPropertySecurityMetadata: loadPropertySecurityMetadata ?? false,
       });
 
     for (const { primaryKey, deferred } of arr) {
-      const object = data.find(x => x.$primaryKey === primaryKey) as
+      const object = data.find((x) => x.$primaryKey === primaryKey) as
         | ObjectHolder
         | undefined;
       if (object) {
@@ -214,7 +215,7 @@ export class BulkObjectLoader {
     select?: readonly string[],
     loadPropertySecurityMetadata?: boolean,
   ) {
-    const pks = arr.map(x => x.primaryKey);
+    const pks = arr.map((x) => x.primaryKey);
 
     const interfaceDef = {
       type: "interface",
@@ -233,23 +234,23 @@ export class BulkObjectLoader {
       } as ObjectTypeDefinition;
       const objMetadata = await this.#client.fetchMetadata(objectDef);
 
-      const remainingPks = pks.filter(pk => !foundObjects.has(pk));
+      const remainingPks = pks.filter((pk) => !foundObjects.has(pk));
       if (remainingPks.length === 0) {
         break;
       }
 
-      const whereClause = remainingPks.length === 1
-        ? { [objMetadata.primaryKeyApiName]: { $eq: remainingPks[0] } }
-        : { [objMetadata.primaryKeyApiName]: { $in: remainingPks } };
+      const whereClause =
+        remainingPks.length === 1
+          ? { [objMetadata.primaryKeyApiName]: { $eq: remainingPks[0] } }
+          : { [objMetadata.primaryKeyApiName]: { $in: remainingPks } };
 
       const { data } = await this.#client(objectDef)
-        .where(whereClause).fetchPage({
+        .where(whereClause)
+        .fetchPage({
           $pageSize: remainingPks.length,
-          ...(select && select.length > 0
-            ? { $select: select }
-            : {}),
-          $loadPropertySecurityMetadata:
-            (loadPropertySecurityMetadata ?? false) as boolean,
+          ...(select && select.length > 0 ? { $select: select } : {}),
+          $loadPropertySecurityMetadata: (loadPropertySecurityMetadata ??
+            false) as boolean,
         });
 
       for (const obj of data) {

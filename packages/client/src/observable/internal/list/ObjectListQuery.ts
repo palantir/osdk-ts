@@ -36,11 +36,14 @@ import {
   RIDS_IDX,
 } from "./ListQuery.js";
 
-type ExtractRelevantObjectsResult = Record<"added" | "modified", {
-  all: (ObjectHolder | InterfaceHolder)[];
-  strictMatches: Set<(ObjectHolder | InterfaceHolder)>;
-  sortaMatches: Set<(ObjectHolder | InterfaceHolder)>;
-}>;
+type ExtractRelevantObjectsResult = Record<
+  "added" | "modified",
+  {
+    all: (ObjectHolder | InterfaceHolder)[];
+    strictMatches: Set<ObjectHolder | InterfaceHolder>;
+    sortaMatches: Set<ObjectHolder | InterfaceHolder>;
+  }
+>;
 
 export class ObjectListQuery extends ListQuery {
   protected createObjectSet(store: Store): ObjectSet<ObjectTypeDefinition> {
@@ -67,15 +70,17 @@ export class ObjectListQuery extends ListQuery {
           { type: "static", objects: [...rids] },
         );
       } else {
-        sourceSet = (pivotInfo.sourceTypeKind === "interface"
-          ? store.client({
-            type: "interface",
-            apiName: pivotInfo.sourceType,
-          } as InterfaceDefinition)
-          : store.client({
-            type: "object",
-            apiName: pivotInfo.sourceType,
-          } as ObjectTypeDefinition)) as ObjectSet<ObjectTypeDefinition>;
+        sourceSet = (
+          pivotInfo.sourceTypeKind === "interface"
+            ? store.client({
+                type: "interface",
+                apiName: pivotInfo.sourceType,
+              } as InterfaceDefinition)
+            : store.client({
+                type: "object",
+                apiName: pivotInfo.sourceType,
+              } as ObjectTypeDefinition)
+        ) as ObjectSet<ObjectTypeDefinition>;
       }
 
       let objectSet = sourceSet
@@ -96,11 +101,10 @@ export class ObjectListQuery extends ListQuery {
     // Start with either a static objectset (for RIDs) or a base objectset
     let objectSet: ObjectSet<ObjectTypeDefinition>;
     if (rids != null) {
-      objectSet = clientCtx.objectSetFactory(
-        typeDefinition,
-        clientCtx,
-        { type: "static", objects: [...rids] },
-      );
+      objectSet = clientCtx.objectSetFactory(typeDefinition, clientCtx, {
+        type: "static",
+        objects: [...rids],
+      });
     } else {
       objectSet = store.client(typeDefinition);
     }
@@ -114,7 +118,7 @@ export class ObjectListQuery extends ListQuery {
     objectSet = objectSet.where(this.canonicalWhere);
 
     if (intersectWith != null && intersectWith.length > 0) {
-      const intersectSets = intersectWith.map(whereClause => {
+      const intersectSets = intersectWith.map((whereClause) => {
         let intersectSet = store.client({
           type: "object",
           apiName: this.apiName,
@@ -146,14 +150,15 @@ export class ObjectListQuery extends ListQuery {
   ): ExtractRelevantObjectsResult {
     return {
       added: {
-        all: changes.addedObjects.get(this.cacheKey.otherKeys[API_NAME_IDX])
-          ?? [],
+        all:
+          changes.addedObjects.get(this.cacheKey.otherKeys[API_NAME_IDX]) ?? [],
         strictMatches: new Set(),
         sortaMatches: new Set(),
       },
       modified: {
-        all: changes.modifiedObjects.get(this.cacheKey.otherKeys[API_NAME_IDX])
-          ?? [],
+        all:
+          changes.modifiedObjects.get(this.cacheKey.otherKeys[API_NAME_IDX]) ??
+          [],
         strictMatches: new Set(),
         sortaMatches: new Set(),
       },

@@ -81,16 +81,12 @@ export function extractValidationRules(
       if (min != null) {
         const msg = getMessage(fieldDef, { type: "min", min });
         validateFns.min = (value) =>
-          value instanceof Date && value.getTime() < min.getTime()
-            ? msg
-            : true;
+          value instanceof Date && value.getTime() < min.getTime() ? msg : true;
       }
       if (max != null) {
         const msg = getMessage(fieldDef, { type: "max", max });
         validateFns.max = (value) =>
-          value instanceof Date && value.getTime() > max.getTime()
-            ? msg
-            : true;
+          value instanceof Date && value.getTime() > max.getTime() ? msg : true;
       }
       break;
     }

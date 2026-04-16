@@ -20,8 +20,8 @@ const router = createRouter({
 
 router.beforeEach(async (to) => {
   if (
-    to.meta.requiresAuth
-    && (client.auth.token == null || client.auth.token.isExpired)
+    to.meta.requiresAuth &&
+    (client.auth.token == null || client.auth.token.isExpired)
   ) {
     try {
       await client.auth.refresh();

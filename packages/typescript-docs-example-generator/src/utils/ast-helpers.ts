@@ -19,9 +19,10 @@
 /**
  * Convert ProcessingError to Error for compatibility with error collectors.
  */
-export function processingErrorToError(
-  processingError: { message: string; cause?: Error },
-): Error {
+export function processingErrorToError(processingError: {
+  message: string;
+  cause?: Error;
+}): Error {
   const error = new Error(processingError.message);
   if (processingError.cause) {
     error.cause = processingError.cause;

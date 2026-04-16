@@ -89,22 +89,22 @@ export const Result = {
   coalesce<T, E>(results: Array<Result<T, E[]>>): Result<T[], E[]> {
     return results.reduce((acc, value) => {
       return value.transform(
-        ok => {
+        (ok) => {
           return acc.transform(
-            accOk => {
+            (accOk) => {
               return Result.ok([...accOk, ok]);
             },
-            accErr => {
+            (accErr) => {
               return Result.err(accErr);
             },
           );
         },
-        err => {
+        (err) => {
           return acc.transform(
             () => {
               return Result.err([...err]);
             },
-            accErr => {
+            (accErr) => {
               return Result.err([...accErr, ...err]);
             },
           );

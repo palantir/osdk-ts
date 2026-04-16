@@ -17,11 +17,7 @@ type FunctionColumns = {
 };
 
 const columnDefinitions: Array<
-  ColumnDefinition<
-    Employee,
-    RDPs,
-    FunctionColumns
-  >
+  ColumnDefinition<Employee, RDPs, FunctionColumns>
 > = [
   {
     locator: {
@@ -102,13 +98,10 @@ const columnDefinitions: Array<
 ];
 
 export function EmployeesTable() {
-  const handleSubmitEdits = useCallback(
-    async () => {
-      alert(`Submitting edits...`);
-      return true;
-    },
-    [],
-  );
+  const handleSubmitEdits = useCallback(async () => {
+    alert(`Submitting edits...`);
+    return true;
+  }, []);
 
   const client = useOsdkClient();
 
@@ -126,10 +119,12 @@ export function EmployeesTable() {
         objectType={Employee}
         columnDefinitions={columnDefinitions}
         selectionMode={"multiple"}
-        defaultOrderBy={[{
-          property: "firstFullTimeStartDate",
-          direction: "desc",
-        }]}
+        defaultOrderBy={[
+          {
+            property: "firstFullTimeStartDate",
+            direction: "desc",
+          },
+        ]}
         onSubmitEdits={handleSubmitEdits}
         editMode="manual"
         pageSize={5}

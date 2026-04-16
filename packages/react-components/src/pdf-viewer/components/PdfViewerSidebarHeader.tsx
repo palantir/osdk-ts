@@ -33,9 +33,8 @@ export function PdfViewerSidebarHeader({
   sidebarMode,
   onSidebarModeChange,
 }: PdfViewerSidebarHeaderProps): React.ReactElement {
-  const value = sidebarMode === "thumbnails"
-    ? SIDEBAR_MODE_VALUE
-    : OUTLINE_MODE_VALUE;
+  const value =
+    sidebarMode === "thumbnails" ? SIDEBAR_MODE_VALUE : OUTLINE_MODE_VALUE;
 
   const handleValueChange = useCallback(
     (newValue: string[]) => {

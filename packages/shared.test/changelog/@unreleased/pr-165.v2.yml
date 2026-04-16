@@ -2,4 +2,4 @@ type: improvement
 improvement:
   description: Rework client version match and deprecation
   links:
-  - https://github.com/palantir/osdk-ts/pull/165
+    - https://github.com/palantir/osdk-ts/pull/165

@@ -12,9 +12,7 @@ import TodoList from "./TodoList.js";
 import ValidateActionDemo from "./ValidateActionDemo.js";
 
 function App() {
-  const [whereClause, setWhereClause] = React.useState<WhereClause<Todo>>(
-    {},
-  );
+  const [whereClause, setWhereClause] = React.useState<WhereClause<Todo>>({});
 
   return (
     <main className="flex min-h-screen flex-col items-center p-24">
@@ -45,10 +43,7 @@ function App() {
           </Section>
 
           <Section>
-            <FilterSelector
-              setFilter={setWhereClause}
-              heading="<-- Filter"
-            />
+            <FilterSelector setFilter={setWhereClause} heading="<-- Filter" />
           </Section>
         </div>
       </div>

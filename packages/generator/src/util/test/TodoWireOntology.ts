@@ -41,10 +41,12 @@ export const TodoWireOntology: WireOntologyDefinition = {
         },
       },
       rid: "ri.ontology.main.action-type.9f84017d-cf17-4fa8-84c3-8e01e5d594f2",
-      operations: [{
-        type: "modifyObject",
-        objectTypeApiName: "Todo",
-      }],
+      operations: [
+        {
+          type: "modifyObject",
+          objectTypeApiName: "Todo",
+        },
+      ],
       status: "ACTIVE",
     },
     "deleteTodos": {
@@ -68,10 +70,12 @@ export const TodoWireOntology: WireOntologyDefinition = {
         },
       },
       rid: "ri.ontology.main.action-type.8f94017d-cf17-4fa8-84c3-8e01e5d594f2",
-      operations: [{
-        type: "deleteObject",
-        objectTypeApiName: "Todo",
-      }],
+      operations: [
+        {
+          type: "deleteObject",
+          objectTypeApiName: "Todo",
+        },
+      ],
       status: "ACTIVE",
     },
   },
@@ -126,15 +130,17 @@ export const TodoWireOntology: WireOntologyDefinition = {
         status: "ACTIVE",
         rid: "ridForTodo",
       },
-      linkTypes: [{
-        apiName: "Assignee",
-        cardinality: "ONE",
-        displayName: "Assignee",
-        objectTypeApiName: "Person",
-        status: "ACTIVE",
-        foreignKeyPropertyApiName: "email",
-        linkTypeRid: "",
-      }],
+      linkTypes: [
+        {
+          apiName: "Assignee",
+          cardinality: "ONE",
+          displayName: "Assignee",
+          objectTypeApiName: "Person",
+          status: "ACTIVE",
+          foreignKeyPropertyApiName: "email",
+          linkTypeRid: "",
+        },
+      ],
       implementsInterfaces: ["SomeInterface"],
       implementsInterfaces2: {
         "SomeInterface": {
@@ -170,15 +176,17 @@ export const TodoWireOntology: WireOntologyDefinition = {
         rid: "ridForPerson",
         status: "ACTIVE",
       },
-      linkTypes: [{
-        apiName: "Todos",
-        cardinality: "MANY",
-        displayName: "Todos",
-        objectTypeApiName: "Todo",
-        status: "ACTIVE",
-        foreignKeyPropertyApiName: "id",
-        linkTypeRid: "",
-      }],
+      linkTypes: [
+        {
+          apiName: "Todos",
+          cardinality: "MANY",
+          displayName: "Todos",
+          objectTypeApiName: "Todo",
+          status: "ACTIVE",
+          foreignKeyPropertyApiName: "id",
+          linkTypeRid: "",
+        },
+      ],
       implementsInterfaces: [],
       implementsInterfaces2: {},
       sharedPropertyTypeMapping: {},
@@ -282,10 +290,12 @@ export const TodoWireOntology: WireOntologyDefinition = {
       fieldType: {
         type: "string",
       },
-      constraints: [{
-        type: "enum",
-        options: ["osdk@palantir.com", "foundry@palantir.com"],
-      }],
+      constraints: [
+        {
+          type: "enum",
+          options: ["osdk@palantir.com", "foundry@palantir.com"],
+        },
+      ],
     },
     arrayValueType: {
       apiName: "arrayValueType",
@@ -299,11 +309,13 @@ export const TodoWireOntology: WireOntologyDefinition = {
           type: "string",
         },
       },
-      constraints: [{
-        type: "array",
-        valueConstraint: { type: "enum", options: ["a", "b\"c", "d'e"] },
-        uniqueValues: false,
-      }],
+      constraints: [
+        {
+          type: "array",
+          valueConstraint: { type: "enum", options: ["a", 'b"c', "d'e"] },
+          uniqueValues: false,
+        },
+      ],
     },
   },
 } as const satisfies WireOntologyDefinition;

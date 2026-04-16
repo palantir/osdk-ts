@@ -22,11 +22,11 @@ export function resolveBaseObjectSetType(
 ): WireObjectSet {
   return objectType.type === "interface"
     ? {
-      type: "interfaceBase",
-      interfaceType: objectType["apiName"] as string,
-    }
+        type: "interfaceBase",
+        interfaceType: objectType.apiName as string,
+      }
     : {
-      type: "base",
-      objectType: objectType["apiName"] as string,
-    };
+        type: "base",
+        objectType: objectType.apiName as string,
+      };
 }

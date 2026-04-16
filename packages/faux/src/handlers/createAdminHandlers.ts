@@ -31,12 +31,9 @@ export const createAdminHandlers: FauxFoundryHandlersFactory = (
   baseUrl,
   fauxFoundry,
 ) => [
-  Admin.Markings.applyListMarkings(
-    baseUrl,
-    (): ListMarkingsResponse => {
-      return fauxFoundry.getAdmin().listMarkings();
-    },
-  ),
+  Admin.Markings.applyListMarkings(baseUrl, (): ListMarkingsResponse => {
+    return fauxFoundry.getAdmin().listMarkings();
+  }),
 
   Admin.MarkingCategories.applyListMarkingCategories(
     baseUrl,
@@ -45,14 +42,11 @@ export const createAdminHandlers: FauxFoundryHandlersFactory = (
     },
   ),
 
-  Admin.CbacBanners.applyGetCbacBanner(
-    baseUrl,
-    ({ request }): CbacBanner => {
-      const url = new URL(request.url);
-      const markingIds = url.searchParams.getAll("markingIds");
-      return fauxFoundry.getAdmin().getCbacBanner(markingIds);
-    },
-  ),
+  Admin.CbacBanners.applyGetCbacBanner(baseUrl, ({ request }): CbacBanner => {
+    const url = new URL(request.url);
+    const markingIds = url.searchParams.getAll("markingIds");
+    return fauxFoundry.getAdmin().getCbacBanner(markingIds);
+  }),
 
   Admin.CbacMarkingRestrictions.applyGetCbacMarkingRestrictions(
     baseUrl,
@@ -79,18 +73,18 @@ export const createAdminHandlers: FauxFoundryHandlersFactory = (
   Admin.Users.applyListUsers(
     baseUrl,
     ({ request, params }): ListUsersResponse => {
-      const include = new URL(request.url).searchParams.get("include")
-        ?? "ACTIVE";
+      const include =
+        new URL(request.url).searchParams.get("include") ?? "ACTIVE";
       const pageSize = Number.parseInt(
         new URL(request.url).searchParams.get("pageSize") ?? "1000",
         10,
       );
-      const pageToken = new URL(request.url).searchParams.get("pageToken")
-        ?? undefined;
+      const pageToken =
+        new URL(request.url).searchParams.get("pageToken") ?? undefined;
 
       if (
-        (include !== "ACTIVE" && include !== "DELETED")
-        || Number.isNaN(pageSize)
+        (include !== "ACTIVE" && include !== "DELETED") ||
+        Number.isNaN(pageSize)
       ) {
         throw new OpenApiCallError(
           400,
@@ -102,11 +96,9 @@ export const createAdminHandlers: FauxFoundryHandlersFactory = (
         throw new OpenApiCallError(400, InvalidArgument("InvalidPageSize"));
       }
 
-      const response = fauxFoundry.getAdmin().listUsers(
-        pageSize,
-        pageToken,
-        include,
-      );
+      const response = fauxFoundry
+        .getAdmin()
+        .listUsers(pageSize, pageToken, include);
       return {
         data: response.users,
         nextPageToken: response.nextPageToken,

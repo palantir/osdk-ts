@@ -142,17 +142,20 @@ function RangeInputInner<T>({
     };
   }, [displayPairs, config]);
 
-  const dataRange = useMemo(() => ({
-    dataMin: computedRange.min,
-    dataMax: computedRange.max,
-  }), [computedRange.min, computedRange.max]);
+  const dataRange = useMemo(
+    () => ({
+      dataMin: computedRange.min,
+      dataMax: computedRange.max,
+    }),
+    [computedRange.min, computedRange.max],
+  );
 
   const buckets = useMemo<Array<HistogramBucket<T>>>(() => {
     if (
-      !showHistogram
-      || displayPairs.length === 0
-      || computedRange.min === undefined
-      || computedRange.max === undefined
+      !showHistogram ||
+      displayPairs.length === 0 ||
+      computedRange.min === undefined ||
+      computedRange.max === undefined
     ) {
       return [];
     }
@@ -192,19 +195,18 @@ function RangeInputInner<T>({
       data-loading={isLoading}
     >
       {showHistogram && buckets.length === 0 && !isLoading && (
-        <div className={sharedStyles.emptyMessage}>
-          No values available
-        </div>
+        <div className={sharedStyles.emptyMessage}>No values available</div>
       )}
 
       {showHistogram && buckets.length > 0 && (
         <div className={styles.histogramContainer}>
           {buckets.map((bucket, index) => {
             const height = (bucket.count / maxBucketCount) * 100;
-            const isInRange = (minValue === undefined
-              || config.toNumber(bucket.max) >= config.toNumber(minValue))
-              && (maxValue === undefined
-                || config.toNumber(bucket.min) <= config.toNumber(maxValue));
+            const isInRange =
+              (minValue === undefined ||
+                config.toNumber(bucket.max) >= config.toNumber(minValue)) &&
+              (maxValue === undefined ||
+                config.toNumber(bucket.min) <= config.toNumber(maxValue));
 
             return (
               <div
@@ -234,10 +236,11 @@ function RangeInputInner<T>({
             className={styles.input}
             value={localMin}
             onChange={handleMinChange}
-            placeholder={dataRange.dataMin !== undefined
-                && config.formatPlaceholder
-              ? config.formatPlaceholder(dataRange.dataMin)
-              : undefined}
+            placeholder={
+              dataRange.dataMin !== undefined && config.formatPlaceholder
+                ? config.formatPlaceholder(dataRange.dataMin)
+                : undefined
+            }
             {...config.inputProps}
           />
         </div>
@@ -256,10 +259,11 @@ function RangeInputInner<T>({
             className={styles.input}
             value={localMax}
             onChange={handleMaxChange}
-            placeholder={dataRange.dataMax !== undefined
-                && config.formatPlaceholder
-              ? config.formatPlaceholder(dataRange.dataMax)
-              : undefined}
+            placeholder={
+              dataRange.dataMax !== undefined && config.formatPlaceholder
+                ? config.formatPlaceholder(dataRange.dataMax)
+                : undefined
+            }
             {...config.inputProps}
           />
         </div>

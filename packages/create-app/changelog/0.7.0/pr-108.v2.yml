@@ -1,6 +1,7 @@
 type: improvement
 improvement:
-  description: Change template-next-static-export tsconfig.json target from es5 to
+  description:
+    Change template-next-static-export tsconfig.json target from es5 to
     ES2020
   links:
-  - https://github.com/palantir/osdk-ts/pull/108
+    - https://github.com/palantir/osdk-ts/pull/108

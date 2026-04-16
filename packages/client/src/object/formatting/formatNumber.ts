@@ -50,11 +50,7 @@ export function formatNumber(
 ): string | undefined {
   switch (numberType.type) {
     case "standard":
-      return formatStandardNumber(
-        value,
-        numberType.baseFormatOptions,
-        locale,
-      );
+      return formatStandardNumber(value, numberType.baseFormatOptions, locale);
 
     case "fixedValues":
       return numberType.values[value];
@@ -130,7 +126,7 @@ function formatStandardUnit(
   const options: ExtendedNumberFormatOptions = {
     ...convertToIntlOptions(rule.baseFormatOptions),
     style: "unit",
-    unit: unit,
+    unit,
   };
 
   try {
@@ -170,12 +166,14 @@ function formatAffix(
   objectData: SimpleOsdkProperties,
   locale: string,
 ): string {
-  const prefix = rule.affix.prefix != null
-    ? resolvePropertyReference(rule.affix.prefix, objectData) ?? ""
-    : "";
-  const suffix = rule.affix.postfix != null
-    ? resolvePropertyReference(rule.affix.postfix, objectData) ?? ""
-    : "";
+  const prefix =
+    rule.affix.prefix != null
+      ? (resolvePropertyReference(rule.affix.prefix, objectData) ?? "")
+      : "";
+  const suffix =
+    rule.affix.postfix != null
+      ? (resolvePropertyReference(rule.affix.postfix, objectData) ?? "")
+      : "";
   return formatNumberWithAffixes(
     value,
     rule.baseFormatOptions,
@@ -216,7 +214,7 @@ function getLocalizedCompactSuffix(
   });
 
   const parts = compactFormatter.formatToParts(scaleDivisor);
-  const compactPart = parts.find(p => p.type === "compact");
+  const compactPart = parts.find((p) => p.type === "compact");
   return compactPart?.value ?? "";
 }
 

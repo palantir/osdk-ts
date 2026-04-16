@@ -20,30 +20,32 @@ import * as path from "node:path";
 
 process.env.PACKAGE_VERSION = await readPackageVersion(process.cwd());
 process.env.PACKAGE_API_VERSION = await readPackageVersion("packages/api");
-process.env.PACKAGE_CLIENT_VERSION = await readPackageVersion(
-  "packages/client",
-);
+process.env.PACKAGE_CLIENT_VERSION =
+  await readPackageVersion("packages/client");
 
 process.env.PACKAGE_CLI_VERSION = await readPackageVersion("packages/cli");
 process.env.TARGET ??= "node";
 process.env.MODE = process.env.production ? "production" : "development";
 
-const config = function(api) {
+const config = function (api) {
   api.cache(false);
   return {
     sourceMaps: true,
     plugins: [
       ["babel-plugin-dev-expression"],
-      ["babel-plugin-transform-inline-environment-variables", {
-        "include": [
-          "PACKAGE_VERSION",
-          "PACKAGE_API_VERSION",
-          "PACKAGE_CLIENT_VERSION",
-          "PACKAGE_CLI_VERSION",
-          "TARGET",
-          "MODE",
-        ],
-      }],
+      [
+        "babel-plugin-transform-inline-environment-variables",
+        {
+          "include": [
+            "PACKAGE_VERSION",
+            "PACKAGE_API_VERSION",
+            "PACKAGE_CLIENT_VERSION",
+            "PACKAGE_CLI_VERSION",
+            "TARGET",
+            "MODE",
+          ],
+        },
+      ],
       ["minify-dead-code-elimination"],
     ],
   };
@@ -61,6 +63,5 @@ async function readPackageVersion(k) {
       "package.json",
     ),
     "utf-8",
-  )
-    .then(f => JSON.parse(f).version);
+  ).then((f) => JSON.parse(f).version);
 }

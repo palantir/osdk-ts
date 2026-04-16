@@ -9,10 +9,12 @@ interface StatsPanelProps {
   isLoadingEmployees: boolean;
 }
 
-export function StatsPanel(
-  { officeCount, isLoadingOffices, employeeCount, isLoadingEmployees }:
-    StatsPanelProps,
-) {
+export function StatsPanel({
+  officeCount,
+  isLoadingOffices,
+  employeeCount,
+  isLoadingEmployees,
+}: StatsPanelProps) {
   const {
     data: fooResult,
     isLoading: fooLoading,
@@ -30,19 +32,17 @@ export function StatsPanel(
         <div className="flex items-center justify-between">
           <span className="text-xs text-[var(--text-muted)]">fooEa</span>
           <div className="flex items-center gap-2">
-            {fooLoading
-              ? <LoadingIndicator size="sm" />
-              : fooError
-              ? (
-                <span className="text-xs text-red-400" title={String(fooError)}>
-                  Error
-                </span>
-              )
-              : (
-                <span className="text-sm font-bold tabular-nums text-[var(--accent-cyan)]">
-                  {fooResult ?? "—"}
-                </span>
-              )}
+            {fooLoading ? (
+              <LoadingIndicator size="sm" />
+            ) : fooError ? (
+              <span className="text-xs text-red-400" title={String(fooError)}>
+                Error
+              </span>
+            ) : (
+              <span className="text-sm font-bold tabular-nums text-[var(--accent-cyan)]">
+                {fooResult ?? "—"}
+              </span>
+            )}
             <button
               onClick={() => refetchFoo()}
               className="text-[10px] text-[var(--text-muted)] hover:text-[var(--accent-cyan)]"

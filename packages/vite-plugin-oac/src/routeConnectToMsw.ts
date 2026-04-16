@@ -50,7 +50,7 @@ export async function routeConnectToMsw(
     {
       onUnhandledRequest: "bypass",
     },
-    emitter as unknown as Parameters<typeof msw["handleRequest"]>[4],
+    emitter as unknown as Parameters<(typeof msw)["handleRequest"]>[4],
     {
       resolutionContext: {
         baseUrl,

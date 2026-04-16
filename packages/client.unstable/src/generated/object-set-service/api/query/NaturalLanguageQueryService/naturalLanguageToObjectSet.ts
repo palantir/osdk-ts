@@ -17,8 +17,7 @@
 import { type ConjureContext, conjureFetch } from "conjure-lite";
 import type {
   NaturalLanguageObjectSetRequest as _api_query_NaturalLanguageObjectSetRequest,
-  NaturalLanguageObjectSetResponse
-    as _api_query_NaturalLanguageObjectSetResponse,
+  NaturalLanguageObjectSetResponse as _api_query_NaturalLanguageObjectSetResponse,
 } from "../__components.js";
 
 /**

@@ -30,9 +30,10 @@ import { toUuid } from "./ridUtils.js";
 /**
  * Extended return type that uses ActionTypeFullMetadata instead of ActionTypeV2.
  */
-export interface PreviewOntologyFullMetadata
-  extends Omit<Ontologies.OntologyFullMetadata, "actionTypes">
-{
+export interface PreviewOntologyFullMetadata extends Omit<
+  Ontologies.OntologyFullMetadata,
+  "actionTypes"
+> {
   actionTypes: Record<string, Ontologies.ActionTypeFullMetadata>;
 }
 
@@ -48,8 +49,10 @@ export class PreviewOntologyIrConverter {
   static getPreviewFullMetadataFromBlockData(
     blockdata: OntologyBlockDataV2,
   ): PreviewOntologyFullMetadata {
-    const baseMetadata = OntologyBlockDataToFullMetadataConverter
-      .getFullMetadataFromBlockData(blockdata);
+    const baseMetadata =
+      OntologyBlockDataToFullMetadataConverter.getFullMetadataFromBlockData(
+        blockdata,
+      );
 
     const actionTypes = this.convertActionTypesWithFullLogicRulesFromBlockData(
       blockdata.actionTypes,
@@ -92,11 +95,11 @@ export class PreviewOntologyIrConverter {
         };
       }
 
-      const linkTypes = fullMetadata.linkTypes.map(lt => ({
+      const linkTypes = fullMetadata.linkTypes.map((lt) => ({
         ...lt,
-        linkTypeRid: `ri.ontology.main.link-type.${
-          toUuid(lt.linkTypeRid || lt.apiName)
-        }` as Ontologies.LinkTypeRid,
+        linkTypeRid: `ri.ontology.main.link-type.${toUuid(
+          lt.linkTypeRid || lt.apiName,
+        )}` as Ontologies.LinkTypeRid,
       }));
 
       result[apiName] = {
@@ -124,8 +127,8 @@ export class PreviewOntologyIrConverter {
   ): Record<string, Ontologies.ActionTypeFullMetadata> {
     const objectTypeLookup = buildBlockDataObjectTypeLookup(blockdata);
     const interfaceTypeLookup = buildBlockDataInterfaceTypeLookup(blockdata);
-    const baseActionTypes = OntologyBlockDataToFullMetadataConverter
-      .getOsdkActionTypesFromBlockData(
+    const baseActionTypes =
+      OntologyBlockDataToFullMetadataConverter.getOsdkActionTypesFromBlockData(
         blockdata,
         objectTypeLookup,
         interfaceTypeLookup,
@@ -133,7 +136,7 @@ export class PreviewOntologyIrConverter {
 
     // Build a lookup from apiName to the original IR action for logic rules
     const actionsByApiName = new Map(
-      Object.values(actions).map(a => [a.actionType.metadata.apiName, a]),
+      Object.values(actions).map((a) => [a.actionType.metadata.apiName, a]),
     );
     const result: Record<string, Ontologies.ActionTypeFullMetadata> = {};
     for (const [apiName, baseActionType] of Object.entries(baseActionTypes)) {

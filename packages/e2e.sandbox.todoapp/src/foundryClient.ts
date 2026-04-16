@@ -20,9 +20,6 @@ const auth = createPublicOauthClient(
   { useHistory: true, logger },
 );
 
-export const $ = createClient(
-  "http://localhost:8080",
-  $ontologyRid,
-  auth,
-  { logger },
-);
+export const $ = createClient("http://localhost:8080", $ontologyRid, auth, {
+  logger,
+});

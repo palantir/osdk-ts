@@ -22,8 +22,6 @@ import type {
 } from "./AggregationsClause.js";
 
 export type AggregateOpts<Q extends ObjectOrInterfaceDefinition> = {
-  $select:
-    | UnorderedAggregationClause<Q>
-    | OrderedAggregationClause<Q>;
+  $select: UnorderedAggregationClause<Q> | OrderedAggregationClause<Q>;
   $groupBy?: GroupByClause<Q>;
 };

@@ -29,16 +29,14 @@ import type { WidgetSetRid } from "../../../net/WidgetSetRid.js";
 import { loadToken } from "../../../util/token.js";
 import type { WidgetSetDeployArgs } from "./WidgetSetDeployArgs.js";
 
-export default async function widgetSetDeployCommand(
-  {
-    widgetSet,
-    foundryUrl,
-    directory,
-    repository,
-    token,
-    tokenFile,
-  }: WidgetSetDeployArgs,
-): Promise<void> {
+export default async function widgetSetDeployCommand({
+  widgetSet,
+  foundryUrl,
+  directory,
+  repository,
+  token,
+  tokenFile,
+}: WidgetSetDeployArgs): Promise<void> {
   const loadedToken = await loadToken(token, tokenFile);
   const tokenProvider = () => loadedToken;
   const clientCtx = createInternalClientContext(foundryUrl, tokenProvider);
@@ -110,9 +108,9 @@ function logArchiveStats(archive: archiver.Archiver): void {
   });
   archive.on("finish", () => {
     consola.info(
-      `Zipped ${
-        prettyBytes(archiveStats.bytes, { binary: true })
-      } total over ${archiveStats.fileCount} files`,
+      `Zipped ${prettyBytes(archiveStats.bytes, {
+        binary: true,
+      })} total over ${archiveStats.fileCount} files`,
     );
   });
 }

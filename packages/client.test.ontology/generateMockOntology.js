@@ -35,31 +35,33 @@ try {
 const fauxFoundry = new LegacyFauxFoundry();
 const fullOntology = fauxFoundry
   .getDefaultOntology()
-  .getFilteredOntologyMetadata(
-    {
-      actionTypes: fauxFoundry.getDefaultOntology().getAllActionTypes().map((
-        actionType,
-      ) => actionType.apiName),
-      objectTypes: fauxFoundry.getDefaultOntology().getAllObjectTypes().map((
-        objectType,
-      ) => objectType.objectType.apiName),
-      interfaceTypes: fauxFoundry.getDefaultOntology().getAllInterfaceTypes()
-        .map((
-          interfaceType,
-        ) => interfaceType.apiName),
-      linkTypes: fauxFoundry.getDefaultOntology().getAllObjectTypes().flatMap(
-        x => x.linkTypes.map(y => y.apiName),
+  .getFilteredOntologyMetadata({
+    actionTypes: fauxFoundry
+      .getDefaultOntology()
+      .getAllActionTypes()
+      .map((actionType) => actionType.apiName),
+    objectTypes: fauxFoundry
+      .getDefaultOntology()
+      .getAllObjectTypes()
+      .map((objectType) => objectType.objectType.apiName),
+    interfaceTypes: fauxFoundry
+      .getDefaultOntology()
+      .getAllInterfaceTypes()
+      .map((interfaceType) => interfaceType.apiName),
+    linkTypes: fauxFoundry
+      .getDefaultOntology()
+      .getAllObjectTypes()
+      .flatMap((x) => x.linkTypes.map((y) => y.apiName)),
+    // @ts-ignore
+    queryTypes: [
+      ...new Set(
+        fauxFoundry
+          .getDefaultOntology()
+          .getAllQueryTypes()
+          .map((x) => x.apiName),
       ),
-      // @ts-ignore
-      queryTypes: [
-        ...new Set(
-          fauxFoundry.getDefaultOntology().getAllQueryTypes().map(x =>
-            x.apiName
-          ),
-        ),
-      ],
-    },
-  );
+    ],
+  });
 
 const ontologyWithoutUnsupportedAction = {
   ...fullOntology,
@@ -70,7 +72,7 @@ const ontologyWithoutUnsupportedAction = {
 
 // the generator does not correctly handle actions that point to object types outside of the ontology
 // this step is typically handled by code upstream of the actual generator
-delete ontologyWithoutUnsupportedAction.actionTypes["unsupportedAction"];
+delete ontologyWithoutUnsupportedAction.actionTypes.unsupportedAction;
 
 await generateClientSdkVersionTwoPointZero(
   ontologyWithoutUnsupportedAction,

@@ -129,7 +129,7 @@ export class ContextValidator {
   validateContext(context: unknown): BaseTemplateContext {
     const validation = this.validate(context, false);
     if (!validation.valid) {
-      const errorMessages = validation.errors.map(e => e.message).join(", ");
+      const errorMessages = validation.errors.map((e) => e.message).join(", ");
       throw new Error(`Context validation failed: ${errorMessages}`);
     }
     return context as BaseTemplateContext;
@@ -138,7 +138,7 @@ export class ContextValidator {
   validatePartialContext(partial: unknown): PartialTemplateContext {
     const validation = this.validate(partial, true);
     if (!validation.valid) {
-      const errorMessages = validation.errors.map(e => e.message).join(", ");
+      const errorMessages = validation.errors.map((e) => e.message).join(", ");
       throw new Error(`Partial context validation failed: ${errorMessages}`);
     }
     return partial as PartialTemplateContext;

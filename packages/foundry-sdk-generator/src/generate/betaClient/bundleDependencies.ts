@@ -41,11 +41,7 @@ export async function bundleDependencies(
     generatedFiles,
   );
   if (entry) {
-    const projectMinifier = new ProjectMinifier(
-      project,
-      importSet,
-      entry,
-    );
+    const projectMinifier = new ProjectMinifier(project, importSet, entry);
     projectMinifier.minifyProject();
   }
   return outputModule(project);
@@ -54,7 +50,7 @@ export async function bundleDependencies(
 export function outputModule(project: Project): string {
   const modules: string[] = [];
 
-  project.getSourceFiles().forEach(sourceFile => {
+  project.getSourceFiles().forEach((sourceFile) => {
     const lines = sourceFile.getText().split("\n");
 
     while (lines.length > 0 && lines[lines.length - 1] === "") {
@@ -69,11 +65,9 @@ export function outputModule(project: Project): string {
     const module = [];
     module.push(`/** ${sourceFile.getFilePath()} **/`);
     module.push(
-      `declare module "${
-        withoutTrailingIndex(
-          sourceFile.getFilePath().replace(".ts", "").replace("/", ""),
-        )
-      }" {`,
+      `declare module "${withoutTrailingIndex(
+        sourceFile.getFilePath().replace(".ts", "").replace("/", ""),
+      )}" {`,
     );
     for (const line of lines) {
       const trimmed = line.trim();

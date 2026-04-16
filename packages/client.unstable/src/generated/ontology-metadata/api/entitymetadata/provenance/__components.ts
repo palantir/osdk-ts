@@ -129,5 +129,4 @@ export type OntologyIrEntityProvenanceSource =
 /**
  * Provenance of an entity originating from ontology metadata application (OMA).
  */
-export interface OntologyMetadataAppEntityProvenance {
-}
+export interface OntologyMetadataAppEntityProvenance {}

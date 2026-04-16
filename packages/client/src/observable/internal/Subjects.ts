@@ -41,10 +41,7 @@ export class Subjects {
 
   peek = <KEY extends KnownCacheKey>(
     cacheKey: KEY,
-  ):
-    | BehaviorSubject<SubjectPayload<KEY>>
-    | undefined =>
-  {
+  ): BehaviorSubject<SubjectPayload<KEY>> | undefined => {
     return this.#cacheKeyToSubject.get(cacheKey);
   };
 
@@ -53,8 +50,8 @@ export class Subjects {
   ): BehaviorSubject<SubjectPayload<KEY>> => {
     let subject = this.#cacheKeyToSubject.get(cacheKey);
     if (!subject) {
-      const initialValue: Entry<KEY> = this.#layers.top.get(cacheKey)
-        ?? createInitEntry(cacheKey);
+      const initialValue: Entry<KEY> =
+        this.#layers.top.get(cacheKey) ?? createInitEntry(cacheKey);
 
       subject = new BehaviorSubject({
         ...initialValue,
@@ -67,9 +64,7 @@ export class Subjects {
     return subject;
   };
 
-  delete = <KEY extends KnownCacheKey>(
-    cacheKey: KEY,
-  ): void => {
+  delete = <KEY extends KnownCacheKey>(cacheKey: KEY): void => {
     const subject = this.peek(cacheKey);
     if (subject) {
       subject.complete();

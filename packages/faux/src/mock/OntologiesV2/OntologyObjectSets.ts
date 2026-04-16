@@ -21,23 +21,16 @@ import { handleOpenApiCall } from "../../handlers/util/handleOpenApiCall.js";
 export const load: CallFactory<
   "ontologyApiName",
   typeof OntologyObjectSets.load
-> = handleOpenApiCall(
-  OntologyObjectSets.load,
-  ["ontologyApiName"],
-);
+> = handleOpenApiCall(OntologyObjectSets.load, ["ontologyApiName"]);
 
 export const aggregate: CallFactory<
   "ontologyApiName",
   typeof OntologyObjectSets.aggregate
-> = handleOpenApiCall(
-  OntologyObjectSets.aggregate,
-  ["ontologyApiName"],
-);
+> = handleOpenApiCall(OntologyObjectSets.aggregate, ["ontologyApiName"]);
 
 export const loadMultipleObjectTypes: CallFactory<
   "ontologyApiName",
   typeof OntologyObjectSets.loadMultipleObjectTypes
-> = handleOpenApiCall(
-  OntologyObjectSets.loadMultipleObjectTypes,
-  ["ontologyApiName"],
-);
+> = handleOpenApiCall(OntologyObjectSets.loadMultipleObjectTypes, [
+  "ontologyApiName",
+]);

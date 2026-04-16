@@ -105,10 +105,7 @@ describe("useLinks enabled option", () => {
   it("should pass dedupeInterval with default of 2000", () => {
     const wrapper = createWrapper();
 
-    renderHook(
-      () => useLinks(mockObject, "relatedObjects"),
-      { wrapper },
-    );
+    renderHook(() => useLinks(mockObject, "relatedObjects"), { wrapper });
 
     expect(mockObserveLinks).toHaveBeenCalledTimes(1);
     const options = mockObserveLinks.mock.calls[0][2];
@@ -169,7 +166,8 @@ describe("useLinks enabled option", () => {
       });
     });
 
-    expect(result.current.linkedObjectsBySourcePrimaryKey.get("obj-123"))
-      .toEqual([linkedObj]);
+    expect(
+      result.current.linkedObjectsBySourcePrimaryKey.get("obj-123"),
+    ).toEqual([linkedObj]);
   });
 });

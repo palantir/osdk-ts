@@ -41,7 +41,7 @@ export async function invokeLoginFlow(
   const server = createServer((req, res) => {
     const query = parse(req.url!, true).query;
     res.end("Authenticated");
-    resolve(query["code"] as string);
+    resolve(query.code as string);
   });
 
   server.on("error", (e) => {
@@ -161,8 +161,11 @@ function generateAuthorizeUrl(
     ["offline_access", "api:read-data", "api:use-ontologies-read"].join(" "),
   );
 
-  return join(baseUrl, "multipass", "api", "oauth2", "authorize") + `?`
-    + queryParams.toString();
+  return (
+    join(baseUrl, "multipass", "api", "oauth2", "authorize") +
+    `?` +
+    queryParams.toString()
+  );
 }
 
 async function getTokenWithCodeVerifier(
@@ -179,8 +182,9 @@ async function getTokenWithCodeVerifier(
   body.append("redirect_uri", redirectUrl);
   body.append("code_verifier", codeVerifier);
 
-  const tokenUrl = join(baseUrl, "multipass", "api", "oauth2", "token")
-    + `?state=${codeVerifier}`;
+  const tokenUrl =
+    join(baseUrl, "multipass", "api", "oauth2", "token") +
+    `?state=${codeVerifier}`;
   try {
     const response = await fetch(tokenUrl, {
       body: body.toString(),
@@ -195,8 +199,9 @@ async function getTokenWithCodeVerifier(
   } catch (e) {
     throw new Error(
       `Failed to get token: ${
-        (e as { cause?: any })?.cause?.toString() ?? e?.toString()
-          ?? "Unknown error"
+        (e as { cause?: any })?.cause?.toString() ??
+        e?.toString() ??
+        "Unknown error"
       }`,
     );
   }

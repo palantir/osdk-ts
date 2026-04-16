@@ -25,8 +25,7 @@ export async function getRelease(
   releaseVersion: string,
 ): Promise<Release> {
   const fetch = createFetch(ctx.tokenProvider);
-  const url =
-    `${ctx.foundryUrl}/api/v2/widgets/widgetSets/${widgetSetRid}/releases/${releaseVersion}?preview=true`;
+  const url = `${ctx.foundryUrl}/api/v2/widgets/widgetSets/${widgetSetRid}/releases/${releaseVersion}?preview=true`;
   const response = await fetch(url);
   return response.json();
 }

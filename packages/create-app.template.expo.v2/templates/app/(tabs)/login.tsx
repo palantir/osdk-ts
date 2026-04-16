@@ -20,10 +20,13 @@ const discovery = {
 
 export default function Login() {
   const router = useRouter();
-  const redirectUri = useMemo(() =>
-    makeRedirectUri({
-      path: "",
-    }), []);
+  const redirectUri = useMemo(
+    () =>
+      makeRedirectUri({
+        path: "",
+      }),
+    [],
+  );
   const [request, response, promptAsync] = useAuthRequest(
     {
       clientId: CLIENT_ID,
@@ -56,8 +59,8 @@ export default function Login() {
           redirectUri,
           extraParams: request?.codeVerifier
             ? {
-              code_verifier: request.codeVerifier,
-            }
+                code_verifier: request.codeVerifier,
+              }
             : undefined,
         },
         discovery,
@@ -71,10 +74,7 @@ export default function Login() {
   return (
     <ThemedView style={styles.loginContainer}>
       <ThemedView style={styles.loginControls}>
-        <Button
-          title="Login"
-          onPress={onLogin}
-        />
+        <Button title="Login" onPress={onLogin} />
         <ThemedText type={"subtitle"} style={styles.loginSubTitle}>
           Powered by Palantir
         </ThemedText>

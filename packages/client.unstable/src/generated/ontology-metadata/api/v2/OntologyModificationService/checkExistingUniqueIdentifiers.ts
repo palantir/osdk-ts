@@ -17,10 +17,8 @@
 import { type ConjureContext, conjureFetch } from "conjure-lite";
 import type { OntologyRid as _api_OntologyRid } from "../../__components.js";
 import type {
-  CheckExistingUniqueIdentifiersRequest
-    as _api_modification_CheckExistingUniqueIdentifiersRequest,
-  CheckExistingUniqueIdentifiersResponse
-    as _api_modification_CheckExistingUniqueIdentifiersResponse,
+  CheckExistingUniqueIdentifiersRequest as _api_modification_CheckExistingUniqueIdentifiersRequest,
+  CheckExistingUniqueIdentifiersResponse as _api_modification_CheckExistingUniqueIdentifiersResponse,
 } from "../../modification/__components.js";
 
 /**

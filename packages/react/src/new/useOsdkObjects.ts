@@ -167,11 +167,11 @@ export interface UseOsdkListResult<
    */
   data:
     | Osdk.Instance<
-      T,
-      "$allBaseProperties" | EXTRA_OPTIONS,
-      PropertyKeys<T>,
-      RDPs
-    >[]
+        T,
+        "$allBaseProperties" | EXTRA_OPTIONS,
+        PropertyKeys<T>,
+        RDPs
+      >[]
     | undefined;
 
   /**
@@ -258,8 +258,7 @@ export function useOsdkObjects<
   | UseOsdkListResult<Q, RDPs>
   | UseOsdkListResult<Q, RDPs, "$rid">
   | UseOsdkListResult<LinkedType<Q, LinkNames<Q>>>
-  | UseOsdkListResult<LinkedType<Q, LinkNames<Q>>, {}, "$rid">
-{
+  | UseOsdkListResult<LinkedType<Q, LinkNames<Q>>, {}, "$rid"> {
   const { observableClient } = React.useContext(OsdkContext2);
 
   const {
@@ -286,30 +285,23 @@ export function useOsdkObjects<
     $select,
   });
 
-  const stableRids = React.useMemo(
-    () => rids,
-    [JSON.stringify(rids)],
-  );
+  const stableRids = React.useMemo(() => rids, [JSON.stringify(rids)]);
 
-  const { subscribe, getSnapShot } = React.useMemo(
-    () => {
-      if (!enabled) {
-        return makeExternalStore<
-          ObserveObjectsCallbackArgs<Q, RDPs>
-        >(
-          () => ({ unsubscribe: () => {} }),
-          devToolsMetadata({
-            hookType: "useOsdkObjects",
-            objectType: type.apiName,
-          }),
-        );
-      }
+  const { subscribe, getSnapShot } = React.useMemo(() => {
+    if (!enabled) {
+      return makeExternalStore<ObserveObjectsCallbackArgs<Q, RDPs>>(
+        () => ({ unsubscribe: () => {} }),
+        devToolsMetadata({
+          hookType: "useOsdkObjects",
+          objectType: type.apiName,
+        }),
+      );
+    }
 
-      return makeExternalStore<
-        ObserveObjectsCallbackArgs<Q, RDPs>
-      >(
-        (observer) =>
-          observableClient.observeList({
+    return makeExternalStore<ObserveObjectsCallbackArgs<Q, RDPs>>(
+      (observer) =>
+        observableClient.observeList(
+          {
             type,
             rids: stableRids,
             where: canonOptions.where,
@@ -327,35 +319,35 @@ export function useOsdkObjects<
             ...($loadPropertySecurityMetadata
               ? { $loadPropertySecurityMetadata }
               : {}),
-          }, observer),
-        devToolsMetadata({
-          hookType: "useOsdkObjects",
-          objectType: type.apiName,
-          where: canonOptions.where,
-          orderBy: canonOptions.orderBy,
-          pageSize,
-        }),
-      );
-    },
-    [
-      enabled,
-      observableClient,
-      type.apiName,
-      type.type,
-      stableRids,
-      canonOptions.where,
-      dedupeIntervalMs,
-      pageSize,
-      canonOptions.orderBy,
-      streamUpdates,
-      canonOptions.withProperties,
-      autoFetchMore,
-      canonOptions.intersectWith,
-      pivotTo,
-      canonOptions.$select,
-      $loadPropertySecurityMetadata,
-    ],
-  );
+          },
+          observer,
+        ),
+      devToolsMetadata({
+        hookType: "useOsdkObjects",
+        objectType: type.apiName,
+        where: canonOptions.where,
+        orderBy: canonOptions.orderBy,
+        pageSize,
+      }),
+    );
+  }, [
+    enabled,
+    observableClient,
+    type.apiName,
+    type.type,
+    stableRids,
+    canonOptions.where,
+    dedupeIntervalMs,
+    pageSize,
+    canonOptions.orderBy,
+    streamUpdates,
+    canonOptions.withProperties,
+    autoFetchMore,
+    canonOptions.intersectWith,
+    pivotTo,
+    canonOptions.$select,
+    $loadPropertySecurityMetadata,
+  ]);
 
   const listPayload = React.useSyncExternalStore(subscribe, getSnapShot);
 
@@ -363,15 +355,18 @@ export function useOsdkObjects<
     await observableClient.invalidateObjectType(type.apiName);
   }, [observableClient, type.apiName]);
 
-  return React.useMemo(() => ({
-    fetchMore: listPayload?.hasMore ? listPayload.fetchMore : undefined,
-    error: extractPayloadError(listPayload, "Failed to load objects"),
-    data: listPayload?.resolvedList,
-    isLoading: isPayloadLoading(listPayload, enabled),
-    isOptimistic: listPayload?.isOptimistic ?? false,
-    totalCount: listPayload?.totalCount,
-    hasMore: listPayload?.hasMore ?? false,
-    objectSet: listPayload?.objectSet,
-    refetch,
-  }), [listPayload, enabled, refetch]);
+  return React.useMemo(
+    () => ({
+      fetchMore: listPayload?.hasMore ? listPayload.fetchMore : undefined,
+      error: extractPayloadError(listPayload, "Failed to load objects"),
+      data: listPayload?.resolvedList,
+      isLoading: isPayloadLoading(listPayload, enabled),
+      isOptimistic: listPayload?.isOptimistic ?? false,
+      totalCount: listPayload?.totalCount,
+      hasMore: listPayload?.hasMore ?? false,
+      objectSet: listPayload?.objectSet,
+      refetch,
+    }),
+    [listPayload, enabled, refetch],
+  );
 }

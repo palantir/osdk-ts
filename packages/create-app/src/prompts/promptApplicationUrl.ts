@@ -17,18 +17,19 @@
 import { consola } from "../consola.js";
 import { italic } from "../highlight.js";
 
-export async function promptApplicationUrl(
-  { skipApplicationUrl, applicationUrl }: {
-    skipApplicationUrl?: boolean;
-    applicationUrl?: string;
-  },
-): Promise<string | undefined> {
+export async function promptApplicationUrl({
+  skipApplicationUrl,
+  applicationUrl,
+}: {
+  skipApplicationUrl?: boolean;
+  applicationUrl?: string;
+}): Promise<string | undefined> {
   if (skipApplicationUrl) {
     return undefined;
   }
 
   if (applicationUrl == null) {
-    const skip = await consola.prompt(
+    const skip = (await consola.prompt(
       `Do you know the URL your production application will be hosted on? This is required to create a production build of your application with the correct OAuth redirect URL.`,
       {
         type: "select",
@@ -41,7 +42,7 @@ export async function promptApplicationUrl(
           },
         ],
       },
-    ) as "yes" | "no";
+    )) as "yes" | "no";
 
     if (skip === "no") {
       return undefined;
@@ -53,11 +54,9 @@ export async function promptApplicationUrl(
       consola.fail("Please enter a valid application URL");
     }
     applicationUrl = await consola.prompt(
-      `Enter the URL your production application will be hosted on:\n${
-        italic(
-          "(Example: https://myapp.example.palantirfoundry.com)",
-        )
-      }`,
+      `Enter the URL your production application will be hosted on:\n${italic(
+        "(Example: https://myapp.example.palantirfoundry.com)",
+      )}`,
       { type: "text" },
     );
   }

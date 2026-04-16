@@ -50,32 +50,33 @@ export function buildDatasource(
   classificationMarkingGroupName?: string,
   mandatoryMarkingGroupName?: string,
 ): ObjectTypeDatasource {
-  const needsSecurity = classificationMarkingGroupName !== undefined
-    || mandatoryMarkingGroupName !== undefined;
+  const needsSecurity =
+    classificationMarkingGroupName !== undefined ||
+    mandatoryMarkingGroupName !== undefined;
 
   const securityConfig = needsSecurity
     ? {
-      classificationConstraint: classificationMarkingGroupName
-        ? {
-          markings: [classificationMarkingGroupName],
-        }
-        : undefined,
-      markingConstraint: mandatoryMarkingGroupName
-        ? {
-          markingIds: [mandatoryMarkingGroupName],
-        }
-        : undefined,
-    }
+        classificationConstraint: classificationMarkingGroupName
+          ? {
+              markings: [classificationMarkingGroupName],
+            }
+          : undefined,
+        markingConstraint: mandatoryMarkingGroupName
+          ? {
+              markingIds: [mandatoryMarkingGroupName],
+            }
+          : undefined,
+      }
     : undefined;
-  return ({
+  return {
     rid: ridGenerator.generateDatasourceRid(apiName),
     datasource: definition,
     editsConfiguration: {
       onlyAllowPrivilegedEdits: false,
     },
     redacted: false,
-    ...((securityConfig !== undefined) && { dataSecurity: securityConfig }),
-  });
+    ...(securityConfig !== undefined && { dataSecurity: securityConfig }),
+  };
 }
 
 export function convertAction(
@@ -89,12 +90,12 @@ export function convertAction(
     action,
     ridGenerator,
   );
-  const parameterOrdering = action.parameterOrdering
-    ?? (action.parameters ?? []).map(p => p.id);
+  const parameterOrdering =
+    action.parameterOrdering ?? (action.parameters ?? []).map((p) => p.id);
 
   // Build parameterIds mapping: UUID (BlockInternalId) -> ParameterId (API name)
   const parameterIds: Record<string, ParameterId> = {};
-  (action.parameters ?? []).forEach(p => {
+  (action.parameters ?? []).forEach((p) => {
     const readableId = ReadableIdGenerator.getForParameter(
       action.apiName,
       p.id,
@@ -112,8 +113,9 @@ export function convertAction(
   ): Record<string, any> => {
     const result: Record<string, any> = {};
     for (const [apiName, value] of Object.entries(interfacePropertyValues)) {
-      const parentInterface = allParentInterfaces.find(maybeSourceParent =>
-        maybeSourceParent.propertiesV3[apiName] !== undefined
+      const parentInterface = allParentInterfaces.find(
+        (maybeSourceParent) =>
+          maybeSourceParent.propertiesV3[apiName] !== undefined,
       )!;
       const rid = ridGenerator.generateInterfacePropertyTypeRid(
         apiName,
@@ -140,11 +142,12 @@ export function convertAction(
       actionTypeLogic: {
         logic: {
           // Convert logic rules with proper RID mappings
-          rules: action.rules.map(rule => {
+          rules: action.rules.map((rule) => {
             if (rule.type === "addInterfaceRule") {
               const interfaceAndParents = flattenInterface(
-                ontologyDefinition
-                  .INTERFACE_TYPE[rule.addInterfaceRule.interfaceApiName],
+                ontologyDefinition.INTERFACE_TYPE[
+                  rule.addInterfaceRule.interfaceApiName
+                ],
                 new Set(),
               );
               return {
@@ -167,8 +170,9 @@ export function convertAction(
               };
             } else if (rule.type === "modifyInterfaceRule") {
               const interfaceAndParents = flattenInterface(
-                ontologyDefinition
-                  .INTERFACE_TYPE[rule.modifyInterfaceRule.interfaceApiName],
+                ontologyDefinition.INTERFACE_TYPE[
+                  rule.modifyInterfaceRule.interfaceApiName
+                ],
                 new Set(),
               );
 
@@ -253,22 +257,22 @@ function buildActionMetadata(
     },
     applyingMessage: [] as Array<{ type: string; message: string }>,
     successMessage: action.submissionMetadata?.successMessage
-      ? [{
-        type: "message" as const,
-        message: action.submissionMetadata.successMessage,
-      }]
+      ? [
+          {
+            type: "message" as const,
+            message: action.submissionMetadata.successMessage,
+          },
+        ]
       : [],
     typeClasses: action.typeClasses ?? [],
-    ...(action.submissionMetadata?.submitButtonDisplayMetadata
-      && {
-        submitButtonDisplayMetadata:
-          action.submissionMetadata.submitButtonDisplayMetadata,
-      }),
-    ...(action.submissionMetadata?.undoButtonConfiguration
-      && {
-        undoButtonConfiguration:
-          action.submissionMetadata.undoButtonConfiguration,
-      }),
+    ...(action.submissionMetadata?.submitButtonDisplayMetadata && {
+      submitButtonDisplayMetadata:
+        action.submissionMetadata.submitButtonDisplayMetadata,
+    }),
+    ...(action.submissionMetadata?.undoButtonConfiguration && {
+      undoButtonConfiguration:
+        action.submissionMetadata.undoButtonConfiguration,
+    }),
   };
 
   const metadata = {
@@ -283,33 +287,34 @@ function buildActionMetadata(
       redactionOverride: null,
     },
     displayMetadata,
-    parameterOrdering: parameterOrdering,
+    parameterOrdering,
     formContentOrdering: getFormContentOrdering(action, parameterOrdering),
     parameters: actionParameters,
     sections: actionSections,
-    status: typeof action.status === "string"
-      ? {
-        type: action.status,
-        [action.status]: {},
-      } as unknown as ActionTypeStatus
-      : action.status,
+    status:
+      typeof action.status === "string"
+        ? ({
+            type: action.status,
+            [action.status]: {},
+          } as unknown as ActionTypeStatus)
+        : action.status,
     entities: action.entities
       ? {
-        affectedInterfaceTypes: action.entities.affectedInterfaceTypes.map(
-          apiName => ridGenerator.generateRidForInterface(apiName),
-        ),
-        affectedLinkTypes: action.entities.affectedLinkTypes,
-        affectedObjectTypes: action.entities.affectedObjectTypes.map(
-          apiName => ridGenerator.generateObjectTypeId(apiName),
-        ),
-        typeGroups: action.entities.typeGroups,
-      }
+          affectedInterfaceTypes: action.entities.affectedInterfaceTypes.map(
+            (apiName) => ridGenerator.generateRidForInterface(apiName),
+          ),
+          affectedLinkTypes: action.entities.affectedLinkTypes,
+          affectedObjectTypes: action.entities.affectedObjectTypes.map(
+            (apiName) => ridGenerator.generateObjectTypeId(apiName),
+          ),
+          typeGroups: action.entities.typeGroups,
+        }
       : {
-        affectedInterfaceTypes: [],
-        affectedLinkTypes: [],
-        affectedObjectTypes: [],
-        typeGroups: [],
-      },
+          affectedInterfaceTypes: [],
+          affectedLinkTypes: [],
+          affectedObjectTypes: [],
+          typeGroups: [],
+        },
   };
   return metadata as MarketplaceActionTypeMetadata;
 }
@@ -344,13 +349,12 @@ export function extractAllowedValues(
         oneOf: {
           type: "oneOf",
           oneOf: {
-            labelledValues: allowedValues.oneOf.map(option => ({
+            labelledValues: allowedValues.oneOf.map((option) => ({
               ...option,
               value: convertAllowedValueOptionValue(option.value, ridGenerator),
             })),
             otherValueAllowed: {
-              allowed: allowedValues.otherValueAllowed
-                ?? false,
+              allowed: allowedValues.otherValueAllowed ?? false,
             },
           },
         },
@@ -378,15 +382,11 @@ export function extractAllowedValues(
         text: {
           type: "text",
           text: {
-            ...(minLength === undefined
-              ? {}
-              : { minLength: minLength }),
-            ...(maxLength === undefined
-              ? {}
-              : { maxLength: maxLength }),
+            ...(minLength === undefined ? {} : { minLength }),
+            ...(maxLength === undefined ? {} : { maxLength }),
             ...(regex === undefined
               ? {}
-              : { regex: { regex: regex, failureMessage: "Invalid input" } }),
+              : { regex: { regex, failureMessage: "Invalid input" } }),
           },
         },
       };
@@ -431,30 +431,30 @@ export function extractAllowedValues(
         user: {
           type: "user",
           user: {
-            filter: (allowedValues.fromGroups ?? []).map(group => {
+            filter: (allowedValues.fromGroups ?? []).map((group) => {
               // Register static group IDs with ridGenerator
               if (group.type === "static") {
-                ridGenerator.getGroupIds().put(
-                  ReadableIdGenerator.getForGroup(group.name),
-                  group.name,
-                );
+                ridGenerator
+                  .getGroupIds()
+                  .put(ReadableIdGenerator.getForGroup(group.name), group.name);
               }
 
               return {
                 type: "groupFilter",
                 groupFilter: {
-                  groupId: group.type === "static"
-                    ? {
-                      type: "staticValue",
-                      staticValue: {
-                        type: "string",
-                        string: group.name,
-                      },
-                    }
-                    : {
-                      type: "parameterId",
-                      parameterId: group.parameter,
-                    },
+                  groupId:
+                    group.type === "static"
+                      ? {
+                          type: "staticValue",
+                          staticValue: {
+                            type: "string",
+                            string: group.name,
+                          },
+                        }
+                      : {
+                          type: "parameterId",
+                          parameterId: group.parameter,
+                        },
                 },
               };
             }),
@@ -486,9 +486,8 @@ export function renderHintFromBaseType(
   parameter: ActionParameter,
   validation?: ActionParameterValidation,
 ): ParameterRenderHint {
-  const type = typeof parameter.type === "string"
-    ? parameter.type
-    : parameter.type.type;
+  const type =
+    typeof parameter.type === "string" ? parameter.type : parameter.type.type;
   switch (type) {
     case "boolean":
     case "booleanList":
@@ -504,8 +503,8 @@ export function renderHintFromBaseType(
       return { type: "numericInput", numericInput: {} };
     case "string":
       if (
-        validation?.allowedValues?.type === "user"
-        || validation?.allowedValues?.type === "multipassGroup"
+        validation?.allowedValues?.type === "user" ||
+        validation?.allowedValues?.type === "multipassGroup"
       ) {
         return { type: "userDropdown", userDropdown: {} };
       }

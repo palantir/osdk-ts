@@ -41,9 +41,7 @@ export interface ColumnConfigDialogProps {
   columnOptions: ColumnConfigOptions;
   currentVisibility?: VisibilityState;
   currentColumnOrder?: ColumnOrderState;
-  onApply: (
-    columns: ColumnConfig[],
-  ) => void;
+  onApply: (columns: ColumnConfig[]) => void;
   isValidConfig?: (columns: ColumnConfig[]) => boolean;
 }
 
@@ -61,18 +59,13 @@ export function ColumnConfigDialog({
   currentColumnOrder,
   onApply,
   isValidConfig,
-}: ColumnConfigDialogProps):
-  | React.ReactElement
-  | null
-{
+}: ColumnConfigDialogProps): React.ReactElement | null {
   const [visibleColumns, setVisibleColumns] = useState<ColumnItem[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
 
   const allColumns: ColumnItem[] = useMemo(() => {
     return columnOptions.map((opt) => {
-      const isVisible = currentVisibility
-        ? currentVisibility[opt.id]
-        : false;
+      const isVisible = currentVisibility ? currentVisibility[opt.id] : false;
 
       return {
         id: opt.id,
@@ -148,13 +141,11 @@ export function ColumnConfigDialog({
   const handleSelectAll = useCallback((columns: ColumnItem[]) => {
     setVisibleColumns((prev) => {
       const allSelected = columns.every((col) =>
-        prev.some((v) => v.id === col.id)
+        prev.some((v) => v.id === col.id),
       );
       if (allSelected) {
         // Deselect all filtered columns
-        return prev.filter(
-          (v) => !columns.some((col) => col.id === v.id),
-        );
+        return prev.filter((v) => !columns.some((col) => col.id === v.id));
       } else {
         // Select all filtered columns that aren't already selected
         const newColumns = columns.filter(
@@ -172,23 +163,26 @@ export function ColumnConfigDialog({
     }
     return allColumns.filter(
       (col) =>
-        (col.label?.toLowerCase().includes(query) ?? false)
-        || col.id.toLowerCase().includes(query),
+        (col.label?.toLowerCase().includes(query) ?? false) ||
+        col.id.toLowerCase().includes(query),
     );
   }, [allColumns, searchQuery]);
 
-  const footer = useMemo(() => (
-    <>
-      <ActionButton onClick={onClose}>Cancel</ActionButton>
-      <ActionButton
-        variant="primary"
-        onClick={handleApply}
-        disabled={isApplyDisabled}
-      >
-        Apply
-      </ActionButton>
-    </>
-  ), [onClose, handleApply, isApplyDisabled]);
+  const footer = useMemo(
+    () => (
+      <>
+        <ActionButton onClick={onClose}>Cancel</ActionButton>
+        <ActionButton
+          variant="primary"
+          onClick={handleApply}
+          disabled={isApplyDisabled}
+        >
+          Apply
+        </ActionButton>
+      </>
+    ),
+    [onClose, handleApply, isApplyDisabled],
+  );
 
   return (
     <Dialog
@@ -219,7 +213,8 @@ export function ColumnConfigDialog({
 
 const DialogTitle = (
   <div className={styles.title}>
-    <Cog />Configure Table Columns
+    <Cog />
+    Configure Table Columns
   </div>
 );
 
@@ -289,10 +284,10 @@ function AvailableColumnsList({
   const selectedCount = visibleColumns.length;
   const totalCount = filteredColumns.length;
   const allFilteredSelected = filteredColumns.every((col) =>
-    visibleColumns.some((v) => v.id === col.id)
+    visibleColumns.some((v) => v.id === col.id),
   );
   const someFilteredSelected = filteredColumns.some((col) =>
-    visibleColumns.some((v) => v.id === col.id)
+    visibleColumns.some((v) => v.id === col.id),
   );
 
   const handleSelectAllClick = useCallback(() => {
@@ -330,22 +325,18 @@ function AvailableColumnsList({
           </Collapsible.Trigger>
         </div>
         <Collapsible.Panel className={styles.propertyList}>
-          {filteredColumns.length === 0
-            ? (
-              <div className={styles.emptyState}>
-                No matching columns found
-              </div>
-            )
-            : (
-              filteredColumns.map((column) => (
-                <PropertyItem
-                  key={column.id}
-                  column={column}
-                  isSelected={visibleColumns.some((v) => v.id === column.id)}
-                  onToggle={onToggleColumn}
-                />
-              ))
-            )}
+          {filteredColumns.length === 0 ? (
+            <div className={styles.emptyState}>No matching columns found</div>
+          ) : (
+            filteredColumns.map((column) => (
+              <PropertyItem
+                key={column.id}
+                column={column}
+                isSelected={visibleColumns.some((v) => v.id === column.id)}
+                onToggle={onToggleColumn}
+              />
+            ))
+          )}
         </Collapsible.Panel>
       </Collapsible.Root>
     </div>
@@ -377,9 +368,7 @@ function PropertyItem({
           onCheckedChange={handleClick}
           className={styles.checkbox}
         />
-        <span className={styles.propertyName}>
-          {column.label}
-        </span>
+        <span className={styles.propertyName}>{column.label}</span>
       </label>
       {showInfoIcon && <SmallInfoSign className={styles.infoIcon} />}
     </div>

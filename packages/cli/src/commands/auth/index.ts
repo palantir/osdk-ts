@@ -34,8 +34,7 @@ const auth: yargs.CommandModule<CliCommonArgs, CommonAuthArgs> = {
       .command(login)
       .demandCommand();
   },
-  handler: async (args) => {
-  },
+  handler: async (args) => {},
 };
 
 export default auth;

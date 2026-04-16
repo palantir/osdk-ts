@@ -25,6 +25,6 @@ export interface FunctionPayload<T = unknown> {
   error?: Error;
 }
 
-export interface TypedFunctionPayload<Q extends QueryDefinition<any>>
-  extends FunctionPayload<QueryReturnType<CompileTimeMetadata<Q>["output"]>>
-{}
+export interface TypedFunctionPayload<
+  Q extends QueryDefinition<any>,
+> extends FunctionPayload<QueryReturnType<CompileTimeMetadata<Q>["output"]>> {}

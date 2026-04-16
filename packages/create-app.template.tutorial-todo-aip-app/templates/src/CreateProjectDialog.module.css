@@ -1,8 +1,8 @@
 .project {
-    display: flex;
-    flex-direction: column;
-    align-content: space-between;
-    gap: 10px;
+  display: flex;
+  flex-direction: column;
+  align-content: space-between;
+  gap: 10px;
 }
 .label {
   display: flex;

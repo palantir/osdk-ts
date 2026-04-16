@@ -2,4 +2,4 @@ type: improvement
 improvement:
   description: Dynamic ontology data loading
   links:
-  - https://github.com/palantir/osdk-ts/pull/89
+    - https://github.com/palantir/osdk-ts/pull/89

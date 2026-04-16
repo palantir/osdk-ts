@@ -51,8 +51,8 @@ export function useProjectTasks(project: MockProject | undefined) {
     useCallback(
       async (taskName: string) => {
         // Try to implement this with the Ontology SDK!
-        const recommendedTaskDescription = await Mocks
-          .getRecommendedTaskDescription(taskName);
+        const recommendedTaskDescription =
+          await Mocks.getRecommendedTaskDescription(taskName);
         await mutate();
         return recommendedTaskDescription;
       },
@@ -71,5 +71,5 @@ export function useProjectTasks(project: MockProject | undefined) {
 }
 
 function sleep(ms: number) {
-  return new Promise(resolve => setTimeout(resolve, ms));
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }

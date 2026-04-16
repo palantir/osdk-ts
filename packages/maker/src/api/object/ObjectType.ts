@@ -24,34 +24,30 @@ import type { ObjectPropertyType } from "./ObjectPropertyType.js";
 import type { ObjectTypeDatasourceDefinition } from "./ObjectTypeDatasourceDefinition.js";
 import type { ObjectTypeStatus } from "./ObjectTypeStatus.js";
 
-export type ObjectType =
-  & OntologyEntityBase
-  & RequiredFields<
+export type ObjectType = OntologyEntityBase &
+  RequiredFields<
     Partial<ObjectTypeInner>,
     | "apiName"
     | "primaryKeyPropertyApiName"
     | "displayName"
     | "pluralDisplayName"
     | "titlePropertyApiName"
-  >
-  & {
+  > & {
     datasources?: Array<ObjectTypeDatasourceDefinition>;
     includeEmptyBackingDatasource?: boolean;
     __type: OntologyEntityTypeEnum.OBJECT_TYPE;
   };
 
-export interface ObjectTypeInner extends
-  Omit<
-    OntologyIrObjectType,
-    | "titlePropertyTypeRid"
-    | "propertyTypes"
-    | "allImplementsInterfaces"
-    | "implementsInterfaces2"
-    | "displayMetadata"
-    | "primaryKeys"
-    | "status"
-  >
-{
+export interface ObjectTypeInner extends Omit<
+  OntologyIrObjectType,
+  | "titlePropertyTypeRid"
+  | "propertyTypes"
+  | "allImplementsInterfaces"
+  | "implementsInterfaces2"
+  | "displayMetadata"
+  | "primaryKeys"
+  | "status"
+> {
   primaryKeyPropertyApiName: string;
   properties: Array<ObjectPropertyType>;
   titlePropertyApiName: string;

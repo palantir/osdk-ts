@@ -18,10 +18,11 @@ import type { SharedPropertyType } from "@osdk/foundry.ontologies";
 import type { EnhanceCommon } from "./EnhanceCommon.js";
 import { EnhancedBase } from "./EnhancedBase.js";
 
-export class EnhancedSharedPropertyType
-  extends EnhancedBase<SharedPropertyType>
-{
-  constructor(common: EnhanceCommon, public raw: SharedPropertyType) {
+export class EnhancedSharedPropertyType extends EnhancedBase<SharedPropertyType> {
+  constructor(
+    common: EnhanceCommon,
+    public raw: SharedPropertyType,
+  ) {
     super(common, raw, raw.apiName, "./ontology/interfaces");
   }
 }

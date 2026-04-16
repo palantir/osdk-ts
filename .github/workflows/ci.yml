@@ -5,7 +5,7 @@ env:
 
 on:
   push:
-    branches: 
+    branches:
       - main
       - release/*
       - next
@@ -44,7 +44,7 @@ jobs:
 
       - name: Check spelling
         run: pnpm exec turbo run ci:cspell
-  
+
   changesets:
     name: Check for changesets
     if: ${{ github.event_name == 'pull_request' && !startsWith(github.event.pull_request.head.ref, 'changeset-release') }}
@@ -71,7 +71,6 @@ jobs:
         run: |
           git fetch origin main:main
           pnpm exec changeset status --since=origin/main
-
 
   build:
     name: Build and Test
@@ -124,7 +123,7 @@ jobs:
             pnpm-lock.yaml \
             config/tsconfig.base.json \
             babel.config.mjs \
-            dprint.json \
+            .oxfmtrc.json \
             .github/workflows/ci.yml \
             .github/workflows/release.yml \
             | grep -q .; then

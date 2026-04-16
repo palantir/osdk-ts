@@ -15,7 +15,6 @@
  */
 
 import { describe, expectTypeOf, it, test, vi } from "vitest";
-
 import type {
   DerivedProperty,
   NullabilityAdherence,
@@ -97,7 +96,7 @@ describe("ObjectSet", () => {
   describe("normal", () => {
     test("select none", async () => {
       const result = await fauxObjectSet.fetchPage();
-      expectTypeOf<typeof result.data[0]>().toEqualTypeOf<
+      expectTypeOf<(typeof result.data)[0]>().toEqualTypeOf<
         Osdk.Instance<EmployeeApiTest, never, PropertyKeys<EmployeeApiTest>>
       >();
 
@@ -114,7 +113,7 @@ describe("ObjectSet", () => {
 
     test("select one", async () => {
       const result = await fauxObjectSet.fetchPage({ "$select": ["fullName"] });
-      expectTypeOf<typeof result.data[0]>().toEqualTypeOf<
+      expectTypeOf<(typeof result.data)[0]>().toEqualTypeOf<
         Osdk.Instance<EmployeeApiTest, never, "fullName">
       >();
     });
@@ -127,9 +126,7 @@ describe("ObjectSet", () => {
         .fetchPage({ $includeAllBaseObjectProperties: true });
 
       expectTypeOf(fetchPageResult).toEqualTypeOf<
-        PageResult<
-          Osdk.Instance<EmployeeApiTest, "$allBaseProperties">
-        >
+        PageResult<Osdk.Instance<EmployeeApiTest, "$allBaseProperties">>
       >();
 
       const asyncIterResult = fauxObjectSet
@@ -152,13 +149,11 @@ describe("ObjectSet", () => {
           $select: ["attachment"],
         });
 
-      const asyncIterResult = fauxObjectSet
-        .where({ class: "idk" })
-        .asyncIter({
-          // @ts-expect-error
-          $includeAllBaseObjectProperties: true,
-          $select: ["attachment"],
-        });
+      const asyncIterResult = fauxObjectSet.where({ class: "idk" }).asyncIter({
+        // @ts-expect-error
+        $includeAllBaseObjectProperties: true,
+        $select: ["attachment"],
+      });
     });
 
     it("does let you pass full select options and false", async () => {
@@ -230,9 +225,7 @@ describe("ObjectSet", () => {
       .fetchPage({ $includeRid: true });
 
     expectTypeOf(x).toEqualTypeOf<
-      PageResult<
-        Osdk.Instance<EmployeeApiTest, "$rid">
-      >
+      PageResult<Osdk.Instance<EmployeeApiTest, "$rid">>
     >();
   });
 
@@ -243,9 +236,7 @@ describe("ObjectSet", () => {
     });
 
     expectTypeOf(subselect).toEqualTypeOf<
-      PageResult<
-        Osdk.Instance<EmployeeApiTest, never, "employeeId" | "class">
-      >
+      PageResult<Osdk.Instance<EmployeeApiTest, never, "employeeId" | "class">>
     >();
   });
 
@@ -260,30 +251,41 @@ describe("ObjectSet", () => {
       const isWithAAssignable: $ObjectSet<EmployeeApiTest, {}> = withA;
 
       expectTypeOf(withA).toEqualTypeOf<
-        $ObjectSet<EmployeeApiTest, {
-          a: "integer";
-        }>
+        $ObjectSet<
+          EmployeeApiTest,
+          {
+            a: "integer";
+          }
+        >
       >();
 
       const withAResults = await withA.fetchPage();
 
-      expectTypeOf<typeof withAResults["data"][0]>().toEqualTypeOf<
-        Osdk.Instance<EmployeeApiTest, never, PropertyKeys<EmployeeApiTest>, {
-          a: "integer";
-        }>
+      expectTypeOf<(typeof withAResults)["data"][0]>().toEqualTypeOf<
+        Osdk.Instance<
+          EmployeeApiTest,
+          never,
+          PropertyKeys<EmployeeApiTest>,
+          {
+            a: "integer";
+          }
+        >
       >();
 
-      expectTypeOf<typeof withAResults["data"][0]["a"]>()
-        .toEqualTypeOf<number>();
+      expectTypeOf<
+        (typeof withAResults)["data"][0]["a"]
+      >().toEqualTypeOf<number>();
     });
 
     it("can be sub-selected", () => {
-      const objectWithUndefinedRdp = fauxObjectSet.withProperties({
-        "derivedPropertyName": (base) =>
-          base.pivotTo("lead").selectProperty("employeeId"),
-      }).fetchOne(3, {
-        $select: ["derivedPropertyName"],
-      });
+      const objectWithUndefinedRdp = fauxObjectSet
+        .withProperties({
+          "derivedPropertyName": (base) =>
+            base.pivotTo("lead").selectProperty("employeeId"),
+        })
+        .fetchOne(3, {
+          $select: ["derivedPropertyName"],
+        });
     });
 
     test("multiple properties", async () => {
@@ -293,29 +295,40 @@ describe("ObjectSet", () => {
         "sister": (base) => base.pivotTo("lead").aggregate("class:collectList"),
       });
       expectTypeOf(withFamily).toEqualTypeOf<
-        $ObjectSet<EmployeeApiTest, {
-          mom: "integer";
-          dad: "string" | undefined;
-          sister: "string"[] | undefined;
-        }>
+        $ObjectSet<
+          EmployeeApiTest,
+          {
+            mom: "integer";
+            dad: "string" | undefined;
+            sister: "string"[] | undefined;
+          }
+        >
       >();
 
       const withFamilyResults = await withFamily.fetchPage();
 
-      expectTypeOf<typeof withFamilyResults["data"][0]>().toEqualTypeOf<
-        Osdk.Instance<EmployeeApiTest, never, PropertyKeys<EmployeeApiTest>, {
-          mom: "integer";
-          dad: "string" | undefined;
-          sister: "string"[] | undefined;
-        }>
+      expectTypeOf<(typeof withFamilyResults)["data"][0]>().toEqualTypeOf<
+        Osdk.Instance<
+          EmployeeApiTest,
+          never,
+          PropertyKeys<EmployeeApiTest>,
+          {
+            mom: "integer";
+            dad: "string" | undefined;
+            sister: "string"[] | undefined;
+          }
+        >
       >();
 
-      expectTypeOf<typeof withFamilyResults["data"][0]["mom"]>()
-        .toEqualTypeOf<number>();
-      expectTypeOf<typeof withFamilyResults["data"][0]["dad"]>()
-        .toEqualTypeOf<string | undefined>();
-      expectTypeOf<typeof withFamilyResults["data"][0]["sister"]>()
-        .toEqualTypeOf<string[] | undefined>();
+      expectTypeOf<
+        (typeof withFamilyResults)["data"][0]["mom"]
+      >().toEqualTypeOf<number>();
+      expectTypeOf<
+        (typeof withFamilyResults)["data"][0]["dad"]
+      >().toEqualTypeOf<string | undefined>();
+      expectTypeOf<
+        (typeof withFamilyResults)["data"][0]["sister"]
+      >().toEqualTypeOf<string[] | undefined>();
     });
 
     describe("called in succession", () => {
@@ -329,10 +342,13 @@ describe("ObjectSet", () => {
         });
 
         expectTypeOf(withParents).toEqualTypeOf<
-          $ObjectSet<EmployeeApiTest, {
-            mom: "integer";
-            dad: "string" | undefined;
-          }>
+          $ObjectSet<
+            EmployeeApiTest,
+            {
+              mom: "integer";
+              dad: "string" | undefined;
+            }
+          >
         >();
       });
 
@@ -351,56 +367,57 @@ describe("ObjectSet", () => {
 
         const withFamilyResults = await withFamily.fetchPage();
 
-        expectTypeOf<typeof withFamilyResults["data"][0]>().toEqualTypeOf<
-          Osdk.Instance<EmployeeApiTest, never, PropertyKeys<EmployeeApiTest>, {
-            mom: "integer";
-            dad: "integer";
-            sis: "integer";
-          }>
+        expectTypeOf<(typeof withFamilyResults)["data"][0]>().toEqualTypeOf<
+          Osdk.Instance<
+            EmployeeApiTest,
+            never,
+            PropertyKeys<EmployeeApiTest>,
+            {
+              mom: "integer";
+              dad: "integer";
+              sis: "integer";
+            }
+          >
         >();
       });
 
-      it(
-        "collectSet, collectList, selectProperty, and numeric aggregations are nullable",
-        async () => {
-          const withAggregations = fauxObjectSet.withProperties({
-            "collectSet": (base) =>
-              base.pivotTo("lead").aggregate("class:collectSet"),
-            "select": (base) => base.pivotTo("lead").selectProperty("fullName"),
-            "collectList": (base) =>
-              base.pivotTo("lead").aggregate("class:collectList"),
-            "min": (base) => base.pivotTo("lead").aggregate("employeeId:max"),
-            "max": (base) => base.pivotTo("lead").aggregate("employeeId:min"),
-            "sum": (base) => base.pivotTo("lead").aggregate("employeeId:sum"),
-            "avg": (base) => base.pivotTo("lead").aggregate("employeeId:avg"),
-            "approximatePercentile": (base) =>
-              base.pivotTo("lead").aggregate(
-                "employeeId:approximatePercentile",
-              ),
-          });
+      it("collectSet, collectList, selectProperty, and numeric aggregations are nullable", async () => {
+        const withAggregations = fauxObjectSet.withProperties({
+          "collectSet": (base) =>
+            base.pivotTo("lead").aggregate("class:collectSet"),
+          "select": (base) => base.pivotTo("lead").selectProperty("fullName"),
+          "collectList": (base) =>
+            base.pivotTo("lead").aggregate("class:collectList"),
+          "min": (base) => base.pivotTo("lead").aggregate("employeeId:max"),
+          "max": (base) => base.pivotTo("lead").aggregate("employeeId:min"),
+          "sum": (base) => base.pivotTo("lead").aggregate("employeeId:sum"),
+          "avg": (base) => base.pivotTo("lead").aggregate("employeeId:avg"),
+          "approximatePercentile": (base) =>
+            base.pivotTo("lead").aggregate("employeeId:approximatePercentile"),
+        });
 
-          const withAggregationResults = await withAggregations.fetchPage();
+        const withAggregationResults = await withAggregations.fetchPage();
 
-          expectTypeOf<typeof withAggregationResults["data"][0]>()
-            .toEqualTypeOf<
-              Osdk.Instance<
-                EmployeeApiTest,
-                never,
-                PropertyKeys<EmployeeApiTest>,
-                {
-                  collectSet: "string"[] | undefined;
-                  select: "string" | undefined;
-                  collectList: "string"[] | undefined;
-                  min: "double" | undefined;
-                  max: "double" | undefined;
-                  sum: "double" | undefined;
-                  avg: "double" | undefined;
-                  approximatePercentile: "double" | undefined;
-                }
-              >
-            >();
-        },
-      );
+        expectTypeOf<
+          (typeof withAggregationResults)["data"][0]
+        >().toEqualTypeOf<
+          Osdk.Instance<
+            EmployeeApiTest,
+            never,
+            PropertyKeys<EmployeeApiTest>,
+            {
+              collectSet: "string"[] | undefined;
+              select: "string" | undefined;
+              collectList: "string"[] | undefined;
+              min: "double" | undefined;
+              max: "double" | undefined;
+              sum: "double" | undefined;
+              avg: "double" | undefined;
+              approximatePercentile: "double" | undefined;
+            }
+          >
+        >();
+      });
     });
 
     describe("fetch functions return correct Osdk.Instance", () => {
@@ -446,19 +463,18 @@ describe("ObjectSet", () => {
 
         // same as above but with expectTypeOf
         expectTypeOf<typeof where>().toEqualTypeOf<typeof withFamily>();
-        expectTypeOf<typeof whereResults["data"][0]>()
-          .toEqualTypeOf<
-            Osdk.Instance<
-              EmployeeApiTest,
-              never,
-              PropertyKeys<EmployeeApiTest>,
-              {
-                mom: "integer";
-                dad: "string" | undefined;
-                sister: "string"[] | undefined;
-              }
-            >
-          >();
+        expectTypeOf<(typeof whereResults)["data"][0]>().toEqualTypeOf<
+          Osdk.Instance<
+            EmployeeApiTest,
+            never,
+            PropertyKeys<EmployeeApiTest>,
+            {
+              mom: "integer";
+              dad: "string" | undefined;
+              sister: "string"[] | undefined;
+            }
+          >
+        >();
 
         // Checks that when you directly assign, it infers correctly.
         // Sometimes an explicit assignment can affect how typescript infers
@@ -510,19 +526,18 @@ describe("ObjectSet", () => {
       it("Works with no select", async () => {
         const withFamilyResults = await withFamily.fetchPage();
 
-        expectTypeOf<typeof withFamilyResults["data"][0]>()
-          .toEqualTypeOf<
-            Osdk.Instance<
-              EmployeeApiTest,
-              never,
-              PropertyKeys<EmployeeApiTest>,
-              {
-                mom: "integer";
-                dad: "string" | undefined;
-                sister: "string"[] | undefined;
-              }
-            >
-          >();
+        expectTypeOf<(typeof withFamilyResults)["data"][0]>().toEqualTypeOf<
+          Osdk.Instance<
+            EmployeeApiTest,
+            never,
+            PropertyKeys<EmployeeApiTest>,
+            {
+              mom: "integer";
+              dad: "string" | undefined;
+              sister: "string"[] | undefined;
+            }
+          >
+        >();
       });
 
       it("Works with selecting all RDPs", async () => {
@@ -530,17 +545,22 @@ describe("ObjectSet", () => {
           $select: ["mom", "dad", "sister"],
         });
 
-        expectTypeOf<typeof withFamilyResults["data"][0]>()
-          .toEqualTypeOf<
-            Osdk.Instance<EmployeeApiTest, never, never, {
+        expectTypeOf<(typeof withFamilyResults)["data"][0]>().toEqualTypeOf<
+          Osdk.Instance<
+            EmployeeApiTest,
+            never,
+            never,
+            {
               mom: "integer";
               dad: "string" | undefined;
               sister: "string"[] | undefined;
-            }>
-          >();
+            }
+          >
+        >();
 
-        expectTypeOf<typeof withFamilyResults["data"][0]["mom"]>()
-          .toEqualTypeOf<number>();
+        expectTypeOf<
+          (typeof withFamilyResults)["data"][0]["mom"]
+        >().toEqualTypeOf<number>();
       });
 
       it("Works with selecting some RDPs", async () => {
@@ -548,12 +568,16 @@ describe("ObjectSet", () => {
           $select: ["mom"],
         });
 
-        expectTypeOf<typeof withFamilyResults["data"][0]>()
-          .toEqualTypeOf<
-            Osdk.Instance<EmployeeApiTest, never, never, {
+        expectTypeOf<(typeof withFamilyResults)["data"][0]>().toEqualTypeOf<
+          Osdk.Instance<
+            EmployeeApiTest,
+            never,
+            never,
+            {
               mom: "integer";
-            }>
-          >();
+            }
+          >
+        >();
       });
 
       it("Works with selecting all non-RDP's", async () => {
@@ -579,19 +603,17 @@ describe("ObjectSet", () => {
           ],
         });
 
-        expectTypeOf<typeof withFamilyResults["data"][0]>()
-          .toEqualTypeOf<
-            Osdk.Instance<
-              EmployeeApiTest,
-              never,
-              PropertyKeys<EmployeeApiTest>,
-              {}
-            >
-          >();
-        expectTypeOf<typeof withFamilyResults["data"][0]["class"]>()
-          .toEqualTypeOf<
-            string | undefined
-          >();
+        expectTypeOf<(typeof withFamilyResults)["data"][0]>().toEqualTypeOf<
+          Osdk.Instance<
+            EmployeeApiTest,
+            never,
+            PropertyKeys<EmployeeApiTest>,
+            {}
+          >
+        >();
+        expectTypeOf<
+          (typeof withFamilyResults)["data"][0]["class"]
+        >().toEqualTypeOf<string | undefined>();
       });
 
       it("Works with selecting some non-RDP's", async () => {
@@ -599,10 +621,9 @@ describe("ObjectSet", () => {
           $select: ["class"],
         });
 
-        expectTypeOf<typeof withFamilyResults["data"][0]>()
-          .toEqualTypeOf<
-            Osdk.Instance<EmployeeApiTest, never, "class", {}>
-          >();
+        expectTypeOf<(typeof withFamilyResults)["data"][0]>().toEqualTypeOf<
+          Osdk.Instance<EmployeeApiTest, never, "class", {}>
+        >();
       });
 
       it("Works with selecting a mix", async () => {
@@ -610,15 +631,9 @@ describe("ObjectSet", () => {
           $select: ["class", "mom"],
         });
 
-        expectTypeOf<typeof withFamilyResults["data"][0]>()
-          .toEqualTypeOf<
-            Osdk.Instance<
-              EmployeeApiTest,
-              never,
-              "class",
-              { mom: "integer" }
-            >
-          >();
+        expectTypeOf<(typeof withFamilyResults)["data"][0]>().toEqualTypeOf<
+          Osdk.Instance<EmployeeApiTest, never, "class", { mom: "integer" }>
+        >();
       });
     });
 
@@ -630,9 +645,12 @@ describe("ObjectSet", () => {
       type ObjectSetType = typeof objectSet;
 
       expectTypeOf<ObjectSetType>().toEqualTypeOf<
-        $ObjectSet<EmployeeApiTest, {
-          mom: "integer";
-        }>
+        $ObjectSet<
+          EmployeeApiTest,
+          {
+            mom: "integer";
+          }
+        >
       >();
 
       const objectSet2 = fauxObjectSet.withProperties({
@@ -682,9 +700,9 @@ describe("ObjectSet", () => {
           // @ts-expect-error
           base.pivotTo("lead").aggregate("geotimeSeriesReference:sum"),
         "geotimeSeriesReferenceExactDistinct": (base) =>
-          base.pivotTo("lead").aggregate(
-            "geotimeSeriesReference:exactDistinct",
-          ),
+          base
+            .pivotTo("lead")
+            .aggregate("geotimeSeriesReference:exactDistinct"),
         "lastUpdated": (base) => {
           base.pivotTo("lead").aggregate("lastUpdated:approximateDistinct");
           base.pivotTo("lead").aggregate("lastUpdated:exactDistinct");
@@ -705,42 +723,51 @@ describe("ObjectSet", () => {
     });
 
     it("has correct aggregation return types", async () => {
-      const aggTestObjectSet = fauxObjectSet.withProperties({
-        "maxHasSameType": (base) =>
-          base.pivotTo("lead").aggregate("dateOfJoining:max"),
-        "minHasSameType": (base) =>
-          base.pivotTo("lead").aggregate("dateOfJoining:min"),
-        "approximateDistinctNumberNoUndefined": (base) =>
-          base.pivotTo("lead").aggregate("employeeId:approximateDistinct"),
-        "exactDistinctNumberNoUndefined": (base) =>
-          base.pivotTo("lead").aggregate("employeeId:exactDistinct"),
-        "countNumberNoUndefined": (base) =>
-          base.pivotTo("lead").aggregate("$count"),
-        "sumNumber": (base) => base.pivotTo("lead").aggregate("employeeId:sum"),
-        "avgNumber": (base) => base.pivotTo("lead").aggregate("employeeId:avg"),
-      }).fetchPage();
+      const aggTestObjectSet = fauxObjectSet
+        .withProperties({
+          "maxHasSameType": (base) =>
+            base.pivotTo("lead").aggregate("dateOfJoining:max"),
+          "minHasSameType": (base) =>
+            base.pivotTo("lead").aggregate("dateOfJoining:min"),
+          "approximateDistinctNumberNoUndefined": (base) =>
+            base.pivotTo("lead").aggregate("employeeId:approximateDistinct"),
+          "exactDistinctNumberNoUndefined": (base) =>
+            base.pivotTo("lead").aggregate("employeeId:exactDistinct"),
+          "countNumberNoUndefined": (base) =>
+            base.pivotTo("lead").aggregate("$count"),
+          "sumNumber": (base) =>
+            base.pivotTo("lead").aggregate("employeeId:sum"),
+          "avgNumber": (base) =>
+            base.pivotTo("lead").aggregate("employeeId:avg"),
+        })
+        .fetchPage();
 
       const result = (await aggTestObjectSet).data[0];
       expectTypeOf((await aggTestObjectSet).data[0]).toEqualTypeOf<
-        Osdk.Instance<EmployeeApiTest, never, PropertyKeys<EmployeeApiTest>, {
-          maxHasSameType: "datetime" | undefined;
-          minHasSameType: "datetime" | undefined;
-          avgNumber: "double" | undefined;
-          approximateDistinctNumberNoUndefined: "integer";
-          exactDistinctNumberNoUndefined: "integer";
-          countNumberNoUndefined: "integer";
-          sumNumber: "double" | undefined;
-        }>
+        Osdk.Instance<
+          EmployeeApiTest,
+          never,
+          PropertyKeys<EmployeeApiTest>,
+          {
+            maxHasSameType: "datetime" | undefined;
+            minHasSameType: "datetime" | undefined;
+            avgNumber: "double" | undefined;
+            approximateDistinctNumberNoUndefined: "integer";
+            exactDistinctNumberNoUndefined: "integer";
+            countNumberNoUndefined: "integer";
+            sumNumber: "double" | undefined;
+          }
+        >
       >();
 
       expectTypeOf(result.maxHasSameType).toEqualTypeOf<string | undefined>();
       expectTypeOf(result.minHasSameType).toEqualTypeOf<string | undefined>();
-      expectTypeOf(result.approximateDistinctNumberNoUndefined).toEqualTypeOf<
-        number
-      >();
-      expectTypeOf(result.exactDistinctNumberNoUndefined).toEqualTypeOf<
-        number
-      >();
+      expectTypeOf(
+        result.approximateDistinctNumberNoUndefined,
+      ).toEqualTypeOf<number>();
+      expectTypeOf(
+        result.exactDistinctNumberNoUndefined,
+      ).toEqualTypeOf<number>();
       expectTypeOf(result.countNumberNoUndefined).toEqualTypeOf<number>();
       expectTypeOf(result.sumNumber).toEqualTypeOf<number | undefined>();
       expectTypeOf(result.avgNumber).toEqualTypeOf<number | undefined>();
@@ -755,9 +782,7 @@ describe("ObjectSet", () => {
 
       b = a; // should be assignable. testing explicitly due to break in 2.2 release.
 
-      expectTypeOf<
-        EmployeeApiTest
-      >().branded.toEqualTypeOf<
+      expectTypeOf<EmployeeApiTest>().branded.toEqualTypeOf<
         DerivedObjectOrInterfaceDefinition.WithDerivedProperties<
           EmployeeApiTest,
           {}
@@ -787,9 +812,9 @@ describe("ObjectSet", () => {
       it("provides correct methods off of selected numeric derived property definitions", () => {
         const objectSet = fauxObjectSet.withProperties({
           "myProp1": (base) => {
-            const selectedInteger = base.pivotTo("lead").selectProperty(
-              "employeeId",
-            );
+            const selectedInteger = base
+              .pivotTo("lead")
+              .selectProperty("employeeId");
 
             expectTypeOf(selectedInteger).toEqualTypeOf<
               DerivedProperty.NumericPropertyDefinition<
@@ -811,9 +836,7 @@ describe("ObjectSet", () => {
             selectedInteger.extractPart("1");
 
             expectTypeOf(
-              base.pivotTo("lead").selectProperty(
-                "performanceScore",
-              ),
+              base.pivotTo("lead").selectProperty("performanceScore"),
             ).toEqualTypeOf<
               DerivedProperty.NumericPropertyDefinition<
                 "double" | undefined,
@@ -821,9 +844,7 @@ describe("ObjectSet", () => {
               >
             >();
             expectTypeOf(
-              base.pivotTo("lead").selectProperty(
-                "rank",
-              ),
+              base.pivotTo("lead").selectProperty("rank"),
             ).toEqualTypeOf<
               DerivedProperty.NumericPropertyDefinition<
                 "short" | undefined,
@@ -831,9 +852,7 @@ describe("ObjectSet", () => {
               >
             >();
             expectTypeOf(
-              base.pivotTo("lead").selectProperty(
-                "yearsOfExperience",
-              ),
+              base.pivotTo("lead").selectProperty("yearsOfExperience"),
             ).toEqualTypeOf<
               DerivedProperty.NumericPropertyDefinition<
                 "long" | undefined,
@@ -841,9 +860,7 @@ describe("ObjectSet", () => {
               >
             >();
             expectTypeOf(
-              base.pivotTo("lead").selectProperty(
-                "hourlyRate",
-              ),
+              base.pivotTo("lead").selectProperty("hourlyRate"),
             ).toEqualTypeOf<
               DerivedProperty.NumericPropertyDefinition<
                 "float" | undefined,
@@ -859,9 +876,9 @@ describe("ObjectSet", () => {
       it("provides correct methods off of selection definitions", () => {
         const objectSet = fauxObjectSet.withProperties({
           "myProp1": (base) => {
-            const selectedInteger = base.pivotTo("lead").selectProperty(
-              "employeeId",
-            );
+            const selectedInteger = base
+              .pivotTo("lead")
+              .selectProperty("employeeId");
 
             expectTypeOf(selectedInteger).toEqualTypeOf<
               DerivedProperty.NumericPropertyDefinition<
@@ -883,9 +900,7 @@ describe("ObjectSet", () => {
             selectedInteger.extractPart("1");
 
             expectTypeOf(
-              base.pivotTo("lead").selectProperty(
-                "performanceScore",
-              ),
+              base.pivotTo("lead").selectProperty("performanceScore"),
             ).toEqualTypeOf<
               DerivedProperty.NumericPropertyDefinition<
                 "double" | undefined,
@@ -893,9 +908,7 @@ describe("ObjectSet", () => {
               >
             >();
             expectTypeOf(
-              base.pivotTo("lead").selectProperty(
-                "rank",
-              ),
+              base.pivotTo("lead").selectProperty("rank"),
             ).toEqualTypeOf<
               DerivedProperty.NumericPropertyDefinition<
                 "short" | undefined,
@@ -903,9 +916,7 @@ describe("ObjectSet", () => {
               >
             >();
             expectTypeOf(
-              base.pivotTo("lead").selectProperty(
-                "yearsOfExperience",
-              ),
+              base.pivotTo("lead").selectProperty("yearsOfExperience"),
             ).toEqualTypeOf<
               DerivedProperty.NumericPropertyDefinition<
                 "long" | undefined,
@@ -913,9 +924,7 @@ describe("ObjectSet", () => {
               >
             >();
             expectTypeOf(
-              base.pivotTo("lead").selectProperty(
-                "hourlyRate",
-              ),
+              base.pivotTo("lead").selectProperty("hourlyRate"),
             ).toEqualTypeOf<
               DerivedProperty.NumericPropertyDefinition<
                 "float" | undefined,
@@ -931,9 +940,9 @@ describe("ObjectSet", () => {
       it("provides correct methods off of aggregated properties", () => {
         const objectSet = fauxObjectSet.withProperties({
           "myProp1": (base) => {
-            const maxAggregation = base.pivotTo("lead").aggregate(
-              "employeeId:max",
-            );
+            const maxAggregation = base
+              .pivotTo("lead")
+              .aggregate("employeeId:max");
 
             expectTypeOf(maxAggregation).toEqualTypeOf<
               DerivedProperty.NumericPropertyDefinition<
@@ -978,12 +987,10 @@ describe("ObjectSet", () => {
               >
             >();
 
-            const collectList = base.pivotTo("peeps").aggregate(
-              "employeeId:collectList",
-            );
-            expectTypeOf(
-              collectList,
-            ).toEqualTypeOf<
+            const collectList = base
+              .pivotTo("peeps")
+              .aggregate("employeeId:collectList");
+            expectTypeOf(collectList).toEqualTypeOf<
               DerivedProperty.Definition<
                 "integer"[] | undefined,
                 EmployeeApiTest
@@ -994,9 +1001,7 @@ describe("ObjectSet", () => {
             collectList.plus(1);
 
             expectTypeOf(
-              base.pivotTo("peeps").aggregate(
-                "employeeId:collectList",
-              ),
+              base.pivotTo("peeps").aggregate("employeeId:collectList"),
             ).toEqualTypeOf<
               DerivedProperty.Definition<
                 "integer"[] | undefined,
@@ -1012,20 +1017,20 @@ describe("ObjectSet", () => {
       it("correctly coerces numeric types", () => {
         const objectSet = fauxObjectSet.withProperties({
           "myProp1": (base) => {
-            const intAndLong = base.pivotTo("lead").selectProperty("employeeId")
-              .add(base.selectProperty("yearsOfExperience")).add(
-                base.selectProperty("employeeId"),
-              );
+            const intAndLong = base
+              .pivotTo("lead")
+              .selectProperty("employeeId")
+              .add(base.selectProperty("yearsOfExperience"))
+              .add(base.selectProperty("employeeId"));
             expectTypeOf(intAndLong).toEqualTypeOf<
               DerivedProperty.NumericPropertyDefinition<"long", EmployeeApiTest>
             >();
 
-            const intAndDouble = base.pivotTo("lead").selectProperty(
-              "employeeId",
-            )
-              .add(base.selectProperty("performanceScore")).add(
-                base.selectProperty("employeeId"),
-              );
+            const intAndDouble = base
+              .pivotTo("lead")
+              .selectProperty("employeeId")
+              .add(base.selectProperty("performanceScore"))
+              .add(base.selectProperty("employeeId"));
             expectTypeOf(intAndDouble).toEqualTypeOf<
               DerivedProperty.NumericPropertyDefinition<
                 "double",
@@ -1033,12 +1038,11 @@ describe("ObjectSet", () => {
               >
             >();
 
-            const longAndDouble = base.pivotTo("lead").selectProperty(
-              "yearsOfExperience",
-            )
-              .add(base.selectProperty("performanceScore")).add(
-                base.selectProperty("yearsOfExperience"),
-              );
+            const longAndDouble = base
+              .pivotTo("lead")
+              .selectProperty("yearsOfExperience")
+              .add(base.selectProperty("performanceScore"))
+              .add(base.selectProperty("yearsOfExperience"));
             expectTypeOf(longAndDouble).toEqualTypeOf<
               DerivedProperty.NumericPropertyDefinition<
                 "double",
@@ -1046,15 +1050,17 @@ describe("ObjectSet", () => {
               >
             >();
 
-            const longAndLong = base.pivotTo("lead").selectProperty(
-              "yearsOfExperience",
-            )
+            const longAndLong = base
+              .pivotTo("lead")
+              .selectProperty("yearsOfExperience")
               .add(base.selectProperty("yearsOfExperience"));
             expectTypeOf(longAndLong).toEqualTypeOf<
               DerivedProperty.NumericPropertyDefinition<"long", EmployeeApiTest>
             >();
 
-            const intAndInt = base.pivotTo("lead").selectProperty("employeeId")
+            const intAndInt = base
+              .pivotTo("lead")
+              .selectProperty("employeeId")
               .add(base.selectProperty("employeeId"));
             expectTypeOf(intAndInt).toEqualTypeOf<
               DerivedProperty.NumericPropertyDefinition<
@@ -1063,13 +1069,13 @@ describe("ObjectSet", () => {
               >
             >();
 
-            const intLongDoubleChain = base.pivotTo("lead").selectProperty(
-              "employeeId",
-            ).add(base.selectProperty("yearsOfExperience")).add(
-              base.selectProperty("employeeId"),
-            ).add(
-              base.selectProperty("performanceScore"),
-            ).add(base.selectProperty("employeeId"));
+            const intLongDoubleChain = base
+              .pivotTo("lead")
+              .selectProperty("employeeId")
+              .add(base.selectProperty("yearsOfExperience"))
+              .add(base.selectProperty("employeeId"))
+              .add(base.selectProperty("performanceScore"))
+              .add(base.selectProperty("employeeId"));
             expectTypeOf(intLongDoubleChain).toEqualTypeOf<
               DerivedProperty.NumericPropertyDefinition<
                 "double",
@@ -1077,9 +1083,10 @@ describe("ObjectSet", () => {
               >
             >();
 
-            const shortAndIntReturnsInt = base.pivotTo("lead").selectProperty(
-              "rank",
-            ).add(base.selectProperty("employeeId"));
+            const shortAndIntReturnsInt = base
+              .pivotTo("lead")
+              .selectProperty("rank")
+              .add(base.selectProperty("employeeId"));
             expectTypeOf(shortAndIntReturnsInt).toEqualTypeOf<
               DerivedProperty.NumericPropertyDefinition<
                 "integer",
@@ -1087,10 +1094,10 @@ describe("ObjectSet", () => {
               >
             >();
 
-            const shortAndFloatReturnsDouble = base.pivotTo("lead")
-              .selectProperty(
-                "rank",
-              ).add(base.selectProperty("hourlyRate"));
+            const shortAndFloatReturnsDouble = base
+              .pivotTo("lead")
+              .selectProperty("rank")
+              .add(base.selectProperty("hourlyRate"));
             expectTypeOf(shortAndFloatReturnsDouble).toEqualTypeOf<
               DerivedProperty.NumericPropertyDefinition<
                 "double",
@@ -1106,7 +1113,9 @@ describe("ObjectSet", () => {
       it("allows adding number literals as a double", () => {
         const objectSet = fauxObjectSet.withProperties({
           "myProp1": (base) => {
-            const plus = base.pivotTo("lead").selectProperty("employeeId")
+            const plus = base
+              .pivotTo("lead")
+              .selectProperty("employeeId")
               .add(1);
             expectTypeOf(plus).toEqualTypeOf<
               DerivedProperty.NumericPropertyDefinition<
@@ -1123,10 +1132,10 @@ describe("ObjectSet", () => {
       it("allows correctly typed nested property definitions", () => {
         const objectSet = fauxObjectSet.withProperties({
           "myProp1": (base) => {
-            const nested = base.pivotTo("lead").selectProperty("employeeId")
-              .add(
-                base.pivotTo("peeps").aggregate("employeeId:sum"),
-              );
+            const nested = base
+              .pivotTo("lead")
+              .selectProperty("employeeId")
+              .add(base.pivotTo("peeps").aggregate("employeeId:sum"));
             expectTypeOf(nested).toEqualTypeOf<
               DerivedProperty.NumericPropertyDefinition<
                 "double",
@@ -1142,10 +1151,10 @@ describe("ObjectSet", () => {
       it("allows correctly types property keys off the linked OT", () => {
         const objectSet = fauxObjectSet.withProperties({
           "myProp1": (base) => {
-            const nested = base.pivotTo("lead").selectProperty("employeeId")
-              .add(
-                base.selectProperty("performanceScore"),
-              );
+            const nested = base
+              .pivotTo("lead")
+              .selectProperty("employeeId")
+              .add(base.selectProperty("performanceScore"));
             expectTypeOf(nested).toEqualTypeOf<
               DerivedProperty.NumericPropertyDefinition<
                 "double",
@@ -1164,9 +1173,9 @@ describe("ObjectSet", () => {
       it("provides correct methods off of datetime selections", () => {
         const objectSet = fauxObjectSet.withProperties({
           "myProp1": (base) => {
-            const selectedDatetime = base.pivotTo("lead").selectProperty(
-              "dateOfJoining",
-            );
+            const selectedDatetime = base
+              .pivotTo("lead")
+              .selectProperty("dateOfJoining");
 
             expectTypeOf(selectedDatetime).toEqualTypeOf<
               DerivedProperty.DatetimePropertyDefinition<
@@ -1178,13 +1187,14 @@ describe("ObjectSet", () => {
             selectedDatetime.max(base.selectProperty("dateOfJoining"));
             selectedDatetime.min(base.selectProperty("lastUpdated"));
 
-            expectTypeOf(base.pivotTo("lead").selectProperty("lastUpdated"))
-              .toEqualTypeOf<
-                DerivedProperty.DatetimePropertyDefinition<
-                  "timestamp" | undefined,
-                  EmployeeApiTest
-                >
-              >();
+            expectTypeOf(
+              base.pivotTo("lead").selectProperty("lastUpdated"),
+            ).toEqualTypeOf<
+              DerivedProperty.DatetimePropertyDefinition<
+                "timestamp" | undefined,
+                EmployeeApiTest
+              >
+            >();
 
             return selectedDatetime;
           },
@@ -1194,7 +1204,9 @@ describe("ObjectSet", () => {
       it("correctly coerces datetime types", () => {
         const objectSet = fauxObjectSet.withProperties({
           "myProp1": (base) => {
-            const max = base.pivotTo("lead").selectProperty("dateOfJoining")
+            const max = base
+              .pivotTo("lead")
+              .selectProperty("dateOfJoining")
               .max(base.selectProperty("lastUpdated"));
             expectTypeOf(max).toEqualTypeOf<
               DerivedProperty.DatetimePropertyDefinition<
@@ -1203,7 +1215,9 @@ describe("ObjectSet", () => {
               >
             >();
 
-            const min = base.pivotTo("lead").selectProperty("dateOfJoining")
+            const min = base
+              .pivotTo("lead")
+              .selectProperty("dateOfJoining")
               .min(base.selectProperty("dateOfJoining"));
             expectTypeOf(min).toEqualTypeOf<
               DerivedProperty.DatetimePropertyDefinition<
@@ -1220,11 +1234,14 @@ describe("ObjectSet", () => {
       it("allows correctly typed nested property definitions", () => {
         const objectSet = fauxObjectSet.withProperties({
           "myProp1": (base) => {
-            const nested = base.pivotTo("lead").selectProperty("dateOfJoining")
+            const nested = base
+              .pivotTo("lead")
+              .selectProperty("dateOfJoining")
               .min(
-                base.pivotTo("lead").pivotTo("lead").selectProperty(
-                  "lastUpdated",
-                ),
+                base
+                  .pivotTo("lead")
+                  .pivotTo("lead")
+                  .selectProperty("lastUpdated"),
               );
             expectTypeOf(nested).toEqualTypeOf<
               DerivedProperty.DatetimePropertyDefinition<
@@ -1241,10 +1258,10 @@ describe("ObjectSet", () => {
       it("allows correctly typed property keys off the linked OT", () => {
         const objectSet = fauxObjectSet.withProperties({
           "myProp1": (base) => {
-            const nested = base.pivotTo("lead").selectProperty("dateOfJoining")
-              .min(
-                base.selectProperty("lastUpdated"),
-              );
+            const nested = base
+              .pivotTo("lead")
+              .selectProperty("dateOfJoining")
+              .min(base.selectProperty("lastUpdated"));
             expectTypeOf(nested).toEqualTypeOf<
               DerivedProperty.DatetimePropertyDefinition<
                 "timestamp",
@@ -1308,63 +1325,50 @@ describe("ObjectSet", () => {
     });
 
     it("appropriately types fetchPage ordered by relevance", async () => {
-      const nearestNeighborsObjectSet = await fauxObjectSet.nearestNeighbors(
-        "textQuery",
-        3,
-        "skillSetEmbedding",
-      ).fetchPage({ $orderBy: "relevance" });
+      const nearestNeighborsObjectSet = await fauxObjectSet
+        .nearestNeighbors("textQuery", 3, "skillSetEmbedding")
+        .fetchPage({ $orderBy: "relevance" });
 
-      type expectedType =
-        & Osdk.Instance<
-          EmployeeApiTest,
-          never,
-          PropertyKeys<EmployeeApiTest>,
-          {}
-        >
-        & { $score: number };
+      type expectedType = Osdk.Instance<
+        EmployeeApiTest,
+        never,
+        PropertyKeys<EmployeeApiTest>,
+        {}
+      > & { $score: number };
 
-      expectTypeOf(nearestNeighborsObjectSet.data[0]).toEqualTypeOf<
-        expectedType
-      >();
+      expectTypeOf(
+        nearestNeighborsObjectSet.data[0],
+      ).toEqualTypeOf<expectedType>();
     });
 
     it("appropriately types fetchPageWithErrors ordered by relevance", async () => {
       const nearestNeighborsObjectSetWithErrors = await fauxObjectSet
-        .nearestNeighbors(
-          "textQuery",
-          3,
-          "skillSetEmbedding",
-        ).fetchPageWithErrors({ $orderBy: "relevance" });
+        .nearestNeighbors("textQuery", 3, "skillSetEmbedding")
+        .fetchPageWithErrors({ $orderBy: "relevance" });
 
-      type expectedType =
-        & Osdk.Instance<
-          EmployeeApiTest,
-          never,
-          PropertyKeys<EmployeeApiTest>,
-          {}
-        >
-        & { $score: number };
-      expectTypeOf(nearestNeighborsObjectSetWithErrors.value!.data[0])
-        .toEqualTypeOf<expectedType>();
+      type expectedType = Osdk.Instance<
+        EmployeeApiTest,
+        never,
+        PropertyKeys<EmployeeApiTest>,
+        {}
+      > & { $score: number };
+      expectTypeOf(
+        nearestNeighborsObjectSetWithErrors.value!.data[0],
+      ).toEqualTypeOf<expectedType>();
     });
 
     it("appropriately types asyncIters ordered by relevance", () => {
-      const asyncIter = fauxObjectSet.nearestNeighbors(
-        "textQuery",
-        3,
-        "skillSetEmbedding",
-      ).asyncIter(
-        { $orderBy: "relevance" },
-      );
+      const asyncIter = fauxObjectSet
+        .nearestNeighbors("textQuery", 3, "skillSetEmbedding")
+        .asyncIter({ $orderBy: "relevance" });
 
       type expectedType = AsyncIterableIterator<
-        & Osdk.Instance<
+        Osdk.Instance<
           EmployeeApiTest,
           never,
           PropertyKeys<EmployeeApiTest>,
           {}
-        >
-        & { $score: number }
+        > & { $score: number }
       >;
       expectTypeOf(asyncIter).toEqualTypeOf<expectedType>();
     });
@@ -1385,32 +1389,28 @@ describe("ObjectSet", () => {
     });
 
     it("does not include score for property order by", async () => {
-      const nearestNeighborsObjectSet = await fauxObjectSet.nearestNeighbors(
-        "textQuery",
-        3,
-        "skillSetEmbedding",
-      ).fetchPage({ $orderBy: { "fullName": "desc" } });
+      const nearestNeighborsObjectSet = await fauxObjectSet
+        .nearestNeighbors("textQuery", 3, "skillSetEmbedding")
+        .fetchPage({ $orderBy: { "fullName": "desc" } });
 
       expectTypeOf(nearestNeighborsObjectSet.data[0]).not.toHaveProperty(
         "$score",
       );
 
       const nearestNeighborsObjectSetWithErrors = await fauxObjectSet
-        .nearestNeighbors(
-          "textQuery",
-          3,
-          "skillSetEmbedding",
-        ).fetchPageWithErrors({ $orderBy: { "fullName": "desc" } });
+        .nearestNeighbors("textQuery", 3, "skillSetEmbedding")
+        .fetchPageWithErrors({ $orderBy: { "fullName": "desc" } });
 
-      expectTypeOf(nearestNeighborsObjectSetWithErrors.value?.data[0]).not
-        .toHaveProperty("$score");
+      expectTypeOf(
+        nearestNeighborsObjectSetWithErrors.value?.data[0],
+      ).not.toHaveProperty("$score");
     });
   });
   describe("narrowToType", () => {
     it("restricts casting from interface to object type", () => {
-      const objectSet = { narrowToType: () => {} } as unknown as $ObjectSet<
-        FooInterfaceApiTest
-      >;
+      const objectSet = {
+        narrowToType: () => {},
+      } as unknown as $ObjectSet<FooInterfaceApiTest>;
 
       objectSet.narrowToType(EmployeeApiTest);
 
@@ -1439,20 +1439,17 @@ describe("ObjectSet", () => {
 
       expectTypeOf<narrowToTypeAllowedTypes>().toEqualTypeOf<"interface">();
 
-      expectTypeOf<narrowToTypeAllowedInterfaceTypes>().toEqualTypeOf<
-        "FooInterface"
-      >();
+      expectTypeOf<narrowToTypeAllowedInterfaceTypes>().toEqualTypeOf<"FooInterface">();
     });
   });
 
   describe("asyncIterLinks", async () => {
     it("typechecks self-referential one link", async () => {
-      for await (
-        const { source, target, linkType } of fauxObjectSet
-          .experimental_asyncIterLinks([
-            "lead",
-          ])
-      ) {
+      for await (const {
+        source,
+        target,
+        linkType,
+      } of fauxObjectSet.experimental_asyncIterLinks(["lead"])) {
         expectTypeOf(source).toEqualTypeOf<
           ObjectIdentifiers<EmployeeApiTest>
         >();
@@ -1471,13 +1468,11 @@ describe("ObjectSet", () => {
     });
 
     it("typechecks self-referential multiple links", async () => {
-      for await (
-        const { source, target, linkType } of fauxObjectSet
-          .experimental_asyncIterLinks([
-            "lead",
-            "peeps",
-          ])
-      ) {
+      for await (const {
+        source,
+        target,
+        linkType,
+      } of fauxObjectSet.experimental_asyncIterLinks(["lead", "peeps"])) {
         expectTypeOf(source).toEqualTypeOf<
           ObjectIdentifiers<EmployeeApiTest>
         >();

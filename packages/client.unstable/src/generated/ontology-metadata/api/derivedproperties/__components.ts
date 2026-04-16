@@ -262,8 +262,7 @@ export interface LinkedCollectionModification {
 /**
  * Total count of objects
  */
-export interface LinkedCountMetric {
-}
+export interface LinkedCountMetric {}
 /**
  * A derived property definition that references property types on a linked object type.
  * The linked object type is specified by a LinkDefinition.
@@ -603,8 +602,7 @@ export interface StorageLinkedCollection {
   limit: number;
   linkedProperty: StoragePropertyTypeIdentifier;
 }
-export interface StorageLinkedCountMetric {
-}
+export interface StorageLinkedCountMetric {}
 export interface StorageLinkedPropertiesDefinition {
   linkDefinition: StorageLinkDefinition;
   propertyTypeMapping: Record<

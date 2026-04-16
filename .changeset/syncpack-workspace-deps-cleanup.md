@@ -12,4 +12,4 @@
 "@osdk/widget.api": patch
 ---
 
-Standardize workspace dependency specifiers to workspace:*
+Standardize workspace dependency specifiers to workspace:\*

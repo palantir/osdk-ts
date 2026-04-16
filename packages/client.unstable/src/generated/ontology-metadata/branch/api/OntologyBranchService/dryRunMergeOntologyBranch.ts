@@ -17,10 +17,8 @@
 import { type ConjureContext, conjureFetch } from "conjure-lite";
 import type { OntologyBranchRid as _api_OntologyBranchRid } from "../../../api/__components.js";
 import type {
-  MergeOntologyBranchDryRunRequest
-    as _branch_api_MergeOntologyBranchDryRunRequest,
-  MergeOntologyBranchDryRunResponse
-    as _branch_api_MergeOntologyBranchDryRunResponse,
+  MergeOntologyBranchDryRunRequest as _branch_api_MergeOntologyBranchDryRunRequest,
+  MergeOntologyBranchDryRunResponse as _branch_api_MergeOntologyBranchDryRunResponse,
 } from "../__components.js";
 
 /**

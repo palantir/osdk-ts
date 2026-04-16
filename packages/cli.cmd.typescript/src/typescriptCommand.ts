@@ -25,10 +25,7 @@ export const typescriptCommand: yargs.CommandModule<
   command: "typescript",
   describe: "Manage code",
   builder: (argv) => {
-    return argv
-      .command(generateCommand)
-      .demandCommand();
+    return argv.command(generateCommand).demandCommand();
   },
-  handler: async (args) => {
-  },
+  handler: async (args) => {},
 };

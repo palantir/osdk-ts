@@ -229,61 +229,73 @@ PUBLIC_FOUNDRY_CLIENT_ID=123
 `.trimStart();
 
 test("it generates .env.development", () => {
-  expect(generateEnvDevelopment({
-    envPrefix: "PUBLIC_",
-    foundryUrl: "https://example.palantirfoundry.com",
-    clientId: "123",
-    corsProxy: false,
-    ontology: "ri.ontology.main.ontology.fake",
-  })).toEqual(expectedEnvDevelopment);
+  expect(
+    generateEnvDevelopment({
+      envPrefix: "PUBLIC_",
+      foundryUrl: "https://example.palantirfoundry.com",
+      clientId: "123",
+      corsProxy: false,
+      ontology: "ri.ontology.main.ontology.fake",
+    }),
+  ).toEqual(expectedEnvDevelopment);
 });
 
 test("it generates .env.development without ontology rid", () => {
-  expect(generateEnvDevelopment({
-    envPrefix: "PUBLIC_",
-    foundryUrl: "https://example.palantirfoundry.com",
-    clientId: "123",
-    corsProxy: false,
-    ontology: undefined,
-  })).toEqual(expectedEnvDevelopmentNoOntologyRid);
+  expect(
+    generateEnvDevelopment({
+      envPrefix: "PUBLIC_",
+      foundryUrl: "https://example.palantirfoundry.com",
+      clientId: "123",
+      corsProxy: false,
+      ontology: undefined,
+    }),
+  ).toEqual(expectedEnvDevelopmentNoOntologyRid);
 });
 
 test("it generates .env.development assuming CORS proxy", () => {
-  expect(generateEnvDevelopment({
-    envPrefix: "PUBLIC_",
-    foundryUrl: "https://example.palantirfoundry.com",
-    clientId: "123",
-    corsProxy: true,
-    ontology: "ri.ontology.main.ontology.fake",
-  })).toEqual(expectedEnvDevelopmentCorsProxy);
+  expect(
+    generateEnvDevelopment({
+      envPrefix: "PUBLIC_",
+      foundryUrl: "https://example.palantirfoundry.com",
+      clientId: "123",
+      corsProxy: true,
+      ontology: "ri.ontology.main.ontology.fake",
+    }),
+  ).toEqual(expectedEnvDevelopmentCorsProxy);
 });
 
 test("it generates .env.production", () => {
-  expect(generateEnvProduction({
-    envPrefix: "PUBLIC_",
-    foundryUrl: "https://example.palantirfoundry.com",
-    applicationUrl: "https://app.com",
-    clientId: "123",
-    ontology: "ri.ontology.main.ontology.fake",
-  })).toEqual(expectedEnvProduction);
+  expect(
+    generateEnvProduction({
+      envPrefix: "PUBLIC_",
+      foundryUrl: "https://example.palantirfoundry.com",
+      applicationUrl: "https://app.com",
+      clientId: "123",
+      ontology: "ri.ontology.main.ontology.fake",
+    }),
+  ).toEqual(expectedEnvProduction);
 });
 
 test("it generates .env.production without app url", () => {
-  expect(generateEnvProduction({
-    envPrefix: "PUBLIC_",
-    foundryUrl: "https://example.palantirfoundry.com",
-    applicationUrl: undefined,
-    clientId: "123",
-    ontology: "ri.ontology.main.ontology.fake",
-  })).toEqual(expectedEnvProductionNoAppUrl);
+  expect(
+    generateEnvProduction({
+      envPrefix: "PUBLIC_",
+      foundryUrl: "https://example.palantirfoundry.com",
+      applicationUrl: undefined,
+      clientId: "123",
+      ontology: "ri.ontology.main.ontology.fake",
+    }),
+  ).toEqual(expectedEnvProductionNoAppUrl);
 });
 
 test("it generates .env.production without ontology rid", () => {
-  expect(generateEnvProduction({
-    envPrefix: "PUBLIC_",
-    foundryUrl: "https://example.palantirfoundry.com",
-    applicationUrl: "https://app.com",
-    clientId: "123",
-    ontology: undefined,
-  })).toEqual(expectedEnvProductionNoOntologyRid);
+  expect(
+    generateEnvProduction({
+      envPrefix: "PUBLIC_",
+      foundryUrl: "https://example.palantirfoundry.com",
+      applicationUrl: "https://app.com",
+      clientId: "123",
+      ontology: undefined,
+    }),
+  ).toEqual(expectedEnvProductionNoOntologyRid);
 });

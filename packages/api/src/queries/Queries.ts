@@ -59,26 +59,29 @@ export namespace QueryParam {
   /**
    * Helper type to convert action definition parameter interface types to typescript types
    */
-  export type InterfaceType<T extends InterfaceDefinition> = {
-    $objectType: CompileTimeMetadata<T> extends { implementedBy: infer U }
-      ? (U extends ReadonlyArray<never> ? string
-        : U extends ReadonlyArray<string> ? U[number]
-        : string)
-      : string;
-    $primaryKey: string | number;
-    $apiName?: never;
-  } | {
-    $apiName: T["apiName"];
-    $objectType: string;
-    $primaryKey: string | number;
-  };
+  export type InterfaceType<T extends InterfaceDefinition> =
+    | {
+        $objectType: CompileTimeMetadata<T> extends { implementedBy: infer U }
+          ? U extends ReadonlyArray<never>
+            ? string
+            : U extends ReadonlyArray<string>
+              ? U[number]
+              : string
+          : string;
+        $primaryKey: string | number;
+        $apiName?: never;
+      }
+    | {
+        $apiName: T["apiName"];
+        $objectType: string;
+        $primaryKey: string | number;
+      };
 
   /**
    * Helper type to convert action definition parameter object sets to typescript types
    */
-  export type ObjectSetType<T extends ObjectOrInterfaceDefinition> = ObjectSet<
-    T
-  >;
+  export type ObjectSetType<T extends ObjectOrInterfaceDefinition> =
+    ObjectSet<T>;
 
   export type RangeKey<T extends AggregationRangeKeyTypes> = AggKeyClientToWire<
     "range",
@@ -119,16 +122,14 @@ export namespace QueryResult {
    */
   export type ObjectType<T extends ObjectOrInterfaceDefinition> = OsdkBase<T>;
 
-  export type InterfaceType<T extends ObjectOrInterfaceDefinition> = OsdkBase<
-    T
-  >;
+  export type InterfaceType<T extends ObjectOrInterfaceDefinition> =
+    OsdkBase<T>;
 
   /**
    * Helper type to convert action definition parameter object sets to typescript types
    */
-  export type ObjectSetType<T extends ObjectOrInterfaceDefinition> = ObjectSet<
-    T
-  >;
+  export type ObjectSetType<T extends ObjectOrInterfaceDefinition> =
+    ObjectSet<T>;
 
   export type RangeKey<T extends AggregationRangeKeyTypes> = AggKeyWireToClient<
     "range",

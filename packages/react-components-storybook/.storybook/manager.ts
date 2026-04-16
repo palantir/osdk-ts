@@ -46,10 +46,7 @@ addons.setConfig({
 
 function redirectToObjectTableIfAtRoot() {
   const url = new URL(window.location.href);
-  if (
-    !url.searchParams.has("path")
-    && window.location.pathname === "/"
-  ) {
+  if (!url.searchParams.has("path") && window.location.pathname === "/") {
     window.location.href =
       "/?path=/story/experimental-objecttable-features--default";
   }

@@ -18,18 +18,16 @@ import type { CommandModule } from "yargs";
 import type { CommonSiteArgs } from "../../CommonSiteArgs.js";
 import type { VersionUnsetArgs } from "./VersionUnsetArgs.js";
 
-const command: CommandModule<
-  CommonSiteArgs,
-  VersionUnsetArgs
-> = {
+const command: CommandModule<CommonSiteArgs, VersionUnsetArgs> = {
   command: "unset",
   describe: "Clear live site version",
   builder: (argv) => {
-    return argv.option("yes", {
-      alias: "y",
-      type: "boolean",
-      description: "Automatically confirm destructive changes",
-    })
+    return argv
+      .option("yes", {
+        alias: "y",
+        type: "boolean",
+        description: "Automatically confirm destructive changes",
+      })
       .group(["yes"], "Unset Options");
   },
   handler: async (args) => {

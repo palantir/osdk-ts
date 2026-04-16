@@ -29,9 +29,7 @@ import { server as s } from "typescript";
 type RequestFn<
   T extends s.protocol.Request,
   X extends s.protocol.Response = never,
-> = (
-  args: T["arguments"],
-) => Promise<{ req: T; resp: X }>;
+> = (args: T["arguments"]) => Promise<{ req: T; resp: X }>;
 
 class TsServerImpl extends EventEmitter<{
   exit: [];
@@ -49,11 +47,10 @@ class TsServerImpl extends EventEmitter<{
 
   get subprocess():
     | Subprocess<{
-      ipc: true;
-      serialization: "json";
-    }>
-    | undefined
-  {
+        ipc: true;
+        serialization: "json";
+      }>
+    | undefined {
     return this.#subprocess;
   }
 
@@ -83,7 +80,7 @@ class TsServerImpl extends EventEmitter<{
   }
 
   async getOneMessage<X>(filter?: (m: unknown) => m is X): Promise<X> {
-    return await this.subprocess!.getOneMessage({ filter }) as X;
+    return (await this.subprocess!.getOneMessage({ filter })) as X;
   }
 
   #requestFactory =
@@ -113,8 +110,8 @@ class TsServerImpl extends EventEmitter<{
   > = this.#requestFactory(
     s.protocol.CommandTypes.CompletionInfo,
     (m): m is s.protocol.CompletionInfoResponse =>
-      isResponse(m)
-      && m.command === s.protocol.CommandTypes.CompletionInfo as string,
+      isResponse(m) &&
+      m.command === (s.protocol.CommandTypes.CompletionInfo as string),
   );
 
   async #makeRequest<
@@ -139,9 +136,9 @@ class TsServerImpl extends EventEmitter<{
     if (isResponse) {
       return {
         req,
-        resp: await this.#subprocess?.getOneMessage({
+        resp: (await this.#subprocess?.getOneMessage({
           filter: isResponse,
-        }) as unknown as X,
+        })) as unknown as X,
       };
     }
     return { req, resp: undefined as unknown as X };
@@ -173,18 +170,15 @@ async function getTsServerPath() {
     cwd: import.meta.url,
     type: "directory",
   });
-  const possibleTsServerPaths = await pMap(
-    nodeModuleDirs,
-    (dir) => path.join(dir, "typescript", "lib", "tsserver.js"),
+  const possibleTsServerPaths = await pMap(nodeModuleDirs, (dir) =>
+    path.join(dir, "typescript", "lib", "tsserver.js"),
   );
 
   const tsServerPath = await pLocate(
     ["no", ...possibleTsServerPaths],
     async (dir) => {
       try {
-        const c = await fs.stat(
-          dir,
-        );
+        const c = await fs.stat(dir);
         return c.isFile();
       } catch (e) {
         return false;
@@ -195,13 +189,11 @@ async function getTsServerPath() {
 }
 
 export function isEvent(m: unknown): m is s.protocol.Event {
-  return !!(m && typeof m === "object" && "type" in m
-    && m.type === "event");
+  return !!(m && typeof m === "object" && "type" in m && m.type === "event");
 }
 
 export function isResponse(m: unknown): m is s.protocol.Response {
-  return !!(m && typeof m === "object" && "type" in m
-    && m.type === "response");
+  return !!(m && typeof m === "object" && "type" in m && m.type === "response");
 }
 
 export function isProjectLoadingStart(
@@ -218,7 +210,9 @@ export function isQuickInfoResponse(
   m: unknown,
   requestSeq?: number,
 ): m is s.protocol.QuickInfoResponse {
-  return isResponse(m)
-    && m.command === s.protocol.CommandTypes.Quickinfo as string
-    && (requestSeq == null || m.request_seq === requestSeq);
+  return (
+    isResponse(m) &&
+    m.command === (s.protocol.CommandTypes.Quickinfo as string) &&
+    (requestSeq == null || m.request_seq === requestSeq)
+  );
 }

@@ -47,32 +47,30 @@ import {
 } from "./InternalSymbols.js";
 import type { ObjectHolder } from "./ObjectHolder.js";
 
-const specialPropertyTypes = new Set(
-  [
-    "attachment",
-    "geotimeSeriesReference",
-    "mediaReference",
-    "numericTimeseries",
-    "stringTimeseries",
-    "sensorTimeseries",
-  ],
-);
+const specialPropertyTypes = new Set([
+  "attachment",
+  "geotimeSeriesReference",
+  "mediaReference",
+  "numericTimeseries",
+  "stringTimeseries",
+  "sensorTimeseries",
+]);
 
 // kept separate so we are not redefining these functions
 // every time an object is created.
 const basePropDefs = {
   "$as": {
-    get: function(this: ObjectHolder) {
+    get (this: ObjectHolder) {
       return get$as(this[ObjectDefRef]);
     },
   },
   "$link": {
-    get: function(this: ObjectHolder) {
+    get (this: ObjectHolder) {
       return get$link(this);
     },
   },
   "$clone": {
-    value: function(
+    value (
       this: ObjectHolder,
       update: Record<string, any> | undefined,
     ) {
@@ -85,8 +83,8 @@ const basePropDefs = {
       }
 
       if (
-        def.primaryKeyApiName in update
-        && rawObj[def.primaryKeyApiName] !== update[def.primaryKeyApiName]
+        def.primaryKeyApiName in update &&
+        rawObj[def.primaryKeyApiName] !== update[def.primaryKeyApiName]
       ) {
         throw new Error(
           `Cannot update ${def.apiName} object with differing primary key values `,
@@ -102,7 +100,7 @@ const basePropDefs = {
     },
   },
   "$objectSpecifier": {
-    get: function(this: ObjectHolder) {
+    get (this: ObjectHolder) {
       const rawObj = this[UnderlyingOsdkObject];
       return createObjectSpecifierFromPrimaryKey(
         this[ObjectDefRef],
@@ -112,13 +110,13 @@ const basePropDefs = {
     enumerable: true,
   },
   "$propertySecurities": {
-    get: function(this: ObjectHolder) {
+    get (this: ObjectHolder) {
       return this[PropertySecuritiesRef];
     },
     enumerable: true,
   },
   "$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata": {
-    get: function(this: ObjectHolder) {
+    get (this: ObjectHolder) {
       return {
         ObjectMetadata: this[ObjectDefRef],
       };
@@ -126,7 +124,7 @@ const basePropDefs = {
     enumerable: false,
   },
   "$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue": {
-    value: function(
+    value (
       this: ObjectHolder,
       propertyApiName: string,
       options?: FormatPropertyOptions,
@@ -168,29 +166,26 @@ export function createOsdkObject(
 
   // updates the object's "hidden class/map".
   const rawObj = parsedObject as ObjectHolder;
-  Object.defineProperties(
-    rawObj,
-    {
-      [UnderlyingOsdkObject]: {
-        enumerable: false,
-        value: simpleOsdkProperties,
-      },
-      [PropertySecuritiesRef]: {
-        enumerable: false,
-        value: clientPropertySecurities,
-      },
-      [ObjectDefRef]: { value: objectDef, enumerable: false }, // TODO: Potentially update when GA metadata field
-      [ClientRef]: { value: client, enumerable: false },
-      ...basePropDefs,
-    } satisfies Record<keyof ObjectHolder, PropertyDescriptor>,
-  );
+  Object.defineProperties(rawObj, {
+    [UnderlyingOsdkObject]: {
+      enumerable: false,
+      value: simpleOsdkProperties,
+    },
+    [PropertySecuritiesRef]: {
+      enumerable: false,
+      value: clientPropertySecurities,
+    },
+    [ObjectDefRef]: { value: objectDef, enumerable: false }, // TODO: Potentially update when GA metadata field
+    [ClientRef]: { value: client, enumerable: false },
+    ...basePropDefs,
+  } satisfies Record<keyof ObjectHolder, PropertyDescriptor>);
 
   // Assign the special values
   for (const propKey of Object.keys(rawObj)) {
     if (
-      propKey in objectDef.properties
-      && typeof (objectDef.properties[propKey].type) === "string"
-      && specialPropertyTypes.has(objectDef.properties[propKey].type)
+      propKey in objectDef.properties &&
+      typeof objectDef.properties[propKey].type === "string" &&
+      specialPropertyTypes.has(objectDef.properties[propKey].type)
     ) {
       rawObj[propKey] = createSpecialProperty(
         client,
@@ -218,37 +213,34 @@ function modifyRdpProperties(
   propKey: string,
 ): any {
   if (
-    derivedPropertyTypeByName[propKey].definition.type === "selection"
-    && derivedPropertyTypeByName[propKey].definition.operation.type
-      === "count"
+    derivedPropertyTypeByName[propKey].definition.type === "selection" &&
+    derivedPropertyTypeByName[propKey].definition.operation.type === "count"
   ) {
     const num = Number(rawValue);
     invariant(
       Number.isSafeInteger(num),
-      "Count aggregation for derived property " + propKey
-        + " returned a value larger than safe integer.",
+      "Count aggregation for derived property " +
+        propKey +
+        " returned a value larger than safe integer.",
     );
     return num;
   } // Selected or collected properties need to be deserialized specially when constructed with RDP
   else if (
-    derivedPropertyTypeByName[propKey].selectedOrCollectedPropertyType
-      != null
-    && typeof (derivedPropertyTypeByName[propKey]
-        .selectedOrCollectedPropertyType.type)
-      === "string"
-    && specialPropertyTypes.has(
-      derivedPropertyTypeByName[propKey].selectedOrCollectedPropertyType
-        .type,
+    derivedPropertyTypeByName[propKey].selectedOrCollectedPropertyType !=
+      null &&
+    typeof derivedPropertyTypeByName[propKey].selectedOrCollectedPropertyType
+      .type === "string" &&
+    specialPropertyTypes.has(
+      derivedPropertyTypeByName[propKey].selectedOrCollectedPropertyType.type,
     )
   ) {
     switch (
-      derivedPropertyTypeByName[propKey].selectedOrCollectedPropertyType
-        ?.type
+      derivedPropertyTypeByName[propKey].selectedOrCollectedPropertyType?.type
     ) {
       case "attachment":
         if (Array.isArray(rawValue)) {
-          return rawValue.map(a =>
-            hydrateAttachmentFromRidInternal(client, a.rid)
+          return rawValue.map((a) =>
+            hydrateAttachmentFromRidInternal(client, a.rid),
           );
         } else {
           return hydrateAttachmentFromRidInternal(
@@ -271,19 +263,22 @@ function createSpecialProperty(
   client: MinimalClient,
   objectDef: FetchedObjectTypeDefinition,
   rawObject: ObjectHolder,
-  p: keyof typeof rawObject & string | symbol,
+  p: (keyof typeof rawObject & string) | symbol,
 ) {
   const rawValue = rawObject[p as any];
   const propDef = objectDef.properties[p as any];
   if (process.env.NODE_ENV !== "production") {
     invariant(
-      propDef != null && typeof propDef.type === "string"
-        && specialPropertyTypes.has(propDef.type),
+      propDef != null &&
+        typeof propDef.type === "string" &&
+        specialPropertyTypes.has(propDef.type),
     );
   }
   if (propDef.type === "attachment") {
     if (Array.isArray(rawValue)) {
-      return rawValue.map(a => hydrateAttachmentFromRidInternal(client, a.rid));
+      return rawValue.map((a) =>
+        hydrateAttachmentFromRidInternal(client, a.rid),
+      );
     }
     return hydrateAttachmentFromRidInternal(
       client,
@@ -292,14 +287,16 @@ function createSpecialProperty(
   }
 
   if (
-    propDef.type === "numericTimeseries"
-    || propDef.type === "stringTimeseries"
-    || propDef.type === "sensorTimeseries"
+    propDef.type === "numericTimeseries" ||
+    propDef.type === "stringTimeseries" ||
+    propDef.type === "sensorTimeseries"
   ) {
     return new TimeSeriesPropertyImpl<
-      (typeof propDef)["type"] extends "numericTimeseries" ? number
-        : (typeof propDef)["type"] extends "stringTimeseries" ? string
-        : number | string
+      (typeof propDef)["type"] extends "numericTimeseries"
+        ? number
+        : (typeof propDef)["type"] extends "stringTimeseries"
+          ? string
+          : number | string
     >(
       client,
       objectDef.apiName,
@@ -316,12 +313,12 @@ function createSpecialProperty(
       p as string,
       (rawValue as ReferenceValue).type === "geotimeSeriesValue"
         ? {
-          time: (rawValue as ReferenceValue).timestamp,
-          value: {
-            type: "Point",
-            coordinates: (rawValue as ReferenceValue).position,
-          },
-        }
+            time: (rawValue as ReferenceValue).timestamp,
+            value: {
+              type: "Point",
+              coordinates: (rawValue as ReferenceValue).position,
+            },
+          }
         : undefined,
     );
   }
@@ -358,19 +355,20 @@ function parseWhenSecuritiesLoaded(
 
   for (const propKey of Object.keys(rawObject)) {
     if (
-      propKey in objectDef.properties || propKey in derivedPropertyTypeByName
+      propKey in objectDef.properties ||
+      propKey in derivedPropertyTypeByName
     ) {
       const value = rawObject[propKey];
 
       if (Array.isArray(value)) {
         const newVal: any[] = [];
         const newSecurities: PropertySecurity[][] = [];
-        value.forEach(spv => {
+        value.forEach((spv) => {
           invariant(
-            typeof spv === "object"
-              && spv != null
-              && "value" in spv
-              && "propertySecurityIndex" in spv,
+            typeof spv === "object" &&
+              spv != null &&
+              "value" in spv &&
+              "propertySecurityIndex" in spv,
             "Expected destructured secured property value object in array",
           );
           const securedValue = spv as SecuredPropertyValue;
@@ -385,18 +383,19 @@ function parseWhenSecuritiesLoaded(
             "Expected property security index to be within bounds",
           );
           newSecurities.push(
-            wirePropertySecurities[securityIndex].disjunction
-              .map(wireToClientPropertySecurities),
+            wirePropertySecurities[securityIndex].disjunction.map(
+              wireToClientPropertySecurities,
+            ),
           );
         });
         parsedObject[propKey] = newVal;
         clientPropertySecurities[propKey] = newSecurities;
       } // Check if this is a secured property value object
       else if (
-        typeof value === "object"
-        && value != null
-        && "value" in value
-        && "propertySecurityIndex" in value
+        typeof value === "object" &&
+        value != null &&
+        "value" in value &&
+        "propertySecurityIndex" in value
       ) {
         const securedValue = value as SecuredPropertyValue;
         parsedObject[propKey] = securedValue.value;
@@ -410,9 +409,9 @@ function parseWhenSecuritiesLoaded(
           securityIndex < wirePropertySecurities.length,
           "Expected property security index to be within bounds",
         );
-        clientPropertySecurities[propKey] =
-          wirePropertySecurities[securityIndex].disjunction
-            .map(wireToClientPropertySecurities);
+        clientPropertySecurities[propKey] = wirePropertySecurities[
+          securityIndex
+        ].disjunction.map(wireToClientPropertySecurities);
       } else {
         // Regular property without security
         parsedObject[propKey] = value;

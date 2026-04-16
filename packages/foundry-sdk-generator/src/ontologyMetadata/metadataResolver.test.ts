@@ -48,8 +48,8 @@ describe("Load Ontologies Metadata", () => {
       "myAccessToken",
       "https://stack.palantir.com",
     );
-    const ontologyDefinitions = await ontologyMetadataResolver
-      .getWireOntologyDefinition(
+    const ontologyDefinitions =
+      await ontologyMetadataResolver.getWireOntologyDefinition(
         "ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361",
         {
           objectTypesApiNamesToLoad: [],
@@ -90,8 +90,8 @@ describe("Load Ontologies Metadata", () => {
       "myAccessToken",
       "https://stack.palantir.com",
     );
-    const ontologyDefinitions = await ontologyMetadataResolver
-      .getWireOntologyDefinition(
+    const ontologyDefinitions =
+      await ontologyMetadataResolver.getWireOntologyDefinition(
         "ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361",
         {
           objectTypesApiNamesToLoad: ["objectDoesNotExist", "Employee"],
@@ -120,16 +120,13 @@ describe("Load Ontologies Metadata", () => {
       "myAccessToken",
       "https://stack.palantir.com",
     );
-    const ontologyDefinitions = await ontologyMetadataResolver
-      .getWireOntologyDefinition(
+    const ontologyDefinitions =
+      await ontologyMetadataResolver.getWireOntologyDefinition(
         "ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361",
         {
           objectTypesApiNamesToLoad: ["Employee"],
           actionTypesApiNamesToLoad: [],
-          linkTypesApiNamesToLoad: [
-            "Employee.peeps",
-            "invalid.invalid",
-          ],
+          linkTypesApiNamesToLoad: ["Employee.peeps", "invalid.invalid"],
         },
       );
 
@@ -173,21 +170,21 @@ describe("Load Ontologies Metadata", () => {
             );
           }
 
-          return HttpResponse.json({ error: "Internal Service Error" }, {
-            status: 500,
-          });
+          return HttpResponse.json(
+            { error: "Internal Service Error" },
+            {
+              status: 500,
+            },
+          );
         }),
       ),
     );
-    const ontologyDefinitions = await ontologyMetadataResolver
-      .getWireOntologyDefinition(
-        ontologyRid,
-        {
-          objectTypesApiNamesToLoad: undefined,
-          actionTypesApiNamesToLoad: ["unsupportedAction"],
-          queryTypesApiNamesToLoad: ["returnsObject"],
-        },
-      );
+    const ontologyDefinitions =
+      await ontologyMetadataResolver.getWireOntologyDefinition(ontologyRid, {
+        objectTypesApiNamesToLoad: undefined,
+        actionTypesApiNamesToLoad: ["unsupportedAction"],
+        queryTypesApiNamesToLoad: ["returnsObject"],
+      });
 
     if (ontologyDefinitions.isOk()) {
       throw new Error();
@@ -207,8 +204,8 @@ describe("Load Ontologies Metadata", () => {
       "myAccessToken",
       "https://stack.palantir.com",
     );
-    const ontologyDefinitions = await ontologyMetadataResolver
-      .getWireOntologyDefinition(
+    const ontologyDefinitions =
+      await ontologyMetadataResolver.getWireOntologyDefinition(
         "ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361",
         {
           objectTypesApiNamesToLoad: undefined,
@@ -232,8 +229,8 @@ describe("Load Ontologies Metadata", () => {
       "myAccessToken",
       "https://stack.palantir.com",
     );
-    const ontologyDefinitions = await ontologyMetadataResolver
-      .getWireOntologyDefinition(
+    const ontologyDefinitions =
+      await ontologyMetadataResolver.getWireOntologyDefinition(
         "ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361",
         {
           objectTypesApiNamesToLoad: ["Employee"],
@@ -250,8 +247,7 @@ describe("Load Ontologies Metadata", () => {
     const fullMetadata = ontologyDefinitions.value.requestedMetadata;
 
     expect(Object.keys(fullMetadata.objectTypes)).toHaveLength(1);
-    expect(fullMetadata.objectTypes.Employee.linkTypes)
-      .toHaveLength(0);
+    expect(fullMetadata.objectTypes.Employee.linkTypes).toHaveLength(0);
     expect(Object.keys(fullMetadata.actionTypes)).toHaveLength(1);
     expect(Object.keys(fullMetadata.interfaceTypes)).toHaveLength(1);
     expect(ontologyDefinitions.value).toMatchSnapshot();
@@ -262,8 +258,8 @@ describe("Load Ontologies Metadata", () => {
       "myAccessToken",
       "https://stack.palantir.com",
     );
-    const ontologyDefinitions = await ontologyMetadataResolver
-      .getWireOntologyDefinition(
+    const ontologyDefinitions =
+      await ontologyMetadataResolver.getWireOntologyDefinition(
         "ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361",
         {
           objectTypesApiNamesToLoad: ["Employee", "Office"],
@@ -289,8 +285,8 @@ describe("Load Ontologies Metadata", () => {
       "myAccessToken",
       "https://stack.palantir.com",
     );
-    const ontologyDefinitions = await ontologyMetadataResolver
-      .getWireOntologyDefinition(
+    const ontologyDefinitions =
+      await ontologyMetadataResolver.getWireOntologyDefinition(
         "ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361",
         {
           objectTypesApiNamesToLoad: ["Employee", "Office"],
@@ -319,8 +315,8 @@ describe("Load Ontologies Metadata", () => {
       "myAccessToken",
       "https://stack.palantir.com",
     );
-    const ontologyDefinitions = await ontologyMetadataResolver
-      .getWireOntologyDefinition(
+    const ontologyDefinitions =
+      await ontologyMetadataResolver.getWireOntologyDefinition(
         "ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361",
         {
           objectTypesApiNamesToLoad: ["Employee", "Office"],
@@ -350,8 +346,8 @@ describe("Load Ontologies Metadata", () => {
         "myAccessToken",
         "https://stack.palantir.com",
       );
-      const ontologyDefinitions = await ontologyMetadataResolver
-        .getWireOntologyDefinition(
+      const ontologyDefinitions =
+        await ontologyMetadataResolver.getWireOntologyDefinition(
           "ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361",
           {
             queryTypesApiNamesToLoad: ["addOne:0.0.9"],
@@ -364,9 +360,8 @@ describe("Load Ontologies Metadata", () => {
       expect(ontologyDefinitions.value.fixedVersionQueryTypes).toEqual([
         "addOne",
       ]);
-      expect(
-        ontologyDefinitions.value.requestedMetadata.queryTypes,
-      ).toMatchInlineSnapshot(`
+      expect(ontologyDefinitions.value.requestedMetadata.queryTypes)
+        .toMatchInlineSnapshot(`
         {
           "addOne:0.0.9": {
             "apiName": "addOne",
@@ -394,8 +389,8 @@ describe("Load Ontologies Metadata", () => {
         "myAccessToken",
         "https://stack.palantir.com",
       );
-      const ontologyDefinitions = await ontologyMetadataResolver
-        .getWireOntologyDefinition(
+      const ontologyDefinitions =
+        await ontologyMetadataResolver.getWireOntologyDefinition(
           "ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361",
           {
             queryTypesApiNamesToLoad: ["addOne"],
@@ -408,9 +403,8 @@ describe("Load Ontologies Metadata", () => {
       expect(ontologyDefinitions.value.fixedVersionQueryTypes.length).toEqual(
         0,
       );
-      expect(
-        ontologyDefinitions.value.requestedMetadata.queryTypes,
-      ).toMatchInlineSnapshot(`
+      expect(ontologyDefinitions.value.requestedMetadata.queryTypes)
+        .toMatchInlineSnapshot(`
         {
           "addOne": {
             "apiName": "addOne",

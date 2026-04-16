@@ -169,10 +169,7 @@ export async function copyChangelogs(
       continue;
     }
 
-    const changelogContent = await getChangelogContent(
-      pkg.name,
-      releaseBranch,
-    );
+    const changelogContent = await getChangelogContent(pkg.name, releaseBranch);
     if (changelogContent) {
       await updateChangelog(pkg.name, pkg.targetVersion, changelogContent);
     }

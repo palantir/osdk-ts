@@ -18,29 +18,37 @@ import { Country_1, StateTerritory } from "@osdk/e2e.generated.catchall";
 import { client } from "./client.js";
 
 export async function runWithPropertiesTest(): Promise<void> {
-  const result = await client(StateTerritory).withProperties({
-    "countryName": (base) =>
-      base.pivotTo("country1").selectProperty("airportCountryName"),
-  }).fetchPage();
+  const result = await client(StateTerritory)
+    .withProperties({
+      "countryName": (base) =>
+        base.pivotTo("country1").selectProperty("airportCountryName"),
+    })
+    .fetchPage();
 
   console.log(result.data.map((x) => x.countryName));
 
-  const result2 = await client(Country_1).withProperties({
-    "exactDistinctAirportStateCode": (base) =>
-      base.pivotTo("stateTerritory").aggregate(
-        "airportStateCode:exactDistinct",
-      ),
-    stateCount: (base) => base.pivotTo("stateTerritory").aggregate("$count"),
-    stateNameSet: (base) =>
-      base.pivotTo("stateTerritory").aggregate("airportStateName:collectSet", {
-        "limit": 10,
-      }),
-  }).fetchPage({ $loadPropertySecurityMetadata: true });
+  const result2 = await client(Country_1)
+    .withProperties({
+      "exactDistinctAirportStateCode": (base) =>
+        base
+          .pivotTo("stateTerritory")
+          .aggregate("airportStateCode:exactDistinct"),
+      stateCount: (base) => base.pivotTo("stateTerritory").aggregate("$count"),
+      stateNameSet: (base) =>
+        base
+          .pivotTo("stateTerritory")
+          .aggregate("airportStateName:collectSet", {
+            "limit": 10,
+          }),
+    })
+    .fetchPage({ $loadPropertySecurityMetadata: true });
 
   console.log(
-    result2.data.map((
-      x,
-    ) => [x.exactDistinctAirportStateCode, x.stateCount, x.stateNameSet]),
+    result2.data.map((x) => [
+      x.exactDistinctAirportStateCode,
+      x.stateCount,
+      x.stateNameSet,
+    ]),
   );
 }
 

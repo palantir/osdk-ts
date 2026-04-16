@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import { Employee, FooInterface } from "@osdk/client.test.ontology";
-
 import type { ObjectOrInterfaceDefinition, ObjectSet } from "@osdk/api";
+import { Employee, FooInterface } from "@osdk/client.test.ontology";
 import type { SetupServer } from "@osdk/shared.test";
 import { FauxFoundry, ontologies, startNodeApiServer } from "@osdk/shared.test";
 import invariant from "tiny-invariant";
@@ -99,9 +98,7 @@ describe(getObjectTypesThatInvalidate, () => {
   });
 
   it("supports A -> B -> A", async () => {
-    const empOS = client(Employee)
-      .pivotTo("officeLink")
-      .pivotTo("occupants");
+    const empOS = client(Employee).pivotTo("officeLink").pivotTo("occupants");
 
     const { resultType, invalidationSet } = await helper(empOS);
     expect(resultType).toEqual("Employee");
@@ -109,10 +106,9 @@ describe(getObjectTypesThatInvalidate, () => {
   });
 
   it("supports basic pivot property rdps", async () => {
-    const empOS = client(Employee)
-      .withProperties({
-        x: (b) => b.pivotTo("officeLink").selectProperty("name"),
-      });
+    const empOS = client(Employee).withProperties({
+      x: (b) => b.pivotTo("officeLink").selectProperty("name"),
+    });
 
     const { resultType, invalidationSet } = await helper(empOS);
     expect(resultType).toEqual("Employee");
@@ -120,10 +116,9 @@ describe(getObjectTypesThatInvalidate, () => {
   });
 
   it("supports basic localized", async () => {
-    const empOS = client(Employee)
-      .withProperties({
-        x: (b) => b.selectProperty("employeeId"),
-      });
+    const empOS = client(Employee).withProperties({
+      x: (b) => b.selectProperty("employeeId"),
+    });
 
     const { resultType, invalidationSet } = await helper(empOS);
     expect(resultType).toEqual("Employee");
@@ -165,9 +160,10 @@ describe(getObjectTypesThatInvalidate, () => {
   });
 
   it("supports crazy unions union of same type", async () => {
-    const set1 = client(Employee).where({ employeeId: { $lt: 100 } }).pivotTo(
-      "lead",
-    ).pivotTo("peeps");
+    const set1 = client(Employee)
+      .where({ employeeId: { $lt: 100 } })
+      .pivotTo("lead")
+      .pivotTo("peeps");
     const set2 = client(Employee).where({ employeeId: { $gt: 200 } });
     const unionSet = set1.union(set2);
 
@@ -190,9 +186,9 @@ describe(getObjectTypesThatInvalidate, () => {
 
   it("supports intersect with pivoted sets", async () => {
     const set1 = client(Employee).pivotTo("officeLink");
-    const set2 = client(Employee).where({ employeeId: 5 }).pivotTo(
-      "officeLink",
-    );
+    const set2 = client(Employee)
+      .where({ employeeId: 5 })
+      .pivotTo("officeLink");
     const intersectSet = set1.intersect(set2);
 
     const { resultType, invalidationSet } = await helper(intersectSet);
@@ -222,23 +218,19 @@ describe(getObjectTypesThatInvalidate, () => {
 
   it.skip("supports interface link search around", async () => {
     // FIXME, we don't have a good interface link example right now
-
     // Assuming FooInterface has links - skip if not available
     // const osdkObjectSet = client(FooInterface).pivotTo("someLink");
-
     // const { resultType, invalidationSet } = await helper(osdkObjectSet);
     // Verify it handles interface pivots correctly
   });
 
   // Complex RDP Tests
   it("supports multiple RDP properties", async () => {
-    const osdkObjectSet = client(Employee)
-      .withProperties({
-        officeCapacity: (b) =>
-          b.pivotTo("officeLink").selectProperty("capacity"),
-        managerName: (b) => b.pivotTo("lead").selectProperty("fullName"),
-        localProp: (b) => b.selectProperty("employeeId"),
-      });
+    const osdkObjectSet = client(Employee).withProperties({
+      officeCapacity: (b) => b.pivotTo("officeLink").selectProperty("capacity"),
+      managerName: (b) => b.pivotTo("lead").selectProperty("fullName"),
+      localProp: (b) => b.selectProperty("employeeId"),
+    });
 
     const { resultType, invalidationSet } = await helper(osdkObjectSet);
     expect(resultType).toEqual("Employee");
@@ -247,13 +239,12 @@ describe(getObjectTypesThatInvalidate, () => {
   });
 
   it("supports nested RDP operations", async () => {
-    const osdkObjectSet = client(Employee)
-      .withProperties({
-        computation: (b) =>
-          b.selectProperty("employeeId").add(
-            b.pivotTo("officeLink").aggregate("$count"),
-          ),
-      });
+    const osdkObjectSet = client(Employee).withProperties({
+      computation: (b) =>
+        b
+          .selectProperty("employeeId")
+          .add(b.pivotTo("officeLink").aggregate("$count")),
+    });
 
     const { resultType, invalidationSet } = await helper(osdkObjectSet);
     expect(resultType).toEqual("Employee");
@@ -263,7 +254,8 @@ describe(getObjectTypesThatInvalidate, () => {
   // Edge Cases and Error Handling
   it("handles empty union sets gracefully", async () => {
     // Create an empty union somehow
-    const emptyUnion = client(Employee).where({ employeeId: -1 })
+    const emptyUnion = client(Employee)
+      .where({ employeeId: -1 })
       .union(client(Employee).where({ employeeId: -2 }));
 
     const { resultType, invalidationSet } = await helper(emptyUnion);
@@ -279,8 +271,8 @@ describe(getObjectTypesThatInvalidate, () => {
 
     const { counts } = await helper(osdkObjectSet);
     // Employee should be counted multiple times
-    expect(counts["Employee"]).toBeGreaterThan(1);
-    expect(counts["Office"]).toBeGreaterThan(0);
+    expect(counts.Employee).toBeGreaterThan(1);
+    expect(counts.Office).toBeGreaterThan(0);
   });
 
   it("handles count adjustment for result type", async () => {
@@ -289,7 +281,7 @@ describe(getObjectTypesThatInvalidate, () => {
     const { resultType, counts, invalidationSet } = await helper(osdkObjectSet);
     // Result type should not be in invalidation set even if in counts
     expect(resultType).toEqual("Employee");
-    expect(counts["Employee"]).toBeDefined();
+    expect(counts.Employee).toBeDefined();
     expect([...invalidationSet]).not.toContain("Employee");
   });
 
@@ -332,12 +324,11 @@ describe(getObjectTypesThatInvalidate, () => {
   });
 
   it("supports RDP unary operations", async () => {
-    const osdkObjectSet = client(Employee)
-      .withProperties({
-        absolute: (b) => b.selectProperty("employeeId").abs(),
-        negated: (b) => b.selectProperty("employeeId").negate(),
-        extracted: (b) => b.selectProperty("startDate").extractPart("YEARS"),
-      });
+    const osdkObjectSet = client(Employee).withProperties({
+      absolute: (b) => b.selectProperty("employeeId").abs(),
+      negated: (b) => b.selectProperty("employeeId").negate(),
+      extracted: (b) => b.selectProperty("startDate").extractPart("YEARS"),
+    });
 
     const { resultType, invalidationSet } = await helper(osdkObjectSet);
     expect(resultType).toEqual("Employee");

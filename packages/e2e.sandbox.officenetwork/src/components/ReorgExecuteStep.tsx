@@ -54,8 +54,11 @@ function isNetworkError(error: unknown): boolean {
   }
   if (error instanceof TypeError) {
     const message = error.message.toLowerCase();
-    return message.includes("network") || message.includes("fetch failed")
-      || message.includes("failed to fetch");
+    return (
+      message.includes("network") ||
+      message.includes("fetch failed") ||
+      message.includes("failed to fetch")
+    );
   }
   if (typeof DOMException !== "undefined" && error instanceof DOMException) {
     return error.name === "NetworkError";
@@ -89,17 +92,21 @@ export function ReorgExecuteStep({
   }, [offices]);
 
   const addLog = React.useCallback((message: string) => {
-    setLogs((
-      prev,
-    ) => [...prev, `[${new Date().toLocaleTimeString()}] ${message}`]);
+    setLogs((prev) => [
+      ...prev,
+      `[${new Date().toLocaleTimeString()}] ${message}`,
+    ]);
   }, []);
 
   const executeReorg = React.useCallback(async () => {
     const changesToExecute = Array.from(changes.entries()).filter(
       ([employeeNumber, change]) => {
         const employee = employeeMap.get(employeeNumber);
-        return employee && change.targetOfficeId
-          && change.targetOfficeId !== employee.primaryOfficeId;
+        return (
+          employee &&
+          change.targetOfficeId &&
+          change.targetOfficeId !== employee.primaryOfficeId
+        );
       },
     );
 
@@ -150,8 +157,9 @@ export function ReorgExecuteStep({
         await withTimeout(
           applyAction({
             employee,
-            emailPrimaryWork: employee.emailPrimaryWork
-              ?? `employee${employeeNumber}@example.com`,
+            emailPrimaryWork:
+              employee.emailPrimaryWork ??
+              `employee${employeeNumber}@example.com`,
             primary_office_id: change.targetOfficeId,
             team: change.targetTeam,
             department: change.targetDepartment,
@@ -210,9 +218,10 @@ export function ReorgExecuteStep({
         await withTimeout(
           applyAction({
             employee,
-            emailPrimaryWork: snapshot.originalValues.emailPrimaryWork
-              ?? employee.emailPrimaryWork
-              ?? `employee${snapshot.employeeNumber}@example.com`,
+            emailPrimaryWork:
+              snapshot.originalValues.emailPrimaryWork ??
+              employee.emailPrimaryWork ??
+              `employee${snapshot.employeeNumber}@example.com`,
             primary_office_id: snapshot.originalValues.primaryOfficeId,
             team: snapshot.originalValues.team,
             department: snapshot.originalValues.department,
@@ -243,16 +252,19 @@ export function ReorgExecuteStep({
 
   React.useEffect(() => {
     if (
-      !hasStartedRef.current && execution.status === "idle" && changes.size > 0
+      !hasStartedRef.current &&
+      execution.status === "idle" &&
+      changes.size > 0
     ) {
       hasStartedRef.current = true;
       void executeReorg();
     }
   }, [execution.status, changes.size, executeReorg]);
 
-  const progressPercent = execution.progress.total > 0
-    ? (execution.progress.completed / execution.progress.total) * 100
-    : 0;
+  const progressPercent =
+    execution.progress.total > 0
+      ? (execution.progress.completed / execution.progress.total) * 100
+      : 0;
 
   const elapsedTime = metrics.startTime
     ? ((metrics.endTime ?? Date.now()) - metrics.startTime) / 1000
@@ -281,8 +293,8 @@ export function ReorgExecuteStep({
               execution.status === "error"
                 ? "bg-[var(--officenetwork-status-error)]"
                 : execution.status === "success"
-                ? "bg-[var(--officenetwork-status-ready)]"
-                : "bg-[var(--officenetwork-status-warning)]"
+                  ? "bg-[var(--officenetwork-status-ready)]"
+                  : "bg-[var(--officenetwork-status-warning)]"
             }`}
             style={{ width: `${progressPercent}%` }}
           />
@@ -306,11 +318,13 @@ export function ReorgExecuteStep({
           {logs.map((log, i) => (
             <div
               key={i}
-              className={log.includes("✓")
-                ? "text-[var(--officenetwork-status-ready)]"
-                : log.includes("✗")
-                ? "text-[var(--officenetwork-status-error)]"
-                : ""}
+              className={
+                log.includes("✓")
+                  ? "text-[var(--officenetwork-status-ready)]"
+                  : log.includes("✗")
+                    ? "text-[var(--officenetwork-status-error)]"
+                    : ""
+              }
             >
               {log}
             </div>
@@ -332,8 +346,8 @@ export function ReorgExecuteStep({
                 Execution failed
               </div>
               <div className="text-xs text-[var(--officenetwork-text-muted)]">
-                {execution.snapshots.length}{" "}
-                changes were applied before the error
+                {execution.snapshots.length} changes were applied before the
+                error
               </div>
             </div>
             <button

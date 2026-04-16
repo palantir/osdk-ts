@@ -23,9 +23,9 @@ import * as TimeSeriesPropertiesV2 from "@osdk/foundry.ontologies/TimeSeriesProp
 import type { MinimalClient } from "./MinimalClientContext.js";
 import { asyncIterPointsHelper, getTimeRange } from "./util/timeseriesUtils.js";
 
-export class TimeSeriesPropertyImpl<T extends number | string>
-  implements TimeSeriesProperty<T>
-{
+export class TimeSeriesPropertyImpl<
+  T extends number | string,
+> implements TimeSeriesProperty<T> {
   #triplet: [string, any, string];
   #client: MinimalClient;
 
@@ -66,9 +66,7 @@ export class TimeSeriesPropertyImpl<T extends number | string>
     return allPoints;
   }
 
-  public async *asyncIterPoints(
-    query?: TimeSeriesQuery,
-  ): AsyncGenerator<
+  public async *asyncIterPoints(query?: TimeSeriesQuery): AsyncGenerator<
     {
       time: any;
       value: T;
@@ -76,17 +74,16 @@ export class TimeSeriesPropertyImpl<T extends number | string>
     void,
     unknown
   > {
-    const streamPointsIterator = await TimeSeriesPropertiesV2
-      .streamPoints(
-        this.#client,
-        await this.#client.ontologyRid,
-        ...this.#triplet,
-        query ? { range: getTimeRange(query) } : {},
-      );
+    const streamPointsIterator = await TimeSeriesPropertiesV2.streamPoints(
+      this.#client,
+      await this.#client.ontologyRid,
+      ...this.#triplet,
+      query ? { range: getTimeRange(query) } : {},
+    );
 
-    for await (
-      const timeseriesPoint of asyncIterPointsHelper<T>(streamPointsIterator)
-    ) {
+    for await (const timeseriesPoint of asyncIterPointsHelper<T>(
+      streamPointsIterator,
+    )) {
       yield timeseriesPoint;
     }
   }

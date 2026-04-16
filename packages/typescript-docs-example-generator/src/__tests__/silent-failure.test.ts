@@ -99,7 +99,7 @@ export { objectSet };
         // It needs to be {{#propertyNames}}...{{/propertyNames}} with the array in context
         // Since we have propertyNames: ["name", "age", "email"], it should render the block multiple times
         expect(result.value).toContain(
-          "import { objectSet } from \"@osdk/api\";",
+          'import { objectSet } from "@osdk/api";',
         );
       }
     });
@@ -120,7 +120,7 @@ export { objectSet };
       {
         name: "#hasProperty",
         isInverted: false,
-        content: "const property = \"{{propertyName}}\";",
+        content: 'const property = "{{propertyName}}";',
       },
     ];
     const version = "2.0.0";
@@ -223,8 +223,7 @@ export { objectSet };
       if (!analysis.success) {
         // Previously: this error got converted to a warning and execution continued
         // Now: this error properly fails the build
-        const warning =
-          `Failed to analyze template test: ${analysis.error.message}`;
+        const warning = `Failed to analyze template test: ${analysis.error.message}`;
         expect(warning).toContain("Failed to analyze template");
 
         // Verify the error propagates correctly

@@ -30,11 +30,11 @@ export async function promptTemplate(parsed: {
   if (template == null) {
     const availableTemplates = TEMPLATES.filter(
       (template) =>
-        !template.hidden
-        && (useBeta
+        !template.hidden &&
+        (useBeta
           ? template.isBeta === true
-          // isBeta could be null
-          : !template.isBeta),
+          : // isBeta could be null
+            !template.isBeta),
     );
 
     if (availableTemplates.length === 0) {
@@ -42,11 +42,9 @@ export async function promptTemplate(parsed: {
     }
     const templateId = await consola.prompt(
       parsed.template != null
-        ? `The provided template ${
-          green(
+        ? `The provided template ${green(
             parsed.template,
-          )
-        } is invalid please select a framework:`
+          )} is invalid please select a framework:`
         : "Select a framework:",
       {
         type: "select",

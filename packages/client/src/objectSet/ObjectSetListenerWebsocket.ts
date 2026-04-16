@@ -55,14 +55,14 @@ function fillOutListener<
   Q extends ObjectOrInterfaceDefinition,
   P extends PropertyKeys<Q>,
   R extends boolean = false,
->(
-  {
-    onChange = doNothing,
-    onError = doNothing,
-    onOutOfDate = doNothing,
-    onSuccessfulSubscription = doNothing,
-  }: ObjectSetSubscription.Listener<Q, P, R>,
-): Required<ObjectSetSubscription.Listener<Q, P, R>> {
+>({
+  onChange = doNothing,
+  onError = doNothing,
+  onOutOfDate = doNothing,
+  onSuccessfulSubscription = doNothing,
+}: ObjectSetSubscription.Listener<Q, P, R>): Required<
+  ObjectSetSubscription.Listener<Q, P, R>
+> {
   return { onChange, onError, onOutOfDate, onSuccessfulSubscription };
 }
 
@@ -105,10 +105,7 @@ function subscriptionIsDone(sub: Subscription<any, any>) {
 
 /** @internal */
 export class ObjectSetListenerWebsocket {
-  static #instances = new WeakMap<
-    ClientCacheKey,
-    ObjectSetListenerWebsocket
-  >();
+  static #instances = new WeakMap<ClientCacheKey, ObjectSetListenerWebsocket>();
   readonly MINIMUM_RECONNECT_DELAY_MS: number;
 
   // FIXME
@@ -137,23 +134,15 @@ export class ObjectSetListenerWebsocket {
   /**
    * map of requestId to all active subscriptions at the time of the request
    */
-  #pendingSubscriptions = new Map<
-    string,
-    Subscription<any, any>[]
-  >();
+  #pendingSubscriptions = new Map<string, Subscription<any, any>[]>();
 
   /**
    * Map of subscriptionId to Subscription. Note: the subscriptionId may be
    * temporary and not the actual subscriptionId from the server.
    */
-  #subscriptions = new Map<
-    string,
-    Subscription<any, any>
-  >();
+  #subscriptions = new Map<string, Subscription<any, any>>();
 
-  #endedSubscriptions = new Set<
-    string
-  >();
+  #endedSubscriptions = new Set<string>();
 
   #maybeDisconnectTimeout: ReturnType<typeof setTimeout> | undefined;
   #heartbeatInterval: ReturnType<typeof setInterval> | undefined;
@@ -161,9 +150,7 @@ export class ObjectSetListenerWebsocket {
   // DO NOT CONSTRUCT DIRECTLY. ONLY EXPOSED AS A TESTING SEAM
   constructor(
     client: MinimalClient,
-    {
-      minimumReconnectDelayMs = MINIMUM_RECONNECT_DELAY_MS,
-    } = {},
+    { minimumReconnectDelayMs = MINIMUM_RECONNECT_DELAY_MS } = {},
   ) {
     this.MINIMUM_RECONNECT_DELAY_MS = minimumReconnectDelayMs;
     this.#client = client;
@@ -173,12 +160,15 @@ export class ObjectSetListenerWebsocket {
       multiplier: EXPONENTIAL_BACKOFF_MULTIPLIER,
       jitterFactor: EXPONENTIAL_BACKOFF_JITTER_FACTOR,
     });
-    this.#logger = client.logger?.child({}, {
-      msgPrefix: "<OSW> ",
-    });
+    this.#logger = client.logger?.child(
+      {},
+      {
+        msgPrefix: "<OSW> ",
+      },
+    );
     invariant(
-      client.baseUrl.startsWith("https://")
-        || client.baseUrl.startsWith("http://"),
+      client.baseUrl.startsWith("https://") ||
+        client.baseUrl.startsWith("http://"),
       "Stack must be a URL",
     );
   }
@@ -193,13 +183,14 @@ export class ObjectSetListenerWebsocket {
     properties: Array<P> = [],
     shouldLoadRids: boolean = false,
   ): Promise<() => void> {
-    const objOrInterfaceDef = objectType.type === "object"
-      ? await this.#client.ontologyProvider.getObjectDefinition(
-        objectType.apiName,
-      )
-      : await this.#client.ontologyProvider.getInterfaceDefinition(
-        objectType.apiName,
-      );
+    const objOrInterfaceDef =
+      objectType.type === "object"
+        ? await this.#client.ontologyProvider.getObjectDefinition(
+            objectType.apiName,
+          )
+        : await this.#client.ontologyProvider.getInterfaceDefinition(
+            objectType.apiName,
+          );
 
     let objectProperties: Array<P> = [];
     let referenceProperties: Array<P> = [];
@@ -208,31 +199,35 @@ export class ObjectSetListenerWebsocket {
       properties = Object.keys(objOrInterfaceDef.properties) as Array<P>;
     }
 
-    objectProperties = properties.filter((p) =>
-      p in objOrInterfaceDef.properties
-      && objOrInterfaceDef.properties[p].type !== "geotimeSeriesReference"
+    objectProperties = properties.filter(
+      (p) =>
+        p in objOrInterfaceDef.properties &&
+        objOrInterfaceDef.properties[p].type !== "geotimeSeriesReference",
     );
 
-    referenceProperties = properties.filter((p) =>
-      p in objOrInterfaceDef.properties
-      && objOrInterfaceDef.properties[p].type === "geotimeSeriesReference"
+    referenceProperties = properties.filter(
+      (p) =>
+        p in objOrInterfaceDef.properties &&
+        objOrInterfaceDef.properties[p].type === "geotimeSeriesReference",
     );
 
     const sub: Subscription<Q, P> = {
       listener: fillOutListener<Q, P>(listener),
       objectSet,
-      primaryKeyPropertyName: objOrInterfaceDef.type === "interface"
-        ? undefined
-        : objOrInterfaceDef.primaryKeyApiName,
+      primaryKeyPropertyName:
+        objOrInterfaceDef.type === "interface"
+          ? undefined
+          : objOrInterfaceDef.primaryKeyApiName,
       requestedProperties: objectProperties,
       requestedReferenceProperties: referenceProperties,
       status: "preparing",
       // Since we don't have a real subscription id yet but we need to keep
       // track of this reference, we can just use a random uuid.
       subscriptionId: `TMP-${nextUuid()}}`,
-      interfaceApiName: objOrInterfaceDef.type === "object"
-        ? undefined
-        : objOrInterfaceDef.apiName,
+      interfaceApiName:
+        objOrInterfaceDef.type === "object"
+          ? undefined
+          : objOrInterfaceDef.apiName,
       loadRids: shouldLoadRids,
     };
 
@@ -302,28 +297,25 @@ export class ObjectSetListenerWebsocket {
     // re-included, so we have to reconstitute the entire list of subscriptions
     const subscribe: ObjectSetStreamSubscribeRequests = {
       id,
-      requests: readySubs.map<ObjectSetStreamSubscribeRequest>((
-        {
+      requests: readySubs.map<ObjectSetStreamSubscribeRequest>(
+        ({
           objectSet,
           requestedProperties,
           requestedReferenceProperties,
           interfaceApiName,
+        }) => {
+          return {
+            objectSet,
+            propertySet: requestedProperties,
+            referenceSet: requestedReferenceProperties,
+            objectLoadingResponseOptions: { shouldLoadObjectRids: true },
+          };
         },
-      ) => {
-        return {
-          objectSet,
-          propertySet: requestedProperties,
-          referenceSet: requestedReferenceProperties,
-          objectLoadingResponseOptions: { shouldLoadObjectRids: true },
-        };
-      }),
+      ),
     };
 
     if (process.env.NODE_ENV !== "production") {
-      this.#logger?.debug(
-        { payload: subscribe },
-        "sending subscribe message",
-      );
+      this.#logger?.debug({ payload: subscribe }, "sending subscribe message");
     }
     this.#ws.send(JSON.stringify(subscribe));
   }
@@ -484,47 +476,45 @@ export class ObjectSetListenerWebsocket {
     }
   };
 
-  #handleMessage_objectSetChanged = async (
-    payload: ObjectSetUpdates,
-  ) => {
+  #handleMessage_objectSetChanged = async (payload: ObjectSetUpdates) => {
     const sub = this.#subscriptions.get(payload.id);
     if (sub == null) return;
 
-    const objectUpdates = payload.updates.filter((update) =>
-      update.type === "object"
+    const objectUpdates = payload.updates.filter(
+      (update) => update.type === "object",
     );
-    const referenceUpdates = payload.updates.filter((update) =>
-      update.type === "reference"
+    const referenceUpdates = payload.updates.filter(
+      (update) => update.type === "reference",
     );
     const osdkObjectsWithReferenceUpdates = await Promise.all(
       referenceUpdates.map(async (o) => {
         const osdkObjectArray = await this.#client.objectFactory2(
           this.#client,
-          [{
-            __apiName: o.objectType,
-            __primaryKey: sub.primaryKeyPropertyName != null
-              ? o.primaryKey[sub.primaryKeyPropertyName]
-              : undefined,
-            ...o.primaryKey,
-            [o.property]: o.value,
-          }],
+          [
+            {
+              __apiName: o.objectType,
+              __primaryKey:
+                sub.primaryKeyPropertyName != null
+                  ? o.primaryKey[sub.primaryKeyPropertyName]
+                  : undefined,
+              ...o.primaryKey,
+              [o.property]: o.value,
+            },
+          ],
           sub.interfaceApiName,
           {},
           undefined,
           false,
           undefined,
           false,
-          await this.#fetchInterfaceMapping(
-            o.objectType,
-            sub.interfaceApiName,
-          ),
+          await this.#fetchInterfaceMapping(o.objectType, sub.interfaceApiName),
         );
         const singleOsdkObject = osdkObjectArray[0] ?? undefined;
         return singleOsdkObject != null
           ? {
-            object: singleOsdkObject as Osdk.Instance<any, never, any>,
-            state: "ADDED_OR_UPDATED" as ObjectState,
-          }
+              object: singleOsdkObject as Osdk.Instance<any, never, any>,
+              state: "ADDED_OR_UPDATED" as ObjectState,
+            }
           : undefined;
       }),
     );
@@ -540,45 +530,47 @@ export class ObjectSetListenerWebsocket {
       }
     }
 
-    const osdkObjects = await Promise.all(objectUpdates.map(async (o) => {
-      const keysToDelete = Object.keys(o.object).filter((key) =>
-        sub.requestedReferenceProperties.includes(key)
-      );
-      for (const key of keysToDelete) {
-        delete o.object[key];
-      }
+    const osdkObjects = await Promise.all(
+      objectUpdates.map(async (o) => {
+        const keysToDelete = Object.keys(o.object).filter((key) =>
+          sub.requestedReferenceProperties.includes(key),
+        );
+        for (const key of keysToDelete) {
+          delete o.object[key];
+        }
 
-      const osdkObjectArray = await this.#client.objectFactory2(
-        this.#client,
-        [o.object],
-        sub.interfaceApiName,
-        {},
-        undefined,
-        false,
-        undefined,
-        false,
-        await this.#fetchInterfaceMapping(
-          o.object.__apiName,
+        const osdkObjectArray = (await this.#client.objectFactory2(
+          this.#client,
+          [o.object],
           sub.interfaceApiName,
-        ),
-      ) as Array<Osdk.Instance<any>>;
-      const singleOsdkObject = osdkObjectArray[0] ?? undefined;
+          {},
+          undefined,
+          false,
+          undefined,
+          false,
+          await this.#fetchInterfaceMapping(
+            o.object.__apiName,
+            sub.interfaceApiName,
+          ),
+        )) as Array<Osdk.Instance<any>>;
+        const singleOsdkObject = osdkObjectArray[0] ?? undefined;
 
-      const rid = singleOsdkObject.$rid as string | undefined;
+        const rid = singleOsdkObject.$rid as string | undefined;
 
-      return singleOsdkObject != null
-        ? rid === undefined
-          ? {
-            object: singleOsdkObject,
-            state: o.state,
-          }
-          : {
-            object: singleOsdkObject,
-            state: o.state,
-            rid,
-          }
-        : undefined;
-    }));
+        return singleOsdkObject != null
+          ? rid === undefined
+            ? {
+                object: singleOsdkObject,
+                state: o.state,
+              }
+            : {
+                object: singleOsdkObject,
+                state: o.state,
+                rid,
+              }
+          : undefined;
+      }),
+    );
 
     for (const osdkObject of osdkObjects) {
       if (osdkObject != null) {
@@ -597,8 +589,9 @@ export class ObjectSetListenerWebsocket {
     interfaceApiName: string | undefined,
   ): Promise<Record<string, Record<string, Record<string, string>>>> {
     if (interfaceApiName == null) return {};
-    const interfaceMap = (await this.#client.ontologyProvider
-      .getObjectDefinition(objectTypeApiName)).interfaceMap;
+    const interfaceMap = (
+      await this.#client.ontologyProvider.getObjectDefinition(objectTypeApiName)
+    ).interfaceMap;
     return {
       [interfaceApiName]: {
         [objectTypeApiName]: interfaceMap[interfaceApiName],
@@ -643,8 +636,8 @@ export class ObjectSetListenerWebsocket {
 
         case "success":
           // `"preparing"` should only be the status on an initial subscribe.
-          const shouldFireOutOfDate = sub.status === "expired"
-            || sub.status === "reconnecting";
+          const shouldFireOutOfDate =
+            sub.status === "expired" || sub.status === "reconnecting";
 
           if (process.env.NODE_ENV !== "production") {
             this.#logger?.debug({ shouldFireOutOfDate }, "success");
@@ -701,8 +694,8 @@ export class ObjectSetListenerWebsocket {
       this.#ws.removeEventListener("close", this.#onClose);
 
       if (
-        this.#ws.readyState !== WebSocket.CLOSING
-        && this.#ws.readyState !== WebSocket.CLOSED
+        this.#ws.readyState !== WebSocket.CLOSING &&
+        this.#ws.readyState !== WebSocket.CLOSED
       ) {
         this.#ws.close();
       }
@@ -749,10 +742,7 @@ export class ObjectSetListenerWebsocket {
         error,
       );
       // eslint-disable-next-line no-console
-      console.error(
-        `The subscription has been closed.`,
-        error,
-      );
+      console.error(`The subscription has been closed.`, error);
 
       if (!subscriptionClosed) {
         this.#logger?.error(error, "Error in onError callback");
@@ -764,10 +754,7 @@ export class ObjectSetListenerWebsocket {
 }
 
 /** @internal */
-export function constructWebsocketUrl(
-  baseUrl: string,
-  ontologyRid: string,
-) {
+export function constructWebsocketUrl(baseUrl: string, ontologyRid: string) {
   const base = new URL(baseUrl);
   const url = new URL(
     `api/v2/ontologySubscriptions/ontologies/${ontologyRid}/streamSubscriptions`,
@@ -780,7 +767,7 @@ export function constructWebsocketUrl(
 let uuidCounter = 0;
 
 function nextUuid() {
-  return `00000000-0000-0000-0000-${
-    (uuidCounter++).toString().padStart(12, "0")
-  }`;
+  return `00000000-0000-0000-0000-${(uuidCounter++)
+    .toString()
+    .padStart(12, "0")}`;
 }

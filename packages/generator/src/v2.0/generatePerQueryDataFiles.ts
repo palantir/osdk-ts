@@ -60,7 +60,7 @@ export async function generatePerQueryDataFilesV2(
   const outDir = path.join(rootOutDir, "ontology", "queries");
   await fs.mkdir(outDir, { recursive: true });
   await Promise.all(
-    Object.values(ontology.queryTypes).map(async query => {
+    Object.values(ontology.queryTypes).map(async (query) => {
       await generateV2QueryFile(
         fs,
         outDir,
@@ -78,14 +78,14 @@ export async function generatePerQueryDataFilesV2(
   await fs.writeFile(
     indexFilePath,
     await formatTs(`
-    ${
-      Object.values(ontology.queryTypes).map(query =>
-        `export {${query.shortApiName}} from "${
-          query.getImportPathRelTo(relOutDir)
-        }";`
+    ${Object.values(ontology.queryTypes)
+      .map(
+        (query) =>
+          `export {${query.shortApiName}} from "${query.getImportPathRelTo(
+            relOutDir,
+          )}";`,
       )
-        .join("\n")
-    }
+      .join("\n")}
       ${Object.keys(ontology.queryTypes).length === 0 ? "export {};" : ""}
     `),
   );
@@ -104,12 +104,10 @@ async function generateV2QueryFile(
   const relFilePath = path.join(relOutDir, `${query.shortApiName}.ts`);
   const objectTypes = getObjectTypeApiNamesFromQuery(query);
   const interfaceTypes = getInterfaceTypeApiNamesFromQuery(query);
-  const interfaceAndObjectTypes = new Set(
-    [
-      ...objectTypes.map(o => ontology.requireObjectType(o)),
-      ...interfaceTypes.map(o => ontology.requireInterfaceType(o)),
-    ],
-  );
+  const interfaceAndObjectTypes = new Set([
+    ...objectTypes.map((o) => ontology.requireObjectType(o)),
+    ...interfaceTypes.map((o) => ontology.requireInterfaceType(o)),
+  ]);
 
   const importObjects = getObjectImports(
     interfaceAndObjectTypes,
@@ -138,8 +136,8 @@ async function generateV2QueryFile(
     path.join(outDir, `${query.shortApiName}.ts`),
     await formatTs(`
         import type { ObjectSpecifier, QueryDefinition, QueryParam, QueryResult, VersionBound} from "${
-      forInternalUse ? "@osdk/api" : "@osdk/client"
-    }";
+          forInternalUse ? "@osdk/api" : "@osdk/client"
+        }";
         import type { $ExpectedClientVersion } from "../../OntologyMetadata${importExt}";
         import { $osdkMetadata} from "../../OntologyMetadata${importExt}";
         ${importObjects}
@@ -150,49 +148,45 @@ async function generateV2QueryFile(
           export interface Signature {
             ${getDescriptionIfPresent(query.description)}
             (${
-      Object.keys(query.parameters).length > 0
-        ? `query: ${query.paramsIdentifier}`
-        : ""
-    }): Promise<${query.shortApiName}.ReturnType>
+              Object.keys(query.parameters).length > 0
+                ? `query: ${query.paramsIdentifier}`
+                : ""
+            }): Promise<${query.shortApiName}.ReturnType>
           }
 
         ${
-      Object.keys(query.parameters).length > 0
-        ? `
+          Object.keys(query.parameters).length > 0
+            ? `
             export interface Parameters {
-            ${
-          stringify(query.parameters, {
-            "*": (parameter, formatter, apiName) => {
-              const q = paramToDef(parameter);
-              return [
-                `
-                ${
-                  queryParamJsDoc(paramToDef(parameter), { apiName })
-                }readonly "${apiName}"${q.nullable ? "?" : ""}`,
-                getQueryParamType(ontology, q, "Param", false, typeRefNames),
-              ];
-            },
-          })
-        }
+            ${stringify(query.parameters, {
+              "*": (parameter, formatter, apiName) => {
+                const q = paramToDef(parameter);
+                return [
+                  `
+                ${queryParamJsDoc(paramToDef(parameter), {
+                  apiName,
+                })}readonly "${apiName}"${q.nullable ? "?" : ""}`,
+                  getQueryParamType(ontology, q, "Param", false, typeRefNames),
+                ];
+              },
+            })}
             }`
-        : ""
-    }
+            : ""
+        }
 
-            ${
-      (() => {
-        const outputDef = paramToDef({ dataType: query.output });
-        const outputType = getQueryParamType(
-          ontology,
-          outputDef,
-          "Result",
-          false,
-          typeRefNames,
-        );
-        return query.output.type === "struct"
-          ? `export interface ReturnType ${outputType}`
-          : `export type ReturnType = ${outputType};`;
-      })()
-    }
+            ${(() => {
+              const outputDef = paramToDef({ dataType: query.output });
+              const outputType = getQueryParamType(
+                ontology,
+                outputDef,
+                "Result",
+                false,
+                typeRefNames,
+              );
+              return query.output.type === "struct"
+                ? `export interface ReturnType ${outputType}`
+                : `export type ReturnType = ${outputType};`;
+            })()}
       }
 
         ${getDescriptionIfPresent(query.description)}
@@ -211,25 +205,21 @@ async function generateV2QueryFile(
             };
             signature: ${query.shortApiName}.Signature;
         }, 
-        ${
-      stringify(baseProps, {
-        "description": () => undefined,
-        "displayName": () => undefined,
-        "rid": () => undefined,
-      })
-    }, 
+        ${stringify(baseProps, {
+          "description": () => undefined,
+          "displayName": () => undefined,
+          "rid": () => undefined,
+        })}, 
           osdkMetadata: typeof $osdkMetadata;
               }
 
         ${getDescriptionIfPresent(query.description)}
         export const ${query.shortApiName}: ${query.definitionIdentifier} = {
-            ${
-      stringify(baseProps, {
-        "description": () => undefined,
-        "displayName": () => undefined,
-        "rid": () => undefined,
-      })
-    },
+            ${stringify(baseProps, {
+              "description": () => undefined,
+              "displayName": () => undefined,
+              "rid": () => undefined,
+            })},
     isFixedVersion: ${isUsingFixedVersion},
     osdkMetadata: $osdkMetadata
         };
@@ -257,11 +247,9 @@ function getLineFor__OsdkTargetType(
   qdt: QueryDataType,
 ) {
   if (qdt.type === "object" || qdt.type === "objectSet") {
-    return `__OsdkTargetType?: ${
-      ontology.requireObjectType(
-        qdt.objectTypeApiName!,
-      ).getImportedDefinitionIdentifier(true)
-    }`;
+    return `__OsdkTargetType?: ${ontology
+      .requireObjectType(qdt.objectTypeApiName!)
+      .getImportedDefinitionIdentifier(true)}`;
   }
   return "";
 }
@@ -297,9 +285,9 @@ export function getQueryParamType(
 
   switch (input.type) {
     case "array":
-      paramType = `${type === "Param" ? "Readonly" : ""}Array<${
-        recurse(input.array)
-      }>`;
+      paramType = `${type === "Param" ? "Readonly" : ""}Array<${recurse(
+        input.array,
+      )}>`;
       break;
     case "date":
       paramType = `Query${type}.PrimitiveType<${JSON.stringify("datetime")}>`;
@@ -324,19 +312,17 @@ export function getQueryParamType(
       break;
     case "struct":
       paramType = `{
-            ${
-        stringify(input.struct, {
-          "*": (p, formatter, apiName) => {
-            return [
-              `
+            ${stringify(input.struct, {
+              "*": (p, formatter, apiName) => {
+                return [
+                  `
                 ${type === "Param" ? "readonly " : ""}"${apiName}"${
-                p.nullable ? "?" : ""
-              }`,
-              recurse(p),
-            ];
-          },
-        })
-      }
+                  p.nullable ? "?" : ""
+                }`,
+                  recurse(p),
+                ];
+              },
+            })}
             }`;
       break;
     case "twoDimensionalAggregation":
@@ -361,42 +347,37 @@ export function getQueryParamType(
       break;
     case "object":
       if (isMapKey) {
-        paramType = `ObjectSpecifier<${
-          enhancedOntology.requireObjectType(input.object)
-            .getImportedDefinitionIdentifier(true)
-        }>`;
+        paramType = `ObjectSpecifier<${enhancedOntology
+          .requireObjectType(input.object)
+          .getImportedDefinitionIdentifier(true)}>`;
         break;
       }
-      paramType = `Query${type}.ObjectType<${
-        enhancedOntology.requireObjectType(input.object)
-          .getImportedDefinitionIdentifier(true)
-      }>`;
+      paramType = `Query${type}.ObjectType<${enhancedOntology
+        .requireObjectType(input.object)
+        .getImportedDefinitionIdentifier(true)}>`;
       break;
     case "interface":
-      paramType = `Query${type}.InterfaceType<${
-        enhancedOntology.requireInterfaceType(input.interface)
-          .getImportedDefinitionIdentifier(true)
-      }>`;
+      paramType = `Query${type}.InterfaceType<${enhancedOntology
+        .requireInterfaceType(input.interface)
+        .getImportedDefinitionIdentifier(true)}>`;
       break;
 
     case "objectSet":
-      paramType = `Query${type}.ObjectSetType<${
-        enhancedOntology.requireObjectType(input.objectSet)
-          .getImportedDefinitionIdentifier(true)
-      }>`;
+      paramType = `Query${type}.ObjectSetType<${enhancedOntology
+        .requireObjectType(input.objectSet)
+        .getImportedDefinitionIdentifier(true)}>`;
       break;
 
     case "interfaceObjectSet":
-      paramType = `Query${type}.ObjectSetType<${
-        enhancedOntology.requireInterfaceType(input.objectSet)
-          .getImportedDefinitionIdentifier(true)
-      }>`;
+      paramType = `Query${type}.ObjectSetType<${enhancedOntology
+        .requireInterfaceType(input.objectSet)
+        .getImportedDefinitionIdentifier(true)}>`;
       break;
 
     case "set":
-      paramType = `${type === "Param" ? "Readonly" : ""}Set<${
-        recurse(input.set)
-      }>`;
+      paramType = `${type === "Param" ? "Readonly" : ""}Set<${recurse(
+        input.set,
+      )}>`;
       break;
 
     case "union":
@@ -404,9 +385,9 @@ export function getQueryParamType(
       break;
 
     case "map":
-      paramType = `Partial<Record<${recurse(input.keyType, true)}, ${
-        recurse(input.valueType)
-      }>>`;
+      paramType = `Partial<Record<${recurse(input.keyType, true)}, ${recurse(
+        input.valueType,
+      )}>>`;
       break;
 
     case "typeReference": {
@@ -454,9 +435,13 @@ function generateCustomTypesNamespace(
     const sanitized = `$${id.replace(/-/g, "_")}`;
     const converted = wireQueryDataTypeToQueryDataTypeDefinition(dt);
     interfaces.push(
-      `export interface ${sanitized} ${
-        getQueryParamType(ontology, converted, "Param", false, names)
-      }`,
+      `export interface ${sanitized} ${getQueryParamType(
+        ontology,
+        converted,
+        "Param",
+        false,
+        names,
+      )}`,
     );
   }
 

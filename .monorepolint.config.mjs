@@ -74,41 +74,25 @@ const INTERNAL_LIBRARY_RULES = {
   private: true,
 };
 
-const archetypeRules = archetypes(
-  standardPackageRules,
-  {
-    unmatched: "error",
-  },
-)
+const archetypeRules = archetypes(standardPackageRules, {
+  unmatched: "error",
+})
   .addArchetype(
     "checkApiPackages",
-    [
-      "@osdk/api",
-      "@osdk/functions",
-      "@osdk/functions-testing.experimental",
-    ],
+    ["@osdk/api", "@osdk/functions", "@osdk/functions-testing.experimental"],
     {
       ...LIBRARY_RULES,
       checkApi: true,
     },
   )
-  .addArchetype(
-    "clientPackage",
-    [
-      "@osdk/client",
-    ],
-    {
-      ...LIBRARY_RULES,
-      checkApi: true,
-      typecheckProject: "tsconfig.typecheck.json",
-    },
-  )
+  .addArchetype("clientPackage", ["@osdk/client"], {
+    ...LIBRARY_RULES,
+    checkApi: true,
+    typecheckProject: "tsconfig.typecheck.json",
+  })
   .addArchetype(
     "tests and benchmarks",
-    [
-      "@osdk/tests.*",
-      "@osdk/benchmarks.*",
-    ],
+    ["@osdk/tests.*", "@osdk/benchmarks.*"],
     {
       ...LIBRARY_RULES,
       minimalChangesOnly: true,
@@ -180,28 +164,19 @@ const archetypeRules = archetypes(
       fixedDepsOnly: true,
     },
   )
-  .addArchetype(
-    "consumerCliWithSite",
-    [
-      "@osdk/ontology-explorer-server",
-    ],
-    {
-      ...LIBRARY_RULES,
-      output: {
-        browser: undefined,
-        cjs: undefined,
-        esm: "bundle",
-      },
-      fixedDepsOnly: true,
-      extraPublishFiles: ["build/site"],
+  .addArchetype("consumerCliWithSite", ["@osdk/ontology-explorer-server"], {
+    ...LIBRARY_RULES,
+    output: {
+      browser: undefined,
+      cjs: undefined,
+      esm: "bundle",
     },
-  )
+    fixedDepsOnly: true,
+    extraPublishFiles: ["build/site"],
+  })
   .addArchetype(
     "forceBundle",
-    [
-      "@osdk/client.unstable",
-      "@osdk/client.unstable.tpsa",
-    ],
+    ["@osdk/client.unstable", "@osdk/client.unstable.tpsa"],
     {
       ...LIBRARY_RULES,
       output: OUTPUT_BUNDLE_ALL,
@@ -237,9 +212,7 @@ const archetypeRules = archetypes(
   )
   .addArchetype(
     "internal libraries / templates with modern tooling ES2023",
-    [
-      "@osdk/typescript-sdk-docs-examples",
-    ],
+    ["@osdk/typescript-sdk-docs-examples"],
     {
       ...INTERNAL_LIBRARY_RULES,
       extraTsConfigCompilerOptions: {
@@ -247,9 +220,7 @@ const archetypeRules = archetypes(
       },
     },
   )
-  .addArchetype("publishedSandboxes", [
-    "@osdk/e2e.sandbox.catchall",
-  ], {
+  .addArchetype("publishedSandboxes", ["@osdk/e2e.sandbox.catchall"], {
     ...INTERNAL_LIBRARY_RULES,
     skipTypes: true,
     private: false,
@@ -262,9 +233,7 @@ const archetypeRules = archetypes(
   })
   .addArchetype(
     "currentlyGeneratedSdks",
-    [
-      "@osdk/e2e.generated.api-namespace.*",
-    ],
+    ["@osdk/e2e.generated.api-namespace.*"],
     {
       ...LIBRARY_RULES,
       skipAttw: true,
@@ -289,72 +258,39 @@ const archetypeRules = archetypes(
       },
     },
   )
-  .addArchetype(
-    "viteReactAppsWithScss",
-    [
-      "@osdk/ontology-explorer-app",
-    ],
-    {
-      ...INTERNAL_LIBRARY_RULES,
-      skipTypes: true,
-      react: true,
-      extraTsConfigCompilerOptions: {
-        "isolatedDeclarations": false,
-        "plugins": [{ "name": "typescript-plugin-css-modules" }],
-        "rootDirs": ["./src", "./build/scss-types"],
-        "allowArbitraryExtensions": true,
-      },
+  .addArchetype("viteReactAppsWithScss", ["@osdk/ontology-explorer-app"], {
+    ...INTERNAL_LIBRARY_RULES,
+    skipTypes: true,
+    react: true,
+    extraTsConfigCompilerOptions: {
+      "isolatedDeclarations": false,
+      "plugins": [{ "name": "typescript-plugin-css-modules" }],
+      "rootDirs": ["./src", "./build/scss-types"],
+      "allowArbitraryExtensions": true,
     },
-  )
-  .addArchetype(
-    "nodeSandboxes",
-    [
-      "@osdk/e2e.sandbox.oauth",
-    ],
-    {
-      ...INTERNAL_LIBRARY_RULES,
-      skipTypes: true,
-    },
-  )
-  .addArchetype(
-    "e2eTests",
-    [
-      "@osdk/e2e.test.foundry-sdk-generator",
-    ],
-    {
-      ...INTERNAL_LIBRARY_RULES,
-      output: OUTPUT_NORMAL,
-      skipTypes: true,
-    },
-  )
-  .addArchetype(
-    "vitePlugin",
-    [
-      "@osdk/widget.vite-plugin",
-    ],
-    {
-      ...LIBRARY_RULES,
-      react: true,
-      output: OUTPUT_ESM_ONLY,
-      extraPublishFiles: ["build/site"],
-    },
-  )
-  .addArchetype(
-    "reactLibrary",
-    [
-      "@osdk/widget.client-react",
-    ],
-    {
-      ...LIBRARY_RULES,
-      react: true,
-    },
-  )
+  })
+  .addArchetype("nodeSandboxes", ["@osdk/e2e.sandbox.oauth"], {
+    ...INTERNAL_LIBRARY_RULES,
+    skipTypes: true,
+  })
+  .addArchetype("e2eTests", ["@osdk/e2e.test.foundry-sdk-generator"], {
+    ...INTERNAL_LIBRARY_RULES,
+    output: OUTPUT_NORMAL,
+    skipTypes: true,
+  })
+  .addArchetype("vitePlugin", ["@osdk/widget.vite-plugin"], {
+    ...LIBRARY_RULES,
+    react: true,
+    output: OUTPUT_ESM_ONLY,
+    extraPublishFiles: ["build/site"],
+  })
+  .addArchetype("reactLibrary", ["@osdk/widget.client-react"], {
+    ...LIBRARY_RULES,
+    react: true,
+  })
   .addArchetype(
     "reactLibraryWithCss",
-    [
-      "@osdk/cbac-components",
-      "@osdk/react-components",
-    ],
+    ["@osdk/cbac-components", "@osdk/react-components"],
     {
       ...LIBRARY_RULES,
       react: true,
@@ -362,41 +298,23 @@ const archetypeRules = archetypes(
       extraPublishFiles: ["AGENTS.md", "docs"],
     },
   )
-  .addArchetype(
-    "reactLibraryWithDocs",
-    [
-      "@osdk/react",
-    ],
-    {
-      ...LIBRARY_RULES,
-      react: true,
-      extraPublishFiles: ["AGENTS.md", "docs", "experimental"],
-      customTsconfigExcludes: ["./src/intellisense.test.helpers/**"],
-    },
-  )
-  .addArchetype(
-    "docs",
-    [
-      "@osdk/docs",
-    ],
-    {
-      ...LIBRARY_RULES,
-      minimalChangesOnly: true,
-      private: true,
-    },
-  )
-  .addArchetype(
-    "cssOnlyPackage",
-    [
-      "@osdk/react-components-styles",
-    ],
-    {
-      repositoryUrl: "https://github.com/palantir/osdk-ts.git",
-      private: false,
-      output: OUTPUT_NONE,
-      minimalChangesOnly: true,
-    },
-  );
+  .addArchetype("reactLibraryWithDocs", ["@osdk/react"], {
+    ...LIBRARY_RULES,
+    react: true,
+    extraPublishFiles: ["AGENTS.md", "docs", "experimental"],
+    customTsconfigExcludes: ["./src/intellisense.test.helpers/**"],
+  })
+  .addArchetype("docs", ["@osdk/docs"], {
+    ...LIBRARY_RULES,
+    minimalChangesOnly: true,
+    private: true,
+  })
+  .addArchetype("cssOnlyPackage", ["@osdk/react-components-styles"], {
+    repositoryUrl: "https://github.com/palantir/osdk-ts.git",
+    private: false,
+    output: OUTPUT_NONE,
+    minimalChangesOnly: true,
+  });
 
 /**
  * We don't want to allow `workspace:^` in our dependencies because our current release branch
@@ -435,11 +353,9 @@ const disallowWorkspaceCaret = createRuleFactory({
                 // always refetch in fixer since another fixer may have already changed the file
                 let packageJson = context.getPackageJson();
                 if (packageJson[d]) {
-                  packageJson[d] = Object.assign(
-                    {},
-                    packageJson[d],
-                    { [dep]: expected },
-                  );
+                  packageJson[d] = Object.assign({}, packageJson[d], {
+                    [dep]: expected,
+                  });
 
                   context.host.writeJson(
                     context.getPackageJsonPath(),
@@ -451,11 +367,11 @@ const disallowWorkspaceCaret = createRuleFactory({
           }
         } else if (version === "workspace:^") {
           if (
-            dep === "@osdk/shared.client2"
+            dep === "@osdk/shared.client2" ||
             // Since this package is only being used internally, it's fine to keep this relaxed to ^ so it can use newer client versions without bumping everything
-            || (packageJson.name === "@osdk/functions"
-              && dep === "@osdk/client")
-          ) continue;
+            (packageJson.name === "@osdk/functions" && dep === "@osdk/client")
+          )
+            continue;
           const message = `'workspace:^' not allowed (${d}['${dep}']).`;
           context.addError({
             message,
@@ -465,11 +381,9 @@ const disallowWorkspaceCaret = createRuleFactory({
               // always refetch in fixer since another fixer may have already changed the file
               let packageJson = context.getPackageJson();
               if (packageJson[d]?.[dep] === "workspace:^") {
-                packageJson[d] = Object.assign(
-                  {},
-                  packageJson[d],
-                  { [dep]: "workspace:~" },
-                );
+                packageJson[d] = Object.assign({}, packageJson[d], {
+                  [dep]: "workspace:~",
+                });
 
                 context.host.writeJson(
                   context.getPackageJsonPath(),
@@ -503,8 +417,7 @@ const fixedDepsOnly = createRuleFactory({
         if (dep === "typescript" && version[0] === "~") continue;
         if (dep === "rollup" && version[0] === "^") continue; // we want rollup CVE fixes
 
-        const message =
-          `May only have fixed dependencies (found ${d}['${dep}'] == '${version}').`;
+        const message = `May only have fixed dependencies (found ${d}['${dep}'] == '${version}').`;
         context.addError({
           message,
           longMessage: message,
@@ -534,8 +447,11 @@ const noPackageEntry = createRuleFactory({
     }
   },
   validateOptions: (options) => {
-    return typeof options === "object" && "entries" in options
-      && Array.isArray(options.entries);
+    return (
+      typeof options === "object" &&
+      "entries" in options &&
+      Array.isArray(options.entries)
+    );
   },
 });
 
@@ -571,9 +487,7 @@ const ourExportsConvention = createRuleFactory({
     const expectedExports = {
       exports: {
         ".": {
-          "browser": options.browser
-            ? "./build/browser/index.js"
-            : undefined,
+          "browser": options.browser ? "./build/browser/index.js" : undefined,
           "import": {
             // we generate the types for this in a separate task
             // than transpile so they end up in different places
@@ -583,9 +497,7 @@ const ourExportsConvention = createRuleFactory({
 
           // for cjs, we generate the types next to the transpiled code
           // so we don't need to separate anything out. TSC infers properly
-          "require": options.cjs
-            ? "./build/cjs/index.cjs"
-            : undefined,
+          "require": options.cjs ? "./build/cjs/index.cjs" : undefined,
           "default": `./build/${options.browser ? "browser" : "esm"}/index.js`,
         },
       },
@@ -612,13 +524,11 @@ const ourExportsConvention = createRuleFactory({
     }
 
     if (await dirExists(publicPath)) {
-      for (
-        const q of await fs.readdir(publicPath, {
-          withFileTypes: true,
-          encoding: "utf8",
-          recursive: true,
-        })
-      ) {
+      for (const q of await fs.readdir(publicPath, {
+        withFileTypes: true,
+        encoding: "utf8",
+        recursive: true,
+      })) {
         if (!q.isFile()) continue;
         if (!q.name.endsWith(".ts")) continue;
 
@@ -666,8 +576,7 @@ const allLocalDepsMustNotBePrivate = createRuleFactory({
         );
 
         if (theirPackageJson.private) {
-          const message =
-            `${dep} is private and cannot be used as a regular dependency for this package`;
+          const message = `${dep} is private and cannot be used as a regular dependency for this package`;
           context.addError({
             message,
             longMessage: message,
@@ -710,8 +619,7 @@ const setWorkspaceDepRangeForPrereleases = createRuleFactory({
           message: `@osdk/client is ${
             isPrerelease ? "a prerelease" : "stable"
           }, so its dependency on @osdk/api should be '${expected}', found '${current}'`,
-          longMessage:
-            `Set dependencies['${depName}'] to '${expected}' in @osdk/client (currently version ${packageJson.version})`,
+          longMessage: `Set dependencies['${depName}'] to '${expected}' in @osdk/client (currently version ${packageJson.version})`,
           file: packageJsonPath,
           fixer: () => {
             let updated = context.getPackageJson();
@@ -737,7 +645,7 @@ const formattedGeneratorHelper = (contents, ext) => async (context) => {
     return cache.get(contents);
   }
   const result = child_process.spawnSync(
-    `pnpm exec dprint fmt --stdin foo.${ext}`,
+    `pnpm exec oxfmt --stdin-filepath foo.${ext}`,
     {
       input: contents,
       encoding: "utf8",
@@ -781,15 +689,13 @@ function getTsconfigOptions(baseTsconfigPath, opts) {
           : {}),
         rootDir: "src",
         outDir: opts.outDir,
-        ...(
-          opts.singlePackageName
-            ? {
+        ...(opts.singlePackageName
+          ? {
               paths: {
                 [opts.singlePackageName]: ["./src"],
               },
             }
-            : {}
-        ),
+          : {}),
         ...(opts.extraTsConfigCompilerOptions ?? {}),
       },
       include: ["./src/**/*"],
@@ -828,19 +734,19 @@ function minimalPackageRules(shared, options) {
     }),
     options.private
       ? packageEntry({
-        ...shared,
-        options: {
-          entries: {
-            private: true,
+          ...shared,
+          options: {
+            entries: {
+              private: true,
+            },
           },
-        },
-      })
+        })
       : noPackageEntry({
-        ...shared,
-        options: {
-          entries: ["private"],
-        },
-      }),
+          ...shared,
+          options: {
+            entries: ["private"],
+          },
+        }),
 
     ...ifTrue(!options.private, [
       allLocalDepsMustNotBePrivate({
@@ -883,8 +789,8 @@ function minimalPackageRules(shared, options) {
 function standardPackageRules(shared, options) {
   options = {
     ...options,
-    vitestEnvironment: options.vitestEnvironment
-      ?? (options.react ? "happy-dom" : undefined),
+    vitestEnvironment:
+      options.vitestEnvironment ?? (options.react ? "happy-dom" : undefined),
     skipAttw: options.skipAttw ?? options.skipTypes,
   };
 
@@ -923,26 +829,23 @@ function standardPackageRules(shared, options) {
     standardTsconfig({
       ...shared,
 
-      options: getTsconfigOptions(
-        `@osdk/monorepo.tsconfig/base.json`,
-        {
-          customTsconfigExcludes: options.customTsconfigExcludes,
-          skipTsconfigReferences: options.skipTsconfigReferences,
-          outDir: "build/esm",
-          react: options.react || options.vitestEnvironment === "happy-dom",
-          extraTsConfigCompilerOptions: options.extraTsConfigCompilerOptions,
-        },
-      ),
+      options: getTsconfigOptions(`@osdk/monorepo.tsconfig/base.json`, {
+        customTsconfigExcludes: options.customTsconfigExcludes,
+        skipTsconfigReferences: options.skipTsconfigReferences,
+        outDir: "build/esm",
+        react: options.react || options.vitestEnvironment === "happy-dom",
+        extraTsConfigCompilerOptions: options.extraTsConfigCompilerOptions,
+      }),
     }),
     ...(options.tsVersion
       ? [
-        requireDependency({
-          ...shared,
-          options: {
-            devDependencies: { typescript: options.tsVersion },
-          },
-        }),
-      ]
+          requireDependency({
+            ...shared,
+            options: {
+              devDependencies: { typescript: options.tsVersion },
+            },
+          }),
+        ]
       : []),
     requireDependency({
       ...shared,
@@ -962,23 +865,23 @@ function standardPackageRules(shared, options) {
           "check-attw": options.skipAttw
             ? DELETE_SCRIPT_ENTRY
             : `attw${options.output.cjs ? "" : " --profile esm-only"} --pack .${
-              options.cssExport ? " --exclude-entrypoints ./styles.css" : ""
-            }`,
-          lint: "eslint . && dprint check  --config $(find-up dprint.json)",
-          "fix-lint":
-            "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
+                options.cssExport ? " --exclude-entrypoints ./styles.css" : ""
+              }`,
+          lint: "eslint .",
+          "fix-lint": "eslint . --fix",
           transpile: DELETE_SCRIPT_ENTRY,
           transpileEsm: options.output.esm
             ? `monorepo.tool.transpile -f esm -m ${options.output.esm} -t node`
             : DELETE_SCRIPT_ENTRY,
           transpileBrowser: options.output.browser
             ? `monorepo.tool.transpile -f esm -m ${options.output.esm} -t browser${
-              options.cssExport ? " && node scripts/build-css.mjs" : ""
-            }`
+                options.cssExport ? " && node scripts/build-css.mjs" : ""
+              }`
             : DELETE_SCRIPT_ENTRY,
-          transpileCjs: options.output.cjs === "bundle"
-            ? "monorepo.tool.transpile -f cjs -m bundle -t node"
-            : DELETE_SCRIPT_ENTRY,
+          transpileCjs:
+            options.output.cjs === "bundle"
+              ? "monorepo.tool.transpile -f cjs -m bundle -t node"
+              : DELETE_SCRIPT_ENTRY,
           transpileWatch: DELETE_SCRIPT_ENTRY,
           transpileTypes: options.skipTypes
             ? DELETE_SCRIPT_ENTRY
@@ -1006,39 +909,39 @@ function standardPackageRules(shared, options) {
           },
           files: !options.private
             ? [
-              ...(options.extraPublishFiles ?? []),
-              ...(options.extraFiles ?? []),
-              ...(options.output.cjs && !options.skipBuildInFiles
-                ? ["build/cjs"]
-                : []),
-              ...(options.output.esm && !options.skipBuildInFiles
-                ? ["build/esm"]
-                : []),
-              ...(options.output.browser && !options.skipBuildInFiles
-                ? ["build/browser"]
-                : []),
-              ...(options.skipTypes || options.skipBuildInFiles
-                ? []
-                : ["build/types"]),
-              "CHANGELOG.md",
-              "package.json",
-              "templates",
+                ...(options.extraPublishFiles ?? []),
+                ...(options.extraFiles ?? []),
+                ...(options.output.cjs && !options.skipBuildInFiles
+                  ? ["build/cjs"]
+                  : []),
+                ...(options.output.esm && !options.skipBuildInFiles
+                  ? ["build/esm"]
+                  : []),
+                ...(options.output.browser && !options.skipBuildInFiles
+                  ? ["build/browser"]
+                  : []),
+                ...(options.skipTypes || options.skipBuildInFiles
+                  ? []
+                  : ["build/types"]),
+                "CHANGELOG.md",
+                "package.json",
+                "templates",
 
-              // fallback entries for "submodule imports" in legacy projects
-              "*.d.ts",
-            ]
+                // fallback entries for "submodule imports" in legacy projects
+                "*.d.ts",
+              ]
             : [],
 
           ...(options.output.esm ? { module: `./build/esm/index.js` } : {}),
           ...(options.output.cjs
             ? {
-              main: "./build/cjs/index.cjs",
+                main: "./build/cjs/index.cjs",
 
-              // if you are using modern tooling for ESM then your tsc isn't relying
-              // on this field (its getting types from exports or should be)
-              // so we only need to include it if we are supporting cjs for this package
-              types: "./build/cjs/index.d.cts",
-            }
+                // if you are using modern tooling for ESM then your tsc isn't relying
+                // on this field (its getting types from exports or should be)
+                // so we only need to include it if we are supporting cjs for this package
+                types: "./build/cjs/index.d.cts",
+              }
             : {}),
 
           type: "module",
@@ -1079,22 +982,22 @@ function standardPackageRules(shared, options) {
           export default defineConfig({
             test: {
             ${
-            options.aliasConsola
-              ? `
+              options.aliasConsola
+                ? `
               alias: {
                 "consola": join(
                   dirname(fileURLToPath(import.meta.url)),
                   "./src/__e2e_tests__/consola.ts",
                 ),
               },`
-              : ""
-          }
+                : ""
+            }
               pool: "forks",
               exclude: [...configDefaults.exclude, "**/build/**/*"],${
-            options.vitestEnvironment
-              ? `\n            environment: "${options.vitestEnvironment}",`
-              : ""
-          }
+                options.vitestEnvironment
+                  ? `\n            environment: "${options.vitestEnvironment}",`
+                  : ""
+              }
               fakeTimers: {
                 toFake: ["setTimeout", "clearTimeout", "Date"],
               },

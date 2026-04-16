@@ -29,8 +29,7 @@ export async function loadActionMetadata(
     { branch: client.branch },
   );
 
-  const { wireActionTypeV2ToSdkActionMetadata } = await import(
-    "@osdk/generator-converters"
-  );
+  const { wireActionTypeV2ToSdkActionMetadata } =
+    await import("@osdk/generator-converters");
   return wireActionTypeV2ToSdkActionMetadata(r);
 }

@@ -84,8 +84,12 @@ describe("createShapeBuilder", () => {
   });
 
   it("produces deterministic shapeId", () => {
-    const a = createShapeBuilder(MockEmployee).select("name" as never).build();
-    const b = createShapeBuilder(MockEmployee).select("name" as never).build();
+    const a = createShapeBuilder(MockEmployee)
+      .select("name" as never)
+      .build();
+    const b = createShapeBuilder(MockEmployee)
+      .select("name" as never)
+      .build();
     expect(a.__shapeId).toBe(b.__shapeId);
   });
 

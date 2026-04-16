@@ -61,9 +61,7 @@ function NullValueWrapperInner({
           <span className={styles.nullLabelText}>No value</span>
         </label>
         {showNullCount && !error && (
-          <span className={styles.count}>
-            {nullCount.toLocaleString()}
-          </span>
+          <span className={styles.count}>{nullCount.toLocaleString()}</span>
         )}
       </div>
       {error && (

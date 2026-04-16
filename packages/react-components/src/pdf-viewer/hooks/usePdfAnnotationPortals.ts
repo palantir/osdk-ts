@@ -36,41 +36,47 @@ export function usePdfAnnotationPortals(
     [],
   );
 
-  useEffect(function subscribePageRendered() {
-    const eventBus = eventBusRef.current;
-    const pdfViewer = pdfViewerRef.current;
-    if (eventBus == null || pdfViewer == null) {
-      return;
-    }
-
-    const handlePageRendered = (evt: { pageNumber: number }) => {
-      const pageIndex = evt.pageNumber - 1;
-      const pageView = pdfViewer.getPageView(pageIndex);
-      if (pageView?.div == null || pageView?.viewport == null) {
+  useEffect(
+    function subscribePageRendered() {
+      const eventBus = eventBusRef.current;
+      const pdfViewer = pdfViewerRef.current;
+      if (eventBus == null || pdfViewer == null) {
         return;
       }
 
-      const viewport = pageView.viewport;
+      const handlePageRendered = (evt: { pageNumber: number }) => {
+        const pageIndex = evt.pageNumber - 1;
+        const pageView = pdfViewer.getPageView(pageIndex);
+        if (pageView?.div == null || pageView?.viewport == null) {
+          return;
+        }
 
-      setPortalTargets((prev) => {
-        // Replace existing entry for this page or add new one
-        const filtered = prev.filter((t) => t.pageNumber !== evt.pageNumber);
-        return [...filtered, {
-          pageNumber: evt.pageNumber,
-          container: pageView.div as HTMLDivElement,
-          pageHeight: viewport.viewBox[3], // viewBox is [xMin, yMin, width, height] and we need the original height before scaling
-          scale: viewport.scale,
-        }].sort((a, b) => a.pageNumber - b.pageNumber);
-      });
-    };
+        const viewport = pageView.viewport;
 
-    eventBus.on(PAGE_RENDERED_EVENT, handlePageRendered);
+        setPortalTargets((prev) => {
+          // Replace existing entry for this page or add new one
+          const filtered = prev.filter((t) => t.pageNumber !== evt.pageNumber);
+          return [
+            ...filtered,
+            {
+              pageNumber: evt.pageNumber,
+              container: pageView.div as HTMLDivElement,
+              pageHeight: viewport.viewBox[3], // viewBox is [xMin, yMin, width, height] and we need the original height before scaling
+              scale: viewport.scale,
+            },
+          ].sort((a, b) => a.pageNumber - b.pageNumber);
+        });
+      };
 
-    return () => {
-      eventBus.off(PAGE_RENDERED_EVENT, handlePageRendered);
-      setPortalTargets([]);
-    };
-  }, [eventBusRef, pdfViewerRef, document]);
+      eventBus.on(PAGE_RENDERED_EVENT, handlePageRendered);
+
+      return () => {
+        eventBus.off(PAGE_RENDERED_EVENT, handlePageRendered);
+        setPortalTargets([]);
+      };
+    },
+    [eventBusRef, pdfViewerRef, document],
+  );
 
   return portalTargets;
 }

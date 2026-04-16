@@ -18,10 +18,7 @@ import type { CommandModule } from "yargs";
 import type { CommonSiteArgs } from "../../CommonSiteArgs.js";
 import type { VersionGetArgs } from "./VersionGetArgs.js";
 
-const command: CommandModule<
-  CommonSiteArgs,
-  VersionGetArgs
-> = {
+const command: CommandModule<CommonSiteArgs, VersionGetArgs> = {
   command: "get",
   describe: "Get live site version",
   builder: (argv) => {

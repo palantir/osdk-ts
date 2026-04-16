@@ -58,9 +58,7 @@ export function ReorgConfigStep({
     <div className="p-4 space-y-6">
       {/* Reorg Type */}
       <section>
-        <h3 className="officenetwork-section-label mb-3">
-          Reorg Type
-        </h3>
+        <h3 className="officenetwork-section-label mb-3">Reorg Type</h3>
         <div className="space-y-2">
           {reorgTypes.map((type) => (
             <label
@@ -94,9 +92,7 @@ export function ReorgConfigStep({
 
       {/* Algorithm */}
       <section>
-        <h3 className="officenetwork-section-label mb-3">
-          Algorithm
-        </h3>
+        <h3 className="officenetwork-section-label mb-3">Algorithm</h3>
         <div className="space-y-2">
           {algorithms.map((algo) => (
             <label
@@ -131,9 +127,7 @@ export function ReorgConfigStep({
       {/* Swap Offices */}
       {config.algorithm === "swap" && (
         <section>
-          <h3 className="officenetwork-section-label mb-3">
-            Swap Offices
-          </h3>
+          <h3 className="officenetwork-section-label mb-3">Swap Offices</h3>
           <div className="space-y-2">
             <div>
               <label className="text-xs text-[var(--officenetwork-text-secondary)] mb-1 block">
@@ -147,7 +141,8 @@ export function ReorgConfigStep({
                       e.target.value,
                       config.swapOfficeIds?.[1] ?? "",
                     ],
-                  })}
+                  })
+                }
                 className="w-full px-3 py-2 text-sm bg-[var(--officenetwork-bg-elevated)] border border-[var(--officenetwork-border-default)] rounded text-[var(--officenetwork-text-primary)]"
               >
                 <option value="">Select office...</option>
@@ -170,7 +165,8 @@ export function ReorgConfigStep({
                       config.swapOfficeIds?.[0] ?? "",
                       e.target.value,
                     ],
-                  })}
+                  })
+                }
                 className="w-full px-3 py-2 text-sm bg-[var(--officenetwork-bg-elevated)] border border-[var(--officenetwork-border-default)] rounded text-[var(--officenetwork-text-primary)]"
               >
                 <option value="">Select office...</option>
@@ -188,13 +184,12 @@ export function ReorgConfigStep({
       {/* Consolidate Target */}
       {config.algorithm === "consolidate" && (
         <section>
-          <h3 className="officenetwork-section-label mb-3">
-            Target Office
-          </h3>
+          <h3 className="officenetwork-section-label mb-3">Target Office</h3>
           <select
             value={config.consolidateOfficeId ?? ""}
             onChange={(e) =>
-              onUpdateConfig({ consolidateOfficeId: e.target.value })}
+              onUpdateConfig({ consolidateOfficeId: e.target.value })
+            }
             className="w-full px-3 py-2 text-sm bg-[var(--officenetwork-bg-elevated)] border border-[var(--officenetwork-border-default)] rounded text-[var(--officenetwork-text-primary)]"
           >
             <option value="">Select target office...</option>
@@ -209,9 +204,7 @@ export function ReorgConfigStep({
 
       {/* Constraints */}
       <section>
-        <h3 className="officenetwork-section-label mb-3">
-          Constraints
-        </h3>
+        <h3 className="officenetwork-section-label mb-3">Constraints</h3>
         <div className="space-y-3">
           <label className="flex items-center gap-3 cursor-pointer">
             <input
@@ -220,7 +213,8 @@ export function ReorgConfigStep({
               onChange={(e) =>
                 onUpdateConstraints({
                   keepHeadcountBalanced: e.target.checked,
-                })}
+                })
+              }
               className="accent-[var(--officenetwork-status-warning)]"
             />
             <div>
@@ -246,7 +240,8 @@ export function ReorgConfigStep({
                 onChange={(e) =>
                   onUpdateConstraints({
                     headcountTolerance: Number(e.target.value),
-                  })}
+                  })
+                }
                 className="w-full accent-[var(--officenetwork-status-warning)]"
               />
             </div>
@@ -257,7 +252,8 @@ export function ReorgConfigStep({
               type="checkbox"
               checked={config.constraints.keepTeamComposition}
               onChange={(e) =>
-                onUpdateConstraints({ keepTeamComposition: e.target.checked })}
+                onUpdateConstraints({ keepTeamComposition: e.target.checked })
+              }
               className="accent-[var(--officenetwork-status-warning)]"
             />
             <div>
@@ -278,7 +274,8 @@ export function ReorgConfigStep({
                 onChange={(e) =>
                   onUpdateConstraints({
                     maxMovesPerOffice: e.target.checked ? 50 : null,
-                  })}
+                  })
+                }
                 className="accent-[var(--officenetwork-status-warning)]"
               />
               <div>
@@ -305,7 +302,8 @@ export function ReorgConfigStep({
                   onChange={(e) =>
                     onUpdateConstraints({
                       maxMovesPerOffice: Number(e.target.value),
-                    })}
+                    })
+                  }
                   className="w-full accent-[var(--officenetwork-status-warning)]"
                 />
               </div>

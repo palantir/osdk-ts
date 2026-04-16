@@ -29,9 +29,7 @@ export interface BatchContext {
     status: Entry<K>["status"],
   ) => Entry<K>;
 
-  read: <K extends KnownCacheKey>(
-    k: K,
-  ) => Entry<K> | undefined;
+  read: <K extends KnownCacheKey>(k: K) => Entry<K> | undefined;
 
   delete: <K extends KnownCacheKey>(
     k: K,

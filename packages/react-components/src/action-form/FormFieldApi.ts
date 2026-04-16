@@ -101,14 +101,10 @@ export interface FormFieldDefinition<
    * Excludes runtime props (value, onChange) which are managed by ActionForm.
    */
   fieldComponentProps: Omit<
-    FormFieldPropsByType[
-      ValidFormFieldForPropertyType<
-        FieldDescriptorType<Q, K>
-      >
-    ],
-    FormManagedProps<
-      ValidFormFieldForPropertyType<FieldDescriptorType<Q, K>>
-    >
+    FormFieldPropsByType[ValidFormFieldForPropertyType<
+      FieldDescriptorType<Q, K>
+    >],
+    FormManagedProps<ValidFormFieldForPropertyType<FieldDescriptorType<Q, K>>>
   >;
 }
 
@@ -206,9 +202,7 @@ export const EMPTY_RANGE: DateRange = [null, null];
  * Renders two text inputs (start / end) with a shared calendar popover
  * that supports range selection.
  */
-export interface DateRangeInputFieldProps
-  extends BaseFormFieldProps<DateRange>
-{
+export interface DateRangeInputFieldProps extends BaseFormFieldProps<DateRange> {
   /** The earliest selectable date. */
   min?: Date;
 
@@ -237,9 +231,10 @@ export interface DateRangeInputFieldProps
 /**
  * Dropdown field props with selectable items
  */
-export interface DropdownFieldProps<V, Multiple extends boolean = false>
-  extends BaseFormFieldProps<Multiple extends true ? V[] : V>
-{
+export interface DropdownFieldProps<
+  V,
+  Multiple extends boolean = false,
+> extends BaseFormFieldProps<Multiple extends true ? V[] : V> {
   /**
    * Available items for the dropdown
    */
@@ -314,39 +309,39 @@ export interface FilePickerProps extends BaseFormFieldProps<File | File[]> {
 /**
  * Text area field props
  */
-export interface TextAreaFieldProps extends
-  BaseFormFieldProps<string>,
-  Pick<
-    React.TextareaHTMLAttributes<HTMLTextAreaElement>,
-    | "rows"
-    | "wrap"
-    /**
-     * If provided, this will be added to the field validation
-     */
-    | "minLength"
-    /**
-     * If provided, this will be added to the field validation
-     */
-    | "maxLength"
-  >
-{
+export interface TextAreaFieldProps
+  extends
+    BaseFormFieldProps<string>,
+    Pick<
+      React.TextareaHTMLAttributes<HTMLTextAreaElement>,
+      | "rows"
+      | "wrap"
+      /**
+       * If provided, this will be added to the field validation
+       */
+      | "minLength"
+      /**
+       * If provided, this will be added to the field validation
+       */
+      | "maxLength"
+    > {
   placeholder?: string;
 }
 
-export interface TextInputFieldProps extends
-  BaseFormFieldProps<string>,
-  Pick<
-    React.InputHTMLAttributes<HTMLInputElement>,
-    /**
-     * If provided, this will be added to the field validation
-     */
-    | "minLength"
-    /**
-     * If provided, this will be added to the field validation
-     */
-    | "maxLength"
-  >
-{
+export interface TextInputFieldProps
+  extends
+    BaseFormFieldProps<string>,
+    Pick<
+      React.InputHTMLAttributes<HTMLInputElement>,
+      /**
+       * If provided, this will be added to the field validation
+       */
+      | "minLength"
+      /**
+       * If provided, this will be added to the field validation
+       */
+      | "maxLength"
+    > {
   placeholder?: string;
 }
 
@@ -402,9 +397,9 @@ export interface Option<V> {
 /**
  * Object set field displays the summary of the count of the given object set
  */
-export interface ObjectSetFieldProps<T extends ObjectTypeDefinition>
-  extends Pick<BaseFormFieldProps<ObjectSet<T>>, "id" | "value">
-{
+export interface ObjectSetFieldProps<
+  T extends ObjectTypeDefinition,
+> extends Pick<BaseFormFieldProps<ObjectSet<T>>, "id" | "value"> {
   /**
    * Message displayed when no object set is provided.
    *
@@ -479,17 +474,20 @@ export type ActionParameters<Q extends ActionDefinition<unknown>> =
 export type FieldValueType<
   Q extends ActionDefinition<unknown>,
   K extends keyof ActionParameters<Q> = keyof ActionParameters<Q>,
-> = ActionParameters<Q>[K]["type"] extends
-  ActionMetadata.DataType.Object<infer T> ? ActionParam.ObjectType<T>
-  : ActionParameters<Q>[K]["type"] extends ActionMetadata.DataType.ObjectSet<
-    infer T
-  > ? ActionParam.ObjectSetType<T>
-  : ActionParameters<Q>[K]["type"] extends ActionMetadata.DataType.Struct<
-    infer T
-  > ? ActionParam.StructType<T>
-  : ActionParameters<Q>[K]["type"] extends keyof DataValueClientToWire
-    ? DataValueClientToWire[ActionParameters<Q>[K]["type"]]
-  : never;
+> =
+  ActionParameters<Q>[K]["type"] extends ActionMetadata.DataType.Object<infer T>
+    ? ActionParam.ObjectType<T>
+    : ActionParameters<Q>[K]["type"] extends ActionMetadata.DataType.ObjectSet<
+          infer T
+        >
+      ? ActionParam.ObjectSetType<T>
+      : ActionParameters<Q>[K]["type"] extends ActionMetadata.DataType.Struct<
+            infer T
+          >
+        ? ActionParam.StructType<T>
+        : ActionParameters<Q>[K]["type"] extends keyof DataValueClientToWire
+          ? DataValueClientToWire[ActionParameters<Q>[K]["type"]]
+          : never;
 
 /**
  * Extracts the parameter type descriptor for a specific action parameter.
@@ -543,9 +541,10 @@ export type FieldType =
  * externally. Read-only fields (no onChange, e.g. ObjectSetField) keep value in
  * fieldComponentProps so it bypasses form state cloning.
  */
-type FormManagedProps<K extends FieldComponent> = "onChange" extends
-  keyof FormFieldPropsByType[K] ? "value" | "onChange"
-  : "onChange";
+type FormManagedProps<K extends FieldComponent> =
+  "onChange" extends keyof FormFieldPropsByType[K]
+    ? "value" | "onChange"
+    : "onChange";
 
 /**
  * An OSDK-agnostic field definition used by BaseForm and FormFieldRenderer.
@@ -575,18 +574,25 @@ export type RendererFieldDefinition = {
  * Gets valid form field types for a given property type
  */
 export type ValidFormFieldForPropertyType<P extends FieldDescriptorType> =
-  P extends "objectSet" ? "OBJECT_SET"
-    : P extends "object" ? "DROPDOWN"
-    : P extends "mediaReference" | "attachment" ? "FILE_PICKER"
-    : P extends "boolean" ? "RADIO_BUTTONS" | "DROPDOWN"
-    : P extends "string" ? "TEXT_INPUT" | "TEXT_AREA"
-    : P extends "datetime" | "timestamp" ? "DATETIME_PICKER"
-    : P extends
-      | "double"
-      | "integer"
-      | "long"
-      | "float"
-      | "short"
-      | "byte"
-      | "decimal" ? "NUMBER_INPUT"
-    : never;
+  P extends "objectSet"
+    ? "OBJECT_SET"
+    : P extends "object"
+      ? "DROPDOWN"
+      : P extends "mediaReference" | "attachment"
+        ? "FILE_PICKER"
+        : P extends "boolean"
+          ? "RADIO_BUTTONS" | "DROPDOWN"
+          : P extends "string"
+            ? "TEXT_INPUT" | "TEXT_AREA"
+            : P extends "datetime" | "timestamp"
+              ? "DATETIME_PICKER"
+              : P extends
+                    | "double"
+                    | "integer"
+                    | "long"
+                    | "float"
+                    | "short"
+                    | "byte"
+                    | "decimal"
+                ? "NUMBER_INPUT"
+                : never;

@@ -35,7 +35,7 @@ export async function cli(): Promise<void> {
   let result =
     "export const files: Map<string, {type: 'base64', body: string} | {type: 'raw', body: string}> = new Map([\n";
 
-  const processFiles = async function(dir: string, baseDir: string) {
+  const processFiles = async function (dir: string, baseDir: string) {
     for (const filename of await fs.readdir(dir)) {
       const file = dir + "/" + filename;
 
@@ -55,15 +55,17 @@ export async function cli(): Promise<void> {
       let output: string;
 
       if (
-        destPath === "package.json.hbs"
-        || destPath === "package.json.osdk.hbs"
-        || destPath === "package.json.psdk.hbs"
+        destPath === "package.json.hbs" ||
+        destPath === "package.json.osdk.hbs" ||
+        destPath === "package.json.psdk.hbs"
       ) {
         const packageJson = JSON.parse(body.toString("utf-8"));
 
-        for (
-          const d of ["dependencies", "devDependencies", "peerDependencies"]
-        ) {
+        for (const d of [
+          "dependencies",
+          "devDependencies",
+          "peerDependencies",
+        ]) {
           if (sourcePackageJson[d]) {
             if (!packageJson[d]) {
               packageJson[d] = {};
@@ -80,15 +82,18 @@ export async function cli(): Promise<void> {
 
         output = safeRaw(JSON.stringify(packageJson, undefined, 2));
       } else if (
-        extsToString.has(path.extname(destPath))
-        || path.basename(destPath) === ".gitignore"
+        extsToString.has(path.extname(destPath)) ||
+        path.basename(destPath) === ".gitignore"
       ) {
         output = safeRaw(body.toString("utf-8"));
       } else {
-        output = serialize({
-          type: "base64",
-          body: body.toString("base64"),
-        }, { space: 2 });
+        output = serialize(
+          {
+            type: "base64",
+            body: body.toString("base64"),
+          },
+          { space: 2 },
+        );
       }
 
       result += `["${destPath}", ${output}],\n`;
@@ -105,10 +110,8 @@ export async function cli(): Promise<void> {
 }
 
 function safeRaw(q: string): string {
-  return `{ type: "raw",  body: \`${
-    q
-      .replace(/\\/g, "\\\\")
-      .replace(/`/g, "\\`")
-      .replace(/\$/g, "\\$")
-  }\`}`;
+  return `{ type: "raw",  body: \`${q
+    .replace(/\\/g, "\\\\")
+    .replace(/`/g, "\\`")
+    .replace(/\$/g, "\\$")}\`}`;
 }

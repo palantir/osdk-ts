@@ -56,24 +56,27 @@ export type FilterComponentType =
  * Gets valid component types for a given property type
  */
 export type ValidComponentsForPropertyType<P extends WirePropertyTypes> =
-  P extends "boolean" ? "LISTOGRAM" | "SINGLE_SELECT" | "TOGGLE"
-    : P extends "string" ?
-        | "LISTOGRAM"
-        | "TEXT_TAGS"
-        | "CONTAINS_TEXT"
-        | "SINGLE_SELECT"
-        | "MULTI_SELECT"
-    : P extends "datetime" | "timestamp"
-      ? "DATE_RANGE" | "SINGLE_DATE" | "MULTI_DATE" | "TIMELINE"
-    : P extends
-      | "double"
-      | "integer"
-      | "long"
-      | "float"
-      | "short"
-      | "byte"
-      | "decimal" ? "NUMBER_RANGE" | "SINGLE_SELECT" | "MULTI_SELECT"
-    : never;
+  P extends "boolean"
+    ? "LISTOGRAM" | "SINGLE_SELECT" | "TOGGLE"
+    : P extends "string"
+      ?
+          | "LISTOGRAM"
+          | "TEXT_TAGS"
+          | "CONTAINS_TEXT"
+          | "SINGLE_SELECT"
+          | "MULTI_SELECT"
+      : P extends "datetime" | "timestamp"
+        ? "DATE_RANGE" | "SINGLE_DATE" | "MULTI_DATE" | "TIMELINE"
+        : P extends
+              | "double"
+              | "integer"
+              | "long"
+              | "float"
+              | "short"
+              | "byte"
+              | "decimal"
+          ? "NUMBER_RANGE" | "SINGLE_SELECT" | "MULTI_SELECT"
+          : never;
 
 /**
  * Union of all possible filter states
@@ -148,9 +151,9 @@ export interface BaseFilterState {
   includeNull?: boolean;
 }
 
-export interface ExactMatchFilterState<T = string | boolean>
-  extends BaseFilterState
-{
+export interface ExactMatchFilterState<
+  T = string | boolean,
+> extends BaseFilterState {
   type: "EXACT_MATCH";
   values: T[];
 }
@@ -188,9 +191,9 @@ export interface NumberRangeFilterState extends BaseFilterState {
  * Consolidated state type for select-based filters.
  * Used by SINGLE_SELECT, MULTI_SELECT, SINGLE_DATE, and MULTI_DATE.
  */
-export interface SelectFilterState<T = string | boolean | number | Date>
-  extends BaseFilterState
-{
+export interface SelectFilterState<
+  T = string | boolean | number | Date,
+> extends BaseFilterState {
   type: "SELECT";
   selectedValues: T[];
 }
@@ -217,9 +220,8 @@ export interface ToggleFilterState extends BaseFilterState {
 export interface PropertyFilterDefinition<
   Q extends ObjectTypeDefinition,
   K extends PropertyKeys<Q> = PropertyKeys<Q>,
-  C extends ValidComponentsForPropertyType<
-    PropertyTypeFromKey<Q, K>
-  > = ValidComponentsForPropertyType<PropertyTypeFromKey<Q, K>>,
+  C extends ValidComponentsForPropertyType<PropertyTypeFromKey<Q, K>> =
+    ValidComponentsForPropertyType<PropertyTypeFromKey<Q, K>>,
 > {
   /**
    * Discriminator for filter definition type
@@ -287,9 +289,8 @@ export interface PropertyFilterDefinition<
 export interface FilterListItemProps<
   Q extends ObjectTypeDefinition,
   K extends PropertyKeys<Q> = PropertyKeys<Q>,
-  C extends ValidComponentsForPropertyType<
-    PropertyTypeFromKey<Q, K>
-  > = ValidComponentsForPropertyType<PropertyTypeFromKey<Q, K>>,
+  C extends ValidComponentsForPropertyType<PropertyTypeFromKey<Q, K>> =
+    ValidComponentsForPropertyType<PropertyTypeFromKey<Q, K>>,
 > extends PropertyFilterDefinition<Q, K, C> {
   objectSet: ObjectSet<Q>;
 

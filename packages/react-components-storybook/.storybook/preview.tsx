@@ -65,9 +65,12 @@ const preview: Preview = {
       handlers: fauxFoundry.handlers,
     },
   },
-  loaders: [async () => {
-    await fauxFoundryReady;
-  }, mswLoader],
+  loaders: [
+    async () => {
+      await fauxFoundryReady;
+    },
+    mswLoader,
+  ],
   decorators: [
     (Story) => (
       <div className="root">

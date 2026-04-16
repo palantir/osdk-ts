@@ -2,4 +2,4 @@ type: feature
 feature:
   description: Add boolean groupbys
   links:
-  - https://github.com/palantir/osdk-ts/pull/130
+    - https://github.com/palantir/osdk-ts/pull/130

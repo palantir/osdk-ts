@@ -18,17 +18,11 @@ import { Users } from "@osdk/foundry.admin";
 import type { CallFactory } from "../../handlers/util/handleOpenApiCall.js";
 import { handleOpenApiCall } from "../../handlers/util/handleOpenApiCall.js";
 
-export const applyGetCurrent: CallFactory<
-  never,
-  typeof Users.getCurrent
-> = handleOpenApiCall(Users.getCurrent, []);
+export const applyGetCurrent: CallFactory<never, typeof Users.getCurrent> =
+  handleOpenApiCall(Users.getCurrent, []);
 
-export const applyGetUser: CallFactory<
-  "userId",
-  typeof Users.get
-> = handleOpenApiCall(Users.get, ["userId"]);
+export const applyGetUser: CallFactory<"userId", typeof Users.get> =
+  handleOpenApiCall(Users.get, ["userId"]);
 
-export const applyListUsers: CallFactory<
-  never,
-  typeof Users.list
-> = handleOpenApiCall(Users.list, []);
+export const applyListUsers: CallFactory<never, typeof Users.list> =
+  handleOpenApiCall(Users.list, []);

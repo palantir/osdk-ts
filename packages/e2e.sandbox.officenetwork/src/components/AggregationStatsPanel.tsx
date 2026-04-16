@@ -138,19 +138,17 @@ export function AggregationStatsPanel() {
               <span className="text-xs text-[var(--officenetwork-text-muted)]">
                 Employees
               </span>
-              {totalLoading
-                ? <LoadingIndicator size="sm" />
-                : totalError
-                ? (
-                  <span className="text-xs text-[var(--officenetwork-status-error)]">
-                    Error
-                  </span>
-                )
-                : (
-                  <span className="text-sm font-bold tabular-nums text-[var(--officenetwork-accent-cyan)]">
-                    {totalCounts?.$count ?? 0}
-                  </span>
-                )}
+              {totalLoading ? (
+                <LoadingIndicator size="sm" />
+              ) : totalError ? (
+                <span className="text-xs text-[var(--officenetwork-status-error)]">
+                  Error
+                </span>
+              ) : (
+                <span className="text-sm font-bold tabular-nums text-[var(--officenetwork-accent-cyan)]">
+                  {totalCounts?.$count ?? 0}
+                </span>
+              )}
             </div>
           </div>
 
@@ -158,74 +156,66 @@ export function AggregationStatsPanel() {
             <div className="text-[9px] text-[var(--officenetwork-status-warning)] uppercase tracking-wider">
               By Department (Top 5)
             </div>
-            {deptLoading
-              ? <LoadingIndicator size="sm" />
-              : deptError
-              ? (
-                <span className="text-xs text-[var(--officenetwork-status-error)]">
-                  Error
-                </span>
-              )
-              : departmentData.length > 0
-              ? (
-                <div className="space-y-0.5">
-                  {departmentData.map((item, index) => (
-                    <div
-                      key={item.$group.department ?? `dept-${index}`}
-                      className="flex items-center justify-between"
-                    >
-                      <span className="text-[10px] text-[var(--officenetwork-text-secondary)] truncate max-w-32">
-                        {item.$group.department}
-                      </span>
-                      <span className="text-[10px] font-medium tabular-nums text-[var(--officenetwork-status-warning)]">
-                        {item.$count}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              )
-              : (
-                <span className="text-[10px] text-[var(--officenetwork-text-muted)]">
-                  No data
-                </span>
-              )}
+            {deptLoading ? (
+              <LoadingIndicator size="sm" />
+            ) : deptError ? (
+              <span className="text-xs text-[var(--officenetwork-status-error)]">
+                Error
+              </span>
+            ) : departmentData.length > 0 ? (
+              <div className="space-y-0.5">
+                {departmentData.map((item, index) => (
+                  <div
+                    key={item.$group.department ?? `dept-${index}`}
+                    className="flex items-center justify-between"
+                  >
+                    <span className="text-[10px] text-[var(--officenetwork-text-secondary)] truncate max-w-32">
+                      {item.$group.department}
+                    </span>
+                    <span className="text-[10px] font-medium tabular-nums text-[var(--officenetwork-status-warning)]">
+                      {item.$count}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <span className="text-[10px] text-[var(--officenetwork-text-muted)]">
+                No data
+              </span>
+            )}
           </div>
 
           <div className="border-t border-[var(--officenetwork-border-muted)] pt-2 space-y-1">
             <div className="text-[9px] text-[var(--officenetwork-status-ready)] uppercase tracking-wider">
               By Office (Top 5)
             </div>
-            {officeLoading
-              ? <LoadingIndicator size="sm" />
-              : officeError
-              ? (
-                <span className="text-xs text-[var(--officenetwork-status-error)]">
-                  Error
-                </span>
-              )
-              : officeData.length > 0
-              ? (
-                <div className="space-y-0.5">
-                  {officeData.map((item, index) => (
-                    <div
-                      key={item.$group.primaryOfficeId ?? `office-${index}`}
-                      className="flex items-center justify-between"
-                    >
-                      <span className="text-[10px] text-[var(--officenetwork-text-secondary)] truncate max-w-32 officenetwork-mono">
-                        {item.$group.primaryOfficeId}
-                      </span>
-                      <span className="text-[10px] font-medium tabular-nums text-[var(--officenetwork-status-ready)]">
-                        {item.$count}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              )
-              : (
-                <span className="text-[10px] text-[var(--officenetwork-text-muted)]">
-                  No data
-                </span>
-              )}
+            {officeLoading ? (
+              <LoadingIndicator size="sm" />
+            ) : officeError ? (
+              <span className="text-xs text-[var(--officenetwork-status-error)]">
+                Error
+              </span>
+            ) : officeData.length > 0 ? (
+              <div className="space-y-0.5">
+                {officeData.map((item, index) => (
+                  <div
+                    key={item.$group.primaryOfficeId ?? `office-${index}`}
+                    className="flex items-center justify-between"
+                  >
+                    <span className="text-[10px] text-[var(--officenetwork-text-secondary)] truncate max-w-32 officenetwork-mono">
+                      {item.$group.primaryOfficeId}
+                    </span>
+                    <span className="text-[10px] font-medium tabular-nums text-[var(--officenetwork-status-ready)]">
+                      {item.$count}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <span className="text-[10px] text-[var(--officenetwork-text-muted)]">
+                No data
+              </span>
+            )}
           </div>
 
           <div className="pt-1 text-[9px] text-[var(--officenetwork-text-muted)] officenetwork-mono">

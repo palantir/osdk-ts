@@ -23,7 +23,7 @@ import styles from "./RadioButtonsField.module.css";
 
 export const RadioButtonsField: <V>(
   props: RadioButtonsFieldProps<V>,
-) => React.ReactElement = typedReactMemo(function RadioButtonsFieldFn<V,>({
+) => React.ReactElement = typedReactMemo(function RadioButtonsFieldFn<V>({
   id,
   value,
   onChange,

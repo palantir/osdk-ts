@@ -93,15 +93,14 @@ describe("PdfViewerToolbar", () => {
       <PdfViewerToolbar {...defaultProps} currentPage={10} numPages={10} />,
     );
 
-    expect((screen.getByLabelText("Next page") as HTMLButtonElement).disabled)
-      .toBe(true);
+    expect(
+      (screen.getByLabelText("Next page") as HTMLButtonElement).disabled,
+    ).toBe(true);
   });
 
   it("should navigate to page on Enter in page input", () => {
     const onPageChange = vi.fn();
-    render(
-      <PdfViewerToolbar {...defaultProps} onPageChange={onPageChange} />,
-    );
+    render(<PdfViewerToolbar {...defaultProps} onPageChange={onPageChange} />);
 
     const input = screen.getByLabelText("Page number");
     fireEvent.change(input, { target: { value: "5" } });
@@ -168,9 +167,7 @@ describe("PdfViewerToolbar", () => {
 
   it("should call onSearchOpen when search button is clicked", () => {
     const onSearchOpen = vi.fn();
-    render(
-      <PdfViewerToolbar {...defaultProps} onSearchOpen={onSearchOpen} />,
-    );
+    render(<PdfViewerToolbar {...defaultProps} onSearchOpen={onSearchOpen} />);
 
     fireEvent.click(screen.getByLabelText("Search"));
     expect(onSearchOpen).toHaveBeenCalled();

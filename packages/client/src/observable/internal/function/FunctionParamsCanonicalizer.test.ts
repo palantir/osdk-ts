@@ -81,24 +81,41 @@ describe("FunctionParamsCanonicalizer", () => {
     const c = new FunctionParamsCanonicalizer();
 
     // Sets sorted
-    expect(c.canonicalize({ s: new Set([3, 1, 2]) }))
-      .toBe(c.canonicalize({ s: new Set([1, 2, 3]) }));
+    expect(c.canonicalize({ s: new Set([3, 1, 2]) })).toBe(
+      c.canonicalize({ s: new Set([1, 2, 3]) }),
+    );
 
     // Maps sorted by key
-    expect(c.canonicalize({ m: new Map([["b", 2], ["a", 1]]) }))
-      .toBe(c.canonicalize({ m: new Map([["a", 1], ["b", 2]]) }));
+    expect(
+      c.canonicalize({
+        m: new Map([
+          ["b", 2],
+          ["a", 1],
+        ]),
+      }),
+    ).toBe(
+      c.canonicalize({
+        m: new Map([
+          ["a", 1],
+          ["b", 2],
+        ]),
+      }),
+    );
 
     // Arrays preserve order
-    expect(c.canonicalize({ arr: [1, 2, 3] }))
-      .not.toBe(c.canonicalize({ arr: [3, 2, 1] }));
+    expect(c.canonicalize({ arr: [1, 2, 3] })).not.toBe(
+      c.canonicalize({ arr: [3, 2, 1] }),
+    );
 
     // Dates as ISO strings
-    expect(c.canonicalize({ d: new Date("2024-01-01T00:00:00.000Z") }))
-      .toBe(c.canonicalize({ d: new Date("2024-01-01T00:00:00.000Z") }));
+    expect(c.canonicalize({ d: new Date("2024-01-01T00:00:00.000Z") })).toBe(
+      c.canonicalize({ d: new Date("2024-01-01T00:00:00.000Z") }),
+    );
 
     // Deep nesting
-    expect(c.canonicalize({ outer: { inner: { deep: 1 } } }))
-      .toBe(c.canonicalize({ outer: { inner: { deep: 1 } } }));
+    expect(c.canonicalize({ outer: { inner: { deep: 1 } } })).toBe(
+      c.canonicalize({ outer: { inner: { deep: 1 } } }),
+    );
 
     // Type distinction
     expect(c.canonicalize({ val: 1 })).not.toBe(c.canonicalize({ val: "1" }));
@@ -108,30 +125,58 @@ describe("FunctionParamsCanonicalizer", () => {
     const c = new FunctionParamsCanonicalizer();
     const obj1 = { id: 1, name: "first" };
     const obj2 = { id: 2, name: "second" };
-    expect(c.canonicalize({ s: new Set([obj1, obj2]) }))
-      .toBe(c.canonicalize({ s: new Set([obj2, obj1]) }));
+    expect(c.canonicalize({ s: new Set([obj1, obj2]) })).toBe(
+      c.canonicalize({ s: new Set([obj2, obj1]) }),
+    );
   });
 
   it("handles Map with non-primitive keys", () => {
     const c = new FunctionParamsCanonicalizer();
     const key1 = { id: 1 };
     const key2 = { id: 2 };
-    expect(c.canonicalize({ m: new Map([[key1, "a"], [key2, "b"]]) }))
-      .toBe(c.canonicalize({ m: new Map([[key2, "b"], [key1, "a"]]) }));
+    expect(
+      c.canonicalize({
+        m: new Map([
+          [key1, "a"],
+          [key2, "b"],
+        ]),
+      }),
+    ).toBe(
+      c.canonicalize({
+        m: new Map([
+          [key2, "b"],
+          [key1, "a"],
+        ]),
+      }),
+    );
   });
 
   it("handles Map with non-primitive values", () => {
     const c = new FunctionParamsCanonicalizer();
     const val1 = { data: "first" };
     const val2 = { data: "second" };
-    expect(c.canonicalize({ m: new Map([["a", val1], ["b", val2]]) }))
-      .toBe(c.canonicalize({ m: new Map([["b", val2], ["a", val1]]) }));
+    expect(
+      c.canonicalize({
+        m: new Map([
+          ["a", val1],
+          ["b", val2],
+        ]),
+      }),
+    ).toBe(
+      c.canonicalize({
+        m: new Map([
+          ["b", val2],
+          ["a", val1],
+        ]),
+      }),
+    );
   });
 
   it("distinguishes null from undefined", () => {
     const c = new FunctionParamsCanonicalizer();
-    expect(c.canonicalize({ val: null }))
-      .not.toBe(c.canonicalize({ val: undefined }));
+    expect(c.canonicalize({ val: null })).not.toBe(
+      c.canonicalize({ val: undefined }),
+    );
   });
 
   it("returns same ref for equivalent ObjectSet params with different object references", () => {
@@ -141,8 +186,9 @@ describe("FunctionParamsCanonicalizer", () => {
     const os2 = createFakeObjectSet({ type: "base", objectType: "Employee" });
 
     expect(os1).not.toBe(os2);
-    expect(c.canonicalize({ employees: os1 }))
-      .toBe(c.canonicalize({ employees: os2 }));
+    expect(c.canonicalize({ employees: os1 })).toBe(
+      c.canonicalize({ employees: os2 }),
+    );
   });
 
   it("returns different refs for ObjectSets with different wire representations", () => {
@@ -151,7 +197,8 @@ describe("FunctionParamsCanonicalizer", () => {
     const os1 = createFakeObjectSet({ type: "base", objectType: "Employee" });
     const os2 = createFakeObjectSet({ type: "base", objectType: "Office" });
 
-    expect(c.canonicalize({ items: os1 }))
-      .not.toBe(c.canonicalize({ items: os2 }));
+    expect(c.canonicalize({ items: os1 })).not.toBe(
+      c.canonicalize({ items: os2 }),
+    );
   });
 });

@@ -22,10 +22,7 @@ import list from "./list/index.js";
 import set from "./set/index.js";
 import unset from "./unset/index.js";
 
-const command: CommandModule<
-  CommonSiteArgs,
-  CommonSiteArgs
-> = {
+const command: CommandModule<CommonSiteArgs, CommonSiteArgs> = {
   command: "version",
   describe: "Manage site versions",
   builder: (argv) => {

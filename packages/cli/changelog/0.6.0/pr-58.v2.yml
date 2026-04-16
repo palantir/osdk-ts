@@ -2,4 +2,4 @@ type: improvement
 improvement:
   description: Display site link after CLI site deploy command
   links:
-  - https://github.com/palantir/osdk-ts/pull/58
+    - https://github.com/palantir/osdk-ts/pull/58

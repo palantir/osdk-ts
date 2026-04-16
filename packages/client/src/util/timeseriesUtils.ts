@@ -29,21 +29,21 @@ export function getTimeRange(body: TimeSeriesQuery): TimeRange {
   }
   return body.$before
     ? {
-      type: "relative",
-      startTime: {
-        when: "BEFORE",
-        value: body.$before,
-        unit: TimeseriesDurationMapping[body.$unit],
-      },
-    }
+        type: "relative",
+        startTime: {
+          when: "BEFORE",
+          value: body.$before,
+          unit: TimeseriesDurationMapping[body.$unit],
+        },
+      }
     : {
-      type: "relative",
-      endTime: {
-        when: "AFTER",
-        value: body.$after!,
-        unit: TimeseriesDurationMapping[body.$unit],
-      },
-    };
+        type: "relative",
+        endTime: {
+          when: "AFTER",
+          value: body.$after!,
+          unit: TimeseriesDurationMapping[body.$unit],
+        },
+      };
 }
 
 export async function* asyncIterPointsHelper<
@@ -59,9 +59,9 @@ export async function* asyncIterPointsHelper<
   unknown
 > {
   const reader = iterator.body?.getReader()!;
-  for await (
-    const point of parseStreamedResponse(iterateReadableStream(reader))
-  ) {
+  for await (const point of parseStreamedResponse(
+    iterateReadableStream(reader),
+  )) {
     yield {
       time: point.time,
       value: point.value as T,

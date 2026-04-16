@@ -15,15 +15,13 @@
  */
 
 import type { OrganizationRid as _api_OrganizationRid } from "../__components.js";
-export interface GetOrgSettingsByUserRequest {
-}
+export interface GetOrgSettingsByUserRequest {}
 export interface GetOrgSettingsByUserResponse {
   organization: _api_OrganizationRid;
   proposals: ProposalsSettings;
   usage: UsageSettings;
 }
-export interface GetOrgSettingsRequest {
-}
+export interface GetOrgSettingsRequest {}
 /**
  * Response containing organization-wide settings managed by OMS.
  */
@@ -31,10 +29,8 @@ export interface GetOrgSettingsResponse {
   proposals: ProposalsSettings;
   usage: UsageSettings;
 }
-export interface ProposalsDisabled {
-}
-export interface ProposalsEnabled {
-}
+export interface ProposalsDisabled {}
+export interface ProposalsEnabled {}
 export interface ProposalsEnabledStatus_disabled {
   type: "disabled";
   disabled: ProposalsDisabled;
@@ -58,8 +54,7 @@ export interface SetOrgSettingsRequest {
   proposals?: ProposalsSettings | null | undefined;
   usage?: UsageSettings | null | undefined;
 }
-export interface SetOrgSettingsResponse {
-}
+export interface SetOrgSettingsResponse {}
 export interface UsageSettings {
   usageEnabled: boolean;
 }

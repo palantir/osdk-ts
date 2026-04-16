@@ -46,6 +46,5 @@ function ToggleInputInner({
   );
 }
 
-export const ToggleInput: React.NamedExoticComponent<ToggleInputProps> = memo(
-  ToggleInputInner,
-);
+export const ToggleInput: React.NamedExoticComponent<ToggleInputProps> =
+  memo(ToggleInputInner);

@@ -2,4 +2,4 @@ type: improvement
 improvement:
   description: Minor changes to create-app based on feedback
   links:
-  - https://github.com/palantir/osdk-ts/pull/76
+    - https://github.com/palantir/osdk-ts/pull/76

@@ -48,9 +48,7 @@ const EXAMPLE_WIDGET_SET_MANIFEST: WidgetSetManifestV1 = {
         "events": {
           "event1": {
             "displayName": "Event 1",
-            "parameterUpdateIds": [
-              "myString",
-            ],
+            "parameterUpdateIds": ["myString"],
           },
         },
       },
@@ -60,7 +58,7 @@ const EXAMPLE_WIDGET_SET_MANIFEST: WidgetSetManifestV1 = {
 
 // These tests don't actually need executing, as compilation is enough to verify the types are correct
 test("WidgetSetManifestV1", () => {
-  expectTypeOf(EXAMPLE_WIDGET_SET_MANIFEST).toEqualTypeOf<
-    WidgetSetManifestV1
-  >();
+  expectTypeOf(
+    EXAMPLE_WIDGET_SET_MANIFEST,
+  ).toEqualTypeOf<WidgetSetManifestV1>();
 });

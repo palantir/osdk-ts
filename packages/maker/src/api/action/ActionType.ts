@@ -54,12 +54,10 @@ interface ActionTypeInner {
   submissionMetadata: SubmissionMetadata;
 }
 
-export type ActionType =
-  & OntologyEntityBase
-  & RequiredFields<
+export type ActionType = OntologyEntityBase &
+  RequiredFields<
     Partial<ActionTypeInner>,
     "apiName" | "displayName" | "rules" | "status"
-  >
-  & {
+  > & {
     __type: OntologyEntityTypeEnum.ACTION_TYPE;
   };

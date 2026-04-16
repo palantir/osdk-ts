@@ -64,9 +64,7 @@ export function formatDateForDisplay(
 }
 
 /** Formats a Date as "2024-06-15 14:30" — space-separated, parsable, for text input editing. */
-export function formatDatetimeForInput(
-  date: Date | undefined | null,
-): string {
+export function formatDatetimeForInput(date: Date | undefined | null): string {
   if (date == null) return "";
   return `${formatDateForInput(date)} ${formatTime(date)}`;
 }
@@ -107,9 +105,10 @@ export function parseDateFromISO(
 }
 
 /** Parses an "HH:mm" time string into hours and minutes. */
-export function parseTimeString(
-  timeString: string,
-): { hours: number; minutes: number } {
+export function parseTimeString(timeString: string): {
+  hours: number;
+  minutes: number;
+} {
   const [hoursStr, minutesStr] = timeString.split(":");
   const hours = parseInt(hoursStr ?? "0", 10);
   const minutes = parseInt(minutesStr ?? "0", 10);

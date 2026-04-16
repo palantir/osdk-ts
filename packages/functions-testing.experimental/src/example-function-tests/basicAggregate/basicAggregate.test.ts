@@ -22,29 +22,35 @@ import { basicAggregate } from "./basicAggregate.js";
 describe("basicAggregate", () => {
   it("should return aggregation correctly", async () => {
     const mockClient = createMockClient();
-    mockClient.when((stub) =>
-      stub(Employee).where({ employeeId: { "$eq": 5 } }).aggregate({
-        $select: { "employeeLocation:exactDistinct": "asc" },
-      })
-    ).thenReturnAggregation(
-      { employeeLocation: { exactDistinct: 3 } },
-    );
+    mockClient
+      .when((stub) =>
+        stub(Employee)
+          .where({ employeeId: { "$eq": 5 } })
+          .aggregate({
+            $select: { "employeeLocation:exactDistinct": "asc" },
+          }),
+      )
+      .thenReturnAggregation({ employeeLocation: { exactDistinct: 3 } });
 
-    mockClient.when((stub) =>
-      stub(Employee).where({ employeeId: { "$eq": 5 } }).aggregate({
-        $select: {
-          "employeeId:max": "unordered",
-          "fullName:approximateDistinct": "unordered",
+    mockClient
+      .when((stub) =>
+        stub(Employee)
+          .where({ employeeId: { "$eq": 5 } })
+          .aggregate({
+            $select: {
+              "employeeId:max": "unordered",
+              "fullName:approximateDistinct": "unordered",
+            },
+            $groupBy: { employeeId: "exact" },
+          }),
+      )
+      .thenReturnAggregation([
+        {
+          $group: { employeeId: 5 },
+          employeeId: { max: 5 },
+          fullName: { approximateDistinct: 1 },
         },
-        $groupBy: { employeeId: "exact" },
-      })
-    ).thenReturnAggregation([
-      {
-        $group: { employeeId: 5 },
-        employeeId: { max: 5 },
-        fullName: { approximateDistinct: 1 },
-      },
-    ]);
+      ]);
     const actual = await basicAggregate(mockClient);
     expect(actual).toEqual(1);
   });

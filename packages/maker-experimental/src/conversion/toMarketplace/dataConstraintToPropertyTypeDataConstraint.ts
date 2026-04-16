@@ -80,12 +80,12 @@ export function dataConstraintToPropertyTypeDataConstraint(
         type: "struct",
         struct: {
           elementConstraints: Object.fromEntries(
-            Object.entries(dc.struct.elementConstraints).map((
-              [field, constraint],
-            ) => [
-              field,
-              convertDataConstraintToDataConstraints(constraint),
-            ]),
+            Object.entries(dc.struct.elementConstraints).map(
+              ([field, constraint]) => [
+                field,
+                convertDataConstraintToDataConstraints(constraint),
+              ],
+            ),
           ),
         },
       } as PropertyTypeDataConstraints_struct;

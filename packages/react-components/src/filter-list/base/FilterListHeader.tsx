@@ -51,20 +51,10 @@ function FilterListHeaderInner({
   return (
     <div className={styles.header}>
       <div className={styles.titleContainer}>
-        {titleIcon && (
-          <span className={styles.titleIcon}>
-            {titleIcon}
-          </span>
-        )}
-        {title && (
-          <span className={styles.title}>
-            {title}
-          </span>
-        )}
+        {titleIcon && <span className={styles.titleIcon}>{titleIcon}</span>}
+        {title && <span className={styles.title}>{title}</span>}
         {showActiveFilterCount && activeFilterCount > 0 && (
-          <span className={styles.activeCount}>
-            ({activeFilterCount})
-          </span>
+          <span className={styles.activeCount}>({activeFilterCount})</span>
         )}
       </div>
 

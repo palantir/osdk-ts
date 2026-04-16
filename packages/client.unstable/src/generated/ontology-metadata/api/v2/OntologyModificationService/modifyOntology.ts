@@ -18,8 +18,7 @@ import { type ConjureContext, conjureFetch } from "conjure-lite";
 import type { OntologyRid as _api_OntologyRid } from "../../__components.js";
 import type {
   OntologyModificationRequest as _api_modification_OntologyModificationRequest,
-  OntologyModificationResponse
-    as _api_modification_OntologyModificationResponse,
+  OntologyModificationResponse as _api_modification_OntologyModificationResponse,
 } from "../../modification/__components.js";
 export async function modifyOntology(
   ctx: ConjureContext,

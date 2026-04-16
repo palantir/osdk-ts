@@ -18,10 +18,7 @@ import type { Client } from "@osdk/client";
 import { addOne } from "@osdk/client.test.ontology";
 import type { Integer } from "@osdk/functions";
 
-export async function basicQuery(
-  client: Client,
-  n: Integer,
-): Promise<Integer> {
+export async function basicQuery(client: Client, n: Integer): Promise<Integer> {
   const result = await client(addOne).executeFunction({ n });
   if (result !== n + 1) {
     throw new Error(`Expected ${n + 1}, but got ${result}`);

@@ -19,8 +19,9 @@ import { stripDerivedPropertiesFromParams } from "../stripDerivedPropertiesFromP
 
 vi.mock("@osdk/client", () => ({
   isObjectSet: (value: unknown) =>
-    value != null && typeof value === "object"
-    && (value as Record<string, unknown>).__isObjectSet === true,
+    value != null &&
+    typeof value === "object" &&
+    (value as Record<string, unknown>).__isObjectSet === true,
   getWireObjectSet: (value: unknown) =>
     (value as Record<string, unknown>).__wire,
 }));

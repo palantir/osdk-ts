@@ -170,16 +170,14 @@ export class ObservableClientImpl implements ObservableClient {
     options: ObserveFunctionOptions,
     subFn: Observer<ObserveFunctionCallbackArgs<Q>>,
   ) => Unsubscribable = (queryDef, params, options, subFn) => {
-    const dependsOn = options.dependsOn?.map(dep =>
-      typeof dep === "string" ? dep : dep.apiName
+    const dependsOn = options.dependsOn?.map((dep) =>
+      typeof dep === "string" ? dep : dep.apiName,
     );
 
     // Partition dependsOnObjects into instances vs ObjectSets
     type ObjectDependency = { $apiName: string; $primaryKey: string | number };
     const instances: ObjectDependency[] = [];
-    const objectSetWires: Array<
-      ReturnType<typeof getWireObjectSet>
-    > = [];
+    const objectSetWires: Array<ReturnType<typeof getWireObjectSet>> = [];
 
     for (const item of options.dependsOnObjects ?? []) {
       if (isObjectSet(item)) {
@@ -193,20 +191,21 @@ export class ObservableClientImpl implements ObservableClient {
     }
 
     // Start async extraction of ObjectSet types
-    const objectSetTypesPromise = objectSetWires.length > 0
-      ? Promise.all(
-        objectSetWires.map(wire =>
-          extractObjectOrInterfaceType(
-            this.__experimentalStore.client[additionalContext],
-            wire,
+    const objectSetTypesPromise =
+      objectSetWires.length > 0
+        ? Promise.all(
+            objectSetWires.map((wire) =>
+              extractObjectOrInterfaceType(
+                this.__experimentalStore.client[additionalContext],
+                wire,
+              ),
+            ),
+          ).then((types) =>
+            types
+              .filter((t): t is NonNullable<typeof t> => t != null)
+              .map((t) => t.apiName),
           )
-        ),
-      ).then(types =>
-        types
-          .filter((t): t is NonNullable<typeof t> => t != null)
-          .map(t => t.apiName)
-      )
-      : undefined;
+        : undefined;
 
     return this.__experimentalStore.functions.observe(
       {
@@ -239,19 +238,19 @@ export class ObservableClientImpl implements ObservableClient {
 
     return objectsArray.length <= 1
       ? observeSingleLink(
-        this.__experimentalStore,
-        objectsArray,
-        linkName,
-        options,
-        observer,
-      )
+          this.__experimentalStore,
+          objectsArray,
+          linkName,
+          options,
+          observer,
+        )
       : observeMultiLinks(
-        this.__experimentalStore,
-        objectsArray,
-        linkName,
-        options,
-        observer,
-      );
+          this.__experimentalStore,
+          objectsArray,
+          linkName,
+          options,
+          observer,
+        );
   };
 
   public applyAction: <Q extends ActionDefinition<any>>(
@@ -322,8 +321,9 @@ export class ObservableClientImpl implements ObservableClient {
     T extends ObjectOrInterfaceDefinition,
     RDPs extends Record<string, SimplePropertyDef> = {},
   >(where: WhereClause<T, RDPs>): Canonical<WhereClause<T, RDPs>> {
-    return this.__experimentalStore.whereCanonicalizer
-      .canonicalize(where) as Canonical<WhereClause<T, RDPs>>;
+    return this.__experimentalStore.whereCanonicalizer.canonicalize(
+      where,
+    ) as Canonical<WhereClause<T, RDPs>>;
   }
 
   public canonicalizeOptions<OS, T extends CanonicalizeOptionsInput<OS>>(
@@ -378,8 +378,8 @@ export class ObservableClientImpl implements ObservableClient {
     if (!arr || arr.length === 0) {
       return arr;
     }
-    const wireStrings = arr.map(os =>
-      JSON.stringify(getWireObjectSet(os as ObjectSet<any, any>))
+    const wireStrings = arr.map((os) =>
+      JSON.stringify(getWireObjectSet(os as ObjectSet<any, any>)),
     );
     const canonKey = canonicalize(wireStrings);
     let cached = cache.get(canonKey);
@@ -432,9 +432,8 @@ function observeSingleLink(
 
   for (const obj of objectsArray) {
     const pk = obj.$primaryKey;
-    const sourceType: "object" | "interface" = obj.$apiName === obj.$objectType
-      ? "object"
-      : "interface";
+    const sourceType: "object" | "interface" =
+      obj.$apiName === obj.$objectType ? "object" : "interface";
 
     parentSub.add(
       store.links.observe(
@@ -507,9 +506,10 @@ function observeMultiLinks(
       }
     }
 
-    const payloads = [...perObjectData.values()].map(d => d.payload);
-    const loading = perObjectData.size < totalExpected
-      || payloads.some(p => p.status === "init" || p.status === "loading");
+    const payloads = [...perObjectData.values()].map((d) => d.payload);
+    const loading =
+      perObjectData.size < totalExpected ||
+      payloads.some((p) => p.status === "init" || p.status === "loading");
 
     observer.next({
       resolvedList: Array.from(seen.values()),
@@ -517,14 +517,14 @@ function observeMultiLinks(
       isOptimistic,
       lastUpdated: latestUpdated,
       fetchMore: hasMore
-        ? () => Promise.all(fetchMores.map(fn => fn())).then(() => {})
+        ? () => Promise.all(fetchMores.map((fn) => fn())).then(() => {})
         : async () => {},
       hasMore,
       status: loading
         ? "loading"
-        : payloads.some(p => p.status === "error")
-        ? "error"
-        : "loaded",
+        : payloads.some((p) => p.status === "error")
+          ? "error"
+          : "loaded",
       ...(!hasMore ? { totalCount: String(seen.size) } : {}),
     });
   }
@@ -533,9 +533,8 @@ function observeMultiLinks(
     const objKey = `${obj.$objectType ?? obj.$apiName}:${obj.$primaryKey}`;
     const pk = obj.$primaryKey;
 
-    const sourceType: "object" | "interface" = obj.$apiName === obj.$objectType
-      ? "object"
-      : "interface";
+    const sourceType: "object" | "interface" =
+      obj.$apiName === obj.$objectType ? "object" : "interface";
 
     parentSub.add(
       store.links.observe(

@@ -40,9 +40,7 @@ export abstract class AbstractImportable {
     this._common = common;
     this.fullApiName = fullApiName;
 
-    [this.apiNamespace, this.shortApiName] = extractNamespace(
-      this.fullApiName,
-    );
+    [this.apiNamespace, this.shortApiName] = extractNamespace(this.fullApiName);
 
     const { importExt } = common;
 
@@ -54,8 +52,10 @@ export abstract class AbstractImportable {
 
   getImportPathRelTo = (filePath: string): string => {
     if (this.importPath.startsWith(".")) {
-      const result = path.relative(path.dirname(filePath), this.importPath)
-        .split(path.sep).join("/");
+      const result = path
+        .relative(path.dirname(filePath), this.importPath)
+        .split(path.sep)
+        .join("/");
 
       if (result.startsWith(".")) {
         return result;

@@ -15,48 +15,56 @@ import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 
 await yargs(hideBin(process.argv))
-  .command("*", "default command", (argv) => {
-    return argv
-      .option("f", {
-        alias: /** @type {const} */ ("format"),
-        choices: /** @type {const} */ (["esm", "cjs"]),
-      })
-      .option("m", {
-        alias: /** @type {const} */ ("mechanism"),
-        choices: /** @type {const} */ (["bundle", "normal", "pure", "types"]),
-        default: /** @type {const} */ ("normal"),
-      })
-      .option("t", {
-        alias: /** @type {const} */ ("target"),
-        choices: /** @type {const} */ (["browser", "node"]),
-      });
-  }, async (args) => {
-    try {
-      if (args.mechanism === "normal" && args.format === "esm") {
-        await transpileWithBabel(args.format, args.target);
-      } else if (args.mechanism === "bundle") {
-        await transpileWithTsup(args.format, args.target);
-      } else if (args.mechanism === "types" && args.format === "esm") {
-        await transformTypes();
-      } else {
-        throw new Error(
-          `Unsupported configuration ${args.mechanism} ${args.format} ${args.target}`,
-        );
-      }
+  .command(
+    "*",
+    "default command",
+    (argv) => {
+      return argv
+        .option("f", {
+          alias: /** @type {const} */ ("format"),
+          choices: /** @type {const} */ (["esm", "cjs"]),
+        })
+        .option("m", {
+          alias: /** @type {const} */ ("mechanism"),
+          choices: /** @type {const} */ (["bundle", "normal", "pure", "types"]),
+          default: /** @type {const} */ ("normal"),
+        })
+        .option("t", {
+          alias: /** @type {const} */ ("target"),
+          choices: /** @type {const} */ (["browser", "node"]),
+        });
+    },
+    async (args) => {
+      try {
+        if (args.mechanism === "normal" && args.format === "esm") {
+          await transpileWithBabel(args.format, args.target);
+        } else if (args.mechanism === "bundle") {
+          await transpileWithTsup(args.format, args.target);
+        } else if (args.mechanism === "types" && args.format === "esm") {
+          await transformTypes();
+        } else {
+          throw new Error(
+            `Unsupported configuration ${args.mechanism} ${args.format} ${args.target}`,
+          );
+        }
 
-      console.log("👍");
-    } catch (e) {
-      console.log("exception", e);
-      throw e;
-    }
-  })
+        console.log("👍");
+      } catch (e) {
+        console.log("exception", e);
+        throw e;
+      }
+    },
+  )
   .parseAsync();
 
 function isTestFile(relativePath) {
   const segments = relativePath.split(path.sep);
-  return segments.some(s =>
-    s.includes(".test.") || s.includes(".test") || s === "testUtils"
-    || s.startsWith("testUtils.")
+  return segments.some(
+    (s) =>
+      s.includes(".test.") ||
+      s.includes(".test") ||
+      s === "testUtils" ||
+      s.startsWith("testUtils."),
   );
 }
 
@@ -74,25 +82,17 @@ async function transformTypes() {
   };
   const fileEndingsToCompile = [".ts", ".mts", ...Object.keys(extMap)];
 
-  for (
-    const f of await readdir(inDir, {
-      recursive: true,
-      withFileTypes: true,
-      encoding: "utf-8",
-    })
-  ) {
+  for (const f of await readdir(inDir, {
+    recursive: true,
+    withFileTypes: true,
+    encoding: "utf-8",
+  })) {
     const fullFilePath = path.join(f.parentPath, f.name);
-    const relative = path.relative(
-      path.resolve(inDir),
-      fullFilePath,
-    );
-    const destPathWrongExt = path.join(
-      outDir,
-      relative,
-    );
+    const relative = path.relative(path.resolve(inDir), fullFilePath);
+    const destPathWrongExt = path.join(outDir, relative);
     if (f.isDirectory()) continue;
     if (isTestFile(relative)) continue;
-    if (!fileEndingsToCompile.some(e => f.name.endsWith(e))) {
+    if (!fileEndingsToCompile.some((e) => f.name.endsWith(e))) {
       continue;
     }
 
@@ -115,18 +115,18 @@ async function transformTypes() {
 
     const destPathRightExt = path.join(
       path.dirname(destPathWrongExt),
-      path.basename(destPathWrongExt, path.extname(destPathWrongExt))
-        + `.d${
-          extMap[path.extname(destPathWrongExt)]
-            ?? path.extname(destPathWrongExt)
+      path.basename(destPathWrongExt, path.extname(destPathWrongExt)) +
+        `.d${
+          extMap[path.extname(destPathWrongExt)] ??
+          path.extname(destPathWrongExt)
         }`,
     );
 
     await mkdir(path.dirname(destPathRightExt), { recursive: true });
     await writeFile(destPathRightExt, result.code, "utf-8");
     if (result.map) {
-      result.map.sources = result.map.sources.map(s =>
-        path.relative(path.dirname(destPathRightExt), s)
+      result.map.sources = result.map.sources.map((s) =>
+        path.relative(path.dirname(destPathRightExt), s),
       );
       result.map.sourcesContent = undefined;
       result.map.file = path.basename(destPathRightExt);
@@ -199,7 +199,9 @@ async function transpileWithTsup(format, target) {
   ];
 
   const devDepNames = Object.keys(pkgJson.devDependencies ?? {});
-  const externalDevDeps = devDepNames.filter(d => !noExternalList.includes(d));
+  const externalDevDeps = devDepNames.filter(
+    (d) => !noExternalList.includes(d),
+  );
 
   await build({
     entry: [
@@ -245,12 +247,14 @@ async function transpileWithTsup(format, target) {
     treeshake: true,
     target: "es2022",
     esbuildPlugins: [
-      /** @type {any} */ (babel({
-        config: {
-          presets: ["@babel/preset-typescript", "@babel/preset-react"],
-          plugins: ["babel-plugin-dev-expression"],
-        },
-      })),
+      /** @type {any} */ (
+        babel({
+          config: {
+            presets: ["@babel/preset-typescript", "@babel/preset-react"],
+            plugins: ["babel-plugin-dev-expression"],
+          },
+        })
+      ),
     ],
   });
 }
@@ -283,7 +287,7 @@ async function transpileWithBabel(format, target) {
     PACKAGE_CLI_VERSION,
   ] = await Promise.all([
     import("@babel/core"),
-    readFile("package.json", "utf-8").then(f => JSON.parse(f).version),
+    readFile("package.json", "utf-8").then((f) => JSON.parse(f).version),
     readPackageVersion("packages/api"),
     readPackageVersion("packages/client"),
     readPackageVersion("packages/cli"),
@@ -316,38 +320,30 @@ async function transpileWithBabel(format, target) {
   };
   const fileEndingsToCompile = Object.keys(extMap);
 
-  for (
-    const f of await readdir(inDir, {
-      recursive: true,
-      withFileTypes: true,
-      encoding: "utf-8",
-    })
-  ) {
+  for (const f of await readdir(inDir, {
+    recursive: true,
+    withFileTypes: true,
+    encoding: "utf-8",
+  })) {
     const fullFilePath = path.join(f.parentPath, f.name);
-    const relative = path.relative(
-      path.resolve(inDir),
-      fullFilePath,
-    );
-    const destPathWrongExt = path.join(
-      outDir,
-      relative,
-    );
+    const relative = path.relative(path.resolve(inDir), fullFilePath);
+    const destPathWrongExt = path.join(outDir, relative);
     if (f.isDirectory()) continue;
     if (isTestFile(relative)) continue;
-    if (fileEndingsToCopy.some(e => f.name.endsWith(e))) {
+    if (fileEndingsToCopy.some((e) => f.name.endsWith(e))) {
       await mkdir(path.dirname(destPathWrongExt), { recursive: true });
       await copyFile(fullFilePath, destPathWrongExt);
       continue;
     }
-    if (!fileEndingsToCompile.some(e => f.name.endsWith(e))) {
+    if (!fileEndingsToCompile.some((e) => f.name.endsWith(e))) {
       continue;
     }
 
     const destPath = path.join(
       path.dirname(destPathWrongExt),
-      path.basename(destPathWrongExt, path.extname(destPathWrongExt)) + (
-        extMap[path.extname(destPathWrongExt)] ?? path.extname(destPathWrongExt)
-      ),
+      path.basename(destPathWrongExt, path.extname(destPathWrongExt)) +
+        (extMap[path.extname(destPathWrongExt)] ??
+          path.extname(destPathWrongExt)),
     );
 
     const result = await babel.transformFileAsync(fullFilePath, {
@@ -356,23 +352,23 @@ async function transpileWithBabel(format, target) {
       // don't look for a config file (default would try to find one)
       configFile: false,
 
-      presets: [
-        "@babel/preset-typescript",
-        "@babel/preset-react",
-      ],
+      presets: ["@babel/preset-typescript", "@babel/preset-react"],
 
       plugins: [
         ["babel-plugin-dev-expression"],
-        ["babel-plugin-transform-inline-environment-variables", {
-          "include": [
-            "PACKAGE_VERSION",
-            "PACKAGE_API_VERSION",
-            "PACKAGE_CLIENT_VERSION",
-            "PACKAGE_CLI_VERSION",
-            "TARGET",
-            "MODE",
-          ],
-        }],
+        [
+          "babel-plugin-transform-inline-environment-variables",
+          {
+            "include": [
+              "PACKAGE_VERSION",
+              "PACKAGE_API_VERSION",
+              "PACKAGE_CLIENT_VERSION",
+              "PACKAGE_CLI_VERSION",
+              "TARGET",
+              "MODE",
+            ],
+          },
+        ],
         ["minify-dead-code-elimination"],
       ],
     });
@@ -387,8 +383,8 @@ async function transpileWithBabel(format, target) {
       // See https://developer.chrome.com/docs/devtools/x-google-ignore-list
       // and https://tc39.es/ecma426/#sec-source-map-format
       if (
-        result.map.sources.some(s =>
-          s === "MinimalLogger.ts" || s === "BrowserLogger.ts"
+        result.map.sources.some(
+          (s) => s === "MinimalLogger.ts" || s === "BrowserLogger.ts",
         )
       ) {
         // @ts-ignore
@@ -410,6 +406,8 @@ async function readPackageVersion(k) {
   const workspaceFile = await findUp("pnpm-workspace.yaml");
   if (!workspaceFile) throw "couldn't find workspace file";
   const workspaceRoot = path.dirname(workspaceFile);
-  return await readFile(path.join(workspaceRoot, k, "package.json"), "utf-8")
-    .then(f => JSON.parse(f).version);
+  return await readFile(
+    path.join(workspaceRoot, k, "package.json"),
+    "utf-8",
+  ).then((f) => JSON.parse(f).version);
 }

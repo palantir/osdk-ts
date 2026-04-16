@@ -18,12 +18,16 @@ import { consola } from "../consola.js";
 
 const scopeNameRegex = /^[a-zA-Z-_:]+$/;
 
-export async function promptScopes(
-  { scopes }: { scopes?: string[] },
-): Promise<string[] | undefined> {
+export async function promptScopes({
+  scopes,
+}: {
+  scopes?: string[];
+}): Promise<string[] | undefined> {
   while (true) {
     if (scopes != null) {
-      const invalidScopes = scopes.filter(scope => !scopeNameRegex.test(scope));
+      const invalidScopes = scopes.filter(
+        (scope) => !scopeNameRegex.test(scope),
+      );
       const allValidScopes = invalidScopes.length === 0;
       if (allValidScopes) {
         break;

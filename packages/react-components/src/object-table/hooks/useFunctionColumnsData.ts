@@ -76,15 +76,17 @@ export function useFunctionColumnsData<
     string,
     never
   >,
->(
-  {
-    objectSet,
-    objects,
-    columnDefinitions,
-    primaryKeyApiName,
-    pageSize = DEFAULT_PAGE_SIZE,
-  }: UseFunctionColumnsDataOptions<Q, RDPs, FunctionColumns>,
-): FunctionColumnData {
+>({
+  objectSet,
+  objects,
+  columnDefinitions,
+  primaryKeyApiName,
+  pageSize = DEFAULT_PAGE_SIZE,
+}: UseFunctionColumnsDataOptions<
+  Q,
+  RDPs,
+  FunctionColumns
+>): FunctionColumnData {
   const prevDataRef = useRef<FunctionColumnData>({});
 
   const stableObjects = useStableObjects(objects);
@@ -97,8 +99,8 @@ export function useFunctionColumnsData<
     [columnDefinitions],
   );
 
-  const disabled = !stableObjectSet || !stableObjects?.length
-    || functionColDefs.length === 0;
+  const disabled =
+    !stableObjectSet || !stableObjects?.length || functionColDefs.length === 0;
 
   // When a new page loads, only that page's queries fire — old pages
   // hit the dedupeIntervalMs cache since their params are unchanged.
@@ -182,9 +184,10 @@ function extractFunctionLocators<
   if (!columnDefinitions) return [];
 
   return columnDefinitions
-    .filter(colDef => colDef.locator.type === "function")
-    .map(colDef =>
-      colDef.locator as FunctionColumnLocator<Q, RDPs, FunctionColumns>
+    .filter((colDef) => colDef.locator.type === "function")
+    .map(
+      (colDef) =>
+        colDef.locator as FunctionColumnLocator<Q, RDPs, FunctionColumns>,
     );
 }
 
@@ -202,10 +205,10 @@ function buildPagedObjectSets<
     return [stripDerivedPropertiesFromParams(objectSet)];
   }
 
-  return chunk(objects, pageSize).map(page => {
+  return chunk(objects, pageSize).map((page) => {
     const whereClause = {
       [primaryKeyApiName]: {
-        $in: page.map(obj => obj.$primaryKey),
+        $in: page.map((obj) => obj.$primaryKey),
       },
     } as WhereClause<Q, RDPs>;
 
@@ -243,8 +246,9 @@ function buildQueryGrid<
           params: locator.getFunctionParams(
             pagedObjectSet as ObjectSet<Q, RDPs>,
           ),
-          dedupeIntervalMs: locator.dedupeIntervalMs
-            ?? DEFAULT_FUNCTION_COLUMN_DEDUPE_INTERVAL_MS,
+          dedupeIntervalMs:
+            locator.dedupeIntervalMs ??
+            DEFAULT_FUNCTION_COLUMN_DEDUPE_INTERVAL_MS,
         } as FunctionQueryParams<QueryDefinition<unknown>>["options"],
       });
     }
@@ -267,10 +271,11 @@ function mergePagedResults(
 ): MergedResult[] {
   if (numColumns === 0) return [];
 
-  const merged: MergedResult[] = Array.from(
-    { length: numColumns },
-    () => ({ isLoading: false, error: undefined, functionsMap: {} }),
-  );
+  const merged: MergedResult[] = Array.from({ length: numColumns }, () => ({
+    isLoading: false,
+    error: undefined,
+    functionsMap: {},
+  }));
 
   results.forEach((result, index) => {
     const columnIndex = index % numColumns;
@@ -319,17 +324,12 @@ function buildFunctionColumnData<
 
     columnData[columnId] = {};
 
-    objects.forEach(obj => {
+    objects.forEach((obj) => {
       const key = String(obj.$primaryKey);
       const prevData = prevColumnData[columnId]?.[key]?.data;
 
       columnData[columnId][key] = createAsyncCellData(
-        resolveCell(
-          result,
-          locator.getKey(obj),
-          locator.getValue,
-          prevData,
-        ),
+        resolveCell(result, locator.getKey(obj), locator.getValue, prevData),
       );
     });
   });
@@ -365,21 +365,25 @@ const useStableObjects = <
     | undefined,
 ):
   | Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>[]
-  | undefined =>
-{
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  return useMemo(() => objects, [
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    JSON.stringify(
-      (objects ?? []).map(item => ({
-        $apiName: item.$apiName,
-        $primaryKey: item.$primaryKey,
-      })).sort((a, b) => {
-        if (a.$apiName !== b.$apiName) {
-          return a.$apiName.localeCompare(b.$apiName);
-        }
-        return String(a.$primaryKey).localeCompare(String(b.$primaryKey));
-      }),
-    ),
-  ]);
+  | undefined => {
+   
+  return useMemo(
+    () => objects,
+    [
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      JSON.stringify(
+        (objects ?? [])
+          .map((item) => ({
+            $apiName: item.$apiName,
+            $primaryKey: item.$primaryKey,
+          }))
+          .sort((a, b) => {
+            if (a.$apiName !== b.$apiName) {
+              return a.$apiName.localeCompare(b.$apiName);
+            }
+            return String(a.$primaryKey).localeCompare(String(b.$primaryKey));
+          }),
+      ),
+    ],
+  );
 };

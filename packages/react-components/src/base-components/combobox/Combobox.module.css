@@ -222,7 +222,10 @@
   justify-content: center;
   width: calc(var(--osdk-combobox-spacing, var(--osdk-surface-spacing)) * 4);
   flex-shrink: 0;
-  color: var(--osdk-combobox-item-color-selected, var(--osdk-intent-primary-rest));
+  color: var(
+    --osdk-combobox-item-color-selected,
+    var(--osdk-intent-primary-rest)
+  );
   visibility: hidden;
 
   &[data-selected] {

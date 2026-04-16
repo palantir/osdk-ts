@@ -25,9 +25,10 @@ export const Widget: React.FC = () => {
     [emitEvent],
   );
 
-  const handleResetCounter = useCallback(() => setCounterValue(0), [
-    setCounterValue,
-  ]);
+  const handleResetCounter = useCallback(
+    () => setCounterValue(0),
+    [setCounterValue],
+  );
 
   useEffect(() => {
     const interval = setInterval(() => setCounterValue(counterValue + 1), 1000);

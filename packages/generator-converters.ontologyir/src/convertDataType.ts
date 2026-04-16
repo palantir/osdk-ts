@@ -55,9 +55,12 @@ export function convertDataType(
   if (required === false && dataType.type !== "optionalType") {
     return {
       type: "union",
-      unionTypes: [convertDataType(dataType, customTypes), {
-        type: "null",
-      }],
+      unionTypes: [
+        convertDataType(dataType, customTypes),
+        {
+          type: "null",
+        },
+      ],
     };
   }
   switch (dataType.type) {
@@ -84,10 +87,7 @@ export function convertDataType(
       return {
         type: "union",
         unionTypes: [
-          convertDataType(
-            optionalData.optionalType.wrappedType,
-            customTypes,
-          ),
+          convertDataType(optionalData.optionalType.wrappedType, customTypes),
           { type: "null" },
         ],
       };
@@ -111,10 +111,7 @@ export function convertDataType(
       const listData = dataType as IListDataType;
       return {
         type: "array",
-        subType: convertDataType(
-          listData.list.elementsType,
-          customTypes,
-        ),
+        subType: convertDataType(listData.list.elementsType, customTypes),
       };
     }
     case "functionCustomType": {
@@ -150,12 +147,12 @@ interface ICustomTypeShape {
 
 function isCustomTypeShape(value: unknown): value is ICustomTypeShape {
   return (
-    typeof value === "object"
-    && value != null
-    && "fieldMetadata" in value
-    && "fields" in value
-    && typeof (value as Record<string, unknown>).fieldMetadata === "object"
-    && typeof (value as Record<string, unknown>).fields === "object"
+    typeof value === "object" &&
+    value != null &&
+    "fieldMetadata" in value &&
+    "fields" in value &&
+    typeof (value as Record<string, unknown>).fieldMetadata === "object" &&
+    typeof (value as Record<string, unknown>).fields === "object"
   );
 }
 
@@ -175,7 +172,7 @@ function convertFunctionCustomType(
     );
   }
   const { fieldMetadata, fields } = customTypeRaw;
-  const structFields = Object.keys(fields).map(key => {
+  const structFields = Object.keys(fields).map((key) => {
     return {
       name: key,
       fieldType: convertDataType(

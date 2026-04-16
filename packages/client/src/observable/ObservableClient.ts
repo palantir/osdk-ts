@@ -89,15 +89,15 @@ interface CacheEntryBase {
 }
 
 export type CacheEntry =
-  | CacheEntryBase & { type: "object" }
-  | CacheEntryBase & {
-    type: "list";
-    where?: unknown;
-    orderBy?: unknown;
-    pageSize?: number;
-  }
-  | CacheEntryBase & { type: "link"; linkName?: string }
-  | CacheEntryBase & { type: "objectSet" };
+  | (CacheEntryBase & { type: "object" })
+  | (CacheEntryBase & {
+      type: "list";
+      where?: unknown;
+      orderBy?: unknown;
+      pageSize?: number;
+    })
+  | (CacheEntryBase & { type: "link"; linkName?: string })
+  | (CacheEntryBase & { type: "objectSet" });
 
 export interface ObserveObjectOptions<
   T extends ObjectOrInterfaceDefinition,
@@ -115,7 +115,8 @@ export type OrderBy<Q extends ObjectOrInterfaceDefinition> = {
 export interface ObserveListOptions<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
-> extends CommonObserveOptions, ObserveOptions {
+>
+  extends CommonObserveOptions, ObserveOptions {
   type: Pick<Q, "apiName" | "type">;
   where?: WhereClause<Q, RDPs>;
   pageSize?: number;
@@ -210,9 +211,7 @@ export interface ObserveObjectsCallbackArgs<
   > = {},
 > {
   resolvedList:
-    | Array<
-      Osdk.Instance<T, "$allBaseProperties", PropertyKeys<T>, RDPs>
-    >
+    | Array<Osdk.Instance<T, "$allBaseProperties", PropertyKeys<T>, RDPs>>
     | undefined;
   isOptimistic: boolean;
   lastUpdated: number;
@@ -231,9 +230,7 @@ export interface ObserveObjectSetArgs<
   > = {},
 > {
   resolvedList:
-    | Array<
-      Osdk.Instance<T, "$allBaseProperties", PropertyKeys<T>, RDPs>
-    >
+    | Array<Osdk.Instance<T, "$allBaseProperties", PropertyKeys<T>, RDPs>>
     | undefined;
   isOptimistic: boolean;
   lastUpdated: number;
@@ -248,7 +245,8 @@ interface ObserveAggregationBaseOptions<
   T extends ObjectOrInterfaceDefinition,
   A extends AggregateOpts<T>,
   RDPs extends Record<string, SimplePropertyDef> = {},
-> extends CommonObserveOptions, ObserveOptions {
+>
+  extends CommonObserveOptions, ObserveOptions {
   type: T;
   where?: WhereClause<T, RDPs>;
   withProperties?: DerivedProperty.Clause<T>;
@@ -614,9 +612,7 @@ export interface CanonicalizeOptionsInput<OS = ObjectSet<any, any>> {
   $select?: ReadonlyArray<string>;
 }
 
-export type CanonicalizedOptions<
-  T extends CanonicalizeOptionsInput<any>,
-> = {
+export type CanonicalizedOptions<T extends CanonicalizeOptionsInput<any>> = {
   [K in keyof T]: T[K];
 };
 
@@ -631,10 +627,9 @@ export function createObservableClient(client: Client): ObservableClient {
       (headers) => {
         headers.set(
           "Fetch-User-Agent",
-          [
-            headers.get("Fetch-User-Agent"),
-            OBSERVABLE_USER_AGENT,
-          ].filter(x => x && x?.length > 0).join(" "),
+          [headers.get("Fetch-User-Agent"), OBSERVABLE_USER_AGENT]
+            .filter((x) => x && x?.length > 0)
+            .join(" "),
         );
         return headers;
       },

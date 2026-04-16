@@ -95,8 +95,9 @@ export class FauxFoundry {
   }
 
   getOntology(ontologyApiNameOrRid: string): FauxOntology {
-    const ontology = this.#ontologiesByApiName.get(ontologyApiNameOrRid)
-      ?? this.#ontologiesByRid.get(ontologyApiNameOrRid);
+    const ontology =
+      this.#ontologiesByApiName.get(ontologyApiNameOrRid) ??
+      this.#ontologiesByRid.get(ontologyApiNameOrRid);
     if (!ontology) {
       throw new OpenApiCallError(
         404,
@@ -111,10 +112,7 @@ export class FauxFoundry {
     fauxDataStore: FauxDataStore,
   ): void {
     const ontology = this.getOntology(ontologyApiNameOrRid); // will throw
-    this.#dataStoresByOntologyApiName.set(
-      ontology.apiName,
-      fauxDataStore,
-    );
+    this.#dataStoresByOntologyApiName.set(ontology.apiName, fauxDataStore);
   }
 
   getDataStore(ontologyApiNameOrRid: string): FauxDataStore {

@@ -15,7 +15,6 @@
  */
 
 import { consola } from "consola";
-
 import * as fs from "node:fs";
 
 // Environment variable names

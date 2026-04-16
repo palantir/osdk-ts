@@ -22,20 +22,19 @@ export async function generatePackageJson(options: {
   packageVersion: string;
   packagePath: string;
   dependencies?: Array<{ dependencyName: string; dependencyVersion: string }>;
-  peerDependencies?: Array<
-    { dependencyName: string; dependencyVersion: string }
-  >;
+  peerDependencies?: Array<{
+    dependencyName: string;
+    dependencyVersion: string;
+  }>;
   beta: boolean;
   packageRid?: string;
-}): Promise<
-  {
-    name: string;
-    version: string;
-    dependencies: { [dependencyName: string]: string } | undefined;
-    peerDependencies: { [dependencyName: string]: string } | undefined;
-    type: string;
-  }
-> {
+}): Promise<{
+  name: string;
+  version: string;
+  dependencies: { [dependencyName: string]: string } | undefined;
+  peerDependencies: { [dependencyName: string]: string } | undefined;
+  type: string;
+}> {
   const packageDeps = constructDependencies(options.dependencies);
   const packagePeerDeps = constructDependencies(options.peerDependencies);
 
@@ -78,13 +77,18 @@ export async function generatePackageJson(options: {
 }
 
 function constructDependencies(
-  dependencies: {
-    dependencyName: string;
-    dependencyVersion: string;
-  }[] | undefined,
+  dependencies:
+    | {
+        dependencyName: string;
+        dependencyVersion: string;
+      }[]
+    | undefined,
 ) {
-  return dependencies?.reduce((acc, value) => {
-    acc[value.dependencyName] = value.dependencyVersion;
-    return acc;
-  }, {} as { [dependencyName: string]: string });
+  return dependencies?.reduce(
+    (acc, value) => {
+      acc[value.dependencyName] = value.dependencyVersion;
+      return acc;
+    },
+    {} as { [dependencyName: string]: string },
+  );
 }

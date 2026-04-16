@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
+import type { ObjectSet, Osdk, PropertyKeys } from "@osdk/api";
 import {
   BarInterface,
   Employee,
   FooInterface,
 } from "@osdk/client.test.ontology";
-import { beforeAll, describe, expect, expectTypeOf, it } from "vitest";
-
-import type { ObjectSet, Osdk, PropertyKeys } from "@osdk/api";
 import { LegacyFauxFoundry, startNodeApiServer } from "@osdk/shared.test";
+import { beforeAll, describe, expect, expectTypeOf, it } from "vitest";
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
 
@@ -54,7 +53,7 @@ describe("ObjectSet", () => {
   it("interface objects set loading", async () => {
     const objectSet = client(FooInterface);
     const { data: interfacers } = await objectSet.fetchPage();
-    const santa = interfacers.find(obj => obj.$primaryKey === 50050);
+    const santa = interfacers.find((obj) => obj.$primaryKey === 50050);
     expect(santa).toBeDefined();
     expect(santa?.fooSpt).toEqual("Santa Claus");
 
@@ -66,9 +65,11 @@ describe("ObjectSet", () => {
   });
 
   it("allows fetching by field from a interface object set - where clause", async () => {
-    const whereClausedInterface = await client(FooInterface).where({
-      fooSpt: "Santa Claus",
-    }).fetchPage({ $includeAllBaseObjectProperties: true });
+    const whereClausedInterface = await client(FooInterface)
+      .where({
+        fooSpt: "Santa Claus",
+      })
+      .fetchPage({ $includeAllBaseObjectProperties: true });
 
     const interfaceObj = whereClausedInterface.data[0];
     expect(interfaceObj.fooSpt).toEqual("Santa Claus");
@@ -81,11 +82,13 @@ describe("ObjectSet", () => {
     expect(asEmployee.fullName).toEqual("Santa Claus");
     expect(asEmployee.office).toEqual("NYC");
 
-    const whereClausedInterface2 = await client(FooInterface).where({
-      fooSpt: "Santa Claus",
-    }).fetchPage({
-      $includeAllBaseObjectProperties: false,
-    });
+    const whereClausedInterface2 = await client(FooInterface)
+      .where({
+        fooSpt: "Santa Claus",
+      })
+      .fetchPage({
+        $includeAllBaseObjectProperties: false,
+      });
 
     const interfaceObj2 = whereClausedInterface2.data[0];
     expect(interfaceObj2.fooSpt).toEqual("Santa Claus");

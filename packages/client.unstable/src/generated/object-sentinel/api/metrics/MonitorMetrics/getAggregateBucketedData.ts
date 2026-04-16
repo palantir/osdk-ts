@@ -16,10 +16,8 @@
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
 import type {
-  GetAggregateBucketedDataRequest
-    as _api_metrics_GetAggregateBucketedDataRequest,
-  GetAggregateBucketedDataResponse
-    as _api_metrics_GetAggregateBucketedDataResponse,
+  GetAggregateBucketedDataRequest as _api_metrics_GetAggregateBucketedDataRequest,
+  GetAggregateBucketedDataResponse as _api_metrics_GetAggregateBucketedDataResponse,
 } from "../__components.js";
 
 /**

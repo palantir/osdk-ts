@@ -62,7 +62,7 @@ export const useTableSorting = <
 }: UseTableSortingProps<Q, RDPs, FunctionColumns>): UseTableSortingResults => {
   // The sorting state in uncontrolled mode
   const [internalSorting, setInternalSorting] = useState<SortingState>(() =>
-    defaultOrderBy ? convertOrderByToSortingState(defaultOrderBy) : []
+    defaultOrderBy ? convertOrderByToSortingState(defaultOrderBy) : [],
   );
 
   const isControlled = orderBy !== undefined;
@@ -77,9 +77,8 @@ export const useTableSorting = <
 
   const onSortingChange: OnChangeFn<SortingState> = useCallback(
     (updater) => {
-      const newSorting = typeof updater === "function"
-        ? updater(sortingState)
-        : updater;
+      const newSorting =
+        typeof updater === "function" ? updater(sortingState) : updater;
 
       // Update internal state if uncontrolled
       if (!isControlled) {

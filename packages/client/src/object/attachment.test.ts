@@ -39,8 +39,7 @@ describe("attachments", () => {
     fauxFoundry.attachments.registerAttachment({
       filename: "file1.txt",
       mediaType: "application/json",
-      rid:
-        "ri.attachments.main.attachment.86016861-707f-4292-b258-6a7108915a75",
+      rid: "ri.attachments.main.attachment.86016861-707f-4292-b258-6a7108915a75",
       buffer: new TextEncoder().encode(
         JSON.stringify({ name: "Hello World" }, null, 2),
       ),
@@ -52,10 +51,9 @@ describe("attachments", () => {
   });
 
   it("reads attachment metadata successfully", async () => {
-    const result = await client(
-      objectTypeWithAllPropertyTypes,
-    )
-      .where({ id: stubData.objectWithAllPropertyTypes1.id }).fetchPage();
+    const result = await client(objectTypeWithAllPropertyTypes)
+      .where({ id: stubData.objectWithAllPropertyTypes1.id })
+      .fetchPage();
 
     const object1 = result.data[0];
     expect(object1.attachment).toBeDefined();
@@ -71,7 +69,8 @@ describe("attachments", () => {
 
   it("reads attachment successfully", async () => {
     const result = await client(objectTypeWithAllPropertyTypes)
-      .where({ id: stubData.objectWithAllPropertyTypes1.id }).fetchPage();
+      .where({ id: stubData.objectWithAllPropertyTypes1.id })
+      .fetchPage();
 
     const object1 = result.data[0];
     expect(object1.attachment).toBeDefined();

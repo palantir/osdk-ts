@@ -96,9 +96,7 @@ const cspell = {
     "packages/create-app.template.*/src/generatedNoCheck/**/*",
     "CHANGELOG.md",
   ],
-  dictionaryDefinitions: [
-    ...getDictionaryDefinitions(),
-  ],
+  dictionaryDefinitions: [...getDictionaryDefinitions()],
   patterns: [
     // In some test code we have some serialized urls that have oauth scopes in url params
     { name: "url-oauth-scopes", pattern: "/api%3A[a-z]+/" },
@@ -183,13 +181,8 @@ const cspell = {
     },
     {
       filename: "**/*.test.{mts,cts,ts,tsx}",
-      dictionaries: [
-        "test-words",
-      ],
-      ignoreRegExpList: [
-        "url-oauth-scopes",
-        "oauth-token",
-      ],
+      dictionaries: ["test-words"],
+      ignoreRegExpList: ["url-oauth-scopes", "oauth-token"],
     },
     {
       filename: [
@@ -218,9 +211,7 @@ const cspell = {
         "examples-extra/*/src/**/*.{mts,cts,ts,tsx}",
       ],
       dictionaries: ["imported-ontologies"],
-      ignoreRegExpList: [
-        /Palo Alto/,
-      ],
+      ignoreRegExpList: [/Palo Alto/],
       words: [
         "Clooney",
         "Downey",

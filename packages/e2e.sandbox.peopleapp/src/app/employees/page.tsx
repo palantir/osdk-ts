@@ -28,19 +28,17 @@ export function EmployeesPage() {
       <div className="flex flex-row items-start text-left">
         <div className="min-w-96 mr-8">
           <Section>
-            {useEnhancedList
-              ? (
-                <EmployeesListEnhanced
-                  selected={selectedEmployee}
-                  onSelect={setSelectedEmployee}
-                />
-              )
-              : (
-                <EmployeesList
-                  selected={selectedEmployee}
-                  onSelect={setSelectedEmployee}
-                />
-              )}
+            {useEnhancedList ? (
+              <EmployeesListEnhanced
+                selected={selectedEmployee}
+                onSelect={setSelectedEmployee}
+              />
+            ) : (
+              <EmployeesList
+                selected={selectedEmployee}
+                onSelect={setSelectedEmployee}
+              />
+            )}
           </Section>
         </div>
 

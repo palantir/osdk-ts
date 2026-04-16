@@ -39,8 +39,7 @@ import type {
 /**
  * Represents all properties available on the corresponding ObjectType.
  */
-export interface AllPropertiesPropertySet {
-}
+export interface AllPropertiesPropertySet {}
 /**
  * Batch endpoint for GetTaggedDependentsForOntologyEntityIdentifier. Loads all versions for each entity and does not page.
  */
@@ -119,8 +118,7 @@ export interface GetDependenciesForTaggedDependentResponseV2Success {
   totalEntitiesCount: number;
   version?: Version | null | undefined;
 }
-export interface GetDependenciesForTaggedDependentResponseV2TagNotFound {
-}
+export interface GetDependenciesForTaggedDependentResponseV2TagNotFound {}
 /**
  * A paging token to be passed back to get the next page of results. Clients shouldn't make any assumptions
  * about the content of the paging token and it should not be parsed/modified.
@@ -461,8 +459,7 @@ export interface RegisterDependencyRequest {
 /**
  * Return type of RegisterDependencyRequest. Intentionally left empty for future extensibility.
  */
-export interface RegisterDependencyResponse {
-}
+export interface RegisterDependencyResponse {}
 /**
  * A tag indicating a particular relevance of a Dependent. Each tag can only be assigned to one version.
  */
@@ -481,8 +478,7 @@ export interface TagDependentRequest {
 /**
  * Return type for TagResourceRequest. Intentionally left empty for future extensibility.
  */
-export interface TagDependentResponse {
-}
+export interface TagDependentResponse {}
 /**
  * Represents a Dependency -> Dependent at a specific Tag
  */

@@ -26,8 +26,9 @@ describe("OsdkContext2", () => {
       return observableClient;
     });
 
-    expect(() => result.current.canonicalizeWhereClause({} as never))
-      .toThrowError(MISSING_PROVIDER_MESSAGE);
+    expect(() =>
+      result.current.canonicalizeWhereClause({} as never),
+    ).toThrowError(MISSING_PROVIDER_MESSAGE);
   });
 
   it("throws a helpful error when client is used without OsdkProvider2", () => {

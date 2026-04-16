@@ -22,11 +22,11 @@ export async function loggingFetch(
   init?: RequestInit | undefined,
 ): Promise<Response> {
   const url = new URL(
-    (typeof input === "string")
+    typeof input === "string"
       ? input
-      : (input instanceof URL)
-      ? input.toString()
-      : input.url,
+      : input instanceof URL
+        ? input.toString()
+        : input.url,
   );
 
   const cleaned = url.pathname.replace(/ri.ontology..*?\//, "{rid}/");

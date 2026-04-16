@@ -84,9 +84,8 @@ function TextTagsInputInner({
     return suggestions
       .filter(
         (s) =>
-          (!inputValue.trim()
-            || s.value.toLowerCase().includes(lowerInput))
-          && !tags.includes(s.value),
+          (!inputValue.trim() || s.value.toLowerCase().includes(lowerInput)) &&
+          !tags.includes(s.value),
       )
       .slice(0, suggestionLimit);
   }, [suggestions, inputValue, tags, suggestionLimit]);
@@ -116,12 +115,9 @@ function TextTagsInputInner({
     [onChange],
   );
 
-  const handleInputValueChange = useCallback(
-    (value: string) => {
-      setInputValue(value);
-    },
-    [],
-  );
+  const handleInputValueChange = useCallback((value: string) => {
+    setInputValue(value);
+  }, []);
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -170,7 +166,7 @@ function TextTagsInputInner({
       )}
 
       <Combobox.Root<string, true>
-        multiple
+        multiple={true}
         value={tags}
         onValueChange={handleValueChange}
         inputValue={inputValue}
@@ -195,27 +191,23 @@ function TextTagsInputInner({
         <Combobox.Portal>
           <Combobox.Positioner>
             <Combobox.Popup>
-              {filteredSuggestions.length === 0
-                ? (
-                  allowCustomTags && inputValue.trim()
-                    ? (
-                      <Combobox.Empty>
-                        Press Enter to add "{inputValue}"
-                      </Combobox.Empty>
-                    )
-                    : (
-                      <Combobox.Empty>
-                        {suggestionLimit
-                          ? "No suggestions"
-                          : "Type to add a tag"}
-                      </Combobox.Empty>
-                    )
+              {filteredSuggestions.length === 0 ? (
+                allowCustomTags && inputValue.trim() ? (
+                  <Combobox.Empty>
+                    Press Enter to add "{inputValue}"
+                  </Combobox.Empty>
+                ) : (
+                  <Combobox.Empty>
+                    {suggestionLimit ? "No suggestions" : "Type to add a tag"}
+                  </Combobox.Empty>
                 )
-                : filteredSuggestions.map(({ value, count }) => (
+              ) : (
+                filteredSuggestions.map(({ value, count }) => (
                   <Combobox.Item key={value} value={value}>
                     {value} ({count.toLocaleString()})
                   </Combobox.Item>
-                ))}
+                ))
+              )}
             </Combobox.Popup>
           </Combobox.Positioner>
         </Combobox.Portal>

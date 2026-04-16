@@ -21,7 +21,10 @@ import type { EnhanceCommon } from "./EnhanceCommon.js";
 import { EnhancedBase } from "./EnhancedBase.js";
 
 export class EnhancedInterfaceType extends EnhancedBase<InterfaceType> {
-  constructor(common: EnhanceCommon, public raw: InterfaceType) {
+  constructor(
+    common: EnhanceCommon,
+    public raw: InterfaceType,
+  ) {
     super(common, raw, raw.apiName, "./ontology/interfaces");
   }
 
@@ -38,9 +41,6 @@ export class EnhancedInterfaceType extends EnhancedBase<InterfaceType> {
   }
 
   getCleanedUpDefinition(v2: boolean): InterfaceMetadata {
-    return __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition(
-      this.raw,
-      v2,
-    );
+    return __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition(this.raw, v2);
   }
 }

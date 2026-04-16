@@ -116,9 +116,10 @@ export default async function main(
     .parseAsync();
   let apiNamespace = "";
   if (commandLineOpts.apiNamespace.length !== 0) {
-    apiNamespace = (commandLineOpts.apiNamespace.slice(-1) !== ".")
-      ? commandLineOpts.apiNamespace + "."
-      : commandLineOpts.apiNamespace;
+    apiNamespace =
+      commandLineOpts.apiNamespace.slice(-1) !== "."
+        ? commandLineOpts.apiNamespace + "."
+        : commandLineOpts.apiNamespace;
     invariant(apiNamespace.length < 1024, "API namespace is too long.");
     invariant(
       apiNamespaceRegex.test(apiNamespace),
@@ -128,9 +129,9 @@ export default async function main(
   consola.info(`Loading ontology from ${commandLineOpts.input}`);
 
   if (
-    !commandLineOpts.generateCodeSnippets
-    && (commandLineOpts.codeSnippetPackageName !== ""
-      || commandLineOpts.codeSnippetDir !== path.resolve("./"))
+    !commandLineOpts.generateCodeSnippets &&
+    (commandLineOpts.codeSnippetPackageName !== "" ||
+      commandLineOpts.codeSnippetDir !== path.resolve("./"))
   ) {
     consola.info(
       "Package name and/or directory supplied for code snippets, but code snippet generation is false.",
@@ -158,24 +159,16 @@ export default async function main(
   consola.info(`Saving ontology to ${commandLineOpts.output}`);
   await fs.writeFile(
     commandLineOpts.output,
-    JSON.stringify(
-      ontologyIr,
-      null,
-      2,
-    ),
+    JSON.stringify(ontologyIr, null, 2),
   );
   // No point in generating block if there aren't any value types
   if (
-    ontologyIr.valueTypes.valueTypes.length > 0
-    || ontologyIr.importedValueTypes.valueTypes.length > 0
+    ontologyIr.valueTypes.valueTypes.length > 0 ||
+    ontologyIr.importedValueTypes.valueTypes.length > 0
   ) {
     await fs.writeFile(
       commandLineOpts.valueTypesOutput,
-      JSON.stringify(
-        ontologyIr.valueTypes,
-        null,
-        2,
-      ),
+      JSON.stringify(ontologyIr.valueTypes, null, 2),
     );
   }
 }

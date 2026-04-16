@@ -65,9 +65,10 @@ module.exports = TRACKED_PACKAGES.flatMap((pkg) => {
     }
 
     const esmPath = exportConfig.import.default;
-    const name = exportPath === "."
-      ? pkgJson.name
-      : `${pkgJson.name}/${exportPath.slice(2)}`;
+    const name =
+      exportPath === "."
+        ? pkgJson.name
+        : `${pkgJson.name}/${exportPath.slice(2)}`;
 
     entries.push({
       name,

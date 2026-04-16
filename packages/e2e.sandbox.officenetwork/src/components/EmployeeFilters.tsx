@@ -64,8 +64,8 @@ const ALL_FILTER_DEFINITIONS: FilterDefinitionUnion<Employee>[] = [
   } as FilterDefinitionUnion<Employee>,
 ];
 
-const INITIAL_FILTERS = ALL_FILTER_DEFINITIONS.filter((def) =>
-  def.id != null && ["department", "locationCity"].includes(def.id)
+const INITIAL_FILTERS = ALL_FILTER_DEFINITIONS.filter(
+  (def) => def.id != null && ["department", "locationCity"].includes(def.id),
 );
 
 const FILTER_SIDEBAR_WIDTH = 256;
@@ -138,15 +138,12 @@ export function EmployeeFilters({
   onFilterClauseChanged,
 }: EmployeeFiltersProps) {
   const [collapsed, setCollapsed] = useState(false);
-  const [filterDefinitions, setFilterDefinitions] = useState<
-    FilterDefinitionUnion<Employee>[]
-  >(INITIAL_FILTERS);
+  const [filterDefinitions, setFilterDefinitions] =
+    useState<FilterDefinitionUnion<Employee>[]>(INITIAL_FILTERS);
 
   const activeIds = useMemo(
     () =>
-      new Set(
-        filterDefinitions.map((d) => d.id).filter((id) => id != null),
-      ),
+      new Set(filterDefinitions.map((d) => d.id).filter((id) => id != null)),
     [filterDefinitions],
   );
 
@@ -165,12 +162,9 @@ export function EmployeeFilters({
     [],
   );
 
-  const handleRemoveFilter = useCallback(
-    (filterKey: string) => {
-      setFilterDefinitions((prev) => prev.filter((d) => d.id !== filterKey));
-    },
-    [],
-  );
+  const handleRemoveFilter = useCallback((filterKey: string) => {
+    setFilterDefinitions((prev) => prev.filter((d) => d.id !== filterKey));
+  }, []);
 
   const renderAddFilterButton = useCallback(
     () => (

@@ -21,7 +21,10 @@ import type { EnhanceCommon } from "./EnhanceCommon.js";
 import { EnhancedBase } from "./EnhancedBase.js";
 
 export class EnhancedObjectType extends EnhancedBase<ObjectTypeFullMetadata> {
-  constructor(common: EnhanceCommon, public raw: ObjectTypeFullMetadata) {
+  constructor(
+    common: EnhanceCommon,
+    public raw: ObjectTypeFullMetadata,
+  ) {
     super(common, raw, raw.objectType.apiName, "./ontology/objects");
   }
 
@@ -34,9 +37,6 @@ export class EnhancedObjectType extends EnhancedBase<ObjectTypeFullMetadata> {
   }
 
   getCleanedUpDefinition(v2: boolean): ObjectMetadata {
-    return wireObjectTypeFullMetadataToSdkObjectMetadata(
-      this.raw,
-      v2,
-    );
+    return wireObjectTypeFullMetadataToSdkObjectMetadata(this.raw, v2);
   }
 }

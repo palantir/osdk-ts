@@ -30,10 +30,7 @@ import { AliasEnvironment } from "./types.js";
 const { testAliasesData, testResourcesData } = vi.hoisted(() => {
   const nodeFs = require("node:fs");
   const nodePath = require("node:path");
-  const aliasesPath = nodePath.resolve(
-    __dirname,
-    "./test-data/aliases.json",
-  );
+  const aliasesPath = nodePath.resolve(__dirname, "./test-data/aliases.json");
   const resourcesPath = nodePath.resolve(
     __dirname,
     "./test-data/resources.json",
@@ -70,15 +67,11 @@ describe("environment detection", () => {
   it("throws when both env vars are set", () => {
     process.env[ALIASES_JSON_FILE_ENV_VAR] = "/some/path/aliases.json";
     process.env[RESOURCES_JSON_FILE_ENV_VAR] = "/some/path/resources.json";
-    expect(() => detectEnvironment()).toThrow(
-      "Ambiguous alias configuration",
-    );
+    expect(() => detectEnvironment()).toThrow("Ambiguous alias configuration");
   });
 
   it("throws when neither env var is set", () => {
-    expect(() => detectEnvironment()).toThrow(
-      "Unknown alias environment",
-    );
+    expect(() => detectEnvironment()).toThrow("Unknown alias environment");
   });
 });
 
@@ -164,9 +157,7 @@ describe("published mode aliases", () => {
     it("throws when aliases file does not exist", () => {
       vi.mocked(fs.existsSync).mockReturnValue(false);
 
-      expect(() => custom("any-alias")).toThrow(
-        "Aliases file not found at",
-      );
+      expect(() => custom("any-alias")).toThrow("Aliases file not found at");
     });
   });
 });
@@ -249,9 +240,7 @@ describe("live preview mode aliases", () => {
     it("throws when resources file does not exist", () => {
       vi.mocked(fs.existsSync).mockReturnValue(false);
 
-      expect(() => custom("any-alias")).toThrow(
-        "Resources file not found at",
-      );
+      expect(() => custom("any-alias")).toThrow("Resources file not found at");
     });
   });
 });

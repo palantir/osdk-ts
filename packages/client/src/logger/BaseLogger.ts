@@ -16,11 +16,10 @@
 
 import type { Logger } from "@osdk/api";
 
-export function noop(): any {
-}
+export function noop(): any {}
 
 interface LoggerConstructor {
-  new(
+  new (
     bindings: Record<string, any>,
     options?: { level?: string; msgPrefix?: string },
   ): Logger;
@@ -49,9 +48,14 @@ export abstract class BaseLogger implements Logger {
     this.options = options;
     this.#factory = factory;
 
-    for (
-      const k of ["trace", "debug", "info", "warn", "error", "fatal"] as const
-    ) {
+    for (const k of [
+      "trace",
+      "debug",
+      "info",
+      "warn",
+      "error",
+      "fatal",
+    ] as const) {
       if (this.options?.level && !this.isLevelEnabled(k)) {
         continue;
       }
@@ -75,20 +79,27 @@ export abstract class BaseLogger implements Logger {
     bindings: Record<string, any>,
     options?: { level?: string; msgPrefix?: string },
   ): Logger {
-    return new this.#factory({
-      ...this.bindings,
-      ...bindings,
-    }, {
-      level: options?.level ?? this.options?.level,
-      msgPrefix: [this.options?.msgPrefix, options?.msgPrefix].filter(x => x)
-        .join(" "),
-    });
+    return new this.#factory(
+      {
+        ...this.bindings,
+        ...bindings,
+      },
+      {
+        level: options?.level ?? this.options?.level,
+        msgPrefix: [this.options?.msgPrefix, options?.msgPrefix]
+          .filter((x) => x)
+          .join(" "),
+      },
+    );
   }
 
   isLevelEnabled(level: string): boolean {
     const ourLevel = (this.options?.level ?? "info") as keyof typeof levels;
 
-    return level in levels && ourLevel in levels
-      && levels[level as keyof typeof levels] >= levels[ourLevel];
+    return (
+      level in levels &&
+      ourLevel in levels &&
+      levels[level as keyof typeof levels] >= levels[ourLevel]
+    );
   }
 }

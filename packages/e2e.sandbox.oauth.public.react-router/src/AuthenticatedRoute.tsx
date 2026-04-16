@@ -10,12 +10,14 @@ function AuthenticatedRoute(): React.JSX.Element | null {
   const [token, setToken] = useState(publicOauthClient.getTokenOrUndefined());
 
   useEffect(() => {
-    publicOauthClient().then((token) => {
-      setToken(token);
-    }).catch((e: unknown) => {
-      console.error(e);
-      setToken(undefined);
-    });
+    publicOauthClient()
+      .then((token) => {
+        setToken(token);
+      })
+      .catch((e: unknown) => {
+        console.error(e);
+        setToken(undefined);
+      });
   }, []);
 
   if (token == null) {

@@ -142,10 +142,7 @@ describe("Select", () => {
   describe("multi-select", () => {
     it("renders with multiple selected values", () => {
       render(
-        <Select.Root<string, true>
-          multiple
-          defaultValue={["alice", "bob"]}
-        >
+        <Select.Root<string, true> multiple={true} defaultValue={["alice", "bob"]}>
           <Select.Trigger data-testid="trigger" />
           <Select.Portal>
             <Select.Positioner>
@@ -167,7 +164,7 @@ describe("Select", () => {
     it("renders multi-select with object values", () => {
       render(
         <Select.Root<User, true>
-          multiple
+          multiple={true}
           defaultValue={[USERS[0], USERS[1]]}
           isItemEqualToValue={(a, b) => a.id === b.id}
           itemToStringLabel={(user) => user.name}

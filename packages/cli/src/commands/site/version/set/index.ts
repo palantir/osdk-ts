@@ -18,19 +18,15 @@ import type { CommandModule } from "yargs";
 import type { CommonSiteArgs } from "../../CommonSiteArgs.js";
 import type { VersionSetArgs } from "./VersionSetArgs.js";
 
-const command: CommandModule<
-  CommonSiteArgs,
-  VersionSetArgs
-> = {
+const command: CommandModule<CommonSiteArgs, VersionSetArgs> = {
   command: "set <version>",
   describe: "Set live site version",
   builder: (argv) => {
-    return argv
-      .positional("version", {
-        type: "string",
-        demandOption: true,
-        description: "Version to set as live",
-      });
+    return argv.positional("version", {
+      type: "string",
+      demandOption: true,
+      description: "Version to set as live",
+    });
   },
   handler: async (args) => {
     const command = await import("./versionSetCommand.mjs");

@@ -56,9 +56,7 @@ const fauxObject: Osdk.Instance<objectTypeWithAllPropertyTypes> = {
   string: "Hi there",
   stringArray: [],
   vector: [],
-} satisfies objectTypeWithAllPropertyTypes.Props as unknown as Osdk.Instance<
-  objectTypeWithAllPropertyTypes
->;
+} satisfies objectTypeWithAllPropertyTypes.Props as unknown as Osdk.Instance<objectTypeWithAllPropertyTypes>;
 
 const objects = {
   fauxObject,
@@ -116,10 +114,7 @@ const whereClauses = {
   whereStrictOrNot: {
     $or: [] as WhereClause<objectTypeWithAllPropertyTypes>[],
   },
-} satisfies Record<
-  string,
-  WhereClause<objectTypeWithAllPropertyTypes>
->;
+} satisfies Record<string, WhereClause<objectTypeWithAllPropertyTypes>>;
 
 whereClauses.stringStartsWithHiAndBye.$and.push(
   whereClauses.stringStartsWithHi,
@@ -159,7 +154,7 @@ const cases = [
   [keyof typeof objects, keyof typeof whereClauses, boolean, boolean]
 >;
 
-type usedWhereClauses = typeof cases[number][1];
+type usedWhereClauses = (typeof cases)[number][1];
 type unusedWhereClauses = Exclude<keyof typeof whereClauses, usedWhereClauses>;
 expectTypeOf<never>().toEqualTypeOf<unusedWhereClauses>;
 
@@ -170,19 +165,20 @@ describe(objectSortaMatchesWhereClause, () => {
     "%s | %s ==> { strict: %s, loose: %s }",
     (instanceName, whereClauseName, strictExpected, nonStrictExpected) => {
       const instance = objects[instanceName] as unknown as ObjectHolder<
-        typeof objects[typeof instanceName]
+        (typeof objects)[typeof instanceName]
       >;
-      const whereClause = whereClauses[whereClauseName] as WhereClause<
-        objectTypeWithAllPropertyTypes
-      >;
+      const whereClause = whereClauses[
+        whereClauseName
+      ] as WhereClause<objectTypeWithAllPropertyTypes>;
       expect(instance).toBeDefined();
       expect(whereClause).toBeDefined();
       expect(objectSortaMatchesWhereClause(instance, whereClause, true)).toBe(
         strictExpected,
       );
 
-      expect(objectSortaMatchesWhereClause(instance, whereClause, false))
-        .toBe(nonStrictExpected);
+      expect(objectSortaMatchesWhereClause(instance, whereClause, false)).toBe(
+        nonStrictExpected,
+      );
     },
   );
 });

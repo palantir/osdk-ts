@@ -7,7 +7,9 @@
   --ifm-color-primary-lighter: #0075eb;
   --ifm-color-primary-lightest: #1a85ff;
   --ifm-code-font-size: 95%;
-  --ifm-font-family-base: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+  --ifm-font-family-base:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu,
+    Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
   --ifm-heading-font-family: var(--ifm-font-family-base);
   --ifm-navbar-height: 56px;
   --ifm-sidebar-width: 280px;

@@ -49,11 +49,7 @@ SOFTWARE.
 import { exec, getExecOutput } from "@actions/exec";
 
 export const setupUser = async (): Promise<void> => {
-  await exec("git", [
-    "config",
-    "user.name",
-    `"github-actions[bot]"`,
-  ]);
+  await exec("git", ["config", "user.name", `"github-actions[bot]"`]);
   await exec("git", [
     "config",
     "user.email",
@@ -88,8 +84,8 @@ export const switchToMaybeExistingBranch = async (
     ignoreReturnCode: true,
   });
   const isCreatingBranch =
-    !stderr.includes(`Switched to a new branch '${branch}'`)
-    && !stderr.includes(`Switched to branch '${branch}'`);
+    !stderr.includes(`Switched to a new branch '${branch}'`) &&
+    !stderr.includes(`Switched to branch '${branch}'`);
   // eslint-disable-next-line no-console
   console.log("stderr: " + stderr);
   if (isCreatingBranch) {

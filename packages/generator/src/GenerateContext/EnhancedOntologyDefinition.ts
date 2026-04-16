@@ -32,9 +32,7 @@ type RequiredType<
     | "interfaceTypes"
     | "queryTypes"
     | "sharedPropertyTypes",
-> = <
-  L extends boolean = false,
->(
+> = <L extends boolean = false>(
   fullApiName: string,
   localOnly?: L,
 ) => L extends true ? EnhancedOntologyDefinition[K][string] : ForeignType;
@@ -44,14 +42,8 @@ export class EnhancedOntologyDefinition {
   objectTypes: Record<string, EnhancedObjectType | ForeignType>;
   actionTypes: Record<string, EnhancedAction>;
   queryTypes: Record<string, EnhancedQuery>;
-  interfaceTypes: Record<
-    string,
-    EnhancedInterfaceType | ForeignType
-  >;
-  sharedPropertyTypes: Record<
-    string,
-    EnhancedSharedPropertyType | ForeignType
-  >;
+  interfaceTypes: Record<string, EnhancedInterfaceType | ForeignType>;
+  sharedPropertyTypes: Record<string, EnhancedSharedPropertyType | ForeignType>;
   #foreignTypes: Record<string, ForeignType> = {};
 
   raw: WireOntologyDefinition;
@@ -76,16 +68,8 @@ export class EnhancedOntologyDefinition {
       EnhancedObjectType,
       externalObjects,
     );
-    this.actionTypes = remap(
-      raw.actionTypes,
-      this.common,
-      EnhancedAction,
-    );
-    this.queryTypes = remap(
-      raw.queryTypes,
-      this.common,
-      EnhancedQuery,
-    );
+    this.actionTypes = remap(raw.actionTypes, this.common, EnhancedAction);
+    this.queryTypes = remap(raw.queryTypes, this.common, EnhancedQuery);
     this.interfaceTypes = remap(
       raw.interfaceTypes,
       this.common,
@@ -118,44 +102,41 @@ export class EnhancedOntologyDefinition {
       if (!ret) {
         const [apiNamespace, shortApiName] = extractNamespace(fullApiName);
 
-        throw new Error(
-          `Unable to find ${type}: No entry for '${fullApiName}`,
-        );
+        throw new Error(`Unable to find ${type}: No entry for '${fullApiName}`);
       }
-      return ret as this[K][string] as L extends true ? this[K][string]
+      return ret as this[K][string] as L extends true
+        ? this[K][string]
         : ForeignType;
     };
   };
 
-  public requireObjectType: RequiredType<"objectTypes"> = this
-    .#createRequireType("objectTypes");
-  public requireInterfaceType: RequiredType<"interfaceTypes"> = this
-    .#createRequireType("interfaceTypes");
-  public requireActionType: RequiredType<"actionTypes"> = this
-    .#createRequireType("actionTypes");
-  public requireQueryType: RequiredType<"queryTypes"> = this
-    .#createRequireType("queryTypes");
-  public requireSharedPropertyType: RequiredType<"sharedPropertyTypes"> = this
-    .#createRequireType(
-      "sharedPropertyTypes",
-    );
+  public requireObjectType: RequiredType<"objectTypes"> =
+    this.#createRequireType("objectTypes");
+  public requireInterfaceType: RequiredType<"interfaceTypes"> =
+    this.#createRequireType("interfaceTypes");
+  public requireActionType: RequiredType<"actionTypes"> =
+    this.#createRequireType("actionTypes");
+  public requireQueryType: RequiredType<"queryTypes"> =
+    this.#createRequireType("queryTypes");
+  public requireSharedPropertyType: RequiredType<"sharedPropertyTypes"> =
+    this.#createRequireType("sharedPropertyTypes");
 }
 
 function remap<T, X>(
   r: Record<string, T>,
   common: EnhanceCommon,
-  Constructor: { new(common: EnhanceCommon, og: T): X },
+  Constructor: { new (common: EnhanceCommon, og: T): X },
 ): Record<string, X>;
 function remap<T, X>(
   r: Record<string, T>,
   common: EnhanceCommon,
-  Constructor: { new(common: EnhanceCommon, original: T): X },
+  Constructor: { new (common: EnhanceCommon, original: T): X },
   externalMap?: Map<string, string>,
 ): Record<string, X | ForeignType>;
 function remap<T, X, const Q extends Map<string, string> | undefined>(
   r: Record<string, T>,
   common: EnhanceCommon,
-  Constructor: { new(common: EnhanceCommon, og: T): X },
+  Constructor: { new (common: EnhanceCommon, og: T): X },
   externalMap?: Q,
 ): Record<string, X | ForeignType> {
   const entries: [string, X | ForeignType][] = [];
@@ -179,17 +160,10 @@ function remap<T, X, const Q extends Map<string, string> | undefined>(
       // }
       entries.push([
         fullApiName,
-        new ForeignType(
-          common,
-          apiNamespace,
-          shortApiName,
-          destPackage,
-        ),
+        new ForeignType(common, apiNamespace, shortApiName, destPackage),
       ]);
     }
   }
 
-  return Object.fromEntries(
-    entries.sort((a, b) => a[0].localeCompare(b[0])),
-  );
+  return Object.fromEntries(entries.sort((a, b) => a[0].localeCompare(b[0])));
 }

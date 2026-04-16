@@ -62,9 +62,7 @@ const employeeObjectDef = {
   },
 } satisfies FetchedObjectTypeDefinition;
 
-function createTestObject(
-  props: Partial<SimpleOsdkProperties>,
-): ObjectHolder {
+function createTestObject(props: Partial<SimpleOsdkProperties>): ObjectHolder {
   const defaultProps: SimpleOsdkProperties = {
     $apiName: "Employee",
     $objectType: "Employee",

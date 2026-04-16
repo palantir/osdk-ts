@@ -51,9 +51,7 @@ function ExcludeDropdownInner({
           data-excluding={isExcluding || undefined}
         >
           {isExcluding && <ExcludeIcon />}
-          <span className={styles.triggerLabel}>
-            {label}
-          </span>
+          <span className={styles.triggerLabel}>{label}</span>
           <ChevronDownIcon />
         </Menu.Trigger>
         <Menu.Portal>

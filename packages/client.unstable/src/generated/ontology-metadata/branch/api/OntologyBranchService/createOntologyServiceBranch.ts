@@ -17,10 +17,8 @@
 import { type ConjureContext, conjureFetch } from "conjure-lite";
 import type { OntologyRid as _api_OntologyRid } from "../../../api/__components.js";
 import type {
-  CreateOntologyServiceBranchRequest
-    as _branch_api_CreateOntologyServiceBranchRequest,
-  CreateOntologyServiceBranchResponse
-    as _branch_api_CreateOntologyServiceBranchResponse,
+  CreateOntologyServiceBranchRequest as _branch_api_CreateOntologyServiceBranchRequest,
+  CreateOntologyServiceBranchResponse as _branch_api_CreateOntologyServiceBranchResponse,
 } from "../__components.js";
 
 /**

@@ -33,9 +33,9 @@ export function smartClientPlugin(): Plugin {
       return (
         code
           .replace(/export const client\b/, "const __rawClient")
-          .replace(/export default client\b/, "export default __rawClient")
-        + `\nimport { smartClient as __sc } from "@osdk/vite-plugin-superrepo/smartClient";\n`
-        + `export const client = __sc(__rawClient);\n`
+          .replace(/export default client\b/, "export default __rawClient") +
+        `\nimport { smartClient as __sc } from "@osdk/vite-plugin-superrepo/smartClient";\n` +
+        `export const client = __sc(__rawClient);\n`
       );
     },
   };

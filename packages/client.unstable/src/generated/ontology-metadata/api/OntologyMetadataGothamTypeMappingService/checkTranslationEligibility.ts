@@ -16,10 +16,8 @@
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
 import type {
-  CheckTranslationEligibilityRequest
-    as _api_typemapping_CheckTranslationEligibilityRequest,
-  CheckTranslationEligibilityResponse
-    as _api_typemapping_CheckTranslationEligibilityResponse,
+  CheckTranslationEligibilityRequest as _api_typemapping_CheckTranslationEligibilityRequest,
+  CheckTranslationEligibilityResponse as _api_typemapping_CheckTranslationEligibilityResponse,
 } from "../typemapping/__components.js";
 
 /**

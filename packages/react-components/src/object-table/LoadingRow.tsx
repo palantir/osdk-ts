@@ -46,9 +46,8 @@ export function LoadingRow<TData extends RowData>({
       {
         <>
           {Array.from({ length: columnCount }).map((_, index) => {
-            const width = headers.length > index
-              ? headers[index].getSize()
-              : columnWidth;
+            const width =
+              headers.length > index ? headers[index].getSize() : columnWidth;
             return <LoadingCell key={`loading-cell-${index}`} width={width} />;
           })}
         </>

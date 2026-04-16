@@ -28,32 +28,37 @@ const buildDir = path.join(__dirname, "..", "build", "browser");
 
 async function findCssModules(dir) {
   const entries = await fs.readdir(dir, { withFileTypes: true });
-  const files = await Promise.all(entries.map(async (entry) => {
-    const fullPath = path.join(dir, entry.name);
-    if (entry.isDirectory()) {
-      return findCssModules(fullPath);
-    } else if (entry.name.endsWith(".module.css")) {
-      return fullPath;
-    }
-    return null;
-  }));
+  const files = await Promise.all(
+    entries.map(async (entry) => {
+      const fullPath = path.join(dir, entry.name);
+      if (entry.isDirectory()) {
+        return findCssModules(fullPath);
+      } else if (entry.name.endsWith(".module.css")) {
+        return fullPath;
+      }
+      return null;
+    }),
+  );
   return files.flat().filter(Boolean);
 }
 
 async function findJsFiles(dir) {
   const entries = await fs.readdir(dir, { withFileTypes: true });
-  const files = await Promise.all(entries.map(async (entry) => {
-    const fullPath = path.join(dir, entry.name);
-    if (entry.isDirectory()) {
-      return findJsFiles(fullPath);
-    } else if (
-      entry.name.endsWith(".js") && !entry.name.endsWith(".test.js")
-      && !entry.name.endsWith(".module.css.js")
-    ) {
-      return fullPath;
-    }
-    return null;
-  }));
+  const files = await Promise.all(
+    entries.map(async (entry) => {
+      const fullPath = path.join(dir, entry.name);
+      if (entry.isDirectory()) {
+        return findJsFiles(fullPath);
+      } else if (
+        entry.name.endsWith(".js") &&
+        !entry.name.endsWith(".test.js") &&
+        !entry.name.endsWith(".module.css.js")
+      ) {
+        return fullPath;
+      }
+      return null;
+    }),
+  );
   return files.flat().filter(Boolean);
 }
 
@@ -66,7 +71,7 @@ async function rewriteCssImports() {
     // Replace CSS module imports to point to .js files
     const updatedContent = content.replace(
       /from\s+["']([^"']+\.module\.css)["']/g,
-      "from \"$1.js\"",
+      'from "$1.js"',
     );
 
     if (content !== updatedContent) {

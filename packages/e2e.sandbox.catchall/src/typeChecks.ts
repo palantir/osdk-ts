@@ -34,45 +34,42 @@ export async function typeChecks(client: Client): Promise<void> {
   // single link pivot types are correct
   {
     const objectSet = client(Employee).pivotTo("lead");
-    expectType<TypeOf<typeof objectSet, Employee.ObjectSet>>(
-      true,
-    );
+    expectType<TypeOf<typeof objectSet, Employee.ObjectSet>>(true);
   }
 
   // multi link pivot types are correct
   {
     const objectSet = client(Employee).pivotTo("peeps");
-    expectType<TypeOf<typeof objectSet, Employee.ObjectSet>>(
-      true,
-    );
+    expectType<TypeOf<typeof objectSet, Employee.ObjectSet>>(true);
   }
 
   // just a demo of aggregations
   {
-    const q = await client(ObjectTypeWithAllPropertyTypes)
-      .aggregate({
-        $select: {
-          "integer:sum": "unordered",
-          "float:sum": "unordered",
-          "decimal:sum": "unordered",
-          "short:max": "unordered",
-          "string:approximateDistinct": "unordered",
-        },
-        $groupBy: {
-          string: "exact",
-          stringArray: "exact",
-        },
-        $orderBy: {
-          group: "string",
-        },
-      });
+    const q = await client(ObjectTypeWithAllPropertyTypes).aggregate({
+      $select: {
+        "integer:sum": "unordered",
+        "float:sum": "unordered",
+        "decimal:sum": "unordered",
+        "short:max": "unordered",
+        "string:approximateDistinct": "unordered",
+      },
+      $groupBy: {
+        string: "exact",
+        stringArray: "exact",
+      },
+      $orderBy: {
+        group: "string",
+      },
+    });
   }
 
   // object $link examples
   {
-    const page = await client(Employee).where({
-      adUsername: "adUsername",
-    }).fetchPage();
+    const page = await client(Employee)
+      .where({
+        adUsername: "adUsername",
+      })
+      .fetchPage();
     const employee = page.data[0];
 
     // lead is an employee
@@ -97,9 +94,7 @@ export async function typeChecks(client: Client): Promise<void> {
     expectType<
       TypeOf<
         typeof peeps,
-        PageResult<
-          Osdk<Employee, "adUsername" | "employeeNumber">
-        >
+        PageResult<Osdk<Employee, "adUsername" | "employeeNumber">>
       >
     >(true);
 
@@ -111,9 +106,7 @@ export async function typeChecks(client: Client): Promise<void> {
     const peepById = await employee.$link.peeps.fetchOne("peepPK", {
       $select: ["adUsername"],
     });
-    expectType<
-      TypeOf<typeof peepById, Osdk<Employee, "adUsername">>
-    >(true);
+    expectType<TypeOf<typeof peepById, Osdk<Employee, "adUsername">>>(true);
 
     // employeeNumber is not part of the selected peep
     expectType<TypeOf<{ employeeNumber: any }, typeof peepById>>(false);

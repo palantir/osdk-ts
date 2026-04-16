@@ -190,18 +190,21 @@ export function typeToMarketplaceObjectPropertyType(
           type: "vectorType",
           vectorType: {
             dimension: type.vector.dimension,
-            supportsSearchWith: type.vector.supportsSearchWith?.map(fn => {
-              switch (fn) {
-                case "COSINE_SIMILARITY":
-                  return "COSINE_SIMILARITY";
-                case "DOT_PRODUCT":
-                  return "DOT_PRODUCT";
-                case "EUCLIDEAN_DISTANCE":
-                  return "EUCLIDEAN_DISTANCE";
-                default:
-                  throw new Error(`Unknown vector similarity function: ${fn}`);
-              }
-            }) ?? [],
+            supportsSearchWith:
+              type.vector.supportsSearchWith?.map((fn) => {
+                switch (fn) {
+                  case "COSINE_SIMILARITY":
+                    return "COSINE_SIMILARITY";
+                  case "DOT_PRODUCT":
+                    return "DOT_PRODUCT";
+                  case "EUCLIDEAN_DISTANCE":
+                    return "EUCLIDEAN_DISTANCE";
+                  default:
+                    throw new Error(
+                      `Unknown vector similarity function: ${fn}`,
+                    );
+                }
+              }) ?? [],
           },
         },
       };
@@ -216,8 +219,8 @@ export function typeToMarketplaceObjectPropertyType(
       };
 
     case "struct": {
-      const structFieldTypes = type.struct.structFields.map(field =>
-        typeToMarketplaceObjectPropertyType(field.fieldType)
+      const structFieldTypes = type.struct.structFields.map((field) =>
+        typeToMarketplaceObjectPropertyType(field.fieldType),
       );
       return {
         type: "primitive",
@@ -379,10 +382,13 @@ export function typeToConcreteDataType(type: Type): ConcreteDataType {
       };
 
     case "struct": {
-      const fields = type.struct.structFields.map(field => ({
-        name: field.apiName,
-        type: typeToConcreteDataType(field.fieldType),
-      } as ConcreteStructElement));
+      const fields = type.struct.structFields.map(
+        (field) =>
+          ({
+            name: field.apiName,
+            type: typeToConcreteDataType(field.fieldType),
+          }) as ConcreteStructElement,
+      );
       return {
         type: "struct",
         struct: { fields },

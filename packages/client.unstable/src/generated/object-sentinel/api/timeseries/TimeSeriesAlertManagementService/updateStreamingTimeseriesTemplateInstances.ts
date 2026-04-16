@@ -16,12 +16,9 @@
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
 import type {
-  StreamingTimeseriesMonitorGroupRid
-    as _api_timeseries_StreamingTimeseriesMonitorGroupRid,
-  UpdateStreamingTimeseriesTemplateInstancesRequest
-    as _api_timeseries_UpdateStreamingTimeseriesTemplateInstancesRequest,
-  UpdateStreamingTimeseriesTemplateInstancesResponse
-    as _api_timeseries_UpdateStreamingTimeseriesTemplateInstancesResponse,
+  StreamingTimeseriesMonitorGroupRid as _api_timeseries_StreamingTimeseriesMonitorGroupRid,
+  UpdateStreamingTimeseriesTemplateInstancesRequest as _api_timeseries_UpdateStreamingTimeseriesTemplateInstancesRequest,
+  UpdateStreamingTimeseriesTemplateInstancesResponse as _api_timeseries_UpdateStreamingTimeseriesTemplateInstancesResponse,
 } from "../__components.js";
 
 /**

@@ -20,12 +20,9 @@ import { OpenApiCallError } from "./handleOpenApiCall.js";
 export function requireParam<P, K extends string>(
   params: P,
   name: K & keyof P,
-): asserts params is
-  & P
-  & {
-    [KK in K]: string;
-  }
-{
+): asserts params is P & {
+  [KK in K]: string;
+} {
   if (typeof params[name] !== "string") {
     throw new OpenApiCallError(
       400,
@@ -37,12 +34,9 @@ export function requireParam<P, K extends string>(
 export function requireParams<P, K extends string>(
   params: P,
   names: Array<K & keyof P>,
-): asserts params is
-  & P
-  & {
-    [KK in K]: string;
-  }
-{
+): asserts params is P & {
+  [KK in K]: string;
+} {
   for (const name of names) {
     requireParam(params, name);
   }

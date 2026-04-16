@@ -1,28 +1,11 @@
-{
-  "name": "{{project}}",
-  "private": true,
-  "version": "0.0.0",
-  "type": "module",
-  "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
-    "format": "prettier --write src/",
-    "lint": "eslint . --report-unused-disable-directives --max-warnings 0",
-    "lint:fix": "eslint --report-unused-disable-directives --max-warnings 0 --fix",
-    "test": "vitest run",
-    "check": "eslint . --report-unused-disable-directives --max-warnings 0 && tsc --noEmit && vitest run",
-    "preview": "vite preview"
-  },
-  "dependencies": {
-    "{{osdkPackage}}": "latest",
-    "@osdk/client": "{{clientVersion}}",
-    "@osdk/foundry": "latest",
-    "@osdk/oauth": "^1.1.0",
-    "@blueprintjs/core": "^6.8.1",
-    "@blueprintjs/icons": "^6.6.0"
-  },
-  "devDependencies": {
-    "@trivago/prettier-plugin-sort-imports": "^5.0.0",
-    "prettier": "^3.0.0"
-  }
-}
+{ "name": "{{project}}", "private": true, "version": "0.0.0", "type": "module",
+"scripts": { "dev": "vite", "build": "tsc && vite build", "format": "prettier
+--write src/", "lint": "eslint . --report-unused-disable-directives
+--max-warnings 0", "lint:fix": "eslint --report-unused-disable-directives
+--max-warnings 0 --fix", "test": "vitest run", "check": "eslint .
+--report-unused-disable-directives --max-warnings 0 && tsc --noEmit && vitest
+run", "preview": "vite preview" }, "dependencies": { "{{osdkPackage}}":
+"latest", "@osdk/client": "{{clientVersion}}", "@osdk/foundry": "latest",
+"@osdk/oauth": "^1.1.0", "@blueprintjs/core": "^6.8.1", "@blueprintjs/icons":
+"^6.6.0" }, "devDependencies": { "@trivago/prettier-plugin-sort-imports":
+"^5.0.0", "prettier": "^3.0.0" } }

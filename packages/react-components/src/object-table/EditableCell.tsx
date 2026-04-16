@@ -41,10 +41,7 @@ export interface EditableCellProps<TData extends RowData, CellValue = unknown> {
   cellId: string;
   dataType?: string;
   onCellEdit: (cellId: string, info: CellEditInfo<TData, CellValue>) => void;
-  onCellValidationError?: (
-    cellId: string,
-    error: string,
-  ) => void;
+  onCellValidationError?: (cellId: string, error: string) => void;
   clearCellValidationError?: (cellId: string) => void;
   validationError?: string;
   originalRowData: TData;
@@ -64,10 +61,7 @@ function valueToString(value: unknown): string {
   return String(value as string | number | boolean | symbol | bigint);
 }
 
-function parseValueByType(
-  value: string,
-  dataType?: string,
-): unknown {
+function parseValueByType(value: string, dataType?: string): unknown {
   if (!dataType || !NUMBER_TYPES.includes(dataType)) {
     return value;
   }
@@ -194,11 +188,14 @@ function EditableCellInner<TData extends RowData, CellValue = unknown>({
     clearCellValidationError,
   ]);
 
-  const handleChange = useCallback((value: string) => {
-    // Cancel any in-flight validation
-    abortController();
-    setInputValue(value);
-  }, [abortController]);
+  const handleChange = useCallback(
+    (value: string) => {
+      // Cancel any in-flight validation
+      abortController();
+      setInputValue(value);
+    },
+    [abortController],
+  );
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -214,9 +211,8 @@ function EditableCellInner<TData extends RowData, CellValue = unknown>({
     [currentValue],
   );
 
-  const inputType = dataType && NUMBER_TYPES.includes(dataType)
-    ? "number"
-    : "text";
+  const inputType =
+    dataType && NUMBER_TYPES.includes(dataType) ? "number" : "text";
 
   return (
     <Tooltip.Provider>

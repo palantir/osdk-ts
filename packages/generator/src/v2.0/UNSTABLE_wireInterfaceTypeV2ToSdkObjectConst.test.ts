@@ -52,7 +52,7 @@ function simpleInterface<T extends string, Q extends SharedPropertyType>(
   implementedByObjectTypes: string[] = [],
 ) {
   const properties = Object.fromEntries(
-    spts.map(spt => [spt.apiName, { ...spt, required: true }]),
+    spts.map((spt) => [spt.apiName, { ...spt, required: true }]),
   );
 
   return {
@@ -76,14 +76,13 @@ function simpleOntology<I extends InterfaceType>(
   apiName: string,
   interfaces: I[],
 ) {
-  const interfaceTypes: Record<I["apiName"], I> = Object
-    .fromEntries(
-      interfaces.map(i => [i.apiName, i]),
-    ) as Record<string, I>;
+  const interfaceTypes: Record<I["apiName"], I> = Object.fromEntries(
+    interfaces.map((i) => [i.apiName, i]),
+  ) as Record<string, I>;
 
-  const sharedPropertyTypes: Record<string, I["properties"][string]> = Object
-    .fromEntries(
-      interfaces.flatMap(i => Object.entries(i.properties)),
+  const sharedPropertyTypes: Record<string, I["properties"][string]> =
+    Object.fromEntries(
+      interfaces.flatMap((i) => Object.entries(i.properties)),
     ) as Record<string, I["properties"][string]>;
 
   return {
@@ -211,16 +210,14 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
     const fooSpt = simpleSpt("foo");
     const barSpt = simpleSpt("bar");
 
-    const ontology = enhanceOntology(
-      {
-        sanitized: simpleOntology("ontology", [
-          simpleInterface("Foo", [fooSpt], ["Parent"]),
-          simpleInterface("Parent", [barSpt], []),
-        ]),
+    const ontology = enhanceOntology({
+      sanitized: simpleOntology("ontology", [
+        simpleInterface("Foo", [fooSpt], ["Parent"]),
+        simpleInterface("Parent", [barSpt], []),
+      ]),
 
-        importExt: "",
-      },
-    );
+      importExt: "",
+    });
 
     const formattedCode = await format(
       __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(
@@ -316,15 +313,13 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
     const fooSpt = simpleSpt("foo");
     const barSpt = simpleSpt("bar");
 
-    const ontology = enhanceOntology(
-      {
-        sanitized: simpleOntology("ontology", [
-          simpleInterface("Foo", [fooSpt, barSpt], ["Parent"]),
-          simpleInterface("Parent", [barSpt], []),
-        ]),
-        importExt: "",
-      },
-    );
+    const ontology = enhanceOntology({
+      sanitized: simpleOntology("ontology", [
+        simpleInterface("Foo", [fooSpt, barSpt], ["Parent"]),
+        simpleInterface("Parent", [barSpt], []),
+      ]),
+      importExt: "",
+    });
 
     const formattedCode = await format(
       __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(
@@ -431,16 +426,14 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
     const fooSpt = simpleSpt("foo");
     const barSpt = simpleSpt("bar");
 
-    const ontology = enhanceOntology(
-      {
-        sanitized: simpleOntology("ontology", [
-          simpleInterface("Foo", [fooSpt], ["Parent"], 2, ["childrenObject"]),
-          simpleInterface("Parent", [barSpt], []),
-        ]),
+    const ontology = enhanceOntology({
+      sanitized: simpleOntology("ontology", [
+        simpleInterface("Foo", [fooSpt], ["Parent"], 2, ["childrenObject"]),
+        simpleInterface("Parent", [barSpt], []),
+      ]),
 
-        importExt: "",
-      },
-    );
+      importExt: "",
+    });
 
     const formattedCode = await format(
       __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(
@@ -536,11 +529,11 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
     // Test with multiple parent interfaces in non-alphabetical order
     const ontology = enhanceOntology({
       sanitized: simpleOntology("ontology", [
-        simpleInterface("Child", [simpleSpt("child")], [
-          "ParentZ",
-          "ParentA",
-          "ParentC",
-        ]),
+        simpleInterface(
+          "Child",
+          [simpleSpt("child")],
+          ["ParentZ", "ParentA", "ParentC"],
+        ),
         simpleInterface("ParentZ", [simpleSpt("z")], []),
         simpleInterface("ParentA", [simpleSpt("a")], []),
         simpleInterface("ParentC", [simpleSpt("c")], []),
@@ -567,23 +560,31 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
     if (implementsMatch) {
       const implementsStr = implementsMatch[1];
       // Check that the array is sorted alphabetically
-      expect(implementsStr).toContain("\"ParentA\", \"ParentC\", \"ParentZ\"");
+      expect(implementsStr).toContain('"ParentA", "ParentC", "ParentZ"');
     }
   });
   it("correctly identifies invalid properties", async () => {
     const ontology = enhanceOntology({
       sanitized: simpleOntology("ontology", [
         simpleInterface("Child", [simpleSpt("child")], []),
-        simpleInterface("com.A.myChild", [
-          simpleSpt("son"),
-          simpleSpt("com.B.son"),
-          simpleSpt("com.A.daughter"),
-        ], []),
-        simpleInterface("com.A.myChildNo", [
-          simpleSpt("son"),
-          simpleSpt("com.A.son"),
-          simpleSpt("com.B.daughter"),
-        ], []),
+        simpleInterface(
+          "com.A.myChild",
+          [
+            simpleSpt("son"),
+            simpleSpt("com.B.son"),
+            simpleSpt("com.A.daughter"),
+          ],
+          [],
+        ),
+        simpleInterface(
+          "com.A.myChildNo",
+          [
+            simpleSpt("son"),
+            simpleSpt("com.A.son"),
+            simpleSpt("com.B.daughter"),
+          ],
+          [],
+        ),
       ]),
       importExt: "",
     });

@@ -60,10 +60,7 @@ describe("useOsdkObject enabled option", () => {
   it("should NOT call observeObject when enabled is false (instance signature)", () => {
     const wrapper = createWrapper();
 
-    renderHook(
-      () => useOsdkObject(mockInstance, false),
-      { wrapper },
-    );
+    renderHook(() => useOsdkObject(mockInstance, false), { wrapper });
 
     expect(mockObserveObject).not.toHaveBeenCalled();
   });
@@ -71,10 +68,9 @@ describe("useOsdkObject enabled option", () => {
   it("should NOT call observeObject when enabled is false (type signature)", () => {
     const wrapper = createWrapper();
 
-    renderHook(
-      () => useOsdkObject(MockObjectType, "pk-000", false),
-      { wrapper },
-    );
+    renderHook(() => useOsdkObject(MockObjectType, "pk-000", false), {
+      wrapper,
+    });
 
     expect(mockObserveObject).not.toHaveBeenCalled();
   });
@@ -82,10 +78,7 @@ describe("useOsdkObject enabled option", () => {
   it("should use offline mode for instance signature", () => {
     const wrapper = createWrapper();
 
-    renderHook(
-      () => useOsdkObject(mockInstance),
-      { wrapper },
-    );
+    renderHook(() => useOsdkObject(mockInstance), { wrapper });
 
     expect(mockObserveObject).toHaveBeenCalledWith(
       "MockObject",
@@ -98,10 +91,7 @@ describe("useOsdkObject enabled option", () => {
   it("should NOT use offline mode for type signature and pass full definition", () => {
     const wrapper = createWrapper();
 
-    renderHook(
-      () => useOsdkObject(MockObjectType, "pk-222"),
-      { wrapper },
-    );
+    renderHook(() => useOsdkObject(MockObjectType, "pk-222"), { wrapper });
 
     expect(mockObserveObject).toHaveBeenCalledWith(
       MockObjectType,

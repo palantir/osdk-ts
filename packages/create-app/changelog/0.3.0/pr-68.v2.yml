@@ -1,6 +1,7 @@
 type: improvement
 improvement:
-  description: Polish casing, option description, and YargsCheckErrors across CLIs
+  description:
+    Polish casing, option description, and YargsCheckErrors across CLIs
     and commands
   links:
-  - https://github.com/palantir/osdk-ts/pull/68
+    - https://github.com/palantir/osdk-ts/pull/68

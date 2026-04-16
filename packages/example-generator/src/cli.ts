@@ -42,9 +42,9 @@ export async function cli(args: string[] = process.argv): Promise<void> {
       type: "boolean",
       default: false,
       describe:
-        "Whether to check if the output directory already contains the same content as"
-        + " the generated examples. An exit code of 0 will be returned if examples are"
-        + " up to date otherwise an exit code of 1 will be returned.",
+        "Whether to check if the output directory already contains the same content as" +
+        " the generated examples. An exit code of 0 will be returned if examples are" +
+        " up to date otherwise an exit code of 1 will be returned.",
     });
 
   await run(base.parseSync());

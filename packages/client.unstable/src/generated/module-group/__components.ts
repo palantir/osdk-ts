@@ -39,13 +39,11 @@ export interface ApplicationStatus {
 /**
  * All requested updates have been completed.
  */
-export interface AppliedInCluster {
-}
+export interface AppliedInCluster {}
 /**
  * There is an update that is actively being applied to the resource.
  */
-export interface ApplyingInCluster {
-}
+export interface ApplyingInCluster {}
 export interface Arg_safe {
   type: "safe";
   safe: SafeArg;
@@ -266,8 +264,7 @@ export interface ContainerImage {
   name: string;
   tagOrDigest: TagOrDigest;
 }
-export interface ContainerJobParameters {
-}
+export interface ContainerJobParameters {}
 export interface ContainerModuleGroupCreationOrUpdateRequest {
   additionalNetworkAccess?: AdditionalNetworkAccess | null | undefined;
   cad: any;
@@ -354,10 +351,8 @@ export interface ContainerStateDescription {
 /**
  * ContainerState not found as part of the pod object or not one of the known states.
  */
-export interface ContainerStateNotFound {
-}
-export interface ContainerStateRunning {
-}
+export interface ContainerStateNotFound {}
+export interface ContainerStateRunning {}
 export interface ContainerStateTerminated {
   reason: string;
 }
@@ -810,8 +805,7 @@ export type ModuleBackingCompute = ModuleBackingCompute_resourceChannel;
  * networking issues. If the module remains unreachable, the job will be marked as failed. If the module
  * recovers then the job will continue as normal.
  */
-export interface ModuleCurrentlyUnreachable {
-}
+export interface ModuleCurrentlyUnreachable {}
 /**
  * Information on the final state of the backend module pod that resulted in the loss of the module.
  */
@@ -985,8 +979,7 @@ export interface NamedCredentialInput {
   secretNames: Array<string>;
 }
 export type NetworkPolicyRid = string;
-export interface NeverCancelConfig {
-}
+export interface NeverCancelConfig {}
 /**
  * For clients, an opaque string that identifies an MGS node.
  * If present, servers will redirect the request to the `nodeId` referenced in this parameter.
@@ -1008,8 +1001,7 @@ export interface NotifySourceChangeRequest {
  * Since contour-backend-multiplexer passes jobs around where fields are optional, this indicates
  * that all of the optional timing fields were found to be empty.
  */
-export interface NoTimingPresent {
-}
+export interface NoTimingPresent {}
 /**
  * Page token to be submitted with the next request in order to retrieve the next page. This should never include
  * any unsafe information.
@@ -1019,8 +1011,7 @@ export type PageToken = string | null | undefined;
 /**
  * There is an update pending for the resource, changes have not been fully reflected in the cluster.
  */
-export interface PendingSyncToCluster {
-}
+export interface PendingSyncToCluster {}
 export type PrimitiveType = "BOOL" | "INT" | "FLOAT" | "STRING";
 
 /**
@@ -1427,8 +1418,7 @@ export type UnknownToComputeService =
   | UnknownToComputeService_deploymentId
   | UnknownToComputeService_applicationId;
 
-export interface UnknownType {
-}
+export interface UnknownType {}
 export interface UnsafeArg {
   key: string;
   value: string;

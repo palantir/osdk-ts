@@ -31,13 +31,8 @@ export class MediaReferencePropertyImpl implements Media {
     propertyName: string;
     mediaReference: CoreMediaReference;
   }) {
-    const {
-      client,
-      objectApiName,
-      primaryKey,
-      propertyName,
-      mediaReference,
-    } = args;
+    const { client, objectApiName, primaryKey, propertyName, mediaReference } =
+      args;
     this.#client = client;
     this.#triplet = [objectApiName, primaryKey, propertyName];
     this.#mediaReference = mediaReference;

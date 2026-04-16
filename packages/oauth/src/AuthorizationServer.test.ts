@@ -15,7 +15,6 @@
  */
 
 import { describe, expect, it } from "vitest";
-
 import { createAuthorizationServer } from "./common.js";
 
 describe("Create authorization server", () => {

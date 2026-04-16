@@ -28,7 +28,7 @@ export const EMPTY_ARRAY: string[] = [];
 export function backgroundFromColors(backgroundColors: string[]): string {
   return backgroundColors.length > 1
     ? `linear-gradient(to right, ${backgroundColors.join(", ")})`
-    : backgroundColors[0] ?? "transparent";
+    : (backgroundColors[0] ?? "transparent");
 }
 
 export interface ResolvedBannerDisplay {
@@ -41,8 +41,8 @@ export function resolveBannerDisplay(
   banner: CbacBannerData | undefined,
 ): ResolvedBannerDisplay {
   return {
-    classificationString: banner?.classificationString
-      ?? UNMARKED_CLASSIFICATION_STRING,
+    classificationString:
+      banner?.classificationString ?? UNMARKED_CLASSIFICATION_STRING,
     textColor: banner?.textColor ?? UNMARKED_TEXT_COLOR,
     backgroundColors: banner?.backgroundColors ?? UNMARKED_BACKGROUND_COLORS,
   };
@@ -61,8 +61,9 @@ export function groupMarkingsByCategory(
     | undefined,
 ): AppliedMarkingGroup[] {
   if (
-    markingIds.length === 0 || categories === undefined
-    || markings === undefined
+    markingIds.length === 0 ||
+    categories === undefined ||
+    markings === undefined
   ) {
     return [];
   }
@@ -73,8 +74,7 @@ export function groupMarkingsByCategory(
 
   for (const marking of markings) {
     if (selected.has(marking.id)) {
-      const name = categoryNames.get(marking.categoryId)
-        ?? marking.categoryId;
+      const name = categoryNames.get(marking.categoryId) ?? marking.categoryId;
       const list = grouped.get(name);
       if (list !== undefined) {
         list.push(marking.name);
@@ -95,9 +95,9 @@ export function resolveRequiredGroups(
   requiredMarkingGroups: string[][],
 ): RequiredMarkingGroup[] {
   const markingIdToName = new Map(
-    categoryGroups.flatMap((g) => g.markings).map((m) =>
-      [m.id, m.name] as const
-    ),
+    categoryGroups
+      .flatMap((g) => g.markings)
+      .map((m) => [m.id, m.name] as const),
   );
   return requiredMarkingGroups.map((ids) => ({
     markingNames: ids.map((id) => markingIdToName.get(id) ?? id),

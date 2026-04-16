@@ -62,13 +62,14 @@ type MergeObjectSet<
 > = DerivedObjectOrInterfaceDefinition.WithDerivedProperties<Q, D>;
 
 type ExtractRdp<
-  D extends
-    | BaseObjectSet<any>
-    | Record<string, SimplePropertyDef>,
-> = [D] extends [never] ? {}
-  : D extends BaseObjectSet<any> ? {}
-  : D extends Record<string, SimplePropertyDef> ? D
-  : {};
+  D extends BaseObjectSet<any> | Record<string, SimplePropertyDef>,
+> = [D] extends [never]
+  ? {}
+  : D extends BaseObjectSet<any>
+    ? {}
+    : D extends Record<string, SimplePropertyDef>
+      ? D
+      : {};
 
 type MaybeSimplifyPropertyKeys<
   Q extends ObjectOrInterfaceDefinition,
@@ -78,52 +79,56 @@ type MaybeSimplifyPropertyKeys<
 type SubSelectKeysHelper<
   Q extends ObjectOrInterfaceDefinition,
   L extends string,
-> = [L] extends [never] ? PropertyKeys<Q>
-  : PropertyKeys<Q> extends L ? PropertyKeys<Q>
-  : L & PropertyKeys<Q>;
+> = [L] extends [never]
+  ? PropertyKeys<Q>
+  : PropertyKeys<Q> extends L
+    ? PropertyKeys<Q>
+    : L & PropertyKeys<Q>;
 
 type SubSelectKeys<
   Q extends ObjectOrInterfaceDefinition,
   X extends SelectArg<Q, PropertyKeys<Q>, any, any, any, any> = never,
 > = SubSelectKeysHelper<Q, Extract$Select<X>>;
 
-type NOOP<T> = T extends (...args: any[]) => any ? T
-  : T extends abstract new(...args: any[]) => any ? T
-  : { [K in keyof T]: T[K] };
+type NOOP<T> = T extends (...args: any[]) => any
+  ? T
+  : T extends abstract new (...args: any[]) => any
+    ? T
+    : { [K in keyof T]: T[K] };
 
 type SubSelectRDPsHelper<
   X extends ValidFetchPageArgs<any, any, any> | ValidAsyncIterArgs<any, any>,
   DEFAULT extends string,
-> = [X] extends [never] ? DEFAULT
-  : (X["$select"] & string[])[number] & DEFAULT;
+> = [X] extends [never] ? DEFAULT : (X["$select"] & string[])[number] & DEFAULT;
 
 type SubSelectRDPs<
   RDPs extends Record<string, SimplePropertyDef>,
   X extends ValidFetchPageArgs<any, RDPs, any> | ValidAsyncIterArgs<any, RDPs>,
-> = [RDPs] extends [never] ? never
+> = [RDPs] extends [never]
+  ? never
   : NOOP<{ [K in SubSelectRDPsHelper<X, string & keyof RDPs>]: RDPs[K] }>;
 
 export interface MinimalObjectSet<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
   ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<PropertyKeys<Q>> = {},
-> extends
-  BaseObjectSet<Q>,
-  FetchPage<Q, RDPs>,
-  AsyncIter<Q, RDPs, ORDER_BY_OPTIONS>,
-  Where<Q, RDPs>,
-  AsyncIterLinks<Q>
-{
-}
+>
+  extends
+    BaseObjectSet<Q>,
+    FetchPage<Q, RDPs>,
+    AsyncIter<Q, RDPs, ORDER_BY_OPTIONS>,
+    Where<Q, RDPs>,
+    AsyncIterLinks<Q> {}
 
 export type ExtractOptions2<
   X extends FetchPageArgs<any, any, any, any, any, any, any>,
-> = [X] extends [never] ? never
+> = [X] extends [never]
+  ? never
   :
-    | ExtractRidOption<X["$includeRid"] extends true ? true : false>
-    | ExtractAllPropertiesOption<
-      X["$includeAllBaseObjectProperties"] extends true ? true : false
-    >;
+      | ExtractRidOption<X["$includeRid"] extends true ? true : false>
+      | ExtractAllPropertiesOption<
+          X["$includeAllBaseObjectProperties"] extends true ? true : false
+        >;
 
 type Extract$Select<X extends FetchPageArgs<any, any>> = NonNullable<
   X["$select"]
@@ -153,21 +158,8 @@ type ValidAsyncIterArgs<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef>,
 > =
-  | ObjectSetArgs.AsyncIter<
-    Q,
-    PropertyKeys<Q>,
-    false,
-    string & keyof RDPs
-  >
-  | AsyncIterArgs<
-    Q,
-    never,
-    any,
-    any,
-    any,
-    true,
-    string & keyof RDPs
-  >;
+  | ObjectSetArgs.AsyncIter<Q, PropertyKeys<Q>, false, string & keyof RDPs>
+  | AsyncIterArgs<Q, never, any, any, any, true, string & keyof RDPs>;
 
 interface FetchPageSignature<
   Q extends ObjectOrInterfaceDefinition,
@@ -311,9 +303,7 @@ interface Where<
 });
 * @returns an objectSet
   */
-  readonly where: (
-    clause: WhereClause<MergeObjectSet<Q, RDPs>>,
-  ) => this;
+  readonly where: (clause: WhereClause<MergeObjectSet<Q, RDPs>>) => this;
 }
 
 interface AsyncIterSignature<
@@ -395,14 +385,16 @@ interface WithProperties<
 > {
   readonly withProperties: <
     NEW extends Record<string, SimplePropertyDef>,
-  >(
-    clause: { [K in keyof NEW]: DerivedProperty.Creator<Q, NEW[K]> },
-  ) => ObjectSet<
+  >(clause: {
+    [K in keyof NEW]: DerivedProperty.Creator<Q, NEW[K]>;
+  }) => ObjectSet<
     Q,
     {
-      [NN in keyof NEW | keyof RDPs]: NN extends keyof NEW ? NEW[NN]
-        : NN extends keyof RDPs ? RDPs[NN]
-        : never;
+      [NN in keyof NEW | keyof RDPs]: NN extends keyof NEW
+        ? NEW[NN]
+        : NN extends keyof RDPs
+          ? RDPs[NN]
+          : never;
     }
   >;
 }
@@ -411,22 +403,16 @@ export interface ObjectSet<
   Q extends ObjectOrInterfaceDefinition = any,
   // Generated code has what is basically ObjectSet<Q> set in here
   // but we never used it so I am repurposing it for RDP
-  UNUSED_OR_RDP extends
-    | BaseObjectSet<Q>
-    | Record<string, SimplePropertyDef> = never,
-> extends
-  ObjectSetCleanedTypes<
-    Q,
-    ExtractRdp<UNUSED_OR_RDP>,
-    MergeObjectSet<Q, ExtractRdp<UNUSED_OR_RDP>>
-  >
-{
-}
+  UNUSED_OR_RDP extends BaseObjectSet<Q> | Record<string, SimplePropertyDef> =
+    never,
+> extends ObjectSetCleanedTypes<
+  Q,
+  ExtractRdp<UNUSED_OR_RDP>,
+  MergeObjectSet<Q, ExtractRdp<UNUSED_OR_RDP>>
+> {}
 
 // Q is the merged type here! Not renaming to keep diff small. Rename in follow up
-interface Aggregate<
-  Q extends ObjectOrInterfaceDefinition,
-> {
+interface Aggregate<Q extends ObjectOrInterfaceDefinition> {
   /**
    * Aggregate on a field in an object type
    * @param req - an aggregation request where you can select fields and choose how to aggregate, e.g., max, min, avg, and also choose
@@ -456,9 +442,7 @@ interface Aggregate<
 }
 
 // Q is the merged type here! Not renaming to keep diff small. Rename in follow up
-interface SetArithmetic<
-  Q extends ObjectOrInterfaceDefinition,
-> {
+interface SetArithmetic<Q extends ObjectOrInterfaceDefinition> {
   /**
    * Unions object sets together
    * @param objectSets - objectSets you want to union with
@@ -500,9 +484,7 @@ interface SetArithmetic<
 }
 
 // Q is the merged type here! Not renaming to keep diff small. Rename in follow up
-interface PivotTo<
-  Q extends ObjectOrInterfaceDefinition,
-> {
+interface PivotTo<Q extends ObjectOrInterfaceDefinition> {
   /**
    * Pivots the object set over to all its linked objects of the specified type
    * @param type - The linked object type you want to pivot to
@@ -576,9 +558,7 @@ interface FetchOne<
 }
 
 // Q is the merged type here! Not renaming to keep diff small. Rename in follow up
-interface Subscribe<
-  Q extends ObjectOrInterfaceDefinition,
-> {
+interface Subscribe<Q extends ObjectOrInterfaceDefinition> {
   /**
    * Request updates when the objects in an object set are added, updated, or removed.
    * @param listener - The handlers to be executed during the lifecycle of the subscription.
@@ -611,19 +591,23 @@ interface NarrowToType<Q extends ObjectOrInterfaceDefinition> {
 }
 
 type RestrictToImplementingObjectTypes<T extends ObjectOrInterfaceDefinition> =
-  T extends ObjectTypeDefinition ? ExtractImplementedInterfaces<T>
-    : T extends InterfaceDefinition ? ExtractImplementingTypes<T>
-    : never;
+  T extends ObjectTypeDefinition
+    ? ExtractImplementedInterfaces<T>
+    : T extends InterfaceDefinition
+      ? ExtractImplementingTypes<T>
+      : never;
 
 type ExtractImplementedInterfaces<T extends ObjectTypeDefinition> =
   CompileTimeMetadata<T> extends { implements: ReadonlyArray<infer API_NAME> }
-    ? API_NAME extends string ? InterfaceDefinition & { apiName: API_NAME }
-    : never
+    ? API_NAME extends string
+      ? InterfaceDefinition & { apiName: API_NAME }
+      : never
     : never;
 
 type ExtractImplementingTypes<T extends InterfaceDefinition> =
-  CompileTimeMetadata<T> extends
-    { implementedBy: ReadonlyArray<infer API_NAME extends string> }
+  CompileTimeMetadata<T> extends {
+    implementedBy: ReadonlyArray<infer API_NAME extends string>;
+  }
     ? (ObjectTypeDefinition & { apiName: API_NAME }) | InterfaceDefinition
     : InterfaceDefinition;
 
@@ -654,15 +638,14 @@ interface ObjectSetCleanedTypes<
   D extends Record<string, SimplePropertyDef>,
   MERGED extends ObjectOrInterfaceDefinition & Q,
   ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<PropertyKeys<Q>> = {},
-> extends
-  MinimalObjectSet<Q, D, ORDER_BY_OPTIONS>,
-  WithProperties<Q, D>,
-  Aggregate<MERGED>,
-  SetArithmetic<MERGED>,
-  PivotTo<Q>,
-  FetchOne<Q, D>,
-  Subscribe<MERGED>,
-  NearestNeighbors<Q>,
-  NarrowToType<Q>
-{
-}
+>
+  extends
+    MinimalObjectSet<Q, D, ORDER_BY_OPTIONS>,
+    WithProperties<Q, D>,
+    Aggregate<MERGED>,
+    SetArithmetic<MERGED>,
+    PivotTo<Q>,
+    FetchOne<Q, D>,
+    Subscribe<MERGED>,
+    NearestNeighbors<Q>,
+    NarrowToType<Q> {}

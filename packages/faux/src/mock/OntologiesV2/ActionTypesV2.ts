@@ -18,10 +18,8 @@ import { ActionTypesV2 } from "@osdk/foundry.ontologies";
 import type { CallFactory } from "../../handlers/util/handleOpenApiCall.js";
 import { handleOpenApiCall } from "../../handlers/util/handleOpenApiCall.js";
 
-export const list: CallFactory<
-  "ontologyApiName",
-  typeof ActionTypesV2.list
-> = handleOpenApiCall(ActionTypesV2.list, ["ontologyApiName"]);
+export const list: CallFactory<"ontologyApiName", typeof ActionTypesV2.list> =
+  handleOpenApiCall(ActionTypesV2.list, ["ontologyApiName"]);
 
 export const get: CallFactory<
   "ontologyApiName" | "actionTypeApiName",

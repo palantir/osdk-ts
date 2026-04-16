@@ -46,11 +46,15 @@ export function filterTimeSeriesData(
 
   const ret = data.filter((point) => {
     if (range.type === "relative") {
-      return (!end || isBefore(point.time, end))
-        && (!start || isAfter(point.time, start));
+      return (
+        (!end || isBefore(point.time, end)) &&
+        (!start || isAfter(point.time, start))
+      );
     } else {
-      return (!end || isBefore(point.time, end))
-        && (!start || isAfter(point.time, start));
+      return (
+        (!end || isBefore(point.time, end)) &&
+        (!start || isAfter(point.time, start))
+      );
     }
   });
 

@@ -22,15 +22,13 @@ import type {
 import type { CacheKey } from "../CacheKey.js";
 import type { MediaMetadataQuery } from "./MediaMetadataQuery.js";
 
-export interface MediaMetadataCacheKey extends
-  CacheKey<
-    "mediaMetadata",
-    MediaMetadata,
-    MediaMetadataQuery,
-    [
-      objectType: string,
-      primaryKey: PrimaryKeyType<ObjectTypeDefinition>,
-      propertyName: string,
-    ]
-  >
-{}
+export interface MediaMetadataCacheKey extends CacheKey<
+  "mediaMetadata",
+  MediaMetadata,
+  MediaMetadataQuery,
+  [
+    objectType: string,
+    primaryKey: PrimaryKeyType<ObjectTypeDefinition>,
+    propertyName: string,
+  ]
+> {}

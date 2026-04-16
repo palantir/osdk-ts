@@ -2,4 +2,4 @@ type: improvement
 improvement:
   description: Update ExitProcessError tips and use option instead of argument
   links:
-  - https://github.com/palantir/osdk-ts/pull/63
+    - https://github.com/palantir/osdk-ts/pull/63

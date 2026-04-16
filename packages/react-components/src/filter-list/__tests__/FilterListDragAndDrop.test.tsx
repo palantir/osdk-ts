@@ -30,9 +30,9 @@ afterEach(cleanup);
 
 type TestDef = FilterDefinitionUnion<typeof MockObjectType>;
 
-const stubRenderInput: RenderFilterInput<TestDef> = ({
-  definition,
-}) => <div data-testid={`filter-input-${definition.type}`} />;
+const stubRenderInput: RenderFilterInput<TestDef> = ({ definition }) => (
+  <div data-testid={`filter-input-${definition.type}`} />
+);
 
 function createDefinitions() {
   return [
@@ -45,11 +45,10 @@ function createDefinitions() {
       minValue: undefined,
       maxValue: undefined,
     }),
-    createPropertyFilterDef(
-      "active",
-      "TOGGLE",
-      { type: "TOGGLE", enabled: false },
-    ),
+    createPropertyFilterDef("active", "TOGGLE", {
+      type: "TOGGLE",
+      enabled: false,
+    }),
   ];
 }
 
@@ -128,11 +127,10 @@ describe("FilterList drag and drop", () => {
   it("renders correct aria labels on drag handles", async () => {
     const definitions = [
       {
-        ...createPropertyFilterDef(
-          "name",
-          "LISTOGRAM",
-          { type: "EXACT_MATCH", values: [] },
-        ),
+        ...createPropertyFilterDef("name", "LISTOGRAM", {
+          type: "EXACT_MATCH",
+          values: [],
+        }),
         label: "Full Name",
       } as FilterDefinitionUnion<typeof MockObjectType>,
       createPropertyFilterDef("age", "NUMBER_RANGE", {

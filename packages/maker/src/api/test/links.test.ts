@@ -981,8 +981,9 @@ describe("Link Types", () => {
       const ontology = getOntologyDefinition();
       const link = ontology[OntologyEntityTypeEnum.LINK_TYPE].fizzToFoo;
       expect(
-        "many" in link && !("intermediaryObjectType" in link)
-          && link.includeEmptyBackingDatasource,
+        "many" in link &&
+          !("intermediaryObjectType" in link) &&
+          link.includeEmptyBackingDatasource,
       ).toBe(true);
     });
 

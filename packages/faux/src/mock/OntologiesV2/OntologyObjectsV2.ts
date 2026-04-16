@@ -21,15 +21,16 @@ import { handleOpenApiCall } from "../../handlers/util/handleOpenApiCall.js";
 export const get: CallFactory<
   "ontologyApiName" | "objectType" | "primaryKey",
   typeof OntologyObjectsV2.get
-> = handleOpenApiCall(
-  OntologyObjectsV2.get,
-  ["ontologyApiName", "objectType", "primaryKey"],
-);
+> = handleOpenApiCall(OntologyObjectsV2.get, [
+  "ontologyApiName",
+  "objectType",
+  "primaryKey",
+]);
 
 export const list: CallFactory<
   "ontologyApiName" | "objectType",
   typeof OntologyObjectsV2.list
-> = handleOpenApiCall(
-  OntologyObjectsV2.list,
-  ["ontologyApiName", "objectType"],
-);
+> = handleOpenApiCall(OntologyObjectsV2.list, [
+  "ontologyApiName",
+  "objectType",
+]);

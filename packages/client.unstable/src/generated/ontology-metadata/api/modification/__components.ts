@@ -31,23 +31,19 @@ import type {
   ActionSubmissionConfiguration as _api_ActionSubmissionConfiguration,
   ActionType as _api_ActionType,
   ActionTypeApiName as _api_ActionTypeApiName,
-  ActionTypeBranchSettingsModification
-    as _api_ActionTypeBranchSettingsModification,
+  ActionTypeBranchSettingsModification as _api_ActionTypeBranchSettingsModification,
   ActionTypeCreate as _api_ActionTypeCreate,
-  ActionTypeDisplayMetadataModification
-    as _api_ActionTypeDisplayMetadataModification,
+  ActionTypeDisplayMetadataModification as _api_ActionTypeDisplayMetadataModification,
   ActionTypeEntities as _api_ActionTypeEntities,
   ActionTypeIdentifier as _api_ActionTypeIdentifier,
   ActionTypeIdInRequest as _api_ActionTypeIdInRequest,
   ActionTypeProvenanceModification as _api_ActionTypeProvenanceModification,
   ActionTypeRid as _api_ActionTypeRid,
-  ActionTypeScenarioSettingsModification
-    as _api_ActionTypeScenarioSettingsModification,
+  ActionTypeScenarioSettingsModification as _api_ActionTypeScenarioSettingsModification,
   ActionTypeStatus as _api_ActionTypeStatus,
   ActionTypeUpdate as _api_ActionTypeUpdate,
   ActionWebhooksModification as _api_ActionWebhooksModification,
-  ArrayPropertyTypeReducerSortDirection
-    as _api_ArrayPropertyTypeReducerSortDirection,
+  ArrayPropertyTypeReducerSortDirection as _api_ArrayPropertyTypeReducerSortDirection,
   AttachmentPropertyType as _api_AttachmentPropertyType,
   Attribution as _api_Attribution,
   BaseFormatter as _api_BaseFormatter,
@@ -69,8 +65,7 @@ import type {
   EditsConfiguration as _api_EditsConfiguration,
   EditSectionRequest as _api_EditSectionRequest,
   EditsOnlyRid as _api_EditsOnlyRid,
-  ExperimentalTimeDependentPropertyTypeV1
-    as _api_ExperimentalTimeDependentPropertyTypeV1,
+  ExperimentalTimeDependentPropertyTypeV1 as _api_ExperimentalTimeDependentPropertyTypeV1,
   FloatPropertyType as _api_FloatPropertyType,
   FormContent as _api_FormContent,
   GeohashPropertyType as _api_GeohashPropertyType,
@@ -81,22 +76,16 @@ import type {
   Icon as _api_Icon,
   InlineActionDisplayOptions as _api_InlineActionDisplayOptions,
   IntegerPropertyType as _api_IntegerPropertyType,
-  InterfaceActionTypeConstraintMetadata
-    as _api_InterfaceActionTypeConstraintMetadata,
-  InterfaceActionTypeConstraintRidOrIdInRequest
-    as _api_InterfaceActionTypeConstraintRidOrIdInRequest,
+  InterfaceActionTypeConstraintMetadata as _api_InterfaceActionTypeConstraintMetadata,
+  InterfaceActionTypeConstraintRidOrIdInRequest as _api_InterfaceActionTypeConstraintRidOrIdInRequest,
   InterfaceLinkTypeCardinality as _api_InterfaceLinkTypeCardinality,
   InterfaceLinkTypeMetadata as _api_InterfaceLinkTypeMetadata,
   InterfaceLinkTypeRidOrIdInRequest as _api_InterfaceLinkTypeRidOrIdInRequest,
-  InterfaceParameterConstraintDisplayMetadata
-    as _api_InterfaceParameterConstraintDisplayMetadata,
-  InterfaceParameterConstraintRidOrIdInRequest
-    as _api_InterfaceParameterConstraintRidOrIdInRequest,
+  InterfaceParameterConstraintDisplayMetadata as _api_InterfaceParameterConstraintDisplayMetadata,
+  InterfaceParameterConstraintRidOrIdInRequest as _api_InterfaceParameterConstraintRidOrIdInRequest,
   InterfacePropertyTypeApiName as _api_InterfacePropertyTypeApiName,
-  InterfacePropertyTypeDisplayMetadata
-    as _api_InterfacePropertyTypeDisplayMetadata,
-  InterfacePropertyTypeRidOrIdInRequest
-    as _api_InterfacePropertyTypeRidOrIdInRequest,
+  InterfacePropertyTypeDisplayMetadata as _api_InterfacePropertyTypeDisplayMetadata,
+  InterfacePropertyTypeRidOrIdInRequest as _api_InterfacePropertyTypeRidOrIdInRequest,
   InterfaceTypeApiName as _api_InterfaceTypeApiName,
   InterfaceTypeIdInRequest as _api_InterfaceTypeIdInRequest,
   InterfaceTypeRid as _api_InterfaceTypeRid,
@@ -192,19 +181,15 @@ import type {
   ObjectTypeAlias as _api_entitymetadata_ObjectTypeAlias,
   PatchApplicationStrategy as _api_entitymetadata_PatchApplicationStrategy,
   SharedPropertyTypeAlias as _api_entitymetadata_SharedPropertyTypeAlias,
-  StreamingConsistencyGuarantee
-    as _api_entitymetadata_StreamingConsistencyGuarantee,
+  StreamingConsistencyGuarantee as _api_entitymetadata_StreamingConsistencyGuarantee,
   StreamingProfileConfig as _api_entitymetadata_StreamingProfileConfig,
   TransformProfileConfig as _api_entitymetadata_TransformProfileConfig,
   TransitionWindows as _api_entitymetadata_TransitionWindows,
 } from "../entitymetadata/__components.js";
 import type {
-  BuilderEntityProvenance
-    as _api_entitymetadata_provenance_BuilderEntityProvenance,
-  EditsHistoryProvenance
-    as _api_entitymetadata_provenance_EditsHistoryProvenance,
-  MarketplaceEntityProvenance
-    as _api_entitymetadata_provenance_MarketplaceEntityProvenance,
+  BuilderEntityProvenance as _api_entitymetadata_provenance_BuilderEntityProvenance,
+  EditsHistoryProvenance as _api_entitymetadata_provenance_EditsHistoryProvenance,
+  MarketplaceEntityProvenance as _api_entitymetadata_provenance_MarketplaceEntityProvenance,
 } from "../entitymetadata/provenance/__components.js";
 import type {
   RuleChain as _api_formatting_RuleChain,
@@ -214,8 +199,7 @@ import type {
   RuleSetIdentifier as _api_formatting_RuleSetIdentifier,
   RuleSetIdInRequest as _api_formatting_RuleSetIdInRequest,
   RuleSetNamedType as _api_formatting_RuleSetNamedType,
-  ValueReferenceSourceModification
-    as _api_formatting_ValueReferenceSourceModification,
+  ValueReferenceSourceModification as _api_formatting_ValueReferenceSourceModification,
 } from "../formatting/__components.js";
 import type {
   PermissionModel as _api_permissions_PermissionModel,
@@ -223,22 +207,16 @@ import type {
   RoleGrantPatch as _api_permissions_RoleGrantPatch,
 } from "../permissions/__components.js";
 import type {
-  ResetSchemaMigrationsAndDropEditParameters
-    as _api_schemamigrations_ResetSchemaMigrationsAndDropEditParameters,
-  SchemaMigrationInitialization
-    as _api_schemamigrations_SchemaMigrationInitialization,
-  SchemaMigrationModification
-    as _api_schemamigrations_SchemaMigrationModification,
+  ResetSchemaMigrationsAndDropEditParameters as _api_schemamigrations_ResetSchemaMigrationsAndDropEditParameters,
+  SchemaMigrationInitialization as _api_schemamigrations_SchemaMigrationInitialization,
+  SchemaMigrationModification as _api_schemamigrations_SchemaMigrationModification,
 } from "../schemamigrations/__components.js";
 import type {
   ExternalMappingConfiguration as _api_typemapping_ExternalMappingConfiguration,
-  ExternalMappingConfigurationFilter
-    as _api_typemapping_ExternalMappingConfigurationFilter,
+  ExternalMappingConfigurationFilter as _api_typemapping_ExternalMappingConfigurationFilter,
   GothamMappingConfiguration as _api_typemapping_GothamMappingConfiguration,
-  ObjectTypeGothamMappingModification
-    as _api_typemapping_ObjectTypeGothamMappingModification,
-  SharedPropertyTypeGothamMappingModification
-    as _api_typemapping_SharedPropertyTypeGothamMappingModification,
+  ObjectTypeGothamMappingModification as _api_typemapping_ObjectTypeGothamMappingModification,
+  SharedPropertyTypeGothamMappingModification as _api_typemapping_SharedPropertyTypeGothamMappingModification,
 } from "../typemapping/__components.js";
 import type {
   BaseParameterTypeModification as _api_types_BaseParameterTypeModification,
@@ -257,13 +235,11 @@ export interface ActionLogMetadataModification {
 /**
  * Action Log is not required for ActionTypes that edit this ObjectType.
  */
-export interface ActionLogNotRequiredModification {
-}
+export interface ActionLogNotRequiredModification {}
 /**
  * Action Log is required for ActionTypes that edit this ObjectType.
  */
-export interface ActionLogRequiredModification {
-}
+export interface ActionLogRequiredModification {}
 export interface ActionLogRequirednessModification_actionLogNotRequired {
   type: "actionLogNotRequired";
   actionLogNotRequired: ActionLogNotRequiredModification;
@@ -343,13 +319,11 @@ export interface ActionTypeModification {
 /**
  * This status indicates that the PropertyType will not change on short notice and should thus be safe to use in user facing workflows. They will not be removed without first being deprecated.
  */
-export interface ActivePropertyTypeStatusModification {
-}
+export interface ActivePropertyTypeStatusModification {}
 /**
  * Indicates the that given object type is archived.
  */
-export interface ArchivedStateModification {
-}
+export interface ArchivedStateModification {}
 export interface ArchiveStateModification_archivedState {
   type: "archivedState";
   archivedState: ArchivedStateModification;
@@ -422,12 +396,10 @@ export interface CompassDeletionParameters {
  */
 export type CompassNamespaceRid = string;
 export type CompassResourceDeletionMode = "TRASH" | "PERMANENTLY_DELETE";
-export interface CopyEditsFromParentBranchOnInitialIndexingMode {
-}
+export interface CopyEditsFromParentBranchOnInitialIndexingMode {}
 export interface CopyEditsMode_copyEditsFromParentBranchOnInitialIndexing {
   type: "copyEditsFromParentBranchOnInitialIndexing";
-  copyEditsFromParentBranchOnInitialIndexing:
-    CopyEditsFromParentBranchOnInitialIndexingMode;
+  copyEditsFromParentBranchOnInitialIndexing: CopyEditsFromParentBranchOnInitialIndexingMode;
 }
 /**
  * Configuration describing whether/how edits should be copied from parent branch.
@@ -453,10 +425,8 @@ export interface DeprecatedPropertyTypeStatusModification {
   replacedBy?: _api_PropertyTypeRid | null | undefined;
   replacedById?: _api_PropertyTypeId | null | undefined;
 }
-export interface DropLinkTypePeeringMetadata {
-}
-export interface DropObjectTypePeeringMetadata {
-}
+export interface DropLinkTypePeeringMetadata {}
+export interface DropObjectTypePeeringMetadata {}
 /**
  * Configuration to enable edits history. In the future specific settings may be added.
  */
@@ -467,8 +437,7 @@ export interface EditsHistoryConfigModification {
  * Contains configuration to import edits history from Phonograph to Funnel/Highbury. This should be set in the
  * edits history object, not in the main object.
  */
-export interface EditsHistoryImportConfigurationModification {
-}
+export interface EditsHistoryImportConfigurationModification {}
 export interface EditsHistoryModification_config {
   type: "config";
   config: EditsHistoryConfigModification;
@@ -590,13 +559,11 @@ export interface EventMetadataModification {
 /**
  * This status indicates that the PropertyType is an example. It is backed by notional data that should not be used for actual workflows, but can be used to test those workflows.
  */
-export interface ExamplePropertyTypeStatusModification {
-}
+export interface ExamplePropertyTypeStatusModification {}
 /**
  * This status indicates that the PropertyType is in development. Please refrain from using it in critical workflows as it may change/disappear at any time.
  */
-export interface ExperimentalPropertyTypeStatusModification {
-}
+export interface ExperimentalPropertyTypeStatusModification {}
 export interface GetEntityModificationHistoryRequest {
   entityRid: EntityRid;
   limit: number;
@@ -645,8 +612,7 @@ export interface ImportSharedPropertyTypesRequest {
 /**
  * A response to ImportSharedPropertyTypesRequest
  */
-export interface ImportSharedPropertyTypesResponse {
-}
+export interface ImportSharedPropertyTypesResponse {}
 export interface InlineActionTypeModification {
   actionTypeIdentifier: _api_ActionTypeIdentifier;
   displayOptions: _api_InlineActionDisplayOptions;
@@ -710,8 +676,7 @@ export interface InterfacePropertyImplementationModification {
   sharedPropertyTypeRidOrIdInRequest: _api_SharedPropertyTypeRidOrIdInRequest;
 }
 export interface InterfacePropertyImplementationModificationV2 {
-  interfacePropertyTypeRidOrIdInRequest:
-    _api_InterfacePropertyTypeRidOrIdInRequest;
+  interfacePropertyTypeRidOrIdInRequest: _api_InterfacePropertyTypeRidOrIdInRequest;
   propertyImplementation: InterfacePropertyTypeImplementationModification;
 }
 export interface InterfacePropertyTypeImplementationModification_propertyTypeId {
@@ -754,8 +719,7 @@ export type InterfacePropertyTypeModification =
 
 export interface InterfacePropertyTypeModificationWithRidOrIdInRequest {
   interfacePropertyTypeModification: InterfacePropertyTypeModification;
-  interfacePropertyTypeRidOrIdInRequest:
-    _api_InterfacePropertyTypeRidOrIdInRequest;
+  interfacePropertyTypeRidOrIdInRequest: _api_InterfacePropertyTypeRidOrIdInRequest;
 }
 export interface InterfacePropertyTypeTypeForModification_array {
   type: "array";
@@ -972,8 +936,7 @@ export interface LinkTypeCreate {
   packageRid?: _api_OntologyPackageRid | null | undefined;
   projectRid?: _api_CompassFolderRid | null | undefined;
 }
-export interface LinkTypeDelete {
-}
+export interface LinkTypeDelete {}
 export interface LinkTypeEntityMetadataModifyRequest {
   arePatchesEnabled?: boolean | null | undefined;
   entityConfig?: EntityConfigModification | null | undefined;
@@ -1025,9 +988,7 @@ export interface LinkTypeUpdate {
  * Request to load all visible Ontologies. This is only expected to be used by Ontology Metadata App.
  */
 export interface LoadAllOntologiesInternalRequest {
-  externalMappingConfigurationFilters: Array<
-    _api_typemapping_ExternalMappingConfigurationFilter
-  >;
+  externalMappingConfigurationFilters: Array<_api_typemapping_ExternalMappingConfigurationFilter>;
   includeEmptyDefaultOntology?: boolean | null | undefined;
 }
 /**
@@ -1057,8 +1018,7 @@ export interface ManyToManyLinkTypeDatasetDatasourceModification {
 }
 export interface ManyToManyLinkTypeDatasourceCreate {
   editsConfiguration?: _api_EditsConfiguration | null | undefined;
-  manyToManyLinkTypeDatasourceDefinition:
-    ManyToManyLinkTypeDatasourceModificationDefinition;
+  manyToManyLinkTypeDatasourceDefinition: ManyToManyLinkTypeDatasourceModificationDefinition;
 }
 export interface ManyToManyLinkTypeDatasourceDelete {
   datasourceRid: _api_DatasourceRid;
@@ -1100,8 +1060,7 @@ export type ManyToManyLinkTypeDatasourceModifyRequest =
 
 export interface ManyToManyLinkTypeDatasourceUpdate {
   editsConfiguration?: _api_EditsConfiguration | null | undefined;
-  manyToManyLinkTypeDatasourceDefinition:
-    ManyToManyLinkTypeDatasourceModificationDefinition;
+  manyToManyLinkTypeDatasourceDefinition: ManyToManyLinkTypeDatasourceModificationDefinition;
   rid: _api_DatasourceRid;
 }
 export interface ManyToManyLinkTypeStreamDatasourceModification {
@@ -1184,17 +1143,14 @@ export type NestedInterfacePropertyTypeImplementationModification =
 /**
  * Configuration for disabled edits history.
  */
-export interface NoEditsHistoryModification {
-}
-export interface NoneEntityProvenance {
-}
+export interface NoEditsHistoryModification {}
+export interface NoneEntityProvenance {}
 /**
  * Entity can be stored in Phonograph. Note that it is not guaranteed that the object type or link type is
  * currently registered with Phonograph. There is no guarantee the object type or link type has finished
  * syncing and is queryable via Phonograph.
  */
-export interface ObjectStorageV1Modification {
-}
+export interface ObjectStorageV1Modification {}
 /**
  * Entity can be stored in Highbury and other V2 Object DBs. It is not possible to store the entity in Phonograph.
  * Edits can be enabled or disabled using the `arePatchesEnabled` field in ObjectTypeEntityMetadata/LinkTypeEntityMetadata.
@@ -1504,8 +1460,7 @@ export interface ObjectTypeDatasourceUpdate {
   objectTypeDatasourceDefinition: ObjectTypeDatasourceModificationDefinition;
   rid: _api_DatasourceRid;
 }
-export interface ObjectTypeDelete {
-}
+export interface ObjectTypeDelete {}
 export interface ObjectTypeDerivedPropertiesDatasourceModification {
   definition: _api_derivedproperties_DerivedPropertiesDefinitionModification;
 }
@@ -1824,8 +1779,7 @@ export interface OntologyDeleteRequest {
 /**
  * Response for OntologyDeleteRequest.
  */
-export interface OntologyDeleteResponse {
-}
+export interface OntologyDeleteResponse {}
 export interface OntologyDiff {
   affectedActionTypes: Record<_api_ActionTypeRid, ModificationType>;
   affectedInterfaceTypes: Record<_api_InterfaceTypeRid, ModificationType>;
@@ -1869,9 +1823,7 @@ export interface OntologyInformationInternal {
   description: string;
   displayName: string;
   enabledObjectStoragesStatus: EnabledObjectStoragesStatus;
-  externalMappingConfigurations: Array<
-    _api_typemapping_ExternalMappingConfiguration
-  >;
+  externalMappingConfigurations: Array<_api_typemapping_ExternalMappingConfiguration>;
   governanceBoardGroupId?: _api_GroupId | null | undefined;
   isDefaultOntologyMultiOrg: boolean;
   isShared: boolean;
@@ -1914,8 +1866,7 @@ export type OntologyModificationDryRunResponse =
   | OntologyModificationDryRunResponse_success
   | OntologyModificationDryRunResponse_error;
 
-export interface OntologyModificationDryRunSuccessStatus {
-}
+export interface OntologyModificationDryRunSuccessStatus {}
 export interface OntologyModificationRequest {
   actionTypesToCreate: Record<
     _api_ActionTypeIdInRequest,
@@ -2086,8 +2037,7 @@ export interface OntologyUpdateRequest {
 /**
  * Response for an OntologyUpdateRequest.
  */
-export interface OntologyUpdateResponse {
-}
+export interface OntologyUpdateResponse {}
 export interface PartialPropertyTypeModification {
   apiName?: _api_ObjectTypeFieldApiName | null | undefined;
   inlineAction?: InlineActionTypeModification | null | undefined;
@@ -2211,8 +2161,7 @@ export interface PutSectionRequestWithId {
  * If a consumer attempts to set an object type or link type to `ReadOnlyV1V2`, OMS will internally
  * remap to an `ObjectStorageV2Modification` instead.
  */
-export interface ReadOnlyV1V2Modification {
-}
+export interface ReadOnlyV1V2Modification {}
 /**
  * Use the reduced value of the implementation to implement the interface property.
  */
@@ -2222,8 +2171,7 @@ export interface ReducedPropertyTypeImplementationModification {
 /**
  * Indicates that the given object type is in the process of being restored by funnel.
  */
-export interface RestorationStateModification {
-}
+export interface RestorationStateModification {}
 export interface RetentionConfigModification {
   targetSize: number;
   triggerSize: number;
@@ -2498,8 +2446,7 @@ export interface TypeGroupModification {
 /**
  * Represents an empty streaming profile configuration.
  */
-export interface UnsetStreamingProfileConfig {
-}
+export interface UnsetStreamingProfileConfig {}
 /**
  * Internal version of ValidationRuleModification.
  */

@@ -1,6 +1,5 @@
 import "@radix-ui/themes/styles.css";
 import "./main.css";
-
 import { FoundryWidget } from "@osdk/widget.client-react";
 import { createRoot } from "react-dom/client";
 import { client } from "./client.js";

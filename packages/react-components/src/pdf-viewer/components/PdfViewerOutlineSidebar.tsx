@@ -51,9 +51,7 @@ export function PdfViewerOutlineSidebar({
           onSidebarModeChange={onSidebarModeChange}
         />
         <div className={styles.emptyState}>
-          <div className={styles.emptyStateText}>
-            No outline available
-          </div>
+          <div className={styles.emptyStateText}>No outline available</div>
         </div>
       </div>
     );
@@ -137,10 +135,7 @@ function PdfViewerOutlineItem({
   );
 }
 
-function computeActiveIndex(
-  items: OutlineItem[],
-  currentPage: number,
-): number {
-  const idx = items.findIndex(item => item.pageNumber > currentPage);
+function computeActiveIndex(items: OutlineItem[], currentPage: number): number {
+  const idx = items.findIndex((item) => item.pageNumber > currentPage);
   return idx === -1 ? items.length - 1 : idx - 1;
 }

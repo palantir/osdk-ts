@@ -68,14 +68,7 @@ export function PdfViewerThumbnail({
         renderTaskRef.current.cancel();
       }
 
-      context.setTransform(
-        DEVICE_PIXEL_RATIO,
-        0,
-        0,
-        DEVICE_PIXEL_RATIO,
-        0,
-        0,
-      );
+      context.setTransform(DEVICE_PIXEL_RATIO, 0, 0, DEVICE_PIXEL_RATIO, 0, 0);
 
       const renderTask = page.render({
         canvasContext: context,
@@ -124,9 +117,11 @@ export function PdfViewerThumbnail({
       tabIndex={0}
       aria-label={`Page ${pageNumber}`}
       aria-current={isActive ? "page" : undefined}
-      style={dimensions != null
-        ? { width: dimensions.width, height: dimensions.height }
-        : undefined}
+      style={
+        dimensions != null
+          ? { width: dimensions.width, height: dimensions.height }
+          : undefined
+      }
     >
       <canvas ref={canvasRef} className={styles.canvas} />
     </div>

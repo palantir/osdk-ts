@@ -46,9 +46,9 @@ function loadPublishedAliases(): ResolvedAliases {
   cachedPublishedAliases = {
     custom: aliasesFile.defaults.custom,
     models: Object.fromEntries<Model>(
-      Object.entries(aliasesFile.defaults.models).map((
-        [alias, { id: identifier }],
-      ) => [alias, identifier]),
+      Object.entries(aliasesFile.defaults.models).map(
+        ([alias, { id: identifier }]) => [alias, identifier],
+      ),
     ),
   };
   return cachedPublishedAliases;
@@ -67,8 +67,9 @@ function loadPreviewAliases(): ResolvedAliases {
     custom: resourcesFile.resources.custom,
     models: Object.fromEntries<Model>(
       resourcesFile.resources.models
-        .filter((model): model is ModelResource & { alias: string } =>
-          model.alias != null
+        .filter(
+          (model): model is ModelResource & { alias: string } =>
+            model.alias != null,
         )
         .map(({ alias, identifier }) => [alias, identifier]),
     ),

@@ -17,8 +17,7 @@
 import { type ConjureContext, conjureFetch } from "conjure-lite";
 import type {
   ActionTypeGetOrganizationsRequest as _api_ActionTypeGetOrganizationsRequest,
-  DeprecatedActionTypeGetOrganizationsResponse
-    as _api_DeprecatedActionTypeGetOrganizationsResponse,
+  DeprecatedActionTypeGetOrganizationsResponse as _api_DeprecatedActionTypeGetOrganizationsResponse,
 } from "../../__components.js";
 
 /**

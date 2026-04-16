@@ -25,9 +25,7 @@ describe(mutateReleasePlan, () => {
         changesets: [
           {
             id: "5",
-            releases: [
-              { name: "foo", type: "patch" },
-            ],
+            releases: [{ name: "foo", type: "patch" }],
             summary: "foo summary",
           },
         ],
@@ -49,9 +47,7 @@ describe(mutateReleasePlan, () => {
         changesets: [
           {
             id: "5",
-            releases: [
-              { name: "foo", type: "minor" },
-            ],
+            releases: [{ name: "foo", type: "minor" }],
             summary: "foo summary",
           },
         ],
@@ -75,9 +71,7 @@ describe(mutateReleasePlan, () => {
         changesets: [
           {
             id: "breezy-adults-call",
-            releases: [
-              { name: "foo", type: "minor" },
-            ],
+            releases: [{ name: "foo", type: "minor" }],
             summary: "foo summary",
           },
         ],
@@ -113,9 +107,7 @@ describe(mutateReleasePlan, () => {
         changesets: [
           {
             id: "first-minor",
-            releases: [
-              { name: "foo", type: "minor" },
-            ],
+            releases: [{ name: "foo", type: "minor" }],
             summary: "foo summary",
           },
         ],
@@ -138,9 +130,7 @@ describe(mutateReleasePlan, () => {
         changesets: [
           {
             id: "first-minor",
-            releases: [
-              { name: "foo", type: "minor" },
-            ],
+            releases: [{ name: "foo", type: "minor" }],
             summary: "foo summary",
           },
         ],
@@ -173,9 +163,7 @@ describe(mutateReleasePlan, () => {
         changesets: [
           {
             id: "first-minor",
-            releases: [
-              { name: "foo", type: "minor" },
-            ],
+            releases: [{ name: "foo", type: "minor" }],
             summary: "foo summary",
           },
         ],

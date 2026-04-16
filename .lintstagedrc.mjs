@@ -14,48 +14,36 @@ const CSPELL_CMD = "cspell --quiet --no-must-find-files";
  * @type {import("lint-staged").Config}
  */
 export default {
-  "packages/monorepo.*/**/*.{js,jsx,ts,tsx,mjs,cjs}": [
-    "dprint fmt",
-    CSPELL_CMD,
-  ],
+  "packages/monorepo.*/**/*.{js,jsx,ts,tsx,mjs,cjs}": [CSPELL_CMD],
   "*.md": [CSPELL_CMD],
-  "packages/**/*.{js,jsx,ts,tsx,mjs,cjs}": (
-    files,
-  ) => {
-    const match = micromatch.not(
-      files,
-      [
-        "**/templates/**/*",
-        "**/generatedNoCheck/**/*",
-        "**/generatedNoCheck2/**/*",
-        "**/examples/**/*",
-      ],
-    );
+  "packages/**/*.{js,jsx,ts,tsx,mjs,cjs}": (files) => {
+    const match = micromatch.not(files, [
+      "**/templates/**/*",
+      "**/generatedNoCheck/**/*",
+      "**/generatedNoCheck2/**/*",
+      "**/examples/**/*",
+    ]);
     if (match.length === 0) return [];
     return [
-      `dprint fmt ${match.join(" ")}`,
       `eslint --fix  ${match.join(" ")}`,
       `${CSPELL_CMD} ${match.join(" ")}`,
     ];
   },
-  "(.lintstagedrc.mjs|.monorepolint.config.mjs)": [
-    "dprint fmt",
-    CSPELL_CMD,
-  ],
+  "(.lintstagedrc.mjs|.monorepolint.config.mjs)": [CSPELL_CMD],
   "*": (files) => {
-    const mrlFiles = micromatch(files, [
-      "package.json",
-      // "**/package.json",
-      "tsconfig.json",
-      "**/tsconfig.json",
-    ], {});
+    const mrlFiles = micromatch(
+      files,
+      [
+        "package.json",
+        // "**/package.json",
+        "tsconfig.json",
+        "**/tsconfig.json",
+      ],
+      {},
+    );
 
-    const mrlCommands = mrlFiles.length > 0
-      ? [
-        "monorepolint check --verbose",
-        `dprint fmt ${mrlFiles.join(" ")} --allow-no-files`,
-      ]
-      : [];
+    const mrlCommands =
+      mrlFiles.length > 0 ? ["monorepolint check --verbose"] : [];
 
     return [...mrlCommands];
   },

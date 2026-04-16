@@ -28,13 +28,13 @@ export function propertyTypeTypeToOntologyIrInterfaceType(
   ridGenerator: OntologyRidGenerator,
 ): InterfacePropertyTypeType {
   switch (true) {
-    case (typeof type === "object" && type.type === "marking"):
+    case typeof type === "object" && type.type === "marking":
       return {
         "type": "marking",
         marking: { markingType: type.markingType },
       };
 
-    case (typeof type === "object" && type.type === "struct"):
+    case typeof type === "object" && type.type === "struct":
       const structFields: Array<InterfaceStructFieldType> = new Array();
       for (const key in type.structDefinition) {
         const fieldTypeDefinition = type.structDefinition[key];
@@ -59,8 +59,8 @@ export function propertyTypeTypeToOntologyIrInterfaceType(
         } else {
           // If it is a full form type definition then process it as such
           if (
-            typeof fieldTypeDefinition === "object"
-            && "fieldType" in fieldTypeDefinition
+            typeof fieldTypeDefinition === "object" &&
+            "fieldType" in fieldTypeDefinition
           ) {
             field = {
               ...fieldTypeDefinition,
@@ -74,12 +74,14 @@ export function propertyTypeTypeToOntologyIrInterfaceType(
                 propertyApiName,
                 ridGenerator,
               ),
-              displayMetadata: fieldTypeDefinition.displayMetadata
-                ?? { displayName: key, description: undefined },
+              displayMetadata: fieldTypeDefinition.displayMetadata ?? {
+                displayName: key,
+                description: undefined,
+              },
               typeClasses: fieldTypeDefinition.typeClasses ?? [],
               aliases: fieldTypeDefinition.aliases ?? [],
-              requireImplementation: fieldTypeDefinition.requireImplementation
-                ?? true,
+              requireImplementation:
+                fieldTypeDefinition.requireImplementation ?? true,
             };
           } else {
             field = {
@@ -109,7 +111,7 @@ export function propertyTypeTypeToOntologyIrInterfaceType(
         struct: { structFields },
       };
 
-    case (typeof type === "object" && type.type === "string"):
+    case typeof type === "object" && type.type === "string":
       return {
         "type": "string",
         "string": {
@@ -123,7 +125,7 @@ export function propertyTypeTypeToOntologyIrInterfaceType(
         },
       };
 
-    case (typeof type === "object" && type.type === "decimal"):
+    case typeof type === "object" && type.type === "decimal":
       return {
         "type": "decimal",
         "decimal": {
@@ -132,13 +134,13 @@ export function propertyTypeTypeToOntologyIrInterfaceType(
         },
       };
 
-    case (type === "geopoint"):
+    case type === "geopoint":
       return { type: "geohash", geohash: {} };
 
-    case (type === "decimal"):
+    case type === "decimal":
       return { type, [type]: { precision: undefined, scale: undefined } };
 
-    case (type === "string"):
+    case type === "string":
       return {
         type,
         [type]: {
@@ -150,13 +152,13 @@ export function propertyTypeTypeToOntologyIrInterfaceType(
         },
       };
 
-    case (type === "mediaReference"):
+    case type === "mediaReference":
       return {
-        type: type,
+        type,
         mediaReference: {},
       };
 
-    case (type === "geotimeSeries"):
+    case type === "geotimeSeries":
       return {
         type: "geotimeSeriesReference",
         geotimeSeriesReference: {},

@@ -80,7 +80,7 @@ export function batchProcessTemplates(
 
   if (errors.length > 0) {
     const errorMessage = errors
-      .map(e => `${e.id}: ${e.error.message}`)
+      .map((e) => `${e.id}: ${e.error.message}`)
       .join("\n");
     return toErrorResult(
       new Error(`Failed to process templates:\n${errorMessage}`),

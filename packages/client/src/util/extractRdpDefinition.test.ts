@@ -78,10 +78,7 @@ describe("extractRdpDefinition", () => {
   };
 
   it("handles 'withProperties' object set type", async () => {
-    const result = await extractRdpDefinition(
-      mockClientCtx,
-      objectSetWithRdps,
-    );
+    const result = await extractRdpDefinition(mockClientCtx, objectSetWithRdps);
 
     expect(result).toMatchInlineSnapshot(
       `
@@ -144,10 +141,7 @@ describe("extractRdpDefinition", () => {
       },
     };
 
-    const result = await extractRdpDefinition(
-      mockClientCtx,
-      nestedObjectSet,
-    );
+    const result = await extractRdpDefinition(mockClientCtx, nestedObjectSet);
 
     expect(result).toMatchInlineSnapshot(`
       {
@@ -282,10 +276,13 @@ describe("extractRdpDefinition", () => {
   it("throws with intersect, subtract, or union having nested RDPs", async () => {
     const intersectionObjectSetWithNestedRdps: ObjectSet = {
       type: "intersect",
-      objectSets: [objectSetWithRdps, {
-        type: "base",
-        objectType: "ThirdType",
-      }],
+      objectSets: [
+        objectSetWithRdps,
+        {
+          type: "base",
+          objectType: "ThirdType",
+        },
+      ],
     };
 
     await expect(

@@ -16,10 +16,8 @@
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
 import type {
-  OntologyBulkLoadEntitiesByDatasourcesRequest
-    as _api_OntologyBulkLoadEntitiesByDatasourcesRequest,
-  OntologyBulkLoadEntitiesByDatasourcesResponse
-    as _api_OntologyBulkLoadEntitiesByDatasourcesResponse,
+  OntologyBulkLoadEntitiesByDatasourcesRequest as _api_OntologyBulkLoadEntitiesByDatasourcesRequest,
+  OntologyBulkLoadEntitiesByDatasourcesResponse as _api_OntologyBulkLoadEntitiesByDatasourcesResponse,
 } from "../__components.js";
 
 /**

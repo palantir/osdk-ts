@@ -87,9 +87,11 @@ describe("autoVersion", () => {
     const nonSemVerGitVersion = "not-semver";
     execMock.mockResolvedValue(execReturnValue(nonSemVerGitVersion));
 
-    await expect(autoVersion({
-      type: "git-describe",
-    })).rejects.toThrowError();
+    await expect(
+      autoVersion({
+        type: "git-describe",
+      }),
+    ).rejects.toThrowError();
   });
 
   it("should throw an error if git isn't found", async () => {
@@ -97,11 +99,11 @@ describe("autoVersion", () => {
       throw new Error("Command not found");
     });
 
-    await expect(autoVersion({
-      type: "git-describe",
-    })).rejects.toThrowError(
-      "git is not installed",
-    );
+    await expect(
+      autoVersion({
+        type: "git-describe",
+      }),
+    ).rejects.toThrowError("git is not installed");
   });
 
   it("should throw an error if the current directory is not a git repository", async () => {
@@ -109,11 +111,11 @@ describe("autoVersion", () => {
       throw new Error("fatal: not a git repository");
     });
 
-    await expect(autoVersion({
-      type: "git-describe",
-    })).rejects.toThrowError(
-      "the current directory is not a git repository",
-    );
+    await expect(
+      autoVersion({
+        type: "git-describe",
+      }),
+    ).rejects.toThrowError("the current directory is not a git repository");
   });
 
   it("should throw an error if no git tags are found", async () => {
@@ -121,10 +123,10 @@ describe("autoVersion", () => {
       throw new Error("fatal: no names found, cannot describe anything.");
     });
 
-    await expect(autoVersion({
-      type: "git-describe",
-    })).rejects.toThrowError(
-      "no matching tags were found.",
-    );
+    await expect(
+      autoVersion({
+        type: "git-describe",
+      }),
+    ).rejects.toThrowError("no matching tags were found.");
   });
 });

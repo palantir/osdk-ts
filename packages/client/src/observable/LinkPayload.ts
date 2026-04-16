@@ -21,12 +21,10 @@ import type { ObserveLinkCallbackArgs } from "./ObservableClient.js";
 /**
  * Internal type to keep the generic insanity down internal to the observable code
  */
-export interface SpecificLinkPayload extends
-  Omit<
-    ObserveLinkCallbackArgs<any>,
-    "resolvedList" | "linkedObjectsBySourcePrimaryKey"
-  >
-{
+export interface SpecificLinkPayload extends Omit<
+  ObserveLinkCallbackArgs<any>,
+  "resolvedList" | "linkedObjectsBySourcePrimaryKey"
+> {
   resolvedList: Array<ObjectHolder | InterfaceHolder> | undefined;
   linkedObjectsBySourcePrimaryKey: ReadonlyMap<
     string | number,

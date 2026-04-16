@@ -76,10 +76,7 @@ function SearchableMenuInner({
 
   return (
     <Menu.Root onOpenChange={handleMenuOpenChange}>
-      <Menu.Trigger
-        className={triggerClassName}
-        disabled={disabled}
-      >
+      <Menu.Trigger className={triggerClassName} disabled={disabled}>
         {trigger}
       </Menu.Trigger>
       <Menu.Portal>
@@ -104,9 +101,7 @@ function SearchableMenuInner({
               />
             ))}
             {filteredItems.length === 0 && (
-              <div className={styles.emptyState}>
-                {emptyMessage}
-              </div>
+              <div className={styles.emptyState}>{emptyMessage}</div>
             )}
           </Menu.Popup>
         </Menu.Positioner>
@@ -119,22 +114,20 @@ export const SearchableMenu: React.MemoExoticComponent<
   typeof SearchableMenuInner
 > = memo(SearchableMenuInner);
 
-function SearchableMenuItemRowInner(
-  { item, onItemSelected }: {
-    item: SearchableMenuItem;
-    onItemSelected: (key: string) => void;
-  },
-): React.ReactElement {
+function SearchableMenuItemRowInner({
+  item,
+  onItemSelected,
+}: {
+  item: SearchableMenuItem;
+  onItemSelected: (key: string) => void;
+}): React.ReactElement {
   const handleClick = useCallback(
     () => onItemSelected(item.key),
     [onItemSelected, item.key],
   );
 
   return (
-    <Menu.Item
-      className={styles.menuItem}
-      onClick={handleClick}
-    >
+    <Menu.Item className={styles.menuItem} onClick={handleClick}>
       {item.label}
     </Menu.Item>
   );

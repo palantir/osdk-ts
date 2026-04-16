@@ -51,9 +51,10 @@ export async function autoVersion(config: AutoVersionConfig): Promise<string> {
 }
 
 async function gitDescribeAutoVersion(tagPrefix: string = ""): Promise<string> {
-  const [matchPrefix, prefixRegex] = tagPrefix !== ""
-    ? [tagPrefix, new RegExp(`^${tagPrefix}`)]
-    : [undefined, new RegExp(`^v?`)];
+  const [matchPrefix, prefixRegex] =
+    tagPrefix !== ""
+      ? [tagPrefix, new RegExp(`^${tagPrefix}`)]
+      : [undefined, new RegExp(`^v?`)];
 
   const gitVersion = await gitDescribe(matchPrefix);
   const version = gitVersion.trim().replace(prefixRegex, "");
@@ -99,9 +100,9 @@ async function gitDescribe(matchPrefix: string | undefined): Promise<string> {
       const errorMessage: string = error.message.toLowerCase();
 
       if (
-        errorMessage.includes("not recognized")
-        || errorMessage.includes("command not found")
-        || errorMessage.includes("no such file or directory")
+        errorMessage.includes("not recognized") ||
+        errorMessage.includes("command not found") ||
+        errorMessage.includes("no such file or directory")
       ) {
         throw new AutoVersionError(
           "Unable to determine auto version using git-describe as git is not installed or found in the PATH.",
@@ -109,9 +110,7 @@ async function gitDescribe(matchPrefix: string | undefined): Promise<string> {
         );
       }
 
-      if (
-        errorMessage.includes("fatal: not a git repository")
-      ) {
+      if (errorMessage.includes("fatal: not a git repository")) {
         throw new AutoVersionError(
           `Unable to determine auto version using git-describe as the current directory is not a git repository.`,
           `You can run the command in a git repository and try again or supply a --version option to set the version manually`,

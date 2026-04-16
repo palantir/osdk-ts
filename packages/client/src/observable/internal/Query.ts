@@ -71,26 +71,28 @@ export abstract class Query<
     this.cacheKeys = store.cacheKeys;
     this.#subject = observable;
 
-    this.logger = logger ?? (
-      process.env.NODE_ENV === "production"
+    this.logger =
+      logger ??
+      (process.env.NODE_ENV === "production"
         ? store.client[additionalContext].logger
-        : store.client[additionalContext].logger?.child({}, {
-          msgPrefix: process.env.NODE_ENV !== "production"
-            ? (`Query<${cacheKey.type}, ${
-              cacheKey.otherKeys.map(x => JSON.stringify(x)).join(", ")
-            }>`)
-            : "Query",
-        })
-    );
+        : store.client[additionalContext].logger?.child(
+            {},
+            {
+              msgPrefix:
+                process.env.NODE_ENV !== "production"
+                  ? `Query<${cacheKey.type}, ${cacheKey.otherKeys
+                      .map((x) => JSON.stringify(x))
+                      .join(", ")}>`
+                  : "Query",
+            },
+          ));
   }
 
   protected abstract _createConnectable(
     subject: Observable<SubjectPayload<KEY>>,
   ): Connectable<PAYLOAD>;
 
-  public subscribe(
-    observer: Observer<PAYLOAD>,
-  ): Subscription {
+  public subscribe(observer: Observer<PAYLOAD>): Subscription {
     this.#connectable ??= this._createConnectable(this.#subject);
     this.#subscription = this.#connectable.connect();
     const sub = this.#connectable.subscribe({
@@ -152,9 +154,10 @@ export abstract class Query<
    * @returns
    */
   async revalidate(force?: boolean): Promise<void> {
-    const logger = process.env.NODE_ENV !== "production"
-      ? this.logger?.child({ methodName: "revalidate" })
-      : this.logger;
+    const logger =
+      process.env.NODE_ENV !== "production"
+        ? this.logger?.child({ methodName: "revalidate" })
+        : this.logger;
 
     if (force) {
       this.abortController?.abort();
@@ -176,10 +179,9 @@ export abstract class Query<
     if (!force) {
       const minDedupeInterval = this.getMinimumDedupeInterval();
       if (
-        minDedupeInterval > 0 && (
-          this.lastFetchStarted != null
-          && Date.now() - this.lastFetchStarted < minDedupeInterval
-        )
+        minDedupeInterval > 0 &&
+        this.lastFetchStarted != null &&
+        Date.now() - this.lastFetchStarted < minDedupeInterval
       ) {
         if (process.env.NODE_ENV !== "production") {
           logger?.debug("Within dupeInterval, aborting revalidate");
@@ -208,11 +210,10 @@ export abstract class Query<
     if (process.env.NODE_ENV !== "production") {
       logger?.debug("calling _fetchAndStore()");
     }
-    this.pendingFetch = this._fetchAndStore()
-      .finally(() => {
-        logger?.debug("promise's finally for _fetchAndStore()");
-        this.pendingFetch = undefined;
-      });
+    this.pendingFetch = this._fetchAndStore().finally(() => {
+      logger?.debug("promise's finally for _fetchAndStore()");
+      this.pendingFetch = undefined;
+    });
 
     await this.pendingFetch;
     return;
@@ -229,29 +230,26 @@ export abstract class Query<
    * @param batch
    * @returns
    */
-  setStatus(
-    status: Status,
-    batch: BatchContext,
-  ): void {
+  setStatus(status: Status, batch: BatchContext): void {
     if (process.env.NODE_ENV !== "production") {
-      this.logger?.child({ methodName: "setStatus" }).debug(
-        `Attempting to set status to '${status}'`,
-      );
+      this.logger
+        ?.child({ methodName: "setStatus" })
+        .debug(`Attempting to set status to '${status}'`);
     }
     const existing = batch.read(this.cacheKey);
     if (existing?.status === status) {
       if (process.env.NODE_ENV !== "production") {
-        this.logger?.child({ methodName: "setStatus" }).debug(
-          `Status is already set to '${status}'; aborting`,
-        );
+        this.logger
+          ?.child({ methodName: "setStatus" })
+          .debug(`Status is already set to '${status}'; aborting`);
       }
       return;
     }
 
     if (process.env.NODE_ENV !== "production") {
-      this.logger?.child({ methodName: "setStatus" }).debug(
-        `Writing status '${status}' to cache`,
-      );
+      this.logger
+        ?.child({ methodName: "setStatus" })
+        .debug(`Writing status '${status}' to cache`);
     }
     batch.write(this.cacheKey, existing?.value, status);
   }

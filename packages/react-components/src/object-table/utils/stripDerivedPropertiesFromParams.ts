@@ -31,10 +31,7 @@ export function stripDerivedPropertiesFromParams(params: unknown): unknown {
   }
 
   if (isObjectSet(params)) {
-    const wire = getWireObjectSet(params) as unknown as Record<
-      string,
-      unknown
-    >;
+    const wire = getWireObjectSet(params) as unknown as Record<string, unknown>;
     return stripWithPropertiesFromWire(wire);
   }
 
@@ -61,15 +58,17 @@ export function stripWithPropertiesFromWire(
   const result: Record<string, unknown> = {};
   for (const [key, value] of Object.entries(wire)) {
     if (
-      key === "objectSet" && value != null && typeof value === "object"
-      && !Array.isArray(value)
+      key === "objectSet" &&
+      value != null &&
+      typeof value === "object" &&
+      !Array.isArray(value)
     ) {
       result[key] = stripWithPropertiesFromWire(
         value as Record<string, unknown>,
       );
     } else if (key === "objectSets" && Array.isArray(value)) {
-      result[key] = value.map(os =>
-        stripWithPropertiesFromWire(os as Record<string, unknown>)
+      result[key] = value.map((os) =>
+        stripWithPropertiesFromWire(os as Record<string, unknown>),
       );
     } else {
       result[key] = value;

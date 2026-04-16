@@ -23,9 +23,7 @@ import type {
 import React, { createContext, useContext, useMemo } from "react";
 import type { RefObject } from "react";
 import { EMPTY_ANNOTATION_ARRAY } from "./constants.js";
-import type {
-  AnnotationPortalTarget,
-} from "./hooks/usePdfAnnotationPortals.js";
+import type { AnnotationPortalTarget } from "./hooks/usePdfAnnotationPortals.js";
 import { usePdfAnnotationsByPage } from "./hooks/usePdfAnnotationsByPage.js";
 import { usePdfFormFields } from "./hooks/usePdfFormFields.js";
 import { usePdfHighlightMode } from "./hooks/usePdfHighlightMode.js";
@@ -98,9 +96,10 @@ export interface PdfViewerProviderProps {
 }
 
 /** Provides {@link PdfViewerContextValue} to descendant components. */
-export function PdfViewerProvider(
-  { value, children }: PdfViewerProviderProps,
-): React.ReactElement {
+export function PdfViewerProvider({
+  value,
+  children,
+}: PdfViewerProviderProps): React.ReactElement {
   return (
     <PdfViewerContext.Provider value={value}>
       {children}

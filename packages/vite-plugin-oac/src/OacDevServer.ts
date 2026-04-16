@@ -51,14 +51,14 @@ export class OacDevServer extends OacServerContext {
   ): Promise<void> => {
     const mswEmitter = new EventEmitter<msw.LifeCycleEventsMap>();
 
-    return void await routeConnectToMsw(
+    return void (await routeConnectToMsw(
       this.serverUrl,
       this.foundry.handlers,
       mswEmitter,
       req,
       res,
       next,
-    );
+    ));
   };
 
   watchOntologyAsCode = async (): Promise<void> => {

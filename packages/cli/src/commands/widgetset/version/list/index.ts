@@ -18,10 +18,7 @@ import type { CommandModule } from "yargs";
 import type { CommonWidgetSetArgs } from "../../CommonWidgetSetArgs.js";
 import type { VersionListArgs } from "./VersionListArgs.js";
 
-const command: CommandModule<
-  CommonWidgetSetArgs,
-  VersionListArgs
-> = {
+const command: CommandModule<CommonWidgetSetArgs, VersionListArgs> = {
   command: "list",
   describe: "List widget set versions",
   builder: (argv) => {

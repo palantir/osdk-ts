@@ -132,11 +132,14 @@ export function usePdfFormFields({
   const onFormChangeRef = useRef(onFormChange);
   const formDataRef = useRef(formData);
 
-  useEffect(function syncCallbackRefs() {
-    onFormSubmitRef.current = onFormSubmit;
-    onFormChangeRef.current = onFormChange;
-    formDataRef.current = formData;
-  }, [onFormSubmit, onFormChange, formData]);
+  useEffect(
+    function syncCallbackRefs() {
+      onFormSubmitRef.current = onFormSubmit;
+      onFormChangeRef.current = onFormChange;
+      formDataRef.current = formData;
+    },
+    [onFormSubmit, onFormChange, formData],
+  );
 
   // Map from annotation ID -> field metadata
   const fieldMapRef = useRef<Map<string, FieldEntry>>(new Map());
@@ -144,60 +147,63 @@ export function usePdfFormFields({
   const nameToIdsRef = useRef<Map<string, string[]>>(new Map());
 
   // Effect 1: Build field metadata map when document loads
-  useEffect(function buildFieldMap() {
-    const doc = document;
-    if (doc == null) {
-      fieldMapRef.current.clear();
-      nameToIdsRef.current.clear();
-      setHasFormFields(false);
-      return;
-    }
-
-    let cancelled = false;
-
-    void doc.getFieldObjects().then((fieldObjects) => {
-      if (cancelled || fieldObjects == null) {
+  useEffect(
+    function buildFieldMap() {
+      const doc = document;
+      if (doc == null) {
+        fieldMapRef.current.clear();
+        nameToIdsRef.current.clear();
         setHasFormFields(false);
         return;
       }
 
-      const fieldMap = new Map<string, FieldEntry>();
-      const nameToIds = new Map<string, string[]>();
+      let cancelled = false;
 
-      for (const [fieldName, objects] of Object.entries(fieldObjects)) {
-        const ids: string[] = [];
-        for (const obj of objects) {
-          const typedObj = obj as {
-            id?: string;
-            type?: string;
-            exportValues?: string;
-            page?: number;
-          };
-          if (typedObj.id == null) continue;
-
-          const fieldType = normalizeFieldType(typedObj.type ?? "text");
-          fieldMap.set(typedObj.id, {
-            fieldName,
-            fieldType,
-            exportValues: typedObj.exportValues,
-            page: typedObj.page ?? 0,
-          });
-          ids.push(typedObj.id);
+      void doc.getFieldObjects().then((fieldObjects) => {
+        if (cancelled || fieldObjects == null) {
+          setHasFormFields(false);
+          return;
         }
-        if (ids.length > 0) {
-          nameToIds.set(fieldName, ids);
+
+        const fieldMap = new Map<string, FieldEntry>();
+        const nameToIds = new Map<string, string[]>();
+
+        for (const [fieldName, objects] of Object.entries(fieldObjects)) {
+          const ids: string[] = [];
+          for (const obj of objects) {
+            const typedObj = obj as {
+              id?: string;
+              type?: string;
+              exportValues?: string;
+              page?: number;
+            };
+            if (typedObj.id == null) continue;
+
+            const fieldType = normalizeFieldType(typedObj.type ?? "text");
+            fieldMap.set(typedObj.id, {
+              fieldName,
+              fieldType,
+              exportValues: typedObj.exportValues,
+              page: typedObj.page ?? 0,
+            });
+            ids.push(typedObj.id);
+          }
+          if (ids.length > 0) {
+            nameToIds.set(fieldName, ids);
+          }
         }
-      }
 
-      fieldMapRef.current = fieldMap;
-      nameToIdsRef.current = nameToIds;
-      setHasFormFields(fieldMap.size > 0);
-    });
+        fieldMapRef.current = fieldMap;
+        nameToIdsRef.current = nameToIds;
+        setHasFormFields(fieldMap.size > 0);
+      });
 
-    return () => {
-      cancelled = true;
-    };
-  }, [document]);
+      return () => {
+        cancelled = true;
+      };
+    },
+    [document],
+  );
 
   // Populates form fields from formData into both annotation storage and DOM elements.
   // Scoped to the viewer container to avoid conflicts with multiple viewer instances.
@@ -229,8 +235,9 @@ export function usePdfFormFields({
           // whose export value matches, uncheck the others.
           // Use exportValues if defined, otherwise fall back to the DOM
           // element's value attribute (mirrors handleFieldChange logic).
-          const optionValue = entry.exportValues
-            ?? (el instanceof HTMLInputElement ? el.value : undefined);
+          const optionValue =
+            entry.exportValues ??
+            (el instanceof HTMLInputElement ? el.value : undefined);
           const isSelected = optionValue === String(value);
           storage.setValue(id, {
             value: isSelected ? (entry.exportValues ?? String(value)) : "Off",
@@ -245,15 +252,18 @@ export function usePdfFormFields({
           if (el == null) continue;
 
           if (
-            entry.fieldType === "checkbox" && el instanceof HTMLInputElement
+            entry.fieldType === "checkbox" &&
+            el instanceof HTMLInputElement
           ) {
-            el.checked = typeof storageVal === "boolean"
-              ? storageVal
-              : storageVal !== "Off";
+            el.checked =
+              typeof storageVal === "boolean"
+                ? storageVal
+                : storageVal !== "Off";
           } else if (el instanceof HTMLSelectElement) {
             el.value = String(value);
           } else if (
-            el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement
+            el instanceof HTMLInputElement ||
+            el instanceof HTMLTextAreaElement
           ) {
             el.value = String(value);
           }
@@ -263,109 +273,119 @@ export function usePdfFormFields({
   }, [document, pdfViewerRef]);
 
   // Effect 2: Populate initial form data when annotation layers render
-  useEffect(function populateFormData() {
-    const eventBus = eventBusRef.current;
-    if (eventBus == null || document == null || formDataRef.current == null) {
-      return;
-    }
+  useEffect(
+    function populateFormData() {
+      const eventBus = eventBusRef.current;
+      if (eventBus == null || document == null || formDataRef.current == null) {
+        return;
+      }
 
-    // Attempt population immediately in case the field map was built
-    // after the annotation layer already rendered (race condition fix).
-    populateFields();
-
-    const onAnnotationLayerRendered = () => {
+      // Attempt population immediately in case the field map was built
+      // after the annotation layer already rendered (race condition fix).
       populateFields();
-    };
 
-    eventBus.on(ANNOTATION_LAYER_RENDERED_EVENT, onAnnotationLayerRendered);
+      const onAnnotationLayerRendered = () => {
+        populateFields();
+      };
 
-    return () => {
-      eventBus.off(ANNOTATION_LAYER_RENDERED_EVENT, onAnnotationLayerRendered);
-    };
-  }, [eventBusRef, document, hasFormFields, populateFields]);
+      eventBus.on(ANNOTATION_LAYER_RENDERED_EVENT, onAnnotationLayerRendered);
+
+      return () => {
+        eventBus.off(
+          ANNOTATION_LAYER_RENDERED_EVENT,
+          onAnnotationLayerRendered,
+        );
+      };
+    },
+    [eventBusRef, document, hasFormFields, populateFields],
+  );
 
   // Effect 3: Listen for field changes via MutationObserver + event listeners
-  useEffect(function listenForFieldChanges() {
-    const pdfViewer = pdfViewerRef.current;
-    if (pdfViewer == null || document == null) {
-      return;
-    }
+  useEffect(
+    function listenForFieldChanges() {
+      const pdfViewer = pdfViewerRef.current;
+      if (pdfViewer == null || document == null) {
+        return;
+      }
 
-    // Get the viewer's container element
-    const container = getViewerContainer(pdfViewer);
-    if (container == null) return;
+      // Get the viewer's container element
+      const container = getViewerContainer(pdfViewer);
+      if (container == null) return;
 
-    const listeners = new Map<Element, () => void>();
+      const listeners = new Map<Element, () => void>();
 
-    function handleFieldChange(
-      el: HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement,
-    ) {
-      const id = el.getAttribute("data-element-id");
-      if (id == null) return;
-
-      const entry = fieldMapRef.current.get(id);
-      if (entry == null) return;
-
-      let value: PdfFormFieldValue;
-      if (entry.fieldType === "checkbox" && el instanceof HTMLInputElement) {
-        value = el.checked;
-      } else if (
-        entry.fieldType === "radiobutton" && el instanceof HTMLInputElement
+      function handleFieldChange(
+        el: HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement,
       ) {
-        // For radio buttons, the value is the button's export value when selected
-        value = el.checked ? (entry.exportValues ?? el.value) : "";
-      } else {
-        value = el.value;
+        const id = el.getAttribute("data-element-id");
+        if (id == null) return;
+
+        const entry = fieldMapRef.current.get(id);
+        if (entry == null) return;
+
+        let value: PdfFormFieldValue;
+        if (entry.fieldType === "checkbox" && el instanceof HTMLInputElement) {
+          value = el.checked;
+        } else if (
+          entry.fieldType === "radiobutton" &&
+          el instanceof HTMLInputElement
+        ) {
+          // For radio buttons, the value is the button's export value when selected
+          value = el.checked ? (entry.exportValues ?? el.value) : "";
+        } else {
+          value = el.value;
+        }
+
+        onFormChangeRef.current?.(entry.fieldName, value);
       }
 
-      onFormChangeRef.current?.(entry.fieldName, value);
-    }
+      function attachListeners(root: Node) {
+        const elements = (root as Element).querySelectorAll?.(
+          ".annotationLayer input, .annotationLayer select, .annotationLayer textarea",
+        );
+        if (elements == null) return;
 
-    function attachListeners(root: Node) {
-      const elements = (root as Element).querySelectorAll?.(
-        ".annotationLayer input, .annotationLayer select, .annotationLayer textarea",
-      );
-      if (elements == null) return;
+        for (const el of elements) {
+          if (listeners.has(el)) continue;
 
-      for (const el of elements) {
-        if (listeners.has(el)) continue;
-
-        const handler = () => {
-          handleFieldChange(
-            el as HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement,
-          );
-        };
-        el.addEventListener("input", handler);
-        el.addEventListener("change", handler);
-        listeners.set(el, handler);
-      }
-    }
-
-    // Attach to any elements already in the DOM
-    attachListeners(container);
-
-    // Watch for new form elements being added (pages render lazily)
-    const observer = new MutationObserver((mutations) => {
-      for (const mutation of mutations) {
-        for (const node of mutation.addedNodes) {
-          if (node instanceof Element) {
-            attachListeners(node);
-          }
+          const handler = () => {
+            handleFieldChange(
+              el as HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement,
+            );
+          };
+          el.addEventListener("input", handler);
+          el.addEventListener("change", handler);
+          listeners.set(el, handler);
         }
       }
-    });
 
-    observer.observe(container, { childList: true, subtree: true });
+      // Attach to any elements already in the DOM
+      attachListeners(container);
 
-    return () => {
-      observer.disconnect();
-      for (const [el, handler] of listeners) {
-        el.removeEventListener("input", handler);
-        el.removeEventListener("change", handler);
-      }
-      listeners.clear();
-    };
-  }, [pdfViewerRef, document]);
+      // Watch for new form elements being added (pages render lazily)
+      const observer = new MutationObserver((mutations) => {
+        for (const mutation of mutations) {
+          for (const node of mutation.addedNodes) {
+            if (node instanceof Element) {
+              attachListeners(node);
+            }
+          }
+        }
+      });
+
+      observer.observe(container, { childList: true, subtree: true });
+
+      return () => {
+        observer.disconnect();
+        for (const [el, handler] of listeners) {
+          el.removeEventListener("input", handler);
+          el.removeEventListener("change", handler);
+        }
+        listeners.clear();
+      };
+    },
+    [pdfViewerRef, document],
+  );
 
   // Callback: collect all form data and invoke onFormSubmit
   const submitFormData = useCallback(() => {

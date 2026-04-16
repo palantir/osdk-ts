@@ -29,8 +29,7 @@ export const fauxFoundry: FauxFoundry = new FauxFoundry(baseUrl, {
   rid: "ri.ontology.main.ontology.storybook-demo",
 });
 
-const SAMPLE_PDF_PATH =
-  `${import.meta.env.BASE_URL}compressed.tracemonkey-pldi-09.pdf`;
+const SAMPLE_PDF_PATH = `${import.meta.env.BASE_URL}compressed.tracemonkey-pldi-09.pdf`;
 
 export const MEDIA_EMPLOYEE_PK = 657495071;
 
@@ -47,9 +46,9 @@ export async function setupFauxFoundry(): Promise<void> {
   });
 
   // Register Employee object type using metadata from JSON
-  fauxFoundry.getDefaultOntology().registerObjectType<Employee>(
-    employeeMetadata,
-  );
+  fauxFoundry
+    .getDefaultOntology()
+    .registerObjectType<Employee>(employeeMetadata);
 
   // Add mock data from JSON file
   const dataStore = fauxFoundry.getDefaultDataStore();
@@ -68,10 +67,7 @@ export async function setupFauxFoundry(): Promise<void> {
     // cspell:disable-next-line
     "compressed.tracemonkey-pldi-09.pdf",
   );
-  const employee = dataStore.getObjectOrThrow(
-    "Employee",
-    MEDIA_EMPLOYEE_PK,
-  );
+  const employee = dataStore.getObjectOrThrow("Employee", MEDIA_EMPLOYEE_PK);
   dataStore.replaceObjectOrThrow({
     ...employee,
     employeeDocuments: mediaRef,

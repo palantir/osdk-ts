@@ -44,15 +44,15 @@ export function extendParametersWithObjectSets<
   for (const parameterId of Object.keys(extendedParameters)) {
     const param = config.parameters[parameterId];
     if (
-      param.type === "objectSet"
-      && extendedParameters[parameterId].type === "objectSet"
+      param.type === "objectSet" &&
+      extendedParameters[parameterId].type === "objectSet"
     ) {
       const parameterValue = extendedParameters[parameterId].value.value;
       if (parameterValue != null) {
         if (
-          typeof parameterValue === "object"
-          && "objectSetRid" in parameterValue
-          && typeof parameterValue.objectSetRid === "string"
+          typeof parameterValue === "object" &&
+          "objectSetRid" in parameterValue &&
+          typeof parameterValue.objectSetRid === "string"
         ) {
           const objectSetRid = parameterValue.objectSetRid;
           const objectSet = getOrHydrateObjectSet(

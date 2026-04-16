@@ -16,10 +16,8 @@
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
 import type {
-  LoadAccessRequestDetailsRequest
-    as _api_accessrequest_LoadAccessRequestDetailsRequest,
-  LoadAccessRequestDetailsResponse
-    as _api_accessrequest_LoadAccessRequestDetailsResponse,
+  LoadAccessRequestDetailsRequest as _api_accessrequest_LoadAccessRequestDetailsRequest,
+  LoadAccessRequestDetailsResponse as _api_accessrequest_LoadAccessRequestDetailsResponse,
 } from "../__components.js";
 
 /**

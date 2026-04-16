@@ -64,12 +64,12 @@ type PublishedPackage = { name: string; version: string };
 
 export type PublishResult =
   | {
-    published: true;
-    publishedPackages: PublishedPackage[];
-  }
+      published: true;
+      publishedPackages: PublishedPackage[];
+    }
   | {
-    published: false;
-  };
+      published: false;
+    };
 
 export async function runPublish({
   script,
@@ -105,8 +105,8 @@ export async function runPublish({
       const pkg = packagesByName.get(pkgName);
       if (pkg === undefined) {
         throw new Error(
-          `Package "${pkgName}" not found.`
-            + "This is probably a bug in the action, please open an issue",
+          `Package "${pkgName}" not found.` +
+            "This is probably a bug in the action, please open an issue",
         );
       }
       releasedPackages.push(pkg);
@@ -118,15 +118,15 @@ export async function runPublish({
           createRelease(context, {
             pkg,
             tagName: `${pkg.packageJson.name}@${pkg.packageJson.version}`,
-          })
+          }),
         ),
       );
     }
   } else {
     if (packages.length === 0) {
       throw new Error(
-        `No package found.`
-          + "This is probably a bug in the action, please open an issue",
+        `No package found.` +
+          "This is probably a bug in the action, please open an issue",
       );
     }
     const pkg = packages[0];

@@ -17,10 +17,8 @@
 import { type ConjureContext, conjureFetch } from "conjure-lite";
 import type { OntologyRid as _api_OntologyRid } from "../../__components.js";
 import type {
-  SystemEntityMetadataModificationRequest
-    as _api_entitymetadata_SystemEntityMetadataModificationRequest,
-  SystemEntityMetadataModificationResponse
-    as _api_entitymetadata_SystemEntityMetadataModificationResponse,
+  SystemEntityMetadataModificationRequest as _api_entitymetadata_SystemEntityMetadataModificationRequest,
+  SystemEntityMetadataModificationResponse as _api_entitymetadata_SystemEntityMetadataModificationResponse,
 } from "../__components.js";
 
 /**

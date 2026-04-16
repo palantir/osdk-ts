@@ -27,9 +27,10 @@ export function objectLocator(obj: BaseServerObject): ObjectLocator {
   return `${obj.__apiName}:${obj.__primaryKey}`;
 }
 
-export function parseLocator(
-  locator: ObjectLocator,
-): { objectType: string; primaryKey: string } {
+export function parseLocator(locator: ObjectLocator): {
+  objectType: string;
+  primaryKey: string;
+} {
   const [objectType, primaryKey] = locator?.split(":") ?? [];
   invariant(objectType && primaryKey, `Invalid locator format:  ${locator}`);
   return { objectType, primaryKey };

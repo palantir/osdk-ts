@@ -26,15 +26,12 @@ export const createObjectSetHandlers = (
   /**
    * Load ObjectSet Objects
    */
-  OntologiesV2.OntologyObjectSets.load(
-    baseUrl,
-    async ({ request, params }) => {
-      const a = fauxFoundry
-        .getDataStore(params.ontologyApiName)
-        .getObjectsFromObjectSet(await request.json());
-      return a;
-    },
-  ),
+  OntologiesV2.OntologyObjectSets.load(baseUrl, async ({ request, params }) => {
+    const a = fauxFoundry
+      .getDataStore(params.ontologyApiName)
+      .getObjectsFromObjectSet(await request.json());
+    return a;
+  }),
 
   /**
    * Aggregate Objects in ObjectSet
@@ -59,10 +56,12 @@ export const createObjectSetHandlers = (
       if (exactGroupBys.length === 0) {
         return {
           accuracy: "ACCURATE",
-          data: [{
-            group: {},
-            metrics: [{ name: "count", value: objects.length }],
-          }],
+          data: [
+            {
+              group: {},
+              metrics: [{ name: "count", value: objects.length }],
+            },
+          ],
         };
       }
 
@@ -73,8 +72,9 @@ export const createObjectSetHandlers = (
       }
 
       const { field, propertyIdentifier, includeNullValues } = exactGroupBys[0];
-      const groupField = field
-        ?? (propertyIdentifier?.type === "property"
+      const groupField =
+        field ??
+        (propertyIdentifier?.type === "property"
           ? propertyIdentifier.apiName
           : undefined);
       if (groupField == null) {
@@ -116,7 +116,9 @@ export const createObjectSetHandlers = (
         .getDataStore(params.ontologyApiName)
         .getObjectsFromObjectSet(await request.json());
 
-      const objectApiNames = new Set(pagedResponse.data.map(o => o.__apiName));
+      const objectApiNames = new Set(
+        pagedResponse.data.map((o) => o.__apiName),
+      );
 
       return {
         interfaceToObjectTypeMappings: fauxFoundry

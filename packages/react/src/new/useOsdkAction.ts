@@ -28,12 +28,11 @@ import React from "react";
 import { useDevToolsMetadata } from "./makeExternalStore.js";
 import { OsdkContext2 } from "./OsdkContext2.js";
 
-type ApplyActionParams<Q extends ActionDefinition<any>> =
-  & Parameters<ActionSignatureFromDef<Q>["applyAction"]>[0]
-  & {
-    [K in keyof ObservableClient.ApplyActionOptions as `$${K}`]:
-      ObservableClient.ApplyActionOptions[K];
-  };
+type ApplyActionParams<Q extends ActionDefinition<any>> = Parameters<
+  ActionSignatureFromDef<Q>["applyAction"]
+>[0] & {
+  [K in keyof ObservableClient.ApplyActionOptions as `$${K}`]: ObservableClient.ApplyActionOptions[K];
+};
 
 export interface UseOsdkActionResult<Q extends ActionDefinition<any>> {
   applyAction: (
@@ -43,9 +42,9 @@ export interface UseOsdkActionResult<Q extends ActionDefinition<any>> {
   error:
     | undefined
     | Partial<{
-      actionValidation: ActionValidationError;
-      unknown: unknown;
-    }>;
+        actionValidation: ActionValidationError;
+        unknown: unknown;
+      }>;
   data: ActionEditResponse | undefined;
 
   isPending: boolean;
@@ -79,109 +78,115 @@ export function useOsdkAction<Q extends ActionDefinition<any>>(
   >();
   const abortControllerRef = React.useRef<AbortController | null>(null);
 
-  const applyAction = React.useCallback(async function applyAction(
-    hookArgs: ApplyActionParams<Q> | Array<ApplyActionParams<Q>>,
-  ) {
-    try {
-      // If validation is in progress, abort it
-      if (isValidating && abortControllerRef.current) {
-        abortControllerRef.current.abort();
+  const applyAction = React.useCallback(
+    async function applyAction(
+      hookArgs: ApplyActionParams<Q> | Array<ApplyActionParams<Q>>,
+    ) {
+      try {
+        // If validation is in progress, abort it
+        if (isValidating && abortControllerRef.current) {
+          abortControllerRef.current.abort();
+          setValidating(false);
+        }
+
+        setPending(true);
+        setError(undefined);
+
+        if (Array.isArray(hookArgs)) {
+          const updates: Array<
+            ObservableClient.ApplyActionOptions["optimisticUpdate"]
+          > = [];
+          const args = hookArgs.map((a) => {
+            const { $optimisticUpdate, ...args } = a;
+            if ($optimisticUpdate) {
+              updates.push($optimisticUpdate);
+            }
+            return args;
+          });
+
+          const r = await observableClient.applyAction(actionDef, args, {
+            optimisticUpdate: (ctx) => {
+              for (const update of updates) {
+                update?.(ctx);
+              }
+            },
+          });
+          setData(r);
+          return r;
+        } else {
+          const { $optimisticUpdate, ...args } = hookArgs;
+
+          const r = await observableClient.applyAction(actionDef, args, {
+            optimisticUpdate: $optimisticUpdate,
+          });
+          setData(r);
+          return r;
+        }
+      } catch (e) {
+        if (e instanceof ActionValidationError) {
+          setError({
+            actionValidation: e,
+          });
+        } else {
+          setError({ unknown: e });
+        }
+        throw e;
+      } finally {
+        setPending(false);
+      }
+    },
+    [observableClient, actionDef, isValidating],
+  );
+
+  const validateAction = React.useCallback(
+    async function validateAction(
+      args: Parameters<ActionSignatureFromDef<Q>["applyAction"]>[0],
+    ): Promise<ActionValidationResponse | undefined> {
+      try {
+        // Check if action is being applied
+        if (isPending) {
+          return undefined;
+        }
+
+        // Abort any existing validation
+        abortControllerRef.current?.abort();
+
+        // Create new AbortController
+        const abortController = new AbortController();
+        abortControllerRef.current = abortController;
+
+        setValidating(true);
+        setError(undefined);
+
+        const result = await observableClient.validateAction(actionDef, args);
+
+        // Check if aborted
+        if (abortController.signal.aborted) {
+          return undefined;
+        }
+
+        setValidationResult(result);
+        return result;
+      } catch (e) {
+        // Check if it was aborted
+        if (e instanceof Error && e.name === "AbortError") {
+          return undefined;
+        }
+
+        if (e instanceof ActionValidationError) {
+          setError({
+            actionValidation: e,
+          });
+        } else {
+          setError({ unknown: e });
+        }
+        throw e;
+      } finally {
         setValidating(false);
       }
-
-      setPending(true);
-      setError(undefined);
-
-      if (Array.isArray(hookArgs)) {
-        const updates: Array<
-          ObservableClient.ApplyActionOptions["optimisticUpdate"]
-        > = [];
-        const args = hookArgs.map(a => {
-          const { $optimisticUpdate, ...args } = a;
-          if ($optimisticUpdate) {
-            updates.push($optimisticUpdate);
-          }
-          return args;
-        });
-
-        const r = await observableClient.applyAction(actionDef, args, {
-          optimisticUpdate: (ctx) => {
-            for (const update of updates) {
-              update?.(ctx);
-            }
-          },
-        });
-        setData(r);
-        return r;
-      } else {
-        const { $optimisticUpdate, ...args } = hookArgs;
-
-        const r = await observableClient.applyAction(actionDef, args, {
-          optimisticUpdate: $optimisticUpdate,
-        });
-        setData(r);
-        return r;
-      }
-    } catch (e) {
-      if (e instanceof ActionValidationError) {
-        setError({
-          actionValidation: e,
-        });
-      } else {
-        setError({ unknown: e });
-      }
-      throw e;
-    } finally {
-      setPending(false);
-    }
-  }, [observableClient, actionDef, isValidating]);
-
-  const validateAction = React.useCallback(async function validateAction(
-    args: Parameters<ActionSignatureFromDef<Q>["applyAction"]>[0],
-  ): Promise<ActionValidationResponse | undefined> {
-    try {
-      // Check if action is being applied
-      if (isPending) {
-        return undefined;
-      }
-
-      // Abort any existing validation
-      abortControllerRef.current?.abort();
-
-      // Create new AbortController
-      const abortController = new AbortController();
-      abortControllerRef.current = abortController;
-
-      setValidating(true);
-      setError(undefined);
-
-      const result = await observableClient.validateAction(actionDef, args);
-
-      // Check if aborted
-      if (abortController.signal.aborted) {
-        return undefined;
-      }
-
-      setValidationResult(result);
-      return result;
-    } catch (e) {
-      // Check if it was aborted
-      if (e instanceof Error && e.name === "AbortError") {
-        return undefined;
-      }
-
-      if (e instanceof ActionValidationError) {
-        setError({
-          actionValidation: e,
-        });
-      } else {
-        setError({ unknown: e });
-      }
-      throw e;
-    } finally {
-      setValidating(false);
-    }
-  }, [observableClient, actionDef, isPending]);
+    },
+    [observableClient, actionDef, isPending],
+  );
 
   // Cleanup on unmount
   React.useEffect(() => {
@@ -190,21 +195,24 @@ export function useOsdkAction<Q extends ActionDefinition<any>>(
     };
   }, []);
 
-  return React.useMemo(() => ({
-    applyAction,
-    validateAction,
-    error,
-    data,
-    isPending,
-    isValidating,
-    validationResult,
-  }), [
-    applyAction,
-    validateAction,
-    error,
-    data,
-    isPending,
-    isValidating,
-    validationResult,
-  ]);
+  return React.useMemo(
+    () => ({
+      applyAction,
+      validateAction,
+      error,
+      data,
+      isPending,
+      isValidating,
+      validationResult,
+    }),
+    [
+      applyAction,
+      validateAction,
+      error,
+      data,
+      isPending,
+      isValidating,
+      validationResult,
+    ],
+  );
 }

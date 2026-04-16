@@ -49,9 +49,9 @@ export interface UseCurrentFoundryUserResult {
  * Get the currently signed in User.
  * @param options Options to control the query.
  */
-export function useCurrentFoundryUser(
-  { enabled = true }: UseCurrentFoundryUserOptions = {},
-): UseCurrentFoundryUserResult {
+export function useCurrentFoundryUser({
+  enabled = true,
+}: UseCurrentFoundryUserOptions = {}): UseCurrentFoundryUserResult {
   const { client } = React.useContext(OsdkContext2);
 
   const handleQuery = React.useCallback(

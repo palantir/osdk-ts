@@ -27,88 +27,93 @@ import {
 import type { ObjectHolder } from "./ObjectHolder.js";
 
 /** @internal */
-export function createOsdkInterface<
-  Q extends FetchedObjectTypeDefinition,
->(
+export function createOsdkInterface<Q extends FetchedObjectTypeDefinition>(
   underlying: ObjectHolder,
   interfaceDef: InterfaceMetadata,
 ): InterfaceHolder {
   const [objApiNamespace] = extractNamespace(interfaceDef.apiName);
 
   return Object.freeze(
-    Object.defineProperties({}, {
-      // first to minimize hidden classes
-      [UnderlyingOsdkObject]: { value: underlying },
+    Object.defineProperties(
+      {},
+      {
+        // first to minimize hidden classes
+        [UnderlyingOsdkObject]: { value: underlying },
 
-      "$apiName": { value: interfaceDef.apiName, enumerable: true },
-      "$as": {
-        value: underlying.$as,
-        enumerable: false,
-      },
-      "$objectType": {
-        value: underlying.$objectType,
-        enumerable: "$objectType" in underlying,
-      },
-      "$primaryKey": {
-        value: underlying.$primaryKey,
-        enumerable: "$primaryKey" in underlying,
-      },
-      "$objectSpecifier": {
-        value: underlying.$objectSpecifier,
-        enumerable: "$objectSpecifier" in underlying,
-      },
-      "$title": {
-        value: underlying.$title,
-        enumerable: "$title" in underlying,
-      },
-      "$rid": {
-        value: (underlying as any).$rid,
-        enumerable: "$rid" in underlying,
-      },
-      "$clone": {
-        value: clone,
-        enumerable: false,
-      },
-      "$propertySecurities": {
-        value: underlying.$propertySecurities,
-        enumerable: "$propertySecurities" in underlying,
-      },
-      "$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata": {
-        value: {
-          "ObjectMetadata": underlying[ObjectDefRef],
-          "InterfaceMetadata": interfaceDef,
+        "$apiName": { value: interfaceDef.apiName, enumerable: true },
+        "$as": {
+          value: underlying.$as,
+          enumerable: false,
         },
-        enumerable: false,
-      },
-      "$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue": {
-        value: underlying.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue,
-        enumerable: false,
-      },
-
-      "$link": {
-        get: function(this: InterfaceHolder) {
-          return get$linkForInterface(this);
+        "$objectType": {
+          value: underlying.$objectType,
+          enumerable: "$objectType" in underlying,
         },
+        "$primaryKey": {
+          value: underlying.$primaryKey,
+          enumerable: "$primaryKey" in underlying,
+        },
+        "$objectSpecifier": {
+          value: underlying.$objectSpecifier,
+          enumerable: "$objectSpecifier" in underlying,
+        },
+        "$title": {
+          value: underlying.$title,
+          enumerable: "$title" in underlying,
+        },
+        "$rid": {
+          value: (underlying as any).$rid,
+          enumerable: "$rid" in underlying,
+        },
+        "$clone": {
+          value: clone,
+          enumerable: false,
+        },
+        "$propertySecurities": {
+          value: underlying.$propertySecurities,
+          enumerable: "$propertySecurities" in underlying,
+        },
+        "$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata": {
+          value: {
+            "ObjectMetadata": underlying[ObjectDefRef],
+            "InterfaceMetadata": interfaceDef,
+          },
+          enumerable: false,
+        },
+        "$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue": {
+          value:
+            underlying.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue,
+          enumerable: false,
+        },
+
+        "$link": {
+          get (this: InterfaceHolder) {
+            return get$linkForInterface(this);
+          },
+        },
+
+        [InterfaceDefRef]: { value: interfaceDef },
+
+        ...Object.fromEntries(
+          Object.keys(interfaceDef.properties).map((p) => {
+            const objDef = underlying[ObjectDefRef];
+
+            const [apiNamespace, apiName] = extractNamespace(p);
+
+            const targetPropName =
+              objDef.interfaceMap![interfaceDef.apiName][p];
+
+            return [
+              apiNamespace === objApiNamespace ? apiName : p,
+              {
+                enumerable: targetPropName in underlying,
+                value: underlying[targetPropName as keyof typeof underlying],
+              },
+            ];
+          }),
+        ),
       },
-
-      [InterfaceDefRef]: { value: interfaceDef },
-
-      ...Object.fromEntries(
-        Object.keys(interfaceDef.properties).map(p => {
-          const objDef = underlying[ObjectDefRef];
-
-          const [apiNamespace, apiName] = extractNamespace(p);
-
-          const targetPropName = objDef
-            .interfaceMap![interfaceDef.apiName][p];
-
-          return [apiNamespace === objApiNamespace ? apiName : p, {
-            enumerable: targetPropName in underlying,
-            value: underlying[targetPropName as keyof typeof underlying],
-          }];
-        }),
-      ),
-    }) as InterfaceHolder,
+    ) as InterfaceHolder,
   );
   function clone(update: Record<string, any> | undefined) {
     if (update == null) {
@@ -124,9 +129,9 @@ export function createOsdkInterface<
     }
 
     const remappedProps = Object.fromEntries(
-      Object.keys(update).map(p => mapProperty(p, update[p])).filter(x =>
-        x != null
-      ),
+      Object.keys(update)
+        .map((p) => mapProperty(p, update[p]))
+        .filter((x) => x != null),
     );
 
     return underlying.$clone(remappedProps).$as(interfaceDef);

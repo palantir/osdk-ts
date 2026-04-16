@@ -31,9 +31,7 @@ export function createFetch(
 ): typeof fetch {
   return createFetchHeaderMutator(
     createRequestLoggingFetch(
-      createErrorExitingFetch(
-        createFetchOrThrow(fetchFn),
-      ),
+      createErrorExitingFetch(createFetchOrThrow(fetchFn)),
     ),
     async (headers) => {
       const token = await tokenProvider();
@@ -80,43 +78,41 @@ function handleFetchError(e: unknown): Promise<Response> {
     message = "The site version could not be found";
   } else if (e.errorName === "VersionLimitExceeded") {
     const { versionLimit } = e.parameters ?? {};
-    const versionLimitPart = versionLimit != null
-      ? ` (Limit: ${versionLimit} versions)`
-      : "";
+    const versionLimitPart =
+      versionLimit != null ? ` (Limit: ${versionLimit} versions)` : "";
     message = `The site contains too many versions${versionLimitPart}`;
     tip =
       "Run the `site version delete` command to delete an old version and try again";
   } else if (e.errorName === "FileCountLimitExceeded") {
     const { fileCountLimit } = e.parameters ?? {};
-    const fileCountLimitPart = fileCountLimit != null
-      ? ` (Limit: ${fileCountLimit} files)`
-      : "";
+    const fileCountLimitPart =
+      fileCountLimit != null ? ` (Limit: ${fileCountLimit} files)` : "";
     message = `The .zip file contains too many files${fileCountLimitPart}`;
     tip =
       "Reduce the number of files in the production build to below the limit";
   } else if (e.errorName === "FileSizeLimitExceeded") {
     const { currentFilePath, currentFileSizeBytes, fileSizeBytesLimit } =
       e.parameters ?? {};
-    const currentFilePathPart = currentFilePath != null
-      ? ` "${currentFilePath}"`
-      : "";
-    const currentFileSizePart = currentFileSizeBytes != null
-      ? ` (${prettyBytes(parseInt(currentFileSizeBytes), { binary: true })})`
-      : "";
-    const fileSizeLimitPart = fileSizeBytesLimit != null
-      ? ` (Limit: ${
-        prettyBytes(parseInt(fileSizeBytesLimit), { binary: true })
-      })`
-      : "";
-    message =
-      `The .zip file contains a file${currentFilePathPart}${currentFileSizePart} that is too large${fileSizeLimitPart}`;
+    const currentFilePathPart =
+      currentFilePath != null ? ` "${currentFilePath}"` : "";
+    const currentFileSizePart =
+      currentFileSizeBytes != null
+        ? ` (${prettyBytes(parseInt(currentFileSizeBytes), { binary: true })})`
+        : "";
+    const fileSizeLimitPart =
+      fileSizeBytesLimit != null
+        ? ` (Limit: ${prettyBytes(parseInt(fileSizeBytesLimit), {
+            binary: true,
+          })})`
+        : "";
+    message = `The .zip file contains a file${currentFilePathPart}${currentFileSizePart} that is too large${fileSizeLimitPart}`;
     tip = "Ensure all files in the production build are below the size limit";
   } else if (e.errorName === "ScanningInProgress") {
     message =
       "The website version is being scanned for vulnerabilities and cannot be deployed yet";
     tip =
-      "If you have a `foundry.config.json` file, set the `site.uploadOnly` property to `true` to disable automatic deployment.\n"
-      + "Website versions can be manually deployed from the Website Hosting page in Developer Console after their scans have completed";
+      "If you have a `foundry.config.json` file, set the `site.uploadOnly` property to `true` to disable automatic deployment.\n" +
+      "Website versions can be manually deployed from the Website Hosting page in Developer Console after their scans have completed";
   } else {
     if (e instanceof UnknownError) {
       // Include deep inspect of original error
@@ -125,13 +121,11 @@ function handleFetchError(e: unknown): Promise<Response> {
       // Include extra info about the original API error
       // https://www.palantir.com/docs/foundry/api/general/overview/errors/
       const { errorCode, errorName, errorInstanceId, parameters } = e;
-      message = `${e.message}\n\n${
-        JSON.stringify(
-          { errorCode, errorName, errorInstanceId, parameters },
-          null,
-          2,
-        )
-      }`;
+      message = `${e.message}\n\n${JSON.stringify(
+        { errorCode, errorName, errorInstanceId, parameters },
+        null,
+        2,
+      )}`;
     }
   }
 
@@ -145,10 +139,11 @@ function createRequestLoggingFetch(
     input: RequestInfo | URL,
     init?: RequestInit,
   ) {
-    const requestLog = typeof input === "string" || input instanceof URL
-      ? `${init?.method ?? "GET"}: ${input.toString().trim()}`
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-conversion
-      : `${input.method ?? "GET"}: ${input.url.toString().trim()}`;
+    const requestLog =
+      typeof input === "string" || input instanceof URL
+        ? `${init?.method ?? "GET"}: ${input.toString().trim()}`
+        : // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-conversion
+          `${input.method ?? "GET"}: ${input.url.toString().trim()}`;
 
     consola.trace(requestLog);
     return fetchFn(input, init).then((a) => {

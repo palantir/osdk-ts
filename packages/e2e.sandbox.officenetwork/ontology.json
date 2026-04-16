@@ -399,10 +399,7 @@
           "linkTypeRid": "ri.ontology.main.relation.3df7c685-c2e1-42ad-9de2-38b505a58980"
         }
       ],
-      "implementsInterfaces": [
-        "Worker",
-        "Person"
-      ],
+      "implementsInterfaces": ["Worker", "Person"],
       "implementsInterfaces2": {
         "Person": {
           "apiName": "Person",
@@ -750,9 +747,7 @@
         "visibility": "NORMAL"
       },
       "linkTypes": [],
-      "implementsInterfaces": [
-        "ExampleInterface"
-      ],
+      "implementsInterfaces": ["ExampleInterface"],
       "implementsInterfaces2": {
         "ExampleInterface": {
           "apiName": "ExampleInterface",
@@ -1232,9 +1227,7 @@
         "visibility": "NORMAL"
       },
       "linkTypes": [],
-      "implementsInterfaces": [
-        "TodoLike"
-      ],
+      "implementsInterfaces": ["TodoLike"],
       "implementsInterfaces2": {
         "TodoLike": {
           "apiName": "TodoLike",
@@ -1300,9 +1293,7 @@
         "visibility": "NORMAL"
       },
       "linkTypes": [],
-      "implementsInterfaces": [
-        "TodoLike"
-      ],
+      "implementsInterfaces": ["TodoLike"],
       "implementsInterfaces2": {
         "TodoLike": {
           "apiName": "TodoLike",
@@ -2826,9 +2817,7 @@
       },
       "extendsInterfaces": [],
       "allExtendsInterfaces": [],
-      "implementedByObjectTypes": [
-        "ExampleObjects"
-      ],
+      "implementedByObjectTypes": ["ExampleObjects"],
       "links": {},
       "allLinks": {}
     },
@@ -2921,9 +2910,7 @@
       },
       "extendsInterfaces": [],
       "allExtendsInterfaces": [],
-      "implementedByObjectTypes": [
-        "Employee"
-      ],
+      "implementedByObjectTypes": ["Employee"],
       "links": {},
       "allLinks": {}
     },
@@ -3016,10 +3003,7 @@
       },
       "extendsInterfaces": [],
       "allExtendsInterfaces": [],
-      "implementedByObjectTypes": [
-        "WontDo",
-        "Todo"
-      ],
+      "implementedByObjectTypes": ["WontDo", "Todo"],
       "links": {},
       "allLinks": {}
     },
@@ -3149,9 +3133,7 @@
       },
       "extendsInterfaces": [],
       "allExtendsInterfaces": [],
-      "implementedByObjectTypes": [
-        "Employee"
-      ],
+      "implementedByObjectTypes": ["Employee"],
       "links": {},
       "allLinks": {}
     }

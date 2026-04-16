@@ -12,21 +12,20 @@ export const TodoView = React.memo(function TodoView({ todo }: Props) {
   const { isLoading, isOptimistic } = useOsdkObject(todo);
 
   const { applyAction, isPending } = useOsdkAction($Actions.completeTodo);
-  const toggleComplete = React.useCallback(
-    () => {
-      return applyAction({
-        is_complete: !todo.isComplete,
-        Todo: todo,
+  const toggleComplete = React.useCallback(() => {
+    return applyAction({
+      is_complete: !todo.isComplete,
+      Todo: todo,
 
-        $optimisticUpdate: (ctx) => {
-          ctx.updateObject(todo.$clone({
+      $optimisticUpdate: (ctx) => {
+        ctx.updateObject(
+          todo.$clone({
             isComplete: !todo.isComplete,
-          }));
-        },
-      });
-    },
-    [applyAction, todo],
-  );
+          }),
+        );
+      },
+    });
+  }, [applyAction, todo]);
 
   return (
     <div className="flex items-center mb-4" key={todo.id}>
@@ -54,9 +53,7 @@ export const TodoView = React.memo(function TodoView({ todo }: Props) {
         {todo.title}
       </label>
 
-      {isOptimistic
-        ? <SmallTextDiv>(Optimistic)</SmallTextDiv>
-        : ("")}
+      {isOptimistic ? <SmallTextDiv>(Optimistic)</SmallTextDiv> : ""}
     </div>
   );
 });

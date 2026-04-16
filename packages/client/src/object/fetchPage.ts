@@ -49,10 +49,7 @@ import { resolveBaseObjectSetType } from "../util/objectSetUtils.js";
 export function augment<
   Q extends ObjectOrInterfaceDefinition,
   T extends PropertyKeys<Q>,
->(
-  type: Q,
-  ...properties: T[]
-): Augment<Q, T> {
+>(type: Q, ...properties: T[]): Augment<Q, T> {
   return { [type.apiName]: properties } as any;
 }
 
@@ -69,8 +66,8 @@ export function objectSetToSearchJsonV2(
       );
     }
     if (
-      objectSet.type === "interfaceBase"
-      && objectSet.interfaceType !== expectedApiName
+      objectSet.type === "interfaceBase" &&
+      objectSet.interfaceType !== expectedApiName
     ) {
       throw new Error(
         `Expected objectSet.objectType to be ${expectedApiName}, but got ${objectSet.interfaceType}`,
@@ -84,10 +81,12 @@ export function objectSetToSearchJsonV2(
     return objectSetToSearchJsonV2(
       objectSet.objectSet,
       expectedApiName,
-      existingWhere == null ? objectSet.where : {
-        type: "and",
-        value: [existingWhere, objectSet.where],
-      },
+      existingWhere == null
+        ? objectSet.where
+        : {
+            type: "and",
+            value: [existingWhere, objectSet.where],
+          },
     );
   }
 
@@ -102,13 +101,16 @@ export function resolveInterfaceObjectSet(
 ): ObjectSet {
   return args?.$includeAllBaseObjectProperties
     ? {
-      type: "intersect",
-      objectSets: [objectSet, {
-        type: "interfaceBase",
-        interfaceType: interfaceTypeApiName,
-        includeAllBaseObjectProperties: true,
-      }],
-    }
+        type: "intersect",
+        objectSets: [
+          objectSet,
+          {
+            type: "interfaceBase",
+            interfaceType: interfaceTypeApiName,
+            includeAllBaseObjectProperties: true,
+          },
+        ],
+      }
     : objectSet;
 }
 
@@ -138,8 +140,8 @@ export async function fetchStaticRidPage<
     T
   >
 > {
-  const shouldLoadPropertySecurities = args.$loadPropertySecurityMetadata
-    ?? false;
+  const shouldLoadPropertySecurities =
+    args.$loadPropertySecurityMetadata ?? false;
   const requestBody = await applyFetchArgs(
     args,
     {
@@ -147,7 +149,7 @@ export async function fetchStaticRidPage<
         type: "static",
         objects: rids as string[],
       },
-      select: ((args?.$select as string[] | undefined) ?? []),
+      select: (args?.$select as string[] | undefined) ?? [],
       excludeRid: !args?.$includeRid,
       snapshot: useSnapshot,
       loadPropertySecurities: shouldLoadPropertySecurities,
@@ -208,8 +210,8 @@ async function fetchInterfacePage<
 ): Promise<FetchPageResult<Q, L, R, S, T>> {
   if (args.$__UNSTABLE_useOldInterfaceApis) {
     invariant(
-      args.$loadPropertySecurityMetadata === false
-        || args.$loadPropertySecurityMetadata === undefined,
+      args.$loadPropertySecurityMetadata === false ||
+        args.$loadPropertySecurityMetadata === undefined,
       "`$loadPropertySecurityMetadata` is not supported with old interface APIs",
     );
     const baseRequestBody: SearchObjectsForInterfaceRequest = {
@@ -242,14 +244,13 @@ async function fetchInterfacePage<
       await client.flushEdits();
     }
 
-    const result = await OntologyInterfaces
-      .search(
-        addUserAgentAndRequestContextHeaders(client, interfaceType),
-        await client.ontologyRid,
-        interfaceType.apiName,
-        requestBody,
-        { preview: true },
-      );
+    const result = await OntologyInterfaces.search(
+      addUserAgentAndRequestContextHeaders(client, interfaceType),
+      await client.ontologyRid,
+      interfaceType.apiName,
+      requestBody,
+      { preview: true },
+    );
 
     result.data = await client.objectFactory(
       client,
@@ -262,17 +263,16 @@ async function fetchInterfacePage<
     return result as any;
   }
 
-  const extractedInterfaceTypeApiName = (await extractObjectOrInterfaceType(
-    client,
-    objectSet,
-  ))?.apiName ?? interfaceType.apiName;
+  const extractedInterfaceTypeApiName =
+    (await extractObjectOrInterfaceType(client, objectSet))?.apiName ??
+    interfaceType.apiName;
   const resolvedInterfaceObjectSet = resolveInterfaceObjectSet(
     objectSet,
     extractedInterfaceTypeApiName,
     args,
   );
-  const shouldLoadPropertySecurities = args.$loadPropertySecurityMetadata
-    ?? false;
+  const shouldLoadPropertySecurities =
+    args.$loadPropertySecurityMetadata ?? false;
   const requestBody = await buildAndRemapRequestBody(
     args,
     {
@@ -337,7 +337,7 @@ export async function fetchPageInternal<
   useSnapshot: boolean = false,
 ): Promise<FetchPageResult<Q, L, R, S, T, ORDER_BY_OPTIONS>> {
   if (objectType.type === "interface") {
-    return await fetchInterfacePage(
+    return (await fetchInterfacePage(
       client,
       objectType,
       args as FetchPageArgs<
@@ -352,9 +352,9 @@ export async function fetchPageInternal<
       >,
       objectSet,
       useSnapshot,
-    ) as any; // fixme
+    )) as any; // fixme
   } else {
-    return await fetchObjectPage(
+    return (await fetchObjectPage(
       client,
       objectType,
       args as FetchPageArgs<
@@ -369,7 +369,7 @@ export async function fetchPageInternal<
       >,
       objectSet,
       useSnapshot,
-    ) as any; // fixme
+    )) as any; // fixme
   }
 }
 
@@ -459,18 +459,10 @@ async function buildAndRemapRequestBody<
   client: MinimalClient,
   objectType: Q,
 ): Promise<RequestBody> {
-  const requestBody = await applyFetchArgs(
-    args,
-    baseBody,
-    client,
-    objectType,
-  );
+  const requestBody = await applyFetchArgs(args, baseBody, client, objectType);
 
   if (requestBody.select != null && requestBody.select.length > 0) {
-    const remapped = remapPropertyNames(
-      objectType,
-      requestBody.select,
-    );
+    const remapped = remapPropertyNames(objectType, requestBody.select);
     return { ...requestBody, select: remapped };
   }
 
@@ -488,9 +480,9 @@ export function remapPropertyNames(
 
   if (objectOrInterface.type === "interface") {
     const [objApiNamespace] = extractNamespace(objectOrInterface.apiName);
-    return propertyNames.map(name => {
+    return propertyNames.map((name) => {
       const [fieldApiNamespace, fieldShortName] = extractNamespace(name);
-      return (fieldApiNamespace == null && objApiNamespace != null)
+      return fieldApiNamespace == null && objApiNamespace != null
         ? `${objApiNamespace}.${fieldShortName}`
         : name;
     });
@@ -546,10 +538,7 @@ async function applyFetchArgs<
     } else {
       const orderByEntries = Object.entries(orderBy);
       const fieldNames = orderByEntries.map(([field]) => field);
-      const remappedFields = remapPropertyNames(
-        objectType,
-        fieldNames,
-      );
+      const remappedFields = remapPropertyNames(objectType, fieldNames);
 
       body.orderBy = {
         fields: orderByEntries.map(([, direction], index) => ({
@@ -583,12 +572,12 @@ export async function fetchObjectPage<
   // In our object factory we await and block on loading the metadata, which if this call finishes, should already be cached on the client
   // We have an empty catch here so that if this call errors before we await later, we won't have an unhandled promise rejection that would crash the process
   // Swallowing the error is ok because we await the metadata load in the objectFactory later anyways which eventually bubbles up the error to the user
-  void client.ontologyProvider.getObjectDefinition(objectType.apiName).catch(
-    () => {},
-  );
+  void client.ontologyProvider
+    .getObjectDefinition(objectType.apiName)
+    .catch(() => {});
 
-  const shouldLoadPropertySecurities = args.$loadPropertySecurityMetadata
-    ?? false;
+  const shouldLoadPropertySecurities =
+    args.$loadPropertySecurityMetadata ?? false;
 
   const requestBody = await buildAndRemapRequestBody(
     args,

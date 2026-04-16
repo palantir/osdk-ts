@@ -82,9 +82,11 @@ describe("FoundryWidget emitEvent race condition handling", () => {
   let container: HTMLDivElement;
   let root: Root;
 
-  function EmitEventCapture(
-    { emitEventRef }: { emitEventRef: { current: EmitEventFn } },
-  ) {
+  function EmitEventCapture({
+    emitEventRef,
+  }: {
+    emitEventRef: { current: EmitEventFn };
+  }) {
     const context = useFoundryWidgetContext<typeof config>();
     emitEventRef.current = context.emitEvent as EmitEventFn;
     return null;
@@ -131,9 +133,9 @@ describe("FoundryWidget emitEvent race condition handling", () => {
         payload: new Promise((resolve) => {
           pending.push({
             payload: payload as { parameterUpdates: { myParam: string } },
-            resolve: resolve as (
-              value: { parameterUpdates: { myParam: string } },
-            ) => void,
+            resolve: resolve as (value: {
+              parameterUpdates: { myParam: string };
+            }) => void,
           });
         }),
       }),

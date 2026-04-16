@@ -44,16 +44,14 @@ export default function CreateTodoForm() {
   return (
     <>
       <H2>
-        Create Todo<InlineSpinner isLoading={isPending} />
+        Create Todo
+        <InlineSpinner isLoading={isPending} />
       </H2>
 
       <div className="flex grow">
-        <form
-          ref={formRef}
-          onSubmit={onSubmit}
-        >
+        <form ref={formRef} onSubmit={onSubmit}>
           <div className="error">
-            <pre>{JSON.stringify(error, null,2)}</pre>
+            <pre>{JSON.stringify(error, null, 2)}</pre>
           </div>
           <input
             type="text"
@@ -70,9 +68,7 @@ export default function CreateTodoForm() {
 
            "
           />
-          <Button disabled={isPending}>
-            Create Todo
-          </Button>
+          <Button disabled={isPending}>Create Todo</Button>
         </form>
       </div>
     </>

@@ -60,17 +60,13 @@ export async function defineOntologyV2(
     randomnessKey,
   );
 
-  const shapes = await getShapes(
-    ontDef.ontology,
-    ridGenerator,
-    randomnessKey,
-  );
+  const shapes = await getShapes(ontDef.ontology, ridGenerator, randomnessKey);
 
   const backingDatasourceApiNames = Object.entries(
     ontologyDefinition[OntologyEntityTypeEnum.OBJECT_TYPE],
   )
-    .filter(([_, obj]) =>
-      (obj as ObjectType).includeEmptyBackingDatasource === true
+    .filter(
+      ([_, obj]) => (obj as ObjectType).includeEmptyBackingDatasource === true,
     )
     .map(([apiName]) => apiName);
 
@@ -79,10 +75,12 @@ export async function defineOntologyV2(
   )
     .filter(([_, link]) => {
       const lt = link as LinkType;
-      return "many" in lt
-        && !("intermediaryObjectType" in lt)
-        && (lt as LinkType & { includeEmptyBackingDatasource?: boolean })
-            .includeEmptyBackingDatasource === true;
+      return (
+        "many" in lt &&
+        !("intermediaryObjectType" in lt) &&
+        (lt as LinkType & { includeEmptyBackingDatasource?: boolean })
+          .includeEmptyBackingDatasource === true
+      );
     })
     .map(([apiName]) => apiName);
 

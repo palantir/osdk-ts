@@ -86,8 +86,7 @@ export function getBlockVersionId(
 ): UUID {
   let mergedString = `${blockSpec.blockMavenCoordinate}_${blockSetVersion}`;
   if (randomnessKey) {
-    mergedString =
-      `${blockSpec.blockMavenCoordinate}_${blockSetVersion}_${randomnessKey}`;
+    mergedString = `${blockSpec.blockMavenCoordinate}_${blockSetVersion}_${randomnessKey}`;
   }
 
   return generateUUIDFromStr(mergedString);

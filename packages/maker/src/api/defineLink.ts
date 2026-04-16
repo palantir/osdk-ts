@@ -36,9 +36,7 @@ import type {
   OneToManyObjectLinkReferenceUserDefinition,
 } from "./links/LinkType.js";
 
-export function defineLink(
-  linkDefinitionInput: LinkTypeDefinition,
-): LinkType {
+export function defineLink(linkDefinitionInput: LinkTypeDefinition): LinkType {
   const linkDefinition = cloneDefinition(linkDefinitionInput);
   // NOTE: we would normally do validation here, but because of circular dependencies
   // we have to wait to validate until everything has been defined. The code for validation
@@ -54,12 +52,8 @@ export function defineLink(
   } else if ("intermediaryObjectType" in linkDefinition) {
     fullLinkDefinition = {
       ...linkDefinition,
-      many: convertUserIntermediaryLinkDefinition(
-        linkDefinition.many,
-      ),
-      toMany: convertUserIntermediaryLinkDefinition(
-        linkDefinition.toMany,
-      ),
+      many: convertUserIntermediaryLinkDefinition(linkDefinition.many),
+      toMany: convertUserIntermediaryLinkDefinition(linkDefinition.toMany),
     };
   } else {
     fullLinkDefinition = {
@@ -69,9 +63,8 @@ export function defineLink(
     };
   }
   const linkType: LinkType = {
-    cardinality: "one" in linkDefinition
-      ? linkDefinition.cardinality
-      : undefined,
+    cardinality:
+      "one" in linkDefinition ? linkDefinition.cardinality : undefined,
     ...fullLinkDefinition,
     apiName: linkDefinition.apiName,
     __type: OntologyEntityTypeEnum.LINK_TYPE,
@@ -117,10 +110,11 @@ function convertLinkTypeMetadata(
   return {
     apiName: metadata.apiName,
     displayMetadata: {
-      displayName: metadata.displayName
-        ?? uppercaseFirstLetter(metadata.apiName),
-      pluralDisplayName: metadata.pluralDisplayName
-        ?? convertToPluralDisplayName(metadata.apiName),
+      displayName:
+        metadata.displayName ?? uppercaseFirstLetter(metadata.apiName),
+      pluralDisplayName:
+        metadata.pluralDisplayName ??
+        convertToPluralDisplayName(metadata.apiName),
       visibility: metadata.visibility ?? "NORMAL",
       groupDisplayName: metadata.groupDisplayName ?? "",
     },

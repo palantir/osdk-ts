@@ -49,8 +49,12 @@ export function BaseFilterList<D>(
     renderAddFilterButton,
   } = props;
 
-  const showHeader = title || titleIcon || showResetButton
-    || showActiveFilterCount || onCollapsedChange;
+  const showHeader =
+    title ||
+    titleIcon ||
+    showResetButton ||
+    showActiveFilterCount ||
+    onCollapsedChange;
 
   const showAddButton = renderAddFilterButton != null || onFilterAdded != null;
 
@@ -63,10 +67,7 @@ export function BaseFilterList<D>(
   return (
     <div className={classnames(styles.filterList, className)}>
       {isCollapsed && (
-        <div
-          className={styles.filterListCollapsed}
-          data-collapsed="true"
-        >
+        <div className={styles.filterListCollapsed} data-collapsed="true">
           <Button
             className={styles.expandButton}
             onClick={handleExpand}
@@ -113,17 +114,17 @@ export function BaseFilterList<D>(
 
         {showAddButton && (
           <div className={styles.addButtonContainer}>
-            {renderAddFilterButton
-              ? renderAddFilterButton()
-              : (
-                <Button
-                  type="button"
-                  className={styles.addButton}
-                  onClick={onFilterAdded}
-                >
-                  + Add filter
-                </Button>
-              )}
+            {renderAddFilterButton ? (
+              renderAddFilterButton()
+            ) : (
+              <Button
+                type="button"
+                className={styles.addButton}
+                onClick={onFilterAdded}
+              >
+                + Add filter
+              </Button>
+            )}
           </div>
         )}
       </div>

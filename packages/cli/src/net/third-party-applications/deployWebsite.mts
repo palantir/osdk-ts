@@ -26,18 +26,14 @@ export async function deployWebsite(
   request: DeployWebsiteRequest,
 ): Promise<Website> {
   const fetch = createFetch(ctx.tokenProvider);
-  const url =
-    `${ctx.foundryUrl}/api/v2/thirdPartyApplications/${thirdPartyAppRid}/website/deploy?preview=true`;
+  const url = `${ctx.foundryUrl}/api/v2/thirdPartyApplications/${thirdPartyAppRid}/website/deploy?preview=true`;
 
-  const result = await fetch(
-    url,
-    {
-      method: "POST",
-      body: JSON.stringify(request),
-      headers: {
-        "Content-Type": "application/json",
-      },
+  const result = await fetch(url, {
+    method: "POST",
+    body: JSON.stringify(request),
+    headers: {
+      "Content-Type": "application/json",
     },
-  );
+  });
   return result.json();
 }

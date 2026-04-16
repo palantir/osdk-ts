@@ -43,17 +43,23 @@ let pythonQueue: Promise<unknown> = Promise.resolve();
 
 function enqueue<T>(fn: () => Promise<T>): Promise<T> {
   const result = pythonQueue.then(fn, fn);
-  pythonQueue = result.then(() => {}, () => {});
+  pythonQueue = result.then(
+    () => {},
+    () => {},
+  );
   return result;
 }
 
 function camelToSnakeCase(str: string): string {
-  return str.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);
+  return str.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
 }
 
 function hasEntries(o: unknown): boolean {
-  return o != null && typeof o === "object"
-    && Object.keys(o as Record<string, unknown>).length > 0;
+  return (
+    o != null &&
+    typeof o === "object" &&
+    Object.keys(o as Record<string, unknown>).length > 0
+  );
 }
 
 function outputContainsOntologyEdit(func: FunctionSpec): boolean {
@@ -68,8 +74,12 @@ function outputContainsOntologyEdit(func: FunctionSpec): boolean {
 function isOsdkObject(
   value: unknown,
 ): value is { $apiName: string; $primaryKey: unknown } {
-  return value != null && typeof value === "object"
-    && "$apiName" in value && "$primaryKey" in value;
+  return (
+    value != null &&
+    typeof value === "object" &&
+    "$apiName" in value &&
+    "$primaryKey" in value
+  );
 }
 
 async function fetchPkPropertyNames(): Promise<Map<string, string>> {
@@ -77,16 +87,12 @@ async function fetchPkPropertyNames(): Promise<Map<string, string>> {
     headers: { "Authorization": LOCAL_RUNTIME_TOKEN },
   });
   if (!response.ok) {
-    throw new Error(
-      `Failed to fetch object types: ${response.status}`,
-    );
+    throw new Error(`Failed to fetch object types: ${response.status}`);
   }
-  const data = await response.json() as Record<string, unknown>;
+  const data = (await response.json()) as Record<string, unknown>;
   const objectTypes = data.data ?? data.objectTypes;
   if (!Array.isArray(objectTypes)) {
-    throw new Error(
-      "Unexpected response format from object types endpoint",
-    );
+    throw new Error("Unexpected response format from object types endpoint");
   }
   const map = new Map<string, string>();
   for (const ot of objectTypes as Record<string, string>[]) {
@@ -118,9 +124,10 @@ function wrapObjectLocator(
   };
 }
 
-function wrapPrimitive(
-  value: number | string | boolean,
-): { type: string; [key: string]: number | string | boolean } {
+function wrapPrimitive(value: number | string | boolean): {
+  type: string;
+  [key: string]: number | string | boolean;
+} {
   if (typeof value === "number") {
     const type = Number.isInteger(value) ? "integer" : "double";
     return { type, [type]: value };
@@ -128,26 +135,22 @@ function wrapPrimitive(
   return { type: typeof value, [typeof value]: value };
 }
 
-function wrapValue(
-  value: unknown,
-  pkNames: Map<string, string>,
-): unknown {
+function wrapValue(value: unknown, pkNames: Map<string, string>): unknown {
   if (
-    typeof value === "number" || typeof value === "string"
-    || typeof value === "boolean"
+    typeof value === "number" ||
+    typeof value === "string" ||
+    typeof value === "boolean"
   ) {
     return wrapPrimitive(value);
   }
   if (isOsdkObject(value)) {
     return wrapObjectLocator(value, pkNames);
   }
-  if (
-    Array.isArray(value) && value.length > 0 && value.every(isOsdkObject)
-  ) {
+  if (Array.isArray(value) && value.length > 0 && value.every(isOsdkObject)) {
     return {
       type: "list",
       list: {
-        values: value.map(item => wrapObjectLocator(item, pkNames)),
+        values: value.map((item) => wrapObjectLocator(item, pkNames)),
       },
     };
   }
@@ -284,9 +287,7 @@ function createFunctionLocator(
     }
   }
 
-  throw new Error(
-    `Could not create locator for function "${functionName}"`,
-  );
+  throw new Error(`Could not create locator for function "${functionName}"`);
 }
 
 const SPECS_TIMEOUT_MS = 30_000;
@@ -301,7 +302,7 @@ async function fetchSpecs(
       signal: AbortSignal.timeout(SPECS_TIMEOUT_MS),
     });
     if (!response.ok) return null;
-    return await response.json() as RuntimeSpecs;
+    return (await response.json()) as RuntimeSpecs;
   } catch {
     return null;
   }
@@ -318,13 +319,15 @@ async function discoverFunctions(): Promise<Map<string, FunctionInfo>> {
 
   function detectEditFunction(func: FunctionSpec, isPython: boolean): boolean {
     const prov = func.ontologyProvenance;
-    return hasEntries(prov?.editedObjects)
-      || hasEntries(prov?.editedLinks)
-      || hasEntries(prov?.editedInterfaces)
+    return (
+      hasEntries(prov?.editedObjects) ||
+      hasEntries(prov?.editedLinks) ||
+      hasEntries(prov?.editedInterfaces) ||
       // Fallback: the Python runtime may not populate ontologyProvenance,
       // but edit functions return list[OntologyEdit] which shows up in the
       // output data type.
-      || (isPython && outputContainsOntologyEdit(func));
+      (isPython && outputContainsOntologyEdit(func))
+    );
   }
 
   const tsSpecs = await fetchSpecs(TS_RUNTIME);
@@ -390,8 +393,9 @@ async function executeLocalFunction(
   functionDefinition: FunctionDefinition,
   parameters: Record<string, unknown>,
 ): Promise<unknown> {
-  const functionName = functionDefinition.apiName
-    ?? functionDefinition.__DefinitionMetadata?.apiName;
+  const functionName =
+    functionDefinition.apiName ??
+    functionDefinition.__DefinitionMetadata?.apiName;
   if (!functionName) {
     throw new Error("Unable to determine function name from definition");
   }
@@ -451,9 +455,10 @@ export function smartClient<T extends Client>(client: T): T {
       const result = (client as unknown as Function)(...args);
 
       if (
-        result && typeof result === "object"
-        && typeof (result as Record<string, unknown>).executeFunction
-          === "function"
+        result &&
+        typeof result === "object" &&
+        typeof (result as Record<string, unknown>).executeFunction ===
+          "function"
       ) {
         return new Proxy(result as object, {
           get(target, prop, receiver) {

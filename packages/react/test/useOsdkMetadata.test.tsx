@@ -58,7 +58,7 @@ describe(useOsdkMetadata, () => {
       expect(result.current).toEqual({
         loading: false,
         metadata: { passedIn: FooObjectDef },
-      })
+      }),
     );
   });
 });

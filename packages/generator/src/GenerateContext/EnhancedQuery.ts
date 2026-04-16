@@ -19,7 +19,10 @@ import type { EnhanceCommon } from "./EnhanceCommon.js";
 import { EnhancedBase } from "./EnhancedBase.js";
 
 export class EnhancedQuery extends EnhancedBase<QueryTypeV2> {
-  constructor(common: EnhanceCommon, public raw: QueryTypeV2) {
+  constructor(
+    common: EnhanceCommon,
+    public raw: QueryTypeV2,
+  ) {
     super(common, raw, raw.apiName, "./ontology/queries");
   }
 

@@ -55,10 +55,7 @@ function SingleSelectInputInner({
     [onChange],
   );
 
-  const items = useMemo(
-    () => values.map(({ value }) => value),
-    [values],
-  );
+  const items = useMemo(() => values.map(({ value }) => value), [values]);
 
   const countByValue = useMemo(
     () => new Map(values.map(({ value, count }) => [value, count])),
@@ -87,9 +84,7 @@ function SingleSelectInputInner({
       data-loading={isLoading}
     >
       {isLoading && (
-        <div className={sharedStyles.loadingMessage}>
-          Loading options...
-        </div>
+        <div className={sharedStyles.loadingMessage}>Loading options...</div>
       )}
 
       {error && (
@@ -99,9 +94,7 @@ function SingleSelectInputInner({
       )}
 
       {!isLoading && !error && values.length === 0 && (
-        <div className={sharedStyles.emptyMessage}>
-          No options available
-        </div>
+        <div className={sharedStyles.emptyMessage}>No options available</div>
       )}
 
       {(values.length > 0 || isLoading) && (

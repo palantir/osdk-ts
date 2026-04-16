@@ -56,7 +56,7 @@ export interface DataValueWireToClient {
  * Map from the DataValue type to the typescript type that we accept
  */
 export interface DataValueClientToWire {
-  attachment: string | AttachmentUpload | Blob & { readonly name: string };
+  attachment: string | AttachmentUpload | (Blob & { readonly name: string });
   boolean: boolean;
   byte: number;
   datetime: string;
@@ -91,6 +91,6 @@ export type AllowedBucketTypes = string | number | boolean;
 export type AllowedBucketKeyTypes =
   | AllowedBucketTypes
   | {
-    startValue: AllowedBucketTypes;
-    endValue: AllowedBucketTypes;
-  };
+      startValue: AllowedBucketTypes;
+      endValue: AllowedBucketTypes;
+    };

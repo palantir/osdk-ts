@@ -23,13 +23,9 @@ export async function undeployWebsite(
   thirdPartyAppRid: ThirdPartyAppRid,
 ): Promise<void> {
   const fetch = createFetch(ctx.tokenProvider);
-  const url =
-    `${ctx.foundryUrl}/api/v2/thirdPartyApplications/${thirdPartyAppRid}/website/undeploy?preview=true`;
+  const url = `${ctx.foundryUrl}/api/v2/thirdPartyApplications/${thirdPartyAppRid}/website/undeploy?preview=true`;
 
-  await fetch(
-    url,
-    {
-      method: "POST",
-    },
-  );
+  await fetch(url, {
+    method: "POST",
+  });
 }

@@ -11,28 +11,26 @@ function useProjects() {
     return Mocks.getProjects();
   });
 
-  const createProject: (
-    name: string,
-  ) => Promise<MockProject["$primaryKey"]> = useCallback(
-    async (name: string) => {
-      // Try to implement this with the Ontology SDK!
-      const id = await Mocks.createProject({ name });
-      await mutate();
-      return id;
-    },
-    [mutate],
-  );
+  const createProject: (name: string) => Promise<MockProject["$primaryKey"]> =
+    useCallback(
+      async (name: string) => {
+        // Try to implement this with the Ontology SDK!
+        const id = await Mocks.createProject({ name });
+        await mutate();
+        return id;
+      },
+      [mutate],
+    );
 
-  const updateProjectDescription: (
-    project: MockProject,
-  ) => Promise<void> = useCallback(
-    async (project) => {
-      // Try to implement this with the Ontology SDK!
-      await Mocks.updateProjectDescription(project);
-      await mutate();
-    },
-    [mutate],
-  );
+  const updateProjectDescription: (project: MockProject) => Promise<void> =
+    useCallback(
+      async (project) => {
+        // Try to implement this with the Ontology SDK!
+        await Mocks.updateProjectDescription(project);
+        await mutate();
+      },
+      [mutate],
+    );
 
   const deleteProject: (project: MockProject) => Promise<void> = useCallback(
     async (project) => {

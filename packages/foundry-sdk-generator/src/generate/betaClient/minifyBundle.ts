@@ -199,17 +199,20 @@ export class ProjectMinifier {
         // If we import * as x, and we use x
         // import type * as x from "..."
         if (namedImports.length === 0) {
-          const aliasedSymbol = declaration.getImportClause()
-            ?.getNamespaceImport()?.getSymbol();
+          const aliasedSymbol = declaration
+            .getImportClause()
+            ?.getNamespaceImport()
+            ?.getSymbol();
           if (aliasedSymbol && identifiersToResolve.has(aliasedSymbol)) {
             this.getNodesToKeepForModule(moduleName).add(declaration);
             const importsFromNamespace = new Set(
               importSourceFile.getExportedDeclarations().keys(),
             );
 
-            importSourceFile.getExportDeclarations().forEach(decl => {
-              this.getNodesToKeepForModule(moduleSpecifier.getLiteralText())
-                .add(decl);
+            importSourceFile.getExportDeclarations().forEach((decl) => {
+              this.getNodesToKeepForModule(
+                moduleSpecifier.getLiteralText(),
+              ).add(decl);
             });
 
             this.getNodesToKeepForModule(moduleSpecifier.getLiteralText()).add(
@@ -313,11 +316,9 @@ export class ProjectMinifier {
         nodeSet.add(ancestor);
       }
 
-      for (
-        const child of currentDeclaration.getDescendantsOfKind(
-          SyntaxKind.Identifier,
-        )
-      ) {
+      for (const child of currentDeclaration.getDescendantsOfKind(
+        SyntaxKind.Identifier,
+      )) {
         const symbol = child.getSymbol();
         // If we've seen this symbol we've already traversed it
         if (!symbol || identifiers.has(symbol)) {
@@ -350,7 +351,7 @@ export class ProjectMinifier {
   private deleteUnused() {
     const deletedModules = new Set<string>();
 
-    this.project.getSourceFiles().forEach(sourceFile => {
+    this.project.getSourceFiles().forEach((sourceFile) => {
       if (sourceFile.getFilePath().startsWith("/internal")) {
         const moduleName = getModuleFromFileName(sourceFile);
         const nodesToKeepForModule = this.nodesToKeep[moduleName];
@@ -362,10 +363,11 @@ export class ProjectMinifier {
         }
 
         // Delete unused imports
-        sourceFile.getImportDeclarations().forEach(importDeclaration => {
-          importDeclaration.getNamedImports().forEach(namedImport => {
+        sourceFile.getImportDeclarations().forEach((importDeclaration) => {
+          importDeclaration.getNamedImports().forEach((namedImport) => {
             if (
-              nodesToKeepForModule && !nodesToKeepForModule.has(namedImport)
+              nodesToKeepForModule &&
+              !nodesToKeepForModule.has(namedImport)
             ) {
               namedImport.remove();
             }
@@ -379,8 +381,8 @@ export class ProjectMinifier {
             continue;
           }
 
-          const targetModuleLiteralText = targetModuleSpecifier
-            .getLiteralText();
+          const targetModuleLiteralText =
+            targetModuleSpecifier.getLiteralText();
           if (deletedModules.has(targetModuleLiteralText)) {
             continue;
           }
@@ -389,7 +391,8 @@ export class ProjectMinifier {
             this.nodesToKeep[targetModuleLiteralText];
 
           if (
-            !nodesToKeepForTargetModule || nodesToKeepForTargetModule.size === 0
+            !nodesToKeepForTargetModule ||
+            nodesToKeepForTargetModule.size === 0
           ) {
             exportDeclaration.remove();
             continue;
@@ -402,7 +405,7 @@ export class ProjectMinifier {
           }
         }
 
-        sourceFile.forEachChild(node => {
+        sourceFile.forEachChild((node) => {
           if (!nodesToKeepForModule.has(node)) {
             node.replaceWithText("");
           }
@@ -445,8 +448,9 @@ export class ProjectMinifier {
 }
 
 function getModuleFromFileName(sourceFile: SourceFile) {
-  return sourceFile.getFilePath().replace("/", "").replace(".ts", "").replace(
-    "/index",
-    "",
-  );
+  return sourceFile
+    .getFilePath()
+    .replace("/", "")
+    .replace(".ts", "")
+    .replace("/index", "");
 }

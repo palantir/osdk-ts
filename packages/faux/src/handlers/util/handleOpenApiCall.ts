@@ -36,23 +36,23 @@ export class OpenApiCallError extends Error {
     },
   ) {
     super(
-      `${json.errorCode} ${json.errorName ?? "Unknown error"} ${
-        JSON.stringify(
-          json.parameters,
-        )
-      }`,
+      `${json.errorCode} ${json.errorName ?? "Unknown error"} ${JSON.stringify(
+        json.parameters,
+      )}`,
     );
   }
 }
 
 type ExtractStringParams<T extends any[]> = T extends [infer A, ...infer B]
-  ? A extends string ? [A, ...ExtractStringParams<B>]
-  : []
+  ? A extends string
+    ? [A, ...ExtractStringParams<B>]
+    : []
   : [];
 
 export type SkipStringParams<T extends any[]> = T extends [infer A, ...infer B]
-  ? A extends string ? SkipStringParams<B>
-  : T
+  ? A extends string
+    ? SkipStringParams<B>
+    : T
   : T;
 
 /**
@@ -65,7 +65,8 @@ export type SkipStringParams<T extends any[]> = T extends [infer A, ...infer B]
  */
 export type ExtractBody<
   X extends (reqCall: any, ...args: any[]) => Promise<any>,
-> = undefined extends SkipStringParams<ParamsAfterReqCall<X>>[0] ? never
+> = undefined extends SkipStringParams<ParamsAfterReqCall<X>>[0]
+  ? never
   : SkipStringParams<ParamsAfterReqCall<X>>[0];
 
 export type ExtractResponse<X extends (...args: any[]) => Promise<any>> =

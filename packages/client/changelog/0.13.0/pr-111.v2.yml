@@ -2,4 +2,4 @@ type: feature
 feature:
   description: Add startsWith for string filter
   links:
-  - https://github.com/palantir/osdk-ts/pull/111
+    - https://github.com/palantir/osdk-ts/pull/111

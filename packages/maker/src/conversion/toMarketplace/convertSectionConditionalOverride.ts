@@ -30,15 +30,16 @@ export function convertSectionConditionalOverride(
       {
         type: "visibility",
         visibility: {
-          visibility: defaultVisibility === "visible"
-            ? {
-              type: "hidden",
-              hidden: {},
-            }
-            : {
-              type: "visible",
-              visible: {},
-            },
+          visibility:
+            defaultVisibility === "visible"
+              ? {
+                  type: "hidden",
+                  hidden: {},
+                }
+              : {
+                  type: "visible",
+                  visible: {},
+                },
         },
       },
     ],

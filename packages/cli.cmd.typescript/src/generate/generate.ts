@@ -18,157 +18,153 @@ import { isValidSemver, YargsCheckError } from "@osdk/cli.common";
 import type { CommandModule } from "yargs";
 import type { TypescriptGenerateArgs } from "./TypescriptGenerateArgs.js";
 
-export const generateCommand: CommandModule<
-  {},
-  TypescriptGenerateArgs
-> = {
+export const generateCommand: CommandModule<{}, TypescriptGenerateArgs> = {
   command: "generate",
   describe: "Generate TypeScript SDK from ontology",
   builder: (argv) => {
     return argv
-      .options(
-        {
-          outDir: {
-            type: "string",
-            description: "Where to place the generated files",
-            demandOption: true,
-          },
-          ontologyPath: {
-            description: "Path to the ontology wire json",
-            type: "string",
-            demandOption: false,
-            conflicts: ["foundryUrl", "clientId"],
-          },
-          foundryUrl: {
-            description: "URL for the foundry stack that contains the ontology",
-            type: "string",
-            demandOption: false,
-            conflicts: "ontologyPath",
-            implies: "clientId",
-            alias: "stack", // for backwards compatibility
-          },
-          clientId: {
-            description: "OAuth client ID for application",
-            type: "string",
-            demandOption: false,
-            conflicts: "ontologyPath",
-            implies: "foundryUrl",
-          },
-          ontologyRid: {
-            description: "Limit requests to this ontology rid only",
-            type: "string",
-            demandOption: false,
-          },
-          ontologyWritePath: {
-            description: "Path to write the ontology wire json",
-            type: "string",
-            demandOption: false,
-            conflicts: ["ontologyPath"],
-          },
-          beta: {
-            type: "boolean",
-            description: "Should generate beta sdk",
-            demandOption: false,
-          },
-          packageType: {
-            default: "commonjs",
-            choices: ["commonjs", "module"],
-          },
-          version: {
-            type: "string",
-            description: "Version of the generated code, or 'dev'",
-            demandOption: true,
-          },
-          packageName: {
-            type: "string",
-            description: "Name of the package to generate",
-          },
-          asPackage: {
-            type: "boolean",
-            description: "Generate as a package (makes a package.json and co)",
-          },
-          clean: {
-            type: "boolean",
-            description: "Clean the output directory before generating",
-          },
-          internal: {
-            type: "boolean",
-            default: false,
-          },
-          externalObjects: {
-            type: "string",
-            coerce: (value) => {
-              const map = new Map<string, string>();
-              if (value) {
-                for (const entry of value.split(",")) {
-                  const [api, ns] = entry.split(":");
-                  map.set(api, ns);
-                }
+      .options({
+        outDir: {
+          type: "string",
+          description: "Where to place the generated files",
+          demandOption: true,
+        },
+        ontologyPath: {
+          description: "Path to the ontology wire json",
+          type: "string",
+          demandOption: false,
+          conflicts: ["foundryUrl", "clientId"],
+        },
+        foundryUrl: {
+          description: "URL for the foundry stack that contains the ontology",
+          type: "string",
+          demandOption: false,
+          conflicts: "ontologyPath",
+          implies: "clientId",
+          alias: "stack", // for backwards compatibility
+        },
+        clientId: {
+          description: "OAuth client ID for application",
+          type: "string",
+          demandOption: false,
+          conflicts: "ontologyPath",
+          implies: "foundryUrl",
+        },
+        ontologyRid: {
+          description: "Limit requests to this ontology rid only",
+          type: "string",
+          demandOption: false,
+        },
+        ontologyWritePath: {
+          description: "Path to write the ontology wire json",
+          type: "string",
+          demandOption: false,
+          conflicts: ["ontologyPath"],
+        },
+        beta: {
+          type: "boolean",
+          description: "Should generate beta sdk",
+          demandOption: false,
+        },
+        packageType: {
+          default: "commonjs",
+          choices: ["commonjs", "module"],
+        },
+        version: {
+          type: "string",
+          description: "Version of the generated code, or 'dev'",
+          demandOption: true,
+        },
+        packageName: {
+          type: "string",
+          description: "Name of the package to generate",
+        },
+        asPackage: {
+          type: "boolean",
+          description: "Generate as a package (makes a package.json and co)",
+        },
+        clean: {
+          type: "boolean",
+          description: "Clean the output directory before generating",
+        },
+        internal: {
+          type: "boolean",
+          default: false,
+        },
+        externalObjects: {
+          type: "string",
+          coerce: (value) => {
+            const map = new Map<string, string>();
+            if (value) {
+              for (const entry of value.split(",")) {
+                const [api, ns] = entry.split(":");
+                map.set(api, ns);
               }
-              return map;
-            },
-            default: "",
+            }
+            return map;
           },
-          externalInterfaces: {
-            type: "string",
-            coerce: (value) => {
-              const map = new Map<string, string>();
-              if (value) {
-                for (const entry of value.split(",")) {
-                  const [api, ns] = entry.split(":");
-                  map.set(api, ns);
-                }
+          default: "",
+        },
+        externalInterfaces: {
+          type: "string",
+          coerce: (value) => {
+            const map = new Map<string, string>();
+            if (value) {
+              for (const entry of value.split(",")) {
+                const [api, ns] = entry.split(":");
+                map.set(api, ns);
               }
-              return map;
-            },
-            default: "",
+            }
+            return map;
           },
-          branch: {
-            type: "string",
-            description: "The branch rid of the ontology to generate from",
-          },
-          skipPackageJsonUpdate: {
-            type: "boolean",
-            description: "Skip updating package.json with OSDK dependencies",
-            default: false,
-          },
-        } as const,
-      ).group(
+          default: "",
+        },
+        branch: {
+          type: "string",
+          description: "The branch rid of the ontology to generate from",
+        },
+        skipPackageJsonUpdate: {
+          type: "boolean",
+          description: "Skip updating package.json with OSDK dependencies",
+          default: false,
+        },
+      } as const)
+      .group(
         ["ontologyPath", "outDir", "version"],
         "Generate from a local file",
-      ).group(
+      )
+      .group(
         ["foundryUrl", "clientId", "outDir", "ontologyWritePath", "version"],
         "OR Generate from Foundry",
-      ).group(["packageName", "as"], "Package generation options")
-      .check(
-        (args) => {
-          if (!args.ontologyPath && !args.foundryUrl) {
-            throw new YargsCheckError(
-              "Must specify either ontologyPath or foundryUrl and clientId",
-            );
-          }
+      )
+      .group(["packageName", "as"], "Package generation options")
+      .check((args) => {
+        if (!args.ontologyPath && !args.foundryUrl) {
+          throw new YargsCheckError(
+            "Must specify either ontologyPath or foundryUrl and clientId",
+          );
+        }
 
-          if (args.version !== "dev" && !isValidSemver(args.version)) {
-            throw new YargsCheckError(
-              "Version must be 'dev' or a valid semver version",
-            );
-          }
+        if (args.version !== "dev" && !isValidSemver(args.version)) {
+          throw new YargsCheckError(
+            "Version must be 'dev' or a valid semver version",
+          );
+        }
 
-          if (args.asPackage && !args.packageName) {
-            throw new YargsCheckError(
-              "Must specify packageName when generating as a package",
-            );
-          }
+        if (args.asPackage && !args.packageName) {
+          throw new YargsCheckError(
+            "Must specify packageName when generating as a package",
+          );
+        }
 
-          if (args.asPackage && !args.version) {
-            throw new YargsCheckError(
-              "Must specify version when generating as a package",
-            );
-          }
+        if (args.asPackage && !args.version) {
+          throw new YargsCheckError(
+            "Must specify version when generating as a package",
+          );
+        }
 
-          return true;
-        },
-      );
+        return true;
+      });
   },
   handler: async (args) => {
     const command = await import("./handleGenerate.mjs");

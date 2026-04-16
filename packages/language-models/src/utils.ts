@@ -38,9 +38,7 @@ import type { PlatformClient } from "@osdk/client";
  * });
  * ```
  */
-export function createFetch(
-  client: PlatformClient,
-): typeof globalThis.fetch {
+export function createFetch(client: PlatformClient): typeof globalThis.fetch {
   return client.fetch;
 }
 
@@ -55,9 +53,7 @@ export function createFetch(
  * const token = await getFoundryToken(platformClient);
  * ```
  */
-export async function getFoundryToken(
-  client: PlatformClient,
-): Promise<string> {
+export async function getFoundryToken(client: PlatformClient): Promise<string> {
   return client.tokenProvider();
 }
 

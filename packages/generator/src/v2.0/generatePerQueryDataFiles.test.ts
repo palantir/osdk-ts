@@ -183,26 +183,24 @@ describe("generatePerQueryDataFiles", () => {
     const files: ts.MapLike<{ version: number }> = {};
 
     // initialize the list of files
-    rootFileNames.forEach(fileName => {
+    rootFileNames.forEach((fileName) => {
       files[fileName] = { version: 0 };
     });
 
     const servicesHost: ts.LanguageServiceHost = {
       getScriptFileNames: () => Object.keys(helper.getFiles()),
-      getScriptVersion: fileName =>
+      getScriptVersion: (fileName) =>
         files[fileName] && files[fileName].version.toString(),
-      getScriptSnapshot: fileName => {
+      getScriptSnapshot: (fileName) => {
         if (!helper.getFiles()[fileName]) {
           return undefined;
         }
 
-        return ts.ScriptSnapshot.fromString(
-          helper.getFiles()[fileName],
-        );
+        return ts.ScriptSnapshot.fromString(helper.getFiles()[fileName]);
       },
       getCurrentDirectory: () => "/bar",
       getCompilationSettings: () => ({}),
-      getDefaultLibFileName: options => ts.getDefaultLibFilePath(options),
+      getDefaultLibFileName: (options) => ts.getDefaultLibFilePath(options),
       fileExists: (path: string) => {
         console.log(path);
         return helper.getFiles()[path] !== undefined;
@@ -812,8 +810,7 @@ describe("generatePerQueryDataFiles", () => {
     );
     expect(
       helper.getFiles()["/foo/ontology/queries/queryWithMultipleTypeRefs.ts"],
-    )
-      .toMatchInlineSnapshot(`
+    ).toMatchInlineSnapshot(`
         "import type { ObjectSpecifier, QueryDefinition, QueryParam, QueryResult, VersionBound } from '@osdk/api';
         import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
         import { $osdkMetadata } from '../../OntologyMetadata.js';

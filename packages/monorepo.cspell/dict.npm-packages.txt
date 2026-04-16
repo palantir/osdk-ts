@@ -17,6 +17,7 @@ Momentjs
 monorepolint
 ngeohash
 npmjs
+oxfmt
 trivago
 tsup
 timecode

@@ -76,23 +76,23 @@ export interface UseFoundryUsersListResult {
  * Lists all Users. This is a paged endpoint. Each page may be smaller or larger than the requested page size.
  * @param options Options to control the query.
  */
-export function useFoundryUsersList(
-  { enabled = true, include = "ACTIVE", pageSize = 1000, pageToken }:
-    UseFoundryUsersListOptions = {},
-): UseFoundryUsersListResult {
+export function useFoundryUsersList({
+  enabled = true,
+  include = "ACTIVE",
+  pageSize = 1000,
+  pageToken,
+}: UseFoundryUsersListOptions = {}): UseFoundryUsersListResult {
   const { client } = React.useContext(OsdkContext2);
 
   const handleQuery = React.useCallback(() => {
     return Users.list(client, { include, pageSize, pageToken });
   }, [client, include, pageSize, pageToken]);
 
-  const query = usePlatformQuery(
-    {
-      query: handleQuery,
-      enabled,
-      queryName: "foundry-users-list",
-    },
-  );
+  const query = usePlatformQuery({
+    query: handleQuery,
+    enabled,
+    queryName: "foundry-users-list",
+  });
 
   return {
     users: query.data?.data,

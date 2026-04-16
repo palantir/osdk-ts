@@ -132,9 +132,7 @@ describe(toDataValue, () => {
       clientCtx,
       mockActionMetadata,
     );
-    expect(ontologyConversion).toEqual(
-      stubData.employee1.__primaryKey,
-    );
+    expect(ontologyConversion).toEqual(stubData.employee1.__primaryKey);
   });
 
   it("maps an ontology object into just its primary key with osdk wrapper", async () => {
@@ -144,9 +142,7 @@ describe(toDataValue, () => {
       clientCtx,
       mockActionMetadata,
     );
-    expect(ontologyConversion).toEqual(
-      task.$primaryKey,
-    );
+    expect(ontologyConversion).toEqual(task.$primaryKey);
   });
 
   it("passes through object set definitions", async () => {
@@ -172,9 +168,7 @@ describe(toDataValue, () => {
       clientCtx,
       mockActionMetadata,
     );
-    expect(objectSetConversion).toMatchInlineSnapshot(
-      expected,
-    );
+    expect(objectSetConversion).toMatchInlineSnapshot(expected);
 
     const definitionConversion = await toDataValue(
       definition,
@@ -199,9 +193,7 @@ describe(toDataValue, () => {
   it("converts file attachment uploads correctly", async () => {
     // Mimics the Web file API (https://developer.mozilla.org/en-US/docs/Web/API/File). The File constructor is only available in Node 19.2.0 and above
     const file = Object.assign(
-      new Blob([
-        JSON.stringify({ name: "Hello World" }, null, 2),
-      ], {
+      new Blob([JSON.stringify({ name: "Hello World" }, null, 2)], {
         type: "application/json",
       }),
       { name: "file1.txt" },
@@ -213,9 +205,7 @@ describe(toDataValue, () => {
 
   it("converts media uploads correctly", async () => {
     const file: MediaUpload = {
-      data: new Blob([
-        JSON.stringify({ name: "Hello World" }, null, 2),
-      ], {
+      data: new Blob([JSON.stringify({ name: "Hello World" }, null, 2)], {
         type: "application/json",
       }),
       fileName: "file.txt",
@@ -268,11 +258,7 @@ describe(toDataValue, () => {
   });
 
   it("passes through nulls correctly", async () => {
-    const converted = await toDataValue(
-      null,
-      clientCtx,
-      mockActionMetadata,
-    );
+    const converted = await toDataValue(null, clientCtx, mockActionMetadata);
     expect(converted).toBeNull();
   });
 

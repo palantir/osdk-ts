@@ -16,10 +16,8 @@
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
 import type {
-  PatchTimeseriesMonitorRequest
-    as _api_timeseries_PatchTimeseriesMonitorRequest,
-  PatchTimeseriesMonitorResponse
-    as _api_timeseries_PatchTimeseriesMonitorResponse,
+  PatchTimeseriesMonitorRequest as _api_timeseries_PatchTimeseriesMonitorRequest,
+  PatchTimeseriesMonitorResponse as _api_timeseries_PatchTimeseriesMonitorResponse,
 } from "../__components.js";
 
 /**

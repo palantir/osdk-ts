@@ -45,8 +45,8 @@ export function PdfViewerSidebar({
   onSidebarModeChange,
 }: PdfViewerSidebarProps): React.ReactElement {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const estimatedItemHeight = Math.floor(DEFAULT_PAGE_HEIGHT * THUMBNAIL_SCALE)
-    + THUMBNAIL_GAP + 20;
+  const estimatedItemHeight =
+    Math.floor(DEFAULT_PAGE_HEIGHT * THUMBNAIL_SCALE) + THUMBNAIL_GAP + 20;
 
   const virtualizer = useVirtualizer({
     count: numPages,
@@ -56,9 +56,12 @@ export function PdfViewerSidebar({
   });
 
   // Auto-scroll to keep the active thumbnail visible
-  useEffect(function syncActiveThumbnail() {
-    virtualizer.scrollToIndex(currentPage - 1, { align: "auto" });
-  }, [currentPage, virtualizer]);
+  useEffect(
+    function syncActiveThumbnail() {
+      virtualizer.scrollToIndex(currentPage - 1, { align: "auto" });
+    },
+    [currentPage, virtualizer],
+  );
 
   return (
     <div className={styles.sidebar}>

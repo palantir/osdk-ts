@@ -242,7 +242,7 @@ const TEMPLATE_REGISTRY: TemplateRegistry = {
   "orTemplate": { property: "fullName", propertyValueV2: `"John Doe"` },
   "containsTemplate": {
     property: "previousTitles",
-    arrayElementValue: "\"Product manager\"",
+    arrayElementValue: '"Product manager"',
   },
   "uploadAttachment": {
     primaryKeyPropertyV2: { apiName: "equipmentId", type: "string" },

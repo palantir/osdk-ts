@@ -20,18 +20,18 @@ import { EntrypointIframe } from "./entrypointIframe.js";
 
 type PageState =
   | {
-    state: "loading";
-  }
+      state: "loading";
+    }
   | {
-    state: "failed";
-    error?: string;
-    response?: string;
-    hint?: string;
-  }
+      state: "failed";
+      error?: string;
+      response?: string;
+      hint?: string;
+    }
   | {
-    state: "success";
-    isRedirecting: boolean;
-  };
+      state: "success";
+      isRedirecting: boolean;
+    };
 
 const POLLING_INTERVAL = 250;
 const REDIRECT_DELAY = 500;
@@ -100,9 +100,8 @@ export const App: React.FC = () => {
           setPageState({
             state: "failed",
             error: error instanceof Error ? error.message : undefined,
-            response: error instanceof ResponseError
-              ? error.response
-              : undefined,
+            response:
+              error instanceof ResponseError ? error.response : undefined,
             hint: error instanceof ResponseError ? error.hint : undefined,
           });
         });
@@ -125,9 +124,11 @@ export const App: React.FC = () => {
           description={
             <div className="description">
               <Spinner intent="primary" size={SpinnerSize.SMALL} />{" "}
-              {pageState.isRedirecting
-                ? <span>Redirecting you…</span>
-                : <span>Loading preview…</span>}
+              {pageState.isRedirecting ? (
+                <span>Redirecting you…</span>
+              ) : (
+                <span>Loading preview…</span>
+              )}
             </div>
           }
         />
@@ -163,18 +164,18 @@ function loadEntrypoints(): Promise<string[]> {
 
 function finish(attempt: number): Promise<
   | {
-    status: "success";
-    redirectUrl: string | null;
-  }
+      status: "success";
+      redirectUrl: string | null;
+    }
   | {
-    status: "error";
-    error: string;
-    response?: string;
-    hint?: string;
-  }
+      status: "error";
+      error: string;
+      response?: string;
+      hint?: string;
+    }
   | {
-    status: "pending";
-  }
+      status: "pending";
+    }
 > {
   return fetch(`../finish?attempt=${attempt}`).then((res) => res.json());
 }

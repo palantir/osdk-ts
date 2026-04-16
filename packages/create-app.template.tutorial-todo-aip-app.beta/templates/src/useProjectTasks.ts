@@ -62,8 +62,8 @@ export function useProjectTasks(project: IProject | undefined) {
     useCallback(
       async (taskName: string) => {
         // Try to implement this with the Ontology SDK!
-        const recommendedTaskDescription = await Mocks
-          .getRecommendedTaskDescription(taskName);
+        const recommendedTaskDescription =
+          await Mocks.getRecommendedTaskDescription(taskName);
         await mutate();
         return recommendedTaskDescription;
       },

@@ -72,8 +72,8 @@ export const CategoryMarkingGroup: React.MemoExoticComponent<
   const gridItemCount = hasOverflow
     ? visibleMarkings.length + 1
     : visibleMarkings.length;
-  const emptyCellCount = (GRID_COLUMNS - (gridItemCount % GRID_COLUMNS))
-    % GRID_COLUMNS;
+  const emptyCellCount =
+    (GRID_COLUMNS - (gridItemCount % GRID_COLUMNS)) % GRID_COLUMNS;
 
   const hasActiveOverflow = overflowMarkings.some(
     (m) => m.selectionState === "SELECTED" || isImplied(m.selectionState),
@@ -86,7 +86,9 @@ export const CategoryMarkingGroup: React.MemoExoticComponent<
       aria-labelledby={headingId}
     >
       <div className={styles.categoryHeader}>
-        <h3 id={headingId} className={styles.categoryName}>{categoryName}</h3>
+        <h3 id={headingId} className={styles.categoryName}>
+          {categoryName}
+        </h3>
         {categoryDescription != null && categoryDescription.length > 0 && (
           <Tooltip.Root>
             <Tooltip.Trigger
@@ -129,10 +131,7 @@ export const CategoryMarkingGroup: React.MemoExoticComponent<
           />
         )}
         {Array.from({ length: emptyCellCount }, (_, i) => (
-          <div
-            key={`empty-${i}`}
-            className={styles.emptyCell}
-          />
+          <div key={`empty-${i}`} className={styles.emptyCell} />
         ))}
       </div>
     </div>

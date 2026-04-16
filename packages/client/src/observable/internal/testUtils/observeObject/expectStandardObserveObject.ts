@@ -44,29 +44,30 @@ const defer = createDefer();
  */
 export async function expectStandardObserveObject<
   T extends ObjectTypeDefinition,
->(
-  { cache, type, primaryKey }: {
-    cache: Store;
-    type: T;
-    primaryKey: PrimaryKeyType<T>;
-  },
-): Promise<{
+>({
+  cache,
+  type,
+  primaryKey,
+}: {
+  cache: Store;
+  type: T;
+  primaryKey: PrimaryKeyType<T>;
+}): Promise<{
   payload: TypedObjectPayload<T>;
   subFn: MockedSingleSubCallback;
 }> {
   const subFn = mockSingleSubCallback();
   defer(
-    cache.objects.observe({
-      apiName: type,
-      pk: primaryKey,
-    }, subFn),
+    cache.objects.observe(
+      {
+        apiName: type,
+        pk: primaryKey,
+      },
+      subFn,
+    ),
   );
 
-  expectSingleObjectCallAndClear(
-    subFn,
-    undefined,
-    "loading",
-  );
+  expectSingleObjectCallAndClear(subFn, undefined, "loading");
 
   await waitForCall(subFn);
 

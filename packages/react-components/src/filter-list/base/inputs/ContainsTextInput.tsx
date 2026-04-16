@@ -95,13 +95,13 @@ function ContainsTextInputInner({
       data-has-value={!!localValue}
     >
       <div className={styles.inputGroup}>
-        {renderSearchIcon
-          ? renderSearchIcon()
-          : (
-            <span className={styles.searchIcon}>
-              <Search />
-            </span>
-          )}
+        {renderSearchIcon ? (
+          renderSearchIcon()
+        ) : (
+          <span className={styles.searchIcon}>
+            <Search />
+          </span>
+        )}
         <Input
           type="text"
           className={styles.input}
@@ -117,9 +117,7 @@ function ContainsTextInputInner({
             onClick={handleClear}
             aria-label="Clear search"
           >
-            {renderClearIcon
-              ? renderClearIcon()
-              : <Cross />}
+            {renderClearIcon ? renderClearIcon() : <Cross />}
           </Button>
         )}
       </div>
@@ -127,6 +125,5 @@ function ContainsTextInputInner({
   );
 }
 
-export const ContainsTextInput: React.NamedExoticComponent<
-  ContainsTextInputProps
-> = memo(ContainsTextInputInner);
+export const ContainsTextInput: React.NamedExoticComponent<ContainsTextInputProps> =
+  memo(ContainsTextInputInner);

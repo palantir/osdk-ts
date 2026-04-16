@@ -42,30 +42,33 @@ export function PdfViewer({
   const [error, setError] = useState<Error | undefined>(undefined);
 
   // This is required until we either support React 19+ or a data fetching hook
-  useEffect(function fetchMediaSource() {
-    let cancelled = false;
-    setLoading(true);
-    setError(undefined);
-    setSrc(undefined);
+  useEffect(
+    function fetchMediaSource() {
+      let cancelled = false;
+      setLoading(true);
+      setError(undefined);
+      setSrc(undefined);
 
-    fetchMediaContents(media)
-      .then((buffer) => {
-        if (!cancelled) {
-          setSrc(buffer);
-          setLoading(false);
-        }
-      })
-      .catch((err: unknown) => {
-        if (!cancelled) {
-          setError(err instanceof Error ? err : new Error(String(err)));
-          setLoading(false);
-        }
-      });
+      fetchMediaContents(media)
+        .then((buffer) => {
+          if (!cancelled) {
+            setSrc(buffer);
+            setLoading(false);
+          }
+        })
+        .catch((err: unknown) => {
+          if (!cancelled) {
+            setError(err instanceof Error ? err : new Error(String(err)));
+            setLoading(false);
+          }
+        });
 
-    return () => {
-      cancelled = true;
-    };
-  }, [media]);
+      return () => {
+        cancelled = true;
+      };
+    },
+    [media],
+  );
 
   const rootClassName = classnames(styles.pdfViewer, className);
 
@@ -99,11 +102,5 @@ export function PdfViewer({
     );
   }
 
-  return (
-    <BasePdfViewer
-      src={src}
-      className={className}
-      {...pdfViewerProps}
-    />
-  );
+  return <BasePdfViewer src={src} className={className} {...pdfViewerProps} />;
 }

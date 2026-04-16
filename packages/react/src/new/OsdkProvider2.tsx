@@ -26,8 +26,8 @@ import { OsdkContext2 } from "./OsdkContext2.js";
 import { useDevToolsClient } from "./useDevToolsClient.js";
 
 declare const process: { env: { NODE_ENV: string } };
-const __DEV__ = typeof process === "undefined"
-  || process.env.NODE_ENV !== "production";
+const __DEV__ =
+  typeof process === "undefined" || process.env.NODE_ENV !== "production";
 
 interface OsdkProviderOptions {
   children: React.ReactNode;
@@ -42,8 +42,8 @@ export function OsdkProvider2({
   observableClient,
   enableDevTools,
 }: OsdkProviderOptions): React.JSX.Element {
-  const devtoolsEnabled = __DEV__
-    && (enableDevTools ?? getRegisteredDevTools() != null);
+  const devtoolsEnabled =
+    __DEV__ && (enableDevTools ?? getRegisteredDevTools() != null);
 
   const baseObservableClient = useMemo(
     () => observableClient ?? createObservableClient(client),
@@ -63,12 +63,8 @@ export function OsdkProvider2({
   );
 
   return (
-    <OsdkContext2.Provider
-      value={contextValue}
-    >
-      <OsdkContext.Provider value={{ client }}>
-        {content}
-      </OsdkContext.Provider>
+    <OsdkContext2.Provider value={contextValue}>
+      <OsdkContext.Provider value={{ client }}>{content}</OsdkContext.Provider>
     </OsdkContext2.Provider>
   );
 }

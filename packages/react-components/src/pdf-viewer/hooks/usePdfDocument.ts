@@ -47,40 +47,41 @@ export function usePdfDocument(
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | undefined>(undefined);
 
-  useEffect(function loadPdfDocument() {
-    pdfWorker.ensureWorker();
-    setLoading(true);
-    setError(undefined);
+  useEffect(
+    function loadPdfDocument() {
+      pdfWorker.ensureWorker();
+      setLoading(true);
+      setError(undefined);
 
-    const loadingTask = getDocument(
-      typeof src === "string" ? { url: src } : { data: src },
-    );
+      const loadingTask = getDocument(
+        typeof src === "string" ? { url: src } : { data: src },
+      );
 
-    let cancelled = false;
+      let cancelled = false;
 
-    loadingTask.promise.then(
-      (pdf) => {
-        if (!cancelled) {
-          setDocument(pdf);
-          setNumPages(pdf.numPages);
-          setLoading(false);
-        }
-      },
-      (err: unknown) => {
-        if (!cancelled) {
-          setError(
-            err instanceof Error ? err : new Error(String(err)),
-          );
-          setLoading(false);
-        }
-      },
-    );
+      loadingTask.promise.then(
+        (pdf) => {
+          if (!cancelled) {
+            setDocument(pdf);
+            setNumPages(pdf.numPages);
+            setLoading(false);
+          }
+        },
+        (err: unknown) => {
+          if (!cancelled) {
+            setError(err instanceof Error ? err : new Error(String(err)));
+            setLoading(false);
+          }
+        },
+      );
 
-    return () => {
-      cancelled = true;
-      void loadingTask.destroy();
-    };
-  }, [src]);
+      return () => {
+        cancelled = true;
+        void loadingTask.destroy();
+      };
+    },
+    [src],
+  );
 
   return { document, numPages, loading, error };
 }

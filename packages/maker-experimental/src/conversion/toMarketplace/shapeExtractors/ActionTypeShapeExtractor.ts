@@ -239,19 +239,19 @@ class BaseParameterTypeConverter {
 
       // Struct types
       case "struct": {
-        const structType = pt.struct as {
-          structFieldTypes?: Record<
-            string,
-            { type: string; [key: string]: unknown }
-          >;
-        } | undefined;
+        const structType = pt.struct as
+          | {
+              structFieldTypes?: Record<
+                string,
+                { type: string; [key: string]: unknown }
+              >;
+            }
+          | undefined;
         const convertedFields: Record<string, unknown> = {};
         if (structType?.structFieldTypes) {
-          for (
-            const [fieldName, fieldType] of Object.entries(
-              structType.structFieldTypes,
-            )
-          ) {
+          for (const [fieldName, fieldType] of Object.entries(
+            structType.structFieldTypes,
+          )) {
             convertedFields[fieldName] = this.convertStructField(fieldType);
           }
         }
@@ -261,19 +261,19 @@ class BaseParameterTypeConverter {
         } as BaseParameterType;
       }
       case "structList": {
-        const structType = pt.structList as {
-          structFieldTypes?: Record<
-            string,
-            { type: string; [key: string]: unknown }
-          >;
-        } | undefined;
+        const structType = pt.structList as
+          | {
+              structFieldTypes?: Record<
+                string,
+                { type: string; [key: string]: unknown }
+              >;
+            }
+          | undefined;
         const convertedFields: Record<string, unknown> = {};
         if (structType?.structFieldTypes) {
-          for (
-            const [fieldName, fieldType] of Object.entries(
-              structType.structFieldTypes,
-            )
-          ) {
+          for (const [fieldName, fieldType] of Object.entries(
+            structType.structFieldTypes,
+          )) {
             convertedFields[fieldName] = this.convertStructField(fieldType);
           }
         }
@@ -289,9 +289,10 @@ class BaseParameterTypeConverter {
     }
   }
 
-  private convertStructField(
-    fieldType: { type: string; [key: string]: unknown },
-  ): unknown {
+  private convertStructField(fieldType: {
+    type: string;
+    [key: string]: unknown;
+  }): unknown {
     const t = fieldType.type;
     switch (t) {
       case "boolean":
@@ -340,16 +341,15 @@ export class ActionTypeShapeExtractor {
     ridGenerator: OntologyRidGenerator,
     knownIdentifiers: KnownMarketplaceIdentifiers,
   ): BlockShapes {
-    const actionApiName =
-      (actionType.actionType as ActionType).metadata.apiName;
-    const actionReadableId = ReadableIdGenerator.getForActionType(
-      actionApiName,
-    );
+    const actionApiName = (actionType.actionType as ActionType).metadata
+      .apiName;
+    const actionReadableId =
+      ReadableIdGenerator.getForActionType(actionApiName);
 
     // Verify this readable ID exists in the rid generator
-    const actionTypeRid = ridGenerator.getActionTypeRids().get(
-      actionReadableId,
-    );
+    const actionTypeRid = ridGenerator
+      .getActionTypeRids()
+      .get(actionReadableId);
     if (!actionTypeRid) {
       return {
         inputShapes: new Map(),
@@ -387,8 +387,8 @@ export class ActionTypeShapeExtractor {
     const allOutputShapes = new Map<ReadableId, OutputShape>();
 
     // Add parameter shapes
-    const parameters =
-      (actionType.actionType as ActionType).metadata.parameters;
+    const parameters = (actionType.actionType as ActionType).metadata
+      .parameters;
     if (parameters) {
       for (const [parameterId, parameter] of Object.entries(parameters)) {
         const paramReadableId = this.getParameterReadableId(

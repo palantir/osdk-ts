@@ -54,8 +54,7 @@ export class TemplateValidator {
       if (variable.required && !(variable.name in context)) {
         errors.push({
           type: "missing-variable",
-          message:
-            `Required variable "${variable.name}" is missing from context`,
+          message: `Required variable "${variable.name}" is missing from context`,
           template: template.id,
           variable: variable.name,
         });
@@ -149,9 +148,11 @@ export class TemplateValidator {
    * Batch validates multiple templates
    */
   batchValidate(
-    templates: Array<
-      { id: string; content: string; context?: Partial<BaseTemplateContext> }
-    >,
+    templates: Array<{
+      id: string;
+      content: string;
+      context?: Partial<BaseTemplateContext>;
+    }>,
   ): Result<Map<string, ValidationResult>, ProcessingError> {
     const results = new Map<string, ValidationResult>();
     const defaultContext = this.getDefaultContext();
@@ -161,12 +162,13 @@ export class TemplateValidator {
       if (!analysisResult.success) {
         results.set(id, {
           valid: false,
-          errors: [{
-            type: "invalid-block",
-            message:
-              `Failed to analyze template: ${analysisResult.error.message}`,
-            template: id,
-          }],
+          errors: [
+            {
+              type: "invalid-block",
+              message: `Failed to analyze template: ${analysisResult.error.message}`,
+              template: id,
+            },
+          ],
         });
         continue;
       }
@@ -193,12 +195,12 @@ export class TemplateValidator {
    * Gets validation suggestions for fixing errors
    */
   getSuggestions(errors: ValidationError[]): string[] {
-    return errors.map(error => {
+    return errors.map((error) => {
       switch (error.type) {
         case "missing-variable":
-          return `Add "${error.variable}" to your context object with type ${
-            this.getExpectedType(error.variable || "unknown")
-          }`;
+          return `Add "${error.variable}" to your context object with type ${this.getExpectedType(
+            error.variable || "unknown",
+          )}`;
 
         case "type-mismatch":
           return `Change "${error.variable || "unknown"}" from ${

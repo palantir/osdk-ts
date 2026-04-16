@@ -41,18 +41,14 @@ describe("MarkdownRenderer", () => {
   });
 
   it("should render a link", () => {
-    render(
-      <MarkdownRenderer content="[Example](https://example.com)" />,
-    );
+    render(<MarkdownRenderer content="[Example](https://example.com)" />);
     const link = screen.getByRole("link", { name: "Example" });
     expect(link).toBeTruthy();
     expect(link.getAttribute("href")).toBe("https://example.com");
   });
 
   it("should render a code block", () => {
-    render(
-      <MarkdownRenderer content={"```\nconst x = 1;\n```"} />,
-    );
+    render(<MarkdownRenderer content={"```\nconst x = 1;\n```"} />);
     expect(screen.getByText("const x = 1;")).toBeTruthy();
   });
 
@@ -72,9 +68,7 @@ describe("MarkdownRenderer", () => {
   });
 
   it("should render task list checkboxes (GFM)", () => {
-    render(
-      <MarkdownRenderer content={"- [x] Done\n- [ ] Not done"} />,
-    );
+    render(<MarkdownRenderer content={"- [x] Done\n- [ ] Not done"} />);
     const checkboxes = screen.getAllByRole("checkbox");
     expect(checkboxes).toHaveLength(2);
     expect((checkboxes[0] as HTMLInputElement).checked).toBe(true);
@@ -85,7 +79,8 @@ describe("MarkdownRenderer", () => {
     const { container } = render(
       <MarkdownRenderer content="# Test" className="my-custom-class" />,
     );
-    expect(container.firstElementChild?.classList.contains("my-custom-class"))
-      .toBe(true);
+    expect(
+      container.firstElementChild?.classList.contains("my-custom-class"),
+    ).toBe(true);
   });
 });

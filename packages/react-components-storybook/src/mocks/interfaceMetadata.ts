@@ -16,9 +16,7 @@
 
 import type { FauxOntology } from "@osdk/faux";
 
-type InterfaceType = Parameters<
-  FauxOntology["registerInterfaceType"]
->[0];
+type InterfaceType = Parameters<FauxOntology["registerInterfaceType"]>[0];
 
 export const interfaceMetadata: Record<string, InterfaceType> = {
   "Person": {

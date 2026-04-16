@@ -63,9 +63,7 @@ export type {
   DataValueClientToWire,
   DataValueWireToClient,
 } from "./mapping/DataValueMapping.js";
-export type {
-  PropertyValueWireToClient,
-} from "./mapping/PropertyValueMapping.js";
+export type { PropertyValueWireToClient } from "./mapping/PropertyValueMapping.js";
 export type {
   Attachment,
   AttachmentMetadata,

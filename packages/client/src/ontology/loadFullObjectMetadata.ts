@@ -28,9 +28,8 @@ export async function loadFullObjectMetadata(
     objectType,
     { preview: true, branch: client.branch },
   );
-  const { wireObjectTypeFullMetadataToSdkObjectMetadata } = await import(
-    "@osdk/generator-converters"
-  );
+  const { wireObjectTypeFullMetadataToSdkObjectMetadata } =
+    await import("@osdk/generator-converters");
   const ret = wireObjectTypeFullMetadataToSdkObjectMetadata(full, true);
   return { ...ret };
 }

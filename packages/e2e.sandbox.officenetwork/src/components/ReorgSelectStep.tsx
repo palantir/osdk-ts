@@ -45,14 +45,14 @@ export function ReorgSelectStep({
       const query = searchQuery.toLowerCase();
       result = result.filter(
         (e) =>
-          e.fullName?.toLowerCase().includes(query)
-          || e.emailPrimaryWork?.toLowerCase().includes(query)
-          || e.team?.toLowerCase().includes(query),
+          e.fullName?.toLowerCase().includes(query) ||
+          e.emailPrimaryWork?.toLowerCase().includes(query) ||
+          e.team?.toLowerCase().includes(query),
       );
     }
 
     return result.sort((a, b) =>
-      (a.fullName ?? "").localeCompare(b.fullName ?? "")
+      (a.fullName ?? "").localeCompare(b.fullName ?? ""),
     );
   }, [
     employees,

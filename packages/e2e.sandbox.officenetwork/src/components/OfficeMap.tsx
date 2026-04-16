@@ -49,7 +49,7 @@ const mapStyle: StyleSpecification = {
       ],
       tileSize: 256,
       attribution:
-        "&copy; <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors &copy; <a href=\"https://carto.com/attributions\">CARTO</a>",
+        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
     },
   },
   layers: [
@@ -87,8 +87,10 @@ interface EmployeeWithLocation {
 const showsOfficeMarkers = (mode: LensMode): boolean => mode === "offices";
 
 const showsEmployeeMarkers = (mode: LensMode): boolean =>
-  mode === "employees" || mode === "network" || mode === "chain"
-  || mode === "team";
+  mode === "employees" ||
+  mode === "network" ||
+  mode === "chain" ||
+  mode === "team";
 
 const showsConnectionLines = (mode: LensMode): boolean =>
   mode === "network" || mode === "chain" || mode === "team";
@@ -174,18 +176,20 @@ export function OfficeMap({
     lensMode,
   });
 
-  const defaultCenter = officesWithLocation.length > 0
-    ? {
-      longitude: officesWithLocation[0].location.coordinates[0],
-      latitude: officesWithLocation[0].location.coordinates[1],
-    }
-    : { longitude: -98, latitude: 39 };
+  const defaultCenter =
+    officesWithLocation.length > 0
+      ? {
+          longitude: officesWithLocation[0].location.coordinates[0],
+          latitude: officesWithLocation[0].location.coordinates[1],
+        }
+      : { longitude: -98, latitude: 39 };
 
   React.useEffect(() => {
     if (freezeMap) return;
     if (
-      selectedOffice?.location && mapRef.current
-      && isPoint(selectedOffice.location)
+      selectedOffice?.location &&
+      mapRef.current &&
+      isPoint(selectedOffice.location)
     ) {
       mapRef.current.flyTo({
         center: [
@@ -201,8 +205,9 @@ export function OfficeMap({
   React.useEffect(() => {
     if (freezeMap) return;
     if (
-      selectedEmployee?.primaryOfficeId && mapRef.current
-      && showsEmployeeMarkers(lensMode)
+      selectedEmployee?.primaryOfficeId &&
+      mapRef.current &&
+      showsEmployeeMarkers(lensMode)
     ) {
       const officeInfo = officeLocationMap.get(
         selectedEmployee.primaryOfficeId,
@@ -239,86 +244,90 @@ export function OfficeMap({
         />
 
         {/* Office markers - dark background with cyan border, fills cyan when selected */}
-        {showsOfficeMarkers(lensMode) && officesWithLocation.map((office) => {
-          const [longitude, latitude] = office.location.coordinates;
-          const isSelected = selectedOffice?.primaryKey_ === office.primaryKey_;
-          const hasMatchingEmployees = employeesByOffice.has(
-            office.primaryKey_,
-          );
-          const isDimmed = hasActiveFilters && !hasMatchingEmployees
-            && !isSelected;
+        {showsOfficeMarkers(lensMode) &&
+          officesWithLocation.map((office) => {
+            const [longitude, latitude] = office.location.coordinates;
+            const isSelected =
+              selectedOffice?.primaryKey_ === office.primaryKey_;
+            const hasMatchingEmployees = employeesByOffice.has(
+              office.primaryKey_,
+            );
+            const isDimmed =
+              hasActiveFilters && !hasMatchingEmployees && !isSelected;
 
-          return (
-            <Marker
-              key={office.primaryKey_}
-              longitude={longitude}
-              latitude={latitude}
-              anchor="bottom"
-              onClick={(e: MarkerEvent<MouseEvent>) => {
-                e.originalEvent.stopPropagation();
-                onSelectOffice(office);
-              }}
-            >
-              <div
-                role="button"
-                tabIndex={0}
-                aria-label={`Select office ${office.name ?? "Unknown"}`}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") {
-                    e.preventDefault();
-                    onSelectOffice(office);
-                  }
-                }}
-                className={`cursor-pointer transition-transform ${
-                  isSelected ? "scale-125" : "hover:scale-110"
-                } focus:outline-none focus:ring-2 focus:ring-[var(--officenetwork-accent-cyan)] focus:ring-offset-2 focus:ring-offset-[var(--officenetwork-bg-base)]`}
-                style={{
-                  opacity: isDimmed ? 0.2 : 1,
-                  transition: "opacity 0.3s ease",
+            return (
+              <Marker
+                key={office.primaryKey_}
+                longitude={longitude}
+                latitude={latitude}
+                anchor="bottom"
+                onClick={(e: MarkerEvent<MouseEvent>) => {
+                  e.originalEvent.stopPropagation();
+                  onSelectOffice(office);
                 }}
               >
                 <div
-                  className="size-8 rounded flex items-center justify-center text-xs font-semibold"
+                  role="button"
+                  tabIndex={0}
+                  aria-label={`Select office ${office.name ?? "Unknown"}`}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      onSelectOffice(office);
+                    }
+                  }}
+                  className={`cursor-pointer transition-transform ${
+                    isSelected ? "scale-125" : "hover:scale-110"
+                  } focus:outline-none focus:ring-2 focus:ring-[var(--officenetwork-accent-cyan)] focus:ring-offset-2 focus:ring-offset-[var(--officenetwork-bg-base)]`}
                   style={{
-                    boxShadow: isSelected
-                      ? "0 0 0 2px var(--officenetwork-accent-cyan), 0 2px 12px rgba(88,166,255,0.5)"
-                      : "0 2px 8px rgba(0,0,0,0.5)",
-                    backgroundColor: isSelected
-                      ? "var(--officenetwork-accent-cyan)"
-                      : "var(--officenetwork-bg-surface)",
-                    color: isSelected
-                      ? "var(--officenetwork-bg-base)"
-                      : "var(--officenetwork-accent-cyan)",
-                    border: isSelected
-                      ? "2px solid var(--officenetwork-accent-cyan)"
-                      : "2px solid var(--officenetwork-accent-cyan)",
+                    opacity: isDimmed ? 0.2 : 1,
+                    transition: "opacity 0.3s ease",
                   }}
                 >
-                  {office.name?.charAt(0) ?? "?"}
-                </div>
-                {isSelected && (
-                  <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 whitespace-nowrap text-[10px] font-medium text-[var(--officenetwork-accent-cyan)] bg-[var(--officenetwork-bg-surface)]/95 px-2 py-0.5 rounded border border-[var(--officenetwork-border-default)]">
-                    {office.name}
+                  <div
+                    className="size-8 rounded flex items-center justify-center text-xs font-semibold"
+                    style={{
+                      boxShadow: isSelected
+                        ? "0 0 0 2px var(--officenetwork-accent-cyan), 0 2px 12px rgba(88,166,255,0.5)"
+                        : "0 2px 8px rgba(0,0,0,0.5)",
+                      backgroundColor: isSelected
+                        ? "var(--officenetwork-accent-cyan)"
+                        : "var(--officenetwork-bg-surface)",
+                      color: isSelected
+                        ? "var(--officenetwork-bg-base)"
+                        : "var(--officenetwork-accent-cyan)",
+                      border: isSelected
+                        ? "2px solid var(--officenetwork-accent-cyan)"
+                        : "2px solid var(--officenetwork-accent-cyan)",
+                    }}
+                  >
+                    {office.name?.charAt(0) ?? "?"}
                   </div>
-                )}
-              </div>
-            </Marker>
-          );
-        })}
+                  {isSelected && (
+                    <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 whitespace-nowrap text-[10px] font-medium text-[var(--officenetwork-accent-cyan)] bg-[var(--officenetwork-bg-surface)]/95 px-2 py-0.5 rounded border border-[var(--officenetwork-border-default)]">
+                      {office.name}
+                    </div>
+                  )}
+                </div>
+              </Marker>
+            );
+          })}
 
         {/* Employee markers - dark background with colored border/text, fills when selected */}
-        {showsEmployeeMarkers(lensMode)
-          && Array.from(employeesByOffice.entries()).map(([officeId, emps]) => {
+        {showsEmployeeMarkers(lensMode) &&
+          Array.from(employeesByOffice.entries()).map(([officeId, emps]) => {
             return emps.map((emp, index) => {
               const [longitude, latitude] = emp.location.coordinates;
-              const isSelected = selectedEmployee?.employeeNumber
-                === emp.employee.employeeNumber;
+              const isSelected =
+                selectedEmployee?.employeeNumber ===
+                emp.employee.employeeNumber;
               const offset = getOffset(index, emps.length);
-              const initials = emp.employee.fullName
-                ?.split(" ")
-                .map((n) => n[0])
-                .join("")
-                .slice(0, 2) ?? "?";
+              const initials =
+                emp.employee.fullName
+                  ?.split(" ")
+                  .map((n) => n[0])
+                  .join("")
+                  .slice(0, 2) ?? "?";
 
               const useHierarchy = usesHierarchyColors(lensMode);
               const hierarchyLevel = useHierarchy
@@ -327,8 +336,10 @@ export function OfficeMap({
               const hierarchyColor = hierarchyLevel
                 ? HIERARCHY_COLORS[hierarchyLevel]
                 : "var(--officenetwork-hier-evp)";
-              const matchesFilter = !filteredLevel
-                || hierarchyLevel === filteredLevel || isSelected;
+              const matchesFilter =
+                !filteredLevel ||
+                hierarchyLevel === filteredLevel ||
+                isSelected;
               const isDimmed = filteredLevel && !matchesFilter;
 
               return (
@@ -414,8 +425,8 @@ export function OfficeMap({
                     isActive
                       ? "bg-[var(--officenetwork-bg-elevated)] ring-1 ring-[var(--officenetwork-accent-cyan)]/50"
                       : filteredLevel
-                      ? "opacity-40 hover:opacity-70"
-                      : "hover:bg-[var(--officenetwork-bg-elevated)]"
+                        ? "opacity-40 hover:opacity-70"
+                        : "hover:bg-[var(--officenetwork-bg-elevated)]"
                   }`}
                 >
                   <span
@@ -423,9 +434,11 @@ export function OfficeMap({
                     style={{ backgroundColor: HIERARCHY_COLORS[level] }}
                   />
                   <span
-                    className={isActive
-                      ? "text-[var(--officenetwork-text-primary)]"
-                      : "text-[var(--officenetwork-text-muted)]"}
+                    className={
+                      isActive
+                        ? "text-[var(--officenetwork-text-primary)]"
+                        : "text-[var(--officenetwork-text-muted)]"
+                    }
                   >
                     {HIERARCHY_LABELS[level]}
                   </span>

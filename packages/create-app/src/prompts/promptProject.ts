@@ -16,9 +16,11 @@
 
 import { consola } from "../consola.js";
 
-export async function promptProject(
-  { project }: { project?: string },
-): Promise<string> {
+export async function promptProject({
+  project,
+}: {
+  project?: string;
+}): Promise<string> {
   while (project == null || !/^[a-zA-Z0-9-_]+$/.test(project)) {
     if (project != null) {
       consola.fail(

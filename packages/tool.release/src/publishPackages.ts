@@ -59,10 +59,12 @@ export async function publishPackages(
     path.join(cwd, "pnpm-publish-summary.json"),
     JSON.stringify(
       {
-        publishedPackages: r.filter((x) => x.published).map(x => ({
-          name: x.name,
-          version: x.newVersion,
-        })),
+        publishedPackages: r
+          .filter((x) => x.published)
+          .map((x) => ({
+            name: x.name,
+            version: x.newVersion,
+          })),
       },
       null,
       2,
@@ -72,17 +74,20 @@ export async function publishPackages(
   return r;
 }
 
-async function execPnpmPublish(
-  { cwd, tag, access }: { cwd: string; tag: string; access: AccessType },
-) {
-  const result = await execa("pnpm", [
-    "publish",
-    "--json",
-    "--tag",
-    "--dry-run",
-    tag,
-    "--no-git-checks",
-  ], { cwd });
+async function execPnpmPublish({
+  cwd,
+  tag,
+  access,
+}: {
+  cwd: string;
+  tag: string;
+  access: AccessType;
+}) {
+  const result = await execa(
+    "pnpm",
+    ["publish", "--json", "--tag", "--dry-run", tag, "--no-git-checks"],
+    { cwd },
+  );
 
   if (result.exitCode !== 0) {
     consola.error(

@@ -34,9 +34,8 @@ export const useColumnResize = ({
   const onColumnSizingChange: OnChangeFn<ColumnSizingState> = useCallback(
     (updater) => {
       setColumnSizing((prev) => {
-        const newState = typeof updater === "function"
-          ? updater(prev)
-          : updater;
+        const newState =
+          typeof updater === "function" ? updater(prev) : updater;
 
         if (onColumnResize) {
           for (const columnId of Object.keys(newState)) {

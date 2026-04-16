@@ -18,9 +18,7 @@ import type { Rollup } from "vite";
 import { expect, test } from "vitest";
 import { getInputHtmlEntrypoints } from "../getInputHtmlEntrypoints.js";
 
-function mockOptions(
-  input: Rollup.NormalizedInputOptions["input"],
-) {
+function mockOptions(input: Rollup.NormalizedInputOptions["input"]) {
   return { input } as Rollup.NormalizedInputOptions;
 }
 

@@ -16,10 +16,8 @@
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
 import type {
-  GetTaggedDependentsForOntologyEntityRequest
-    as _api_provenance_GetTaggedDependentsForOntologyEntityRequest,
-  GetTaggedDependentsForOntologyEntityResponse
-    as _api_provenance_GetTaggedDependentsForOntologyEntityResponse,
+  GetTaggedDependentsForOntologyEntityRequest as _api_provenance_GetTaggedDependentsForOntologyEntityRequest,
+  GetTaggedDependentsForOntologyEntityResponse as _api_provenance_GetTaggedDependentsForOntologyEntityResponse,
 } from "../__components.js";
 
 /**

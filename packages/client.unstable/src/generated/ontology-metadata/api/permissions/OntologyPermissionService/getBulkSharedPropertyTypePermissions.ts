@@ -16,10 +16,8 @@
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
 import type {
-  GetBulkSharedPropertyTypePermissionsRequest
-    as _api_permissions_GetBulkSharedPropertyTypePermissionsRequest,
-  GetBulkSharedPropertyTypePermissionsResponse
-    as _api_permissions_GetBulkSharedPropertyTypePermissionsResponse,
+  GetBulkSharedPropertyTypePermissionsRequest as _api_permissions_GetBulkSharedPropertyTypePermissionsRequest,
+  GetBulkSharedPropertyTypePermissionsResponse as _api_permissions_GetBulkSharedPropertyTypePermissionsResponse,
 } from "../__components.js";
 
 /**

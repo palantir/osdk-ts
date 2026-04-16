@@ -7,13 +7,14 @@ function PeopleApp() {
   const navigate = useNavigate();
   const location = useLocation();
   const path = location.pathname;
-  const activeTab = path === "/" || path === "/employees"
-    ? "employees"
-    : path === "/employees/filter-list"
-    ? "filter-list"
-    : path === "/form"
-    ? "form"
-    : "offices";
+  const activeTab =
+    path === "/" || path === "/employees"
+      ? "employees"
+      : path === "/employees/filter-list"
+        ? "filter-list"
+        : path === "/form"
+          ? "form"
+          : "offices";
 
   return (
     <main className="flex min-h-screen flex-col items-center p-24">

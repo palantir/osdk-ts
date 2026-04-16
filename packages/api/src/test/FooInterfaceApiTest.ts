@@ -33,9 +33,10 @@ export namespace FooInterfaceApiTest {
   }
   export type StrictProps = Props;
 
-  export interface ObjectSet
-    extends $ObjectSet<FooInterfaceApiTest, FooInterfaceApiTest.ObjectSet>
-  {}
+  export interface ObjectSet extends $ObjectSet<
+    FooInterfaceApiTest,
+    FooInterfaceApiTest.ObjectSet
+  > {}
 
   export type OsdkInstance<
     OPTIONS extends never | "$rid" = never,

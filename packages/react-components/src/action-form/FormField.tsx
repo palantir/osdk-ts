@@ -27,41 +27,40 @@ interface FormFieldProps {
   children: React.ReactNode;
 }
 
-export const FormField: React.FC<FormFieldProps> = memo(
-  function FormFieldFn({
-    fieldKey,
-    label,
-    isRequired,
-    helperText,
-    error,
-    onBlur,
-    children,
-  }: FormFieldProps): React.ReactElement {
-    return (
-      <div className={styles.osdkFormField} onBlur={onBlur}>
-        {label != null && (
-          <label className={styles.osdkFormFieldLabel} htmlFor={fieldKey}>
-            {label}
-            {isRequired === true && (
-              <span
-                className={styles.osdkFormFieldRequired}
-                aria-label="required"
-              >
-                {" "}*
-              </span>
-            )}
-          </label>
-        )}
-        {children}
-        {error != null && (
-          <div className={styles.osdkFormFieldError} role="alert">
-            {error}
-          </div>
-        )}
-        {helperText != null && (
-          <div className={styles.osdkFormFieldHelperText}>{helperText}</div>
-        )}
-      </div>
-    );
-  },
-);
+export const FormField: React.FC<FormFieldProps> = memo(function FormFieldFn({
+  fieldKey,
+  label,
+  isRequired,
+  helperText,
+  error,
+  onBlur,
+  children,
+}: FormFieldProps): React.ReactElement {
+  return (
+    <div className={styles.osdkFormField} onBlur={onBlur}>
+      {label != null && (
+        <label className={styles.osdkFormFieldLabel} htmlFor={fieldKey}>
+          {label}
+          {isRequired === true && (
+            <span
+              className={styles.osdkFormFieldRequired}
+              aria-label="required"
+            >
+              {" "}
+              *
+            </span>
+          )}
+        </label>
+      )}
+      {children}
+      {error != null && (
+        <div className={styles.osdkFormFieldError} role="alert">
+          {error}
+        </div>
+      )}
+      {helperText != null && (
+        <div className={styles.osdkFormFieldHelperText}>{helperText}</div>
+      )}
+    </div>
+  );
+});

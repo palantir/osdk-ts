@@ -58,8 +58,8 @@ interface OsdkContextContents {
   devtoolsEnabled: boolean;
 }
 
-export const OsdkContext2: React.Context<OsdkContextContents> = React
-  .createContext<OsdkContextContents>({
+export const OsdkContext2: React.Context<OsdkContextContents> =
+  React.createContext<OsdkContextContents>({
     client: fakeClient,
     observableClient: fakeObservableClient,
     devtoolsEnabled: false,

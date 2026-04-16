@@ -14,5 +14,4 @@
  * limitations under the License.
  */
 
-export interface ValueTypeValidationSuccess {
-}
+export interface ValueTypeValidationSuccess {}

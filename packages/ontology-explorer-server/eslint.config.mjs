@@ -18,16 +18,13 @@ import * as typescriptEslintParser from "@typescript-eslint/parser";
 import * as tseslint from "typescript-eslint";
 import rootConfig from "../../eslint.config.mjs";
 
-export default tseslint.config(
-  ...rootConfig,
-  {
-    files: ["src/**/*"],
-    languageOptions: {
-      parser: typescriptEslintParser,
-      parserOptions: {
-        projectService: true,
-        tsconfigRootDir: import.meta.dirname,
-      },
+export default tseslint.config(...rootConfig, {
+  files: ["src/**/*"],
+  languageOptions: {
+    parser: typescriptEslintParser,
+    parserOptions: {
+      projectService: true,
+      tsconfigRootDir: import.meta.dirname,
     },
   },
-);
+});

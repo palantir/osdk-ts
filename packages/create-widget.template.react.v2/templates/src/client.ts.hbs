@@ -1,9 +1,4 @@
-import { $ontologyRid } from "{{osdkPackage}}";
-import { createClient } from "@osdk/client";
-import { createFoundryWidgetTokenProvider } from "@osdk/widget.client";
-
-export const client = createClient(
-  window.location.origin,
-  $ontologyRid,
-  createFoundryWidgetTokenProvider(),
-);
+import { $ontologyRid } from "{{osdkPackage}}"; import { createClient } from
+"@osdk/client"; import { createFoundryWidgetTokenProvider } from
+"@osdk/widget.client"; export const client = createClient(
+window.location.origin, $ontologyRid, createFoundryWidgetTokenProvider(), );

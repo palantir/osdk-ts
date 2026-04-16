@@ -49,7 +49,7 @@ test("visitNpmPackages", async () => {
     [packageJson2.name]: "/path/to/node_modules/package2/package.json",
     [packageJson3.name]: "/path/to/node_modules/package3/package.json",
   } as const;
-  const packageJsons: Record<typeof packageJsonPaths[string], PackageJson> = {
+  const packageJsons: Record<(typeof packageJsonPaths)[string], PackageJson> = {
     [packageJsonPaths[packageJson1.name]]: packageJson1,
     [packageJsonPaths[packageJson2.name]]: packageJson2,
     [packageJsonPaths[packageJson3.name]]: packageJson3,

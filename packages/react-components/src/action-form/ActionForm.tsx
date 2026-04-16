@@ -43,9 +43,8 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
   onSuccess,
   onError,
 }: ActionFormProps<Q>): React.ReactElement {
-  const { applyAction: osdkApplyAction, isPending } = useOsdkAction(
-    actionDefinition,
-  );
+  const { applyAction: osdkApplyAction, isPending } =
+    useOsdkAction(actionDefinition);
   const {
     metadata,
     loading: metadataLoading,
@@ -84,10 +83,10 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
 
   const rendererFieldDefinitions = useMemo(
     () =>
-      customFieldDefinitions
-        ?? (metadata != null
-          ? getDefaultFieldDefinitions(metadata)
-          : EMPTY_FIELD_DEFINITIONS),
+      customFieldDefinitions ??
+      (metadata != null
+        ? getDefaultFieldDefinitions(metadata)
+        : EMPTY_FIELD_DEFINITIONS),
     [customFieldDefinitions, metadata],
   );
 
@@ -132,8 +131,8 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
     [onFormStateChange],
   );
 
-  const resolvedTitle = formTitle ?? metadata?.displayName
-    ?? actionDefinition.apiName;
+  const resolvedTitle =
+    formTitle ?? metadata?.displayName ?? actionDefinition.apiName;
 
   const isControlled = controlledFormState != null;
 

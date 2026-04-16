@@ -19,9 +19,7 @@ import classNames from "classnames";
 import React from "react";
 import styles from "./ActionButton.module.css";
 
-export interface ButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement>
-{
+export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: "primary" | "secondary";
 }
 

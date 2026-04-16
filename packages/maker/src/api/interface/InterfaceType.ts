@@ -25,19 +25,19 @@ import type {
   InterfaceSharedPropertyType,
 } from "./InterfacePropertyType.js";
 
-export interface InterfaceType extends
-  OntologyEntityBase,
-  Omit<
-    OntologyIrMarketplaceInterfaceType,
-    // we want our simplified representation
-    | "properties"
-    // these things don't need to exist as the system works fine without them (I'm told)
-    | "propertiesV2"
-    | "propertiesV3"
-    | "extendsInterfaces"
-    | "extendsInterfacesMetadata"
-  >
-{
+export interface InterfaceType
+  extends
+    OntologyEntityBase,
+    Omit<
+      OntologyIrMarketplaceInterfaceType,
+      // we want our simplified representation
+      | "properties"
+      // these things don't need to exist as the system works fine without them (I'm told)
+      | "propertiesV2"
+      | "propertiesV3"
+      | "extendsInterfaces"
+      | "extendsInterfacesMetadata"
+    > {
   propertiesV2: Record<string, InterfaceSharedPropertyType>;
   propertiesV3: Record<string, InterfacePropertyType>;
   extendsInterfaces: Array<InterfaceType>;

@@ -56,8 +56,9 @@ export async function toDataValue(
   if (Array.isArray(value) || value instanceof Set) {
     const values = Array.from(value);
     if (
-      values.some((dataValue) =>
-        isAttachmentUpload(dataValue) || isAttachmentFile(dataValue)
+      values.some(
+        (dataValue) =>
+          isAttachmentUpload(dataValue) || isAttachmentFile(dataValue),
       )
     ) {
       const converted = [];
@@ -76,36 +77,24 @@ export async function toDataValue(
 
   // For uploads, we need to upload ourselves first to get the RID of the attachment
   if (isAttachmentUpload(value)) {
-    const attachment = await Attachments.upload(
-      client,
-      value.data,
-      {
-        filename: value.name,
-      },
-    );
+    const attachment = await Attachments.upload(client, value.data, {
+      filename: value.name,
+    });
     return await toDataValue(attachment.rid, client, actionMetadata);
   }
 
   if (isAttachmentFile(value)) {
-    const attachment = await Attachments.upload(
-      client,
-      value,
-      {
-        filename: value.name as string,
-      },
-    );
+    const attachment = await Attachments.upload(client, value, {
+      filename: value.name as string,
+    });
     return await toDataValue(attachment.rid, client, actionMetadata);
   }
 
   if (isMediaUpload(value)) {
-    const mediaRef = await MediaSets.uploadMedia(
-      client,
-      value.data,
-      {
-        filename: value.fileName,
-        preview: true,
-      },
-    );
+    const mediaRef = await MediaSets.uploadMedia(client, value.data, {
+      filename: value.fileName,
+      preview: true,
+    });
     return await toDataValue(mediaRef, client, actionMetadata);
   }
 

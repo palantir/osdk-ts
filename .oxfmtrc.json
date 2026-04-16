@@ -1,0 +1,38 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "printWidth": 80,
+  "tabWidth": 2,
+  "useTabs": false,
+  "semi": true,
+  "singleQuote": false,
+  "trailingComma": "all",
+  "quoteProps": "preserve",
+  "arrowParens": "always",
+  "sortImports": {
+    "groups": [
+      ["builtin", "external"],
+      ["internal", "parent", "sibling", "index"]
+    ],
+    "internalPattern": [],
+    "newlinesBetween": false,
+    "ignoreCase": true,
+    "order": "asc"
+  },
+  "sortPackageJson": false,
+  "ignorePatterns": [
+    "**/*-lock.json",
+    "**/build",
+    "**/.turbo",
+    "**/src/generatedNoCheck/",
+    "**/src/generatedNoCheck2/",
+    "pnpm-lock.yaml",
+    ".vscode/settings.json",
+    "examples/",
+    "examples-extra/**/dist",
+    "**/tsup.config.bundled_*",
+    "**/api-docs/",
+    "**/*.report.api.md",
+    "**/*.hbs",
+    "**/tsconfig.json"
+  ]
+}

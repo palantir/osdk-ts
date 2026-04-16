@@ -44,8 +44,7 @@ import type {
 /**
  * See com.palantir.object.set.api.AllPropertiesPropertySet.
  */
-export interface AllPropertiesPropertySet {
-}
+export interface AllPropertiesPropertySet {}
 /**
  * See com.palantir.object.set.api.AndFilter.
  */
@@ -406,8 +405,7 @@ export interface ManyToManyJoinCondition {
 /**
  * This filter matches all objects.
  */
-export interface MatchAllFilter {
-}
+export interface MatchAllFilter {}
 /**
  * See com.palantir.object.set.api.MultiMatchFilter.
  */

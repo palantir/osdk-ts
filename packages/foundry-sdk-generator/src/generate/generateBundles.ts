@@ -39,9 +39,7 @@ async function createRollupBuild(
         browser: true,
         modulePaths: [nodeModulesPath!],
       }),
-      ("default" in commonjs
-        ? commonjs.default
-        : (commonjs as any))({}),
+      ("default" in commonjs ? commonjs.default : (commonjs as any))({}),
       ("default" in nodePolyfill
         ? nodePolyfill.default
         : (nodePolyfill as any))(),
@@ -85,10 +83,7 @@ async function generateEsmBuild(
   absolutePackagePath: string,
   packageName: string,
 ) {
-  const umdBuild = await createRollupBuild(
-    absolutePackagePath,
-    packageName,
-  );
+  const umdBuild = await createRollupBuild(absolutePackagePath, packageName);
   await writeRollupBuild(umdBuild, absolutePackagePath, packageName, "esm");
 }
 
@@ -96,7 +91,5 @@ export async function generateBundles(
   absolutePackagePath: string,
   packageName: string,
 ): Promise<void> {
-  await Promise.all([
-    generateEsmBuild(absolutePackagePath, packageName),
-  ]);
+  await Promise.all([generateEsmBuild(absolutePackagePath, packageName)]);
 }

@@ -25,10 +25,7 @@ import type {
 
 export function subSelectPropertiesUrl<
   T extends OntologyObjectV2 | OntologyObject,
->(
-  object: T,
-  url: URL,
-): T {
+>(object: T, url: URL): T {
   const properties = new Set(url.searchParams.getAll("select"));
 
   if (properties.size === 0) {
@@ -55,19 +52,18 @@ export function subSelectPropertiesUrl<
 
 export function subSelectProperties<
   T extends OntologyObjectV2,
-  TResponse extends
-    | PagedBodyResponse<T>
-    | PagedBodyResponseWithTotal<T>,
-  TIncludeCount extends (TResponse extends PagedBodyResponseWithTotal<T> ? true
-    : false),
+  TResponse extends PagedBodyResponse<T> | PagedBodyResponseWithTotal<T>,
+  TIncludeCount extends TResponse extends PagedBodyResponseWithTotal<T>
+    ? true
+    : false,
 >(
   objects: PagedBodyResponse<T>,
   urlOrProperties: URL | string[],
   includeCount: TIncludeCount,
   excludeRid?: boolean,
-): TIncludeCount extends true ? PagedBodyResponseWithTotal<T>
-  : PagedBodyResponse<T>
-{
+): TIncludeCount extends true
+  ? PagedBodyResponseWithTotal<T>
+  : PagedBodyResponse<T> {
   let properties: Set<string>;
   if (Array.isArray(urlOrProperties)) {
     properties = new Set(urlOrProperties);
@@ -75,7 +71,7 @@ export function subSelectProperties<
     properties = new Set(urlOrProperties.searchParams.getAll("select"));
   }
 
-  const result = objects.data.map(object => {
+  const result = objects.data.map((object) => {
     // This is set when an object had an interface that was marked to return all properties
     if (object.$propsToReturn) {
       return {
@@ -109,16 +105,15 @@ export function subSelectProperties<
     );
   });
 
-  const ret:
-    | PagedBodyResponse<T>
-    | PagedBodyResponseWithTotal<T> = {
-      nextPageToken: objects.nextPageToken,
-      data: result as T[],
-      totalCount: (objects as PagedBodyResponseWithTotal<T>).totalCount,
-      propertySecurities: objects.propertySecurities,
-    };
+  const ret: PagedBodyResponse<T> | PagedBodyResponseWithTotal<T> = {
+    nextPageToken: objects.nextPageToken,
+    data: result as T[],
+    totalCount: (objects as PagedBodyResponseWithTotal<T>).totalCount,
+    propertySecurities: objects.propertySecurities,
+  };
 
-  return ret as TIncludeCount extends true ? PagedBodyResponseWithTotal<T>
+  return ret as TIncludeCount extends true
+    ? PagedBodyResponseWithTotal<T>
     : PagedBodyResponse<T>;
 }
 function removeRid<T extends OntologyObjectV2>(object: T) {

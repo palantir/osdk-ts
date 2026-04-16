@@ -34,9 +34,11 @@ export interface NestedExampleMetadata {
   code: string;
 }
 
-export type NestedExampleEntry = NestedExampleMetadata | {
-  [variationKey: string]: NestedExampleMetadata | NestedExampleEntry;
-};
+export type NestedExampleEntry =
+  | NestedExampleMetadata
+  | {
+      [variationKey: string]: NestedExampleMetadata | NestedExampleEntry;
+    };
 
 export interface NestedVersionExamples {
   [exampleName: string]: NestedExampleEntry;
@@ -135,14 +137,14 @@ export class HierarchyBuilder {
    * @returns Object with flat and nested file contents
    */
   generateHierarchyFiles(): { flat: string; nested: string } {
-    const flatContent = `${
-      generateFileHeader(
-        undefined,
-        "Generated examples hierarchy for SDK documentation\n * This provides a mapping of example names to their file paths\n * similar to how TYPESCRIPT_OSDK_SNIPPETS works for templates",
-      )
-    }export const TYPESCRIPT_OSDK_EXAMPLES = ${
-      JSON.stringify(this.flatHierarchy, null, 2)
-    } as const;
+    const flatContent = `${generateFileHeader(
+      undefined,
+      "Generated examples hierarchy for SDK documentation\n * This provides a mapping of example names to their file paths\n * similar to how TYPESCRIPT_OSDK_SNIPPETS works for templates",
+    )}export const TYPESCRIPT_OSDK_EXAMPLES = ${JSON.stringify(
+      this.flatHierarchy,
+      null,
+      2,
+    )} as const;
 `;
 
     const nestedContent = `${generateFileHeader()}/**
@@ -180,9 +182,11 @@ export interface NestedExamplesHierarchy {
  * The nested OSDK documentation context with template variations grouped under their base names.
  * Generated from TYPESCRIPT_OSDK_EXAMPLES.
  */
-export const TYPESCRIPT_OSDK_CONTEXT: NestedExamplesHierarchy = ${
-      JSON.stringify(this.nestedHierarchy, null, 2)
-    } as const;
+export const TYPESCRIPT_OSDK_CONTEXT: NestedExamplesHierarchy = ${JSON.stringify(
+      this.nestedHierarchy,
+      null,
+      2,
+    )} as const;
 `;
 
     return { flat: flatContent, nested: nestedContent };
@@ -207,7 +211,7 @@ export const TYPESCRIPT_OSDK_CONTEXT: NestedExamplesHierarchy = ${
     for (const versionData of Object.values(this.flatHierarchy.versions)) {
       const examples = Object.keys(versionData.examples);
       totalExamples += examples.length;
-      variations += examples.filter(name => name.includes("_")).length;
+      variations += examples.filter((name) => name.includes("_")).length;
     }
 
     return { versions, totalExamples, variations };

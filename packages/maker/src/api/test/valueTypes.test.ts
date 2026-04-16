@@ -38,7 +38,7 @@ describe("Value Types", () => {
           constraints: [{ constraint: { "allowedValues": ["TRUE_VALUE"] } }],
         },
         version: "not a version",
-      })
+      }),
     ).toThrowErrorMatchingInlineSnapshot(
       "[Error: Invariant failed: Version is not a valid semver]",
     );
@@ -86,8 +86,8 @@ describe("Value Types", () => {
 
     const ontology = dumpOntologyFullMetadata();
     const objectPropertyType =
-      ontology.ontology.objectTypes["com.palantir.testObject"]
-        .objectType.propertyTypes["constrainedString"];
+      ontology.ontology.objectTypes["com.palantir.testObject"].objectType
+        .propertyTypes.constrainedString;
 
     expect(objectPropertyType.valueType).toEqual({
       apiName: "stringWithConstraints",
@@ -100,23 +100,28 @@ describe("Value Types", () => {
     });
 
     expect(objectPropertyType.dataConstraints).toBeDefined();
-    expect(objectPropertyType.dataConstraints?.propertyTypeConstraints)
-      .toHaveLength(1);
+    expect(
+      objectPropertyType.dataConstraints?.propertyTypeConstraints,
+    ).toHaveLength(1);
 
-    const constraintWrapper = objectPropertyType.dataConstraints
-      ?.propertyTypeConstraints[0];
+    const constraintWrapper =
+      objectPropertyType.dataConstraints?.propertyTypeConstraints[0];
     expect(constraintWrapper?.constraints?.type).toBe("string");
     expect(
-      (constraintWrapper?.constraints as {
-        type: "string";
-        string: { length: { minSize: number; maxSize: number } };
-      }).string.length.minSize,
+      (
+        constraintWrapper?.constraints as {
+          type: "string";
+          string: { length: { minSize: number; maxSize: number } };
+        }
+      ).string.length.minSize,
     ).toBe(5);
     expect(
-      (constraintWrapper?.constraints as {
-        type: "string";
-        string: { length: { minSize: number; maxSize: number } };
-      }).string.length.maxSize,
+      (
+        constraintWrapper?.constraints as {
+          type: "string";
+          string: { length: { minSize: number; maxSize: number } };
+        }
+      ).string.length.maxSize,
     ).toBe(20);
     expect(constraintWrapper?.failureMessage?.message).toBe(
       "String must be between 5 and 20 characters",
@@ -306,7 +311,7 @@ describe("Value Types", () => {
           type: "boolean",
         },
         version: "1.0.0",
-      })
+      }),
     ).toThrowErrorMatchingInlineSnapshot(
       "[Error: Invariant failed: Value type with apiName duplicateTest and version 1.0.0 is already defined]",
     );
@@ -334,7 +339,7 @@ describe("Value Types", () => {
     const wireType = dumpValueTypeWireType();
     expect(wireType.valueTypes).toHaveLength(1);
     expect(wireType.valueTypes[0].versions).toHaveLength(2);
-    expect(wireType.valueTypes[0].versions.map(v => v.version)).toEqual([
+    expect(wireType.valueTypes[0].versions.map((v) => v.version)).toEqual([
       "1.0.0",
       "2.0.0",
     ]);

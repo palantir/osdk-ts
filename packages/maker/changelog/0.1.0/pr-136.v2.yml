@@ -2,4 +2,4 @@ type: improvement
 improvement:
   description: ont in code experiment
   links:
-  - https://github.com/palantir/osdk-ts/pull/136
+    - https://github.com/palantir/osdk-ts/pull/136

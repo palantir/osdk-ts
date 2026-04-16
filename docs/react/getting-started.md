@@ -30,6 +30,7 @@ All `@osdk/*` packages must use **compatible versions**. Mismatched versions (e.
   }
 }
 ```
+
 :::
 
 You can find the latest versions on npm:
@@ -165,7 +166,9 @@ function TodoList() {
 
   return (
     <div>
-      {data?.map(todo => <div key={todo.$primaryKey}>{todo.title}</div>)}
+      {data?.map((todo) => (
+        <div key={todo.$primaryKey}>{todo.title}</div>
+      ))}
     </div>
   );
 }
@@ -357,7 +360,8 @@ function Dashboard() {
   // Use React Query for external APIs
   const { data: weatherData } = useQuery({
     queryKey: ["weather"],
-    queryFn: () => fetch("https://api.weather.com/current").then(r => r.json()),
+    queryFn: () =>
+      fetch("https://api.weather.com/current").then((r) => r.json()),
   });
 
   return (

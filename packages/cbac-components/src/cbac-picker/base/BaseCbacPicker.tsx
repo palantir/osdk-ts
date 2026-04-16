@@ -62,9 +62,10 @@ export function BaseCbacPicker({
 }: BaseCbacPickerProps): React.ReactElement {
   const errorMessage = error != null ? formatCbacError(error) : undefined;
   const showInitialLoading = isLoading === true && categories.length === 0;
-  const showValidationWarning = isValid === false
-    && requiredMarkingGroups != null
-    && requiredMarkingGroups.length > 0;
+  const showValidationWarning =
+    isValid === false &&
+    requiredMarkingGroups != null &&
+    requiredMarkingGroups.length > 0;
 
   return (
     <div className={classnames(styles.picker, className)}>
@@ -80,41 +81,30 @@ export function BaseCbacPicker({
           className={styles.innerBanner}
         />
       )}
-      {errorMessage !== undefined
-        ? (
-          <div
-            className={styles.statusMessage}
-            role="alert"
-          >
-            <p>{errorMessage.title}</p>
-            {errorMessage.remediation && <p>{errorMessage.remediation}</p>}
-          </div>
-        )
-        : showInitialLoading
-        ? (
-          <div
-            className={styles.statusMessage}
-            role="status"
-            aria-live="polite"
-          >
-            Loading...
-          </div>
-        )
-        : (
-          <div className={styles.categoriesContainer}>
-            {categories.map((group) => (
-              <CategoryMarkingGroup
-                key={group.category.id}
-                categoryName={group.category.name}
-                categoryDescription={group.category.description}
-                markings={group.markings}
-                markingStates={markingStates}
-                readOnly={readOnly}
-                onMarkingToggle={onMarkingToggle}
-              />
-            ))}
-          </div>
-        )}
+      {errorMessage !== undefined ? (
+        <div className={styles.statusMessage} role="alert">
+          <p>{errorMessage.title}</p>
+          {errorMessage.remediation && <p>{errorMessage.remediation}</p>}
+        </div>
+      ) : showInitialLoading ? (
+        <div className={styles.statusMessage} role="status" aria-live="polite">
+          Loading...
+        </div>
+      ) : (
+        <div className={styles.categoriesContainer}>
+          {categories.map((group) => (
+            <CategoryMarkingGroup
+              key={group.category.id}
+              categoryName={group.category.name}
+              categoryDescription={group.category.description}
+              markings={group.markings}
+              markingStates={markingStates}
+              readOnly={readOnly}
+              onMarkingToggle={onMarkingToggle}
+            />
+          ))}
+        </div>
+      )}
       {validationCallouts}
       {showValidationWarning && (
         <ValidationWarning requiredMarkingGroups={requiredMarkingGroups} />

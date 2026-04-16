@@ -31,10 +31,7 @@ describe("media", () => {
   let client: Client;
 
   beforeAll(() => {
-    const testSetup = startNodeApiServer(
-      new LegacyFauxFoundry(),
-      createClient,
-    );
+    const testSetup = startNodeApiServer(new LegacyFauxFoundry(), createClient);
 
     ({ client } = testSetup);
 
@@ -43,9 +40,7 @@ describe("media", () => {
       .registerMedia(
         objectTypeWithAllPropertyTypes.apiName,
         "mediaReference",
-        new TextEncoder().encode(
-          JSON.stringify({ content: "Hello World" }),
-        ),
+        new TextEncoder().encode(JSON.stringify({ content: "Hello World" })),
         "application/json",
         "file1.txt",
         stubData.objectWithAllPropertyTypes1.mediaReference.reference
@@ -58,10 +53,9 @@ describe("media", () => {
   });
 
   it("reads media metadata successfully", async () => {
-    const result = await client(
-      objectTypeWithAllPropertyTypes,
-    )
-      .where({ id: stubData.objectWithAllPropertyTypes1.id }).fetchPage();
+    const result = await client(objectTypeWithAllPropertyTypes)
+      .where({ id: stubData.objectWithAllPropertyTypes1.id })
+      .fetchPage();
 
     const object1 = result.data[0];
     expect(object1.mediaReference).toBeDefined();
@@ -75,7 +69,8 @@ describe("media", () => {
 
   it("reads media content successfully", async () => {
     const result = await client(objectTypeWithAllPropertyTypes)
-      .where({ id: stubData.objectWithAllPropertyTypes1.id }).fetchPage();
+      .where({ id: stubData.objectWithAllPropertyTypes1.id })
+      .fetchPage();
 
     const object1 = result.data[0];
     expect(object1.mediaReference).toBeDefined();
@@ -87,7 +82,8 @@ describe("media", () => {
 
   it("gets media reference successfully", async () => {
     const result = await client(objectTypeWithAllPropertyTypes)
-      .where({ id: stubData.objectWithAllPropertyTypes1.id }).fetchPage();
+      .where({ id: stubData.objectWithAllPropertyTypes1.id })
+      .fetchPage();
 
     const object1 = result.data[0];
     expect(object1.mediaReference).toBeDefined();

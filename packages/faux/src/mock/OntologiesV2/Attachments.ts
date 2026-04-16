@@ -18,17 +18,11 @@ import { Attachments } from "@osdk/foundry.ontologies";
 import type { CallFactory } from "../../handlers/util/handleOpenApiCall.js";
 import { handleOpenApiCall } from "../../handlers/util/handleOpenApiCall.js";
 
-export const upload: CallFactory<
-  never,
-  typeof Attachments.upload
-> = handleOpenApiCall(Attachments.upload, []);
+export const upload: CallFactory<never, typeof Attachments.upload> =
+  handleOpenApiCall(Attachments.upload, []);
 
-export const get: CallFactory<
-  "attachmentRid",
-  typeof Attachments.get
-> = handleOpenApiCall(Attachments.get, ["attachmentRid"]);
+export const get: CallFactory<"attachmentRid", typeof Attachments.get> =
+  handleOpenApiCall(Attachments.get, ["attachmentRid"]);
 
-export const read: CallFactory<
-  "attachmentRid",
-  typeof Attachments.read
-> = handleOpenApiCall(Attachments.read, ["attachmentRid"]);
+export const read: CallFactory<"attachmentRid", typeof Attachments.read> =
+  handleOpenApiCall(Attachments.read, ["attachmentRid"]);

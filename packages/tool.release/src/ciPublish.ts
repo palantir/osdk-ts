@@ -70,29 +70,29 @@ async function ciPublish(): Promise<void> {
 
 async function getRemoteBranches(): Promise<string[]> {
   const repoRoot = process.cwd();
-  const { stdout } = await execa("git", [
-    "ls-remote",
-    "--heads",
-    "origin",
-    "refs/heads/release/*",
-  ], { cwd: repoRoot });
-  return stdout.split("\n").filter(line => !!line).map(line => {
-    const match = line.match(/release\/(.*)/);
-    if (!match) {
-      consola.log(match);
-      throw new Error(`Invalid branch name: ${line}`);
-    }
-    return match[0];
-  });
+  const { stdout } = await execa(
+    "git",
+    ["ls-remote", "--heads", "origin", "refs/heads/release/*"],
+    { cwd: repoRoot },
+  );
+  return stdout
+    .split("\n")
+    .filter((line) => !!line)
+    .map((line) => {
+      const match = line.match(/release\/(.*)/);
+      if (!match) {
+        consola.log(match);
+        throw new Error(`Invalid branch name: ${line}`);
+      }
+      return match[0];
+    });
 }
 
 async function getCurrentBranch(): Promise<string> {
   const repoRoot = process.cwd();
-  const { stdout } = await execa("git", [
-    "rev-parse",
-    "--abbrev-ref",
-    "HEAD",
-  ], { cwd: repoRoot });
+  const { stdout } = await execa("git", ["rev-parse", "--abbrev-ref", "HEAD"], {
+    cwd: repoRoot,
+  });
   return stdout;
 }
 

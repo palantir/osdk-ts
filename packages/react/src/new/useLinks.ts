@@ -26,9 +26,7 @@ import { extractPayloadError, isPayloadLoading } from "./hookUtils.js";
 import { devToolsMetadata, makeExternalStore } from "./makeExternalStore.js";
 import { OsdkContext2 } from "./OsdkContext2.js";
 
-export interface UseLinksOptions<
-  T extends ObjectOrInterfaceDefinition,
-> {
+export interface UseLinksOptions<T extends ObjectOrInterfaceDefinition> {
   /**
    * Standard OSDK Where clause for filtering linked objects
    */
@@ -89,9 +87,7 @@ export interface UseLinksOptions<
   enabled?: boolean;
 }
 
-export interface UseLinksResult<
-  Q extends ObjectOrInterfaceDefinition,
-> {
+export interface UseLinksResult<Q extends ObjectOrInterfaceDefinition> {
   links: Osdk.Instance<Q>[] | undefined;
 
   /**
@@ -155,7 +151,7 @@ export function useLinks<
   const objectsKey = React.useMemo(() => {
     if (objects === undefined) return "";
     const arr = Array.isArray(objects) ? objects : [objects];
-    return arr.map(obj => `${obj.$apiName}:${obj.$primaryKey}`).join(",");
+    return arr.map((obj) => `${obj.$apiName}:${obj.$primaryKey}`).join(",");
   }, [objects]);
 
   // Convert single object to array for consistent handling
@@ -163,73 +159,70 @@ export function useLinks<
     return objects === undefined
       ? emptyArray
       : Array.isArray(objects)
-      ? objects
-      : [objects];
+        ? objects
+        : [objects];
   }, [objectsKey, objects]);
 
-  const { subscribe, getSnapShot } = React.useMemo(
-    () => {
-      if (!enabled) {
-        return makeExternalStore<ObserveLinks.CallbackArgs<T>>(
-          () => ({ unsubscribe: () => {} }),
-          devToolsMetadata({
-            hookType: "useLinks",
-            sourceObjectType: objectsArray[0]?.$apiName,
-            linkName,
-          }),
-        );
-      }
+  const { subscribe, getSnapShot } = React.useMemo(() => {
+    if (!enabled) {
       return makeExternalStore<ObserveLinks.CallbackArgs<T>>(
-        (observer) =>
-          observableClient.observeLinks(
-            objectsArray,
-            linkName,
-            {
-              linkName,
-              where: canonOptions.where,
-              pageSize: otherOptions.pageSize,
-              orderBy: canonOptions.orderBy,
-              mode: otherOptions.mode,
-              dedupeInterval: otherOptions.dedupeIntervalMs ?? 2_000,
-              ...(canonOptions.$select ? { select: canonOptions.$select } : {}),
-            },
-            observer,
-          ),
+        () => ({ unsubscribe: () => {} }),
         devToolsMetadata({
           hookType: "useLinks",
           sourceObjectType: objectsArray[0]?.$apiName,
           linkName,
         }),
       );
-    },
-    [
-      enabled,
-      observableClient,
-      objectsArray,
-      objectsKey,
-      linkName,
-      canonOptions.where,
-      otherOptions.pageSize,
-      canonOptions.orderBy,
-      otherOptions.mode,
-      otherOptions.dedupeIntervalMs,
-      canonOptions.$select,
-    ],
-  );
+    }
+    return makeExternalStore<ObserveLinks.CallbackArgs<T>>(
+      (observer) =>
+        observableClient.observeLinks(
+          objectsArray,
+          linkName,
+          {
+            linkName,
+            where: canonOptions.where,
+            pageSize: otherOptions.pageSize,
+            orderBy: canonOptions.orderBy,
+            mode: otherOptions.mode,
+            dedupeInterval: otherOptions.dedupeIntervalMs ?? 2_000,
+            ...(canonOptions.$select ? { select: canonOptions.$select } : {}),
+          },
+          observer,
+        ),
+      devToolsMetadata({
+        hookType: "useLinks",
+        sourceObjectType: objectsArray[0]?.$apiName,
+        linkName,
+      }),
+    );
+  }, [
+    enabled,
+    observableClient,
+    objectsArray,
+    objectsKey,
+    linkName,
+    canonOptions.where,
+    otherOptions.pageSize,
+    canonOptions.orderBy,
+    otherOptions.mode,
+    otherOptions.dedupeIntervalMs,
+    canonOptions.$select,
+  ]);
 
-  const payload = React.useSyncExternalStore(
-    subscribe,
-    getSnapShot,
-  );
+  const payload = React.useSyncExternalStore(subscribe, getSnapShot);
 
-  return React.useMemo(() => ({
-    links: payload?.resolvedList,
-    linkedObjectsBySourcePrimaryKey: payload?.linkedObjectsBySourcePrimaryKey
-      ?? emptyMap,
-    isLoading: isPayloadLoading(payload, enabled),
-    isOptimistic: payload?.isOptimistic ?? false,
-    error: extractPayloadError(payload, "Failed to load links"),
-    fetchMore: payload?.hasMore ? payload?.fetchMore : undefined,
-    hasMore: payload?.hasMore ?? false,
-  }), [payload, enabled]);
+  return React.useMemo(
+    () => ({
+      links: payload?.resolvedList,
+      linkedObjectsBySourcePrimaryKey:
+        payload?.linkedObjectsBySourcePrimaryKey ?? emptyMap,
+      isLoading: isPayloadLoading(payload, enabled),
+      isOptimistic: payload?.isOptimistic ?? false,
+      error: extractPayloadError(payload, "Failed to load links"),
+      fetchMore: payload?.hasMore ? payload?.fetchMore : undefined,
+      hasMore: payload?.hasMore ?? false,
+    }),
+    [payload, enabled],
+  );
 }

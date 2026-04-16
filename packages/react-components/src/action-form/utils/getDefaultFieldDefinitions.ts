@@ -27,8 +27,8 @@ import type { RendererFieldDefinition } from "../FormFieldApi.js";
 export function getDefaultFieldDefinitions(
   metadata: ActionMetadata,
 ): ReadonlyArray<RendererFieldDefinition> {
-  return Object.entries(metadata.parameters).map(
-    ([key, param]) => buildFieldDefinition(key, param),
+  return Object.entries(metadata.parameters).map(([key, param]) =>
+    buildFieldDefinition(key, param),
   );
 }
 
@@ -94,10 +94,13 @@ function buildFieldDefinition(
         ...base,
         fieldComponent: "RADIO_BUTTONS",
         fieldComponentProps: {
-          options: [{ label: "True", value: true }, {
-            label: "False",
-            value: false,
-          }],
+          options: [
+            { label: "True", value: true },
+            {
+              label: "False",
+              value: false,
+            },
+          ],
         },
       };
     case "integer":

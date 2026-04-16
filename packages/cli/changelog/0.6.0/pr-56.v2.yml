@@ -2,4 +2,4 @@ type: improvement
 improvement:
   description: Prompt user for destructive CLI commands
   links:
-  - https://github.com/palantir/osdk-ts/pull/56
+    - https://github.com/palantir/osdk-ts/pull/56

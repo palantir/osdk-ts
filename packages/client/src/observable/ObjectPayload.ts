@@ -18,14 +18,15 @@ import type { ObjectTypeDefinition, Osdk } from "@osdk/api";
 import type { ObjectHolder } from "../object/convertWireToOsdkObjects/ObjectHolder.js";
 import type { ObserveObjectCallbackArgs } from "./ObservableClient.js";
 
-export interface ObjectPayload
-  extends Omit<ObserveObjectCallbackArgs<any>, "object">
-{
+export interface ObjectPayload extends Omit<
+  ObserveObjectCallbackArgs<any>,
+  "object"
+> {
   object: ObjectHolder | undefined;
 }
 
-export interface TypedObjectPayload<T extends ObjectTypeDefinition>
-  extends ObjectPayload
-{
-  object: ObjectHolder<Osdk.Instance<T>> & Osdk.Instance<T> | undefined;
+export interface TypedObjectPayload<
+  T extends ObjectTypeDefinition,
+> extends ObjectPayload {
+  object: (ObjectHolder<Osdk.Instance<T>> & Osdk.Instance<T>) | undefined;
 }

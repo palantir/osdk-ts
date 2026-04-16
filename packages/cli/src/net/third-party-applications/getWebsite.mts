@@ -26,8 +26,7 @@ export async function getWebsite(
   thirdPartyAppRid: ThirdPartyAppRid,
 ): Promise<Website | undefined> {
   const fetch = createFetch(ctx.tokenProvider);
-  const url =
-    `${ctx.foundryUrl}/api/v2/thirdPartyApplications/${thirdPartyAppRid}/website?preview=true`;
+  const url = `${ctx.foundryUrl}/api/v2/thirdPartyApplications/${thirdPartyAppRid}/website?preview=true`;
 
   try {
     const result = await fetch(url);
@@ -35,9 +34,10 @@ export async function getWebsite(
   } catch (e) {
     // Revisit this error handling in the API
     if (
-      e instanceof ExitProcessError && e.originalError != null
-      && e.originalError instanceof PalantirApiError
-      && e.originalError.errorName === "WebsiteNotFound"
+      e instanceof ExitProcessError &&
+      e.originalError != null &&
+      e.originalError instanceof PalantirApiError &&
+      e.originalError.errorName === "WebsiteNotFound"
     ) {
       return undefined;
     }

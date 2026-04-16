@@ -76,15 +76,19 @@ export type UseOsdkFunctionsResult = Array<
  * @param options - Configuration options containing the queries to execute
  * @returns Array of results in the same order as input queries, each with the same shape as useOsdkFunction
  */
-export function useOsdkFunctions(
-  { queries, enabled = true, maxConcurrent }: UseOsdkFunctionsProps,
-): UseOsdkFunctionsResult {
+export function useOsdkFunctions({
+  queries,
+  enabled = true,
+  maxConcurrent,
+}: UseOsdkFunctionsProps): UseOsdkFunctionsResult {
   const { observableClient } = React.useContext(OsdkContext2);
 
-  const stableQueriesKey = JSON.stringify(queries.map(q => ({
-    apiName: q.queryDefinition.apiName,
-    ...q.options,
-  })));
+  const stableQueriesKey = JSON.stringify(
+    queries.map((q) => ({
+      apiName: q.queryDefinition.apiName,
+      ...q.options,
+    })),
+  );
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const stableQueries = React.useMemo(() => queries, [stableQueriesKey]);
@@ -94,10 +98,10 @@ export function useOsdkFunctions(
       !enabled || stableQueries.length === 0
         ? EMPTY_STORE
         : createCompositeExternalStore(
-          stableQueries,
-          observableClient,
-          maxConcurrent,
-        ),
+            stableQueries,
+            observableClient,
+            maxConcurrent,
+          ),
     [enabled, maxConcurrent, observableClient, stableQueries],
   );
 
@@ -116,25 +120,26 @@ export function useOsdkFunctions(
 
   return React.useMemo(
     () =>
-      stableQueries.map((_, index): UseOsdkFunctionResult<
-        QueryDefinition<unknown>
-      > => {
-        const payload = payloads[index];
-        const error = payload?.error
-          ?? (payload?.status === "error"
-            ? new Error("Failed to execute function")
-            : undefined);
+      stableQueries.map(
+        (_, index): UseOsdkFunctionResult<QueryDefinition<unknown>> => {
+          const payload = payloads[index];
+          const error =
+            payload?.error ??
+            (payload?.status === "error"
+              ? new Error("Failed to execute function")
+              : undefined);
 
-        return {
-          data: payload?.result as UseOsdkFunctionResult<
-            QueryDefinition<unknown>
-          >["data"],
-          isLoading: payload?.status === "loading",
-          error,
-          lastUpdated: payload?.lastUpdated ?? 0,
-          refetch: refetches[index],
-        };
-      }),
+          return {
+            data: payload?.result as UseOsdkFunctionResult<
+              QueryDefinition<unknown>
+            >["data"],
+            isLoading: payload?.status === "loading",
+            error,
+            lastUpdated: payload?.lastUpdated ?? 0,
+            refetch: refetches[index],
+          };
+        },
+      ),
     [stableQueries, payloads, refetches],
   );
 }

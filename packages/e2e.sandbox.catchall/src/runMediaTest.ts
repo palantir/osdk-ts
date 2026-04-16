@@ -31,27 +31,27 @@ import { client, mjClient } from "./client.js";
 async function runReadMediaTest(ref: Media): Promise<Blob> {
   const mediaMetadata = await ref.fetchMetadata();
   if (mediaMetadata.sizeBytes !== 18484484) {
-    throw (new Error(
+    throw new Error(
       `Media Metadata was incorrect: expected: 18484484 bytes and got ${mediaMetadata.sizeBytes} bytes`,
-    ));
+    );
   }
   if (mediaMetadata.mediaType !== "image/png") {
-    throw (new Error(
+    throw new Error(
       `Media Metadata was incorrect: expected type image/png and got ${mediaMetadata.mediaType}`,
-    ));
+    );
   }
 
   const mediaContents = await ref.fetchContents();
 
   if (!mediaContents.ok) {
-    throw (new Error("Failed to fetch media contents"));
+    throw new Error("Failed to fetch media contents");
   }
 
   const mediaMimeType = mediaContents.headers.get("Content-Type");
   if (mediaMimeType !== "image/png") {
-    throw (new Error(
+    throw new Error(
       `MediaMimeType was incorrect: expected image/png and got ${mediaMimeType} instead`,
-    ));
+    );
   }
 
   return mediaContents.blob();
@@ -62,20 +62,20 @@ async function runCreateMediaReferenceTest(
 ): Promise<MediaReference> {
   // should not work
   // Won't allow property keys not of media ref type
-  await client(
-    __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference,
-  )
+  await client(__EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference)
     .createMediaReference({
       data,
       fileName: "test15.png",
       objectType: MnayanOsdkMediaObject,
       // @ts-expect-error
       propertyType: "path",
-    }).then((_) => {
-      throw (new Error(
+    })
+    .then((_) => {
+      throw new Error(
         "This create media reference should not resolve as it is not being assigned to a media reference property",
-      ));
-    }).catch(() => {
+      );
+    })
+    .catch(() => {
       console.log("Request failed as expected");
     });
 
@@ -84,23 +84,28 @@ async function runCreateMediaReferenceTest(
   console.log("ephemeral upload success!");
 
   // should work
-  return client(__EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference)
-    .createMediaReference({
-      data,
-      fileName: "test15.png",
-      objectType: MnayanOsdkMediaObject,
-      propertyType: "mediaReference",
-    });
+  return client(
+    __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference,
+  ).createMediaReference({
+    data,
+    fileName: "test15.png",
+    objectType: MnayanOsdkMediaObject,
+    propertyType: "mediaReference",
+  });
 }
 
 async function runUploadMediaTest(data: Blob): Promise<void> {
   const payload: MediaUpload = { data, fileName: "test15.png" };
 
-  const result = await client($Actions.createUnstructuredImageExample)
-    .applyAction({
+  const result = await client(
+    $Actions.createUnstructuredImageExample,
+  ).applyAction(
+    {
       media_reference: payload,
       path: "test15.png",
-    }, { $returnEdits: true });
+    },
+    { $returnEdits: true },
+  );
 }
 
 async function runMediaQueryTest(): Promise<void> {
@@ -119,26 +124,29 @@ async function runMediaQueryTest(): Promise<void> {
   const data = new Blob([new Uint8Array(imageBuffer)], { type: "image/png" });
 
   // Test Direct Upload
-  let output = await mjClient($Queries.kbnTsv2MediaReferenceParamOutput)
-    .executeFunction({
-      mediaReference: { data, fileName: "palantir.png" },
-    });
+  let output = await mjClient(
+    $Queries.kbnTsv2MediaReferenceParamOutput,
+  ).executeFunction({
+    mediaReference: { data, fileName: "palantir.png" },
+  });
   console.log(output.getMediaReference);
   console.log((await output.fetchMetadata()).sizeBytes);
 
   // Test Media Reference Upload
-  output = await mjClient($Queries.kbnTsv2MediaReferenceParamOutput)
-    .executeFunction({
-      mediaReference: output.getMediaReference(),
-    });
+  output = await mjClient(
+    $Queries.kbnTsv2MediaReferenceParamOutput,
+  ).executeFunction({
+    mediaReference: output.getMediaReference(),
+  });
   console.log(output.getMediaReference);
   console.log((await output.fetchMetadata()).sizeBytes);
 
   // Test Media Upload
-  output = await mjClient($Queries.kbnTsv2MediaReferenceParamOutput)
-    .executeFunction({
-      mediaReference: output,
-    });
+  output = await mjClient(
+    $Queries.kbnTsv2MediaReferenceParamOutput,
+  ).executeFunction({
+    mediaReference: output,
+  });
   console.log(output.getMediaReference);
   console.log((await output.fetchMetadata()).sizeBytes);
 }
@@ -246,7 +254,7 @@ export async function runMediaTest(): Promise<void> {
   );
 
   if (!result.mediaReference) {
-    throw (new Error("Object does not contain expected media reference"));
+    throw new Error("Object does not contain expected media reference");
   }
   console.log("Reading Media Reference");
   const testImage: Blob = await runReadMediaTest(result.mediaReference);
@@ -258,14 +266,14 @@ export async function runMediaTest(): Promise<void> {
 
   // test applying via a function backed action
   console.log("Applying Media Reference via Function Backed Action");
-  await client(
-    $Actions.createMediaViaFunction,
-  )
-    .applyAction({
+  await client($Actions.createMediaViaFunction).applyAction(
+    {
       mediaItem: mediaRef,
-    }, {
+    },
+    {
       $returnEdits: true,
-    });
+    },
+  );
   console.log("SUCCESS: Applying Media Reference via Function Backed Action");
 
   // test direct media upload

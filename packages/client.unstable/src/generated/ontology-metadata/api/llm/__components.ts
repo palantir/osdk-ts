@@ -48,8 +48,7 @@ export interface OntologyLmsRequest_stringPlugin {
 
 export interface OntologyLmsRequest_actionTypeDescriptionGeneratorPlugin {
   type: "actionTypeDescriptionGeneratorPlugin";
-  actionTypeDescriptionGeneratorPlugin:
-    ActionTypeDescriptionGeneratorPluginRequest;
+  actionTypeDescriptionGeneratorPlugin: ActionTypeDescriptionGeneratorPluginRequest;
 }
 /**
  * Union wrapping the various plugins that we have for the Ontology LMS app.
@@ -66,8 +65,7 @@ export interface OntologyLmsResponse_stringPlugin {
 
 export interface OntologyLmsResponse_actionTypeDescriptionGeneratorPlugin {
   type: "actionTypeDescriptionGeneratorPlugin";
-  actionTypeDescriptionGeneratorPlugin:
-    ActionTypeDescriptionGeneratorPluginResponse;
+  actionTypeDescriptionGeneratorPlugin: ActionTypeDescriptionGeneratorPluginResponse;
 }
 /**
  * Union type for the outputs of the Ontology-LMS app
