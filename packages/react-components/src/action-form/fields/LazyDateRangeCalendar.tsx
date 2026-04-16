@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,16 +14,20 @@
  * limitations under the License.
  */
 
-import { configDefaults, defineConfig } from "vitest/config";
+import React, { Suspense } from "react";
+import styles from "./DatePickerCommon.module.css";
+import type { DateRangeCalendarProps } from "./DateRangeCalendar.js";
 
-export default defineConfig({
-  test: {
-    pool: "forks",
-    exclude: [...configDefaults.exclude, "**/build/**/*"],
-    environment: "happy-dom",
-    setupFiles: ["./src/test/setupPolyfills.ts"],
-    fakeTimers: {
-      toFake: ["setTimeout", "clearTimeout", "Date"],
-    },
-  },
-});
+const DateRangeCalendarLazy = React.lazy(
+  () => import("./DateRangeCalendar.js"),
+);
+
+export function LazyDateRangeCalendar(
+  props: DateRangeCalendarProps,
+): React.ReactElement {
+  return (
+    <Suspense fallback={<div className={styles.osdkDatePickerFallback} />}>
+      <DateRangeCalendarLazy {...props} />
+    </Suspense>
+  );
+}
