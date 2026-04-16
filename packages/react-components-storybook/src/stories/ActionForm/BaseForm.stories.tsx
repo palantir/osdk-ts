@@ -42,6 +42,17 @@ interface BaseFormStoryProps {
 
 const DROPDOWN_ITEMS = ["Low", "Medium", "High"];
 
+const DEPARTMENT_ITEMS = [
+  "Engineering",
+  "Marketing",
+  "Sales",
+  "Finance",
+  "Operations",
+  "Legal",
+];
+
+const TAG_ITEMS = ["Urgent", "Review", "Follow-up", "Archived", "Pinned"];
+
 const fieldDefinitions: ReadonlyArray<RendererFieldDefinition> = [
   {
     fieldKey: "name",
@@ -763,4 +774,341 @@ const fieldDefinitions = [
       />
     );
   },
+};
+
+const searchableDropdownFieldDefinitions: ReadonlyArray<
+  RendererFieldDefinition
+> = [
+  {
+    fieldKey: "department",
+    fieldComponent: "DROPDOWN",
+    label: "Department",
+    fieldComponentProps: {
+      items: DEPARTMENT_ITEMS,
+      isSearchable: true,
+      placeholder: "Search departments...",
+    },
+  },
+  {
+    fieldKey: "name",
+    fieldComponent: "TEXT_INPUT",
+    label: "Name",
+    isRequired: true,
+    fieldComponentProps: {
+      placeholder: "Enter your name",
+    },
+  },
+];
+
+export const WithSearchableDropdown: Story = {
+  args: {
+    fieldDefinitions: searchableDropdownFieldDefinitions,
+    onSubmit: handleSubmit,
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `const fieldDefinitions = [
+  {
+    fieldKey: "department",
+    fieldComponent: "DROPDOWN",
+    label: "Department",
+    fieldComponentProps: {
+      items: ["Engineering", "Marketing", "Sales", "Finance", "Operations", "Legal"],
+      isSearchable: true,
+      placeholder: "Search departments...",
+    },
+  },
+];
+
+// isSearchable renders a Combobox with type-ahead filtering
+// instead of a plain Select dropdown.
+<BaseForm
+  fieldDefinitions={fieldDefinitions}
+  onSubmit={(formState) => console.log("Submitted:", formState)}
+/>`,
+      },
+    },
+  },
+  render: (args) => <BaseForm {...args} />,
+};
+
+const multiSelectDropdownFieldDefinitions: ReadonlyArray<
+  RendererFieldDefinition
+> = [
+  {
+    fieldKey: "title",
+    fieldComponent: "TEXT_INPUT",
+    label: "Title",
+    isRequired: true,
+    fieldComponentProps: {
+      placeholder: "Enter a title",
+    },
+  },
+  {
+    fieldKey: "tags",
+    fieldComponent: "DROPDOWN",
+    label: "Tags",
+    fieldComponentProps: {
+      items: TAG_ITEMS,
+      isMultiple: true,
+      isSearchable: true,
+      placeholder: "Select tags...",
+    },
+  },
+];
+
+export const WithMultiSelectDropdown: Story = {
+  args: {
+    fieldDefinitions: multiSelectDropdownFieldDefinitions,
+    onSubmit: handleSubmit,
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `const fieldDefinitions = [
+  {
+    fieldKey: "title",
+    fieldComponent: "TEXT_INPUT",
+    label: "Title",
+    isRequired: true,
+    fieldComponentProps: { placeholder: "Enter a title" },
+  },
+  {
+    fieldKey: "tags",
+    fieldComponent: "DROPDOWN",
+    label: "Tags",
+    fieldComponentProps: {
+      items: ["Urgent", "Review", "Follow-up", "Archived", "Pinned"],
+      isMultiple: true,
+      isSearchable: true,
+      placeholder: "Select tags...",
+    },
+  },
+];
+
+// isMultiple + isSearchable renders a multi-select Combobox
+// where users can search and select multiple values.
+<BaseForm
+  fieldDefinitions={fieldDefinitions}
+  onSubmit={(formState) => console.log("Submitted:", formState)}
+/>`,
+      },
+    },
+  },
+  render: (args) => <BaseForm {...args} />,
+};
+
+const dateTimeFieldDefinitions: ReadonlyArray<RendererFieldDefinition> = [
+  {
+    fieldKey: "scheduledAt",
+    fieldComponent: "DATETIME_PICKER",
+    label: "Scheduled At (date + time)",
+    fieldComponentProps: {
+      showTime: true,
+      placeholder: "Select date and time",
+    },
+  },
+  {
+    fieldKey: "deadline",
+    fieldComponent: "DATETIME_PICKER",
+    label: "Deadline (date only)",
+    fieldComponentProps: {
+      placeholder: "Select date",
+    },
+  },
+];
+
+export const WithDateTimePicker: Story = {
+  args: {
+    fieldDefinitions: dateTimeFieldDefinitions,
+    onSubmit: handleSubmit,
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `const fieldDefinitions = [
+  {
+    fieldKey: "scheduledAt",
+    fieldComponent: "DATETIME_PICKER",
+    label: "Scheduled At (date + time)",
+    fieldComponentProps: {
+      showTime: true,
+      placeholder: "Select date and time",
+    },
+  },
+  {
+    fieldKey: "deadline",
+    fieldComponent: "DATETIME_PICKER",
+    label: "Deadline (date only)",
+    fieldComponentProps: {
+      placeholder: "Select date",
+    },
+  },
+];
+
+// showTime: true adds a time picker alongside the date calendar.
+// Without showTime, only the date is selectable.
+<BaseForm
+  fieldDefinitions={fieldDefinitions}
+  onSubmit={(formState) => console.log("Submitted:", formState)}
+/>`,
+      },
+    },
+  },
+  render: (args) => <BaseForm {...args} />,
+};
+
+const multiFilePickerFieldDefinitions: ReadonlyArray<RendererFieldDefinition> =
+  [
+    {
+      fieldKey: "attachments",
+      fieldComponent: "FILE_PICKER",
+      label: "Attachments",
+      fieldComponentProps: {
+        isMulti: true,
+        accept: [".pdf", ".png", ".jpg"],
+        maxSize: 5242880,
+        text: "No files selected",
+        buttonText: "Choose Files",
+      },
+    },
+    {
+      fieldKey: "singleFile",
+      fieldComponent: "FILE_PICKER",
+      label: "Cover Image (single file)",
+      fieldComponentProps: {
+        accept: ".png,.jpg",
+        text: "No file chosen",
+      },
+    },
+  ];
+
+export const WithMultiFilePicker: Story = {
+  args: {
+    fieldDefinitions: multiFilePickerFieldDefinitions,
+    onSubmit: handleSubmit,
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `const fieldDefinitions = [
+  {
+    fieldKey: "attachments",
+    fieldComponent: "FILE_PICKER",
+    label: "Attachments",
+    fieldComponentProps: {
+      isMulti: true,
+      accept: [".pdf", ".png", ".jpg"],
+      maxSize: 5242880,     // 5 MB
+      text: "No files selected",
+      buttonText: "Choose Files",
+    },
+  },
+  {
+    fieldKey: "singleFile",
+    fieldComponent: "FILE_PICKER",
+    label: "Cover Image (single file)",
+    fieldComponentProps: {
+      accept: ".png,.jpg",
+    },
+  },
+];
+
+// isMulti: true allows selecting multiple files.
+// maxSize validates individual file sizes (in bytes).
+// accept filters file types in the browser file dialog.
+<BaseForm
+  fieldDefinitions={fieldDefinitions}
+  onSubmit={(formState) => console.log("Submitted:", formState)}
+/>`,
+      },
+    },
+  },
+  render: (args) => <BaseForm {...args} />,
+};
+
+const defaultValueFieldDefinitions: ReadonlyArray<RendererFieldDefinition> = [
+  {
+    fieldKey: "name",
+    fieldComponent: "TEXT_INPUT",
+    label: "Name",
+    isRequired: true,
+    fieldComponentProps: {
+      placeholder: "Enter a name",
+      defaultValue: "Jane Doe",
+    },
+  },
+  {
+    fieldKey: "quantity",
+    fieldComponent: "NUMBER_INPUT",
+    label: "Quantity",
+    fieldComponentProps: {
+      min: 0,
+      max: 1000,
+      step: 1,
+      defaultValue: 42,
+    },
+  },
+  {
+    fieldKey: "priority",
+    fieldComponent: "DROPDOWN",
+    label: "Priority",
+    fieldComponentProps: {
+      items: DROPDOWN_ITEMS,
+      placeholder: "Select priority",
+    },
+  },
+];
+
+export const WithDefaultValues: Story = {
+  args: {
+    fieldDefinitions: defaultValueFieldDefinitions,
+    onSubmit: handleSubmit,
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `const fieldDefinitions = [
+  {
+    fieldKey: "name",
+    fieldComponent: "TEXT_INPUT",
+    label: "Name",
+    isRequired: true,
+    fieldComponentProps: {
+      placeholder: "Enter a name",
+      defaultValue: "Jane Doe",
+    },
+  },
+  {
+    fieldKey: "quantity",
+    fieldComponent: "NUMBER_INPUT",
+    label: "Quantity",
+    fieldComponentProps: {
+      min: 0, max: 1000, step: 1,
+      defaultValue: 42,
+    },
+  },
+  {
+    fieldKey: "priority",
+    fieldComponent: "DROPDOWN",
+    label: "Priority",
+    fieldComponentProps: {
+      items: ["Low", "Medium", "High"],
+      placeholder: "Select priority",
+    },
+  },
+];
+
+// defaultValue inside fieldComponentProps pre-populates fields
+// in uncontrolled mode. The "Priority" dropdown has no default
+// for comparison.
+<BaseForm
+  fieldDefinitions={fieldDefinitions}
+  onSubmit={(formState) => console.log("Submitted:", formState)}
+/>`,
+      },
+    },
+  },
+  render: (args) => <BaseForm {...args} />,
 };
