@@ -35,7 +35,6 @@ const columnDefinitions: Array<
       }
       return undefined;
     },
-    editable: true,
   },
   // Function-backed column
   {
@@ -133,7 +132,7 @@ export function EmployeesTable() {
           direction: "desc",
         }]}
         onSubmitEdits={handleSubmitEdits}
-        editMode="always"
+        editMode="manual"
       />
     </div>
   );

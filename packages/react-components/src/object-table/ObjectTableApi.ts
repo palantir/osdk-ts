@@ -28,7 +28,7 @@ import type {
 } from "@osdk/api";
 import type { QueryParameterType } from "@osdk/client/unstable-do-not-use";
 import type * as React from "react";
-import type { CellEditInfo } from "./utils/types.js";
+import type { CellEditInfo, EditFieldConfig } from "./utils/types.js";
 
 export type { DropdownEditConfig, EditFieldConfig } from "./utils/types.js";
 
