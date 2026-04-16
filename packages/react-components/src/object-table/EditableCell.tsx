@@ -21,7 +21,6 @@ import { Tooltip } from "../base-components/tooltip/Tooltip.js";
 import { DropdownCellField } from "./components/DropdownCellField.js";
 import { TextInputCellField } from "./components/TextInputCellField.js";
 import styles from "./EditableCell.module.css";
-import { useRegisterPortal } from "./utils/PortalTracker.js";
 import type { CellEditInfo, EditFieldConfig } from "./utils/types.js";
 
 const NUMBER_TYPES: readonly string[] = [
@@ -243,7 +242,6 @@ function EditableCellInner<TData extends RowData, CellValue = unknown>({
     : "text";
 
   const isDropdown = editFieldConfig?.fieldComponent === "DROPDOWN";
-  const portalRef = useRegisterPortal();
 
   return (
     <Tooltip.Provider>
@@ -262,7 +260,6 @@ function EditableCellInner<TData extends RowData, CellValue = unknown>({
                 hasValidationError={hasValidationError}
                 isEdited={isEdited}
                 onChange={handleDropdownChange}
-                portalRef={portalRef}
               />
             )
             : (

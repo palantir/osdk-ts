@@ -19,6 +19,7 @@ import classNames from "classnames";
 import React from "react";
 import { DropdownField } from "../../action-form/fields/DropdownField.js";
 import styles from "../EditableCell.module.css";
+import { useRegisterPortal } from "../utils/PortalTracker.js";
 import type { EditFieldConfig } from "../utils/types.js";
 
 interface DropdownCellFieldProps {
@@ -28,7 +29,6 @@ interface DropdownCellFieldProps {
   hasValidationError: boolean;
   isEdited: boolean;
   onChange: (newValue: unknown) => void;
-  portalRef: (element: HTMLElement | null) => void;
 }
 
 function DropdownCellFieldInner({
@@ -38,8 +38,9 @@ function DropdownCellFieldInner({
   hasValidationError,
   isEdited,
   onChange,
-  portalRef,
 }: DropdownCellFieldProps): React.ReactElement {
+  const portalRef = useRegisterPortal();
+
   if (!isRowFocused) {
     return (
       <div
