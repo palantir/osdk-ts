@@ -41,7 +41,8 @@ interface ActionFormStoryProps {
 }
 
 const meta: Meta<ActionFormStoryProps> = {
-  title: "Components/ActionForm",
+  title: "Experimental/ActionForm",
+  tags: ["experimental"],
   component: ActionForm,
   args: {
     actionDefinition: StoryAction,
@@ -210,10 +211,12 @@ const customFieldDefinitions: ReadonlyArray<
   {
     fieldKey: "isActive",
     label: "Active Employee",
-    fieldComponent: "DROPDOWN",
+    fieldComponent: "RADIO_BUTTONS",
     fieldComponentProps: {
-      items: [true, false],
-      itemToStringLabel: (v: unknown) => (v === true ? "Yes" : "No"),
+      options: [
+        { label: "Yes", value: true },
+        { label: "No", value: false },
+      ],
     },
   },
 ];

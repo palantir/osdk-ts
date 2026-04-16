@@ -146,7 +146,8 @@ function handleSubmit(formState: Record<string, unknown>): void {
 }
 
 const meta: Meta<BaseFormStoryProps> = {
-  title: "Components/ActionForm/Building Blocks/BaseForm",
+  title: "Experimental/ActionForm/Building Blocks/BaseForm",
+  tags: ["experimental"],
   component: BaseForm,
   decorators: [
     (Story) => (
