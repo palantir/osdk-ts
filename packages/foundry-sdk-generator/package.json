@@ -59,7 +59,7 @@
   "devDependencies": {
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
-    "@osdk/shared.test": "workspace:*",
+    "@osdk/shared.test": "workspace:~",
     "@types/node": "^18.19.124",
     "@types/yargs": "^17.0.33",
     "msw": "^2.11.1",

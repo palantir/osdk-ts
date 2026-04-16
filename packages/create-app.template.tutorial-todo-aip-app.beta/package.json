@@ -39,7 +39,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.35.0",
-    "@osdk/create-app.template-packager": "workspace:*",
+    "@osdk/create-app.template-packager": "workspace:~",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@types/react": "^18",

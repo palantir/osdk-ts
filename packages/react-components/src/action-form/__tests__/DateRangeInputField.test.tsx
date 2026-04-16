@@ -225,6 +225,94 @@ describe("DateRangeInputField", () => {
       fireEvent.change(startInput, { target: { value: "2024-06-15" } });
       expect(startInput.getAttribute("aria-invalid")).not.toBe("true");
     });
+
+    it("reverts start input on blur when typed start would overlap end", () => {
+      const onChange = vi.fn();
+      render(
+        <DateRangeInputField
+          value={[new Date(2024, 0, 1), new Date(2024, 5, 15)]}
+          onChange={onChange}
+        />,
+      );
+      const startInput = screen.getByLabelText(
+        "Start date",
+      ) as HTMLInputElement;
+      fireEvent.focus(startInput);
+      fireEvent.change(startInput, { target: { value: "2024-12-01" } });
+      fireEvent.blur(startInput);
+
+      expect(onChange).not.toHaveBeenCalled();
+      expect(startInput.value).toBe("Jan 1, 2024");
+    });
+
+    it("reverts end input on blur when typed end would overlap start", () => {
+      const onChange = vi.fn();
+      render(
+        <DateRangeInputField
+          value={[new Date(2024, 5, 15), new Date(2024, 11, 31)]}
+          onChange={onChange}
+        />,
+      );
+      const endInput = screen.getByLabelText("End date") as HTMLInputElement;
+      fireEvent.focus(endInput);
+      fireEvent.change(endInput, { target: { value: "2024-01-01" } });
+      fireEvent.blur(endInput);
+
+      expect(onChange).not.toHaveBeenCalled();
+      expect(endInput.value).toBe("Dec 31, 2024");
+    });
+
+    it("reverts start input on Enter when typed start would overlap end", () => {
+      const onChange = vi.fn();
+      render(
+        <DateRangeInputField
+          value={[new Date(2024, 0, 1), new Date(2024, 5, 15)]}
+          onChange={onChange}
+        />,
+      );
+      const startInput = screen.getByLabelText(
+        "Start date",
+      ) as HTMLInputElement;
+      fireEvent.focus(startInput);
+      fireEvent.change(startInput, { target: { value: "2024-12-01" } });
+      fireEvent.keyDown(startInput, { key: "Enter" });
+
+      expect(onChange).not.toHaveBeenCalled();
+    });
+
+    it("reverts end input on Enter when typed end would overlap start", () => {
+      const onChange = vi.fn();
+      render(
+        <DateRangeInputField
+          value={[new Date(2024, 5, 15), new Date(2024, 11, 31)]}
+          onChange={onChange}
+        />,
+      );
+      const endInput = screen.getByLabelText("End date") as HTMLInputElement;
+      fireEvent.focus(endInput);
+      fireEvent.change(endInput, { target: { value: "2024-01-01" } });
+      fireEvent.keyDown(endInput, { key: "Enter" });
+
+      expect(onChange).not.toHaveBeenCalled();
+    });
+
+    it("reverts end input when same day and allowSingleDayRange is false", () => {
+      const onChange = vi.fn();
+      render(
+        <DateRangeInputField
+          value={[new Date(2024, 5, 15), new Date(2024, 11, 31)]}
+          onChange={onChange}
+          allowSingleDayRange={false}
+        />,
+      );
+      const endInput = screen.getByLabelText("End date") as HTMLInputElement;
+      fireEvent.focus(endInput);
+      fireEvent.change(endInput, { target: { value: "2024-06-15" } });
+      fireEvent.blur(endInput);
+
+      expect(onChange).not.toHaveBeenCalled();
+      expect(endInput.value).toBe("Dec 31, 2024");
+    });
   });
 
   describe("focus management", () => {

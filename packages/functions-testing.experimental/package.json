@@ -61,10 +61,10 @@
   "devDependencies": {
     "@microsoft/api-documenter": "^7.26.32",
     "@microsoft/api-extractor": "^7.52.11",
-    "@osdk/api": "workspace:*",
-    "@osdk/client": "workspace:*",
-    "@osdk/client.test.ontology": "workspace:*",
-    "@osdk/functions": "workspace:*",
+    "@osdk/api": "workspace:~",
+    "@osdk/client": "workspace:~",
+    "@osdk/client.test.ontology": "workspace:~",
+    "@osdk/functions": "workspace:~",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "typescript": "~5.5.4"

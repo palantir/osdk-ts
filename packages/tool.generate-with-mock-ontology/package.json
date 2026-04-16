@@ -30,15 +30,15 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
-    "@osdk/api": "workspace:*",
-    "@osdk/client": "workspace:*",
+    "@osdk/api": "workspace:~",
+    "@osdk/client": "workspace:~",
     "@test-app2/osdk": "link:osdk/@test-app2/osdk"
   },
   "devDependencies": {
-    "@osdk/foundry-sdk-generator": "workspace:*",
+    "@osdk/foundry-sdk-generator": "workspace:~",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
-    "@osdk/shared.test": "workspace:*",
+    "@osdk/shared.test": "workspace:~",
     "@types/node": "^18.19.124",
     "execa": "^9.6.0",
     "msw": "^2.11.1",

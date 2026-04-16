@@ -48,11 +48,11 @@
     "react-dom": "^18 || ^19"
   },
   "devDependencies": {
-    "@osdk/client": "workspace:*",
+    "@osdk/client": "workspace:~",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
-    "@osdk/widget.api": "workspace:*",
-    "@osdk/widget.client": "workspace:*",
+    "@osdk/widget.api": "workspace:~",
+    "@osdk/widget.client": "workspace:~",
     "@types/react": "^18.3.24",
     "@types/react-dom": "^18.3.7",
     "react": "^18.3.1",

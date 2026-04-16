@@ -47,7 +47,7 @@
   "devDependencies": {
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
-    "@osdk/osdk-docs-context-generator": "workspace:*",
+    "@osdk/osdk-docs-context-generator": "workspace:~",
     "@types/semver": "^7.7.1",
     "tsx": "^4.19.1",
     "typescript": "~5.5.4",

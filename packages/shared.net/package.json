@@ -39,10 +39,10 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
-    "@osdk/shared.client.impl": "workspace:*",
+    "@osdk/shared.client.impl": "workspace:~",
     "@osdk/shared.client2": "^1.0.0",
-    "@osdk/shared.net.errors": "workspace:*",
-    "@osdk/shared.net.fetch": "workspace:*"
+    "@osdk/shared.net.errors": "workspace:~",
+    "@osdk/shared.net.fetch": "workspace:~"
   },
   "devDependencies": {
     "@osdk/monorepo.api-extractor": "workspace:~",
