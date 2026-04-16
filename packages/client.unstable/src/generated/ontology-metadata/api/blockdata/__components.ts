@@ -142,13 +142,22 @@ export interface ActionTypePermissionInformation {
 }
 export interface ActionTypeRestrictionStatus {
   hasRolesApplied: boolean;
+  publicProject: boolean;
   ontologyPackageRid?: _api_OntologyPackageRid | null | undefined;
 }
 export type BlockInternalId = string;
 export interface BlockPermissionInformation {
   actionTypes: Record<_api_ActionTypeRid, ActionTypePermissionInformation>;
+  interfaceTypes: Record<
+    _api_InterfaceTypeRid,
+    InterfaceTypePermissionInformation
+  >;
   linkTypes: Record<_api_LinkTypeRid, LinkTypePermissionInformation>;
   objectTypes: Record<_api_ObjectTypeRid, ObjectTypePermissionInformation>;
+  sharedPropertyTypes: Record<
+    _api_SharedPropertyTypeRid,
+    SharedPropertyTypePermissionInformation
+  >;
 }
 export type BlockShapeId = BlockInternalId;
 
@@ -204,6 +213,13 @@ export type GeotimeSeriesIntegrationName = string;
 export type InstallLocationBlockShapeId = BlockShapeId;
 export interface InterfaceTypeBlockDataV2 {
   interfaceType: MarketplaceInterfaceType;
+}
+export interface InterfaceTypePermissionInformation {
+  restrictionStatus: InterfaceTypeRestrictionStatus;
+}
+export interface InterfaceTypeRestrictionStatus {
+  publicProject: boolean;
+  ontologyPackageRid?: _api_OntologyPackageRid | null | undefined;
 }
 /**
  * Will only match if there is a single datasource that matches the output type (e.g. a dataset datasource
@@ -268,6 +284,7 @@ export interface LinkTypePermissionInformation {
 }
 export interface LinkTypeRestrictionStatus {
   editRestrictedByDatasources: boolean;
+  publicProject: boolean;
   ontologyPackageRid?: _api_OntologyPackageRid | null | undefined;
   restrictedByDatasources: boolean;
 }
@@ -502,6 +519,7 @@ export interface ObjectTypePermissionInformation {
 }
 export interface ObjectTypeRestrictionStatus {
   editRestrictedByDatasources: boolean;
+  publicProject: boolean;
   ontologyPackageRid?: _api_OntologyPackageRid | null | undefined;
   restrictedByDatasources: boolean;
 }
@@ -527,8 +545,16 @@ export interface OntologyIrActionTypeBlockDataV2 {
 }
 export interface OntologyIrBlockPermissionInformation {
   actionTypes: Record<_api_ActionTypeApiName, ActionTypePermissionInformation>;
+  interfaceTypes: Record<
+    _api_InterfaceTypeApiName,
+    InterfaceTypePermissionInformation
+  >;
   linkTypes: Record<_api_LinkTypeId, LinkTypePermissionInformation>;
   objectTypes: Record<_api_ObjectTypeApiName, ObjectTypePermissionInformation>;
+  sharedPropertyTypes: Record<
+    _api_ObjectTypeFieldApiName,
+    SharedPropertyTypePermissionInformation
+  >;
 }
 export interface OntologyIrInterfaceTypeBlockDataV2 {
   interfaceType: OntologyIrMarketplaceInterfaceType;
@@ -879,6 +905,13 @@ export interface SchemaTransitionsWithSchemaVersion {
 }
 export interface SharedPropertyTypeBlockDataV2 {
   sharedPropertyType: _api_SharedPropertyType;
+}
+export interface SharedPropertyTypePermissionInformation {
+  restrictionStatus: SharedPropertyTypeRestrictionStatus;
+}
+export interface SharedPropertyTypeRestrictionStatus {
+  publicProject: boolean;
+  ontologyPackageRid?: _api_OntologyPackageRid | null | undefined;
 }
 /**
  * Ontology as code uses this as a stable ID for the stream input

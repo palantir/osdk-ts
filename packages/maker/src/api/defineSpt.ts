@@ -22,6 +22,7 @@ import type {
 } from "@osdk/client.unstable";
 import invariant from "tiny-invariant";
 import { cloneDefinition } from "./cloneDefinition.js";
+import type { EntityPermission } from "./common/EntityPermission.js";
 import { OntologyEntityTypeEnum } from "./common/OntologyEntityTypeEnum.js";
 import {
   namespace,
@@ -53,6 +54,7 @@ export interface SharedPropertyTypeDefinition {
   aliases?: Array<string>;
   gothamMapping?: SharedPropertyTypeGothamMapping;
   baseFormatter?: OntologyIrBaseFormatter;
+  permission?: EntityPermission;
 }
 
 export function defineSharedPropertyType(

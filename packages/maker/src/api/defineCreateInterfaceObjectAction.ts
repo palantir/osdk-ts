@@ -130,7 +130,7 @@ export function defineCreateInterfaceObjectAction(
     apiName: actionApiName,
     displayName: def.displayName
       ?? `Create ${def.interfaceType.displayMetadata.displayName}`,
-    parameters: parameters,
+    parameters,
     status: def.status ?? (def.interfaceType.status.type !== "deprecated"
       ? def.interfaceType.status.type
       : def.interfaceType.status),
@@ -211,6 +211,7 @@ export function defineCreateInterfaceObjectAction(
       }),
     ...(def.submissionMetadata
       && { submissionMetadata: def.submissionMetadata }),
+    ...(def.permission && { permission: def.permission }),
     ...(def.icon && { icon: def.icon }),
   });
 }

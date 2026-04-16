@@ -351,8 +351,10 @@ describe("Experimental Test Suite", () => {
           },
           "blockPermissionInformation": {
             "actionTypes": {},
+            "interfaceTypes": {},
             "linkTypes": {},
             "objectTypes": {},
+            "sharedPropertyTypes": {},
           },
           "interfaceTypes": {},
           "linkTypes": {},
@@ -550,8 +552,10 @@ describe("Experimental Test Suite", () => {
           "actionTypes": {},
           "blockPermissionInformation": {
             "actionTypes": {},
+            "interfaceTypes": {},
             "linkTypes": {},
             "objectTypes": {},
+            "sharedPropertyTypes": {},
           },
           "interfaceTypes": {},
           "linkTypes": {},
