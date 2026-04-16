@@ -18,6 +18,8 @@ monorepolint
 ngeohash
 npmjs
 oxfmt
+oxlint
+tsgolint
 trivago
 tsup
 timecode

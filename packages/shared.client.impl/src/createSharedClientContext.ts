@@ -22,7 +22,7 @@ import {
   createRetryingFetch,
 } from "@osdk/shared.net.fetch";
 
-// eslint-disable-next-line @typescript-eslint/consistent-type-imports
+// oxlint-disable-next-line typescript/consistent-type-imports
 type OldSharedClientContext = import("@osdk/shared.client").SharedClientContext;
 export const USER_AGENT_HEADER = "Fetch-User-Agent";
 

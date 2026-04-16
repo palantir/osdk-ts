@@ -29,8 +29,6 @@
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
     "codegen": "rm -rf src/generatedNoCheck2/* &&  osdk-unstable-typescript generate --outDir src/generatedNoCheck2 --ontologyPath ontology.json --version dev --internal --packageType module",
     "dev": "vite",
-    "fix-lint": "eslint . --fix",
-    "lint": "eslint .",
     "preview": "vite preview",
     "transpileEsm": "monorepo.tool.transpile -f esm -m normal -t node",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"

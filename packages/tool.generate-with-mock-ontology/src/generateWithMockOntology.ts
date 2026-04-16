@@ -103,7 +103,7 @@ export async function generateWithMockOntology(): Promise<void> {
     });
     await fs.cp(dir, finalOutDir, { recursive: true });
   } finally {
-    // eslint-disable-next-line no-console
+    // oxlint-disable-next-line no-console
     console.log("teardown: stopping API server");
     testSetup.apiServer.close();
   }

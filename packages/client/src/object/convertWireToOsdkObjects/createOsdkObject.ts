@@ -60,20 +60,17 @@ const specialPropertyTypes = new Set([
 // every time an object is created.
 const basePropDefs = {
   "$as": {
-    get (this: ObjectHolder) {
+    get(this: ObjectHolder) {
       return get$as(this[ObjectDefRef]);
     },
   },
   "$link": {
-    get (this: ObjectHolder) {
+    get(this: ObjectHolder) {
       return get$link(this);
     },
   },
   "$clone": {
-    value (
-      this: ObjectHolder,
-      update: Record<string, any> | undefined,
-    ) {
+    value(this: ObjectHolder, update: Record<string, any> | undefined) {
       // I think `rawObj` is the same thing as `this` and can be removed?
       const rawObj = this[UnderlyingOsdkObject] as SimpleOsdkProperties;
       const def = this[ObjectDefRef];
@@ -100,7 +97,7 @@ const basePropDefs = {
     },
   },
   "$objectSpecifier": {
-    get (this: ObjectHolder) {
+    get(this: ObjectHolder) {
       const rawObj = this[UnderlyingOsdkObject];
       return createObjectSpecifierFromPrimaryKey(
         this[ObjectDefRef],
@@ -110,13 +107,13 @@ const basePropDefs = {
     enumerable: true,
   },
   "$propertySecurities": {
-    get (this: ObjectHolder) {
+    get(this: ObjectHolder) {
       return this[PropertySecuritiesRef];
     },
     enumerable: true,
   },
   "$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata": {
-    get (this: ObjectHolder) {
+    get(this: ObjectHolder) {
       return {
         ObjectMetadata: this[ObjectDefRef],
       };
@@ -124,7 +121,7 @@ const basePropDefs = {
     enumerable: false,
   },
   "$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue": {
-    value (
+    value(
       this: ObjectHolder,
       propertyApiName: string,
       options?: FormatPropertyOptions,

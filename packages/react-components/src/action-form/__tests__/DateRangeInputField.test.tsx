@@ -20,7 +20,7 @@ import { DateRangeInputField } from "../fields/DateRangeInputField.js";
 
 vi.mock("../fields/LazyDateRangeCalendar.js", async () => {
   const { default: DateRangeCalendar } = await vi.importActual<
-    // eslint-disable-next-line @typescript-eslint/consistent-type-imports
+    // oxlint-disable-next-line typescript/consistent-type-imports
     typeof import("../fields/DateRangeCalendar.js")
   >("../fields/DateRangeCalendar.js");
   return { LazyDateRangeCalendar: DateRangeCalendar };

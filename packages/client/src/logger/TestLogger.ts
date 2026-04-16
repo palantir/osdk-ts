@@ -62,7 +62,7 @@ export class TestLogger extends BaseLogger implements Logger {
     }
 
     return vi.fn<Logger.LogFn>(
-      // eslint-disable-next-line no-console
+      // oxlint-disable-next-line no-console
       console[name === "fatal" ? "error" : name].bind(console, msgs.join(" ")),
     ) as Logger.LogFn;
   }

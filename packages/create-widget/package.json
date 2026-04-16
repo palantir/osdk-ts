@@ -29,8 +29,6 @@
     "check-spelling": "cspell --quiet .",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
     "codegen": "node codegen.mjs",
-    "fix-lint": "eslint . --fix",
-    "lint": "eslint .",
     "test": "vitest run --pool=forks",
     "test:watch": "vitest",
     "transpileEsm": "monorepo.tool.transpile -f esm -m bundle -t node",

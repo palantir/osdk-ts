@@ -41,9 +41,9 @@ export class ErrorBoundary extends Component<
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo): void {
-    // eslint-disable-next-line no-console
+    // oxlint-disable-next-line no-console
     console.error("[ErrorBoundary]", error);
-    // eslint-disable-next-line no-console
+    // oxlint-disable-next-line no-console
     console.error("[ErrorBoundary] Component stack:", errorInfo.componentStack);
     this.props.onError?.(error);
   }

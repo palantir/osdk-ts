@@ -731,17 +731,17 @@ export class ObjectSetListenerWebsocket {
     try {
       sub.listener.onError({ subscriptionClosed, error });
     } catch (onErrorError) {
-      // eslint-disable-next-line no-console
+      // oxlint-disable-next-line no-console
       console.error(
         `Error encountered in an onError callback for an OSDK subscription`,
         onErrorError,
       );
-      // eslint-disable-next-line no-console
+      // oxlint-disable-next-line no-console
       console.error(
         `This onError call was triggered by an error in another callback`,
         error,
       );
-      // eslint-disable-next-line no-console
+      // oxlint-disable-next-line no-console
       console.error(`The subscription has been closed.`, error);
 
       if (!subscriptionClosed) {

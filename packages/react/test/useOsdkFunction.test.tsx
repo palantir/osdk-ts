@@ -140,6 +140,7 @@ describe("useOsdkFunction", () => {
     );
 
     act(() => {
+      // oxlint-disable-next-line @typescript-eslint/no-floating-promises -- false positive from tsgolint alpha
       result.current.refetch();
     });
 

@@ -276,7 +276,7 @@ export function buildWhereClause<Q extends ObjectTypeDefinition>(
       case "HAS_LINK": {
         if (state.type !== "hasLink") {
           if (process.env.NODE_ENV !== "production") {
-            // eslint-disable-next-line no-console
+            // oxlint-disable-next-line no-console
             console.warn(
               `[FilterList] State type mismatch for hasLink filter "${definition.linkName}": expected hasLink, got ${state.type}`,
             );
@@ -302,7 +302,7 @@ export function buildWhereClause<Q extends ObjectTypeDefinition>(
       case "KEYWORD_SEARCH": {
         if (state.type !== "keywordSearch") {
           if (process.env.NODE_ENV !== "production") {
-            // eslint-disable-next-line no-console
+            // oxlint-disable-next-line no-console
             console.warn(
               `[FilterList] State type mismatch for keywordSearch filter: expected keywordSearch, got ${state.type}`,
             );
@@ -331,7 +331,7 @@ export function buildWhereClause<Q extends ObjectTypeDefinition>(
             }
           } else {
             if (process.env.NODE_ENV !== "production") {
-              // eslint-disable-next-line no-console
+              // oxlint-disable-next-line no-console
               console.warn(
                 "[FilterList] Keyword search with properties: 'all' requires propertyTypes to be provided. Filter will be skipped.",
               );
@@ -366,7 +366,7 @@ export function buildWhereClause<Q extends ObjectTypeDefinition>(
       case "CUSTOM": {
         if (state.type !== "custom") {
           if (process.env.NODE_ENV !== "production") {
-            // eslint-disable-next-line no-console
+            // oxlint-disable-next-line no-console
             console.warn(
               `[FilterList] State type mismatch for custom filter "${definition.key}": expected custom, got ${state.type}`,
             );

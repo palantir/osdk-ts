@@ -86,7 +86,7 @@ export function applyShapeTransformations<
           transformedProps[prop] = op.transform(originalValue);
         } catch (e) {
           if (process.env.NODE_ENV !== "production") {
-            // eslint-disable-next-line no-console
+            // oxlint-disable-next-line no-console
             console.error(`Shape transform error for property "${prop}":`, e);
           }
           return {

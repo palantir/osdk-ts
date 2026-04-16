@@ -387,7 +387,7 @@ export class FauxDataStore {
         const target = this.getObject(linkDef.objectTypeApiName, fkValue);
 
         if (fkValue != null && !target) {
-          // eslint-disable-next-line no-console
+          // oxlint-disable-next-line no-console
           console.log(
             `WARNING! Setting a FK value to a non-existent object: ${dstLocator}`,
           );

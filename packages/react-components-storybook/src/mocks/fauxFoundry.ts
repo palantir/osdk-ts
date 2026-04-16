@@ -248,7 +248,7 @@ export async function setupFauxFoundry(): Promise<void> {
   });
 
   // Log registered objects for debugging
-  // eslint-disable-next-line no-console
+  // oxlint-disable-next-line no-console
   console.log(
     `FauxFoundry: Registered ${employeeData.length} employees`,
     Array.from(dataStore.getObjectsOfType("Employee")).length,

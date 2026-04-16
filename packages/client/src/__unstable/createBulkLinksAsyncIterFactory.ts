@@ -52,6 +52,7 @@ export function createBulkLinksAsyncIterFactory(ctx: MinimalClient) {
     const helper = await mcc.forObjectByApiName(objs[0].$objectType);
 
     const [objectTypeRid, propertyMapping, fullLinkMapping] = await Promise.all(
+      // oxlint-disable-next-line @typescript-eslint/await-thenable -- false positive from tsgolint alpha on Promise.all
       [helper.getRid(), helper.getPropertyMapping(), helper.getLinkMapping()],
     );
 

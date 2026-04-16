@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-/* eslint-disable @typescript-eslint/require-await */
+/* oxlint-disable typescript/require-await */
 
 import { InvalidRequest } from "../errors.js";
 import {

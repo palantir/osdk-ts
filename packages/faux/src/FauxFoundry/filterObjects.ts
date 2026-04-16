@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-/* eslint-disable no-console */
+/* oxlint-disable no-console */
 
 import type * as OntologiesV2 from "@osdk/foundry.ontologies";
 import invariant from "tiny-invariant";

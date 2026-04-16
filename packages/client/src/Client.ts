@@ -38,7 +38,7 @@ import type { MinimalClient } from "./MinimalClientContext.js";
 import type { QuerySignatureFromDef } from "./queries/types.js";
 import type { SatisfiesSemver } from "./SatisfiesSemver.js";
 
-// eslint-disable-next-line @typescript-eslint/consistent-type-imports
+// oxlint-disable-next-line typescript/consistent-type-imports
 type OldSharedClient = import("@osdk/shared.client").SharedClient;
 
 export type CheckVersionBound<Q> =

@@ -45,7 +45,7 @@ export function createMockObjectSet<
   let fauxResults: any;
   let fauxObjectSet: $ObjectSet<Q>;
 
-  // eslint-disable-next-line prefer-const
+  // oxlint-disable-next-line prefer-const
   fauxObject = {
     $link: {
       peeps: {

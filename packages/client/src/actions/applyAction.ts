@@ -276,7 +276,7 @@ export function remapActionResponse(
         editedObjectTypesSet.add(edit.objectType);
       } else {
         if (process.env.NODE_ENV !== "production") {
-          // eslint-disable-next-line no-console
+          // oxlint-disable-next-line no-console
           console.warn(`Unexpected edit type: ${JSON.stringify(edit)}`);
         }
       }

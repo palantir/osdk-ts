@@ -58,10 +58,7 @@ export function createWriteableClient<X extends AnyEdit = never>(
   // We use define properties because the client has non-enumerable properties that we want to preserve.
   const writeableClient = Object.defineProperties<Client>(client, {
     link: {
-      value <
-        SOL extends AddLinkSources<X>,
-        A extends AddLinkApiNames<X, SOL>,
-      >(
+      value<SOL extends AddLinkSources<X>, A extends AddLinkApiNames<X, SOL>>(
         source: SOL,
         apiName: A,
         target: AddLinkTargets<X, SOL, A>,
@@ -92,7 +89,7 @@ export function createWriteableClient<X extends AnyEdit = never>(
       },
     },
     unlink: {
-      value <
+      value<
         SOL extends RemoveLinkSources<X>,
         A extends RemoveLinkApiNames<X, SOL>,
       >(
@@ -125,7 +122,7 @@ export function createWriteableClient<X extends AnyEdit = never>(
       },
     },
     create: {
-      async value <OTD extends CreatableObjectOrInterfaceTypes<X>>(
+      async value<OTD extends CreatableObjectOrInterfaceTypes<X>>(
         obj: OTD,
         properties: CreatableObjectOrInterfaceTypeProperties<X, OTD>,
       ): Promise<void> {
@@ -142,7 +139,7 @@ export function createWriteableClient<X extends AnyEdit = never>(
       },
     },
     update: {
-      value <
+      value<
         SOL extends UpdatableObjectOrInterfaceLocators<X>,
         OTD extends UpdatableObjectOrInterfaceLocatorProperties<X, SOL>,
       >(locator: SOL, properties: OTD): Promise<void> {
@@ -160,7 +157,7 @@ export function createWriteableClient<X extends AnyEdit = never>(
       },
     },
     delete: {
-      value <OL extends DeletableObjectOrInterfaceLocators<X>>(
+      value<OL extends DeletableObjectOrInterfaceLocators<X>>(
         obj: OL,
       ): Promise<void> {
         return editRequestManager.postEdit({

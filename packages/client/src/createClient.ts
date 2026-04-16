@@ -67,7 +67,7 @@ import type { QuerySignatureFromDef } from "./queries/types.js";
 // Since this is just a string in `@osdk/shared.client2` instead of a symbol,
 // we can safely perform this trick.
 type newSymbolClientContext =
-  // eslint-disable-next-line @typescript-eslint/consistent-type-imports
+  // oxlint-disable-next-line typescript/consistent-type-imports
   typeof import("@osdk/shared.client2").symbolClientContext;
 
 class ActionInvoker<
@@ -118,7 +118,7 @@ export function createClientInternal(
       throw new Error("Invalid ontology RID");
     }
   } else {
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    // oxlint-disable-next-line typescript/no-floating-promises
     ontologyRid.then((ontologyRid) => {
       if (!ontologyRid.startsWith("ri.")) {
         // FIXME this promise is not await so this just shows up as an unhandled promise rejection

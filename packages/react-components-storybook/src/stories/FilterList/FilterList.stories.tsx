@@ -435,7 +435,7 @@ export const WithTitleAndIcon: Story = {
 
 function WithResetButtonStory(args: Partial<EmployeeFilterListProps>) {
   const handleReset = useCallback(() => {
-    // eslint-disable-next-line no-console
+    // oxlint-disable-next-line no-console
     console.log("Reset clicked");
   }, []);
 
@@ -862,7 +862,7 @@ function CombinedWithObjectTableStory(args: Partial<EmployeeFilterListProps>) {
   >(undefined);
 
   const handleFilterRemoved = useCallback((filterKey: string) => {
-    // eslint-disable-next-line no-console
+    // oxlint-disable-next-line no-console
     console.log("Removed filter:", filterKey);
   }, []);
 

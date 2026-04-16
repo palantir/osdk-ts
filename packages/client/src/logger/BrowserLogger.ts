@@ -71,7 +71,7 @@ export class BrowserLogger extends BaseLogger implements Logger {
     }
 
     return (...args: any[]): any => {
-      // eslint-disable-next-line no-console
+      // oxlint-disable-next-line no-console
       console[name === "fatal" ? "error" : name](
         msgs.join(" "),
         ...styles,

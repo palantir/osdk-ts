@@ -90,7 +90,7 @@ export function useOsdkFunctions({
     })),
   );
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+  // oxlint-disable-next-line react/exhaustive-deps
   const stableQueries = React.useMemo(() => queries, [stableQueriesKey]);
 
   const { subscribe, getSnapshot } = React.useMemo(

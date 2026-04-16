@@ -32,7 +32,7 @@ export class CacheKeys<TCacheKey extends CacheKey> {
     this.#onCreate?.(cacheKey);
 
     if (DEBUG_REFCOUNTS) {
-      // eslint-disable-next-line no-console
+      // oxlint-disable-next-line no-console
       console.log(
         `CacheKeys.onCreate(${cacheKey.type}, ${JSON.stringify(
           cacheKey.otherKeys,
@@ -40,7 +40,7 @@ export class CacheKeys<TCacheKey extends CacheKey> {
       );
 
       this.#finalizationRegistry.register(cacheKey, () => {
-        // eslint-disable-next-line no-console
+        // oxlint-disable-next-line no-console
         console.log(
           `CacheKey Finalization(${cacheKey.type}, ${JSON.stringify(
             cacheKey.otherKeys,
@@ -82,7 +82,7 @@ export class CacheKeys<TCacheKey extends CacheKey> {
         try {
           cleanupCallback();
         } catch (e) {
-          // eslint-disable-next-line no-console
+          // oxlint-disable-next-line no-console
           console.error(
             "Caught an error while running a finalization callback",
             e,
@@ -98,7 +98,7 @@ export class CacheKeys<TCacheKey extends CacheKey> {
   ): K {
     const cacheKeyArgs = this.#normalizeArgs(type, args);
     if (process.env.NODE_ENV !== "production" && DEBUG_CACHE_KEYS) {
-      // eslint-disable-next-line no-console
+      // oxlint-disable-next-line no-console
       console.debug(
         `CacheKeys.get([${type},
         ${cacheKeyArgs

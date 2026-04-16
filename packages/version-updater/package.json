@@ -28,8 +28,6 @@
   "scripts": {
     "check-spelling": "cspell --quiet .",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
-    "fix-lint": "eslint . --fix",
-    "lint": "eslint .",
     "postVersioning": "./scripts/postVersioning.mjs",
     "test": "vitest run --pool=forks",
     "test:watch": "vitest",

@@ -74,7 +74,7 @@ export interface MockClientHelper {
 }
 
 function mockLog(...args: any[]) {
-  // eslint-disable-next-line no-console
+  // oxlint-disable-next-line no-console
   console.log(chalk.yellow("mockClient"), ...args);
 }
 
@@ -106,7 +106,7 @@ export function createTestLogger(
         const obj: Record<string, unknown> = hasData ? (args[0] as any) : {};
         const more: any[] = hasData ? args.slice(1) : args.slice(0);
 
-        // eslint-disable-next-line no-console
+        // oxlint-disable-next-line no-console
         console.log(
           `${colors[name][1](name)}${
             options?.msgPrefix ? " " + colors[name][0](options.msgPrefix) : ""
@@ -114,7 +114,7 @@ export function createTestLogger(
           ...more,
         );
         if (bindings && Object.keys(bindings).length > 0) {
-          // eslint-disable-next-line no-console
+          // oxlint-disable-next-line no-console
           console.log(bindings);
         }
       },
@@ -403,7 +403,7 @@ export async function waitForCall(
       },
     );
   } catch (e) {
-    // eslint-disable-next-line no-console
+    // oxlint-disable-next-line no-console
     console.log(
       `We are going to fail waiting for ${times} calls because these are our calls: `,
       inspect(subFn.mock.calls, {

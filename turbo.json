@@ -17,22 +17,29 @@
       "cache": false
     },
 
+    "//#oxlint": {
+      "outputLogs": "new-only",
+      "inputs": [
+        "packages/*/src/**/*.ts",
+        "packages/*/src/**/*.tsx",
+        ".oxlintrc.json",
+        "plugins/oxlint-plugin-header.js"
+      ],
+      "dependsOn": ["//#oxfmt", "codegen"]
+    },
+
+    // lint only runs for generator packages (they still use ESLint)
+    // All other packages are linted by //#oxlint from root
     "lint": {
       "outputLogs": "new-only",
       "inputs": [
         "src/**/*.ts",
         "src/**/*.tsx",
-        ".eslintrc.cjs",
         "eslint.config.mjs",
         "tsconfig.json"
       ],
       "outputs": [],
-      "dependsOn": [
-        "//#global-eslint-config",
-        "//#oxfmt",
-        "codegen",
-        "^transpileTypes"
-      ]
+      "dependsOn": ["//#global-eslint-config", "codegen", "^transpileTypes"]
     },
 
     /* Psuedo task to let us depend on oxfmt config */
@@ -228,6 +235,7 @@
     "check": {
       "dependsOn": [
         "//#check-mrl",
+        "//#oxlint",
         "lint",
         "typecheck",
         "test",

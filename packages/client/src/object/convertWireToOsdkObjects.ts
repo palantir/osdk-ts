@@ -365,7 +365,7 @@ function invariantInterfacesAsViews(
     if (client.logger) {
       client.logger.warn(warning);
     } else {
-      // eslint-disable-next-line no-console
+      // oxlint-disable-next-line no-console
       console.error(`WARNING! ${warning}`);
     }
     throw new Error(warning);

@@ -213,7 +213,7 @@ export class Store {
     const subject = this.subjects.peek(key);
 
     if (DEBUG_REFCOUNTS) {
-      // eslint-disable-next-line no-console
+      // oxlint-disable-next-line no-console
       console.log(
         `CacheKey cleaning up (${JSON.stringify({
           closed: subject?.closed,

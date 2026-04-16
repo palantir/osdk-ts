@@ -4,4 +4,5 @@ if [ "$(git config user.email)" = "checkpoint@cline.bot" ]; then
 fi
 
 TERM=dumb npx oxfmt --check
+TERM=dumb npx oxlint -c .oxlintrc.json .
 TERM=dumb npx lint-staged

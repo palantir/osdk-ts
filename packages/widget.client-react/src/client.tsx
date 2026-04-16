@@ -233,7 +233,7 @@ export const FoundryWidget = <C extends WidgetConfig<C["parameters"]>>({
 
     const resizeObserver = new ResizeObserver((entries) => {
       if (entries.length !== 1) {
-        // eslint-disable-next-line no-console
+        // oxlint-disable-next-line no-console
         console.error(
           "Expected exactly one resize observer entry but received:",
           entries,
@@ -242,7 +242,7 @@ export const FoundryWidget = <C extends WidgetConfig<C["parameters"]>>({
       }
       const entry = entries[0];
       if (entry.borderBoxSize.length !== 1) {
-        // eslint-disable-next-line no-console
+        // oxlint-disable-next-line no-console
         console.error(
           "Expected exactly one border box size but received:",
           entry.borderBoxSize,

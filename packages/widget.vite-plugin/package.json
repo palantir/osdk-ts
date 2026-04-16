@@ -30,8 +30,6 @@
     "check-spelling": "cspell --quiet .",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
     "dev": "vite",
-    "fix-lint": "eslint . --fix",
-    "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest run",
     "transpileEsm": "monorepo.tool.transpile -f esm -m normal -t node",

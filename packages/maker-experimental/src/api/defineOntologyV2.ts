@@ -43,7 +43,7 @@ export async function defineOntologyV2(
   try {
     await body();
   } catch (e) {
-    // eslint-disable-next-line no-console
+    // oxlint-disable-next-line no-console
     console.error(
       "Unexpected error while processing the body of the ontology",
       e,

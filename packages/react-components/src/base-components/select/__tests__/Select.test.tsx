@@ -142,7 +142,10 @@ describe("Select", () => {
   describe("multi-select", () => {
     it("renders with multiple selected values", () => {
       render(
-        <Select.Root<string, true> multiple={true} defaultValue={["alice", "bob"]}>
+        <Select.Root<string, true>
+          multiple={true}
+          defaultValue={["alice", "bob"]}
+        >
           <Select.Trigger data-testid="trigger" />
           <Select.Portal>
             <Select.Positioner>

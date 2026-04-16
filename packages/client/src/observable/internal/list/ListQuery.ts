@@ -651,7 +651,7 @@ export abstract class ListQuery extends BaseListQuery<
           logger?.error("Uncaught error while revalidating list", e);
         } else {
           // Make sure we write to the console if there is no logger!
-          // eslint-disable-next-line no-console
+          // oxlint-disable-next-line no-console
           console.error("Uncaught error while revalidating list", e);
         }
       });

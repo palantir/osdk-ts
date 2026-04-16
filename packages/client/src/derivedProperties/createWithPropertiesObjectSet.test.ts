@@ -106,8 +106,7 @@ describe(createWithPropertiesObjectSet, () => {
     const result = clause.derivedPropertyName(deriveObjectSet);
     const definition = map.get(result);
 
-    const secondResult =
-      clause.secondaryDerivedPropertyName(deriveObjectSet);
+    const secondResult = clause.secondaryDerivedPropertyName(deriveObjectSet);
     const secondDefinition = map.get(secondResult);
 
     expect(definition).toMatchInlineSnapshot(`

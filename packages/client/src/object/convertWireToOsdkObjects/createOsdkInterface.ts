@@ -87,7 +87,7 @@ export function createOsdkInterface<Q extends FetchedObjectTypeDefinition>(
         },
 
         "$link": {
-          get (this: InterfaceHolder) {
+          get(this: InterfaceHolder) {
             return get$linkForInterface(this);
           },
         },

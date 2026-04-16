@@ -31,7 +31,9 @@ describe("DropdownField", () => {
     });
 
     it("renders a combobox input when isSearchable is true", () => {
-      render(<DropdownField value={null} items={STRING_ITEMS} isSearchable={true} />);
+      render(
+        <DropdownField value={null} items={STRING_ITEMS} isSearchable={true} />,
+      );
 
       expect(screen.getByRole("combobox")).toBeDefined();
     });
@@ -97,7 +99,9 @@ describe("DropdownField", () => {
 
   describe("searchable (Combobox variant)", () => {
     it("renders combobox with search input", async () => {
-      render(<DropdownField value={null} items={STRING_ITEMS} isSearchable={true} />);
+      render(
+        <DropdownField value={null} items={STRING_ITEMS} isSearchable={true} />,
+      );
 
       const input = screen.getByRole("combobox");
       expect(input).toBeDefined();
@@ -158,7 +162,9 @@ describe("DropdownField", () => {
     });
 
     it("shows 'No results' when search matches nothing", async () => {
-      render(<DropdownField value={null} items={STRING_ITEMS} isSearchable={true} />);
+      render(
+        <DropdownField value={null} items={STRING_ITEMS} isSearchable={true} />,
+      );
 
       const input = screen.getByRole("combobox");
       fireEvent.focus(input);

@@ -52,7 +52,7 @@ export class GeotimeSeriesPropertyImpl<
     );
     latestPointPromise.then(
       (latestPoint) => (this.lastFetchedValue = latestPoint),
-      // eslint-disable-next-line no-console
+      // oxlint-disable-next-line no-console
       (err) => void console.error(err),
     );
     return latestPointPromise;

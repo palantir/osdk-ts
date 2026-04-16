@@ -91,7 +91,7 @@ export function useFunctionColumnsData<
 
   const stableObjects = useStableObjects(objects);
   // TODO: replace with useDeepEqual when it's added
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+  // oxlint-disable-next-line react/exhaustive-deps
   const stableObjectSet = useMemo(() => objectSet, [JSON.stringify(objectSet)]);
 
   const functionColDefs = useMemo(
@@ -366,11 +366,10 @@ const useStableObjects = <
 ):
   | Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>[]
   | undefined => {
-   
   return useMemo(
     () => objects,
     [
-      // eslint-disable-next-line react-hooks/exhaustive-deps
+      // oxlint-disable-next-line react/exhaustive-deps
       JSON.stringify(
         (objects ?? [])
           .map((item) => ({

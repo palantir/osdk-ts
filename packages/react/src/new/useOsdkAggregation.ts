@@ -208,7 +208,6 @@ export function useOsdkAggregation<
     }
     return makeExternalStore<ObserveAggregationArgs<Q, A>>(
       (observer) =>
-         
         observableClient.observeAggregation(
           {
             type,

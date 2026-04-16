@@ -69,14 +69,14 @@ export class RefCounts<T extends {}> {
 
     if (DEBUG_REFCOUNTS) {
       for (const [key, count] of this.refCounts) {
-        // eslint-disable-next-line no-console
+        // oxlint-disable-next-line no-console
         console.debug("RefCounts.gc() - counts: ", JSON.stringify(key), count);
       }
     }
 
     for (const [key, deathTime] of this.gcMap) {
       if (DEBUG_REFCOUNTS && deathTime >= now) {
-        // eslint-disable-next-line no-console
+        // oxlint-disable-next-line no-console
         console.debug(
           "RefCounts.gc() - ttl ",
           JSON.stringify(key),
@@ -86,7 +86,7 @@ export class RefCounts<T extends {}> {
 
       if (deathTime < now) {
         if (DEBUG_REFCOUNTS) {
-          // eslint-disable-next-line no-console
+          // oxlint-disable-next-line no-console
           console.debug(
             "RefCounts.gc() - registering cleaning up",
             JSON.stringify(key),

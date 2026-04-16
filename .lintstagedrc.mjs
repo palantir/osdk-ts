@@ -24,10 +24,7 @@ export default {
       "**/examples/**/*",
     ]);
     if (match.length === 0) return [];
-    return [
-      `eslint --fix  ${match.join(" ")}`,
-      `${CSPELL_CMD} ${match.join(" ")}`,
-    ];
+    return [`${CSPELL_CMD} ${match.join(" ")}`];
   },
   "(.lintstagedrc.mjs|.monorepolint.config.mjs)": [CSPELL_CMD],
   "*": (files) => {

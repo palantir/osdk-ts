@@ -55,7 +55,7 @@ export async function routeConnectToMsw(
       resolutionContext: {
         baseUrl,
       },
-      // eslint-disable-next-line @typescript-eslint/require-await
+      // oxlint-disable-next-line typescript/require-await
       async onMockedResponse(mockedResponse) {
         const { status, statusText, headers } = mockedResponse;
 

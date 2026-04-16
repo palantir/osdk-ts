@@ -95,7 +95,7 @@ export const App: React.FC = () => {
         })
         .catch((error: unknown) => {
           window.clearInterval(poll);
-          // eslint-disable-next-line no-console
+          // oxlint-disable-next-line no-console
           console.error("Failed to finish dev mode setup:", error);
           setPageState({
             state: "failed",

@@ -194,7 +194,7 @@ export type {
   OsdkBase,
   PrimaryKeyType,
 } from "./OsdkBase.js";
-// eslint-disable-next-line @typescript-eslint/no-deprecated
+// oxlint-disable-next-line typescript/no-deprecated
 export type { OsdkObject } from "./OsdkObject.js";
 export type { ConvertProps, MaybeScore, Osdk } from "./OsdkObjectFrom.js";
 export type { PageResult } from "./PageResult.js";

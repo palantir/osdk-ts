@@ -135,7 +135,7 @@ export class Layers {
       if (this.logger) {
         this.logger.error("Unhandled error in batch", e);
       } else {
-        // eslint-disable-next-line no-console
+        // oxlint-disable-next-line no-console
         console.error("Unhandled error in batch", e);
         throw e;
       }

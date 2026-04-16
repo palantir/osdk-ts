@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-/* eslint-disable @typescript-eslint/no-deprecated */
+/* oxlint-disable typescript/no-deprecated */
 
 export { isOk } from "@osdk/api";
 export type {

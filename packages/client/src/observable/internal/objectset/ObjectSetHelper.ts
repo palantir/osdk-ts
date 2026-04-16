@@ -72,7 +72,7 @@ export class ObjectSetHelper extends AbstractHelper<
     if (options.streamUpdates) {
       if (options.pivotTo) {
         if (process.env.NODE_ENV !== "production") {
-          // eslint-disable-next-line no-console
+          // oxlint-disable-next-line no-console
           console.warn(
             "[@osdk/client] streamUpdates is not supported with pivotTo. " +
               "The server does not support websocket subscriptions for " +

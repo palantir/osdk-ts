@@ -23,7 +23,7 @@ import { DatetimePickerField } from "../fields/DatetimePickerField.js";
 // boundary — we test DatetimePickerField behavior, not the lazy loading mechanism.
 vi.mock("../fields/LazyDateCalendar.js", async () => {
   const { default: DateCalendar } = await vi.importActual<
-    // eslint-disable-next-line @typescript-eslint/consistent-type-imports
+    // oxlint-disable-next-line typescript/consistent-type-imports
     typeof import("../fields/DateCalendar.js")
   >("../fields/DateCalendar.js");
   return { LazyDateCalendar: DateCalendar };
