@@ -34,7 +34,7 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
-    "@osdk/typescript-sdk-docs": "workspace:~",
+    "@osdk/typescript-sdk-docs": "workspace:*",
     "mustache": "^4.2.0",
     "semver": "^7.7.2",
     "yargs": "^17.7.2"

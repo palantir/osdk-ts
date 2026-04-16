@@ -13,13 +13,13 @@
     "typecheck": "tsc"
   },
   "dependencies": {
-    "@osdk/api": "workspace:~",
-    "@osdk/client": "workspace:~",
-    "@osdk/oauth": "workspace:~",
+    "@osdk/api": "workspace:*",
+    "@osdk/client": "workspace:*",
+    "@osdk/oauth": "workspace:*",
     "@test-app2/osdk": "link:osdk/@test-app2/osdk"
   },
   "devDependencies": {
-    "@osdk/tool.generate-with-mock-ontology": "workspace:~",
+    "@osdk/tool.generate-with-mock-ontology": "workspace:*",
     "typescript": "~5.5.4"
   }
 }
