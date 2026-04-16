@@ -135,7 +135,11 @@ export function useDateEditState({
 
   const stopEditing = useCallback(() => {
     setIsEditing(false);
-  }, []);
+    // Reset inputValue to match the committed value so re-entering editing
+    // mode doesn't cause a controlled-input value mismatch that can swallow
+    // the first keystroke (e.g. backspace after an invalid-input revert).
+    setInputValue(value != null ? editFormatFn(value) : "");
+  }, [value, editFormatFn]);
 
   const setDateValue = useCallback(
     (date: Date | null) => {

@@ -126,6 +126,30 @@ describe("useDateEditState", () => {
       });
       expect(result.current.isEditing).toBe(false);
     });
+
+    it("resets inputValue to committed value's edit format", () => {
+      const { result } = renderHook(() =>
+        useDateEditState(
+          makeConfig({ value: new Date(2024, 0, 15) }),
+        )
+      );
+
+      act(() => {
+        result.current.startEditing();
+      });
+      act(() => {
+        result.current.setInputValue("invalid-date");
+      });
+      expect(result.current.inputValue).toBe("invalid-date");
+
+      act(() => {
+        result.current.stopEditing();
+      });
+
+      // inputValue should be reset to the edit-formatted committed value,
+      // not retain the stale invalid text.
+      expect(result.current.inputValue).toBe("2024-01-15");
+    });
   });
 
   describe("setInputValue", () => {
