@@ -12,7 +12,7 @@
     "lint": "turbo run lint",
     "postVersionCmd": "turbo run postVersioning && turbo codegen",
     "prePublish": "turbo build && turbo lint",
-    "prepare": "husky install",
+    "prepare": "git config --unset core.hooksPath 2>/dev/null; lefthook install",
     "syncpack": "syncpack lint",
     "tag-release": "./scripts/tag-release.sh",
     "test": "FORCE_COLOR=1 turbo run test",
@@ -37,7 +37,6 @@
     "@osdk/monorepo.tool.transpile": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@size-limit/preset-small-lib": "^12.0.1",
-    "@types/lint-staged": "^13.3.0",
     "@typescript-eslint/eslint-plugin": "^8.43.0",
     "@typescript-eslint/parser": "^8.43.0",
     "@vitest/coverage-v8": "^3.2.4",
@@ -59,9 +58,7 @@
     "find-up": "^7.0.0",
     "find-up-cli": "^6.0.0",
     "globals": "^15.15.0",
-    "husky": "^9.1.7",
-    "lint-staged": "^15.5.2",
-    "micromatch": "^4.0.8",
+    "lefthook": "^1.11.13",
     "postcss": "^8.5.6",
     "postcss-cli": "^11.0.1",
     "postcss-import": "^16.1.1",
@@ -92,7 +89,8 @@
       "dprint",
       "esbuild",
       "msw",
-      "unrs-resolver"
+      "unrs-resolver",
+      "lefthook"
     ],
     "overrides": {
       "trim@0.0.1": "0.0.3",

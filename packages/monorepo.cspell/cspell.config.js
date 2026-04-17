@@ -80,7 +80,7 @@ const cspell = {
     // Just too complex right now. We should fix this later.
     "eslint.config.mjs",
     "tsup.config.js",
-    ".lintstagedrc.mjs",
+    "lefthook.yml",
     ".envrc.sample",
     ".monorepolint.config.mjs",
     ".syncpackrc",

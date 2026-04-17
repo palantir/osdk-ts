@@ -1,0 +1,117 @@
+pre-commit:
+  skip:
+    - run: '[ "$(git config user.email)" = "checkpoint@cline.bot" ]'
+  parallel: true
+  jobs:
+    # monorepo tool packages: dprint + cspell (no eslint)
+    - name: lint-monorepo
+      glob: "packages/monorepo.*/**/*.{js,jsx,ts,tsx,mjs,cjs}"
+      group:
+        piped: true
+        jobs:
+          - name: dprint-monorepo
+            stage_fixed: true
+            run: npx dprint fmt {staged_files}
+          - name: cspell-monorepo
+            run: npx cspell --quiet --no-must-find-files {staged_files}
+
+    # regular packages: dprint → eslint → cspell (piped so fixers don't race)
+    - name: lint-packages
+      glob: "packages/**/*.{js,jsx,ts,tsx,mjs,cjs}"
+      exclude: "(templates|generatedNoCheck|generatedNoCheck2|examples)/"
+      group:
+        piped: true
+        jobs:
+          - name: dprint-packages
+            stage_fixed: true
+            run: npx dprint fmt {staged_files}
+          - name: eslint-packages
+            stage_fixed: true
+            run: npx eslint --fix {staged_files}
+          - name: cspell-packages
+            run: npx cspell --quiet --no-must-find-files {staged_files}
+
+    # markdown: cspell only
+    - name: cspell-md
+      glob: "*.md"
+      run: npx cspell --quiet --no-must-find-files {staged_files}
+
+    # config files: dprint + cspell
+    - name: lint-config
+      glob: "{.monorepolint.config.mjs,lefthook.yml}"
+      group:
+        piped: true
+        jobs:
+          - name: dprint-config
+            stage_fixed: true
+            run: npx dprint fmt --allow-no-files {staged_files}
+          - name: cspell-config
+            run: npx cspell --quiet --no-must-find-files {staged_files}
+
+    # package.json / tsconfig: monorepolint check then dprint
+    - name: lint-mrl-files
+      glob: "{package.json,**/package.json,tsconfig.json,**/tsconfig.json}"
+      group:
+        piped: true
+        jobs:
+          - name: monorepolint
+            run: npx monorepolint check --verbose
+          - name: dprint-mrl-files
+            stage_fixed: true
+            run: npx dprint fmt --allow-no-files {staged_files}
+
+pre-push:
+  commands:
+    changeset-check:
+      interactive: true
+      run: |
+        current_branch="$(git branch --show-current 2>/dev/null)"
+        case "$current_branch" in
+          changeset-release/*) exit 0 ;;
+        esac
+        if [ "$current_branch" != "main" ] && [ -n "$current_branch" ]; then
+          changeset_files="$(git diff origin/main --diff-filter=A --name-only -- .changeset/ 2>/dev/null | grep '\.md$' | grep -v 'README\.md' | grep -v 'simulatedRelease' || true)"
+          if [ -z "$changeset_files" ]; then
+            echo ""
+            echo "No changeset detected on branch '$current_branch'"
+            echo "Run 'pnpm changeset' to create one."
+            echo ""
+            printf "Push anyway? [y/N] "
+            read -r answer < /dev/tty
+            case "$answer" in
+              [yY]|[yY][eE][sS]) ;;
+              *)
+                echo "Push aborted."
+                exit 1
+                ;;
+            esac
+          fi
+        fi
+
+    cspell-push:
+      run: |
+        REMOTE_REF=$(git merge-base HEAD @{upstream} 2>/dev/null || true)
+        if [ -z "$REMOTE_REF" ]; then
+          REMOTE_REF=$(git merge-base HEAD main 2>/dev/null || true)
+        fi
+        if [ -z "$REMOTE_REF" ]; then
+          echo "Could not determine base ref, running full cspell check..."
+          pnpm cspell:all
+          exit $?
+        fi
+        FILECOUNT=$(git diff --name-only --diff-filter=ACMR "$REMOTE_REF" HEAD | wc -l)
+        if [ "$FILECOUNT" -eq 0 ]; then
+          echo "No changed files to spellcheck."
+          exit 0
+        fi
+        echo "Running cspell on changed files..."
+        git diff --name-only --diff-filter=ACMR -z "$REMOTE_REF" HEAD | xargs -0 pnpm exec cspell --no-must-find-files
+        CSPELL_EXIT=$?
+        if [ "$CSPELL_EXIT" -ne 0 ]; then
+          echo ""
+          echo "cspell found spelling errors. Either:"
+          echo "  1. Fix the typo"
+          echo "  2. Add the word to a dictionary file in packages/monorepo.cspell/"
+          echo "  3. Add a cspell:ignore comment above the line"
+          exit 1
+        fi
