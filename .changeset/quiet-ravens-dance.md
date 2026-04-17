@@ -1,6 +1,5 @@
 ---
 "@osdk/react-components": patch
-"@osdk/react-components-styles": patch
 "@osdk/faux": patch
 ---
 

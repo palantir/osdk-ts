@@ -55,24 +55,22 @@ Later layers always win when styles conflict, regardless of selector specificity
 
 ```css
 /* index.css */
-@layer osdk.tokens, osdk.components;
+@layer osdk.components, cbac.components;
 
-@import "@osdk/react-components-styles" layer(osdk.tokens);
 @import "@osdk/react-components/styles.css" layer(osdk.components);
-@import "@osdk/cbac-components/styles.css" layer(osdk.components);
+@import "@osdk/cbac-components/styles.css" layer(cbac.components); /* only needed if using CBAC components */
 ```
 
 ### With Tailwind CSS v4
 
 ```css
 /* index.css */
-@layer tailwind, osdk.tokens, osdk.components;
+@layer tailwind, osdk.components, cbac.components;
 
 @import "tailwindcss" layer(tailwind);
 
-@import "@osdk/react-components-styles" layer(osdk.tokens);
 @import "@osdk/react-components/styles.css" layer(osdk.components);
-@import "@osdk/cbac-components/styles.css" layer(osdk.components);
+@import "@osdk/cbac-components/styles.css" layer(cbac.components); /* only needed if using CBAC components */
 ```
 
 ### Custom theme overrides
@@ -80,11 +78,10 @@ Later layers always win when styles conflict, regardless of selector specificity
 Add a custom layer after the OSDK layers to override any token:
 
 ```css
-@layer osdk.tokens, osdk.components, user.brand;
+@layer osdk.components, user.brand;
 
-@import "@osdk/react-components-styles" layer(osdk.tokens);
 @import "@osdk/react-components/styles.css" layer(osdk.components);
-@import "@osdk/cbac-components/styles.css" layer(osdk.components);
+@import "@osdk/cbac-components/styles.css" layer(cbac.components); /* only needed if using CBAC components */
 @import "./user-brand.css" layer(user.brand);
 ```
 
