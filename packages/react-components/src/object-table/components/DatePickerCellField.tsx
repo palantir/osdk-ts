@@ -18,10 +18,7 @@ import classNames from "classnames";
 import React, { useCallback, useMemo } from "react";
 import { DatetimePickerField } from "../../action-form/fields/DatetimePickerField.js";
 
-import {
-  formatDateForInput,
-  formatDatetimeForInput,
-} from "../../shared/dateUtils.js";
+import { formatDateForInput } from "../../shared/dateUtils.js";
 import styles from "../EditableCell.module.css";
 import { useRegisterPortal } from "../utils/PortalTracker.js";
 import type { DatePickerEditConfig } from "../utils/types.js";
@@ -62,9 +59,13 @@ function DatePickerCellFieldInner({
     ?? dataType === "timestamp";
 
   const handleChange = useCallback((newValue: Date | null) => {
+    if (newValue == null) {
+      onChange(null);
+      return;
+    }
     onChange(
       showTime
-        ? formatDatetimeForInput(newValue)
+        ? newValue.toISOString()
         : formatDateForInput(newValue),
     );
   }, [onChange, showTime]);
