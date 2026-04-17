@@ -149,7 +149,10 @@ export function filterObjects(
       }
       invariant(field);
       return objects.filter((obj) => {
-        return value ? obj[field] == null : obj[field] != null;
+        // Empty strings are also considered null to match the behavior of the backend
+        const v = obj[field];
+        const isEmpty = v == null || v === "";
+        return value ? isEmpty : !isEmpty;
       });
     }
 

@@ -120,11 +120,13 @@ function ListogramInputInner({
           {displayValues.map(({ value, count }) => {
             const percentage = maxCount > 0 ? (count / maxCount) * 100 : 0;
             const perRowColor = colorMap?.[value];
+            const isEmpty = value === "";
 
             return (
               <Button
                 key={value}
                 className={styles.row}
+                // eslint-disable-next-line react/jsx-no-bind
                 onClick={() => toggleValue(value)}
                 aria-pressed={selectedSet.has(value)}
                 style={
@@ -148,17 +150,21 @@ function ListogramInputInner({
                 >
                   <Checkbox
                     checked={selectedSet.has(value)}
+                    // eslint-disable-next-line react/jsx-no-bind
                     onCheckedChange={() => toggleValue(value)}
                     isExcluding={isExcluding}
                   />
                 </span>
                 <span
-                  className={styles.label}
+                  className={classnames(
+                    styles.label,
+                    isEmpty && styles.emptyLabel,
+                  )}
                   data-excluding={
                     (isExcluding && selectedSet.has(value)) || undefined
                   }
                 >
-                  {value}
+                  {isEmpty ? "No value" : value}
                 </span>
                 {displayMode !== "minimal" && (
                   <span className={styles.count}>{count.toLocaleString()}</span>
@@ -176,6 +182,7 @@ function ListogramInputInner({
             <Button
               type="button"
               className={styles.viewAllButton}
+              // eslint-disable-next-line react/jsx-no-bind
               onClick={() => setIsExpanded(true)}
             >
               View all ({sortedValues.length})
