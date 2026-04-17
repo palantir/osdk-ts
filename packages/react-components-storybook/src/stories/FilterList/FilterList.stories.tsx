@@ -22,6 +22,7 @@ import type {
 } from "@osdk/react-components/experimental/filter-list";
 import { FilterList } from "@osdk/react-components/experimental/filter-list";
 import { ObjectTable } from "@osdk/react-components/experimental/object-table";
+import { useOsdkClient } from "@osdk/react/experimental";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useCallback, useMemo, useState } from "react";
 import { useArgs } from "storybook/preview-api";
@@ -289,6 +290,63 @@ export const Default: Story = {
       </div>
     );
   },
+};
+
+function WithObjectSetStory(args: Partial<EmployeeFilterListProps>) {
+  const client = useOsdkClient();
+  const objectSet = useMemo(
+    () =>
+      client(Employee).where({
+        department: "Marketing",
+      }),
+    [client],
+  );
+
+  const filterDefinitions = useMemo(
+    (): FilterDefinitionUnion<Employee>[] => [
+      teamFilter,
+      locationCityFilter,
+    ],
+    [],
+  );
+
+  return (
+    <div style={SIDEBAR_STYLE}>
+      <FilterList
+        objectType={Employee}
+        objectSet={objectSet}
+        filterDefinitions={filterDefinitions}
+        {...args}
+      />
+    </div>
+  );
+}
+
+export const WithObjectSet: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Pass an `objectSet` prop to scope filter aggregations to a subset of objects. "
+          + "Here the object set is filtered to Marketing department employees, "
+          + "so the listogram counts reflect only that subset.",
+      },
+      source: {
+        code: `const client = useOsdkClient();
+const objectSet = client(Employee).where({ department: "Marketing" });
+
+<FilterList
+  objectType={Employee}
+  objectSet={objectSet}
+  filterDefinitions={[
+    { type: "PROPERTY", key: "team", label: "Team", filterComponent: "LISTOGRAM", filterState: { type: "EXACT_MATCH", values: [] } },
+    { type: "PROPERTY", key: "locationCity", label: "Location City", filterComponent: "LISTOGRAM", filterState: { type: "EXACT_MATCH", values: [] } },
+  ]}
+/>`,
+      },
+    },
+  },
+  render: (args) => <WithObjectSetStory {...args} />,
 };
 
 function AddFilterModeStory(args: Partial<EmployeeFilterListProps>) {
