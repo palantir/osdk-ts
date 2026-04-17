@@ -92,6 +92,9 @@
       "core-js",
       "core-js-pure",
       "esbuild",
+      "oxfmt",
+      "oxlint",
+      "oxlint-tsgolint",
       "msw",
       "unrs-resolver"
     ],
