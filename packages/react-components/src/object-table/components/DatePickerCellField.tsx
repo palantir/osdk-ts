@@ -17,14 +17,10 @@
 import classNames from "classnames";
 import React, { useMemo } from "react";
 import { DatetimePickerField } from "../../action-form/fields/DatetimePickerField.js";
-import {
-  formatDateForDisplay,
-  formatDatetimeForInput,
-} from "../../shared/dateUtils.js";
+
 import styles from "../EditableCell.module.css";
 import { useRegisterPortal } from "../utils/PortalTracker.js";
 import type { DatePickerEditConfig } from "../utils/types.js";
-import { ReadonlyDisplayCell } from "./ReadonlyDisplayCell.js";
 
 interface DatePickerCellFieldProps {
   fieldComponentProps?: DatePickerEditConfig;
@@ -62,29 +58,6 @@ function DatePickerCellFieldInner({
   const showTime = fieldComponentProps?.showTime
     ?? dataType === "timestamp";
 
-  const displayValue = useMemo(() => {
-    if (dateValue == null) return inputValue;
-    const customFormat = fieldComponentProps?.formatDate;
-    if (customFormat != null) return customFormat(dateValue);
-    return showTime
-      ? formatDatetimeForInput(dateValue)
-      : formatDateForDisplay(dateValue);
-  }, [
-    dateValue,
-    inputValue,
-    showTime,
-    fieldComponentProps?.formatDate,
-  ]);
-
-  if (!isRowFocused) {
-    return (
-      <ReadonlyDisplayCell
-        inputValue={displayValue}
-        hasValidationError={hasValidationError}
-        isEdited={isEdited}
-      />
-    );
-  }
   return (
     <div
       className={classNames(
@@ -101,6 +74,7 @@ function DatePickerCellFieldInner({
         value={dateValue}
         onChange={onChange}
         portalRef={portalRef}
+        readOnly={!isRowFocused}
       />
     </div>
   );

@@ -5,6 +5,22 @@
   outline: none;
 }
 
+/* Read-only mode: hide borders and make it look like plain text */
+.osdkDatetimeReadOnly {
+  border-color: transparent;
+  background-color: transparent;
+  cursor: default;
+
+  &:hover {
+    background-color: transparent;
+  }
+
+  &:focus-within {
+    outline: none;
+    border-color: transparent;
+  }
+}
+
 /* Time footer — rendered as a popover sibling (not a DayPicker tfoot) so the
    border-top can span the full popover width via negative margins. */
 .osdkDatetimeTimeFooter {

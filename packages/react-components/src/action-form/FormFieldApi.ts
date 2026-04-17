@@ -195,6 +195,13 @@ export interface DatetimePickerFieldProps extends BaseFormFieldProps<Date> {
    * Used to track portaled content for click-outside detection.
    */
   portalRef?: React.Ref<HTMLDivElement>;
+
+  /**
+   * When true, the field displays its value as plain text without
+   * opening the popover on focus. The input border is hidden so it
+   * visually blends with surrounding read-only content.
+   */
+  readOnly?: boolean;
 }
 
 /**
