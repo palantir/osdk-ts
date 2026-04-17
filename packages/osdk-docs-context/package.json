@@ -32,7 +32,7 @@
     "check-spelling": "cspell --quiet .",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
     "codegen": "generate-osdk-context --output-dir . && pnpm run format",
-    "format": "npx dprint fmt --config $(find-up dprint.json)",
+    "format": "npx oxfmt --write src/",
     "test": "vitest run --pool=forks",
     "test:watch": "vitest",
     "transpileBrowser": "monorepo.tool.transpile -f esm -m normal -t browser",
