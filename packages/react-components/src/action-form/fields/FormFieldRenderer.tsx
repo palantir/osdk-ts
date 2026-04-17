@@ -31,6 +31,7 @@ export interface FormFieldRendererProps {
   fieldDefinition: RendererFieldDefinition;
   value: unknown;
   onFieldValueChange: (value: unknown) => void;
+  error: string | undefined;
 }
 
 export const FormFieldRenderer: React.FC<FormFieldRendererProps> = memo(
@@ -38,6 +39,7 @@ export const FormFieldRenderer: React.FC<FormFieldRendererProps> = memo(
     fieldDefinition,
     value,
     onFieldValueChange,
+    error,
   }: FormFieldRendererProps): React.ReactElement {
     const { label, isRequired, helperText, helperTextPlacement } =
       fieldDefinition;
@@ -49,6 +51,7 @@ export const FormFieldRenderer: React.FC<FormFieldRendererProps> = memo(
         fieldKey={fieldDefinition.fieldKey}
         helperText={helperText}
         helperTextPlacement={helperTextPlacement}
+        error={error}
       >
         {renderFieldComponent(fieldDefinition, value, onFieldValueChange)}
       </FormField>

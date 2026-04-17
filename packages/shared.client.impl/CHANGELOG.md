@@ -1,5 +1,11 @@
 # @osdk/shared.client.impl
 
+## 1.9.0
+
+### Minor Changes
+
+- bcf359f: Add new headers options for OSDK clients
+
 ## 1.8.0
 
 ### Minor Changes

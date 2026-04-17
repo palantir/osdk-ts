@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import React, { useState } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { BaseForm } from "../BaseForm.js";
@@ -49,7 +55,7 @@ describe("BaseForm", () => {
         />,
       );
 
-      const nameInput = screen.getByRole("textbox", { name: "name" });
+      const nameInput = screen.getByRole("textbox", { name: /name/ });
       fireEvent.change(nameInput, { target: { value: "Alice" } });
 
       fireEvent.click(screen.getByRole("button", { name: /submit/i }));
@@ -97,7 +103,7 @@ describe("BaseForm", () => {
         />,
       );
 
-      const nameInput = screen.getByRole("textbox", { name: "name" });
+      const nameInput = screen.getByRole("textbox", { name: /name/ });
       fireEvent.change(nameInput, { target: { value: "Typed" } });
 
       fireEvent.click(screen.getByRole("button", { name: /submit/i }));
@@ -245,7 +251,7 @@ describe("BaseForm", () => {
         />,
       );
 
-      const nameInput = screen.getByRole("textbox", { name: "name" });
+      const nameInput = screen.getByRole("textbox", { name: /name/ });
       fireEvent.change(nameInput, { target: { value: "Updated" } });
 
       expect(onFieldValueChange).toHaveBeenCalledWith("name", "Updated");
@@ -300,7 +306,7 @@ describe("BaseForm", () => {
 
       render(<ControlledWrapper />);
 
-      const nameInput = screen.getByRole("textbox", { name: "name" });
+      const nameInput = screen.getByRole("textbox", { name: /name/ });
       fireEvent.change(nameInput, { target: { value: "Updated" } });
 
       fireEvent.click(screen.getByRole("button", { name: /submit/i }));
@@ -327,7 +333,7 @@ describe("BaseForm", () => {
         />,
       );
 
-      const nameInput = screen.getByRole("textbox", { name: "name" });
+      const nameInput = screen.getByRole("textbox", { name: /name/ });
       fireEvent.change(nameInput, { target: { value: "User Typed This" } });
 
       fireEvent.click(screen.getByRole("button", { name: /submit/i }));
@@ -337,6 +343,261 @@ describe("BaseForm", () => {
           expect.objectContaining({ name: "Parent" }),
         );
       });
+    });
+  });
+
+  describe("validation", () => {
+    it("shows error for required field after blur with empty value", async () => {
+      render(
+        <BaseForm
+          fieldDefinitions={[makeDef("name", { isRequired: true })]}
+          onSubmit={vi.fn()}
+        />,
+      );
+
+      const input = screen.getByRole("textbox", { name: /name/ });
+      fireEvent.focus(input);
+      fireEvent.blur(input);
+
+      await waitFor(() => {
+        expect(screen.getByRole("alert")).toBeDefined();
+        expect(screen.getByRole("alert").textContent).toBe(
+          "This field is required",
+        );
+      });
+    });
+
+    it("shows minLength error after blur", async () => {
+      render(
+        <BaseForm
+          fieldDefinitions={[
+            makeDef("name", {
+              fieldComponentProps: { minLength: 3 },
+            }),
+          ]}
+          onSubmit={vi.fn()}
+        />,
+      );
+
+      const input = screen.getByRole("textbox", { name: /name/ });
+      fireEvent.change(input, { target: { value: "ab" } });
+      fireEvent.blur(input);
+
+      await waitFor(() => {
+        expect(screen.getByRole("alert").textContent).toBe(
+          "Must be at least 3 characters",
+        );
+      });
+    });
+
+    it("clears error after value becomes valid", async () => {
+      render(
+        <BaseForm
+          fieldDefinitions={[makeDef("name", { isRequired: true })]}
+          onSubmit={vi.fn()}
+        />,
+      );
+
+      const input = screen.getByRole("textbox", { name: /name/ });
+      fireEvent.focus(input);
+      fireEvent.blur(input);
+
+      await waitFor(() => {
+        expect(screen.getByRole("alert")).toBeDefined();
+      });
+
+      fireEvent.change(input, { target: { value: "Alice" } });
+
+      await waitFor(() => {
+        expect(screen.queryByRole("alert")).toBeNull();
+      });
+    });
+
+    it("blocks submission when required field is empty and shows errors", async () => {
+      const onSubmit = vi.fn();
+      render(
+        <BaseForm
+          fieldDefinitions={[makeDef("name", { isRequired: true })]}
+          onSubmit={onSubmit}
+        />,
+      );
+
+      fireEvent.click(screen.getByRole("button", { name: /submit/i }));
+
+      await waitFor(() => {
+        expect(screen.getByRole("alert")).toBeDefined();
+      });
+
+      expect(onSubmit).not.toHaveBeenCalled();
+    });
+
+    it("disables submit button after failed attempt while errors exist", async () => {
+      render(
+        <BaseForm
+          fieldDefinitions={[makeDef("name", { isRequired: true })]}
+          onSubmit={vi.fn()}
+        />,
+      );
+
+      const getSubmitButton = () =>
+        document.querySelector(
+          "button[type='submit']",
+        ) as HTMLButtonElement;
+
+      expect(getSubmitButton().disabled).toBe(false);
+
+      fireEvent.click(getSubmitButton());
+
+      await waitFor(() => {
+        expect(getSubmitButton().disabled).toBe(true);
+      });
+    });
+
+    it("re-enables submit button after fixing errors", async () => {
+      render(
+        <BaseForm
+          fieldDefinitions={[makeDef("name", { isRequired: true })]}
+          onSubmit={vi.fn()}
+        />,
+      );
+
+      const getSubmitButton = () =>
+        document.querySelector(
+          "button[type='submit']",
+        ) as HTMLButtonElement;
+
+      // Touch the field first so RHF tracks it for revalidation
+      const input = screen.getByRole("textbox", { name: /name/ });
+      fireEvent.focus(input);
+      fireEvent.blur(input);
+
+      await waitFor(() => {
+        expect(screen.getByRole("alert")).toBeDefined();
+      });
+
+      // Submit to set hasAttemptedSubmit
+      fireEvent.click(getSubmitButton());
+
+      await waitFor(() => {
+        expect(getSubmitButton().disabled).toBe(true);
+      });
+
+      // Fix the error — RHF revalidates because the field is touched
+      fireEvent.change(input, { target: { value: "Alice" } });
+
+      await waitFor(() => {
+        expect(screen.queryByRole("alert")).toBeNull();
+      });
+
+      expect(getSubmitButton().disabled).toBe(false);
+    });
+
+    it("shows submission error on button when onSubmit rejects", async () => {
+      const onSubmit = vi.fn().mockRejectedValue(
+        new Error("Server error"),
+      );
+      render(
+        <BaseForm
+          fieldDefinitions={[makeDef("name")]}
+          onSubmit={onSubmit}
+        />,
+      );
+
+      fireEvent.click(screen.getByRole("button", { name: /submit/i }));
+
+      await waitFor(() => {
+        expect(screen.getByText("Server error")).toBeDefined();
+      });
+    });
+
+    it("clears submission error when a field is edited", async () => {
+      const onSubmit = vi.fn().mockRejectedValue(
+        new Error("Server error"),
+      );
+      render(
+        <BaseForm
+          fieldDefinitions={[makeDef("name")]}
+          onSubmit={onSubmit}
+        />,
+      );
+
+      fireEvent.click(screen.getByRole("button", { name: /submit/i }));
+
+      await waitFor(() => {
+        expect(screen.getByText("Server error")).toBeDefined();
+      });
+
+      const input = screen.getByRole("textbox", { name: /name/ });
+      fireEvent.change(input, { target: { value: "Alice" } });
+
+      await waitFor(() => {
+        expect(screen.queryByText("Server error")).toBeNull();
+      });
+    });
+
+    it("shows error count indicator when validation errors exist", async () => {
+      render(
+        <BaseForm
+          fieldDefinitions={[makeDef("name", { isRequired: true })]}
+          onSubmit={vi.fn()}
+        />,
+      );
+
+      fireEvent.click(screen.getByRole("button", { name: /submit/i }));
+
+      await waitFor(() => {
+        expect(screen.getByText("1 issue")).toBeDefined();
+      });
+    });
+
+    it("shows 'Submitting' while async onSubmit is pending", async () => {
+      let resolveSubmit: () => void;
+      const onSubmit = vi.fn(
+        () =>
+          new Promise<void>((resolve) => {
+            resolveSubmit = resolve;
+          }),
+      );
+      render(
+        <BaseForm
+          fieldDefinitions={[makeDef("name")]}
+          onSubmit={onSubmit}
+        />,
+      );
+
+      fireEvent.click(screen.getByRole("button", { name: /submit/i }));
+
+      await waitFor(() => {
+        expect(
+          screen.getByRole("button", { name: /submitting/i }),
+        ).toBeDefined();
+      });
+
+      resolveSubmit!();
+
+      await waitFor(() => {
+        expect(
+          screen.getByRole("button", { name: /^submit$/i }),
+        ).toBeDefined();
+      });
+    });
+
+    it("submits without errors when fields are not required", async () => {
+      const onSubmit = vi.fn();
+      render(
+        <BaseForm
+          fieldDefinitions={[makeDef("name"), makeDef("email")]}
+          onSubmit={onSubmit}
+        />,
+      );
+
+      fireEvent.click(screen.getByRole("button", { name: /submit/i }));
+
+      await waitFor(() => {
+        expect(onSubmit).toHaveBeenCalled();
+      });
+
+      expect(screen.queryByRole("alert")).toBeNull();
     });
   });
 });

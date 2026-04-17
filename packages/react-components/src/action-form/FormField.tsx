@@ -71,9 +71,7 @@ export const FormField: React.FC<FormFieldProps> = memo(
                     ? `Info about ${label}`
                     : "More information"}
                 >
-                  <InfoSign
-                    className={styles.osdkFormFieldInfoIcon}
-                  />
+                  <InfoSign size={16} />
                 </Tooltip.Trigger>
                 <Tooltip.Portal>
                   <Tooltip.Positioner sideOffset={4}>

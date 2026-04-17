@@ -1,5 +1,15 @@
 # @osdk/generator-converters.ontologyir
 
+## 2.9.0
+
+### Minor Changes
+
+- 3390ea2: Resolve Python objectSet/object UUID references recursively and detect edit functions via output dataType when ontologyProvenance is absent
+
+### Patch Changes
+
+- @osdk/client.unstable@2.9.0
+
 ## 2.8.0
 
 ### Minor Changes

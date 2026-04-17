@@ -1,6 +1,6 @@
 {
   "name": "@osdk/react-components",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -34,6 +34,60 @@
       "require": "./build/cjs/public/primitives.cjs",
       "default": "./build/browser/public/primitives.js"
     },
+    "./experimental/action-form": {
+      "browser": "./build/browser/public/experimental/action-form.js",
+      "import": {
+        "types": "./build/types/public/experimental/action-form.d.ts",
+        "default": "./build/esm/public/experimental/action-form.js"
+      },
+      "require": "./build/cjs/public/experimental/action-form.cjs",
+      "default": "./build/browser/public/experimental/action-form.js"
+    },
+    "./experimental/filter-list": {
+      "browser": "./build/browser/public/experimental/filter-list.js",
+      "import": {
+        "types": "./build/types/public/experimental/filter-list.d.ts",
+        "default": "./build/esm/public/experimental/filter-list.js"
+      },
+      "require": "./build/cjs/public/experimental/filter-list.cjs",
+      "default": "./build/browser/public/experimental/filter-list.js"
+    },
+    "./experimental/markdown-renderer": {
+      "browser": "./build/browser/public/experimental/markdown-renderer.js",
+      "import": {
+        "types": "./build/types/public/experimental/markdown-renderer.d.ts",
+        "default": "./build/esm/public/experimental/markdown-renderer.js"
+      },
+      "require": "./build/cjs/public/experimental/markdown-renderer.cjs",
+      "default": "./build/browser/public/experimental/markdown-renderer.js"
+    },
+    "./experimental/object-table": {
+      "browser": "./build/browser/public/experimental/object-table.js",
+      "import": {
+        "types": "./build/types/public/experimental/object-table.d.ts",
+        "default": "./build/esm/public/experimental/object-table.js"
+      },
+      "require": "./build/cjs/public/experimental/object-table.cjs",
+      "default": "./build/browser/public/experimental/object-table.js"
+    },
+    "./experimental/pdf-viewer": {
+      "browser": "./build/browser/public/experimental/pdf-viewer.js",
+      "import": {
+        "types": "./build/types/public/experimental/pdf-viewer.d.ts",
+        "default": "./build/esm/public/experimental/pdf-viewer.js"
+      },
+      "require": "./build/cjs/public/experimental/pdf-viewer.cjs",
+      "default": "./build/browser/public/experimental/pdf-viewer.js"
+    },
+    "./experimental/tiff-renderer": {
+      "browser": "./build/browser/public/experimental/tiff-renderer.js",
+      "import": {
+        "types": "./build/types/public/experimental/tiff-renderer.d.ts",
+        "default": "./build/esm/public/experimental/tiff-renderer.js"
+      },
+      "require": "./build/cjs/public/experimental/tiff-renderer.cjs",
+      "default": "./build/browser/public/experimental/tiff-renderer.js"
+    },
     "./styles.css": "./build/browser/styles.css",
     "./*": {
       "browser": "./build/browser/public/*.js",
@@ -46,7 +100,7 @@
     }
   },
   "scripts": {
-    "check-attw": "attw --pack . --exclude-entrypoints ./styles.css",
+    "check-attw": "attw --pack . --exclude-entrypoints ./styles.css ./experimental/action-form ./experimental/filter-list ./experimental/markdown-renderer ./experimental/object-table ./experimental/pdf-viewer ./experimental/tiff-renderer",
     "check-spelling": "cspell --quiet .",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
@@ -67,15 +121,20 @@
     "@dnd-kit/utilities": "^3.2.2",
     "@tanstack/react-table": "^8.21.3",
     "@tanstack/react-virtual": "^3.13.13",
+    "date-fns": "^2.28.0",
+    "date-fns-tz": "^2.0.0",
     "lodash-es": "^4.17.21",
-    "pdfjs-dist": "^4.9.155",
+    "pdfjs-dist": "~4.8.69",
     "react-day-picker": "^8.10.0",
-    "react-hook-form": "^7.54.0"
+    "react-hook-form": "^7.54.0",
+    "react-markdown": "^9.0.3",
+    "remark-gfm": "^4.0.1",
+    "utif": "^3.1.0"
   },
   "peerDependencies": {
     "@osdk/api": "^2.8.0",
     "@osdk/client": "^2.8.0",
-    "@osdk/react": "^0.10.0",
+    "@osdk/react": "^0.11.0",
     "@types/react": "^17 || ^18 || ^19",
     "classnames": "^2.0.0",
     "react": "^17 || ^18 || ^19",

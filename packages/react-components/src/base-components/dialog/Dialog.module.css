@@ -49,6 +49,7 @@
 .title {
   font-size: var(--osdk-dialog-title-font-size);
   font-weight: var(--osdk-dialog-title-font-weight);
+  color: var(--osdk-dialog-title-color);
 }
 
 .body {
