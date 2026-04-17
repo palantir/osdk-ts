@@ -353,6 +353,18 @@ const archetypeRules = archetypes(
     "reactLibraryWithCss",
     [
       "@osdk/cbac-components",
+    ],
+    {
+      ...LIBRARY_RULES,
+      react: true,
+      cssExport: true,
+      extraPublishFiles: ["AGENTS.md", "docs"],
+      setupFiles: ["./src/test/setupPolyfills.ts"],
+    },
+  )
+  .addArchetype(
+    "reactComponentsLibrary",
+    [
       "@osdk/react-components",
     ],
     {
@@ -360,6 +372,14 @@ const archetypeRules = archetypes(
       react: true,
       cssExport: ["styles.css"],
       extraPublishFiles: ["AGENTS.md", "docs"],
+      attwExcludeEntrypoints: [
+        "./experimental/action-form",
+        "./experimental/filter-list",
+        "./experimental/markdown-renderer",
+        "./experimental/object-table",
+        "./experimental/pdf-viewer",
+        "./experimental/tiff-renderer",
+      ],
       setupFiles: ["./src/test/setupPolyfills.ts"],
     },
   )
@@ -862,6 +882,8 @@ function minimalPackageRules(shared, options) {
  * @property { "vite" | undefined } [framework]
  * @property { import("typescript").CompilerOptions} [extraTsConfigCompilerOptions]
  * @property { string[] } [cssExport]
+ * @property { string[] } [attwExcludeEntrypoints]
+ * @property { string } [typecheckProject]
  */
 
 /**
@@ -954,9 +976,12 @@ function standardPackageRules(shared, options) {
           "check-attw": options.skipAttw
             ? DELETE_SCRIPT_ENTRY
             : `attw${options.output.cjs ? "" : " --profile esm-only"} --pack .${
-              cssExports.length > 0
+              cssExports.length > 0 || options.attwExcludeEntrypoints?.length
                 ? ` --exclude-entrypoints ${
-                  cssExports.map(f => `./${f}`).join(" ")
+                  [
+                    ...cssExports.map(f => `./${f}`),
+                    ...(options.attwExcludeEntrypoints ?? []),
+                  ].join(" ")
                 }`
                 : ""
             }`,
