@@ -15,7 +15,7 @@
  */
 
 import { Input } from "@base-ui/react/input";
-import React from "react";
+import React, { useCallback, useRef, useState } from "react";
 import styles from "./TimePicker.module.css";
 
 interface TimePickerProps {
@@ -29,11 +29,40 @@ export function TimePicker({
   onChange,
   label = "Time",
 }: TimePickerProps): React.ReactElement {
+  const [localValue, setLocalValue] = useState(value);
+  const isFocusedRef = useRef(false);
+  const localValueRef = useRef(localValue);
+  localValueRef.current = localValue;
+
+  // Sync from prop when not focused (parent changed the value externally)
+  const prevValueRef = useRef(value);
+  if (prevValueRef.current !== value) {
+    prevValueRef.current = value;
+    if (!isFocusedRef.current) {
+      setLocalValue(value);
+    }
+  }
+
+  const handleFocus = useCallback(() => {
+    isFocusedRef.current = true;
+  }, []);
+
+  const handleBlur = useCallback(() => {
+    isFocusedRef.current = false;
+    onChange(localValueRef.current);
+  }, [onChange]);
+
+  const handleChange = useCallback((newValue: string) => {
+    setLocalValue(newValue);
+  }, []);
+
   return (
     <Input
       type="time"
-      value={value}
-      onValueChange={onChange}
+      value={localValue}
+      onValueChange={handleChange}
+      onFocus={handleFocus}
+      onBlur={handleBlur}
       className={styles.osdkTimePickerInput}
       aria-label={label}
     />
