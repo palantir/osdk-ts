@@ -1139,9 +1139,9 @@ function standardPackageRules(shared, options) {
           }${
             options.vitestEnv
               ? `\n            env: {\n${
-                Object.entries(options.vitestEnv).map(([k, v]) =>
-                  `              ${k}: ${JSON.stringify(v)},`
-                ).join("\n")
+                Object.entries(options.vitestEnv)
+                  .map(([k, v]) => `              ${k}: ${JSON.stringify(v)},`)
+                  .join("\n")
               }\n            },`
               : ""
           }
