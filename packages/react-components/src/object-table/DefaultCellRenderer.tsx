@@ -47,8 +47,11 @@ export function renderDefaultCell<TData extends RowData>(
 
   const cellEdits = meta.cellEdits;
   const editedValue = cellEdits?.[cellId];
-  const currentValue = editedValue?.newValue ?? cellValue;
+  // If newValue is explicitly set to null, treat it as null. Otherwise, fall back to the original cell value.
+  const currentValue =
+    editedValue?.newValue === undefined ? cellValue : editedValue?.newValue;
   const validationError = meta.validationErrors?.get(cellId);
+  const isRowFocused = meta.focusedRowId === rowId;
 
   return (
     <EditableCell<TData>
@@ -56,6 +59,7 @@ export function renderDefaultCell<TData extends RowData>(
       currentValue={currentValue}
       cellId={cellId}
       dataType={columnMeta?.dataType}
+      editFieldConfig={columnMeta?.editFieldConfig}
       onCellEdit={meta.onCellEdit}
       onCellValidationError={meta.onCellValidationError}
       clearCellValidationError={meta.clearCellValidationError}
@@ -64,6 +68,7 @@ export function renderDefaultCell<TData extends RowData>(
       columnId={columnId}
       validateEdit={columnMeta?.validateEdit}
       validationError={validationError}
+      isRowFocused={isRowFocused}
     />
   );
 }

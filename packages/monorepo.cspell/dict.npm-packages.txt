@@ -24,3 +24,4 @@ tsgolint
 trivago
 tsup
 timecode
+utif

@@ -19,3 +19,4 @@ export * from "./experimental/filter-list.js";
 export * from "./experimental/markdown-renderer.js";
 export * from "./experimental/object-table.js";
 export * from "./experimental/pdf-viewer.js";
+export * from "./experimental/tiff-renderer.js";

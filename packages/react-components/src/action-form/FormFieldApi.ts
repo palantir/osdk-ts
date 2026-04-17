@@ -273,6 +273,12 @@ export interface DropdownFieldProps<
    * Whether multiple values can be selected
    */
   isMultiple?: Multiple;
+
+  /**
+   * Ref forwarded to the portal container element.
+   * Used to track portaled content for click-outside detection.
+   */
+  portalRef?: React.Ref<HTMLDivElement>;
 }
 
 export interface FilePickerProps extends BaseFormFieldProps<File | File[]> {

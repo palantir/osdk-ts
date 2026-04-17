@@ -956,10 +956,39 @@ export const EditableTable: Story = {
       {
         locator: { type: "property", id: "jobTitle" },
         editable: true,
+        editFieldConfig: {
+          fieldComponent: "DROPDOWN",
+          fieldComponentProps: {
+            items: [
+              "Software Engineer",
+              "Senior Software Engineer",
+              "Staff Engineer",
+              "Engineering Manager",
+              "Product Manager",
+              "Designer",
+            ],
+            isSearchable: true,
+            placeholder: "Search job titles…",
+          },
+        },
       },
       {
         locator: { type: "property", id: "department" },
-        editable: false, // Read-only column
+        editable: true,
+        editFieldConfig: {
+          fieldComponent: "DROPDOWN",
+          fieldComponentProps: {
+            items: [
+              "Engineering",
+              "Product",
+              "Design",
+              "Sales",
+              "Marketing",
+              "Finance",
+              "Human Resources",
+            ],
+          },
+        },
       },
     ],
     editMode: "manual",
@@ -979,18 +1008,47 @@ export const EditableTable: Story = {
   {
     locator: { type: "property", id: "jobTitle" },
     editable: true,
+    editFieldConfig: {
+      fieldComponent: "DROPDOWN",
+      fieldComponentProps: {
+        items: [
+          "Software Engineer",
+          "Senior Software Engineer",
+          "Staff Engineer",
+          "Engineering Manager",
+          "Product Manager",
+          "Designer",
+        ],
+        isSearchable: true,
+        placeholder: "Search job titles…",
+      },
+    },
   },
   {
     locator: { type: "property", id: "department" },
-    editable: false, // Read-only column
+    editable: true,
+    editFieldConfig: {
+      fieldComponent: "DROPDOWN",
+      fieldComponentProps: {
+        items: [
+          "Engineering",
+          "Product",
+          "Design",
+          "Sales",
+          "Marketing",
+          "Finance",
+          "Human Resources",
+        ],
+      },
+    },
   },
 ];
 
 return (
-  <ObjectTable 
-    objectType={Employee} 
-    columnDefinitions={columnDefinitions} 
-    editMode="manual" 
+  <ObjectTable
+    objectType={Employee}
+    columnDefinitions={columnDefinitions}
+    editMode="manual"
   />
 );`,
       },
@@ -1115,6 +1173,46 @@ export const EditableWithValidation: Story = {
             : "Employee number must be positive";
         },
       },
+      {
+        locator: { type: "property", id: "jobTitle" },
+        editable: true,
+        editFieldConfig: {
+          fieldComponent: "DROPDOWN",
+          fieldComponentProps: {
+            items: [
+              "Software Engineer",
+              "Senior Software Engineer",
+              "Staff Engineer",
+              "Engineering Manager",
+              "Product Manager",
+              "Designer",
+            ],
+            isSearchable: true,
+            placeholder: "Search job titles…",
+          },
+        },
+        validateEdit: async (value: unknown) => {
+          return value ? undefined : "Job title is required";
+        },
+      },
+      {
+        locator: { type: "property", id: "department" },
+        editable: true,
+        editFieldConfig: {
+          fieldComponent: "DROPDOWN",
+          fieldComponentProps: {
+            items: [
+              "Engineering",
+              "Product",
+              "Design",
+              "Sales",
+              "Marketing",
+              "Finance",
+              "Human Resources",
+            ],
+          },
+        },
+      },
     ],
     editMode: "always",
     onSubmitEdits: async (edits: CellEditInfo<Osdk.Instance<Employee>>[]) => {
@@ -1146,14 +1244,54 @@ export const EditableWithValidation: Story = {
     validateEdit: async (value: number) => {
       return value > 0 ? undefined : "Employee number must be positive";
     },
+  },
+  {
+    locator: { type: "property", id: "jobTitle" },
+    editable: true,
+    editFieldConfig: {
+      fieldComponent: "DROPDOWN",
+      fieldComponentProps: {
+        items: [
+          "Software Engineer",
+          "Senior Software Engineer",
+          "Staff Engineer",
+          "Engineering Manager",
+          "Product Manager",
+          "Designer",
+        ],
+        isSearchable: true,
+        placeholder: "Search job titles…",
+      },
+    },
+    validateEdit: async (value: unknown) => {
+      return value ? undefined : "Job title is required";
+    },
+  },
+  {
+    locator: { type: "property", id: "department" },
+    editable: true,
+    editFieldConfig: {
+      fieldComponent: "DROPDOWN",
+      fieldComponentProps: {
+        items: [
+          "Engineering",
+          "Product",
+          "Design",
+          "Sales",
+          "Marketing",
+          "Finance",
+          "Human Resources",
+        ],
+      },
+    },
+  },
 ];
 
 return (
-  <ObjectTable 
-    objectType={Employee} 
+  <ObjectTable
+    objectType={Employee}
     columnDefinitions={columnDefinitions}
-    editMode="always" // Always in edit mode
-    // Submit Edits button disabled when there are validation errors
+    editMode="always"
     onSubmitEdits={async (edits) => {
       return true;
     }}
@@ -1177,6 +1315,7 @@ return (
           <li>Name must be at least 2 characters</li>
           <li>Email must be a valid format</li>
           <li>Employee number must be positive</li>
+          <li>Job title is required</li>
         </ul>
       </div>
       <ObjectTable {...args} objectType={Employee} />

@@ -20,6 +20,8 @@ export type {
   ColumnDefinition,
   ColumnDefinitionLocator,
   CustomColumnLocator,
+  DropdownEditConfig,
+  EditFieldConfig,
   FunctionColumnLocator,
   ObjectTableProps,
   PropertyColumnLocator,
