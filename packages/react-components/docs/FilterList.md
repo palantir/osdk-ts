@@ -113,15 +113,16 @@ function EmployeeFilters() {
 
 When using `type: "PROPERTY"`, the definition supports:
 
-| Field             | Type                     | Description                                               |
-| ----------------- | ------------------------ | --------------------------------------------------------- |
-| `key`             | `string`                 | Property key on the object type                           |
-| `label`           | `string`                 | Display label for the filter                              |
-| `filterComponent` | `FilterComponentType`    | Which UI component to render (see table below)            |
-| `filterState`     | `FilterState`            | Initial state for the filter                              |
-| `isVisible`       | `boolean`                | Whether the filter is initially visible (default: `true`) |
-| `colorMap`        | `Record<string, string>` | Custom colors for LISTOGRAM bar values                    |
-| `listogramConfig` | `ListogramConfig`        | Configuration for LISTOGRAM display (see below)           |
+| Field             | Type                           | Description                                                                  |
+| ----------------- | ------------------------------ | ---------------------------------------------------------------------------- |
+| `key`             | `string`                       | Property key on the object type                                              |
+| `label`           | `string`                       | Display label for the filter                                                 |
+| `filterComponent` | `FilterComponentType`          | Which UI component to render (see table below)                               |
+| `filterState`     | `FilterState`                  | Initial state for the filter                                                 |
+| `isVisible`       | `boolean`                      | Whether the filter is initially visible (default: `true`)                    |
+| `colorMap`        | `Record<string, string>`       | Custom colors for LISTOGRAM bar values                                       |
+| `listogramConfig` | `ListogramConfig`              | Configuration for LISTOGRAM display (see below)                              |
+| `renderValue`     | `(value: string) => ReactNode` | Custom render for filter values in dropdown items, chips, and listogram rows |
 
 #### Listogram Configuration
 
@@ -339,6 +340,31 @@ Assign colors to specific values in a listogram:
   ]}
 />;
 ```
+
+### Custom Value Rendering
+
+Use `renderValue` to customize how filter values are displayed. The raw string value is still used for filtering and matching — only the display changes. This is useful for showing human-readable names instead of IDs:
+
+```typescript
+const USER_NAMES: Record<string, string> = {
+  "abc-123": "Alice Smith",
+  "def-456": "Bob Jones",
+};
+
+<FilterList
+  objectSet={$(Task)}
+  filterDefinitions={[
+    {
+      type: "PROPERTY",
+      key: "assigneeUserId",
+      filterComponent: "LISTOGRAM",
+      renderValue: (userId) => <span>{USER_NAMES[userId] ?? userId}</span>,
+    },
+  ]}
+/>;
+```
+
+`renderValue` works with `LISTOGRAM`, `SINGLE_SELECT`, and `MULTI_SELECT` filter components. For `MULTI_SELECT`, it applies to both dropdown items and selected chips.
 
 ### Listogram Display Modes
 

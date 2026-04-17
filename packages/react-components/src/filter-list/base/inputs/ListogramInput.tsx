@@ -16,6 +16,7 @@
 
 import { Button } from "@base-ui/react/button";
 import classnames from "classnames";
+import type { ReactNode } from "react";
 import React, { memo, useCallback, useMemo, useState } from "react";
 import { Checkbox } from "../../../base-components/checkbox/Checkbox.js";
 import type { PropertyAggregationValue } from "../../types/AggregationTypes.js";
@@ -41,6 +42,7 @@ interface ListogramInputProps {
   style?: React.CSSProperties;
   maxVisibleItems?: number;
   searchQuery?: string;
+  renderValue?: (value: string) => ReactNode;
 }
 
 function ListogramInputInner({
@@ -57,6 +59,7 @@ function ListogramInputInner({
   style,
   maxVisibleItems,
   searchQuery,
+  renderValue,
 }: ListogramInputProps): React.ReactElement {
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -159,7 +162,11 @@ function ListogramInputInner({
                   data-excluding={(isExcluding && selectedSet.has(value))
                     || undefined}
                 >
-                  {isEmpty ? "No value" : value}
+                  {isEmpty
+                    ? "No value"
+                    : renderValue
+                    ? renderValue(value)
+                    : value}
                 </span>
                 {displayMode !== "minimal" && (
                   <span className={styles.count}>{count.toLocaleString()}</span>

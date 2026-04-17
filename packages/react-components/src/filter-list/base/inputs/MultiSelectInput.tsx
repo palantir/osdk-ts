@@ -15,6 +15,7 @@
  */
 
 import classnames from "classnames";
+import type { ReactNode } from "react";
 import React, { memo, useCallback, useMemo } from "react";
 import { Combobox } from "../../../base-components/combobox/Combobox.js";
 import type { PropertyAggregationValue } from "../../types/AggregationTypes.js";
@@ -31,6 +32,7 @@ interface MultiSelectInputProps {
   style?: React.CSSProperties;
   placeholder?: string;
   ariaLabel?: string;
+  renderValue?: (value: string) => ReactNode;
 }
 
 function MultiSelectInputInner({
@@ -43,6 +45,7 @@ function MultiSelectInputInner({
   style,
   placeholder = "Select values...",
   ariaLabel = "Search values",
+  renderValue,
 }: MultiSelectInputProps): React.ReactElement {
   const handleValueChange = useCallback(
     (newValues: string[] | null) => {
@@ -65,13 +68,15 @@ function MultiSelectInputInner({
     (value: string) => (
       <Combobox.Item key={value} value={value}>
         <Combobox.ItemIndicator />
-        <span className={styles.itemLabel}>{value}</span>
+        <span className={styles.itemLabel}>
+          {renderValue ? renderValue(value) : value}
+        </span>
         <span className={styles.itemCount}>
           ({(countByValue.get(value) ?? 0).toLocaleString()})
         </span>
       </Combobox.Item>
     ),
-    [countByValue],
+    [countByValue, renderValue],
   );
 
   const renderChips = useCallback(
@@ -82,7 +87,7 @@ function MultiSelectInputInner({
             key={value}
             aria-label={value}
           >
-            {value}
+            {renderValue ? renderValue(value) : value}
             <Combobox.ChipRemove />
           </Combobox.Chip>
         ))}
@@ -92,7 +97,7 @@ function MultiSelectInputInner({
         />
       </>
     ),
-    [placeholder, ariaLabel],
+    [placeholder, ariaLabel, renderValue],
   );
 
   return (

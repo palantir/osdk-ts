@@ -15,6 +15,7 @@
  */
 
 import classnames from "classnames";
+import type { ReactNode } from "react";
 import React, { memo, useCallback, useMemo } from "react";
 import { Combobox } from "../../../base-components/combobox/Combobox.js";
 import type { PropertyAggregationValue } from "../../types/AggregationTypes.js";
@@ -33,6 +34,7 @@ interface SingleSelectInputProps {
   showClearButton?: boolean;
   showCounts?: boolean;
   ariaLabel?: string;
+  renderValue?: (value: string) => ReactNode;
 }
 
 function SingleSelectInputInner({
@@ -47,6 +49,7 @@ function SingleSelectInputInner({
   showClearButton = true,
   showCounts = false,
   ariaLabel = "Select value",
+  renderValue,
 }: SingleSelectInputProps): React.ReactElement {
   const handleValueChange = useCallback(
     (value: string | null) => {
@@ -69,7 +72,9 @@ function SingleSelectInputInner({
     (value: string) => (
       <Combobox.Item key={value} value={value}>
         <Combobox.ItemIndicator />
-        <span className={styles.itemLabel}>{value}</span>
+        <span className={styles.itemLabel}>
+          {renderValue ? renderValue(value) : value}
+        </span>
         {showCounts && (
           <span className={styles.itemCount}>
             ({(countByValue.get(value) ?? 0).toLocaleString()})
@@ -77,7 +82,7 @@ function SingleSelectInputInner({
         )}
       </Combobox.Item>
     ),
-    [countByValue, showCounts],
+    [countByValue, showCounts, renderValue],
   );
 
   return (

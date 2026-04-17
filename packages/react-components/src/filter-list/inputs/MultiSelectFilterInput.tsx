@@ -20,6 +20,7 @@ import type {
   PropertyKeys,
   WhereClause,
 } from "@osdk/api";
+import type { ReactNode } from "react";
 import React, { memo, useCallback, useMemo } from "react";
 import { FilterInputExcludeRow } from "../base/FilterInputExcludeRow.js";
 import { MultiSelectInput } from "../base/inputs/MultiSelectInput.js";
@@ -35,6 +36,7 @@ interface MultiSelectFilterInputProps<Q extends ObjectTypeDefinition> {
   onFilterStateChanged: (state: FilterState) => void;
   whereClause: WhereClause<Q>;
   excludeRowOpen?: boolean;
+  renderValue?: (value: string) => ReactNode;
 }
 
 function MultiSelectFilterInputInner<Q extends ObjectTypeDefinition>({
@@ -45,6 +47,7 @@ function MultiSelectFilterInputInner<Q extends ObjectTypeDefinition>({
   onFilterStateChanged,
   whereClause,
   excludeRowOpen,
+  renderValue,
 }: MultiSelectFilterInputProps<Q>): React.ReactElement {
   const selectedValues = useMemo(
     () =>
@@ -101,6 +104,7 @@ function MultiSelectFilterInputInner<Q extends ObjectTypeDefinition>({
         selectedValues={selectedValues}
         onChange={handleChange}
         ariaLabel={`Search ${propertyKey} values`}
+        renderValue={renderValue}
       />
     </FilterInputExcludeRow>
   );

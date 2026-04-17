@@ -21,6 +21,7 @@ import type {
   PropertyKeys,
   WirePropertyTypes,
 } from "@osdk/api";
+import type { ReactNode } from "react";
 import type { CustomFilterState } from "./types/CustomRendererTypes.js";
 import type { KeywordSearchFilterState } from "./types/KeywordSearchTypes.js";
 import type {
@@ -271,6 +272,13 @@ export interface PropertyFilterDefinition<
      */
     maxVisibleItems?: number;
   };
+
+  /**
+   * Custom render function for filter values.
+   * Replaces the default string display in dropdown items, chips, and listogram rows.
+   * The raw string value is still used for filtering and matching; only the display changes.
+   */
+  renderValue?: (value: string) => ReactNode;
 
   /**
    * Controls whether this filter is rendered.
