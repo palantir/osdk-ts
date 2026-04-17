@@ -378,6 +378,7 @@ const archetypeRules = archetypes(
         "./experimental/markdown-renderer",
         "./experimental/object-table",
         "./experimental/pdf-viewer",
+        "./experimental/tiff-renderer",
       ],
       setupFiles: ["./src/test/setupPolyfills.ts"],
     },
