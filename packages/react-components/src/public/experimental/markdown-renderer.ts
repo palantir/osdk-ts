@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-export * from "./experimental/action-form.js";
-export * from "./experimental/filter-list.js";
-export * from "./experimental/markdown-renderer.js";
-export * from "./experimental/object-table.js";
-export * from "./experimental/pdf-viewer.js";
-export * from "./experimental/tiff-renderer.js";
+// MarkdownRenderer
+export {
+  MarkdownRenderer,
+  type MarkdownRendererProps,
+} from "../../markdown-renderer/MarkdownRenderer.js";
