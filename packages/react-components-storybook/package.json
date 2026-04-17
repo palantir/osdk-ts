@@ -9,7 +9,7 @@
   },
   "scripts": {
     "build": "storybook build",
-    "dev": "storybook dev -p 6006",
+    "dev": "trap 'kill 0' EXIT; pnpm turbo watch transpileBrowser --filter='@osdk/react-components-storybook^...' & storybook dev -p 6006",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "lint": "eslint . && dprint check --config $(find-up dprint.json)",
     "transpileAllDeps": "pnpm --filter @osdk/* transpileBrowser",
