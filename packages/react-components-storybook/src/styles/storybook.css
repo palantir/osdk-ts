@@ -43,40 +43,6 @@ body {
   color: #2563eb;
 }
 
-/* Form story styles — horizontal layout for Default story */
-.osdkFormStoryLayout {
-  display: flex;
-  gap: calc(var(--osdk-surface-spacing) * 4);
-  align-items: flex-start;
-  width: 100%;
-}
-
-.osdkFormStoryLayout > .osdkFormCard {
-  flex-shrink: 0;
-}
-
-.osdkFormStoryResultPanel {
-  flex: 1;
-  min-width: 0;
-}
-
-.osdkFormStoryResultPanel .osdkSubmitBanner {
-  margin-top: 0;
-}
-
-.osdkFormStoryResultPanel .osdkSubmitResultHeading {
-  margin-top: calc(var(--osdk-surface-spacing) * 3);
-}
-
-.osdkFormStoryResultEmpty {
-  padding: calc(var(--osdk-surface-spacing) * 4);
-  color: var(--osdk-typography-color-muted-rest, #999);
-  font-size: var(--osdk-typography-size-body-small);
-  text-align: center;
-  border: 1px dashed var(--osdk-surface-border-color-default, #ddd);
-  border-radius: var(--osdk-surface-border-radius);
-}
-
 .osdkFormCard {
   --osdk-form-label-font-size: var(--osdk-typography-size-body-small);
 
@@ -86,43 +52,6 @@ body {
   border: var(--osdk-surface-border-width) solid
     var(--osdk-surface-border-color-default);
   border-radius: var(--osdk-surface-border-radius);
-}
-
-.osdkSubmitBanner {
-  margin-top: calc(var(--osdk-surface-spacing) * 3);
-  padding: calc(var(--osdk-surface-spacing) * 2)
-    calc(var(--osdk-surface-spacing) * 3);
-  border-radius: var(--osdk-surface-border-radius);
-  font-size: var(--osdk-typography-size-body-small);
-  font-weight: 500;
-}
-
-.osdkSubmitBannerSuccess {
-  background: #d4edda;
-  color: var(--osdk-intent-success-foreground, #155724);
-}
-
-.osdkSubmitBannerError {
-  background: #f8d7da;
-  color: var(--osdk-intent-danger-foreground, #721c24);
-}
-
-.osdkSubmitResult {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: calc(var(--osdk-surface-spacing) * 3);
-  margin-top: calc(var(--osdk-surface-spacing) * 4);
-}
-
-.osdkSubmitResultSection {
-  min-width: 0;
-}
-
-.osdkSubmitResultHeading {
-  font-size: var(--osdk-typography-size-body-small);
-  font-weight: 600;
-  margin: 0 0 calc(var(--osdk-surface-spacing) * 2);
-  color: var(--osdk-typography-color-default-rest);
 }
 
 .osdkFormStorySpacing {

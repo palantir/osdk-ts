@@ -16,7 +16,6 @@
 
 import { FauxFoundry } from "@osdk/faux";
 import type { Employee } from "../types/Employee.js";
-import { ModifyEmployee } from "./employeeActionMetadata.js";
 import { employeeData } from "./employeeData.js";
 import { employeeMetadata } from "./employeeMetadata.js";
 import { interfaceMetadata } from "./interfaceMetadata.js";
@@ -51,9 +50,6 @@ export async function setupFauxFoundry(): Promise<void> {
   fauxFoundry.getDefaultOntology().registerObjectType<Employee>(
     employeeMetadata,
   );
-
-  // Register action types with a no-op implementation
-  fauxFoundry.getDefaultOntology().registerActionType(ModifyEmployee, () => {});
 
   // Add mock data from JSON file
   const dataStore = fauxFoundry.getDefaultDataStore();
