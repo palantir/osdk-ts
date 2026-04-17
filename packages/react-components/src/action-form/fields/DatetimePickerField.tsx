@@ -50,7 +50,6 @@ export const DatetimePickerField: React.NamedExoticComponent<
   showTime = false,
   closeOnSelection,
   portalRef,
-  readOnly = false,
 }: DatetimePickerFieldProps) {
   const shouldCloseOnSelection = closeOnSelection ?? !showTime;
   const popoverId = useId();
@@ -89,10 +88,9 @@ export const DatetimePickerField: React.NamedExoticComponent<
   // --- Input event handlers ---
 
   const handleFocus = useCallback(() => {
-    if (readOnly) return;
     startEditing();
     setIsOpen(true);
-  }, [startEditing, readOnly]);
+  }, [startEditing]);
 
   const handleBlur = useCallback(
     (e: React.FocusEvent<HTMLInputElement>) => {
@@ -244,7 +242,6 @@ export const DatetimePickerField: React.NamedExoticComponent<
   const wrapperClassName = classnames(
     commonStyles.osdkDatePickerInputWrapper,
     styles.osdkDatetimeInputWrapper,
-    readOnly && styles.osdkDatetimeReadOnly,
     inputError != null && commonStyles.osdkDatePickerInputWrapperError,
   );
 
@@ -267,7 +264,6 @@ export const DatetimePickerField: React.NamedExoticComponent<
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
           autoComplete="off"
-          readOnly={readOnly}
           role="combobox"
           aria-expanded={isOpen}
           aria-controls={popoverId}
