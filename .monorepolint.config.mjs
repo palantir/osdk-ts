@@ -312,17 +312,27 @@ const archetypeRules = archetypes(standardPackageRules, {
     ...LIBRARY_RULES,
     react: true,
   })
-  .addArchetype(
-    "reactLibraryWithCss",
-    ["@osdk/cbac-components", "@osdk/react-components"],
-    {
-      ...LIBRARY_RULES,
-      react: true,
-      cssExport: true,
-      extraPublishFiles: ["AGENTS.md", "docs"],
-      setupFiles: ["./src/test/setupPolyfills.ts"],
-    },
-  )
+  .addArchetype("reactLibraryWithCss", ["@osdk/cbac-components"], {
+    ...LIBRARY_RULES,
+    react: true,
+    cssExport: true,
+    extraPublishFiles: ["AGENTS.md", "docs"],
+    setupFiles: ["./src/test/setupPolyfills.ts"],
+  })
+  .addArchetype("reactComponentsLibrary", ["@osdk/react-components"], {
+    ...LIBRARY_RULES,
+    react: true,
+    cssExport: true,
+    extraPublishFiles: ["AGENTS.md", "docs"],
+    attwExcludeEntrypoints: [
+      "./experimental/action-form",
+      "./experimental/filter-list",
+      "./experimental/markdown-renderer",
+      "./experimental/object-table",
+      "./experimental/pdf-viewer",
+    ],
+    setupFiles: ["./src/test/setupPolyfills.ts"],
+  })
   .addArchetype("reactLibraryWithDocs", ["@osdk/react"], {
     ...LIBRARY_RULES,
     react: true,
@@ -804,6 +814,7 @@ function minimalPackageRules(shared, options) {
  * @property { "vite" | undefined } [framework]
  * @property { import("typescript").CompilerOptions} [extraTsConfigCompilerOptions]
  * @property { boolean } [cssExport]
+ * @property { string[] } [attwExcludeEntrypoints]
  * @property { string } [typecheckProject]
  * @property { boolean } [keepEslint]
  */
@@ -892,7 +903,13 @@ function standardPackageRules(shared, options) {
           "check-attw": options.skipAttw
             ? DELETE_SCRIPT_ENTRY
             : `attw${options.output.cjs ? "" : " --profile esm-only"} --pack .${
-                options.cssExport ? " --exclude-entrypoints ./styles.css" : ""
+                options.cssExport || options.attwExcludeEntrypoints?.length
+                  ? ` --exclude-entrypoints${
+                      options.cssExport ? " ./styles.css" : ""
+                    }${(options.attwExcludeEntrypoints ?? [])
+                      .map((e) => ` ${e}`)
+                      .join("")}`
+                  : ""
               }`,
           lint: options.keepEslint ? "eslint ." : DELETE_SCRIPT_ENTRY,
           "fix-lint": options.keepEslint

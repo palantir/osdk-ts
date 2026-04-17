@@ -15,7 +15,7 @@
  */
 
 // cspell:words dataurl
-const { readFileSync } = require("fs");
+const { readFileSync, readdirSync } = require("fs");
 const { join } = require("path");
 
 /**
@@ -53,24 +53,8 @@ module.exports = TRACKED_PACKAGES.flatMap((pkg) => {
   const peerDeps = Object.keys(pkgJson.peerDependencies || {});
   const ignore = peerDeps.filter((dep) => !dep.startsWith("@osdk/"));
 
-  const entries = [];
-
-  for (const [exportPath, exportConfig] of Object.entries(pkgJson.exports)) {
-    // Skip wildcards and non-JS exports (e.g. ./styles.css)
-    if (exportPath.includes("*") || !exportConfig?.import?.default) continue;
-
-    // Skip internal/unstable entry points — only track public surface
-    if (exportPath.includes("internal") || exportPath.includes("unstable")) {
-      continue;
-    }
-
-    const esmPath = exportConfig.import.default;
-    const name =
-      exportPath === "."
-        ? pkgJson.name
-        : `${pkgJson.name}/${exportPath.slice(2)}`;
-
-    entries.push({
+  function makeEntry(name, esmPath) {
+    return {
       name,
       path: join("packages", pkg, esmPath),
       import: "*",
@@ -90,7 +74,64 @@ module.exports = TRACKED_PACKAGES.flatMap((pkg) => {
         };
         return config;
       },
-    });
+    };
+  }
+
+  const entries = [];
+
+  // Collect explicit (non-wildcard) export paths to avoid duplicates
+  const explicitExports = new Set(
+    Object.keys(pkgJson.exports).filter((p) => !p.includes("*")),
+  );
+
+  for (const [exportPath, exportConfig] of Object.entries(pkgJson.exports)) {
+    // Skip non-JS exports (e.g. ./styles.css)
+    if (!exportConfig?.import?.default) continue;
+
+    // Resolve wildcard exports by scanning the filesystem
+    if (exportPath.includes("*")) {
+      const pattern = exportConfig.import.default; // e.g. "./build/esm/public/*.js"
+      const globDir = join(pkgDir, pattern.replace(/\/\*\.js$/, ""));
+      let files;
+      try {
+        files = readdirSync(globDir, { recursive: true });
+      } catch {
+        continue; // directory doesn't exist yet (pre-build)
+      }
+      for (const file of files) {
+        const fileName = String(file);
+        if (!fileName.endsWith(".js")) continue;
+        const stem = fileName.replace(/\.js$/, "");
+        const resolvedExportPath = exportPath.replace("*", stem);
+
+        // Skip paths that have explicit exports (avoid duplicates)
+        if (explicitExports.has(resolvedExportPath)) continue;
+
+        if (
+          resolvedExportPath.includes("internal") ||
+          resolvedExportPath.includes("unstable")
+        ) {
+          continue;
+        }
+
+        const resolvedEsmPath = pattern.replace("*", stem);
+        const name = `${pkgJson.name}/${resolvedExportPath.slice(2)}`;
+        entries.push(makeEntry(name, resolvedEsmPath));
+      }
+      continue;
+    }
+
+    // Skip internal/unstable entry points — only track public surface
+    if (exportPath.includes("internal") || exportPath.includes("unstable")) {
+      continue;
+    }
+
+    const esmPath = exportConfig.import.default;
+    const name =
+      exportPath === "."
+        ? pkgJson.name
+        : `${pkgJson.name}/${exportPath.slice(2)}`;
+    entries.push(makeEntry(name, esmPath));
   }
 
   return entries;

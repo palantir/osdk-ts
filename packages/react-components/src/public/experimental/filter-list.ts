@@ -14,8 +14,24 @@
  * limitations under the License.
  */
 
-export * from "./experimental/action-form.js";
-export * from "./experimental/filter-list.js";
-export * from "./experimental/markdown-renderer.js";
-export * from "./experimental/object-table.js";
-export * from "./experimental/pdf-viewer.js";
+export { BaseFilterList } from "../../filter-list/base/BaseFilterList.js";
+export type {
+  BaseFilterListProps,
+  RenderFilterInput,
+} from "../../filter-list/base/BaseFilterListApi.js";
+export { FilterList } from "../../filter-list/FilterList.js";
+
+export type {
+  FilterDefinitionUnion,
+  FilterListProps,
+} from "../../filter-list/FilterListApi.js";
+export type {
+  FilterComponentType,
+  FilterListItemProps,
+  FilterState,
+  PropertyFilterDefinition,
+} from "../../filter-list/FilterListItemApi.js";
+export {
+  deserializeFilterStates,
+  serializeFilterStates,
+} from "../../filter-list/utils/filterStateSerialization.js";
