@@ -124,6 +124,9 @@ function ListogramInputInner({
             const percentage = maxCount > 0 ? (count / maxCount) * 100 : 0;
             const perRowColor = colorMap?.[value];
             const isEmpty = value === "";
+            const displayLabel = isEmpty
+              ? "No value"
+              : (renderValue?.(value) ?? value);
 
             return (
               <Button
@@ -162,11 +165,7 @@ function ListogramInputInner({
                   data-excluding={(isExcluding && selectedSet.has(value))
                     || undefined}
                 >
-                  {isEmpty
-                    ? "No value"
-                    : renderValue
-                    ? renderValue(value)
-                    : value}
+                  {displayLabel}
                 </span>
                 {displayMode !== "minimal" && (
                   <span className={styles.count}>{count.toLocaleString()}</span>

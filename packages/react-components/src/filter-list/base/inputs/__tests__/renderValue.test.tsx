@@ -130,9 +130,12 @@ describe("MultiSelectInput renderValue", () => {
 });
 
 describe("SingleSelectInput renderValue", () => {
-  it("accepts renderValue prop without error", () => {
-    // SingleSelectInput renders dropdown items in a portal;
-    // verify it mounts without error when renderValue is provided
+  // SingleSelectInput renders dropdown items inside a Combobox portal
+  // which only mounts when opened — not testable in jsdom without
+  // full browser event sequences. These tests verify the component
+  // accepts the prop and renders without errors.
+
+  it("mounts with renderValue without error", () => {
     const { container } = render(
       <SingleSelectInput
         values={mockValues}
@@ -144,11 +147,11 @@ describe("SingleSelectInput renderValue", () => {
       />,
     );
 
-    expect(container).toBeDefined();
+    expect(container.querySelector("input")).toBeDefined();
   });
 
-  it("renders without renderValue", () => {
-    const { container } = render(
+  it("mounts without renderValue without error", () => {
+    render(
       <SingleSelectInput
         values={mockValues}
         isLoading={false}
@@ -158,7 +161,6 @@ describe("SingleSelectInput renderValue", () => {
       />,
     );
 
-    expect(container).toBeDefined();
     expect(screen.queryAllByTestId("custom-value")).toHaveLength(0);
   });
 });

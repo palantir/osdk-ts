@@ -366,6 +366,10 @@ const USER_NAMES: Record<string, string> = {
 
 `renderValue` works with `LISTOGRAM`, `SINGLE_SELECT`, and `MULTI_SELECT` filter components. For `MULTI_SELECT`, it applies to both dropdown items and selected chips.
 
+> **Note:** Search within filter dropdowns still matches against the raw string value, not the rendered display. For example, if you render user IDs as names, users must search by ID, not by name.
+
+For best performance, memoize `renderValue` with `useCallback` to avoid unnecessary re-renders:
+
 ### Listogram Display Modes
 
 Control how much detail each listogram row shows:
