@@ -15,9 +15,10 @@
  */
 
 import classNames from "classnames";
-import React, { useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 import { DatetimePickerField } from "../../action-form/fields/DatetimePickerField.js";
 
+import { formatDateForInput } from "../../shared/dateUtils.js";
 import styles from "../EditableCell.module.css";
 import { useRegisterPortal } from "../utils/PortalTracker.js";
 import type { DatePickerEditConfig } from "../utils/types.js";
@@ -58,6 +59,10 @@ function DatePickerCellFieldInner({
   const showTime = fieldComponentProps?.showTime
     ?? dataType === "timestamp";
 
+  const handleChange = useCallback((newValue: Date | null) => {
+    onChange(formatDateForInput(newValue));
+  }, [onChange]);
+
   return (
     <div
       className={classNames(
@@ -72,7 +77,7 @@ function DatePickerCellFieldInner({
         {...fieldComponentProps}
         showTime={showTime}
         value={dateValue}
-        onChange={onChange}
+        onChange={handleChange}
         portalRef={portalRef}
         readOnly={!isRowFocused}
       />
