@@ -79,6 +79,15 @@
       "require": "./build/cjs/public/experimental/pdf-viewer.cjs",
       "default": "./build/browser/public/experimental/pdf-viewer.js"
     },
+    "./experimental/tiff-renderer": {
+      "browser": "./build/browser/public/experimental/tiff-renderer.js",
+      "import": {
+        "types": "./build/types/public/experimental/tiff-renderer.d.ts",
+        "default": "./build/esm/public/experimental/tiff-renderer.js"
+      },
+      "require": "./build/cjs/public/experimental/tiff-renderer.cjs",
+      "default": "./build/browser/public/experimental/tiff-renderer.js"
+    },
     "./styles.css": "./build/browser/styles.css",
     "./*": {
       "browser": "./build/browser/public/*.js",
@@ -91,7 +100,7 @@
     }
   },
   "scripts": {
-    "check-attw": "attw --pack . --exclude-entrypoints ./styles.css ./experimental/action-form ./experimental/filter-list ./experimental/markdown-renderer ./experimental/object-table ./experimental/pdf-viewer",
+    "check-attw": "attw --pack . --exclude-entrypoints ./styles.css ./experimental/action-form ./experimental/filter-list ./experimental/markdown-renderer ./experimental/object-table ./experimental/pdf-viewer ./experimental/tiff-renderer",
     "check-spelling": "cspell --quiet .",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
@@ -119,7 +128,8 @@
     "react-day-picker": "^8.10.0",
     "react-hook-form": "^7.54.0",
     "react-markdown": "^9.0.3",
-    "remark-gfm": "^4.0.1"
+    "remark-gfm": "^4.0.1",
+    "utif": "^3.1.0"
   },
   "peerDependencies": {
     "@osdk/api": "^2.8.0",

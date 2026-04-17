@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-export * from "./experimental/action-form.js";
-export * from "./experimental/filter-list.js";
-export * from "./experimental/markdown-renderer.js";
-export * from "./experimental/object-table.js";
-export * from "./experimental/pdf-viewer.js";
-export * from "./experimental/tiff-renderer.js";
+export interface TiffRendererProps {
+  /** TIFF bytes to render */
+  content: Uint8Array;
+  /** Callback fired when rendering fails */
+  onError?: () => void;
+}
