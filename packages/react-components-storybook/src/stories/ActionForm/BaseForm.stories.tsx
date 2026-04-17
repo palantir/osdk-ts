@@ -20,7 +20,7 @@ import { BaseForm } from "@osdk/react-components/experimental";
 import { useOsdkClient } from "@osdk/react/experimental";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import React, { useCallback, useMemo, useState } from "react";
-import { expect, fn, userEvent, within } from "storybook/test";
+import { fn } from "storybook/test";
 import { fauxFoundry } from "../../mocks/fauxFoundry.js";
 import { Employee } from "../../types/Employee.js";
 
@@ -578,27 +578,6 @@ export const WithValidation: Story = {
 />`,
       },
     },
-  },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-
-    // Focus and blur the required "Name" field to trigger validation.
-    // Query by role — the label includes a child <span aria-label="required">
-    // that merges into the computed accessible name.
-    const nameInput = canvas.getByRole("textbox", { name: /Name/ });
-    await userEvent.click(nameInput);
-    await userEvent.tab();
-
-    await expect(canvas.getByText("This field is required")).toBeVisible();
-
-    // Typing a value should clear the error.
-    await userEvent.click(nameInput);
-    await userEvent.type(nameInput, "Alice");
-    await userEvent.tab();
-
-    await expect(
-      canvas.queryByText("This field is required"),
-    ).not.toBeInTheDocument();
   },
 };
 

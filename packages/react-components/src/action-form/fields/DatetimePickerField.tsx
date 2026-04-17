@@ -28,6 +28,7 @@ import {
   parseTimeString,
 } from "../../shared/dateUtils.js";
 import type { DatetimePickerFieldProps } from "../FormFieldApi.js";
+import { stopPropagation } from "./calendarShared.js";
 import commonStyles from "./DatePickerCommon.module.css";
 import styles from "./DatetimePickerField.module.css";
 import { LazyDateCalendar } from "./LazyDateCalendar.js";
@@ -245,35 +246,29 @@ export const DatetimePickerField: React.NamedExoticComponent<
 
   return (
     <Popover.Root open={isOpen} onOpenChange={handleOpenChange}>
-      {
-        /* The wrapper div provides styling/border; the Input inside is the
-          actual interactive trigger. Using render={<Input>} avoids nesting
-          an interactive combobox inside an interactive button wrapper. */
-      }
-      <div className={wrapperClassName}>
-        <Popover.Trigger
-          nativeButton={false}
-          render={
-            <Input
-              ref={inputRef}
-              id={id}
-              className={commonStyles.osdkDatePickerInput}
-              type="text"
-              value={displayedValue}
-              onValueChange={setInputValue}
-              onFocus={handleFocus}
-              onBlur={handleBlur}
-              onKeyDown={handleKeyDown}
-              placeholder={placeholder}
-              autoComplete="off"
-              role="combobox"
-              aria-expanded={isOpen}
-              aria-controls={popoverId}
-              aria-haspopup="dialog"
-            />
-          }
+      <Popover.Trigger
+        nativeButton={false}
+        render={<div className={wrapperClassName} tabIndex={-1} />}
+      >
+        <Input
+          ref={inputRef}
+          id={id}
+          className={commonStyles.osdkDatePickerInput}
+          type="text"
+          value={displayedValue}
+          onValueChange={setInputValue}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
+          onClick={stopPropagation}
+          onKeyDown={handleKeyDown}
+          placeholder={placeholder}
+          autoComplete="off"
+          role="combobox"
+          aria-expanded={isOpen}
+          aria-controls={popoverId}
+          aria-haspopup="dialog"
         />
-      </div>
+      </Popover.Trigger>
       <Popover.Portal>
         <Popover.Positioner sideOffset={4}>
           <Popover.Popup
