@@ -20,9 +20,95 @@
   ],
   "versionGroups": [
     {
-      "label": "Use workspace:~ for local @osdk/monorepo.* packages",
+      "label": "Ignore pinned semver range for @osdk/api in e2e.generated.1.1.x (targets older API versions)",
       "dependencies": [
-        "@osdk/monorepo.*"
+        "@osdk/api"
+      ],
+      "packages": [
+        "@osdk/e2e.generated.1.1.x"
+      ],
+      "isIgnored": true
+    },
+    {
+      "label": "Ignore pinned semver range for typescript-sdk-docs in maker",
+      "dependencies": [
+        "@osdk/typescript-sdk-docs"
+      ],
+      "packages": [
+        "@osdk/maker"
+      ],
+      "isIgnored": true
+    },
+    {
+      "label": "Ignore link: protocol dependencies for @test-app2/osdk",
+      "dependencies": [
+        "@test-app2/osdk"
+      ],
+      "isIgnored": true
+    },
+    {
+      "label": "Ignore workspace:~ deps in functions (intentionally pinned)",
+      "packages": [
+        "@osdk/functions"
+      ],
+      "isIgnored": true
+    },
+    {
+      "label": "Ignore catalog: referenced packages (@osdk/foundry.*, @osdk/internal.foundry.*, @osdk/docs-spec-*)",
+      "dependencies": [
+        "@osdk/foundry",
+        "@osdk/foundry.*",
+        "@osdk/internal.foundry.*",
+        "@osdk/docs-spec-*"
+      ],
+      "isIgnored": true
+    },
+    {
+      "label": "Ignore pinned semver ranges for shared.client, shared.client2, legacy-client",
+      "dependencies": [
+        "@osdk/legacy-client",
+        "@osdk/shared.client",
+        "@osdk/shared.client2"
+      ],
+      "isIgnored": true
+    },
+    {
+      "label": "Ignore @osdk peer dependencies (intentionally broad ranges)",
+      "dependencies": [
+        "@osdk/**"
+      ],
+      "dependencyTypes": [
+        "peer"
+      ],
+      "isIgnored": true
+    },
+    {
+      "label": "@osdk/client uses workspace:~ for @osdk/api (MRL enforces this for stable releases)",
+      "dependencies": [
+        "@osdk/api"
+      ],
+      "packages": [
+        "@osdk/client"
+      ],
+      "pinVersion": "workspace:~"
+    },
+    {
+      "label": "Use workspace:* for @osdk/api, @osdk/cli, @osdk/client",
+      "dependencies": [
+        "@osdk/api",
+        "@osdk/cli",
+        "@osdk/client"
+      ],
+      "dependencyTypes": [
+        "dev",
+        "prod"
+      ],
+      "pinVersion": "workspace:*"
+    },
+    {
+      "label": "Use workspace:~ for local @osdk/* packages",
+      "dependencies": [
+        "@osdk/**"
       ],
       "dependencyTypes": [
         "dev",
@@ -31,7 +117,7 @@
       "pinVersion": "workspace:~"
     },
     {
-      "label": "Use workspace protocol for all other local packages",
+      "label": "Use workspace:* for all other local packages",
       "dependencies": [
         "$LOCAL"
       ],
@@ -39,7 +125,7 @@
         "dev",
         "prod"
       ],
-      "pinVersion": "workspace:~"
+      "pinVersion": "workspace:*"
     }
   ]
 }
