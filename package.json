@@ -61,6 +61,7 @@
     "husky": "^9.1.7",
     "lint-staged": "^15.5.2",
     "micromatch": "^4.0.8",
+    "oxfmt": "latest",
     "oxlint": "latest",
     "oxlint-tsgolint": "latest",
     "postcss": "^8.5.6",
