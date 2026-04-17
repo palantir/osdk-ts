@@ -381,6 +381,10 @@ const archetypeRules = archetypes(
         "./experimental/tiff-renderer",
       ],
       setupFiles: ["./src/test/setupPolyfills.ts"],
+      vitestEnv: {
+        TZ: "UTC",
+        LANG: "en_US.UTF-8",
+      },
     },
   )
   .addArchetype(
@@ -882,6 +886,7 @@ function minimalPackageRules(shared, options) {
  * * @property { boolean } [skipBuildInFiles]
  * @property { "happy-dom" } [vitestEnvironment]
  * @property { string[] } [setupFiles]
+ * @property { Record<string, string> } [vitestEnv]
  * @property { boolean } [skipTsconfigReferences]
  * @property { boolean } [aliasConsola]
  * @property { Record<"esm" | "cjs" | "browser", "bundle" | "normal" | undefined>} output
@@ -1130,6 +1135,14 @@ function standardPackageRules(shared, options) {
               ? `\n            setupFiles: ${
                 JSON.stringify(options.setupFiles)
               },`
+              : ""
+          }${
+            options.vitestEnv
+              ? `\n            env: {\n${
+                Object.entries(options.vitestEnv).map(([k, v]) =>
+                  `              ${k}: ${JSON.stringify(v)},`
+                ).join("\n")
+              }\n            },`
               : ""
           }
               fakeTimers: {
