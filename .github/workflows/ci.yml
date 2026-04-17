@@ -285,6 +285,8 @@ jobs:
             let current = [], base = [];
             try { current = JSON.parse(fs.readFileSync("/tmp/current.json", "utf8")); } catch {}
             try { base = JSON.parse(fs.readFileSync("/tmp/base.json", "utf8")); } catch {}
+            if (!Array.isArray(current)) current = [];
+            if (!Array.isArray(base)) base = [];
 
             const baseMap = Object.fromEntries(base.map(e => [e.name, e.size]));
             const currentMap = Object.fromEntries(current.map(e => [e.name, e.size]));
