@@ -380,6 +380,99 @@ By default, LISTOGRAM filters show at most 5 items with a "View all" link. Overr
 />;
 ```
 
+### Linked Property Filter (Client-Side Filtering)
+
+`LINKED_PROPERTY` filters cannot be expressed as a `WhereClause` on the primary object type, so they are **not included in `filterClause`**. You must listen to `onFilterStateChanged` and handle filtering on the client side by filtering the linked object set, pivoting back, and intersecting with the original object set.
+
+```typescript
+import type { WhereClause } from "@osdk/api";
+import { FilterList, ObjectTable } from "@osdk/react-components/experimental";
+import type { FilterState } from "@osdk/react-components/experimental";
+import { Employee, Office } from "@YourApp/sdk";
+import { $ } from "@YourApp/sdk";
+import { useCallback, useMemo, useState } from "react";
+
+function EmployeeDashboard() {
+  const baseObjectSet = useMemo(() => $(Employee), []);
+  const [filterClause, setFilterClause] = useState<
+    WhereClause<typeof Employee>
+  >({});
+  const [objectSet, setObjectSet] = useState(baseObjectSet);
+
+  const handleFilterStateChanged = useCallback(
+    (
+      definition: { type: string; key?: string; linkTypeApiName?: string },
+      newState: FilterState,
+    ) => {
+      if (
+        definition.type === "LINKED_PROPERTY"
+        && definition.linkTypeApiName === "office"
+      ) {
+        // Filter the linked object type based on the selected values
+        const selectedValues = newState.type === "EXACT_MATCH"
+          ? newState.values
+          : [];
+        if (selectedValues.length > 0) {
+          // Apply filter on the linked object, pivot back, and intersect
+          const filteredOffices = $(Office).where({
+            city: { $in: selectedValues },
+          });
+          const employeesWithMatchingOffice = filteredOffices.pivotTo(
+            "employees",
+          );
+          setObjectSet(baseObjectSet.intersect(employeesWithMatchingOffice));
+        } else {
+          setObjectSet(baseObjectSet);
+        }
+      }
+    },
+    [baseObjectSet],
+  );
+
+  return (
+    <div style={{ display: "flex", gap: 16, height: 600 }}>
+      <div style={{ width: 320, flexShrink: 0 }}>
+        <FilterList
+          objectSet={objectSet}
+          filterDefinitions={[
+            {
+              type: "PROPERTY",
+              key: "department",
+              filterComponent: "LISTOGRAM",
+            },
+            {
+              type: "LINKED_PROPERTY",
+              key: "city",
+              linkTypeApiName: "office",
+              filterComponent: "LISTOGRAM",
+              label: "Office City",
+            },
+          ]}
+          filterClause={filterClause}
+          onFilterClauseChanged={setFilterClause}
+          onFilterStateChanged={handleFilterStateChanged}
+        />
+      </div>
+      <div style={{ flex: 1 }}>
+        <ObjectTable
+          objectType={Employee}
+          objectSet={objectSet}
+          filter={filterClause}
+        />
+      </div>
+    </div>
+  );
+}
+```
+
+The pattern is:
+
+1. Listen to `onFilterStateChanged` for `LINKED_PROPERTY` changes
+2. Apply the selected values as a filter on the linked object type (e.g., `Office`)
+3. Pivot back to the primary object type (e.g., `filteredOffices.pivotTo("employees")`)
+4. Intersect the result with your base object set
+5. Pass the intersected object set to both `FilterList` and `ObjectTable`
+
 ### Collapsible Panel
 
 Make the filter list collapsible:

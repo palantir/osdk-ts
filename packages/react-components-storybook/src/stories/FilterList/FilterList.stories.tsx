@@ -20,6 +20,7 @@ import { FilterList, ObjectTable } from "@osdk/react-components/experimental";
 import type {
   FilterDefinitionUnion,
   FilterListProps,
+  FilterState as FilterStateType,
 } from "@osdk/react-components/experimental";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useCallback, useMemo, useState } from "react";
@@ -992,6 +993,155 @@ const handleFilterRemoved = (filterKey) => {
     },
   },
   render: (args) => <WithRemovableFiltersStory {...args} />,
+};
+
+function WithLinkedPropertyFilterStory(
+  args: Partial<EmployeeFilterListProps>,
+) {
+  const client = useOsdkClient();
+  const baseObjectSet = useMemo(() => client(Employee), [client]);
+  const [objectSet, setObjectSet] = useState(baseObjectSet);
+  const [filterClause, setFilterClause] = useState<
+    WhereClause<Employee> | undefined
+  >(undefined);
+
+  const filterDefinitions = useMemo(
+    (): FilterDefinitionUnion<Employee>[] => [
+      departmentFilter,
+      {
+        type: "LINKED_PROPERTY",
+        linkName: "lead",
+        linkedPropertyKey: "department",
+        linkedFilterComponent: "LISTOGRAM",
+        linkedFilterState: { type: "EXACT_MATCH", values: [] },
+        filterState: {
+          type: "linkedProperty",
+          linkedFilterState: { type: "EXACT_MATCH", values: [] },
+        },
+        label: "Lead's Department",
+      } as FilterDefinitionUnion<Employee>,
+    ],
+    [],
+  );
+
+  const handleFilterStateChanged = useCallback(
+    (
+      definition: FilterDefinitionUnion<Employee>,
+      newState: FilterStateType,
+    ) => {
+      if (definition.type !== "LINKED_PROPERTY") {
+        return;
+      }
+
+      const linkedState = newState.type === "linkedProperty"
+        ? newState.linkedFilterState
+        : undefined;
+      const selectedValues = linkedState?.type === "EXACT_MATCH"
+        ? linkedState.values.filter((v): v is string => typeof v === "string")
+        : [];
+
+      if (selectedValues.length > 0) {
+        // 1. Filter the linked object type by the selected values
+        const filteredLeads = client(Employee).where({
+          department: { $in: selectedValues },
+        });
+        // 2. Pivot back to get employees whose lead matches
+        const employeesWithMatchingLead = filteredLeads.pivotTo("peeps");
+        // 3. Intersect with the base object set
+        setObjectSet(baseObjectSet.intersect(employeesWithMatchingLead));
+      } else {
+        setObjectSet(baseObjectSet);
+      }
+    },
+    [client, baseObjectSet],
+  );
+
+  return (
+    <div style={COMBINED_LAYOUT_STYLE}>
+      <div style={SIDEBAR_FIXED_STYLE}>
+        <FilterList
+          objectSet={objectSet}
+          filterDefinitions={filterDefinitions}
+          filterClause={filterClause}
+          onFilterClauseChanged={setFilterClause}
+          onFilterStateChanged={handleFilterStateChanged}
+          {...args}
+        />
+      </div>
+      <div style={FLEX_FILL_STYLE}>
+        <ObjectTable
+          objectType={Employee}
+          objectSet={objectSet}
+          filter={filterClause}
+        />
+      </div>
+    </div>
+  );
+}
+
+export const WithLinkedPropertyFilter: Story = {
+  name: "Linked Property Filter",
+  args: {
+    title: "Filters",
+    showResetButton: true,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "LINKED_PROPERTY filters are not included in the `filterClause` because they can't be "
+          + "expressed as a WhereClause on the primary object type. Instead, listen to "
+          + "`onFilterStateChanged`, filter the linked object type, pivot back, and intersect "
+          + "with the base object set.",
+      },
+      source: {
+        code: `const baseObjectSet = useMemo(() => client(Employee), [client]);
+const [objectSet, setObjectSet] = useState(baseObjectSet);
+const [filterClause, setFilterClause] = useState<WhereClause<Employee>>({});
+
+const handleFilterStateChanged = useCallback(
+  (definition, newState) => {
+    if (definition.type !== "LINKED_PROPERTY") return;
+
+    const linkedState = newState.type === "linkedProperty"
+      ? newState.linkedFilterState : undefined;
+    const selectedValues = linkedState?.type === "EXACT_MATCH"
+      ? linkedState.values : [];
+
+    if (selectedValues.length > 0) {
+      // Filter linked objects, pivot back, intersect
+      const filteredLeads = client(Employee).where({
+        department: { $in: selectedValues },
+      });
+      setObjectSet(baseObjectSet.intersect(filteredLeads.pivotTo("peeps")));
+    } else {
+      setObjectSet(baseObjectSet);
+    }
+  },
+  [client, baseObjectSet],
+);
+
+<FilterList
+  objectSet={objectSet}
+  filterDefinitions={[
+    { type: "PROPERTY", key: "department", filterComponent: "LISTOGRAM" },
+    {
+      type: "LINKED_PROPERTY",
+      linkName: "lead",
+      linkedPropertyKey: "department",
+      linkedFilterComponent: "LISTOGRAM",
+      label: "Lead's Department",
+    },
+  ]}
+  filterClause={filterClause}
+  onFilterClauseChanged={setFilterClause}
+  onFilterStateChanged={handleFilterStateChanged}
+/>
+<ObjectTable objectType={Employee} objectSet={objectSet} filter={filterClause} />`,
+      },
+    },
+  },
+  render: (args) => <WithLinkedPropertyFilterStory {...args} />,
 };
 
 function FullFeaturedStory(
