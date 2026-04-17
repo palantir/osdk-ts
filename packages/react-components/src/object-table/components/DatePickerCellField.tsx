@@ -49,7 +49,6 @@ function parseDateValue(input: string): Date | null {
 
 function DatePickerCellFieldInner({
   fieldComponentProps,
-  isRowFocused,
   inputValue,
   hasValidationError,
   isEdited,
@@ -86,7 +85,6 @@ function DatePickerCellFieldInner({
         value={dateValue}
         onChange={handleChange}
         portalRef={portalRef}
-        readOnly={!isRowFocused}
       />
     </div>
   );
