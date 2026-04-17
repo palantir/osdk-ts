@@ -77,7 +77,7 @@ function generateInterfaceSnippet(
 ) {
   const interfaceContext = {
     "interfaceApiName": interfaceType.apiName,
-    "packageName": packageName,
+    packageName,
     "objectOrInterfaceApiName": interfaceType.apiName,
     "propertyNames": Object.keys(interfaceType.propertiesV3),
     "interfaceName": interfaceType.displayMetadata.displayName,
@@ -89,7 +89,7 @@ function generateInterfaceSnippet(
 function generateObjectSnippet(objectType: ObjectType, packageName: string) {
   const objectContext = {
     "objectType": objectType.apiName,
-    "packageName": packageName,
+    packageName,
     "objectOrInterfaceApiName": objectType.apiName,
   };
   return getSnippets(objectSnippets, objectContext);
@@ -98,7 +98,7 @@ function generateObjectSnippet(objectType: ObjectType, packageName: string) {
 function generateActionSnippet(actionType: ActionType, packageName: string) {
   const actionContext = {
     "actionApiName": actionType.apiName,
-    "packageName": packageName,
+    packageName,
   };
   return getSnippets(actionSnippets, actionContext);
 }
@@ -111,18 +111,16 @@ function getSnippets(
   context: {},
 ) {
   const allSnippets = {};
-  for (
-    const templateName of Object.keys(snippetType).filter(key =>
-      isNaN(Number(key))
-    )
-  ) {
+  for (const templateName of Object.keys(snippetType).filter((key) =>
+    isNaN(Number(key)),
+  )) {
     const versions = Object.values(TYPESCRIPT_OSDK_SNIPPETS.versions);
-    const latestTemplate = versions
-      .slice()
-      .reverse()
-      .find(v => v.snippets[templateName])
-      ?.snippets[templateName]
-      .at(-1)?.template ?? "";
+    const latestTemplate =
+      versions
+        .slice()
+        .reverse()
+        .find((v) => v.snippets[templateName])
+        ?.snippets[templateName].at(-1)?.template ?? "";
     const renderedTemplate = Mustache.render(latestTemplate, context);
     const snippetName = snippetNameMapping.get(templateName);
 

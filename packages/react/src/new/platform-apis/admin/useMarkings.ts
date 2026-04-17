@@ -49,9 +49,9 @@ export interface UseMarkingsResult {
  * List all markings.
  * @param options Options to control the query.
  */
-export function useMarkings(
-  { enabled = true }: UseMarkingsOptions = {},
-): UseMarkingsResult {
+export function useMarkings({
+  enabled = true,
+}: UseMarkingsOptions = {}): UseMarkingsResult {
   const { client } = React.useContext(OsdkContext2);
 
   const handleQuery = React.useCallback(() => {

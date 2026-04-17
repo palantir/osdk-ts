@@ -93,8 +93,8 @@ function ListogramInputInner({
     return sortedValues.slice(0, maxVisibleItems);
   }, [sortedValues, maxVisibleItems, isExpanded]);
 
-  const hasMore = maxVisibleItems != null
-    && sortedValues.length > maxVisibleItems;
+  const hasMore =
+    maxVisibleItems != null && sortedValues.length > maxVisibleItems;
 
   return (
     <div
@@ -129,16 +129,20 @@ function ListogramInputInner({
                 // eslint-disable-next-line react/jsx-no-bind
                 onClick={() => toggleValue(value)}
                 aria-pressed={selectedSet.has(value)}
-                style={perRowColor || percentage > 0
-                  ? ({
-                    "--osdk-filter-listogram-bar-fill-scale": percentage / 100,
-                    ...(perRowColor
-                      ? {
-                        "--osdk-filter-listogram-row-bar-color": perRowColor,
-                      }
-                      : undefined),
-                  } as React.CSSProperties)
-                  : undefined}
+                style={
+                  perRowColor || percentage > 0
+                    ? ({
+                        "--osdk-filter-listogram-bar-fill-scale":
+                          percentage / 100,
+                        ...(perRowColor
+                          ? {
+                              "--osdk-filter-listogram-row-bar-color":
+                                perRowColor,
+                            }
+                          : undefined),
+                      } as React.CSSProperties)
+                    : undefined
+                }
               >
                 <span
                   className={styles.checkbox}
@@ -156,8 +160,9 @@ function ListogramInputInner({
                     styles.label,
                     isEmpty && styles.emptyLabel,
                   )}
-                  data-excluding={(isExcluding && selectedSet.has(value))
-                    || undefined}
+                  data-excluding={
+                    (isExcluding && selectedSet.has(value)) || undefined
+                  }
                 >
                   {isEmpty ? "No value" : value}
                 </span>

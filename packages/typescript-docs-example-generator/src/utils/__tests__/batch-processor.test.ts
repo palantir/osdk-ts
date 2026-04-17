@@ -27,10 +27,12 @@ describe("BatchProcessor", () => {
         { id: "3", data: 3 },
       ];
 
-      const processor = vi.fn((item: BatchItem<number>): Result<number> => ({
-        success: true as const,
-        value: item.data * 2,
-      }));
+      const processor = vi.fn(
+        (item: BatchItem<number>): Result<number> => ({
+          success: true as const,
+          value: item.data * 2,
+        }),
+      );
 
       const result = await BatchProcessor.processBatch(items, processor);
 
@@ -102,10 +104,12 @@ describe("BatchProcessor", () => {
         data: i,
       }));
 
-      const processor = vi.fn((): Result<number> => ({
-        success: false,
-        error: new Error("Always fails"),
-      }));
+      const processor = vi.fn(
+        (): Result<number> => ({
+          success: false,
+          error: new Error("Always fails"),
+        }),
+      );
 
       await BatchProcessor.processBatch(items, processor, {
         maxErrors: 3,
@@ -123,7 +127,7 @@ describe("BatchProcessor", () => {
 
       const processor = vi.fn(
         async (item: BatchItem<number>): Promise<Result<number>> => {
-          await new Promise(resolve => setTimeout(resolve, 10));
+          await new Promise((resolve) => setTimeout(resolve, 10));
           return { success: true as const, value: item.data * 2 };
         },
       );
@@ -178,7 +182,7 @@ describe("BatchProcessor", () => {
           activeCount.push(currentActive);
 
           // Simulate async work
-          await new Promise(resolve => setTimeout(resolve, 10));
+          await new Promise((resolve) => setTimeout(resolve, 10));
 
           executionOrder.push(item.data);
           currentActive--;
@@ -215,7 +219,7 @@ describe("BatchProcessor", () => {
 
       const processor = vi.fn(
         async (item: BatchItem<number>): Promise<Result<number>> => {
-          await new Promise(resolve => setTimeout(resolve, 5));
+          await new Promise((resolve) => setTimeout(resolve, 5));
 
           // Fail even numbers
           if (item.data % 2 === 0) {
@@ -283,7 +287,7 @@ describe("BatchProcessor", () => {
       const processor = vi.fn(
         async (item: BatchItem<number>): Promise<Result<number>> => {
           // Simulate 10ms of work
-          await new Promise(resolve => setTimeout(resolve, 10));
+          await new Promise((resolve) => setTimeout(resolve, 10));
           return { success: true as const, value: item.data * 2 };
         },
       );
@@ -313,7 +317,9 @@ describe("BatchProcessor", () => {
       const processor = vi.fn(
         async (item: BatchItem<number>): Promise<Result<string>> => {
           // Random delay to ensure different completion orders
-          await new Promise(resolve => setTimeout(resolve, Math.random() * 20));
+          await new Promise((resolve) =>
+            setTimeout(resolve, Math.random() * 20),
+          );
           return { success: true as const, value: `processed-${item.data}` };
         },
       );
@@ -339,15 +345,15 @@ describe("BatchProcessor", () => {
       const validators = [
         {
           name: "validator1",
-          validate: () => ({ success: true, value: "ok1" } as Result<string>),
+          validate: () => ({ success: true, value: "ok1" }) as Result<string>,
         },
         {
           name: "validator2",
-          validate: () => ({ success: true, value: "ok2" } as Result<string>),
+          validate: () => ({ success: true, value: "ok2" }) as Result<string>,
         },
         {
           name: "validator3",
-          validate: () => ({ success: true, value: "ok3" } as Result<string>),
+          validate: () => ({ success: true, value: "ok3" }) as Result<string>,
         },
       ];
 
@@ -365,14 +371,15 @@ describe("BatchProcessor", () => {
       const validators = [
         {
           name: "validator1",
-          validate: () => ({ success: true, value: "ok" } as Result<string>),
+          validate: () => ({ success: true, value: "ok" }) as Result<string>,
         },
         {
           name: "validator2",
-          validate: () => ({
-            success: false,
-            error: new Error("Validation failed"),
-          } as Result<string>),
+          validate: () =>
+            ({
+              success: false,
+              error: new Error("Validation failed"),
+            }) as Result<string>,
         },
       ];
 
@@ -416,15 +423,17 @@ describe("BatchProcessor", () => {
         },
         {
           id: "2",
-          result: { success: false, error: new Error("Error 2") } as Result<
-            string
-          >,
+          result: {
+            success: false,
+            error: new Error("Error 2"),
+          } as Result<string>,
         },
         {
           id: "3",
-          result: { success: false, error: new Error("Error 3") } as Result<
-            string
-          >,
+          result: {
+            success: false,
+            error: new Error("Error 3"),
+          } as Result<string>,
         },
       ];
 
@@ -485,7 +494,7 @@ describe("BatchProcessor", () => {
       const processor = vi.fn(async (item: BatchItem<number>) => {
         currentConcurrent++;
         maxConcurrent = Math.max(maxConcurrent, currentConcurrent);
-        await new Promise(resolve => setTimeout(resolve, 5));
+        await new Promise((resolve) => setTimeout(resolve, 5));
         currentConcurrent--;
         return { success: true as const, value: item.data };
       });

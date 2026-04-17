@@ -2,4 +2,4 @@ type: improvement
 improvement:
   description: Check client env variables at runtime
   links:
-  - https://github.com/palantir/osdk-ts/pull/71
+    - https://github.com/palantir/osdk-ts/pull/71

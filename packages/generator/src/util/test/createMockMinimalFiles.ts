@@ -28,14 +28,10 @@ export function createMockMinimalFiles(): {
   };
   dumpFilesToConsole: () => void;
 } {
-  const writeFile = vi.fn<WriteFileFn>(
-    () => Promise.resolve(),
-  );
+  const writeFile = vi.fn<WriteFileFn>(() => Promise.resolve());
   const getFiles = () => Object.fromEntries(writeFile.mock.calls);
 
-  const readdir = vi.fn<ReaddirFn>(
-    () => Promise.resolve([]),
-  );
+  const readdir = vi.fn<ReaddirFn>(() => Promise.resolve([]));
 
   return {
     minimalFiles: {

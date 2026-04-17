@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-/* eslint-disable @typescript-eslint/require-await */
+/* oxlint-disable typescript/require-await */
 
 import { InvalidRequest } from "../errors.js";
 import {
@@ -36,9 +36,10 @@ export const createLoadObjectsHandlers: FauxFoundryHandlersFactory = (
    */
   OntologiesV2.OntologyObjectsV2.get(
     baseUrl,
-    async (
-      { request, params: { ontologyApiName, objectType, primaryKey } },
-    ) => {
+    async ({
+      request,
+      params: { ontologyApiName, objectType, primaryKey },
+    }) => {
       return subSelectPropertiesUrl(
         fauxFoundry
           .getDataStore(ontologyApiName)
@@ -55,9 +56,7 @@ export const createLoadObjectsHandlers: FauxFoundryHandlersFactory = (
     baseUrl,
     async ({ request, params: { ontologyApiName, objectType } }) => {
       const loadObjects = pageThroughResponseSearchParams(
-        fauxFoundry
-          .getDataStore(ontologyApiName)
-          .getObjectsOfType(objectType),
+        fauxFoundry.getDataStore(ontologyApiName).getObjectsOfType(objectType),
         getPaginationParamsFromUrl(request),
         true,
       );
@@ -74,12 +73,10 @@ export const createLoadObjectsHandlers: FauxFoundryHandlersFactory = (
    */
   OntologiesV2.LinkedObjectsV2.listLinkedObjects(
     baseUrl,
-    async (
-      {
-        request,
-        params: { primaryKey, linkType, objectType, ontologyApiName },
-      },
-    ) => {
+    async ({
+      request,
+      params: { primaryKey, linkType, objectType, ontologyApiName },
+    }) => {
       const linkResults = fauxFoundry
         .getDataStore(ontologyApiName)
         .getLinksOrThrow(objectType, primaryKey, linkType);
@@ -103,26 +100,21 @@ export const createLoadObjectsHandlers: FauxFoundryHandlersFactory = (
 
   OntologiesV2.LinkedObjectsV2.getLinkedObject(
     baseUrl,
-    async (
-      {
-        request,
-        params: {
-          ontologyApiName,
-          objectType,
-          primaryKey,
-          linkType,
-          targetPrimaryKey,
-        },
+    async ({
+      request,
+      params: {
+        ontologyApiName,
+        objectType,
+        primaryKey,
+        linkType,
+        targetPrimaryKey,
       },
-    ) => {
+    }) => {
       const object = fauxFoundry
         .getDataStore(ontologyApiName)
         .getLinkOrThrow(objectType, primaryKey, linkType, targetPrimaryKey);
 
-      return subSelectPropertiesUrl(
-        object,
-        new URL(request.url),
-      );
+      return subSelectPropertiesUrl(object, new URL(request.url));
     },
   ),
 ];

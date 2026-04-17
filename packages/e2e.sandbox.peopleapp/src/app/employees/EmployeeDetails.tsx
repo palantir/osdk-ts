@@ -12,12 +12,11 @@ interface EmployeeDetailsProps {
 
 export function EmployeeDetails({ employee }: EmployeeDetailsProps) {
   // Only use useLinks when we have an employee to avoid unnecessary API calls
-  const { links: officeLink, isLoading: isOfficeLoading, error: officeError } =
-    useLinks(
-      employee ?? [],
-      "primaryOffice",
-      {},
-    );
+  const {
+    links: officeLink,
+    isLoading: isOfficeLoading,
+    error: officeError,
+  } = useLinks(employee ?? [], "primaryOffice", {});
 
   if (!employee) {
     return (
@@ -64,41 +63,37 @@ export function EmployeeDetails({ employee }: EmployeeDetailsProps) {
         {employee && (
           <OfficeSelector
             employee={employee}
-            currentOfficeId={officeLink && officeLink.length > 0
-              ? officeLink[0].$primaryKey
-              : null}
+            currentOfficeId={
+              officeLink && officeLink.length > 0
+                ? officeLink[0].$primaryKey
+                : null
+            }
           />
         )}
       </div>
 
-      {isOfficeLoading
-        ? <LoadingMessage message="Loading office information..." />
-        : officeError
-        ? (
-          <ErrorMessage
-            message={`Error loading office: ${officeError.message}`}
-          />
-        )
-        : officeLink && officeLink.length > 0
-        ? (
-          <div className="grid grid-cols-2 gap-2 mt-2">
-            <div className="text-gray-600">Office Name:</div>
-            <div>{officeLink[0].name ?? "Unnamed office"}</div>
+      {isOfficeLoading ? (
+        <LoadingMessage message="Loading office information..." />
+      ) : officeError ? (
+        <ErrorMessage
+          message={`Error loading office: ${officeError.message}`}
+        />
+      ) : officeLink && officeLink.length > 0 ? (
+        <div className="grid grid-cols-2 gap-2 mt-2">
+          <div className="text-gray-600">Office Name:</div>
+          <div>{officeLink[0].name ?? "Unnamed office"}</div>
 
-            <div className="text-gray-600">Office ID:</div>
-            <div>{officeLink[0].$primaryKey}</div>
+          <div className="text-gray-600">Office ID:</div>
+          <div>{officeLink[0].$primaryKey}</div>
 
-            <div className="text-gray-600">Location:</div>
-            <div>
-              {officeLink[0].location
-                ? (
-                  `Location available`
-                )
-                : "No location data"}
-            </div>
+          <div className="text-gray-600">Location:</div>
+          <div>
+            {officeLink[0].location ? `Location available` : "No location data"}
           </div>
-        )
-        : <div className="text-sm italic">No office information available</div>}
+        </div>
+      ) : (
+        <div className="text-sm italic">No office information available</div>
+      )}
     </div>
   );
 }

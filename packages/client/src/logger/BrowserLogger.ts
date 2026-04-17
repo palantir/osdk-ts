@@ -62,22 +62,16 @@ export class BrowserLogger extends BaseLogger implements Logger {
 
     if (this.options?.msgPrefix) {
       msgs.push(`%c${this.options.msgPrefix}%c`);
-      styles.push(
-        "font-style: italic; color: gray",
-        "",
-      );
+      styles.push("font-style: italic; color: gray", "");
     }
 
     if (typeof bindings === "object" && "methodName" in bindings) {
       msgs.push(`%c.${bindings.methodName}()%c`);
-      styles.push(
-        "font-style: italic;color: orchid",
-        "",
-      );
+      styles.push("font-style: italic;color: orchid", "");
     }
 
     return (...args: any[]): any => {
-      // eslint-disable-next-line no-console
+      // oxlint-disable-next-line no-console
       console[name === "fatal" ? "error" : name](
         msgs.join(" "),
         ...styles,

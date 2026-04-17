@@ -17,10 +17,8 @@
 import { type ConjureContext, conjureFetch } from "conjure-lite";
 import type { MonitorRid as _api_MonitorRid } from "../../__components.js";
 import type {
-  UpdateTimeseriesJobConfigurationRequestV2
-    as _api_registry_UpdateTimeseriesJobConfigurationRequestV2,
-  UpdateTimeseriesJobConfigurationResponse
-    as _api_registry_UpdateTimeseriesJobConfigurationResponse,
+  UpdateTimeseriesJobConfigurationRequestV2 as _api_registry_UpdateTimeseriesJobConfigurationRequestV2,
+  UpdateTimeseriesJobConfigurationResponse as _api_registry_UpdateTimeseriesJobConfigurationResponse,
 } from "../__components.js";
 
 /**

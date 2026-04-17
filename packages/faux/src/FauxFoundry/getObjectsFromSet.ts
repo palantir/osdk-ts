@@ -32,10 +32,7 @@ export function getObjectsFromSet(
 
     case "filter": {
       const base = getObjectsFromSet(ds, objectSet.objectSet, methodInput);
-      return filterObjects(
-        base,
-        objectSet.where,
-      );
+      return filterObjects(base, objectSet.where);
     }
 
     case "union": {
@@ -77,17 +74,18 @@ export function getObjectsFromSet(
           methodInput,
         );
         for (const obj of set) {
-          const match = toIntersect.find(x =>
-            x.__apiName === obj.__apiName
-            && x.__primaryKey === obj.__primaryKey
+          const match = toIntersect.find(
+            (x) =>
+              x.__apiName === obj.__apiName &&
+              x.__primaryKey === obj.__primaryKey,
           );
 
           if (!match) {
             set.delete(obj);
-          } else if (obj["$propsToReturn"] || match["$propsToReturn"]) {
-            obj["$propsToReturn"] = {
-              ...obj["$propsToReturn"],
-              ...match["$propsToReturn"],
+          } else if (obj.$propsToReturn || match.$propsToReturn) {
+            obj.$propsToReturn = {
+              ...obj.$propsToReturn,
+              ...match.$propsToReturn,
             };
           }
         }
@@ -97,7 +95,7 @@ export function getObjectsFromSet(
 
     case "searchAround": {
       const base = getObjectsFromSet(ds, objectSet.objectSet, methodInput);
-      return base.flatMap(o => {
+      return base.flatMap((o) => {
         const ret = ds.getLinksOrThrow(
           o.__apiName,
           o.__primaryKey,
@@ -109,7 +107,7 @@ export function getObjectsFromSet(
 
     case "interfaceLinkSearchAround": {
       const base = getObjectsFromSet(ds, objectSet.objectSet, methodInput);
-      return base.flatMap(o => {
+      return base.flatMap((o) => {
         const ret = ds.getLinksOrThrow(
           o.__apiName,
           o.__primaryKey,
@@ -120,16 +118,16 @@ export function getObjectsFromSet(
     }
 
     case "static": {
-      return objectSet.objects.map(x => ds.getObjectByRid(x)).filter(x =>
-        x != null
-      );
+      return objectSet.objects
+        .map((x) => ds.getObjectByRid(x))
+        .filter((x) => x != null);
     }
 
     case "withProperties": {
       const { derivedProperties } = objectSet;
 
       const base = getObjectsFromSet(ds, objectSet.objectSet, methodInput);
-      return base.map(obj => {
+      return base.map((obj) => {
         const extra = Object.fromEntries(
           Object.entries(derivedProperties).map(([k, v]) => {
             return [k, getDerivedPropertyValue(ds, obj, v)];
@@ -155,34 +153,34 @@ export function getObjectsFromSet(
       );
 
     case "interfaceBase":
-      const relevantObjectTypes = ds
-        .ontology
-        .getAllObjectTypes().filter(x =>
-          objectSet.interfaceType in x.implementsInterfaces2
-        );
+      const relevantObjectTypes = ds.ontology
+        .getAllObjectTypes()
+        .filter((x) => objectSet.interfaceType in x.implementsInterfaces2);
 
       // const ifaceDef = ds.ontology.getInterfaceType(objectTypeWithAllPropertyTypes);
 
-      return relevantObjectTypes.flatMap(x =>
-        Array.from(ds.getObjectsOfType(x.objectType.apiName))
-      ).map(obj => {
-        const objDef = ds.ontology.getObjectTypeFullMetadataOrThrow(
-          obj.__apiName,
-        );
-        const ifaceMap = objDef.implementsInterfaces2[objectSet.interfaceType];
-        const $propsToReturn = objectSet.includeAllBaseObjectProperties
-          ? obj
-          : Object.fromEntries(
-            Object.values(ifaceMap.properties).map(
-              (propApiName) => [propApiName, obj[propApiName]],
-            ),
+      return relevantObjectTypes
+        .flatMap((x) => Array.from(ds.getObjectsOfType(x.objectType.apiName)))
+        .map((obj) => {
+          const objDef = ds.ontology.getObjectTypeFullMetadataOrThrow(
+            obj.__apiName,
           );
+          const ifaceMap =
+            objDef.implementsInterfaces2[objectSet.interfaceType];
+          const $propsToReturn = objectSet.includeAllBaseObjectProperties
+            ? obj
+            : Object.fromEntries(
+                Object.values(ifaceMap.properties).map((propApiName) => [
+                  propApiName,
+                  obj[propApiName],
+                ]),
+              );
 
-        return ({
-          ...objToInterface(ds, obj, objectSet.interfaceType),
-          $propsToReturn,
+          return {
+            ...objToInterface(ds, obj, objectSet.interfaceType),
+            $propsToReturn,
+          };
         });
-      });
 
     // This does not mimic KNN, it just returns `numNeighbors` objects
     case "nearestNeighbors":
@@ -207,8 +205,7 @@ function objToInterface(
   iface: OntologiesV2.InterfaceTypeApiName,
 ): BaseServerObject {
   const ifaceDef = ds.ontology.getInterfaceType(iface);
-  const propMap = ds.ontology
-    .getObjectTypeFullMetadataOrThrow(o.__apiName)
+  const propMap = ds.ontology.getObjectTypeFullMetadataOrThrow(o.__apiName)
     .implementsInterfaces2[iface].properties;
 
   const { __apiName, __primaryKey, __rid, __title } = o;
@@ -256,12 +253,12 @@ function getDerivedPropertySelection(
     }
     case "collectList": {
       const objs = getObjectsFromSet(ds, objectSet, obj);
-      return objs.map(o => o[operation.selectedPropertyApiName]);
+      return objs.map((o) => o[operation.selectedPropertyApiName]);
     }
     case "collectSet": {
       const objs = getObjectsFromSet(ds, objectSet, obj);
       return Array.from(
-        new Set(objs.map(o => o[operation.selectedPropertyApiName])),
+        new Set(objs.map((o) => o[operation.selectedPropertyApiName])),
       );
     }
     case "count": {
@@ -271,9 +268,7 @@ function getDerivedPropertySelection(
   }
 }
 
-export function createOrderBySortFn(
-  orderBy: OntologiesV2.SearchOrderByV2,
-) {
+export function createOrderBySortFn(orderBy: OntologiesV2.SearchOrderByV2) {
   const fns = orderBy.fields.map(({ field, direction }) => {
     return (
       a: BaseServerObject | undefined,

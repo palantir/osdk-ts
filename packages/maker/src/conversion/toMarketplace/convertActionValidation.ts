@@ -34,27 +34,29 @@ export function convertActionValidation(
   return {
     actionTypeLevelValidation: {
       rules: Object.fromEntries(
-        (action.validation
-          ?? [{
-            condition: { type: "true", true: {} },
-            displayMetadata: { failureMessage: "", typeClasses: [] },
-          }]).map((rule, idx) => [idx, rule]),
+        (
+          action.validation ?? [
+            {
+              condition: { type: "true", true: {} },
+              displayMetadata: { failureMessage: "", typeClasses: [] },
+            },
+          ]
+        ).map((rule, idx) => [idx, rule]),
       ),
     },
     parameterValidations: Object.fromEntries(
-      (action.parameters ?? []).map(p => {
+      (action.parameters ?? []).map((p) => {
         return [
           p.id,
           {
             defaultValidation: {
               display: {
-                renderHint: p.renderHint
-                  ?? renderHintFromBaseType(p, p.validation),
+                renderHint:
+                  p.renderHint ?? renderHintFromBaseType(p, p.validation),
                 visibility: convertActionVisibility(
                   p.validation.defaultVisibility,
                 ),
-                ...p.defaultValue
-                  && { prefill: p.defaultValue },
+                ...(p.defaultValue && { prefill: p.defaultValue }),
               },
               validation: {
                 allowedValues: extractAllowedValues(
@@ -65,46 +67,45 @@ export function convertActionValidation(
                 ),
               },
             },
-            conditionalOverrides: p.validation.conditionalOverrides?.map(
-              (override) =>
+            conditionalOverrides:
+              p.validation.conditionalOverrides?.map((override) =>
                 convertActionParameterConditionalOverride(
                   override,
                   p.validation,
                   action.parameters,
                 ),
-            ) ?? [],
+              ) ?? [],
           },
         ];
       }),
     ),
     sectionValidations: {
       ...Object.fromEntries(
-        Object.entries(action.sections ?? {}).map((
-          [sectionId, section],
-        ) => [
+        Object.entries(action.sections ?? {}).map(([sectionId, section]) => [
           section.id,
           {
-            defaultDisplayMetadata: section.defaultVisibility === "hidden"
-              ? {
-                visibility: {
-                  type: "hidden",
-                  hidden: {},
-                },
-              }
-              : {
-                visibility: {
-                  type: "visible",
-                  visible: {},
-                },
-              },
-            conditionalOverrides: section.conditionalOverrides?.map(
-              (override) =>
+            defaultDisplayMetadata:
+              section.defaultVisibility === "hidden"
+                ? {
+                    visibility: {
+                      type: "hidden",
+                      hidden: {},
+                    },
+                  }
+                : {
+                    visibility: {
+                      type: "visible",
+                      visible: {},
+                    },
+                  },
+            conditionalOverrides:
+              section.conditionalOverrides?.map((override) =>
                 convertSectionConditionalOverride(
                   override,
                   section.defaultVisibility ?? "visible",
                   action.parameters,
                 ),
-            ) ?? [],
+              ) ?? [],
           },
         ]),
       ),

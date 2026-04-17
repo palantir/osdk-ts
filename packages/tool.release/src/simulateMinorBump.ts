@@ -36,14 +36,12 @@ export function simulateMinorBump(): void {
   // Remove all old changesets that would have been deleted after minor release was cut
   preJson.changesets = [];
 
-  fs.readdirSync(packagesDir).forEach(folder => {
+  fs.readdirSync(packagesDir).forEach((folder) => {
     const packagePath = path.join(packagesDir, folder);
     const packageJsonPath = path.join(packagePath, "package.json");
 
     if (fs.existsSync(packageJsonPath)) {
-      const packageJson = JSON.parse(
-        fs.readFileSync(packageJsonPath, "utf8"),
-      );
+      const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf8"));
 
       let version = packageJson.version;
 
@@ -64,13 +62,11 @@ export function simulateMinorBump(): void {
       );
 
       // Add a changeset file that indicates a minor bump happened, write back
-      const changesetFileName = `${
-        packageJson.name.replace("/", "-")
-      }-simulatedRelease`;
-      const changesetFile = path.join(
-        changesetsDir,
-        changesetFileName + ".md",
-      );
+      const changesetFileName = `${packageJson.name.replace(
+        "/",
+        "-",
+      )}-simulatedRelease`;
+      const changesetFile = path.join(changesetsDir, changesetFileName + ".md");
 
       preJson.changesets.push(changesetFileName);
 

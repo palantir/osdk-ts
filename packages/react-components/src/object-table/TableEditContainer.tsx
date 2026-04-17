@@ -21,16 +21,12 @@ import { ActionButton } from "../base-components/action-button/ActionButton.js";
 import styles from "./TableEditContainer.module.css";
 import type { EditableConfig } from "./utils/types.js";
 
-interface TableEditContainerProps<
-  TData extends RowData,
-> {
+interface TableEditContainerProps<TData extends RowData> {
   editableConfig: EditableConfig<TData, unknown>;
   focusedRowId?: string | null;
 }
 
-export function TableEditContainer<
-  TData extends RowData,
->({
+export function TableEditContainer<TData extends RowData>({
   editableConfig,
   focusedRowId,
 }: TableEditContainerProps<TData>): ReactElement {
@@ -79,46 +75,35 @@ export function TableEditContainer<
 
   return (
     <div className={styles.tableEditContainer}>
-      {hasEdits || hasValidationError
-        ? (
-          <div className={styles.editsInfoContainer}>
-            {hasEdits && (
-              <div className={styles.modificationCount}>
-                {`${
-                  cellEdits ? Object.keys(cellEdits).length : 0
-                } modifications`}
-              </div>
-            )}
-            {hasEdits && hasValidationError && (
-              <div className={styles.divider} />
-            )}
-            {hasValidationError && (
-              <div className={styles.validationError}>
-                <Error className={styles.errorIcon} />
-                Validation error
-              </div>
-            )}
-          </div>
+      {hasEdits || hasValidationError ? (
+        <div className={styles.editsInfoContainer}>
+          {hasEdits && (
+            <div className={styles.modificationCount}>
+              {`${cellEdits ? Object.keys(cellEdits).length : 0} modifications`}
+            </div>
+          )}
+          {hasEdits && hasValidationError && <div className={styles.divider} />}
+          {hasValidationError && (
+            <div className={styles.validationError}>
+              <Error className={styles.errorIcon} />
+              Validation error
+            </div>
+          )}
+        </div>
+      ) : (
+        isInEditMode &&
+        !focusedRowId && (
+          <div className={styles.placeholder}>Select a row to edit data…</div>
         )
-        : (isInEditMode && !focusedRowId && (
-          <div className={styles.placeholder}>
-            Select a row to edit data…
-          </div>
-        ))}
+      )}
       <div className={styles.editButtons}>
         {!isInEditMode && canToggleEditMode && (
-          <ActionButton
-            variant="primary"
-            onClick={handleEnterEditMode}
-          >
+          <ActionButton variant="primary" onClick={handleEnterEditMode}>
             Edit Table
           </ActionButton>
         )}
         {isInEditMode && canToggleEditMode && (
-          <ActionButton
-            variant="secondary"
-            onClick={handleCancelEdits}
-          >
+          <ActionButton variant="secondary" onClick={handleCancelEdits}>
             Cancel
           </ActionButton>
         )}

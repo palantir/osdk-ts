@@ -49,9 +49,7 @@ describe("useDateEditState", () => {
 
     it("displays formatted value when not editing", () => {
       const { result } = renderHook(() =>
-        useDateEditState(
-          makeConfig({ value: new Date(2024, 0, 15) }),
-        )
+        useDateEditState(makeConfig({ value: new Date(2024, 0, 15) })),
       );
 
       expect(result.current.isEditing).toBe(false);
@@ -65,7 +63,7 @@ describe("useDateEditState", () => {
             value: new Date(2024, 0, 15),
             displayFormatFn: () => "custom display",
           }),
-        )
+        ),
       );
 
       expect(result.current.displayedValue).toBe("custom display");
@@ -81,7 +79,7 @@ describe("useDateEditState", () => {
             displayFormatFn: formatDateForDisplay, // "Jan 15, 2024"
             editFormatFn: formatDateForInput, // "2024-01-15"
           }),
-        )
+        ),
       );
 
       // Not editing: displayedValue uses displayFormatFn
@@ -129,7 +127,7 @@ describe("useDateEditState", () => {
             value: new Date(2024, 0, 15),
             displayFormatFn: formatDateForDisplay,
           }),
-        )
+        ),
       );
 
       act(() => {
@@ -152,7 +150,7 @@ describe("useDateEditState", () => {
       const { result } = renderHook(() =>
         useDateEditState(
           makeConfig({ value: new Date(2024, 0, 15), onChange }),
-        )
+        ),
       );
 
       act(() => {
@@ -173,7 +171,7 @@ describe("useDateEditState", () => {
     it("calls onChange with validated date for valid input", () => {
       const onChange = vi.fn();
       const { result } = renderHook(() =>
-        useDateEditState(makeConfig({ onChange }))
+        useDateEditState(makeConfig({ onChange })),
       );
 
       act(() => {
@@ -196,7 +194,7 @@ describe("useDateEditState", () => {
       const { result } = renderHook(() =>
         useDateEditState(
           makeConfig({ value: new Date(2024, 0, 15), onChange }),
-        )
+        ),
       );
 
       act(() => {
@@ -216,7 +214,7 @@ describe("useDateEditState", () => {
     it("does not call onChange for invalid input", () => {
       const onChange = vi.fn();
       const { result } = renderHook(() =>
-        useDateEditState(makeConfig({ onChange }))
+        useDateEditState(makeConfig({ onChange })),
       );
 
       act(() => {
@@ -273,7 +271,7 @@ describe("useDateEditState", () => {
             value: null,
             editFormatFn: formatDateForInput,
           }),
-        )
+        ),
       );
 
       act(() => {
@@ -323,7 +321,7 @@ describe("useDateEditState", () => {
             min: new Date(2024, 0, 1),
             max: new Date(2024, 11, 31),
           }),
-        )
+        ),
       );
 
       act(() => {
@@ -343,7 +341,7 @@ describe("useDateEditState", () => {
             min: new Date(2024, 0, 1),
             max: new Date(2024, 11, 31),
           }),
-        )
+        ),
       );
 
       act(() => {

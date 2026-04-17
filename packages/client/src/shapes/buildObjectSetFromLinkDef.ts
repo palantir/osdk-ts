@@ -82,15 +82,16 @@ export async function buildObjectSetFromLinkDefByType(
   sourcePrimaryKey: unknown,
   linkDef: ShapeLinkObjectSetDef,
 ): Promise<ObjectSet<ObjectOrInterfaceDefinition>> {
-  const metadata = await client[additionalContext].ontologyProvider
-    .getObjectDefinition(sourceType.apiName);
+  const metadata = await client[
+    additionalContext
+  ].ontologyProvider.getObjectDefinition(sourceType.apiName);
   const pkFieldName = metadata.primaryKeyApiName;
 
   let objectSet: ObjectSet<ObjectOrInterfaceDefinition> = client(
     sourceType as ObjectTypeDefinition,
-  ).where(
-    { [pkFieldName]: sourcePrimaryKey } as WhereClause<ObjectTypeDefinition>,
-  );
+  ).where({
+    [pkFieldName]: sourcePrimaryKey,
+  } as WhereClause<ObjectTypeDefinition>);
 
   for (const segment of linkDef.segments) {
     if (segment.type === "pivotTo") {
@@ -100,13 +101,13 @@ export async function buildObjectSetFromLinkDefByType(
 
   if (linkDef.setOperations && linkDef.setOperations.length > 0) {
     const otherObjectSets = await Promise.all(
-      linkDef.setOperations.map(setOp =>
+      linkDef.setOperations.map((setOp) =>
         buildObjectSetFromLinkDefByType(
           client,
           sourceType,
           sourcePrimaryKey,
           setOp.other,
-        )
+        ),
       ),
     );
     for (let i = 0; i < linkDef.setOperations.length; i++) {

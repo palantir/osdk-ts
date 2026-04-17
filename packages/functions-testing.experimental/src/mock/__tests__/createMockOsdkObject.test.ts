@@ -55,10 +55,11 @@ describe("createMockOsdkObject", () => {
     });
 
     it("throws when primary key property is not provided", () => {
-      expect(() => createMockOsdkObject(Employee, { fullName: "John" }))
-        .toThrow(
-          "Primary key property \"employeeId\" must be provided in properties for Employee.",
-        );
+      expect(() =>
+        createMockOsdkObject(Employee, { fullName: "John" }),
+      ).toThrow(
+        'Primary key property "employeeId" must be provided in properties for Employee.',
+      );
     });
 
     it("throws when object type has no primaryKeyApiName", () => {
@@ -68,7 +69,7 @@ describe("createMockOsdkObject", () => {
       };
 
       expect(() => createMockOsdkObject(badObjectType as any, {})).toThrow(
-        "Object type \"BadObject\" does not have a primaryKeyApiName defined.",
+        'Object type "BadObject" does not have a primaryKeyApiName defined.',
       );
     });
   });
@@ -109,9 +110,9 @@ describe("createMockOsdkObject", () => {
           Employee,
           { employeeId: 1 },
           { titlePropertyApiName: "fullName" },
-        )
+        ),
       ).toThrow(
-        "titlePropertyApiName \"fullName\" was specified but not found in properties for Employee",
+        'titlePropertyApiName "fullName" was specified but not found in properties for Employee',
       );
     });
   });
@@ -330,7 +331,8 @@ describe("createMockOsdkObject", () => {
           fullName: "Bob",
         });
 
-        mockClient.whenObjectSet(peepsSet, (os) => os.fetchPage())
+        mockClient
+          .whenObjectSet(peepsSet, (os) => os.fetchPage())
           .thenReturnObjects([p1, p2]);
 
         const mockEmployee = createMockOsdkObject(
@@ -350,9 +352,8 @@ describe("createMockOsdkObject", () => {
         const peepsSet = createMockObjectSet(Employee);
 
         mockClient
-          .whenObjectSet(
-            peepsSet,
-            (os) => os.aggregate({ $select: { $count: "unordered" } }),
+          .whenObjectSet(peepsSet, (os) =>
+            os.aggregate({ $select: { $count: "unordered" } }),
           )
           .thenReturnAggregation({ $count: 3 });
 
@@ -401,7 +402,7 @@ describe("createMockOsdkObject", () => {
       expect(() =>
         mockEmployee.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
           "employeeId",
-        )
+        ),
       ).toThrow(
         "$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue is not supported on mock objects.",
       );

@@ -17,8 +17,7 @@
 import { type ConjureContext, conjureFetch } from "conjure-lite";
 import type {
   GetOrgSettingsByUserRequest as _api_organization_GetOrgSettingsByUserRequest,
-  GetOrgSettingsByUserResponse
-    as _api_organization_GetOrgSettingsByUserResponse,
+  GetOrgSettingsByUserResponse as _api_organization_GetOrgSettingsByUserResponse,
 } from "../__components.js";
 
 /**

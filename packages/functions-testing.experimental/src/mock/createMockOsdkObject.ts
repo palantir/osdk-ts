@@ -42,11 +42,11 @@ export interface MockOsdkObjectOptions<
 // TODO: Add support for RDPs
 
 type LinkStubs<Q extends ObjectTypeDefinition> = {
-  [LINK_NAME in LinkNames<Q>]?:
-    CompileTimeMetadata<Q>["links"][LINK_NAME]["multiplicity"] extends true ?
+  [LINK_NAME in LinkNames<Q>]?: CompileTimeMetadata<Q>["links"][LINK_NAME]["multiplicity"] extends true
+    ?
         | Array<Osdk.Instance<LinkedType<Q, LINK_NAME>>>
         | ObjectSet<LinkedType<Q, LINK_NAME>>
-      : Osdk.Instance<LinkedType<Q, LINK_NAME>>;
+    : Osdk.Instance<LinkedType<Q, LINK_NAME>>;
 };
 
 function createSingleLinkStub<T extends ObjectTypeDefinition>(
@@ -65,9 +65,10 @@ function createManyLinkStub<T extends ObjectTypeDefinition>(
   linkedObjects: Array<Osdk.Instance<T>>,
 ): {
   fetchOne: (primaryKey: unknown) => Promise<Osdk.Instance<T> | undefined>;
-  fetchPage: () => Promise<
-    { data: Array<Osdk.Instance<T>>; nextPageToken: undefined }
-  >;
+  fetchPage: () => Promise<{
+    data: Array<Osdk.Instance<T>>;
+    nextPageToken: undefined;
+  }>;
   asyncIter: () => AsyncIterableIterator<Osdk.Instance<T>>;
   aggregate: () => never;
 } {
@@ -137,24 +138,19 @@ function createManyLinkStub<T extends ObjectTypeDefinition>(
  * @param options - Configuration including links, titlePropertyApiName, and $rid
  * @returns A frozen mock OSDK object
  */
-export function createMockOsdkObject<
-  Q extends ObjectTypeDefinition,
->(
+export function createMockOsdkObject<Q extends ObjectTypeDefinition>(
   objectType: Q,
   properties?: Partial<CompileTimeMetadata<Q>["props"]>,
   options: MockOsdkObjectOptions<Q> = {},
 ): Osdk.Instance<Q> {
-  const {
-    links,
-    titlePropertyApiName,
-  } = options;
+  const { links, titlePropertyApiName } = options;
 
   const primaryKeyApiName = objectType.primaryKeyApiName;
 
   invariant(
     primaryKeyApiName != null,
-    `Object type "${objectType.apiName}" does not have a primaryKeyApiName defined. `
-      + `Ensure you are using a generated object type constant that includes primaryKeyApiName.`,
+    `Object type "${objectType.apiName}" does not have a primaryKeyApiName defined. ` +
+      `Ensure you are using a generated object type constant that includes primaryKeyApiName.`,
   );
 
   if (properties == null) {
@@ -163,8 +159,8 @@ export function createMockOsdkObject<
 
   invariant(
     primaryKeyApiName in properties,
-    `Primary key property "${primaryKeyApiName}" must be provided in properties for ${objectType.apiName}. `
-      + `Include "${primaryKeyApiName}" in the properties argument.`,
+    `Primary key property "${primaryKeyApiName}" must be provided in properties for ${objectType.apiName}. ` +
+      `Include "${primaryKeyApiName}" in the properties argument.`,
   );
 
   if (titlePropertyApiName != null) {
@@ -176,14 +172,16 @@ export function createMockOsdkObject<
 
   const $primaryKey = properties[primaryKeyApiName as keyof typeof properties];
 
-  const $title = titlePropertyApiName != null
-    ? properties[titlePropertyApiName as keyof typeof properties] as
-      | string
-      | undefined
-    : undefined;
+  const $title =
+    titlePropertyApiName != null
+      ? (properties[titlePropertyApiName as keyof typeof properties] as
+          | string
+          | undefined)
+      : undefined;
 
-  const $rid = options.$rid
-    ?? `ri.mock.main.object.${objectType.apiName}.${String($primaryKey)}`;
+  const $rid =
+    options.$rid ??
+    `ri.mock.main.object.${objectType.apiName}.${String($primaryKey)}`;
 
   const mockObject: Record<string, unknown> = {
     $apiName: objectType.apiName,
@@ -274,11 +272,7 @@ export function createMockOsdkObject<
       }
 
       const newProperties = { ...properties, ...updates };
-      return createMockOsdkObject(
-        objectType,
-        newProperties,
-        options,
-      ) as any;
+      return createMockOsdkObject(objectType, newProperties, options) as any;
     },
     enumerable: false,
   });

@@ -25,9 +25,7 @@ import React from "react";
 import { devToolsMetadata, makeExternalStore } from "./makeExternalStore.js";
 import { OsdkContext2 } from "./OsdkContext2.js";
 
-export interface UseOsdkObjectResult<
-  Q extends ObjectOrInterfaceDefinition,
-> {
+export interface UseOsdkObjectResult<Q extends ObjectOrInterfaceDefinition> {
   object: Osdk.Instance<Q> | undefined;
   isLoading: boolean;
 
@@ -44,9 +42,7 @@ export interface UseOsdkObjectResult<
  * @param obj an existing `Osdk.Instance` object to get metadata for.
  * @param enabled Enable or disable the query (defaults to true)
  */
-export function useOsdkObject<
-  Q extends ObjectOrInterfaceDefinition,
->(
+export function useOsdkObject<Q extends ObjectOrInterfaceDefinition>(
   obj: Osdk.Instance<Q>,
   enabled?: boolean,
 ): UseOsdkObjectResult<Q>;
@@ -57,9 +53,7 @@ export function useOsdkObject<
  * @param primaryKey The primary key of the object
  * @param enabled Enable or disable the query (defaults to true)
  */
-export function useOsdkObject<
-  Q extends ObjectOrInterfaceDefinition,
->(
+export function useOsdkObject<Q extends ObjectOrInterfaceDefinition>(
   type: Q,
   primaryKey: PrimaryKeyType<Q>,
   enabled?: boolean,
@@ -71,9 +65,7 @@ export function useOsdkObject<
  * @param primaryKey The primary key of the object
  * @param options Options including $select, enabled, and $loadPropertySecurityMetadata
  */
-export function useOsdkObject<
-  Q extends ObjectOrInterfaceDefinition,
->(
+export function useOsdkObject<Q extends ObjectOrInterfaceDefinition>(
   type: Q,
   primaryKey: PrimaryKeyType<Q>,
   options?: {
@@ -85,21 +77,19 @@ export function useOsdkObject<
 /*
     Implementation of useOsdkObject
  */
-export function useOsdkObject<
-  Q extends ObjectOrInterfaceDefinition,
->(
+export function useOsdkObject<Q extends ObjectOrInterfaceDefinition>(
   ...args:
     | [obj: Osdk.Instance<Q>, enabled?: boolean]
     | [type: Q, primaryKey: PrimaryKeyType<Q>, enabled?: boolean]
     | [
-      type: Q,
-      primaryKey: PrimaryKeyType<Q>,
-      options?: {
-        $select?: readonly PropertyKeys<Q>[];
-        enabled?: boolean;
-        $loadPropertySecurityMetadata?: boolean;
-      },
-    ]
+        type: Q,
+        primaryKey: PrimaryKeyType<Q>,
+        options?: {
+          $select?: readonly PropertyKeys<Q>[];
+          enabled?: boolean;
+          $loadPropertySecurityMetadata?: boolean;
+        },
+      ]
 ): UseOsdkObjectResult<Q> {
   const { observableClient } = React.useContext(OsdkContext2);
 
@@ -109,26 +99,29 @@ export function useOsdkObject<
   const isInstanceSignature = "$objectType" in args[0];
 
   // Extract options object if provided (3rd arg is an object with $select or enabled)
-  const optionsArg = !isInstanceSignature
-      && args[2] != null
-      && typeof args[2] === "object"
-    ? args[2] as {
-      $select?: readonly string[];
-      enabled?: boolean;
-      $loadPropertySecurityMetadata?: boolean;
-    }
-    : undefined;
+  const optionsArg =
+    !isInstanceSignature && args[2] != null && typeof args[2] === "object"
+      ? (args[2] as {
+          $select?: readonly string[];
+          enabled?: boolean;
+          $loadPropertySecurityMetadata?: boolean;
+        })
+      : undefined;
 
   // Extract enabled flag - 2nd param for instance signature, 3rd for type signature
   const enabled = isInstanceSignature
-    ? (typeof args[1] === "boolean" ? args[1] : true)
+    ? typeof args[1] === "boolean"
+      ? args[1]
+      : true
     : optionsArg
-    ? (optionsArg.enabled ?? true)
-    : (typeof args[2] === "boolean" ? args[2] : true);
+      ? (optionsArg.enabled ?? true)
+      : typeof args[2] === "boolean"
+        ? args[2]
+        : true;
 
   const selectArg = optionsArg?.$select;
-  const loadPropertySecurityMetadata = optionsArg
-    ?.$loadPropertySecurityMetadata;
+  const loadPropertySecurityMetadata =
+    optionsArg?.$loadPropertySecurityMetadata;
 
   const mode = isInstanceSignature ? "offline" : undefined;
 
@@ -140,61 +133,57 @@ export function useOsdkObject<
     ? (args[0] as Osdk.Instance<Q>).$primaryKey
     : (args[1] as PrimaryKeyType<Q>);
 
-  const apiNameString = typeof typeOrApiName === "string"
-    ? typeOrApiName
-    : typeOrApiName.apiName;
+  const apiNameString =
+    typeof typeOrApiName === "string" ? typeOrApiName : typeOrApiName.apiName;
 
   const stableSelect = React.useMemo(
     () => selectArg,
     [JSON.stringify(selectArg)],
   );
 
-  const { subscribe, getSnapShot } = React.useMemo(
-    () => {
-      if (!enabled) {
-        return makeExternalStore<ObserveObjectCallbackArgs<Q>>(
-          () => ({ unsubscribe: () => {} }),
-          devToolsMetadata({
-            hookType: "useOsdkObject",
-            objectType: apiNameString,
-            primaryKey: String(primaryKey),
-          }),
-        );
-      }
+  const { subscribe, getSnapShot } = React.useMemo(() => {
+    if (!enabled) {
       return makeExternalStore<ObserveObjectCallbackArgs<Q>>(
-        (observer) =>
-          observableClient.observeObject(
-            typeOrApiName,
-            primaryKey,
-            {
-              mode,
-              ...(stableSelect ? { select: stableSelect } : {}),
-              ...(loadPropertySecurityMetadata
-                ? {
-                  $loadPropertySecurityMetadata: loadPropertySecurityMetadata,
-                }
-                : {}),
-            },
-            observer,
-          ),
+        () => ({ unsubscribe: () => {} }),
         devToolsMetadata({
           hookType: "useOsdkObject",
           objectType: apiNameString,
           primaryKey: String(primaryKey),
         }),
       );
-    },
-    [
-      enabled,
-      observableClient,
-      typeOrApiName,
-      apiNameString,
-      primaryKey,
-      mode,
-      stableSelect,
-      loadPropertySecurityMetadata,
-    ],
-  );
+    }
+    return makeExternalStore<ObserveObjectCallbackArgs<Q>>(
+      (observer) =>
+        observableClient.observeObject(
+          typeOrApiName,
+          primaryKey,
+          {
+            mode,
+            ...(stableSelect ? { select: stableSelect } : {}),
+            ...(loadPropertySecurityMetadata
+              ? {
+                  $loadPropertySecurityMetadata: loadPropertySecurityMetadata,
+                }
+              : {}),
+          },
+          observer,
+        ),
+      devToolsMetadata({
+        hookType: "useOsdkObject",
+        objectType: apiNameString,
+        primaryKey: String(primaryKey),
+      }),
+    );
+  }, [
+    enabled,
+    observableClient,
+    typeOrApiName,
+    apiNameString,
+    primaryKey,
+    mode,
+    stableSelect,
+    loadPropertySecurityMetadata,
+  ]);
 
   const payload = React.useSyncExternalStore(subscribe, getSnapShot);
 
@@ -213,8 +202,9 @@ export function useOsdkObject<
     return {
       object: payload?.object as Osdk.Instance<Q> | undefined,
       isLoading: enabled
-        ? (payload?.status === "loading" || payload?.status === "init"
-          || !payload)
+        ? payload?.status === "loading" ||
+          payload?.status === "init" ||
+          !payload
         : false,
       isOptimistic: !!payload?.isOptimistic,
       error,

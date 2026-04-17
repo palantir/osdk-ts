@@ -17,8 +17,7 @@
 import { type ConjureContext, conjureFetch } from "conjure-lite";
 import type {
   GetActionTypesForObjectTypeRequest as _api_GetActionTypesForObjectTypeRequest,
-  GetActionTypesForObjectTypeResponse
-    as _api_GetActionTypesForObjectTypeResponse,
+  GetActionTypesForObjectTypeResponse as _api_GetActionTypesForObjectTypeResponse,
 } from "../__components.js";
 
 /**

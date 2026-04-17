@@ -16,12 +16,9 @@
 
 // These are migrated from @osdk/foundry.internal to avoid coupling the apis
 
-export type ActionResults =
-  & (
-    | ObjectEdits
-    | LargeScaleObjectEdits
-  )
-  & { editedObjectTypes: Array<String> };
+export type ActionResults = (ObjectEdits | LargeScaleObjectEdits) & {
+  editedObjectTypes: Array<string>;
+};
 
 interface ObjectEdits {
   type: "edits";
@@ -60,11 +57,14 @@ export interface ValidateActionResponseV2 {
     configuredFailureMessage?: string;
     result: "VALID" | "INVALID";
   }>;
-  parameters: Record<string, {
-    result: "VALID" | "INVALID";
-    evaluatedConstraints: Array<ParameterEvaluatedConstraint>;
-    required: boolean;
-  }>;
+  parameters: Record<
+    string,
+    {
+      result: "VALID" | "INVALID";
+      evaluatedConstraints: Array<ParameterEvaluatedConstraint>;
+      required: boolean;
+    }
+  >;
 }
 type ParameterEvaluatedConstraint =
   | { type: "arraySize"; lt?: any; lte?: any; gt?: any; gte?: any }
@@ -72,18 +72,18 @@ type ParameterEvaluatedConstraint =
   | { type: "objectPropertyValue" }
   | { type: "objectQueryResult" }
   | {
-    type: "oneOf";
-    options: Array<{
-      displayName?: string;
-      value?: any;
-    }>;
-    otherValuesAllowed: boolean;
-  }
+      type: "oneOf";
+      options: Array<{
+        displayName?: string;
+        value?: any;
+      }>;
+      otherValuesAllowed: boolean;
+    }
   | { type: "range"; lt?: any; lte?: any; gt?: any; gte?: any }
   | { type: "stringLength"; lt?: any; lte?: any; gt?: any; gte?: any }
   | {
-    type: "stringRegexMatch";
-    regex: string;
-    configuredFailureMessage?: string;
-  }
+      type: "stringRegexMatch";
+      regex: string;
+      configuredFailureMessage?: string;
+    }
   | { type: "unevaluable" };

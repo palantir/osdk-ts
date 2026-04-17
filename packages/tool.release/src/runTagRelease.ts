@@ -33,9 +33,9 @@ async function createGithubReleaseTag(
   context: GithubContext,
   sha: string,
 ) {
-  const changelogPath = `packages/${
-    getDirNameFromPackageName(packageName)
-  }/CHANGELOG.md`;
+  const changelogPath = `packages/${getDirNameFromPackageName(
+    packageName,
+  )}/CHANGELOG.md`;
   const changelogContent = await context.octokit.rest.repos.getContent({
     owner: context.repo.owner,
     repo: context.repo.repo,
@@ -51,10 +51,7 @@ async function createGithubReleaseTag(
     "base64",
   ).toString("utf8");
 
-  const changelogEntry = getChangelogEntry(
-    changelog,
-    version,
-  );
+  const changelogEntry = getChangelogEntry(changelog, version);
 
   if (!changelogEntry) {
     throw new Error(
@@ -64,44 +61,45 @@ async function createGithubReleaseTag(
 
   const tagName = `${packageName}@${version}`;
 
-  void context.octokit.rest.repos.createRelease({
-    ...context.repo,
-    tag_name: tagName,
-    name: tagName,
-    body: changelogEntry.content === "\n"
-      ? "No changes were made."
-      : changelogEntry.content,
-    prerelease: version.includes("beta")
-      || version.includes("rc"),
-    target_commitish: sha,
-  }).then((result) => {
-    consola.log(
-      `Created GitHub release with tag ${
-        chalk.green(`${packageName}@${version}`)
-      } at ${result.data.html_url}`,
-    );
-  }).catch((e) => {
-    if (e.response.data?.errors[0].code === "already_exists") {
+  void context.octokit.rest.repos
+    .createRelease({
+      ...context.repo,
+      tag_name: tagName,
+      name: tagName,
+      body:
+        changelogEntry.content === "\n"
+          ? "No changes were made."
+          : changelogEntry.content,
+      prerelease: version.includes("beta") || version.includes("rc"),
+      target_commitish: sha,
+    })
+    .then((result) => {
       consola.log(
-        chalk.yellow(
-          `Release for ${packageName}@${version} already exists, ignoring`,
-        ),
+        `Created GitHub release with tag ${chalk.green(
+          `${packageName}@${version}`,
+        )} at ${result.data.html_url}`,
       );
-    } else {
-      consola.error(
-        "Failed to create release for ${packageName}@${version}",
-        e,
-      );
-    }
-  });
+    })
+    .catch((e) => {
+      if (e.response.data?.errors[0].code === "already_exists") {
+        consola.log(
+          chalk.yellow(
+            `Release for ${packageName}@${version} already exists, ignoring`,
+          ),
+        );
+      } else {
+        consola.error(
+          "Failed to create release for ${packageName}@${version}",
+          e,
+        );
+      }
+    });
 }
 
 async function fetchPublishedPackagesAndSha(
   context: GithubContext,
   sha?: string,
-): Promise<
-  { workflowSha: string; publishedPackages: PublishedPackages }
-> {
+): Promise<{ workflowSha: string; publishedPackages: PublishedPackages }> {
   // If SHA is provided, this will only fetch the published packages for that SHA
   const runs = await context.octokit.rest.actions.listWorkflowRuns({
     repo: context.repo.repo,
@@ -111,8 +109,8 @@ async function fetchPublishedPackagesAndSha(
   });
 
   for (const workflowRun of runs.data.workflow_runs) {
-    const artifacts = await context.octokit.rest.actions
-      .listWorkflowRunArtifacts({
+    const artifacts =
+      await context.octokit.rest.actions.listWorkflowRunArtifacts({
         owner: context.repo.owner,
         repo: context.repo.repo,
         run_id: workflowRun.id,
@@ -166,9 +164,9 @@ export async function runTagRelease(
 
   for (const publishedPackage of publishedPackages.publishedPackages) {
     const packageName = publishedPackage.name;
-    const packagePath = `packages/${
-      getDirNameFromPackageName(packageName)
-    }/package.json`;
+    const packagePath = `packages/${getDirNameFromPackageName(
+      packageName,
+    )}/package.json`;
     const pkg = await context.octokit.rest.repos.getContent({
       owner: context.repo.owner,
       repo: context.repo.repo,

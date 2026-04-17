@@ -35,10 +35,7 @@ import { isInterfaceLocator } from "./types.js";
 class InMemoryEditBatch<X extends AnyEdit = never> implements EditBatch<X> {
   private edits: X[] = [];
 
-  public link<
-    SOL extends AddLinkSources<X>,
-    A extends AddLinkApiNames<X, SOL>,
-  >(
+  public link<SOL extends AddLinkSources<X>, A extends AddLinkApiNames<X, SOL>>(
     source: SOL,
     apiName: A,
     target: AddLinkTargets<X, SOL, A>,
@@ -66,11 +63,7 @@ class InMemoryEditBatch<X extends AnyEdit = never> implements EditBatch<X> {
   public unlink<
     SOL extends RemoveLinkSources<X>,
     A extends RemoveLinkApiNames<X, SOL>,
-  >(
-    source: SOL,
-    apiName: A,
-    target: RemoveLinkTargets<X, SOL, A>,
-  ): void {
+  >(source: SOL, apiName: A, target: RemoveLinkTargets<X, SOL, A>): void {
     if (!Array.isArray(target)) {
       this.edits.push({
         type: "removeLink",

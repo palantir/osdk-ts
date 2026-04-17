@@ -22,55 +22,54 @@ import { handleOpenApiCall } from "../../handlers/util/handleOpenApiCall.js";
 export const getMediaMetadata: CallFactory<
   "ontologyApiName" | "objectType" | "primaryKey" | "propertyName",
   typeof MediaReferenceProperties.getMediaMetadata
-> = handleOpenApiCall(
-  MediaReferenceProperties.getMediaMetadata,
-  ["ontologyApiName", "objectType", "primaryKey", "propertyName"],
-);
+> = handleOpenApiCall(MediaReferenceProperties.getMediaMetadata, [
+  "ontologyApiName",
+  "objectType",
+  "primaryKey",
+  "propertyName",
+]);
 
 export const getMediaContent: CallFactory<
   "ontologyApiName" | "objectType" | "primaryKey" | "propertyName",
   typeof MediaReferenceProperties.getMediaContent
-> = handleOpenApiCall(
-  MediaReferenceProperties.getMediaContent,
-  ["ontologyApiName", "objectType", "primaryKey", "propertyName"],
-);
+> = handleOpenApiCall(MediaReferenceProperties.getMediaContent, [
+  "ontologyApiName",
+  "objectType",
+  "primaryKey",
+  "propertyName",
+]);
 
 export const upload: CallFactory<
   "ontologyApiName" | "objectType" | "propertyName",
   typeof MediaReferenceProperties.upload
-> = handleOpenApiCall(
-  MediaReferenceProperties.upload,
-  ["ontologyApiName", "objectType", "propertyName"],
-);
+> = handleOpenApiCall(MediaReferenceProperties.upload, [
+  "ontologyApiName",
+  "objectType",
+  "propertyName",
+]);
 
-export const uploadMedia: CallFactory<
-  never,
-  typeof MediaSets.uploadMedia
-> = handleOpenApiCall(
-  MediaSets.uploadMedia,
-  [],
-);
+export const uploadMedia: CallFactory<never, typeof MediaSets.uploadMedia> =
+  handleOpenApiCall(MediaSets.uploadMedia, []);
 
 export const transform: CallFactory<
   "mediaSetRid" | "mediaItemRid",
   typeof MediaSets.transform
-> = handleOpenApiCall(
-  MediaSets.transform,
-  ["mediaSetRid", "mediaItemRid"],
-);
+> = handleOpenApiCall(MediaSets.transform, ["mediaSetRid", "mediaItemRid"]);
 
 export const getTransformStatus: CallFactory<
   "mediaSetRid" | "mediaItemRid" | "transformationJobId",
   typeof MediaSets.getStatus
-> = handleOpenApiCall(
-  MediaSets.getStatus,
-  ["mediaSetRid", "mediaItemRid", "transformationJobId"],
-);
+> = handleOpenApiCall(MediaSets.getStatus, [
+  "mediaSetRid",
+  "mediaItemRid",
+  "transformationJobId",
+]);
 
 export const getTransformResult: CallFactory<
   "mediaSetRid" | "mediaItemRid" | "transformationJobId",
   typeof MediaSets.getResult
-> = handleOpenApiCall(
-  MediaSets.getResult,
-  ["mediaSetRid", "mediaItemRid", "transformationJobId"],
-);
+> = handleOpenApiCall(MediaSets.getResult, [
+  "mediaSetRid",
+  "mediaItemRid",
+  "transformationJobId",
+]);

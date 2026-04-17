@@ -62,14 +62,8 @@ function TimelineInputInner({
     onChange(undefined, undefined);
   }, [onChange]);
 
-  const startInputMax = useMemo(
-    () => endDate ?? maxDate,
-    [endDate, maxDate],
-  );
-  const endInputMin = useMemo(
-    () => startDate ?? minDate,
-    [startDate, minDate],
-  );
+  const startInputMax = useMemo(() => endDate ?? maxDate, [endDate, maxDate]);
+  const endInputMin = useMemo(() => startDate ?? minDate, [startDate, minDate]);
 
   return (
     <div className={classnames(styles.timeline, className)}>

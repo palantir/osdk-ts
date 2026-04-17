@@ -25,15 +25,15 @@ const INTEGRITY_CHECKSUM = "f5825c521429caf22a4dd13b66e243af";
 const IS_MOCKED_RESPONSE = Symbol("isMockedResponse");
 const activeClientIds = new Set();
 
-addEventListener("install", function() {
+addEventListener("install", () => {
   self.skipWaiting();
 });
 
-addEventListener("activate", function(event) {
+addEventListener("activate", (event) => {
   event.waitUntil(self.clients.claim());
 });
 
-addEventListener("message", async function(event) {
+addEventListener("message", async (event) => {
   const clientId = Reflect.get(event.source || {}, "id");
 
   if (!clientId || !self.clients) {
@@ -106,7 +106,7 @@ addEventListener("message", async function(event) {
   }
 });
 
-addEventListener("fetch", function(event) {
+addEventListener("fetch", (event) => {
   // Bypass navigation requests.
   if (event.request.mode === "navigate") {
     return;
@@ -115,8 +115,8 @@ addEventListener("fetch", function(event) {
   // Opening the DevTools triggers the "only-if-cached" request
   // that cannot be handled by the worker. Bypass such requests.
   if (
-    event.request.cache === "only-if-cached"
-    && event.request.mode !== "same-origin"
+    event.request.cache === "only-if-cached" &&
+    event.request.mode !== "same-origin"
   ) {
     return;
   }

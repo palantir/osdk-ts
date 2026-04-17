@@ -18,7 +18,6 @@ import type {
   NullabilityAdherence,
   SelectArg,
 } from "../object/FetchPageArgs.js";
-
 import type {
   ObjectOrInterfaceDefinition,
   PropertyKeys,

@@ -99,13 +99,17 @@ interface FlatExamplesHierarchy {
   };
 }
 
-export const TYPESCRIPT_OSDK_CONTEXT: NestedExamplesHierarchy = ${
-  JSON.stringify(TYPESCRIPT_OSDK_CONTEXT, null, 2)
-};
+export const TYPESCRIPT_OSDK_CONTEXT: NestedExamplesHierarchy = ${JSON.stringify(
+  TYPESCRIPT_OSDK_CONTEXT,
+  null,
+  2,
+)};
 
-export const TYPESCRIPT_OSDK_EXAMPLES: FlatExamplesHierarchy = ${
-  JSON.stringify(TYPESCRIPT_OSDK_EXAMPLES, null, 2)
-};
+export const TYPESCRIPT_OSDK_EXAMPLES: FlatExamplesHierarchy = ${JSON.stringify(
+  TYPESCRIPT_OSDK_EXAMPLES,
+  null,
+  2,
+)};
 `;
 
 writeFileSync(outputFile, content);

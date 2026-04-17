@@ -17,8 +17,7 @@
 import { type ConjureContext, conjureFetch } from "conjure-lite";
 import type {
   ValidateBatchExecutionRequest as _api_executor_ValidateBatchExecutionRequest,
-  ValidatedBatchExecutionResponse
-    as _api_executor_ValidatedBatchExecutionResponse,
+  ValidatedBatchExecutionResponse as _api_executor_ValidatedBatchExecutionResponse,
 } from "../__components.js";
 
 /**

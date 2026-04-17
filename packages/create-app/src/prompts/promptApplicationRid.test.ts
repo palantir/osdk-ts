@@ -48,8 +48,6 @@ test("it prompts if initial value is invalid", async () => {
   vi.mocked(consola).prompt.mockResolvedValueOnce(valid);
   expect(
     await promptApplicationRid({ application: "ri.something.else.and.fake" }),
-  ).toEqual(
-    valid,
-  );
+  ).toEqual(valid);
   expect(vi.mocked(consola).prompt).toHaveBeenCalledTimes(1);
 });

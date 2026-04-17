@@ -95,8 +95,8 @@ export function MultiColumnSortDialog({
       prev.map((item) =>
         item.id === id
           ? { ...item, direction: item.direction === "asc" ? "desc" : "asc" }
-          : item
-      )
+          : item,
+      ),
     );
   }, []);
 
@@ -113,8 +113,8 @@ export function MultiColumnSortDialog({
     () =>
       columnOptions.filter(
         (col) =>
-          col.canSort
-          && !selectedSortColumns.some((selected) => selected.id === col.id),
+          col.canSort &&
+          !selectedSortColumns.some((selected) => selected.id === col.id),
       ),
     [columnOptions, selectedSortColumns],
   );
@@ -148,31 +148,28 @@ export function MultiColumnSortDialog({
             onClick={() => handleToggleSortDirection(item.id)}
             aria-label={`Toggle sort direction for ${item.name}`}
           >
-            {item.direction === "asc"
-              ? (
-                <SortAlphabetical
-                  className={styles.sortIcon}
-                />
-              )
-              : (
-                <SortAlphabeticalDesc
-                  className={styles.sortIcon}
-                />
-              )}
+            {item.direction === "asc" ? (
+              <SortAlphabetical className={styles.sortIcon} />
+            ) : (
+              <SortAlphabeticalDesc className={styles.sortIcon} />
+            )}
           </Button>
         </div>
       ),
     }));
   }, [selectedSortColumns, handleToggleSortDirection]);
 
-  const footer = useMemo(() => (
-    <>
-      <ActionButton onClick={onClose}>Cancel</ActionButton>
-      <ActionButton variant="primary" onClick={handleApply}>
-        Apply
-      </ActionButton>
-    </>
-  ), [handleApply, onClose]);
+  const footer = useMemo(
+    () => (
+      <>
+        <ActionButton onClick={onClose}>Cancel</ActionButton>
+        <ActionButton variant="primary" onClick={handleApply}>
+          Apply
+        </ActionButton>
+      </>
+    ),
+    [handleApply, onClose],
+  );
 
   return (
     <Dialog
@@ -194,9 +191,7 @@ export function MultiColumnSortDialog({
           trigger={
             <>
               <Add className={styles.addIcon} />
-              <span className={styles.addColumnText}>
-                Add Column to Sort
-              </span>
+              <span className={styles.addColumnText}>Add Column to Sort</span>
               <CaretDown />
             </>
           }
@@ -212,6 +207,7 @@ export function MultiColumnSortDialog({
 
 const DialogTitle = (
   <div className={styles.title}>
-    <Cog />Sort on Multiple Columns
+    <Cog />
+    Sort on Multiple Columns
   </div>
 );

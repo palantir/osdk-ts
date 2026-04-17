@@ -32,7 +32,10 @@ export async function runAggregationGroupByDatesTest(): Promise<void> {
     $select: { $count: "unordered" },
     $groupBy: {
       date: {
-        $ranges: [["2008-03-01", "2009-11-05"], ["2015-10-01", "2018-11-05"]],
+        $ranges: [
+          ["2008-03-01", "2009-11-05"],
+          ["2015-10-01", "2018-11-05"],
+        ],
       },
     },
   });
@@ -41,10 +44,10 @@ export async function runAggregationGroupByDatesTest(): Promise<void> {
     $select: { $count: "unordered" },
     $groupBy: {
       currentTimestamp: {
-        $ranges: [["2023-04-02T17:28:00Z", "2023-04-03T18:28:00Z"], [
-          "2023-04-05T17:28:00Z",
-          "2023-04-06T11:28:00Z",
-        ]],
+        $ranges: [
+          ["2023-04-02T17:28:00Z", "2023-04-03T18:28:00Z"],
+          ["2023-04-05T17:28:00Z", "2023-04-06T11:28:00Z"],
+        ],
       },
     },
   });

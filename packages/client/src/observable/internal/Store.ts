@@ -52,9 +52,7 @@ import type { KnownCacheKey } from "./KnownCacheKey.js";
 import type { Entry } from "./Layer.js";
 import { Layers } from "./Layers.js";
 import { LinksHelper } from "./links/LinksHelper.js";
-import {
-  SOURCE_API_NAME_IDX as LINK_API_NAME_IDX,
-} from "./links/SpecificLinkCacheKey.js";
+import { SOURCE_API_NAME_IDX as LINK_API_NAME_IDX } from "./links/SpecificLinkCacheKey.js";
 import {
   API_NAME_IDX as LIST_API_NAME_IDX,
   RDP_IDX as LIST_RDP_IDX,
@@ -91,8 +89,8 @@ export namespace Store {
     - Data is one per layer per cache key
 */
 
-const __DEV__ = typeof process === "undefined"
-  || process.env.NODE_ENV !== "production";
+const __DEV__ =
+  typeof process === "undefined" || process.env.NODE_ENV !== "production";
 
 /**
  * Central data store with layered cache architecture.
@@ -156,9 +154,12 @@ export class Store {
   readonly objectSets: ObjectSetHelper;
 
   constructor(client: Client) {
-    this.logger = client[additionalContext].logger?.child({}, {
-      msgPrefix: "Store",
-    });
+    this.logger = client[additionalContext].logger?.child(
+      {},
+      {
+        msgPrefix: "Store",
+      },
+    );
     this.client = client;
 
     this.cacheKeys = new CacheKeys<KnownCacheKey>({
@@ -212,14 +213,12 @@ export class Store {
     const subject = this.subjects.peek(key);
 
     if (DEBUG_REFCOUNTS) {
-      // eslint-disable-next-line no-console
+      // oxlint-disable-next-line no-console
       console.log(
-        `CacheKey cleaning up (${
-          JSON.stringify({
-            closed: subject?.closed,
-            observed: subject?.observed,
-          })
-        })`,
+        `CacheKey cleaning up (${JSON.stringify({
+          closed: subject?.closed,
+          observed: subject?.observed,
+        })})`,
         JSON.stringify([key.type, ...key.otherKeys], null, 2),
       );
     }
@@ -257,14 +256,15 @@ export class Store {
     return result as ActionValidationResponse;
   };
 
-  public getValue<K extends KnownCacheKey>(
-    cacheKey: K,
-  ): Entry<K> | undefined {
+  public getValue<K extends KnownCacheKey>(cacheKey: K): Entry<K> | undefined {
     return this.layers.top.get(cacheKey);
   }
 
   batch<X>(
-    { optimisticId, changes = createChangedObjects() }: {
+    {
+      optimisticId,
+      changes = createChangedObjects(),
+    }: {
       optimisticId?: OptimisticId;
       changes?: Changes;
     },
@@ -294,10 +294,15 @@ export class Store {
     if (variants.size === 0) {
       // No registered variants - create and revalidate the base variant (no RDP)
       promises.push(
-        this.objects.getQuery({
-          apiName,
-          pk,
-        }, undefined).revalidate(/* force */ true),
+        this.objects
+          .getQuery(
+            {
+              apiName,
+              pk,
+            },
+            undefined,
+          )
+          .revalidate(/* force */ true),
       );
     } else {
       // Revalidate all registered variants
@@ -316,9 +321,10 @@ export class Store {
     changes: Changes,
     optimisticId?: OptimisticId | undefined,
   ): Promise<void> {
-    const logger = process.env.NODE_ENV !== "production"
-      ? this.logger?.child({ methodName: "maybeRevalidateQueries" })
-      : undefined;
+    const logger =
+      process.env.NODE_ENV !== "production"
+        ? this.logger?.child({ methodName: "maybeRevalidateQueries" })
+        : undefined;
 
     if (changes.isEmpty()) {
       if (process.env.NODE_ENV !== "production") {
@@ -424,10 +430,8 @@ export class Store {
       const query = this.queries.peek(cacheKey);
       // Both ObjectSetQuery and ListQuery expose objectTypes: ReadonlySet<string>
       if (query && "objectTypes" in query) {
-        for (
-          const objectType of (query as { objectTypes: ReadonlySet<string> })
-            .objectTypes
-        ) {
+        for (const objectType of (query as { objectTypes: ReadonlySet<string> })
+          .objectTypes) {
           if (this.#changesAffectObjectType(changes, objectType)) {
             return true;
           }
@@ -444,15 +448,14 @@ export class Store {
     const affected = this.#changesAffectObjectType(changes, queryObjectType);
 
     if (process.env.NODE_ENV !== "production") {
-      this.logger?.child({ methodName: "shouldPropagateToQuery" }).debug(
-        `Query type: ${queryObjectType}, affected: ${affected}`,
-        {
+      this.logger
+        ?.child({ methodName: "shouldPropagateToQuery" })
+        .debug(`Query type: ${queryObjectType}, affected: ${affected}`, {
           queryKey: DEBUG_ONLY__cacheKeyToString(cacheKey),
           addedCount: changes.addedObjects.get(queryObjectType)?.length ?? 0,
-          modifiedCount: changes.modifiedObjects.get(queryObjectType)?.length
-            ?? 0,
-        },
-      );
+          modifiedCount:
+            changes.modifiedObjects.get(queryObjectType)?.length ?? 0,
+        });
     }
 
     return affected;
@@ -531,8 +534,8 @@ export class Store {
 
     for (const deletedKey of changes.deleted) {
       if (
-        deletedKey.type === "object"
-        && deletedKey.otherKeys[OBJECT_API_NAME_IDX] === objectType
+        deletedKey.type === "object" &&
+        deletedKey.otherKeys[OBJECT_API_NAME_IDX] === objectType
       ) {
         return true;
       }
@@ -560,18 +563,18 @@ export class Store {
       apiName = apiName.apiName;
     }
     if (process.env.NODE_ENV !== "production") {
-      this.logger?.child({ methodName: "invalidateObjectType" }).info(
-        changes ? DEBUG_ONLY__changesToString(changes) : void 0,
-      );
+      this.logger
+        ?.child({ methodName: "invalidateObjectType" })
+        .info(changes ? DEBUG_ONLY__changesToString(changes) : void 0);
     }
 
     const promises: Array<Promise<void>> = [];
 
     for (const cacheKey of this.layers.truth.keys()) {
       if (
-        cacheKey.type !== "mediaMetadata"
-        && changes
-        && changes.modified.has(cacheKey)
+        cacheKey.type !== "mediaMetadata" &&
+        changes &&
+        changes.modified.has(cacheKey)
       ) {
         continue;
       }
@@ -631,7 +634,7 @@ export class Store {
 
   public getCacheSnapshot(): CacheSnapshot {
     if (__DEV__) {
-      const sizeCache = this.#sizeCache ??= new WeakMap<object, number>();
+      const sizeCache = (this.#sizeCache ??= new WeakMap<object, number>());
       const entries: CacheEntry[] = [];
       let totalSize = 0;
 

@@ -31,10 +31,7 @@ import type {
 
 export interface UseEditableTableProps<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<
-    string,
-    never
-  >,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
   FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
     string,
     never
@@ -48,19 +45,12 @@ export interface UseEditableTableProps<
     FunctionColumns
   >["onCellValueChanged"];
 
-  onSubmitEdits?: ObjectTableProps<
-    Q,
-    RDPs,
-    FunctionColumns
-  >["onSubmitEdits"];
+  onSubmitEdits?: ObjectTableProps<Q, RDPs, FunctionColumns>["onSubmitEdits"];
 }
 
 export function useEditableTable<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<
-    string,
-    never
-  >,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
   FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
     string,
     never
@@ -73,9 +63,7 @@ export function useEditableTable<
   Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
   unknown
 > {
-  const [isActive, setActive] = useState<boolean>(
-    editMode === "always",
-  );
+  const [isActive, setActive] = useState<boolean>(editMode === "always");
   const [cellEdits, setCellEdits] = useState<
     Record<
       string,
@@ -84,17 +72,13 @@ export function useEditableTable<
         unknown
       >
     >
-  >(
-    {},
-  );
-  const [validationErrors, setValidationErrors] = useState<
-    Map<string, string>
-  >(
+  >({});
+  const [validationErrors, setValidationErrors] = useState<Map<string, string>>(
     new Map(),
   );
 
   const clearCellValidationError = useCallback((cellId: string) => {
-    setValidationErrors(prev => {
+    setValidationErrors((prev) => {
       const newErrors = new Map(prev);
       newErrors.delete(cellId);
       return newErrors;
@@ -111,12 +95,12 @@ export function useEditableTable<
     ) => {
       // If value is changed back to original, remove it from edits
       if (info.newValue === info.oldValue) {
-        setCellEdits(prev => {
+        setCellEdits((prev) => {
           const { [cellId]: _, ...rest } = prev;
           return rest;
         });
       } else {
-        setCellEdits(prev => ({
+        setCellEdits((prev) => ({
           ...prev,
           [cellId]: info,
         }));
@@ -137,20 +121,18 @@ export function useEditableTable<
     return onSubmitEdits ? onSubmitEdits(edits) : false;
   }, [cellEdits, onSubmitEdits]);
 
-  const onCellValidationError = useCallback(
-    (cellId: string, error: string) => {
-      setValidationErrors(prev => {
-        const newErrors = new Map(prev);
-        newErrors.set(cellId, error);
-        return newErrors;
-      });
-    },
-    [],
-  );
+  const onCellValidationError = useCallback((cellId: string, error: string) => {
+    setValidationErrors((prev) => {
+      const newErrors = new Map(prev);
+      newErrors.set(cellId, error);
+      return newErrors;
+    });
+  }, []);
 
-  const editModeState: EditModeState = editMode === "always"
-    ? { type: "always", isActive: true }
-    : { type: "manual", isActive, setActive };
+  const editModeState: EditModeState =
+    editMode === "always"
+      ? { type: "always", isActive: true }
+      : { type: "manual", isActive, setActive };
 
   return {
     cellEdits,

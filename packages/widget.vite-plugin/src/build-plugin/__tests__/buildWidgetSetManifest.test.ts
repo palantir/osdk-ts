@@ -58,12 +58,8 @@ describe("buildWidgetSetManifest", () => {
             name: "Widget widgetOne",
             description: "Widget widgetOne Description",
             type: "workshopWidgetV1",
-            entrypointJs: [
-              { path: "scripts/widgetOne.js", type: "module" },
-            ],
-            entrypointCss: [
-              { path: "styles/widgetOne.css" },
-            ],
+            entrypointJs: [{ path: "scripts/widgetOne.js", type: "module" }],
+            entrypointCss: [{ path: "styles/widgetOne.css" }],
             parameters: {
               stringParam: {
                 type: "string",
@@ -83,12 +79,8 @@ describe("buildWidgetSetManifest", () => {
             name: "Widget widgetTwo",
             description: "Widget widgetTwo Description",
             type: "workshopWidgetV1",
-            entrypointJs: [
-              { path: "scripts/widgetTwo.js", type: "module" },
-            ],
-            entrypointCss: [
-              { path: "styles/widgetTwo.css" },
-            ],
+            entrypointJs: [{ path: "scripts/widgetTwo.js", type: "module" }],
+            entrypointCss: [{ path: "styles/widgetTwo.css" }],
             parameters: {
               stringParam: {
                 type: "string",
@@ -279,18 +271,17 @@ function createMockWidgetBuild(
   stylesheets?: string[],
 ): WidgetBuildOutputs {
   return {
-    scripts: scripts?.map(src => ({
+    scripts: scripts?.map((src) => ({
       type: "script" as const,
       scriptType: "module" as const,
       src,
-    }))
-      ?? [
-        {
-          type: "script",
-          scriptType: "module",
-          src: `/scripts/${id}.js`,
-        },
-      ],
+    })) ?? [
+      {
+        type: "script",
+        scriptType: "module",
+        src: `/scripts/${id}.js`,
+      },
+    ],
     stylesheets: stylesheets ?? [`/styles/${id}.css`],
     widgetConfig: {
       id,

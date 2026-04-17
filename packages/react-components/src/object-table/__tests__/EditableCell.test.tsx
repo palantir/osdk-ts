@@ -47,7 +47,8 @@ describe("EditableCell", () => {
   it("should clear validation error when validation succeeds", async () => {
     const onCellValidationError = vi.fn();
     const clearCellValidationError = vi.fn();
-    const validateEdit = vi.fn()
+    const validateEdit = vi
+      .fn()
       .mockResolvedValueOnce("Validation failed")
       .mockResolvedValueOnce(undefined); // Success on second attempt
 

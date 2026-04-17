@@ -16,13 +16,16 @@
 
 import { getFoundryToken } from "./getFoundryToken.js";
 
-type WidgetSettings = Record<string, {
-  scriptEntrypoints: Array<{
-    filePath: string;
-    scriptType: "DEFAULT" | "MODULE";
-  }>;
-  stylesheetEntrypoints: Array<{ filePath: string }>;
-}>;
+type WidgetSettings = Record<
+  string,
+  {
+    scriptEntrypoints: Array<{
+      filePath: string;
+      scriptType: "DEFAULT" | "MODULE";
+    }>;
+    stylesheetEntrypoints: Array<{ filePath: string }>;
+  }
+>;
 
 export function setWidgetSetSettings(
   foundryUrl: string,
@@ -33,16 +36,17 @@ export function setWidgetSetSettings(
 ): Promise<Response> {
   const widgetSettings: WidgetSettings = Object.fromEntries(
     Object.entries(widgetIdToOverrides).map(
-      ([widgetId, overrides]) => ([
-        widgetId,
-        {
-          scriptEntrypoints: overrides.map((filePath) => ({
-            filePath,
-            scriptType: "MODULE",
-          })),
-          stylesheetEntrypoints: [],
-        },
-      ] as const),
+      ([widgetId, overrides]) =>
+        [
+          widgetId,
+          {
+            scriptEntrypoints: overrides.map((filePath) => ({
+              filePath,
+              scriptType: "MODULE",
+            })),
+            stylesheetEntrypoints: [],
+          },
+        ] as const,
     ),
   );
   return fetch(

@@ -17,10 +17,8 @@
 import { type ConjureContext, conjureFetch } from "conjure-lite";
 import type { OntologyProposalRid as _api_OntologyProposalRid } from "../../../api/__components.js";
 import type {
-  LoadOntologyBranchForProposalRequest
-    as _branch_api_LoadOntologyBranchForProposalRequest,
-  LoadOntologyBranchForProposalResponse
-    as _branch_api_LoadOntologyBranchForProposalResponse,
+  LoadOntologyBranchForProposalRequest as _branch_api_LoadOntologyBranchForProposalRequest,
+  LoadOntologyBranchForProposalResponse as _branch_api_LoadOntologyBranchForProposalResponse,
 } from "../__components.js";
 
 /**

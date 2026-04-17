@@ -35,15 +35,9 @@ export interface ObjectSetOperations {
   loadPropertySecurity?: true;
 }
 
-export interface ObjectSetCacheKey extends
-  CacheKey<
-    "objectSet",
-    ObjectSetStorageData,
-    ObjectSetQuery,
-    [
-      baseObjectSetWire: string,
-      operations: Canonical<ObjectSetOperations>,
-    ]
-  >
-{
-}
+export interface ObjectSetCacheKey extends CacheKey<
+  "objectSet",
+  ObjectSetStorageData,
+  ObjectSetQuery,
+  [baseObjectSetWire: string, operations: Canonical<ObjectSetOperations>]
+> {}

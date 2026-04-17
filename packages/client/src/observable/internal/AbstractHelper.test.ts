@@ -19,7 +19,7 @@ import { describe, expect, it, vi } from "vitest";
 import { AbstractHelper } from "./AbstractHelper.js";
 
 function flushMicrotasks(): Promise<void> {
-  return new Promise(resolve => queueMicrotask(resolve));
+  return new Promise((resolve) => queueMicrotask(resolve));
 }
 
 describe("AbstractHelper pending cleanup", () => {

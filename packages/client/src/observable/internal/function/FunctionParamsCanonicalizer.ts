@@ -117,7 +117,7 @@ export class FunctionParamsCanonicalizer {
 
     if (Array.isArray(value)) {
       path.push("$:array");
-      const arr = value.map(item => this.#encodeAndBuild(item, path, seen));
+      const arr = value.map((item) => this.#encodeAndBuild(item, path, seen));
       path.push("$:array_end");
       return arr;
     }
@@ -125,7 +125,7 @@ export class FunctionParamsCanonicalizer {
     if (value instanceof Set) {
       path.push("$:set");
       const sorted = this.#sortSetValues(Array.from(value));
-      const arr = sorted.map(item => this.#encodeAndBuild(item, path, seen));
+      const arr = sorted.map((item) => this.#encodeAndBuild(item, path, seen));
       path.push("$:set_end");
       return arr;
     }

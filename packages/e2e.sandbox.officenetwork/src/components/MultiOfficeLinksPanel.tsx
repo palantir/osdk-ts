@@ -13,22 +13,20 @@ interface MultiOfficeLinksPanelProps {
   onSelectEmployee: (employee: Employee.OsdkInstance) => void;
 }
 
-export function MultiOfficeLinksPanel(
-  { offices, onSelectEmployee }: MultiOfficeLinksPanelProps,
-) {
+export function MultiOfficeLinksPanel({
+  offices,
+  onSelectEmployee,
+}: MultiOfficeLinksPanelProps) {
   const {
     links: allOccupants,
     linkedObjectsBySourcePrimaryKey,
     isLoading,
     error,
-  } = useLinks(
-    offices,
-    "occupants",
-  );
+  } = useLinks(offices, "occupants");
 
-  const [expandedOffices, setExpandedOffices] = React.useState<
-    Set<string>
-  >(() => new Set());
+  const [expandedOffices, setExpandedOffices] = React.useState<Set<string>>(
+    () => new Set(),
+  );
 
   const toggleOffice = React.useCallback((officeId: string) => {
     setExpandedOffices((prev) => {
@@ -86,10 +84,7 @@ export function MultiOfficeLinksPanel(
             const isExpanded = expandedOffices.has(office.primaryKey_);
 
             return (
-              <div
-                key={office.primaryKey_}
-                className="mb-1"
-              >
+              <div key={office.primaryKey_} className="mb-1">
                 <button
                   onClick={() => toggleOffice(office.primaryKey_)}
                   className="w-full text-left px-3 py-2 rounded hover:bg-[var(--officenetwork-bg-elevated)] transition-colors flex items-center gap-2"
@@ -106,8 +101,9 @@ export function MultiOfficeLinksPanel(
                   </span>
                 </button>
 
-                {isExpanded && officeEmployees && officeEmployees.length > 0
-                  && (
+                {isExpanded &&
+                  officeEmployees &&
+                  officeEmployees.length > 0 && (
                     <div className="ml-5 space-y-px">
                       {officeEmployees.map((emp) => {
                         const level = getHierarchyLevel(emp.jobTitle);
@@ -124,8 +120,8 @@ export function MultiOfficeLinksPanel(
                               }}
                             />
                             <span className="text-xs text-[var(--officenetwork-text-secondary)] group-hover:text-[var(--officenetwork-accent-cyan)] truncate flex-1">
-                              {emp.fullName
-                                ?? `Employee #${emp.employeeNumber}`}
+                              {emp.fullName ??
+                                `Employee #${emp.employeeNumber}`}
                             </span>
                             <span
                               className="text-[9px] officenetwork-mono uppercase tracking-wider shrink-0"
@@ -139,13 +135,13 @@ export function MultiOfficeLinksPanel(
                     </div>
                   )}
 
-                {isExpanded
-                  && (!officeEmployees || officeEmployees.length === 0)
-                  && !isLoading && (
-                  <div className="ml-5 px-3 py-2 text-[10px] text-[var(--officenetwork-text-muted)]">
-                    No employees
-                  </div>
-                )}
+                {isExpanded &&
+                  (!officeEmployees || officeEmployees.length === 0) &&
+                  !isLoading && (
+                    <div className="ml-5 px-3 py-2 text-[10px] text-[var(--officenetwork-text-muted)]">
+                      No employees
+                    </div>
+                  )}
               </div>
             );
           })}

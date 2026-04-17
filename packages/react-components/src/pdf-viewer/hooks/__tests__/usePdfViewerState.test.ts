@@ -65,9 +65,9 @@ function createMockCoreResult(overrides: { scale?: number } = {}) {
     scale,
     setScale: vi.fn(),
     portalTargets: [],
-    pdfViewerRef: { current: { pagesRotation: 0 } } as unknown as RefObject<
-      PDFViewer
-    >,
+    pdfViewerRef: {
+      current: { pagesRotation: 0 },
+    } as unknown as RefObject<PDFViewer>,
     eventBusRef: { current: null } as RefObject<EventBus | null>,
     findControllerRef: {
       current: null,
@@ -90,12 +90,14 @@ function createMockSearchResult() {
 }
 
 describe("usePdfViewerState", () => {
-  function setup(options: {
-    initialScale?: number;
-    initialSidebarOpen?: boolean;
-    sidebarMode?: "thumbnails" | "outline";
-    coreScale?: number;
-  } = {}) {
+  function setup(
+    options: {
+      initialScale?: number;
+      initialSidebarOpen?: boolean;
+      sidebarMode?: "thumbnails" | "outline";
+      coreScale?: number;
+    } = {},
+  ) {
     const coreResult = createMockCoreResult({
       scale: options.coreScale ?? options.initialScale,
     });
@@ -328,7 +330,7 @@ describe("usePdfViewerState", () => {
     mockedUsePdfOutline.mockReturnValue([]);
 
     const { result } = renderHook(() =>
-      usePdfViewerState({ src: "test.pdf", onDownload })
+      usePdfViewerState({ src: "test.pdf", onDownload }),
     );
 
     await act(async () => {
@@ -354,7 +356,7 @@ describe("usePdfViewerState", () => {
     mockedUsePdfOutline.mockReturnValue([]);
 
     const { result } = renderHook(() =>
-      usePdfViewerState({ src: "test.pdf", onDownload })
+      usePdfViewerState({ src: "test.pdf", onDownload }),
     );
 
     await act(async () => {
@@ -379,7 +381,7 @@ describe("usePdfViewerState", () => {
     mockedUsePdfOutline.mockReturnValue([]);
 
     const { result } = renderHook(() =>
-      usePdfViewerState({ src: "test.pdf", onDownload })
+      usePdfViewerState({ src: "test.pdf", onDownload }),
     );
 
     await act(async () => {
@@ -410,7 +412,7 @@ describe("usePdfViewerState", () => {
       usePdfViewerState({
         src: "https://example.com/files/report.pdf",
         onDownload,
-      })
+      }),
     );
 
     await act(async () => {

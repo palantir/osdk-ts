@@ -26,19 +26,17 @@ describe(generatePerActionDataFiles, () => {
     const helper = createMockMinimalFiles();
     const BASE_PATH = "/foo";
     const sanitizedOntology = { ...TodoWireOntology, actionTypes: {} };
-    await generatePerActionDataFiles(
-      {
-        fs: helper.minimalFiles,
-        outDir: BASE_PATH,
-        ontology: enhanceOntology({
-          sanitized: sanitizedOntology,
-          importExt: "",
-          externalObjects: new Map(),
-          externalInterfaces: new Map(),
-          externalSpts: new Map(),
-        }),
-      },
-    );
+    await generatePerActionDataFiles({
+      fs: helper.minimalFiles,
+      outDir: BASE_PATH,
+      ontology: enhanceOntology({
+        sanitized: sanitizedOntology,
+        importExt: "",
+        externalObjects: new Map(),
+        externalInterfaces: new Map(),
+        externalSpts: new Map(),
+      }),
+    });
     expect(helper.getFiles()[`${BASE_PATH}/ontology/actions.ts`]).toEqual(
       "export {};\n",
     );
@@ -48,19 +46,17 @@ describe(generatePerActionDataFiles, () => {
     const helper = createMockMinimalFiles();
     const BASE_PATH = "/foo/ontology/actions";
     const sanitizedOntology = TodoWireOntology;
-    await generatePerActionDataFiles(
-      {
-        fs: helper.minimalFiles,
-        outDir: path.join(BASE_PATH, "..", ".."),
-        ontology: enhanceOntology({
-          sanitized: sanitizedOntology,
-          importExt: "",
-          externalObjects: new Map(),
-          externalInterfaces: new Map(),
-          externalSpts: new Map(),
-        }),
-      },
-    );
+    await generatePerActionDataFiles({
+      fs: helper.minimalFiles,
+      outDir: path.join(BASE_PATH, "..", ".."),
+      ontology: enhanceOntology({
+        sanitized: sanitizedOntology,
+        importExt: "",
+        externalObjects: new Map(),
+        externalInterfaces: new Map(),
+        externalSpts: new Map(),
+      }),
+    });
 
     expect(helper.getFiles()[`${BASE_PATH}/deleteTodos.ts`]).toContain(
       "import type { Todo } from '../objects/Todo';\n",

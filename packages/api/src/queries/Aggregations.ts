@@ -24,13 +24,15 @@ import type {
   AggregationValueTypes,
 } from "../ontology/QueryDefinition.js";
 
-export type Range<T extends AllowedBucketTypes> = {
-  startValue?: T;
-  endValue: T;
-} | {
-  startValue: T;
-  endValue?: T;
-};
+export type Range<T extends AllowedBucketTypes> =
+  | {
+      startValue?: T;
+      endValue: T;
+    }
+  | {
+      startValue: T;
+      endValue?: T;
+    };
 
 export type AllowedBucketTypes = string | number | boolean;
 export type AllowedBucketKeyTypes =
@@ -51,23 +53,27 @@ export type ThreeDimensionalAggregation<
 export type AggKeyWireToClient<
   T extends AggregationKeyTypes,
   S extends AggregationRangeKeyTypes = never,
-> = T extends keyof DataValueWireToClient ? DataValueWireToClient[T]
+> = T extends keyof DataValueWireToClient
+  ? DataValueWireToClient[T]
   : T extends "range"
-    ? S extends keyof DataValueWireToClient ? Range<DataValueWireToClient[S]>
-    : never
-  : never;
+    ? S extends keyof DataValueWireToClient
+      ? Range<DataValueWireToClient[S]>
+      : never
+    : never;
 
 export type AggKeyClientToWire<
   T extends AggregationKeyTypes,
   S extends AggregationRangeKeyTypes = never,
-> = T extends keyof DataValueClientToWire ? DataValueClientToWire[T]
+> = T extends keyof DataValueClientToWire
+  ? DataValueClientToWire[T]
   : T extends "range"
-    ? S extends keyof DataValueClientToWire ? Range<DataValueClientToWire[S]>
-    : never
-  : never;
+    ? S extends keyof DataValueClientToWire
+      ? Range<DataValueClientToWire[S]>
+      : never
+    : never;
 
-export type AggValueWireToClient<T extends AggregationValueTypes> = T extends
-  keyof DataValueWireToClient ? DataValueWireToClient[T] : never;
+export type AggValueWireToClient<T extends AggregationValueTypes> =
+  T extends keyof DataValueWireToClient ? DataValueWireToClient[T] : never;
 
-export type AggValueClientToWire<T extends AggregationValueTypes> = T extends
-  keyof DataValueClientToWire ? DataValueClientToWire[T] : never;
+export type AggValueClientToWire<T extends AggregationValueTypes> =
+  T extends keyof DataValueClientToWire ? DataValueClientToWire[T] : never;

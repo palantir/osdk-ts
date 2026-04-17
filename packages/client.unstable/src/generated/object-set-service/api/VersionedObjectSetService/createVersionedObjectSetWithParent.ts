@@ -17,8 +17,7 @@
 import { type ConjureContext, conjureFetch } from "conjure-lite";
 import type {
   CreateVersionedObjectSetResponse as _api_CreateVersionedObjectSetResponse,
-  CreateVersionedObjectSetWithParentRequest
-    as _api_CreateVersionedObjectSetWithParentRequest,
+  CreateVersionedObjectSetWithParentRequest as _api_CreateVersionedObjectSetWithParentRequest,
 } from "../__components.js";
 
 /**

@@ -26,88 +26,82 @@ import { generateExamples } from "../../generateExamples.js";
  * to ensure they produce valid TypeScript code.
  */
 describe("Generated Code Compilation", () => {
-  it(
-    "should generate valid TypeScript code without template placeholders",
-    async () => {
-      // Create temporary directory
-      const tempDir = await fs.mkdtemp(
-        path.join(os.tmpdir(), "test-examples-"),
-      );
-      const hierarchyPath = path.join(tempDir, "hierarchy.ts");
+  it("should generate valid TypeScript code without template placeholders", async () => {
+    // Create temporary directory
+    const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), "test-examples-"));
+    const hierarchyPath = path.join(tempDir, "hierarchy.ts");
 
-      try {
-        // Run the generator
-        await generateExamples(tempDir, hierarchyPath, ["2.1.0"]);
+    try {
+      // Run the generator
+      await generateExamples(tempDir, hierarchyPath, ["2.1.0"]);
 
-        // Read all generated TypeScript files
-        const tsFiles: string[] = [];
+      // Read all generated TypeScript files
+      const tsFiles: string[] = [];
 
-        async function findTsFiles(dir: string) {
-          const entries = await fs.readdir(dir, { withFileTypes: true });
-          for (const entry of entries) {
-            const fullPath = path.join(dir, entry.name);
-            if (entry.isDirectory()) {
-              await findTsFiles(fullPath);
-            } else if (entry.name.endsWith(".ts")) {
-              tsFiles.push(fullPath);
-            }
+      async function findTsFiles(dir: string) {
+        const entries = await fs.readdir(dir, { withFileTypes: true });
+        for (const entry of entries) {
+          const fullPath = path.join(dir, entry.name);
+          if (entry.isDirectory()) {
+            await findTsFiles(fullPath);
+          } else if (entry.name.endsWith(".ts")) {
+            tsFiles.push(fullPath);
           }
         }
+      }
 
-        await findTsFiles(tempDir);
+      await findTsFiles(tempDir);
 
-        // Verify files were generated
-        expect(tsFiles.length).toBeGreaterThan(0);
-        console.log(`Generated ${tsFiles.length} TypeScript files`);
+      // Verify files were generated
+      expect(tsFiles.length).toBeGreaterThan(0);
+      console.log(`Generated ${tsFiles.length} TypeScript files`);
 
-        // Check each file for common issues
-        const errors: Array<{ file: string; error: string }> = [];
+      // Check each file for common issues
+      const errors: Array<{ file: string; error: string }> = [];
 
-        for (const filePath of tsFiles) {
-          const content = await fs.readFile(filePath, "utf-8");
-          const relativePath = path.relative(tempDir, filePath);
+      for (const filePath of tsFiles) {
+        const content = await fs.readFile(filePath, "utf-8");
+        const relativePath = path.relative(tempDir, filePath);
 
-          // Check for unresolved template variables
-          if (content.includes("{{") || content.includes("}}")) {
-            errors.push({
-              file: relativePath,
-              error: "Contains unresolved Handlebars template placeholders",
-            });
-          }
-
-          // Check for empty files (ignoring comments and whitespace)
-          const codeContent = content
-            .split("\n")
-            .filter(line =>
-              !line.trim().startsWith("//") && line.trim().length > 0
-            )
-            .join("\n")
-            .trim();
-
-          if (codeContent.length === 0) {
-            errors.push({
-              file: relativePath,
-              error: "File contains no actual code (only comments/whitespace)",
-            });
-          }
-        }
-
-        // Report any errors found
-        if (errors.length > 0) {
-          console.error("Validation errors found:");
-          errors.forEach(({ file, error }) => {
-            console.error(`  ${file}: ${error}`);
+        // Check for unresolved template variables
+        if (content.includes("{{") || content.includes("}}")) {
+          errors.push({
+            file: relativePath,
+            error: "Contains unresolved Handlebars template placeholders",
           });
         }
 
-        expect(errors).toHaveLength(0);
-      } finally {
-        // Clean up temporary directory
-        await fs.rm(tempDir, { recursive: true, force: true });
+        // Check for empty files (ignoring comments and whitespace)
+        const codeContent = content
+          .split("\n")
+          .filter(
+            (line) => !line.trim().startsWith("//") && line.trim().length > 0,
+          )
+          .join("\n")
+          .trim();
+
+        if (codeContent.length === 0) {
+          errors.push({
+            file: relativePath,
+            error: "File contains no actual code (only comments/whitespace)",
+          });
+        }
       }
-    },
-    30000,
-  ); // 30 second timeout
+
+      // Report any errors found
+      if (errors.length > 0) {
+        console.error("Validation errors found:");
+        errors.forEach(({ file, error }) => {
+          console.error(`  ${file}: ${error}`);
+        });
+      }
+
+      expect(errors).toHaveLength(0);
+    } finally {
+      // Clean up temporary directory
+      await fs.rm(tempDir, { recursive: true, force: true });
+    }
+  }, 30000); // 30 second timeout
 
   it("should generate expected number of examples per version (accounting for valid skips)", async () => {
     // Use the same data source as the actual generator
@@ -142,8 +136,9 @@ describe("Generated Code Compilation", () => {
     // Test each version that should be generated
     for (const [version, versionData] of Object.entries(docsData.versions)) {
       if (
-        !versionData || typeof versionData !== "object"
-        || !("snippets" in versionData)
+        !versionData ||
+        typeof versionData !== "object" ||
+        !("snippets" in versionData)
       ) {
         continue;
       }
@@ -151,9 +146,9 @@ describe("Generated Code Compilation", () => {
       // Skip versions that aren't being generated (like 1.0.0)
       if (!generatedVersions.includes(version)) {
         console.log(
-          `Skipping version ${version} - not in generated versions: ${
-            generatedVersions.join(", ")
-          }`,
+          `Skipping version ${version} - not in generated versions: ${generatedVersions.join(
+            ", ",
+          )}`,
         );
         continue;
       }
@@ -174,10 +169,10 @@ describe("Generated Code Compilation", () => {
 
         const templateContent = snippetData.template.trim();
         if (
-          templateContent.startsWith("// Upgrade to")
-          || templateContent.includes("// Placeholder")
-          || templateContent === "// Not supported"
-          || templateContent === "// Not supported."
+          templateContent.startsWith("// Upgrade to") ||
+          templateContent.includes("// Placeholder") ||
+          templateContent === "// Not supported" ||
+          templateContent === "// Not supported."
         ) {
           expectedSkips++;
           continue;
@@ -185,7 +180,8 @@ describe("Generated Code Compilation", () => {
 
         // Check if this template generates variations (has block helpers)
         if (
-          templateContent.includes("{{#") || templateContent.includes("{{^")
+          templateContent.includes("{{#") ||
+          templateContent.includes("{{^")
         ) {
           variationGeneratingTemplates++;
         }
@@ -215,10 +211,11 @@ describe("Generated Code Compilation", () => {
         if (!snippetData?.template) continue;
 
         const templateContent = snippetData.template.trim();
-        const shouldBeSkipped = templateContent.startsWith("// Upgrade to")
-          || templateContent.includes("// Placeholder")
-          || templateContent === "// Not supported"
-          || templateContent === "// Not supported.";
+        const shouldBeSkipped =
+          templateContent.startsWith("// Upgrade to") ||
+          templateContent.includes("// Placeholder") ||
+          templateContent === "// Not supported" ||
+          templateContent === "// Not supported.";
 
         if (shouldBeSkipped) continue;
 
@@ -226,8 +223,8 @@ describe("Generated Code Compilation", () => {
 
         // Check if this template generated any output (base or variations)
         const hasBaseExample = snippetKey in outputExamples;
-        const hasVariations = Object.keys(outputExamples).some(key =>
-          key.startsWith(snippetKey + "_")
+        const hasVariations = Object.keys(outputExamples).some((key) =>
+          key.startsWith(snippetKey + "_"),
         );
 
         if (!hasBaseExample && !hasVariations) {
@@ -243,8 +240,8 @@ describe("Generated Code Compilation", () => {
         );
       }
 
-      const variations = Object.keys(outputExamples).filter(key =>
-        key.includes("_#") || key.includes("_^")
+      const variations = Object.keys(outputExamples).filter(
+        (key) => key.includes("_#") || key.includes("_^"),
       );
       if (variations.length > 0) {
         console.log(
@@ -257,9 +254,9 @@ describe("Generated Code Compilation", () => {
       // The key assertion: no templates should be completely missing
       if (missingSnippets.length > 0) {
         throw new Error(
-          `Found ${missingSnippets.length} missing templates in version ${version}. Templates that should generate examples but don't: ${
-            missingSnippets.join(", ")
-          }`,
+          `Found ${missingSnippets.length} missing templates in version ${version}. Templates that should generate examples but don't: ${missingSnippets.join(
+            ", ",
+          )}`,
         );
       }
 

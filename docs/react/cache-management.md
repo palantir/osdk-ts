@@ -12,11 +12,11 @@ The `OsdkProvider2` creates an `ObservableClient` that maintains a normalized ca
 
 ### What Gets Cached
 
-| Data Type | Cache Key Based On |
-|-----------|-------------------|
-| **Objects** | Object type + primary key |
-| **Lists** | Object type + where clause + orderBy |
-| **Links** | Source object + link name + filters |
+| Data Type        | Cache Key Based On                                |
+| ---------------- | ------------------------------------------------- |
+| **Objects**      | Object type + primary key                         |
+| **Lists**        | Object type + where clause + orderBy              |
+| **Links**        | Source object + link name + filters               |
 | **Aggregations** | Object type + where clause + aggregate definition |
 
 ### Cache Sharing
@@ -110,19 +110,19 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
 
 #### Object Invalidation
 
-| Method | Effect | Use Case |
-|--------|--------|----------|
-| `invalidateObjects([obj1, obj2])` | Re-fetches specific objects | You know exactly which objects are stale |
-| `invalidateObjectType(Todo)` | Re-fetches all objects and lists of that type | External bulk update |
-| `invalidateAll()` | Re-fetches everything | Last resort |
+| Method                            | Effect                                        | Use Case                                 |
+| --------------------------------- | --------------------------------------------- | ---------------------------------------- |
+| `invalidateObjects([obj1, obj2])` | Re-fetches specific objects                   | You know exactly which objects are stale |
+| `invalidateObjectType(Todo)`      | Re-fetches all objects and lists of that type | External bulk update                     |
+| `invalidateAll()`                 | Re-fetches everything                         | Last resort                              |
 
 #### Function Invalidation
 
-| Method | Effect | Use Case |
-|--------|--------|----------|
-| `invalidateFunction(queryDef, params)` | Re-fetches a specific function query | You know which function call is stale |
-| `invalidateFunction(queryDef)` | Re-fetches ALL queries for that function | External change affecting all calls |
-| `invalidateFunctionsByObject(apiName, pk)` | Re-fetches functions depending on a specific object | Object changed outside action flow |
+| Method                                     | Effect                                              | Use Case                              |
+| ------------------------------------------ | --------------------------------------------------- | ------------------------------------- |
+| `invalidateFunction(queryDef, params)`     | Re-fetches a specific function query                | You know which function call is stale |
+| `invalidateFunction(queryDef)`             | Re-fetches ALL queries for that function            | External change affecting all calls   |
+| `invalidateFunctionsByObject(apiName, pk)` | Re-fetches functions depending on a specific object | Object changed outside action flow    |
 
 ### Usage
 
@@ -137,7 +137,9 @@ await observableClient.invalidateObjects([todo1, todo2]);
 await observableClient.invalidateObjectType(Todo);
 
 // Invalidate a specific function query
-await observableClient.invalidateFunction(getEmployeeMetrics, { departmentId: "sales" });
+await observableClient.invalidateFunction(getEmployeeMetrics, {
+  departmentId: "sales",
+});
 
 // Invalidate ALL queries for a function
 await observableClient.invalidateFunction(getEmployeeMetrics);
@@ -171,7 +173,10 @@ const { data } = useOsdkFunction(getEmployeeReport, {
 });
 
 // You can invalidate it by calling:
-await observableClient.invalidateFunctionsByObject("Employee", employee.$primaryKey);
+await observableClient.invalidateFunctionsByObject(
+  "Employee",
+  employee.$primaryKey,
+);
 ```
 
 This is useful when you know a specific object has changed outside of the normal action flow.

@@ -73,7 +73,7 @@ describe("usePdfAnnotationsByPage", () => {
     const annotations = [createAnnotation({ id: "a1", page: 1 })];
 
     const { result, rerender } = renderHook(() =>
-      usePdfAnnotationsByPage(annotations)
+      usePdfAnnotationsByPage(annotations),
     );
 
     const firstResult = result.current;

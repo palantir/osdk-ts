@@ -18,26 +18,34 @@ import { consola } from "../consola.js";
 import { italic } from "../highlight.js";
 import type { SdkVersion } from "../templates.js";
 
-export async function promptOntologyAndOsdkPackageAndOsdkRegistryUrl(
-  { ontology, osdkPackage, osdkRegistryUrl, skipOsdk, sdkVersion }: {
-    ontology?: string;
-    osdkPackage?: string;
-    osdkRegistryUrl?: string;
-    skipOsdk?: boolean;
-    sdkVersion: SdkVersion;
-  },
-): Promise<
-  { ontology?: string; osdkPackage?: string; osdkRegistryUrl?: string }
-> {
+export async function promptOntologyAndOsdkPackageAndOsdkRegistryUrl({
+  ontology,
+  osdkPackage,
+  osdkRegistryUrl,
+  skipOsdk,
+  sdkVersion,
+}: {
+  ontology?: string;
+  osdkPackage?: string;
+  osdkRegistryUrl?: string;
+  skipOsdk?: boolean;
+  sdkVersion: SdkVersion;
+}): Promise<{
+  ontology?: string;
+  osdkPackage?: string;
+  osdkRegistryUrl?: string;
+}> {
   if (skipOsdk) {
     return {};
   }
 
   if (
-    sdkVersion !== "1.x" && osdkPackage == null && ontology == null
-    && osdkRegistryUrl == null
+    sdkVersion !== "1.x" &&
+    osdkPackage == null &&
+    ontology == null &&
+    osdkRegistryUrl == null
   ) {
-    const skip = await consola.prompt(
+    const skip = (await consola.prompt(
       "Will you be using an OSDK in your application?",
       {
         type: "select",
@@ -49,7 +57,7 @@ export async function promptOntologyAndOsdkPackageAndOsdkRegistryUrl(
           },
         ],
       },
-    ) as "yes" | "no";
+    )) as "yes" | "no";
 
     if (skip === "no") {
       return {};
@@ -57,18 +65,16 @@ export async function promptOntologyAndOsdkPackageAndOsdkRegistryUrl(
   }
 
   while (
-    ontology == null
-    || !/^ri\.ontology\.[^.]+\.ontology\.[^.]+$/.test(ontology)
+    ontology == null ||
+    !/^ri\.ontology\.[^.]+\.ontology\.[^.]+$/.test(ontology)
   ) {
     if (ontology != null) {
       consola.fail("Please enter a valid Ontology resource identifier (rid)");
     }
     ontology = await consola.prompt(
-      `Enter the Ontology resource identifier (rid) associated with your Developer Console:\n${
-        italic(
-          "(Example: ri.ontology.main.ontology.1df1ce4c-f9d2-0f78-a316-287f6ac80bb2)",
-        )
-      }`,
+      `Enter the Ontology resource identifier (rid) associated with your Developer Console:\n${italic(
+        "(Example: ri.ontology.main.ontology.1df1ce4c-f9d2-0f78-a316-287f6ac80bb2)",
+      )}`,
       { type: "text" },
     );
   }
@@ -78,21 +84,18 @@ export async function promptOntologyAndOsdkPackageAndOsdkRegistryUrl(
       consola.fail("Please enter a valid OSDK package name");
     }
     osdkPackage = await consola.prompt(
-      `Enter the OSDK package name for your application from Developer Console:\n${
-        italic(
-          "(Example: @my-app/sdk)",
-        )
-      }`,
+      `Enter the OSDK package name for your application from Developer Console:\n${italic(
+        "(Example: @my-app/sdk)",
+      )}`,
       { type: "text" },
     );
   }
 
   while (
-    osdkRegistryUrl == null
-    || !/^https:\/\/[^/]+\/artifacts\/api\/repositories\/ri\.artifacts\.[^/]+\/contents\/release\/npm\/?$/
-      .test(
-        osdkRegistryUrl,
-      )
+    osdkRegistryUrl == null ||
+    !/^https:\/\/[^/]+\/artifacts\/api\/repositories\/ri\.artifacts\.[^/]+\/contents\/release\/npm\/?$/.test(
+      osdkRegistryUrl,
+    )
   ) {
     if (osdkRegistryUrl != null) {
       consola.fail(
@@ -100,11 +103,9 @@ export async function promptOntologyAndOsdkPackageAndOsdkRegistryUrl(
       );
     }
     osdkRegistryUrl = await consola.prompt(
-      `Enter the NPM registry URL to install your OSDK package from Developer Console:\n${
-        italic(
-          "(Example: https://example.palantirfoundry.com/artifacts/api/repositories/ri.artifacts.main.repository.a4a7fe1c-486f-4226-b706-7b90005f527d/contents/release/npm)",
-        )
-      }`,
+      `Enter the NPM registry URL to install your OSDK package from Developer Console:\n${italic(
+        "(Example: https://example.palantirfoundry.com/artifacts/api/repositories/ri.artifacts.main.repository.a4a7fe1c-486f-4226-b706-7b90005f527d/contents/release/npm)",
+      )}`,
       { type: "text" },
     );
   }

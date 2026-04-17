@@ -52,36 +52,34 @@ import { Octokit } from "octokit";
 export const setupOctokit = (githubToken: string): Octokit => {
   const Github = Octokit.plugin(throttling);
 
-  return new Github(
-    {
-      auth: githubToken,
-      throttle: {
-        onRateLimit: (
-          retryAfter: any,
-          options: any,
-          octokit: any,
-          retryCount: any,
-        ) => {
-          octokit.log.warn(
-            `Request quota exhausted for request ${options.method} ${options.url}`,
-          );
+  return new Github({
+    auth: githubToken,
+    throttle: {
+      onRateLimit: (
+        retryAfter: any,
+        options: any,
+        octokit: any,
+        retryCount: any,
+      ) => {
+        octokit.log.warn(
+          `Request quota exhausted for request ${options.method} ${options.url}`,
+        );
 
-          octokit.log.warn(`Retrying after ${retryAfter} seconds!`);
-          octokit.log.warn(`Retry Count: ${retryCount}`);
+        octokit.log.warn(`Retrying after ${retryAfter} seconds!`);
+        octokit.log.warn(`Retry Count: ${retryCount}`);
 
-          if (retryCount < 1) {
-            // only retries once
-            octokit.log.info(`Retrying after ${retryAfter} seconds!`);
-            return true;
-          }
-        },
-        onSecondaryRateLimit: (retryAfter: any, options: any, octokit: any) => {
-          // does not retry, only logs a warning
-          octokit.log.warn(
-            `SecondaryRateLimit detected for request ${options.method} ${options.url}`,
-          );
-        },
+        if (retryCount < 1) {
+          // only retries once
+          octokit.log.info(`Retrying after ${retryAfter} seconds!`);
+          return true;
+        }
+      },
+      onSecondaryRateLimit: (retryAfter: any, options: any, octokit: any) => {
+        // does not retry, only logs a warning
+        octokit.log.warn(
+          `SecondaryRateLimit detected for request ${options.method} ${options.url}`,
+        );
       },
     },
-  );
+  });
 };

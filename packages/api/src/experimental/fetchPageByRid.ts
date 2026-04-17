@@ -19,7 +19,6 @@ import type {
   NullabilityAdherence,
 } from "../object/FetchPageArgs.js";
 import type { FetchPageResult } from "../object/FetchPageResult.js";
-
 import type {
   ObjectOrInterfaceDefinition,
   PropertyKeys,

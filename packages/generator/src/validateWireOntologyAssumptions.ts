@@ -26,11 +26,9 @@ export function validateWireOntologyAssumptions(
     invariantMapKeyMatchesApiName(objectKey, objectType.objectType);
     invariantNotStartWithDollarSign(objectType.objectType.apiName);
 
-    for (
-      const [propertyKey, propertyType] of Object.entries(
-        objectType.objectType.properties,
-      )
-    ) {
+    for (const [propertyKey, propertyType] of Object.entries(
+      objectType.objectType.properties,
+    )) {
       invariantNotStartWithDollarSign(propertyKey);
     }
   }
@@ -46,8 +44,5 @@ function invariantMapKeyMatchesApiName(
   );
 }
 function invariantNotStartWithDollarSign(value: string) {
-  invariant(
-    !value.startsWith("$"),
-    "apiName should not start with $",
-  );
+  invariant(!value.startsWith("$"), "apiName should not start with $");
 }

@@ -17,10 +17,8 @@
 import { type ConjureContext, conjureFetch } from "conjure-lite";
 import type { PageToken as _api_registry_PageToken } from "../../registry/__components.js";
 import type {
-  BatchExecutionStatusByEventIdRequest
-    as _api_executor_BatchExecutionStatusByEventIdRequest,
-  BatchExecutionStatusByEventIdResponse
-    as _api_executor_BatchExecutionStatusByEventIdResponse,
+  BatchExecutionStatusByEventIdRequest as _api_executor_BatchExecutionStatusByEventIdRequest,
+  BatchExecutionStatusByEventIdResponse as _api_executor_BatchExecutionStatusByEventIdResponse,
 } from "../__components.js";
 export async function getBatchExecutionStatusByEventId(
   ctx: ConjureContext,

@@ -240,10 +240,10 @@ async function main(): Promise<void> {
   // Basic structural validation before passing to converter
   const blockData = blockDataJson as Record<string, unknown>;
   if (
-    !blockData
-    || typeof blockData !== "object"
-    || !("objectTypes" in blockData)
-    || !("actionTypes" in blockData)
+    !blockData ||
+    typeof blockData !== "object" ||
+    !("objectTypes" in blockData) ||
+    !("actionTypes" in blockData)
   ) {
     consola.error(
       `Invalid Ontology structure in ${inputFile}. Expected objectTypes and actionTypes fields.`,
@@ -251,8 +251,8 @@ async function main(): Promise<void> {
     process.exit(1);
   }
 
-  const previewMetadata = PreviewOntologyIrConverter
-    .getPreviewFullMetadataFromBlockData(
+  const previewMetadata =
+    PreviewOntologyIrConverter.getPreviewFullMetadataFromBlockData(
       blockDataJson as Parameters<
         typeof PreviewOntologyIrConverter.getPreviewFullMetadataFromBlockData
       >[0],
@@ -262,10 +262,7 @@ async function main(): Promise<void> {
   // that import ontology types (e.g. `from ontology_sdk.ontology.objects import X`)
   // can be successfully parsed during discovery.
   if (argv.pythonBinary && argv.pythonFunctionsDir) {
-    generatePythonSdk(
-      previewMetadata,
-      argv.pythonBinary,
-    );
+    generatePythonSdk(previewMetadata, argv.pythonBinary);
   }
 
   // Function discovery is optional - only run if at least one functions flag is provided
@@ -277,13 +274,14 @@ async function main(): Promise<void> {
       process.exit(1);
     }
 
-    const effectivePythonRootDir = argv.pythonRootProjectDir
-      ?? (argv.pythonFunctionsDir
+    const effectivePythonRootDir =
+      argv.pythonRootProjectDir ??
+      (argv.pythonFunctionsDir
         ? path.dirname(argv.pythonFunctionsDir)
         : undefined);
 
-    const queryTypes = await OntologyIrToFullMetadataConverter
-      .getOsdkQueryTypes(
+    const queryTypes =
+      await OntologyIrToFullMetadataConverter.getOsdkQueryTypes(
         argv.pythonBinary,
         argv.functionsDir,
         argv.nodeModulesPath,
@@ -297,9 +295,9 @@ async function main(): Promise<void> {
     if (functionNames.length > 0) {
       previewMetadata.queryTypes = queryTypes;
       consola.info(
-        `Discovered ${functionNames.length} function(s): ${
-          functionNames.join(", ")
-        }`,
+        `Discovered ${functionNames.length} function(s): ${functionNames.join(
+          ", ",
+        )}`,
       );
     } else {
       consola.info("No functions discovered.");
@@ -477,18 +475,18 @@ async function main(): Promise<void> {
 
     const objectTypeMetadata: Record<string, unknown> = {};
     if (previewMetadata.objectTypes) {
-      for (
-        const [apiName, objData] of Object.entries(previewMetadata.objectTypes)
-      ) {
+      for (const [apiName, objData] of Object.entries(
+        previewMetadata.objectTypes,
+      )) {
         const objType = objData.objectType;
         const propertyTypeMetadata: Record<
           string,
           { propertyTypeApiName: string; type?: unknown }
         > = {};
         if (objType.properties) {
-          for (
-            const [propApiName, propDef] of Object.entries(objType.properties)
-          ) {
+          for (const [propApiName, propDef] of Object.entries(
+            objType.properties,
+          )) {
             propertyTypeMetadata[propApiName] = {
               propertyTypeApiName: propApiName,
               type: propDef.dataType,

@@ -78,10 +78,13 @@ describe("ObjectsHelper.propagateWrite RDP merge", () => {
     const rdpConfig = createFakeRdpConfig("fullName");
 
     // Create key B (with RDP for "fullName") and seed it
-    const queryB = store.objects.getQuery({
-      apiName: Employee,
-      pk: 1,
-    }, rdpConfig);
+    const queryB = store.objects.getQuery(
+      {
+        apiName: Employee,
+        pk: 1,
+      },
+      rdpConfig,
+    );
     store.batch({}, (batch) => {
       queryB.writeToStore(emp as any, "loaded", batch);
     });
@@ -108,10 +111,13 @@ describe("ObjectsHelper.propagateWrite RDP merge", () => {
     const rdpConfig = createFakeRdpConfig("derivedAddress");
 
     // Create key B (with RDP for "derivedAddress") — no prior write
-    const queryB = store.objects.getQuery({
-      apiName: Employee,
-      pk: 1,
-    }, rdpConfig);
+    const queryB = store.objects.getQuery(
+      {
+        apiName: Employee,
+        pk: 1,
+      },
+      rdpConfig,
+    );
 
     // First write — there is no existing value so the merge guard
     // (existing?.value) is false and the value is written as-is.
@@ -131,10 +137,13 @@ describe("ObjectsHelper.propagateWrite RDP merge", () => {
   it("does not merge for a non-RDP cache key", () => {
     // Create a plain (no RDP) key and write twice — the merge block
     // should be skipped because expectedRdpFields is empty.
-    const query = store.objects.getQuery({
-      apiName: Employee,
-      pk: 1,
-    }, undefined);
+    const query = store.objects.getQuery(
+      {
+        apiName: Employee,
+        pk: 1,
+      },
+      undefined,
+    );
 
     store.batch({}, (batch) => {
       query.writeToStore(emp as any, "loaded", batch);
@@ -161,10 +170,13 @@ describe("ObjectsHelper.propagateWrite RDP merge", () => {
     const rdpConfig = createFakeRdpConfig("derivedAddress");
 
     // Create key B (with RDP for "derivedAddress") and seed it
-    const queryB = store.objects.getQuery({
-      apiName: Employee,
-      pk: 1,
-    }, rdpConfig);
+    const queryB = store.objects.getQuery(
+      {
+        apiName: Employee,
+        pk: 1,
+      },
+      rdpConfig,
+    );
     store.batch({}, (batch) => {
       queryB.writeToStore(emp as any, "loaded", batch);
     });
@@ -229,16 +241,15 @@ describe("ObjectsHelper.isKeyActive", () => {
     updateObject(store, emp);
 
     // Create key B (with RDP) and seed it
-    const queryB = store.objects.getQuery({
-      apiName: Employee,
-      pk: 1,
-    }, rdpConfig);
+    const queryB = store.objects.getQuery(
+      {
+        apiName: Employee,
+        pk: 1,
+      },
+      rdpConfig,
+    );
     store.batch({}, (batch) => {
-      queryB.writeToStore(
-        emp as any,
-        "loaded",
-        batch,
-      );
+      queryB.writeToStore(emp as any, "loaded", batch);
     });
 
     // Subscribe then unsubscribe to make key B unobserved
@@ -271,16 +282,15 @@ describe("ObjectsHelper.isKeyActive", () => {
     updateObject(store, emp);
 
     // Create key B (with RDP) and seed it
-    const queryB = store.objects.getQuery({
-      apiName: Employee,
-      pk: 1,
-    }, rdpConfig);
+    const queryB = store.objects.getQuery(
+      {
+        apiName: Employee,
+        pk: 1,
+      },
+      rdpConfig,
+    );
     store.batch({}, (batch) => {
-      queryB.writeToStore(
-        emp as any,
-        "loaded",
-        batch,
-      );
+      queryB.writeToStore(emp as any, "loaded", batch);
     });
 
     // Subscribe then unsubscribe, no pending cleanup (cleanup already ran)
@@ -306,10 +316,13 @@ describe("ObjectsHelper.isKeyActive", () => {
 
     // Seed both keys
     updateObject(store, emp);
-    const queryB = store.objects.getQuery({
-      apiName: Employee,
-      pk: 1,
-    }, rdpConfig);
+    const queryB = store.objects.getQuery(
+      {
+        apiName: Employee,
+        pk: 1,
+      },
+      rdpConfig,
+    );
     store.batch({}, (batch) => {
       queryB.writeToStore(emp as any, "loaded", batch);
     });
@@ -341,10 +354,13 @@ describe("ObjectsHelper.isKeyActive", () => {
 
     // Seed both keys
     updateObject(store, emp);
-    const queryB = store.objects.getQuery({
-      apiName: Employee,
-      pk: 1,
-    }, rdpConfig);
+    const queryB = store.objects.getQuery(
+      {
+        apiName: Employee,
+        pk: 1,
+      },
+      rdpConfig,
+    );
     store.batch({}, (batch) => {
       queryB.writeToStore(emp as any, "loaded", batch);
     });
@@ -361,9 +377,7 @@ describe("ObjectsHelper.isKeyActive", () => {
     // Re-subscribe (remount) — should see updated data
     const subFn = mockSingleSubCallback();
     store.cacheKeys.retain(queryB.cacheKey);
-    const sub2 = subjectB.subscribe(
-      (value) => subFn.next(value as any),
-    );
+    const sub2 = subjectB.subscribe((value) => subFn.next(value as any));
 
     await waitForCall(subFn);
     expect(subFn.next).toHaveBeenCalledWith(
@@ -423,14 +437,20 @@ describe("Two variants with different RDP configs - GC of one should not affect 
     const rdpConfigA = createFakeRdpConfig("fieldA");
     const rdpConfigAB = createFakeRdpConfig("fieldA", "fieldB");
 
-    const queryA = store.objects.getQuery({
-      apiName: Employee,
-      pk: 1,
-    }, rdpConfigA);
-    const queryB = store.objects.getQuery({
-      apiName: Employee,
-      pk: 1,
-    }, rdpConfigAB);
+    const queryA = store.objects.getQuery(
+      {
+        apiName: Employee,
+        pk: 1,
+      },
+      rdpConfigA,
+    );
+    const queryB = store.objects.getQuery(
+      {
+        apiName: Employee,
+        pk: 1,
+      },
+      rdpConfigAB,
+    );
 
     store.batch({}, (batch) => {
       queryA.writeToStore(emp as any, "loaded", batch);
@@ -439,10 +459,7 @@ describe("Two variants with different RDP configs - GC of one should not affect 
       queryB.writeToStore(emp as any, "loaded", batch);
     });
 
-    expect(store.objectCacheKeyRegistry.getVariantCount(
-      "Employee",
-      1,
-    )).toBe(2);
+    expect(store.objectCacheKeyRegistry.getVariantCount("Employee", 1)).toBe(2);
 
     simulateGc(queryB.cacheKey);
 
@@ -462,10 +479,7 @@ describe("Two variants with different RDP configs - GC of one should not affect 
     expect(store.subjects.peek(queryB.cacheKey)).toBeUndefined();
 
     // Registry should only have A
-    expect(store.objectCacheKeyRegistry.getVariantCount(
-      "Employee",
-      1,
-    )).toBe(1);
+    expect(store.objectCacheKeyRegistry.getVariantCount("Employee", 1)).toBe(1);
     const variants = store.objectCacheKeyRegistry.getVariants("Employee", 1);
     expect(variants.has(queryA.cacheKey)).toBe(true);
     expect(variants.has(queryB.cacheKey)).toBe(false);
@@ -475,14 +489,20 @@ describe("Two variants with different RDP configs - GC of one should not affect 
     const rdpConfigA = createFakeRdpConfig("fieldA");
     const rdpConfigAB = createFakeRdpConfig("fieldA", "fieldB");
 
-    const queryA = store.objects.getQuery({
-      apiName: Employee,
-      pk: 1,
-    }, rdpConfigA);
-    const queryB = store.objects.getQuery({
-      apiName: Employee,
-      pk: 1,
-    }, rdpConfigAB);
+    const queryA = store.objects.getQuery(
+      {
+        apiName: Employee,
+        pk: 1,
+      },
+      rdpConfigA,
+    );
+    const queryB = store.objects.getQuery(
+      {
+        apiName: Employee,
+        pk: 1,
+      },
+      rdpConfigAB,
+    );
 
     store.batch({}, (batch) => {
       queryA.writeToStore(emp as any, "loaded", batch);
@@ -497,10 +517,7 @@ describe("Two variants with different RDP configs - GC of one should not affect 
 
     simulateGc(queryB.cacheKey);
 
-    expect(store.objectCacheKeyRegistry.getVariantCount(
-      "Employee",
-      1,
-    )).toBe(1);
+    expect(store.objectCacheKeyRegistry.getVariantCount("Employee", 1)).toBe(1);
 
     // Update via base variant — should still propagate to A
     updateObject(store, emp.$clone({ fullName: "Bob" }));

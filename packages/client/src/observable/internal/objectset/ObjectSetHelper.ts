@@ -72,11 +72,11 @@ export class ObjectSetHelper extends AbstractHelper<
     if (options.streamUpdates) {
       if (options.pivotTo) {
         if (process.env.NODE_ENV !== "production") {
-          // eslint-disable-next-line no-console
+          // oxlint-disable-next-line no-console
           console.warn(
-            "[@osdk/client] streamUpdates is not supported with pivotTo. "
-              + "The server does not support websocket subscriptions for "
-              + "link-traversal queries. Ignoring streamUpdates.",
+            "[@osdk/client] streamUpdates is not supported with pivotTo. " +
+              "The server does not support websocket subscriptions for " +
+              "link-traversal queries. Ignoring streamUpdates.",
           );
         }
       } else {
@@ -126,21 +126,21 @@ export class ObjectSetHelper extends AbstractHelper<
 
     if (options.union && options.union.length > 0) {
       operations.union = this.objectSetArrayCanonicalizer.canonicalizeUnion(
-        options.union.map(os => JSON.stringify(getWireObjectSet(os))),
+        options.union.map((os) => JSON.stringify(getWireObjectSet(os))),
       );
     }
 
     if (options.intersect && options.intersect.length > 0) {
-      operations.intersect = this.objectSetArrayCanonicalizer
-        .canonicalizeIntersect(
-          options.intersect.map(os => JSON.stringify(getWireObjectSet(os))),
+      operations.intersect =
+        this.objectSetArrayCanonicalizer.canonicalizeIntersect(
+          options.intersect.map((os) => JSON.stringify(getWireObjectSet(os))),
         );
     }
 
     if (options.subtract && options.subtract.length > 0) {
-      operations.subtract = this.objectSetArrayCanonicalizer
-        .canonicalizeSubtract(
-          options.subtract.map(os => JSON.stringify(getWireObjectSet(os))),
+      operations.subtract =
+        this.objectSetArrayCanonicalizer.canonicalizeSubtract(
+          options.subtract.map((os) => JSON.stringify(getWireObjectSet(os))),
         );
     }
 

@@ -45,10 +45,7 @@ function is$or(
 ): whereClause is { $or: SimpleWhereClause[] } {
   if (process.env.NODE_ENV !== "production") {
     if ("$or" in whereClause) {
-      invariant(
-        Array.isArray(whereClause.$or),
-        "expected $or to be an array",
-      );
+      invariant(Array.isArray(whereClause.$or), "expected $or to be an array");
       invariant(
         Object.keys(whereClause).length === 1,
         "expected only $or to be present",
@@ -83,13 +80,13 @@ export function objectSortaMatchesWhereClause(
   }
 
   if (is$and(whereClause)) {
-    return whereClause.$and.every(w =>
-      objectSortaMatchesWhereClause(o, w, strict)
+    return whereClause.$and.every((w) =>
+      objectSortaMatchesWhereClause(o, w, strict),
     );
   }
   if (is$or(whereClause)) {
-    return whereClause.$or.some(w =>
-      objectSortaMatchesWhereClause(o, w, strict)
+    return whereClause.$or.some((w) =>
+      objectSortaMatchesWhereClause(o, w, strict),
     );
   }
   if (is$not(whereClause)) {

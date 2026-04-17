@@ -53,14 +53,11 @@ export function useCbacSelection(
   );
   categoryGroupsRef.current = pickerState.categoryGroups;
 
-  const toggle = React.useCallback(
-    (markingId: string) => {
-      setSelectedIds((prev) =>
-        toggleMarking(markingId, prev, categoryGroupsRef.current)
-      );
-    },
-    [],
-  );
+  const toggle = React.useCallback((markingId: string) => {
+    setSelectedIds((prev) =>
+      toggleMarking(markingId, prev, categoryGroupsRef.current),
+    );
+  }, []);
 
   const dismiss = React.useCallback(() => {
     setSelectedIds(EMPTY_ARRAY);

@@ -67,34 +67,32 @@ test("getWidgetSetInputSpec successfully discovers OSDK packages", async () => {
     },
   };
 
-  vi.mocked(visitNpmPackages).mockImplementation(
-    (packageJsonPath, onVisit) => {
-      onVisit(packageJsonPath, packageJson1);
-      onVisit(
-        resolve(packageJsonPath, "/node_modules/package2@0.2.0/package.json"),
-        packageJson2,
-      );
-      onVisit(
-        resolve(packageJsonPath, "/node_modules/package3@0.3.0/package.json"),
-        packageJson3,
-      );
-      // Handle multiple versions of same OSDK package
-      onVisit(
-        resolve(packageJsonPath, "/node_modules/package4@0.4.0/package.json"),
-        packageJson4,
-      );
-      onVisit(
-        resolve(packageJsonPath, "/node_modules/package4@0.4.1/package.json"),
-        packageJson4_1,
-      );
-      // Handle multiple occurrences of same version of OSDK package
-      onVisit(
-        resolve(packageJsonPath, "/node_modules/package4@0.4.1/package.json"),
-        packageJson4_1,
-      );
-      return Promise.resolve();
-    },
-  );
+  vi.mocked(visitNpmPackages).mockImplementation((packageJsonPath, onVisit) => {
+    onVisit(packageJsonPath, packageJson1);
+    onVisit(
+      resolve(packageJsonPath, "/node_modules/package2@0.2.0/package.json"),
+      packageJson2,
+    );
+    onVisit(
+      resolve(packageJsonPath, "/node_modules/package3@0.3.0/package.json"),
+      packageJson3,
+    );
+    // Handle multiple versions of same OSDK package
+    onVisit(
+      resolve(packageJsonPath, "/node_modules/package4@0.4.0/package.json"),
+      packageJson4,
+    );
+    onVisit(
+      resolve(packageJsonPath, "/node_modules/package4@0.4.1/package.json"),
+      packageJson4_1,
+    );
+    // Handle multiple occurrences of same version of OSDK package
+    onVisit(
+      resolve(packageJsonPath, "/node_modules/package4@0.4.1/package.json"),
+      packageJson4_1,
+    );
+    return Promise.resolve();
+  });
   const widgetSetInputSpec = await getWidgetSetInputSpec(
     "/path/to/package.json",
   );

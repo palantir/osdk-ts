@@ -24,8 +24,7 @@ export async function listReleases(
   widgetSetRid: WidgetSetRid,
 ): Promise<ListReleasesResponse> {
   const fetch = createFetch(ctx.tokenProvider);
-  const url =
-    `${ctx.foundryUrl}/api/v2/widgets/widgetSets/${widgetSetRid}/releases?preview=true`;
+  const url = `${ctx.foundryUrl}/api/v2/widgets/widgetSets/${widgetSetRid}/releases?preview=true`;
   const response = await fetch(url);
   return response.json();
 }

@@ -62,8 +62,8 @@ export function CbacPickerDialog({
     onOpenChange(false);
   }, [reset, onOpenChange]);
 
-  const hasInitialMarkings = initialMarkingIds !== undefined
-    && initialMarkingIds.length > 0;
+  const hasInitialMarkings =
+    initialMarkingIds !== undefined && initialMarkingIds.length > 0;
 
   const submitDisabledReason = React.useMemo(
     () =>

@@ -23,8 +23,8 @@ export function propertyJsdoc(
   { isInherited, apiName }: { isInherited?: boolean; apiName: string },
 ): string {
   const ret = [];
-  const renderDisplayName = property.displayName
-    && property.displayName !== apiName;
+  const renderDisplayName =
+    property.displayName && property.displayName !== apiName;
   const status = rawPropertyMetadata?.status;
   if (isInherited || renderDisplayName || property.description || status) {
     if (status) {

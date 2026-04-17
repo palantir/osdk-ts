@@ -27,7 +27,7 @@ export async function applySeed(
     importMeta: import.meta,
   });
 
-  const module: { default: (fauxFoundry: FauxFoundry) => void } = await jiti
-    .import(seedPath);
+  const module: { default: (fauxFoundry: FauxFoundry) => void } =
+    await jiti.import(seedPath);
   module.default(fauxFoundry);
 }

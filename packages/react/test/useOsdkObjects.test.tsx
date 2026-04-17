@@ -54,10 +54,9 @@ describe("useOsdkObjects enabled option", () => {
   it("should NOT call observeList when enabled is false", () => {
     const wrapper = createWrapper();
 
-    renderHook(
-      () => useOsdkObjects(MockObjectType, { enabled: false }),
-      { wrapper },
-    );
+    renderHook(() => useOsdkObjects(MockObjectType, { enabled: false }), {
+      wrapper,
+    });
 
     expect(mockObserveList).not.toHaveBeenCalled();
   });
@@ -163,10 +162,9 @@ describe("useOsdkObjects enabled option", () => {
       return { unsubscribe: vitest.fn() };
     });
 
-    const { result } = renderHook(
-      () => useOsdkObjects(MockObjectType),
-      { wrapper },
-    );
+    const { result } = renderHook(() => useOsdkObjects(MockObjectType), {
+      wrapper,
+    });
 
     expect(result.current.hasMore).toBe(false);
 
@@ -192,10 +190,9 @@ describe("useOsdkObjects enabled option", () => {
 
     const mockObjectSet = { type: "objectSet" };
 
-    const { result } = renderHook(
-      () => useOsdkObjects(MockObjectType),
-      { wrapper },
-    );
+    const { result } = renderHook(() => useOsdkObjects(MockObjectType), {
+      wrapper,
+    });
 
     act(() => {
       capturedObserver?.next({
@@ -212,10 +209,9 @@ describe("useOsdkObjects enabled option", () => {
   it("should call invalidateObjectType when refetch is called", async () => {
     const wrapper = createWrapper();
 
-    const { result } = renderHook(
-      () => useOsdkObjects(MockObjectType),
-      { wrapper },
-    );
+    const { result } = renderHook(() => useOsdkObjects(MockObjectType), {
+      wrapper,
+    });
 
     await act(async () => {
       await result.current.refetch();

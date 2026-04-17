@@ -24,7 +24,7 @@ export type Result<V> = OkResult<V> | ErrorResult;
  * @returns whether a result has a value in it
  */
 export function isOk<X>(a: Result<X>): a is OkResult<X> {
-  return ("value" in a);
+  return "value" in a;
 }
 
 /**
@@ -33,5 +33,5 @@ export function isOk<X>(a: Result<X>): a is OkResult<X> {
  * @returns whether a result has an error in it
  */
 export function isError<X>(a: Result<X>): a is ErrorResult {
-  return ("error" in a);
+  return "error" in a;
 }

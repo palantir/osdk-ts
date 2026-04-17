@@ -28,50 +28,56 @@ export function convertInterfaceProperty(
   apiName: string,
 ): [string, OntologyIrMarketplaceInterfacePropertyType] {
   if (isInterfaceSharedPropertyType(prop)) {
-    return [prop.sharedPropertyType.apiName, {
-      type: "sharedPropertyBasedPropertyType",
-      sharedPropertyBasedPropertyType: {
-        requireImplementation: prop.required,
-        sharedPropertyType: convertSpt(prop.sharedPropertyType),
+    return [
+      prop.sharedPropertyType.apiName,
+      {
+        type: "sharedPropertyBasedPropertyType",
+        sharedPropertyBasedPropertyType: {
+          requireImplementation: prop.required,
+          sharedPropertyType: convertSpt(prop.sharedPropertyType),
+        },
       },
-    }];
+    ];
   } else {
-    return [apiName, {
-      type: "interfaceDefinedPropertyType",
-      interfaceDefinedPropertyType: {
-        apiName: apiName,
-        displayMetadata: {
-          displayName: prop.displayName ?? apiName,
-          visibility: prop.visibility ?? "NORMAL",
-          description: prop.description,
-        },
-        type: prop.array
-          ? {
-            type: "array" as const,
-            array: {
-              subtype: propertyTypeTypeToOntologyIrInterfaceType(prop.type),
-            },
-          }
-          : propertyTypeTypeToOntologyIrInterfaceType(prop.type),
-        constraints: {
-          primaryKeyConstraint: prop.primaryKeyConstraint ?? "NO_RESTRICTION",
-          requireImplementation: prop.required ?? true,
-          indexedForSearch: true,
-          typeClasses: prop.typeClasses ?? [],
-          dataConstraints: convertNullabilityToDataConstraint({
-            type: prop.type,
-            nullability: prop.nullability,
-          }),
-          valueType: prop.valueType
+    return [
+      apiName,
+      {
+        type: "interfaceDefinedPropertyType",
+        interfaceDefinedPropertyType: {
+          apiName,
+          displayMetadata: {
+            displayName: prop.displayName ?? apiName,
+            visibility: prop.visibility ?? "NORMAL",
+            description: prop.description,
+          },
+          type: prop.array
             ? {
-              apiName: prop.valueType.apiName,
-              version: prop.valueType.version,
-              packageNamespace: prop.valueType.packageNamespace,
-              displayMetadata: prop.valueType.displayMetadata,
-            }
-            : undefined,
+                type: "array" as const,
+                array: {
+                  subtype: propertyTypeTypeToOntologyIrInterfaceType(prop.type),
+                },
+              }
+            : propertyTypeTypeToOntologyIrInterfaceType(prop.type),
+          constraints: {
+            primaryKeyConstraint: prop.primaryKeyConstraint ?? "NO_RESTRICTION",
+            requireImplementation: prop.required ?? true,
+            indexedForSearch: true,
+            typeClasses: prop.typeClasses ?? [],
+            dataConstraints: convertNullabilityToDataConstraint({
+              type: prop.type,
+              nullability: prop.nullability,
+            }),
+            valueType: prop.valueType
+              ? {
+                  apiName: prop.valueType.apiName,
+                  version: prop.valueType.version,
+                  packageNamespace: prop.valueType.packageNamespace,
+                  displayMetadata: prop.valueType.displayMetadata,
+                }
+              : undefined,
+          },
         },
       },
-    }];
+    ];
   }
 }

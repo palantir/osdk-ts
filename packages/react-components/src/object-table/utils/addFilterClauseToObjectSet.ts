@@ -30,8 +30,9 @@ export function addFilterClauseToObjectSet<
   whereClause: WhereClause<Q>,
 ): ObjectSet<Q, RDPs> {
   if (
-    objectSet == null || typeof objectSet !== "object"
-    || !isObjectSet(objectSet)
+    objectSet == null ||
+    typeof objectSet !== "object" ||
+    !isObjectSet(objectSet)
   ) {
     return objectSet;
   }

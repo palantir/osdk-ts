@@ -38,36 +38,34 @@ import type { MinimalClient } from "./MinimalClientContext.js";
 import type { QuerySignatureFromDef } from "./queries/types.js";
 import type { SatisfiesSemver } from "./SatisfiesSemver.js";
 
-// eslint-disable-next-line @typescript-eslint/consistent-type-imports
+// oxlint-disable-next-line typescript/consistent-type-imports
 type OldSharedClient = import("@osdk/shared.client").SharedClient;
 
-export type CheckVersionBound<Q> = Q extends VersionBound<infer V> ? (
-    SatisfiesSemver<V, MaxOsdkVersion> extends true ? Q
+export type CheckVersionBound<Q> =
+  Q extends VersionBound<infer V>
+    ? SatisfiesSemver<V, MaxOsdkVersion> extends true
+      ? Q
       : Q & {
-        [ErrorMessage]:
-          `Your SDK requires a semver compatible version with ${V}. You have ${MaxOsdkVersion}. Update your package.json`;
-      }
-  )
-  : Q;
+          [ErrorMessage]: `Your SDK requires a semver compatible version with ${V}. You have ${MaxOsdkVersion}. Update your package.json`;
+        }
+    : Q;
 
 export interface Client extends SharedClient, OldSharedClient {
   <Q extends ObjectTypeDefinition>(
     o: Q,
-  ): unknown extends CompileTimeMetadata<Q>["objectSet"] ? ObjectSet<Q>
+  ): unknown extends CompileTimeMetadata<Q>["objectSet"]
+    ? ObjectSet<Q>
     : CompileTimeMetadata<Q>["objectSet"];
 
-  <Q extends (InterfaceDefinition)>(
+  <Q extends InterfaceDefinition>(
     o: Q,
-  ): unknown extends CompileTimeMetadata<Q>["objectSet"] ? MinimalObjectSet<Q>
+  ): unknown extends CompileTimeMetadata<Q>["objectSet"]
+    ? MinimalObjectSet<Q>
     : CompileTimeMetadata<Q>["objectSet"];
 
-  <Q extends ActionDefinition<any>>(
-    o: Q,
-  ): ActionSignatureFromDef<Q>;
+  <Q extends ActionDefinition<any>>(o: Q): ActionSignatureFromDef<Q>;
 
-  <Q extends QueryDefinition<any>>(
-    o: Q,
-  ): QuerySignatureFromDef<Q>;
+  <Q extends QueryDefinition<any>>(o: Q): QuerySignatureFromDef<Q>;
 
   <
     Q extends
@@ -80,18 +78,23 @@ export interface Client extends SharedClient, OldSharedClient {
   ): ExperimentFns<Q>;
 
   fetchMetadata<
-    Q extends (
+    Q extends
       | ObjectTypeDefinition
       | InterfaceDefinition
       | ActionDefinition<any>
-      | QueryDefinition<any>
-    ),
-  >(o: Q): Promise<
-    Q extends ObjectTypeDefinition ? ObjectMetadata
-      : Q extends InterfaceDefinition ? InterfaceMetadata
-      : Q extends ActionDefinition<any> ? ActionMetadata
-      : Q extends QueryDefinition<any> ? QueryMetadata
-      : never
+      | QueryDefinition<any>,
+  >(
+    o: Q,
+  ): Promise<
+    Q extends ObjectTypeDefinition
+      ? ObjectMetadata
+      : Q extends InterfaceDefinition
+        ? InterfaceMetadata
+        : Q extends ActionDefinition<any>
+          ? ActionMetadata
+          : Q extends QueryDefinition<any>
+            ? QueryMetadata
+            : never
   >;
 
   /** @internal */

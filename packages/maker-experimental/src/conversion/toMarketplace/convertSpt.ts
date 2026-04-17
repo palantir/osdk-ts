@@ -54,29 +54,30 @@ export function convertSpt(
     },
     type: array
       ? {
-        type: "array" as const,
-        array: {
-          subtype: propertyTypeTypeToOntologyIrType(
-            type,
-            ridGenerator,
-            apiName,
-            true,
-          ),
-          reducers: [{ direction: "DESCENDING_NULLS_LAST", field: null }],
-        },
-      }
+          type: "array" as const,
+          array: {
+            subtype: propertyTypeTypeToOntologyIrType(
+              type,
+              ridGenerator,
+              apiName,
+              true,
+            ),
+            reducers: [{ direction: "DESCENDING_NULLS_LAST", field: null }],
+          },
+        }
       : propertyTypeTypeToOntologyIrType(type, ridGenerator, apiName, true),
     aliases: aliases ?? [],
     baseFormatter,
     dataConstraints: dataConstraint,
-    gothamMapping: gothamMapping,
+    gothamMapping,
     indexedForSearch: true,
     typeClasses: typeClasses ?? [],
-    valueType: valueType === undefined
-      ? undefined
-      : ridGenerator.generateRidForValueType(
-        valueType.apiName,
-        valueType.version,
-      ),
+    valueType:
+      valueType === undefined
+        ? undefined
+        : ridGenerator.generateRidForValueType(
+            valueType.apiName,
+            valueType.version,
+          ),
   };
 }

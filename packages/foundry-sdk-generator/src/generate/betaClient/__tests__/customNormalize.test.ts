@@ -38,9 +38,7 @@ describe("test path normalization", () => {
 
     const macPathExtraSlashes =
       "C\\Users\\testFolder\\osdk-ts\\\\packages\\foundry-sdk-generator\\src\\generate\\betaClient\\__tests__\\\\customNormalize.test.ts";
-    expect(customNormalize(macPathExtraSlashes)).toEqual(
-      normalizedWindowsPath,
-    );
+    expect(customNormalize(macPathExtraSlashes)).toEqual(normalizedWindowsPath);
   });
 
   it("works for mixed slashes", () => {
@@ -53,8 +51,6 @@ describe("test path normalization", () => {
 
     const macPathExtraSlashes =
       "C\\Users\\testFolder\\osdk-ts\\\\packages\\foundry-sdk-generator//src\\generate//betaClient\\__tests__\\\\customNormalize.test.ts";
-    expect(customNormalize(macPathExtraSlashes)).toEqual(
-      normalizedWindowsPath,
-    );
+    expect(customNormalize(macPathExtraSlashes)).toEqual(normalizedWindowsPath);
   });
 });

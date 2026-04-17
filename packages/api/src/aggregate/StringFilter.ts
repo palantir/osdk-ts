@@ -43,32 +43,32 @@ export namespace StringFilter {
   export interface $eq extends Just<"$eq", StringFilterOptions> {}
   export interface $ne extends Just<"$ne", StringFilterOptions> {}
   export interface $isNull extends Just<"$isNull", StringFilterOptions> {}
-  export interface $startsWith
-    extends Just<"$startsWith", StringFilterOptions>
-  {
-  }
-  export interface $containsAllTermsInOrder
-    extends Just<"$containsAllTermsInOrder", StringFilterOptions>
-  {
-  }
-  export interface $containsAnyTerm
-    extends Just<"$containsAnyTerm", StringFilterOptions>
-  {
-  }
-  export interface $containsAllTerms
-    extends Just<"$containsAllTerms", StringFilterOptions>
-  {
-  }
+  export interface $startsWith extends Just<
+    "$startsWith",
+    StringFilterOptions
+  > {}
+  export interface $containsAllTermsInOrder extends Just<
+    "$containsAllTermsInOrder",
+    StringFilterOptions
+  > {}
+  export interface $containsAnyTerm extends Just<
+    "$containsAnyTerm",
+    StringFilterOptions
+  > {}
+  export interface $containsAllTerms extends Just<
+    "$containsAllTerms",
+    StringFilterOptions
+  > {}
   export interface $interval extends Just<"$interval", StringFilterOptions> {}
   export interface $in extends Just<"$in", StringFilterOptions> {}
   export interface $gt extends Just<"$gt", StringFilterOptions> {}
   export interface $gte extends Just<"$gte", StringFilterOptions> {}
   export interface $lt extends Just<"$lt", StringFilterOptions> {}
   export interface $lte extends Just<"$lte", StringFilterOptions> {}
-  export interface $matchesRegex
-    extends Just<"$matchesRegex", StringFilterOptions>
-  {
-  }
+  export interface $matchesRegex extends Just<
+    "$matchesRegex",
+    StringFilterOptions
+  > {}
 }
 
 export type StringFilter =

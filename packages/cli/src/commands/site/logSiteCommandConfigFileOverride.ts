@@ -24,8 +24,8 @@ export async function logSiteCommandConfigFileOverride(
   config: FoundryConfig<"site"> | undefined,
 ): Promise<void> {
   if (
-    config?.site.application != null
-    && args.application !== config.site.application
+    config?.site.application != null &&
+    args.application !== config.site.application
   ) {
     consola.debug(
       `Overriding "application" from config file with ${args.application}`,

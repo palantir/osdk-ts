@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-/* eslint-disable no-console */
+/* oxlint-disable no-console */
 
 import type * as OntologiesV2 from "@osdk/foundry.ontologies";
 import invariant from "tiny-invariant";
@@ -168,7 +168,7 @@ export function filterObjects(
         const fieldValue = obj[field];
         if (typeof fieldValue === "string") {
           const lowerFieldValue = fieldValue.toLowerCase();
-          return searchTerms.some(term => lowerFieldValue.includes(term));
+          return searchTerms.some((term) => lowerFieldValue.includes(term));
         }
         return false;
       });
@@ -186,7 +186,7 @@ export function filterObjects(
         const fieldValue = obj[field];
         if (typeof fieldValue === "string") {
           const lowerFieldValue = fieldValue.toLowerCase();
-          return searchTerms.every(term => lowerFieldValue.includes(term));
+          return searchTerms.every((term) => lowerFieldValue.includes(term));
         }
         return false;
       });
@@ -205,7 +205,7 @@ export function filterObjects(
         if (typeof fieldValue === "string") {
           const lowerFieldValue = fieldValue.toLowerCase();
           let lastIndex = -1;
-          return searchTerms.every(term => {
+          return searchTerms.every((term) => {
             const index = lowerFieldValue.indexOf(term, lastIndex + 1);
             if (index > lastIndex) {
               lastIndex = index;
@@ -245,8 +245,10 @@ export function filterObjects(
 
           const lastTerm = searchTerms[searchTerms.length - 1];
           const remainingText = lowerFieldValue.substring(lastIndex + 1);
-          return remainingText.includes(lastTerm)
-            || remainingText.startsWith(lastTerm);
+          return (
+            remainingText.includes(lastTerm) ||
+            remainingText.startsWith(lastTerm)
+          );
         }
         return false;
       });
@@ -287,10 +289,8 @@ export function filterObjects(
       where satisfies never;
   }
   console.error(
-    "-=-=-=-=-=-= Unhandled where type: \n"
-      + `Unhandled where type: ${JSON.stringify(where)}`,
+    "-=-=-=-=-=-= Unhandled where type: \n" +
+      `Unhandled where type: ${JSON.stringify(where)}`,
   );
-  throw new Error(
-    `Unhandled where type: ${JSON.stringify(where)}`,
-  );
+  throw new Error(`Unhandled where type: ${JSON.stringify(where)}`);
 }

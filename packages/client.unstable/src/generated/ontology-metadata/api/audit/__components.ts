@@ -16,10 +16,8 @@
 
 import type {
   CreateOntologyBranchRequest as _approvals_api_CreateOntologyBranchRequest,
-  LoadAllOntologyBranchesWithProposalPageRequest
-    as _approvals_api_LoadAllOntologyBranchesWithProposalPageRequest,
-  LoadOntologyBranchWithProposalRequest
-    as _approvals_api_LoadOntologyBranchWithProposalRequest,
+  LoadAllOntologyBranchesWithProposalPageRequest as _approvals_api_LoadAllOntologyBranchesWithProposalPageRequest,
+  LoadOntologyBranchWithProposalRequest as _approvals_api_LoadOntologyBranchWithProposalRequest,
   ModifyOntologyBranchRequest as _approvals_api_ModifyOntologyBranchRequest,
 } from "../../approvals/api/__components.js";
 import type {
@@ -35,34 +33,24 @@ import type {
   ActionTypeRid as _api_ActionTypeRid,
   ActionTypeVersion as _api_ActionTypeVersion,
   DatasourceRid as _api_DatasourceRid,
-  GetActionTypesForInterfaceTypeRequest
-    as _api_GetActionTypesForInterfaceTypeRequest,
-  GetActionTypesForInterfaceTypeResponse
-    as _api_GetActionTypesForInterfaceTypeResponse,
+  GetActionTypesForInterfaceTypeRequest as _api_GetActionTypesForInterfaceTypeRequest,
+  GetActionTypesForInterfaceTypeResponse as _api_GetActionTypesForInterfaceTypeResponse,
   GetActionTypesForObjectTypeRequest as _api_GetActionTypesForObjectTypeRequest,
-  GetActionTypesForObjectTypeResponse
-    as _api_GetActionTypesForObjectTypeResponse,
+  GetActionTypesForObjectTypeResponse as _api_GetActionTypesForObjectTypeResponse,
   GetEntityDelegateDatasetRequest as _api_GetEntityDelegateDatasetRequest,
   GetEntityDelegateDatasetResponse as _api_GetEntityDelegateDatasetResponse,
   GetEntityQueryableSourceRequest as _api_GetEntityQueryableSourceRequest,
   GetEntityQueryableSourceResponse as _api_GetEntityQueryableSourceResponse,
   GetFeatureConfigurationsResponse as _api_GetFeatureConfigurationsResponse,
   GetLinkTypesForObjectTypesRequest as _api_GetLinkTypesForObjectTypesRequest,
-  GetObjectTypesForInterfaceTypesRequest
-    as _api_GetObjectTypesForInterfaceTypesRequest,
-  GetObjectTypesForInterfaceTypesResponse
-    as _api_GetObjectTypesForInterfaceTypesResponse,
-  GetObjectTypesForSharedPropertyTypesRequest
-    as _api_GetObjectTypesForSharedPropertyTypesRequest,
-  GetObjectTypesForSharedPropertyTypesResponse
-    as _api_GetObjectTypesForSharedPropertyTypesResponse,
+  GetObjectTypesForInterfaceTypesRequest as _api_GetObjectTypesForInterfaceTypesRequest,
+  GetObjectTypesForInterfaceTypesResponse as _api_GetObjectTypesForInterfaceTypesResponse,
+  GetObjectTypesForSharedPropertyTypesRequest as _api_GetObjectTypesForSharedPropertyTypesRequest,
+  GetObjectTypesForSharedPropertyTypesResponse as _api_GetObjectTypesForSharedPropertyTypesResponse,
   GetObjectTypesForTypeGroupsRequest as _api_GetObjectTypesForTypeGroupsRequest,
-  GetObjectTypesForTypeGroupsResponse
-    as _api_GetObjectTypesForTypeGroupsResponse,
-  GetOntologyEntitiesForTypeGroupsRequest
-    as _api_GetOntologyEntitiesForTypeGroupsRequest,
-  GetOntologyEntitiesForTypeGroupsResponse
-    as _api_GetOntologyEntitiesForTypeGroupsResponse,
+  GetObjectTypesForTypeGroupsResponse as _api_GetObjectTypesForTypeGroupsResponse,
+  GetOntologyEntitiesForTypeGroupsRequest as _api_GetOntologyEntitiesForTypeGroupsRequest,
+  GetOntologyEntitiesForTypeGroupsResponse as _api_GetOntologyEntitiesForTypeGroupsResponse,
   GetOntologySummaryRequest as _api_GetOntologySummaryRequest,
   GetOntologySummaryResponse as _api_GetOntologySummaryResponse,
   GetRelationsForObjectTypesRequest as _api_GetRelationsForObjectTypesRequest,
@@ -70,20 +58,17 @@ import type {
   LinkTypeId as _api_LinkTypeId,
   LinkTypeRid as _api_LinkTypeRid,
   LoadActionTypesFromOntologyRequest as _api_LoadActionTypesFromOntologyRequest,
-  LoadAllActionTypesFromOntologyRequest
-    as _api_LoadAllActionTypesFromOntologyRequest,
+  LoadAllActionTypesFromOntologyRequest as _api_LoadAllActionTypesFromOntologyRequest,
   LoadAllActionTypesPageRequest as _api_LoadAllActionTypesPageRequest,
   LoadAllInterfaceTypesPageRequest as _api_LoadAllInterfaceTypesPageRequest,
   LoadAllObjectTypesPageRequest as _api_LoadAllObjectTypesPageRequest,
   LoadAllOntologiesRequest as _api_LoadAllOntologiesRequest,
-  LoadAllSharedPropertyTypesPageRequest
-    as _api_LoadAllSharedPropertyTypesPageRequest,
+  LoadAllSharedPropertyTypesPageRequest as _api_LoadAllSharedPropertyTypesPageRequest,
   LoadAllTypeGroupsPageRequest as _api_LoadAllTypeGroupsPageRequest,
   ObjectTypeId as _api_ObjectTypeId,
   ObjectTypeRid as _api_ObjectTypeRid,
   OntologyBranchRid as _api_OntologyBranchRid,
-  OntologyBulkLoadEntitiesByDatasourcesRequest
-    as _api_OntologyBulkLoadEntitiesByDatasourcesRequest,
+  OntologyBulkLoadEntitiesByDatasourcesRequest as _api_OntologyBulkLoadEntitiesByDatasourcesRequest,
   OntologyBulkLoadEntitiesRequest as _api_OntologyBulkLoadEntitiesRequest,
   OntologyLoadAllEntitiesRequest as _api_OntologyLoadAllEntitiesRequest,
   OntologyLoadAllRequest as _api_OntologyLoadAllRequest,
@@ -97,8 +82,7 @@ import type {
   OntologyRidsForEntitiesResponse as _api_OntologyRidsForEntitiesResponse,
   OntologyVersion as _api_OntologyVersion,
   OrganizationRid as _api_OrganizationRid,
-  OrganizationRidsForOntologyResponse
-    as _api_OrganizationRidsForOntologyResponse,
+  OrganizationRidsForOntologyResponse as _api_OrganizationRidsForOntologyResponse,
   RelationId as _api_RelationId,
   RelationRid as _api_RelationRid,
   RuleSetRid as _api_RuleSetRid,
@@ -108,170 +92,101 @@ import type {
   TypeGroupRid as _api_TypeGroupRid,
 } from "../__components.js";
 import type {
-  CreateAssociationRequest
-    as _api_association_metadata_CreateAssociationRequest,
-  CreateAssociationResponse
-    as _api_association_metadata_CreateAssociationResponse,
-  DeleteAssociationsRequest
-    as _api_association_metadata_DeleteAssociationsRequest,
-  DeleteAssociationsResponse
-    as _api_association_metadata_DeleteAssociationsResponse,
-  LoadOntologyEntityAssociationsRequest
-    as _api_association_metadata_LoadOntologyEntityAssociationsRequest,
-  LoadOntologyEntityAssociationsResponse
-    as _api_association_metadata_LoadOntologyEntityAssociationsResponse,
-  LoadResourceAssociationsRequest
-    as _api_association_metadata_LoadResourceAssociationsRequest,
-  LoadResourceAssociationsResponse
-    as _api_association_metadata_LoadResourceAssociationsResponse,
-  UpdateAssociationRequest
-    as _api_association_metadata_UpdateAssociationRequest,
-  UpdateAssociationResponse
-    as _api_association_metadata_UpdateAssociationResponse,
+  CreateAssociationRequest as _api_association_metadata_CreateAssociationRequest,
+  CreateAssociationResponse as _api_association_metadata_CreateAssociationResponse,
+  DeleteAssociationsRequest as _api_association_metadata_DeleteAssociationsRequest,
+  DeleteAssociationsResponse as _api_association_metadata_DeleteAssociationsResponse,
+  LoadOntologyEntityAssociationsRequest as _api_association_metadata_LoadOntologyEntityAssociationsRequest,
+  LoadOntologyEntityAssociationsResponse as _api_association_metadata_LoadOntologyEntityAssociationsResponse,
+  LoadResourceAssociationsRequest as _api_association_metadata_LoadResourceAssociationsRequest,
+  LoadResourceAssociationsResponse as _api_association_metadata_LoadResourceAssociationsResponse,
+  UpdateAssociationRequest as _api_association_metadata_UpdateAssociationRequest,
+  UpdateAssociationResponse as _api_association_metadata_UpdateAssociationResponse,
 } from "../association/metadata/__components.js";
 import type {
-  GetStreamingProfileConfigsResponse
-    as _api_entitymetadata_GetStreamingProfileConfigsResponse,
+  GetStreamingProfileConfigsResponse as _api_entitymetadata_GetStreamingProfileConfigsResponse,
   LoadEntityMetadataRequest as _api_entitymetadata_LoadEntityMetadataRequest,
-  SystemEntityMetadataModificationRequest
-    as _api_entitymetadata_SystemEntityMetadataModificationRequest,
-  SystemEntityMetadataModificationResponse
-    as _api_entitymetadata_SystemEntityMetadataModificationResponse,
+  SystemEntityMetadataModificationRequest as _api_entitymetadata_SystemEntityMetadataModificationRequest,
+  SystemEntityMetadataModificationResponse as _api_entitymetadata_SystemEntityMetadataModificationResponse,
 } from "../entitymetadata/__components.js";
 import type {
   LoadAllRuleSetsRequest as _api_formatting_LoadAllRuleSetsRequest,
   LoadRuleSetsRequest as _api_formatting_LoadRuleSetsRequest,
 } from "../formatting/__components.js";
 import type {
-  CheckExistingUniqueIdentifiersRequest
-    as _api_modification_CheckExistingUniqueIdentifiersRequest,
-  CheckExistingUniqueIdentifiersResponse
-    as _api_modification_CheckExistingUniqueIdentifiersResponse,
-  GetEntityModificationHistoryRequest
-    as _api_modification_GetEntityModificationHistoryRequest,
-  GetEntityModificationHistoryResponse
-    as _api_modification_GetEntityModificationHistoryResponse,
-  GetModificationHistoryRequest
-    as _api_modification_GetModificationHistoryRequest,
-  GetModificationHistoryResponse
-    as _api_modification_GetModificationHistoryResponse,
+  CheckExistingUniqueIdentifiersRequest as _api_modification_CheckExistingUniqueIdentifiersRequest,
+  CheckExistingUniqueIdentifiersResponse as _api_modification_CheckExistingUniqueIdentifiersResponse,
+  GetEntityModificationHistoryRequest as _api_modification_GetEntityModificationHistoryRequest,
+  GetEntityModificationHistoryResponse as _api_modification_GetEntityModificationHistoryResponse,
+  GetModificationHistoryRequest as _api_modification_GetModificationHistoryRequest,
+  GetModificationHistoryResponse as _api_modification_GetModificationHistoryResponse,
   GetModifiedEntitiesRequest as _api_modification_GetModifiedEntitiesRequest,
   GetModifiedEntitiesResponse as _api_modification_GetModifiedEntitiesResponse,
-  ImportSharedPropertyTypesRequest
-    as _api_modification_ImportSharedPropertyTypesRequest,
-  ImportSharedPropertyTypesResponse
-    as _api_modification_ImportSharedPropertyTypesResponse,
-  LoadAllOntologiesInternalRequest
-    as _api_modification_LoadAllOntologiesInternalRequest,
-  LoadAllOntologiesInternalResponse
-    as _api_modification_LoadAllOntologiesInternalResponse,
+  ImportSharedPropertyTypesRequest as _api_modification_ImportSharedPropertyTypesRequest,
+  ImportSharedPropertyTypesResponse as _api_modification_ImportSharedPropertyTypesResponse,
+  LoadAllOntologiesInternalRequest as _api_modification_LoadAllOntologiesInternalRequest,
+  LoadAllOntologiesInternalResponse as _api_modification_LoadAllOntologiesInternalResponse,
   OntologyCreateRequest as _api_modification_OntologyCreateRequest,
   OntologyCreateResponse as _api_modification_OntologyCreateResponse,
   OntologyDeleteRequest as _api_modification_OntologyDeleteRequest,
   OntologyDeleteResponse as _api_modification_OntologyDeleteResponse,
-  OntologyModificationDryRunRequest
-    as _api_modification_OntologyModificationDryRunRequest,
-  OntologyModificationDryRunResponse
-    as _api_modification_OntologyModificationDryRunResponse,
+  OntologyModificationDryRunRequest as _api_modification_OntologyModificationDryRunRequest,
+  OntologyModificationDryRunResponse as _api_modification_OntologyModificationDryRunResponse,
   OntologyModificationRequest as _api_modification_OntologyModificationRequest,
-  OntologyModificationResponse
-    as _api_modification_OntologyModificationResponse,
+  OntologyModificationResponse as _api_modification_OntologyModificationResponse,
   OntologyUpdateRequest as _api_modification_OntologyUpdateRequest,
   OntologyUpdateResponse as _api_modification_OntologyUpdateResponse,
 } from "../modification/__components.js";
 import type {
   BulkUpdateEntityRolesRequest as _api_permissions_BulkUpdateEntityRolesRequest,
-  BulkUpdateEntityRolesResponse
-    as _api_permissions_BulkUpdateEntityRolesResponse,
-  GetActionTypePermissionsResponse
-    as _api_permissions_GetActionTypePermissionsResponse,
-  GetBulkActionTypePermissionsForUsersRequest
-    as _api_permissions_GetBulkActionTypePermissionsForUsersRequest,
-  GetBulkActionTypePermissionsForUsersResponse
-    as _api_permissions_GetBulkActionTypePermissionsForUsersResponse,
-  GetBulkActionTypePermissionsRequest
-    as _api_permissions_GetBulkActionTypePermissionsRequest,
-  GetBulkActionTypePermissionsResponse
-    as _api_permissions_GetBulkActionTypePermissionsResponse,
-  GetBulkInterfaceTypePermissionsRequest
-    as _api_permissions_GetBulkInterfaceTypePermissionsRequest,
-  GetBulkInterfaceTypePermissionsResponse
-    as _api_permissions_GetBulkInterfaceTypePermissionsResponse,
-  GetBulkLinkTypePermissionsForUsersRequest
-    as _api_permissions_GetBulkLinkTypePermissionsForUsersRequest,
-  GetBulkLinkTypePermissionsForUsersResponse
-    as _api_permissions_GetBulkLinkTypePermissionsForUsersResponse,
-  GetBulkLinkTypePermissionsRequest
-    as _api_permissions_GetBulkLinkTypePermissionsRequest,
-  GetBulkLinkTypePermissionsResponse
-    as _api_permissions_GetBulkLinkTypePermissionsResponse,
-  GetBulkObjectTypePermissionsForUsersRequest
-    as _api_permissions_GetBulkObjectTypePermissionsForUsersRequest,
-  GetBulkObjectTypePermissionsForUsersResponse
-    as _api_permissions_GetBulkObjectTypePermissionsForUsersResponse,
-  GetBulkObjectTypePermissionsRequest
-    as _api_permissions_GetBulkObjectTypePermissionsRequest,
-  GetBulkObjectTypePermissionsResponse
-    as _api_permissions_GetBulkObjectTypePermissionsResponse,
-  GetBulkOntologyPermissionsRequest
-    as _api_permissions_GetBulkOntologyPermissionsRequest,
-  GetBulkOntologyPermissionsResponse
-    as _api_permissions_GetBulkOntologyPermissionsResponse,
-  GetBulkSharedPropertyTypePermissionsRequest
-    as _api_permissions_GetBulkSharedPropertyTypePermissionsRequest,
-  GetBulkSharedPropertyTypePermissionsResponse
-    as _api_permissions_GetBulkSharedPropertyTypePermissionsResponse,
-  GetBulkTypeGroupPermissionsRequest
-    as _api_permissions_GetBulkTypeGroupPermissionsRequest,
-  GetBulkTypeGroupPermissionsResponse
-    as _api_permissions_GetBulkTypeGroupPermissionsResponse,
-  GetCreateOntologyPermissionsResponse
-    as _api_permissions_GetCreateOntologyPermissionsResponse,
-  GetEditorsForObjectTypeRequest
-    as _api_permissions_GetEditorsForObjectTypeRequest,
-  GetEditorsForObjectTypeResponse
-    as _api_permissions_GetEditorsForObjectTypeResponse,
-  GetInterfaceTypePermissionsResponse
-    as _api_permissions_GetInterfaceTypePermissionsResponse,
-  GetLinkTypePermissionsResponse
-    as _api_permissions_GetLinkTypePermissionsResponse,
-  GetObjectTypePermissionsResponse
-    as _api_permissions_GetObjectTypePermissionsResponse,
-  GetOntologyPermissionsResponse
-    as _api_permissions_GetOntologyPermissionsResponse,
-  GetRuleSetPermissionsResponse
-    as _api_permissions_GetRuleSetPermissionsResponse,
-  GetSharedPropertyTypePermissionsResponse
-    as _api_permissions_GetSharedPropertyTypePermissionsResponse,
-  GetSuggestedRolesDatasourceResponse
-    as _api_permissions_GetSuggestedRolesDatasourceResponse,
+  BulkUpdateEntityRolesResponse as _api_permissions_BulkUpdateEntityRolesResponse,
+  GetActionTypePermissionsResponse as _api_permissions_GetActionTypePermissionsResponse,
+  GetBulkActionTypePermissionsForUsersRequest as _api_permissions_GetBulkActionTypePermissionsForUsersRequest,
+  GetBulkActionTypePermissionsForUsersResponse as _api_permissions_GetBulkActionTypePermissionsForUsersResponse,
+  GetBulkActionTypePermissionsRequest as _api_permissions_GetBulkActionTypePermissionsRequest,
+  GetBulkActionTypePermissionsResponse as _api_permissions_GetBulkActionTypePermissionsResponse,
+  GetBulkInterfaceTypePermissionsRequest as _api_permissions_GetBulkInterfaceTypePermissionsRequest,
+  GetBulkInterfaceTypePermissionsResponse as _api_permissions_GetBulkInterfaceTypePermissionsResponse,
+  GetBulkLinkTypePermissionsForUsersRequest as _api_permissions_GetBulkLinkTypePermissionsForUsersRequest,
+  GetBulkLinkTypePermissionsForUsersResponse as _api_permissions_GetBulkLinkTypePermissionsForUsersResponse,
+  GetBulkLinkTypePermissionsRequest as _api_permissions_GetBulkLinkTypePermissionsRequest,
+  GetBulkLinkTypePermissionsResponse as _api_permissions_GetBulkLinkTypePermissionsResponse,
+  GetBulkObjectTypePermissionsForUsersRequest as _api_permissions_GetBulkObjectTypePermissionsForUsersRequest,
+  GetBulkObjectTypePermissionsForUsersResponse as _api_permissions_GetBulkObjectTypePermissionsForUsersResponse,
+  GetBulkObjectTypePermissionsRequest as _api_permissions_GetBulkObjectTypePermissionsRequest,
+  GetBulkObjectTypePermissionsResponse as _api_permissions_GetBulkObjectTypePermissionsResponse,
+  GetBulkOntologyPermissionsRequest as _api_permissions_GetBulkOntologyPermissionsRequest,
+  GetBulkOntologyPermissionsResponse as _api_permissions_GetBulkOntologyPermissionsResponse,
+  GetBulkSharedPropertyTypePermissionsRequest as _api_permissions_GetBulkSharedPropertyTypePermissionsRequest,
+  GetBulkSharedPropertyTypePermissionsResponse as _api_permissions_GetBulkSharedPropertyTypePermissionsResponse,
+  GetBulkTypeGroupPermissionsRequest as _api_permissions_GetBulkTypeGroupPermissionsRequest,
+  GetBulkTypeGroupPermissionsResponse as _api_permissions_GetBulkTypeGroupPermissionsResponse,
+  GetCreateOntologyPermissionsResponse as _api_permissions_GetCreateOntologyPermissionsResponse,
+  GetEditorsForObjectTypeRequest as _api_permissions_GetEditorsForObjectTypeRequest,
+  GetEditorsForObjectTypeResponse as _api_permissions_GetEditorsForObjectTypeResponse,
+  GetInterfaceTypePermissionsResponse as _api_permissions_GetInterfaceTypePermissionsResponse,
+  GetLinkTypePermissionsResponse as _api_permissions_GetLinkTypePermissionsResponse,
+  GetObjectTypePermissionsResponse as _api_permissions_GetObjectTypePermissionsResponse,
+  GetOntologyPermissionsResponse as _api_permissions_GetOntologyPermissionsResponse,
+  GetRuleSetPermissionsResponse as _api_permissions_GetRuleSetPermissionsResponse,
+  GetSharedPropertyTypePermissionsResponse as _api_permissions_GetSharedPropertyTypePermissionsResponse,
+  GetSuggestedRolesDatasourceResponse as _api_permissions_GetSuggestedRolesDatasourceResponse,
   GetSuggestedRolesResponse as _api_permissions_GetSuggestedRolesResponse,
-  GetWorkflowPermissionsResponse
-    as _api_permissions_GetWorkflowPermissionsResponse,
+  GetWorkflowPermissionsResponse as _api_permissions_GetWorkflowPermissionsResponse,
   UpdateEntityRolesRequest as _api_permissions_UpdateEntityRolesRequest,
   UpdateEntityRolesResponse as _api_permissions_UpdateEntityRolesResponse,
 } from "../permissions/__components.js";
 import type {
-  BatchGetTaggedDependentsForOntologyEntityIdentifierRequest
-    as _api_provenance_BatchGetTaggedDependentsForOntologyEntityIdentifierRequest,
-  BatchGetTaggedDependentsForOntologyEntityIdentifierResponse
-    as _api_provenance_BatchGetTaggedDependentsForOntologyEntityIdentifierResponse,
-  GetDependenciesForTaggedDependentRequest
-    as _api_provenance_GetDependenciesForTaggedDependentRequest,
-  GetDependenciesForTaggedDependentRequestV2
-    as _api_provenance_GetDependenciesForTaggedDependentRequestV2,
-  GetDependenciesForTaggedDependentResponse
-    as _api_provenance_GetDependenciesForTaggedDependentResponse,
-  GetDependenciesForTaggedDependentResponseV2
-    as _api_provenance_GetDependenciesForTaggedDependentResponseV2,
-  GetTaggedDependentsForOntologyEntityIdentifierRequest
-    as _api_provenance_GetTaggedDependentsForOntologyEntityIdentifierRequest,
-  GetTaggedDependentsForOntologyEntityIdentifierResponse
-    as _api_provenance_GetTaggedDependentsForOntologyEntityIdentifierResponse,
-  GetTaggedDependentsForOntologyEntityRequest
-    as _api_provenance_GetTaggedDependentsForOntologyEntityRequest,
-  GetTaggedDependentsForOntologyEntityResponse
-    as _api_provenance_GetTaggedDependentsForOntologyEntityResponse,
+  BatchGetTaggedDependentsForOntologyEntityIdentifierRequest as _api_provenance_BatchGetTaggedDependentsForOntologyEntityIdentifierRequest,
+  BatchGetTaggedDependentsForOntologyEntityIdentifierResponse as _api_provenance_BatchGetTaggedDependentsForOntologyEntityIdentifierResponse,
+  GetDependenciesForTaggedDependentRequest as _api_provenance_GetDependenciesForTaggedDependentRequest,
+  GetDependenciesForTaggedDependentRequestV2 as _api_provenance_GetDependenciesForTaggedDependentRequestV2,
+  GetDependenciesForTaggedDependentResponse as _api_provenance_GetDependenciesForTaggedDependentResponse,
+  GetDependenciesForTaggedDependentResponseV2 as _api_provenance_GetDependenciesForTaggedDependentResponseV2,
+  GetTaggedDependentsForOntologyEntityIdentifierRequest as _api_provenance_GetTaggedDependentsForOntologyEntityIdentifierRequest,
+  GetTaggedDependentsForOntologyEntityIdentifierResponse as _api_provenance_GetTaggedDependentsForOntologyEntityIdentifierResponse,
+  GetTaggedDependentsForOntologyEntityRequest as _api_provenance_GetTaggedDependentsForOntologyEntityRequest,
+  GetTaggedDependentsForOntologyEntityResponse as _api_provenance_GetTaggedDependentsForOntologyEntityResponse,
   RegisterDependencyRequest as _api_provenance_RegisterDependencyRequest,
   RegisterDependencyResponse as _api_provenance_RegisterDependencyResponse,
   TagDependentRequest as _api_provenance_TagDependentRequest,
@@ -281,16 +196,13 @@ import type { LoadObjectTypeSchemaMigrationsRequest as _api_schemamigrations_Loa
 import type {
   ActionTypeSearchRequest as _api_search_ActionTypeSearchRequest,
   CombinedEntityTypeRid as _api_search_CombinedEntityTypeRid,
-  GetObjectTypeSemanticSearchStatusResponse
-    as _api_search_GetObjectTypeSemanticSearchStatusResponse,
+  GetObjectTypeSemanticSearchStatusResponse as _api_search_GetObjectTypeSemanticSearchStatusResponse,
   InterfaceTypeSearchRequest as _api_search_InterfaceTypeSearchRequest,
   LinkTypeSearchRequest as _api_search_LinkTypeSearchRequest,
   ObjectTypeSearchRequest as _api_search_ObjectTypeSearchRequest,
   ObjectTypeSearchRequestV2 as _api_search_ObjectTypeSearchRequestV2,
-  SearchTitleInCombinedEntityTypeRequest
-    as _api_search_SearchTitleInCombinedEntityTypeRequest,
-  SharedPropertyTypeSearchRequest
-    as _api_search_SharedPropertyTypeSearchRequest,
+  SearchTitleInCombinedEntityTypeRequest as _api_search_SearchTitleInCombinedEntityTypeRequest,
+  SharedPropertyTypeSearchRequest as _api_search_SharedPropertyTypeSearchRequest,
   TypeGroupSearchRequest as _api_search_TypeGroupSearchRequest,
 } from "../search/__components.js";
 import type {
@@ -302,18 +214,14 @@ import type {
   GetUsageRequestV2 as _api_usage_GetUsageRequestV2,
   GetUsageResponse as _api_usage_GetUsageResponse,
   GetUsageResponseV2 as _api_usage_GetUsageResponseV2,
-  GetUsageSettingsByOrganizationRequest
-    as _api_usage_GetUsageSettingsByOrganizationRequest,
-  GetUsageSettingsByOrganizationResponse
-    as _api_usage_GetUsageSettingsByOrganizationResponse,
+  GetUsageSettingsByOrganizationRequest as _api_usage_GetUsageSettingsByOrganizationRequest,
+  GetUsageSettingsByOrganizationResponse as _api_usage_GetUsageSettingsByOrganizationResponse,
   GetUsageSettingsByUserRequest as _api_usage_GetUsageSettingsByUserRequest,
   GetUsageSettingsByUserResponse as _api_usage_GetUsageSettingsByUserResponse,
   ReportUsageMetadataRequest as _api_usage_ReportUsageMetadataRequest,
   ReportUsageMetadataResponse as _api_usage_ReportUsageMetadataResponse,
-  SetUsageSettingsByOrganizationRequest
-    as _api_usage_SetUsageSettingsByOrganizationRequest,
-  SetUsageSettingsByOrganizationResponse
-    as _api_usage_SetUsageSettingsByOrganizationResponse,
+  SetUsageSettingsByOrganizationRequest as _api_usage_SetUsageSettingsByOrganizationRequest,
+  SetUsageSettingsByOrganizationResponse as _api_usage_SetUsageSettingsByOrganizationResponse,
 } from "../usage/__components.js";
 export interface ActionTypeGetOrganizationsRequestParams {
   actionTypeRids: Array<_api_ActionTypeRid>;
@@ -516,8 +424,7 @@ export interface ModifyActionTypesAuditRecord {
   createdActionTypes: Array<CreatedActionTypeAuditRecord>;
   updatedActionTypes: Array<UpdatedActionTypeAuditRecord>;
 }
-export interface ModifyOntologyBranchWithProposalAuditRecord {
-}
+export interface ModifyOntologyBranchWithProposalAuditRecord {}
 export interface ObjectTypeAndDatasourcesLoadAuditRecord {
   datasourceRids: Array<_api_DatasourceRid>;
   objectTypeId: _api_ObjectTypeId;
@@ -592,8 +499,7 @@ export interface OntologyBulkLoadEntitiesAuditRecord {
 export interface OntologyBulkLoadEntitiesByDatasourcesAuditRecord {
   entities: Array<EntityLoadByDatasourceRecord>;
 }
-export interface OntologyEntityMetadataServiceGetStreamingProfileConfigsRequestParams {
-}
+export interface OntologyEntityMetadataServiceGetStreamingProfileConfigsRequestParams {}
 export interface OntologyEntityMetadataServiceGetStreamingProfileConfigsResponseParams {
   response: _api_entitymetadata_GetStreamingProfileConfigsResponse;
 }
@@ -887,8 +793,7 @@ export interface OntologyMetadataServiceGetEntityQueryableSourceRequestParams {
 export interface OntologyMetadataServiceGetEntityQueryableSourceResponseParams {
   response: _api_GetEntityQueryableSourceResponse;
 }
-export interface OntologyMetadataServiceGetFeatureConfigurationsRequestParams {
-}
+export interface OntologyMetadataServiceGetFeatureConfigurationsRequestParams {}
 export interface OntologyMetadataServiceGetFeatureConfigurationsResponseParams {
   response: _api_GetFeatureConfigurationsResponse;
 }
@@ -914,8 +819,7 @@ export interface OntologyMetadataServiceGetModifiedEntitiesResponseParams {
   ontologyRid: _api_OntologyRid;
   response: _api_modification_GetModifiedEntitiesResponse;
 }
-export interface OntologyMetadataServiceGetObjectTypeSemanticSearchStatusRequestParams {
-}
+export interface OntologyMetadataServiceGetObjectTypeSemanticSearchStatusRequestParams {}
 export interface OntologyMetadataServiceGetObjectTypeSemanticSearchStatusResponseParams {
   response: _api_search_GetObjectTypeSemanticSearchStatusResponse;
 }
@@ -1204,8 +1108,7 @@ export interface OntologyPermissionServiceGetBulkTypeGroupPermissionsRequestPara
 export interface OntologyPermissionServiceGetBulkTypeGroupPermissionsResultParams {
   request: _api_permissions_GetBulkTypeGroupPermissionsResponse;
 }
-export interface OntologyPermissionServiceGetCreateOntologyPermissionsRequestParams {
-}
+export interface OntologyPermissionServiceGetCreateOntologyPermissionsRequestParams {}
 export interface OntologyPermissionServiceGetCreateOntologyPermissionsResultParams {
   response: _api_permissions_GetCreateOntologyPermissionsResponse;
 }
@@ -1296,12 +1199,10 @@ export interface OntologyPermissionServiceUpdateEntityRolesResultParams {
   response: _api_permissions_UpdateEntityRolesResponse;
 }
 export interface OntologyProvenanceServiceBatchGetDependentsForOntologyEntityIdentifierRequestParams {
-  request:
-    _api_provenance_BatchGetTaggedDependentsForOntologyEntityIdentifierRequest;
+  request: _api_provenance_BatchGetTaggedDependentsForOntologyEntityIdentifierRequest;
 }
 export interface OntologyProvenanceServiceBatchGetDependentsOntologyEntityIdentifierResultParams {
-  request:
-    _api_provenance_BatchGetTaggedDependentsForOntologyEntityIdentifierResponse;
+  request: _api_provenance_BatchGetTaggedDependentsForOntologyEntityIdentifierResponse;
 }
 export interface OntologyProvenanceServiceGetDependenciesRequestParams {
   request: _api_provenance_GetDependenciesForTaggedDependentRequest;
@@ -1316,12 +1217,10 @@ export interface OntologyProvenanceServiceGetDependenciesV2ResultParams {
   request: _api_provenance_GetDependenciesForTaggedDependentResponseV2;
 }
 export interface OntologyProvenanceServiceGetDependentsForOntologyEntityIdentifierRequestParams {
-  request:
-    _api_provenance_GetTaggedDependentsForOntologyEntityIdentifierRequest;
+  request: _api_provenance_GetTaggedDependentsForOntologyEntityIdentifierRequest;
 }
 export interface OntologyProvenanceServiceGetDependentsOntologyEntityIdentifierResultParams {
-  request:
-    _api_provenance_GetTaggedDependentsForOntologyEntityIdentifierResponse;
+  request: _api_provenance_GetTaggedDependentsForOntologyEntityIdentifierResponse;
 }
 export interface OntologyProvenanceServiceGetDependentsRequestParams {
   request: _api_provenance_GetTaggedDependentsForOntologyEntityRequest;

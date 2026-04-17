@@ -169,10 +169,7 @@ export function DraggableList<T extends DraggableItem>({
         collisionDetection={closestCenter}
         onDragEnd={handleDragEnd}
       >
-        <SortableContext
-          items={itemIds}
-          strategy={verticalListSortingStrategy}
-        >
+        <SortableContext items={itemIds} strategy={verticalListSortingStrategy}>
           {items.map((item) => (
             <DraggableListItem<T>
               key={item.id}
@@ -216,7 +213,7 @@ const useKeyboardEvents = (containerRef: RefObject<HTMLDivElement>) => {
       }
 
       // Only intercept when a drag is active (an item has [data-dragging="true"])
-      if (el!.querySelector("[data-dragging=\"true\"]") == null) {
+      if (el!.querySelector('[data-dragging="true"]') == null) {
         return;
       }
 

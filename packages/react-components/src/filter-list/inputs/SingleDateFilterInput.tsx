@@ -30,9 +30,9 @@ function SingleDateFilterInputInner({
   const selectedDate = useMemo(
     () =>
       filterState?.type === "SELECT"
-        ? (filterState.selectedValues[0] instanceof Date
+        ? filterState.selectedValues[0] instanceof Date
           ? filterState.selectedValues[0]
-          : undefined)
+          : undefined
         : undefined,
     [filterState],
   );
@@ -50,10 +50,7 @@ function SingleDateFilterInputInner({
   );
 
   return (
-    <SingleDateInput
-      selectedDate={selectedDate}
-      onChange={handleChange}
-    />
+    <SingleDateInput selectedDate={selectedDate} onChange={handleChange} />
   );
 }
 

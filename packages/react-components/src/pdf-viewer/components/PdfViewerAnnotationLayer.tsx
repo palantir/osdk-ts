@@ -46,7 +46,7 @@ function computeRectStyle(
     width: rect.width * scale,
     height: rect.height * scale,
     ...(color != null
-      ? { "--osdk-pdf-annotation-color": color } as React.CSSProperties
+      ? ({ "--osdk-pdf-annotation-color": color } as React.CSSProperties)
       : {}),
   };
 }
@@ -83,10 +83,7 @@ function AnnotationItem({
     onClick,
   );
 
-  const className = classnames(
-    styles.annotation,
-    styles[annotation.type],
-  );
+  const className = classnames(styles.annotation, styles[annotation.type]);
 
   const multiRects = annotation.rects;
   const hasMultipleRects = multiRects != null && multiRects.length > 1;
@@ -113,12 +110,7 @@ function AnnotationItem({
           <div
             key={i}
             className={className}
-            style={computeRectStyle(
-              rect,
-              pageHeight,
-              scale,
-              annotation.color,
-            )}
+            style={computeRectStyle(rect, pageHeight, scale, annotation.color)}
           />
         ))}
       </div>
@@ -189,25 +181,23 @@ export function PdfViewerAnnotationLayer({
   return (
     <div className={styles.annotationLayer}>
       {annotations.map((annotation) =>
-        annotation.type === "custom"
-          ? (
-            <CustomAnnotationItem
-              key={annotation.id}
-              annotation={annotation}
-              pageHeight={pageHeight}
-              scale={scale}
-              onClick={onAnnotationClick}
-            />
-          )
-          : (
-            <AnnotationItem
-              key={annotation.id}
-              annotation={annotation}
-              pageHeight={pageHeight}
-              scale={scale}
-              onClick={onAnnotationClick}
-            />
-          )
+        annotation.type === "custom" ? (
+          <CustomAnnotationItem
+            key={annotation.id}
+            annotation={annotation}
+            pageHeight={pageHeight}
+            scale={scale}
+            onClick={onAnnotationClick}
+          />
+        ) : (
+          <AnnotationItem
+            key={annotation.id}
+            annotation={annotation}
+            pageHeight={pageHeight}
+            scale={scale}
+            onClick={onAnnotationClick}
+          />
+        ),
       )}
     </div>
   );

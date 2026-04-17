@@ -29,9 +29,7 @@ export function renderDefaultCell<TData extends RowData>(
 
   const cellValue = cellContext.getValue();
 
-  const asyncCellData = isAsyncCellData(cellValue)
-    ? cellValue
-    : undefined;
+  const asyncCellData = isAsyncCellData(cellValue) ? cellValue : undefined;
 
   // Function-backed columns are read-only: the value is server-computed
   // and cannot be edited in the table. Return the async cell directly.
@@ -50,9 +48,8 @@ export function renderDefaultCell<TData extends RowData>(
   const cellEdits = meta.cellEdits;
   const editedValue = cellEdits?.[cellId];
   // If newValue is explicitly set to null, treat it as null. Otherwise, fall back to the original cell value.
-  const currentValue = editedValue?.newValue === undefined
-    ? cellValue
-    : editedValue?.newValue;
+  const currentValue =
+    editedValue?.newValue === undefined ? cellValue : editedValue?.newValue;
   const validationError = meta.validationErrors?.get(cellId);
   const isRowFocused = meta.focusedRowId === rowId;
 

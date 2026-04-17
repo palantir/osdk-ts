@@ -1693,7 +1693,6 @@ versions:
                 throw e;
             }
 
-
       searchInterfacesReference:
         - template: |-
             import { {{interfaceApiName}} } from "{{{packageName}}}";
@@ -2157,7 +2156,7 @@ versions:
                 const attachmentFile = await fetch("file.json");
                 const attachmentBlob = await attachmentFile.blob();
                 const attachment: AttachmentUpload = createAttachmentUpload(attachmentBlob, "myFile");
-            
+
             {{/hasAttachmentProperty}}
             {{#hasMediaParameter}}
                 // You can upload media data via your Action
@@ -2261,66 +2260,66 @@ versions:
             - primaryKeyPropertyValueV2
   "2.4.0":
     snippets:
-        derivedPropertyNumericExpression:
-          - template: |-
-              import { {{objectType}} } from "{{{packageName}}}";
-              // Edit this import if your client location differs
-              import { client } from "./client";
+      derivedPropertyNumericExpression:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+            // Edit this import if your client location differs
+            import { client } from "./client";
 
-              const {{objectType}}WithExpression = await client({{objectType}})
-                  .withProperties({
-                    {{^isUnary}}
-                    "newPropertyName": (baseObjectSet) =>
-                        baseObjectSet.pivotTo("{{linkApiName}}")
-                            .aggregate("{{property}}").{{operation}}(
-                                baseObjectSet.pivotTo("{{linkApiName}}").aggregate("$count"))
-                    }).fetchPage();
-                    {{/isUnary}}
-                    {{#isUnary}}
-                    "{{operation}}_{{property}}": (baseObjectSet) =>
-                        baseObjectSet.pivotTo("{{linkApiName}}")
-                        .selectProperty("{{property}}").{{operation}}()
+            const {{objectType}}WithExpression = await client({{objectType}})
+                .withProperties({
+                  {{^isUnary}}
+                  "newPropertyName": (baseObjectSet) =>
+                      baseObjectSet.pivotTo("{{linkApiName}}")
+                          .aggregate("{{property}}").{{operation}}(
+                              baseObjectSet.pivotTo("{{linkApiName}}").aggregate("$count"))
                   }).fetchPage();
-                    {{/isUnary}}
-        derivedPropertyDatetimeExpression:
-          - template: |-
-              import { {{objectType}} } from "{{{packageName}}}";
-              // Edit this import if your client location differs
-              import { client } from "./client";
+                  {{/isUnary}}
+                  {{#isUnary}}
+                  "{{operation}}_{{property}}": (baseObjectSet) =>
+                      baseObjectSet.pivotTo("{{linkApiName}}")
+                      .selectProperty("{{property}}").{{operation}}()
+                }).fetchPage();
+                  {{/isUnary}}
+      derivedPropertyDatetimeExpression:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+            // Edit this import if your client location differs
+            import { client } from "./client";
 
-              const {{objectType}}WithExpression = await client({{objectType}})
-                  .withProperties({
-                        {{^isExtractPart}} 
-                        "derivedPropertyDatetime_{{operation}}": (baseObjectSet) =>
-                        baseObjectSet.pivotTo("{{linkApiName}}")
-                            .selectProperty("{{property}}")
-                            .{{operation}}(baseObjectSet.pivotTo("{{linkApiName}}").selectProperty("{{property}}"))
-                        {{/isExtractPart}}
-                        {{#isExtractPart}}
-                        "YEARS_part_of_{{property}}_of_{{linkApiName}}": (baseObjectSet) =>
-                        baseObjectSet.pivotTo("{{linkApiName}}")
-                            .selectProperty("{{property}}").extractPart("YEARS")
-                        {{/isExtractPart}}
-                  }).fetchPage();
-        nearestNeighborsTextQuery:
-          - template: |-
-              import { {{objectType}} } from "{{{packageName}}}";
-              // Edit this import if your client location differs
-              import { client } from "./client";
+            const {{objectType}}WithExpression = await client({{objectType}})
+                .withProperties({
+                      {{^isExtractPart}} 
+                      "derivedPropertyDatetime_{{operation}}": (baseObjectSet) =>
+                      baseObjectSet.pivotTo("{{linkApiName}}")
+                          .selectProperty("{{property}}")
+                          .{{operation}}(baseObjectSet.pivotTo("{{linkApiName}}").selectProperty("{{property}}"))
+                      {{/isExtractPart}}
+                      {{#isExtractPart}}
+                      "YEARS_part_of_{{property}}_of_{{linkApiName}}": (baseObjectSet) =>
+                      baseObjectSet.pivotTo("{{linkApiName}}")
+                          .selectProperty("{{property}}").extractPart("YEARS")
+                      {{/isExtractPart}}
+                }).fetchPage();
+      nearestNeighborsTextQuery:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+            // Edit this import if your client location differs
+            import { client } from "./client";
 
-              const result = await client({{objectType}})
-                .nearestNeighbors("coffee", 5, "{{property}}")
-                .fetchPage();
+            const result = await client({{objectType}})
+              .nearestNeighbors("coffee", 5, "{{property}}")
+              .fetchPage();
 
-        nearestNeighborsVectorQuery:
-          - template: |-
-              import { {{objectType}} } from "{{{packageName}}}";
-              // Edit this import if your client location differs
-              import { client } from "./client";
+      nearestNeighborsVectorQuery:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+            // Edit this import if your client location differs
+            import { client } from "./client";
 
-              // Note that this vector maps to an arbitrary string
-              // It must match the dimension of the "{{property}}" property: {{vectorDimensionSize}}
-              const vector_query = Array.from({ length: {{vectorDimensionSize}} }, () => 0.3);
-              const result = await client({{objectType}})
-                .nearestNeighbors(vector_query, 5, "{{property}}")
-                .fetchPage();
+            // Note that this vector maps to an arbitrary string
+            // It must match the dimension of the "{{property}}" property: {{vectorDimensionSize}}
+            const vector_query = Array.from({ length: {{vectorDimensionSize}} }, () => 0.3);
+            const result = await client({{objectType}})
+              .nearestNeighbors(vector_query, 5, "{{property}}")
+              .fetchPage();

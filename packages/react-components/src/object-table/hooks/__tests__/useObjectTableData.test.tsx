@@ -118,10 +118,12 @@ describe(useObjectTableData, () => {
     const filterClause = {
       name: "John",
     } as unknown as WhereClause<TestObject>;
-    const orderBy: SortingState = [{
-      id: "name",
-      desc: false,
-    }];
+    const orderBy: SortingState = [
+      {
+        id: "name",
+        desc: false,
+      },
+    ];
     const { result } = renderHook(
       () =>
         useObjectTableData(TestObjectType, undefined, filterClause, orderBy),
@@ -237,16 +239,14 @@ describe(useObjectTableData, () => {
       },
     );
 
-    const firstMockResult = result
-      .current as unknown as MockReturnType;
+    const firstMockResult = result.current as unknown as MockReturnType;
     const firstWithProperties = firstMockResult._testOptions.withProperties;
 
     // Rerender with same columnDefinitions reference
     rerender({ colDefs: columnDefinitions });
 
     // Should be the same reference (memoized)
-    const secondMockResult = result
-      .current as unknown as MockReturnType;
+    const secondMockResult = result.current as unknown as MockReturnType;
     expect(secondMockResult._testOptions.withProperties).toBe(
       firstWithProperties,
     );
@@ -272,8 +272,8 @@ describe(useObjectTableData, () => {
 
     type ColDefs =
       | Array<
-        ColumnDefinition<TestObject, Record<string, SimplePropertyDef>, {}>
-      >
+          ColumnDefinition<TestObject, Record<string, SimplePropertyDef>, {}>
+        >
       | undefined;
 
     const { result, rerender } = renderHook(
@@ -285,8 +285,7 @@ describe(useObjectTableData, () => {
       },
     );
 
-    const firstMockResult = result
-      .current as unknown as MockReturnType;
+    const firstMockResult = result.current as unknown as MockReturnType;
     expect(firstMockResult._testOptions.withProperties).toEqual({
       rdp1: mockRdpCreator1,
     });
@@ -301,18 +300,16 @@ describe(useObjectTableData, () => {
 
     rerender({ colDefs: updatedColumnDefinitions as ColDefs });
 
-    const secondMockResult = result
-      .current as unknown as MockReturnType;
+    const secondMockResult = result.current as unknown as MockReturnType;
     expect(secondMockResult._testOptions.withProperties).toEqual({
       rdp2: mockRdpCreator2,
     });
   });
 
   it("returns useOsdkObjects result structure", () => {
-    const { result } = renderHook(
-      () => useObjectTableData(TestObjectType),
-      { wrapper },
-    );
+    const { result } = renderHook(() => useObjectTableData(TestObjectType), {
+      wrapper,
+    });
 
     expect(result.current).toHaveProperty("data");
     expect(result.current).toHaveProperty("isLoading");
@@ -321,10 +318,9 @@ describe(useObjectTableData, () => {
   });
 
   it("when no objectSet provided, only enables useOsdkObjects", () => {
-    const { result } = renderHook(
-      () => useObjectTableData(TestObjectType),
-      { wrapper },
-    );
+    const { result } = renderHook(() => useObjectTableData(TestObjectType), {
+      wrapper,
+    });
 
     expect(useOsdkObjects).toHaveBeenCalledWith(
       TestObjectType,

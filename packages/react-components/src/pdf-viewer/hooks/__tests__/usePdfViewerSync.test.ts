@@ -167,7 +167,7 @@ describe("usePdfViewerSync", () => {
         scale: 1.0,
         onScaleChange: vi.fn(),
         onPageChange: vi.fn(),
-      })
+      }),
     );
 
     // Should not throw
@@ -190,7 +190,7 @@ describe("usePdfViewerSync", () => {
         scale: 1.0,
         onScaleChange: vi.fn(),
         onPageChange,
-      })
+      }),
     );
 
     // onPageChange should never be called since there's no eventBus

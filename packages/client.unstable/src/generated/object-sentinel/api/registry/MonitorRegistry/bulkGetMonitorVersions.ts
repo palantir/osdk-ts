@@ -17,8 +17,7 @@
 import { type ConjureContext, conjureFetch } from "conjure-lite";
 import type {
   BulkGetMonitorVersionsRequest as _api_registry_BulkGetMonitorVersionsRequest,
-  BulkGetMonitorVersionsResponse
-    as _api_registry_BulkGetMonitorVersionsResponse,
+  BulkGetMonitorVersionsResponse as _api_registry_BulkGetMonitorVersionsResponse,
 } from "../__components.js";
 
 /**

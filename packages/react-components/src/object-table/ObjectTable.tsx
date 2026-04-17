@@ -52,10 +52,7 @@ import type { EditableConfig } from "./utils/types.js";
 
 export function ObjectTable<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<
-    string,
-    never
-  >,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
   FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
     string,
     never
@@ -96,13 +93,11 @@ export function ObjectTable<
     Q,
     RDPs,
     FunctionColumns
-  >(
-    {
-      orderBy,
-      defaultOrderBy,
-      onOrderByChanged,
-    },
-  );
+  >({
+    orderBy,
+    defaultOrderBy,
+    onOrderByChanged,
+  });
 
   const { data, fetchMore, isLoading, error } = useObjectTableData<
     Q,
@@ -123,10 +118,7 @@ export function ObjectTable<
     Q,
     RDPs,
     FunctionColumns
-  >(
-    objectType,
-    columnDefinitions,
-  );
+  >(objectType, columnDefinitions);
 
   const {
     rowSelection,
@@ -143,15 +135,13 @@ export function ObjectTable<
     data,
   });
 
-  const selectionColumn = useSelectionColumn<Q, RDPs>(
-    {
-      selectionMode,
-      isAllSelected,
-      hasSelection,
-      onToggleAll,
-      onToggleRow,
-    },
-  );
+  const selectionColumn = useSelectionColumn<Q, RDPs>({
+    selectionMode,
+    isAllSelected,
+    hasSelection,
+    onToggleAll,
+    onToggleRow,
+  });
 
   const {
     columnVisibility,
@@ -235,17 +225,20 @@ export function ObjectTable<
 
   const isTableLoading = isLoading || isColumnsLoading;
 
-  const headerMenuFeatureFlags: HeaderMenuFeatureFlags = useMemo(() => ({
-    showSortingItems: enableOrdering,
-    showPinningItems: enableColumnPinning,
-    showResizeItem: enableColumnResizing,
-    showConfigItem: enableColumnConfig,
-  }), [
-    enableOrdering,
-    enableColumnPinning,
-    enableColumnResizing,
-    enableColumnConfig,
-  ]);
+  const headerMenuFeatureFlags: HeaderMenuFeatureFlags = useMemo(
+    () => ({
+      showSortingItems: enableOrdering,
+      showPinningItems: enableColumnPinning,
+      showResizeItem: enableColumnResizing,
+      showConfigItem: enableColumnConfig,
+    }),
+    [
+      enableOrdering,
+      enableColumnPinning,
+      enableColumnResizing,
+      enableColumnConfig,
+    ],
+  );
 
   return (
     <BaseTable<Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>>

@@ -96,9 +96,12 @@ describe(createEditBatch, () => {
     editBatch.create(Task, { id: 3 });
     editBatch.delete({ $apiName: "Task", $primaryKey: 0 });
     editBatch.delete(taskInstance);
-    editBatch.update({ $apiName: "Task", $primaryKey: 0 }, {
-      name: "My New Task Name",
-    });
+    editBatch.update(
+      { $apiName: "Task", $primaryKey: 0 },
+      {
+        name: "My New Task Name",
+      },
+    );
     editBatch.update(taskInstance, { name: "My Very New Task Name" });
     editBatch.update({ $apiName: "Task", $primaryKey: 3 }, {});
     editBatch.create(Task, { id: 0, name: "My Task Name" });
@@ -109,11 +112,14 @@ describe(createEditBatch, () => {
       fooSpt: "created interface",
     });
     editBatch.update(fooInterfaceInstance, { fooSpt: "fooSpt" });
-    editBatch.update({
-      $apiName: "FooInterface",
-      $objectType: "FooObjectType",
-      $primaryKey: 22,
-    }, { fooSpt: "fooSpt2" });
+    editBatch.update(
+      {
+        $apiName: "FooInterface",
+        $objectType: "FooObjectType",
+        $primaryKey: 22,
+      },
+      { fooSpt: "fooSpt2" },
+    );
     editBatch.delete(fooInterfaceInstance);
 
     editBatch.link({ $apiName: "Employee", $primaryKey: 0 }, "visitedOffices", {

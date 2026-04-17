@@ -17,20 +17,16 @@
 import type { CommonAuthArgs, LoginArgs } from "@osdk/cli.common";
 import type { CommandModule } from "yargs";
 
-export const command: CommandModule<
-  CommonAuthArgs,
-  LoginArgs
-> = {
+export const command: CommandModule<CommonAuthArgs, LoginArgs> = {
   command: "login",
   describe: "Authenticate with an application ID",
   builder: (argv) => {
-    return argv
-      .option("clientId", {
-        alias: "applicationId", // for backwards compatibility
-        type: "string",
-        demandOption: true,
-        describe: "OAuth client ID for application",
-      });
+    return argv.option("clientId", {
+      alias: "applicationId", // for backwards compatibility
+      type: "string",
+      demandOption: true,
+      describe: "OAuth client ID for application",
+    });
   },
   handler: async (args) => {
     const command = await import("@osdk/cli.common/loginFlow");

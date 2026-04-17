@@ -29,10 +29,7 @@ interface SortableFilterListItemProps<D> {
   filterKey: string;
   label: string;
   filterState: FilterState | undefined;
-  onFilterStateChanged: (
-    filterKey: string,
-    state: FilterState,
-  ) => void;
+  onFilterStateChanged: (filterKey: string, state: FilterState) => void;
   onFilterRemoved?: (filterKey: string) => void;
   renderInput: RenderFilterInput<D>;
 }
@@ -56,10 +53,13 @@ function SortableFilterListItemInner<D>({
     isDragging,
   } = useSortable({ id });
 
-  const style = useMemo<React.CSSProperties>(() => ({
-    transform: CSS.Transform.toString(transform),
-    transition: transition ?? undefined,
-  }), [transform, transition]);
+  const style = useMemo<React.CSSProperties>(
+    () => ({
+      transform: CSS.Transform.toString(transform),
+      transition: transition ?? undefined,
+    }),
+    [transform, transition],
+  );
 
   return (
     <div

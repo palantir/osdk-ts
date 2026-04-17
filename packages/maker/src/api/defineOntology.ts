@@ -62,24 +62,21 @@ export let dependencies: Record<string, string>;
 /** @internal */
 export let namespace: string;
 
-export function updateOntology<
-  T extends OntologyEntityType,
->(
-  entity: T,
-): void {
+export function updateOntology<T extends OntologyEntityType>(entity: T): void {
   if (entity.__type !== OntologyEntityTypeEnum.VALUE_TYPE) {
     ontologyDefinition[entity.__type][entity.apiName] = entity;
     return;
   }
   // value types are a special case
   if (
-    ontologyDefinition[OntologyEntityTypeEnum.VALUE_TYPE][entity.apiName]
-      === undefined
+    ontologyDefinition[OntologyEntityTypeEnum.VALUE_TYPE][entity.apiName] ===
+    undefined
   ) {
     ontologyDefinition[OntologyEntityTypeEnum.VALUE_TYPE][entity.apiName] = [];
   }
-  ontologyDefinition[OntologyEntityTypeEnum.VALUE_TYPE][entity.apiName]
-    .push(entity);
+  ontologyDefinition[OntologyEntityTypeEnum.VALUE_TYPE][entity.apiName].push(
+    entity,
+  );
 }
 
 export async function defineOntology(
@@ -113,7 +110,7 @@ export async function defineOntology(
   try {
     await body();
   } catch (e) {
-    // eslint-disable-next-line no-console
+    // oxlint-disable-next-line no-console
     console.error(
       "Unexpected error while processing the body of the ontology",
       e,
@@ -152,7 +149,7 @@ export function writeStaticObjects(outputDir: string): void {
     fs.mkdirSync(codegenDir, { recursive: true });
   }
 
-  Object.values(typeDirs).forEach(typeDirNameFromMap => {
+  Object.values(typeDirs).forEach((typeDirNameFromMap) => {
     const currentTypeDirPath = path.join(codegenDir, typeDirNameFromMap);
     if (fs.existsSync(currentTypeDirPath)) {
       fs.rmSync(currentTypeDirPath, { recursive: true, force: true });
@@ -172,9 +169,10 @@ export function writeStaticObjects(outputDir: string): void {
 
       Object.entries(entities).forEach(
         ([apiName, entity]: [string, OntologyEntityType]) => {
-          const entityFileNameBase = camel(withoutNamespace(apiName))
-            + (ontologyTypeEnumKey as OntologyEntityTypeEnum
-                === OntologyEntityTypeEnum.VALUE_TYPE
+          const entityFileNameBase =
+            camel(withoutNamespace(apiName)) +
+            ((ontologyTypeEnumKey as OntologyEntityTypeEnum) ===
+            OntologyEntityTypeEnum.VALUE_TYPE
               ? "ValueType"
               : "");
           const filePath = path.join(typeDirPath, `${entityFileNameBase}.ts`);
@@ -210,8 +208,8 @@ export const ${entityFileNameBase}: ${entityTypeName} = wrapWithProxy(${entityFi
   );
 
   if (topLevelExportStatements.length > 0) {
-    const mainIndexContent = dependencyInjectionString()
-      + topLevelExportStatements.join("\n") + "\n";
+    const mainIndexContent =
+      dependencyInjectionString() + topLevelExportStatements.join("\n") + "\n";
     const mainIndexFilePath = path.join(outputDir, "index.ts");
     fs.writeFileSync(mainIndexFilePath, mainIndexContent, { flag: "w" });
   }
@@ -223,32 +221,33 @@ export function buildDatasource(
   classificationMarkingGroupName?: string,
   mandatoryMarkingGroupName?: string,
 ): OntologyIrObjectTypeDatasource {
-  const needsSecurity = classificationMarkingGroupName !== undefined
-    || mandatoryMarkingGroupName !== undefined;
+  const needsSecurity =
+    classificationMarkingGroupName !== undefined ||
+    mandatoryMarkingGroupName !== undefined;
 
   const securityConfig = needsSecurity
     ? {
-      classificationConstraint: classificationMarkingGroupName
-        ? {
-          markingGroupName: classificationMarkingGroupName,
-        }
-        : undefined,
-      markingConstraint: mandatoryMarkingGroupName
-        ? {
-          markingGroupName: mandatoryMarkingGroupName,
-        }
-        : undefined,
-    }
+        classificationConstraint: classificationMarkingGroupName
+          ? {
+              markingGroupName: classificationMarkingGroupName,
+            }
+          : undefined,
+        markingConstraint: mandatoryMarkingGroupName
+          ? {
+              markingGroupName: mandatoryMarkingGroupName,
+            }
+          : undefined,
+      }
     : undefined;
-  return ({
+  return {
     datasourceName: apiName,
     datasource: definition,
     editsConfiguration: {
       onlyAllowPrivilegedEdits: false,
     },
     redacted: false,
-    ...((securityConfig !== undefined) && { dataSecurity: securityConfig }),
-  });
+    ...(securityConfig !== undefined && { dataSecurity: securityConfig }),
+  };
 }
 
 export function cleanAndValidateLinkTypeId(apiName: string): string {
@@ -257,7 +256,8 @@ export function cleanAndValidateLinkTypeId(apiName: string): string {
   // Insert a dash after a sequence of uppercase letters when followed by a lowercase letter
   // then convert the whole string to lowercase
   // e.g., apiName, APIname, and apiNAME will all be converted to api-name
-  const linkTypeId = step1.replace(/([A-Z])([A-Z][a-z])/g, "$1-$2")
+  const linkTypeId = step1
+    .replace(/([A-Z])([A-Z][a-z])/g, "$1-$2")
     .toLowerCase();
 
   const VALIDATION_PATTERN = /^([a-z][a-z0-9\-]*)$/;
@@ -328,8 +328,8 @@ export function convertAction(
     convertActionParameters(action);
   const actionSections: Record<SectionId, OntologyIrSection> =
     convertActionSections(action);
-  const parameterOrdering = action.parameterOrdering
-    ?? (action.parameters ?? []).map(p => p.id);
+  const parameterOrdering =
+    action.parameterOrdering ?? (action.parameters ?? []).map((p) => p.id);
   return {
     actionType: {
       actionTypeLogic: {
@@ -361,33 +361,34 @@ export function convertAction(
             blueprint: action.icon ?? { locator: "edit", color: "#000000" },
           },
           successMessage: action.submissionMetadata?.successMessage
-            ? [{
-              type: "message",
-              message: action.submissionMetadata.successMessage,
-            }]
+            ? [
+                {
+                  type: "message",
+                  message: action.submissionMetadata.successMessage,
+                },
+              ]
             : [],
           typeClasses: action.typeClasses ?? [],
-          ...(action.submissionMetadata?.submitButtonDisplayMetadata
-            && {
-              submitButtonDisplayMetadata:
-                action.submissionMetadata.submitButtonDisplayMetadata,
-            }),
-          ...(action.submissionMetadata?.undoButtonConfiguration
-            && {
-              undoButtonConfiguration:
-                action.submissionMetadata.undoButtonConfiguration,
-            }),
+          ...(action.submissionMetadata?.submitButtonDisplayMetadata && {
+            submitButtonDisplayMetadata:
+              action.submissionMetadata.submitButtonDisplayMetadata,
+          }),
+          ...(action.submissionMetadata?.undoButtonConfiguration && {
+            undoButtonConfiguration:
+              action.submissionMetadata.undoButtonConfiguration,
+          }),
         },
-        parameterOrdering: parameterOrdering,
+        parameterOrdering,
         formContentOrdering: getFormContentOrdering(action, parameterOrdering),
         parameters: actionParameters,
         sections: actionSections,
-        status: typeof action.status === "string"
-          ? {
-            type: action.status,
-            [action.status]: {},
-          } as unknown as ActionTypeStatus
-          : action.status,
+        status:
+          typeof action.status === "string"
+            ? ({
+                type: action.status,
+                [action.status]: {},
+              } as unknown as ActionTypeStatus)
+            : action.status,
         entities: action.entities,
       },
     },
@@ -406,8 +407,7 @@ export function extractAllowedValues(
           oneOf: {
             labelledValues: allowedValues.oneOf,
             otherValueAllowed: {
-              allowed: allowedValues.otherValueAllowed
-                ?? false,
+              allowed: allowedValues.otherValueAllowed ?? false,
             },
           },
         },
@@ -435,15 +435,11 @@ export function extractAllowedValues(
         text: {
           type: "text",
           text: {
-            ...(minLength === undefined
-              ? {}
-              : { minLength: minLength }),
-            ...(maxLength === undefined
-              ? {}
-              : { maxLength: maxLength }),
+            ...(minLength === undefined ? {} : { minLength }),
+            ...(maxLength === undefined ? {} : { maxLength }),
             ...(regex === undefined
               ? {}
-              : { regex: { regex: regex, failureMessage: "Invalid input" } }),
+              : { regex: { regex, failureMessage: "Invalid input" } }),
           },
         },
       };
@@ -488,22 +484,23 @@ export function extractAllowedValues(
         user: {
           type: "user",
           user: {
-            filter: (allowedValues.fromGroups ?? []).map(group => {
+            filter: (allowedValues.fromGroups ?? []).map((group) => {
               return {
                 type: "groupFilter",
                 groupFilter: {
-                  groupId: group.type === "static"
-                    ? {
-                      type: "staticValue",
-                      staticValue: {
-                        type: "string",
-                        string: group.name,
-                      },
-                    }
-                    : {
-                      type: "parameterId",
-                      parameterId: group.parameter,
-                    },
+                  groupId:
+                    group.type === "static"
+                      ? {
+                          type: "staticValue",
+                          staticValue: {
+                            type: "string",
+                            string: group.name,
+                          },
+                        }
+                      : {
+                          type: "parameterId",
+                          parameterId: group.parameter,
+                        },
                 },
               };
             }),
@@ -528,7 +525,7 @@ export function extractAllowedValues(
           [k]: {},
         },
       } as unknown as OntologyIrAllowedParameterValues;
-      // TODO(dpaquin): there's probably a TS clean way to do this
+    // TODO(dpaquin): there's probably a TS clean way to do this
   }
 }
 
@@ -537,9 +534,8 @@ export function renderHintFromBaseType(
   validation?: ActionParameterValidation,
 ): ParameterRenderHint {
   // TODO(dpaquin): these are just guesses, we should find where they're actually defined
-  const type = typeof parameter.type === "string"
-    ? parameter.type
-    : parameter.type.type;
+  const type =
+    typeof parameter.type === "string" ? parameter.type : parameter.type.type;
   switch (type) {
     case "boolean":
     case "booleanList":
@@ -555,8 +551,8 @@ export function renderHintFromBaseType(
       return { type: "numericInput", numericInput: {} };
     case "string":
       if (
-        validation?.allowedValues?.type === "user"
-        || validation?.allowedValues?.type === "multipassGroup"
+        validation?.allowedValues?.type === "user" ||
+        validation?.allowedValues?.type === "multipassGroup"
       ) {
         return { type: "userDropdown", userDropdown: {} };
       }

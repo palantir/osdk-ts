@@ -54,11 +54,10 @@ export class CodeTransformer {
    * @returns Code with fixed ESM imports
    */
   static fixEsmImports(code: string): string {
-    return code
-      .replace(
-        /import { client } from "\.\/client";/g,
-        "import { client } from \"./client.js\";",
-      );
+    return code.replace(
+      /import { client } from "\.\/client";/g,
+      'import { client } from "./client.js";',
+    );
   }
 
   /**
@@ -85,30 +84,34 @@ export class CodeTransformer {
     let indentLevel = 0;
     const indent = " ".repeat(indentSize);
 
-    return lines.map(line => {
-      const trimmed = line.trim();
+    return lines
+      .map((line) => {
+        const trimmed = line.trim();
 
-      // Decrease indent for closing braces
-      if (
-        trimmed.startsWith("}") || trimmed.startsWith("]")
-        || trimmed.startsWith(")")
-      ) {
-        indentLevel = Math.max(0, indentLevel - 1);
-      }
+        // Decrease indent for closing braces
+        if (
+          trimmed.startsWith("}") ||
+          trimmed.startsWith("]") ||
+          trimmed.startsWith(")")
+        ) {
+          indentLevel = Math.max(0, indentLevel - 1);
+        }
 
-      const formatted = indentLevel > 0
-        ? indent.repeat(indentLevel) + trimmed
-        : trimmed;
+        const formatted =
+          indentLevel > 0 ? indent.repeat(indentLevel) + trimmed : trimmed;
 
-      // Increase indent for opening braces
-      if (
-        trimmed.endsWith("{") || trimmed.endsWith("[") || trimmed.endsWith("(")
-      ) {
-        indentLevel++;
-      }
+        // Increase indent for opening braces
+        if (
+          trimmed.endsWith("{") ||
+          trimmed.endsWith("[") ||
+          trimmed.endsWith("(")
+        ) {
+          indentLevel++;
+        }
 
-      return formatted;
-    }).join("\n");
+        return formatted;
+      })
+      .join("\n");
   }
 
   /**

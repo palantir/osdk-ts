@@ -59,23 +59,25 @@ export namespace WidgetMessage {
   /**
    * Emit when the widget is ready to start receiving messages from the host Foundry UI
    */
-  export interface Ready
-    extends WidgetBaseMessage<"widget.ready", Payload.Ready>
-  {}
+  export interface Ready extends WidgetBaseMessage<
+    "widget.ready",
+    Payload.Ready
+  > {}
 
   /**
    * Emit when the widget document body element resizes
    */
-  export interface Resize
-    extends WidgetBaseMessage<"widget.resize", Payload.Resize>
-  {}
+  export interface Resize extends WidgetBaseMessage<
+    "widget.resize",
+    Payload.Resize
+  > {}
 
   /**
    * Event payload that the widget sends to the host Foundry UI
    */
-  export interface EmitEvent<C extends WidgetConfig<C["parameters"]>>
-    extends WidgetBaseMessage<"widget.emit-event", Payload.EmitEvent<C>>
-  {}
+  export interface EmitEvent<
+    C extends WidgetConfig<C["parameters"]>,
+  > extends WidgetBaseMessage<"widget.emit-event", Payload.EmitEvent<C>> {}
 }
 
 export type WidgetMessage<C extends WidgetConfig<C["parameters"]>> =
@@ -101,18 +103,17 @@ export function isWidgetEmitEventMessage<
   return event.type === "widget.emit-event";
 }
 
-type WidgetMessageVisitor<C extends WidgetConfig<C["parameters"]>> =
-  & {
-    [T in WidgetMessage<C>["type"]]: (
-      payload: Extract<WidgetMessage<C>, { type: T }> extends {
-        payload: infer P;
-      } ? P
-        : never,
-    ) => void;
-  }
-  & {
-    _unknown: (type: string) => void;
-  };
+type WidgetMessageVisitor<C extends WidgetConfig<C["parameters"]>> = {
+  [T in WidgetMessage<C>["type"]]: (
+    payload: Extract<WidgetMessage<C>, { type: T }> extends {
+      payload: infer P;
+    }
+      ? P
+      : never,
+  ) => void;
+} & {
+  _unknown: (type: string) => void;
+};
 
 export function visitWidgetMessage<C extends WidgetConfig<C["parameters"]>>(
   message: WidgetMessage<C>,

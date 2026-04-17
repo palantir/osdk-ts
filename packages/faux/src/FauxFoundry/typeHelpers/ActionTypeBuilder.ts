@@ -84,9 +84,10 @@ export class ActionTypeBuilder<
       V extends SimpleActionParamTypes ? TH_ActionParameterV2<V, R> : never
     >
   > {
-    const v = (typeof parameter === "string")
-      ? createActionParameterV2(parameter, required)
-      : parameter;
+    const v =
+      typeof parameter === "string"
+        ? createActionParameterV2(parameter, required)
+        : parameter;
 
     return new ActionTypeBuilder({
       ...this.action,

@@ -2,4 +2,4 @@ type: feature
 feature:
   description: Add count to aggregations
   links:
-  - https://github.com/palantir/osdk-ts/pull/84
+    - https://github.com/palantir/osdk-ts/pull/84

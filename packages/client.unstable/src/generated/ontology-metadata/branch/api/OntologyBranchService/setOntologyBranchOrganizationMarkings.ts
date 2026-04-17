@@ -16,10 +16,8 @@
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
 import type {
-  SetOntologyBranchOrganizationMarkingsRequest
-    as _branch_api_SetOntologyBranchOrganizationMarkingsRequest,
-  SetOntologyBranchOrganizationMarkingsResponse
-    as _branch_api_SetOntologyBranchOrganizationMarkingsResponse,
+  SetOntologyBranchOrganizationMarkingsRequest as _branch_api_SetOntologyBranchOrganizationMarkingsRequest,
+  SetOntologyBranchOrganizationMarkingsResponse as _branch_api_SetOntologyBranchOrganizationMarkingsResponse,
 } from "../__components.js";
 
 /**

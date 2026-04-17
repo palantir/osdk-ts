@@ -83,8 +83,9 @@ export interface ObserveObjectSetOptions<
   $loadPropertySecurityMetadata?: boolean;
 }
 
-export interface ObjectSetQueryOptions
-  extends ObserveObjectSetOptions<any, any>
-{
+export interface ObjectSetQueryOptions extends ObserveObjectSetOptions<
+  any,
+  any
+> {
   baseObjectSet: ObjectSet<any>;
 }

@@ -35,18 +35,18 @@ export function defineImportObject(
   const properties: Array<ObjectPropertyType> = Object.entries(
     objectDef.properties ?? {},
   ).map(([apiName, type]) => ({
-    apiName: apiName,
+    apiName,
     displayName: convertToDisplayName(apiName),
     type: type.type,
   }));
   const finalObject: ObjectType = {
     apiName: objectDef.apiName,
-    properties: properties,
+    properties,
     __type: OntologyEntityTypeEnum.OBJECT_TYPE,
 
     // the rest don't matter for now
-    displayName: objectDef.displayName
-      ?? convertToDisplayName(objectDef.apiName),
+    displayName:
+      objectDef.displayName ?? convertToDisplayName(objectDef.apiName),
     pluralDisplayName: convertToPluralDisplayName(objectDef.apiName),
     primaryKeyPropertyApiName: properties[0]?.apiName,
     titlePropertyApiName: properties[0]?.apiName,

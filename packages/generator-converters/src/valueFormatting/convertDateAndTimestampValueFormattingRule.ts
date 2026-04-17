@@ -38,9 +38,7 @@ export function convertTimestampFormattingRule(
   return {
     type: "timestamp",
     format: convertDatetimeFormat(wireFormatting.format),
-    displayTimezone: convertDatetimeTimezone(
-      wireFormatting.displayTimezone,
-    ),
+    displayTimezone: convertDatetimeTimezone(wireFormatting.displayTimezone),
   };
 }
 

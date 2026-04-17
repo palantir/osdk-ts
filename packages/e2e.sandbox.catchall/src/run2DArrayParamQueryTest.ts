@@ -32,12 +32,18 @@ const client = createClient(
 
 console.log(
   await client(getFirstSecondElementOf2DArray).executeFunction({
-    "array": [[0, 1], [2, 3]],
+    "array": [
+      [0, 1],
+      [2, 3],
+    ],
   }),
 ); // should be 1
 
 const res = await client(identity2DArray).executeFunction({
-  "array": [[0, 1], [2, 3]],
+  "array": [
+    [0, 1],
+    [2, 3],
+  ],
 });
 const b = res[0][0];
 console.log(res); // should return the same array

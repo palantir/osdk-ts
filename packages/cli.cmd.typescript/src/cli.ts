@@ -19,16 +19,13 @@ import { consola } from "consola";
 import { generateCommand } from "./generate/generate.js";
 
 export async function cli(args: string[] = process.argv): Promise<unknown> {
-  consola.info(
-    `Palantir OSDK CLI ${process.env.PACKAGE_VERSION}\n`,
-  );
+  consola.info(`Palantir OSDK CLI ${process.env.PACKAGE_VERSION}\n`);
 
   const base = getYargsBase(args);
 
   // Special handling where failures happen before yargs does its error handling within .fail
   try {
-    return await base
-      .command(generateCommand).parseAsync();
+    return await base.command(generateCommand).parseAsync();
   } catch (err) {
     if (err instanceof ExitProcessError) {
       consola.error(err);

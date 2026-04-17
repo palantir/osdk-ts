@@ -20,26 +20,24 @@ import type { Canonical } from "./Canonical.js";
 import { WeakRefTrie } from "./WeakRefTrie.js";
 
 export class OrderByCanonicalizer {
-  #trie = new WeakRefTrie(
-    (array: Array<string>) => {
-      const pairs = array.reduce<Array<[string, "asc" | "desc"]>>(
-        (result, _, index, array) => {
-          if (index % 2 === 0 && array[index] != null) {
-            result.push(
-              array.slice(index, index + 2) as [string, "asc" | "desc"],
-            );
-          }
-          return result;
-        },
-        [],
-      );
-      const data = Object.fromEntries(pairs) satisfies Record<
-        string,
-        "asc" | "desc"
-      > as Canonical<OrderBy<ObjectTypeDefinition>>;
-      return data;
-    },
-  );
+  #trie = new WeakRefTrie((array: Array<string>) => {
+    const pairs = array.reduce<Array<[string, "asc" | "desc"]>>(
+      (result, _, index, array) => {
+        if (index % 2 === 0 && array[index] != null) {
+          result.push(
+            array.slice(index, index + 2) as [string, "asc" | "desc"],
+          );
+        }
+        return result;
+      },
+      [],
+    );
+    const data = Object.fromEntries(pairs) satisfies Record<
+      string,
+      "asc" | "desc"
+    > as Canonical<OrderBy<ObjectTypeDefinition>>;
+    return data;
+  });
 
   canonicalize(
     orderBy: Record<string, "asc" | "desc" | undefined>,

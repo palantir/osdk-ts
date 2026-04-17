@@ -49,9 +49,9 @@ export interface UseMarkingCategoriesResult {
  * List all marking categories.
  * @param options Options to control the query.
  */
-export function useMarkingCategories(
-  { enabled = true }: UseMarkingCategoriesOptions = {},
-): UseMarkingCategoriesResult {
+export function useMarkingCategories({
+  enabled = true,
+}: UseMarkingCategoriesOptions = {}): UseMarkingCategoriesResult {
   const { client } = React.useContext(OsdkContext2);
 
   const handleQuery = React.useCallback(() => {

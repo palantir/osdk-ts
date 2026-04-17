@@ -17,10 +17,8 @@
 import { type ConjureContext, conjureFetch } from "conjure-lite";
 import type { OrganizationRid as _api_OrganizationRid } from "../../__components.js";
 import type {
-  SetUsageSettingsByOrganizationRequest
-    as _api_usage_SetUsageSettingsByOrganizationRequest,
-  SetUsageSettingsByOrganizationResponse
-    as _api_usage_SetUsageSettingsByOrganizationResponse,
+  SetUsageSettingsByOrganizationRequest as _api_usage_SetUsageSettingsByOrganizationRequest,
+  SetUsageSettingsByOrganizationResponse as _api_usage_SetUsageSettingsByOrganizationResponse,
 } from "../__components.js";
 
 /**

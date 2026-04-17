@@ -128,11 +128,11 @@ export type InterfaceActionTypeUserDefinition = {
 export function defineAction(actionDefInput: ActionTypeDefinition): ActionType {
   const actionDef = cloneDefinition(actionDefInput);
   const apiName = namespace + actionDef.apiName;
-  const parameterIds = (actionDef.parameters ?? []).map(p => p.id);
+  const parameterIds = (actionDef.parameters ?? []).map((p) => p.id);
 
   if (
-    ontologyDefinition[OntologyEntityTypeEnum.ACTION_TYPE][apiName]
-      !== undefined
+    ontologyDefinition[OntologyEntityTypeEnum.ACTION_TYPE][apiName] !==
+    undefined
   ) {
     throw new Error(
       `Action type with apiName ${actionDef.apiName} is already defined`,
@@ -149,20 +149,20 @@ export function defineAction(actionDefInput: ActionTypeDefinition): ActionType {
     `Parameter ids must be unique`,
   );
 
-  const parameterIdsNotFound = Array.from(referencedParameterIds(actionDef))
-    .filter(p => !parameterIdsSet.has(p));
+  const parameterIdsNotFound = Array.from(
+    referencedParameterIds(actionDef),
+  ).filter((p) => !parameterIdsSet.has(p));
   invariant(
     parameterIdsNotFound.length === 0,
-    `Parameters ${
-      JSON.stringify(parameterIdsNotFound)
-    } were referenced but not defined`,
+    `Parameters ${JSON.stringify(
+      parameterIdsNotFound,
+    )} were referenced but not defined`,
   );
 
   const definedSectionIds = new Set(Object.keys(actionDef.sections ?? []));
   const undefinedSectionsInOrdering = (actionDef.formContentOrdering ?? [])
-    .flatMap(
-      s => s.type === "parameterId" ? [] : [s.sectionId],
-    ).filter(sId => !definedSectionIds.has(sId));
+    .flatMap((s) => (s.type === "parameterId" ? [] : [s.sectionId]))
+    .filter((sId) => !definedSectionIds.has(sId));
   invariant(
     undefinedSectionsInOrdering.length === 0,
     `Sections [${undefinedSectionsInOrdering}] were referenced in content ordering but not defined`,
@@ -172,28 +172,30 @@ export function defineAction(actionDefInput: ActionTypeDefinition): ActionType {
     actionDef.rules.length > 0,
     `Action type ${actionDef.apiName} must have at least one logic rule`,
   );
-  actionDef.rules.forEach(rule => {
+  actionDef.rules.forEach((rule) => {
     if (rule.type === "modifyObjectRule") {
       invariant(
-        parameterIds.some(id => id === rule.modifyObjectRule.objectToModify),
+        parameterIds.some((id) => id === rule.modifyObjectRule.objectToModify),
         `Object to modify parameter must be defined in parameters`,
       );
     }
     if (rule.type === "deleteObjectRule") {
       invariant(
-        parameterIds.some(id => id === rule.deleteObjectRule.objectToDelete),
+        parameterIds.some((id) => id === rule.deleteObjectRule.objectToDelete),
         `Object to delete parameter must be defined in parameters`,
       );
     }
     if (rule.type === "modifyInterfaceRule") {
       // The there must be a parameter for the interface, and the interface there must exist
-      const interfaceParam = actionDef.parameters!.find(p =>
-        p.id === rule.modifyInterfaceRule.interfaceObjectToModifyParameter
+      const interfaceParam = actionDef.parameters!.find(
+        (p) =>
+          p.id === rule.modifyInterfaceRule.interfaceObjectToModifyParameter,
       );
       invariant(
-        interfaceParam !== undefined && typeof interfaceParam.type === "object"
-          && (interfaceParam.type.type === "interfaceReference"
-            || interfaceParam.type.type === "interfaceReferenceList"),
+        interfaceParam !== undefined &&
+          typeof interfaceParam.type === "object" &&
+          (interfaceParam.type.type === "interfaceReference" ||
+            interfaceParam.type.type === "interfaceReferenceList"),
         `Interface object to modify parameter must be an interface reference`,
       );
       const interfaceReference =
@@ -201,8 +203,8 @@ export function defineAction(actionDefInput: ActionTypeDefinition): ActionType {
           ? interfaceParam.type.interfaceReference.interfaceTypeRid
           : interfaceParam.type.interfaceReferenceList.interfaceTypeRid;
       invariant(
-        ontologyDefinition.INTERFACE_TYPE[interfaceReference] !== undefined
-          || importedTypes.INTERFACE_TYPE[interfaceReference] !== undefined,
+        ontologyDefinition.INTERFACE_TYPE[interfaceReference] !== undefined ||
+          importedTypes.INTERFACE_TYPE[interfaceReference] !== undefined,
         `Interface type ${interfaceReference} does not exist`,
       );
 
@@ -210,10 +212,11 @@ export function defineAction(actionDefInput: ActionTypeDefinition): ActionType {
       const interfaceType =
         ontologyDefinition.INTERFACE_TYPE[interfaceReference];
       Object.keys(rule.modifyInterfaceRule.sharedPropertyValues).forEach(
-        spt => {
+        (spt) => {
           invariant(
-            Object.keys(getFlattenedInterfaceProperties(interfaceType))
-              .includes(spt),
+            Object.keys(
+              getFlattenedInterfaceProperties(interfaceType),
+            ).includes(spt),
             `Shared property type ${spt} does not exist in interface type ${interfaceReference}`,
           );
         },
@@ -221,16 +224,18 @@ export function defineAction(actionDefInput: ActionTypeDefinition): ActionType {
     }
     if (rule.type === "addInterfaceRule") {
       // The referenced interface must exist globally
-      const interfaceType = ontologyDefinition
-        .INTERFACE_TYPE[rule.addInterfaceRule.interfaceApiName]
-        ?? importedTypes.INTERFACE_TYPE[rule.addInterfaceRule.interfaceApiName];
+      const interfaceType =
+        ontologyDefinition.INTERFACE_TYPE[
+          rule.addInterfaceRule.interfaceApiName
+        ] ??
+        importedTypes.INTERFACE_TYPE[rule.addInterfaceRule.interfaceApiName];
       invariant(
         interfaceType !== undefined,
         `Interface type ${rule.addInterfaceRule.interfaceApiName} does not exist`,
       );
 
       // All referenced SPTs must exist on the interface
-      Object.keys(rule.addInterfaceRule.sharedPropertyValues).forEach(spt => {
+      Object.keys(rule.addInterfaceRule.sharedPropertyValues).forEach((spt) => {
         invariant(
           Object.keys(getFlattenedInterfaceProperties(interfaceType)).includes(
             spt,
@@ -263,17 +268,20 @@ export function isPropertyParameter(
   type: PropertyTypeType,
 ): boolean {
   if ("interfaceType" in def) {
-    return (Object.keys(getFlattenedInterfaceProperties(def.interfaceType))
-      .includes(name)
-      && !Object.keys(def.nonParameterMappings ?? {}).includes(name)
-      && !isStruct(type)
-      && !def.excludedProperties?.includes(name));
+    return (
+      Object.keys(getFlattenedInterfaceProperties(def.interfaceType)).includes(
+        name,
+      ) &&
+      !Object.keys(def.nonParameterMappings ?? {}).includes(name) &&
+      !isStruct(type) &&
+      !def.excludedProperties?.includes(name)
+    );
   }
   return (
-    getPropertyKeys(def.objectType).includes(name)
-    && !Object.keys(def.nonParameterMappings ?? {}).includes(name)
-    && !isStruct(type)
-    && !def.excludedProperties?.includes(name)
+    getPropertyKeys(def.objectType).includes(name) &&
+    !Object.keys(def.nonParameterMappings ?? {}).includes(name) &&
+    !isStruct(type) &&
+    !def.excludedProperties?.includes(name)
   );
 }
 
@@ -290,57 +298,62 @@ export function createParameters(
   const targetParams = getTargetParameters(def, parameterSet);
   return [
     ...targetParams,
-    ...Array.from(parameterSet).map(
-      id => {
-        let propertyMetadata;
-        if (id in propertyMap) {
-          propertyMetadata = "sharedPropertyType" in propertyMap[id]
+    ...Array.from(parameterSet).map((id) => {
+      let propertyMetadata;
+      if (id in propertyMap) {
+        propertyMetadata =
+          "sharedPropertyType" in propertyMap[id]
             ? propertyMap[id].sharedPropertyType
             : propertyMap[id];
-        }
-        return {
-          id,
-          displayName: def.parameterConfiguration?.[id]?.displayName
-            ?? propertyMetadata?.displayName
-            ?? uppercaseFirstLetter(id),
-          type: def.parameterConfiguration?.[id]?.customParameterType
-            ?? extractActionParameterType(propertyMetadata!),
-          validation: (def.parameterConfiguration?.[id] !== undefined)
+      }
+      return {
+        id,
+        displayName:
+          def.parameterConfiguration?.[id]?.displayName ??
+          propertyMetadata?.displayName ??
+          uppercaseFirstLetter(id),
+        type:
+          def.parameterConfiguration?.[id]?.customParameterType ??
+          extractActionParameterType(propertyMetadata!),
+        validation:
+          def.parameterConfiguration?.[id] !== undefined
             ? {
-              ...def.parameterConfiguration?.[id],
-              allowedValues: def.parameterConfiguration?.[id].allowedValues
-                ?? (def.parameterConfiguration?.[id].customParameterType
-                  ? extractAllowedValuesFromActionParameterType(
-                    def.parameterConfiguration?.[id].customParameterType,
-                  )
-                  : extractAllowedValuesFromPropertyType(
-                    propertyMetadata!.type,
-                  )),
-              required: def.parameterConfiguration?.[id].required
-                ?? (propertyMetadata?.nullability?.noNulls
-                  ?? false),
-            }
+                ...def.parameterConfiguration?.[id],
+                allowedValues:
+                  def.parameterConfiguration?.[id].allowedValues ??
+                  (def.parameterConfiguration?.[id].customParameterType
+                    ? extractAllowedValuesFromActionParameterType(
+                        def.parameterConfiguration?.[id].customParameterType,
+                      )
+                    : extractAllowedValuesFromPropertyType(
+                        propertyMetadata!.type,
+                      )),
+                required:
+                  def.parameterConfiguration?.[id].required ??
+                  propertyMetadata?.nullability?.noNulls ??
+                  false,
+              }
             : {
-              required: (propertyMetadata!.array ?? false)
-                ? {
-                  listLength: propertyMetadata!.nullability
-                      ?.noEmptyCollections
-                    ? { min: 1 }
-                    : {},
-                }
-                : requiredMap?.[id]
-                  ?? propertyMetadata?.nullability?.noNulls
-                  ?? false,
-              allowedValues: extractAllowedValuesFromPropertyType(
-                propertyMetadata?.type!,
-              ),
-            },
-          defaultValue: def.parameterConfiguration?.[id]?.defaultValue,
-          description: def.parameterConfiguration?.[id]?.description,
-          renderHint: def.parameterConfiguration?.[id]?.renderHint,
-        };
-      },
-    ),
+                required:
+                  (propertyMetadata!.array ?? false)
+                    ? {
+                        listLength: propertyMetadata!.nullability
+                          ?.noEmptyCollections
+                          ? { min: 1 }
+                          : {},
+                      }
+                    : (requiredMap?.[id] ??
+                      propertyMetadata?.nullability?.noNulls ??
+                      false),
+                allowedValues: extractAllowedValuesFromPropertyType(
+                  propertyMetadata?.type!,
+                ),
+              },
+        defaultValue: def.parameterConfiguration?.[id]?.defaultValue,
+        description: def.parameterConfiguration?.[id]?.description,
+        renderHint: def.parameterConfiguration?.[id]?.renderHint,
+      };
+    }),
   ];
 }
 
@@ -349,22 +362,23 @@ function getTargetParameters(
   parameterSet: Set<string>,
 ): Array<ActionParameter> {
   const targetParams: Array<ActionParameter> = [];
-  parameterSet.forEach(name => {
+  parameterSet.forEach((name) => {
     if (name === MODIFY_OBJECT_PARAMETER) {
       targetParams.push({
         id: MODIFY_OBJECT_PARAMETER,
-        displayName: def.parameterConfiguration?.[name]?.displayName
-          ?? "Modify object",
-        type: (typeof def.parameterConfiguration?.[name]?.required === "object"
-            && "listLength" in def.parameterConfiguration?.[name]?.required)
-          ? {
-            type: "objectReferenceList",
-            objectReferenceList: { objectTypeId: def.objectType!.apiName },
-          }
-          : {
-            type: "objectReference",
-            objectReference: { objectTypeId: def.objectType!.apiName },
-          },
+        displayName:
+          def.parameterConfiguration?.[name]?.displayName ?? "Modify object",
+        type:
+          typeof def.parameterConfiguration?.[name]?.required === "object" &&
+          "listLength" in def.parameterConfiguration?.[name]?.required
+            ? {
+                type: "objectReferenceList",
+                objectReferenceList: { objectTypeId: def.objectType!.apiName },
+              }
+            : {
+                type: "objectReference",
+                objectReference: { objectTypeId: def.objectType!.apiName },
+              },
         validation: {
           ...def.parameterConfiguration?.[name],
           allowedValues: { type: "objectQuery" },
@@ -378,26 +392,27 @@ function getTargetParameters(
     if (name === CREATE_OR_MODIFY_OBJECT_PARAMETER) {
       targetParams.push({
         id: CREATE_OR_MODIFY_OBJECT_PARAMETER,
-        displayName: def.parameterConfiguration?.[name]?.displayName
-          ?? "Create or modify object",
+        displayName:
+          def.parameterConfiguration?.[name]?.displayName ??
+          "Create or modify object",
         type: {
           type: "objectReference",
           objectReference: {
             objectTypeId: def.objectType!.apiName,
             maybeCreateObjectOption: !("primaryKeyOption" in def)
               ? {
-                type: "autoGenerated",
-                autoGenerated: {},
-              }
-              : (def.primaryKeyOption === "autoGenerated")
-              ? {
-                type: "autoGenerated",
-                autoGenerated: {},
-              }
-              : {
-                type: "userInput",
-                userInput: {},
-              },
+                  type: "autoGenerated",
+                  autoGenerated: {},
+                }
+              : def.primaryKeyOption === "autoGenerated"
+                ? {
+                    type: "autoGenerated",
+                    autoGenerated: {},
+                  }
+                : {
+                    type: "userInput",
+                    userInput: {},
+                  },
           },
         },
         validation: {
@@ -413,18 +428,19 @@ function getTargetParameters(
     if (name === DELETE_OBJECT_PARAMETER && !("interfaceType" in def)) {
       targetParams.push({
         id: DELETE_OBJECT_PARAMETER,
-        displayName: def.parameterConfiguration?.[name]?.displayName
-          ?? "Delete object",
-        type: (typeof def.parameterConfiguration?.[name]?.required === "object"
-            && "listLength" in def.parameterConfiguration?.[name]?.required)
-          ? {
-            type: "objectReferenceList",
-            objectReferenceList: { objectTypeId: def.objectType!.apiName },
-          }
-          : {
-            type: "objectReference",
-            objectReference: { objectTypeId: def.objectType!.apiName },
-          },
+        displayName:
+          def.parameterConfiguration?.[name]?.displayName ?? "Delete object",
+        type:
+          typeof def.parameterConfiguration?.[name]?.required === "object" &&
+          "listLength" in def.parameterConfiguration?.[name]?.required
+            ? {
+                type: "objectReferenceList",
+                objectReferenceList: { objectTypeId: def.objectType!.apiName },
+              }
+            : {
+                type: "objectReference",
+                objectReference: { objectTypeId: def.objectType!.apiName },
+              },
         validation: {
           ...def.parameterConfiguration?.[name],
           allowedValues: { type: "objectQuery" },
@@ -438,38 +454,43 @@ function getTargetParameters(
     if (name === CREATE_INTERFACE_OBJECT_PARAMETER && "interfaceType" in def) {
       targetParams.push({
         id: CREATE_INTERFACE_OBJECT_PARAMETER,
-        displayName: def.parameterConfiguration?.[name]?.displayName
-          ?? "Object type to create",
-        type: (typeof def.parameterConfiguration?.[name]?.required === "object"
-            && "listLength" in def.parameterConfiguration?.[name]?.required)
-          ? {
-            type: "objectReferenceList",
-            objectReferenceList: { objectTypeId: def.objectType!.apiName },
-          }
-          : {
-            type: "objectTypeReference",
-            objectTypeReference: {
-              interfaceTypeRids: [def.interfaceType.apiName],
-            },
-          },
+        displayName:
+          def.parameterConfiguration?.[name]?.displayName ??
+          "Object type to create",
+        type:
+          typeof def.parameterConfiguration?.[name]?.required === "object" &&
+          "listLength" in def.parameterConfiguration?.[name]?.required
+            ? {
+                type: "objectReferenceList",
+                objectReferenceList: { objectTypeId: def.objectType!.apiName },
+              }
+            : {
+                type: "objectTypeReference",
+                objectTypeReference: {
+                  interfaceTypeRids: [def.interfaceType.apiName],
+                },
+              },
         validation: {
           ...def.parameterConfiguration?.[name],
           required: true,
-          allowedValues: def.objectType === undefined
-            ? {
-              type: "objectTypeReference",
-              interfaceTypes: [def.interfaceType.apiName],
-            }
-            : {
-              type: "oneOf",
-              oneOf: [{
-                label: def.objectType.displayName,
-                value: {
-                  type: "objectType",
-                  objectType: { objectTypeId: def.objectType.apiName },
+          allowedValues:
+            def.objectType === undefined
+              ? {
+                  type: "objectTypeReference",
+                  interfaceTypes: [def.interfaceType.apiName],
+                }
+              : {
+                  type: "oneOf",
+                  oneOf: [
+                    {
+                      label: def.objectType.displayName,
+                      value: {
+                        type: "objectType",
+                        objectType: { objectTypeId: def.objectType.apiName },
+                      },
+                    },
+                  ],
                 },
-              }],
-            },
         },
         defaultValue: def.parameterConfiguration?.[name]?.defaultValue,
         description: def.parameterConfiguration?.[name]?.description,
@@ -479,37 +500,42 @@ function getTargetParameters(
     if (name === MODIFY_INTERFACE_OBJECT_PARAMETER && "interfaceType" in def) {
       targetParams.push({
         id: MODIFY_INTERFACE_OBJECT_PARAMETER,
-        displayName: def.parameterConfiguration?.[name]?.displayName
-          ?? "Object type to modify",
-        type: (typeof def.parameterConfiguration?.[name]?.required === "object"
-            && "listLength" in def.parameterConfiguration?.[name]?.required)
-          ? {
-            type: "interfaceReferenceList",
-            interfaceReferenceList: {
-              interfaceTypeRid: def.interfaceType.apiName,
-            },
-          }
-          : {
-            type: "interfaceReference",
-            interfaceReference: {
-              interfaceTypeRid: def.interfaceType.apiName,
-            },
-          },
+        displayName:
+          def.parameterConfiguration?.[name]?.displayName ??
+          "Object type to modify",
+        type:
+          typeof def.parameterConfiguration?.[name]?.required === "object" &&
+          "listLength" in def.parameterConfiguration?.[name]?.required
+            ? {
+                type: "interfaceReferenceList",
+                interfaceReferenceList: {
+                  interfaceTypeRid: def.interfaceType.apiName,
+                },
+              }
+            : {
+                type: "interfaceReference",
+                interfaceReference: {
+                  interfaceTypeRid: def.interfaceType.apiName,
+                },
+              },
         validation: {
           ...def.parameterConfiguration?.[name],
           required: true,
-          allowedValues: def.objectType === undefined
-            ? { type: "interfaceObjectQuery" }
-            : {
-              type: "oneOf",
-              oneOf: [{
-                label: def.objectType.displayName,
-                value: {
-                  type: "objectType",
-                  objectType: { objectTypeId: def.objectType.apiName },
+          allowedValues:
+            def.objectType === undefined
+              ? { type: "interfaceObjectQuery" }
+              : {
+                  type: "oneOf",
+                  oneOf: [
+                    {
+                      label: def.objectType.displayName,
+                      value: {
+                        type: "objectType",
+                        objectType: { objectTypeId: def.objectType.apiName },
+                      },
+                    },
+                  ],
                 },
-              }],
-            },
         },
         defaultValue: def.parameterConfiguration?.[name]?.defaultValue,
         description: def.parameterConfiguration?.[name]?.description,
@@ -519,37 +545,41 @@ function getTargetParameters(
     if (name === DELETE_OBJECT_PARAMETER && "interfaceType" in def) {
       targetParams.push({
         id: DELETE_OBJECT_PARAMETER,
-        displayName: def.parameterConfiguration?.[name]?.displayName
-          ?? "Delete Object",
-        type: (typeof def.parameterConfiguration?.[name]?.required === "object"
-            && "listLength" in def.parameterConfiguration?.[name]?.required)
-          ? {
-            type: "interfaceReferenceList",
-            interfaceReferenceList: {
-              interfaceTypeRid: def.interfaceType.apiName,
-            },
-          }
-          : {
-            type: "interfaceReference",
-            interfaceReference: {
-              interfaceTypeRid: def.interfaceType.apiName,
-            },
-          },
+        displayName:
+          def.parameterConfiguration?.[name]?.displayName ?? "Delete Object",
+        type:
+          typeof def.parameterConfiguration?.[name]?.required === "object" &&
+          "listLength" in def.parameterConfiguration?.[name]?.required
+            ? {
+                type: "interfaceReferenceList",
+                interfaceReferenceList: {
+                  interfaceTypeRid: def.interfaceType.apiName,
+                },
+              }
+            : {
+                type: "interfaceReference",
+                interfaceReference: {
+                  interfaceTypeRid: def.interfaceType.apiName,
+                },
+              },
         validation: {
           ...def.parameterConfiguration?.[name],
           required: true,
-          allowedValues: def.objectType === undefined
-            ? { type: "interfaceObjectQuery" }
-            : {
-              type: "oneOf",
-              oneOf: [{
-                label: def.objectType.displayName,
-                value: {
-                  type: "objectType",
-                  objectType: { objectTypeId: def.objectType.apiName },
+          allowedValues:
+            def.objectType === undefined
+              ? { type: "interfaceObjectQuery" }
+              : {
+                  type: "oneOf",
+                  oneOf: [
+                    {
+                      label: def.objectType.displayName,
+                      value: {
+                        type: "objectType",
+                        objectType: { objectTypeId: def.objectType.apiName },
+                      },
+                    },
+                  ],
                 },
-              }],
-            },
         },
         defaultValue: def.parameterConfiguration?.[name]?.defaultValue,
         description: def.parameterConfiguration?.[name]?.description,
@@ -567,17 +597,18 @@ function referencedParameterIds(
 
   // section definitions
   Object.values(actionDef.sections ?? {})
-    .flatMap(p => p.parameters).forEach(pId => parameterIds.add(pId));
+    .flatMap((p) => p.parameters)
+    .forEach((pId) => parameterIds.add(pId));
 
   // form content ordering
-  (actionDef.formContentOrdering ?? []).forEach(item => {
+  (actionDef.formContentOrdering ?? []).forEach((item) => {
     if (item.type === "parameterId") {
       parameterIds.add(item.parameterId);
     }
   });
 
   // logic rules
-  actionDef.rules.forEach(rule => {
+  actionDef.rules.forEach((rule) => {
     // when visiting each rule, we also do drive-by namespace prefixing
     switch (rule.type) {
       case "addInterfaceRule":
@@ -791,7 +822,8 @@ function extractActionParameterType(
     }
   }
   if (
-    typeof typeType === "string" && isActionParameterTypePrimitive(typeType)
+    typeof typeType === "string" &&
+    isActionParameterTypePrimitive(typeType)
   ) {
     return maybeAddList(typeType, pt);
   }
@@ -836,7 +868,7 @@ export function convertValidationRule(
   actionValidation: ActionLevelValidationDefinition,
   actionParameters?: ActionParameter[],
 ): Array<ActionValidationRule> {
-  return actionValidation.map(rule => {
+  return actionValidation.map((rule) => {
     return {
       condition: convertConditionDefinition(rule.condition, actionParameters),
       displayMetadata: rule.displayMetadata ?? {
@@ -850,14 +882,18 @@ export function convertValidationRule(
 function validateActionConfiguration(action: ActionType): void {
   const seenParameterIds = new Set<ParameterId>();
   const parameterMap: Record<string, ActionParameter> =
-    action.parameters?.reduce((acc, param) => {
-      acc[param.id] = param;
-      return acc;
-    }, {} as Record<string, ActionParameter>) ?? {};
+    action.parameters?.reduce(
+      (acc, param) => {
+        acc[param.id] = param;
+        return acc;
+      },
+      {} as Record<string, ActionParameter>,
+    ) ?? {};
   const orderedParameters =
-    action.parameterOrdering?.map(id => parameterMap[id]) ?? action.parameters;
-  orderedParameters?.forEach(param => {
-    param.validation.conditionalOverrides?.forEach(override => {
+    action.parameterOrdering?.map((id) => parameterMap[id]) ??
+    action.parameters;
+  orderedParameters?.forEach((param) => {
+    param.validation.conditionalOverrides?.forEach((override) => {
       validateParameterCondition(
         override.condition,
         param.id,
@@ -885,7 +921,7 @@ function validateParameterCondition(
     case "parameter":
       const overrideParamId = condition.parameterId;
       invariant(
-        parameters?.some(p => p.id === overrideParamId),
+        parameters?.some((p) => p.id === overrideParamId),
         `Parameter condition on ${currentParameterId} is referencing unknown parameter ${overrideParamId}`,
       );
       invariant(
@@ -900,25 +936,25 @@ function validateParameterCondition(
     case "and":
       // this will not catch the niche edge case where users use the full syntax for unions
       if ("conditions" in condition) {
-        condition.conditions.forEach(c =>
+        condition.conditions.forEach((c) =>
           validateParameterCondition(
             c,
             currentParameterId,
             seenParameterIds,
             parameters,
-          )
+          ),
         );
       }
       break;
     case "or":
       if ("conditions" in condition) {
-        condition.conditions.forEach(c =>
+        condition.conditions.forEach((c) =>
           validateParameterCondition(
             c,
             currentParameterId,
             seenParameterIds,
             parameters,
-          )
+          ),
         );
       }
       break;
@@ -947,8 +983,8 @@ function validateParameterPrefill(
   switch (defaultValue.type) {
     case "objectParameterPropertyValue":
       invariant(
-        parameters?.some(p =>
-          p.id === defaultValue.objectParameterPropertyValue.parameterId
+        parameters?.some(
+          (p) => p.id === defaultValue.objectParameterPropertyValue.parameterId,
         ),
         `Default value for parameter ${currentParameterId} is referencing unknown parameter ${defaultValue.objectParameterPropertyValue.parameterId}`,
       );
@@ -961,8 +997,8 @@ function validateParameterPrefill(
       break;
     case "staticValue":
       invariant(
-        defaultValue.staticValue.type
-          === parameters?.find(p => p.id === currentParameterId)?.type,
+        defaultValue.staticValue.type ===
+          parameters?.find((p) => p.id === currentParameterId)?.type,
         `Default static value for parameter ${currentParameterId} does not match type`,
       );
       break;
@@ -986,25 +1022,23 @@ export function validateActionParameters(
   name: string,
 ): void {
   // validates that parameters either exist as object properties or have a type defined
-  [
-    ...Object.keys(def.parameterConfiguration ?? {}),
-  ].forEach(id => {
+  [...Object.keys(def.parameterConfiguration ?? {})].forEach((id) => {
     invariant(
-      properties.includes(id)
-        || properties.includes(addNamespaceIfNone(id))
-        || (def.parameterConfiguration?.[id].customParameterType !== undefined)
-        || isTargetParameter(id),
+      properties.includes(id) ||
+        properties.includes(addNamespaceIfNone(id)) ||
+        def.parameterConfiguration?.[id].customParameterType !== undefined ||
+        isTargetParameter(id),
       `Parameter ${id} does not exist as a property on ${name} and its type is not explicitly defined`,
     );
   });
   [
     ...Object.keys(def.nonParameterMappings ?? {}),
-    ...def.excludedProperties ?? [],
-  ].forEach(id => {
+    ...(def.excludedProperties ?? []),
+  ].forEach((id) => {
     invariant(
-      properties.includes(id)
-        || properties.includes(addNamespaceIfNone(id))
-        || properties.includes(withoutNamespace(id)),
+      properties.includes(id) ||
+        properties.includes(addNamespaceIfNone(id)) ||
+        properties.includes(withoutNamespace(id)),
       `Property ${id} does not exist as a property on ${name}`,
     );
   });
@@ -1019,12 +1053,14 @@ export function createDefaultParameterOrdering(
   priorityId?: string,
 ): string[] {
   return [
-    ...priorityId ? [priorityId] : [],
-    ...Object.keys(def.parameterConfiguration ?? {}).filter(id =>
-      id !== priorityId
+    ...(priorityId ? [priorityId] : []),
+    ...Object.keys(def.parameterConfiguration ?? {}).filter(
+      (id) => id !== priorityId,
     ),
-    ...properties.filter(id =>
-      !def.parameterConfiguration?.[id] && parameters.some(p => p.id === id)
+    ...properties.filter(
+      (id) =>
+        !def.parameterConfiguration?.[id] &&
+        parameters.some((p) => p.id === id),
     ),
   ];
 }
@@ -1036,43 +1072,49 @@ export function validateParameterOrdering(
 ): void {
   const orderingSet = new Set(parameterOrdering);
   const missingParameters = [...parameterSet].filter(
-    param => !orderingSet.has(param),
+    (param) => !orderingSet.has(param),
   );
-  const extraneousParameters = parameterOrdering.filter(param =>
-    !parameterSet.has(param)
+  const extraneousParameters = parameterOrdering.filter(
+    (param) => !parameterSet.has(param),
   );
   invariant(
-    extraneousParameters.length === 0
-      && missingParameters.length === 0,
+    extraneousParameters.length === 0 && missingParameters.length === 0,
     `Action parameter ordering for ${actionApiName} does not match expected parameters. Extraneous parameters in ordering: {${extraneousParameters}}, Missing parameters in ordering: {${missingParameters}}`,
   );
 }
 
 export function isTargetParameter(parameterId: string): boolean {
-  return parameterId === MODIFY_OBJECT_PARAMETER
-    || parameterId === CREATE_OR_MODIFY_OBJECT_PARAMETER
-    || parameterId === CREATE_INTERFACE_OBJECT_PARAMETER
-    || parameterId === MODIFY_INTERFACE_OBJECT_PARAMETER;
+  return (
+    parameterId === MODIFY_OBJECT_PARAMETER ||
+    parameterId === CREATE_OR_MODIFY_OBJECT_PARAMETER ||
+    parameterId === CREATE_INTERFACE_OBJECT_PARAMETER ||
+    parameterId === MODIFY_INTERFACE_OBJECT_PARAMETER
+  );
 }
 
 export function addNamespaceToActionDefinition(
   def: InterfaceActionTypeUserDefinition,
 ): void {
   def.parameterConfiguration = Object.fromEntries(
-    Object.entries(def.parameterConfiguration ?? {})
-      .map((
-        [id, config],
-      ) => [getInterfaceParameterName(def, id), config]),
+    Object.entries(def.parameterConfiguration ?? {}).map(([id, config]) => [
+      getInterfaceParameterName(def, id),
+      config,
+    ]),
   );
   def.nonParameterMappings = Object.fromEntries(
-    Object.entries(def.nonParameterMappings ?? {})
-      .map(([id, value]) => [addNamespaceIfNone(id), value]),
+    Object.entries(def.nonParameterMappings ?? {}).map(([id, value]) => [
+      addNamespaceIfNone(id),
+      value,
+    ]),
   );
-  def.excludedProperties = (def.excludedProperties
-    ?? []).map(id => addNamespaceIfNone(id));
-  def.sections = def.sections?.map(section => ({
+  def.excludedProperties = (def.excludedProperties ?? []).map((id) =>
+    addNamespaceIfNone(id),
+  );
+  def.sections = def.sections?.map((section) => ({
     ...section,
-    parameters: section.parameters.map(p => getInterfaceParameterName(def, p)),
+    parameters: section.parameters.map((p) =>
+      getInterfaceParameterName(def, p),
+    ),
   }));
 }
 
@@ -1084,10 +1126,10 @@ export function getInterfaceParameterName(
   if (def.useNonNamespacedParameters) {
     return getNonNamespacedParameterName(def, parameter);
   }
-  return (isTargetParameter(parameter)
-      || !Object.keys(def.interfaceType.propertiesV2).includes(
-        addNamespaceIfNone(parameter),
-      ))
+  return isTargetParameter(parameter) ||
+    !Object.keys(def.interfaceType.propertiesV2).includes(
+      addNamespaceIfNone(parameter),
+    )
     ? parameter
     : addNamespaceIfNone(parameter);
 }
@@ -1096,8 +1138,10 @@ export function getNonNamespacedParameterName(
   def: InterfaceActionTypeUserDefinition,
   parameter: string,
 ): string {
-  return def.conflictingParameterOverrides?.[parameter]
-    ?? (parameter.split(".").pop() || parameter);
+  return (
+    def.conflictingParameterOverrides?.[parameter] ??
+    (parameter.split(".").pop() || parameter)
+  );
 }
 
 export function createInterfacePropertyLogicRuleValue(
@@ -1121,19 +1165,19 @@ export function createInterfacePropertyLogicRuleValue(
             apiName,
             array
               ? {
-                type: "structListParameterFieldValue",
-                structListParameterFieldValue: {
-                  parameterId,
-                  structFieldApiName: apiName,
-                },
-              }
+                  type: "structListParameterFieldValue",
+                  structListParameterFieldValue: {
+                    parameterId,
+                    structFieldApiName: apiName,
+                  },
+                }
               : {
-                type: "structParameterFieldValue",
-                structParameterFieldValue: {
-                  parameterId,
-                  structFieldApiName: apiName,
+                  type: "structParameterFieldValue",
+                  structParameterFieldValue: {
+                    parameterId,
+                    structFieldApiName: apiName,
+                  },
                 },
-              },
           ];
         }),
       ),

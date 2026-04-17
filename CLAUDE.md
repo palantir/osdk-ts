@@ -21,9 +21,9 @@
 
 ## Formatting
 
-- Run `npx dprint fmt` on changed files before committing
-- The pre-commit hook runs `dprint check` and will reject unformatted code
-- To check without fixing: `npx dprint check`
+- Run `npx oxfmt --write` on changed files before committing
+- The pre-commit hook runs `oxfmt --check` and will reject unformatted code
+- To check without fixing: `npx oxfmt --check`
 
 ## React Best Practices
 

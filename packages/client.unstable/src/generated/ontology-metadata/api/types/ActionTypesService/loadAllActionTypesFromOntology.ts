@@ -17,8 +17,7 @@
 import { type ConjureContext, conjureFetch } from "conjure-lite";
 import type {
   ActionTypeLoadResponse as _api_ActionTypeLoadResponse,
-  LoadAllActionTypesFromOntologyRequest
-    as _api_LoadAllActionTypesFromOntologyRequest,
+  LoadAllActionTypesFromOntologyRequest as _api_LoadAllActionTypesFromOntologyRequest,
   OntologyRid as _api_OntologyRid,
 } from "../../__components.js";
 

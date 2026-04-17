@@ -40,9 +40,10 @@ export class ActionApplication {
     args,
     { optimisticUpdate } = {},
   ) => {
-    const logger = process.env.NODE_ENV !== "production"
-      ? this.store.logger?.child({ methodName: "applyAction" })
-      : this.store.logger;
+    const logger =
+      process.env.NODE_ENV !== "production"
+        ? this.store.logger?.child({ methodName: "applyAction" })
+        : this.store.logger;
     const removeOptimisticResult = runOptimisticJob(
       this.store,
       optimisticUpdate,
@@ -57,10 +58,8 @@ export class ActionApplication {
 
           const results: ActionReturnTypeForOptions<{ $returnEdits: true }> =
             await this.store
-              .client(action).batchApplyAction(
-                args,
-                { $returnEdits: true },
-              );
+              .client(action)
+              .batchApplyAction(args, { $returnEdits: true });
 
           await this.#invalidateActionEditResponse(results);
 
@@ -71,15 +70,15 @@ export class ActionApplication {
         // have to deal with the `any` here and force cast it to what it should be.
         // TODO: Update the types so this doesn't happen!
 
-        const actionResults: ActionEditResponse = await this.store.client(
-          action,
-        ).applyAction(args as any, { $returnEdits: true });
+        const actionResults: ActionEditResponse = await this.store
+          .client(action)
+          .applyAction(args as any, { $returnEdits: true });
 
         if (process.env.NODE_ENV !== "production") {
           if (ACTION_DELAY > 0) {
             logger?.debug("action done, pausing", actionResults);
-            await new Promise<void>(resolve =>
-              setTimeout(resolve, ACTION_DELAY)
+            await new Promise<void>((resolve) =>
+              setTimeout(resolve, ACTION_DELAY),
             );
             logger?.debug("action done, pausing done");
           }
@@ -88,9 +87,7 @@ export class ActionApplication {
         return actionResults;
       } finally {
         if (process.env.NODE_ENV !== "production") {
-          logger?.debug(
-            "optimistic action complete; remove the results",
-          );
+          logger?.debug("optimistic action complete; remove the results");
         }
         // make sure this happens even if the action fails
         await removeOptimisticResult();
@@ -126,12 +123,10 @@ export class ActionApplication {
       // Use the registry to find all RDP variant cache keys for each deleted object.
       this.store.batch({}, (batch) => {
         for (const { objectType, primaryKey } of deletedObjects ?? []) {
-          for (
-            const cacheKey of this.store.objectCacheKeyRegistry.getVariants(
-              objectType,
-              primaryKey,
-            )
-          ) {
+          for (const cacheKey of this.store.objectCacheKeyRegistry.getVariants(
+            objectType,
+            primaryKey,
+          )) {
             this.store.queries.peek(cacheKey)?.deleteFromStore(
               "loaded", // this is probably not the best value to use
               batch,

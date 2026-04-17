@@ -19,8 +19,7 @@ import { expectType } from "ts-expect";
 import { client } from "./client.js";
 
 export async function demoStrictnessObject(): Promise<void> {
-  const { data: defaultResults } = await client(BoundariesUsState)
-    .fetchPage();
+  const { data: defaultResults } = await client(BoundariesUsState).fetchPage();
   expectType<string>(defaultResults[0].usState);
 
   // const { data: dropResults } = await client(BoundariesUsState)
@@ -44,7 +43,6 @@ export async function demoStrictnessObject(): Promise<void> {
 export async function demoStrictnessInterface(): Promise<void> {
   // const { data: fooDataNotStrict } = await client(FooInterface)
   //   .fetchPage({ $__EXPERIMENTAL_strictNonNull: false });
-
   // const employeeNotStrict = fooDataNotStrict[0].$as(Employee);
   // expectType<
   //   Osdk<

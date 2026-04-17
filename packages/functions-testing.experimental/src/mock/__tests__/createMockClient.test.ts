@@ -69,7 +69,11 @@ describe("createMockClient", () => {
       });
 
       mockClient
-        .when((c) => c(Employee).where({ office: { $eq: "NYC" } }).fetchPage())
+        .when((c) =>
+          c(Employee)
+            .where({ office: { $eq: "NYC" } })
+            .fetchPage(),
+        )
         .thenReturnObjects([emp]);
 
       const result = await mockClient(Employee)
@@ -91,11 +95,17 @@ describe("createMockClient", () => {
       const emp = createMockOsdkObject(Employee, { employeeId: 1 });
 
       mockClient
-        .when((c) => c(Employee).where({ office: { $eq: "NYC" } }).fetchPage())
+        .when((c) =>
+          c(Employee)
+            .where({ office: { $eq: "NYC" } })
+            .fetchPage(),
+        )
         .thenReturnObjects([emp]);
 
       await expect(
-        mockClient(Employee).where({ office: { $eq: "LA" } }).fetchPage(),
+        mockClient(Employee)
+          .where({ office: { $eq: "LA" } })
+          .fetchPage(),
       ).rejects.toThrow();
     });
   });
@@ -108,8 +118,7 @@ describe("createMockClient", () => {
         fullName: "John",
       });
 
-      mockClient.when((c) => c(Employee).fetchOne(123))
-        .thenReturnObject(emp);
+      mockClient.when((c) => c(Employee).fetchOne(123)).thenReturnObject(emp);
 
       const result = await mockClient(Employee).fetchOne(123);
 
@@ -124,7 +133,7 @@ describe("createMockClient", () => {
 
       mockClient
         .when((c) =>
-          c(Employee).aggregate({ $select: { $count: "unordered" } })
+          c(Employee).aggregate({ $select: { $count: "unordered" } }),
         )
         .thenReturnAggregation({ $count: 42 });
 
@@ -142,11 +151,8 @@ describe("createMockClient", () => {
       const emp = createMockOsdkObject(Employee, { employeeId: 1 });
       const office = createMockOsdkObject(Office, { officeId: "nyc" });
 
-      mockClient.when((c) => c(Employee).fetchPage())
-        .thenReturnObjects([emp]);
-      mockClient.when((c) => c(Office).fetchPage()).thenReturnObjects([
-        office,
-      ]);
+      mockClient.when((c) => c(Employee).fetchPage()).thenReturnObjects([emp]);
+      mockClient.when((c) => c(Office).fetchPage()).thenReturnObjects([office]);
 
       const empResult = await mockClient(Employee).fetchPage();
       const officeResult = await mockClient(Office).fetchPage();
@@ -167,7 +173,7 @@ describe("createMockClient", () => {
             .where({
               $and: [{ office: { $eq: "NYC" } }, { employeeId: { $gte: 1 } }],
             })
-            .fetchPage()
+            .fetchPage(),
         )
         .thenReturnObjects([emp]);
 
@@ -186,8 +192,7 @@ describe("createMockClient", () => {
       const mockClient = createMockClient();
       const emp = createMockOsdkObject(Employee, { employeeId: 1 });
 
-      mockClient.when((c) => c(Employee).fetchPage())
-        .thenReturnObjects([emp]);
+      mockClient.when((c) => c(Employee).fetchPage()).thenReturnObjects([emp]);
 
       mockClient.clearStubs();
 
@@ -200,8 +205,7 @@ describe("createMockClient", () => {
       const mockClient = createMockClient();
       const emp = createMockOsdkObject(Employee, { employeeId: 1 });
 
-      mockClient.when((c) => c(Employee).fetchPage())
-        .thenReturnObjects([emp]);
+      mockClient.when((c) => c(Employee).fetchPage()).thenReturnObjects([emp]);
 
       const okResult = await mockClient(Employee).fetchPageWithErrors();
       expect(okResult.error).toBeUndefined();
@@ -217,9 +221,7 @@ describe("createMockClient", () => {
       const mockClient = createMockClient();
       const emp = createMockOsdkObject(Employee, { employeeId: 1 });
 
-      mockClient.when((c) => c(Employee).fetchOne(1)).thenReturnObject(
-        emp,
-      );
+      mockClient.when((c) => c(Employee).fetchOne(1)).thenReturnObject(emp);
 
       const okResult = await mockClient(Employee).fetchOneWithErrors(1);
       expect(okResult.value).toEqual(emp);
@@ -320,7 +322,8 @@ describe("createMockClient", () => {
         fullName: "Bob",
       });
 
-      mockClient.whenObjectSet(peepsSet, (os) => os.fetchPage())
+      mockClient
+        .whenObjectSet(peepsSet, (os) => os.fetchPage())
         .thenReturnObjects([p1, p2]);
 
       const result = await peepsSet.fetchPage();
@@ -335,9 +338,8 @@ describe("createMockClient", () => {
       const peepsSet = createMockObjectSet(Employee);
 
       mockClient
-        .whenObjectSet(
-          peepsSet,
-          (os) => os.aggregate({ $select: { $count: "unordered" } }),
+        .whenObjectSet(peepsSet, (os) =>
+          os.aggregate({ $select: { $count: "unordered" } }),
         )
         .thenReturnAggregation({ $count: 5 });
 
@@ -356,7 +358,8 @@ describe("createMockClient", () => {
         fullName: "Charlie",
       });
 
-      mockClient.whenObjectSet(peepsSet, (os) => os.fetchOne(42))
+      mockClient
+        .whenObjectSet(peepsSet, (os) => os.fetchOne(42))
         .thenReturnObject(emp);
 
       const result = await peepsSet.fetchOne(42);
@@ -374,9 +377,8 @@ describe("createMockClient", () => {
       });
 
       mockClient
-        .whenObjectSet(
-          empSet,
-          (os) => os.where({ office: { $eq: "NYC" } }).fetchPage(),
+        .whenObjectSet(empSet, (os) =>
+          os.where({ office: { $eq: "NYC" } }).fetchPage(),
         )
         .thenReturnObjects([emp]);
 

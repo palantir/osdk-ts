@@ -47,12 +47,13 @@ export function convertObject(
   const { derivedDatasources, derivedPropertyNames } =
     extractDerivedDatasources(objectType, ridGenerator);
 
-  const propertyDatasources: ObjectTypeDatasource[] =
-    (objectType.properties ?? [])
-      .filter(prop => !derivedPropertyNames.includes(prop.apiName))
-      .flatMap(prop =>
-        extractPropertyDatasource(prop, objectType.apiName, ridGenerator)
-      );
+  const propertyDatasources: ObjectTypeDatasource[] = (
+    objectType.properties ?? []
+  )
+    .filter((prop) => !derivedPropertyNames.includes(prop.apiName))
+    .flatMap((prop) =>
+      extractPropertyDatasource(prop, objectType.apiName, ridGenerator),
+    );
 
   const classificationGroupMarkingNames = extractMarkingGroups(
     objectType.properties ?? [],
@@ -64,20 +65,22 @@ export function convertObject(
     "MANDATORY",
   );
 
-  const classificationInputGroup = classificationGroupMarkingNames.length > 0
-    ? classificationGroupMarkingNames.reduce((l, r) => l + "/" + r)
-    : undefined;
+  const classificationInputGroup =
+    classificationGroupMarkingNames.length > 0
+      ? classificationGroupMarkingNames.reduce((l, r) => l + "/" + r)
+      : undefined;
 
-  const mandatoryInputGroup = mandatoryMarkingNames.length > 0
-    ? mandatoryMarkingNames.reduce((l, r) => l + "/" + r)
-    : undefined;
+  const mandatoryInputGroup =
+    mandatoryMarkingNames.length > 0
+      ? mandatoryMarkingNames.reduce((l, r) => l + "/" + r)
+      : undefined;
 
   const objectDatasource = buildDatasource(
     objectType.apiName,
     convertDatasourceDefinition(
       objectType,
-      (objectType.properties ?? []).filter(prop =>
-        !derivedPropertyNames.includes(prop.apiName)
+      (objectType.properties ?? []).filter(
+        (prop) => !derivedPropertyNames.includes(prop.apiName),
       ),
       ridGenerator,
     ),
@@ -94,16 +97,14 @@ export function convertObject(
 
   // Convert propertyTypes to use RIDs as keys
   const propertyTypesWithRids = Object.fromEntries(
-    objectType.properties?.map<[string, PropertyType]>(
-      val => {
-        const convertedProp = convertObjectPropertyType(
-          val,
-          objectType.apiName,
-          ridGenerator,
-        );
-        return [convertedProp.rid, convertedProp];
-      },
-    ) ?? [],
+    objectType.properties?.map<[string, PropertyType]>((val) => {
+      const convertedProp = convertObjectPropertyType(
+        val,
+        objectType.apiName,
+        ridGenerator,
+      );
+      return [convertedProp.rid, convertedProp];
+    }) ?? [],
   );
 
   const titlePropertyRid = ridGenerator.generatePropertyRid(
@@ -137,45 +138,46 @@ export function convertObject(
       id: ridGenerator.generateObjectTypeId(objectType.apiName),
       status: convertObjectStatus(objectType.status),
       redacted: false,
-      implementsInterfaces: implementations.map(impl =>
-        ridGenerator.generateRidForInterface(impl.implements.apiName)
+      implementsInterfaces: implementations.map((impl) =>
+        ridGenerator.generateRidForInterface(impl.implements.apiName),
       ),
-      implementsInterfaces2: implementations.map(impl => {
+      implementsInterfaces2: implementations.map((impl) => {
         const allParents = flattenInterface(impl.implements, new Set());
-        return ({
+        return {
           interfaceTypeRid: ridGenerator.generateRidForInterface(
             impl.implements.apiName,
           ),
           interfaceTypeApiName: impl.implements.apiName,
           links: {},
           linksV2: {},
-          propertiesV2: Object.fromEntries(impl.propertyMapping
-            .map(
-              mappings => {
-                // TODO(): This probably won't work for importing
-                const sourceInterface = allParents.find(
-                  (interfaceType, _index) => {
-                    return interfaceType
-                      .propertiesV3[mappings.interfaceProperty] !== undefined;
-                  },
-                )!;
-                return [
-                  ridGenerator.generateInterfacePropertyTypeRid(
-                    mappings.interfaceProperty,
-                    sourceInterface.apiName,
+          propertiesV2: Object.fromEntries(
+            impl.propertyMapping.map((mappings) => {
+              // TODO(): This probably won't work for importing
+              const sourceInterface = allParents.find(
+                (interfaceType, _index) => {
+                  return (
+                    interfaceType.propertiesV3[mappings.interfaceProperty] !==
+                    undefined
+                  );
+                },
+              )!;
+              return [
+                ridGenerator.generateInterfacePropertyTypeRid(
+                  mappings.interfaceProperty,
+                  sourceInterface.apiName,
+                ),
+                {
+                  type: "propertyTypeRid",
+                  propertyTypeRid: ridGenerator.generatePropertyRid(
+                    mappings.mapsTo,
+                    objectType.apiName,
                   ),
-                  {
-                    type: "propertyTypeRid",
-                    propertyTypeRid: ridGenerator.generatePropertyRid(
-                      mappings.mapsTo,
-                      objectType.apiName,
-                    ),
-                  },
-                ];
-              },
-            )),
+                },
+              ];
+            }),
+          ),
           properties: {},
-        });
+        };
       }),
       allImplementsInterfaces: {},
       traits: { workflowObjectTypeTraits: {} },
@@ -201,11 +203,11 @@ export function extractMarkingGroups(
   markingType: "CBAC" | "MANDATORY",
 ): string[] {
   return properties
-    .map(prop => {
+    .map((prop) => {
       if (
-        typeof prop.type === "object"
-        && prop.type.type === "marking"
-        && prop.type.markingType === markingType
+        typeof prop.type === "object" &&
+        prop.type.type === "marking" &&
+        prop.type.markingType === markingType
       ) {
         return prop.type.markingInputGroupName;
       }
@@ -227,10 +229,8 @@ export function extractPropertyDatasource(
       const geotimeDefinition: ObjectTypeDatasourceDefinition = {
         type: "geotimeSeries",
         geotimeSeries: {
-          geotimeSeriesIntegrationRid: ridGenerator
-            .generateRidForGeotimeSeriesIntegration(
-              identifier,
-            ),
+          geotimeSeriesIntegrationRid:
+            ridGenerator.generateRidForGeotimeSeriesIntegration(identifier),
           properties: [
             ridGenerator.generatePropertyRid(
               property.apiName,
@@ -247,13 +247,14 @@ export function extractPropertyDatasource(
         type: "mediaSetView",
         mediaSetView: {
           assumedMarkings: [],
-          mediaSetViewLocator: ridGenerator.generateMediaSetViewLocator(
-            identifier,
-          ),
-          properties: [ridGenerator.generatePropertyRid(
-            property.apiName,
-            objectTypeApiName,
-          )],
+          mediaSetViewLocator:
+            ridGenerator.generateMediaSetViewLocator(identifier),
+          properties: [
+            ridGenerator.generatePropertyRid(
+              property.apiName,
+              objectTypeApiName,
+            ),
+          ],
           uploadProperties: [],
         },
       };
@@ -272,14 +273,14 @@ function extractDerivedDatasources(
   derivedDatasources: ObjectTypeDatasource[];
   derivedPropertyNames: string[];
 } {
-  const inputDerivedDatasources = (objectType.datasources ?? []).filter(ds =>
-    ds.type === "derived"
+  const inputDerivedDatasources = (objectType.datasources ?? []).filter(
+    (ds) => ds.type === "derived",
   );
   const derivedDatasources = inputDerivedDatasources.map((ds, i) =>
-    buildDerivedDatasource(ds, i, objectType.apiName, ridGenerator)
+    buildDerivedDatasource(ds, i, objectType.apiName, ridGenerator),
   );
-  const derivedPropertyNames = inputDerivedDatasources.flatMap(ds =>
-    Object.keys(ds.propertyMapping)
+  const derivedPropertyNames = inputDerivedDatasources.flatMap((ds) =>
+    Object.keys(ds.propertyMapping),
   );
   return { derivedDatasources, derivedPropertyNames };
 }
@@ -294,7 +295,7 @@ function buildDerivedDatasource(
   const linkDefinition = {
     type: "multiHopLink" as const,
     multiHopLink: {
-      steps: datasource.linkDefinition.map(step => ({
+      steps: datasource.linkDefinition.map((step) => ({
         type: "searchAround" as const,
         searchAround: {
           linkTypeIdentifier: {
@@ -313,45 +314,39 @@ function buildDerivedDatasource(
     typeof Object.values(datasource.propertyMapping)[0] === "string";
   const derivedDefinition: DerivedPropertiesDefinition = isLinkedProperties
     ? {
-      type: "linkedProperties",
-      linkedProperties: {
-        linkDefinition,
-        propertyTypeMapping: Object.fromEntries(
-          Object.entries(datasource.propertyMapping).map((
-            [sourceProp, targetProp],
-          ) => [
-            ridGenerator.generatePropertyRid(
-              sourceProp,
-              objectTypeApiName,
+        type: "linkedProperties",
+        linkedProperties: {
+          linkDefinition,
+          propertyTypeMapping: Object.fromEntries(
+            Object.entries(datasource.propertyMapping).map(
+              ([sourceProp, targetProp]) => [
+                ridGenerator.generatePropertyRid(sourceProp, objectTypeApiName),
+                {
+                  type: "propertyType" as const,
+                  propertyType: ridGenerator.generatePropertyRid(
+                    targetProp,
+                    objectTypeApiName,
+                  ),
+                },
+              ],
             ),
-            {
-              type: "propertyType" as const,
-              propertyType: ridGenerator.generatePropertyRid(
-                targetProp,
-                objectTypeApiName,
-              ),
-            },
-          ]),
-        ),
-      },
-    }
+          ),
+        },
+      }
     : {
-      type: "aggregatedProperties",
-      aggregatedProperties: {
-        linkDefinition,
-        propertyTypeMapping: Object.fromEntries(
-          Object.entries(datasource.propertyMapping).map((
-            [sourceProp, agg],
-          ) => [
-            ridGenerator.generatePropertyRid(
-              sourceProp,
-              objectTypeApiName,
+        type: "aggregatedProperties",
+        aggregatedProperties: {
+          linkDefinition,
+          propertyTypeMapping: Object.fromEntries(
+            Object.entries(datasource.propertyMapping).map(
+              ([sourceProp, agg]) => [
+                ridGenerator.generatePropertyRid(sourceProp, objectTypeApiName),
+                buildAggregation(agg, ridGenerator),
+              ],
             ),
-            buildAggregation(agg, ridGenerator),
-          ]),
-        ),
-      },
-    };
+          ),
+        },
+      };
   const fullDefinition: ObjectTypeDatasourceDefinition = {
     type: "derived",
     derived: {
@@ -376,15 +371,15 @@ function buildAggregation(
   // TODO: Convert property references in aggregations to RIDs
   if (type !== "count") {
     if (["collectList", "collectSet"].includes(type)) {
-      innerDef["linkedProperty"] = {
+      innerDef.linkedProperty = {
         type: "propertyType",
         propertyType: foreignProperty
           ? ridGenerator.generateRid(`property.unknown.${foreignProperty}`)
           : undefined,
       };
-      innerDef["limit"] = limit;
+      innerDef.limit = limit;
     } else {
-      innerDef["property"] = {
+      innerDef.property = {
         type: "propertyType",
         propertyType: foreignProperty
           ? ridGenerator.generateRid(`property.unknown.${foreignProperty}`)
@@ -436,8 +431,8 @@ export function flattenInterface(
   if (interfaceType.extendsInterfaces.length === 0) {
     return [interfaceType];
   }
-  const parents = interfaceType.extendsInterfaces.flatMap(parent =>
-    flattenInterface(parent, seen)
+  const parents = interfaceType.extendsInterfaces.flatMap((parent) =>
+    flattenInterface(parent, seen),
   );
   return [interfaceType, ...parents];
 }

@@ -95,24 +95,22 @@ const ObjectSetFieldContent = React.memo(function ObjectSetFieldContentFn({
 
   return (
     <div className={styles.osdkObjectSetField}>
-      {showLoadingState
-        ? (
-          <>
-            {OBJECT_SET_ICON_SKELETON}
-            {OBJECT_SET_LABEL_SKELETON}
-          </>
-        )
-        : (
-          <>
-            <BlueprintIcon icon={icon} size={ICON_SIZE} />
-            <ObjectSetLabel
-              displayName={displayName}
-              totalCount={totalCount}
-              error={objectSetError}
-              isLoading={objectSetLoading}
-            />
-          </>
-        )}
+      {showLoadingState ? (
+        <>
+          {OBJECT_SET_ICON_SKELETON}
+          {OBJECT_SET_LABEL_SKELETON}
+        </>
+      ) : (
+        <>
+          <BlueprintIcon icon={icon} size={ICON_SIZE} />
+          <ObjectSetLabel
+            displayName={displayName}
+            totalCount={totalCount}
+            error={objectSetError}
+            isLoading={objectSetLoading}
+          />
+        </>
+      )}
     </div>
   );
 });

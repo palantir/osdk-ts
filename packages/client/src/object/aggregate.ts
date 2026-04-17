@@ -48,9 +48,7 @@ export async function aggregate<
 ): Promise<AggregationsResults<Q, AO>> {
   const resolvedObjectSet = resolveBaseObjectSetType(objectType);
   const body: AggregateObjectsRequestV2 = {
-    aggregation: modernToLegacyAggregationClause<AO["$select"]>(
-      req.$select,
-    ),
+    aggregation: modernToLegacyAggregationClause<AO["$select"]>(req.$select),
     groupBy: [],
     where: undefined,
   };
@@ -75,9 +73,7 @@ export async function aggregate<
   );
 
   if (!result.data || !Array.isArray(result.data)) {
-    throw new Error(
-      `Aggregation request failed: ${JSON.stringify(result)}`,
-    );
+    throw new Error(`Aggregation request failed: ${JSON.stringify(result)}`);
   }
 
   if (!req.$groupBy) {
@@ -88,15 +84,12 @@ export async function aggregate<
 
     return {
       ...aggregationToCountResult(result.data[0]),
-      ...legacyToModernSingleAggregationResult(
-        result.data[0],
-        req.$select,
-      ),
+      ...legacyToModernSingleAggregationResult(result.data[0], req.$select),
     } as any;
   }
 
-  const ret: AggregationResultsWithGroups<Q, AO["$select"], any> = result.data
-    .map((entry) => {
+  const ret: AggregationResultsWithGroups<Q, AO["$select"], any> =
+    result.data.map((entry) => {
       return {
         $group: entry.group as any,
         ...aggregationToCountResult(entry),

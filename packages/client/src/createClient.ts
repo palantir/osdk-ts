@@ -67,16 +67,13 @@ import type { QuerySignatureFromDef } from "./queries/types.js";
 // Since this is just a string in `@osdk/shared.client2` instead of a symbol,
 // we can safely perform this trick.
 type newSymbolClientContext =
-  // eslint-disable-next-line @typescript-eslint/consistent-type-imports
+  // oxlint-disable-next-line typescript/consistent-type-imports
   typeof import("@osdk/shared.client2").symbolClientContext;
 
-class ActionInvoker<Q extends ActionDefinition<any>>
-  implements ActionSignatureFromDef<Q>
-{
-  constructor(
-    clientCtx: MinimalClient,
-    actionDef: ActionDefinition<any>,
-  ) {
+class ActionInvoker<
+  Q extends ActionDefinition<any>,
+> implements ActionSignatureFromDef<Q> {
+  constructor(clientCtx: MinimalClient, actionDef: ActionDefinition<any>) {
     // We type the property as a generic function as binding `applyAction`
     // doesn't return a type thats all that useful anyway
     // The implements covers us for the most part here as this exact type doesn't
@@ -89,13 +86,10 @@ class ActionInvoker<Q extends ActionDefinition<any>>
   batchApplyAction: (...args: any[]) => any;
 }
 
-class QueryInvoker<Q extends QueryDefinition<any>>
-  implements QuerySignatureFromDef<Q>
-{
-  constructor(
-    clientCtx: MinimalClient,
-    queryDef: QueryDefinition<any>,
-  ) {
+class QueryInvoker<
+  Q extends QueryDefinition<any>,
+> implements QuerySignatureFromDef<Q> {
+  constructor(clientCtx: MinimalClient, queryDef: QueryDefinition<any>) {
     this.executeFunction = applyQuery.bind(undefined, clientCtx, queryDef);
   }
 
@@ -112,10 +106,10 @@ export function createClientInternal(
   tokenProvider: () => Promise<string>,
   options:
     | {
-      logger?: Logger;
-      UNSTABLE_DO_NOT_USE_BRANCH?: string;
-      headers?: Record<string, string>;
-    }
+        logger?: Logger;
+        UNSTABLE_DO_NOT_USE_BRANCH?: string;
+        headers?: Record<string, string>;
+      }
     | undefined = undefined,
   fetchFn: typeof globalThis.fetch = fetch,
 ): Client {
@@ -124,7 +118,7 @@ export function createClientInternal(
       throw new Error("Invalid ontology RID");
     }
   } else {
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    // oxlint-disable-next-line typescript/no-floating-promises
     ontologyRid.then((ontologyRid) => {
       if (!ontologyRid.startsWith("ri.")) {
         // FIXME this promise is not await so this just shows up as an unhandled promise rejection
@@ -163,30 +157,33 @@ export function createClientFromContext(clientCtx: MinimalClient) {
       | Experiment<"2.0.8">
       | Experiment<"2.1.0">
       | Experiment<"2.8.0">,
-  >(o: T): T extends ObjectTypeDefinition ? ObjectSet<T>
-    : T extends InterfaceDefinition ? MinimalObjectSet<T>
-    : T extends ActionDefinition<any> ? ActionSignatureFromDef<T>
-    : T extends QueryDefinition<any> ? QuerySignatureFromDef<T>
-    : T extends Experiment<"2.0.8"> | Experiment<"2.1.0"> | Experiment<"2.8.0">
-      ? { invoke: ExperimentFns<T> }
-    : never
-  {
+  >(
+    o: T,
+  ): T extends ObjectTypeDefinition
+    ? ObjectSet<T>
+    : T extends InterfaceDefinition
+      ? MinimalObjectSet<T>
+      : T extends ActionDefinition<any>
+        ? ActionSignatureFromDef<T>
+        : T extends QueryDefinition<any>
+          ? QuerySignatureFromDef<T>
+          : T extends
+                | Experiment<"2.0.8">
+                | Experiment<"2.1.0">
+                | Experiment<"2.8.0">
+            ? { invoke: ExperimentFns<T> }
+            : never {
     if (o.type === "object" || o.type === "interface") {
       return clientCtx.objectSetFactory(o, clientCtx) as any;
     } else if (o.type === "action") {
-      return new ActionInvoker(
-        clientCtx,
-        o,
-      ) as (T extends ActionDefinition<any>
-        // first `as` to the action definition for our "real" typecheck
-        ? ActionSignatureFromDef<T>
-        : never) as any; // then as any for dealing with the conditional return value
+      return new ActionInvoker(clientCtx, o) as T extends ActionDefinition<any>
+        ? // first `as` to the action definition for our "real" typecheck
+          ActionSignatureFromDef<T>
+        : never as any; // then as any for dealing with the conditional return value
     } else if (o.type === "query") {
-      return new QueryInvoker(
-        clientCtx,
-        o,
-      ) as (T extends QueryDefinition<any> ? QuerySignatureFromDef<T>
-        : never) as any;
+      return new QueryInvoker(clientCtx, o) as T extends QueryDefinition<any>
+        ? QuerySignatureFromDef<T>
+        : never as any;
     } else if (o.type === "experiment") {
       switch (o.name) {
         case __EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks.name:
@@ -195,9 +192,8 @@ export function createClientFromContext(clientCtx: MinimalClient) {
               objs: Array<OsdkBase<any>>,
               linkTypes: string[],
             ) {
-              const { createBulkLinksAsyncIterFactory } = await import(
-                "./__unstable/createBulkLinksAsyncIterFactory.js"
-              );
+              const { createBulkLinksAsyncIterFactory } =
+                await import("./__unstable/createBulkLinksAsyncIterFactory.js");
               yield* createBulkLinksAsyncIterFactory(clientCtx)(
                 objs,
                 linkTypes,
@@ -216,14 +212,12 @@ export function createClientFromContext(clientCtx: MinimalClient) {
               rid: string,
               options: SelectArg<Q, L, R, S>,
             ) => {
-              return await fetchSingle(
+              return (await fetchSingle(
                 clientCtx,
                 objectType,
                 options,
-                createWithRid(
-                  [rid],
-                ),
-              ) as Osdk<Q>;
+                createWithRid([rid]),
+              )) as Osdk<Q>;
             },
           } as any;
         case __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference.name:
@@ -238,9 +232,8 @@ export function createClientFromContext(clientCtx: MinimalClient) {
               propertyType: L;
             }) => {
               const { data, fileName, objectType, propertyType } = args;
-              const { upload } = await import(
-                "@osdk/foundry.ontologies/MediaReferenceProperty"
-              );
+              const { upload } =
+                await import("@osdk/foundry.ontologies/MediaReferenceProperty");
               return await upload(
                 clientCtx,
                 await clientCtx.ontologyRid,
@@ -289,11 +282,7 @@ export function createClientFromContext(clientCtx: MinimalClient) {
                 T
               >,
             ) => {
-              return await fetchStaticRidPage(
-                clientCtx,
-                rids,
-                options ?? {},
-              );
+              return await fetchStaticRidPage(clientCtx, rids, options ?? {});
             },
           } as any;
 
@@ -304,9 +293,8 @@ export function createClientFromContext(clientCtx: MinimalClient) {
               transformation: MediaTransformation;
               options?: TransformOptions;
             }) => {
-              const { transformAndWaitInternal } = await import(
-                "./util/transformAndWaitInternal.js"
-              );
+              const { transformAndWaitInternal } =
+                await import("./util/transformAndWaitInternal.js");
               const { mediaSetRid, mediaItemRid, token } =
                 args.mediaReference.reference.mediaSetViewItem;
               return transformAndWaitInternal(
@@ -327,30 +315,24 @@ export function createClientFromContext(clientCtx: MinimalClient) {
     }
   }
 
-  const fetchMetadata = fetchMetadataInternal.bind(
-    undefined,
-    clientCtx,
-  );
+  const fetchMetadata = fetchMetadataInternal.bind(undefined, clientCtx);
 
   const symbolClientContext: newSymbolClientContext = "__osdkClientContext";
 
-  const client: Client = Object.defineProperties<Client>(
-    clientFn as Client,
-    {
-      [oldSymbolClientContext]: {
-        value: clientCtx,
-      },
-      [symbolClientContext]: {
-        value: clientCtx,
-      },
-      [additionalContext]: {
-        value: clientCtx,
-      },
-      fetchMetadata: {
-        value: fetchMetadata,
-      },
-    } satisfies Record<keyof Client, PropertyDescriptor>,
-  );
+  const client: Client = Object.defineProperties<Client>(clientFn as Client, {
+    [oldSymbolClientContext]: {
+      value: clientCtx,
+    },
+    [symbolClientContext]: {
+      value: clientCtx,
+    },
+    [additionalContext]: {
+      value: clientCtx,
+    },
+    fetchMetadata: {
+      value: fetchMetadata,
+    },
+  } satisfies Record<keyof Client, PropertyDescriptor>);
 
   return client;
 }
@@ -359,12 +341,14 @@ export const createClient: (
   baseUrl: string,
   ontologyRid: string | Promise<string>,
   tokenProvider: () => Promise<string>,
-  options?: {
-    logger?: Logger;
-    /** @beta This is an experimental feature subject to change */
-    UNSTABLE_DO_NOT_USE_BRANCH?: string;
-    headers?: Record<string, string>;
-  } | undefined,
+  options?:
+    | {
+        logger?: Logger;
+        /** @beta This is an experimental feature subject to change */
+        UNSTABLE_DO_NOT_USE_BRANCH?: string;
+        headers?: Record<string, string>;
+      }
+    | undefined,
   fetchFn?: typeof fetch | undefined,
 ) => Client = createClientInternal.bind(
   undefined,
@@ -385,9 +369,7 @@ export const createClientWithTransaction: (
     ...args,
   ) as Client;
 
-function createWithRid(
-  rids: string[],
-) {
+function createWithRid(rids: string[]) {
   const withRid: WireObjectSet = {
     type: "static",
     "objects": rids,

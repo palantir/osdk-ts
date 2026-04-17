@@ -32,18 +32,13 @@ describe(useOsdkMetadata, () => {
 
     const wrapper = ({ children }: React.PropsWithChildren) => {
       return (
-        <OsdkContext.Provider
-          value={{ client: fakeClient }}
-        >
+        <OsdkContext.Provider value={{ client: fakeClient }}>
           {children}
         </OsdkContext.Provider>
       );
     };
 
-    const { result, rerender } = renderHook(
-      () => useOsdkClient(),
-      { wrapper },
-    );
+    const { result, rerender } = renderHook(() => useOsdkClient(), { wrapper });
 
     expect(result.current).toBe(fakeClient);
   });

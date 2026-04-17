@@ -32,9 +32,10 @@ interface TableCellProps<TData extends RowData> {
   ) => React.ReactNode;
 }
 
-export function TableCell<TData extends RowData>(
-  { cell, renderCellContextMenu }: TableCellProps<TData>,
-): React.ReactElement {
+export function TableCell<TData extends RowData>({
+  cell,
+  renderCellContextMenu,
+}: TableCellProps<TData>): React.ReactElement {
   const tdRef = useRef<HTMLTableCellElement>(null);
   const isSelectColumn = cell.column.id === SELECTION_COLUMN_ID;
 
@@ -47,9 +48,11 @@ export function TableCell<TData extends RowData>(
     tdRef,
   });
 
-  const shouldRenderContextMenu = !isSelectColumn && isContextMenuOpen
-    && !!popoverPosition
-    && !!renderCellContextMenu;
+  const shouldRenderContextMenu =
+    !isSelectColumn &&
+    isContextMenuOpen &&
+    !!popoverPosition &&
+    !!renderCellContextMenu;
 
   const { columnStyles } = getColumnPinningStyles(cell.column);
 
@@ -63,21 +66,22 @@ export function TableCell<TData extends RowData>(
         onContextMenu={handleOpenContextMenu}
       >
         <div className={styles.osdkTableCellContent}>
-          {flexRender(
-            cell.column.columnDef.cell,
-            cell.getContext(),
-          ) as ReactNode}
+          {
+            flexRender(
+              cell.column.columnDef.cell,
+              cell.getContext(),
+            ) as ReactNode
+          }
         </div>
       </td>
-      {shouldRenderContextMenu
-        && (
-          <CellContextMenu
-            cell={cell}
-            position={popoverPosition}
-            onClose={handleCloseContextMenu}
-            renderContent={renderCellContextMenu}
-          />
-        )}
+      {shouldRenderContextMenu && (
+        <CellContextMenu
+          cell={cell}
+          position={popoverPosition}
+          onClose={handleCloseContextMenu}
+          renderContent={renderCellContextMenu}
+        />
+      )}
     </>
   );
 }

@@ -37,9 +37,7 @@ type StylesheetBuildOutput = {
   src: string;
 };
 
-export function extractBuildOutputs(
-  htmlFilePath: string,
-): BuildOutputs {
+export function extractBuildOutputs(htmlFilePath: string): BuildOutputs {
   const htmlContent = fs.readFileSync(htmlFilePath, "utf-8");
   return parseTransformResult(htmlContent);
 }
@@ -50,12 +48,12 @@ export function extractBuildOutputs(
 function parseTransformResult(result: string): BuildOutputs {
   const outputs = visitNode(parse5(result));
   return {
-    scripts: outputs.filter((output) =>
-      output.type === "script"
+    scripts: outputs.filter(
+      (output) => output.type === "script",
     ) as ScriptBuildOutput[],
-    stylesheets: outputs.filter((output) => output.type === "stylesheet").map((
-      output,
-    ) => output.src),
+    stylesheets: outputs
+      .filter((output) => output.type === "stylesheet")
+      .map((output) => output.src),
   };
 }
 
@@ -141,14 +139,9 @@ function assertEmptyNode(node: DefaultTreeAdapterTypes.Node): void {
   }
 }
 
-function assertValue(
-  actual: string,
-  allowedValues: string[],
-) {
+function assertValue(actual: string, allowedValues: string[]) {
   if (!allowedValues.includes(actual)) {
-    throw new Error(
-      `Invalid value found in Vite HTML output: ${actual}`,
-    );
+    throw new Error(`Invalid value found in Vite HTML output: ${actual}`);
   }
 }
 

@@ -182,29 +182,30 @@ describe("aggregate", () => {
       >
     >(false); // subSelect should hide unused keys
 
-    const grouped = await client(objectTypeWithAllPropertyTypes).aggregate(
-      {
-        $select: {
-          "id:approximateDistinct": "unordered",
-          "id:exactDistinct": "unordered",
-          "id:max": "unordered",
-          "$count": "unordered",
-        },
-        $groupBy: {
-          string: "exact",
-          id: { $exactWithLimit: 10 },
-          integer: { $ranges: [[1, 2]] },
-          short: {
-            $ranges: [[2, 3], [4, 5]],
-          },
-          float: { $fixedWidth: 10 },
-          dateTime: { $duration: [10, "seconds"] },
-          date: { $ranges: [["2024-01-02", "2024-01-09"]] },
-          boolean: "exact",
-          double: { "$exact": { $defaultValue: "default", $limit: 300 } },
-        },
+    const grouped = await client(objectTypeWithAllPropertyTypes).aggregate({
+      $select: {
+        "id:approximateDistinct": "unordered",
+        "id:exactDistinct": "unordered",
+        "id:max": "unordered",
+        "$count": "unordered",
       },
-    );
+      $groupBy: {
+        string: "exact",
+        id: { $exactWithLimit: 10 },
+        integer: { $ranges: [[1, 2]] },
+        short: {
+          $ranges: [
+            [2, 3],
+            [4, 5],
+          ],
+        },
+        float: { $fixedWidth: 10 },
+        dateTime: { $duration: [10, "seconds"] },
+        date: { $ranges: [["2024-01-02", "2024-01-09"]] },
+        boolean: "exact",
+        double: { "$exact": { $defaultValue: "default", $limit: 300 } },
+      },
+    });
     expectType<Array<any>>(grouped);
     expectType<string | undefined>(grouped[0].$group.string);
     expectType<number>(grouped[0].id.approximateDistinct);
@@ -254,7 +255,10 @@ describe("aggregate", () => {
         id: { $exactWithLimit: 10 },
         integer: { $ranges: [[1, 2]] },
         short: {
-          $ranges: [[2, 3], [4, 5]],
+          $ranges: [
+            [2, 3],
+            [4, 5],
+          ],
         },
         float: { $fixedWidth: 10 },
       },
@@ -295,30 +299,36 @@ describe("aggregate", () => {
         id: { $exact: { $limit: 10, $defaultValue: "default" } },
         integer: { $ranges: [[1, 2]] },
         short: {
-          $ranges: [[2, 3], [4, 5]],
+          $ranges: [
+            [2, 3],
+            [4, 5],
+          ],
         },
         float: { $fixedWidth: 10 },
       },
     });
 
     expectTypeOf<
-      typeof aggregate<objectTypeWithAllPropertyTypes, {
-        $select: {
-          "id:approximateDistinct": "unordered";
-          "wrongSelectKey": "wrong key";
-          "$count": "unordered";
-        };
-        $groupBy: {
-          string: "exact";
-          wrongKey: "wrongKey";
-          id: { $exactWithLimit: 10 };
-          integer: { $ranges: [[1, 2]] };
-          short: {
-            $ranges: [[2, 3], [4, 5]];
+      typeof aggregate<
+        objectTypeWithAllPropertyTypes,
+        {
+          $select: {
+            "id:approximateDistinct": "unordered";
+            "wrongSelectKey": "wrong key";
+            "$count": "unordered";
           };
-          float: { $fixedWidth: 10 };
-        };
-      }>
+          $groupBy: {
+            string: "exact";
+            wrongKey: "wrongKey";
+            id: { $exactWithLimit: 10 };
+            integer: { $ranges: [[1, 2]] };
+            short: {
+              $ranges: [[2, 3], [4, 5]];
+            };
+            float: { $fixedWidth: 10 };
+          };
+        }
+      >
     >().toBeCallableWith(
       clientCtx,
       objectTypeWithAllPropertyTypes,
@@ -340,7 +350,10 @@ describe("aggregate", () => {
           id: { $exactWithLimit: 10 },
           integer: { $ranges: [[1, 2]] },
           short: {
-            $ranges: [[2, 3], [4, 5]],
+            $ranges: [
+              [2, 3],
+              [4, 5],
+            ],
           },
           float: { $fixedWidth: 10 },
         },
@@ -516,24 +529,22 @@ describe("aggregate", () => {
   });
 
   it("prohibits ordered select with multiple groupBy", async () => {
-    await client(Todo).aggregate(
-      {
-        $select: {
-          // @ts-expect-error
-          "id:max": "desc",
-          // @ts-expect-error
-          "text:approximateDistinct": "asc",
-          // @ts-expect-error
-          "text:exactDistinct": "desc",
-          "id:avg": "unordered",
-          "$count": "unordered",
-        },
-        $groupBy: {
-          id: "exact",
-          timestamp: "exact",
-        },
+    await client(Todo).aggregate({
+      $select: {
+        // @ts-expect-error
+        "id:max": "desc",
+        // @ts-expect-error
+        "text:approximateDistinct": "asc",
+        // @ts-expect-error
+        "text:exactDistinct": "desc",
+        "id:avg": "unordered",
+        "$count": "unordered",
       },
-    );
+      $groupBy: {
+        id: "exact",
+        timestamp: "exact",
+      },
+    });
   });
 
   describe("$exact", () => {
@@ -547,9 +558,7 @@ describe("aggregate", () => {
         },
       });
 
-      expectTypeOf(result[0].$group.text).toEqualTypeOf<
-        string | null
-      >();
+      expectTypeOf(result[0].$group.text).toEqualTypeOf<string | null>();
     });
 
     it("correctly does not null bucket type when $includeNullValue is not included", async () => {
@@ -625,9 +634,7 @@ describe("aggregate", () => {
         },
       });
 
-      expectTypeOf(result[0].$group.text).toEqualTypeOf<
-        string | null
-      >();
+      expectTypeOf(result[0].$group.text).toEqualTypeOf<string | null>();
     });
   });
 
@@ -706,9 +713,7 @@ describe("aggregate", () => {
   });
 
   it("works with where: todo", async () => {
-    const f: AggregateOpts<
-      Employee
-    > = {
+    const f: AggregateOpts<Employee> = {
       $select: {
         "office:approximateDistinct": "unordered",
       },

@@ -14,5 +14,4 @@
  * limitations under the License.
  */
 
-export interface DoubleType {
-}
+export interface DoubleType {}

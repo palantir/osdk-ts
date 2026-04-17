@@ -17,19 +17,19 @@
 import { consola } from "../consola.js";
 import { italic } from "../highlight.js";
 
-export async function promptClientId(
-  { clientId }: { clientId?: string },
-): Promise<string> {
+export async function promptClientId({
+  clientId,
+}: {
+  clientId?: string;
+}): Promise<string> {
   while (clientId == null || !/^[0-9a-f]+$/.test(clientId)) {
     if (clientId != null) {
       consola.fail("Please enter a valid OAuth client ID");
     }
     clientId = await consola.prompt(
-      `Enter the OAuth client ID for your application from Developer Console:\n${
-        italic(
-          "(Example: 2650385ab6c5e0df3b44aff776b00a42)",
-        )
-      }`,
+      `Enter the OAuth client ID for your application from Developer Console:\n${italic(
+        "(Example: 2650385ab6c5e0df3b44aff776b00a42)",
+      )}`,
       { type: "text" },
     );
   }

@@ -4,10 +4,10 @@ on:
   push:
     branches: [main]
     paths:
-      - 'packages/react-components/**'
-      - 'packages/react-components-styles/**'
-      - 'packages/react-components-storybook/**'
-      - '.github/workflows/deploy-storybook.yml'
+      - "packages/react-components/**"
+      - "packages/react-components-styles/**"
+      - "packages/react-components-storybook/**"
+      - ".github/workflows/deploy-storybook.yml"
   workflow_dispatch:
 
 permissions:
@@ -38,16 +38,16 @@ jobs:
         run: pnpm --filter react-components-storybook build
 
       - name: Deploy to gh-pages branch
-        run: |          
+        run: |
           # Clone existing gh-pages to preserve other content
           git clone --branch gh-pages --single-branch --depth 1 https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git gh-pages-temp
-          
+
           # Update storybook content
           rm -rf gh-pages-temp/storybook
           mkdir gh-pages-temp/storybook
           cp -r packages/react-components-storybook/storybook-static/* gh-pages-temp/storybook/
           touch gh-pages-temp/storybook/.nojekyll
-          
+
           # Commit and push changes
           cd gh-pages-temp
           git config user.name "github-actions[bot]"

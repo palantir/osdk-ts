@@ -75,10 +75,7 @@ async function setup() {
       "twoDimensionalAggregationFunction",
       "threeDimensionalAggregationFunction",
     ],
-    interfaceTypes: [
-      "FooInterface",
-      "BarInterface",
-    ],
+    interfaceTypes: ["FooInterface", "BarInterface"],
     linkTypes: ["Employee.peeps", "Employee.lead", "Employee.officeLink"],
     palantirOnlyTest: true,
     _: [],

@@ -8,7 +8,7 @@ This guide covers executing actions, validation, optimistic updates, and debounc
 
 ## useOsdkAction
 
-*Experimental - import from `@osdk/react/experimental`*
+_Experimental - import from `@osdk/react/experimental`_
 
 Execute and validate actions with automatic state management.
 
@@ -79,6 +79,7 @@ The `error` object has the following structure:
 ```
 
 `ActionValidationError` extends `Error` and has:
+
 - `message` - Error message string
 - `validation` - Full validation response from server
 
@@ -89,7 +90,9 @@ import { $Actions, Todo } from "@my/osdk";
 import { useOsdkAction } from "@osdk/react/experimental";
 
 function TodoActionWithErrorHandling({ todo }: { todo: Todo.OsdkInstance }) {
-  const { applyAction, error, isPending } = useOsdkAction($Actions.completeTodo);
+  const { applyAction, error, isPending } = useOsdkAction(
+    $Actions.completeTodo,
+  );
 
   const onClick = async () => {
     try {
@@ -189,7 +192,9 @@ function TodoForm() {
 
       <button
         type="submit"
-        disabled={isPending || isValidating || validationResult?.result !== "VALID"}
+        disabled={
+          isPending || isValidating || validationResult?.result !== "VALID"
+        }
       >
         Create Todo
       </button>
@@ -228,7 +233,7 @@ function BulkCompleteButton({ todos }: { todos: Todo.OsdkInstance[] }) {
 
   const onClick = useCallback(() => {
     applyAction(
-      todos.map(todo => ({
+      todos.map((todo) => ({
         todo: todo,
         isComplete: true,
       })),
@@ -256,7 +261,9 @@ import { useCallback } from "react";
 
 function TodoView({ todo }: { todo: Todo.OsdkInstance }) {
   const { isLoading, isOptimistic } = useOsdkObject(todo);
-  const { applyAction, error, isPending } = useOsdkAction($Actions.completeTodo);
+  const { applyAction, error, isPending } = useOsdkAction(
+    $Actions.completeTodo,
+  );
 
   const onClick = useCallback(() => {
     applyAction({
@@ -273,7 +280,9 @@ function TodoView({ todo }: { todo: Todo.OsdkInstance }) {
     <div>
       {todo.title}
       {todo.isComplete === false && !isOptimistic && (
-        <button onClick={onClick} disabled={isPending}>Mark Complete</button>
+        <button onClick={onClick} disabled={isPending}>
+          Mark Complete
+        </button>
       )}
       {isPending && "(Saving)"}
       {isLoading && "(Loading)"}
@@ -319,13 +328,14 @@ const updatedTodo = todo.$clone({
   priority: "high",
 });
 ```
+
 :::
 
 ---
 
 ## useDebouncedCallback
 
-*Experimental - import from `@osdk/react/experimental`*
+_Experimental - import from `@osdk/react/experimental`_
 
 Debounce callback functions for auto-save patterns or expensive operations.
 
@@ -349,11 +359,7 @@ function SearchableList({ onSearch }: { onSearch: (query: string) => void }) {
   };
 
   return (
-    <input
-      value={query}
-      onChange={handleChange}
-      placeholder="Search..."
-    />
+    <input value={query} onChange={handleChange} placeholder="Search..." />
   );
 }
 ```

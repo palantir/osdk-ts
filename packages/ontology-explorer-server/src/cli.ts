@@ -45,21 +45,23 @@ export async function cli(args: string[] = process.argv): Promise<void> {
   try {
     const app = createServer(argv.ontologyFile);
 
-    app.listen(argv.port, () => {
-      consola.log(
-        `Ontology Explorer listening on http://localhost:${argv.port}`,
-      );
-    }).on("error", (err: NodeJS.ErrnoException) => {
-      if (err.code === "EADDRINUSE") {
-        consola.error(
-          `Error: Port ${argv.port} is already in use.\n`
-            + `Try a different port`,
+    app
+      .listen(argv.port, () => {
+        consola.log(
+          `Ontology Explorer listening on http://localhost:${argv.port}`,
         );
-      } else {
-        consola.error(`Error starting server: ${err.message}`);
-      }
-      process.exit(1);
-    });
+      })
+      .on("error", (err: NodeJS.ErrnoException) => {
+        if (err.code === "EADDRINUSE") {
+          consola.error(
+            `Error: Port ${argv.port} is already in use.\n` +
+              `Try a different port`,
+          );
+        } else {
+          consola.error(`Error starting server: ${err.message}`);
+        }
+        process.exit(1);
+      });
   } catch (err) {
     consola.error(err instanceof Error ? err.message : String(err));
     process.exit(1);

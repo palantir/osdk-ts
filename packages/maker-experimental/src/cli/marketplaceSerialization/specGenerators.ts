@@ -45,7 +45,7 @@ export function generateBlockSetSpec(
   codeBlocks: Record<UUID, CodeBlockSpec>,
 ): CodeBlockSetSpec {
   return {
-    version: version,
+    version,
     creationTimestamp: new Date().toISOString(),
     about: {
       fallbackDescription: productName,
@@ -85,12 +85,14 @@ export async function generateOntologyBlockSpec(
     blockMavenCoordinate: `${mavenGroup}:ontology`,
     inputs: Object.fromEntries(shapes.inputShapes),
     outputs: Object.fromEntries(shapes.outputShapes),
-    blockData: [{
-      type: "files",
-      files: {
-        path: "ontology.json",
+    blockData: [
+      {
+        type: "files",
+        files: {
+          path: "ontology.json",
+        },
       },
-    }],
+    ],
     blockType: "ONTOLOGY",
     inputMappingEntries: [],
     externalRecommendations: [],

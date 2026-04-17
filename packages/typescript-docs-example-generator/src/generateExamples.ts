@@ -56,7 +56,7 @@ function getAllSupportedVersions(): string[] {
 
   // Filter for versions >= 2.0.0 using proper semver comparison
   return allVersions
-    .filter(version => {
+    .filter((version) => {
       // Validate the version string and check if it's >= 2.0.0
       const valid = semver.valid(version);
       return valid && semver.gte(valid, "2.0.0");
@@ -96,8 +96,8 @@ export async function generateExamples(
     const availableVersions = Object.keys(
       TYPESCRIPT_OSDK_SNIPPETS.versions || {},
     );
-    const versionsToGenerate = requestedVersions.filter(v =>
-      availableVersions.includes(v)
+    const versionsToGenerate = requestedVersions.filter((v) =>
+      availableVersions.includes(v),
     );
 
     if (versionsToGenerate.length === 0) {
@@ -137,7 +137,9 @@ export async function generateExamples(
 
       if (!snippets) {
         // eslint-disable-next-line no-console
-        console.warn(`⚠️ No snippets found for version ${version}, skipping...`);
+        console.warn(
+          `⚠️ No snippets found for version ${version}, skipping...`,
+        );
         continue;
       }
 
@@ -168,7 +170,7 @@ export async function generateExamples(
       report.totalVariations += versionResult.value.totalVariations;
 
       // Add version prefix to error template IDs for better reporting
-      const versionErrors = versionResult.value.errors.map(error => ({
+      const versionErrors = versionResult.value.errors.map((error) => ({
         ...error,
         templateId: `${version}/${error.templateId}`,
       }));
@@ -186,10 +188,7 @@ export async function generateExamples(
     const { flat, nested } = hierarchyBuilder.generateHierarchyFiles();
 
     // Add hierarchy files to the writer
-    fileWriter.addFile(
-      path.relative(outputDir, hierarchyOutputPath),
-      flat,
-    );
+    fileWriter.addFile(path.relative(outputDir, hierarchyOutputPath), flat);
     fileWriter.addFile(
       path.relative(
         outputDir,
@@ -223,7 +222,7 @@ export async function generateExamples(
     if (report.failed > 0) {
       // eslint-disable-next-line no-console
       console.error(`\n❌ Failed to generate ${report.failed} examples`);
-      report.errors.forEach(err => {
+      report.errors.forEach((err) => {
         // eslint-disable-next-line no-console
         console.error(`  - ${err.templateId}: ${err.error.message}`);
         if (err.error.getSuggestion) {
@@ -270,9 +269,10 @@ function generateAllExamplesForVersion(
   };
   const { errors, addError, hasErrors } = BatchProcessor.createErrorCollector();
   const warnings: string[] = [];
-  let indexContent = `${
-    generateFileHeader(`index`, `TYPESCRIPT Examples - SDK Version ${version}`)
-  }
+  let indexContent = `${generateFileHeader(
+    `index`,
+    `TYPESCRIPT Examples - SDK Version ${version}`,
+  )}
 // This file was automatically generated from the typescript-sdk-docs package
 
 `;
@@ -294,8 +294,8 @@ function generateAllExamplesForVersion(
     // Skip templates that only contain upgrade comments or invalid syntax
     const templateContent = snippetData.template.trim();
     if (
-      templateContent.startsWith("// Upgrade to")
-      || templateContent.includes("// Placeholder")
+      templateContent.startsWith("// Upgrade to") ||
+      templateContent.includes("// Placeholder")
     ) {
       // eslint-disable-next-line no-console
       console.log(
@@ -374,22 +374,19 @@ function generateAllExamplesForVersion(
       for (const [varName, prefixes] of Object.entries(blockVarsByName)) {
         for (const prefix of prefixes) {
           if (prefix === "#") {
-            indexContent +=
-              `\n// See: ./${snippetKey}_${prefix}${varName}.ts (Standard block: ${varName} = true)`;
+            indexContent += `\n// See: ./${snippetKey}_${prefix}${varName}.ts (Standard block: ${varName} = true)`;
           } else if (prefix === "^") {
-            indexContent +=
-              `\n// See: ./${snippetKey}_${prefix}${varName}.ts (Inverted block: ${varName} = false)`;
+            indexContent += `\n// See: ./${snippetKey}_${prefix}${varName}.ts (Inverted block: ${varName} = false)`;
           }
         }
       }
 
       indexContent += "\n\n";
     } else {
-      const processResult = processTemplateV2(
-        snippetData.template,
-        context,
-        { templateId: snippetKey, useCache: true },
-      );
+      const processResult = processTemplateV2(snippetData.template, context, {
+        templateId: snippetKey,
+        useCache: true,
+      });
 
       if (!processResult.success) {
         addError(snippetKey, processResult.error as GeneratorError);
@@ -400,13 +397,12 @@ function generateAllExamplesForVersion(
       const processedCode = processResult.value;
 
       // Apply code transformations using the utility
-      const transformedCode = CodeTransformer.applyCommonTransforms(
-        processedCode,
-      );
+      const transformedCode =
+        CodeTransformer.applyCommonTransforms(processedCode);
 
-      const fileContent = `${
-        generateFileHeader(snippetKey)
-      }\n${transformedCode}`;
+      const fileContent = `${generateFileHeader(
+        snippetKey,
+      )}\n${transformedCode}`;
 
       fileWriter.addFile(`typescript/${version}/${snippetKey}.ts`, fileContent);
 
@@ -435,7 +431,7 @@ function generateAllExamplesForVersion(
   console.log(`✓ All examples collected for version ${version}`);
 
   // Convert BatchProcessor errors back to expected format
-  const formattedErrors = errors.map(error => ({
+  const formattedErrors = errors.map((error) => ({
     templateId: error.id,
     error: error.error as GeneratorError,
   }));

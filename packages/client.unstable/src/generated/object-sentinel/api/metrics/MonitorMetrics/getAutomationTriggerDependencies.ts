@@ -16,8 +16,7 @@
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
 import type {
-  GetAutomationTriggerDependenciesResponse
-    as _api_metrics_GetAutomationTriggerDependenciesResponse,
+  GetAutomationTriggerDependenciesResponse as _api_metrics_GetAutomationTriggerDependenciesResponse,
   GetDependentAutomationsRequest as _api_metrics_GetDependentAutomationsRequest,
 } from "../__components.js";
 

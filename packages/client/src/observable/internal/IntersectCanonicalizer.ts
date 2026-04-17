@@ -49,7 +49,7 @@ export class IntersectCanonicalizer extends CachingCanonicalizer<
     intersectWith: IntersectWithInput,
   ): Canonical<Array<Canonical<SimpleWhereClause>>> {
     const canonicalClauses = intersectWith.map((item) =>
-      this.whereCanonicalizer.canonicalize(item.where ?? {})
+      this.whereCanonicalizer.canonicalize(item.where ?? {}),
     );
 
     const structuralKey = canonicalClauses

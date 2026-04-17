@@ -16,10 +16,8 @@
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
 import type {
-  GetStreamingTimeseriesMonitorGroupRequest
-    as _api_registry_GetStreamingTimeseriesMonitorGroupRequest,
-  GetStreamingTimeseriesMonitorGroupResponse
-    as _api_registry_GetStreamingTimeseriesMonitorGroupResponse,
+  GetStreamingTimeseriesMonitorGroupRequest as _api_registry_GetStreamingTimeseriesMonitorGroupRequest,
+  GetStreamingTimeseriesMonitorGroupResponse as _api_registry_GetStreamingTimeseriesMonitorGroupResponse,
 } from "../__components.js";
 
 /**

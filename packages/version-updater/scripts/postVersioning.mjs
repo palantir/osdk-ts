@@ -49,13 +49,7 @@ const workspaceDirPath = getWorkspaceDirPath();
 const clientPackageVersion = getClientPackageVersion();
 
 updateConstVariable(
-  path.join(
-    workspaceDirPath,
-    "packages",
-    "client",
-    "src",
-    "Client.ts",
-  ),
+  path.join(workspaceDirPath, "packages", "client", "src", "Client.ts"),
   "MaxOsdkVersion",
   clientPackageVersion,
 );
@@ -130,12 +124,10 @@ function updateConstVariable(filePath, variableName, value) {
   const regexp = new RegExp(`const ${variableName} = ".*?";`);
   if (!regexp.test(fileContents)) {
     consola.error(
-      `Variable ${variableName} not found in ${
-        path.relative(
-          workspaceDirPath,
-          filePath,
-        )
-      }`,
+      `Variable ${variableName} not found in ${path.relative(
+        workspaceDirPath,
+        filePath,
+      )}`,
     );
     process.exit(30);
   }
@@ -151,9 +143,10 @@ function updateConstVariable(filePath, variableName, value) {
   } else {
     fs.writeFileSync(filePath, newContents);
     consola.info(
-      `Updated ${variableName} in ${
-        path.relative(workspaceDirPath, filePath)
-      } to ${value}`,
+      `Updated ${variableName} in ${path.relative(
+        workspaceDirPath,
+        filePath,
+      )} to ${value}`,
     );
   }
 }
@@ -185,9 +178,10 @@ function getClientPackageVersion() {
   const currentSemver = semver.parse(currentVersion);
   if (!currentSemver) {
     consola.error(
-      `Invalid version ${currentVersion} in ${
-        path.relative(workspaceDirPath, clientPackageJsonPath)
-      } )}`,
+      `Invalid version ${currentVersion} in ${path.relative(
+        workspaceDirPath,
+        clientPackageJsonPath,
+      )} )}`,
     );
     process.exit(20);
   }
@@ -195,9 +189,10 @@ function getClientPackageVersion() {
   const { major, minor, patch } = currentSemver;
   if (major == null || minor == null || patch == null) {
     consola.error(
-      `Invalid version ${currentVersion} in ${
-        path.relative(workspaceDirPath, clientPackageJsonPath)
-      } )}`,
+      `Invalid version ${currentVersion} in ${path.relative(
+        workspaceDirPath,
+        clientPackageJsonPath,
+      )} )}`,
     );
     process.exit(21);
   }
@@ -228,8 +223,9 @@ function getPeerPackageVersion(packageName) {
  * @param {Record<string, { strategy: string, range?: string }>} peersConfig - Per-peer strategy config
  */
 function updatePeerDependencies(packageDir, peersConfig) {
-  const loosePeers = Object.entries(peersConfig)
-    .filter(([, cfg]) => cfg.strategy === "loose");
+  const loosePeers = Object.entries(peersConfig).filter(
+    ([, cfg]) => cfg.strategy === "loose",
+  );
   const changelogPeers = Object.entries(peersConfig)
     .filter(([, cfg]) => cfg.strategy === "changelog")
     .map(([name]) => name);
@@ -306,9 +302,7 @@ function updatePeerDependencies(packageDir, peersConfig) {
 
     const currentPeerVersion = getPeerPackageVersion(peerName);
     if (!currentPeerVersion) {
-      consola.warn(
-        `Could not read version for ${peerName}, skipping`,
-      );
+      consola.warn(`Could not read version for ${peerName}, skipping`);
       continue;
     }
 

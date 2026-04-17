@@ -38,22 +38,16 @@ interface UseSelectionColumnProps {
 
 export const useSelectionColumn = <
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<
-    string,
-    never
-  >,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
 >({
   selectionMode,
   isAllSelected,
   hasSelection,
   onToggleAll,
   onToggleRow,
-}: UseSelectionColumnProps):
-  | ColumnDef<
-    Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>
-  >
-  | null =>
-{
+}: UseSelectionColumnProps): ColumnDef<
+  Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>
+> | null => {
   // TODO: Replace with useLatestRef
   const isAllSelectedRef = useRef(isAllSelected);
   isAllSelectedRef.current = isAllSelected;
@@ -74,22 +68,16 @@ export const useSelectionColumn = <
       Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>
     > = {
       id: SELECTION_COLUMN_ID,
-      header: () => (
-        selectionMode === "multiple"
-          ? (
-            <SelectionHeaderCell
-              isAllSelected={isAllSelectedRef.current}
-              hasSelection={hasSelectionRef.current}
-              onToggleAll={onToggleAllRef.current}
-            />
-          )
-          : null
-      ),
+      header: () =>
+        selectionMode === "multiple" ? (
+          <SelectionHeaderCell
+            isAllSelected={isAllSelectedRef.current}
+            hasSelection={hasSelectionRef.current}
+            onToggleAll={onToggleAllRef.current}
+          />
+        ) : null,
       cell: ({ row }: { row: any }) => (
-        <SelectionCell
-          row={row}
-          onToggleRow={onToggleRowRef.current}
-        />
+        <SelectionCell row={row} onToggleRow={onToggleRowRef.current} />
       ),
       size: SELECTION_COLUMN_WIDTH,
       minSize: SELECTION_COLUMN_WIDTH,
@@ -100,9 +88,7 @@ export const useSelectionColumn = <
     };
 
     return colDef;
-  }, [
-    selectionMode,
-  ]);
+  }, [selectionMode]);
 
   return selectionColumn;
 };

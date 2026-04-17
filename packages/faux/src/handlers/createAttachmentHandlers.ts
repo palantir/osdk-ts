@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-/* eslint-disable @typescript-eslint/require-await */
+/* oxlint-disable typescript/require-await */
 
 import { randomUUID } from "node:crypto";
 import { OntologiesV2 } from "../mock/index.js";
@@ -28,33 +28,27 @@ export const createAttachmentHandlers: FauxFoundryHandlersFactory = (
   /**
    * Upload attachment
    */
-  OntologiesV2.Attachments.upload(
-    baseUrl,
-    async ({ request }) => {
-      const { filename } = requireSearchParams(["filename"], request);
+  OntologiesV2.Attachments.upload(baseUrl, async ({ request }) => {
+    const { filename } = requireSearchParams(["filename"], request);
 
-      return fauxFoundry.attachments.registerAttachment({
-        buffer: await request.arrayBuffer(),
-        filename,
-        mediaType: request.headers.get("Content-Type")
-          ?? "application/octet-stream",
-        rid: `ri.attachments.main.attachment.${randomUUID()}`,
-      });
-    },
-  ),
+    return fauxFoundry.attachments.registerAttachment({
+      buffer: await request.arrayBuffer(),
+      filename,
+      mediaType:
+        request.headers.get("Content-Type") ?? "application/octet-stream",
+      rid: `ri.attachments.main.attachment.${randomUUID()}`,
+    });
+  }),
 
   /**
    * Get attachment metadata V1
    */
 
-  OntologiesV2.Attachments.get(
-    baseUrl,
-    async ({ params }) => {
-      return fauxFoundry
-        .attachments
-        .getAttachmentMetadataByRid(params.attachmentRid);
-    },
-  ),
+  OntologiesV2.Attachments.get(baseUrl, async ({ params }) => {
+    return fauxFoundry.attachments.getAttachmentMetadataByRid(
+      params.attachmentRid,
+    );
+  }),
 
   /**
    * Get attachment metadata V2
@@ -62,11 +56,12 @@ export const createAttachmentHandlers: FauxFoundryHandlersFactory = (
 
   OntologiesV2.AttachmentPropertiesV2.getAttachment(
     baseUrl,
-    async (
-      { params: { ontologyApiName, primaryKey, objectType, propertyName } },
-    ) => {
+    async ({
+      params: { ontologyApiName, primaryKey, objectType, propertyName },
+    }) => {
       return {
-        ...fauxFoundry.getDataStore(ontologyApiName)
+        ...fauxFoundry
+          .getDataStore(ontologyApiName)
           .getAttachmentMetadata(objectType, primaryKey, propertyName),
         type: "single" as const,
       };
@@ -77,13 +72,11 @@ export const createAttachmentHandlers: FauxFoundryHandlersFactory = (
    * Read attachment content V1
    */
 
-  OntologiesV2.Attachments.read(
-    baseUrl,
-    async ({ params }) => {
-      return new Response(fauxFoundry
-        .attachments.getAttachmentBuffer(params.attachmentRid));
-    },
-  ),
+  OntologiesV2.Attachments.read(baseUrl, async ({ params }) => {
+    return new Response(
+      fauxFoundry.attachments.getAttachmentBuffer(params.attachmentRid),
+    );
+  }),
 
   /**
    * Read attachment content V2
@@ -91,15 +84,13 @@ export const createAttachmentHandlers: FauxFoundryHandlersFactory = (
 
   OntologiesV2.AttachmentPropertiesV2.readAttachment(
     baseUrl,
-    async (
-      { params: { ontologyApiName, primaryKey, objectType, propertyName } },
-    ) => {
+    async ({
+      params: { ontologyApiName, primaryKey, objectType, propertyName },
+    }) => {
       return new Response(
-        fauxFoundry.getDataStore(ontologyApiName).getAttachmentBuffer(
-          objectType,
-          primaryKey,
-          propertyName,
-        ),
+        fauxFoundry
+          .getDataStore(ontologyApiName)
+          .getAttachmentBuffer(objectType, primaryKey, propertyName),
       );
     },
   ),

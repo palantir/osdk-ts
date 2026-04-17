@@ -17,12 +17,14 @@
 import { consola } from "../consola.js";
 import { italic } from "../highlight.js";
 
-export async function promptApplicationRid(
-  { application }: { application?: string },
-): Promise<string> {
+export async function promptApplicationRid({
+  application,
+}: {
+  application?: string;
+}): Promise<string> {
   while (
-    application == null
-    || !/^ri\.third-party-applications\.[^.]+\.application\.[^.]+$/.test(
+    application == null ||
+    !/^ri\.third-party-applications\.[^.]+\.application\.[^.]+$/.test(
       application,
     )
   ) {
@@ -32,11 +34,9 @@ export async function promptApplicationRid(
       );
     }
     application = await consola.prompt(
-      `Enter the application resource identifier (rid) for your application from Developer Console:\n${
-        italic(
-          "(Example: ri.third-party-applications.main.application.1c66b352-4e00-40d2-995d-061c9d533ace)",
-        )
-      }`,
+      `Enter the application resource identifier (rid) for your application from Developer Console:\n${italic(
+        "(Example: ri.third-party-applications.main.application.1c66b352-4e00-40d2-995d-061c9d533ace)",
+      )}`,
       { type: "text" },
     );
   }

@@ -25,8 +25,11 @@ export function OfficeSelector({
   const [isAssigning, setIsAssigning] = useState(false);
   const [assignError, setAssignError] = useState<Error | null>(null);
   const [assignSuccess, setAssignSuccess] = useState(false);
-  const { data: offices, isLoading: officesLoading, error: officesError } =
-    useOsdkObjects(Office, {});
+  const {
+    data: offices,
+    isLoading: officesLoading,
+    error: officesError,
+  } = useOsdkObjects(Office, {});
 
   const handleAssignOffice = async () => {
     setIsAssigning(true);
@@ -35,9 +38,10 @@ export function OfficeSelector({
 
     try {
       // Create payload with null value for clearing office assignment
-      const primary_office_id = selectedOfficeId == null
-        ? undefined // Using undefined for clarity - API will treat as null
-        : selectedOfficeId;
+      const primary_office_id =
+        selectedOfficeId == null
+          ? undefined // Using undefined for clarity - API will treat as null
+          : selectedOfficeId;
 
       await $(modifyEmployee).applyAction({
         employee,
@@ -84,71 +88,63 @@ export function OfficeSelector({
 
   return (
     <div>
-      {!showSelector
-        ? (
-          <Button onClick={() => setShowSelector(true)} variant="secondary">
-            {currentOfficeId ? "Change Office" : "Assign Office"}
-          </Button>
-        )
-        : (
-          <div className="mt-3 p-4 border border-gray-200 bg-gray-50 rounded">
-            <h4 className="text-sm font-medium mb-2">Select an office:</h4>
+      {!showSelector ? (
+        <Button onClick={() => setShowSelector(true)} variant="secondary">
+          {currentOfficeId ? "Change Office" : "Assign Office"}
+        </Button>
+      ) : (
+        <div className="mt-3 p-4 border border-gray-200 bg-gray-50 rounded">
+          <h4 className="text-sm font-medium mb-2">Select an office:</h4>
 
-            {officesLoading
-              ? (
-                <div className="flex items-center text-sm text-gray-500">
-                  <InlineSpinner /> Loading offices...
+          {officesLoading ? (
+            <div className="flex items-center text-sm text-gray-500">
+              <InlineSpinner /> Loading offices...
+            </div>
+          ) : (
+            <>
+              <div className="mb-3">
+                <select
+                  className="w-full p-2 border border-gray-300 rounded"
+                  value={selectedOfficeId || ""}
+                  onChange={(e) => setSelectedOfficeId(e.target.value || null)}
+                >
+                  <option value="">-- No office --</option>
+                  {offices?.map((office) => (
+                    <option key={office.$primaryKey} value={office.$primaryKey}>
+                      {office.name || `Office ${office.$primaryKey}`}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {assignError && (
+                <div className="mb-3 p-2 bg-red-100 rounded">
+                  <ErrorMessage message={assignError} />
                 </div>
-              )
-              : (
-                <>
-                  <div className="mb-3">
-                    <select
-                      className="w-full p-2 border border-gray-300 rounded"
-                      value={selectedOfficeId || ""}
-                      onChange={(e) =>
-                        setSelectedOfficeId(e.target.value || null)}
-                    >
-                      <option value="">-- No office --</option>
-                      {offices?.map(office => (
-                        <option
-                          key={office.$primaryKey}
-                          value={office.$primaryKey}
-                        >
-                          {office.name || `Office ${office.$primaryKey}`}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  {assignError && (
-                    <div className="mb-3 p-2 bg-red-100 rounded">
-                      <ErrorMessage message={assignError} />
-                    </div>
-                  )}
-
-                  {assignSuccess && (
-                    <div className="mb-3 p-2 text-sm bg-green-100 text-green-800 rounded">
-                      Office successfully assigned!
-                    </div>
-                  )}
-
-                  <div className="flex justify-end gap-2">
-                    <Button
-                      variant="secondary"
-                      onClick={handleCancel}
-                      disabled={isAssigning}
-                    >
-                      Cancel
-                    </Button>
-                    <Button onClick={handleAssignOffice} disabled={isAssigning}>
-                      {isAssigning ? "Assigning..." : "Assign Office"}
-                    </Button>
-                  </div>
-                </>
               )}
-          </div>
-        )}
+
+              {assignSuccess && (
+                <div className="mb-3 p-2 text-sm bg-green-100 text-green-800 rounded">
+                  Office successfully assigned!
+                </div>
+              )}
+
+              <div className="flex justify-end gap-2">
+                <Button
+                  variant="secondary"
+                  onClick={handleCancel}
+                  disabled={isAssigning}
+                >
+                  Cancel
+                </Button>
+                <Button onClick={handleAssignOffice} disabled={isAssigning}>
+                  {isAssigning ? "Assigning..." : "Assign Office"}
+                </Button>
+              </div>
+            </>
+          )}
+        </div>
+      )}
     </div>
   );
 }

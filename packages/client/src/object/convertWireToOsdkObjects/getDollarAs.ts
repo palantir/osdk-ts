@@ -35,16 +35,13 @@ export type DollarAsFn = <
 ) => OsdkBase<any>;
 
 export const get$as: (key: FetchedObjectTypeDefinition) => DollarAsFn =
-  createSimpleCache<
-    FetchedObjectTypeDefinition,
-    DollarAsFn
-  >(new WeakMap(), $asFactory).get;
+  createSimpleCache<FetchedObjectTypeDefinition, DollarAsFn>(
+    new WeakMap(),
+    $asFactory,
+  ).get;
 
 const osdkObjectToInterfaceView = createSimpleCache(
-  new WeakMap<
-    OsdkBase<any>,
-    Map<string, WeakRef<OsdkBase<any>>>
-  >(),
+  new WeakMap<OsdkBase<any>, Map<string, WeakRef<OsdkBase<any>>>>(),
   () =>
     new Map<
       /* interface api name */ string,
@@ -52,14 +49,10 @@ const osdkObjectToInterfaceView = createSimpleCache(
     >(),
 );
 
-function $asFactory(
-  objDef: FetchedObjectTypeDefinition,
-): DollarAsFn {
+function $asFactory(objDef: FetchedObjectTypeDefinition): DollarAsFn {
   // We use the exact same logic for both the interface rep and the underlying rep
 
-  return function $as<
-    NEW_Q extends ObjectOrInterfaceDefinition,
-  >(
+  return function $as<NEW_Q extends ObjectOrInterfaceDefinition>(
     this: OsdkBase<any> & { [UnderlyingOsdkObject]: any },
     targetMinDef: NEW_Q | string,
   ): OsdkBase<any> {
@@ -100,14 +93,14 @@ function $asFactory(
 
     const existing = osdkObjectToInterfaceView
       .get(underlying)
-      .get(targetInterfaceApiName)?.deref();
+      .get(targetInterfaceApiName)
+      ?.deref();
     if (existing) return existing;
 
     const osdkInterface = createOsdkInterface(underlying, def.def);
-    osdkObjectToInterfaceView.get(underlying).set(
-      targetInterfaceApiName,
-      new WeakRef(osdkInterface),
-    );
+    osdkObjectToInterfaceView
+      .get(underlying)
+      .set(targetInterfaceApiName, new WeakRef(osdkInterface));
     return osdkInterface;
   };
 }

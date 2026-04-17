@@ -31,9 +31,7 @@ function ContainsTextFilterInputInner({
 }: ContainsTextFilterInputProps): React.ReactElement {
   const value = useMemo(
     () =>
-      filterState?.type === "CONTAINS_TEXT"
-        ? filterState.value
-        : undefined,
+      filterState?.type === "CONTAINS_TEXT" ? filterState.value : undefined,
     [filterState],
   );
 

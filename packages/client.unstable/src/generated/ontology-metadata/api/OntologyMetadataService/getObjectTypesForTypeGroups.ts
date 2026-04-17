@@ -17,8 +17,7 @@
 import { type ConjureContext, conjureFetch } from "conjure-lite";
 import type {
   GetObjectTypesForTypeGroupsRequest as _api_GetObjectTypesForTypeGroupsRequest,
-  GetObjectTypesForTypeGroupsResponse
-    as _api_GetObjectTypesForTypeGroupsResponse,
+  GetObjectTypesForTypeGroupsResponse as _api_GetObjectTypesForTypeGroupsResponse,
 } from "../__components.js";
 
 /**

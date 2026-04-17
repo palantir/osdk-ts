@@ -80,12 +80,7 @@ export function FoundryWidgetBuildPlugin(
         const widgetSetVersion = await computeWidgetSetVersion(foundryConfig);
         const widgetBuilds = await Promise.all(
           htmlEntrypoints.map((input) =>
-            getWidgetBuildOutputs(
-              bundle,
-              input,
-              config.build.outDir,
-              server,
-            )
+            getWidgetBuildOutputs(bundle, input, config.build.outDir, server),
           ),
         );
         const widgetSetInputSpec = await getWidgetSetInputSpec(
@@ -127,8 +122,9 @@ async function computeWidgetSetVersion(
   foundryConfig: LoadedFoundryConfig<"widgetSet">,
 ): Promise<string> {
   return autoVersion(
-    foundryConfig.foundryConfig.widgetSet.autoVersion
-      ?? { "type": "package-json" },
+    foundryConfig.foundryConfig.widgetSet.autoVersion ?? {
+      "type": "package-json",
+    },
   );
 }
 
@@ -138,8 +134,5 @@ function writeManifest(
 ): void {
   const manifestPath = path.join(outDir, MANIFEST_FILE_LOCATION);
   fs.mkdirSync(path.dirname(manifestPath), { recursive: true });
-  fs.writeFileSync(
-    manifestPath,
-    JSON.stringify(widgetSetManifest, null, 2),
-  );
+  fs.writeFileSync(manifestPath, JSON.stringify(widgetSetManifest, null, 2));
 }

@@ -37,10 +37,7 @@ import { useFunctionColumnsData } from "./useFunctionColumnsData.js";
 
 type WithProperties<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<
-    string,
-    never
-  >,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
 > = {
   [K in keyof RDPs]: DerivedProperty.Creator<Q, RDPs[K]>;
 };
@@ -57,10 +54,7 @@ interface UseObjectTableDataResult<
  */
 export function useObjectTableData<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<
-    string,
-    never
-  >,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
   FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
     string,
     never
@@ -95,11 +89,11 @@ export function useObjectTableData<
       return;
     }
 
-    const rdpColumns = columnDefinitions.map(colDef => colDef.locator).filter(
-      (colLocator) => {
+    const rdpColumns = columnDefinitions
+      .map((colDef) => colDef.locator)
+      .filter((colLocator) => {
         return colLocator.type === "rdp";
-      },
-    );
+      });
 
     if (!rdpColumns.length) {
       return;
@@ -123,13 +117,10 @@ export function useObjectTableData<
   // When shouldUseObjectSet is true, we know objectSet is defined
   // and objectOrInterfaceType is an ObjectTypeDefinition
   const objectSetResult = useObjectSet(
-    shouldUseObjectSet ? objectSet as ObjectSet<Q, RDPs> : undefined as any,
+    shouldUseObjectSet ? (objectSet as ObjectSet<Q, RDPs>) : (undefined as any),
     {
       ...(objectSetOptions as ObjectSetOptions<Q>),
-      withProperties: withProperties as WithProperties<
-        Q,
-        RDPs
-      >,
+      withProperties: withProperties as WithProperties<Q, RDPs>,
       where: filter,
       orderBy,
       pageSize,
@@ -138,27 +129,22 @@ export function useObjectTableData<
     },
   );
 
-  const osdkObjectsResult = useOsdkObjects<
-    Q,
-    RDPs
-  >(
-    objectOrInterfaceType,
-    {
-      withProperties,
-      pageSize,
-      where: filter,
-      orderBy,
-      enabled: !shouldUseObjectSet,
-      dedupeIntervalMs,
-    },
-  );
+  const osdkObjectsResult = useOsdkObjects<Q, RDPs>(objectOrInterfaceType, {
+    withProperties,
+    pageSize,
+    where: filter,
+    orderBy,
+    enabled: !shouldUseObjectSet,
+    dedupeIntervalMs,
+  });
 
   // Get the result from the appropriate hook
   const baseResult = shouldUseObjectSet ? objectSetResult : osdkObjectsResult;
 
-  const primaryKeyApiName = objectOrInterfaceType.type === "object"
-    ? objectOrInterfaceType.primaryKeyApiName
-    : undefined;
+  const primaryKeyApiName =
+    objectOrInterfaceType.type === "object"
+      ? objectOrInterfaceType.primaryKeyApiName
+      : undefined;
 
   // Call useFunctionColumnsData to get function column data
   const functionColumnData = useFunctionColumnsData<Q, RDPs, FunctionColumns>({
@@ -173,7 +159,7 @@ export function useObjectTableData<
   const mergedData = useMemo(() => {
     if (!baseResult.data) return baseResult.data;
 
-    return baseResult.data.map(obj => {
+    return baseResult.data.map((obj) => {
       const objKey = String(obj.$primaryKey);
       const functionData: Record<string, AsyncCellData> = {};
 

@@ -17,10 +17,8 @@
 import { type ConjureContext, conjureFetch } from "conjure-lite";
 import type { OntologyRid as _api_OntologyRid } from "../__components.js";
 import type {
-  UpdateAssociationRequest
-    as _api_association_metadata_UpdateAssociationRequest,
-  UpdateAssociationResponse
-    as _api_association_metadata_UpdateAssociationResponse,
+  UpdateAssociationRequest as _api_association_metadata_UpdateAssociationRequest,
+  UpdateAssociationResponse as _api_association_metadata_UpdateAssociationResponse,
 } from "../association/metadata/__components.js";
 
 /**

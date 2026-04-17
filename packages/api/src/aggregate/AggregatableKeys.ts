@@ -21,9 +21,7 @@ import type {
   NumericWithPropAggregateOption,
   ValidCollectPropertyKeysForSpecialTypes,
 } from "../derivedProperties/WithPropertiesAggregationOptions.js";
-import type {
-  GetWirePropertyValueFromClient,
-} from "../mapping/PropertyValueMapping.js";
+import type { GetWirePropertyValueFromClient } from "../mapping/PropertyValueMapping.js";
 import type {
   ObjectOrInterfaceDefinition,
   PropertyKeys,
@@ -46,18 +44,21 @@ export type NumericAggregateOption =
   | "exactDistinct"
   | MinMaxAggregateOption;
 
-type AGG_FOR_TYPE<WIRE_TYPE extends WirePropertyTypes> = number extends
-  GetWirePropertyValueFromClient<WIRE_TYPE> ? NumericAggregateOption
-  : WIRE_TYPE extends "datetime" | "timestamp" ? DatetimeAggregateOption
-  : BaseAggregateOptions;
+type AGG_FOR_TYPE<WIRE_TYPE extends WirePropertyTypes> =
+  number extends GetWirePropertyValueFromClient<WIRE_TYPE>
+    ? NumericAggregateOption
+    : WIRE_TYPE extends "datetime" | "timestamp"
+      ? DatetimeAggregateOption
+      : BaseAggregateOptions;
 
 type WITH_PROPERTIES_AGG_FOR_TYPE<WIRE_TYPE extends WirePropertyTypes> =
   number extends GetWirePropertyValueFromClient<WIRE_TYPE>
     ? NumericWithPropAggregateOption
     : WIRE_TYPE extends "datetime" | "timestamp"
       ? DatetimeWithPropAggregateOption
-    : WIRE_TYPE extends "string" ? BaseWithPropAggregations
-    : WITH_PROPERTIES_AGG_FOR_SPECIAL_WIRE_TYPE<WIRE_TYPE>;
+      : WIRE_TYPE extends "string"
+        ? BaseWithPropAggregations
+        : WITH_PROPERTIES_AGG_FOR_SPECIAL_WIRE_TYPE<WIRE_TYPE>;
 
 type WITH_PROPERTIES_AGG_FOR_SPECIAL_WIRE_TYPE<
   WIRE_TYPE extends WirePropertyTypes,
@@ -68,23 +69,14 @@ type WITH_PROPERTIES_AGG_FOR_SPECIAL_WIRE_TYPE<
 export type ValidAggregationKeys<
   Q extends ObjectOrInterfaceDefinition,
   R extends "aggregate" | "withPropertiesAggregate" = "aggregate",
-> = keyof (
-  & {
-    [
-      KK in AggregatableKeys<Q> as `${KK & string}:${R extends "aggregate"
-        ? AGG_FOR_TYPE<
-          CompileTimeMetadata<Q>["properties"][KK]["type"]
-        >
-        : WITH_PROPERTIES_AGG_FOR_TYPE<
-          CompileTimeMetadata<Q>["properties"][KK]["type"]
-        >}`
-    ]?: any;
-  }
-  & { $count?: any }
-);
+> = keyof ({
+  [KK in AggregatableKeys<Q> as `${KK & string}:${R extends "aggregate"
+    ? AGG_FOR_TYPE<CompileTimeMetadata<Q>["properties"][KK]["type"]>
+    : WITH_PROPERTIES_AGG_FOR_TYPE<
+        CompileTimeMetadata<Q>["properties"][KK]["type"]
+      >}`]?: any;
+} & { $count?: any });
 
-export type AggregatableKeys<
-  Q extends ObjectOrInterfaceDefinition,
-> = keyof {
+export type AggregatableKeys<Q extends ObjectOrInterfaceDefinition> = keyof {
   [P in PropertyKeys<Q>]: any;
 };

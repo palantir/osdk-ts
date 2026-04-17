@@ -37,9 +37,9 @@ export async function copyFiles(
       continue;
     }
     const indexOfPackageName = fileName.indexOf(generatedPackageName);
-    const tsPath = removeDts(fileName.slice(
-      indexOfPackageName + generatedPackageName.length,
-    ));
+    const tsPath = removeDts(
+      fileName.slice(indexOfPackageName + generatedPackageName.length),
+    );
 
     const newModulePath = `${generatedPackageName}${tsPath}`;
 
@@ -54,11 +54,9 @@ export async function copyFiles(
       moduleSpecifier.setLiteralValue(newModuleSpecifier);
 
       if (newModuleSpecifier.startsWith("internal")) {
-        for (
-          const importName of importDeclaration.getNamedImports().map(imp =>
-            imp.getName()
-          )
-        ) {
+        for (const importName of importDeclaration
+          .getNamedImports()
+          .map((imp) => imp.getName())) {
           importSet.add(importName);
         }
       }
@@ -79,11 +77,9 @@ export async function copyFiles(
         );
         moduleSpecifier.setLiteralValue(newModuleSpecifier);
         if (newModuleSpecifier.startsWith("internal")) {
-          for (
-            const exportName of exportDeclaration.getNamedExports().map(exp =>
-              exp.getName()
-            )
-          ) {
+          for (const exportName of exportDeclaration
+            .getNamedExports()
+            .map((exp) => exp.getName())) {
             importSet.add(exportName);
           }
         }
@@ -166,8 +162,8 @@ function* getTypeFiles(dir: string): Generator<string> {
     const target = path.join(dir, item);
     // no test files
     if (
-      (target.endsWith(".d.ts") && !target.endsWith(".test.d.ts"))
-      || (target.endsWith(".d.cts") && !target.endsWith(".test.d.cts"))
+      (target.endsWith(".d.ts") && !target.endsWith(".test.d.ts")) ||
+      (target.endsWith(".d.cts") && !target.endsWith(".test.d.cts"))
     ) {
       yield target;
     } else {
@@ -184,9 +180,10 @@ function transformModuleSpecifier(value: string, filePath: string) {
   if (value.startsWith("@osdk")) {
     // package relative import
     if (value.startsWith("@osdk/gateway/types")) {
-      moduleSpecifier = `internal/${
-        value.replace("@osdk/gateway/types", "@osdk/gateway/public/types")
-      }`;
+      moduleSpecifier = `internal/${value.replace(
+        "@osdk/gateway/types",
+        "@osdk/gateway/public/types",
+      )}`;
     } else {
       moduleSpecifier = `internal/${value}`;
     }

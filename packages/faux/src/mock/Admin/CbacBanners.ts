@@ -18,7 +18,5 @@ import { CbacBanners } from "@osdk/foundry.admin";
 import type { CallFactory } from "../../handlers/util/handleOpenApiCall.js";
 import { handleOpenApiCall } from "../../handlers/util/handleOpenApiCall.js";
 
-export const applyGetCbacBanner: CallFactory<
-  never,
-  typeof CbacBanners.get
-> = handleOpenApiCall(CbacBanners.get, []);
+export const applyGetCbacBanner: CallFactory<never, typeof CbacBanners.get> =
+  handleOpenApiCall(CbacBanners.get, []);

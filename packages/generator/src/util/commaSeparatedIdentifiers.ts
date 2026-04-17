@@ -18,11 +18,13 @@ export function commaSeparatedIdentifiers(
   identifiers: ReadonlyArray<string>,
   alternateNames?: ReadonlyMap<string, string>,
 ): string {
-  return identifiers.map(i => {
-    const alt = alternateNames?.get(i);
-    if (alt) {
-      return `${i}: ${alt}`;
-    }
-    return i;
-  }).join(",");
+  return identifiers
+    .map((i) => {
+      const alt = alternateNames?.get(i);
+      if (alt) {
+        return `${i}: ${alt}`;
+      }
+      return i;
+    })
+    .join(",");
 }

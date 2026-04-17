@@ -25,8 +25,9 @@ export interface LoadedFoundryConfig<T extends "site" | "widgetSet"> {
 
 export type FoundryConfig<T extends "site" | "widgetSet"> = T extends "site"
   ? FoundrySiteConfig
-  : T extends "widgetSet" ? FoundryWidgetSetConfig
-  : never;
+  : T extends "widgetSet"
+    ? FoundryWidgetSetConfig
+    : never;
 
 export interface FoundrySiteConfig {
   foundryUrl: string;
@@ -66,9 +67,7 @@ export interface PackageJsonAutoVersionConfig {
   type: "package-json";
 }
 
-const CONFIG_FILE_NAMES: string[] = [
-  "foundry.config.json",
-];
+const CONFIG_FILE_NAMES: string[] = ["foundry.config.json"];
 
 const FOUNDRY_SITE_CONFIG_SCHEMA = {
   type: "object",
@@ -169,9 +168,9 @@ export async function loadFoundryConfig(
 
     if (!validate(foundryConfig)) {
       throw new Error(
-        `The configuration file ${configFilePath} does not match the expected schema: ${
-          ajv.errorsText(validate.errors)
-        }`,
+        `The configuration file ${configFilePath} does not match the expected schema: ${ajv.errorsText(
+          validate.errors,
+        )}`,
       );
     }
 

@@ -30,7 +30,7 @@ export function getProperty(
   const props = obj.properties;
   if (props == null) return undefined;
   if (Array.isArray(props)) {
-    return props.find(prop => prop.apiName === propertyId);
+    return props.find((prop) => prop.apiName === propertyId);
   }
   return propertyId in props ? props[propertyId] : undefined;
 }
@@ -44,7 +44,7 @@ export function getPropertyKeys(
   const props = obj.properties;
   if (props == null) return [];
   if (Array.isArray(props)) {
-    return props.map(prop => prop.apiName);
+    return props.map((prop) => prop.apiName);
   }
   return Object.keys(props);
 }
@@ -58,7 +58,7 @@ export function toPropertyMap(
   const props = obj.properties;
   if (props == null) return {};
   if (Array.isArray(props)) {
-    return Object.fromEntries(props.map(prop => [prop.apiName, prop]));
+    return Object.fromEntries(props.map((prop) => [prop.apiName, prop]));
   }
   return props;
 }

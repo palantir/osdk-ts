@@ -13,17 +13,14 @@ interface TodoListProps {
 }
 
 function TodoList({ where, heading }: TodoListProps) {
-  const { data, isLoading, isOptimistic } = useOsdkObjects(
-    Todo,
-    {
-      where,
-      orderBy: {
-        title: "asc",
-      },
-      streamUpdates: true,
-      pageSize: 5,
+  const { data, isLoading, isOptimistic } = useOsdkObjects(Todo, {
+    where,
+    orderBy: {
+      title: "asc",
     },
-  );
+    streamUpdates: true,
+    pageSize: 5,
+  });
 
   return (
     <>
@@ -31,22 +28,15 @@ function TodoList({ where, heading }: TodoListProps) {
         {heading ?? "Todos"}
         <InlineSpinner isLoading={isLoading} />
         <SmallTextDiv>
-          {isOptimistic
-            ? "(Optimistic)"
-            : ""}
+          {isOptimistic ? "(Optimistic)" : ""}
           {isLoading ? "(Loading)" : ""}
         </SmallTextDiv>
       </H2>
 
       {!data && isLoading && "Loading"}
 
-      {data
-        && data.map((todo) => (
-          <TodoView
-            todo={todo}
-            key={todo.$primaryKey}
-          />
-        ))}
+      {data &&
+        data.map((todo) => <TodoView todo={todo} key={todo.$primaryKey} />)}
     </>
   );
 }

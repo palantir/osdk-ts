@@ -29,15 +29,12 @@ export function getYargsBase(args: string[]): Argv<CliCommonArgs> {
     .wrap(Math.min(150, yargs().terminalWidth()))
     .env("OSDK")
     .version(false)
-    .option(
-      "verbose",
-      {
-        alias: "v",
-        type: "boolean",
-        description: "Enable verbose logging",
-        count: true,
-      },
-    )
+    .option("verbose", {
+      alias: "v",
+      type: "boolean",
+      description: "Enable verbose logging",
+      count: true,
+    })
     .demandCommand()
     .middleware(logLevelMiddleware, true)
     .strict()

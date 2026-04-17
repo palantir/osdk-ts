@@ -54,12 +54,7 @@ function createSampleTiffBytes(): Uint8Array {
   view.setUint16(offset, numEntries, true);
   offset += 2;
 
-  function writeEntry(
-    tag: number,
-    type: number,
-    count: number,
-    value: number,
-  ) {
+  function writeEntry(tag: number, type: number, count: number, value: number) {
     view.setUint16(offset, tag, true);
     offset += 2;
     view.setUint16(offset, type, true);
@@ -138,8 +133,7 @@ export const Default: Story = {
   parameters: {
     docs: {
       source: {
-        code:
-          `import { TiffRenderer } from "@osdk/react-components/experimental";
+        code: `import { TiffRenderer } from "@osdk/react-components/experimental";
 
 <TiffRenderer content={tiffBytes} />`,
       },
@@ -154,8 +148,7 @@ export const WithErrorCallback: Story = {
   parameters: {
     docs: {
       source: {
-        code:
-          `import { TiffRenderer } from "@osdk/react-components/experimental";
+        code: `import { TiffRenderer } from "@osdk/react-components/experimental";
 
 <TiffRenderer content={tiffBytes} onError={() => console.error("TIFF render failed")} />`,
       },

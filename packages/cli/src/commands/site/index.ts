@@ -37,17 +37,13 @@ const command: CommandModule<CliCommonArgs, CommonSiteArgs> = {
         application: {
           type: "string",
           coerce: (application) => application as ThirdPartyAppRid,
-          ...application
-            ? { default: application }
-            : { demandOption: true },
+          ...(application ? { default: application } : { demandOption: true }),
           description: "Application resource identifier (rid)",
         },
         foundryUrl: {
           coerce: (foundryUrl) => foundryUrl.replace(/\/$/, ""),
           type: "string",
-          ...foundryUrl
-            ? { default: foundryUrl }
-            : { demandOption: true },
+          ...(foundryUrl ? { default: foundryUrl } : { demandOption: true }),
           description: "URL for the Foundry stack",
         },
         token: {

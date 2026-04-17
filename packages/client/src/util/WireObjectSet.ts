@@ -30,6 +30,7 @@ const WIRE_OBJECT_SET_TYPES = new Set([
 
 /** @internal */
 export function isWireObjectSet(o: any): o is WireObjectSet {
-  return o != null && typeof o === "object"
-    && WIRE_OBJECT_SET_TYPES.has(o.type);
+  return (
+    o != null && typeof o === "object" && WIRE_OBJECT_SET_TYPES.has(o.type)
+  );
 }

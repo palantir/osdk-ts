@@ -20,9 +20,7 @@ import type { ObjectOrInterfaceDefinition } from "../ontology/ObjectOrInterface.
 import type { CompileTimeMetadata } from "../ontology/ObjectTypeDefinition.js";
 import type { GroupByMapper } from "./GroupByMapper.js";
 
-export type GroupByClause<
-  Q extends ObjectOrInterfaceDefinition,
-> = {
+export type GroupByClause<Q extends ObjectOrInterfaceDefinition> = {
   [P in AggregatableKeys<Q>]?: GroupByEntry<Q, P>;
 };
 
@@ -32,33 +30,34 @@ type BaseGroupByValue =
   | ExactGroupByWithOptions;
 
 type ExactGroupByWithOptions = {
-  $exact:
-    & {
-      $limit?: number;
-    }
-    & (
-      | {
+  $exact: {
+    $limit?: number;
+  } & (
+    | {
         $defaultValue?: undefined;
         $includeNullValue?: false;
       }
-      | {
+    | {
         $defaultValue: string;
         $includeNullValue?: false;
       }
-      | {
+    | {
         $defaultValue?: never;
         $includeNullValue: true;
       }
-    );
+  );
 };
 
 export type GroupByRange<T> = [T, T];
 
 export type StringGroupByValue = BaseGroupByValue;
 
-export type NumericGroupByValue = BaseGroupByValue | {
-  $fixedWidth: number;
-} | { $ranges: GroupByRange<number>[] };
+export type NumericGroupByValue =
+  | BaseGroupByValue
+  | {
+      $fixedWidth: number;
+    }
+  | { $ranges: GroupByRange<number>[] };
 
 export type TimestampGroupByValue =
   | BaseGroupByValue
@@ -120,8 +119,8 @@ interface TimeValueMapping {
 }
 
 type DurationGroupBy<A> = {
-  [K in keyof typeof DurationMapping]: typeof DurationMapping[K] extends A
-    ? [TimeValueMapping[typeof DurationMapping[K]], K]
+  [K in keyof typeof DurationMapping]: (typeof DurationMapping)[K] extends A
+    ? [TimeValueMapping[(typeof DurationMapping)[K]], K]
     : never;
 }[keyof typeof DurationMapping];
 

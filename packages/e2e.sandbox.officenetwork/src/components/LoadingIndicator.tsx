@@ -3,9 +3,10 @@ interface LoadingIndicatorProps {
   size?: "sm" | "md";
 }
 
-export function LoadingIndicator(
-  { isLoading = true, size = "sm" }: LoadingIndicatorProps,
-) {
+export function LoadingIndicator({
+  isLoading = true,
+  size = "sm",
+}: LoadingIndicatorProps) {
   if (!isLoading) return null;
 
   const sizeClasses = size === "sm" ? "size-3" : "size-4";
@@ -23,9 +24,11 @@ interface StatusBadgeProps {
   error?: Error;
 }
 
-export function StatusBadge(
-  { isLoading, isOptimistic, error }: StatusBadgeProps,
-) {
+export function StatusBadge({
+  isLoading,
+  isOptimistic,
+  error,
+}: StatusBadgeProps) {
   if (error) {
     return (
       <span className="officenetwork-badge officenetwork-badge-error">
@@ -45,7 +48,7 @@ export function StatusBadge(
   if (isLoading) {
     return (
       <span className="officenetwork-badge officenetwork-badge-info flex items-center gap-1.5">
-        <LoadingIndicator isLoading size="sm" />
+        <LoadingIndicator isLoading={true} size="sm" />
         Loading
       </span>
     );

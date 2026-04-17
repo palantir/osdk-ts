@@ -200,7 +200,7 @@ describe(FauxAdmin, () => {
         createUser({ id: "user-3", status: "ACTIVE" }),
       ];
 
-      users.forEach(user => fauxAdmin.registerUser(user));
+      users.forEach((user) => fauxAdmin.registerUser(user));
 
       const page1 = fauxAdmin.listUsers(2, undefined, "ACTIVE");
 
@@ -236,7 +236,7 @@ describe(FauxAdmin, () => {
         createUser({ id: "user-3", status: "ACTIVE" }),
       ];
 
-      users.forEach(user => fauxAdmin.registerUser(user));
+      users.forEach((user) => fauxAdmin.registerUser(user));
 
       const result = fauxAdmin.listUsers(1, undefined, "ACTIVE");
 
@@ -253,7 +253,7 @@ describe(FauxAdmin, () => {
         createUser({ id: "user-4", status: "ACTIVE" }),
       ];
 
-      users.forEach(user => fauxAdmin.registerUser(user));
+      users.forEach((user) => fauxAdmin.registerUser(user));
 
       const result = fauxAdmin.listUsers(2, "user-2", "ACTIVE");
 

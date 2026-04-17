@@ -27,25 +27,21 @@ export async function uploadSnapshotVersion(
   zipFile: ReadableStream | Blob | BufferSource,
 ): Promise<Version> {
   const fetch = createFetch(ctx.tokenProvider);
-  const url =
-    `${ctx.foundryUrl}/api/v2/thirdPartyApplications/${thirdPartyAppRid}/website/versions/uploadSnapshot?version=${
-      encodeURIComponent(version)
-    }&preview=true${
-      snapshotId !== ""
-        ? `&snapshotIdentifier=${encodeURIComponent(snapshotId)}`
-        : ""
-    }`;
+  const url = `${ctx.foundryUrl}/api/v2/thirdPartyApplications/${thirdPartyAppRid}/website/versions/uploadSnapshot?version=${encodeURIComponent(
+    version,
+  )}&preview=true${
+    snapshotId !== ""
+      ? `&snapshotIdentifier=${encodeURIComponent(snapshotId)}`
+      : ""
+  }`;
 
-  const result = await fetch(
-    url,
-    {
-      method: "POST",
-      body: zipFile,
-      headers: {
-        "Content-Type": "application/octet-stream",
-      },
-      duplex: "half", // Node hates me
-    } satisfies RequestInit & { duplex: "half" } as any,
-  );
+  const result = await fetch(url, {
+    method: "POST",
+    body: zipFile,
+    headers: {
+      "Content-Type": "application/octet-stream",
+    },
+    duplex: "half", // Node hates me
+  } satisfies RequestInit & { duplex: "half" } as any);
   return result.json();
 }

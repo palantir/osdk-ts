@@ -16,10 +16,8 @@
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
 import type {
-  LoadAllSharedPropertyTypesPageRequest
-    as _api_LoadAllSharedPropertyTypesPageRequest,
-  LoadAllSharedPropertyTypesPageResponse
-    as _api_LoadAllSharedPropertyTypesPageResponse,
+  LoadAllSharedPropertyTypesPageRequest as _api_LoadAllSharedPropertyTypesPageRequest,
+  LoadAllSharedPropertyTypesPageResponse as _api_LoadAllSharedPropertyTypesPageResponse,
   OntologyRid as _api_OntologyRid,
   OntologyVersion as _api_OntologyVersion,
 } from "../__components.js";

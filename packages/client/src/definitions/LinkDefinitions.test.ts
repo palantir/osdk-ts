@@ -33,20 +33,16 @@ import { describe, expectTypeOf, it } from "vitest";
 describe("LinkDefinitions", () => {
   describe("OsdkObjectLinkObject", () => {
     it("is correctly absent on types with no links", () => {
-      expectTypeOf<OsdkObjectLinksObject<equipment>>()
-        .toEqualTypeOf<never>();
+      expectTypeOf<OsdkObjectLinksObject<equipment>>().toEqualTypeOf<never>();
     });
 
     it("populates on types with links", () => {
-      expectTypeOf<OsdkObjectLinksObject<Employee>>()
-        .toEqualTypeOf<
-          {
-            readonly lead: SingleLinkAccessor<Employee>;
-            readonly officeLink: SingleLinkAccessor<Office>;
-            readonly peeps: ObjectSet<Employee>;
-            readonly visitedOffices: ObjectSet<Office>;
-          }
-        >();
+      expectTypeOf<OsdkObjectLinksObject<Employee>>().toEqualTypeOf<{
+        readonly lead: SingleLinkAccessor<Employee>;
+        readonly officeLink: SingleLinkAccessor<Office>;
+        readonly peeps: ObjectSet<Employee>;
+        readonly visitedOffices: ObjectSet<Office>;
+      }>();
     });
 
     describe("SingletonLinkAccessor", () => {
@@ -66,32 +62,28 @@ describe("LinkDefinitions", () => {
         type PersonDef = Person;
 
         //   // e.g. .lead.fetchOne({});
-        expectTypeOf<Awaited<ReturnType<Helper<PersonDef, {}>["fetchOne"]>>>()
-          .branded.toEqualTypeOf<Osdk<PersonDef>>();
+        expectTypeOf<
+          Awaited<ReturnType<Helper<PersonDef, {}>["fetchOne"]>>
+        >().branded.toEqualTypeOf<Osdk<PersonDef>>();
 
         // e.g. .lead.fetchOne();
         expectTypeOf<
           Awaited<
             ReturnType<Helper<PersonDef, SelectArg<PersonDef>>["fetchOne"]>
           >
-        >().branded
-          .toEqualTypeOf<Osdk<PersonDef>>();
+        >().branded.toEqualTypeOf<Osdk<PersonDef>>();
 
         // e.g. .lead.fetchOne({ select: [] });
         expectTypeOf<
-          Awaited<
-            ReturnType<Helper<PersonDef, { $select: [] }>["fetchOne"]>
-          >
-        >().branded
-          .toEqualTypeOf<Osdk<PersonDef>>();
+          Awaited<ReturnType<Helper<PersonDef, { $select: [] }>["fetchOne"]>>
+        >().branded.toEqualTypeOf<Osdk<PersonDef>>();
 
         // e.g. .lead.fetchOne({ select: ["name"] });
         expectTypeOf<
           Awaited<
             ReturnType<Helper<PersonDef, { $select: ["name"] }>["fetchOne"]>
           >
-        >()
-          .toEqualTypeOf<Osdk<PersonDef, "name">>();
+        >().toEqualTypeOf<Osdk<PersonDef, "name">>();
       });
     });
   });

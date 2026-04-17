@@ -150,24 +150,23 @@ export function FilterList<Q extends ObjectTypeDefinition>(
     : onFilterRemoved;
 
   const renderInput = useCallback<RenderFilterInput<FilterDefinitionUnion<Q>>>(
-    (
-      {
-        definition,
-        filterKey,
-        filterState,
-        onFilterStateChanged,
-        searchQuery,
-        excludeRowOpen,
-      },
-    ) => (
+    ({
+      definition,
+      filterKey,
+      filterState,
+      onFilterStateChanged,
+      searchQuery,
+      excludeRowOpen,
+    }) => (
       <FilterInput
         objectType={objectType}
         objectSet={objectSet}
         definition={definition}
         filterState={filterState}
         onFilterStateChanged={onFilterStateChanged}
-        whereClause={perFilterWhereClauses.get(filterKey)
-          ?? ({} as WhereClause<Q>)}
+        whereClause={
+          perFilterWhereClauses.get(filterKey) ?? ({} as WhereClause<Q>)
+        }
         searchQuery={searchQuery}
         excludeRowOpen={excludeRowOpen}
       />

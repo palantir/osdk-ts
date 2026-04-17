@@ -40,11 +40,11 @@ export async function getWidgetBuildOutputs(
   const scriptPaths = new Set(
     buildOutputs.scripts.map((script) => script.src.slice(1)),
   );
-  const entrypointChunk = Object.values(bundle).find((
-    chunk,
-  ): chunk is Rollup.OutputChunk =>
-    chunk.type === "chunk" && chunk.isEntry
-    && scriptPaths.has(chunk.fileName)
+  const entrypointChunk = Object.values(bundle).find(
+    (chunk): chunk is Rollup.OutputChunk =>
+      chunk.type === "chunk" &&
+      chunk.isEntry &&
+      scriptPaths.has(chunk.fileName),
   );
   if (entrypointChunk == null) {
     throw new Error(`Entrypoint chunk not found for input file: ${input}`);
@@ -54,9 +54,7 @@ export async function getWidgetBuildOutputs(
   return { ...buildOutputs, widgetConfig };
 }
 
-function getChunkConfigModuleId(
-  chunk: Rollup.OutputChunk,
-): string {
+function getChunkConfigModuleId(chunk: Rollup.OutputChunk): string {
   const configModuleIds = chunk.moduleIds.filter(isConfigFile);
   if (configModuleIds.length === 0) {
     throw new Error(

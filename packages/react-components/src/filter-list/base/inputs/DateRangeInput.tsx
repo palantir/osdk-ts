@@ -30,9 +30,9 @@ const dateConfig: RangeInputConfig<Date> = {
   minLabel: "From",
   maxLabel: "To",
   formatTooltip: (min, max, count) =>
-    `${formatDateForInput(min)} - ${
-      formatDateForInput(max)
-    }: ${count.toLocaleString()}`,
+    `${formatDateForInput(min)} - ${formatDateForInput(
+      max,
+    )}: ${count.toLocaleString()}`,
 };
 
 interface DateRangeInputProps {
@@ -46,9 +46,7 @@ interface DateRangeInputProps {
   style?: React.CSSProperties;
 }
 
-function DateRangeInputInner(
-  props: DateRangeInputProps,
-): React.ReactElement {
+function DateRangeInputInner(props: DateRangeInputProps): React.ReactElement {
   return <RangeInput {...props} config={dateConfig} />;
 }
 

@@ -73,9 +73,9 @@ export interface AggregationQueryOptions<
 export interface AggregationPayloadBase {
   result:
     | AggregationsResults<
-      ObjectOrInterfaceDefinition,
-      AggregateOpts<ObjectOrInterfaceDefinition>
-    >
+        ObjectOrInterfaceDefinition,
+        AggregateOpts<ObjectOrInterfaceDefinition>
+      >
     | undefined;
   status: Status;
   lastUpdated: number;
@@ -109,13 +109,14 @@ export abstract class AggregationQuery extends Query<
       opts,
       cacheKey,
       process.env.NODE_ENV !== "production"
-        ? (
-          store.client[additionalContext].logger?.child({}, {
-            msgPrefix: `AggregationQuery<${
-              cacheKey.otherKeys.map(x => JSON.stringify(x)).join(", ")
-            }>`,
-          })
-        )
+        ? store.client[additionalContext].logger?.child(
+            {},
+            {
+              msgPrefix: `AggregationQuery<${cacheKey.otherKeys
+                .map((x) => JSON.stringify(x))
+                .join(", ")}>`,
+            },
+          )
         : undefined,
     );
     this.apiName = cacheKey.otherKeys[API_NAME_IDX];
@@ -170,9 +171,10 @@ export abstract class AggregationQuery extends Query<
             status: x.status,
             result: x.value,
             lastUpdated: x.lastUpdated,
-            error: x.status === "error"
-              ? new Error("Aggregation failed")
-              : undefined,
+            error:
+              x.status === "error"
+                ? new Error("Aggregation failed")
+                : undefined,
           };
         }),
       ),
@@ -189,9 +191,9 @@ export abstract class AggregationQuery extends Query<
 
   async _fetchAndStore(): Promise<void> {
     if (process.env.NODE_ENV !== "production") {
-      this.logger?.child({ methodName: "_fetchAndStore" }).debug(
-        "calling _fetchAndStore",
-      );
+      this.logger
+        ?.child({ methodName: "_fetchAndStore" })
+        .debug("calling _fetchAndStore");
     }
 
     try {

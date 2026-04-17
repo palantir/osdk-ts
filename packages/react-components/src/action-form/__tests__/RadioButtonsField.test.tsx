@@ -42,7 +42,8 @@ describe("RadioButtonsField", () => {
     it("marks the matching radio as checked when value is provided", () => {
       render(<RadioButtonsField value="green" options={STRING_OPTIONS} />);
 
-      const greenRadio = screen.getByText("Green")
+      const greenRadio = screen
+        .getByText("Green")
         .closest("label")!
         .querySelector("[role='radio']")!;
       expect(greenRadio.getAttribute("aria-checked")).toBe("true");
@@ -93,7 +94,8 @@ describe("RadioButtonsField", () => {
         />,
       );
 
-      const appleRadio = screen.getByText("Apple")
+      const appleRadio = screen
+        .getByText("Apple")
         .closest("label")!
         .querySelector("[role='radio']")!;
       expect(appleRadio.getAttribute("aria-checked")).toBe("true");

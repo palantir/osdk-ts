@@ -320,8 +320,7 @@ export interface AllowOntologySchemaMigrationsShape {
   about: LocalizedTitleAndDescription;
 }
 
-export interface AnySchema {
-}
+export interface AnySchema {}
 
 export interface AppConfigOutputShape {
   about: LocalizedTitleAndDescription;
@@ -345,14 +344,12 @@ export interface ArtifactsRepositoryShape {
 /**
  * AttachmentListType specifies that this parameter must be a list of Attachment rids.
  */
-export interface AttachmentListType {
-}
+export interface AttachmentListType {}
 
 /**
  * AttachmentType specifies that this parameter must be the rid of an Attachment.
  */
-export interface AttachmentType {
-}
+export interface AttachmentType {}
 
 export interface AudioDecodeFormat_flac {
   type: "flac";
@@ -783,20 +780,17 @@ export type BlockType =
   | "WORKSHOP"
   | "WRITEBACK";
 
-export interface BmpFormat {
-}
+export interface BmpFormat {}
 
 /**
  * BooleanListType specifies that this parameter must be a list of Booleans.
  */
-export interface BooleanListType {
-}
+export interface BooleanListType {}
 
 /**
  * BooleanType specifies that this parameter must be a Boolean.
  */
-export interface BooleanType {
-}
+export interface BooleanType {}
 
 export interface CarbonWorkspaceInputShape {
   about: LocalizedTitleAndDescription;
@@ -960,8 +954,7 @@ export interface CodeWorkspaceOutputShape {
   imageType: ContainerImageType;
 }
 
-export interface CompassFolderType {
-}
+export interface CompassFolderType {}
 
 /**
  * represents the intended purpose of the input.  An INSTALL_LOCATION will require INSTALL_IN permissions.
@@ -1002,8 +995,7 @@ export type CompassResourceTypeConstraints =
 /**
  * A user-written application hosted in Compute Modules.
  */
-export interface ComputeModuleType {
-}
+export interface ComputeModuleType {}
 
 export interface ConcreteArrayType {
   elementType: ConcreteDataType;
@@ -1282,14 +1274,12 @@ export type DataType =
 /**
  * DateListType specifies that this parameter must be a list of Dates.
  */
-export interface DateListType {
-}
+export interface DateListType {}
 
 /**
  * DateType specifies that this parameter must be a Date.
  */
-export interface DateType {
-}
+export interface DateType {}
 
 /**
  * DecimalListType specifies that this parameter must be a list of Decimals.
@@ -1311,8 +1301,7 @@ export interface DeployedAppShape {
   about: LocalizedTitleAndDescription;
 }
 
-export interface DicomSchema {
-}
+export interface DicomSchema {}
 
 export interface DocumentDecodeFormat_pdf {
   type: "pdf";
@@ -1344,20 +1333,17 @@ export interface DocumentSchema {
   format: DocumentDecodeFormat;
 }
 
-export interface DocxFormat {
-}
+export interface DocxFormat {}
 
 /**
  * DoubleListType specifies that this parameter must be a list of Doubles.
  */
-export interface DoubleListType {
-}
+export interface DoubleListType {}
 
 /**
  * DoubleType specifies that this parameter must be a Double.
  */
-export interface DoubleType {
-}
+export interface DoubleType {}
 
 /**
  * Describes the built-in eddie logical type from the logical types in the Eddie registry. Must be an exact
@@ -1422,9 +1408,7 @@ export type EddieInputParameterType = EddieInputParameterType_primitive;
  * Instance type: LiteralParameter
  */
 export interface EddieLiteralParameterType {
-  additionalConstraints: Array<
-    _api_eddie_transformations_api_LiteralConstraint
-  >;
+  additionalConstraints: Array<_api_eddie_transformations_api_LiteralConstraint>;
   requiredType: EddieTypeReference;
 }
 
@@ -1462,8 +1446,7 @@ export interface EddiePipelineShape {
 /**
  * An Eddie Pipeline that may contain various UDFs.
  */
-export interface EddiePipelineType {
-}
+export interface EddiePipelineType {}
 
 export interface EddiePrimitiveParameterType_literal {
   type: "literal";
@@ -1511,8 +1494,7 @@ export interface EdgePipelineMagritteSourceInputShape {
   magritteTaskType?: EdgeMagritteTaskType | null | undefined;
 }
 
-export interface Empty {
-}
+export interface Empty {}
 
 export interface EvaluationSuiteShape {
   about: LocalizedTitleAndDescription;
@@ -1578,8 +1560,7 @@ export interface FilesLocator {
   path: string;
 }
 
-export interface FlacFormat {
-}
+export interface FlacFormat {}
 
 export interface FlinkProfileShape {
   about: LocalizedTitleAndDescription;
@@ -1662,26 +1643,22 @@ export type GenericDataType =
 /**
  * GeohashListType specifies that this parameter must be a list of Geohashes.
  */
-export interface GeohashListType {
-}
+export interface GeohashListType {}
 
 /**
  * GeohashType specifies that this parameter must be a Geohash.
  */
-export interface GeohashType {
-}
+export interface GeohashType {}
 
 /**
  * GeoshapeListType specifies that this parameter must be a list of Geoshapes.
  */
-export interface GeoshapeListType {
-}
+export interface GeoshapeListType {}
 
 /**
  * GeoshapeType specifies that this parameter must be a Geoshape.
  */
-export interface GeoshapeType {
-}
+export interface GeoshapeType {}
 
 export type GeotimeSeriesIntegrationRid = string;
 
@@ -1694,16 +1671,14 @@ export interface GeotimeSeriesIntegrationShape {
  * valid allowedParameterValues: ParameterGeotimeSeriesReferenceOrEmpty
  * valid prefill DataValues: None
  */
-export interface GeotimeSeriesReferenceListType {
-}
+export interface GeotimeSeriesReferenceListType {}
 
 /**
  * GeotimeSeriesReferenceType specifies that this parameter must be a GeotimeSeriesReference.
  * valid allowedParameterValues: ParameterGeotimeSeriesReferenceOrEmpty
  * valid prefill DataValues: None
  */
-export interface GeotimeSeriesReferenceType {
-}
+export interface GeotimeSeriesReferenceType {}
 
 export type GroupId = string;
 
@@ -2010,8 +1985,7 @@ export interface InputShape_magritteSourceConfigOverrides {
 
 export interface InputShape_magritteStreamingExtractConfigOverrides {
   type: "magritteStreamingExtractConfigOverrides";
-  magritteStreamingExtractConfigOverrides:
-    MagritteStreamingExtractConfigOverridesInputShape;
+  magritteStreamingExtractConfigOverrides: MagritteStreamingExtractConfigOverridesInputShape;
 }
 
 export interface InputShape_markings {
@@ -2381,14 +2355,12 @@ export interface InstallPrefixShape {
 /**
  * IntegerListType specifies that this parameter must be a list of Integers.
  */
-export interface IntegerListType {
-}
+export interface IntegerListType {}
 
 /**
  * IntegerType specifies that this parameter must be an Integer.
  */
-export interface IntegerType {
-}
+export interface IntegerType {}
 
 export type InterfaceLinkTypeCardinality = "SINGLE" | "MANY";
 
@@ -2472,11 +2444,9 @@ export type InterfaceTypeReference = BlockInternalId;
 
 export type InterfaceTypeRid = string;
 
-export interface Jpeg2000Format {
-}
+export interface Jpeg2000Format {}
 
-export interface JpgFormat {
-}
+export interface JpgFormat {}
 
 export interface LanguageModelShape {
   about: LocalizedTitleAndDescription;
@@ -2666,14 +2636,12 @@ export interface LogicShape {
 /**
  * LongListType specifies that this parameter must be a list of Longs.
  */
-export interface LongListType {
-}
+export interface LongListType {}
 
 /**
  * LongType specifies that this parameter must be a Long.
  */
-export interface LongType {
-}
+export interface LongType {}
 
 export interface MachineryProcessShape {
   about: LocalizedTitleAndDescription;
@@ -2772,8 +2740,7 @@ export type MarkdownText = string;
 /**
  * MarkingListType specifies that this parameter must be a list of Markings.
  */
-export interface MarkingListType {
-}
+export interface MarkingListType {}
 
 /**
  * MarkingOperation defines the level of user permissions required to install a package with this Marking. For
@@ -2801,8 +2768,7 @@ export interface MarkingsSizeConstraints {
 /**
  * MarkingType specifies that this parameter must be a CBAC or Madatory Marking type.
  */
-export interface MarkingType {
-}
+export interface MarkingType {}
 
 export interface MavenLocator {
   path: string;
@@ -2811,8 +2777,7 @@ export interface MavenLocator {
 /**
  * MediaReferenceType specifies that this parameter must be a MediaReference.
  */
-export interface MediaReferenceType {
-}
+export interface MediaReferenceType {}
 
 export interface MediaSchema_document {
   type: "document";
@@ -2936,8 +2901,7 @@ export type MediaSetTransactionPolicy =
   | MediaSetTransactionPolicy_batchTransactions
   | MediaSetTransactionPolicy_noTransactions;
 
-export interface MkvVideoContainerFormat {
-}
+export interface MkvVideoContainerFormat {}
 
 export interface ModelInputShape {
   about: LocalizedTitleAndDescription;
@@ -2983,14 +2947,11 @@ export interface MonocleGraphShape {
   about: LocalizedTitleAndDescription;
 }
 
-export interface MovVideoContainerFormat {
-}
+export interface MovVideoContainerFormat {}
 
-export interface Mp2Format {
-}
+export interface Mp2Format {}
 
-export interface Mp3Format {
-}
+export interface Mp3Format {}
 
 export interface Mp4AudioContainerFormat_singleStream {
   type: "singleStream";
@@ -3002,11 +2963,9 @@ export interface Mp4AudioContainerFormat_singleStream {
  */
 export type Mp4AudioContainerFormat = Mp4AudioContainerFormat_singleStream;
 
-export interface Mp4VideoContainerFormat {
-}
+export interface Mp4VideoContainerFormat {}
 
-export interface MultiModalSchema {
-}
+export interface MultiModalSchema {}
 
 export interface MultipassGroupShape {
   about: LocalizedTitleAndDescription;
@@ -3029,11 +2988,9 @@ export interface NetworkEgressPolicyShape {
  * Although this often has the file extension .wav, it's a distinct format.
  * See https://www1.icsi.berkeley.edu/Speech/faq/wavfile-fmts.html
  */
-export interface NistSphereFormat {
-}
+export interface NistSphereFormat {}
 
-export interface NitfFormat {
-}
+export interface NitfFormat {}
 
 /**
  * Notepad document that can be opened on its own or referenced in Workshop or Carbon.
@@ -3148,8 +3105,7 @@ export type ObjectTypeReference = BlockInternalId;
  * addInterfaceRule where you need to specify what type of object you're creating.
  * NOTE: this is NOT an object instance.
  */
-export interface ObjectTypeReferenceType {
-}
+export interface ObjectTypeReferenceType {}
 
 export type ObjectTypeRid = string;
 
@@ -3234,8 +3190,7 @@ export interface OntologySdkShapeV2 {
   about: LocalizedTitleAndDescription;
 }
 
-export interface OpusFormat {
-}
+export interface OpusFormat {}
 
 export type OutputEditsSupport = "EDITS_ENABLED" | "EDITS_DISABLED";
 
@@ -3764,14 +3719,11 @@ export type PathPolicy =
   | PathPolicy_pathRequired
   | PathPolicy_pathNotSupported;
 
-export interface PdfFormat {
-}
+export interface PdfFormat {}
 
-export interface PngFormat {
-}
+export interface PngFormat {}
 
-export interface PptxFormat {
-}
+export interface PptxFormat {}
 
 /**
  * RESOURCE_PREALLOCATION_REQUIRED requires the resource has been preallocated already
@@ -4194,8 +4146,7 @@ export interface SingleOutputType {
 /**
  * An mp4 container which contains a single audio stream.
  */
-export interface SingleStreamMp4AudioContainerFormat {
-}
+export interface SingleStreamMp4AudioContainerFormat {}
 
 /**
  * An ogg container which contains a single audio stream.
@@ -4207,8 +4158,7 @@ export interface SingleStreamOggAudioContainerFormat {
 /**
  * A webm container which contains a single audio stream.
  */
-export interface SingleStreamWebmAudioContainerFormat {
-}
+export interface SingleStreamWebmAudioContainerFormat {}
 
 export interface SlateApplicationInputShape {
   about: LocalizedTitleAndDescription;
@@ -4267,8 +4217,7 @@ export type StableShapeIdentifier = string;
 /**
  * A stemma code repository. Currently this type should only be used to identify external transforms.
  */
-export interface StemmaRepositoryType {
-}
+export interface StemmaRepositoryType {}
 
 export interface StreamLocator {
   branch: string;
@@ -4278,14 +4227,12 @@ export interface StreamLocator {
 /**
  * StringListType specifies that this parameter must be a list of Strings.
  */
-export interface StringListType {
-}
+export interface StringListType {}
 
 /**
  * StringType specifies that this parameter must be a String.
  */
-export interface StringType {
-}
+export interface StringType {}
 
 export interface StructFieldBaseParameterType_boolean {
   type: "boolean";
@@ -4458,14 +4405,12 @@ export interface ThirdPartyApplicationShape {
   about: LocalizedTitleAndDescription;
 }
 
-export interface TiffFormat {
-}
+export interface TiffFormat {}
 
 /**
  * TimeSeriesReferenceType specifies that this parameter must be a TimeSeriesReference.
  */
-export interface TimeSeriesReferenceType {
-}
+export interface TimeSeriesReferenceType {}
 
 export type TimeSeriesSyncRid = string;
 
@@ -4479,14 +4424,12 @@ export type TimeSeriesSyncType = "NUMERIC" | "CATEGORICAL";
 /**
  * TimestampListType specifies that this parameter must be a list of Timestamps.
  */
-export interface TimestampListType {
-}
+export interface TimestampListType {}
 
 /**
  * TimestampType specifies that this parameter must be a Timestamp.
  */
-export interface TimestampType {
-}
+export interface TimestampType {}
 
 export interface TransformsJobSpecShape {
   about: LocalizedTitleAndDescription;
@@ -4500,11 +4443,9 @@ export interface TransformsRequestPermit {
   requestType: RequestType;
 }
 
-export interface TsVideoContainerFormat {
-}
+export interface TsVideoContainerFormat {}
 
-export interface TxtFormat {
-}
+export interface TxtFormat {}
 
 /**
  * This is a placeholder type for when we don't care about the specific type of a parameter, simply representing
@@ -4512,8 +4453,7 @@ export interface TxtFormat {
  * output function shapes, mostly  to allow for more complex types to be used in the future without breaking
  * existing stored shapes.
  */
-export interface UnspecifiedParameterType {
-}
+export interface UnspecifiedParameterType {}
 
 /**
  * A string representing a value type's api name. Used as a stable, cross-stack identifier for service managed value types.
@@ -4592,11 +4532,9 @@ export interface VirtualTableLocator {
   rid: string;
 }
 
-export interface Void {
-}
+export interface Void {}
 
-export interface VorbisFormat {
-}
+export interface VorbisFormat {}
 
 /**
  * Vortex Map Template that can be used to generate Maps.
@@ -4609,8 +4547,7 @@ export interface WalkthroughShape {
   about: LocalizedTitleAndDescription;
 }
 
-export interface WavFormat {
-}
+export interface WavFormat {}
 
 export interface WebhookShape {
   about: LocalizedTitleAndDescription;
@@ -4623,8 +4560,7 @@ export interface WebmAudioContainerFormat_singleStream {
 
 export type WebmAudioContainerFormat = WebmAudioContainerFormat_singleStream;
 
-export interface WebpFormat {
-}
+export interface WebpFormat {}
 
 export type WidgetReference = BlockInternalId;
 
@@ -4663,5 +4599,4 @@ export interface WorkshopApplicationSaveLocationInputShape {
   id: StableShapeIdentifier;
 }
 
-export interface XlsxFormat {
-}
+export interface XlsxFormat {}

@@ -56,7 +56,7 @@ import { BasePdfViewer } from "@osdk/react-components/experimental";
     ],
   }}
   onAnnotationClick={(annotation) => console.log("Clicked:", annotation.id)}
-/>;
+/>
 ```
 
 ## Props
@@ -269,7 +269,9 @@ function MinimalViewer({ src }: { src: string }) {
 
   return (
     <div>
-      <span>Page {currentPage} of {numPages}</span>
+      <span>
+        Page {currentPage} of {numPages}
+      </span>
       <div ref={containerRef} style={{ height: "80vh", overflow: "auto" }}>
         <div ref={viewerRef} className="pdfViewer" />
       </div>

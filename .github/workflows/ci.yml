@@ -5,7 +5,7 @@ env:
 
 on:
   push:
-    branches: 
+    branches:
       - main
       - release/*
       - next
@@ -44,7 +44,7 @@ jobs:
 
       - name: Check spelling
         run: pnpm exec turbo run ci:cspell
-  
+
   changesets:
     name: Check for changesets
     if: ${{ github.event_name == 'pull_request' && !startsWith(github.event.pull_request.head.ref, 'changeset-release') }}
@@ -72,7 +72,6 @@ jobs:
           git fetch origin main:main
           pnpm exec changeset status --since=origin/main
 
-
   build:
     name: Build and Test
     timeout-minutes: 25
@@ -83,7 +82,7 @@ jobs:
       issues: write
     strategy:
       matrix:
-        node: [18, 20, 22, 24] # We need to support any LTS versions since the GA of 2.0, which includes 18.x and up
+        node: [20, 22, 24] # Node 18 dropped: oxc toolchain (oxlint, oxfmt) requires Node 20+
 
     steps:
       - name: Check out code
@@ -124,7 +123,7 @@ jobs:
             pnpm-lock.yaml \
             config/tsconfig.base.json \
             babel.config.mjs \
-            dprint.json \
+            .oxfmtrc.json \
             .github/workflows/ci.yml \
             .github/workflows/release.yml \
             | grep -q .; then
@@ -133,23 +132,11 @@ jobs:
             echo "changed=false" >> "$GITHUB_OUTPUT"
           fi
 
-      # These packages use Vite 7+ or Storybook which require Node 20+, so exclude them on Node 18
-      - name: Transpile, typecheck, Lint and test (excluding Vite 7/Storybook packages on Node 18)
-        if: matrix.node == 18
-        run: pnpm exec turbo check --filter="!@osdk/create-app.template.*" --filter="!@osdk/create-widget.template.*" --filter="!@osdk/widget.vite-plugin" --filter="!@osdk/examples.*" --filter="!@psdk/examples.*" --filter="!@osdk/e2e.sandbox.todowidget" --filter="!@osdk/ontology-explorer-app" --filter="!@osdk/react-components-storybook"
-
       - name: Transpile, typecheck, Lint and test
-        if: matrix.node != 18
         run: pnpm check
 
       # catches some of the examples that don't have transpile/typecheck tasks
-      # These packages use Vite 7+ or Storybook which require Node 20+, so exclude them on Node 18
-      - name: Build (excluding Vite 7/Storybook packages on Node 18)
-        if: matrix.node == 18
-        run: pnpm exec turbo build ${{ steps.infra.outputs.changed == 'true' && '--force' || '' }} --filter="!@osdk/create-app.template.*" --filter="!@osdk/create-widget.template.*" --filter="!@osdk/widget.vite-plugin" --filter="!@osdk/examples.*" --filter="!@psdk/examples.*" --filter="!@osdk/e2e.sandbox.todowidget" --filter="!@osdk/ontology-explorer-app" --filter="!@osdk/react-components-storybook"
-
       - name: Build
-        if: matrix.node != 18
         run: pnpm build ${{ steps.infra.outputs.changed == 'true' && '--force' || '' }}
 
       - name: Verify nothing changed

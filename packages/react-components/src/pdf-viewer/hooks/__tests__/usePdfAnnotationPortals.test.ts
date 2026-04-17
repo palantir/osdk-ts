@@ -54,7 +54,7 @@ describe("usePdfAnnotationPortals", () => {
     const eventBusRef = { current: null } as RefObject<EventBus | null>;
 
     const { result } = renderHook(() =>
-      usePdfAnnotationPortals(pdfViewerRef, eventBusRef, MOCK_DOCUMENT)
+      usePdfAnnotationPortals(pdfViewerRef, eventBusRef, MOCK_DOCUMENT),
     );
 
     expect(result.current).toEqual([]);
@@ -74,7 +74,7 @@ describe("usePdfAnnotationPortals", () => {
     const eventBusRef = { current: eventBus } as RefObject<EventBus>;
 
     const { result } = renderHook(() =>
-      usePdfAnnotationPortals(pdfViewerRef, eventBusRef, MOCK_DOCUMENT)
+      usePdfAnnotationPortals(pdfViewerRef, eventBusRef, MOCK_DOCUMENT),
     );
 
     act(() => {
@@ -116,7 +116,7 @@ describe("usePdfAnnotationPortals", () => {
     const eventBusRef = { current: eventBus } as RefObject<EventBus>;
 
     const { result } = renderHook(() =>
-      usePdfAnnotationPortals(pdfViewerRef, eventBusRef, MOCK_DOCUMENT)
+      usePdfAnnotationPortals(pdfViewerRef, eventBusRef, MOCK_DOCUMENT),
     );
 
     // Fire page 3 first, then page 1
@@ -152,7 +152,7 @@ describe("usePdfAnnotationPortals", () => {
     const eventBusRef = { current: eventBus } as RefObject<EventBus>;
 
     const { result } = renderHook(() =>
-      usePdfAnnotationPortals(pdfViewerRef, eventBusRef, MOCK_DOCUMENT)
+      usePdfAnnotationPortals(pdfViewerRef, eventBusRef, MOCK_DOCUMENT),
     );
 
     act(() => {
@@ -190,7 +190,7 @@ describe("usePdfAnnotationPortals", () => {
     const eventBusRef = { current: eventBus } as RefObject<EventBus>;
 
     const { result } = renderHook(() =>
-      usePdfAnnotationPortals(pdfViewerRef, eventBusRef, MOCK_DOCUMENT)
+      usePdfAnnotationPortals(pdfViewerRef, eventBusRef, MOCK_DOCUMENT),
     );
 
     act(() => {
@@ -213,7 +213,7 @@ describe("usePdfAnnotationPortals", () => {
     const eventBusRef = { current: eventBus } as RefObject<EventBus>;
 
     const { result } = renderHook(() =>
-      usePdfAnnotationPortals(pdfViewerRef, eventBusRef, MOCK_DOCUMENT)
+      usePdfAnnotationPortals(pdfViewerRef, eventBusRef, MOCK_DOCUMENT),
     );
 
     act(() => {
@@ -228,7 +228,7 @@ describe("usePdfAnnotationPortals", () => {
     const eventBusRef = { current: null } as RefObject<EventBus | null>;
 
     const { result } = renderHook(() =>
-      usePdfAnnotationPortals(pdfViewerRef, eventBusRef, MOCK_DOCUMENT)
+      usePdfAnnotationPortals(pdfViewerRef, eventBusRef, MOCK_DOCUMENT),
     );
 
     expect(result.current).toEqual([]);

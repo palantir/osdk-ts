@@ -40,10 +40,10 @@ type PropertyApiNameUnion = PropertyApiName | SharedPropertyTypeApiName;
 /** @internal */
 export function wireObjectTypeV2ToSdkObjectConstV2(
   wireObject: ObjectTypeFullMetadata,
-  { ontology, forInternalUse }: Pick<
-    GenerateContext,
-    "ontology" | "forInternalUse"
-  >,
+  {
+    ontology,
+    forInternalUse,
+  }: Pick<GenerateContext, "ontology" | "forInternalUse">,
   currentFilePath: string,
 ) {
   const object = ontology.requireObjectType(
@@ -54,8 +54,8 @@ export function wireObjectTypeV2ToSdkObjectConstV2(
     throw new Error("Should not be generating types for an external type");
   }
   const uniqueLinkTargetTypes = new Set(
-    wireObject.linkTypes.map(a =>
-      ontology.requireObjectType(a.objectTypeApiName, false)
+    wireObject.linkTypes.map((a) =>
+      ontology.requireObjectType(a.objectTypeApiName, false),
     ),
   );
 
@@ -146,18 +146,16 @@ export function wireObjectTypeV2ToSdkObjectConstV2(
     } satisfies ${objectDefIdentifier} & { internalDoNotUseMetadata: { rid: string } } as ${objectDefIdentifier};`;
 }
 
-export interface Identifiers extends
-  Record<
-    | "osdkObjectIdentifier"
-    | "propertyKeysIdentifier"
-    | "osdkObjectPropsIdentifier"
-    | "objectDefIdentifier"
-    | "osdkObjectLinksIdentifier"
-    | "osdkObjectStrictPropsIdentifier"
-    | "objectSetIdentifier",
-    string
-  >
-{}
+export interface Identifiers extends Record<
+  | "osdkObjectIdentifier"
+  | "propertyKeysIdentifier"
+  | "osdkObjectPropsIdentifier"
+  | "objectDefIdentifier"
+  | "osdkObjectLinksIdentifier"
+  | "osdkObjectStrictPropsIdentifier"
+  | "objectSetIdentifier",
+  string
+> {}
 
 export function createOsdkObject(
   object: EnhancedObjectType | EnhancedInterfaceType,
@@ -216,9 +214,7 @@ function maybeStripNamespace(
   type: EnhancedInterfaceType | EnhancedObjectType,
   q: string,
 ) {
-  if (
-    type.apiNamespace && q.startsWith(`${type.apiNamespace}.`)
-  ) {
+  if (type.apiNamespace && q.startsWith(`${type.apiNamespace}.`)) {
     return q.slice(type.apiNamespace.length + 1);
   } else {
     return q;
@@ -235,42 +231,38 @@ export function createProps(
     return `export type StrictProps = Props`;
   }
   const definition = type.getCleanedUpDefinition(true);
-  const propertyMetadata = type instanceof EnhancedObjectType
-    ? type.raw.objectType.properties
-    : type instanceof EnhancedInterfaceType
-    ? type.raw.properties
-    : undefined;
+  const propertyMetadata =
+    type instanceof EnhancedObjectType
+      ? type.raw.objectType.properties
+      : type instanceof EnhancedInterfaceType
+        ? type.raw.properties
+        : undefined;
   return `export interface ${identifier} {
-${
-    stringify(definition.properties, {
-      "*": (propertyDefinition, _, apiName) => {
-        const metadata = propertyMetadata
-          ? (propertyMetadata as Record<PropertyApiNameUnion, any>)[apiName]
-          : undefined;
-        return [
-          `${
-            propertyJsdoc(propertyDefinition, metadata, {
-              apiName,
-            })
-          }readonly "${maybeStripNamespace(type, apiName)}"`,
-          (typeof propertyDefinition.type === "object"
-            ? remapStructType(propertyDefinition.type)
-            : getPropTypeOrValueTypeEnum(
-              propertyDefinition,
-              valueTypeMetadata,
+${stringify(definition.properties, {
+  "*": (propertyDefinition, _, apiName) => {
+    const metadata = propertyMetadata
+      ? (propertyMetadata as Record<PropertyApiNameUnion, any>)[apiName]
+      : undefined;
+    return [
+      `${propertyJsdoc(propertyDefinition, metadata, {
+        apiName,
+      })}readonly "${maybeStripNamespace(type, apiName)}"`,
+      (typeof propertyDefinition.type === "object"
+        ? remapStructType(propertyDefinition.type)
+        : getPropTypeOrValueTypeEnum(propertyDefinition, valueTypeMetadata)) +
+        `${propertyDefinition.multiplicity ? "[]" : ""}${
+          propertyDefinition.nullable ||
+          (!strict &&
+            !(
+              definition.type === "object" &&
+              definition.primaryKeyApiName === apiName
             ))
-          + `${propertyDefinition.multiplicity ? "[]" : ""}${
-            propertyDefinition.nullable
-              || (!strict
-                && !(definition.type === "object"
-                  && definition.primaryKeyApiName === apiName))
-              ? `| undefined`
-              : ""
-          }`,
-        ] as [string, string];
-      },
-    })
-  }
+            ? `| undefined`
+            : ""
+        }`,
+    ] as [string, string];
+  },
+})}
     }`;
 }
 
@@ -287,84 +279,81 @@ export function createDefinition(
   }: Identifiers,
 ) {
   const definition = object.getCleanedUpDefinition(true);
-  const propertyMetadata = object instanceof EnhancedObjectType
-    ? object.raw.objectType.properties
-    : object instanceof EnhancedInterfaceType
-    ? object.raw.properties
-    : undefined;
+  const propertyMetadata =
+    object instanceof EnhancedObjectType
+      ? object.raw.objectType.properties
+      : object instanceof EnhancedInterfaceType
+        ? object.raw.properties
+        : undefined;
   return `
     export interface ${identifier} extends ${
-    object instanceof EnhancedObjectType
-      ? `$ObjectTypeDefinition`
-      : `$InterfaceDefinition`
-  } {
+      object instanceof EnhancedObjectType
+        ? `$ObjectTypeDefinition`
+        : `$InterfaceDefinition`
+    } {
       osdkMetadata: typeof $osdkMetadata;
       type: "${object instanceof EnhancedObjectType ? "object" : "interface"}";
       apiName: "${object.fullApiName}";${
-    object instanceof EnhancedObjectType && definition.type === "object"
-      ? `
+        object instanceof EnhancedObjectType && definition.type === "object"
+          ? `
       primaryKeyApiName: "${definition.primaryKeyApiName}";
       primaryKeyType: "${definition.primaryKeyType}";`
-      : ""
-  }
+          : ""
+      }
       __DefinitionMetadata?: {
       objectSet: ${objectSetIdentifier};
       props: ${osdkObjectPropsIdentifier};
       linksType: ${osdkObjectLinksIdentifier};
       strictProps: ${osdkObjectStrictPropsIdentifier};
-      ${
-    stringify(definition, {
-      links: (_value) =>
-        `{
+      ${stringify(definition, {
+        links: (_value) =>
+          `{
         ${
           definition.type === "interface"
             ? stringify(definition.links, {
-              "*": (linkDefinition) =>
-                `$InterfaceMetadata.Link<${
-                  linkDefinition.targetType === "interface"
-                    ? ontology.requireInterfaceType(
-                      linkDefinition.targetTypeApiName,
-                    )
-                      .getImportedDefinitionIdentifier(true)
-                    : ontology.requireObjectType(
-                      linkDefinition.targetTypeApiName,
-                    ).getImportedDefinitionIdentifier(true)
-                }, ${linkDefinition.multiplicity}>`,
-            })
+                "*": (linkDefinition) =>
+                  `$InterfaceMetadata.Link<${
+                    linkDefinition.targetType === "interface"
+                      ? ontology
+                          .requireInterfaceType(
+                            linkDefinition.targetTypeApiName,
+                          )
+                          .getImportedDefinitionIdentifier(true)
+                      : ontology
+                          .requireObjectType(linkDefinition.targetTypeApiName)
+                          .getImportedDefinitionIdentifier(true)
+                  }, ${linkDefinition.multiplicity}>`,
+              })
             : stringify(definition.links, {
-              "*": (linkDefinition) =>
-                `$ObjectMetadata.Link<${
-                  ontology.requireObjectType(linkDefinition.targetType)
-                    .getImportedDefinitionIdentifier(true)
-                }, ${linkDefinition.multiplicity}>`,
-            })
+                "*": (linkDefinition) =>
+                  `$ObjectMetadata.Link<${ontology
+                    .requireObjectType(linkDefinition.targetType)
+                    .getImportedDefinitionIdentifier(
+                      true,
+                    )}, ${linkDefinition.multiplicity}>`,
+              })
         }
       }`,
-      properties: (_value) => (`{
-        ${
-        stringify(definition.properties, {
+        properties: (_value) => `{
+        ${stringify(definition.properties, {
           "*": (propertyDefinition, _, apiName) =>
             [
-              `${
-                propertyJsdoc(
-                  propertyDefinition,
-                  (propertyMetadata as Record<PropertyApiNameUnion, any>)[
-                    apiName
-                  ],
-                  {
-                    apiName,
-                  },
-                )
-              }"${maybeStripNamespace(object, apiName)}"`,
+              `${propertyJsdoc(
+                propertyDefinition,
+                (propertyMetadata as Record<PropertyApiNameUnion, any>)[
+                  apiName
+                ],
+                {
+                  apiName,
+                },
+              )}"${maybeStripNamespace(object, apiName)}"`,
               `$PropertyDef<${JSON.stringify(propertyDefinition.type)}, "${
                 propertyDefinition.nullable ? "nullable" : "non-nullable"
               }", "${propertyDefinition.multiplicity ? "array" : "single"}">`,
             ] as [string, string],
-        })
-      }
-      }`),
-    })
-  }
+        })}
+      }`,
+      })}
   } 
 }
   `;
@@ -379,52 +368,51 @@ export function createLinks(
 
   return `
     ${
-    Object.keys(definition.links).length === 0
-      ? `export type ${identifier} = {};`
-      : `
+      Object.keys(definition.links).length === 0
+        ? `export type ${identifier} = {};`
+        : `
         export interface ${identifier}  {
-${
-        stringify(definition.links, {
-          "*": (definition, _, key) => {
-            const linkTarget = ontology.requireObjectType(
-              definition.targetType,
-            )
-              .getImportedDefinitionIdentifier(true);
+${stringify(definition.links, {
+  "*": (definition, _, key) => {
+    const linkTarget = ontology
+      .requireObjectType(definition.targetType)
+      .getImportedDefinitionIdentifier(true);
 
-            return [
-              `readonly ${key}`,
-              `${
-                definition.multiplicity
-                  ? `${linkTarget}.ObjectSet`
-                  : `$SingleLinkAccessor<${linkTarget}>`
-              }
-          `,
-            ];
-          },
-        })
+    return [
+      `readonly ${key}`,
+      `${
+        definition.multiplicity
+          ? `${linkTarget}.ObjectSet`
+          : `$SingleLinkAccessor<${linkTarget}>`
       }
+          `,
+    ];
+  },
+})}
     }
     `
-  }`;
+    }`;
 }
 
 export function createPropertyKeys(
   type: EnhancedObjectType | EnhancedInterfaceType,
 ) {
-  const properties = Object.keys(type.getCleanedUpDefinition(true).properties)
-    .sort((a, b) => a.localeCompare(b));
-  return `export type PropertyKeys = ${
-    stringUnionFrom(
-      properties.map((a) => maybeStripNamespace(type, a)),
-    )
-  };`;
+  const properties = Object.keys(
+    type.getCleanedUpDefinition(true).properties,
+  ).sort((a, b) => a.localeCompare(b));
+  return `export type PropertyKeys = ${stringUnionFrom(
+    properties.map((a) => maybeStripNamespace(type, a)),
+  )};`;
 }
 
 function remapStructType(structType: Record<string, any>): string {
   let output = `{`;
-  Object.entries(structType).sort(([a], [b]) => a.localeCompare(b)).map((
-    [key, value],
-  ) => output += `${key}:$PropType[${JSON.stringify(value)}]|undefined;`);
+  Object.entries(structType)
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(
+      ([key, value]) =>
+        (output += `${key}:$PropType[${JSON.stringify(value)}]|undefined;`),
+    );
   output += "}";
   return output;
 }
@@ -433,13 +421,15 @@ function getPropTypeOrValueTypeEnum(
   propertyDefinition: ObjectMetadata.Property,
   valueTypeMetadata: Record<ValueTypeApiName, OntologyValueType>,
 ): string {
-  const defaultPropString = `$PropType[${
-    JSON.stringify(propertyDefinition.type)
-  }]`;
+  const defaultPropString = `$PropType[${JSON.stringify(
+    propertyDefinition.type,
+  )}]`;
   if (
-    !(propertyDefinition.type === "string"
-      || propertyDefinition.type === "boolean")
-    || !propertyDefinition.valueTypeApiName
+    !(
+      propertyDefinition.type === "string" ||
+      propertyDefinition.type === "boolean"
+    ) ||
+    !propertyDefinition.valueTypeApiName
   ) {
     return defaultPropString;
   }
@@ -460,15 +450,12 @@ function getPropTypeOrValueTypeEnum(
     shouldWrapWithParentheses = true;
   }
 
-  const maybeEnumString = maybeGetEnumString(
-    propertyDefinition,
-    constraint,
-  );
+  const maybeEnumString = maybeGetEnumString(propertyDefinition, constraint);
 
   return maybeEnumString
-    ? (
-      shouldWrapWithParentheses ? `(${maybeEnumString})` : maybeEnumString
-    )
+    ? shouldWrapWithParentheses
+      ? `(${maybeEnumString})`
+      : maybeEnumString
     : defaultPropString;
 }
 
@@ -480,23 +467,24 @@ function maybeGetEnumString(
     return undefined;
   }
   if (propertyDefinition.type === "string") {
-    return stringUnionFrom(constraint.options.map(x => String(x)));
+    return stringUnionFrom(constraint.options.map((x) => String(x)));
   }
   if (propertyDefinition.type === "boolean") {
-    return constraint.options.map(value => {
-      if (value === true) {
-        return true;
-      } else if (value === false) {
-        return false;
-      } else if (value == null) {
-        // Always infer nullability from the property definition
-        return undefined;
-      } else {
-        consola.warn(`Unexpected boolean value in enum: ${value}. Ignoring.`);
-      }
-    }).filter(value => value != null).join(
-      " | ",
-    );
+    return constraint.options
+      .map((value) => {
+        if (value === true) {
+          return true;
+        } else if (value === false) {
+          return false;
+        } else if (value == null) {
+          // Always infer nullability from the property definition
+          return undefined;
+        } else {
+          consola.warn(`Unexpected boolean value in enum: ${value}. Ignoring.`);
+        }
+      })
+      .filter((value) => value != null)
+      .join(" | ");
   }
   return undefined;
 }

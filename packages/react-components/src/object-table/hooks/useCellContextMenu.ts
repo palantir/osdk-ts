@@ -37,26 +37,28 @@ interface UseCellContextMenuResults {
 export const useCellContextMenu = ({
   tdRef,
 }: UseCellContextMenuProps): UseCellContextMenuResults => {
-  const [popoverPosition, setPopoverPosition] = useState<
-    PopoverPosition | null
-  >(null);
+  const [popoverPosition, setPopoverPosition] =
+    useState<PopoverPosition | null>(null);
   const [isContextMenuOpen, setIsContextMenuOpen] = useState(false);
 
-  const handleOpenContextMenu = useCallback((event: React.MouseEvent) => {
-    event.preventDefault();
-    event.stopPropagation();
+  const handleOpenContextMenu = useCallback(
+    (event: React.MouseEvent) => {
+      event.preventDefault();
+      event.stopPropagation();
 
-    if (tdRef.current) {
-      const rect = tdRef.current.getBoundingClientRect();
-      const position = {
-        left: rect.left,
-        top: rect.bottom,
-        width: rect.width,
-      };
-      setPopoverPosition(position);
-      setIsContextMenuOpen(true);
-    }
-  }, [tdRef]);
+      if (tdRef.current) {
+        const rect = tdRef.current.getBoundingClientRect();
+        const position = {
+          left: rect.left,
+          top: rect.bottom,
+          width: rect.width,
+        };
+        setPopoverPosition(position);
+        setIsContextMenuOpen(true);
+      }
+    },
+    [tdRef],
+  );
 
   const handleCloseContextMenu = useCallback(() => {
     setIsContextMenuOpen(false);

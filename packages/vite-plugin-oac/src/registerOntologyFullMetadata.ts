@@ -86,10 +86,7 @@ function createActionImplementation(
       switch (operation.type) {
         case "createObject": {
           // Handle create object operation
-          const objectType = getObjectTypeForOperation(
-            operation,
-            fullMetadata,
-          );
+          const objectType = getObjectTypeForOperation(operation, fullMetadata);
 
           // we don't store the PK with the other properties
           const primaryKeyProp = objectType.objectType.primaryKey;
@@ -126,10 +123,7 @@ function createActionImplementation(
             "objectToModifyParameter",
           );
 
-          const targetObject = batch.getObject(
-            objectType.apiName,
-            primaryKey,
-          );
+          const targetObject = batch.getObject(objectType.apiName, primaryKey);
           invariant(
             targetObject,
             `Could not find object ${objectType.apiName} with PK ${primaryKey}`,
@@ -184,8 +178,8 @@ function createActionImplementation(
           // For simplicity, assume we have the primary keys in the parameters
           // In a real implementation, we would need to extract them from the parameters
           const aSidePrimaryKey = params.aSidePrimaryKey || params.primaryKey_;
-          const bSidePrimaryKey = params.bSidePrimaryKey
-            || params.linkedObjectPrimaryKey;
+          const bSidePrimaryKey =
+            params.bSidePrimaryKey || params.linkedObjectPrimaryKey;
 
           if (aSidePrimaryKey && bSidePrimaryKey) {
             batch.addLink(
@@ -208,8 +202,8 @@ function createActionImplementation(
           // For simplicity, assume we have the primary keys in the parameters
           // In a real implementation, we would need to extract them from the parameters
           const aSidePrimaryKey = params.aSidePrimaryKey || params.primaryKey_;
-          const bSidePrimaryKey = params.bSidePrimaryKey
-            || params.linkedObjectPrimaryKey;
+          const bSidePrimaryKey =
+            params.bSidePrimaryKey || params.linkedObjectPrimaryKey;
 
           if (aSidePrimaryKey && bSidePrimaryKey) {
             batch.removeLink(
@@ -291,12 +285,12 @@ function latLonStringToGeoJSON(latLonStr: string) {
 
   // Basic validation
   if (
-    isNaN(lat)
-    || isNaN(lon)
-    || lat < -90
-    || lat > 90
-    || lon < -180
-    || lon > 180
+    isNaN(lat) ||
+    isNaN(lon) ||
+    lat < -90 ||
+    lat > 90 ||
+    lon < -180 ||
+    lon > 180
   ) {
     throw new Error("Invalid latitude or longitude");
   }
@@ -319,7 +313,7 @@ function handleObjectLinks(
   params: Record<string, unknown>,
 ): void {
   // HACK HACK HACK
-  fullMetadata.objectTypes[objectTypeApiName].linkTypes.forEach(link => {
+  fullMetadata.objectTypes[objectTypeApiName].linkTypes.forEach((link) => {
     const cardinality = link.cardinality;
 
     if (cardinality === "ONE") {
@@ -356,5 +350,5 @@ function anyValueMatches(
   obj: BaseServerObject | Record<string, unknown>,
   primaryKey: string | number | boolean,
 ) {
-  return Object.values(obj).some(val => val === primaryKey);
+  return Object.values(obj).some((val) => val === primaryKey);
 }

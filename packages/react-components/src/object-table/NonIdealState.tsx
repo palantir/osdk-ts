@@ -21,14 +21,12 @@ interface NonIdealStateProps {
   message: string;
 }
 
-export function NonIdealState(
-  { message }: NonIdealStateProps,
-): React.ReactElement {
+export function NonIdealState({
+  message,
+}: NonIdealStateProps): React.ReactElement {
   return (
     <div className={styles.container}>
-      <div className={styles.message}>
-        {message}
-      </div>
+      <div className={styles.message}>{message}</div>
     </div>
   );
 }

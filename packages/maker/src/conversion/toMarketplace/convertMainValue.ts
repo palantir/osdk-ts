@@ -28,8 +28,9 @@ export function convertMainValue(
   sharedPropertyType?: SharedPropertyType,
 ): OntologyIrStructMainValue | undefined {
   if (
-    sharedPropertyType && isStruct(sharedPropertyType.type)
-    && sharedPropertyType.type.mainValue
+    sharedPropertyType &&
+    isStruct(sharedPropertyType.type) &&
+    sharedPropertyType.type.mainValue
   ) {
     return {
       fieldApiNames: Array.isArray(sharedPropertyType.type.mainValue.fields)

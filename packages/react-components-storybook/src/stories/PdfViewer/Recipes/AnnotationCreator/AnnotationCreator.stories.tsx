@@ -25,8 +25,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 
 // cspell:ignore tracemonkey pldi
-const SAMPLE_PDF_URL =
-  `${import.meta.env.BASE_URL}compressed.tracemonkey-pldi-09.pdf`;
+const SAMPLE_PDF_URL = `${import.meta.env.BASE_URL}compressed.tracemonkey-pldi-09.pdf`;
 
 type AnnotationWithText = PdfAnnotation & { selectedText: string };
 
@@ -140,17 +139,22 @@ interface AnnotationSidebarItemProps {
   onDelete: (id: string) => void;
 }
 
-function AnnotationSidebarItem(
-  { annotation, onClick, onDelete }: AnnotationSidebarItemProps,
-): React.ReactElement {
+function AnnotationSidebarItem({
+  annotation,
+  onClick,
+  onDelete,
+}: AnnotationSidebarItemProps): React.ReactElement {
   const handleClick = useCallback(() => {
     onClick(annotation.page);
   }, [onClick, annotation.page]);
 
-  const handleDelete = useCallback((e: React.MouseEvent) => {
-    e.stopPropagation();
-    onDelete(annotation.id);
-  }, [onDelete, annotation.id]);
+  const handleDelete = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation();
+      onDelete(annotation.id);
+    },
+    [onDelete, annotation.id],
+  );
 
   const itemStyles: React.CSSProperties = {
     ...sidebarItemStyles,
@@ -158,22 +162,12 @@ function AnnotationSidebarItem(
   };
 
   return (
-    <div
-      onClick={handleClick}
-      role="button"
-      tabIndex={0}
-      style={itemStyles}
-    >
-      <div style={sidebarItemPageStyles}>
-        Page {annotation.page}
-      </div>
+    <div onClick={handleClick} role="button" tabIndex={0} style={itemStyles}>
+      <div style={sidebarItemPageStyles}>Page {annotation.page}</div>
       <div style={sidebarItemTextStyles}>
         &ldquo;{annotation.selectedText}&rdquo;
       </div>
-      <button
-        onClick={handleDelete}
-        style={deleteButtonStyles}
-      >
+      <button onClick={handleDelete} style={deleteButtonStyles}>
         Delete
       </button>
     </div>
@@ -188,15 +182,13 @@ interface AnnotationSidebarProps {
   onDelete: (id: string) => void;
 }
 
-function AnnotationSidebar(
-  {
-    annotations,
-    annotationModeActive,
-    onToggleMode,
-    onAnnotationClick,
-    onDelete,
-  }: AnnotationSidebarProps,
-): React.ReactElement {
+function AnnotationSidebar({
+  annotations,
+  annotationModeActive,
+  onToggleMode,
+  onAnnotationClick,
+  onDelete,
+}: AnnotationSidebarProps): React.ReactElement {
   const toggleButtonStyles: React.CSSProperties = {
     ...toggleButtonBaseStyles,
     background: annotationModeActive ? "#c00" : "#2965cc",
@@ -204,21 +196,15 @@ function AnnotationSidebar(
 
   return (
     <div style={sidebarStyles}>
-      <h3 style={sidebarHeaderStyles}>
-        Annotations ({annotations.length})
-      </h3>
-      <button
-        onClick={onToggleMode}
-        type="button"
-        style={toggleButtonStyles}
-      >
+      <h3 style={sidebarHeaderStyles}>Annotations ({annotations.length})</h3>
+      <button onClick={onToggleMode} type="button" style={toggleButtonStyles}>
         {annotationModeActive ? "Stop Annotating" : "Start Annotating"}
       </button>
       {annotations.length === 0 && (
         <p style={emptyMessageStyles}>
           {annotationModeActive
             ? "Select text on the PDF to create an annotation."
-            : "Click \"Start Annotating\" then select text on the PDF."}
+            : 'Click "Start Annotating" then select text on the PDF.'}
         </p>
       )}
       {annotations.map((annotation) => (
@@ -233,9 +219,7 @@ function AnnotationSidebar(
   );
 }
 
-function AnnotationCreatorDemo(
-  { src }: { src: string },
-): React.ReactElement {
+function AnnotationCreatorDemo({ src }: { src: string }): React.ReactElement {
   const [annotations, setAnnotations] = useState<AnnotationWithText[]>([]);
   const [annotationModeActive, setAnnotationModeActive] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -254,72 +238,72 @@ function AnnotationCreatorDemo(
   }, []);
 
   // Listen for text selection when annotation mode is active
-  useEffect(function captureTextSelection() {
-    if (!annotationModeActive) return;
+  useEffect(
+    function captureTextSelection() {
+      if (!annotationModeActive) return;
 
-    const container = containerRef.current;
-    if (container == null) return;
+      const container = containerRef.current;
+      if (container == null) return;
 
-    function handleMouseUp() {
-      const selection = window.getSelection();
-      if (selection == null || selection.isCollapsed) return;
+      function handleMouseUp() {
+        const selection = window.getSelection();
+        if (selection == null || selection.isCollapsed) return;
 
-      const selectedText = selection.toString().trim();
-      if (selectedText === "") return;
+        const selectedText = selection.toString().trim();
+        if (selectedText === "") return;
 
-      const range = selection.getRangeAt(0);
-      const pageEl = findPageElement(range.startContainer);
-      if (pageEl == null) return;
+        const range = selection.getRangeAt(0);
+        const pageEl = findPageElement(range.startContainer);
+        if (pageEl == null) return;
 
-      const pageNumber = Number(pageEl.getAttribute("data-page-number"));
-      if (Number.isNaN(pageNumber)) return;
+        const pageNumber = Number(pageEl.getAttribute("data-page-number"));
+        if (Number.isNaN(pageNumber)) return;
 
-      // Read the pdfjs scale factor from the CSS variable
-      const scale = parseFloat(
-        getComputedStyle(pageEl).getPropertyValue("--scale-factor"),
-      ) || 1;
-      const pageHeight = pageEl.clientHeight / scale;
+        // Read the pdfjs scale factor from the CSS variable
+        const scale =
+          parseFloat(
+            getComputedStyle(pageEl).getPropertyValue("--scale-factor"),
+          ) || 1;
+        const pageHeight = pageEl.clientHeight / scale;
 
-      const pageRect = pageEl.getBoundingClientRect();
-      const clientRects = range.getClientRects();
+        const pageRect = pageEl.getBoundingClientRect();
+        const clientRects = range.getClientRects();
 
-      const pdfRects: PdfRect[] = [];
-      for (let i = 0; i < clientRects.length; i++) {
-        const cr = clientRects[i];
-        // Skip zero-size rects
-        if (cr.width === 0 || cr.height === 0) continue;
-        pdfRects.push(domRectToPdfRect(cr, pageRect, pageHeight, scale));
+        const pdfRects: PdfRect[] = [];
+        for (let i = 0; i < clientRects.length; i++) {
+          const cr = clientRects[i];
+          // Skip zero-size rects
+          if (cr.width === 0 || cr.height === 0) continue;
+          pdfRects.push(domRectToPdfRect(cr, pageRect, pageHeight, scale));
+        }
+
+        if (pdfRects.length === 0) return;
+
+        const newAnnotation: AnnotationWithText = {
+          id: crypto.randomUUID(),
+          type: "highlight",
+          page: pageNumber,
+          rect: pdfRects[0],
+          rects: pdfRects,
+          color: HIGHLIGHT_COLOR,
+          label: selectedText,
+          selectedText,
+        };
+
+        setAnnotations((prev) => [...prev, newAnnotation]);
+        selection.removeAllRanges();
       }
 
-      if (pdfRects.length === 0) return;
-
-      const newAnnotation: AnnotationWithText = {
-        id: crypto.randomUUID(),
-        type: "highlight",
-        page: pageNumber,
-        rect: pdfRects[0],
-        rects: pdfRects,
-        color: HIGHLIGHT_COLOR,
-        label: selectedText,
-        selectedText,
-      };
-
-      setAnnotations((prev) => [...prev, newAnnotation]);
-      selection.removeAllRanges();
-    }
-
-    container.addEventListener("mouseup", handleMouseUp);
-    return () => container.removeEventListener("mouseup", handleMouseUp);
-  }, [annotationModeActive]);
+      container.addEventListener("mouseup", handleMouseUp);
+      return () => container.removeEventListener("mouseup", handleMouseUp);
+    },
+    [annotationModeActive],
+  );
 
   return (
     <div style={demoContainerStyles}>
       <div ref={containerRef} style={viewerContainerStyles}>
-        <BasePdfViewer
-          ref={viewerRef}
-          src={src}
-          annotations={annotations}
-        />
+        <BasePdfViewer ref={viewerRef} src={src} annotations={annotations} />
       </div>
       <AnnotationSidebar
         annotations={annotations}
@@ -345,8 +329,7 @@ export const AnnotationCreator: Story = {
   parameters: {
     docs: {
       source: {
-        code:
-          `// Select text to create annotations, view and manage them in the sidebar`,
+        code: `// Select text to create annotations, view and manage them in the sidebar`,
       },
     },
   },

@@ -25,7 +25,7 @@ export async function visitNpmPackages(
 ): Promise<void> {
   const visited = new Set<string>();
 
-  const visitNpmPackagesInternal = async function(
+  const visitNpmPackagesInternal = async function (
     packageJsonPath: string,
   ): Promise<void> {
     if (visited.has(packageJsonPath)) {
@@ -33,19 +33,13 @@ export async function visitNpmPackages(
     }
 
     const packageJson = await parsePackageJson(packageJsonPath);
-    onVisit(
-      packageJsonPath,
-      packageJson,
-    );
+    onVisit(packageJsonPath, packageJson);
     visited.add(packageJsonPath);
 
     const context = path.dirname(packageJsonPath);
     const npmDependencies = Object.keys(packageJson.dependencies ?? {});
     for (const childName of npmDependencies) {
-      const childPackageJsonPath = findPackageJsonPath(
-        childName,
-        context,
-      );
+      const childPackageJsonPath = findPackageJsonPath(childName, context);
       await visitNpmPackagesInternal(childPackageJsonPath);
     }
   };

@@ -27,7 +27,7 @@ export async function safeStat(
       throw new Error(`Expected ${filePath} to not exist`);
     }
 
-    // eslint-disable-next-line no-console
+    // oxlint-disable-next-line no-console
     console.log(`safeStat: ${filePath} exists`);
     return ret;
   } catch (e) {
@@ -35,7 +35,7 @@ export async function safeStat(
       throw new Error(`Expected ${filePath} to exist`);
     }
 
-    // eslint-disable-next-line no-console
+    // oxlint-disable-next-line no-console
     console.log(`safeStat: ${filePath} does not exist`);
     return undefined;
   }

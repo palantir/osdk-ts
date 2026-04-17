@@ -31,52 +31,46 @@ export function __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition(
     description: interfaceType.description,
     implements: interfaceType.allExtendsInterfaces
       ? [...interfaceType.allExtendsInterfaces].sort((a, b) =>
-        a.localeCompare(b)
-      )
+          a.localeCompare(b),
+        )
       : interfaceType.extendsInterfaces
-      ? [...interfaceType.extendsInterfaces].sort((a, b) => a.localeCompare(b))
-      : undefined,
+        ? [...interfaceType.extendsInterfaces].sort((a, b) =>
+            a.localeCompare(b),
+          )
+        : undefined,
     properties: Object.fromEntries(
       Object.entries(
         // prefer V2 if available and non-empty, otherwise fall back to V1
-        (interfaceType.allPropertiesV2
-            && Object.keys(interfaceType.allPropertiesV2).length > 0)
+        interfaceType.allPropertiesV2 &&
+          Object.keys(interfaceType.allPropertiesV2).length > 0
           ? interfaceType.allPropertiesV2
           : (interfaceType.allProperties ?? interfaceType.properties),
       )
-        .map((
-          [key, value],
-        ) => {
-          return [
-            key,
-            wirePropertyV2ToSdkPropertyDefinition(
-              value,
-              true,
-              log,
-            ),
-          ];
-        }).filter(([_, value]) => value != null)
+        .map(([key, value]) => {
+          return [key, wirePropertyV2ToSdkPropertyDefinition(value, true, log)];
+        })
+        .filter(([_, value]) => value != null)
         .sort(([a], [b]) => (a as string).localeCompare(b as string)),
     ),
     links: Object.fromEntries(
-      Object.entries(interfaceType.allLinks ?? interfaceType.links ?? {}).sort(
-        ([a], [b]) => a.localeCompare(b),
-      ).map(
-        (
-          [linkApiName, linkType],
-        ) => [linkApiName, {
-          multiplicity: linkType.cardinality === "MANY",
-          targetTypeApiName: linkType.linkedEntityApiName.apiName,
-          targetType: linkType.linkedEntityApiName.type === "objectTypeApiName"
-            ? "object"
-            : "interface",
-        }],
-      ),
+      Object.entries(interfaceType.allLinks ?? interfaceType.links ?? {})
+        .sort(([a], [b]) => a.localeCompare(b))
+        .map(([linkApiName, linkType]) => [
+          linkApiName,
+          {
+            multiplicity: linkType.cardinality === "MANY",
+            targetTypeApiName: linkType.linkedEntityApiName.apiName,
+            targetType:
+              linkType.linkedEntityApiName.type === "objectTypeApiName"
+                ? "object"
+                : "interface",
+          },
+        ]),
     ),
     implementedBy: interfaceType.implementedByObjectTypes
       ? [...interfaceType.implementedByObjectTypes].sort((a, b) =>
-        a.localeCompare(b)
-      )
+          a.localeCompare(b),
+        )
       : interfaceType.implementedByObjectTypes,
   };
 }

@@ -43,40 +43,34 @@ export function __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(
   currentFilePath: string = "",
 ) {
   const definition = deleteUndefineds(
-    __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition(
-      interfaceDef.raw,
-      v2,
-    ),
+    __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition(interfaceDef.raw, v2),
   );
   const uniqueLinkTargetTypes = new Set(
     definition.links
-      ? Object.values(definition.links).map(a =>
-        a.targetType === "object"
-          ? ontology.requireObjectType(
-            a.targetTypeApiName,
-          )
-          : ontology.requireInterfaceType(
-            a.targetTypeApiName,
-          )
-      )
+      ? Object.values(definition.links).map((a) =>
+          a.targetType === "object"
+            ? ontology.requireObjectType(a.targetTypeApiName)
+            : ontology.requireInterfaceType(a.targetTypeApiName),
+        )
       : [],
   );
 
   const objectDefIdentifier = interfaceDef.getDefinitionIdentifier(v2);
 
-  const parents = definition.implements?.map(p => {
-    const parent = ontology.requireInterfaceType(p, true);
-    if (parent instanceof EnhancedInterfaceType) {
-      const it = deleteUndefineds(
-        __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition(
-          parent.raw,
-          v2,
-          consola,
-        ),
-      );
-      return it;
-    }
-  }) ?? [];
+  const parents =
+    definition.implements?.map((p) => {
+      const parent = ontology.requireInterfaceType(p, true);
+      if (parent instanceof EnhancedInterfaceType) {
+        const it = deleteUndefineds(
+          __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition(
+            parent.raw,
+            v2,
+            consola,
+          ),
+        );
+        return it;
+      }
+    }) ?? [];
 
   const mergedProperties = { ...definition.properties };
   for (const parent of parents) {
@@ -96,10 +90,7 @@ export function __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(
         );
       } else if (mergedProperties[apiName] != null) {
         invariant(
-          fastDeepEqual(
-            mergedProperties[apiName],
-            parent.properties[apiName],
-          ),
+          fastDeepEqual(mergedProperties[apiName], parent.properties[apiName]),
           `Some interface defines a conflicting property '${apiName}' that does not match property from parent '${parent.apiName}'`,
         );
       }
@@ -113,8 +104,7 @@ export function __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(
   const propertyKeysIdentifier = `${interfaceDef.shortApiName}.PropertyKeys`;
   // const osdkObjectPropsIdentifier = `OsdkObjectProps$${objectDefIdentifier}`;
   const osdkObjectPropsIdentifier = `${interfaceDef.shortApiName}.Props`;
-  const osdkObjectStrictPropsIdentifier =
-    `${interfaceDef.shortApiName}.StrictProps`;
+  const osdkObjectStrictPropsIdentifier = `${interfaceDef.shortApiName}.StrictProps`;
   const osdkObjectLinksIdentifier = `OsdkObjectLinks$${objectDefIdentifier}`;
   const osdkObjectIdentifier = `${interfaceDef.shortApiName}.OsdkObject`;
 
@@ -134,9 +124,9 @@ export function __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(
   );
   if (maybeBadProperties.length > 0) {
     throw new Error(
-      `Property name collision in interface "${interfaceDef.fullApiName}": ${
-        maybeBadProperties.join(", ")
-      }.  +
+      `Property name collision in interface "${interfaceDef.fullApiName}": ${maybeBadProperties.join(
+        ", ",
+      )}.  +
 Cannot have both an unqualified property and a namespaced property with matching root name when the namespace matches the interface.`,
     );
   }
@@ -152,37 +142,34 @@ Cannot have both an unqualified property and a namespaced property with matching
     } from "${forInternalUse ? "@osdk/api" : "@osdk/client"}";
     
         ${
-      definition.links
-        ? Object.keys(definition.links).length > 0
-          ? `
+          definition.links
+            ? Object.keys(definition.links).length > 0
+              ? `
         export interface ${osdkObjectLinksIdentifier}  {
-${
-            stringify(definition.links, {
-              "*": (definition) => {
-                const linkTarget = definition.targetType === "object"
-                  ? ontology.requireObjectType(
-                    definition.targetTypeApiName,
-                  )
-                    .getImportedDefinitionIdentifier(v2)
-                  : ontology.requireInterfaceType(
-                    definition.targetTypeApiName,
-                  )
-                    .getImportedDefinitionIdentifier(v2);
+${stringify(definition.links, {
+  "*": (definition) => {
+    const linkTarget =
+      definition.targetType === "object"
+        ? ontology
+            .requireObjectType(definition.targetTypeApiName)
+            .getImportedDefinitionIdentifier(v2)
+        : ontology
+            .requireInterfaceType(definition.targetTypeApiName)
+            .getImportedDefinitionIdentifier(v2);
 
-                return `${
-                  definition.multiplicity
-                    ? `${linkTarget}.ObjectSet`
-                    : `$SingleLinkAccessor<${linkTarget}>`
-                }
+    return `${
+      definition.multiplicity
+        ? `${linkTarget}.ObjectSet`
+        : `$SingleLinkAccessor<${linkTarget}>`
+    }
           `;
-              },
-            })
-          }
+  },
+})}
     }
     `
-          : `export type ${osdkObjectLinksIdentifier} = {};`
-        : `export type ${osdkObjectLinksIdentifier} = {};`
-    }
+              : `export type ${osdkObjectLinksIdentifier} = {};`
+            : `export type ${osdkObjectLinksIdentifier} = {};`
+        }
 
     export namespace ${interfaceDef.shortApiName} {
 
@@ -233,17 +220,18 @@ export function getInvalidInterfaceProperties(
   }
   const unqualifiedPropNames = new Set(
     Object.keys(definition.properties)
-      .map(apiName => extractNamespace(apiName))
+      .map((apiName) => extractNamespace(apiName))
       .filter(([namespace]) => namespace == null)
       .map(([, rootName]) => rootName),
   );
 
   // Find namespaced properties whose namespace matches the interface
   // AND whose root name conflicts with an un-namespaced property
-  const badProperties = Object.keys(definition.properties).filter(apiName => {
+  const badProperties = Object.keys(definition.properties).filter((apiName) => {
     const [ns, rootName] = extractNamespace(apiName);
-    return ns === interfaceDef.apiNamespace
-      && unqualifiedPropNames.has(rootName);
+    return (
+      ns === interfaceDef.apiNamespace && unqualifiedPropNames.has(rootName)
+    );
   });
 
   return badProperties;

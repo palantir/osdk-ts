@@ -263,10 +263,9 @@ describe("ActionTypeShapeExtractor", () => {
 
       // Should have output shapes for action type and parameters
       expect(result.outputShapes.size).toBe(3); // action + 2 parameters
-      expect(result.outputShapes.has("action-type-createTask" as ReadableId))
-        .toBe(
-          true,
-        );
+      expect(
+        result.outputShapes.has("action-type-createTask" as ReadableId),
+      ).toBe(true);
 
       const actionShape = result.outputShapes.get(
         "action-type-createTask" as ReadableId,
@@ -553,10 +552,9 @@ describe("ActionTypeShapeExtractor", () => {
 
       // Should have action + 3 parameters
       expect(result.outputShapes.size).toBe(4);
-      expect(result.outputShapes.has("action-type-complexAction" as ReadableId))
-        .toBe(
-          true,
-        );
+      expect(
+        result.outputShapes.has("action-type-complexAction" as ReadableId),
+      ).toBe(true);
       expect(
         result.outputShapes.has(
           "action-complexAction-parameter-param1" as ReadableId,

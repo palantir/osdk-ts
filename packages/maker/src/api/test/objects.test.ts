@@ -87,13 +87,17 @@ describe("Object Types", () => {
         apiName: "foo",
         primaryKeyPropertyApiName: "bar",
         properties: { "bar": { type: "string" } },
-        implementsInterfaces: [{
-          implements: sample,
-          propertyMapping: [{
-            interfaceProperty: "com.palantir.foo",
-            mapsTo: "fizz",
-          }],
-        }],
+        implementsInterfaces: [
+          {
+            implements: sample,
+            propertyMapping: [
+              {
+                interfaceProperty: "com.palantir.foo",
+                mapsTo: "fizz",
+              },
+            ],
+          },
+        ],
       });
     }).toThrowErrorMatchingInlineSnapshot(
       `[Error: Invariant failed: \nOntology Definition Error: Object property mapped to interface does not exist. Object Property Mapped: fizz\n]`,
@@ -107,16 +111,21 @@ describe("Object Types", () => {
         apiName: "foo",
         primaryKeyPropertyApiName: "bar",
         properties: { "bar": { type: "string" } },
-        implementsInterfaces: [{
-          implements: sample,
-          propertyMapping: [{
-            interfaceProperty: "com.palantir.fizz",
-            mapsTo: "bar",
-          }, {
-            interfaceProperty: "com.palantir.foo",
-            mapsTo: "bar",
-          }],
-        }],
+        implementsInterfaces: [
+          {
+            implements: sample,
+            propertyMapping: [
+              {
+                interfaceProperty: "com.palantir.fizz",
+                mapsTo: "bar",
+              },
+              {
+                interfaceProperty: "com.palantir.foo",
+                mapsTo: "bar",
+              },
+            ],
+          },
+        ],
       });
     }).toThrowErrorMatchingInlineSnapshot(
       `[Error: Invariant failed: \nOntology Definition Error: Interface property com.palantir.fizz referenced in foo object does not exist\n]`,
@@ -156,13 +165,17 @@ describe("Object Types", () => {
         },
       },
       aliases: ["alias1", "alias2"],
-      implementsInterfaces: [{
-        implements: sample,
-        propertyMapping: [{
-          interfaceProperty: spt.apiName,
-          mapsTo: "bar",
-        }],
-      }],
+      implementsInterfaces: [
+        {
+          implements: sample,
+          propertyMapping: [
+            {
+              interfaceProperty: spt.apiName,
+              mapsTo: "bar",
+            },
+          ],
+        },
+      ],
     });
 
     expect(dumpOntologyFullMetadata().ontology).toMatchInlineSnapshot(`
@@ -1336,11 +1349,13 @@ describe("Object Types", () => {
         apiName: "buzz",
         primaryKeyPropertyApiName: "buzz",
         properties: { "buzz": { type: "string" } },
-        datasources: [{
-          type: "stream",
-          retentionPeriod: "bad retention period string",
-        }],
-      })
+        datasources: [
+          {
+            type: "stream",
+            retentionPeriod: "bad retention period string",
+          },
+        ],
+      }),
     ).toThrowErrorMatchingInlineSnapshot(
       `[Error: Invariant failed: Retention period "bad retention period string" on object "buzz" is not a valid ISO 8601 duration string]`,
     );
@@ -1600,9 +1615,11 @@ describe("Object Types", () => {
           { type: "dataset" },
           {
             type: "derived",
-            linkDefinition: [{
-              linkType: flightToPassengers,
-            }],
+            linkDefinition: [
+              {
+                linkType: flightToPassengers,
+              },
+            ],
             propertyMapping: {
               numPassengers: {
                 type: "collectList",
@@ -1638,9 +1655,11 @@ describe("Object Types", () => {
         { type: "dataset" },
         {
           type: "derived",
-          linkDefinition: [{
-            linkType: flightToPassengers,
-          }],
+          linkDefinition: [
+            {
+              linkType: flightToPassengers,
+            },
+          ],
           propertyMapping: {
             passengersList: {
               type: "collectList",
@@ -3853,13 +3872,16 @@ describe("Object Types", () => {
         },
       },
       array: true,
-      reducers: [{
-        direction: "descending",
-        structField: "prop1",
-      }, {
-        direction: "ascending",
-        structField: "prop2",
-      }],
+      reducers: [
+        {
+          direction: "descending",
+          structField: "prop1",
+        },
+        {
+          direction: "ascending",
+          structField: "prop2",
+        },
+      ],
     });
     const object = defineObject({
       titlePropertyApiName: "bar",
@@ -3901,13 +3923,16 @@ describe("Object Types", () => {
             },
           },
           array: true,
-          reducers: [{
-            direction: "descending",
-            structField: "field1",
-          }, {
-            direction: "ascending",
-            structField: "field2",
-          }],
+          reducers: [
+            {
+              direction: "descending",
+              structField: "field1",
+            },
+            {
+              direction: "ascending",
+              structField: "field2",
+            },
+          ],
         },
       },
     });

@@ -29,21 +29,22 @@ import type { Token } from "./Token.js";
 
 // Node 18 is supposed to have a `CustomEvent` but it is not exposed on `globalThis`
 // which creates a problem for making a single codebase for node and browser. This polyfill works around it
-const CustomEvent = process.env.TARGET === "browser"
-  ? globalThis.CustomEvent
-  : globalThis.CustomEvent
-    ?? class CustomEvent<T> extends Event {
-      #detail: T | null;
+const CustomEvent =
+  process.env.TARGET === "browser"
+    ? globalThis.CustomEvent
+    : (globalThis.CustomEvent ??
+      class CustomEvent<T> extends Event {
+        #detail: T | null;
 
-      constructor(type: string, options: EventInit & { detail: T }) {
-        super(type, options);
-        this.#detail = options?.detail ?? null;
-      }
+        constructor(type: string, options: EventInit & { detail: T }) {
+          super(type, options);
+          this.#detail = options?.detail ?? null;
+        }
 
-      get detail() {
-        return this.#detail;
-      }
-    };
+        get detail() {
+          return this.#detail;
+        }
+      });
 
 declare const process: {
   env: Record<string, string | undefined>;
@@ -69,22 +70,22 @@ export type TokenStorageType = "localStorage" | "sessionStorage" | "none";
 export type SessionStorageState =
   // when we are going to the login page
   | {
-    codeVerifier?: never;
-    state?: never;
-    oldUrl: string;
-  }
+      codeVerifier?: never;
+      state?: never;
+      oldUrl: string;
+    }
   // when we are redirecting to oauth login
   | {
-    codeVerifier: string;
-    state: string;
-    oldUrl: string;
-  }
+      codeVerifier: string;
+      state: string;
+      oldUrl: string;
+    }
   // when we have the refresh token
   | {
-    codeVerifier?: never;
-    state?: never;
-    oldUrl?: never;
-  };
+      codeVerifier?: never;
+      state?: never;
+      oldUrl?: never;
+    };
 
 function localStorageKey(client: Client) {
   return `@osdk/oauth : refresh : ${client.client_id}`;
@@ -96,9 +97,7 @@ function localStorageKey(client: Client) {
  *
  * Call this once at client initialization and pass the result to storage functions.
  */
-export function getStorage(
-  storageType: TokenStorageType,
-): Storage | undefined {
+export function getStorage(storageType: TokenStorageType): Storage | undefined {
   if (storageType === "none") return undefined;
 
   // Node.js doesn't have Web Storage APIs
@@ -115,31 +114,21 @@ export function saveLocal(
   x: LocalStorageState,
   storage: Storage | undefined,
 ): void {
-  storage?.setItem(
-    localStorageKey(client),
-    JSON.stringify(x),
-  );
+  storage?.setItem(localStorageKey(client), JSON.stringify(x));
 }
 
 export function removeLocal(
   client: Client,
   storage: Storage | undefined,
 ): void {
-  storage?.removeItem(
-    localStorageKey(client),
-  );
+  storage?.removeItem(localStorageKey(client));
 }
 
 export function readLocal(
   client: Client,
   storage: Storage | undefined,
 ): LocalStorageState {
-  return JSON.parse(
-    storage?.getItem(
-      localStorageKey(client),
-    )
-      ?? "{}",
-  );
+  return JSON.parse(storage?.getItem(localStorageKey(client)) ?? "{}");
 }
 
 export function saveSession(client: Client, x: SessionStorageState): void {
@@ -152,18 +141,13 @@ export function saveSession(client: Client, x: SessionStorageState): void {
 
 export function removeSession(client: Client): void {
   // MUST `sessionStorage?` as nodejs does not have sessionStorage
-  globalThis.sessionStorage?.removeItem(
-    localStorageKey(client),
-  );
+  globalThis.sessionStorage?.removeItem(localStorageKey(client));
 }
 
 export function readSession(client: Client): SessionStorageState {
   return JSON.parse(
     // MUST `sessionStorage?` as nodejs does not have sessionStorage
-    globalThis.sessionStorage?.getItem(
-      localStorageKey(client),
-    )
-      ?? "{}",
+    globalThis.sessionStorage?.getItem(localStorageKey(client)) ?? "{}",
   );
 }
 
@@ -194,11 +178,15 @@ export function common<
   ): Token {
     const { refresh_token, expires_in, access_token } = resp;
     invariant(expires_in != null);
-    saveLocal(client, {
-      refresh_token,
-      refreshTokenMarker,
-      requestedScopes: scopes,
-    }, storage);
+    saveLocal(
+      client,
+      {
+        refresh_token,
+        refreshTokenMarker,
+        requestedScopes: scopes,
+      },
+      storage,
+    );
     token = {
       refresh_token,
       expires_in,
@@ -208,10 +196,7 @@ export function common<
 
     eventTarget.dispatchTypedEvent(
       type,
-      new CustomEvent(
-        type,
-        { detail: token },
-      ),
+      new CustomEvent(type, { detail: token }),
     );
     return token;
   }
@@ -234,12 +219,7 @@ export function common<
     invariant(token, "not signed in");
 
     const result = await processRevocationResponse(
-      await revocationRequest(
-        as,
-        client,
-        token.access_token,
-        oauthHttpOptions,
-      ),
+      await revocationRequest(as, client, token.access_token, oauthHttpOptions),
     );
 
     rmTimeout();
@@ -274,24 +254,27 @@ export function common<
     return token?.access_token;
   }
 
-  const getToken = Object.assign(async function getToken() {
-    if (!token || Date.now() >= token.expires_at) {
-      token = await signIn();
-    }
-    return token?.access_token;
-  }, {
-    signIn,
-    refresh,
-    signOut,
-    rmTimeout,
-    getTokenOrUndefined,
-    addEventListener: eventTarget.addEventListener.bind(
-      eventTarget,
-    ) as typeof eventTarget.addEventListener,
-    removeEventListener: eventTarget.removeEventListener.bind(
-      eventTarget,
-    ) as typeof eventTarget.removeEventListener,
-  });
+  const getToken = Object.assign(
+    async function getToken() {
+      if (!token || Date.now() >= token.expires_at) {
+        token = await signIn();
+      }
+      return token?.access_token;
+    },
+    {
+      signIn,
+      refresh,
+      signOut,
+      rmTimeout,
+      getTokenOrUndefined,
+      addEventListener: eventTarget.addEventListener.bind(
+        eventTarget,
+      ) as typeof eventTarget.addEventListener,
+      removeEventListener: eventTarget.removeEventListener.bind(
+        eventTarget,
+      ) as typeof eventTarget.removeEventListener,
+    },
+  );
 
   return { getToken, makeTokenAndSaveRefresh };
 }

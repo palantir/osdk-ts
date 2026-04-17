@@ -24,8 +24,7 @@ export async function listVersions(
   thirdPartyAppRid: ThirdPartyAppRid,
 ): Promise<ListVersionsResponse> {
   const fetch = createFetch(ctx.tokenProvider);
-  const url =
-    `${ctx.foundryUrl}/api/v2/thirdPartyApplications/${thirdPartyAppRid}/website/versions?preview=true`;
+  const url = `${ctx.foundryUrl}/api/v2/thirdPartyApplications/${thirdPartyAppRid}/website/versions?preview=true`;
 
   const result = await fetch(url);
   return result.json();

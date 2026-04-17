@@ -28,8 +28,8 @@ export function convertConditionDefinition(
         return {
           type: "and",
           and: {
-            conditions: condition.conditions.map(c =>
-              convertConditionDefinition(c, actionParameters)
+            conditions: condition.conditions.map((c) =>
+              convertConditionDefinition(c, actionParameters),
             ),
           },
         };
@@ -41,8 +41,8 @@ export function convertConditionDefinition(
         return {
           type: "or",
           or: {
-            conditions: condition.conditions.map(c =>
-              convertConditionDefinition(c, actionParameters)
+            conditions: condition.conditions.map((c) =>
+              convertConditionDefinition(c, actionParameters),
             ),
           },
         };
@@ -72,9 +72,7 @@ export function convertConditionDefinition(
             staticValue: {
               type: "stringList",
               stringList: {
-                strings: [
-                  condition.name,
-                ],
+                strings: [condition.name],
               },
             },
           },
@@ -82,7 +80,7 @@ export function convertConditionDefinition(
       };
     case "parameter":
       invariant(
-        actionParameters?.some(param => param.id === condition.parameterId),
+        actionParameters?.some((param) => param.id === condition.parameterId),
         `Action parameter condition references unknown parameter ${condition.parameterId}`,
       );
       return {

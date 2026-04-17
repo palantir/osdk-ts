@@ -78,11 +78,11 @@ export class ListsHelper extends AbstractHelper<
     if (options.streamUpdates) {
       if (options.pivotTo) {
         if (process.env.NODE_ENV !== "production") {
-          // eslint-disable-next-line no-console
+          // oxlint-disable-next-line no-console
           console.warn(
-            "[@osdk/client] streamUpdates is not supported with pivotTo. "
-              + "The server does not support websocket subscriptions for "
-              + "link-traversal queries. Ignoring streamUpdates.",
+            "[@osdk/client] streamUpdates is not supported with pivotTo. " +
+              "The server does not support websocket subscriptions for " +
+              "link-traversal queries. Ignoring streamUpdates.",
           );
         }
       } else {
@@ -114,21 +114,22 @@ export class ListsHelper extends AbstractHelper<
       ? this.rdpCanonicalizer.canonicalize(withProperties)
       : undefined;
 
-    const canonIntersect = intersectWith && intersectWith.length > 0
-      ? this.intersectCanonicalizer.canonicalize(intersectWith)
-      : undefined;
+    const canonIntersect =
+      intersectWith && intersectWith.length > 0
+        ? this.intersectCanonicalizer.canonicalize(intersectWith)
+        : undefined;
 
     const canonPivot = pivotTo
       ? this.pivotCanonicalizer.canonicalize(apiName, type, pivotTo)
       : undefined;
 
-    const canonRids = rids != null
-      ? this.ridListCanonicalizer.canonicalize(rids)
-      : undefined;
+    const canonRids =
+      rids != null ? this.ridListCanonicalizer.canonicalize(rids) : undefined;
 
-    const canonSelect = select && select.length > 0
-      ? this.selectCanonicalizer.canonicalize(select)
-      : undefined;
+    const canonSelect =
+      select && select.length > 0
+        ? this.selectCanonicalizer.canonicalize(select)
+        : undefined;
 
     const listCacheKey = this.cacheKeys.get<ListCacheKey>(
       "list",
@@ -145,9 +146,8 @@ export class ListsHelper extends AbstractHelper<
     );
 
     return this.store.queries.get(listCacheKey, () => {
-      const QueryClass = type === "object"
-        ? ObjectListQuery
-        : InterfaceListQuery;
+      const QueryClass =
+        type === "object" ? ObjectListQuery : InterfaceListQuery;
       return new QueryClass(
         this.store,
         this.store.subjects.get(listCacheKey),

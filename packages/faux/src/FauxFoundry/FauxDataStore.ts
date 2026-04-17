@@ -55,29 +55,25 @@ export interface MediaMetadataAndContent {
 }
 
 type ObjectTypeCreatableWithoutApiName<T extends ObjectTypeDefinition> =
-  & OrUndefinedToOptional<JustProps<T>>
-  & { $rid?: string };
+  OrUndefinedToOptional<JustProps<T>> & { $rid?: string };
 
 /**
  * Represents the properties needed to create an object, specifically,
  * the properties of the object and the $apiName
  */
 type ObjectTypeCreatable<T extends ObjectTypeDefinition> =
-  & ObjectTypeCreatableWithoutApiName<T>
-  & {
+  ObjectTypeCreatableWithoutApiName<T> & {
     $apiName: CompileTimeMetadata<T>["apiName"];
   };
 
 /**
  * Helper type for converting `foo: string | undefined` into `foo?: string`
  */
-type OrUndefinedToOptional<T extends object> =
-  & {
-    [K in keyof T as T[K] extends undefined ? K : never]?: T[K];
-  }
-  & {
-    [K in keyof T as T[K] extends undefined ? never : K]?: T[K];
-  };
+type OrUndefinedToOptional<T extends object> = {
+  [K in keyof T as T[K] extends undefined ? K : never]?: T[K];
+} & {
+  [K in keyof T as T[K] extends undefined ? never : K]?: T[K];
+};
 
 /**
  * Type safe object for representing "client" side objects.
@@ -192,20 +188,17 @@ export class FauxDataStore {
     primaryKey: string | number | boolean,
   ): void {
     if (this.getObject(objectType, primaryKey)) {
-      throw new OpenApiCallError(
-        500,
-        {
-          errorCode: "CONFLICT",
-          errorName: "ObjectAlreadyExists",
-          errorInstanceId: "faux-foundry",
-          parameters: {
-            objectType,
-            primaryKey: String(primaryKey),
-          },
-          errorDescription:
-            "The object the user is attempting to create already exists.",
-        } satisfies OntologiesV2.ObjectAlreadyExists,
-      );
+      throw new OpenApiCallError(500, {
+        errorCode: "CONFLICT",
+        errorName: "ObjectAlreadyExists",
+        errorInstanceId: "faux-foundry",
+        parameters: {
+          objectType,
+          primaryKey: String(primaryKey),
+        },
+        errorDescription:
+          "The object the user is attempting to create already exists.",
+      } satisfies OntologiesV2.ObjectAlreadyExists);
     }
   }
 
@@ -293,10 +286,12 @@ export class FauxDataStore {
   ): BaseServerObject {
     const registeredObj = this.registerObject(regularObject);
 
-    this.#objectsWithSecurities.get(registeredObj.__apiName).set(
-      String(registeredObj.__primaryKey),
-      Object.freeze({ ...securedObject }),
-    );
+    this.#objectsWithSecurities
+      .get(registeredObj.__apiName)
+      .set(
+        String(registeredObj.__primaryKey),
+        Object.freeze({ ...securedObject }),
+      );
     this.#propertySecurities.set(
       objectLocator(registeredObj),
       propertySecurities,
@@ -308,9 +303,8 @@ export class FauxDataStore {
     objectType: string | ObjectTypeDefinition,
     anyObj: BaseObjectTypeCreatable,
   ) {
-    objectType = typeof objectType === "string"
-      ? objectType
-      : objectType.apiName;
+    objectType =
+      typeof objectType === "string" ? objectType : objectType.apiName;
 
     if ("$apiName" in anyObj) {
       invariant(anyObj.$apiName === objectType);
@@ -324,8 +318,9 @@ export class FauxDataStore {
       | boolean;
 
     const maybeTitle = anyObj[meta.objectType.titleProperty];
-    const rid = anyObj.$rid
-      ?? `ri.phonograph2-objects.main.object.${crypto.randomUUID()}`;
+    const rid =
+      anyObj.$rid ??
+      `ri.phonograph2-objects.main.object.${crypto.randomUUID()}`;
 
     invariant(
       realPrimaryKey != null,
@@ -370,12 +365,10 @@ export class FauxDataStore {
       if (linkDef.cardinality === "ONE") {
         invariant(
           this.#strict && linkDef.foreignKeyPropertyApiName,
-          `Error examining ${objectType.objectType.apiName}.${linkDef.apiName}: ONE side of links should have a foreign key. ${
-            inspect(
-              linkDef,
-              { colors: false },
-            )
-          }`,
+          `Error examining ${objectType.objectType.apiName}.${linkDef.apiName}: ONE side of links should have a foreign key. ${inspect(
+            linkDef,
+            { colors: false },
+          )}`,
         );
 
         const fkName = linkDef.foreignKeyPropertyApiName;
@@ -394,7 +387,7 @@ export class FauxDataStore {
         const target = this.getObject(linkDef.objectTypeApiName, fkValue);
 
         if (fkValue != null && !target) {
-          // eslint-disable-next-line no-console
+          // oxlint-disable-next-line no-console
           console.log(
             `WARNING! Setting a FK value to a non-existent object: ${dstLocator}`,
           );
@@ -469,11 +462,12 @@ export class FauxDataStore {
     );
 
     if (this.#strict) {
-      const oneSide = srcSide.cardinality === "ONE"
-        ? { object: src, link: srcSide }
-        : dstSide.cardinality === "ONE"
-        ? { object: dst, link: dstSide }
-        : undefined;
+      const oneSide =
+        srcSide.cardinality === "ONE"
+          ? { object: src, link: srcSide }
+          : dstSide.cardinality === "ONE"
+            ? { object: dst, link: dstSide }
+            : undefined;
       const manySide = oneSide
         ? srcSide.cardinality === "MANY"
           ? { object: src, link: srcSide }
@@ -559,9 +553,9 @@ export class FauxDataStore {
     this.getObjectOrThrow(objectType, primaryKey);
     const def = this.ontology.getObjectTypeFullMetadataOrThrow(objectType);
     invariant(
-      def.objectType.properties[property].dataType.type === "timeseries"
-        || def.objectType.properties[property].dataType.type
-          === "geotimeSeriesReference",
+      def.objectType.properties[property].dataType.type === "timeseries" ||
+        def.objectType.properties[property].dataType.type ===
+          "geotimeSeriesReference",
     );
     this.#timeSeriesData
       .get(objectType)
@@ -663,58 +657,49 @@ export class FauxDataStore {
     if (!propertyDef) {
       // This should be the correct error, per
       // https://github.com/palantir/osdk-ts/pull/1303#discussion_r2001968959
-      throw new OpenApiCallError(
-        400,
-        {
-          errorCode: "NOT_FOUND",
-          errorName: "PropertiesNotFound",
-          errorInstanceId: "faux-foundry",
-          parameters: {
-            objectType,
-            properties: [property],
-          },
-          errorDescription:
-            "The requested properties are not found on the object type.",
-        } satisfies OntologiesV2.PropertiesNotFound,
-      );
+      throw new OpenApiCallError(400, {
+        errorCode: "NOT_FOUND",
+        errorName: "PropertiesNotFound",
+        errorInstanceId: "faux-foundry",
+        parameters: {
+          objectType,
+          properties: [property],
+        },
+        errorDescription:
+          "The requested properties are not found on the object type.",
+      } satisfies OntologiesV2.PropertiesNotFound);
     }
 
     if (propertyDef.dataType.type !== "mediaReference") {
       // FIXME: what would the backend do here?
-      throw new OpenApiCallError(
-        400,
-        {
-          errorCode: "INVALID_ARGUMENT",
-          errorName: "InvalidPropertyType",
-          errorInstanceId: "faux-foundry",
-          parameters: {
-            property,
-            propertyBaseType: propertyDef.dataType.type,
-          },
-          errorDescription:
-            "The given property type is not of the expected type.",
-        } satisfies OntologiesV2.InvalidPropertyType,
-      );
+      throw new OpenApiCallError(400, {
+        errorCode: "INVALID_ARGUMENT",
+        errorName: "InvalidPropertyType",
+        errorInstanceId: "faux-foundry",
+        parameters: {
+          property,
+          propertyBaseType: propertyDef.dataType.type,
+        },
+        errorDescription:
+          "The given property type is not of the expected type.",
+      } satisfies OntologiesV2.InvalidPropertyType);
     }
 
     const rid = obj[property].reference.mediaSetViewItem.mediaItemRid;
 
     if (!rid || !rid.startsWith("ri.")) {
-      throw new OpenApiCallError(
-        400,
-        {
-          errorCode: "INVALID_ARGUMENT",
-          errorName: "InvalidPropertyValue",
-          errorInstanceId: "faux-foundry",
-          parameters: {
-            property,
-            propertyBaseType: propertyDef.dataType.type,
-            propertyValue: rid,
-          },
-          errorDescription:
-            "The value of the given property is invalid. See the documentation of PropertyValue for details on how properties are represented.",
-        } satisfies OntologiesV2.InvalidPropertyValue,
-      );
+      throw new OpenApiCallError(400, {
+        errorCode: "INVALID_ARGUMENT",
+        errorName: "InvalidPropertyValue",
+        errorInstanceId: "faux-foundry",
+        parameters: {
+          property,
+          propertyBaseType: propertyDef.dataType.type,
+          propertyValue: rid,
+        },
+        errorDescription:
+          "The value of the given property is invalid. See the documentation of PropertyValue for details on how properties are represented.",
+      } satisfies OntologiesV2.InvalidPropertyValue);
     }
 
     const ret = this.#media.get(objectType).get(property).get(rid);
@@ -735,26 +720,20 @@ export class FauxDataStore {
       const links = this.#singleLinks.get(locator);
       invariant(
         links.get(destLinkName) === expectedPriorValue,
-        `Failed to remove link: expected ${
-          JSON.stringify(
-            expectedPriorValue,
-          )
-        } but found ${
-          JSON.stringify(
-            links.get(destLinkName),
-          )
-        } for link ${destLinkName} on ${JSON.stringify(locator)}`,
+        `Failed to remove link: expected ${JSON.stringify(
+          expectedPriorValue,
+        )} but found ${JSON.stringify(
+          links.get(destLinkName),
+        )} for link ${destLinkName} on ${JSON.stringify(locator)}`,
       );
       links.delete(destLinkName);
     } else {
       const links = this.#manyLinks.get(locator);
       invariant(
         links.get(destLinkName)?.has(expectedPriorValue),
-        `Failed to remove link: expected collection to contain ${
-          JSON.stringify(
-            expectedPriorValue,
-          )
-        } for link ${destLinkName} on ${JSON.stringify(locator)}`,
+        `Failed to remove link: expected collection to contain ${JSON.stringify(
+          expectedPriorValue,
+        )} for link ${destLinkName} on ${JSON.stringify(locator)}`,
       );
       links.remove(destLinkName, expectedPriorValue);
     }
@@ -907,9 +886,7 @@ export class FauxDataStore {
       getPaginationParamsFromRequest(parsedBody),
       false,
       loadPropertySecurities
-        ? this.#propertySecurities.get(
-          objectLocator(objects[0]),
-        )
+        ? this.#propertySecurities.get(objectLocator(objects[0]))
         : undefined,
     );
 
@@ -977,14 +954,15 @@ export class FauxDataStore {
         result: "VALID",
         submissionCriteria: [],
       },
-      edits: req.options?.mode === "VALIDATE_AND_EXECUTE"
-          && (req.options.returnEdits === "ALL"
-            || req.options.returnEdits === "ALL_V2_WITH_DELETIONS")
-        ? {
-          type: "edits",
-          ...batch.objectEdits,
-        }
-        : undefined,
+      edits:
+        req.options?.mode === "VALIDATE_AND_EXECUTE" &&
+        (req.options.returnEdits === "ALL" ||
+          req.options.returnEdits === "ALL_V2_WITH_DELETIONS")
+          ? {
+              type: "edits",
+              ...batch.objectEdits,
+            }
+          : undefined,
     };
   }
 
@@ -1033,9 +1011,9 @@ export class FauxDataStore {
       const editedObjectTypes = new Set<OntologiesV2.ObjectTypeApiName>();
       for (const edit of batch.objectEdits.edits) {
         if (
-          edit.type === "modifyObject"
-          || edit.type === "addObject"
-          || edit.type === "deleteObject"
+          edit.type === "modifyObject" ||
+          edit.type === "addObject" ||
+          edit.type === "deleteObject"
         ) {
           editedObjectTypes.add(edit.objectType);
         }
@@ -1066,11 +1044,12 @@ function extractOneManySide(
   dstSide: OntologiesV2.LinkTypeSideV2,
   dst: BaseServerObject,
 ) {
-  const oneSide = srcSide.cardinality === "ONE"
-    ? { object: src, link: srcSide }
-    : dstSide.cardinality === "ONE"
-    ? { object: dst, link: dstSide }
-    : undefined;
+  const oneSide =
+    srcSide.cardinality === "ONE"
+      ? { object: src, link: srcSide }
+      : dstSide.cardinality === "ONE"
+        ? { object: dst, link: dstSide }
+        : undefined;
   const manySide = oneSide
     ? srcSide.cardinality === "MANY"
       ? { object: src, link: srcSide }

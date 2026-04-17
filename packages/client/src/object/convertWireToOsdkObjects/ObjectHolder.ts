@@ -27,9 +27,9 @@ import type { ClientRef, ObjectDefRef } from "./InternalSymbols.js";
  * The unused generic parameter `_Q` can be used as an added check when casting.
  * That is its only purpose
  */
-export interface ObjectHolder<_Q extends Osdk.Instance<any> = never>
-  extends BaseHolder
-{
+export interface ObjectHolder<
+  _Q extends Osdk.Instance<any> = never,
+> extends BaseHolder {
   readonly [ObjectDefRef]: FetchedObjectTypeDefinition;
   readonly [ClientRef]: MinimalClient;
 

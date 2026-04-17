@@ -71,7 +71,7 @@ export async function transformAndWaitInternal(
       throw new MediaTransformationFailedError(jobId);
     }
     if (status !== "SUCCESSFUL") {
-      await new Promise(resolve => setTimeout(resolve, pollIntervalMs));
+      await new Promise((resolve) => setTimeout(resolve, pollIntervalMs));
     }
   }
 

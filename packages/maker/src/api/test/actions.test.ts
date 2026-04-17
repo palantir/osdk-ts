@@ -48,25 +48,29 @@ describe("Action Types", () => {
       apiName: "foo",
       displayName: "exampleAction",
       status: "active",
-      rules: [{
-        type: "addOrModifyObjectRuleV2",
-        addOrModifyObjectRuleV2: {
-          objectToModify: "objectToModifyParameter",
-          propertyValues: {
-            "bar": {
-              type: "parameterId",
-              parameterId: "param1",
+      rules: [
+        {
+          type: "addOrModifyObjectRuleV2",
+          addOrModifyObjectRuleV2: {
+            objectToModify: "objectToModifyParameter",
+            propertyValues: {
+              "bar": {
+                type: "parameterId",
+                parameterId: "param1",
+              },
             },
+            structFieldValues: {},
           },
-          structFieldValues: {},
         },
-      }],
-      parameters: [{
-        id: "param1",
-        displayName: "param1",
-        type: "boolean",
-        validation: { required: true, allowedValues: { type: "boolean" } },
-      }],
+      ],
+      parameters: [
+        {
+          id: "param1",
+          displayName: "param1",
+          type: "boolean",
+          validation: { required: true, allowedValues: { type: "boolean" } },
+        },
+      ],
     });
 
     expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
@@ -246,21 +250,25 @@ describe("Action Types", () => {
         apiName: "foo",
         displayName: "exampleAction",
         status: "active",
-        rules: [{
-          type: "addInterfaceRule",
-          addInterfaceRule: {
-            interfaceApiName: "foo",
-            objectTypeParameter: "param1",
-            sharedPropertyValues: {},
-            interfacePropertyValues: {},
+        rules: [
+          {
+            type: "addInterfaceRule",
+            addInterfaceRule: {
+              interfaceApiName: "foo",
+              objectTypeParameter: "param1",
+              sharedPropertyValues: {},
+              interfacePropertyValues: {},
+            },
           },
-        }],
-        parameters: [{
-          id: "param1",
-          displayName: "param1",
-          type: "boolean",
-          validation: { required: true, allowedValues: { type: "boolean" } },
-        }],
+        ],
+        parameters: [
+          {
+            id: "param1",
+            displayName: "param1",
+            type: "boolean",
+            validation: { required: true, allowedValues: { type: "boolean" } },
+          },
+        ],
       });
 
       expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
@@ -493,23 +501,25 @@ describe("Action Types", () => {
             },
           },
         },
-        implementsInterfaces: [{
-          implements: exampleInterface,
-          propertyMapping: [
-            {
-              interfaceProperty: "com.palantir.mySpt",
-              mapsTo: "bar",
-            },
-            {
-              interfaceProperty: "property1",
-              mapsTo: "property1",
-            },
-            {
-              interfaceProperty: "com.palantir.property2",
-              mapsTo: "property2",
-            },
-          ],
-        }],
+        implementsInterfaces: [
+          {
+            implements: exampleInterface,
+            propertyMapping: [
+              {
+                interfaceProperty: "com.palantir.mySpt",
+                mapsTo: "bar",
+              },
+              {
+                interfaceProperty: "property1",
+                mapsTo: "property1",
+              },
+              {
+                interfaceProperty: "com.palantir.property2",
+                mapsTo: "property2",
+              },
+            ],
+          },
+        ],
       });
 
       const createActionWithObjectType = defineCreateInterfaceObjectAction({
@@ -4048,12 +4058,14 @@ describe("Action Types", () => {
       });
       const deleteAction = defineDeleteInterfaceObjectAction({
         interfaceType: exampleInterface,
-        actionLevelValidation: [{
-          condition: {
-            type: "group",
-            name: "deleteValidationGroup",
+        actionLevelValidation: [
+          {
+            condition: {
+              type: "group",
+              name: "deleteValidationGroup",
+            },
           },
-        }],
+        ],
       });
 
       expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
@@ -4295,12 +4307,14 @@ describe("Action Types", () => {
         apiName: "custom-api-name-1",
         displayName: "Custom Create Action",
         status: "experimental",
-        actionLevelValidation: [{
-          condition: {
-            type: "group",
-            name: "actionLevelGroup",
+        actionLevelValidation: [
+          {
+            condition: {
+              type: "group",
+              name: "actionLevelGroup",
+            },
           },
-        }],
+        ],
         parameterConfiguration: {
           "property3": {
             required: false,
@@ -4369,12 +4383,14 @@ describe("Action Types", () => {
         apiName: "custom-api-name-2",
         displayName: "Custom Modify Action",
         status: "experimental",
-        actionLevelValidation: [{
-          condition: {
-            type: "group",
-            name: "actionLevelGroup",
+        actionLevelValidation: [
+          {
+            condition: {
+              type: "group",
+              name: "actionLevelGroup",
+            },
           },
-        }],
+        ],
         parameterConfiguration: {
           "property3": {
             required: false,
@@ -5462,70 +5478,75 @@ describe("Action Types", () => {
           apiName: "action",
           displayName: "action",
           status: "active",
-          parameters: [{
-            id: "interfaceObjectToModifyParameter",
-            displayName: "Interface object to modify",
-            type: {
-              type: "interfaceReference",
-              interfaceReference: {
-                interfaceTypeRid: interfaceType.apiName,
+          parameters: [
+            {
+              id: "interfaceObjectToModifyParameter",
+              displayName: "Interface object to modify",
+              type: {
+                type: "interfaceReference",
+                interfaceReference: {
+                  interfaceTypeRid: interfaceType.apiName,
+                },
+              },
+              validation: {
+                required: true,
+                allowedValues: { type: "interfaceObjectQuery" },
               },
             },
-            validation: {
-              required: true,
-              allowedValues: { type: "interfaceObjectQuery" },
+            {
+              id: "sptParameter",
+              displayName: "SPT",
+              type: "string",
+              validation: {
+                required: true,
+                allowedValues: { type: "text" },
+              },
             },
-          }, {
-            id: "sptParameter",
-            displayName: "SPT",
-            type: "string",
-            validation: {
-              required: true,
-              allowedValues: { type: "text" },
+            {
+              id: "otherParameter",
+              displayName: "Other parameter",
+              type: "string",
+              validation: {
+                required: true,
+                allowedValues: { type: "text" },
+              },
             },
-          }, {
-            id: "otherParameter",
-            displayName: "Other parameter",
-            type: "string",
-            validation: {
-              required: true,
-              allowedValues: { type: "text" },
-            },
-          }],
-          rules: [{
-            type: "modifyInterfaceRule",
-            modifyInterfaceRule: {
-              interfaceApiName: "com.palantir.other.ontology.event.Event",
-              interfaceObjectToModifyParameter:
-                "interfaceObjectToModifyParameter",
-              sharedPropertyValues: {
-                spt: {
-                  type: "parameterId",
-                  parameterId: "sptParameter",
-                },
-                "com.palantir.other.invalid.spt": {
-                  type: "staticValue",
-                  staticValue: {
-                    type: "double",
-                    double: 4,
+          ],
+          rules: [
+            {
+              type: "modifyInterfaceRule",
+              modifyInterfaceRule: {
+                interfaceApiName: "com.palantir.other.ontology.event.Event",
+                interfaceObjectToModifyParameter:
+                  "interfaceObjectToModifyParameter",
+                sharedPropertyValues: {
+                  spt: {
+                    type: "parameterId",
+                    parameterId: "sptParameter",
+                  },
+                  "com.palantir.other.invalid.spt": {
+                    type: "staticValue",
+                    staticValue: {
+                      type: "double",
+                      double: 4,
+                    },
+                  },
+                  other: {
+                    type: "parameterId",
+                    parameterId: "otherParameter",
                   },
                 },
-                other: {
-                  type: "parameterId",
-                  parameterId: "otherParameter",
-                },
+                interfacePropertyValues: {},
               },
-              interfacePropertyValues: {},
             },
-          }],
-        })
+          ],
+        }),
       ).toThrowErrorMatchingInlineSnapshot(
         `[Error: Invariant failed: Shared property type com.palantir.other.invalid.spt does not exist in interface type com.palantir.interfaceType]`,
       );
       expect(() =>
-        defineCreateInterfaceObjectAction({ interfaceType: interfaceType })
-      ).not
-        .toThrow();
+        defineCreateInterfaceObjectAction({ interfaceType }),
+      ).not.toThrow();
     });
 
     it("Interface actions validate SPT existence on the interface", () => {
@@ -5554,50 +5575,55 @@ describe("Action Types", () => {
           apiName: "action",
           displayName: "action",
           status: "active",
-          parameters: [{
-            id: "interfaceObjectToModifyParameter",
-            displayName: "Interface object to modify",
-            type: {
-              type: "interfaceReference",
-              interfaceReference: {
-                interfaceTypeRid: interfaceType.apiName,
+          parameters: [
+            {
+              id: "interfaceObjectToModifyParameter",
+              displayName: "Interface object to modify",
+              type: {
+                type: "interfaceReference",
+                interfaceReference: {
+                  interfaceTypeRid: interfaceType.apiName,
+                },
+              },
+              validation: {
+                required: true,
+                allowedValues: { type: "interfaceObjectQuery" },
               },
             },
-            validation: {
-              required: true,
-              allowedValues: { type: "interfaceObjectQuery" },
+            {
+              id: "sptParameter",
+              displayName: "SPT",
+              type: "string",
+              validation: {
+                required: true,
+                allowedValues: { type: "text" },
+              },
             },
-          }, {
-            id: "sptParameter",
-            displayName: "SPT",
-            type: "string",
-            validation: {
-              required: true,
-              allowedValues: { type: "text" },
-            },
-          }],
-          rules: [{
-            type: "modifyInterfaceRule",
-            modifyInterfaceRule: {
-              interfaceApiName: "com.palantir.other.ontology.event.Event",
-              interfaceObjectToModifyParameter:
-                "interfaceObjectToModifyParameter",
-              sharedPropertyValues: {
-                spt: {
-                  type: "parameterId",
-                  parameterId: "sptParameter",
-                },
-                [pulseRepetitionIntervalSecs.apiName]: {
-                  type: "staticValue",
-                  staticValue: {
-                    type: "double",
-                    double: 4,
+          ],
+          rules: [
+            {
+              type: "modifyInterfaceRule",
+              modifyInterfaceRule: {
+                interfaceApiName: "com.palantir.other.ontology.event.Event",
+                interfaceObjectToModifyParameter:
+                  "interfaceObjectToModifyParameter",
+                sharedPropertyValues: {
+                  spt: {
+                    type: "parameterId",
+                    parameterId: "sptParameter",
+                  },
+                  [pulseRepetitionIntervalSecs.apiName]: {
+                    type: "staticValue",
+                    staticValue: {
+                      type: "double",
+                      double: 4,
+                    },
                   },
                 },
+                interfacePropertyValues: {},
               },
-              interfacePropertyValues: {},
             },
-          }],
+          ],
         });
       }).toThrowErrorMatchingInlineSnapshot(
         `[Error: Invariant failed: Shared property type com.palantir.other.ontology.pulseRepetitionIntervalSecs does not exist in interface type com.palantir.interfaceType]`,
@@ -6563,26 +6589,18 @@ describe("Action Types", () => {
         },
       });
 
-      const createObjectActionType = defineCreateObjectAction(
-        {
-          objectType: exampleObjectType,
-        },
-      );
-      const modifyObjectActionType = defineModifyObjectAction(
-        {
-          objectType: exampleObjectType,
-        },
-      );
-      const deleteObjectActionType = defineDeleteObjectAction(
-        {
-          objectType: exampleObjectType,
-        },
-      );
-      const createOrModifyObjectActionType = defineCreateOrModifyObjectAction(
-        {
-          objectType: exampleObjectType,
-        },
-      );
+      const createObjectActionType = defineCreateObjectAction({
+        objectType: exampleObjectType,
+      });
+      const modifyObjectActionType = defineModifyObjectAction({
+        objectType: exampleObjectType,
+      });
+      const deleteObjectActionType = defineDeleteObjectAction({
+        objectType: exampleObjectType,
+      });
+      const createOrModifyObjectActionType = defineCreateOrModifyObjectAction({
+        objectType: exampleObjectType,
+      });
 
       expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
         {
@@ -7507,15 +7525,16 @@ describe("Action Types", () => {
         },
       });
 
-      const createObjectActionType = defineCreateObjectAction(
-        {
-          objectType: exampleObjectType,
-          actionLevelValidation: [{
+      const createObjectActionType = defineCreateObjectAction({
+        objectType: exampleObjectType,
+        actionLevelValidation: [
+          {
             condition: {
               type: "group",
               name: "actionLevelGroup",
             },
-          }, {
+          },
+          {
             condition: {
               type: "group",
               name: "actionLevelGroup2",
@@ -7524,81 +7543,82 @@ describe("Action Types", () => {
               failureMessage: "Different custom failure message",
               typeClasses: [],
             },
-          }],
-          parameterOrdering: ["bar", "fizz", "primary"],
-          parameterConfiguration: {
-            "fizz": {
-              required: false,
-              conditionalOverrides: [
-                {
-                  type: "required",
-                  condition: {
-                    type: "and",
-                    conditions: [
-                      {
-                        type: "group",
-                        name: "parameterLevelGroup",
-                      },
-                      {
-                        type: "parameter",
-                        parameterId: "bar",
-                        matches: {
-                          type: "staticValue",
-                          staticValue: {
-                            type: "string",
-                            string: "bar",
-                          },
+          },
+        ],
+        parameterOrdering: ["bar", "fizz", "primary"],
+        parameterConfiguration: {
+          "fizz": {
+            required: false,
+            conditionalOverrides: [
+              {
+                type: "required",
+                condition: {
+                  type: "and",
+                  conditions: [
+                    {
+                      type: "group",
+                      name: "parameterLevelGroup",
+                    },
+                    {
+                      type: "parameter",
+                      parameterId: "bar",
+                      matches: {
+                        type: "staticValue",
+                        staticValue: {
+                          type: "string",
+                          string: "bar",
                         },
                       },
-                    ],
-                  },
-                },
-              ],
-              defaultValue: {
-                type: "staticValue",
-                staticValue: {
-                  type: "string",
-                  string: "default_fizz",
+                    },
+                  ],
                 },
               },
-              displayName: "fizz_display",
-              description: "fizz_description",
-              renderHint: {
-                type: "textArea",
-                textArea: {},
+            ],
+            defaultValue: {
+              type: "staticValue",
+              staticValue: {
+                type: "string",
+                string: "default_fizz",
               },
             },
-          },
-          excludedProperties: ["buzz"],
-          defaultFormat: "TABLE",
-          enableLayoutSwitch: true,
-          submissionMetadata: {
-            successMessage: "Custom success message",
-            undoButtonConfiguration: true,
-            submitButtonDisplayMetadata: {
-              intent: "DANGER",
-              text: "Custom button",
+            displayName: "fizz_display",
+            description: "fizz_description",
+            renderHint: {
+              type: "textArea",
+              textArea: {},
             },
-          },
-          tableConfiguration: {
-            columnWidthByParameterRid: {},
-            enableFileImport: false,
-            fitHorizontally: true,
-            frozenColumnCount: 1,
-            rowHeightInLines: 10,
           },
         },
-      );
+        excludedProperties: ["buzz"],
+        defaultFormat: "TABLE",
+        enableLayoutSwitch: true,
+        submissionMetadata: {
+          successMessage: "Custom success message",
+          undoButtonConfiguration: true,
+          submitButtonDisplayMetadata: {
+            intent: "DANGER",
+            text: "Custom button",
+          },
+        },
+        tableConfiguration: {
+          columnWidthByParameterRid: {},
+          enableFileImport: false,
+          fitHorizontally: true,
+          frozenColumnCount: 1,
+          rowHeightInLines: 10,
+        },
+      });
 
-      const modifyObjectActionType = defineModifyObjectAction(
-        {
-          objectType: exampleObjectType,
-          actionLevelValidation: [{
+      const modifyObjectActionType = defineModifyObjectAction({
+        objectType: exampleObjectType,
+        actionLevelValidation: [
+          {
             condition: {
               type: "group",
               name: "actionLevelGroup",
             },
-          }, {
+          },
+          {
             condition: {
               type: "group",
               name: "actionLevelGroup2",
@@ -7607,77 +7627,78 @@ describe("Action Types", () => {
               failureMessage: "Different custom failure message",
               typeClasses: [],
             },
-          }],
-          parameterOrdering: ["bar", "fizz"],
-          parameterConfiguration: {
-            "fizz": {
-              required: false,
-              conditionalOverrides: [
-                {
-                  type: "required",
-                  condition: {
-                    type: "and",
-                    conditions: [
-                      {
-                        type: "group",
-                        name: "parameterLevelGroup",
-                      },
-                      {
-                        type: "parameter",
-                        parameterId: "bar",
-                        matches: {
-                          type: "staticValue",
-                          staticValue: {
-                            type: "string",
-                            string: "bar",
-                          },
+          },
+        ],
+        parameterOrdering: ["bar", "fizz"],
+        parameterConfiguration: {
+          "fizz": {
+            required: false,
+            conditionalOverrides: [
+              {
+                type: "required",
+                condition: {
+                  type: "and",
+                  conditions: [
+                    {
+                      type: "group",
+                      name: "parameterLevelGroup",
+                    },
+                    {
+                      type: "parameter",
+                      parameterId: "bar",
+                      matches: {
+                        type: "staticValue",
+                        staticValue: {
+                          type: "string",
+                          string: "bar",
                         },
                       },
-                    ],
-                  },
-                },
-              ],
-              defaultValue: {
-                type: "staticValue",
-                staticValue: {
-                  type: "string",
-                  string: "default_fizz",
+                    },
+                  ],
                 },
               },
-              displayName: "fizz_display",
-              description: "fizz_description",
+            ],
+            defaultValue: {
+              type: "staticValue",
+              staticValue: {
+                type: "string",
+                string: "default_fizz",
+              },
             },
-          },
-          excludedProperties: ["buzz"],
-          defaultFormat: "TABLE",
-          enableLayoutSwitch: true,
-          submissionMetadata: {
-            successMessage: "Custom success message",
-            undoButtonConfiguration: true,
-            submitButtonDisplayMetadata: {
-              intent: "DANGER",
-              text: "Custom button",
-            },
-          },
-          tableConfiguration: {
-            columnWidthByParameterRid: {},
-            enableFileImport: false,
-            fitHorizontally: true,
-            frozenColumnCount: 1,
-            rowHeightInLines: 10,
+            displayName: "fizz_display",
+            description: "fizz_description",
           },
         },
-      );
+        excludedProperties: ["buzz"],
+        defaultFormat: "TABLE",
+        enableLayoutSwitch: true,
+        submissionMetadata: {
+          successMessage: "Custom success message",
+          undoButtonConfiguration: true,
+          submitButtonDisplayMetadata: {
+            intent: "DANGER",
+            text: "Custom button",
+          },
+        },
+        tableConfiguration: {
+          columnWidthByParameterRid: {},
+          enableFileImport: false,
+          fitHorizontally: true,
+          frozenColumnCount: 1,
+          rowHeightInLines: 10,
+        },
+      });
 
-      const createOrModifyObjectActionType = defineCreateOrModifyObjectAction(
-        {
-          objectType: exampleObjectType,
-          actionLevelValidation: [{
+      const createOrModifyObjectActionType = defineCreateOrModifyObjectAction({
+        objectType: exampleObjectType,
+        actionLevelValidation: [
+          {
             condition: {
               type: "group",
               name: "actionLevelGroup",
             },
-          }, {
+          },
+          {
             condition: {
               type: "group",
               name: "actionLevelGroup2",
@@ -7686,68 +7707,68 @@ describe("Action Types", () => {
               failureMessage: "Different custom failure message",
               typeClasses: [],
             },
-          }],
-          parameterOrdering: ["bar", "fizz"],
-          parameterConfiguration: {
-            "fizz": {
-              required: false,
-              conditionalOverrides: [
-                {
-                  type: "required",
-                  condition: {
-                    type: "and",
-                    conditions: [
-                      {
-                        type: "group",
-                        name: "parameterLevelGroup",
-                      },
-                      {
-                        type: "parameter",
-                        parameterId: "bar",
-                        matches: {
-                          type: "staticValue",
-                          staticValue: {
-                            type: "string",
-                            string: "bar",
-                          },
+          },
+        ],
+        parameterOrdering: ["bar", "fizz"],
+        parameterConfiguration: {
+          "fizz": {
+            required: false,
+            conditionalOverrides: [
+              {
+                type: "required",
+                condition: {
+                  type: "and",
+                  conditions: [
+                    {
+                      type: "group",
+                      name: "parameterLevelGroup",
+                    },
+                    {
+                      type: "parameter",
+                      parameterId: "bar",
+                      matches: {
+                        type: "staticValue",
+                        staticValue: {
+                          type: "string",
+                          string: "bar",
                         },
                       },
-                    ],
-                  },
-                },
-              ],
-              defaultValue: {
-                type: "staticValue",
-                staticValue: {
-                  type: "string",
-                  string: "default_fizz",
+                    },
+                  ],
                 },
               },
-              displayName: "fizz_display",
-              description: "fizz_description",
+            ],
+            defaultValue: {
+              type: "staticValue",
+              staticValue: {
+                type: "string",
+                string: "default_fizz",
+              },
             },
+            displayName: "fizz_display",
+            description: "fizz_description",
           },
-          excludedProperties: ["buzz"],
-          defaultFormat: "TABLE",
-          enableLayoutSwitch: true,
-          submissionMetadata: {
-            successMessage: "Custom success message",
-            undoButtonConfiguration: true,
-            submitButtonDisplayMetadata: {
-              intent: "DANGER",
-              text: "Custom button",
-            },
-          },
-          tableConfiguration: {
-            columnWidthByParameterRid: {},
-            enableFileImport: false,
-            fitHorizontally: true,
-            frozenColumnCount: 1,
-            rowHeightInLines: 10,
-          },
-          primaryKeyOption: "userInput",
         },
-      );
+        excludedProperties: ["buzz"],
+        defaultFormat: "TABLE",
+        enableLayoutSwitch: true,
+        submissionMetadata: {
+          successMessage: "Custom success message",
+          undoButtonConfiguration: true,
+          submitButtonDisplayMetadata: {
+            intent: "DANGER",
+            text: "Custom button",
+          },
+        },
+        tableConfiguration: {
+          columnWidthByParameterRid: {},
+          enableFileImport: false,
+          fitHorizontally: true,
+          frozenColumnCount: 1,
+          rowHeightInLines: 10,
+        },
+        primaryKeyOption: "userInput",
+      });
 
       expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
         {
@@ -9172,45 +9193,39 @@ describe("Action Types", () => {
         },
       });
 
-      const createObjectActionType = defineCreateObjectAction(
-        {
-          objectType: exampleObjectType,
-          nonParameterMappings: {
-            "fizz": {
-              type: "currentUser",
-            },
-            "buzz": {
-              type: "currentTime",
-            },
+      const createObjectActionType = defineCreateObjectAction({
+        objectType: exampleObjectType,
+        nonParameterMappings: {
+          "fizz": {
+            type: "currentUser",
+          },
+          "buzz": {
+            type: "currentTime",
           },
         },
-      );
-      const modifyObjectActionType = defineModifyObjectAction(
-        {
-          objectType: exampleObjectType,
-          nonParameterMappings: {
-            "fizz": {
-              type: "currentUser",
-            },
-            "buzz": {
-              type: "currentTime",
-            },
+      });
+      const modifyObjectActionType = defineModifyObjectAction({
+        objectType: exampleObjectType,
+        nonParameterMappings: {
+          "fizz": {
+            type: "currentUser",
+          },
+          "buzz": {
+            type: "currentTime",
           },
         },
-      );
-      const createOrModifyObjectActionType = defineCreateOrModifyObjectAction(
-        {
-          objectType: exampleObjectType,
-          nonParameterMappings: {
-            "fizz": {
-              type: "currentUser",
-            },
-            "buzz": {
-              type: "currentTime",
-            },
+      });
+      const createOrModifyObjectActionType = defineCreateOrModifyObjectAction({
+        objectType: exampleObjectType,
+        nonParameterMappings: {
+          "fizz": {
+            type: "currentUser",
+          },
+          "buzz": {
+            type: "currentTime",
           },
         },
-      );
+      });
 
       const property1 = defineSharedPropertyType({
         apiName: "property1",
@@ -10543,7 +10558,7 @@ describe("Action Types", () => {
               },
             },
           },
-        })
+        }),
       ).toThrowError(
         "Invariant failed: Default static value for parameter buzz does not match type",
       );
@@ -10570,26 +10585,30 @@ describe("Action Types", () => {
           apiName: "foo",
           displayName: "exampleAction",
           status: "active",
-          rules: [{
-            type: "modifyObjectRule",
-            modifyObjectRule: {
-              objectToModify: "sampleObject",
-              propertyValues: {
-                "name": {
-                  type: "parameterId",
-                  parameterId: "name",
+          rules: [
+            {
+              type: "modifyObjectRule",
+              modifyObjectRule: {
+                objectToModify: "sampleObject",
+                propertyValues: {
+                  "name": {
+                    type: "parameterId",
+                    parameterId: "name",
+                  },
                 },
+                structFieldValues: {},
               },
-              structFieldValues: {},
             },
-          }],
-          parameters: [{
-            id: "name",
-            displayName: "Name",
-            type: "string",
-            validation: { required: true, allowedValues: { type: "text" } },
-          }],
-        })
+          ],
+          parameters: [
+            {
+              id: "name",
+              displayName: "Name",
+              type: "string",
+              validation: { required: true, allowedValues: { type: "text" } },
+            },
+          ],
+        }),
       ).toThrowError(
         "Invariant failed: Object to modify parameter must be defined in parameters",
       );
@@ -10613,13 +10632,15 @@ describe("Action Types", () => {
           [MODIFY_OBJECT_PARAMETER]: {
             displayName: "Chose a manager to modify",
             description: "Description",
-            conditionalOverrides: [{
-              type: "visibility",
-              condition: {
-                type: "group",
-                name: "supervisors",
+            conditionalOverrides: [
+              {
+                type: "visibility",
+                condition: {
+                  type: "group",
+                  name: "supervisors",
+                },
               },
-            }],
+            ],
           },
         },
       });
@@ -10629,13 +10650,15 @@ describe("Action Types", () => {
           [CREATE_OR_MODIFY_OBJECT_PARAMETER]: {
             displayName: "Chose a manager to modify or create a new one",
             description: "Description",
-            conditionalOverrides: [{
-              type: "visibility",
-              condition: {
-                type: "group",
-                name: "supervisors",
+            conditionalOverrides: [
+              {
+                type: "visibility",
+                condition: {
+                  type: "group",
+                  name: "supervisors",
+                },
               },
-            }],
+            ],
           },
         },
       });
@@ -10671,13 +10694,15 @@ describe("Action Types", () => {
           [CREATE_INTERFACE_OBJECT_PARAMETER]: {
             displayName: "Choose an object to create",
             description: "Description",
-            conditionalOverrides: [{
-              type: "visibility",
-              condition: {
-                type: "group",
-                name: "supervisors",
+            conditionalOverrides: [
+              {
+                type: "visibility",
+                condition: {
+                  type: "group",
+                  name: "supervisors",
+                },
               },
-            }],
+            ],
           },
         },
       });
@@ -10687,13 +10712,15 @@ describe("Action Types", () => {
           [MODIFY_INTERFACE_OBJECT_PARAMETER]: {
             displayName: "Choose an object to modify",
             description: "Description",
-            conditionalOverrides: [{
-              type: "visibility",
-              condition: {
-                type: "group",
-                name: "supervisors",
+            conditionalOverrides: [
+              {
+                type: "visibility",
+                condition: {
+                  type: "group",
+                  name: "supervisors",
+                },
               },
-            }],
+            ],
           },
         },
       });
@@ -10703,13 +10730,15 @@ describe("Action Types", () => {
           [DELETE_OBJECT_PARAMETER]: {
             displayName: "Chose managers to delete",
             description: "Description",
-            conditionalOverrides: [{
-              type: "visibility",
-              condition: {
-                type: "group",
-                name: "supervisors",
+            conditionalOverrides: [
+              {
+                type: "visibility",
+                condition: {
+                  type: "group",
+                  name: "supervisors",
+                },
               },
-            }],
+            ],
           },
         },
       });
@@ -12210,47 +12239,55 @@ describe("Action Types", () => {
         apiName: "foo",
         displayName: "exampleAction",
         status: "active",
-        rules: [{
-          type: "modifyObjectRule",
-          modifyObjectRule: {
-            objectToModify: "objectToModifyParameter",
-            propertyValues: {
-              "bar": {
-                type: "parameterId",
-                parameterId: "param1",
-              },
-            },
-            structFieldValues: {},
-          },
-        }],
-        parameters: [{
-          id: "param1",
-          displayName: "param1",
-          type: "boolean",
-          validation: {
-            required: true,
-            allowedValues: { type: "boolean" },
-            defaultVisibility: "editable",
-            conditionalOverrides: [
-              {
-                type: "visibility",
-                condition: {
-                  type: "group",
-                  name: "myGroup",
+        rules: [
+          {
+            type: "modifyObjectRule",
+            modifyObjectRule: {
+              objectToModify: "objectToModifyParameter",
+              propertyValues: {
+                "bar": {
+                  type: "parameterId",
+                  parameterId: "param1",
                 },
               },
-            ],
+              structFieldValues: {},
+            },
           },
-        }, {
-          id: "objectToModifyParameter",
-          displayName: "objectToModifyParameter",
-          type: "objectTypeReference",
-          validation: {
-            required: true,
-            allowedValues: { type: "objectTypeReference", interfaceTypes: [] },
-            defaultVisibility: "editable",
+        ],
+        parameters: [
+          {
+            id: "param1",
+            displayName: "param1",
+            type: "boolean",
+            validation: {
+              required: true,
+              allowedValues: { type: "boolean" },
+              defaultVisibility: "editable",
+              conditionalOverrides: [
+                {
+                  type: "visibility",
+                  condition: {
+                    type: "group",
+                    name: "myGroup",
+                  },
+                },
+              ],
+            },
           },
-        }],
+          {
+            id: "objectToModifyParameter",
+            displayName: "objectToModifyParameter",
+            type: "objectTypeReference",
+            validation: {
+              required: true,
+              allowedValues: {
+                type: "objectTypeReference",
+                interfaceTypes: [],
+              },
+              defaultVisibility: "editable",
+            },
+          },
+        ],
       });
 
       expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
@@ -13091,12 +13128,14 @@ describe("Action Types", () => {
       });
       const createAction = defineCreateObjectAction({
         objectType: sampleObject,
-        actionLevelValidation: [{
-          condition: {
-            type: "group",
-            name: "testGroup",
+        actionLevelValidation: [
+          {
+            condition: {
+              type: "group",
+              name: "testGroup",
+            },
           },
-        }],
+        ],
       });
 
       expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
@@ -13514,43 +13553,43 @@ describe("Action Types", () => {
       });
       const createAction = defineCreateObjectAction({
         objectType: sampleObject,
-        actionLevelValidation: [{
-          displayMetadata: {
-            failureMessage:
-              "Insufficient permissions. Missing organization membership required to submit action",
-            typeClasses: [],
-          },
-          condition: {
-            type: "comparison",
-            comparison: {
-              operator: "INTERSECTS",
-              left: {
-                type: "userProperty",
-                userProperty: {
-                  userId: {
-                    type: "currentUser",
-                    currentUser: {},
-                  },
-                  propertyValue: {
-                    type: "organizationMarkingIds",
-                    organizationMarkingIds: {},
+        actionLevelValidation: [
+          {
+            displayMetadata: {
+              failureMessage:
+                "Insufficient permissions. Missing organization membership required to submit action",
+              typeClasses: [],
+            },
+            condition: {
+              type: "comparison",
+              comparison: {
+                operator: "INTERSECTS",
+                left: {
+                  type: "userProperty",
+                  userProperty: {
+                    userId: {
+                      type: "currentUser",
+                      currentUser: {},
+                    },
+                    propertyValue: {
+                      type: "organizationMarkingIds",
+                      organizationMarkingIds: {},
+                    },
                   },
                 },
-              },
-              right: {
-                type: "staticValue",
-                staticValue: {
-                  type: "stringList",
-                  stringList: {
-                    strings: [
-                      "87ef507e-f954-457e-ad68-e0df71ef7567",
-                    ],
+                right: {
+                  type: "staticValue",
+                  staticValue: {
+                    type: "stringList",
+                    stringList: {
+                      strings: ["87ef507e-f954-457e-ad68-e0df71ef7567"],
+                    },
                   },
                 },
               },
             },
           },
-        }],
+        ],
       });
 
       expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
@@ -15909,43 +15948,43 @@ describe("Action Types", () => {
         },
       });
 
-      const createObjectActionType = defineCreateObjectAction(
-        {
-          objectType: exampleObjectType,
-          parameterConfiguration: {
-            "bar": {
-              allowedValues: {
-                type: "multipassGroup",
-              },
+      const createObjectActionType = defineCreateObjectAction({
+        objectType: exampleObjectType,
+        parameterConfiguration: {
+          "bar": {
+            allowedValues: {
+              type: "multipassGroup",
             },
-            "fizz": {
-              allowedValues: {
-                type: "user",
-                fromGroups: [{
+          },
+          "fizz": {
+            allowedValues: {
+              type: "user",
+              fromGroups: [
+                {
                   type: "parameter",
                   parameter: "bar",
-                }],
-              },
+                },
+              ],
             },
-            "buzz": {
-              allowedValues: {
-                type: "user",
-              },
+          },
+          "buzz": {
+            allowedValues: {
+              type: "user",
             },
-            "fizzbuzz": {
-              allowedValues: {
-                type: "user",
-                fromGroups: [
-                  {
-                    type: "static",
-                    name: "inputGroup",
-                  },
-                ],
-              },
+          },
+          "fizzbuzz": {
+            allowedValues: {
+              type: "user",
+              fromGroups: [
+                {
+                  type: "static",
+                  name: "inputGroup",
+                },
+              ],
             },
           },
         },
-      );
+      });
       expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
         {
           "importedOntology": {

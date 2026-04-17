@@ -88,10 +88,7 @@ function FilterInputExcludeRowInner({
           </span>
         )}
         {onClearAll && selectedCount > 0 && (
-          <Button
-            className={styles.clearAllButton}
-            onClick={onClearAll}
-          >
+          <Button className={styles.clearAllButton} onClick={onClearAll}>
             Clear all
           </Button>
         )}

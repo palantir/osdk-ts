@@ -90,31 +90,40 @@ export function usePdfViewerState({
   const outlineItems = usePdfOutline(core.document);
 
   // Sync sidebarMode prop changes to state
-  useEffect(function syncSidebarMode() {
-    setSidebarMode(sidebarModeProp);
-  }, [sidebarModeProp]);
+  useEffect(
+    function syncSidebarMode() {
+      setSidebarMode(sidebarModeProp);
+    },
+    [sidebarModeProp],
+  );
 
   // Sync rotation → PDFViewer
-  useEffect(function syncRotationToViewer() {
-    const pdfViewer = core.pdfViewerRef.current;
-    if (pdfViewer != null) {
-      pdfViewer.pagesRotation = rotation;
-    }
-  }, [core.pdfViewerRef, rotation]);
+  useEffect(
+    function syncRotationToViewer() {
+      const pdfViewer = core.pdfViewerRef.current;
+      if (pdfViewer != null) {
+        pdfViewer.pagesRotation = rotation;
+      }
+    },
+    [core.pdfViewerRef, rotation],
+  );
 
   // Ctrl+F keyboard shortcut
-  useEffect(function registerSearchShortcut() {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.ctrlKey || e.metaKey) && e.key === "f") {
-        e.preventDefault();
-        search.openSearch();
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [search.openSearch]);
+  useEffect(
+    function registerSearchShortcut() {
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if ((e.ctrlKey || e.metaKey) && e.key === "f") {
+          e.preventDefault();
+          search.openSearch();
+        }
+      };
+      window.addEventListener("keydown", handleKeyDown);
+      return () => {
+        window.removeEventListener("keydown", handleKeyDown);
+      };
+    },
+    [search.openSearch],
+  );
 
   const zoomIn = useCallback(() => {
     core.setScale(Math.min(core.scale + SCALE_STEP, MAX_SCALE));
@@ -136,61 +145,69 @@ export function usePdfViewerState({
     setSidebarOpen((prev) => !prev);
   }, []);
 
-  const download = useCallback((filename?: string) => {
-    if (core.document == null) {
-      return;
-    }
-    void core.document.getData().then((data) => {
-      const blob = new Blob([data.buffer as ArrayBuffer], {
-        type: "application/pdf",
-      });
-      const url = URL.createObjectURL(blob);
-      const resolvedFilename = resolveDownloadFilename(src, filename);
-      const a = globalThis.document.createElement("a");
-      a.href = url;
-      a.download = resolvedFilename;
-      a.click();
-      URL.revokeObjectURL(url);
-      onDownload?.({ success: true, filename: resolvedFilename });
-    }).catch((err: unknown) => {
-      onDownload?.({
-        success: false,
-        error: err instanceof Error
-          ? err
-          : new Error("Failed to download PDF"),
-      });
-    });
-  }, [core.document, src, onDownload]);
+  const download = useCallback(
+    (filename?: string) => {
+      if (core.document == null) {
+        return;
+      }
+      void core.document
+        .getData()
+        .then((data) => {
+          const blob = new Blob([data.buffer as ArrayBuffer], {
+            type: "application/pdf",
+          });
+          const url = URL.createObjectURL(blob);
+          const resolvedFilename = resolveDownloadFilename(src, filename);
+          const a = globalThis.document.createElement("a");
+          a.href = url;
+          a.download = resolvedFilename;
+          a.click();
+          URL.revokeObjectURL(url);
+          onDownload?.({ success: true, filename: resolvedFilename });
+        })
+        .catch((err: unknown) => {
+          onDownload?.({
+            success: false,
+            error:
+              err instanceof Error ? err : new Error("Failed to download PDF"),
+          });
+        });
+    },
+    [core.document, src, onDownload],
+  );
 
-  return useMemo((): UsePdfViewerStateResult => ({
-    ...core,
-    zoomIn,
-    zoomOut,
-    rotation,
-    rotateLeft,
-    rotateRight,
-    sidebarOpen,
-    sidebarMode,
-    setSidebarMode,
-    toggleSidebar,
-    search,
-    outlineItems,
-    download,
-  }), [
-    core,
-    zoomIn,
-    zoomOut,
-    rotation,
-    rotateLeft,
-    rotateRight,
-    sidebarOpen,
-    sidebarMode,
-    setSidebarMode,
-    toggleSidebar,
-    search,
-    outlineItems,
-    download,
-  ]);
+  return useMemo(
+    (): UsePdfViewerStateResult => ({
+      ...core,
+      zoomIn,
+      zoomOut,
+      rotation,
+      rotateLeft,
+      rotateRight,
+      sidebarOpen,
+      sidebarMode,
+      setSidebarMode,
+      toggleSidebar,
+      search,
+      outlineItems,
+      download,
+    }),
+    [
+      core,
+      zoomIn,
+      zoomOut,
+      rotation,
+      rotateLeft,
+      rotateRight,
+      sidebarOpen,
+      sidebarMode,
+      setSidebarMode,
+      toggleSidebar,
+      search,
+      outlineItems,
+      download,
+    ],
+  );
 }
 
 /** Derive a download filename from an explicit name, the src URL, or a fallback. */

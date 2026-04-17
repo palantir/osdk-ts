@@ -19,43 +19,46 @@ import { ForeignType } from "../GenerateContext/ForeignType.js";
 import type { GenerateContext } from "../GenerateContext/GenerateContext.js";
 import { formatTs } from "../util/test/formatTs.js";
 
-export async function generateRootIndexTsFile(
-  { fs, outDir, importExt, ontologyApiNamespace, ontology }: GenerateContext,
-): Promise<void> {
+export async function generateRootIndexTsFile({
+  fs,
+  outDir,
+  importExt,
+  ontologyApiNamespace,
+  ontology,
+}: GenerateContext): Promise<void> {
   await fs.writeFile(
     path.join(outDir, "index.ts"),
     await formatTs(
-      `export {${
-        helper(ontology.actionTypes)
-      }} from "./ontology/actions${importExt}";
+      `export {${helper(
+        ontology.actionTypes,
+      )}} from "./ontology/actions${importExt}";
         export * as $Actions from "./ontology/actions${importExt}";
-        export {${
-        helper(ontology.interfaceTypes)
-      }} from "./ontology/interfaces${importExt}";
+        export {${helper(
+          ontology.interfaceTypes,
+        )}} from "./ontology/interfaces${importExt}";
         export * as $Interfaces from "./ontology/interfaces${importExt}";
-        export {${
-        helper(ontology.objectTypes)
-      }} from "./ontology/objects${importExt}";
+        export {${helper(
+          ontology.objectTypes,
+        )}} from "./ontology/objects${importExt}";
         export * as $Objects from "./ontology/objects${importExt}";
-        export {${
-        helper(ontology.queryTypes)
-      }} from "./ontology/queries${importExt}";
+        export {${helper(
+          ontology.queryTypes,
+        )}} from "./ontology/queries${importExt}";
         export * as $Queries from "./ontology/queries${importExt}";
         export { $osdkMetadata } from "./OntologyMetadata${importExt}";
         ${
-        ontologyApiNamespace == null
-          ? `export { $ontologyRid } from "./OntologyMetadata${importExt}";`
-          : ``
-      }
+          ontologyApiNamespace == null
+            ? `export { $ontologyRid } from "./OntologyMetadata${importExt}";`
+            : ``
+        }
     `,
     ),
   );
 }
 
 function helper(x: Record<string, { shortApiName: string }>) {
-  return Object.values(x).filter(x => !(x instanceof ForeignType)).map(a =>
-    a.shortApiName
-  ).join(
-    ", ",
-  );
+  return Object.values(x)
+    .filter((x) => !(x instanceof ForeignType))
+    .map((a) => a.shortApiName)
+    .join(", ");
 }

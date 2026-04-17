@@ -24,9 +24,7 @@ import type {
 import type { InputShape, OutputShape } from "@osdk/client.unstable/api";
 import * as fs from "node:fs";
 import * as path from "node:path";
-import {
-  typeToConcreteDataType,
-} from "../conversion/toMarketplace/typeVisitors.js";
+import { typeToConcreteDataType } from "../conversion/toMarketplace/typeVisitors.js";
 import type { ReadableId } from "../util/generateRid.js";
 import { ReadableIdGenerator } from "../util/generateRid.js";
 import type { BlockGeneratorResult } from "./marketplaceSerialization/BlockGeneratorResult.js";
@@ -62,8 +60,8 @@ export function propertyTypeToSchemaType(
       return "TIMESTAMP";
     default:
       throw new Error(
-        `Unsupported property type "${typeStr}" for empty backing datasource. `
-          + `If using a property type that doesn't support empty backing datasources please make the property an edit only property.`,
+        `Unsupported property type "${typeStr}" for empty backing datasource. ` +
+          `If using a property type that doesn't support empty backing datasources please make the property an edit only property.`,
       );
   }
 }
@@ -100,9 +98,7 @@ function getEditOnlyPropertyRids(
 export function getNonEditOnlyProperties(
   objectTypeBlockData: ObjectTypeBlockDataV2,
 ): PropertyType[] {
-  const editOnlyRids = getEditOnlyPropertyRids(
-    objectTypeBlockData.datasources,
-  );
+  const editOnlyRids = getEditOnlyPropertyRids(objectTypeBlockData.datasources);
   return Object.entries(objectTypeBlockData.objectType.propertyTypes)
     .filter(([rid]) => !editOnlyRids.has(rid))
     .map(([_, prop]) => prop);
@@ -131,11 +127,10 @@ async function generateBackingDatasetBlock(
     OutputShape
   >;
 
-  const datasourceReadableId = ReadableIdGenerator.getForDatasetOutput(
-    datasetName,
-  );
-  const columnReadableIds: ReadableId[] = columns.map(col =>
-    ReadableIdGenerator.getForDatasetColumnOutput(datasetName, col.name)
+  const datasourceReadableId =
+    ReadableIdGenerator.getForDatasetOutput(datasetName);
+  const columnReadableIds: ReadableId[] = columns.map((col) =>
+    ReadableIdGenerator.getForDatasetColumnOutput(datasetName, col.name),
   );
 
   const datasourceBlockInternalId = toBlockShapeId(
@@ -187,17 +182,11 @@ async function generateBackingDatasetBlock(
   // These are distinct from the block shape IDs that appear in the manifest outputs.
   // The add-on maps these internal IDs -> block shape IDs.
   const columnInternalIds = columns.map((col) =>
-    toBlockShapeId(
-      `column-internal-${datasetName}-${col.name}`,
-      randomnessKey,
-    )
+    toBlockShapeId(`column-internal-${datasetName}-${col.name}`, randomnessKey),
   );
 
   const compassReadableId = `${blockIdentifier}-compass-resource` as ReadableId;
-  const compassBlockShapeId = toBlockShapeId(
-    compassReadableId,
-    randomnessKey,
-  );
+  const compassBlockShapeId = toBlockShapeId(compassReadableId, randomnessKey);
 
   const datasourceInternalId = toBlockShapeId(
     `datasource-internal-${datasetName}`,
@@ -274,41 +263,15 @@ async function generateBackingDatasetBlock(
   );
 
   // Write VERSION
-  await fs.promises.writeFile(
-    path.join(dsBlockDataDir, "VERSION"),
-    "\"1\"",
-  );
+  await fs.promises.writeFile(path.join(dsBlockDataDir, "VERSION"), '"1"');
 
   // Write empty files.zip
   // An empty zip file is just the end-of-central-directory record (22 bytes)
   const emptyZip = Buffer.from([
-    0x50,
-    0x4b,
-    0x05,
-    0x06,
-    0x00,
-    0x00,
-    0x00,
-    0x00,
-    0x00,
-    0x00,
-    0x00,
-    0x00,
-    0x00,
-    0x00,
-    0x00,
-    0x00,
-    0x00,
-    0x00,
-    0x00,
-    0x00,
-    0x00,
-    0x00,
+    0x50, 0x4b, 0x05, 0x06, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
   ]);
-  await fs.promises.writeFile(
-    path.join(dsBlockDataDir, "files.zip"),
-    emptyZip,
-  );
+  await fs.promises.writeFile(path.join(dsBlockDataDir, "files.zip"), emptyZip);
 
   // Build inputs (compassResource for install location)
   const inputs: Record<ReadableId, InputShape> = {} as Record<
@@ -362,7 +325,7 @@ export async function generateBackingDatasetBlockResult(
   const apiName = objectTypeBlockData.objectType.apiName!;
   const nonEditOnlyProps = getNonEditOnlyProperties(objectTypeBlockData);
 
-  const columns: BackingDatasetColumn[] = nonEditOnlyProps.map(prop => ({
+  const columns: BackingDatasetColumn[] = nonEditOnlyProps.map((prop) => ({
     name: prop.apiName!,
     type: prop.type,
   }));
@@ -413,9 +376,7 @@ export async function generateBackingDatasetBlockResultForLink(
   const objectTypeA = objectTypes[m2m.objectTypeRidA];
   const objectTypeB = objectTypes[m2m.objectTypeRidB];
   if (!objectTypeA || !objectTypeB) {
-    throw new Error(
-      `Could not find object types for link "${linkApiName}"`,
-    );
+    throw new Error(`Could not find object types for link "${linkApiName}"`);
   }
   const propTypeA = objectTypeA.objectType.propertyTypes[pkRidA]?.type;
   const propTypeB = objectTypeB.objectType.propertyTypes[pkRidB]?.type;

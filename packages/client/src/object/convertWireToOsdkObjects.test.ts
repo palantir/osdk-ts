@@ -65,24 +65,28 @@ describe("convertWireToOsdkObjects", () => {
   });
 
   it("configures properties correctly", async () => {
-    const { data: [employee] } = await client(Employee).fetchPage();
+    const {
+      data: [employee],
+    } = await client(Employee).fetchPage();
 
-    expect(Object.keys(employee).sort()).toEqual([
-      "employeeId",
-      "$title",
-      "fullName",
-      "office",
-      "class",
-      "startDate",
-      "employeeSensor",
-      "employeeStatus",
-      "$apiName",
-      "$objectType",
-      "$primaryKey",
-      "$propertySecurities",
-      "$objectSpecifier",
-      "employeeLocation",
-    ].sort());
+    expect(Object.keys(employee).sort()).toEqual(
+      [
+        "employeeId",
+        "$title",
+        "fullName",
+        "office",
+        "class",
+        "startDate",
+        "employeeSensor",
+        "employeeStatus",
+        "$apiName",
+        "$objectType",
+        "$primaryKey",
+        "$propertySecurities",
+        "$objectSpecifier",
+        "employeeLocation",
+      ].sort(),
+    );
 
     expect(Object.keys(employee.$as)).toEqual([]);
     expect(Object.keys(employee.$link)).toEqual([
@@ -93,16 +97,20 @@ describe("convertWireToOsdkObjects", () => {
     ]);
 
     const asFoo = employee.$as(FooInterface);
-    expect(Object.keys(asFoo.$link)).toEqual([
-      "toBar",
-    ]);
+    expect(Object.keys(asFoo.$link)).toEqual(["toBar"]);
   });
 
   it("stringifies properties on objects and interfaces correctly", async () => {
-    const { data: [employee] } = await client(Employee).fetchPage();
-    const { data: [employee2] } = await client(Employee).where({
-      $and: [{ employeeId: { $gt: 50030 } }, { employeeId: { $lt: 50032 } }],
-    }).fetchPage();
+    const {
+      data: [employee],
+    } = await client(Employee).fetchPage();
+    const {
+      data: [employee2],
+    } = await client(Employee)
+      .where({
+        $and: [{ employeeId: { $gt: 50030 } }, { employeeId: { $lt: 50032 } }],
+      })
+      .fetchPage();
 
     // Should not have $title
     expect(JSON.stringify(employee)).toMatchInlineSnapshot(
@@ -134,27 +142,23 @@ describe("convertWireToOsdkObjects", () => {
   });
 
   it("converts attachments as expected", async () => {
-    const withValues = await client(
-      objectTypeWithAllPropertyTypes,
-    )
+    const withValues = await client(objectTypeWithAllPropertyTypes)
       .where({ id: 1 })
       .fetchPage();
     expect(withValues.data.length).toBeGreaterThanOrEqual(1);
 
     const { attachment, attachmentArray } = withValues.data[0];
 
-    expectTypeOf(attachment).toMatchTypeOf<
-      Attachment | undefined
-    >;
+    expectTypeOf(attachment).toMatchTypeOf<Attachment | undefined>;
     expect(attachment?.rid).toEqual(
       "ri.attachments.main.attachment.86016861-707f-4292-b258-6a7108915a75",
     );
     expect(Array.isArray(attachmentArray)).toBeTruthy();
     expectTypeOf(attachmentArray![0]).toMatchTypeOf<Attachment>;
 
-    const withoutValues = await client(
-      objectTypeWithAllPropertyTypes,
-    ).where({ id: 2 }).fetchPage();
+    const withoutValues = await client(objectTypeWithAllPropertyTypes)
+      .where({ id: 2 })
+      .fetchPage();
 
     const {
       attachment: emptyAttachment,
@@ -165,27 +169,21 @@ describe("convertWireToOsdkObjects", () => {
   });
 
   it("converts media as expected", async () => {
-    const withValues = await client(
-      objectTypeWithAllPropertyTypes,
-    )
+    const withValues = await client(objectTypeWithAllPropertyTypes)
       .where({ id: 1 })
       .fetchPage();
     expect(withValues.data.length).toBeGreaterThanOrEqual(1);
 
     const { mediaReference } = withValues.data[0];
 
-    expectTypeOf(mediaReference).toMatchTypeOf<
-      Media | undefined
-    >;
+    expectTypeOf(mediaReference).toMatchTypeOf<Media | undefined>;
     expect(mediaReference).toBeDefined();
 
-    const withoutValues = await client(
-      objectTypeWithAllPropertyTypes,
-    ).where({ id: 2 }).fetchPage();
+    const withoutValues = await client(objectTypeWithAllPropertyTypes)
+      .where({ id: 2 })
+      .fetchPage();
 
-    const {
-      mediaReference: emptyMedia,
-    } = withoutValues.data[0];
+    const { mediaReference: emptyMedia } = withoutValues.data[0];
     expect(emptyMedia).toBeUndefined();
   });
 
@@ -640,7 +638,7 @@ describe("convertWireToOsdkObjects", () => {
           undefined,
           ["employeeId"],
           "throw",
-        )
+        ),
       ).rejects.toThrowErrorMatchingInlineSnapshot(
         `[Error: Unable to safely convert objects as some non nullable properties are null]`,
       );
@@ -724,7 +722,7 @@ describe("convertWireToOsdkObjects", () => {
           undefined,
           ["employeeId"],
           "throw",
-        )
+        ),
       ).rejects.toThrowErrorMatchingInlineSnapshot(
         `[Error: Unable to safely convert objects as some non nullable properties are null]`,
       );
@@ -808,7 +806,7 @@ describe("convertWireToOsdkObjects", () => {
           undefined,
           undefined,
           "throw",
-        )
+        ),
       ).rejects.toThrowErrorMatchingInlineSnapshot(
         `[Error: Unable to safely convert objects as some non nullable properties are null]`,
       );
@@ -894,7 +892,7 @@ describe("convertWireToOsdkObjects", () => {
           undefined,
           undefined,
           "throw",
-        )
+        ),
       ).rejects.toThrowErrorMatchingInlineSnapshot(
         `[Error: Unable to safely convert objects as some non nullable properties are null]`,
       );
@@ -1012,14 +1010,16 @@ describe("convertWireToOsdkObjects", () => {
   describe("$metadata", () => {
     describe("object", () => {
       it("has an accessible object on $__experimental-metadata", async () => {
-        const { data: [employee] } = await client(Employee).fetchPage();
-        expect(employee.$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata)
-          .toBeDefined();
+        const {
+          data: [employee],
+        } = await client(Employee).fetchPage();
+        expect(
+          employee.$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata,
+        ).toBeDefined();
         expect(
           employee.$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata.ObjectMetadata,
-        )
-          .toMatchInlineSnapshot(
-            `
+        ).toMatchInlineSnapshot(
+          `
             {
               "apiName": "Employee",
               "description": "A full-time or part-time 
@@ -1220,26 +1220,28 @@ describe("convertWireToOsdkObjects", () => {
               },
             }
           `,
-          );
-      });
-
-      it("$experimental_metadata is not enumerable", async () => {
-        const { data: [employee] } = await client(Employee).fetchPage();
-
-        expect(
-          employee.$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata
-            .propertyIsEnumerable(
-              "$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata",
-            ),
-        ).toEqual(
-          false,
         );
       });
 
+      it("$experimental_metadata is not enumerable", async () => {
+        const {
+          data: [employee],
+        } = await client(Employee).fetchPage();
+
+        expect(
+          employee.$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata.propertyIsEnumerable(
+            "$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata",
+          ),
+        ).toEqual(false);
+      });
+
       it("returns frozen metadata", async () => {
-        const { data: [employee] } = await client(Employee).fetchPage();
-        expect(employee.$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata)
-          .toBeDefined();
+        const {
+          data: [employee],
+        } = await client(Employee).fetchPage();
+        expect(
+          employee.$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata,
+        ).toBeDefined();
         expect(
           Object.isFrozen(
             employee.$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata
@@ -1249,30 +1251,34 @@ describe("convertWireToOsdkObjects", () => {
       });
 
       it("returns the same reference", async () => {
-        const { data: [employee] } = await client(Employee).fetchPage();
-        const { data: [employee2] } = await client(Employee).fetchPage();
+        const {
+          data: [employee],
+        } = await client(Employee).fetchPage();
+        const {
+          data: [employee2],
+        } = await client(Employee).fetchPage();
         expect(
           employee.$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata.ObjectMetadata,
-        )
-          .toBe(
-            employee2.$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata
-              .ObjectMetadata,
-          );
+        ).toBe(
+          employee2.$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata.ObjectMetadata,
+        );
       });
     });
 
     describe("interface", () => {
       it("has an accessible interface on $__experimental-metadata", async () => {
-        const { data: [employee] } = await client(Employee).fetchPage();
+        const {
+          data: [employee],
+        } = await client(Employee).fetchPage();
         const objAsFoo = employee.$as(FooInterface);
-        expect(objAsFoo.$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata)
-          .toBeDefined();
+        expect(
+          objAsFoo.$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata,
+        ).toBeDefined();
         expect(
           objAsFoo.$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata
             .InterfaceMetadata,
-        )
-          .toMatchInlineSnapshot(
-            `
+        ).toMatchInlineSnapshot(
+          `
             {
               "apiName": "FooInterface",
               "description": "Interface for Foo",
@@ -1313,25 +1319,27 @@ describe("convertWireToOsdkObjects", () => {
               "type": "interface",
             }
           `,
-          );
-      });
-      it("$experimental_metadata is not enumerable", async () => {
-        const { data: [employee] } = await client(Employee).fetchPage();
-        const objAsFoo = employee.$as(FooInterface);
-        expect(
-          objAsFoo.$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata
-            .propertyIsEnumerable(
-              "$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata",
-            ),
-        ).toEqual(
-          false,
         );
       });
-      it("returns frozen metadata", async () => {
-        const { data: [employee] } = await client(Employee).fetchPage();
+      it("$experimental_metadata is not enumerable", async () => {
+        const {
+          data: [employee],
+        } = await client(Employee).fetchPage();
         const objAsFoo = employee.$as(FooInterface);
-        expect(objAsFoo.$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata)
-          .toBeDefined();
+        expect(
+          objAsFoo.$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata.propertyIsEnumerable(
+            "$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata",
+          ),
+        ).toEqual(false);
+      });
+      it("returns frozen metadata", async () => {
+        const {
+          data: [employee],
+        } = await client(Employee).fetchPage();
+        const objAsFoo = employee.$as(FooInterface);
+        expect(
+          objAsFoo.$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata,
+        ).toBeDefined();
         expect(
           Object.isFrozen(
             objAsFoo.$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata
@@ -1340,18 +1348,21 @@ describe("convertWireToOsdkObjects", () => {
         ).toBe(true);
       });
       it("returns the same reference", async () => {
-        const { data: [employee] } = await client(Employee).fetchPage();
+        const {
+          data: [employee],
+        } = await client(Employee).fetchPage();
         const objAsFoo = employee.$as(FooInterface);
-        const { data: [employee2] } = await client(Employee).fetchPage();
+        const {
+          data: [employee2],
+        } = await client(Employee).fetchPage();
         const objAsFoo2 = employee2.$as(FooInterface);
         expect(
           objAsFoo.$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata
             .InterfaceMetadata,
-        )
-          .toBe(
-            objAsFoo2.$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata
-              .InterfaceMetadata,
-          );
+        ).toBe(
+          objAsFoo2.$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata
+            .InterfaceMetadata,
+        );
       });
     });
   });

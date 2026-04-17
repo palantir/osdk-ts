@@ -41,9 +41,8 @@ function DateRangeFilterInputInner<Q extends ObjectTypeDefinition>({
   filterState,
   onFilterStateChanged,
 }: DateRangeFilterInputProps<Q>): React.ReactElement {
-  const dateRangeState = filterState?.type === "DATE_RANGE"
-    ? filterState
-    : undefined;
+  const dateRangeState =
+    filterState?.type === "DATE_RANGE" ? filterState : undefined;
   const includeNull = filterState?.includeNull;
 
   const handleNullChange = useCallback(
@@ -88,27 +87,24 @@ function DateRangeFilterInputInner<Q extends ObjectTypeDefinition>({
     histogramArgs,
   );
 
-  const valueCountPairs = useMemo<Array<{ value: Date; count: number }>>(
-    () => {
-      if (!aggregateData) return [];
-      const dataArray = aggregateData as Iterable<{
-        $group: Record<string, unknown>;
-        $count?: number;
-      }>;
-      const pairs: Array<{ value: Date; count: number }> = [];
-      for (const item of dataArray) {
-        const rawValue = item.$group[propertyKey];
-        if (rawValue != null) {
-          const date = new Date(String(rawValue));
-          if (!isNaN(date.getTime())) {
-            pairs.push({ value: date, count: item.$count ?? 0 });
-          }
+  const valueCountPairs = useMemo<Array<{ value: Date; count: number }>>(() => {
+    if (!aggregateData) return [];
+    const dataArray = aggregateData as Iterable<{
+      $group: Record<string, unknown>;
+      $count?: number;
+    }>;
+    const pairs: Array<{ value: Date; count: number }> = [];
+    for (const item of dataArray) {
+      const rawValue = item.$group[propertyKey];
+      if (rawValue != null) {
+        const date = new Date(String(rawValue));
+        if (!isNaN(date.getTime())) {
+          pairs.push({ value: date, count: item.$count ?? 0 });
         }
       }
-      return pairs;
-    },
-    [aggregateData, propertyKey],
-  );
+    }
+    return pairs;
+  }, [aggregateData, propertyKey]);
 
   const nullCountAggregateOptions = useMemo(
     () => createNullCountAggregateOptions<Q>(),
@@ -124,10 +120,10 @@ function DateRangeFilterInputInner<Q extends ObjectTypeDefinition>({
     () =>
       objectSet != null
         ? {
-          where: nullWhereClause,
-          aggregate: nullCountAggregateOptions,
-          objectSet,
-        }
+            where: nullWhereClause,
+            aggregate: nullCountAggregateOptions,
+            objectSet,
+          }
         : { where: nullWhereClause, aggregate: nullCountAggregateOptions },
     [nullWhereClause, nullCountAggregateOptions, objectSet],
   );
@@ -136,10 +132,7 @@ function DateRangeFilterInputInner<Q extends ObjectTypeDefinition>({
     data: nullCountData,
     isLoading: nullLoading,
     error: nullError,
-  } = useOsdkAggregation(
-    objectType,
-    nullCountArgs,
-  );
+  } = useOsdkAggregation(objectType, nullCountArgs);
 
   const nullCount = useMemo(() => {
     if (!nullCountData) return 0;

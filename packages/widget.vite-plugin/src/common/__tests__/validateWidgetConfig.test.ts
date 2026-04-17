@@ -83,7 +83,7 @@ describe("validateWidgetConfig", () => {
     };
 
     expect(() => validateWidgetConfig(invalidConfig)).toThrow(
-      "Parameter id \"Invalid-Param\" does not match allowed pattern (must be camelCase)",
+      'Parameter id "Invalid-Param" does not match allowed pattern (must be camelCase)',
     );
   });
 
@@ -145,7 +145,7 @@ describe("validateWidgetConfig", () => {
       },
     };
     expect(() => validateWidgetConfig(invalidConfig)).toThrow(
-      "ObjectSet parameter \"myObjectSet\" must have a valid rid in its metadata, make sure your OSDK was generated with a generator version >=2.6.2",
+      'ObjectSet parameter "myObjectSet" must have a valid rid in its metadata, make sure your OSDK was generated with a generator version >=2.6.2',
     );
   });
 });

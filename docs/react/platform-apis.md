@@ -20,9 +20,10 @@ export function UserProfile({ userId }: { userId: string }) {
   const { user, isLoading, error } = useFoundryUser(userId);
 
   if (error != null) {
-    const errorMessage = error instanceof PalantirApiError
-      ? error.errorDescription
-      : error.message;
+    const errorMessage =
+      error instanceof PalantirApiError
+        ? error.errorDescription
+        : error.message;
 
     return <div>Failed to load user: {errorMessage}</div>;
   }
@@ -73,9 +74,10 @@ export function CurrentUserBadge() {
   const { currentUser, isLoading, error } = useCurrentFoundryUser();
 
   if (error != null) {
-    const errorMessage = error instanceof PalantirApiError
-      ? error.errorDescription
-      : error.message;
+    const errorMessage =
+      error instanceof PalantirApiError
+        ? error.errorDescription
+        : error.message;
 
     return <div>Failed to load current user: {errorMessage}</div>;
   }
@@ -116,9 +118,10 @@ export function UsersList() {
   const { users, isLoading, error } = useFoundryUsersList();
 
   if (error != null) {
-    const errorMessage = error instanceof PalantirApiError
-      ? error.errorDescription
-      : error.message;
+    const errorMessage =
+      error instanceof PalantirApiError
+        ? error.errorDescription
+        : error.message;
 
     return <div>Failed to load user list: {errorMessage}</div>;
   }
@@ -129,9 +132,7 @@ export function UsersList() {
       {users && (
         <ul>
           {users.map((user) => (
-            <li key={user.id}>
-              {user.username}
-            </li>
+            <li key={user.id}>{user.username}</li>
           ))}
         </ul>
       )}
@@ -171,9 +172,10 @@ export function UsersList() {
   });
 
   if (error != null) {
-    const errorMessage = error instanceof PalantirApiError
-      ? error.errorDescription
-      : error.message;
+    const errorMessage =
+      error instanceof PalantirApiError
+        ? error.errorDescription
+        : error.message;
 
     return <div>Failed to load users: {errorMessage}</div>;
   }
@@ -184,7 +186,9 @@ export function UsersList() {
       {users && (
         <>
           <ul>
-            {users.map((user) => <li key={user.id}>{user.username}</li>)}
+            {users.map((user) => (
+              <li key={user.id}>{user.username}</li>
+            ))}
           </ul>
 
           {nextPageToken && (

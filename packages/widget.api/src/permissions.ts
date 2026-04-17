@@ -32,4 +32,4 @@ export const BrowserPermission = {
   ALLOW_POPUPS: "allow-popups",
 } as const;
 export type BrowserPermission =
-  typeof BrowserPermission[keyof typeof BrowserPermission];
+  (typeof BrowserPermission)[keyof typeof BrowserPermission];

@@ -84,15 +84,14 @@ function createObjectTypeBlockData(
   const propertyMapping: Record<string, PropertyTypeMappingInfo> = {};
 
   for (const prop of props) {
-    const rid =
-      `ri.ontology-metadata.temp.property-type.${apiName}.${prop.apiName}`;
+    const rid = `ri.ontology-metadata.temp.property-type.${apiName}.${prop.apiName}`;
     propertyTypes[rid] = makePropertyType(prop.apiName, prop.type, rid);
     propertyMapping[rid] = prop.editOnly
       ? { type: "editOnly", editOnly: {} }
       : {
-        type: "column",
-        column: prop.apiName,
-      };
+          type: "column",
+          column: prop.apiName,
+        };
   }
 
   return {
@@ -143,20 +142,18 @@ function createObjectTypeBlockData(
 }
 
 describe("propertyTypeToSchemaType", () => {
-  it.each(
-    [
-      ["string", "STRING"],
-      ["boolean", "BOOLEAN"],
-      ["integer", "INTEGER"],
-      ["long", "LONG"],
-      ["double", "DOUBLE"],
-      ["float", "FLOAT"],
-      ["byte", "BYTE"],
-      ["short", "SHORT"],
-      ["date", "DATE"],
-      ["timestamp", "TIMESTAMP"],
-    ] as const,
-  )("maps '%s' to '%s'", (input, expected) => {
+  it.each([
+    ["string", "STRING"],
+    ["boolean", "BOOLEAN"],
+    ["integer", "INTEGER"],
+    ["long", "LONG"],
+    ["double", "DOUBLE"],
+    ["float", "FLOAT"],
+    ["byte", "BYTE"],
+    ["short", "SHORT"],
+    ["date", "DATE"],
+    ["timestamp", "TIMESTAMP"],
+  ] as const)("maps '%s' to '%s'", (input, expected) => {
     expect(propertyTypeToSchemaType(input)).toBe(expected);
   });
 
@@ -183,7 +180,7 @@ describe("getNonEditOnlyProperties", () => {
     const blockData = createObjectTypeBlockData();
     const props = getNonEditOnlyProperties(blockData);
     expect(props).toHaveLength(2);
-    expect(props.map(p => p.apiName)).toEqual(["id", "count"]);
+    expect(props.map((p) => p.apiName)).toEqual(["id", "count"]);
   });
 
   it("excludes edit-only properties", () => {
@@ -196,7 +193,7 @@ describe("getNonEditOnlyProperties", () => {
     });
     const props = getNonEditOnlyProperties(blockData);
     expect(props).toHaveLength(2);
-    expect(props.map(p => p.apiName)).toEqual(["id", "count"]);
+    expect(props.map((p) => p.apiName)).toEqual(["id", "count"]);
   });
 });
 
@@ -314,7 +311,7 @@ describe("generateBackingDatasetBlockResult", () => {
       path.join(result.block_data_directory, "VERSION"),
       "utf-8",
     );
-    expect(version).toBe("\"1\"");
+    expect(version).toBe('"1"');
 
     // files.zip
     const zipBuffer = await fs.promises.readFile(
@@ -371,14 +368,14 @@ function createLinkTypeBlockData(
     columnB?: string;
   } = {},
 ): LinkTypeBlockDataV2 {
-  const objectTypeRidA = overrides.objectTypeRidA
-    ?? "ri.ontology-metadata.temp.object-type.ObjA";
-  const objectTypeRidB = overrides.objectTypeRidB
-    ?? "ri.ontology-metadata.temp.object-type.ObjB";
-  const pkRidA = overrides.pkRidA
-    ?? "ri.ontology-metadata.temp.property-type.ObjA.fooId";
-  const pkRidB = overrides.pkRidB
-    ?? "ri.ontology-metadata.temp.property-type.ObjB.barId";
+  const objectTypeRidA =
+    overrides.objectTypeRidA ?? "ri.ontology-metadata.temp.object-type.ObjA";
+  const objectTypeRidB =
+    overrides.objectTypeRidB ?? "ri.ontology-metadata.temp.object-type.ObjB";
+  const pkRidA =
+    overrides.pkRidA ?? "ri.ontology-metadata.temp.property-type.ObjA.fooId";
+  const pkRidB =
+    overrides.pkRidB ?? "ri.ontology-metadata.temp.property-type.ObjB.barId";
   const columnA = overrides.columnA ?? "fooId";
   const columnB = overrides.columnB ?? "barId";
 
@@ -407,21 +404,23 @@ function createLinkTypeBlockData(
       status: { type: "active", active: {} },
       redacted: false,
     },
-    datasources: [{
-      rid: "ri.ontology.main.datasource.test",
-      datasource: {
-        type: "dataset",
-        dataset: {
-          datasetRid: "ri.foundry.main.dataset.link-test",
-          branchId: "main",
-          writebackDatasetRid: undefined,
-          objectTypeAPrimaryKeyMapping: { [pkRidA]: columnA },
-          objectTypeBPrimaryKeyMapping: { [pkRidB]: columnB },
+    datasources: [
+      {
+        rid: "ri.ontology.main.datasource.test",
+        datasource: {
+          type: "dataset",
+          dataset: {
+            datasetRid: "ri.foundry.main.dataset.link-test",
+            branchId: "main",
+            writebackDatasetRid: undefined,
+            objectTypeAPrimaryKeyMapping: { [pkRidA]: columnA },
+            objectTypeBPrimaryKeyMapping: { [pkRidB]: columnB },
+          },
         },
+        editsConfiguration: { onlyAllowPrivilegedEdits: false },
+        redacted: false,
       },
-      editsConfiguration: { onlyAllowPrivilegedEdits: false },
-      redacted: false,
-    }],
+    ],
     entityMetadata: undefined,
   } as unknown as LinkTypeBlockDataV2;
 }
@@ -436,14 +435,14 @@ function createObjectTypesForLink(
     pkTypeB?: Type;
   } = {},
 ): Record<string, ObjectTypeBlockDataV2> {
-  const objectTypeRidA = overrides.objectTypeRidA
-    ?? "ri.ontology-metadata.temp.object-type.ObjA";
-  const objectTypeRidB = overrides.objectTypeRidB
-    ?? "ri.ontology-metadata.temp.object-type.ObjB";
-  const pkRidA = overrides.pkRidA
-    ?? "ri.ontology-metadata.temp.property-type.ObjA.fooId";
-  const pkRidB = overrides.pkRidB
-    ?? "ri.ontology-metadata.temp.property-type.ObjB.barId";
+  const objectTypeRidA =
+    overrides.objectTypeRidA ?? "ri.ontology-metadata.temp.object-type.ObjA";
+  const objectTypeRidB =
+    overrides.objectTypeRidB ?? "ri.ontology-metadata.temp.object-type.ObjB";
+  const pkRidA =
+    overrides.pkRidA ?? "ri.ontology-metadata.temp.property-type.ObjA.fooId";
+  const pkRidB =
+    overrides.pkRidB ?? "ri.ontology-metadata.temp.property-type.ObjB.barId";
   const pkTypeA = overrides.pkTypeA ?? STRING_PROPERTY_TYPE;
   const pkTypeB = overrides.pkTypeB ?? STRING_PROPERTY_TYPE;
 
@@ -560,7 +559,7 @@ describe("generateBackingDatasetBlockResultForLink", () => {
       path.join(result.block_data_directory, "VERSION"),
       "utf-8",
     );
-    expect(version).toBe("\"1\"");
+    expect(version).toBe('"1"');
 
     // files.zip
     const zipBuffer = await fs.promises.readFile(

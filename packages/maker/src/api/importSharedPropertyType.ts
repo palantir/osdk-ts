@@ -23,18 +23,15 @@ import { type SharedPropertyType } from "./properties/SharedPropertyType.js";
 /**
  * Defines a foreign shared property type you want to take as an input to your product. The typeHint field is used for OSDK generation
  */
-export function importSharedPropertyType(
-  opts: {
-    apiName: string;
-    packageName?: string;
-    typeHint: PropertyTypeType;
-    array?: boolean;
-  },
-): SharedPropertyType {
+export function importSharedPropertyType(opts: {
+  apiName: string;
+  packageName?: string;
+  typeHint: PropertyTypeType;
+  array?: boolean;
+}): SharedPropertyType {
   const { apiName, packageName, typeHint, array } = opts;
-  const fullApiName = packageName === undefined
-    ? apiName
-    : `${packageName}.${apiName}`;
+  const fullApiName =
+    packageName === undefined ? apiName : `${packageName}.${apiName}`;
   if (packageName !== undefined) {
     invariant(
       !packageName.endsWith("."),

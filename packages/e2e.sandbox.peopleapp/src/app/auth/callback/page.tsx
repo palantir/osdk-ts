@@ -38,7 +38,7 @@ export function AuthCallbackPage() {
             <h2 className="text-xl font-semibold mb-2">Authentication Error</h2>
             <p className="text-red-700 mb-4">{error}</p>
             <button
-              onClick={() => window.location.href = "/"}
+              onClick={() => (window.location.href = "/")}
               className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
             >
               Return to Home
@@ -51,14 +51,13 @@ export function AuthCallbackPage() {
     // After successful callback processing, redirect to the main page
     // Preserve any state that was passed if available
     const redirectPath = location.state?.from || "/";
-    return <Navigate to={redirectPath} replace />;
+    return <Navigate to={redirectPath} replace={true} />;
   }
 
   return (
     <div className="flex items-center justify-center h-screen">
       <div className="text-center">
-        <div className="w-16 h-16 border-t-4 border-blue-500 border-solid rounded-full animate-spin mx-auto mb-4">
-        </div>
+        <div className="w-16 h-16 border-t-4 border-blue-500 border-solid rounded-full animate-spin mx-auto mb-4" />
         <h2 className="text-xl font-semibold mb-2">
           Authentication in progress...
         </h2>

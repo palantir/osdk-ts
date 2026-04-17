@@ -37,7 +37,7 @@ import { convertSpt } from "./convertSpt.js";
 export function convertOntologyDefinitionToWireBlockData(
   ontology: OntologyDefinition,
 ): OntologyIrOntologyBlockDataV2 {
-  return ({
+  return {
     objectTypes: Object.fromEntries(
       Object.entries(ontology[OntologyEntityTypeEnum.OBJECT_TYPE]).map<
         [string, OntologyIrObjectTypeBlockDataV2]
@@ -46,24 +46,21 @@ export function convertOntologyDefinitionToWireBlockData(
       }),
     ),
     sharedPropertyTypes: Object.fromEntries(
-      Object.entries(
-        ontology[OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE],
-      )
-        .map<[string, OntologyIrSharedPropertyTypeBlockDataV2]>((
-          [apiName, spt],
-        ) => [apiName, { sharedPropertyType: convertSpt(spt) }]),
+      Object.entries(ontology[OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE]).map<
+        [string, OntologyIrSharedPropertyTypeBlockDataV2]
+      >(([apiName, spt]) => [apiName, { sharedPropertyType: convertSpt(spt) }]),
     ),
     interfaceTypes: Object.fromEntries(
-      Object.entries(
-        ontology[OntologyEntityTypeEnum.INTERFACE_TYPE],
-      )
-        .map<[string, OntologyIrInterfaceTypeBlockDataV2]>(
-          ([apiName, interfaceType]) => {
-            return [apiName, {
-              interfaceType: convertInterface(interfaceType),
-            }];
+      Object.entries(ontology[OntologyEntityTypeEnum.INTERFACE_TYPE]).map<
+        [string, OntologyIrInterfaceTypeBlockDataV2]
+      >(([apiName, interfaceType]) => {
+        return [
+          apiName,
+          {
+            interfaceType: convertInterface(interfaceType),
           },
-        ),
+        ];
+      }),
     ),
     linkTypes: Object.fromEntries(
       Object.entries(ontology[OntologyEntityTypeEnum.LINK_TYPE]).map<
@@ -83,20 +80,23 @@ export function convertOntologyDefinitionToWireBlockData(
       actionTypes: Object.fromEntries(
         Object.entries(ontology[OntologyEntityTypeEnum.ACTION_TYPE])
           .filter(([apiName, action]) => action.validation)
-          .map<
-            [string, ActionTypePermissionInformation]
-          >(([apiName, action]) => {
-            return [apiName, {
-              restrictionStatus: {
-                hasRolesApplied: true,
-                ontologyPackageRid: null,
-                publicProject: false,
-              },
-            }];
-          }),
+          .map<[string, ActionTypePermissionInformation]>(
+            ([apiName, action]) => {
+              return [
+                apiName,
+                {
+                  restrictionStatus: {
+                    hasRolesApplied: true,
+                    ontologyPackageRid: null,
+                    publicProject: false,
+                  },
+                },
+              ];
+            },
+          ),
       ),
       linkTypes: {},
       objectTypes: {},
     },
-  });
+  };
 }

@@ -2,4 +2,4 @@ type: feature
 feature:
   description: Adding bulk actions to 1.1
   links:
-  - https://github.com/palantir/osdk-ts/pull/53
+    - https://github.com/palantir/osdk-ts/pull/53

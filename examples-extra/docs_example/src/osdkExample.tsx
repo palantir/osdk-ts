@@ -30,14 +30,25 @@ export async function osdkObjectSetExample() {
 
   // Where clause with ors, ands, nots
   const complexFilteredEmployeeObjectSet = await client(Employee).where({
-    $or: [{ fullName: { $startsWith: "Clooney" }, employeeId: { $gt: 10 } }, {
-      $and: [{ $not: { fullName: { $containsAllTerms: "Pitt Redford" } } }, {
-        $or: [{ fullName: { $containsAnyTerm: "Downey Evans Scott" } }, {
-          fullName: { $containsAllTermsInOrder: "Hemsworth Pratt Tucker" },
-          employeeId: { $gte: 20 },
-        }],
-      }],
-    }],
+    $or: [
+      { fullName: { $startsWith: "Clooney" }, employeeId: { $gt: 10 } },
+      {
+        $and: [
+          { $not: { fullName: { $containsAllTerms: "Pitt Redford" } } },
+          {
+            $or: [
+              { fullName: { $containsAnyTerm: "Downey Evans Scott" } },
+              {
+                fullName: {
+                  $containsAllTermsInOrder: "Hemsworth Pratt Tucker",
+                },
+                employeeId: { $gte: 20 },
+              },
+            ],
+          },
+        ],
+      },
+    ],
   });
 
   // Where clause in
@@ -69,14 +80,32 @@ export async function osdkObjectSetExample() {
       { entrance: { $within: [0, 1, 2, 3] } },
       {
         entrance: {
-          $within: { $polygon: [[[0, 1], [0, 0], [1, 1], [1, 0], [0, 1]]] },
+          $within: {
+            $polygon: [
+              [
+                [0, 1],
+                [0, 0],
+                [1, 1],
+                [1, 0],
+                [0, 1],
+              ],
+            ],
+          },
         },
       },
       {
         entrance: {
           $within: {
             type: "Polygon",
-            coordinates: [[[0, 1], [0, 0], [1, 1], [1, 0], [0, 1]]],
+            coordinates: [
+              [
+                [0, 1],
+                [0, 0],
+                [1, 1],
+                [1, 0],
+                [0, 1],
+              ],
+            ],
           },
         },
       },
@@ -90,14 +119,32 @@ export async function osdkObjectSetExample() {
       { entrance: { $intersects: [0, 1, 2, 3] } },
       {
         entrance: {
-          $intersects: { $polygon: [[[0, 1], [0, 0], [1, 1], [1, 0], [0, 1]]] },
+          $intersects: {
+            $polygon: [
+              [
+                [0, 1],
+                [0, 0],
+                [1, 1],
+                [1, 0],
+                [0, 1],
+              ],
+            ],
+          },
         },
       },
       {
         entrance: {
           $intersects: {
             type: "Polygon",
-            coordinates: [[[0, 1], [0, 0], [1, 1], [1, 0], [0, 1]]],
+            coordinates: [
+              [
+                [0, 1],
+                [0, 0],
+                [1, 1],
+                [1, 0],
+                [0, 1],
+              ],
+            ],
           },
         },
       },
@@ -123,11 +170,8 @@ export async function osdkObjectSetExample() {
   const getPeeps = await client(Employee).pivotTo("peeps").fetchPage();
   console.log(getPeeps.data);
 
-  const filteredEmployees = await simpleFilteredEmployeeObjectSet
-    .fetchPage();
-  const employeeLead = await filteredEmployees
-    .data[0].$link
-    .lead.fetchOne();
+  const filteredEmployees = await simpleFilteredEmployeeObjectSet.fetchPage();
+  const employeeLead = await filteredEmployees.data[0].$link.lead.fetchOne();
   console.log(employeeLead.fullName);
 
   // When fetching a page of employees, you can down select properties you want, and also order the results
@@ -142,17 +186,25 @@ export async function osdkObjectSetExample() {
    */
 
   // When calling an action, you can get back the edits that were made
-  const actionResults = await client(promoteEmployee).applyAction({
-    employeeId: employeeLead.employeeId,
-    newTitle: "Architect",
-    newCompensation: 1000000,
-  }, { $returnEdits: true });
+  const actionResults = await client(promoteEmployee).applyAction(
+    {
+      employeeId: employeeLead.employeeId,
+      newTitle: "Architect",
+      newCompensation: 1000000,
+    },
+    { $returnEdits: true },
+  );
 
-  const actionResults1 = await client(promoteEmployee).batchApplyAction([{
-    employeeId: employeeLead.employeeId,
-    newTitle: "Architect",
-    newCompensation: 1000000,
-  }], { $returnEdits: true });
+  const actionResults1 = await client(promoteEmployee).batchApplyAction(
+    [
+      {
+        employeeId: employeeLead.employeeId,
+        newTitle: "Architect",
+        newCompensation: 1000000,
+      },
+    ],
+    { $returnEdits: true },
+  );
 
   if (actionResults.type === "edits") {
     console.log("Edited employee: ", actionResults.modifiedObjects);
@@ -164,11 +216,14 @@ export async function osdkObjectSetExample() {
 
   // You can also just run validation to make sure the parameters you passed in for valid
   // Note, this action takes a concrete object, but will also accept the PK of the object (e.g. employeeLead.employeeId)
-  const actionValidation = await client(promoteEmployeeObject).applyAction({
-    employee: employeeLead,
-    newTitle: "Architect",
-    newCompensation: 1000000,
-  }, { $validateOnly: true });
+  const actionValidation = await client(promoteEmployeeObject).applyAction(
+    {
+      employee: employeeLead,
+      newTitle: "Architect",
+      newCompensation: 1000000,
+    },
+    { $validateOnly: true },
+  );
 
   // You can get the entire validation result, or validation on a per-param basis
   console.log(actionValidation.result);

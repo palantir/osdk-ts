@@ -119,7 +119,7 @@ export namespace ActionParam {
     export type InterfaceType<T extends InterfaceDefinition> = {
         		$objectType: CompileTimeMetadata<T> extends {
             			implementedBy: infer U
-            		} ? (U extends ReadonlyArray<never> ? string : U extends ReadonlyArray<string> ? U[number] : string) : string
+            		} ? U extends ReadonlyArray<never> ? string : U extends ReadonlyArray<string> ? U[number] : string : string
         		$primaryKey: string | number
         	};
     	// Warning: (ae-forgotten-export) The symbol "NULL_VALUE" needs to be exported by the entry point index.d.ts
@@ -174,10 +174,10 @@ export type AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<
 > = ContainsExactMatchWithNull<AO["$groupBy"]> extends true ? {
     	$groupBy: AO["$groupBy"]
     	$select: UnorderedAggregationClause<Q>
-} : SingleKeyObject<AO["$groupBy"]> extends never ? (AO["$select"] extends UnorderedAggregationClause<Q> ? AggregateOptsThatErrors<Q, AO> : {} extends AO["$groupBy"] ? AggregateOptsThatErrors<Q, AO> : {
+} : SingleKeyObject<AO["$groupBy"]> extends never ? AO["$select"] extends UnorderedAggregationClause<Q> ? AggregateOptsThatErrors<Q, AO> : {} extends AO["$groupBy"] ? AggregateOptsThatErrors<Q, AO> : {
     	$groupBy: AO["$groupBy"]
     	$select: UnorderedAggregationClause<Q>
-}) : AggregateOptsThatErrors<Q, AO>;
+} : AggregateOptsThatErrors<Q, AO>;
 
 // @public (undocumented)
 export type AggregationClause<Q extends ObjectOrInterfaceDefinition> = UnorderedAggregationClause<Q> | OrderedAggregationClause<Q>;
@@ -334,14 +334,14 @@ export type ConvertProps<
 	TO extends ValidToFrom<FROM>,
 	P extends ValidOsdkPropParams<FROM>,
 	OPTIONS extends never | "$rid" | "$allBaseProperties" | "$propertySecurities" = never
-> = TO extends FROM ? P : TO extends ObjectTypeDefinition ? (UnionIfTrue<MapPropNamesToObjectType<FROM, TO, P, OPTIONS>, P extends "$rid" ? true : false, "$rid">) : TO extends InterfaceDefinition ? FROM extends ObjectTypeDefinition ? (UnionIfTrue<MapPropNamesToInterface<FROM, TO, P>, P extends "$rid" ? true : false, "$rid">) : never : never;
+> = TO extends FROM ? P : TO extends ObjectTypeDefinition ? UnionIfTrue<MapPropNamesToObjectType<FROM, TO, P, OPTIONS>, P extends "$rid" ? true : false, "$rid"> : TO extends InterfaceDefinition ? FROM extends ObjectTypeDefinition ? UnionIfTrue<MapPropNamesToInterface<FROM, TO, P>, P extends "$rid" ? true : false, "$rid"> : never : never;
 
 // @public
 export interface DataValueClientToWire {
     	// (undocumented)
-    attachment: string | AttachmentUpload | Blob & {
+    attachment: string | AttachmentUpload | (Blob & {
         		readonly name: string
-        	};
+        	});
     	// (undocumented)
     boolean: boolean;
     	// (undocumented)
@@ -1352,7 +1352,7 @@ export type Osdk<
 	Q extends ObjectOrInterfaceDefinition,
 	OPTIONS extends string = never,
 	P extends PropertyKeys<Q> = PropertyKeys<Q>
-> = IsNever<OPTIONS> extends true ? Osdk.Instance<Q, never, P> : IsAny<OPTIONS> extends true ? Osdk.Instance<Q, never, P> : (IsNever<Exclude<OPTIONS, "$rid">>) extends true ? Osdk.Instance<Q, OPTIONS & "$rid", P> : Osdk.Instance<Q, ("$rid" extends OPTIONS ? "$rid" : never), ExtractPropsKeysFromOldPropsStyle<Q, OPTIONS>>;
+> = IsNever<OPTIONS> extends true ? Osdk.Instance<Q, never, P> : IsAny<OPTIONS> extends true ? Osdk.Instance<Q, never, P> : IsNever<Exclude<OPTIONS, "$rid">> extends true ? Osdk.Instance<Q, OPTIONS & "$rid", P> : Osdk.Instance<Q, "$rid" extends OPTIONS ? "$rid" : never, ExtractPropsKeysFromOldPropsStyle<Q, OPTIONS>>;
 
 // @public (undocumented)
 export namespace Osdk {
@@ -1425,9 +1425,9 @@ export type OsdkObjectLinksObject<O extends ObjectOrInterfaceDefinition> = Objec
 
 // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
 // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
 // Warning: (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
+// Warning: (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
+// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 // Warning: (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
 // Warning: (ae-forgotten-export) The symbol "GetClientPropertyValueFromWire" needs to be exported by the entry point index.d.ts
 //
@@ -1489,7 +1489,7 @@ export interface PropertyDef<
 }
 
 // @public (undocumented)
-export type PropertyKeys<O extends ObjectOrInterfaceDefinition> = (keyof CompileTimeMetadata<O>["properties"]) & string;
+export type PropertyKeys<O extends ObjectOrInterfaceDefinition> = keyof CompileTimeMetadata<O>["properties"] & string;
 
 // @public (undocumented)
 export namespace PropertyKeys {
@@ -1537,11 +1537,11 @@ export type PropertyNumberFormattingRuleType = NumberFormatStandard | NumberForm
 // @public
 export type PropertySecurity = ({
     	type: "propertyMarkings"
-} & PropertyMarkings) | ({
+} & PropertyMarkings) | {
     	type: "unsupportedPolicy"
-}) | ({
+} | {
     	type: "errorComputingSecurity"
-});
+};
 
 // @public (undocumented)
 export interface PropertyTimestampFormattingRule {
@@ -1673,7 +1673,7 @@ export namespace QueryParam {
     export type InterfaceType<T extends InterfaceDefinition> = {
         		$objectType: CompileTimeMetadata<T> extends {
             			implementedBy: infer U
-            		} ? (U extends ReadonlyArray<never> ? string : U extends ReadonlyArray<string> ? U[number] : string) : string
+            		} ? U extends ReadonlyArray<never> ? string : U extends ReadonlyArray<string> ? U[number] : string : string
         		$primaryKey: string | number
         		$apiName?: never
         	} | {
@@ -1982,15 +1982,15 @@ export type WirePropertyTypes = BaseWirePropertyTypes | Record<string, BaseWireP
 
 // Warnings were encountered during analysis:
 //
-// src/Definitions.ts:42:52 - (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
-// src/Definitions.ts:42:52 - (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
-// src/Definitions.ts:42:52 - (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
-// src/Definitions.ts:42:52 - (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
-// src/OsdkObjectFrom.ts:273:49 - (ae-forgotten-export) The symbol "ObjectPropertySecurities" needs to be exported by the entry point index.d.ts
+// src/Definitions.ts:42:69 - (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
+// src/Definitions.ts:42:69 - (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
+// src/Definitions.ts:42:69 - (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
+// src/Definitions.ts:42:69 - (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
+// src/OsdkObjectFrom.ts:271:13 - (ae-forgotten-export) The symbol "ObjectPropertySecurities" needs to be exported by the entry point index.d.ts
 // src/aggregate/AggregateOpts.ts:25:3 - (ae-forgotten-export) The symbol "UnorderedAggregationClause" needs to be exported by the entry point index.d.ts
 // src/aggregate/AggregateOpts.ts:25:3 - (ae-forgotten-export) The symbol "OrderedAggregationClause" needs to be exported by the entry point index.d.ts
-// src/aggregate/AggregationResultsWithGroups.ts:36:5 - (ae-forgotten-export) The symbol "MaybeNullable_2" needs to be exported by the entry point index.d.ts
-// src/aggregate/AggregationResultsWithGroups.ts:36:5 - (ae-forgotten-export) The symbol "OsdkObjectPropertyTypeNotUndefined" needs to be exported by the entry point index.d.ts
+// src/aggregate/AggregationResultsWithGroups.ts:35:3 - (ae-forgotten-export) The symbol "MaybeNullable_2" needs to be exported by the entry point index.d.ts
+// src/aggregate/AggregationResultsWithGroups.ts:35:3 - (ae-forgotten-export) The symbol "OsdkObjectPropertyTypeNotUndefined" needs to be exported by the entry point index.d.ts
 // src/objectSet/ObjectSetLinks.ts:36:3 - (ae-forgotten-export) The symbol "LinkedObjectType" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)

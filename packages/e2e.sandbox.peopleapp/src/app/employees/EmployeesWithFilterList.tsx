@@ -22,7 +22,6 @@ import {
 import "@osdk/react-components/styles.css";
 import { useOsdkObjects } from "@osdk/react/experimental";
 import { useState } from "react";
-
 import { List } from "../../components/List.js";
 import { ListItem } from "../../components/ListItem.js";
 import { Employee } from "../../generatedNoCheck2/index.js";
@@ -111,7 +110,7 @@ export function EmployeesWithFilterList(props: EmployeesWithFilterListProps) {
               {employees.fetchMore && " (more available)"}
             </div>
             <pre style={{ fontSize: 10, marginTop: 8 }}>
-            Where: {JSON.stringify(whereClause, null, 2)}
+              Where: {JSON.stringify(whereClause, null, 2)}
             </pre>
           </div>
 

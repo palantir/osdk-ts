@@ -14,26 +14,27 @@
  * limitations under the License.
  */
 
-import { consola } from "consola";
-
 import { createInternalClientContext, thirdPartyApplications } from "#net";
+import { consola } from "consola";
 import { loadToken } from "../../../../util/token.js";
 import type { VersionSetArgs } from "./VersionSetArgs.js";
 
-export default async function versionSetCommand(
-  { version, application, foundryUrl, token, tokenFile }: VersionSetArgs,
-): Promise<void> {
+export default async function versionSetCommand({
+  version,
+  application,
+  foundryUrl,
+  token,
+  tokenFile,
+}: VersionSetArgs): Promise<void> {
   consola.start(`Setting live version`);
   const loadedToken = await loadToken(token, tokenFile);
   const tokenProvider = () => loadedToken;
   const clientCtx = createInternalClientContext(foundryUrl, tokenProvider);
 
   if (version) {
-    await thirdPartyApplications.deployWebsite(
-      clientCtx,
-      application,
-      { version },
-    );
+    await thirdPartyApplications.deployWebsite(clientCtx, application, {
+      version,
+    });
   }
 
   consola.success(`Set live version to ${version}`);

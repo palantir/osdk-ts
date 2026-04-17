@@ -27,10 +27,12 @@ export const App: React.FC = () => {
       <Container size="1">
         <Flex p="5" direction="column" gap="2">
           <Heading size="4">
-            {parameters.state === "loading"
-                || parameters.state === "not-started"
-              ? <Skeleton>Hello, world!</Skeleton>
-              : headerText}
+            {parameters.state === "loading" ||
+            parameters.state === "not-started" ? (
+              <Skeleton>Hello, world!</Skeleton>
+            ) : (
+              headerText
+            )}
           </Heading>
           {parameters.state === "loaded" && showWarning && (
             <Callout.Root size="1" color="orange" variant="soft">

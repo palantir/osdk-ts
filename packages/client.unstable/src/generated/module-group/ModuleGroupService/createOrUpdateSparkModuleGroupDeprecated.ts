@@ -17,8 +17,7 @@
 import { type ConjureContext, conjureFetch } from "conjure-lite";
 import type {
   ModuleGroupName as _ModuleGroupName,
-  SparkModuleGroupCreationOrUpdateRequest
-    as _SparkModuleGroupCreationOrUpdateRequest,
+  SparkModuleGroupCreationOrUpdateRequest as _SparkModuleGroupCreationOrUpdateRequest,
 } from "../__components.js";
 
 /**

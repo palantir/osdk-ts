@@ -22,10 +22,7 @@ export function LocationInput({
 
   return (
     <div className={`mb-4 ${className}`}>
-      <label
-        htmlFor="location"
-        className="block text-sm font-medium mb-1"
-      >
+      <label htmlFor="location" className="block text-sm font-medium mb-1">
         Location
       </label>
 

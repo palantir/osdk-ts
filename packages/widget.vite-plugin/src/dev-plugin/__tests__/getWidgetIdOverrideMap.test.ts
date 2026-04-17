@@ -42,12 +42,14 @@ describe("getWidgetIdOverrideMap", () => {
   });
 
   test("localhost dev server URLs", async () => {
-    vi.spyOn(extractInjectedScriptsModule, "extractInjectedScripts")
-      .mockResolvedValue({
-        // Extracted scripts sources start with the base path
-        scriptSources: ["/@vite/client"],
-        inlineScripts: [],
-      });
+    vi.spyOn(
+      extractInjectedScriptsModule,
+      "extractInjectedScripts",
+    ).mockResolvedValue({
+      // Extracted scripts sources start with the base path
+      scriptSources: ["/@vite/client"],
+      inlineScripts: [],
+    });
     const baseHref = `http://localhost:5173/`;
 
     const result = await getWidgetIdOverrideMap(
@@ -68,12 +70,14 @@ describe("getWidgetIdOverrideMap", () => {
 
   test("remote server URLs", async () => {
     // Representative values when running dev mode in Code Workspaces mode
-    vi.spyOn(extractInjectedScriptsModule, "extractInjectedScripts")
-      .mockResolvedValue({
-        // Extracted scripts sources start with the base path
-        scriptSources: [`/proxy/path/@vite/client`],
-        inlineScripts: [],
-      });
+    vi.spyOn(
+      extractInjectedScriptsModule,
+      "extractInjectedScripts",
+    ).mockResolvedValue({
+      // Extracted scripts sources start with the base path
+      scriptSources: [`/proxy/path/@vite/client`],
+      inlineScripts: [],
+    });
     const baseHref = `https://worksapce.stack.com/proxy/path/`;
 
     const result = await getWidgetIdOverrideMap(

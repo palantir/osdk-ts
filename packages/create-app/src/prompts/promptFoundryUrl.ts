@@ -17,19 +17,19 @@
 import { consola } from "../consola.js";
 import { italic } from "../highlight.js";
 
-export async function promptFoundryUrl(
-  { foundryUrl }: { foundryUrl?: string },
-): Promise<string> {
+export async function promptFoundryUrl({
+  foundryUrl,
+}: {
+  foundryUrl?: string;
+}): Promise<string> {
   while (foundryUrl == null || !foundryUrl.startsWith("https://")) {
     if (foundryUrl != null) {
       consola.fail("Please enter a valid Foundry URL");
     }
     foundryUrl = await consola.prompt(
-      `Enter the URL for your Foundry stack:\n${
-        italic(
-          "(Example: https://example.palantirfoundry.com)",
-        )
-      }`,
+      `Enter the URL for your Foundry stack:\n${italic(
+        "(Example: https://example.palantirfoundry.com)",
+      )}`,
       { type: "text" },
     );
   }

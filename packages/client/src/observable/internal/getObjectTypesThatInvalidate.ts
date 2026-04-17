@@ -49,22 +49,25 @@ export async function getObjectTypesThatInvalidate(
 }> {
   const counts: Record<string, number> = {};
 
-  const resultType = await calcObjectSet(
-    objectSet,
-    { counts, methodInput: undefined, ontologyProvider: mc.ontologyProvider },
-  );
+  const resultType = await calcObjectSet(objectSet, {
+    counts,
+    methodInput: undefined,
+    ontologyProvider: mc.ontologyProvider,
+  });
 
   // we need to uncount the final result type
   const tweaked = {
     ...counts,
-    [resultType.apiName]: (counts[resultType.apiName]) - 1,
+    [resultType.apiName]: counts[resultType.apiName] - 1,
   };
 
   return {
     resultType,
     counts,
     invalidationSet: new Set(
-      Object.entries(tweaked).filter(([, v]) => v > 0).map(([k]) => k),
+      Object.entries(tweaked)
+        .filter(([, v]) => v > 0)
+        .map(([k]) => k),
     ),
   };
 }
@@ -118,9 +121,9 @@ async function calcObjectSet(
 
       // if we got here then we did not find the link and something is wrong.
       throw new Error(
-        `Could not find link ${os.interfaceLink} in object set ${
-          JSON.stringify(os.objectSet)
-        }`,
+        `Could not find link ${os.interfaceLink} in object set ${JSON.stringify(
+          os.objectSet,
+        )}`,
       );
     }
 
@@ -136,9 +139,9 @@ async function calcObjectSet(
 
       // if we got here then we did not find the link and something is wrong.
       throw new Error(
-        `Could not find link ${os.link} in object set ${
-          JSON.stringify(os.objectSet)
-        }`,
+        `Could not find link ${os.link} in object set ${JSON.stringify(
+          os.objectSet,
+        )}`,
       );
     }
 
@@ -176,19 +179,15 @@ async function calcObjectSet(
       }
 
       if (returnTypes.length === 0) {
-        throw new Error(
-          `Could not find any context types for set operation`,
-        );
+        throw new Error(`Could not find any context types for set operation`);
       }
 
-      const allMatch = returnTypes.every(({ r }) =>
-        r.apiName === returnTypes[0].r.apiName
+      const allMatch = returnTypes.every(
+        ({ r }) => r.apiName === returnTypes[0].r.apiName,
       );
 
       if (!allMatch) {
-        throw new Error(
-          `Incompatible context types found for set operation`,
-        );
+        throw new Error(`Incompatible context types found for set operation`);
       }
 
       return returnTypes[0].r;
@@ -206,13 +205,13 @@ async function calcObjectSet(
 
       // we only call this to get the context type, so we give it a new ctx
       // otherwise it will double count everything
-      return (await calcObjectSet(ctx.methodInput, { ...ctx, counts: {} }));
+      return await calcObjectSet(ctx.methodInput, { ...ctx, counts: {} });
 
     case "asType":
-      // we don't currently support this anywhere.
+    // we don't currently support this anywhere.
     case "asBaseObjectTypes":
-      // We don't currently support this because it could return multiple object types conceptually
-      // internally, we actually use it this way but we shouldn't be finding that object sets.
+    // We don't currently support this because it could return multiple object types conceptually
+    // internally, we actually use it this way but we shouldn't be finding that object sets.
     case "reference":
     // reference is particularly problematic because we cannot answer the question about
     // which types without loading the object set definition (and it can change).
@@ -224,9 +223,7 @@ async function calcObjectSet(
       return calcObjectSet(os.objectSet, ctx);
 
     default:
-      throw new Error(
-        `Unhandled ObjectSet type ${(os as any).type}`,
-      );
+      throw new Error(`Unhandled ObjectSet type ${(os as any).type}`);
   }
 }
 
@@ -251,7 +248,7 @@ async function calcRdp(
     case "add":
     case "multiply":
       return await Promise.all(
-        dpd.properties.map(innerDpd => calcRdp(innerDpd, ctx)),
+        dpd.properties.map((innerDpd) => calcRdp(innerDpd, ctx)),
       );
 
     // Operates on 2 ordered properties

@@ -6,7 +6,7 @@ This repository is a monorepo for the Palantir OSDK (Ontology SDK) TypeScript pa
 
 ## Changeset Files
 
-When reviewing or creating changeset files (`.changeset/*.md`), **do not nitpick about quoting of package names or empty changesets**. 
+When reviewing or creating changeset files (`.changeset/*.md`), **do not nitpick about quoting of package names or empty changesets**.
 
 Changeset files use YAML front matter to specify which packages are affected by changes. Package names may appear with or without quotes, and both formats are acceptable:
 

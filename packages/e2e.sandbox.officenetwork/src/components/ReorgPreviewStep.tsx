@@ -31,8 +31,9 @@ export function ReorgPreviewStep({
 
   React.useEffect(() => {
     if (
-      config.algorithm !== "manual" && changes.size === 0
-      && selectedEmployees.length > 0
+      config.algorithm !== "manual" &&
+      changes.size === 0 &&
+      selectedEmployees.length > 0
     ) {
       const generatedChanges = generateChanges(
         selectedEmployees,
@@ -58,8 +59,8 @@ export function ReorgPreviewStep({
 
     changesWithEmployees.forEach(({ employee, change }) => {
       if (
-        change?.targetOfficeId
-        && change.targetOfficeId !== employee.primaryOfficeId
+        change?.targetOfficeId &&
+        change.targetOfficeId !== employee.primaryOfficeId
       ) {
         totalMoves++;
         if (employee.primaryOfficeId) {
@@ -131,15 +132,18 @@ export function ReorgPreviewStep({
               const toOffice = change?.targetOfficeId
                 ? officeMap.get(change.targetOfficeId)
                 : null;
-              const hasOfficeChange = change?.targetOfficeId
-                && change.targetOfficeId !== employee.primaryOfficeId;
+              const hasOfficeChange =
+                change?.targetOfficeId &&
+                change.targetOfficeId !== employee.primaryOfficeId;
 
               return (
                 <tr
                   key={employee.employeeNumber}
-                  className={hasOfficeChange
-                    ? "bg-[var(--officenetwork-status-warning)]/5"
-                    : ""}
+                  className={
+                    hasOfficeChange
+                      ? "bg-[var(--officenetwork-status-warning)]/5"
+                      : ""
+                  }
                 >
                   <td className="px-4 py-2">
                     <div className="font-medium text-[var(--officenetwork-text-primary)]">
@@ -151,9 +155,11 @@ export function ReorgPreviewStep({
                   </td>
                   <td className="px-4 py-2">
                     <span
-                      className={hasOfficeChange
-                        ? "text-[var(--officenetwork-status-error)]"
-                        : "text-[var(--officenetwork-text-secondary)]"}
+                      className={
+                        hasOfficeChange
+                          ? "text-[var(--officenetwork-status-error)]"
+                          : "text-[var(--officenetwork-text-secondary)]"
+                      }
                     >
                       {fromOffice?.name ?? "—"}
                     </span>
@@ -162,38 +168,42 @@ export function ReorgPreviewStep({
                     {hasOfficeChange ? "→" : "—"}
                   </td>
                   <td className="px-4 py-2">
-                    {config.algorithm === "manual"
-                      ? (
-                        <select
-                          value={change?.targetOfficeId
-                            ?? employee.primaryOfficeId ?? ""}
-                          onChange={(e) =>
-                            onSetChange(employee.employeeNumber, {
-                              ...change,
-                              targetOfficeId: e.target.value || undefined,
-                            })}
-                          className="w-full px-2 py-1 text-sm bg-[var(--officenetwork-bg-elevated)] border border-[var(--officenetwork-border-default)] rounded text-[var(--officenetwork-text-primary)]"
-                        >
-                          <option value="">No change</option>
-                          {offices.map((office) => (
-                            <option
-                              key={office.primaryKey_}
-                              value={office.primaryKey_}
-                            >
-                              {office.name}
-                            </option>
-                          ))}
-                        </select>
-                      )
-                      : (
-                        <span
-                          className={hasOfficeChange
+                    {config.algorithm === "manual" ? (
+                      <select
+                        value={
+                          change?.targetOfficeId ??
+                          employee.primaryOfficeId ??
+                          ""
+                        }
+                        onChange={(e) =>
+                          onSetChange(employee.employeeNumber, {
+                            ...change,
+                            targetOfficeId: e.target.value || undefined,
+                          })
+                        }
+                        className="w-full px-2 py-1 text-sm bg-[var(--officenetwork-bg-elevated)] border border-[var(--officenetwork-border-default)] rounded text-[var(--officenetwork-text-primary)]"
+                      >
+                        <option value="">No change</option>
+                        {offices.map((office) => (
+                          <option
+                            key={office.primaryKey_}
+                            value={office.primaryKey_}
+                          >
+                            {office.name}
+                          </option>
+                        ))}
+                      </select>
+                    ) : (
+                      <span
+                        className={
+                          hasOfficeChange
                             ? "text-[var(--officenetwork-status-ready)]"
-                            : "text-[var(--officenetwork-text-secondary)]"}
-                        >
-                          {toOffice?.name ?? fromOffice?.name ?? "—"}
-                        </span>
-                      )}
+                            : "text-[var(--officenetwork-text-secondary)]"
+                        }
+                      >
+                        {toOffice?.name ?? fromOffice?.name ?? "—"}
+                      </span>
+                    )}
                   </td>
                 </tr>
               );

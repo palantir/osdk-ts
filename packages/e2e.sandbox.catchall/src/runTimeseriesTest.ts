@@ -31,12 +31,10 @@ export async function runTimeseriesTest(): Promise<void> {
 
   const result2 = await client(DherlihyComplexObject).fetchOne("b");
 
-  for await (
-    const point of result2.seriesId?.asyncIterPoints({
-      $before: 2,
-      $unit: "year",
-    })!
-  ) {
+  for await (const point of result2.seriesId?.asyncIterPoints({
+    $before: 2,
+    $unit: "year",
+  })!) {
     console.log(point);
   }
 

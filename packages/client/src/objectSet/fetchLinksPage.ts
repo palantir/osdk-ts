@@ -42,9 +42,9 @@ export const fetchLinksPage = async <
     throw new Error("Interface object sets are not supported yet.");
   }
 
-  void client.ontologyProvider.getObjectDefinition(objectType.apiName).catch(
-    () => {},
-  );
+  void client.ontologyProvider
+    .getObjectDefinition(objectType.apiName)
+    .catch(() => {});
 
   const result = await OntologyObjectSets.loadLinks(
     client,
@@ -73,7 +73,7 @@ export const remapLinksPage = <
         source: remapObjectLocator(sourceObject!),
         target: remapObjectLocator(targetObject!),
         linkType: linkType! as LINK_TYPES,
-      }))
+      })),
     ),
   };
 };

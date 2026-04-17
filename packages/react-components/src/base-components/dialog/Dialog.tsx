@@ -47,12 +47,7 @@ export function Dialog({
     >
       <BaseUIDialog.Portal>
         <BaseUIDialog.Backdrop className={styles.backdrop} />
-        <BaseUIDialog.Popup
-          className={classnames(
-            styles.popup,
-            className,
-          )}
-        >
+        <BaseUIDialog.Popup className={classnames(styles.popup, className)}>
           <div className={styles.header}>
             <BaseUIDialog.Title className={styles.title}>
               {title}

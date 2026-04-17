@@ -62,11 +62,7 @@ describe("useFilterListState", () => {
 
   it("initializes filter states from filterState for property filters", () => {
     const initialState = createExactMatchState([]);
-    const nameDef = createPropertyFilterDef(
-      "name",
-      "LISTOGRAM",
-      initialState,
-    );
+    const nameDef = createPropertyFilterDef("name", "LISTOGRAM", initialState);
     const props = createProps({
       filterDefinitions: [nameDef],
     });
@@ -325,10 +321,7 @@ describe("useFilterListState", () => {
       const activeKey = getFilterKey(activeDef);
 
       act(() => {
-        result.current.setFilterState(
-          nameKey,
-          createExactMatchState(["John"]),
-        );
+        result.current.setFilterState(nameKey, createExactMatchState(["John"]));
         result.current.setFilterState(activeKey, createToggleState(true));
       });
       expect(result.current.activeFilterCount).toBe(2);

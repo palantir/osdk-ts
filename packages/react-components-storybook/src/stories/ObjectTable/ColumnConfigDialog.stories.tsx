@@ -94,8 +94,7 @@ export const Default: Story = {
   parameters: {
     docs: {
       source: {
-        code:
-          `import { ColumnConfigDialog } from "@osdk/react-components/experimental";
+        code: `import { ColumnConfigDialog } from "@osdk/react-components/experimental";
 
 const [isOpen, setIsOpen] = useState(false);
 

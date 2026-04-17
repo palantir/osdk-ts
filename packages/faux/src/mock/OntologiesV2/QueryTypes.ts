@@ -21,15 +21,7 @@ import { handleOpenApiCall } from "../../handlers/util/handleOpenApiCall.js";
 export const get: CallFactory<
   "ontologyApiName" | "queryTypeApiName",
   typeof QueryTypes.get
-> = handleOpenApiCall(
-  QueryTypes.get,
-  ["ontologyApiName", "queryTypeApiName"],
-);
+> = handleOpenApiCall(QueryTypes.get, ["ontologyApiName", "queryTypeApiName"]);
 
-export const list: CallFactory<
-  "ontologyApiName",
-  typeof QueryTypes.list
-> = handleOpenApiCall(
-  QueryTypes.list,
-  ["ontologyApiName"],
-);
+export const list: CallFactory<"ontologyApiName", typeof QueryTypes.list> =
+  handleOpenApiCall(QueryTypes.list, ["ontologyApiName"]);

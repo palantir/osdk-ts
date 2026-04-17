@@ -42,14 +42,9 @@ export function createCompositeExternalStore(
 } {
   // Mutable snapshot array — replaced (never mutated in place) on each
   // observer callback so that useSyncExternalStore sees a new reference.
-  let current: Array<Snapshot<FunctionPayload>> = queries.map(
-    () => undefined,
-  );
+  let current: Array<Snapshot<FunctionPayload>> = queries.map(() => undefined);
 
-  const updateSlot = (
-    index: number,
-    value: Snapshot<FunctionPayload>,
-  ) => {
+  const updateSlot = (index: number, value: Snapshot<FunctionPayload>) => {
     const next = [...current];
     next[index] = value;
     current = next;
@@ -77,18 +72,14 @@ export function createCompositeExternalStore(
           updateSlot(index, payload as Snapshot<FunctionPayload>);
           notifyUpdate();
 
-          if (
-            payload?.status === "loaded" || payload?.status === "error"
-          ) {
+          if (payload?.status === "loaded" || payload?.status === "error") {
             onSettled();
           }
         },
         error: (error: unknown) => {
           updateSlot(index, {
             ...(current[index] ?? {}),
-            error: error instanceof Error
-              ? error
-              : new Error(String(error)),
+            error: error instanceof Error ? error : new Error(String(error)),
           } as Snapshot<FunctionPayload>);
           notifyUpdate();
           onSettled();
@@ -100,8 +91,8 @@ export function createCompositeExternalStore(
 
   function getEnabledIndices(): number[] {
     return queries
-      .map((q, i) => q.options?.enabled !== false ? i : -1)
-      .filter(i => i !== -1);
+      .map((q, i) => (q.options?.enabled !== false ? i : -1))
+      .filter((i) => i !== -1);
   }
 
   function subscribe(notifyUpdate: () => void): () => void {
@@ -112,9 +103,10 @@ export function createCompositeExternalStore(
       if (queueIdx >= enabledIndices.length) return;
 
       const index = enabledIndices[queueIdx];
-      const onSettled = maxConcurrent != null
-        ? () => subscribeAt(queueIdx + maxConcurrent)
-        : () => {};
+      const onSettled =
+        maxConcurrent != null
+          ? () => subscribeAt(queueIdx + maxConcurrent)
+          : () => {};
 
       subscriptions.push(
         observeQuery(queries[index], index, notifyUpdate, onSettled),
@@ -124,15 +116,16 @@ export function createCompositeExternalStore(
     // When staggering, only start the first `maxConcurrent` queries.
     // Each calls subscribeAt(queueIdx + maxConcurrent) when it settles,
     // creating a sliding window of concurrent subscriptions.
-    const initialCount = maxConcurrent != null
-      ? Math.min(maxConcurrent, enabledIndices.length)
-      : enabledIndices.length;
+    const initialCount =
+      maxConcurrent != null
+        ? Math.min(maxConcurrent, enabledIndices.length)
+        : enabledIndices.length;
 
     for (let i = 0; i < initialCount; i++) {
       subscribeAt(i);
     }
 
-    return () => subscriptions.forEach(sub => sub.unsubscribe());
+    return () => subscriptions.forEach((sub) => sub.unsubscribe());
   }
 
   return {
@@ -144,6 +137,6 @@ export function createCompositeExternalStore(
 const EMPTY_SNAPSHOTS: Array<Snapshot<FunctionPayload>> = [];
 
 export const EMPTY_STORE = {
-  subscribe: (): () => void => () => {},
+  subscribe: (): (() => void) => () => {},
   getSnapshot: (): Snapshot<FunctionPayload>[] => EMPTY_SNAPSHOTS,
 } as const;

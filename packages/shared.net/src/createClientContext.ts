@@ -33,9 +33,7 @@ export function createClientContext(
   return createSharedClientContext(
     baseUrl,
     async () => await tokenProvider(),
-    [
-      userAgent,
-    ].filter(x => x && x?.length > 0).join(" "),
+    [userAgent].filter((x) => x && x?.length > 0).join(" "),
     fetchFn,
   );
 }

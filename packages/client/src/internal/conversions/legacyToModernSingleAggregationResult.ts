@@ -49,7 +49,8 @@ export function legacyToModernSingleAggregationResult<
       continue;
     }
     const [property, metricType] = name.split(".");
-    if (result[property]) { // guard against an unknown metric name
+    if (result[property]) {
+      // guard against an unknown metric name
       result[property][metricType] = value;
     }
   }

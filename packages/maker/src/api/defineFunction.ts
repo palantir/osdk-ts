@@ -23,7 +23,7 @@ export interface FunctionIrBlockData {
 }
 
 // Type definitions for optional function discovery dependencies
-type IFunctionDiscoverer = new(
+type IFunctionDiscoverer = new (
   program: ts.Program,
   entryPointPath: string,
   fullFilePath: string,
@@ -111,8 +111,8 @@ export async function generateFunctionsIr(
 
   // Normalize to forward slashes to match TypeScript's internal path format
   const normalizedRootDir = rootDir.replace(/\\/g, "/");
-  const tsConfigPath = configPath?.replace(/\\/g, "/")
-    ?? (normalizedRootDir + "/tsconfig.json");
+  const tsConfigPath =
+    configPath?.replace(/\\/g, "/") ?? normalizedRootDir + "/tsconfig.json";
   const program = OntologyIrToFullMetadataConverter.createProgram(
     tsConfigPath,
     normalizedRootDir,

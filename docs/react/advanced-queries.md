@@ -8,7 +8,7 @@ This guide covers advanced querying patterns including useObjectSet, derived pro
 
 ## useObjectSet
 
-*Experimental - import from `@osdk/react/experimental`*
+_Experimental - import from `@osdk/react/experimental`_
 
 Advanced querying with set operations, derived properties, and link traversal.
 
@@ -17,9 +17,11 @@ Advanced querying with set operations, derived properties, and link traversal.
 Both hooks support where, orderBy, pagination, withProperties, pivotTo, autoFetchMore, and streamUpdates. Note that `pivotTo` and `streamUpdates` cannot be combined, see the note below.
 
 **Use useOsdkObjects when:**
+
 - Passing an ObjectType or Interface directly (`Todo`)
 
 **Use useObjectSet when:**
+
 - Starting from an ObjectSet instance (`$(Todo)`)
 - Need set operations (`union`, `intersect`, `subtract`) with other ObjectSets
 
@@ -70,10 +72,8 @@ function TodosWithSetOperations() {
 
   return (
     <div>
-      {data?.map(todo => (
-        <div key={todo.$primaryKey}>
-          {todo.title}
-        </div>
+      {data?.map((todo) => (
+        <div key={todo.$primaryKey}>{todo.title}</div>
       ))}
     </div>
   );
@@ -110,7 +110,10 @@ Find objects that exist in all sets:
 import { $, Employee } from "@my/osdk";
 import { useObjectSet } from "@osdk/react/experimental";
 
-function SharedProjects({ employee1, employee2 }: {
+function SharedProjects({
+  employee1,
+  employee2,
+}: {
   employee1: Employee.OsdkInstance;
   employee2: Employee.OsdkInstance;
 }) {
@@ -125,7 +128,7 @@ function SharedProjects({ employee1, employee2 }: {
   return (
     <div>
       <h3>Shared Projects</h3>
-      {data?.map(project => (
+      {data?.map((project) => (
         <div key={project.$primaryKey}>{project.name}</div>
       ))}
     </div>
@@ -165,8 +168,8 @@ function ComplexTodoQuery() {
   const completedTodos = $(Todo).where({ isComplete: true });
 
   const { data } = useObjectSet(highPriorityTodos, {
-    union: [urgentTodos],        // High priority OR urgent
-    subtract: [completedTodos],  // But not completed
+    union: [urgentTodos], // High priority OR urgent
+    subtract: [completedTodos], // But not completed
   });
 
   return <div>High priority or urgent (but not completed): {data?.length}</div>;
@@ -181,18 +184,18 @@ Navigate to linked objects:
 import { $, Employee } from "@my/osdk";
 import { useObjectSet } from "@osdk/react/experimental";
 
-function EmployeeDepartments({ employee }: { employee: Employee.OsdkInstance }) {
+function EmployeeDepartments({
+  employee,
+}: {
+  employee: Employee.OsdkInstance;
+}) {
   const employeeSet = $(Employee).where({ id: employee.id });
 
   const { data } = useObjectSet(employeeSet, {
     pivotTo: "department",
   });
 
-  return (
-    <div>
-      Departments: {data?.map(dept => dept.name).join(", ")}
-    </div>
-  );
+  return <div>Departments: {data?.map((dept) => dept.name).join(", ")}</div>;
 }
 ```
 
@@ -204,8 +207,8 @@ import { useObjectSet } from "@osdk/react/experimental";
 
 const { data, isLoading } = useObjectSet($(Todo), {
   where: { isComplete: false },
-  autoFetchMore: 200,     // Fetch at least 200 items
-  streamUpdates: true,    // Real-time WebSocket updates
+  autoFetchMore: 200, // Fetch at least 200 items
+  streamUpdates: true, // Real-time WebSocket updates
 });
 ```
 
@@ -242,7 +245,7 @@ still fetch data normally but won't receive real-time updates.
 
 ## Derived Properties
 
-*Available in both useOsdkObjects and useObjectSet*
+_Available in both useOsdkObjects and useObjectSet_
 
 Add computed properties calculated server-side using the builder pattern.
 
@@ -288,15 +291,11 @@ const { data } = useOsdkObjects(Employee, {
   withProperties: {
     // Chained traversal
     departmentSize: (base: DerivedProperty.Builder<Employee, false>) =>
-      base.pivotTo("manager")
-        .pivotTo("reports")
-        .aggregate("$count"),
+      base.pivotTo("manager").pivotTo("reports").aggregate("$count"),
 
     // Aggregate a specific property
     avgReportSalary: (base: DerivedProperty.Builder<Employee, false>) =>
-      base.pivotTo("reports")
-        .selectProperty("salary")
-        .aggregate("$avg"),
+      base.pivotTo("reports").selectProperty("salary").aggregate("$avg"),
   },
 });
 ```
@@ -324,7 +323,7 @@ const { data } = useOsdkObjects(Employee, {
 
 ## useOsdkFunction
 
-*Experimental - import from `@osdk/react/experimental`*
+_Experimental - import from `@osdk/react/experimental`_
 
 Execute and observe functions with request deduplication and configurable dependency tracking for automatic refetching.
 
@@ -466,7 +465,7 @@ function ConditionalReport({ employeeId }: { employeeId: string }) {
 
 ## useOsdkAggregation
 
-*Experimental - import from `@osdk/react/experimental`*
+_Experimental - import from `@osdk/react/experimental`_
 
 Server-side grouping and aggregation.
 
@@ -574,6 +573,7 @@ function HighPriorityStats() {
 The `$select` object uses a special key format where each key is a metric and each value is an ordering directive (`"unordered"`, `"asc"`, or `"desc"`). When using `$groupBy`, the ordering determines the order results are returned.
 
 **Key formats:**
+
 - `$count` - Count of objects
 - `"propertyName:sum"` - Sum of a numeric property
 - `"propertyName:avg"` - Average of a numeric property
@@ -602,7 +602,7 @@ The `$select` object uses a special key format where each key is a metric and ea
 
 ## useOsdkMetadata
 
-*Stable - import from `@osdk/react`*
+_Stable - import from `@osdk/react`_
 
 Fetch metadata about object types or interfaces.
 

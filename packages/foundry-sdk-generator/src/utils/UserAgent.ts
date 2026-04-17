@@ -14,5 +14,4 @@
  * limitations under the License.
  */
 
-export const USER_AGENT: string =
-  `typescript-sdk-generator/${process.env.PACKAGE_VERSION}`;
+export const USER_AGENT: string = `typescript-sdk-generator/${process.env.PACKAGE_VERSION}`;

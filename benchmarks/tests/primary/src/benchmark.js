@@ -78,7 +78,10 @@ async function main() {
       ["time", "heapUsed", "rss"].map((key) => [
         key,
         {
-          std: std(results.map((x) => x[key]), "uncorrected"),
+          std: std(
+            results.map((x) => x[key]),
+            "uncorrected",
+          ),
           mean: mean(results.map((x) => x[key])),
           min: Math.min(...results.map((x) => x[key])),
           max: Math.max(...results.map((x) => x[key])),
@@ -128,9 +131,10 @@ async function runTest(test) {
       /** @type {import("./types.js").Result} */
       const response = /** @type any */ (await subprocess.getOneMessage());
       invariant(
-        response.type === "result" && "time" in response
-          && "heapUsed" in response
-          && "rss" in response,
+        response.type === "result" &&
+          "time" in response &&
+          "heapUsed" in response &&
+          "rss" in response,
       );
       return response;
     } catch (e) {
@@ -152,7 +156,7 @@ main();
 async function createSidecar(test) {
   const sidecarPath = path.join(import.meta.dirname, "sidecars", test);
 
-  const createSidecar = await fileExists(sidecarPath)
+  const createSidecar = (await fileExists(sidecarPath))
     ? (await import(sidecarPath)).default
     : undefined;
 

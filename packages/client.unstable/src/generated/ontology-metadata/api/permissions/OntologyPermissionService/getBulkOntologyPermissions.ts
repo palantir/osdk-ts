@@ -16,10 +16,8 @@
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
 import type {
-  GetBulkOntologyPermissionsRequest
-    as _api_permissions_GetBulkOntologyPermissionsRequest,
-  GetBulkOntologyPermissionsResponse
-    as _api_permissions_GetBulkOntologyPermissionsResponse,
+  GetBulkOntologyPermissionsRequest as _api_permissions_GetBulkOntologyPermissionsRequest,
+  GetBulkOntologyPermissionsResponse as _api_permissions_GetBulkOntologyPermissionsResponse,
 } from "../__components.js";
 
 /**

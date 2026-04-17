@@ -69,25 +69,27 @@ export class FunctionsHelper extends AbstractHelper<
       canonicalParams,
     );
 
-    return this.store.queries.get(functionCacheKey, () =>
-      new FunctionQuery(
-        this.store,
-        this.store.subjects.get(functionCacheKey),
-        queryDef,
-        params,
-        functionCacheKey,
-        observeOpts,
-        objectSetTypesPromise,
-      ));
+    return this.store.queries.get(
+      functionCacheKey,
+      () =>
+        new FunctionQuery(
+          this.store,
+          this.store.subjects.get(functionCacheKey),
+          queryDef,
+          params,
+          functionCacheKey,
+          observeOpts,
+          objectSetTypesPromise,
+        ),
+    );
   }
 
   async invalidateFunction(
     apiName: string | QueryDefinition<unknown>,
     params?: FunctionParams,
   ): Promise<void> {
-    const functionApiName = typeof apiName === "string"
-      ? apiName
-      : apiName.apiName;
+    const functionApiName =
+      typeof apiName === "string" ? apiName : apiName.apiName;
 
     let canonicalParams: Canonical<CanonicalFunctionParams> | undefined;
     if (params !== undefined) {

@@ -80,9 +80,7 @@ function getObjectReferenceType(
 ): { objectTypeId: string } {
   const param = action.actionType.metadata.parameters[paramKey];
   if (!param || param.type.type !== "objectReference") {
-    throw new Error(
-      `Parameter '${paramKey}' must be an objectReference type`,
-    );
+    throw new Error(`Parameter '${paramKey}' must be an objectReference type`);
   }
   return param.type.objectReference;
 }
@@ -93,9 +91,7 @@ function getObjectReferenceTypeFromBlockData(
 ): { objectTypeId: string } {
   const param = action.actionType.metadata.parameters[paramKey];
   if (!param || param.type.type !== "objectReference") {
-    throw new Error(
-      `Parameter '${paramKey}' must be an objectReference type`,
-    );
+    throw new Error(`Parameter '${paramKey}' must be an objectReference type`);
   }
   return param.type.objectReference;
 }
@@ -112,8 +108,8 @@ export function convertIrLogicRulesToActionLogicRules(
   const objectLookup = buildObjectTypeLookup(ir);
   const interfaceLookup = buildInterfaceTypeLookup(ir);
 
-  return rules.map(irRule =>
-    convertSingleRule(irRule, action, objectLookup, interfaceLookup)
+  return rules.map((irRule) =>
+    convertSingleRule(irRule, action, objectLookup, interfaceLookup),
   );
 }
 
@@ -125,8 +121,8 @@ export function convertBlockDataLogicRulesToActionLogicRules(
   const objectLookup = buildBlockDataObjectTypeLookup(blockdata);
   const interfaceLookup = buildBlockDataInterfaceTypeLookup(blockdata);
 
-  return rules.map(rule =>
-    convertBlockDataSingleRule(rule, action, objectLookup, interfaceLookup)
+  return rules.map((rule) =>
+    convertBlockDataSingleRule(rule, action, objectLookup, interfaceLookup),
   );
 }
 

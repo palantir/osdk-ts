@@ -17,10 +17,8 @@
 import { type ConjureContext, conjureFetch } from "conjure-lite";
 import type { OntologyRid as _api_OntologyRid } from "../__components.js";
 import type {
-  LoadGothamTypeInstallationStatusesRequest
-    as _api_typemapping_LoadGothamTypeInstallationStatusesRequest,
-  LoadGothamTypeInstallationStatusesResponse
-    as _api_typemapping_LoadGothamTypeInstallationStatusesResponse,
+  LoadGothamTypeInstallationStatusesRequest as _api_typemapping_LoadGothamTypeInstallationStatusesRequest,
+  LoadGothamTypeInstallationStatusesResponse as _api_typemapping_LoadGothamTypeInstallationStatusesResponse,
 } from "../typemapping/__components.js";
 
 /**

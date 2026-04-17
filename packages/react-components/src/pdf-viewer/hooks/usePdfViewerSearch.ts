@@ -118,59 +118,65 @@ export function usePdfViewerSearch(
     dispatchFind(EMPTY_STRING, false);
   }, [dispatchFind]);
 
-  useEffect(function subscribeSearchEvents() {
-    const eventBus = eventBusRef.current;
-    if (eventBus == null) {
-      return;
-    }
+  useEffect(
+    function subscribeSearchEvents() {
+      const eventBus = eventBusRef.current;
+      if (eventBus == null) {
+        return;
+      }
 
-    const handleMatchesCount = (evt: {
-      matchesCount: { current: number; total: number };
-    }) => {
-      setTotalMatches(evt.matchesCount.total);
-      setCurrentMatchIndex(
-        evt.matchesCount.current > 0 ? evt.matchesCount.current - 1 : 0,
-      );
-    };
+      const handleMatchesCount = (evt: {
+        matchesCount: { current: number; total: number };
+      }) => {
+        setTotalMatches(evt.matchesCount.total);
+        setCurrentMatchIndex(
+          evt.matchesCount.current > 0 ? evt.matchesCount.current - 1 : 0,
+        );
+      };
 
-    const handleControlState = (evt: {
-      state: number;
-      matchesCount: { current: number; total: number };
-    }) => {
-      setTotalMatches(evt.matchesCount.total);
-      setCurrentMatchIndex(
-        evt.matchesCount.current > 0 ? evt.matchesCount.current - 1 : 0,
-      );
-    };
+      const handleControlState = (evt: {
+        state: number;
+        matchesCount: { current: number; total: number };
+      }) => {
+        setTotalMatches(evt.matchesCount.total);
+        setCurrentMatchIndex(
+          evt.matchesCount.current > 0 ? evt.matchesCount.current - 1 : 0,
+        );
+      };
 
-    eventBus.on(UPDATE_FIND_MATCHES_COUNT_EVENT, handleMatchesCount);
-    eventBus.on(UPDATE_FIND_CONTROL_STATE_EVENT, handleControlState);
+      eventBus.on(UPDATE_FIND_MATCHES_COUNT_EVENT, handleMatchesCount);
+      eventBus.on(UPDATE_FIND_CONTROL_STATE_EVENT, handleControlState);
 
-    return () => {
-      eventBus.off(UPDATE_FIND_MATCHES_COUNT_EVENT, handleMatchesCount);
-      eventBus.off(UPDATE_FIND_CONTROL_STATE_EVENT, handleControlState);
-    };
-  }, [eventBusRef, findControllerRef, document]);
+      return () => {
+        eventBus.off(UPDATE_FIND_MATCHES_COUNT_EVENT, handleMatchesCount);
+        eventBus.off(UPDATE_FIND_CONTROL_STATE_EVENT, handleControlState);
+      };
+    },
+    [eventBusRef, findControllerRef, document],
+  );
 
-  return useMemo((): UsePdfViewerSearchResult => ({
-    query,
-    totalMatches,
-    currentMatchIndex,
-    isSearchOpen,
-    setQuery,
-    nextMatch,
-    prevMatch,
-    openSearch,
-    closeSearch,
-  }), [
-    query,
-    totalMatches,
-    currentMatchIndex,
-    isSearchOpen,
-    setQuery,
-    nextMatch,
-    prevMatch,
-    openSearch,
-    closeSearch,
-  ]);
+  return useMemo(
+    (): UsePdfViewerSearchResult => ({
+      query,
+      totalMatches,
+      currentMatchIndex,
+      isSearchOpen,
+      setQuery,
+      nextMatch,
+      prevMatch,
+      openSearch,
+      closeSearch,
+    }),
+    [
+      query,
+      totalMatches,
+      currentMatchIndex,
+      isSearchOpen,
+      setQuery,
+      nextMatch,
+      prevMatch,
+      openSearch,
+      closeSearch,
+    ],
+  );
 }

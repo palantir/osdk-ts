@@ -26,9 +26,7 @@ describe(startsWithApiNamespace, () => {
     const fullApiName = `${fullNamespace}.${apiNameOnly}`;
 
     it("returns false if only partial namespace is provided", () => {
-      expect(startsWithApiNamespace(fullApiName, partialNamespace)).toBe(
-        false,
-      );
+      expect(startsWithApiNamespace(fullApiName, partialNamespace)).toBe(false);
     });
 
     it("returns true if full namespace is provided", () => {
@@ -49,9 +47,7 @@ describe(startsWithApiNamespace, () => {
     const apiNameOnly = "Foo";
 
     it("returns false if any namespace is provided", () => {
-      expect(startsWithApiNamespace(apiNameOnly, wrongNamespace)).toBe(
-        false,
-      );
+      expect(startsWithApiNamespace(apiNameOnly, wrongNamespace)).toBe(false);
     });
 
     it("returns true if no namespace is provided", () => {

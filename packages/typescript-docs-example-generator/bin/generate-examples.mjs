@@ -28,7 +28,7 @@ const argv = yargs(hideBin(process.argv))
       describe: "Comma-separated list of versions to generate",
       type: "string",
       coerce: (value) =>
-        value ? value.split(",").map(v => v.trim()) : undefined,
+        value ? value.split(",").map((v) => v.trim()) : undefined,
       default: undefined,
       defaultDescription: "auto-discover all versions >= 2.0.0",
     },
@@ -51,8 +51,7 @@ const argv = yargs(hideBin(process.argv))
   )
   .help()
   .alias("help", "h")
-  .strict()
-  .argv;
+  .strict().argv;
 
 const config = {
   outputDir: argv["output-dir"],

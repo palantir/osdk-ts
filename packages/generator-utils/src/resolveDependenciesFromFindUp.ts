@@ -26,27 +26,24 @@ import { getDependencyVersionFromFindUpPackageJson } from "./getDependencyVersio
 export async function resolveDependenciesFromFindUp(
   deps: { [key: string]: string | undefined },
   cwd: string,
-): Promise<{
-  dependencyName: string;
-  dependencyVersion: string;
-}[]> {
+): Promise<
+  {
+    dependencyName: string;
+    dependencyVersion: string;
+  }[]
+> {
   return await Promise.all(
-    Object.entries(deps).map(
-      async ([dependencyName, dependencyVersion]) => {
-        return {
-          dependencyName,
-          dependencyVersion: changeVersionPrefix(
-            dependencyVersion
-              ?? await getDependencyVersionFromFindUpPackageJson(
-                dependencyName,
-                {
-                  cwd,
-                },
-              ),
-            "^",
-          ),
-        };
-      },
-    ),
+    Object.entries(deps).map(async ([dependencyName, dependencyVersion]) => {
+      return {
+        dependencyName,
+        dependencyVersion: changeVersionPrefix(
+          dependencyVersion ??
+            (await getDependencyVersionFromFindUpPackageJson(dependencyName, {
+              cwd,
+            })),
+          "^",
+        ),
+      };
+    }),
   );
 }

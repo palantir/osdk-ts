@@ -30,10 +30,7 @@ import { getFilterKey } from "../utils/getFilterKey.js";
 
 export interface UseFilterListStateResult<Q extends ObjectTypeDefinition> {
   filterStates: Map<string, FilterState>;
-  setFilterState: (
-    filterKey: string,
-    state: FilterState,
-  ) => void;
+  setFilterState: (filterKey: string, state: FilterState) => void;
   clearFilterState: (filterKey: string) => void;
   whereClause: WhereClause<Q>;
   perFilterWhereClauses: Map<string, WhereClause<Q>>;
@@ -119,17 +116,17 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
     return map;
   }, [metadata?.properties]);
 
-  const [filterStates, setFilterStates] = useState<
-    Map<string, FilterState>
-  >(() => {
-    const states = buildInitialStates(filterDefinitions);
-    if (initialFilterStates) {
-      for (const [key, state] of initialFilterStates) {
-        states.set(key, state);
+  const [filterStates, setFilterStates] = useState<Map<string, FilterState>>(
+    () => {
+      const states = buildInitialStates(filterDefinitions);
+      if (initialFilterStates) {
+        for (const [key, state] of initialFilterStates) {
+          states.set(key, state);
+        }
       }
-    }
-    return states;
-  });
+      return states;
+    },
+  );
 
   const setFilterState = useCallback(
     (filterKey: string, state: FilterState) => {
@@ -184,12 +181,7 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
   );
 
   const whereClause = useMemo(
-    () =>
-      buildWhereClause(
-        filterDefinitions,
-        filterStates,
-        propertyTypes,
-      ),
+    () => buildWhereClause(filterDefinitions, filterStates, propertyTypes),
     [filterDefinitions, filterStates, propertyTypes],
   );
 
@@ -202,12 +194,7 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
       const key = getFilterKey(definition);
       map.set(
         key,
-        buildWhereClause(
-          filterDefinitions,
-          filterStates,
-          propertyTypes,
-          key,
-        ),
+        buildWhereClause(filterDefinitions, filterStates, propertyTypes, key),
       );
     }
     return map;
@@ -235,21 +222,24 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
     onFilterClauseChanged?.(newWhereClause);
   }, [filterDefinitions, propertyTypes, onFilterClauseChanged]);
 
-  return useMemo(() => ({
-    filterStates,
-    setFilterState,
-    clearFilterState,
-    whereClause,
-    perFilterWhereClauses,
-    activeFilterCount,
-    reset,
-  }), [
-    filterStates,
-    setFilterState,
-    clearFilterState,
-    whereClause,
-    perFilterWhereClauses,
-    activeFilterCount,
-    reset,
-  ]);
+  return useMemo(
+    () => ({
+      filterStates,
+      setFilterState,
+      clearFilterState,
+      whereClause,
+      perFilterWhereClauses,
+      activeFilterCount,
+      reset,
+    }),
+    [
+      filterStates,
+      setFilterState,
+      clearFilterState,
+      whereClause,
+      perFilterWhereClauses,
+      activeFilterCount,
+      reset,
+    ],
+  );
 }

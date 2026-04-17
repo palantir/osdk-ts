@@ -49,7 +49,7 @@ export function NumberInputField({
   step,
 }: NumberInputFieldProps): React.ReactElement {
   const [displayValue, setDisplayValue] = useState<string>(() =>
-    formatNumberForDisplay(value)
+    formatNumberForDisplay(value),
   );
 
   const prevValueRef = useRef(value);

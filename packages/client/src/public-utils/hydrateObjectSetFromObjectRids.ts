@@ -35,9 +35,9 @@ export function hydrateObjectSetFromObjectRids<
       definition.type === "interface"
         ? { type: "interfaceBase", interfaceType: definition.apiName }
         : {
-          type: "base",
-          objectType: definition.apiName,
-        },
+            type: "base",
+            objectType: definition.apiName,
+          },
       {
         type: "static",
         objects: asMutableArray(rids),

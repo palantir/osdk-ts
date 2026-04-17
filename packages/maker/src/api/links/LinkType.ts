@@ -28,35 +28,41 @@ import type { ObjectType } from "../object/ObjectType.js";
 import type { ObjectTypeDefinition } from "../object/ObjectTypeDefinition.js";
 
 export type LinkType =
-  | (OntologyEntityBase & OneToManyLinkTypeDefinition & {
-    __type: OntologyEntityTypeEnum.LINK_TYPE;
-  })
-  | (OntologyEntityBase & ManyToManyLinkTypeDefinition & {
-    __type: OntologyEntityTypeEnum.LINK_TYPE;
-  })
-  | (OntologyEntityBase & IntermediaryLinkTypeDefinition & {
-    __type: OntologyEntityTypeEnum.LINK_TYPE;
-  });
+  | (OntologyEntityBase &
+      OneToManyLinkTypeDefinition & {
+        __type: OntologyEntityTypeEnum.LINK_TYPE;
+      })
+  | (OntologyEntityBase &
+      ManyToManyLinkTypeDefinition & {
+        __type: OntologyEntityTypeEnum.LINK_TYPE;
+      })
+  | (OntologyEntityBase &
+      IntermediaryLinkTypeDefinition & {
+        __type: OntologyEntityTypeEnum.LINK_TYPE;
+      });
 
 export type LinkTypeDefinition =
   | Omit<
-    OntologyEntityBase & OneToManyLinkTypeUserDefinition & {
-      __type: OntologyEntityTypeEnum.LINK_TYPE;
-    },
-    "__type"
-  >
+      OntologyEntityBase &
+        OneToManyLinkTypeUserDefinition & {
+          __type: OntologyEntityTypeEnum.LINK_TYPE;
+        },
+      "__type"
+    >
   | Omit<
-    OntologyEntityBase & ManyToManyLinkTypeUserDefinition & {
-      __type: OntologyEntityTypeEnum.LINK_TYPE;
-    },
-    "__type"
-  >
+      OntologyEntityBase &
+        ManyToManyLinkTypeUserDefinition & {
+          __type: OntologyEntityTypeEnum.LINK_TYPE;
+        },
+      "__type"
+    >
   | Omit<
-    OntologyEntityBase & IntermediaryLinkTypeUserDefinition & {
-      __type: OntologyEntityTypeEnum.LINK_TYPE;
-    },
-    "__type"
-  >;
+      OntologyEntityBase &
+        IntermediaryLinkTypeUserDefinition & {
+          __type: OntologyEntityTypeEnum.LINK_TYPE;
+        },
+      "__type"
+    >;
 
 export type ObjectTypePropertyApiName = string;
 
@@ -172,8 +178,8 @@ export type UserLinkTypeStatus =
   | "experimental"
   | "example"
   | {
-    type: "deprecated";
-    message: string;
-    deadline: string;
-    replacedBy?: LinkTypeId;
-  };
+      type: "deprecated";
+      message: string;
+      deadline: string;
+      replacedBy?: LinkTypeId;
+    };

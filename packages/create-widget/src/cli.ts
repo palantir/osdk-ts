@@ -17,7 +17,6 @@
 import type { Argv } from "yargs";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
-
 import { promptFoundryUrl } from "./prompts/promptFoundryUrl.js";
 import { promptOsdkPackage } from "./prompts/promptOsdkPackage.js";
 import { promptOsdkRegistryUrl } from "./prompts/promptOsdkRegistryUrl.js";

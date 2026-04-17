@@ -17,8 +17,7 @@
 import { type ConjureContext, conjureFetch } from "conjure-lite";
 import type {
   CompassRid as _constraints_CompassRid,
-  ConfiguredResourceConstraintsPage
-    as _constraints_ConfiguredResourceConstraintsPage,
+  ConfiguredResourceConstraintsPage as _constraints_ConfiguredResourceConstraintsPage,
   ModuleGroupProducer as _constraints_ModuleGroupProducer,
 } from "../__components.js";
 

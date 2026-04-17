@@ -35,26 +35,37 @@ export function getDefType(
 export function isInterfaceActionParam(
   o: any,
 ): o is ActionParam.InterfaceType<any> {
-  return o != null && typeof o === "object"
-    && "$objectType" in o && "$primaryKey" in o;
+  return (
+    o != null &&
+    typeof o === "object" &&
+    "$objectType" in o &&
+    "$primaryKey" in o
+  );
 }
 
 /** @internal */
 export function isInterfaceQueryParam(
   o: any,
 ): o is QueryParam.InterfaceType<any> {
-  return o != null && typeof o === "object"
-    && "$objectType" in o && "$primaryKey" in o;
+  return (
+    o != null &&
+    typeof o === "object" &&
+    "$objectType" in o &&
+    "$primaryKey" in o
+  );
 }
 
 /** @internal */
-export function isInterfaceSpecifier(
-  o: any,
-): o is {
+export function isInterfaceSpecifier(o: any): o is {
   $apiName: string;
   $objectType: string;
   $primaryKey: PrimaryKeyTypes;
 } {
-  return o != null && typeof o === "object"
-    && "$objectType" in o && "$primaryKey" in o && o.$objectType !== o.$apiName;
+  return (
+    o != null &&
+    typeof o === "object" &&
+    "$objectType" in o &&
+    "$primaryKey" in o &&
+    o.$objectType !== o.$apiName
+  );
 }

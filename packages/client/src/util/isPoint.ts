@@ -15,6 +15,12 @@
  */
 
 export function isPoint(o: any): o is GeoJSON.Point {
-  return o && typeof o === "object" && "type" in o && o.type === "Point"
-    && "coordinates" in o && o.coordinates.length === 2;
+  return (
+    o &&
+    typeof o === "object" &&
+    "type" in o &&
+    o.type === "Point" &&
+    "coordinates" in o &&
+    o.coordinates.length === 2
+  );
 }

@@ -50,9 +50,10 @@ export class ObjectsHelper extends AbstractHelper<
     options: ObserveObjectOptions<T>,
     rdpConfig?: Canonical<Rdp> | null,
   ): ObjectQuery {
-    const apiName = typeof options.apiName === "string"
-      ? options.apiName
-      : options.apiName.apiName;
+    const apiName =
+      typeof options.apiName === "string"
+        ? options.apiName
+        : options.apiName.apiName;
     const { pk, select, $loadPropertySecurityMetadata } = options;
 
     const defType = getDefType(options.apiName);
@@ -64,18 +65,21 @@ export class ObjectsHelper extends AbstractHelper<
       rdpConfig ?? undefined,
     );
 
-    return this.store.queries.get(objectCacheKey, () =>
-      new ObjectQuery(
-        this.store,
-        this.store.subjects.get(objectCacheKey),
-        apiName,
-        pk,
-        objectCacheKey,
-        { dedupeInterval: 0 },
-        defType,
-        select,
-        $loadPropertySecurityMetadata,
-      ));
+    return this.store.queries.get(
+      objectCacheKey,
+      () =>
+        new ObjectQuery(
+          this.store,
+          this.store.subjects.get(objectCacheKey),
+          apiName,
+          pk,
+          objectCacheKey,
+          { dedupeInterval: 0 },
+          defType,
+          select,
+          $loadPropertySecurityMetadata,
+        ),
+    );
   }
 
   /**
@@ -90,16 +94,16 @@ export class ObjectsHelper extends AbstractHelper<
     rdpConfig?: Canonical<Rdp> | null,
     selectFields?: ReadonlySet<string>,
   ): ObjectCacheKey[] {
-    return values.map(v =>
-      this.getQuery({
-        apiName: v.$objectType ?? v.$apiName,
-        pk: v.$primaryKey,
-      }, rdpConfig).writeToStore(
-        v as ObjectHolder,
-        "loaded",
-        batch,
-        selectFields,
-      ).cacheKey
+    return values.map(
+      (v) =>
+        this.getQuery(
+          {
+            apiName: v.$objectType ?? v.$apiName,
+            pk: v.$primaryKey,
+          },
+          rdpConfig,
+        ).writeToStore(v as ObjectHolder, "loaded", batch, selectFields)
+          .cacheKey,
     );
   }
 
@@ -115,10 +119,11 @@ export class ObjectsHelper extends AbstractHelper<
     selectFields?: ReadonlySet<string>,
   ): void {
     const existing = batch.read(sourceCacheKey);
-    const dataChanged = !existing
-      || existing.value === undefined
-      || value === tombstone
-      || !deepEqual(existing.value, value);
+    const dataChanged =
+      !existing ||
+      existing.value === undefined ||
+      value === tombstone ||
+      !deepEqual(existing.value, value);
     const statusChanged = !existing || existing.status !== status;
 
     if (!dataChanged && !statusChanged) {
@@ -130,11 +135,12 @@ export class ObjectsHelper extends AbstractHelper<
     // When a $select-filtered fetch returns partial objects, merge with
     // existing cached data to preserve fields not in the select set.
     const existingHolder = existing?.value;
-    const canMergeSelectFields = dataChanged
-      && selectFields
-      && selectFields.size > 0
-      && existingHolder
-      && this.isObjectHolder(existingHolder);
+    const canMergeSelectFields =
+      dataChanged &&
+      selectFields &&
+      selectFields.size > 0 &&
+      existingHolder &&
+      this.isObjectHolder(existingHolder);
 
     if (canMergeSelectFields && valueToWrite !== tombstone) {
       valueToWrite = mergeSelectFields(
@@ -149,12 +155,12 @@ export class ObjectsHelper extends AbstractHelper<
     // property values. Merge with the existing cached value so that RDP fields
     // not present in the incoming object are preserved.
     if (
-      valueToWrite !== tombstone
-      && existing?.value
-      && this.isObjectHolder(existing.value)
+      valueToWrite !== tombstone &&
+      existing?.value &&
+      this.isObjectHolder(existing.value)
     ) {
-      const expectedRdpFields = this.store.objectCacheKeyRegistry
-        .getRdpFieldSet(sourceCacheKey);
+      const expectedRdpFields =
+        this.store.objectCacheKeyRegistry.getRdpFieldSet(sourceCacheKey);
       if (expectedRdpFields.size > 0) {
         const underlying = valueToWrite[UnderlyingOsdkObject];
         const actualRdpFields = new Set<string>();
@@ -181,15 +187,14 @@ export class ObjectsHelper extends AbstractHelper<
       batch.changes.registerObject(sourceCacheKey, value, !existing);
     }
 
-    const metadata = this.store.objectCacheKeyRegistry.getMetadata(
-      sourceCacheKey,
-    );
+    const metadata =
+      this.store.objectCacheKeyRegistry.getMetadata(sourceCacheKey);
 
     const relatedKeys = metadata
       ? this.store.objectCacheKeyRegistry.getVariants(
-        metadata.apiName,
-        metadata.primaryKey,
-      )
+          metadata.apiName,
+          metadata.primaryKey,
+        )
       : new Set([sourceCacheKey]);
 
     for (const targetKey of relatedKeys) {
@@ -237,10 +242,12 @@ export class ObjectsHelper extends AbstractHelper<
   private isObjectHolder(
     value: ObjectHolder | undefined,
   ): value is ObjectHolder {
-    return value != null
-      && typeof value === "object"
-      && "$apiName" in value
-      && "$primaryKey" in value;
+    return (
+      value != null &&
+      typeof value === "object" &&
+      "$apiName" in value &&
+      "$primaryKey" in value
+    );
   }
 
   /**
@@ -252,12 +259,10 @@ export class ObjectsHelper extends AbstractHelper<
     sourceCacheKey: ObjectCacheKey,
     targetCacheKey: ObjectCacheKey,
   ): ObjectHolder {
-    const sourceRdpFields = this.store.objectCacheKeyRegistry.getRdpFieldSet(
-      sourceCacheKey,
-    );
-    const targetRdpFields = this.store.objectCacheKeyRegistry.getRdpFieldSet(
-      targetCacheKey,
-    );
+    const sourceRdpFields =
+      this.store.objectCacheKeyRegistry.getRdpFieldSet(sourceCacheKey);
+    const targetRdpFields =
+      this.store.objectCacheKeyRegistry.getRdpFieldSet(targetCacheKey);
 
     return mergeObjectFields(
       sourceValue,

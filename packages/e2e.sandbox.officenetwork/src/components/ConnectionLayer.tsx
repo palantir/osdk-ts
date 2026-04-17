@@ -64,9 +64,10 @@ const connectionTypes: ConnectionProperties["type"][] = [
   "cross-office",
 ];
 
-export function ConnectionLayer(
-  { connections, visible = true }: ConnectionLayerProps,
-) {
+export function ConnectionLayer({
+  connections,
+  visible = true,
+}: ConnectionLayerProps) {
   if (!visible || connections.features.length === 0) {
     return null;
   }
@@ -75,8 +76,8 @@ export function ConnectionLayer(
     (acc, type) => {
       acc[type] = {
         type: "FeatureCollection" as const,
-        features: connections.features.filter((f) =>
-          f.properties.type === type
+        features: connections.features.filter(
+          (f) => f.properties.type === type,
         ),
       };
       return acc;

@@ -35,13 +35,11 @@ describe(BulkObjectLoader, () => {
     mockClient = createClientMockHelper();
     client = mockClient.client;
 
-    // eslint-disable-next-line @typescript-eslint/unbound-method
+    // oxlint-disable-next-line typescript/unbound-method
     vi.mocked(client.fetchMetadata).mockReturnValue(
-      Promise.resolve(
-        {
-          primaryKeyApiName: "id",
-        } satisfies Pick<ObjectMetadata, "primaryKeyApiName"> as ObjectMetadata,
-      ),
+      Promise.resolve({
+        primaryKeyApiName: "id",
+      } satisfies Pick<ObjectMetadata, "primaryKeyApiName"> as ObjectMetadata),
     );
   });
 
@@ -137,10 +135,7 @@ describe(BulkObjectLoader, () => {
     expect(mockThen).not.toHaveBeenCalled();
 
     secondRequest.resolve({
-      data: [
-        employees[1],
-        employees[2],
-      ],
+      data: [employees[1], employees[2]],
       nextPageToken: undefined,
       totalCount: "2",
     });
@@ -240,23 +235,21 @@ describe(BulkObjectLoader, () => {
       const loader = new BulkObjectLoader(client, 25, 100);
       vi.useFakeTimers();
 
-      // eslint-disable-next-line @typescript-eslint/unbound-method
+      // oxlint-disable-next-line typescript/unbound-method
       vi.mocked(client.fetchMetadata)
-        .mockResolvedValueOnce(
-          {
-            type: "interface",
-            implementedBy: ["Employee"],
-            links: {},
-            apiName: "FooInterface",
-            displayName: "FooInterface",
-            description: undefined,
-            properties: {},
-            rid: "ri.test",
-          } satisfies InterfaceMetadata,
-        )
-        .mockResolvedValueOnce(
-          { primaryKeyApiName: "employeeId" } as ObjectMetadata,
-        );
+        .mockResolvedValueOnce({
+          type: "interface",
+          implementedBy: ["Employee"],
+          links: {},
+          apiName: "FooInterface",
+          displayName: "FooInterface",
+          description: undefined,
+          properties: {},
+          rid: "ri.test",
+        } satisfies InterfaceMetadata)
+        .mockResolvedValueOnce({
+          primaryKeyApiName: "employeeId",
+        } as ObjectMetadata);
 
       const fullObj = {
         $apiName: "Employee",
@@ -277,23 +270,21 @@ describe(BulkObjectLoader, () => {
       const loader = new BulkObjectLoader(client, 25, 100);
       vi.useFakeTimers();
 
-      // eslint-disable-next-line @typescript-eslint/unbound-method
+      // oxlint-disable-next-line typescript/unbound-method
       vi.mocked(client.fetchMetadata)
-        .mockResolvedValueOnce(
-          {
-            type: "interface",
-            implementedBy: ["Employee"],
-            links: {},
-            apiName: "FooInterface",
-            displayName: "FooInterface",
-            description: undefined,
-            properties: {},
-            rid: "ri.test",
-          } satisfies InterfaceMetadata,
-        )
-        .mockResolvedValueOnce(
-          { primaryKeyApiName: "employeeId" } as ObjectMetadata,
-        );
+        .mockResolvedValueOnce({
+          type: "interface",
+          implementedBy: ["Employee"],
+          links: {},
+          apiName: "FooInterface",
+          displayName: "FooInterface",
+          description: undefined,
+          properties: {},
+          rid: "ri.test",
+        } satisfies InterfaceMetadata)
+        .mockResolvedValueOnce({
+          primaryKeyApiName: "employeeId",
+        } as ObjectMetadata);
 
       client.mockReturnValueOnce(mockObjectSet([]));
 

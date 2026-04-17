@@ -68,9 +68,11 @@ async function getStdoutOrThrow(...args: Parameters<typeof getExecOutput>) {
   return stdout;
 }
 
-async function getContext(
-  args: { repo: string; branch?: string; commitSha?: string },
-): Promise<GithubContext> {
+async function getContext(args: {
+  repo: string;
+  branch?: string;
+  commitSha?: string;
+}): Promise<GithubContext> {
   const parts = args.repo.split("/");
 
   return {
@@ -78,14 +80,15 @@ async function getContext(
       owner: parts[0],
       repo: parts[1],
     },
-    sha: args.commitSha
-      ?? (await getStdoutOrThrow("git", ["rev-parse", "HEAD"])).trim(),
-    branch: args.branch
-      ?? process.env.GITHUB_HEAD_REF
-      ?? (await getStdoutOrThrow("git", ["symbolic-ref", "HEAD"])).replace(
-        "refs/heads/",
-        "",
-      ).trim(),
+    sha:
+      args.commitSha ??
+      (await getStdoutOrThrow("git", ["rev-parse", "HEAD"])).trim(),
+    branch:
+      args.branch ??
+      process.env.GITHUB_HEAD_REF ??
+      (await getStdoutOrThrow("git", ["symbolic-ref", "HEAD"]))
+        .replace("refs/heads/", "")
+        .trim(),
     octokit: setupOctokit(await getGithubTokenOrFail()),
   };
 }
@@ -158,7 +161,7 @@ async function getContext(
     await setupUser();
   }
 
-  if (process.env.SKIP_GIT_CLEAN_CHECK !== "true" && !await isGitClean()) {
+  if (process.env.SKIP_GIT_CLEAN_CHECK !== "true" && !(await isGitClean())) {
     throw new FailedWithUserMessage(
       "Your working directory is not clean. We are aborting for your protection.",
     );
@@ -261,9 +264,11 @@ async function getGithubTokenOrFail() {
     );
 
     try {
-      const token = (await getStdoutOrThrow("gh", ["auth", "token"], {
-        silent: true,
-      })).trim();
+      const token = (
+        await getStdoutOrThrow("gh", ["auth", "token"], {
+          silent: true,
+        })
+      ).trim();
       consola.info("GitHub token was found through GitHub CLI.");
       return token;
     } catch (e) {

@@ -67,14 +67,14 @@ export class ListQueryView<PAYLOAD extends BaseListPayloadShape> {
     this.#pageSize = pageSize;
     this.#viewId = `view_${++viewIdCounter}`;
 
-    this.#autoFetchMinimum = autoFetchMore === true
-      ? Number.MAX_SAFE_INTEGER
-      : (typeof autoFetchMore === "number" && autoFetchMore > 0)
-      ? autoFetchMore
-      : 0;
-    this.#viewLimit = this.#autoFetchMinimum > 0
-      ? Number.MAX_SAFE_INTEGER
-      : pageSize;
+    this.#autoFetchMinimum =
+      autoFetchMore === true
+        ? Number.MAX_SAFE_INTEGER
+        : typeof autoFetchMore === "number" && autoFetchMore > 0
+          ? autoFetchMore
+          : 0;
+    this.#viewLimit =
+      this.#autoFetchMinimum > 0 ? Number.MAX_SAFE_INTEGER : pageSize;
 
     // Memoize fetchMore to maintain stable function identity
     this.#fetchMore = this.#createFetchMore();
@@ -91,14 +91,13 @@ export class ListQueryView<PAYLOAD extends BaseListPayloadShape> {
         this.#observer?.next?.(this.#transformPayload(payload));
 
         const loadedCount = payload.resolvedList?.length ?? 0;
-        const fetchThreshold = this.#autoFetchMinimum > 0
-          ? this.#autoFetchMinimum
-          : this.#viewLimit;
+        const fetchThreshold =
+          this.#autoFetchMinimum > 0 ? this.#autoFetchMinimum : this.#viewLimit;
 
         if (
-          payload.status === "loaded"
-          && this.#query.hasMorePages()
-          && loadedCount < fetchThreshold
+          payload.status === "loaded" &&
+          this.#query.hasMorePages() &&
+          loadedCount < fetchThreshold
         ) {
           void this.#query.fetchMore();
         }
@@ -132,10 +131,10 @@ export class ListQueryView<PAYLOAD extends BaseListPayloadShape> {
     // When auto-fetching and below threshold with more pages available,
     // report "loading" to prevent status oscillation
     if (
-      this.#autoFetchMinimum > 0
-      && status === "loaded"
-      && this.#query.hasMorePages()
-      && loadedCount < this.#autoFetchMinimum
+      this.#autoFetchMinimum > 0 &&
+      status === "loaded" &&
+      this.#query.hasMorePages() &&
+      loadedCount < this.#autoFetchMinimum
     ) {
       status = "loading";
     }

@@ -48,9 +48,7 @@ export interface BaseHolder {
     newDef: string | ObjectOrInterfaceDefinition,
   ) => ObjectHolder | InterfaceHolder;
 
-  readonly "$clone": (
-    newProps?: Record<string, any>,
-  ) => this;
+  readonly "$clone": (newProps?: Record<string, any>) => this;
 
   readonly "$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata": {
     readonly ObjectMetadata: ObjectMetadata;

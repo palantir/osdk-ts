@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-import { consola } from "consola";
-
 import { createInternalClientContext, thirdPartyApplications } from "#net";
 import { ExitProcessError } from "@osdk/cli.common";
 import type { AutoVersionConfig } from "@osdk/foundry-config-json";
 import { autoVersion, AutoVersionError } from "@osdk/foundry-config-json";
 import archiver from "archiver";
+import { consola } from "consola";
 import { colorize } from "consola/utils";
 import * as fs from "node:fs";
 import path from "node:path";
@@ -32,25 +31,24 @@ import { maybeUpdateJemmaCustomMetadata } from "../../../util/maybeUpdateJemmaCu
 import { loadToken } from "../../../util/token.js";
 import type { SiteDeployArgs } from "./SiteDeployArgs.js";
 
-interface SiteDeployInternalArgs
-  extends Omit<SiteDeployArgs, "version" | "autoVersion" | "gitTagPrefix">
-{
+interface SiteDeployInternalArgs extends Omit<
+  SiteDeployArgs,
+  "version" | "autoVersion" | "gitTagPrefix"
+> {
   selectedVersion: string | AutoVersionConfig;
 }
 
-export default async function siteDeployCommand(
-  {
-    selectedVersion,
-    application,
-    foundryUrl,
-    uploadOnly,
-    snapshot,
-    snapshotId,
-    directory,
-    token,
-    tokenFile,
-  }: SiteDeployInternalArgs,
-): Promise<void> {
+export default async function siteDeployCommand({
+  selectedVersion,
+  application,
+  foundryUrl,
+  uploadOnly,
+  snapshot,
+  snapshotId,
+  directory,
+  token,
+  tokenFile,
+}: SiteDeployInternalArgs): Promise<void> {
   const loadedToken = await loadToken(token, tokenFile);
   const tokenProvider = () => loadedToken;
   const clientCtx = createInternalClientContext(foundryUrl, tokenProvider);
@@ -60,9 +58,7 @@ export default async function siteDeployCommand(
     siteVersion = selectedVersion;
   } else {
     siteVersion = await findAutoVersion(selectedVersion);
-    consola.info(
-      `Auto version inferred next version to be: ${siteVersion}`,
-    );
+    consola.info(`Auto version inferred next version to be: ${siteVersion}`);
   }
 
   consola.debug(`Using directory for site files: "${path.resolve(directory)}`);
@@ -90,12 +86,7 @@ export default async function siteDeployCommand(
     return;
   }
 
-  await upload(
-    clientCtx,
-    application,
-    siteVersion,
-    archive,
-  );
+  await upload(clientCtx, application, siteVersion, archive);
 
   let siteLink: string | undefined;
   if (!uploadOnly) {
@@ -118,8 +109,7 @@ export default async function siteDeployCommand(
     const domain = website?.subdomains[0];
     consola.info("Upload only mode enabled, skipping deployment");
     if (domain != null) {
-      siteLink =
-        `https://${domain}/.system/preview?previewVersion=${siteVersion}`;
+      siteLink = `https://${domain}/.system/preview?previewVersion=${siteVersion}`;
       logSiteLink("Preview link:", siteLink);
     }
   }
@@ -192,9 +182,9 @@ function logArchiveStats(archive: archiver.Archiver): void {
   });
   archive.on("finish", () => {
     consola.info(
-      `Zipped ${
-        prettyBytes(archiveStats.bytes, { binary: true })
-      } total over ${archiveStats.fileCount} files`,
+      `Zipped ${prettyBytes(archiveStats.bytes, {
+        binary: true,
+      })} total over ${archiveStats.fileCount} files`,
     );
   });
 }

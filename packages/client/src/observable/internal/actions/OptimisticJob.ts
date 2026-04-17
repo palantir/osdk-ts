@@ -27,16 +27,12 @@ export class OptimisticJob {
   #result!: Promise<Changes>;
 
   constructor(store: Store, optimisticId: OptimisticId) {
-    const updatedObjects: Array<
-      ObjectHolder
-    > = [];
+    const updatedObjects: Array<ObjectHolder> = [];
 
     // due to potentially needing to fetch the object metadata,
     // the creation of objects needs to be async. In practice, the
     // metadata is cached.
-    const addedObjectPromises: Array<
-      Promise<ObjectHolder>
-    > = [];
+    const addedObjectPromises: Array<Promise<ObjectHolder>> = [];
 
     const deletedObjects: Array<ObjectHolder> = [];
 
@@ -45,18 +41,21 @@ export class OptimisticJob {
 
     // todo memoize this
     this.getResult = () => {
-      return this.#result ??= (async () => {
-        const addedObjects = await Promise.allSettled(
-          addedObjectPromises,
-        );
+      return (this.#result ??= (async () => {
+        const addedObjects = await Promise.allSettled(addedObjectPromises);
 
         const { batchResult } = store.batch({ optimisticId }, (batch) => {
           for (const obj of addedObjects) {
             if (obj.status === "fulfilled") {
-              store.objects.getQuery({
-                apiName: obj.value.$objectType,
-                pk: obj.value.$primaryKey,
-              }, undefined).writeToStore(obj.value, "loading", batch);
+              store.objects
+                .getQuery(
+                  {
+                    apiName: obj.value.$objectType,
+                    pk: obj.value.$primaryKey,
+                  },
+                  undefined,
+                )
+                .writeToStore(obj.value, "loading", batch);
             } else {
               // TODO FIXME
               throw obj;
@@ -64,22 +63,32 @@ export class OptimisticJob {
           }
 
           for (const obj of updatedObjects) {
-            store.objects.getQuery({
-              apiName: obj.$objectType,
-              pk: obj.$primaryKey,
-            }, undefined).writeToStore(obj, "loading", batch);
+            store.objects
+              .getQuery(
+                {
+                  apiName: obj.$objectType,
+                  pk: obj.$primaryKey,
+                },
+                undefined,
+              )
+              .writeToStore(obj, "loading", batch);
           }
 
           for (const obj of deletedObjects) {
-            store.objects.getQuery({
-              apiName: obj.$objectType,
-              pk: obj.$primaryKey,
-            }, undefined).deleteFromStore("loading", batch);
+            store.objects
+              .getQuery(
+                {
+                  apiName: obj.$objectType,
+                  pk: obj.$primaryKey,
+                },
+                undefined,
+              )
+              .deleteFromStore("loading", batch);
           }
         });
 
         return batchResult.changes;
-      })();
+      })());
     };
 
     this.context = {
@@ -88,20 +97,24 @@ export class OptimisticJob {
         return this;
       },
       createObject(type, pk, properties) {
-        const create = store.client[additionalContext].objectFactory2(
-          store.client[additionalContext],
-          [{
-            $primaryKey: pk,
-            $apiName: type.apiName,
-            $objectType: type.apiName,
-            ...properties,
-          }],
-          undefined,
-          {},
-          undefined,
-        ).then(objs => {
-          return objs[0];
-        });
+        const create = store.client[additionalContext]
+          .objectFactory2(
+            store.client[additionalContext],
+            [
+              {
+                $primaryKey: pk,
+                $apiName: type.apiName,
+                $objectType: type.apiName,
+                ...properties,
+              },
+            ],
+            undefined,
+            {},
+            undefined,
+          )
+          .then((objs) => {
+            return objs[0];
+          });
 
         addedObjectPromises.push(create);
         return this;
@@ -128,11 +141,13 @@ export function runOptimisticJob(
   const optimisticApplicationDone = job.getResult();
 
   return () => {
-    return optimisticApplicationDone.then(
-      // we don't want to leak the result
-      () => undefined,
-    ).finally(() => {
-      store.layers.remove(optimisticId);
-    });
+    return optimisticApplicationDone
+      .then(
+        // we don't want to leak the result
+        () => undefined,
+      )
+      .finally(() => {
+        store.layers.remove(optimisticId);
+      });
   };
 }

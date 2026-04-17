@@ -53,8 +53,9 @@ export function createMinimalClient(
   objectSetFactory: ObjectSetFactory<any, any> = createObjectSet,
   createOntologyProviderFactory: (
     a: OntologyCachingOptions & { logger?: Logger },
-  ) => (minimalClient: MinimalClient) => OntologyProvider =
-    createStandardOntologyProviderFactory,
+  ) => (
+    minimalClient: MinimalClient,
+  ) => OntologyProvider = createStandardOntologyProviderFactory,
 ) {
   if (process.env.NODE_ENV !== "production") {
     try {
@@ -89,14 +90,11 @@ export function createMinimalClient(
     requestContext: {},
     branch: options.branch,
     narrowTypeInterfaceOrObjectMapping: {},
-  } satisfies Omit<
-    MinimalClient,
-    "ontologyProvider"
-  > as any;
+  } satisfies Omit<MinimalClient, "ontologyProvider"> as any;
 
-  return Object.freeze(Object.assign(minimalClient, {
-    ontologyProvider: createOntologyProviderFactory(
-      options,
-    )(minimalClient),
-  }));
+  return Object.freeze(
+    Object.assign(minimalClient, {
+      ontologyProvider: createOntologyProviderFactory(options)(minimalClient),
+    }),
+  );
 }

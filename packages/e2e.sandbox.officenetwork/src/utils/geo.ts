@@ -4,15 +4,15 @@ export function isPoint(
   value: Geometry | GeoJsonProperties | null | undefined,
 ): value is Point {
   return (
-    typeof value === "object"
-    && value != null
-    && "type" in value
-    && value.type === "Point"
-    && "coordinates" in value
-    && Array.isArray(value.coordinates)
-    && value.coordinates.length >= 2
-    && typeof value.coordinates[0] === "number"
-    && typeof value.coordinates[1] === "number"
+    typeof value === "object" &&
+    value != null &&
+    "type" in value &&
+    value.type === "Point" &&
+    "coordinates" in value &&
+    Array.isArray(value.coordinates) &&
+    value.coordinates.length >= 2 &&
+    typeof value.coordinates[0] === "number" &&
+    typeof value.coordinates[1] === "number"
   );
 }
 

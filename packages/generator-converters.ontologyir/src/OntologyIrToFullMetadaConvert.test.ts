@@ -19,2697 +19,2682 @@ import { OntologyIrToFullMetadataConverter } from "./OntologyIrToFullMetadataCon
 
 describe(OntologyIrToFullMetadataConverter, () => {
   it("should convert ontology IR to full metadata", async () => {
-    const result = OntologyIrToFullMetadataConverter
-      .getFullMetadataFromIr(
-        {
-          "objectTypes": {
-            "Dc3DistributionCenterProposal": {
-              "objectType": {
+    const result = OntologyIrToFullMetadataConverter.getFullMetadataFromIr({
+      "objectTypes": {
+        "Dc3DistributionCenterProposal": {
+          "objectType": {
+            "displayMetadata": {
+              "displayName": "[DC3] Distribution Center Proposal",
+              "icon": {
+                "type": "blueprint",
+                "blueprint": {
+                  "locator": "cube",
+                  "color": "#2D72D2",
+                },
+              },
+              "pluralDisplayName": "[DC3] Distribution Center Proposals",
+              "visibility": "NORMAL",
+            },
+            "primaryKeys": ["primaryKey_"],
+            "propertyTypes": {
+              "primaryKey_": {
+                "apiName": "primaryKey_",
                 "displayMetadata": {
-                  "displayName": "[DC3] Distribution Center Proposal",
-                  "icon": {
-                    "type": "blueprint",
-                    "blueprint": {
-                      "locator": "cube",
-                      "color": "#2D72D2",
-                    },
-                  },
-                  "pluralDisplayName": "[DC3] Distribution Center Proposals",
+                  "displayName": "Primary Key",
                   "visibility": "NORMAL",
                 },
-                "primaryKeys": [
-                  "primaryKey_",
+                "indexedForSearch": true,
+                "type": {
+                  "type": "string",
+                  "string": {
+                    "isLongText": false,
+                    "supportsEfficientLeadingWildcard": false,
+                    "supportsExactMatching": true,
+                  },
+                },
+                "typeClasses": [
+                  {
+                    "kind": "render_hint",
+                    "name": "SELECTABLE",
+                  },
+                  {
+                    "kind": "render_hint",
+                    "name": "SORTABLE",
+                  },
                 ],
-                "propertyTypes": {
+                "status": {
+                  "type": "active",
+                  "active": {},
+                },
+              },
+              "name": {
+                "apiName": "name",
+                "displayMetadata": {
+                  "displayName": "Name",
+                  "visibility": "NORMAL",
+                },
+                "indexedForSearch": true,
+                "type": {
+                  "type": "string",
+                  "string": {
+                    "isLongText": false,
+                    "supportsEfficientLeadingWildcard": false,
+                    "supportsExactMatching": true,
+                  },
+                },
+                "typeClasses": [
+                  {
+                    "kind": "render_hint",
+                    "name": "SELECTABLE",
+                  },
+                  {
+                    "kind": "render_hint",
+                    "name": "SORTABLE",
+                  },
+                ],
+                "status": {
+                  "type": "active",
+                  "active": {},
+                },
+              },
+              "price": {
+                "apiName": "price",
+                "displayMetadata": {
+                  "displayName": "Price",
+                  "description":
+                    "The price of the distribution center proposal in USD",
+                  "visibility": "NORMAL",
+                },
+                "indexedForSearch": true,
+                "type": {
+                  "type": "float",
+                  "float": {},
+                },
+                "typeClasses": [
+                  {
+                    "kind": "render_hint",
+                    "name": "SELECTABLE",
+                  },
+                  {
+                    "kind": "render_hint",
+                    "name": "SORTABLE",
+                  },
+                ],
+                "status": {
+                  "type": "active",
+                  "active": {},
+                },
+              },
+              "proposedLocation": {
+                "apiName": "proposedLocation",
+                "displayMetadata": {
+                  "displayName": "Proposed Location",
+                  "visibility": "NORMAL",
+                },
+                "indexedForSearch": true,
+                "type": {
+                  "type": "geohash",
+                  "geohash": {},
+                },
+                "typeClasses": [
+                  {
+                    "kind": "render_hint",
+                    "name": "SELECTABLE",
+                  },
+                  {
+                    "kind": "render_hint",
+                    "name": "SORTABLE",
+                  },
+                ],
+                "status": {
+                  "type": "active",
+                  "active": {},
+                },
+              },
+            },
+            "titlePropertyTypeRid": "name",
+            "apiName": "Dc3DistributionCenterProposal",
+            "status": {
+              "type": "active",
+              "active": {},
+            },
+            "redacted": false,
+            "implementsInterfaces2": [],
+            "allImplementsInterfaces": {},
+          },
+          "datasources": [
+            {
+              "datasourceName": "Dc3DistributionCenterProposal",
+              "datasource": {
+                "type": "datasetV2",
+                "datasetV2": {
+                  "datasetRid": "Dc3DistributionCenterProposal",
+                  "propertyMapping": {
+                    "primaryKey_": {
+                      "type": "column",
+                      "column": "primaryKey_",
+                    },
+                    "name": {
+                      "type": "column",
+                      "column": "name",
+                    },
+                    "price": {
+                      "type": "column",
+                      "column": "price",
+                    },
+                    "proposedLocation": {
+                      "type": "column",
+                      "column": "proposedLocation",
+                    },
+                  },
+                },
+              },
+              "editsConfiguration": {
+                "onlyAllowPrivilegedEdits": false,
+              },
+              "redacted": false,
+            },
+          ],
+          "entityMetadata": {
+            "arePatchesEnabled": false,
+            "aliases": [],
+          },
+        },
+        "Dc3Restaurant": {
+          "objectType": {
+            "displayMetadata": {
+              "displayName": "[DC3] Restaurant",
+              "icon": {
+                "type": "blueprint",
+                "blueprint": {
+                  "locator": "cube",
+                  "color": "#2D72D2",
+                },
+              },
+              "pluralDisplayName": "[DC3] Restaurants",
+              "visibility": "NORMAL",
+            },
+            "primaryKeys": ["primaryKey_"],
+            "propertyTypes": {
+              "primaryKey_": {
+                "apiName": "primaryKey_",
+                "displayMetadata": {
+                  "displayName": "Primary Key",
+                  "visibility": "NORMAL",
+                },
+                "indexedForSearch": true,
+                "type": {
+                  "type": "string",
+                  "string": {
+                    "isLongText": false,
+                    "supportsEfficientLeadingWildcard": false,
+                    "supportsExactMatching": true,
+                  },
+                },
+                "typeClasses": [
+                  {
+                    "kind": "render_hint",
+                    "name": "SELECTABLE",
+                  },
+                  {
+                    "kind": "render_hint",
+                    "name": "SORTABLE",
+                  },
+                ],
+                "status": {
+                  "type": "active",
+                  "active": {},
+                },
+              },
+              "name": {
+                "apiName": "name",
+                "displayMetadata": {
+                  "displayName": "Name",
+                  "visibility": "NORMAL",
+                },
+                "indexedForSearch": true,
+                "type": {
+                  "type": "string",
+                  "string": {
+                    "isLongText": false,
+                    "supportsEfficientLeadingWildcard": false,
+                    "supportsExactMatching": true,
+                  },
+                },
+                "typeClasses": [
+                  {
+                    "kind": "render_hint",
+                    "name": "SELECTABLE",
+                  },
+                  {
+                    "kind": "render_hint",
+                    "name": "SORTABLE",
+                  },
+                ],
+                "status": {
+                  "type": "active",
+                  "active": {},
+                },
+              },
+              "location": {
+                "apiName": "location",
+                "displayMetadata": {
+                  "displayName": "Location",
+                  "visibility": "NORMAL",
+                },
+                "indexedForSearch": true,
+                "type": {
+                  "type": "geohash",
+                  "geohash": {},
+                },
+                "typeClasses": [
+                  {
+                    "kind": "render_hint",
+                    "name": "SELECTABLE",
+                  },
+                  {
+                    "kind": "render_hint",
+                    "name": "SORTABLE",
+                  },
+                ],
+                "status": {
+                  "type": "active",
+                  "active": {},
+                },
+              },
+              "rating": {
+                "apiName": "rating",
+                "displayMetadata": {
+                  "displayName": "Rating",
+                  "visibility": "NORMAL",
+                },
+                "indexedForSearch": true,
+                "type": {
+                  "type": "integer",
+                  "integer": {},
+                },
+                "typeClasses": [
+                  {
+                    "kind": "render_hint",
+                    "name": "SELECTABLE",
+                  },
+                  {
+                    "kind": "render_hint",
+                    "name": "SORTABLE",
+                  },
+                ],
+                "status": {
+                  "type": "active",
+                  "active": {},
+                },
+              },
+            },
+            "titlePropertyTypeRid": "name",
+            "apiName": "Dc3Restaurant",
+            "status": {
+              "type": "active",
+              "active": {},
+            },
+            "redacted": false,
+            "implementsInterfaces2": [],
+            "allImplementsInterfaces": {},
+          },
+          "datasources": [
+            {
+              "datasourceName": "Dc3Restaurant",
+              "datasource": {
+                "type": "datasetV2",
+                "datasetV2": {
+                  "datasetRid": "Dc3Restaurant",
+                  "propertyMapping": {
+                    "primaryKey_": {
+                      "type": "column",
+                      "column": "primaryKey_",
+                    },
+                    "name": {
+                      "type": "column",
+                      "column": "name",
+                    },
+                    "location": {
+                      "type": "column",
+                      "column": "location",
+                    },
+                    "rating": {
+                      "type": "column",
+                      "column": "rating",
+                    },
+                  },
+                },
+              },
+              "editsConfiguration": {
+                "onlyAllowPrivilegedEdits": false,
+              },
+              "redacted": false,
+            },
+          ],
+          "entityMetadata": {
+            "arePatchesEnabled": false,
+            "aliases": [],
+          },
+        },
+        "Dc3DistributionRouteAnalysis": {
+          "objectType": {
+            "displayMetadata": {
+              "displayName": "[DC3] Distribution Route Analysis",
+              "icon": {
+                "type": "blueprint",
+                "blueprint": {
+                  "locator": "cube",
+                  "color": "#2D72D2",
+                },
+              },
+              "pluralDisplayName": "[DC3] Distribution Route Analyses",
+              "visibility": "NORMAL",
+            },
+            "primaryKeys": ["primaryKey_"],
+            "propertyTypes": {
+              "primaryKey_": {
+                "apiName": "primaryKey_",
+                "displayMetadata": {
+                  "displayName": "Primary Key",
+                  "visibility": "NORMAL",
+                },
+                "indexedForSearch": true,
+                "type": {
+                  "type": "string",
+                  "string": {
+                    "isLongText": false,
+                    "supportsEfficientLeadingWildcard": false,
+                    "supportsExactMatching": true,
+                  },
+                },
+                "typeClasses": [
+                  {
+                    "kind": "render_hint",
+                    "name": "SELECTABLE",
+                  },
+                  {
+                    "kind": "render_hint",
+                    "name": "SORTABLE",
+                  },
+                ],
+                "status": {
+                  "type": "active",
+                  "active": {},
+                },
+              },
+              "distributionProposal": {
+                "apiName": "distributionProposal",
+                "displayMetadata": {
+                  "displayName": "Distribution Proposal",
+                  "visibility": "NORMAL",
+                },
+                "indexedForSearch": true,
+                "type": {
+                  "type": "string",
+                  "string": {
+                    "isLongText": false,
+                    "supportsEfficientLeadingWildcard": false,
+                    "supportsExactMatching": true,
+                  },
+                },
+                "typeClasses": [
+                  {
+                    "kind": "render_hint",
+                    "name": "SELECTABLE",
+                  },
+                  {
+                    "kind": "render_hint",
+                    "name": "SORTABLE",
+                  },
+                ],
+                "status": {
+                  "type": "active",
+                  "active": {},
+                },
+              },
+              "restaurant": {
+                "apiName": "restaurant",
+                "displayMetadata": {
+                  "displayName": "Restaurant",
+                  "visibility": "NORMAL",
+                },
+                "indexedForSearch": true,
+                "type": {
+                  "type": "string",
+                  "string": {
+                    "isLongText": false,
+                    "supportsEfficientLeadingWildcard": false,
+                    "supportsExactMatching": true,
+                  },
+                },
+                "typeClasses": [
+                  {
+                    "kind": "render_hint",
+                    "name": "SELECTABLE",
+                  },
+                  {
+                    "kind": "render_hint",
+                    "name": "SORTABLE",
+                  },
+                ],
+                "status": {
+                  "type": "active",
+                  "active": {},
+                },
+              },
+              "timeMinutes": {
+                "apiName": "timeMinutes",
+                "displayMetadata": {
+                  "displayName": "Time (Minutes)",
+                  "visibility": "NORMAL",
+                },
+                "indexedForSearch": true,
+                "type": {
+                  "type": "string",
+                  "string": {
+                    "isLongText": false,
+                    "supportsEfficientLeadingWildcard": false,
+                    "supportsExactMatching": true,
+                  },
+                },
+                "typeClasses": [
+                  {
+                    "kind": "render_hint",
+                    "name": "SELECTABLE",
+                  },
+                  {
+                    "kind": "render_hint",
+                    "name": "SORTABLE",
+                  },
+                ],
+                "status": {
+                  "type": "active",
+                  "active": {},
+                },
+              },
+            },
+            "titlePropertyTypeRid": "primaryKey_",
+            "apiName": "Dc3DistributionRouteAnalysis",
+            "status": {
+              "type": "active",
+              "active": {},
+            },
+            "redacted": false,
+            "implementsInterfaces2": [],
+            "allImplementsInterfaces": {},
+          },
+          "datasources": [
+            {
+              "datasourceName": "Dc3DistributionRouteAnalysis",
+              "datasource": {
+                "type": "datasetV2",
+                "datasetV2": {
+                  "datasetRid": "Dc3DistributionRouteAnalysis",
+                  "propertyMapping": {
+                    "primaryKey_": {
+                      "type": "column",
+                      "column": "primaryKey_",
+                    },
+                    "distributionProposal": {
+                      "type": "column",
+                      "column": "distributionProposal",
+                    },
+                    "restaurant": {
+                      "type": "column",
+                      "column": "restaurant",
+                    },
+                    "timeMinutes": {
+                      "type": "column",
+                      "column": "timeMinutes",
+                    },
+                  },
+                },
+              },
+              "editsConfiguration": {
+                "onlyAllowPrivilegedEdits": false,
+              },
+              "redacted": false,
+            },
+          ],
+          "entityMetadata": {
+            "arePatchesEnabled": false,
+            "aliases": [],
+          },
+        },
+      },
+      "sharedPropertyTypes": {},
+      "interfaceTypes": {},
+      "linkTypes": {
+        "Dc3RestaurantToDistributionRoute": {
+          "linkType": {
+            "definition": {
+              "type": "oneToMany",
+              "oneToMany": {
+                "cardinalityHint": "ONE_TO_ONE",
+                "manyToOneLinkMetadata": {
+                  "displayMetadata": {
+                    "displayName": "Distribution Route Analysis",
+                    "pluralDisplayName": "Distribution Route Analyses",
+                    "visibility": "NORMAL",
+                  },
+                  "apiName": "distributionRouteAnalysis",
+                  "typeClasses": [],
+                },
+                "objectTypeRidManySide": "Dc3DistributionRouteAnalysis",
+                "objectTypeRidOneSide": "Dc3Restaurant",
+                "oneToManyLinkMetadata": {
+                  "displayMetadata": {
+                    "displayName": "Restaurant",
+                    "pluralDisplayName": "Restaurants",
+                    "visibility": "NORMAL",
+                  },
+                  "apiName": "restaurant",
+                  "typeClasses": [],
+                },
+                "oneSidePrimaryKeyToManySidePropertyMapping": [
+                  {
+                    "from": {
+                      "apiName": "primaryKey_",
+                      "object": "Dc3Restaurant",
+                    },
+                    "to": {
+                      "apiName": "restaurant",
+                      "object": "Dc3DistributionRouteAnalysis",
+                    },
+                  },
+                ],
+              },
+            },
+            "id": "Dc3RestaurantToDistributionRoute",
+            "status": {
+              "type": "active",
+              "active": {},
+            },
+            "redacted": false,
+          },
+          "datasources": [],
+          "entityMetadata": {
+            "arePatchesEnabled": false,
+          },
+        },
+        "Dc3DistributionCenterProposalToDistributionRoute": {
+          "linkType": {
+            "definition": {
+              "type": "oneToMany",
+              "oneToMany": {
+                "cardinalityHint": "ONE_TO_ONE",
+                "manyToOneLinkMetadata": {
+                  "displayMetadata": {
+                    "displayName": "Distribution Route Analysis",
+                    "pluralDisplayName": "Distribution Route Analyses",
+                    "visibility": "NORMAL",
+                  },
+                  "apiName": "distributionRouteAnalysis",
+                  "typeClasses": [],
+                },
+                "objectTypeRidManySide": "Dc3DistributionRouteAnalysis",
+                "objectTypeRidOneSide": "Dc3DistributionCenterProposal",
+                "oneToManyLinkMetadata": {
+                  "displayMetadata": {
+                    "displayName": "Distribution Center Proposal",
+                    "pluralDisplayName": "Distribution Center Proposals",
+                    "visibility": "NORMAL",
+                  },
+                  "apiName": "distributionCenterProposal",
+                  "typeClasses": [],
+                },
+                "oneSidePrimaryKeyToManySidePropertyMapping": [
+                  {
+                    "from": {
+                      "apiName": "primaryKey_",
+                      "object": "Dc3DistributionCenterProposal",
+                    },
+                    "to": {
+                      "apiName": "distributionProposal",
+                      "object": "Dc3DistributionRouteAnalysis",
+                    },
+                  },
+                ],
+              },
+            },
+            "id": "Dc3DistributionCenterProposalToDistributionRoute",
+            "status": {
+              "type": "active",
+              "active": {},
+            },
+            "redacted": false,
+          },
+          "datasources": [],
+          "entityMetadata": {
+            "arePatchesEnabled": false,
+          },
+        },
+      },
+      "actionTypes": {
+        "create-object-dc3distribution-center-proposal": {
+          "actionType": {
+            "actionTypeLogic": {
+              "logic": {
+                "rules": [
+                  {
+                    "type": "addObjectRule",
+                    "addObjectRule": {
+                      "objectTypeId": "Dc3DistributionCenterProposal",
+                      "propertyValues": {
+                        "primaryKey_": {
+                          "type": "parameterId",
+                          "parameterId": "primaryKey_",
+                        },
+                        "name": {
+                          "type": "parameterId",
+                          "parameterId": "name",
+                        },
+                        "price": {
+                          "type": "parameterId",
+                          "parameterId": "price",
+                        },
+                        "proposedLocation": {
+                          "type": "parameterId",
+                          "parameterId": "proposedLocation",
+                        },
+                      },
+                      "structFieldValues": {},
+                    },
+                  },
+                ],
+              },
+              "validation": {
+                "sectionValidations": {},
+                "actionTypeLevelValidation": {
+                  "rules": {
+                    "0": {
+                      "condition": {
+                        "type": "true",
+                        "true": {},
+                      },
+                      "displayMetadata": {
+                        "failureMessage": "",
+                        "typeClasses": [],
+                      },
+                    },
+                  },
+                },
+                "parameterValidations": {
                   "primaryKey_": {
-                    "apiName": "primaryKey_",
-                    "displayMetadata": {
-                      "displayName": "Primary Key",
-                      "visibility": "NORMAL",
-                    },
-                    "indexedForSearch": true,
-                    "type": {
-                      "type": "string",
-                      "string": {
-                        "isLongText": false,
-                        "supportsEfficientLeadingWildcard": false,
-                        "supportsExactMatching": true,
+                    "conditionalOverrides": [],
+                    "defaultValidation": {
+                      "display": {
+                        "renderHint": {
+                          "type": "textInput",
+                          "textInput": {},
+                        },
+                        "visibility": {
+                          "type": "editable",
+                          "editable": {},
+                        },
                       },
-                    },
-                    "typeClasses": [
-                      {
-                        "kind": "render_hint",
-                        "name": "SELECTABLE",
+                      "validation": {
+                        "allowedValues": {
+                          "type": "text",
+                          "text": {
+                            "type": "text",
+                            "text": {},
+                          },
+                        },
+                        "required": {
+                          "type": "required",
+                          "required": {},
+                        },
                       },
-                      {
-                        "kind": "render_hint",
-                        "name": "SORTABLE",
-                      },
-                    ],
-                    "status": {
-                      "type": "active",
-                      "active": {},
                     },
                   },
                   "name": {
-                    "apiName": "name",
-                    "displayMetadata": {
-                      "displayName": "Name",
-                      "visibility": "NORMAL",
-                    },
-                    "indexedForSearch": true,
-                    "type": {
-                      "type": "string",
-                      "string": {
-                        "isLongText": false,
-                        "supportsEfficientLeadingWildcard": false,
-                        "supportsExactMatching": true,
+                    "conditionalOverrides": [],
+                    "defaultValidation": {
+                      "display": {
+                        "renderHint": {
+                          "type": "textInput",
+                          "textInput": {},
+                        },
+                        "visibility": {
+                          "type": "editable",
+                          "editable": {},
+                        },
                       },
-                    },
-                    "typeClasses": [
-                      {
-                        "kind": "render_hint",
-                        "name": "SELECTABLE",
+                      "validation": {
+                        "allowedValues": {
+                          "type": "text",
+                          "text": {
+                            "type": "text",
+                            "text": {},
+                          },
+                        },
+                        "required": {
+                          "type": "required",
+                          "required": {},
+                        },
                       },
-                      {
-                        "kind": "render_hint",
-                        "name": "SORTABLE",
-                      },
-                    ],
-                    "status": {
-                      "type": "active",
-                      "active": {},
                     },
                   },
                   "price": {
-                    "apiName": "price",
-                    "displayMetadata": {
-                      "displayName": "Price",
-                      "description":
-                        "The price of the distribution center proposal in USD",
-                      "visibility": "NORMAL",
-                    },
-                    "indexedForSearch": true,
-                    "type": {
-                      "type": "float",
-                      "float": {},
-                    },
-                    "typeClasses": [
-                      {
-                        "kind": "render_hint",
-                        "name": "SELECTABLE",
+                    "conditionalOverrides": [],
+                    "defaultValidation": {
+                      "display": {
+                        "renderHint": {
+                          "type": "numericInput",
+                          "numericInput": {},
+                        },
+                        "visibility": {
+                          "type": "editable",
+                          "editable": {},
+                        },
                       },
-                      {
-                        "kind": "render_hint",
-                        "name": "SORTABLE",
+                      "validation": {
+                        "allowedValues": {
+                          "type": "range",
+                          "range": {
+                            "type": "range",
+                            "range": {},
+                          },
+                        },
+                        "required": {
+                          "type": "required",
+                          "required": {},
+                        },
                       },
-                    ],
-                    "status": {
-                      "type": "active",
-                      "active": {},
                     },
                   },
                   "proposedLocation": {
-                    "apiName": "proposedLocation",
-                    "displayMetadata": {
-                      "displayName": "Proposed Location",
-                      "visibility": "NORMAL",
-                    },
-                    "indexedForSearch": true,
-                    "type": {
-                      "type": "geohash",
-                      "geohash": {},
-                    },
-                    "typeClasses": [
-                      {
-                        "kind": "render_hint",
-                        "name": "SELECTABLE",
+                    "conditionalOverrides": [],
+                    "defaultValidation": {
+                      "display": {
+                        "renderHint": {
+                          "type": "textInput",
+                          "textInput": {},
+                        },
+                        "visibility": {
+                          "type": "editable",
+                          "editable": {},
+                        },
                       },
-                      {
-                        "kind": "render_hint",
-                        "name": "SORTABLE",
-                      },
-                    ],
-                    "status": {
-                      "type": "active",
-                      "active": {},
-                    },
-                  },
-                },
-                "titlePropertyTypeRid": "name",
-                "apiName": "Dc3DistributionCenterProposal",
-                "status": {
-                  "type": "active",
-                  "active": {},
-                },
-                "redacted": false,
-                "implementsInterfaces2": [],
-                "allImplementsInterfaces": {},
-              },
-              "datasources": [
-                {
-                  "datasourceName": "Dc3DistributionCenterProposal",
-                  "datasource": {
-                    "type": "datasetV2",
-                    "datasetV2": {
-                      "datasetRid": "Dc3DistributionCenterProposal",
-                      "propertyMapping": {
-                        "primaryKey_": {
-                          "type": "column",
-                          "column": "primaryKey_",
+                      "validation": {
+                        "allowedValues": {
+                          "type": "geoshape",
+                          "geoshape": {
+                            "type": "geoshape",
+                            "geoshape": {},
+                          },
                         },
-                        "name": {
-                          "type": "column",
-                          "column": "name",
-                        },
-                        "price": {
-                          "type": "column",
-                          "column": "price",
-                        },
-                        "proposedLocation": {
-                          "type": "column",
-                          "column": "proposedLocation",
+                        "required": {
+                          "type": "required",
+                          "required": {},
                         },
                       },
                     },
                   },
-                  "editsConfiguration": {
-                    "onlyAllowPrivilegedEdits": false,
-                  },
-                  "redacted": false,
                 },
-              ],
-              "entityMetadata": {
-                "arePatchesEnabled": false,
-                "aliases": [],
               },
             },
-            "Dc3Restaurant": {
-              "objectType": {
-                "displayMetadata": {
-                  "displayName": "[DC3] Restaurant",
-                  "icon": {
-                    "type": "blueprint",
-                    "blueprint": {
-                      "locator": "cube",
-                      "color": "#2D72D2",
+            "metadata": {
+              "apiName": "create-object-dc3distribution-center-proposal",
+              "displayMetadata": {
+                "configuration": {
+                  "defaultLayout": "FORM",
+                  "displayAndFormat": {
+                    "table": {
+                      "columnWidthByParameterRid": {},
+                      "enableFileImport": true,
+                      "fitHorizontally": false,
+                      "frozenColumnCount": 0,
+                      "rowHeightInLines": 1,
                     },
                   },
-                  "pluralDisplayName": "[DC3] Restaurants",
-                  "visibility": "NORMAL",
+                  "enableLayoutUserSwitch": false,
                 },
-                "primaryKeys": [
-                  "primaryKey_",
+                "description": "",
+                "displayName": "Create [DC3] Distribution Center Proposal",
+                "icon": {
+                  "type": "blueprint",
+                  "blueprint": {
+                    "locator": "edit",
+                    "color": "#000000",
+                  },
+                },
+                "successMessage": [],
+                "typeClasses": [],
+              },
+              "formContentOrdering": [],
+              "parameterOrdering": [
+                "primaryKey_",
+                "name",
+                "price",
+                "proposedLocation",
+              ],
+              "parameters": {
+                "primaryKey_": {
+                  "id": "primaryKey_",
+                  "type": {
+                    "type": "string",
+                    "string": {},
+                  },
+                  "displayMetadata": {
+                    "displayName": "Primary Key",
+                    "description": "",
+                    "typeClasses": [],
+                  },
+                },
+                "name": {
+                  "id": "name",
+                  "type": {
+                    "type": "string",
+                    "string": {},
+                  },
+                  "displayMetadata": {
+                    "displayName": "Name",
+                    "description": "",
+                    "typeClasses": [],
+                  },
+                },
+                "price": {
+                  "id": "price",
+                  "type": {
+                    "type": "double",
+                    "double": {},
+                  },
+                  "displayMetadata": {
+                    "displayName": "Price",
+                    "description": "",
+                    "typeClasses": [],
+                  },
+                },
+                "proposedLocation": {
+                  "id": "proposedLocation",
+                  "type": {
+                    "type": "geoshape",
+                    "geoshape": {},
+                  },
+                  "displayMetadata": {
+                    "displayName": "Proposed Location",
+                    "description": "",
+                    "typeClasses": [],
+                  },
+                },
+              },
+              "sections": {},
+              "status": {
+                "type": "active",
+                "active": {},
+              },
+            },
+          },
+        },
+        "modify-object-dc3distribution-center-proposal": {
+          "actionType": {
+            "actionTypeLogic": {
+              "logic": {
+                "rules": [
+                  {
+                    "type": "modifyObjectRule",
+                    "modifyObjectRule": {
+                      "objectToModify": "objectToModifyParameter",
+                      "propertyValues": {
+                        "primaryKey_": {
+                          "type": "parameterId",
+                          "parameterId": "primaryKey_",
+                        },
+                        "name": {
+                          "type": "parameterId",
+                          "parameterId": "name",
+                        },
+                        "price": {
+                          "type": "parameterId",
+                          "parameterId": "price",
+                        },
+                        "proposedLocation": {
+                          "type": "parameterId",
+                          "parameterId": "proposedLocation",
+                        },
+                      },
+                      "structFieldValues": {},
+                    },
+                  },
                 ],
-                "propertyTypes": {
+              },
+              "validation": {
+                "sectionValidations": {},
+                "actionTypeLevelValidation": {
+                  "rules": {
+                    "0": {
+                      "condition": {
+                        "type": "true",
+                        "true": {},
+                      },
+                      "displayMetadata": {
+                        "failureMessage": "",
+                        "typeClasses": [],
+                      },
+                    },
+                  },
+                },
+                "parameterValidations": {
+                  "objectToModifyParameter": {
+                    "conditionalOverrides": [],
+                    "defaultValidation": {
+                      "display": {
+                        "renderHint": {
+                          "type": "dropdown",
+                          "dropdown": {},
+                        },
+                        "visibility": {
+                          "type": "editable",
+                          "editable": {},
+                        },
+                      },
+                      "validation": {
+                        "allowedValues": {
+                          "type": "objectQuery",
+                          "objectQuery": {
+                            "type": "objectQuery",
+                            "objectQuery": {},
+                          },
+                        },
+                        "required": {
+                          "type": "required",
+                          "required": {},
+                        },
+                      },
+                    },
+                  },
                   "primaryKey_": {
-                    "apiName": "primaryKey_",
-                    "displayMetadata": {
-                      "displayName": "Primary Key",
-                      "visibility": "NORMAL",
-                    },
-                    "indexedForSearch": true,
-                    "type": {
-                      "type": "string",
-                      "string": {
-                        "isLongText": false,
-                        "supportsEfficientLeadingWildcard": false,
-                        "supportsExactMatching": true,
+                    "conditionalOverrides": [],
+                    "defaultValidation": {
+                      "display": {
+                        "renderHint": {
+                          "type": "textInput",
+                          "textInput": {},
+                        },
+                        "visibility": {
+                          "type": "editable",
+                          "editable": {},
+                        },
                       },
-                    },
-                    "typeClasses": [
-                      {
-                        "kind": "render_hint",
-                        "name": "SELECTABLE",
+                      "validation": {
+                        "allowedValues": {
+                          "type": "text",
+                          "text": {
+                            "type": "text",
+                            "text": {},
+                          },
+                        },
+                        "required": {
+                          "type": "required",
+                          "required": {},
+                        },
                       },
-                      {
-                        "kind": "render_hint",
-                        "name": "SORTABLE",
-                      },
-                    ],
-                    "status": {
-                      "type": "active",
-                      "active": {},
                     },
                   },
                   "name": {
-                    "apiName": "name",
-                    "displayMetadata": {
-                      "displayName": "Name",
-                      "visibility": "NORMAL",
-                    },
-                    "indexedForSearch": true,
-                    "type": {
-                      "type": "string",
-                      "string": {
-                        "isLongText": false,
-                        "supportsEfficientLeadingWildcard": false,
-                        "supportsExactMatching": true,
+                    "conditionalOverrides": [],
+                    "defaultValidation": {
+                      "display": {
+                        "renderHint": {
+                          "type": "textInput",
+                          "textInput": {},
+                        },
+                        "visibility": {
+                          "type": "editable",
+                          "editable": {},
+                        },
+                      },
+                      "validation": {
+                        "allowedValues": {
+                          "type": "text",
+                          "text": {
+                            "type": "text",
+                            "text": {},
+                          },
+                        },
+                        "required": {
+                          "type": "required",
+                          "required": {},
+                        },
                       },
                     },
-                    "typeClasses": [
-                      {
-                        "kind": "render_hint",
-                        "name": "SELECTABLE",
+                  },
+                  "price": {
+                    "conditionalOverrides": [],
+                    "defaultValidation": {
+                      "display": {
+                        "renderHint": {
+                          "type": "numericInput",
+                          "numericInput": {},
+                        },
+                        "visibility": {
+                          "type": "editable",
+                          "editable": {},
+                        },
                       },
-                      {
-                        "kind": "render_hint",
-                        "name": "SORTABLE",
+                      "validation": {
+                        "allowedValues": {
+                          "type": "range",
+                          "range": {
+                            "type": "range",
+                            "range": {},
+                          },
+                        },
+                        "required": {
+                          "type": "required",
+                          "required": {},
+                        },
                       },
-                    ],
-                    "status": {
-                      "type": "active",
-                      "active": {},
+                    },
+                  },
+                  "proposedLocation": {
+                    "conditionalOverrides": [],
+                    "defaultValidation": {
+                      "display": {
+                        "renderHint": {
+                          "type": "textInput",
+                          "textInput": {},
+                        },
+                        "visibility": {
+                          "type": "editable",
+                          "editable": {},
+                        },
+                      },
+                      "validation": {
+                        "allowedValues": {
+                          "type": "geoshape",
+                          "geoshape": {
+                            "type": "geoshape",
+                            "geoshape": {},
+                          },
+                        },
+                        "required": {
+                          "type": "required",
+                          "required": {},
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+            "metadata": {
+              "apiName": "modify-object-dc3distribution-center-proposal",
+              "displayMetadata": {
+                "configuration": {
+                  "defaultLayout": "FORM",
+                  "displayAndFormat": {
+                    "table": {
+                      "columnWidthByParameterRid": {},
+                      "enableFileImport": true,
+                      "fitHorizontally": false,
+                      "frozenColumnCount": 0,
+                      "rowHeightInLines": 1,
+                    },
+                  },
+                  "enableLayoutUserSwitch": false,
+                },
+                "description": "",
+                "displayName": "Modify [DC3] Distribution Center Proposal",
+                "icon": {
+                  "type": "blueprint",
+                  "blueprint": {
+                    "locator": "edit",
+                    "color": "#000000",
+                  },
+                },
+                "successMessage": [],
+                "typeClasses": [],
+              },
+              "formContentOrdering": [],
+              "parameterOrdering": [
+                "objectToModifyParameter",
+                "primaryKey_",
+                "name",
+                "price",
+                "proposedLocation",
+              ],
+              "parameters": {
+                "objectToModifyParameter": {
+                  "id": "objectToModifyParameter",
+                  "type": {
+                    "type": "objectReference",
+                    "objectReference": {
+                      "objectTypeId": "Dc3DistributionCenterProposal",
+                    },
+                  },
+                  "displayMetadata": {
+                    "displayName": "Modify object",
+                    "description": "",
+                    "typeClasses": [],
+                  },
+                },
+                "primaryKey_": {
+                  "id": "primaryKey_",
+                  "type": {
+                    "type": "string",
+                    "string": {},
+                  },
+                  "displayMetadata": {
+                    "displayName": "Primary Key",
+                    "description": "",
+                    "typeClasses": [],
+                  },
+                },
+                "name": {
+                  "id": "name",
+                  "type": {
+                    "type": "string",
+                    "string": {},
+                  },
+                  "displayMetadata": {
+                    "displayName": "Name",
+                    "description": "",
+                    "typeClasses": [],
+                  },
+                },
+                "price": {
+                  "id": "price",
+                  "type": {
+                    "type": "double",
+                    "double": {},
+                  },
+                  "displayMetadata": {
+                    "displayName": "Price",
+                    "description": "",
+                    "typeClasses": [],
+                  },
+                },
+                "proposedLocation": {
+                  "id": "proposedLocation",
+                  "type": {
+                    "type": "geoshape",
+                    "geoshape": {},
+                  },
+                  "displayMetadata": {
+                    "displayName": "Proposed Location",
+                    "description": "",
+                    "typeClasses": [],
+                  },
+                },
+              },
+              "sections": {},
+              "status": {
+                "type": "active",
+                "active": {},
+              },
+            },
+          },
+        },
+        "delete-object-dc3distribution-center-proposal": {
+          "actionType": {
+            "actionTypeLogic": {
+              "logic": {
+                "rules": [
+                  {
+                    "type": "deleteObjectRule",
+                    "deleteObjectRule": {
+                      "objectToDelete": "objectToDeleteParameter",
+                    },
+                  },
+                ],
+              },
+              "validation": {
+                "sectionValidations": {},
+                "actionTypeLevelValidation": {
+                  "rules": {
+                    "0": {
+                      "condition": {
+                        "type": "true",
+                        "true": {},
+                      },
+                      "displayMetadata": {
+                        "failureMessage": "",
+                        "typeClasses": [],
+                      },
+                    },
+                  },
+                },
+                "parameterValidations": {
+                  "objectToDeleteParameter": {
+                    "conditionalOverrides": [],
+                    "defaultValidation": {
+                      "display": {
+                        "renderHint": {
+                          "type": "dropdown",
+                          "dropdown": {},
+                        },
+                        "visibility": {
+                          "type": "editable",
+                          "editable": {},
+                        },
+                      },
+                      "validation": {
+                        "allowedValues": {
+                          "type": "objectQuery",
+                          "objectQuery": {
+                            "type": "objectQuery",
+                            "objectQuery": {},
+                          },
+                        },
+                        "required": {
+                          "type": "required",
+                          "required": {},
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+            "metadata": {
+              "apiName": "delete-object-dc3distribution-center-proposal",
+              "displayMetadata": {
+                "configuration": {
+                  "defaultLayout": "FORM",
+                  "displayAndFormat": {
+                    "table": {
+                      "columnWidthByParameterRid": {},
+                      "enableFileImport": true,
+                      "fitHorizontally": false,
+                      "frozenColumnCount": 0,
+                      "rowHeightInLines": 1,
+                    },
+                  },
+                  "enableLayoutUserSwitch": false,
+                },
+                "description": "",
+                "displayName": "Delete [DC3] Distribution Center Proposal",
+                "icon": {
+                  "type": "blueprint",
+                  "blueprint": {
+                    "locator": "edit",
+                    "color": "#000000",
+                  },
+                },
+                "successMessage": [],
+                "typeClasses": [],
+              },
+              "formContentOrdering": [],
+              "parameterOrdering": ["objectToDeleteParameter"],
+              "parameters": {
+                "objectToDeleteParameter": {
+                  "id": "objectToDeleteParameter",
+                  "type": {
+                    "type": "objectReference",
+                    "objectReference": {
+                      "objectTypeId": "Dc3DistributionCenterProposal",
+                    },
+                  },
+                  "displayMetadata": {
+                    "displayName": "Delete object",
+                    "description": "",
+                    "typeClasses": [],
+                  },
+                },
+              },
+              "sections": {},
+              "status": {
+                "type": "active",
+                "active": {},
+              },
+            },
+          },
+        },
+        "create-object-dc3restaurant": {
+          "actionType": {
+            "actionTypeLogic": {
+              "logic": {
+                "rules": [
+                  {
+                    "type": "addObjectRule",
+                    "addObjectRule": {
+                      "objectTypeId": "Dc3Restaurant",
+                      "propertyValues": {
+                        "primaryKey_": {
+                          "type": "parameterId",
+                          "parameterId": "primaryKey_",
+                        },
+                        "name": {
+                          "type": "parameterId",
+                          "parameterId": "name",
+                        },
+                        "location": {
+                          "type": "parameterId",
+                          "parameterId": "location",
+                        },
+                        "rating": {
+                          "type": "parameterId",
+                          "parameterId": "rating",
+                        },
+                      },
+                      "structFieldValues": {},
+                    },
+                  },
+                ],
+              },
+              "validation": {
+                "sectionValidations": {},
+                "actionTypeLevelValidation": {
+                  "rules": {
+                    "0": {
+                      "condition": {
+                        "type": "true",
+                        "true": {},
+                      },
+                      "displayMetadata": {
+                        "failureMessage": "",
+                        "typeClasses": [],
+                      },
+                    },
+                  },
+                },
+                "parameterValidations": {
+                  "primaryKey_": {
+                    "conditionalOverrides": [],
+                    "defaultValidation": {
+                      "display": {
+                        "renderHint": {
+                          "type": "textInput",
+                          "textInput": {},
+                        },
+                        "visibility": {
+                          "type": "editable",
+                          "editable": {},
+                        },
+                      },
+                      "validation": {
+                        "allowedValues": {
+                          "type": "text",
+                          "text": {
+                            "type": "text",
+                            "text": {},
+                          },
+                        },
+                        "required": {
+                          "type": "required",
+                          "required": {},
+                        },
+                      },
+                    },
+                  },
+                  "name": {
+                    "conditionalOverrides": [],
+                    "defaultValidation": {
+                      "display": {
+                        "renderHint": {
+                          "type": "textInput",
+                          "textInput": {},
+                        },
+                        "visibility": {
+                          "type": "editable",
+                          "editable": {},
+                        },
+                      },
+                      "validation": {
+                        "allowedValues": {
+                          "type": "text",
+                          "text": {
+                            "type": "text",
+                            "text": {},
+                          },
+                        },
+                        "required": {
+                          "type": "required",
+                          "required": {},
+                        },
+                      },
                     },
                   },
                   "location": {
-                    "apiName": "location",
-                    "displayMetadata": {
-                      "displayName": "Location",
-                      "visibility": "NORMAL",
-                    },
-                    "indexedForSearch": true,
-                    "type": {
-                      "type": "geohash",
-                      "geohash": {},
-                    },
-                    "typeClasses": [
-                      {
-                        "kind": "render_hint",
-                        "name": "SELECTABLE",
+                    "conditionalOverrides": [],
+                    "defaultValidation": {
+                      "display": {
+                        "renderHint": {
+                          "type": "textInput",
+                          "textInput": {},
+                        },
+                        "visibility": {
+                          "type": "editable",
+                          "editable": {},
+                        },
                       },
-                      {
-                        "kind": "render_hint",
-                        "name": "SORTABLE",
+                      "validation": {
+                        "allowedValues": {
+                          "type": "geoshape",
+                          "geoshape": {
+                            "type": "geoshape",
+                            "geoshape": {},
+                          },
+                        },
+                        "required": {
+                          "type": "required",
+                          "required": {},
+                        },
                       },
-                    ],
-                    "status": {
-                      "type": "active",
-                      "active": {},
                     },
                   },
                   "rating": {
-                    "apiName": "rating",
-                    "displayMetadata": {
-                      "displayName": "Rating",
-                      "visibility": "NORMAL",
-                    },
-                    "indexedForSearch": true,
-                    "type": {
-                      "type": "integer",
-                      "integer": {},
-                    },
-                    "typeClasses": [
-                      {
-                        "kind": "render_hint",
-                        "name": "SELECTABLE",
+                    "conditionalOverrides": [],
+                    "defaultValidation": {
+                      "display": {
+                        "renderHint": {
+                          "type": "numericInput",
+                          "numericInput": {},
+                        },
+                        "visibility": {
+                          "type": "editable",
+                          "editable": {},
+                        },
                       },
-                      {
-                        "kind": "render_hint",
-                        "name": "SORTABLE",
-                      },
-                    ],
-                    "status": {
-                      "type": "active",
-                      "active": {},
-                    },
-                  },
-                },
-                "titlePropertyTypeRid": "name",
-                "apiName": "Dc3Restaurant",
-                "status": {
-                  "type": "active",
-                  "active": {},
-                },
-                "redacted": false,
-                "implementsInterfaces2": [],
-                "allImplementsInterfaces": {},
-              },
-              "datasources": [
-                {
-                  "datasourceName": "Dc3Restaurant",
-                  "datasource": {
-                    "type": "datasetV2",
-                    "datasetV2": {
-                      "datasetRid": "Dc3Restaurant",
-                      "propertyMapping": {
-                        "primaryKey_": {
-                          "type": "column",
-                          "column": "primaryKey_",
+                      "validation": {
+                        "allowedValues": {
+                          "type": "range",
+                          "range": {
+                            "type": "range",
+                            "range": {},
+                          },
                         },
-                        "name": {
-                          "type": "column",
-                          "column": "name",
-                        },
-                        "location": {
-                          "type": "column",
-                          "column": "location",
-                        },
-                        "rating": {
-                          "type": "column",
-                          "column": "rating",
+                        "required": {
+                          "type": "required",
+                          "required": {},
                         },
                       },
                     },
                   },
-                  "editsConfiguration": {
-                    "onlyAllowPrivilegedEdits": false,
-                  },
-                  "redacted": false,
                 },
-              ],
-              "entityMetadata": {
-                "arePatchesEnabled": false,
-                "aliases": [],
               },
             },
-            "Dc3DistributionRouteAnalysis": {
-              "objectType": {
-                "displayMetadata": {
-                  "displayName": "[DC3] Distribution Route Analysis",
-                  "icon": {
-                    "type": "blueprint",
-                    "blueprint": {
-                      "locator": "cube",
-                      "color": "#2D72D2",
+            "metadata": {
+              "apiName": "create-object-dc3restaurant",
+              "displayMetadata": {
+                "configuration": {
+                  "defaultLayout": "FORM",
+                  "displayAndFormat": {
+                    "table": {
+                      "columnWidthByParameterRid": {},
+                      "enableFileImport": true,
+                      "fitHorizontally": false,
+                      "frozenColumnCount": 0,
+                      "rowHeightInLines": 1,
                     },
                   },
-                  "pluralDisplayName": "[DC3] Distribution Route Analyses",
-                  "visibility": "NORMAL",
+                  "enableLayoutUserSwitch": false,
                 },
-                "primaryKeys": [
-                  "primaryKey_",
+                "description": "",
+                "displayName": "Create [DC3] Restaurant",
+                "icon": {
+                  "type": "blueprint",
+                  "blueprint": {
+                    "locator": "edit",
+                    "color": "#000000",
+                  },
+                },
+                "successMessage": [],
+                "typeClasses": [],
+              },
+              "formContentOrdering": [],
+              "parameterOrdering": [
+                "primaryKey_",
+                "name",
+                "location",
+                "rating",
+              ],
+              "parameters": {
+                "primaryKey_": {
+                  "id": "primaryKey_",
+                  "type": {
+                    "type": "string",
+                    "string": {},
+                  },
+                  "displayMetadata": {
+                    "displayName": "Primary Key",
+                    "description": "",
+                    "typeClasses": [],
+                  },
+                },
+                "name": {
+                  "id": "name",
+                  "type": {
+                    "type": "string",
+                    "string": {},
+                  },
+                  "displayMetadata": {
+                    "displayName": "Name",
+                    "description": "",
+                    "typeClasses": [],
+                  },
+                },
+                "location": {
+                  "id": "location",
+                  "type": {
+                    "type": "geoshape",
+                    "geoshape": {},
+                  },
+                  "displayMetadata": {
+                    "displayName": "Location",
+                    "description": "",
+                    "typeClasses": [],
+                  },
+                },
+                "rating": {
+                  "id": "rating",
+                  "type": {
+                    "type": "integer",
+                    "integer": {},
+                  },
+                  "displayMetadata": {
+                    "displayName": "Rating",
+                    "description": "",
+                    "typeClasses": [],
+                  },
+                },
+              },
+              "sections": {},
+              "status": {
+                "type": "active",
+                "active": {},
+              },
+            },
+          },
+        },
+        "modify-object-dc3restaurant": {
+          "actionType": {
+            "actionTypeLogic": {
+              "logic": {
+                "rules": [
+                  {
+                    "type": "modifyObjectRule",
+                    "modifyObjectRule": {
+                      "objectToModify": "objectToModifyParameter",
+                      "propertyValues": {
+                        "primaryKey_": {
+                          "type": "parameterId",
+                          "parameterId": "primaryKey_",
+                        },
+                        "name": {
+                          "type": "parameterId",
+                          "parameterId": "name",
+                        },
+                        "location": {
+                          "type": "parameterId",
+                          "parameterId": "location",
+                        },
+                        "rating": {
+                          "type": "parameterId",
+                          "parameterId": "rating",
+                        },
+                      },
+                      "structFieldValues": {},
+                    },
+                  },
                 ],
-                "propertyTypes": {
+              },
+              "validation": {
+                "sectionValidations": {},
+                "actionTypeLevelValidation": {
+                  "rules": {
+                    "0": {
+                      "condition": {
+                        "type": "true",
+                        "true": {},
+                      },
+                      "displayMetadata": {
+                        "failureMessage": "",
+                        "typeClasses": [],
+                      },
+                    },
+                  },
+                },
+                "parameterValidations": {
+                  "objectToModifyParameter": {
+                    "conditionalOverrides": [],
+                    "defaultValidation": {
+                      "display": {
+                        "renderHint": {
+                          "type": "dropdown",
+                          "dropdown": {},
+                        },
+                        "visibility": {
+                          "type": "editable",
+                          "editable": {},
+                        },
+                      },
+                      "validation": {
+                        "allowedValues": {
+                          "type": "objectQuery",
+                          "objectQuery": {
+                            "type": "objectQuery",
+                            "objectQuery": {},
+                          },
+                        },
+                        "required": {
+                          "type": "required",
+                          "required": {},
+                        },
+                      },
+                    },
+                  },
                   "primaryKey_": {
-                    "apiName": "primaryKey_",
-                    "displayMetadata": {
-                      "displayName": "Primary Key",
-                      "visibility": "NORMAL",
-                    },
-                    "indexedForSearch": true,
-                    "type": {
-                      "type": "string",
-                      "string": {
-                        "isLongText": false,
-                        "supportsEfficientLeadingWildcard": false,
-                        "supportsExactMatching": true,
+                    "conditionalOverrides": [],
+                    "defaultValidation": {
+                      "display": {
+                        "renderHint": {
+                          "type": "textInput",
+                          "textInput": {},
+                        },
+                        "visibility": {
+                          "type": "editable",
+                          "editable": {},
+                        },
+                      },
+                      "validation": {
+                        "allowedValues": {
+                          "type": "text",
+                          "text": {
+                            "type": "text",
+                            "text": {},
+                          },
+                        },
+                        "required": {
+                          "type": "required",
+                          "required": {},
+                        },
                       },
                     },
-                    "typeClasses": [
-                      {
-                        "kind": "render_hint",
-                        "name": "SELECTABLE",
+                  },
+                  "name": {
+                    "conditionalOverrides": [],
+                    "defaultValidation": {
+                      "display": {
+                        "renderHint": {
+                          "type": "textInput",
+                          "textInput": {},
+                        },
+                        "visibility": {
+                          "type": "editable",
+                          "editable": {},
+                        },
                       },
-                      {
-                        "kind": "render_hint",
-                        "name": "SORTABLE",
+                      "validation": {
+                        "allowedValues": {
+                          "type": "text",
+                          "text": {
+                            "type": "text",
+                            "text": {},
+                          },
+                        },
+                        "required": {
+                          "type": "required",
+                          "required": {},
+                        },
                       },
-                    ],
-                    "status": {
-                      "type": "active",
-                      "active": {},
+                    },
+                  },
+                  "location": {
+                    "conditionalOverrides": [],
+                    "defaultValidation": {
+                      "display": {
+                        "renderHint": {
+                          "type": "textInput",
+                          "textInput": {},
+                        },
+                        "visibility": {
+                          "type": "editable",
+                          "editable": {},
+                        },
+                      },
+                      "validation": {
+                        "allowedValues": {
+                          "type": "geoshape",
+                          "geoshape": {
+                            "type": "geoshape",
+                            "geoshape": {},
+                          },
+                        },
+                        "required": {
+                          "type": "required",
+                          "required": {},
+                        },
+                      },
+                    },
+                  },
+                  "rating": {
+                    "conditionalOverrides": [],
+                    "defaultValidation": {
+                      "display": {
+                        "renderHint": {
+                          "type": "numericInput",
+                          "numericInput": {},
+                        },
+                        "visibility": {
+                          "type": "editable",
+                          "editable": {},
+                        },
+                      },
+                      "validation": {
+                        "allowedValues": {
+                          "type": "range",
+                          "range": {
+                            "type": "range",
+                            "range": {},
+                          },
+                        },
+                        "required": {
+                          "type": "required",
+                          "required": {},
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+            "metadata": {
+              "apiName": "modify-object-dc3restaurant",
+              "displayMetadata": {
+                "configuration": {
+                  "defaultLayout": "FORM",
+                  "displayAndFormat": {
+                    "table": {
+                      "columnWidthByParameterRid": {},
+                      "enableFileImport": true,
+                      "fitHorizontally": false,
+                      "frozenColumnCount": 0,
+                      "rowHeightInLines": 1,
+                    },
+                  },
+                  "enableLayoutUserSwitch": false,
+                },
+                "description": "",
+                "displayName": "Modify [DC3] Restaurant",
+                "icon": {
+                  "type": "blueprint",
+                  "blueprint": {
+                    "locator": "edit",
+                    "color": "#000000",
+                  },
+                },
+                "successMessage": [],
+                "typeClasses": [],
+              },
+              "formContentOrdering": [],
+              "parameterOrdering": [
+                "objectToModifyParameter",
+                "primaryKey_",
+                "name",
+                "location",
+                "rating",
+              ],
+              "parameters": {
+                "objectToModifyParameter": {
+                  "id": "objectToModifyParameter",
+                  "type": {
+                    "type": "objectReference",
+                    "objectReference": {
+                      "objectTypeId": "Dc3Restaurant",
+                    },
+                  },
+                  "displayMetadata": {
+                    "displayName": "Modify object",
+                    "description": "",
+                    "typeClasses": [],
+                  },
+                },
+                "primaryKey_": {
+                  "id": "primaryKey_",
+                  "type": {
+                    "type": "string",
+                    "string": {},
+                  },
+                  "displayMetadata": {
+                    "displayName": "Primary Key",
+                    "description": "",
+                    "typeClasses": [],
+                  },
+                },
+                "name": {
+                  "id": "name",
+                  "type": {
+                    "type": "string",
+                    "string": {},
+                  },
+                  "displayMetadata": {
+                    "displayName": "Name",
+                    "description": "",
+                    "typeClasses": [],
+                  },
+                },
+                "location": {
+                  "id": "location",
+                  "type": {
+                    "type": "geoshape",
+                    "geoshape": {},
+                  },
+                  "displayMetadata": {
+                    "displayName": "Location",
+                    "description": "",
+                    "typeClasses": [],
+                  },
+                },
+                "rating": {
+                  "id": "rating",
+                  "type": {
+                    "type": "integer",
+                    "integer": {},
+                  },
+                  "displayMetadata": {
+                    "displayName": "Rating",
+                    "description": "",
+                    "typeClasses": [],
+                  },
+                },
+              },
+              "sections": {},
+              "status": {
+                "type": "active",
+                "active": {},
+              },
+            },
+          },
+        },
+        "delete-object-dc3restaurant": {
+          "actionType": {
+            "actionTypeLogic": {
+              "logic": {
+                "rules": [
+                  {
+                    "type": "deleteObjectRule",
+                    "deleteObjectRule": {
+                      "objectToDelete": "objectToDeleteParameter",
+                    },
+                  },
+                ],
+              },
+              "validation": {
+                "sectionValidations": {},
+                "actionTypeLevelValidation": {
+                  "rules": {
+                    "0": {
+                      "condition": {
+                        "type": "true",
+                        "true": {},
+                      },
+                      "displayMetadata": {
+                        "failureMessage": "",
+                        "typeClasses": [],
+                      },
+                    },
+                  },
+                },
+                "parameterValidations": {
+                  "objectToDeleteParameter": {
+                    "conditionalOverrides": [],
+                    "defaultValidation": {
+                      "display": {
+                        "renderHint": {
+                          "type": "dropdown",
+                          "dropdown": {},
+                        },
+                        "visibility": {
+                          "type": "editable",
+                          "editable": {},
+                        },
+                      },
+                      "validation": {
+                        "allowedValues": {
+                          "type": "objectQuery",
+                          "objectQuery": {
+                            "type": "objectQuery",
+                            "objectQuery": {},
+                          },
+                        },
+                        "required": {
+                          "type": "required",
+                          "required": {},
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+            "metadata": {
+              "apiName": "delete-object-dc3restaurant",
+              "displayMetadata": {
+                "configuration": {
+                  "defaultLayout": "FORM",
+                  "displayAndFormat": {
+                    "table": {
+                      "columnWidthByParameterRid": {},
+                      "enableFileImport": true,
+                      "fitHorizontally": false,
+                      "frozenColumnCount": 0,
+                      "rowHeightInLines": 1,
+                    },
+                  },
+                  "enableLayoutUserSwitch": false,
+                },
+                "description": "",
+                "displayName": "Delete [DC3] Restaurant",
+                "icon": {
+                  "type": "blueprint",
+                  "blueprint": {
+                    "locator": "edit",
+                    "color": "#000000",
+                  },
+                },
+                "successMessage": [],
+                "typeClasses": [],
+              },
+              "formContentOrdering": [],
+              "parameterOrdering": ["objectToDeleteParameter"],
+              "parameters": {
+                "objectToDeleteParameter": {
+                  "id": "objectToDeleteParameter",
+                  "type": {
+                    "type": "objectReference",
+                    "objectReference": {
+                      "objectTypeId": "Dc3Restaurant",
+                    },
+                  },
+                  "displayMetadata": {
+                    "displayName": "Delete object",
+                    "description": "",
+                    "typeClasses": [],
+                  },
+                },
+              },
+              "sections": {},
+              "status": {
+                "type": "active",
+                "active": {},
+              },
+            },
+          },
+        },
+        "create-object-dc3distribution-route-analysis": {
+          "actionType": {
+            "actionTypeLogic": {
+              "logic": {
+                "rules": [
+                  {
+                    "type": "addObjectRule",
+                    "addObjectRule": {
+                      "objectTypeId": "Dc3DistributionRouteAnalysis",
+                      "propertyValues": {
+                        "primaryKey_": {
+                          "type": "parameterId",
+                          "parameterId": "primaryKey_",
+                        },
+                        "distributionProposal": {
+                          "type": "parameterId",
+                          "parameterId": "distributionProposal",
+                        },
+                        "restaurant": {
+                          "type": "parameterId",
+                          "parameterId": "restaurant",
+                        },
+                        "timeMinutes": {
+                          "type": "parameterId",
+                          "parameterId": "timeMinutes",
+                        },
+                      },
+                      "structFieldValues": {},
+                    },
+                  },
+                ],
+              },
+              "validation": {
+                "sectionValidations": {},
+                "actionTypeLevelValidation": {
+                  "rules": {
+                    "0": {
+                      "condition": {
+                        "type": "true",
+                        "true": {},
+                      },
+                      "displayMetadata": {
+                        "failureMessage": "",
+                        "typeClasses": [],
+                      },
+                    },
+                  },
+                },
+                "parameterValidations": {
+                  "primaryKey_": {
+                    "conditionalOverrides": [],
+                    "defaultValidation": {
+                      "display": {
+                        "renderHint": {
+                          "type": "textInput",
+                          "textInput": {},
+                        },
+                        "visibility": {
+                          "type": "editable",
+                          "editable": {},
+                        },
+                      },
+                      "validation": {
+                        "allowedValues": {
+                          "type": "text",
+                          "text": {
+                            "type": "text",
+                            "text": {},
+                          },
+                        },
+                        "required": {
+                          "type": "required",
+                          "required": {},
+                        },
+                      },
                     },
                   },
                   "distributionProposal": {
-                    "apiName": "distributionProposal",
-                    "displayMetadata": {
-                      "displayName": "Distribution Proposal",
-                      "visibility": "NORMAL",
-                    },
-                    "indexedForSearch": true,
-                    "type": {
-                      "type": "string",
-                      "string": {
-                        "isLongText": false,
-                        "supportsEfficientLeadingWildcard": false,
-                        "supportsExactMatching": true,
+                    "conditionalOverrides": [],
+                    "defaultValidation": {
+                      "display": {
+                        "renderHint": {
+                          "type": "textInput",
+                          "textInput": {},
+                        },
+                        "visibility": {
+                          "type": "editable",
+                          "editable": {},
+                        },
                       },
-                    },
-                    "typeClasses": [
-                      {
-                        "kind": "render_hint",
-                        "name": "SELECTABLE",
+                      "validation": {
+                        "allowedValues": {
+                          "type": "text",
+                          "text": {
+                            "type": "text",
+                            "text": {},
+                          },
+                        },
+                        "required": {
+                          "type": "required",
+                          "required": {},
+                        },
                       },
-                      {
-                        "kind": "render_hint",
-                        "name": "SORTABLE",
-                      },
-                    ],
-                    "status": {
-                      "type": "active",
-                      "active": {},
                     },
                   },
                   "restaurant": {
-                    "apiName": "restaurant",
-                    "displayMetadata": {
-                      "displayName": "Restaurant",
-                      "visibility": "NORMAL",
-                    },
-                    "indexedForSearch": true,
-                    "type": {
-                      "type": "string",
-                      "string": {
-                        "isLongText": false,
-                        "supportsEfficientLeadingWildcard": false,
-                        "supportsExactMatching": true,
+                    "conditionalOverrides": [],
+                    "defaultValidation": {
+                      "display": {
+                        "renderHint": {
+                          "type": "textInput",
+                          "textInput": {},
+                        },
+                        "visibility": {
+                          "type": "editable",
+                          "editable": {},
+                        },
                       },
-                    },
-                    "typeClasses": [
-                      {
-                        "kind": "render_hint",
-                        "name": "SELECTABLE",
+                      "validation": {
+                        "allowedValues": {
+                          "type": "text",
+                          "text": {
+                            "type": "text",
+                            "text": {},
+                          },
+                        },
+                        "required": {
+                          "type": "required",
+                          "required": {},
+                        },
                       },
-                      {
-                        "kind": "render_hint",
-                        "name": "SORTABLE",
-                      },
-                    ],
-                    "status": {
-                      "type": "active",
-                      "active": {},
                     },
                   },
                   "timeMinutes": {
-                    "apiName": "timeMinutes",
-                    "displayMetadata": {
-                      "displayName": "Time (Minutes)",
-                      "visibility": "NORMAL",
-                    },
-                    "indexedForSearch": true,
-                    "type": {
-                      "type": "string",
-                      "string": {
-                        "isLongText": false,
-                        "supportsEfficientLeadingWildcard": false,
-                        "supportsExactMatching": true,
+                    "conditionalOverrides": [],
+                    "defaultValidation": {
+                      "display": {
+                        "renderHint": {
+                          "type": "textInput",
+                          "textInput": {},
+                        },
+                        "visibility": {
+                          "type": "editable",
+                          "editable": {},
+                        },
                       },
-                    },
-                    "typeClasses": [
-                      {
-                        "kind": "render_hint",
-                        "name": "SELECTABLE",
+                      "validation": {
+                        "allowedValues": {
+                          "type": "text",
+                          "text": {
+                            "type": "text",
+                            "text": {},
+                          },
+                        },
+                        "required": {
+                          "type": "required",
+                          "required": {},
+                        },
                       },
-                      {
-                        "kind": "render_hint",
-                        "name": "SORTABLE",
-                      },
-                    ],
-                    "status": {
-                      "type": "active",
-                      "active": {},
                     },
                   },
                 },
-                "titlePropertyTypeRid": "primaryKey_",
-                "apiName": "Dc3DistributionRouteAnalysis",
-                "status": {
-                  "type": "active",
-                  "active": {},
-                },
-                "redacted": false,
-                "implementsInterfaces2": [],
-                "allImplementsInterfaces": {},
               },
-              "datasources": [
-                {
-                  "datasourceName": "Dc3DistributionRouteAnalysis",
-                  "datasource": {
-                    "type": "datasetV2",
-                    "datasetV2": {
-                      "datasetRid": "Dc3DistributionRouteAnalysis",
-                      "propertyMapping": {
+            },
+            "metadata": {
+              "apiName": "create-object-dc3distribution-route-analysis",
+              "displayMetadata": {
+                "configuration": {
+                  "defaultLayout": "FORM",
+                  "displayAndFormat": {
+                    "table": {
+                      "columnWidthByParameterRid": {},
+                      "enableFileImport": true,
+                      "fitHorizontally": false,
+                      "frozenColumnCount": 0,
+                      "rowHeightInLines": 1,
+                    },
+                  },
+                  "enableLayoutUserSwitch": false,
+                },
+                "description": "",
+                "displayName": "Create [DC3] Distribution Route Analysis",
+                "icon": {
+                  "type": "blueprint",
+                  "blueprint": {
+                    "locator": "edit",
+                    "color": "#000000",
+                  },
+                },
+                "successMessage": [],
+                "typeClasses": [],
+              },
+              "formContentOrdering": [],
+              "parameterOrdering": [
+                "primaryKey_",
+                "distributionProposal",
+                "restaurant",
+                "timeMinutes",
+              ],
+              "parameters": {
+                "primaryKey_": {
+                  "id": "primaryKey_",
+                  "type": {
+                    "type": "string",
+                    "string": {},
+                  },
+                  "displayMetadata": {
+                    "displayName": "Primary Key",
+                    "description": "",
+                    "typeClasses": [],
+                  },
+                },
+                "distributionProposal": {
+                  "id": "distributionProposal",
+                  "type": {
+                    "type": "string",
+                    "string": {},
+                  },
+                  "displayMetadata": {
+                    "displayName": "Distribution Proposal",
+                    "description": "",
+                    "typeClasses": [],
+                  },
+                },
+                "restaurant": {
+                  "id": "restaurant",
+                  "type": {
+                    "type": "string",
+                    "string": {},
+                  },
+                  "displayMetadata": {
+                    "displayName": "Restaurant",
+                    "description": "",
+                    "typeClasses": [],
+                  },
+                },
+                "timeMinutes": {
+                  "id": "timeMinutes",
+                  "type": {
+                    "type": "string",
+                    "string": {},
+                  },
+                  "displayMetadata": {
+                    "displayName": "Time (Minutes)",
+                    "description": "",
+                    "typeClasses": [],
+                  },
+                },
+              },
+              "sections": {},
+              "status": {
+                "type": "active",
+                "active": {},
+              },
+            },
+          },
+        },
+        "modify-object-dc3distribution-route-analysis": {
+          "actionType": {
+            "actionTypeLogic": {
+              "logic": {
+                "rules": [
+                  {
+                    "type": "modifyObjectRule",
+                    "modifyObjectRule": {
+                      "objectToModify": "objectToModifyParameter",
+                      "propertyValues": {
                         "primaryKey_": {
-                          "type": "column",
-                          "column": "primaryKey_",
+                          "type": "parameterId",
+                          "parameterId": "primaryKey_",
                         },
                         "distributionProposal": {
-                          "type": "column",
-                          "column": "distributionProposal",
+                          "type": "parameterId",
+                          "parameterId": "distributionProposal",
                         },
                         "restaurant": {
-                          "type": "column",
-                          "column": "restaurant",
+                          "type": "parameterId",
+                          "parameterId": "restaurant",
                         },
                         "timeMinutes": {
-                          "type": "column",
-                          "column": "timeMinutes",
+                          "type": "parameterId",
+                          "parameterId": "timeMinutes",
+                        },
+                      },
+                      "structFieldValues": {},
+                    },
+                  },
+                ],
+              },
+              "validation": {
+                "sectionValidations": {},
+                "actionTypeLevelValidation": {
+                  "rules": {
+                    "0": {
+                      "condition": {
+                        "type": "true",
+                        "true": {},
+                      },
+                      "displayMetadata": {
+                        "failureMessage": "",
+                        "typeClasses": [],
+                      },
+                    },
+                  },
+                },
+                "parameterValidations": {
+                  "objectToModifyParameter": {
+                    "conditionalOverrides": [],
+                    "defaultValidation": {
+                      "display": {
+                        "renderHint": {
+                          "type": "dropdown",
+                          "dropdown": {},
+                        },
+                        "visibility": {
+                          "type": "editable",
+                          "editable": {},
+                        },
+                      },
+                      "validation": {
+                        "allowedValues": {
+                          "type": "objectQuery",
+                          "objectQuery": {
+                            "type": "objectQuery",
+                            "objectQuery": {},
+                          },
+                        },
+                        "required": {
+                          "type": "required",
+                          "required": {},
                         },
                       },
                     },
                   },
-                  "editsConfiguration": {
-                    "onlyAllowPrivilegedEdits": false,
+                  "primaryKey_": {
+                    "conditionalOverrides": [],
+                    "defaultValidation": {
+                      "display": {
+                        "renderHint": {
+                          "type": "textInput",
+                          "textInput": {},
+                        },
+                        "visibility": {
+                          "type": "editable",
+                          "editable": {},
+                        },
+                      },
+                      "validation": {
+                        "allowedValues": {
+                          "type": "text",
+                          "text": {
+                            "type": "text",
+                            "text": {},
+                          },
+                        },
+                        "required": {
+                          "type": "required",
+                          "required": {},
+                        },
+                      },
+                    },
                   },
-                  "redacted": false,
+                  "distributionProposal": {
+                    "conditionalOverrides": [],
+                    "defaultValidation": {
+                      "display": {
+                        "renderHint": {
+                          "type": "textInput",
+                          "textInput": {},
+                        },
+                        "visibility": {
+                          "type": "editable",
+                          "editable": {},
+                        },
+                      },
+                      "validation": {
+                        "allowedValues": {
+                          "type": "text",
+                          "text": {
+                            "type": "text",
+                            "text": {},
+                          },
+                        },
+                        "required": {
+                          "type": "required",
+                          "required": {},
+                        },
+                      },
+                    },
+                  },
+                  "restaurant": {
+                    "conditionalOverrides": [],
+                    "defaultValidation": {
+                      "display": {
+                        "renderHint": {
+                          "type": "textInput",
+                          "textInput": {},
+                        },
+                        "visibility": {
+                          "type": "editable",
+                          "editable": {},
+                        },
+                      },
+                      "validation": {
+                        "allowedValues": {
+                          "type": "text",
+                          "text": {
+                            "type": "text",
+                            "text": {},
+                          },
+                        },
+                        "required": {
+                          "type": "required",
+                          "required": {},
+                        },
+                      },
+                    },
+                  },
+                  "timeMinutes": {
+                    "conditionalOverrides": [],
+                    "defaultValidation": {
+                      "display": {
+                        "renderHint": {
+                          "type": "textInput",
+                          "textInput": {},
+                        },
+                        "visibility": {
+                          "type": "editable",
+                          "editable": {},
+                        },
+                      },
+                      "validation": {
+                        "allowedValues": {
+                          "type": "text",
+                          "text": {
+                            "type": "text",
+                            "text": {},
+                          },
+                        },
+                        "required": {
+                          "type": "required",
+                          "required": {},
+                        },
+                      },
+                    },
+                  },
                 },
+              },
+            },
+            "metadata": {
+              "apiName": "modify-object-dc3distribution-route-analysis",
+              "displayMetadata": {
+                "configuration": {
+                  "defaultLayout": "FORM",
+                  "displayAndFormat": {
+                    "table": {
+                      "columnWidthByParameterRid": {},
+                      "enableFileImport": true,
+                      "fitHorizontally": false,
+                      "frozenColumnCount": 0,
+                      "rowHeightInLines": 1,
+                    },
+                  },
+                  "enableLayoutUserSwitch": false,
+                },
+                "description": "",
+                "displayName": "Modify [DC3] Distribution Route Analysis",
+                "icon": {
+                  "type": "blueprint",
+                  "blueprint": {
+                    "locator": "edit",
+                    "color": "#000000",
+                  },
+                },
+                "successMessage": [],
+                "typeClasses": [],
+              },
+              "formContentOrdering": [],
+              "parameterOrdering": [
+                "objectToModifyParameter",
+                "primaryKey_",
+                "distributionProposal",
+                "restaurant",
+                "timeMinutes",
               ],
-              "entityMetadata": {
-                "arePatchesEnabled": false,
-                "aliases": [],
+              "parameters": {
+                "objectToModifyParameter": {
+                  "id": "objectToModifyParameter",
+                  "type": {
+                    "type": "objectReference",
+                    "objectReference": {
+                      "objectTypeId": "Dc3DistributionRouteAnalysis",
+                    },
+                  },
+                  "displayMetadata": {
+                    "displayName": "Modify object",
+                    "description": "",
+                    "typeClasses": [],
+                  },
+                },
+                "primaryKey_": {
+                  "id": "primaryKey_",
+                  "type": {
+                    "type": "string",
+                    "string": {},
+                  },
+                  "displayMetadata": {
+                    "displayName": "Primary Key",
+                    "description": "",
+                    "typeClasses": [],
+                  },
+                },
+                "distributionProposal": {
+                  "id": "distributionProposal",
+                  "type": {
+                    "type": "string",
+                    "string": {},
+                  },
+                  "displayMetadata": {
+                    "displayName": "Distribution Proposal",
+                    "description": "",
+                    "typeClasses": [],
+                  },
+                },
+                "restaurant": {
+                  "id": "restaurant",
+                  "type": {
+                    "type": "string",
+                    "string": {},
+                  },
+                  "displayMetadata": {
+                    "displayName": "Restaurant",
+                    "description": "",
+                    "typeClasses": [],
+                  },
+                },
+                "timeMinutes": {
+                  "id": "timeMinutes",
+                  "type": {
+                    "type": "string",
+                    "string": {},
+                  },
+                  "displayMetadata": {
+                    "displayName": "Time (Minutes)",
+                    "description": "",
+                    "typeClasses": [],
+                  },
+                },
+              },
+              "sections": {},
+              "status": {
+                "type": "active",
+                "active": {},
               },
             },
           },
-          "sharedPropertyTypes": {},
-          "interfaceTypes": {},
-          "linkTypes": {
-            "Dc3RestaurantToDistributionRoute": {
-              "linkType": {
-                "definition": {
-                  "type": "oneToMany",
-                  "oneToMany": {
-                    "cardinalityHint": "ONE_TO_ONE",
-                    "manyToOneLinkMetadata": {
-                      "displayMetadata": {
-                        "displayName": "Distribution Route Analysis",
-                        "pluralDisplayName": "Distribution Route Analyses",
-                        "visibility": "NORMAL",
-                      },
-                      "apiName": "distributionRouteAnalysis",
-                      "typeClasses": [],
+        },
+        "delete-object-dc3distribution-route-analysis": {
+          "actionType": {
+            "actionTypeLogic": {
+              "logic": {
+                "rules": [
+                  {
+                    "type": "deleteObjectRule",
+                    "deleteObjectRule": {
+                      "objectToDelete": "objectToDeleteParameter",
                     },
-                    "objectTypeRidManySide": "Dc3DistributionRouteAnalysis",
-                    "objectTypeRidOneSide": "Dc3Restaurant",
-                    "oneToManyLinkMetadata": {
+                  },
+                ],
+              },
+              "validation": {
+                "sectionValidations": {},
+                "actionTypeLevelValidation": {
+                  "rules": {
+                    "0": {
+                      "condition": {
+                        "type": "true",
+                        "true": {},
+                      },
                       "displayMetadata": {
-                        "displayName": "Restaurant",
-                        "pluralDisplayName": "Restaurants",
-                        "visibility": "NORMAL",
+                        "failureMessage": "",
+                        "typeClasses": [],
                       },
-                      "apiName": "restaurant",
-                      "typeClasses": [],
                     },
-                    "oneSidePrimaryKeyToManySidePropertyMapping": [
-                      {
-                        "from": {
-                          "apiName": "primaryKey_",
-                          "object": "Dc3Restaurant",
-                        },
-                        "to": {
-                          "apiName": "restaurant",
-                          "object": "Dc3DistributionRouteAnalysis",
-                        },
-                      },
-                    ],
                   },
                 },
-                "id": "Dc3RestaurantToDistributionRoute",
-                "status": {
-                  "type": "active",
-                  "active": {},
+                "parameterValidations": {
+                  "objectToDeleteParameter": {
+                    "conditionalOverrides": [],
+                    "defaultValidation": {
+                      "display": {
+                        "renderHint": {
+                          "type": "dropdown",
+                          "dropdown": {},
+                        },
+                        "visibility": {
+                          "type": "editable",
+                          "editable": {},
+                        },
+                      },
+                      "validation": {
+                        "allowedValues": {
+                          "type": "objectQuery",
+                          "objectQuery": {
+                            "type": "objectQuery",
+                            "objectQuery": {},
+                          },
+                        },
+                        "required": {
+                          "type": "required",
+                          "required": {},
+                        },
+                      },
+                    },
+                  },
                 },
-                "redacted": false,
-              },
-              "datasources": [],
-              "entityMetadata": {
-                "arePatchesEnabled": false,
               },
             },
-            "Dc3DistributionCenterProposalToDistributionRoute": {
-              "linkType": {
-                "definition": {
-                  "type": "oneToMany",
-                  "oneToMany": {
-                    "cardinalityHint": "ONE_TO_ONE",
-                    "manyToOneLinkMetadata": {
-                      "displayMetadata": {
-                        "displayName": "Distribution Route Analysis",
-                        "pluralDisplayName": "Distribution Route Analyses",
-                        "visibility": "NORMAL",
-                      },
-                      "apiName": "distributionRouteAnalysis",
-                      "typeClasses": [],
+            "metadata": {
+              "apiName": "delete-object-dc3distribution-route-analysis",
+              "displayMetadata": {
+                "configuration": {
+                  "defaultLayout": "FORM",
+                  "displayAndFormat": {
+                    "table": {
+                      "columnWidthByParameterRid": {},
+                      "enableFileImport": true,
+                      "fitHorizontally": false,
+                      "frozenColumnCount": 0,
+                      "rowHeightInLines": 1,
                     },
-                    "objectTypeRidManySide": "Dc3DistributionRouteAnalysis",
-                    "objectTypeRidOneSide": "Dc3DistributionCenterProposal",
-                    "oneToManyLinkMetadata": {
-                      "displayMetadata": {
-                        "displayName": "Distribution Center Proposal",
-                        "pluralDisplayName": "Distribution Center Proposals",
-                        "visibility": "NORMAL",
-                      },
-                      "apiName": "distributionCenterProposal",
-                      "typeClasses": [],
-                    },
-                    "oneSidePrimaryKeyToManySidePropertyMapping": [
-                      {
-                        "from": {
-                          "apiName": "primaryKey_",
-                          "object": "Dc3DistributionCenterProposal",
-                        },
-                        "to": {
-                          "apiName": "distributionProposal",
-                          "object": "Dc3DistributionRouteAnalysis",
-                        },
-                      },
-                    ],
+                  },
+                  "enableLayoutUserSwitch": false,
+                },
+                "description": "",
+                "displayName": "Delete [DC3] Distribution Route Analysis",
+                "icon": {
+                  "type": "blueprint",
+                  "blueprint": {
+                    "locator": "edit",
+                    "color": "#000000",
                   },
                 },
-                "id": "Dc3DistributionCenterProposalToDistributionRoute",
-                "status": {
-                  "type": "active",
-                  "active": {},
-                },
-                "redacted": false,
+                "successMessage": [],
+                "typeClasses": [],
               },
-              "datasources": [],
-              "entityMetadata": {
-                "arePatchesEnabled": false,
+              "formContentOrdering": [],
+              "parameterOrdering": ["objectToDeleteParameter"],
+              "parameters": {
+                "objectToDeleteParameter": {
+                  "id": "objectToDeleteParameter",
+                  "type": {
+                    "type": "objectReference",
+                    "objectReference": {
+                      "objectTypeId": "Dc3DistributionRouteAnalysis",
+                    },
+                  },
+                  "displayMetadata": {
+                    "displayName": "Delete object",
+                    "description": "",
+                    typeClasses: [],
+                  },
+                },
+              },
+              "sections": {},
+              "status": {
+                "type": "active",
+                "active": {},
               },
             },
           },
-          "actionTypes": {
-            "create-object-dc3distribution-center-proposal": {
-              "actionType": {
-                "actionTypeLogic": {
-                  "logic": {
-                    "rules": [
-                      {
-                        "type": "addObjectRule",
-                        "addObjectRule": {
-                          "objectTypeId": "Dc3DistributionCenterProposal",
-                          "propertyValues": {
-                            "primaryKey_": {
-                              "type": "parameterId",
-                              "parameterId": "primaryKey_",
-                            },
-                            "name": {
-                              "type": "parameterId",
-                              "parameterId": "name",
-                            },
-                            "price": {
-                              "type": "parameterId",
-                              "parameterId": "price",
-                            },
-                            "proposedLocation": {
-                              "type": "parameterId",
-                              "parameterId": "proposedLocation",
-                            },
-                          },
-                          "structFieldValues": {},
-                        },
-                      },
-                    ],
-                  },
-                  "validation": {
-                    "sectionValidations": {},
-                    "actionTypeLevelValidation": {
-                      "rules": {
-                        "0": {
-                          "condition": {
-                            "type": "true",
-                            "true": {},
-                          },
-                          "displayMetadata": {
-                            "failureMessage": "",
-                            "typeClasses": [],
-                          },
-                        },
-                      },
-                    },
-                    "parameterValidations": {
-                      "primaryKey_": {
-                        "conditionalOverrides": [],
-                        "defaultValidation": {
-                          "display": {
-                            "renderHint": {
-                              "type": "textInput",
-                              "textInput": {},
-                            },
-                            "visibility": {
-                              "type": "editable",
-                              "editable": {},
-                            },
-                          },
-                          "validation": {
-                            "allowedValues": {
-                              "type": "text",
-                              "text": {
-                                "type": "text",
-                                "text": {},
-                              },
-                            },
-                            "required": {
-                              "type": "required",
-                              "required": {},
-                            },
-                          },
-                        },
-                      },
-                      "name": {
-                        "conditionalOverrides": [],
-                        "defaultValidation": {
-                          "display": {
-                            "renderHint": {
-                              "type": "textInput",
-                              "textInput": {},
-                            },
-                            "visibility": {
-                              "type": "editable",
-                              "editable": {},
-                            },
-                          },
-                          "validation": {
-                            "allowedValues": {
-                              "type": "text",
-                              "text": {
-                                "type": "text",
-                                "text": {},
-                              },
-                            },
-                            "required": {
-                              "type": "required",
-                              "required": {},
-                            },
-                          },
-                        },
-                      },
-                      "price": {
-                        "conditionalOverrides": [],
-                        "defaultValidation": {
-                          "display": {
-                            "renderHint": {
-                              "type": "numericInput",
-                              "numericInput": {},
-                            },
-                            "visibility": {
-                              "type": "editable",
-                              "editable": {},
-                            },
-                          },
-                          "validation": {
-                            "allowedValues": {
-                              "type": "range",
-                              "range": {
-                                "type": "range",
-                                "range": {},
-                              },
-                            },
-                            "required": {
-                              "type": "required",
-                              "required": {},
-                            },
-                          },
-                        },
-                      },
-                      "proposedLocation": {
-                        "conditionalOverrides": [],
-                        "defaultValidation": {
-                          "display": {
-                            "renderHint": {
-                              "type": "textInput",
-                              "textInput": {},
-                            },
-                            "visibility": {
-                              "type": "editable",
-                              "editable": {},
-                            },
-                          },
-                          "validation": {
-                            "allowedValues": {
-                              "type": "geoshape",
-                              "geoshape": {
-                                "type": "geoshape",
-                                "geoshape": {},
-                              },
-                            },
-                            "required": {
-                              "type": "required",
-                              "required": {},
-                            },
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
-                "metadata": {
-                  "apiName": "create-object-dc3distribution-center-proposal",
-                  "displayMetadata": {
-                    "configuration": {
-                      "defaultLayout": "FORM",
-                      "displayAndFormat": {
-                        "table": {
-                          "columnWidthByParameterRid": {},
-                          "enableFileImport": true,
-                          "fitHorizontally": false,
-                          "frozenColumnCount": 0,
-                          "rowHeightInLines": 1,
-                        },
-                      },
-                      "enableLayoutUserSwitch": false,
-                    },
-                    "description": "",
-                    "displayName": "Create [DC3] Distribution Center Proposal",
-                    "icon": {
-                      "type": "blueprint",
-                      "blueprint": {
-                        "locator": "edit",
-                        "color": "#000000",
-                      },
-                    },
-                    "successMessage": [],
-                    "typeClasses": [],
-                  },
-                  "formContentOrdering": [],
-                  "parameterOrdering": [
-                    "primaryKey_",
-                    "name",
-                    "price",
-                    "proposedLocation",
-                  ],
-                  "parameters": {
-                    "primaryKey_": {
-                      "id": "primaryKey_",
-                      "type": {
-                        "type": "string",
-                        "string": {},
-                      },
-                      "displayMetadata": {
-                        "displayName": "Primary Key",
-                        "description": "",
-                        "typeClasses": [],
-                      },
-                    },
-                    "name": {
-                      "id": "name",
-                      "type": {
-                        "type": "string",
-                        "string": {},
-                      },
-                      "displayMetadata": {
-                        "displayName": "Name",
-                        "description": "",
-                        "typeClasses": [],
-                      },
-                    },
-                    "price": {
-                      "id": "price",
-                      "type": {
-                        "type": "double",
-                        "double": {},
-                      },
-                      "displayMetadata": {
-                        "displayName": "Price",
-                        "description": "",
-                        "typeClasses": [],
-                      },
-                    },
-                    "proposedLocation": {
-                      "id": "proposedLocation",
-                      "type": {
-                        "type": "geoshape",
-                        "geoshape": {},
-                      },
-                      "displayMetadata": {
-                        "displayName": "Proposed Location",
-                        "description": "",
-                        "typeClasses": [],
-                      },
-                    },
-                  },
-                  "sections": {},
-                  "status": {
-                    "type": "active",
-                    "active": {},
-                  },
-                },
-              },
-            },
-            "modify-object-dc3distribution-center-proposal": {
-              "actionType": {
-                "actionTypeLogic": {
-                  "logic": {
-                    "rules": [
-                      {
-                        "type": "modifyObjectRule",
-                        "modifyObjectRule": {
-                          "objectToModify": "objectToModifyParameter",
-                          "propertyValues": {
-                            "primaryKey_": {
-                              "type": "parameterId",
-                              "parameterId": "primaryKey_",
-                            },
-                            "name": {
-                              "type": "parameterId",
-                              "parameterId": "name",
-                            },
-                            "price": {
-                              "type": "parameterId",
-                              "parameterId": "price",
-                            },
-                            "proposedLocation": {
-                              "type": "parameterId",
-                              "parameterId": "proposedLocation",
-                            },
-                          },
-                          "structFieldValues": {},
-                        },
-                      },
-                    ],
-                  },
-                  "validation": {
-                    "sectionValidations": {},
-                    "actionTypeLevelValidation": {
-                      "rules": {
-                        "0": {
-                          "condition": {
-                            "type": "true",
-                            "true": {},
-                          },
-                          "displayMetadata": {
-                            "failureMessage": "",
-                            "typeClasses": [],
-                          },
-                        },
-                      },
-                    },
-                    "parameterValidations": {
-                      "objectToModifyParameter": {
-                        "conditionalOverrides": [],
-                        "defaultValidation": {
-                          "display": {
-                            "renderHint": {
-                              "type": "dropdown",
-                              "dropdown": {},
-                            },
-                            "visibility": {
-                              "type": "editable",
-                              "editable": {},
-                            },
-                          },
-                          "validation": {
-                            "allowedValues": {
-                              "type": "objectQuery",
-                              "objectQuery": {
-                                "type": "objectQuery",
-                                "objectQuery": {},
-                              },
-                            },
-                            "required": {
-                              "type": "required",
-                              "required": {},
-                            },
-                          },
-                        },
-                      },
-                      "primaryKey_": {
-                        "conditionalOverrides": [],
-                        "defaultValidation": {
-                          "display": {
-                            "renderHint": {
-                              "type": "textInput",
-                              "textInput": {},
-                            },
-                            "visibility": {
-                              "type": "editable",
-                              "editable": {},
-                            },
-                          },
-                          "validation": {
-                            "allowedValues": {
-                              "type": "text",
-                              "text": {
-                                "type": "text",
-                                "text": {},
-                              },
-                            },
-                            "required": {
-                              "type": "required",
-                              "required": {},
-                            },
-                          },
-                        },
-                      },
-                      "name": {
-                        "conditionalOverrides": [],
-                        "defaultValidation": {
-                          "display": {
-                            "renderHint": {
-                              "type": "textInput",
-                              "textInput": {},
-                            },
-                            "visibility": {
-                              "type": "editable",
-                              "editable": {},
-                            },
-                          },
-                          "validation": {
-                            "allowedValues": {
-                              "type": "text",
-                              "text": {
-                                "type": "text",
-                                "text": {},
-                              },
-                            },
-                            "required": {
-                              "type": "required",
-                              "required": {},
-                            },
-                          },
-                        },
-                      },
-                      "price": {
-                        "conditionalOverrides": [],
-                        "defaultValidation": {
-                          "display": {
-                            "renderHint": {
-                              "type": "numericInput",
-                              "numericInput": {},
-                            },
-                            "visibility": {
-                              "type": "editable",
-                              "editable": {},
-                            },
-                          },
-                          "validation": {
-                            "allowedValues": {
-                              "type": "range",
-                              "range": {
-                                "type": "range",
-                                "range": {},
-                              },
-                            },
-                            "required": {
-                              "type": "required",
-                              "required": {},
-                            },
-                          },
-                        },
-                      },
-                      "proposedLocation": {
-                        "conditionalOverrides": [],
-                        "defaultValidation": {
-                          "display": {
-                            "renderHint": {
-                              "type": "textInput",
-                              "textInput": {},
-                            },
-                            "visibility": {
-                              "type": "editable",
-                              "editable": {},
-                            },
-                          },
-                          "validation": {
-                            "allowedValues": {
-                              "type": "geoshape",
-                              "geoshape": {
-                                "type": "geoshape",
-                                "geoshape": {},
-                              },
-                            },
-                            "required": {
-                              "type": "required",
-                              "required": {},
-                            },
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
-                "metadata": {
-                  "apiName": "modify-object-dc3distribution-center-proposal",
-                  "displayMetadata": {
-                    "configuration": {
-                      "defaultLayout": "FORM",
-                      "displayAndFormat": {
-                        "table": {
-                          "columnWidthByParameterRid": {},
-                          "enableFileImport": true,
-                          "fitHorizontally": false,
-                          "frozenColumnCount": 0,
-                          "rowHeightInLines": 1,
-                        },
-                      },
-                      "enableLayoutUserSwitch": false,
-                    },
-                    "description": "",
-                    "displayName": "Modify [DC3] Distribution Center Proposal",
-                    "icon": {
-                      "type": "blueprint",
-                      "blueprint": {
-                        "locator": "edit",
-                        "color": "#000000",
-                      },
-                    },
-                    "successMessage": [],
-                    "typeClasses": [],
-                  },
-                  "formContentOrdering": [],
-                  "parameterOrdering": [
-                    "objectToModifyParameter",
-                    "primaryKey_",
-                    "name",
-                    "price",
-                    "proposedLocation",
-                  ],
-                  "parameters": {
-                    "objectToModifyParameter": {
-                      "id": "objectToModifyParameter",
-                      "type": {
-                        "type": "objectReference",
-                        "objectReference": {
-                          "objectTypeId": "Dc3DistributionCenterProposal",
-                        },
-                      },
-                      "displayMetadata": {
-                        "displayName": "Modify object",
-                        "description": "",
-                        "typeClasses": [],
-                      },
-                    },
-                    "primaryKey_": {
-                      "id": "primaryKey_",
-                      "type": {
-                        "type": "string",
-                        "string": {},
-                      },
-                      "displayMetadata": {
-                        "displayName": "Primary Key",
-                        "description": "",
-                        "typeClasses": [],
-                      },
-                    },
-                    "name": {
-                      "id": "name",
-                      "type": {
-                        "type": "string",
-                        "string": {},
-                      },
-                      "displayMetadata": {
-                        "displayName": "Name",
-                        "description": "",
-                        "typeClasses": [],
-                      },
-                    },
-                    "price": {
-                      "id": "price",
-                      "type": {
-                        "type": "double",
-                        "double": {},
-                      },
-                      "displayMetadata": {
-                        "displayName": "Price",
-                        "description": "",
-                        "typeClasses": [],
-                      },
-                    },
-                    "proposedLocation": {
-                      "id": "proposedLocation",
-                      "type": {
-                        "type": "geoshape",
-                        "geoshape": {},
-                      },
-                      "displayMetadata": {
-                        "displayName": "Proposed Location",
-                        "description": "",
-                        "typeClasses": [],
-                      },
-                    },
-                  },
-                  "sections": {},
-                  "status": {
-                    "type": "active",
-                    "active": {},
-                  },
-                },
-              },
-            },
-            "delete-object-dc3distribution-center-proposal": {
-              "actionType": {
-                "actionTypeLogic": {
-                  "logic": {
-                    "rules": [
-                      {
-                        "type": "deleteObjectRule",
-                        "deleteObjectRule": {
-                          "objectToDelete": "objectToDeleteParameter",
-                        },
-                      },
-                    ],
-                  },
-                  "validation": {
-                    "sectionValidations": {},
-                    "actionTypeLevelValidation": {
-                      "rules": {
-                        "0": {
-                          "condition": {
-                            "type": "true",
-                            "true": {},
-                          },
-                          "displayMetadata": {
-                            "failureMessage": "",
-                            "typeClasses": [],
-                          },
-                        },
-                      },
-                    },
-                    "parameterValidations": {
-                      "objectToDeleteParameter": {
-                        "conditionalOverrides": [],
-                        "defaultValidation": {
-                          "display": {
-                            "renderHint": {
-                              "type": "dropdown",
-                              "dropdown": {},
-                            },
-                            "visibility": {
-                              "type": "editable",
-                              "editable": {},
-                            },
-                          },
-                          "validation": {
-                            "allowedValues": {
-                              "type": "objectQuery",
-                              "objectQuery": {
-                                "type": "objectQuery",
-                                "objectQuery": {},
-                              },
-                            },
-                            "required": {
-                              "type": "required",
-                              "required": {},
-                            },
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
-                "metadata": {
-                  "apiName": "delete-object-dc3distribution-center-proposal",
-                  "displayMetadata": {
-                    "configuration": {
-                      "defaultLayout": "FORM",
-                      "displayAndFormat": {
-                        "table": {
-                          "columnWidthByParameterRid": {},
-                          "enableFileImport": true,
-                          "fitHorizontally": false,
-                          "frozenColumnCount": 0,
-                          "rowHeightInLines": 1,
-                        },
-                      },
-                      "enableLayoutUserSwitch": false,
-                    },
-                    "description": "",
-                    "displayName": "Delete [DC3] Distribution Center Proposal",
-                    "icon": {
-                      "type": "blueprint",
-                      "blueprint": {
-                        "locator": "edit",
-                        "color": "#000000",
-                      },
-                    },
-                    "successMessage": [],
-                    "typeClasses": [],
-                  },
-                  "formContentOrdering": [],
-                  "parameterOrdering": [
-                    "objectToDeleteParameter",
-                  ],
-                  "parameters": {
-                    "objectToDeleteParameter": {
-                      "id": "objectToDeleteParameter",
-                      "type": {
-                        "type": "objectReference",
-                        "objectReference": {
-                          "objectTypeId": "Dc3DistributionCenterProposal",
-                        },
-                      },
-                      "displayMetadata": {
-                        "displayName": "Delete object",
-                        "description": "",
-                        "typeClasses": [],
-                      },
-                    },
-                  },
-                  "sections": {},
-                  "status": {
-                    "type": "active",
-                    "active": {},
-                  },
-                },
-              },
-            },
-            "create-object-dc3restaurant": {
-              "actionType": {
-                "actionTypeLogic": {
-                  "logic": {
-                    "rules": [
-                      {
-                        "type": "addObjectRule",
-                        "addObjectRule": {
-                          "objectTypeId": "Dc3Restaurant",
-                          "propertyValues": {
-                            "primaryKey_": {
-                              "type": "parameterId",
-                              "parameterId": "primaryKey_",
-                            },
-                            "name": {
-                              "type": "parameterId",
-                              "parameterId": "name",
-                            },
-                            "location": {
-                              "type": "parameterId",
-                              "parameterId": "location",
-                            },
-                            "rating": {
-                              "type": "parameterId",
-                              "parameterId": "rating",
-                            },
-                          },
-                          "structFieldValues": {},
-                        },
-                      },
-                    ],
-                  },
-                  "validation": {
-                    "sectionValidations": {},
-                    "actionTypeLevelValidation": {
-                      "rules": {
-                        "0": {
-                          "condition": {
-                            "type": "true",
-                            "true": {},
-                          },
-                          "displayMetadata": {
-                            "failureMessage": "",
-                            "typeClasses": [],
-                          },
-                        },
-                      },
-                    },
-                    "parameterValidations": {
-                      "primaryKey_": {
-                        "conditionalOverrides": [],
-                        "defaultValidation": {
-                          "display": {
-                            "renderHint": {
-                              "type": "textInput",
-                              "textInput": {},
-                            },
-                            "visibility": {
-                              "type": "editable",
-                              "editable": {},
-                            },
-                          },
-                          "validation": {
-                            "allowedValues": {
-                              "type": "text",
-                              "text": {
-                                "type": "text",
-                                "text": {},
-                              },
-                            },
-                            "required": {
-                              "type": "required",
-                              "required": {},
-                            },
-                          },
-                        },
-                      },
-                      "name": {
-                        "conditionalOverrides": [],
-                        "defaultValidation": {
-                          "display": {
-                            "renderHint": {
-                              "type": "textInput",
-                              "textInput": {},
-                            },
-                            "visibility": {
-                              "type": "editable",
-                              "editable": {},
-                            },
-                          },
-                          "validation": {
-                            "allowedValues": {
-                              "type": "text",
-                              "text": {
-                                "type": "text",
-                                "text": {},
-                              },
-                            },
-                            "required": {
-                              "type": "required",
-                              "required": {},
-                            },
-                          },
-                        },
-                      },
-                      "location": {
-                        "conditionalOverrides": [],
-                        "defaultValidation": {
-                          "display": {
-                            "renderHint": {
-                              "type": "textInput",
-                              "textInput": {},
-                            },
-                            "visibility": {
-                              "type": "editable",
-                              "editable": {},
-                            },
-                          },
-                          "validation": {
-                            "allowedValues": {
-                              "type": "geoshape",
-                              "geoshape": {
-                                "type": "geoshape",
-                                "geoshape": {},
-                              },
-                            },
-                            "required": {
-                              "type": "required",
-                              "required": {},
-                            },
-                          },
-                        },
-                      },
-                      "rating": {
-                        "conditionalOverrides": [],
-                        "defaultValidation": {
-                          "display": {
-                            "renderHint": {
-                              "type": "numericInput",
-                              "numericInput": {},
-                            },
-                            "visibility": {
-                              "type": "editable",
-                              "editable": {},
-                            },
-                          },
-                          "validation": {
-                            "allowedValues": {
-                              "type": "range",
-                              "range": {
-                                "type": "range",
-                                "range": {},
-                              },
-                            },
-                            "required": {
-                              "type": "required",
-                              "required": {},
-                            },
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
-                "metadata": {
-                  "apiName": "create-object-dc3restaurant",
-                  "displayMetadata": {
-                    "configuration": {
-                      "defaultLayout": "FORM",
-                      "displayAndFormat": {
-                        "table": {
-                          "columnWidthByParameterRid": {},
-                          "enableFileImport": true,
-                          "fitHorizontally": false,
-                          "frozenColumnCount": 0,
-                          "rowHeightInLines": 1,
-                        },
-                      },
-                      "enableLayoutUserSwitch": false,
-                    },
-                    "description": "",
-                    "displayName": "Create [DC3] Restaurant",
-                    "icon": {
-                      "type": "blueprint",
-                      "blueprint": {
-                        "locator": "edit",
-                        "color": "#000000",
-                      },
-                    },
-                    "successMessage": [],
-                    "typeClasses": [],
-                  },
-                  "formContentOrdering": [],
-                  "parameterOrdering": [
-                    "primaryKey_",
-                    "name",
-                    "location",
-                    "rating",
-                  ],
-                  "parameters": {
-                    "primaryKey_": {
-                      "id": "primaryKey_",
-                      "type": {
-                        "type": "string",
-                        "string": {},
-                      },
-                      "displayMetadata": {
-                        "displayName": "Primary Key",
-                        "description": "",
-                        "typeClasses": [],
-                      },
-                    },
-                    "name": {
-                      "id": "name",
-                      "type": {
-                        "type": "string",
-                        "string": {},
-                      },
-                      "displayMetadata": {
-                        "displayName": "Name",
-                        "description": "",
-                        "typeClasses": [],
-                      },
-                    },
-                    "location": {
-                      "id": "location",
-                      "type": {
-                        "type": "geoshape",
-                        "geoshape": {},
-                      },
-                      "displayMetadata": {
-                        "displayName": "Location",
-                        "description": "",
-                        "typeClasses": [],
-                      },
-                    },
-                    "rating": {
-                      "id": "rating",
-                      "type": {
-                        "type": "integer",
-                        "integer": {},
-                      },
-                      "displayMetadata": {
-                        "displayName": "Rating",
-                        "description": "",
-                        "typeClasses": [],
-                      },
-                    },
-                  },
-                  "sections": {},
-                  "status": {
-                    "type": "active",
-                    "active": {},
-                  },
-                },
-              },
-            },
-            "modify-object-dc3restaurant": {
-              "actionType": {
-                "actionTypeLogic": {
-                  "logic": {
-                    "rules": [
-                      {
-                        "type": "modifyObjectRule",
-                        "modifyObjectRule": {
-                          "objectToModify": "objectToModifyParameter",
-                          "propertyValues": {
-                            "primaryKey_": {
-                              "type": "parameterId",
-                              "parameterId": "primaryKey_",
-                            },
-                            "name": {
-                              "type": "parameterId",
-                              "parameterId": "name",
-                            },
-                            "location": {
-                              "type": "parameterId",
-                              "parameterId": "location",
-                            },
-                            "rating": {
-                              "type": "parameterId",
-                              "parameterId": "rating",
-                            },
-                          },
-                          "structFieldValues": {},
-                        },
-                      },
-                    ],
-                  },
-                  "validation": {
-                    "sectionValidations": {},
-                    "actionTypeLevelValidation": {
-                      "rules": {
-                        "0": {
-                          "condition": {
-                            "type": "true",
-                            "true": {},
-                          },
-                          "displayMetadata": {
-                            "failureMessage": "",
-                            "typeClasses": [],
-                          },
-                        },
-                      },
-                    },
-                    "parameterValidations": {
-                      "objectToModifyParameter": {
-                        "conditionalOverrides": [],
-                        "defaultValidation": {
-                          "display": {
-                            "renderHint": {
-                              "type": "dropdown",
-                              "dropdown": {},
-                            },
-                            "visibility": {
-                              "type": "editable",
-                              "editable": {},
-                            },
-                          },
-                          "validation": {
-                            "allowedValues": {
-                              "type": "objectQuery",
-                              "objectQuery": {
-                                "type": "objectQuery",
-                                "objectQuery": {},
-                              },
-                            },
-                            "required": {
-                              "type": "required",
-                              "required": {},
-                            },
-                          },
-                        },
-                      },
-                      "primaryKey_": {
-                        "conditionalOverrides": [],
-                        "defaultValidation": {
-                          "display": {
-                            "renderHint": {
-                              "type": "textInput",
-                              "textInput": {},
-                            },
-                            "visibility": {
-                              "type": "editable",
-                              "editable": {},
-                            },
-                          },
-                          "validation": {
-                            "allowedValues": {
-                              "type": "text",
-                              "text": {
-                                "type": "text",
-                                "text": {},
-                              },
-                            },
-                            "required": {
-                              "type": "required",
-                              "required": {},
-                            },
-                          },
-                        },
-                      },
-                      "name": {
-                        "conditionalOverrides": [],
-                        "defaultValidation": {
-                          "display": {
-                            "renderHint": {
-                              "type": "textInput",
-                              "textInput": {},
-                            },
-                            "visibility": {
-                              "type": "editable",
-                              "editable": {},
-                            },
-                          },
-                          "validation": {
-                            "allowedValues": {
-                              "type": "text",
-                              "text": {
-                                "type": "text",
-                                "text": {},
-                              },
-                            },
-                            "required": {
-                              "type": "required",
-                              "required": {},
-                            },
-                          },
-                        },
-                      },
-                      "location": {
-                        "conditionalOverrides": [],
-                        "defaultValidation": {
-                          "display": {
-                            "renderHint": {
-                              "type": "textInput",
-                              "textInput": {},
-                            },
-                            "visibility": {
-                              "type": "editable",
-                              "editable": {},
-                            },
-                          },
-                          "validation": {
-                            "allowedValues": {
-                              "type": "geoshape",
-                              "geoshape": {
-                                "type": "geoshape",
-                                "geoshape": {},
-                              },
-                            },
-                            "required": {
-                              "type": "required",
-                              "required": {},
-                            },
-                          },
-                        },
-                      },
-                      "rating": {
-                        "conditionalOverrides": [],
-                        "defaultValidation": {
-                          "display": {
-                            "renderHint": {
-                              "type": "numericInput",
-                              "numericInput": {},
-                            },
-                            "visibility": {
-                              "type": "editable",
-                              "editable": {},
-                            },
-                          },
-                          "validation": {
-                            "allowedValues": {
-                              "type": "range",
-                              "range": {
-                                "type": "range",
-                                "range": {},
-                              },
-                            },
-                            "required": {
-                              "type": "required",
-                              "required": {},
-                            },
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
-                "metadata": {
-                  "apiName": "modify-object-dc3restaurant",
-                  "displayMetadata": {
-                    "configuration": {
-                      "defaultLayout": "FORM",
-                      "displayAndFormat": {
-                        "table": {
-                          "columnWidthByParameterRid": {},
-                          "enableFileImport": true,
-                          "fitHorizontally": false,
-                          "frozenColumnCount": 0,
-                          "rowHeightInLines": 1,
-                        },
-                      },
-                      "enableLayoutUserSwitch": false,
-                    },
-                    "description": "",
-                    "displayName": "Modify [DC3] Restaurant",
-                    "icon": {
-                      "type": "blueprint",
-                      "blueprint": {
-                        "locator": "edit",
-                        "color": "#000000",
-                      },
-                    },
-                    "successMessage": [],
-                    "typeClasses": [],
-                  },
-                  "formContentOrdering": [],
-                  "parameterOrdering": [
-                    "objectToModifyParameter",
-                    "primaryKey_",
-                    "name",
-                    "location",
-                    "rating",
-                  ],
-                  "parameters": {
-                    "objectToModifyParameter": {
-                      "id": "objectToModifyParameter",
-                      "type": {
-                        "type": "objectReference",
-                        "objectReference": {
-                          "objectTypeId": "Dc3Restaurant",
-                        },
-                      },
-                      "displayMetadata": {
-                        "displayName": "Modify object",
-                        "description": "",
-                        "typeClasses": [],
-                      },
-                    },
-                    "primaryKey_": {
-                      "id": "primaryKey_",
-                      "type": {
-                        "type": "string",
-                        "string": {},
-                      },
-                      "displayMetadata": {
-                        "displayName": "Primary Key",
-                        "description": "",
-                        "typeClasses": [],
-                      },
-                    },
-                    "name": {
-                      "id": "name",
-                      "type": {
-                        "type": "string",
-                        "string": {},
-                      },
-                      "displayMetadata": {
-                        "displayName": "Name",
-                        "description": "",
-                        "typeClasses": [],
-                      },
-                    },
-                    "location": {
-                      "id": "location",
-                      "type": {
-                        "type": "geoshape",
-                        "geoshape": {},
-                      },
-                      "displayMetadata": {
-                        "displayName": "Location",
-                        "description": "",
-                        "typeClasses": [],
-                      },
-                    },
-                    "rating": {
-                      "id": "rating",
-                      "type": {
-                        "type": "integer",
-                        "integer": {},
-                      },
-                      "displayMetadata": {
-                        "displayName": "Rating",
-                        "description": "",
-                        "typeClasses": [],
-                      },
-                    },
-                  },
-                  "sections": {},
-                  "status": {
-                    "type": "active",
-                    "active": {},
-                  },
-                },
-              },
-            },
-            "delete-object-dc3restaurant": {
-              "actionType": {
-                "actionTypeLogic": {
-                  "logic": {
-                    "rules": [
-                      {
-                        "type": "deleteObjectRule",
-                        "deleteObjectRule": {
-                          "objectToDelete": "objectToDeleteParameter",
-                        },
-                      },
-                    ],
-                  },
-                  "validation": {
-                    "sectionValidations": {},
-                    "actionTypeLevelValidation": {
-                      "rules": {
-                        "0": {
-                          "condition": {
-                            "type": "true",
-                            "true": {},
-                          },
-                          "displayMetadata": {
-                            "failureMessage": "",
-                            "typeClasses": [],
-                          },
-                        },
-                      },
-                    },
-                    "parameterValidations": {
-                      "objectToDeleteParameter": {
-                        "conditionalOverrides": [],
-                        "defaultValidation": {
-                          "display": {
-                            "renderHint": {
-                              "type": "dropdown",
-                              "dropdown": {},
-                            },
-                            "visibility": {
-                              "type": "editable",
-                              "editable": {},
-                            },
-                          },
-                          "validation": {
-                            "allowedValues": {
-                              "type": "objectQuery",
-                              "objectQuery": {
-                                "type": "objectQuery",
-                                "objectQuery": {},
-                              },
-                            },
-                            "required": {
-                              "type": "required",
-                              "required": {},
-                            },
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
-                "metadata": {
-                  "apiName": "delete-object-dc3restaurant",
-                  "displayMetadata": {
-                    "configuration": {
-                      "defaultLayout": "FORM",
-                      "displayAndFormat": {
-                        "table": {
-                          "columnWidthByParameterRid": {},
-                          "enableFileImport": true,
-                          "fitHorizontally": false,
-                          "frozenColumnCount": 0,
-                          "rowHeightInLines": 1,
-                        },
-                      },
-                      "enableLayoutUserSwitch": false,
-                    },
-                    "description": "",
-                    "displayName": "Delete [DC3] Restaurant",
-                    "icon": {
-                      "type": "blueprint",
-                      "blueprint": {
-                        "locator": "edit",
-                        "color": "#000000",
-                      },
-                    },
-                    "successMessage": [],
-                    "typeClasses": [],
-                  },
-                  "formContentOrdering": [],
-                  "parameterOrdering": [
-                    "objectToDeleteParameter",
-                  ],
-                  "parameters": {
-                    "objectToDeleteParameter": {
-                      "id": "objectToDeleteParameter",
-                      "type": {
-                        "type": "objectReference",
-                        "objectReference": {
-                          "objectTypeId": "Dc3Restaurant",
-                        },
-                      },
-                      "displayMetadata": {
-                        "displayName": "Delete object",
-                        "description": "",
-                        "typeClasses": [],
-                      },
-                    },
-                  },
-                  "sections": {},
-                  "status": {
-                    "type": "active",
-                    "active": {},
-                  },
-                },
-              },
-            },
-            "create-object-dc3distribution-route-analysis": {
-              "actionType": {
-                "actionTypeLogic": {
-                  "logic": {
-                    "rules": [
-                      {
-                        "type": "addObjectRule",
-                        "addObjectRule": {
-                          "objectTypeId": "Dc3DistributionRouteAnalysis",
-                          "propertyValues": {
-                            "primaryKey_": {
-                              "type": "parameterId",
-                              "parameterId": "primaryKey_",
-                            },
-                            "distributionProposal": {
-                              "type": "parameterId",
-                              "parameterId": "distributionProposal",
-                            },
-                            "restaurant": {
-                              "type": "parameterId",
-                              "parameterId": "restaurant",
-                            },
-                            "timeMinutes": {
-                              "type": "parameterId",
-                              "parameterId": "timeMinutes",
-                            },
-                          },
-                          "structFieldValues": {},
-                        },
-                      },
-                    ],
-                  },
-                  "validation": {
-                    "sectionValidations": {},
-                    "actionTypeLevelValidation": {
-                      "rules": {
-                        "0": {
-                          "condition": {
-                            "type": "true",
-                            "true": {},
-                          },
-                          "displayMetadata": {
-                            "failureMessage": "",
-                            "typeClasses": [],
-                          },
-                        },
-                      },
-                    },
-                    "parameterValidations": {
-                      "primaryKey_": {
-                        "conditionalOverrides": [],
-                        "defaultValidation": {
-                          "display": {
-                            "renderHint": {
-                              "type": "textInput",
-                              "textInput": {},
-                            },
-                            "visibility": {
-                              "type": "editable",
-                              "editable": {},
-                            },
-                          },
-                          "validation": {
-                            "allowedValues": {
-                              "type": "text",
-                              "text": {
-                                "type": "text",
-                                "text": {},
-                              },
-                            },
-                            "required": {
-                              "type": "required",
-                              "required": {},
-                            },
-                          },
-                        },
-                      },
-                      "distributionProposal": {
-                        "conditionalOverrides": [],
-                        "defaultValidation": {
-                          "display": {
-                            "renderHint": {
-                              "type": "textInput",
-                              "textInput": {},
-                            },
-                            "visibility": {
-                              "type": "editable",
-                              "editable": {},
-                            },
-                          },
-                          "validation": {
-                            "allowedValues": {
-                              "type": "text",
-                              "text": {
-                                "type": "text",
-                                "text": {},
-                              },
-                            },
-                            "required": {
-                              "type": "required",
-                              "required": {},
-                            },
-                          },
-                        },
-                      },
-                      "restaurant": {
-                        "conditionalOverrides": [],
-                        "defaultValidation": {
-                          "display": {
-                            "renderHint": {
-                              "type": "textInput",
-                              "textInput": {},
-                            },
-                            "visibility": {
-                              "type": "editable",
-                              "editable": {},
-                            },
-                          },
-                          "validation": {
-                            "allowedValues": {
-                              "type": "text",
-                              "text": {
-                                "type": "text",
-                                "text": {},
-                              },
-                            },
-                            "required": {
-                              "type": "required",
-                              "required": {},
-                            },
-                          },
-                        },
-                      },
-                      "timeMinutes": {
-                        "conditionalOverrides": [],
-                        "defaultValidation": {
-                          "display": {
-                            "renderHint": {
-                              "type": "textInput",
-                              "textInput": {},
-                            },
-                            "visibility": {
-                              "type": "editable",
-                              "editable": {},
-                            },
-                          },
-                          "validation": {
-                            "allowedValues": {
-                              "type": "text",
-                              "text": {
-                                "type": "text",
-                                "text": {},
-                              },
-                            },
-                            "required": {
-                              "type": "required",
-                              "required": {},
-                            },
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
-                "metadata": {
-                  "apiName": "create-object-dc3distribution-route-analysis",
-                  "displayMetadata": {
-                    "configuration": {
-                      "defaultLayout": "FORM",
-                      "displayAndFormat": {
-                        "table": {
-                          "columnWidthByParameterRid": {},
-                          "enableFileImport": true,
-                          "fitHorizontally": false,
-                          "frozenColumnCount": 0,
-                          "rowHeightInLines": 1,
-                        },
-                      },
-                      "enableLayoutUserSwitch": false,
-                    },
-                    "description": "",
-                    "displayName": "Create [DC3] Distribution Route Analysis",
-                    "icon": {
-                      "type": "blueprint",
-                      "blueprint": {
-                        "locator": "edit",
-                        "color": "#000000",
-                      },
-                    },
-                    "successMessage": [],
-                    "typeClasses": [],
-                  },
-                  "formContentOrdering": [],
-                  "parameterOrdering": [
-                    "primaryKey_",
-                    "distributionProposal",
-                    "restaurant",
-                    "timeMinutes",
-                  ],
-                  "parameters": {
-                    "primaryKey_": {
-                      "id": "primaryKey_",
-                      "type": {
-                        "type": "string",
-                        "string": {},
-                      },
-                      "displayMetadata": {
-                        "displayName": "Primary Key",
-                        "description": "",
-                        "typeClasses": [],
-                      },
-                    },
-                    "distributionProposal": {
-                      "id": "distributionProposal",
-                      "type": {
-                        "type": "string",
-                        "string": {},
-                      },
-                      "displayMetadata": {
-                        "displayName": "Distribution Proposal",
-                        "description": "",
-                        "typeClasses": [],
-                      },
-                    },
-                    "restaurant": {
-                      "id": "restaurant",
-                      "type": {
-                        "type": "string",
-                        "string": {},
-                      },
-                      "displayMetadata": {
-                        "displayName": "Restaurant",
-                        "description": "",
-                        "typeClasses": [],
-                      },
-                    },
-                    "timeMinutes": {
-                      "id": "timeMinutes",
-                      "type": {
-                        "type": "string",
-                        "string": {},
-                      },
-                      "displayMetadata": {
-                        "displayName": "Time (Minutes)",
-                        "description": "",
-                        "typeClasses": [],
-                      },
-                    },
-                  },
-                  "sections": {},
-                  "status": {
-                    "type": "active",
-                    "active": {},
-                  },
-                },
-              },
-            },
-            "modify-object-dc3distribution-route-analysis": {
-              "actionType": {
-                "actionTypeLogic": {
-                  "logic": {
-                    "rules": [
-                      {
-                        "type": "modifyObjectRule",
-                        "modifyObjectRule": {
-                          "objectToModify": "objectToModifyParameter",
-                          "propertyValues": {
-                            "primaryKey_": {
-                              "type": "parameterId",
-                              "parameterId": "primaryKey_",
-                            },
-                            "distributionProposal": {
-                              "type": "parameterId",
-                              "parameterId": "distributionProposal",
-                            },
-                            "restaurant": {
-                              "type": "parameterId",
-                              "parameterId": "restaurant",
-                            },
-                            "timeMinutes": {
-                              "type": "parameterId",
-                              "parameterId": "timeMinutes",
-                            },
-                          },
-                          "structFieldValues": {},
-                        },
-                      },
-                    ],
-                  },
-                  "validation": {
-                    "sectionValidations": {},
-                    "actionTypeLevelValidation": {
-                      "rules": {
-                        "0": {
-                          "condition": {
-                            "type": "true",
-                            "true": {},
-                          },
-                          "displayMetadata": {
-                            "failureMessage": "",
-                            "typeClasses": [],
-                          },
-                        },
-                      },
-                    },
-                    "parameterValidations": {
-                      "objectToModifyParameter": {
-                        "conditionalOverrides": [],
-                        "defaultValidation": {
-                          "display": {
-                            "renderHint": {
-                              "type": "dropdown",
-                              "dropdown": {},
-                            },
-                            "visibility": {
-                              "type": "editable",
-                              "editable": {},
-                            },
-                          },
-                          "validation": {
-                            "allowedValues": {
-                              "type": "objectQuery",
-                              "objectQuery": {
-                                "type": "objectQuery",
-                                "objectQuery": {},
-                              },
-                            },
-                            "required": {
-                              "type": "required",
-                              "required": {},
-                            },
-                          },
-                        },
-                      },
-                      "primaryKey_": {
-                        "conditionalOverrides": [],
-                        "defaultValidation": {
-                          "display": {
-                            "renderHint": {
-                              "type": "textInput",
-                              "textInput": {},
-                            },
-                            "visibility": {
-                              "type": "editable",
-                              "editable": {},
-                            },
-                          },
-                          "validation": {
-                            "allowedValues": {
-                              "type": "text",
-                              "text": {
-                                "type": "text",
-                                "text": {},
-                              },
-                            },
-                            "required": {
-                              "type": "required",
-                              "required": {},
-                            },
-                          },
-                        },
-                      },
-                      "distributionProposal": {
-                        "conditionalOverrides": [],
-                        "defaultValidation": {
-                          "display": {
-                            "renderHint": {
-                              "type": "textInput",
-                              "textInput": {},
-                            },
-                            "visibility": {
-                              "type": "editable",
-                              "editable": {},
-                            },
-                          },
-                          "validation": {
-                            "allowedValues": {
-                              "type": "text",
-                              "text": {
-                                "type": "text",
-                                "text": {},
-                              },
-                            },
-                            "required": {
-                              "type": "required",
-                              "required": {},
-                            },
-                          },
-                        },
-                      },
-                      "restaurant": {
-                        "conditionalOverrides": [],
-                        "defaultValidation": {
-                          "display": {
-                            "renderHint": {
-                              "type": "textInput",
-                              "textInput": {},
-                            },
-                            "visibility": {
-                              "type": "editable",
-                              "editable": {},
-                            },
-                          },
-                          "validation": {
-                            "allowedValues": {
-                              "type": "text",
-                              "text": {
-                                "type": "text",
-                                "text": {},
-                              },
-                            },
-                            "required": {
-                              "type": "required",
-                              "required": {},
-                            },
-                          },
-                        },
-                      },
-                      "timeMinutes": {
-                        "conditionalOverrides": [],
-                        "defaultValidation": {
-                          "display": {
-                            "renderHint": {
-                              "type": "textInput",
-                              "textInput": {},
-                            },
-                            "visibility": {
-                              "type": "editable",
-                              "editable": {},
-                            },
-                          },
-                          "validation": {
-                            "allowedValues": {
-                              "type": "text",
-                              "text": {
-                                "type": "text",
-                                "text": {},
-                              },
-                            },
-                            "required": {
-                              "type": "required",
-                              "required": {},
-                            },
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
-                "metadata": {
-                  "apiName": "modify-object-dc3distribution-route-analysis",
-                  "displayMetadata": {
-                    "configuration": {
-                      "defaultLayout": "FORM",
-                      "displayAndFormat": {
-                        "table": {
-                          "columnWidthByParameterRid": {},
-                          "enableFileImport": true,
-                          "fitHorizontally": false,
-                          "frozenColumnCount": 0,
-                          "rowHeightInLines": 1,
-                        },
-                      },
-                      "enableLayoutUserSwitch": false,
-                    },
-                    "description": "",
-                    "displayName": "Modify [DC3] Distribution Route Analysis",
-                    "icon": {
-                      "type": "blueprint",
-                      "blueprint": {
-                        "locator": "edit",
-                        "color": "#000000",
-                      },
-                    },
-                    "successMessage": [],
-                    "typeClasses": [],
-                  },
-                  "formContentOrdering": [],
-                  "parameterOrdering": [
-                    "objectToModifyParameter",
-                    "primaryKey_",
-                    "distributionProposal",
-                    "restaurant",
-                    "timeMinutes",
-                  ],
-                  "parameters": {
-                    "objectToModifyParameter": {
-                      "id": "objectToModifyParameter",
-                      "type": {
-                        "type": "objectReference",
-                        "objectReference": {
-                          "objectTypeId": "Dc3DistributionRouteAnalysis",
-                        },
-                      },
-                      "displayMetadata": {
-                        "displayName": "Modify object",
-                        "description": "",
-                        "typeClasses": [],
-                      },
-                    },
-                    "primaryKey_": {
-                      "id": "primaryKey_",
-                      "type": {
-                        "type": "string",
-                        "string": {},
-                      },
-                      "displayMetadata": {
-                        "displayName": "Primary Key",
-                        "description": "",
-                        "typeClasses": [],
-                      },
-                    },
-                    "distributionProposal": {
-                      "id": "distributionProposal",
-                      "type": {
-                        "type": "string",
-                        "string": {},
-                      },
-                      "displayMetadata": {
-                        "displayName": "Distribution Proposal",
-                        "description": "",
-                        "typeClasses": [],
-                      },
-                    },
-                    "restaurant": {
-                      "id": "restaurant",
-                      "type": {
-                        "type": "string",
-                        "string": {},
-                      },
-                      "displayMetadata": {
-                        "displayName": "Restaurant",
-                        "description": "",
-                        "typeClasses": [],
-                      },
-                    },
-                    "timeMinutes": {
-                      "id": "timeMinutes",
-                      "type": {
-                        "type": "string",
-                        "string": {},
-                      },
-                      "displayMetadata": {
-                        "displayName": "Time (Minutes)",
-                        "description": "",
-                        "typeClasses": [],
-                      },
-                    },
-                  },
-                  "sections": {},
-                  "status": {
-                    "type": "active",
-                    "active": {},
-                  },
-                },
-              },
-            },
-            "delete-object-dc3distribution-route-analysis": {
-              "actionType": {
-                "actionTypeLogic": {
-                  "logic": {
-                    "rules": [
-                      {
-                        "type": "deleteObjectRule",
-                        "deleteObjectRule": {
-                          "objectToDelete": "objectToDeleteParameter",
-                        },
-                      },
-                    ],
-                  },
-                  "validation": {
-                    "sectionValidations": {},
-                    "actionTypeLevelValidation": {
-                      "rules": {
-                        "0": {
-                          "condition": {
-                            "type": "true",
-                            "true": {},
-                          },
-                          "displayMetadata": {
-                            "failureMessage": "",
-                            "typeClasses": [],
-                          },
-                        },
-                      },
-                    },
-                    "parameterValidations": {
-                      "objectToDeleteParameter": {
-                        "conditionalOverrides": [],
-                        "defaultValidation": {
-                          "display": {
-                            "renderHint": {
-                              "type": "dropdown",
-                              "dropdown": {},
-                            },
-                            "visibility": {
-                              "type": "editable",
-                              "editable": {},
-                            },
-                          },
-                          "validation": {
-                            "allowedValues": {
-                              "type": "objectQuery",
-                              "objectQuery": {
-                                "type": "objectQuery",
-                                "objectQuery": {},
-                              },
-                            },
-                            "required": {
-                              "type": "required",
-                              "required": {},
-                            },
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
-                "metadata": {
-                  "apiName": "delete-object-dc3distribution-route-analysis",
-                  "displayMetadata": {
-                    "configuration": {
-                      "defaultLayout": "FORM",
-                      "displayAndFormat": {
-                        "table": {
-                          "columnWidthByParameterRid": {},
-                          "enableFileImport": true,
-                          "fitHorizontally": false,
-                          "frozenColumnCount": 0,
-                          "rowHeightInLines": 1,
-                        },
-                      },
-                      "enableLayoutUserSwitch": false,
-                    },
-                    "description": "",
-                    "displayName": "Delete [DC3] Distribution Route Analysis",
-                    "icon": {
-                      "type": "blueprint",
-                      "blueprint": {
-                        "locator": "edit",
-                        "color": "#000000",
-                      },
-                    },
-                    "successMessage": [],
-                    "typeClasses": [],
-                  },
-                  "formContentOrdering": [],
-                  "parameterOrdering": [
-                    "objectToDeleteParameter",
-                  ],
-                  "parameters": {
-                    "objectToDeleteParameter": {
-                      "id": "objectToDeleteParameter",
-                      "type": {
-                        "type": "objectReference",
-                        "objectReference": {
-                          "objectTypeId": "Dc3DistributionRouteAnalysis",
-                        },
-                      },
-                      "displayMetadata": {
-                        "displayName": "Delete object",
-                        "description": "",
-                        typeClasses: [],
-                      },
-                    },
-                  },
-                  "sections": {},
-                  "status": {
-                    "type": "active",
-                    "active": {},
-                  },
-                },
-              },
-            },
-          },
-          "blockPermissionInformation": {
-            "actionTypes": {},
-            "linkTypes": {},
-            "objectTypes": {},
-          },
-        } as const,
-      );
+        },
+      },
+      "blockPermissionInformation": {
+        "actionTypes": {},
+        "linkTypes": {},
+        "objectTypes": {},
+      },
+    } as const);
 
     expect(result).toMatchInlineSnapshot(`
       {

@@ -52,9 +52,11 @@ interface QueryPayload<T> {
   status: "loading" | "success" | "error";
 }
 
-export function usePlatformQuery<T>(
-  { query, queryName, enabled = true }: UseQueryOptions<T>,
-): QueryResult<T> {
+export function usePlatformQuery<T>({
+  query,
+  queryName,
+  enabled = true,
+}: UseQueryOptions<T>): QueryResult<T> {
   const observerRef = React.useRef<Observer<QueryPayload<T> | undefined>>();
 
   const handleQuery = React.useCallback(() => {
@@ -78,36 +80,33 @@ export function usePlatformQuery<T>(
       });
   }, [query]);
 
-  const { subscribe, getSnapShot } = React.useMemo(
-    () => {
-      if (!enabled) {
-        return makeExternalStore<QueryPayload<T>>(
-          () => ({ unsubscribe: () => {} }),
-          devToolsMetadata({
-            hookType: "usePlatformQuery",
-            objectType: queryName,
-          }),
-        );
-      }
-
+  const { subscribe, getSnapShot } = React.useMemo(() => {
+    if (!enabled) {
       return makeExternalStore<QueryPayload<T>>(
-        (observer: Observer<QueryPayload<T> | undefined>) => {
-          observerRef.current = observer;
-          handleQuery();
-          return {
-            unsubscribe: () => {
-              observerRef.current = undefined;
-            },
-          };
-        },
+        () => ({ unsubscribe: () => {} }),
         devToolsMetadata({
           hookType: "usePlatformQuery",
           objectType: queryName,
         }),
       );
-    },
-    [enabled, queryName, handleQuery],
-  );
+    }
+
+    return makeExternalStore<QueryPayload<T>>(
+      (observer: Observer<QueryPayload<T> | undefined>) => {
+        observerRef.current = observer;
+        handleQuery();
+        return {
+          unsubscribe: () => {
+            observerRef.current = undefined;
+          },
+        };
+      },
+      devToolsMetadata({
+        hookType: "usePlatformQuery",
+        objectType: queryName,
+      }),
+    );
+  }, [enabled, queryName, handleQuery]);
 
   const payload = React.useSyncExternalStore(subscribe, getSnapShot);
 
@@ -120,7 +119,7 @@ export function usePlatformQuery<T>(
 
   return {
     data: payload?.data,
-    isLoading: enabled ? (payload?.status === "loading" || !payload) : false,
+    isLoading: enabled ? payload?.status === "loading" || !payload : false,
     error,
     refetch: handleQuery,
   };

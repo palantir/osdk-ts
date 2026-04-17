@@ -29,10 +29,7 @@ export function logWidgetSetDeployCommandConfigFileOverride(
     );
   }
 
-  if (
-    config?.repository != null
-    && args.repository !== config.repository
-  ) {
+  if (config?.repository != null && args.repository !== config.repository) {
     consola.debug(
       `Overriding "repository" from config file with ${args.repository}`,
     );

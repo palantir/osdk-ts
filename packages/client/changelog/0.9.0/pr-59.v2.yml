@@ -2,4 +2,4 @@ type: feature
 feature:
   description: Add $intersects for where clause
   links:
-  - https://github.com/palantir/osdk-ts/pull/59
+    - https://github.com/palantir/osdk-ts/pull/59

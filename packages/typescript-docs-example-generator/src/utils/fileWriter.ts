@@ -143,8 +143,8 @@ export class FileWriter {
    * Get all queued file paths (relative to output directory)
    */
   getQueuedPaths(): string[] {
-    return Array.from(this.files.keys()).map(fullPath =>
-      path.relative(this.options.outputDir, fullPath)
+    return Array.from(this.files.keys()).map((fullPath) =>
+      path.relative(this.options.outputDir, fullPath),
     );
   }
 }

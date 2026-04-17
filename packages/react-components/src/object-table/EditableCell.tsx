@@ -41,10 +41,7 @@ export interface EditableCellProps<TData extends RowData, CellValue = unknown> {
   cellId: string;
   dataType?: string;
   onCellEdit: (cellId: string, info: CellEditInfo<TData, CellValue>) => void;
-  onCellValidationError?: (
-    cellId: string,
-    error: string,
-  ) => void;
+  onCellValidationError?: (cellId: string, error: string) => void;
   clearCellValidationError?: (cellId: string) => void;
   validationError?: string;
   originalRowData: TData;
@@ -66,10 +63,7 @@ function valueToString(value: unknown): string {
   return String(value as string | number | boolean | symbol | bigint);
 }
 
-function parseValueByType(
-  value: string,
-  dataType?: string,
-): unknown {
+function parseValueByType(value: string, dataType?: string): unknown {
   if (!dataType || !NUMBER_TYPES.includes(dataType)) {
     return value;
   }
@@ -160,10 +154,7 @@ function EditableCellInner<TData extends RowData, CellValue = unknown>({
           }
         },
         (error) => {
-          if (
-            !controller.signal.aborted
-            && error.name !== "AbortError"
-          ) {
+          if (!controller.signal.aborted && error.name !== "AbortError") {
             onCellValidationError?.(cellId, VALIDATION_ERROR_MESSAGE);
           }
         },
@@ -209,11 +200,14 @@ function EditableCellInner<TData extends RowData, CellValue = unknown>({
     commitEdit(parsedValue);
   }, [inputValue, dataType, commitEdit]);
 
-  const handleInputChange = useCallback((value: string) => {
-    // Cancel any in-flight validation
-    abortValidation();
-    setInputValue(value);
-  }, [abortValidation]);
+  const handleInputChange = useCallback(
+    (value: string) => {
+      // Cancel any in-flight validation
+      abortValidation();
+      setInputValue(value);
+    },
+    [abortValidation],
+  );
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -237,42 +231,39 @@ function EditableCellInner<TData extends RowData, CellValue = unknown>({
     [commitEdit],
   );
 
-  const inputType = dataType && NUMBER_TYPES.includes(dataType)
-    ? "number"
-    : "text";
+  const inputType =
+    dataType && NUMBER_TYPES.includes(dataType) ? "number" : "text";
 
   const isDropdown = editFieldConfig?.fieldComponent === "DROPDOWN";
 
   return (
     <Tooltip.Provider>
       <Tooltip.Root disabled={!hasValidationError}>
-        <Tooltip.Trigger
-          className={styles.osdkEditableCellTrigger}
-        >
-          {isDropdown
-            ? (
-              <DropdownCellField
-                editFieldConfig={editFieldConfig as EditFieldConfig & {
+        <Tooltip.Trigger className={styles.osdkEditableCellTrigger}>
+          {isDropdown ? (
+            <DropdownCellField
+              editFieldConfig={
+                editFieldConfig as EditFieldConfig & {
                   fieldComponent: "DROPDOWN";
-                }}
-                isRowFocused={isRowFocused ?? false}
-                inputValue={inputValue}
-                hasValidationError={hasValidationError}
-                isEdited={isEdited}
-                onChange={handleDropdownChange}
-              />
-            )
-            : (
-              <TextInputCellField
-                inputType={inputType}
-                inputValue={inputValue}
-                hasValidationError={hasValidationError}
-                isEdited={isEdited}
-                onValueChange={handleInputChange}
-                onBlur={handleBlur}
-                onKeyDown={handleKeyDown}
-              />
-            )}
+                }
+              }
+              isRowFocused={isRowFocused ?? false}
+              inputValue={inputValue}
+              hasValidationError={hasValidationError}
+              isEdited={isEdited}
+              onChange={handleDropdownChange}
+            />
+          ) : (
+            <TextInputCellField
+              inputType={inputType}
+              inputValue={inputValue}
+              hasValidationError={hasValidationError}
+              isEdited={isEdited}
+              onValueChange={handleInputChange}
+              onBlur={handleBlur}
+              onKeyDown={handleKeyDown}
+            />
+          )}
         </Tooltip.Trigger>
         <Tooltip.Portal>
           <Tooltip.Positioner sideOffset={4} side={"bottom"}>
@@ -293,4 +284,4 @@ function EditableCellInner<TData extends RowData, CellValue = unknown>({
 export const EditableCell = React.memo(
   EditableCellInner,
 ) as typeof EditableCellInner;
-"";
+("");

@@ -14,10 +14,16 @@ interface OfficePanelProps {
   onClose: () => void;
 }
 
-export function OfficePanel(
-  { office, onSelectEmployee, onClose }: OfficePanelProps,
-) {
-  const { links: occupants, isLoading, error } = useLinks(office, "occupants", {
+export function OfficePanel({
+  office,
+  onSelectEmployee,
+  onClose,
+}: OfficePanelProps) {
+  const {
+    links: occupants,
+    isLoading,
+    error,
+  } = useLinks(office, "occupants", {
     $select: ["fullName", "employeeNumber", "jobTitle", "primaryOfficeId"],
   });
 
@@ -37,9 +43,9 @@ export function OfficePanel(
   const aggregatedCount = occupantAgg?.$count;
 
   const coords = office.location
-    ? `${office.location.coordinates[1].toFixed(4)}, ${
-      office.location.coordinates[0].toFixed(4)
-    }`
+    ? `${office.location.coordinates[1].toFixed(4)}, ${office.location.coordinates[0].toFixed(
+        4,
+      )}`
     : "No coordinates";
 
   return (
@@ -105,52 +111,46 @@ export function OfficePanel(
       {/* Occupants List */}
       <div className="flex-1 overflow-auto">
         <div className="p-2">
-          <div className="officenetwork-section-label px-2 py-2">
-            Occupants
-          </div>
-          {occupants && occupants.length > 0
-            ? (
-              <div className="space-y-px">
-                {occupants.map((emp) => {
-                  const level = getHierarchyLevel(emp.jobTitle);
-                  return (
-                    <button
-                      key={emp.employeeNumber}
-                      onClick={() => onSelectEmployee(emp)}
-                      className="w-full text-left px-3 py-2 rounded hover:bg-[var(--officenetwork-bg-elevated)] transition-colors group flex items-center gap-3"
-                    >
-                      <div
-                        className="size-2 rounded-sm shrink-0"
-                        style={{ backgroundColor: HIERARCHY_COLORS[level] }}
-                      />
-                      <div className="flex-1 min-w-0">
-                        <div className="text-sm text-[var(--officenetwork-text-primary)] group-hover:text-[var(--officenetwork-accent-cyan)] truncate">
-                          {emp.fullName ?? `Employee #${emp.employeeNumber}`}
-                        </div>
-                        <div className="text-[10px] text-[var(--officenetwork-text-muted)] flex items-center gap-2">
-                          <span>{emp.jobTitle ?? "No title"}</span>
-                          <span
-                            className="uppercase tracking-wider"
-                            style={{ color: HIERARCHY_COLORS[level] }}
-                          >
-                            {HIERARCHY_LABELS[level]}
-                          </span>
-                        </div>
+          <div className="officenetwork-section-label px-2 py-2">Occupants</div>
+          {occupants && occupants.length > 0 ? (
+            <div className="space-y-px">
+              {occupants.map((emp) => {
+                const level = getHierarchyLevel(emp.jobTitle);
+                return (
+                  <button
+                    key={emp.employeeNumber}
+                    onClick={() => onSelectEmployee(emp)}
+                    className="w-full text-left px-3 py-2 rounded hover:bg-[var(--officenetwork-bg-elevated)] transition-colors group flex items-center gap-3"
+                  >
+                    <div
+                      className="size-2 rounded-sm shrink-0"
+                      style={{ backgroundColor: HIERARCHY_COLORS[level] }}
+                    />
+                    <div className="flex-1 min-w-0">
+                      <div className="text-sm text-[var(--officenetwork-text-primary)] group-hover:text-[var(--officenetwork-accent-cyan)] truncate">
+                        {emp.fullName ?? `Employee #${emp.employeeNumber}`}
                       </div>
-                    </button>
-                  );
-                })}
+                      <div className="text-[10px] text-[var(--officenetwork-text-muted)] flex items-center gap-2">
+                        <span>{emp.jobTitle ?? "No title"}</span>
+                        <span
+                          className="uppercase tracking-wider"
+                          style={{ color: HIERARCHY_COLORS[level] }}
+                        >
+                          {HIERARCHY_LABELS[level]}
+                        </span>
+                      </div>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          ) : !isLoading ? (
+            <div className="px-3 py-8 text-center">
+              <div className="text-sm text-[var(--officenetwork-text-muted)]">
+                No employees at this office
               </div>
-            )
-            : !isLoading
-            ? (
-              <div className="px-3 py-8 text-center">
-                <div className="text-sm text-[var(--officenetwork-text-muted)]">
-                  No employees at this office
-                </div>
-              </div>
-            )
-            : null}
+            </div>
+          ) : null}
         </div>
       </div>
 

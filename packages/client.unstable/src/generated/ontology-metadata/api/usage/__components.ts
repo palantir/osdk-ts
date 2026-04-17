@@ -198,8 +198,7 @@ export interface GetUsageResponseV2 {
 /**
  * Request to load Ontology Usage settings for an organization. Intentionally left empty.
  */
-export interface GetUsageSettingsByOrganizationRequest {
-}
+export interface GetUsageSettingsByOrganizationRequest {}
 /**
  * Response to GetUsageSettingByOrganizationRequest.
  */
@@ -210,8 +209,7 @@ export interface GetUsageSettingsByOrganizationResponse {
  * Request to load Ontology Usage settings for a user based on their organization membership.
  * Intentionally left empty.
  */
-export interface GetUsageSettingsByUserRequest {
-}
+export interface GetUsageSettingsByUserRequest {}
 /**
  * Response to GetUsageSettingByOrganizationRequest.
  */
@@ -221,18 +219,15 @@ export interface GetUsageSettingsByUserResponse {
 /**
  * Marker type indicating previously incorrectly reported provenance.
  */
-export interface IncorrectProvenanceRecorded {
-}
+export interface IncorrectProvenanceRecorded {}
 /**
  * Marker type indicating no function rules to check.
  */
-export interface NoFunctionRules {
-}
+export interface NoFunctionRules {}
 /**
  * Marker type indicating no incorrect provenance was reported so far.
  */
-export interface NoIncorrectProvenanceRecorded {
-}
+export interface NoIncorrectProvenanceRecorded {}
 /**
  * An ObjectTypeIdentifier with its PropertyTypeIdentifier(s) to report usage for.
  */
@@ -275,9 +270,7 @@ export type OntologyEntityIdentifiers =
  */
 export interface OntologyEntityReferences {
   linkTypeIdentifiers: Array<_api_LinkTypeIdentifier>;
-  objectTypeAndPropertyTypeIdentifiers: Array<
-    ObjectTypeAndPropertyTypeIdentifiers
-  >;
+  objectTypeAndPropertyTypeIdentifiers: Array<ObjectTypeAndPropertyTypeIdentifiers>;
   objectTypesWithAllProperties: Array<_api_ObjectTypeIdentifier>;
 }
 export interface OriginResource_resourceIdentifier {
@@ -340,8 +333,7 @@ export interface ReportUsageMetadataRequest {
 /**
  * Return type for a ReportUsageMetadataRequest. Intentionally left empty to allow for future extensibility.
  */
-export interface ReportUsageMetadataResponse {
-}
+export interface ReportUsageMetadataResponse {}
 /**
  * Request to configure Ontology Usage settings for an organization.
  */
@@ -351,8 +343,7 @@ export interface SetUsageSettingsByOrganizationRequest {
 /**
  * Response to SetUsageSettingsByOrganizationRequest. Intentionally left empty.
  */
-export interface SetUsageSettingsByOrganizationResponse {
-}
+export interface SetUsageSettingsByOrganizationResponse {}
 export interface UsageOverall {
   uniqueUsersCount: number;
 }

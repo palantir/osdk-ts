@@ -42,7 +42,7 @@ export const employeeObjectType: ObjectTypeV2 = {
     },
     office: {
       description:
-        "The unique \"ID\" of the employee's \\\"primary\\\" assigned office.\n This is some more text.",
+        'The unique "ID" of the employee\'s \\"primary\\" assigned office.\n This is some more text.',
       dataType: {
         type: "string",
       },

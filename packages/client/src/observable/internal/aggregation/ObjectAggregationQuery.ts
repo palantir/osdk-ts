@@ -55,7 +55,7 @@ export class ObjectAggregationQuery extends AggregationQuery {
     objectSet = objectSet.where(this.canonicalWhere);
 
     if (intersectWith != null && intersectWith.length > 0) {
-      const intersectSets = intersectWith.map(whereClause => {
+      const intersectSets = intersectWith.map((whereClause) => {
         let intersectSet = this.store.client(objectTypeDef);
 
         if (this.rdpConfig) {

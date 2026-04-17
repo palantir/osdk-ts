@@ -56,17 +56,21 @@ export interface QueryStubBuilder<T> {
   thenReturn(result: T): void;
 }
 
-export type StubBuilderFor<T> = T extends PageResult<infer U>
-  ? FetchPageStubBuilder<U>
-  : IsOsdkObject<T> extends true ? FetchOneStubBuilder<T>
-  : AggregateStubBuilder<T>;
+export type StubBuilderFor<T> =
+  T extends PageResult<infer U>
+    ? FetchPageStubBuilder<U>
+    : IsOsdkObject<T> extends true
+      ? FetchOneStubBuilder<T>
+      : AggregateStubBuilder<T>;
 
-type QueryReturnTypeFromDef<Q extends QueryDefinition> = ReturnType<
-  CompileTimeMetadata<Q>["signature"]
-> extends Promise<infer R> ? R : never;
+type QueryReturnTypeFromDef<Q extends QueryDefinition> =
+  ReturnType<CompileTimeMetadata<Q>["signature"]> extends Promise<infer R>
+    ? R
+    : never;
 
 type QueryParamsFromDef<Q extends QueryDefinition> =
-  Parameters<CompileTimeMetadata<Q>["signature"]> extends [infer P] ? P
+  Parameters<CompileTimeMetadata<Q>["signature"]> extends [infer P]
+    ? P
     : undefined;
 
 export type StubClient = {
@@ -99,7 +103,7 @@ export function createMockClient(): MockClient {
 
   const resolve = (objectType: string, calls: Call[]): unknown =>
     resolveStub(
-      stubs.filter(s => s.objectType === objectType),
+      stubs.filter((s) => s.objectType === objectType),
       calls,
       `No stub for request\n`,
     );
@@ -116,9 +120,7 @@ export function createMockClient(): MockClient {
     throw new Error(msg);
   };
 
-  const mockClient = ((
-    def: ObjectOrInterfaceDefinition | QueryDefinition,
-  ) => {
+  const mockClient = ((def: ObjectOrInterfaceDefinition | QueryDefinition) => {
     invariant("apiName" in def, "Expected ObjectType, Interface, or Query");
 
     if (def.type === "query") {
@@ -133,9 +135,8 @@ export function createMockClient(): MockClient {
       };
     }
 
-    return createMockObjectSetWithResolver(
-      def,
-      (calls) => resolve(def.apiName, calls),
+    return createMockObjectSetWithResolver(def, (calls) =>
+      resolve(def.apiName, calls),
     );
   }) as MockClient;
 
@@ -165,10 +166,7 @@ export function createMockClient(): MockClient {
     } as unknown as StubBuilderFor<T>;
   };
 
-  mockClient.whenObjectSet = <
-    Q extends ObjectOrInterfaceDefinition,
-    T,
-  >(
+  mockClient.whenObjectSet = <Q extends ObjectOrInterfaceDefinition, T>(
     objectSet: ObjectSet<Q>,
     callback: ObjectSetStubCallback<Q, T>,
   ): StubBuilderFor<T> => {

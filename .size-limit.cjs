@@ -108,8 +108,8 @@ module.exports = TRACKED_PACKAGES.flatMap((pkg) => {
         if (explicitExports.has(resolvedExportPath)) continue;
 
         if (
-          resolvedExportPath.includes("internal")
-          || resolvedExportPath.includes("unstable")
+          resolvedExportPath.includes("internal") ||
+          resolvedExportPath.includes("unstable")
         ) {
           continue;
         }
@@ -127,9 +127,10 @@ module.exports = TRACKED_PACKAGES.flatMap((pkg) => {
     }
 
     const esmPath = exportConfig.import.default;
-    const name = exportPath === "."
-      ? pkgJson.name
-      : `${pkgJson.name}/${exportPath.slice(2)}`;
+    const name =
+      exportPath === "."
+        ? pkgJson.name
+        : `${pkgJson.name}/${exportPath.slice(2)}`;
     entries.push(makeEntry(name, esmPath));
   }
 

@@ -19,19 +19,12 @@ import { EnhancedObjectType } from "../GenerateContext/EnhancedObjectType.js";
 import { ForeignType } from "../GenerateContext/ForeignType.js";
 import type { GenerateContext } from "../GenerateContext/GenerateContext.js";
 import { formatTs } from "../util/test/formatTs.js";
-import {
-  wireObjectTypeV2ToSdkObjectConstV2,
-} from "./wireObjectTypeV2ToSdkObjectConstV2.js";
+import { wireObjectTypeV2ToSdkObjectConstV2 } from "./wireObjectTypeV2ToSdkObjectConstV2.js";
 
 export async function generatePerObjectDataFiles(
   ctx: GenerateContext,
 ): Promise<void> {
-  const {
-    fs,
-    outDir,
-    ontology,
-    importExt,
-  } = ctx;
+  const { fs, outDir, ontology, importExt } = ctx;
   await fs.mkdir(path.join(outDir, "ontology", "objects"), { recursive: true });
   for (const obj of Object.values(ontology.objectTypes)) {
     if (obj instanceof ForeignType) continue;
@@ -47,10 +40,8 @@ export async function generatePerObjectDataFiles(
       outFilePath,
       await formatTs(`
         import type { PropertyDef as $PropertyDef } from "${
-        ctx.forInternalUse
-          ? "@osdk/api"
-          : "@osdk/client"
-      }";
+          ctx.forInternalUse ? "@osdk/api" : "@osdk/client"
+        }";
         import { $osdkMetadata } from "../../OntologyMetadata${importExt}";
         import type { $ExpectedClientVersion } from "../../OntologyMetadata${importExt}";
         ${wireObjectTypeV2ToSdkObjectConstV2(obj.raw, ctx, relPath)}
@@ -61,13 +52,13 @@ export async function generatePerObjectDataFiles(
   await fs.writeFile(
     path.join(outDir, "ontology", "objects.ts"),
     await formatTs(`
-    ${
-      Object.values(ctx.ontology.objectTypes).filter(o =>
-        o instanceof EnhancedObjectType
-      ).map(objType =>
-        `export {${objType.shortApiName}} from "./objects/${objType.shortApiName}${importExt}";`
-      ).join("\n")
-    }
+    ${Object.values(ctx.ontology.objectTypes)
+      .filter((o) => o instanceof EnhancedObjectType)
+      .map(
+        (objType) =>
+          `export {${objType.shortApiName}} from "./objects/${objType.shortApiName}${importExt}";`,
+      )
+      .join("\n")}
     ${Object.keys(ontology.objectTypes).length === 0 ? "export {};" : ""}
     `),
   );

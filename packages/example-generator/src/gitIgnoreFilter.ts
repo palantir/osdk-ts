@@ -46,9 +46,8 @@ export function gitIgnoreFilter(
     relativePath: string,
     options: Options,
   ): boolean => {
-    const isIgnored: GlobbyFilterFunction = entry.origin === "left"
-      ? isIgnoredLeft
-      : isIgnoredRight;
+    const isIgnored: GlobbyFilterFunction =
+      entry.origin === "left" ? isIgnoredLeft : isIgnoredRight;
     // .git is not ignored by globby. We have to handle it.
     if (entry.name === ".git") {
       return false;

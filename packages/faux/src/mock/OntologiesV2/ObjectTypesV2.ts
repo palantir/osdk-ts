@@ -21,39 +21,35 @@ import { handleOpenApiCall } from "../../handlers/util/handleOpenApiCall.js";
 export const get: CallFactory<
   "ontologyApiName" | "objectTypeApiName",
   typeof ObjectTypesV2.get
-> = handleOpenApiCall(
-  ObjectTypesV2.get,
-  ["ontologyApiName", "objectTypeApiName"],
-);
+> = handleOpenApiCall(ObjectTypesV2.get, [
+  "ontologyApiName",
+  "objectTypeApiName",
+]);
 
 export const getFullMetadata: CallFactory<
   "ontologyApiName" | "objectTypeApiName",
   typeof ObjectTypesV2.getFullMetadata
-> = handleOpenApiCall(
-  ObjectTypesV2.getFullMetadata,
-  ["ontologyApiName", "objectTypeApiName"],
-);
+> = handleOpenApiCall(ObjectTypesV2.getFullMetadata, [
+  "ontologyApiName",
+  "objectTypeApiName",
+]);
 
 export const getOutgoingLinkType: CallFactory<
   "ontology" | "objectType" | "linkType",
   typeof ObjectTypesV2.getOutgoingLinkType
-> = handleOpenApiCall(
-  ObjectTypesV2.getOutgoingLinkType,
-  ["ontology", "objectType", "linkType"],
-);
+> = handleOpenApiCall(ObjectTypesV2.getOutgoingLinkType, [
+  "ontology",
+  "objectType",
+  "linkType",
+]);
 
 export const listOutgoingLinkTypes: CallFactory<
   "ontology" | "objectType",
   typeof ObjectTypesV2.listOutgoingLinkTypes
-> = handleOpenApiCall(
-  ObjectTypesV2.listOutgoingLinkTypes,
-  ["ontology", "objectType"],
-);
+> = handleOpenApiCall(ObjectTypesV2.listOutgoingLinkTypes, [
+  "ontology",
+  "objectType",
+]);
 
-export const list: CallFactory<
-  "ontologyApiName",
-  typeof ObjectTypesV2.list
-> = handleOpenApiCall(
-  ObjectTypesV2.list,
-  ["ontologyApiName"],
-);
+export const list: CallFactory<"ontologyApiName", typeof ObjectTypesV2.list> =
+  handleOpenApiCall(ObjectTypesV2.list, ["ontologyApiName"]);

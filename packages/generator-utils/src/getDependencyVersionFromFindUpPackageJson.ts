@@ -33,9 +33,10 @@ export async function getDependencyVersionFromFindUpPackageJson(
     );
   }
   const parsedPackageJson = JSON.parse(packageJson);
-  const version = parsedPackageJson.dependencies?.[name]
-    ?? parsedPackageJson.devDependencies?.[name]
-    ?? parsedPackageJson.peerDependencies?.[name];
+  const version =
+    parsedPackageJson.dependencies?.[name] ??
+    parsedPackageJson.devDependencies?.[name] ??
+    parsedPackageJson.peerDependencies?.[name];
 
   invariant(
     version !== undefined,

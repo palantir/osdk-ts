@@ -34,11 +34,13 @@ export class EditRequestManager {
 
   public postEdit(edit: TransactionEdit): Promise<void> {
     if (this.inFlightRequest) {
-      if (this.editTimeout) { // This means we are in the same tick that the request was created, meaning we can just add to the same request
+      if (this.editTimeout) {
+        // This means we are in the same tick that the request was created, meaning we can just add to the same request
         this.pendingEdits.push(edit);
         return this.inFlightRequest;
       }
-      if (this.queuedRequest) { // This means we already have a queued request that will run after the inFlightRequest finishes, so we can just add to that one
+      if (this.queuedRequest) {
+        // This means we already have a queued request that will run after the inFlightRequest finishes, so we can just add to that one
         this.pendingEdits.push(edit);
         return this.queuedRequest;
       }
@@ -52,9 +54,7 @@ export class EditRequestManager {
       return this.queuedRequest;
     } else {
       // There is no request in flight, which means we should create a new one
-      this.inFlightRequest = this.createInitialPromiseWithTimeout(
-        edit,
-      );
+      this.inFlightRequest = this.createInitialPromiseWithTimeout(edit);
       return this.inFlightRequest;
     }
   }
@@ -67,7 +67,8 @@ export class EditRequestManager {
       this.editTimeout = setTimeout(async () => {
         this.editTimeout = null;
         await this.dispatchRequest();
-        if (!this.queuedRequest) { // The queued request will see this inFlightRequest resolve and should set the inFlightRequest to itself
+        if (!this.queuedRequest) {
+          // The queued request will see this inFlightRequest resolve and should set the inFlightRequest to itself
           this.inFlightRequest = null;
         }
         resolve();

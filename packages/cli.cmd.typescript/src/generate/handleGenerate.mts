@@ -73,9 +73,8 @@ async function generateFromLocalFile(args: TypescriptGenerateArgs) {
 }
 
 async function generateFromStack(args: TypescriptGenerateArgs) {
-  const { foundryUrl, clientId, ontologyWritePath } = args as
-    & TypescriptGenerateArgs
-    & { foundryUrl: string; clientId: string };
+  const { foundryUrl, clientId, ontologyWritePath } =
+    args as TypescriptGenerateArgs & { foundryUrl: string; clientId: string };
 
   const token = await invokeLoginFlow({
     clientId,
@@ -89,9 +88,7 @@ async function generateFromStack(args: TypescriptGenerateArgs) {
   );
 
   try {
-    const ontologies = await OntologiesV2.list(
-      ctx,
-    );
+    const ontologies = await OntologiesV2.list(ctx);
 
     if (args.ontologyRid) {
       ontologies.data = ontologies.data.filter(
@@ -136,7 +133,7 @@ async function generateFromStack(args: TypescriptGenerateArgs) {
       return {
         ...x,
         linkTypes: [...x.linkTypes].sort((a, b) =>
-          a.apiName.localeCompare(b.apiName)
+          a.apiName.localeCompare(b.apiName),
         ),
         implementsInterfaces2: sortKeys(x.implementsInterfaces2),
         sharedPropertyTypeMapping: sortKeys(x.sharedPropertyTypeMapping),
@@ -223,9 +220,7 @@ async function generateClientSdk(
           dependencyVersions.osdkLegacyClientVersion = "workspace:~";
         }
 
-        const expectedDeps = getExpectedDependencies(
-          dependencyVersions,
-        );
+        const expectedDeps = getExpectedDependencies(dependencyVersions);
 
         for (const [type, deps] of Object.entries(expectedDeps)) {
           if (!(type in packageJson)) {
@@ -309,8 +304,7 @@ export async function getDependencyVersions(): Promise<{
     ourPackageJson.dependencies["@arethetypeswrong/cli"];
   const osdkClientVersion = `^${process.env.PACKAGE_CLIENT_VERSION}`;
   const osdkApiVersion = `^${process.env.PACKAGE_API_VERSION}`;
-  const osdkLegacyClientVersion =
-    `^${process.env.PACKAGE_LEGACY_CLIENT_VERSION}`;
+  const osdkLegacyClientVersion = `^${process.env.PACKAGE_LEGACY_CLIENT_VERSION}`;
 
   return {
     typescriptVersion,
@@ -332,7 +326,7 @@ async function getOurPackageJsonPath() {
   if (!ourPackageJsonPath) {
     throw new Error("Could not find our package.json");
   }
-  return cachedOurPackageJsonPath = ourPackageJsonPath;
+  return (cachedOurPackageJsonPath = ourPackageJsonPath);
 }
 
 async function generateSourceFiles(
@@ -388,14 +382,16 @@ function isOntologyEditQuery(dataType: QueryDataType): boolean {
       return isOntologyEditQuery(dataType.subType);
 
     case "union":
-      return dataType.unionTypes.some(t => isOntologyEditQuery(t));
+      return dataType.unionTypes.some((t) => isOntologyEditQuery(t));
 
     case "struct":
-      return dataType.fields.some(f => isOntologyEditQuery(f.fieldType));
+      return dataType.fields.some((f) => isOntologyEditQuery(f.fieldType));
 
     case "entrySet":
-      return isOntologyEditQuery(dataType.keyType)
-        || isOntologyEditQuery(dataType.valueType);
+      return (
+        isOntologyEditQuery(dataType.keyType) ||
+        isOntologyEditQuery(dataType.valueType)
+      );
 
     case "attachment":
     case "boolean":

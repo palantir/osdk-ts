@@ -25,9 +25,7 @@ import { OacDevServer } from "./OacDevServer.js";
  * Vite plugin for Ontology as Code (OAC) that generates ontology IR, metadata, and OSDK
  * in both development and build modes.
  */
-export function ontologyAsCode(
-  oacConfig: OacConfig,
-): PluginOption {
+export function ontologyAsCode(oacConfig: OacConfig): PluginOption {
   let viteConfig: ResolvedConfig;
 
   return {
@@ -54,9 +52,7 @@ export function ontologyAsCode(
           await fs.promises.mkdir(ctx.workDir, { recursive: true });
           await generateOntologyAssets(ctx);
 
-          ctx.logger.info(
-            "Successfully generated ontology assets for build",
-          );
+          ctx.logger.info("Successfully generated ontology assets for build");
         } catch (error) {
           ctx.logger.error(
             `Failed to generate ontology assets: ${

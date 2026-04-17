@@ -93,7 +93,8 @@ describe("FilePickerField", () => {
       const trigger = screen.getByRole("button", { name: "Choose file" });
       // Mock click to prevent infinite recursion — HappyDOM has no native
       // file dialog to absorb the event, so the click bubbles back up.
-      const clickSpy = vi.spyOn(getFileInput(), "click")
+      const clickSpy = vi
+        .spyOn(getFileInput(), "click")
         .mockImplementation(() => {});
 
       fireEvent.keyDown(trigger, { key: "Enter" });
@@ -105,7 +106,8 @@ describe("FilePickerField", () => {
       render(<FilePickerField value={null} />);
 
       const trigger = screen.getByRole("button", { name: "Choose file" });
-      const clickSpy = vi.spyOn(getFileInput(), "click")
+      const clickSpy = vi
+        .spyOn(getFileInput(), "click")
         .mockImplementation(() => {});
 
       fireEvent.keyDown(trigger, { key: " " });

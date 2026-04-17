@@ -27,19 +27,17 @@ export interface TH_ActionTypeV2<
 > extends ActionTypeV2 {
   parameters: P;
 }
-export function createAction<P extends Record<ParameterId, ActionParameterV2>>(
-  {
-    apiName,
-    parameters,
-    rid = createActionRid(),
-    operations = [],
-    status = "ACTIVE",
-    description,
-  }: Partial<Omit<ActionTypeV2, "apiName" | "parameters">> & {
-    apiName: ActionTypeApiName;
-    parameters: P;
-  },
-): TH_ActionTypeV2<P> {
+export function createAction<P extends Record<ParameterId, ActionParameterV2>>({
+  apiName,
+  parameters,
+  rid = createActionRid(),
+  operations = [],
+  status = "ACTIVE",
+  description,
+}: Partial<Omit<ActionTypeV2, "apiName" | "parameters">> & {
+  apiName: ActionTypeApiName;
+  parameters: P;
+}): TH_ActionTypeV2<P> {
   return {
     apiName,
     parameters,

@@ -28,10 +28,9 @@ describe("evaluateFilter", () => {
 
     it("returns false when value is not in the array", () => {
       expect(evaluateFilter("$in", 7, [1, 5, 10], true)).toBe(false);
-      expect(evaluateFilter("$in", "deleted", ["active", "pending"], true))
-        .toBe(
-          false,
-        );
+      expect(
+        evaluateFilter("$in", "deleted", ["active", "pending"], true),
+      ).toBe(false);
     });
 
     it("handles empty arrays", () => {

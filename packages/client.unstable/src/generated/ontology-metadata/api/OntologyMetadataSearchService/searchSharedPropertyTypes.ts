@@ -16,10 +16,8 @@
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
 import type {
-  SharedPropertyTypeSearchRequest
-    as _api_search_SharedPropertyTypeSearchRequest,
-  SharedPropertyTypeSearchResponse
-    as _api_search_SharedPropertyTypeSearchResponse,
+  SharedPropertyTypeSearchRequest as _api_search_SharedPropertyTypeSearchRequest,
+  SharedPropertyTypeSearchResponse as _api_search_SharedPropertyTypeSearchResponse,
 } from "../search/__components.js";
 
 /**

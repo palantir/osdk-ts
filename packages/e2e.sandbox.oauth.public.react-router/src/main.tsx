@@ -1,11 +1,11 @@
+import React from "react";
 import ReactDOM from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import AuthCallback from "./AuthCallback.js";
 import AuthenticatedRoute from "./AuthenticatedRoute.js";
 import Home from "./Home.js";
-import Login from "./Login.js";
 import "./index.css";
-import React from "react";
+import Login from "./Login.js";
 
 const router = createBrowserRouter(
   [

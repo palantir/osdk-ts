@@ -594,7 +594,7 @@ describe("SPTs", () => {
       },
     });
     const action = defineCreateObjectAction({ objectType: obj });
-    const priceParam = action.parameters?.find(p => p.id === "price");
+    const priceParam = action.parameters?.find((p) => p.id === "price");
     expect(priceParam?.type).toBe("decimal");
   });
   it("Number formatting works", () => {

@@ -67,8 +67,8 @@ export function defineObject(
     ? Object.keys(objectDef.properties)
     : [];
   if (
-    ontologyDefinition[OntologyEntityTypeEnum.OBJECT_TYPE][apiName]
-      !== undefined
+    ontologyDefinition[OntologyEntityTypeEnum.OBJECT_TYPE][apiName] !==
+    undefined
   ) {
     throw new Error(
       `Object type with apiName ${objectDef.apiName} is already defined`,
@@ -78,7 +78,7 @@ export function defineObject(
     isValidObjectApiName(objectDef.apiName),
     `Invalid API name ${objectDef.apiName}. API names must match the regex ${OBJECT_API_NAME_PATTERN}.`,
   );
-  propertyApiNames.forEach(apiName => {
+  propertyApiNames.forEach((apiName) => {
     invariant(
       isValidApiName(apiName),
       `Invalid API name ${apiName} for property on object ${objectDef.apiName}. API names must match the regex ${API_NAME_PATTERN}.`,
@@ -94,48 +94,51 @@ export function defineObject(
   );
 
   invariant(
-    !(objectDef.properties?.[objectDef.primaryKeyPropertyApiName]?.editOnly),
+    !objectDef.properties?.[objectDef.primaryKeyPropertyApiName]?.editOnly,
     `Primary key property ${objectDef.primaryKeyPropertyApiName} on object ${objectDef.apiName} cannot be edit-only`,
   );
 
   if (objectDef.includeEmptyBackingDatasource && objectDef.datasources) {
     const nonDatasetDatasources = objectDef.datasources.filter(
-      ds => ds.type !== "dataset",
+      (ds) => ds.type !== "dataset",
     );
     invariant(
       nonDatasetDatasources.length === 0,
-      `Object type "${objectDef.apiName}" has non-dataset datasources (${
-        nonDatasetDatasources.map(ds => ds.type).join(", ")
-      }) and cannot use includeEmptyBackingDatasource. `
-        + `Empty backing datasources are only supported for object types with dataset datasources.`,
+      `Object type "${objectDef.apiName}" has non-dataset datasources (${nonDatasetDatasources
+        .map((ds) => ds.type)
+        .join(", ")}) and cannot use includeEmptyBackingDatasource. ` +
+        `Empty backing datasources are only supported for object types with dataset datasources.`,
     );
   }
 
-  const retentionPeriods =
-    ((objectDef.datasources ?? []).filter(ds =>
-      ds.type === "stream"
-    ) as ObjectTypeDatasourceDefinition_stream[]).map(ds => ds.retentionPeriod);
-  retentionPeriods.forEach(retentionPeriod => {
+  const retentionPeriods = (
+    (objectDef.datasources ?? []).filter(
+      (ds) => ds.type === "stream",
+    ) as ObjectTypeDatasourceDefinition_stream[]
+  ).map((ds) => ds.retentionPeriod);
+  retentionPeriods.forEach((retentionPeriod) => {
     invariant(
       retentionPeriod === undefined || ISO_8601_DURATION.test(retentionPeriod),
       `Retention period "${retentionPeriod}" on object "${objectDef.apiName}" is not a valid ISO 8601 duration string`,
     );
   });
 
-  const baseDatasources = (objectDef.datasources ?? []).filter(ds =>
-    ["dataset", "stream", "restrictedView"].includes(ds.type)
+  const baseDatasources = (objectDef.datasources ?? []).filter((ds) =>
+    ["dataset", "stream", "restrictedView"].includes(ds.type),
   );
   invariant(
     baseDatasources.length <= 1,
-    `Object ${objectDef.apiName} has more than one base datasource (got: [${
-      baseDatasources.map(ds => ds.type).join(", ")
-    }])`,
+    `Object ${objectDef.apiName} has more than one base datasource (got: [${baseDatasources
+      .map((ds) => ds.type)
+      .join(", ")}])`,
   );
-  const derivedDatasources = (objectDef.datasources ?? []).filter(ds =>
-    ds.type === "derived"
+  const derivedDatasources = (objectDef.datasources ?? []).filter(
+    (ds) => ds.type === "derived",
   );
   if (derivedDatasources.length > 0) {
-    derivedDatasources.forEach(ds => validateDerivedDatasource(objectDef, ds));
+    derivedDatasources.forEach((ds) =>
+      validateDerivedDatasource(objectDef, ds),
+    );
   }
 
   // Validate property statuses match the object status.
@@ -145,8 +148,9 @@ export function defineObject(
   // There is no restriction on property statuses of an active object.
   const objectStatusType = getStatusType(objectDef.status);
   if (
-    objectStatusType === "experimental" || objectStatusType === "deprecated"
-    || objectStatusType === "example"
+    objectStatusType === "experimental" ||
+    objectStatusType === "deprecated" ||
+    objectStatusType === "example"
   ) {
     const mismatchedProperties: string[] = [];
     Object.entries(objectDef.properties ?? {}).forEach(
@@ -161,16 +165,17 @@ export function defineObject(
     );
     invariant(
       mismatchedProperties.length === 0,
-      `Object "${objectDef.apiName}" has "${objectStatusType}" status, but the following properties have a different status: ${
-        mismatchedProperties.join(", ")
-      }`,
+      `Object "${objectDef.apiName}" has "${objectStatusType}" status, but the following properties have a different status: ${mismatchedProperties.join(
+        ", ",
+      )}`,
     );
   }
 
   // Validate deprecated status deadline is in ISO 8601 format
   if (
-    objectDef.status && typeof objectDef.status === "object"
-    && objectDef.status.type === "deprecated"
+    objectDef.status &&
+    typeof objectDef.status === "object" &&
+    objectDef.status.type === "deprecated"
   ) {
     const deadline = objectDef.status.deadline;
     invariant(
@@ -178,12 +183,13 @@ export function defineObject(
       `Deprecated status deadline "${deadline}" on object "${objectDef.apiName}" is not a valid ISO 8601 datetime string`,
     );
   }
-  const titleProp = objectDef.properties?.[objectDef.titlePropertyApiName]
-    ?.type;
+  const titleProp =
+    objectDef.properties?.[objectDef.titlePropertyApiName]?.type;
   invariant(
-    !isExotic(titleProp)
-      || (isStruct(titleProp) && titleProp.mainValue
-        && !isExotic(titleProp.mainValue.type)),
+    !isExotic(titleProp) ||
+      (isStruct(titleProp) &&
+        titleProp.mainValue &&
+        !isExotic(titleProp.mainValue.type)),
     `Title property ${objectDef.titlePropertyApiName} must be a primitive type`,
   );
   invariant(
@@ -193,30 +199,30 @@ export function defineObject(
     `Primary key property ${objectDef.primaryKeyPropertyApiName} can only be primitive types`,
   );
 
-  objectDef.implementsInterfaces?.forEach(interfaceImpl => {
+  objectDef.implementsInterfaces?.forEach((interfaceImpl) => {
     const allInterfaceProperties = getFlattenedInterfaceProperties(
       interfaceImpl.implements,
     );
-    const nonExistentInterfaceProperties: ValidationResult[] = interfaceImpl
-      .propertyMapping.map(val => val.interfaceProperty).filter(
-        interfaceProperty =>
-          allInterfaceProperties[addNamespaceIfNone(interfaceProperty)]
-            === undefined
-          && allInterfaceProperties[withoutNamespace(interfaceProperty)]
-            === undefined,
-      ).map(interfaceProp => ({
-        type: "invalid",
-        reason:
-          `Interface property ${interfaceProp} referenced in ${objectDef.apiName} object does not exist`,
-      }));
+    const nonExistentInterfaceProperties: ValidationResult[] =
+      interfaceImpl.propertyMapping
+        .map((val) => val.interfaceProperty)
+        .filter(
+          (interfaceProperty) =>
+            allInterfaceProperties[addNamespaceIfNone(interfaceProperty)] ===
+              undefined &&
+            allInterfaceProperties[withoutNamespace(interfaceProperty)] ===
+              undefined,
+        )
+        .map((interfaceProp) => ({
+          type: "invalid",
+          reason: `Interface property ${interfaceProp} referenced in ${objectDef.apiName} object does not exist`,
+        }));
 
     const interfaceToObjectProperties = Object.fromEntries(
-      interfaceImpl.propertyMapping.map(
-        mapping => [
-          mapping.interfaceProperty,
-          mapping.mapsTo,
-        ],
-      ),
+      interfaceImpl.propertyMapping.map((mapping) => [
+        mapping.interfaceProperty,
+        mapping.mapsTo,
+      ]),
     );
     const validateProperty = (
       interfaceProp: [string, InterfacePropertyType],
@@ -234,16 +240,15 @@ export function defineObject(
       }
       return {
         type: "invalid",
-        reason:
-          `Interface spt ${apiName} not implemented by ${objectDef.apiName} object definition`,
+        reason: `Interface spt ${apiName} not implemented by ${objectDef.apiName} object definition`,
       };
     };
     const validations = Object.entries(
       getFlattenedInterfaceProperties(interfaceImpl.implements),
     ).map(validateProperty);
-    const allFailedValidations = validations.concat(
-      nonExistentInterfaceProperties,
-    ).filter(val => val.type === "invalid");
+    const allFailedValidations = validations
+      .concat(nonExistentInterfaceProperties)
+      .filter((val) => val.type === "invalid");
     invariant(
       allFailedValidations.length === 0,
       "\n" + allFailedValidations.map(formatValidationErrors).join("\n"),
@@ -253,7 +258,7 @@ export function defineObject(
   const flattenedProperties: Array<ObjectPropertyType> = Object.entries(
     objectDef.properties ?? {},
   ).map(([apiName, property]) =>
-    convertUserObjectPropertyType(apiName, property)
+    convertUserObjectPropertyType(apiName, property),
   );
 
   const finalObject: ObjectType = {
@@ -269,9 +274,10 @@ export function defineObject(
 
 type ValidationResult = { type: "valid" } | { type: "invalid"; reason: string };
 
-function formatValidationErrors(
-  error: { type: "invalid"; reason: string },
-): string {
+function formatValidationErrors(error: {
+  type: "invalid";
+  reason: string;
+}): string {
   return `Ontology Definition Error: ${error.reason}\n`;
 }
 
@@ -286,16 +292,14 @@ function validateInterfaceImplProperty(
   if (objProp === undefined) {
     return {
       type: "invalid",
-      reason:
-        `Object property mapped to interface does not exist. Object Property Mapped: ${mappedObjectProp}`,
+      reason: `Object property mapped to interface does not exist. Object Property Mapped: ${mappedObjectProp}`,
     };
   }
   const propertyType = getInterfacePropertyTypeType(type);
   if (JSON.stringify(propertyType) !== JSON.stringify(objProp?.type)) {
     return {
       type: "invalid",
-      reason:
-        `Object property type does not match the interface property it is mapped to. Interface Property: ${apiName}, objectProperty: ${mappedObjectProp}`,
+      reason: `Object property type does not match the interface property it is mapped to. Interface Property: ${apiName}, objectProperty: ${mappedObjectProp}`,
     };
   }
 
@@ -315,8 +319,8 @@ export function convertToPluralDisplayName(
   return s === undefined || s == null
     ? ""
     : s.endsWith("s")
-    ? uppercaseFirstLetter(s)
-    : uppercaseFirstLetter(s) + "s";
+      ? uppercaseFirstLetter(s)
+      : uppercaseFirstLetter(s) + "s";
 }
 
 function convertUserObjectPropertyType(
@@ -343,19 +347,19 @@ function validateDerivedDatasource(
   );
 
   // all of the links references should exist
-  datasource.linkDefinition.forEach(link => {
+  datasource.linkDefinition.forEach((link) => {
     const linkApiName = link.linkType.apiName;
     invariant(
-      ontologyDefinition[OntologyEntityTypeEnum.LINK_TYPE][linkApiName]
-          !== undefined
-        || importedTypes[OntologyEntityTypeEnum.LINK_TYPE][linkApiName]
-          !== undefined,
+      ontologyDefinition[OntologyEntityTypeEnum.LINK_TYPE][linkApiName] !==
+        undefined ||
+        importedTypes[OntologyEntityTypeEnum.LINK_TYPE][linkApiName] !==
+          undefined,
       `Link type '${linkApiName}' used in derived datasource for object '${objectDef.apiName}' is not defined.`,
     );
   });
 
   // all of the properties references on the source object should exist
-  Object.keys(datasource.propertyMapping).forEach(prop => {
+  Object.keys(datasource.propertyMapping).forEach((prop) => {
     invariant(
       objectDef.properties?.[prop] !== undefined,
       `Property '${prop}' used in derived datasource for object '${objectDef.apiName}' is not defined.`,
@@ -363,7 +367,7 @@ function validateDerivedDatasource(
   });
 
   const isLinkedProperties =
-    (typeof Object.values(datasource.propertyMapping)[0]) === "string";
+    typeof Object.values(datasource.propertyMapping)[0] === "string";
   if (isLinkedProperties) {
     validateLinkedProperties(datasource, objectDef);
   } else {
@@ -379,9 +383,8 @@ function getPropertiesForValidation(
   linkObject: string | ObjectTypeDefinition | ObjectType,
   objectDef: ObjectTypeDefinition,
 ): { apiName: string; hasProperty: (propName: string) => boolean } {
-  const targetApiName = typeof linkObject === "string"
-    ? linkObject
-    : linkObject.apiName;
+  const targetApiName =
+    typeof linkObject === "string" ? linkObject : linkObject.apiName;
   const selfApiName = namespace + objectDef.apiName;
 
   // Self-referential: use objectDef directly (not yet in registry)
@@ -398,7 +401,7 @@ function getPropertiesForValidation(
   return {
     apiName,
     hasProperty: (propName: string) =>
-      object.properties?.find(p => p.apiName === propName) !== undefined,
+      object.properties?.find((p) => p.apiName === propName) !== undefined,
   };
 }
 
@@ -415,7 +418,7 @@ function validateLinkedProperties(
     targetObject,
     objectDef,
   );
-  foreignProperties.forEach(prop => {
+  foreignProperties.forEach((prop) => {
     invariant(
       hasProperty(prop),
       `Property '${prop}' on object '${apiName}' is not defined`,
@@ -493,9 +496,8 @@ function isCollectible(property: ObjectPropertyTypeUserDefinition): boolean {
   if (!(property.array ?? false)) {
     return false;
   }
-  const typeType = typeof property.type === "string"
-    ? property.type
-    : property.type.type;
+  const typeType =
+    typeof property.type === "string" ? property.type : property.type.type;
   return [
     "boolean",
     "byte",
@@ -516,14 +518,9 @@ function isCollectible(property: ObjectPropertyTypeUserDefinition): boolean {
 
 function isNumeric(type: PropertyTypeType): boolean {
   const typeType = typeof type === "string" ? type : type.type;
-  return [
-    "byte",
-    "double",
-    "float",
-    "integer",
-    "long",
-    "short",
-  ].includes(typeType);
+  return ["byte", "double", "float", "integer", "long", "short"].includes(
+    typeType,
+  );
 }
 
 function isPrimitive(type: PropertyTypeType): boolean {

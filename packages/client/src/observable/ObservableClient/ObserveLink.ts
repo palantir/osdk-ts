@@ -36,7 +36,8 @@ export namespace ObserveLinks {
   export interface Options<
     Q extends ObjectTypeDefinition | InterfaceDefinition,
     L extends keyof CompileTimeMetadata<Q>["links"] & string,
-  > extends CommonObserveOptions, ObserveOptions {
+  >
+    extends CommonObserveOptions, ObserveOptions {
     srcType: Pick<Q, "type" | "apiName">;
     sourceUnderlyingObjectType: string;
     pk: PrimaryKeyType<Q>;

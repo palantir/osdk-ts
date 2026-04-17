@@ -70,13 +70,14 @@ export class FunctionQuery extends Query<
       opts,
       cacheKey,
       process.env.NODE_ENV !== "production"
-        ? (
-          store.client[additionalContext].logger?.child({}, {
-            msgPrefix: `FunctionQuery<${
-              cacheKey.otherKeys.map(x => JSON.stringify(x)).join(", ")
-            }>`,
-          })
-        )
+        ? store.client[additionalContext].logger?.child(
+            {},
+            {
+              msgPrefix: `FunctionQuery<${cacheKey.otherKeys
+                .map((x) => JSON.stringify(x))
+                .join(", ")}>`,
+            },
+          )
         : undefined,
     );
     this.#apiName = queryDef.apiName;
@@ -89,7 +90,7 @@ export class FunctionQuery extends Query<
     // Handle async ObjectSet type resolution
     if (objectSetTypesPromise) {
       objectSetTypesPromise
-        .then(types => {
+        .then((types) => {
           if (this.abortController?.signal.aborted) return;
 
           let addedNewTypes = false;
@@ -145,24 +146,22 @@ export class FunctionQuery extends Query<
 
   async _fetchAndStore(): Promise<void> {
     if (process.env.NODE_ENV !== "production") {
-      this.logger?.child({ methodName: "_fetchAndStore" }).debug(
-        "calling _fetchAndStore",
-      );
+      this.logger
+        ?.child({ methodName: "_fetchAndStore" })
+        .debug("calling _fetchAndStore");
     }
 
     try {
       // Type assertion needed because FunctionQuery we determine types dynamically
       // at runtime without compile-time parameter type info. applyQuery internally
       // converts params via remapQueryParams which handles the type safely.
-      const result = await (applyQuery as (
-        client: MinimalClient,
-        query: QueryDefinition<unknown>,
-        params?: Record<string, unknown>,
-      ) => Promise<unknown>)(
-        this.store.client[additionalContext],
-        this.#queryDef,
-        this.#params,
-      );
+      const result = await (
+        applyQuery as (
+          client: MinimalClient,
+          query: QueryDefinition<unknown>,
+          params?: Record<string, unknown>,
+        ) => Promise<unknown>
+      )(this.store.client[additionalContext], this.#queryDef, this.#params);
 
       const executedAt = Date.now();
 
@@ -171,10 +170,9 @@ export class FunctionQuery extends Query<
       });
     } catch (e) {
       if (process.env.NODE_ENV !== "production") {
-        this.logger?.child({ methodName: "_fetchAndStore" }).error(
-          "Error executing function",
-          e,
-        );
+        this.logger
+          ?.child({ methodName: "_fetchAndStore" })
+          .error("Error executing function", e);
       }
       const error = e instanceof Error ? e : new Error(String(e));
       this.store.batch({}, (batch) => {
@@ -232,11 +230,11 @@ export class FunctionQuery extends Query<
 
     for (const dep of this.#dependsOnObjects) {
       const modifiedObjects = changes.modifiedObjects.get(dep.$apiName);
-      if (modifiedObjects?.some(obj => obj.$primaryKey === dep.$primaryKey)) {
+      if (modifiedObjects?.some((obj) => obj.$primaryKey === dep.$primaryKey)) {
         return this.revalidate(true);
       }
       const addedObjects = changes.addedObjects.get(dep.$apiName);
-      if (addedObjects?.some(obj => obj.$primaryKey === dep.$primaryKey)) {
+      if (addedObjects?.some((obj) => obj.$primaryKey === dep.$primaryKey)) {
         return this.revalidate(true);
       }
     }

@@ -82,9 +82,8 @@ function ListogramFilterInputInner<Q extends ObjectTypeDefinition>({
     [onFilterStateChanged, isExcluding],
   );
 
-  const sortBy = displayMode === "minimal"
-    ? "value" as const
-    : "count" as const;
+  const sortBy =
+    displayMode === "minimal" ? ("value" as const) : ("count" as const);
   const aggregationOptions = useMemo(
     () => ({ where: whereClause, sortBy }),
     [whereClause, sortBy],

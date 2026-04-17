@@ -71,18 +71,17 @@ fs.writeFileSync(
   import { getPackageFiles } from "../getPackageFiles.js";
 
   export const TEMPLATES: readonly Template[] = [
-  ${
-    TEMPLATES.map((template) => {
-      const v1Name = findPackageName([
-        `@osdk/create-app.template.${template.id}.v1`,
-        `@osdk/create-app.template.${template.id}`,
-      ]);
-      const v2Name = findPackageName([
-        `@osdk/create-app.template.${template.id}.v2`,
-        `@osdk/create-app.template.${template.id}.beta`,
-        `@osdk/create-app.template.${template.id}`,
-      ]);
-      return dedent`
+  ${TEMPLATES.map((template) => {
+    const v1Name = findPackageName([
+      `@osdk/create-app.template.${template.id}.v1`,
+      `@osdk/create-app.template.${template.id}`,
+    ]);
+    const v2Name = findPackageName([
+      `@osdk/create-app.template.${template.id}.v2`,
+      `@osdk/create-app.template.${template.id}.beta`,
+      `@osdk/create-app.template.${template.id}`,
+    ]);
+    return dedent`
           // ${template.label}
           {
             id: "template-${template.id}",
@@ -95,8 +94,7 @@ fs.writeFileSync(
               ${v2Name ? `"2.x": getPackageFiles(import("${v2Name}")),` : ""}
             },
           },`;
-    }).join("\n")
-  }
+  }).join("\n")}
   ];
   `,
 );

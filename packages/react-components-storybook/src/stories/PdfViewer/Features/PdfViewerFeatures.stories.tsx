@@ -30,8 +30,7 @@ import { fn } from "storybook/test";
 import { MEDIA_EMPLOYEE_PK } from "../../../mocks/fauxFoundry.js";
 import { Employee } from "../../../types/Employee.js";
 
-const SAMPLE_PDF_URL =
-  `${import.meta.env.BASE_URL}compressed.tracemonkey-pldi-09.pdf`;
+const SAMPLE_PDF_URL = `${import.meta.env.BASE_URL}compressed.tracemonkey-pldi-09.pdf`;
 
 const BOOKMARKED_PDF_URL = `${import.meta.env.BASE_URL}nested_outline.pdf`;
 
@@ -122,7 +121,7 @@ const meta: Meta<PdfViewerMediaProps> = {
       description: "Which sidebar panel to show when the sidebar is open",
       control: "radio",
       options: ["thumbnails", "outline"],
-      table: { defaultValue: { summary: "\"thumbnails\"" } },
+      table: { defaultValue: { summary: '"thumbnails"' } },
     },
     outlineIcons: {
       description:
@@ -151,8 +150,7 @@ export const WithPdfUrl: StoryObj<PdfViewerProps> = {
   parameters: {
     docs: {
       source: {
-        code:
-          `import { BasePdfViewer } from "@osdk/react-components/experimental";
+        code: `import { BasePdfViewer } from "@osdk/react-components/experimental";
 
 <BasePdfViewer src="/compressed.tracemonkey-pldi-09.pdf" />`,
       },
@@ -411,8 +409,7 @@ export const InteractiveForm: StoryObj<PdfViewerProps> = {
   parameters: {
     docs: {
       source: {
-        code:
-          `import { BasePdfViewer } from "@osdk/react-components/experimental";
+        code: `import { BasePdfViewer } from "@osdk/react-components/experimental";
 
 <BasePdfViewer
   src="https://example.com/interactive-form.pdf"

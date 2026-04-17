@@ -44,7 +44,7 @@ export class MinimalLogger extends BaseLogger implements Logger {
     }
 
     return (...args: any[]) => {
-      // eslint-disable-next-line no-console
+      // oxlint-disable-next-line no-console
       console[name === "fatal" ? "error" : name](msgs.join(" "), ...args);
     };
   }

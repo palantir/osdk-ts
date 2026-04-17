@@ -43,15 +43,12 @@ export async function applyOntologyAndSeed(
     await ctx.hooks?.preSeed?.(ontology);
   } catch (e) {
     ctx.logger.error(
-      `Unhandled error from preSeed hook. Ignoring and continuing. ${
-        inspect(e)
-      }`,
+      `Unhandled error from preSeed hook. Ignoring and continuing. ${inspect(
+        e,
+      )}`,
     );
   }
 
   ctx.logger.debug("applying seed data");
-  await applySeed(
-    fauxFoundry,
-    path.resolve(ctx.ontologyDir, "seed.ts"),
-  );
+  await applySeed(fauxFoundry, path.resolve(ctx.ontologyDir, "seed.ts"));
 }

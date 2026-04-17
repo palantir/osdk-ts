@@ -27,10 +27,7 @@ import * as tseslint from "typescript-eslint";
 
 export default tseslint.config(
   {
-    ignores: [
-      "**/tsup.config.bundled_*",
-      "**/vitest.config.mts.timestamp-*",
-    ],
+    ignores: ["**/tsup.config.bundled_*", "**/vitest.config.mts.timestamp-*"],
   },
   { files: ["**/*.ts", "**/*.tsx", "**/*.mts", "**/*.cts"] },
   tseslint.configs.base,
@@ -53,23 +50,22 @@ export default tseslint.config(
           {
             pattern:
               "(!\n)? Copyright \\d{4} Palantir Technologies, Inc\\. All rights reserved\\.",
-            template: "\n"
-              + ` * Copyright ${
-                new Date().getFullYear()
-              } Palantir Technologies, Inc. All rights reserved.\n`
-              + " *\n"
-              + " * Licensed under the Apache License, Version 2.0 (the \"License\");\n"
-              + " * you may not use this file except in compliance with the License.\n"
-              + " * You may obtain a copy of the License at\n"
-              + " *\n"
-              + " *     http://www.apache.org/licenses/LICENSE-2.0\n"
-              + " *\n"
-              + " * Unless required by applicable law or agreed to in writing, software\n"
-              + " * distributed under the License is distributed on an \"AS IS\" BASIS,\n"
-              + " * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n"
-              + " * See the License for the specific language governing permissions and\n"
-              + " * limitations under the License.\n"
-              + " ",
+            template:
+              "\n" +
+              ` * Copyright ${new Date().getFullYear()} Palantir Technologies, Inc. All rights reserved.\n` +
+              " *\n" +
+              ' * Licensed under the Apache License, Version 2.0 (the "License");\n' +
+              " * you may not use this file except in compliance with the License.\n" +
+              " * You may obtain a copy of the License at\n" +
+              " *\n" +
+              " *     http://www.apache.org/licenses/LICENSE-2.0\n" +
+              " *\n" +
+              " * Unless required by applicable law or agreed to in writing, software\n" +
+              ' * distributed under the License is distributed on an "AS IS" BASIS,\n' +
+              " * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n" +
+              " * See the License for the specific language governing permissions and\n" +
+              " * limitations under the License.\n" +
+              " ",
           },
         ],
         2,
@@ -86,10 +82,13 @@ export default tseslint.config(
       // Use `import type` for type-only imports — erased at runtime
       "@typescript-eslint/consistent-type-imports": "error",
       // Ban classes with only static members — use plain objects/functions instead
-      "@typescript-eslint/no-extraneous-class": ["warn", {
-        allowConstructorOnly: true,
-        allowEmpty: true,
-      }],
+      "@typescript-eslint/no-extraneous-class": [
+        "warn",
+        {
+          allowConstructorOnly: true,
+          allowEmpty: true,
+        },
+      ],
       // Ban explicit `any` — use `unknown`, generics, or proper types instead
       "@typescript-eslint/no-explicit-any": "warn",
       // Ban `new` in interfaces/type aliases — catches typo vs constructor signature
@@ -103,11 +102,14 @@ export default tseslint.config(
       // Ban the `Function` type — too permissive, use explicit function signatures
       "@typescript-eslint/no-unsafe-function-type": "warn",
       // Ban expressions used as statements — catches forgotten assignments/calls
-      "@typescript-eslint/no-unused-expressions": ["warn", {
-        allowShortCircuit: true,
-        allowTernary: true,
-        enforceForJSX: true,
-      }],
+      "@typescript-eslint/no-unused-expressions": [
+        "warn",
+        {
+          allowShortCircuit: true,
+          allowTernary: true,
+          enforceForJSX: true,
+        },
+      ],
       // Ban String/Number/Boolean wrapper types — use lowercase primitives
       "@typescript-eslint/no-wrapper-object-types": "warn",
       // Prefer for-of over indexed for loops — cleaner iteration
@@ -115,16 +117,19 @@ export default tseslint.config(
       // Use `namespace` not `module` keyword — `module` is confusing with ESM
       "@typescript-eslint/prefer-namespace-keyword": "warn",
       // Ban `/// <reference types="...">` — use imports instead
-      "@typescript-eslint/triple-slash-reference": ["warn", {
-        types: "prefer-import",
-      }],
+      "@typescript-eslint/triple-slash-reference": [
+        "warn",
+        {
+          types: "prefer-import",
+        },
+      ],
       // Merge overloads that differ only by one optional param — simpler API surface
       "@typescript-eslint/unified-signatures": "warn",
 
       //
       // ─── Code quality ──────────────────────────────────────────────────
       //
-      // Note: curly is not enabled because dprint removes braces from single-line if/else
+      // Note: curly is not enabled because oxfmt removes braces from single-line if/else
 
       // Use obj.prop not obj["prop"] when key is a valid identifier
       "dot-notation": "warn",
@@ -203,16 +208,8 @@ export default tseslint.config(
       // "import/consistent-type-specifier-style": ["error", "prefer-top-level"],
       // Ban duplicate imports from the same module — merge them into one statement
       "import/no-duplicates": ["error"],
-      // Enforce consistent import group ordering (dprint handles alphabetical sorting)
-      "import/order": [
-        "warn",
-        {
-          groups: [
-            ["builtin", "external"],
-            ["internal", "parent", "sibling", "index"],
-          ],
-        },
-      ],
+      // Import ordering is handled by oxfmt's sortImports
+      "import/order": "off",
       "import/no-unresolved": "off",
       "import/no-named-as-default": "off", // this used to be an error but the plugin isnt updated for 9
 
@@ -246,49 +243,54 @@ export default tseslint.config(
   // Type checking rules
   //
   {
-    files: [
-      "packages/*/src/**/*",
-    ],
+    files: ["packages/*/src/**/*"],
     ignores: [
       // Uses ESLint 8 + @typescript-eslint v6, incompatible with v8 type-checked rules
       "packages/typescript-sdk-docs-examples/**",
     ],
-    extends: [
-      tseslint.configs.strictTypeCheckedOnly,
-    ],
+    extends: [tseslint.configs.strictTypeCheckedOnly],
     rules: {
       // Use obj.prop not obj["prop"] — type-aware version replaces base rule
       "dot-notation": "off",
       "@typescript-eslint/dot-notation": "warn",
       // Enforce PascalCase for class names — standard TypeScript convention
-      "@typescript-eslint/naming-convention": ["warn", {
-        format: ["PascalCase"],
-        selector: "class",
-      }],
+      "@typescript-eslint/naming-convention": [
+        "warn",
+        {
+          format: ["PascalCase"],
+          selector: "class",
+        },
+      ],
 
       // Ban unhandled promises — must await, return, or void them
       "@typescript-eslint/no-floating-promises": "error",
       // Ban await on non-Promise values — always a bug
       "@typescript-eslint/await-thenable": "error",
       // Ban passing async functions where void callbacks expected — catches unhandled rejections
-      "@typescript-eslint/no-misused-promises": ["error", {
-        // this lets you pass an async function to a definition of `() => void`
-        checksVoidReturn: false,
-      }],
+      "@typescript-eslint/no-misused-promises": [
+        "error",
+        {
+          // this lets you pass an async function to a definition of `() => void`
+          checksVoidReturn: false,
+        },
+      ],
       // Control what can appear in template literals — prevents [object Object] surprises
-      "@typescript-eslint/restrict-template-expressions": ["error", {
-        allow: [
-          { name: ["Error", "URL", "URLSearchParams"], from: "lib" },
-          "unknown",
-        ],
-        allowAny: true,
-        allowBoolean: true,
-        allowNullish: true,
-        allowNumber: true,
-        allowNever: true,
-        allowRegExp: true,
-        allowArray: true,
-      }],
+      "@typescript-eslint/restrict-template-expressions": [
+        "error",
+        {
+          allow: [
+            { name: ["Error", "URL", "URLSearchParams"], from: "lib" },
+            "unknown",
+          ],
+          allowAny: true,
+          allowBoolean: true,
+          allowNullish: true,
+          allowNumber: true,
+          allowNever: true,
+          allowRegExp: true,
+          allowArray: true,
+        },
+      ],
 
       // Too noisy or false positives
       "@typescript-eslint/no-unnecessary-type-assertion": "off",
@@ -313,10 +315,13 @@ export default tseslint.config(
       "@typescript-eslint/no-unsafe-argument": "off",
       "prefer-const": "warn",
       "@typescript-eslint/no-unsafe-call": "off",
-      "@typescript-eslint/no-confusing-void-expression": ["warn", {
-        ignoreArrowShorthand: true,
-        ignoreVoidOperator: true,
-      }],
+      "@typescript-eslint/no-confusing-void-expression": [
+        "warn",
+        {
+          ignoreArrowShorthand: true,
+          ignoreVoidOperator: true,
+        },
+      ],
       "@typescript-eslint/restrict-plus-operands": "warn",
       "@typescript-eslint/use-unknown-in-catch-callback-variable": "warn",
       "@typescript-eslint/only-throw-error": "warn",
@@ -386,18 +391,24 @@ export default tseslint.config(
       //
 
       // Ban inline arrow functions in JSX props — causes unnecessary re-renders (DOM elements and refs exempt)
-      "react/jsx-no-bind": ["warn", {
-        ignoreDOMComponents: true,
-        ignoreRefs: true,
-      }],
+      "react/jsx-no-bind": [
+        "warn",
+        {
+          ignoreDOMComponents: true,
+          ignoreRefs: true,
+        },
+      ],
       // Require explicit disabled={true} not just disabled — clearer intent
       "react/jsx-boolean-value": ["warn", "always"],
       // Require key prop on list items including fragment shorthand — prevents reconciliation bugs
       "react/jsx-key": ["warn", { checkFragmentShorthand: true }],
       // Require rel="noreferrer" with target="_blank" — prevents reverse tabnapping attacks
-      "react/jsx-no-target-blank": ["warn", {
-        enforceDynamicLinks: "always",
-      }],
+      "react/jsx-no-target-blank": [
+        "warn",
+        {
+          enforceDynamicLinks: "always",
+        },
+      ],
       // Ban deprecated React APIs — keeps code forward-compatible
       "react/no-deprecated": "warn",
       // Ban string refs like ref="myRef" — use useRef() or callback refs

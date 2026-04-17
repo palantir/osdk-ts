@@ -63,9 +63,7 @@ function MultiDateInputInner({
   const removeDate = useCallback(
     (date: Date) => {
       const dateStr = formatDateForInput(date);
-      onChange(
-        selectedDates.filter((d) => formatDateForInput(d) !== dateStr),
-      );
+      onChange(selectedDates.filter((d) => formatDateForInput(d) !== dateStr));
     },
     [selectedDates, onChange],
   );
@@ -94,8 +92,7 @@ function MultiDateInputInner({
               {formatDateForDisplay(date)}
               <Button
                 className={sharedStyles.tagRemove}
-                onClick={() =>
-                  removeDate(date)}
+                onClick={() => removeDate(date)}
                 aria-label={`Remove ${formatDateForDisplay(date)}`}
               >
                 ×

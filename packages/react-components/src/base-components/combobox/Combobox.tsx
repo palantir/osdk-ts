@@ -31,9 +31,10 @@ import classnames from "classnames";
 import React from "react";
 import styles from "./Combobox.module.css";
 
-interface ComboboxInputComponentProps
-  extends Omit<ComboboxInputProps, "className">
-{
+interface ComboboxInputComponentProps extends Omit<
+  ComboboxInputProps,
+  "className"
+> {
   className?: string;
 }
 
@@ -61,9 +62,10 @@ function ComboboxInput({
   );
 }
 
-interface ComboboxPositionerComponentProps
-  extends Omit<ComboboxPositionerProps, "className">
-{
+interface ComboboxPositionerComponentProps extends Omit<
+  ComboboxPositionerProps,
+  "className"
+> {
   className?: string;
 }
 
@@ -83,9 +85,10 @@ function ComboboxPositioner({
   );
 }
 
-interface ComboboxPopupComponentProps
-  extends Omit<ComboboxPopupProps, "className">
-{
+interface ComboboxPopupComponentProps extends Omit<
+  ComboboxPopupProps,
+  "className"
+> {
   className?: string;
 }
 
@@ -104,9 +107,10 @@ function ComboboxPopup({
   );
 }
 
-interface ComboboxItemComponentProps
-  extends Omit<ComboboxItemProps, "className">
-{
+interface ComboboxItemComponentProps extends Omit<
+  ComboboxItemProps,
+  "className"
+> {
   className?: string;
 }
 
@@ -148,9 +152,10 @@ function ComboboxChips({
   );
 }
 
-interface ComboboxChipComponentProps
-  extends Omit<ComboboxChipProps, "className">
-{
+interface ComboboxChipComponentProps extends Omit<
+  ComboboxChipProps,
+  "className"
+> {
   className?: string;
 }
 
@@ -169,9 +174,10 @@ function ComboboxChip({
   );
 }
 
-interface ComboboxChipRemoveComponentProps
-  extends Omit<ComboboxChipRemoveProps, "className">
-{
+interface ComboboxChipRemoveComponentProps extends Omit<
+  ComboboxChipRemoveProps,
+  "className"
+> {
   className?: string;
 }
 
@@ -190,9 +196,10 @@ function ComboboxChipRemove({
   );
 }
 
-interface ComboboxClearComponentProps
-  extends Omit<ComboboxClearProps, "className">
-{
+interface ComboboxClearComponentProps extends Omit<
+  ComboboxClearProps,
+  "className"
+> {
   className?: string;
 }
 
@@ -227,9 +234,10 @@ function ComboboxEmpty({
   );
 }
 
-interface ComboboxListComponentProps
-  extends Omit<ComboboxListProps, "className">
-{
+interface ComboboxListComponentProps extends Omit<
+  ComboboxListProps,
+  "className"
+> {
   className?: string;
 }
 
@@ -248,9 +256,10 @@ function ComboboxList({
   );
 }
 
-interface ComboboxItemIndicatorComponentProps
-  extends Omit<ComboboxItemIndicatorProps, "className">
-{
+interface ComboboxItemIndicatorComponentProps extends Omit<
+  ComboboxItemIndicatorProps,
+  "className"
+> {
   className?: string;
 }
 

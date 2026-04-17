@@ -40,7 +40,7 @@ describe("useFilterVisibility", () => {
     ];
 
     const { result } = renderHook(() =>
-      useFilterVisibility(definitions, getKey, getIsVisible)
+      useFilterVisibility(definitions, getKey, getIsVisible),
     );
 
     expect(result.current.visibleDefinitions).toEqual([
@@ -59,7 +59,7 @@ describe("useFilterVisibility", () => {
     ];
 
     const { result } = renderHook(() =>
-      useFilterVisibility(definitions, getKey, getIsVisible)
+      useFilterVisibility(definitions, getKey, getIsVisible),
     );
 
     expect(result.current.hiddenDefinitions).toHaveLength(1);
@@ -82,7 +82,7 @@ describe("useFilterVisibility", () => {
     ];
 
     const { result } = renderHook(() =>
-      useFilterVisibility(definitions, getKey, getIsVisible)
+      useFilterVisibility(definitions, getKey, getIsVisible),
     );
 
     expect(result.current.visibleDefinitions).toHaveLength(2);
@@ -101,7 +101,7 @@ describe("useFilterVisibility", () => {
 
   it("handles undefined filterDefinitions gracefully", () => {
     const { result } = renderHook(() =>
-      useFilterVisibility(undefined, getKey, getIsVisible)
+      useFilterVisibility(undefined, getKey, getIsVisible),
     );
 
     expect(result.current.visibleDefinitions).toEqual([]);

@@ -30,19 +30,22 @@ export function defineDeleteObjectAction(
 ): ActionType {
   const def = cloneDefinition(defInput);
   return defineAction({
-    apiName: def.apiName
-      ?? `delete-object-${
-        kebab(def.objectType.apiName.split(".").pop() ?? def.objectType.apiName)
-      }`,
+    apiName:
+      def.apiName ??
+      `delete-object-${kebab(
+        def.objectType.apiName.split(".").pop() ?? def.objectType.apiName,
+      )}`,
     displayName: def.displayName ?? `Delete ${def.objectType.displayName}`,
     parameters: createParameters(def, {}, new Set([DELETE_OBJECT_PARAMETER])),
     status: def.status ?? "active",
-    rules: [{
-      type: "deleteObjectRule",
-      deleteObjectRule: {
-        objectToDelete: DELETE_OBJECT_PARAMETER,
+    rules: [
+      {
+        type: "deleteObjectRule",
+        deleteObjectRule: {
+          objectToDelete: DELETE_OBJECT_PARAMETER,
+        },
       },
-    }],
+    ],
     entities: {
       affectedInterfaceTypes: [],
       affectedObjectTypes: [def.objectType.apiName],
@@ -51,10 +54,8 @@ export function defineDeleteObjectAction(
     },
     ...(def.actionLevelValidation
       ? {
-        validation: convertValidationRule(
-          def.actionLevelValidation,
-        ),
-      }
+          validation: convertValidationRule(def.actionLevelValidation),
+        }
       : {}),
     ...(def.icon && { icon: def.icon }),
   });

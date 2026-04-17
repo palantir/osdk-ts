@@ -65,9 +65,8 @@ export function useRowSelection<
   data,
 }: UseRowSelectionProps<Q, RDPs>): UseRowSelectionResult {
   // The rowSelectionState in uncontrolled mode
-  const [internalRowSelection, setInternalRowSelection] = useState<
-    RowSelectionState
-  >({});
+  const [internalRowSelection, setInternalRowSelection] =
+    useState<RowSelectionState>({});
 
   // Used for shift-click behavior in "multiple" mode
   const [lastSelectedRowIndex, setLastSelectedRowIndex] = useState<
@@ -84,7 +83,7 @@ export function useRowSelection<
     if (!enableRowSelection) return {};
     if (isControlled) {
       const selectedRowIds = isAllSelectedProp
-        ? (data ?? []).map(item => item.$primaryKey)
+        ? (data ?? []).map((item) => item.$primaryKey)
         : selectedRows;
       return getRowSelectionState(selectedRowIds);
     }
@@ -101,9 +100,10 @@ export function useRowSelection<
   const selectedCount = Object.values(rowSelectionState).filter(Boolean).length;
   const totalCount = data?.length ?? 0;
   // In controlled mode, use the prop if provided, otherwise calculate based on selected count
-  const isAllSelected = isControlled && isAllSelectedProp !== undefined
-    ? isAllSelectedProp
-    : totalCount > 0 && selectedCount === totalCount;
+  const isAllSelected =
+    isControlled && isAllSelectedProp !== undefined
+      ? isAllSelectedProp
+      : totalCount > 0 && selectedCount === totalCount;
   const hasSelection = isAllSelected || selectedCount > 0;
 
   const onToggleAll = useCallback(() => {
@@ -111,7 +111,7 @@ export function useRowSelection<
 
     const newSelectedRows: PrimaryKeyType<Q>[] = isAllSelected
       ? []
-      : data.map(item => item.$primaryKey);
+      : data.map((item) => item.$primaryKey);
 
     if (!isControlled) {
       setInternalRowSelection(getRowSelectionState(newSelectedRows));
@@ -138,14 +138,21 @@ export function useRowSelection<
         // When user does shiftClick but lastSelectedRowIndex is null,
         // it is treated as a normal click in multiple selection
         if (isShiftClick && lastSelectedRowIndex != null) {
-          newSelectedRows = getRangeSelectionRows(
-            { rowId, rowIndex, data, lastSelectedRowIndex, rowSelectionState },
-          );
+          newSelectedRows = getRangeSelectionRows({
+            rowId,
+            rowIndex,
+            data,
+            lastSelectedRowIndex,
+            rowSelectionState,
+          });
           setLastSelectedRowIndex(rowIndex);
         } else {
-          newSelectedRows = getMultipleSelectionRows(
-            { rowId, rowIndex, data, rowSelectionState },
-          );
+          newSelectedRows = getMultipleSelectionRows({
+            rowId,
+            rowIndex,
+            data,
+            rowSelectionState,
+          });
           // Only update lastSelectedRowIndex if we're selecting (not deselecting)
           if (
             !isCurrentlySelected<Q, RDPs>({ rowIndex, data, rowSelectionState })
@@ -194,9 +201,12 @@ interface GetSelectedRowsProps<
 function getSingleSelectionRows<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
->(
-  { rowId, rowIndex, data, rowSelectionState }: GetSelectedRowsProps<Q, RDPs>,
-): PrimaryKeyType<Q>[] {
+>({
+  rowId,
+  rowIndex,
+  data,
+  rowSelectionState,
+}: GetSelectedRowsProps<Q, RDPs>): PrimaryKeyType<Q>[] {
   const primaryKey = data[rowIndex].$primaryKey;
   // Toggle row selection in single selection mode
   const newSelectedRows = rowSelectionState[rowId] ? [] : [primaryKey];
@@ -206,21 +216,23 @@ function getSingleSelectionRows<
 function getRangeSelectionRows<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
->(
-  { lastSelectedRowIndex, rowIndex, data, rowSelectionState }:
-    GetSelectedRowsProps<Q, RDPs>,
-): PrimaryKeyType<Q>[] {
+>({
+  lastSelectedRowIndex,
+  rowIndex,
+  data,
+  rowSelectionState,
+}: GetSelectedRowsProps<Q, RDPs>): PrimaryKeyType<Q>[] {
   // This function is only called if lastSelectedRowIndex is not null
   // This condition is added for typechecks only
   if (lastSelectedRowIndex != null) {
     const rowsInRange = getRowsInRange(data, lastSelectedRowIndex, rowIndex);
-    const primaryKeysInRange = rowsInRange.map(item => item.$primaryKey);
+    const primaryKeysInRange = rowsInRange.map((item) => item.$primaryKey);
 
     const currentlySelected = getSelectedPrimaryKeys(rowSelectionState, data);
 
     // Add all rows in range to selectedRows if not yet selected
     const newSelectedRows = [...currentlySelected];
-    primaryKeysInRange.forEach(item => {
+    primaryKeysInRange.forEach((item) => {
       if (!newSelectedRows.includes(item)) {
         newSelectedRows.push(item);
       }
@@ -233,12 +245,14 @@ function getRangeSelectionRows<
 function isCurrentlySelected<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
->(
-  { rowIndex, data, rowSelectionState }: Pick<
-    GetSelectedRowsProps<Q, RDPs>,
-    "rowIndex" | "data" | "rowSelectionState"
-  >,
-): boolean {
+>({
+  rowIndex,
+  data,
+  rowSelectionState,
+}: Pick<
+  GetSelectedRowsProps<Q, RDPs>,
+  "rowIndex" | "data" | "rowSelectionState"
+>): boolean {
   const primaryKey = data[rowIndex].$primaryKey;
   const currentlySelected = getSelectedPrimaryKeys(rowSelectionState, data);
   return currentlySelected.includes(primaryKey);
@@ -247,16 +261,21 @@ function isCurrentlySelected<
 function getMultipleSelectionRows<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
->(
-  { rowIndex, data, rowSelectionState }: GetSelectedRowsProps<Q, RDPs>,
-): PrimaryKeyType<Q>[] {
+>({
+  rowIndex,
+  data,
+  rowSelectionState,
+}: GetSelectedRowsProps<Q, RDPs>): PrimaryKeyType<Q>[] {
   const primaryKey = data[rowIndex].$primaryKey;
   const currentlySelected = getSelectedPrimaryKeys(rowSelectionState, data);
   // Handles single row toggle in multiple selection mode
-  const newSelectedRows =
-    isCurrentlySelected<Q, RDPs>({ rowIndex, data, rowSelectionState })
-      ? currentlySelected.filter(i => i !== primaryKey)
-      : [...currentlySelected, primaryKey];
+  const newSelectedRows = isCurrentlySelected<Q, RDPs>({
+    rowIndex,
+    data,
+    rowSelectionState,
+  })
+    ? currentlySelected.filter((i) => i !== primaryKey)
+    : [...currentlySelected, primaryKey];
   return newSelectedRows;
 }
 
@@ -293,13 +312,10 @@ function getRowsInRange<
 function getRowSelectionState<Q extends ObjectOrInterfaceDefinition>(
   primaryKeys: PrimaryKeyType<Q>[],
 ): RowSelectionState {
-  return primaryKeys.reduce<RowSelectionState>(
-    (acc, primaryKey) => {
-      acc[getRowIdFromPrimaryKey(primaryKey)] = true;
-      return acc;
-    },
-    {},
-  );
+  return primaryKeys.reduce<RowSelectionState>((acc, primaryKey) => {
+    acc[getRowIdFromPrimaryKey(primaryKey)] = true;
+    return acc;
+  }, {});
 }
 
 /**
@@ -313,6 +329,6 @@ function getSelectedPrimaryKeys<
   data: Array<Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>>,
 ): PrimaryKeyType<Q>[] {
   return data
-    .filter(item => selectionState[getRowId(item)])
-    .map(item => item.$primaryKey);
+    .filter((item) => selectionState[getRowId(item)])
+    .map((item) => item.$primaryKey);
 }

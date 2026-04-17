@@ -47,5 +47,5 @@ export function createFauxFoundryHandlers(
     createAttachmentHandlers,
     createMediaRefHandlers,
     createAdminHandlers,
-  ].flatMap(x => x(baseUrl, fauxFoundry));
+  ].flatMap((x) => x(baseUrl, fauxFoundry));
 }

@@ -34,16 +34,16 @@ function supportsViews<PAYLOAD extends BaseListPayloadShape>(
   query: unknown,
 ): query is ListQueryViewTarget<PAYLOAD> {
   return (
-    query != null
-    && typeof (query as ListQueryViewTarget<PAYLOAD>).registerFetchPageSize
-      === "function"
-    && typeof (query as ListQueryViewTarget<PAYLOAD>).getLoadedCount
-      === "function"
-    && typeof (query as ListQueryViewTarget<PAYLOAD>).hasMorePages
-      === "function"
-    && typeof (query as ListQueryViewTarget<PAYLOAD>).notifySubscribers
-      === "function"
-    && typeof (query as ListQueryViewTarget<PAYLOAD>).fetchMore === "function"
+    query != null &&
+    typeof (query as ListQueryViewTarget<PAYLOAD>).registerFetchPageSize ===
+      "function" &&
+    typeof (query as ListQueryViewTarget<PAYLOAD>).getLoadedCount ===
+      "function" &&
+    typeof (query as ListQueryViewTarget<PAYLOAD>).hasMorePages ===
+      "function" &&
+    typeof (query as ListQueryViewTarget<PAYLOAD>).notifySubscribers ===
+      "function" &&
+    typeof (query as ListQueryViewTarget<PAYLOAD>).fetchMore === "function"
   );
 }
 
@@ -80,7 +80,7 @@ export abstract class AbstractHelper<
   abstract getQuery(options: TObserveOptions): TQuery;
 
   protected _subscribe<
-    PAYLOAD extends (TQuery extends Query<any, infer P, any> ? P : never),
+    PAYLOAD extends TQuery extends Query<any, infer P, any> ? P : never,
   >(
     query: TQuery,
     options: TObserveOptions,
@@ -91,16 +91,13 @@ export abstract class AbstractHelper<
     // unmount), cancel exactly one pending release and avoid an extra retain.
     // This keeps refcounts balanced during unmount→remount within the same tick
     // (e.g. React StrictMode effect cleanup + re-run).
-    const pendingCleanupCount = this.store.pendingCleanup.get(query.cacheKey)
-      ?? 0;
+    const pendingCleanupCount =
+      this.store.pendingCleanup.get(query.cacheKey) ?? 0;
     if (pendingCleanupCount > 0) {
       if (pendingCleanupCount === 1) {
         this.store.pendingCleanup.delete(query.cacheKey);
       } else {
-        this.store.pendingCleanup.set(
-          query.cacheKey,
-          pendingCleanupCount - 1,
-        );
+        this.store.pendingCleanup.set(query.cacheKey, pendingCleanupCount - 1);
       }
     } else {
       this.store.cacheKeys.retain(query.cacheKey);
@@ -124,16 +121,17 @@ export abstract class AbstractHelper<
     // For queries that support views (list-like queries), wrap with ListQueryView
     // to handle per-subscriber view data such as pageSize
     const listOptions = options as ListObserveOptions;
-    const useView = supportsViews<PAYLOAD & BaseListPayloadShape>(query)
-      && (listOptions.pageSize !== undefined
-        || listOptions.autoFetchMore !== undefined);
+    const useView =
+      supportsViews<PAYLOAD & BaseListPayloadShape>(query) &&
+      (listOptions.pageSize !== undefined ||
+        listOptions.autoFetchMore !== undefined);
 
     const sub = useView
       ? new ListQueryView<PAYLOAD & BaseListPayloadShape>(
-        query,
-        listOptions.pageSize ?? 100,
-        listOptions.autoFetchMore,
-      ).subscribe(subFn as Observer<PAYLOAD & BaseListPayloadShape>)
+          query,
+          listOptions.pageSize ?? 100,
+          listOptions.autoFetchMore,
+        ).subscribe(subFn as Observer<PAYLOAD & BaseListPayloadShape>)
       : query.subscribe(subFn);
 
     const querySub = new QuerySubscription(query, sub);
@@ -161,8 +159,8 @@ export abstract class AbstractHelper<
         (this.store.pendingCleanup.get(query.cacheKey) ?? 0) + 1,
       );
       queueMicrotask(() => {
-        const currentPending = this.store.pendingCleanup.get(query.cacheKey)
-          ?? 0;
+        const currentPending =
+          this.store.pendingCleanup.get(query.cacheKey) ?? 0;
         if (currentPending > 0) {
           if (currentPending === 1) {
             this.store.pendingCleanup.delete(query.cacheKey);

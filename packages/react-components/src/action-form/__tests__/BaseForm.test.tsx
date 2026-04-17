@@ -373,9 +373,7 @@ describe("BaseForm", () => {
       );
 
       const getSubmitButton = () =>
-        document.querySelector(
-          "button[type='submit']",
-        ) as HTMLButtonElement;
+        document.querySelector("button[type='submit']") as HTMLButtonElement;
 
       expect(getSubmitButton().disabled).toBe(false);
 
@@ -395,9 +393,7 @@ describe("BaseForm", () => {
       );
 
       const getSubmitButton = () =>
-        document.querySelector(
-          "button[type='submit']",
-        ) as HTMLButtonElement;
+        document.querySelector("button[type='submit']") as HTMLButtonElement;
 
       // Touch the field first so RHF tracks it for revalidation
       const input = screen.getByRole("textbox", { name: /name/ });
@@ -426,14 +422,9 @@ describe("BaseForm", () => {
     });
 
     it("shows submission error on button when onSubmit rejects", async () => {
-      const onSubmit = vi.fn().mockRejectedValue(
-        new Error("Server error"),
-      );
+      const onSubmit = vi.fn().mockRejectedValue(new Error("Server error"));
       render(
-        <BaseForm
-          fieldDefinitions={[makeDef("name")]}
-          onSubmit={onSubmit}
-        />,
+        <BaseForm fieldDefinitions={[makeDef("name")]} onSubmit={onSubmit} />,
       );
 
       fireEvent.click(screen.getByRole("button", { name: /submit/i }));
@@ -444,14 +435,9 @@ describe("BaseForm", () => {
     });
 
     it("clears submission error when a field is edited", async () => {
-      const onSubmit = vi.fn().mockRejectedValue(
-        new Error("Server error"),
-      );
+      const onSubmit = vi.fn().mockRejectedValue(new Error("Server error"));
       render(
-        <BaseForm
-          fieldDefinitions={[makeDef("name")]}
-          onSubmit={onSubmit}
-        />,
+        <BaseForm fieldDefinitions={[makeDef("name")]} onSubmit={onSubmit} />,
       );
 
       fireEvent.click(screen.getByRole("button", { name: /submit/i }));
@@ -492,10 +478,7 @@ describe("BaseForm", () => {
           }),
       );
       render(
-        <BaseForm
-          fieldDefinitions={[makeDef("name")]}
-          onSubmit={onSubmit}
-        />,
+        <BaseForm fieldDefinitions={[makeDef("name")]} onSubmit={onSubmit} />,
       );
 
       fireEvent.click(screen.getByRole("button", { name: /submit/i }));
@@ -509,9 +492,7 @@ describe("BaseForm", () => {
       resolveSubmit!();
 
       await waitFor(() => {
-        expect(
-          screen.getByRole("button", { name: /^submit$/i }),
-        ).toBeDefined();
+        expect(screen.getByRole("button", { name: /^submit$/i })).toBeDefined();
       });
     });
 

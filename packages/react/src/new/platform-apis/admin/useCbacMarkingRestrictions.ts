@@ -57,10 +57,10 @@ export interface UseCbacMarkingRestrictionsResult {
  * Get CBAC marking restrictions (implied, disallowed, required) for the given marking IDs.
  * @param options Options to control the query.
  */
-export function useCbacMarkingRestrictions(
-  { markingIds, enabled: externalEnabled = true }:
-    UseCbacMarkingRestrictionsOptions,
-): UseCbacMarkingRestrictionsResult {
+export function useCbacMarkingRestrictions({
+  markingIds,
+  enabled: externalEnabled = true,
+}: UseCbacMarkingRestrictionsOptions): UseCbacMarkingRestrictionsResult {
   const { client } = React.useContext(OsdkContext2);
 
   const stableMarkingIds = React.useMemo(
@@ -83,23 +83,22 @@ export function useCbacMarkingRestrictions(
     queryName: "cbac-marking-restrictions",
   });
 
-  const restrictions = React.useMemo(
-    (): CbacMarkingRestrictionsData | undefined => {
-      if (query.data == null) {
-        return undefined;
-      }
-      return {
-        disallowedMarkings: query.data.disallowedMarkings.map(String),
-        impliedMarkings: query.data.impliedMarkings.map(String),
-        requiredMarkings: query.data.requiredMarkings.map(group =>
-          group.map(String)
-        ),
-        userSatisfiesMarkings: query.data.userSatisfiesMarkings,
-        isValid: query.data.isValid,
-      };
-    },
-    [query.data],
-  );
+  const restrictions = React.useMemo(():
+    | CbacMarkingRestrictionsData
+    | undefined => {
+    if (query.data == null) {
+      return undefined;
+    }
+    return {
+      disallowedMarkings: query.data.disallowedMarkings.map(String),
+      impliedMarkings: query.data.impliedMarkings.map(String),
+      requiredMarkings: query.data.requiredMarkings.map((group) =>
+        group.map(String),
+      ),
+      userSatisfiesMarkings: query.data.userSatisfiesMarkings,
+      isValid: query.data.isValid,
+    };
+  }, [query.data]);
 
   return {
     restrictions,

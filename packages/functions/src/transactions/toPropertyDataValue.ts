@@ -16,9 +16,7 @@
 
 import type { DataValue } from "@osdk/foundry.ontologies";
 
-export function toPropertyDataValue(
-  value: unknown,
-): DataValue {
+export function toPropertyDataValue(value: unknown): DataValue {
   if (value == null) {
     return null; // This differs from how actions handles null, which expects a specific enum value.
   }
@@ -48,6 +46,12 @@ export function toPropertyDataValue(
 }
 
 function isPoint(o: any): o is GeoJSON.Point {
-  return o && typeof o === "object" && "type" in o && o.type === "Point"
-    && "coordinates" in o && o.coordinates.length === 2;
+  return (
+    o &&
+    typeof o === "object" &&
+    "type" in o &&
+    o.type === "Point" &&
+    "coordinates" in o &&
+    o.coordinates.length === 2
+  );
 }

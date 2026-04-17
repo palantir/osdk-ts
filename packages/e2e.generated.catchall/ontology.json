@@ -6459,9 +6459,7 @@
       },
       "extendsInterfaces": [],
       "allExtendsInterfaces": [],
-      "implementedByObjectTypes": [
-        "MwaltherPersonOt"
-      ],
+      "implementedByObjectTypes": ["MwaltherPersonOt"],
       "links": {},
       "allLinks": {}
     },
@@ -6566,15 +6564,9 @@
           "requireImplementation": false
         }
       },
-      "extendsInterfaces": [
-        "MwaltherPersonV2"
-      ],
-      "allExtendsInterfaces": [
-        "MwaltherPersonV2"
-      ],
-      "implementedByObjectTypes": [
-        "MwaltherPersonOt"
-      ],
+      "extendsInterfaces": ["MwaltherPersonV2"],
+      "allExtendsInterfaces": ["MwaltherPersonV2"],
+      "implementedByObjectTypes": ["MwaltherPersonOt"],
       "links": {},
       "allLinks": {}
     },
@@ -6610,9 +6602,7 @@
       },
       "extendsInterfaces": [],
       "allExtendsInterfaces": [],
-      "implementedByObjectTypes": [
-        "MwaltherPersonOt"
-      ],
+      "implementedByObjectTypes": ["MwaltherPersonOt"],
       "links": {},
       "allLinks": {}
     }

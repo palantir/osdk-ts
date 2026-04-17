@@ -56,10 +56,7 @@ function clampToPropertyBounds(
   return Math.max(bounds.min, Math.min(bounds.max, value));
 }
 
-function formatDateValue(
-  date: Date,
-  propertyType: string | undefined,
-): string {
+function formatDateValue(date: Date, propertyType: string | undefined): string {
   if (propertyType === "datetime") {
     return formatDateForInput(date);
   }
@@ -160,7 +157,7 @@ function filterStateToPropertyFilter(
         (v) =>
           v instanceof Date
             ? formatDateValue(v, propertyType)
-            : v as string | number | boolean,
+            : (v as string | number | boolean),
       );
       return buildValueOrNullFilter(values);
     }
@@ -245,18 +242,18 @@ export function buildWhereClause<Q extends ObjectTypeDefinition>(
 
     switch (definition.type) {
       case "PROPERTY": {
-        const propertyType = propertyTypes?.get(definition.key as string)
-          ?.type;
+        const propertyType = propertyTypes?.get(definition.key as string)?.type;
         const filter = filterStateToPropertyFilter(state, propertyType);
         if (filter !== undefined) {
           const isExcluding = "isExcluding" in state && state.isExcluding;
           if (isCompoundFilter(filter)) {
-            const fieldClauses = filter.conditions.map(c => ({
+            const fieldClauses = filter.conditions.map((c) => ({
               [definition.key]: c,
             }));
-            let rangeClause: Record<string, unknown> = fieldClauses.length === 1
-              ? fieldClauses[0]
-              : { $and: fieldClauses };
+            let rangeClause: Record<string, unknown> =
+              fieldClauses.length === 1
+                ? fieldClauses[0]
+                : { $and: fieldClauses };
             if (filter.includeNull) {
               rangeClause = {
                 $or: [rangeClause, { [definition.key]: { $isNull: true } }],
@@ -274,7 +271,7 @@ export function buildWhereClause<Q extends ObjectTypeDefinition>(
       case "HAS_LINK": {
         if (state.type !== "hasLink") {
           if (process.env.NODE_ENV !== "production") {
-            // eslint-disable-next-line no-console
+            // oxlint-disable-next-line no-console
             console.warn(
               `[FilterList] State type mismatch for hasLink filter "${definition.linkName}": expected hasLink, got ${state.type}`,
             );
@@ -300,7 +297,7 @@ export function buildWhereClause<Q extends ObjectTypeDefinition>(
       case "KEYWORD_SEARCH": {
         if (state.type !== "keywordSearch") {
           if (process.env.NODE_ENV !== "production") {
-            // eslint-disable-next-line no-console
+            // oxlint-disable-next-line no-console
             console.warn(
               `[FilterList] State type mismatch for keywordSearch filter: expected keywordSearch, got ${state.type}`,
             );
@@ -329,7 +326,7 @@ export function buildWhereClause<Q extends ObjectTypeDefinition>(
             }
           } else {
             if (process.env.NODE_ENV !== "production") {
-              // eslint-disable-next-line no-console
+              // oxlint-disable-next-line no-console
               console.warn(
                 "[FilterList] Keyword search with properties: 'all' requires propertyTypes to be provided. Filter will be skipped.",
               );
@@ -344,9 +341,8 @@ export function buildWhereClause<Q extends ObjectTypeDefinition>(
           break;
         }
 
-        const containsOp = state.operator === "AND"
-          ? "$containsAllTerms"
-          : "$containsAnyTerm";
+        const containsOp =
+          state.operator === "AND" ? "$containsAllTerms" : "$containsAnyTerm";
 
         const propertySearches = propertiesToSearch.map((prop) => ({
           [prop]: { [containsOp]: searchTerm },
@@ -358,16 +354,14 @@ export function buildWhereClause<Q extends ObjectTypeDefinition>(
         } else {
           searchClause = { $or: propertySearches };
         }
-        clauses.push(
-          state.isExcluding ? { $not: searchClause } : searchClause,
-        );
+        clauses.push(state.isExcluding ? { $not: searchClause } : searchClause);
         break;
       }
 
       case "CUSTOM": {
         if (state.type !== "custom") {
           if (process.env.NODE_ENV !== "production") {
-            // eslint-disable-next-line no-console
+            // oxlint-disable-next-line no-console
             console.warn(
               `[FilterList] State type mismatch for custom filter "${definition.key}": expected custom, got ${state.type}`,
             );
@@ -409,11 +403,12 @@ function buildValueOrNullFilter(
   const nonEmpty = values.filter((v) => v !== "");
   const hasEmpty = nonEmpty.length < values.length;
 
-  const valueClause: PropertyFilter | undefined = nonEmpty.length === 0
-    ? undefined
-    : nonEmpty.length === 1
-    ? nonEmpty[0]
-    : { $in: nonEmpty };
+  const valueClause: PropertyFilter | undefined =
+    nonEmpty.length === 0
+      ? undefined
+      : nonEmpty.length === 1
+        ? nonEmpty[0]
+        : { $in: nonEmpty };
 
   if (!hasEmpty) {
     return valueClause;

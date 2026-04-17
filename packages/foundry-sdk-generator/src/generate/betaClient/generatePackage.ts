@@ -75,7 +75,7 @@ export async function generatePackage(
     mkdir: async (path, _options?: { recursive: boolean }) => {
       await mkdir(customNormalize(path), { recursive: true });
     },
-    readdir: path => readdir(path),
+    readdir: (path) => readdir(path),
   };
 
   await generateClientSdkVersionTwoPointZero(
@@ -118,7 +118,7 @@ export async function generatePackage(
     );
 
     compilerOutput[type] = compileInMemory(inMemoryFileSystem, type);
-    compilerOutput[type].diagnostics.forEach(d => {
+    compilerOutput[type].diagnostics.forEach((d) => {
       consola.error(`Error compiling file`, d.file?.fileName, d.messageText);
       success = false;
     });
@@ -129,18 +129,15 @@ export async function generatePackage(
     await mkdir(join(packagePath, "cjs"), { recursive: true });
 
     for (const [path, contents] of Object.entries(compilerOutput[type].files)) {
-      const newPath = path.replace(
-        packagePath,
-        join(packagePath, type),
-      );
+      const newPath = path.replace(packagePath, join(packagePath, type));
       await mkdir(dirname(newPath), { recursive: true });
       await writeFile(newPath, contents, { flag: "w" });
     }
 
-    void await writeFile(
+    void (await writeFile(
       join(packagePath, type, "package.json"),
       JSON.stringify({ type: type === "esm" ? "module" : "commonjs" }),
-    );
+    ));
   }
 
   await mkdir(join(packagePath, "dist", "bundle"), { recursive: true });
@@ -157,7 +154,7 @@ export async function generatePackage(
       bundleDts = await bundleDependencies(
         [],
         options.packageName,
-        compilerOutput["esm"].files,
+        compilerOutput.esm.files,
         undefined,
       );
     } catch (e) {

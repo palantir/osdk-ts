@@ -32,17 +32,21 @@ function createMockData(
 ): Array<
   Osdk.Instance<TestObject, "$allBaseProperties", never, Record<string, never>>
 > {
-  return Array.from({ length: count }, (_, i) => ({
-    $primaryKey: `item-${i}` as PrimaryKeyType<TestObject>,
-    $objectType: "TestObject",
-    $apiName: "TestObject",
-    $title: `Item ${i}`,
-  } as Osdk.Instance<
-    TestObject,
-    "$allBaseProperties",
-    never,
-    Record<string, never>
-  >));
+  return Array.from(
+    { length: count },
+    (_, i) =>
+      ({
+        $primaryKey: `item-${i}` as PrimaryKeyType<TestObject>,
+        $objectType: "TestObject",
+        $apiName: "TestObject",
+        $title: `Item ${i}`,
+      }) as Osdk.Instance<
+        TestObject,
+        "$allBaseProperties",
+        never,
+        Record<string, never>
+      >,
+  );
 }
 
 describe("useRowSelection", () => {
@@ -53,7 +57,7 @@ describe("useRowSelection", () => {
         useRowSelection({
           selectionMode: "none",
           data,
-        })
+        }),
       );
 
       expect(result.current.rowSelection).toEqual({});
@@ -68,7 +72,7 @@ describe("useRowSelection", () => {
         useRowSelection({
           selectionMode: "none",
           data,
-        })
+        }),
       );
 
       act(() => {
@@ -97,7 +101,7 @@ describe("useRowSelection", () => {
             selectionMode: "single",
             onRowSelection,
             data,
-          })
+          }),
         );
 
         act(() => {
@@ -121,7 +125,7 @@ describe("useRowSelection", () => {
             selectionMode: "single",
             onRowSelection,
             data,
-          })
+          }),
         );
 
         // Select
@@ -147,7 +151,7 @@ describe("useRowSelection", () => {
           useRowSelection({
             selectionMode: "single",
             data,
-          })
+          }),
         );
 
         act(() => {
@@ -170,7 +174,7 @@ describe("useRowSelection", () => {
           useRowSelection({
             selectionMode: "single",
             data,
-          })
+          }),
         );
         // First click as the lastSelectedRow
         act(() => {
@@ -195,7 +199,7 @@ describe("useRowSelection", () => {
             selectionMode: "multiple",
             onRowSelection,
             data,
-          })
+          }),
         );
 
         act(() => {
@@ -214,10 +218,10 @@ describe("useRowSelection", () => {
           "item-2": true,
         });
         expect(result.current.isAllSelected).toBe(false);
-        expect(onRowSelection).toHaveBeenLastCalledWith([
-          data[0].$primaryKey,
-          data[2].$primaryKey,
-        ], false);
+        expect(onRowSelection).toHaveBeenLastCalledWith(
+          [data[0].$primaryKey, data[2].$primaryKey],
+          false,
+        );
       });
 
       it("deselects individual rows", () => {
@@ -226,7 +230,7 @@ describe("useRowSelection", () => {
           useRowSelection({
             selectionMode: "multiple",
             data,
-          })
+          }),
         );
 
         // Select two rows
@@ -258,7 +262,7 @@ describe("useRowSelection", () => {
             selectionMode: "multiple",
             onRowSelection,
             data,
-          })
+          }),
         );
 
         // First click
@@ -276,11 +280,10 @@ describe("useRowSelection", () => {
           "item-2": true,
           "item-3": true,
         });
-        expect(onRowSelection).toHaveBeenLastCalledWith([
-          data[1].$primaryKey,
-          data[2].$primaryKey,
-          data[3].$primaryKey,
-        ], false);
+        expect(onRowSelection).toHaveBeenLastCalledWith(
+          [data[1].$primaryKey, data[2].$primaryKey, data[3].$primaryKey],
+          false,
+        );
       });
 
       it("selects range in reverse order (shift-click up)", () => {
@@ -289,7 +292,7 @@ describe("useRowSelection", () => {
           useRowSelection({
             selectionMode: "multiple",
             data,
-          })
+          }),
         );
 
         // First click on row 3
@@ -315,7 +318,7 @@ describe("useRowSelection", () => {
           useRowSelection({
             selectionMode: "multiple",
             data,
-          })
+          }),
         );
 
         // Shift-click without previous selection
@@ -332,7 +335,7 @@ describe("useRowSelection", () => {
           useRowSelection({
             selectionMode: "multiple",
             data,
-          })
+          }),
         );
 
         // Select row 0
@@ -364,7 +367,7 @@ describe("useRowSelection", () => {
           useRowSelection({
             selectionMode: "multiple",
             data,
-          })
+          }),
         );
 
         // Select rows 0, 1, 2
@@ -412,7 +415,7 @@ describe("useRowSelection", () => {
             selectionMode: "multiple",
             onRowSelection,
             data,
-          })
+          }),
         );
 
         expect(result.current.isAllSelected).toBe(false);
@@ -428,11 +431,10 @@ describe("useRowSelection", () => {
           "item-2": true,
         });
         expect(result.current.isAllSelected).toBe(true);
-        expect(onRowSelection).toHaveBeenCalledWith([
-          data[0].$primaryKey,
-          data[1].$primaryKey,
-          data[2].$primaryKey,
-        ], true);
+        expect(onRowSelection).toHaveBeenCalledWith(
+          [data[0].$primaryKey, data[1].$primaryKey, data[2].$primaryKey],
+          true,
+        );
 
         // Deselect all
         act(() => {
@@ -455,7 +457,7 @@ describe("useRowSelection", () => {
             selectionMode: "single",
             selectedRows: [data[1].$primaryKey],
             data,
-          })
+          }),
         );
 
         expect(result.current.rowSelection).toEqual({ "item-1": true });
@@ -510,7 +512,7 @@ describe("useRowSelection", () => {
             selectionMode: "multiple",
             selectedRows: [data[0].$primaryKey, data[2].$primaryKey],
             data,
-          })
+          }),
         );
 
         expect(result.current.rowSelection).toEqual({
@@ -528,7 +530,7 @@ describe("useRowSelection", () => {
             selectedRows: [data[0].$primaryKey],
             onRowSelection,
             data,
-          })
+          }),
         );
 
         // Add selection to selectedRows
@@ -536,10 +538,10 @@ describe("useRowSelection", () => {
           result.current.onToggleRow("item-2", 2);
         });
 
-        expect(onRowSelection).toHaveBeenCalledWith([
-          data[0].$primaryKey,
-          data[2].$primaryKey,
-        ], false);
+        expect(onRowSelection).toHaveBeenCalledWith(
+          [data[0].$primaryKey, data[2].$primaryKey],
+          false,
+        );
 
         // Remove selection from selectedRows
         act(() => {
@@ -558,7 +560,7 @@ describe("useRowSelection", () => {
             selectedRows: [],
             onRowSelection,
             data,
-          })
+          }),
         );
 
         // First click
@@ -571,11 +573,10 @@ describe("useRowSelection", () => {
           result.current.onToggleRow("item-3", 3, true);
         });
 
-        expect(onRowSelection).toHaveBeenLastCalledWith([
-          data[1].$primaryKey,
-          data[2].$primaryKey,
-          data[3].$primaryKey,
-        ], false);
+        expect(onRowSelection).toHaveBeenLastCalledWith(
+          [data[1].$primaryKey, data[2].$primaryKey, data[3].$primaryKey],
+          false,
+        );
       });
 
       it("calls onRowSelection when toggling all rows", () => {
@@ -587,18 +588,17 @@ describe("useRowSelection", () => {
             selectedRows: [],
             onRowSelection,
             data,
-          })
+          }),
         );
 
         act(() => {
           result.current.onToggleAll();
         });
 
-        expect(onRowSelection).toHaveBeenCalledWith([
-          data[0].$primaryKey,
-          data[1].$primaryKey,
-          data[2].$primaryKey,
-        ], true);
+        expect(onRowSelection).toHaveBeenCalledWith(
+          [data[0].$primaryKey, data[1].$primaryKey, data[2].$primaryKey],
+          true,
+        );
       });
 
       it("updates when selectedRows prop changes", () => {
@@ -612,9 +612,9 @@ describe("useRowSelection", () => {
             }),
           {
             initialProps: {
-              selectedRows: [data[0].$primaryKey] as PrimaryKeyType<
-                TestObject
-              >[],
+              selectedRows: [
+                data[0].$primaryKey,
+              ] as PrimaryKeyType<TestObject>[],
             },
           },
         );
@@ -640,7 +640,7 @@ describe("useRowSelection", () => {
             selectedRows: [],
             onRowSelection,
             data,
-          })
+          }),
         );
 
         // Toggle all - should pass isSelectAll=true
@@ -649,7 +649,7 @@ describe("useRowSelection", () => {
         });
 
         expect(onRowSelection).toHaveBeenCalledWith(
-          data.map(item => item.$primaryKey),
+          data.map((item) => item.$primaryKey),
           true,
         );
 
@@ -775,7 +775,7 @@ describe("useRowSelection", () => {
         useRowSelection({
           selectionMode: "multiple",
           data: undefined,
-        })
+        }),
       );
 
       expect(result.current.rowSelection).toEqual({});
@@ -794,7 +794,7 @@ describe("useRowSelection", () => {
         useRowSelection({
           selectionMode: "multiple",
           data: [],
-        })
+        }),
       );
 
       expect(result.current.rowSelection).toEqual({});

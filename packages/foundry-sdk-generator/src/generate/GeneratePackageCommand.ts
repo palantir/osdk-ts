@@ -40,9 +40,10 @@ export interface generatePackageCommandArgs {
   branch?: string;
 }
 
-export class GeneratePackageCommand
-  implements CommandModule<{}, generatePackageCommandArgs>
-{
+export class GeneratePackageCommand implements CommandModule<
+  {},
+  generatePackageCommandArgs
+> {
   public command = "generatePackage";
   public describe = "Generates a new npm package which can be published";
 
@@ -77,8 +78,7 @@ export class GeneratePackageCommand
       .positional("ontology", {
         type: "string",
         demandOption: true,
-        description:
-          `The ontology rid or ontology API name of the ontology to generate. Example Usage: --ontology palantirOntology`,
+        description: `The ontology rid or ontology API name of the ontology to generate. Example Usage: --ontology palantirOntology`,
         default:
           "ri.ontology.main.ontology.00000000-0000-0000-0000-000000000000",
       })
@@ -86,61 +86,49 @@ export class GeneratePackageCommand
         array: true,
         string: true,
         demandOption: false,
-        description:
-          `The API names of the object types to generate. Example Usage: --objectTypes Aircraft Airport`,
+        description: `The API names of the object types to generate. Example Usage: --objectTypes Aircraft Airport`,
         default: undefined,
-        defaultDescription:
-          `By default, no arguments will not load any object type.`,
+        defaultDescription: `By default, no arguments will not load any object type.`,
       })
       .options("actionTypes", {
         array: true,
         string: true,
         demandOption: false,
-        description:
-          `The API names of the action types to generate. Example Usage: --actionTypes schedule-airplane-maintenance`,
+        description: `The API names of the action types to generate. Example Usage: --actionTypes schedule-airplane-maintenance`,
         default: undefined,
-        defaultDescription:
-          `By default, no arguments will not load any action type.`,
+        defaultDescription: `By default, no arguments will not load any action type.`,
       })
       .options("linkTypes", {
         array: true,
         string: true,
         demandOption: false,
-        description:
-          `The link types to generate in the format of ObjectTypeApiName.LinkTypeApiName. Example Usage: --linkTypes Aircraft.scheduledFlight`,
+        description: `The link types to generate in the format of ObjectTypeApiName.LinkTypeApiName. Example Usage: --linkTypes Aircraft.scheduledFlight`,
         default: undefined,
-        defaultDescription:
-          `By default, no arguments will not load any link type.`,
+        defaultDescription: `By default, no arguments will not load any link type.`,
       })
       .options("queryTypes", {
         array: true,
         string: true,
         demandOption: false,
-        description:
-          `The API Names of the query types to generate. Example Usage: --queryTypes calculateMetric`,
+        description: `The API Names of the query types to generate. Example Usage: --queryTypes calculateMetric`,
         default: undefined,
-        defaultDescription:
-          `By default, no arguments will not load any query type.`,
+        defaultDescription: `By default, no arguments will not load any query type.`,
       })
       .options("interfaceTypes", {
         array: true,
         string: true,
         demandOption: false,
-        description:
-          `The API Names of the interface types to generate. Example Usage: --interfaceTypes Geolocatable`,
+        description: `The API Names of the interface types to generate. Example Usage: --interfaceTypes Geolocatable`,
         default: undefined,
-        defaultDescription:
-          `By default, no arguments will not load any interface type.`,
+        defaultDescription: `By default, no arguments will not load any interface type.`,
       })
       .options("experimentalFeatures", {
         array: true,
         string: true,
         demandOption: false,
-        description:
-          `Experimental features that can be modified or removed at any time. Example Usage: --experimentalFeatures realtimeUpdates`,
+        description: `Experimental features that can be modified or removed at any time. Example Usage: --experimentalFeatures realtimeUpdates`,
         default: undefined,
-        defaultDescription:
-          `By default, no arguments will not enable any experimental features.`,
+        defaultDescription: `By default, no arguments will not enable any experimental features.`,
       })
       .options("beta", {
         boolean: true,
@@ -157,13 +145,11 @@ export class GeneratePackageCommand
       .positional("branch", {
         type: "string",
         demandOption: false,
-        description:
-          `The branch rid of the ontology to generate from.This is still an experimental feature and only has beta support, use with caution. Example Usage: --branch ri.branch..branch.0000000-0000-0000-0000-0000000000`,
+        description: `The branch rid of the ontology to generate from.This is still an experimental feature and only has beta support, use with caution. Example Usage: --branch ri.branch..branch.0000000-0000-0000-0000-0000000000`,
         default: undefined,
         // experimental for now
         hidden: true,
-        defaultDescription:
-          `By default, no arguments will load data from the main branch of the ontology you selected`,
+        defaultDescription: `By default, no arguments will load data from the main branch of the ontology you selected`,
       })
       .options("sdkPackages", {
         array: true,
@@ -172,8 +158,8 @@ export class GeneratePackageCommand
         hidden: true,
         coerce: (arg: string[]) => {
           return new Map(
-            arg.map((sdkPackage) =>
-              sdkPackage.split("=", 2) as [string, string]
+            arg.map(
+              (sdkPackage) => sdkPackage.split("=", 2) as [string, string],
             ),
           );
         },
@@ -209,8 +195,8 @@ export class GeneratePackageCommand
 
     const timeStart = Date.now();
 
-    const wireOntologyDefinition = await ontologyMetadataResolver
-      .getWireOntologyDefinition(
+    const wireOntologyDefinition =
+      await ontologyMetadataResolver.getWireOntologyDefinition(
         ontologyRid,
         {
           objectTypesApiNamesToLoad: transformArrayArg(args.objectTypes),
@@ -224,7 +210,7 @@ export class GeneratePackageCommand
       );
 
     if (wireOntologyDefinition.isErr()) {
-      wireOntologyDefinition.error.forEach(err => {
+      wireOntologyDefinition.error.forEach((err) => {
         consola.error(err);
       });
       consola.error("Failed generating package");
@@ -236,8 +222,8 @@ export class GeneratePackageCommand
       packageVersion: args.packageVersion,
       outputDir: args.outputDir,
       beta: !!args.beta,
-      ontologyJsonOnly: args.experimentalFeatures?.includes("ontologyJsonOnly")
-        ?? false,
+      ontologyJsonOnly:
+        args.experimentalFeatures?.includes("ontologyJsonOnly") ?? false,
       packageRid: args.packageRid,
     });
 

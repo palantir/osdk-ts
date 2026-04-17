@@ -24,8 +24,7 @@ import type {
 /**
  * Performs a full replay for ALL input datasets associated with the alert.
  */
-export interface FullReplay {
-}
+export interface FullReplay {}
 export interface GetStreamingTimeseriesTemplateInstancesRequest {
   logicVersion: LogicVersion;
 }
@@ -56,8 +55,7 @@ export interface PatchTimeseriesMonitorRequest {
   monitorRid: _api_MonitorRid;
   patchFields: PatchFields;
 }
-export interface PatchTimeseriesMonitorResponse {
-}
+export interface PatchTimeseriesMonitorResponse {}
 export interface ReplayStreamingAlertRequest {
   outputDatasetRid: _api_DatasetRid;
   outputObjectTypeRid: _api_ObjectTypeRid;
@@ -65,8 +63,7 @@ export interface ReplayStreamingAlertRequest {
   rootObjectTypeRid: _api_ObjectTypeRid;
   schemaVersionOverride?: number | null | undefined;
 }
-export interface ReplayStreamingAlertResponse {
-}
+export interface ReplayStreamingAlertResponse {}
 export interface ReplayWindow_partialReplay {
   type: "partialReplay";
   partialReplay: PartialReplay;
@@ -84,8 +81,7 @@ export type StreamingTimeseriesMonitorGroupRid = string;
  * This response is only returned when there has been no update template instances request with the monitor group
  * rid.
  */
-export interface StreamingTimeseriesTemplateInstancesNotFound {
-}
+export interface StreamingTimeseriesTemplateInstancesNotFound {}
 /**
  * A conjurized version of com.palantir.object.sentinel.timeseriescondition.objects.QualifiedSeriesId
  */
@@ -117,5 +113,4 @@ export interface UpdateStreamingTimeseriesTemplateInstancesRequest {
     StringifiedTemplateInstances
   >;
 }
-export interface UpdateStreamingTimeseriesTemplateInstancesResponse {
-}
+export interface UpdateStreamingTimeseriesTemplateInstancesResponse {}

@@ -83,16 +83,23 @@ export type PropertyTypeTypesWithoutStruct = Exclude<
   PropertyTypeType,
   PropertyTypeTypeStruct
 >;
-export function isPropertyTypeType(
-  v: PropertyTypeType,
-): v is PropertyTypeType {
-  return v === "boolean" || v === "byte"
-    || v === "date" || v === "decimal" || v === "double"
-    || v === "float" || v === "geopoint" || v === "geoshape"
-    || v === "integer" || v === "long"
-    || (typeof v === "object" && v.type === "marking")
-    || v === "short" || v === "string"
-    || v === "timestamp";
+export function isPropertyTypeType(v: PropertyTypeType): v is PropertyTypeType {
+  return (
+    v === "boolean" ||
+    v === "byte" ||
+    v === "date" ||
+    v === "decimal" ||
+    v === "double" ||
+    v === "float" ||
+    v === "geopoint" ||
+    v === "geoshape" ||
+    v === "integer" ||
+    v === "long" ||
+    (typeof v === "object" && v.type === "marking") ||
+    v === "short" ||
+    v === "string" ||
+    v === "timestamp"
+  );
 }
 export function isExotic(
   type: PropertyTypeType | undefined,
@@ -105,9 +112,12 @@ export function isExotic(
       type,
     );
   } else if (typeof type === "object" && type != null) {
-    return type.type === "marking" || type.type === "struct"
-      || type.type === "string"
-      || type.type === "decimal";
+    return (
+      type.type === "marking" ||
+      type.type === "struct" ||
+      type.type === "string" ||
+      type.type === "decimal"
+    );
   }
   return false;
 }
@@ -119,15 +129,10 @@ export function isStruct(
 
 type Optional<T, K extends keyof T> = Pick<Partial<T>, K> & Omit<T, K>;
 
-export interface StructPropertyType extends
-  Optional<
-    Omit<
-      StructFieldType,
-      "fieldType" | "structFieldRid" | "apiName"
-    >,
-    "typeClasses" | "aliases"
-  >
-{
+export interface StructPropertyType extends Optional<
+  Omit<StructFieldType, "fieldType" | "structFieldRid" | "apiName">,
+  "typeClasses" | "aliases"
+> {
   fieldType: PropertyTypeTypesWithoutStruct;
   requireImplementation?: boolean;
 }

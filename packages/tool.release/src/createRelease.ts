@@ -84,10 +84,10 @@ export const createRelease = async (
   } catch (err) {
     // if we can't find a changelog, the user has probably disabled changelogs
     if (
-      err
-      && typeof err === "object"
-      && "code" in err
-      && err.code !== "ENOENT"
+      err &&
+      typeof err === "object" &&
+      "code" in err &&
+      err.code !== "ENOENT"
     ) {
       throw err;
     }

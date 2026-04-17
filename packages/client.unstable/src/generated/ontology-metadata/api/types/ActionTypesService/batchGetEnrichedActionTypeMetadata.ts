@@ -16,10 +16,8 @@
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
 import type {
-  BatchGetEnrichedActionTypeMetadataRequest
-    as _api_BatchGetEnrichedActionTypeMetadataRequest,
-  BatchGetEnrichedActionTypeMetadataResponse
-    as _api_BatchGetEnrichedActionTypeMetadataResponse,
+  BatchGetEnrichedActionTypeMetadataRequest as _api_BatchGetEnrichedActionTypeMetadataRequest,
+  BatchGetEnrichedActionTypeMetadataResponse as _api_BatchGetEnrichedActionTypeMetadataResponse,
 } from "../../__components.js";
 
 /**

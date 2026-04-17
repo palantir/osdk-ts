@@ -109,7 +109,9 @@ export function useDateEditState({
   // for the input's visible text.
   const displayedValue = isEditing
     ? inputValue
-    : (value != null ? displayFormatFn(value) : "");
+    : value != null
+      ? displayFormatFn(value)
+      : "";
 
   // Parse the input once per render and derive all validation state from it.
   const dateValue = inputValue !== "" ? parseFn(inputValue) : undefined;
@@ -124,9 +126,8 @@ export function useDateEditState({
   })();
 
   // The validated date ready for onChange, derived from dateValue + inputError.
-  const validatedDate = (inputError == null && dateValue != null)
-    ? dateValue
-    : null;
+  const validatedDate =
+    inputError == null && dateValue != null ? dateValue : null;
 
   const setDateValue = useCallback(
     (date: Date | null) => {

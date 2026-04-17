@@ -30,10 +30,7 @@ export interface FieldBridgeProps {
   onExternalChange?: (fieldKey: string, value: unknown) => void;
 }
 const SELECT_LIKE_FIELDS: ReadonlySet<FieldComponent> = new Set<FieldComponent>(
-  [
-    "RADIO_BUTTONS",
-    "DROPDOWN",
-  ],
+  ["RADIO_BUTTONS", "DROPDOWN"],
 );
 
 export const FieldBridge: React.FC<FieldBridgeProps> = memo(
@@ -42,10 +39,7 @@ export const FieldBridge: React.FC<FieldBridgeProps> = memo(
     control,
     onExternalChange,
   }: FieldBridgeProps): React.ReactElement {
-    const rules = useMemo(
-      () => extractValidationRules(fieldDef),
-      [fieldDef],
-    );
+    const rules = useMemo(() => extractValidationRules(fieldDef), [fieldDef]);
 
     const {
       field: { onChange, onBlur, value },

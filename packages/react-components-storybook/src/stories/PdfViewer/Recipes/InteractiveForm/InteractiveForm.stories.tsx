@@ -203,9 +203,10 @@ interface FormSidebarProps {
   onLoadRecipe: (recipe: Record<string, PdfFormFieldValue>) => void;
 }
 
-function FormSidebar(
-  { formValues, onLoadRecipe }: FormSidebarProps,
-): React.ReactElement {
+function FormSidebar({
+  formValues,
+  onLoadRecipe,
+}: FormSidebarProps): React.ReactElement {
   const handleDownload = useCallback(() => {
     void downloadFilledPdf(formValues);
   }, [formValues]);

@@ -50,22 +50,32 @@ export async function runAssignEmployeeToVentureTest(): Promise<void> {
         console.log("  - Validating assignEmployee1");
         didValidateOnce = true;
 
-        const { data: [venture] } = await client(Venture).fetchPage();
+        const {
+          data: [venture],
+        } = await client(Venture).fetchPage();
 
-        const r = await client(assignEmployee1).applyAction({
-          "employee-1": emp.id,
-          "venture-1": venture.ventureId,
-        }, {
-          $validateOnly: true,
-        });
-
-        if (false) {
-          const r = await client(assignEmployee1).batchApplyAction([{
+        const r = await client(assignEmployee1).applyAction(
+          {
             "employee-1": emp.id,
             "venture-1": venture.ventureId,
-          }], {
-            $returnEdits: true,
-          });
+          },
+          {
+            $validateOnly: true,
+          },
+        );
+
+        if (false) {
+          const r = await client(assignEmployee1).batchApplyAction(
+            [
+              {
+                "employee-1": emp.id,
+                "venture-1": venture.ventureId,
+              },
+            ],
+            {
+              $returnEdits: true,
+            },
+          );
         }
 
         console.log(r);

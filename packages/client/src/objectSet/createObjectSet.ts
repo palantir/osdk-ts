@@ -83,8 +83,11 @@ function isObjectTypeDefinition(
 export function isObjectSet(
   o: object,
 ): o is ObjectSet<ObjectOrInterfaceDefinition> {
-  return o != null && typeof o === "object"
-    && isWireObjectSet(objectSetDefinitions.get(o));
+  return (
+    o != null &&
+    typeof o === "object" &&
+    isWireObjectSet(objectSetDefinitions.get(o))
+  );
 }
 
 export function getWireObjectSet(
@@ -94,10 +97,7 @@ export function getWireObjectSet(
 }
 
 /** @internal exported for internal use only */
-export const objectSetDefinitions = new WeakMap<
-  any,
-  WireObjectSet
->();
+export const objectSetDefinitions = new WeakMap<any, WireObjectSet>();
 
 /** @internal */
 export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
@@ -105,27 +105,31 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
   clientCtx: MinimalClient,
   objectSet: WireObjectSet = resolveBaseObjectSetType(objectType),
 ): ObjectSet<Q> {
+  const boundAggregate = aggregate<Q, any>;
   const base: ObjectSet<Q> = {
-    aggregate: (aggregate<Q, any>).bind(
+    aggregate: boundAggregate.bind(
       globalThis,
-      augmentRequestContext(clientCtx, _ => ({ finalMethodCall: "aggregate" })),
+      augmentRequestContext(clientCtx, (_) => ({
+        finalMethodCall: "aggregate",
+      })),
       objectType,
       objectSet,
     ) as ObjectSet<Q>["aggregate"],
 
     fetchPage: fetchPageInternal.bind(
       globalThis,
-      augmentRequestContext(clientCtx, _ => ({ finalMethodCall: "fetchPage" })),
+      augmentRequestContext(clientCtx, (_) => ({
+        finalMethodCall: "fetchPage",
+      })),
       objectType,
       objectSet,
     ) as ObjectSet<Q>["fetchPage"],
 
     fetchPageWithErrors: fetchPageWithErrorsInternal.bind(
       globalThis,
-      augmentRequestContext(
-        clientCtx,
-        _ => ({ finalMethodCall: "fetchPageWithErrors" }),
-      ),
+      augmentRequestContext(clientCtx, (_) => ({
+        finalMethodCall: "fetchPageWithErrors",
+      })),
       objectType,
       objectSet,
     ) as ObjectSet<Q>["fetchPageWithErrors"],
@@ -138,9 +142,7 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
       });
     },
 
-    pivotTo<L extends LinkNames<Q>>(
-      type: L,
-    ): ObjectSet<LinkedType<Q, L>> {
+    pivotTo<L extends LinkNames<Q>>(type: L): ObjectSet<LinkedType<Q, L>> {
       return createSearchAround(type)();
     },
 
@@ -149,7 +151,7 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
         type: "union",
         objectSets: [
           objectSet,
-          ...objectSets.map(os => objectSetDefinitions.get(os)!),
+          ...objectSets.map((os) => objectSetDefinitions.get(os)!),
         ],
       });
     },
@@ -159,7 +161,7 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
         type: "intersect",
         objectSets: [
           objectSet,
-          ...objectSets.map(os => objectSetDefinitions.get(os)!),
+          ...objectSets.map((os) => objectSetDefinitions.get(os)!),
         ],
       });
     },
@@ -169,7 +171,7 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
         type: "subtract",
         objectSets: [
           objectSet,
-          ...objectSets.map(os => objectSetDefinitions.get(os)!),
+          ...objectSets.map((os) => objectSetDefinitions.get(os)!),
         ],
       });
     },
@@ -178,20 +180,16 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
       const nearestNeighborsQuery = isTextQuery(query)
         ? { "type": "text" as const, "value": query }
         : { "type": "vector" as const, "value": query };
-      return clientCtx.objectSetFactory(
-        objectType,
-        clientCtx,
-        {
-          type: "nearestNeighbors",
-          objectSet,
-          propertyIdentifier: {
-            type: "property",
-            apiName: property as PropertyApiName,
-          },
-          numNeighbors,
-          query: nearestNeighborsQuery,
+      return clientCtx.objectSetFactory(objectType, clientCtx, {
+        type: "nearestNeighbors",
+        objectSet,
+        propertyIdentifier: {
+          type: "property",
+          apiName: property as PropertyApiName,
         },
-      ) as ObjectSet<Q>;
+        numNeighbors,
+        query: nearestNeighborsQuery,
+      }) as ObjectSet<Q>;
     },
 
     async *asyncIter<
@@ -208,23 +206,16 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
     > {
       let $nextPageToken: string | undefined;
       do {
-        const result: FetchPageResult<
-          Q,
-          L,
-          R,
-          S,
-          T,
-          ORDER_BY_OPTIONS
-        > = await fetchPageInternal(
-          augmentRequestContext(
-            clientCtx,
-            _ => ({ finalMethodCall: "asyncIter" }),
-          ),
-          objectType,
-          objectSet,
-          { ...args, $pageSize: 10000, $nextPageToken },
-          true,
-        );
+        const result: FetchPageResult<Q, L, R, S, T, ORDER_BY_OPTIONS> =
+          await fetchPageInternal(
+            augmentRequestContext(clientCtx, (_) => ({
+              finalMethodCall: "asyncIter",
+            })),
+            objectType,
+            objectSet,
+            { ...args, $pageSize: 10000, $nextPageToken },
+            true,
+          );
         $nextPageToken = result.nextPageToken;
 
         for (const obj of result.data) {
@@ -235,64 +226,49 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
 
     fetchOne: (isObjectTypeDefinition(objectType)
       ? async <A extends SelectArg<Q>>(
-        primaryKey: PrimaryKeyType<Q>,
-        options: A,
-      ) => {
-        return await fetchSingle(
-          augmentRequestContext(
-            clientCtx,
-            _ => ({ finalMethodCall: "fetchOne" }),
-          ),
-          objectType,
-          options,
-          await createWithPk(
-            clientCtx,
+          primaryKey: PrimaryKeyType<Q>,
+          options: A,
+        ) => {
+          return (await fetchSingle(
+            augmentRequestContext(clientCtx, (_) => ({
+              finalMethodCall: "fetchOne",
+            })),
             objectType,
-            objectSet,
-            primaryKey,
-          ),
-        ) as Osdk<Q>;
-      }
+            options,
+            await createWithPk(clientCtx, objectType, objectSet, primaryKey),
+          )) as Osdk<Q>;
+        }
       : undefined) as ObjectSet<Q>["fetchOne"],
 
     fetchOneWithErrors: (isObjectTypeDefinition(objectType)
       ? async <A extends SelectArg<Q>>(
-        primaryKey: Q extends ObjectTypeDefinition ? PrimaryKeyType<Q>
-          : never,
-        options: A,
-      ) => {
-        return await fetchSingleWithErrors(
-          augmentRequestContext(
-            clientCtx,
-            _ => ({ finalMethodCall: "fetchOneWithErrors" }),
-          ),
-          objectType,
-          options,
-          await createWithPk(
-            clientCtx,
+          primaryKey: Q extends ObjectTypeDefinition
+            ? PrimaryKeyType<Q>
+            : never,
+          options: A,
+        ) => {
+          return (await fetchSingleWithErrors(
+            augmentRequestContext(clientCtx, (_) => ({
+              finalMethodCall: "fetchOneWithErrors",
+            })),
             objectType,
-            objectSet,
-            primaryKey,
-          ),
-        ) as Result<Osdk<Q>>;
-      }
+            options,
+            await createWithPk(clientCtx, objectType, objectSet, primaryKey),
+          )) as Result<Osdk<Q>>;
+        }
       : undefined) as ObjectSet<Q>["fetchOneWithErrors"],
 
-    subscribe: (
-      listener,
-      opts,
-    ) => {
-      const pendingSubscribe = import("./ObjectSetListenerWebsocket.js")
-        .then(({ ObjectSetListenerWebsocket }) =>
-          ObjectSetListenerWebsocket.getInstance(clientCtx)
-            .subscribe(
-              objectType,
-              objectSet,
-              listener as ObjectSetSubscription.Listener<Q, any>,
-              opts?.properties,
-              opts?.includeRid,
-            )
-        );
+    subscribe: (listener, opts) => {
+      const pendingSubscribe = import("./ObjectSetListenerWebsocket.js").then(
+        ({ ObjectSetListenerWebsocket }) =>
+          ObjectSetListenerWebsocket.getInstance(clientCtx).subscribe(
+            objectType,
+            objectSet,
+            listener as ObjectSetSubscription.Listener<Q, any>,
+            opts?.properties,
+            opts?.includeRid,
+          ),
+      );
 
       return { unsubscribe: async () => (await pendingSubscribe)() };
     },
@@ -302,27 +278,22 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
 
       const derivedProperties: Record<string, DerivedPropertyDefinition> = {};
       for (const key of Object.keys(clause)) {
-        const derivedPropertyDefinition = clause
-          [key](createWithPropertiesObjectSet(
+        const derivedPropertyDefinition = clause[key](
+          createWithPropertiesObjectSet(
             objectType,
             { type: "methodInput" },
             definitionMap,
             true,
-          ));
-        derivedProperties[key] = definitionMap.get(
-          derivedPropertyDefinition,
-        )!;
+          ),
+        );
+        derivedProperties[key] = definitionMap.get(derivedPropertyDefinition)!;
       }
 
-      return clientCtx.objectSetFactory(
-        objectType,
-        clientCtx,
-        {
-          type: "withProperties",
-          derivedProperties,
-          objectSet,
-        },
-      );
+      return clientCtx.objectSetFactory(objectType, clientCtx, {
+        type: "withProperties",
+        derivedProperties,
+        objectSet,
+      });
     },
 
     narrowToType: (
@@ -337,15 +308,11 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
       clientCtx.narrowTypeInterfaceOrObjectMapping[objectTypeDef.apiName] =
         objectTypeDef.type;
 
-      return clientCtx.objectSetFactory(
-        objectTypeDef,
-        clientCtx,
-        {
-          type: "asType",
-          objectSet,
-          entityType: objectTypeDef.apiName,
-        },
-      );
+      return clientCtx.objectSetFactory(objectTypeDef, clientCtx, {
+        type: "asType",
+        objectSet,
+        entityType: objectTypeDef.apiName,
+      });
     },
 
     async *experimental_asyncIterLinks<
@@ -358,10 +325,9 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
       let $nextPageToken: string | undefined;
       do {
         const result = await fetchLinksPage(
-          augmentRequestContext(
-            clientCtx,
-            _ => ({ finalMethodCall: "asyncIterLinks" }),
-          ),
+          augmentRequestContext(clientCtx, (_) => ({
+            finalMethodCall: "asyncIterLinks",
+          })),
           objectType,
           objectSet,
           links,
@@ -386,15 +352,15 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
         clientCtx,
         objectType.type === "object"
           ? {
-            type: "searchAround",
-            objectSet,
-            link,
-          }
+              type: "searchAround",
+              objectSet,
+              link,
+            }
           : {
-            type: "interfaceLinkSearchAround",
-            objectSet,
-            interfaceLink: link,
-          },
+              type: "interfaceLinkSearchAround",
+              objectSet,
+              interfaceLink: link,
+            },
       );
     };
   }

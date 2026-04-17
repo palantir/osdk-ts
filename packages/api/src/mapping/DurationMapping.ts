@@ -58,11 +58,5 @@ export const TimeDurationMapping: {
   "years": "YEARS",
 } satisfies Record<
   string,
-  | "YEARS"
-  | "MONTHS"
-  | "WEEKS"
-  | "DAYS"
-  | "HOURS"
-  | "MINUTES"
-  | "SECONDS"
+  "YEARS" | "MONTHS" | "WEEKS" | "DAYS" | "HOURS" | "MINUTES" | "SECONDS"
 >;

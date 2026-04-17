@@ -47,7 +47,9 @@ export interface BlockVariationFiles {
  */
 function createVariationVariables(blocks: BlockVariable[]): string[] {
   // Extract variable names from blocks (remove # or ^ prefix)
-  const regularVariables = blocks.map(block => block.name.replace(/^[#^]/, ""));
+  const regularVariables = blocks.map((block) =>
+    block.name.replace(/^[#^]/, ""),
+  );
 
   const commonVariables = [
     "linkedObjectType",
@@ -88,11 +90,10 @@ function createBlockVariation(
   const context = getSnippetContext(snippetKey, `${prefix}${varName}`);
 
   // Process template with context using Result-based approach
-  const processResult = processTemplateV2(
-    template,
-    context,
-    { templateId: `${snippetKey}${prefix}${varName}`, useCache: true },
-  );
+  const processResult = processTemplateV2(template, context, {
+    templateId: `${snippetKey}${prefix}${varName}`,
+    useCache: true,
+  });
 
   if (!processResult.success) {
     return toErrorResult(
@@ -108,9 +109,10 @@ function createBlockVariation(
   const transformedCode = CodeTransformer.applyCommonTransforms(code);
 
   // Create file content with header
-  const content = `${
-    generateFileHeader(snippetKey, `Variation: ${prefix}${varName}`)
-  }\n${transformedCode}`;
+  const content = `${generateFileHeader(
+    snippetKey,
+    `Variation: ${prefix}${varName}`,
+  )}\n${transformedCode}`;
 
   // Create variation key and file path
   const variationKey = `${snippetKey}_${prefix}${varName}`;
@@ -169,8 +171,8 @@ export function generateBlockVariations(
   // Generate variations for each block group
   for (const [varName, blockVars] of Object.entries(blockGroups)) {
     // Check if there's a standard (#) or inverted (^) block for this variable
-    const hasStandardBlock = blockVars.some(block => !block.isInverted);
-    const hasInvertedBlock = blockVars.some(block => block.isInverted);
+    const hasStandardBlock = blockVars.some((block) => !block.isInverted);
+    const hasInvertedBlock = blockVars.some((block) => block.isInverted);
 
     // Create standard block variation if it exists
     if (hasStandardBlock) {

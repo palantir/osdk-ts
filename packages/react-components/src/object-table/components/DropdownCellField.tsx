@@ -44,13 +44,10 @@ function DropdownCellFieldInner({
   if (!isRowFocused) {
     return (
       <div
-        className={classNames(
-          styles.osdkEditableCell,
-          {
-            [styles.error]: hasValidationError,
-            [styles.osdkEditedInput]: isEdited,
-          },
-        )}
+        className={classNames(styles.osdkEditableCell, {
+          [styles.error]: hasValidationError,
+          [styles.osdkEditedInput]: isEdited,
+        })}
       >
         <div
           className={classNames(
@@ -66,13 +63,10 @@ function DropdownCellFieldInner({
   }
   return (
     <div
-      className={classNames(
-        styles.osdkEditableCellDropdown,
-        {
-          [styles.error]: hasValidationError,
-          [styles.osdkEditedInput]: isEdited,
-        },
-      )}
+      className={classNames(styles.osdkEditableCellDropdown, {
+        [styles.error]: hasValidationError,
+        [styles.osdkEditedInput]: isEdited,
+      })}
     >
       <DropdownField
         {...editFieldConfig.fieldComponentProps}

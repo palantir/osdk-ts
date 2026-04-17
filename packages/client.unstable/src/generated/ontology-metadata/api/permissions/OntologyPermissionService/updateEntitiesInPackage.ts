@@ -17,10 +17,8 @@
 import { type ConjureContext, conjureFetch } from "conjure-lite";
 import type { OntologyPackageRid as _api_OntologyPackageRid } from "../../__components.js";
 import type {
-  UpdateEntitiesInPackageRequest
-    as _api_permissions_UpdateEntitiesInPackageRequest,
-  UpdateEntitiesInPackageResponse
-    as _api_permissions_UpdateEntitiesInPackageResponse,
+  UpdateEntitiesInPackageRequest as _api_permissions_UpdateEntitiesInPackageRequest,
+  UpdateEntitiesInPackageResponse as _api_permissions_UpdateEntitiesInPackageResponse,
 } from "../__components.js";
 
 /**

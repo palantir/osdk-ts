@@ -18,9 +18,11 @@
 
 import { createMemoryTest, neverOptimizeFunction } from "../helpers.js";
 
-const r = await createMemoryTest(neverOptimizeFunction(async () => {
-  return Math.random();
-}));
+const r = await createMemoryTest(
+  neverOptimizeFunction(async () => {
+    return Math.random();
+  }),
+);
 
 // eslint-disable-next-line no-console
 console.log(r);

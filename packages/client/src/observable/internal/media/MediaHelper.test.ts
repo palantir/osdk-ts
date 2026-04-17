@@ -129,11 +129,13 @@ describe("MediaHelper", () => {
     mediaHelper.clearCache(coords);
     expect(mockStore.queries.delete).toHaveBeenCalled();
 
-    mockStore.queries.keys = vi.fn().mockReturnValue([
-      { type: "mediaMetadata" },
-      { type: "otherType" },
-      { type: "mediaMetadata" },
-    ]);
+    mockStore.queries.keys = vi
+      .fn()
+      .mockReturnValue([
+        { type: "mediaMetadata" },
+        { type: "otherType" },
+        { type: "mediaMetadata" },
+      ]);
 
     mediaHelper.clearAll();
     expect(mockStore.queries.delete).toHaveBeenCalledTimes(3);

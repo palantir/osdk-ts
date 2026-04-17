@@ -67,10 +67,7 @@ interface FilterListItemProps<D> {
   filterKey: string;
   label: string;
   filterState: FilterState | undefined;
-  onFilterStateChanged: (
-    filterKey: string,
-    state: FilterState,
-  ) => void;
+  onFilterStateChanged: (filterKey: string, state: FilterState) => void;
   onFilterRemoved?: (filterKey: string) => void;
   renderInput: RenderFilterInput<D>;
   dragHandleAttributes?: DraggableAttributes;
@@ -106,7 +103,7 @@ function FilterListItemInner<D>({
 
   const handleToggleSearch = useCallback(() => {
     setSearchState((prev) =>
-      prev.type === "closed" ? { type: "open", query: "" } : { type: "closed" }
+      prev.type === "closed" ? { type: "open", query: "" } : { type: "closed" },
     );
   }, []);
 
@@ -139,9 +136,8 @@ function FilterListItemInner<D>({
 
   const searchOpen = searchState.type === "open";
   const searchQuery = searchState.type === "open" ? searchState.query : "";
-  const searchQueryForInput = searchState.type === "open"
-    ? searchState.query
-    : undefined;
+  const searchQueryForInput =
+    searchState.type === "open" ? searchState.query : undefined;
 
   return (
     <div
@@ -160,11 +156,7 @@ function FilterListItemInner<D>({
             <DragHandleIcon />
           </Button>
         )}
-        <span
-          className={styles.itemLabel}
-        >
-          {label}
-        </span>
+        <span className={styles.itemLabel}>{label}</span>
         {showSearch && (
           <Button
             className={styles.headerActionButton}

@@ -34,13 +34,12 @@ export namespace HostMessage {
 
   export type Payload = Payload.UpdateParameters<any>;
 
-  export interface UpdateParameters<C extends WidgetConfig<C["parameters"]>>
-    extends
-      HostBaseMessage<
-        "host.update-parameters",
-        Payload.UpdateParameters<C>
-      >
-  {}
+  export interface UpdateParameters<
+    C extends WidgetConfig<C["parameters"]>,
+  > extends HostBaseMessage<
+    "host.update-parameters",
+    Payload.UpdateParameters<C>
+  > {}
 }
 
 export type HostMessage<C extends WidgetConfig<C["parameters"]>> =
@@ -52,18 +51,17 @@ export function isHostParametersUpdatedMessage<
   return event.type === "host.update-parameters";
 }
 
-type HostMessageVisitor<C extends WidgetConfig<C["parameters"]>> =
-  & {
-    [T in HostMessage<C>["type"]]: (
-      payload: Extract<HostMessage<C>, { type: T }> extends {
-        payload: infer P;
-      } ? P
-        : never,
-    ) => void;
-  }
-  & {
-    _unknown: (type: string) => void;
-  };
+type HostMessageVisitor<C extends WidgetConfig<C["parameters"]>> = {
+  [T in HostMessage<C>["type"]]: (
+    payload: Extract<HostMessage<C>, { type: T }> extends {
+      payload: infer P;
+    }
+      ? P
+      : never,
+  ) => void;
+} & {
+  _unknown: (type: string) => void;
+};
 
 /**
  * Strongly typed visitor to handle every type of host message

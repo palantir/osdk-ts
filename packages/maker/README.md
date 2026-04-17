@@ -31,9 +31,13 @@ An ontology serves as a container for all your type definitions. You define an o
 ```typescript
 import { defineOntology } from "@osdk/maker";
 
-await defineOntology("com.example.", async () => {
-  // Define your ontology entities here
-}, "path/to/output/directory");
+await defineOntology(
+  "com.example.",
+  async () => {
+    // Define your ontology entities here
+  },
+  "path/to/output/directory",
+);
 ```
 
 The namespace parameter (`"com.example."` in this example) prefixes all entity names to avoid naming conflicts.
@@ -98,9 +102,11 @@ const tagsProperty = defineSharedPropertyType({
   displayName: "Tags",
   description: "List of tags",
   // optionally add a reducer
-  reducers: [{
-    direction: "descending",
-  }],
+  reducers: [
+    {
+      direction: "descending",
+    },
+  ],
 });
 ```
 
@@ -207,12 +213,14 @@ defineValueType({
   displayName: "Email Address",
   type: {
     type: "string",
-    constraints: [{
-      constraint: {
-        regex: "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$",
+    constraints: [
+      {
+        constraint: {
+          regex: "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$",
+        },
+        failureMessage: "Must be a valid email address",
       },
-      failureMessage: "Must be a valid email address",
-    }],
+    ],
   },
   version: "1.0.0",
 });
@@ -223,11 +231,13 @@ defineValueType({
   displayName: "True/False Value",
   type: {
     type: "boolean",
-    constraints: [{
-      constraint: {
-        allowedValues: ["TRUE_VALUE"],
+    constraints: [
+      {
+        constraint: {
+          allowedValues: ["TRUE_VALUE"],
+        },
       },
-    }],
+    ],
   },
   version: "0.1.0",
 });
@@ -474,10 +484,12 @@ const eventObject = defineObject({
     "eventName": { type: "string", displayName: "Event Name" },
     "timestamp": { type: "timestamp" },
   },
-  datasources: [{
-    type: "stream",
-    retentionPeriod: "P90D", // 90 days retention (ISO 8601 duration format)
-  }],
+  datasources: [
+    {
+      type: "stream",
+      retentionPeriod: "P90D", // 90 days retention (ISO 8601 duration format)
+    },
+  ],
 });
 ```
 
@@ -501,35 +513,37 @@ const object = defineObject({
       },
     },
   },
-  datasources: [{
-    type: "dataset",
-    // you can optionally define an objectSecurityPolicy here as well
-    propertySecurityGroups: [
-      {
-        name: "myPsg",
-        properties: ["protectedProperty"],
-        granularPolicy: {
-          type: "and",
-          conditions: [
-            {
-              type: "markingProperty",
-              property: "markingProperty",
-            },
-            {
-              type: "group",
-              name: "myInputGroup",
-            },
-          ],
+  datasources: [
+    {
+      type: "dataset",
+      // you can optionally define an objectSecurityPolicy here as well
+      propertySecurityGroups: [
+        {
+          name: "myPsg",
+          properties: ["protectedProperty"],
+          granularPolicy: {
+            type: "and",
+            conditions: [
+              {
+                type: "markingProperty",
+                property: "markingProperty",
+              },
+              {
+                type: "group",
+                name: "myInputGroup",
+              },
+            ],
+          },
+          appliedMarkings: {
+            "myCbacMarking": "CBAC",
+          },
+          assumedMarkings: {
+            "myMandatoryMarking": "MANDATORY",
+          },
         },
-        appliedMarkings: {
-          "myCbacMarking": "CBAC",
-        },
-        assumedMarkings: {
-          "myMandatoryMarking": "MANDATORY",
-        },
-      },
-    ],
-  }],
+      ],
+    },
+  ],
 });
 ```
 
@@ -771,30 +785,23 @@ const makeDealsVisible: ActionParameterConditionalOverride = {
   type: "visibility",
   condition: {
     type: "and",
-    conditions: [
-      mustBeInTeamCondition,
-      teamEqualsSalesParameterCondition,
-    ],
+    conditions: [mustBeInTeamCondition, teamEqualsSalesParameterCondition],
   },
 };
 
-const modifyObjectActionType = defineModifyObjectAction(
-  {
-    objectType: employeeObject,
-    actionLevelValidation: {
-      condition: mustBeManagerCondition,
-    },
-    parameterConfiguration: {
-      "numDeals": {
-        defaultVisibility: "hidden",
-        conditionalOverrides: [
-          makeDealsVisible,
-        ],
-      },
-    },
-    excludedProperties: ["experience"],
+const modifyObjectActionType = defineModifyObjectAction({
+  objectType: employeeObject,
+  actionLevelValidation: {
+    condition: mustBeManagerCondition,
   },
-);
+  parameterConfiguration: {
+    "numDeals": {
+      defaultVisibility: "hidden",
+      conditionalOverrides: [makeDealsVisible],
+    },
+  },
+  excludedProperties: ["experience"],
+});
 ```
 
 ### Derived Properties
@@ -860,9 +867,11 @@ const flight = defineObject({
     {
       type: "derived",
       // multi-hop link traversals are also supported, just extend this list!
-      linkDefinition: [{
-        linkType: flightToPassengers,
-      }],
+      linkDefinition: [
+        {
+          linkType: flightToPassengers,
+        },
+      ],
       propertyMapping: {
         passengersList: {
           type: "collectList",

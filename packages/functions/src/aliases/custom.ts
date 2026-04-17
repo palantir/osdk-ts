@@ -24,9 +24,9 @@ export function custom(alias: string): Custom {
   if (!(alias in resolvedAliases.custom)) {
     const available = Object.keys(resolvedAliases.custom);
     throw new Error(
-      `Custom alias '${alias}' not found. Available aliases: [${
-        available.join(", ")
-      }]`,
+      `Custom alias '${alias}' not found. Available aliases: [${available.join(
+        ", ",
+      )}]`,
     );
   }
 

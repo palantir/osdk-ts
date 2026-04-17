@@ -21,32 +21,18 @@ import { handleOpenApiCall } from "../../handlers/util/handleOpenApiCall.js";
 export const getFullMetadata: CallFactory<
   "ontologyApiName",
   typeof OntologiesV2.getFullMetadata
-> = handleOpenApiCall(
-  OntologiesV2.getFullMetadata,
-  ["ontologyApiName"],
-);
+> = handleOpenApiCall(OntologiesV2.getFullMetadata, ["ontologyApiName"]);
 
 export const loadMetadata: CallFactory<
   "ontologyApiName",
   typeof OntologiesV2.loadMetadata
-> = handleOpenApiCall(
-  OntologiesV2.loadMetadata,
-  ["ontologyApiName"],
-);
+> = handleOpenApiCall(OntologiesV2.loadMetadata, ["ontologyApiName"]);
 
 export const list: CallFactory<never, typeof OntologiesV2.list> =
-  handleOpenApiCall(
-    OntologiesV2.list,
-    [],
-  );
+  handleOpenApiCall(OntologiesV2.list, []);
 
 /**
  * Get specified Ontology
  */
-export const get: CallFactory<
-  "ontologyRid",
-  typeof OntologiesV2.get
-> = handleOpenApiCall(
-  OntologiesV2.get,
-  ["ontologyRid"],
-);
+export const get: CallFactory<"ontologyRid", typeof OntologiesV2.get> =
+  handleOpenApiCall(OntologiesV2.get, ["ontologyRid"]);

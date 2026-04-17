@@ -116,9 +116,9 @@ export class TemplateNotFoundError extends GeneratorError {
     public readonly searchedLocations: string[],
   ) {
     super(
-      `Template "${templateName}" not found. Searched in: ${
-        searchedLocations.join(", ")
-      }`,
+      `Template "${templateName}" not found. Searched in: ${searchedLocations.join(
+        ", ",
+      )}`,
     );
     this.name = "TemplateNotFoundError";
   }
@@ -138,7 +138,7 @@ export class ValidationError extends GeneratorError {
     }>,
   ) {
     const errorList = validationErrors
-      .map(e => `  - ${e.field}: ${e.message}`)
+      .map((e) => `  - ${e.field}: ${e.message}`)
       .join("\n");
     super(`Validation failed:\n${errorList}`);
     this.name = "ValidationError";
@@ -152,21 +152,22 @@ export class ValidationError extends GeneratorError {
 /**
  * Helper to create error results
  */
-export function toErrorResult(
-  error: unknown,
-): { success: false; error: GeneratorError } {
+export function toErrorResult(error: unknown): {
+  success: false;
+  error: GeneratorError;
+} {
   if (error instanceof GeneratorError) {
     return { success: false, error };
   }
 
   // Wrap unknown errors
   const message = error instanceof Error ? error.message : String(error);
-  const wrappedError = new class extends GeneratorError {
+  const wrappedError = new (class extends GeneratorError {
     readonly code = "UNKNOWN_ERROR";
     getSuggestion() {
       return "Check the error message for details";
     }
-  }(message);
+  })(message);
 
   return { success: false, error: wrappedError };
 }

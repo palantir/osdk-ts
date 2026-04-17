@@ -43,63 +43,66 @@ export function usePdfViewer(
   const eventBusRef = useRef<EventBus | null>(null);
   const findControllerRef = useRef<PDFFindController | null>(null);
 
-  useEffect(function initializePdfViewer() {
-    const container = containerRef.current;
-    const viewer = viewerRef.current;
-    if (container == null || viewer == null || document == null) {
-      return;
-    }
-
-    const eventBus = new EventBus();
-    const linkService = new PDFLinkService({ eventBus });
-    const findController = new PDFFindController({
-      linkService,
-      eventBus,
-      updateMatchesCountOnProgress: true,
-    });
-
-    const pdfViewer = new PDFViewer({
-      container,
-      viewer,
-      eventBus,
-      linkService,
-      findController,
-      removePageBorders: true,
-      annotationEditorMode: AnnotationEditorType.NONE,
-      annotationEditorHighlightColors:
-        "yellow=#FFFF98,green=#53FFBC,blue=#80EBFF,pink=#FFCBE6,red=#FF4F5F",
-    });
-
-    linkService.setViewer(pdfViewer);
-    linkService.setDocument(document);
-    findController.setDocument(document);
-    pdfViewer.setDocument(document);
-
-    // Apply initial scale and page after pages are loaded to avoid
-    // "scrollPageIntoView: not a valid pageNumber" console errors.
-    const onPagesLoaded = () => {
-      if (initialScale != null) {
-        pdfViewer.currentScale = initialScale;
+  useEffect(
+    function initializePdfViewer() {
+      const container = containerRef.current;
+      const viewer = viewerRef.current;
+      if (container == null || viewer == null || document == null) {
+        return;
       }
-      if (initialPage != null && initialPage > 1) {
-        pdfViewer.currentPageNumber = initialPage;
-        pdfViewer.scrollPageIntoView({ pageNumber: initialPage });
-      }
-      eventBus.off(PAGES_LOADED_EVENT, onPagesLoaded);
-    };
-    eventBus.on(PAGES_LOADED_EVENT, onPagesLoaded);
 
-    eventBusRef.current = eventBus;
-    findControllerRef.current = findController;
-    pdfViewerRef.current = pdfViewer;
+      const eventBus = new EventBus();
+      const linkService = new PDFLinkService({ eventBus });
+      const findController = new PDFFindController({
+        linkService,
+        eventBus,
+        updateMatchesCountOnProgress: true,
+      });
 
-    return () => {
-      pdfViewerRef.current = null;
-      eventBusRef.current = null;
-      findControllerRef.current = null;
-      pdfViewer.cleanup();
-    };
-  }, [containerRef, viewerRef, document]);
+      const pdfViewer = new PDFViewer({
+        container,
+        viewer,
+        eventBus,
+        linkService,
+        findController,
+        removePageBorders: true,
+        annotationEditorMode: AnnotationEditorType.NONE,
+        annotationEditorHighlightColors:
+          "yellow=#FFFF98,green=#53FFBC,blue=#80EBFF,pink=#FFCBE6,red=#FF4F5F",
+      });
+
+      linkService.setViewer(pdfViewer);
+      linkService.setDocument(document);
+      findController.setDocument(document);
+      pdfViewer.setDocument(document);
+
+      // Apply initial scale and page after pages are loaded to avoid
+      // "scrollPageIntoView: not a valid pageNumber" console errors.
+      const onPagesLoaded = () => {
+        if (initialScale != null) {
+          pdfViewer.currentScale = initialScale;
+        }
+        if (initialPage != null && initialPage > 1) {
+          pdfViewer.currentPageNumber = initialPage;
+          pdfViewer.scrollPageIntoView({ pageNumber: initialPage });
+        }
+        eventBus.off(PAGES_LOADED_EVENT, onPagesLoaded);
+      };
+      eventBus.on(PAGES_LOADED_EVENT, onPagesLoaded);
+
+      eventBusRef.current = eventBus;
+      findControllerRef.current = findController;
+      pdfViewerRef.current = pdfViewer;
+
+      return () => {
+        pdfViewerRef.current = null;
+        eventBusRef.current = null;
+        findControllerRef.current = null;
+        pdfViewer.cleanup();
+      };
+    },
+    [containerRef, viewerRef, document],
+  );
 
   return { pdfViewerRef, eventBusRef, findControllerRef };
 }

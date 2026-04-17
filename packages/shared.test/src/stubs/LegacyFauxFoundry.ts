@@ -42,9 +42,7 @@ import { registerLazyQueries } from "./queries.js";
 import { fooSpt } from "./spts.js";
 
 export class LegacyFauxFoundry extends FauxFoundry {
-  constructor(
-    baseUrl: string = "https://stack.palantir.com/",
-  ) {
+  constructor(baseUrl: string = "https://stack.palantir.com/") {
     super(baseUrl, defaultOntologyMetadata, { strict: false });
 
     //
@@ -79,20 +77,16 @@ export class LegacyFauxFoundry extends FauxFoundry {
     legacyFauxDataStore.registerObject(employee50050);
 
     legacyFauxDataStore.registerObject(nycOffice);
-    legacyFauxDataStore.registerObject(
-      {
-        ...nycOffice,
-        __primaryKey: "SEA",
-        __rid: nycOffice.__rid + "-1",
-        officeId: "SEA",
-        name: "Seattle Office",
-      } satisfies typeof nycOffice,
-    );
+    legacyFauxDataStore.registerObject({
+      ...nycOffice,
+      __primaryKey: "SEA",
+      __rid: nycOffice.__rid + "-1",
+      officeId: "SEA",
+      name: "Seattle Office",
+    } satisfies typeof nycOffice);
 
     legacyFauxDataStore.registerObject(objectWithAllPropertyTypes1);
-    legacyFauxDataStore.registerObject(
-      objectWithAllPropertyTypes2,
-    );
+    legacyFauxDataStore.registerObject(objectWithAllPropertyTypes2);
     legacyFauxDataStore.registerObject(objectWithAllPropertyTypesEmptyEntries);
     legacyFauxDataStore.registerObject(travisPlayer);
     legacyFauxDataStore.registerLink(

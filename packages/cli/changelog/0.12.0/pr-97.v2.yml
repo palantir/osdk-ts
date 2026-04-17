@@ -2,4 +2,4 @@ type: improvement
 improvement:
   description: Improve no site versions found message
   links:
-  - https://github.com/palantir/osdk-ts/pull/97
+    - https://github.com/palantir/osdk-ts/pull/97

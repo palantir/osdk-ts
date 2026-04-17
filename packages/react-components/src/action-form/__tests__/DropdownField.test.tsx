@@ -31,7 +31,9 @@ describe("DropdownField", () => {
     });
 
     it("renders a combobox input when isSearchable is true", () => {
-      render(<DropdownField value={null} items={STRING_ITEMS} isSearchable />);
+      render(
+        <DropdownField value={null} items={STRING_ITEMS} isSearchable={true} />,
+      );
 
       expect(screen.getByRole("combobox")).toBeDefined();
     });
@@ -86,7 +88,7 @@ describe("DropdownField", () => {
         <DropdownField<string, true>
           value={["Alice"]}
           items={STRING_ITEMS}
-          isMultiple
+          isMultiple={true}
         />,
       );
 
@@ -97,7 +99,9 @@ describe("DropdownField", () => {
 
   describe("searchable (Combobox variant)", () => {
     it("renders combobox with search input", async () => {
-      render(<DropdownField value={null} items={STRING_ITEMS} isSearchable />);
+      render(
+        <DropdownField value={null} items={STRING_ITEMS} isSearchable={true} />,
+      );
 
       const input = screen.getByRole("combobox");
       expect(input).toBeDefined();
@@ -117,8 +121,8 @@ describe("DropdownField", () => {
         <DropdownField<string, true>
           value={["Alice"]}
           items={STRING_ITEMS}
-          isSearchable
-          isMultiple
+          isSearchable={true}
+          isMultiple={true}
         />,
       );
 
@@ -132,8 +136,8 @@ describe("DropdownField", () => {
           value={[]}
           items={STRING_ITEMS}
           onChange={onChange}
-          isSearchable
-          isMultiple
+          isSearchable={true}
+          isMultiple={true}
         />,
       );
 
@@ -159,7 +163,7 @@ describe("DropdownField", () => {
 
     it("shows 'No results' when search matches nothing", async () => {
       render(
-        <DropdownField value={null} items={STRING_ITEMS} isSearchable />,
+        <DropdownField value={null} items={STRING_ITEMS} isSearchable={true} />,
       );
 
       const input = screen.getByRole("combobox");
@@ -178,8 +182,8 @@ describe("DropdownField", () => {
         <DropdownField<string, true>
           value={[]}
           items={STRING_ITEMS}
-          isSearchable
-          isMultiple
+          isSearchable={true}
+          isMultiple={true}
         />,
       );
 
@@ -192,8 +196,8 @@ describe("DropdownField", () => {
         <DropdownField<string, true>
           value={["Alice"]}
           items={STRING_ITEMS}
-          isSearchable
-          isMultiple
+          isSearchable={true}
+          isMultiple={true}
           placeholder="Pick names"
         />,
       );

@@ -56,9 +56,10 @@ export interface UseCbacBannerResult {
  * Get the CBAC banner data for the given marking IDs.
  * @param options Options to control the query.
  */
-export function useCbacBanner(
-  { markingIds, enabled: externalEnabled = true }: UseCbacBannerOptions,
-): UseCbacBannerResult {
+export function useCbacBanner({
+  markingIds,
+  enabled: externalEnabled = true,
+}: UseCbacBannerOptions): UseCbacBannerResult {
   const { client } = React.useContext(OsdkContext2);
 
   const stableMarkingIds = React.useMemo(

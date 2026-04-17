@@ -31,8 +31,8 @@ const LegacyShapesSymbol = Symbol.for("osdk.shapes.$primaryKey");
 
 export function isSourcePkSymbol(value: unknown): value is symbol {
   return (
-    typeof value === "symbol"
-    && (value === SourcePrimaryKeySymbol || value === LegacyShapesSymbol)
+    typeof value === "symbol" &&
+    (value === SourcePrimaryKeySymbol || value === LegacyShapesSymbol)
   );
 }
 
@@ -149,16 +149,14 @@ export type ShapeDerivedLinks<
 
 export type ShapeInstance<
   S extends ShapeDefinition<ObjectOrInterfaceDefinition>,
-> = S extends ShapeDefinition<infer BASE, infer PROPS, infer LINKS> ?
-    & OsdkBase<BASE>
-    & { readonly $rid: string }
-    & PROPS
-    & {
-      [K in keyof LINKS]: LINKS[K] extends
-        ShapeDefinition<ObjectOrInterfaceDefinition> ? ShapeInstance<LINKS[K]>[]
-        : never;
-    }
-  : never;
+> =
+  S extends ShapeDefinition<infer BASE, infer PROPS, infer LINKS>
+    ? OsdkBase<BASE> & { readonly $rid: string } & PROPS & {
+          [K in keyof LINKS]: LINKS[K] extends ShapeDefinition<ObjectOrInterfaceDefinition>
+            ? ShapeInstance<LINKS[K]>[]
+            : never;
+        }
+    : never;
 
 export type PropertyType<
   BASE extends ObjectOrInterfaceDefinition,
@@ -206,28 +204,22 @@ export interface ShapeLinkBuilder<
   readonly $primaryKey: symbol;
 }
 
-export interface ShapeLinkBuilderInternal
-  extends
-    ShapeLinkBuilder<ObjectOrInterfaceDefinition, ObjectOrInterfaceDefinition>
-{
+export interface ShapeLinkBuilderInternal extends ShapeLinkBuilder<
+  ObjectOrInterfaceDefinition,
+  ObjectOrInterfaceDefinition
+> {
   toObjectSetDef(): ShapeLinkObjectSetDef;
 }
 
 export interface ShapeBuilder<
   BASE extends ObjectOrInterfaceDefinition,
   PROPS extends Record<string, unknown> = {},
-  LINKS extends Record<
-    string,
-    ShapeDefinition<ObjectOrInterfaceDefinition>
-  > = {},
+  LINKS extends Record<string, ShapeDefinition<ObjectOrInterfaceDefinition>> =
+    {},
 > {
   select<K extends Exclude<PropertyKeys<BASE>, keyof PROPS>>(
     ...props: K[]
-  ): ShapeBuilder<
-    BASE,
-    PROPS & { [P in K]: PropertyType<BASE, P> },
-    LINKS
-  >;
+  ): ShapeBuilder<BASE, PROPS & { [P in K]: PropertyType<BASE, P> }, LINKS>;
 
   require<K extends Exclude<PropertyKeys<BASE>, keyof PROPS>>(
     ...props: K[]
@@ -257,10 +249,7 @@ export interface ShapeBuilder<
     LINKS
   >;
 
-  withTransform<
-    K extends Exclude<PropertyKeys<BASE>, keyof PROPS>,
-    R,
-  >(
+  withTransform<K extends Exclude<PropertyKeys<BASE>, keyof PROPS>, R>(
     prop: K,
     transform: (value: PropertyType<BASE, K>) => R,
   ): ShapeBuilder<BASE, PROPS & { [P in K]: R }, LINKS>;

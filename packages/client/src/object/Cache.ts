@@ -40,11 +40,7 @@ export interface AsyncClientCache<K, V> {
    * @param value the value or a promise to the value
    * @returns a new promise to the resolved value
    */
-  set: (
-    client: MinimalClient,
-    key: K,
-    value: V | Promise<V>,
-  ) => Promise<V>;
+  set: (client: MinimalClient, key: K, value: V | Promise<V>) => Promise<V>;
 }
 
 /** @internal */
@@ -68,9 +64,9 @@ export function createClientCache<K, V extends {}>(
 ): ClientCache<K, V>;
 export function createClientCache<K, V extends {}>(
   fn?: Factory<K, V>,
-): typeof fn extends undefined ? ClientCache<K, V | undefined>
-  : ClientCache<K, V>
-{
+): typeof fn extends undefined
+  ? ClientCache<K, V | undefined>
+  : ClientCache<K, V> {
   const cache = new WeakMap<
     ClientCacheKey,
     typeof fn extends undefined ? Map<K, V | undefined> : Map<K, V>
@@ -130,8 +126,11 @@ export function createAsyncClientCache<K, V extends {}>(
     },
 
     get: async function get(client: MinimalClient, key: K) {
-      return cache.get(client, key) ?? inProgress.get(client, key)
-        ?? ret.set(client, key, fn(client, key));
+      return (
+        cache.get(client, key) ??
+        inProgress.get(client, key) ??
+        ret.set(client, key, fn(client, key))
+      );
     },
 
     set: async function set(client: MinimalClient, k: K, v: V | Promise<V>) {

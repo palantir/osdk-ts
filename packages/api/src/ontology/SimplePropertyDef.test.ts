@@ -20,43 +20,49 @@ import type { SimplePropertyDef } from "./SimplePropertyDef.js";
 
 describe("Type conversion", () => {
   test("SimplePropertyDef.ExtractMultiplicity", () => {
-    expectTypeOf<SimplePropertyDef.ExtractMultiplicity<"string"[]>>()
-      .toEqualTypeOf<"array">();
+    expectTypeOf<
+      SimplePropertyDef.ExtractMultiplicity<"string"[]>
+    >().toEqualTypeOf<"array">();
     expectTypeOf<
       SimplePropertyDef.ExtractMultiplicity<"string"[] | undefined>
-    >()
-      .toEqualTypeOf<"array">();
+    >().toEqualTypeOf<"array">();
 
-    expectTypeOf<SimplePropertyDef.ExtractMultiplicity<"string">>()
-      .toEqualTypeOf<"single">();
-    expectTypeOf<SimplePropertyDef.ExtractMultiplicity<"string" | undefined>>()
-      .toEqualTypeOf<"single">();
+    expectTypeOf<
+      SimplePropertyDef.ExtractMultiplicity<"string">
+    >().toEqualTypeOf<"single">();
+    expectTypeOf<
+      SimplePropertyDef.ExtractMultiplicity<"string" | undefined>
+    >().toEqualTypeOf<"single">();
   });
 
   test("SimplePropertyDef.ExtractNullable", () => {
-    expectTypeOf<SimplePropertyDef.ExtractNullable<"string"[]>>()
-      .toEqualTypeOf<"non-nullable">();
-    expectTypeOf<SimplePropertyDef.ExtractNullable<"string"[] | undefined>>()
-      .toEqualTypeOf<"nullable">();
-    expectTypeOf<SimplePropertyDef.ExtractNullable<"string">>()
-      .toEqualTypeOf<"non-nullable">();
-    expectTypeOf<SimplePropertyDef.ExtractNullable<"string" | undefined>>()
-      .toEqualTypeOf<"nullable">();
+    expectTypeOf<
+      SimplePropertyDef.ExtractNullable<"string"[]>
+    >().toEqualTypeOf<"non-nullable">();
+    expectTypeOf<
+      SimplePropertyDef.ExtractNullable<"string"[] | undefined>
+    >().toEqualTypeOf<"nullable">();
+    expectTypeOf<
+      SimplePropertyDef.ExtractNullable<"string">
+    >().toEqualTypeOf<"non-nullable">();
+    expectTypeOf<
+      SimplePropertyDef.ExtractNullable<"string" | undefined>
+    >().toEqualTypeOf<"nullable">();
   });
 
   test("SimplePropertyDef.ExtractWirePropertyType", () => {
-    expectTypeOf<SimplePropertyDef.ExtractWirePropertyType<"string"[]>>()
-      .toEqualTypeOf<"string">();
+    expectTypeOf<
+      SimplePropertyDef.ExtractWirePropertyType<"string"[]>
+    >().toEqualTypeOf<"string">();
     expectTypeOf<
       SimplePropertyDef.ExtractWirePropertyType<"string"[] | undefined>
-    >()
-      .toEqualTypeOf<"string">();
-    expectTypeOf<SimplePropertyDef.ExtractWirePropertyType<"string">>()
-      .toEqualTypeOf<"string">();
+    >().toEqualTypeOf<"string">();
+    expectTypeOf<
+      SimplePropertyDef.ExtractWirePropertyType<"string">
+    >().toEqualTypeOf<"string">();
     expectTypeOf<
       SimplePropertyDef.ExtractWirePropertyType<"string" | undefined>
-    >()
-      .toEqualTypeOf<"string">();
+    >().toEqualTypeOf<"string">();
   });
 
   it("SimplePropertyDef.FromPropertyMetadata", () => {
@@ -64,36 +70,34 @@ describe("Type conversion", () => {
       SimplePropertyDef.FromPropertyMetadata<
         PropertyDef<"string", "nullable", "array">
       >
-    >()
-      .toEqualTypeOf<"string"[] | undefined>();
+    >().toEqualTypeOf<"string"[] | undefined>();
 
     expectTypeOf<
       SimplePropertyDef.FromPropertyMetadata<
         PropertyDef<"string", "non-nullable", "array">
       >
-    >()
-      .toEqualTypeOf<"string"[]>();
+    >().toEqualTypeOf<"string"[]>();
 
     expectTypeOf<
       SimplePropertyDef.FromPropertyMetadata<
         PropertyDef<"string", "non-nullable", "single">
       >
-    >()
-      .toEqualTypeOf<"string">();
+    >().toEqualTypeOf<"string">();
 
     expectTypeOf<
       SimplePropertyDef.FromPropertyMetadata<
         PropertyDef<"string", "nullable", "single">
       >
-    >()
-      .toEqualTypeOf<"string" | undefined>();
+    >().toEqualTypeOf<"string" | undefined>();
   });
 
   test(".ToRuntimeProperty", () => {
-    expectTypeOf<SimplePropertyDef.ToRuntimeProperty<"string">>()
-      .toEqualTypeOf<string>();
+    expectTypeOf<
+      SimplePropertyDef.ToRuntimeProperty<"string">
+    >().toEqualTypeOf<string>();
 
-    expectTypeOf<SimplePropertyDef.ToRuntimeProperty<"string" | undefined>>()
-      .toEqualTypeOf<string | undefined>();
+    expectTypeOf<
+      SimplePropertyDef.ToRuntimeProperty<"string" | undefined>
+    >().toEqualTypeOf<string | undefined>();
   });
 });

@@ -33,10 +33,7 @@ import type {
 export function configToShapeDefinition<
   BASE extends ObjectOrInterfaceDefinition,
   const C extends InlineShapeConfig<BASE>,
->(
-  baseType: BASE,
-  config: C,
-): InferShapeDefinition<BASE, C> {
+>(baseType: BASE, config: C): InferShapeDefinition<BASE, C> {
   const baseTypeApiName = baseType.apiName;
   const props: Record<string, ShapePropertyConfig> = {};
 
@@ -100,8 +97,9 @@ export function configToShapeDefinition<
     for (const [name, linkConfig] of Object.entries(config.links)) {
       const linkBuilder = createShapeLinkBuilder(baseTypeApiName);
       const traversed = linkConfig.via(linkBuilder as ShapeLinkBuilderInternal);
-      const objectSetDef: ShapeLinkObjectSetDef =
-        (traversed as ShapeLinkBuilderInternal).toObjectSetDef();
+      const objectSetDef: ShapeLinkObjectSetDef = (
+        traversed as ShapeLinkBuilderInternal
+      ).toObjectSetDef();
 
       const targetShape: ShapeDefinition<ObjectOrInterfaceDefinition> =
         linkConfig.target;

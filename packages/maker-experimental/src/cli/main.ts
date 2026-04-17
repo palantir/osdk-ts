@@ -92,9 +92,10 @@ export default async function main(
 
   let apiNamespace = "";
   if (commandLineOpts.apiNamespace.length !== 0) {
-    apiNamespace = (commandLineOpts.apiNamespace.slice(-1) !== ".")
-      ? commandLineOpts.apiNamespace + "."
-      : commandLineOpts.apiNamespace;
+    apiNamespace =
+      commandLineOpts.apiNamespace.slice(-1) !== "."
+        ? commandLineOpts.apiNamespace + "."
+        : commandLineOpts.apiNamespace;
     invariant(apiNamespace.length < 1024, "API namespace is too long.");
     invariant(
       apiNamespaceRegex.test(apiNamespace),
@@ -149,9 +150,8 @@ export default async function main(
     // The ontology block has inputs with these readable IDs (from shape extraction)
     // Map them to the datasource block's outputs (which use the same readable IDs)
     const inputDatasetReadableId = ReadableIdGenerator.getForDataset(apiName);
-    const outputDatasetReadableId = ReadableIdGenerator.getForDatasetOutput(
-      apiName,
-    );
+    const outputDatasetReadableId =
+      ReadableIdGenerator.getForDatasetOutput(apiName);
     if (shapes.inputShapes.has(inputDatasetReadableId)) {
       ontologyInputMappingEntries.push({
         input: inputDatasetReadableId,
@@ -164,8 +164,8 @@ export default async function main(
         apiName,
         prop.apiName!,
       );
-      const getForDatasetColumnOutput = ReadableIdGenerator
-        .getForDatasetColumnOutput(apiName, prop.apiName!);
+      const getForDatasetColumnOutput =
+        ReadableIdGenerator.getForDatasetColumnOutput(apiName, prop.apiName!);
       if (shapes.inputShapes.has(colInputReadableId)) {
         ontologyInputMappingEntries.push({
           input: colInputReadableId,
@@ -223,33 +223,35 @@ export default async function main(
 
   // Generate backing datasource BlockGeneratorResults for objects with includeEmptyBackingDatasource
   const backingDsGeneratorResults = await Promise.all(
-    backingDatasourceApiNames.filter(apiName => {
-      const objectTypeBlockData = findObjectTypeByApiName(
-        ontologyIr.ontology.objectTypes,
-        apiName,
-      );
-      return objectTypeBlockData !== undefined;
-    }).map(async apiName => {
-      const objectTypeBlockData = findObjectTypeByApiName(
-        ontologyIr.ontology.objectTypes,
-        apiName,
-      );
-      consola.info(
-        `Generating backing datasource BlockGeneratorResult for ${apiName}...`,
-      );
+    backingDatasourceApiNames
+      .filter((apiName) => {
+        const objectTypeBlockData = findObjectTypeByApiName(
+          ontologyIr.ontology.objectTypes,
+          apiName,
+        );
+        return objectTypeBlockData !== undefined;
+      })
+      .map(async (apiName) => {
+        const objectTypeBlockData = findObjectTypeByApiName(
+          ontologyIr.ontology.objectTypes,
+          apiName,
+        );
+        consola.info(
+          `Generating backing datasource BlockGeneratorResult for ${apiName}...`,
+        );
 
-      return await generateBackingDatasetBlockResult(
-        objectTypeBlockData!,
-        commandLineOpts.buildDir,
-        commandLineOpts.randomnessKey,
-      );
-    }),
+        return await generateBackingDatasetBlockResult(
+          objectTypeBlockData!,
+          commandLineOpts.buildDir,
+          commandLineOpts.randomnessKey,
+        );
+      }),
   );
 
   // Generate backing datasource BlockGeneratorResults for link types with includeEmptyBackingDatasource
   const backingDsLinkGeneratorResults = await Promise.all(
     backingDatasourceLinkApiNames
-      .map(linkApiName => {
+      .map((linkApiName) => {
         const linkTypeBlockData = findLinkTypeByApiName(
           ontologyIr.ontology.linkTypes,
           linkApiName,
@@ -266,9 +268,7 @@ export default async function main(
           commandLineOpts.randomnessKey,
         );
       })
-      .filter(
-        (p): p is Promise<BlockGeneratorResult> => p !== undefined,
-      ),
+      .filter((p): p is Promise<BlockGeneratorResult> => p !== undefined),
   );
 
   // Create BlockGeneratorResult
@@ -296,16 +296,9 @@ export default async function main(
     null,
     2,
   );
-  await fs.promises.writeFile(
-    commandLineOpts.output,
-    blockGeneratorResultJson,
-  );
-  consola.success(
-    `BlockGeneratorResult written to ${commandLineOpts.output}`,
-  );
-  consola.info(
-    `Block data directory: ${blockDataDir}`,
-  );
+  await fs.promises.writeFile(commandLineOpts.output, blockGeneratorResultJson);
+  consola.success(`BlockGeneratorResult written to ${commandLineOpts.output}`);
+  consola.info(`Block data directory: ${blockDataDir}`);
 }
 
 async function loadOntology(
@@ -348,7 +341,5 @@ function findLinkTypeByApiName(
   apiName: string,
 ): LinkTypeBlockDataV2 | undefined {
   const linkTypeId = cleanAndValidateLinkTypeId(apiName);
-  return Object.values(linkTypes).find(
-    (lt) => lt.linkType.id === linkTypeId,
-  );
+  return Object.values(linkTypes).find((lt) => lt.linkType.id === linkTypeId);
 }

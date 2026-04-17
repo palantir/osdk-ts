@@ -21,23 +21,29 @@ import { handleOpenApiCall } from "../../handlers/util/handleOpenApiCall.js";
 export const getFirstPoint: CallFactory<
   "ontologyApiName" | "objectType" | "primaryKey" | "propertyName",
   typeof TimeSeriesPropertiesV2.getFirstPoint
-> = handleOpenApiCall(
-  TimeSeriesPropertiesV2.getFirstPoint,
-  ["ontologyApiName", "objectType", "primaryKey", "propertyName"],
-);
+> = handleOpenApiCall(TimeSeriesPropertiesV2.getFirstPoint, [
+  "ontologyApiName",
+  "objectType",
+  "primaryKey",
+  "propertyName",
+]);
 
 export const getLastPoint: CallFactory<
   "ontologyApiName" | "objectType" | "primaryKey" | "propertyName",
   typeof TimeSeriesPropertiesV2.getLastPoint
-> = handleOpenApiCall(
-  TimeSeriesPropertiesV2.getLastPoint,
-  ["ontologyApiName", "objectType", "primaryKey", "propertyName"],
-);
+> = handleOpenApiCall(TimeSeriesPropertiesV2.getLastPoint, [
+  "ontologyApiName",
+  "objectType",
+  "primaryKey",
+  "propertyName",
+]);
 
 export const streamPoints: CallFactory<
   "ontologyApiName" | "objectType" | "primaryKey" | "propertyName",
   typeof TimeSeriesPropertiesV2.streamPoints
-> = handleOpenApiCall(
-  TimeSeriesPropertiesV2.streamPoints,
-  ["ontologyApiName", "objectType", "primaryKey", "propertyName"],
-);
+> = handleOpenApiCall(TimeSeriesPropertiesV2.streamPoints, [
+  "ontologyApiName",
+  "objectType",
+  "primaryKey",
+  "propertyName",
+]);

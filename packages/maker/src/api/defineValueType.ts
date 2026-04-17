@@ -35,15 +35,18 @@ import { type ValueTypeDefinitionVersion } from "./values/ValueTypeDefinitionVer
 import { type ValueTypeType } from "./values/ValueTypeType.js";
 
 type ZipBaseAndConstraint<Base, Constraint> = {
-  [PropertyType in (BaseType["type"] & DataConstraint["type"])]: Base extends
-    { type: PropertyType } ? {
-      baseType: Omit<Base, "type">;
-      constraints?: Constraint extends { type: PropertyType } ? {
-          constraint: Omit<Constraint, "type">;
-          failureMessage?: FailureMessage;
-        }[]
-        : undefined;
-    }
+  [PropertyType in BaseType["type"] & DataConstraint["type"]]: Base extends {
+    type: PropertyType;
+  }
+    ? {
+        baseType: Omit<Base, "type">;
+        constraints?: Constraint extends { type: PropertyType }
+          ? {
+              constraint: Omit<Constraint, "type">;
+              failureMessage?: FailureMessage;
+            }[]
+          : undefined;
+      }
     : never;
 };
 
@@ -55,10 +58,10 @@ type ValueTypeDefinitionBacking = {
   [Type in ValueTypeType["type"] & DataConstraint["type"]]: {
     baseType: { "type": Extract<ValueTypeType, { type: Type }>["value"] } & {
       constraints: {
-        constraint: Extract<
-          DataConstraint,
-          { type: Type }
-        >[keyof Omit<Extract<DataConstraint, { type: Type }>, "type">];
+        constraint: Extract<DataConstraint, { type: Type }>[keyof Omit<
+          Extract<DataConstraint, { type: Type }>,
+          "type"
+        >];
         failureMessage?: FailureMessage;
       }[];
     };
@@ -80,24 +83,24 @@ function convertValueTypeTypeToBaseType(
   if (typeof valueType === "string") {
   }
   switch (true) {
-    case (typeof valueType === "object" && valueType.type === "array"):
+    case typeof valueType === "object" && valueType.type === "array":
       return {
         type: "array",
         array: {
           elementType: convertValueTypeTypeToBaseType(valueType.elementType),
         },
       };
-    case (typeof valueType === "object" && valueType.type === "struct"):
+    case typeof valueType === "object" && valueType.type === "struct":
       return {
         type: "structV2",
         structV2: {
-          fields: valueType.fields.map(field => ({
+          fields: valueType.fields.map((field) => ({
             identifier: field.identifier,
             baseType: convertValueTypeTypeToBaseType(field.baseType),
           })),
         },
       };
-    case (typeof valueType === "object" && valueType.type === "map"):
+    case typeof valueType === "object" && valueType.type === "map":
       return {
         type: "map",
         map: {
@@ -105,14 +108,14 @@ function convertValueTypeTypeToBaseType(
           valueType: convertValueTypeTypeToBaseType(valueType.valueType),
         },
       };
-    case (typeof valueType === "object" && valueType.type === "optional"):
+    case typeof valueType === "object" && valueType.type === "optional":
       return {
         type: "optional",
         optional: {
           wrappedType: convertValueTypeTypeToBaseType(valueType.wrappedType),
         },
       };
-    case (typeof valueType === "string"):
+    case typeof valueType === "string":
       return { type: valueType, [valueType]: {} } as any;
     default:
       throw new Error("Invalid ValueTypeType");
@@ -129,12 +132,14 @@ export type ValueTypeDefinition = {
   namespacePrefix?: boolean;
 };
 
-export type UserValueTypeStatus = "active" | {
-  type: "deprecated";
-  message: string;
-  deadline: string;
-  replacedBy?: ValueTypeRid;
-};
+export type UserValueTypeStatus =
+  | "active"
+  | {
+      type: "deprecated";
+      message: string;
+      deadline: string;
+      replacedBy?: ValueTypeRid;
+    };
 
 export function defineValueType(
   valueTypeDefInput: ValueTypeDefinition,
@@ -155,26 +160,29 @@ export function defineValueType(
 
   const existingVersions =
     ontologyDefinition[OntologyEntityTypeEnum.VALUE_TYPE][apiName] ?? [];
-  const duplicateVersion = existingVersions.find(vt => vt.version === version);
+  const duplicateVersion = existingVersions.find(
+    (vt) => vt.version === version,
+  );
   invariant(
     duplicateVersion === undefined,
     `Value type with apiName ${apiName} and version ${version} is already defined`,
   );
 
-  const typeName: TypeNames = typeof type.type === "string"
-    ? type.type
-    : type.type.type === "struct"
-    ? "structV2"
-    : type.type.type;
+  const typeName: TypeNames =
+    typeof type.type === "string"
+      ? type.type
+      : type.type.type === "struct"
+        ? "structV2"
+        : type.type.type;
   // These suck but TS doesn't understand the relationship from the key of the base type to the type string
   const constraints = type.constraints
-    ? type.constraints.map<ValueTypeDataConstraint>(constraint => {
-      const output: any = {
-        constraint: { type: typeName, [typeName]: constraint.constraint },
-        failureMessage: constraint.failureMessage,
-      };
-      return { constraint: output as DataConstraintWrapper };
-    })
+    ? type.constraints.map<ValueTypeDataConstraint>((constraint) => {
+        const output: any = {
+          constraint: { type: typeName, [typeName]: constraint.constraint },
+          failureMessage: constraint.failureMessage,
+        };
+        return { constraint: output as DataConstraintWrapper };
+      })
     : [];
 
   const baseType: BaseType = convertValueTypeTypeToBaseType(type.type);
@@ -183,13 +191,13 @@ export function defineValueType(
     apiName,
     packageNamespace: namespace.substring(0, namespace.length - 1),
     displayMetadata: {
-      displayName: displayName,
+      displayName,
       description: description ?? "",
     },
     status: convertUserValueTypeStatusToValueTypeStatus(valueTypeDef.status),
-    version: version,
-    baseType: baseType,
-    constraints: constraints,
+    version,
+    baseType,
+    constraints,
     exampleValues: [],
     __type: OntologyEntityTypeEnum.VALUE_TYPE,
   };

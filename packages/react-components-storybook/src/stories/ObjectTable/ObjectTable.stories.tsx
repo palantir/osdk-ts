@@ -478,10 +478,12 @@ export const CustomColumnWidths: Story = {
 export const WithDefaultSorting: Story = {
   args: {
     objectType: Employee,
-    defaultOrderBy: [{
-      property: "fullName",
-      direction: "desc",
-    }],
+    defaultOrderBy: [
+      {
+        property: "fullName",
+        direction: "desc",
+      },
+    ],
   },
   parameters: {
     docs: {
@@ -699,8 +701,7 @@ return (
           <strong>Current Sort:</strong>{" "}
           {orderBy.map((o: any, i: number) => (
             <span key={i}>
-              {o.property} ({o.direction})
-              {i < orderBy.length - 1 && ", "}
+              {o.property} ({o.direction}){i < orderBy.length - 1 && ", "}
             </span>
           ))}
         </div>
@@ -737,10 +738,7 @@ return (
     const [selectedRows, setSelectedRows] = useState<any[]>([]);
     const [isSelectAll, setIsSelectAll] = useState<boolean>(false);
     const handleRowSelection = useCallback(
-      (
-        selectedRows: any[],
-        isSelectAll?: boolean,
-      ) => {
+      (selectedRows: any[], isSelectAll?: boolean) => {
         setSelectedRows(selectedRows);
         if (isSelectAll !== undefined) {
           setIsSelectAll(isSelectAll);
@@ -1093,7 +1091,7 @@ export const WithSubmitEditsButton: Story = {
     ],
     editMode: "manual",
     onSubmitEdits: async (edits: CellEditInfo<Osdk.Instance<Employee>>[]) => {
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
       alert(`Successfully submitted ${edits.length} edits`);
       return true;
     },

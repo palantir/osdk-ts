@@ -20,9 +20,10 @@ import { Select } from "../../base-components/select/Select.js";
 import { typedReactMemo } from "../../shared/typedMemo.js";
 import type { DropdownFieldProps } from "../FormFieldApi.js";
 
-interface InnerDropdownProps<V, Multiple extends boolean>
-  extends Omit<DropdownFieldProps<V, Multiple>, "isSearchable">
-{
+interface InnerDropdownProps<V, Multiple extends boolean> extends Omit<
+  DropdownFieldProps<V, Multiple>,
+  "isSearchable"
+> {
   itemToStringLabel: (item: V) => string;
   getKey: (item: V) => string;
   portalRef?: React.Ref<HTMLDivElement>;
@@ -35,8 +36,8 @@ export function DropdownField<V, Multiple extends boolean = false>({
   portalRef,
   ...rest
 }: DropdownFieldProps<V, Multiple>): React.ReactElement {
-  const resolvedItemToStringLabel = itemToStringLabel
-    ?? defaultItemToStringLabel;
+  const resolvedItemToStringLabel =
+    itemToStringLabel ?? defaultItemToStringLabel;
 
   const getKey = useCallback(
     (item: V) => itemToKey?.(item) ?? resolvedItemToStringLabel(item),
@@ -131,9 +132,9 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
           </Combobox.Chip>
         ))}
         <Combobox.Input
-          placeholder={selectedValues.length > 0
-            ? ""
-            : (placeholder ?? "Search…")}
+          placeholder={
+            selectedValues.length > 0 ? "" : (placeholder ?? "Search…")
+          }
         />
       </>
     ),
@@ -159,13 +160,13 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
         isItemEqualToValue={isItemEqual}
         items={items}
       >
-        {isMultiple
-          ? (
-            <Combobox.Chips>
-              <Combobox.Value>{renderChips}</Combobox.Value>
-            </Combobox.Chips>
-          )
-          : <Combobox.Input placeholder={placeholder} />}
+        {isMultiple ? (
+          <Combobox.Chips>
+            <Combobox.Value>{renderChips}</Combobox.Value>
+          </Combobox.Chips>
+        ) : (
+          <Combobox.Input placeholder={placeholder} />
+        )}
         <Combobox.Portal ref={portalRef}>
           <Combobox.Positioner>
             <Combobox.Popup>

@@ -53,9 +53,9 @@ function testStage(s: string) {
 function setupOntology(fauxFoundry: FauxFoundry) {
   const fauxOntology = fauxFoundry.getDefaultOntology();
   ontologies.addEmployeeOntology(fauxOntology);
-  fauxFoundry.getDefaultOntology().registerObjectType(
-    stubData.todoWithLinkTypes,
-  );
+  fauxFoundry
+    .getDefaultOntology()
+    .registerObjectType(stubData.todoWithLinkTypes);
 }
 
 function setupTodos(
@@ -129,9 +129,7 @@ describe("ListQuery autoFetchMore tests", () => {
     testStage("Wait for threshold to be met");
     const payload = await waitForPayload(
       listSub,
-      (p) =>
-        p?.status === "loaded"
-        && (p?.resolvedList?.length ?? 0) >= 50,
+      (p) => p?.status === "loaded" && (p?.resolvedList?.length ?? 0) >= 50,
     );
 
     testStage("Verify final state meets threshold");
@@ -161,7 +159,7 @@ describe("ListQuery autoFetchMore tests", () => {
     testStage("Wait for all items to load");
     const payload = await waitForPayload(
       listSub,
-      (p) => p?.status === "loaded" && !(p?.hasMore),
+      (p) => p?.status === "loaded" && !p?.hasMore,
     );
 
     testStage("Verify all items fetched");
@@ -228,7 +226,7 @@ describe("ListQuery autoFetchMore tests", () => {
     testStage("Wait for all data despite high threshold");
     const payload = await waitForPayload(
       listSub,
-      (p) => p?.status === "loaded" && !(p?.hasMore),
+      (p) => p?.status === "loaded" && !p?.hasMore,
     );
 
     testStage("Verify all available items fetched");
@@ -439,16 +437,7 @@ describe("ListQuery sort stability across pages", () => {
     // serverOrdered skips client re-sort, preserving page order
     expect(payload?.resolvedList?.length).toBe(10);
     expect(payload!.resolvedList!.map((t) => t.id)).toEqual([
-      0,
-      1,
-      2,
-      3,
-      4,
-      5,
-      6,
-      7,
-      8,
-      9,
+      0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
     ]);
   });
 
@@ -504,14 +493,7 @@ describe("ListQuery sort stability across pages", () => {
     // Page 1 items stay before page 2 items with no interleaving
     expect(payload?.resolvedList?.length).toBe(8);
     expect(payload!.resolvedList!.map((t) => t.id)).toEqual([
-      0,
-      2,
-      4,
-      6,
-      1,
-      3,
-      5,
-      7,
+      0, 2, 4, 6, 1, 3, 5, 7,
     ]);
   });
 
@@ -630,24 +612,15 @@ describe("ListQuery pivotTo tests", () => {
       fullName: "Employee 3",
     });
 
-    fauxFoundry.getDefaultDataStore().registerLink(
-      emp1,
-      "officeLink",
-      officeA,
-      "occupants",
-    );
-    fauxFoundry.getDefaultDataStore().registerLink(
-      emp2,
-      "officeLink",
-      officeA,
-      "occupants",
-    );
-    fauxFoundry.getDefaultDataStore().registerLink(
-      emp3,
-      "officeLink",
-      officeB,
-      "occupants",
-    );
+    fauxFoundry
+      .getDefaultDataStore()
+      .registerLink(emp1, "officeLink", officeA, "occupants");
+    fauxFoundry
+      .getDefaultDataStore()
+      .registerLink(emp2, "officeLink", officeA, "occupants");
+    fauxFoundry
+      .getDefaultDataStore()
+      .registerLink(emp3, "officeLink", officeB, "occupants");
 
     testStage("Observe with pivotTo and where clause filtering on employeeId");
     const listSub = mockListSubCallback();
@@ -717,24 +690,15 @@ describe("ListQuery pivotTo tests", () => {
       fullName: "Employee 3",
     });
 
-    fauxFoundry.getDefaultDataStore().registerLink(
-      emp1,
-      "officeLink",
-      officeA,
-      "occupants",
-    );
-    fauxFoundry.getDefaultDataStore().registerLink(
-      emp2,
-      "officeLink",
-      officeA,
-      "occupants",
-    );
-    fauxFoundry.getDefaultDataStore().registerLink(
-      emp3,
-      "officeLink",
-      officeB,
-      "occupants",
-    );
+    fauxFoundry
+      .getDefaultDataStore()
+      .registerLink(emp1, "officeLink", officeA, "occupants");
+    fauxFoundry
+      .getDefaultDataStore()
+      .registerLink(emp2, "officeLink", officeA, "occupants");
+    fauxFoundry
+      .getDefaultDataStore()
+      .registerLink(emp3, "officeLink", officeB, "occupants");
 
     testStage("Observe with rids for emp1 and emp3, pivotTo officeLink");
     const listSub = mockListSubCallback();
@@ -803,18 +767,12 @@ describe("ListQuery pivotTo tests", () => {
       fullName: "Employee 2",
     });
 
-    fauxFoundry.getDefaultDataStore().registerLink(
-      emp1,
-      "officeLink",
-      officeA,
-      "occupants",
-    );
-    fauxFoundry.getDefaultDataStore().registerLink(
-      emp2,
-      "officeLink",
-      officeB,
-      "occupants",
-    );
+    fauxFoundry
+      .getDefaultDataStore()
+      .registerLink(emp1, "officeLink", officeA, "occupants");
+    fauxFoundry
+      .getDefaultDataStore()
+      .registerLink(emp2, "officeLink", officeB, "occupants");
 
     testStage(
       "Observe with rids for both employees, where filters to employeeId 1",
@@ -873,12 +831,9 @@ describe("ListQuery pivotTo tests", () => {
       fullName: "Employee 1",
     });
 
-    fauxFoundry.getDefaultDataStore().registerLink(
-      emp1,
-      "officeLink",
-      officeA,
-      "occupants",
-    );
+    fauxFoundry
+      .getDefaultDataStore()
+      .registerLink(emp1, "officeLink", officeA, "occupants");
 
     testStage("Observe with empty rids + pivotTo");
     const listSub = mockListSubCallback();
@@ -960,12 +915,9 @@ describe("ListQuery pivotTo tests", () => {
       employeeId: 1,
       fullName: "Employee 1",
     });
-    fauxFoundry.getDefaultDataStore().registerLink(
-      emp,
-      "officeLink",
-      office,
-      "occupants",
-    );
+    fauxFoundry
+      .getDefaultDataStore()
+      .registerLink(emp, "officeLink", office, "occupants");
 
     testStage("Observe object type with pivotTo");
     const listSub = mockListSubCallback();
@@ -1020,18 +972,12 @@ describe("ListQuery pivotTo tests", () => {
       fullName: "Employee 2",
     });
 
-    fauxFoundry.getDefaultDataStore().registerLink(
-      emp1,
-      "officeLink",
-      officeA,
-      "occupants",
-    );
-    fauxFoundry.getDefaultDataStore().registerLink(
-      emp2,
-      "officeLink",
-      officeB,
-      "occupants",
-    );
+    fauxFoundry
+      .getDefaultDataStore()
+      .registerLink(emp1, "officeLink", officeA, "occupants");
+    fauxFoundry
+      .getDefaultDataStore()
+      .registerLink(emp2, "officeLink", officeB, "occupants");
 
     testStage("Observe with pivotTo and no where clause");
     const listSub = mockListSubCallback();
@@ -1057,9 +1003,10 @@ describe("ListQuery pivotTo tests", () => {
 
     testStage("Verify both linked offices are returned");
     expect(payload?.resolvedList).toHaveLength(2);
-    expect(
-      payload?.resolvedList?.map((o) => o.$primaryKey).sort(),
-    ).toEqual(["office-a", "office-b"]);
+    expect(payload?.resolvedList?.map((o) => o.$primaryKey).sort()).toEqual([
+      "office-a",
+      "office-b",
+    ]);
 
     expectNoMoreCalls(listSub);
   });
@@ -1228,12 +1175,10 @@ describe("ListQuery shared query autoFetchMore tests", () => {
     );
 
     testStage("Verify no status oscillation");
-    const allEmissions = sub.next.mock.calls.map(
-      (call) => ({
-        count: call[0]?.resolvedList?.length ?? 0,
-        status: call[0]?.status,
-      }),
-    );
+    const allEmissions = sub.next.mock.calls.map((call) => ({
+      count: call[0]?.resolvedList?.length ?? 0,
+      status: call[0]?.status,
+    }));
 
     let sawLoadedWithData = false;
     for (const emission of allEmissions) {

@@ -27,9 +27,7 @@ import type {
 } from "@osdk/foundry.ontologies";
 import { isNullableQueryDataType } from "./isNullableQueryDataType.js";
 
-export function wireQueryDataTypeToQueryDataTypeDefinition<
-  K extends string,
->(
+export function wireQueryDataTypeToQueryDataTypeDefinition<K extends string>(
   input: QueryDataType,
 ): QueryDataTypeDefinition {
   switch (input.type) {
@@ -92,7 +90,7 @@ export function wireQueryDataTypeToQueryDataTypeDefinition<
 
       // special case for a union where one half is nullable to skip the union step and just allow nulls directly
       if (allowNulls && input.unionTypes.length === 2) {
-        const nonNull = input.unionTypes.find(t => t.type != null);
+        const nonNull = input.unionTypes.find((t) => t.type != null);
         if (nonNull) {
           return {
             ...wireQueryDataTypeToQueryDataTypeDefinition(nonNull),
@@ -116,10 +114,12 @@ export function wireQueryDataTypeToQueryDataTypeDefinition<
     case "struct":
       return {
         type: "struct",
-        struct: Object.fromEntries(input.fields.map(f => [
-          f.name,
-          wireQueryDataTypeToQueryDataTypeDefinition(f.fieldType),
-        ])),
+        struct: Object.fromEntries(
+          input.fields.map((f) => [
+            f.name,
+            wireQueryDataTypeToQueryDataTypeDefinition(f.fieldType),
+          ]),
+        ),
         nullable: false,
       };
 
@@ -142,15 +142,15 @@ export function wireQueryDataTypeToQueryDataTypeDefinition<
 
       if (!validMapKeyTypes.includes(keyType.type)) {
         throw new Error(
-          "Map types with a key type of " + keyType.type + " are not supported"
-            + validMapKeyTypes.toString(),
+          "Map types with a key type of " +
+            keyType.type +
+            " are not supported" +
+            validMapKeyTypes.toString(),
         );
       }
 
       if (keyType.type === "array") {
-        throw new Error(
-          "Map types cannot have keys as arrays",
-        );
+        throw new Error("Map types cannot have keys as arrays");
       }
 
       return {
@@ -229,7 +229,7 @@ function get3DQueryAggregationProps(
  */
 function guardInvalidKeyTypes(
   key: QueryAggregationKeyType,
-): key is QueryAggregationKeyType & ({ type: "string" | "boolean" }) {
+): key is QueryAggregationKeyType & { type: "string" | "boolean" } {
   return key.type === "string" || key.type === "boolean";
 }
 

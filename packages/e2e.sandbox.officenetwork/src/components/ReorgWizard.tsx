@@ -243,8 +243,8 @@ export function ReorgWizard({ employees, offices, onClose }: ReorgWizardProps) {
                 {state.step === "preview" ? "Execute" : "Next"}
               </button>
             )}
-            {state.step === "execute" && state.execution.status === "success"
-              && (
+            {state.step === "execute" &&
+              state.execution.status === "success" && (
                 <button
                   onClick={onClose}
                   className="px-4 py-1.5 text-xs font-medium bg-[var(--officenetwork-status-ready)] text-[var(--officenetwork-bg-base)] rounded hover:opacity-90 transition-opacity"

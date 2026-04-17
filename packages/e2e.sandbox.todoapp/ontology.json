@@ -188,9 +188,7 @@
       },
       "extendsInterfaces": [],
       "allExtendsInterfaces": [],
-      "implementedByObjectTypes": [
-        "Todo"
-      ],
+      "implementedByObjectTypes": ["Todo"],
       "links": {},
       "allLinks": {}
     }

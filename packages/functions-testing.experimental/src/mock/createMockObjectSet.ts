@@ -25,8 +25,7 @@ import {
 const MOCK_OBJECT_SET_BRAND: unique symbol = Symbol("MOCK_OBJECT_SET_BRAND");
 
 export type MockObjectSetBranded<Q extends ObjectOrInterfaceDefinition> =
-  & ObjectSet<Q>
-  & {
+  ObjectSet<Q> & {
     [MOCK_OBJECT_SET_BRAND]: true;
     __registerStub(calls: Call[], value: unknown): void;
   };
@@ -60,7 +59,7 @@ export function createMockObjectSet<Q extends ObjectOrInterfaceDefinition>(
 export function isMockObjectSet(
   value: unknown,
 ): value is MockObjectSetBranded<ObjectOrInterfaceDefinition> {
-  return value != null
-    && typeof value === "object"
-    && MOCK_OBJECT_SET_BRAND in value;
+  return (
+    value != null && typeof value === "object" && MOCK_OBJECT_SET_BRAND in value
+  );
 }

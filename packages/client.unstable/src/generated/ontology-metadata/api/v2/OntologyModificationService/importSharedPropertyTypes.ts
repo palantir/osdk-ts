@@ -17,10 +17,8 @@
 import { type ConjureContext, conjureFetch } from "conjure-lite";
 import type { OntologyRid as _api_OntologyRid } from "../../__components.js";
 import type {
-  ImportSharedPropertyTypesRequest
-    as _api_modification_ImportSharedPropertyTypesRequest,
-  ImportSharedPropertyTypesResponse
-    as _api_modification_ImportSharedPropertyTypesResponse,
+  ImportSharedPropertyTypesRequest as _api_modification_ImportSharedPropertyTypesRequest,
+  ImportSharedPropertyTypesResponse as _api_modification_ImportSharedPropertyTypesResponse,
 } from "../../modification/__components.js";
 
 /**

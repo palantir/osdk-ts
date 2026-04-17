@@ -22,7 +22,7 @@ import {
   createRetryingFetch,
 } from "@osdk/shared.net.fetch";
 
-// eslint-disable-next-line @typescript-eslint/consistent-type-imports
+// oxlint-disable-next-line typescript/consistent-type-imports
 type OldSharedClientContext = import("@osdk/shared.client").SharedClientContext;
 export const USER_AGENT_HEADER = "Fetch-User-Agent";
 
@@ -52,18 +52,16 @@ export function createSharedClientContext(
       headers.set("Authorization", `Bearer ${token}`);
 
       const customUserAgent = customHeaders
-        ? Object.entries(customHeaders)
-          .find(([k]) => k.toLowerCase() === USER_AGENT_HEADER.toLowerCase())
-          ?.[1]
+        ? Object.entries(customHeaders).find(
+            ([k]) => k.toLowerCase() === USER_AGENT_HEADER.toLowerCase(),
+          )?.[1]
         : undefined;
 
       headers.set(
         USER_AGENT_HEADER,
-        [
-          headers.get(USER_AGENT_HEADER),
-          userAgent,
-          customUserAgent,
-        ].filter(x => x && x?.length > 0).join(" "),
+        [headers.get(USER_AGENT_HEADER), userAgent, customUserAgent]
+          .filter((x) => x && x?.length > 0)
+          .join(" "),
       );
       return headers;
     },
@@ -77,17 +75,18 @@ export function createSharedClientContext(
     try {
       return await retryingFetchWithAuthOrThrow(input, init);
     } catch (e: any) {
-      const betterError = (e instanceof PalantirApiError)
-        ? new PalantirApiError(
-          e.message,
-          e.errorName,
-          e.errorCode,
-          e.errorDescription,
-          e.statusCode,
-          e.errorInstanceId,
-          e.parameters,
-        )
-        : new Error("Captured stack trace for error: " + (e.message ?? e));
+      const betterError =
+        e instanceof PalantirApiError
+          ? new PalantirApiError(
+              e.message,
+              e.errorName,
+              e.errorCode,
+              e.errorDescription,
+              e.statusCode,
+              e.errorInstanceId,
+              e.parameters,
+            )
+          : new Error("Captured stack trace for error: " + (e.message ?? e));
 
       (betterError as any).cause = e;
       throw betterError;

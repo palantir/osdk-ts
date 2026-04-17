@@ -112,7 +112,6 @@
   }
 }
 
-
 /* Range-middle needs .calendarDayButton prefix to match specificity of
    .calendarDayButton.calendarSelected (rdp applies both to range-middle days). */
 .calendarDayButton.calendarRangeMiddle {
@@ -202,7 +201,6 @@
   white-space: nowrap;
 }
 
-
 /* Caption dropdowns container */
 .calendarCaptionDropdowns {
   display: flex;
@@ -229,11 +227,9 @@
   }
 }
 
-
 /* Footer — content rendered inside DayPicker's <tfoot> (constrained by the table). */
 .calendarFooter {
   padding-top: var(--osdk-time-picker-padding-top);
   margin-top: var(--osdk-time-picker-margin-top);
   border-top: var(--osdk-time-picker-border-top);
 }
-

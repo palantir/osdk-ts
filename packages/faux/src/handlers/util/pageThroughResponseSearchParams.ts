@@ -38,17 +38,20 @@ export function pageThroughResponseSearchParams<
   TIncludeCount extends boolean,
 >(
   iter: Iterable<TData>,
-  { pageSize = 1000, pageToken }: {
+  {
+    pageSize = 1000,
+    pageToken,
+  }: {
     pageSize: number | undefined;
     pageToken: PageToken | undefined;
   },
   includeCount?: TIncludeCount,
   propertySecurities?: PropertySecurities[],
 ):
-  | (TIncludeCount extends true ? PagedBodyResponseWithTotal<TData>
-    : PagedBodyResponse<TData>)
-  | undefined
-{
+  | (TIncludeCount extends true
+      ? PagedBodyResponseWithTotal<TData>
+      : PagedBodyResponse<TData>)
+  | undefined {
   const data = Array.from(iter);
   const pageCount = Math.ceil(data.length / pageSize);
   const currentPage = pageToken ? Number(pageToken) : 0;
@@ -59,21 +62,19 @@ export function pageThroughResponseSearchParams<
 
   const startIndex = currentPage * pageSize;
   const endIndex = Math.min(startIndex + pageSize, data.length);
-  const nextPageToken = currentPage + 1 < pageCount
-    ? (currentPage + 1).toString()
-    : undefined;
+  const nextPageToken =
+    currentPage + 1 < pageCount ? (currentPage + 1).toString() : undefined;
 
   const ret: PagedBodyResponse<TData> | PagedBodyResponseWithTotal<TData> = {
     nextPageToken,
     data: data.slice(startIndex, endIndex),
-    ...(includeCount
-      ? { totalCount: String(data.length) }
-      : {}),
+    ...(includeCount ? { totalCount: String(data.length) } : {}),
     propertySecurities: propertySecurities ?? [],
   };
 
   return ret as
-    | (TIncludeCount extends true ? PagedBodyResponseWithTotal<TData>
-      : PagedBodyResponse<TData>)
+    | (TIncludeCount extends true
+        ? PagedBodyResponseWithTotal<TData>
+        : PagedBodyResponse<TData>)
     | undefined;
 }

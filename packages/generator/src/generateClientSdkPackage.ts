@@ -53,29 +53,19 @@ export async function generateClientSdkPackage(
     );
 
     await fs.promises.mkdir(outDir, { recursive: true });
-    await writeJson(
-      minimalFs,
-      path.join(outDir, "package.json"),
-      { type: packageType },
-    );
+    await writeJson(minimalFs, path.join(outDir, "package.json"), {
+      type: packageType,
+    });
 
-    await writeJson(
-      minimalFs,
-      path.join(outDir, `tsconfig.json`),
-      {
-        compilerOptions: getTsCompilerOptions(packageType),
-      },
-    );
+    await writeJson(minimalFs, path.join(outDir, `tsconfig.json`), {
+      compilerOptions: getTsCompilerOptions(packageType),
+    });
   }
 
   await writeJson(
     minimalFs,
     path.join(baseOutDir, "package.json"),
-    getPackageJsonContents(
-      packageName,
-      packageVersion,
-      dependencyVersions,
-    ),
+    getPackageJsonContents(packageName, packageVersion, dependencyVersions),
   );
 
   // we need to shim for the node10 resolver
@@ -117,17 +107,18 @@ export function getTsCompilerOptions(packageType: "commonjs" | "module"): {
     skipLibCheck: true,
   };
 
-  const compilerOptions = packageType === "commonjs"
-    ? {
-      ...commonTsconfig,
-      module: "commonjs",
-      target: "es2018",
-    }
-    : {
-      ...commonTsconfig,
-      module: "NodeNext",
-      target: "ES2020",
-    };
+  const compilerOptions =
+    packageType === "commonjs"
+      ? {
+          ...commonTsconfig,
+          module: "commonjs",
+          target: "es2018",
+        }
+      : {
+          ...commonTsconfig,
+          module: "NodeNext",
+          target: "ES2020",
+        };
   return compilerOptions;
 }
 
@@ -139,12 +130,10 @@ export interface DependencyVersions {
   osdkClientVersion: string;
 }
 
-export function getExpectedDependencies(
-  {
-    osdkApiVersion,
-    osdkClientVersion,
-  }: DependencyVersions,
-): {
+export function getExpectedDependencies({
+  osdkApiVersion,
+  osdkClientVersion,
+}: DependencyVersions): {
   devDependencies: Record<string, string>;
   peerDependencies: Record<string, string>;
 } {
@@ -159,14 +148,9 @@ export function getExpectedDependencies(
   };
 }
 
-function getExpectedDependenciesFull(
-  dependencyVersions: DependencyVersions,
-) {
-  const {
-    typescriptVersion,
-    tslibVersion,
-    areTheTypesWrongVersion,
-  } = dependencyVersions;
+function getExpectedDependenciesFull(dependencyVersions: DependencyVersions) {
+  const { typescriptVersion, tslibVersion, areTheTypesWrongVersion } =
+    dependencyVersions;
 
   const base = getExpectedDependencies(dependencyVersions);
 
@@ -220,16 +204,11 @@ export function getPackageJsonContents(
       },
     },
     scripts: {
-      prepack:
-        `tsc -p ${esmPrefix}/tsconfig.json && tsc -p ${commonjsPrefix}/tsconfig.json`,
+      prepack: `tsc -p ${esmPrefix}/tsconfig.json && tsc -p ${commonjsPrefix}/tsconfig.json`,
       check: "npm exec attw $(npm pack)",
     },
     ...getExpectedDependenciesFull(dependencyVersions),
-    files: [
-      "**/*.js",
-      "**/*.d.ts",
-      "dist/**/package.json",
-    ],
+    files: ["**/*.js", "**/*.d.ts", "dist/**/package.json"],
   };
 }
 
@@ -240,8 +219,8 @@ async function writeJson(
 ) {
   // consola.info(`Writing ${filePath}`);
   // consola.debug(`Writing ${filePath} with body`, body);
-  return void await minimalFs.writeFile(
+  return void (await minimalFs.writeFile(
     filePath,
     JSON.stringify(body, undefined, 2) + "\n",
-  );
+  ));
 }

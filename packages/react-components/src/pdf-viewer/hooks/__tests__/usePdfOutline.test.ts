@@ -21,21 +21,19 @@ import { usePdfOutline } from "../usePdfOutline.js";
 
 function createMockDocument(
   options: {
-    outline?:
-      | Array<{
+    outline?: Array<{
+      title: string;
+      bold: boolean;
+      italic: boolean;
+      dest: string | unknown[] | null;
+      items: Array<{
         title: string;
         bold: boolean;
         italic: boolean;
         dest: string | unknown[] | null;
-        items: Array<{
-          title: string;
-          bold: boolean;
-          italic: boolean;
-          dest: string | unknown[] | null;
-          items: never[];
-        }>;
-      }>
-      | null;
+        items: never[];
+      }>;
+    }> | null;
     pages?: Array<{
       items: Array<{
         str: string;
@@ -69,7 +67,7 @@ function createMockDocument(
       const page = pages[pageNum - 1];
       return Promise.resolve({
         getTextContent: vi.fn(() =>
-          Promise.resolve({ items: page?.items ?? [] })
+          Promise.resolve({ items: page?.items ?? [] }),
         ),
       });
     }),
@@ -102,7 +100,7 @@ describe("usePdfOutline", () => {
             dest: [mockRef],
             items: [],
           },
-        ])
+        ]),
       ),
       getPageIndex: vi.fn(() => Promise.resolve(0)),
       getDestination: vi.fn(),
@@ -152,7 +150,7 @@ describe("usePdfOutline", () => {
               },
             ],
           },
-        ])
+        ]),
       ),
       getPageIndex: vi.fn(() => Promise.resolve(0)),
       getDestination: vi.fn(),
@@ -184,7 +182,7 @@ describe("usePdfOutline", () => {
             dest: "named-destination-1",
             items: [],
           },
-        ])
+        ]),
       ),
       getDestination: vi.fn(() => Promise.resolve([destRef])),
       getPageIndex: vi.fn(() => Promise.resolve(3)),
@@ -300,7 +298,7 @@ describe("usePdfOutline", () => {
             dest: [mockRef],
             items: [],
           },
-        ])
+        ]),
       ),
       getPageIndex: vi.fn(() => Promise.resolve(0)),
       getDestination: vi.fn(),

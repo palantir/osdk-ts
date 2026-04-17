@@ -47,9 +47,12 @@ export type FilterDefinitionUnion<Q extends ObjectTypeDefinition> =
  * Extract the key from a filter definition union
  */
 export type FilterKey<Q extends ObjectTypeDefinition> =
-  FilterDefinitionUnion<Q> extends infer D ? D extends { key: infer K } ? K
-    : D extends { linkName: infer L } ? L
-    : never
+  FilterDefinitionUnion<Q> extends infer D
+    ? D extends { key: infer K }
+      ? K
+      : D extends { linkName: infer L }
+        ? L
+        : never
     : never;
 
 /**
@@ -57,8 +60,9 @@ export type FilterKey<Q extends ObjectTypeDefinition> =
  */
 export type FilterState<Q extends ObjectTypeDefinition> =
   FilterDefinitionUnion<Q> extends infer D
-    ? D extends { filterState: infer S } ? S
-    : never
+    ? D extends { filterState: infer S }
+      ? S
+      : never
     : never;
 
 /**

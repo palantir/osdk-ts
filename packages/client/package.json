@@ -60,8 +60,6 @@
     "check-attw": "attw --pack .",
     "check-spelling": "cspell --quiet .",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
-    "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
-    "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
     "test": "vitest run --pool=forks",
     "test:watch": "vitest",
     "transpileBrowser": "monorepo.tool.transpile -f esm -m normal -t browser",

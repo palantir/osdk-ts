@@ -38,10 +38,14 @@ export function BaseCbacBanner({
   onDismiss,
   className,
 }: BaseCbacBannerProps): React.ReactElement {
-  const bannerStyle = React.useMemo((): React.CSSProperties => ({
-    "--osdk-cbac-banner-bg": backgroundFromColors(backgroundColors),
-    "--osdk-cbac-banner-color": textColor,
-  } as React.CSSProperties), [textColor, backgroundColors]);
+  const bannerStyle = React.useMemo(
+    (): React.CSSProperties =>
+      ({
+        "--osdk-cbac-banner-bg": backgroundFromColors(backgroundColors),
+        "--osdk-cbac-banner-color": textColor,
+      }) as React.CSSProperties,
+    [textColor, backgroundColors],
+  );
 
   const handleDismiss = React.useCallback(
     (e: React.MouseEvent) => {
@@ -51,8 +55,8 @@ export function BaseCbacBanner({
     [onDismiss],
   );
 
-  const dismissButton = onDismiss != null
-    ? (
+  const dismissButton =
+    onDismiss != null ? (
       <Button
         className={styles.dismissButton}
         onClick={handleDismiss}
@@ -60,8 +64,7 @@ export function BaseCbacBanner({
       >
         <Cross size={12} color="currentColor" />
       </Button>
-    )
-    : null;
+    ) : null;
 
   if (onClick != null) {
     return (
@@ -86,9 +89,7 @@ export function BaseCbacBanner({
       className={classnames(styles.bannerRow, className)}
       style={bannerStyle}
     >
-      <span className={styles.banner}>
-        {classificationString}
-      </span>
+      <span className={styles.banner}>{classificationString}</span>
       {dismissButton}
     </div>
   );

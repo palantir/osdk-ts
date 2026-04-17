@@ -2,4 +2,4 @@ type: improvement
 improvement:
   description: Expose WhereClause
   links:
-  - https://github.com/palantir/osdk-ts/pull/155
+    - https://github.com/palantir/osdk-ts/pull/155

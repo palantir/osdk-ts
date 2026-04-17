@@ -40,12 +40,12 @@ export async function generateOntologyMetadataFile(
           : ""
       }
        ${
-        ontology.raw.branch != null
-          ? `
+         ontology.raw.branch != null
+           ? `
         export const $branch = "${ontology.raw.branch.rid}";
         `
-          : ""
-      }
+           : ""
+       }
       `,
     ),
   );

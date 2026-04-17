@@ -166,7 +166,7 @@ describe("transformEmitEventPayload", () => {
 
     expect(result.type).toBe("async");
     await expect(result.payload).rejects.toThrow(
-      "Cannot emit event \"updateObjectSet\" with ObjectSet parameter \"myObjectSet\" without an osdk client",
+      'Cannot emit event "updateObjectSet" with ObjectSet parameter "myObjectSet" without an osdk client',
     );
   });
 
@@ -231,7 +231,7 @@ describe("transformEmitEventPayload", () => {
 
     expect(result.type).toBe("async");
     await expect(result.payload).rejects.toThrow(
-      "Event with ID \"nonExistentEvent\" not found in widget config",
+      'Event with ID "nonExistentEvent" not found in widget config',
     );
   });
 });

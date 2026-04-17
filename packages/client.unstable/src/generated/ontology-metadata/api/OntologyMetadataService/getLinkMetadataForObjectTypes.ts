@@ -16,10 +16,8 @@
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
 import type {
-  GetLinkMetadataForObjectTypesRequest
-    as _api_GetLinkMetadataForObjectTypesRequest,
-  GetLinkMetadataForObjectTypesResponse
-    as _api_GetLinkMetadataForObjectTypesResponse,
+  GetLinkMetadataForObjectTypesRequest as _api_GetLinkMetadataForObjectTypesRequest,
+  GetLinkMetadataForObjectTypesResponse as _api_GetLinkMetadataForObjectTypesResponse,
 } from "../__components.js";
 
 /**

@@ -86,17 +86,19 @@ export function applyShapeTransformations<
           transformedProps[prop] = op.transform(originalValue);
         } catch (e) {
           if (process.env.NODE_ENV !== "production") {
-            // eslint-disable-next-line no-console
+            // oxlint-disable-next-line no-console
             console.error(`Shape transform error for property "${prop}":`, e);
           }
           return {
             data: undefined,
             dropped: false,
-            violations: [{
-              property: prop,
-              primaryKey,
-              constraint: "transformError",
-            }],
+            violations: [
+              {
+                property: prop,
+                primaryKey,
+                constraint: "transformError",
+              },
+            ],
           };
         }
         break;
@@ -116,11 +118,12 @@ export function applyShapeTransformations<
   }
 
   // Clone the object with transformed properties if any were modified
-  const clonedObject = Object.keys(transformedProps).length > 0
-    ? rawObject.$clone(
-      transformedProps as Partial<Osdk.Instance<ShapeBaseType<S>>>,
-    )
-    : rawObject;
+  const clonedObject =
+    Object.keys(transformedProps).length > 0
+      ? rawObject.$clone(
+          transformedProps as Partial<Osdk.Instance<ShapeBaseType<S>>>,
+        )
+      : rawObject;
 
   // Phase 4: Check require constraints on the TRANSFORMED object
   // This allows withDefault + require to work together correctly

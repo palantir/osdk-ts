@@ -23,7 +23,6 @@ import type {
 } from "../ontology/ObjectTypeDefinition.js";
 import type { ObjectIdentifiers } from "../OsdkBase.js";
 import type { OsdkObjectPrimaryKeyType } from "../OsdkObjectPrimaryKeyType.js";
-
 import type {
   ActionResults,
   ValidateActionResponseV2,
@@ -33,9 +32,9 @@ import type { NULL_VALUE } from "./NullValue.js";
 export type ApplyActionOptions =
   | { $returnEdits?: true; $validateOnly?: false }
   | {
-    $validateOnly?: true;
-    $returnEdits?: false;
-  };
+      $validateOnly?: true;
+      $returnEdits?: false;
+    };
 
 export type ApplyBatchActionOptions = { $returnEdits?: boolean };
 
@@ -66,9 +65,11 @@ export namespace ActionParam {
    */
   export type InterfaceType<T extends InterfaceDefinition> = {
     $objectType: CompileTimeMetadata<T> extends { implementedBy: infer U }
-      ? (U extends ReadonlyArray<never> ? string
-        : U extends ReadonlyArray<string> ? U[number]
-        : string)
+      ? U extends ReadonlyArray<never>
+        ? string
+        : U extends ReadonlyArray<string>
+          ? U[number]
+          : string
       : string;
     $primaryKey: string | number;
   };

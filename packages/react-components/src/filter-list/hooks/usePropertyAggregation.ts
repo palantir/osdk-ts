@@ -76,54 +76,55 @@ export function usePropertyAggregation<
     [aggregateOptions, options?.where, objectSet],
   );
 
-  const { data: countData, isLoading, error } = useOsdkAggregation(
-    objectType,
-    aggregationArgs,
-  );
+  const {
+    data: countData,
+    isLoading,
+    error,
+  } = useOsdkAggregation(objectType, aggregationArgs);
 
-  const result = useMemo(
-    (): { data: PropertyAggregationValue[]; maxCount: number } => {
-      if (!countData) {
-        return { data: [], maxCount: 0 };
-      }
+  const result = useMemo((): {
+    data: PropertyAggregationValue[];
+    maxCount: number;
+  } => {
+    if (!countData) {
+      return { data: [], maxCount: 0 };
+    }
 
-      const values: PropertyAggregationValue[] = [];
-      let maxCount = 0;
+    const values: PropertyAggregationValue[] = [];
+    let maxCount = 0;
 
-      // The aggregation result type varies by query structure. Since we're building
-      // the query dynamically based on propertyKey, we cast to a known shape that
-      // matches the $groupBy + $count aggregation pattern.
-      const dataArray = countData as AggregationGroupResult;
+    // The aggregation result type varies by query structure. Since we're building
+    // the query dynamically based on propertyKey, we cast to a known shape that
+    // matches the $groupBy + $count aggregation pattern.
+    const dataArray = countData as AggregationGroupResult;
 
-      for (const item of dataArray) {
-        const rawValue = item.$group[propertyKey as string];
-        const count = item.$count ?? 0;
+    for (const item of dataArray) {
+      const rawValue = item.$group[propertyKey as string];
+      const count = item.$count ?? 0;
 
-        if (rawValue == null) {
-          values.push({ value: "", count, isNull: true });
-        } else {
-          values.push({ value: String(rawValue), count });
-        }
-        maxCount = Math.max(maxCount, count);
-      }
-
-      const sortBy = options?.sortBy ?? "count";
-      if (sortBy === "count") {
-        values.sort((a, b) =>
-          b.count - a.count || a.value.localeCompare(b.value)
-        );
+      if (rawValue == null) {
+        values.push({ value: "", count, isNull: true });
       } else {
-        values.sort((a, b) => a.value.localeCompare(b.value));
+        values.push({ value: String(rawValue), count });
       }
+      maxCount = Math.max(maxCount, count);
+    }
 
-      if (options?.limit && values.length > options.limit) {
-        return { data: values.slice(0, options.limit), maxCount };
-      }
+    const sortBy = options?.sortBy ?? "count";
+    if (sortBy === "count") {
+      values.sort(
+        (a, b) => b.count - a.count || a.value.localeCompare(b.value),
+      );
+    } else {
+      values.sort((a, b) => a.value.localeCompare(b.value));
+    }
 
-      return { data: values, maxCount };
-    },
-    [countData, propertyKey, options?.limit, options?.sortBy],
-  );
+    if (options?.limit && values.length > options.limit) {
+      return { data: values.slice(0, options.limit), maxCount };
+    }
+
+    return { data: values, maxCount };
+  }, [countData, propertyKey, options?.limit, options?.sortBy]);
 
   return {
     data: result.data,

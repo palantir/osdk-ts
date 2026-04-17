@@ -40,41 +40,37 @@ export function PersonListSection({
         </div>
         {isLoading && <LoadingIndicator size="sm" />}
       </div>
-      {people && people.length > 0
-        ? (
-          <div className={`space-y-px ${maxHeight} overflow-auto`}>
-            {people.slice(0, maxVisible).map((person) => {
-              const level = getHierarchyLevel(person.jobTitle);
-              return (
-                <button
-                  key={person.employeeNumber}
-                  onClick={() => onSelectEmployee(person)}
-                  className="w-full flex items-center gap-2 px-2 py-1.5 rounded text-left hover:bg-[var(--officenetwork-bg-elevated)] transition-colors group"
-                >
-                  <div
-                    className="size-2 rounded-sm shrink-0"
-                    style={{ backgroundColor: HIERARCHY_COLORS[level] }}
-                  />
-                  <span className="text-sm text-[var(--officenetwork-text-secondary)] group-hover:text-[var(--officenetwork-accent-cyan)] truncate">
-                    {person.fullName ?? `#${person.employeeNumber}`}
-                  </span>
-                </button>
-              );
-            })}
-            {people.length > maxVisible && (
-              <div className="text-[10px] text-[var(--officenetwork-text-muted)] px-2 py-1 officenetwork-mono">
-                +{people.length - maxVisible} more
-              </div>
-            )}
-          </div>
-        )
-        : !isLoading
-        ? (
-          <div className="text-sm text-[var(--officenetwork-text-muted)]">
-            {emptyMessage}
-          </div>
-        )
-        : null}
+      {people && people.length > 0 ? (
+        <div className={`space-y-px ${maxHeight} overflow-auto`}>
+          {people.slice(0, maxVisible).map((person) => {
+            const level = getHierarchyLevel(person.jobTitle);
+            return (
+              <button
+                key={person.employeeNumber}
+                onClick={() => onSelectEmployee(person)}
+                className="w-full flex items-center gap-2 px-2 py-1.5 rounded text-left hover:bg-[var(--officenetwork-bg-elevated)] transition-colors group"
+              >
+                <div
+                  className="size-2 rounded-sm shrink-0"
+                  style={{ backgroundColor: HIERARCHY_COLORS[level] }}
+                />
+                <span className="text-sm text-[var(--officenetwork-text-secondary)] group-hover:text-[var(--officenetwork-accent-cyan)] truncate">
+                  {person.fullName ?? `#${person.employeeNumber}`}
+                </span>
+              </button>
+            );
+          })}
+          {people.length > maxVisible && (
+            <div className="text-[10px] text-[var(--officenetwork-text-muted)] px-2 py-1 officenetwork-mono">
+              +{people.length - maxVisible} more
+            </div>
+          )}
+        </div>
+      ) : !isLoading ? (
+        <div className="text-sm text-[var(--officenetwork-text-muted)]">
+          {emptyMessage}
+        </div>
+      ) : null}
     </div>
   );
 }

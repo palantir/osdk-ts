@@ -55,7 +55,7 @@ export const BlueprintIcon: React.NamedExoticComponent<BlueprintIconProps> =
  */
 function useIcon(icon: IconName, size: IconSize): IconPaths | undefined {
   const [iconPaths, setIconPaths] = React.useState<IconPaths | undefined>(() =>
-    Icons.getPaths(icon, size)
+    Icons.getPaths(icon, size),
   );
 
   React.useEffect(

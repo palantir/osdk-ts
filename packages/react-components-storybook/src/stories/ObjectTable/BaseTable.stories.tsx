@@ -300,10 +300,7 @@ return <BaseTable table={table} headerMenuFeatureFlags={headerMenuFeatureFlags} 
 
     return (
       <div style={{ height: "400px" }}>
-        <BaseTable
-          {...args}
-          table={table}
-        />
+        <BaseTable {...args} table={table} />
       </div>
     );
   },
@@ -370,10 +367,7 @@ return <BaseTable table={table} headerMenuFeatureFlags={headerMenuFeatureFlags} 
 
     return (
       <div style={{ height: "400px" }}>
-        <BaseTable
-          {...args}
-          table={table}
-        />
+        <BaseTable {...args} table={table} />
       </div>
     );
   },
@@ -438,10 +432,7 @@ return <BaseTable table={table} headerMenuFeatureFlags={headerMenuFeatureFlags} 
 
     return (
       <div style={{ height: "400px" }}>
-        <BaseTable
-          {...args}
-          table={table}
-        />
+        <BaseTable {...args} table={table} />
       </div>
     );
   },
@@ -513,10 +504,7 @@ return <BaseTable table={table} headerMenuFeatureFlags={headerMenuFeatureFlags} 
 
     return (
       <div style={{ height: "400px" }}>
-        <BaseTable
-          {...args}
-          table={table}
-        />
+        <BaseTable {...args} table={table} />
       </div>
     );
   },

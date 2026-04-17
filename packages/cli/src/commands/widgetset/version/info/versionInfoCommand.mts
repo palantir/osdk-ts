@@ -19,9 +19,13 @@ import { consola } from "consola";
 import { loadToken } from "../../../../util/token.js";
 import type { VersionInfoArgs } from "./VersionInfoArgs.js";
 
-export default async function versionInfoCommand(
-  { version, foundryUrl, widgetSet, token, tokenFile }: VersionInfoArgs,
-): Promise<void> {
+export default async function versionInfoCommand({
+  version,
+  foundryUrl,
+  widgetSet,
+  token,
+  tokenFile,
+}: VersionInfoArgs): Promise<void> {
   const loadedToken = await loadToken(token, tokenFile);
   const tokenProvider = () => loadedToken;
   const clientCtx = createInternalClientContext(foundryUrl, tokenProvider);

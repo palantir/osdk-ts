@@ -26,252 +26,296 @@ describe("Object Status", () => {
 
   describe("Object Status Validation", () => {
     it("throws an error when object status is experimental and a property is active", async () => {
-      await defineOntology("com.palantir.", () => {
-        expect(() =>
-          defineObject({
-            titlePropertyApiName: "bar",
-            displayName: "ValidationTestObject",
-            pluralDisplayName: "ValidationTestObjects",
-            apiName: "validationTest",
-            primaryKeyPropertyApiName: "bar",
-            status: "experimental" as ObjectTypeStatus,
-            properties: {
-              "bar": { type: "string", status: "active" as ObjectTypeStatus },
-            },
-          })
-        ).toThrowError(
-          /Object "validationTest" has "experimental" status, but the following properties have a different status: bar/,
-        );
-      }, "/tmp/");
+      await defineOntology(
+        "com.palantir.",
+        () => {
+          expect(() =>
+            defineObject({
+              titlePropertyApiName: "bar",
+              displayName: "ValidationTestObject",
+              pluralDisplayName: "ValidationTestObjects",
+              apiName: "validationTest",
+              primaryKeyPropertyApiName: "bar",
+              status: "experimental" as ObjectTypeStatus,
+              properties: {
+                "bar": { type: "string", status: "active" as ObjectTypeStatus },
+              },
+            }),
+          ).toThrowError(
+            /Object "validationTest" has "experimental" status, but the following properties have a different status: bar/,
+          );
+        },
+        "/tmp/",
+      );
     });
 
     it("does not throw when object status is active and a property is experimental", async () => {
-      await defineOntology("com.palantir.", () => {
-        expect(() =>
-          defineObject({
-            titlePropertyApiName: "bar",
-            displayName: "ActiveExpPropObject",
-            pluralDisplayName: "ActiveExpPropObjects",
-            apiName: "activeExpProp",
-            primaryKeyPropertyApiName: "bar",
-            status: "active" as ObjectTypeStatus,
-            properties: {
-              "bar": {
-                type: "string",
-                status: "experimental" as ObjectTypeStatus,
+      await defineOntology(
+        "com.palantir.",
+        () => {
+          expect(() =>
+            defineObject({
+              titlePropertyApiName: "bar",
+              displayName: "ActiveExpPropObject",
+              pluralDisplayName: "ActiveExpPropObjects",
+              apiName: "activeExpProp",
+              primaryKeyPropertyApiName: "bar",
+              status: "active" as ObjectTypeStatus,
+              properties: {
+                "bar": {
+                  type: "string",
+                  status: "experimental" as ObjectTypeStatus,
+                },
               },
-            },
-          })
-        ).not.toThrow();
-      }, "/tmp/");
+            }),
+          ).not.toThrow();
+        },
+        "/tmp/",
+      );
     });
 
     it("throws an error when object status is example and a property is active", async () => {
-      await defineOntology("com.palantir.", () => {
-        expect(() =>
-          defineObject({
-            titlePropertyApiName: "bar",
-            displayName: "ExampleActivePropObject",
-            pluralDisplayName: "ExampleActivePropObjects",
-            apiName: "exampleActiveProp",
-            primaryKeyPropertyApiName: "bar",
-            status: "example" as ObjectTypeStatus,
-            properties: {
-              "bar": {
-                type: "string",
-                status: "active" as ObjectTypeStatus,
+      await defineOntology(
+        "com.palantir.",
+        () => {
+          expect(() =>
+            defineObject({
+              titlePropertyApiName: "bar",
+              displayName: "ExampleActivePropObject",
+              pluralDisplayName: "ExampleActivePropObjects",
+              apiName: "exampleActiveProp",
+              primaryKeyPropertyApiName: "bar",
+              status: "example" as ObjectTypeStatus,
+              properties: {
+                "bar": {
+                  type: "string",
+                  status: "active" as ObjectTypeStatus,
+                },
               },
-            },
-          })
-        ).toThrowError(
-          /Object "exampleActiveProp" has "example" status, but the following properties have a different status: bar/,
-        );
-      }, "/tmp/");
+            }),
+          ).toThrowError(
+            /Object "exampleActiveProp" has "example" status, but the following properties have a different status: bar/,
+          );
+        },
+        "/tmp/",
+      );
     });
 
     it("throws an error when object status is deprecated and a property is active", async () => {
-      await defineOntology("com.palantir.", () => {
-        expect(() =>
-          defineObject({
-            titlePropertyApiName: "bar",
-            displayName: "DeprecatedActivePropObject",
-            pluralDisplayName: "DeprecatedActivePropObjects",
-            apiName: "deprecatedActiveProp",
-            primaryKeyPropertyApiName: "bar",
-            status: {
-              type: "deprecated",
-              message: "old",
-              deadline: "2023-01-01",
-            } as ObjectTypeStatus,
-            properties: {
-              "bar": {
-                type: "string",
-                status: "active" as ObjectTypeStatus,
+      await defineOntology(
+        "com.palantir.",
+        () => {
+          expect(() =>
+            defineObject({
+              titlePropertyApiName: "bar",
+              displayName: "DeprecatedActivePropObject",
+              pluralDisplayName: "DeprecatedActivePropObjects",
+              apiName: "deprecatedActiveProp",
+              primaryKeyPropertyApiName: "bar",
+              status: {
+                type: "deprecated",
+                message: "old",
+                deadline: "2023-01-01",
+              } as ObjectTypeStatus,
+              properties: {
+                "bar": {
+                  type: "string",
+                  status: "active" as ObjectTypeStatus,
+                },
               },
-            },
-          })
-        ).toThrowError(
-          /Object "deprecatedActiveProp" has "deprecated" status, but the following properties have a different status: bar/,
-        );
-      }, "/tmp/");
+            }),
+          ).toThrowError(
+            /Object "deprecatedActiveProp" has "deprecated" status, but the following properties have a different status: bar/,
+          );
+        },
+        "/tmp/",
+      );
     });
 
     it("does not throw when object status is experimental and no properties have active status", async () => {
-      await defineOntology("com.palantir.", () => {
-        expect(() =>
-          defineObject({
-            titlePropertyApiName: "bar",
-            displayName: "ValidationTestObject2",
-            pluralDisplayName: "ValidationTestObjects2",
-            apiName: "validationTest2",
-            primaryKeyPropertyApiName: "bar",
-            status: "experimental" as ObjectTypeStatus,
-            properties: {
-              "bar": {
-                type: "string",
-                status: "experimental" as ObjectTypeStatus,
+      await defineOntology(
+        "com.palantir.",
+        () => {
+          expect(() =>
+            defineObject({
+              titlePropertyApiName: "bar",
+              displayName: "ValidationTestObject2",
+              pluralDisplayName: "ValidationTestObjects2",
+              apiName: "validationTest2",
+              primaryKeyPropertyApiName: "bar",
+              status: "experimental" as ObjectTypeStatus,
+              properties: {
+                "bar": {
+                  type: "string",
+                  status: "experimental" as ObjectTypeStatus,
+                },
               },
-            },
-          })
-        ).not.toThrow();
-      }, "/tmp/");
+            }),
+          ).not.toThrow();
+        },
+        "/tmp/",
+      );
     });
 
     it("does not throw when active object has property with no status", async () => {
-      await defineOntology("com.palantir.", () => {
-        expect(() =>
-          defineObject({
-            titlePropertyApiName: "bar",
-            displayName: "ActiveNoStatusPropObject",
-            pluralDisplayName: "ActiveNoStatusPropObjects",
-            apiName: "activeNoStatusProp",
-            primaryKeyPropertyApiName: "bar",
-            status: "active" as ObjectTypeStatus,
-            properties: {
-              "bar": { type: "string" },
-            },
-          })
-        ).not.toThrow();
-      }, "/tmp/");
+      await defineOntology(
+        "com.palantir.",
+        () => {
+          expect(() =>
+            defineObject({
+              titlePropertyApiName: "bar",
+              displayName: "ActiveNoStatusPropObject",
+              pluralDisplayName: "ActiveNoStatusPropObjects",
+              apiName: "activeNoStatusProp",
+              primaryKeyPropertyApiName: "bar",
+              status: "active" as ObjectTypeStatus,
+              properties: {
+                "bar": { type: "string" },
+              },
+            }),
+          ).not.toThrow();
+        },
+        "/tmp/",
+      );
     });
 
     it("does not throw when experimental object has property with no status", async () => {
-      await defineOntology("com.palantir.", () => {
-        expect(() =>
-          defineObject({
-            titlePropertyApiName: "bar",
-            displayName: "ExpNoStatusPropObject",
-            pluralDisplayName: "ExpNoStatusPropObjects",
-            apiName: "expNoStatusProp",
-            primaryKeyPropertyApiName: "bar",
-            status: "experimental" as ObjectTypeStatus,
-            properties: {
-              "bar": { type: "string" },
-            },
-          })
-        ).not.toThrow();
-      }, "/tmp/");
+      await defineOntology(
+        "com.palantir.",
+        () => {
+          expect(() =>
+            defineObject({
+              titlePropertyApiName: "bar",
+              displayName: "ExpNoStatusPropObject",
+              pluralDisplayName: "ExpNoStatusPropObjects",
+              apiName: "expNoStatusProp",
+              primaryKeyPropertyApiName: "bar",
+              status: "experimental" as ObjectTypeStatus,
+              properties: {
+                "bar": { type: "string" },
+              },
+            }),
+          ).not.toThrow();
+        },
+        "/tmp/",
+      );
     });
   });
 
   describe("Object Status Conversion", () => {
     it("converts default status (undefined) to active", async () => {
-      await defineOntology("com.palantir.", () => {
-        const obj = defineObject({
-          titlePropertyApiName: "bar",
-          displayName: "DefaultStatusObject",
-          pluralDisplayName: "DefaultStatusObjects",
-          apiName: "defaultStatus",
-          primaryKeyPropertyApiName: "bar",
-          properties: { "bar": { type: "string" } },
-        });
+      await defineOntology(
+        "com.palantir.",
+        () => {
+          const obj = defineObject({
+            titlePropertyApiName: "bar",
+            displayName: "DefaultStatusObject",
+            pluralDisplayName: "DefaultStatusObjects",
+            apiName: "defaultStatus",
+            primaryKeyPropertyApiName: "bar",
+            properties: { "bar": { type: "string" } },
+          });
 
-        const metadata = dumpOntologyFullMetadata();
-        expect(
-          metadata.ontology.objectTypes["com.palantir.defaultStatus"]
-            .objectType.status,
-        ).toEqual({
-          type: "active",
-          active: {},
-        });
-      }, "/tmp/");
+          const metadata = dumpOntologyFullMetadata();
+          expect(
+            metadata.ontology.objectTypes["com.palantir.defaultStatus"]
+              .objectType.status,
+          ).toEqual({
+            type: "active",
+            active: {},
+          });
+        },
+        "/tmp/",
+      );
     });
 
     it("converts active status to proper format", async () => {
-      await defineOntology("com.palantir.", () => {
-        const obj = defineObject({
-          titlePropertyApiName: "bar",
-          displayName: "ActiveStatusObject",
-          pluralDisplayName: "ActiveStatusObjects",
-          apiName: "activeStatus",
-          primaryKeyPropertyApiName: "bar",
-          properties: { "bar": { type: "string" } },
-          status: "active" as ObjectTypeStatus,
-        });
+      await defineOntology(
+        "com.palantir.",
+        () => {
+          const obj = defineObject({
+            titlePropertyApiName: "bar",
+            displayName: "ActiveStatusObject",
+            pluralDisplayName: "ActiveStatusObjects",
+            apiName: "activeStatus",
+            primaryKeyPropertyApiName: "bar",
+            properties: { "bar": { type: "string" } },
+            status: "active" as ObjectTypeStatus,
+          });
 
-        const metadata = dumpOntologyFullMetadata();
-        expect(
-          metadata.ontology.objectTypes["com.palantir.activeStatus"]
-            .objectType.status,
-        ).toEqual({
-          type: "active",
-          active: {},
-        });
-      }, "/tmp/");
+          const metadata = dumpOntologyFullMetadata();
+          expect(
+            metadata.ontology.objectTypes["com.palantir.activeStatus"]
+              .objectType.status,
+          ).toEqual({
+            type: "active",
+            active: {},
+          });
+        },
+        "/tmp/",
+      );
     });
 
     it("converts experimental status to proper format", async () => {
-      await defineOntology("com.palantir.", () => {
-        const obj = defineObject({
-          titlePropertyApiName: "bar",
-          displayName: "ExperimentalStatusObject",
-          pluralDisplayName: "ExperimentalStatusObjects",
-          apiName: "experimentalStatus",
-          primaryKeyPropertyApiName: "bar",
-          properties: { "bar": { type: "string" } },
-          status: "experimental" as ObjectTypeStatus,
-        });
+      await defineOntology(
+        "com.palantir.",
+        () => {
+          const obj = defineObject({
+            titlePropertyApiName: "bar",
+            displayName: "ExperimentalStatusObject",
+            pluralDisplayName: "ExperimentalStatusObjects",
+            apiName: "experimentalStatus",
+            primaryKeyPropertyApiName: "bar",
+            properties: { "bar": { type: "string" } },
+            status: "experimental" as ObjectTypeStatus,
+          });
 
-        const metadata = dumpOntologyFullMetadata();
-        expect(
-          metadata.ontology.objectTypes["com.palantir.experimentalStatus"]
-            .objectType.status,
-        ).toEqual({
-          type: "experimental",
-          experimental: {},
-        });
-      }, "/tmp/");
+          const metadata = dumpOntologyFullMetadata();
+          expect(
+            metadata.ontology.objectTypes["com.palantir.experimentalStatus"]
+              .objectType.status,
+          ).toEqual({
+            type: "experimental",
+            experimental: {},
+          });
+        },
+        "/tmp/",
+      );
     });
 
     it("converts deprecated status to proper format", async () => {
-      await defineOntology("com.palantir.", () => {
-        const obj = defineObject({
-          titlePropertyApiName: "bar",
-          displayName: "DeprecatedStatusObject",
-          pluralDisplayName: "DeprecatedStatusObjects",
-          apiName: "deprecatedStatus",
-          primaryKeyPropertyApiName: "bar",
-          properties: { "bar": { type: "string" } },
-          status: {
-            type: "deprecated",
-            message: "This object is deprecated",
-            deadline: "2023-01-01",
-          } as ObjectTypeStatus,
-        });
+      await defineOntology(
+        "com.palantir.",
+        () => {
+          const obj = defineObject({
+            titlePropertyApiName: "bar",
+            displayName: "DeprecatedStatusObject",
+            pluralDisplayName: "DeprecatedStatusObjects",
+            apiName: "deprecatedStatus",
+            primaryKeyPropertyApiName: "bar",
+            properties: { "bar": { type: "string" } },
+            status: {
+              type: "deprecated",
+              message: "This object is deprecated",
+              deadline: "2023-01-01",
+            } as ObjectTypeStatus,
+          });
 
-        const metadata = dumpOntologyFullMetadata();
-        expect(
-          metadata.ontology.objectTypes["com.palantir.deprecatedStatus"]
-            .objectType.status,
-        ).toEqual({
-          type: "deprecated",
-          deprecated: {
-            message: "This object is deprecated",
-            deadline: "2023-01-01",
-            replacedBy: undefined,
-          },
-        });
-      }, "/tmp/");
+          const metadata = dumpOntologyFullMetadata();
+          expect(
+            metadata.ontology.objectTypes["com.palantir.deprecatedStatus"]
+              .objectType.status,
+          ).toEqual({
+            type: "deprecated",
+            deprecated: {
+              message: "This object is deprecated",
+              deadline: "2023-01-01",
+              replacedBy: undefined,
+            },
+          });
+        },
+        "/tmp/",
+      );
     });
   });
 });

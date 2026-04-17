@@ -72,10 +72,9 @@ describe("useOsdkFunction", () => {
   it("should NOT call observeFunction when enabled is false", () => {
     const wrapper = createWrapper();
 
-    renderHook(
-      () => useOsdkFunction(MockQueryDef, { enabled: false }),
-      { wrapper },
-    );
+    renderHook(() => useOsdkFunction(MockQueryDef, { enabled: false }), {
+      wrapper,
+    });
 
     expect(mockObserveFunction).not.toHaveBeenCalled();
   });
@@ -141,14 +140,14 @@ describe("useOsdkFunction", () => {
     );
 
     act(() => {
+      // oxlint-disable-next-line @typescript-eslint/no-floating-promises -- false positive from tsgolint alpha
       result.current.refetch();
     });
 
     expect(mockInvalidateFunction).toHaveBeenCalledTimes(1);
-    expect(mockInvalidateFunction).toHaveBeenCalledWith(
-      MockQueryDef,
-      { id: "123" },
-    );
+    expect(mockInvalidateFunction).toHaveBeenCalledWith(MockQueryDef, {
+      id: "123",
+    });
   });
 
   it("should return isLoading true when status is loading", () => {

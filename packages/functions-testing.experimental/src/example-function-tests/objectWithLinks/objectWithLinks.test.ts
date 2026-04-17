@@ -150,9 +150,8 @@ describe("objectWithLinks", () => {
       const peepsSet = createMockObjectSet(Employee);
 
       mockClient
-        .whenObjectSet(
-          peepsSet,
-          (os) => os.aggregate({ $select: { $count: "unordered" } }),
+        .whenObjectSet(peepsSet, (os) =>
+          os.aggregate({ $select: { $count: "unordered" } }),
         )
         .thenReturnAggregation({ $count: 7 });
 

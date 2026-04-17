@@ -113,55 +113,62 @@ export const DistanceUnitMapping: {
 export type GeoFilter_Within = {
   "$within":
     | {
-      $distance: [number, keyof typeof DistanceUnitMapping];
-      $of: [number, number] | Readonly<Point>;
-      $bbox?: never;
-      $polygon?: never;
-    }
+        $distance: [number, keyof typeof DistanceUnitMapping];
+        $of: [number, number] | Readonly<Point>;
+        $bbox?: never;
+        $polygon?: never;
+      }
     | {
-      $bbox: BBox;
-      $distance?: never;
-      $of?: never;
-      $polygon?: never;
-    }
+        $bbox: BBox;
+        $distance?: never;
+        $of?: never;
+        $polygon?: never;
+      }
     | BBox
     | {
-      $polygon: Polygon["coordinates"];
-      $bbox?: never;
-      $distance?: never;
-      $of?: never;
-    }
+        $polygon: Polygon["coordinates"];
+        $bbox?: never;
+        $distance?: never;
+        $of?: never;
+      }
     | Polygon;
 };
 
 export type GeoFilter_Intersects = {
   "$intersects":
     | {
-      $bbox: BBox;
-      $polygon?: never;
-    }
+        $bbox: BBox;
+        $polygon?: never;
+      }
     | BBox
     | {
-      $polygon: Polygon["coordinates"];
-      $bbox?: never;
-    }
+        $polygon: Polygon["coordinates"];
+        $bbox?: never;
+      }
     | Polygon;
 };
 
-type BaseFilterFor<T> = T extends Record<string, BaseWirePropertyTypes>
-  ? StructFilterOpts<T>
-  : T extends "string" ? StringFilter
-  : T extends "geopoint" | "geoshape" ? GeoFilter
-  : T extends "datetime" | "timestamp" ? DatetimeFilter
-  : T extends "boolean" ? BooleanFilter
-  : T extends WhereClauseNumberPropertyTypes ? NumberFilter
-  : BaseFilter<string>; // Fallback for unknown types
+type BaseFilterFor<T> =
+  T extends Record<string, BaseWirePropertyTypes>
+    ? StructFilterOpts<T>
+    : T extends "string"
+      ? StringFilter
+      : T extends "geopoint" | "geoshape"
+        ? GeoFilter
+        : T extends "datetime" | "timestamp"
+          ? DatetimeFilter
+          : T extends "boolean"
+            ? BooleanFilter
+            : T extends WhereClauseNumberPropertyTypes
+              ? NumberFilter
+              : BaseFilter<string>; // Fallback for unknown types
 
-type FilterFor<PD extends ObjectMetadata.Property> = PD["multiplicity"] extends
-  true ? ArrayFilter<BaseFilterFor<PD["type"]>>
-  : PD["type"] extends Record<string, BaseWirePropertyTypes>
-    ? StructFilter<PD["type"]> | BaseFilter.$isNull<string>
-  : BaseFilterFor<PD["type"]>;
+type FilterFor<PD extends ObjectMetadata.Property> =
+  PD["multiplicity"] extends true
+    ? ArrayFilter<BaseFilterFor<PD["type"]>>
+    : PD["type"] extends Record<string, BaseWirePropertyTypes>
+      ? StructFilter<PD["type"]> | BaseFilter.$isNull<string>
+      : BaseFilterFor<PD["type"]>;
 
 type StructFilterOpts<ST extends Record<string, BaseWirePropertyTypes>> = {
   [K in keyof ST]?: FilterFor<{ "type": ST[K] }>;
@@ -220,5 +227,5 @@ export type WhereClause<
   | AndWhereClause<T, RDPs>
   | NotWhereClause<T, RDPs>
   | (IsNever<keyof CompileTimeMetadata<T>["properties"]> extends true
-    ? Record<string, never>
-    : MergedPropertyWhereClause<T, RDPs>);
+      ? Record<string, never>
+      : MergedPropertyWhereClause<T, RDPs>);

@@ -53,11 +53,11 @@ OSDK uses CSS [`@layer`](https://developer.mozilla.org/en-US/docs/Web/CSS/@layer
 
 **OSDK's layer hierarchy:**
 
-| Layer | Purpose |
-| --- | --- |
-| `osdk.tokens` | Design tokens (colors, spacing, typography) — the defaults |
-| `osdk.components` | Component structural styles (layout, borders, sizing) |
-| `user.theme` | Your custom overrides (you define this) |
+| Layer             | Purpose                                                    |
+| ----------------- | ---------------------------------------------------------- |
+| `osdk.tokens`     | Design tokens (colors, spacing, typography) — the defaults |
+| `osdk.components` | Component structural styles (layout, borders, sizing)      |
+| `user.theme`      | Your custom overrides (you define this)                    |
 
 The `@layer` declaration at the top of your CSS file sets this order:
 
@@ -80,7 +80,7 @@ This means you can override any OSDK token with a simple `:root` selector in you
 **OSDK Tokens (`--osdk-*`):**
 
 - All tokens used in OSDK components are prefixed with --osdk.
-- Any blueprint token used in OSDK components is mapped to an --osdk-* token, e.g. `--osdk-surface-spacing: var(--bp-surface-spacing);`
+- Any blueprint token used in OSDK components is mapped to an --osdk-\* token, e.g. `--osdk-surface-spacing: var(--bp-surface-spacing);`
 - Override these to theme **OSDK components only**
 - Safe to customize without affecting other Blueprint components in your app
 
@@ -101,6 +101,7 @@ You can customize the appearance by overriding CSS custom properties at differen
 ### Customization Strategies
 
 1. **Override OSDK tokens** - Change OSDK component styling without affecting Blueprint components
+
    ```css
    @layer user.theme {
      :root {
@@ -116,6 +117,7 @@ You can customize the appearance by overriding CSS custom properties at differen
    ```
 
 2. **Override Blueprint tokens** - Change both Blueprint and OSDK components for consistent theming
+
    ```css
    @layer user.theme {
      :root {

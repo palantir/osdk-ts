@@ -20,24 +20,25 @@ import type { ValueTypeDefinitionVersion } from "@osdk/maker";
 export function convertValueTypesToIr(
   valueTypes: Record<string, ValueTypeDefinitionVersion[]>,
 ): OntologyIrValueTypeBlockDataEntry[] {
-  return Object.values(valueTypes).map<
-    OntologyIrValueTypeBlockDataEntry
-  >(definitions => ({
-    metadata: {
-      apiName: definitions[0].apiName,
-      packageNamespace: definitions[0].packageNamespace,
-      displayMetadata: definitions[0].displayMetadata,
-      status: definitions[0].status,
-    },
-    // TODO(dpaquin): instead of deduping here, we should refactor the value type types from arrays to maps
-    versions: Array.from(
-      new Map(definitions.map(definition => [definition.version, definition]))
-        .values(),
-    ).map(definition => ({
-      version: definition.version,
-      baseType: definition.baseType,
-      constraints: definition.constraints,
-      exampleValues: definition.exampleValues,
-    })),
-  }));
+  return Object.values(valueTypes).map<OntologyIrValueTypeBlockDataEntry>(
+    (definitions) => ({
+      metadata: {
+        apiName: definitions[0].apiName,
+        packageNamespace: definitions[0].packageNamespace,
+        displayMetadata: definitions[0].displayMetadata,
+        status: definitions[0].status,
+      },
+      // TODO(dpaquin): instead of deduping here, we should refactor the value type types from arrays to maps
+      versions: Array.from(
+        new Map(
+          definitions.map((definition) => [definition.version, definition]),
+        ).values(),
+      ).map((definition) => ({
+        version: definition.version,
+        baseType: definition.baseType,
+        constraints: definition.constraints,
+        exampleValues: definition.exampleValues,
+      })),
+    }),
+  );
 }

@@ -46,8 +46,7 @@ export const WithColumnConfigDialog: Story = {
   parameters: {
     docs: {
       source: {
-        code:
-          `const [isColumnConfigOpen, setIsColumnConfigOpen] = useState(false);
+        code: `const [isColumnConfigOpen, setIsColumnConfigOpen] = useState(false);
 const [columnDefinitions, setColumnDefinitions] = useState(initialColumnDefinitions);
 
 const handleApplyColumnConfig = useCallback(
@@ -127,16 +126,16 @@ return (
 
     const currentVisibility = useMemo(() => {
       const visibility: Record<string, boolean> = {};
-      initialColumnDefinitions.forEach(colDef => {
+      initialColumnDefinitions.forEach((colDef) => {
         visibility[colDef.locator.id] = columnDefinitions.some(
-          def => def.locator.id === colDef.locator.id,
+          (def) => def.locator.id === colDef.locator.id,
         );
       });
       return visibility;
     }, [columnDefinitions]);
 
     const currentColumnOrder = useMemo(
-      () => columnDefinitions.map(colDef => colDef.locator.id),
+      () => columnDefinitions.map((colDef) => colDef.locator.id),
       [columnDefinitions],
     );
 
@@ -146,8 +145,8 @@ return (
           [];
         columns.forEach(({ columnId, isVisible }) => {
           if (isVisible) {
-            const colDef = initialColumnDefinitions.find(def =>
-              def.locator.id === columnId
+            const colDef = initialColumnDefinitions.find(
+              (def) => def.locator.id === columnId,
             );
             if (colDef) {
               newColumnDefinitions.push(colDef);

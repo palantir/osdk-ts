@@ -83,10 +83,7 @@ export const FilePickerField: React.FC<FilePickerProps> = memo(
 
     const displayText = useMemo(() => getDisplayText(value), [value]);
     const hasValue = displayText != null;
-    const acceptString = useMemo(
-      () => normalizeAccept(accept),
-      [accept],
-    );
+    const acceptString = useMemo(() => normalizeAccept(accept), [accept]);
     return (
       // The entire component is a single tab stop (tabIndex={0}).
       // Text and Browse are <span>s (not buttons) so they don't create

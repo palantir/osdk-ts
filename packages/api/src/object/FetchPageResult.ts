@@ -35,18 +35,14 @@ export type RespectNullability<S extends NullabilityAdherence> = S extends false
 
 /** exposed for a test */
 export type UnionIfFalse<S extends string, JUST_S_IF_TRUE extends boolean, E> =
-  IsNever<S> extends true ? never
-    : JUST_S_IF_TRUE extends true ? S
-    : S | E;
+  IsNever<S> extends true ? never : JUST_S_IF_TRUE extends true ? S : S | E;
 
 /** exposed for a test */
 export type UnionIfTrue<
   S extends string,
   UNION_IF_TRUE extends boolean,
   E extends string,
-> = IsNever<S> extends true ? never
-  : UNION_IF_TRUE extends true ? S | E
-  : S;
+> = IsNever<S> extends true ? never : UNION_IF_TRUE extends true ? S | E : S;
 
 /**
  * Helper type for converting fetch options into an Osdk object
@@ -91,5 +87,7 @@ export type SingleOsdkResult<
 >;
 
 export type IsAny<T> = unknown extends T
-  ? [keyof T] extends [never] ? false : true
+  ? [keyof T] extends [never]
+    ? false
+    : true
   : false;

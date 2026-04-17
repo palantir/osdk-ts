@@ -71,9 +71,10 @@ export namespace EmployeeApiTest {
   }
   export type StrictProps = Props;
 
-  export interface ObjectSet
-    extends $ObjectSet<EmployeeApiTest, EmployeeApiTest.ObjectSet>
-  {}
+  export interface ObjectSet extends $ObjectSet<
+    EmployeeApiTest,
+    EmployeeApiTest.ObjectSet
+  > {}
 }
 
 export interface EmployeeApiTest extends $ObjectTypeDefinition {

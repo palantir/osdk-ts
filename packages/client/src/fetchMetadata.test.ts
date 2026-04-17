@@ -45,9 +45,7 @@ describe("FetchMetadata", () => {
   it("fetches object metadata correctly", async () => {
     const objectMetadata = await client.fetchMetadata($Objects.Employee);
 
-    expectTypeOf(objectMetadata).toEqualTypeOf<
-      ObjectMetadata
-    >();
+    expectTypeOf(objectMetadata).toEqualTypeOf<ObjectMetadata>();
 
     expect(objectMetadata).toMatchInlineSnapshot(`
       {
@@ -213,9 +211,7 @@ describe("FetchMetadata", () => {
       $Interfaces.FooInterface,
     );
 
-    expectTypeOf(interfaceMetadata).toEqualTypeOf<
-      InterfaceMetadata
-    >();
+    expectTypeOf(interfaceMetadata).toEqualTypeOf<InterfaceMetadata>();
 
     expect(interfaceMetadata).toMatchInlineSnapshot(`
       {
@@ -261,9 +257,7 @@ describe("FetchMetadata", () => {
   });
 
   it("fetches action metadata correctly", async () => {
-    const actionMetadata = await client.fetchMetadata(
-      $Actions.moveOffice,
-    );
+    const actionMetadata = await client.fetchMetadata($Actions.moveOffice);
 
     expectTypeOf(actionMetadata).toEqualTypeOf<ActionMetadata>();
 

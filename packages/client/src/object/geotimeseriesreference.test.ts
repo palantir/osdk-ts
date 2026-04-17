@@ -51,20 +51,13 @@ describe("Timeseries", () => {
   };
 
   beforeAll(async () => {
-    const testSetup = startNodeApiServer(
-      new LegacyFauxFoundry(),
-      createClient,
-    );
+    const testSetup = startNodeApiServer(new LegacyFauxFoundry(), createClient);
     ({ client } = testSetup);
 
     for (const [pk, data] of Object.entries(locationGeotimeData)) {
-      testSetup.fauxFoundry.getDataStore($ontologyRid)
-        .registerTimeSeriesData(
-          "Employee",
-          pk,
-          "employeeLocation",
-          data,
-        );
+      testSetup.fauxFoundry
+        .getDataStore($ontologyRid)
+        .registerTimeSeriesData("Employee", pk, "employeeLocation", data);
     }
 
     vi.setSystemTime(new Date("2013-03-13"));
@@ -147,13 +140,16 @@ describe("Timeseries", () => {
       $endTime: "2014-04-14T12:00:00.000Z",
     });
     expect(points).toBeDefined();
-    expect(points!).toEqual([{
-      time: "2013-03-13",
-      value: { type: "Point", coordinates: [2.2, 2.2] },
-    }, {
-      time: "2014-04-14",
-      value: { type: "Point", coordinates: [3.3, 3.3] },
-    }]);
+    expect(points!).toEqual([
+      {
+        time: "2013-03-13",
+        value: { type: "Point", coordinates: [2.2, 2.2] },
+      },
+      {
+        time: "2014-04-14",
+        value: { type: "Point", coordinates: [3.3, 3.3] },
+      },
+    ]);
   });
 
   it("getAll points with no query works", async () => {
@@ -161,9 +157,7 @@ describe("Timeseries", () => {
     expect(employee.$primaryKey).toEqual(50030);
     const points = await employee.employeeLocation?.getAllValues();
     expect(points).toBeDefined();
-    expect(points!).toEqual(
-      locationGeotimeData[50030],
-    );
+    expect(points!).toEqual(locationGeotimeData[50030]);
   });
 
   it("getAll points with no data works", async () => {
@@ -206,8 +200,6 @@ describe("Timeseries", () => {
       points.push(point);
     }
     expect(points).toBeDefined();
-    expect(points!).toEqual(
-      locationGeotimeData[50030],
-    );
+    expect(points!).toEqual(locationGeotimeData[50030]);
   });
 });

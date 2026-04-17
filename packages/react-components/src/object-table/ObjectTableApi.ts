@@ -120,9 +120,7 @@ interface EditableColumnDefinition<
    * @param value the current cell value
    * @returns a promise that resolves to an error message string if validation fails, or undefined if validation succeeds
    */
-  validateEdit?: (
-    value: unknown,
-  ) => Promise<string | undefined>;
+  validateEdit?: (value: unknown) => Promise<string | undefined>;
 }
 
 /**
@@ -140,11 +138,10 @@ interface ReadonlyColumnDefinition<
   editable?: false;
 }
 
-export type ExtractQueryParameters<
-  Q extends QueryDefinition,
-> = CompileTimeMetadata<Q>["parameters"] extends Record<string, never>
-  ? undefined
-  : QueryParameterType<CompileTimeMetadata<Q>["parameters"]>;
+export type ExtractQueryParameters<Q extends QueryDefinition> =
+  CompileTimeMetadata<Q>["parameters"] extends Record<string, never>
+    ? undefined
+    : QueryParameterType<CompileTimeMetadata<Q>["parameters"]>;
 
 export interface PropertyColumnLocator<Q extends ObjectOrInterfaceDefinition> {
   type: "property";
@@ -386,10 +383,12 @@ export interface ObjectTableProps<
    * including the rowId, columnId, new and old values, and the row data before the edit
    * @return a promise that resolves to true if the edits were successfully submitted
    */
-  onSubmitEdits?: (edits: CellEditInfo<
-    Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
-    unknown
-  >[]) => Promise<boolean>;
+  onSubmitEdits?: (
+    edits: CellEditInfo<
+      Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
+      unknown
+    >[],
+  ) => Promise<boolean>;
 
   /**
    * Called when the column visibility or ordering changed.
@@ -490,9 +489,7 @@ export interface ObjectTableProps<
   className?: string;
 }
 
-export interface ObjectSetOptions<
-  Q extends ObjectOrInterfaceDefinition,
-> {
+export interface ObjectSetOptions<Q extends ObjectOrInterfaceDefinition> {
   /**
    * Object sets to union with
    */

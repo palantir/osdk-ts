@@ -64,9 +64,7 @@ export function TableBody<TData extends RowData>({
   }, [rowVirtualizer, rows.length]);
 
   const totalSize = rowVirtualizer.getTotalSize();
-  const bodyHeight = isLoadingMore
-    ? totalSize + rowHeight
-    : totalSize;
+  const bodyHeight = isLoadingMore ? totalSize + rowHeight : totalSize;
 
   const headers = headerGroups[0]?.headers ?? [];
 

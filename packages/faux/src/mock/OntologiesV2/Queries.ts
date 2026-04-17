@@ -21,7 +21,4 @@ import { handleOpenApiCall } from "../../handlers/util/handleOpenApiCall.js";
 export const execute: CallFactory<
   "ontologyApiName" | "queryApiName",
   typeof Queries.execute
-> = handleOpenApiCall(
-  Queries.execute,
-  ["ontologyApiName", "queryApiName"],
-);
+> = handleOpenApiCall(Queries.execute, ["ontologyApiName", "queryApiName"]);

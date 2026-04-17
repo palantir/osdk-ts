@@ -20,9 +20,7 @@ export type {
   ActionParameter,
   ActionParameterValidation,
 } from "./api/action/ActionParameter.js";
-export type {
-  ActionParameterAllowedValues,
-} from "./api/action/ActionParameterAllowedValues.js";
+export type { ActionParameterAllowedValues } from "./api/action/ActionParameterAllowedValues.js";
 export type { ActionParameterConditionalOverride } from "./api/action/ActionParameterConditionalOverride.js";
 export type {
   ActionParameterConfiguration,

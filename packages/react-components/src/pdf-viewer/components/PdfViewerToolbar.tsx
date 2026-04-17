@@ -75,9 +75,12 @@ export function PdfViewerToolbar({
   const [pageInputValue, setPageInputValue] = useState(String(currentPage));
 
   // Sync input display when currentPage changes from scrolling
-  useEffect(function syncPageInput() {
-    setPageInputValue(String(currentPage));
-  }, [currentPage]);
+  useEffect(
+    function syncPageInput() {
+      setPageInputValue(String(currentPage));
+    },
+    [currentPage],
+  );
 
   const handlePrevPage = useCallback(() => {
     if (currentPage > 1) {
@@ -239,12 +242,16 @@ export function PdfViewerToolbar({
               highlightModeActive && styles.toolbarButtonActive,
             )}
             onClick={onHighlightToggle}
-            aria-label={highlightModeActive
-              ? "Disable highlight mode"
-              : "Enable highlight mode"}
-            title={highlightModeActive
-              ? "Disable highlight mode"
-              : "Enable highlight mode"}
+            aria-label={
+              highlightModeActive
+                ? "Disable highlight mode"
+                : "Enable highlight mode"
+            }
+            title={
+              highlightModeActive
+                ? "Disable highlight mode"
+                : "Enable highlight mode"
+            }
             aria-pressed={highlightModeActive}
             type="button"
           >

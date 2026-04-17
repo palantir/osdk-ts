@@ -17,8 +17,7 @@
 import { type ConjureContext, conjureFetch } from "conjure-lite";
 import type {
   OntologyRid as _api_OntologyRid,
-  OrganizationRidsForOntologyResponse
-    as _api_OrganizationRidsForOntologyResponse,
+  OrganizationRidsForOntologyResponse as _api_OrganizationRidsForOntologyResponse,
 } from "../__components.js";
 
 /**

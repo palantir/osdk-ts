@@ -34,8 +34,8 @@ import type { PdfViewerHandle, PdfViewerProps } from "./types.js";
 
 export const BasePdfViewer: React.ForwardRefExoticComponent<
   PdfViewerProps & React.RefAttributes<PdfViewerHandle>
-> = forwardRef<PdfViewerHandle, PdfViewerProps>(
-  function BasePdfViewer({
+> = forwardRef<PdfViewerHandle, PdfViewerProps>(function BasePdfViewer(
+  {
     src,
     annotations = EMPTY_ANNOTATION_ARRAY,
     onAnnotationClick,
@@ -53,150 +53,155 @@ export const BasePdfViewer: React.ForwardRefExoticComponent<
     sidebarMode: sidebarModeProp = "thumbnails",
     outlineIcons,
     className,
-  }, ref) {
-    const viewer = usePdfViewerState({
-      src,
-      initialPage,
-      initialScale,
-      initialSidebarOpen,
-      sidebarMode: sidebarModeProp,
-      onDownload,
+  },
+  ref,
+) {
+  const viewer = usePdfViewerState({
+    src,
+    initialPage,
+    initialScale,
+    initialSidebarOpen,
+    sidebarMode: sidebarModeProp,
+    onDownload,
+  });
+
+  const { highlightModeActive, toggleHighlightMode, deleteHighlight } =
+    usePdfHighlightMode({
+      pdfViewerRef: viewer.pdfViewerRef,
+      document: viewer.document,
+      enabled: enableHighlight,
+      onTextHighlight,
+      onHighlightDelete,
     });
 
-    const { highlightModeActive, toggleHighlightMode, deleteHighlight } =
-      usePdfHighlightMode({
-        pdfViewerRef: viewer.pdfViewerRef,
-        document: viewer.document,
-        enabled: enableHighlight,
-        onTextHighlight,
-        onHighlightDelete,
-      });
-
-    useImperativeHandle(ref, () => ({
+  useImperativeHandle(
+    ref,
+    () => ({
       scrollToPage: viewer.scrollToPage,
       deleteHighlight,
-    }), [viewer.scrollToPage, deleteHighlight]);
+    }),
+    [viewer.scrollToPage, deleteHighlight],
+  );
 
-    const { hasFormFields, submitFormData } = usePdfFormFields({
-      pdfViewerRef: viewer.pdfViewerRef,
-      eventBusRef: viewer.eventBusRef,
-      document: viewer.document,
-      formData,
-      onFormSubmit,
-      onFormChange,
-    });
+  const { hasFormFields, submitFormData } = usePdfFormFields({
+    pdfViewerRef: viewer.pdfViewerRef,
+    eventBusRef: viewer.eventBusRef,
+    document: viewer.document,
+    formData,
+    onFormSubmit,
+    onFormChange,
+  });
 
-    const annotationsByPage = usePdfAnnotationsByPage(annotations);
+  const annotationsByPage = usePdfAnnotationsByPage(annotations);
 
-    const rootClassName = classnames(styles.pdfViewer, className);
+  const rootClassName = classnames(styles.pdfViewer, className);
 
-    if (viewer.loading) {
-      return (
-        <div className={rootClassName}>
-          <div className={styles.loadingContainer}>
-            <Spin className={styles.spinnerIcon} />
-            Loading…
-          </div>
-        </div>
-      );
-    }
-
-    if (viewer.error != null) {
-      return (
-        <div className={rootClassName}>
-          <div className={styles.errorContainer}>
-            <ErrorIcon className={styles.errorIcon} />
-            Failed to load PDF: {viewer.error.message}
-          </div>
-        </div>
-      );
-    }
-
-    if (viewer.document == null) {
-      return (
-        <div className={rootClassName}>
-          <div className={styles.loadingContainer}>No document</div>
-        </div>
-      );
-    }
-
+  if (viewer.loading) {
     return (
       <div className={rootClassName}>
-        <PdfViewerToolbar
-          currentPage={viewer.currentPage}
-          numPages={viewer.numPages}
-          scale={viewer.scale}
-          sidebarOpen={viewer.sidebarOpen}
-          onPageChange={viewer.scrollToPage}
-          onScaleChange={viewer.setScale}
-          onSearchOpen={viewer.search.openSearch}
-          onSidebarToggle={viewer.toggleSidebar}
-          onDownload={viewer.download}
-          enableDownload={enableDownload}
-          onRotateLeft={viewer.rotateLeft}
-          onRotateRight={viewer.rotateRight}
-          enableHighlight={enableHighlight}
-          highlightModeActive={highlightModeActive}
-          onHighlightToggle={toggleHighlightMode}
-          enableFormSave={onFormSubmit != null && hasFormFields}
-          onFormSave={submitFormData}
-        />
-        {viewer.search.isSearchOpen && (
-          <PdfViewerSearchBar
-            query={viewer.search.query}
-            totalMatches={viewer.search.totalMatches}
-            currentMatchIndex={viewer.search.currentMatchIndex}
-            onQueryChange={viewer.search.setQuery}
-            onNext={viewer.search.nextMatch}
-            onPrev={viewer.search.prevMatch}
-            onClose={viewer.search.closeSearch}
-          />
-        )}
-        <div className={styles.contentArea}>
-          {viewer.sidebarOpen && viewer.sidebarMode === "thumbnails" && (
-            <PdfViewerSidebar
-              document={viewer.document}
-              numPages={viewer.numPages}
-              currentPage={viewer.currentPage}
-              onPageClick={viewer.scrollToPage}
-              sidebarMode={viewer.sidebarMode}
-              onSidebarModeChange={viewer.setSidebarMode}
-            />
-          )}
-          {viewer.sidebarOpen && viewer.sidebarMode === "outline" && (
-            <PdfViewerOutlineSidebar
-              outlineItems={viewer.outlineItems}
-              currentPage={viewer.currentPage}
-              onItemClick={viewer.scrollToPage}
-              sidebarMode={viewer.sidebarMode}
-              onSidebarModeChange={viewer.setSidebarMode}
-              outlineIcons={outlineIcons}
-            />
-          )}
-          <div className={styles.scrollContainerWrapper}>
-            <div ref={viewer.containerRef} className={styles.scrollContainer}>
-              <div ref={viewer.viewerRef} className="pdfViewer" />
-              {viewer.portalTargets.map((target) => {
-                const pageAnnotations = annotationsByPage[target.pageNumber]
-                  ?? EMPTY_ANNOTATION_ARRAY;
-                if (pageAnnotations.length === 0) {
-                  return null;
-                }
-                return createPortal(
-                  <PdfViewerAnnotationLayer
-                    key={target.pageNumber}
-                    annotations={pageAnnotations}
-                    pageHeight={target.pageHeight}
-                    scale={target.scale}
-                    onAnnotationClick={onAnnotationClick}
-                  />,
-                  target.container,
-                );
-              })}
-            </div>
-          </div>
+        <div className={styles.loadingContainer}>
+          <Spin className={styles.spinnerIcon} />
+          Loading…
         </div>
       </div>
     );
-  },
-);
+  }
+
+  if (viewer.error != null) {
+    return (
+      <div className={rootClassName}>
+        <div className={styles.errorContainer}>
+          <ErrorIcon className={styles.errorIcon} />
+          Failed to load PDF: {viewer.error.message}
+        </div>
+      </div>
+    );
+  }
+
+  if (viewer.document == null) {
+    return (
+      <div className={rootClassName}>
+        <div className={styles.loadingContainer}>No document</div>
+      </div>
+    );
+  }
+
+  return (
+    <div className={rootClassName}>
+      <PdfViewerToolbar
+        currentPage={viewer.currentPage}
+        numPages={viewer.numPages}
+        scale={viewer.scale}
+        sidebarOpen={viewer.sidebarOpen}
+        onPageChange={viewer.scrollToPage}
+        onScaleChange={viewer.setScale}
+        onSearchOpen={viewer.search.openSearch}
+        onSidebarToggle={viewer.toggleSidebar}
+        onDownload={viewer.download}
+        enableDownload={enableDownload}
+        onRotateLeft={viewer.rotateLeft}
+        onRotateRight={viewer.rotateRight}
+        enableHighlight={enableHighlight}
+        highlightModeActive={highlightModeActive}
+        onHighlightToggle={toggleHighlightMode}
+        enableFormSave={onFormSubmit != null && hasFormFields}
+        onFormSave={submitFormData}
+      />
+      {viewer.search.isSearchOpen && (
+        <PdfViewerSearchBar
+          query={viewer.search.query}
+          totalMatches={viewer.search.totalMatches}
+          currentMatchIndex={viewer.search.currentMatchIndex}
+          onQueryChange={viewer.search.setQuery}
+          onNext={viewer.search.nextMatch}
+          onPrev={viewer.search.prevMatch}
+          onClose={viewer.search.closeSearch}
+        />
+      )}
+      <div className={styles.contentArea}>
+        {viewer.sidebarOpen && viewer.sidebarMode === "thumbnails" && (
+          <PdfViewerSidebar
+            document={viewer.document}
+            numPages={viewer.numPages}
+            currentPage={viewer.currentPage}
+            onPageClick={viewer.scrollToPage}
+            sidebarMode={viewer.sidebarMode}
+            onSidebarModeChange={viewer.setSidebarMode}
+          />
+        )}
+        {viewer.sidebarOpen && viewer.sidebarMode === "outline" && (
+          <PdfViewerOutlineSidebar
+            outlineItems={viewer.outlineItems}
+            currentPage={viewer.currentPage}
+            onItemClick={viewer.scrollToPage}
+            sidebarMode={viewer.sidebarMode}
+            onSidebarModeChange={viewer.setSidebarMode}
+            outlineIcons={outlineIcons}
+          />
+        )}
+        <div className={styles.scrollContainerWrapper}>
+          <div ref={viewer.containerRef} className={styles.scrollContainer}>
+            <div ref={viewer.viewerRef} className="pdfViewer" />
+            {viewer.portalTargets.map((target) => {
+              const pageAnnotations =
+                annotationsByPage[target.pageNumber] ?? EMPTY_ANNOTATION_ARRAY;
+              if (pageAnnotations.length === 0) {
+                return null;
+              }
+              return createPortal(
+                <PdfViewerAnnotationLayer
+                  key={target.pageNumber}
+                  annotations={pageAnnotations}
+                  pageHeight={target.pageHeight}
+                  scale={target.scale}
+                  onAnnotationClick={onAnnotationClick}
+                />,
+                target.container,
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+});

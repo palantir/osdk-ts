@@ -51,8 +51,8 @@ export interface UseCbacPickerStateResult {
 function useStableArray(arr: string[]): string[] {
   const ref = React.useRef(arr);
   if (
-    arr.length !== ref.current.length
-    || arr.some((id, i) => id !== ref.current[i])
+    arr.length !== ref.current.length ||
+    arr.some((id, i) => id !== ref.current[i])
   ) {
     ref.current = arr;
   }
@@ -100,8 +100,11 @@ export function useCbacPickerState(
   const isValid = restrictions?.isValid ?? true;
   const userSatisfiesMarkings = restrictions?.userSatisfiesMarkings ?? true;
 
-  const isLoading = categoriesLoading || markingsLoading
-    || restrictionsLoading || bannerLoading;
+  const isLoading =
+    categoriesLoading ||
+    markingsLoading ||
+    restrictionsLoading ||
+    bannerLoading;
 
   const error = React.useMemo(() => {
     const errors = [
@@ -113,7 +116,7 @@ export function useCbacPickerState(
     if (errors.length > 1) {
       return new AggregateError(
         errors,
-        errors.map(e => e.message).join("; "),
+        errors.map((e) => e.message).join("; "),
       );
     }
     return errors[0];
@@ -126,15 +129,12 @@ export function useCbacPickerState(
     refetchRestrictions();
   }, [refetchCategories, refetchMarkings, refetchBanner, refetchRestrictions]);
 
-  const categoryGroups = React.useMemo(
-    (): CategoryMarkingGroup[] => {
-      if (rawCategories === undefined || rawMarkings === undefined) {
-        return [];
-      }
-      return groupMarkingsByCategory(rawMarkings, rawCategories);
-    },
-    [rawMarkings, rawCategories],
-  );
+  const categoryGroups = React.useMemo((): CategoryMarkingGroup[] => {
+    if (rawCategories === undefined || rawMarkings === undefined) {
+      return [];
+    }
+    return groupMarkingsByCategory(rawMarkings, rawCategories);
+  }, [rawMarkings, rawCategories]);
 
   const markingStates = React.useMemo(
     () =>

@@ -61,10 +61,9 @@ export class TestLogger extends BaseLogger implements Logger {
       msgs.push(chalk.magenta(`.${bindings.methodName}()`));
     }
 
-    // eslint-disable-next-line no-console
-    return vi.fn<Logger.LogFn>(console[name === "fatal" ? "error" : name].bind(
-      console,
-      msgs.join(" "),
-    )) as Logger.LogFn;
+    return vi.fn<Logger.LogFn>(
+      // oxlint-disable-next-line no-console
+      console[name === "fatal" ? "error" : name].bind(console, msgs.join(" ")),
+    ) as Logger.LogFn;
   }
 }

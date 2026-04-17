@@ -332,12 +332,7 @@ describe("extendParametersWithObjectSets", () => {
     };
 
     expect(() =>
-      extendParametersWithObjectSets(
-        undefined,
-        config,
-        parameters,
-        cache,
-      )
+      extendParametersWithObjectSets(undefined, config, parameters, cache),
     ).toThrow("Not provided an OSDK client");
   });
 

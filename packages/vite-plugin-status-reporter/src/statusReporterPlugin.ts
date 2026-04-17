@@ -54,11 +54,7 @@ export interface StatusReporterConfig {
  * Lifecycle: PREPARING → READY (with heartbeat) → FAILED on error → STOPPED on close.
  */
 export function statusReporterPlugin(config: StatusReporterConfig): Plugin {
-  const {
-    service,
-    gatewayAddrFile,
-    heartbeatInterval = 30_000,
-  } = config;
+  const { service, gatewayAddrFile, heartbeatInterval = 30_000 } = config;
 
   let resolvedAddrFile: string;
   let logger: Logger | undefined;

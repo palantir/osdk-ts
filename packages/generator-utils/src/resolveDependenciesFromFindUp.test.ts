@@ -22,9 +22,14 @@ import { resolveDependenciesFromFindUp } from "./resolveDependenciesFromFindUp.j
 describe(resolveDependenciesFromFindUp, () => {
   describe("not provided a version", () => {
     it("errors when it does not find a version", async () => {
-      await expect(resolveDependenciesFromFindUp({
-        not_a_real_dep_you_would_find: undefined,
-      }, dirname(fileURLToPath(import.meta.url)))).rejects.toThrow(
+      await expect(
+        resolveDependenciesFromFindUp(
+          {
+            not_a_real_dep_you_would_find: undefined,
+          },
+          dirname(fileURLToPath(import.meta.url)),
+        ),
+      ).rejects.toThrow(
         /^Invariant failed: Could not find a dependency for not_a_real_dep_you_would_find in (.*?)$/,
       );
     });

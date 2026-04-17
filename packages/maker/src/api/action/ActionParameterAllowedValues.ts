@@ -25,21 +25,21 @@ import type {
 
 export type ActionParameterAllowedValues =
   | {
-    type: "oneOf";
-    oneOf: Array<OntologyIrLabelledValue>;
-    otherValueAllowed?: boolean;
-  }
+      type: "oneOf";
+      oneOf: Array<OntologyIrLabelledValue>;
+      otherValueAllowed?: boolean;
+    }
   | {
-    type: "range";
-    min?: OntologyIrConditionValue;
-    max?: OntologyIrConditionValue;
-  }
+      type: "range";
+      min?: OntologyIrConditionValue;
+      max?: OntologyIrConditionValue;
+    }
   | { type: "text"; minLength?: number; maxLength?: number; regex?: string }
   | {
-    type: "datetime";
-    maximum?: OntologyIrParameterDateRangeValue;
-    minimum?: OntologyIrParameterDateRangeValue;
-  }
+      type: "datetime";
+      maximum?: OntologyIrParameterDateRangeValue;
+      minimum?: OntologyIrParameterDateRangeValue;
+    }
   | { type: "objectTypeReference"; interfaceTypes: Array<InterfaceTypeApiName> }
   | { type: "objectQuery" }
   | { type: "attachment" }
@@ -57,13 +57,11 @@ export type ActionParameterAllowedValues =
   | { type: "redacted" }
   | { type: "multipassGroup" }
   | {
-    type: "user";
-    fromGroups?: Array<UserGroup>;
-  };
+      type: "user";
+      fromGroups?: Array<UserGroup>;
+    };
 
-export type UserGroup =
-  | ParameterUserGroup
-  | StaticUserGroup;
+export type UserGroup = ParameterUserGroup | StaticUserGroup;
 
 export type ParameterUserGroup = {
   type: "parameter";

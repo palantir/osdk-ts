@@ -17,10 +17,8 @@
 import { type ConjureContext, conjureFetch } from "conjure-lite";
 import type { OntologyRid as _api_OntologyRid } from "../__components.js";
 import type {
-  DeleteAssociationsRequest
-    as _api_association_metadata_DeleteAssociationsRequest,
-  DeleteAssociationsResponse
-    as _api_association_metadata_DeleteAssociationsResponse,
+  DeleteAssociationsRequest as _api_association_metadata_DeleteAssociationsRequest,
+  DeleteAssociationsResponse as _api_association_metadata_DeleteAssociationsResponse,
 } from "../association/metadata/__components.js";
 
 /**

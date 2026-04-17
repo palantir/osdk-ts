@@ -50,10 +50,7 @@ export async function run({ outputDirectory, check }: RunArgs): Promise<void> {
   await fixMonorepolint(tmpDir);
 
   const templatesWithSdkVersionWithOsdk = templatesWithSdkVersions(
-    [
-      ...TEMPLATES,
-      ...WIDGET_TEMPLATES,
-    ],
+    [...TEMPLATES, ...WIDGET_TEMPLATES],
     true,
   );
   const templatesWithSdkVersionWithoutOsdk = templatesWithSdkVersions(
@@ -75,12 +72,7 @@ export async function run({ outputDirectory, check }: RunArgs): Promise<void> {
       false,
     );
   } else {
-    copyExamples(
-      resolvedOutput,
-      tmpDir,
-      templatesWithSdkVersionWithOsdk,
-      true,
-    );
+    copyExamples(resolvedOutput, tmpDir, templatesWithSdkVersionWithOsdk, true);
     copyExamples(
       resolvedOutput,
       tmpDir,
@@ -101,16 +93,16 @@ function templatesWithSdkVersions<T extends Pick<Template, "files" | "hidden">>(
   isUsingOsdk: boolean = true,
 ) {
   let templatesWithSdkVersions = templates.flatMap((template) =>
-    Object.keys(template.files).map((sdkVersion) =>
-      [template, sdkVersion as SdkVersion] as const
-    )
+    Object.keys(template.files).map(
+      (sdkVersion) => [template, sdkVersion as SdkVersion] as const,
+    ),
   );
 
   // Bootstrapping without an OSDK is only supported for visible 2.x templates
   if (!isUsingOsdk) {
-    templatesWithSdkVersions = templatesWithSdkVersions.filter((
-      [template, sdkVersion],
-    ) => !template.hidden && sdkVersion === "2.x");
+    templatesWithSdkVersions = templatesWithSdkVersions.filter(
+      ([template, sdkVersion]) => !template.hidden && sdkVersion === "2.x",
+    );
   }
 
   return templatesWithSdkVersions;
@@ -163,12 +155,14 @@ async function generateCreateAppExamplesWithOsdk(
   tmpDir: tmp.DirResult,
 ): Promise<void> {
   process.chdir(tmpDir.name);
-  for (
-    const [template, sdkVersion] of templatesWithSdkVersions(TEMPLATES, true)
-  ) {
-    const osdkPackage = sdkVersion === "2.x"
-      ? "@osdk/e2e.generated.catchall"
-      : "@osdk/e2e.generated.1.1.x";
+  for (const [template, sdkVersion] of templatesWithSdkVersions(
+    TEMPLATES,
+    true,
+  )) {
+    const osdkPackage =
+      sdkVersion === "2.x"
+        ? "@osdk/e2e.generated.catchall"
+        : "@osdk/e2e.generated.1.1.x";
     await generateCreateAppExamples(tmpDir, template, sdkVersion, {
       ontology: "ri.ontology.main.ontology.fake",
       package: osdkPackage,
@@ -181,12 +175,10 @@ async function generateCreateAppExamplesWithOsdk(
 async function generateCreateAppExamplesWithoutOsdk(
   tmpDir: tmp.DirResult,
 ): Promise<void> {
-  for (
-    const [template, sdkVersion] of templatesWithSdkVersions(
-      TEMPLATES,
-      false,
-    )
-  ) {
+  for (const [template, sdkVersion] of templatesWithSdkVersions(
+    TEMPLATES,
+    false,
+  )) {
     await generateCreateAppExamples(tmpDir, template, sdkVersion);
   }
 }
@@ -194,15 +186,14 @@ async function generateCreateAppExamplesWithoutOsdk(
 async function generateCreateWidgetExamples(
   tmpDir: tmp.DirResult,
 ): Promise<void> {
-  for (
-    const [template, sdkVersion] of templatesWithSdkVersions(
-      WIDGET_TEMPLATES,
-    )
-  ) {
+  for (const [template, sdkVersion] of templatesWithSdkVersions(
+    WIDGET_TEMPLATES,
+  )) {
     const exampleId = sdkVersionedTemplateExampleId(template, sdkVersion, true);
-    const osdkPackage = sdkVersion === "2.x"
-      ? "@osdk/e2e.generated.catchall"
-      : "@osdk/e2e.generated.1.1.x";
+    const osdkPackage =
+      sdkVersion === "2.x"
+        ? "@osdk/e2e.generated.catchall"
+        : "@osdk/e2e.generated.1.1.x";
     consola.info(
       `Generating example ${exampleId} using osdkPackage ${osdkPackage}`,
     );
@@ -230,10 +221,9 @@ async function mutateFiles(
   isUsingOsdk: boolean = true,
 ) {
   for (const mutator of MUTATORS) {
-    const matches = await globby(
-      mutator.filePattern,
-      { cwd: path.join(tmpDir.name, exampleId) },
-    );
+    const matches = await globby(mutator.filePattern, {
+      cwd: path.join(tmpDir.name, exampleId),
+    });
     for (const match of matches) {
       const filePath = path.join(tmpDir.name, exampleId, match);
       const result = mutator.mutate(
@@ -258,10 +248,9 @@ async function mutateFiles(
 }
 
 async function fixMonorepolint(tmpDir: tmp.DirResult): Promise<void> {
-  const mrlConfig = await findUp(
-    ".monorepolint.config.mjs",
-    { cwd: path.dirname(fileURLToPath(import.meta.url)) },
-  );
+  const mrlConfig = await findUp(".monorepolint.config.mjs", {
+    cwd: path.dirname(fileURLToPath(import.meta.url)),
+  });
   if (mrlConfig == null) {
     consola.error("Unable to find .monorepolint.config.mjs");
     process.exit(1);
@@ -270,30 +259,26 @@ async function fixMonorepolint(tmpDir: tmp.DirResult): Promise<void> {
   const mrlPathsWithOsdk = [
     ...templatesWithSdkVersions(TEMPLATES, true),
     ...templatesWithSdkVersions(WIDGET_TEMPLATES),
-  ].map((
-    [template, sdkVersion],
-  ) =>
+  ].map(([template, sdkVersion]) =>
     path.join(
       tmpDir.name,
       sdkVersionedTemplateExampleId(template, sdkVersion, true),
       "package.json",
-    )
+    ),
   );
-  const mrlPathsWithoutOsdk = templatesWithSdkVersions(TEMPLATES, false)
-    .map((
-      [template, sdkVersion],
-    ) =>
+  const mrlPathsWithoutOsdk = templatesWithSdkVersions(TEMPLATES, false).map(
+    ([template, sdkVersion]) =>
       path.join(
         tmpDir.name,
         sdkVersionedTemplateExampleId(template, sdkVersion, false),
         "package.json",
-      )
-    );
+      ),
+  );
   const mrlPaths = [...mrlPathsWithOsdk, ...mrlPathsWithoutOsdk];
   const { stdout: mrlStdout, stderr: mrlStderr } = await promisify(exec)(
-    `pnpm exec monorepolint check --verbose --fix --paths ${
-      mrlPaths.join(" ")
-    }`,
+    `pnpm exec monorepolint check --verbose --fix --paths ${mrlPaths.join(
+      " ",
+    )}`,
   );
   consola.log(mrlStdout);
   consola.log(mrlStderr);
@@ -305,9 +290,7 @@ function checkExamples(
   templatesWithSdkVersion: (readonly [Template, SdkVersion])[],
   isUsingOsdk: boolean,
 ): void {
-  for (
-    const [template, sdkVersion] of templatesWithSdkVersion
-  ) {
+  for (const [template, sdkVersion] of templatesWithSdkVersion) {
     const exampleId = sdkVersionedTemplateExampleId(
       template,
       sdkVersion,
@@ -317,29 +300,21 @@ function checkExamples(
     // realpath because globby in .gitignore filter requires symlinks in tmp directory to be resolved
     const pathLeft = fs.realpathSync(path.join(resolvedOutput, exampleId));
     const pathRight = fs.realpathSync(path.join(tmpDir.name, exampleId));
-    const compareResult = compareSync(
-      pathLeft,
-      pathRight,
-      {
-        compareContent: true,
-        filterHandler: gitIgnoreFilter(pathLeft, pathRight),
-        excludeFilter: "/.turbo,turbo.json",
-      },
-    );
+    const compareResult = compareSync(pathLeft, pathRight, {
+      compareContent: true,
+      filterHandler: gitIgnoreFilter(pathLeft, pathRight),
+      excludeFilter: "/.turbo,turbo.json",
+    });
     if (!compareResult.same) {
       consola.error(
         `Found ${compareResult.differences} differences in ${exampleId} please generate examples again.`,
       );
-      consola.error(compareResult.diffSet?.filter(d => d.state !== "equal"));
+      consola.error(compareResult.diffSet?.filter((d) => d.state !== "equal"));
 
       for (const q of compareResult.diffSet ?? []) {
         if (q.state !== "equal") {
-          const aPath = q.path1 && q.name1
-            ? path.join(q.path1, q.name1)
-            : null;
-          const bPath = q.path2 && q.name2
-            ? path.join(q.path2, q.name2)
-            : null;
+          const aPath = q.path1 && q.name1 ? path.join(q.path1, q.name1) : null;
+          const bPath = q.path2 && q.name2 ? path.join(q.path2, q.name2) : null;
 
           const aContents = getContents(aPath);
           const bContents = getContents(bPath);
@@ -365,13 +340,13 @@ function checkExamples(
 
 function getContents(aPath: string | null) {
   return aPath?.endsWith(".json")
-    ? JSON.parse(
-      fs.readFileSync(aPath, "utf-8"),
-    )
-    : aPath?.endsWith(".ts") || aPath?.endsWith(".tsx")
-        || aPath?.endsWith(".js") || aPath?.endsWith(".jsx")
-    ? fs.readFileSync(aPath, "utf-8")
-    : null;
+    ? JSON.parse(fs.readFileSync(aPath, "utf-8"))
+    : aPath?.endsWith(".ts") ||
+        aPath?.endsWith(".tsx") ||
+        aPath?.endsWith(".js") ||
+        aPath?.endsWith(".jsx")
+      ? fs.readFileSync(aPath, "utf-8")
+      : null;
 }
 
 function copyExamples(
@@ -381,9 +356,7 @@ function copyExamples(
   isUsingOsdk: boolean,
 ): void {
   consola.info("Copying generated packages to output directory");
-  for (
-    const [template, sdkVersion] of templatesWithSdkVersion
-  ) {
+  for (const [template, sdkVersion] of templatesWithSdkVersion) {
     const exampleId = sdkVersionedTemplateExampleId(
       template,
       sdkVersion,
@@ -431,13 +404,13 @@ const UPDATE_PACKAGE_JSON: Mutator = {
     newContent: content
       .replace(
         // Use locally generated SDK in the monorepo
-        "\"@osdk/e2e.generated.1.1.x\": \"latest\"",
-        "\"@osdk/e2e.generated.1.1.x\": \"workspace:*\"",
+        '"@osdk/e2e.generated.1.1.x": "latest"',
+        '"@osdk/e2e.generated.1.1.x": "workspace:*"',
       )
       .replace(
         // Use locally generated SDK in the monorepo
-        "\"@osdk/e2e.generated.catchall\": \"latest\"",
-        "\"@osdk/e2e.generated.catchall\": \"workspace:*\"",
+        '"@osdk/e2e.generated.catchall": "latest"',
+        '"@osdk/e2e.generated.catchall": "workspace:*"',
       )
       .replace(
         // Use locally generated SDK in the monorepo
@@ -471,21 +444,27 @@ const UPDATE_PACKAGE_JSON: Mutator = {
       )
       .replace(
         // Follow monorepo package naming convention
-        `"name": "${
-          sdkVersionedTemplateExampleId(template, sdkVersion, true)
-        }"`,
-        `"name": "@osdk/examples.${
-          sdkVersionedTemplateCanonicalId(template, sdkVersion)
-        }"`,
+        `"name": "${sdkVersionedTemplateExampleId(
+          template,
+          sdkVersion,
+          true,
+        )}"`,
+        `"name": "@osdk/examples.${sdkVersionedTemplateCanonicalId(
+          template,
+          sdkVersion,
+        )}"`,
       )
       .replace(
         // Follow monorepo package naming convention
-        `"name": "${
-          sdkVersionedTemplateExampleId(template, sdkVersion, false)
-        }"`,
-        `"name": "@psdk/examples.${
-          sdkVersionedTemplateCanonicalId(template, sdkVersion)
-        }"`,
+        `"name": "${sdkVersionedTemplateExampleId(
+          template,
+          sdkVersion,
+          false,
+        )}"`,
+        `"name": "@psdk/examples.${sdkVersionedTemplateCanonicalId(
+          template,
+          sdkVersion,
+        )}"`,
       ),
   }),
 };
@@ -498,11 +477,7 @@ const UPDATE_README: Mutator = {
   }),
 };
 
-const MUTATORS: Mutator[] = [
-  DELETE_NPM_RC,
-  UPDATE_PACKAGE_JSON,
-  UPDATE_README,
-];
+const MUTATORS: Mutator[] = [DELETE_NPM_RC, UPDATE_PACKAGE_JSON, UPDATE_README];
 
 function templateCanonicalId(template: Template): string {
   return template.id.replace(/^template-/, "");
@@ -536,16 +511,16 @@ function readme(
 ): string {
   return `# ${templateExampleId(template)}
 
-This project was generated with [\`@osdk/create-app\`](https://www.npmjs.com/package/@osdk/create-app) from the \`${
-    templateCanonicalId(template)
-  }\` template. It is built against a locally generated SDK and a non-existent Foundry stack, so it is intended for reference purposes only.
+This project was generated with [\`@osdk/create-app\`](https://www.npmjs.com/package/@osdk/create-app) from the \`${templateCanonicalId(
+    template,
+  )}\` template. It is built against a locally generated SDK and a non-existent Foundry stack, so it is intended for reference purposes only.
 
 To quickly create your own version of this template run the following command and answer the prompts based on your Developer Console application:
 
 \`\`\`
-npm create @osdk/app@latest -- --template ${
-    templateCanonicalId(template)
-  } --sdkVersion ${sdkVersion}${!isUsingOsdk ? " --skipOsdk" : ""}
+npm create @osdk/app@latest -- --template ${templateCanonicalId(
+    template,
+  )} --sdkVersion ${sdkVersion}${!isUsingOsdk ? " --skipOsdk" : ""}
 \`\`\`
 
 Alternatively check out the Developer Console docs for a full guide on creating and deploying frontend applications with the Ontology SDK.

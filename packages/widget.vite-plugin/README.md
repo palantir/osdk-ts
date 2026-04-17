@@ -120,7 +120,7 @@ You can configure vite and this plugin to output multiple widgets simultaneously
 src/
   main.tsx
   main.config.ts
-  second.tsx        // Imported by second.html 
+  second.tsx        // Imported by second.html
   second.config.ts  // Imported by second.tsx
 index.html
 second.html         // Second entrypoint
@@ -152,16 +152,12 @@ This vite plugin will then discover both entrypoints and output a combined `.pal
     "version": "0.0.0",
     "widgets": {
       "main": {
-        "entrypointJs": [
-          "assets/main-D7Z1E0qk.js"
-        ],
+        "entrypointJs": ["assets/main-D7Z1E0qk.js"],
         "entrypointCss": []
         // Rest of config
       },
       "second": {
-        "entrypointJs": [
-          "assets/second-CULz-_Ck.js"
-        ],
+        "entrypointJs": ["assets/second-CULz-_Ck.js"],
         "entrypointCss": []
         // Rest of config
       }

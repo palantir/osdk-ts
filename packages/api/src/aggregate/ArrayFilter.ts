@@ -21,12 +21,11 @@ interface ArrayFilterOptions<T> {
   "$isNull": boolean;
 }
 namespace ArrayFilter {
-  export interface $contains<T>
-    extends Just<"$contains", ArrayFilterOptions<T>>
-  {}
+  export interface $contains<T> extends Just<
+    "$contains",
+    ArrayFilterOptions<T>
+  > {}
   export interface $isNull<T> extends Just<"$isNull", ArrayFilterOptions<T>> {}
 }
 
-export type ArrayFilter<T> =
-  | ArrayFilter.$contains<T>
-  | ArrayFilter.$isNull<T>;
+export type ArrayFilter<T> = ArrayFilter.$contains<T> | ArrayFilter.$isNull<T>;

@@ -35,19 +35,27 @@ export function createWithPropertiesObjectSet<
 ): DerivedProperty.SelectPropertyBuilder<Q, false> {
   return {
     pivotTo: (link) => {
-      return createWithPropertiesObjectSet(objectType, {
-        type: "searchAround",
-        objectSet,
-        link,
-      }, definitionMap);
+      return createWithPropertiesObjectSet(
+        objectType,
+        {
+          type: "searchAround",
+          objectSet,
+          link,
+        },
+        definitionMap,
+      );
     },
     where: (clause) => {
       const rdpNames = new Set(definitionMap.keys());
-      return createWithPropertiesObjectSet(objectType, {
-        type: "filter",
-        objectSet,
-        where: modernToLegacyWhereClause(clause, objectType, rdpNames),
-      }, definitionMap);
+      return createWithPropertiesObjectSet(
+        objectType,
+        {
+          type: "filter",
+          objectSet,
+          where: modernToLegacyWhereClause(clause, objectType, rdpNames),
+        },
+        definitionMap,
+      );
     },
     aggregate: (aggregation: string, opt: any) => {
       const splitAggregation = aggregation.split(":");
@@ -73,7 +81,7 @@ export function createWithPropertiesObjectSet<
           aggregationOperationDefinition = {
             type: "approximatePercentile",
             selectedPropertyApiName: aggregationPropertyName,
-            approximatePercentile: opt?.percentile ?? .5,
+            approximatePercentile: opt?.percentile ?? 0.5,
           };
           break;
         case "collectSet":

@@ -263,7 +263,7 @@ Displays header and cell with the provided custom renderers.
 ```typescript
 {
   type: "custom",
-  id: "columnName" 
+  id: "columnName"
 }
 ```
 

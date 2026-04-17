@@ -131,16 +131,18 @@ function convertNumberFormattingType(
           wireNumberType.baseFormatOptions,
         ),
         affix: {
-          prefix: wireNumberType.affix?.prefix != null
-            ? convertPropertyTypeReferenceOrStringConstant(
-              wireNumberType.affix.prefix,
-            )
-            : undefined,
-          postfix: wireNumberType.affix?.postfix != null
-            ? convertPropertyTypeReferenceOrStringConstant(
-              wireNumberType.affix.postfix,
-            )
-            : undefined,
+          prefix:
+            wireNumberType.affix?.prefix != null
+              ? convertPropertyTypeReferenceOrStringConstant(
+                  wireNumberType.affix.prefix,
+                )
+              : undefined,
+          postfix:
+            wireNumberType.affix?.postfix != null
+              ? convertPropertyTypeReferenceOrStringConstant(
+                  wireNumberType.affix.postfix,
+                )
+              : undefined,
         },
       };
     }

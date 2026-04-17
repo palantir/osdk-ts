@@ -18,18 +18,15 @@ import type {
   AggregateRequest as _api_AggregateRequest,
   AggregateResponse as _api_AggregateResponse,
   Backend as _api_Backend,
-  CheckBulkOperationPermissionsRequest
-    as _api_CheckBulkOperationPermissionsRequest,
-  CheckBulkOperationPermissionsResponse
-    as _api_CheckBulkOperationPermissionsResponse,
+  CheckBulkOperationPermissionsRequest as _api_CheckBulkOperationPermissionsRequest,
+  CheckBulkOperationPermissionsResponse as _api_CheckBulkOperationPermissionsResponse,
   CreateObjectSetRequest as _api_CreateObjectSetRequest,
   CreateObjectSetResponse as _api_CreateObjectSetResponse,
   CreateTemporaryObjectSetRequest as _api_CreateTemporaryObjectSetRequest,
   CreateTemporaryObjectSetResponse as _api_CreateTemporaryObjectSetResponse,
   CreateVersionedObjectSetRequest as _api_CreateVersionedObjectSetRequest,
   CreateVersionedObjectSetResponse as _api_CreateVersionedObjectSetResponse,
-  CreateVersionedObjectSetWithParentRequest
-    as _api_CreateVersionedObjectSetWithParentRequest,
+  CreateVersionedObjectSetWithParentRequest as _api_CreateVersionedObjectSetWithParentRequest,
   DatasourceRid as _api_DatasourceRid,
   EntityPrimaryKey as _api_EntityPrimaryKey,
   EntityTypeRid as _api_EntityTypeRid,
@@ -43,8 +40,7 @@ import type {
   GetBulkObjectSetRequest as _api_GetBulkObjectSetRequest,
   GetBulkObjectSetResponse as _api_GetBulkObjectSetResponse,
   GetLinksRequest as _api_GetLinksRequest,
-  GetObjectLocatorsInitialScrollRequest
-    as _api_GetObjectLocatorsInitialScrollRequest,
+  GetObjectLocatorsInitialScrollRequest as _api_GetObjectLocatorsInitialScrollRequest,
   GetObjectLocatorsNextScrollRequest as _api_GetObjectLocatorsNextScrollRequest,
   GetObjectLocatorsScrollResponse as _api_GetObjectLocatorsScrollResponse,
   GetObjectSetResponse as _api_GetObjectSetResponse,

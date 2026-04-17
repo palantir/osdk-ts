@@ -31,23 +31,23 @@ export type AggregationResultsWithGroups<
   Q extends ObjectOrInterfaceDefinition,
   A extends UnorderedAggregationClause<Q> | OrderedAggregationClause<Q>,
   G extends GroupByClause<Q> | undefined,
-> = (
-  & {
-    $group: {
-      [P in keyof G & PropertyKeys<Q>]: G[P] extends
-        { $ranges: GroupByRange<infer T>[] } ? { startValue: T; endValue: T }
-        : MaybeNullable<
+> = ({
+  $group: {
+    [P in keyof G & PropertyKeys<Q>]: G[P] extends {
+      $ranges: GroupByRange<infer T>[];
+    }
+      ? { startValue: T; endValue: T }
+      : MaybeNullable<
           G[P],
           OsdkObjectPropertyTypeNotUndefined<
             CompileTimeMetadata<Q>["properties"][P]
           >
         >;
-    };
-  }
-  & AggregationResultsWithoutGroups<Q, A>
-)[];
+  };
+} & AggregationResultsWithoutGroups<Q, A>)[];
 
 type MaybeNullable<GROUP, VALUE> = GROUP extends {
   $exact: { $includeNullValue: true };
-} ? VALUE | null
+}
+  ? VALUE | null
   : VALUE;

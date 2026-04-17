@@ -65,10 +65,7 @@ const DRAG_OVERLAY_HANDLE_ATTRIBUTES: DraggableAttributes = {
 interface FilterListContentProps<D> {
   filterDefinitions?: Array<D>;
   filterStates: Map<string, FilterState>;
-  onFilterStateChanged: (
-    filterKey: string,
-    state: FilterState,
-  ) => void;
+  onFilterStateChanged: (filterKey: string, state: FilterState) => void;
   onFilterRemoved?: (filterKey: string) => void;
   renderInput: RenderFilterInput<D>;
   getFilterKey: (definition: D) => string;
@@ -97,7 +94,9 @@ export function FilterListContent<D>({
     if (!enableSorting || !dragOrder || !filterDefinitions) {
       return filterDefinitions;
     }
-    const defsByKey = new Map(filterDefinitions.map(d => [getFilterKey(d), d]));
+    const defsByKey = new Map(
+      filterDefinitions.map((d) => [getFilterKey(d), d]),
+    );
     const ordered: Array<D> = [];
     for (const key of dragOrder) {
       const def = defsByKey.get(key);
@@ -128,15 +127,15 @@ export function FilterListContent<D>({
   });
   const sensors = useSensors(pointerSensor, keyboardSensor);
 
-  const activeIndex = activeId != null
-    ? sortableIds.indexOf(String(activeId))
-    : -1;
-  const activeDefinition = activeIndex >= 0 && renderDefinitions
-    ? renderDefinitions[activeIndex]
-    : undefined;
+  const activeIndex =
+    activeId != null ? sortableIds.indexOf(String(activeId)) : -1;
+  const activeDefinition =
+    activeIndex >= 0 && renderDefinitions
+      ? renderDefinitions[activeIndex]
+      : undefined;
 
   const activeFilterKey = useMemo(
-    () => activeDefinition ? getFilterKey(activeDefinition) : undefined,
+    () => (activeDefinition ? getFilterKey(activeDefinition) : undefined),
     [activeDefinition, getFilterKey],
   );
 
@@ -168,9 +167,8 @@ export function FilterListContent<D>({
     () => ({
       onDragStart({ active }) {
         const idx = sortableIds.indexOf(String(active.id));
-        const def = idx >= 0 && renderDefinitions
-          ? renderDefinitions[idx]
-          : undefined;
+        const def =
+          idx >= 0 && renderDefinitions ? renderDefinitions[idx] : undefined;
         const label = def ? getFilterLabel(def) : "filter";
         return `Picked up ${label} filter`;
       },
@@ -183,9 +181,8 @@ export function FilterListContent<D>({
       },
       onDragEnd({ active, over }) {
         const idx = sortableIds.indexOf(String(active.id));
-        const def = idx >= 0 && renderDefinitions
-          ? renderDefinitions[idx]
-          : undefined;
+        const def =
+          idx >= 0 && renderDefinitions ? renderDefinitions[idx] : undefined;
         const label = def ? getFilterLabel(def) : "filter";
         if (over && active.id !== over.id) {
           const overIdx = sortableIds.indexOf(String(over.id));
@@ -195,9 +192,8 @@ export function FilterListContent<D>({
       },
       onDragCancel({ active }) {
         const idx = sortableIds.indexOf(String(active.id));
-        const def = idx >= 0 && renderDefinitions
-          ? renderDefinitions[idx]
-          : undefined;
+        const def =
+          idx >= 0 && renderDefinitions ? renderDefinitions[idx] : undefined;
         const label = def ? getFilterLabel(def) : "filter";
         return `Cancelled dragging ${label} filter`;
       },
@@ -205,10 +201,7 @@ export function FilterListContent<D>({
     [renderDefinitions, sortableIds, getFilterLabel],
   );
 
-  const accessibility = useMemo(
-    () => ({ announcements }),
-    [announcements],
-  );
+  const accessibility = useMemo(() => ({ announcements }), [announcements]);
 
   if (!renderDefinitions || renderDefinitions.length === 0) {
     return (
@@ -222,10 +215,7 @@ export function FilterListContent<D>({
 
   if (enableSorting) {
     return (
-      <div
-        className={classnames(styles.content, className)}
-        style={style}
-      >
+      <div className={classnames(styles.content, className)} style={style}>
         <DndContext
           sensors={sensors}
           collisionDetection={closestCenter}
@@ -261,10 +251,7 @@ export function FilterListContent<D>({
             })}
           </SortableContext>
 
-          <DragOverlay
-            dropAnimation={null}
-            className={styles.dragOverlay}
-          >
+          <DragOverlay dropAnimation={null} className={styles.dragOverlay}>
             {activeDefinition && activeFilterKey && (
               <FilterListItem
                 definition={activeDefinition}
@@ -284,10 +271,7 @@ export function FilterListContent<D>({
   }
 
   return (
-    <div
-      className={classnames(styles.content, className)}
-      style={style}
-    >
+    <div className={classnames(styles.content, className)} style={style}>
       {renderDefinitions.map((definition) => {
         const filterKey = getFilterKey(definition);
         const state = filterStates.get(filterKey);

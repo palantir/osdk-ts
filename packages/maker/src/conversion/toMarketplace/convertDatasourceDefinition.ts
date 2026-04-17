@@ -37,8 +37,8 @@ export function convertDatasourceDefinition(
   objectType: ObjectType,
   properties: ObjectPropertyType[],
 ): OntologyIrObjectTypeDatasourceDefinition {
-  const baseDatasource = objectType.datasources?.find(ds =>
-    ["dataset", "stream", "restrictedView", "direct"].includes(ds.type)
+  const baseDatasource = objectType.datasources?.find((ds) =>
+    ["dataset", "stream", "restrictedView", "direct"].includes(ds.type),
   );
   switch (baseDatasource?.type) {
     case "stream":
@@ -47,9 +47,7 @@ export function convertDatasourceDefinition(
         ? { type: "time", time: { window } }
         : { type: "none", none: {} };
       const propertyMapping = Object.fromEntries(
-        properties.map((
-          prop,
-        ) => [prop.apiName, prop.apiName]),
+        properties.map((prop) => [prop.apiName, prop.apiName]),
       );
       return {
         type: "streamV2",
@@ -92,11 +90,12 @@ export function convertDatasourceDefinition(
     case "dataset":
     default:
       if (
-        objectType.properties?.some(prop =>
-          typeof prop.type === "object" && prop.type.type === "marking"
-        )
-        || baseDatasource?.objectSecurityPolicy
-        || baseDatasource?.propertySecurityGroups
+        objectType.properties?.some(
+          (prop) =>
+            typeof prop.type === "object" && prop.type.type === "marking",
+        ) ||
+        baseDatasource?.objectSecurityPolicy ||
+        baseDatasource?.propertySecurityGroups
       ) {
         return {
           type: "datasetV3",
@@ -131,13 +130,13 @@ function convertPropertySecurityGroups(
   primaryKeyPropertyApiName: string,
 ): OntologyIrPropertySecurityGroups {
   if (
-    !ds
-    || (!("objectSecurityPolicy" in ds) && !("propertySecurityGroups" in ds))
+    !ds ||
+    (!("objectSecurityPolicy" in ds) && !("propertySecurityGroups" in ds))
   ) {
     return {
       groups: [
         {
-          properties: properties.map(prop => prop.apiName),
+          properties: properties.map((prop) => prop.apiName),
           rid: "defaultObjectSecurityPolicy",
           security: {
             type: "granular",
@@ -166,11 +165,11 @@ function convertPropertySecurityGroups(
     };
   }
 
-  const validPropertyNames = new Set(properties.map(prop => prop.apiName));
+  const validPropertyNames = new Set(properties.map((prop) => prop.apiName));
   const usedProperties = new Set();
 
-  ds.propertySecurityGroups?.forEach(psg => {
-    psg.properties.forEach(propertyName => {
+  ds.propertySecurityGroups?.forEach((psg) => {
+    psg.properties.forEach((propertyName) => {
       invariant(
         validPropertyNames.has(propertyName),
         `Property "${propertyName}" in property security group ${psg.name} does not exist in the properties list`,
@@ -202,14 +201,14 @@ function convertPropertySecurityGroups(
       primaryKey: {},
     },
     properties: properties
-      .filter(prop => !usedProperties.has(prop.apiName))
-      .map(prop => prop.apiName),
+      .filter((prop) => !usedProperties.has(prop.apiName))
+      .map((prop) => prop.apiName),
   };
 
   return {
     groups: [
       objectSecurityPolicyGroup,
-      ...(ds.propertySecurityGroups?.map(psg => ({
+      ...(ds.propertySecurityGroups?.map((psg) => ({
         rid: psg.name,
         security: {
           type: "granular" as const,
@@ -241,11 +240,11 @@ function convertGranularPolicy(
       granularPolicyCondition: granularPolicy
         ? convertSecurityCondition(granularPolicy)
         : {
-          type: "and",
-          and: {
-            conditions: [],
+            type: "and",
+            and: {
+              conditions: [],
+            },
           },
-        },
       additionalMandatory: {
         markings: appliedMarkings ?? {},
         assumedMarkings: [],
@@ -264,8 +263,8 @@ function convertSecurityCondition(
         return {
           type: "and",
           and: {
-            conditions: condition.conditions.map(c =>
-              convertSecurityCondition(c)
+            conditions: condition.conditions.map((c) =>
+              convertSecurityCondition(c),
             ),
           },
         };
@@ -277,8 +276,8 @@ function convertSecurityCondition(
         return {
           type: "or",
           or: {
-            conditions: condition.conditions.map(c =>
-              convertSecurityCondition(c)
+            conditions: condition.conditions.map((c) =>
+              convertSecurityCondition(c),
             ),
           },
         };
@@ -326,9 +325,7 @@ function convertSecurityCondition(
             type: "constant",
             constant: {
               type: "strings",
-              strings: [
-                condition.name,
-              ],
+              strings: [condition.name],
             },
           },
         },
