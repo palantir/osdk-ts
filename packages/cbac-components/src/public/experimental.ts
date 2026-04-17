@@ -15,6 +15,8 @@
  */
 
 // CBAC Picker - OSDK-aware components
+export { CbacBanner } from "../cbac-picker/CbacBanner.js";
+export { CbacBannerPopover } from "../cbac-picker/CbacBannerPopover.js";
 export { CbacPicker } from "../cbac-picker/CbacPicker.js";
 export { CbacPickerDialog } from "../cbac-picker/CbacPickerDialog.js";
 
@@ -34,7 +36,12 @@ export type {
   CategoryMarkingGroup,
   CbacBannerData,
   MarkingSelectionState,
+  MaxClassificationConstraint,
   PickerMarking,
   PickerMarkingCategory,
   RequiredMarkingGroup,
 } from "../cbac-picker/types.js";
+
+// CBAC Picker - MaxClassificationField
+export { MaxClassificationField } from "../cbac-picker/base/MaxClassificationField.js";
+export type { MaxClassificationFieldProps } from "../cbac-picker/base/MaxClassificationField.js";

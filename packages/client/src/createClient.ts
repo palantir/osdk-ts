@@ -19,6 +19,7 @@ import type {
   FetchPageArgs,
   InterfaceDefinition,
   Logger,
+  MediaReference,
   NullabilityAdherence,
   ObjectOrInterfaceDefinition,
   ObjectSet,
@@ -32,13 +33,16 @@ import type {
 import type {
   Experiment,
   ExperimentFns,
+  MediaTransformation,
   MinimalObjectSet,
+  TransformOptions,
 } from "@osdk/api/unstable";
 import {
   __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference,
   __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchOneByRid,
   __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchPageByRid,
   __EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks,
+  __EXPERIMENTAL__NOT_SUPPORTED_YET__transformAndWait,
 } from "@osdk/api/unstable";
 import type { ObjectSet as WireObjectSet } from "@osdk/foundry.ontologies";
 import { symbolClientContext as oldSymbolClientContext } from "@osdk/shared.client";
@@ -47,6 +51,7 @@ import { applyAction } from "./actions/applyAction.js";
 import { additionalContext, type Client } from "./Client.js";
 import { createMinimalClient } from "./createMinimalClient.js";
 import { fetchMetadataInternal } from "./fetchMetadata.js";
+import { makeMediaTransformation } from "./internal/conversions/makeMediaTransformation.js";
 import { MinimalLogger } from "./logger/MinimalLogger.js";
 import type { MinimalClient } from "./MinimalClientContext.js";
 import { fetchPage, fetchStaticRidPage } from "./object/fetchPage.js";
@@ -156,12 +161,13 @@ export function createClientFromContext(clientCtx: MinimalClient) {
       | ActionDefinition<any>
       | QueryDefinition<any>
       | Experiment<"2.0.8">
-      | Experiment<"2.1.0">,
+      | Experiment<"2.1.0">
+      | Experiment<"2.8.0">,
   >(o: T): T extends ObjectTypeDefinition ? ObjectSet<T>
     : T extends InterfaceDefinition ? MinimalObjectSet<T>
     : T extends ActionDefinition<any> ? ActionSignatureFromDef<T>
     : T extends QueryDefinition<any> ? QuerySignatureFromDef<T>
-    : T extends Experiment<"2.0.8"> | Experiment<"2.1.0">
+    : T extends Experiment<"2.0.8"> | Experiment<"2.1.0"> | Experiment<"2.8.0">
       ? { invoke: ExperimentFns<T> }
     : never
   {
@@ -185,7 +191,7 @@ export function createClientFromContext(clientCtx: MinimalClient) {
       switch (o.name) {
         case __EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks.name:
           return {
-            getBulkLinks: async function*(
+            async *getBulkLinks(
               objs: Array<OsdkBase<any>>,
               linkTypes: string[],
             ) {
@@ -287,6 +293,29 @@ export function createClientFromContext(clientCtx: MinimalClient) {
                 clientCtx,
                 rids,
                 options ?? {},
+              );
+            },
+          } as any;
+
+        case __EXPERIMENTAL__NOT_SUPPORTED_YET__transformAndWait.name:
+          return {
+            transformAndWait: async (args: {
+              mediaReference: MediaReference;
+              transformation: MediaTransformation;
+              options?: TransformOptions;
+            }) => {
+              const { transformAndWaitInternal } = await import(
+                "./util/transformAndWaitInternal.js"
+              );
+              const { mediaSetRid, mediaItemRid, token } =
+                args.mediaReference.reference.mediaSetViewItem;
+              return transformAndWaitInternal(
+                clientCtx,
+                mediaSetRid,
+                mediaItemRid,
+                makeMediaTransformation(args.transformation),
+                token,
+                args.options,
               );
             },
           } as any;

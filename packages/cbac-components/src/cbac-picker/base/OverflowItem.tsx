@@ -15,12 +15,14 @@
  */
 
 import { Button } from "@base-ui/react/button";
+import { Tooltip } from "@base-ui/react/tooltip";
 import classnames from "classnames";
 import React from "react";
 import type { MarkingSelectionState } from "../types.js";
 import styles from "./OverflowItem.module.css";
 import {
   getDisplayLabel,
+  getTooltipText,
   isDisallowed,
   isImplied,
 } from "./selectionStateHelpers.js";
@@ -28,6 +30,7 @@ import {
 export interface OverflowItemProps {
   id: string;
   label: string;
+  description?: string;
   selectionState: MarkingSelectionState;
   disabled?: boolean;
   onToggle: (markingId: string) => void;
@@ -38,6 +41,7 @@ export const OverflowItem: React.MemoExoticComponent<
 > = React.memo(function OverflowItem({
   id,
   label,
+  description,
   selectionState,
   disabled,
   onToggle,
@@ -50,18 +54,46 @@ export const OverflowItem: React.MemoExoticComponent<
   const isSelected = selectionState === "SELECTED";
   const implied = isImplied(selectionState);
 
-  return (
+  const tooltipText = getTooltipText(selectionState);
+  const hasDescription = description !== undefined && description.length > 0;
+  const showTooltip = hasDescription || tooltipText != null;
+  const isItemDisabled = disabled ?? disallowed;
+
+  const button = (
     <Button
       className={classnames(
         styles.overflowItem,
         (isSelected || implied) && styles.overflowItemSelected,
         disallowed && styles.overflowItemDisabled,
       )}
-      onClick={handleClick}
-      disabled={disabled ?? disallowed}
+      onClick={isItemDisabled ? undefined : handleClick}
+      disabled={showTooltip ? undefined : isItemDisabled}
+      aria-disabled={showTooltip ? isItemDisabled : undefined}
       aria-pressed={isSelected || implied}
     >
       {getDisplayLabel(label, selectionState)}
     </Button>
+  );
+
+  if (!showTooltip) {
+    return button;
+  }
+
+  return (
+    <Tooltip.Root>
+      <Tooltip.Trigger render={button} />
+      <Tooltip.Portal>
+        <Tooltip.Positioner side="right" sideOffset={4}>
+          <Tooltip.Popup className={styles.tooltip}>
+            {hasDescription && (
+              <p className={styles.tooltipDescription}>{description}</p>
+            )}
+            {tooltipText != null && (
+              <p className={styles.tooltipHint}>{tooltipText}</p>
+            )}
+          </Tooltip.Popup>
+        </Tooltip.Positioner>
+      </Tooltip.Portal>
+    </Tooltip.Root>
   );
 });

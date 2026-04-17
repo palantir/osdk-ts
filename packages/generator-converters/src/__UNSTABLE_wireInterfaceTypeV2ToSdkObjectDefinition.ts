@@ -55,10 +55,13 @@ export function __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition(
               log,
             ),
           ];
-        }).filter(([_, value]) => value != null),
+        }).filter(([_, value]) => value != null)
+        .sort(([a], [b]) => (a as string).localeCompare(b as string)),
     ),
     links: Object.fromEntries(
-      Object.entries(interfaceType.allLinks ?? interfaceType.links ?? {}).map(
+      Object.entries(interfaceType.allLinks ?? interfaceType.links ?? {}).sort(
+        ([a], [b]) => a.localeCompare(b),
+      ).map(
         (
           [linkApiName, linkType],
         ) => [linkApiName, {

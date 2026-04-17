@@ -17,18 +17,18 @@ import type {
 
 export namespace Employee {
   export type PropertyKeys =
-    | 'id'
-    | 'firstName'
-    | 'email'
     | 'adUsername'
-    | 'locationName'
-    | 'locationCity'
-    | 'firstFullTimeStartDate'
     | 'businessTitle'
+    | 'email'
     | 'employeeNumber'
+    | 'favPlace'
+    | 'firstFullTimeStartDate'
+    | 'firstName'
+    | 'id'
     | 'jobProfile'
-    | 'locationType'
-    | 'favPlace';
+    | 'locationCity'
+    | 'locationName'
+    | 'locationType';
 
   export interface Links {
     readonly lead: $SingleLinkAccessor<Employee>;

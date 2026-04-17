@@ -15,7 +15,6 @@
  */
 
 import type { WhereClause } from "@osdk/api";
-import { useOsdkClient } from "@osdk/react";
 import { FilterList, ObjectTable } from "@osdk/react-components/experimental";
 import type {
   FilterDefinitionUnion,
@@ -28,11 +27,6 @@ import { fauxFoundry } from "../../mocks/fauxFoundry.js";
 import { Employee } from "../../types/Employee.js";
 
 type EmployeeFilterListProps = FilterListProps<typeof Employee>;
-
-function useEmployeeObjectSet() {
-  const client = useOsdkClient();
-  return useMemo(() => client(Employee), [client]);
-}
 
 const departmentFilter: FilterDefinitionUnion<Employee> = {
   type: "PROPERTY",
@@ -152,8 +146,12 @@ const meta: Meta<EmployeeFilterListProps> = {
     },
   },
   argTypes: {
+    objectType: {
+      description: "The object type definition for the objects being filtered",
+      control: false,
+    },
     objectSet: {
-      description: "The object set to filter",
+      description: "Optional object set to scope aggregation queries",
       control: false,
     },
     filterDefinitions: {
@@ -262,7 +260,7 @@ export const Default: Story = {
     docs: {
       source: {
         code: `<FilterList
-  objectSet={client(Employee)}
+  objectType={Employee}
   filterDefinitions={[
     { type: "PROPERTY", key: "department", label: "Department", filterComponent: "LISTOGRAM", filterState: { type: "EXACT_MATCH", values: [] } },
     { type: "PROPERTY", key: "locationCity", label: "Location City", filterComponent: "LISTOGRAM", filterState: { type: "EXACT_MATCH", values: [] } },
@@ -271,8 +269,7 @@ export const Default: Story = {
       },
     },
   },
-  render: ({ objectSet: _os, ...args }) => {
-    const objectSet = useEmployeeObjectSet();
+  render: ({ objectType: _ot, objectSet: _os, ...args }) => {
     const filterDefinitions = useMemo(
       (): FilterDefinitionUnion<Employee>[] => [
         departmentFilter,
@@ -283,7 +280,7 @@ export const Default: Story = {
     return (
       <div style={SIDEBAR_STYLE}>
         <FilterList
-          objectSet={objectSet}
+          objectType={Employee}
           filterDefinitions={filterDefinitions}
           {...args}
         />
@@ -293,7 +290,6 @@ export const Default: Story = {
 };
 
 function AddFilterModeStory(args: Partial<EmployeeFilterListProps>) {
-  const objectSet = useEmployeeObjectSet();
   const filterDefinitions = useMemo(
     (): FilterDefinitionUnion<Employee>[] => [
       departmentFilter,
@@ -317,7 +313,7 @@ function AddFilterModeStory(args: Partial<EmployeeFilterListProps>) {
   return (
     <div style={SIDEBAR_STYLE}>
       <FilterList
-        objectSet={objectSet}
+        objectType={Employee}
         filterDefinitions={filterDefinitions}
         addFilterMode="uncontrolled"
         {...args}
@@ -343,7 +339,7 @@ export const AddFilterMode: Story = {
 ];
 
 <FilterList
-  objectSet={client(Employee)}
+  objectType={Employee}
   filterDefinitions={filterDefinitions}
   addFilterMode="uncontrolled"
   showResetButton={true}
@@ -355,7 +351,6 @@ export const AddFilterMode: Story = {
 };
 
 function WithAllFilterTypesStory(args: Partial<EmployeeFilterListProps>) {
-  const objectSet = useEmployeeObjectSet();
   const [filterClause, setFilterClause] = useState<
     WhereClause<Employee> | undefined
   >(undefined);
@@ -364,7 +359,7 @@ function WithAllFilterTypesStory(args: Partial<EmployeeFilterListProps>) {
     <div style={FLEX_ROW_STYLE}>
       <div style={SIDEBAR_STYLE}>
         <FilterList
-          objectSet={objectSet}
+          objectType={Employee}
           filterDefinitions={sharedFilterDefinitions}
           filterClause={filterClause}
           onFilterClauseChanged={setFilterClause}
@@ -392,7 +387,7 @@ export const WithAllFilterTypes: Story = {
       },
       source: {
         code: `<FilterList
-  objectSet={client(Employee)}
+  objectType={Employee}
   filterDefinitions={filterDefinitions}
   filterClause={filterClause}
   onFilterClauseChanged={setFilterClause}
@@ -411,7 +406,7 @@ export const WithTitleAndIcon: Story = {
     docs: {
       source: {
         code: `<FilterList
-  objectSet={client(Employee)}
+  objectType={Employee}
   filterDefinitions={filterDefinitions}
   title="Employee Filters"
   titleIcon={<svg>...</svg>}
@@ -419,12 +414,11 @@ export const WithTitleAndIcon: Story = {
       },
     },
   },
-  render: ({ objectSet: _os, ...args }) => {
-    const objectSet = useEmployeeObjectSet();
+  render: ({ objectType: _ot, objectSet: _os, ...args }) => {
     return (
       <div style={SIDEBAR_STYLE}>
         <FilterList
-          objectSet={objectSet}
+          objectType={Employee}
           filterDefinitions={sharedFilterDefinitions}
           titleIcon={FILTER_ICON}
           {...args}
@@ -435,7 +429,6 @@ export const WithTitleAndIcon: Story = {
 };
 
 function WithResetButtonStory(args: Partial<EmployeeFilterListProps>) {
-  const objectSet = useEmployeeObjectSet();
   const handleReset = useCallback(() => {
     // eslint-disable-next-line no-console
     console.log("Reset clicked");
@@ -444,7 +437,7 @@ function WithResetButtonStory(args: Partial<EmployeeFilterListProps>) {
   return (
     <div style={SIDEBAR_STYLE}>
       <FilterList
-        objectSet={objectSet}
+        objectType={Employee}
         filterDefinitions={sharedFilterDefinitions}
         onReset={handleReset}
         {...args}
@@ -461,7 +454,7 @@ export const WithResetButton: Story = {
     docs: {
       source: {
         code: `<FilterList
-  objectSet={client(Employee)}
+  objectType={Employee}
   filterDefinitions={filterDefinitions}
   showResetButton={true}
   onReset={() => console.log("Reset clicked")}
@@ -480,19 +473,18 @@ export const WithActiveFilterCount: Story = {
     docs: {
       source: {
         code: `<FilterList
-  objectSet={client(Employee)}
+  objectType={Employee}
   filterDefinitions={filterDefinitions}
   showActiveFilterCount={true}
 />`,
       },
     },
   },
-  render: ({ objectSet: _os, ...args }) => {
-    const objectSet = useEmployeeObjectSet();
+  render: ({ objectType: _ot, objectSet: _os, ...args }) => {
     return (
       <div style={SIDEBAR_STYLE}>
         <FilterList
-          objectSet={objectSet}
+          objectType={Employee}
           filterDefinitions={sharedFilterDefinitions}
           {...args}
         />
@@ -509,19 +501,18 @@ export const WithSorting: Story = {
     docs: {
       source: {
         code: `<FilterList
-  objectSet={client(Employee)}
+  objectType={Employee}
   filterDefinitions={filterDefinitions}
   enableSorting={true}
 />`,
       },
     },
   },
-  render: ({ objectSet: _os, ...args }) => {
-    const objectSet = useEmployeeObjectSet();
+  render: ({ objectType: _ot, objectSet: _os, ...args }) => {
     return (
       <div style={SIDEBAR_STYLE}>
         <FilterList
-          objectSet={objectSet}
+          objectType={Employee}
           filterDefinitions={sharedFilterDefinitions}
           {...args}
         />
@@ -535,12 +526,10 @@ function CollapsiblePanelStory(
     onCollapsedChange?: (collapsed: boolean) => void;
   },
 ) {
-  const objectSet = useEmployeeObjectSet();
-
   return (
     <div style={SIDEBAR_STYLE}>
       <FilterList
-        objectSet={objectSet}
+        objectType={Employee}
         filterDefinitions={sharedFilterDefinitions}
         {...args}
       />
@@ -563,7 +552,7 @@ export const CollapsiblePanel: Story = {
         code: `const [collapsed, setCollapsed] = useState(false);
 
 <FilterList
-  objectSet={client(Employee)}
+  objectType={Employee}
   filterDefinitions={filterDefinitions}
   title="Employee Filters"
   collapsed={collapsed}
@@ -598,12 +587,11 @@ export const KeywordSearch: Story = {
   { type: "PROPERTY", key: "locationCity", label: "Location City", filterComponent: "LISTOGRAM", filterState: { type: "EXACT_MATCH", values: [] } },
 ];
 
-<FilterList objectSet={client(Employee)} filterDefinitions={filterDefinitions} />`,
+<FilterList objectType={Employee} filterDefinitions={filterDefinitions} />`,
       },
     },
   },
-  render: ({ objectSet: _os, ...args }) => {
-    const objectSet = useEmployeeObjectSet();
+  render: ({ objectType: _ot, objectSet: _os, ...args }) => {
     const filterDefinitions = useMemo(
       (): FilterDefinitionUnion<Employee>[] => [
         {
@@ -620,7 +608,7 @@ export const KeywordSearch: Story = {
     return (
       <div style={SIDEBAR_STYLE}>
         <FilterList
-          objectSet={objectSet}
+          objectType={Employee}
           filterDefinitions={filterDefinitions}
           {...args}
         />
@@ -630,7 +618,6 @@ export const KeywordSearch: Story = {
 };
 
 function WithColorMapStory(args: Partial<EmployeeFilterListProps>) {
-  const objectSet = useEmployeeObjectSet();
   const withoutColorMap = useMemo(
     (): FilterDefinitionUnion<Employee>[] => [
       {
@@ -668,14 +655,14 @@ function WithColorMapStory(args: Partial<EmployeeFilterListProps>) {
     <div style={FLEX_ROW_STYLE}>
       <div style={SIDEBAR_STYLE}>
         <FilterList
-          objectSet={objectSet}
+          objectType={Employee}
           filterDefinitions={withoutColorMap}
           {...args}
         />
       </div>
       <div style={SIDEBAR_STYLE}>
         <FilterList
-          objectSet={objectSet}
+          objectType={Employee}
           filterDefinitions={withColorMap}
           {...args}
         />
@@ -707,7 +694,7 @@ const filterDefinitions = [
   },
 ];
 
-<FilterList objectSet={client(Employee)} filterDefinitions={filterDefinitions} />`,
+<FilterList objectType={Employee} filterDefinitions={filterDefinitions} />`,
       },
     },
   },
@@ -717,7 +704,6 @@ const filterDefinitions = [
 function WithListogramDisplayModesStory(
   args: Partial<EmployeeFilterListProps>,
 ) {
-  const objectSet = useEmployeeObjectSet();
   const fullDefs = useMemo(
     (): FilterDefinitionUnion<Employee>[] => [
       {
@@ -765,21 +751,21 @@ function WithListogramDisplayModesStory(
     <div style={FLEX_ROW_STYLE}>
       <div style={SIDEBAR_STYLE}>
         <FilterList
-          objectSet={objectSet}
+          objectType={Employee}
           filterDefinitions={fullDefs}
           {...args}
         />
       </div>
       <div style={SIDEBAR_STYLE}>
         <FilterList
-          objectSet={objectSet}
+          objectType={Employee}
           filterDefinitions={countDefs}
           {...args}
         />
       </div>
       <div style={SIDEBAR_STYLE}>
         <FilterList
-          objectSet={objectSet}
+          objectType={Employee}
           filterDefinitions={minimalDefs}
           {...args}
         />
@@ -808,7 +794,6 @@ const filterDefinitions = [
 };
 
 function WithCheckboxStory(args: Partial<EmployeeFilterListProps>) {
-  const objectSet = useEmployeeObjectSet();
   const filterDefinitions = useMemo(
     (): FilterDefinitionUnion<Employee>[] => [
       {
@@ -834,7 +819,7 @@ function WithCheckboxStory(args: Partial<EmployeeFilterListProps>) {
   return (
     <div style={SIDEBAR_STYLE}>
       <FilterList
-        objectSet={objectSet}
+        objectType={Employee}
         filterDefinitions={filterDefinitions}
         {...args}
       />
@@ -852,7 +837,7 @@ export const WithCheckbox: Story = {
       },
       source: {
         code: `<FilterList
-  objectSet={client(Employee)}
+  objectType={Employee}
   filterDefinitions={[
     { type: "PROPERTY", key: "department", label: "Department", filterComponent: "LISTOGRAM", filterState: { type: "EXACT_MATCH", values: [] } },
     { type: "PROPERTY", key: "team", label: "Team", filterComponent: "LISTOGRAM", filterState: { type: "EXACT_MATCH", values: [] } },
@@ -867,7 +852,6 @@ export const WithCheckbox: Story = {
 function CombinedWithObjectTableStory(
   args: Partial<EmployeeFilterListProps>,
 ) {
-  const objectSet = useEmployeeObjectSet();
   const [filterClause, setFilterClause] = useState<
     WhereClause<Employee> | undefined
   >(undefined);
@@ -881,7 +865,7 @@ function CombinedWithObjectTableStory(
     <div style={COMBINED_LAYOUT_STYLE}>
       <div style={SIDEBAR_FIXED_STYLE}>
         <FilterList
-          objectSet={objectSet}
+          objectType={Employee}
           filterDefinitions={sharedFilterDefinitions}
           onFilterRemoved={handleFilterRemoved}
           filterClause={filterClause}
@@ -911,7 +895,7 @@ export const CombinedWithObjectTable: Story = {
 <div style={{ display: "flex", gap: 16, height: 600 }}>
   <div style={{ width: 320 }}>
     <FilterList
-      objectSet={client(Employee)}
+      objectType={Employee}
       filterDefinitions={filterDefinitions}
       title="Employee Filters"
       showResetButton={true}
@@ -933,7 +917,6 @@ export const CombinedWithObjectTable: Story = {
 };
 
 function WithRemovableFiltersStory(args: Partial<EmployeeFilterListProps>) {
-  const objectSet = useEmployeeObjectSet();
   const [definitions, setDefinitions] = useState<
     FilterDefinitionUnion<Employee>[]
   >(sharedFilterDefinitions);
@@ -952,7 +935,7 @@ function WithRemovableFiltersStory(args: Partial<EmployeeFilterListProps>) {
   return (
     <div style={SIDEBAR_STYLE}>
       <FilterList
-        objectSet={objectSet}
+        objectType={Employee}
         filterDefinitions={definitions}
         onFilterRemoved={handleFilterRemoved}
         {...args}
@@ -983,7 +966,7 @@ const handleFilterRemoved = (filterKey) => {
 };
 
 <FilterList
-  objectSet={client(Employee)}
+  objectType={Employee}
   filterDefinitions={definitions}
   onFilterRemoved={handleFilterRemoved}
   title="Removable Filters"
@@ -999,7 +982,6 @@ function FullFeaturedStory(
     onCollapsedChange?: (collapsed: boolean) => void;
   },
 ) {
-  const objectSet = useEmployeeObjectSet();
   const [filterClause, setFilterClause] = useState<
     WhereClause<Employee> | undefined
   >(undefined);
@@ -1026,7 +1008,7 @@ function FullFeaturedStory(
     <div style={COMBINED_LAYOUT_STYLE}>
       <div style={SIDEBAR_FIXED_STYLE}>
         <FilterList
-          objectSet={objectSet}
+          objectType={Employee}
           filterDefinitions={definitions}
           titleIcon={FILTER_ICON}
           onReset={handleReset}
@@ -1064,7 +1046,7 @@ export const FullFeatured: Story = {
           `// All features combined: collapse, sort, search, exclude, remove, reset
 
 <FilterList
-  objectSet={client(Employee)}
+  objectType={Employee}
   filterDefinitions={definitions}
   title="Employee Filters"
   titleIcon={<FilterIcon />}

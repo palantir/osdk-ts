@@ -339,6 +339,7 @@ describe("FetchMetadata", () => {
         },
         "rid": "ri.function-registry.main.function.9b55870a-63c7-4d48-8f06-9627c0805968",
         "type": "query",
+        "typeReferences": undefined,
         "version": "0.11.0",
       }
     `);

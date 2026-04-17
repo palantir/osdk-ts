@@ -51,6 +51,7 @@ export function evaluateFilter(
     case "$containsAllTermsInOrder":
     case "$containsAnyTerm":
     case "$interval":
+    case "$matchesRegex":
     case "$intersects":
     case "$within":
       // for these we will strictly say no and loosely say yes

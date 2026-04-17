@@ -50,3 +50,27 @@ export const uploadMedia: CallFactory<
   MediaSets.uploadMedia,
   [],
 );
+
+export const transform: CallFactory<
+  "mediaSetRid" | "mediaItemRid",
+  typeof MediaSets.transform
+> = handleOpenApiCall(
+  MediaSets.transform,
+  ["mediaSetRid", "mediaItemRid"],
+);
+
+export const getTransformStatus: CallFactory<
+  "mediaSetRid" | "mediaItemRid" | "transformationJobId",
+  typeof MediaSets.getStatus
+> = handleOpenApiCall(
+  MediaSets.getStatus,
+  ["mediaSetRid", "mediaItemRid", "transformationJobId"],
+);
+
+export const getTransformResult: CallFactory<
+  "mediaSetRid" | "mediaItemRid" | "transformationJobId",
+  typeof MediaSets.getResult
+> = handleOpenApiCall(
+  MediaSets.getResult,
+  ["mediaSetRid", "mediaItemRid", "transformationJobId"],
+);

@@ -34,6 +34,10 @@
     outline-offset: var(--osdk-input-focus-offset);
     border-color: var(--osdk-input-border-color-focus);
   }
+
+  &[aria-invalid] {
+    border-color: var(--osdk-input-border-color-error);
+  }
 }
 
 .osdkNumberInputField {

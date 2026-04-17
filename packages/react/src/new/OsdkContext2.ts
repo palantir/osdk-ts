@@ -55,10 +55,12 @@ interface OsdkContextContents {
   // in the future we can just make
   // this `client: ObservableClient`
   observableClient: ObservableClient;
+  devtoolsEnabled: boolean;
 }
 
 export const OsdkContext2: React.Context<OsdkContextContents> = React
   .createContext<OsdkContextContents>({
     client: fakeClient,
     observableClient: fakeObservableClient,
+    devtoolsEnabled: false,
   });

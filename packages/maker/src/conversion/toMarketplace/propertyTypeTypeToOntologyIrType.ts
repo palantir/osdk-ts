@@ -79,7 +79,7 @@ export function propertyTypeTypeToOntologyIrType(
       return {
         type: "struct",
         struct: {
-          structFields: structFields,
+          structFields,
           mainValue: convertMainValue(type, apiName, sharedPropertyType),
         },
       };
@@ -88,7 +88,7 @@ export function propertyTypeTypeToOntologyIrType(
       return {
         "type": "string",
         "string": {
-          analyzerOverride: undefined,
+          analyzerOverride: type.analyzerOverride,
           enableAsciiFolding: type.enableAsciiFolding,
           isLongText: type.isLongText ?? false,
           supportsEfficientLeadingWildcard:
@@ -127,7 +127,7 @@ export function propertyTypeTypeToOntologyIrType(
 
     case (type === "mediaReference"):
       return {
-        type: type,
+        type,
         mediaReference: {},
       };
 

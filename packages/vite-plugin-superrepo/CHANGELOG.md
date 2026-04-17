@@ -1,5 +1,11 @@
 # @osdk/vite-plugin-superrepo
 
+## 0.3.0
+
+### Minor Changes
+
+- 3390ea2: Resolve Python objectSet/object UUID references recursively and detect edit functions via output dataType when ontologyProvenance is absent
+
 ## 0.2.0
 
 ### Minor Changes

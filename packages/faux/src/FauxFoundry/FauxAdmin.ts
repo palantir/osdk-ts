@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-import type { User } from "@osdk/foundry.admin";
+import type {
+  CbacBanner,
+  CbacMarkingRestrictions,
+  Marking,
+  MarkingCategory,
+  User,
+} from "@osdk/foundry.admin";
 import {
   CurrentUserPermissionDeniedError,
   GetInvalidPageTokenError,
@@ -26,9 +32,24 @@ import { OpenApiCallError } from "../handlers/util/handleOpenApiCall.js";
 
 type UserStatus = "ACTIVE" | "DELETED";
 
+interface BannerConfig {
+  classificationString: string;
+  textColor: string;
+  backgroundColors: string[];
+}
+
+type BannerResolver = (
+  markingIds: string[],
+  markings: Marking[],
+  categories: MarkingCategory[],
+) => BannerConfig;
+
 export class FauxAdmin {
   #users: User[] = [];
   #currentUserId: string | undefined;
+  #markings: Marking[] = [];
+  #markingCategories: MarkingCategory[] = [];
+  #bannerResolver: BannerResolver | undefined;
 
   registerUser(user: User): void {
     if (this.#users.some(({ id }) => id === user.id)) {
@@ -108,6 +129,59 @@ export class FauxAdmin {
     return {
       users: filteredUsers.slice(startIndex, startIndex + pageSize),
       nextPageToken: filteredUsers[startIndex + pageSize]?.id,
+    };
+  }
+
+  registerMarking(marking: Marking): void {
+    this.#markings.push(marking);
+  }
+
+  registerMarkingCategory(category: MarkingCategory): void {
+    this.#markingCategories.push(category);
+  }
+
+  setBannerResolver(resolver: BannerResolver): void {
+    this.#bannerResolver = resolver;
+  }
+
+  listMarkings(): { data: Marking[] } {
+    return { data: this.#markings };
+  }
+
+  listMarkingCategories(): { data: MarkingCategory[] } {
+    return { data: this.#markingCategories };
+  }
+
+  getCbacBanner(markingIds: string[]): CbacBanner {
+    if (this.#bannerResolver != null) {
+      const config = this.#bannerResolver(
+        markingIds,
+        this.#markings,
+        this.#markingCategories,
+      );
+      return {
+        classificationString: config.classificationString,
+        markings: markingIds,
+        textColor: config.textColor,
+        backgroundColors: config.backgroundColors,
+      };
+    }
+
+    return {
+      classificationString: markingIds.join(" // "),
+      markings: markingIds,
+      textColor: "#FFFFFF",
+      backgroundColors: ["#8F99A8"],
+    };
+  }
+
+  getCbacMarkingRestrictions(_markingIds: string[]): CbacMarkingRestrictions {
+    return {
+      disallowedMarkings: [],
+      impliedMarkings: [],
+      requiredMarkings: [],
+      userSatisfiesMarkings: true,
+      isValid: _markingIds.length > 0,
     };
   }
 }

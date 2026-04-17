@@ -1448,7 +1448,7 @@ export interface PageResult<T> {
 }
 
 // @public (undocumented)
-export type PossibleWhereClauseFilters = "$gt" | "$eq" | "$ne" | "$isNull" | "$contains" | "$gte" | "$lt" | "$lte" | "$within" | "$in" | "$intersects" | "$startsWith" | "$containsAllTermsInOrder" | "$containsAnyTerm" | "$containsAllTerms" | "$interval";
+export type PossibleWhereClauseFilters = "$gt" | "$eq" | "$ne" | "$isNull" | "$contains" | "$gte" | "$lt" | "$lte" | "$within" | "$in" | "$intersects" | "$startsWith" | "$containsAllTermsInOrder" | "$containsAnyTerm" | "$containsAllTerms" | "$interval" | "$matchesRegex";
 
 // @public (undocumented)
 export type PrimaryKeyType<Q extends ObjectOrInterfaceDefinition> = (Q extends ObjectTypeDefinition ? OsdkObjectPrimaryKeyType<Q> : unknown) & PropertyValueWireToClient[PrimaryKeyTypes];
@@ -1622,9 +1622,10 @@ export interface PropertyValueWireToClient {
 // Warning: (ae-forgotten-export) The symbol "ThreeDimensionalAggregationDataType" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "MapDataType" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "ArrayQueryDataType" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "TypeReferenceQueryDataType" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
-export type QueryDataTypeDefinition<T_Target extends ObjectOrInterfaceDefinition = any> = PrimitiveDataType | ObjectQueryDataType<T_Target> | InterfaceQueryDataType<T_Target> | ObjectSetQueryDataType<T_Target> | InterfaceObjectSetQueryDataType<T_Target> | SetQueryDataType | UnionQueryDataType | StructQueryDataType | TwoDimensionalAggregationDataType | ThreeDimensionalAggregationDataType | MapDataType | ArrayQueryDataType;
+export type QueryDataTypeDefinition<T_Target extends ObjectOrInterfaceDefinition = any> = PrimitiveDataType | ObjectQueryDataType<T_Target> | InterfaceQueryDataType<T_Target> | ObjectSetQueryDataType<T_Target> | InterfaceObjectSetQueryDataType<T_Target> | SetQueryDataType | UnionQueryDataType | StructQueryDataType | TwoDimensionalAggregationDataType | ThreeDimensionalAggregationDataType | MapDataType | ArrayQueryDataType | TypeReferenceQueryDataType;
 
 // @public (undocumented)
 export interface QueryDefinition<T = any> {
@@ -1660,6 +1661,8 @@ export interface QueryMetadata {
     rid: string;
     	// (undocumented)
     type: "query";
+    	// (undocumented)
+    typeReferences?: Record<string, QueryDataTypeDefinition>;
     	// (undocumented)
     version: string;
 }

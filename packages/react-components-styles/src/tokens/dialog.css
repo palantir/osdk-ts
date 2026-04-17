@@ -8,6 +8,7 @@
   --osdk-dialog-header-padding: var(--osdk-dialog-padding);
   --osdk-dialog-title-font-size: var(--osdk-typography-size-body-medium);
   --osdk-dialog-title-font-weight: var(--osdk-typography-weight-bold);
+  --osdk-dialog-title-color: var(--osdk-typography-color-default-rest);
 
   /* Body */
   --osdk-dialog-bg: var(--osdk-background-primary);

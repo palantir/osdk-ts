@@ -20,6 +20,7 @@ import React, { useLayoutEffect } from "react";
 import { LoadingRow } from "./LoadingRow.js";
 import styles from "./TableBody.module.css";
 import { TableRow } from "./TableRow.js";
+import { DEFAULT_ROW_HEIGHT, VIRTUALIZER_OVERSCAN } from "./utils/constants.js";
 
 interface TableBodyProps<TData extends RowData> {
   rows: Array<Row<TData>>;
@@ -42,7 +43,7 @@ export function TableBody<TData extends RowData>({
   tableContainerRef,
   onRowClick,
   renderCellContextMenu,
-  rowHeight = 40,
+  rowHeight = DEFAULT_ROW_HEIGHT,
   isLoadingMore = false,
   headerGroups = [],
   focusedRowId,
@@ -54,7 +55,7 @@ export function TableBody<TData extends RowData>({
     count: rows.length,
     estimateSize: () => rowHeight,
     getScrollElement: () => tableContainerRef.current,
-    overscan: 5,
+    overscan: VIRTUALIZER_OVERSCAN,
   });
 
   // Measure the virtualizer after the DOM has been laid out to ensure proper dimensions

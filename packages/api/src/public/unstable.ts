@@ -23,6 +23,47 @@ export {
   type FetchPageByRidPayload,
 } from "../experimental/fetchPageByRid.js";
 export { __EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks } from "../experimental/getBulkLinks.js";
+export type {
+  AudioEncoding,
+  AudioOperation,
+  AudioToTextOperation,
+  DicomToImageOperation,
+  DocumentTextExtractionConfig,
+  DocumentToDocumentOperation,
+  DocumentToImageOperation,
+  DocumentToTextOperation,
+  EmailToAttachmentOperation,
+  EmailToTextOperation,
+  ImageOperation,
+  ImageSpec,
+  ImageToDocumentOperation,
+  ImageToEmbeddingOperation,
+  ImageToTextOperation,
+  LayoutAwareExtractionParameters,
+  LlmSpec,
+  MediaTransformation,
+  OcrLanguageOrScript,
+  OcrOutputFormat,
+  OcrParameters,
+  PageRange,
+  SpreadsheetToTextOperation,
+  TranscribeOutputFormat,
+  VideoOperation,
+  VideoToArchiveOperation,
+  VideoToAudioOperation,
+  VideoToImageOperation,
+  VideoToTextOperation,
+  VlmPreprocessingConfig,
+} from "../experimental/MediaTransformation.js";
+export {
+  __EXPERIMENTAL__NOT_SUPPORTED_YET__transformAndWait,
+  type TransformOptions,
+} from "../experimental/transformAndWait.js";
+export {
+  MediaTransformationError,
+  MediaTransformationFailedError,
+  MediaTransformationTimeoutError,
+} from "../object/MediaTransformationErrors.js";
 
 export type { EXPERIMENTAL_BulkLinkResult } from "../objectSet/BulkLinkResult.js";
 export type { MinimalObjectSet } from "../objectSet/ObjectSet.js";

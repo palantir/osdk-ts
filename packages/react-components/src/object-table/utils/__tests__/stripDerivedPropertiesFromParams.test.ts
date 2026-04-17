@@ -15,10 +15,7 @@
  */
 
 import { describe, expect, it, vi } from "vitest";
-import {
-  stripDerivedPropertiesFromParams,
-  stripWithPropertiesFromWire,
-} from "../stripDerivedPropertiesFromParams.js";
+import { stripDerivedPropertiesFromParams } from "../stripDerivedPropertiesFromParams.js";
 
 vi.mock("@osdk/client", () => ({
   isObjectSet: (value: unknown) =>
@@ -27,149 +24,6 @@ vi.mock("@osdk/client", () => ({
   getWireObjectSet: (value: unknown) =>
     (value as Record<string, unknown>).__wire,
 }));
-
-describe("stripWithPropertiesFromWire", () => {
-  it("returns base object set unchanged", () => {
-    const wire = { type: "base", objectType: "Employee" };
-    expect(stripWithPropertiesFromWire(wire)).toEqual(wire);
-  });
-
-  it("strips a top-level withProperties node", () => {
-    const wire = {
-      type: "withProperties",
-      derivedProperties: {
-        managerName: {
-          type: "selection",
-          objectSet: {
-            type: "searchAround",
-            objectSet: { type: "methodInput" },
-            link: "lead",
-          },
-          operation: {
-            type: "get",
-            selectedPropertyApiName: "fullName",
-          },
-        },
-      },
-      objectSet: {
-        type: "base",
-        objectType: "Employee",
-      },
-    };
-
-    expect(stripWithPropertiesFromWire(wire)).toEqual({
-      type: "base",
-      objectType: "Employee",
-    });
-  });
-
-  it("strips withProperties nested inside a filter", () => {
-    const wire = {
-      type: "filter",
-      objectSet: {
-        type: "withProperties",
-        derivedProperties: {
-          managerName: {
-            type: "selection",
-            objectSet: {
-              type: "searchAround",
-              objectSet: { type: "methodInput" },
-              link: "lead",
-            },
-            operation: {
-              type: "get",
-              selectedPropertyApiName: "fullName",
-            },
-          },
-        },
-        objectSet: {
-          type: "base",
-          objectType: "Employee",
-        },
-      },
-      where: {
-        type: "eq",
-        field: "fullName",
-        value: "Jane Doe",
-      },
-    };
-
-    expect(stripWithPropertiesFromWire(wire)).toEqual({
-      type: "filter",
-      objectSet: {
-        type: "base",
-        objectType: "Employee",
-      },
-      where: {
-        type: "eq",
-        field: "fullName",
-        value: "Jane Doe",
-      },
-    });
-  });
-
-  it("strips withProperties from inside union objectSets", () => {
-    const wire = {
-      type: "union",
-      objectSets: [
-        {
-          type: "withProperties",
-          derivedProperties: { foo: { type: "bar" } },
-          objectSet: { type: "base", objectType: "Employee" },
-        },
-        { type: "base", objectType: "Manager" },
-      ],
-    };
-
-    expect(stripWithPropertiesFromWire(wire)).toEqual({
-      type: "union",
-      objectSets: [
-        { type: "base", objectType: "Employee" },
-        { type: "base", objectType: "Manager" },
-      ],
-    });
-  });
-
-  it("strips deeply nested withProperties", () => {
-    const wire = {
-      type: "filter",
-      objectSet: {
-        type: "withProperties",
-        derivedProperties: { x: {} },
-        objectSet: {
-          type: "filter",
-          objectSet: {
-            type: "withProperties",
-            derivedProperties: { y: {} },
-            objectSet: { type: "base", objectType: "Employee" },
-          },
-          where: { type: "eq", field: "a", value: "1" },
-        },
-      },
-      where: { type: "eq", field: "b", value: "2" },
-    };
-
-    expect(stripWithPropertiesFromWire(wire)).toEqual({
-      type: "filter",
-      objectSet: {
-        type: "filter",
-        objectSet: { type: "base", objectType: "Employee" },
-        where: { type: "eq", field: "a", value: "1" },
-      },
-      where: { type: "eq", field: "b", value: "2" },
-    });
-  });
-
-  it("preserves searchAround nodes without withProperties", () => {
-    const wire = {
-      type: "searchAround",
-      objectSet: { type: "base", objectType: "Employee" },
-      link: "lead",
-    };
-
-    expect(stripWithPropertiesFromWire(wire)).toEqual(wire);
-  });
-});
 
 describe("stripDerivedPropertiesFromParams", () => {
   it("returns null/undefined unchanged", () => {
@@ -181,6 +35,16 @@ describe("stripDerivedPropertiesFromParams", () => {
     expect(stripDerivedPropertiesFromParams("hello")).toBe("hello");
     expect(stripDerivedPropertiesFromParams(42)).toBe(42);
     expect(stripDerivedPropertiesFromParams(true)).toBe(true);
+  });
+
+  it("passes through params without ObjectSets unchanged", () => {
+    const params = {
+      name: "test",
+      count: 5,
+      nested: { a: 1, b: "two" },
+    };
+
+    expect(stripDerivedPropertiesFromParams(params)).toEqual(params);
   });
 
   it("strips withProperties from ObjectSet param values", () => {
@@ -218,13 +82,178 @@ describe("stripDerivedPropertiesFromParams", () => {
     });
   });
 
-  it("passes through params without ObjectSets unchanged", () => {
-    const params = {
-      name: "test",
-      count: 5,
-      nested: { a: 1, b: "two" },
+  it("returns base object set unchanged", () => {
+    const mockObjectSet = {
+      __isObjectSet: true,
+      __wire: { type: "base", objectType: "Employee" },
     };
 
-    expect(stripDerivedPropertiesFromParams(params)).toEqual(params);
+    const params = { employees: mockObjectSet };
+
+    expect(stripDerivedPropertiesFromParams(params)).toEqual({
+      employees: { type: "base", objectType: "Employee" },
+    });
+  });
+
+  it("strips a top-level withProperties node from ObjectSet", () => {
+    const mockObjectSet = {
+      __isObjectSet: true,
+      __wire: {
+        type: "withProperties",
+        derivedProperties: {
+          managerName: {
+            type: "selection",
+            objectSet: {
+              type: "searchAround",
+              objectSet: { type: "methodInput" },
+              link: "lead",
+            },
+            operation: {
+              type: "get",
+              selectedPropertyApiName: "fullName",
+            },
+          },
+        },
+        objectSet: {
+          type: "base",
+          objectType: "Employee",
+        },
+      },
+    };
+
+    expect(stripDerivedPropertiesFromParams({ os: mockObjectSet })).toEqual({
+      os: { type: "base", objectType: "Employee" },
+    });
+  });
+
+  it("strips withProperties nested inside a filter", () => {
+    const mockObjectSet = {
+      __isObjectSet: true,
+      __wire: {
+        type: "filter",
+        objectSet: {
+          type: "withProperties",
+          derivedProperties: {
+            managerName: {
+              type: "selection",
+              objectSet: {
+                type: "searchAround",
+                objectSet: { type: "methodInput" },
+                link: "lead",
+              },
+              operation: {
+                type: "get",
+                selectedPropertyApiName: "fullName",
+              },
+            },
+          },
+          objectSet: {
+            type: "base",
+            objectType: "Employee",
+          },
+        },
+        where: {
+          type: "eq",
+          field: "fullName",
+          value: "Jane Doe",
+        },
+      },
+    };
+
+    expect(stripDerivedPropertiesFromParams({ os: mockObjectSet })).toEqual({
+      os: {
+        type: "filter",
+        objectSet: {
+          type: "base",
+          objectType: "Employee",
+        },
+        where: {
+          type: "eq",
+          field: "fullName",
+          value: "Jane Doe",
+        },
+      },
+    });
+  });
+
+  it("strips withProperties from inside union objectSets", () => {
+    const mockObjectSet = {
+      __isObjectSet: true,
+      __wire: {
+        type: "union",
+        objectSets: [
+          {
+            type: "withProperties",
+            derivedProperties: { foo: { type: "bar" } },
+            objectSet: { type: "base", objectType: "Employee" },
+          },
+          { type: "base", objectType: "Manager" },
+        ],
+      },
+    };
+
+    expect(stripDerivedPropertiesFromParams({ os: mockObjectSet })).toEqual({
+      os: {
+        type: "union",
+        objectSets: [
+          { type: "base", objectType: "Employee" },
+          { type: "base", objectType: "Manager" },
+        ],
+      },
+    });
+  });
+
+  it("strips deeply nested withProperties", () => {
+    const mockObjectSet = {
+      __isObjectSet: true,
+      __wire: {
+        type: "filter",
+        objectSet: {
+          type: "withProperties",
+          derivedProperties: { x: {} },
+          objectSet: {
+            type: "filter",
+            objectSet: {
+              type: "withProperties",
+              derivedProperties: { y: {} },
+              objectSet: { type: "base", objectType: "Employee" },
+            },
+            where: { type: "eq", field: "a", value: "1" },
+          },
+        },
+        where: { type: "eq", field: "b", value: "2" },
+      },
+    };
+
+    expect(stripDerivedPropertiesFromParams({ os: mockObjectSet })).toEqual({
+      os: {
+        type: "filter",
+        objectSet: {
+          type: "filter",
+          objectSet: { type: "base", objectType: "Employee" },
+          where: { type: "eq", field: "a", value: "1" },
+        },
+        where: { type: "eq", field: "b", value: "2" },
+      },
+    });
+  });
+
+  it("preserves searchAround nodes without withProperties", () => {
+    const mockObjectSet = {
+      __isObjectSet: true,
+      __wire: {
+        type: "searchAround",
+        objectSet: { type: "base", objectType: "Employee" },
+        link: "lead",
+      },
+    };
+
+    expect(stripDerivedPropertiesFromParams({ os: mockObjectSet })).toEqual({
+      os: {
+        type: "searchAround",
+        objectSet: { type: "base", objectType: "Employee" },
+        link: "lead",
+      },
+    });
   });
 });

@@ -15,7 +15,7 @@ import type {
 } from '@osdk/client';
 
 export namespace Todo {
-  export type PropertyKeys = 'id' | 'title' | 'isComplete';
+  export type PropertyKeys = 'id' | 'isComplete' | 'title';
 
   export type Links = {};
 

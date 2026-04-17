@@ -69,6 +69,14 @@ const config: StorybookConfig = {
       global: "globalThis",
     };
 
+    // Turbo watch rebuilds upstream packages on change, which briefly
+    // produces incomplete builds that Vite picks up as errors. The overlay
+    // flashes on every rebuild cycle, so we disable it.
+    config.server = {
+      ...config.server,
+      hmr: { overlay: false },
+    };
+
     // Configure build options
     config.build = {
       ...config.build,

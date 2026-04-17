@@ -13,7 +13,7 @@ import type {
 export type OsdkObjectLinks$MwaltherTestIdp = {};
 
 export namespace MwaltherTestIdp {
-  export type PropertyKeys = 'newProperty1' | 'mwaltherNam' | 'idpAge' | 'mwaltherName';
+  export type PropertyKeys = 'mwaltherName' | 'idpAge' | 'mwaltherNam' | 'newProperty1';
 
   export interface Props {
     /**

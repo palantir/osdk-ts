@@ -15,7 +15,7 @@ import type {
 } from '@osdk/client';
 
 export namespace NbaPlayer {
-  export type PropertyKeys = 'id' | 'gamesPlayed' | 'name' | 'jerseyNumber' | 'wikiUrl';
+  export type PropertyKeys = 'gamesPlayed' | 'id' | 'jerseyNumber' | 'name' | 'wikiUrl';
 
   export type Links = {};
 

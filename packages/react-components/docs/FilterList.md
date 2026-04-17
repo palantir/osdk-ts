@@ -4,7 +4,7 @@ A comprehensive guide for using the FilterList component from `@osdk/react-compo
 
 ## Prerequisites
 
-Before using FilterList, make sure you have completed the library setup described in the [README](../README.md#setup), including:
+Before using FilterList, make sure you have completed the library setup described in the [README](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/README.md#setup), including:
 
 - Installing the required dependencies
 - Wrapping your app with `OsdkProvider2`
@@ -465,7 +465,7 @@ Use the `className` prop for scoped styling:
 />
 ```
 
-For a full reference of CSS tokens, see the [@osdk/react-components-styles documentation](../../react-components-styles/README.md).
+For a full reference of CSS tokens, see the [@osdk/react-components-styles documentation](https://github.com/palantir/osdk-ts/blob/main/packages/react-components-styles/README.md).
 
 ## Best Practices
 

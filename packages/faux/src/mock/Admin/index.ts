@@ -14,4 +14,8 @@
  * limitations under the License.
  */
 
+export * as CbacBanners from "./CbacBanners.js";
+export * as CbacMarkingRestrictions from "./CbacMarkingRestrictions.js";
+export * as MarkingCategories from "./MarkingCategories.js";
+export * as Markings from "./Markings.js";
 export * as Users from "./Users.js";

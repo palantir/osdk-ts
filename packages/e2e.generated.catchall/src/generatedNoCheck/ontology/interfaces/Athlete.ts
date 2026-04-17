@@ -13,7 +13,7 @@ import type {
 export type OsdkObjectLinks$Athlete = {};
 
 export namespace Athlete {
-  export type PropertyKeys = 'jerseyNumber' | 'athleteId' | 'name22';
+  export type PropertyKeys = 'athleteId' | 'jerseyNumber' | 'name22';
 
   export interface Props {
     /**

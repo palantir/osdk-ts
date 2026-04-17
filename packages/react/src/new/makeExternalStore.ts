@@ -18,6 +18,51 @@ import type {
   Observer,
   Unsubscribable,
 } from "@osdk/client/unstable-do-not-use";
+import React from "react";
+
+declare const process: { env: { NODE_ENV: string } };
+const __DEV__ = typeof process === "undefined"
+  || process.env.NODE_ENV !== "production";
+
+export const OSDK_HOOK_METADATA: symbol = Symbol.for(
+  "__OSDK_HOOK_METADATA__",
+);
+
+export interface OsdkStoreMetadata {
+  hookType: string;
+  objectType?: string;
+  primaryKey?: string;
+  actionName?: string;
+  sourceObjectType?: string;
+  linkName?: string;
+  where?: unknown;
+  orderBy?: unknown;
+  pageSize?: number;
+  aggregate?: unknown;
+}
+
+export const devToolsMetadata: (
+  meta: OsdkStoreMetadata,
+) => OsdkStoreMetadata | undefined = __DEV__
+  ? (meta) => meta
+  : (_meta) => undefined;
+
+export function useDevToolsMetadata(
+  devtoolsEnabled: boolean,
+  hookType: string,
+  key: string,
+): void {
+  const ref = React.useRef<
+    { [k: symbol]: true; hookType: string; key: string } | null
+  >(null);
+  if (devtoolsEnabled) {
+    if (ref.current == null || ref.current.key !== key) {
+      ref.current = { [OSDK_HOOK_METADATA]: true, hookType, key };
+    }
+  } else if (ref.current != null) {
+    ref.current = null;
+  }
+}
 
 export type Snapshot<X> =
   | X & { error?: Error }
@@ -26,7 +71,7 @@ export type Snapshot<X> =
 
 export function makeExternalStore<X>(
   createObservation: (callback: Observer<X | undefined>) => Unsubscribable,
-  _name?: string,
+  _metadata?: OsdkStoreMetadata,
   initialValue?: Snapshot<X>,
 ): {
   subscribe: (notifyUpdate: () => void) => () => void;
@@ -59,10 +104,14 @@ export function makeExternalStore<X>(
     };
   }
 
-  return {
-    subscribe,
-    getSnapShot,
-  };
+  const store = { subscribe, getSnapShot };
+  if (__DEV__ && _metadata != null) {
+    Object.defineProperty(store, OSDK_HOOK_METADATA, {
+      value: _metadata,
+      enumerable: false,
+    });
+  }
+  return store;
 }
 
 /**
@@ -76,7 +125,7 @@ export function makeExternalStoreAsync<X>(
   createObservation: (
     callback: Observer<X | undefined>,
   ) => Promise<Unsubscribable>,
-  _name?: string,
+  _metadata?: OsdkStoreMetadata,
   initialValue?: Snapshot<X>,
 ): {
   subscribe: (notifyUpdate: () => void) => () => void;
@@ -135,8 +184,12 @@ export function makeExternalStoreAsync<X>(
     };
   }
 
-  return {
-    subscribe,
-    getSnapShot,
-  };
+  const store = { subscribe, getSnapShot };
+  if (__DEV__ && _metadata != null) {
+    Object.defineProperty(store, OSDK_HOOK_METADATA, {
+      value: _metadata,
+      enumerable: false,
+    });
+  }
+  return store;
 }

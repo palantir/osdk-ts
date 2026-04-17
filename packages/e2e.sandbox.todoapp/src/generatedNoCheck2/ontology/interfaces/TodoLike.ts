@@ -13,7 +13,7 @@ import type {
 export type OsdkObjectLinks$TodoLike = {};
 
 export namespace TodoLike {
-  export type PropertyKeys = 'name' | 'isComplete';
+  export type PropertyKeys = 'isComplete' | 'name';
 
   export interface Props {
     /**

@@ -1,5 +1,15 @@
 # @osdk/cli
 
+## 0.33.0
+
+### Minor Changes
+
+- 40fe279: Fix cli by making referenced packages bundled
+
+### Patch Changes
+
+- @osdk/widget.api@3.6.0
+
 ## 0.32.0
 
 ### Minor Changes

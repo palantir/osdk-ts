@@ -21,27 +21,53 @@ import {
 } from "@osdk/client/unstable-do-not-use";
 import React, { useMemo } from "react";
 import { OsdkContext } from "../OsdkContext.js";
+import { getRegisteredDevTools } from "../public/devtools-registry.js";
 import { OsdkContext2 } from "./OsdkContext2.js";
+import { useDevToolsClient } from "./useDevToolsClient.js";
+
+declare const process: { env: { NODE_ENV: string } };
+const __DEV__ = typeof process === "undefined"
+  || process.env.NODE_ENV !== "production";
 
 interface OsdkProviderOptions {
   children: React.ReactNode;
   client: Client;
   observableClient?: ObservableClient;
+  enableDevTools?: boolean;
 }
 
 export function OsdkProvider2({
   children,
   client,
   observableClient,
+  enableDevTools,
 }: OsdkProviderOptions): React.JSX.Element {
-  observableClient = useMemo(
+  const devtoolsEnabled = __DEV__
+    && (enableDevTools ?? getRegisteredDevTools() != null);
+
+  const baseObservableClient = useMemo(
     () => observableClient ?? createObservableClient(client),
     [client, observableClient],
   );
+
+  const { client: devToolsClient, wrapChildren } = useDevToolsClient(
+    baseObservableClient,
+    devtoolsEnabled,
+  );
+
+  const content = wrapChildren?.(children) ?? children;
+
+  const contextValue = useMemo(
+    () => ({ client, observableClient: devToolsClient, devtoolsEnabled }),
+    [client, devToolsClient, devtoolsEnabled],
+  );
+
   return (
-    <OsdkContext2.Provider value={{ client, observableClient }}>
+    <OsdkContext2.Provider
+      value={contextValue}
+    >
       <OsdkContext.Provider value={{ client }}>
-        {children}
+        {content}
       </OsdkContext.Provider>
     </OsdkContext2.Provider>
   );

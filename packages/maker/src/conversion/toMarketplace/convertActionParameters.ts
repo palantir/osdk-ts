@@ -32,7 +32,7 @@ export function convertActionParameters(
     displayMetadata: {
       displayName: p.displayName,
       description: p.description ?? "",
-      typeClasses: [],
+      typeClasses: p.typeClasses ?? [],
     },
   }]));
 }

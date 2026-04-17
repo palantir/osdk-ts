@@ -83,6 +83,7 @@ export {
   identity2DArray,
   kbnTsv2MediaReferenceParamOutput,
   queryTakesAllParameterTypes,
+  recursiveStruct,
 } from './ontology/queries.js';
 export * as $Queries from './ontology/queries.js';
 export { $osdkMetadata } from './OntologyMetadata.js';

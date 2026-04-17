@@ -492,11 +492,13 @@ describe(useObjectTableData, () => {
       { wrapper },
     );
 
-    expect(useFunctionColumnsData).toHaveBeenCalledWith(
-      undefined,
-      mockBaseData,
+    expect(useFunctionColumnsData).toHaveBeenCalledWith({
+      objectSet: undefined,
+      objects: mockBaseData,
       columnDefinitions,
-    );
+      primaryKeyApiName: undefined,
+      pageSize: 50,
+    });
     expect(result.current.data).toEqual([
       {
         $primaryKey: "1",
@@ -586,11 +588,13 @@ describe(useObjectTableData, () => {
       { wrapper },
     );
 
-    expect(useFunctionColumnsData).toHaveBeenCalledWith(
-      mockObjectSet,
-      mockBaseData,
+    expect(useFunctionColumnsData).toHaveBeenCalledWith({
+      objectSet: mockObjectSet,
+      objects: mockBaseData,
       columnDefinitions,
-    );
+      primaryKeyApiName: undefined,
+      pageSize: 50,
+    });
 
     expect(result.current.data).toEqual([
       {

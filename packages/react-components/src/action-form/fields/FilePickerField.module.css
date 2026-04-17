@@ -43,6 +43,10 @@
       var(--osdk-file-picker-trigger-focus-color);
     outline-offset: var(--osdk-file-picker-trigger-focus-offset);
   }
+
+  &[aria-invalid] {
+    border-color: var(--osdk-file-picker-trigger-border-color-error);
+  }
 }
 
 /* Visually hidden file input */

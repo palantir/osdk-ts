@@ -8,3 +8,4 @@ export { getTodoCount } from './queries/getTodoCount.js';
 export { identity2DArray } from './queries/identity2DArray.js';
 export { kbnTsv2MediaReferenceParamOutput } from './queries/kbnTsv2MediaReferenceParamOutput.js';
 export { queryTakesAllParameterTypes } from './queries/queryTakesAllParameterTypes.js';
+export { recursiveStruct } from './queries/recursiveStruct.js';

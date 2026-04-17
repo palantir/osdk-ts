@@ -350,7 +350,7 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
       export type OsdkObjectLinks$Foo = {};
 
       export namespace Foo {
-        export type PropertyKeys = "foo" | "bar";
+        export type PropertyKeys = "bar" | "foo";
 
         export interface Props {
           /**

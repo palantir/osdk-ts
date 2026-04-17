@@ -26,6 +26,7 @@ export interface OverflowButtonProps {
   overflowMarkings: ReadonlyArray<{
     id: string;
     label: string;
+    description?: string;
     selectionState: MarkingSelectionState;
     disabled?: boolean;
   }>;
@@ -62,6 +63,7 @@ export function OverflowButton({
                 key={marking.id}
                 id={marking.id}
                 label={marking.label}
+                description={marking.description}
                 selectionState={marking.selectionState}
                 disabled={marking.disabled}
                 onToggle={onMarkingToggle}

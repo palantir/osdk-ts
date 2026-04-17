@@ -15,7 +15,7 @@ import type {
 } from '@osdk/client';
 
 export namespace BuilderDeploymentState {
-  export type PropertyKeys = 'skuId' | 'date' | 'currentTimestamp';
+  export type PropertyKeys = 'currentTimestamp' | 'date' | 'skuId';
 
   export type Links = {};
 

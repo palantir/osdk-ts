@@ -96,14 +96,12 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
   props: FilterListProps<Q>,
 ): UseFilterListStateResult<Q> {
   const {
-    objectSet,
+    objectType,
     filterDefinitions,
     onFilterStateChanged,
     onFilterClauseChanged,
     initialFilterStates,
   } = props;
-
-  const objectType = objectSet.$objectSetInternals.def;
   const { metadata } = useOsdkMetadata(objectType);
 
   const propertyTypes = useMemo(() => {

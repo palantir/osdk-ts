@@ -604,3 +604,162 @@ export const queryTypeAcceptsMediaReference: QueryTypeV2 = {
   version: "0.1.0",
   typeReferences: {},
 };
+
+export const queryTypeReturnsRecursiveStruct: QueryTypeV2 = {
+  apiName: "queryReturnsRecursiveStruct",
+  displayName: "queryReturnsRecursiveStruct",
+  parameters: {
+    treeNode: {
+      dataType: {
+        type: "typeReference",
+        typeId: "recursive-tree-node",
+      },
+    },
+  },
+  output: {
+    type: "typeReference",
+    typeId: "recursive-tree-node",
+  },
+  rid:
+    "ri.function-registry.main.function.d4f69e63-9531-55ff-0a1c-4896e0a0bee5",
+  version: "0.1.0",
+  typeReferences: {
+    "recursive-tree-node": {
+      type: "struct",
+      fields: [
+        {
+          name: "id",
+          fieldType: {
+            type: "string",
+          },
+        },
+        {
+          name: "value",
+          fieldType: {
+            type: "integer",
+          },
+        },
+        {
+          name: "children",
+          fieldType: {
+            type: "array",
+            subType: {
+              type: "typeReference",
+              typeId: "recursive-tree-node",
+            },
+          },
+        },
+      ],
+    },
+  },
+};
+
+export const queryTypeWithMultipleTypeRefs: QueryTypeV2 = {
+  apiName: "queryWithMultipleTypeRefs",
+  displayName: "queryWithMultipleTypeRefs",
+  parameters: {
+    tree: {
+      dataType: {
+        type: "typeReference",
+        typeId: "binary-tree-node",
+      },
+    },
+    linkedList: {
+      dataType: {
+        type: "typeReference",
+        typeId: "linked-list-node",
+      },
+    },
+  },
+  output: {
+    type: "struct",
+    fields: [
+      {
+        name: "processedTree",
+        fieldType: {
+          type: "typeReference",
+          typeId: "binary-tree-node",
+        },
+      },
+      {
+        name: "processedList",
+        fieldType: {
+          type: "typeReference",
+          typeId: "linked-list-node",
+        },
+      },
+    ],
+  },
+  rid:
+    "ri.function-registry.main.function.e5g70f74-0642-66gg-1b2d-5907f1b1cff6",
+  version: "0.1.0",
+  typeReferences: {
+    "binary-tree-node": {
+      type: "struct",
+      fields: [
+        {
+          name: "value",
+          fieldType: {
+            type: "integer",
+          },
+        },
+        {
+          name: "left",
+          fieldType: {
+            type: "union",
+            unionTypes: [
+              {
+                type: "typeReference",
+                typeId: "binary-tree-node",
+              },
+              {
+                type: "null",
+              },
+            ],
+          },
+        },
+        {
+          name: "right",
+          fieldType: {
+            type: "union",
+            unionTypes: [
+              {
+                type: "typeReference",
+                typeId: "binary-tree-node",
+              },
+              {
+                type: "null",
+              },
+            ],
+          },
+        },
+      ],
+    },
+    "linked-list-node": {
+      type: "struct",
+      fields: [
+        {
+          name: "data",
+          fieldType: {
+            type: "string",
+          },
+        },
+        {
+          name: "next",
+          fieldType: {
+            type: "union",
+            unionTypes: [
+              {
+                type: "typeReference",
+                typeId: "linked-list-node",
+              },
+              {
+                type: "null",
+              },
+            ],
+          },
+        },
+      ],
+    },
+  },
+};

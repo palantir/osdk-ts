@@ -42,13 +42,17 @@ export function TableRow<TData extends RowData>({
   setFocusedRowId,
   isInEditMode,
 }: TableRowProps<TData>): React.ReactElement {
-  const handleClick = useCallback(() => {
+  // Use the capture phase so row focus is set even when children call
+  // stopPropagation on the click event (e.g. DatetimePickerField's input).
+  const handleClickCapture = useCallback(() => {
     setFocusedRowId?.(row.id);
+  }, [row.id, setFocusedRowId]);
 
+  const handleClick = useCallback(() => {
     if (!isInEditMode) {
       onRowClick?.(row.original);
     }
-  }, [isInEditMode, onRowClick, row.original, row.id, setFocusedRowId]);
+  }, [isInEditMode, onRowClick, row.original]);
 
   return (
     <tr
@@ -59,6 +63,7 @@ export function TableRow<TData extends RowData>({
         height: `${virtualRow.size}px`,
         transform: `translateY(${virtualRow.start}px)`,
       }}
+      onClickCapture={handleClickCapture}
       onClick={handleClick}
     >
       {row.getVisibleCells().map((cell) => (

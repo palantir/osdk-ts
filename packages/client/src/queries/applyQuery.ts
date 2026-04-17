@@ -398,6 +398,7 @@ async function getRequiredDefinitions(
     case "threeDimensionalAggregation":
     case "timestamp":
     case "twoDimensionalAggregation":
+    case "typeReference":
     case "union":
       break;
     default: {

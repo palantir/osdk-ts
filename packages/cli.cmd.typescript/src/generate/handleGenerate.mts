@@ -171,6 +171,10 @@ async function generateFromStack(args: TypescriptGenerateArgs) {
 
     ontology.sharedPropertyTypes = sortKeys(ontology.sharedPropertyTypes);
 
+    if (ontology.valueTypes) {
+      ontology.valueTypes = sortKeys(ontology.valueTypes);
+    }
+
     if (ontologyWritePath) {
       fs.writeFileSync(ontologyWritePath, JSON.stringify(ontology, null, 2));
     }

@@ -16,7 +16,10 @@
 
 import type { Observer } from "@osdk/client/unstable-do-not-use";
 import React from "react";
-import { makeExternalStore } from "../new/makeExternalStore.js";
+import {
+  devToolsMetadata,
+  makeExternalStore,
+} from "../new/makeExternalStore.js";
 
 export interface UseQueryOptions<T> {
   /**
@@ -80,9 +83,10 @@ export function usePlatformQuery<T>(
       if (!enabled) {
         return makeExternalStore<QueryPayload<T>>(
           () => ({ unsubscribe: () => {} }),
-          process.env.NODE_ENV !== "production"
-            ? `${queryName} Query [DISABLED]`
-            : undefined,
+          devToolsMetadata({
+            hookType: "usePlatformQuery",
+            objectType: queryName,
+          }),
         );
       }
 
@@ -96,7 +100,10 @@ export function usePlatformQuery<T>(
             },
           };
         },
-        queryName,
+        devToolsMetadata({
+          hookType: "usePlatformQuery",
+          objectType: queryName,
+        }),
       );
     },
     [enabled, queryName, handleQuery],

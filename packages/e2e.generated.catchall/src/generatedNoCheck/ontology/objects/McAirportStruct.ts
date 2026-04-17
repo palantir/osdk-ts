@@ -15,7 +15,7 @@ import type {
 } from '@osdk/client';
 
 export namespace McAirportStruct {
-  export type PropertyKeys = 'airportName' | 'city' | 'airportStruct' | 'state' | 'originDate';
+  export type PropertyKeys = 'airportName' | 'airportStruct' | 'city' | 'originDate' | 'state';
 
   export type Links = {};
 

@@ -325,6 +325,12 @@ function LiveTodoList() {
 }
 ```
 
+:::note
+`streamUpdates` cannot be used together with `pivotTo`. The server does not support
+websocket subscriptions for link-traversal queries. Queries using `pivotTo` will
+still fetch data normally but won't receive real-time updates.
+:::
+
 ### Set Intersections with `intersectWith`
 
 Find objects matching multiple where clauses:
@@ -402,11 +408,16 @@ const { data, isLoading, isOptimistic, fetchMore, error } = useOsdkObjects(
     autoFetchMore: 100,
     enabled: true,
     intersectWith: [{ where: { priority: "high" } }],
-    pivotTo: "assignee",
     withProperties: { /* see advanced-queries */ },
   },
 );
 ```
+
+:::note
+`streamUpdates` and `pivotTo` cannot be used together. The server does not support
+websocket subscriptions for link-traversal queries. Queries using `pivotTo` will
+still fetch data normally but won't receive real-time updates.
+:::
 
 ---
 

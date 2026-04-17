@@ -77,6 +77,11 @@
   text-decoration: line-through;
 }
 
+.emptyLabel {
+  color: var(--osdk-filter-listogram-empty-label-color);
+  font-style: var(--osdk-filter-listogram-empty-label-font-style);
+}
+
 .bar {
   width: var(--osdk-filter-listogram-bar-width);
   flex-shrink: 0;

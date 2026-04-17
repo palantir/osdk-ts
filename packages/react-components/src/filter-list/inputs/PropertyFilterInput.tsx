@@ -33,7 +33,7 @@ import { ToggleFilterInput } from "./ToggleFilterInput.js";
 
 interface PropertyFilterInputProps<Q extends ObjectTypeDefinition> {
   objectType: Q;
-  objectSet: ObjectSet<Q>;
+  objectSet?: ObjectSet<Q>;
   definition: Extract<FilterDefinitionUnion<Q>, { type: "PROPERTY" }>;
   filterState: FilterState | undefined;
   onFilterStateChanged: (state: FilterState) => void;
@@ -84,6 +84,7 @@ function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
           propertyKey={definition.key}
           filterState={filterState}
           onFilterStateChanged={onFilterStateChanged}
+          whereClause={whereClause}
         />
       );
 
@@ -95,6 +96,7 @@ function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
           propertyKey={definition.key}
           filterState={filterState}
           onFilterStateChanged={onFilterStateChanged}
+          whereClause={whereClause}
         />
       );
 

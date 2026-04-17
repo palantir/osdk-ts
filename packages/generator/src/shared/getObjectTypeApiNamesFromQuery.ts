@@ -28,5 +28,11 @@ export function getObjectTypeApiNamesFromQuery(
   }
   getObjectTypesFromQueryDataType(query.output, types);
 
+  if (query.typeReferences) {
+    for (const typeRef of Object.values(query.typeReferences)) {
+      getObjectTypesFromQueryDataType(typeRef, types);
+    }
+  }
+
   return Array.from(types);
 }

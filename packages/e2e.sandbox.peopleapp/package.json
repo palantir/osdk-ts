@@ -29,7 +29,7 @@
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
     "codegen": "rm -rf src/generatedNoCheck2/* &&  osdk-unstable-typescript generate --outDir src/generatedNoCheck2 --ontologyPath ontology.json --version dev --internal --packageType module",
     "codegen-from-server": "rm -rf src/generatedNoCheck2/* && osdk-unstable-typescript generate --stack ${FOUNDRY_URL} --clientId ${FOUNDRY_CLIENT_ID} --outDir src/generatedNoCheck2 --ontologyWritePath ontology.json --version dev --internal --beta --packageType module",
-    "dev": "vite",
+    "dev": "trap 'kill 0' EXIT; pnpm turbo watch transpileBrowser --filter='@osdk/e2e.sandbox.peopleapp^...' & vite",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
     "preview": "vite preview",

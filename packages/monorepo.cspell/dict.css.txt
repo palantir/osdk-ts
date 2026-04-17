@@ -8,5 +8,7 @@ oklch
 Resizer
 Segoe
 unitless
+vhidden
+Vhidden
 vermillion
 WCAG

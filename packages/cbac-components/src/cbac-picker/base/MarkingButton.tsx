@@ -15,6 +15,7 @@
  */
 
 import { Button } from "@base-ui/react/button";
+import { Tooltip } from "@base-ui/react/tooltip";
 import classnames from "classnames";
 import React from "react";
 import type { MarkingSelectionState } from "../types.js";
@@ -22,9 +23,11 @@ import styles from "./MarkingButton.module.css";
 import { getDisplayLabel, isDisallowed } from "./selectionStateHelpers.js";
 
 export interface MarkingButtonProps {
+  id: string;
   label: string;
+  description?: string;
   selectionState: MarkingSelectionState;
-  onToggle: () => void;
+  onToggle: (markingId: string) => void;
   disabled?: boolean;
 }
 
@@ -39,24 +42,79 @@ const selectionStateClassMap: Record<
   NONE: undefined,
 };
 
-export function MarkingButton({
+function getSelectionHint(state: MarkingSelectionState): string | undefined {
+  switch (state) {
+    case "SELECTED":
+      return "Click to deselect";
+    case "IMPLIED":
+      return "Implied by another marking";
+    case "DISALLOWED":
+    case "IMPLIED_DISALLOWED":
+      return "Not available with current selection. Deselect your current choice first.";
+    case "NONE":
+      return undefined;
+  }
+}
+
+export const MarkingButton: React.MemoExoticComponent<
+  (props: MarkingButtonProps) => React.ReactElement
+> = React.memo(function MarkingButton({
+  id,
   label,
+  description,
   selectionState,
   onToggle,
   disabled,
 }: MarkingButtonProps): React.ReactElement {
-  return (
+  const handleToggle = React.useCallback(() => {
+    onToggle(id);
+  }, [onToggle, id]);
+
+  const hasDescription = description !== undefined
+    && description.length > 0;
+  const isButtonDisabled = disabled ?? isDisallowed(selectionState);
+  const showTooltip = hasDescription || isDisallowed(selectionState);
+  const hint = getSelectionHint(selectionState);
+
+  const button = (
     <Button
       className={classnames(
         styles.markingButton,
         selectionStateClassMap[selectionState],
       )}
-      onClick={onToggle}
-      disabled={disabled ?? isDisallowed(selectionState)}
+      onClick={isButtonDisabled ? undefined : handleToggle}
+      disabled={showTooltip ? undefined : isButtonDisabled}
+      aria-disabled={showTooltip ? isButtonDisabled : undefined}
       aria-pressed={selectionState === "SELECTED"
         || selectionState === "IMPLIED"}
+      title={showTooltip ? undefined : label}
     >
       {getDisplayLabel(label, selectionState)}
     </Button>
   );
-}
+
+  if (!showTooltip) {
+    return button;
+  }
+
+  return (
+    <Tooltip.Root>
+      <Tooltip.Trigger render={button} />
+      <Tooltip.Portal>
+        <Tooltip.Positioner sideOffset={8}>
+          <Tooltip.Popup className={styles.tooltip}>
+            <p className={styles.tooltipTitle}>{label}</p>
+            {hasDescription && (
+              <p className={styles.tooltipDescription}>{description}</p>
+            )}
+            {hint != null && (
+              <p className={styles.tooltipHint}>
+                {hint}
+              </p>
+            )}
+          </Tooltip.Popup>
+        </Tooltip.Positioner>
+      </Tooltip.Portal>
+    </Tooltip.Root>
+  );
+});

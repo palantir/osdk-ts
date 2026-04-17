@@ -17,14 +17,14 @@ import type {
 
 export namespace EsongIssues {
   export type PropertyKeys =
+    | 'createdAt'
     | 'id'
+    | 'label'
     | 'numComments'
     | 'pdsTicket'
-    | 'status'
     | 'pdsTicketId'
-    | 'title'
-    | 'label'
-    | 'createdAt';
+    | 'status'
+    | 'title';
 
   export interface Links {
     readonly esongPds: $SingleLinkAccessor<EsongPds>;
@@ -134,25 +134,25 @@ export interface EsongIssues extends $ObjectTypeDefinition {
     };
     implements: ['EsongInterfaceA', 'EsongInterfaceC', 'EsongInterfaceWithIlts'];
     interfaceMap: {
+      EsongInterfaceA: {
+        esongSptA: 'label';
+      };
       EsongInterfaceC: {
         esongId: 'label';
       };
       EsongInterfaceWithIlts: {
         esongId: 'title';
       };
-      EsongInterfaceA: {
-        esongSptA: 'label';
-      };
     };
     inverseInterfaceMap: {
+      EsongInterfaceA: {
+        label: 'esongSptA';
+      };
       EsongInterfaceC: {
         label: 'esongId';
       };
       EsongInterfaceWithIlts: {
         title: 'esongId';
-      };
-      EsongInterfaceA: {
-        label: 'esongSptA';
       };
     };
     links: {

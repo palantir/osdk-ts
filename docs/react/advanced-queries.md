@@ -14,7 +14,7 @@ Advanced querying with set operations, derived properties, and link traversal.
 
 ### When to Use useObjectSet vs useOsdkObjects
 
-Both hooks support where, orderBy, pagination, withProperties, pivotTo, autoFetchMore, and streamUpdates.
+Both hooks support where, orderBy, pagination, withProperties, pivotTo, autoFetchMore, and streamUpdates. Note that `pivotTo` and `streamUpdates` cannot be combined, see the note below.
 
 **Use useOsdkObjects when:**
 - Passing an ObjectType or Interface directly (`Todo`)
@@ -209,6 +209,12 @@ const { data, isLoading } = useObjectSet($(Todo), {
 });
 ```
 
+:::note
+`streamUpdates` cannot be used together with `pivotTo`. The server does not support
+websocket subscriptions for link-traversal queries. Queries using `pivotTo` will
+still fetch data normally but won't receive real-time updates.
+:::
+
 ### All Options
 
 - `where` - Filter objects
@@ -216,11 +222,11 @@ const { data, isLoading } = useObjectSet($(Todo), {
 - `union` - Combine with other ObjectSets
 - `intersect` - Find common objects with other ObjectSets
 - `subtract` - Remove objects that exist in other ObjectSets
-- `pivotTo` - Traverse to linked objects (changes result type)
+- `pivotTo` - Traverse to linked objects (changes result type). Cannot be combined with `streamUpdates`.
 - `pageSize` - Number of objects per page
 - `orderBy` - Sort order
 - `dedupeIntervalMs` - Minimum time between re-fetches (default: 2000ms)
-- `streamUpdates` - Enable real-time websocket updates (default: false)
+- `streamUpdates` - Enable real-time websocket updates (default: false). Cannot be combined with `pivotTo`.
 - `autoFetchMore` - Auto-fetch additional pages
 - `enabled` - Enable/disable the query
 

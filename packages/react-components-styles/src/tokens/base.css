@@ -187,6 +187,15 @@
     fill: currentColor;
   }
 
+  /*
+   * Blueprint 6 icon components use oversized path coordinates (320×320)
+   * with scale(0.05, -0.05) transforms. During rendering the path extends
+   * beyond the SVG viewBox, so overflow must be visible to prevent clipping.
+   */
+  .bp6-icon > svg {
+    overflow: visible;
+  }
+
   *,
   *::before,
   *::after {

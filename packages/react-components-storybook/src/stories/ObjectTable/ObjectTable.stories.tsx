@@ -958,13 +958,57 @@ export const EditableTable: Story = {
       {
         locator: { type: "property", id: "jobTitle" },
         editable: true,
+        editFieldConfig: {
+          fieldComponent: "DROPDOWN",
+          fieldComponentProps: {
+            items: [
+              "Software Engineer",
+              "Senior Software Engineer",
+              "Staff Engineer",
+              "Engineering Manager",
+              "Product Manager",
+              "Designer",
+            ],
+            isSearchable: true,
+            placeholder: "Search job titles…",
+          },
+        },
       },
       {
         locator: { type: "property", id: "department" },
-        editable: false, // Read-only column
+        editable: true,
+        editFieldConfig: {
+          fieldComponent: "DROPDOWN",
+          fieldComponentProps: {
+            items: [
+              "Engineering",
+              "Product",
+              "Design",
+              "Sales",
+              "Marketing",
+              "Finance",
+              "Human Resources",
+            ],
+          },
+        },
+      },
+      {
+        locator: { type: "property", id: "firstInternStartDate" },
+        editable: true,
+      },
+      {
+        locator: { type: "property", id: "firstFullTimeStartDate" },
+        editable: true,
+        editFieldConfig: {
+          fieldComponent: "DATE_PICKER",
+          fieldComponentProps: {
+            showTime: false,
+            placeholder: "Select date...",
+          },
+        },
       },
     ],
-    editMode: "manual",
+    editMode: "always",
   } as any,
   parameters: {
     docs: {
@@ -981,39 +1025,119 @@ export const EditableTable: Story = {
   {
     locator: { type: "property", id: "jobTitle" },
     editable: true,
+    editFieldConfig: {
+      fieldComponent: "DROPDOWN",
+      fieldComponentProps: {
+        items: [
+          "Software Engineer",
+          "Senior Software Engineer",
+          "Staff Engineer",
+          "Engineering Manager",
+          "Product Manager",
+          "Designer",
+        ],
+        isSearchable: true,
+        placeholder: "Search job titles…",
+      },
+    },
   },
   {
     locator: { type: "property", id: "department" },
-    editable: false, // Read-only column
+    editable: true,
+    editFieldConfig: {
+      fieldComponent: "DROPDOWN",
+      fieldComponentProps: {
+        items: [
+          "Engineering",
+          "Product",
+          "Design",
+          "Sales",
+          "Marketing",
+          "Finance",
+          "Human Resources",
+        ],
+      },
+    },
+  },
+  // Example where the field is inferred from datatype
+  {
+    locator: { type: "property", id: "firstInternStartDate" },
+    editable: true,
+  },
+  {
+    locator: { type: "property", id: "firstFullTimeStartDate" },
+    editable: true,
+    editFieldConfig: {
+      fieldComponent: "DATE_PICKER",
+      fieldComponentProps: {
+        showTime: false,
+        placeholder: "Select date...",
+      },
+    },
   },
 ];
 
 return (
-  <ObjectTable 
-    objectType={Employee} 
-    columnDefinitions={columnDefinitions} 
-    editMode="manual" 
+  <ObjectTable
+    objectType={Employee}
+    columnDefinitions={columnDefinitions}
+    editMode="manual"
   />
 );`,
       },
     },
   },
-  render: (args) => (
-    <div className="object-table-container" style={{ height: "600px" }}>
-      <div
-        style={{
-          padding: "12px",
-          backgroundColor: "#fff3cd",
-          marginBottom: "8px",
-          borderRadius: "4px",
-        }}
-      >
-        Try changing edit mode to "always" to enable inline editing without
-        needing to toggle edit mode on.
+  render: (args) => {
+    const [lastEdit, setLastEdit] = useState<
+      CellEditInfo<Osdk.Instance<typeof Employee>> | undefined
+    >();
+
+    const handleCellValueChanged = useCallback(
+      (info: CellEditInfo<Osdk.Instance<typeof Employee>>) => {
+        setLastEdit(info);
+      },
+      [],
+    );
+
+    return (
+      <div className="object-table-container" style={{ height: "600px" }}>
+        <div
+          style={{
+            padding: "12px",
+            backgroundColor: "#fff3cd",
+            marginBottom: "8px",
+            borderRadius: "4px",
+          }}
+        >
+          Try changing edit mode to "manual" to enable inline editing with an
+          Edit Table button.
+        </div>
+        {lastEdit != null && (
+          <div
+            style={{
+              padding: "12px",
+              backgroundColor: "#d1ecf1",
+              marginBottom: "8px",
+              borderRadius: "4px",
+              fontFamily: "monospace",
+              fontSize: "13px",
+            }}
+          >
+            <strong>Last cell edit:</strong>{" "}
+            Column "{lastEdit.columnId}" changed from "{String(
+              lastEdit.oldValue,
+            )}" to "
+            {String(lastEdit.newValue)}"
+          </div>
+        )}
+        <ObjectTable
+          {...args}
+          objectType={Employee}
+          onCellValueChanged={handleCellValueChanged}
+        />
       </div>
-      <ObjectTable {...args} objectType={Employee} />
-    </div>
-  ),
+    );
+  },
 };
 
 export const WithSubmitEditsButton: Story = {
@@ -1117,6 +1241,46 @@ export const EditableWithValidation: Story = {
             : "Employee number must be positive";
         },
       },
+      {
+        locator: { type: "property", id: "jobTitle" },
+        editable: true,
+        editFieldConfig: {
+          fieldComponent: "DROPDOWN",
+          fieldComponentProps: {
+            items: [
+              "Software Engineer",
+              "Senior Software Engineer",
+              "Staff Engineer",
+              "Engineering Manager",
+              "Product Manager",
+              "Designer",
+            ],
+            isSearchable: true,
+            placeholder: "Search job titles…",
+          },
+        },
+        validateEdit: async (value: unknown) => {
+          return value ? undefined : "Job title is required";
+        },
+      },
+      {
+        locator: { type: "property", id: "department" },
+        editable: true,
+        editFieldConfig: {
+          fieldComponent: "DROPDOWN",
+          fieldComponentProps: {
+            items: [
+              "Engineering",
+              "Product",
+              "Design",
+              "Sales",
+              "Marketing",
+              "Finance",
+              "Human Resources",
+            ],
+          },
+        },
+      },
     ],
     editMode: "always",
     onSubmitEdits: async (edits: CellEditInfo<Osdk.Instance<Employee>>[]) => {
@@ -1148,14 +1312,54 @@ export const EditableWithValidation: Story = {
     validateEdit: async (value: number) => {
       return value > 0 ? undefined : "Employee number must be positive";
     },
+  },
+  {
+    locator: { type: "property", id: "jobTitle" },
+    editable: true,
+    editFieldConfig: {
+      fieldComponent: "DROPDOWN",
+      fieldComponentProps: {
+        items: [
+          "Software Engineer",
+          "Senior Software Engineer",
+          "Staff Engineer",
+          "Engineering Manager",
+          "Product Manager",
+          "Designer",
+        ],
+        isSearchable: true,
+        placeholder: "Search job titles…",
+      },
+    },
+    validateEdit: async (value: unknown) => {
+      return value ? undefined : "Job title is required";
+    },
+  },
+  {
+    locator: { type: "property", id: "department" },
+    editable: true,
+    editFieldConfig: {
+      fieldComponent: "DROPDOWN",
+      fieldComponentProps: {
+        items: [
+          "Engineering",
+          "Product",
+          "Design",
+          "Sales",
+          "Marketing",
+          "Finance",
+          "Human Resources",
+        ],
+      },
+    },
+  },
 ];
 
 return (
-  <ObjectTable 
-    objectType={Employee} 
+  <ObjectTable
+    objectType={Employee}
     columnDefinitions={columnDefinitions}
-    editMode="always" // Always in edit mode
-    // Submit Edits button disabled when there are validation errors
+    editMode="always"
     onSubmitEdits={async (edits) => {
       return true;
     }}
@@ -1179,6 +1383,7 @@ return (
           <li>Name must be at least 2 characters</li>
           <li>Email must be a valid format</li>
           <li>Employee number must be positive</li>
+          <li>Job title is required</li>
         </ul>
       </div>
       <ObjectTable {...args} objectType={Employee} />

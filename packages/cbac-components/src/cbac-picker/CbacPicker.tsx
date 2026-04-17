@@ -16,13 +16,16 @@
 
 import React from "react";
 import { BaseCbacPicker } from "./base/BaseCbacPicker.js";
+import type { MaxClassificationConstraint } from "./types.js";
 import { useCbacSelection } from "./useCbacSelection.js";
+import { useConstraintCallout } from "./useConstraintCallout.js";
 import { EMPTY_ARRAY } from "./utils/cbacPickerUtils.js";
 import { toggleMarking } from "./utils/selectionLogic.js";
 
 export interface CbacPickerProps {
   initialMarkingIds?: string[];
   onChange: (markingIds: string[]) => void;
+  maxClassificationConstraint?: MaxClassificationConstraint;
   readOnly?: boolean;
   className?: string;
 }
@@ -30,6 +33,7 @@ export interface CbacPickerProps {
 export function CbacPicker({
   initialMarkingIds,
   onChange,
+  maxClassificationConstraint,
   readOnly,
   className,
 }: CbacPickerProps): React.ReactElement {
@@ -66,6 +70,8 @@ export function CbacPicker({
     onChange(EMPTY_ARRAY);
   }, [onChange]);
 
+  const constraintCallout = useConstraintCallout(maxClassificationConstraint);
+
   return (
     <BaseCbacPicker
       categories={categoryGroups}
@@ -78,6 +84,7 @@ export function CbacPicker({
       readOnly={readOnly}
       isLoading={isLoading}
       error={error}
+      validationCallouts={constraintCallout}
       className={className}
     />
   );

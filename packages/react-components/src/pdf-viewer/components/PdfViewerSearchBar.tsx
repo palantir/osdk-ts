@@ -70,7 +70,7 @@ export function PdfViewerSearchBar({
   return (
     <div className={styles.searchBar}>
       <input
-        autoFocus
+        autoFocus={true}
         className={styles.searchInput}
         type="text"
         value={query}

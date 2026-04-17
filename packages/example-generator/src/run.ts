@@ -327,7 +327,7 @@ function checkExamples(
       {
         compareContent: true,
         filterHandler: gitIgnoreFilter(pathLeft, pathRight),
-        excludeFilter: "/.turbo",
+        excludeFilter: "/.turbo,turbo.json",
       },
     );
     if (!compareResult.same) {

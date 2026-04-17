@@ -56,20 +56,65 @@ export const mockMarkings: PickerMarking[] = [
     id: "m-unclassified",
     categoryId: "cat-classification",
     name: "Unclassified",
+    description: "Information that is not classified and can be freely shared.",
   },
   {
     id: "m-confidential",
     categoryId: "cat-classification",
     name: "Confidential",
+    description:
+      "Information that could cause damage to national security if disclosed.",
   },
-  { id: "m-secret", categoryId: "cat-classification", name: "Secret" },
-  { id: "m-top-secret", categoryId: "cat-classification", name: "Top Secret" },
-  { id: "m-alpha", categoryId: "cat-compartment", name: "ALPHA" },
-  { id: "m-bravo", categoryId: "cat-compartment", name: "BRAVO" },
-  { id: "m-charlie", categoryId: "cat-compartment", name: "CHARLIE" },
-  { id: "m-rel-usa", categoryId: "cat-releasability", name: "REL USA" },
-  { id: "m-rel-allied", categoryId: "cat-releasability", name: "REL ALLIED" },
-  { id: "m-no-foreign", categoryId: "cat-releasability", name: "NO FOREIGN" },
+  {
+    id: "m-secret",
+    categoryId: "cat-classification",
+    name: "Secret",
+    description:
+      "Information that could cause serious damage to national security if disclosed.",
+  },
+  {
+    id: "m-top-secret",
+    categoryId: "cat-classification",
+    name: "Top Secret",
+    description:
+      "Information that could cause exceptionally grave damage to national security if disclosed.",
+  },
+  {
+    id: "m-alpha",
+    categoryId: "cat-compartment",
+    name: "ALPHA",
+    description: "Access to ALPHA compartmented information.",
+  },
+  {
+    id: "m-bravo",
+    categoryId: "cat-compartment",
+    name: "BRAVO",
+    description: "Access to BRAVO compartmented information.",
+  },
+  {
+    id: "m-charlie",
+    categoryId: "cat-compartment",
+    name: "CHARLIE",
+    description: "Access to CHARLIE compartmented information.",
+  },
+  {
+    id: "m-rel-usa",
+    categoryId: "cat-releasability",
+    name: "REL USA",
+    description: "Releasable to United States personnel only.",
+  },
+  {
+    id: "m-rel-allied",
+    categoryId: "cat-releasability",
+    name: "REL ALLIED",
+    description: "Releasable to allied nation personnel.",
+  },
+  {
+    id: "m-no-foreign",
+    categoryId: "cat-releasability",
+    name: "NO FOREIGN",
+    description: "Not releasable to foreign nationals.",
+  },
 ];
 
 export const mockCategoryGroups: CategoryMarkingGroup[] = [

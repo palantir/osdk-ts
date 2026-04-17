@@ -31,6 +31,7 @@ import {
 import React from "react";
 import { extractPayloadError, isPayloadLoading } from "./hookUtils.js";
 import {
+  devToolsMetadata,
   makeExternalStore,
   makeExternalStoreAsync,
 } from "./makeExternalStore.js";
@@ -101,12 +102,6 @@ export interface UseOsdkAggregationResult<
   error: Error | undefined;
   refetch: () => Promise<void>;
 }
-
-declare const process: {
-  env: {
-    NODE_ENV: "development" | "production";
-  };
-};
 
 /**
  * React hook for performing aggregations on OSDK object sets.
@@ -209,11 +204,12 @@ export function useOsdkAggregation<
               },
               observer,
             ),
-          process.env.NODE_ENV !== "production"
-            ? `aggregation ${type.apiName} ${
-              JSON.stringify(canonOptions.where)
-            }`
-            : void 0,
+          devToolsMetadata({
+            hookType: "useOsdkAggregation",
+            objectType: type.apiName,
+            where: canonOptions.where,
+            aggregate: canonOptions.aggregate,
+          }),
         );
       }
       return makeExternalStore<ObserveAggregationArgs<Q, A>>(
@@ -230,9 +226,12 @@ export function useOsdkAggregation<
             },
             observer,
           ),
-        process.env.NODE_ENV !== "production"
-          ? `aggregation ${type.apiName} ${JSON.stringify(canonOptions.where)}`
-          : void 0,
+        devToolsMetadata({
+          hookType: "useOsdkAggregation",
+          objectType: type.apiName,
+          where: canonOptions.where,
+          aggregate: canonOptions.aggregate,
+        }),
       );
     },
     [

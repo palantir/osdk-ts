@@ -133,7 +133,7 @@ describe("ObjectSetListenerWebsocket", async () => {
     let updateReceived: {
       object: Osdk.Instance<Employee>;
       state: "ADDED_OR_UPDATED" | "REMOVED";
-    } | undefined = undefined;
+    } | undefined;
 
     let listenerPromise: DeferredPromise<void>;
 
@@ -228,16 +228,16 @@ describe("ObjectSetListenerWebsocket", async () => {
 
       it("correctly requests regular object properties", () => {
         expect(subReq1.requests[0].propertySet).toEqual([
+          "class",
           "employeeId",
+          "employeeSensor",
+          "employeeStatus",
+          "favoriteRestaurants",
           "fullName",
           "office",
-          "class",
-          "startDate",
-          "employeeStatus",
-          "employeeSensor",
           "skillSet",
           "skillSetEmbedding",
-          "favoriteRestaurants",
+          "startDate",
         ]);
       });
 
@@ -708,7 +708,7 @@ function createMockWebSocketConstructor(
   logger: Logger,
 ): MockedWebSocket {
   let i = 0;
-  const ret = vi.fn(function(..._args: any[]): MockedWebSocket {
+  const ret = vi.fn((..._args: any[]): MockedWebSocket => {
     const webSocketInst = i++;
     logger.debug("WebSocket constructor called");
     const eventEmitter = new EventTarget();

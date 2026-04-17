@@ -36,7 +36,9 @@ export function wireActionTypeV2ToSdkActionMetadata(
     apiName: input.apiName,
     unsanitizedApiName: unsanitizedApiName ?? input.apiName,
     parameters: Object.fromEntries(
-      Object.entries(input.parameters).map((
+      Object.entries(input.parameters).sort(
+        ([a], [b]) => a.localeCompare(b),
+      ).map((
         [key, value],
       ) => [key, wireActionParameterV2ToSdkParameterDefinition(value)]),
     ),

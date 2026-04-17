@@ -29,12 +29,28 @@ import { renderHook } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { ColumnDefinition } from "../../ObjectTableApi.js";
 import {
-  DEFAULT_DEDUPE_INTERVAL_MS,
-  useFunctionColumnsData,
-} from "../useFunctionColumnsData.js";
+  DEFAULT_FUNCTION_COLUMN_DEDUPE_INTERVAL_MS,
+  DEFAULT_MAX_CONCURRENT_REQUESTS,
+  DEFAULT_PAGE_SIZE,
+} from "../../utils/constants.js";
+import { useFunctionColumnsData } from "../useFunctionColumnsData.js";
 
 vi.mock("@osdk/react/experimental", () => ({
   useOsdkFunctions: vi.fn(),
+}));
+
+vi.mock("../../utils/addFilterClauseToObjectSet.js", () => ({
+  addFilterClauseToObjectSet: vi.fn(
+    (objectSet: unknown, whereClause: unknown) => ({
+      __filteredObjectSet: true,
+      objectSet,
+      whereClause,
+    }),
+  ),
+}));
+
+vi.mock("../../utils/stripDerivedPropertiesFromParams.js", () => ({
+  stripDerivedPropertiesFromParams: vi.fn((params: unknown) => params),
 }));
 
 const TestObjectType: ObjectTypeDefinition = {
@@ -114,13 +130,18 @@ describe("useFunctionColumnsData", () => {
     vi.mocked(useOsdkFunctions).mockReturnValue([]);
 
     const { result } = renderHook(
-      () => useFunctionColumnsData(undefined, mockObjects, undefined),
+      () =>
+        useFunctionColumnsData({
+          objectSet: undefined,
+          objects: mockObjects,
+        }),
     );
 
     expect(result.current).toEqual({});
     expect(useOsdkFunctions).toHaveBeenCalledWith({
       queries: [],
       enabled: false,
+      maxConcurrent: DEFAULT_MAX_CONCURRENT_REQUESTS,
     });
   });
 
@@ -128,13 +149,14 @@ describe("useFunctionColumnsData", () => {
     vi.mocked(useOsdkFunctions).mockReturnValue([]);
 
     const { result } = renderHook(
-      () => useFunctionColumnsData(mockObjectSet, [], undefined),
+      () => useFunctionColumnsData({ objectSet: mockObjectSet, objects: [] }),
     );
 
     expect(result.current).toEqual({});
     expect(useOsdkFunctions).toHaveBeenCalledWith({
       queries: [],
       enabled: false,
+      maxConcurrent: DEFAULT_MAX_CONCURRENT_REQUESTS,
     });
   });
 
@@ -156,7 +178,11 @@ describe("useFunctionColumnsData", () => {
 
     const { result, rerender } = renderHook(
       () =>
-        useFunctionColumnsData(mockObjectSet, mockObjects, columnDefinitions),
+        useFunctionColumnsData({
+          objectSet: mockObjectSet,
+          objects: mockObjects,
+          columnDefinitions,
+        }),
     );
 
     // Initially shows isLoading state
@@ -211,12 +237,13 @@ describe("useFunctionColumnsData", () => {
         {
           queryDefinition: mockQueryDefinition,
           options: {
-            dedupeIntervalMs: DEFAULT_DEDUPE_INTERVAL_MS,
+            dedupeIntervalMs: DEFAULT_FUNCTION_COLUMN_DEDUPE_INTERVAL_MS,
             params: { [OBJ_SET_KEY]: mockObjectSet },
           },
         },
       ],
       enabled: true,
+      maxConcurrent: DEFAULT_MAX_CONCURRENT_REQUESTS,
     });
   });
 
@@ -261,7 +288,11 @@ describe("useFunctionColumnsData", () => {
 
     const { result } = renderHook(
       () =>
-        useFunctionColumnsData(mockObjectSet, mockOneObject, columnDefinitions),
+        useFunctionColumnsData({
+          objectSet: mockObjectSet,
+          objects: mockOneObject,
+          columnDefinitions,
+        }),
     );
 
     expect(result.current).toEqual({
@@ -273,103 +304,6 @@ describe("useFunctionColumnsData", () => {
           isLoading: false,
         },
       },
-    });
-  });
-
-  it("should group columns by unique query definition", async () => {
-    const mockOneObject = [
-      mockObject1,
-    ] as Osdk.Instance<TestObject, "$allBaseProperties", TestObjectKeys, {}>[];
-
-    const mockResult = {
-      "TestObject:obj1": {
-        status: "active",
-        timestamp: "2024-01-01",
-      },
-    };
-
-    type FunctionColumnDef = {
-      statusColumn: MockQueryDef;
-      timestampColumn: MockQueryDef;
-    };
-
-    const columnDefinitions: ColumnDefinition<
-      TestObject,
-      {},
-      FunctionColumnDef
-    >[] = [
-      {
-        locator: {
-          type: "function",
-          id: "statusColumn",
-          queryDefinition: mockQueryDefinition,
-          getFunctionParams: ((objectSet: ObjectSet<TestObject>) => ({
-            [OBJ_SET_KEY]: objectSet,
-          })) as any,
-          getValue: (cellData) => (cellData as { status: string })?.status,
-          getKey: (obj) => `${obj.$objectType}:${obj.$primaryKey}`,
-        },
-      },
-      {
-        locator: {
-          type: "function",
-          id: "timestampColumn",
-          queryDefinition: mockQueryDefinition,
-          getFunctionParams: ((objectSet: ObjectSet<TestObject>) => ({
-            [OBJ_SET_KEY]: objectSet,
-          })) as any,
-          getValue: (cellData) =>
-            (cellData as { timestamp: string })?.timestamp,
-          getKey: (obj) => `${obj.$objectType}:${obj.$primaryKey}`,
-        },
-      },
-    ];
-
-    vi.mocked(useOsdkFunctions).mockReturnValue([
-      {
-        data: mockResult,
-        error: undefined,
-        isLoading: false,
-        lastUpdated: Date.now(),
-      },
-    ] as unknown as UseOsdkFunctionsResult);
-
-    const { result } = renderHook(
-      () =>
-        useFunctionColumnsData(mockObjectSet, mockOneObject, columnDefinitions),
-    );
-
-    expect(result.current).toEqual({
-      statusColumn: {
-        obj1: {
-          __asyncCell: true,
-          data: "active",
-          error: undefined,
-          isLoading: false,
-        },
-      },
-      timestampColumn: {
-        obj1: {
-          __asyncCell: true,
-          data: "2024-01-01",
-          error: undefined,
-          isLoading: false,
-        },
-      },
-    });
-
-    // Should only make one query since both columns use the same query definition
-    expect(useOsdkFunctions).toHaveBeenCalledWith({
-      queries: [
-        {
-          queryDefinition: mockQueryDefinition,
-          options: {
-            dedupeIntervalMs: DEFAULT_DEDUPE_INTERVAL_MS,
-            params: { [OBJ_SET_KEY]: mockObjectSet },
-          },
-        },
-      ],
-      enabled: true,
     });
   });
 
@@ -449,7 +383,11 @@ describe("useFunctionColumnsData", () => {
 
     const { result } = renderHook(
       () =>
-        useFunctionColumnsData(mockObjectSet, mockObjects, columnDefinitions),
+        useFunctionColumnsData({
+          objectSet: mockObjectSet,
+          objects: mockObjects,
+          columnDefinitions,
+        }),
     );
 
     expect(result.current).toEqual({
@@ -478,18 +416,19 @@ describe("useFunctionColumnsData", () => {
           queryDefinition: mockQueryDefinition,
           options: {
             params: { [OBJ_SET_KEY]: mockObjectSet },
-            dedupeIntervalMs: DEFAULT_DEDUPE_INTERVAL_MS,
+            dedupeIntervalMs: DEFAULT_FUNCTION_COLUMN_DEDUPE_INTERVAL_MS,
           },
         },
         {
           queryDefinition: mockQueryDefinition2,
           options: {
             params: { [OBJ_SET_KEY]: mockObjectSet },
-            dedupeIntervalMs: DEFAULT_DEDUPE_INTERVAL_MS,
+            dedupeIntervalMs: DEFAULT_FUNCTION_COLUMN_DEDUPE_INTERVAL_MS,
           },
         },
       ],
       enabled: true,
+      maxConcurrent: DEFAULT_MAX_CONCURRENT_REQUESTS,
     });
   });
 
@@ -525,7 +464,11 @@ describe("useFunctionColumnsData", () => {
 
     const { result } = renderHook(
       () =>
-        useFunctionColumnsData(mockObjectSet, mockObjects, columnDefinitions),
+        useFunctionColumnsData({
+          objectSet: mockObjectSet,
+          objects: mockObjects,
+          columnDefinitions,
+        }),
     );
 
     expect(result.current).toEqual({
@@ -560,7 +503,11 @@ describe("useFunctionColumnsData", () => {
 
     const { result } = renderHook(
       () =>
-        useFunctionColumnsData(mockObjectSet, mockObjects, columnDefinitions),
+        useFunctionColumnsData({
+          objectSet: mockObjectSet,
+          objects: mockObjects,
+          columnDefinitions,
+        }),
     );
 
     expect(result.current).toEqual({
@@ -595,12 +542,323 @@ describe("useFunctionColumnsData", () => {
 
     renderHook(
       () =>
-        useFunctionColumnsData(mockObjectSet, mockObjects, nonFunctionColumns),
+        useFunctionColumnsData({
+          objectSet: mockObjectSet,
+          objects: mockObjects,
+          columnDefinitions: nonFunctionColumns,
+        }),
     );
 
     expect(useOsdkFunctions).toHaveBeenCalledWith({
       queries: [],
       enabled: false,
+      maxConcurrent: DEFAULT_MAX_CONCURRENT_REQUESTS,
+    });
+  });
+
+  describe("paginated object sets", () => {
+    const PRIMARY_KEY_API_NAME = "id";
+
+    function makeObjects(count: number) {
+      return Array.from({ length: count }, (_, i) => ({
+        $objectType: "TestObject",
+        $apiName: "TestObject",
+        $primaryKey: `obj${i}`,
+      })) as Osdk.Instance<
+        TestObject,
+        "$allBaseProperties",
+        TestObjectKeys,
+        {}
+      >[];
+    }
+
+    it("should pass full object set when primaryKeyApiName is not provided", () => {
+      vi.mocked(useOsdkFunctions).mockReturnValue([
+        {
+          data: {},
+          error: undefined,
+          isLoading: false,
+          lastUpdated: Date.now(),
+        },
+      ] as unknown as UseOsdkFunctionsResult);
+
+      renderHook(() =>
+        useFunctionColumnsData({
+          objectSet: mockObjectSet,
+          objects: mockObjects,
+          columnDefinitions,
+        })
+      );
+
+      expect(useOsdkFunctions).toHaveBeenCalledWith(
+        expect.objectContaining({
+          queries: [
+            expect.objectContaining({
+              queryDefinition: mockQueryDefinition,
+              options: expect.objectContaining({
+                params: { [OBJ_SET_KEY]: mockObjectSet },
+              }),
+            }),
+          ],
+          enabled: true,
+        }),
+      );
+    });
+
+    it("should chunk objects into paginated object sets when primaryKeyApiName is provided", () => {
+      const pageSize = 2;
+      const objects = makeObjects(5);
+
+      vi.mocked(useOsdkFunctions).mockReturnValue(
+        Array.from({ length: 3 }, () => ({
+          data: {},
+          error: undefined,
+          isLoading: false,
+          lastUpdated: Date.now(),
+        })) as unknown as UseOsdkFunctionsResult,
+      );
+
+      renderHook(() =>
+        useFunctionColumnsData({
+          objectSet: mockObjectSet,
+          objects,
+          columnDefinitions,
+          primaryKeyApiName: PRIMARY_KEY_API_NAME,
+          pageSize,
+        })
+      );
+
+      const call = vi.mocked(useOsdkFunctions).mock.calls[0][0];
+      // 5 objects / pageSize 2 = 3 pages, 1 column = 3 queries
+      expect(call.queries).toHaveLength(3);
+      expect(call.enabled).toBe(true);
+
+      // Each query should have a filtered object set with $in clause
+      const page0Params = call.queries[0].options?.params as Record<
+        string,
+        unknown
+      >;
+      const page1Params = call.queries[1].options?.params as Record<
+        string,
+        unknown
+      >;
+      const page2Params = call.queries[2].options?.params as Record<
+        string,
+        unknown
+      >;
+
+      // Page 0: obj0, obj1
+      expect(page0Params[OBJ_SET_KEY]).toEqual(
+        expect.objectContaining({
+          __filteredObjectSet: true,
+          objectSet: mockObjectSet,
+          whereClause: {
+            [PRIMARY_KEY_API_NAME]: { $in: ["obj0", "obj1"] },
+          },
+        }),
+      );
+
+      // Page 1: obj2, obj3
+      expect(page1Params[OBJ_SET_KEY]).toEqual(
+        expect.objectContaining({
+          __filteredObjectSet: true,
+          objectSet: mockObjectSet,
+          whereClause: {
+            [PRIMARY_KEY_API_NAME]: { $in: ["obj2", "obj3"] },
+          },
+        }),
+      );
+
+      // Page 2: obj4
+      expect(page2Params[OBJ_SET_KEY]).toEqual(
+        expect.objectContaining({
+          __filteredObjectSet: true,
+          objectSet: mockObjectSet,
+          whereClause: {
+            [PRIMARY_KEY_API_NAME]: { $in: ["obj4"] },
+          },
+        }),
+      );
+    });
+
+    it("should use DEFAULT_PAGE_SIZE when pageSize is not specified", () => {
+      const objects = makeObjects(DEFAULT_PAGE_SIZE + 1);
+
+      vi.mocked(useOsdkFunctions).mockReturnValue(
+        Array.from({ length: 2 }, () => ({
+          data: {},
+          error: undefined,
+          isLoading: false,
+          lastUpdated: Date.now(),
+        })) as unknown as UseOsdkFunctionsResult,
+      );
+
+      renderHook(() =>
+        useFunctionColumnsData({
+          objectSet: mockObjectSet,
+          objects,
+          columnDefinitions,
+          primaryKeyApiName: PRIMARY_KEY_API_NAME,
+        })
+      );
+
+      const call = vi.mocked(useOsdkFunctions).mock.calls[0][0];
+      // DEFAULT_PAGE_SIZE + 1 objects → 2 pages
+      expect(call.queries).toHaveLength(2);
+    });
+
+    it("should create page × column queries for multiple columns with pagination", () => {
+      const pageSize = 2;
+      const objects = makeObjects(3);
+
+      type MultiColumnDef = {
+        statusColumn: MockQueryDef;
+        timestampColumn: MockQueryDef;
+      };
+
+      const multiColumnDefs: ColumnDefinition<
+        TestObject,
+        {},
+        MultiColumnDef
+      >[] = [
+        {
+          locator: {
+            type: "function",
+            id: "statusColumn",
+            queryDefinition: mockQueryDefinition,
+            getFunctionParams: ((objectSet: ObjectSet<TestObject>) => ({
+              [OBJ_SET_KEY]: objectSet,
+            })) as any,
+            getKey: (obj) => `${obj.$objectType}:${obj.$primaryKey}`,
+          },
+        },
+        {
+          locator: {
+            type: "function",
+            id: "timestampColumn",
+            queryDefinition: mockQueryDefinition2,
+            getFunctionParams: ((objectSet: ObjectSet<TestObject>) => ({
+              [OBJ_SET_KEY]: objectSet,
+            })) as any,
+            getKey: (obj) => `${obj.$objectType}:${obj.$primaryKey}`,
+          },
+        },
+      ];
+
+      // 3 objects / pageSize 2 = 2 pages, 2 columns = 4 queries
+      vi.mocked(useOsdkFunctions).mockReturnValue(
+        Array.from({ length: 4 }, () => ({
+          data: {},
+          error: undefined,
+          isLoading: false,
+          lastUpdated: Date.now(),
+        })) as unknown as UseOsdkFunctionsResult,
+      );
+
+      renderHook(() =>
+        useFunctionColumnsData({
+          objectSet: mockObjectSet,
+          objects,
+          columnDefinitions: multiColumnDefs,
+          primaryKeyApiName: PRIMARY_KEY_API_NAME,
+          pageSize,
+        })
+      );
+
+      const call = vi.mocked(useOsdkFunctions).mock.calls[0][0];
+      expect(call.queries).toHaveLength(4);
+
+      // Layout is page-first: [page0_col0, page0_col1, page1_col0, page1_col1]
+      expect(call.queries[0].queryDefinition).toBe(mockQueryDefinition);
+      expect(call.queries[1].queryDefinition).toBe(mockQueryDefinition2);
+      expect(call.queries[2].queryDefinition).toBe(mockQueryDefinition);
+      expect(call.queries[3].queryDefinition).toBe(mockQueryDefinition2);
+
+      // Page 0 queries should filter to obj0, obj1
+      const page0Col0Params = call.queries[0].options?.params as Record<
+        string,
+        unknown
+      >;
+      expect(page0Col0Params[OBJ_SET_KEY]).toEqual(
+        expect.objectContaining({
+          whereClause: {
+            [PRIMARY_KEY_API_NAME]: { $in: ["obj0", "obj1"] },
+          },
+        }),
+      );
+
+      // Page 1 queries should filter to obj2
+      const page1Col0Params = call.queries[2].options?.params as Record<
+        string,
+        unknown
+      >;
+      expect(page1Col0Params[OBJ_SET_KEY]).toEqual(
+        expect.objectContaining({
+          whereClause: {
+            [PRIMARY_KEY_API_NAME]: { $in: ["obj2"] },
+          },
+        }),
+      );
+    });
+
+    it("should merge paged results back into per-column data", () => {
+      const pageSize = 2;
+      const objects = makeObjects(3);
+
+      vi.mocked(useOsdkFunctions).mockReturnValue([
+        // page0: obj0, obj1
+        {
+          data: {
+            "TestObject:obj0": { value: "r0" },
+            "TestObject:obj1": { value: "r1" },
+          },
+          error: undefined,
+          isLoading: false,
+          lastUpdated: Date.now(),
+        },
+        // page1: obj2
+        {
+          data: {
+            "TestObject:obj2": { value: "r2" },
+          },
+          error: undefined,
+          isLoading: false,
+          lastUpdated: Date.now(),
+        },
+      ] as unknown as UseOsdkFunctionsResult);
+
+      const { result } = renderHook(() =>
+        useFunctionColumnsData({
+          objectSet: mockObjectSet,
+          objects,
+          columnDefinitions,
+          primaryKeyApiName: PRIMARY_KEY_API_NAME,
+          pageSize,
+        })
+      );
+
+      expect(result.current).toEqual({
+        testColumn: {
+          obj0: {
+            __asyncCell: true,
+            data: { value: "r0" },
+            error: undefined,
+            isLoading: false,
+          },
+          obj1: {
+            __asyncCell: true,
+            data: { value: "r1" },
+            error: undefined,
+            isLoading: false,
+          },
+          obj2: {
+            __asyncCell: true,
+            data: { value: "r2" },
+            error: undefined,
+            isLoading: false,
+          },
+        },
+      });
     });
   });
 
@@ -617,7 +875,11 @@ describe("useFunctionColumnsData", () => {
 
     const { result, rerender } = renderHook(
       () =>
-        useFunctionColumnsData(mockObjectSet, mockObjects, columnDefinitions),
+        useFunctionColumnsData({
+          objectSet: mockObjectSet,
+          objects: mockObjects,
+          columnDefinitions,
+        }),
     );
 
     // Check initial loading state

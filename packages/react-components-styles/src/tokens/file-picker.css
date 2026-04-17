@@ -34,6 +34,11 @@
     --osdk-typography-color-default-rest
   );
 
+  /* Error state */
+  --osdk-file-picker-trigger-border-color-error: var(
+    --osdk-input-border-color-error
+  );
+
   /* Browse button */
   --osdk-file-picker-browse-bg: var(--osdk-button-secondary-bg);
   --osdk-file-picker-browse-bg-hover: var(--osdk-button-secondary-bg-hover);

@@ -72,9 +72,17 @@ export type FilterStatesMap<Q extends ObjectTypeDefinition> = Map<
 
 export interface FilterListProps<Q extends ObjectTypeDefinition> {
   /**
-   * The set of objects to be filtered
+   * The object type definition for the objects being filtered.
+   * Used for metadata resolution (property types, display names).
    */
-  objectSet: ObjectSet<Q>;
+  objectType: Q;
+
+  /**
+   * Optional object set to scope aggregation queries.
+   * When provided, filter aggregations (e.g. listogram counts) are scoped to this set.
+   * When omitted, aggregations run against the full object type.
+   */
+  objectSet?: ObjectSet<Q>;
 
   /**
    * Optional title to display in the filter list header
