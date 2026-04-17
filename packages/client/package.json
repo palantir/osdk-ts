@@ -94,8 +94,8 @@
     "ws": "^8.18.3"
   },
   "peerDependencies": {
-    "@osdk/client.test.ontology": "workspace:~",
-    "@osdk/shared.test": "workspace:~"
+    "@osdk/client.test.ontology": "workspace:^",
+    "@osdk/shared.test": "workspace:^"
   },
   "peerDependenciesMeta": {
     "@osdk/client.test.ontology": {

@@ -1860,7 +1860,7 @@ importers:
         specifier: workspace:~
         version: link:../api
       '@osdk/client.test.ontology':
-        specifier: workspace:~
+        specifier: workspace:^
         version: link:../client.test.ontology
       '@osdk/client.unstable':
         specifier: workspace:*
@@ -1893,7 +1893,7 @@ importers:
         specifier: workspace:~
         version: link:../shared.net.fetch
       '@osdk/shared.test':
-        specifier: workspace:~
+        specifier: workspace:^
         version: link:../shared.test
       '@types/geojson':
         specifier: ^7946.0.16
@@ -3149,7 +3149,7 @@ importers:
         specifier: workspace:~
         version: link:../api
       '@osdk/client':
-        specifier: workspace:~
+        specifier: workspace:^
         version: link:../client
       '@osdk/e2e.generated.api-namespace.dep':
         specifier: workspace:~
@@ -4151,7 +4151,7 @@ importers:
   packages/language-models:
     dependencies:
       '@osdk/client':
-        specifier: workspace:~
+        specifier: workspace:^
         version: link:../client
     devDependencies:
       '@osdk/monorepo.api-extractor':
@@ -5220,10 +5220,10 @@ importers:
   packages/typescript-sdk-docs-examples:
     dependencies:
       '@osdk/client':
-        specifier: workspace:~
+        specifier: workspace:^
         version: link:../client
       '@osdk/functions':
-        specifier: workspace:~
+        specifier: workspace:^
         version: link:../functions
     devDependencies:
       '@osdk/api':
