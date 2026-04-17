@@ -16,11 +16,18 @@
 
 import { findUp } from "find-up";
 import * as fs from "node:fs/promises";
+import { createRequire } from "node:module";
 import * as path from "node:path";
 import serialize from "serialize-javascript";
 
-export async function cli(): Promise<void> {
+type Entry = { type: "base64"; body: string } | { type: "raw"; body: string };
+
+export async function cli(
+  argv: string[] = process.argv.slice(2),
+): Promise<void> {
   const extsToString = new Set([".html", ".cjs", ".hbs", ".gitignore", ".tsx"]);
+
+  const sharedPackages = parseSharedFlags(argv);
 
   const templatesDir = await findUp("templates", { type: "directory" });
   if (!templatesDir) throw new Error("template dir is missing");
@@ -32,27 +39,50 @@ export async function cli(): Promise<void> {
     await fs.readFile(sourcePackageJsonPath, "utf-8"),
   );
 
+  const entries = new Map<string, Entry>();
+
+  for (const pkgName of sharedPackages) {
+    const sharedDir = resolveSharedTemplatesDir(pkgName, sourcePackageJsonPath);
+    await collectFiles(sharedDir, sharedDir, entries, sourcePackageJson);
+  }
+  await collectFiles(templatesDir, templatesDir, entries, sourcePackageJson);
+
   let result =
     "export const files: Map<string, {type: 'base64', body: string} | {type: 'raw', body: string}> = new Map([\n";
+  for (const [destPath, entry] of entries) {
+    const output = entry.type === "raw"
+      ? safeRaw(entry.body)
+      : serialize(entry, { space: 2 });
+    result += `["${destPath}", ${output}],\n`;
+  }
+  result += `]);`;
 
-  const processFiles = async function(dir: string, baseDir: string) {
+  await fs.mkdir("src/generatedNoCheck", { recursive: true });
+
+  await fs.writeFile("src/generatedNoCheck/index.ts", result, {
+    encoding: "utf-8",
+  });
+
+  async function collectFiles(
+    dir: string,
+    baseDir: string,
+    sink: Map<string, Entry>,
+    sourcePkg: Record<string, unknown>,
+  ): Promise<void> {
     for (const filename of await fs.readdir(dir)) {
       const file = dir + "/" + filename;
-
       const stat = await fs.stat(file);
       if (stat.isDirectory()) {
-        await processFiles(file, baseDir);
+        await collectFiles(file, baseDir, sink, sourcePkg);
         continue;
       }
 
       let destPath = path.relative(baseDir, file);
-
       if (path.basename(destPath) === "_gitignore") {
         destPath = path.join(path.dirname(destPath), ".gitignore");
       }
 
       const body = await fs.readFile(file);
-      let output: string;
 
       if (
         destPath === "package.json.hbs"
@@ -60,15 +90,17 @@ export async function cli(): Promise<void> {
         || destPath === "package.json.psdk.hbs"
       ) {
         const packageJson = JSON.parse(body.toString("utf-8"));
-
         for (
           const d of ["dependencies", "devDependencies", "peerDependencies"]
         ) {
-          if (sourcePackageJson[d]) {
+          const sourceDeps = sourcePkg[d] as
+            | Record<string, string>
+            | undefined;
+          if (sourceDeps) {
             if (!packageJson[d]) {
               packageJson[d] = {};
             }
-            Object.assign(packageJson[d], sourcePackageJson[d]);
+            Object.assign(packageJson[d], sourceDeps);
             delete packageJson[d]["@osdk/create-app.template-packager"];
             for (const key of Object.keys(packageJson[d])) {
               if (key.startsWith("@osdk/monorepo.")) {
@@ -77,31 +109,44 @@ export async function cli(): Promise<void> {
             }
           }
         }
-
-        output = safeRaw(JSON.stringify(packageJson, undefined, 2));
+        sink.set(destPath, {
+          type: "raw",
+          body: JSON.stringify(packageJson, undefined, 2),
+        });
       } else if (
         extsToString.has(path.extname(destPath))
         || path.basename(destPath) === ".gitignore"
       ) {
-        output = safeRaw(body.toString("utf-8"));
+        sink.set(destPath, { type: "raw", body: body.toString("utf-8") });
       } else {
-        output = serialize({
-          type: "base64",
-          body: body.toString("base64"),
-        }, { space: 2 });
+        sink.set(destPath, { type: "base64", body: body.toString("base64") });
       }
-
-      result += `["${destPath}", ${output}],\n`;
     }
-  };
-  await processFiles(templatesDir, templatesDir);
-  result += `]);`;
+  }
+}
 
-  await fs.mkdir("src/generatedNoCheck", { recursive: true });
+function parseSharedFlags(argv: string[]): string[] {
+  const shared: string[] = [];
+  for (let i = 0; i < argv.length; i++) {
+    if (argv[i] === "--shared") {
+      const next = argv[i + 1];
+      if (next == null) throw new Error("--shared requires a package name");
+      shared.push(next);
+      i++;
+    } else if (argv[i].startsWith("--shared=")) {
+      shared.push(argv[i].slice("--shared=".length));
+    }
+  }
+  return shared;
+}
 
-  await fs.writeFile("src/generatedNoCheck/index.ts", result, {
-    encoding: "utf-8",
-  });
+function resolveSharedTemplatesDir(
+  pkgName: string,
+  sourcePackageJsonPath: string,
+): string {
+  const require = createRequire(sourcePackageJsonPath);
+  const resolved = require.resolve(`${pkgName}/package.json`);
+  return path.join(path.dirname(resolved), "templates");
 }
 
 function safeRaw(q: string): string {

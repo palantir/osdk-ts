@@ -20,7 +20,6 @@ import { hideBin } from "yargs/helpers";
 
 import { promptApplicationRid } from "./prompts/promptApplicationRid.js";
 import { promptApplicationUrl } from "./prompts/promptApplicationUrl.js";
-import { promptAuthless } from "./prompts/promptAuthless.js";
 import { promptClientId } from "./prompts/promptClientId.js";
 import { promptCorsProxy } from "./prompts/promptCorsProxy.js";
 import { promptFoundryUrl } from "./prompts/promptFoundryUrl.js";
@@ -49,7 +48,6 @@ interface CliArgs {
   osdkRegistryUrl?: string;
   corsProxy?: boolean;
   scopes?: string[];
-  authless?: boolean;
 }
 
 export async function cli(args: string[] = process.argv): Promise<void> {
@@ -135,34 +133,13 @@ export async function cli(args: string[] = process.argv): Promise<void> {
             describe:
               "List of client-side scopes to be used when creating a client",
           })
-          .option("authless", {
-            type: "boolean",
-            describe:
-              "Generate an authless application that uses a public token instead of OAuth",
-          })
           .check((argv) => {
-            if (
-              argv.authless
-              && (argv.clientId != null || argv.scopes != null)
-            ) {
-              throw new Error(
-                "The --authless flag cannot be used with --clientId or --scopes.",
-              );
-            }
             if (
               argv.skipOsdk
               && (argv.sdkVersion == null || argv.sdkVersion.startsWith("1."))
             ) {
               throw new Error(
                 "The --skipOsdk flag is only allowed when sdkVersion is 2.x. Please set --sdkVersion to 2.x or remove the --skipOsdk flag.",
-              );
-            }
-            if (
-              argv.authless
-              && (argv.sdkVersion != null && argv.sdkVersion.startsWith("1."))
-            ) {
-              throw new Error(
-                "The --authless flag is only allowed when sdkVersion is 2.x. Please set --sdkVersion to 2.x or remove the --authless flag.",
               );
             }
             return true;
@@ -177,14 +154,27 @@ export async function cli(args: string[] = process.argv): Promise<void> {
     ...parsed,
     template,
   });
-  const authless: boolean = sdkVersion === "2.x"
-    ? await promptAuthless(parsed)
-    : false;
+  const authless: boolean = template.authless ?? false;
+  if (authless && sdkVersion !== "2.x") {
+    throw new Error(
+      `The ${template.label} template only supports sdkVersion 2.x.`,
+    );
+  }
+  if (authless && parsed.clientId != null) {
+    throw new Error(
+      `The ${template.label} template does not accept --clientId.`,
+    );
+  }
+  if (authless && parsed.scopes != null) {
+    throw new Error(
+      `The ${template.label} template does not accept --scopes.`,
+    );
+  }
   const foundryUrl: string = await promptFoundryUrl(parsed);
   const applicationUrl: string | undefined = await promptApplicationUrl(parsed);
   const application: string = await promptApplicationRid(parsed);
-  const clientId: string = authless
-    ? ""
+  const clientId: string | undefined = authless
+    ? undefined
     : await promptClientId(parsed);
   const { osdkPackage, ontology, osdkRegistryUrl } =
     await promptOntologyAndOsdkPackageAndOsdkRegistryUrl(
@@ -211,6 +201,5 @@ export async function cli(args: string[] = process.argv): Promise<void> {
     corsProxy,
     scopes,
     ontology,
-    authless,
   });
 }

@@ -23,9 +23,7 @@ import { fileURLToPath } from "node:url";
 import { consola } from "./consola.js";
 import {
   generateEnvDevelopment,
-  generateEnvDevelopmentAuthless,
   generateEnvProduction,
-  generateEnvProductionAuthless,
 } from "./generate/generateEnv.js";
 import { generateFoundryConfigJson } from "./generate/generateFoundryConfigJson.js";
 import { generateNpmRc } from "./generate/generateNpmRc.js";
@@ -41,12 +39,11 @@ interface RunArgs {
   applicationUrl: string | undefined;
   application: string;
   ontology: string | undefined;
-  clientId: string;
+  clientId: string | undefined;
   osdkPackage: string | undefined;
   osdkRegistryUrl: string | undefined;
   corsProxy: boolean;
   scopes: string[] | undefined;
-  authless: boolean;
 }
 
 export async function run(
@@ -64,13 +61,14 @@ export async function run(
     osdkRegistryUrl,
     corsProxy,
     scopes,
-    authless,
   }: RunArgs,
 ): Promise<void> {
   consola.log("");
   consola.start(
     `Creating project ${green(project)} using template ${green(template.id)}`,
   );
+
+  const authless = template.authless ?? false;
 
   const cwd = process.cwd();
   const root = path.join(cwd, project);
@@ -138,7 +136,7 @@ export async function run(
     corsProxy,
     clientVersion: changeVersionPrefix(clientVersion, "^"),
     scopes,
-    authless,
+    clientId,
   };
   const processFiles = function(dir: string) {
     fs.readdirSync(dir).forEach((file) => {
@@ -177,17 +175,6 @@ export async function run(
         }
       }
 
-      // Files with the `.auth` extension are only kept if the application uses OAuth (not authless)
-      if (file.includes(".auth")) {
-        if (authless) {
-          fs.rmSync(fullPath);
-          return;
-        } else {
-          fs.renameSync(fullPath, fullPath.replace(".auth", ""));
-          fullPath = fullPath.replace(".auth", "");
-        }
-      }
-
       if (!fullPath.endsWith(".hbs")) {
         return;
       }
@@ -204,29 +191,33 @@ export async function run(
   fs.writeFileSync(path.join(root, ".npmrc"), npmRc);
 
   const envDevelopment = authless
-    ? generateEnvDevelopmentAuthless({
+    ? generateEnvDevelopment({
+      authless: true,
       envPrefix: template.envPrefix,
       ontology,
     })
     : generateEnvDevelopment({
+      authless: false,
       envPrefix: template.envPrefix,
       foundryUrl,
-      clientId,
+      clientId: clientId ?? "",
       corsProxy,
       ontology,
     });
   fs.writeFileSync(path.join(root, ".env.development"), envDevelopment);
   const envProduction = authless
-    ? generateEnvProductionAuthless({
+    ? generateEnvProduction({
+      authless: true,
       envPrefix: template.envPrefix,
       applicationUrl,
       ontology,
     })
     : generateEnvProduction({
+      authless: false,
       envPrefix: template.envPrefix,
       foundryUrl,
       applicationUrl,
-      clientId,
+      clientId: clientId ?? "",
       ontology,
     });
   fs.writeFileSync(path.join(root, ".env.production"), envProduction);

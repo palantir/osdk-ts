@@ -17,9 +17,7 @@
 import { expect, test } from "vitest";
 import {
   generateEnvDevelopment,
-  generateEnvDevelopmentAuthless,
   generateEnvProduction,
-  generateEnvProductionAuthless,
 } from "./generateEnv.js";
 
 const expectedEnvDevelopment = `
@@ -232,6 +230,7 @@ PUBLIC_FOUNDRY_CLIENT_ID=123
 
 test("it generates .env.development", () => {
   expect(generateEnvDevelopment({
+    authless: false,
     envPrefix: "PUBLIC_",
     foundryUrl: "https://example.palantirfoundry.com",
     clientId: "123",
@@ -242,6 +241,7 @@ test("it generates .env.development", () => {
 
 test("it generates .env.development without ontology rid", () => {
   expect(generateEnvDevelopment({
+    authless: false,
     envPrefix: "PUBLIC_",
     foundryUrl: "https://example.palantirfoundry.com",
     clientId: "123",
@@ -252,6 +252,7 @@ test("it generates .env.development without ontology rid", () => {
 
 test("it generates .env.development assuming CORS proxy", () => {
   expect(generateEnvDevelopment({
+    authless: false,
     envPrefix: "PUBLIC_",
     foundryUrl: "https://example.palantirfoundry.com",
     clientId: "123",
@@ -262,6 +263,7 @@ test("it generates .env.development assuming CORS proxy", () => {
 
 test("it generates .env.production", () => {
   expect(generateEnvProduction({
+    authless: false,
     envPrefix: "PUBLIC_",
     foundryUrl: "https://example.palantirfoundry.com",
     applicationUrl: "https://app.com",
@@ -272,6 +274,7 @@ test("it generates .env.production", () => {
 
 test("it generates .env.production without app url", () => {
   expect(generateEnvProduction({
+    authless: false,
     envPrefix: "PUBLIC_",
     foundryUrl: "https://example.palantirfoundry.com",
     applicationUrl: undefined,
@@ -282,6 +285,7 @@ test("it generates .env.production without app url", () => {
 
 test("it generates .env.production without ontology rid", () => {
   expect(generateEnvProduction({
+    authless: false,
     envPrefix: "PUBLIC_",
     foundryUrl: "https://example.palantirfoundry.com",
     applicationUrl: "https://app.com",
@@ -361,21 +365,24 @@ PUBLIC_FOUNDRY_API_URL=https://myapp.example.palantirfoundry.com/proxy
 `.trimStart();
 
 test("it generates .env.development for authless", () => {
-  expect(generateEnvDevelopmentAuthless({
+  expect(generateEnvDevelopment({
+    authless: true,
     envPrefix: "PUBLIC_",
     ontology: "ri.ontology.main.ontology.fake",
   })).toEqual(expectedEnvDevelopmentAuthless);
 });
 
 test("it generates .env.development for authless without ontology rid", () => {
-  expect(generateEnvDevelopmentAuthless({
+  expect(generateEnvDevelopment({
+    authless: true,
     envPrefix: "PUBLIC_",
     ontology: undefined,
   })).toEqual(expectedEnvDevelopmentAuthlessNoOntology);
 });
 
 test("it generates .env.production for authless", () => {
-  expect(generateEnvProductionAuthless({
+  expect(generateEnvProduction({
+    authless: true,
     envPrefix: "PUBLIC_",
     applicationUrl: "https://myapp.example.palantirfoundry.com",
     ontology: "ri.ontology.main.ontology.fake",
@@ -383,7 +390,8 @@ test("it generates .env.production for authless", () => {
 });
 
 test("it generates .env.production for authless without application url", () => {
-  expect(generateEnvProductionAuthless({
+  expect(generateEnvProduction({
+    authless: true,
     envPrefix: "PUBLIC_",
     applicationUrl: undefined,
     ontology: "ri.ontology.main.ontology.fake",
@@ -391,7 +399,8 @@ test("it generates .env.production for authless without application url", () => 
 });
 
 test("it generates .env.production for authless without ontology rid", () => {
-  expect(generateEnvProductionAuthless({
+  expect(generateEnvProduction({
+    authless: true,
     envPrefix: "PUBLIC_",
     applicationUrl: "https://myapp.example.palantirfoundry.com",
     ontology: undefined,

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,22 +14,4 @@
  * limitations under the License.
  */
 
-import { consola } from "../consola.js";
-import { italic } from "../highlight.js";
-
-export async function promptAuthless(
-  { authless }: { authless?: boolean },
-): Promise<boolean> {
-  if (authless != null) {
-    return authless;
-  }
-
-  return consola.prompt(
-    `Build a public unauthenticated app with an authless client?\n${
-      italic(
-        "Use this for public-facing applications that don't require user sign-in.",
-      )
-    }`,
-    { type: "confirm", initial: false },
-  );
-}
+export { files } from "./generatedNoCheck/index.js";
