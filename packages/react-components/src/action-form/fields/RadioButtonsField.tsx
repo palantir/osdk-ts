@@ -66,7 +66,11 @@ const RadioItem = memo(function RadioItemFn({
 }): React.ReactElement {
   return (
     <label className={styles.osdkRadioItem}>
-      <Radio.Root value={option.label} className={styles.osdkRadioRoot}>
+      <Radio.Root
+        aria-label={option.label}
+        value={option.label}
+        className={styles.osdkRadioRoot}
+      >
         <Radio.Indicator className={styles.osdkRadioIndicator} />
       </Radio.Root>
       <span className={styles.osdkRadioLabel}>{option.label}</span>

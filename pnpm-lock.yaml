@@ -4666,9 +4666,6 @@ importers:
       '@osdk/client':
         specifier: workspace:*
         version: link:../client
-      '@osdk/foundry.ontologies':
-        specifier: catalog:foundry-platform-typescript
-        version: 2.57.0
       '@osdk/monorepo.tsconfig':
         specifier: workspace:~
         version: link:../monorepo.tsconfig

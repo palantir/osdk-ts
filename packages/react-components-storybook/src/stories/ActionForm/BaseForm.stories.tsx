@@ -19,8 +19,8 @@ import type { RendererFieldDefinition } from "@osdk/react-components/experimenta
 import { BaseForm } from "@osdk/react-components/experimental";
 import { useOsdkClient } from "@osdk/react/experimental";
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { useCallback, useMemo, useState } from "react";
-import { expect, userEvent, within } from "storybook/test";
+import React, { useCallback, useMemo, useState } from "react";
+import { expect, fn, userEvent, within } from "storybook/test";
 import { fauxFoundry } from "../../mocks/fauxFoundry.js";
 import { Employee } from "../../types/Employee.js";
 
@@ -140,20 +140,49 @@ const fieldDefinitions: ReadonlyArray<RendererFieldDefinition> = [
 
 const EMPTY_FIELD_DEFINITIONS: ReadonlyArray<RendererFieldDefinition> = [];
 
+const TOAST_DURATION_MS = 3000;
+
+// Module-level ref so handleSubmit can trigger the toast rendered by SubmitToast.
+const toastRef: { current: ((msg: string) => void) | undefined } = {
+  current: undefined,
+};
+
+// Spy that logs submissions to the Storybook Actions panel
+// and shows a brief success toast in the story canvas.
+const submitSpy = fn().mockName("onSubmit");
 function handleSubmit(formState: Record<string, unknown>): void {
-  // eslint-disable-next-line no-console
-  console.log("Form submitted:", formState);
+  submitSpy(formState);
+  toastRef.current?.("Submitted successfully");
+}
+
+function SubmitToast(): React.ReactElement | null {
+  const [message, setMessage] = useState<string>();
+
+  const showToast = useCallback((msg: string) => {
+    setMessage(msg);
+    setTimeout(() => setMessage(undefined), TOAST_DURATION_MS);
+  }, []);
+
+  toastRef.current = showToast;
+
+  if (message == null) {
+    return null;
+  }
+  return <div className="osdkSubmitToast">{message}</div>;
 }
 
 const meta: Meta<BaseFormStoryProps> = {
-  title: "Experimental/ActionForm/Building Blocks/BaseForm",
+  title: "Experimental/BaseForm",
   tags: ["experimental"],
   component: BaseForm,
   decorators: [
     (Story) => (
-      <div className="osdkFormCard">
-        <Story />
-      </div>
+      <>
+        <SubmitToast />
+        <div className="osdkFormCard">
+          <Story />
+        </div>
+      </>
     ),
   ],
   parameters: {
@@ -333,39 +362,41 @@ return (
       },
     },
   },
-  render: () => {
-    const [formState, setFormState] = useState<Record<string, unknown>>({});
-
-    const handleFieldValueChange = useCallback(
-      (fieldKey: string, value: unknown) => {
-        setFormState((prev) => ({ ...prev, [fieldKey]: value }));
-      },
-      [],
-    );
-
-    return (
-      <div>
-        <div className="osdkFormStorySpacing">
-          <strong>Current Form State:</strong>
-          <pre className="osdkCodeOutput">
-            {JSON.stringify(
-              formState,
-              (_key, value) =>
-                value instanceof File ? `File: ${value.name}` : value,
-              2,
-            )}
-          </pre>
-        </div>
-        <BaseForm
-          fieldDefinitions={fieldDefinitions}
-          formState={formState}
-          onFieldValueChange={handleFieldValueChange}
-          onSubmit={handleSubmit}
-        />
-      </div>
-    );
-  },
+  render: () => <ControlledFormStory />,
 };
+
+function ControlledFormStory(): React.ReactElement {
+  const [formState, setFormState] = useState<Record<string, unknown>>({});
+
+  const handleFieldValueChange = useCallback(
+    (fieldKey: string, value: unknown) => {
+      setFormState((prev) => ({ ...prev, [fieldKey]: value }));
+    },
+    [],
+  );
+
+  return (
+    <div>
+      <div className="osdkFormStorySpacing">
+        <strong>Current Form State:</strong>
+        <pre className="osdkCodeOutput">
+          {JSON.stringify(
+            formState,
+            (_key, value) =>
+              value instanceof File ? `File: ${value.name}` : value,
+            2,
+          )}
+        </pre>
+      </div>
+      <BaseForm
+        fieldDefinitions={fieldDefinitions}
+        formState={formState}
+        onFieldValueChange={handleFieldValueChange}
+        onSubmit={handleSubmit}
+      />
+    </div>
+  );
+}
 
 export const WithCustomTitle: Story = {
   args: {
@@ -552,7 +583,9 @@ export const WithValidation: Story = {
     const canvas = within(canvasElement);
 
     // Focus and blur the required "Name" field to trigger validation.
-    const nameInput = canvas.getByLabelText("Name");
+    // Query by role — the label includes a child <span aria-label="required">
+    // that merges into the computed accessible name.
+    const nameInput = canvas.getByRole("textbox", { name: /Name/ });
     await userEvent.click(nameInput);
     await userEvent.tab();
 
@@ -732,50 +765,52 @@ const fieldDefinitions = [
       },
     },
   },
-  render: () => {
-    const client = useOsdkClient();
-
-    // Widen Employee.ObjectSet → ObjectSet<ObjectTypeDefinition> for
-    // RendererFieldDefinition which uses the base ObjectTypeDefinition.
-    // ObjectSet has contravariant method parameters (primaryKey) that
-    // prevent structural assignability, so an assertion is needed here.
-    const employeeObjectSet = useMemo(
-      () => client(Employee) as ObjectSet<ObjectTypeDefinition>,
-      [client],
-    );
-
-    const objectSetFieldDefinitions: ReadonlyArray<RendererFieldDefinition> =
-      useMemo(
-        () => [
-          {
-            fieldKey: "name",
-            fieldComponent: "TEXT_INPUT" as const,
-            label: "Name",
-            isRequired: true,
-            fieldComponentProps: {
-              placeholder: "Enter a name",
-            },
-          },
-          {
-            fieldKey: "employees",
-            fieldComponent: "OBJECT_SET" as const,
-            label: "Employees",
-            fieldComponentProps: {
-              value: employeeObjectSet,
-            },
-          },
-        ],
-        [employeeObjectSet],
-      );
-
-    return (
-      <BaseForm
-        fieldDefinitions={objectSetFieldDefinitions}
-        onSubmit={handleSubmit}
-      />
-    );
-  },
+  render: () => <ObjectSetFieldStory />,
 };
+
+function ObjectSetFieldStory(): React.ReactElement {
+  const client = useOsdkClient();
+
+  // Widen Employee.ObjectSet → ObjectSet<ObjectTypeDefinition> for
+  // RendererFieldDefinition which uses the base ObjectTypeDefinition.
+  // ObjectSet has contravariant method parameters (primaryKey) that
+  // prevent structural assignability, so an assertion is needed here.
+  const employeeObjectSet = useMemo(
+    () => client(Employee) as ObjectSet<ObjectTypeDefinition>,
+    [client],
+  );
+
+  const objectSetFieldDefinitions: ReadonlyArray<RendererFieldDefinition> =
+    useMemo(
+      () => [
+        {
+          fieldKey: "name",
+          fieldComponent: "TEXT_INPUT" as const,
+          label: "Name",
+          isRequired: true,
+          fieldComponentProps: {
+            placeholder: "Enter a name",
+          },
+        },
+        {
+          fieldKey: "employees",
+          fieldComponent: "OBJECT_SET" as const,
+          label: "Employees",
+          fieldComponentProps: {
+            value: employeeObjectSet,
+          },
+        },
+      ],
+      [employeeObjectSet],
+    );
+
+  return (
+    <BaseForm
+      fieldDefinitions={objectSetFieldDefinitions}
+      onSubmit={handleSubmit}
+    />
+  );
+}
 
 const searchableDropdownFieldDefinitions: ReadonlyArray<
   RendererFieldDefinition
@@ -948,6 +983,69 @@ export const WithDateTimePicker: Story = {
 
 // showTime: true adds a time picker alongside the date calendar.
 // Without showTime, only the date is selectable.
+<BaseForm
+  fieldDefinitions={fieldDefinitions}
+  onSubmit={(formState) => console.log("Submitted:", formState)}
+/>`,
+      },
+    },
+  },
+};
+
+const dateRangeFieldDefinitions: ReadonlyArray<RendererFieldDefinition> = [
+  {
+    fieldKey: "vacationDates",
+    fieldComponent: "DATE_RANGE_INPUT",
+    label: "Vacation Dates (date only)",
+    fieldComponentProps: {
+      placeholderStart: "Start date",
+      placeholderEnd: "End date",
+    },
+  },
+  {
+    fieldKey: "meetingWindow",
+    fieldComponent: "DATE_RANGE_INPUT",
+    label: "Meeting Window (date + time)",
+    fieldComponentProps: {
+      showTime: true,
+      placeholderStart: "Start",
+      placeholderEnd: "End",
+    },
+  },
+];
+
+export const WithDateRangePicker: Story = {
+  args: {
+    fieldDefinitions: dateRangeFieldDefinitions,
+    onSubmit: handleSubmit,
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `const fieldDefinitions = [
+  {
+    fieldKey: "vacationDates",
+    fieldComponent: "DATE_RANGE_INPUT",
+    label: "Vacation Dates (date only)",
+    fieldComponentProps: {
+      placeholderStart: "Start date",
+      placeholderEnd: "End date",
+    },
+  },
+  {
+    fieldKey: "meetingWindow",
+    fieldComponent: "DATE_RANGE_INPUT",
+    label: "Meeting Window (date + time)",
+    fieldComponentProps: {
+      showTime: true,
+      placeholderStart: "Start",
+      placeholderEnd: "End",
+    },
+  },
+];
+
+// DATE_RANGE_INPUT renders two inputs (start/end) with
+// a shared calendar popover. showTime adds time pickers.
 <BaseForm
   fieldDefinitions={fieldDefinitions}
   onSubmit={(formState) => console.log("Submitted:", formState)}
