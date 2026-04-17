@@ -161,6 +161,8 @@
   ],
   "ignorePatterns": [
     "**/*.js",
+    "**/*.mjs",
+    "**/*.cjs",
     "**/tsup.config.bundled_*",
     "**/vitest.config.mts.timestamp-*",
     "**/build/",
