@@ -251,9 +251,7 @@ function EditableCellInner<TData extends RowData, CellValue = unknown>({
       case "DROPDOWN":
         return (
           <DropdownCellField
-            editFieldConfig={editFieldConfig as EditFieldConfig & {
-              fieldComponent: "DROPDOWN";
-            }}
+            fieldComponentProps={editFieldConfig.fieldComponentProps}
             isRowFocused={isRowFocused}
             inputValue={inputValue}
             hasValidationError={hasValidationError}
@@ -264,9 +262,7 @@ function EditableCellInner<TData extends RowData, CellValue = unknown>({
       case "DATE_PICKER":
         return (
           <DatePickerCellField
-            editFieldConfig={editFieldConfig as EditFieldConfig & {
-              fieldComponent: "DATE_PICKER";
-            }}
+            fieldComponentProps={editFieldConfig.fieldComponentProps}
             isRowFocused={isRowFocused}
             inputValue={inputValue}
             hasValidationError={hasValidationError}

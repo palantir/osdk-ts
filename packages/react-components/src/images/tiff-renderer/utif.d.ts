@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,20 +14,16 @@
  * limitations under the License.
  */
 
-import { configDefaults, defineConfig } from "vitest/config";
+// The `utif` package does not ship its own TypeScript declarations.
+declare module "utif" {
+  interface IFD {
+    width: number;
+    height: number;
+    data: Uint8Array;
+    [key: string]: unknown;
+  }
 
-export default defineConfig({
-  test: {
-    pool: "forks",
-    exclude: [...configDefaults.exclude, "**/build/**/*"],
-    environment: "happy-dom",
-    setupFiles: ["./src/test/setupPolyfills.ts"],
-    env: {
-      TZ: "UTC",
-      LANG: "en_US.UTF-8",
-    },
-    fakeTimers: {
-      toFake: ["setTimeout", "clearTimeout", "Date"],
-    },
-  },
-});
+  function decode(buffer: ArrayBuffer): IFD[];
+  function decodeImage(buffer: ArrayBuffer, ifd: IFD): void;
+  function toRGBA8(ifd: IFD): Uint8Array;
+}
