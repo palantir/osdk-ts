@@ -207,6 +207,8 @@
   --osdk-filter-listogram-label-color: var(
     --osdk-typography-color-default-rest
   );
+  --osdk-filter-listogram-empty-label-color: var(--osdk-typography-color-muted);
+  --osdk-filter-listogram-empty-label-font-style: italic;
   --osdk-filter-listogram-bar-height: calc(var(--osdk-surface-spacing) * 2);
   --osdk-filter-listogram-bar-width: calc(var(--osdk-surface-spacing) * 12.5);
   --osdk-filter-listogram-bar-bg: var(--osdk-palette-gray-100);
