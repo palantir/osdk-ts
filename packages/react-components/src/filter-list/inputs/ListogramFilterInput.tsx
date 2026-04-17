@@ -20,7 +20,6 @@ import type {
   PropertyKeys,
   WhereClause,
 } from "@osdk/api";
-import type { ReactNode } from "react";
 import React, { memo, useCallback, useMemo } from "react";
 import { FilterInputExcludeRow } from "../base/FilterInputExcludeRow.js";
 import { ListogramInput } from "../base/inputs/ListogramInput.js";
@@ -40,7 +39,7 @@ interface ListogramFilterInputProps<Q extends ObjectTypeDefinition> {
   maxVisibleItems?: number;
   searchQuery?: string;
   excludeRowOpen?: boolean;
-  renderValue?: (value: string) => ReactNode;
+  renderValue?: (value: string) => string;
 }
 
 function ListogramFilterInputInner<Q extends ObjectTypeDefinition>({

@@ -29,12 +29,15 @@ const mockValues: PropertyAggregationValue[] = [
   { value: "def-456", count: 3 },
 ];
 
-const mockRenderValue = (value: string) => (
-  <span data-testid="custom-value">{`User: ${value}`}</span>
-);
+const LABELS: Record<string, string> = {
+  "abc-123": "Alice Smith",
+  "def-456": "Bob Jones",
+};
+
+const mockRenderValue = (value: string): string => LABELS[value] ?? value;
 
 describe("ListogramInput renderValue", () => {
-  it("renders custom content via renderValue", () => {
+  it("renders custom display text via renderValue", () => {
     render(
       <ListogramInput
         values={mockValues}
@@ -47,10 +50,8 @@ describe("ListogramInput renderValue", () => {
       />,
     );
 
-    const customValues = screen.getAllByTestId("custom-value");
-    expect(customValues).toHaveLength(2);
-    expect(customValues[0].textContent).toBe("User: abc-123");
-    expect(customValues[1].textContent).toBe("User: def-456");
+    expect(screen.getByText("Alice Smith")).toBeDefined();
+    expect(screen.getByText("Bob Jones")).toBeDefined();
   });
 
   it("falls back to raw string without renderValue", () => {
@@ -67,7 +68,6 @@ describe("ListogramInput renderValue", () => {
 
     expect(screen.getByText("abc-123")).toBeDefined();
     expect(screen.getByText("def-456")).toBeDefined();
-    expect(screen.queryAllByTestId("custom-value")).toHaveLength(0);
   });
 
   it("renders 'No value' for empty values even with renderValue", () => {
@@ -89,14 +89,47 @@ describe("ListogramInput renderValue", () => {
     );
 
     expect(screen.getByText("No value")).toBeDefined();
-    const customValues = screen.getAllByTestId("custom-value");
-    expect(customValues).toHaveLength(1);
-    expect(customValues[0].textContent).toBe("User: abc-123");
+    expect(screen.getByText("Alice Smith")).toBeDefined();
+  });
+
+  it("filters by rendered value when searchQuery is provided", () => {
+    render(
+      <ListogramInput
+        values={mockValues}
+        maxCount={7}
+        isLoading={false}
+        error={null}
+        selectedValues={[]}
+        onChange={vi.fn()}
+        renderValue={mockRenderValue}
+        searchQuery="Alice"
+      />,
+    );
+
+    expect(screen.getByText("Alice Smith")).toBeDefined();
+    expect(screen.queryByText("Bob Jones")).toBeNull();
+  });
+
+  it("filters by raw value when no renderValue is provided", () => {
+    render(
+      <ListogramInput
+        values={mockValues}
+        maxCount={7}
+        isLoading={false}
+        error={null}
+        selectedValues={[]}
+        onChange={vi.fn()}
+        searchQuery="abc"
+      />,
+    );
+
+    expect(screen.getByText("abc-123")).toBeDefined();
+    expect(screen.queryByText("def-456")).toBeNull();
   });
 });
 
 describe("MultiSelectInput renderValue", () => {
-  it("renders custom content in selected chips", () => {
+  it("renders custom display text in selected chips", () => {
     render(
       <MultiSelectInput
         values={mockValues}
@@ -108,13 +141,10 @@ describe("MultiSelectInput renderValue", () => {
       />,
     );
 
-    // Chip content should use renderValue
-    const customValues = screen.getAllByTestId("custom-value");
-    expect(customValues.length).toBeGreaterThanOrEqual(1);
-    expect(customValues[0].textContent).toBe("User: abc-123");
+    expect(screen.getByText("Alice Smith")).toBeDefined();
   });
 
-  it("does not render custom content without renderValue", () => {
+  it("does not render custom text without renderValue", () => {
     render(
       <MultiSelectInput
         values={mockValues}
@@ -125,7 +155,7 @@ describe("MultiSelectInput renderValue", () => {
       />,
     );
 
-    expect(screen.queryAllByTestId("custom-value")).toHaveLength(0);
+    expect(screen.queryByText("Alice Smith")).toBeNull();
   });
 });
 
@@ -161,6 +191,6 @@ describe("SingleSelectInput renderValue", () => {
       />,
     );
 
-    expect(screen.queryAllByTestId("custom-value")).toHaveLength(0);
+    expect(screen.queryByText("Alice Smith")).toBeNull();
   });
 });

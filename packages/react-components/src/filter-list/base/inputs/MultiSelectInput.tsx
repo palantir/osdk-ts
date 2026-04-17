@@ -15,7 +15,6 @@
  */
 
 import classnames from "classnames";
-import type { ReactNode } from "react";
 import React, { memo, useCallback, useMemo } from "react";
 import { Combobox } from "../../../base-components/combobox/Combobox.js";
 import type { PropertyAggregationValue } from "../../types/AggregationTypes.js";
@@ -32,7 +31,7 @@ interface MultiSelectInputProps {
   style?: React.CSSProperties;
   placeholder?: string;
   ariaLabel?: string;
-  renderValue?: (value: string) => ReactNode;
+  renderValue?: (value: string) => string;
 }
 
 function MultiSelectInputInner({
@@ -62,6 +61,15 @@ function MultiSelectInputInner({
   const countByValue = useMemo(
     () => new Map(values.map(({ value, count }) => [value, count])),
     [values],
+  );
+
+  const comboboxFilter = useMemo(
+    () =>
+      renderValue
+        ? (itemValue: string, query: string) =>
+          renderValue(itemValue).toLowerCase().includes(query.toLowerCase())
+        : undefined,
+    [renderValue],
   );
 
   const renderItem = useCallback(
@@ -124,6 +132,7 @@ function MultiSelectInputInner({
           value={selectedValues}
           onValueChange={handleValueChange}
           items={items}
+          filter={comboboxFilter}
         >
           {isLoading && (
             <div className={sharedStyles.loadingMessage}>

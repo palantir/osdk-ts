@@ -15,7 +15,6 @@
  */
 
 import classnames from "classnames";
-import type { ReactNode } from "react";
 import React, { memo, useCallback, useMemo } from "react";
 import { Combobox } from "../../../base-components/combobox/Combobox.js";
 import type { PropertyAggregationValue } from "../../types/AggregationTypes.js";
@@ -34,7 +33,7 @@ interface SingleSelectInputProps {
   showClearButton?: boolean;
   showCounts?: boolean;
   ariaLabel?: string;
-  renderValue?: (value: string) => ReactNode;
+  renderValue?: (value: string) => string;
 }
 
 function SingleSelectInputInner({
@@ -66,6 +65,15 @@ function SingleSelectInputInner({
   const countByValue = useMemo(
     () => new Map(values.map(({ value, count }) => [value, count])),
     [values],
+  );
+
+  const comboboxFilter = useMemo(
+    () =>
+      renderValue
+        ? (itemValue: string, query: string) =>
+          renderValue(itemValue).toLowerCase().includes(query.toLowerCase())
+        : undefined,
+    [renderValue],
   );
 
   const renderItem = useCallback(
@@ -115,6 +123,7 @@ function SingleSelectInputInner({
             value={selectedValue ?? null}
             onValueChange={handleValueChange}
             items={items}
+            filter={comboboxFilter}
           >
             <Combobox.SearchInput
               placeholder={placeholder}

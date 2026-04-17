@@ -731,9 +731,7 @@ function WithRenderValueStory(args: Partial<EmployeeFilterListProps>) {
         label: "Department (custom render)",
         filterComponent: "LISTOGRAM",
         filterState: { type: "EXACT_MATCH", values: [] },
-        renderValue: (value: string) => (
-          <span>{DEPARTMENT_LABELS[value] ?? value}</span>
-        ),
+        renderValue: (value: string) => DEPARTMENT_LABELS[value] ?? value,
       } as FilterDefinitionUnion<Employee>,
       {
         type: "PROPERTY",
@@ -742,9 +740,7 @@ function WithRenderValueStory(args: Partial<EmployeeFilterListProps>) {
         label: "Team (custom render)",
         filterComponent: "MULTI_SELECT",
         filterState: { type: "SELECT", selectedValues: [] },
-        renderValue: (value: string) => (
-          <span style={{ fontStyle: "italic" }}>{value.toUpperCase()}</span>
-        ),
+        renderValue: (value: string) => value.toUpperCase(),
       } as FilterDefinitionUnion<Employee>,
     ],
     [],
@@ -775,8 +771,8 @@ export const WithRenderValue: Story = {
     docs: {
       description: {
         story:
-          "Use `renderValue` to customize how filter values are displayed. "
-          + "The raw value is still used for filtering — only the display changes. "
+          "Use `renderValue` to customize how filter values are displayed and searched. "
+          + "The returned string replaces the raw value for display and search matching. "
           + "Works with LISTOGRAM, MULTI_SELECT, and SINGLE_SELECT components.",
       },
       source: {
@@ -794,7 +790,7 @@ const filterDefinitions = [
     label: "Department",
     filterComponent: "LISTOGRAM",
     filterState: { type: "EXACT_MATCH", values: [] },
-    renderValue: (value) => <span>{DEPARTMENT_LABELS[value] ?? value}</span>,
+    renderValue: (value) => DEPARTMENT_LABELS[value] ?? value,
   },
 ];
 

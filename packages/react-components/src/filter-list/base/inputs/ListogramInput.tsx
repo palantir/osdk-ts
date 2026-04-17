@@ -16,7 +16,6 @@
 
 import { Button } from "@base-ui/react/button";
 import classnames from "classnames";
-import type { ReactNode } from "react";
 import React, { memo, useCallback, useMemo, useState } from "react";
 import { Checkbox } from "../../../base-components/checkbox/Checkbox.js";
 import type { PropertyAggregationValue } from "../../types/AggregationTypes.js";
@@ -42,7 +41,7 @@ interface ListogramInputProps {
   style?: React.CSSProperties;
   maxVisibleItems?: number;
   searchQuery?: string;
-  renderValue?: (value: string) => ReactNode;
+  renderValue?: (value: string) => string;
 }
 
 function ListogramInputInner({
@@ -80,10 +79,14 @@ function ListogramInputInner({
 
   const filteredValues = useMemo(() => {
     if (searchQuery) {
-      return filterValuesBySearch(stableValues, searchQuery, (v) => v.value);
+      return filterValuesBySearch(
+        stableValues,
+        searchQuery,
+        (v) => renderValue?.(v.value) ?? v.value,
+      );
     }
     return stableValues;
-  }, [stableValues, searchQuery]);
+  }, [stableValues, searchQuery, renderValue]);
 
   const sortedValues = useMemo(() => {
     const selected = filteredValues.filter((v) => selectedSet.has(v.value));
