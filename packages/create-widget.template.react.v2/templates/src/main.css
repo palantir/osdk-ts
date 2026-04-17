@@ -1,11 +1,10 @@
-html,
-body {
-  margin: 0;
+html, body {
+    margin: 0;
 }
 
-.radix-themes:where([data-is-root-theme="true"]) {
-  min-height: 0;
-  @supports (min-height: 100dvh) {
+.radix-themes:where([data-is-root-theme='true']) {
     min-height: 0;
-  }
+    @supports(min-height: 100dvh) {
+        min-height: 0;
+    }
 }

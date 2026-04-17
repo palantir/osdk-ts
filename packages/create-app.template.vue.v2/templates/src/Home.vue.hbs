@@ -1,27 +1,27 @@
 <script setup lang="ts">
-  import Header from "./components/Header.vue"; import NextSteps from
-  "./components/NextSteps.vue";
-  {{#if osdkPackage}}
-    import Osdk from "./components/Osdk.vue";
-  {{/if}}
+import Header from "./components/Header.vue";
+import NextSteps from "./components/NextSteps.vue";
+{{#if osdkPackage}}
+import Osdk from "./components/Osdk.vue";
+{{/if}}
 </script>
 
 <template>
   <div class="home">
     <Header />
     {{#if osdkPackage}}
-      <Osdk />
+    <Osdk />
     {{/if}}
     <NextSteps />
   </div>
 </template>
 
 <style scoped>
-  .home {
-    display: flex;
-    flex-direction: column;
-    gap: 60px;
-    max-width: 800px;
-    width: 100%;
-  }
+.home {
+  display: flex;
+  flex-direction: column;
+  gap: 60px;
+  max-width: 800px;
+  width: 100%;
+}
 </style>

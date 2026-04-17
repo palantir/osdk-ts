@@ -40,8 +40,8 @@ function Home() {
           </p>
           <p>
             The application is implemented with mock in memory data.
-            <br />
-            Can you solve how to change it to use the Ontology SDK instead?
+            <br />Can you solve how to change it to use the Ontology SDK
+            instead?
           </p>
         </div>
       </div>

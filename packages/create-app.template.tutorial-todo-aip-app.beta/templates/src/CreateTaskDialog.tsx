@@ -19,8 +19,9 @@ function CreateTaskDialog({
   onClose,
   onTaskCreated,
 }: CreateTaskDialogProps) {
-  const { createTask, getRecommendedTaskDescription } =
-    useProjectTasks(project);
+  const { createTask, getRecommendedTaskDescription } = useProjectTasks(
+    project,
+  );
 
   const [name, setName] = useState<string>("New task");
   const [description, setDescription] = useState<string>("");

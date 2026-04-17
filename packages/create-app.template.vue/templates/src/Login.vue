@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onUpdated, ref } from "vue";
-import { useRouter } from "vue-router";
 import client from "./client";
+import { useRouter } from "vue-router";
 
 const router = useRouter();
 

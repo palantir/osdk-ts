@@ -33,6 +33,8 @@
     "**/api-docs/",
     "**/*.report.api.md",
     "**/*.hbs",
-    "**/tsconfig.json"
+    "**/tsconfig.json",
+    "**/create-app.template*/templates/**",
+    "**/create-widget.template*/templates/**"
   ]
 }

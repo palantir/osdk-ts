@@ -13,14 +13,12 @@ interface CreateTaskDialogProps {
   onTaskCreated: (taskId: string) => void;
 }
 
-function CreateTaskDialog({
-  project,
-  isOpen,
-  onClose,
-  onTaskCreated,
-}: CreateTaskDialogProps) {
-  const { createTask, getRecommendedTaskDescription } =
-    useProjectTasks(project);
+function CreateTaskDialog(
+  { project, isOpen, onClose, onTaskCreated }: CreateTaskDialogProps,
+) {
+  const { createTask, getRecommendedTaskDescription } = useProjectTasks(
+    project,
+  );
 
   const [name, setName] = useState<string>("New task");
   const [description, setDescription] = useState<string>("");

@@ -5,6 +5,7 @@
   /* margin: 0.5em; */
   gap: 0.5em;
   border-radius: 5px;
+
 }
 
 .projectTitle {
@@ -23,7 +24,7 @@
 }
 
 .aip {
-  background-color: #7961db;
+  background-color: #7961DB;
   color: #ffffff;
   border: 1px solid #ccc;
   padding: 2px;

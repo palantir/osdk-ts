@@ -29,7 +29,10 @@ export default tseslint.config({
 
     parser: tsParser,
   },
-  extends: [eslint.configs.recommended, ...tseslint.configs.recommended],
+  extends: [
+    eslint.configs.recommended,
+    ...tseslint.configs.recommended,
+  ],
   plugins: {
     "react": /** @type import("eslint").ESLint.Plugin */ (reactPlugin),
     "react-refresh": reactRefresh,
@@ -39,17 +42,16 @@ export default tseslint.config({
     "import": importPlugin,
   },
   rules: {
-    .../** @type import("eslint").Linter.RulesRecord */
-    (reactPlugin.configs.flat?.recommended.rules),
+    ...(
+      /** @type import("eslint").Linter.RulesRecord */
+      (reactPlugin.configs.flat?.recommended.rules)
+    ),
     "react-hooks/rules-of-hooks": "error",
     "react-hooks/exhaustive-deps": "warn",
     ...jsxA11yPlugin.configs.recommended.rules,
-    "react-refresh/only-export-components": [
-      "warn",
-      {
-        allowConstantExport: true,
-      },
-    ],
+    "react-refresh/only-export-components": ["warn", {
+      allowConstantExport: true,
+    }],
 
     "import/named": "error",
     "import/default": "error",

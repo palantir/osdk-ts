@@ -15,12 +15,12 @@ module.exports = mergeConfig(defaultConfig, {
   },
   resolver: {
     unstable_enablePackageExports: true,
-    assetExts: (defaultConfig.resolver?.assetExts ?? []).filter(
-      (ext) => ext !== "svg",
+    assetExts: (defaultConfig.resolver?.assetExts ?? []).filter(ext =>
+      ext !== "svg"
     ),
     sourceExts: [...(defaultConfig.resolver?.sourceExts ?? []), "svg"],
 
-    resolveRequest: function (context, moduleName, platform) {
+    resolveRequest: function(context, moduleName, platform) {
       if (moduleName.includes("@osdk")) {
         context = {
           ...context,

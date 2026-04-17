@@ -1,11 +1,11 @@
 import { OsdkProvider } from "@osdk/react";
-import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import AuthCallback from "./AuthCallback";
-import "./index.css";
-import client from "./client";
 import Home from "./Home";
+import "./index.css";
+import { StrictMode } from "react";
+import client from "./client";
 
 const router = createBrowserRouter(
   [

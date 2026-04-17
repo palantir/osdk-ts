@@ -66,7 +66,7 @@ const projects: MockProject[] = [
 
 async function delay(): Promise<void> {
   return new Promise((resolve) =>
-    setTimeout(() => resolve(), 500 + Math.random() * 1000),
+    setTimeout(() => resolve(), 500 + Math.random() * 1000)
   );
 }
 
@@ -112,7 +112,9 @@ async function getRecommendedProjectDescription(
   return `AIP Logic mock description for project`;
 }
 
-async function updateProjectDescription(project: MockProject): Promise<void> {
+async function updateProjectDescription(
+  project: MockProject,
+): Promise<void> {
   await delay();
   project.description = await getRecommendedProjectDescription(project);
 }

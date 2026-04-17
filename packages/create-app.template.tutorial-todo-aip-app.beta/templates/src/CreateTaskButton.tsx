@@ -10,8 +10,9 @@ interface CreateTaskButtonProps {
 }
 
 function CreateTaskButton({ project, onTaskCreated }: CreateTaskButtonProps) {
-  const { isLoading: isLoadingTasks, isError: isErrorTasks } =
-    useProjectTasks(project);
+  const { isLoading: isLoadingTasks, isError: isErrorTasks } = useProjectTasks(
+    project,
+  );
 
   const [isOpen, setIsOpen] = useState(false);
   const handleOpen = useCallback(() => setIsOpen(true), []);
@@ -23,9 +24,7 @@ function CreateTaskButton({ project, onTaskCreated }: CreateTaskButtonProps) {
 
   return (
     <>
-      <button onClick={handleOpen} className={css.button}>
-        Create Task
-      </button>
+      <button onClick={handleOpen} className={css.button}>Create Task</button>
       <CreateTaskDialog
         project={project}
         isOpen={isOpen}

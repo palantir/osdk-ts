@@ -1,5 +1,6 @@
 import palantir from "/palantir.svg";
 import react from "/react.svg";
+
 import { H2, Link } from "@blueprintjs/core";
 import React from "react";
 import css from "./Header.module.css";

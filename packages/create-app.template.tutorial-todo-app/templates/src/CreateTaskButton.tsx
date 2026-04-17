@@ -8,8 +8,9 @@ interface CreateTaskButtonProps {
 }
 
 function CreateTaskButton({ project }: CreateTaskButtonProps) {
-  const { isLoading: isLoadingTasks, isError: isErrorTasks } =
-    useProjectTasks(project);
+  const { isLoading: isLoadingTasks, isError: isErrorTasks } = useProjectTasks(
+    project,
+  );
 
   const [isOpen, setIsOpen] = useState(false);
   const handleOpen = useCallback(() => setIsOpen(true), []);
