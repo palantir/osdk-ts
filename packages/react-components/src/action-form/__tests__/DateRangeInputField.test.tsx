@@ -445,7 +445,7 @@ describe("DateRangeInputField", () => {
       expect(timeInputs.length).toBe(0);
     });
 
-    it("calls onChange with updated start time", () => {
+    it("calls onChange with updated start time on blur", () => {
       const onChange = vi.fn();
       render(
         <DateRangeInputField
@@ -461,6 +461,7 @@ describe("DateRangeInputField", () => {
         "input[aria-label='Start time']",
       ) as HTMLInputElement;
       fireEvent.change(startTimeInput, { target: { value: "14:30" } });
+      fireEvent.blur(startTimeInput);
 
       expect(onChange).toHaveBeenCalledTimes(1);
       const [start] = onChange.mock.calls[0][0];
@@ -469,7 +470,7 @@ describe("DateRangeInputField", () => {
       expect(start?.getDate()).toBe(15);
     });
 
-    it("calls onChange with updated end time", () => {
+    it("calls onChange with updated end time on blur", () => {
       const onChange = vi.fn();
       render(
         <DateRangeInputField
@@ -485,6 +486,7 @@ describe("DateRangeInputField", () => {
         "input[aria-label='End time']",
       ) as HTMLInputElement;
       fireEvent.change(endTimeInput, { target: { value: "16:45" } });
+      fireEvent.blur(endTimeInput);
 
       expect(onChange).toHaveBeenCalledTimes(1);
       const [, end] = onChange.mock.calls[0][0];

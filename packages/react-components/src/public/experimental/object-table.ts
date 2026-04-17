@@ -20,6 +20,7 @@ export type {
   ColumnDefinition,
   ColumnDefinitionLocator,
   CustomColumnLocator,
+  DatePickerEditConfig,
   DropdownEditConfig,
   EditFieldConfig,
   FunctionColumnLocator,

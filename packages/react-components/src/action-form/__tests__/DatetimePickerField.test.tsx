@@ -138,7 +138,7 @@ describe("DatetimePickerField", () => {
       expect(timeInput.value).toBe("14:30");
     });
 
-    it("calls onChange with updated time when time input changes", () => {
+    it("calls onChange with updated time when time input is blurred", () => {
       const onChange = vi.fn();
       render(
         <DatetimePickerField
@@ -155,6 +155,12 @@ describe("DatetimePickerField", () => {
       ) as HTMLInputElement;
       fireEvent.change(timeInput, { target: { value: "16:45" } });
 
+      // onChange is deferred until the time input is blurred so that
+      // typing multi-digit hours (e.g. "12") isn't interrupted by a
+      // parent re-render that resets the input after the first digit.
+      expect(onChange).not.toHaveBeenCalled();
+      fireEvent.blur(timeInput);
+
       expect(onChange).toHaveBeenCalledTimes(1);
       const calledDate: Date = onChange.mock.calls[0][0];
       expect(calledDate.getHours()).toBe(16);
@@ -162,7 +168,7 @@ describe("DatetimePickerField", () => {
       expect(calledDate.getDate()).toBe(15);
     });
 
-    it("updates input text when time changes", () => {
+    it("updates input text when time is committed", () => {
       const onChange = vi.fn();
       render(
         <DatetimePickerField
@@ -178,8 +184,9 @@ describe("DatetimePickerField", () => {
         "input[type=\"time\"]",
       ) as HTMLInputElement;
       fireEvent.change(timeInput, { target: { value: "16:45" } });
+      fireEvent.blur(timeInput);
 
-      // The main input text should reflect the new time
+      // The main input text should reflect the new time after commit
       expect(input.value).toBe("2024-01-15 16:45");
     });
   });

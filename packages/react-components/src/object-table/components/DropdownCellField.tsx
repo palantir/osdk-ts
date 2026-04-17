@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-import { Error } from "@blueprintjs/icons";
 import classNames from "classnames";
 import React from "react";
 import { DropdownField } from "../../action-form/fields/DropdownField.js";
 import styles from "../EditableCell.module.css";
 import { useRegisterPortal } from "../utils/PortalTracker.js";
-import type { EditFieldConfig } from "../utils/types.js";
+import type { DropdownEditConfig } from "../utils/types.js";
+import { ReadonlyDisplayCell } from "./ReadonlyDisplayCell.js";
 
 interface DropdownCellFieldProps {
-  editFieldConfig: EditFieldConfig & { fieldComponent: "DROPDOWN" };
+  fieldComponentProps: DropdownEditConfig;
   isRowFocused: boolean;
   inputValue: string;
   hasValidationError: boolean;
@@ -32,7 +32,7 @@ interface DropdownCellFieldProps {
 }
 
 function DropdownCellFieldInner({
-  editFieldConfig,
+  fieldComponentProps,
   isRowFocused,
   inputValue,
   hasValidationError,
@@ -43,25 +43,11 @@ function DropdownCellFieldInner({
 
   if (!isRowFocused) {
     return (
-      <div
-        className={classNames(
-          styles.osdkEditableCell,
-          {
-            [styles.error]: hasValidationError,
-            [styles.osdkEditedInput]: isEdited,
-          },
-        )}
-      >
-        <div
-          className={classNames(
-            styles.osdkEditableInput,
-            styles.osdkDropdownText,
-          )}
-        >
-          {inputValue}
-        </div>
-        {hasValidationError && <Error className={styles.errorIcon} />}
-      </div>
+      <ReadonlyDisplayCell
+        inputValue={inputValue}
+        hasValidationError={hasValidationError}
+        isEdited={isEdited}
+      />
     );
   }
   return (
@@ -75,7 +61,7 @@ function DropdownCellFieldInner({
       )}
     >
       <DropdownField
-        {...editFieldConfig.fieldComponentProps}
+        {...fieldComponentProps}
         portalRef={portalRef}
         value={inputValue}
         onChange={onChange}
