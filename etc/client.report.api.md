@@ -97,7 +97,7 @@ export interface Client extends SharedClient, OldSharedClient {
     	// (undocumented)
     <Q extends ObjectTypeDefinition>(o: Q): unknown extends CompileTimeMetadata<Q>["objectSet"] ? ObjectSet<Q> : CompileTimeMetadata<Q>["objectSet"];
     	// (undocumented)
-    <Q extends (InterfaceDefinition)>(o: Q): unknown extends CompileTimeMetadata<Q>["objectSet"] ? MinimalObjectSet<Q> : CompileTimeMetadata<Q>["objectSet"];
+    <Q extends InterfaceDefinition>(o: Q): unknown extends CompileTimeMetadata<Q>["objectSet"] ? MinimalObjectSet<Q> : CompileTimeMetadata<Q>["objectSet"];
     	// Warning: (ae-forgotten-export) The symbol "ActionSignatureFromDef" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
@@ -109,7 +109,7 @@ export interface Client extends SharedClient, OldSharedClient {
     	// (undocumented)
     <Q extends Experiment<"2.0.8"> | Experiment<"2.1.0"> | Experiment<"2.2.0"> | Experiment<"2.8.0">>(experiment: Q): ExperimentFns<Q>;
     	// (undocumented)
-    fetchMetadata<Q extends (ObjectTypeDefinition | InterfaceDefinition | ActionDefinition<any> | QueryDefinition<any>)>(o: Q): Promise<Q extends ObjectTypeDefinition ? ObjectMetadata : Q extends InterfaceDefinition ? InterfaceMetadata : Q extends ActionDefinition<any> ? ActionMetadata : Q extends QueryDefinition<any> ? QueryMetadata : never>;
+    fetchMetadata<Q extends ObjectTypeDefinition | InterfaceDefinition | ActionDefinition<any> | QueryDefinition<any>>(o: Q): Promise<Q extends ObjectTypeDefinition ? ObjectMetadata : Q extends InterfaceDefinition ? InterfaceMetadata : Q extends ActionDefinition<any> ? ActionMetadata : Q extends QueryDefinition<any> ? QueryMetadata : never>;
 }
 
 export { CompileTimeMetadata }
