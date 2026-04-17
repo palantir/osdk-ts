@@ -288,7 +288,6 @@ describe("BaseForm", () => {
         />,
       );
 
-      // Regex because the accessible name includes "required" from aria-label
       const input = screen.getByRole("textbox", { name: /name/ });
       fireEvent.focus(input);
       fireEvent.blur(input);

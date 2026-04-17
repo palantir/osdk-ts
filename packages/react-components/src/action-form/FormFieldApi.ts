@@ -28,67 +28,89 @@ import type React from "react";
 /**
  * A form field definition specifies configuration for a single field
  */
-/**
- * A form field definition specifies configuration for a single field.
- *
- * Implemented as a distributed mapped type so that `fieldComponent` and
- * `fieldComponentProps` are correlated per-variant. When you set
- * `fieldComponent: "DROPDOWN"`, TypeScript enforces that `fieldComponentProps`
- * includes `items`. A plain interface would lose this correlation because
- * `Omit` over a union of prop types collapses to only common (optional) keys.
- *
- * @see RendererFieldDefinition — the OSDK-agnostic equivalent used by BaseForm
- */
-export type FormFieldDefinition<
+export interface FormFieldDefinition<
   Q extends ActionDefinition<unknown>,
   K extends FieldKey<Q> = FieldKey<Q>,
-> = {
-  [C in ValidFormFieldForPropertyType<FieldDescriptorType<Q, K>>]: {
-    /** The field's unique key */
-    fieldKey: K;
-    /** Display label for the field */
-    label: string;
-    /** Default value of the field */
-    defaultValue?: FieldValueType<Q, K>;
-    /** The form field component type to render */
-    fieldComponent: C;
-    /** Whether the field is required */
-    isRequired?: boolean;
-    /** Placeholder text */
-    placeholder?: string;
-    /**
-     * Additional information to display on this field.
-     * The placement of helper text depends on the value of helperTextPlacement prop.
-     */
-    helperText?: string;
-    /**
-     * The placement of the helper text either below the field or in a tooltip
-     * @default "tooltip"
-     */
-    helperTextPlacement?: "bottom" | "tooltip";
-    /** Whether the field is disabled */
-    isDisabled?: boolean;
-    /**
-     * A callback to customize error messages when a built-in validation rule fails.
-     * Receives a discriminated union with the constraint data (e.g., the min value
-     * that was exceeded) so the message can reference the threshold.
-     *
-     * Return a string to override the default message, or `undefined` to keep it.
-     */
-    onValidationError?: (error: ValidationError) => string | undefined;
-    /**
-     * Additional function to validate the field.
-     *
-     * Return `undefined` if valid, or an error message string if invalid.
-     */
-    validate?: (value: FieldValueType<Q, K>) => Promise<string | undefined>;
-    /**
-     * The component props for the form field.
-     * Excludes runtime props (value, onChange) which are managed by ActionForm.
-     */
-    fieldComponentProps: Omit<FormFieldPropsByType[C], FormManagedProps<C>>;
-  };
-}[ValidFormFieldForPropertyType<FieldDescriptorType<Q, K>>];
+> {
+  /**
+   * The field's unique key
+   */
+  fieldKey: K;
+
+  /**
+   * Display label for the field
+   */
+  label: string;
+
+  /**
+   * Default value of the field
+   */
+  defaultValue?: FieldValueType<Q, K>;
+
+  /**
+   * The form field component type to render
+   */
+  fieldComponent: ValidFormFieldForPropertyType<FieldDescriptorType<Q, K>>;
+
+  /**
+   * Whether the field is required
+   */
+  isRequired?: boolean;
+
+  /**
+   * Placeholder text
+   */
+  placeholder?: string;
+
+  /**
+   * Additional information to display on this field
+   * The placement of helper text depends on the value of helperTextPlacement prop
+   */
+  helperText?: string;
+
+  /**
+   * The placement of the helper text either below the field or in a tooltip
+   *
+   * @default "tooltip"
+   */
+  helperTextPlacement?: "bottom" | "tooltip";
+
+  /**
+   * Whether the field is disabled
+   */
+  isDisabled?: boolean;
+
+  /**
+   * A callback to customize error messages when a built-in validation rule fails.
+   * Receives a discriminated union with the constraint data (e.g., the min value
+   * that was exceeded) so the message can reference the threshold.
+   *
+   * Return a string to override the default message, or `undefined` to keep it.
+   */
+  onValidationError?: (error: ValidationError) => string | undefined;
+
+  /**
+   * Additional function to validate the field.
+   *
+   * Return `undefined` if valid, or an error message string if invalid.
+   */
+  validate?: (value: FieldValueType<Q, K>) => Promise<string | undefined>;
+
+  /**
+   * The component props for the form field.
+   * Excludes runtime props (value, onChange) which are managed by ActionForm.
+   */
+  fieldComponentProps: Omit<
+    FormFieldPropsByType[
+      ValidFormFieldForPropertyType<
+        FieldDescriptorType<Q, K>
+      >
+    ],
+    FormManagedProps<
+      ValidFormFieldForPropertyType<FieldDescriptorType<Q, K>>
+    >
+  >;
+}
 
 /**
  * A discriminated union describing which validation rule failed and the
