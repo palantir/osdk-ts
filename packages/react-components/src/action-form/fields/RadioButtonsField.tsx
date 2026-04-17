@@ -28,6 +28,7 @@ export const RadioButtonsField: <V>(
   value,
   onChange,
   options,
+  orientation,
 }: RadioButtonsFieldProps<V>): React.ReactElement {
   const selectedLabel = useMemo(
     () =>
@@ -49,6 +50,7 @@ export const RadioButtonsField: <V>(
     <RadioGroup
       id={id}
       className={styles.osdkRadioGroup}
+      data-orientation={orientation ?? "vertical"}
       value={selectedLabel}
       onValueChange={handleValueChange}
     >
