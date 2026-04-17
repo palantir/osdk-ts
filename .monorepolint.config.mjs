@@ -1051,6 +1051,10 @@ function standardPackageRules(shared, options) {
                     )},`
                   : ""
               }
+              env: {
+                TZ: "UTC",
+                LANG: "en_US.UTF-8",
+              },
               fakeTimers: {
                 toFake: ["setTimeout", "clearTimeout", "Date"],
               },

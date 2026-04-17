@@ -20,6 +20,10 @@ export default defineConfig({
   test: {
     pool: "forks",
     exclude: [...configDefaults.exclude, "**/build/**/*"],
+    env: {
+      TZ: "UTC",
+      LANG: "en_US.UTF-8",
+    },
     fakeTimers: {
       toFake: ["setTimeout", "clearTimeout", "Date"],
     },
