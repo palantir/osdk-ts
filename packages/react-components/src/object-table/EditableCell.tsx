@@ -18,6 +18,7 @@ import { Error } from "@blueprintjs/icons";
 import type { RowData } from "@tanstack/react-table";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Tooltip } from "../base-components/tooltip/Tooltip.js";
+import { DatePickerCellField } from "./components/DatePickerCellField.js";
 import { DropdownCellField } from "./components/DropdownCellField.js";
 import { TextInputCellField } from "./components/TextInputCellField.js";
 import styles from "./EditableCell.module.css";
@@ -31,6 +32,11 @@ const NUMBER_TYPES: readonly string[] = [
   "decimal",
   "byte",
   "short",
+];
+
+const DATE_TYPES: readonly string[] = [
+  "datetime",
+  "timestamp",
 ];
 
 const VALIDATION_ERROR_MESSAGE = "Validation error";
@@ -101,7 +107,7 @@ function EditableCellInner<TData extends RowData, CellValue = unknown>({
   validateEdit,
   validationError,
   editFieldConfig,
-  isRowFocused,
+  isRowFocused = false,
 }: EditableCellProps<TData, CellValue>): React.ReactElement {
   const [inputValue, setInputValue] = useState<string>(
     valueToString(currentValue),
@@ -229,8 +235,7 @@ function EditableCellInner<TData extends RowData, CellValue = unknown>({
     [currentValue],
   );
 
-  // Dropdown: commit on selection
-  const handleDropdownChange = useCallback(
+  const handleCommit = useCallback(
     (newValue: unknown) => {
       commitEdit(newValue as CellValue);
     },
@@ -241,7 +246,60 @@ function EditableCellInner<TData extends RowData, CellValue = unknown>({
     ? "number"
     : "text";
 
-  const isDropdown = editFieldConfig?.fieldComponent === "DROPDOWN";
+  const renderFieldInput = () => {
+    switch (editFieldConfig?.fieldComponent) {
+      case "DROPDOWN":
+        return (
+          <DropdownCellField
+            editFieldConfig={editFieldConfig as EditFieldConfig & {
+              fieldComponent: "DROPDOWN";
+            }}
+            isRowFocused={isRowFocused}
+            inputValue={inputValue}
+            hasValidationError={hasValidationError}
+            isEdited={isEdited}
+            onChange={handleCommit}
+          />
+        );
+      case "DATE_PICKER":
+        return (
+          <DatePickerCellField
+            editFieldConfig={editFieldConfig as EditFieldConfig & {
+              fieldComponent: "DATE_PICKER";
+            }}
+            isRowFocused={isRowFocused}
+            inputValue={inputValue}
+            hasValidationError={hasValidationError}
+            isEdited={isEdited}
+            onChange={handleCommit}
+          />
+        );
+      default:
+        if (dataType != null && DATE_TYPES.includes(dataType)) {
+          return (
+            <DatePickerCellField
+              isRowFocused={isRowFocused}
+              inputValue={inputValue}
+              hasValidationError={hasValidationError}
+              isEdited={isEdited}
+              onChange={handleCommit}
+              dataType={dataType}
+            />
+          );
+        }
+        return (
+          <TextInputCellField
+            inputType={inputType}
+            inputValue={inputValue}
+            hasValidationError={hasValidationError}
+            isEdited={isEdited}
+            onValueChange={handleInputChange}
+            onBlur={handleBlur}
+            onKeyDown={handleKeyDown}
+          />
+        );
+    }
+  };
 
   return (
     <Tooltip.Provider>
@@ -249,30 +307,7 @@ function EditableCellInner<TData extends RowData, CellValue = unknown>({
         <Tooltip.Trigger
           className={styles.osdkEditableCellTrigger}
         >
-          {isDropdown
-            ? (
-              <DropdownCellField
-                editFieldConfig={editFieldConfig as EditFieldConfig & {
-                  fieldComponent: "DROPDOWN";
-                }}
-                isRowFocused={isRowFocused ?? false}
-                inputValue={inputValue}
-                hasValidationError={hasValidationError}
-                isEdited={isEdited}
-                onChange={handleDropdownChange}
-              />
-            )
-            : (
-              <TextInputCellField
-                inputType={inputType}
-                inputValue={inputValue}
-                hasValidationError={hasValidationError}
-                isEdited={isEdited}
-                onValueChange={handleInputChange}
-                onBlur={handleBlur}
-                onKeyDown={handleKeyDown}
-              />
-            )}
+          {renderFieldInput()}
         </Tooltip.Trigger>
         <Tooltip.Portal>
           <Tooltip.Positioner sideOffset={4} side={"bottom"}>

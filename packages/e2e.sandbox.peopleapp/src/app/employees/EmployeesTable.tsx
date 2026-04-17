@@ -36,6 +36,17 @@ const columnDefinitions: Array<
       return undefined;
     },
   },
+  // {
+  //   locator: { type: "property", id: "firstFullTimeStartDate" },
+  //   editable: true,
+  //   editFieldConfig: {
+  //     fieldComponent: "DATE_PICKER",
+  //     fieldComponentProps: {
+  //       showTime: false,
+  //       placeholder: "Select date...",
+  //     },
+  //   },
+  // },
   // Function-backed column
   {
     locator: {
@@ -63,15 +74,16 @@ const columnDefinitions: Array<
     locator: { type: "property", id: "firstFullTimeStartDate" },
     width: 300,
     renderHeader: () => "Start Date",
-    renderCell: (object: Osdk.Instance<Employee>) => {
-      return (
-        <div>
-          {object.firstFullTimeStartDate
-            ? new Date(object.firstFullTimeStartDate).toISOString()
-            : "No value"}
-        </div>
-      );
-    },
+    // renderCell: (object: Osdk.Instance<Employee>) => {
+    //   return (
+    //     <div>
+    //       {object.firstFullTimeStartDate
+    //         ? new Date(object.firstFullTimeStartDate).toISOString()
+    //         : "No value"}
+    //     </div>
+    //   );
+    // },
+    editable: true,
   },
   // RDP
   {
@@ -117,7 +129,7 @@ export function EmployeesTable() {
   return (
     <div
       style={{
-        height: "200px",
+        height: "300px",
         overflow: "hidden",
       }}
     >
