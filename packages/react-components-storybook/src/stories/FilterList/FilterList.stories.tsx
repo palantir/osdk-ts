@@ -20,6 +20,7 @@ import type {
   FilterDefinitionUnion,
   FilterListProps,
 } from "@osdk/react-components/experimental";
+import { useOsdkClient } from "@osdk/react/experimental";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useCallback, useMemo, useState } from "react";
 import { useArgs } from "storybook/preview-api";
@@ -287,6 +288,63 @@ export const Default: Story = {
       </div>
     );
   },
+};
+
+function WithObjectSetStory(args: Partial<EmployeeFilterListProps>) {
+  const client = useOsdkClient();
+  const objectSet = useMemo(
+    () =>
+      client(Employee).where({
+        department: "Marketing",
+      }),
+    [client],
+  );
+
+  const filterDefinitions = useMemo(
+    (): FilterDefinitionUnion<Employee>[] => [
+      teamFilter,
+      locationCityFilter,
+    ],
+    [],
+  );
+
+  return (
+    <div style={SIDEBAR_STYLE}>
+      <FilterList
+        objectType={Employee}
+        objectSet={objectSet}
+        filterDefinitions={filterDefinitions}
+        {...args}
+      />
+    </div>
+  );
+}
+
+export const WithObjectSet: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Pass an `objectSet` prop to scope filter aggregations to a subset of objects. "
+          + "Here the object set is filtered to Marketing department employees, "
+          + "so the listogram counts reflect only that subset.",
+      },
+      source: {
+        code: `const client = useOsdkClient();
+const objectSet = client(Employee).where({ department: "Marketing" });
+
+<FilterList
+  objectType={Employee}
+  objectSet={objectSet}
+  filterDefinitions={[
+    { type: "PROPERTY", key: "team", label: "Team", filterComponent: "LISTOGRAM", filterState: { type: "EXACT_MATCH", values: [] } },
+    { type: "PROPERTY", key: "locationCity", label: "Location City", filterComponent: "LISTOGRAM", filterState: { type: "EXACT_MATCH", values: [] } },
+  ]}
+/>`,
+      },
+    },
+  },
+  render: (args) => <WithObjectSetStory {...args} />,
 };
 
 function AddFilterModeStory(args: Partial<EmployeeFilterListProps>) {
@@ -975,6 +1033,278 @@ const handleFilterRemoved = (filterKey) => {
     },
   },
   render: (args) => <WithRemovableFiltersStory {...args} />,
+};
+
+function LinkedPropertyFilterStory(args: Partial<EmployeeFilterListProps>) {
+  const [filterClause, setFilterClause] = useState<
+    WhereClause<Employee> | undefined
+  >(undefined);
+
+  const filterDefinitions = useMemo(
+    (): FilterDefinitionUnion<Employee>[] => [
+      {
+        type: "LINKED_PROPERTY",
+        id: "lead-department",
+        linkName: "lead",
+        linkedPropertyKey: "department",
+        linkedFilterComponent: "LISTOGRAM",
+        linkedFilterState: { type: "EXACT_MATCH", values: [] },
+        filterState: {
+          type: "linkedProperty",
+          linkedFilterState: { type: "EXACT_MATCH", values: [] },
+        },
+        label: "Lead's Department",
+      },
+      {
+        type: "LINKED_PROPERTY",
+        id: "lead-location",
+        linkName: "lead",
+        linkedPropertyKey: "locationCity",
+        linkedFilterComponent: "LISTOGRAM",
+        linkedFilterState: { type: "EXACT_MATCH", values: [] },
+        filterState: {
+          type: "linkedProperty",
+          linkedFilterState: { type: "EXACT_MATCH", values: [] },
+        },
+        label: "Lead's Location",
+      },
+      departmentFilter,
+    ],
+    [],
+  );
+
+  return (
+    <div style={FLEX_ROW_STYLE}>
+      <div style={SIDEBAR_STYLE}>
+        <FilterList
+          objectType={Employee}
+          filterDefinitions={filterDefinitions}
+          filterClause={filterClause}
+          onFilterClauseChanged={setFilterClause}
+          {...args}
+        />
+      </div>
+      <div style={FLEX_FILL_STYLE}>
+        <strong>Filter Clause (JSON):</strong>
+        <pre style={PRE_STYLE}>
+          {filterClause
+            ? JSON.stringify(filterClause, null, 2)
+            : "(no active filters)"}
+        </pre>
+      </div>
+    </div>
+  );
+}
+
+export const LinkedPropertyFilter: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Use `LINKED_PROPERTY` filters to filter objects based on properties of their linked objects. "
+          + "Here we filter employees by their lead's department and location.",
+      },
+      source: {
+        code: `<FilterList
+  objectType={Employee}
+  filterDefinitions={[
+    {
+      type: "LINKED_PROPERTY",
+      linkName: "lead",
+      linkedPropertyKey: "department",
+      linkedFilterComponent: "LISTOGRAM",
+      linkedFilterState: { type: "EXACT_MATCH", values: [] },
+      filterState: { type: "linkedProperty", linkedFilterState: { type: "EXACT_MATCH", values: [] } },
+      label: "Lead's Department",
+    },
+    {
+      type: "LINKED_PROPERTY",
+      linkName: "lead",
+      linkedPropertyKey: "locationCity",
+      linkedFilterComponent: "LISTOGRAM",
+      linkedFilterState: { type: "EXACT_MATCH", values: [] },
+      filterState: { type: "linkedProperty", linkedFilterState: { type: "EXACT_MATCH", values: [] } },
+      label: "Lead's Location",
+    },
+  ]}
+  filterClause={filterClause}
+  onFilterClauseChanged={setFilterClause}
+/>`,
+      },
+    },
+  },
+  render: (args) => <LinkedPropertyFilterStory {...args} />,
+};
+
+interface SeniorityFilterState {
+  type: "custom";
+  customState: { selectedLevels: string[] };
+}
+
+function CustomFilterStory(args: Partial<EmployeeFilterListProps>) {
+  const [filterClause, setFilterClause] = useState<
+    WhereClause<Employee> | undefined
+  >(undefined);
+
+  const filterDefinitions = useMemo(
+    (): FilterDefinitionUnion<Employee>[] => [
+      {
+        type: "CUSTOM",
+        id: "seniority",
+        key: "seniority",
+        label: "Seniority Level",
+        filterComponent: "CUSTOM",
+        filterState: {
+          type: "custom",
+          customState: { selectedLevels: [] },
+        } as SeniorityFilterState,
+        renderInput: ({
+          filterState,
+          onFilterStateChanged,
+        }: {
+          filterState: SeniorityFilterState;
+          onFilterStateChanged: (state: SeniorityFilterState) => void;
+        }) => {
+          const levels = ["Junior", "Mid", "Senior"];
+          const selected = filterState.customState.selectedLevels;
+
+          return (
+            <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+              {levels.map((level) => {
+                const isSelected = selected.includes(level);
+                return (
+                  <label
+                    key={level}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 8,
+                      cursor: "pointer",
+                      padding: "4px 0",
+                    }}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={isSelected}
+                      onChange={() => {
+                        const next = isSelected
+                          ? selected.filter((l) => l !== level)
+                          : [...selected, level];
+                        onFilterStateChanged({
+                          ...filterState,
+                          customState: { selectedLevels: next },
+                        });
+                      }}
+                    />
+                    {level}
+                  </label>
+                );
+              })}
+            </div>
+          );
+        },
+        toWhereClause: (
+          state: SeniorityFilterState,
+        ): WhereClause<Employee> | undefined => {
+          const levels = state.customState.selectedLevels;
+          if (levels.length === 0) return undefined;
+
+          const startDate = new Date();
+          const clauses: WhereClause<Employee>[] = [];
+
+          if (levels.includes("Junior")) {
+            const oneYearAgo = new Date(startDate);
+            oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+            clauses.push({
+              $and: [{ firstFullTimeStartDate: { $gte: oneYearAgo } }],
+            } as WhereClause<Employee>);
+          }
+          if (levels.includes("Mid")) {
+            const oneYearAgo = new Date(startDate);
+            oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+            const twoYearsAgo = new Date(startDate);
+            twoYearsAgo.setFullYear(twoYearsAgo.getFullYear() - 2);
+            clauses.push({
+              $and: [
+                { firstFullTimeStartDate: { $lt: oneYearAgo } },
+                { firstFullTimeStartDate: { $gte: twoYearsAgo } },
+              ],
+            } as WhereClause<Employee>);
+          }
+          if (levels.includes("Senior")) {
+            const twoYearsAgo = new Date(startDate);
+            twoYearsAgo.setFullYear(twoYearsAgo.getFullYear() - 2);
+            clauses.push({
+              $and: [{ firstFullTimeStartDate: { $lt: twoYearsAgo } }],
+            } as WhereClause<Employee>);
+          }
+
+          return clauses.length === 1
+            ? clauses[0]
+            : { $or: clauses } as WhereClause<Employee>;
+        },
+      } as unknown as FilterDefinitionUnion<Employee>,
+    ],
+    [],
+  );
+
+  return (
+    <div style={FLEX_ROW_STYLE}>
+      <div style={SIDEBAR_STYLE}>
+        <FilterList
+          objectType={Employee}
+          filterDefinitions={filterDefinitions}
+          filterClause={filterClause}
+          onFilterClauseChanged={setFilterClause}
+          {...args}
+        />
+      </div>
+      <div style={FLEX_FILL_STYLE}>
+        <strong>Filter Clause (JSON):</strong>
+        <pre style={PRE_STYLE}>
+          {filterClause
+            ? JSON.stringify(filterClause, null, 2)
+            : "(no active filters)"}
+        </pre>
+      </div>
+    </div>
+  );
+}
+
+export const CustomFilter: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Use `CUSTOM` filters for fully custom rendering and filter logic. "
+          + "This example implements a seniority filter based on start date ranges, "
+          + "using `renderInput` for custom UI and `toWhereClause` for the filter logic.",
+      },
+      source: {
+        code: `<FilterList
+  objectType={Employee}
+  filterDefinitions={[
+    {
+      type: "CUSTOM",
+      key: "seniority",
+      label: "Seniority Level",
+      filterComponent: "CUSTOM",
+      filterState: { type: "custom", customState: { selectedLevels: [] } },
+      renderInput: ({ filterState, onFilterStateChanged }) => (
+        // Custom checkbox UI for seniority levels
+      ),
+      toWhereClause: (state) => {
+        // Convert selected seniority levels to date-range where clauses
+      },
+    },
+  ]}
+  filterClause={filterClause}
+  onFilterClauseChanged={setFilterClause}
+/>`,
+      },
+    },
+  },
+  render: (args) => <CustomFilterStory {...args} />,
 };
 
 function FullFeaturedStory(

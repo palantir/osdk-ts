@@ -39,13 +39,14 @@ const columnDefinitions: Array<
   // Function-backed column
   {
     locator: {
-      type: "function" as const,
-      id: "daysSinceStart" as const,
+      type: "function",
+      id: "daysSinceStart",
       queryDefinition: getEmployeeDaysSinceStart,
-      getFunctionParams: (objectSet: any) => ({ employees: objectSet }),
-      getKey: (obj: any) => `${obj.$objectType}:${obj.$primaryKey}`,
-      getValue: (data: { daysSinceStart: any }) => data?.daysSinceStart,
-    } as any,
+      getFunctionParams: (objectSet) => ({ employees: objectSet }),
+      getKey: (obj) => `${obj.$objectType}:${obj.$primaryKey}`,
+      getValue: (data) =>
+        (data as { daysSinceStart?: unknown } | undefined)?.daysSinceStart,
+    },
     columnName: "Days Since Start",
     width: 150,
   },

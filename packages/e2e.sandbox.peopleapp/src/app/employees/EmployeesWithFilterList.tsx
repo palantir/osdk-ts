@@ -69,7 +69,20 @@ const INITIAL_FILTER_DEFINITIONS: FilterDefinitionUnion<Employee>[] = [
     label: "Department",
     filterComponent: "LISTOGRAM",
     filterState: { type: "EXACT_MATCH", values: [] },
-  } as FilterDefinitionUnion<Employee>,
+  },
+  {
+    type: "LINKED_PROPERTY",
+    id: "lead-department",
+    linkName: "lead",
+    linkedPropertyKey: "department",
+    linkedFilterComponent: "LISTOGRAM",
+    linkedFilterState: { type: "EXACT_MATCH", values: [] },
+    filterState: {
+      type: "linkedProperty",
+      linkedFilterState: { type: "EXACT_MATCH", values: [] },
+    },
+    label: "Lead's Department",
+  },
 ];
 
 export function EmployeesWithFilterList(props: EmployeesWithFilterListProps) {

@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-import type { DerivedProperty, Osdk } from "@osdk/api";
+import type {
+  DerivedProperty,
+  ObjectSet,
+  Osdk,
+  QueryDefinition,
+} from "@osdk/api";
 import { ObjectTable } from "@osdk/react-components/experimental";
 import type {
   CellEditInfo,
@@ -26,6 +31,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useCallback, useState } from "react";
 import { fauxFoundry } from "../../mocks/fauxFoundry.js";
 import { Employee } from "../../types/Employee.js";
+import { WorkerInterface } from "../../types/WorkerInterface.js";
 
 // Create a concrete type for Storybook to parse more easily
 type EmployeeTableProps = ObjectTableProps<typeof Employee>;
@@ -198,41 +204,59 @@ const meta: Meta<EmployeeTableProps> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
+// Used by stories that don't define their own columnDefinitions.
+const defaultEmployeeColumns: ColumnDefinition<Employee>[] = [
+  { locator: { type: "property", id: "fullName" } },
+  { locator: { type: "property", id: "emailPrimaryWork" } },
+  { locator: { type: "property", id: "jobProfile" } },
+  { locator: { type: "property", id: "jobTitle" } },
+  { locator: { type: "property", id: "department" } },
+  { locator: { type: "property", id: "businessTitle" } },
+  { locator: { type: "property", id: "businessArea" } },
+  { locator: { type: "property", id: "team" } },
+  { locator: { type: "property", id: "workerType" } },
+  { locator: { type: "property", id: "locationName" } },
+  { locator: { type: "property", id: "locationCity" } },
+  { locator: { type: "property", id: "locationCountry" } },
+  { locator: { type: "property", id: "locationRegion" } },
+  { locator: { type: "property", id: "locationType" } },
+  { locator: { type: "property", id: "firstFullTimeStartDate" } },
+  { locator: { type: "property", id: "firstInternStartDate" } },
+  { locator: { type: "property", id: "employeeNumber" } },
+  { locator: { type: "property", id: "adUsername" } },
+  { locator: { type: "property", id: "primaryOfficeId" } },
+  { locator: { type: "property", id: "preferredNameFirst" } },
+  { locator: { type: "property", id: "preferredNameLast" } },
+  { locator: { type: "property", id: "leadEmployeeNumber" } },
+  { locator: { type: "property", id: "mentorEmployeeNumber" } },
+];
+
+// Query definition for the function-backed column
+const getEmployeeSeniority: QueryDefinition<Employee> = {
+  type: "query",
+  apiName: "getEmployeeSeniority",
+  version: "1.0.0",
+  osdkMetadata: undefined as never,
+};
+
+type SeniorityFunctions = {
+  seniority: typeof getEmployeeSeniority;
+};
+
 // Define column definitions similar to the e2e example
 type RDPs = {
   managerName: "string";
 };
 
-const columnDefinitions: ColumnDefinition<Employee, RDPs, {}>[] = [
+const columnDefinitions: ColumnDefinition<
+  Employee,
+  RDPs,
+  SeniorityFunctions
+>[] = [
   {
     locator: {
       type: "property",
       id: "fullName",
-    },
-  },
-  {
-    locator: { type: "property", id: "emailPrimaryWork" },
-    renderHeader: () => "Email",
-  },
-  {
-    locator: { type: "property", id: "jobTitle" },
-    isVisible: false,
-  },
-  {
-    locator: { type: "property", id: "department" },
-  },
-  {
-    locator: { type: "property", id: "firstFullTimeStartDate" },
-    width: 200,
-    renderHeader: () => "Start Date",
-    renderCell: (object: Osdk.Instance<Employee>) => {
-      return (
-        <div>
-          {object.firstFullTimeStartDate
-            ? new Date(object.firstFullTimeStartDate).toLocaleDateString()
-            : "No date"}
-        </div>
-      );
     },
   },
   {
@@ -250,14 +274,32 @@ const columnDefinitions: ColumnDefinition<Employee, RDPs, {}>[] = [
       return <span style={{ color: "#999" }}>No Manager</span>;
     },
   },
+  {
+    locator: {
+      type: "function",
+      id: "seniority",
+      queryDefinition: getEmployeeSeniority,
+      getFunctionParams: (objectSet: ObjectSet<Employee>) =>
+        ({ employees: objectSet }) as never,
+      getKey: (object: Osdk.Instance<Employee>) => String(object.$primaryKey),
+      getValue: (cellData?: unknown) => cellData,
+    },
+    renderHeader: () => "Seniority",
+    width: 120,
+  },
 ];
 
 export const Default: Story = {
   args: {
     objectType: Employee,
+    columnDefinitions: defaultEmployeeColumns,
   },
   parameters: {
     docs: {
+      description: {
+        story:
+          "Minimal setup showing Employee data with default column definitions.",
+      },
       source: {
         code: `<ObjectTable objectType={Employee} />`,
       },
@@ -273,6 +315,7 @@ export const Default: Story = {
 export const WithObjectSet: Story = {
   args: {
     objectType: Employee,
+    columnDefinitions: defaultEmployeeColumns,
   },
   parameters: {
     docs: {
@@ -304,43 +347,53 @@ return <ObjectTable objectType={Employee} objectSet={employeeObjectSet} />`,
   },
 };
 
-export const WithColumnDefinitions: Story = {
+export const WithInterfaceType: Story = {
+  args: {
+    objectType: WorkerInterface as unknown as typeof Employee,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Pass an interface type instead of an object type. The table shows the interface's "
+          + "properties (email, name, employeeNumber) and any object implementing the interface "
+          + "will be displayed.",
+      },
+      source: {
+        code: `import { WorkerInterface } from "./types/WorkerInterface";
+
+<ObjectTable objectType={WorkerInterface} />`,
+      },
+    },
+  },
+  render: (args) => (
+    <div className="object-table-container" style={{ height: "600px" }}>
+      <ObjectTable {...args} />
+    </div>
+  ),
+};
+
+export const WithDerivedPropertiesAndFunctionColumns: Story = {
   args: {
     objectType: Employee,
     columnDefinitions: columnDefinitions as ColumnDefinition<Employee>[],
   },
   parameters: {
     docs: {
+      description: {
+        story:
+          "Demonstrates derived property (RDP) columns and function-backed columns. "
+          + "The 'Manager' column uses an RDP to pivot to the lead's fullName, while "
+          + "the 'Seniority' column uses a Foundry query to compute a derived value per row.",
+      },
       source: {
-        code: `const columnDefinitions = [
-  {
-    locator: { type: "property", id: "fullName" },
-  },
-  {
-    locator: { type: "property", id: "emailPrimaryWork" },
-    renderHeader: () => "Email",
-  },
-  {
-    locator: { type: "property", id: "jobTitle" },
-    isVisible: false,
-  },
-  {
-    locator: { type: "property", id: "department" },
-  },
-  {
-    locator: { type: "property", id: "firstFullTimeStartDate" },
-    width: 200,
-    renderHeader: () => "Start Date",
-    renderCell: (object) => {
-      return (
-        <div>
-          {object["firstFullTimeStartDate"]
-            ? new Date(object["firstFullTimeStartDate"]).toLocaleDateString()
-            : "No date"}
-        </div>
-      );
-    },
-  },
+        code: `import { getEmployeeSeniority } from "./ontology/queries";
+
+type RDPs = { managerName: "string" };
+type SeniorityFunctions = { seniority: typeof getEmployeeSeniority };
+
+const columnDefinitions: ColumnDefinition<Employee, RDPs, SeniorityFunctions>[] = [
+  { locator: { type: "property", id: "fullName" } },
   {
     locator: {
       type: "rdp",
@@ -355,6 +408,18 @@ export const WithColumnDefinitions: Story = {
       }
       return <span style={{ color: "#999" }}>No Manager</span>;
     },
+  },
+  {
+    locator: {
+      type: "function",
+      id: "seniority",
+      queryDefinition: getEmployeeSeniority,
+      getFunctionParams: (objectSet) => ({ employees: objectSet }),
+      getKey: (object) => String(object.$primaryKey),
+      getValue: (cellData) => cellData,
+    },
+    renderHeader: () => "Seniority",
+    width: 120,
   },
 ];
 
@@ -372,6 +437,7 @@ export const WithColumnDefinitions: Story = {
 export const SingleSelection: Story = {
   args: {
     objectType: Employee,
+    columnDefinitions: defaultEmployeeColumns,
     selectionMode: "single",
   },
   parameters: {
@@ -391,6 +457,7 @@ export const SingleSelection: Story = {
 export const MultipleSelection: Story = {
   args: {
     objectType: Employee,
+    columnDefinitions: defaultEmployeeColumns,
     selectionMode: "multiple",
   },
   parameters: {
@@ -410,6 +477,7 @@ export const MultipleSelection: Story = {
 export const WithContextMenu: Story = {
   args: {
     objectType: Employee,
+    columnDefinitions: defaultEmployeeColumns,
     renderCellContextMenu: (_: any, cellValue: unknown) => {
       return (
         <div
@@ -478,6 +546,7 @@ export const CustomColumnWidths: Story = {
 export const WithDefaultSorting: Story = {
   args: {
     objectType: Employee,
+    columnDefinitions: defaultEmployeeColumns,
     defaultOrderBy: [{
       property: "fullName",
       direction: "desc",
@@ -647,6 +716,7 @@ export const WithCustomColumn: Story = {
 export const WithRowClickHandler: Story = {
   args: {
     objectType: Employee,
+    columnDefinitions: defaultEmployeeColumns,
     onRowClick: (employee: any) => {
       alert(`Clicked on ${employee.fullName}`);
     },
@@ -707,6 +777,7 @@ return (
         <div className="object-table-container" style={{ height: "600px" }}>
           <ObjectTable
             objectType={Employee}
+            columnDefinitions={defaultEmployeeColumns}
             orderBy={orderBy}
             onOrderByChanged={setOrderBy}
           />
@@ -777,6 +848,7 @@ return (
         <div className="object-table-container" style={{ height: "600px" }}>
           <ObjectTable
             objectType={Employee}
+            columnDefinitions={defaultEmployeeColumns}
             selectionMode="multiple"
             selectedRows={selectedRows}
             onRowSelection={handleRowSelection}
@@ -790,6 +862,7 @@ return (
 export const DisableAllHeaderMenuFeatures: Story = {
   args: {
     objectType: Employee,
+    columnDefinitions: defaultEmployeeColumns,
     enableOrdering: false,
     enableColumnPinning: false,
     enableColumnResizing: false,
@@ -818,6 +891,7 @@ export const DisableAllHeaderMenuFeatures: Story = {
 export const CustomRowHeight: Story = {
   args: {
     objectType: Employee,
+    columnDefinitions: defaultEmployeeColumns,
     rowHeight: 56,
   },
   parameters: {

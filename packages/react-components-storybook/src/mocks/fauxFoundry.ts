@@ -251,6 +251,49 @@ export async function setupFauxFoundry(): Promise<void> {
     };
   });
 
+  // Register a function-backed column query type
+  fauxFoundry.getDefaultOntology().registerQueryType(
+    {
+      apiName: "getEmployeeSeniority",
+      version: "1.0.0",
+      displayName: "Get Employee Seniority",
+      description:
+        "Returns seniority level for each employee based on their start date",
+      rid: "ri.function-registry.main.function.seniority-query",
+      typeReferences: {},
+      parameters: {
+        employees: {
+          dataType: {
+            type: "objectSet",
+            objectApiName: "Employee",
+            objectTypeApiName: "Employee",
+          },
+        },
+      },
+      output: {
+        type: "string",
+      },
+    },
+    (req, fauxDataStore) => {
+      const objects = Array.from(
+        fauxDataStore.getObjectsOfType("Employee"),
+      );
+      const result: Record<string, string> = {};
+      for (const obj of objects) {
+        const pk = String(obj.employeeNumber);
+        const startDate = obj.firstFullTimeStartDate as string | undefined;
+        if (startDate) {
+          const years = (Date.now() - new Date(startDate).getTime())
+            / (365.25 * 24 * 60 * 60 * 1000);
+          result[pk] = years >= 2 ? "Senior" : years >= 1 ? "Mid" : "Junior";
+        } else {
+          result[pk] = "Unknown";
+        }
+      }
+      return { value: result };
+    },
+  );
+
   // Log registered objects for debugging
   // eslint-disable-next-line no-console
   console.log(
