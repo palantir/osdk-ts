@@ -86,15 +86,36 @@ export const DateRangeInputField: React.NamedExoticComponent<
   const parseFn = parseDate
     ?? (showTime ? parseDatetimeFromInput : parseDateFromInput);
 
+  // Wrap onChange to handle tuple construction and overlap rejection.
+  // Clearing (null) is always allowed; overlap is checked for non-null dates.
+  const startOnChange = useCallback(
+    (date: Date | null) => {
+      if (date != null && isOverlapping(date, endDate, allowSingleDayRange)) {
+        return;
+      }
+      onChange?.([date, endDate ?? null]);
+    },
+    [endDate, onChange, allowSingleDayRange],
+  );
+
+  const endOnChange = useCallback(
+    (date: Date | null) => {
+      if (date != null && isOverlapping(startDate, date, allowSingleDayRange)) {
+        return;
+      }
+      onChange?.([startDate ?? null, date]);
+    },
+    [startDate, onChange, allowSingleDayRange],
+  );
+
   const {
     isEditing: isEditingStart,
-    inputValue: startInputRaw,
     dateValue: startParsedValue,
     inputError: startInputError,
-    validatedDate: startCommittedValue,
     displayedValue: displayedStart,
     startEditing: beginStartEditing,
     stopEditing: stopStartEditing,
+    commitAndStopEditing: commitStartAndStopEditing,
     setInputValue: setStartInputValue,
     setDateValue: setStartDateValue,
   } = useDateEditState({
@@ -104,16 +125,16 @@ export const DateRangeInputField: React.NamedExoticComponent<
     parseFn,
     min,
     max,
+    onChange: startOnChange,
   });
   const {
     isEditing: isEditingEnd,
-    inputValue: endInputRaw,
     dateValue: endParsedValue,
     inputError: endInputError,
-    validatedDate: endCommittedValue,
     displayedValue: displayedEnd,
     startEditing: beginEndEditing,
     stopEditing: stopEndEditing,
+    commitAndStopEditing: commitEndAndStopEditing,
     setInputValue: setEndInputValue,
     setDateValue: setEndDateValue,
   } = useDateEditState({
@@ -123,26 +144,25 @@ export const DateRangeInputField: React.NamedExoticComponent<
     parseFn,
     min,
     max,
+    onChange: endOnChange,
   });
 
-  // --- Cross-input error: overlapping range ---
+  // --- Cross-input error: overlapping range (live feedback while typing) ---
+  // Blur/Enter handlers prevent overlapping values from being committed,
+  // so this only fires during editing for immediate red-border feedback.
   const hasOverlapError = (() => {
     if (!isEditingStart && !isEditingEnd) return false;
-    const parsedStart = isEditingStart
+    const effectiveStart = isEditingStart
       ? startParsedValue
       : (startDate ?? undefined);
-    const parsedEnd = isEditingEnd ? endParsedValue : (endDate ?? undefined);
-    if (parsedStart == null || parsedEnd == null) return false;
-    if (!allowSingleDayRange && parsedEnd.getTime() === parsedStart.getTime()) {
-      return true;
-    }
-    return parsedEnd.getTime() < parsedStart.getTime();
+    const effectiveEnd = isEditingEnd
+      ? endParsedValue
+      : (endDate ?? undefined);
+    return isOverlapping(effectiveStart, effectiveEnd, allowSingleDayRange);
   })();
 
-  const startInvalid = isEditingStart
-    && (startInputError != null || hasOverlapError);
-  const endInvalid = isEditingEnd
-    && (endInputError != null || hasOverlapError);
+  const startInvalid = startInputError != null || hasOverlapError;
+  const endInvalid = endInputError != null || hasOverlapError;
 
   // --- Focus handlers ---
 
@@ -172,14 +192,9 @@ export const DateRangeInputField: React.NamedExoticComponent<
       if (endInputRef.current === related) {
         return;
       }
-      if (startInputRaw === "") {
-        onChange?.([null, endDate ?? null]);
-      } else if (startCommittedValue != null) {
-        onChange?.([startCommittedValue, endDate ?? null]);
-      }
-      stopStartEditing();
+      commitStartAndStopEditing();
     },
-    [startInputRaw, startCommittedValue, stopStartEditing, endDate, onChange],
+    [commitStartAndStopEditing],
   );
 
   const handleEndBlur = useCallback(
@@ -192,14 +207,9 @@ export const DateRangeInputField: React.NamedExoticComponent<
       if (startInputRef.current === related) {
         return;
       }
-      if (endInputRaw === "") {
-        onChange?.([startDate ?? null, null]);
-      } else if (endCommittedValue != null) {
-        onChange?.([startDate ?? null, endCommittedValue]);
-      }
-      stopEndEditing();
+      commitEndAndStopEditing();
     },
-    [endInputRaw, endCommittedValue, stopEndEditing, startDate, onChange],
+    [commitEndAndStopEditing],
   );
 
   // --- Popover helpers ---
@@ -220,12 +230,7 @@ export const DateRangeInputField: React.NamedExoticComponent<
     (e: React.KeyboardEvent<HTMLInputElement>) => {
       if (e.key === "Enter") {
         e.preventDefault();
-        if (startInputRaw === "") {
-          onChange?.([null, endDate ?? null]);
-        } else if (startCommittedValue != null) {
-          onChange?.([startCommittedValue, endDate ?? null]);
-        }
-        stopStartEditing();
+        commitStartAndStopEditing();
         // Auto-advance to end
         endInputRef.current?.focus();
       } else if (e.key === "Escape") {
@@ -235,25 +240,14 @@ export const DateRangeInputField: React.NamedExoticComponent<
         setIsOpen(false);
       }
     },
-    [
-      startInputRaw,
-      startCommittedValue,
-      stopStartEditing,
-      closePopover,
-      endDate,
-      onChange,
-    ],
+    [commitStartAndStopEditing, closePopover],
   );
 
   const handleEndKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => {
       if (e.key === "Enter") {
         e.preventDefault();
-        if (endInputRaw === "") {
-          onChange?.([startDate ?? null, null]);
-        } else if (endCommittedValue != null) {
-          onChange?.([startDate ?? null, endCommittedValue]);
-        }
+        commitEndAndStopEditing();
         closePopover();
       } else if (e.key === "Escape") {
         e.preventDefault();
@@ -271,14 +265,7 @@ export const DateRangeInputField: React.NamedExoticComponent<
         }
       }
     },
-    [
-      endInputRaw,
-      endCommittedValue,
-      closePopover,
-      startDate,
-      onChange,
-      isOpen,
-    ],
+    [commitEndAndStopEditing, closePopover, isOpen],
   );
 
   // Called by base-ui when the popover opens or closes (e.g. click outside, Escape).
@@ -308,7 +295,11 @@ export const DateRangeInputField: React.NamedExoticComponent<
         stopStartEditing();
         setActiveBoundary("end");
         endInputRef.current?.focus();
-      } else if (newStart != null && newEnd != null && shouldCloseOnSelection) {
+      } else if (
+        newStart != null
+        && newEnd != null
+        && shouldCloseOnSelection
+      ) {
         // Full range selected — close and blur.
         closePopover();
       } else if (newStart != null && newEnd != null) {
@@ -425,8 +416,7 @@ export const DateRangeInputField: React.NamedExoticComponent<
           className={classnames(
             commonStyles.osdkDatePickerInputWrapper,
             styles.osdkDateRangeInputWrapper,
-            (startInvalid || hasOverlapError)
-              && commonStyles.osdkDatePickerInputWrapperError,
+            startInvalid && commonStyles.osdkDatePickerInputWrapperError,
           )}
         >
           <Input
@@ -448,8 +438,7 @@ export const DateRangeInputField: React.NamedExoticComponent<
           className={classnames(
             commonStyles.osdkDatePickerInputWrapper,
             styles.osdkDateRangeInputWrapper,
-            (endInvalid || hasOverlapError)
-              && commonStyles.osdkDatePickerInputWrapperError,
+            endInvalid && commonStyles.osdkDatePickerInputWrapperError,
           )}
         >
           <Input
@@ -505,3 +494,14 @@ export const DateRangeInputField: React.NamedExoticComponent<
     </Popover.Root>
   );
 });
+
+/** True when the end boundary is before (or same-day when disallowed) the start. */
+function isOverlapping(
+  start: Date | null | undefined,
+  end: Date | null | undefined,
+  allowSingleDayRange: boolean,
+): boolean {
+  if (start == null || end == null) return false;
+  if (!allowSingleDayRange && end.getTime() === start.getTime()) return true;
+  return end.getTime() < start.getTime();
+}

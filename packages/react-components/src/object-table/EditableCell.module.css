@@ -40,6 +40,58 @@
   }
 }
 
+.osdkEditableCellTrigger {
+  width: 100%;
+}
+
+.osdkEditableCellDropdown {
+  /* Override the default borders in dropdown */
+  --osdk-select-border-color: transparent;
+  --osdk-combobox-border-color: transparent;
+  --osdk-combobox-focus-border-color: transparent;
+
+  --osdk-combobox-input-padding: var(--osdk-surface-spacing)
+    calc(var(--osdk-surface-spacing) * 3);
+
+  --osdk-select-trigger-padding: var(--osdk-surface-spacing)
+    calc(var(--osdk-surface-spacing) * 3);
+
+  border-radius: var(--osdk-surface-border-radius);
+
+  tr[data-focused="true"] & {
+    border: var(--osdk-table-cell-editable-border);
+    background: var(--osdk-table-cell-editable-bg);
+
+    &.osdkEditedInput {
+      border: var(--osdk-table-cell-edited-border);
+    }
+
+    &:focus-within,
+    &.osdkEditedInput:focus-within {
+      border: var(--osdk-emphasis-focus-width) solid
+        var(--osdk-emphasis-focus-color);
+    }
+
+    &.error {
+      border: var(--osdk-table-cell-edited-border-error);
+
+      &:focus-within {
+        border: var(--osdk-emphasis-focus-width) solid
+          var(--osdk-intent-danger-rest);
+      }
+    }
+  }
+
+  &.error {
+    background: var(--osdk-table-cell-editable-bg);
+    border: var(--osdk-table-cell-edited-border-error);
+  }
+}
+
+.osdkDropdownText {
+  padding: calc(var(--osdk-surface-spacing) * 0.5) 0;
+}
+
 .osdkEditableInput {
   width: 100%;
   overflow: hidden;
@@ -55,6 +107,7 @@
 }
 
 .osdkEditedInput {
+  border-radius: var(--osdk-surface-border-radius);
   border: var(--osdk-table-cell-edited-border);
   background: var(--osdk-table-cell-editable-bg);
 }
