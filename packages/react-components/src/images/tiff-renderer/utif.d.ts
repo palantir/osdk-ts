@@ -14,9 +14,16 @@
  * limitations under the License.
  */
 
-export * from "./experimental/action-form.js";
-export * from "./experimental/filter-list.js";
-export * from "./experimental/markdown-renderer.js";
-export * from "./experimental/object-table.js";
-export * from "./experimental/pdf-viewer.js";
-export * from "./experimental/tiff-renderer.js";
+// The `utif` package does not ship its own TypeScript declarations.
+declare module "utif" {
+  interface IFD {
+    width: number;
+    height: number;
+    data: Uint8Array;
+    [key: string]: unknown;
+  }
+
+  function decode(buffer: ArrayBuffer): IFD[];
+  function decodeImage(buffer: ArrayBuffer, ifd: IFD): void;
+  function toRGBA8(ifd: IFD): Uint8Array;
+}
