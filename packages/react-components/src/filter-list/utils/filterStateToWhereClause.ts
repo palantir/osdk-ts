@@ -215,6 +215,39 @@ function filterStateToPropertyFilter(
  * cannot verify that the constructed clause structure matches the generic Q's
  * expected shape, but the structure is guaranteed to be valid by construction.
  */
+/**
+ * Builds a WHERE clause fragment for a single property key from filter state.
+ * Shared by PROPERTY and STATIC_VALUES filter types.
+ */
+function buildPropertyKeyClause(
+  key: string,
+  state: FilterState,
+  propertyType?: string,
+): Record<string, unknown> | undefined {
+  const filter = filterStateToPropertyFilter(state, propertyType);
+  if (filter === undefined) {
+    return undefined;
+  }
+  const isExcluding = "isExcluding" in state && state.isExcluding;
+  if (isCompoundFilter(filter)) {
+    const fieldClauses = filter.conditions.map(c => ({
+      [key]: c,
+    }));
+    let rangeClause: Record<string, unknown> = fieldClauses.length === 1
+      ? fieldClauses[0]
+      : { $and: fieldClauses };
+    if (filter.includeNull) {
+      rangeClause = {
+        $or: [rangeClause, { [key]: { $isNull: true } }],
+      };
+    }
+    return isExcluding ? { $not: rangeClause } : rangeClause;
+  } else {
+    const clause = { [key]: filter };
+    return isExcluding ? { $not: clause } : clause;
+  }
+}
+
 export interface PropertyTypeInfo {
   type: string;
   multiplicity: boolean;
@@ -247,26 +280,13 @@ export function buildWhereClause<Q extends ObjectTypeDefinition>(
       case "PROPERTY": {
         const propertyType = propertyTypes?.get(definition.key as string)
           ?.type;
-        const filter = filterStateToPropertyFilter(state, propertyType);
-        if (filter !== undefined) {
-          const isExcluding = "isExcluding" in state && state.isExcluding;
-          if (isCompoundFilter(filter)) {
-            const fieldClauses = filter.conditions.map(c => ({
-              [definition.key]: c,
-            }));
-            let rangeClause: Record<string, unknown> = fieldClauses.length === 1
-              ? fieldClauses[0]
-              : { $and: fieldClauses };
-            if (filter.includeNull) {
-              rangeClause = {
-                $or: [rangeClause, { [definition.key]: { $isNull: true } }],
-              };
-            }
-            clauses.push(isExcluding ? { $not: rangeClause } : rangeClause);
-          } else {
-            const clause = { [definition.key]: filter };
-            clauses.push(isExcluding ? { $not: clause } : clause);
-          }
+        const clause = buildPropertyKeyClause(
+          definition.key as string,
+          state,
+          propertyType,
+        );
+        if (clause !== undefined) {
+          clauses.push(clause);
         }
         break;
       }
@@ -378,6 +398,21 @@ export function buildWhereClause<Q extends ObjectTypeDefinition>(
         const customClause = definition.toWhereClause(state);
         if (customClause && Object.keys(customClause).length > 0) {
           clauses.push(customClause as Record<string, unknown>);
+        }
+        break;
+      }
+
+      case "STATIC_VALUES": {
+        if (definition.toWhereClause) {
+          const staticClause = definition.toWhereClause(state);
+          if (staticClause && Object.keys(staticClause).length > 0) {
+            clauses.push(staticClause as Record<string, unknown>);
+          }
+        } else {
+          const clause = buildPropertyKeyClause(definition.key, state);
+          if (clause !== undefined) {
+            clauses.push(clause);
+          }
         }
         break;
       }

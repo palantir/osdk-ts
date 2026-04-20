@@ -38,6 +38,8 @@ export function getFilterKey<Q extends ObjectTypeDefinition>(
         }`;
     case "CUSTOM":
       return definition.id ?? definition.key;
+    case "STATIC_VALUES":
+      return definition.id ?? definition.key;
     default:
       return assertUnreachable(definition);
   }

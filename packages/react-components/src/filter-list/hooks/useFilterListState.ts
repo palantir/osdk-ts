@@ -73,6 +73,13 @@ function buildInitialStates<Q extends ObjectTypeDefinition>(
         }
         break;
       }
+      case "STATIC_VALUES": {
+        const state = definition.filterState;
+        if (state) {
+          states.set(key, state);
+        }
+        break;
+      }
       case "LINKED_PROPERTY": {
         const innerState = definition.defaultLinkedFilterState;
         if (innerState) {

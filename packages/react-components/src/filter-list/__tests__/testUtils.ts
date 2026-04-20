@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeDefinition } from "@osdk/api";
+import type { ObjectTypeDefinition, WhereClause } from "@osdk/api";
 import type { FilterDefinitionUnion } from "../FilterListApi.js";
 import type {
   ContainsTextFilterState,
@@ -25,6 +25,7 @@ import type {
   SelectFilterState,
   ToggleFilterState,
 } from "../FilterListItemApi.js";
+import type { StaticValuesComponentType } from "../types/StaticValuesTypes.js";
 
 export const MockObjectType = {
   apiName: "TestObject",
@@ -202,4 +203,28 @@ export function createDateRangeState(
     includeNull: options?.includeNull,
     isExcluding: options?.isExcluding,
   };
+}
+
+/**
+ * Create a static values filter definition for testing
+ */
+export function createStaticValuesFilterDef(
+  key: string,
+  filterComponent: StaticValuesComponentType,
+  values: string[],
+  filterState: FilterState,
+  options?: {
+    toWhereClause?: (
+      state: FilterState,
+    ) => WhereClause<typeof MockObjectType> | undefined;
+  },
+): FilterDefinitionUnion<typeof MockObjectType> {
+  return {
+    type: "STATIC_VALUES",
+    key,
+    filterComponent,
+    values,
+    filterState,
+    toWhereClause: options?.toWhereClause,
+  } as FilterDefinitionUnion<typeof MockObjectType>;
 }
