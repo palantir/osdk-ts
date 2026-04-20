@@ -29,6 +29,28 @@ vi.mock("@osdk/react/experimental", () => ({
 
 vi.mock("@osdk/react", () => ({
   useOsdkMetadata: vi.fn(),
+  useOsdkClient: vi.fn().mockReturnValue({}),
+}));
+
+vi.mock("../useActionFormMetadata.js", () => ({
+  useActionFormMetadata: vi.fn().mockReturnValue({
+    formMetadata: {
+      formContentOrdering: [
+        { type: "parameterId", parameterId: "name" },
+        { type: "parameterId", parameterId: "email" },
+      ],
+      parameterOrdering: ["name", "email"],
+      sections: {},
+      applyingMessage: [],
+      applyingMessageEnabled: false,
+      successMessage: [],
+      successMessageEnabled: false,
+      submitButtonDisplayMetadata: undefined,
+      undoButtonConfiguration: undefined,
+    },
+    loading: false,
+    error: undefined,
+  }),
 }));
 
 /**

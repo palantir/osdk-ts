@@ -15,13 +15,14 @@
  */
 
 import type { ActionDefinition } from "@osdk/api";
-import { useOsdkMetadata } from "@osdk/react";
+import { useOsdkClient, useOsdkMetadata } from "@osdk/react";
 import { useOsdkAction } from "@osdk/react/experimental";
 import React, { useCallback, useEffect, useMemo } from "react";
 import { typedReactMemo } from "../shared/typedMemo.js";
 import type { ActionFormProps, FormState } from "./ActionFormApi.js";
 import { BaseForm } from "./BaseForm.js";
 import type { RendererFieldDefinition } from "./FormFieldApi.js";
+import { useActionFormMetadata } from "./useActionFormMetadata.js";
 import { coerceFieldValue } from "./utils/coerceFieldValue.js";
 import { getDefaultFieldDefinitions } from "./utils/getDefaultFieldDefinitions.js";
 
@@ -43,6 +44,7 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
   onSuccess,
   onError,
 }: ActionFormProps<Q>): React.ReactElement {
+  const client = useOsdkClient();
   const { applyAction: osdkApplyAction, isPending } = useOsdkAction(
     actionDefinition,
   );
@@ -52,13 +54,23 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
     error: metadataError,
   } = useOsdkMetadata(actionDefinition);
 
+  // Fetch rich form metadata (sections, ordering, display messages) from
+  // the ontology-metadata internal API. This is scaffolding — formMetadata
+  // will be consumed for section rendering and field ordering in a follow-up.
+  const {
+    formMetadata,
+    loading: formMetadataLoading,
+    error: formMetadataError,
+  } = useActionFormMetadata(client, metadata?.rid);
+
   useEffect(
     function saveMetadataError() {
-      if (metadataError != null) {
-        onError?.({ type: "unknown", error: metadataError });
+      const error = metadataError ?? formMetadataError;
+      if (error != null) {
+        onError?.({ type: "unknown", error });
       }
     },
-    [metadataError, onError],
+    [metadataError, formMetadataError, onError],
   );
 
   const parameters = metadata?.parameters;
@@ -143,7 +155,7 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
     onSubmit: handleSubmit,
     isSubmitDisabled,
     isPending,
-    isLoading: metadataLoading,
+    isLoading: metadataLoading || formMetadataLoading,
     onFieldValueChange: handleFieldValueChange,
   };
 
