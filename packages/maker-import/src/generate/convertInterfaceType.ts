@@ -14,9 +14,15 @@
  * limitations under the License.
  */
 
-import type { InterfaceType, SharedPropertyType } from "@osdk/maker";
+import type {
+  InterfaceDefinedProperty,
+  InterfacePropertyType,
+  InterfaceType,
+  SharedPropertyType,
+} from "@osdk/maker";
 import { OntologyEntityTypeEnum } from "@osdk/maker";
 import { convertSharedPropertyType } from "./convertSharedPropertyType.js";
+import { mapPropertyType } from "./mapPropertyType.js";
 import { withoutNamespace } from "./utils.js";
 
 interface GatewayInterfaceType {
@@ -31,6 +37,17 @@ interface GatewayInterfaceType {
       displayName?: string;
       description?: string;
       dataType: { type: string; [key: string]: unknown };
+    }
+  >;
+  propertiesV2?: Record<
+    string,
+    {
+      type: string;
+      apiName?: string;
+      displayName?: string;
+      description?: string;
+      dataType?: { type: string; [key: string]: unknown };
+      requireImplementation?: boolean;
     }
   >;
   links: Record<
@@ -62,10 +79,7 @@ export function convertInterfaceType(
     string,
     { sharedPropertyType: SharedPropertyType; required: boolean }
   > = {};
-  const propertiesV3: Record<
-    string,
-    { sharedPropertyType: SharedPropertyType; required: boolean }
-  > = {};
+  const propertiesV3: Record<string, InterfacePropertyType> = {};
 
   for (const [sptApiName, sptDef] of Object.entries(iface.properties)) {
     const converted = convertSharedPropertyType({
@@ -78,6 +92,27 @@ export function convertInterfaceType(
       const entry = { sharedPropertyType: converted, required: true };
       propertiesV2[sptApiName] = entry;
       propertiesV3[withoutNamespace(sptApiName)] = entry;
+    }
+  }
+
+  // Convert IDPs from propertiesV2 (gateway field) into propertiesV3
+  if (iface.propertiesV2) {
+    for (const [apiName, propDef] of Object.entries(iface.propertiesV2)) {
+      if (
+        propDef.type === "interfaceDefinedPropertyType" && propDef.dataType
+      ) {
+        const mapped = mapPropertyType(propDef.dataType);
+        if (mapped) {
+          const idpEntry: InterfaceDefinedProperty = {
+            type: mapped.type,
+            array: mapped.array,
+            displayName: propDef.displayName,
+            description: propDef.description,
+            required: propDef.requireImplementation,
+          };
+          propertiesV3[withoutNamespace(apiName)] = idpEntry;
+        }
+      }
     }
   }
 
