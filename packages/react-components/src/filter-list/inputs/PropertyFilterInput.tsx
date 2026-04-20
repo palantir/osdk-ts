@@ -40,6 +40,7 @@ interface PropertyFilterInputProps<Q extends ObjectTypeDefinition> {
   whereClause: WhereClause<Q>;
   searchQuery?: string;
   excludeRowOpen?: boolean;
+  showCount?: boolean;
 }
 
 function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
@@ -51,6 +52,7 @@ function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
   whereClause,
   searchQuery,
   excludeRowOpen,
+  showCount,
 }: PropertyFilterInputProps<Q>): React.ReactElement {
   switch (definition.filterComponent) {
     case "CONTAINS_TEXT":
@@ -111,6 +113,7 @@ function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
           whereClause={whereClause}
           excludeRowOpen={excludeRowOpen}
           renderValue={definition.renderValue}
+          showCount={showCount}
         />
       );
 
@@ -125,6 +128,7 @@ function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
           whereClause={whereClause}
           excludeRowOpen={excludeRowOpen}
           renderValue={definition.renderValue}
+          showCount={showCount}
         />
       );
 
@@ -155,6 +159,7 @@ function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
           whereClause={whereClause}
           colorMap={definition.colorMap}
           displayMode={definition.listogramConfig?.displayMode}
+          showCount={showCount}
           maxVisibleItems={definition.listogramConfig?.maxVisibleItems ?? 5}
           searchQuery={searchQuery}
           excludeRowOpen={excludeRowOpen}

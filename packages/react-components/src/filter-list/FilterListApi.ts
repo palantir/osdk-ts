@@ -206,6 +206,13 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
   showActiveFilterCount?: boolean;
 
   /**
+   * Show aggregation counts next to filter option values.
+   * When false, counts are hidden in LISTOGRAM, SINGLE_SELECT, and MULTI_SELECT inputs.
+   * @default true
+   */
+  showCount?: boolean;
+
+  /**
    * Additional CSS class name
    */
   className?: string;

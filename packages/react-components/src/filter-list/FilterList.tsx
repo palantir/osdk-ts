@@ -44,6 +44,7 @@ export function FilterList<Q extends ObjectTypeDefinition>(
     showResetButton = false,
     onReset,
     showActiveFilterCount = false,
+    showCount = true,
     className,
     enableSorting,
     onFilterAdded,
@@ -170,6 +171,7 @@ export function FilterList<Q extends ObjectTypeDefinition>(
           ?? ({} as WhereClause<Q>)}
         searchQuery={searchQuery}
         excludeRowOpen={excludeRowOpen}
+        showCount={showCount}
       />
     ),
     [objectType, objectSet, perFilterWhereClauses],
