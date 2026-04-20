@@ -186,6 +186,15 @@ const fieldDefinitions: ReadonlyArray<RendererFieldDefinition> = [
       customRenderer: RatingSlider,
     },
   },
+  {
+    fieldKey: "manager",
+    fieldComponent: "OBJECT_SELECT",
+    label: "Manager",
+    placeholder: "Search for a manager…",
+    fieldComponentProps: {
+      objectTypeApiName: "Employee",
+    },
+  },
 ];
 
 export function FormPage() {
@@ -208,15 +217,6 @@ export function FormPage() {
   const allFieldDefinitions = useMemo(
     (): ReadonlyArray<RendererFieldDefinition> => [
       ...fieldDefinitions,
-      {
-        fieldKey: "manager",
-        fieldComponent: "OBJECT_SELECT",
-        label: "Manager",
-        placeholder: "Search for a manager…",
-        fieldComponentProps: {
-          objectTypeApiName: "Employee",
-        },
-      },
       {
         fieldKey: "team",
         fieldComponent: "OBJECT_SET",

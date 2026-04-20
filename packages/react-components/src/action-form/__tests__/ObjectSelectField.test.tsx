@@ -110,6 +110,21 @@ describe("ObjectSelectField", () => {
     expect(screen.getByRole("option", { name: "Carol White" })).toBeDefined();
   });
 
+  it("calls onChange with the selected object when an option is clicked", async () => {
+    const onChange = vi.fn();
+    mockLoadedState();
+    renderObjectSelect({ onChange });
+    await openCombobox();
+
+    fireEvent.click(screen.getByRole("option", { name: "Alice Smith" }));
+
+    await vi.waitFor(() => {
+      expect(onChange).toHaveBeenCalledWith(
+        expect.objectContaining({ $primaryKey: 1, $title: "Alice Smith" }),
+      );
+    });
+  });
+
   it("passes objectTypeApiName to useOsdkObjects as a minimal type def", () => {
     mockLoadedState();
     renderObjectSelect({ objectTypeApiName: "Office" });

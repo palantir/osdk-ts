@@ -16,8 +16,8 @@
 
 import type { ObjectTypeDefinition, Osdk } from "@osdk/api";
 import { useOsdkObjects } from "@osdk/react/experimental";
-import React, { useCallback, useMemo, useRef, useState } from "react";
-import { typedReactMemo } from "../../shared/typedMemo.js";
+import React, { memo, useCallback, useMemo, useState } from "react";
+import { useDebouncedValue } from "../../shared/hooks/useDebouncedValue.js";
 import type { FetchingState, ObjectSelectFieldProps } from "../FormFieldApi.js";
 import { AsyncDropdownField } from "./AsyncDropdownField.js";
 
@@ -28,9 +28,9 @@ type OsdkObject = Osdk.Instance<ObjectTypeDefinition>;
 
 const EMPTY_ITEMS: OsdkObject[] = [];
 
-export const ObjectSelectField: (
-  props: ObjectSelectFieldProps,
-) => React.ReactElement = typedReactMemo(function ObjectSelectFieldFn({
+export const ObjectSelectField: React.NamedExoticComponent<
+  ObjectSelectFieldProps
+> = memo(function ObjectSelectField({
   objectTypeApiName,
   value,
   onChange,
@@ -39,18 +39,19 @@ export const ObjectSelectField: (
   placeholder,
   isMultiple,
   portalRef,
-}: ObjectSelectFieldProps): React.ReactElement {
-  const [displayQuery, setDisplayQuery] = useState("");
-  const [debouncedQuery, setDebouncedQuery] = useState("");
-  const timeoutRef = useRef<ReturnType<typeof setTimeout>>();
+}): React.ReactElement {
+  // Tracks the user's search text. Cleared on selection so the selected
+  // label (managed by base-ui) doesn't trigger a server-side search.
+  const [query, setQuery] = useState("");
+  const debouncedQuery = useDebouncedValue(query, SEARCH_DEBOUNCE_MS);
 
-  const handleQueryChange = useCallback((query: string) => {
-    setDisplayQuery(query);
-    clearTimeout(timeoutRef.current);
-    timeoutRef.current = setTimeout(() => {
-      setDebouncedQuery(query);
-    }, SEARCH_DEBOUNCE_MS);
-  }, []);
+  const handleChange = useCallback(
+    (newValue: unknown) => {
+      onChange?.(newValue);
+      setQuery("");
+    },
+    [onChange],
+  );
 
   // At runtime, useOsdkObjects only reads apiName and type from the definition.
   // The full ObjectTypeDefinition is for compile-time type safety only.
@@ -74,7 +75,9 @@ export const ObjectSelectField: (
     return {
       $title: { $containsAllTermsInOrder: debouncedQuery.trim() },
     } as Parameters<typeof useOsdkObjects>[1] extends
-      { where?: infer W } | undefined ? W : never;
+      | { where?: infer W }
+      | undefined ? W
+      : never;
   }, [debouncedQuery]);
 
   const {
@@ -113,7 +116,7 @@ export const ObjectSelectField: (
     <AsyncDropdownField
       id={id}
       value={typedValue}
-      onChange={onChange}
+      onChange={handleChange}
       error={error}
       items={items}
       itemToStringLabel={itemToStringLabel}
@@ -122,8 +125,7 @@ export const ObjectSelectField: (
       placeholder={placeholder ?? "Search…"}
       isMultiple={isMultiple}
       portalRef={portalRef}
-      query={displayQuery}
-      onQueryChange={handleQueryChange}
+      onQueryChange={setQuery}
       fetchingState={fetchingState}
       onFetchMore={handleFetchMore}
       fetchError={fetchError}
