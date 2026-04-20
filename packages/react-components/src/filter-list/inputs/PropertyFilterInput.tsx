@@ -110,6 +110,7 @@ function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
           onFilterStateChanged={onFilterStateChanged}
           whereClause={whereClause}
           excludeRowOpen={excludeRowOpen}
+          renderValue={definition.renderValue}
         />
       );
 
@@ -123,6 +124,7 @@ function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
           onFilterStateChanged={onFilterStateChanged}
           whereClause={whereClause}
           excludeRowOpen={excludeRowOpen}
+          renderValue={definition.renderValue}
         />
       );
 
@@ -156,6 +158,7 @@ function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
           maxVisibleItems={definition.listogramConfig?.maxVisibleItems ?? 5}
           searchQuery={searchQuery}
           excludeRowOpen={excludeRowOpen}
+          renderValue={definition.renderValue}
         />
       );
 

@@ -35,6 +35,7 @@ interface MultiSelectFilterInputProps<Q extends ObjectTypeDefinition> {
   onFilterStateChanged: (state: FilterState) => void;
   whereClause: WhereClause<Q>;
   excludeRowOpen?: boolean;
+  renderValue?: (value: string) => string;
 }
 
 function MultiSelectFilterInputInner<Q extends ObjectTypeDefinition>({
@@ -45,6 +46,7 @@ function MultiSelectFilterInputInner<Q extends ObjectTypeDefinition>({
   onFilterStateChanged,
   whereClause,
   excludeRowOpen,
+  renderValue,
 }: MultiSelectFilterInputProps<Q>): React.ReactElement {
   const selectedValues = useMemo(
     () =>
@@ -101,6 +103,7 @@ function MultiSelectFilterInputInner<Q extends ObjectTypeDefinition>({
         selectedValues={selectedValues}
         onChange={handleChange}
         ariaLabel={`Search ${propertyKey} values`}
+        renderValue={renderValue}
       />
     </FilterInputExcludeRow>
   );

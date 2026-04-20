@@ -35,6 +35,7 @@ interface SingleSelectFilterInputProps<Q extends ObjectTypeDefinition> {
   onFilterStateChanged: (state: FilterState) => void;
   whereClause: WhereClause<Q>;
   excludeRowOpen?: boolean;
+  renderValue?: (value: string) => string;
 }
 
 function SingleSelectFilterInputInner<Q extends ObjectTypeDefinition>({
@@ -45,6 +46,7 @@ function SingleSelectFilterInputInner<Q extends ObjectTypeDefinition>({
   onFilterStateChanged,
   whereClause,
   excludeRowOpen,
+  renderValue,
 }: SingleSelectFilterInputProps<Q>): React.ReactElement {
   const selectedValue = useMemo(
     () =>
@@ -101,6 +103,7 @@ function SingleSelectFilterInputInner<Q extends ObjectTypeDefinition>({
         selectedValue={selectedValue}
         onChange={handleChange}
         ariaLabel={`Select ${propertyKey}`}
+        renderValue={renderValue}
       />
     </FilterInputExcludeRow>
   );

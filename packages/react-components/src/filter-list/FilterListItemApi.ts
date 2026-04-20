@@ -273,6 +273,13 @@ export interface PropertyFilterDefinition<
   };
 
   /**
+   * Custom display function for filter values.
+   * Replaces the default string display in dropdown items, chips, and listogram rows.
+   * The returned string is also used for search matching within filter dropdowns.
+   */
+  renderValue?: (value: string) => string;
+
+  /**
    * Controls whether this filter is rendered.
    * When false, the filter is hidden but its state is preserved.
    * @default true

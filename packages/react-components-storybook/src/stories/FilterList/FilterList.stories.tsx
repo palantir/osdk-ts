@@ -701,6 +701,106 @@ const filterDefinitions = [
   render: (args) => <WithColorMapStory {...args} />,
 };
 
+const DEPARTMENT_LABELS: Record<string, string> = {
+  Marketing: "Marketing Dept.",
+  Operations: "Ops Team",
+  Finance: "Finance & Accounting",
+  Product: "Product Group",
+};
+
+function WithRenderValueStory(args: Partial<EmployeeFilterListProps>) {
+  const withoutRenderValue = useMemo(
+    (): FilterDefinitionUnion<Employee>[] => [
+      {
+        type: "PROPERTY",
+        id: "department-default",
+        key: "department",
+        label: "Department (default)",
+        filterComponent: "LISTOGRAM",
+        filterState: { type: "EXACT_MATCH", values: [] },
+      } as FilterDefinitionUnion<Employee>,
+    ],
+    [],
+  );
+  const withRenderValue = useMemo(
+    (): FilterDefinitionUnion<Employee>[] => [
+      {
+        type: "PROPERTY",
+        id: "department-custom",
+        key: "department",
+        label: "Department (custom render)",
+        filterComponent: "LISTOGRAM",
+        filterState: { type: "EXACT_MATCH", values: [] },
+        renderValue: (value: string) => DEPARTMENT_LABELS[value] ?? value,
+      } as FilterDefinitionUnion<Employee>,
+      {
+        type: "PROPERTY",
+        id: "team-custom",
+        key: "team",
+        label: "Team (custom render)",
+        filterComponent: "MULTI_SELECT",
+        filterState: { type: "SELECT", selectedValues: [] },
+        renderValue: (value: string) => value.toUpperCase(),
+      } as FilterDefinitionUnion<Employee>,
+    ],
+    [],
+  );
+
+  return (
+    <div style={FLEX_ROW_STYLE}>
+      <div style={SIDEBAR_STYLE}>
+        <FilterList
+          objectType={Employee}
+          filterDefinitions={withoutRenderValue}
+          {...args}
+        />
+      </div>
+      <div style={SIDEBAR_STYLE}>
+        <FilterList
+          objectType={Employee}
+          filterDefinitions={withRenderValue}
+          {...args}
+        />
+      </div>
+    </div>
+  );
+}
+
+export const WithRenderValue: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Use `renderValue` to customize how filter values are displayed and searched. "
+          + "The returned string replaces the raw value for display and search matching. "
+          + "Works with LISTOGRAM, MULTI_SELECT, and SINGLE_SELECT components.",
+      },
+      source: {
+        code: `const DEPARTMENT_LABELS = {
+  Marketing: "Marketing Dept.",
+  Operations: "Ops Team",
+  Finance: "Finance & Accounting",
+  Product: "Product Group",
+};
+
+const filterDefinitions = [
+  {
+    type: "PROPERTY",
+    key: "department",
+    label: "Department",
+    filterComponent: "LISTOGRAM",
+    filterState: { type: "EXACT_MATCH", values: [] },
+    renderValue: (value) => DEPARTMENT_LABELS[value] ?? value,
+  },
+];
+
+<FilterList objectType={Employee} filterDefinitions={filterDefinitions} />`,
+      },
+    },
+  },
+  render: (args) => <WithRenderValueStory {...args} />,
+};
+
 function WithListogramDisplayModesStory(
   args: Partial<EmployeeFilterListProps>,
 ) {

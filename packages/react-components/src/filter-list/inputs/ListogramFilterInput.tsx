@@ -39,6 +39,7 @@ interface ListogramFilterInputProps<Q extends ObjectTypeDefinition> {
   maxVisibleItems?: number;
   searchQuery?: string;
   excludeRowOpen?: boolean;
+  renderValue?: (value: string) => string;
 }
 
 function ListogramFilterInputInner<Q extends ObjectTypeDefinition>({
@@ -53,6 +54,7 @@ function ListogramFilterInputInner<Q extends ObjectTypeDefinition>({
   maxVisibleItems,
   searchQuery,
   excludeRowOpen,
+  renderValue,
 }: ListogramFilterInputProps<Q>): React.ReactElement {
   const selectedValues = useMemo(
     () =>
@@ -117,6 +119,7 @@ function ListogramFilterInputInner<Q extends ObjectTypeDefinition>({
         isExcluding={isExcluding}
         maxVisibleItems={maxVisibleItems}
         searchQuery={searchQuery}
+        renderValue={renderValue}
       />
     </FilterInputExcludeRow>
   );
