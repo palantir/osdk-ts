@@ -49,6 +49,7 @@ export const DatetimePickerField: React.NamedExoticComponent<
   parseDate,
   showTime = false,
   closeOnSelection,
+  portalRef,
 }: DatetimePickerFieldProps) {
   const shouldCloseOnSelection = closeOnSelection ?? !showTime;
   const popoverId = useId();
@@ -269,7 +270,7 @@ export const DatetimePickerField: React.NamedExoticComponent<
           aria-haspopup="dialog"
         />
       </Popover.Trigger>
-      <Popover.Portal>
+      <Popover.Portal ref={portalRef}>
         <Popover.Positioner sideOffset={4}>
           <Popover.Popup
             ref={popoverRef}
