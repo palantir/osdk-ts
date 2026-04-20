@@ -7,12 +7,13 @@ import type {
   ObjectSet as $ObjectSet,
   Osdk as $Osdk,
   PropertyValueWireToClient as $PropType,
+  SingleLinkAccessor as $SingleLinkAccessor,
 } from '@osdk/client';
 
 export type OsdkObjectLinks$TodoLike = {};
 
 export namespace TodoLike {
-  export type PropertyKeys = 'name' | 'isComplete';
+  export type PropertyKeys = 'isComplete' | 'name';
 
   export interface Props {
     /**

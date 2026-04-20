@@ -37,12 +37,21 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  overflow-y: auto;
+  overflow: hidden;
   background: var(--osdk-filter-list-bg);
   border: var(--osdk-filter-list-border);
   border-radius: var(--osdk-filter-list-border-radius);
+  box-shadow: var(--osdk-filter-list-shadow);
   padding: var(--osdk-filter-list-padding);
   gap: var(--osdk-filter-list-gap);
+}
+
+.scrollableContent {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
 }
 
 .hiddenContent {
@@ -92,10 +101,10 @@
 .addButtonContainer {
   display: flex;
   justify-content: center;
-  position: sticky;
-  bottom: 0;
-  padding-top: var(--osdk-filter-list-addButton-padding-top);
+  padding: var(--osdk-filter-list-addButton-container-padding);
   background: var(--osdk-filter-list-addButton-container-bg);
+  border-top: var(--osdk-filter-list-addButton-container-border-top);
+  flex-shrink: 0;
 }
 
 .addButtonContainer > * {
@@ -103,13 +112,17 @@
 }
 
 .addButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-family: var(--osdk-filter-header-font-family);
   font-size: var(--osdk-filter-header-reset-font-size);
-  color: var(--osdk-filter-header-reset-color);
+  color: var(--osdk-typography-color-default-rest);
   background: var(--osdk-filter-header-button-bg);
-  border: none;
+  border: var(--osdk-filter-list-addButton-border);
   cursor: pointer;
   padding: var(--osdk-filter-header-reset-padding);
+  min-height: var(--osdk-filter-list-addButton-height);
   border-radius: var(--osdk-filter-header-button-border-radius);
   transition: background-color var(--osdk-filter-header-button-transition);
 

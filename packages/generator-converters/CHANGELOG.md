@@ -1,5 +1,76 @@
 # @osdk/generator-converters
 
+## 2.9.0
+
+### Minor Changes
+
+- cbc8e9c: Add recursive query support
+- 9171453: Alphabetize code generation for sdk.
+
+### Patch Changes
+
+- Updated dependencies [cbc8e9c]
+- Updated dependencies [e8d14a0]
+- Updated dependencies [2394ca7]
+  - @osdk/api@2.9.0
+
+## 2.8.0
+
+### Minor Changes
+
+- 322c5bc: Simulated release
+- abb0e0f: Bump Platform SDK dependencies
+- 60b5ffb: Add `platformApiName` field to actions to preserve the original API name used by the Foundry platform
+- 35f2f1a: Add Media inputs/outputs for Queries
+- 46f0a47: Update platform SDK to 2.57.0 and handle new typeReference query data type
+- 4470c0d: Add support to execute queries on branches.
+
+### Patch Changes
+
+- Updated dependencies [322c5bc]
+- Updated dependencies [4bb9769]
+- Updated dependencies [f294f5a]
+- Updated dependencies [0df859a]
+- Updated dependencies [d284bf2]
+- Updated dependencies [4ef6adc]
+- Updated dependencies [60b5ffb]
+- Updated dependencies [8c30908]
+- Updated dependencies [4a856cb]
+- Updated dependencies [b68cebd]
+- Updated dependencies [35f2f1a]
+- Updated dependencies [61e33ab]
+  - @osdk/api@2.8.0
+
+## 2.8.0-beta.32
+
+### Minor Changes
+
+- 46f0a47: Update platform SDK to 2.57.0 and handle new typeReference query data type
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.32
+
+## 2.8.0-beta.31
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.31
+
+## 2.8.0-beta.30
+
+### Patch Changes
+
+- Updated dependencies [4ef6adc]
+  - @osdk/api@2.8.0-beta.30
+
+## 2.8.0-beta.29
+
+### Patch Changes
+
+- Updated dependencies [4a856cb]
+  - @osdk/api@2.8.0-beta.29
+
 ## 2.8.0-beta.28
 
 ### Patch Changes

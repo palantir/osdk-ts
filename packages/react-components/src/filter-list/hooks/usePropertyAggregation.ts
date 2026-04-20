@@ -41,6 +41,7 @@ export interface UsePropertyAggregationOptions<
 > {
   limit?: number;
   where?: WhereClause<Q>;
+  sortBy?: "count" | "value";
 }
 
 export function usePropertyAggregation<
@@ -49,7 +50,7 @@ export function usePropertyAggregation<
 >(
   objectType: Q,
   propertyKey: K,
-  objectSet: ObjectSet<Q>,
+  objectSet: ObjectSet<Q> | undefined,
   options?: UsePropertyAggregationOptions<Q>,
 ): UsePropertyAggregationResult {
   // AggregateOpts requires specific property keys from Q, but we're dynamically
@@ -67,11 +68,18 @@ export function usePropertyAggregation<
     [propertyKey],
   );
 
-  const { data: countData, isLoading, error } = useOsdkAggregation(objectType, {
-    aggregate: aggregateOptions,
-    where: options?.where,
-    objectSet,
-  });
+  const aggregationArgs = useMemo(
+    () =>
+      objectSet != null
+        ? { aggregate: aggregateOptions, where: options?.where, objectSet }
+        : { aggregate: aggregateOptions, where: options?.where },
+    [aggregateOptions, options?.where, objectSet],
+  );
+
+  const { data: countData, isLoading, error } = useOsdkAggregation(
+    objectType,
+    aggregationArgs,
+  );
 
   const result = useMemo(
     (): { data: PropertyAggregationValue[]; maxCount: number } => {
@@ -99,7 +107,14 @@ export function usePropertyAggregation<
         maxCount = Math.max(maxCount, count);
       }
 
-      values.sort((a, b) => b.count - a.count);
+      const sortBy = options?.sortBy ?? "count";
+      if (sortBy === "count") {
+        values.sort((a, b) =>
+          b.count - a.count || a.value.localeCompare(b.value)
+        );
+      } else {
+        values.sort((a, b) => a.value.localeCompare(b.value));
+      }
 
       if (options?.limit && values.length > options.limit) {
         return { data: values.slice(0, options.limit), maxCount };
@@ -107,7 +122,7 @@ export function usePropertyAggregation<
 
       return { data: values, maxCount };
     },
-    [countData, propertyKey, options?.limit],
+    [countData, propertyKey, options?.limit, options?.sortBy],
   );
 
   return {

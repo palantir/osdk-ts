@@ -29,7 +29,7 @@ import { coerceToStringArray } from "../utils/coerceFilterValue.js";
 
 interface ListogramFilterInputProps<Q extends ObjectTypeDefinition> {
   objectType: Q;
-  objectSet: ObjectSet<Q>;
+  objectSet?: ObjectSet<Q>;
   propertyKey: string;
   filterState: FilterState | undefined;
   onFilterStateChanged: (state: FilterState) => void;
@@ -39,6 +39,7 @@ interface ListogramFilterInputProps<Q extends ObjectTypeDefinition> {
   maxVisibleItems?: number;
   searchQuery?: string;
   excludeRowOpen?: boolean;
+  renderValue?: (value: string) => string;
 }
 
 function ListogramFilterInputInner<Q extends ObjectTypeDefinition>({
@@ -53,6 +54,7 @@ function ListogramFilterInputInner<Q extends ObjectTypeDefinition>({
   maxVisibleItems,
   searchQuery,
   excludeRowOpen,
+  renderValue,
 }: ListogramFilterInputProps<Q>): React.ReactElement {
   const selectedValues = useMemo(
     () =>
@@ -62,6 +64,14 @@ function ListogramFilterInputInner<Q extends ObjectTypeDefinition>({
     [filterState],
   );
   const isExcluding = filterState?.isExcluding ?? false;
+
+  const handleClearAll = useCallback(() => {
+    onFilterStateChanged({
+      type: "EXACT_MATCH",
+      values: [],
+      isExcluding,
+    });
+  }, [onFilterStateChanged, isExcluding]);
 
   const handleChange = useCallback(
     (values: string[]) => {
@@ -74,9 +84,12 @@ function ListogramFilterInputInner<Q extends ObjectTypeDefinition>({
     [onFilterStateChanged, isExcluding],
   );
 
+  const sortBy = displayMode === "minimal"
+    ? "value" as const
+    : "count" as const;
   const aggregationOptions = useMemo(
-    () => ({ where: whereClause }),
-    [whereClause],
+    () => ({ where: whereClause, sortBy }),
+    [whereClause, sortBy],
   );
 
   const { data, maxCount, isLoading, error } = usePropertyAggregation(
@@ -92,6 +105,7 @@ function ListogramFilterInputInner<Q extends ObjectTypeDefinition>({
       filterState={filterState}
       onFilterStateChanged={onFilterStateChanged}
       totalValueCount={data.length}
+      onClearAll={handleClearAll}
     >
       <ListogramInput
         values={data}
@@ -102,8 +116,10 @@ function ListogramFilterInputInner<Q extends ObjectTypeDefinition>({
         onChange={handleChange}
         colorMap={colorMap}
         displayMode={displayMode}
+        isExcluding={isExcluding}
         maxVisibleItems={maxVisibleItems}
         searchQuery={searchQuery}
+        renderValue={renderValue}
       />
     </FilterInputExcludeRow>
   );

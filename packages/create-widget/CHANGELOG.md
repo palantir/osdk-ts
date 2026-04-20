@@ -1,5 +1,30 @@
 # @osdk/create-widget
 
+## 3.6.0
+
+### Minor Changes
+
+- 4794c87: We are fixing unexported devDependencies by adding them as dependencies
+
+### Patch Changes
+
+- @osdk/generator-utils@2.9.0
+
+## 3.5.0
+
+### Minor Changes
+
+- 322c5bc: Simulated release
+- 35f2f1a: Add Media inputs/outputs for Queries
+
+## 3.5.0-beta.32
+
+## 3.5.0-beta.31
+
+## 3.5.0-beta.30
+
+## 3.5.0-beta.29
+
 ## 3.5.0-beta.28
 
 ## 3.5.0-beta.27

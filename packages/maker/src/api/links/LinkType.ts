@@ -24,6 +24,8 @@ import type { OptionalFields } from "../../util/OptionalFields.js";
 import type { RequiredFields } from "../../util/RequiredFields.js";
 import type { OntologyEntityBase } from "../common/OntologyEntityBase.js";
 import type { OntologyEntityTypeEnum } from "../common/OntologyEntityTypeEnum.js";
+import type { TypeClass } from "../common/TypeClass.js";
+import type { ObjectType } from "../object/ObjectType.js";
 import type { ObjectTypeDefinition } from "../object/ObjectTypeDefinition.js";
 
 export type LinkType =
@@ -71,7 +73,7 @@ export interface OneToManyLinkTypeDefinition {
 }
 
 export interface OneToManyObjectLinkReference {
-  object: ObjectTypeDefinition | string;
+  object: ObjectTypeDefinition | ObjectType | string;
   metadata: LinkTypeMetadata;
 }
 
@@ -86,7 +88,7 @@ export interface OneToManyLinkTypeUserDefinition {
 }
 
 export interface OneToManyObjectLinkReferenceUserDefinition {
-  object: ObjectTypeDefinition | string;
+  object: ObjectTypeDefinition | ObjectType | string;
   metadata: LinkTypeMetadataUserDefinition;
 }
 
@@ -97,10 +99,11 @@ export interface ManyToManyLinkTypeDefinition {
   editsEnabled?: boolean;
   status?: UserLinkTypeStatus;
   redacted?: boolean;
+  includeEmptyBackingDatasource?: boolean;
 }
 
 export interface ManyToManyObjectLinkReference {
-  object: ObjectTypeDefinition | string;
+  object: ObjectTypeDefinition | ObjectType | string;
   metadata: LinkTypeMetadata;
 }
 
@@ -110,10 +113,11 @@ export interface ManyToManyLinkTypeUserDefinition {
   toMany: ManyToManyObjectLinkReferenceUserDefinition;
   editsEnabled?: boolean;
   status?: UserLinkTypeStatus;
+  includeEmptyBackingDatasource?: boolean;
 }
 
 export interface ManyToManyObjectLinkReferenceUserDefinition {
-  object: ObjectTypeDefinition | string;
+  object: ObjectTypeDefinition | ObjectType | string;
   metadata: LinkTypeMetadataUserDefinition;
 }
 
@@ -121,14 +125,14 @@ export interface IntermediaryLinkTypeDefinition {
   apiName: string;
   many: IntermediaryObjectLinkReference;
   toMany: IntermediaryObjectLinkReference;
-  intermediaryObjectType: ObjectTypeDefinition;
+  intermediaryObjectType: ObjectTypeDefinition | ObjectType;
   editsEnabled?: boolean;
   status?: UserLinkTypeStatus;
   redacted?: boolean;
 }
 
 export interface IntermediaryObjectLinkReference {
-  object: ObjectTypeDefinition | string;
+  object: ObjectTypeDefinition | ObjectType | string;
   metadata: LinkTypeMetadata;
   linkToIntermediary: LinkType;
 }
@@ -137,13 +141,13 @@ export interface IntermediaryLinkTypeUserDefinition {
   apiName: string;
   many: IntermediaryObjectLinkReferenceUserDefinition;
   toMany: IntermediaryObjectLinkReferenceUserDefinition;
-  intermediaryObjectType: ObjectTypeDefinition | string;
+  intermediaryObjectType: ObjectTypeDefinition | ObjectType | string;
   editsEnabled?: boolean;
   status?: UserLinkTypeStatus;
 }
 
 export interface IntermediaryObjectLinkReferenceUserDefinition {
-  object: ObjectTypeDefinition | string;
+  object: ObjectTypeDefinition | ObjectType | string;
   metadata: LinkTypeMetadataUserDefinition;
   linkToIntermediary: LinkType;
 }
@@ -154,6 +158,7 @@ export interface LinkTypeMetadataUserDefinition {
   pluralDisplayName?: string;
   visibility?: Visibility;
   groupDisplayName?: string;
+  typeClasses?: TypeClass[];
 }
 
 export type LinkSideMetadata = OptionalFields<

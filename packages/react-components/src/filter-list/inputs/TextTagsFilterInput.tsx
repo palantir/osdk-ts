@@ -29,7 +29,7 @@ import { coerceToStringArray } from "../utils/coerceFilterValue.js";
 
 interface TextTagsFilterInputProps<Q extends ObjectTypeDefinition> {
   objectType: Q;
-  objectSet: ObjectSet<Q>;
+  objectSet?: ObjectSet<Q>;
   propertyKey: string;
   filterState: FilterState | undefined;
   onFilterStateChanged: (state: FilterState) => void;
@@ -54,6 +54,14 @@ function TextTagsFilterInputInner<Q extends ObjectTypeDefinition>({
     [filterState],
   );
   const isExcluding = filterState?.isExcluding ?? false;
+
+  const handleClearAll = useCallback(() => {
+    onFilterStateChanged({
+      type: "EXACT_MATCH",
+      values: [],
+      isExcluding,
+    });
+  }, [onFilterStateChanged, isExcluding]);
 
   const handleChange = useCallback(
     (values: string[]) => {
@@ -84,6 +92,7 @@ function TextTagsFilterInputInner<Q extends ObjectTypeDefinition>({
       filterState={filterState}
       onFilterStateChanged={onFilterStateChanged}
       totalValueCount={data.length}
+      onClearAll={handleClearAll}
     >
       <TextTagsInput
         suggestions={data}

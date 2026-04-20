@@ -1,6 +1,6 @@
 {
   "name": "@osdk/cbac-components",
-  "version": "0.1.0-beta.1",
+  "version": "0.2.0",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -50,7 +50,7 @@
   },
   "dependencies": {
     "@base-ui/react": "^1.0.0",
-    "@blueprintjs/icons": "^6.0.0"
+    "@blueprintjs/icons": "^6.7.0"
   },
   "peerDependencies": {
     "@osdk/react": "*",
@@ -78,6 +78,7 @@
   },
   "files": [
     "AGENTS.md",
+    "docs",
     "build/cjs",
     "build/esm",
     "build/browser",

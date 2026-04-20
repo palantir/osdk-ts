@@ -7,18 +7,19 @@ import type {
   ObjectSet as $ObjectSet,
   Osdk as $Osdk,
   PropertyValueWireToClient as $PropType,
+  SingleLinkAccessor as $SingleLinkAccessor,
 } from '@osdk/client';
 
 export type OsdkObjectLinks$FooInterface = {};
 
 export namespace FooInterface {
   export type PropertyKeys =
-    | 'name'
-    | 'description'
-    | 'inheritedDescription'
-    | 'deprecatedName'
     | 'deprecatedDescription'
-    | 'experimentalProperty';
+    | 'deprecatedName'
+    | 'description'
+    | 'experimentalProperty'
+    | 'inheritedDescription'
+    | 'name';
 
   export interface Props {
     /**

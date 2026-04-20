@@ -33,6 +33,7 @@ export function FilterList<Q extends ObjectTypeDefinition>(
   props: FilterListProps<Q>,
 ): React.ReactElement {
   const {
+    objectType,
     objectSet,
     title,
     titleIcon,
@@ -50,11 +51,10 @@ export function FilterList<Q extends ObjectTypeDefinition>(
     renderAddFilterButton,
   } = props;
 
-  const objectType = objectSet.$objectSetInternals.def;
-
   const {
     filterStates,
     setFilterState,
+    clearFilterState,
     perFilterWhereClauses,
     activeFilterCount,
     reset,
@@ -97,12 +97,13 @@ export function FilterList<Q extends ObjectTypeDefinition>(
 
   const handleFilterRemoved = useCallback(
     (filterKey: string) => {
+      clearFilterState(filterKey);
       if (uncontrolledAddFilterMode) {
         hideFilter(filterKey);
       }
       onFilterRemoved?.(filterKey);
     },
-    [uncontrolledAddFilterMode, hideFilter, onFilterRemoved],
+    [clearFilterState, uncontrolledAddFilterMode, hideFilter, onFilterRemoved],
   );
 
   const handleFilterShown = useCallback(

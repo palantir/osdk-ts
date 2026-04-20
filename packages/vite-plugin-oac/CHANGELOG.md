@@ -1,5 +1,128 @@
 # @osdk/vite-plugin-oac
 
+## 0.7.0
+
+### Patch Changes
+
+- Updated dependencies [b90fb8e]
+- Updated dependencies [cbc8e9c]
+- Updated dependencies [e8d14a0]
+- Updated dependencies [40fe279]
+- Updated dependencies [3390ea2]
+- Updated dependencies [2394ca7]
+- Updated dependencies [492db18]
+  - @osdk/maker@0.17.0
+  - @osdk/api@2.9.0
+  - @osdk/faux@0.7.0
+  - @osdk/cli@0.33.0
+  - @osdk/generator-converters.ontologyir@2.9.0
+  - @osdk/client.unstable@2.9.0
+
+## 0.6.0
+
+### Minor Changes
+
+- 150da1a: Simulated release
+- 35f2f1a: Add Media inputs/outputs for Queries
+- 00677eb: Upgrade Storybook to v10 and add MCP addon.
+
+### Patch Changes
+
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [150da1a]
+- Updated dependencies [150da1a]
+- Updated dependencies [322c5bc]
+- Updated dependencies [cc7f505]
+- Updated dependencies [4bb9769]
+- Updated dependencies [8f92197]
+- Updated dependencies [abb0e0f]
+- Updated dependencies [4762f4b]
+- Updated dependencies [f294f5a]
+- Updated dependencies [963626f]
+- Updated dependencies [f487a6a]
+- Updated dependencies [4da867d]
+- Updated dependencies [e462938]
+- Updated dependencies [6499ff9]
+- Updated dependencies [908b519]
+- Updated dependencies [0e45a37]
+- Updated dependencies [fcf81ba]
+- Updated dependencies [ab50d31]
+- Updated dependencies [034081a]
+- Updated dependencies [77aa4a9]
+- Updated dependencies [fd3f6d3]
+- Updated dependencies [9ee82f4]
+- Updated dependencies [0df859a]
+- Updated dependencies [ef0cd72]
+- Updated dependencies [5b938ef]
+- Updated dependencies [d284bf2]
+- Updated dependencies [4ef6adc]
+- Updated dependencies [60b5ffb]
+- Updated dependencies [7fa6de3]
+- Updated dependencies [2b15836]
+- Updated dependencies [684b6c6]
+- Updated dependencies [8c30908]
+- Updated dependencies [acb4ed6]
+- Updated dependencies [e8ca289]
+- Updated dependencies [4a856cb]
+- Updated dependencies [b68cebd]
+- Updated dependencies [35f2f1a]
+- Updated dependencies [cde6b85]
+- Updated dependencies [e0ba9eb]
+- Updated dependencies [32c6a0c]
+- Updated dependencies [972bda6]
+- Updated dependencies [12fe33f]
+- Updated dependencies [6941b4f]
+- Updated dependencies [46f0a47]
+- Updated dependencies [e9f9f58]
+- Updated dependencies [4470c0d]
+- Updated dependencies [eac64f4]
+- Updated dependencies [61e33ab]
+  - @osdk/api@2.8.0
+  - @osdk/cli@0.32.0
+  - @osdk/client.unstable@2.8.0
+  - @osdk/faux@0.6.0
+  - @osdk/generator-converters.ontologyir@2.8.0
+  - @osdk/maker@0.16.0
+
+## 0.6.0-beta.33
+
+### Patch Changes
+
+- Updated dependencies [46f0a47]
+  - @osdk/generator-converters.ontologyir@2.8.0-beta.32
+  - @osdk/faux@0.6.0-beta.7
+  - @osdk/api@2.8.0-beta.32
+  - @osdk/client.unstable@2.8.0-beta.32
+  - @osdk/cli@0.32.0-beta.5
+
+## 0.6.0-beta.32
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.31
+- @osdk/client.unstable@2.8.0-beta.31
+- @osdk/generator-converters.ontologyir@2.8.0-beta.31
+
+## 0.6.0-beta.31
+
+### Patch Changes
+
+- Updated dependencies [4ef6adc]
+  - @osdk/api@2.8.0-beta.30
+  - @osdk/client.unstable@2.8.0-beta.30
+  - @osdk/generator-converters.ontologyir@2.8.0-beta.30
+
+## 0.6.0-beta.30
+
+### Patch Changes
+
+- Updated dependencies [4a856cb]
+  - @osdk/api@2.8.0-beta.29
+  - @osdk/client.unstable@2.8.0-beta.29
+  - @osdk/generator-converters.ontologyir@2.8.0-beta.29
+
 ## 0.6.0-beta.29
 
 ### Patch Changes

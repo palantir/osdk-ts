@@ -25,7 +25,6 @@ import { useState } from "react";
 
 import { List } from "../../components/List.js";
 import { ListItem } from "../../components/ListItem.js";
-import { $ } from "../../foundryClient.js";
 import { Employee } from "../../generatedNoCheck2/index.js";
 
 interface EmployeeListItemProps {
@@ -68,8 +67,8 @@ const INITIAL_FILTER_DEFINITIONS: FilterDefinitionUnion<Employee>[] = [
     id: "department",
     key: "department",
     label: "Department",
-    filterComponent: "CHECKBOX_LIST",
-    filterState: { type: "SELECT", selectedValues: [] },
+    filterComponent: "LISTOGRAM",
+    filterState: { type: "EXACT_MATCH", values: [] },
   } as FilterDefinitionUnion<Employee>,
 ];
 
@@ -87,7 +86,7 @@ export function EmployeesWithFilterList(props: EmployeesWithFilterListProps) {
       <div style={{ display: "flex", gap: "16px", height: "100%" }}>
         <div>
           <FilterList
-            objectSet={$(Employee)}
+            objectType={Employee}
             filterDefinitions={INITIAL_FILTER_DEFINITIONS}
             onFilterClauseChanged={setWhereClause}
             enableSorting={true}

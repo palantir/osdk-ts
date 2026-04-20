@@ -59,8 +59,10 @@ import {
   isInterfaceSharedPropertyType,
 } from "./interface/InterfacePropertyType.js";
 import type { InterfaceType } from "./interface/InterfaceType.js";
+import { getPropertyKeys } from "./object/objectPropertyHelpers.js";
 import type { ObjectPropertyType } from "./object/ObjectPropertyType.js";
 import type { ObjectPropertyTypeUserDefinition } from "./object/ObjectPropertyTypeUserDefinition.js";
+import type { ObjectType } from "./object/ObjectType.js";
 import type { ObjectTypeDefinition } from "./object/ObjectTypeDefinition.js";
 import {
   isStruct,
@@ -82,7 +84,7 @@ export const MODIFY_INTERFACE_OBJECT_PARAMETER: string =
 export type ActionTypeDefinition = Omit<ActionType, "__type">;
 
 export type ActionTypeUserDefinition = {
-  objectType: ObjectTypeDefinition;
+  objectType: ObjectTypeDefinition | ObjectType;
   apiName?: string;
   displayName?: string;
   status?: ActionStatus;
@@ -103,7 +105,7 @@ export type ActionTypeUserDefinition = {
 
 export type InterfaceActionTypeUserDefinition = {
   interfaceType: InterfaceType;
-  objectType?: ObjectTypeDefinition;
+  objectType?: ObjectTypeDefinition | ObjectType;
   apiName?: string;
   displayName?: string;
   status?: ActionStatus;
@@ -241,7 +243,7 @@ export function defineAction(actionDefInput: ActionTypeDefinition): ActionType {
 
   const fullAction = {
     ...actionDef,
-    apiName: apiName,
+    apiName,
     entities: actionDef.entities ?? {
       affectedInterfaceTypes: [],
       affectedObjectTypes: [],
@@ -268,7 +270,7 @@ export function isPropertyParameter(
       && !def.excludedProperties?.includes(name));
   }
   return (
-    Object.keys(def.objectType.properties ?? {}).includes(name)
+    getPropertyKeys(def.objectType).includes(name)
     && !Object.keys(def.nonParameterMappings ?? {}).includes(name)
     && !isStruct(type)
     && !def.excludedProperties?.includes(name)
@@ -279,6 +281,8 @@ export function createParameters(
   def: ActionTypeUserDefinition | InterfaceActionTypeUserDefinition,
   propertyMap:
     | Record<string, ObjectPropertyTypeUserDefinition>
+    | Record<string, ObjectPropertyType>
+    | Record<string, ObjectPropertyType | ObjectPropertyTypeUserDefinition>
     | Record<string, InterfacePropertyType>,
   parameterSet: Set<string>,
   requiredMap?: Record<string, boolean>,
@@ -288,7 +292,7 @@ export function createParameters(
     ...targetParams,
     ...Array.from(parameterSet).map(
       id => {
-        let propertyMetadata = undefined;
+        let propertyMetadata;
         if (id in propertyMap) {
           propertyMetadata = "sharedPropertyType" in propertyMap[id]
             ? propertyMap[id].sharedPropertyType
@@ -1119,14 +1123,14 @@ export function createInterfacePropertyLogicRuleValue(
               ? {
                 type: "structListParameterFieldValue",
                 structListParameterFieldValue: {
-                  parameterId: parameterId,
+                  parameterId,
                   structFieldApiName: apiName,
                 },
               }
               : {
                 type: "structParameterFieldValue",
                 structParameterFieldValue: {
-                  parameterId: parameterId,
+                  parameterId,
                   structFieldApiName: apiName,
                 },
               },
@@ -1139,7 +1143,7 @@ export function createInterfacePropertyLogicRuleValue(
     type: "logicRuleValue",
     logicRuleValue: {
       type: "parameterId",
-      parameterId: parameterId,
+      parameterId,
     },
   };
 }

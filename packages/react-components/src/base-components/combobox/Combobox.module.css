@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+/* TODO: Extract each variable into its tokens file and map to default value there */
+
 .osdkComboboxInputWrapper {
   display: flex;
   flex-wrap: wrap;
@@ -64,8 +66,12 @@
   flex: 1;
   min-width: 0;
   width: 100%;
-  padding: calc(var(--osdk-combobox-spacing, var(--osdk-surface-spacing)) * 1.5)
-    calc(var(--osdk-combobox-spacing, var(--osdk-surface-spacing)) * 2);
+  text-overflow: ellipsis;
+  padding: var(
+    --osdk-combobox-input-padding,
+    calc(var(--osdk-surface-spacing) * 1.5)
+      calc(var(--osdk-surface-spacing) * 2)
+  );
   border-radius: var(
     --osdk-combobox-border-radius,
     var(--osdk-surface-border-radius)
@@ -89,12 +95,7 @@
       --osdk-combobox-focus-border-color,
       var(--osdk-intent-primary-rest)
     );
-    outline: var(--osdk-combobox-focus-width, var(--osdk-emphasis-focus-width))
-      solid var(--osdk-combobox-focus-color, var(--osdk-emphasis-focus-color));
-    outline-offset: var(
-      --osdk-combobox-focus-offset,
-      var(--osdk-emphasis-focus-offset)
-    );
+    outline: none;
   }
 
   .osdkComboboxInputWrapper & {
@@ -165,6 +166,7 @@
 .osdkComboboxItem {
   display: flex;
   align-items: center;
+  gap: calc(var(--osdk-combobox-spacing, var(--osdk-surface-spacing)) * 1.5);
   padding: calc(var(--osdk-combobox-spacing, var(--osdk-surface-spacing)) * 1.5)
     calc(var(--osdk-combobox-spacing, var(--osdk-surface-spacing)) * 2);
   border-radius: var(
@@ -217,6 +219,23 @@
   &[data-disabled] {
     cursor: not-allowed;
     opacity: var(--osdk-disabled-opacity, 0.5);
+  }
+}
+
+.osdkComboboxItemIndicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: calc(var(--osdk-combobox-spacing, var(--osdk-surface-spacing)) * 4);
+  flex-shrink: 0;
+  color: var(
+    --osdk-combobox-item-color-selected,
+    var(--osdk-intent-primary-rest)
+  );
+  visibility: hidden;
+
+  &[data-selected] {
+    visibility: visible;
   }
 }
 

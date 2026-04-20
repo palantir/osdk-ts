@@ -149,12 +149,7 @@ function filterStateToPropertyFilter(
     }
 
     case "EXACT_MATCH": {
-      if (state.values.length === 0) {
-        return undefined;
-      }
-      return state.values.length === 1
-        ? state.values[0]
-        : { $in: state.values };
+      return buildValueOrNullFilter(state.values);
     }
 
     case "SELECT": {
@@ -167,7 +162,7 @@ function filterStateToPropertyFilter(
             ? formatDateValue(v, propertyType)
             : v as string | number | boolean,
       );
-      return values.length === 1 ? values[0] : { $in: values };
+      return buildValueOrNullFilter(values);
     }
 
     case "TIMELINE": {
@@ -228,7 +223,6 @@ export interface PropertyTypeInfo {
 export function buildWhereClause<Q extends ObjectTypeDefinition>(
   definitions: Array<FilterDefinitionUnion<Q>> | undefined,
   filterStates: Map<string, FilterState>,
-  operator: "and" | "or",
   propertyTypes?: Map<string, PropertyTypeInfo>,
   excludeFilterKey?: string,
 ): WhereClause<Q> {
@@ -401,9 +395,37 @@ export function buildWhereClause<Q extends ObjectTypeDefinition>(
     return clauses[0] as WhereClause<Q>;
   }
 
-  if (operator === "and") {
-    return { $and: clauses } as WhereClause<Q>;
+  return { $and: clauses } as WhereClause<Q>;
+}
+
+/** Splits values into non-empty and empty, returning $isNull for empty strings. */
+function buildValueOrNullFilter(
+  values: (string | number | boolean)[],
+): PropertyFilter | CompoundFilter | undefined {
+  if (values.length === 0) {
+    return undefined;
   }
 
-  return { $or: clauses } as WhereClause<Q>;
+  const nonEmpty = values.filter((v) => v !== "");
+  const hasEmpty = nonEmpty.length < values.length;
+
+  const valueClause: PropertyFilter | undefined = nonEmpty.length === 0
+    ? undefined
+    : nonEmpty.length === 1
+    ? nonEmpty[0]
+    : { $in: nonEmpty };
+
+  if (!hasEmpty) {
+    return valueClause;
+  }
+
+  if (valueClause === undefined) {
+    return { $isNull: true };
+  }
+
+  return {
+    __compound: true,
+    conditions: [valueClause],
+    includeNull: true,
+  };
 }

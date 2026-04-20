@@ -117,7 +117,10 @@ function createMockRidGenerator(
     ) => `interface-prop.${interfaceTypeApiName}.${apiName}` as any,
     generateStructFieldRid: (propertyApiName: string, apiName: string) =>
       `struct-field.${propertyApiName}.${apiName}` as any,
-    generateLocator: (dataSetName: string, _columnNames: Set<string>) => ({
+    generateDatasetLocator: (
+      dataSetName: string,
+      _columnNames: Set<string>,
+    ) => ({
       rid: `dataset.${dataSetName}`,
       branchId: "main",
     }),

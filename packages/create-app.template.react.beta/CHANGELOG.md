@@ -1,5 +1,38 @@
 # @osdk/create-app.template.react
 
+## 2.9.0
+
+### Minor Changes
+
+- 89def41: patch bump associated with BlueprintJS upgrade
+
+## 2.8.0
+
+### Minor Changes
+
+- 322c5bc: Simulated release
+- 12dcb6a: Bump node and vite versions
+- c22dcac: Bump @types/node to 24.10.13
+- 0ff602a: Bump vite to ^7.3.1
+- e22f91c: Make template a11y compatible
+- 5f9fb46: Bump @types/node
+- 35f2f1a: Add Media inputs/outputs for Queries
+- a41b817: Add Blueprint6 to create-app react.beta template
+- 001c64c: Link to guide on how to add OSDK to templates
+- 60dc05a: Make osdk react template responsive
+- 9c48891: Fix templates nit
+- 6260835: Revert node bump
+- e68e9b1: add dx improvements to react.beta template: path aliases, error boundary, stricter eslint, prettier import sorting, editorconfig, vscode settings
+- 5562739: React/Vue templates UI polish
+
+## 2.8.0-beta.32
+
+## 2.8.0-beta.31
+
+## 2.8.0-beta.30
+
+## 2.8.0-beta.29
+
 ## 2.8.0-beta.28
 
 ### Minor Changes

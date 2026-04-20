@@ -1,5 +1,65 @@
 # @osdk/widget.vite-plugin
 
+## 3.6.0
+
+### Minor Changes
+
+- 89def41: patch bump associated with BlueprintJS upgrade
+
+### Patch Changes
+
+- @osdk/widget.api@3.6.0
+
+## 3.5.0
+
+### Minor Changes
+
+- 7901ae0: Simulated release
+- 12dcb6a: Bump node and vite versions
+- c22dcac: Bump @types/node to 24.10.13
+- beb2867: Add refreshHostDataOnAction
+- 0ff602a: Bump vite to ^7.3.1
+- de531ed: Handle HMR for widget config files
+- b9066dd: Support interfaces in object set parameters
+- 35f2f1a: Add Media inputs/outputs for Queries
+- 6260835: Revert node bump
+
+### Patch Changes
+
+- Updated dependencies [322c5bc]
+- Updated dependencies [7901ae0]
+- Updated dependencies [e590bed]
+- Updated dependencies [beb2867]
+- Updated dependencies [b9066dd]
+- Updated dependencies [35f2f1a]
+- Updated dependencies [fad598c]
+  - @osdk/foundry-config-json@1.7.0
+  - @osdk/widget.api@3.5.0
+
+## 3.5.0-beta.32
+
+### Patch Changes
+
+- @osdk/widget.api@3.5.0-beta.32
+
+## 3.5.0-beta.31
+
+### Patch Changes
+
+- @osdk/widget.api@3.5.0-beta.31
+
+## 3.5.0-beta.30
+
+### Patch Changes
+
+- @osdk/widget.api@3.5.0-beta.30
+
+## 3.5.0-beta.29
+
+### Patch Changes
+
+- @osdk/widget.api@3.5.0-beta.29
+
 ## 3.5.0-beta.28
 
 ### Patch Changes

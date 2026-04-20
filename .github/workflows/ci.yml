@@ -32,7 +32,7 @@ jobs:
           cache: "pnpm"
 
       - name: Cache Turbo
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: .turbo/cache
           key: turbo-${{ runner.os }}-${{ github.sha }}
@@ -100,7 +100,7 @@ jobs:
           cache: "pnpm"
 
       - name: Cache Turbo
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: .turbo/cache
           key: turbo-${{ runner.os }}-node${{ matrix.node }}-${{ github.sha }}
@@ -109,6 +109,29 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install
+
+      # Detect if repo infrastructure files changed. When they do, we run
+      # build with --force so it can't silently rely on cached artifacts
+      # from the check step (which would mask broken task dependencies).
+      - name: Detect infra changes
+        id: infra
+        run: |
+          BASE_SHA="${{ github.event.pull_request.base.sha || github.event.before }}"
+          if git diff --name-only "$BASE_SHA" HEAD -- \
+            turbo.json \
+            package.json \
+            pnpm-workspace.yaml \
+            pnpm-lock.yaml \
+            config/tsconfig.base.json \
+            babel.config.mjs \
+            dprint.json \
+            .github/workflows/ci.yml \
+            .github/workflows/release.yml \
+            | grep -q .; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          fi
 
       # These packages use Vite 7+ or Storybook which require Node 20+, so exclude them on Node 18
       - name: Transpile, typecheck, Lint and test (excluding Vite 7/Storybook packages on Node 18)
@@ -123,11 +146,11 @@ jobs:
       # These packages use Vite 7+ or Storybook which require Node 20+, so exclude them on Node 18
       - name: Build (excluding Vite 7/Storybook packages on Node 18)
         if: matrix.node == 18
-        run: pnpm exec turbo build --filter="!@osdk/create-app.template.*" --filter="!@osdk/create-widget.template.*" --filter="!@osdk/widget.vite-plugin" --filter="!@osdk/examples.*" --filter="!@psdk/examples.*" --filter="!@osdk/e2e.sandbox.todowidget" --filter="!@osdk/ontology-explorer-app" --filter="!@osdk/react-components-storybook"
+        run: pnpm exec turbo build ${{ steps.infra.outputs.changed == 'true' && '--force' || '' }} --filter="!@osdk/create-app.template.*" --filter="!@osdk/create-widget.template.*" --filter="!@osdk/widget.vite-plugin" --filter="!@osdk/examples.*" --filter="!@psdk/examples.*" --filter="!@osdk/e2e.sandbox.todowidget" --filter="!@osdk/ontology-explorer-app" --filter="!@osdk/react-components-storybook"
 
       - name: Build
         if: matrix.node != 18
-        run: pnpm build
+        run: pnpm build ${{ steps.infra.outputs.changed == 'true' && '--force' || '' }}
 
       - name: Verify nothing changed
         run: git diff --exit-code
@@ -165,7 +188,7 @@ jobs:
           cache: "pnpm"
 
       - name: Cache Turbo
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: .turbo/cache
           key: turbo-${{ runner.os }}-${{ github.sha }}
@@ -211,7 +234,7 @@ jobs:
           cache: "pnpm"
 
       - name: Cache Turbo
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: .turbo/cache
           key: turbo-${{ runner.os }}-${{ github.sha }}
@@ -262,6 +285,8 @@ jobs:
             let current = [], base = [];
             try { current = JSON.parse(fs.readFileSync("/tmp/current.json", "utf8")); } catch {}
             try { base = JSON.parse(fs.readFileSync("/tmp/base.json", "utf8")); } catch {}
+            if (!Array.isArray(current)) current = [];
+            if (!Array.isArray(base)) base = [];
 
             const baseMap = Object.fromEntries(base.map(e => [e.name, e.size]));
             const currentMap = Object.fromEntries(current.map(e => [e.name, e.size]));

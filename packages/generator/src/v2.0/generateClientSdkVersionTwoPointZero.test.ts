@@ -487,6 +487,7 @@ const referencingOntology: WireOntologyDefinition = {
       },
       rid: "ri.a.b.c",
       version: "0",
+      typeReferences: {},
     },
   },
   sharedPropertyTypes: {},
@@ -760,6 +761,7 @@ describe("generator", () => {
           ObjectSet as $ObjectSet,
           Osdk as $Osdk,
           PropertyValueWireToClient as $PropType,
+          SingleLinkAccessor as $SingleLinkAccessor,
         } from '@osdk/client';
 
         export type OsdkObjectLinks$SomeInterface = {};
@@ -948,7 +950,7 @@ describe("generator", () => {
         } from '@osdk/client';
 
         export namespace Todo {
-          export type PropertyKeys = 'id' | 'body' | 'complete' | 'array';
+          export type PropertyKeys = 'array' | 'body' | 'complete' | 'id';
 
           export interface Links {
             readonly Assignee: $SingleLinkAccessor<Person>;
@@ -958,7 +960,7 @@ describe("generator", () => {
             /**
              * (no ontology metadata)
              */
-            readonly array: ('a' | 'b' | 'c')[] | undefined;
+            readonly array: ('a' | 'b"c' | "d'e")[] | undefined;
             /**
              *   display name: 'Body',
              *
@@ -1450,6 +1452,7 @@ describe("generator", () => {
           ObjectSet as $ObjectSet,
           Osdk as $Osdk,
           PropertyValueWireToClient as $PropType,
+          SingleLinkAccessor as $SingleLinkAccessor,
         } from '@osdk/api';
 
         export type OsdkObjectLinks$SomeInterface = {};
@@ -1638,7 +1641,7 @@ describe("generator", () => {
         } from '@osdk/api';
 
         export namespace Todo {
-          export type PropertyKeys = 'id' | 'body' | 'complete' | 'array';
+          export type PropertyKeys = 'array' | 'body' | 'complete' | 'id';
 
           export interface Links {
             readonly Assignee: $SingleLinkAccessor<Person>;
@@ -1648,7 +1651,7 @@ describe("generator", () => {
             /**
              * (no ontology metadata)
              */
-            readonly array: ('a' | 'b' | 'c')[] | undefined;
+            readonly array: ('a' | 'b"c' | "d'e")[] | undefined;
             /**
              *   display name: 'Body',
              *
@@ -2079,7 +2082,7 @@ describe("generator", () => {
           } from '@osdk/api';
 
           export namespace UsesForeignSpt {
-            export type PropertyKeys = 'id' | 'body';
+            export type PropertyKeys = 'body' | 'id';
 
             export type Links = {};
 
@@ -2447,7 +2450,7 @@ describe("generator", () => {
         } from '@osdk/client';
 
         export namespace Todo {
-          export type PropertyKeys = 'id' | 'body' | 'complete' | 'array';
+          export type PropertyKeys = 'array' | 'body' | 'complete' | 'id';
 
           export interface Links {
             readonly Assignee: $SingleLinkAccessor<Person>;
@@ -2738,6 +2741,7 @@ describe("generator", () => {
           ObjectSet as $ObjectSet,
           Osdk as $Osdk,
           PropertyValueWireToClient as $PropType,
+          SingleLinkAccessor as $SingleLinkAccessor,
         } from '@osdk/client';
 
         export type OsdkObjectLinks$SomeInterface = {};
@@ -2829,7 +2833,7 @@ describe("generator", () => {
         } from '@osdk/client';
 
         export namespace Task {
-          export type PropertyKeys = 'taskId' | 'body';
+          export type PropertyKeys = 'body' | 'taskId';
 
           export type Links = {};
 

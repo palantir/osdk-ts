@@ -18,6 +18,7 @@ import type {
   ActionTypeBlockDataV2,
   ActionTypePermissionInformation,
   InterfaceTypeBlockDataV2,
+  KnownMarketplaceIdentifiers,
   LinkTypeBlockDataV2,
   ObjectTypeBlockDataV2,
   OntologyBlockDataV2,
@@ -28,6 +29,7 @@ import {
   cleanAndValidateLinkTypeId,
   OntologyEntityTypeEnum,
 } from "@osdk/maker";
+import type { FunctionsIr } from "../../api/defineOntologyV2.js";
 import type { OntologyRidGenerator } from "../../util/generateRid.js";
 import { ReadableIdGenerator } from "../../util/generateRid.js";
 import { convertAction } from "./convertActionHelpers.js";
@@ -36,7 +38,6 @@ import { convertLink } from "./convertLink.js";
 import { convertObject } from "./convertObject.js";
 import { convertSpt } from "./convertSpt.js";
 import { MIGRATION_SHAPE_READABLE_ID } from "./shapeExtractors/IrShapeExtractor.js";
-import { FunctionsIr } from "../../api/defineOntologyV2.js";
 
 export function convertOntologyDefinitionToWireBlockData(
   ontology: OntologyDefinition,
@@ -145,7 +146,7 @@ export function convertOntologyDefinitionToWireBlockData(
 function buildKnownIdentifiers(
   ontology: OntologyDefinition,
   ridGenerator: OntologyRidGenerator,
-) {
+): KnownMarketplaceIdentifiers {
   // Interface types: InterfaceTypeRid -> BlockInternalId
   const interfaceMappings = Object.fromEntries(
     Array.from(ridGenerator.getInterfaceRids().inverse().entries()).map((
@@ -409,28 +410,28 @@ function buildKnownIdentifiers(
     actionParameterIds: actionParameterIdMappings,
     actionParameters: actionParameterMappings,
     actionTypes: actionTypeMappings,
-    datasourceColumns: datasourceColumns,
+    datasourceColumns,
     datasources: backingDatasourceMappings,
     filesDatasources: filesDatasourceMappings,
     functions: {},
-    geotimeSeriesSyncs: geotimeSeriesSyncs,
+    geotimeSeriesSyncs,
     groupIds: groupMappings,
     interfaceLinkTypes: interfaceLinkMappings,
     interfacePropertyTypes: interfacePropertyMappings,
     interfaceTypes: interfaceMappings,
-    linkTypeIds: linkTypeIds,
+    linkTypeIds,
     linkTypes: linkTypeRids,
     markings: markingsMappings,
-    objectTypeIds: objectTypeIds,
+    objectTypeIds,
     objectTypes: objectTypeRids,
-    propertyTypeIds: propertyTypeIds,
+    propertyTypeIds,
     propertyTypes: propertyRids,
     sharedPropertyTypes: sharedPropertyMappings,
     shapeIdForOntologyAllowSchemaMigrations: ridGenerator.toBlockInternalId(
       MIGRATION_SHAPE_READABLE_ID,
     ),
     shapeIdForInstallPrefix: null,
-    timeSeriesSyncs: timeSeriesSyncs,
+    timeSeriesSyncs,
     valueTypes: valueTypeMappings,
     webhooks: {},
     workshopModules: {},

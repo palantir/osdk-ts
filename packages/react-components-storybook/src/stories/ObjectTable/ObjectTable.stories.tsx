@@ -15,10 +15,7 @@
  */
 
 import type { DerivedProperty, Osdk } from "@osdk/api";
-import {
-  ColumnConfigDialog,
-  ObjectTable,
-} from "@osdk/react-components/experimental";
+import { ObjectTable } from "@osdk/react-components/experimental";
 import type {
   CellEditInfo,
   ColumnDefinition,
@@ -26,7 +23,7 @@ import type {
 } from "@osdk/react-components/experimental";
 import { useOsdkClient } from "@osdk/react/experimental";
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useState } from "react";
 import { fauxFoundry } from "../../mocks/fauxFoundry.js";
 import { Employee } from "../../types/Employee.js";
 
@@ -34,7 +31,8 @@ import { Employee } from "../../types/Employee.js";
 type EmployeeTableProps = ObjectTableProps<typeof Employee>;
 
 const meta: Meta<EmployeeTableProps> = {
-  title: "Components/ObjectTable",
+  title: "Experimental/ObjectTable/Features",
+  tags: ["experimental"],
   component: ObjectTable,
   parameters: {
     msw: {
@@ -52,12 +50,12 @@ const meta: Meta<EmployeeTableProps> = {
     columnDefinitions: {
       description:
         "Ordered list of column definitions to show in the table. If not provided, all of the properties of the object type will be shown in default order.",
-      control: "object",
+      control: false,
     },
     filter: {
       description:
         "The current where clause to filter the objects in the table. If provided, the filter is controlled.",
-      control: "object",
+      control: false,
     },
     enableOrdering: {
       description: "Whether the table is sortable by the user.",
@@ -105,12 +103,12 @@ const meta: Meta<EmployeeTableProps> = {
     defaultOrderBy: {
       description:
         "The default order by clause to sort the objects in the table. If provided without orderBy prop, the sorting is uncontrolled. If both orderBy and defaultOrderBy are provided, orderBy takes precedence.",
-      control: "object",
+      control: false,
     },
     orderBy: {
       description:
         "The current order by clause to sort the objects in the table. If provided, the sorting is controlled. If both orderBy and defaultOrderBy are provided, orderBy takes precedence.",
-      control: "object",
+      control: false,
     },
     onOrderByChanged: {
       description:
@@ -164,7 +162,7 @@ const meta: Meta<EmployeeTableProps> = {
     selectedRows: {
       description:
         "The currently selected rows in the table. If provided, the row selection is controlled.",
-      control: "object",
+      control: false,
     },
     onRowSelection: {
       description:
@@ -230,8 +228,8 @@ const columnDefinitions: ColumnDefinition<Employee, RDPs, {}>[] = [
     renderCell: (object: Osdk.Instance<Employee>) => {
       return (
         <div>
-          {object["firstFullTimeStartDate"]
-            ? new Date(object["firstFullTimeStartDate"]).toLocaleDateString()
+          {object.firstFullTimeStartDate
+            ? new Date(object.firstFullTimeStartDate).toLocaleDateString()
             : "No date"}
         </div>
       );
@@ -247,7 +245,7 @@ const columnDefinitions: ColumnDefinition<Employee, RDPs, {}>[] = [
     renderHeader: () => "Manager",
     renderCell: (object: Osdk.Instance<Employee>) => {
       if ("managerName" in object) {
-        return <span>{object["managerName"] as string}</span>;
+        return <span>{object.managerName as string}</span>;
       }
       return <span style={{ color: "#999" }}>No Manager</span>;
     },
@@ -614,7 +612,7 @@ export const WithCustomColumn: Story = {
                   background: "white",
                   cursor: "pointer",
                 }}
-                onClick={() => alert(`View ${object["fullName"]}`)}
+                onClick={() => alert(`View ${object.fullName}`)}
               >
                 View
               </button>
@@ -627,7 +625,7 @@ export const WithCustomColumn: Story = {
                   background: "white",
                   cursor: "pointer",
                 }}
-                onClick={() => alert(`Edit ${object["fullName"]}`)}
+                onClick={() => alert(`Edit ${object.fullName}`)}
               >
                 Edit
               </button>
@@ -650,7 +648,7 @@ export const WithRowClickHandler: Story = {
   args: {
     objectType: Employee,
     onRowClick: (employee: any) => {
-      alert(`Clicked on ${employee["fullName"]}`);
+      alert(`Clicked on ${employee.fullName}`);
     },
   },
   parameters: {
@@ -869,7 +867,7 @@ export const WithCustomRenderers: Story = {
         },
         renderHeader: () => "Employment Status",
         renderCell: (employee: any) => {
-          const startDate = employee["firstFullTimeStartDate"];
+          const startDate = employee.firstFullTimeStartDate;
           const isActive = startDate && new Date(startDate) <= new Date();
 
           return (
@@ -945,161 +943,6 @@ export const WithCustomRenderers: Story = {
   ),
 };
 
-export const WithColumnConfigDialog: Story = {
-  parameters: {
-    docs: {
-      source: {
-        code:
-          `const [isColumnConfigOpen, setIsColumnConfigOpen] = useState(false);
-const [columnDefinitions, setColumnDefinitions] = useState(initialColumnDefinitions);
-
-const handleApplyColumnConfig = useCallback(
-  (columns: Array<{ columnId: string; isVisible: boolean }>) => {
-    const newColumnDefinitions = [];
-    columns.forEach(({ columnId, isVisible }) => {
-      if (isVisible) {
-        const colDef = initialColumnDefinitions.find(def => def.locator.id === columnId);
-        if (colDef) {
-          newColumnDefinitions.push(colDef);
-        }
-      }
-    });
-    setColumnDefinitions(newColumnDefinitions);
-    setIsColumnConfigOpen(false);
-  },
-  [],
-);
-
-return (
-  <>
-    <button onClick={() => setIsColumnConfigOpen(true)}>
-      Configure Columns
-    </button>
-    <ObjectTable
-      objectType={Employee}
-      columnDefinitions={columnDefinitions}
-      enableColumnConfig={false}
-    />
-    <ColumnConfigDialog
-      isOpen={isColumnConfigOpen}
-      onClose={() => setIsColumnConfigOpen(false)}
-      columnOptions={columnOptions}
-      currentVisibility={currentVisibility}
-      currentColumnOrder={currentColumnOrder}
-      onApply={handleApplyColumnConfig}
-    />
-  </>
-);`,
-      },
-    },
-  },
-  render: () => {
-    const initialColumnDefinitions: Array<ColumnDefinition<Employee, {}, {}>> =
-      [
-        {
-          locator: { type: "property", id: "fullName" },
-          columnName: "Full Name",
-        },
-        {
-          locator: { type: "property", id: "emailPrimaryWork" },
-          columnName: "Email",
-        },
-        {
-          locator: { type: "property", id: "jobTitle" },
-          columnName: "Job Title",
-        },
-        {
-          locator: { type: "property", id: "department" },
-          columnName: "Department",
-        },
-      ];
-
-    const [isColumnConfigOpen, setIsColumnConfigOpen] = useState(false);
-    const [columnDefinitions, setColumnDefinitions] = useState<
-      Array<ColumnDefinition<Employee, {}, {}>>
-    >(initialColumnDefinitions);
-
-    const columnOptions = useMemo(
-      () =>
-        initialColumnDefinitions.map((colDef) => ({
-          id: colDef.locator.id,
-          name: colDef.columnName || colDef.locator.id,
-        })),
-      [],
-    );
-
-    const currentVisibility = useMemo(() => {
-      const visibility: Record<string, boolean> = {};
-      initialColumnDefinitions.forEach(colDef => {
-        visibility[colDef.locator.id] = columnDefinitions.some(
-          def => def.locator.id === colDef.locator.id,
-        );
-      });
-      return visibility;
-    }, [columnDefinitions]);
-
-    const currentColumnOrder = useMemo(
-      () => columnDefinitions.map(colDef => colDef.locator.id),
-      [columnDefinitions],
-    );
-
-    const handleApplyColumnConfig = useCallback(
-      (columns: Array<{ columnId: string; isVisible: boolean }>) => {
-        const newColumnDefinitions: Array<ColumnDefinition<Employee, {}, {}>> =
-          [];
-        columns.forEach(({ columnId, isVisible }) => {
-          if (isVisible) {
-            const colDef = initialColumnDefinitions.find(def =>
-              def.locator.id === columnId
-            );
-            if (colDef) {
-              newColumnDefinitions.push(colDef);
-            }
-          }
-        });
-        setColumnDefinitions(newColumnDefinitions);
-        setIsColumnConfigOpen(false);
-      },
-      [],
-    );
-
-    return (
-      <div
-        style={{ height: "600px", display: "flex", flexDirection: "column" }}
-      >
-        <div style={{ padding: "8px 0", marginBottom: 8 }}>
-          <button
-            onClick={() => setIsColumnConfigOpen(true)}
-            style={{
-              padding: "8px 16px",
-              backgroundColor: "#3b82f6",
-              color: "white",
-              border: "none",
-              borderRadius: "4px",
-              cursor: "pointer",
-            }}
-          >
-            Configure Columns
-          </button>
-        </div>
-        <ObjectTable
-          objectType={Employee}
-          columnDefinitions={columnDefinitions}
-          enableColumnConfig={false}
-        />
-        <ColumnConfigDialog
-          isOpen={isColumnConfigOpen}
-          onClose={() => setIsColumnConfigOpen(false)}
-          columnOptions={columnOptions}
-          currentVisibility={currentVisibility}
-          currentColumnOrder={currentColumnOrder}
-          onApply={handleApplyColumnConfig}
-        />
-      </div>
-    );
-  },
-};
-
 export const EditableTable: Story = {
   args: {
     objectType: Employee,
@@ -1115,13 +958,57 @@ export const EditableTable: Story = {
       {
         locator: { type: "property", id: "jobTitle" },
         editable: true,
+        editFieldConfig: {
+          fieldComponent: "DROPDOWN",
+          fieldComponentProps: {
+            items: [
+              "Software Engineer",
+              "Senior Software Engineer",
+              "Staff Engineer",
+              "Engineering Manager",
+              "Product Manager",
+              "Designer",
+            ],
+            isSearchable: true,
+            placeholder: "Search job titles…",
+          },
+        },
       },
       {
         locator: { type: "property", id: "department" },
-        editable: false, // Read-only column
+        editable: true,
+        editFieldConfig: {
+          fieldComponent: "DROPDOWN",
+          fieldComponentProps: {
+            items: [
+              "Engineering",
+              "Product",
+              "Design",
+              "Sales",
+              "Marketing",
+              "Finance",
+              "Human Resources",
+            ],
+          },
+        },
+      },
+      {
+        locator: { type: "property", id: "firstInternStartDate" },
+        editable: true,
+      },
+      {
+        locator: { type: "property", id: "firstFullTimeStartDate" },
+        editable: true,
+        editFieldConfig: {
+          fieldComponent: "DATE_PICKER",
+          fieldComponentProps: {
+            showTime: false,
+            placeholder: "Select date...",
+          },
+        },
       },
     ],
-    editMode: "manual",
+    editMode: "always",
   } as any,
   parameters: {
     docs: {
@@ -1138,39 +1025,119 @@ export const EditableTable: Story = {
   {
     locator: { type: "property", id: "jobTitle" },
     editable: true,
+    editFieldConfig: {
+      fieldComponent: "DROPDOWN",
+      fieldComponentProps: {
+        items: [
+          "Software Engineer",
+          "Senior Software Engineer",
+          "Staff Engineer",
+          "Engineering Manager",
+          "Product Manager",
+          "Designer",
+        ],
+        isSearchable: true,
+        placeholder: "Search job titles…",
+      },
+    },
   },
   {
     locator: { type: "property", id: "department" },
-    editable: false, // Read-only column
+    editable: true,
+    editFieldConfig: {
+      fieldComponent: "DROPDOWN",
+      fieldComponentProps: {
+        items: [
+          "Engineering",
+          "Product",
+          "Design",
+          "Sales",
+          "Marketing",
+          "Finance",
+          "Human Resources",
+        ],
+      },
+    },
+  },
+  // Example where the field is inferred from datatype
+  {
+    locator: { type: "property", id: "firstInternStartDate" },
+    editable: true,
+  },
+  {
+    locator: { type: "property", id: "firstFullTimeStartDate" },
+    editable: true,
+    editFieldConfig: {
+      fieldComponent: "DATE_PICKER",
+      fieldComponentProps: {
+        showTime: false,
+        placeholder: "Select date...",
+      },
+    },
   },
 ];
 
 return (
-  <ObjectTable 
-    objectType={Employee} 
-    columnDefinitions={columnDefinitions} 
-    editMode="manual" 
+  <ObjectTable
+    objectType={Employee}
+    columnDefinitions={columnDefinitions}
+    editMode="manual"
   />
 );`,
       },
     },
   },
-  render: (args) => (
-    <div className="object-table-container" style={{ height: "600px" }}>
-      <div
-        style={{
-          padding: "12px",
-          backgroundColor: "#fff3cd",
-          marginBottom: "8px",
-          borderRadius: "4px",
-        }}
-      >
-        Try changing edit mode to "always" to enable inline editing without
-        needing to toggle edit mode on.
+  render: (args) => {
+    const [lastEdit, setLastEdit] = useState<
+      CellEditInfo<Osdk.Instance<typeof Employee>> | undefined
+    >();
+
+    const handleCellValueChanged = useCallback(
+      (info: CellEditInfo<Osdk.Instance<typeof Employee>>) => {
+        setLastEdit(info);
+      },
+      [],
+    );
+
+    return (
+      <div className="object-table-container" style={{ height: "600px" }}>
+        <div
+          style={{
+            padding: "12px",
+            backgroundColor: "#fff3cd",
+            marginBottom: "8px",
+            borderRadius: "4px",
+          }}
+        >
+          Try changing edit mode to "manual" to enable inline editing with an
+          Edit Table button.
+        </div>
+        {lastEdit != null && (
+          <div
+            style={{
+              padding: "12px",
+              backgroundColor: "#d1ecf1",
+              marginBottom: "8px",
+              borderRadius: "4px",
+              fontFamily: "monospace",
+              fontSize: "13px",
+            }}
+          >
+            <strong>Last cell edit:</strong>{" "}
+            Column "{lastEdit.columnId}" changed from "{String(
+              lastEdit.oldValue,
+            )}" to "
+            {String(lastEdit.newValue)}"
+          </div>
+        )}
+        <ObjectTable
+          {...args}
+          objectType={Employee}
+          onCellValueChanged={handleCellValueChanged}
+        />
       </div>
-      <ObjectTable {...args} objectType={Employee} />
-    </div>
-  ),
+    );
+  },
 };
 
 export const WithSubmitEditsButton: Story = {
@@ -1274,6 +1241,46 @@ export const EditableWithValidation: Story = {
             : "Employee number must be positive";
         },
       },
+      {
+        locator: { type: "property", id: "jobTitle" },
+        editable: true,
+        editFieldConfig: {
+          fieldComponent: "DROPDOWN",
+          fieldComponentProps: {
+            items: [
+              "Software Engineer",
+              "Senior Software Engineer",
+              "Staff Engineer",
+              "Engineering Manager",
+              "Product Manager",
+              "Designer",
+            ],
+            isSearchable: true,
+            placeholder: "Search job titles…",
+          },
+        },
+        validateEdit: async (value: unknown) => {
+          return value ? undefined : "Job title is required";
+        },
+      },
+      {
+        locator: { type: "property", id: "department" },
+        editable: true,
+        editFieldConfig: {
+          fieldComponent: "DROPDOWN",
+          fieldComponentProps: {
+            items: [
+              "Engineering",
+              "Product",
+              "Design",
+              "Sales",
+              "Marketing",
+              "Finance",
+              "Human Resources",
+            ],
+          },
+        },
+      },
     ],
     editMode: "always",
     onSubmitEdits: async (edits: CellEditInfo<Osdk.Instance<Employee>>[]) => {
@@ -1305,14 +1312,54 @@ export const EditableWithValidation: Story = {
     validateEdit: async (value: number) => {
       return value > 0 ? undefined : "Employee number must be positive";
     },
+  },
+  {
+    locator: { type: "property", id: "jobTitle" },
+    editable: true,
+    editFieldConfig: {
+      fieldComponent: "DROPDOWN",
+      fieldComponentProps: {
+        items: [
+          "Software Engineer",
+          "Senior Software Engineer",
+          "Staff Engineer",
+          "Engineering Manager",
+          "Product Manager",
+          "Designer",
+        ],
+        isSearchable: true,
+        placeholder: "Search job titles…",
+      },
+    },
+    validateEdit: async (value: unknown) => {
+      return value ? undefined : "Job title is required";
+    },
+  },
+  {
+    locator: { type: "property", id: "department" },
+    editable: true,
+    editFieldConfig: {
+      fieldComponent: "DROPDOWN",
+      fieldComponentProps: {
+        items: [
+          "Engineering",
+          "Product",
+          "Design",
+          "Sales",
+          "Marketing",
+          "Finance",
+          "Human Resources",
+        ],
+      },
+    },
+  },
 ];
 
 return (
-  <ObjectTable 
-    objectType={Employee} 
+  <ObjectTable
+    objectType={Employee}
     columnDefinitions={columnDefinitions}
-    editMode="always" // Always in edit mode
-    // Submit Edits button disabled when there are validation errors
+    editMode="always"
     onSubmitEdits={async (edits) => {
       return true;
     }}
@@ -1336,6 +1383,7 @@ return (
           <li>Name must be at least 2 characters</li>
           <li>Email must be a valid format</li>
           <li>Employee number must be positive</li>
+          <li>Job title is required</li>
         </ul>
       </div>
       <ObjectTable {...args} objectType={Employee} />

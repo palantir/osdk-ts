@@ -83,6 +83,7 @@ interface IPythonDiscoveredFunction {
   output: { type: "single"; single: { dataType: IDataType } };
   customTypes?: Record<string, IPythonCustomType>;
   objectTypes?: Record<string, { objectApiName: string }>;
+  objectSetTypes?: Record<string, { objectApiName: string }>;
 }
 
 interface IPythonCustomType {
@@ -421,6 +422,7 @@ export class OntologyIrToFullMetadataConverter {
     const functions = fd.discover();
 
     if (irOutputFile) {
+      fs.mkdirSync(path.dirname(irOutputFile), { recursive: true });
       fs.writeFileSync(irOutputFile, JSON.stringify(functions));
     }
 
@@ -469,6 +471,7 @@ export class OntologyIrToFullMetadataConverter {
           func.output.single.dataType,
           func.customTypes,
         ),
+        typeReferences: {},
       } satisfies Ontologies.QueryTypeV2;
     });
   }
@@ -493,29 +496,102 @@ export class OntologyIrToFullMetadataConverter {
       const functionName = func.locator.python3.functionName;
       const customTypes = func.customTypes ?? {};
       const objectTypes = func.objectTypes;
+      const objectSetTypes = func.objectSetTypes;
 
-      // Resolve object type references: Python discovery returns object
-      // parameters as {type: "object", object: "<uuid>"} where the UUID maps
-      // to the function's objectTypes field. Convert these to the format
-      // expected by convertDataType: {type: "object", object: {objectTypeId: "<apiName>"}}.
-      const resolvedInputs = func.inputs.map((input) => {
-        if (
-          input.dataType.type === "object"
-          && typeof input.dataType.object === "string"
-          && objectTypes?.[input.dataType.object]
-        ) {
+      // Resolve Python discovery UUID references to the format expected by
+      // convertDataType. Python discovery returns:
+      //   - object params as {type: "object", object: "<uuid>"}
+      //   - objectSet params as {type: "objectSet", objectSet: "<uuid>"}
+      // These UUIDs map to the function's objectTypes / objectSetTypes fields
+      // which carry the actual objectApiName. The resolution must be recursive
+      // to handle nested types (e.g. list[seller] produces
+      // {type: "list", list: {elementsType: {type: "object", object: "<uuid>"}}}).
+      function resolveDataType(dt: IDataType): IDataType {
+        if (dt.type === "object" && typeof dt.object === "string") {
+          if (!objectTypes?.[dt.object]) {
+            throw new Error(
+              `Could not resolve object UUID "${dt.object}" — not present in objectTypes map`,
+            );
+          }
           return {
-            ...input,
-            dataType: {
-              ...input.dataType,
-              object: {
-                objectTypeId: objectTypes[input.dataType.object].objectApiName,
-              },
+            ...dt,
+            object: {
+              objectTypeId: objectTypes[dt.object].objectApiName,
             },
           };
         }
-        return input;
-      });
+        if (dt.type === "objectSet" && typeof dt.objectSet === "string") {
+          if (!objectSetTypes?.[dt.objectSet]) {
+            throw new Error(
+              `Could not resolve objectSet UUID "${dt.objectSet}" — not present in objectSetTypes map`,
+            );
+          }
+          return {
+            ...dt,
+            objectSet: {
+              objectTypeId: objectSetTypes[dt.objectSet].objectApiName,
+            },
+          };
+        }
+        if (dt.type === "list") {
+          const listData = dt.list as { elementsType: IDataType } | undefined;
+          if (listData?.elementsType) {
+            const resolved = resolveDataType(listData.elementsType);
+            if (resolved !== listData.elementsType) {
+              return { ...dt, list: { elementsType: resolved } };
+            }
+          }
+        }
+        if (dt.type === "set") {
+          const setData = dt.set as { elementsType: IDataType } | undefined;
+          if (setData?.elementsType) {
+            const resolved = resolveDataType(setData.elementsType);
+            if (resolved !== setData.elementsType) {
+              return { ...dt, set: { elementsType: resolved } };
+            }
+          }
+        }
+        if (dt.type === "optionalType") {
+          const optData = dt.optionalType as
+            | { wrappedType: IDataType }
+            | undefined;
+          if (optData?.wrappedType) {
+            const resolved = resolveDataType(optData.wrappedType);
+            if (resolved !== optData.wrappedType) {
+              return { ...dt, optionalType: { wrappedType: resolved } };
+            }
+          }
+        }
+        if (dt.type === "functionCustomType") {
+          const typeId = dt.functionCustomType as string;
+          const customType = customTypes[typeId] as
+            | IPythonCustomType
+            | undefined;
+          if (customType?.fields) {
+            let changed = false;
+            const resolvedFields: Record<string, IDataType> = {};
+            for (const [key, fieldDt] of Object.entries(customType.fields)) {
+              const resolved = resolveDataType(fieldDt);
+              if (resolved !== fieldDt) changed = true;
+              resolvedFields[key] = resolved;
+            }
+            if (changed) {
+              customTypes[typeId] = {
+                ...customType,
+                fields: resolvedFields,
+              };
+            }
+          }
+        }
+        return dt;
+      }
+
+      const resolvedInputs = func.inputs.map((input) => ({
+        ...input,
+        dataType: resolveDataType(input.dataType),
+      }));
+
+      const resolvedOutput = resolveDataType(func.output.single.dataType);
 
       const queryType: Ontologies.QueryTypeV2 = {
         apiName: functionName,
@@ -534,9 +610,10 @@ export class OntologyIrToFullMetadataConverter {
           return acc;
         }, {}),
         output: convertDataType(
-          func.output.single.dataType,
+          resolvedOutput,
           customTypes,
         ),
+        typeReferences: {},
       };
       queries.push(queryType);
     }

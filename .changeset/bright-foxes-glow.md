@@ -2,4 +2,4 @@
 "@osdk/react-components": patch
 ---
 
-Add TextAreaField component using @base-ui Input with render prop for native textarea rendering
+Set default tooltip trigger delay to 200ms in TooltipTrigger

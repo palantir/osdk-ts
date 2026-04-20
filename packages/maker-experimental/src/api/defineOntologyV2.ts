@@ -15,23 +15,24 @@
  */
 
 import type { OntologyIrV2 } from "@osdk/client.unstable";
-import type { ObjectType } from "@osdk/maker";
 import type { IDiscoveredFunction } from "@osdk/generator-converters.ontologyir";
+import type { LinkType, ObjectType } from "@osdk/maker";
 import {
   getOntologyDefinition,
   initializeOntologyState,
   OntologyEntityTypeEnum,
 } from "@osdk/maker";
+import * as fs from "fs";
 import { convertOntologyDefinition } from "../conversion/toMarketplace/convertOntologyDefinition.js";
 import { getShapes } from "../conversion/toMarketplace/shapeExtractors/IrShapeExtractor.js";
 import type { BlockShapes } from "../util/generateRid.js";
 import { OntologyRidGeneratorImpl } from "../util/generateRid.js";
-import * as fs from "fs";
 
 export interface OntologyV2Result {
   ontologyIr: OntologyIrV2;
   shapes: BlockShapes;
   backingDatasourceApiNames: string[];
+  backingDatasourceLinkApiNames: string[];
 }
 
 export interface FunctionsIr {
@@ -65,9 +66,8 @@ export async function defineOntologyV2(
       fs.readFileSync(functionsIrFile, "utf-8"),
     );
   }
-  
 
-  const ridGenerator = new OntologyRidGeneratorImpl();
+  const ridGenerator = new OntologyRidGeneratorImpl(randomnessKey);
   const ontDef = convertOntologyDefinition(
     ontologyDefinition,
     ridGenerator,
@@ -90,5 +90,22 @@ export async function defineOntologyV2(
     )
     .map(([apiName]) => apiName);
 
-  return { ontologyIr: ontDef, shapes, backingDatasourceApiNames };
+  const backingDatasourceLinkApiNames = Object.entries(
+    ontologyDefinition[OntologyEntityTypeEnum.LINK_TYPE],
+  )
+    .filter(([_, link]) => {
+      const lt = link as LinkType;
+      return "many" in lt
+        && !("intermediaryObjectType" in lt)
+        && (lt as LinkType & { includeEmptyBackingDatasource?: boolean })
+            .includeEmptyBackingDatasource === true;
+    })
+    .map(([apiName]) => apiName);
+
+  return {
+    ontologyIr: ontDef,
+    shapes,
+    backingDatasourceApiNames,
+    backingDatasourceLinkApiNames,
+  };
 }

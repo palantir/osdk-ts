@@ -1,5 +1,18 @@
 # @osdk/tool.release
 
+## 0.14.0
+
+### Minor Changes
+
+- 3d54d44: Add version number to title.
+
+## 0.13.0
+
+### Minor Changes
+
+- 322c5bc: Simulated release
+- 35f2f1a: Add Media inputs/outputs for Queries
+
 ## 0.13.0-beta.2
 
 ### Minor Changes

@@ -25,6 +25,12 @@ export type {
   UseOsdkFunctionResult,
 } from "../new/useOsdkFunction.js";
 export { useOsdkFunction } from "../new/useOsdkFunction.js";
+export { useOsdkFunctions } from "../new/useOsdkFunctions.js";
+export type {
+  FunctionQueryParams,
+  UseOsdkFunctionsProps,
+  UseOsdkFunctionsResult,
+} from "../new/useOsdkFunctions.js";
 export { useOsdkObject } from "../new/useOsdkObject.js";
 export type {
   UseOsdkListResult,
@@ -35,3 +41,8 @@ export { useOsdkClient } from "../useOsdkClient.js";
 export { useOsdkMetadata } from "../useOsdkMetadata.js";
 export type { UseOsdkMetadataResult } from "../useOsdkMetadata.js";
 export { useDebouncedCallback } from "../utils/useDebouncedCallback.js";
+export type { DevToolsRegistry } from "./devtools-registry.js";
+export {
+  getRegisteredDevTools,
+  registerDevTools,
+} from "./devtools-registry.js";

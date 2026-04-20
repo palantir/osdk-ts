@@ -28,27 +28,33 @@ import {
   validateActionParameters,
   validateParameterOrdering,
 } from "./defineAction.js";
+import {
+  getProperty,
+  getPropertyKeys,
+  toPropertyMap,
+} from "./object/objectPropertyHelpers.js";
 import { isStruct } from "./properties/PropertyTypeType.js";
 
 export function defineCreateOrModifyObjectAction(
   defInput: ActionTypeUserDefinition,
 ): ActionType {
   const def = cloneDefinition(defInput);
+  const propertyKeys = getPropertyKeys(def.objectType);
   validateActionParameters(
     def,
-    Object.keys(def.objectType.properties ?? {}),
+    propertyKeys,
     def.objectType.apiName,
   );
   const propertiesWithDerivedDatasources = (def.objectType.datasources ?? [])
     .filter(ds => ds.type === "derived").flatMap(ds =>
       Object.keys(ds.propertyMapping)
     );
-  const propertyParameters = Object.keys(def.objectType.properties ?? {})
+  const propertyParameters = propertyKeys
     .filter(
       id =>
         !Object.keys(def.nonParameterMappings ?? {}).includes(id)
         && !def.excludedProperties?.includes(id)
-        && !isStruct(def.objectType.properties?.[id].type!)
+        && !isStruct(getProperty(def.objectType, id)?.type!)
         && id !== def.objectType.primaryKeyPropertyApiName
         && !propertiesWithDerivedDatasources.includes(id),
     );
@@ -73,13 +79,13 @@ export function defineCreateOrModifyObjectAction(
   }
   const parameters = createParameters(
     def,
-    def.objectType.properties ?? {},
+    toPropertyMap(def.objectType),
     parameterNames,
   );
   parameters.forEach(
     p => {
       // create prefilled parameters for object type properties unless overridden
-      if (def.objectType.properties?.[p.id] && p.defaultValue === undefined) {
+      if (getProperty(def.objectType, p.id) && p.defaultValue === undefined) {
         p.defaultValue = {
           type: "objectParameterPropertyValue",
           objectParameterPropertyValue: {
@@ -100,7 +106,7 @@ export function defineCreateOrModifyObjectAction(
     apiName: actionApiName,
     displayName: def.displayName
       ?? `Create or Modify ${def.objectType.displayName}`,
-    parameters: parameters,
+    parameters,
     status: def.status ?? "active",
     rules: [{
       type: "addOrModifyObjectRuleV2",
@@ -126,7 +132,7 @@ export function defineCreateOrModifyObjectAction(
     parameterOrdering: def.parameterOrdering
       ?? createDefaultParameterOrdering(
         def,
-        Object.keys(def.objectType.properties ?? {}),
+        propertyKeys,
         parameters,
         CREATE_OR_MODIFY_OBJECT_PARAMETER,
       ),

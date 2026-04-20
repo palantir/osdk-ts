@@ -1,5 +1,106 @@
 # @osdk/maker-experimental
 
+## 0.7.0
+
+### Minor Changes
+
+- 492db18: Expand the set of types acceptable in references
+
+### Patch Changes
+
+- Updated dependencies [b90fb8e]
+- Updated dependencies [cbc8e9c]
+- Updated dependencies [e8d14a0]
+- Updated dependencies [2394ca7]
+- Updated dependencies [492db18]
+  - @osdk/maker@0.17.0
+  - @osdk/api@2.9.0
+  - @osdk/client.unstable@2.9.0
+
+## 0.6.0
+
+### Minor Changes
+
+- 425cb92: Simulated release
+- f487a6a: Maker experimental
+- e462938: Support PSGs in OAC
+- a73bafd: Fix link type block data gen
+- fd3f6d3: Add support for empty backing datasources
+- 9ee82f4: Dedupe many-to-many PK property names in datasource
+- 771e3e6: Update datasource generation
+- 764fe55: Support multi block-generation-result outputs.
+- e8ca289: Fix key resolution
+- 35f2f1a: Add Media inputs/outputs for Queries
+- 4ec5877: Fix link dataset shapes
+- eac64f4: Link backing dataset generation
+
+### Patch Changes
+
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [cc7f505]
+- Updated dependencies [4bb9769]
+- Updated dependencies [8f92197]
+- Updated dependencies [f294f5a]
+- Updated dependencies [963626f]
+- Updated dependencies [f487a6a]
+- Updated dependencies [e462938]
+- Updated dependencies [6499ff9]
+- Updated dependencies [0e45a37]
+- Updated dependencies [fcf81ba]
+- Updated dependencies [ab50d31]
+- Updated dependencies [034081a]
+- Updated dependencies [77aa4a9]
+- Updated dependencies [fd3f6d3]
+- Updated dependencies [9ee82f4]
+- Updated dependencies [0df859a]
+- Updated dependencies [5b938ef]
+- Updated dependencies [d284bf2]
+- Updated dependencies [4ef6adc]
+- Updated dependencies [60b5ffb]
+- Updated dependencies [7fa6de3]
+- Updated dependencies [2b15836]
+- Updated dependencies [684b6c6]
+- Updated dependencies [8c30908]
+- Updated dependencies [acb4ed6]
+- Updated dependencies [e8ca289]
+- Updated dependencies [4a856cb]
+- Updated dependencies [b68cebd]
+- Updated dependencies [35f2f1a]
+- Updated dependencies [e0ba9eb]
+- Updated dependencies [972bda6]
+- Updated dependencies [6941b4f]
+- Updated dependencies [e9f9f58]
+- Updated dependencies [eac64f4]
+- Updated dependencies [61e33ab]
+  - @osdk/api@2.8.0
+  - @osdk/client.unstable@2.8.0
+  - @osdk/maker@0.16.0
+
+## 0.6.0-beta.9
+
+### Minor Changes
+
+- 4ec5877: Fix link dataset shapes
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.32
+- @osdk/client.unstable@2.8.0-beta.32
+
+## 0.6.0-beta.8
+
+### Minor Changes
+
+- a73bafd: Fix link type block data gen
+- e8ca289: Fix key resolution
+
+### Patch Changes
+
+- Updated dependencies [e8ca289]
+  - @osdk/maker@0.16.0-beta.15
+
 ## 0.6.0-beta.7
 
 ### Minor Changes

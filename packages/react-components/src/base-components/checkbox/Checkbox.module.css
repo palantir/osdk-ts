@@ -18,12 +18,13 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  min-width: calc(
+  width: calc(
     var(--osdk-checkbox-icon-size) + var(--osdk-checkbox-padding) * 2
   );
-  min-height: calc(
+  height: calc(
     var(--osdk-checkbox-icon-size) + var(--osdk-checkbox-padding) * 2
   );
+  flex-shrink: 0;
   padding: var(--osdk-checkbox-padding);
   cursor: pointer;
   border-radius: var(--osdk-surface-border-radius);
@@ -43,6 +44,18 @@
 
   &[data-checked],
   &[data-indeterminate] {
+    background-color: var(--osdk-checkbox-bg-checked);
+
+    &:hover {
+      background-color: var(--osdk-checkbox-bg-checked-hover);
+    }
+
+    &:active {
+      background-color: var(--osdk-checkbox-bg-checked-active);
+    }
+  }
+
+  &[data-excluding][data-checked] {
     background-color: var(--osdk-checkbox-bg-checked);
 
     &:hover {

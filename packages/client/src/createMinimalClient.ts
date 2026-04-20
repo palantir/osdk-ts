@@ -44,6 +44,7 @@ export function createMinimalClient(
     transactionId?: string;
     flushEdits?: () => Promise<void>;
     branch?: string;
+    headers?: Record<string, string>;
   } = {},
   fetchFn: (
     input: Request | URL | string,
@@ -76,6 +77,7 @@ export function createMinimalClient(
       tokenProvider,
       USER_AGENT,
       fetchFn,
+      options.headers,
     ),
     objectSetFactory,
     objectFactory: convertWireToOsdkObjects,

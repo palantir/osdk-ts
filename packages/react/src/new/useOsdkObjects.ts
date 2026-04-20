@@ -19,6 +19,7 @@ import type {
   LinkedType,
   LinkNames,
   ObjectOrInterfaceDefinition,
+  ObjectSet,
   Osdk,
   PropertyKeys,
   SimplePropertyDef,
@@ -26,7 +27,8 @@ import type {
 } from "@osdk/api";
 import type { ObserveObjectsCallbackArgs } from "@osdk/client/unstable-do-not-use";
 import React from "react";
-import { makeExternalStore } from "./makeExternalStore.js";
+import { extractPayloadError, isPayloadLoading } from "./hookUtils.js";
+import { devToolsMetadata, makeExternalStore } from "./makeExternalStore.js";
 import { OsdkContext2 } from "./OsdkContext2.js";
 
 export interface UseOsdkObjectsOptions<
@@ -106,6 +108,9 @@ export interface UseOsdkObjectsOptions<
   /**
    * Pivot to related objects through a link.
    * This changes the return type from T to the linked object type.
+   *
+   * Cannot be combined with `streamUpdates`. The server does not support
+   * websocket subscriptions for link-traversal queries.
    */
   pivotTo?: LinkNames<T>;
 
@@ -120,6 +125,12 @@ export interface UseOsdkObjectsOptions<
    */
   autoFetchMore?: boolean | number;
 
+  /**
+   * Enable streaming updates via websocket subscription.
+   *
+   * Cannot be combined with `pivotTo`. The server does not support
+   * websocket subscriptions for link-traversal queries.
+   */
   streamUpdates?: boolean;
 
   /**
@@ -186,22 +197,26 @@ export interface UseOsdkListResult<
    * The total count of objects matching the query (if available from the API)
    */
   totalCount?: string;
+
+  hasMore: boolean;
+
+  objectSet: ObjectSet<T, RDPs> | undefined;
+
+  refetch: () => Promise<void>;
 }
 
-const EMPTY_WHERE = {};
-
-declare const process: {
-  env: {
-    NODE_ENV: "development" | "production";
-  };
-};
-
+// pivotTo overloads: streamUpdates is forbidden (the server does not support
+// websocket subscriptions for link-traversal queries).
 export function useOsdkObjects<
   Q extends ObjectOrInterfaceDefinition,
   L extends LinkNames<Q>,
 >(
   type: Q,
-  options: UseOsdkObjectsOptions<Q> & { pivotTo: L; rids: readonly string[] },
+  options: UseOsdkObjectsOptions<Q> & {
+    pivotTo: L;
+    rids: readonly string[];
+    streamUpdates?: never;
+  },
 ): UseOsdkListResult<LinkedType<Q, L>, {}, "$rid">;
 
 export function useOsdkObjects<
@@ -209,15 +224,20 @@ export function useOsdkObjects<
   L extends LinkNames<Q>,
 >(
   type: Q,
-  options: UseOsdkObjectsOptions<Q> & { pivotTo: L },
+  options: UseOsdkObjectsOptions<Q> & { pivotTo: L; streamUpdates?: never },
 ): UseOsdkListResult<LinkedType<Q, L>>;
 
+// Non-pivotTo overloads: pivotTo is forbidden to prevent fallthrough from the
+// pivotTo overloads above (which would give the wrong return type).
 export function useOsdkObjects<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
 >(
   type: Q,
-  options: UseOsdkObjectsOptions<Q, RDPs> & { rids: readonly string[] },
+  options: UseOsdkObjectsOptions<Q, RDPs> & {
+    rids: readonly string[];
+    pivotTo?: never;
+  },
 ): UseOsdkListResult<Q, RDPs, "$rid">;
 
 export function useOsdkObjects<
@@ -225,7 +245,7 @@ export function useOsdkObjects<
   RDPs extends Record<string, SimplePropertyDef> = {},
 >(
   type: Q,
-  options?: UseOsdkObjectsOptions<Q, RDPs>,
+  options?: UseOsdkObjectsOptions<Q, RDPs> & { pivotTo?: never },
 ): UseOsdkListResult<Q, RDPs>;
 
 export function useOsdkObjects<
@@ -258,39 +278,17 @@ export function useOsdkObjects<
     $loadPropertySecurityMetadata,
   } = options ?? {};
 
-  const canonWhere = observableClient.canonicalizeWhereClause<
-    Q,
-    RDPs
-  >(where ?? EMPTY_WHERE);
-
-  const stableCanonWhere = React.useMemo(
-    () => canonWhere,
-    [JSON.stringify(canonWhere)],
-  );
+  const canonOptions = observableClient.canonicalizeOptions({
+    where,
+    withProperties,
+    orderBy,
+    intersectWith,
+    $select,
+  });
 
   const stableRids = React.useMemo(
     () => rids,
     [JSON.stringify(rids)],
-  );
-
-  const stableWithProperties = React.useMemo(
-    () => withProperties,
-    [JSON.stringify(withProperties)],
-  );
-
-  const stableIntersectWith = React.useMemo(
-    () => intersectWith,
-    [JSON.stringify(intersectWith)],
-  );
-
-  const stableOrderBy = React.useMemo(
-    () => orderBy,
-    [JSON.stringify(orderBy)],
-  );
-
-  const stableSelect = React.useMemo(
-    () => $select,
-    [JSON.stringify($select)],
   );
 
   const { subscribe, getSnapShot } = React.useMemo(
@@ -300,9 +298,10 @@ export function useOsdkObjects<
           ObserveObjectsCallbackArgs<Q, RDPs>
         >(
           () => ({ unsubscribe: () => {} }),
-          process.env.NODE_ENV !== "production"
-            ? `list ${type.apiName} [DISABLED]`
-            : void 0,
+          devToolsMetadata({
+            hookType: "useOsdkObjects",
+            objectType: type.apiName,
+          }),
         );
       }
 
@@ -313,27 +312,29 @@ export function useOsdkObjects<
           observableClient.observeList({
             type,
             rids: stableRids,
-            where: stableCanonWhere,
+            where: canonOptions.where,
             dedupeInterval: dedupeIntervalMs ?? 2_000,
             pageSize,
-            orderBy: stableOrderBy,
+            orderBy: canonOptions.orderBy,
             streamUpdates,
-            withProperties: stableWithProperties,
+            withProperties: canonOptions.withProperties,
             autoFetchMore,
-            ...(stableIntersectWith
-              ? { intersectWith: stableIntersectWith }
+            ...(canonOptions.intersectWith
+              ? { intersectWith: canonOptions.intersectWith }
               : {}),
             ...(pivotTo ? { pivotTo } : {}),
-            ...(stableSelect ? { select: stableSelect } : {}),
+            ...(canonOptions.$select ? { select: canonOptions.$select } : {}),
             ...($loadPropertySecurityMetadata
               ? { $loadPropertySecurityMetadata }
               : {}),
           }, observer),
-        process.env.NODE_ENV !== "production"
-          ? `list ${type.apiName} ${
-            stableRids ? `[${stableRids.length} rids]` : ""
-          } ${JSON.stringify(stableCanonWhere)}`
-          : void 0,
+        devToolsMetadata({
+          hookType: "useOsdkObjects",
+          objectType: type.apiName,
+          where: canonOptions.where,
+          orderBy: canonOptions.orderBy,
+          pageSize,
+        }),
       );
     },
     [
@@ -342,40 +343,35 @@ export function useOsdkObjects<
       type.apiName,
       type.type,
       stableRids,
-      stableCanonWhere,
+      canonOptions.where,
       dedupeIntervalMs,
       pageSize,
-      stableOrderBy,
+      canonOptions.orderBy,
       streamUpdates,
-      stableWithProperties,
+      canonOptions.withProperties,
       autoFetchMore,
-      stableIntersectWith,
+      canonOptions.intersectWith,
       pivotTo,
-      stableSelect,
+      canonOptions.$select,
       $loadPropertySecurityMetadata,
     ],
   );
 
   const listPayload = React.useSyncExternalStore(subscribe, getSnapShot);
 
-  return React.useMemo(() => {
-    let error: Error | undefined;
-    if (listPayload && "error" in listPayload && listPayload.error) {
-      error = listPayload.error;
-    } else if (listPayload?.status === "error") {
-      error = new Error("Failed to load objects");
-    }
+  const refetch = React.useCallback(async () => {
+    await observableClient.invalidateObjectType(type.apiName);
+  }, [observableClient, type.apiName]);
 
-    return {
-      fetchMore: listPayload?.hasMore ? listPayload.fetchMore : undefined,
-      error,
-      data: listPayload?.resolvedList,
-      isLoading: enabled
-        ? (listPayload?.status === "loading" || listPayload?.status === "init"
-          || !listPayload)
-        : false,
-      isOptimistic: listPayload?.isOptimistic ?? false,
-      totalCount: listPayload?.totalCount,
-    };
-  }, [listPayload, enabled]);
+  return React.useMemo(() => ({
+    fetchMore: listPayload?.hasMore ? listPayload.fetchMore : undefined,
+    error: extractPayloadError(listPayload, "Failed to load objects"),
+    data: listPayload?.resolvedList,
+    isLoading: isPayloadLoading(listPayload, enabled),
+    isOptimistic: listPayload?.isOptimistic ?? false,
+    totalCount: listPayload?.totalCount,
+    hasMore: listPayload?.hasMore ?? false,
+    objectSet: listPayload?.objectSet,
+    refetch,
+  }), [listPayload, enabled, refetch]);
 }

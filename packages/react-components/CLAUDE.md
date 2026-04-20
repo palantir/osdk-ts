@@ -1,4 +1,4 @@
-This documentation provides guidance for developing in `@osdk/react-components` and `@osdk/react-components-styles`.
+This documentation provides guidance for developing in `@osdk/react-components`.
 
 ## TypeScript Best Practices
 
@@ -10,6 +10,7 @@ This documentation provides guidance for developing in `@osdk/react-components` 
 
 - Always put new components in their own file and create separate components instead of inline functions
 - NEVER conditionally call React hooks
+- ALWAYS keep components rendering during loading/error states. Don't use early returns like `if (isLoading) return <LoadingMessage />`. Show loading/error indicators while rendering existing data to prevent UI flashing
 - ALWAYS memoize non-primitive values passed to component props with useCallback or useMemo
 - ALWAYS combine classnames with the classnames function. NEVER use string literal.
 - NEVER use empty arrays `[]` or empty objects `{}` directly in component bodies as they create new references on every render, causing infinite re-renders. Always extract them as constants outside the component or memoize them. For example, instead of `const defaultValue = []`, use `const EMPTY_ARRAY: [] = []` outside the component or `const defaultValue = useMemo(() => [], [])`.
@@ -22,8 +23,8 @@ This documentation provides guidance for developing in `@osdk/react-components` 
 ## CSS Styling Best Practices
 
 - Do not hardcode CSS colors and pixel values.
-- ALWAYS use css variables to enable themabiltiy using CSS variables. Any default styling should be added to @osdk/react-components-styles index.css
-- ALWAYS try to use --bp tokens first before using any hardcoded value. The --bp tokens used should always be mapped from a --osdk token.
+- ALWAYS use css variables to enable themability using CSS variables. Any default styling should be added to `src/tokens/` CSS files.
+- ALWAYS try to use --bp tokens first before using any hardcoded value. The --bp tokens used should always be mapped from a --osdk token in `src/tokens/base-tokens/base.css`.
 
 ## Project Management
 

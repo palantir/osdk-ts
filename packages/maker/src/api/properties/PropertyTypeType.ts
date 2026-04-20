@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { StructFieldType } from "@osdk/client.unstable";
+import type { Analyzer, StructFieldType } from "@osdk/client.unstable";
 
 export type PropertyTypeType =
   | PropertyTypeTypePrimitive
@@ -71,6 +71,7 @@ type PropertyTypeTypeString = {
   supportsExactMatching?: boolean;
   supportsFullTextRegex?: boolean;
   enableAsciiFolding?: boolean;
+  analyzerOverride?: Analyzer;
 };
 
 type PropertyTypeTypeDecimal = {

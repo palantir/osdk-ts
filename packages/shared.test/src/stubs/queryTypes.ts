@@ -32,6 +32,7 @@ export const addOneQueryType: QueryTypeV2 = {
   rid:
     "ri.function-registry.main.function.abd64ff3-276e-48c5-afee-5a6ef0b2ea47",
   version: "0.0.9",
+  typeReferences: {},
 };
 
 export const addOneQueryTypeOlderVersion: QueryTypeV2 = {
@@ -50,6 +51,7 @@ export const addOneQueryTypeOlderVersion: QueryTypeV2 = {
   rid:
     "ri.function-registry.main.function.abd64ff3-276e-48c5-afee-5a6ef0b2ea47",
   version: "0.0.1",
+  typeReferences: {},
 };
 
 export const queryTypeReturnsStruct: QueryTypeV2 = {
@@ -124,6 +126,7 @@ export const queryTypeReturnsStruct: QueryTypeV2 = {
   rid:
     "ri.function-registry.main.function.b2ae7b3e-2c89-42f5-a762-68957a9c039d",
   version: "0.0.9",
+  typeReferences: {},
 };
 
 export const queryTypeReturnsComplexStruct: QueryTypeV2 = {
@@ -214,6 +217,7 @@ export const queryTypeReturnsComplexStruct: QueryTypeV2 = {
   rid:
     "ri.function-registry.main.function.b2ae7b3e-2c89-42f5-a762-68957a9c039d",
   version: "0.0.9",
+  typeReferences: {},
 };
 
 export const queryTypeReturnsTimestamp: QueryTypeV2 = {
@@ -226,6 +230,7 @@ export const queryTypeReturnsTimestamp: QueryTypeV2 = {
   rid:
     "ri.function-registry.main.function.b2ae7b3e-2c89-42f5-a762-68957a9c039d",
   version: "0.0.9",
+  typeReferences: {},
 };
 
 export const queryTypeReturnsDate: QueryTypeV2 = {
@@ -238,6 +243,7 @@ export const queryTypeReturnsDate: QueryTypeV2 = {
   rid:
     "ri.function-registry.main.function.b2ae7b3e-2c89-42f5-a762-68957a9c039d",
   version: "0.0.9",
+  typeReferences: {},
 };
 
 export const queryTypeReturnsObject: QueryTypeV2 = {
@@ -252,6 +258,7 @@ export const queryTypeReturnsObject: QueryTypeV2 = {
   rid:
     "ri.function-registry.main.function.b2ae7b3e-2c89-42f5-a762-68957a9c039d",
   version: "0.0.9",
+  typeReferences: {},
 };
 
 export const queryTypeThreeDimensionalAggregation: QueryTypeV2 = {
@@ -278,6 +285,7 @@ export const queryTypeThreeDimensionalAggregation: QueryTypeV2 = {
   rid:
     "ri.function-registry.main.function.9b55870a-63c7-4d48-8f06-9627c0805968",
   version: "0.11.0",
+  typeReferences: {},
 };
 
 export const queryTypeTwoDimensionalAggregation: QueryTypeV2 = {
@@ -296,6 +304,7 @@ export const queryTypeTwoDimensionalAggregation: QueryTypeV2 = {
   rid:
     "ri.function-registry.main.function.9b55870a-63c7-4d48-8f06-9627c0805968",
   version: "0.11.0",
+  typeReferences: {},
 };
 
 export const queryTypeAcceptsTwoDimensionalAggregation: QueryTypeV2 = {
@@ -326,6 +335,7 @@ export const queryTypeAcceptsTwoDimensionalAggregation: QueryTypeV2 = {
   rid:
     "ri.function-registry.main.function.9b55870a-63c7-4d48-8f06-9627c0805968",
   version: "0.11.0",
+  typeReferences: {},
 };
 
 export const queryTypeAcceptsThreeDimensionalAggregation: QueryTypeV2 = {
@@ -372,6 +382,7 @@ export const queryTypeAcceptsThreeDimensionalAggregation: QueryTypeV2 = {
   rid:
     "ri.function-registry.main.function.9b55870a-63c7-4d48-8f06-9627c0805968",
   version: "0.11.0",
+  typeReferences: {},
 };
 
 export const queryTypeAcceptsObjects: QueryTypeV2 = {
@@ -395,6 +406,7 @@ export const queryTypeAcceptsObjects: QueryTypeV2 = {
   rid:
     "ri.function-registry.main.function.9b55870a-63c7-4d48-8f06-9627c0805968",
   version: "0.11.0",
+  typeReferences: {},
 };
 
 export const queryTypeAcceptsInterfaces: QueryTypeV2 = {
@@ -416,6 +428,7 @@ export const queryTypeAcceptsInterfaces: QueryTypeV2 = {
   rid:
     "ri.function-registry.main.function.9b35870a-63c7-4d48-8f06-9617c0805968",
   version: "0.11.0",
+  typeReferences: {},
 };
 
 export const queryTypeAcceptsInterfaceObjectSet: QueryTypeV2 = {
@@ -435,6 +448,7 @@ export const queryTypeAcceptsInterfaceObjectSet: QueryTypeV2 = {
   rid:
     "ri.function-registry.main.function.4db06290-aab9-43fd-a22d-608b7ecc1849",
   version: "0.14.0",
+  typeReferences: {},
 };
 
 export const queryTypeOutputsInterfaceObjectSet: QueryTypeV2 = {
@@ -454,6 +468,7 @@ export const queryTypeOutputsInterfaceObjectSet: QueryTypeV2 = {
   rid:
     "ri.function-registry.main.function.4db06290-7bb9-43fd-a22d-60sdf7ecc1849",
   version: "0.14.0",
+  typeReferences: {},
 };
 
 export const queryTypeAcceptsObjectSets: QueryTypeV2 = {
@@ -477,6 +492,7 @@ export const queryTypeAcceptsObjectSets: QueryTypeV2 = {
   rid:
     "ri.function-registry.main.function.9b55870a-63c7-4d48-8f06-9627c0805968",
   version: "0.11.0",
+  typeReferences: {},
 };
 
 export const queryTypeReturnsArray: QueryTypeV2 = {
@@ -496,6 +512,7 @@ export const queryTypeReturnsArray: QueryTypeV2 = {
   "rid":
     "ri.function-registry.main.function.c3e58d52-8430-44ee-9f0b-3785d9a9bdda",
   "version": "0.1.1",
+  typeReferences: {},
 };
 
 export const queryTypeReturnsArrayOfObjects: QueryTypeV2 = {
@@ -519,6 +536,7 @@ export const queryTypeReturnsArrayOfObjects: QueryTypeV2 = {
   "rid":
     "ri.function-registry.main.function.c3e58d52-8430-44ee-9f0b-3785d9a9bdda",
   "version": "0.1.1",
+  typeReferences: {},
 };
 
 export const queryTypeReturnsMap: QueryTypeV2 = {
@@ -552,6 +570,7 @@ export const queryTypeReturnsMap: QueryTypeV2 = {
   "rid":
     "ri.function-registry.main.function.c3e58d52-8430-44ee-9f0b-3785d9a9bdd2",
   "version": "0.1.1",
+  typeReferences: {},
 };
 
 export const queryTypeReturnsMediaReference: QueryTypeV2 = {
@@ -564,6 +583,7 @@ export const queryTypeReturnsMediaReference: QueryTypeV2 = {
   rid:
     "ri.function-registry.main.function.c3e58d52-8430-44ee-9f0b-3785d9a9bdd3",
   version: "0.1.0",
+  typeReferences: {},
 };
 
 export const queryTypeAcceptsMediaReference: QueryTypeV2 = {
@@ -582,4 +602,164 @@ export const queryTypeAcceptsMediaReference: QueryTypeV2 = {
   rid:
     "ri.function-registry.main.function.c3e58d52-8430-44ee-9f0b-3785d9a9bdd4",
   version: "0.1.0",
+  typeReferences: {},
+};
+
+export const queryTypeReturnsRecursiveStruct: QueryTypeV2 = {
+  apiName: "queryReturnsRecursiveStruct",
+  displayName: "queryReturnsRecursiveStruct",
+  parameters: {
+    treeNode: {
+      dataType: {
+        type: "typeReference",
+        typeId: "recursive-tree-node",
+      },
+    },
+  },
+  output: {
+    type: "typeReference",
+    typeId: "recursive-tree-node",
+  },
+  rid:
+    "ri.function-registry.main.function.d4f69e63-9531-55ff-0a1c-4896e0a0bee5",
+  version: "0.1.0",
+  typeReferences: {
+    "recursive-tree-node": {
+      type: "struct",
+      fields: [
+        {
+          name: "id",
+          fieldType: {
+            type: "string",
+          },
+        },
+        {
+          name: "value",
+          fieldType: {
+            type: "integer",
+          },
+        },
+        {
+          name: "children",
+          fieldType: {
+            type: "array",
+            subType: {
+              type: "typeReference",
+              typeId: "recursive-tree-node",
+            },
+          },
+        },
+      ],
+    },
+  },
+};
+
+export const queryTypeWithMultipleTypeRefs: QueryTypeV2 = {
+  apiName: "queryWithMultipleTypeRefs",
+  displayName: "queryWithMultipleTypeRefs",
+  parameters: {
+    tree: {
+      dataType: {
+        type: "typeReference",
+        typeId: "binary-tree-node",
+      },
+    },
+    linkedList: {
+      dataType: {
+        type: "typeReference",
+        typeId: "linked-list-node",
+      },
+    },
+  },
+  output: {
+    type: "struct",
+    fields: [
+      {
+        name: "processedTree",
+        fieldType: {
+          type: "typeReference",
+          typeId: "binary-tree-node",
+        },
+      },
+      {
+        name: "processedList",
+        fieldType: {
+          type: "typeReference",
+          typeId: "linked-list-node",
+        },
+      },
+    ],
+  },
+  rid:
+    "ri.function-registry.main.function.e5g70f74-0642-66gg-1b2d-5907f1b1cff6",
+  version: "0.1.0",
+  typeReferences: {
+    "binary-tree-node": {
+      type: "struct",
+      fields: [
+        {
+          name: "value",
+          fieldType: {
+            type: "integer",
+          },
+        },
+        {
+          name: "left",
+          fieldType: {
+            type: "union",
+            unionTypes: [
+              {
+                type: "typeReference",
+                typeId: "binary-tree-node",
+              },
+              {
+                type: "null",
+              },
+            ],
+          },
+        },
+        {
+          name: "right",
+          fieldType: {
+            type: "union",
+            unionTypes: [
+              {
+                type: "typeReference",
+                typeId: "binary-tree-node",
+              },
+              {
+                type: "null",
+              },
+            ],
+          },
+        },
+      ],
+    },
+    "linked-list-node": {
+      type: "struct",
+      fields: [
+        {
+          name: "data",
+          fieldType: {
+            type: "string",
+          },
+        },
+        {
+          name: "next",
+          fieldType: {
+            type: "union",
+            unionTypes: [
+              {
+                type: "typeReference",
+                typeId: "linked-list-node",
+              },
+              {
+                type: "null",
+              },
+            ],
+          },
+        },
+      ],
+    },
+  },
 };

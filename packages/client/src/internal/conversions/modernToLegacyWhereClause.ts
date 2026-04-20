@@ -269,10 +269,19 @@ function handleWherePair(
       field,
       value: typeof filter[firstKey] === "string"
         ? filter[firstKey]
-        : filter[firstKey]["term"],
+        : filter[firstKey].term,
       fuzzy: typeof filter[firstKey] === "string"
         ? false
-        : filter[firstKey]["fuzzySearch"] ?? false,
+        : filter[firstKey].fuzzySearch ?? false,
+    };
+  }
+
+  if (firstKey === "$matchesRegex") {
+    return {
+      type: "regex",
+      ...(propertyIdentifier != null && { propertyIdentifier }),
+      field,
+      value: filter[firstKey],
     };
   }
 

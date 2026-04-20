@@ -29,12 +29,13 @@ import { coerceToStringArray } from "../utils/coerceFilterValue.js";
 
 interface MultiSelectFilterInputProps<Q extends ObjectTypeDefinition> {
   objectType: Q;
-  objectSet: ObjectSet<Q>;
+  objectSet?: ObjectSet<Q>;
   propertyKey: string;
   filterState: FilterState | undefined;
   onFilterStateChanged: (state: FilterState) => void;
   whereClause: WhereClause<Q>;
   excludeRowOpen?: boolean;
+  renderValue?: (value: string) => string;
 }
 
 function MultiSelectFilterInputInner<Q extends ObjectTypeDefinition>({
@@ -45,6 +46,7 @@ function MultiSelectFilterInputInner<Q extends ObjectTypeDefinition>({
   onFilterStateChanged,
   whereClause,
   excludeRowOpen,
+  renderValue,
 }: MultiSelectFilterInputProps<Q>): React.ReactElement {
   const selectedValues = useMemo(
     () =>
@@ -54,6 +56,14 @@ function MultiSelectFilterInputInner<Q extends ObjectTypeDefinition>({
     [filterState],
   );
   const isExcluding = filterState?.isExcluding ?? false;
+
+  const handleClearAll = useCallback(() => {
+    onFilterStateChanged({
+      type: "SELECT",
+      selectedValues: [],
+      isExcluding,
+    });
+  }, [onFilterStateChanged, isExcluding]);
 
   const handleChange = useCallback(
     (selectedValues: string[]) => {
@@ -84,6 +94,7 @@ function MultiSelectFilterInputInner<Q extends ObjectTypeDefinition>({
       filterState={filterState}
       onFilterStateChanged={onFilterStateChanged}
       totalValueCount={data.length}
+      onClearAll={handleClearAll}
     >
       <MultiSelectInput
         values={data}
@@ -92,6 +103,7 @@ function MultiSelectFilterInputInner<Q extends ObjectTypeDefinition>({
         selectedValues={selectedValues}
         onChange={handleChange}
         ariaLabel={`Search ${propertyKey} values`}
+        renderValue={renderValue}
       />
     </FilterInputExcludeRow>
   );

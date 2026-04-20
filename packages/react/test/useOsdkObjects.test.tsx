@@ -15,7 +15,7 @@
  */
 
 import type { ObjectTypeDefinition } from "@osdk/api";
-import { renderHook } from "@testing-library/react";
+import { act, renderHook } from "@testing-library/react";
 import * as React from "react";
 import { beforeEach, describe, expect, it, vitest } from "vitest";
 import { OsdkContext2 } from "../src/new/OsdkContext2.js";
@@ -28,15 +28,19 @@ const MockObjectType = {
 
 describe("useOsdkObjects enabled option", () => {
   const mockObserveList = vitest.fn();
+  const mockInvalidateObjectType = vitest.fn().mockResolvedValue(undefined);
 
   const createWrapper = () => {
     const observableClient = {
       observeList: mockObserveList,
-      canonicalizeWhereClause: vitest.fn((w) => w),
+      canonicalizeOptions: vitest.fn((opts) => opts),
+      invalidateObjectType: mockInvalidateObjectType,
     } as any;
 
     return ({ children }: React.PropsWithChildren) => (
-      <OsdkContext2.Provider value={{ observableClient }}>
+      <OsdkContext2.Provider
+        value={{ observableClient, devtoolsEnabled: false }}
+      >
         {children}
       </OsdkContext2.Provider>
     );
@@ -149,5 +153,74 @@ describe("useOsdkObjects enabled option", () => {
       }),
       expect.any(Object),
     );
+  });
+
+  it("should return hasMore from payload", () => {
+    const wrapper = createWrapper();
+    let capturedObserver: { next: (value: any) => void } | null = null;
+    mockObserveList.mockImplementation((opts, observer) => {
+      capturedObserver = observer;
+      return { unsubscribe: vitest.fn() };
+    });
+
+    const { result } = renderHook(
+      () => useOsdkObjects(MockObjectType),
+      { wrapper },
+    );
+
+    expect(result.current.hasMore).toBe(false);
+
+    act(() => {
+      capturedObserver?.next({
+        resolvedList: [{ $primaryKey: "1" }],
+        status: "loaded",
+        hasMore: true,
+        fetchMore: vitest.fn(),
+      });
+    });
+
+    expect(result.current.hasMore).toBe(true);
+  });
+
+  it("should return objectSet from payload", () => {
+    const wrapper = createWrapper();
+    let capturedObserver: { next: (value: any) => void } | null = null;
+    mockObserveList.mockImplementation((opts, observer) => {
+      capturedObserver = observer;
+      return { unsubscribe: vitest.fn() };
+    });
+
+    const mockObjectSet = { type: "objectSet" };
+
+    const { result } = renderHook(
+      () => useOsdkObjects(MockObjectType),
+      { wrapper },
+    );
+
+    act(() => {
+      capturedObserver?.next({
+        resolvedList: [{ $primaryKey: "1" }],
+        status: "loaded",
+        hasMore: false,
+        objectSet: mockObjectSet,
+      });
+    });
+
+    expect(result.current.objectSet).toBe(mockObjectSet);
+  });
+
+  it("should call invalidateObjectType when refetch is called", async () => {
+    const wrapper = createWrapper();
+
+    const { result } = renderHook(
+      () => useOsdkObjects(MockObjectType),
+      { wrapper },
+    );
+
+    await act(async () => {
+      await result.current.refetch();
+    });
+
+    expect(mockInvalidateObjectType).toHaveBeenCalledWith("MockObject");
   });
 });

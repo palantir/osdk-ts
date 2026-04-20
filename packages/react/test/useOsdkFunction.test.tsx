@@ -52,7 +52,10 @@ describe("useOsdkFunction", () => {
 
     return ({ children }: React.PropsWithChildren) => (
       <OsdkContext2.Provider
-        value={{ observableClient: observableClient as ObservableClient }}
+        value={{
+          observableClient: observableClient as ObservableClient,
+          devtoolsEnabled: false,
+        }}
       >
         {children}
       </OsdkContext2.Provider>

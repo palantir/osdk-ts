@@ -381,7 +381,7 @@ export class LinkTypeShapeExtractor {
           this.datasourceLocatorsMatch(shape.datasource, datasourceLocator)
           && shape.name === column
         ) {
-          columnReferences.push(id);
+          columnReferences.push(ridGenerator.toBlockInternalId(id));
           break;
         }
       }
@@ -424,7 +424,7 @@ export class LinkTypeShapeExtractor {
               type: "generic",
               generic: { type: "any", any: {} as Void },
             },
-            datasource: datasourceReadableId,
+            datasource: ridGenerator.toBlockInternalId(datasourceReadableId),
             typeclasses: [],
           };
 

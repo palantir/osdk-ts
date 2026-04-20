@@ -1,5 +1,67 @@
 # @osdk/widget.api
 
+## 3.6.0
+
+### Patch Changes
+
+- Updated dependencies [cbc8e9c]
+- Updated dependencies [e8d14a0]
+- Updated dependencies [2394ca7]
+  - @osdk/api@2.9.0
+
+## 3.5.0
+
+### Minor Changes
+
+- 7901ae0: Simulated release
+- e590bed: Add scenario parameter type for Scenarios support in custom widgets
+- beb2867: Add refreshHostDataOnAction
+- b9066dd: Support interfaces in object set parameters
+- 35f2f1a: Add Media inputs/outputs for Queries
+- fad598c: Export BrowserPermission object as well as type
+
+### Patch Changes
+
+- Updated dependencies [322c5bc]
+- Updated dependencies [4bb9769]
+- Updated dependencies [f294f5a]
+- Updated dependencies [0df859a]
+- Updated dependencies [d284bf2]
+- Updated dependencies [4ef6adc]
+- Updated dependencies [60b5ffb]
+- Updated dependencies [8c30908]
+- Updated dependencies [4a856cb]
+- Updated dependencies [b68cebd]
+- Updated dependencies [35f2f1a]
+- Updated dependencies [61e33ab]
+  - @osdk/api@2.8.0
+
+## 3.5.0-beta.32
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.32
+
+## 3.5.0-beta.31
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.31
+
+## 3.5.0-beta.30
+
+### Patch Changes
+
+- Updated dependencies [4ef6adc]
+  - @osdk/api@2.8.0-beta.30
+
+## 3.5.0-beta.29
+
+### Patch Changes
+
+- Updated dependencies [4a856cb]
+  - @osdk/api@2.8.0-beta.29
+
 ## 3.5.0-beta.28
 
 ### Patch Changes

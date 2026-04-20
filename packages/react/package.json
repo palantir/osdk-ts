@@ -1,6 +1,6 @@
 {
   "name": "@osdk/react",
-  "version": "0.10.0-beta.13",
+  "version": "0.11.0",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -15,6 +15,15 @@
       },
       "require": "./build/cjs/index.cjs",
       "default": "./build/browser/index.js"
+    },
+    "./devtools-registry": {
+      "browser": "./build/browser/public/devtools-registry.js",
+      "import": {
+        "types": "./build/types/public/devtools-registry.d.ts",
+        "default": "./build/esm/public/devtools-registry.js"
+      },
+      "require": "./build/cjs/public/devtools-registry.cjs",
+      "default": "./build/browser/public/devtools-registry.js"
     },
     "./experimental": {
       "browser": "./build/browser/public/experimental.js",
@@ -60,8 +69,9 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "peerDependencies": {
-    "@osdk/api": "*",
-    "@osdk/client": "*",
+    "@osdk/api": "^2.8.0",
+    "@osdk/client": "^2.8.0",
+    "@osdk/client.test.ontology": "workspace:*",
     "@osdk/foundry.admin": "*",
     "@osdk/foundry.core": "*",
     "@types/react": "^17 || ^18 || ^19",
@@ -69,6 +79,9 @@
     "react-dom": "^17 || ^18 || ^19"
   },
   "peerDependenciesMeta": {
+    "@osdk/client.test.ontology": {
+      "optional": true
+    },
     "@osdk/foundry.admin": {
       "optional": true
     },
@@ -79,7 +92,6 @@
   "devDependencies": {
     "@osdk/api": "workspace:*",
     "@osdk/client": "workspace:*",
-    "@osdk/client.test.ontology": "workspace:*",
     "@osdk/foundry.admin": "catalog:foundry-platform-typescript",
     "@osdk/foundry.core": "catalog:foundry-platform-typescript",
     "@osdk/monorepo.api-extractor": "workspace:~",

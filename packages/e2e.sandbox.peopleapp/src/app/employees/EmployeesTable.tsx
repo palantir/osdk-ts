@@ -1,8 +1,8 @@
 import type { DerivedProperty, Osdk } from "@osdk/api";
 import type { ColumnDefinition } from "@osdk/react-components/experimental";
 import { ObjectTable } from "@osdk/react-components/experimental";
+import { useOsdkClient } from "@osdk/react/experimental";
 import React, { useCallback } from "react";
-import { $ } from "../../foundryClient.js";
 import {
   Employee,
   getEmployeeDaysSinceStart,
@@ -44,7 +44,7 @@ const columnDefinitions: Array<
       queryDefinition: getEmployeeDaysSinceStart,
       getFunctionParams: (objectSet: any) => ({ employees: objectSet }),
       getKey: (obj: any) => `${obj.$objectType}:${obj.$primaryKey}`,
-      getValue: (data: any) => data.daysSinceStart,
+      getValue: (data: { daysSinceStart: any }) => data?.daysSinceStart,
     } as any,
     columnName: "Days Since Start",
     width: 150,
@@ -66,8 +66,8 @@ const columnDefinitions: Array<
     renderCell: (object: Osdk.Instance<Employee>) => {
       return (
         <div>
-          {object["firstFullTimeStartDate"]
-            ? new Date(object["firstFullTimeStartDate"]).toISOString()
+          {object.firstFullTimeStartDate
+            ? new Date(object.firstFullTimeStartDate).toISOString()
             : "No value"}
         </div>
       );
@@ -92,7 +92,7 @@ const columnDefinitions: Array<
     renderHeader: () => "Custom",
     renderCell: (object: Osdk.Instance<Employee>) => {
       return (
-        <button onClick={() => alert(`Clicked ${object["$title"]}`)}>
+        <button onClick={() => alert(`Clicked ${object.$title}`)}>
           Click me
         </button>
       );
@@ -110,12 +110,14 @@ export function EmployeesTable() {
     [],
   );
 
-  const os = $(Employee);
+  const client = useOsdkClient();
+
+  const os = client(Employee);
 
   return (
     <div
       style={{
-        height: "500px",
+        height: "300px",
         overflow: "hidden",
       }}
     >
@@ -130,6 +132,7 @@ export function EmployeesTable() {
         }]}
         onSubmitEdits={handleSubmitEdits}
         editMode="manual"
+        pageSize={5}
       />
     </div>
   );

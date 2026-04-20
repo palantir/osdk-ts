@@ -19,7 +19,6 @@ import {
   FilterList,
 } from "@osdk/react-components/experimental";
 import React, { useCallback, useMemo, useState } from "react";
-import { $ } from "../foundryClient.js";
 import { Employee } from "../generatedNoCheck2/index.js";
 
 const ALL_FILTER_DEFINITIONS: FilterDefinitionUnion<Employee>[] = [
@@ -28,24 +27,24 @@ const ALL_FILTER_DEFINITIONS: FilterDefinitionUnion<Employee>[] = [
     id: "department",
     key: "department",
     label: "Department",
-    filterComponent: "CHECKBOX_LIST",
-    filterState: { type: "SELECT", selectedValues: [] },
+    filterComponent: "LISTOGRAM",
+    filterState: { type: "EXACT_MATCH", values: [] },
   } as FilterDefinitionUnion<Employee>,
   {
     type: "PROPERTY",
     id: "locationCity",
     key: "locationCity",
     label: "Location City",
-    filterComponent: "CHECKBOX_LIST",
-    filterState: { type: "SELECT", selectedValues: [] },
+    filterComponent: "LISTOGRAM",
+    filterState: { type: "EXACT_MATCH", values: [] },
   } as FilterDefinitionUnion<Employee>,
   {
     type: "PROPERTY",
     id: "businessTitle",
     key: "businessTitle",
     label: "Business Title",
-    filterComponent: "CHECKBOX_LIST",
-    filterState: { type: "SELECT", selectedValues: [] },
+    filterComponent: "LISTOGRAM",
+    filterState: { type: "EXACT_MATCH", values: [] },
   } as FilterDefinitionUnion<Employee>,
   {
     type: "PROPERTY",
@@ -194,11 +193,12 @@ export function EmployeeFilters({
   return (
     <div style={containerStyle}>
       <FilterList
-        objectSet={$(Employee)}
+        objectType={Employee}
         filterDefinitions={filterDefinitions}
         onFilterClauseChanged={onFilterClauseChanged}
         onFilterRemoved={handleRemoveFilter}
         enableSorting={true}
+        addFilterMode="controlled"
         renderAddFilterButton={renderAddFilterButton}
         title="Employee Filters"
         showActiveFilterCount={true}

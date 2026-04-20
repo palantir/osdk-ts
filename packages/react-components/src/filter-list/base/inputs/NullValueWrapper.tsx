@@ -60,7 +60,7 @@ function NullValueWrapperInner({
           <Checkbox checked={includeNull} onCheckedChange={handleToggle} />
           <span className={styles.nullLabelText}>No value</span>
         </label>
-        {showNullCount && !error && nullCount > 0 && (
+        {showNullCount && !error && (
           <span className={styles.count}>
             {nullCount.toLocaleString()}
           </span>

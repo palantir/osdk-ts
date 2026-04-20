@@ -15,6 +15,7 @@
  */
 
 import type {
+  CompileTimeMetadata,
   DerivedProperty,
   ObjectOrInterfaceDefinition,
   ObjectSet,
@@ -22,12 +23,18 @@ import type {
   PrimaryKeyType,
   PropertyKeys,
   QueryDefinition,
-  QueryMetadata,
   SimplePropertyDef,
   WhereClause,
 } from "@osdk/api";
+import type { QueryParameterType } from "@osdk/client/unstable-do-not-use";
 import type * as React from "react";
-import type { CellEditInfo } from "./utils/types.js";
+import type { CellEditInfo, EditFieldConfig } from "./utils/types.js";
+
+export type {
+  DatePickerEditConfig,
+  DropdownEditConfig,
+  EditFieldConfig,
+} from "./utils/types.js";
 
 export type ColumnDefinition<
   Q extends ObjectOrInterfaceDefinition,
@@ -36,7 +43,18 @@ export type ColumnDefinition<
     string,
     never
   >,
-> = {
+> =
+  | EditableColumnDefinition<Q, RDPs, FunctionColumns>
+  | ReadonlyColumnDefinition<Q, RDPs, FunctionColumns>;
+
+interface SharedColumnDefinition<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
+    string,
+    never
+  >,
+> {
   locator: ColumnDefinitionLocator<Q, RDPs, FunctionColumns>;
 
   /**
@@ -54,17 +72,6 @@ export type ColumnDefinition<
   resizable?: boolean;
   orderable?: boolean;
   filterable?: boolean;
-  editable?: boolean;
-
-  /**
-   * Additional function to validate the cell value during edit
-   *
-   * @param value the current cell value
-   * @returns a promise that resolves to an error message string if validation fails, or undefined if validation succeeds
-   */
-  validateEdit?: (
-    value: unknown,
-  ) => Promise<string | undefined>;
 
   renderCell?: (
     object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
@@ -87,13 +94,61 @@ export type ColumnDefinition<
    * When both columnName and renderHeader are provided, renderHeader will take precedence in the table header.
    */
   renderHeader?: () => React.ReactNode;
-};
+}
+
+/**
+ * Column definition for an editable column. Setting `editable: true`
+ * unlocks `editFieldConfig` and `validateEdit`.
+ */
+interface EditableColumnDefinition<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
+    string,
+    never
+  >,
+> extends SharedColumnDefinition<Q, RDPs, FunctionColumns> {
+  editable: true;
+
+  /**
+   * Configuration for the cell editor component.
+   *
+   * When provided, the column uses the specified field component
+   * (e.g. dropdown) instead of the default auto-detected text/number input.
+   */
+  editFieldConfig?: EditFieldConfig;
+
+  /**
+   * Additional function to validate the cell value during edit.
+   *
+   * @param value the current cell value
+   * @returns a promise that resolves to an error message string if validation fails, or undefined if validation succeeds
+   */
+  validateEdit?: (
+    value: unknown,
+  ) => Promise<string | undefined>;
+}
+
+/**
+ * Column definition for a read-only column (default).
+ * `editFieldConfig` and `validateEdit` are not available.
+ */
+interface ReadonlyColumnDefinition<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
+    string,
+    never
+  >,
+> extends SharedColumnDefinition<Q, RDPs, FunctionColumns> {
+  editable?: false;
+}
 
 export type ExtractQueryParameters<
-  TQueryDef extends QueryDefinition,
-> = TQueryDef["__DefinitionMetadata"] extends QueryMetadata
-  ? TQueryDef["__DefinitionMetadata"]["parameters"]
-  : never;
+  Q extends QueryDefinition,
+> = CompileTimeMetadata<Q>["parameters"] extends Record<string, never>
+  ? undefined
+  : QueryParameterType<CompileTimeMetadata<Q>["parameters"]>;
 
 export interface PropertyColumnLocator<Q extends ObjectOrInterfaceDefinition> {
   type: "property";
@@ -122,7 +177,7 @@ export interface FunctionColumnLocator<
    * @returns - The function's input parameters including the object set.
    */
   getFunctionParams: (
-    objectSet: ObjectSet<Q>,
+    objectSet: ObjectSet<Q, RDPs>,
   ) => ExtractQueryParameters<FunctionColumns[keyof FunctionColumns]>;
 
   /**
@@ -140,7 +195,16 @@ export interface FunctionColumnLocator<
    * @param cellData - The raw data returned by the function for this object
    * @returns - The value to display in the cell
    */
-  getValue?: (cellData: unknown) => unknown;
+  getValue?: (cellData?: unknown) => unknown;
+
+  /**
+   * Minimum time between re-fetches of the same function with the same parameters, in milliseconds.
+   * Defaults to 5 minutes as it is expensive to fetch function columns for a large object set
+   * and they are expected to be relatively static in the context of an object table
+   *
+   * @default 300_000 (5 minutes)
+   */
+  dedupeIntervalMs?: number;
 }
 
 export interface RdpColumnLocator<
@@ -191,6 +255,22 @@ export interface ObjectTableProps<
   objectSet?: ObjectSet<Q>;
 
   objectSetOptions?: ObjectSetOptions<Q>;
+
+  /**
+   * Minimum time between fetch requests in milliseconds.
+   * Increasing this value reduces redundant network calls when the same data
+   * is requested multiple times in quick succession.
+   *
+   * @default 60_000 1 minute
+   */
+  dedupeIntervalMs?: number;
+
+  /**
+   * Number of objects to fetch per page.
+   *
+   * @default 50
+   */
+  pageSize?: number;
 
   /**
    * Ordered list of column definitions to show in the table

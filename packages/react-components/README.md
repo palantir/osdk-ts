@@ -10,11 +10,8 @@ Built on top of [@osdk/react](../react), these components use OSDK hooks interna
 
 Run the command to install:
 
-- @osdk/react-components - The unstyled components from this package
-- @osdk/react-components-styles - The default styles for the components
-
 ```sh
-npm install @osdk/react-components@beta @osdk/react-components-styles@beta
+npm install @osdk/react-components
 ```
 
 **Peer Dependencies:**
@@ -53,23 +50,55 @@ function App() {
 
 ### CSS Setup
 
-Add this to your application's entry css file (e.g., `index.css` or `index.scss`):
+Add the OSDK style import to your application's entry CSS file (e.g., `index.css`). This single import includes both design tokens and component styles.
+
+#### Understanding CSS Layers
+
+OSDK uses CSS [`@layer`](https://developer.mozilla.org/en-US/docs/Web/CSS/@layer) to make theming predictable. If you're not familiar with `@layer`, here's what you need to know:
+
+**What is `@layer`?** CSS `@layer` lets you group styles into named layers and control the order in which they apply. When two styles target the same element, the style in the _later_ layer always wins — regardless of selector specificity. This is what makes the theming system maintainable.
+**Adding your own layer:** You can add a custom layer (e.g., `user.brand`) after the OSDK layers to override any token or component style. Later layers always win.
+
+**When styles conflict, CSS resolves them in this order:**
+
+1. **Layer order** — Later layers always win (`osdk.components` < `user.brand`)
+2. **Selector specificity** — More specific selectors win _within the same layer_
+3. **Source order** — Later declarations win when specificity is equal
+
+#### With Tailwind CSS v4
+
+> **Important:** The `@layer` declaration defines the cascade order. Wrapping the Tailwind import in `layer(tailwind)` nests all of Tailwind's styles into a single named layer. By listing `tailwind` before the OSDK layers, OSDK styles take priority over Tailwind's resets and utilities.
 
 ```css
 /* index.css */
-@layer osdk.tokens, osdk.components;
+@layer tailwind, osdk.styles, user.brand;
 
-@import "@osdk/react-components-styles" layer(osdk.tokens);
-@import "@osdk/react-components/styles.css" layer(osdk.components);
+@import "tailwindcss" layer(tailwind);
+@import "@osdk/react-components/styles.css" layer(osdk.styles);
 
-.root {
+/* To add your own brand overrides on top, append a custom layer: */
+@import "./user-brand.css" layer(user.brand);
+```
+
+To add your own brand overrides on top:
+
+```css
+/* index.css */
+@layer osdk.styles, user.brand;
+
+@import "@osdk/react-components/styles.css" layer(osdk.styles);
+@import "./user-brand.css" layer(user.brand);
+```
+
+#### Portal isolation (required)
+
+Add `isolation: isolate` to your app's root element. This is required for Base UI portals. See https://base-ui.com/react/overview/quick-start#portals
+
+```css
+#root {
   isolation: isolate;
 }
 ```
-
-The `.root` isolation is required for Base UI portals. See https://base-ui.com/react/overview/quick-start#portals
-
-Using `@layer` ensures proper CSS cascade ordering - component styles are loaded before token styles, allowing tokens to override component defaults when needed.
 
 ## Components
 
@@ -187,7 +216,7 @@ This package focuses on complex, Ontology-aware components with built-in data fe
 
 ## Custom Styling
 
-See `@osdk/react-components-styles` README on how to apply custom themes and styling to the components.
+See the [CSS Variables Reference](./docs/CSSVariables.md) on how to apply custom themes and styling to the components.
 
 ## Example Usage
 

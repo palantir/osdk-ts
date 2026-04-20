@@ -24,10 +24,14 @@ import type {
   WhereClause,
 } from "@osdk/api";
 import type { ObjectTypeDefinition } from "@osdk/client";
-import type { ObserveAggregationArgs } from "@osdk/client/unstable-do-not-use";
-import { computeObjectSetCacheKey } from "@osdk/client/unstable-do-not-use";
-import React from "react";
 import {
+  getWireObjectSet,
+  type ObserveAggregationArgs,
+} from "@osdk/client/unstable-do-not-use";
+import React from "react";
+import { extractPayloadError, isPayloadLoading } from "./hookUtils.js";
+import {
+  devToolsMetadata,
   makeExternalStore,
   makeExternalStoreAsync,
 } from "./makeExternalStore.js";
@@ -89,8 +93,6 @@ export interface UseOsdkAggregationOptionsWithObjectSet<
   objectSet: ObjectSet<T>;
 }
 
-const EMPTY_WHERE = {};
-
 export interface UseOsdkAggregationResult<
   T extends ObjectOrInterfaceDefinition,
   A extends AggregateOpts<T>,
@@ -98,14 +100,8 @@ export interface UseOsdkAggregationResult<
   data: AggregationsResults<T, A> | undefined;
   isLoading: boolean;
   error: Error | undefined;
-  refetch: () => void;
+  refetch: () => Promise<void>;
 }
-
-declare const process: {
-  env: {
-    NODE_ENV: "development" | "production";
-  };
-};
 
 /**
  * React hook for performing aggregations on OSDK object sets.
@@ -166,7 +162,7 @@ export function useOsdkAggregation<
     | UseOsdkAggregationOptionsWithObjectSet<Q, A, RDPs>,
 ): UseOsdkAggregationResult<Q, A> {
   const {
-    where = EMPTY_WHERE,
+    where,
     withProperties,
     intersectWith,
     aggregate,
@@ -176,57 +172,44 @@ export function useOsdkAggregation<
 
   const { observableClient } = React.useContext(OsdkContext2);
 
-  const canonWhere = observableClient.canonicalizeWhereClause<Q>(where);
+  const canonOptions = observableClient.canonicalizeOptions({
+    where,
+    withProperties,
+    aggregate,
+    intersectWith,
+  });
 
-  const stableCanonWhere = React.useMemo(
-    () => canonWhere,
-    [JSON.stringify(canonWhere)],
-  );
+  const objectSetKey = objectSet
+    ? JSON.stringify(getWireObjectSet(objectSet as ObjectSet<Q>))
+    : undefined;
 
   const objectSetRef = React.useRef(objectSet);
   objectSetRef.current = objectSet;
 
-  const objectSetKeyString = objectSet
-    ? computeObjectSetCacheKey(objectSet)
-    : undefined;
-
-  const stableWithProperties = React.useMemo(
-    () => withProperties,
-    [JSON.stringify(withProperties)],
-  );
-
-  const stableAggregate = React.useMemo(
-    () => aggregate,
-    [JSON.stringify(aggregate)],
-  );
-
-  const stableIntersectWith = React.useMemo(
-    () => intersectWith,
-    [JSON.stringify(intersectWith)],
-  );
-
   const { subscribe, getSnapShot } = React.useMemo(
     () => {
-      if (objectSetKeyString && objectSetRef.current) {
+      const currentObjectSet = objectSetRef.current;
+      if (currentObjectSet) {
         return makeExternalStoreAsync<ObserveAggregationArgs<Q, A>>(
           (observer) =>
             observableClient.observeAggregation(
               {
-                type: type,
-                objectSet: objectSetRef.current!,
-                where: stableCanonWhere,
-                withProperties: stableWithProperties,
-                intersectWith: stableIntersectWith,
-                aggregate: stableAggregate,
+                type,
+                objectSet: currentObjectSet,
+                where: canonOptions.where,
+                withProperties: canonOptions.withProperties,
+                intersectWith: canonOptions.intersectWith,
+                aggregate: canonOptions.aggregate,
                 dedupeInterval: dedupeIntervalMs ?? 2_000,
               },
               observer,
             ),
-          process.env.NODE_ENV !== "production"
-            ? `aggregation ${type.apiName} ${objectSetKeyString} ${
-              JSON.stringify(stableCanonWhere)
-            }`
-            : void 0,
+          devToolsMetadata({
+            hookType: "useOsdkAggregation",
+            objectType: type.apiName,
+            where: canonOptions.where,
+            aggregate: canonOptions.aggregate,
+          }),
         );
       }
       return makeExternalStore<ObserveAggregationArgs<Q, A>>(
@@ -234,29 +217,32 @@ export function useOsdkAggregation<
           // eslint-disable-next-line @typescript-eslint/no-deprecated
           observableClient.observeAggregation(
             {
-              type: type,
-              where: stableCanonWhere,
-              withProperties: stableWithProperties,
-              intersectWith: stableIntersectWith,
-              aggregate: stableAggregate,
+              type,
+              where: canonOptions.where,
+              withProperties: canonOptions.withProperties,
+              intersectWith: canonOptions.intersectWith,
+              aggregate: canonOptions.aggregate,
               dedupeInterval: dedupeIntervalMs ?? 2_000,
             },
             observer,
           ),
-        process.env.NODE_ENV !== "production"
-          ? `aggregation ${type.apiName} ${JSON.stringify(stableCanonWhere)}`
-          : void 0,
+        devToolsMetadata({
+          hookType: "useOsdkAggregation",
+          objectType: type.apiName,
+          where: canonOptions.where,
+          aggregate: canonOptions.aggregate,
+        }),
       );
     },
     [
       observableClient,
       type.apiName,
       type.type,
-      objectSetKeyString,
-      stableCanonWhere,
-      stableWithProperties,
-      stableIntersectWith,
-      stableAggregate,
+      objectSetKey,
+      canonOptions.where,
+      canonOptions.withProperties,
+      canonOptions.intersectWith,
+      canonOptions.aggregate,
       dedupeIntervalMs,
     ],
   );
@@ -267,20 +253,10 @@ export function useOsdkAggregation<
     await observableClient.invalidateObjectType(type.apiName);
   }, [observableClient, type.apiName]);
 
-  return React.useMemo(() => {
-    let error: Error | undefined;
-    if (payload && "error" in payload && payload.error) {
-      error = payload.error;
-    } else if (payload?.status === "error") {
-      error = new Error("Failed to execute aggregation");
-    }
-
-    return {
-      data: payload?.result as AggregationsResults<Q, A> | undefined,
-      isLoading: payload?.status === "loading" || payload?.status === "init"
-        || !payload,
-      error,
-      refetch,
-    };
-  }, [payload, refetch]);
+  return React.useMemo(() => ({
+    data: payload?.result as AggregationsResults<Q, A> | undefined,
+    isLoading: isPayloadLoading(payload, true),
+    error: extractPayloadError(payload, "Failed to execute aggregation"),
+    refetch,
+  }), [payload, refetch]);
 }

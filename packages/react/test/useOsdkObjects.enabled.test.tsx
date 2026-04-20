@@ -32,11 +32,14 @@ describe("useOsdkObjects enabled option", () => {
   const createWrapper = () => {
     const observableClient = {
       observeList: mockObserveList,
-      canonicalizeWhereClause: vitest.fn((w) => w),
+      canonicalizeOptions: vitest.fn((opts) => opts),
+      invalidateObjectType: vitest.fn().mockResolvedValue(undefined),
     } as any;
 
     return ({ children }: React.PropsWithChildren) => (
-      <OsdkContext2.Provider value={{ observableClient }}>
+      <OsdkContext2.Provider
+        value={{ observableClient, devtoolsEnabled: false }}
+      >
         {children}
       </OsdkContext2.Provider>
     );

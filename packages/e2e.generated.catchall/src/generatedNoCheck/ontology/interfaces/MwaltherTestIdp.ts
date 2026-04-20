@@ -7,12 +7,13 @@ import type {
   ObjectSet as $ObjectSet,
   Osdk as $Osdk,
   PropertyValueWireToClient as $PropType,
+  SingleLinkAccessor as $SingleLinkAccessor,
 } from '@osdk/client';
 
 export type OsdkObjectLinks$MwaltherTestIdp = {};
 
 export namespace MwaltherTestIdp {
-  export type PropertyKeys = 'newProperty1' | 'mwaltherNam' | 'idpAge' | 'mwaltherName';
+  export type PropertyKeys = 'mwaltherName' | 'idpAge' | 'mwaltherNam' | 'newProperty1';
 
   export interface Props {
     /**

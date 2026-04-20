@@ -42,7 +42,7 @@ export function convertLink(
 ): LinkTypeBlockDataV2 {
   validateLink(linkType);
   let definition: LinkDefinition;
-  let datasource: ManyToManyLinkTypeDatasource | undefined = undefined;
+  let datasource: ManyToManyLinkTypeDatasource | undefined;
   if ("one" in linkType) {
     const { apiName: oneObjectApiName, object: oneObject } = getObject(
       linkType.one.object,
@@ -158,17 +158,18 @@ export function convertLink(
         },
       },
     };
-
+    const datasetLocator = ridGenerator.generateDatasetLocator(
+      `link.${linkType.apiName}`,
+      new Set([resolvedColumnA, resolvedColumnB]),
+    );
     datasource = {
       rid: ridGenerator.generateDatasourceRid(linkType.apiName),
       datasource: {
         type: "dataset",
         dataset: {
           // TODO: Add proper branchId from link configuration
-          branchId: "main",
-          datasetRid: ridGenerator.generateDatasourceRid(
-            linkType.apiName,
-          ),
+          branchId: datasetLocator.branchId,
+          datasetRid: datasetLocator.rid,
           writebackDatasetRid: undefined,
           // TODO: Convert property mappings to use property RIDs as keys
           objectTypeAPrimaryKeyMapping: {
@@ -190,7 +191,7 @@ export function convertLink(
 
   return {
     linkType: {
-      definition: definition,
+      definition,
       rid: ridGenerator.generateRidForLinkType(linkTypeId),
       id: cleanAndValidateLinkTypeId(linkType.apiName),
       status: convertLinkStatus(linkType.status, ridGenerator),
@@ -291,7 +292,7 @@ function validateLink(linkDefinition: LinkType) {
 }
 
 export function getObject(
-  object: string | ObjectTypeDefinition,
+  object: string | ObjectTypeDefinition | ObjectType,
 ): { apiName: string; object: ObjectType } {
   const objectApiName = typeof object === "string" ? object : object.apiName;
   const fullObject =

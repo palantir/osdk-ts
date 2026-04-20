@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import { Button } from "@base-ui/react/button";
 import classnames from "classnames";
-import React, { memo, useCallback } from "react";
+import React, { memo, useCallback, useMemo } from "react";
 import { Combobox } from "../../../base-components/combobox/Combobox.js";
 import type { PropertyAggregationValue } from "../../types/AggregationTypes.js";
 import styles from "./MultiSelectInput.module.css";
@@ -31,9 +30,8 @@ interface MultiSelectInputProps {
   className?: string;
   style?: React.CSSProperties;
   placeholder?: string;
-  maxDisplayedTags?: number;
-  showClearAll?: boolean;
   ariaLabel?: string;
+  renderValue?: (value: string) => string;
 }
 
 function MultiSelectInputInner({
@@ -45,9 +43,8 @@ function MultiSelectInputInner({
   className,
   style,
   placeholder = "Select values...",
-  maxDisplayedTags = 3,
-  showClearAll = true,
   ariaLabel = "Search values",
+  renderValue,
 }: MultiSelectInputProps): React.ReactElement {
   const handleValueChange = useCallback(
     (newValues: string[] | null) => {
@@ -56,19 +53,60 @@ function MultiSelectInputInner({
     [onChange],
   );
 
-  const removeValue = useCallback(
-    (value: string) => {
-      onChange(selectedValues.filter((v) => v !== value));
-    },
-    [selectedValues, onChange],
+  const items = useMemo(
+    () => values.map(({ value }) => value),
+    [values],
   );
 
-  const clearAll = useCallback(() => {
-    onChange([]);
-  }, [onChange]);
+  const countByValue = useMemo(
+    () => new Map(values.map(({ value, count }) => [value, count])),
+    [values],
+  );
 
-  const displayedTags = selectedValues.slice(0, maxDisplayedTags);
-  const remainingCount = selectedValues.length - maxDisplayedTags;
+  const comboboxFilter = useMemo(
+    () =>
+      renderValue
+        ? (itemValue: string, query: string) =>
+          renderValue(itemValue).toLowerCase().includes(query.toLowerCase())
+        : undefined,
+    [renderValue],
+  );
+
+  const renderItem = useCallback(
+    (value: string) => (
+      <Combobox.Item key={value} value={value}>
+        <Combobox.ItemIndicator />
+        <span className={styles.itemLabel}>
+          {renderValue ? renderValue(value) : value}
+        </span>
+        <span className={styles.itemCount}>
+          ({(countByValue.get(value) ?? 0).toLocaleString()})
+        </span>
+      </Combobox.Item>
+    ),
+    [countByValue, renderValue],
+  );
+
+  const renderChips = useCallback(
+    (selectedItems: string[]) => (
+      <>
+        {selectedItems.map((value) => (
+          <Combobox.Chip
+            key={value}
+            aria-label={value}
+          >
+            {renderValue ? renderValue(value) : value}
+            <Combobox.ChipRemove />
+          </Combobox.Chip>
+        ))}
+        <Combobox.Input
+          placeholder={selectedItems.length > 0 ? "" : placeholder}
+          aria-label={ariaLabel}
+        />
+      </>
+    ),
+    [placeholder, ariaLabel, renderValue],
+  );
 
   return (
     <div
@@ -90,9 +128,11 @@ function MultiSelectInputInner({
 
       {(values.length > 0 || isLoading) && (
         <Combobox.Root<string, true>
-          multiple
+          multiple={true}
           value={selectedValues}
           onValueChange={handleValueChange}
+          items={items}
+          filter={comboboxFilter}
         >
           {isLoading && (
             <div className={sharedStyles.loadingMessage}>
@@ -100,59 +140,15 @@ function MultiSelectInputInner({
             </div>
           )}
 
-          {selectedValues.length > 0 && (
-            <div className={sharedStyles.tagContainer}>
-              {displayedTags.map((value) => (
-                <span key={value} className={sharedStyles.tag}>
-                  {value}
-                  <Button
-                    type="button"
-                    className={sharedStyles.tagRemove}
-                    onClick={() =>
-                      removeValue(value)}
-                    aria-label={`Remove ${value}`}
-                  >
-                    ×
-                  </Button>
-                </span>
-              ))}
-              {remainingCount > 0 && (
-                <span className={sharedStyles.tag}>
-                  +{remainingCount} more
-                </span>
-              )}
-            </div>
-          )}
-
-          <div className={styles.inputRow}>
-            <Combobox.SearchInput
-              placeholder={selectedValues.length > 0
-                ? `${selectedValues.length} selected`
-                : placeholder}
-              aria-label={ariaLabel}
-            />
-            {showClearAll && selectedValues.length > 0 && (
-              <Combobox.Clear
-                className={styles.clearButton}
-                onClick={clearAll}
-                aria-label="Clear all selections"
-              />
-            )}
-          </div>
+          <Combobox.Chips>
+            <Combobox.Value>{renderChips}</Combobox.Value>
+          </Combobox.Chips>
 
           <Combobox.Portal>
             <Combobox.Positioner>
               <Combobox.Popup>
-                {values.length === 0
-                  ? <Combobox.Empty>No options available</Combobox.Empty>
-                  : values.map(({ value, count }) => (
-                    <Combobox.Item key={value} value={value}>
-                      <span>{value}</span>
-                      <span className={styles.itemCount}>
-                        ({count.toLocaleString()})
-                      </span>
-                    </Combobox.Item>
-                  ))}
+                <Combobox.Empty>No matching options</Combobox.Empty>
+                <Combobox.List>{renderItem}</Combobox.List>
               </Combobox.Popup>
             </Combobox.Positioner>
           </Combobox.Portal>

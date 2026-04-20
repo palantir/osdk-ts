@@ -39,7 +39,7 @@ import type {
 type ParameterRid = string;
 import { createHash } from "crypto";
 import { toBlockShapeId } from "../cli/marketplaceSerialization/CodeBlockSpec.js";
-import { InputMappingEntry } from "../cli/marketplaceSerialization/index.js";
+import type { InputMappingEntry } from "../cli/marketplaceSerialization/index.js";
 
 // Given a unique key generates a rid deterministically (from a lock file eventually)
 export type ReadableId = string & { __brand: "ReadableId" };
@@ -132,7 +132,7 @@ export interface OntologyRidGenerator {
     apiName: string,
   ): StructFieldRid;
   // Datasource locator methods
-  generateLocator(
+  generateDatasetLocator(
     dataSetName: string,
     columnNames: Set<string>,
   ): DatasetDatasourceLocator;
@@ -744,7 +744,7 @@ export class OntologyRidGeneratorImpl implements OntologyRidGenerator {
   }
 
   // Datasource locator methods
-  generateLocator(
+  generateDatasetLocator(
     dataSetName: string,
     columnNames: Set<string>,
   ): DatasetDatasourceLocator {
@@ -762,7 +762,7 @@ export class OntologyRidGeneratorImpl implements OntologyRidGenerator {
             type: "dataset",
             dataset: { rid: datasetRid, branch: branchId },
           } as DatasourceLocator,
-          name: name,
+          name,
         } as ResolvedDatasourceColumnShape,
       );
     });
@@ -807,7 +807,7 @@ export class OntologyRidGeneratorImpl implements OntologyRidGenerator {
         ReadableIdGenerator.getForStreamColumn(streamName, name),
         {
           datasource: marketplaceLocator,
-          name: name,
+          name,
         } as ResolvedDatasourceColumnShape,
       );
     });
@@ -841,7 +841,7 @@ export class OntologyRidGeneratorImpl implements OntologyRidGenerator {
             type: "restrictedView",
             restrictedView: { rid: restrictedViewRid },
           } as DatasourceLocator,
-          name: name,
+          name,
         } as ResolvedDatasourceColumnShape,
       );
     });

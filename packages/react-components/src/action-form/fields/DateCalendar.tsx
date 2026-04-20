@@ -14,35 +14,61 @@
  * limitations under the License.
  */
 
+import { ChevronLeft, ChevronRight } from "@blueprintjs/icons";
+import classnames from "classnames";
 import React, { useMemo } from "react";
-import type {
-  ClassNames,
-  DateAfter,
-  DateBefore,
-  Matcher,
-} from "react-day-picker";
+import type { ClassNames } from "react-day-picker";
 import { DayPicker } from "react-day-picker";
+import {
+  buildDisabledMatchers,
+  DEFAULT_FROM_YEAR,
+  DEFAULT_TO_YEAR,
+} from "./calendarShared.js";
 import styles from "./DateCalendar.module.css";
 
-const CLASS_NAMES: Partial<ClassNames> = {
+export const CLASS_NAMES: ClassNames = {
   root: styles.calendar,
   months: styles.calendarMonths,
-  month_grid: styles.calendarMonthGrid,
-  weekday: styles.calendarWeekday,
-  day: styles.calendarDay,
-  day_button: styles.calendarDayButton,
-  selected: styles.calendarSelected,
-  today: styles.calendarToday,
-  outside: styles.calendarOutside,
-  disabled: styles.calendarDisabled,
-  hidden: styles.calendarHidden,
+  table: styles.calendarMonthGrid,
+  head_cell: styles.calendarWeekday,
+  cell: styles.calendarDay,
+  day: styles.calendarDayButton,
+  day_selected: styles.calendarSelected,
+  day_today: styles.calendarToday,
+  day_outside: styles.calendarOutside,
+  day_disabled: styles.calendarDisabled,
+  day_hidden: styles.calendarHidden,
   nav: styles.calendarNav,
-  button_previous: styles.calendarNavButton,
-  button_next: styles.calendarNavButton,
-  month_caption: styles.calendarMonthCaption,
-  caption_label: styles.calendarCaptionLabel,
-  chevron: styles.calendarChevron,
+  nav_button_previous: classnames(
+    styles.calendarNavButton,
+    styles.calendarNavPrev,
+  ),
+  nav_button_next: classnames(styles.calendarNavButton, styles.calendarNavNext),
+  caption: styles.calendarMonthCaption,
+  caption_label: styles.calendarVhidden,
+  caption_dropdowns: styles.calendarCaptionDropdowns,
+  dropdown: styles.calendarDropdown,
+  dropdown_month: styles.calendarDropdown,
+  dropdown_year: styles.calendarDropdown,
+  nav_icon: styles.calendarChevron,
+  vhidden: styles.calendarVhidden,
+  tfoot: styles.calendarFooter,
 };
+
+const NAV_ICON_SIZE = 12;
+
+function IconLeft(): React.ReactElement {
+  return <ChevronLeft size={NAV_ICON_SIZE} />;
+}
+
+function IconRight(): React.ReactElement {
+  return <ChevronRight size={NAV_ICON_SIZE} />;
+}
+
+export const CALENDAR_COMPONENTS: {
+  IconLeft: () => React.ReactElement;
+  IconRight: () => React.ReactElement;
+} = { IconLeft, IconRight };
 
 export interface DateCalendarProps {
   dateSelected: Date | undefined;
@@ -59,18 +85,10 @@ export default function DateCalendar({
   max,
   footer,
 }: DateCalendarProps): React.ReactElement {
-  const disabled = useMemo((): Matcher[] => {
-    const matchers: Matcher[] = [];
-    if (min != null) {
-      const before: DateBefore = { before: min };
-      matchers.push(before);
-    }
-    if (max != null) {
-      const after: DateAfter = { after: max };
-      matchers.push(after);
-    }
-    return matchers;
-  }, [min, max]);
+  const disabled = useMemo(() => buildDisabledMatchers(min, max), [min, max]);
+
+  const fromYear = min != null ? min.getFullYear() : DEFAULT_FROM_YEAR;
+  const toYear = max != null ? max.getFullYear() : DEFAULT_TO_YEAR;
 
   return (
     <DayPicker
@@ -80,7 +98,16 @@ export default function DateCalendar({
       disabled={disabled}
       defaultMonth={dateSelected}
       classNames={CLASS_NAMES}
+      components={CALENDAR_COMPONENTS}
       footer={footer}
+      // Render month/year as dropdown selects + prev/next arrows,
+      // so users can jump directly to any month/year without paging.
+      captionLayout="dropdown-buttons"
+      fromYear={fromYear}
+      toYear={toYear}
+      showOutsideDays={true}
+      // Always render 6 rows so the calendar height doesn't jump between months.
+      fixedWeeks={true}
     />
   );
 }

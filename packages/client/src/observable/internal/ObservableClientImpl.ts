@@ -44,6 +44,9 @@ import type { ListPayload } from "../ListPayload.js";
 import type { ObjectPayload } from "../ObjectPayload.js";
 import type { ObjectSetPayload } from "../ObjectSetPayload.js";
 import type {
+  CacheSnapshot,
+  CanonicalizedOptions,
+  CanonicalizeOptionsInput,
   ObservableClient,
   ObserveAggregationArgs,
   ObserveAggregationOptions,
@@ -58,6 +61,11 @@ import type {
   Unsubscribable,
 } from "../ObservableClient.js";
 import type { Observer } from "../ObservableClient/common.js";
+import type {
+  MediaMetadataObserveOptions,
+  MediaMetadataPayload,
+} from "../ObservableClient/MediaObservableTypes.js";
+import type { MediaPropertyLocation } from "../ObservableClient/MediaTypes.js";
 import type { ObserveLinks } from "../ObservableClient/ObserveLink.js";
 import type { AggregationPayloadBase } from "./aggregation/AggregationQuery.js";
 import type { Canonical } from "./Canonical.js";
@@ -75,6 +83,10 @@ import { UnsubscribableWrapper } from "./UnsubscribableWrapper.js";
  */
 export class ObservableClientImpl implements ObservableClient {
   __experimentalStore: Store;
+
+  #unionCache = new WeakMap<Canonical<string[]>, ReadonlyArray<any>>();
+  #intersectCache = new WeakMap<Canonical<string[]>, ReadonlyArray<any>>();
+  #subtractCache = new WeakMap<Canonical<string[]>, ReadonlyArray<any>>();
 
   constructor(store: Store) {
     this.__experimentalStore = store;
@@ -313,6 +325,86 @@ export class ObservableClientImpl implements ObservableClient {
     return this.__experimentalStore.whereCanonicalizer
       .canonicalize(where) as Canonical<WhereClause<T, RDPs>>;
   }
+
+  public canonicalizeOptions<OS, T extends CanonicalizeOptionsInput<OS>>(
+    options: T,
+  ): CanonicalizedOptions<T> {
+    const store = this.__experimentalStore;
+    const result = { ...options };
+
+    result.where = store.whereCanonicalizer.canonicalize(result.where);
+    result.withProperties = store.genericCanonicalizer.canonicalize(
+      result.withProperties,
+    );
+    result.orderBy = store.orderByCanonicalizer.canonicalize(result.orderBy);
+    result.aggregate = store.genericCanonicalizer.canonicalize(
+      result.aggregate,
+    );
+    result.intersectWith = store.genericCanonicalizer.canonicalize(
+      result.intersectWith,
+    );
+    result.$select = store.selectCanonicalizer.canonicalize(result.$select);
+
+    result.union = this.#canonObjectSetArray(
+      result.union,
+      store.objectSetArrayCanonicalizer.canonicalizeUnion.bind(
+        store.objectSetArrayCanonicalizer,
+      ),
+      this.#unionCache,
+    );
+    result.intersect = this.#canonObjectSetArray(
+      result.intersect,
+      store.objectSetArrayCanonicalizer.canonicalizeIntersect.bind(
+        store.objectSetArrayCanonicalizer,
+      ),
+      this.#intersectCache,
+    );
+    result.subtract = this.#canonObjectSetArray(
+      result.subtract,
+      store.objectSetArrayCanonicalizer.canonicalizeSubtract.bind(
+        store.objectSetArrayCanonicalizer,
+      ),
+      this.#subtractCache,
+    );
+
+    return result as CanonicalizedOptions<T>;
+  }
+
+  #canonObjectSetArray<T>(
+    arr: ReadonlyArray<T> | undefined,
+    canonicalize: (wireStrings: string[]) => Canonical<string[]>,
+    cache: WeakMap<Canonical<string[]>, ReadonlyArray<T>>,
+  ): ReadonlyArray<T> | undefined {
+    if (!arr || arr.length === 0) {
+      return arr;
+    }
+    const wireStrings = arr.map(os =>
+      JSON.stringify(getWireObjectSet(os as ObjectSet<any, any>))
+    );
+    const canonKey = canonicalize(wireStrings);
+    let cached = cache.get(canonKey);
+    if (!cached) {
+      cached = arr;
+      cache.set(canonKey, cached);
+    }
+    return cached;
+  }
+
+  public observeMediaMetadata(
+    coords: MediaPropertyLocation,
+    options: MediaMetadataObserveOptions,
+    observer: Observer<MediaMetadataPayload>,
+  ): Unsubscribable {
+    return this.__experimentalStore.media.observeMediaMetadata(
+      coords,
+      options,
+      observer,
+    );
+  }
+
+  public async getCacheSnapshot(): Promise<CacheSnapshot> {
+    return this.__experimentalStore.getCacheSnapshot();
+  }
 }
 
 function observeSingleLink(
@@ -328,7 +420,7 @@ function observeSingleLink(
       linkedObjectsBySourcePrimaryKey: new Map(),
       isOptimistic: false,
       lastUpdated: 0,
-      fetchMore: () => Promise.resolve(),
+      fetchMore: async () => {},
       hasMore: false,
       status: "loaded",
       totalCount: "0",
@@ -426,7 +518,7 @@ function observeMultiLinks(
       lastUpdated: latestUpdated,
       fetchMore: hasMore
         ? () => Promise.all(fetchMores.map(fn => fn())).then(() => {})
-        : () => Promise.resolve(),
+        : async () => {},
       hasMore,
       status: loading
         ? "loading"

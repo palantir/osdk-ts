@@ -1,5 +1,20 @@
 # @osdk/cli.common
 
+## 0.33.0
+
+### Minor Changes
+
+- 40fe279: Fix cli by making referenced packages bundled
+
+## 0.32.0
+
+### Minor Changes
+
+- 322c5bc: Simulated release
+- 35f2f1a: Add Media inputs/outputs for Queries
+
+## 0.32.0-beta.5
+
 ## 0.32.0-beta.4
 
 ## 0.32.0-beta.3

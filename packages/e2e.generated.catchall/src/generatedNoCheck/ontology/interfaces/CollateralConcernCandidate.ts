@@ -7,6 +7,7 @@ import type {
   ObjectSet as $ObjectSet,
   Osdk as $Osdk,
   PropertyValueWireToClient as $PropType,
+  SingleLinkAccessor as $SingleLinkAccessor,
 } from '@osdk/client';
 
 export interface OsdkObjectLinks$CollateralConcernCandidate {
@@ -14,7 +15,7 @@ export interface OsdkObjectLinks$CollateralConcernCandidate {
 }
 
 export namespace CollateralConcernCandidate {
-  export type PropertyKeys = 'collateralConcernName' | 'collateralConcernDescription';
+  export type PropertyKeys = 'collateralConcernDescription' | 'collateralConcernName';
 
   export interface Props {
     /**

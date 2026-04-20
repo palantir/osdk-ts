@@ -179,9 +179,21 @@
   color: var(--osdk-typography-color-default-rest);
   font-size: var(--osdk-typography-size-body-medium);
 
-  /* Blueprint icon color override to inherit surrounding text color */
+  /* Blueprint icon alignment and color override */
   .bp6-icon {
+    display: inline-block;
+    flex: 0 0 auto;
+    vertical-align: text-bottom;
     fill: currentColor;
+  }
+
+  /*
+   * Blueprint 6 icon components use oversized path coordinates (320×320)
+   * with scale(0.05, -0.05) transforms. During rendering the path extends
+   * beyond the SVG viewBox, so overflow must be visible to prevent clipping.
+   */
+  .bp6-icon > svg {
+    overflow: visible;
   }
 
   *,

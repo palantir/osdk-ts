@@ -15,3 +15,4 @@
  */
 
 export { createSharedClientContext } from "./createSharedClientContext.js";
+export { USER_AGENT_HEADER } from "./createSharedClientContext.js";

@@ -1,7 +1,7 @@
 {
   "name": "@osdk/typescript-sdk-docs-examples",
   "private": true,
-  "version": "0.5.0-beta.2",
+  "version": "0.5.0",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -38,8 +38,8 @@
   },
   "dependencies": {},
   "peerDependencies": {
-    "@osdk/client": "workspace:~",
-    "@osdk/functions": "workspace:~"
+    "@osdk/client": "workspace:^",
+    "@osdk/functions": "workspace:^"
   },
   "devDependencies": {
     "@osdk/api": "workspace:~",

@@ -15,6 +15,7 @@
  */
 
 export type MarkingSelectionState =
+  | "NONE"
   | "SELECTED"
   | "IMPLIED"
   | "DISALLOWED"
@@ -49,4 +50,10 @@ export interface CategoryMarkingGroup {
 
 export interface RequiredMarkingGroup {
   markingNames: string[];
+}
+
+export interface MaxClassificationConstraint {
+  bannerClassificationString: string;
+  helperText?: string;
+  markingIds: string[];
 }

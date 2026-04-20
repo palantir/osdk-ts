@@ -27,7 +27,7 @@ import type {
 } from "@osdk/client/unstable-do-not-use";
 import { getWireObjectSet } from "@osdk/client/unstable-do-not-use";
 import React from "react";
-import { makeExternalStore } from "./makeExternalStore.js";
+import { devToolsMetadata, makeExternalStore } from "./makeExternalStore.js";
 import { OsdkContext2 } from "./OsdkContext2.js";
 
 export interface UseOsdkFunctionOptions<Q extends QueryDefinition<unknown>> {
@@ -127,14 +127,8 @@ export interface UseOsdkFunctionResult<Q extends QueryDefinition<unknown>> {
    * Manually refetch the function.
    * Useful for "pull to refresh" or retry patterns.
    */
-  refetch: () => void;
+  refetch: () => Promise<void>;
 }
-
-declare const process: {
-  env: {
-    NODE_ENV: "development" | "production";
-  };
-};
 
 /**
  * React hook for executing and observing OSDK functions.
@@ -211,11 +205,10 @@ export function useOsdkFunction<Q extends QueryDefinition<unknown>>(
       if (!enabled) {
         return makeExternalStore<ObserveFunctionCallbackArgs<Q>>(
           () => ({ unsubscribe: () => {} }),
-          process.env.NODE_ENV !== "production"
-            ? `function ${queryDef.apiName} ${
-              JSON.stringify(stableParams)
-            } [DISABLED]`
-            : void 0,
+          devToolsMetadata({
+            hookType: "useOsdkFunction",
+            objectType: queryDef.apiName,
+          }),
         );
       }
       return makeExternalStore<ObserveFunctionCallbackArgs<Q>>(
@@ -230,9 +223,10 @@ export function useOsdkFunction<Q extends QueryDefinition<unknown>>(
             },
             observer,
           ),
-        process.env.NODE_ENV !== "production"
-          ? `function ${queryDef.apiName} ${JSON.stringify(stableParams)}`
-          : void 0,
+        devToolsMetadata({
+          hookType: "useOsdkFunction",
+          objectType: queryDef.apiName,
+        }),
       );
     },
     [
@@ -249,8 +243,8 @@ export function useOsdkFunction<Q extends QueryDefinition<unknown>>(
 
   const payload = React.useSyncExternalStore(subscribe, getSnapShot);
 
-  const refetch = React.useCallback(() => {
-    void observableClient.invalidateFunction(queryDef, paramsForApi);
+  const refetch = React.useCallback(async () => {
+    await observableClient.invalidateFunction(queryDef, paramsForApi);
   }, [observableClient, queryDef, paramsForApi]);
 
   return React.useMemo(() => {

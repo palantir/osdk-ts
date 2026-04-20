@@ -29,12 +29,13 @@ import { coerceToString } from "../utils/coerceFilterValue.js";
 
 interface SingleSelectFilterInputProps<Q extends ObjectTypeDefinition> {
   objectType: Q;
-  objectSet: ObjectSet<Q>;
+  objectSet?: ObjectSet<Q>;
   propertyKey: string;
   filterState: FilterState | undefined;
   onFilterStateChanged: (state: FilterState) => void;
   whereClause: WhereClause<Q>;
   excludeRowOpen?: boolean;
+  renderValue?: (value: string) => string;
 }
 
 function SingleSelectFilterInputInner<Q extends ObjectTypeDefinition>({
@@ -45,6 +46,7 @@ function SingleSelectFilterInputInner<Q extends ObjectTypeDefinition>({
   onFilterStateChanged,
   whereClause,
   excludeRowOpen,
+  renderValue,
 }: SingleSelectFilterInputProps<Q>): React.ReactElement {
   const selectedValue = useMemo(
     () =>
@@ -54,6 +56,14 @@ function SingleSelectFilterInputInner<Q extends ObjectTypeDefinition>({
     [filterState],
   );
   const isExcluding = filterState?.isExcluding ?? false;
+
+  const handleClearAll = useCallback(() => {
+    onFilterStateChanged({
+      type: "SELECT",
+      selectedValues: [],
+      isExcluding,
+    });
+  }, [onFilterStateChanged, isExcluding]);
 
   const handleChange = useCallback(
     (value: string | undefined) => {
@@ -84,6 +94,7 @@ function SingleSelectFilterInputInner<Q extends ObjectTypeDefinition>({
       filterState={filterState}
       onFilterStateChanged={onFilterStateChanged}
       totalValueCount={data.length}
+      onClearAll={handleClearAll}
     >
       <SingleSelectInput
         values={data}
@@ -92,6 +103,7 @@ function SingleSelectFilterInputInner<Q extends ObjectTypeDefinition>({
         selectedValue={selectedValue}
         onChange={handleChange}
         ariaLabel={`Select ${propertyKey}`}
+        renderValue={renderValue}
       />
     </FilterInputExcludeRow>
   );

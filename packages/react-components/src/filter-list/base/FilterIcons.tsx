@@ -17,12 +17,13 @@
 import {
   ChevronDown,
   Cross,
+  Disable,
   DoubleChevronLeft,
   DoubleChevronRight,
   More,
+  Reset,
   Search,
   Tick,
-  Undo,
 } from "@blueprintjs/icons";
 import React from "react";
 
@@ -51,9 +52,13 @@ export function ExpandIcon(): React.ReactElement {
 }
 
 export function ResetIcon(): React.ReactElement {
-  return <Undo size={14} />;
+  return <Reset size={12} />;
 }
 
 export function CheckIcon(): React.ReactElement {
   return <Tick size={12} />;
+}
+
+export function ExcludeIcon(): React.ReactElement {
+  return <Disable color="currentColor" size={12} />;
 }
