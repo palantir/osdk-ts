@@ -4,7 +4,7 @@
 
 Merge @osdk/react-components-styles into @osdk/react-components
 
-Design tokens and component styles are now bundled in a single package. The `@osdk/react-components-styles` package has been removed.
+Design tokens and component styles are now bundled in a single package. `@osdk/react-components-styles` is deprecated and will be removed in a future release.
 
 **Migration steps:**
 

@@ -10,8 +10,8 @@ Setup required before using `@osdk/react-components` or `@osdk/cbac-components`.
 
 ```bash
 npm install @osdk/api@beta @osdk/client@beta @osdk/react@beta
-npm install @osdk/react-components@beta @osdk/react-components-styles@beta
-npm install @osdk/cbac-components@beta  # if using CBAC components
+npm install @osdk/react-components
+npm install @osdk/cbac-components # if using CBAC components
 npm install react react-dom classnames
 ```
 

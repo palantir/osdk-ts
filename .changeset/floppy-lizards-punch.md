@@ -19,6 +19,7 @@
 "@osdk/react-components-storybook": patch
 "@osdk/create-app.template.react": patch
 "@osdk/create-app.template.vue": patch
+"@osdk/react-components-styles": patch
 "@osdk/foundry-sdk-generator": patch
 "@osdk/vite-plugin-superrepo": patch
 "@osdk/client.test.ontology": patch

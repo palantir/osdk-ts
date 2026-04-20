@@ -1,0 +1,204 @@
+@import "@blueprintjs/core/lib/css/blueprint-design-tokens.css";
+
+/* Level 1 - Blueprint Tokens */
+:root {
+  /* Blueprint token mappings - Surface tokens */
+  --osdk-surface-z-index-1: var(--bp-surface-z-index-1);
+  --osdk-surface-z-index-2: var(--bp-surface-z-index-2);
+  --osdk-surface-z-index-3: var(--bp-surface-z-index-3);
+  --osdk-surface-z-index-4: var(--bp-surface-z-index-4);
+  --osdk-surface-border-radius: var(--bp-surface-border-radius);
+  --osdk-surface-layer-primary: var(--bp-surface-layer-primary);
+  --osdk-surface-border-width: var(--bp-surface-border-width);
+  --osdk-surface-border-color-default: var(--bp-surface-border-color-default);
+  --osdk-surface-border-color-strong: var(--bp-surface-border-color-strong);
+  --osdk-surface-background-color-default-rest: var(
+    --bp-surface-background-color-default-rest
+  );
+  --osdk-surface-background-color-default-hover: var(
+    --bp-surface-background-color-default-hover
+  );
+  --osdk-surface-background-color-default-active: var(
+    --bp-surface-background-color-default-active
+  );
+  --osdk-surface-background-color-danger-rest: var(
+    --bp-surface-background-color-danger-rest
+  );
+  --osdk-surface-background-color-danger-hover: var(
+    --bp-surface-background-color-danger-hover
+  );
+  --osdk-surface-background-color-danger-active: var(
+    --bp-surface-background-color-danger-active
+  );
+  --osdk-surface-spacing: var(--bp-surface-spacing);
+  --osdk-surface-shadow-2: var(--bp-surface-shadow-2);
+
+  /* Blueprint token mappings - Typography tokens */
+  --osdk-typography-family-default: var(--bp-typography-family-default);
+  --osdk-typography-color-muted: var(--bp-typography-color-muted);
+  --osdk-typography-color-default-rest: var(--bp-typography-color-default-rest);
+  --osdk-typography-color-danger-rest: var(--bp-typography-color-danger-rest);
+  --osdk-typography-color-danger-active: var(
+    --bp-typography-color-danger-active
+  );
+  --osdk-typography-size-body-x-small: var(--bp-typography-size-body-x-small);
+  --osdk-typography-size-body-small: var(--bp-typography-size-body-small);
+  --osdk-typography-size-body-medium: var(--bp-typography-size-body-medium);
+  --osdk-typography-size-body-large: var(--bp-typography-size-body-large);
+  --osdk-typography-line-height-default: var(
+    --bp-typography-line-height-default
+  );
+  --osdk-typography-weight-default: var(--bp-typography-weight-default);
+  --osdk-typography-weight-bold: var(--bp-typography-weight-bold);
+
+  /* Blueprint token mappings - Intent tokens */
+  --osdk-intent-default-rest: var(--bp-intent-default-rest);
+  --osdk-intent-default-hover: var(--bp-intent-default-hover);
+  --osdk-intent-default-active: var(--bp-intent-default-active);
+  --osdk-intent-default-disabled: var(--bp-intent-default-disabled);
+  --osdk-intent-default-foreground: var(--bp-intent-default-foreground);
+  --osdk-intent-primary-rest: var(--bp-intent-primary-rest);
+  --osdk-intent-primary-hover: var(--bp-intent-primary-hover);
+  --osdk-intent-primary-active: var(--bp-intent-primary-active);
+  --osdk-intent-primary-disabled: var(--bp-intent-primary-disabled);
+  --osdk-intent-primary-foreground: var(--bp-intent-primary-foreground);
+  --osdk-intent-success-rest: var(--bp-intent-success-rest);
+  --osdk-intent-success-hover: var(--bp-intent-success-hover);
+  --osdk-intent-success-active: var(--bp-intent-success-active);
+  --osdk-intent-success-disabled: var(--bp-intent-success-disabled);
+  --osdk-intent-success-foreground: var(--bp-intent-success-foreground);
+  --osdk-intent-warning-rest: var(--bp-intent-warning-rest);
+  --osdk-intent-warning-hover: var(--bp-intent-warning-hover);
+  --osdk-intent-warning-active: var(--bp-intent-warning-active);
+  --osdk-intent-warning-disabled: var(--bp-intent-warning-disabled);
+  --osdk-intent-warning-foreground: var(--bp-intent-warning-foreground);
+  --osdk-intent-danger-rest: var(--bp-intent-danger-rest);
+  --osdk-intent-danger-hover: var(--bp-intent-danger-hover);
+  --osdk-intent-danger-active: var(--bp-intent-danger-active);
+  --osdk-intent-danger-disabled: var(--bp-intent-danger-disabled);
+  --osdk-intent-danger-foreground: var(--bp-intent-danger-foreground);
+
+  /* Blueprint token mappings - Emphasis tokens */
+  --osdk-emphasis-focus-width: var(--bp-emphasis-focus-width);
+  --osdk-emphasis-focus-color: var(--bp-emphasis-focus-color);
+  --osdk-emphasis-focus-offset: var(--bp-emphasis-focus-offset);
+  --osdk-emphasis-transition-duration: var(--bp-emphasis-transition-duration);
+  --osdk-emphasis-ease-default: var(--bp-emphasis-ease-default);
+
+  /* Blueprint token mappings - Palette tokens */
+  --osdk-palette-gray-1: var(--bp-palette-gray-1);
+  --osdk-palette-gray-2: var(--bp-palette-gray-2);
+  --osdk-palette-gray-4: var(--bp-palette-gray-4);
+  --osdk-palette-dark-gray-2: var(--bp-palette-dark-gray-2);
+  --osdk-palette-dark-gray-3: var(--bp-palette-dark-gray-3);
+  --osdk-palette-light-gray-1: var(--bp-palette-light-gray-1);
+  --osdk-palette-light-gray-3: var(--bp-palette-light-gray-3);
+  --osdk-palette-light-gray-4: var(--bp-palette-light-gray-4);
+  --osdk-palette-light-gray-5: var(--bp-palette-light-gray-5);
+
+  --osdk-palette-white: var(--bp-palette-white);
+  --osdk-palette-black: var(--bp-palette-black);
+
+  /* Semantic color tokens - abstracting palette usage */
+  /* Background colors */
+  --osdk-background-primary: var(--osdk-palette-white);
+  --osdk-background-secondary: var(--osdk-palette-light-gray-5);
+  --osdk-background-tertiary: var(--osdk-palette-light-gray-4);
+  --osdk-background-skeleton-from: color-mix(
+    in srgb,
+    var(--osdk-palette-gray-1) 5%,
+    transparent
+  );
+  --osdk-background-skeleton-to: color-mix(
+    in srgb,
+    var(--osdk-palette-gray-1) 40%,
+    transparent
+  );
+  --osdk-background-backdrop: color-mix(
+    in srgb,
+    var(--osdk-palette-black) 50%,
+    transparent
+  );
+
+  /* Custom colors */
+  --osdk-custom-color-gray-1: color-mix(
+    in srgb,
+    var(--osdk-palette-gray-1) 5%,
+    transparent
+  );
+  --osdk-custom-color-gray-2: color-mix(
+    in srgb,
+    var(--osdk-palette-gray-1) 8%,
+    transparent
+  );
+  --osdk-custom-color-gray-3: color-mix(
+    in srgb,
+    var(--osdk-palette-gray-1) 10%,
+    transparent
+  );
+  --osdk-custom-color-gray-4: color-mix(
+    in srgb,
+    var(--osdk-palette-gray-1) 20%,
+    transparent
+  );
+  --osdk-custom-color-light-gray-1: color-mix(
+    in srgb,
+    var(--osdk-palette-light-gray-1) 60%,
+    transparent
+  );
+  --osdk-custom-color-light-gray-2: color-mix(
+    in srgb,
+    var(--osdk-palette-light-gray-5) 50%,
+    transparent
+  );
+  --osdk-custom-color-primary-1: color-mix(
+    in srgb,
+    var(--osdk-intent-primary-rest) 50%,
+    transparent
+  );
+
+  /* Shared Styling */
+  --osdk-focus-outline: var(--osdk-emphasis-focus-width) solid
+    var(--osdk-emphasis-focus-color);
+  --osdk-focus-visible-outline-offset: var(--osdk-emphasis-focus-offset);
+  --osdk-surface-border: var(--osdk-surface-border-width) solid
+    var(--osdk-surface-border-color-default);
+
+  /* Shared drag handle tokens */
+  --osdk-drag-handle-color: var(--osdk-typography-color-muted);
+  --osdk-drag-handle-color-hover: var(--osdk-typography-color-default-rest);
+  --osdk-drag-handle-cursor: grab;
+  --osdk-drag-handle-cursor-active: grabbing;
+
+  /* Shared icon styling */
+  --osdk-iconography-size-small: var(--osdk-typography-size-body-large);
+  --osdk-iconography-color-muted: var(--osdk-intent-default-rest);
+
+  /* Global styling */
+  font-family: var(--osdk-typography-family-default);
+  color: var(--osdk-typography-color-default-rest);
+  font-size: var(--osdk-typography-size-body-medium);
+
+  /* Blueprint icon alignment and color override */
+  .bp6-icon {
+    display: inline-block;
+    flex: 0 0 auto;
+    vertical-align: text-bottom;
+    fill: currentColor;
+  }
+
+  /*
+   * Blueprint 6 icon components use oversized path coordinates (320×320)
+   * with scale(0.05, -0.05) transforms. During rendering the path extends
+   * beyond the SVG viewBox, so overflow must be visible to prevent clipping.
+   */
+  .bp6-icon > svg {
+    overflow: visible;
+  }
+
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+}
