@@ -29,6 +29,7 @@ import {
   createNumberRangeState,
   createPropertyFilterDef,
   createSelectState,
+  createStaticValuesFilterDef,
   createToggleState,
 } from "./testUtils.js";
 
@@ -451,6 +452,134 @@ describe("buildWhereClause", () => {
     );
     const result = buildWhereClause([def], filterStates);
     expect(result).toEqual({ name: { $isNull: true } });
+  });
+
+  // --- STATIC_VALUES filter tests ---
+
+  it("builds $in clause for STATIC_VALUES with EXACT_MATCH", () => {
+    const def = createStaticValuesFilterDef(
+      "status",
+      "LISTOGRAM",
+      ["Active", "Inactive"],
+      { type: "EXACT_MATCH", values: [] },
+    );
+    const filterStates = stateMap(
+      [def, { type: "EXACT_MATCH", values: ["Active", "Inactive"] }],
+    );
+    const result = buildWhereClause([def], filterStates);
+    expect(result).toEqual({ status: { $in: ["Active", "Inactive"] } });
+  });
+
+  it("builds single value clause for STATIC_VALUES with one selected", () => {
+    const def = createStaticValuesFilterDef(
+      "status",
+      "LISTOGRAM",
+      ["Active", "Inactive"],
+      { type: "EXACT_MATCH", values: [] },
+    );
+    const filterStates = stateMap(
+      [def, { type: "EXACT_MATCH", values: ["Active"] }],
+    );
+    const result = buildWhereClause([def], filterStates);
+    expect(result).toEqual({ status: "Active" });
+  });
+
+  it("returns empty object for STATIC_VALUES with no selections", () => {
+    const def = createStaticValuesFilterDef(
+      "status",
+      "LISTOGRAM",
+      ["Active", "Inactive"],
+      { type: "EXACT_MATCH", values: [] },
+    );
+    const filterStates = stateMap(
+      [def, { type: "EXACT_MATCH", values: [] }],
+    );
+    const result = buildWhereClause([def], filterStates);
+    expect(result).toEqual({});
+  });
+
+  it("wraps with $not for STATIC_VALUES with isExcluding", () => {
+    const def = createStaticValuesFilterDef(
+      "status",
+      "LISTOGRAM",
+      ["Active", "Inactive"],
+      { type: "EXACT_MATCH", values: [] },
+    );
+    const filterStates = stateMap(
+      [def, { type: "EXACT_MATCH", values: ["Active"], isExcluding: true }],
+    );
+    const result = buildWhereClause([def], filterStates);
+    expect(result).toEqual({ $not: { status: "Active" } });
+  });
+
+  it("builds SELECT clause for STATIC_VALUES SINGLE_SELECT", () => {
+    const def = createStaticValuesFilterDef(
+      "priority",
+      "SINGLE_SELECT",
+      ["High", "Medium", "Low"],
+      { type: "SELECT", selectedValues: [] },
+    );
+    const filterStates = stateMap(
+      [def, createSelectState(["High"])],
+    );
+    const result = buildWhereClause([def], filterStates);
+    expect(result).toEqual({ priority: "High" });
+  });
+
+  it("builds $in for STATIC_VALUES MULTI_SELECT", () => {
+    const def = createStaticValuesFilterDef(
+      "team",
+      "MULTI_SELECT",
+      ["Alpha", "Beta", "Gamma"],
+      { type: "SELECT", selectedValues: [] },
+    );
+    const filterStates = stateMap(
+      [def, createSelectState(["Alpha", "Beta"])],
+    );
+    const result = buildWhereClause([def], filterStates);
+    expect(result).toEqual({ team: { $in: ["Alpha", "Beta"] } });
+  });
+
+  it("calls toWhereClause for STATIC_VALUES when provided", () => {
+    const def = createStaticValuesFilterDef(
+      "status",
+      "LISTOGRAM",
+      ["Yes", "No"],
+      { type: "EXACT_MATCH", values: [] },
+      {
+        toWhereClause: (state) => {
+          if (
+            state.type === "EXACT_MATCH"
+            && (state.values as string[]).includes("Yes")
+          ) {
+            return { active: true };
+          }
+          return undefined;
+        },
+      },
+    );
+    const filterStates = stateMap(
+      [def, { type: "EXACT_MATCH", values: ["Yes"] }],
+    );
+    const result = buildWhereClause([def], filterStates);
+    expect(result).toEqual({ active: true });
+  });
+
+  it("returns empty for STATIC_VALUES toWhereClause returning undefined", () => {
+    const def = createStaticValuesFilterDef(
+      "status",
+      "LISTOGRAM",
+      ["Yes", "No"],
+      { type: "EXACT_MATCH", values: [] },
+      {
+        toWhereClause: () => undefined,
+      },
+    );
+    const filterStates = stateMap(
+      [def, { type: "EXACT_MATCH", values: ["Yes"] }],
+    );
+    const result = buildWhereClause([def], filterStates);
+    expect(result).toEqual({});
   });
 
   it("preserves state when filters are reordered", () => {

@@ -382,6 +382,42 @@ export function buildWhereClause<Q extends ObjectTypeDefinition>(
         break;
       }
 
+      case "STATIC_VALUES": {
+        if (definition.toWhereClause) {
+          const staticClause = definition.toWhereClause(state);
+          if (staticClause && Object.keys(staticClause).length > 0) {
+            clauses.push(staticClause as Record<string, unknown>);
+          }
+        } else {
+          const filter = filterStateToPropertyFilter(state);
+          if (filter !== undefined) {
+            const isExcluding = "isExcluding" in state && state.isExcluding;
+            if (isCompoundFilter(filter)) {
+              const fieldClauses = filter.conditions.map(c => ({
+                [definition.key]: c,
+              }));
+              let rangeClause: Record<string, unknown> =
+                fieldClauses.length === 1
+                  ? fieldClauses[0]
+                  : { $and: fieldClauses };
+              if (filter.includeNull) {
+                rangeClause = {
+                  $or: [
+                    rangeClause,
+                    { [definition.key]: { $isNull: true } },
+                  ],
+                };
+              }
+              clauses.push(isExcluding ? { $not: rangeClause } : rangeClause);
+            } else {
+              const clause = { [definition.key]: filter };
+              clauses.push(isExcluding ? { $not: clause } : clause);
+            }
+          }
+        }
+        break;
+      }
+
       default:
         assertUnreachable(definition);
     }
