@@ -163,47 +163,7 @@ export default async function main(
       commandLineOpts.functionsDir && commandLineOpts.nodeModulesDir,
       "functionsDir and nodeModulesDir must be supplied when using temporaryBlockDataFile",
     );
-    OntologyIrToFullMetadataConverter.discoverTypeScriptFunctions(
-      commandLineOpts.functionsDir,
-      commandLineOpts.nodeModulesDir,
-      commandLineOpts.functionsIrOutputFile,
-      previewMetadata,
-    );
-    functionsIrFile = commandLineOpts.functionsIrOutputFile;
-    consola.info(
-      `Discovered functions during block data generation at ${commandLineOpts.functionsIrOutputFile}`,
-    );
-  }
-
-  let functionsIrFile;
-  if (commandLineOpts.temporaryBlockDataFile) {
-    consola.info(
-      `Loading temporary block data from ${commandLineOpts.temporaryBlockDataFile}`,
-    );
-    const fileContent = await fs.promises.readFile(
-      commandLineOpts.temporaryBlockDataFile,
-      "utf-8",
-    );
-    let blockDataJson: unknown;
-    try {
-      blockDataJson = JSON.parse(fileContent);
-    } catch {
-      consola.error(
-        `Failed to parse JSON from ${commandLineOpts.temporaryBlockDataFile}`,
-      );
-      process.exit(1);
-    }
-    const previewMetadata = PreviewOntologyIrConverter
-      .getPreviewFullMetadataFromBlockData(
-        blockDataJson as Parameters<
-          typeof PreviewOntologyIrConverter.getPreviewFullMetadataFromBlockData
-        >[0],
-      );
-    invariant(
-      commandLineOpts.functionsDir && commandLineOpts.nodeModulesDir,
-      "functionsDir and nodeModulesDir must be supplied when using temporaryBlockDataFile",
-    );
-    OntologyIrToFullMetadataConverter.discoverTypeScriptFunctions(
+    await OntologyIrToFullMetadataConverter.discoverTypeScriptFunctions(
       commandLineOpts.functionsDir,
       commandLineOpts.nodeModulesDir,
       commandLineOpts.functionsIrOutputFile,
