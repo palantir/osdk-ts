@@ -16,6 +16,7 @@
 
 import type { ObjectTypeDefinition } from "@osdk/api";
 import React, { memo, useCallback, useMemo } from "react";
+import { assertUnreachable } from "../../shared/assertUnreachable.js";
 import { FilterInputExcludeRow } from "../base/FilterInputExcludeRow.js";
 import { ListogramInput } from "../base/inputs/ListogramInput.js";
 import { MultiSelectInput } from "../base/inputs/MultiSelectInput.js";
@@ -255,6 +256,9 @@ function StaticValuesFilterInputInner<Q extends ObjectTypeDefinition>({
           />
         </FilterInputExcludeRow>
       );
+
+    default:
+      return assertUnreachable(definition.filterComponent);
   }
 }
 
