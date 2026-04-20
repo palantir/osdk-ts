@@ -43,7 +43,8 @@ const command: CommandModule<CliCommonArgs, CommonSiteArgs> = {
           description: "Application resource identifier (rid)",
         },
         foundryUrl: {
-          coerce: (foundryUrl) => foundryUrl.replace(/\/$/, ""),
+          coerce: (foundryUrl) =>
+            foundryUrl.endsWith("/") ? foundryUrl : foundryUrl + "/",
           type: "string",
           ...foundryUrl
             ? { default: foundryUrl }

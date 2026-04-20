@@ -41,7 +41,8 @@ const command: CommandModule<CliCommonArgs, CommonWidgetSetArgs> = {
         description: "Widget set resource identifier (rid)",
       },
       foundryUrl: {
-        coerce: (foundryUrl) => foundryUrl.replace(/\/$/, ""),
+        coerce: (foundryUrl) =>
+          foundryUrl.endsWith("/") ? foundryUrl : foundryUrl + "/",
         type: "string",
         ...foundryUrl
           ? { default: foundryUrl }

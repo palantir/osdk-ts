@@ -123,7 +123,10 @@ export async function publishDevModeSettings(
       // In Code Workspaces the preview UI automatically handles this redirect
       redirectUrl: isCodeWorkspacesMode(server.config.mode)
         ? null
-        : `${foundryUrl}/workspace/custom-widgets/preview/${widgetSetRid}`,
+        : new URL(
+          `workspace/custom-widgets/preview/${widgetSetRid}`,
+          foundryUrl.endsWith("/") ? foundryUrl : foundryUrl + "/",
+        ).toString(),
     }));
   } catch (error: unknown) {
     server.config.logger.error(
