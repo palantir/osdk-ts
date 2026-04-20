@@ -109,10 +109,58 @@ export interface DropdownEditConfig<V = unknown> {
 }
 
 /**
+ * User-facing configuration for a date picker editor in a table cell.
+ *
+ * This is intentionally a standalone interface rather than re-exporting
+ * `DatetimePickerFieldProps` from ActionForm, so the table API doesn't break
+ * when ActionForm's prop shape changes.
+ */
+export interface DatePickerEditConfig {
+  /**
+   * The earliest date the user can select.
+   */
+  min?: Date;
+
+  /**
+   * The latest date the user can select.
+   */
+  max?: Date;
+
+  /**
+   * Whether to show a time picker alongside the calendar.
+   */
+  showTime?: boolean;
+
+  /**
+   * Whether to close the popover after selecting a date.
+   * @default true when `showTime` is false, false when `showTime` is true
+   */
+  closeOnSelection?: boolean;
+
+  /**
+   * Placeholder text shown when no value is selected.
+   */
+  placeholder?: string;
+
+  /**
+   * Formats a Date for display in the input field when not editing.
+   * Provide a matching `parseDate` if using a custom format.
+   */
+  formatDate?: (date: Date) => string;
+
+  /**
+   * Parses a user-typed string back into a Date.
+   * Must be the inverse of `formatDate`.
+   */
+  parseDate?: (text: string) => Date | undefined;
+}
+
+/**
  * Maps each supported editable field component to its user-facing config.
  */
 interface EditFieldPropsByType {
   DROPDOWN: DropdownEditConfig;
+  DATE_PICKER: DatePickerEditConfig;
 }
 
 type EditFieldComponent = keyof EditFieldPropsByType;
