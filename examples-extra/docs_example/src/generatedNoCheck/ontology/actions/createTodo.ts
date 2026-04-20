@@ -70,19 +70,16 @@ export interface createTodo extends ActionDefinition<createTodo.Signatures> {
     rid: 'notNeeded?';
     status: 'ACTIVE';
     type: 'action';
-    unsanitizedApiName: 'createTodo';
 
     signatures: createTodo.Signatures;
   };
   apiName: 'createTodo';
   type: 'action';
-  unsanitizedApiName: 'createTodo';
   osdkMetadata: typeof $osdkMetadata;
 }
 
 export const createTodo: createTodo = {
   apiName: 'createTodo',
   type: 'action',
-  unsanitizedApiName: 'createTodo',
   osdkMetadata: $osdkMetadata,
 };

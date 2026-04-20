@@ -100,19 +100,16 @@ export interface moveOffice extends ActionDefinition<moveOffice.Signatures> {
     rid: 'ri.ontology.main.action-type.9f84017d-cf17-4fa8-84c3-8e01e5d594f2';
     status: 'ACTIVE';
     type: 'action';
-    unsanitizedApiName: 'move-office';
 
     signatures: moveOffice.Signatures;
   };
   apiName: 'moveOffice';
   type: 'action';
-  unsanitizedApiName: 'move-office';
   osdkMetadata: typeof $osdkMetadata;
 }
 
 export const moveOffice: moveOffice = {
   apiName: 'moveOffice',
   type: 'action',
-  unsanitizedApiName: 'move-office',
   osdkMetadata: $osdkMetadata,
 };
