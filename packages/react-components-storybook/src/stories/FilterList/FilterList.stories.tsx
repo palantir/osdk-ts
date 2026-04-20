@@ -136,6 +136,7 @@ const meta: Meta<EmployeeFilterListProps> = {
     enableSorting: false,
     showResetButton: false,
     showActiveFilterCount: false,
+    showCount: true,
     collapsed: false,
   },
   parameters: {
@@ -212,6 +213,12 @@ const meta: Meta<EmployeeFilterListProps> = {
       description: "Show count of active filters in header",
       control: "boolean",
       table: { defaultValue: { summary: "false" } },
+    },
+    showCount: {
+      description:
+        "Show aggregation counts next to filter option values in LISTOGRAM, SINGLE_SELECT, and MULTI_SELECT inputs",
+      control: "boolean",
+      table: { defaultValue: { summary: "true" } },
     },
     onFilterAdded: {
       description:
