@@ -30,10 +30,15 @@ import {
 } from "../utils/coerceFilterValue.js";
 
 interface StaticValuesFilterInputProps<Q extends ObjectTypeDefinition> {
+  /** The static values filter definition containing values and component config */
   definition: StaticValuesFilterDefinition<Q>;
+  /** Current filter state, or undefined if no selection has been made */
   filterState: FilterState | undefined;
+  /** Callback fired when the user changes the filter selection */
   onFilterStateChanged: (state: FilterState) => void;
+  /** Search term for filtering displayed values within the filter input */
   searchQuery?: string;
+  /** Whether the exclude/include toggle row is expanded */
   excludeRowOpen?: boolean;
 }
 
