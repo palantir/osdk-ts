@@ -82,6 +82,13 @@ export interface StaticValuesFilterDefinition<
   renderValue?: (value: string) => string;
 
   /**
+   * Show aggregation counts next to filter option values.
+   * Applies to LISTOGRAM, SINGLE_SELECT, and MULTI_SELECT components.
+   * @default true for LISTOGRAM and MULTI_SELECT, false for SINGLE_SELECT
+   */
+  showCount?: boolean;
+
+  /**
    * Maps filter values to colors for visual differentiation.
    * Used by LISTOGRAM (per-row bar colors).
    */

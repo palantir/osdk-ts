@@ -280,6 +280,13 @@ export interface PropertyFilterDefinition<
   renderValue?: (value: string) => string;
 
   /**
+   * Show aggregation counts next to filter option values.
+   * Applies to LISTOGRAM, SINGLE_SELECT, and MULTI_SELECT components.
+   * @default true for LISTOGRAM and MULTI_SELECT, false for SINGLE_SELECT
+   */
+  showCount?: boolean;
+
+  /**
    * Controls whether this filter is rendered.
    * When false, the filter is hidden but its state is preserved.
    * @default true

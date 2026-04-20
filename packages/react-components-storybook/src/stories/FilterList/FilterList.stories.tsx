@@ -136,7 +136,6 @@ const meta: Meta<EmployeeFilterListProps> = {
     enableSorting: false,
     showResetButton: false,
     showActiveFilterCount: false,
-    showCount: true,
     collapsed: false,
   },
   parameters: {
@@ -213,12 +212,6 @@ const meta: Meta<EmployeeFilterListProps> = {
       description: "Show count of active filters in header",
       control: "boolean",
       table: { defaultValue: { summary: "false" } },
-    },
-    showCount: {
-      description:
-        "Show aggregation counts next to filter option values in LISTOGRAM, SINGLE_SELECT, and MULTI_SELECT inputs",
-      control: "boolean",
-      table: { defaultValue: { summary: "true" } },
     },
     onFilterAdded: {
       description:
@@ -899,6 +892,96 @@ const filterDefinitions = [
     },
   },
   render: (args) => <WithListogramDisplayModesStory {...args} />,
+};
+
+function WithHiddenCountsStory(args: Partial<EmployeeFilterListProps>) {
+  const withCounts = useMemo(
+    (): FilterDefinitionUnion<Employee>[] => [
+      {
+        type: "PROPERTY",
+        id: "dept-with-count",
+        key: "department",
+        label: "Department (counts visible)",
+        filterComponent: "LISTOGRAM",
+        filterState: { type: "EXACT_MATCH", values: [] },
+      } as FilterDefinitionUnion<Employee>,
+      {
+        type: "PROPERTY",
+        id: "team-with-count",
+        key: "team",
+        label: "Team (counts visible)",
+        filterComponent: "MULTI_SELECT",
+        filterState: { type: "SELECT", selectedValues: [] },
+      } as FilterDefinitionUnion<Employee>,
+    ],
+    [],
+  );
+  const withoutCounts = useMemo(
+    (): FilterDefinitionUnion<Employee>[] => [
+      {
+        type: "PROPERTY",
+        id: "dept-no-count",
+        key: "department",
+        label: "Department (counts hidden)",
+        filterComponent: "LISTOGRAM",
+        filterState: { type: "EXACT_MATCH", values: [] },
+        showCount: false,
+      } as FilterDefinitionUnion<Employee>,
+      {
+        type: "PROPERTY",
+        id: "team-no-count",
+        key: "team",
+        label: "Team (counts hidden)",
+        filterComponent: "MULTI_SELECT",
+        filterState: { type: "SELECT", selectedValues: [] },
+        showCount: false,
+      } as FilterDefinitionUnion<Employee>,
+    ],
+    [],
+  );
+
+  return (
+    <div style={FLEX_ROW_STYLE}>
+      <div style={SIDEBAR_STYLE}>
+        <FilterList
+          objectType={Employee}
+          filterDefinitions={withCounts}
+          {...args}
+        />
+      </div>
+      <div style={SIDEBAR_STYLE}>
+        <FilterList
+          objectType={Employee}
+          filterDefinitions={withoutCounts}
+          {...args}
+        />
+      </div>
+    </div>
+  );
+}
+
+export const WithHiddenCounts: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Use `showCount: false` on individual filter definitions to hide "
+          + "aggregation counts in LISTOGRAM and MULTI_SELECT inputs. "
+          + "Bar visualizations in LISTOGRAM are preserved.",
+      },
+      source: {
+        code:
+          `// showCount defaults to true; set false to hide counts per filter
+const filterDefinitions = [
+  { ..., filterComponent: "LISTOGRAM", showCount: false },
+  { ..., filterComponent: "MULTI_SELECT", showCount: false },
+];
+
+<FilterList objectType={Employee} filterDefinitions={filterDefinitions} />`,
+      },
+    },
+  },
+  render: (args) => <WithHiddenCountsStory {...args} />,
 };
 
 function WithCheckboxStory(args: Partial<EmployeeFilterListProps>) {

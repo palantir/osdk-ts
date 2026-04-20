@@ -46,7 +46,7 @@ function SingleSelectInputInner({
   style,
   placeholder = "Select a value...",
   showClearButton = true,
-  showCounts = true,
+  showCounts = false,
   ariaLabel = "Select value",
   renderValue,
 }: SingleSelectInputProps): React.ReactElement {

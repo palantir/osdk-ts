@@ -64,7 +64,6 @@ interface LinkedPropertyInputProps<
   filterState: FilterState | undefined;
   onFilterStateChanged: (state: FilterState) => void;
   searchQuery?: string;
-  showCount?: boolean;
   className?: string;
   style?: React.CSSProperties;
 }
@@ -78,7 +77,6 @@ function LinkedPropertyInputInner<
   filterState,
   onFilterStateChanged,
   searchQuery,
-  showCount,
   className,
   style,
 }: LinkedPropertyInputProps<Q, L>): React.ReactElement {
@@ -245,7 +243,7 @@ function LinkedPropertyInputInner<
             propertyKey={linkedPropertyKey}
             selectedValues={values}
             onChange={onSelectChange}
-            showCount={showCount}
+            showCount={definition.showCount}
           />
         );
       }
@@ -261,7 +259,7 @@ function LinkedPropertyInputInner<
             propertyKey={linkedPropertyKey}
             selectedValue={value}
             onChange={onSingleSelectChange}
-            showCount={showCount}
+            showCount={definition.showCount}
           />
         );
       }
@@ -338,7 +336,7 @@ function LinkedPropertyInputInner<
             selectedValues={selectedValues}
             onChange={onExactMatchChange}
             searchQuery={searchQuery}
-            showCount={showCount}
+            showCount={definition.showCount}
           />
         );
       }
