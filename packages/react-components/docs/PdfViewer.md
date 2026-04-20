@@ -299,7 +299,7 @@ function MinimalViewer({ src }: { src: string }) {
 
 ## Theming
 
-All colors and sizes are driven by CSS custom properties defined in `@osdk/react-components-styles`. Override them to match your application theme:
+All colors and sizes are driven by CSS custom properties included in `@osdk/react-components/styles.css`. Override them to match your application theme:
 
 ```css
 :root {

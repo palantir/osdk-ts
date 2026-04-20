@@ -1181,14 +1181,13 @@ type EmployeeProps = PropertyKeys<typeof Employee>;
 
 ### Table has no styling or looks broken
 
-- Ensure you've imported `@osdk/react-components-styles` in your main CSS file
+- Ensure you've imported `@osdk/react-components/styles.css` in your main CSS file
 - Check that the CSS import is in the correct location (application entry point)
-- Verify the CSS layer syntax is correct: `@layer osdk.tokens;` must come before the import
 - Check browser DevTools to confirm CSS custom properties are loaded
 
 ## Theming
 
-The ObjectTable (and all OSDK components) can be themed using CSS custom properties from the `@osdk/react-components-styles` package.
+The ObjectTable (and all OSDK components) can be themed using CSS custom properties included in `@osdk/react-components/styles.css`.
 
 ### Understanding Token Scopes
 
@@ -1212,10 +1211,9 @@ The ObjectTable (and all OSDK components) can be themed using CSS custom propert
 Change OSDK component styling without affecting other Blueprint components in your app:
 
 ```css
-@layer osdk.tokens, osdk.components, user.theme;
+@layer osdk.styles, user.theme;
 
-@import "@osdk/react-components/styles.css" layer(osdk.components);
-@import "@osdk/react-components-styles" layer(osdk.tokens);
+@import "@osdk/react-components/styles.css" layer(osdk.styles);
 
 @layer user.theme {
   :root {
@@ -1236,10 +1234,9 @@ Change OSDK component styling without affecting other Blueprint components in yo
 Change both Blueprint and OSDK components for consistent theming:
 
 ```css
-@layer osdk.components, osdk.tokens, user.theme;
+@layer osdk.styles, user.theme;
 
-@import "@osdk/react-components/styles.css" layer(osdk.components);
-@import "@osdk/react-components-styles" layer(osdk.tokens);
+@import "@osdk/react-components/styles.css" layer(osdk.styles);
 
 @layer user.theme {
   :root {
@@ -1326,8 +1323,7 @@ Apply custom styles to specific ObjectTable instances using the `className` prop
 
 For a complete reference of all available CSS tokens for theming, see:
 
-- [@osdk/react-components-styles CSS Variables Documentation](https://github.com/palantir/osdk-ts/blob/main/packages/react-components-styles/CSS_VARIABLES.md)
-- [@osdk/react-components-styles README](https://github.com/palantir/osdk-ts/blob/main/packages/react-components-styles/README.md)
+- [CSS Variables Documentation](./CSSVariables.md)
 
 ### Accessibility Note
 

@@ -27,7 +27,6 @@
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@osdk/react": "workspace:*",
     "@osdk/react-components": "workspace:*",
-    "@osdk/react-components-styles": "workspace:*",
     "@storybook/addon-a11y": "^10.2.10",
     "@storybook/addon-docs": "^10.2.10",
     "@storybook/addon-links": "^10.2.10",

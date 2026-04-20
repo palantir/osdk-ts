@@ -152,6 +152,7 @@
     "@types/react-dom": "^18.3.7",
     "eslint-plugin-react-hooks": "^5.2.0",
     "p-defer": "^4.0.1",
+    "postcss-import": "^16.0.0",
     "postcss-modules": "^6.0.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
@@ -175,5 +176,8 @@
   "main": "./build/cjs/index.cjs",
   "module": "./build/esm/index.js",
   "types": "./build/cjs/index.d.cts",
+  "sideEffects": [
+    "**/*.css"
+  ],
   "type": "module"
 }
