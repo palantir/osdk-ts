@@ -116,12 +116,16 @@ export function mutateReleasePlan(
   }
 
   for (const q of releasePlan.releases) {
+    if (q.type === "major") {
+      throw new FailedWithUserMessage(
+        `Package "${q.name}" received a major bump (${q.oldVersion} -> ${q.newVersion}). Major bumps are never allowed.`,
+      );
+    }
     if (releaseType === "main" && q.type === "patch") {
       q.type = "minor";
       const suffix = q.newVersion.split("-")[1];
       q.newVersion = inc(q.oldVersion, "minor")!;
       if (suffix) {
-        // restore suffix
         q.newVersion += `-${suffix}`;
       }
     }

@@ -221,6 +221,8 @@ async function generateClientSdk(
           dependencyVersions.osdkApiVersion = "workspace:~";
           dependencyVersions.osdkClientVersion = "workspace:~";
           dependencyVersions.osdkLegacyClientVersion = "workspace:~";
+          dependencyVersions.osdkApiPeerVersion = "workspace:^";
+          dependencyVersions.osdkClientPeerVersion = "workspace:^";
         }
 
         const expectedDeps = getExpectedDependencies(
@@ -235,10 +237,19 @@ async function generateClientSdk(
           }
         }
 
-        updateVersionsIfTheyExist(packageJson, {
-          "@osdk/client": dependencyVersions.osdkClientVersion,
-          "@osdk/api": dependencyVersions.osdkApiVersion,
-        });
+        updateVersionsIfTheyExist(
+          packageJson,
+          {
+            "@osdk/client": dependencyVersions.osdkClientVersion,
+            "@osdk/api": dependencyVersions.osdkApiVersion,
+          },
+          {
+            "@osdk/client": dependencyVersions.osdkClientPeerVersion
+              ?? dependencyVersions.osdkClientVersion,
+            "@osdk/api": dependencyVersions.osdkApiPeerVersion
+              ?? dependencyVersions.osdkApiVersion,
+          },
+        );
 
         // only write if changed
         if (!deepEqual(packageJsonOriginal, packageJson)) {
@@ -279,9 +290,11 @@ async function generateClientSdk(
 export function updateVersionsIfTheyExist(
   packageJson: any,
   versions: Record<string, string>,
+  peerVersions: Record<string, string> = versions,
 ): void {
   for (const d of ["dependencies", "devDependencies", "peerDependencies"]) {
-    for (const [key, value] of Object.entries(versions)) {
+    const v = d === "peerDependencies" ? peerVersions : versions;
+    for (const [key, value] of Object.entries(v)) {
       if (packageJson?.[d]?.[key]) {
         packageJson[d][key] = value;
       }
@@ -296,6 +309,8 @@ export async function getDependencyVersions(): Promise<{
   osdkApiVersion: string;
   osdkClientVersion: string;
   osdkLegacyClientVersion: string;
+  osdkApiPeerVersion?: string;
+  osdkClientPeerVersion?: string;
 }> {
   const ourPackageJsonPath = await getOurPackageJsonPath();
 

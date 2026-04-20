@@ -424,8 +424,8 @@ const archetypeRules = archetypes(
   );
 
 /**
- * We don't want to allow `workspace:^` in our dependencies because our current release branch
- * strategy only allows for patch changes in the release branch and minors elsewhere.
+ * We don't want to allow `workspace:^` in our regular dependencies because our current release
+ * branch strategy only allows for patch changes in the release branch and minors elsewhere.
  *
  * If we were to allow `workspace:^`, then the follow scenario causes issues:
  *   - Suppose we have a Foo and a Bar package and Bar depends on Foo.
@@ -437,6 +437,15 @@ const archetypeRules = archetypes(
  * on Foo @ `^1.1.0` would be satisfied by the shipped `Foo@1.2.0`.
  *
  * Using `workspace:~` prevents this as `~` can only resolve patch changes.
+ *
+ * However, peerDependencies are the exception: they MUST use `workspace:^`. With `workspace:~`,
+ * a minor bump in a peer dep (e.g. @osdk/api 2.8.0 -> 2.9.0) falls outside the tilde range
+ * (`~2.8.0`), so changesets treats it as a breaking change and forces a major bump on the
+ * consuming package. Using `workspace:^` keeps minor bumps in range (`^2.8.0` accepts `2.9.0`).
+ * Additionally, this is how most of our public packages with peer dependencies are treated. They
+ * should be compatible with any higher version of the dependency, and anything else would be a break
+ * for users.
+ * See: https://github.com/palantir/osdk-ts/pull/3020
  */
 const disallowWorkspaceCaret = createRuleFactory({
   name: "disallowWorkspaceCaret",
@@ -474,7 +483,31 @@ const disallowWorkspaceCaret = createRuleFactory({
               },
             });
           }
-        } else if (version === "workspace:^") {
+        } else if (d === "peerDependencies" && version === "workspace:~") {
+          const message =
+            `'workspace:~' not allowed in peerDependencies (${d}['${dep}']).`;
+          context.addError({
+            message,
+            longMessage:
+              `${message} Use 'workspace:^' for peerDependencies to avoid major bumps when peer deps receive minor version changes.`,
+            file: context.getPackageJsonPath(),
+            fixer: () => {
+              let packageJson = context.getPackageJson();
+              if (packageJson[d]?.[dep] === "workspace:~") {
+                packageJson[d] = Object.assign(
+                  {},
+                  packageJson[d],
+                  { [dep]: "workspace:^" },
+                );
+
+                context.host.writeJson(
+                  context.getPackageJsonPath(),
+                  packageJson,
+                );
+              }
+            },
+          });
+        } else if (version === "workspace:^" && d !== "peerDependencies") {
           if (
             dep === "@osdk/shared.client2"
             // Since this package is only being used internally, it's fine to keep this relaxed to ^ so it can use newer client versions without bumping everything
