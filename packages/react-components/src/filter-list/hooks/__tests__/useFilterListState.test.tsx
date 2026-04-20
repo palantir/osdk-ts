@@ -135,7 +135,7 @@ describe("useFilterListState", () => {
     expect(result.current.whereClause).toEqual({ name: "John" });
   });
 
-  it("does not call onFilterClauseChanged on mount", () => {
+  it("calls onFilterClauseChanged on mount with initial where clause", () => {
     const onFilterClauseChanged = vi.fn();
     const nameDef = createPropertyFilterDef(
       "name",
@@ -147,10 +147,31 @@ describe("useFilterListState", () => {
       onFilterClauseChanged,
     });
     renderHook(() => useFilterListState(props));
-    expect(onFilterClauseChanged).not.toHaveBeenCalled();
+    expect(onFilterClauseChanged).toHaveBeenCalledTimes(1);
+    expect(onFilterClauseChanged).toHaveBeenCalledWith({});
   });
 
-  it("calls onFilterClauseChanged synchronously on setFilterState", () => {
+  it("calls onFilterClauseChanged on mount when initialFilterStates has active filters", () => {
+    const onFilterClauseChanged = vi.fn();
+    const nameDef = createPropertyFilterDef(
+      "name",
+      "LISTOGRAM",
+      createExactMatchState([]),
+    );
+    const initialFilterStates = new Map([
+      [getFilterKey(nameDef), createExactMatchState(["John"])],
+    ]);
+    const props = createProps({
+      filterDefinitions: [nameDef],
+      onFilterClauseChanged,
+      initialFilterStates,
+    });
+    renderHook(() => useFilterListState(props));
+    expect(onFilterClauseChanged).toHaveBeenCalledTimes(1);
+    expect(onFilterClauseChanged).toHaveBeenCalledWith({ name: "John" });
+  });
+
+  it("calls onFilterClauseChanged on setFilterState", () => {
     const onFilterClauseChanged = vi.fn();
     const nameDef = createPropertyFilterDef(
       "name",
@@ -162,6 +183,7 @@ describe("useFilterListState", () => {
       onFilterClauseChanged,
     });
     const { result } = renderHook(() => useFilterListState(props));
+    onFilterClauseChanged.mockClear();
     act(() => {
       result.current.setFilterState(
         getFilterKey(nameDef),
@@ -194,7 +216,6 @@ describe("useFilterListState", () => {
     act(() => {
       result.current.reset();
     });
-    expect(onFilterClauseChanged).toHaveBeenCalledTimes(1);
     expect(onFilterClauseChanged).toHaveBeenCalledWith({});
   });
 
