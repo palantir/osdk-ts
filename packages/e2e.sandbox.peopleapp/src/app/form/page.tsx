@@ -209,6 +209,15 @@ export function FormPage() {
     (): ReadonlyArray<RendererFieldDefinition> => [
       ...fieldDefinitions,
       {
+        fieldKey: "manager",
+        fieldComponent: "OBJECT_SELECT",
+        label: "Manager",
+        placeholder: "Search for a manager…",
+        fieldComponentProps: {
+          objectTypeApiName: "Employee",
+        },
+      },
+      {
         fieldKey: "team",
         fieldComponent: "OBJECT_SET",
         label: "Team Members",

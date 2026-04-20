@@ -27,6 +27,7 @@ import { DatetimePickerField } from "./DatetimePickerField.js";
 import { DropdownField } from "./DropdownField.js";
 import { FilePickerField } from "./FilePickerField.js";
 import { NumberInputField } from "./NumberInputField.js";
+import { ObjectSelectField } from "./ObjectSelectField.js";
 import { ObjectSetField } from "./ObjectSetField.js";
 import { RadioButtonsField } from "./RadioButtonsField.js";
 import { TextAreaField } from "./TextAreaField.js";
@@ -171,6 +172,17 @@ function renderFieldComponent(
           id={fieldDefinition.fieldKey}
           value={coerceToFileValue(value)}
           onChange={onChange}
+          error={error}
+          {...fieldDefinition.fieldComponentProps}
+        />
+      );
+    case "OBJECT_SELECT":
+      return (
+        <ObjectSelectField
+          id={fieldDefinition.fieldKey}
+          value={value}
+          onChange={onChange}
+          placeholder={fieldDefinition.placeholder}
           error={error}
           {...fieldDefinition.fieldComponentProps}
         />

@@ -87,16 +87,19 @@ interface ComboboxPopupComponentProps
   extends Omit<ComboboxPopupProps, "className">
 {
   className?: string;
+  onScroll?: React.UIEventHandler<HTMLDivElement>;
 }
 
 function ComboboxPopup({
   className,
   children,
+  onScroll,
   ...rest
 }: ComboboxPopupComponentProps): React.ReactElement {
   return (
     <BaseUICombobox.Popup
       className={classnames(styles.osdkComboboxPopup, className)}
+      onScroll={onScroll}
       {...rest}
     >
       {children}

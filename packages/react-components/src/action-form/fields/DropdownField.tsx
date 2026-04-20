@@ -26,6 +26,11 @@ interface InnerDropdownProps<V, Multiple extends boolean>
   itemToStringLabel: (item: V) => string;
   getKey: (item: V) => string;
   portalRef?: React.Ref<HTMLDivElement>;
+  query?: string;
+  onQueryChange?: (query: string) => void;
+  filter?: null;
+  children?: React.ReactNode;
+  onPopupScroll?: React.UIEventHandler<HTMLDivElement>;
 }
 
 export function DropdownField<V, Multiple extends boolean = false>({
@@ -33,6 +38,11 @@ export function DropdownField<V, Multiple extends boolean = false>({
   itemToStringLabel,
   itemToKey,
   portalRef,
+  query,
+  onQueryChange,
+  filter,
+  children,
+  onPopupScroll,
   ...rest
 }: DropdownFieldProps<V, Multiple>): React.ReactElement {
   const resolvedItemToStringLabel = itemToStringLabel
@@ -50,6 +60,11 @@ export function DropdownField<V, Multiple extends boolean = false>({
         itemToStringLabel={resolvedItemToStringLabel}
         getKey={getKey}
         portalRef={portalRef}
+        query={query}
+        onQueryChange={onQueryChange}
+        filter={filter}
+        onPopupScroll={onPopupScroll}
+        children={children}
       />
     );
   }
@@ -117,7 +132,19 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
   isMultiple,
   placeholder,
   portalRef,
+  query,
+  onQueryChange,
+  filter,
+  children,
+  onPopupScroll,
 }: InnerDropdownProps<V, Multiple>): React.ReactElement {
+  const handleInputValueChange = useCallback(
+    (inputValue: string) => {
+      onQueryChange?.(inputValue);
+    },
+    [onQueryChange],
+  );
+
   const renderChips = useCallback(
     (selectedValues: V[]) => (
       <>
@@ -158,6 +185,11 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
         itemToStringLabel={itemToStringLabel}
         isItemEqualToValue={isItemEqual}
         items={items}
+        inputValue={query}
+        onInputValueChange={onQueryChange != null
+          ? handleInputValueChange
+          : undefined}
+        filter={filter}
       >
         {isMultiple
           ? (
@@ -168,9 +200,10 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
           : <Combobox.Input placeholder={placeholder} />}
         <Combobox.Portal ref={portalRef}>
           <Combobox.Positioner>
-            <Combobox.Popup>
+            <Combobox.Popup onScroll={onPopupScroll}>
               <Combobox.Empty>No results</Combobox.Empty>
               <Combobox.List>{renderItem}</Combobox.List>
+              {children}
             </Combobox.Popup>
           </Combobox.Positioner>
         </Combobox.Portal>
