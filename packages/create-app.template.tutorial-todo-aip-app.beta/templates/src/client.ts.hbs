@@ -24,21 +24,17 @@ const clientId = getMetaTagContent("osdk-clientId");
 const redirectUrl = getMetaTagContent("osdk-redirectUrl");
 const ontologyRid = getMetaTagContent("osdk-ontologyRid");
 
-{{#if scopes}}
-const scopes = [
-  {{#each scopes}}
+const scopes: string[] = [
+{{#each scopes}}
   "{{this}}",
-  {{/each}}
+{{/each}}
 ];
-{{/if}}
 
 export const auth: PublicOauthClient = createPublicOauthClient(
   clientId,
   foundryUrl,
   redirectUrl,
-  {{#if scopes}}
-  { scopes }
-  {{/if}}
+  { scopes },
 );
 
 /**
