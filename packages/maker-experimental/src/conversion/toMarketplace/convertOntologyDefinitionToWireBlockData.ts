@@ -41,7 +41,10 @@ import { MIGRATION_SHAPE_READABLE_ID } from "./shapeExtractors/IrShapeExtractor.
 export function convertOntologyDefinitionToWireBlockData(
   ontology: OntologyDefinition,
   ridGenerator: OntologyRidGenerator,
+  allOntologies?: OntologyDefinition[],
 ): OntologyBlockDataV2 {
+  const ontologiesToScan = allOntologies ?? [ontology];
+
   // Convert all entity types first to populate ridGenerator's BiMaps
   const objectTypes = Object.fromEntries(
     Object.entries(ontology[OntologyEntityTypeEnum.OBJECT_TYPE]).map<
@@ -104,6 +107,7 @@ export function convertOntologyDefinitionToWireBlockData(
   const knownIdentifiers = buildKnownIdentifiers(
     ontology,
     ridGenerator,
+    ontologiesToScan,
   );
 
   return ({
@@ -118,18 +122,20 @@ export function convertOntologyDefinitionToWireBlockData(
     ruleSets: {},
     blockPermissionInformation: {
       actionTypes: Object.fromEntries(
-        Object.entries(ontology[OntologyEntityTypeEnum.ACTION_TYPE])
-          .filter(([apiName, action]) => action.validation)
-          .map<
-            [string, ActionTypePermissionInformation]
-          >(([apiName, action]) => {
-            return [ridGenerator.generateRidForActionType(apiName), {
-              restrictionStatus: {
-                hasRolesApplied: true,
-                ontologyPackageRid: null,
-              },
-            }];
-          }),
+        ontologiesToScan.flatMap(ont =>
+          Object.entries(ont[OntologyEntityTypeEnum.ACTION_TYPE])
+            .filter(([apiName, action]) => action.validation)
+            .map<
+              [string, ActionTypePermissionInformation]
+            >(([apiName, action]) => {
+              return [ridGenerator.generateRidForActionType(apiName), {
+                restrictionStatus: {
+                  hasRolesApplied: true,
+                  ontologyPackageRid: null,
+                },
+              }];
+            })
+        ),
       ),
       linkTypes: {},
       objectTypes: {},
@@ -140,6 +146,7 @@ export function convertOntologyDefinitionToWireBlockData(
 function buildKnownIdentifiers(
   ontology: OntologyDefinition,
   ridGenerator: OntologyRidGenerator,
+  ontologiesToScan: OntologyDefinition[],
 ): KnownMarketplaceIdentifiers {
   // Interface types: InterfaceTypeRid -> BlockInternalId
   const interfaceMappings = Object.fromEntries(
@@ -188,37 +195,43 @@ function buildKnownIdentifiers(
   );
 
   // Object type IDs: ObjectTypeId -> BlockInternalId
+  // Scan all ontologies so cross-references to imported objects resolve.
   const objectTypeIds = Object.fromEntries(
-    Object.entries(ontology[OntologyEntityTypeEnum.OBJECT_TYPE]).map((
-      [objectTypeApiName, objectType],
-    ) => [
-      ridGenerator.getObjectTypeIds().get(
-        ReadableIdGenerator.getForObjectType(objectTypeApiName),
-      ),
-      ridGenerator.toBlockInternalId(
-        ReadableIdGenerator.getForObjectType(objectTypeApiName),
-      ),
-    ]),
+    ontologiesToScan.flatMap(ont =>
+      Object.entries(ont[OntologyEntityTypeEnum.OBJECT_TYPE]).map((
+        [objectTypeApiName, objectType],
+      ) => [
+        ridGenerator.getObjectTypeIds().get(
+          ReadableIdGenerator.getForObjectType(objectTypeApiName),
+        ),
+        ridGenerator.toBlockInternalId(
+          ReadableIdGenerator.getForObjectType(objectTypeApiName),
+        ),
+      ])
+    ),
   );
 
   // Property type IDs: ObjectTypeId -> (PropertyTypeId -> BlockInternalId)
+  // Scan all ontologies so imported object properties are included.
   const propertyTypeIds: Record<string, Record<string, string>> = {};
-  Object.entries(ontology[OntologyEntityTypeEnum.OBJECT_TYPE]).forEach((
-    [objectTypeApiName, objectType],
-  ) => {
-    const propMap: Record<string, string> = {};
-    (objectType.properties ?? []).forEach((property) => {
-      propMap[property.apiName] = ridGenerator.toBlockInternalId(
-        ReadableIdGenerator.getForObjectProperty(
-          objectTypeApiName,
-          property.apiName,
-        ),
-      );
+  ontologiesToScan.forEach(ont => {
+    Object.entries(ont[OntologyEntityTypeEnum.OBJECT_TYPE]).forEach((
+      [objectTypeApiName, objectType],
+    ) => {
+      const propMap: Record<string, string> = {};
+      (objectType.properties ?? []).forEach((property) => {
+        propMap[property.apiName] = ridGenerator.toBlockInternalId(
+          ReadableIdGenerator.getForObjectProperty(
+            objectTypeApiName,
+            property.apiName,
+          ),
+        );
+      });
+      const objTypeId = ridGenerator.getObjectTypeIds().get(
+        ReadableIdGenerator.getForObjectType(objectTypeApiName),
+      )!;
+      propertyTypeIds[objTypeId] = propMap;
     });
-    const objTypeId = ridGenerator.getObjectTypeIds().get(
-      ReadableIdGenerator.getForObjectType(objectTypeApiName),
-    )!;
-    propertyTypeIds[objTypeId] = propMap;
   });
 
   // Property type RIDs: PropertyTypeRid -> BlockInternalId
@@ -253,18 +266,20 @@ function buildKnownIdentifiers(
   );
 
   // Link type IDs: LinkTypeId -> BlockInternalId
+  // Scan all ontologies so imported link types are included.
   const linkTypeIds = Object.fromEntries(
-    Object.keys(ontology[OntologyEntityTypeEnum.LINK_TYPE]).map((
-      linkTypeId,
-      link,
-    ) => [
-      cleanAndValidateLinkTypeId(linkTypeId),
-      ridGenerator.toBlockInternalId(
-        ReadableIdGenerator.getForLinkType(
-          cleanAndValidateLinkTypeId(linkTypeId),
+    ontologiesToScan.flatMap(ont =>
+      Object.keys(ont[OntologyEntityTypeEnum.LINK_TYPE]).map((
+        linkTypeId,
+      ) => [
+        cleanAndValidateLinkTypeId(linkTypeId),
+        ridGenerator.toBlockInternalId(
+          ReadableIdGenerator.getForLinkType(
+            cleanAndValidateLinkTypeId(linkTypeId),
+          ),
         ),
-      ),
-    ]),
+      ])
+    ),
   );
 
   // Link type RIDs: LinkTypeRid -> BlockInternalId
