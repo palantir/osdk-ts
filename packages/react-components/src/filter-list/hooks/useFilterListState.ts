@@ -16,7 +16,7 @@
 
 import type { ObjectTypeDefinition, WhereClause } from "@osdk/api";
 import { useOsdkMetadata } from "@osdk/react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { assertUnreachable } from "../../shared/assertUnreachable.js";
 import type { FilterListProps } from "../FilterListApi.js";
 import type { FilterState } from "../FilterListItemApi.js";
@@ -103,6 +103,8 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
     initialFilterStates,
   } = props;
   const { metadata } = useOsdkMetadata(objectType);
+  const onFilterClauseChangedRef = useRef(onFilterClauseChanged);
+  onFilterClauseChangedRef.current = onFilterClauseChanged;
 
   const propertyTypes = useMemo(() => {
     const map = new Map<string, PropertyTypeInfo>();
@@ -174,8 +176,8 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
   );
 
   useEffect(() => {
-    onFilterClauseChanged?.(whereClause);
-  }, [whereClause, onFilterClauseChanged]);
+    onFilterClauseChangedRef.current?.(whereClause);
+  }, [whereClause]);
 
   const perFilterWhereClauses = useMemo(() => {
     const map = new Map<string, WhereClause<Q>>();
