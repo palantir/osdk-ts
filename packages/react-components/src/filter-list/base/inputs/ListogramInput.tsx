@@ -36,6 +36,7 @@ interface ListogramInputProps {
   onChange: (values: string[]) => void;
   colorMap?: Record<string, string>;
   displayMode?: ListogramDisplayMode;
+  showCount?: boolean;
   isExcluding?: boolean;
   className?: string;
   style?: React.CSSProperties;
@@ -53,6 +54,7 @@ function ListogramInputInner({
   onChange,
   colorMap,
   displayMode = "full",
+  showCount = true,
   isExcluding,
   className,
   style,
@@ -170,7 +172,7 @@ function ListogramInputInner({
                 >
                   {displayLabel}
                 </span>
-                {displayMode !== "minimal" && (
+                {showCount && displayMode !== "minimal" && (
                   <span className={styles.count}>{count.toLocaleString()}</span>
                 )}
                 {displayMode === "full" && (

@@ -36,6 +36,7 @@ interface ListogramFilterInputProps<Q extends ObjectTypeDefinition> {
   whereClause: WhereClause<Q>;
   colorMap?: Record<string, string>;
   displayMode?: "full" | "count" | "minimal";
+  showCount?: boolean;
   maxVisibleItems?: number;
   searchQuery?: string;
   excludeRowOpen?: boolean;
@@ -51,6 +52,7 @@ function ListogramFilterInputInner<Q extends ObjectTypeDefinition>({
   whereClause,
   colorMap,
   displayMode,
+  showCount,
   maxVisibleItems,
   searchQuery,
   excludeRowOpen,
@@ -116,6 +118,7 @@ function ListogramFilterInputInner<Q extends ObjectTypeDefinition>({
         onChange={handleChange}
         colorMap={colorMap}
         displayMode={displayMode}
+        showCount={showCount}
         isExcluding={isExcluding}
         maxVisibleItems={maxVisibleItems}
         searchQuery={searchQuery}

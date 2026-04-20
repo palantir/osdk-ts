@@ -188,6 +188,7 @@ function StaticValuesFilterInputInner<Q extends ObjectTypeDefinition>({
             onChange={exactMatch.handleChange}
             colorMap={definition.colorMap}
             displayMode={definition.listogramConfig?.displayMode}
+            showCount={definition.showCount}
             isExcluding={isExcluding}
             maxVisibleItems={definition.listogramConfig?.maxVisibleItems ?? 5}
             searchQuery={searchQuery}
@@ -211,6 +212,7 @@ function StaticValuesFilterInputInner<Q extends ObjectTypeDefinition>({
             error={null}
             selectedValue={select.selectedValue}
             onChange={select.handleSingleChange}
+            showCounts={definition.showCount}
             ariaLabel={`Select ${definition.key}`}
             renderValue={definition.renderValue}
           />
@@ -232,6 +234,7 @@ function StaticValuesFilterInputInner<Q extends ObjectTypeDefinition>({
             error={null}
             selectedValues={select.selectedValues}
             onChange={select.handleMultiChange}
+            showCounts={definition.showCount}
             ariaLabel={`Search ${definition.key} values`}
             renderValue={definition.renderValue}
           />

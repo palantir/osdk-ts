@@ -30,6 +30,7 @@ interface MultiSelectInputProps {
   className?: string;
   style?: React.CSSProperties;
   placeholder?: string;
+  showCounts?: boolean;
   ariaLabel?: string;
   renderValue?: (value: string) => string;
 }
@@ -43,6 +44,7 @@ function MultiSelectInputInner({
   className,
   style,
   placeholder = "Select values...",
+  showCounts = true,
   ariaLabel = "Search values",
   renderValue,
 }: MultiSelectInputProps): React.ReactElement {
@@ -79,12 +81,14 @@ function MultiSelectInputInner({
         <span className={styles.itemLabel}>
           {renderValue ? renderValue(value) : value}
         </span>
-        <span className={styles.itemCount}>
-          ({(countByValue.get(value) ?? 0).toLocaleString()})
-        </span>
+        {showCounts && (
+          <span className={styles.itemCount}>
+            ({(countByValue.get(value) ?? 0).toLocaleString()})
+          </span>
+        )}
       </Combobox.Item>
     ),
-    [countByValue, renderValue],
+    [countByValue, showCounts, renderValue],
   );
 
   const renderChips = useCallback(
