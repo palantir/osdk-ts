@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeDefinition } from "@osdk/api";
+import type { ObjectTypeDefinition, WhereClause } from "@osdk/api";
 import type { FilterDefinitionUnion } from "../FilterListApi.js";
 import type {
   ContainsTextFilterState,
@@ -214,7 +214,9 @@ export function createStaticValuesFilterDef(
   values: string[],
   filterState: FilterState,
   options?: {
-    toWhereClause?: (state: FilterState) => Record<string, unknown> | undefined;
+    toWhereClause?: (
+      state: FilterState,
+    ) => WhereClause<typeof MockObjectType> | undefined;
   },
 ): FilterDefinitionUnion<typeof MockObjectType> {
   return {

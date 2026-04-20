@@ -37,108 +37,14 @@ interface StaticValuesFilterInputProps<Q extends ObjectTypeDefinition> {
   excludeRowOpen?: boolean;
 }
 
-function StaticValuesFilterInputInner<Q extends ObjectTypeDefinition>({
-  definition,
-  filterState,
-  onFilterStateChanged,
-  searchQuery,
-  excludeRowOpen,
-}: StaticValuesFilterInputProps<Q>): React.ReactElement {
-  const aggregationValues: PropertyAggregationValue[] = useMemo(
-    () => definition.values.map((value) => ({ value, count: 0 })),
-    [definition.values],
-  );
-
-  const isExcluding = filterState?.isExcluding ?? false;
-
-  switch (definition.filterComponent) {
-    case "LISTOGRAM":
-      return (
-        <StaticListogramInput
-          values={aggregationValues}
-          filterState={filterState}
-          onFilterStateChanged={onFilterStateChanged}
-          isExcluding={isExcluding}
-          colorMap={definition.colorMap}
-          displayMode={definition.listogramConfig?.displayMode}
-          maxVisibleItems={definition.listogramConfig?.maxVisibleItems ?? 5}
-          searchQuery={searchQuery}
-          excludeRowOpen={excludeRowOpen}
-          renderValue={definition.renderValue}
-        />
-      );
-
-    case "SINGLE_SELECT":
-      return (
-        <StaticSingleSelectInput
-          values={aggregationValues}
-          filterState={filterState}
-          onFilterStateChanged={onFilterStateChanged}
-          isExcluding={isExcluding}
-          excludeRowOpen={excludeRowOpen}
-          filterKey={definition.key}
-          renderValue={definition.renderValue}
-        />
-      );
-
-    case "MULTI_SELECT":
-      return (
-        <StaticMultiSelectInput
-          values={aggregationValues}
-          filterState={filterState}
-          onFilterStateChanged={onFilterStateChanged}
-          isExcluding={isExcluding}
-          excludeRowOpen={excludeRowOpen}
-          filterKey={definition.key}
-          renderValue={definition.renderValue}
-        />
-      );
-
-    case "TEXT_TAGS":
-      return (
-        <StaticTextTagsInput
-          values={aggregationValues}
-          filterState={filterState}
-          onFilterStateChanged={onFilterStateChanged}
-          isExcluding={isExcluding}
-          excludeRowOpen={excludeRowOpen}
-        />
-      );
-  }
-}
-
-export const StaticValuesFilterInput: typeof StaticValuesFilterInputInner =
-  memo(
-    StaticValuesFilterInputInner,
-  ) as typeof StaticValuesFilterInputInner;
-
-// --- Sub-components for each filter component type ---
-
-interface StaticListogramInputProps {
-  values: PropertyAggregationValue[];
-  filterState: FilterState | undefined;
-  onFilterStateChanged: (state: FilterState) => void;
-  isExcluding: boolean;
-  colorMap?: Record<string, string>;
-  displayMode?: "full" | "count" | "minimal";
-  maxVisibleItems: number;
-  searchQuery?: string;
-  excludeRowOpen?: boolean;
-  renderValue?: (value: string) => string;
-}
-
-const StaticListogramInput = memo(function StaticListogramInput({
-  values,
-  filterState,
-  onFilterStateChanged,
-  isExcluding,
-  colorMap,
-  displayMode,
-  maxVisibleItems,
-  searchQuery,
-  excludeRowOpen,
-  renderValue,
-}: StaticListogramInputProps): React.ReactElement {
+/**
+ * Hooks for EXACT_MATCH state management (used by LISTOGRAM and TEXT_TAGS).
+ */
+function useExactMatchState(
+  filterState: FilterState | undefined,
+  onFilterStateChanged: (state: FilterState) => void,
+  isExcluding: boolean,
+) {
   const selectedValues = useMemo(
     () =>
       filterState?.type === "EXACT_MATCH"
@@ -166,51 +72,17 @@ const StaticListogramInput = memo(function StaticListogramInput({
     [onFilterStateChanged, isExcluding],
   );
 
-  return (
-    <FilterInputExcludeRow
-      excludeRowOpen={excludeRowOpen}
-      filterState={filterState}
-      onFilterStateChanged={onFilterStateChanged}
-      totalValueCount={values.length}
-      onClearAll={handleClearAll}
-    >
-      <ListogramInput
-        values={values}
-        maxCount={0}
-        isLoading={false}
-        error={null}
-        selectedValues={selectedValues}
-        onChange={handleChange}
-        colorMap={colorMap}
-        displayMode={displayMode}
-        isExcluding={isExcluding}
-        maxVisibleItems={maxVisibleItems}
-        searchQuery={searchQuery}
-        renderValue={renderValue}
-      />
-    </FilterInputExcludeRow>
-  );
-});
-
-interface StaticSingleSelectInputProps {
-  values: PropertyAggregationValue[];
-  filterState: FilterState | undefined;
-  onFilterStateChanged: (state: FilterState) => void;
-  isExcluding: boolean;
-  excludeRowOpen?: boolean;
-  filterKey: string;
-  renderValue?: (value: string) => string;
+  return { selectedValues, handleClearAll, handleChange };
 }
 
-const StaticSingleSelectInput = memo(function StaticSingleSelectInput({
-  values,
-  filterState,
-  onFilterStateChanged,
-  isExcluding,
-  excludeRowOpen,
-  filterKey,
-  renderValue,
-}: StaticSingleSelectInputProps): React.ReactElement {
+/**
+ * Hooks for SELECT state management (used by SINGLE_SELECT and MULTI_SELECT).
+ */
+function useSelectState(
+  filterState: FilterState | undefined,
+  onFilterStateChanged: (state: FilterState) => void,
+  isExcluding: boolean,
+) {
   const selectedValue = useMemo(
     () =>
       filterState?.type === "SELECT"
@@ -219,65 +91,6 @@ const StaticSingleSelectInput = memo(function StaticSingleSelectInput({
     [filterState],
   );
 
-  const handleClearAll = useCallback(() => {
-    onFilterStateChanged({
-      type: "SELECT",
-      selectedValues: [],
-      isExcluding,
-    });
-  }, [onFilterStateChanged, isExcluding]);
-
-  const handleChange = useCallback(
-    (value: string | undefined) => {
-      onFilterStateChanged({
-        type: "SELECT",
-        selectedValues: value !== undefined ? [value] : [],
-        isExcluding,
-      });
-    },
-    [onFilterStateChanged, isExcluding],
-  );
-
-  return (
-    <FilterInputExcludeRow
-      excludeRowOpen={excludeRowOpen}
-      filterState={filterState}
-      onFilterStateChanged={onFilterStateChanged}
-      totalValueCount={values.length}
-      onClearAll={handleClearAll}
-    >
-      <SingleSelectInput
-        values={values}
-        isLoading={false}
-        error={null}
-        selectedValue={selectedValue}
-        onChange={handleChange}
-        ariaLabel={`Select ${filterKey}`}
-        renderValue={renderValue}
-      />
-    </FilterInputExcludeRow>
-  );
-});
-
-interface StaticMultiSelectInputProps {
-  values: PropertyAggregationValue[];
-  filterState: FilterState | undefined;
-  onFilterStateChanged: (state: FilterState) => void;
-  isExcluding: boolean;
-  excludeRowOpen?: boolean;
-  filterKey: string;
-  renderValue?: (value: string) => string;
-}
-
-const StaticMultiSelectInput = memo(function StaticMultiSelectInput({
-  values,
-  filterState,
-  onFilterStateChanged,
-  isExcluding,
-  excludeRowOpen,
-  filterKey,
-  renderValue,
-}: StaticMultiSelectInputProps): React.ReactElement {
   const selectedValues = useMemo(
     () =>
       filterState?.type === "SELECT"
@@ -294,7 +107,18 @@ const StaticMultiSelectInput = memo(function StaticMultiSelectInput({
     });
   }, [onFilterStateChanged, isExcluding]);
 
-  const handleChange = useCallback(
+  const handleSingleChange = useCallback(
+    (value: string | undefined) => {
+      onFilterStateChanged({
+        type: "SELECT",
+        selectedValues: value !== undefined ? [value] : [],
+        isExcluding,
+      });
+    },
+    [onFilterStateChanged, isExcluding],
+  );
+
+  const handleMultiChange = useCallback(
     (selectedValues: string[]) => {
       onFilterStateChanged({
         type: "SELECT",
@@ -305,84 +129,131 @@ const StaticMultiSelectInput = memo(function StaticMultiSelectInput({
     [onFilterStateChanged, isExcluding],
   );
 
-  return (
-    <FilterInputExcludeRow
-      excludeRowOpen={excludeRowOpen}
-      filterState={filterState}
-      onFilterStateChanged={onFilterStateChanged}
-      totalValueCount={values.length}
-      onClearAll={handleClearAll}
-    >
-      <MultiSelectInput
-        values={values}
-        isLoading={false}
-        error={null}
-        selectedValues={selectedValues}
-        onChange={handleChange}
-        ariaLabel={`Search ${filterKey} values`}
-        renderValue={renderValue}
-      />
-    </FilterInputExcludeRow>
-  );
-});
-
-interface StaticTextTagsInputProps {
-  values: PropertyAggregationValue[];
-  filterState: FilterState | undefined;
-  onFilterStateChanged: (state: FilterState) => void;
-  isExcluding: boolean;
-  excludeRowOpen?: boolean;
+  return {
+    selectedValue,
+    selectedValues,
+    handleClearAll,
+    handleSingleChange,
+    handleMultiChange,
+  };
 }
 
-const StaticTextTagsInput = memo(function StaticTextTagsInput({
-  values,
+function StaticValuesFilterInputInner<Q extends ObjectTypeDefinition>({
+  definition,
   filterState,
   onFilterStateChanged,
-  isExcluding,
+  searchQuery,
   excludeRowOpen,
-}: StaticTextTagsInputProps): React.ReactElement {
-  const tags = useMemo(
-    () =>
-      filterState?.type === "EXACT_MATCH"
-        ? coerceToStringArray(filterState.values)
-        : [],
-    [filterState],
+}: StaticValuesFilterInputProps<Q>): React.ReactElement {
+  const aggregationValues: PropertyAggregationValue[] = useMemo(
+    () => definition.values.map((value) => ({ value, count: 0 })),
+    [definition.values],
   );
 
-  const handleClearAll = useCallback(() => {
-    onFilterStateChanged({
-      type: "EXACT_MATCH",
-      values: [],
-      isExcluding,
-    });
-  }, [onFilterStateChanged, isExcluding]);
+  const isExcluding = filterState?.isExcluding ?? false;
 
-  const handleChange = useCallback(
-    (values: string[]) => {
-      onFilterStateChanged({
-        type: "EXACT_MATCH",
-        values,
-        isExcluding,
-      });
-    },
-    [onFilterStateChanged, isExcluding],
+  const exactMatch = useExactMatchState(
+    filterState,
+    onFilterStateChanged,
+    isExcluding,
+  );
+  const select = useSelectState(
+    filterState,
+    onFilterStateChanged,
+    isExcluding,
   );
 
-  return (
-    <FilterInputExcludeRow
-      excludeRowOpen={excludeRowOpen}
-      filterState={filterState}
-      onFilterStateChanged={onFilterStateChanged}
-      totalValueCount={values.length}
-      onClearAll={handleClearAll}
-    >
-      <TextTagsInput
-        suggestions={values}
-        isLoading={false}
-        error={null}
-        tags={tags}
-        onChange={handleChange}
-      />
-    </FilterInputExcludeRow>
-  );
-});
+  switch (definition.filterComponent) {
+    case "LISTOGRAM":
+      return (
+        <FilterInputExcludeRow
+          excludeRowOpen={excludeRowOpen}
+          filterState={filterState}
+          onFilterStateChanged={onFilterStateChanged}
+          totalValueCount={aggregationValues.length}
+          onClearAll={exactMatch.handleClearAll}
+        >
+          <ListogramInput
+            values={aggregationValues}
+            maxCount={0}
+            isLoading={false}
+            error={null}
+            selectedValues={exactMatch.selectedValues}
+            onChange={exactMatch.handleChange}
+            colorMap={definition.colorMap}
+            displayMode={definition.listogramConfig?.displayMode}
+            isExcluding={isExcluding}
+            maxVisibleItems={definition.listogramConfig?.maxVisibleItems ?? 5}
+            searchQuery={searchQuery}
+            renderValue={definition.renderValue}
+          />
+        </FilterInputExcludeRow>
+      );
+
+    case "SINGLE_SELECT":
+      return (
+        <FilterInputExcludeRow
+          excludeRowOpen={excludeRowOpen}
+          filterState={filterState}
+          onFilterStateChanged={onFilterStateChanged}
+          totalValueCount={aggregationValues.length}
+          onClearAll={select.handleClearAll}
+        >
+          <SingleSelectInput
+            values={aggregationValues}
+            isLoading={false}
+            error={null}
+            selectedValue={select.selectedValue}
+            onChange={select.handleSingleChange}
+            ariaLabel={`Select ${definition.key}`}
+            renderValue={definition.renderValue}
+          />
+        </FilterInputExcludeRow>
+      );
+
+    case "MULTI_SELECT":
+      return (
+        <FilterInputExcludeRow
+          excludeRowOpen={excludeRowOpen}
+          filterState={filterState}
+          onFilterStateChanged={onFilterStateChanged}
+          totalValueCount={aggregationValues.length}
+          onClearAll={select.handleClearAll}
+        >
+          <MultiSelectInput
+            values={aggregationValues}
+            isLoading={false}
+            error={null}
+            selectedValues={select.selectedValues}
+            onChange={select.handleMultiChange}
+            ariaLabel={`Search ${definition.key} values`}
+            renderValue={definition.renderValue}
+          />
+        </FilterInputExcludeRow>
+      );
+
+    case "TEXT_TAGS":
+      return (
+        <FilterInputExcludeRow
+          excludeRowOpen={excludeRowOpen}
+          filterState={filterState}
+          onFilterStateChanged={onFilterStateChanged}
+          totalValueCount={aggregationValues.length}
+          onClearAll={exactMatch.handleClearAll}
+        >
+          <TextTagsInput
+            suggestions={aggregationValues}
+            isLoading={false}
+            error={null}
+            tags={exactMatch.selectedValues}
+            onChange={exactMatch.handleChange}
+          />
+        </FilterInputExcludeRow>
+      );
+  }
+}
+
+export const StaticValuesFilterInput: typeof StaticValuesFilterInputInner =
+  memo(
+    StaticValuesFilterInputInner,
+  ) as typeof StaticValuesFilterInputInner;

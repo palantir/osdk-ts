@@ -540,6 +540,20 @@ describe("buildWhereClause", () => {
     expect(result).toEqual({ team: { $in: ["Alpha", "Beta"] } });
   });
 
+  it("builds $in for STATIC_VALUES TEXT_TAGS", () => {
+    const def = createStaticValuesFilterDef(
+      "tags",
+      "TEXT_TAGS",
+      ["urgent", "blocked", "ready"],
+      { type: "EXACT_MATCH", values: [] },
+    );
+    const filterStates = stateMap(
+      [def, { type: "EXACT_MATCH", values: ["urgent", "blocked"] }],
+    );
+    const result = buildWhereClause([def], filterStates);
+    expect(result).toEqual({ tags: { $in: ["urgent", "blocked"] } });
+  });
+
   it("calls toWhereClause for STATIC_VALUES when provided", () => {
     const def = createStaticValuesFilterDef(
       "status",

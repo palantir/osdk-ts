@@ -1124,10 +1124,20 @@ function WithStaticValuesStory(args: Partial<EmployeeFilterListProps>) {
             return undefined;
           }
           const values = state.values as string[];
-          if (values.includes("Active") && !values.includes("Inactive")) {
+          const hasActive = values.includes("Active");
+          const hasInactive = values.includes("Inactive");
+          if (hasActive && hasInactive) {
+            return {
+              $or: [
+                { employeeStatus: "Active" },
+                { employeeStatus: "Inactive" },
+              ],
+            } as WhereClause<Employee>;
+          }
+          if (hasActive) {
             return { employeeStatus: "Active" } as WhereClause<Employee>;
           }
-          if (values.includes("Inactive") && !values.includes("Active")) {
+          if (hasInactive) {
             return { employeeStatus: "Inactive" } as WhereClause<Employee>;
           }
           return undefined;
