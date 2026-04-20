@@ -397,7 +397,28 @@ describe("DatetimePickerField", () => {
       expect(document.activeElement).not.toBe(input);
     });
 
-    it("blurs input when tabbing past end of popover", () => {
+    it("popover stays open when Tab moves focus from input into calendar", () => {
+      render(
+        <DatetimePickerField
+          value={new Date(2024, 0, 15)}
+          onChange={vi.fn()}
+        />,
+      );
+      const input = screen.getByRole("combobox") as HTMLInputElement;
+
+      // Open popover
+      input.focus();
+      fireEvent.focus(input);
+      expect(input.getAttribute("aria-expanded")).toBe("true");
+
+      // Tab from input — handleKeyDown moves focus into the calendar
+      fireEvent.keyDown(input, { key: "Tab" });
+
+      // Popover must stay open — no flicker
+      expect(input.getAttribute("aria-expanded")).toBe("true");
+    });
+
+    it("returns focus to input and closes popover when tabbing past end of popover", () => {
       render(
         <DatetimePickerField
           value={new Date(2024, 0, 15)}
@@ -422,7 +443,40 @@ describe("DatetimePickerField", () => {
       // relatedTarget inside the popover triggers the "close" branch.
       fireEvent.focus(endSentinel, { relatedTarget: dialog });
 
-      expect(document.activeElement).not.toBe(input);
+      // Focus returns to the input so the next Tab proceeds to the next field.
+      expect(document.activeElement).toBe(input);
+      // Popover should be closed.
+      expect(input.getAttribute("aria-expanded")).toBe("false");
+    });
+
+    it("Tab from input after boundary exit does not reopen the popover", () => {
+      render(
+        <DatetimePickerField
+          value={new Date(2024, 0, 15)}
+          onChange={vi.fn()}
+        />,
+      );
+      const input = screen.getByRole("combobox") as HTMLInputElement;
+
+      // Open popover
+      input.focus();
+      fireEvent.focus(input);
+      expect(input.getAttribute("aria-expanded")).toBe("true");
+
+      const dialog = screen.getByRole("dialog");
+      const endSentinel = dialog.querySelector(
+        "[aria-label='End of date picker dialog']",
+      ) as HTMLElement;
+
+      // Tab reaches end boundary → popover closes, focus returns to input
+      fireEvent.focus(endSentinel, { relatedTarget: dialog });
+      expect(input.getAttribute("aria-expanded")).toBe("false");
+      expect(document.activeElement).toBe(input);
+
+      // The next Tab on the input should NOT reopen the popover.
+      // It should let the default Tab behavior proceed to the next field.
+      fireEvent.keyDown(input, { key: "Tab" });
+      expect(input.getAttribute("aria-expanded")).toBe("false");
     });
 
     it("popover closes after selecting a date (closeOnSelection)", () => {
