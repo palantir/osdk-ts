@@ -174,7 +174,7 @@ export function FilterList<Q extends ObjectTypeDefinition>(
         showCount={showCount}
       />
     ),
-    [objectType, objectSet, perFilterWhereClauses],
+    [objectType, objectSet, perFilterWhereClauses, showCount],
   );
 
   return (
