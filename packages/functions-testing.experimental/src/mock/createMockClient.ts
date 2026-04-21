@@ -64,12 +64,6 @@ export interface AggregateStubBuilder<T> {
 
 export interface QueryStubBuilder<T> {
   thenReturn(result: T): void;
-  /**
-   * Register an error to be thrown when a matching query call is made.
-   * `executeFunction` will reject with the provided error, rather than the
-   * generic "No stub for query" fallback that fires when no stub is
-   * registered at all.
-   */
   thenThrow(error: Error): void;
 }
 
