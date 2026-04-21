@@ -68,14 +68,6 @@ interface OntologyFullMetadata {
       description?: string;
       dataType: { type: string; [key: string]: unknown };
     }>;
-    propertiesV2?: Record<string, {
-      type: string;
-      apiName?: string;
-      displayName?: string;
-      description?: string;
-      dataType?: { type: string; [key: string]: unknown };
-      requireImplementation?: boolean;
-    }>;
     links: Record<string, {
       apiName: string;
       displayName?: string;
