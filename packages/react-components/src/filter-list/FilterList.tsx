@@ -15,9 +15,7 @@
  */
 
 import type { ObjectTypeDefinition, WhereClause } from "@osdk/api";
-import { useRegisterUserAgent } from "@osdk/react/experimental";
 import React, { useCallback, useMemo } from "react";
-import { componentUserAgent } from "../util/UserAgent.js";
 import { AddFilterPopover } from "./base/AddFilterPopover.js";
 import { BaseFilterList } from "./base/BaseFilterList.js";
 import type { RenderFilterInput } from "./base/BaseFilterListApi.js";
@@ -52,8 +50,6 @@ export function FilterList<Q extends ObjectTypeDefinition>(
     onFilterRemoved,
     renderAddFilterButton,
   } = props;
-
-  useRegisterUserAgent(componentUserAgent("FilterList"));
 
   const {
     filterStates,

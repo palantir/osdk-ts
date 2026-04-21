@@ -21,11 +21,9 @@ import type {
   QueryDefinition,
   SimplePropertyDef,
 } from "@osdk/api";
-import { useRegisterUserAgent } from "@osdk/react/experimental";
 import type { Cell } from "@tanstack/react-table";
 import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import React, { useCallback, useMemo } from "react";
-import { componentUserAgent } from "../util/UserAgent.js";
 import { useColumnDefs } from "./hooks/useColumnDefs.js";
 import { useColumnPinning } from "./hooks/useColumnPinning.js";
 import { useColumnResize } from "./hooks/useColumnResize.js";
@@ -90,8 +88,6 @@ export function ObjectTable<
   editMode = "manual",
   ...props
 }: ObjectTableProps<Q, RDPs, FunctionColumns>): React.ReactElement {
-  useRegisterUserAgent(componentUserAgent("ObjectTable"));
-
   const { columnSizing, onColumnSizingChange } = useColumnResize({
     onColumnResize,
   });

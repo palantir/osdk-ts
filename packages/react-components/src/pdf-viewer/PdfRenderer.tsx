@@ -16,10 +16,8 @@
 
 import { Error as ErrorIcon, Spin } from "@blueprintjs/icons";
 import type { Media } from "@osdk/api";
-import { useRegisterUserAgent } from "@osdk/react/experimental";
 import classnames from "classnames";
 import React, { useEffect, useState } from "react";
-import { componentUserAgent } from "../util/UserAgent.js";
 import { BasePdfViewer } from "./PdfViewer.js";
 import styles from "./PdfViewer.module.css";
 import type { PdfViewerProps } from "./types.js";
@@ -39,8 +37,6 @@ export function PdfViewer({
   className,
   ...pdfViewerProps
 }: PdfViewerMediaProps): React.ReactElement {
-  useRegisterUserAgent(componentUserAgent("PdfViewer"));
-
   const [src, setSrc] = useState<ArrayBuffer | undefined>(undefined);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | undefined>(undefined);
