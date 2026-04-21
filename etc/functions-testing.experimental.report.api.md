@@ -82,6 +82,8 @@ export interface MockOsdkObjectOptions<Q extends ObjectTypeDefinition = ObjectTy
 export interface QueryStubBuilder<T> {
     	// (undocumented)
     thenReturn(result: T): void;
+    	// (undocumented)
+    thenThrow(error: Error): void;
 }
 
 // Warning: (ae-forgotten-export) The symbol "IsOsdkObject" needs to be exported by the entry point index.d.ts
