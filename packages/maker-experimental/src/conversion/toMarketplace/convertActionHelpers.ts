@@ -252,14 +252,14 @@ function convertFunctionBackedAction(
     rule.type === "functionRule",
     "Function-backed action must have a functionRule",
   );
-  const functionApiName = rule.functionRule.functionRid;
+  const functionName = rule.functionRule.functionRid;
 
   const discoveredFunction = functionsIr.discoveredFunctions.find(
-    f => f.locator.typescriptOsdk?.functionName === functionApiName,
+    f => f.locator.typescriptOsdk?.functionName === functionName,
   );
   invariant(
     discoveredFunction != null,
-    `Function "${functionApiName}" not found in functions IR`,
+    `Function "${functionName}" not found in functions IR`,
   );
 
   const parameters: Record<ParameterId, Parameter> = {};
@@ -322,7 +322,7 @@ function convertFunctionBackedAction(
     }));
   action = { ...action, parameters: syntheticParameters };
 
-  const functionRid = `ri.function-registry.main.function.${functionApiName}`;
+  const functionRid = `ri.function-registry.main.function.${functionName}`;
 
   const formContentOrdering = parameterOrdering.map(p => ({
     type: "parameterId" as const,
@@ -454,7 +454,7 @@ function convertFunctionInputDataType(
       return {
         type: "objectSetRid" as const,
         objectSetRid: {
-          objectTypeId: objectTypeId,
+          objectTypeId,
         },
       } as unknown as Parameter["type"];
     }
@@ -652,7 +652,7 @@ function buildActionMetadata(
       redactionOverride: null,
     },
     displayMetadata,
-    parameterOrdering: parameterOrdering,
+    parameterOrdering,
     formContentOrdering: getFormContentOrdering(action, parameterOrdering),
     parameters: actionParameters,
     sections: actionSections,
@@ -749,13 +749,13 @@ export function extractAllowedValues(
           text: {
             ...(minLength === undefined
               ? {}
-              : { minLength: minLength }),
+              : { minLength }),
             ...(maxLength === undefined
               ? {}
-              : { maxLength: maxLength }),
+              : { maxLength }),
             ...(regex === undefined
               ? {}
-              : { regex: { regex: regex, failureMessage: "Invalid input" } }),
+              : { regex: { regex, failureMessage: "Invalid input" } }),
           },
         },
       };
