@@ -55,6 +55,7 @@ export function createMockObjectSet<
         },
       },
     },
+    $as: vi.fn(() => fauxObject) as Osdk.Instance<Q>["$as"],
   } as Osdk.Instance<Q>;
 
   fauxResults = {
@@ -1449,7 +1450,7 @@ describe("ObjectSet", () => {
       expectTypeOf<narrowToTypeAllowedTypes>().toEqualTypeOf<"interface">();
 
       expectTypeOf<narrowToTypeAllowedInterfaceTypes>().toEqualTypeOf<
-        "FooInterface"
+        "FooInterface" | "ReducerInterface"
       >();
     });
   });

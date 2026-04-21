@@ -82,6 +82,22 @@ export type PropMapToObject<
   TO extends ObjectTypeDefinition,
 > = NonNullable<CompileTimeMetadata<TO>["interfaceMap"]>[ApiNameAsString<FROM>];
 
+type AutoModifierForOtProp<
+  TO extends ObjectTypeDefinition,
+  OtProp,
+> = OtProp extends keyof CompileTimeMetadata<TO>["properties"]
+  ? CompileTimeMetadata<TO>["properties"][OtProp] extends {
+    hasReducers: true;
+    mainValue: { fields: readonly string[] };
+  } ? `${OtProp & string}:applyReducersAndExtractMainValue`
+  : CompileTimeMetadata<TO>["properties"][OtProp] extends { hasReducers: true }
+    ? `${OtProp & string}:applyReducers`
+  : CompileTimeMetadata<TO>["properties"][OtProp] extends {
+    mainValue: { fields: readonly string[] };
+  } ? `${OtProp & string}:applyMainValue`
+  : OtProp & string
+  : OtProp & string;
+
 export type MapPropNamesToObjectType<
   FROM extends ObjectOrInterfaceDefinition,
   TO extends ObjectTypeDefinition,
@@ -92,15 +108,21 @@ export type MapPropNamesToObjectType<
     | "$allBaseProperties"
     | "$propertySecurities" = never,
 > = "$allBaseProperties" extends OPTIONS
-  ? PropertyKeys<FROM> extends P ? PropertyKeys<TO>
-  : PropMapToObject<
-    FROM,
-    TO
-  >[JustProps<FROM, P> & keyof PropMapToObject<FROM, TO>]
-  : PropMapToObject<
-    FROM,
-    TO
-  >[JustProps<FROM, P> & keyof PropMapToObject<FROM, TO>];
+  ? PropertyKeys<FROM> extends P ? AutoModifierForOtProp<TO, PropertyKeys<TO>>
+  : AutoModifierForOtProp<
+    TO,
+    PropMapToObject<
+      FROM,
+      TO
+    >[JustProps<FROM, P> & keyof PropMapToObject<FROM, TO>]
+  >
+  : AutoModifierForOtProp<
+    TO,
+    PropMapToObject<
+      FROM,
+      TO
+    >[JustProps<FROM, P> & keyof PropMapToObject<FROM, TO>]
+  >;
 
 type NamespaceOf<S extends string> = S extends `${infer Before}.${infer After}`
   ? After extends `${string}.${string}` ? `${Before}.${NamespaceOf<After>}`
@@ -130,6 +152,12 @@ export type MapPropNamesToInterface<
   >[JustProps<FROM, P> & keyof PropMapToInterface<FROM, TO>],
   TO
 >;
+
+/**
+ * P entries without modifier notation. Used to keep the existing
+ * Map…ToObjectType / Map…ToInterface logic focused on plain prop names.
+ */
+type PlainP<P> = P extends `${string}:${string}` ? never : P;
 /**
  * Older version of this helper that allows for `$rid` and co in
  * the properties field.
@@ -140,7 +168,7 @@ export type MapPropNamesToInterface<
 export type ConvertProps<
   FROM extends ObjectOrInterfaceDefinition,
   TO extends ValidToFrom<FROM>,
-  P extends ValidOsdkPropParams<FROM>,
+  P extends ValidOsdkPropParams<FROM> | string,
   OPTIONS extends
     | never
     | "$rid"
@@ -149,14 +177,25 @@ export type ConvertProps<
 > = TO extends FROM ? P
   : TO extends ObjectTypeDefinition ? (
       UnionIfTrue<
-        MapPropNamesToObjectType<FROM, TO, P, OPTIONS>,
+        IsNever<PlainP<P>> extends true ? never
+          : MapPropNamesToObjectType<
+            FROM,
+            TO,
+            PlainP<P> & ValidOsdkPropParams<FROM>,
+            OPTIONS
+          >,
         P extends "$rid" ? true : false,
         "$rid"
       >
     )
   : TO extends InterfaceDefinition ? FROM extends ObjectTypeDefinition ? (
         UnionIfTrue<
-          MapPropNamesToInterface<FROM, TO, P>,
+          IsNever<PlainP<P>> extends true ? never
+            : MapPropNamesToInterface<
+              FROM,
+              TO,
+              PlainP<P> & ValidOsdkPropParams<FROM>
+            >,
           P extends "$rid" ? true : false,
           "$rid"
         >
@@ -276,7 +315,17 @@ export namespace Osdk {
         : Q extends ObjectOrInterfaceDefinition ? OsdkObjectLinksObject<Q>
         : never;
 
-      readonly $as: <NEW_Q extends ValidToFrom<Q>>(
+      /**
+       * When `P` includes modifier notation (e.g. `"prop:applyReducers"`),
+       * only object-type targets are allowed — interface casts are rejected
+       * at the type level because interface properties cannot represent
+       * modifier-reduced shapes.
+       */
+      readonly $as: <
+        NEW_Q extends HasModifiers<P> extends true
+          ? ValidToFrom<Q> & ObjectTypeDefinition
+          : ValidToFrom<Q>,
+      >(
         type: NEW_Q | string,
       ) => Osdk.Instance<
         NEW_Q,

@@ -115,6 +115,59 @@ export interface ReducerTest extends $ObjectTypeDefinition {
       name: 'cube';
     };
     implements: ['ReducerTestInterface'];
+    interfaceImplementations: {
+      ReducerTestInterface: {
+        stringFromNonMainValueOfStruct: {
+          type: 'structField';
+          propertyApiName: 'struct';
+          structFieldApiName: 'string';
+        };
+        stringFromSingleMainValue: {
+          type: 'reduced';
+          implementation: {
+            type: 'structField';
+            propertyApiName: 'structArray';
+            structFieldApiName: 'integer';
+          };
+        };
+        stringFromReducer: {
+          type: 'reduced';
+          implementation: {
+            type: 'localProperty';
+            propertyApiName: 'stringArray';
+          };
+        };
+        stringFromMainValue: {
+          type: 'structField';
+          propertyApiName: 'structWithMultipleMain';
+          structFieldApiName: 'integer1';
+        };
+        structFromMultipleMainValue: {
+          type: 'struct';
+          mapping: {
+            integer: {
+              type: 'structFieldOfProperty';
+              propertyApiName: 'structWithMultipleMain';
+              structFieldApiName: 'integer2';
+            };
+            string: {
+              type: 'structFieldOfProperty';
+              propertyApiName: 'structWithMultipleMain';
+              structFieldApiName: 'string1';
+            };
+          };
+        };
+        stringFromReducedMainValueStructArray: {
+          type: 'structField';
+          propertyApiName: 'struct';
+          structFieldApiName: 'integer';
+        };
+        stringFromArrayFromAlreadyReduced: {
+          type: 'localProperty';
+          propertyApiName: 'stringArray';
+        };
+      };
+    };
     interfaceMap: {
       ReducerTestInterface: {
         stringFromArrayFromAlreadyReduced: 'stringArray';

@@ -88,6 +88,21 @@ export interface ObjectMetadata extends ObjectInterfaceBaseMetadata {
       /* InterfaceType property api name */ string
     >
   >;
+  /**
+   * Describes how this object type implements each property of the interfaces
+   * it implements. Parallel to `interfaceMap`/`inverseInterfaceMap`, but
+   * captures the richer cases (struct fields, reduced properties, struct
+   * mappings) that the flat maps can't express.
+   *
+   * Optional for backwards compatibility — legacy metadata may not surface it.
+   */
+  interfaceImplementations?: Record<
+    /* InterfaceType api name */ string,
+    Record<
+      /* InterfaceType property api name */ string,
+      ObjectMetadata.InterfacePropertyImplementation
+    >
+  >;
 }
 
 export namespace ObjectMetadata {
@@ -113,6 +128,54 @@ export namespace ObjectMetadata {
     __OsdkLinkTargetType?: Q;
     targetType: Q["apiName"];
     multiplicity: M;
+  }
+
+  /**
+   * Describes how an object type implements an interface property. Mirrors
+   * the four variants on the wire
+   * (`InterfacePropertyTypeImplementation`), minimized to what the SDK needs
+   * to resolve property types across `$as` casts.
+   */
+  export type InterfacePropertyImplementation =
+    | InterfacePropertyLocalImplementation
+    | InterfacePropertyStructFieldImplementation
+    | InterfacePropertyStructImplementation
+    | InterfacePropertyReducedImplementation;
+
+  export interface InterfacePropertyLocalImplementation {
+    type: "localProperty";
+    propertyApiName: string;
+  }
+
+  export interface InterfacePropertyStructFieldImplementation {
+    type: "structField";
+    propertyApiName: string;
+    structFieldApiName: string;
+  }
+
+  export interface InterfacePropertyStructImplementation {
+    type: "struct";
+    mapping: Record<
+      /* struct field api name */ string,
+      | { type: "property"; propertyApiName: string }
+      | {
+        type: "structFieldOfProperty";
+        propertyApiName: string;
+        structFieldApiName: string;
+      }
+    >;
+  }
+
+  export interface InterfacePropertyReducedImplementation {
+    type: "reduced";
+    /**
+     * The inner implementation being reduced. Cannot itself be `reduced` —
+     * arbitrary nesting is disallowed on the wire.
+     */
+    implementation:
+      | InterfacePropertyLocalImplementation
+      | InterfacePropertyStructFieldImplementation
+      | InterfacePropertyStructImplementation;
   }
 }
 

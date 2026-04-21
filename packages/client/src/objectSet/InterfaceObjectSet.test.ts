@@ -22,16 +22,22 @@ import {
 import { beforeAll, describe, expect, expectTypeOf, it } from "vitest";
 
 import type { ObjectSet, Osdk, PropertyKeys } from "@osdk/api";
-import { LegacyFauxFoundry, startNodeApiServer } from "@osdk/shared.test";
+import type { SetupServer } from "@osdk/shared.test";
+import {
+  LegacyFauxFoundry,
+  MockOntologiesV2,
+  startNodeApiServer,
+} from "@osdk/shared.test";
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
 
 describe("ObjectSet", () => {
   let client: Client;
+  let apiServer: SetupServer;
 
   beforeAll(() => {
     const testSetup = startNodeApiServer(new LegacyFauxFoundry(), createClient);
-    ({ client } = testSetup);
+    ({ client, apiServer } = testSetup);
     return () => {
       testSetup.apiServer.close();
     };
@@ -75,7 +81,17 @@ describe("ObjectSet", () => {
 
     const asEmployee = interfaceObj.$as(Employee);
     expectTypeOf<typeof asEmployee>().toEqualTypeOf<
-      Osdk.Instance<Employee, "$allBaseProperties", PropertyKeys<Employee>, {}>
+      Osdk.Instance<
+        Employee,
+        "$allBaseProperties",
+        | Exclude<
+          PropertyKeys<Employee>,
+          "employeeProfile" | "performanceScores"
+        >
+        | "employeeProfile:applyMainValue"
+        | "performanceScores:applyReducers",
+        {}
+      >
     >;
 
     expect(asEmployee.fullName).toEqual("Santa Claus");
@@ -105,5 +121,153 @@ describe("ObjectSet", () => {
     expectTypeOf<typeof objectSet>().toEqualTypeOf<
       ObjectSet<FooInterface, never>
     >;
+  });
+
+  describe("interface → $as(objectType) carries modifier-bearing data", () => {
+    const baseUrl = "https://stack.palantir.com/";
+
+    const interfaceToObjectMappings = {
+      interfaceToObjectTypeMappings: {
+        FooInterface: { Employee: { fooSpt: "fullName", fooIdp: "office" } },
+      },
+      interfaceToObjectTypeMappingsV2: {
+        FooInterface: {
+          Employee: {
+            fooSpt: {
+              type: "localPropertyImplementation" as const,
+              propertyApiName: "fullName",
+            },
+            fooIdp: {
+              type: "localPropertyImplementation" as const,
+              propertyApiName: "office",
+            },
+          },
+        },
+      },
+    };
+
+    it("explicit $as(Employee): server returns reduced/mainValue data for interface loads, cast type reflects this", async () => {
+      await apiServer.boundary(async () => {
+        let capturedRequest: unknown;
+
+        apiServer.use(
+          MockOntologiesV2.OntologyObjectSets.loadMultipleObjectTypes(
+            baseUrl,
+            async ({ request }) => {
+              capturedRequest = await request.json();
+              return {
+                data: [
+                  {
+                    __rid:
+                      "ri.phonograph2-objects.main.object.88a6fccb-f333-46d6-a07e-7725c5f18b61",
+                    __primaryKey: 50030,
+                    __apiName: "Employee",
+                    employeeId: 50030,
+                    fullName: "John Doe",
+                    office: "NYC",
+                    employeeProfile: {
+                      bio:
+                        "Senior engineer with expertise in distributed systems",
+                    },
+                    performanceScores: 95.5,
+                  },
+                ],
+                ...interfaceToObjectMappings,
+                totalCount: "1",
+                propertySecurities: [],
+              };
+            },
+          ),
+        );
+
+        const result = await client(FooInterface).fetchPage({
+          $includeAllBaseObjectProperties: true,
+        });
+
+        expect(result.data).toHaveLength(1);
+        expect(capturedRequest).toMatchObject({
+          objectSet: {
+            type: "intersect",
+            objectSets: [
+              { type: "interfaceBase", interfaceType: "FooInterface" },
+              {
+                type: "interfaceBase",
+                interfaceType: "FooInterface",
+                includeAllBaseObjectProperties: true,
+              },
+            ],
+          },
+        });
+
+        const interfaceObj = result.data[0];
+        expect(interfaceObj.fooSpt).toEqual("John Doe");
+
+        const asEmployee = interfaceObj.$as(Employee);
+        expect(asEmployee.fullName).toEqual("John Doe");
+        expect(asEmployee.office).toEqual("NYC");
+        expect(asEmployee.employeeProfile).toEqual({
+          bio: "Senior engineer with expertise in distributed systems",
+        });
+        expect(asEmployee.performanceScores).toEqual(95.5);
+
+        expectTypeOf<typeof asEmployee>().toEqualTypeOf<
+          Osdk.Instance<
+            Employee,
+            "$allBaseProperties",
+            | Exclude<
+              PropertyKeys<Employee>,
+              "employeeProfile" | "performanceScores"
+            >
+            | "employeeProfile:applyMainValue"
+            | "performanceScores:applyReducers",
+            {}
+          >
+        >;
+      })();
+    });
+
+    it("implicit cast (interface load): $as(FooInterface) on underlying object happens internally", async () => {
+      await apiServer.boundary(async () => {
+        apiServer.use(
+          MockOntologiesV2.OntologyObjectSets.loadMultipleObjectTypes(
+            baseUrl,
+            () => {
+              return {
+                data: [
+                  {
+                    __rid:
+                      "ri.phonograph2-objects.main.object.88a6fccb-f333-46d6-a07e-7725c5f18b61",
+                    __primaryKey: 50030,
+                    __apiName: "Employee",
+                    fullName: "John Doe",
+                    office: "NYC",
+                  },
+                ],
+                ...interfaceToObjectMappings,
+                totalCount: "1",
+                propertySecurities: [],
+              };
+            },
+          ),
+        );
+
+        const result = await client(FooInterface).fetchPage();
+        const interfaceObj = result.data[0];
+
+        expect(interfaceObj.$apiName).toEqual("FooInterface");
+        expect(interfaceObj.$objectType).toEqual("Employee");
+        expect(interfaceObj.fooSpt).toEqual("John Doe");
+        expect(interfaceObj.fooIdp).toEqual("NYC");
+
+        const backToEmployee = interfaceObj.$as(Employee);
+        expect(backToEmployee.$apiName).toEqual("Employee");
+        expect(backToEmployee.fullName).toEqual("John Doe");
+        expect(backToEmployee.office).toEqual("NYC");
+
+        expectTypeOf<typeof backToEmployee>().toEqualTypeOf<
+          Osdk.Instance<Employee, never, "fullName" | "office", {}>
+        >;
+      })();
+    });
   });
 });

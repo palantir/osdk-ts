@@ -107,15 +107,25 @@ export interface EmployeeApiTest extends $ObjectTypeDefinition {
       color: "blue";
       name: "person";
     };
-    implements: ["FooInterface"];
+    implements: ["FooInterface", "ReducerInterface"];
     interfaceMap: {
       FooInterface: {
         fooSpt: "fullName";
+      };
+      ReducerInterface: {
+        ifaceAddress: "addressStruct";
+        ifaceSalary: "salaryHistory";
+        ifaceBonus: "bonusHistory";
       };
     };
     inverseInterfaceMap: {
       FooInterface: {
         fullName: "fooSpt";
+      };
+      ReducerInterface: {
+        addressStruct: "ifaceAddress";
+        salaryHistory: "ifaceSalary";
+        bonusHistory: "ifaceBonus";
       };
     };
     links: {
