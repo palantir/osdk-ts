@@ -177,6 +177,7 @@ When building new components:
 3. Keep the Base component API simple using primitive types
 4. For complex components, consider a building blocks tier with sub-components and hooks
 5. Document all layers for users who want to customize
+6. **Register a user agent for metrics** — wrap every OSDK component with `withOsdkMetrics` at the export barrel (see [Metrics](#metrics) below)
 
 ## Folder Structure
 
@@ -213,6 +214,31 @@ This package focuses on complex, Ontology-aware components with built-in data fe
 - Avoids duplicating well-solved UI problems
 - Reduces maintenance burden
 - Encourages consistent use of existing design systems
+
+## Metrics
+
+Every OSDK component (the outermost data-fetching layer, **not** the Base component) must register a user agent string so that network requests include a `Fetch-User-Agent` header identifying which component initiated them. This enables usage tracking and debugging.
+
+This is handled automatically by the `withOsdkMetrics` HOC. Wrap your component at the **export barrel** (`public/experimental/*.ts`), not inside the component body:
+
+```ts
+// public/experimental/my-component.ts
+import { MyComponent as _MyComponent } from "../../my-component/MyComponent.js";
+import { withOsdkMetrics } from "../../util/withOsdkMetrics.js";
+export const MyComponent: typeof _MyComponent = withOsdkMetrics(
+  _MyComponent,
+  "MyComponent",
+);
+```
+
+`withOsdkMetrics` calls `useRegisterUserAgent` internally, producing a user agent string like `osdk-react-components/<version>/MyComponent`.
+
+**Checklist for new components:**
+
+- [ ] Wrap the OSDK component with `withOsdkMetrics` in the export barrel
+- [ ] Add `typeof _Component` annotation to satisfy `--isolatedDeclarations`
+- [ ] Do **not** wrap Base components — only the OSDK wrapper needs it
+- [ ] Do **not** call `useRegisterUserAgent` directly inside the component body
 
 ## Custom Styling
 

@@ -37,6 +37,7 @@ import { useFunctionColumnsData } from "../useFunctionColumnsData.js";
 
 vi.mock("@osdk/react/experimental", () => ({
   useOsdkFunctions: vi.fn(),
+  useRegisterUserAgent: vi.fn(),
 }));
 
 vi.mock("../../utils/addFilterClauseToObjectSet.js", () => ({
