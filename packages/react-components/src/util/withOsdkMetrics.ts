@@ -19,7 +19,11 @@ import type { FunctionComponent } from "react";
 import React from "react";
 import { componentUserAgent } from "./UserAgent.js";
 
-export function withOsdkMetrics<C extends FunctionComponent>(
+// `any` is required: FunctionComponent defaults to FunctionComponent<{}> which
+// rejects components with required props. A generic P parameter doesn't help
+// because TS can't infer both P and C simultaneously from a single argument.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function withOsdkMetrics<C extends FunctionComponent<any>>(
   Component: C,
   name: string,
 ): C {
