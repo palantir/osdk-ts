@@ -60,6 +60,7 @@ export function defineDeleteInterfaceObjectAction(
       affectedLinkTypes: [],
       typeGroups: [],
     },
+    ...(def.permission && { permission: def.permission }),
     ...(def.icon && { icon: def.icon }),
   });
 }

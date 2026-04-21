@@ -22,6 +22,7 @@ import type {
 } from "@osdk/client.unstable";
 import type { OptionalFields } from "../../util/OptionalFields.js";
 import type { RequiredFields } from "../../util/RequiredFields.js";
+import type { EntityPermission } from "../common/EntityPermission.js";
 import type { OntologyEntityBase } from "../common/OntologyEntityBase.js";
 import type { OntologyEntityTypeEnum } from "../common/OntologyEntityTypeEnum.js";
 import type { TypeClass } from "../common/TypeClass.js";
@@ -68,6 +69,7 @@ export interface OneToManyLinkTypeDefinition {
   manyForeignKeyProperty: ObjectTypePropertyApiName;
   cardinality: "OneToMany" | "OneToOne" | undefined;
   editsEnabled?: boolean;
+  permission?: EntityPermission;
   status?: UserLinkTypeStatus;
   redacted?: boolean;
 }
@@ -83,6 +85,7 @@ export interface OneToManyLinkTypeUserDefinition {
   toMany: OneToManyObjectLinkReferenceUserDefinition;
   manyForeignKeyProperty: ObjectTypePropertyApiName;
   editsEnabled?: boolean;
+  permission?: EntityPermission;
   status?: UserLinkTypeStatus;
   cardinality?: "OneToMany" | "OneToOne" | undefined;
 }
@@ -97,6 +100,7 @@ export interface ManyToManyLinkTypeDefinition {
   many: ManyToManyObjectLinkReference;
   toMany: ManyToManyObjectLinkReference;
   editsEnabled?: boolean;
+  permission?: EntityPermission;
   status?: UserLinkTypeStatus;
   redacted?: boolean;
   includeEmptyBackingDatasource?: boolean;
@@ -112,6 +116,7 @@ export interface ManyToManyLinkTypeUserDefinition {
   many: ManyToManyObjectLinkReferenceUserDefinition;
   toMany: ManyToManyObjectLinkReferenceUserDefinition;
   editsEnabled?: boolean;
+  permission?: EntityPermission;
   status?: UserLinkTypeStatus;
   includeEmptyBackingDatasource?: boolean;
 }
@@ -127,6 +132,7 @@ export interface IntermediaryLinkTypeDefinition {
   toMany: IntermediaryObjectLinkReference;
   intermediaryObjectType: ObjectTypeDefinition | ObjectType;
   editsEnabled?: boolean;
+  permission?: EntityPermission;
   status?: UserLinkTypeStatus;
   redacted?: boolean;
 }
@@ -143,6 +149,7 @@ export interface IntermediaryLinkTypeUserDefinition {
   toMany: IntermediaryObjectLinkReferenceUserDefinition;
   intermediaryObjectType: ObjectTypeDefinition | ObjectType | string;
   editsEnabled?: boolean;
+  permission?: EntityPermission;
   status?: UserLinkTypeStatus;
 }
 
