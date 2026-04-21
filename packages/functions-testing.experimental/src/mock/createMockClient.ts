@@ -36,7 +36,12 @@ import {
 
 type ClientStub = Stub & { objectType: string };
 
-type QueryStub = { queryApiName: string; params: unknown; value: unknown };
+type QueryStub = {
+  queryApiName: string;
+  params: unknown;
+  value?: unknown;
+  error?: Error;
+};
 
 type IsOsdkObject<T> = T extends { $apiName: string } ? true : false;
 
@@ -59,6 +64,13 @@ export interface AggregateStubBuilder<T> {
 
 export interface QueryStubBuilder<T> {
   thenReturn(result: T): void;
+  /**
+   * Register an error to be thrown when a matching query call is made.
+   * `executeFunction` will reject with the provided error, rather than the
+   * generic "No stub for query" fallback that fires when no stub is
+   * registered at all.
+   */
+  thenThrow(error: Error): void;
 }
 
 export type StubBuilderFor<T> = T extends PageResult<infer U>
@@ -113,6 +125,9 @@ export function createMockClient(): MockClient {
     for (const stub of queryStubs) {
       if (stub.queryApiName !== queryApiName) continue;
       if (deepEqual(stub.params, params)) {
+        if (stub.error !== undefined) {
+          throw stub.error;
+        }
         return stub.value;
       }
     }
@@ -214,6 +229,13 @@ export function createMockClient(): MockClient {
           queryApiName: query.apiName,
           params,
           value: result,
+        });
+      },
+      thenThrow: (error: Error) => {
+        queryStubs.push({
+          queryApiName: query.apiName,
+          params,
+          error,
         });
       },
     };
