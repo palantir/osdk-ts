@@ -1,5 +1,21 @@
 # @osdk/react-components-storybook
 
+## 0.4.0
+
+### Minor Changes
+
+- f01a8f4: improvements(build): significant reduction in build task graphs
+- aba44b8: Add date picker cell to editable ObjectTable
+- 5d8edf8: feat(tiff): Tiff Renderer
+- 9996dd6: Add dropdown field to editable ObjectTable
+- 4bce409: feat(md): markdown renderer
+
+### Patch Changes
+
+- Updated dependencies [f01a8f4]
+- Updated dependencies [1a0f772]
+  - @osdk/faux@0.8.0
+
 ## 0.3.0
 
 ### Minor Changes

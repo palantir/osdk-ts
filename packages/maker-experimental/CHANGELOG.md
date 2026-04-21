@@ -1,5 +1,23 @@
 # @osdk/maker-experimental
 
+## 0.8.0
+
+### Minor Changes
+
+- f01a8f4: improvements(build): significant reduction in build task graphs
+- b1b8a8b: Support string analyzers
+- 32691ed: Make compass resource shape optional for output datasets
+- 9333a4a: Support imports in maker experimental
+
+### Patch Changes
+
+- Updated dependencies [f01a8f4]
+- Updated dependencies [151d258]
+- Updated dependencies [b1b8a8b]
+  - @osdk/client.unstable@2.10.0
+  - @osdk/maker@0.18.0
+  - @osdk/api@2.10.0
+
 ## 0.7.0
 
 ### Minor Changes
