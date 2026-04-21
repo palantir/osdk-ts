@@ -6,7 +6,7 @@
 
 import type { Attachment } from '@osdk/api';
 import type { AttachmentMetadata } from '@osdk/api';
-import type { Client } from '@osdk/client';
+import { Client } from '@osdk/client';
 import type { CompileTimeMetadata } from '@osdk/api';
 import type { InterfaceDefinition } from '@osdk/api';
 import type { LinkedType } from '@osdk/api';

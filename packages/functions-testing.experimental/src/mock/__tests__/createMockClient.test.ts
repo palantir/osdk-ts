@@ -238,6 +238,22 @@ describe("createMockClient", () => {
     });
   });
 
+  describe("platform client context", () => {
+    it("exposes a SharedClientContext so platform fetches don't crash", async () => {
+      const mockClient = createMockClient();
+      const ctx = (mockClient as any).__osdkClientContext;
+
+      expect(ctx).toBeDefined();
+      expect(typeof ctx.baseUrl).toBe("string");
+      expect(ctx.baseUrl.length).toBeGreaterThan(0);
+      // foundryPlatformFetch reads `ctx.baseUrl.endsWith("/")` — verify it doesn't throw.
+      expect(() => ctx.baseUrl.endsWith("/")).not.toThrow();
+      expect(typeof ctx.fetch).toBe("function");
+      expect(typeof ctx.tokenProvider).toBe("function");
+      await expect(ctx.tokenProvider()).resolves.toBeTypeOf("string");
+    });
+  });
+
   describe("query stubbing", () => {
     it("returns stubbed query result with parameters", async () => {
       const mockClient = createMockClient();
