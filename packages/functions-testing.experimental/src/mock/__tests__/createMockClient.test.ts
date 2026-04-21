@@ -254,6 +254,56 @@ describe("createMockClient", () => {
     });
   });
 
+  describe("asymmetric matchers", () => {
+    it("matches whenQuery params with expect.any(...)", async () => {
+      const mockClient = createMockClient();
+
+      mockClient
+        .whenQuery(addOne, { n: expect.any(Number) as unknown as number })
+        .thenReturn(42);
+
+      expect(await mockClient(addOne).executeFunction({ n: 1 })).toBe(42);
+      expect(await mockClient(addOne).executeFunction({ n: 99 })).toBe(42);
+    });
+
+    it("matches where clauses with expect.objectContaining(...)", async () => {
+      const mockClient = createMockClient();
+      const emp = createMockOsdkObject(Employee, { employeeId: 7 });
+
+      mockClient
+        .when((c) =>
+          c(Employee)
+            .where(
+              expect.objectContaining({ office: { $eq: "NYC" } }) as any,
+            )
+            .fetchPage()
+        )
+        .thenReturnObjects([emp]);
+
+      const result = await mockClient(Employee)
+        .where({ office: { $eq: "NYC" } })
+        .fetchPage();
+
+      expect(result.data).toHaveLength(1);
+    });
+
+    it("matches whenQuery params with expect.anything()", async () => {
+      const mockClient = createMockClient();
+
+      mockClient
+        .whenQuery(queryTypeReturnsArray, {
+          people: expect.anything() as unknown as string[],
+        })
+        .thenReturn(["ok"]);
+
+      expect(
+        await mockClient(queryTypeReturnsArray).executeFunction({
+          people: ["whatever"],
+        }),
+      ).toEqual(["ok"]);
+    });
+  });
+
   describe("query stubbing", () => {
     it("returns stubbed query result with parameters", async () => {
       const mockClient = createMockClient();
