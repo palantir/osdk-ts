@@ -1859,9 +1859,6 @@ importers:
       '@osdk/api':
         specifier: workspace:~
         version: link:../api
-      '@osdk/client.test.ontology':
-        specifier: workspace:^
-        version: link:../client.test.ontology
       '@osdk/client.unstable':
         specifier: workspace:*
         version: link:../client.unstable
@@ -1932,6 +1929,9 @@ importers:
       '@microsoft/api-extractor':
         specifier: ^7.52.11
         version: 7.52.11(@types/node@24.12.0)
+      '@osdk/client.test.ontology':
+        specifier: workspace:*
+        version: link:../client.test.ontology
       '@osdk/monorepo.api-extractor':
         specifier: workspace:~
         version: link:../monorepo.api-extractor
@@ -4477,9 +4477,6 @@ importers:
 
   packages/react:
     dependencies:
-      '@osdk/client.test.ontology':
-        specifier: workspace:*
-        version: link:../client.test.ontology
       react-dom:
         specifier: ^17 || ^18 || ^19
         version: 18.3.1(react@18.3.1)
@@ -4490,6 +4487,9 @@ importers:
       '@osdk/client':
         specifier: workspace:*
         version: link:../client
+      '@osdk/client.test.ontology':
+        specifier: workspace:*
+        version: link:../client.test.ontology
       '@osdk/foundry.admin':
         specifier: catalog:foundry-platform-typescript
         version: 2.57.0
