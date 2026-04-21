@@ -51,6 +51,8 @@ export default async function main(
     apiNamespace: string;
     buildDir: string;
     randomnessKey?: string;
+    compileSeed?: string[];
+    seedOutput: string;
   } = await yargs(hideBin(args))
     .version(process.env.PACKAGE_VERSION ?? "")
     .wrap(Math.min(150, yargs().terminalWidth()))
@@ -86,6 +88,18 @@ export default async function main(
       randomnessKey: {
         describe: "Value used to assure uniqueness of entities",
         type: "string",
+      },
+      compileSeed: {
+        describe: "Seed data file(s) to compile into JSON",
+        type: "string" as const,
+        array: true,
+        coerce: (files: string[]) => files.map(f => path.resolve(f)),
+      },
+      seedOutput: {
+        describe: "Output path for compiled seed data JSON",
+        type: "string" as const,
+        default: "build/seed-data.json",
+        coerce: path.resolve,
       },
     })
     .parseAsync();
@@ -306,6 +320,15 @@ export default async function main(
   consola.info(
     `Block data directory: ${blockDataDir}`,
   );
+
+  if (commandLineOpts.compileSeed && commandLineOpts.compileSeed.length > 0) {
+    const { compileSeedData } = await import("./compileSeedData.js");
+    await compileSeedData(
+      commandLineOpts.compileSeed,
+      commandLineOpts.seedOutput,
+      ontologyIr.ontology,
+    );
+  }
 }
 
 async function loadOntology(
