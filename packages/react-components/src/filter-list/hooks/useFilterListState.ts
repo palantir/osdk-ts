@@ -16,7 +16,7 @@
 
 import type { ObjectTypeDefinition, WhereClause } from "@osdk/api";
 import { useOsdkMetadata } from "@osdk/react";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { assertUnreachable } from "../../shared/assertUnreachable.js";
 import type { FilterListProps } from "../FilterListApi.js";
 import type { FilterState } from "../FilterListItemApi.js";
@@ -73,6 +73,13 @@ function buildInitialStates<Q extends ObjectTypeDefinition>(
         }
         break;
       }
+      case "STATIC_VALUES": {
+        const state = definition.filterState;
+        if (state) {
+          states.set(key, state);
+        }
+        break;
+      }
       case "LINKED_PROPERTY": {
         const innerState = definition.defaultLinkedFilterState;
         if (innerState) {
@@ -103,6 +110,8 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
     initialFilterStates,
   } = props;
   const { metadata } = useOsdkMetadata(objectType);
+  const onFilterClauseChangedRef = useRef(onFilterClauseChanged);
+  onFilterClauseChangedRef.current = onFilterClauseChanged;
 
   const propertyTypes = useMemo(() => {
     const map = new Map<string, PropertyTypeInfo>();
@@ -133,24 +142,12 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
 
   const setFilterState = useCallback(
     (filterKey: string, state: FilterState) => {
-      let newWhereClause: WhereClause<Q> | undefined;
-
       setFilterStates((prev) => {
         const next = new Map(prev);
         next.set(filterKey, state);
-
-        newWhereClause = buildWhereClause(
-          filterDefinitions,
-          next,
-          propertyTypes,
-        );
-
         return next;
       });
 
-      if (newWhereClause !== undefined) {
-        onFilterClauseChanged?.(newWhereClause);
-      }
       const definition = filterDefinitions?.find(
         (d) => getFilterKey(d) === filterKey,
       );
@@ -160,27 +157,19 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
     },
     [
       filterDefinitions,
-      propertyTypes,
-      onFilterClauseChanged,
       onFilterStateChanged,
     ],
   );
 
   const clearFilterState = useCallback(
     (filterKey: string) => {
-      const clearedStates = new Map(filterStates);
-      clearedStates.delete(filterKey);
-
-      setFilterStates(clearedStates);
-
-      const newWhereClause = buildWhereClause(
-        filterDefinitions,
-        clearedStates,
-        propertyTypes,
-      );
-      onFilterClauseChanged?.(newWhereClause);
+      setFilterStates((prev) => {
+        const next = new Map(prev);
+        next.delete(filterKey);
+        return next;
+      });
     },
-    [filterStates, filterDefinitions, propertyTypes, onFilterClauseChanged],
+    [],
   );
 
   const whereClause = useMemo(
@@ -192,6 +181,10 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
       ),
     [filterDefinitions, filterStates, propertyTypes],
   );
+
+  useEffect(() => {
+    onFilterClauseChangedRef.current?.(whereClause);
+  }, [whereClause]);
 
   const perFilterWhereClauses = useMemo(() => {
     const map = new Map<string, WhereClause<Q>>();
@@ -224,16 +217,8 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
   }, [filterStates]);
 
   const reset = useCallback(() => {
-    const initialStates = buildInitialStates(filterDefinitions);
-    setFilterStates(initialStates);
-
-    const newWhereClause = buildWhereClause(
-      filterDefinitions,
-      initialStates,
-      propertyTypes,
-    );
-    onFilterClauseChanged?.(newWhereClause);
-  }, [filterDefinitions, propertyTypes, onFilterClauseChanged]);
+    setFilterStates(buildInitialStates(filterDefinitions));
+  }, [filterDefinitions]);
 
   return useMemo(() => ({
     filterStates,

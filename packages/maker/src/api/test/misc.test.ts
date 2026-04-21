@@ -52,8 +52,10 @@ describe("Miscellaneous Tests", () => {
             "actionTypes": {},
             "blockPermissionInformation": {
               "actionTypes": {},
+              "interfaceTypes": {},
               "linkTypes": {},
               "objectTypes": {},
+              "sharedPropertyTypes": {},
             },
             "interfaceTypes": {},
             "linkTypes": {},
@@ -95,8 +97,10 @@ describe("Miscellaneous Tests", () => {
             "actionTypes": {},
             "blockPermissionInformation": {
               "actionTypes": {},
+              "interfaceTypes": {},
               "linkTypes": {},
               "objectTypes": {},
+              "sharedPropertyTypes": {},
             },
             "interfaceTypes": {
               "com.palantir.myInterface": {
@@ -116,6 +120,7 @@ describe("Miscellaneous Tests", () => {
                   "extendsInterfaces": [],
                   "extendsInterfacesMetadata": [],
                   "links": [],
+                  "permission": undefined,
                   "properties": [],
                   "propertiesV2": {
                     "com.palantir.core.ontology.types.id": {
@@ -221,8 +226,10 @@ describe("Miscellaneous Tests", () => {
             "actionTypes": {},
             "blockPermissionInformation": {
               "actionTypes": {},
+              "interfaceTypes": {},
               "linkTypes": {},
               "objectTypes": {},
+              "sharedPropertyTypes": {},
             },
             "interfaceTypes": {},
             "linkTypes": {},
@@ -264,8 +271,10 @@ describe("Miscellaneous Tests", () => {
             "actionTypes": {},
             "blockPermissionInformation": {
               "actionTypes": {},
+              "interfaceTypes": {},
               "linkTypes": {},
               "objectTypes": {},
+              "sharedPropertyTypes": {},
             },
             "interfaceTypes": {
               "com.palantir.myInterface": {
@@ -285,6 +294,7 @@ describe("Miscellaneous Tests", () => {
                   "extendsInterfaces": [],
                   "extendsInterfacesMetadata": [],
                   "links": [],
+                  "permission": undefined,
                   "properties": [],
                   "propertiesV2": {
                     "com.other.package.spt": {
@@ -634,13 +644,13 @@ describe("Miscellaneous Tests", () => {
         const parentInterface = defineInterface({
           apiName: "parentInterface",
           properties: {
-            property1: property1,
+            property1,
           },
         });
         const childInterface = defineInterface({
           apiName: "childInterface",
           properties: {
-            property2: property2,
+            property2,
           },
           extends: [parentInterface],
         });
@@ -797,13 +807,13 @@ describe("Miscellaneous Tests", () => {
       const parentInterface = defineInterface({
         apiName: "parentInterface",
         properties: {
-          iProperty1: iProperty1,
+          iProperty1,
         },
       });
       const childInterface = defineInterface({
         apiName: "childInterface",
         properties: {
-          iProperty2: iProperty2,
+          iProperty2,
         },
         extends: [parentInterface],
       });
@@ -840,8 +850,10 @@ describe("Miscellaneous Tests", () => {
             "actionTypes": {},
             "blockPermissionInformation": {
               "actionTypes": {},
+              "interfaceTypes": {},
               "linkTypes": {},
               "objectTypes": {},
+              "sharedPropertyTypes": {},
             },
             "interfaceTypes": {},
             "linkTypes": {},
@@ -855,8 +867,10 @@ describe("Miscellaneous Tests", () => {
             "actionTypes": {},
             "blockPermissionInformation": {
               "actionTypes": {},
+              "interfaceTypes": {},
               "linkTypes": {},
               "objectTypes": {},
+              "sharedPropertyTypes": {},
             },
             "interfaceTypes": {
               "com.palantir.childInterface": {
@@ -893,6 +907,7 @@ describe("Miscellaneous Tests", () => {
                       "extendsInterfaces": [],
                       "extendsInterfacesMetadata": [],
                       "links": [],
+                      "permission": undefined,
                       "properties": [],
                       "propertiesV2": {
                         "com.palantir.iProperty1": {
@@ -983,6 +998,7 @@ describe("Miscellaneous Tests", () => {
                     },
                   ],
                   "links": [],
+                  "permission": undefined,
                   "properties": [],
                   "propertiesV2": {
                     "com.palantir.iProperty2": {
@@ -1089,6 +1105,7 @@ describe("Miscellaneous Tests", () => {
                   "extendsInterfaces": [],
                   "extendsInterfacesMetadata": [],
                   "links": [],
+                  "permission": undefined,
                   "properties": [],
                   "propertiesV2": {
                     "com.palantir.iProperty1": {

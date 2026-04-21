@@ -28,6 +28,7 @@ vi.mock("@osdk/react/experimental", () => ({
     isLoading: false,
     error: null,
   }),
+  useRegisterUserAgent: vi.fn(),
 }));
 
 afterEach(() => {

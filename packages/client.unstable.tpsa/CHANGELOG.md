@@ -1,5 +1,11 @@
 # @osdk/client.unstable.tpsa
 
+## 0.11.0
+
+### Minor Changes
+
+- f01a8f4: improvements(build): significant reduction in build task graphs
+
 ## 0.10.0
 
 ### Minor Changes

@@ -54,6 +54,7 @@ interface MockReturnType extends UseOsdkListResult<TestObject> {
 }
 
 vi.mock("@osdk/react/experimental", () => ({
+  useRegisterUserAgent: vi.fn(),
   useOsdkObjects: vi.fn((objectType, options): MockReturnType => {
     return {
       data: [],

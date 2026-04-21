@@ -1,5 +1,53 @@
 # @osdk/react-components
 
+## 0.4.0
+
+### Minor Changes
+
+- da434c9: Merge @osdk/react-components-styles into @osdk/react-components
+
+  Design tokens and component styles are now bundled in a single package. `@osdk/react-components-styles` is deprecated and will be removed in a future release.
+
+  **Migration steps:**
+  1. Remove `@osdk/react-components-styles` from your dependencies
+  2. Replace your CSS imports:
+
+     ```css
+     /* Before */
+     @import "@osdk/react-components-styles" layer(osdk.tokens);
+     @import "@osdk/react-components/styles.css" layer(osdk.components);
+
+     /* After */
+     @import "@osdk/react-components/styles.css" layer(osdk.styles);
+     ```
+
+- e572448: Set default tooltip trigger delay to 200ms in TooltipTrigger
+- f0866c7: Pass cross-filter whereClause to DateRange and NumberRange filter inputs so histograms and null counts update when other filters are applied
+- 8e06dce: Add renderValue option to PropertyFilterDefinition for custom filter value display and search
+- 2bb6860: Add `showCount` option to filter definitions for hiding aggregation counts in dropdown options
+- f01a8f4: improvements(build): significant reduction in build task graphs
+- aba44b8: Add date picker cell to editable ObjectTable
+- 5d8edf8: feat(tiff): Tiff Renderer
+- 81ac0a1: Prevent committing overlapping date ranges and fix backspace after invalid input revert
+- 9996dd6: Add dropdown field to editable ObjectTable
+- 4bce409: feat(md): markdown renderer
+- 51739ae: Polyfill Promise.withResolvers for pdfjs-dist Node 18 test compatibility
+- 1a0f772: Show "No value" for empty filter values in ListogramInput and generate $isNull instead of $eq: "" in where clauses
+- c144b04: Add form field validation with onTouched mode, error display, and submit tooltip
+- 7f4824a: Downgrade react-markdown to ^9.0.3
+- e5a652b: Pin TZ=UTC in vitest config to prevent locale-dependent test failures
+- 0c04731: Add individual subpath exports for experimental component groups (filter-list, object-table, pdf-viewer, markdown-renderer, action-form)
+- c9c4424: Add STATIC_VALUES filter definition type for providing fixed value lists without OSDK aggregation
+- f9033fb: Consolidate onFilterClauseChanged into a single useEffect on whereClause, fixing missing callback when initialFilterStates is set and a stale closure bug in clearFilterState
+- 6c1f444: Add date-fns and date-fns-tz dependencies
+- 957a878: Rename/improve DateTimePickerField and introduce DateRangeInputField
+
+### Patch Changes
+
+- Updated dependencies [f01a8f4]
+- Updated dependencies [f34a1ce]
+  - @osdk/react@0.12.0
+
 ## 0.3.0
 
 ### Minor Changes

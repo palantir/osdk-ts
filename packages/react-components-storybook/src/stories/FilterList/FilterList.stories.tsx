@@ -19,6 +19,7 @@ import { FilterList, ObjectTable } from "@osdk/react-components/experimental";
 import type {
   FilterDefinitionUnion,
   FilterListProps,
+  FilterState,
 } from "@osdk/react-components/experimental";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useCallback, useMemo, useState } from "react";
@@ -893,6 +894,96 @@ const filterDefinitions = [
   render: (args) => <WithListogramDisplayModesStory {...args} />,
 };
 
+function WithHiddenCountsStory(args: Partial<EmployeeFilterListProps>) {
+  const withCounts = useMemo(
+    (): FilterDefinitionUnion<Employee>[] => [
+      {
+        type: "PROPERTY",
+        id: "dept-with-count",
+        key: "department",
+        label: "Department (counts visible)",
+        filterComponent: "LISTOGRAM",
+        filterState: { type: "EXACT_MATCH", values: [] },
+      } as FilterDefinitionUnion<Employee>,
+      {
+        type: "PROPERTY",
+        id: "team-with-count",
+        key: "team",
+        label: "Team (counts visible)",
+        filterComponent: "MULTI_SELECT",
+        filterState: { type: "SELECT", selectedValues: [] },
+      } as FilterDefinitionUnion<Employee>,
+    ],
+    [],
+  );
+  const withoutCounts = useMemo(
+    (): FilterDefinitionUnion<Employee>[] => [
+      {
+        type: "PROPERTY",
+        id: "dept-no-count",
+        key: "department",
+        label: "Department (counts hidden)",
+        filterComponent: "LISTOGRAM",
+        filterState: { type: "EXACT_MATCH", values: [] },
+        showCount: false,
+      } as FilterDefinitionUnion<Employee>,
+      {
+        type: "PROPERTY",
+        id: "team-no-count",
+        key: "team",
+        label: "Team (counts hidden)",
+        filterComponent: "MULTI_SELECT",
+        filterState: { type: "SELECT", selectedValues: [] },
+        showCount: false,
+      } as FilterDefinitionUnion<Employee>,
+    ],
+    [],
+  );
+
+  return (
+    <div style={FLEX_ROW_STYLE}>
+      <div style={SIDEBAR_STYLE}>
+        <FilterList
+          objectType={Employee}
+          filterDefinitions={withCounts}
+          {...args}
+        />
+      </div>
+      <div style={SIDEBAR_STYLE}>
+        <FilterList
+          objectType={Employee}
+          filterDefinitions={withoutCounts}
+          {...args}
+        />
+      </div>
+    </div>
+  );
+}
+
+export const WithHiddenCounts: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Use `showCount: false` on individual filter definitions to hide "
+          + "aggregation counts in LISTOGRAM and MULTI_SELECT inputs. "
+          + "Bar visualizations in LISTOGRAM are preserved.",
+      },
+      source: {
+        code:
+          `// showCount defaults to true; set false to hide counts per filter
+const filterDefinitions = [
+  { ..., filterComponent: "LISTOGRAM", showCount: false },
+  { ..., filterComponent: "MULTI_SELECT", showCount: false },
+];
+
+<FilterList objectType={Employee} filterDefinitions={filterDefinitions} />`,
+      },
+    },
+  },
+  render: (args) => <WithHiddenCountsStory {...args} />,
+};
+
 function WithCheckboxStory(args: Partial<EmployeeFilterListProps>) {
   const filterDefinitions = useMemo(
     (): FilterDefinitionUnion<Employee>[] => [
@@ -1075,6 +1166,164 @@ const handleFilterRemoved = (filterKey) => {
     },
   },
   render: (args) => <WithRemovableFiltersStory {...args} />,
+};
+
+function WithStaticValuesStory(args: Partial<EmployeeFilterListProps>) {
+  const [filterClause, setFilterClause] = useState<
+    WhereClause<Employee> | undefined
+  >(undefined);
+
+  const filterDefinitions = useMemo(
+    (): FilterDefinitionUnion<Employee>[] => [
+      {
+        type: "STATIC_VALUES",
+        key: "department",
+        label: "Department (static)",
+        filterComponent: "LISTOGRAM",
+        values: ["Marketing", "Operations", "Finance", "Product"],
+        filterState: { type: "EXACT_MATCH", values: [] },
+        listogramConfig: { displayMode: "minimal" },
+      } as FilterDefinitionUnion<Employee>,
+      {
+        type: "STATIC_VALUES",
+        key: "locationCity",
+        label: "Office Location",
+        filterComponent: "SINGLE_SELECT",
+        values: ["New York", "San Francisco", "London", "Tokyo"],
+        filterState: { type: "SELECT", selectedValues: [] },
+      } as FilterDefinitionUnion<Employee>,
+      {
+        type: "STATIC_VALUES",
+        key: "team",
+        label: "Team (multi-select)",
+        filterComponent: "MULTI_SELECT",
+        values: ["Alpha", "Beta", "Gamma", "Delta"],
+        filterState: { type: "SELECT", selectedValues: [] },
+      } as FilterDefinitionUnion<Employee>,
+      {
+        type: "STATIC_VALUES",
+        id: "custom-status",
+        key: "status",
+        label: "Status (custom clause)",
+        filterComponent: "LISTOGRAM",
+        values: ["Active", "Inactive"],
+        filterState: { type: "EXACT_MATCH", values: [] },
+        listogramConfig: { displayMode: "minimal" },
+        toWhereClause: (state: FilterState) => {
+          if (state.type !== "EXACT_MATCH" || state.values.length === 0) {
+            return undefined;
+          }
+          const values = state.values as string[];
+          const hasActive = values.includes("Active");
+          const hasInactive = values.includes("Inactive");
+          if (hasActive && hasInactive) {
+            return {
+              $or: [
+                { employeeStatus: "Active" },
+                { employeeStatus: "Inactive" },
+              ],
+            } as WhereClause<Employee>;
+          }
+          if (hasActive) {
+            return { employeeStatus: "Active" } as WhereClause<Employee>;
+          }
+          if (hasInactive) {
+            return { employeeStatus: "Inactive" } as WhereClause<Employee>;
+          }
+          return undefined;
+        },
+      } as FilterDefinitionUnion<Employee>,
+    ],
+    [],
+  );
+
+  return (
+    <div style={FLEX_ROW_STYLE}>
+      <div style={SIDEBAR_STYLE}>
+        <FilterList
+          objectType={Employee}
+          filterDefinitions={filterDefinitions}
+          filterClause={filterClause}
+          onFilterClauseChanged={setFilterClause}
+          {...args}
+        />
+      </div>
+      <div style={FLEX_FILL_STYLE}>
+        <strong>Filter Clause (JSON):</strong>
+        <pre style={PRE_STYLE}>
+          {filterClause
+            ? JSON.stringify(filterClause, null, 2)
+            : "(no active filters)"}
+        </pre>
+      </div>
+    </div>
+  );
+}
+
+export const WithStaticValues: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Use `STATIC_VALUES` filter definitions to provide a fixed list of values "
+          + "instead of fetching from OSDK aggregation. Supports LISTOGRAM, SINGLE_SELECT, "
+          + "MULTI_SELECT, and TEXT_TAGS components. Optionally provide a `toWhereClause` "
+          + "function for custom clause generation.",
+      },
+      source: {
+        code: `const filterDefinitions = [
+  {
+    type: "STATIC_VALUES",
+    key: "department",
+    label: "Department",
+    filterComponent: "LISTOGRAM",
+    values: ["Marketing", "Operations", "Finance", "Product"],
+    filterState: { type: "EXACT_MATCH", values: [] },
+    listogramConfig: { displayMode: "minimal" },
+  },
+  {
+    type: "STATIC_VALUES",
+    key: "locationCity",
+    label: "Office Location",
+    filterComponent: "SINGLE_SELECT",
+    values: ["New York", "San Francisco", "London", "Tokyo"],
+    filterState: { type: "SELECT", selectedValues: [] },
+  },
+  {
+    type: "STATIC_VALUES",
+    key: "team",
+    label: "Team",
+    filterComponent: "MULTI_SELECT",
+    values: ["Alpha", "Beta", "Gamma", "Delta"],
+    filterState: { type: "SELECT", selectedValues: [] },
+  },
+  {
+    type: "STATIC_VALUES",
+    key: "status",
+    label: "Status",
+    filterComponent: "LISTOGRAM",
+    values: ["Active", "Inactive"],
+    filterState: { type: "EXACT_MATCH", values: [] },
+    toWhereClause: (state) => {
+      // Custom WHERE clause mapping
+      if (state.type === "EXACT_MATCH" && state.values.includes("Active")) {
+        return { employeeStatus: "Active" };
+      }
+      return undefined;
+    },
+  },
+];
+
+<FilterList
+  objectType={Employee}
+  filterDefinitions={filterDefinitions}
+  filterClause={filterClause}
+  onFilterClauseChanged={setFilterClause}
+/>`,
+      },
+    },
+  },
+  render: (args) => <WithStaticValuesStory {...args} />,
 };
 
 function FullFeaturedStory(

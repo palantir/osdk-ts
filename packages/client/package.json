@@ -1,6 +1,6 @@
 {
   "name": "@osdk/client",
-  "version": "2.9.0",
+  "version": "2.10.0",
   "description": "",
   "access": "public",
   "license": "Apache-2.0",
@@ -94,13 +94,9 @@
     "ws": "^8.18.3"
   },
   "peerDependencies": {
-    "@osdk/client.test.ontology": "workspace:^",
     "@osdk/shared.test": "workspace:^"
   },
   "peerDependenciesMeta": {
-    "@osdk/client.test.ontology": {
-      "optional": true
-    },
     "@osdk/shared.test": {
       "optional": true
     }
@@ -108,6 +104,7 @@
   "devDependencies": {
     "@microsoft/api-documenter": "^7.26.32",
     "@microsoft/api-extractor": "^7.52.11",
+    "@osdk/client.test.ontology": "workspace:*",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@types/geojson": "^7946.0.14",

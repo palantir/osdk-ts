@@ -1,5 +1,20 @@
 # @osdk/maker
 
+## 0.18.0
+
+### Minor Changes
+
+- f01a8f4: improvements(build): significant reduction in build task graphs
+- 151d258: Wire typeclasses to links and actions
+- b1b8a8b: Support string analyzers
+
+### Patch Changes
+
+- Updated dependencies [f01a8f4]
+  - @osdk/generator-converters.ontologyir@2.10.0
+  - @osdk/typescript-sdk-docs@0.8.0
+  - @osdk/api@2.10.0
+
 ## 0.17.0
 
 ### Minor Changes

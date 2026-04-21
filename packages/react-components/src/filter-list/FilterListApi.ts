@@ -32,6 +32,7 @@ import type {
   HasLinkFilterDefinition,
   LinkedPropertyFilterDefinition,
 } from "./types/LinkedFilterTypes.js";
+import type { StaticValuesFilterDefinition } from "./types/StaticValuesTypes.js";
 
 /**
  * Union type of all filter definition types
@@ -41,7 +42,8 @@ export type FilterDefinitionUnion<Q extends ObjectTypeDefinition> =
   | HasLinkFilterDefinition<Q>
   | LinkedPropertyFilterDefinition<Q, LinkNames<Q>>
   | KeywordSearchFilterDefinition<Q>
-  | CustomFilterDefinition<Q>;
+  | CustomFilterDefinition<Q>
+  | StaticValuesFilterDefinition<Q>;
 
 /**
  * Extract the key from a filter definition union

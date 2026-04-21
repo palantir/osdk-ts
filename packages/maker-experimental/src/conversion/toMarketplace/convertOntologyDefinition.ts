@@ -17,10 +17,10 @@
 import type { OntologyIrV2 } from "@osdk/client.unstable";
 import type { OntologyDefinition } from "@osdk/maker";
 import { getImportedTypes } from "@osdk/maker";
+import type { FunctionsIr } from "../../api/defineOntologyV2.js";
 import type { OntologyRidGeneratorImpl } from "../../util/generateRid.js";
 import { convertOntologyDefinitionToWireBlockData } from "./convertOntologyDefinitionToWireBlockData.js";
 import { convertOntologyToValueTypeIr } from "./convertOntologyToValueTypeIr.js";
-import { FunctionsIr } from "../../api/defineOntologyV2.js";
 
 export function convertOntologyDefinition(
   ontology: OntologyDefinition,
@@ -28,14 +28,29 @@ export function convertOntologyDefinition(
   functionsIr?: FunctionsIr,
   randomnessKey?: string,
 ): OntologyIrV2 {
+  const importedTypes = getImportedTypes();
+
+  // Convert imported ontology FIRST so that all imported entity RIDs and IDs
+  // are registered in the ridGenerator before the main ontology's
+  // knownIdentifiers is built.
+  const importedOntology = convertOntologyDefinitionToWireBlockData(
+    importedTypes,
+    ridGenerator,
+  );
+
+  const allOntologies = [ontology, importedTypes];
+  const mainOntology = convertOntologyDefinitionToWireBlockData(
+    ontology,
+    ridGenerator,
+    allOntologies,
+    functionsIr,
+  );
+
   return {
-    ontology: convertOntologyDefinitionToWireBlockData(ontology, ridGenerator, functionsIr),
-    importedOntology: convertOntologyDefinitionToWireBlockData(
-      getImportedTypes(),
-      ridGenerator,
-    ),
+    ontology: mainOntology,
+    importedOntology,
     valueTypes: convertOntologyToValueTypeIr(ontology),
-    importedValueTypes: convertOntologyToValueTypeIr(getImportedTypes()),
+    importedValueTypes: convertOntologyToValueTypeIr(importedTypes),
     randomnessKey,
   };
 }

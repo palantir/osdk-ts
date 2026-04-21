@@ -17,14 +17,23 @@
 import type {
   ActionTypeBlockDataV2,
   ActionTypePermissionInformation,
+  ActionTypeRestrictionStatus,
   InterfaceTypeBlockDataV2,
+  InterfaceTypePermissionInformation,
+  InterfaceTypeRestrictionStatus,
   KnownMarketplaceIdentifiers,
   LinkTypeBlockDataV2,
+  LinkTypePermissionInformation,
+  LinkTypeRestrictionStatus,
   ObjectTypeBlockDataV2,
+  ObjectTypePermissionInformation,
+  ObjectTypeRestrictionStatus,
   OntologyBlockDataV2,
   SharedPropertyTypeBlockDataV2,
+  SharedPropertyTypePermissionInformation,
+  SharedPropertyTypeRestrictionStatus,
 } from "@osdk/client.unstable";
-import type { OntologyDefinition } from "@osdk/maker";
+import type { EntityPermission, OntologyDefinition } from "@osdk/maker";
 import {
   cleanAndValidateLinkTypeId,
   OntologyEntityTypeEnum,
@@ -39,11 +48,64 @@ import { convertObject } from "./convertObject.js";
 import { convertSpt } from "./convertSpt.js";
 import { MIGRATION_SHAPE_READABLE_ID } from "./shapeExtractors/IrShapeExtractor.js";
 
+function toActionTypeRestrictionStatus(
+  p: EntityPermission,
+): ActionTypeRestrictionStatus {
+  return {
+    hasRolesApplied: true,
+    publicProject: p === "publicProject",
+    ontologyPackageRid: typeof p === "object" ? p.ontologyPackageRid : null,
+  };
+}
+
+function toObjectTypeRestrictionStatus(
+  p: EntityPermission,
+): ObjectTypeRestrictionStatus {
+  return {
+    restrictedByDatasources: false,
+    editRestrictedByDatasources: false,
+    publicProject: p === "publicProject",
+    ontologyPackageRid: typeof p === "object" ? p.ontologyPackageRid : null,
+  };
+}
+
+function toLinkTypeRestrictionStatus(
+  p: EntityPermission,
+): LinkTypeRestrictionStatus {
+  return {
+    restrictedByDatasources: false,
+    editRestrictedByDatasources: false,
+    publicProject: p === "publicProject",
+    ontologyPackageRid: typeof p === "object" ? p.ontologyPackageRid : null,
+  };
+}
+
+function toInterfaceTypeRestrictionStatus(
+  p: EntityPermission,
+): InterfaceTypeRestrictionStatus {
+  return {
+    publicProject: p === "publicProject",
+    ontologyPackageRid: typeof p === "object" ? p.ontologyPackageRid : null,
+  };
+}
+
+function toSharedPropertyTypeRestrictionStatus(
+  p: EntityPermission,
+): SharedPropertyTypeRestrictionStatus {
+  return {
+    publicProject: p === "publicProject",
+    ontologyPackageRid: typeof p === "object" ? p.ontologyPackageRid : null,
+  };
+}
+
 export function convertOntologyDefinitionToWireBlockData(
   ontology: OntologyDefinition,
   ridGenerator: OntologyRidGenerator,
+  allOntologies?: OntologyDefinition[],
   functionsIr?: FunctionsIr,
 ): OntologyBlockDataV2 {
+  const ontologiesToScan = allOntologies ?? [ontology];
+
   // Convert all entity types first to populate ridGenerator's BiMaps
   const objectTypes = Object.fromEntries(
     Object.entries(ontology[OntologyEntityTypeEnum.OBJECT_TYPE]).map<
@@ -110,6 +172,7 @@ export function convertOntologyDefinitionToWireBlockData(
   const knownIdentifiers = buildKnownIdentifiers(
     ontology,
     ridGenerator,
+    ontologiesToScan,
   );
 
   return ({
@@ -124,21 +187,85 @@ export function convertOntologyDefinitionToWireBlockData(
     ruleSets: {},
     blockPermissionInformation: {
       actionTypes: Object.fromEntries(
-        Object.entries(ontology[OntologyEntityTypeEnum.ACTION_TYPE])
-          .filter(([apiName, action]) => action.validation)
-          .map<
-            [string, ActionTypePermissionInformation]
-          >(([apiName, action]) => {
-            return [ridGenerator.generateRidForActionType(apiName), {
-              restrictionStatus: {
-                hasRolesApplied: true,
-                ontologyPackageRid: null,
-              },
-            }];
-          }),
+        ontologiesToScan.flatMap(ont =>
+          Object.entries(ontology[OntologyEntityTypeEnum.ACTION_TYPE])
+            .filter(([_, action]) => action.validation || action.permission)
+            .map<
+              [string, ActionTypePermissionInformation]
+            >(([apiName, action]) => {
+              return [ridGenerator.generateRidForActionType(apiName), {
+                restrictionStatus: toActionTypeRestrictionStatus(
+                  action.permission ?? "roles",
+                ),
+              }];
+            })
+        ),
       ),
-      linkTypes: {},
-      objectTypes: {},
+      objectTypes: Object.fromEntries(
+        ontologiesToScan.flatMap(ont =>
+          Object.entries(ontology[OntologyEntityTypeEnum.OBJECT_TYPE])
+            .filter(([_, objectType]) => objectType.permission != null)
+            .map<
+              [string, ObjectTypePermissionInformation]
+            >(([apiName, objectType]) => {
+              return [ridGenerator.generateRidForObjectType(apiName), {
+                restrictionStatus: toObjectTypeRestrictionStatus(
+                  objectType.permission!,
+                ),
+              }];
+            })
+        ),
+      ),
+      linkTypes: Object.fromEntries(
+        ontologiesToScan.flatMap(ont =>
+          Object.entries(ontology[OntologyEntityTypeEnum.LINK_TYPE])
+            .filter(([_, link]) => link.permission != null)
+            .map<
+              [string, LinkTypePermissionInformation]
+            >(([id, link]) => {
+              return [
+                ridGenerator.generateRidForLinkType(
+                  cleanAndValidateLinkTypeId(id),
+                ),
+                {
+                  restrictionStatus: toLinkTypeRestrictionStatus(
+                    link.permission!,
+                  ),
+                },
+              ];
+            })
+        ),
+      ),
+      interfaceTypes: Object.fromEntries(
+        ontologiesToScan.flatMap(ont =>
+          Object.entries(ontology[OntologyEntityTypeEnum.INTERFACE_TYPE])
+            .filter(([_, iface]) => iface.permission != null)
+            .map<
+              [string, InterfaceTypePermissionInformation]
+            >(([apiName, iface]) => {
+              return [ridGenerator.generateRidForInterface(apiName), {
+                restrictionStatus: toInterfaceTypeRestrictionStatus(
+                  iface.permission!,
+                ),
+              }];
+            })
+        ),
+      ),
+      sharedPropertyTypes: Object.fromEntries(
+        ontologiesToScan.flatMap(ont =>
+          Object.entries(ontology[OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE])
+            .filter(([_, spt]) => spt.permission != null)
+            .map<
+              [string, SharedPropertyTypePermissionInformation]
+            >(([apiName, spt]) => {
+              return [ridGenerator.generateSptRid(apiName), {
+                restrictionStatus: toSharedPropertyTypeRestrictionStatus(
+                  spt.permission!,
+                ),
+              }];
+            })
+        ),
+      ),
     },
   });
 }
@@ -146,6 +273,7 @@ export function convertOntologyDefinitionToWireBlockData(
 function buildKnownIdentifiers(
   ontology: OntologyDefinition,
   ridGenerator: OntologyRidGenerator,
+  ontologiesToScan: OntologyDefinition[],
 ): KnownMarketplaceIdentifiers {
   // Interface types: InterfaceTypeRid -> BlockInternalId
   const interfaceMappings = Object.fromEntries(
@@ -194,37 +322,43 @@ function buildKnownIdentifiers(
   );
 
   // Object type IDs: ObjectTypeId -> BlockInternalId
+  // Scan all ontologies so cross-references to imported objects resolve.
   const objectTypeIds = Object.fromEntries(
-    Object.entries(ontology[OntologyEntityTypeEnum.OBJECT_TYPE]).map((
-      [objectTypeApiName, objectType],
-    ) => [
-      ridGenerator.getObjectTypeIds().get(
-        ReadableIdGenerator.getForObjectType(objectTypeApiName),
-      ),
-      ridGenerator.toBlockInternalId(
-        ReadableIdGenerator.getForObjectType(objectTypeApiName),
-      ),
-    ]),
+    ontologiesToScan.flatMap(ont =>
+      Object.entries(ont[OntologyEntityTypeEnum.OBJECT_TYPE]).map((
+        [objectTypeApiName, objectType],
+      ) => [
+        ridGenerator.getObjectTypeIds().get(
+          ReadableIdGenerator.getForObjectType(objectTypeApiName),
+        ),
+        ridGenerator.toBlockInternalId(
+          ReadableIdGenerator.getForObjectType(objectTypeApiName),
+        ),
+      ])
+    ),
   );
 
   // Property type IDs: ObjectTypeId -> (PropertyTypeId -> BlockInternalId)
+  // Scan all ontologies so imported object properties are included.
   const propertyTypeIds: Record<string, Record<string, string>> = {};
-  Object.entries(ontology[OntologyEntityTypeEnum.OBJECT_TYPE]).forEach((
-    [objectTypeApiName, objectType],
-  ) => {
-    const propMap: Record<string, string> = {};
-    (objectType.properties ?? []).forEach((property) => {
-      propMap[property.apiName] = ridGenerator.toBlockInternalId(
-        ReadableIdGenerator.getForObjectProperty(
-          objectTypeApiName,
-          property.apiName,
-        ),
-      );
+  ontologiesToScan.forEach(ont => {
+    Object.entries(ont[OntologyEntityTypeEnum.OBJECT_TYPE]).forEach((
+      [objectTypeApiName, objectType],
+    ) => {
+      const propMap: Record<string, string> = {};
+      (objectType.properties ?? []).forEach((property) => {
+        propMap[property.apiName] = ridGenerator.toBlockInternalId(
+          ReadableIdGenerator.getForObjectProperty(
+            objectTypeApiName,
+            property.apiName,
+          ),
+        );
+      });
+      const objTypeId = ridGenerator.getObjectTypeIds().get(
+        ReadableIdGenerator.getForObjectType(objectTypeApiName),
+      )!;
+      propertyTypeIds[objTypeId] = propMap;
     });
-    const objTypeId = ridGenerator.getObjectTypeIds().get(
-      ReadableIdGenerator.getForObjectType(objectTypeApiName),
-    )!;
-    propertyTypeIds[objTypeId] = propMap;
   });
 
   // Property type RIDs: PropertyTypeRid -> BlockInternalId
@@ -259,18 +393,20 @@ function buildKnownIdentifiers(
   );
 
   // Link type IDs: LinkTypeId -> BlockInternalId
+  // Scan all ontologies so imported link types are included.
   const linkTypeIds = Object.fromEntries(
-    Object.keys(ontology[OntologyEntityTypeEnum.LINK_TYPE]).map((
-      linkTypeId,
-      link,
-    ) => [
-      cleanAndValidateLinkTypeId(linkTypeId),
-      ridGenerator.toBlockInternalId(
-        ReadableIdGenerator.getForLinkType(
-          cleanAndValidateLinkTypeId(linkTypeId),
+    ontologiesToScan.flatMap(ont =>
+      Object.keys(ont[OntologyEntityTypeEnum.LINK_TYPE]).map((
+        linkTypeId,
+      ) => [
+        cleanAndValidateLinkTypeId(linkTypeId),
+        ridGenerator.toBlockInternalId(
+          ReadableIdGenerator.getForLinkType(
+            cleanAndValidateLinkTypeId(linkTypeId),
+          ),
         ),
-      ),
-    ]),
+      ])
+    ),
   );
 
   // Link type RIDs: LinkTypeRid -> BlockInternalId

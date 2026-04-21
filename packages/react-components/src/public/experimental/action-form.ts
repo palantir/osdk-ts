@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-export { ActionForm } from "../../action-form/ActionForm.js";
+import { ActionForm as _ActionForm } from "../../action-form/ActionForm.js";
+import { withOsdkMetrics } from "../../util/withOsdkMetrics.js";
+export const ActionForm: typeof _ActionForm = withOsdkMetrics(
+  _ActionForm,
+  "ActionForm",
+);
 export type {
   ActionFormProps,
   BaseFormProps,

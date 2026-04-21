@@ -46,6 +46,7 @@ export type { SubmissionMetadata } from "./api/action/SubmissionMetadata.js";
 export type { TableConfiguration } from "./api/action/TableConfiguration.js";
 export { addDependency } from "./api/addDependency.js";
 export type { BlueprintIcon } from "./api/common/BlueprintIcons.js";
+export type { EntityPermission } from "./api/common/EntityPermission.js";
 export type { OntologyDefinition } from "./api/common/OntologyDefinition.js";
 export { OntologyEntityTypeEnum } from "./api/common/OntologyEntityTypeEnum.js";
 export {
