@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,17 @@
  * limitations under the License.
  */
 
-import React from "react";
-import { useOnMount } from "./core/useOnMount.js";
-import { UserAgentContext } from "./UserAgentContext.js";
+import { useEffect } from "react";
 
-export function useRegisterUserAgent(agent: string): void {
-  const addUserAgent = React.useContext(UserAgentContext);
-  useOnMount(() => {
-    return addUserAgent(agent);
-  });
+/**
+ * Runs an effect exactly once on mount. The callback's return value
+ * is used as the cleanup function, just like `useEffect`.
+ *
+ * This is a semantic wrapper around `useEffect(() => …, [])` that
+ * makes the intent explicit and avoids needing an eslint-disable
+ * for `react-hooks/exhaustive-deps`.
+ */
+export function useOnMount(effect: () => void | (() => void)): void {
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(effect, []);
 }
