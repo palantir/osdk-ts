@@ -1,6 +1,6 @@
 {
   "name": "@osdk/create-app",
-  "version": "2.8.0",
+  "version": "2.9.0",
   "description": "",
   "access": "public",
   "license": "Apache-2.0",
@@ -38,6 +38,7 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
+    "@osdk/generator-utils": "workspace:*",
     "consola": "3.4.2",
     "find-up": "7.0.0",
     "handlebars": "4.7.8",
@@ -53,7 +54,6 @@
     "@osdk/create-app.template.tutorial-todo-app.beta": "workspace:*",
     "@osdk/create-app.template.vue": "workspace:*",
     "@osdk/create-app.template.vue.v2": "workspace:*",
-    "@osdk/generator-utils": "workspace:*",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@types/node": "^18.0.0",

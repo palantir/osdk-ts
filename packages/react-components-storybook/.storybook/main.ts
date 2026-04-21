@@ -19,11 +19,13 @@ import type { StorybookConfig } from "@storybook/react-vite";
 const config: StorybookConfig = {
   stories: ["../src/**/*.stories.@(js|jsx|ts|tsx|mdx)"],
   addons: [
+    "@storybook/addon-a11y",
     "@storybook/addon-docs",
     "@storybook/addon-links",
     "@storybook/addon-themes",
     "@storybook/addon-mcp",
     "msw-storybook-addon",
+    "storybook-addon-tag-badges",
   ],
   framework: {
     name: "@storybook/react-vite",
@@ -65,6 +67,14 @@ const config: StorybookConfig = {
       ...config.define,
       "import.meta.env.SSR": false,
       global: "globalThis",
+    };
+
+    // Turbo watch rebuilds upstream packages on change, which briefly
+    // produces incomplete builds that Vite picks up as errors. The overlay
+    // flashes on every rebuild cycle, so we disable it.
+    config.server = {
+      ...config.server,
+      hmr: { overlay: false },
     };
 
     // Configure build options

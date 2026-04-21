@@ -2,6 +2,8 @@ aggregatable
 aimpoints
 BACKCOMPAT
 backlink
+blockquote
+blockquotes
 Canonicalizer
 Canonicalizers
 codegen

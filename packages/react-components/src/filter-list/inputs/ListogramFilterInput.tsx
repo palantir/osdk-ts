@@ -29,7 +29,7 @@ import { coerceToStringArray } from "../utils/coerceFilterValue.js";
 
 interface ListogramFilterInputProps<Q extends ObjectTypeDefinition> {
   objectType: Q;
-  objectSet: ObjectSet<Q>;
+  objectSet?: ObjectSet<Q>;
   propertyKey: string;
   filterState: FilterState | undefined;
   onFilterStateChanged: (state: FilterState) => void;

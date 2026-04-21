@@ -21,6 +21,7 @@ export default defineConfig({
     pool: "forks",
     exclude: [...configDefaults.exclude, "**/build/**/*"],
     environment: "happy-dom",
+    setupFiles: ["./src/test/setupPolyfills.ts"],
     fakeTimers: {
       toFake: ["setTimeout", "clearTimeout", "Date"],
     },

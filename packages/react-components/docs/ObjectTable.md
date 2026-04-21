@@ -4,7 +4,7 @@ A comprehensive guide for using the ObjectTable component from `@osdk/react-comp
 
 ## Prerequisites
 
-Before using ObjectTable, make sure you have completed the library setup described in the [README](../README.md#setup), including:
+Before using ObjectTable, make sure you have completed the library setup described in the [README](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/README.md#setup), including:
 
 - Installing the required dependencies
 - Wrapping your app with `OsdkProvider2`
@@ -26,7 +26,10 @@ Before using ObjectTable, make sure you have completed the library setup describ
 
 ```typescript
 import { ObjectTable } from "@osdk/react-components/experimental";
-import type { ColumnDefinition } from "@osdk/react-components/experimental";
+import type {
+  ColumnDefinition,
+  EditFieldConfig,
+} from "@osdk/react-components/experimental";
 ```
 
 ## Basic Usage
@@ -141,7 +144,7 @@ Each column header has a menu with items for sorting, filtering, pinning, resizi
 
 ### Cell Editing
 
-> **Note:** Editable cells currently support text and number data types. The editable feature allows inline editing with validation and bulk submission capabilities.
+> The editable feature allows inline editing with validation and bulk submission capabilities. Editable cells support text inputs, number inputs, and dropdown selectors.
 
 | Prop                 | Type                                          | Description                                                                                                                     |
 | -------------------- | --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
@@ -164,7 +167,8 @@ type ColumnDefinition<Q, RDPs, FunctionColumns> = {
   resizable?: boolean; // Allow column resizing
   orderable?: boolean; // Allow column sorting
   filterable?: boolean; // Allow column filtering
-  editable?: boolean; // Allow inline editing for this column (currently supports text and number types)
+  editable?: boolean; // Allow inline editing for this column
+  editFieldConfig?: EditFieldConfig; // Optional editor component config (e.g. dropdown)
   validateEdit?: (value: unknown) => Promise<string | undefined>; // Custom validation function for cell edits
   renderCell?: (object, locator) => React.ReactNode; // Custom cell renderer
   columnName?: string; // Custom column name for the header
@@ -172,7 +176,29 @@ type ColumnDefinition<Q, RDPs, FunctionColumns> = {
 };
 ```
 
-> **Note:** Editable cells currently support text and number data types. Support for other data types (date, boolean, etc.) will be added in future updates.
+#### `editFieldConfig`
+
+When `editable` is `true`, columns default to a text or number input (auto-detected from the property type). Use `editFieldConfig` to specify a different editor component.
+
+**Supported editor components:**
+
+| `fieldComponent` | Description                              | Renders                                                      |
+| ---------------- | ---------------------------------------- | ------------------------------------------------------------ |
+| `"DROPDOWN"`     | A select dropdown or searchable combobox | `Select` (default) or `Combobox` (when `isSearchable: true`) |
+
+Without `editFieldConfig`, editable columns use a text input for string properties and a number input for numeric properties (`double`, `integer`, `long`, `float`, `decimal`, `byte`, `short`).
+
+**Dropdown `fieldComponentProps`:**
+
+| Prop                | Type                      | Default        | Description                                              |
+| ------------------- | ------------------------- | -------------- | -------------------------------------------------------- |
+| `items`             | `V[]`                     | (required)     | Available items for the dropdown                         |
+| `isSearchable`      | `boolean`                 | `false`        | Renders a searchable combobox instead of a select        |
+| `placeholder`       | `string`                  | -              | Placeholder text when no value is selected               |
+| `itemToStringLabel` | `(item: V) => string`     | `String(item)` | Converts an item to a display string                     |
+| `itemToKey`         | `(item: V) => string`     | -              | Returns a unique key for each item (used as React `key`) |
+| `isItemEqual`       | `(a: V, b: V) => boolean` | `Object.is`    | Custom equality check (required when items are objects)  |
+| `isMultiple`        | `boolean`                 | `false`        | Whether multiple values can be selected                  |
 
 #### `columnName` vs `renderHeader`
 
@@ -204,16 +230,31 @@ Displays a computed property:
 }
 ```
 
-#### 3. Function Column (Not supported yet)
+#### 3. Function Column
 
-Displays custom computed values:
+Displays values computed by an OSDK function (query). This is equivalent to Workshop's [function-backed columns](https://www.palantir.com/docs/foundry/workshop/widgets-object-table/#function-backed-columns). The function must accept an ObjectSet parameter and return a map of results keyed per object.
 
 ```typescript
 {
   type: "function",
-  id: "functionName"
+  id: "columnKey",                // Key in your FunctionColumns type map
+  queryDefinition: myQuery,       // The OSDK query definition to execute
+  getFunctionParams: (objectSet) => ({ objectSetKey: objectSet }),
+  getKey: (object) => `${object.$objectType}:${object.$primaryKey}`, // The key to index the value of an object
+  getValue: (cellData) => cellData?.status,  // Getter to extract the value from the raw data
+  dedupeIntervalMs: 5 * 60 * 1_000, // The stale time of your data, if multiple requests happen within this interval, no new network call will be made
 }
 ```
+
+| Property            | Type                     | Required | Description                                                                                                                                                                   |
+| ------------------- | ------------------------ | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `type`              | `"function"`             | Yes      | Identifies this as a function column                                                                                                                                          |
+| `id`                | `keyof FunctionColumns`  | Yes      | Key in the FunctionColumns type map                                                                                                                                           |
+| `queryDefinition`   | `QueryDefinition`        | Yes      | The OSDK query definition to execute                                                                                                                                          |
+| `getFunctionParams` | `(objectSet) => params`  | Yes      | Computes function parameters from the current ObjectSet                                                                                                                       |
+| `getKey`            | `(object) => string`     | Yes      | Generates a lookup key for each object in the result map                                                                                                                      |
+| `getValue`          | `(cellData?) => unknown` | No       | Extracts a display value from the raw function result per object. `cellData` is `undefined` when the object has no result (e.g., loading or missing from the function output) |
+| `dedupeIntervalMs`  | `number`                 | No       | Minimum time (ms) between re-fetches of the same function with the same parameters. Defaults to `300_000` (5 minutes)                                                         |
 
 #### 4. Custom Column
 
@@ -616,7 +657,7 @@ function EmployeesTable() {
 
 ### Example 13: Editable Table
 
-Enable inline editing with validation and bulk submission:
+Enable inline editing with validation, dropdown selectors, and bulk submission:
 
 ```typescript
 import { useOsdkAction } from "@osdk/react";
@@ -630,13 +671,12 @@ import { Employee, updateMultipleEmployees } from "@YourApp/sdk";
 const columnDefinitions: Array<ColumnDefinition<typeof Employee>> = [
   {
     locator: { type: "property", id: "fullName" },
-    editable: true, // Enable editing for this column
+    editable: true, // Default text input
   },
   {
     locator: { type: "property", id: "email" },
     editable: true,
     validateEdit: async (value) => {
-      // Custom validation function
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       return emailRegex.test(value as string)
         ? undefined
@@ -646,10 +686,39 @@ const columnDefinitions: Array<ColumnDefinition<typeof Employee>> = [
   {
     locator: { type: "property", id: "department" },
     editable: true,
+    editFieldConfig: {
+      fieldComponent: "DROPDOWN",
+      fieldComponentProps: {
+        items: [
+          "Engineering",
+          "Product",
+          "Design",
+          "Sales",
+          "Marketing",
+          "Finance",
+          "Human Resources",
+        ],
+      },
+    },
   },
   {
     locator: { type: "property", id: "jobTitle" },
-    editable: false, // This column is read-only
+    editable: true,
+    editFieldConfig: {
+      fieldComponent: "DROPDOWN",
+      fieldComponentProps: {
+        items: [
+          "Software Engineer",
+          "Senior Software Engineer",
+          "Staff Engineer",
+          "Engineering Manager",
+          "Product Manager",
+          "Designer",
+        ],
+        isSearchable: true, // Renders a searchable combobox
+        placeholder: "Search job titles…",
+      },
+    },
   },
 ];
 
@@ -707,24 +776,26 @@ function EditableEmployeesTable() {
    - `manual` (default): User clicks "Edit Table" button to enter edit mode
    - `always`: Table is always in edit mode
 
-2. **Validation**:
-   - Use `validate` prop on columns for async validation
-   - Use `onValidationError` for custom error messages
-   - Validation errors are shown with an error icon and tooltip
+2. **Editor Components**:
+   - **Text input** (default): For string properties
+   - **Number input** (auto-detected): For numeric properties (`double`, `integer`, `long`, `float`, `decimal`, `byte`, `short`)
+   - **Dropdown (Select)**: Fixed list of options via `editFieldConfig` with `fieldComponent: "DROPDOWN"`
+   - **Dropdown (Combobox)**: Searchable list via `isSearchable: true` in `fieldComponentProps`
 
-3. **Edit State Management**:
+3. **Validation**:
+   - Use `validateEdit` on columns for async validation
+   - Validation errors are shown with an error icon and tooltip
+   - Works with all editor types including dropdowns
+
+4. **Edit State Management**:
    - Edits are tracked locally until submitted
    - Modified cells are visually highlighted
    - "Cancel" button discards all pending edits
 
-4. **Bulk Submission**:
+5. **Bulk Submission**:
    - When `onSubmitEdits` is provided, a "Submit Edits" button appears
    - All edits are submitted together
    - Return `true` from `onSubmitEdits` to clear edits after successful submission
-
-5. **Data Types**:
-   - Currently supports text and number input types
-   - Number types are automatically detected from the property type
 
 ### Example 14: Custom Column Configuration Dialog
 
@@ -854,6 +925,101 @@ This example demonstrates:
 - Providing a custom button to open the dialog
 - Disabling the built-in column configuration to avoid conflicts
 - Managing hidden columns that can be toggled visible by users
+
+### Example 15: Function-Backed Columns
+
+Display values computed by OSDK functions (queries) alongside regular property columns. Function columns automatically handle loading states, caching, and deduplication.
+
+```typescript
+import {
+  type ColumnDefinition,
+  ObjectTable,
+} from "@osdk/react-components/experimental";
+import { Employee, getEmployeeMetrics } from "@YourApp/sdk";
+
+// Define a type map for your function columns
+type EmployeeFunctionColumns = {
+  metrics: typeof getEmployeeMetrics;
+};
+
+const columnDefinitions: Array<
+  ColumnDefinition<
+    typeof Employee,
+    Record<string, never>,
+    EmployeeFunctionColumns
+  >
+> = [
+  {
+    locator: { type: "property", id: "fullName" },
+    pinned: "left",
+    width: 200,
+  },
+  {
+    locator: { type: "property", id: "department" },
+  },
+  {
+    locator: {
+      type: "function",
+      id: "metrics",
+      queryDefinition: getEmployeeMetrics,
+      // Pass the current object set as a parameter to the function
+      getFunctionParams: (objectSet) => ({ employees: objectSet }),
+      // Generate a unique key for each object to look up its result
+      getKey: (employee) => `${employee.$objectType}:${employee.$primaryKey}`,
+      // Extract the specific value to display from the function result
+      getValue: (cellData) =>
+        (cellData as { score: number } | undefined)?.score,
+      // Cache results for 1 minute instead of the default 5
+      dedupeIntervalMs: 60_000,
+    },
+    columnName: "Performance Score",
+  },
+];
+
+function EmployeesWithMetricsTable() {
+  return (
+    <ObjectTable
+      objectType={Employee}
+      columnDefinitions={columnDefinitions}
+    />
+  );
+}
+```
+
+Multiple function columns sharing the same `queryDefinition` are automatically deduplicated into a single API call. Use different `getValue` functions to extract different fields from the same result:
+
+```typescript
+const columnDefinitions: Array<
+  ColumnDefinition<
+    typeof Employee,
+    Record<string, never>,
+    EmployeeFunctionColumns
+  >
+> = [
+  {
+    locator: {
+      type: "function",
+      id: "metrics",
+      queryDefinition: getEmployeeMetrics,
+      getFunctionParams: (objectSet) => ({ employees: objectSet }),
+      getKey: (emp) => `${emp.$objectType}:${emp.$primaryKey}`,
+      getValue: (cellData) => (cellData as { score: number })?.score,
+    },
+    columnName: "Score",
+  },
+  {
+    locator: {
+      type: "function",
+      id: "metrics",
+      queryDefinition: getEmployeeMetrics,
+      getFunctionParams: (objectSet) => ({ employees: objectSet }),
+      getKey: (emp) => `${emp.$objectType}:${emp.$primaryKey}`,
+      getValue: (cellData) => (cellData as { rank: string })?.rank,
+    },
+    columnName: "Rank",
+  },
+];
+```
 
 ### Column Pinning
 
@@ -1160,8 +1326,8 @@ Apply custom styles to specific ObjectTable instances using the `className` prop
 
 For a complete reference of all available CSS tokens for theming, see:
 
-- [@osdk/react-components-styles CSS Variables Documentation](../../react-components-styles/CSS_VARIABLES.md)
-- [@osdk/react-components-styles README](../../react-components-styles/README.md)
+- [@osdk/react-components-styles CSS Variables Documentation](https://github.com/palantir/osdk-ts/blob/main/packages/react-components-styles/CSS_VARIABLES.md)
+- [@osdk/react-components-styles README](https://github.com/palantir/osdk-ts/blob/main/packages/react-components-styles/README.md)
 
 ### Accessibility Note
 
@@ -1175,7 +1341,7 @@ The default tokens are designed to meet WCAG AA standards.
 
 ## Additional Resources
 
-- [ObjectTable API Reference](../src/object-table/ObjectTableApi.ts)
-- [ObjectTable Implementation](../src/object-table/ObjectTable.tsx)
-- [PeopleApp Examples](../../e2e.sandbox.peopleapp/src/app/employees/EmployeesTable.tsx)
-- [@osdk/react Documentation](../../docs/react/getting-started.md)
+- [ObjectTable API Reference](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/src/object-table/ObjectTableApi.ts)
+- [ObjectTable Implementation](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/src/object-table/ObjectTable.tsx)
+- [PeopleApp Examples](https://github.com/palantir/osdk-ts/blob/main/packages/e2e.sandbox.peopleapp/src/app/employees/EmployeesTable.tsx)
+- [@osdk/react Documentation](https://github.com/palantir/osdk-ts/blob/main/docs/react/getting-started.md)

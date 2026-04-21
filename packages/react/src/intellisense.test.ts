@@ -187,4 +187,34 @@ describe("intellisense", () => {
     expect(dataResp.body?.displayString).toBeDefined();
     expect(dataResp.body?.displayString).toContain("Osdk.Instance<Employee");
   });
+
+  it(
+    "useOsdkObjectsWithPivotStreamUpdates",
+    { timeout: 40_000 },
+    async () => {
+      expect(ts.sys.fileExists(intellisenseFilePath)).toBeTruthy();
+      invariant(tsServer);
+
+      // Verify pivotTo-only still gets correct linked type (line 26: data in PivotOnly)
+      const { resp: pivotResp } = await tsServer.sendQuickInfoRequest({
+        file: intellisenseFilePath,
+        line: 26,
+        offset: 13,
+      });
+      expect(pivotResp.body?.displayString).toBeDefined();
+      expect(pivotResp.body?.displayString).toContain("Employee");
+
+      // Verify streamUpdates-only compiles (line 33: data in StreamOnly)
+      const { resp: streamResp } = await tsServer.sendQuickInfoRequest({
+        file: intellisenseFilePath,
+        line: 33,
+        offset: 13,
+      });
+      expect(streamResp.body?.displayString).toBeDefined();
+
+      // The @ts-expect-error on line 41 validates that combining pivotTo +
+      // streamUpdates is a type error. If the restriction is removed, typecheck
+      // will fail with "unused @ts-expect-error".
+    },
+  );
 });

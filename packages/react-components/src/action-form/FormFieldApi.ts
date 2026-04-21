@@ -81,24 +81,24 @@ export interface FormFieldDefinition<
   isDisabled?: boolean;
 
   /**
-   * A callback to return a custom error message if validation failed
+   * A callback to customize error messages when a built-in validation rule fails.
+   * Receives a discriminated union with the constraint data (e.g., the min value
+   * that was exceeded) so the message can reference the threshold.
    *
-   * @param validationRule the validation rule that failed with the error message
-   * @returns the error message to display
+   * Return a string to override the default message, or `undefined` to keep it.
    */
-  onValidationError?: (error: ValidationError) => string;
+  onValidationError?: (error: ValidationError) => string | undefined;
 
   /**
-   * Additional function to validate the field
+   * Additional function to validate the field.
    *
-   * @param value the current field value
-   * @returns a boolean promise indicating whether the value is valid
+   * Return `undefined` if valid, or an error message string if invalid.
    */
-  validate?: (value: FieldValueType<Q, K>) => Promise<boolean>;
+  validate?: (value: FieldValueType<Q, K>) => Promise<string | undefined>;
 
   /**
-   * The component props for the form field
-   * Excludes runtime props (value, onChange) which are managed by ActionForm
+   * The component props for the form field.
+   * Excludes runtime props (value, onChange) which are managed by ActionForm.
    */
   fieldComponentProps: Omit<
     FormFieldPropsByType[
@@ -106,25 +106,30 @@ export interface FormFieldDefinition<
         FieldDescriptorType<Q, K>
       >
     ],
-    "value" | "onChange"
+    FormManagedProps<
+      ValidFormFieldForPropertyType<FieldDescriptorType<Q, K>>
+    >
   >;
 }
 
-type ValidationError = { type: ValidationRule; error: string };
-
-type ValidationRule =
-  | "required"
-  | "min"
-  | "max"
-  | "minLength"
-  | "maxLength"
-  | "pattern"
-  | "validate";
+/**
+ * A discriminated union describing which validation rule failed and the
+ * constraint data the user needs to build a meaningful error message.
+ */
+export type ValidationError =
+  | { type: "required" }
+  | { type: "min"; min: number | Date }
+  | { type: "max"; max: number | Date }
+  | { type: "minLength"; minLength: number }
+  | { type: "maxLength"; maxLength: number }
+  | { type: "maxSize"; maxSize: number }
+  | { type: "validate"; message: string };
 
 /**
  * Maps field types to their corresponding props
  */
 export interface FormFieldPropsByType {
+  DATE_RANGE_INPUT: DateRangeInputFieldProps;
   DATETIME_PICKER: DatetimePickerFieldProps;
   DROPDOWN: DropdownFieldProps<unknown, boolean>;
   FILE_PICKER: FilePickerProps;
@@ -170,8 +175,63 @@ export interface DatetimePickerFieldProps extends BaseFormFieldProps<Date> {
    */
   placeholder?: string;
 
-  /** Formats a Date for display in the trigger button. */
+  /**
+   * Formats a Date for display in the input field when not editing.
+   * When typing, the input shows the parsable format (YYYY-MM-DD or YYYY-MM-DD HH:mm).
+   * Provide a matching `parseDate` if using a custom format.
+   */
   formatDate?: (date: Date) => string;
+
+  /**
+   * Parses a user-typed string back into a Date.
+   * Must be the inverse of `formatDate` — if `formatDate(d)` produces string `s`,
+   * then `parseDate(s)` must return an equivalent Date.
+   * When omitted, defaults to parsing "YYYY-MM-DD" (date-only) or "YYYY-MM-DD HH:mm" (with time).
+   */
+  parseDate?: (text: string) => Date | undefined;
+}
+
+/**
+ * A date range represented as a start/end tuple.
+ * Either element may be `null` when the range is partially selected.
+ */
+export type DateRange = readonly [Date | null, Date | null];
+
+/** Default empty range — both bounds are null. */
+export const EMPTY_RANGE: DateRange = [null, null];
+
+/**
+ * Date range input field props.
+ *
+ * Renders two text inputs (start / end) with a shared calendar popover
+ * that supports range selection.
+ */
+export interface DateRangeInputFieldProps
+  extends BaseFormFieldProps<DateRange>
+{
+  /** The earliest selectable date. */
+  min?: Date;
+
+  /** The latest selectable date. */
+  max?: Date;
+
+  /** Whether to show time pickers for both dates. */
+  showTime?: boolean;
+
+  /** Placeholder text for the start date input. */
+  placeholderStart?: string;
+
+  /** Placeholder text for the end date input. */
+  placeholderEnd?: string;
+
+  /** Whether to allow start and end on the same day. @default true */
+  allowSingleDayRange?: boolean;
+
+  /** Formats a Date for display. Defaults to "YYYY-MM-DD". */
+  formatDate?: (date: Date) => string;
+
+  /** Parses a user-typed string back into a Date. */
+  parseDate?: (text: string) => Date | undefined;
 }
 
 /**
@@ -218,6 +278,12 @@ export interface DropdownFieldProps<V, Multiple extends boolean = false>
    * Whether multiple values can be selected
    */
   isMultiple?: Multiple;
+
+  /**
+   * Ref forwarded to the portal container element.
+   * Used to track portaled content for click-outside detection.
+   */
+  portalRef?: React.Ref<HTMLDivElement>;
 }
 
 export interface FilePickerProps extends BaseFormFieldProps<File | File[]> {
@@ -235,6 +301,20 @@ export interface FilePickerProps extends BaseFormFieldProps<File | File[]> {
    * Maximum file size in bytes
    */
   maxSize?: number;
+
+  /**
+   * The text displayed when no file is selected.
+   *
+   * @default "No file chosen"
+   */
+  text?: string;
+
+  /**
+   * The text displayed on the browse button.
+   *
+   * @default "Browse"
+   */
+  buttonText?: string;
 }
 
 /**
@@ -329,8 +409,15 @@ export interface Option<V> {
  * Object set field displays the summary of the count of the given object set
  */
 export interface ObjectSetFieldProps<T extends ObjectTypeDefinition>
-  extends BaseFormFieldProps<ObjectSet<T>>
-{}
+  extends Pick<BaseFormFieldProps<ObjectSet<T>>, "id" | "value">
+{
+  /**
+   * Message displayed when no object set is provided.
+   *
+   * @default "Object set is not defined"
+   */
+  emptyMessage?: string;
+}
 
 /**
  * Custom field props for user-defined renderers
@@ -350,9 +437,21 @@ export interface BaseFormFieldProps<V> {
   id?: string;
 
   /**
+   * The validation error message for this field, if any.
+   * When set, the field should display a visual error state.
+   */
+  error?: string;
+
+  /**
    * The value of the form field
    */
   value: V | null;
+
+  /**
+   * The default value of the form field.
+   */
+  defaultValue?: V;
+
   /**
    * Called when the field value changes.
    *
@@ -410,6 +509,7 @@ export type FieldDescriptorType<
  * Available form field component types
  */
 export type FieldComponent =
+  | "DATE_RANGE_INPUT"
   | "DATETIME_PICKER"
   | "DROPDOWN"
   | "FILE_PICKER"
@@ -444,6 +544,16 @@ export type FieldType =
   | { type: "struct"; struct: Record<string, string> };
 
 /**
+ * Props managed by form state infrastructure (FieldBridge / RHF).
+ * Fields with onChange participate in form state → value and onChange are managed
+ * externally. Read-only fields (no onChange, e.g. ObjectSetField) keep value in
+ * fieldComponentProps so it bypasses form state cloning.
+ */
+type FormManagedProps<K extends FieldComponent> = "onChange" extends
+  keyof FormFieldPropsByType[K] ? "value" | "onChange"
+  : "onChange";
+
+/**
  * An OSDK-agnostic field definition used by BaseForm and FormFieldRenderer.
  * Contains only the information needed to render a single field — no generics,
  * no compile-time parameter constraints.
@@ -457,12 +567,13 @@ export type RendererFieldDefinition = {
     fieldComponent: K;
     fieldType?: FieldType;
     label: string;
-    defaultValue?: unknown;
     isRequired?: boolean;
     placeholder?: string;
     helperText?: string;
     helperTextPlacement?: "bottom" | "tooltip";
-    fieldComponentProps: Omit<FormFieldPropsByType[K], "value" | "onChange">;
+    validate?: (value: unknown) => Promise<string | undefined>;
+    onValidationError?: (error: ValidationError) => string | undefined;
+    fieldComponentProps: Omit<FormFieldPropsByType[K], FormManagedProps<K>>;
   };
 }[FieldComponent];
 

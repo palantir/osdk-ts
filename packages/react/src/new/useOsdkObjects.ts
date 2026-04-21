@@ -28,7 +28,7 @@ import type {
 import type { ObserveObjectsCallbackArgs } from "@osdk/client/unstable-do-not-use";
 import React from "react";
 import { extractPayloadError, isPayloadLoading } from "./hookUtils.js";
-import { makeExternalStore } from "./makeExternalStore.js";
+import { devToolsMetadata, makeExternalStore } from "./makeExternalStore.js";
 import { OsdkContext2 } from "./OsdkContext2.js";
 
 export interface UseOsdkObjectsOptions<
@@ -108,6 +108,9 @@ export interface UseOsdkObjectsOptions<
   /**
    * Pivot to related objects through a link.
    * This changes the return type from T to the linked object type.
+   *
+   * Cannot be combined with `streamUpdates`. The server does not support
+   * websocket subscriptions for link-traversal queries.
    */
   pivotTo?: LinkNames<T>;
 
@@ -122,6 +125,12 @@ export interface UseOsdkObjectsOptions<
    */
   autoFetchMore?: boolean | number;
 
+  /**
+   * Enable streaming updates via websocket subscription.
+   *
+   * Cannot be combined with `pivotTo`. The server does not support
+   * websocket subscriptions for link-traversal queries.
+   */
   streamUpdates?: boolean;
 
   /**
@@ -196,18 +205,18 @@ export interface UseOsdkListResult<
   refetch: () => Promise<void>;
 }
 
-declare const process: {
-  env: {
-    NODE_ENV: "development" | "production";
-  };
-};
-
+// pivotTo overloads: streamUpdates is forbidden (the server does not support
+// websocket subscriptions for link-traversal queries).
 export function useOsdkObjects<
   Q extends ObjectOrInterfaceDefinition,
   L extends LinkNames<Q>,
 >(
   type: Q,
-  options: UseOsdkObjectsOptions<Q> & { pivotTo: L; rids: readonly string[] },
+  options: UseOsdkObjectsOptions<Q> & {
+    pivotTo: L;
+    rids: readonly string[];
+    streamUpdates?: never;
+  },
 ): UseOsdkListResult<LinkedType<Q, L>, {}, "$rid">;
 
 export function useOsdkObjects<
@@ -215,15 +224,20 @@ export function useOsdkObjects<
   L extends LinkNames<Q>,
 >(
   type: Q,
-  options: UseOsdkObjectsOptions<Q> & { pivotTo: L },
+  options: UseOsdkObjectsOptions<Q> & { pivotTo: L; streamUpdates?: never },
 ): UseOsdkListResult<LinkedType<Q, L>>;
 
+// Non-pivotTo overloads: pivotTo is forbidden to prevent fallthrough from the
+// pivotTo overloads above (which would give the wrong return type).
 export function useOsdkObjects<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
 >(
   type: Q,
-  options: UseOsdkObjectsOptions<Q, RDPs> & { rids: readonly string[] },
+  options: UseOsdkObjectsOptions<Q, RDPs> & {
+    rids: readonly string[];
+    pivotTo?: never;
+  },
 ): UseOsdkListResult<Q, RDPs, "$rid">;
 
 export function useOsdkObjects<
@@ -231,7 +245,7 @@ export function useOsdkObjects<
   RDPs extends Record<string, SimplePropertyDef> = {},
 >(
   type: Q,
-  options?: UseOsdkObjectsOptions<Q, RDPs>,
+  options?: UseOsdkObjectsOptions<Q, RDPs> & { pivotTo?: never },
 ): UseOsdkListResult<Q, RDPs>;
 
 export function useOsdkObjects<
@@ -284,9 +298,10 @@ export function useOsdkObjects<
           ObserveObjectsCallbackArgs<Q, RDPs>
         >(
           () => ({ unsubscribe: () => {} }),
-          process.env.NODE_ENV !== "production"
-            ? `list ${type.apiName} [DISABLED]`
-            : void 0,
+          devToolsMetadata({
+            hookType: "useOsdkObjects",
+            objectType: type.apiName,
+          }),
         );
       }
 
@@ -313,11 +328,13 @@ export function useOsdkObjects<
               ? { $loadPropertySecurityMetadata }
               : {}),
           }, observer),
-        process.env.NODE_ENV !== "production"
-          ? `list ${type.apiName} ${
-            stableRids ? `[${stableRids.length} rids]` : ""
-          } ${JSON.stringify(canonOptions.where)}`
-          : void 0,
+        devToolsMetadata({
+          hookType: "useOsdkObjects",
+          objectType: type.apiName,
+          where: canonOptions.where,
+          orderBy: canonOptions.orderBy,
+          pageSize,
+        }),
       );
     },
     [

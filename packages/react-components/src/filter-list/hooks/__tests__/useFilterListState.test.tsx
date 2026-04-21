@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import type { ObjectSet } from "@osdk/api";
 import { act, renderHook } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -37,19 +36,11 @@ import type { FilterListProps } from "../../FilterListApi.js";
 import { getFilterKey } from "../../utils/getFilterKey.js";
 import { useFilterListState } from "../useFilterListState.js";
 
-function createMockObjectSet(): ObjectSet<typeof MockObjectType> {
-  return {
-    $objectSetInternals: {
-      def: MockObjectType,
-    },
-  } as ObjectSet<typeof MockObjectType>;
-}
-
 function createProps(
   overrides: Partial<FilterListProps<typeof MockObjectType>> = {},
 ): FilterListProps<typeof MockObjectType> {
   return {
-    objectSet: createMockObjectSet(),
+    objectType: MockObjectType,
     ...overrides,
   };
 }
@@ -351,6 +342,31 @@ describe("useFilterListState", () => {
       );
       expect(result.current.activeFilterCount).toBe(1);
     });
+  });
+
+  it("works without objectSet (objectType only)", () => {
+    const nameDef = createPropertyFilterDef(
+      "name",
+      "LISTOGRAM",
+      createExactMatchState([]),
+    );
+    const props = createProps({
+      filterDefinitions: [nameDef],
+    });
+    expect(props.objectSet).toBeUndefined();
+    const { result } = renderHook(() => useFilterListState(props));
+    expect(result.current.filterStates.size).toBe(1);
+    act(() => {
+      result.current.setFilterState(
+        getFilterKey(nameDef),
+        createExactMatchState(["John"]),
+      );
+    });
+    expect(result.current.whereClause).toEqual({ name: "John" });
+    act(() => {
+      result.current.reset();
+    });
+    expect(result.current.whereClause).toEqual({});
   });
 
   it("handles multiple filter definitions", () => {

@@ -44,6 +44,7 @@ import type { ListPayload } from "../ListPayload.js";
 import type { ObjectPayload } from "../ObjectPayload.js";
 import type { ObjectSetPayload } from "../ObjectSetPayload.js";
 import type {
+  CacheSnapshot,
   CanonicalizedOptions,
   CanonicalizeOptionsInput,
   ObservableClient,
@@ -60,6 +61,11 @@ import type {
   Unsubscribable,
 } from "../ObservableClient.js";
 import type { Observer } from "../ObservableClient/common.js";
+import type {
+  MediaMetadataObserveOptions,
+  MediaMetadataPayload,
+} from "../ObservableClient/MediaObservableTypes.js";
+import type { MediaPropertyLocation } from "../ObservableClient/MediaTypes.js";
 import type { ObserveLinks } from "../ObservableClient/ObserveLink.js";
 import type { AggregationPayloadBase } from "./aggregation/AggregationQuery.js";
 import type { Canonical } from "./Canonical.js";
@@ -383,6 +389,22 @@ export class ObservableClientImpl implements ObservableClient {
     }
     return cached;
   }
+
+  public observeMediaMetadata(
+    coords: MediaPropertyLocation,
+    options: MediaMetadataObserveOptions,
+    observer: Observer<MediaMetadataPayload>,
+  ): Unsubscribable {
+    return this.__experimentalStore.media.observeMediaMetadata(
+      coords,
+      options,
+      observer,
+    );
+  }
+
+  public async getCacheSnapshot(): Promise<CacheSnapshot> {
+    return this.__experimentalStore.getCacheSnapshot();
+  }
 }
 
 function observeSingleLink(
@@ -398,7 +420,7 @@ function observeSingleLink(
       linkedObjectsBySourcePrimaryKey: new Map(),
       isOptimistic: false,
       lastUpdated: 0,
-      fetchMore: () => Promise.resolve(),
+      fetchMore: async () => {},
       hasMore: false,
       status: "loaded",
       totalCount: "0",
@@ -496,7 +518,7 @@ function observeMultiLinks(
       lastUpdated: latestUpdated,
       fetchMore: hasMore
         ? () => Promise.all(fetchMores.map(fn => fn())).then(() => {})
-        : () => Promise.resolve(),
+        : async () => {},
       hasMore,
       status: loading
         ? "loading"

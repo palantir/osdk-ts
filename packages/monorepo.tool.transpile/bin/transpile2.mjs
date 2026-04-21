@@ -175,12 +175,27 @@ async function transpileWithTsup(format, target) {
   ]);
 
   const noExternalList = [
+    "@osdk/cli.cmd.typescript",
+    "@osdk/cli.common",
     "@osdk/foundry.ontologies",
     "@osdk/foundry.mediasets",
     "@osdk/shared.client",
     "@osdk/shared.client2",
     "oauth4webapi",
     "p-defer",
+    // create-app templates (private, must be bundled)
+    "@osdk/create-app.template.expo.v2",
+    "@osdk/create-app.template.react",
+    "@osdk/create-app.template.react.beta",
+    "@osdk/create-app.template.tutorial-todo-aip-app",
+    "@osdk/create-app.template.tutorial-todo-aip-app.beta",
+    "@osdk/create-app.template.tutorial-todo-app",
+    "@osdk/create-app.template.tutorial-todo-app.beta",
+    "@osdk/create-app.template.vue",
+    "@osdk/create-app.template.vue.v2",
+    // create-widget templates (private, must be bundled)
+    "@osdk/create-widget.template.minimal-react.v2",
+    "@osdk/create-widget.template.react.v2",
   ];
 
   const devDepNames = Object.keys(pkgJson.devDependencies ?? {});

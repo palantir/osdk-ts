@@ -55,6 +55,7 @@ export class ObjectSetQuery extends BaseListQuery<
   #baseObjectSetWire: string;
   #operations: Canonical<ObjectSetOperations>;
   #composedObjectSet: ObjectSet<any, any>;
+  #identityObjectSet: ObjectSet<any, any>;
   #objectTypes: Set<string>;
   #requiresServerEvaluation: boolean;
   #resultTypeApiName: string;
@@ -86,6 +87,7 @@ export class ObjectSetQuery extends BaseListQuery<
     this.#baseObjectSetWire = baseObjectSetWire;
     this.#operations = operations;
     this.#composedObjectSet = this.#composeObjectSet(opts);
+    this.#identityObjectSet = this.#composeIdentityObjectSet(opts);
 
     const baseWire: WireObjectSet = JSON.parse(baseObjectSetWire);
     this.#objectTypes = this.#extractObjectTypes(baseWire, opts);
@@ -131,6 +133,28 @@ export class ObjectSetQuery extends BaseListQuery<
     if (opts.withProperties) {
       result = result.withProperties(opts.withProperties);
     }
+    if (opts.where) {
+      result = result.where(opts.where);
+    }
+    if (opts.union && opts.union.length > 0) {
+      result = result.union(...opts.union);
+    }
+    if (opts.intersect && opts.intersect.length > 0) {
+      result = result.intersect(...opts.intersect);
+    }
+    if (opts.subtract && opts.subtract.length > 0) {
+      result = result.subtract(...opts.subtract);
+    }
+    if (opts.pivotTo) {
+      result = result.pivotTo(opts.pivotTo);
+    }
+
+    return result;
+  }
+
+  #composeIdentityObjectSet(opts: ObjectSetQueryOptions): ObjectSet<any, any> {
+    let result = opts.baseObjectSet;
+
     if (opts.where) {
       result = result.where(opts.where);
     }
@@ -484,7 +508,7 @@ export class ObjectSetQuery extends BaseListQuery<
       hasMore: this.nextPageToken != null,
       status: params.status,
       lastUpdated: params.lastUpdated,
-      objectSet: this.#composedObjectSet,
+      objectSet: this.#identityObjectSet,
       totalCount: params.totalCount,
     };
   }

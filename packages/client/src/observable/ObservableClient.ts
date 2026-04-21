@@ -50,6 +50,11 @@ import type {
   Observer,
   Status,
 } from "./ObservableClient/common.js";
+import type {
+  MediaMetadataObserveOptions,
+  MediaMetadataPayload,
+} from "./ObservableClient/MediaObservableTypes.js";
+import type { MediaPropertyLocation } from "./ObservableClient/MediaTypes.js";
 import type { ObserveLinks } from "./ObservableClient/ObserveLink.js";
 import type { OptimisticBuilder } from "./OptimisticBuilder.js";
 
@@ -58,6 +63,41 @@ export namespace ObservableClient {
     optimisticUpdate?: (ctx: OptimisticBuilder) => void;
   }
 }
+
+export interface CacheSnapshot {
+  entries: CacheEntry[];
+  stats: {
+    totalEntries: number;
+    totalSize: number;
+    totalHits?: number;
+  };
+}
+
+interface CacheEntryMetadata {
+  timestamp: number;
+  status: "init" | "loading" | "loaded" | "error";
+  hitCount?: number;
+  size: number;
+  isOptimistic?: boolean;
+}
+
+interface CacheEntryBase {
+  key: string;
+  objectType: string;
+  metadata: CacheEntryMetadata;
+  data?: unknown;
+}
+
+export type CacheEntry =
+  | CacheEntryBase & { type: "object" }
+  | CacheEntryBase & {
+    type: "list";
+    where?: unknown;
+    orderBy?: unknown;
+    pageSize?: number;
+  }
+  | CacheEntryBase & { type: "link"; linkName?: string }
+  | CacheEntryBase & { type: "objectSet" };
 
 export interface ObserveObjectOptions<
   T extends ObjectOrInterfaceDefinition,
@@ -82,6 +122,13 @@ export interface ObserveListOptions<
   orderBy?: OrderBy<Q>;
   invalidationMode?: InvalidationMode;
   expectedLength?: number;
+
+  /**
+   * Enable streaming updates via websocket subscription.
+   *
+   * Cannot be combined with `pivotTo`. The server does not support
+   * websocket subscriptions for link-traversal queries.
+   */
   streamUpdates?: boolean;
   withProperties?: DerivedProperty.Clause<Q>;
 
@@ -137,6 +184,12 @@ export interface ObserveListOptions<
   intersectWith?: Array<{
     where: WhereClause<Q, RDPs>;
   }>;
+
+  /**
+   * Traverse to linked objects. Cannot be combined with `streamUpdates`.
+   * The server does not support websocket subscriptions for link-traversal
+   * queries.
+   */
   pivotTo?: string;
 }
 
@@ -529,6 +582,8 @@ export interface ObservableClient extends ObserveLinks {
     primaryKey: string | number,
   ): Promise<void>;
 
+  getCacheSnapshot(): Promise<CacheSnapshot>;
+
   canonicalizeWhereClause: <
     T extends ObjectOrInterfaceDefinition,
     RDPs extends Record<string, SimplePropertyDef> = {},
@@ -539,6 +594,12 @@ export interface ObservableClient extends ObserveLinks {
   canonicalizeOptions: <OS, T extends CanonicalizeOptionsInput<OS>>(
     options: T,
   ) => CanonicalizedOptions<T>;
+
+  observeMediaMetadata(
+    coords: MediaPropertyLocation,
+    options: MediaMetadataObserveOptions,
+    observer: Observer<MediaMetadataPayload>,
+  ): Unsubscribable;
 }
 
 export interface CanonicalizeOptionsInput<OS = ObjectSet<any, any>> {

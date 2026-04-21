@@ -14,10 +14,13 @@
  * limitations under the License.
  */
 
-import type { CompileTimeMetadata, QueryDefinition } from "@osdk/api";
-import type { Client } from "@osdk/client";
+import type { QueryDefinition } from "@osdk/api";
 import React from "react";
-import { useOsdkClient } from "../useOsdkClient.js";
+import {
+  createCompositeExternalStore,
+  EMPTY_STORE,
+} from "./createCompositeExternalStore.js";
+import { OsdkContext2 } from "./OsdkContext2.js";
 import type {
   UseOsdkFunctionOptions,
   UseOsdkFunctionResult,
@@ -29,7 +32,7 @@ export interface FunctionQueryParams<Q extends QueryDefinition<unknown>> {
    * Only allow params and enabled options at the query level,
    * other options are not yet supported in this batch context
    */
-  options?: Pick<UseOsdkFunctionOptions<Q>, "params" | "enabled">;
+  options?: UseOsdkFunctionOptions<Q>;
 }
 
 export interface UseOsdkFunctionsProps {
@@ -44,171 +47,94 @@ export interface UseOsdkFunctionsProps {
    * @default true
    */
   enabled?: boolean;
+
+  /**
+   * Maximum number of queries to execute concurrently.
+   * When set, queries are subscribed in batches — the next query starts
+   * only after a running one completes (status "loaded" or "error").
+   * Useful for large payloads that may exceed server time limits.
+   *
+   * @default undefined (all queries run in parallel)
+   */
+  maxConcurrent?: number;
 }
 
 export type UseOsdkFunctionsResult = Array<
-  Omit<UseOsdkFunctionResult<QueryDefinition<unknown>>, "refetch">
+  UseOsdkFunctionResult<QueryDefinition<unknown>>
 >;
 
 /**
  * React hook for executing multiple OSDK function queries in parallel.
+ *
+ * This hook executes multiple function queries with individual configurations,
+ * with automatic caching and deduplication via the ObservableClient.
  * Results are returned in the same order as the input queries.
+ *
+ * Queries with identical function+params share cached results through the
+ * Store layer, avoiding duplicate network requests across components.
  *
  * @param options - Configuration options containing the queries to execute
  * @returns Array of results in the same order as input queries, each with the same shape as useOsdkFunction
  */
 export function useOsdkFunctions(
-  { queries, enabled = true }: UseOsdkFunctionsProps,
+  { queries, enabled = true, maxConcurrent }: UseOsdkFunctionsProps,
 ): UseOsdkFunctionsResult {
-  const client = useOsdkClient();
+  const { observableClient } = React.useContext(OsdkContext2);
 
-  const [results, setResults] = React.useState<
-    UseOsdkFunctionsResult
-  >(() =>
-    queries.map(() => ({
-      data: undefined,
-      isLoading: false,
-      error: undefined,
-      lastUpdated: 0,
-    }))
+  const stableQueriesKey = JSON.stringify(queries.map(q => ({
+    apiName: q.queryDefinition.apiName,
+    ...q.options,
+  })));
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const stableQueries = React.useMemo(() => queries, [stableQueriesKey]);
+
+  const { subscribe, getSnapshot } = React.useMemo(
+    () =>
+      !enabled || stableQueries.length === 0
+        ? EMPTY_STORE
+        : createCompositeExternalStore(
+          stableQueries,
+          observableClient,
+          maxConcurrent,
+        ),
+    [enabled, maxConcurrent, observableClient, stableQueries],
   );
 
-  const abortControllerRef = React.useRef<AbortController | null>(null);
+  const payloads = React.useSyncExternalStore(subscribe, getSnapshot);
 
-  React.useEffect(() => {
-    if (!enabled || queries.length === 0) {
-      return;
-    }
-
-    // Cancel previous requests
-    abortControllerRef.current?.abort();
-
-    const abortController = new AbortController();
-    abortControllerRef.current = abortController;
-
-    const executeQueries = async () => {
-      // Initialize loading state for all queries
-      setResults(prev =>
-        queries.map((_, index) => ({
-          data: prev[index]?.data, // Preserving existing data
-          isLoading: queries[index].options?.enabled !== false,
-          error: undefined,
-          lastUpdated: prev[index]?.lastUpdated || 0,
-        }))
-      );
-
-      for await (
-        const queryResult of executeQueriesGenerator(
-          queries,
-          client,
-        )
-      ) {
-        const { index, result, error } = queryResult;
-
-        if (abortController.signal.aborted) {
-          break;
-        }
-
-        setResults(prev => {
-          if (abortController.signal.aborted) {
-            return prev;
-          }
-          const newResults = [...prev];
-          newResults[index] = {
-            data: result,
-            isLoading: false,
-            error: error instanceof Error
-              ? error
-              : error
-              ? new Error(
-                typeof error === "string" ? error : JSON.stringify(error),
-              )
-              : undefined,
-            lastUpdated: Date.now(),
-          };
-          return newResults;
-        });
-      }
-    };
-
-    void executeQueries();
-
-    return () => {
-      abortController.abort();
-    };
-  }, [
-    enabled,
-    client,
-    queries,
-  ]);
-
-  return results;
-}
-
-interface QueryResult<Q extends QueryDefinition<unknown>> {
-  index: number;
-  result?:
-    | (CompileTimeMetadata<Q>["signature"] extends (...args: never[]) => infer R
-      ? Awaited<R>
-      : never)
-    | undefined;
-  error?: unknown;
-}
-/**
- * Generator function that executes queries and yields results as they complete
- */
-async function* executeQueriesGenerator(
-  queries: Array<FunctionQueryParams<QueryDefinition<unknown>>>,
-  client: Client,
-): AsyncGenerator<QueryResult<QueryDefinition<unknown>>> {
-  const queryPromises = queries.map((query, index) =>
-    createQueryPromise<typeof query.queryDefinition>(query, index, client)
+  const refetches = React.useMemo(
+    () =>
+      stableQueries.map((query) => async () => {
+        await observableClient.invalidateFunction(
+          query.queryDefinition,
+          query.options?.params as Record<string, unknown> | undefined,
+        );
+      }),
+    [stableQueries, observableClient],
   );
 
-  const pendingPromises = [...queryPromises];
+  return React.useMemo(
+    () =>
+      stableQueries.map((_, index): UseOsdkFunctionResult<
+        QueryDefinition<unknown>
+      > => {
+        const payload = payloads[index];
+        const error = payload?.error
+          ?? (payload?.status === "error"
+            ? new Error("Failed to execute function")
+            : undefined);
 
-  // Yield results as they complete using Promise.race
-  while (pendingPromises.length > 0) {
-    const raceResult = await Promise.race(
-      pendingPromises.map((promise, idx) =>
-        promise.then(result => ({ result, idx }))
-      ),
-    );
-
-    yield raceResult.result;
-
-    // Remove the completed promise from the pending list
-    void pendingPromises.splice(raceResult.idx, 1);
-  }
+        return {
+          data: payload?.result as UseOsdkFunctionResult<
+            QueryDefinition<unknown>
+          >["data"],
+          isLoading: payload?.status === "loading",
+          error,
+          lastUpdated: payload?.lastUpdated ?? 0,
+          refetch: refetches[index],
+        };
+      }),
+    [stableQueries, payloads, refetches],
+  );
 }
-
-const createQueryPromise = async <Q extends QueryDefinition<unknown>>(
-  query: FunctionQueryParams<Q>,
-  index: number,
-  client: Client,
-): Promise<QueryResult<Q>> => {
-  // Skip disabled queries
-  if (query.options?.enabled === false) {
-    return { index, result: undefined, error: undefined };
-  }
-
-  const queryClient = client(query.queryDefinition);
-
-  if (
-    "executeFunction" in queryClient
-    && typeof queryClient.executeFunction === "function"
-  ) {
-    try {
-      const result = await queryClient.executeFunction(query.options?.params);
-      return { index, result, error: null };
-    } catch (error) {
-      return { index, result: undefined, error };
-    }
-  }
-
-  return {
-    index,
-    result: undefined,
-    error: new Error("Invalid query client: executeFunction method not found"),
-  };
-};

@@ -258,7 +258,7 @@ export function defineObject(
 
   const finalObject: ObjectType = {
     ...objectDef,
-    apiName: apiName,
+    apiName,
     __type: OntologyEntityTypeEnum.OBJECT_TYPE,
     properties: flattenedProperties,
   };
@@ -327,7 +327,7 @@ function convertUserObjectPropertyType(
   property.displayName = property.displayName ?? uppercaseFirstLetter(apiName);
   return {
     ...property,
-    apiName: apiName,
+    apiName,
     displayName: property.displayName ?? uppercaseFirstLetter(apiName),
     type: property.type,
   };
@@ -376,7 +376,7 @@ function validateDerivedDatasource(
  * the target object is the same as the object being defined (not yet in registry).
  */
 function getPropertiesForValidation(
-  linkObject: string | ObjectTypeDefinition,
+  linkObject: string | ObjectTypeDefinition | ObjectType,
   objectDef: ObjectTypeDefinition,
 ): { apiName: string; hasProperty: (propName: string) => boolean } {
   const targetApiName = typeof linkObject === "string"
@@ -506,7 +506,7 @@ function isCollectible(property: ObjectPropertyTypeUserDefinition): boolean {
     "geoshape",
     "integer",
     "long",
-    "mediareference",
+    "mediaReference",
     "short",
     "string",
     "struct",

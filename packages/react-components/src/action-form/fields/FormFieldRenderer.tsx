@@ -16,11 +16,18 @@
 
 import React, { memo } from "react";
 import { FormField } from "../FormField.js";
-import type { RendererFieldDefinition } from "../FormFieldApi.js";
+import {
+  type DateRange,
+  EMPTY_RANGE,
+  type RendererFieldDefinition,
+} from "../FormFieldApi.js";
 import { CustomField } from "./CustomField.js";
+import { DateRangeInputField } from "./DateRangeInputField.js";
 import { DatetimePickerField } from "./DatetimePickerField.js";
 import { DropdownField } from "./DropdownField.js";
+import { FilePickerField } from "./FilePickerField.js";
 import { NumberInputField } from "./NumberInputField.js";
+import { ObjectSetField } from "./ObjectSetField.js";
 import { RadioButtonsField } from "./RadioButtonsField.js";
 import { TextAreaField } from "./TextAreaField.js";
 import { TextInputField } from "./TextInputField.js";
@@ -29,6 +36,8 @@ export interface FormFieldRendererProps {
   fieldDefinition: RendererFieldDefinition;
   value: unknown;
   onFieldValueChange: (value: unknown) => void;
+  onBlur: (e: React.FocusEvent<HTMLDivElement>) => void;
+  error: string | undefined;
 }
 
 export const FormFieldRenderer: React.FC<FormFieldRendererProps> = memo(
@@ -36,6 +45,8 @@ export const FormFieldRenderer: React.FC<FormFieldRendererProps> = memo(
     fieldDefinition,
     value,
     onFieldValueChange,
+    onBlur,
+    error,
   }: FormFieldRendererProps): React.ReactElement {
     const { label, isRequired, helperText, helperTextPlacement } =
       fieldDefinition;
@@ -46,8 +57,15 @@ export const FormFieldRenderer: React.FC<FormFieldRendererProps> = memo(
         isRequired={isRequired}
         fieldKey={fieldDefinition.fieldKey}
         helperText={helperTextPlacement !== "tooltip" ? helperText : undefined}
+        error={error}
+        onBlur={onBlur}
       >
-        {renderFieldComponent(fieldDefinition, value, onFieldValueChange)}
+        {renderFieldComponent(
+          fieldDefinition,
+          value,
+          onFieldValueChange,
+          error,
+        )}
       </FormField>
     );
   },
@@ -57,8 +75,19 @@ function renderFieldComponent(
   fieldDefinition: RendererFieldDefinition,
   value: unknown,
   onChange: (value: unknown) => void,
+  error: string | undefined,
 ): React.ReactElement {
   switch (fieldDefinition.fieldComponent) {
+    case "DATE_RANGE_INPUT":
+      return (
+        <DateRangeInputField
+          id={fieldDefinition.fieldKey}
+          value={coerceToDateRange(value)}
+          onChange={onChange}
+          placeholderStart={fieldDefinition.placeholder}
+          {...fieldDefinition.fieldComponentProps}
+        />
+      );
     case "TEXT_INPUT":
       return (
         <TextInputField
@@ -66,6 +95,7 @@ function renderFieldComponent(
           value={value != null ? String(value) : ""}
           onChange={onChange}
           placeholder={fieldDefinition.placeholder}
+          error={error}
           {...fieldDefinition.fieldComponentProps}
         />
       );
@@ -76,6 +106,7 @@ function renderFieldComponent(
           value={value != null ? String(value) : ""}
           onChange={onChange}
           placeholder={fieldDefinition.placeholder}
+          error={error}
           {...fieldDefinition.fieldComponentProps}
         />
       );
@@ -85,6 +116,7 @@ function renderFieldComponent(
           value={value}
           onChange={onChange}
           placeholder={fieldDefinition.placeholder}
+          error={error}
           {...fieldDefinition.fieldComponentProps}
         />
       );
@@ -97,6 +129,7 @@ function renderFieldComponent(
           // TODO: Use coerceFieldValue
           value={value instanceof Date ? value : null}
           onChange={onChange}
+          error={error}
           {...fieldDefinition.fieldComponentProps}
         />
       );
@@ -106,6 +139,7 @@ function renderFieldComponent(
           id={fieldDefinition.fieldKey}
           value={value}
           onChange={onChange}
+          error={error}
           {...fieldDefinition.fieldComponentProps}
         />
       );
@@ -115,6 +149,7 @@ function renderFieldComponent(
           id={fieldDefinition.fieldKey}
           value={value}
           onChange={onChange}
+          error={error}
           {...fieldDefinition.fieldComponentProps}
         />
       );
@@ -126,16 +161,53 @@ function renderFieldComponent(
           value={typeof value === "number" ? value : null}
           onChange={onChange}
           placeholder={fieldDefinition.placeholder}
+          error={error}
           {...fieldDefinition.fieldComponentProps}
         />
       );
     case "FILE_PICKER":
+      return (
+        <FilePickerField
+          id={fieldDefinition.fieldKey}
+          value={coerceToFileValue(value)}
+          onChange={onChange}
+          error={error}
+          {...fieldDefinition.fieldComponentProps}
+        />
+      );
     case "OBJECT_SET":
-      return <div>Unsupported field type: {fieldDefinition.fieldComponent}
-      </div>;
+      return (
+        <ObjectSetField
+          id={fieldDefinition.fieldKey}
+          {...fieldDefinition.fieldComponentProps}
+        />
+      );
     default:
       return assertUnreachableFieldComponent(fieldDefinition);
   }
+}
+
+function coerceToDateRange(value: unknown): DateRange {
+  if (!Array.isArray(value) || value.length !== 2) return EMPTY_RANGE;
+  const start = value[0] instanceof Date ? value[0] : null;
+  const end = value[1] instanceof Date ? value[1] : null;
+  if (start == null && end == null) return EMPTY_RANGE;
+  return [start, end];
+}
+
+// TODO: Move and share with `coerceFieldValue`
+function isFileArray(value: unknown[]): value is File[] {
+  return value.every((v) => v instanceof File);
+}
+
+function coerceToFileValue(value: unknown): File | File[] | null {
+  if (value instanceof File) {
+    return value;
+  }
+  if (Array.isArray(value) && isFileArray(value)) {
+    return value;
+  }
+  return null;
 }
 
 function assertUnreachableFieldComponent(value: never): never {

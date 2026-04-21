@@ -14,4 +14,11 @@
  * limitations under the License.
  */
 
-export * from "./build/cjs/public/unstable-do-not-use.cjs";
+import { CbacBanners } from "@osdk/foundry.admin";
+import type { CallFactory } from "../../handlers/util/handleOpenApiCall.js";
+import { handleOpenApiCall } from "../../handlers/util/handleOpenApiCall.js";
+
+export const applyGetCbacBanner: CallFactory<
+  never,
+  typeof CbacBanners.get
+> = handleOpenApiCall(CbacBanners.get, []);

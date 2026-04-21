@@ -28,6 +28,7 @@ import invariant from "tiny-invariant";
 import type { ActionSignatureFromDef } from "../../actions/applyAction.js";
 import { additionalContext, type Client } from "../../Client.js";
 import { DEBUG_REFCOUNTS } from "../DebugFlags.js";
+import type { CacheEntry, CacheSnapshot } from "../ObservableClient.js";
 import type { OptimisticBuilder } from "../OptimisticBuilder.js";
 import { ActionApplication } from "./actions/ActionApplication.js";
 import {
@@ -52,10 +53,14 @@ import type { Entry } from "./Layer.js";
 import { Layers } from "./Layers.js";
 import { LinksHelper } from "./links/LinksHelper.js";
 import {
+  SOURCE_API_NAME_IDX as LINK_API_NAME_IDX,
+} from "./links/SpecificLinkCacheKey.js";
+import {
   API_NAME_IDX as LIST_API_NAME_IDX,
   RDP_IDX as LIST_RDP_IDX,
 } from "./list/ListCacheKey.js";
 import { ListsHelper } from "./list/ListsHelper.js";
+import { MediaHelper } from "./media/MediaHelper.js";
 import {
   API_NAME_IDX as OBJECT_API_NAME_IDX,
   RDP_CONFIG_IDX as OBJECT_RDP_CONFIG_IDX,
@@ -85,6 +90,9 @@ export namespace Store {
     - Subjects are one per type per store (by cache key)
     - Data is one per layer per cache key
 */
+
+const __DEV__ = typeof process === "undefined"
+  || process.env.NODE_ENV !== "production";
 
 /**
  * Central data store with layered cache architecture.
@@ -144,6 +152,7 @@ export class Store {
   readonly lists: ListsHelper;
   readonly objects: ObjectsHelper;
   readonly links: LinksHelper;
+  readonly media: MediaHelper;
   readonly objectSets: ObjectSetHelper;
 
   constructor(client: Client) {
@@ -183,6 +192,7 @@ export class Store {
       this.orderByCanonicalizer,
       this.selectCanonicalizer,
     );
+    this.media = new MediaHelper(this, this.cacheKeys);
     this.objectSets = new ObjectSetHelper(
       this,
       this.cacheKeys,
@@ -410,10 +420,14 @@ export class Store {
     cacheKey: KnownCacheKey,
     changes: Changes,
   ): boolean {
-    if (cacheKey.type === "objectSet") {
+    if (cacheKey.type === "objectSet" || cacheKey.type === "list") {
       const query = this.queries.peek(cacheKey);
-      if (query) {
-        for (const objectType of query.objectTypes) {
+      // Both ObjectSetQuery and ListQuery expose objectTypes: ReadonlySet<string>
+      if (query && "objectTypes" in query) {
+        for (
+          const objectType of (query as { objectTypes: ReadonlySet<string> })
+            .objectTypes
+        ) {
           if (this.#changesAffectObjectType(changes, objectType)) {
             return true;
           }
@@ -611,5 +625,92 @@ export class Store {
     primaryKey: string | number,
   ): Promise<void> {
     return this.functions.invalidateFunctionsByObject(apiName, primaryKey);
+  }
+
+  #sizeCache: WeakMap<object, number> | undefined;
+
+  public getCacheSnapshot(): CacheSnapshot {
+    if (__DEV__) {
+      const sizeCache = this.#sizeCache ??= new WeakMap<object, number>();
+      const entries: CacheEntry[] = [];
+      let totalSize = 0;
+
+      for (const cacheKey of this.layers.truth.keys()) {
+        const entry = this.layers.top.get(cacheKey);
+        if (!entry) {
+          continue;
+        }
+
+        let entryType: CacheEntry["type"] | undefined;
+        let objectType = "";
+
+        if (cacheKey.type === "object") {
+          entryType = "object";
+          objectType = cacheKey.otherKeys[OBJECT_API_NAME_IDX];
+        } else if (cacheKey.type === "list") {
+          entryType = "list";
+          objectType = cacheKey.otherKeys[LIST_API_NAME_IDX];
+        } else if (cacheKey.type === "specificLink") {
+          entryType = "link";
+          objectType = cacheKey.otherKeys[LINK_API_NAME_IDX];
+        } else if (cacheKey.type === "objectSet") {
+          entryType = "objectSet";
+          objectType = "";
+        }
+
+        if (!entryType) {
+          continue;
+        }
+
+        let estimatedSize = 0;
+        if (entry.value != null && typeof entry.value === "object") {
+          const objectValue = entry.value;
+          const cached = sizeCache.get(objectValue);
+          if (cached !== undefined) {
+            estimatedSize = cached;
+          } else {
+            try {
+              estimatedSize = JSON.stringify(entry.value).length * 2;
+            } catch {
+              // TODO: surface unserializable entries to devtools users
+              estimatedSize = 0;
+            }
+            sizeCache.set(objectValue, estimatedSize);
+          }
+        } else if (entry.value != null) {
+          try {
+            estimatedSize = JSON.stringify(entry.value).length * 2;
+          } catch {
+            estimatedSize = 0;
+          }
+        }
+        totalSize += estimatedSize;
+
+        entries.push({
+          key: DEBUG_ONLY__cacheKeyToString(cacheKey),
+          type: entryType,
+          objectType,
+          metadata: {
+            timestamp: entry.lastUpdated,
+            status: entry.status,
+            size: estimatedSize,
+          },
+          data: entry.value,
+        });
+      }
+
+      return {
+        entries,
+        stats: {
+          totalEntries: entries.length,
+          totalSize,
+        },
+      };
+    }
+
+    return {
+      entries: [],
+      stats: { totalEntries: 0, totalSize: 0 },
+    };
   }
 }

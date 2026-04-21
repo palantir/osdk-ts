@@ -15,7 +15,18 @@
  */
 
 import { describe, expect, it } from "vitest";
+import { objectSetDefinitions } from "../../../objectSet/createObjectSet.js";
 import { FunctionParamsCanonicalizer } from "./FunctionParamsCanonicalizer.js";
+
+/**
+ * Creates a fake ObjectSet that `isObjectSet` recognizes by registering
+ * a wire representation in the internal WeakMap.
+ */
+function createFakeObjectSet(wire: { type: string; objectType: string }) {
+  const obj = {};
+  objectSetDefinitions.set(obj, wire as any);
+  return obj;
+}
 
 describe("FunctionParamsCanonicalizer", () => {
   it("returns same ref for equivalent objects with different key order", () => {
@@ -121,5 +132,26 @@ describe("FunctionParamsCanonicalizer", () => {
     const c = new FunctionParamsCanonicalizer();
     expect(c.canonicalize({ val: null }))
       .not.toBe(c.canonicalize({ val: undefined }));
+  });
+
+  it("returns same ref for equivalent ObjectSet params with different object references", () => {
+    const c = new FunctionParamsCanonicalizer();
+
+    const os1 = createFakeObjectSet({ type: "base", objectType: "Employee" });
+    const os2 = createFakeObjectSet({ type: "base", objectType: "Employee" });
+
+    expect(os1).not.toBe(os2);
+    expect(c.canonicalize({ employees: os1 }))
+      .toBe(c.canonicalize({ employees: os2 }));
+  });
+
+  it("returns different refs for ObjectSets with different wire representations", () => {
+    const c = new FunctionParamsCanonicalizer();
+
+    const os1 = createFakeObjectSet({ type: "base", objectType: "Employee" });
+    const os2 = createFakeObjectSet({ type: "base", objectType: "Office" });
+
+    expect(c.canonicalize({ items: os1 }))
+      .not.toBe(c.canonicalize({ items: os2 }));
   });
 });

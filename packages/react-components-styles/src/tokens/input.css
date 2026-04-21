@@ -31,4 +31,7 @@
 
   /* Input disabled */
   --osdk-input-disabled-opacity: 0.5;
+
+  /* Input error */
+  --osdk-input-border-color-error: var(--osdk-intent-danger-rest);
 }

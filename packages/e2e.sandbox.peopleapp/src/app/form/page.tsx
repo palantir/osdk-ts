@@ -1,9 +1,12 @@
+import type { ObjectSet, ObjectTypeDefinition } from "@osdk/api";
 import { BaseForm } from "@osdk/react-components/experimental";
 import type {
   BaseFormFieldProps,
   RendererFieldDefinition,
 } from "@osdk/react-components/experimental";
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
+import { $ } from "../../foundryClient.js";
+import { Employee } from "../../generatedNoCheck2/index.js";
 import "./form-page.css";
 
 function RatingSlider({ id, value, onChange }: BaseFormFieldProps<unknown>) {
@@ -49,6 +52,17 @@ const fieldDefinitions: ReadonlyArray<RendererFieldDefinition> = [
     label: "Employment End Date",
     placeholder: "Enter employment end date",
     fieldComponentProps: {},
+  },
+  {
+    fieldKey: "employmentDuration",
+    fieldComponent: "DATE_RANGE_INPUT",
+    label: "Employment Duration",
+    placeholder: "Enter employment duration",
+    isRequired: true,
+    fieldComponentProps: {
+      placeholderStart: "Start Date",
+      placeholderEnd: "End Date",
+    },
   },
   {
     fieldKey: "department",
@@ -125,6 +139,24 @@ const fieldDefinitions: ReadonlyArray<RendererFieldDefinition> = [
     },
   },
   {
+    fieldKey: "resume",
+    fieldComponent: "FILE_PICKER",
+    label: "Resume",
+    fieldComponentProps: {
+      accept: [".pdf", ".doc", ".docx"],
+      maxSize: 100, // 100 bytes
+    },
+  },
+  {
+    fieldKey: "portfolioFiles",
+    fieldComponent: "FILE_PICKER",
+    label: "Portfolio Files",
+    fieldComponentProps: {
+      isMulti: true,
+      accept: "image/*",
+    },
+  },
+  {
     fieldKey: "skills",
     fieldComponent: "DROPDOWN",
     label: "Skills",
@@ -149,8 +181,8 @@ const fieldDefinitions: ReadonlyArray<RendererFieldDefinition> = [
     fieldKey: "rating",
     fieldComponent: "CUSTOM",
     label: "Rating",
-    defaultValue: 5,
     fieldComponentProps: {
+      defaultValue: 5,
       customRenderer: RatingSlider,
     },
   },
@@ -161,25 +193,58 @@ export function FormPage() {
     Record<string, unknown> | undefined
   >(undefined);
 
-  const handleSubmit = useCallback((formState: Record<string, unknown>) => {
-    setSubmittedState(formState);
-  }, []);
+  const handleSubmit = useCallback(
+    async (formState: Record<string, unknown>) => {
+      setSubmittedState(formState);
+    },
+    [],
+  );
+
+  const employeeObjectSet = useMemo(
+    () => $(Employee) as ObjectSet<ObjectTypeDefinition>,
+    [],
+  );
+
+  const allFieldDefinitions = useMemo(
+    (): ReadonlyArray<RendererFieldDefinition> => [
+      ...fieldDefinitions,
+      {
+        fieldKey: "team",
+        fieldComponent: "OBJECT_SET",
+        label: "Team Members",
+        fieldComponentProps: {
+          value: employeeObjectSet,
+        },
+      },
+    ],
+    [employeeObjectSet],
+  );
 
   return (
     <div style={{ maxWidth: 480, width: "100%", textAlign: "left" }}>
       <div className="formCard">
         <BaseForm
           formTitle="Demo Base Form"
-          fieldDefinitions={fieldDefinitions}
+          fieldDefinitions={allFieldDefinitions}
           onSubmit={handleSubmit}
         />
       </div>
 
       {submittedState != null && (
         <pre className="submittedOutput">
-          {JSON.stringify(submittedState, null, 2)}
+          {JSON.stringify(submittedState, fileReplacer, 2)}
         </pre>
       )}
     </div>
   );
+}
+
+function fileReplacer(_key: string, value: unknown): unknown {
+  if (value instanceof File) {
+    return value.name;
+  }
+  if (Array.isArray(value) && value.every((v) => v instanceof File)) {
+    return value.map((f) => f.name);
+  }
+  return value;
 }
