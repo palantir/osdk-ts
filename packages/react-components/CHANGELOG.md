@@ -1,5 +1,17 @@
 # @osdk/react-components
 
+## 0.5.0
+
+### Minor Changes
+
+- e456da5: Add Fetch-User-Agent tracing headers for React layer network calls
+
+### Patch Changes
+
+- Updated dependencies [58248f8]
+- Updated dependencies [e456da5]
+  - @osdk/react@0.13.0
+
 ## 0.4.0
 
 ### Minor Changes

@@ -1,5 +1,17 @@
 # @osdk/maker
 
+## 0.19.0
+
+### Minor Changes
+
+- a6f4208: configure entity perms in OAC
+
+### Patch Changes
+
+- Updated dependencies [a6f4208]
+  - @osdk/generator-converters.ontologyir@2.11.0
+  - @osdk/api@2.11.0
+
 ## 0.18.0
 
 ### Minor Changes

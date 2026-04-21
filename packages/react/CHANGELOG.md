@@ -1,5 +1,12 @@
 # @osdkkit/react
 
+## 0.13.0
+
+### Minor Changes
+
+- 58248f8: Move @osdk/client.test.ontology from peerDependencies to devDependencies to fix npm resolution errors in consuming repos
+- e456da5: Add Fetch-User-Agent tracing headers for React layer network calls
+
 ## 0.12.0
 
 ### Minor Changes
