@@ -1,5 +1,18 @@
 # @osdk/functions-testing.experimental
 
+## 0.5.0
+
+### Minor Changes
+
+- 40fb8c1: Attach a `SharedClientContext` to the mock client so Foundry Platform API helpers (e.g. `Users.getCurrent(client)`) don't crash inside `foundryPlatformFetch` on an undefined `baseUrl` before a request is made. Callers mock the HTTP layer themselves (MSW, `vi.spyOn(globalThis, "fetch")`, etc.).
+
+### Patch Changes
+
+- Updated dependencies [58248f8]
+- Updated dependencies [e456da5]
+  - @osdk/client@2.11.0
+  - @osdk/api@2.11.0
+
 ## 0.4.0
 
 ### Minor Changes
