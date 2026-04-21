@@ -16,9 +16,10 @@
 
 import type { ActionDefinition } from "@osdk/api";
 import { useOsdkMetadata } from "@osdk/react";
-import { useOsdkAction } from "@osdk/react/experimental";
+import { useOsdkAction, useRegisterUserAgent } from "@osdk/react/experimental";
 import React, { useCallback, useEffect, useMemo } from "react";
 import { typedReactMemo } from "../shared/typedMemo.js";
+import { componentUserAgent } from "../util/UserAgent.js";
 import type { ActionFormProps, FormState } from "./ActionFormApi.js";
 import { BaseForm } from "./BaseForm.js";
 import type { RendererFieldDefinition } from "./FormFieldApi.js";
@@ -43,6 +44,8 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
   onSuccess,
   onError,
 }: ActionFormProps<Q>): React.ReactElement {
+  useRegisterUserAgent(componentUserAgent("ActionForm"));
+
   const { applyAction: osdkApplyAction, isPending } = useOsdkAction(
     actionDefinition,
   );

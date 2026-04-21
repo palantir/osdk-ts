@@ -620,7 +620,10 @@ export type CanonicalizedOptions<
   [K in keyof T]: T[K];
 };
 
-export function createObservableClient(client: Client): ObservableClient {
+export function createObservableClient(
+  client: Client,
+  extraUserAgents?: () => string[],
+): ObservableClient {
   // First we need a modified client that adds an extra header so we know its
   // an observable client
   const tweakedClient = createClientFromContext({
@@ -634,6 +637,7 @@ export function createObservableClient(client: Client): ObservableClient {
           [
             headers.get("Fetch-User-Agent"),
             OBSERVABLE_USER_AGENT,
+            ...(extraUserAgents?.() ?? []),
           ].filter(x => x && x?.length > 0).join(" "),
         );
         return headers;

@@ -21,6 +21,7 @@ import { ObjectSetField } from "../fields/ObjectSetField.js";
 
 vi.mock("@osdk/react/experimental", () => ({
   useObjectSet: vi.fn(),
+  useRegisterUserAgent: vi.fn(),
 }));
 
 vi.mock("@osdk/react", () => ({
