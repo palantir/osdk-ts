@@ -25,6 +25,7 @@ import type { RequiredFields } from "../../util/RequiredFields.js";
 import type { EntityPermission } from "../common/EntityPermission.js";
 import type { OntologyEntityBase } from "../common/OntologyEntityBase.js";
 import type { OntologyEntityTypeEnum } from "../common/OntologyEntityTypeEnum.js";
+import type { TypeClass } from "../common/TypeClass.js";
 import type { ObjectType } from "../object/ObjectType.js";
 import type { ObjectTypeDefinition } from "../object/ObjectTypeDefinition.js";
 
@@ -164,6 +165,7 @@ export interface LinkTypeMetadataUserDefinition {
   pluralDisplayName?: string;
   visibility?: Visibility;
   groupDisplayName?: string;
+  typeClasses?: TypeClass[];
 }
 
 export type LinkSideMetadata = OptionalFields<

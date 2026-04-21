@@ -21,7 +21,11 @@ import type {
   PropertyTypeMappingInfo,
   Type,
 } from "@osdk/client.unstable";
-import type { InputShape, OutputShape } from "@osdk/client.unstable/api";
+import type {
+  InputShape,
+  InputShapeMetadata,
+  OutputShape,
+} from "@osdk/client.unstable/api";
 import * as fs from "node:fs";
 import * as path from "node:path";
 import {
@@ -315,6 +319,11 @@ async function generateBackingDatasetBlock(
     ReadableId,
     InputShape
   >;
+  const input_shape_metadata: Record<ReadableId, InputShapeMetadata> =
+    {} as Record<
+      ReadableId,
+      InputShapeMetadata
+    >;
   inputs[compassReadableId] = {
     type: "compassResource",
     compassResource: {
@@ -335,6 +344,11 @@ async function generateBackingDatasetBlock(
       ],
     },
   } as InputShape;
+  input_shape_metadata[compassReadableId] = {
+    isOptional: true,
+    reconcileAccessRequirements: "RESOURCE_EXISTENCE_REQUIRED",
+    isAccessedInReconcile: true,
+  } as InputShapeMetadata;
 
   return {
     block_identifier: blockIdentifier,
@@ -346,7 +360,7 @@ async function generateBackingDatasetBlock(
     input_mapping_entries: [],
     external_recommendations: [],
     add_on_override: addOnOverride,
-    input_shape_metadata: {},
+    input_shape_metadata,
     block_type: "STATIC_DATASET",
   };
 }

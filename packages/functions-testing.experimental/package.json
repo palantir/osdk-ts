@@ -56,9 +56,9 @@
     "vitest": "^3.2.4"
   },
   "peerDependencies": {
-    "@osdk/api": "workspace:~",
-    "@osdk/client": "workspace:~",
-    "@osdk/functions": "workspace:~"
+    "@osdk/api": "workspace:^",
+    "@osdk/client": "workspace:^",
+    "@osdk/functions": "workspace:^"
   },
   "devDependencies": {
     "@microsoft/api-documenter": "^7.26.32",

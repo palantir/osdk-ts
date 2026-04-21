@@ -26,7 +26,10 @@ Before using ObjectTable, make sure you have completed the library setup describ
 
 ```typescript
 import { ObjectTable } from "@osdk/react-components/experimental";
-import type { ColumnDefinition } from "@osdk/react-components/experimental";
+import type {
+  ColumnDefinition,
+  EditFieldConfig,
+} from "@osdk/react-components/experimental";
 ```
 
 ## Basic Usage
@@ -141,7 +144,7 @@ Each column header has a menu with items for sorting, filtering, pinning, resizi
 
 ### Cell Editing
 
-> **Note:** Editable cells currently support text and number data types. The editable feature allows inline editing with validation and bulk submission capabilities.
+> The editable feature allows inline editing with validation and bulk submission capabilities. Editable cells support text inputs, number inputs, and dropdown selectors.
 
 | Prop                 | Type                                          | Description                                                                                                                     |
 | -------------------- | --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
@@ -164,7 +167,8 @@ type ColumnDefinition<Q, RDPs, FunctionColumns> = {
   resizable?: boolean; // Allow column resizing
   orderable?: boolean; // Allow column sorting
   filterable?: boolean; // Allow column filtering
-  editable?: boolean; // Allow inline editing for this column (currently supports text and number types)
+  editable?: boolean; // Allow inline editing for this column
+  editFieldConfig?: EditFieldConfig; // Optional editor component config (e.g. dropdown)
   validateEdit?: (value: unknown) => Promise<string | undefined>; // Custom validation function for cell edits
   renderCell?: (object, locator) => React.ReactNode; // Custom cell renderer
   columnName?: string; // Custom column name for the header
@@ -172,7 +176,29 @@ type ColumnDefinition<Q, RDPs, FunctionColumns> = {
 };
 ```
 
-> **Note:** Editable cells currently support text and number data types. Support for other data types (date, boolean, etc.) will be added in future updates.
+#### `editFieldConfig`
+
+When `editable` is `true`, columns default to a text or number input (auto-detected from the property type). Use `editFieldConfig` to specify a different editor component.
+
+**Supported editor components:**
+
+| `fieldComponent` | Description                              | Renders                                                      |
+| ---------------- | ---------------------------------------- | ------------------------------------------------------------ |
+| `"DROPDOWN"`     | A select dropdown or searchable combobox | `Select` (default) or `Combobox` (when `isSearchable: true`) |
+
+Without `editFieldConfig`, editable columns use a text input for string properties and a number input for numeric properties (`double`, `integer`, `long`, `float`, `decimal`, `byte`, `short`).
+
+**Dropdown `fieldComponentProps`:**
+
+| Prop                | Type                      | Default        | Description                                              |
+| ------------------- | ------------------------- | -------------- | -------------------------------------------------------- |
+| `items`             | `V[]`                     | (required)     | Available items for the dropdown                         |
+| `isSearchable`      | `boolean`                 | `false`        | Renders a searchable combobox instead of a select        |
+| `placeholder`       | `string`                  | -              | Placeholder text when no value is selected               |
+| `itemToStringLabel` | `(item: V) => string`     | `String(item)` | Converts an item to a display string                     |
+| `itemToKey`         | `(item: V) => string`     | -              | Returns a unique key for each item (used as React `key`) |
+| `isItemEqual`       | `(a: V, b: V) => boolean` | `Object.is`    | Custom equality check (required when items are objects)  |
+| `isMultiple`        | `boolean`                 | `false`        | Whether multiple values can be selected                  |
 
 #### `columnName` vs `renderHeader`
 
@@ -631,7 +657,7 @@ function EmployeesTable() {
 
 ### Example 13: Editable Table
 
-Enable inline editing with validation and bulk submission:
+Enable inline editing with validation, dropdown selectors, and bulk submission:
 
 ```typescript
 import { useOsdkAction } from "@osdk/react";
@@ -645,13 +671,12 @@ import { Employee, updateMultipleEmployees } from "@YourApp/sdk";
 const columnDefinitions: Array<ColumnDefinition<typeof Employee>> = [
   {
     locator: { type: "property", id: "fullName" },
-    editable: true, // Enable editing for this column
+    editable: true, // Default text input
   },
   {
     locator: { type: "property", id: "email" },
     editable: true,
     validateEdit: async (value) => {
-      // Custom validation function
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       return emailRegex.test(value as string)
         ? undefined
@@ -661,10 +686,39 @@ const columnDefinitions: Array<ColumnDefinition<typeof Employee>> = [
   {
     locator: { type: "property", id: "department" },
     editable: true,
+    editFieldConfig: {
+      fieldComponent: "DROPDOWN",
+      fieldComponentProps: {
+        items: [
+          "Engineering",
+          "Product",
+          "Design",
+          "Sales",
+          "Marketing",
+          "Finance",
+          "Human Resources",
+        ],
+      },
+    },
   },
   {
     locator: { type: "property", id: "jobTitle" },
-    editable: false, // This column is read-only
+    editable: true,
+    editFieldConfig: {
+      fieldComponent: "DROPDOWN",
+      fieldComponentProps: {
+        items: [
+          "Software Engineer",
+          "Senior Software Engineer",
+          "Staff Engineer",
+          "Engineering Manager",
+          "Product Manager",
+          "Designer",
+        ],
+        isSearchable: true, // Renders a searchable combobox
+        placeholder: "Search job titles…",
+      },
+    },
   },
 ];
 
@@ -722,24 +776,26 @@ function EditableEmployeesTable() {
    - `manual` (default): User clicks "Edit Table" button to enter edit mode
    - `always`: Table is always in edit mode
 
-2. **Validation**:
-   - Use `validate` prop on columns for async validation
-   - Use `onValidationError` for custom error messages
-   - Validation errors are shown with an error icon and tooltip
+2. **Editor Components**:
+   - **Text input** (default): For string properties
+   - **Number input** (auto-detected): For numeric properties (`double`, `integer`, `long`, `float`, `decimal`, `byte`, `short`)
+   - **Dropdown (Select)**: Fixed list of options via `editFieldConfig` with `fieldComponent: "DROPDOWN"`
+   - **Dropdown (Combobox)**: Searchable list via `isSearchable: true` in `fieldComponentProps`
 
-3. **Edit State Management**:
+3. **Validation**:
+   - Use `validateEdit` on columns for async validation
+   - Validation errors are shown with an error icon and tooltip
+   - Works with all editor types including dropdowns
+
+4. **Edit State Management**:
    - Edits are tracked locally until submitted
    - Modified cells are visually highlighted
    - "Cancel" button discards all pending edits
 
-4. **Bulk Submission**:
+5. **Bulk Submission**:
    - When `onSubmitEdits` is provided, a "Submit Edits" button appears
    - All edits are submitted together
    - Return `true` from `onSubmitEdits` to clear edits after successful submission
-
-5. **Data Types**:
-   - Currently supports text and number input types
-   - Number types are automatically detected from the property type
 
 ### Example 14: Custom Column Configuration Dialog
 
@@ -1125,14 +1181,13 @@ type EmployeeProps = PropertyKeys<typeof Employee>;
 
 ### Table has no styling or looks broken
 
-- Ensure you've imported `@osdk/react-components-styles` in your main CSS file
+- Ensure you've imported `@osdk/react-components/styles.css` in your main CSS file
 - Check that the CSS import is in the correct location (application entry point)
-- Verify the CSS layer syntax is correct: `@layer osdk.tokens;` must come before the import
 - Check browser DevTools to confirm CSS custom properties are loaded
 
 ## Theming
 
-The ObjectTable (and all OSDK components) can be themed using CSS custom properties from the `@osdk/react-components-styles` package.
+The ObjectTable (and all OSDK components) can be themed using CSS custom properties included in `@osdk/react-components/styles.css`.
 
 ### Understanding Token Scopes
 
@@ -1156,10 +1211,9 @@ The ObjectTable (and all OSDK components) can be themed using CSS custom propert
 Change OSDK component styling without affecting other Blueprint components in your app:
 
 ```css
-@layer osdk.tokens, osdk.components, user.theme;
+@layer osdk.styles, user.theme;
 
-@import "@osdk/react-components/styles.css" layer(osdk.components);
-@import "@osdk/react-components-styles" layer(osdk.tokens);
+@import "@osdk/react-components/styles.css" layer(osdk.styles);
 
 @layer user.theme {
   :root {
@@ -1180,10 +1234,9 @@ Change OSDK component styling without affecting other Blueprint components in yo
 Change both Blueprint and OSDK components for consistent theming:
 
 ```css
-@layer osdk.components, osdk.tokens, user.theme;
+@layer osdk.styles, user.theme;
 
-@import "@osdk/react-components/styles.css" layer(osdk.components);
-@import "@osdk/react-components-styles" layer(osdk.tokens);
+@import "@osdk/react-components/styles.css" layer(osdk.styles);
 
 @layer user.theme {
   :root {
@@ -1270,8 +1323,7 @@ Apply custom styles to specific ObjectTable instances using the `className` prop
 
 For a complete reference of all available CSS tokens for theming, see:
 
-- [@osdk/react-components-styles CSS Variables Documentation](https://github.com/palantir/osdk-ts/blob/main/packages/react-components-styles/CSS_VARIABLES.md)
-- [@osdk/react-components-styles README](https://github.com/palantir/osdk-ts/blob/main/packages/react-components-styles/README.md)
+- [CSS Variables Documentation](./CSSVariables.md)
 
 ### Accessibility Note
 

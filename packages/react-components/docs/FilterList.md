@@ -113,15 +113,16 @@ function EmployeeFilters() {
 
 When using `type: "PROPERTY"`, the definition supports:
 
-| Field             | Type                     | Description                                               |
-| ----------------- | ------------------------ | --------------------------------------------------------- |
-| `key`             | `string`                 | Property key on the object type                           |
-| `label`           | `string`                 | Display label for the filter                              |
-| `filterComponent` | `FilterComponentType`    | Which UI component to render (see table below)            |
-| `filterState`     | `FilterState`            | Initial state for the filter                              |
-| `isVisible`       | `boolean`                | Whether the filter is initially visible (default: `true`) |
-| `colorMap`        | `Record<string, string>` | Custom colors for LISTOGRAM bar values                    |
-| `listogramConfig` | `ListogramConfig`        | Configuration for LISTOGRAM display (see below)           |
+| Field             | Type                        | Description                                                                                   |
+| ----------------- | --------------------------- | --------------------------------------------------------------------------------------------- |
+| `key`             | `string`                    | Property key on the object type                                                               |
+| `label`           | `string`                    | Display label for the filter                                                                  |
+| `filterComponent` | `FilterComponentType`       | Which UI component to render (see table below)                                                |
+| `filterState`     | `FilterState`               | Initial state for the filter                                                                  |
+| `isVisible`       | `boolean`                   | Whether the filter is initially visible (default: `true`)                                     |
+| `colorMap`        | `Record<string, string>`    | Custom colors for LISTOGRAM bar values                                                        |
+| `listogramConfig` | `ListogramConfig`           | Configuration for LISTOGRAM display (see below)                                               |
+| `renderValue`     | `(value: string) => string` | Custom display and search text for filter values in dropdown items, chips, and listogram rows |
 
 #### Listogram Configuration
 
@@ -340,6 +341,33 @@ Assign colors to specific values in a listogram:
 />;
 ```
 
+### Custom Value Rendering
+
+Use `renderValue` to customize how filter values are displayed and searched. The returned string replaces the raw value for both display and search matching. This is useful for showing human-readable names instead of IDs:
+
+```typescript
+const USER_NAMES: Record<string, string> = {
+  "abc-123": "Alice Smith",
+  "def-456": "Bob Jones",
+};
+
+<FilterList
+  objectSet={$(Task)}
+  filterDefinitions={[
+    {
+      type: "PROPERTY",
+      key: "assigneeUserId",
+      filterComponent: "LISTOGRAM",
+      renderValue: (userId) => USER_NAMES[userId] ?? userId,
+    },
+  ]}
+/>;
+```
+
+`renderValue` works with `LISTOGRAM`, `SINGLE_SELECT`, and `MULTI_SELECT` filter components. For `MULTI_SELECT`, it applies to both dropdown items and selected chips. Searching within a filter dropdown matches against the `renderValue` output.
+
+For best performance, memoize `renderValue` with `useCallback` to avoid unnecessary re-renders:
+
 ### Listogram Display Modes
 
 Control how much detail each listogram row shows:
@@ -439,13 +467,12 @@ LISTOGRAM and TEXT_TAGS filters support an exclude/include toggle. Hover a filte
 
 ## Styling
 
-FilterList uses CSS custom properties from `@osdk/react-components-styles` for theming. Override `--osdk-*` tokens to customize FilterList without affecting other components, or override `--bp-*` tokens for global theming.
+FilterList uses CSS custom properties included in `@osdk/react-components/styles.css` for theming. Override `--osdk-*` tokens to customize FilterList without affecting other components, or override `--bp-*` tokens for global theming.
 
 ```css
-@layer osdk.tokens, osdk.components, user.theme;
+@layer osdk.styles, user.theme;
 
-@import "@osdk/react-components/styles.css" layer(osdk.components);
-@import "@osdk/react-components-styles" layer(osdk.tokens);
+@import "@osdk/react-components/styles.css" layer(osdk.styles);
 
 @layer user.theme {
   :root {
@@ -465,7 +492,7 @@ Use the `className` prop for scoped styling:
 />
 ```
 
-For a full reference of CSS tokens, see the [@osdk/react-components-styles documentation](https://github.com/palantir/osdk-ts/blob/main/packages/react-components-styles/README.md).
+For a full reference of CSS tokens, see the [CSS Variables documentation](./CSSVariables.md).
 
 ## Best Practices
 

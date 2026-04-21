@@ -25,12 +25,14 @@ interface InnerDropdownProps<V, Multiple extends boolean>
 {
   itemToStringLabel: (item: V) => string;
   getKey: (item: V) => string;
+  portalRef?: React.Ref<HTMLDivElement>;
 }
 
 export function DropdownField<V, Multiple extends boolean = false>({
   isSearchable = false,
   itemToStringLabel,
   itemToKey,
+  portalRef,
   ...rest
 }: DropdownFieldProps<V, Multiple>): React.ReactElement {
   const resolvedItemToStringLabel = itemToStringLabel
@@ -47,6 +49,7 @@ export function DropdownField<V, Multiple extends boolean = false>({
         {...rest}
         itemToStringLabel={resolvedItemToStringLabel}
         getKey={getKey}
+        portalRef={portalRef}
       />
     );
   }
@@ -56,6 +59,7 @@ export function DropdownField<V, Multiple extends boolean = false>({
       {...rest}
       itemToStringLabel={resolvedItemToStringLabel}
       getKey={getKey}
+      portalRef={portalRef}
     />
   );
 }
@@ -72,6 +76,7 @@ const SelectDropdown = typedReactMemo(function SelectDropdownFn<
   isItemEqual,
   isMultiple,
   placeholder,
+  portalRef,
 }: InnerDropdownProps<V, Multiple>): React.ReactElement {
   return (
     <div>
@@ -83,7 +88,7 @@ const SelectDropdown = typedReactMemo(function SelectDropdownFn<
         itemToStringLabel={itemToStringLabel}
       >
         <Select.Trigger placeholder={placeholder} />
-        <Select.Portal>
+        <Select.Portal ref={portalRef}>
           <Select.Positioner>
             <Select.Popup>
               {items.map((item) => (
@@ -111,6 +116,7 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
   isItemEqual,
   isMultiple,
   placeholder,
+  portalRef,
 }: InnerDropdownProps<V, Multiple>): React.ReactElement {
   const renderChips = useCallback(
     (selectedValues: V[]) => (
@@ -160,7 +166,7 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
             </Combobox.Chips>
           )
           : <Combobox.Input placeholder={placeholder} />}
-        <Combobox.Portal>
+        <Combobox.Portal ref={portalRef}>
           <Combobox.Positioner>
             <Combobox.Popup>
               <Combobox.Empty>No results</Combobox.Empty>

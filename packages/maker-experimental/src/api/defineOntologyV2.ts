@@ -22,6 +22,7 @@ import {
   OntologyEntityTypeEnum,
 } from "@osdk/maker";
 import { convertOntologyDefinition } from "../conversion/toMarketplace/convertOntologyDefinition.js";
+import { getImportedShapes } from "../conversion/toMarketplace/shapeExtractors/ImportedShapeExtractor.js";
 import { getShapes } from "../conversion/toMarketplace/shapeExtractors/IrShapeExtractor.js";
 import type { BlockShapes } from "../util/generateRid.js";
 import { OntologyRidGeneratorImpl } from "../util/generateRid.js";
@@ -65,6 +66,18 @@ export async function defineOntologyV2(
     ridGenerator,
     randomnessKey,
   );
+
+  // Generate input shapes for imported entities and merge into main shapes
+  const importedShapes = getImportedShapes(
+    ontDef.importedOntology,
+    ridGenerator,
+  );
+  for (const [key, value] of importedShapes.inputShapes) {
+    shapes.inputShapes.set(key, value);
+  }
+  for (const [key, value] of importedShapes.inputShapeMetadata) {
+    shapes.inputShapeMetadata.set(key, value);
+  }
 
   const backingDatasourceApiNames = Object.entries(
     ontologyDefinition[OntologyEntityTypeEnum.OBJECT_TYPE],

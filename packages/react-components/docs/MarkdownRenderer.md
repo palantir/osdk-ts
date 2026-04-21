@@ -41,7 +41,7 @@ import { MarkdownRenderer } from "@osdk/react-components/experimental";
 
 ## Theming
 
-All colors and sizes are driven by CSS custom properties defined in `@osdk/react-components-styles`. Override them to match your application theme:
+All colors and sizes are driven by CSS custom properties defined in `./CSSVariables.md`. Override them to match your application theme:
 
 ```css
 :root {
