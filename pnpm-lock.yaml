@@ -3950,6 +3950,9 @@ importers:
       '@osdk/client.test.ontology':
         specifier: workspace:~
         version: link:../client.test.ontology
+      '@osdk/foundry.admin':
+        specifier: catalog:foundry-platform-typescript
+        version: 2.57.0
       '@osdk/functions':
         specifier: workspace:~
         version: link:../functions
@@ -3959,6 +3962,9 @@ importers:
       '@osdk/monorepo.tsconfig':
         specifier: workspace:~
         version: link:../monorepo.tsconfig
+      msw:
+        specifier: ^2.11.1
+        version: 2.11.1(@types/node@24.12.0)(typescript@5.5.4)
       typescript:
         specifier: ~5.5.4
         version: 5.5.4
@@ -22363,7 +22369,7 @@ snapshots:
 
   '@bundled-es-modules/statuses@1.0.1':
     dependencies:
-      statuses: 2.0.1
+      statuses: 2.0.2
 
   '@changesets/apply-release-plan@7.0.13':
     dependencies:
