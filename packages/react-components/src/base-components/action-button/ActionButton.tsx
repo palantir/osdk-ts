@@ -25,7 +25,11 @@ export interface ButtonProps
   variant?: "primary" | "secondary";
 }
 
-export const ActionButton: React.NamedExoticComponent<ButtonProps> = React.memo(
+export const ActionButton: React.MemoExoticComponent<
+  React.ForwardRefExoticComponent<
+    ButtonProps & React.RefAttributes<HTMLButtonElement>
+  >
+> = React.memo(
   React.forwardRef<HTMLButtonElement, ButtonProps>(
     function ActionButton({ variant = "secondary", className, ...rest }, ref) {
       return (

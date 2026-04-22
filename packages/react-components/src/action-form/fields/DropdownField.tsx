@@ -20,6 +20,8 @@ import { Select } from "../../base-components/select/Select.js";
 import { typedReactMemo } from "../../shared/typedMemo.js";
 import type { DropdownFieldProps } from "../FormFieldApi.js";
 
+const EMPTY_ARRAY: [] = [];
+
 interface InnerDropdownProps<V, Multiple extends boolean>
   extends Omit<DropdownFieldProps<V, Multiple>, "isSearchable">
 {
@@ -40,7 +42,7 @@ export function DropdownField<V, Multiple extends boolean = false>({
   // single-select needs null. Passing undefined switches Base UI from
   // uncontrolled to controlled and triggers a warning.
   const normalizedValue = (value
-    ?? (rest.isMultiple ? [] : null)) as typeof value;
+    ?? (rest.isMultiple ? EMPTY_ARRAY : null)) as typeof value;
 
   const resolvedItemToStringLabel = itemToStringLabel
     ?? defaultItemToStringLabel;

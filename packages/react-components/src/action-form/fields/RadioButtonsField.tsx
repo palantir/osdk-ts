@@ -67,7 +67,6 @@ const RadioItem = memo(function RadioItemFn({
   return (
     <label className={styles.osdkRadioItem}>
       <Radio.Root
-        aria-label={option.label}
         value={option.label}
         className={styles.osdkRadioRoot}
       >
