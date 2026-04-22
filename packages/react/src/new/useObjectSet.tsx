@@ -244,7 +244,8 @@ export function useObjectSet<
   const previousCompletedPayloadRef = React.useRef<
     Snapshot<ObserveObjectSetArgs<Q, RDPs>> | undefined
   >();
-
+  // TODO: Is it expected to only clear the previousCompletedPayloadRef when the object type changes?
+  // What if the same object type is queried with different filters, should we also clear the cache?
   const objectTypeChanged = previousObjectTypeRef.current !== objectTypeKey;
   if (objectTypeChanged) {
     previousObjectTypeRef.current = objectTypeKey;
