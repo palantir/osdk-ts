@@ -17,32 +17,32 @@
 import type * as Ontologies from "@osdk/foundry.ontologies";
 import type { IDataType } from "./OntologyIrToFullMetadataConverter.js";
 
-export interface IOptionalDataType extends IDataType {
+interface IOptionalDataType extends IDataType {
   type: "optionalType";
   optionalType: { wrappedType: IDataType };
 }
 
-export interface ISetDataType extends IDataType {
+interface ISetDataType extends IDataType {
   type: "set";
   set: { elementsType: IDataType };
 }
 
-export interface IObjectSetDataType extends IDataType {
+interface IObjectSetDataType extends IDataType {
   type: "objectSet";
   objectSet: { objectTypeId: string };
 }
 
-export interface IListDataType extends IDataType {
+interface IListDataType extends IDataType {
   type: "list";
   list: { elementsType: IDataType };
 }
 
-export interface IFunctionCustomDataType extends IDataType {
+interface IFunctionCustomDataType extends IDataType {
   type: "functionCustomType";
   functionCustomType: string;
 }
 
-export interface IObjectDataType extends IDataType {
+interface IObjectDataType extends IDataType {
   type: "object";
   object: { objectTypeId: string };
 }

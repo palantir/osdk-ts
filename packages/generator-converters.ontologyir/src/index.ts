@@ -15,14 +15,6 @@
  */
 
 export type { OntologyIrOntologyBlockDataV2 } from "@osdk/client.unstable";
-export type {
-  IFunctionCustomDataType,
-  IListDataType,
-  IObjectDataType,
-  IObjectSetDataType,
-  IOptionalDataType,
-  ISetDataType,
-} from "./convertDataType.js";
 export {
   type BlockDataApiNameLookup,
   buildBlockDataInterfaceTypeLookup,

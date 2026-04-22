@@ -37,6 +37,7 @@ import type {
   SharedPropertyTypeInputShape,
   SharedPropertyTypeOutputShape,
 } from "@osdk/client.unstable/api";
+import type { FunctionsIr } from "../../../api/defineOntologyV2.js";
 import {
   type BlockShapes,
   type OntologyRidGenerator,
@@ -49,7 +50,6 @@ import {
 } from "../typeVisitors.js";
 import { LinkTypeShapeExtractor } from "./LinkTypeShapeExtractor.js";
 import { ObjectTypeShapeExtractor } from "./ObjectTypeShapeExtractor.js";
-import { FunctionsIr } from "../../../api/defineOntologyV2.js";
 
 export const MIGRATION_SHAPE_READABLE_ID: ReadableId =
   "migration-input" as ReadableId;
