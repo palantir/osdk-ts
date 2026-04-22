@@ -15,10 +15,11 @@
  */
 
 import type { ObjectTypeDefinition, Osdk } from "@osdk/api";
+import { useOsdkMetadata } from "@osdk/react";
 import { useOsdkObjects } from "@osdk/react/experimental";
 import React, { memo, useCallback, useMemo, useState } from "react";
 import { useDebouncedValue } from "../../shared/hooks/useDebouncedValue.js";
-import type { FetchingState, ObjectSelectFieldProps } from "../FormFieldApi.js";
+import type { ObjectSelectFieldProps } from "../FormFieldApi.js";
 import { AsyncDropdownField } from "./AsyncDropdownField.js";
 
 const SEARCH_DEBOUNCE_MS = 300;
@@ -65,20 +66,25 @@ export const ObjectSelectField: React.NamedExoticComponent<
     [objectTypeApiName],
   );
 
+  const { metadata } = useOsdkMetadata(objectTypeDef);
+  const titleProperty = metadata?.titleProperty as string | undefined;
+
+  // Search on the title property (e.g. "fullName") so the where clause
+  // matches the same text displayed to the user via obj.$title.
+  // The where clause is loosely typed because we resolve the property
+  // name at runtime from metadata, not from compile-time type info.
   const where = useMemo(() => {
-    if (debouncedQuery.trim() === "") {
+    const trimmed = debouncedQuery.trim();
+    if (trimmed === "" || titleProperty == null) {
       return undefined;
     }
-    // Search on $title property via a containsAllTermsInOrder filter.
-    // The where clause is loosely typed since we don't have compile-time
-    // property info — the object type metadata is resolved at fetch time.
     return {
-      $title: { $containsAllTermsInOrder: debouncedQuery.trim() },
+      $title: { $containsAnyTerm: trimmed },
     } as Parameters<typeof useOsdkObjects>[1] extends
       | { where?: infer W }
       | undefined ? W
       : never;
-  }, [debouncedQuery]);
+  }, [debouncedQuery, titleProperty]);
 
   const {
     data,
@@ -92,19 +98,6 @@ export const ObjectSelectField: React.NamedExoticComponent<
   });
 
   const items = data ?? EMPTY_ITEMS;
-
-  const fetchingState = useMemo((): FetchingState => {
-    if (fetchError != null) {
-      return "error";
-    }
-    if (isLoading && items.length === 0) {
-      return "loading";
-    }
-    if (hasMore) {
-      return "more_available";
-    }
-    return "all_fetched";
-  }, [fetchError, isLoading, items.length, hasMore]);
 
   const handleFetchMore = useCallback(() => {
     void fetchMore?.();
@@ -126,7 +119,9 @@ export const ObjectSelectField: React.NamedExoticComponent<
       isMultiple={isMultiple}
       portalRef={portalRef}
       onQueryChange={setQuery}
-      fetchingState={fetchingState}
+      searchQuery={query}
+      isLoading={isLoading}
+      hasMore={hasMore}
       onFetchMore={handleFetchMore}
       fetchError={fetchError}
     />

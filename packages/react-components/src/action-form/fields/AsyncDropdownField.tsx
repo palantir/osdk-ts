@@ -14,20 +14,25 @@
  * limitations under the License.
  */
 
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback } from "react";
 import { SkeletonBar } from "../../base-components/skeleton/SkeletonBar.js";
+import { useInfiniteScroll } from "../../shared/hooks/useInfiniteScroll.js";
 import { typedReactMemo } from "../../shared/typedMemo.js";
-import type { DropdownFieldProps, FetchingState } from "../FormFieldApi.js";
+import type {
+  DropdownFieldProps,
+  ItemListRendererProps,
+} from "../FormFieldApi.js";
 import styles from "./AsyncDropdownField.module.css";
 import { DropdownField } from "./DropdownField.js";
 
 export interface AsyncDropdownFieldProps<V, Multiple extends boolean = false>
-  extends Omit<DropdownFieldProps<V, Multiple>, "children">
+  extends Omit<DropdownFieldProps<V, Multiple>, "itemListRenderer">
 {
-  /**
-   * Current state of the async data fetch.
-   */
-  fetchingState: FetchingState;
+  /** Whether the data source is currently loading. */
+  isLoading: boolean;
+
+  /** Whether more pages of data are available to fetch. */
+  hasMore: boolean;
 
   /**
    * Called when the user scrolls to the bottom and more data is available.
@@ -38,6 +43,12 @@ export interface AsyncDropdownFieldProps<V, Multiple extends boolean = false>
    * The error from the most recent failed fetch, if any.
    */
   fetchError?: Error;
+
+  /**
+   * Current search text entered by the user.
+   * Used to display a contextual "No matches for X" message.
+   */
+  searchQuery?: string;
 }
 
 export const AsyncDropdownField: <V, Multiple extends boolean = false>(
@@ -46,55 +57,66 @@ export const AsyncDropdownField: <V, Multiple extends boolean = false>(
   V,
   Multiple extends boolean,
 >({
-  fetchingState,
+  isLoading,
+  hasMore,
   onFetchMore,
   fetchError,
+  searchQuery,
   ...dropdownProps
 }: AsyncDropdownFieldProps<V, Multiple>): React.ReactElement {
-  const handlePopupScroll = useCallback(
-    (event: React.UIEvent<HTMLDivElement>) => {
-      if (fetchingState !== "more_available" || onFetchMore == null) {
-        return;
-      }
-      const target = event.currentTarget;
-      // Trigger fetch when scrolled within 1px of the bottom
-      if (
-        Math.ceil(target.scrollTop + target.clientHeight) >= target.scrollHeight
-      ) {
-        onFetchMore();
-      }
-    },
-    [fetchingState, onFetchMore],
-  );
+  const sentinelRef = useInfiniteScroll({
+    onLoadMore: onFetchMore,
+    loadedCount: dropdownProps.items.length,
+    hasMore,
+  });
 
-  const footer = useMemo(() => {
-    switch (fetchingState) {
-      case "loading":
-      case "more_available":
-        return (
-          <div className={styles.osdkAsyncDropdownFooter}>
-            <SkeletonBar />
-          </div>
-        );
-      case "error":
-        return (
-          <div className={styles.osdkAsyncDropdownError} role="alert">
-            {fetchError?.message ?? "Failed to load"}
-          </div>
-        );
-      case "all_fetched":
-        return null;
-    }
-  }, [fetchingState, fetchError]);
+  const itemListRenderer = useCallback(
+    ({ itemList, renderEmpty, itemCount }: ItemListRendererProps) => {
+      // Empty list: show a single message for the current state
+      if (itemCount === 0) {
+        const isSearching = searchQuery != null && searchQuery.trim() !== "";
+        if (fetchError != null) {
+          return renderEmpty(fetchError.message);
+        }
+        if (isLoading) {
+          return renderEmpty(isSearching ? "Searching\u2026" : "Loading\u2026");
+        }
+        if (isSearching) {
+          return renderEmpty(<>No matches for {searchQuery.trim()}</>);
+        }
+        return renderEmpty("No results");
+      }
+
+      // Has items: render the list with an optional footer
+      return (
+        <>
+          {renderEmpty("No results")}
+          {itemList}
+          {fetchError != null
+            ? (
+              <div className={styles.osdkAsyncDropdownError} role="alert">
+                {fetchError.message}
+              </div>
+            )
+            : hasMore
+            ? (
+              <div ref={sentinelRef}>
+                <SkeletonBar width="60%" height={12} />
+              </div>
+            )
+            : null}
+        </>
+      );
+    },
+    [isLoading, fetchError, hasMore, sentinelRef, searchQuery],
+  );
 
   return (
     <DropdownField
       {...dropdownProps}
       isSearchable={true}
-      filter={null}
-      onPopupScroll={handlePopupScroll}
-    >
-      {footer}
-    </DropdownField>
+      filter={dropdownProps.onQueryChange != null ? null : undefined}
+      itemListRenderer={itemListRenderer}
+    />
   );
 });

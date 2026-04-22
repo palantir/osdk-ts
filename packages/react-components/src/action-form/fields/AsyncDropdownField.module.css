@@ -14,16 +14,6 @@
  * limitations under the License.
  */
 
-.osdkAsyncDropdownFooter {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: calc(var(--osdk-async-dropdown-footer-padding, var(--bp-spacing-2, 8px)));
-}
-
 .osdkAsyncDropdownError {
-  color: var(--osdk-async-dropdown-error-color, var(--bp-intent-danger-color, #cd4246));
-  font-size: var(--osdk-async-dropdown-error-font-size, var(--bp-font-size-small, 12px));
-  padding: var(--osdk-async-dropdown-error-padding, var(--bp-spacing-2, 8px));
-  text-align: center;
+  color: var(--osdk-async-dropdown-error-color, var(--osdk-intent-danger-rest));
 }

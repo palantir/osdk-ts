@@ -18,12 +18,30 @@ import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { ObjectSelectField } from "../fields/ObjectSelectField.js";
 
+vi.mock("@osdk/react", () => ({
+  useOsdkMetadata: vi.fn(),
+}));
+
 vi.mock("@osdk/react/experimental", () => ({
   useOsdkObjects: vi.fn(),
 }));
 
+const { useOsdkMetadata } = await import("@osdk/react");
+const mockUseOsdkMetadata = vi.mocked(useOsdkMetadata);
+
 const { useOsdkObjects } = await import("@osdk/react/experimental");
 const mockUseOsdkObjects = vi.mocked(useOsdkObjects);
+
+function mockMetadataLoaded(
+  titleProperty: string = "fullName",
+): void {
+  mockUseOsdkMetadata.mockReturnValue({
+    loading: false,
+    metadata: { titleProperty } as ReturnType<
+      typeof useOsdkMetadata
+    >["metadata"],
+  });
+}
 
 afterEach(cleanup);
 
@@ -91,6 +109,8 @@ async function openCombobox(): Promise<void> {
 describe("ObjectSelectField", () => {
   beforeEach(() => {
     mockUseOsdkObjects.mockReset();
+    mockUseOsdkMetadata.mockReset();
+    mockMetadataLoaded();
   });
 
   it("renders a searchable combobox", () => {
@@ -119,10 +139,12 @@ describe("ObjectSelectField", () => {
     fireEvent.click(screen.getByRole("option", { name: "Alice Smith" }));
 
     await vi.waitFor(() => {
-      expect(onChange).toHaveBeenCalledWith(
-        expect.objectContaining({ $primaryKey: 1, $title: "Alice Smith" }),
-      );
+      expect(onChange).toHaveBeenCalled();
     });
+    const selectedValue = onChange.mock.calls[0]?.[0];
+    expect(selectedValue).toEqual(
+      expect.objectContaining({ $primaryKey: 1, $title: "Alice Smith" }),
+    );
   });
 
   it("passes objectTypeApiName to useOsdkObjects as a minimal type def", () => {
@@ -135,7 +157,7 @@ describe("ObjectSelectField", () => {
     );
   });
 
-  it("shows loading indicator when data is not yet available", async () => {
+  it("shows loading message when data is not yet available", async () => {
     mockLoadedState([], { isLoading: true });
     renderObjectSelect();
 
@@ -143,11 +165,10 @@ describe("ObjectSelectField", () => {
     fireEvent.focus(input);
     fireEvent.keyDown(input, { key: "ArrowDown" });
 
-    // Loading state renders a skeleton in the popup
     await vi.waitFor(() => {
       const popup = document.querySelector("[class*='osdkComboboxPopup']");
-      const skeleton = popup?.querySelector("[class*='skeleton']");
-      expect(skeleton).not.toBeNull();
+      expect(popup).not.toBeNull();
+      expect(popup!.textContent).toContain("Loading");
     });
   });
 
@@ -163,13 +184,13 @@ describe("ObjectSelectField", () => {
     fireEvent.keyDown(input, { key: "ArrowDown" });
 
     await vi.waitFor(() => {
-      const alertElement = document.querySelector("[role='alert']");
-      expect(alertElement).not.toBeNull();
-      expect(alertElement!.textContent).toBe("Connection refused");
+      const popup = document.querySelector("[class*='osdkComboboxPopup']");
+      expect(popup).not.toBeNull();
+      expect(popup!.textContent).toContain("Connection refused");
     });
   });
 
-  it("debounces search input before updating where clause", async () => {
+  it("debounces search input before updating the where clause", async () => {
     vi.useFakeTimers();
     try {
       mockLoadedState();
@@ -183,16 +204,52 @@ describe("ObjectSelectField", () => {
       const firstCall = mockUseOsdkObjects.mock.calls.at(-1);
       expect(firstCall?.[1]?.where).toBeUndefined();
 
-      // Advance past the debounce timer
+      // Advance past the debounce timer (300ms)
       vi.advanceTimersByTime(300);
 
       await vi.waitFor(() => {
         const latestCall = mockUseOsdkObjects.mock.calls.at(-1);
-        expect(latestCall?.[1]?.where).toBeDefined();
+        expect(latestCall?.[1]?.where).toEqual({
+          fullName: { $containsAllTermsInOrder: "Ali" },
+        });
       });
     } finally {
       vi.useRealTimers();
     }
+  });
+
+  it("does not set where clause when metadata is still loading", async () => {
+    vi.useFakeTimers();
+    try {
+      mockUseOsdkMetadata.mockReturnValue({ loading: true });
+      mockLoadedState();
+      renderObjectSelect();
+
+      const input = screen.getByRole("combobox");
+      fireEvent.focus(input);
+      fireEvent.change(input, { target: { value: "Ali" } });
+      vi.advanceTimersByTime(300);
+
+      await vi.waitFor(() => {
+        const latestCall = mockUseOsdkObjects.mock.calls.at(-1);
+        expect(latestCall?.[1]?.where).toBeUndefined();
+      });
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("clears the search query on selection", async () => {
+    mockLoadedState();
+    renderObjectSelect();
+    await openCombobox();
+
+    fireEvent.click(screen.getByRole("option", { name: "Alice Smith" }));
+
+    await vi.waitFor(() => {
+      const latestCall = mockUseOsdkObjects.mock.calls.at(-1);
+      expect(latestCall?.[1]?.where).toBeUndefined();
+    });
   });
 
   it("renders custom placeholder text", () => {

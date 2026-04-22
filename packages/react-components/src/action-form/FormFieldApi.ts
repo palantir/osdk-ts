@@ -309,15 +309,27 @@ export interface DropdownFieldProps<V, Multiple extends boolean = false>
   filter?: null;
 
   /**
-   * Content rendered after the item list inside the popup.
+   * Custom renderer for the popup content (item list, empty state, footer).
+   * Receives pre-built `itemList` and a `renderEmpty` wrapper so the renderer
+   * does not need to know about the underlying combobox primitives.
+   *
+   * When omitted, the default rendering is:
+   * `<>{renderEmpty("No results")}{itemList}</>`
    */
-  children?: React.ReactNode;
+  itemListRenderer?: (props: ItemListRendererProps) => React.ReactNode;
+}
 
-  /**
-   * Scroll event handler on the popup container.
-   * Use for scroll-to-bottom detection to trigger pagination.
-   */
-  onPopupScroll?: React.UIEventHandler<HTMLDivElement>;
+/**
+ * Props passed to the `itemListRenderer` callback on `DropdownFieldProps`.
+ * Contains pre-built pieces that the renderer can compose with custom UI.
+ */
+export interface ItemListRendererProps {
+  /** Pre-rendered item list (e.g. `<Combobox.List>` with all items). */
+  itemList: React.ReactNode;
+  /** Wraps children in the combobox empty state container (styled, hidden when items exist). */
+  renderEmpty: (children: React.ReactNode) => React.ReactNode;
+  /** Number of items currently available. */
+  itemCount: number;
 }
 
 export interface FilePickerProps extends BaseFormFieldProps<File | File[]> {
@@ -490,16 +502,6 @@ export interface CustomFieldProps<V> extends BaseFormFieldProps<V> {
    */
   customRenderer: (props: BaseFormFieldProps<V>) => React.ReactNode;
 }
-
-/**
- * Represents the current state of an async data fetch.
- * Used by AsyncDropdownField to render appropriate loading/error UI.
- */
-export type FetchingState =
-  | "loading"
-  | "more_available"
-  | "all_fetched"
-  | "error";
 
 export interface BaseFormFieldProps<V> {
   /**

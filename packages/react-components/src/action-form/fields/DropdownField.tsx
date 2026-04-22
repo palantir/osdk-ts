@@ -29,8 +29,6 @@ interface InnerDropdownProps<V, Multiple extends boolean>
   query?: string;
   onQueryChange?: (query: string) => void;
   filter?: null;
-  children?: React.ReactNode;
-  onPopupScroll?: React.UIEventHandler<HTMLDivElement>;
 }
 
 export function DropdownField<V, Multiple extends boolean = false>({
@@ -41,8 +39,7 @@ export function DropdownField<V, Multiple extends boolean = false>({
   query,
   onQueryChange,
   filter,
-  children,
-  onPopupScroll,
+  itemListRenderer,
   ...rest
 }: DropdownFieldProps<V, Multiple>): React.ReactElement {
   const resolvedItemToStringLabel = itemToStringLabel
@@ -63,8 +60,7 @@ export function DropdownField<V, Multiple extends boolean = false>({
         query={query}
         onQueryChange={onQueryChange}
         filter={filter}
-        onPopupScroll={onPopupScroll}
-        children={children}
+        itemListRenderer={itemListRenderer}
       />
     );
   }
@@ -135,8 +131,7 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
   query,
   onQueryChange,
   filter,
-  children,
-  onPopupScroll,
+  itemListRenderer,
 }: InnerDropdownProps<V, Multiple>): React.ReactElement {
   const handleInputValueChange = useCallback(
     (inputValue: string) => {
@@ -200,10 +195,19 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
           : <Combobox.Input placeholder={placeholder} />}
         <Combobox.Portal ref={portalRef}>
           <Combobox.Positioner>
-            <Combobox.Popup onScroll={onPopupScroll}>
-              <Combobox.Empty>No results</Combobox.Empty>
-              <Combobox.List>{renderItem}</Combobox.List>
-              {children}
+            <Combobox.Popup>
+              {itemListRenderer?.({
+                itemList: <Combobox.List>{renderItem}</Combobox.List>,
+                renderEmpty: (children) => (
+                  <Combobox.Empty>{children}</Combobox.Empty>
+                ),
+                itemCount: items.length,
+              }) ?? (
+                <>
+                  <Combobox.Empty>No results</Combobox.Empty>
+                  <Combobox.List>{renderItem}</Combobox.List>
+                </>
+              )}
             </Combobox.Popup>
           </Combobox.Positioner>
         </Combobox.Portal>

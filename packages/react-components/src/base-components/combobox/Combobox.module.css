@@ -354,8 +354,8 @@
 }
 
 .osdkComboboxEmpty {
-  padding: calc(var(--osdk-combobox-spacing, var(--osdk-surface-spacing)) * 3)
-    calc(var(--osdk-combobox-spacing, var(--osdk-surface-spacing)) * 2);
+  padding: var(--osdk-combobox-spacing, var(--osdk-surface-spacing))
+    var(--osdk-combobox-spacing, var(--osdk-surface-spacing));
   text-align: center;
   color: var(--osdk-combobox-empty-color, var(--osdk-typography-color-muted));
   font-family: var(

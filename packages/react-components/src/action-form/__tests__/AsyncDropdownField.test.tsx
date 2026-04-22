@@ -16,26 +16,51 @@
 
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import React from "react";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { AsyncDropdownField } from "../fields/AsyncDropdownField.js";
-import type { FetchingState } from "../FormFieldApi.js";
 
-afterEach(cleanup);
+// IntersectionObserver mock for HappyDOM
+let intersectionCallback: IntersectionObserverCallback;
+const mockObserve = vi.fn();
+const mockUnobserve = vi.fn();
+
+beforeEach(() => {
+  vi.stubGlobal(
+    "IntersectionObserver",
+    vi.fn((callback: IntersectionObserverCallback) => {
+      intersectionCallback = callback;
+      return {
+        observe: mockObserve,
+        unobserve: mockUnobserve,
+        disconnect: vi.fn(),
+      };
+    }),
+  );
+});
+
+afterEach(() => {
+  cleanup();
+  vi.restoreAllMocks();
+  mockObserve.mockClear();
+  mockUnobserve.mockClear();
+});
 
 const ITEMS = ["Alpha", "Beta", "Gamma"];
 
 function renderAsyncDropdown(overrides: {
-  fetchingState: FetchingState;
+  items?: string[];
+  isLoading?: boolean;
+  hasMore?: boolean;
   onFetchMore?: () => void;
   fetchError?: Error;
-}) {
+} = {}) {
   return render(
     <AsyncDropdownField
       items={ITEMS}
       value={null}
       onChange={vi.fn()}
-      query=""
-      onQueryChange={vi.fn()}
+      isLoading={false}
+      hasMore={false}
       {...overrides}
     />,
   );
@@ -54,87 +79,123 @@ function getPopup(): Element | null {
   return document.querySelector("[class*='osdkComboboxPopup']");
 }
 
+function simulateIntersection(isIntersecting: boolean): void {
+  intersectionCallback(
+    [{ isIntersecting } as IntersectionObserverEntry],
+    {} as IntersectionObserver,
+  );
+}
+
 describe("AsyncDropdownField", () => {
-  describe("scroll-to-bottom detection", () => {
-    it("calls onFetchMore when scrolled to bottom and state is more_available", async () => {
+  describe("infinite scroll", () => {
+    it("calls onFetchMore when sentinel becomes visible and hasMore is true", async () => {
       const onFetchMore = vi.fn();
-      renderAsyncDropdown({
-        fetchingState: "more_available",
-        onFetchMore,
-      });
+      renderAsyncDropdown({ hasMore: true, onFetchMore });
       await openCombobox();
 
-      const popup = getPopup();
-      expect(popup).not.toBeNull();
-
-      Object.defineProperty(popup!, "scrollTop", {
-        value: 200,
-        writable: true,
-      });
-      Object.defineProperty(popup!, "clientHeight", { value: 100 });
-      Object.defineProperty(popup!, "scrollHeight", { value: 300 });
-      fireEvent.scroll(popup!);
+      simulateIntersection(true);
 
       expect(onFetchMore).toHaveBeenCalledTimes(1);
     });
 
-    it("does not call onFetchMore when state is all_fetched", async () => {
+    it("does not call onFetchMore when hasMore is false", async () => {
       const onFetchMore = vi.fn();
-      renderAsyncDropdown({
-        fetchingState: "all_fetched",
-        onFetchMore,
-      });
+      renderAsyncDropdown({ hasMore: false, onFetchMore });
       await openCombobox();
 
-      const popup = getPopup();
-      Object.defineProperty(popup!, "scrollTop", {
-        value: 200,
-        writable: true,
-      });
-      Object.defineProperty(popup!, "clientHeight", { value: 100 });
-      Object.defineProperty(popup!, "scrollHeight", { value: 300 });
-      fireEvent.scroll(popup!);
-
+      // No sentinel is rendered when hasMore is false
       expect(onFetchMore).not.toHaveBeenCalled();
     });
 
-    it("does not call onFetchMore when not scrolled to bottom", async () => {
+    it("does not call onFetchMore when sentinel is not intersecting", async () => {
       const onFetchMore = vi.fn();
-      renderAsyncDropdown({
-        fetchingState: "more_available",
-        onFetchMore,
-      });
+      renderAsyncDropdown({ hasMore: true, onFetchMore });
       await openCombobox();
 
-      const popup = getPopup();
-      Object.defineProperty(popup!, "scrollTop", { value: 50, writable: true });
-      Object.defineProperty(popup!, "clientHeight", { value: 100 });
-      Object.defineProperty(popup!, "scrollHeight", { value: 300 });
-      fireEvent.scroll(popup!);
+      simulateIntersection(false);
 
       expect(onFetchMore).not.toHaveBeenCalled();
     });
   });
 
-  describe("footer states", () => {
-    it("renders loading indicator when loading", async () => {
-      renderAsyncDropdown({ fetchingState: "loading" });
+  describe("footer and empty message", () => {
+    it("shows skeleton footer when hasMore is true and items exist", async () => {
+      renderAsyncDropdown({ hasMore: true });
       await openCombobox();
 
-      // SkeletonBar renders inside the popup after the list items
-      const popup = getPopup();
-      expect(popup).not.toBeNull();
-      // The popup should have more children than just the list and empty
-      // (the footer div with SkeletonBar is appended)
-      const skeletonBars = popup!.querySelectorAll("[class*='skeleton']");
-      expect(skeletonBars.length).toBeGreaterThan(0);
+      const skeletonBars = getPopup()?.querySelectorAll("[class*='skeleton']");
+      expect(skeletonBars!.length).toBeGreaterThan(0);
     });
 
-    it("renders error message when error state", async () => {
-      renderAsyncDropdown({
-        fetchingState: "error",
-        fetchError: new Error("Network timeout"),
+    it("shows 'Loading...' empty message when loading with no items", async () => {
+      render(
+        <AsyncDropdownField
+          items={[]}
+          value={null}
+          onChange={vi.fn()}
+          isLoading={true}
+          hasMore={false}
+        />,
+      );
+      const input = screen.getByRole("combobox");
+      fireEvent.focus(input);
+      fireEvent.keyDown(input, { key: "ArrowDown" });
+
+      await vi.waitFor(() => {
+        const popup = getPopup();
+        expect(popup).not.toBeNull();
+        expect(popup!.textContent).toContain("Loading");
+        expect(popup!.textContent).not.toContain("No results");
       });
+    });
+
+    it("does not show skeleton footer when loading with no items", async () => {
+      render(
+        <AsyncDropdownField
+          items={[]}
+          value={null}
+          onChange={vi.fn()}
+          isLoading={true}
+          hasMore={false}
+        />,
+      );
+      const input = screen.getByRole("combobox");
+      fireEvent.focus(input);
+      fireEvent.keyDown(input, { key: "ArrowDown" });
+
+      await vi.waitFor(() => {
+        const popup = getPopup();
+        expect(popup).not.toBeNull();
+        const skeletonBars = popup!.querySelectorAll("[class*='skeleton']");
+        expect(skeletonBars.length).toBe(0);
+      });
+    });
+
+    it("shows error in empty message when error with no items", async () => {
+      render(
+        <AsyncDropdownField
+          items={[]}
+          value={null}
+          onChange={vi.fn()}
+          isLoading={false}
+          hasMore={false}
+          fetchError={new Error("Connection refused")}
+        />,
+      );
+      const input = screen.getByRole("combobox");
+      fireEvent.focus(input);
+      fireEvent.keyDown(input, { key: "ArrowDown" });
+
+      await vi.waitFor(() => {
+        const popup = getPopup();
+        expect(popup).not.toBeNull();
+        expect(popup!.textContent).toContain("Connection refused");
+        expect(popup!.textContent).not.toContain("No results");
+      });
+    });
+
+    it("shows error footer when error with items", async () => {
+      renderAsyncDropdown({ fetchError: new Error("Network timeout") });
       await openCombobox();
 
       const alertElement = document.querySelector("[role='alert']");
@@ -142,17 +203,17 @@ describe("AsyncDropdownField", () => {
       expect(alertElement!.textContent).toBe("Network timeout");
     });
 
-    it("renders fallback error message when no error object", async () => {
-      renderAsyncDropdown({ fetchingState: "error" });
+    it("shows error.message in footer for fetchError", async () => {
+      renderAsyncDropdown({ fetchError: new Error("Unexpected failure") });
       await openCombobox();
 
       const alertElement = document.querySelector("[role='alert']");
       expect(alertElement).not.toBeNull();
-      expect(alertElement!.textContent).toBe("Failed to load");
+      expect(alertElement!.textContent).toBe("Unexpected failure");
     });
 
-    it("renders no footer when all_fetched", async () => {
-      renderAsyncDropdown({ fetchingState: "all_fetched" });
+    it("renders no footer when all data is fetched", async () => {
+      renderAsyncDropdown({ hasMore: false });
       await openCombobox();
 
       const alertElement = document.querySelector("[role='alert']");
