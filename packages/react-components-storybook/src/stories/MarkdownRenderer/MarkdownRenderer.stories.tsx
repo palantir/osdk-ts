@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { MarkdownRendererProps } from "@osdk/react-components/experimental";
-import { MarkdownRenderer } from "@osdk/react-components/experimental";
+import type { MarkdownRendererProps } from "@osdk/react-components/experimental/markdown-renderer";
+import { MarkdownRenderer } from "@osdk/react-components/experimental/markdown-renderer";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
 const SAMPLE_MARKDOWN = `# Sample Document
@@ -39,7 +39,7 @@ This is a **sample markdown** document that demonstrates the *MarkdownRenderer* 
 ## Code Example
 
 \`\`\`typescript
-import { MarkdownRenderer } from "@osdk/react-components/experimental";
+import { MarkdownRenderer } from "@osdk/react-components/experimental/markdown-renderer";
 
 function App() {
   return <MarkdownRenderer content="# Hello World" />;
@@ -144,7 +144,7 @@ export const MinimalContent: Story = {
     docs: {
       source: {
         code:
-          `import { MarkdownRenderer } from "@osdk/react-components/experimental";
+          `import { MarkdownRenderer } from "@osdk/react-components/experimental/markdown-renderer";
 
 <MarkdownRenderer content="# Hello World\\n\\nA simple paragraph with **bold** and *italic*." />`,
       },

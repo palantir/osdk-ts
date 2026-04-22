@@ -17,8 +17,8 @@
 import type {
   OutlineItem,
   PdfViewerOutlineSidebarProps,
-} from "@osdk/react-components/experimental";
-import { PdfViewerOutlineSidebar } from "@osdk/react-components/experimental";
+} from "@osdk/react-components/experimental/pdf-viewer";
+import { PdfViewerOutlineSidebar } from "@osdk/react-components/experimental/pdf-viewer";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { fn } from "storybook/test";
 

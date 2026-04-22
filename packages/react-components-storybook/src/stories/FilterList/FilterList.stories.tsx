@@ -15,12 +15,13 @@
  */
 
 import type { WhereClause } from "@osdk/api";
-import { FilterList, ObjectTable } from "@osdk/react-components/experimental";
 import type {
   FilterDefinitionUnion,
   FilterListProps,
   FilterState,
-} from "@osdk/react-components/experimental";
+} from "@osdk/react-components/experimental/filter-list";
+import { FilterList } from "@osdk/react-components/experimental/filter-list";
+import { ObjectTable } from "@osdk/react-components/experimental/object-table";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useCallback, useMemo, useState } from "react";
 import { useArgs } from "storybook/preview-api";
