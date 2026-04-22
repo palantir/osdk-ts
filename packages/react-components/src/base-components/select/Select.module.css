@@ -154,6 +154,48 @@
   }
 }
 
+.osdkSelectClear {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: calc(
+    var(--osdk-select-spacing, var(--osdk-surface-spacing)) * 0.5
+  );
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  flex-shrink: 0;
+  color: var(--osdk-select-clear-color, var(--osdk-iconography-color-muted));
+  border-radius: var(
+    --osdk-select-border-radius,
+    var(--osdk-surface-border-radius)
+  );
+  transition:
+    color
+      var(
+        --osdk-select-transition-duration,
+        var(--osdk-emphasis-transition-duration)
+      )
+      var(--osdk-select-transition-ease, var(--osdk-emphasis-ease-default)),
+    background-color
+      var(
+        --osdk-select-transition-duration,
+        var(--osdk-emphasis-transition-duration)
+      )
+      var(--osdk-select-transition-ease, var(--osdk-emphasis-ease-default));
+
+  &:hover {
+    color: var(
+      --osdk-select-clear-color-hover,
+      var(--osdk-typography-color-default-rest)
+    );
+    background-color: var(
+      --osdk-select-clear-bg-hover,
+      var(--osdk-surface-background-color-default-hover)
+    );
+  }
+}
+
 .osdkSelectPositioner {
   z-index: var(--osdk-select-z-index, var(--osdk-surface-z-index-3));
 }

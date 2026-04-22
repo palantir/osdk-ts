@@ -105,6 +105,7 @@ function SelectPositioner({
     <BaseUISelect.Positioner
       className={classnames(styles.osdkSelectPositioner, className)}
       sideOffset={4}
+      alignItemWithTrigger={false}
       {...rest}
     >
       {children}

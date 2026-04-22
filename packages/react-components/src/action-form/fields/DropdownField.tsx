@@ -14,9 +14,12 @@
  * limitations under the License.
  */
 
+import { CaretDown, Cross, Tick } from "@blueprintjs/icons";
 import React, { useCallback } from "react";
 import { Combobox } from "../../base-components/combobox/Combobox.js";
+import comboboxStyles from "../../base-components/combobox/Combobox.module.css";
 import { Select } from "../../base-components/select/Select.js";
+import selectStyles from "../../base-components/select/Select.module.css";
 import { typedReactMemo } from "../../shared/typedMemo.js";
 import type { DropdownFieldProps } from "../FormFieldApi.js";
 
@@ -78,6 +81,18 @@ const SelectDropdown = typedReactMemo(function SelectDropdownFn<
   placeholder,
   portalRef,
 }: InnerDropdownProps<V, Multiple>): React.ReactElement {
+  const hasValue = isMultiple
+    ? Array.isArray(value) && value.length > 0
+    : value != null;
+
+  const handleClear = useCallback(
+    () => {
+      const cleared = isMultiple ? ([] as V[]) : null;
+      onChange?.(cleared as Parameters<NonNullable<typeof onChange>>[0]);
+    },
+    [isMultiple, onChange],
+  );
+
   return (
     <div>
       <Select.Root
@@ -87,7 +102,30 @@ const SelectDropdown = typedReactMemo(function SelectDropdownFn<
         isItemEqualToValue={isItemEqual}
         itemToStringLabel={itemToStringLabel}
       >
-        <Select.Trigger placeholder={placeholder} />
+        <Select.Trigger placeholder={placeholder}>
+          <div className={selectStyles.osdkSelectValueContainer}>
+            <Select.Value />
+            {placeholder != null && (
+              <span className={selectStyles.osdkSelectPlaceholder}>
+                {placeholder}
+              </span>
+            )}
+          </div>
+          {hasValue && (
+            <button
+              type="button"
+              aria-label="Clear"
+              className={selectStyles.osdkSelectClear}
+              onMouseDown={preventTriggerOpen}
+              onClick={handleClear}
+            >
+              <Cross size={16} />
+            </button>
+          )}
+          <span className={selectStyles.osdkSelectIcon}>
+            <CaretDown />
+          </span>
+        </Select.Trigger>
         <Select.Portal ref={portalRef}>
           <Select.Positioner>
             <Select.Popup>
@@ -118,31 +156,43 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
   placeholder,
   portalRef,
 }: InnerDropdownProps<V, Multiple>): React.ReactElement {
-  const renderChips = useCallback(
-    (selectedValues: V[]) => (
-      <>
-        {selectedValues.map((item) => (
-          <Combobox.Chip
-            key={getKey(item)}
-            aria-label={itemToStringLabel(item)}
-          >
-            {itemToStringLabel(item)}
-            <Combobox.ChipRemove />
-          </Combobox.Chip>
-        ))}
-        <Combobox.Input
-          placeholder={selectedValues.length > 0
-            ? ""
-            : (placeholder ?? "Search…")}
-        />
-      </>
-    ),
-    [getKey, itemToStringLabel, placeholder],
+  const hasValue = isMultiple
+    ? Array.isArray(value) && value.length > 0
+    : value != null;
+
+  const handleClear = useCallback(
+    () => {
+      const cleared = isMultiple ? ([] as V[]) : null;
+      onChange?.(cleared as Parameters<NonNullable<typeof onChange>>[0]);
+    },
+    [isMultiple, onChange],
+  );
+
+  const renderTriggerValue = useCallback(
+    (selectedValues: V[]) =>
+      selectedValues.length > 0
+        ? selectedValues.map(itemToStringLabel).join(", ")
+        : null,
+    [itemToStringLabel],
   );
 
   const renderItem = useCallback(
     (item: V) => (
       <Combobox.Item key={getKey(item)} value={item}>
+        {itemToStringLabel(item)}
+      </Combobox.Item>
+    ),
+    [getKey, itemToStringLabel],
+  );
+
+  const renderItemWithCheckbox = useCallback(
+    (item: V) => (
+      <Combobox.Item key={getKey(item)} value={item}>
+        <Combobox.ItemIndicator
+          className={comboboxStyles.osdkComboboxItemCheckbox}
+        >
+          <Tick size={16} />
+        </Combobox.ItemIndicator>
         {itemToStringLabel(item)}
       </Combobox.Item>
     ),
@@ -159,18 +209,42 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
         isItemEqualToValue={isItemEqual}
         items={items}
       >
-        {isMultiple
-          ? (
-            <Combobox.Chips>
-              <Combobox.Value>{renderChips}</Combobox.Value>
-            </Combobox.Chips>
-          )
-          : <Combobox.Input placeholder={placeholder} />}
+        <Combobox.Trigger>
+          <div className={comboboxStyles.osdkComboboxValueContainer}>
+            {isMultiple
+              ? <Combobox.Value>{renderTriggerValue}</Combobox.Value>
+              : <Combobox.Value />}
+            {placeholder != null && (
+              <span className={comboboxStyles.osdkComboboxPlaceholder}>
+                {placeholder}
+              </span>
+            )}
+          </div>
+          {hasValue && (
+            <button
+              type="button"
+              aria-label="Clear"
+              className={comboboxStyles.osdkComboboxClear}
+              onMouseDown={preventTriggerOpen}
+              onClick={handleClear}
+            >
+              <Cross size={16} />
+            </button>
+          )}
+          <Combobox.Icon>
+            <CaretDown />
+          </Combobox.Icon>
+        </Combobox.Trigger>
         <Combobox.Portal ref={portalRef}>
           <Combobox.Positioner>
             <Combobox.Popup>
+              <div className={comboboxStyles.osdkComboboxPopupSearchInput}>
+                <Combobox.SearchInput placeholder="Search…" />
+              </div>
               <Combobox.Empty>No results</Combobox.Empty>
-              <Combobox.List>{renderItem}</Combobox.List>
+              <Combobox.List>
+                {isMultiple ? renderItemWithCheckbox : renderItem}
+              </Combobox.List>
             </Combobox.Popup>
           </Combobox.Positioner>
         </Combobox.Portal>
@@ -178,6 +252,11 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
     </div>
   );
 });
+
+function preventTriggerOpen(e: React.MouseEvent): void {
+  e.stopPropagation();
+  e.preventDefault();
+}
 
 function defaultItemToStringLabel<V>(item: V): string {
   if (item == null || typeof item !== "object") {
