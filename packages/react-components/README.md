@@ -197,12 +197,18 @@ src/
 │   ├── utils/              # Helper utilities and types
 │   └── components/         # Supporting React components
 └── public/
-    └── experimental.ts     # Public API exports
+    └── experimental/       # Public API exports (one file per component)
+        ├── object-table.ts
+        ├── filter-list.ts
+        ├── pdf-viewer.ts
+        ├── markdown-renderer.ts
+        ├── tiff-renderer.ts
+        └── action-form.ts
 ```
 
 ### Export Strategy
 
-- **OSDK Components**: Exported through `experimental.ts` (e.g., `ObjectTable`, `FilterList`)
+- **OSDK Components**: Exported through individual entry points under `experimental/` (e.g., `experimental/object-table`, `experimental/filter-list`)
 - **Base Components**: Select base components are exported for advanced use cases (e.g., `BaseTable`, `BaseFilterList`)
 - **UI Primitives**: The `base-components/` folder contains internal UI primitives that are **NOT exported**
 
@@ -249,7 +255,7 @@ See the [CSS Variables Reference](./docs/CSSVariables.md) on how to apply custom
 ### Object Table
 
 ```ts
-import { ObjectTable } from "@osdk/react-components/experimental";
+import { ObjectTable } from "@osdk/react-components/experimental/object-table";
 import { Employee } from "@your-osdk-package";
 
 function EmployeeDirectory() {

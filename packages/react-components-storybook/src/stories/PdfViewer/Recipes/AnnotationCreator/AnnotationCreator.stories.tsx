@@ -19,8 +19,8 @@ import type {
   PdfRect,
   PdfViewerHandle,
   PdfViewerProps,
-} from "@osdk/react-components/experimental";
-import { BasePdfViewer } from "@osdk/react-components/experimental";
+} from "@osdk/react-components/experimental/pdf-viewer";
+import { BasePdfViewer } from "@osdk/react-components/experimental/pdf-viewer";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 

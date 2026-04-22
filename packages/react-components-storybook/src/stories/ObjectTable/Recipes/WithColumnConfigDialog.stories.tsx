@@ -17,11 +17,11 @@
 import {
   ColumnConfigDialog,
   ObjectTable,
-} from "@osdk/react-components/experimental";
+} from "@osdk/react-components/experimental/object-table";
 import type {
   ColumnDefinition,
   ObjectTableProps,
-} from "@osdk/react-components/experimental";
+} from "@osdk/react-components/experimental/object-table";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useCallback, useMemo, useState } from "react";
 import { fauxFoundry } from "../../../mocks/fauxFoundry.js";

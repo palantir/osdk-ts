@@ -19,8 +19,8 @@
 import type {
   PdfFormFieldValue,
   PdfViewerProps,
-} from "@osdk/react-components/experimental";
-import { BasePdfViewer } from "@osdk/react-components/experimental";
+} from "@osdk/react-components/experimental/pdf-viewer";
+import { BasePdfViewer } from "@osdk/react-components/experimental/pdf-viewer";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import {
   PDFCheckBox,
@@ -348,7 +348,7 @@ export const InteractiveForm: Story = {
         code: `// This story demonstrates using formData and onFormChange
 // to build a sidebar that tracks form values and loads presets.
 // Uses pdf-lib to download the filled PDF.
-import { BasePdfViewer } from "@osdk/react-components/experimental";
+import { BasePdfViewer } from "@osdk/react-components/experimental/pdf-viewer";
 import { PDFDocument } from "pdf-lib";
 
 const [formData, setFormData] = useState<Record<string, PdfFormFieldValue>>();
