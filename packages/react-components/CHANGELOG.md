@@ -1,5 +1,11 @@
 # @osdk/react-components
 
+## 0.6.0
+
+### Minor Changes
+
+- 4f3c57c: Update docs to use new per-component experimental import paths
+
 ## 0.5.0
 
 ### Minor Changes
