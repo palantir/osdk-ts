@@ -259,8 +259,10 @@ function convertSingleRule(
       } = {
         type: "function",
         functionRid: r.functionRid,
-        functionInputValues:
-          r.functionInputValues as Ontologies.FunctionLogicRule["functionInputValues"],
+        functionInputValues: r
+          .functionInputValues as Ontologies.FunctionLogicRule[
+            "functionInputValues"
+          ],
         functionVersion: r.functionVersion,
       };
       return result;
@@ -403,8 +405,10 @@ function convertBlockDataSingleRule(
       } = {
         type: "function",
         functionRid: r.functionRid,
-        functionInputValues:
-          r.functionInputValues as Ontologies.FunctionLogicRule["functionInputValues"],
+        functionInputValues: r
+          .functionInputValues as Ontologies.FunctionLogicRule[
+            "functionInputValues"
+          ],
         functionVersion: r.functionVersion,
       };
       return result;
