@@ -390,7 +390,9 @@ async function main(): Promise<void> {
 
     const functionNames = Object.keys(queryTypes);
     if (functionNames.length > 0) {
-      previewMetadata.queryTypes = queryTypes;
+      for (const [apiName, queryType] of Object.entries(queryTypes)) {
+        previewMetadata.queryTypes[apiName] = queryType;
+      }
       consola.info(
         `Discovered ${functionNames.length} function(s): ${
           functionNames.join(", ")
