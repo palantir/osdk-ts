@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+export { useStableObjectSet } from "../new/core/useStableObjectSet.js";
 export { OsdkProvider2 } from "../new/OsdkProvider2.js";
 export { useLinks } from "../new/useLinks.js";
 export { useObjectSet } from "../new/useObjectSet.js";
