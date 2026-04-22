@@ -52,7 +52,7 @@ export function useInfiniteScroll({
 
   // Re-observe when loadedCount changes so that a short list where the
   // sentinel is already visible triggers another fetch.
-  useEffect(() => {
+  useEffect(function reObserveSentinel() {
     const sentinel = sentinelRef.current;
     if (observerRef.current == null || sentinel == null || !hasMore) {
       return;
@@ -62,6 +62,14 @@ export function useInfiniteScroll({
       observerRef.current?.unobserve(sentinel);
     };
   }, [loadedCount, hasMore]);
+
+  // Disconnect the observer on unmount to prevent leaks if React skips
+  // the null ref callback during a fast unmount.
+  useEffect(function disconnectObserverOnUnmount() {
+    return () => {
+      observerRef.current?.disconnect();
+    };
+  }, []);
 
   const setRef = useCallback(
     (node: Element | null) => {

@@ -45,7 +45,7 @@ function mockMetadataLoaded(
 
 afterEach(cleanup);
 
-function makeMockObject(primaryKey: number, title: string) {
+function makeMockObject(primaryKey: number, title?: string) {
   return {
     $primaryKey: primaryKey,
     $title: title,
@@ -81,7 +81,7 @@ function mockLoadedState(
     refetch: vi.fn(),
     objectSet: undefined,
     ...overrides,
-  } as unknown as ReturnType<typeof useOsdkObjects>);
+  } as never);
 }
 
 function renderObjectSelect(
@@ -210,7 +210,7 @@ describe("ObjectSelectField", () => {
       await vi.waitFor(() => {
         const latestCall = mockUseOsdkObjects.mock.calls.at(-1);
         expect(latestCall?.[1]?.where).toEqual({
-          fullName: { $containsAllTermsInOrder: "Ali" },
+          fullName: { $containsAnyTerm: "Ali" },
         });
       });
     } finally {
@@ -262,12 +262,7 @@ describe("ObjectSelectField", () => {
 
   it("uses $primaryKey as fallback display when $title is missing", async () => {
     mockLoadedState([
-      {
-        $primaryKey: 99,
-        $title: undefined as unknown as string,
-        $objectType: "Employee",
-        $apiName: "Employee",
-      },
+      makeMockObject(99),
     ]);
     renderObjectSelect();
 

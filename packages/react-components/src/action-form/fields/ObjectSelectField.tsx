@@ -67,7 +67,9 @@ export const ObjectSelectField: React.NamedExoticComponent<
   );
 
   const { metadata } = useOsdkMetadata(objectTypeDef);
-  const titleProperty = metadata?.titleProperty as string | undefined;
+  const titleProperty = typeof metadata?.titleProperty === "string"
+    ? metadata.titleProperty
+    : undefined;
 
   // Search on the title property (e.g. "fullName") so the where clause
   // matches the same text displayed to the user via obj.$title.
@@ -79,7 +81,7 @@ export const ObjectSelectField: React.NamedExoticComponent<
       return undefined;
     }
     return {
-      $title: { $containsAnyTerm: trimmed },
+      [titleProperty]: { $containsAnyTerm: trimmed },
     } as Parameters<typeof useOsdkObjects>[1] extends
       | { where?: infer W }
       | undefined ? W
