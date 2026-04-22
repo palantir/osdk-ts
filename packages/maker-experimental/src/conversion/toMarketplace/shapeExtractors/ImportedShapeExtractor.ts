@@ -70,6 +70,7 @@ export function getImportedShapes(
     inputShapes: new Map(),
     outputShapes: new Map(),
     inputShapeMetadata: new Map(),
+    inputMappings: [],
   };
 
   extractImportedObjectTypes(importedBlockData, ridGenerator, blockShapes);
