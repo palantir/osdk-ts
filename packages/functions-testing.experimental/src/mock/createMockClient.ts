@@ -67,8 +67,15 @@ export interface QueryStubBuilder<T> {
   thenThrow(error: Error): void;
 }
 
-export type StubBuilderFor<T> = T extends PageResult<infer U>
-  ? FetchPageStubBuilder<U>
+export type StubBuilderFor<T> = T extends Promise<infer R> ? StubBuilderFor<R>
+  : T extends AsyncIterableIterator<infer U> ? FetchPageStubBuilder<U>
+  : T extends PageResult<infer U> ? FetchPageStubBuilder<U>
+  : T extends { value: PageResult<infer U>; error?: never }
+    ? FetchPageStubBuilder<U>
+  : T extends { value: infer U; error?: never }
+    ? (IsOsdkObject<U> extends true ? FetchOneStubBuilder<U>
+      : AggregateStubBuilder<U>)
+  : T extends { error: Error; value?: never } ? never
   : IsOsdkObject<T> extends true ? FetchOneStubBuilder<T>
   : AggregateStubBuilder<T>;
 
@@ -85,11 +92,11 @@ export type StubClient = {
   <Q extends InterfaceDefinition>(o: Q): ObjectSet<Q>;
 };
 
-export type StubPatternCallback<T> = (client: StubClient) => Promise<T>;
+export type StubPatternCallback<T> = (client: StubClient) => T;
 
 export type ObjectSetStubCallback<Q extends ObjectOrInterfaceDefinition, T> = (
   os: ObjectSet<Q>,
-) => Promise<T>;
+) => T;
 
 export interface MockClient extends Client {
   when<T>(callback: StubPatternCallback<T>): StubBuilderFor<T>;

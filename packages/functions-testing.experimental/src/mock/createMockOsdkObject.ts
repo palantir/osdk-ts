@@ -21,6 +21,7 @@ import type {
   ObjectSet,
   ObjectTypeDefinition,
   Osdk,
+  Result,
 } from "@osdk/api";
 import invariant from "tiny-invariant";
 import { isMockObjectSet } from "./createMockObjectSet.js";
@@ -46,18 +47,24 @@ type LinkStubs<Q extends ObjectTypeDefinition> = {
     CompileTimeMetadata<Q>["links"][LINK_NAME]["multiplicity"] extends true ?
         | Array<Osdk.Instance<LinkedType<Q, LINK_NAME>>>
         | ObjectSet<LinkedType<Q, LINK_NAME>>
-      : Osdk.Instance<LinkedType<Q, LINK_NAME>>;
+      : Osdk.Instance<LinkedType<Q, LINK_NAME>> | Error;
 };
 
 function createSingleLinkStub<T extends ObjectTypeDefinition>(
-  linkedObject: Osdk.Instance<T>,
+  linked: Osdk.Instance<T> | Error,
 ): {
   fetchOne: () => Promise<Osdk.Instance<T>>;
-  fetchOneWithErrors: () => Promise<{ value: Osdk.Instance<T> }>;
+  fetchOneWithErrors: () => Promise<Result<Osdk.Instance<T>>>;
 } {
+  if (linked instanceof Error) {
+    return {
+      fetchOne: () => Promise.reject(linked),
+      fetchOneWithErrors: () => Promise.resolve({ error: linked }),
+    };
+  }
   return {
-    fetchOne: () => Promise.resolve(linkedObject),
-    fetchOneWithErrors: () => Promise.resolve({ value: linkedObject }),
+    fetchOne: () => Promise.resolve(linked),
+    fetchOneWithErrors: () => Promise.resolve({ value: linked }),
   };
 }
 
@@ -238,7 +245,7 @@ export function createMockOsdkObject<
           );
         } else {
           linkAccessors[linkName] = createSingleLinkStub(
-            linkValue as Osdk.Instance<ObjectTypeDefinition>,
+            linkValue as Osdk.Instance<ObjectTypeDefinition> | Error,
           );
         }
       }
