@@ -1,5 +1,11 @@
 # @osdkkit/react
 
+## 0.14.0
+
+### Minor Changes
+
+- 5a45dc0: Fix stableObjectSet by using a useStableObjectSet hook
+
 ## 0.13.0
 
 ### Minor Changes
