@@ -567,7 +567,10 @@ export class Store {
 
     const promises: Array<Promise<void>> = [];
 
-    for (const cacheKey of this.layers.truth.keys()) {
+    // Walk queries.keys() rather than layers.truth.keys(): an "offline"-mode
+    // or never-fetched query can be registered and subscribed without having
+    // written to truth yet, and still needs to be notified after an action.
+    for (const cacheKey of this.queries.keys()) {
       if (
         cacheKey.type !== "mediaMetadata"
         && changes
@@ -582,6 +585,24 @@ export class Store {
     }
 
     // we use allSettled here because we don't care if it succeeds or fails, just that they all complete.
+    return Promise.allSettled(promises).then(() => void 0);
+  }
+
+  /**
+   * Invalidate only specificLink queries affected by changes to an object type.
+   * Lists and object queries propagate via `#maybeRevalidateQueries` when
+   * object-level writes fire `onRevalidate`; links do not, so they need an
+   * explicit type-level kick after an action edits objects of a type that a
+   * link has on its source or target side.
+   */
+  public invalidateLinkQueriesForType(apiName: string): Promise<void> {
+    const promises: Array<Promise<void>> = [];
+    for (const cacheKey of this.queries.keys()) {
+      if (cacheKey.type !== "specificLink") continue;
+      const query = this.queries.peek(cacheKey);
+      if (!query) continue;
+      promises.push(query.invalidateObjectType(apiName, undefined));
+    }
     return Promise.allSettled(promises).then(() => void 0);
   }
 
