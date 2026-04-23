@@ -313,6 +313,8 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
   );
 });
 
+// Prevent the clear/remove click from bubbling into the trigger
+// and toggling the dropdown open/closed.
 function preventTriggerOpen(e: React.MouseEvent): void {
   e.stopPropagation();
   e.preventDefault();

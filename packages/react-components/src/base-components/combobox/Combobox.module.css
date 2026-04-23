@@ -654,6 +654,7 @@
 .osdkComboboxPopupSearchInput {
   position: sticky;
   inset-block-start: 0;
+  /* Keeps the sticky search input above scrolled list items */
   z-index: 1;
   background-color: var(
     --osdk-combobox-popup-bg,
