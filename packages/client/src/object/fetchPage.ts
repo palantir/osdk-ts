@@ -25,9 +25,13 @@ import type {
   ObjectSetArgs,
   ObjectTypeDefinition,
   PropertyKeys,
-  PropertyModifierValue,
   Result,
 } from "@osdk/api";
+
+type PropertyModifierValue =
+  | "applyMainValue"
+  | "applyReducers"
+  | "applyReducersAndExtractMainValue";
 import type { PageSize, PageToken } from "@osdk/foundry.core";
 import type {
   LoadObjectSetV2MultipleObjectTypesRequest,

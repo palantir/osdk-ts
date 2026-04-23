@@ -249,33 +249,7 @@ export type ApplyBatchActionOptions = {
     	$returnEdits?: boolean
 };
 
-// Warning: (ae-forgotten-export) The symbol "PropsWithOnlyMainValue" needs to be exported by the entry point index.d.ts
-// Warning: (ae-forgotten-export) The symbol "PropsWithOnlyReducers" needs to be exported by the entry point index.d.ts
-// Warning: (ae-forgotten-export) The symbol "PropsWithBoth" needs to be exported by the entry point index.d.ts
-//
-// @public (undocumented)
-export type ApplyModifiersArg<
-	Q extends ObjectOrInterfaceDefinition,
-	K extends PropertyKeys<Q> = PropertyKeys<Q>
-> = { [P in PropsWithOnlyMainValue<Q>]? : "applyMainValue" } & { [P in PropsWithOnlyReducers<Q>]? : "applyReducers" } & { [P in PropsWithBoth<Q>]? : "applyMainValue" | "applyReducers" | "applyReducersAndExtractMainValue" };
-
-// @public (undocumented)
-export type ApplyModifiersToProps<
-	Q extends ObjectOrInterfaceDefinition,
-	MODIFIERS extends Record<string, PropertyModifierValue>
-> = { [K in PropertyKeys<Q>] : K extends keyof MODIFIERS ? MODIFIERS[K] extends PropertyModifierValue ? ApplyModifierToProperty<CompileTimeMetadata<Q>["properties"][K], MODIFIERS[K]> : CompileTimeMetadata<Q>["props"][K] : CompileTimeMetadata<Q>["props"][K] };
-
-// Warning: (tsdoc-escape-greater-than) The ">" character should be escaped using a backslash to avoid confusion with an HTML tag
-// Warning: (tsdoc-escape-greater-than) The ">" character should be escaped using a backslash to avoid confusion with an HTML tag
-// Warning: (tsdoc-escape-greater-than) The ">" character should be escaped using a backslash to avoid confusion with an HTML tag
-// Warning: (ae-forgotten-export) The symbol "MainValueOfReduced" needs to be exported by the entry point index.d.ts
-//
-// @public
-export type ApplyModifierToProperty<
-	P extends ObjectMetadata.Property,
-	M extends PropertyModifierValue
-> = M extends "applyMainValue" ? MainValueTypeOf<P> | (P["nullable"] extends true ? undefined : never) : M extends "applyReducers" ? ReducedTypeOf<P> | (P["nullable"] extends true ? undefined : never) : M extends "applyReducersAndExtractMainValue" ? MainValueOfReduced<P> | (P["nullable"] extends true ? undefined : never) : never;
-
+// Warning: (ae-forgotten-export) The symbol "ApplyModifiersArg" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "OrderByArg" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
@@ -294,7 +268,7 @@ export interface AsyncIterArgs<
     	// (undocumented)
     $__UNSTABLE_useOldInterfaceApis?: boolean;
     	// (undocumented)
-    $applyModifiers?: MODIFIERS;
+    $applyModifiers?: ApplyModifiersArg<Q, PropertyKeys<Q>> & MODIFIERS & { [P in Exclude<keyof MODIFIERS, PropertyKeys<Q>>] : never };
     	// (undocumented)
     $includeAllBaseObjectProperties?: PropertyKeys<Q> extends K ? T : never;
 }
@@ -672,7 +646,7 @@ export interface FetchPageArgs<
 	MODIFIERS extends ApplyModifiersArg<Q, PropertyKeys<Q>> = {}
 > extends AsyncIterArgs<Q, K, R, A, S, T, RDP_KEYS, ORDER_BY_OPTIONS, PROPERTY_SECURITIES, MODIFIERS> {
     	// (undocumented)
-    $applyModifiers?: MODIFIERS;
+    $applyModifiers?: ApplyModifiersArg<Q, PropertyKeys<Q>> & MODIFIERS & { [P in Exclude<keyof MODIFIERS, PropertyKeys<Q>>] : never };
     	// (undocumented)
     $nextPageToken?: string;
     	// (undocumented)
@@ -940,15 +914,6 @@ export namespace Logger {
         (msg: string, ...args: any[]): void;
         	}
 }
-
-// Warning: (ae-forgotten-export) The symbol "GetClientPropertyValueFromWire" needs to be exported by the entry point index.d.ts
-//
-// @public
-export type MainValueTypeOf<P extends ObjectMetadata.Property> = P["mainValue"] extends {
-    	fields: readonly [infer Single extends string]
-} ? P["type"] extends Record<string, WirePropertyTypes> ? Single extends keyof P["type"] ? GetClientPropertyValueFromWire<P["type"][Single]> : never : never : P["mainValue"] extends {
-    	fields: readonly (infer F extends string)[]
-} ? P["type"] extends Record<string, WirePropertyTypes> ? { [K in F & keyof P["type"]] : GetClientPropertyValueFromWire<P["type"][K]> } : never : never;
 
 // @public (undocumented)
 export type MaybeScore<
@@ -1409,6 +1374,7 @@ export namespace Osdk {
     	// Warning: (ae-forgotten-export) The symbol "ReducedValues" needs to be exported by the entry point index.d.ts
     // Warning: (ae-forgotten-export) The symbol "GetPropsKeys" needs to be exported by the entry point index.d.ts
     // Warning: (ae-forgotten-export) The symbol "HasModifiers" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "ApplyModifiersToProps" needs to be exported by the entry point index.d.ts
     // Warning: (ae-forgotten-export) The symbol "BuildModifiersFromP" needs to be exported by the entry point index.d.ts
     // Warning: (ae-forgotten-export) The symbol "GetPropNamesFromP" needs to be exported by the entry point index.d.ts
     //
@@ -1483,6 +1449,7 @@ export type OsdkObjectLinksObject<O extends ObjectOrInterfaceDefinition> = Objec
 // Warning: (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
 // Warning: (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
 // Warning: (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
+// Warning: (ae-forgotten-export) The symbol "GetClientPropertyValueFromWire" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
 export type OsdkObjectPropertyType<
@@ -1582,9 +1549,6 @@ export interface PropertyMarkings {
     	disjunctive?: Array<Array<MarkingId>>;
 }
 
-// @public
-export type PropertyModifierValue = "applyMainValue" | "applyReducers" | "applyReducersAndExtractMainValue";
-
 // @public (undocumented)
 export interface PropertyNumberFormattingRule {
     	// (undocumented)
@@ -1676,18 +1640,6 @@ export interface PropertyValueWireToClient {
     	// (undocumented)
     vector: number[];
 }
-
-// @public
-export type PropsWithMainValue<Q extends ObjectOrInterfaceDefinition> = { [K in PropertyKeys<Q>] : CompileTimeMetadata<Q>["properties"][K] extends {
-        	mainValue: {
-            		fields: readonly string[]
-            	}
-    } ? K : never }[PropertyKeys<Q>];
-
-// @public
-export type PropsWithReducers<Q extends ObjectOrInterfaceDefinition> = { [K in PropertyKeys<Q>] : CompileTimeMetadata<Q>["properties"][K] extends {
-        	hasReducers: true
-    } ? K : never }[PropertyKeys<Q>];
 
 // Warning: (ae-forgotten-export) The symbol "PrimitiveDataType" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "InterfaceObjectSetQueryDataType" needs to be exported by the entry point index.d.ts
@@ -1832,9 +1784,6 @@ type Range_2<T extends AllowedBucketTypes_2> = {
     	endValue?: T
 };
 export { Range_2 as Range }
-
-// @public
-export type ReducedTypeOf<P extends ObjectMetadata.Property> = P["hasReducers"] extends true ? P["type"] extends WirePropertyTypes ? GetClientPropertyValueFromWire<P["type"]> : never : never;
 
 // Warning: (ae-forgotten-export) The symbol "ErrorResult" needs to be exported by the entry point index.d.ts
 //
@@ -2071,6 +2020,9 @@ export type WirePropertyTypes = BaseWirePropertyTypes | Record<string, BaseWireP
 // src/aggregate/AggregationResultsWithGroups.ts:36:5 - (ae-forgotten-export) The symbol "MaybeNullable_2" needs to be exported by the entry point index.d.ts
 // src/aggregate/AggregationResultsWithGroups.ts:36:5 - (ae-forgotten-export) The symbol "OsdkObjectPropertyTypeNotUndefined" needs to be exported by the entry point index.d.ts
 // src/objectSet/ObjectSetLinks.ts:36:3 - (ae-forgotten-export) The symbol "LinkedObjectType" needs to be exported by the entry point index.d.ts
+// src/ontology/PropertyModifiers.ts:76:9 - (tsdoc-escape-greater-than) The ">" character should be escaped using a backslash to avoid confusion with an HTML tag
+// src/ontology/PropertyModifiers.ts:77:8 - (tsdoc-escape-greater-than) The ">" character should be escaped using a backslash to avoid confusion with an HTML tag
+// src/ontology/PropertyModifiers.ts:78:27 - (tsdoc-escape-greater-than) The ">" character should be escaped using a backslash to avoid confusion with an HTML tag
 
 // (No @packageDocumentation comment for this package)
 
