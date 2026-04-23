@@ -28,6 +28,7 @@ import type { BatchContext } from "../BatchContext.js";
 import type { CacheKey } from "../CacheKey.js";
 import type { Canonical } from "../Canonical.js";
 import { type Changes, DEBUG_ONLY__changesToString } from "../Changes.js";
+import { changesAffectObjectType } from "../changesAffectObjectType.js";
 import { getObjectTypesThatInvalidate } from "../getObjectTypesThatInvalidate.js";
 import type { Entry } from "../Layer.js";
 import {
@@ -334,22 +335,10 @@ export class ObjectSetQuery extends BaseListQuery<
 
   #handleServerRevalidation(changes: Changes): Promise<void> | undefined {
     for (const objectType of this.#objectTypes) {
-      const added = changes.addedObjects.get(objectType);
-      const modified = changes.modifiedObjects.get(objectType);
-      if ((added && added.length > 0) || (modified && modified.length > 0)) {
+      if (changesAffectObjectType(changes, objectType)) {
         return this.revalidate(true);
       }
     }
-
-    for (const deletedKey of changes.deleted) {
-      if (
-        deletedKey.type === "object"
-        && this.#objectTypes.has(deletedKey.otherKeys[OBJECT_API_NAME_IDX])
-      ) {
-        return this.revalidate(true);
-      }
-    }
-
     return undefined;
   }
 
@@ -486,10 +475,8 @@ export class ObjectSetQuery extends BaseListQuery<
     changes: Changes | undefined,
   ): Promise<void> => {
     if (this.#objectTypes.has(objectType)) {
-      changes?.modified.add(this.cacheKey);
-      return this.revalidate(true);
+      return this.markAffectedAndRevalidate(changes);
     }
-    return Promise.resolve();
   };
 
   protected createPayload(
