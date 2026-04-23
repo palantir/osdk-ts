@@ -17,11 +17,6 @@
 import type { Changes } from "./Changes.js";
 import { API_NAME_IDX } from "./object/ObjectCacheKey.js";
 
-/**
- * Checks if a Changes object contains any added, modified, or deleted
- * objects of the given type. Used by Store, ListQuery, and ObjectSetQuery
- * to determine whether changes are relevant to a query.
- */
 export function changesAffectObjectType(
   changes: Changes,
   objectType: string,

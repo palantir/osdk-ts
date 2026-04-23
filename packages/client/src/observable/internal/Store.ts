@@ -429,7 +429,7 @@ export class Store {
           const objectType of (query as { objectTypes: ReadonlySet<string> })
             .objectTypes
         ) {
-          if (this.#changesAffectObjectType(changes, objectType)) {
+          if (changesAffectObjectType(changes, objectType)) {
             return true;
           }
         }
@@ -442,7 +442,7 @@ export class Store {
       return false;
     }
 
-    const affected = this.#changesAffectObjectType(changes, queryObjectType);
+    const affected = changesAffectObjectType(changes, queryObjectType);
 
     if (process.env.NODE_ENV !== "production") {
       this.logger?.child({ methodName: "shouldPropagateToQuery" }).debug(
@@ -508,17 +508,6 @@ export class Store {
       // Links would have apiName at a different position
     }
     return undefined;
-  }
-
-  /**
-   * Checks if changes affect a specific object type.
-   *
-   * @param changes - The changes to check
-   * @param objectType - The object type to check for
-   * @returns true if the changes include added or modified objects of this type
-   */
-  #changesAffectObjectType(changes: Changes, objectType: string): boolean {
-    return changesAffectObjectType(changes, objectType);
   }
 
   /**
