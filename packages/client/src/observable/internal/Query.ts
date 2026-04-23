@@ -151,6 +151,13 @@ export abstract class Query<
    * @param force
    * @returns
    */
+  protected markAffectedAndRevalidate(
+    changes: Changes | undefined,
+  ): Promise<void> {
+    changes?.modified.add(this.cacheKey);
+    return this.revalidate(true);
+  }
+
   async revalidate(force?: boolean): Promise<void> {
     const logger = process.env.NODE_ENV !== "production"
       ? this.logger?.child({ methodName: "revalidate" })

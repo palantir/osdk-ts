@@ -41,12 +41,10 @@ import type { BatchContext } from "../BatchContext.js";
 import { type CacheKey } from "../CacheKey.js";
 import type { Canonical } from "../Canonical.js";
 import { type Changes, DEBUG_ONLY__changesToString } from "../Changes.js";
+import { changesAffectObjectType } from "../changesAffectObjectType.js";
 import { getObjectTypesThatInvalidate } from "../getObjectTypesThatInvalidate.js";
 import type { Entry } from "../Layer.js";
-import {
-  API_NAME_IDX as OBJECT_API_NAME_IDX,
-  type ObjectCacheKey,
-} from "../object/ObjectCacheKey.js";
+import { type ObjectCacheKey } from "../object/ObjectCacheKey.js";
 import { objectSortaMatchesWhereClause as objectMatchesWhereClause } from "../objectMatchesWhereClause.js";
 import type { OptimisticId } from "../OptimisticId.js";
 import type { PivotInfo } from "../PivotCanonicalizer.js";
@@ -370,8 +368,7 @@ export abstract class ListQuery extends BaseListQuery<
     changes: Changes | undefined,
   ): Promise<void> => {
     if (await this.revalidateObjectType(objectType)) {
-      changes?.modified.add(this.cacheKey);
-      return this.revalidate(true);
+      return this.markAffectedAndRevalidate(changes);
     }
   };
 
@@ -402,29 +399,15 @@ export abstract class ListQuery extends BaseListQuery<
     // mark ourselves as updated so we don't infinite recurse.
     changes.modified.add(this.cacheKey);
 
-    // When the fetched object type differs from apiName (e.g. a query that
-    // traverses a link), we can't locally evaluate whether result-type
-    // changes affect this query -- that depends on link relationships the
-    // client doesn't have. Fall back to a full server revalidation.
+    // For cross-type queries (e.g. link traversal where result type differs
+    // from apiName), fall back to full server revalidation since we can't
+    // locally evaluate link relationships.
     if (
       this.#fetchedObjectType != null
       && this.#fetchedObjectType !== this.apiName
+      && changesAffectObjectType(changes, this.#fetchedObjectType)
     ) {
-      const fetchedType = this.#fetchedObjectType;
-      if (
-        (changes.addedObjects.get(fetchedType)?.length ?? 0) > 0
-        || (changes.modifiedObjects.get(fetchedType)?.length ?? 0) > 0
-      ) {
-        return this.revalidate(true);
-      }
-      for (const key of changes.deleted) {
-        if (
-          key.type === "object"
-          && key.otherKeys[OBJECT_API_NAME_IDX] === fetchedType
-        ) {
-          return this.revalidate(true);
-        }
-      }
+      return this.revalidate(true);
     }
 
     try {
