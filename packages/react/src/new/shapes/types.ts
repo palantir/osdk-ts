@@ -65,7 +65,7 @@ export interface LinkEntry {
   hasMore: boolean;
   fetchMore: () => Promise<void>;
   subscription?: Unsubscribable;
-  nestedByPk: Map<unknown, Map<string, LinkEntry>>;
+  nestedByPk: Map<string | number, Map<string, LinkEntry>>;
   cleaned: boolean;
 }
 
