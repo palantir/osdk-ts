@@ -19,6 +19,7 @@ import classNames from "classnames";
 import React, { memo, useCallback, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { ActionButton } from "../base-components/action-button/ActionButton.js";
+import { SkeletonBar } from "../base-components/skeleton/SkeletonBar.js";
 import { Tooltip } from "../base-components/tooltip/Tooltip.js";
 import { useAsyncAction } from "../shared/hooks/useAsyncAction.js";
 import type { BaseFormProps } from "./ActionFormApi.js";
@@ -125,7 +126,13 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
     >
       {formTitle != null && <FormHeader title={formTitle} />}
       {isLoading && fieldDefinitions.length === 0 && (
-        <div role="status">Loading form fields...</div>
+        <div
+          role="status"
+          aria-label="Loading form fields"
+          className={styles.osdkFormFields}
+        >
+          {FORM_SKELETON}
+        </div>
       )}
       <div className={styles.osdkFormFields}>
         {fieldDefinitions.map((fieldDef) => (
@@ -151,6 +158,19 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
     </form>
   );
 });
+
+const SKELETON_FIELD_COUNT = 3;
+
+// Mimics the label + input layout of real form fields.
+const FORM_SKELETON = Array.from(
+  { length: SKELETON_FIELD_COUNT },
+  (_, i) => (
+    <div key={i} className={styles.osdkFormSkeletonField}>
+      <SkeletonBar className={styles.osdkFormSkeletonLabel} />
+      <SkeletonBar className={styles.osdkFormSkeletonInput} />
+    </div>
+  ),
+);
 
 function buildDefaultValues(
   fieldDefinitions: ReadonlyArray<RendererFieldDefinition>,
@@ -198,7 +218,9 @@ const SubmitButton = memo(function SubmitButtonFn({
 
   return (
     <Tooltip.Root defaultOpen={true}>
-      <Tooltip.Trigger>
+      <Tooltip.Trigger
+        render={<span className={styles.osdkTooltipTriggerWrapper} />}
+      >
         {button}
       </Tooltip.Trigger>
       <Tooltip.Portal>
