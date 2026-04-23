@@ -140,6 +140,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  line-height: 0;
   color: var(--osdk-select-icon-color, var(--osdk-iconography-color-muted));
   flex-shrink: 0;
   transition: transform
@@ -160,6 +161,7 @@
   justify-content: center;
   margin: 0;
   padding: 0;
+  line-height: 0;
   border: none;
   background: transparent;
   cursor: pointer;

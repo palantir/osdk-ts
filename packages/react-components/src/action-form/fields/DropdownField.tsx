@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { Button } from "@base-ui/react/button";
 import { CaretDown, Cross, Tick } from "@blueprintjs/icons";
 import React, { useCallback, useState } from "react";
 import { Combobox } from "../../base-components/combobox/Combobox.js";
@@ -61,7 +62,7 @@ export function DropdownField<V, Multiple extends boolean = false>({
     [itemToKey, resolvedItemToStringLabel],
   );
 
-  // Multi-select always uses Combobox for the chip-based UI
+  // Multi-select always uses Combobox for the chip-based UI because it looks better
   if (isSearchable || rest.isMultiple) {
     return (
       <ComboboxDropdown
@@ -131,15 +132,14 @@ const SelectDropdown = typedReactMemo(function SelectDropdownFn<
             )}
           </div>
           {hasValue && (
-            <button
-              type="button"
+            <Button
               aria-label="Clear"
               className={selectStyles.osdkSelectClear}
               onMouseDown={preventTriggerOpen}
               onClick={handleClear}
             >
-              <Cross size={16} />
-            </button>
+              <Cross />
+            </Button>
           )}
           <span className={selectStyles.osdkSelectIcon}>
             <CaretDown />
@@ -220,7 +220,7 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
     (item: V) => (
       <Combobox.Item key={getKey(item)} value={item}>
         <Combobox.ItemIndicator>
-          <Tick size={16} />
+          <Tick />
         </Combobox.ItemIndicator>
         {itemToStringLabel(item)}
       </Combobox.Item>
@@ -239,6 +239,7 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
         itemToStringLabel={itemToStringLabel}
         isItemEqualToValue={isItemEqual}
         items={items}
+        autoHighlight={isSearchable}
       >
         <Combobox.Trigger
           className={isMultiple
@@ -255,15 +256,14 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
                       className={comboboxStyles.osdkComboboxTriggerChip}
                     >
                       {itemToStringLabel(item)}
-                      <button
-                        type="button"
+                      <Button
                         aria-label={`Remove ${itemToStringLabel(item)}`}
                         className={comboboxStyles.osdkComboboxTriggerChipRemove}
                         onMouseDown={preventTriggerOpen}
                         onClick={() => handleRemoveItem(item)}
                       >
                         <Cross size={12} />
-                      </button>
+                      </Button>
                     </span>
                   ))}
                 </div>
@@ -280,15 +280,14 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
               )}
           </div>
           {hasValue && (
-            <button
-              type="button"
+            <Button
               aria-label="Clear"
               className={comboboxStyles.osdkComboboxClear}
               onMouseDown={preventTriggerOpen}
               onClick={handleClear}
             >
-              <Cross size={16} />
-            </button>
+              <Cross />
+            </Button>
           )}
           <Combobox.Icon>
             <CaretDown />
