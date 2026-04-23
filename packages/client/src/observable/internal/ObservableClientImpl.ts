@@ -22,6 +22,7 @@ import type {
   Attachment,
   CompileTimeMetadata,
   Media,
+  MediaReference,
   ObjectOrInterfaceDefinition,
   ObjectSet,
   ObjectTypeDefinition,
@@ -422,6 +423,13 @@ export class ObservableClientImpl implements ObservableClient {
     source: Media | Attachment,
   ): void {
     this.__experimentalStore.media.invalidateMedia(source);
+  }
+
+  public async uploadMedia(
+    file: Blob,
+    options: { fileName: string },
+  ): Promise<MediaReference> {
+    return this.__experimentalStore.media.uploadMedia(file, options);
   }
 
   public async getCacheSnapshot(): Promise<CacheSnapshot> {

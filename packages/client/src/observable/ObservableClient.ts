@@ -24,6 +24,7 @@ import type {
   CompileTimeMetadata,
   DerivedProperty,
   Media,
+  MediaReference,
   ObjectOrInterfaceDefinition,
   ObjectSet,
   ObjectTypeDefinition,
@@ -614,6 +615,11 @@ export interface ObservableClient extends ObserveLinks {
   invalidateMedia(
     source: Media | Attachment,
   ): void;
+
+  uploadMedia(
+    file: Blob,
+    options: { fileName: string },
+  ): Promise<MediaReference>;
 }
 
 export interface CanonicalizeOptionsInput<OS = ObjectSet<any, any>> {

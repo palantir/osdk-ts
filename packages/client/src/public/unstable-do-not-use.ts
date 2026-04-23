@@ -35,6 +35,12 @@ export type {
   Unsubscribable,
 } from "../observable/ObservableClient.js";
 export type { Observer } from "../observable/ObservableClient/common.js";
+export type {
+  MediaContentObserveOptions,
+  MediaContentPayload,
+  MediaMetadataObserveOptions,
+  MediaMetadataPayload,
+} from "../observable/ObservableClient/MediaObservableTypes.js";
 export type { ObserveLinks } from "../observable/ObservableClient/ObserveLink.js";
 export {
   getMetaTagContent,

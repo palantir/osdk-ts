@@ -19,7 +19,9 @@ import type {
   Media,
   MediaMetadata,
   MediaPropertyLocation,
+  MediaReference,
 } from "@osdk/api";
+import { MediaSets } from "@osdk/foundry.mediasets";
 import * as OntologiesV2 from "@osdk/foundry.ontologies";
 import { additionalContext } from "../../../Client.js";
 import type {
@@ -262,6 +264,46 @@ export class MediaHelper extends AbstractHelper<
     const baseCacheKey = this.getCacheKey(mediaOrLocation);
     const cacheKey = preview ? `${baseCacheKey}:preview` : baseCacheKey;
     this.blobManager.releaseBlobUrl(cacheKey);
+  }
+
+  async uploadMedia(
+    file: Blob,
+    options: { fileName: string },
+  ): Promise<MediaReference> {
+    const gatewayMediaRef = await MediaSets.uploadMedia(
+      this.store.client[additionalContext],
+      file,
+      {
+        filename: options.fileName,
+        preview: true,
+      },
+    );
+
+    return {
+      mimeType: gatewayMediaRef.mimeType,
+      reference: {
+        type: "mediaSetViewItem",
+        mediaSetViewItem: {
+          mediaItemRid: gatewayMediaRef.reference.mediaSetViewItem.mediaItemRid,
+          mediaSetRid: gatewayMediaRef.reference.mediaSetViewItem.mediaSetRid,
+          mediaSetViewRid:
+            gatewayMediaRef.reference.mediaSetViewItem.mediaSetViewRid,
+          token: gatewayMediaRef.reference.mediaSetViewItem.token,
+          readToken: gatewayMediaRef.reference.mediaSetViewItem.token,
+        },
+      },
+    };
+  }
+
+  async prefetch(
+    source: MediaSource,
+    options?: { preview?: boolean },
+  ): Promise<void> {
+    const preview = options?.preview ?? true;
+    await Promise.all([
+      this.fetchContent(source, { preview }),
+      this.fetchMetadataForSource(source).catch(() => undefined),
+    ]);
   }
 
   private async fetchMetadataForSource(
