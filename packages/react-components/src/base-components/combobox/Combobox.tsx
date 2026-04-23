@@ -19,17 +19,68 @@ import {
   type ComboboxChipProps,
   type ComboboxChipRemoveProps,
   type ComboboxClearProps,
+  type ComboboxIconProps,
   type ComboboxInputProps,
   type ComboboxItemIndicatorProps,
   type ComboboxItemProps,
   type ComboboxListProps,
   type ComboboxPopupProps,
   type ComboboxPositionerProps,
+  type ComboboxTriggerProps,
 } from "@base-ui/react/combobox";
-import { Cross, Search, Tick } from "@blueprintjs/icons";
+import { CaretDown, Cross, Search, Tick } from "@blueprintjs/icons";
 import classnames from "classnames";
 import React from "react";
 import styles from "./Combobox.module.css";
+
+interface ComboboxTriggerComponentProps
+  extends Omit<ComboboxTriggerProps, "className">
+{
+  className?: string;
+}
+
+function ComboboxTrigger({
+  className,
+  children,
+  ...rest
+}: ComboboxTriggerComponentProps): React.ReactElement {
+  return (
+    <BaseUICombobox.Trigger
+      className={classnames(styles.osdkComboboxTrigger, className)}
+      {...rest}
+    >
+      {children ?? (
+        <>
+          <div className={styles.osdkComboboxValueContainer}>
+            <BaseUICombobox.Value />
+          </div>
+          <ComboboxIcon />
+        </>
+      )}
+    </BaseUICombobox.Trigger>
+  );
+}
+
+interface ComboboxIconComponentProps
+  extends Omit<ComboboxIconProps, "className">
+{
+  className?: string;
+}
+
+function ComboboxIcon({
+  className,
+  children,
+  ...rest
+}: ComboboxIconComponentProps): React.ReactElement {
+  return (
+    <BaseUICombobox.Icon
+      className={classnames(styles.osdkComboboxIcon, className)}
+      {...rest}
+    >
+      {children ?? <CaretDown />}
+    </BaseUICombobox.Icon>
+  );
+}
 
 interface ComboboxInputComponentProps
   extends Omit<ComboboxInputProps, "className">
@@ -275,6 +326,8 @@ function ComboboxItemIndicator({
 
 export const Combobox: {
   Root: typeof BaseUICombobox.Root;
+  Trigger: typeof ComboboxTrigger;
+  Icon: typeof ComboboxIcon;
   SearchInput: typeof ComboboxSearchInput;
   Input: typeof ComboboxInput;
   Portal: typeof BaseUICombobox.Portal;
@@ -291,6 +344,8 @@ export const Combobox: {
   Value: typeof BaseUICombobox.Value;
 } = {
   Root: BaseUICombobox.Root,
+  Trigger: ComboboxTrigger,
+  Icon: ComboboxIcon,
   SearchInput: ComboboxSearchInput,
   Input: ComboboxInput,
   Portal: BaseUICombobox.Portal,

@@ -115,6 +115,7 @@ function renderFieldComponent(
     case "DROPDOWN": {
       return (
         <DropdownField
+          id={fieldDefinition.fieldKey}
           value={value}
           onChange={onChange}
           placeholder={fieldDefinition.placeholder}
