@@ -20,11 +20,11 @@ import type {
 } from "@osdk/foundry.core";
 
 export type GroupId = PlatformGroupId & {
-  __groupIdBrand?: void;
+  __idBrand?: "group";
 };
 
 export type UserId = PlatformUserId & {
-  __userIdBrand?: void;
+  __idBrand?: "user";
 };
 
 export type Principal = {
