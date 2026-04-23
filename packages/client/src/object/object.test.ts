@@ -736,8 +736,10 @@ describe.each([
                     __apiName: "Employee",
                     employeeId: 50030,
                     fullName: "John Doe",
-                    employeeProfile:
-                      "Senior engineer with expertise in distributed systems",
+                    employeeProfile: {
+                      bio:
+                        "Senior engineer with expertise in distributed systems",
+                    },
                   },
                 ],
                 nextPageToken: undefined,
@@ -773,9 +775,9 @@ describe.each([
             },
           ]),
         });
-        expect(result.data[0].employeeProfile).toBe(
-          "Senior engineer with expertise in distributed systems",
-        );
+        expect(result.data[0].employeeProfile).toEqual({
+          bio: "Senior engineer with expertise in distributed systems",
+        });
 
         type ResultEmployeeProfile = (typeof result.data)[0]["employeeProfile"];
         expectTypeOf<ResultEmployeeProfile>().toEqualTypeOf<

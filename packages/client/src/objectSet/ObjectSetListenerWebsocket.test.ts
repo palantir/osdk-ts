@@ -231,7 +231,6 @@ describe("ObjectSetListenerWebsocket", async () => {
           "class",
           "employeeId",
           "employeeProfile",
-
           "employeeSensor",
           "employeeStatus",
           "favoriteRestaurants",
