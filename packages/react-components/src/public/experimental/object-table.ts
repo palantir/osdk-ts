@@ -50,3 +50,11 @@ export type {
   MultiColumnSortDialogProps,
   SortColumnItem,
 } from "../../object-table/MultiColumnSortDialog.js";
+
+// Loading cell components for custom column renderers.
+// Use `LoadingCell` when rendering a full `<td>` element (e.g. in a custom row renderer).
+// Use `LoadingCellContent` when rendering just the skeleton content inside an existing cell.
+export {
+  LoadingCell,
+  LoadingCellContent,
+} from "../../object-table/LoadingCell.js";
