@@ -28,7 +28,6 @@ interface InnerDropdownProps<V, Multiple extends boolean>
   portalRef?: React.Ref<HTMLDivElement>;
   query?: string;
   onQueryChange?: (query: string) => void;
-  filter?: null;
 }
 
 export function DropdownField<V, Multiple extends boolean = false>({
@@ -38,7 +37,7 @@ export function DropdownField<V, Multiple extends boolean = false>({
   portalRef,
   query,
   onQueryChange,
-  filter,
+  disableClientSideFiltering,
   itemListRenderer,
   ...rest
 }: DropdownFieldProps<V, Multiple>): React.ReactElement {
@@ -59,7 +58,7 @@ export function DropdownField<V, Multiple extends boolean = false>({
         portalRef={portalRef}
         query={query}
         onQueryChange={onQueryChange}
-        filter={filter}
+        disableClientSideFiltering={disableClientSideFiltering}
         itemListRenderer={itemListRenderer}
       />
     );
@@ -130,7 +129,7 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
   portalRef,
   query,
   onQueryChange,
-  filter,
+  disableClientSideFiltering,
   itemListRenderer,
 }: InnerDropdownProps<V, Multiple>): React.ReactElement {
   const handleInputValueChange = useCallback(
@@ -184,7 +183,7 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
         onInputValueChange={onQueryChange != null
           ? handleInputValueChange
           : undefined}
-        filter={filter}
+        filter={disableClientSideFiltering ? null : undefined}
       >
         {isMultiple
           ? (

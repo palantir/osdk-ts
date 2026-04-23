@@ -22,16 +22,19 @@ import { useDebouncedValue } from "../../shared/hooks/useDebouncedValue.js";
 import type { ObjectSelectFieldProps } from "../FormFieldApi.js";
 import { AsyncDropdownField } from "./AsyncDropdownField.js";
 
+/** Debounce search input to avoid firing a server query on every keystroke. */
 const SEARCH_DEBOUNCE_MS = 300;
+/** Number of objects fetched per page from the OSDK. */
 const PAGE_SIZE = 50;
 
 type OsdkObject = Osdk.Instance<ObjectTypeDefinition>;
 
+/** Stable empty array so the component doesn't re-render when data is undefined. */
 const EMPTY_ITEMS: OsdkObject[] = [];
 
 export const ObjectSelectField: React.NamedExoticComponent<
   ObjectSelectFieldProps
-> = memo(function ObjectSelectField({
+> = memo(function ObjectSelectFieldFn({
   objectTypeApiName,
   value,
   onChange,
@@ -47,7 +50,7 @@ export const ObjectSelectField: React.NamedExoticComponent<
   const debouncedQuery = useDebouncedValue(query, SEARCH_DEBOUNCE_MS);
 
   const handleChange = useCallback(
-    (newValue: unknown) => {
+    (newValue: OsdkObject | null) => {
       onChange?.(newValue);
       setQuery("");
     },
@@ -56,7 +59,6 @@ export const ObjectSelectField: React.NamedExoticComponent<
 
   // At runtime, useOsdkObjects only reads apiName and type from the definition.
   // The full ObjectTypeDefinition is for compile-time type safety only.
-  // Internal OSDK code uses this same pattern (ObjectListQuery.ts line 46).
   const objectTypeDef = useMemo(
     () =>
       ({
@@ -105,12 +107,10 @@ export const ObjectSelectField: React.NamedExoticComponent<
     void fetchMore?.();
   }, [fetchMore]);
 
-  const typedValue = narrowValue(value);
-
   return (
     <AsyncDropdownField
       id={id}
-      value={typedValue}
+      value={value}
       onChange={handleChange}
       error={error}
       items={items}
@@ -129,25 +129,6 @@ export const ObjectSelectField: React.NamedExoticComponent<
     />
   );
 });
-
-/**
- * Narrows an unknown form value to an OsdkObject by checking for $primaryKey.
- * The form state stores OsdkObject instances selected by the user; this guard
- * bridges the untyped form boundary to the typed OSDK world.
- */
-function isOsdkObject(value: unknown): value is OsdkObject {
-  return value != null && typeof value === "object" && "$primaryKey" in value;
-}
-
-function narrowValue(value: unknown): OsdkObject | OsdkObject[] | null {
-  if (value == null) {
-    return null;
-  }
-  if (Array.isArray(value)) {
-    return value.filter(isOsdkObject);
-  }
-  return isOsdkObject(value) ? value : null;
-}
 
 function itemToStringLabel(obj: OsdkObject): string {
   return obj.$title ?? String(obj.$primaryKey);

@@ -46,7 +46,6 @@ export interface AsyncDropdownFieldProps<V, Multiple extends boolean = false>
 
   /**
    * Current search text entered by the user.
-   * Used to display a contextual "No matches for X" message.
    */
   searchQuery?: string;
 }
@@ -101,6 +100,10 @@ export const AsyncDropdownField: <V, Multiple extends boolean = false>(
             : hasMore
             ? (
               <div ref={sentinelRef}>
+                {
+                  /* 60% width avoids a jarring full-width flash; 12px matches
+                  the line height of option text for a natural shimmer. */
+                }
                 <SkeletonBar width="60%" height={12} />
               </div>
             )
@@ -115,7 +118,7 @@ export const AsyncDropdownField: <V, Multiple extends boolean = false>(
     <DropdownField
       {...dropdownProps}
       isSearchable={true}
-      filter={dropdownProps.onQueryChange != null ? null : undefined}
+      disableClientSideFiltering={dropdownProps.onQueryChange != null}
       itemListRenderer={itemListRenderer}
     />
   );

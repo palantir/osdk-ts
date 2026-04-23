@@ -65,4 +65,18 @@ describe("getDefaultFieldDefinitions", () => {
     });
     expect(field.isRequired).toBe(false);
   });
+
+  it("returns TEXT_INPUT for string parameters, not OBJECT_SELECT", () => {
+    const metadata = makeMetadata({
+      name: {
+        type: "string",
+        nullable: false,
+      },
+    });
+
+    const [field] = getDefaultFieldDefinitions(metadata);
+
+    expect(field.fieldComponent).toBe("TEXT_INPUT");
+    expect(field.fieldComponent).not.toBe("OBJECT_SELECT");
+  });
 });

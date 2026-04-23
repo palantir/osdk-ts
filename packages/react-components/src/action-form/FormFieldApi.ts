@@ -22,6 +22,7 @@ import type {
   DataValueClientToWire,
   ObjectSet,
   ObjectTypeDefinition,
+  Osdk,
 } from "@osdk/api";
 import type React from "react";
 
@@ -303,10 +304,10 @@ export interface DropdownFieldProps<V, Multiple extends boolean = false>
   onQueryChange?: (query: string) => void;
 
   /**
-   * When set to `null`, disables the combobox's built-in client-side filtering.
-   * Use when items are already filtered server-side.
+   * When true, disables the combobox's built-in client-side filtering.
+   * Use when items are already filtered server-side (e.g. via `onQueryChange`).
    */
-  filter?: null;
+  disableClientSideFiltering?: boolean;
 
   /**
    * Custom renderer for the popup content (item list, empty state, footer).
@@ -476,29 +477,29 @@ export interface ObjectSetFieldProps<T extends ObjectTypeDefinition>
 /**
  * Object select field props for selecting object instances.
  * Used for action parameters that accept a single object or multiple objects.
+ *
+ * Extends DropdownFieldProps with props that ObjectSelectField manages
+ * internally (items, search, filtering) omitted from the public surface.
  */
-export interface ObjectSelectFieldProps extends BaseFormFieldProps<unknown> {
+export interface ObjectSelectFieldProps extends
+  Omit<
+    DropdownFieldProps<Osdk.Instance<ObjectTypeDefinition>>,
+    | "items"
+    | "itemToStringLabel"
+    | "itemToKey"
+    | "isItemEqual"
+    | "isSearchable"
+    | "query"
+    | "onQueryChange"
+    | "disableClientSideFiltering"
+    | "itemListRenderer"
+  >
+{
   /**
    * The API name of the object type to search within.
    * Resolved from the action parameter metadata (e.g. "Employee").
    */
   objectTypeApiName: string;
-
-  /**
-   * Placeholder text for the search input.
-   */
-  placeholder?: string;
-
-  /**
-   * Whether multiple objects can be selected.
-   */
-  isMultiple?: boolean;
-
-  /**
-   * Ref forwarded to the portal container element.
-   * Used to track portaled content for click-outside detection.
-   */
-  portalRef?: React.Ref<HTMLDivElement>;
 }
 
 /**

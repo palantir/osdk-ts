@@ -53,6 +53,7 @@ function renderAsyncDropdown(overrides: {
   hasMore?: boolean;
   onFetchMore?: () => void;
   fetchError?: Error;
+  searchQuery?: string;
 } = {}) {
   return render(
     <AsyncDropdownField
@@ -123,8 +124,10 @@ describe("AsyncDropdownField", () => {
       renderAsyncDropdown({ hasMore: true });
       await openCombobox();
 
-      const skeletonBars = getPopup()?.querySelectorAll("[class*='skeleton']");
-      expect(skeletonBars!.length).toBeGreaterThan(0);
+      const popup = getPopup();
+      expect(popup).not.toBeNull();
+      const skeletonBars = popup?.querySelectorAll("[class*='skeleton']");
+      expect(skeletonBars?.length).toBeGreaterThan(0);
     });
 
     it("shows 'Loading...' empty message when loading with no items", async () => {
@@ -144,8 +147,8 @@ describe("AsyncDropdownField", () => {
       await vi.waitFor(() => {
         const popup = getPopup();
         expect(popup).not.toBeNull();
-        expect(popup!.textContent).toContain("Loading");
-        expect(popup!.textContent).not.toContain("No results");
+        expect(popup?.textContent).toContain("Loading");
+        expect(popup?.textContent).not.toContain("No results");
       });
     });
 
@@ -166,8 +169,8 @@ describe("AsyncDropdownField", () => {
       await vi.waitFor(() => {
         const popup = getPopup();
         expect(popup).not.toBeNull();
-        const skeletonBars = popup!.querySelectorAll("[class*='skeleton']");
-        expect(skeletonBars.length).toBe(0);
+        const skeletonBars = popup?.querySelectorAll("[class*='skeleton']");
+        expect(skeletonBars?.length ?? 0).toBe(0);
       });
     });
 
@@ -189,8 +192,8 @@ describe("AsyncDropdownField", () => {
       await vi.waitFor(() => {
         const popup = getPopup();
         expect(popup).not.toBeNull();
-        expect(popup!.textContent).toContain("Connection refused");
-        expect(popup!.textContent).not.toContain("No results");
+        expect(popup?.textContent).toContain("Connection refused");
+        expect(popup?.textContent).not.toContain("No results");
       });
     });
 
@@ -200,16 +203,7 @@ describe("AsyncDropdownField", () => {
 
       const alertElement = document.querySelector("[role='alert']");
       expect(alertElement).not.toBeNull();
-      expect(alertElement!.textContent).toBe("Network timeout");
-    });
-
-    it("shows error.message in footer for fetchError", async () => {
-      renderAsyncDropdown({ fetchError: new Error("Unexpected failure") });
-      await openCombobox();
-
-      const alertElement = document.querySelector("[role='alert']");
-      expect(alertElement).not.toBeNull();
-      expect(alertElement!.textContent).toBe("Unexpected failure");
+      expect(alertElement?.textContent).toBe("Network timeout");
     });
 
     it("renders no footer when all data is fetched", async () => {
@@ -220,6 +214,56 @@ describe("AsyncDropdownField", () => {
       const skeletonBars = getPopup()?.querySelectorAll("[class*='skeleton']");
       expect(alertElement).toBeNull();
       expect(skeletonBars?.length ?? 0).toBe(0);
+    });
+  });
+
+  describe("search query messages", () => {
+    function openEmptyCombobox(): void {
+      const input = screen.getByRole("combobox");
+      fireEvent.focus(input);
+      fireEvent.keyDown(input, { key: "ArrowDown" });
+    }
+
+    it("shows 'Searching...' when loading with a search query and no items", async () => {
+      render(
+        <AsyncDropdownField
+          items={[]}
+          value={null}
+          onChange={vi.fn()}
+          isLoading={true}
+          hasMore={false}
+          searchQuery="Ali"
+        />,
+      );
+      openEmptyCombobox();
+
+      await vi.waitFor(() => {
+        const popup = getPopup();
+        expect(popup).not.toBeNull();
+        expect(popup?.textContent).toContain("Searching");
+        expect(popup?.textContent).not.toContain("No results");
+      });
+    });
+
+    it("shows 'No matches' when not loading with a search query and no items", async () => {
+      render(
+        <AsyncDropdownField
+          items={[]}
+          value={null}
+          onChange={vi.fn()}
+          isLoading={false}
+          hasMore={false}
+          searchQuery="Xyz"
+        />,
+      );
+      openEmptyCombobox();
+
+      await vi.waitFor(() => {
+        const popup = getPopup();
+        expect(popup).not.toBeNull();
+        expect(popup?.textContent).toContain("No matches");
+        expect(popup?.textContent).toContain("Xyz");
+      });
     });
   });
 });

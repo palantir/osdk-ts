@@ -32,27 +32,12 @@ const mockUseOsdkMetadata = vi.mocked(useOsdkMetadata);
 const { useOsdkObjects } = await import("@osdk/react/experimental");
 const mockUseOsdkObjects = vi.mocked(useOsdkObjects);
 
-function mockMetadataLoaded(
-  titleProperty: string = "fullName",
-): void {
-  mockUseOsdkMetadata.mockReturnValue({
-    loading: false,
-    metadata: { titleProperty } as ReturnType<
-      typeof useOsdkMetadata
-    >["metadata"],
-  });
-}
+// The full return type is UseOsdkListResult<ObjectTypeDefinition> whose `data`
+// field requires full Osdk.Instance objects (including $objectSpecifier, etc.).
+// Our mock objects only carry the subset ObjectSelectField reads at runtime
+// ($primaryKey, $title), so the mock value must be cast through `never`.
 
 afterEach(cleanup);
-
-function makeMockObject(primaryKey: number, title?: string) {
-  return {
-    $primaryKey: primaryKey,
-    $title: title,
-    $objectType: "Employee",
-    $apiName: "Employee",
-  };
-}
 
 const MOCK_EMPLOYEES = [
   makeMockObject(1, "Alice Smith"),
@@ -82,28 +67,6 @@ function mockLoadedState(
     objectSet: undefined,
     ...overrides,
   } as never);
-}
-
-function renderObjectSelect(
-  overrides: Partial<Parameters<typeof ObjectSelectField>[0]> = {},
-) {
-  return render(
-    <ObjectSelectField
-      objectTypeApiName="Employee"
-      value={null}
-      onChange={vi.fn()}
-      {...overrides}
-    />,
-  );
-}
-
-async function openCombobox(): Promise<void> {
-  const input = screen.getByRole("combobox");
-  fireEvent.focus(input);
-  fireEvent.keyDown(input, { key: "ArrowDown" });
-  await vi.waitFor(() => {
-    expect(screen.getByRole("option", { name: "Alice Smith" })).toBeDefined();
-  });
 }
 
 describe("ObjectSelectField", () => {
@@ -168,7 +131,7 @@ describe("ObjectSelectField", () => {
     await vi.waitFor(() => {
       const popup = document.querySelector("[class*='osdkComboboxPopup']");
       expect(popup).not.toBeNull();
-      expect(popup!.textContent).toContain("Loading");
+      expect(popup?.textContent).toContain("Loading");
     });
   });
 
@@ -186,7 +149,7 @@ describe("ObjectSelectField", () => {
     await vi.waitFor(() => {
       const popup = document.querySelector("[class*='osdkComboboxPopup']");
       expect(popup).not.toBeNull();
-      expect(popup!.textContent).toContain("Connection refused");
+      expect(popup?.textContent).toContain("Connection refused");
     });
   });
 
@@ -252,6 +215,29 @@ describe("ObjectSelectField", () => {
     });
   });
 
+  it("clears search text from the input after selecting an object", async () => {
+    mockLoadedState();
+    renderObjectSelect();
+
+    const input = screen.getByRole("combobox");
+    fireEvent.focus(input);
+    fireEvent.change(input, { target: { value: "Ali" } });
+    fireEvent.keyDown(input, { key: "ArrowDown" });
+
+    await vi.waitFor(() => {
+      expect(screen.getByRole("option", { name: "Alice Smith" })).toBeDefined();
+    });
+
+    fireEvent.click(screen.getByRole("option", { name: "Alice Smith" }));
+
+    // After selection, the search text should not remain in the input.
+    // The component clears its query state so base-ui can display the
+    // selected label instead of leftover search text.
+    await vi.waitFor(() => {
+      expect(input).not.toHaveProperty("value", "Ali");
+    });
+  });
+
   it("renders custom placeholder text", () => {
     mockLoadedState();
     renderObjectSelect({ placeholder: "Find an employee…" });
@@ -261,9 +247,7 @@ describe("ObjectSelectField", () => {
   });
 
   it("uses $primaryKey as fallback display when $title is missing", async () => {
-    mockLoadedState([
-      makeMockObject(99),
-    ]);
+    mockLoadedState([makeMockObject(99)]);
     renderObjectSelect();
 
     const input = screen.getByRole("combobox");
@@ -275,3 +259,43 @@ describe("ObjectSelectField", () => {
     });
   });
 });
+
+function mockMetadataLoaded(titleProperty: string = "fullName"): void {
+  mockUseOsdkMetadata.mockReturnValue({
+    loading: false,
+    metadata: { titleProperty } as ReturnType<
+      typeof useOsdkMetadata
+    >["metadata"],
+  });
+}
+
+function makeMockObject(primaryKey: number, title?: string) {
+  return {
+    $primaryKey: primaryKey,
+    $title: title,
+    $objectType: "Employee",
+    $apiName: "Employee",
+  };
+}
+
+function renderObjectSelect(
+  overrides: Partial<Parameters<typeof ObjectSelectField>[0]> = {},
+) {
+  return render(
+    <ObjectSelectField
+      objectTypeApiName="Employee"
+      value={null}
+      onChange={vi.fn()}
+      {...overrides}
+    />,
+  );
+}
+
+async function openCombobox(): Promise<void> {
+  const input = screen.getByRole("combobox");
+  fireEvent.focus(input);
+  fireEvent.keyDown(input, { key: "ArrowDown" });
+  await vi.waitFor(() => {
+    expect(screen.getByRole("option", { name: "Alice Smith" })).toBeDefined();
+  });
+}

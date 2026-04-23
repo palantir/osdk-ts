@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { ObjectTypeDefinition, Osdk } from "@osdk/api";
 import React, { memo } from "react";
 import { FormField } from "../FormField.js";
 import {
@@ -180,7 +181,7 @@ function renderFieldComponent(
       return (
         <ObjectSelectField
           id={fieldDefinition.fieldKey}
-          value={value}
+          value={narrowToOsdkObject(value)}
           onChange={onChange}
           placeholder={fieldDefinition.placeholder}
           error={error}
@@ -218,6 +219,16 @@ function coerceToFileValue(value: unknown): File | File[] | null {
   }
   if (Array.isArray(value) && isFileArray(value)) {
     return value;
+  }
+  return null;
+}
+
+/** Narrows the untyped form value to an OsdkObject by checking for $primaryKey. */
+function narrowToOsdkObject(
+  value: unknown,
+): Osdk.Instance<ObjectTypeDefinition> | null {
+  if (value != null && typeof value === "object" && "$primaryKey" in value) {
+    return value as Osdk.Instance<ObjectTypeDefinition>;
   }
   return null;
 }
