@@ -37,6 +37,7 @@ export async function cli(args: string[] = process.argv): Promise<
     return await base
       .command(site)
       .command(widgetSet)
+      .command(auth)
       .command({
         command: "unstable",
         aliases: ["experimental"],
@@ -44,7 +45,6 @@ export async function cli(args: string[] = process.argv): Promise<
         builder: (argv) => {
           return argv
             .command(typescript)
-            .command(auth)
             .demandCommand();
         },
         handler: (_args) => {},
