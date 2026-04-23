@@ -326,17 +326,8 @@ export abstract class ListQuery extends BaseListQuery<
     );
   }
 
-  /**
-   * Determines if this query's results are affected by changes to the
-   * given object type. Base checks apiName (source type) and
-   * fetchedObjectType (actual result type when they differ).
-   * Subclasses override to add type-specific logic (e.g. interface
-   * implementation checks).
-   */
-  async revalidateObjectType(objectType: string): Promise<boolean> {
-    return this.apiName === objectType
-      || (this.#fetchedObjectType != null
-        && this.#fetchedObjectType === objectType);
+  revalidateObjectType(objectType: string): boolean {
+    return this.objectTypes.has(objectType);
   }
 
   /**
@@ -350,7 +341,7 @@ export abstract class ListQuery extends BaseListQuery<
     objectType: string,
     changes: Changes | undefined,
   ): Promise<void> => {
-    if (await this.revalidateObjectType(objectType)) {
+    if (this.revalidateObjectType(objectType)) {
       return this.markAffectedAndRevalidate(changes);
     }
   };
