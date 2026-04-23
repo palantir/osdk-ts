@@ -52,6 +52,27 @@ const osdkObjectToInterfaceView = createSimpleCache(
     >(),
 );
 
+function assertInterfaceImplementationIsDirectMapping(
+  objDef: FetchedObjectTypeDefinition,
+  interfaceApiName: string,
+): void {
+  const implementations = objDef.interfaceImplementations?.[interfaceApiName];
+  if (implementations == null) return;
+  for (
+    const [iptApiName, implementation] of Object.entries(implementations)
+  ) {
+    if (implementation.type === "localProperty") continue;
+    const reason = implementation.type === "reduced"
+      ? "applies a reducer"
+      : "extracts a struct main value / field";
+    throw new Error(
+      `Cannot cast '${objDef.apiName}' to interface '${interfaceApiName}': `
+        + `property '${iptApiName}' ${reason}, which is not representable on `
+        + `the interface type. Load the object directly`,
+    );
+  }
+}
+
 function $asFactory(
   objDef: FetchedObjectTypeDefinition,
 ): DollarAsFn {
@@ -95,6 +116,11 @@ function $asFactory(
         `Object does not implement interface '${targetInterfaceApiName}'.`,
       );
     }
+
+    assertInterfaceImplementationIsDirectMapping(
+      objDef,
+      targetInterfaceApiName,
+    );
 
     const underlying = this[UnderlyingOsdkObject];
 

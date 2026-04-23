@@ -330,7 +330,7 @@ export type CompileTimeMetadata<T extends {
 // Warning: (ae-forgotten-export) The symbol "ValidOsdkPropParams" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "UnionIfTrue" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "IsNever" needs to be exported by the entry point index.d.ts
-// Warning: (ae-forgotten-export) The symbol "PlainP" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "RemoveModifierSelectors" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "MapPropNamesToObjectType" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "MapPropNamesToInterface" needs to be exported by the entry point index.d.ts
 //
@@ -340,7 +340,7 @@ export type ConvertProps<
 	TO extends ValidToFrom<FROM>,
 	P extends ValidOsdkPropParams<FROM> | string,
 	OPTIONS extends never | "$rid" | "$allBaseProperties" | "$propertySecurities" = never
-> = TO extends FROM ? P : TO extends ObjectTypeDefinition ? (UnionIfTrue<IsNever<PlainP<P>> extends true ? never : MapPropNamesToObjectType<FROM, TO, PlainP<P> & ValidOsdkPropParams<FROM>, OPTIONS>, P extends "$rid" ? true : false, "$rid">) : TO extends InterfaceDefinition ? FROM extends ObjectTypeDefinition ? (UnionIfTrue<IsNever<PlainP<P>> extends true ? never : MapPropNamesToInterface<FROM, TO, PlainP<P> & ValidOsdkPropParams<FROM>>, P extends "$rid" ? true : false, "$rid">) : never : never;
+> = TO extends FROM ? P : TO extends ObjectTypeDefinition ? (UnionIfTrue<IsNever<RemoveModifierSelectors<P>> extends true ? never : MapPropNamesToObjectType<FROM, TO, RemoveModifierSelectors<P> & ValidOsdkPropParams<FROM>, OPTIONS>, P extends "$rid" ? true : false, "$rid">) : TO extends InterfaceDefinition ? FROM extends ObjectTypeDefinition ? (UnionIfTrue<IsNever<RemoveModifierSelectors<P>> extends true ? never : MapPropNamesToInterface<FROM, TO, RemoveModifierSelectors<P> & ValidOsdkPropParams<FROM>>, P extends "$rid" ? true : false, "$rid">) : never : never;
 
 // @public
 export interface DataValueClientToWire {
@@ -1145,7 +1145,8 @@ export interface ObjectMetadata extends ObjectInterfaceBaseMetadata {
     //
     // (undocumented)
     icon: Icon | undefined;
-    	interfaceImplementations?: Record<string, Record<string, ObjectMetadata.InterfacePropertyImplementation>>;
+    	// (undocumented)
+    interfaceImplementations?: Record<string, Record<string, ObjectMetadata.InterfacePropertyImplementation>>;
     	// (undocumented)
     interfaceMap: Record<string, Record<string, string>>;
     	// (undocumented)
@@ -1183,7 +1184,8 @@ export namespace ObjectMetadata {
         	}
     	// (undocumented)
     export interface InterfacePropertyReducedImplementation {
-        		implementation: InterfacePropertyLocalImplementation | InterfacePropertyStructFieldImplementation | InterfacePropertyStructImplementation;
+        		// (undocumented)
+        implementation: InterfacePropertyLocalImplementation | InterfacePropertyStructFieldImplementation | InterfacePropertyStructImplementation;
         		// (undocumented)
         type: "reduced";
         	}
@@ -2054,7 +2056,8 @@ export type WirePropertyTypes = BaseWirePropertyTypes | Record<string, BaseWireP
 // src/Definitions.ts:42:52 - (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
 // src/Definitions.ts:42:52 - (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
 // src/Definitions.ts:42:52 - (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
-// src/OsdkObjectFrom.ts:364:49 - (ae-forgotten-export) The symbol "ObjectPropertySecurities" needs to be exported by the entry point index.d.ts
+// src/OsdkObjectFrom.ts:315:48 - (tsdoc-escape-greater-than) The ">" character should be escaped using a backslash to avoid confusion with an HTML tag
+// src/OsdkObjectFrom.ts:360:49 - (ae-forgotten-export) The symbol "ObjectPropertySecurities" needs to be exported by the entry point index.d.ts
 // src/aggregate/AggregateOpts.ts:25:3 - (ae-forgotten-export) The symbol "UnorderedAggregationClause" needs to be exported by the entry point index.d.ts
 // src/aggregate/AggregateOpts.ts:25:3 - (ae-forgotten-export) The symbol "OrderedAggregationClause" needs to be exported by the entry point index.d.ts
 // src/aggregate/AggregationResultsWithGroups.ts:36:5 - (ae-forgotten-export) The symbol "MaybeNullable_2" needs to be exported by the entry point index.d.ts

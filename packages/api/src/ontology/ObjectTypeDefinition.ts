@@ -88,14 +88,6 @@ export interface ObjectMetadata extends ObjectInterfaceBaseMetadata {
       /* InterfaceType property api name */ string
     >
   >;
-  /**
-   * Describes how this object type implements each property of the interfaces
-   * it implements. Parallel to `interfaceMap`/`inverseInterfaceMap`, but
-   * captures the richer cases (struct fields, reduced properties, struct
-   * mappings) that the flat maps can't express.
-   *
-   * Optional for backwards compatibility — legacy metadata may not surface it.
-   */
   interfaceImplementations?: Record<
     /* InterfaceType api name */ string,
     Record<
@@ -130,12 +122,6 @@ export namespace ObjectMetadata {
     multiplicity: M;
   }
 
-  /**
-   * Describes how an object type implements an interface property. Mirrors
-   * the four variants on the wire
-   * (`InterfacePropertyTypeImplementation`), minimized to what the SDK needs
-   * to resolve property types across `$as` casts.
-   */
   export type InterfacePropertyImplementation =
     | InterfacePropertyLocalImplementation
     | InterfacePropertyStructFieldImplementation
@@ -168,10 +154,6 @@ export namespace ObjectMetadata {
 
   export interface InterfacePropertyReducedImplementation {
     type: "reduced";
-    /**
-     * The inner implementation being reduced. Cannot itself be `reduced` —
-     * arbitrary nesting is disallowed on the wire.
-     */
     implementation:
       | InterfacePropertyLocalImplementation
       | InterfacePropertyStructFieldImplementation

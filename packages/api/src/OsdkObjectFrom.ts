@@ -153,11 +153,7 @@ export type MapPropNamesToInterface<
   TO
 >;
 
-/**
- * P entries without modifier notation. Used to keep the existing
- * Map…ToObjectType / Map…ToInterface logic focused on plain prop names.
- */
-type PlainP<P> = P extends `${string}:${string}` ? never : P;
+type RemoveModifierSelectors<P> = P extends `${string}:${string}` ? never : P;
 /**
  * Older version of this helper that allows for `$rid` and co in
  * the properties field.
@@ -177,11 +173,11 @@ export type ConvertProps<
 > = TO extends FROM ? P
   : TO extends ObjectTypeDefinition ? (
       UnionIfTrue<
-        IsNever<PlainP<P>> extends true ? never
+        IsNever<RemoveModifierSelectors<P>> extends true ? never
           : MapPropNamesToObjectType<
             FROM,
             TO,
-            PlainP<P> & ValidOsdkPropParams<FROM>,
+            RemoveModifierSelectors<P> & ValidOsdkPropParams<FROM>,
             OPTIONS
           >,
         P extends "$rid" ? true : false,
@@ -190,11 +186,11 @@ export type ConvertProps<
     )
   : TO extends InterfaceDefinition ? FROM extends ObjectTypeDefinition ? (
         UnionIfTrue<
-          IsNever<PlainP<P>> extends true ? never
+          IsNever<RemoveModifierSelectors<P>> extends true ? never
             : MapPropNamesToInterface<
               FROM,
               TO,
-              PlainP<P> & ValidOsdkPropParams<FROM>
+              RemoveModifierSelectors<P> & ValidOsdkPropParams<FROM>
             >,
           P extends "$rid" ? true : false,
           "$rid"
@@ -317,9 +313,9 @@ export namespace Osdk {
 
       /**
        * When `P` includes modifier notation (e.g. `"prop:applyReducers"`),
-       * only object-type targets are allowed — interface casts are rejected
-       * at the type level because interface properties cannot represent
-       * modifier-reduced shapes.
+       * only object-type targets are allowed — interface casts are rejected.
+       * Interfaces cannot have modifiers applied, so Interface -> Interface
+       * casts are allowed.
        */
       readonly $as: <
         NEW_Q extends HasModifiers<P> extends true

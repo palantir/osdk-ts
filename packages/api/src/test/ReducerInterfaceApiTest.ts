@@ -23,13 +23,6 @@ import type {
 
 export type OsdkObjectLinks$ReducerInterfaceApiTest = {};
 
-/**
- * Hand-rolled test interface whose properties have the same *types* as the
- * modifier-capable object properties on EmployeeApiTest, but without any
- * modifier metadata of their own — interfaces cannot carry `mainValue` or
- * `hasReducers`. Those live on the implementing object type and are surfaced
- * through a $as cast.
- */
 export namespace ReducerInterfaceApiTest {
   export type PropertyKeys =
     | "ifaceAddress"
