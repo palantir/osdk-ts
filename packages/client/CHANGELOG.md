@@ -1,5 +1,41 @@
 # @osdk/client
 
+## 2.11.0
+
+### Minor Changes
+
+- 58248f8: Move @osdk/client.test.ontology from peerDependencies to devDependencies to fix npm resolution errors in consuming repos
+- e456da5: Add Fetch-User-Agent tracing headers for React layer network calls
+
+### Patch Changes
+
+- Updated dependencies [a6f4208]
+  - @osdk/client.unstable@2.11.0
+  - @osdk/api@2.11.0
+  - @osdk/generator-converters@2.11.0
+
+## 2.10.0
+
+### Minor Changes
+
+- 29ab35a: Use workspace:^ for peer dependencies to prevent changesets from propagating major bumps when a peer dep receives a minor version change. The internal codegen (`osdk-unstable-typescript generate --internal`) now emits `workspace:^` for peer deps while keeping `workspace:~` for regular/dev deps.
+- 0fb9c8a: fix invalidateObjectType to match queries where the result type differs from apiName (e.g. link traversal queries)
+- f01a8f4: improvements(build): significant reduction in build task graphs
+- f34a1ce: prevent streamUpdates from being used with pivotTo since the server does not support websocket subscriptions for link-traversal queries
+- 7e7f70b: Fix sorting on ObjectTable when the object set contains a reference type (e.g., intersect with a temporary object set)
+
+### Patch Changes
+
+- Updated dependencies [f01a8f4]
+  - @osdk/client.test.ontology@2.10.0
+  - @osdk/generator-converters@2.10.0
+  - @osdk/shared.client.impl@1.10.0
+  - @osdk/shared.net.errors@2.9.0
+  - @osdk/shared.net.fetch@1.9.0
+  - @osdk/client.unstable@2.10.0
+  - @osdk/shared.test@2.9.0
+  - @osdk/api@2.10.0
+
 ## 2.9.0
 
 ### Minor Changes

@@ -61,8 +61,10 @@ describe("Interfaces", () => {
           "actionTypes": {},
           "blockPermissionInformation": {
             "actionTypes": {},
+            "interfaceTypes": {},
             "linkTypes": {},
             "objectTypes": {},
+            "sharedPropertyTypes": {},
           },
           "interfaceTypes": {
             "com.palantir.Foo": {
@@ -82,6 +84,7 @@ describe("Interfaces", () => {
                 "extendsInterfaces": [],
                 "extendsInterfacesMetadata": [],
                 "links": [],
+                "permission": undefined,
                 "properties": [],
                 "propertiesV2": {},
                 "propertiesV3": {
@@ -143,7 +146,7 @@ describe("Interfaces", () => {
         displayName: "Bar",
         properties: {
           "foo": { type: "boolean" },
-          "spt": spt,
+          spt,
         },
       });
       expect(dumpOntologyFullMetadata().ontology).toMatchInlineSnapshot(`
@@ -151,8 +154,10 @@ describe("Interfaces", () => {
           "actionTypes": {},
           "blockPermissionInformation": {
             "actionTypes": {},
+            "interfaceTypes": {},
             "linkTypes": {},
             "objectTypes": {},
+            "sharedPropertyTypes": {},
           },
           "interfaceTypes": {
             "com.palantir.bar": {
@@ -172,6 +177,7 @@ describe("Interfaces", () => {
                 "extendsInterfaces": [],
                 "extendsInterfacesMetadata": [],
                 "links": [],
+                "permission": undefined,
                 "properties": [],
                 "propertiesV2": {
                   "com.palantir.spt": {
@@ -347,8 +353,10 @@ describe("Interfaces", () => {
           "actionTypes": {},
           "blockPermissionInformation": {
             "actionTypes": {},
+            "interfaceTypes": {},
             "linkTypes": {},
             "objectTypes": {},
+            "sharedPropertyTypes": {},
           },
           "interfaceTypes": {
             "com.palantir.parentInterface": {
@@ -368,6 +376,7 @@ describe("Interfaces", () => {
                 "extendsInterfaces": [],
                 "extendsInterfacesMetadata": [],
                 "links": [],
+                "permission": undefined,
                 "properties": [],
                 "propertiesV2": {
                   "com.palantir.spt": {
@@ -558,8 +567,10 @@ describe("Interfaces", () => {
           "actionTypes": {},
           "blockPermissionInformation": {
             "actionTypes": {},
+            "interfaceTypes": {},
             "linkTypes": {},
             "objectTypes": {},
+            "sharedPropertyTypes": {},
           },
           "interfaceTypes": {
             "com.palantir.bar": {
@@ -579,6 +590,7 @@ describe("Interfaces", () => {
                 "extendsInterfaces": [],
                 "extendsInterfacesMetadata": [],
                 "links": [],
+                "permission": undefined,
                 "properties": [],
                 "propertiesV2": {},
                 "propertiesV3": {
@@ -701,8 +713,10 @@ describe("Interfaces", () => {
           "actionTypes": {},
           "blockPermissionInformation": {
             "actionTypes": {},
+            "interfaceTypes": {},
             "linkTypes": {},
             "objectTypes": {},
+            "sharedPropertyTypes": {},
           },
           "interfaceTypes": {
             "com.palantir.parentInterface": {
@@ -722,6 +736,7 @@ describe("Interfaces", () => {
                 "extendsInterfaces": [],
                 "extendsInterfacesMetadata": [],
                 "links": [],
+                "permission": undefined,
                 "properties": [],
                 "propertiesV2": {
                   "com.palantir.spt": {
@@ -957,8 +972,10 @@ describe("Interfaces", () => {
         "actionTypes": {},
         "blockPermissionInformation": {
           "actionTypes": {},
+          "interfaceTypes": {},
           "linkTypes": {},
           "objectTypes": {},
+          "sharedPropertyTypes": {},
         },
         "interfaceTypes": {
           "com.palantir.childInterface": {
@@ -995,6 +1012,7 @@ describe("Interfaces", () => {
                   "extendsInterfaces": [],
                   "extendsInterfacesMetadata": [],
                   "links": [],
+                  "permission": undefined,
                   "properties": [],
                   "propertiesV2": {},
                   "propertiesV3": {
@@ -1036,6 +1054,7 @@ describe("Interfaces", () => {
                 },
               ],
               "links": [],
+              "permission": undefined,
               "properties": [],
               "propertiesV2": {},
               "propertiesV3": {
@@ -1093,6 +1112,7 @@ describe("Interfaces", () => {
               "extendsInterfaces": [],
               "extendsInterfacesMetadata": [],
               "links": [],
+              "permission": undefined,
               "properties": [],
               "propertiesV2": {},
               "propertiesV3": {
@@ -1152,8 +1172,10 @@ describe("Interfaces", () => {
         "actionTypes": {},
         "blockPermissionInformation": {
           "actionTypes": {},
+          "interfaceTypes": {},
           "linkTypes": {},
           "objectTypes": {},
+          "sharedPropertyTypes": {},
         },
         "interfaceTypes": {
           "com.palantir.parentInterface": {
@@ -1173,6 +1195,7 @@ describe("Interfaces", () => {
               "extendsInterfaces": [],
               "extendsInterfacesMetadata": [],
               "links": [],
+              "permission": undefined,
               "properties": [],
               "propertiesV2": {},
               "propertiesV3": {},
@@ -1233,5 +1256,24 @@ describe("Interfaces", () => {
       status: { type: "example" },
     });
     expect(result.status).toEqual(exampleStatus);
+  });
+
+  it("serializes publicProject permission on interface type", async () => {
+    await defineOntology("com.palantir.", () => {
+      defineInterface({
+        apiName: "myInterface",
+        displayName: "My Interface",
+        permission: "publicProject",
+      });
+
+      const bpi = dumpOntologyFullMetadata().ontology
+        .blockPermissionInformation!;
+      const itPerms = Object.values(bpi.interfaceTypes);
+      expect(itPerms).toHaveLength(1);
+      expect(itPerms[0].restrictionStatus).toEqual({
+        publicProject: true,
+        ontologyPackageRid: null,
+      });
+    }, "/tmp/");
   });
 });

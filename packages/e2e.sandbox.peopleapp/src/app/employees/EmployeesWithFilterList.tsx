@@ -18,7 +18,7 @@ import type { WhereClause } from "@osdk/api";
 import {
   type FilterDefinitionUnion,
   FilterList,
-} from "@osdk/react-components/experimental";
+} from "@osdk/react-components/experimental/filter-list";
 import "@osdk/react-components/styles.css";
 import { useOsdkObjects } from "@osdk/react/experimental";
 import { useState } from "react";

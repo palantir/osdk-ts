@@ -20,6 +20,8 @@ import { Select } from "../../base-components/select/Select.js";
 import { typedReactMemo } from "../../shared/typedMemo.js";
 import type { DropdownFieldProps } from "../FormFieldApi.js";
 
+const EMPTY_ARRAY: [] = [];
+
 interface InnerDropdownProps<V, Multiple extends boolean>
   extends Omit<DropdownFieldProps<V, Multiple>, "isSearchable">
 {
@@ -33,8 +35,15 @@ export function DropdownField<V, Multiple extends boolean = false>({
   itemToStringLabel,
   itemToKey,
   portalRef,
+  value,
   ...rest
 }: DropdownFieldProps<V, Multiple>): React.ReactElement {
+  // Ensure always controlled from first render: multi-select needs [],
+  // single-select needs null. Passing undefined switches Base UI from
+  // uncontrolled to controlled and triggers a warning.
+  const normalizedValue = (value
+    ?? (rest.isMultiple ? EMPTY_ARRAY : null)) as typeof value;
+
   const resolvedItemToStringLabel = itemToStringLabel
     ?? defaultItemToStringLabel;
 
@@ -47,6 +56,7 @@ export function DropdownField<V, Multiple extends boolean = false>({
     return (
       <ComboboxDropdown
         {...rest}
+        value={normalizedValue}
         itemToStringLabel={resolvedItemToStringLabel}
         getKey={getKey}
         portalRef={portalRef}
@@ -57,6 +67,7 @@ export function DropdownField<V, Multiple extends boolean = false>({
   return (
     <SelectDropdown
       {...rest}
+      value={normalizedValue}
       itemToStringLabel={resolvedItemToStringLabel}
       getKey={getKey}
       portalRef={portalRef}
@@ -68,6 +79,7 @@ const SelectDropdown = typedReactMemo(function SelectDropdownFn<
   V,
   Multiple extends boolean,
 >({
+  id,
   value,
   onChange,
   items,
@@ -87,7 +99,7 @@ const SelectDropdown = typedReactMemo(function SelectDropdownFn<
         isItemEqualToValue={isItemEqual}
         itemToStringLabel={itemToStringLabel}
       >
-        <Select.Trigger placeholder={placeholder} />
+        <Select.Trigger id={id} placeholder={placeholder} />
         <Select.Portal ref={portalRef}>
           <Select.Positioner>
             <Select.Popup>
@@ -108,6 +120,7 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
   V,
   Multiple extends boolean,
 >({
+  id,
   value,
   onChange,
   items,
@@ -165,7 +178,7 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
               <Combobox.Value>{renderChips}</Combobox.Value>
             </Combobox.Chips>
           )
-          : <Combobox.Input placeholder={placeholder} />}
+          : <Combobox.Input id={id} placeholder={placeholder} />}
         <Combobox.Portal ref={portalRef}>
           <Combobox.Positioner>
             <Combobox.Popup>

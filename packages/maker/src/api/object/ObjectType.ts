@@ -17,6 +17,7 @@
 import type { OntologyIrObjectType, Visibility } from "@osdk/client.unstable";
 import type { RequiredFields } from "../../util/RequiredFields.js";
 import type { BlueprintIcon } from "../common/BlueprintIcons.js";
+import type { EntityPermission } from "../common/EntityPermission.js";
 import type { OntologyEntityBase } from "../common/OntologyEntityBase.js";
 import type { OntologyEntityTypeEnum } from "../common/OntologyEntityTypeEnum.js";
 import type { InterfaceImplementation } from "./InterfaceImplementation.js";
@@ -37,6 +38,7 @@ export type ObjectType =
   & {
     datasources?: Array<ObjectTypeDatasourceDefinition>;
     includeEmptyBackingDatasource?: boolean;
+    permission?: EntityPermission;
     __type: OntologyEntityTypeEnum.OBJECT_TYPE;
   };
 

@@ -1,5 +1,22 @@
 # @osdk/widget.api
 
+## 3.8.0
+
+### Patch Changes
+
+- @osdk/api@2.11.0
+
+## 3.7.0
+
+### Minor Changes
+
+- f01a8f4: improvements(build): significant reduction in build task graphs
+
+### Patch Changes
+
+- Updated dependencies [f01a8f4]
+  - @osdk/api@2.10.0
+
 ## 3.6.0
 
 ### Patch Changes

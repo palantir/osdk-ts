@@ -1,6 +1,6 @@
 import type { DerivedProperty, Osdk } from "@osdk/api";
-import type { ColumnDefinition } from "@osdk/react-components/experimental";
-import { ObjectTable } from "@osdk/react-components/experimental";
+import type { ColumnDefinition } from "@osdk/react-components/experimental/object-table";
+import { ObjectTable } from "@osdk/react-components/experimental/object-table";
 import { useOsdkClient } from "@osdk/react/experimental";
 import React, { useCallback } from "react";
 import {
@@ -117,7 +117,7 @@ export function EmployeesTable() {
   return (
     <div
       style={{
-        height: "200px",
+        height: "300px",
         overflow: "hidden",
       }}
     >

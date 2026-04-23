@@ -88,7 +88,51 @@
   }
 }
 
-.osdkDropdownText {
+.osdkEditableCellDatePicker {
+  /* Override the default borders in date picker */
+  --osdk-datetime-input-border-width: 0px;
+  --osdk-datetime-input-border-color: transparent;
+  --osdk-datetime-input-border-color-focus: transparent;
+  --osdk-datetime-input-focus-width: 0px;
+  --osdk-datetime-input-bg: transparent;
+  --osdk-datetime-input-bg-hover: transparent;
+
+  --osdk-datetime-input-padding: var(--osdk-surface-spacing)
+    calc(var(--osdk-surface-spacing) * 3);
+
+  border-radius: var(--osdk-surface-border-radius);
+
+  tr[data-focused="true"] & {
+    border: var(--osdk-table-cell-editable-border);
+    background: var(--osdk-table-cell-editable-bg);
+
+    &.osdkEditedInput {
+      border: var(--osdk-table-cell-edited-border);
+    }
+
+    &:focus-within,
+    &.osdkEditedInput:focus-within {
+      border: var(--osdk-emphasis-focus-width) solid
+        var(--osdk-emphasis-focus-color);
+    }
+
+    &.error {
+      border: var(--osdk-table-cell-edited-border-error);
+
+      &:focus-within {
+        border: var(--osdk-emphasis-focus-width) solid
+          var(--osdk-intent-danger-rest);
+      }
+    }
+  }
+
+  &.error {
+    background: var(--osdk-table-cell-editable-bg);
+    border: var(--osdk-table-cell-edited-border-error);
+  }
+}
+
+.readonlyDisplayCell {
   padding: calc(var(--osdk-surface-spacing) * 0.5) 0;
 }
 

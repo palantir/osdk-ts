@@ -238,6 +238,22 @@ describe("createMockClient", () => {
     });
   });
 
+  describe("platform client context", () => {
+    it("exposes a SharedClientContext so platform fetches don't crash", async () => {
+      const mockClient = createMockClient();
+      const ctx = (mockClient as any).__osdkClientContext;
+
+      expect(ctx).toBeDefined();
+      expect(typeof ctx.baseUrl).toBe("string");
+      expect(ctx.baseUrl.length).toBeGreaterThan(0);
+      // foundryPlatformFetch reads `ctx.baseUrl.endsWith("/")` — verify it doesn't throw.
+      expect(() => ctx.baseUrl.endsWith("/")).not.toThrow();
+      expect(typeof ctx.fetch).toBe("function");
+      expect(typeof ctx.tokenProvider).toBe("function");
+      await expect(ctx.tokenProvider()).resolves.toBeTypeOf("string");
+    });
+  });
+
   describe("query stubbing", () => {
     it("returns stubbed query result with parameters", async () => {
       const mockClient = createMockClient();
@@ -304,6 +320,35 @@ describe("createMockClient", () => {
       await expect(
         mockClient(addOne).executeFunction({ n: 5 }),
       ).rejects.toThrow("No stub for query 'addOne'");
+    });
+
+    it("thenThrow: executeFunction rejects with the configured error", async () => {
+      const mockClient = createMockClient();
+      const err = new Error("rate limited");
+
+      mockClient.whenQuery(addOne, { n: 5 }).thenThrow(err);
+
+      await expect(
+        mockClient(addOne).executeFunction({ n: 5 }),
+      ).rejects.toBe(err);
+    });
+
+    it("thenThrow: only the matching params trigger the error", async () => {
+      const mockClient = createMockClient();
+      mockClient.whenQuery(addOne, { n: 1 }).thenThrow(new Error("boom"));
+      mockClient.whenQuery(addOne, { n: 2 }).thenReturn(99);
+
+      await expect(mockClient(addOne).executeFunction({ n: 1 })).rejects
+        .toThrow("boom");
+      expect(await mockClient(addOne).executeFunction({ n: 2 })).toBe(99);
+    });
+
+    it("thenThrow: unrelated params still surface the default 'No stub' error", async () => {
+      const mockClient = createMockClient();
+      mockClient.whenQuery(addOne, { n: 1 }).thenThrow(new Error("boom"));
+
+      await expect(mockClient(addOne).executeFunction({ n: 99 })).rejects
+        .toThrow("No stub for query 'addOne'");
     });
   });
 

@@ -15,12 +15,12 @@
  */
 
 import type { DerivedProperty, Osdk } from "@osdk/api";
-import { ObjectTable } from "@osdk/react-components/experimental";
+import { ObjectTable } from "@osdk/react-components/experimental/object-table";
 import type {
   CellEditInfo,
   ColumnDefinition,
   ObjectTableProps,
-} from "@osdk/react-components/experimental";
+} from "@osdk/react-components/experimental/object-table";
 import { useOsdkClient } from "@osdk/react/experimental";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useCallback, useState } from "react";
@@ -992,8 +992,23 @@ export const EditableTable: Story = {
           },
         },
       },
+      {
+        locator: { type: "property", id: "firstInternStartDate" },
+        editable: true,
+      },
+      {
+        locator: { type: "property", id: "firstFullTimeStartDate" },
+        editable: true,
+        editFieldConfig: {
+          fieldComponent: "DATE_PICKER",
+          fieldComponentProps: {
+            showTime: false,
+            placeholder: "Select date...",
+          },
+        },
+      },
     ],
-    editMode: "manual",
+    editMode: "always",
   } as any,
   parameters: {
     docs: {
@@ -1044,6 +1059,22 @@ export const EditableTable: Story = {
       },
     },
   },
+  // Example where the field is inferred from datatype
+  {
+    locator: { type: "property", id: "firstInternStartDate" },
+    editable: true,
+  },
+  {
+    locator: { type: "property", id: "firstFullTimeStartDate" },
+    editable: true,
+    editFieldConfig: {
+      fieldComponent: "DATE_PICKER",
+      fieldComponentProps: {
+        showTime: false,
+        placeholder: "Select date...",
+      },
+    },
+  },
 ];
 
 return (
@@ -1056,22 +1087,57 @@ return (
       },
     },
   },
-  render: (args) => (
-    <div className="object-table-container" style={{ height: "600px" }}>
-      <div
-        style={{
-          padding: "12px",
-          backgroundColor: "#fff3cd",
-          marginBottom: "8px",
-          borderRadius: "4px",
-        }}
-      >
-        Try changing edit mode to "always" to enable inline editing without
-        needing to toggle edit mode on.
+  render: (args) => {
+    const [lastEdit, setLastEdit] = useState<
+      CellEditInfo<Osdk.Instance<typeof Employee>> | undefined
+    >();
+
+    const handleCellValueChanged = useCallback(
+      (info: CellEditInfo<Osdk.Instance<typeof Employee>>) => {
+        setLastEdit(info);
+      },
+      [],
+    );
+
+    return (
+      <div className="object-table-container" style={{ height: "600px" }}>
+        <div
+          style={{
+            padding: "12px",
+            backgroundColor: "#fff3cd",
+            marginBottom: "8px",
+            borderRadius: "4px",
+          }}
+        >
+          Try changing edit mode to "manual" to enable inline editing with an
+          Edit Table button.
+        </div>
+        {lastEdit != null && (
+          <div
+            style={{
+              padding: "12px",
+              backgroundColor: "#d1ecf1",
+              marginBottom: "8px",
+              borderRadius: "4px",
+              fontFamily: "monospace",
+              fontSize: "13px",
+            }}
+          >
+            <strong>Last cell edit:</strong>{" "}
+            Column "{lastEdit.columnId}" changed from "{String(
+              lastEdit.oldValue,
+            )}" to "
+            {String(lastEdit.newValue)}"
+          </div>
+        )}
+        <ObjectTable
+          {...args}
+          objectType={Employee}
+          onCellValueChanged={handleCellValueChanged}
+        />
       </div>
-      <ObjectTable {...args} objectType={Employee} />
-    </div>
-  ),
+    );
+  },
 };
 
 export const WithSubmitEditsButton: Story = {

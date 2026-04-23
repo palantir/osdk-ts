@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
+import { Popover } from "@base-ui/react/popover";
 import { InfoSign } from "@blueprintjs/icons";
 import React, { memo } from "react";
-import { Tooltip, TooltipArrow } from "../base-components/tooltip/index.js";
 import styles from "./FormField.module.css";
 
 interface FormFieldProps {
   fieldKey: string;
   label?: string;
   isRequired?: boolean;
-  helperText?: string;
+  helperText?: React.ReactNode;
   helperTextPlacement?: "bottom" | "tooltip";
   error?: string;
   children: React.ReactNode;
@@ -65,36 +65,38 @@ export const FormField: React.FC<FormFieldProps> = memo(
           ? (
             <div className={styles.osdkFormFieldLabelRow}>
               {labelElement}
-              <Tooltip.Root>
-                <Tooltip.Trigger
+              <Popover.Root>
+                <Popover.Trigger
+                  render={<span className={styles.osdkFormFieldInfoIcon} />}
+                  openOnHover
                   aria-label={label != null
                     ? `Info about ${label}`
                     : "More information"}
                 >
-                  <InfoSign size={16} />
-                </Tooltip.Trigger>
-                <Tooltip.Portal>
-                  <Tooltip.Positioner sideOffset={4}>
-                    <Tooltip.Popup>
+                  <InfoSign size={12} />
+                </Popover.Trigger>
+                <Popover.Portal>
+                  <Popover.Positioner sideOffset={4}>
+                    <Popover.Popup
+                      className={styles.osdkFormFieldInfoPopup}
+                    >
                       {helperText}
-                      <TooltipArrow />
-                    </Tooltip.Popup>
-                  </Tooltip.Positioner>
-                </Tooltip.Portal>
-              </Tooltip.Root>
+                    </Popover.Popup>
+                  </Popover.Positioner>
+                </Popover.Portal>
+              </Popover.Root>
             </div>
           )
           : labelElement}
+        {showBottomText && (
+          <div className={styles.osdkFormFieldHelperText}>{helperText}</div>
+        )}
         {children}
-        {error != null
-          ? (
-            <div className={styles.osdkFormFieldError} role="alert">
-              {error}
-            </div>
-          )
-          : showBottomText
-          ? <div className={styles.osdkFormFieldHelperText}>{helperText}</div>
-          : null}
+        {error != null && (
+          <div className={styles.osdkFormFieldError} role="alert">
+            {error}
+          </div>
+        )}
       </div>
     );
   },

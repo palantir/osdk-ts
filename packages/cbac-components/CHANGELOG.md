@@ -1,5 +1,11 @@
 # @osdk/cbac-components
 
+## 0.3.0
+
+### Minor Changes
+
+- f01a8f4: improvements(build): significant reduction in build task graphs
+
 ## 0.2.0
 
 ### Minor Changes

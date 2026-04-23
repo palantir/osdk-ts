@@ -1,5 +1,13 @@
 # @osdk/create-widget.template.react.v2
 
+## 3.8.0
+
+## 3.7.0
+
+### Minor Changes
+
+- f01a8f4: improvements(build): significant reduction in build task graphs
+
 ## 3.6.0
 
 ### Minor Changes

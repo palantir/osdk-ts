@@ -45,8 +45,24 @@ describe("FormField", () => {
     });
   });
 
-  describe("error with bottom helper text", () => {
-    it("shows error and hides bottom helper text when both are present", () => {
+  describe("bottom helper text", () => {
+    it("shows helper text below the label when placement is bottom", () => {
+      render(
+        <FormField
+          fieldKey="name"
+          label="Name"
+          helperText="Enter your full name"
+          helperTextPlacement="bottom"
+        >
+          <input id="name" />
+        </FormField>,
+      );
+
+      expect(screen.queryByRole("alert")).toBeNull();
+      expect(screen.getByText("Enter your full name")).toBeDefined();
+    });
+
+    it("shows both helper text and error when both are present", () => {
       render(
         <FormField
           fieldKey="name"
@@ -62,28 +78,27 @@ describe("FormField", () => {
       expect(screen.getByRole("alert").textContent).toBe(
         "This field is required",
       );
-      // Error takes precedence — helper text is hidden
-      expect(screen.queryByText("Enter your full name")).toBeNull();
+      expect(screen.getByText("Enter your full name")).toBeDefined();
     });
+  });
 
-    it("shows bottom helper text when there is no error", () => {
+  describe("tooltip helper text", () => {
+    it("shows tooltip icon when placement is tooltip", () => {
       render(
         <FormField
           fieldKey="name"
           label="Name"
           helperText="Enter your full name"
-          helperTextPlacement="bottom"
+          helperTextPlacement="tooltip"
         >
           <input id="name" />
         </FormField>,
       );
 
       expect(screen.queryByRole("alert")).toBeNull();
-      expect(screen.getByText("Enter your full name")).toBeDefined();
+      expect(screen.getByLabelText("Info about Name")).toBeDefined();
     });
-  });
 
-  describe("error with tooltip helper text", () => {
     it("shows error and keeps tooltip icon when both are present", () => {
       render(
         <FormField
@@ -100,23 +115,6 @@ describe("FormField", () => {
       expect(screen.getByRole("alert").textContent).toBe(
         "This field is required",
       );
-      // Tooltip icon stays visible — it's in the label row, separate from the error
-      expect(screen.getByLabelText("Info about Name")).toBeDefined();
-    });
-
-    it("shows tooltip icon without error when no error", () => {
-      render(
-        <FormField
-          fieldKey="name"
-          label="Name"
-          helperText="Enter your full name"
-          helperTextPlacement="tooltip"
-        >
-          <input id="name" />
-        </FormField>,
-      );
-
-      expect(screen.queryByRole("alert")).toBeNull();
       expect(screen.getByLabelText("Info about Name")).toBeDefined();
     });
   });

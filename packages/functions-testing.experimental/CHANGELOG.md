@@ -1,5 +1,42 @@
 # @osdk/functions-testing.experimental
 
+## 0.6.0
+
+### Minor Changes
+
+- 8e4472c: Add `thenThrow(error)` to `whenQuery(...)` stub builder. Lets tests explicitly configure a query's `executeFunction` to reject with a specific error, instead of only being able to exercise the implicit "no stub registered" error path.
+
+## 0.5.0
+
+### Minor Changes
+
+- 40fb8c1: Attach a `SharedClientContext` to the mock client so Foundry Platform API helpers (e.g. `Users.getCurrent(client)`) don't crash inside `foundryPlatformFetch` on an undefined `baseUrl` before a request is made. Callers mock the HTTP layer themselves (MSW, `vi.spyOn(globalThis, "fetch")`, etc.).
+
+### Patch Changes
+
+- Updated dependencies [58248f8]
+- Updated dependencies [e456da5]
+  - @osdk/client@2.11.0
+  - @osdk/api@2.11.0
+
+## 0.4.0
+
+### Minor Changes
+
+- 29ab35a: Use workspace:^ for peer dependencies to prevent changesets from propagating major bumps when a peer dep receives a minor version change. The internal codegen (`osdk-unstable-typescript generate --internal`) now emits `workspace:^` for peer deps while keeping `workspace:~` for regular/dev deps.
+- f01a8f4: improvements(build): significant reduction in build task graphs
+
+### Patch Changes
+
+- Updated dependencies [29ab35a]
+- Updated dependencies [0fb9c8a]
+- Updated dependencies [f01a8f4]
+- Updated dependencies [f34a1ce]
+- Updated dependencies [7e7f70b]
+  - @osdk/client@2.10.0
+  - @osdk/functions@1.7.0
+  - @osdk/api@2.10.0
+
 ## 0.3.0
 
 ### Minor Changes

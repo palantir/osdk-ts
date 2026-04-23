@@ -19,11 +19,13 @@ import {
   createObservableClient,
   type ObservableClient,
 } from "@osdk/client/unstable-do-not-use";
-import React, { useMemo } from "react";
+import React, { useCallback, useMemo, useRef } from "react";
 import { OsdkContext } from "../OsdkContext.js";
 import { getRegisteredDevTools } from "../public/devtools-registry.js";
+import { REACT_USER_AGENT } from "../util/UserAgent.js";
 import { OsdkContext2 } from "./OsdkContext2.js";
 import { useDevToolsClient } from "./useDevToolsClient.js";
+import { UserAgentContext } from "./UserAgentContext.js";
 
 declare const process: { env: { NODE_ENV: string } };
 const __DEV__ = typeof process === "undefined"
@@ -45,8 +47,22 @@ export function OsdkProvider2({
   const devtoolsEnabled = __DEV__
     && (enableDevTools ?? getRegisteredDevTools() != null);
 
+  const userAgentsRef = useRef(new Set<string>([REACT_USER_AGENT]));
+
+  const addUserAgent = useCallback((agent: string) => {
+    userAgentsRef.current.add(agent);
+    return () => {
+      userAgentsRef.current.delete(agent);
+    };
+  }, []);
+
   const baseObservableClient = useMemo(
-    () => observableClient ?? createObservableClient(client),
+    () =>
+      observableClient
+        ?? createObservableClient(
+          client,
+          () => [...userAgentsRef.current],
+        ),
     [client, observableClient],
   );
 
@@ -63,12 +79,14 @@ export function OsdkProvider2({
   );
 
   return (
-    <OsdkContext2.Provider
-      value={contextValue}
-    >
-      <OsdkContext.Provider value={{ client }}>
-        {content}
-      </OsdkContext.Provider>
-    </OsdkContext2.Provider>
+    <UserAgentContext.Provider value={addUserAgent}>
+      <OsdkContext2.Provider
+        value={contextValue}
+      >
+        <OsdkContext.Provider value={{ client }}>
+          {content}
+        </OsdkContext.Provider>
+      </OsdkContext2.Provider>
+    </UserAgentContext.Provider>
   );
 }

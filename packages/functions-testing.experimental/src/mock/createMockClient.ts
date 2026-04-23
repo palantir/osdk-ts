@@ -23,7 +23,7 @@ import type {
   PageResult,
   QueryDefinition,
 } from "@osdk/api";
-import type { Client } from "@osdk/client";
+import { type Client, createPlatformClient } from "@osdk/client";
 import invariant from "tiny-invariant";
 import { type MockObjectSetBranded } from "./createMockObjectSet.js";
 import {
@@ -36,9 +36,19 @@ import {
 
 type ClientStub = Stub & { objectType: string };
 
-type QueryStub = { queryApiName: string; params: unknown; value: unknown };
+type QueryStub = {
+  queryApiName: string;
+  params: unknown;
+  value?: unknown;
+  error?: Error;
+};
 
 type IsOsdkObject<T> = T extends { $apiName: string } ? true : false;
+
+// Well-known string key used by Foundry Platform APIs to pull the
+// SharedClientContext (baseUrl, tokenProvider, fetch) off a client. Matches
+// the value of `symbolClientContext` in `@osdk/shared.client2`.
+const SYMBOL_CLIENT_CONTEXT = "__osdkClientContext";
 
 export interface FetchPageStubBuilder<T> {
   thenReturnObjects(objects: T[]): void;
@@ -54,6 +64,7 @@ export interface AggregateStubBuilder<T> {
 
 export interface QueryStubBuilder<T> {
   thenReturn(result: T): void;
+  thenThrow(error: Error): void;
 }
 
 export type StubBuilderFor<T> = T extends PageResult<infer U>
@@ -108,6 +119,9 @@ export function createMockClient(): MockClient {
     for (const stub of queryStubs) {
       if (stub.queryApiName !== queryApiName) continue;
       if (deepEqual(stub.params, params)) {
+        if (stub.error !== undefined) {
+          throw stub.error;
+        }
         return stub.value;
       }
     }
@@ -211,6 +225,13 @@ export function createMockClient(): MockClient {
           value: result,
         });
       },
+      thenThrow: (error: Error) => {
+        queryStubs.push({
+          queryApiName: query.apiName,
+          params,
+          error,
+        });
+      },
     };
   };
 
@@ -222,6 +243,18 @@ export function createMockClient(): MockClient {
   mockClient.fetchMetadata = async () => {
     invariant(false, "fetchMetadata is not supported in mocks");
   };
+
+  // Attach a SharedClientContext so Foundry Platform API helpers
+  // (e.g. `Users.getCurrent(client)`) don't crash inside `foundryPlatformFetch`
+  // on an undefined `baseUrl` before any request is made. Callers intercept the
+  // actual HTTP layer themselves (MSW, vi.spyOn(globalThis, "fetch"), etc.).
+  Object.defineProperty(mockClient, SYMBOL_CLIENT_CONTEXT, {
+    value: createPlatformClient(
+      "https://mock.invalid/",
+      async () => "mock-token",
+    ),
+    enumerable: false,
+  });
 
   // TODO: Implement WriteableClient operations
 

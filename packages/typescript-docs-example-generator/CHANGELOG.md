@@ -1,5 +1,16 @@
 # @osdk/typescript-docs-example-generator
 
+## 0.6.0
+
+### Minor Changes
+
+- f01a8f4: improvements(build): significant reduction in build task graphs
+
+### Patch Changes
+
+- Updated dependencies [f01a8f4]
+  - @osdk/typescript-sdk-docs@0.8.0
+
 ## 0.5.0
 
 ### Minor Changes

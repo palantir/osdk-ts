@@ -1,5 +1,13 @@
 # @osdk/create-app.template.tutorial-todo-aip-app.beta
 
+## 2.11.0
+
+## 2.10.0
+
+### Minor Changes
+
+- f01a8f4: improvements(build): significant reduction in build task graphs
+
 ## 2.9.0
 
 ## 2.8.0

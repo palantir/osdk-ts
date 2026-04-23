@@ -38,14 +38,23 @@
 .osdkFormFieldLabelRow {
   display: flex;
   align-items: center;
-  gap: var(--osdk-form-label-row-gap);
 }
 
 .osdkFormFieldInfoIcon {
-  width: var(--osdk-form-info-icon-size);
-  height: var(--osdk-form-info-icon-size);
+  display: inline-flex;
+  align-items: center;
   color: var(--osdk-form-info-icon-color);
+  cursor: pointer;
   flex-shrink: 0;
+}
+
+.osdkFormFieldInfoPopup {
+  padding: var(--osdk-tooltip-padding);
+  background-color: var(--osdk-tooltip-bg);
+  border-radius: var(--osdk-surface-border-radius);
+  box-shadow: var(--osdk-tooltip-shadow);
+  max-width: var(--osdk-tooltip-max-width);
+  font-size: var(--osdk-tooltip-font-size);
 }
 
 .osdkFormFieldHelperText {

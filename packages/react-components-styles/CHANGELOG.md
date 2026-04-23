@@ -1,5 +1,20 @@
 # @osdk/react-components-styles
 
+## 0.6.0
+
+## 0.5.0
+
+## 0.4.0
+
+### Minor Changes
+
+- f01a8f4: improvements(build): significant reduction in build task graphs
+- 5d8edf8: feat(tiff): Tiff Renderer
+- 4bce409: feat(md): markdown renderer
+- 1a0f772: Show "No value" for empty filter values in ListogramInput and generate $isNull instead of $eq: "" in where clauses
+- c144b04: Add form field validation with onTouched mode, error display, and submit tooltip
+- 957a878: Rename/improve DateTimePickerField and introduce DateRangeInputField
+
 ## 0.3.0
 
 ### Minor Changes

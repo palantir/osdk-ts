@@ -1,6 +1,6 @@
 {
   "name": "@osdk/generator-converters.preview",
-  "version": "0.1.0",
+  "version": "0.3.0",
   "description": "OSDK generator with support for Python and TSv2 discovered functions",
   "access": "public",
   "license": "Apache-2.0",

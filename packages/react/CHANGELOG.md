@@ -1,5 +1,24 @@
 # @osdkkit/react
 
+## 0.13.0
+
+### Minor Changes
+
+- 58248f8: Move @osdk/client.test.ontology from peerDependencies to devDependencies to fix npm resolution errors in consuming repos
+- e456da5: Add Fetch-User-Agent tracing headers for React layer network calls
+
+## 0.12.0
+
+### Minor Changes
+
+- f01a8f4: improvements(build): significant reduction in build task graphs
+- f34a1ce: prevent streamUpdates from being used with pivotTo since the server does not support websocket subscriptions for link-traversal queries
+
+### Patch Changes
+
+- Updated dependencies [f01a8f4]
+  - @osdk/client.test.ontology@2.10.0
+
 ## 0.11.0
 
 ### Minor Changes

@@ -49,6 +49,7 @@ export const DatetimePickerField: React.NamedExoticComponent<
   parseDate,
   showTime = false,
   closeOnSelection,
+  portalRef,
 }: DatetimePickerFieldProps) {
   const shouldCloseOnSelection = closeOnSelection ?? !showTime;
   const popoverId = useId();
@@ -56,6 +57,10 @@ export const DatetimePickerField: React.NamedExoticComponent<
   const popoverRef = useRef<HTMLDivElement>(null);
 
   const [isOpen, setIsOpen] = useState(false);
+  // When true, the next handleFocus call skips reopening the popover.
+  // Set before focusing the input from a popover boundary exit so that
+  // Tab/Shift-Tab proceeds to the adjacent form field naturally.
+  const skipReopenRef = useRef(false);
 
   // Format/parse: pick between date-only and datetime variants.
   // editFormatFn produces a parsable string for typing (e.g. "2024-01-15" or "2024-01-15 14:30").
@@ -87,6 +92,11 @@ export const DatetimePickerField: React.NamedExoticComponent<
   // --- Input event handlers ---
 
   const handleFocus = useCallback(() => {
+    if (skipReopenRef.current) {
+      skipReopenRef.current = false;
+      startEditing();
+      return;
+    }
     startEditing();
     setIsOpen(true);
   }, [startEditing]);
@@ -215,7 +225,13 @@ export const DatetimePickerField: React.NamedExoticComponent<
     (e: React.FocusEvent<HTMLDivElement>) => {
       const relatedTarget = e.relatedTarget ?? document.activeElement;
       if (popoverRef.current?.contains(relatedTarget as Node)) {
-        closePopover();
+        // Tab reached the end of the popover. Close the popover and
+        // return focus to the input without reopening it, so the next
+        // Tab advances to the next form field.
+        skipReopenRef.current = true;
+        setIsOpen(false);
+        stopEditing();
+        inputRef.current?.focus();
       } else {
         const buttons = popoverRef.current?.querySelectorAll<HTMLElement>(
           "button, select",
@@ -224,7 +240,7 @@ export const DatetimePickerField: React.NamedExoticComponent<
         lastButton?.focus();
       }
     },
-    [closePopover],
+    [stopEditing],
   );
 
   // --- Time picker (rendered as a popover sibling, not a DayPicker footer,
@@ -248,7 +264,7 @@ export const DatetimePickerField: React.NamedExoticComponent<
     <Popover.Root open={isOpen} onOpenChange={handleOpenChange}>
       <Popover.Trigger
         nativeButton={false}
-        render={<div className={wrapperClassName} />}
+        render={<div className={wrapperClassName} tabIndex={-1} />}
       >
         <Input
           ref={inputRef}
@@ -269,7 +285,7 @@ export const DatetimePickerField: React.NamedExoticComponent<
           aria-haspopup="dialog"
         />
       </Popover.Trigger>
-      <Popover.Portal>
+      <Popover.Portal ref={portalRef}>
         <Popover.Positioner sideOffset={4}>
           <Popover.Popup
             ref={popoverRef}

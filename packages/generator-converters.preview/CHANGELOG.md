@@ -1,5 +1,32 @@
 # @osdk/generator-converters.preview
 
+## 0.3.0
+
+### Minor Changes
+
+- bd027d6: Add import support to Super repo imports
+
+### Patch Changes
+
+- Updated dependencies [a6f4208]
+  - @osdk/generator-converters.ontologyir@2.11.0
+  - @osdk/client.unstable@2.11.0
+  - @osdk/generator@2.11.0
+
+## 0.2.0
+
+### Minor Changes
+
+- f01a8f4: improvements(build): significant reduction in build task graphs
+
+### Patch Changes
+
+- Updated dependencies [29ab35a]
+- Updated dependencies [f01a8f4]
+  - @osdk/generator@2.10.0
+  - @osdk/generator-converters.ontologyir@2.10.0
+  - @osdk/client.unstable@2.10.0
+
 ## 0.1.0
 
 ### Minor Changes

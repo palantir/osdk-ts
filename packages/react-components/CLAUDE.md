@@ -1,4 +1,4 @@
-This documentation provides guidance for developing in `@osdk/react-components` and `@osdk/react-components-styles`.
+This documentation provides guidance for developing in `@osdk/react-components`.
 
 ## TypeScript Best Practices
 
@@ -23,8 +23,8 @@ This documentation provides guidance for developing in `@osdk/react-components` 
 ## CSS Styling Best Practices
 
 - Do not hardcode CSS colors and pixel values.
-- ALWAYS use css variables to enable themabiltiy using CSS variables. Any default styling should be added to @osdk/react-components-styles index.css
-- ALWAYS try to use --bp tokens first before using any hardcoded value. The --bp tokens used should always be mapped from a --osdk token.
+- ALWAYS use css variables to enable themability using CSS variables. Any default styling should be added to `src/tokens/` CSS files.
+- ALWAYS try to use --bp tokens first before using any hardcoded value. The --bp tokens used should always be mapped from a --osdk token in `src/tokens/base-tokens/base.css`.
 
 ## Project Management
 

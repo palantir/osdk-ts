@@ -63,10 +63,11 @@ export interface FormFieldDefinition<
   placeholder?: string;
 
   /**
-   * Additional information to display on this field
-   * The placement of helper text depends on the value of helperTextPlacement prop
+   * Additional information to display on this field.
+   * Accepts plain text or rich content (e.g. JSX with links or formatting).
+   * Rendered below the label and above the input.
    */
-  helperText?: string;
+  helperText?: React.ReactNode;
 
   /**
    * The placement of the helper text either below the field or in a tooltip
@@ -189,6 +190,12 @@ export interface DatetimePickerFieldProps extends BaseFormFieldProps<Date> {
    * When omitted, defaults to parsing "YYYY-MM-DD" (date-only) or "YYYY-MM-DD HH:mm" (with time).
    */
   parseDate?: (text: string) => Date | undefined;
+
+  /**
+   * Ref forwarded to the portal container element.
+   * Used to track portaled content for click-outside detection.
+   */
+  portalRef?: React.Ref<HTMLDivElement>;
 }
 
 /**
@@ -395,6 +402,14 @@ export interface RadioButtonsFieldProps<V> extends BaseFormFieldProps<V> {
    * the corresponding option entry.
    */
   options: Option<V>[];
+
+  /**
+   * Controls the layout direction of the radio buttons.
+   *
+   * - `"vertical"` (default): options are stacked in a column
+   * - `"horizontal"`: options are laid out in a row, wrapping when needed
+   */
+  orientation?: "horizontal" | "vertical";
 }
 
 /**
@@ -569,7 +584,7 @@ export type RendererFieldDefinition = {
     label: string;
     isRequired?: boolean;
     placeholder?: string;
-    helperText?: string;
+    helperText?: React.ReactNode;
     helperTextPlacement?: "bottom" | "tooltip";
     validate?: (value: unknown) => Promise<string | undefined>;
     onValidationError?: (error: ValidationError) => string | undefined;

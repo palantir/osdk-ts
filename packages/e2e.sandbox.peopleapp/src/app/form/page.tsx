@@ -1,9 +1,9 @@
 import type { ObjectSet, ObjectTypeDefinition } from "@osdk/api";
-import { BaseForm } from "@osdk/react-components/experimental";
+import { BaseForm } from "@osdk/react-components/experimental/action-form";
 import type {
   BaseFormFieldProps,
   RendererFieldDefinition,
-} from "@osdk/react-components/experimental";
+} from "@osdk/react-components/experimental/action-form";
 import { useCallback, useMemo, useState } from "react";
 import { $ } from "../../foundryClient.js";
 import { Employee } from "../../generatedNoCheck2/index.js";
