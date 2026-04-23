@@ -23,6 +23,8 @@ import selectStyles from "../../base-components/select/Select.module.css";
 import { typedReactMemo } from "../../shared/typedMemo.js";
 import type { DropdownFieldProps } from "../FormFieldApi.js";
 
+const EMPTY_ARRAY: [] = [];
+
 interface InnerDropdownProps<V, Multiple extends boolean>
   extends Omit<DropdownFieldProps<V, Multiple>, "isSearchable">
 {
@@ -36,8 +38,15 @@ export function DropdownField<V, Multiple extends boolean = false>({
   itemToStringLabel,
   itemToKey,
   portalRef,
+  value,
   ...rest
 }: DropdownFieldProps<V, Multiple>): React.ReactElement {
+  // Ensure always controlled from first render: multi-select needs [],
+  // single-select needs null. Passing undefined switches Base UI from
+  // uncontrolled to controlled and triggers a warning.
+  const normalizedValue = (value
+    ?? (rest.isMultiple ? EMPTY_ARRAY : null)) as typeof value;
+
   const resolvedItemToStringLabel = itemToStringLabel
     ?? defaultItemToStringLabel;
 
@@ -50,6 +59,7 @@ export function DropdownField<V, Multiple extends boolean = false>({
     return (
       <ComboboxDropdown
         {...rest}
+        value={normalizedValue}
         itemToStringLabel={resolvedItemToStringLabel}
         getKey={getKey}
         portalRef={portalRef}
@@ -60,6 +70,7 @@ export function DropdownField<V, Multiple extends boolean = false>({
   return (
     <SelectDropdown
       {...rest}
+      value={normalizedValue}
       itemToStringLabel={resolvedItemToStringLabel}
       getKey={getKey}
       portalRef={portalRef}
@@ -71,6 +82,7 @@ const SelectDropdown = typedReactMemo(function SelectDropdownFn<
   V,
   Multiple extends boolean,
 >({
+  id,
   value,
   onChange,
   items,
@@ -85,13 +97,10 @@ const SelectDropdown = typedReactMemo(function SelectDropdownFn<
     ? Array.isArray(value) && value.length > 0
     : value != null;
 
-  const handleClear = useCallback(
-    () => {
-      const cleared = isMultiple ? ([] as V[]) : null;
-      onChange?.(cleared as Parameters<NonNullable<typeof onChange>>[0]);
-    },
-    [isMultiple, onChange],
-  );
+  const handleClear = useCallback(() => {
+    const cleared = isMultiple ? ([] as V[]) : null;
+    onChange?.(cleared as Parameters<NonNullable<typeof onChange>>[0]);
+  }, [isMultiple, onChange]);
 
   return (
     <div>
@@ -146,6 +155,7 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
   V,
   Multiple extends boolean,
 >({
+  id,
   value,
   onChange,
   items,
@@ -160,13 +170,10 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
     ? Array.isArray(value) && value.length > 0
     : value != null;
 
-  const handleClear = useCallback(
-    () => {
-      const cleared = isMultiple ? ([] as V[]) : null;
-      onChange?.(cleared as Parameters<NonNullable<typeof onChange>>[0]);
-    },
-    [isMultiple, onChange],
-  );
+  const handleClear = useCallback(() => {
+    const cleared = isMultiple ? ([] as V[]) : null;
+    onChange?.(cleared as Parameters<NonNullable<typeof onChange>>[0]);
+  }, [isMultiple, onChange]);
 
   const renderTriggerValue = useCallback(
     (selectedValues: V[]) =>
