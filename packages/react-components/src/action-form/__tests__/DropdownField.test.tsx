@@ -236,7 +236,7 @@ describe("DropdownField", () => {
       });
     });
 
-    it("renders tick indicators in multi-select items", async () => {
+    it("marks selected items with aria-selected in multi-select", async () => {
       render(
         <DropdownField<string, true>
           value={["Alice"]}
@@ -250,8 +250,11 @@ describe("DropdownField", () => {
       fireEvent.click(trigger);
 
       await vi.waitFor(() => {
-        const options = screen.getAllByRole("option");
-        expect(options.length).toBe(STRING_ITEMS.length);
+        const alice = screen.getByRole("option", { name: /Alice/ });
+        expect(alice.getAttribute("aria-selected")).toBe("true");
+
+        const bob = screen.getByRole("option", { name: /Bob/ });
+        expect(bob.getAttribute("aria-selected")).toBe("false");
       });
     });
   });
