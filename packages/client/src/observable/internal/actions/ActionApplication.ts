@@ -20,7 +20,6 @@ import type {
   ActionReturnTypeForOptions,
 } from "@osdk/api";
 import type { ActionSignatureFromDef } from "../../../actions/applyAction.js";
-import { type Changes } from "../Changes.js";
 import type { Store } from "../Store.js";
 import { runOptimisticJob } from "./OptimisticJob.js";
 
@@ -104,46 +103,76 @@ export class ActionApplication {
     if (actionEditResponse == null) {
       return;
     }
-    const {
-      deletedObjects,
-      modifiedObjects,
-      addedObjects,
-      editedObjectTypes,
-      type,
-    } = actionEditResponse;
-    let changes: Changes | undefined;
-    if (type === "edits") {
-      const promisesToWait: Promise<any>[] = [];
 
-      for (const list of [deletedObjects, modifiedObjects, addedObjects]) {
-        for (const obj of list ?? []) {
-          promisesToWait.push(
-            this.store.invalidateObject(obj.objectType, obj.primaryKey),
-          );
+    const { editedObjectTypes, type } = actionEditResponse;
+
+    if (type !== "edits") {
+      // largeScaleEdits — server truncated; editedObjectTypes is all we have.
+      await Promise.all(
+        (editedObjectTypes ?? []).map(apiName =>
+          this.store.invalidateObjectType(apiName, undefined)
+        ),
+      );
+      return;
+    }
+
+    const {
+      addedObjects,
+      modifiedObjects,
+      deletedObjects,
+      addedLinks,
+      deletedLinks,
+      deletedObjectsCount,
+      deletedLinksCount,
+    } = actionEditResponse;
+
+    // Tombstone deleted objects first so subscribers never observe a "loading"
+    // state for an object we already know is gone.
+    this.store.batch({}, (batch) => {
+      for (const { objectType, primaryKey } of deletedObjects ?? []) {
+        for (
+          const cacheKey of this.store.objectCacheKeyRegistry.getVariants(
+            objectType,
+            primaryKey,
+          )
+        ) {
+          // ?. skips RDP variants that were registered but never observed —
+          // nothing to tombstone in that case.
+          this.store.queries.peek(cacheKey)?.deleteFromStore("loaded", batch);
         }
       }
+    });
 
-      // Use the registry to find all RDP variant cache keys for each deleted object.
-      this.store.batch({}, (batch) => {
-        for (const { objectType, primaryKey } of deletedObjects ?? []) {
-          for (
-            const cacheKey of this.store.objectCacheKeyRegistry.getVariants(
-              objectType,
-              primaryKey,
-            )
-          ) {
-            this.store.queries.peek(cacheKey)?.deleteFromStore(
-              "loaded", // this is probably not the best value to use
-              batch,
-            );
-          }
+    const types = new Set<string>();
+    for (const apiName of editedObjectTypes ?? []) {
+      types.add(apiName);
+    }
+
+    const objectsComplete = (deletedObjectsCount ?? 0)
+      <= (deletedObjects?.length ?? 0);
+    const linksComplete = (deletedLinksCount ?? 0)
+      <= (deletedLinks?.length ?? 0);
+
+    if (objectsComplete) {
+      for (const list of [addedObjects, modifiedObjects, deletedObjects]) {
+        for (const obj of list ?? []) {
+          types.add(obj.objectType);
         }
-      });
-      await Promise.all(promisesToWait);
-    } else {
-      for (const apiName of editedObjectTypes) {
-        await this.store.invalidateObjectType(apiName as string, changes);
       }
     }
+    if (linksComplete) {
+      for (const list of [addedLinks, deletedLinks]) {
+        for (const link of list ?? []) {
+          types.add(link.aSideObject.objectType);
+          types.add(link.bSideObject.objectType);
+        }
+      }
+    }
+
+    await Promise.all(
+      [...types].map(apiName =>
+        this.store.invalidateObjectType(apiName, undefined)
+      ),
+    );
   };
 }
