@@ -41,7 +41,7 @@ import type {
   ObserveObjectsCallbackArgs,
 } from "@osdk/client/unstable-do-not-use";
 import React from "react";
-import { makeExternalStore } from "../makeExternalStore.js";
+import { devToolsMetadata, makeExternalStore } from "../makeExternalStore.js";
 import { OsdkContext2 } from "../OsdkContext2.js";
 import { useStableValue } from "../shared/storeUtils.js";
 import {
@@ -143,11 +143,11 @@ export function useShapeSingle<
       if (!enabled) {
         return makeExternalStore<ObserveObjectCallbackArgs<ShapeBaseType<S>>>(
           () => ({ unsubscribe: () => {} }),
-          process.env.NODE_ENV !== "production"
-            ? `shape[${
-              shape.__shapeId.slice(0, 8)
-            }] ${objectType} ${primaryKey} [DISABLED]`
-            : void 0,
+          devToolsMetadata({
+            hookType: "useShapeSingle",
+            objectType,
+            primaryKey: String(primaryKey),
+          }),
         );
       }
 
@@ -157,9 +157,11 @@ export function useShapeSingle<
             mode: undefined,
             ...(selectProps.length > 0 ? { select: selectProps } : {}),
           }, observer),
-        process.env.NODE_ENV !== "production"
-          ? `shape[${shape.__shapeId.slice(0, 8)}] ${objectType} ${primaryKey}`
-          : void 0,
+        devToolsMetadata({
+          hookType: "useShapeSingle",
+          objectType,
+          primaryKey: String(primaryKey),
+        }),
       );
     },
     [
@@ -343,11 +345,10 @@ export function useShapeList<
       if (!enabled) {
         return makeExternalStore<ObserveObjectsCallbackArgs<ShapeBaseType<S>>>(
           () => ({ unsubscribe: () => {} }),
-          process.env.NODE_ENV !== "production"
-            ? `shapeList[${
-              shape.__shapeId.slice(0, 8)
-            }] ${objectType.apiName} [DISABLED]`
-            : void 0,
+          devToolsMetadata({
+            hookType: "useShapeList",
+            objectType: objectType.apiName,
+          }),
         );
       }
 
@@ -365,11 +366,13 @@ export function useShapeList<
             },
             observer,
           ),
-        process.env.NODE_ENV !== "production"
-          ? `shapeList[${shape.__shapeId.slice(0, 8)}] ${objectType.apiName} ${
-            JSON.stringify(canonWhere)
-          }`
-          : void 0,
+        devToolsMetadata({
+          hookType: "useShapeList",
+          objectType: objectType.apiName,
+          where: canonWhere,
+          orderBy: stableOrderBy,
+          pageSize,
+        }),
       );
     },
     [
