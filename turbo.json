@@ -44,6 +44,7 @@
 
     "check-spelling": {
       "outputLogs": "new-only",
+      "dependsOn": ["codegen"],
       "inputs": ["**/*.{ts,tsx,cts,mts,md,json,js,mjs,cjs}"]
     },
 

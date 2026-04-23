@@ -77,8 +77,10 @@ describe("Link Types", () => {
           "actionTypes": {},
           "blockPermissionInformation": {
             "actionTypes": {},
+            "interfaceTypes": {},
             "linkTypes": {},
             "objectTypes": {},
+            "sharedPropertyTypes": {},
           },
           "interfaceTypes": {},
           "linkTypes": {
@@ -433,8 +435,10 @@ describe("Link Types", () => {
           "actionTypes": {},
           "blockPermissionInformation": {
             "actionTypes": {},
+            "interfaceTypes": {},
             "linkTypes": {},
             "objectTypes": {},
+            "sharedPropertyTypes": {},
           },
           "interfaceTypes": {},
           "linkTypes": {
@@ -1087,8 +1091,10 @@ describe("Link Types", () => {
           "actionTypes": {},
           "blockPermissionInformation": {
             "actionTypes": {},
+            "interfaceTypes": {},
             "linkTypes": {},
             "objectTypes": {},
+            "sharedPropertyTypes": {},
           },
           "interfaceTypes": {},
           "linkTypes": {
@@ -1684,8 +1690,10 @@ describe("Link Types", () => {
           "actionTypes": {},
           "blockPermissionInformation": {
             "actionTypes": {},
+            "interfaceTypes": {},
             "linkTypes": {},
             "objectTypes": {},
+            "sharedPropertyTypes": {},
           },
           "interfaceTypes": {},
           "linkTypes": {
@@ -2020,8 +2028,10 @@ describe("Link Types", () => {
           "actionTypes": {},
           "blockPermissionInformation": {
             "actionTypes": {},
+            "interfaceTypes": {},
             "linkTypes": {},
             "objectTypes": {},
+            "sharedPropertyTypes": {},
           },
           "interfaceTypes": {
             "com.palantir.A": {
@@ -2055,6 +2065,7 @@ describe("Link Types", () => {
                     "required": true,
                   },
                 ],
+                "permission": undefined,
                 "properties": [],
                 "propertiesV2": {},
                 "propertiesV3": {},
@@ -2082,6 +2093,7 @@ describe("Link Types", () => {
                 "extendsInterfaces": [],
                 "extendsInterfacesMetadata": [],
                 "links": [],
+                "permission": undefined,
                 "properties": [],
                 "propertiesV2": {},
                 "propertiesV3": {},
@@ -2112,8 +2124,10 @@ describe("Link Types", () => {
           "actionTypes": {},
           "blockPermissionInformation": {
             "actionTypes": {},
+            "interfaceTypes": {},
             "linkTypes": {},
             "objectTypes": {},
+            "sharedPropertyTypes": {},
           },
           "interfaceTypes": {
             "com.palantir.A": {
@@ -2147,6 +2161,7 @@ describe("Link Types", () => {
                     "required": true,
                   },
                 ],
+                "permission": undefined,
                 "properties": [],
                 "propertiesV2": {},
                 "propertiesV3": {},
@@ -2174,6 +2189,7 @@ describe("Link Types", () => {
                 "extendsInterfaces": [],
                 "extendsInterfacesMetadata": [],
                 "links": [],
+                "permission": undefined,
                 "properties": [],
                 "propertiesV2": {},
                 "propertiesV3": {},
@@ -2191,5 +2207,48 @@ describe("Link Types", () => {
         }
       `);
     });
+  });
+
+  it("serializes roles permission on link type", async () => {
+    await defineOntology("com.palantir.", () => {
+      const objA = defineObject({
+        apiName: "objA",
+        displayName: "ObjA",
+        pluralDisplayName: "ObjAs",
+        primaryKeyPropertyApiName: "id",
+        titlePropertyApiName: "id",
+        properties: { "id": { type: "string" } },
+      });
+      const objB = defineObject({
+        apiName: "objB",
+        displayName: "ObjB",
+        pluralDisplayName: "ObjBs",
+        primaryKeyPropertyApiName: "id",
+        titlePropertyApiName: "id",
+        properties: {
+          "id": { type: "string" },
+          "fk": { type: "string" },
+        },
+      });
+
+      defineLink({
+        apiName: "aToB",
+        one: { object: objA, metadata: { apiName: "objAs" } },
+        toMany: { object: objB, metadata: { apiName: "objBs" } },
+        manyForeignKeyProperty: "fk",
+        permission: "roles",
+      });
+
+      const bpi = dumpOntologyFullMetadata().ontology
+        .blockPermissionInformation!;
+      const ltPerms = Object.values(bpi.linkTypes);
+      expect(ltPerms).toHaveLength(1);
+      expect(ltPerms[0].restrictionStatus).toEqual({
+        restrictedByDatasources: false,
+        editRestrictedByDatasources: false,
+        publicProject: false,
+        ontologyPackageRid: null,
+      });
+    }, "/tmp/");
   });
 });

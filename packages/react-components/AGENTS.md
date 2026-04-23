@@ -4,7 +4,13 @@ Pre-built, Ontology-aware React components. Pass in OSDK entities and they handl
 
 ## Components
 
-All components import from `@osdk/react-components/experimental`.
+Components are imported from their individual entry points under `@osdk/react-components/experimental/`:
+
+- `@osdk/react-components/experimental/object-table` — ObjectTable, BaseTable, ColumnConfigDialog
+- `@osdk/react-components/experimental/filter-list` — FilterList, BaseFilterList
+- `@osdk/react-components/experimental/pdf-viewer` — PdfViewer, BasePdfViewer, and building blocks/hooks
+- `@osdk/react-components/experimental/tiff-renderer` — TiffRenderer
+- `@osdk/react-components/experimental/markdown-renderer` — MarkdownRenderer
 
 | Component              | Description                                                                                                                                 |
 | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |

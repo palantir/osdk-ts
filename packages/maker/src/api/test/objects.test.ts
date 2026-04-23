@@ -170,8 +170,10 @@ describe("Object Types", () => {
         "actionTypes": {},
         "blockPermissionInformation": {
           "actionTypes": {},
+          "interfaceTypes": {},
           "linkTypes": {},
           "objectTypes": {},
+          "sharedPropertyTypes": {},
         },
         "interfaceTypes": {
           "com.palantir.interface": {
@@ -191,6 +193,7 @@ describe("Object Types", () => {
               "extendsInterfaces": [],
               "extendsInterfacesMetadata": [],
               "links": [],
+              "permission": undefined,
               "properties": [],
               "propertiesV2": {
                 "com.palantir.foo": {
@@ -599,8 +602,10 @@ describe("Object Types", () => {
         "actionTypes": {},
         "blockPermissionInformation": {
           "actionTypes": {},
+          "interfaceTypes": {},
           "linkTypes": {},
           "objectTypes": {},
+          "sharedPropertyTypes": {},
         },
         "interfaceTypes": {},
         "linkTypes": {},
@@ -979,8 +984,10 @@ describe("Object Types", () => {
           "actionTypes": {},
           "blockPermissionInformation": {
             "actionTypes": {},
+            "interfaceTypes": {},
             "linkTypes": {},
             "objectTypes": {},
+            "sharedPropertyTypes": {},
           },
           "interfaceTypes": {},
           "linkTypes": {},
@@ -994,8 +1001,10 @@ describe("Object Types", () => {
           "actionTypes": {},
           "blockPermissionInformation": {
             "actionTypes": {},
+            "interfaceTypes": {},
             "linkTypes": {},
             "objectTypes": {},
+            "sharedPropertyTypes": {},
           },
           "interfaceTypes": {},
           "linkTypes": {},
@@ -1135,8 +1144,10 @@ describe("Object Types", () => {
           "actionTypes": {},
           "blockPermissionInformation": {
             "actionTypes": {},
+            "interfaceTypes": {},
             "linkTypes": {},
             "objectTypes": {},
+            "sharedPropertyTypes": {},
           },
           "interfaceTypes": {},
           "linkTypes": {},
@@ -1150,8 +1161,10 @@ describe("Object Types", () => {
           "actionTypes": {},
           "blockPermissionInformation": {
             "actionTypes": {},
+            "interfaceTypes": {},
             "linkTypes": {},
             "objectTypes": {},
+            "sharedPropertyTypes": {},
           },
           "interfaceTypes": {},
           "linkTypes": {},
@@ -1366,8 +1379,10 @@ describe("Object Types", () => {
           "actionTypes": {},
           "blockPermissionInformation": {
             "actionTypes": {},
+            "interfaceTypes": {},
             "linkTypes": {},
             "objectTypes": {},
+            "sharedPropertyTypes": {},
           },
           "interfaceTypes": {},
           "linkTypes": {},
@@ -1381,8 +1396,10 @@ describe("Object Types", () => {
           "actionTypes": {},
           "blockPermissionInformation": {
             "actionTypes": {},
+            "interfaceTypes": {},
             "linkTypes": {},
             "objectTypes": {},
+            "sharedPropertyTypes": {},
           },
           "interfaceTypes": {},
           "linkTypes": {},
@@ -1673,8 +1690,10 @@ describe("Object Types", () => {
           "actionTypes": {},
           "blockPermissionInformation": {
             "actionTypes": {},
+            "interfaceTypes": {},
             "linkTypes": {},
             "objectTypes": {},
+            "sharedPropertyTypes": {},
           },
           "interfaceTypes": {},
           "linkTypes": {},
@@ -2244,8 +2263,10 @@ describe("Object Types", () => {
           },
           "blockPermissionInformation": {
             "actionTypes": {},
+            "interfaceTypes": {},
             "linkTypes": {},
             "objectTypes": {},
+            "sharedPropertyTypes": {},
           },
           "interfaceTypes": {},
           "linkTypes": {
@@ -2729,8 +2750,10 @@ describe("Object Types", () => {
           "actionTypes": {},
           "blockPermissionInformation": {
             "actionTypes": {},
+            "interfaceTypes": {},
             "linkTypes": {},
             "objectTypes": {},
+            "sharedPropertyTypes": {},
           },
           "interfaceTypes": {},
           "linkTypes": {},
@@ -2744,8 +2767,10 @@ describe("Object Types", () => {
           "actionTypes": {},
           "blockPermissionInformation": {
             "actionTypes": {},
+            "interfaceTypes": {},
             "linkTypes": {},
             "objectTypes": {},
+            "sharedPropertyTypes": {},
           },
           "interfaceTypes": {},
           "linkTypes": {
@@ -3097,8 +3122,10 @@ describe("Object Types", () => {
           "actionTypes": {},
           "blockPermissionInformation": {
             "actionTypes": {},
+            "interfaceTypes": {},
             "linkTypes": {},
             "objectTypes": {},
+            "sharedPropertyTypes": {},
           },
           "interfaceTypes": {},
           "linkTypes": {},
@@ -3112,8 +3139,10 @@ describe("Object Types", () => {
           "actionTypes": {},
           "blockPermissionInformation": {
             "actionTypes": {},
+            "interfaceTypes": {},
             "linkTypes": {},
             "objectTypes": {},
+            "sharedPropertyTypes": {},
           },
           "interfaceTypes": {},
           "linkTypes": {},
@@ -3453,8 +3482,10 @@ describe("Object Types", () => {
           "actionTypes": {},
           "blockPermissionInformation": {
             "actionTypes": {},
+            "interfaceTypes": {},
             "linkTypes": {},
             "objectTypes": {},
+            "sharedPropertyTypes": {},
           },
           "interfaceTypes": {},
           "linkTypes": {},
@@ -3468,8 +3499,10 @@ describe("Object Types", () => {
           "actionTypes": {},
           "blockPermissionInformation": {
             "actionTypes": {},
+            "interfaceTypes": {},
             "linkTypes": {},
             "objectTypes": {},
+            "sharedPropertyTypes": {},
           },
           "interfaceTypes": {},
           "linkTypes": {},
@@ -3917,8 +3950,10 @@ describe("Object Types", () => {
           "actionTypes": {},
           "blockPermissionInformation": {
             "actionTypes": {},
+            "interfaceTypes": {},
             "linkTypes": {},
             "objectTypes": {},
+            "sharedPropertyTypes": {},
           },
           "interfaceTypes": {},
           "linkTypes": {},
@@ -3932,8 +3967,10 @@ describe("Object Types", () => {
           "actionTypes": {},
           "blockPermissionInformation": {
             "actionTypes": {},
+            "interfaceTypes": {},
             "linkTypes": {},
             "objectTypes": {},
+            "sharedPropertyTypes": {},
           },
           "interfaceTypes": {},
           "linkTypes": {},
@@ -4411,5 +4448,34 @@ describe("Object Types", () => {
         },
       }
     `);
+  });
+
+  it("serializes ontologyPackage permission on object type", async () => {
+    await defineOntology("com.palantir.", () => {
+      defineObject({
+        apiName: "foo",
+        displayName: "Foo",
+        pluralDisplayName: "Foos",
+        primaryKeyPropertyApiName: "id",
+        titlePropertyApiName: "id",
+        properties: { "id": { type: "string" } },
+        permission: {
+          type: "ontologyPackage",
+          ontologyPackageRid:
+            "ri.ontology-package.main.ontology-package.abc-123",
+        },
+      });
+
+      const bpi = dumpOntologyFullMetadata().ontology
+        .blockPermissionInformation!;
+      const otPerms = Object.values(bpi.objectTypes);
+      expect(otPerms).toHaveLength(1);
+      expect(otPerms[0].restrictionStatus).toEqual({
+        restrictedByDatasources: false,
+        editRestrictedByDatasources: false,
+        publicProject: false,
+        ontologyPackageRid: "ri.ontology-package.main.ontology-package.abc-123",
+      });
+    }, "/tmp/");
   });
 });

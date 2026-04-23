@@ -5,13 +5,13 @@ A React component for rendering TIFF images from raw byte arrays.
 ## Import
 
 ```tsx
-import { TiffRenderer } from "@osdk/react-components/experimental";
+import { TiffRenderer } from "@osdk/react-components/experimental/tiff-renderer";
 ```
 
 ## Usage
 
 ```tsx
-import { TiffRenderer } from "@osdk/react-components/experimental";
+import { TiffRenderer } from "@osdk/react-components/experimental/tiff-renderer";
 
 <TiffRenderer content={tiffBytes} />;
 ```

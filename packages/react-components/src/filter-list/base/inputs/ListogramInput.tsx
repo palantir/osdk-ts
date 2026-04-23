@@ -36,11 +36,13 @@ interface ListogramInputProps {
   onChange: (values: string[]) => void;
   colorMap?: Record<string, string>;
   displayMode?: ListogramDisplayMode;
+  showCount?: boolean;
   isExcluding?: boolean;
   className?: string;
   style?: React.CSSProperties;
   maxVisibleItems?: number;
   searchQuery?: string;
+  renderValue?: (value: string) => string;
 }
 
 function ListogramInputInner({
@@ -52,11 +54,13 @@ function ListogramInputInner({
   onChange,
   colorMap,
   displayMode = "full",
+  showCount = true,
   isExcluding,
   className,
   style,
   maxVisibleItems,
   searchQuery,
+  renderValue,
 }: ListogramInputProps): React.ReactElement {
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -77,10 +81,14 @@ function ListogramInputInner({
 
   const filteredValues = useMemo(() => {
     if (searchQuery) {
-      return filterValuesBySearch(stableValues, searchQuery, (v) => v.value);
+      return filterValuesBySearch(
+        stableValues,
+        searchQuery,
+        (v) => renderValue?.(v.value) ?? v.value,
+      );
     }
     return stableValues;
-  }, [stableValues, searchQuery]);
+  }, [stableValues, searchQuery, renderValue]);
 
   const sortedValues = useMemo(() => {
     const selected = filteredValues.filter((v) => selectedSet.has(v.value));
@@ -121,6 +129,9 @@ function ListogramInputInner({
             const percentage = maxCount > 0 ? (count / maxCount) * 100 : 0;
             const perRowColor = colorMap?.[value];
             const isEmpty = value === "";
+            const displayLabel = isEmpty
+              ? "No value"
+              : (renderValue?.(value) ?? value);
 
             return (
               <Button
@@ -159,9 +170,9 @@ function ListogramInputInner({
                   data-excluding={(isExcluding && selectedSet.has(value))
                     || undefined}
                 >
-                  {isEmpty ? "No value" : value}
+                  {displayLabel}
                 </span>
-                {displayMode !== "minimal" && (
+                {showCount && displayMode !== "minimal" && (
                   <span className={styles.count}>{count.toLocaleString()}</span>
                 )}
                 {displayMode === "full" && (

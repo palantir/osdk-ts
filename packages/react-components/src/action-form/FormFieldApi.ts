@@ -441,6 +441,14 @@ export interface RadioButtonsFieldProps<V> extends BaseFormFieldProps<V> {
    * the corresponding option entry.
    */
   options: Option<V>[];
+
+  /**
+   * Controls the layout direction of the radio buttons.
+   *
+   * - `"vertical"` (default): options are stacked in a column
+   * - `"horizontal"`: options are laid out in a row, wrapping when needed
+   */
+  orientation?: "horizontal" | "vertical";
 }
 
 /**

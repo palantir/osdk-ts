@@ -1,5 +1,35 @@
 # @osdk/vite-plugin-oac
 
+## 0.9.0
+
+### Patch Changes
+
+- Updated dependencies [a6f4208]
+  - @osdk/generator-converters.ontologyir@2.11.0
+  - @osdk/client.unstable@2.11.0
+  - @osdk/maker@0.19.0
+  - @osdk/api@2.11.0
+  - @osdk/cli@0.35.0
+
+## 0.8.0
+
+### Minor Changes
+
+- f01a8f4: improvements(build): significant reduction in build task graphs
+
+### Patch Changes
+
+- Updated dependencies [f01a8f4]
+- Updated dependencies [151d258]
+- Updated dependencies [1a0f772]
+- Updated dependencies [b1b8a8b]
+  - @osdk/generator-converters.ontologyir@2.10.0
+  - @osdk/client.unstable@2.10.0
+  - @osdk/maker@0.18.0
+  - @osdk/faux@0.8.0
+  - @osdk/api@2.10.0
+  - @osdk/cli@0.34.0
+
 ## 0.7.0
 
 ### Patch Changes

@@ -56,11 +56,10 @@ Add the CBAC component styles to your application's entry CSS file:
 If using CSS layers with `@osdk/react-components`:
 
 ```css
-@layer osdk.tokens, osdk.components;
+@layer osdk.styles;
 
-@import "@osdk/react-components-styles" layer(osdk.tokens);
-@import "@osdk/react-components/styles.css" layer(osdk.components);
-@import "@osdk/cbac-components/styles.css" layer(osdk.components);
+@import "@osdk/react-components/styles.css" layer(osdk.styles);
+@import "@osdk/cbac-components/styles.css" layer(osdk.styles);
 ```
 
 ## Components

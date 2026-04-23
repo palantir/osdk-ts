@@ -5,13 +5,13 @@ A React component for rendering markdown content using [react-markdown](https://
 ## Import
 
 ```tsx
-import { MarkdownRenderer } from "@osdk/react-components/experimental";
+import { MarkdownRenderer } from "@osdk/react-components/experimental/markdown-renderer";
 ```
 
 ## Usage
 
 ```tsx
-import { MarkdownRenderer } from "@osdk/react-components/experimental";
+import { MarkdownRenderer } from "@osdk/react-components/experimental/markdown-renderer";
 
 <MarkdownRenderer content="# Hello World\n\nThis is **bold** text." />;
 ```
@@ -41,7 +41,7 @@ import { MarkdownRenderer } from "@osdk/react-components/experimental";
 
 ## Theming
 
-All colors and sizes are driven by CSS custom properties defined in `@osdk/react-components-styles`. Override them to match your application theme:
+All colors and sizes are driven by CSS custom properties defined in `./CSSVariables.md`. Override them to match your application theme:
 
 ```css
 :root {

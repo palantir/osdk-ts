@@ -25,11 +25,11 @@ Before using ObjectTable, make sure you have completed the library setup describ
 ## Import
 
 ```typescript
-import { ObjectTable } from "@osdk/react-components/experimental";
+import { ObjectTable } from "@osdk/react-components/experimental/object-table";
 import type {
   ColumnDefinition,
   EditFieldConfig,
-} from "@osdk/react-components/experimental";
+} from "@osdk/react-components/experimental/object-table";
 ```
 
 ## Basic Usage
@@ -39,7 +39,7 @@ import type {
 The simplest way to use ObjectTable is with just an object type:
 
 ```typescript
-import { ObjectTable } from "@osdk/react-components/experimental";
+import { ObjectTable } from "@osdk/react-components/experimental/object-table";
 import { Office } from "@YourApp/sdk";
 
 function OfficesPage() {
@@ -275,7 +275,7 @@ Displays header and cell with the provided custom renderers.
 import {
   type ColumnDefinition,
   ObjectTable,
-} from "@osdk/react-components/experimental";
+} from "@osdk/react-components/experimental/object-table";
 import { Employee } from "@YourApp/sdk";
 
 const columnDefinitions: Array<ColumnDefinition<typeof Employee>> = [
@@ -309,7 +309,7 @@ function EmployeesTable() {
 ### Example 2: Table with Multiple Selection
 
 ```typescript
-import { ObjectTable } from "@osdk/react-components/experimental";
+import { ObjectTable } from "@osdk/react-components/experimental/object-table";
 import { Employee } from "@YourApp/sdk";
 
 function EmployeesTable() {
@@ -325,7 +325,7 @@ function EmployeesTable() {
 ### Example 3: Table with Default Sorting
 
 ```typescript
-import { ObjectTable } from "@osdk/react-components/experimental";
+import { ObjectTable } from "@osdk/react-components/experimental/object-table";
 import { Employee } from "@YourApp/sdk";
 
 function EmployeesTable() {
@@ -347,7 +347,7 @@ function EmployeesTable() {
 import {
   type ColumnDefinition,
   ObjectTable,
-} from "@osdk/react-components/experimental";
+} from "@osdk/react-components/experimental/object-table";
 import { Employee } from "@YourApp/sdk";
 
 const columnDefinitions: Array<ColumnDefinition<typeof Employee>> = [
@@ -384,7 +384,7 @@ function EmployeesTable() {
 import {
   type ColumnDefinition,
   ObjectTable,
-} from "@osdk/react-components/experimental";
+} from "@osdk/react-components/experimental/object-table";
 import { Employee } from "@YourApp/sdk";
 
 const columnDefinitions: Array<ColumnDefinition<typeof Employee>> = [
@@ -431,7 +431,7 @@ const columnDefinitions: Array<ColumnDefinition<typeof Employee>> = [
 ### Example 7: Context Menu on Cell Right-Click
 
 ```typescript
-import { ObjectTable } from "@osdk/react-components/experimental";
+import { ObjectTable } from "@osdk/react-components/experimental/object-table";
 import { Employee } from "@YourApp/sdk";
 
 function EmployeesTable() {
@@ -468,7 +468,7 @@ function EmployeesTable() {
 ### Example 8: Row Click Handler
 
 ```typescript
-import { ObjectTable } from "@osdk/react-components/experimental";
+import { ObjectTable } from "@osdk/react-components/experimental/object-table";
 import { Employee } from "@YourApp/sdk";
 import { useRouter } from "next/router";
 
@@ -497,7 +497,7 @@ import { DerivedProperty } from "@osdk/client";
 import {
   type ColumnDefinition,
   ObjectTable,
-} from "@osdk/react-components/experimental";
+} from "@osdk/react-components/experimental/object-table";
 import { Employee } from "@YourApp/sdk";
 
 type RDPs = {
@@ -541,7 +541,7 @@ function EmployeesWithManagerTable() {
 ### Example 10: Controlled Sorting
 
 ```typescript
-import { ObjectTable } from "@osdk/react-components/experimental";
+import { ObjectTable } from "@osdk/react-components/experimental/object-table";
 import { Employee } from "@YourApp/sdk";
 import { useState } from "react";
 
@@ -568,7 +568,7 @@ function EmployeesTable() {
 ### Example 11: Controlled Row Selection
 
 ```typescript
-import { ObjectTable } from "@osdk/react-components/experimental";
+import { ObjectTable } from "@osdk/react-components/experimental/object-table";
 import { Employee } from "@YourApp/sdk";
 import { useState } from "react";
 
@@ -624,7 +624,7 @@ In a custom column type, you can render anything in the column by passing in ren
 import {
   type ColumnDefinition,
   ObjectTable,
-} from "@osdk/react-components/experimental";
+} from "@osdk/react-components/experimental/object-table";
 import { Employee } from "@YourApp/sdk";
 
 const columnDefinitions: Array<ColumnDefinition<typeof Employee>> = [
@@ -665,7 +665,7 @@ import {
   type CellEditInfo,
   type ColumnDefinition,
   ObjectTable,
-} from "@osdk/react-components/experimental";
+} from "@osdk/react-components/experimental/object-table";
 import { Employee, updateMultipleEmployees } from "@YourApp/sdk";
 
 const columnDefinitions: Array<ColumnDefinition<typeof Employee>> = [
@@ -806,7 +806,7 @@ import {
   ColumnConfigDialog,
   type ColumnDefinition,
   ObjectTable,
-} from "@osdk/react-components/experimental";
+} from "@osdk/react-components/experimental/object-table";
 import { Employee } from "@YourApp/sdk";
 import { useCallback, useMemo, useState } from "react";
 
@@ -934,7 +934,7 @@ Display values computed by OSDK functions (queries) alongside regular property c
 import {
   type ColumnDefinition,
   ObjectTable,
-} from "@osdk/react-components/experimental";
+} from "@osdk/react-components/experimental/object-table";
 import { Employee, getEmployeeMetrics } from "@YourApp/sdk";
 
 // Define a type map for your function columns
@@ -1125,7 +1125,7 @@ Use TypeScript generics to ensure type safety:
 import {
   type ColumnDefinition,
   ObjectTable,
-} from "@osdk/react-components/experimental";
+} from "@osdk/react-components/experimental/object-table";
 import { Employee } from "@YourApp/sdk";
 
 type RDPs = {
@@ -1181,14 +1181,13 @@ type EmployeeProps = PropertyKeys<typeof Employee>;
 
 ### Table has no styling or looks broken
 
-- Ensure you've imported `@osdk/react-components-styles` in your main CSS file
+- Ensure you've imported `@osdk/react-components/styles.css` in your main CSS file
 - Check that the CSS import is in the correct location (application entry point)
-- Verify the CSS layer syntax is correct: `@layer osdk.tokens;` must come before the import
 - Check browser DevTools to confirm CSS custom properties are loaded
 
 ## Theming
 
-The ObjectTable (and all OSDK components) can be themed using CSS custom properties from the `@osdk/react-components-styles` package.
+The ObjectTable (and all OSDK components) can be themed using CSS custom properties included in `@osdk/react-components/styles.css`.
 
 ### Understanding Token Scopes
 
@@ -1212,10 +1211,9 @@ The ObjectTable (and all OSDK components) can be themed using CSS custom propert
 Change OSDK component styling without affecting other Blueprint components in your app:
 
 ```css
-@layer osdk.tokens, osdk.components, user.theme;
+@layer osdk.styles, user.theme;
 
-@import "@osdk/react-components/styles.css" layer(osdk.components);
-@import "@osdk/react-components-styles" layer(osdk.tokens);
+@import "@osdk/react-components/styles.css" layer(osdk.styles);
 
 @layer user.theme {
   :root {
@@ -1236,10 +1234,9 @@ Change OSDK component styling without affecting other Blueprint components in yo
 Change both Blueprint and OSDK components for consistent theming:
 
 ```css
-@layer osdk.components, osdk.tokens, user.theme;
+@layer osdk.styles, user.theme;
 
-@import "@osdk/react-components/styles.css" layer(osdk.components);
-@import "@osdk/react-components-styles" layer(osdk.tokens);
+@import "@osdk/react-components/styles.css" layer(osdk.styles);
 
 @layer user.theme {
   :root {
@@ -1326,8 +1323,7 @@ Apply custom styles to specific ObjectTable instances using the `className` prop
 
 For a complete reference of all available CSS tokens for theming, see:
 
-- [@osdk/react-components-styles CSS Variables Documentation](https://github.com/palantir/osdk-ts/blob/main/packages/react-components-styles/CSS_VARIABLES.md)
-- [@osdk/react-components-styles README](https://github.com/palantir/osdk-ts/blob/main/packages/react-components-styles/README.md)
+- [CSS Variables Documentation](./CSSVariables.md)
 
 ### Accessibility Note
 

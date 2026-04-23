@@ -2705,8 +2705,10 @@ describe(OntologyIrToFullMetadataConverter, () => {
           },
           "blockPermissionInformation": {
             "actionTypes": {},
+            "interfaceTypes": {},
             "linkTypes": {},
             "objectTypes": {},
+            "sharedPropertyTypes": {},
           },
         } as const,
       );

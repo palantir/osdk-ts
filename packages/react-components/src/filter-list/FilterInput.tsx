@@ -22,6 +22,7 @@ import type { FilterDefinitionUnion } from "./FilterListApi.js";
 import type { FilterState } from "./FilterListItemApi.js";
 import { LinkedPropertyInput } from "./inputs/LinkedPropertyInput.js";
 import { PropertyFilterInput } from "./inputs/PropertyFilterInput.js";
+import { StaticValuesFilterInput } from "./inputs/StaticValuesFilterInput.js";
 
 interface FilterInputProps<Q extends ObjectTypeDefinition> {
   objectType: Q;
@@ -133,6 +134,17 @@ function FilterInputContent<Q extends ObjectTypeDefinition>({
           filterState={filterState}
           onFilterStateChanged={onFilterStateChanged}
           whereClause={whereClause}
+          searchQuery={searchQuery}
+          excludeRowOpen={excludeRowOpen}
+        />
+      );
+
+    case "STATIC_VALUES":
+      return (
+        <StaticValuesFilterInput
+          definition={definition}
+          filterState={filterState}
+          onFilterStateChanged={onFilterStateChanged}
           searchQuery={searchQuery}
           excludeRowOpen={excludeRowOpen}
         />

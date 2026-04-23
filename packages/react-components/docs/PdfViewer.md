@@ -5,7 +5,10 @@ A React component for rendering PDF documents with text selection, custom annota
 ## Import
 
 ```tsx
-import { BasePdfViewer, PdfViewer } from "@osdk/react-components/experimental";
+import {
+  BasePdfViewer,
+  PdfViewer,
+} from "@osdk/react-components/experimental/pdf-viewer";
 ```
 
 - **`PdfViewer`** — Primary component for OSDK usage. Accepts an OSDK `Media` object, handles fetching the PDF contents, and renders the viewer.
@@ -16,7 +19,7 @@ import { BasePdfViewer, PdfViewer } from "@osdk/react-components/experimental";
 ### With OSDK Media
 
 ```tsx
-import { PdfViewer } from "@osdk/react-components/experimental";
+import { PdfViewer } from "@osdk/react-components/experimental/pdf-viewer";
 
 <PdfViewer media={employee.employeeDocuments} />;
 ```
@@ -24,7 +27,7 @@ import { PdfViewer } from "@osdk/react-components/experimental";
 ### With a URL or ArrayBuffer
 
 ```tsx
-import { BasePdfViewer } from "@osdk/react-components/experimental";
+import { BasePdfViewer } from "@osdk/react-components/experimental/pdf-viewer";
 
 // From a URL
 <BasePdfViewer src="https://example.com/document.pdf" />
@@ -156,7 +159,7 @@ Tier 3: usePdfViewerState / usePdfViewerCore    ← custom everything
 
 ## Building blocks
 
-All building blocks are exported from `@osdk/react-components/experimental` for composing custom PDF viewer layouts. Use `PdfViewerContent` as the foundation and add whichever chrome you need.
+All building blocks are exported from `@osdk/react-components/experimental/pdf-viewer` for composing custom PDF viewer layouts. Use `PdfViewerContent` as the foundation and add whichever chrome you need.
 
 | Component                  | Description                                                        |
 | -------------------------- | ------------------------------------------------------------------ |
@@ -170,7 +173,7 @@ All building blocks are exported from `@osdk/react-components/experimental` for 
 ### Example: content-only viewer
 
 ```tsx
-import { PdfViewerContent } from "@osdk/react-components/experimental";
+import { PdfViewerContent } from "@osdk/react-components/experimental/pdf-viewer";
 
 <PdfViewerContent
   src="https://example.com/document.pdf"
@@ -214,7 +217,7 @@ import {
   PdfViewerSearchBar,
   PdfViewerToolbar,
   usePdfViewerState,
-} from "@osdk/react-components/experimental";
+} from "@osdk/react-components/experimental/pdf-viewer";
 import { createPortal } from "react-dom";
 
 function MyCustomViewer({ src }: { src: string }) {
@@ -259,7 +262,7 @@ function MyCustomViewer({ src }: { src: string }) {
 ### Example: minimal viewer with `usePdfViewerCore`
 
 ```tsx
-import { usePdfViewerCore } from "@osdk/react-components/experimental";
+import { usePdfViewerCore } from "@osdk/react-components/experimental/pdf-viewer";
 
 function MinimalViewer({ src }: { src: string }) {
   const { containerRef, viewerRef, loading, error, currentPage, numPages } =
@@ -299,7 +302,7 @@ function MinimalViewer({ src }: { src: string }) {
 
 ## Theming
 
-All colors and sizes are driven by CSS custom properties defined in `@osdk/react-components-styles`. Override them to match your application theme:
+All colors and sizes are driven by CSS custom properties included in `@osdk/react-components/styles.css`. Override them to match your application theme:
 
 ```css
 :root {

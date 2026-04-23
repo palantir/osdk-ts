@@ -25,6 +25,7 @@ import type { FormFieldDefinition } from "../FormFieldApi.js";
 
 vi.mock("@osdk/react/experimental", () => ({
   useOsdkAction: vi.fn(),
+  useRegisterUserAgent: vi.fn(),
 }));
 
 vi.mock("@osdk/react", () => ({

@@ -1,5 +1,23 @@
 # @osdk/widget.vite-plugin
 
+## 3.8.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.8.0
+
+## 3.7.0
+
+### Minor Changes
+
+- f01a8f4: improvements(build): significant reduction in build task graphs
+
+### Patch Changes
+
+- Updated dependencies [f01a8f4]
+  - @osdk/foundry-config-json@1.8.0
+  - @osdk/widget.api@3.7.0
+
 ## 3.6.0
 
 ### Minor Changes

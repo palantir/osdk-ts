@@ -1,0 +1,130 @@
+/* Datetime Picker Styling */
+:root {
+  /* Input error */
+  --osdk-datetime-input-error-border-color: var(--osdk-intent-danger-rest);
+
+  /* Popover */
+  --osdk-datetime-popover-bg: var(--osdk-background-primary);
+  --osdk-datetime-popover-padding: calc(var(--osdk-surface-spacing) * 2);
+  --osdk-datetime-popover-z-index: var(--osdk-surface-z-index-3);
+  --osdk-datetime-popover-shadow: var(--osdk-surface-shadow-2);
+
+  /* Calendar */
+  --osdk-datetime-calendar-font-family: var(--osdk-typography-family-default);
+  --osdk-datetime-calendar-font-size: var(--osdk-typography-size-body-small);
+  --osdk-datetime-calendar-cell-size: calc(var(--osdk-surface-spacing) * 8);
+  --osdk-datetime-calendar-gap: 2px;
+
+  /* Calendar header */
+  --osdk-datetime-calendar-caption-font-size: var(
+    --osdk-typography-size-body-medium
+  );
+  --osdk-datetime-calendar-caption-font-weight: var(
+    --osdk-typography-weight-bold
+  );
+
+  /* Calendar weekday header */
+  --osdk-datetime-calendar-weekday-color: var(--osdk-typography-color-muted);
+  --osdk-datetime-calendar-weekday-font-size: var(
+    --osdk-typography-size-body-x-small
+  );
+
+  --osdk-datetime-calendar-day-color: var(--osdk-typography-color-default);
+  --osdk-datetime-calendar-day-hover-bg: var(
+    --osdk-surface-background-color-default-hover
+  );
+  --osdk-datetime-calendar-day-hover-color: var(
+    --osdk-typography-color-default
+  );
+  --osdk-datetime-calendar-day-active-bg: var(
+    --osdk-surface-background-color-default-active
+  );
+  --osdk-datetime-calendar-day-border-radius: var(--osdk-surface-border-radius);
+
+  /* Calendar selected day */
+  --osdk-datetime-calendar-selected-bg: var(--osdk-intent-primary-rest);
+  --osdk-datetime-calendar-selected-color: var(
+    --osdk-intent-primary-foreground
+  );
+  --osdk-datetime-calendar-selected-hover-bg: var(--osdk-intent-primary-hover);
+
+  /* Calendar today */
+  --osdk-datetime-calendar-today-font-weight: var(
+    --osdk-typography-weight-bold
+  );
+
+  /* Calendar range middle (days between start and end) */
+  --osdk-datetime-calendar-range-middle-bg: color-mix(
+    in srgb,
+    var(--osdk-intent-primary-rest) 15%,
+    transparent
+  );
+
+  /* Calendar disabled */
+  --osdk-datetime-calendar-disabled-color: var(--osdk-intent-default-disabled);
+
+  /* Calendar outside month */
+  --osdk-datetime-calendar-outside-color: var(--osdk-typography-color-muted);
+
+  /* Calendar nav buttons */
+  --osdk-datetime-calendar-nav-button-size: calc(
+    var(--osdk-surface-spacing) * 5
+  );
+  --osdk-datetime-calendar-nav-button-border-radius: var(
+    --osdk-surface-border-radius
+  );
+  --osdk-datetime-calendar-nav-button-hover-bg: var(
+    --osdk-surface-background-color-default-hover
+  );
+
+  /* Calendar focus ring */
+  --osdk-datetime-calendar-focus-outline: 1px solid
+    var(--osdk-input-border-color-focus);
+
+  /* Calendar months gap (also used by range time row) */
+  --osdk-datetime-calendar-months-gap: calc(var(--osdk-surface-spacing) * 4);
+
+  /* Calendar nav disabled */
+  --osdk-datetime-calendar-nav-disabled-color: var(
+    --osdk-typography-color-muted
+  );
+
+  /* Calendar dropdown */
+  --osdk-datetime-calendar-dropdown-padding: 2px var(--osdk-surface-spacing);
+  --osdk-datetime-calendar-dropdown-border-radius: var(
+    --osdk-input-border-radius
+  );
+
+  /* Calendar caption dropdowns gap */
+  --osdk-datetime-calendar-caption-gap: var(--osdk-surface-spacing);
+
+  /* Calendar outside day opacity */
+  --osdk-datetime-calendar-outside-opacity: 0.4;
+
+  /* Date input wrapper — indirection tokens for component isolation */
+  --osdk-datetime-input-min-height: var(--osdk-input-min-height);
+  --osdk-datetime-input-padding: var(--osdk-input-padding);
+  --osdk-datetime-input-border-radius: var(--osdk-input-border-radius);
+  --osdk-datetime-input-bg: var(--osdk-input-bg);
+  --osdk-datetime-input-bg-hover: var(--osdk-input-bg-hover);
+  --osdk-datetime-input-color: var(--osdk-input-color);
+  --osdk-datetime-input-font-family: var(--osdk-input-font-family);
+  --osdk-datetime-input-font-size: var(--osdk-input-font-size);
+  --osdk-datetime-input-line-height: var(
+    --osdk-input-line-height,
+    var(--osdk-typography-line-height-default)
+  );
+  --osdk-datetime-input-placeholder-color: var(--osdk-input-placeholder-color);
+  --osdk-datetime-input-border-width: var(--osdk-input-border-width);
+  --osdk-datetime-input-border-color: var(--osdk-input-border-color);
+  --osdk-datetime-input-border-color-focus: var(--osdk-input-border-color-focus);
+  --osdk-datetime-input-focus-width: var(--osdk-input-focus-width);
+  --osdk-datetime-input-focus-color: var(--osdk-input-focus-color);
+  --osdk-datetime-input-focus-offset: var(--osdk-input-focus-offset);
+  --osdk-datetime-input-transition-duration: var(--osdk-input-transition-duration);
+  --osdk-datetime-input-transition-ease: var(--osdk-input-transition-ease);
+
+  /* Calendar fallback / loading */
+  --osdk-datetime-calendar-fallback-width: 280px;
+  --osdk-datetime-calendar-fallback-height: 300px;
+}

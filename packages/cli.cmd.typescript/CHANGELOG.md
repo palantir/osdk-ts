@@ -1,5 +1,27 @@
 # @osdk/cli.cmd.typescript
 
+## 0.35.0
+
+### Patch Changes
+
+- @osdk/generator@2.11.0
+- @osdk/cli.common@0.35.0
+
+## 0.34.0
+
+### Minor Changes
+
+- 29ab35a: Use workspace:^ for peer dependencies to prevent changesets from propagating major bumps when a peer dep receives a minor version change. The internal codegen (`osdk-unstable-typescript generate --internal`) now emits `workspace:^` for peer deps while keeping `workspace:~` for regular/dev deps.
+- f01a8f4: improvements(build): significant reduction in build task graphs
+
+### Patch Changes
+
+- Updated dependencies [29ab35a]
+- Updated dependencies [f01a8f4]
+  - @osdk/generator@2.10.0
+  - @osdk/shared.client.impl@1.10.0
+  - @osdk/cli.common@0.34.0
+
 ## 0.33.0
 
 ### Minor Changes

@@ -27,6 +27,7 @@ import {
   type FunctionQueryParams,
   useOsdkFunctions,
   type UseOsdkFunctionsResult,
+  useStableObjectSet,
 } from "@osdk/react/experimental";
 import { chunk } from "lodash-es";
 import { useMemo, useRef } from "react";
@@ -88,9 +89,7 @@ export function useFunctionColumnsData<
   const prevDataRef = useRef<FunctionColumnData>({});
 
   const stableObjects = useStableObjects(objects);
-  // TODO: replace with useDeepEqual when it's added
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const stableObjectSet = useMemo(() => objectSet, [JSON.stringify(objectSet)]);
+  const stableObjectSet = useStableObjectSet(objectSet);
 
   const functionColDefs = useMemo(
     () => extractFunctionLocators<Q, RDPs, FunctionColumns>(columnDefinitions),
