@@ -945,6 +945,8 @@ export namespace Logger {
 //
 // @public
 export type MainValueTypeOf<P extends ObjectMetadata.Property> = P["mainValue"] extends {
+    	fields: readonly [infer Single extends string]
+} ? P["type"] extends Record<string, WirePropertyTypes> ? Single extends keyof P["type"] ? GetClientPropertyValueFromWire<P["type"][Single]> : never : never : P["mainValue"] extends {
     	fields: readonly (infer F extends string)[]
 } ? P["type"] extends Record<string, WirePropertyTypes> ? { [K in F & keyof P["type"]] : GetClientPropertyValueFromWire<P["type"][K]> } : never : never;
 

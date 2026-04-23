@@ -27,22 +27,24 @@ import type { WirePropertyTypes } from "./WirePropertyTypes.js";
 
 /** Modifier values users can specify */
 export type PropertyModifierValue =
-  | "applyMainValue" // For structs - returns struct with only main value fields
-  | "applyReducers" // For arrays - returns single element type (not array)
-  | "applyReducersAndExtractMainValue"; // For arrays of structs - returns single element with only main value fields
+  | "applyMainValue"
+  | "applyReducers"
+  | "applyReducersAndExtractMainValue";
 
-/**
- * Extract the main value struct type from a property.
- * Returns a struct containing only the fields specified in mainValue.fields.
- */
 export type MainValueTypeOf<P extends ObjectMetadata.Property> =
-  P["mainValue"] extends { fields: readonly (infer F extends string)[] }
-    ? P["type"] extends Record<string, WirePropertyTypes> ? {
-        [K in F & keyof P["type"]]: GetClientPropertyValueFromWire<
-          P["type"][K]
-        >;
-      }
+  P["mainValue"] extends { fields: readonly [infer Single extends string] }
+    ? P["type"] extends Record<string, WirePropertyTypes>
+      ? Single extends keyof P["type"]
+        ? GetClientPropertyValueFromWire<P["type"][Single]>
+      : never
     : never
+    : P["mainValue"] extends { fields: readonly (infer F extends string)[] }
+      ? P["type"] extends Record<string, WirePropertyTypes> ? {
+          [K in F & keyof P["type"]]: GetClientPropertyValueFromWire<
+            P["type"][K]
+          >;
+        }
+      : never
     : never;
 
 /**
@@ -88,13 +90,19 @@ export type ApplyModifierToProperty<
   : never;
 
 type MainValueOfReduced<P extends ObjectMetadata.Property> =
-  P["mainValue"] extends { fields: readonly (infer F extends string)[] }
-    ? P["type"] extends Record<string, WirePropertyTypes> ? {
-        [K in F & keyof P["type"]]: GetClientPropertyValueFromWire<
-          P["type"][K]
-        >;
-      }
+  P["mainValue"] extends { fields: readonly [infer Single extends string] }
+    ? P["type"] extends Record<string, WirePropertyTypes>
+      ? Single extends keyof P["type"]
+        ? GetClientPropertyValueFromWire<P["type"][Single]>
+      : never
     : never
+    : P["mainValue"] extends { fields: readonly (infer F extends string)[] }
+      ? P["type"] extends Record<string, WirePropertyTypes> ? {
+          [K in F & keyof P["type"]]: GetClientPropertyValueFromWire<
+            P["type"][K]
+          >;
+        }
+      : never
     : never;
 
 export type PropsWithBoth<Q extends ObjectOrInterfaceDefinition> =

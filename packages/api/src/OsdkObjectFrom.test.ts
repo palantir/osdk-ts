@@ -543,14 +543,14 @@ describe("ExtractOptions", () => {
         expectTypeOf<MainValueTypeOf<FullNameDef>>().toEqualTypeOf<never>();
       });
 
-      it("extracts main value struct from array of structs property", () => {
+      it("extracts scalar value when mainValue has a single field (array of structs)", () => {
         type BonusHistoryDef = NonNullable<
           EmployeeApiTest["__DefinitionMetadata"]
         >["properties"]["bonusHistory"];
-        // Main value field is ["amount"], so result is struct with that field
-        expectTypeOf<MainValueTypeOf<BonusHistoryDef>>().toEqualTypeOf<{
-          amount: number;
-        }>();
+        // Main value field is ["amount"] (single), so wire returns the scalar value
+        expectTypeOf<MainValueTypeOf<BonusHistoryDef>>().toEqualTypeOf<
+          number
+        >();
       });
     });
 
@@ -604,14 +604,14 @@ describe("ExtractOptions", () => {
         >();
       });
 
-      it("transforms array of structs with applyReducersAndExtractMainValue", () => {
+      it("transforms array of structs with applyReducersAndExtractMainValue (single field => scalar)", () => {
         type Modified = ApplyModifiersToProps<
           EmployeeApiTest,
           { bonusHistory: "applyReducersAndExtractMainValue" }
         >;
-        // bonusHistory should be struct with only main value fields | undefined
+        // bonusHistory has single mainValue field, wire returns scalar
         expectTypeOf<Modified["bonusHistory"]>().toEqualTypeOf<
-          { amount: number } | undefined
+          number | undefined
         >();
       });
 
@@ -659,14 +659,14 @@ describe("ExtractOptions", () => {
         >();
       });
 
-      it("returns struct with main value fields when applyReducersAndExtractMainValue modifier applied", () => {
+      it("returns scalar when mainValue has single field with applyReducersAndExtractMainValue", () => {
         type toCheck = Osdk.Instance<
           EmployeeApiTest,
           never,
           "bonusHistory:applyReducersAndExtractMainValue"
         >;
         expectTypeOf<toCheck["bonusHistory"]>().toEqualTypeOf<
-          { amount: number } | undefined
+          number | undefined
         >();
       });
 
@@ -763,11 +763,9 @@ describe("ExtractOptions", () => {
             {}
           >
         >();
-        // bonusHistory should be main value struct of single element
+        // bonusHistory has single mainValue field, wire returns scalar
         type ResultType = (typeof result)["data"][0]["bonusHistory"];
-        expectTypeOf<ResultType>().toEqualTypeOf<
-          { amount: number } | undefined
-        >();
+        expectTypeOf<ResultType>().toEqualTypeOf<number | undefined>();
       });
 
       it("preserves unmodified properties alongside modified ones", async () => {
@@ -835,6 +833,24 @@ describe("ExtractOptions", () => {
         expectTypeOf<Data["addressStruct"]>().toEqualTypeOf<
           { city: string; zipCode: string } | undefined
         >();
+      });
+
+      it("disallows invalid modifiers in fetchPage args", async () => {
+        const objectSet = createMockObjectSet<EmployeeApiTest>();
+
+        await objectSet.fetchPage({
+          $applyModifiers: {
+            // @ts-expect-error invalid modifier value
+            addressStruct: "invalidModifier",
+          },
+        });
+
+        await objectSet.fetchPage({
+          $applyModifiers: {
+            // @ts-expect-error invalid modifier key
+            invalidProp: "applyMainValue",
+          },
+        });
       });
     });
   });
