@@ -15,12 +15,11 @@
  */
 
 /**
- * Store layer for a single shape's derived links. Owns one `LinkEntry` per
- * top-level derived link on the shape and — if a link's target shape has its
- * own derived links — one `LinkEntry` per (pk, nestedLinkName) under the
- * parent's `nestedByPk`. Feeds `useSyncExternalStore` via `subscribe` /
- * `getSnapShot`. Teardown is one-way: `destroy` cascades unsubscribes
- * through the nested tree.
+ * Store layer for one source object's derived links on a given shape. Owns
+ * one `LinkEntry` per top-level derived link. If a link's target shape has
+ * its own derived links, also owns one `LinkEntry` per (pk, nestedLinkName)
+ * under the parent's `nestedByPk`. Feeds `useSyncExternalStore` via
+ * `subscribe` / `getSnapShot`. Teardown is one-way via `destroy`.
  */
 
 import type {
@@ -82,13 +81,13 @@ export {
 } from "./types.js";
 
 /**
- * Debounce window for batching nested link kickoffs. When a parent list
- * resolves, each item wants its own nested link observations started. A
- * short delay lets multiple observer emissions (e.g. rapid streamUpdates
- * re-resolutions) coalesce into a single `startLinksInBatch` call instead
- * of fanning out per-emission. 25ms is empirical: long enough to batch
- * burst emissions, short enough to be imperceptible to users waiting on
- * nested link data.
+ * Debounce window before starting newly-queued nested link observations.
+ * When a parent list resolves, each item needs its own nested link
+ * subscriptions. If the parent observer emits a few times in quick
+ * succession (e.g. streamUpdates), we collapse those into one
+ * `startLinksInBatch` call instead of kicking off subscriptions per
+ * emission. 25ms is a guess: small enough to feel instant, large enough
+ * to coalesce sync-ish bursts. Not tuned against real workloads.
  */
 const NESTED_FLUSH_DELAY_MS = 25;
 
@@ -111,15 +110,16 @@ function pruneStaleNestedEntries(
 }
 
 /**
- * Creates a store that observes all derived links for a single source object
- * against the given shape. Returned methods:
+ * Creates a store that observes all derived links for a single source
+ * object against the given shape. Returned methods:
  *
- * - `subscribe(notify)` — add a listener. First subscribe kicks off observation
- *   of all non-deferred top-level links; last unsubscribe triggers `destroy`.
- * - `getSnapShot()` — read a cached snapshot of all link data + statuses.
- * - `loadDeferred(linkName)` — start a link that was configured with `defer: true`.
- * - `retry(linkName?)` — restart error-state entries.
- * - `destroy()` — one-way teardown; cascades through nested subscriptions.
+ * - `subscribe(notify)`: add a listener. First subscribe kicks off
+ *   observation of all non-deferred top-level links. Last unsubscribe
+ *   triggers `destroy`.
+ * - `getSnapShot()`: read a cached snapshot of all link data + statuses.
+ * - `loadDeferred(linkName)`: start a link configured with `defer: true`.
+ * - `retry(linkName?)`: restart error-state entries.
+ * - `destroy()`: one-way teardown; cascades through nested subscriptions.
  */
 export function createDerivedLinksStore<
   S extends ShapeDefinition<ObjectOrInterfaceDefinition>,
