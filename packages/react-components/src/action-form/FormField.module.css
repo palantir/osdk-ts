@@ -38,6 +38,7 @@
 .osdkFormFieldLabelRow {
   display: flex;
   align-items: center;
+  gap: var(--osdk-form-label-row-gap);
 }
 
 .osdkFormFieldInfoIcon {

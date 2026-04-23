@@ -29,75 +29,69 @@ interface FormFieldProps {
   children: React.ReactNode;
 }
 
-export const FormField: React.FC<FormFieldProps> = memo(
-  function FormFieldFn({
-    fieldKey,
-    label,
-    isRequired,
-    helperText,
-    helperTextPlacement = "tooltip",
-    error,
-    children,
-  }: FormFieldProps): React.ReactElement {
-    const showTooltip = helperText != null && helperTextPlacement === "tooltip";
-    const showBottomText = helperText != null
-      && helperTextPlacement === "bottom";
+export const FormField: React.FC<FormFieldProps> = memo(function FormFieldFn({
+  fieldKey,
+  label,
+  isRequired,
+  helperText,
+  helperTextPlacement = "tooltip",
+  error,
+  children,
+}: FormFieldProps): React.ReactElement {
+  const showTooltip = helperText != null && helperTextPlacement === "tooltip";
+  const showBottomText = helperText != null && helperTextPlacement === "bottom";
 
-    const labelElement = label != null
-      ? (
-        <label className={styles.osdkFormFieldLabel} htmlFor={fieldKey}>
-          {label}
-          {isRequired === true && (
-            <span
-              className={styles.osdkFormFieldRequired}
-              aria-label="required"
-            >
-              {" "}*
-            </span>
-          )}
-        </label>
-      )
-      : null;
-
-    return (
-      <div className={styles.osdkFormField}>
-        {showTooltip
-          ? (
-            <div className={styles.osdkFormFieldLabelRow}>
-              {labelElement}
-              <Popover.Root>
-                <Popover.Trigger
-                  render={<span className={styles.osdkFormFieldInfoIcon} />}
-                  openOnHover
-                  aria-label={label != null
-                    ? `Info about ${label}`
-                    : "More information"}
-                >
-                  <InfoSign size={12} />
-                </Popover.Trigger>
-                <Popover.Portal>
-                  <Popover.Positioner sideOffset={4}>
-                    <Popover.Popup
-                      className={styles.osdkFormFieldInfoPopup}
-                    >
-                      {helperText}
-                    </Popover.Popup>
-                  </Popover.Positioner>
-                </Popover.Portal>
-              </Popover.Root>
-            </div>
-          )
-          : labelElement}
-        {showBottomText && (
-          <div className={styles.osdkFormFieldHelperText}>{helperText}</div>
+  const labelElement = label != null
+    ? (
+      <label className={styles.osdkFormFieldLabel} htmlFor={fieldKey}>
+        {label}
+        {isRequired === true && (
+          <span className={styles.osdkFormFieldRequired} aria-label="required">
+            {" "}
+            *
+          </span>
         )}
-        {children}
-        {error != null && (
-          <div className={styles.osdkFormFieldError} role="alert">
-            {error}
+      </label>
+    )
+    : null;
+
+  return (
+    <div className={styles.osdkFormField}>
+      {showTooltip
+        ? (
+          <div className={styles.osdkFormFieldLabelRow}>
+            {labelElement}
+            <Popover.Root>
+              <Popover.Trigger
+                render={<span className={styles.osdkFormFieldInfoIcon} />}
+                nativeButton={false}
+                openOnHover={true}
+                aria-label={label != null
+                  ? `Info about ${label}`
+                  : "More information"}
+              >
+                <InfoSign size={12} />
+              </Popover.Trigger>
+              <Popover.Portal>
+                <Popover.Positioner sideOffset={4}>
+                  <Popover.Popup className={styles.osdkFormFieldInfoPopup}>
+                    {helperText}
+                  </Popover.Popup>
+                </Popover.Positioner>
+              </Popover.Portal>
+            </Popover.Root>
           </div>
-        )}
-      </div>
-    );
-  },
-);
+        )
+        : labelElement}
+      {showBottomText && (
+        <div className={styles.osdkFormFieldHelperText}>{helperText}</div>
+      )}
+      {children}
+      {error != null && (
+        <div className={styles.osdkFormFieldError} role="alert">
+          {error}
+        </div>
+      )}
+    </div>
+  );
+});
