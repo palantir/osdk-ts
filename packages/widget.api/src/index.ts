@@ -41,6 +41,7 @@ export {
 export {
   isWidgetEmitEventMessage,
   isWidgetReadyMessage,
+  isWidgetReloadMessage,
   isWidgetResizeMessage,
   visitWidgetMessage,
 } from "./messages/widgetMessages.js";
