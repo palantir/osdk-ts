@@ -865,6 +865,9 @@ importers:
       '@osdk/oauth':
         specifier: workspace:*
         version: link:../../packages/oauth
+      '@osdk/react':
+        specifier: workspace:*
+        version: link:../../packages/react
       normalize.css:
         specifier: ^8.0.1
         version: 8.0.1
@@ -965,6 +968,9 @@ importers:
       '@osdk/oauth':
         specifier: workspace:*
         version: link:../../packages/oauth
+      '@osdk/react':
+        specifier: workspace:*
+        version: link:../../packages/react
       normalize.css:
         specifier: ^8.0.1
         version: 8.0.1
