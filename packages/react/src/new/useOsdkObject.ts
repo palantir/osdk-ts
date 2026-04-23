@@ -27,6 +27,7 @@ import type {
   Unsubscribable,
 } from "@osdk/client/unstable-do-not-use";
 import React from "react";
+import type { Snapshot } from "./makeExternalStore.js";
 import {
   devToolsMetadata,
   extractPayloadError,
@@ -286,7 +287,7 @@ export function useOsdkObject<
     : null;
 
   const hasObjectData = (
-    p: ObserveObjectCallbackArgs<Q> | undefined,
+    p: Snapshot<ObserveObjectCallbackArgs<Q>>,
   ): boolean => p?.object != null;
 
   const suspenseStore = React.useMemo(() => {

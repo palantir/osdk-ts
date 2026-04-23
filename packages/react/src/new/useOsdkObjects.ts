@@ -33,6 +33,7 @@ import type {
 } from "@osdk/client/unstable-do-not-use";
 import React from "react";
 import { extractPayloadError, isPayloadLoading } from "./hookUtils.js";
+import type { Snapshot } from "./makeExternalStore.js";
 import { devToolsMetadata, makeExternalStore } from "./makeExternalStore.js";
 import {
   getClientId,
@@ -522,7 +523,7 @@ export function useOsdkObjects<
     : null;
 
   const hasListData = (
-    p: ObserveObjectsCallbackArgs<Q, RDPs> | undefined,
+    p: Snapshot<ObserveObjectsCallbackArgs<Q, RDPs>>,
   ): boolean => p?.resolvedList != null;
 
   const suspenseStore = React.useMemo(() => {
