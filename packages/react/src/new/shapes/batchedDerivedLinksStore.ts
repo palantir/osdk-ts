@@ -37,15 +37,12 @@ import {
   wrapError,
 } from "../shared/storeUtils.js";
 import { createDerivedLinksStore } from "./derivedLinksStore.js";
-import type {
-  AnyShapeInstance,
-  DerivedLinksStore,
-} from "./derivedLinksTypes.js";
+import type { AnyShapeInstance, DerivedLinksStore } from "./types.js";
 import {
   isBatchableLink,
   NOOP_FETCH_MORE,
   violationsToError,
-} from "./derivedLinksTypes.js";
+} from "./types.js";
 
 export interface BatchedDerivedLinksPayload<
   S extends ShapeDefinition<ObjectOrInterfaceDefinition>,
