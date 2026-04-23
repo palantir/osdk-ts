@@ -145,7 +145,6 @@ export interface AsyncIterArgs<
 {
   $__UNSTABLE_useOldInterfaceApis?: boolean;
   $includeAllBaseObjectProperties?: PropertyKeys<Q> extends K ? T : never;
-  /** Apply modifiers to transform property types (e.g., extract main value from structs) */
   $applyModifiers?: MODIFIERS;
 }
 

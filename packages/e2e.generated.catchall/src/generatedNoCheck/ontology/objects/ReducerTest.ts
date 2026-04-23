@@ -16,12 +16,12 @@ import type {
 
 export namespace ReducerTest {
   export type PropertyKeys =
-    | 'structWithMultipleMain'
+    | 'integerArray'
+    | 'primaryKey_'
+    | 'stringArray'
     | 'struct'
     | 'structArray'
-    | 'stringArray'
-    | 'integerArray'
-    | 'primaryKey_';
+    | 'structWithMultipleMain';
 
   export type Links = {};
 
@@ -53,9 +53,9 @@ export namespace ReducerTest {
      */
     readonly struct:
       | {
-          string: $PropType['string'] | undefined;
           integer: $PropType['integer'] | undefined;
           integer2: $PropType['string'] | undefined;
+          string: $PropType['string'] | undefined;
         }
       | undefined;
     /**
@@ -64,7 +64,7 @@ export namespace ReducerTest {
      *   property status: experimental
      */
     readonly structArray:
-      | { string: $PropType['string'] | undefined; integer: $PropType['string'] | undefined }[]
+      | { integer: $PropType['string'] | undefined; string: $PropType['string'] | undefined }[]
       | undefined;
     /**
      * @experimental
@@ -74,8 +74,8 @@ export namespace ReducerTest {
     readonly structWithMultipleMain:
       | {
           integer1: $PropType['string'] | undefined;
-          string1: $PropType['string'] | undefined;
           integer2: $PropType['integer'] | undefined;
+          string1: $PropType['string'] | undefined;
         }
       | undefined;
   }
@@ -99,6 +99,8 @@ export interface ReducerTest extends $ObjectTypeDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'object';
   apiName: 'ReducerTest';
+  primaryKeyApiName: 'primaryKey_';
+  primaryKeyType: 'string';
   __DefinitionMetadata?: {
     objectSet: ReducerTest.ObjectSet;
     props: ReducerTest.Props;
@@ -191,6 +193,8 @@ export const ReducerTest = {
   type: 'object',
   apiName: 'ReducerTest',
   osdkMetadata: $osdkMetadata,
+  primaryKeyApiName: 'primaryKey_',
+  primaryKeyType: 'string',
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.object-type.4069c2c9-9497-45ec-8fa2-02caf0c261e9',
   },

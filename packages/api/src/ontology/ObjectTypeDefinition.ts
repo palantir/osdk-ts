@@ -100,11 +100,9 @@ export namespace ObjectMetadata {
     nullable?: boolean;
     valueTypeApiName?: string;
     valueFormatting?: PropertyValueFormattingRule;
-    /** For struct properties - specifies which fields comprise the main value */
     mainValue?: {
       fields: readonly string[];
     };
-    /** For array properties - indicates if reducers can be applied to get a single element */
     hasReducers?: boolean;
   }
 
@@ -139,9 +137,7 @@ export interface PropertyDef<
   T extends WirePropertyTypes,
   N extends "nullable" | "non-nullable" = "nullable",
   M extends "array" | "single" = "single",
-  /** Main value fields for structs - array of field names comprising the main value */
   MAIN_VALUE_FIELDS extends readonly string[] | undefined = undefined,
-  /** Whether reducers can be applied to this array property */
   HAS_REDUCERS extends boolean = false,
 > extends ObjectMetadata.Property {
   type: T;

@@ -178,7 +178,9 @@ type ExtractPropsKeysFromOldPropsStyle<
 > = P extends "$all" ? PropertyKeys<Q>
   : Exclude<P, "$strict" | "$notStrict" | "$rid">;
 
-export type IsAny<T> = 0 extends 1 & NoInfer<T> ? true : false;
+export type IsAny<T> = unknown extends T
+  ? [keyof T] extends [never] ? false : true
+  : false;
 
 export type GetPropsKeys<
   Q extends ObjectOrInterfaceDefinition,
@@ -249,12 +251,24 @@ export namespace Osdk {
     R extends Record<string, SimplePropertyDef> = {},
   > =
     & OsdkBase<Q>
-    & Pick<
-      HasModifiers<P> extends true
-        ? ApplyModifiersToProps<Q, BuildModifiersFromP<P>>
-        : CompileTimeMetadata<Q>["props"],
-      GetPropsKeys<Q, GetPropNamesFromP<P>, [R] extends [{}] ? false : true>
-    >
+    // When P is just property keys (no `:modifier` strings), the deferred
+    // `HasModifiers<P>` conditional in the modifier path keeps the resulting
+    // Instance symbolic — this blocks structural assignability checks across
+    // package boundaries (e.g. `Osdk.Instance<Employee> extends
+    // ObjectLocator<Employee>` in `@osdk/functions`' edit-batch inference).
+    // Short-circuit to the plain `Pick<Compile, ...>` shape for that case so
+    // Instance simplifies eagerly; only fall through to the modifier path when
+    // P actually carries modifier strings.
+    & ([P] extends [PropertyKeys<Q>] ? Pick<
+        CompileTimeMetadata<Q>["props"],
+        GetPropsKeys<Q, P, [R] extends [{}] ? false : true>
+      >
+      : Pick<
+        HasModifiers<P> extends true
+          ? ApplyModifiersToProps<Q, BuildModifiersFromP<P>>
+          : CompileTimeMetadata<Q>["props"],
+        GetPropsKeys<Q, GetPropNamesFromP<P>, [R] extends [{}] ? false : true>
+      >)
     & ([R] extends [never] ? {}
       : { [A in keyof R]: SimplePropertyDef.ToRuntimeProperty<R[A]> })
     & {

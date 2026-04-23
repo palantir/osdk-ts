@@ -61,7 +61,6 @@ function modifierToLoadLevelType(
     case "applyReducersAndExtractMainValue":
       return "applyReducersAndExtractMainValue";
     default: {
-      // This ensures TypeScript knows the switch is exhaustive
       const _exhaustiveCheck: never = modifier;
       throw new Error(`Unknown modifier: ${_exhaustiveCheck}`);
     }
@@ -748,6 +747,8 @@ export async function fetchObjectPage<
     );
     allProperties = objDef ? Object.keys(objDef.properties) : undefined;
   } else {
+    // We have an empty catch here so that if this call errors before we await later, we won't have an unhandled promise rejection that would crash the process
+    // Swallowing the error is ok because we await the metadata load in the objectFactory later anyways which eventually bubbles up the error to the user
     void client.ontologyProvider.getObjectDefinition(objectType.apiName).catch(
       () => {},
     );

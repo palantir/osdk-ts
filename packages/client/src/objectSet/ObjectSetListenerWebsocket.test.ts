@@ -230,17 +230,17 @@ describe("ObjectSetListenerWebsocket", async () => {
         expect(subReq1.requests[0].propertySet).toEqual([
           "class",
           "employeeId",
+          "employeeProfile",
+
           "employeeSensor",
           "employeeStatus",
           "favoriteRestaurants",
           "fullName",
           "office",
+          "performanceScores",
           "skillSet",
           "skillSetEmbedding",
           "startDate",
-          "favoriteRestaurants",
-          "employeeProfile",
-          "performanceScores",
         ]);
       });
 
