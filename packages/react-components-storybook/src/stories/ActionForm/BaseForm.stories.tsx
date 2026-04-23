@@ -1198,7 +1198,7 @@ export const WithHelperText: Story = {
 ];
 
 // helperText accepts React.ReactNode — plain strings, JSX with links,
-// bold text, or any renderable content.
+// bold text, or any valid React node.
 // "tooltip" (default) shows an info icon next to the label.
 // "bottom" renders the text below the label, above the input.
 <BaseForm
