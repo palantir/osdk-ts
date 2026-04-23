@@ -107,12 +107,9 @@ export class ActionApplication {
     const { editedObjectTypes, type } = actionEditResponse;
 
     if (type !== "edits") {
-      // largeScaleEdits — server truncated; editedObjectTypes is all we have.
-      await Promise.all(
-        (editedObjectTypes ?? []).map(apiName =>
-          this.store.invalidateObjectType(apiName, undefined)
-        ),
-      );
+      for (const apiName of editedObjectTypes) {
+        await this.store.invalidateObjectType(apiName, undefined);
+      }
       return;
     }
 
@@ -136,31 +133,26 @@ export class ActionApplication {
             primaryKey,
           )
         ) {
-          // ?. skips RDP variants that were registered but never observed —
-          // nothing to tombstone in that case.
           this.store.queries.peek(cacheKey)?.deleteFromStore("loaded", batch);
         }
       }
     });
 
-    const types = new Set<string>();
-    for (const apiName of editedObjectTypes ?? []) {
-      types.add(apiName);
-    }
+    const types = new Set<string>(editedObjectTypes);
 
-    const objectsComplete = (deletedObjectsCount ?? 0)
-      <= (deletedObjects?.length ?? 0);
-    const linksComplete = (deletedLinksCount ?? 0)
-      <= (deletedLinks?.length ?? 0);
+    const deletedObjectsTruncated = (deletedObjectsCount ?? 0)
+      > (deletedObjects?.length ?? 0);
+    const deletedLinksTruncated = (deletedLinksCount ?? 0)
+      > (deletedLinks?.length ?? 0);
 
-    if (objectsComplete) {
+    if (!deletedObjectsTruncated) {
       for (const list of [addedObjects, modifiedObjects, deletedObjects]) {
         for (const obj of list ?? []) {
           types.add(obj.objectType);
         }
       }
     }
-    if (linksComplete) {
+    if (!deletedLinksTruncated) {
       for (const list of [addedLinks, deletedLinks]) {
         for (const link of list ?? []) {
           types.add(link.aSideObject.objectType);

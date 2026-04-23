@@ -772,131 +772,25 @@ describe("Store Invalidation Type Isolation", () => {
   });
 
   describe("applyAction auto-invalidation", () => {
-    it(
-      "modifying a target-type object invalidates link queries observing it",
-      async () => {
-        // The reported bug: after applyAction modifies an object, any useLinks
-        // observation whose target type matches must refetch and observe the
-        // modified payload.
-        const { payload: office1Payload } = await expectStandardObserveObject({
-          cache,
-          type: Office,
-          primaryKey: OFFICE_1_ID,
-        });
-        const office1 = office1Payload?.object;
-        invariant(office1);
-
-        const { linkSubFn } = await expectStandardObserveLink({
-          store: cache,
-          srcObject: office1,
-          srcLinkName: "occupants",
-          targetType: Employee,
-          expected: [expect.objectContaining({ $primaryKey: EMPLOYEE_1_ID })],
-        });
-
-        linkSubFn.next.mockClear();
-
-        await cache.applyAction(promoteEmployee, {
-          employeeId: EMPLOYEE_1_ID,
-          newTitle: "Senior Engineer",
-          newCompensation: 200000,
-        });
-
-        await vi.waitFor(() => {
-          expect(linkSubFn.next).toHaveBeenCalledWith(
-            expect.objectContaining({
-              status: "loaded",
-              resolvedList: expect.arrayContaining([
-                expect.objectContaining({ fullName: "Senior Engineer" }),
-              ]),
-            }),
-          );
-        });
-      },
-    );
-
-    it("modifying an object invalidates list queries of that type", async () => {
-      const todoListSubFn = mockListSubCallback();
+    async function observeList(
+      type: typeof Employee | typeof Office | typeof Todo,
+    ) {
+      const subFn = mockListSubCallback();
       defer(cache.lists.observe({
-        type: Todo,
+        type,
         where: {},
         orderBy: {},
         mode: "offline",
         pageSize: 10,
-      }, todoListSubFn));
+      }, subFn));
+      await vi.waitFor(() => expect(subFn.next).toHaveBeenCalled());
+      subFn.next.mockClear();
+      return subFn;
+    }
 
-      await vi.waitFor(() => expect(todoListSubFn.next).toHaveBeenCalled());
-      todoListSubFn.next.mockClear();
+    it("modify invalidates list and link queries of the modified type", async () => {
+      const todoListSubFn = await observeList(Todo);
 
-      await cache.applyAction(editTodo, {
-        id: TODO_1_ID,
-        text: "Todo One (updated)",
-      });
-
-      await vi.waitFor(() => {
-        expect(todoListSubFn.next).toHaveBeenCalledWith(
-          expect.objectContaining({
-            status: "loaded",
-            resolvedList: expect.arrayContaining([
-              expect.objectContaining({ text: "Todo One (updated)" }),
-            ]),
-          }),
-        );
-      });
-    });
-
-    it("adding objects invalidates list queries of each added type", async () => {
-      const empListSubFn = mockListSubCallback();
-      defer(cache.lists.observe({
-        type: Employee,
-        where: {},
-        orderBy: {},
-        mode: "offline",
-        pageSize: 10,
-      }, empListSubFn));
-
-      const officeListSubFn = mockListSubCallback();
-      defer(cache.lists.observe({
-        type: Office,
-        where: {},
-        orderBy: {},
-        mode: "offline",
-        pageSize: 10,
-      }, officeListSubFn));
-
-      const todoListSubFn = mockListSubCallback();
-      defer(cache.lists.observe({
-        type: Todo,
-        where: {},
-        orderBy: {},
-        mode: "offline",
-        pageSize: 10,
-      }, todoListSubFn));
-
-      await vi.waitFor(() => {
-        expect(empListSubFn.next).toHaveBeenCalled();
-        expect(officeListSubFn.next).toHaveBeenCalled();
-        expect(todoListSubFn.next).toHaveBeenCalled();
-      });
-      empListSubFn.next.mockClear();
-      officeListSubFn.next.mockClear();
-      todoListSubFn.next.mockClear();
-
-      await cache.applyAction(createOfficeAndEmployee, {
-        officeId: "new-office-1",
-        employeeId: 999,
-      });
-
-      await vi.waitFor(() => {
-        expect(empListSubFn.next).toHaveBeenCalled();
-        expect(officeListSubFn.next).toHaveBeenCalled();
-      });
-
-      // Isolation: the unrelated Todo list must not refetch.
-      expect(todoListSubFn.next).not.toHaveBeenCalled();
-    });
-
-    it("adding a target-type object invalidates link queries", async () => {
       const { payload: office1Payload } = await expectStandardObserveObject({
         cache,
         type: Office,
@@ -912,44 +806,86 @@ describe("Store Invalidation Type Isolation", () => {
         targetType: Employee,
         expected: [expect.objectContaining({ $primaryKey: EMPLOYEE_1_ID })],
       });
-
       linkSubFn.next.mockClear();
 
-      // Action adds a new Employee object. The occupants link query (target
-      // type = Employee) must refetch even though the action response doesn't
-      // declare an explicit link edit.
-      await cache.applyAction(createOfficeAndEmployee, {
-        officeId: "new-office-2",
-        employeeId: 1000,
+      await cache.applyAction(editTodo, {
+        id: TODO_1_ID,
+        text: "Todo One (updated)",
+      });
+      await vi.waitFor(() => {
+        expect(todoListSubFn.next).toHaveBeenCalledWith(
+          expect.objectContaining({
+            status: "loaded",
+            resolvedList: expect.arrayContaining([
+              expect.objectContaining({ text: "Todo One (updated)" }),
+            ]),
+          }),
+        );
       });
 
-      await vi.waitFor(() => expect(linkSubFn.next).toHaveBeenCalled());
+      await cache.applyAction(promoteEmployee, {
+        employeeId: EMPLOYEE_1_ID,
+        newTitle: "Senior Engineer",
+        newCompensation: 200000,
+      });
+      await vi.waitFor(() => {
+        expect(linkSubFn.next).toHaveBeenCalledWith(
+          expect.objectContaining({
+            status: "loaded",
+            resolvedList: expect.arrayContaining([
+              expect.objectContaining({ fullName: "Senior Engineer" }),
+            ]),
+          }),
+        );
+      });
     });
 
-    it("deleted object is removed from the store and list queries refetch", async () => {
+    it("add invalidates list + link queries of each added type; unrelated types untouched", async () => {
+      const empListSubFn = await observeList(Employee);
+      const officeListSubFn = await observeList(Office);
+      const todoListSubFn = await observeList(Todo);
+
+      const { payload: office1Payload } = await expectStandardObserveObject({
+        cache,
+        type: Office,
+        primaryKey: OFFICE_1_ID,
+      });
+      const office1 = office1Payload?.object;
+      invariant(office1);
+
+      const { linkSubFn } = await expectStandardObserveLink({
+        store: cache,
+        srcObject: office1,
+        srcLinkName: "occupants",
+        targetType: Employee,
+        expected: [expect.objectContaining({ $primaryKey: EMPLOYEE_1_ID })],
+      });
+      linkSubFn.next.mockClear();
+
+      await cache.applyAction(createOfficeAndEmployee, {
+        officeId: "new-office-1",
+        employeeId: 999,
+      });
+
+      await vi.waitFor(() => {
+        expect(empListSubFn.next).toHaveBeenCalled();
+        expect(officeListSubFn.next).toHaveBeenCalled();
+        expect(linkSubFn.next).toHaveBeenCalled();
+      });
+      expect(todoListSubFn.next).not.toHaveBeenCalled();
+    });
+
+    it("delete tombstones the object and refetches list queries", async () => {
       const { subFn: todoSubFn } = await expectStandardObserveObject({
         cache,
         type: Todo,
         primaryKey: TODO_1_ID,
       });
-
-      const todoListSubFn = mockListSubCallback();
-      defer(cache.lists.observe({
-        type: Todo,
-        where: {},
-        orderBy: {},
-        mode: "offline",
-        pageSize: 10,
-      }, todoListSubFn));
-
-      await vi.waitFor(() => expect(todoListSubFn.next).toHaveBeenCalled());
+      const todoListSubFn = await observeList(Todo);
       todoSubFn.next.mockClear();
-      todoListSubFn.next.mockClear();
 
       await cache.applyAction(deleteTodoAction, { id: TODO_1_ID });
 
-      // The subscribed object transitions to a non-loaded payload (the tombstone
-      // pass runs before invalidation). The list refetches.
       await vi.waitFor(() => expect(todoSubFn.next).toHaveBeenCalled());
       await vi.waitFor(() => expect(todoListSubFn.next).toHaveBeenCalled());
     });
@@ -985,7 +921,6 @@ describe("Store Invalidation Type Isolation", () => {
         targetType: Employee,
         expected: [],
       });
-
       peepsSubFn.next.mockClear();
       leadSubFn.next.mockClear();
 
@@ -994,70 +929,28 @@ describe("Store Invalidation Type Isolation", () => {
         peepId: EMPLOYEE_2_ID,
       });
 
-      // Both sides of the added link must refetch.
       await vi.waitFor(() => expect(peepsSubFn.next).toHaveBeenCalled());
       await vi.waitFor(() => expect(leadSubFn.next).toHaveBeenCalled());
     });
 
-    it(
-      "truncated deletion falls back to editedObjectTypes for type-level invalidation",
-      async () => {
-        const todoListSubFn = mockListSubCallback();
-        defer(cache.lists.observe({
-          type: Todo,
-          where: {},
-          orderBy: {},
-          mode: "offline",
-          pageSize: 10,
-        }, todoListSubFn));
+    it("truncated deletion (count > length) falls back to editedObjectTypes", async () => {
+      const todoListSubFn = await observeList(Todo);
 
-        await vi.waitFor(() => expect(todoListSubFn.next).toHaveBeenCalled());
-        todoListSubFn.next.mockClear();
+      await cache.applyAction(truncatedDeleteAction, { id: TODO_2_ID });
 
-        await cache.applyAction(truncatedDeleteAction, { id: TODO_2_ID });
+      // deletedObjectsCount=100 vs deletedObjects.length=1 flags truncation, so
+      // per-object enumeration is skipped; Todo invalidates via editedObjectTypes.
+      await vi.waitFor(() => expect(todoListSubFn.next).toHaveBeenCalled());
+    });
 
-        // deletedObjectsCount=100 vs deletedObjects.length=1 flags truncation,
-        // so the per-object-type union skips this object. Invalidation still
-        // reaches Todo through editedObjectTypes ["Todo"].
-        await vi.waitFor(() => expect(todoListSubFn.next).toHaveBeenCalled());
-      },
-    );
+    it("largeScaleEdits response uses editedObjectTypes; unrelated types untouched", async () => {
+      const todoListSubFn = await observeList(Todo);
+      const empListSubFn = await observeList(Employee);
 
-    it(
-      "largeScaleEdits response invalidates via editedObjectTypes",
-      async () => {
-        const todoListSubFn = mockListSubCallback();
-        defer(cache.lists.observe({
-          type: Todo,
-          where: {},
-          orderBy: {},
-          mode: "offline",
-          pageSize: 10,
-        }, todoListSubFn));
+      await cache.applyAction(largeScaleEditsAction, {});
 
-        const empListSubFn = mockListSubCallback();
-        defer(cache.lists.observe({
-          type: Employee,
-          where: {},
-          orderBy: {},
-          mode: "offline",
-          pageSize: 10,
-        }, empListSubFn));
-
-        await vi.waitFor(() => {
-          expect(todoListSubFn.next).toHaveBeenCalled();
-          expect(empListSubFn.next).toHaveBeenCalled();
-        });
-        todoListSubFn.next.mockClear();
-        empListSubFn.next.mockClear();
-
-        await cache.applyAction(largeScaleEditsAction, {});
-
-        // The response has type: "largeScaleEdits" with editedObjectTypes=["Todo"].
-        // Only Todo queries should refetch; Employee stays put.
-        await vi.waitFor(() => expect(todoListSubFn.next).toHaveBeenCalled());
-        expect(empListSubFn.next).not.toHaveBeenCalled();
-      },
-    );
+      await vi.waitFor(() => expect(todoListSubFn.next).toHaveBeenCalled());
+      expect(empListSubFn.next).not.toHaveBeenCalled();
+    });
   });
 });
