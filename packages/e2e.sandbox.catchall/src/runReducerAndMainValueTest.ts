@@ -5,19 +5,24 @@ import { client } from "./client.js";
 export async function runReducerAndMainValueTest(): Promise<void> {
   const reducerTestObject = await client(ReducerTest).fetchPage(
     {
-      $select: ["stringArray"],
       $applyModifiers: {
-        "stringArray": "applyReducers",
+        stringArray: "applyReducers",
+        structWithMultipleMain: "applyMainValue",
       },
     },
   );
 
   const reducedValue: string | undefined =
     reducerTestObject.data[0].stringArray;
-  assert(typeof reducedValue === "number");
+  const mainValueStruct: {
+    string1: string;
+    integer1: string;
+  } | undefined = reducerTestObject.data[0].structWithMultipleMain;
+  assert(typeof reducedValue === "string");
+  assert(typeof mainValueStruct);
   console.log(
     "Object with reduced values",
-    reducerTestObject.data[0],
+    reducerTestObject.data,
   );
 }
 

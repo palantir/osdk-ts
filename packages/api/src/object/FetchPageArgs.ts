@@ -125,7 +125,10 @@ export interface FetchPageArgs<
 {
   $nextPageToken?: string;
   $pageSize?: number;
-  $applyModifiers?: MODIFIERS;
+  $applyModifiers?:
+    & ApplyModifiersArg<Q, PropertyKeys<Q>>
+    & MODIFIERS
+    & { [P in Exclude<keyof MODIFIERS, PropertyKeys<Q>>]: never };
 }
 
 export interface AsyncIterArgs<
@@ -145,7 +148,10 @@ export interface AsyncIterArgs<
 {
   $__UNSTABLE_useOldInterfaceApis?: boolean;
   $includeAllBaseObjectProperties?: PropertyKeys<Q> extends K ? T : never;
-  $applyModifiers?: MODIFIERS;
+  $applyModifiers?:
+    & ApplyModifiersArg<Q, PropertyKeys<Q>>
+    & MODIFIERS
+    & { [P in Exclude<keyof MODIFIERS, PropertyKeys<Q>>]: never };
 }
 
 export type Augment<
