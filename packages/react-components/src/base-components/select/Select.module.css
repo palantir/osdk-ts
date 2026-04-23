@@ -158,9 +158,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: calc(
-    var(--osdk-select-spacing, var(--osdk-surface-spacing)) * 0.5
-  );
+  margin: 0;
+  padding: 0;
   border: none;
   background: transparent;
   cursor: pointer;

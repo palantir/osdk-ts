@@ -15,7 +15,7 @@
  */
 
 import { CaretDown, Cross, Tick } from "@blueprintjs/icons";
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import { Combobox } from "../../base-components/combobox/Combobox.js";
 import comboboxStyles from "../../base-components/combobox/Combobox.module.css";
 import { Select } from "../../base-components/select/Select.js";
@@ -25,12 +25,18 @@ import type { DropdownFieldProps } from "../FormFieldApi.js";
 
 const EMPTY_ARRAY: [] = [];
 
-interface InnerDropdownProps<V, Multiple extends boolean>
+interface InnerSelectProps<V, Multiple extends boolean>
   extends Omit<DropdownFieldProps<V, Multiple>, "isSearchable">
 {
   itemToStringLabel: (item: V) => string;
   getKey: (item: V) => string;
   portalRef?: React.Ref<HTMLDivElement>;
+}
+
+interface InnerComboboxProps<V, Multiple extends boolean>
+  extends InnerSelectProps<V, Multiple>
+{
+  isSearchable: boolean;
 }
 
 export function DropdownField<V, Multiple extends boolean = false>({
@@ -55,7 +61,8 @@ export function DropdownField<V, Multiple extends boolean = false>({
     [itemToKey, resolvedItemToStringLabel],
   );
 
-  if (isSearchable) {
+  // Multi-select always uses Combobox for the chip-based UI
+  if (isSearchable || rest.isMultiple) {
     return (
       <ComboboxDropdown
         {...rest}
@@ -63,6 +70,7 @@ export function DropdownField<V, Multiple extends boolean = false>({
         itemToStringLabel={resolvedItemToStringLabel}
         getKey={getKey}
         portalRef={portalRef}
+        isSearchable={isSearchable}
       />
     );
   }
@@ -92,21 +100,23 @@ const SelectDropdown = typedReactMemo(function SelectDropdownFn<
   isMultiple,
   placeholder,
   portalRef,
-}: InnerDropdownProps<V, Multiple>): React.ReactElement {
-  const hasValue = isMultiple
-    ? Array.isArray(value) && value.length > 0
-    : value != null;
+}: InnerSelectProps<V, Multiple>): React.ReactElement {
+  const [open, setOpen] = useState(false);
+
+  const hasValue = value != null;
 
   const handleClear = useCallback(() => {
-    const cleared = isMultiple ? ([] as V[]) : null;
-    onChange?.(cleared as Parameters<NonNullable<typeof onChange>>[0]);
-  }, [isMultiple, onChange]);
+    onChange?.(null as Parameters<NonNullable<typeof onChange>>[0]);
+    setOpen(false);
+  }, [onChange]);
 
   return (
     <div>
       <Select.Root
         value={value}
         onValueChange={onChange}
+        open={open}
+        onOpenChange={setOpen}
         multiple={isMultiple}
         isItemEqualToValue={isItemEqual}
         itemToStringLabel={itemToStringLabel}
@@ -163,24 +173,38 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
   getKey,
   isItemEqual,
   isMultiple,
+  isSearchable,
   placeholder,
   portalRef,
-}: InnerDropdownProps<V, Multiple>): React.ReactElement {
+}: InnerComboboxProps<V, Multiple>): React.ReactElement {
+  const [open, setOpen] = useState(false);
+
   const hasValue = isMultiple
     ? Array.isArray(value) && value.length > 0
     : value != null;
 
   const handleClear = useCallback(() => {
-    const cleared = isMultiple ? ([] as V[]) : null;
+    const cleared = isMultiple ? (EMPTY_ARRAY as V[]) : null;
     onChange?.(cleared as Parameters<NonNullable<typeof onChange>>[0]);
+    // Single-select: close after clearing. Multi-select: keep open for continued selection.
+    if (!isMultiple) {
+      setOpen(false);
+    }
   }, [isMultiple, onChange]);
 
-  const renderTriggerValue = useCallback(
-    (selectedValues: V[]) =>
-      selectedValues.length > 0
-        ? selectedValues.map(itemToStringLabel).join(", ")
-        : null,
-    [itemToStringLabel],
+  const handleRemoveItem = useCallback(
+    (itemToRemove: V) => {
+      if (!isMultiple || !Array.isArray(value)) {
+        return;
+      }
+      const next = value.filter((v) =>
+        isItemEqual != null
+          ? !isItemEqual(v, itemToRemove)
+          : v !== itemToRemove
+      );
+      onChange?.(next as Parameters<NonNullable<typeof onChange>>[0]);
+    },
+    [isMultiple, value, onChange, isItemEqual],
   );
 
   const renderItem = useCallback(
@@ -192,12 +216,10 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
     [getKey, itemToStringLabel],
   );
 
-  const renderItemWithCheckbox = useCallback(
+  const renderItemWithIndicator = useCallback(
     (item: V) => (
       <Combobox.Item key={getKey(item)} value={item}>
-        <Combobox.ItemIndicator
-          className={comboboxStyles.osdkComboboxItemCheckbox}
-        >
+        <Combobox.ItemIndicator>
           <Tick size={16} />
         </Combobox.ItemIndicator>
         {itemToStringLabel(item)}
@@ -211,21 +233,51 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
       <Combobox.Root
         value={value}
         onValueChange={onChange}
+        open={open}
+        onOpenChange={setOpen}
         multiple={isMultiple}
         itemToStringLabel={itemToStringLabel}
         isItemEqualToValue={isItemEqual}
         items={items}
       >
-        <Combobox.Trigger>
+        <Combobox.Trigger
+          className={isMultiple
+            ? comboboxStyles.osdkComboboxTriggerMulti
+            : undefined}
+        >
           <div className={comboboxStyles.osdkComboboxValueContainer}>
-            {isMultiple
-              ? <Combobox.Value>{renderTriggerValue}</Combobox.Value>
-              : <Combobox.Value />}
-            {placeholder != null && (
-              <span className={comboboxStyles.osdkComboboxPlaceholder}>
-                {placeholder}
-              </span>
-            )}
+            {isMultiple && hasValue
+              ? (
+                <div className={comboboxStyles.osdkComboboxTriggerChips}>
+                  {(value as V[]).map((item) => (
+                    <span
+                      key={getKey(item)}
+                      className={comboboxStyles.osdkComboboxTriggerChip}
+                    >
+                      {itemToStringLabel(item)}
+                      <button
+                        type="button"
+                        aria-label={`Remove ${itemToStringLabel(item)}`}
+                        className={comboboxStyles.osdkComboboxTriggerChipRemove}
+                        onMouseDown={preventTriggerOpen}
+                        onClick={() => handleRemoveItem(item)}
+                      >
+                        <Cross size={12} />
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              )
+              : (
+                <>
+                  <Combobox.Value />
+                  {!hasValue && placeholder != null && (
+                    <span className={comboboxStyles.osdkComboboxPlaceholder}>
+                      {placeholder}
+                    </span>
+                  )}
+                </>
+              )}
           </div>
           {hasValue && (
             <button
@@ -245,12 +297,14 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
         <Combobox.Portal ref={portalRef}>
           <Combobox.Positioner>
             <Combobox.Popup>
-              <div className={comboboxStyles.osdkComboboxPopupSearchInput}>
-                <Combobox.SearchInput placeholder="Search…" />
-              </div>
+              {isSearchable && (
+                <div className={comboboxStyles.osdkComboboxPopupSearchInput}>
+                  <Combobox.SearchInput placeholder="Search…" />
+                </div>
+              )}
               <Combobox.Empty>No results</Combobox.Empty>
               <Combobox.List>
-                {isMultiple ? renderItemWithCheckbox : renderItem}
+                {isMultiple ? renderItemWithIndicator : renderItem}
               </Combobox.List>
             </Combobox.Popup>
           </Combobox.Positioner>

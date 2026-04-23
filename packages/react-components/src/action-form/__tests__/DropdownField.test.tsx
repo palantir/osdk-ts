@@ -31,7 +31,9 @@ describe("DropdownField", () => {
     });
 
     it("renders a combobox input when isSearchable is true", () => {
-      render(<DropdownField value={null} items={STRING_ITEMS} isSearchable={true} />);
+      render(
+        <DropdownField value={null} items={STRING_ITEMS} isSearchable={true} />,
+      );
 
       expect(screen.getByRole("combobox")).toBeDefined();
     });
@@ -97,7 +99,9 @@ describe("DropdownField", () => {
 
   describe("searchable (Combobox variant)", () => {
     it("renders a trigger button when isSearchable is true", () => {
-      render(<DropdownField value={null} items={STRING_ITEMS} isSearchable={true} />);
+      render(
+        <DropdownField value={null} items={STRING_ITEMS} isSearchable={true} />,
+      );
 
       const trigger = screen.getByRole("combobox");
       expect(trigger).toBeDefined();
@@ -105,15 +109,47 @@ describe("DropdownField", () => {
 
     it("displays selected value in the searchable trigger", () => {
       render(
-        <DropdownField value="Alice" items={STRING_ITEMS} isSearchable={true} />,
+        <DropdownField
+          value="Alice"
+          items={STRING_ITEMS}
+          isSearchable={true}
+        />,
       );
 
       const trigger = screen.getByRole("combobox");
       expect(trigger.textContent).toContain("Alice");
     });
 
+    it("shows placeholder when no value is selected", () => {
+      render(
+        <DropdownField
+          value={null}
+          items={STRING_ITEMS}
+          isSearchable={true}
+          placeholder="Pick one…"
+        />,
+      );
+
+      expect(screen.getByText("Pick one…")).toBeDefined();
+    });
+
+    it("hides placeholder when a value is selected", () => {
+      render(
+        <DropdownField
+          value="Alice"
+          items={STRING_ITEMS}
+          isSearchable={true}
+          placeholder="Pick one…"
+        />,
+      );
+
+      expect(screen.queryByText("Pick one…")).toBeNull();
+    });
+
     it("renders items after clicking the trigger", async () => {
-      render(<DropdownField value={null} items={STRING_ITEMS} isSearchable={true} />);
+      render(
+        <DropdownField value={null} items={STRING_ITEMS} isSearchable={true} />,
+      );
 
       const trigger = screen.getByRole("combobox");
       fireEvent.click(trigger);
@@ -126,7 +162,9 @@ describe("DropdownField", () => {
     });
 
     it("shows search input inside popup after opening", async () => {
-      render(<DropdownField value={null} items={STRING_ITEMS} isSearchable={true} />);
+      render(
+        <DropdownField value={null} items={STRING_ITEMS} isSearchable={true} />,
+      );
 
       const trigger = screen.getByRole("combobox");
       fireEvent.click(trigger);
@@ -198,7 +236,7 @@ describe("DropdownField", () => {
       });
     });
 
-    it("renders checkbox indicators in multi-select items", async () => {
+    it("renders tick indicators in multi-select items", async () => {
       render(
         <DropdownField<string, true>
           value={["Alice"]}

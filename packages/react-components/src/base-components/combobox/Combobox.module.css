@@ -116,10 +116,28 @@
   }
 }
 
+/* Multi-select trigger: no hover/active background since chips are interactive */
+.osdkComboboxTriggerMulti {
+  &:hover {
+    background-color: var(
+      --osdk-combobox-trigger-bg,
+      var(--osdk-surface-background-color-default-rest)
+    );
+  }
+
+  &:active {
+    background-color: var(
+      --osdk-combobox-trigger-bg,
+      var(--osdk-surface-background-color-default-rest)
+    );
+  }
+}
+
 .osdkComboboxValueContainer {
   flex: 1;
   display: grid;
   min-width: 0;
+  text-align: start;
 
   & > * {
     grid-area: 1 / 1;
@@ -459,9 +477,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: calc(
-    var(--osdk-combobox-spacing, var(--osdk-surface-spacing)) * 0.5
-  );
+  margin: 0;
+  padding: 0;
   border: none;
   background: transparent;
   cursor: pointer;
@@ -571,6 +588,63 @@
     color: var(
       --osdk-combobox-checkbox-color-checked,
       var(--osdk-surface-background-color-default-rest)
+    );
+  }
+}
+
+.osdkComboboxTriggerChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(var(--osdk-combobox-spacing, var(--osdk-surface-spacing)) * 1);
+  grid-area: 1 / 1;
+  align-items: center;
+}
+
+.osdkComboboxTriggerChip {
+  display: inline-flex;
+  align-items: center;
+  gap: calc(var(--osdk-combobox-spacing, var(--osdk-surface-spacing)) * 1);
+  padding: calc(var(--osdk-combobox-spacing, var(--osdk-surface-spacing)) * 1)
+    calc(var(--osdk-combobox-spacing, var(--osdk-surface-spacing)) * 1.5);
+  border-radius: var(
+    --osdk-combobox-border-radius,
+    var(--osdk-surface-border-radius)
+  );
+  background-color: var(
+    --osdk-combobox-chip-bg,
+    var(--osdk-surface-background-color-default-hover)
+  );
+  font-size: var(
+    --osdk-combobox-chip-font-size,
+    var(--osdk-typography-size-body-small)
+  );
+  line-height: 1;
+  color: var(
+    --osdk-combobox-chip-color,
+    var(--osdk-typography-color-default-rest)
+  );
+  white-space: nowrap;
+}
+
+.osdkComboboxTriggerChipRemove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  margin: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  line-height: 0;
+  color: var(
+    --osdk-combobox-chip-remove-color,
+    var(--osdk-iconography-color-muted)
+  );
+
+  &:hover {
+    color: var(
+      --osdk-combobox-chip-remove-color-hover,
+      var(--osdk-typography-color-default-rest)
     );
   }
 }
