@@ -871,7 +871,7 @@ describe("ExtractOptions", () => {
           {}
         >
       >();
-      expectTypeOf(result["addressStruct"]).toEqualTypeOf<
+      expectTypeOf(result.addressStruct).toEqualTypeOf<
         { city: string; zipCode: string } | undefined
       >();
     });
@@ -879,16 +879,16 @@ describe("ExtractOptions", () => {
     it("$as to OT after interface load: array prop auto-applies reducers", async () => {
       const result = (await createMockObjectSet<ReducerInterfaceApiTest>()
         .fetchPage()).data[0].$as({} as EmployeeApiTest);
-      expectTypeOf(result["salaryHistory"]).toEqualTypeOf<
+      expectTypeOf(result.salaryHistory).toEqualTypeOf<
         number | undefined
       >();
     });
 
-    it("$as to OT: array-of-struct auto-applies reduce+mainValue", async () => {
+    it("$as to OT: array-of-struct auto-applies reduce+mainValue (single field => scalar)", async () => {
       const result = (await createMockObjectSet<ReducerInterfaceApiTest>()
         .fetchPage()).data[0].$as({} as EmployeeApiTest);
-      expectTypeOf(result["bonusHistory"]).toEqualTypeOf<
-        { amount: number } | undefined
+      expectTypeOf(result.bonusHistory).toEqualTypeOf<
+        number | undefined
       >();
     });
 
@@ -898,7 +898,7 @@ describe("ExtractOptions", () => {
           {} as EmployeeApiTest,
         );
       // addressStruct on Employee has mainValue → implicitly applied.
-      expectTypeOf(result["addressStruct"]).toEqualTypeOf<
+      expectTypeOf(result.addressStruct).toEqualTypeOf<
         { city: string; zipCode: string } | undefined
       >();
     });
@@ -910,7 +910,7 @@ describe("ExtractOptions", () => {
         .fetchPage({ $select: ["fooSpt"] })).data[0].$as(
           {} as EmployeeApiTest,
         );
-      expectTypeOf(result["fullName"]).toEqualTypeOf<string | undefined>();
+      expectTypeOf(result.fullName).toEqualTypeOf<string | undefined>();
     });
 
     it("$as to interface is rejected when P carries modifier notation", async () => {

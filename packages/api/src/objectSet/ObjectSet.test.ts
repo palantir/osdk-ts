@@ -56,7 +56,7 @@ export function createMockObjectSet<
       },
     },
     $as: vi.fn(() => fauxObject) as Osdk.Instance<Q>["$as"],
-  } as Osdk.Instance<Q>;
+  } as unknown as Osdk.Instance<Q>;
 
   fauxResults = {
     data: [fauxObject],

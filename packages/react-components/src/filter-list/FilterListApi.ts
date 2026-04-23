@@ -84,7 +84,7 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
    * When provided, filter aggregations (e.g. listogram counts) are scoped to this set.
    * When omitted, aggregations run against the full object type.
    */
-  objectSet?: ObjectSet<Q>;
+  objectSet?: ObjectSet<NoInfer<Q>>;
 
   /**
    * Optional title to display in the filter list header
@@ -100,13 +100,13 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
    * The definition for all supported filter items in the list
    * If not supplied, all filterable properties will be available
    */
-  filterDefinitions?: Array<FilterDefinitionUnion<Q>>;
+  filterDefinitions?: Array<FilterDefinitionUnion<NoInfer<Q>>>;
 
   /**
    * The current where clause to filter the objectSet.
    * If provided, the filter clause is controlled.
    */
-  filterClause?: WhereClause<Q>;
+  filterClause?: WhereClause<NoInfer<Q>>;
 
   /**
    * Called when the filter clause changes.
@@ -114,7 +114,7 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
    *
    * @param newClause The updated filter clause
    */
-  onFilterClauseChanged?: (newClause: WhereClause<Q>) => void;
+  onFilterClauseChanged?: (newClause: WhereClause<NoInfer<Q>>) => void;
 
   /**
    * Called when filter state changes
@@ -123,7 +123,7 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
    * @param newState The updated filter state
    */
   onFilterStateChanged?: (
-    definition: FilterDefinitionUnion<Q>,
+    definition: FilterDefinitionUnion<NoInfer<Q>>,
     newState: FilterStateType,
   ) => void;
 
@@ -151,8 +151,8 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
    * @param newDefinitions The current filter definitions array
    */
   onFilterAdded?: (
-    filterKey: FilterKey<Q>,
-    newDefinitions: Array<FilterDefinitionUnion<Q>>,
+    filterKey: FilterKey<NoInfer<Q>>,
+    newDefinitions: Array<FilterDefinitionUnion<NoInfer<Q>>>,
   ) => void;
 
   /**
@@ -163,7 +163,7 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
    *
    * @param filterKey The key of the removed filter
    */
-  onFilterRemoved?: (filterKey: FilterKey<Q>) => void;
+  onFilterRemoved?: (filterKey: FilterKey<NoInfer<Q>>) => void;
 
   /**
    * Enable drag-and-drop reordering of filters.
