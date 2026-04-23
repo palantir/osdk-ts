@@ -101,12 +101,11 @@ export abstract class ListQuery extends BaseListQuery<
   #objectSet: ObjectSet<ObjectTypeDefinition>;
   #pivotIntersectApplied = false;
 
-  // The actual type of objects this query returns, resolved on first fetch
-  // via getObjectTypesThatInvalidate. For simple queries this equals apiName.
-  // For transformed queries (e.g. link traversal) it may differ -- e.g.
-  // Employee.pivotTo(Office) has apiName "Employee" but fetches Office objects.
+  // Resolved on first fetch for pivot/intersect queries. Undefined for
+  // simple queries where result type always equals apiName.
   #fetchedObjectType: string | undefined;
-  #objectTypesCache: ReadonlySet<string> | undefined;
+  #needsResultTypeResolution: boolean;
+  #defaultObjectTypes: ReadonlySet<string>;
 
   /**
    * Register changes to the cache specific to ListQuery
@@ -146,7 +145,9 @@ export abstract class ListQuery extends BaseListQuery<
     this.#pivotInfo = cacheKey.otherKeys[PIVOT_IDX];
 
     this.#objectSet = this.createObjectSet(store);
-    this.#objectTypesCache = new Set([this.apiName]);
+    this.#defaultObjectTypes = new Set([this.apiName]);
+    this.#needsResultTypeResolution = this.#pivotInfo != null
+      || (this.#intersectWith != null && this.#intersectWith.length > 0);
 
     // Only initialize the sorting strategy here if there's no pivotTo.
     // When pivotTo is used, the target type differs from apiName, so we
@@ -183,14 +184,13 @@ export abstract class ListQuery extends BaseListQuery<
   }
 
   get objectTypes(): ReadonlySet<string> {
-    return this.#objectTypesCache ?? new Set([this.apiName]);
-  }
-
-  #updateFetchedObjectType(fetchedApiName: string): void {
-    this.#fetchedObjectType = fetchedApiName;
-    this.#objectTypesCache = fetchedApiName !== this.apiName
-      ? new Set([this.apiName, fetchedApiName])
-      : new Set([this.apiName]);
+    if (
+      this.#fetchedObjectType == null
+      || this.#fetchedObjectType === this.apiName
+    ) {
+      return this.#defaultObjectTypes;
+    }
+    return new Set([this.apiName, this.#fetchedObjectType]);
   }
 
   protected createPayload(
@@ -213,81 +213,64 @@ export abstract class ListQuery extends BaseListQuery<
   protected async fetchPageData(
     signal: AbortSignal | undefined,
   ): Promise<PageResult<Osdk.Instance<any>>> {
-    const needsResultType = (Object.keys(this.#orderBy).length > 0
-      && !(this.sortingStrategy instanceof OrderBySortingStrategy))
-      || (this.#pivotInfo != null && this.#intersectWith != null
-        && this.#intersectWith.length > 0 && !this.#pivotIntersectApplied);
-
-    if (needsResultType) {
-      const wireObjectSet = getWireObjectSet(this.#objectSet);
-      const { resultType } = await getObjectTypesThatInvalidate(
-        this.store.client[additionalContext],
-        wireObjectSet,
-      );
-
-      this.#updateFetchedObjectType(resultType.apiName);
-
-      if (
-        Object.keys(this.#orderBy).length > 0
-        && !(this.sortingStrategy instanceof OrderBySortingStrategy)
-      ) {
-        this.sortingStrategy = new OrderBySortingStrategy(
-          resultType.apiName,
-          this.#orderBy,
-        );
-      }
-
-      if (
-        this.#pivotInfo != null && this.#intersectWith != null
-        && this.#intersectWith.length > 0 && !this.#pivotIntersectApplied
-      ) {
-        const rdpConfig = this.cacheKey.otherKeys[RDP_IDX];
-        const intersectSets = this.#intersectWith.map(whereClause => {
-          if (resultType.type === "object") {
-            let objectSet = this.store.client({
-              type: "object",
-              apiName: resultType.apiName,
-            } as ObjectTypeDefinition);
-
-            if (rdpConfig != null) {
-              objectSet = objectSet.withProperties(
-                rdpConfig as DerivedProperty.Clause<ObjectTypeDefinition>,
-              );
-            }
-
-            return objectSet.where(whereClause as WhereClause<any>);
-          }
-
-          return this.store.client({
-            type: "interface",
-            apiName: resultType.apiName,
-          } as InterfaceDefinition).where(
-            whereClause as WhereClause<any>,
-          );
-        });
-
-        this.#objectSet = this.#objectSet.intersect(
-          ...intersectSets,
-        );
-        this.#pivotIntersectApplied = true;
-      }
-    }
-
-    // Resolve the actual result type on first fetch so revalidateObjectType
-    // can match against it. For simple queries this equals apiName; for
-    // transformed queries (link traversal, etc.) it may differ.
-    // Some ObjectSet types (static, reference) don't support result type
-    // resolution, so we fall back to apiName.
-    if (this.#fetchedObjectType == null) {
+    // Resolve the result type once for queries that need it (pivot/intersect).
+    // Simple queries skip this entirely since result type === apiName.
+    if (this.#needsResultTypeResolution && this.#fetchedObjectType == null) {
       try {
         const wireObjectSet = getWireObjectSet(this.#objectSet);
         const { resultType } = await getObjectTypesThatInvalidate(
           this.store.client[additionalContext],
           wireObjectSet,
         );
-        this.#updateFetchedObjectType(resultType.apiName);
+
+        this.#fetchedObjectType = resultType.apiName;
+
+        if (
+          Object.keys(this.#orderBy).length > 0
+          && !(this.sortingStrategy instanceof OrderBySortingStrategy)
+        ) {
+          this.sortingStrategy = new OrderBySortingStrategy(
+            resultType.apiName,
+            this.#orderBy,
+          );
+        }
+
+        if (
+          this.#pivotInfo != null && this.#intersectWith != null
+          && this.#intersectWith.length > 0 && !this.#pivotIntersectApplied
+        ) {
+          const rdpConfig = this.cacheKey.otherKeys[RDP_IDX];
+          const intersectSets = this.#intersectWith.map(whereClause => {
+            if (resultType.type === "object") {
+              let objectSet = this.store.client({
+                type: "object",
+                apiName: resultType.apiName,
+              } as ObjectTypeDefinition);
+
+              if (rdpConfig != null) {
+                objectSet = objectSet.withProperties(
+                  rdpConfig as DerivedProperty.Clause<ObjectTypeDefinition>,
+                );
+              }
+
+              return objectSet.where(whereClause as WhereClause<any>);
+            }
+
+            return this.store.client({
+              type: "interface",
+              apiName: resultType.apiName,
+            } as InterfaceDefinition).where(
+              whereClause as WhereClause<any>,
+            );
+          });
+
+          this.#objectSet = this.#objectSet.intersect(
+            ...intersectSets,
+          );
+          this.#pivotIntersectApplied = true;
+        }
       } catch {
-        this.#updateFetchedObjectType(this.apiName);
+        this.#fetchedObjectType = this.apiName;
       }
     }
 
