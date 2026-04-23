@@ -21,7 +21,50 @@ import {
   readLocal,
   removeLocal,
   saveLocal,
+  tokenExpired,
+  tokenShouldRefresh,
 } from "./common.js";
+import type { Token } from "./Token.js";
+
+function makeToken(expiresInSeconds: number): Token {
+  return {
+    access_token: "test-token",
+    expires_in: expiresInSeconds,
+    expires_at: Date.now() + expiresInSeconds * 1000,
+  };
+}
+
+describe("tokenExpired", () => {
+  it("should return true when within the 60s padding window", () => {
+    expect(tokenExpired(makeToken(59))).toBe(true);
+  });
+
+  it("should return false when just outside the padding window", () => {
+    expect(tokenExpired(makeToken(61))).toBe(false);
+  });
+});
+
+describe("tokenShouldRefresh", () => {
+  it("should return true when past 75% of lifetime", () => {
+    // Token with 1 hour lifetime, only 10 minutes left (past the 45 min mark)
+    const t: Token = {
+      access_token: "test-token",
+      expires_in: 3600,
+      expires_at: Date.now() + 10 * 60 * 1000,
+    };
+    expect(tokenShouldRefresh(t)).toBe(true);
+  });
+
+  it("should return false when before 75% of lifetime", () => {
+    // Token with 1 hour lifetime, 30 minutes left (before the 45 min mark)
+    const t: Token = {
+      access_token: "test-token",
+      expires_in: 3600,
+      expires_at: Date.now() + 30 * 60 * 1000,
+    };
+    expect(tokenShouldRefresh(t)).toBe(false);
+  });
+});
 
 describe("local functions", () => {
   beforeEach(() => {

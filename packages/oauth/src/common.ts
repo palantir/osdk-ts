@@ -24,6 +24,7 @@ import { processRevocationResponse, revocationRequest } from "oauth4webapi";
 import invariant from "tiny-invariant";
 import { TypedEventTarget } from "typescript-event-target";
 import type { BaseOauthClient, Events } from "./BaseOauthClient.js";
+import type { OauthLogger } from "./Logger.js";
 import { throwIfError } from "./throwIfError.js";
 import type { Token } from "./Token.js";
 
@@ -167,6 +168,22 @@ export function readSession(client: Client): SessionStorageState {
   );
 }
 
+/**
+ * Fraction of token lifetime at which to schedule a background refresh.
+ * Example: A token with a one hour lifetime and fraction 0.75 should refresh after 45 minutes.
+ * For public clients, we try to refresh these tokens early because browser tabs may be closed intermittently and
+ * transparently refreshing is a nicer experience than requiring a new sign-in.
+ * This is less important for confidential clients with client secrets and without refresh tokens, but we use the same
+ * process for all tokens for simplicity.
+ */
+const REFRESH_LIFETIME_FRACTION = 0.75;
+
+/**
+ * Time before expiry at which tokenExpired() reports expired. Accounts for clock drift, slow networks, and slow
+ * requests on the server. After this point, getToken() considers the token stale and blocks on renewal.
+ */
+const TOKEN_EXPIRED_PADDING_MS = 60 * 1000;
+
 export function common<
   R extends undefined | (() => Promise<Token | undefined>),
 >(
@@ -178,6 +195,7 @@ export function common<
   refreshTokenMarker: string | undefined,
   scopes: string,
   storage: Storage | undefined,
+  logger?: OauthLogger,
 ): {
   getToken: BaseOauthClient<keyof Events & string> & { refresh: R };
   makeTokenAndSaveRefresh: (
@@ -220,14 +238,22 @@ export function common<
   function rmTimeout() {
     if (refreshTimeout) clearTimeout(refreshTimeout);
   }
+
+  let pendingRefresh: Promise<Token | undefined | void> | undefined;
+  function tryBackgroundRefresh() {
+    if (!refresh || pendingRefresh) return;
+    pendingRefresh = refresh().catch((e: unknown) => {
+      logger?.warn("Background token refresh failed", e);
+    }).finally(() => {
+      pendingRefresh = undefined;
+    });
+  }
+
   function restartRefreshTimer(evt: CustomEvent<Token>) {
-    if (refresh) {
-      rmTimeout();
-      refreshTimeout = setTimeout(
-        refresh,
-        evt.detail.expires_in * 1000 - 60 * 1000,
-      );
-    }
+    rmTimeout();
+    if (!refresh) return;
+    const delay = evt.detail.expires_in * 1000 * REFRESH_LIFETIME_FRACTION;
+    refreshTimeout = setTimeout(tryBackgroundRefresh, delay);
   }
 
   async function signOut() {
@@ -268,15 +294,19 @@ export function common<
   eventTarget.addEventListener("refresh", restartRefreshTimer);
 
   function getTokenOrUndefined() {
-    if (!token || Date.now() >= token.expires_at) {
+    if (!token || tokenExpired(token)) {
       return undefined;
     }
-    return token?.access_token;
+    return token.access_token;
   }
 
   const getToken = Object.assign(async function getToken() {
-    if (!token || Date.now() >= token.expires_at) {
+    if (!token || tokenExpired(token)) {
       token = await signIn();
+    } else if (tokenShouldRefresh(token) && !pendingRefresh) {
+      // Background refresh hasn't started yet, so trigger it here but do not block
+      rmTimeout();
+      tryBackgroundRefresh();
     }
     return token?.access_token;
   }, {
@@ -294,6 +324,15 @@ export function common<
   });
 
   return { getToken, makeTokenAndSaveRefresh };
+}
+
+export function tokenShouldRefresh(t: Token): boolean {
+  return Date.now()
+    >= t.expires_at - (t.expires_in * 1000 * (1 - REFRESH_LIFETIME_FRACTION));
+}
+
+export function tokenExpired(t: Token): boolean {
+  return Date.now() >= t.expires_at - TOKEN_EXPIRED_PADDING_MS;
 }
 
 export function createAuthorizationServer(

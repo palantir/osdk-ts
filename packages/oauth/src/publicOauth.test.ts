@@ -393,6 +393,7 @@ describe(createPublicOauthClient, () => {
             "api:use-ontologies-write",
           ]).sort().join(" "),
         undefined,
+        undefined,
       );
     });
 
@@ -555,7 +556,7 @@ describe(createPublicOauthClient, () => {
         { tokenStorage: "localStorage" },
       );
 
-      // common() is called with 8 args, the last one being the storage
+      // common() is called with 9 args; storage is at index 7
       const lastArg = vi.mocked(commonJs.common).mock.calls[0][7];
       expect(lastArg).toBe(mockLocalStorage);
     });
