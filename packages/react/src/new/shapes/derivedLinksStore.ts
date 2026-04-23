@@ -14,6 +14,15 @@
  * limitations under the License.
  */
 
+/**
+ * Store layer for a single shape's derived links. Owns one `LinkEntry` per
+ * top-level derived link on the shape and — if a link's target shape has its
+ * own derived links — one `LinkEntry` per (pk, nestedLinkName) under the
+ * parent's `nestedByPk`. Feeds `useSyncExternalStore` via `subscribe` /
+ * `getSnapShot`. Teardown is one-way: `destroy` cascades unsubscribes
+ * through the nested tree.
+ */
+
 import type {
   ObjectOrInterfaceDefinition,
   ObjectSet,
@@ -72,8 +81,23 @@ export {
   violationsToError,
 } from "./types.js";
 
+/**
+ * Debounce window for batching nested link kickoffs. When a parent list
+ * resolves, each item wants its own nested link observations started. A
+ * short delay lets multiple observer emissions (e.g. rapid streamUpdates
+ * re-resolutions) coalesce into a single `startLinksInBatch` call instead
+ * of fanning out per-emission. 25ms is empirical: long enough to batch
+ * burst emissions, short enough to be imperceptible to users waiting on
+ * nested link data.
+ */
 const NESTED_FLUSH_DELAY_MS = 25;
 
+/**
+ * Removes nested entries for pks that are no longer in the parent's result
+ * set. `cleanupNestedMap` recursively unsubscribes each entry and marks it
+ * `cleaned`, which allows any already-queued flushes for those entries to
+ * no-op gracefully.
+ */
 function pruneStaleNestedEntries(
   nestedByPk: Map<string | number, Map<string, LinkEntry>>,
   currentPks: Set<string | number>,
@@ -86,6 +110,17 @@ function pruneStaleNestedEntries(
   }
 }
 
+/**
+ * Creates a store that observes all derived links for a single source object
+ * against the given shape. Returned methods:
+ *
+ * - `subscribe(notify)` — add a listener. First subscribe kicks off observation
+ *   of all non-deferred top-level links; last unsubscribe triggers `destroy`.
+ * - `getSnapShot()` — read a cached snapshot of all link data + statuses.
+ * - `loadDeferred(linkName)` — start a link that was configured with `defer: true`.
+ * - `retry(linkName?)` — restart error-state entries.
+ * - `destroy()` — one-way teardown; cascades through nested subscriptions.
+ */
 export function createDerivedLinksStore<
   S extends ShapeDefinition<ObjectOrInterfaceDefinition>,
 >(
@@ -117,6 +152,12 @@ export function createDerivedLinksStore<
   let nestedFlushTimer: ReturnType<typeof setTimeout> | undefined;
   let isDestroyed = false;
 
+  /**
+   * Schedules a single flush of `pendingNestedEntries` after the debounce
+   * window. An entry can be pruned (via `cleanupNestedMap` setting `cleaned`)
+   * between being queued and the flush firing, so we filter those out here
+   * instead of trying to remove them from the queue at prune time.
+   */
   function scheduleNestedFlush(): void {
     if (nestedFlushTimer != null) {
       return;
@@ -126,7 +167,6 @@ export function createDerivedLinksStore<
       if (isDestroyed) {
         return;
       }
-      // Filter out entries that were cleaned up while pending
       const batch = pendingNestedEntries.splice(0).filter(({ entry }) =>
         !entry.cleaned
       );
@@ -136,6 +176,12 @@ export function createDerivedLinksStore<
     }, NESTED_FLUSH_DELAY_MS);
   }
 
+  /**
+   * For each raw object in a parent's result set, ensure a nested `LinkEntry`
+   * exists for every nested derived link the target shape declares. New entries
+   * with status `"init"` are queued for batched startup; returns the set of
+   * pks seen so the caller can prune entries whose pks disappeared.
+   */
   function trackNestedLinksForObjects(
     parentEntry: LinkEntry,
     rawObjects: Osdk.Instance<ObjectOrInterfaceDefinition>[],
@@ -171,6 +217,12 @@ export function createDerivedLinksStore<
     return currentPks;
   }
 
+  /**
+   * Called every time a parent link's observer emits. Three steps:
+   *   1. Ensure nested entries exist for each raw object (and queue new ones).
+   *   2. Prune nested entries for pks no longer in the result set.
+   *   3. If new entries were queued, schedule the debounced flush to start them.
+   */
   function handleNestedLinks(
     parentEntry: LinkEntry,
     rawObjects: Osdk.Instance<ObjectOrInterfaceDefinition>[],
@@ -190,6 +242,12 @@ export function createDerivedLinksStore<
     }
   }
 
+  /**
+   * Moves a batch of entries to `"loading"` in one pass, notifies subscribers
+   * once for the bulk status change, and then kicks off each entry's async
+   * observation. Errors from `startLinkObservationInternal` flip the entry
+   * to `"error"` individually.
+   */
   function startLinksInBatch(
     entries: Array<
       { entry: LinkEntry; sourceType: ObjectOrInterfaceDefinition }
@@ -220,6 +278,12 @@ export function createDerivedLinksStore<
     startLinksInBatch([{ entry, sourceType }]);
   }
 
+  /**
+   * Observer used for `observeObjectSet` on each link entry. On `next` it
+   * applies shape transformations, updates entry state, recurses into nested
+   * link handling, and rebuilds the entry's data with any nested link data
+   * attached. On `error` it flips the entry to `"error"`.
+   */
   function createLinkObserver(
     entry: LinkEntry,
   ): Observer<ListObserverPayload> {
@@ -339,6 +403,12 @@ export function createDerivedLinksStore<
     });
   }
 
+  /**
+   * One-way teardown. Order matters: set `isDestroyed` first so in-flight
+   * async work (observer next/error, startLinkObservationInternal) no-ops.
+   * Then clear the flush timer, drop the pending queue, unsubscribe every
+   * entry, and cascade through `nestedByPk`.
+   */
   function destroy(): void {
     isDestroyed = true;
     if (nestedFlushTimer != null) {
@@ -373,6 +443,10 @@ export function createDerivedLinksStore<
     destroy,
   );
 
+  /**
+   * Starts observation for a link that was configured with `defer: true`.
+   * No-op for unknown link names or links not in the `deferred` state.
+   */
   function loadDeferred(
     linkName: keyof ShapeDerivedLinks<S>,
   ): void {
@@ -383,6 +457,11 @@ export function createDerivedLinksStore<
     startLinkObservation(entry, shape.__baseType);
   }
 
+  /**
+   * Resets error-state entries back to `"init"` and restarts observation.
+   * With a `linkName`, scopes to a single entry; otherwise retries all links.
+   * No-op for entries not currently in `"error"`.
+   */
   function retry(linkName?: keyof ShapeDerivedLinks<S>): void {
     const retryEntry = (entry: LinkEntry) => {
       if (entry.status !== "error") {

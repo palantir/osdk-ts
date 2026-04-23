@@ -14,47 +14,8 @@
  * limitations under the License.
  */
 
+import deepEqual from "fast-deep-equal";
 import React from "react";
-
-/** Structural equality for plain JSON values (objects, arrays, primitives). Not suited for Date, RegExp, Map, or Set. */
-export function deepEqual(a: unknown, b: unknown): boolean {
-  if (a === b) {
-    return true;
-  }
-  if (a == null || b == null || typeof a !== typeof b) {
-    return false;
-  }
-  if (Array.isArray(a)) {
-    if (!Array.isArray(b) || a.length !== b.length) {
-      return false;
-    }
-    for (let i = 0; i < a.length; i++) {
-      if (!deepEqual(a[i], b[i])) {
-        return false;
-      }
-    }
-    return true;
-  }
-  if (typeof a === "object") {
-    const aObj = a as Record<string, unknown>;
-    const bObj = b as Record<string, unknown>;
-    const aKeys = Object.keys(aObj);
-    const bKeys = Object.keys(bObj);
-    if (aKeys.length !== bKeys.length) {
-      return false;
-    }
-    for (const key of aKeys) {
-      if (
-        !Object.prototype.hasOwnProperty.call(bObj, key)
-        || !deepEqual(aObj[key], bObj[key])
-      ) {
-        return false;
-      }
-    }
-    return true;
-  }
-  return false;
-}
 
 export function useStableValue<T>(value: T): T {
   const ref = React.useRef(value);
