@@ -37,6 +37,13 @@ import type {
   ObjectMetadata,
   ObjectTypeDefinition,
 } from "./ontology/ObjectTypeDefinition.js";
+import type {
+  ApplyModifiersToProps,
+  PropertyModifierValue,
+  PropsWithBoth,
+  PropsWithOnlyMainValue,
+  PropsWithOnlyReducers,
+} from "./ontology/PropertyModifiers.js";
 import type { SimplePropertyDef } from "./ontology/SimplePropertyDef.js";
 import type { OsdkBase } from "./OsdkBase.js";
 
@@ -171,17 +178,15 @@ type ExtractPropsKeysFromOldPropsStyle<
 > = P extends "$all" ? PropertyKeys<Q>
   : Exclude<P, "$strict" | "$notStrict" | "$rid">;
 
-export type IsAny<T> = unknown extends T
-  ? [keyof T] extends [never] ? false : true
-  : false;
+export type IsAny<T> = 0 extends 1 & NoInfer<T> ? true : false;
 
 export type GetPropsKeys<
   Q extends ObjectOrInterfaceDefinition,
-  P extends PropertyKeys<Q>,
+  P,
   N extends boolean = false,
 > = IsNever<P> extends true ? N extends true ? never : PropertyKeys<Q>
   : IsAny<P> extends true ? PropertyKeys<Q>
-  : P;
+  : P & PropertyKeys<Q>;
 
 /**
  * Use `Osdk.Instance` or `YourType.OsdkInstance`
@@ -210,6 +215,28 @@ export type MaybeScore<
   ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<any>,
 > = ORDER_BY_OPTIONS extends "relevance" ? T & { $score: number } : T;
 
+type ReducedValues<Q extends ObjectOrInterfaceDefinition> =
+  | `${PropsWithOnlyMainValue<Q> & string}:applyMainValue`
+  | `${PropsWithOnlyReducers<Q> & string}:applyReducers`
+  | `${PropsWithBoth<Q> & string}:applyMainValue`
+  | `${PropsWithBoth<Q> & string}:applyReducers`
+  | `${PropsWithBoth<Q> & string}:applyReducersAndExtractMainValue`;
+
+type ExtractPropNameFromP<S> = S extends `${infer Prop}:${string}` ? Prop : S;
+
+type GetPropNamesFromP<P> = [P] extends [string] ? ExtractPropNameFromP<P>
+  : never;
+
+type HasAnyModifiers<P> = P extends `${string}:${string}` ? true : never;
+type HasModifiers<P> = IsAny<P> extends true ? false
+  : [HasAnyModifiers<P>] extends [never] ? false
+  : true;
+
+type BuildModifiersFromP<P> = {
+  [K in P as K extends `${infer Prop}:${string}` ? Prop : never]: K extends
+    `${string}:${infer Mod extends PropertyModifierValue}` ? Mod : never;
+};
+
 export namespace Osdk {
   export type Instance<
     Q extends ObjectOrInterfaceDefinition,
@@ -218,14 +245,15 @@ export namespace Osdk {
       | "$rid"
       | "$allBaseProperties"
       | "$propertySecurities" = never,
-    P extends PropertyKeys<Q> = PropertyKeys<Q>,
+    P extends PropertyKeys<Q> | ReducedValues<Q> = PropertyKeys<Q>,
     R extends Record<string, SimplePropertyDef> = {},
   > =
     & OsdkBase<Q>
     & Pick<
-      CompileTimeMetadata<Q>["props"],
-      // If there aren't any additional properties, then we want GetPropsKeys to default to PropertyKeys<Q>
-      GetPropsKeys<Q, P, [R] extends [{}] ? false : true>
+      HasModifiers<P> extends true
+        ? ApplyModifiersToProps<Q, BuildModifiersFromP<P>>
+        : CompileTimeMetadata<Q>["props"],
+      GetPropsKeys<Q, GetPropNamesFromP<P>, [R] extends [{}] ? false : true>
     >
     & ([R] extends [never] ? {}
       : { [A in keyof R]: SimplePropertyDef.ToRuntimeProperty<R[A]> })
@@ -287,6 +315,8 @@ export namespace Osdk {
       : "$rid" extends OPTIONS ? { readonly $rid: string }
       : {});
 }
+
+type HasKeys<T> = keyof T extends never ? false : true;
 
 /**
  * NOT EXPORTED FROM PACKAGE

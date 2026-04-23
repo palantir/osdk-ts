@@ -129,6 +129,16 @@ export type {
 export type { OntologyMetadata } from "./ontology/OntologyMetadata.js";
 export type { PrimaryKeyTypes } from "./ontology/PrimaryKeyTypes.js";
 export type {
+  ApplyModifiersArg,
+  ApplyModifiersToProps,
+  ApplyModifierToProperty,
+  MainValueTypeOf,
+  PropertyModifierValue,
+  PropsWithMainValue,
+  PropsWithReducers,
+  ReducedTypeOf,
+} from "./ontology/PropertyModifiers.js";
+export type {
   InterfaceQueryDataType,
   ObjectQueryDataType,
   ObjectSetQueryDataType,

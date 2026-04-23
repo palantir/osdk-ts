@@ -41,7 +41,10 @@ export namespace EmployeeApiTest {
     | "dateOfJoining"
     | "lastUpdated"
     | "skillSet"
-    | "skillSetEmbedding";
+    | "skillSetEmbedding"
+    | "addressStruct"
+    | "salaryHistory"
+    | "bonusHistory";
 
   export interface Links {
     readonly lead: $SingleLinkAccessor<EmployeeApiTest>;
@@ -68,6 +71,16 @@ export namespace EmployeeApiTest {
     readonly lastUpdated: $PropType["timestamp"] | undefined;
     readonly skillSet: $PropType["string"] | undefined;
     readonly skillSetEmbedding: $PropType["vector"] | undefined;
+    // Struct with mainValue for modifier tests
+    readonly addressStruct:
+      | { street: string; city: string; zipCode: string }
+      | undefined;
+    // Array with reducers for modifier tests
+    readonly salaryHistory: number[] | undefined;
+    // Array of structs with both mainValue and reducers for modifier tests
+    readonly bonusHistory:
+      | Array<{ year: number; amount: number }>
+      | undefined;
   }
   export type StrictProps = Props;
 
@@ -134,6 +147,28 @@ export interface EmployeeApiTest extends $ObjectTypeDefinition {
       lastUpdated: $PropertyDef<"timestamp", "nullable", "single">;
       skillSet: $PropertyDef<"string", "nullable", "single">;
       skillSetEmbedding: $PropertyDef<"vector", "nullable", "single">;
+      // Struct with mainValue - main value fields are city and zipCode
+      addressStruct: {
+        type: { street: "string"; city: "string"; zipCode: "string" };
+        nullable: true;
+        multiplicity: false;
+        mainValue: { fields: readonly ["city", "zipCode"] };
+      };
+      // Array with reducers (e.g., get max salary)
+      salaryHistory: {
+        type: "integer";
+        nullable: true;
+        multiplicity: true;
+        hasReducers: true;
+      };
+      // Array of structs with both mainValue and reducers
+      bonusHistory: {
+        type: { year: "integer"; amount: "integer" };
+        nullable: true;
+        multiplicity: true;
+        mainValue: { fields: readonly ["amount"] };
+        hasReducers: true;
+      };
     };
     rid: "ri.ontology.main.object-type.401ac022-89eb-4591-8b7e-0a912b9efb44";
     status: "ACTIVE";

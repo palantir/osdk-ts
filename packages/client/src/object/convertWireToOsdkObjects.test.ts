@@ -82,6 +82,8 @@ describe("convertWireToOsdkObjects", () => {
       "$propertySecurities",
       "$objectSpecifier",
       "employeeLocation",
+      "employeeProfile",
+      "performanceScores",
     ].sort());
 
     expect(Object.keys(employee.$as)).toEqual([]);
@@ -106,7 +108,7 @@ describe("convertWireToOsdkObjects", () => {
 
     // Should not have $title
     expect(JSON.stringify(employee)).toMatchInlineSnapshot(
-      `"{"employeeId":50030,"fullName":"John Doe","office":"NYC","class":"Red","startDate":"2019-01-01","employeeStatus":{},"employeeSensor":{},"employeeLocation":{},"$apiName":"Employee","$objectType":"Employee","$primaryKey":50030,"$objectSpecifier":"Employee:50030"}"`,
+      `"{"employeeId":50030,"fullName":"John Doe","office":"NYC","class":"Red","startDate":"2019-01-01","employeeStatus":{},"employeeSensor":{},"employeeLocation":{},"employeeProfile":{"bio":"Senior engineer with expertise in distributed systems","yearsExperience":10},"performanceScores":[95.5,88.2,92.1],"$apiName":"Employee","$objectType":"Employee","$primaryKey":50030,"$objectSpecifier":"Employee:50030"}"`,
     );
 
     expect(JSON.stringify(employee.$as(FooInterface))).toMatchInlineSnapshot(
@@ -115,7 +117,7 @@ describe("convertWireToOsdkObjects", () => {
 
     // Should have $title
     expect(JSON.stringify(employee2)).toMatchInlineSnapshot(
-      `"{"employeeId":50031,"fullName":"Jane Doe","office":"SEA","class":"Blue","startDate":"2012-02-12","employeeStatus":{},"employeeSensor":{},"employeeLocation":{},"$apiName":"Employee","$objectType":"Employee","$primaryKey":50031,"$title":"Jane Doe","$objectSpecifier":"Employee:50031"}"`,
+      `"{"employeeId":50031,"fullName":"Jane Doe","office":"SEA","class":"Blue","startDate":"2012-02-12","employeeStatus":{},"employeeSensor":{},"employeeLocation":{},"employeeProfile":{"bio":"Team lead focused on frontend development","yearsExperience":8},"performanceScores":[91,89.5,94],"$apiName":"Employee","$objectType":"Employee","$primaryKey":50031,"$title":"Jane Doe","$objectSpecifier":"Employee:50031"}"`,
     );
 
     expect(JSON.stringify(employee2.$as(FooInterface))).toMatchInlineSnapshot(
@@ -1095,6 +1097,23 @@ describe("convertWireToOsdkObjects", () => {
                   "valueFormatting": undefined,
                   "valueTypeApiName": undefined,
                 },
+                "employeeProfile": {
+                  "description": "Employee profile with main value being the bio",
+                  "displayName": undefined,
+                  "mainValue": {
+                    "fields": [
+                      "bio",
+                    ],
+                  },
+                  "multiplicity": false,
+                  "nullable": true,
+                  "type": {
+                    "bio": "string",
+                    "yearsExperience": "integer",
+                  },
+                  "valueFormatting": undefined,
+                  "valueTypeApiName": undefined,
+                },
                 "employeeSensor": {
                   "description": "TimeSeries sensor of the status of the employee",
                   "displayName": undefined,
@@ -1116,6 +1135,7 @@ describe("convertWireToOsdkObjects", () => {
                 "favoriteRestaurants": {
                   "description": undefined,
                   "displayName": undefined,
+                  "hasReducers": false,
                   "multiplicity": true,
                   "nullable": true,
                   "type": "string",
@@ -1138,6 +1158,16 @@ describe("convertWireToOsdkObjects", () => {
                   "multiplicity": false,
                   "nullable": true,
                   "type": "string",
+                  "valueFormatting": undefined,
+                  "valueTypeApiName": undefined,
+                },
+                "performanceScores": {
+                  "description": "Array of performance scores with reducers",
+                  "displayName": undefined,
+                  "hasReducers": true,
+                  "multiplicity": true,
+                  "nullable": true,
+                  "type": "double",
                   "valueFormatting": undefined,
                   "valueTypeApiName": undefined,
                 },
