@@ -481,17 +481,6 @@ function useOsdkObjectsWithShape<
 ): UseOsdkObjectsShapeResult<Q, C> {
   type S = InferShapeDefinition<Q, C>;
 
-  const prevConfig = React.useRef(options.shape);
-  if (process.env.NODE_ENV !== "production") {
-    if (prevConfig.current !== options.shape) {
-      // eslint-disable-next-line no-console
-      console.warn(
-        "useOsdkObjects: shape config changed between renders. Shape configs should be static.",
-      );
-      prevConfig.current = options.shape;
-    }
-  }
-
   const configRef = React.useRef(options.shape);
   const shapeDef = React.useMemo(
     () => configToShapeDefinition(type, configRef.current),

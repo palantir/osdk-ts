@@ -274,17 +274,6 @@ function useOsdkObjectWithShape<
 {
   const rawShape = options.shape;
 
-  const prevConfig = React.useRef(rawShape);
-  if (process.env.NODE_ENV !== "production") {
-    if (prevConfig.current !== rawShape) {
-      // eslint-disable-next-line no-console
-      console.warn(
-        "useOsdkObject: shape config changed between renders. Shape configs should be static.",
-      );
-      prevConfig.current = rawShape;
-    }
-  }
-
   const isPreBuilt = typeof rawShape === "object" && rawShape != null
     && "__shapeId" in rawShape;
 
