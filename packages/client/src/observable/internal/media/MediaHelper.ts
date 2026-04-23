@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-import type { MediaMetadata, MediaReference } from "@osdk/api";
+import type {
+  Attachment,
+  Media,
+  MediaMetadata,
+  MediaPropertyLocation,
+  MediaReference,
+} from "@osdk/api";
 import { MediaSets } from "@osdk/foundry.mediasets";
 import * as OntologiesV2 from "@osdk/foundry.ontologies";
 import { additionalContext } from "../../../Client.js";
@@ -26,7 +32,7 @@ import type {
   MediaContentObserveOptions,
   MediaContentPayload,
 } from "../../ObservableClient/MediaObservableTypes.js";
-import type { MediaPropertyLocation } from "../../ObservableClient/MediaTypes.js";
+
 import { AbstractHelper } from "../AbstractHelper.js";
 import type { KnownCacheKey } from "../KnownCacheKey.js";
 import type { Query } from "../Query.js";
@@ -72,9 +78,15 @@ export class MediaHelper extends AbstractHelper<
   }
 
   private getContentCacheKey(source: MediaSource): MediaContentCacheKey {
-    const objectType = isMediaPropertyLocation(source)
-      ? source.objectType
-      : "";
+    let objectType = "";
+    if (isMediaPropertyLocation(source)) {
+      objectType = source.objectType;
+    } else if ("getMediaSourceLocation" in source) {
+      const coords = source.getMediaSourceLocation?.();
+      if (coords) {
+        objectType = coords.objectType;
+      }
+    }
     return this.cacheKeys.get(
       "mediaContent",
       objectType,
@@ -82,11 +94,22 @@ export class MediaHelper extends AbstractHelper<
     ) as MediaContentCacheKey;
   }
 
+  private resolveCoords(source: Media): MediaPropertyLocation {
+    const coords = source.getMediaSourceLocation?.();
+    if (!coords) {
+      throw new Error(
+        "Cannot observe media metadata: source has no location (transient or uploaded media)",
+      );
+    }
+    return coords;
+  }
+
   observeMediaMetadata(
-    coords: MediaPropertyLocation,
+    source: Media,
     options: MediaMetadataObserveOptions,
     observer: Observer<MediaMetadataPayload>,
   ): UnsubscribableWrapper {
+    const coords = this.resolveCoords(source);
     const cacheKey = this.getMetadataCacheKey(coords);
 
     const query = this.store.queries.get(cacheKey, () => {
@@ -106,7 +129,7 @@ export class MediaHelper extends AbstractHelper<
   }
 
   observeMedia(
-    source: MediaSource,
+    source: Media | Attachment,
     options: MediaContentObserveOptions,
     observer: Observer<MediaContentPayload>,
   ): { unsubscribe: () => void } {
@@ -132,7 +155,7 @@ export class MediaHelper extends AbstractHelper<
     return this._subscribe(query, options, observer);
   }
 
-  invalidateMedia(source: MediaSource): void {
+  invalidateMedia(source: Media | Attachment): void {
     const typedCacheKey = this.getContentCacheKey(source);
     const query = this.store.queries.peek(typedCacheKey) as
       | MediaContentQuery
