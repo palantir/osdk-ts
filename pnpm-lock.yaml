@@ -1462,6 +1462,9 @@ importers:
       '@blueprintjs/core':
         specifier: ^6.10.0
         version: 6.11.3(@types/react@18.3.24)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@osdk/react':
+        specifier: workspace:*
+        version: link:../../packages/react
       '@osdk/widget.client':
         specifier: workspace:*
         version: link:../../packages/widget.client
@@ -1544,6 +1547,9 @@ importers:
       '@osdk/e2e.generated.catchall':
         specifier: workspace:*
         version: link:../../packages/e2e.generated.catchall
+      '@osdk/react':
+        specifier: workspace:*
+        version: link:../../packages/react
       '@osdk/widget.client':
         specifier: workspace:*
         version: link:../../packages/widget.client
