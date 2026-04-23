@@ -16,6 +16,7 @@
 
 import type {
   ObjectOrInterfaceDefinition,
+  PrimaryKeyType,
   PropertyKeys,
   WhereClause,
 } from "@osdk/api";
@@ -85,4 +86,26 @@ export interface UseShapeListResult<
     linkName?: keyof ShapeDerivedLinks<S>,
   ) => void;
   invalidate: (linkName?: keyof ShapeDerivedLinks<S>) => void;
+}
+
+export function useShapeSingle<
+  S extends ShapeDefinition<ObjectOrInterfaceDefinition>,
+>(
+  _shape: S,
+  _primaryKey: PrimaryKeyType<ShapeBaseType<S>>,
+  _options?: {
+    enabled?: boolean;
+    links?: Partial<{ [K in keyof ShapeDerivedLinks<S>]: LinkLoadConfig }>;
+  },
+): UseShapeResult<S> {
+  throw new Error("useShapeSingle is not implemented yet");
+}
+
+export function useShapeList<
+  S extends ShapeDefinition<ObjectOrInterfaceDefinition>,
+>(
+  _shape: S,
+  _options: UseShapeListOptions<S>,
+): UseShapeListResult<S> {
+  throw new Error("useShapeList is not implemented yet");
 }

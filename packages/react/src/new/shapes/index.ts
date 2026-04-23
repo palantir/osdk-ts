@@ -20,3 +20,5 @@ export type {
   UseShapeListResult,
   UseShapeResult,
 } from "./useShape.js";
+
+export { useShapeList, useShapeSingle } from "./useShape.js";

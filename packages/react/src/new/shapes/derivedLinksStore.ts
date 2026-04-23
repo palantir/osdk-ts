@@ -50,19 +50,19 @@ import type {
   DerivedLinksStore,
   LinkEntry,
   ListObserverPayload,
-} from "./derivedLinksTypes.js";
+} from "./types.js";
 import {
   buildDataWithNestedLinks,
   cleanupNestedMap,
   createLinkEntry,
   violationsToError,
-} from "./derivedLinksTypes.js";
+} from "./types.js";
 
 export type {
   AnyShapeInstance,
   DerivedLinksPayload,
   DerivedLinksStore,
-} from "./derivedLinksTypes.js";
+} from "./types.js";
 export {
   buildDataWithNestedLinks,
   cleanupNestedMap,
@@ -70,13 +70,13 @@ export {
   isBatchableLink,
   NOOP_FETCH_MORE,
   violationsToError,
-} from "./derivedLinksTypes.js";
+} from "./types.js";
 
 const NESTED_FLUSH_DELAY_MS = 25;
 
 function pruneStaleNestedEntries(
-  nestedByPk: Map<unknown, Map<string, LinkEntry>>,
-  currentPks: Set<unknown>,
+  nestedByPk: Map<string | number, Map<string, LinkEntry>>,
+  currentPks: Set<string | number>,
 ): void {
   for (const [pk, nestedMap] of nestedByPk) {
     if (!currentPks.has(pk)) {
@@ -139,10 +139,10 @@ export function createDerivedLinksStore<
   function trackNestedLinksForObjects(
     parentEntry: LinkEntry,
     rawObjects: Osdk.Instance<ObjectOrInterfaceDefinition>[],
-  ): Set<unknown> {
+  ): Set<string | number> {
     const nestedDerivedLinks = parentEntry.linkDef.targetShape
       .__derivedLinks as readonly ShapeDerivedLinkDef[];
-    const currentPks = new Set<unknown>();
+    const currentPks = new Set<string | number>();
 
     for (const rawObj of rawObjects) {
       const pk = rawObj.$primaryKey;
