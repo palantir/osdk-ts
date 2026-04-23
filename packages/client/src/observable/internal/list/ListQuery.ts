@@ -104,6 +104,7 @@ export abstract class ListQuery extends BaseListQuery<
   // Resolved on first fetch for pivot/intersect queries. Undefined for
   // simple queries where result type always equals apiName.
   #fetchedObjectType: string | undefined;
+  #resolvedObjectTypes: ReadonlySet<string> | undefined;
   #needsResultTypeResolution: boolean;
   #defaultObjectTypes: ReadonlySet<string>;
 
@@ -190,7 +191,11 @@ export abstract class ListQuery extends BaseListQuery<
     ) {
       return this.#defaultObjectTypes;
     }
-    return new Set([this.apiName, this.#fetchedObjectType]);
+    this.#resolvedObjectTypes ??= new Set([
+      this.apiName,
+      this.#fetchedObjectType,
+    ]);
+    return this.#resolvedObjectTypes;
   }
 
   protected createPayload(
