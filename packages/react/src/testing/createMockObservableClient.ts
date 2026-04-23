@@ -292,6 +292,18 @@ export function createMockObservableClient(
       NOOP_ASYNC as ObservableClient["invalidateFunctionsByObject"],
     canonicalizeOptions:
       ((options) => options) as ObservableClient["canonicalizeOptions"],
+    getCacheSnapshot: () =>
+      Promise.resolve({
+        entries: [],
+        stats: { totalEntries: 0, totalSize: 0 },
+      }),
+    observeMediaMetadata: ((
+      _coords,
+      _options,
+      _observer,
+    ) => ({
+      unsubscribe: () => {},
+    })) as ObservableClient["observeMediaMetadata"],
   };
 
   return mockClient;

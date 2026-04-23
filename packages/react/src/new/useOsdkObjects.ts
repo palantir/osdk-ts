@@ -269,11 +269,11 @@ export function useOsdkObjects<
   L extends LinkNames<Q>,
 >(
   type: Q,
-<<<<<<< HEAD
-  options: UseOsdkObjectsOptions<Q> & { pivotTo: L; streamUpdates?: never },
-=======
-  options: UseOsdkObjectsOptions<Q> & { pivotTo: L; shape?: never },
->>>>>>> 50861f5d5 (wire shapes into existing hooks, add test utilities and shape tests)
+  options: UseOsdkObjectsOptions<Q> & {
+    pivotTo: L;
+    streamUpdates?: never;
+    shape?: never;
+  },
 ): UseOsdkListResult<LinkedType<Q, L>>;
 
 // Non-pivotTo overloads: pivotTo is forbidden to prevent fallthrough from the
