@@ -63,25 +63,7 @@ export const FormField: React.FC<FormFieldProps> = memo(function FormFieldFn({
         ? (
           <div className={styles.osdkFormFieldLabelRow}>
             {labelElement}
-            <Popover.Root>
-              <Popover.Trigger
-                render={<span className={styles.osdkFormFieldInfoIcon} />}
-                nativeButton={false}
-                openOnHover={true}
-                aria-label={label != null
-                  ? `Info about ${label}`
-                  : "More information"}
-              >
-                <InfoSign size={12} />
-              </Popover.Trigger>
-              <Popover.Portal>
-                <Popover.Positioner sideOffset={4}>
-                  <Popover.Popup className={styles.osdkFormFieldInfoPopup}>
-                    {helperText}
-                  </Popover.Popup>
-                </Popover.Positioner>
-              </Popover.Portal>
-            </Popover.Root>
+            <InfoTip label={label}>{helperText}</InfoTip>
           </div>
         )
         : labelElement}
@@ -97,3 +79,30 @@ export const FormField: React.FC<FormFieldProps> = memo(function FormFieldFn({
     </div>
   );
 });
+
+interface InfoTipProps {
+  label?: string;
+  children: React.ReactNode;
+}
+
+function InfoTip({ label, children }: InfoTipProps): React.ReactElement {
+  return (
+    <Popover.Root>
+      <Popover.Trigger
+        render={<span className={styles.osdkFormFieldInfoIcon} />}
+        nativeButton={false}
+        openOnHover={true}
+        aria-label={label != null ? `Info about ${label}` : "More information"}
+      >
+        <InfoSign size={12} />
+      </Popover.Trigger>
+      <Popover.Portal>
+        <Popover.Positioner sideOffset={4}>
+          <Popover.Popup className={styles.osdkFormFieldInfoPopup}>
+            {children}
+          </Popover.Popup>
+        </Popover.Positioner>
+      </Popover.Portal>
+    </Popover.Root>
+  );
+}

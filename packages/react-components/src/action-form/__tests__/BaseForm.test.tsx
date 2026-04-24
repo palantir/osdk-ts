@@ -172,7 +172,7 @@ describe("BaseForm", () => {
   });
 
   describe("helper text", () => {
-    it("renders helper text below the label when placement is bottom", () => {
+    it("renders helper text when placement is bottom", () => {
       render(
         <BaseForm
           fieldDefinitions={[
@@ -185,8 +185,7 @@ describe("BaseForm", () => {
         />,
       );
 
-      const helperEl = screen.getByText("Enter your full name");
-      expect(helperEl).toBeDefined();
+      expect(screen.getByText("Enter your full name")).toBeDefined();
     });
 
     it("renders tooltip trigger when placement is tooltip", () => {
