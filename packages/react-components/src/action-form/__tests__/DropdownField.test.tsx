@@ -254,6 +254,28 @@ describe("DropdownField", () => {
         expect(options.length).toBe(STRING_ITEMS.length);
       });
     });
+
+    it("marks selected items with aria-selected in multi-select", async () => {
+      render(
+        <DropdownField<string, true>
+          value={["Alice"]}
+          items={STRING_ITEMS}
+          isSearchable={true}
+          isMultiple={true}
+        />,
+      );
+
+      const trigger = screen.getByRole("combobox");
+      fireEvent.click(trigger);
+
+      await vi.waitFor(() => {
+        const alice = screen.getByRole("option", { name: /Alice/ });
+        expect(alice.getAttribute("aria-selected")).toBe("true");
+
+        const bob = screen.getByRole("option", { name: /Bob/ });
+        expect(bob.getAttribute("aria-selected")).toBe("false");
+      });
+    });
   });
 
   describe("clear button", () => {

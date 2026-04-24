@@ -1,5 +1,11 @@
 # @osdk/react-components-storybook
 
+## 0.5.0
+
+### Minor Changes
+
+- 83993d7: Export LoadingCells as building blocks
+
 ## 0.4.0
 
 ### Minor Changes

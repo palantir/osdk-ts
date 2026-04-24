@@ -26,6 +26,12 @@ import type { DropdownFieldProps } from "../FormFieldApi.js";
 
 const EMPTY_ARRAY: [] = [];
 
+/**
+ * SelectDropdown is only used for single-select (the multi-select path
+ * always routes to ComboboxDropdown). We keep the `Multiple` generic so
+ * the spread from DropdownField type-checks, but SelectDropdown never
+ * reads `isMultiple`.
+ */
 interface InnerSelectProps<V, Multiple extends boolean>
   extends Omit<DropdownFieldProps<V, Multiple>, "isSearchable">
 {
@@ -44,9 +50,9 @@ interface InnerComboboxProps<V, Multiple extends boolean>
 
 export function DropdownField<V, Multiple extends boolean = false>({
   isSearchable = false,
+  isMultiple,
   itemToStringLabel,
   itemToKey,
-  portalRef,
   value,
   query,
   onQueryChange,
@@ -58,7 +64,7 @@ export function DropdownField<V, Multiple extends boolean = false>({
   // single-select needs null. Passing undefined switches Base UI from
   // uncontrolled to controlled and triggers a warning.
   const normalizedValue = (value
-    ?? (rest.isMultiple ? EMPTY_ARRAY : null)) as typeof value;
+    ?? (isMultiple ? EMPTY_ARRAY : null)) as typeof value;
 
   const resolvedItemToStringLabel = itemToStringLabel
     ?? defaultItemToStringLabel;
@@ -69,14 +75,14 @@ export function DropdownField<V, Multiple extends boolean = false>({
   );
 
   // Multi-select always uses Combobox for the chip-based UI because it looks better
-  if (isSearchable || rest.isMultiple) {
+  if (isSearchable || isMultiple) {
     return (
       <ComboboxDropdown
         {...rest}
+        isMultiple={isMultiple}
         value={normalizedValue}
         itemToStringLabel={resolvedItemToStringLabel}
         getKey={getKey}
-        portalRef={portalRef}
         isSearchable={isSearchable}
         query={query}
         onQueryChange={onQueryChange}
@@ -92,7 +98,6 @@ export function DropdownField<V, Multiple extends boolean = false>({
       value={normalizedValue}
       itemToStringLabel={resolvedItemToStringLabel}
       getKey={getKey}
-      portalRef={portalRef}
     />
   );
 }
@@ -108,7 +113,6 @@ const SelectDropdown = typedReactMemo(function SelectDropdownFn<
   itemToStringLabel,
   getKey,
   isItemEqual,
-  isMultiple,
   placeholder,
   portalRef,
 }: InnerSelectProps<V, Multiple>): React.ReactElement {
@@ -128,11 +132,10 @@ const SelectDropdown = typedReactMemo(function SelectDropdownFn<
         onValueChange={onChange}
         open={open}
         onOpenChange={setOpen}
-        multiple={isMultiple}
         isItemEqualToValue={isItemEqual}
         itemToStringLabel={itemToStringLabel}
       >
-        <Select.Trigger placeholder={placeholder}>
+        <Select.Trigger id={id} placeholder={placeholder}>
           <div className={selectStyles.osdkSelectValueContainer}>
             <Select.Value />
             {placeholder != null && (
@@ -259,15 +262,16 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
         autoHighlight={isSearchable}
       >
         <Combobox.Trigger
+          id={id}
           className={isMultiple
             ? comboboxStyles.osdkComboboxTriggerMulti
             : undefined}
         >
           <div className={comboboxStyles.osdkComboboxValueContainer}>
-            {isMultiple && hasValue
+            {isMultiple && Array.isArray(value) && value.length > 0
               ? (
                 <div className={comboboxStyles.osdkComboboxTriggerChips}>
-                  {(value as V[]).map((item) => (
+                  {value.map((item: V) => (
                     <span
                       key={getKey(item)}
                       className={comboboxStyles.osdkComboboxTriggerChip}
