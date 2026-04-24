@@ -71,16 +71,6 @@ export class ObjectSetHelper extends AbstractHelper<
     const ret = super.observe(options, subFn);
 
     if (options.streamUpdates) {
-      if (
-        options.withProperties
-        || hasWithProperties(getWireObjectSet(options.baseObjectSet))
-      ) {
-        throw new Error(
-          "[@osdk/client] streamUpdates is not supported with withProperties. "
-            + "The server does not support websocket subscriptions for "
-            + "object sets that include derived properties.",
-        );
-      }
       if (options.pivotTo) {
         if (process.env.NODE_ENV !== "production") {
           // eslint-disable-next-line no-console
@@ -88,6 +78,18 @@ export class ObjectSetHelper extends AbstractHelper<
             "[@osdk/client] streamUpdates is not supported with pivotTo. "
               + "The server does not support websocket subscriptions for "
               + "link-traversal queries. Ignoring streamUpdates.",
+          );
+        }
+      } else if (
+        options.withProperties
+        || hasWithProperties(getWireObjectSet(options.baseObjectSet))
+      ) {
+        if (process.env.NODE_ENV !== "production") {
+          // eslint-disable-next-line no-console
+          console.warn(
+            "[@osdk/client] streamUpdates is not supported with withProperties. "
+              + "The server does not support websocket subscriptions for "
+              + "object sets that include derived properties. Ignoring streamUpdates.",
           );
         }
       } else {

@@ -2,4 +2,4 @@
 "@osdk/client": patch
 ---
 
-throw when streamUpdates is combined with withProperties
+warn and ignore streamUpdates when combined with withProperties
