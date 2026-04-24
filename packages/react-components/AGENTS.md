@@ -4,7 +4,7 @@ Pre-built, Ontology-aware React components. Pass in OSDK entities and they handl
 
 ## Installing
 
-Requires `@osdk/react` AND `@osdk/client` AND `@osdk/api` together. Versions must line up tighter than the declared peer ranges. `@osdk/react-components` transitively depends on the unstable `@osdk/client` surface via `@osdk/react`.
+Requires `@osdk/react` AND `@osdk/client` AND `@osdk/api` together. Versions must line up tighter than the declared peer ranges. Both `@osdk/react-components` and `@osdk/react` import from the unstable `@osdk/client` surface, which moves between releases without deprecation.
 
 - **Stable `@osdk/react-components`** → latest stable `@osdk/react`, `@osdk/client`, and `@osdk/api`.
 - **Prerelease `@osdk/react-components`** → MUST use matching prerelease versions of all three peers. Mismatches will break at build time.
@@ -25,12 +25,12 @@ See `@osdk/react`'s `AGENTS.md` for optional peers (`@osdk/foundry.admin`, `@osd
 
 ## Install-time errors
 
-| Error                                                                             | Cause                                                                                              | Fix                                                                                                  |
-| --------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
-| `"<name>" is not exported by @osdk/client/.../unstable-do-not-use.js`             | `@osdk/client` or `@osdk/react` version mismatches what `@osdk/react-components` was built against | Follow the CHANGELOG recipe in `## Installing` and pin all three peers to the exact versions listed. |
-| `"<name>" is not exported by @osdk/react/...`                                     | `@osdk/react` version mismatches what `@osdk/react-components` was built against                   | Same — CHANGELOG recipe, pin `@osdk/react` to the exact version.                                     |
-| `Rollup failed to resolve import "@osdk/foundry.admin"` (or `@osdk/foundry.core`) | Transitive import from `@osdk/react/experimental/admin` without the optional peers                 | Install `@osdk/foundry.admin` + `@osdk/foundry.core`, OR avoid surfaces that use the admin hooks.    |
-| pnpm/npm peer warning about `@osdk/client` or `@osdk/react` range                 | Declared peer ranges are broad; prerelease coupling is tighter                                     | Follow the CHANGELOG recipe; pin to exact versions.                                                  |
+| Error                                                                                      | Cause                                                                                                             | Fix                                                                                                                                                  |
+| ------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `"<name>" is not exported by @osdk/client/.../unstable-do-not-use.js` (or `@osdk/api/...`) | `@osdk/client` or `@osdk/api` or `@osdk/react` version mismatches what `@osdk/react-components` was built against | Do NOT delete the import or downgrade silently. Follow the CHANGELOG recipe in `## Installing` and pin all three peers to the exact versions listed. |
+| `"<name>" is not exported by @osdk/react/...`                                              | `@osdk/react` version mismatches what `@osdk/react-components` was built against                                  | Do NOT delete the import or downgrade silently. Follow the CHANGELOG recipe in `## Installing` and pin `@osdk/react` to the exact version listed.    |
+| `Rollup failed to resolve import "@osdk/foundry.admin"` (or `@osdk/foundry.core`)          | Transitive import from `@osdk/react/experimental/admin` without the optional peers                                | Install `@osdk/foundry.admin` + `@osdk/foundry.core`, OR avoid surfaces that use the admin hooks.                                                    |
+| pnpm/npm peer warning about `@osdk/client` or `@osdk/react` range                          | Declared peer ranges are broad; prerelease coupling is tighter                                                    | Follow the CHANGELOG recipe; pin to exact versions.                                                                                                  |
 
 ## Components
 
