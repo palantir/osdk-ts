@@ -567,9 +567,6 @@ export class Store {
 
     const promises: Array<Promise<void>> = [];
 
-    // Walk queries.keys() rather than layers.truth.keys(): an "offline"-mode
-    // or never-fetched query can be registered and subscribed without having
-    // written to truth yet, and still needs to be notified after an action.
     for (const cacheKey of this.queries.keys()) {
       if (
         cacheKey.type !== "mediaMetadata"

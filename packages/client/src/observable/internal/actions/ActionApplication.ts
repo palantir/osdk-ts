@@ -98,44 +98,33 @@ export class ActionApplication {
   };
 
   #invalidateActionEditResponse = async (
-    response: ActionEditResponse | undefined,
+    actionEditResponse: ActionEditResponse | undefined,
   ): Promise<void> => {
-    if (response == null) {
+    if (actionEditResponse == null) {
       return;
     }
 
-    if (response.type !== "edits") {
-      for (const apiName of response.editedObjectTypes) {
-        await this.store.invalidateObjectType(apiName, undefined);
-      }
+    if (actionEditResponse.type !== "edits") {
+      await Promise.all(
+        actionEditResponse.editedObjectTypes.map(apiName =>
+          this.store.invalidateObjectType(apiName, undefined)
+        ),
+      );
       return;
     }
 
-    this.#tombstoneDeletedObjects(response.deletedObjects ?? []);
+    const {
+      addedObjects,
+      modifiedObjects,
+      deletedObjects,
+      addedLinks,
+      deletedLinks,
+    } = actionEditResponse;
 
-    const { perObjectInvalidations, coarseTypes, linkKickTypes } = this
-      .#collectInvalidationTargets(response);
-
-    await Promise.all([
-      ...perObjectInvalidations,
-      ...[...coarseTypes].map(apiName =>
-        this.store.invalidateObjectType(apiName, undefined)
-      ),
-      ...[...linkKickTypes].map(apiName =>
-        this.store.invalidateLinkQueriesForType(apiName)
-      ),
-    ]);
-  };
-
-  // Tombstone deleted objects before invalidating so subscribers never observe
-  // a "loading" state for an object we already know is gone.
-  #tombstoneDeletedObjects(
-    deletedObjects: ReadonlyArray<
-      { objectType: string; primaryKey: string | number }
-    >,
-  ): void {
+    // Tombstone deleted objects first so subscribers never observe a loading
+    // state for an object we already know is gone.
     this.store.batch({}, (batch) => {
-      for (const { objectType, primaryKey } of deletedObjects) {
+      for (const { objectType, primaryKey } of deletedObjects ?? []) {
         for (
           const cacheKey of this.store.objectCacheKeyRegistry.getVariants(
             objectType,
@@ -146,71 +135,31 @@ export class ActionApplication {
         }
       }
     });
-  }
 
-  #collectInvalidationTargets(
-    edits: Extract<ActionEditResponse, { type: "edits" }>,
-  ): {
-    perObjectInvalidations: Array<Promise<unknown>>;
-    coarseTypes: Set<string>;
-    linkKickTypes: Set<string>;
-  } {
-    const {
-      addedObjects,
-      modifiedObjects,
-      deletedObjects,
-      addedLinks,
-      deletedLinks,
-      deletedObjectsCount,
-      deletedLinksCount,
-      editedObjectTypes,
-    } = edits;
-
-    const deletedObjectsTruncated = (deletedObjectsCount ?? 0)
-      > (deletedObjects?.length ?? 0);
-    const deletedLinksTruncated = (deletedLinksCount ?? 0)
-      > (deletedLinks?.length ?? 0);
-
-    // Per-object invalidation updates lists in-place via onRevalidate; a coarse
-    // refetch would pull in objects the caller never had.
     const perObjectInvalidations: Array<Promise<unknown>> = [];
-    const perObjectTypes = new Set<string>();
+    const linkKickTypes = new Set<string>();
     for (const obj of [...(addedObjects ?? []), ...(modifiedObjects ?? [])]) {
-      perObjectTypes.add(obj.objectType);
+      linkKickTypes.add(obj.objectType);
       perObjectInvalidations.push(
         this.store.invalidateObject(obj.objectType, obj.primaryKey),
       );
     }
-    if (!deletedObjectsTruncated) {
-      for (const obj of deletedObjects ?? []) {
-        perObjectTypes.add(obj.objectType);
-      }
+    for (const obj of deletedObjects ?? []) {
+      linkKickTypes.add(obj.objectType);
+    }
+    for (const link of [...(addedLinks ?? []), ...(deletedLinks ?? [])]) {
+      linkKickTypes.add(link.aSideObject.objectType);
+      linkKickTypes.add(link.bSideObject.objectType);
     }
 
-    // Types the server flagged but we couldn't enumerate per-object (truncated
-    // deletes, link-only sides, type-only) fall back to type-level invalidation.
-    const coarseTypes = new Set<string>();
-    for (const apiName of editedObjectTypes) {
-      if (!perObjectTypes.has(apiName)) {
-        coarseTypes.add(apiName);
-      }
-    }
-
-    // Link queries don't see object propagation — kick them explicitly.
-    const linkKickTypes = new Set<string>(perObjectTypes);
-    if (!deletedLinksTruncated) {
-      for (const link of [...(addedLinks ?? []), ...(deletedLinks ?? [])]) {
-        const a = link.aSideObject.objectType;
-        const b = link.bSideObject.objectType;
-        if (!coarseTypes.has(a)) {
-          linkKickTypes.add(a);
-        }
-        if (!coarseTypes.has(b)) {
-          linkKickTypes.add(b);
-        }
-      }
-    }
-
-    return { perObjectInvalidations, coarseTypes, linkKickTypes };
-  }
+    // Object modifications reach link queries via the RxJS subject pipeline,
+    // but deletes and link edits don't; kick link queries for every touched
+    // type.
+    await Promise.all([
+      ...perObjectInvalidations,
+      ...[...linkKickTypes].map(apiName =>
+        this.store.invalidateLinkQueriesForType(apiName)
+      ),
+    ]);
+  };
 }
