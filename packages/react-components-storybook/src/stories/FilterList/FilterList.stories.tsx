@@ -1581,16 +1581,23 @@ function WithLinkedPropertyFiltersStory(
         label: "Reports' Department",
       } as FilterDefinitionUnion<Employee>,
       {
-        type: "LINKED_PROPERTY",
-        linkName: "lead",
-        linkedPropertyKey: "locationCity",
-        linkedFilterComponent: "LISTOGRAM",
-        linkedFilterState: { type: "EXACT_MATCH", values: [] },
-        filterState: {
-          type: "linkedProperty",
-          linkedFilterState: { type: "EXACT_MATCH", values: [] },
+        type: "STATIC_VALUES",
+        key: "managerCity",
+        label: "Manager's City (static example)",
+        filterComponent: "LISTOGRAM",
+        values: ["New York", "San Francisco", "London", "Tokyo"],
+        filterState: { type: "EXACT_MATCH", values: [] },
+        listogramConfig: { displayMode: "minimal" },
+        toWhereClause: (state) => {
+          if (state.type !== "EXACT_MATCH" || state.values.length === 0) {
+            return undefined;
+          }
+          return {
+            $or: state.values.map((city) => ({
+              "lead->locationCity": city,
+            })),
+          } as WhereClause<Employee>;
         },
-        label: "Manager's City",
       } as FilterDefinitionUnion<Employee>,
     ],
     [],
@@ -1627,11 +1634,13 @@ export const WithLinkedPropertyFilters: Story = {
         story: "Demonstrates filtering on properties of linked objects. "
           + "HAS_LINK filters objects based on whether they have a linked object. "
           + "LINKED_PROPERTY filters on a specific property of the linked objects. "
-          + "In this example, 'Reports' Department' filters employees by the department "
-          + "of their direct reports, and 'Manager's City' filters by the location of their manager.",
+          + "The 'Reports' Department' filter uses LINKED_PROPERTY to filter by the department of direct reports. "
+          + "The 'Manager's City' filter shows an equivalent using STATIC_VALUES with a custom toWhereClause. "
+          + "NOTE: In production, LINKED_PROPERTY with aggregation requires proper backend support for aggregation on pivoted object sets.",
       },
       source: {
-        code: `const filterDefinitions = [
+        code: `// HAS_LINK and LINKED_PROPERTY filter definitions
+const filterDefinitions = [
   {
     type: "HAS_LINK",
     linkName: "lead",
@@ -1639,8 +1648,9 @@ export const WithLinkedPropertyFilters: Story = {
     filterState: { type: "hasLink", hasLink: false },
   },
   {
+    // LINKED_PROPERTY: filters on properties of linked objects
     type: "LINKED_PROPERTY",
-    linkName: "peeps",
+    linkName: "peeps", // many-to-one: "who are my direct reports?"
     linkedPropertyKey: "department",
     linkedFilterComponent: "LISTOGRAM",
     linkedFilterState: { type: "EXACT_MATCH", values: [] },
@@ -1651,16 +1661,23 @@ export const WithLinkedPropertyFilters: Story = {
     label: "Reports' Department",
   },
   {
-    type: "LINKED_PROPERTY",
-    linkName: "lead",
-    linkedPropertyKey: "locationCity",
-    linkedFilterComponent: "LISTOGRAM",
-    linkedFilterState: { type: "EXACT_MATCH", values: [] },
-    filterState: {
-      type: "linkedProperty",
-      linkedFilterState: { type: "EXACT_MATCH", values: [] },
-    },
+    // Alternative: use STATIC_VALUES with toWhereClause for linked filtering
+    type: "STATIC_VALUES",
+    key: "managerCity",
     label: "Manager's City",
+    filterComponent: "LISTOGRAM",
+    values: ["New York", "San Francisco", "London", "Tokyo"],
+    filterState: { type: "EXACT_MATCH", values: [] },
+    toWhereClause: (state) => {
+      if (state.type !== "EXACT_MATCH" || state.values.length === 0) {
+        return undefined;
+      }
+      return {
+        $or: state.values.map((city) => ({
+          "lead->locationCity": city,
+        })),
+      };
+    },
   },
 ];
 
@@ -1827,33 +1844,9 @@ function WithCustomFiltersStory(args: Partial<EmployeeFilterListProps>) {
           if (!value) return undefined;
           return {
             fullName: { $containsAnyTerm: value },
-          } as WhereClause<Employee>;
+          };
         },
-      } as FilterDefinitionUnion<Employee>,
-      {
-        type: "CUSTOM",
-        key: "custom-senior-only",
-        label: "Senior Only",
-        filterComponent: "CUSTOM",
-        filterState: { type: "custom", customState: { seniorOnly: false } },
-        renderItem: ({ filterState, onFilterStateChanged }) => (
-          <CustomSeniorOnlyFilterItem
-            filterState={filterState as {
-              type: "custom";
-              customState: { seniorOnly: boolean };
-            }}
-            onFilterStateChanged={onFilterStateChanged}
-          />
-        ),
-        toWhereClause: (state) => {
-          const seniorOnly = (state.customState as { seniorOnly?: boolean })
-            ?.seniorOnly;
-          if (!seniorOnly) return undefined;
-          return {
-            jobTitle: { $containsAnyTerm: "Senior" },
-          } as WhereClause<Employee>;
-        },
-      } as FilterDefinitionUnion<Employee>,
+      },
     ],
     [],
   );
@@ -1888,9 +1881,7 @@ export const WithCustomFilters: Story = {
       description: {
         story:
           "Custom filters provide full control over filtering logic and UI. "
-          + "The 'Name Contains' filter uses `renderInput` for a simple custom input. "
-          + "The 'Senior Only' filter uses `renderItem` for a fully custom styled component. "
-          + "Both convert their state to a WhereClause via the `toWhereClause` function.",
+          + "The 'Name Contains' filter uses `renderInput` for a simple custom input. ",
       },
       source: {
         code: `// Custom filter with renderInput
@@ -1920,34 +1911,9 @@ const nameContainsFilter = {
   },
 };
 
-// Custom filter with renderItem (full control)
-const seniorOnlyFilter = {
-  type: "CUSTOM",
-  key: "custom-senior-only",
-  label: "Senior Only",
-  filterComponent: "CUSTOM",
-  filterState: { type: "custom", customState: { seniorOnly: false } },
-  renderItem: ({ filterState, onFilterStateChanged }) => (
-    <StyledCheckbox
-      checked={filterState.customState.seniorOnly}
-      onChange={(seniorOnly) =>
-        onFilterStateChanged({
-          type: "custom",
-          customState: { seniorOnly },
-        })
-      }
-      label="Show only senior employees"
-    />
-  ),
-  toWhereClause: (state) => {
-    if (!state.customState.seniorOnly) return undefined;
-    return { jobTitle: { $containsAnyTerm: "Senior" } };
-  },
-};
-
 <FilterList
   objectType={Employee}
-  filterDefinitions={[nameContainsFilter, seniorOnlyFilter]}
+  filterDefinitions={[nameContainsFilter]}
   filterClause={filterClause}
   onFilterClauseChanged={setFilterClause}
 />`,
