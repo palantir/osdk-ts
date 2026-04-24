@@ -100,6 +100,10 @@ export namespace ObjectMetadata {
     nullable?: boolean;
     valueTypeApiName?: string;
     valueFormatting?: PropertyValueFormattingRule;
+    mainValue?: {
+      fields: readonly string[];
+    };
+    hasReducers?: boolean;
   }
 
   export interface Link<
@@ -133,10 +137,16 @@ export interface PropertyDef<
   T extends WirePropertyTypes,
   N extends "nullable" | "non-nullable" = "nullable",
   M extends "array" | "single" = "single",
+  MAIN_VALUE_FIELDS extends readonly string[] | undefined = undefined,
+  HAS_REDUCERS extends boolean = false,
 > extends ObjectMetadata.Property {
   type: T;
   multiplicity: M extends "array" ? true : false;
   nullable: N extends "nullable" ? true : false;
+  mainValue: MAIN_VALUE_FIELDS extends readonly string[]
+    ? { fields: MAIN_VALUE_FIELDS }
+    : undefined;
+  hasReducers: HAS_REDUCERS;
 }
 
 export type ReleaseStatus =
