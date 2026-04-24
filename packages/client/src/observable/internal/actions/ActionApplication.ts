@@ -98,35 +98,44 @@ export class ActionApplication {
   };
 
   #invalidateActionEditResponse = async (
-    actionEditResponse: ActionEditResponse | undefined,
+    response: ActionEditResponse | undefined,
   ): Promise<void> => {
-    if (actionEditResponse == null) {
+    if (response == null) {
       return;
     }
 
-    const { editedObjectTypes, type } = actionEditResponse;
-
-    if (type !== "edits") {
-      for (const apiName of editedObjectTypes) {
+    if (response.type !== "edits") {
+      for (const apiName of response.editedObjectTypes) {
         await this.store.invalidateObjectType(apiName, undefined);
       }
       return;
     }
 
-    const {
-      addedObjects,
-      modifiedObjects,
-      deletedObjects,
-      addedLinks,
-      deletedLinks,
-      deletedObjectsCount,
-      deletedLinksCount,
-    } = actionEditResponse;
+    this.#tombstoneDeletedObjects(response.deletedObjects ?? []);
 
-    // Tombstone deleted objects first so subscribers never observe a "loading"
-    // state for an object we already know is gone.
+    const { perObjectInvalidations, coarseTypes, linkKickTypes } = this
+      .#collectInvalidationTargets(response);
+
+    await Promise.all([
+      ...perObjectInvalidations,
+      ...[...coarseTypes].map(apiName =>
+        this.store.invalidateObjectType(apiName, undefined)
+      ),
+      ...[...linkKickTypes].map(apiName =>
+        this.store.invalidateLinkQueriesForType(apiName)
+      ),
+    ]);
+  };
+
+  // Tombstone deleted objects before invalidating so subscribers never observe
+  // a "loading" state for an object we already know is gone.
+  #tombstoneDeletedObjects(
+    deletedObjects: ReadonlyArray<
+      { objectType: string; primaryKey: string | number }
+    >,
+  ): void {
     this.store.batch({}, (batch) => {
-      for (const { objectType, primaryKey } of deletedObjects ?? []) {
+      for (const { objectType, primaryKey } of deletedObjects) {
         for (
           const cacheKey of this.store.objectCacheKeyRegistry.getVariants(
             objectType,
@@ -137,6 +146,25 @@ export class ActionApplication {
         }
       }
     });
+  }
+
+  #collectInvalidationTargets(
+    edits: Extract<ActionEditResponse, { type: "edits" }>,
+  ): {
+    perObjectInvalidations: Array<Promise<unknown>>;
+    coarseTypes: Set<string>;
+    linkKickTypes: Set<string>;
+  } {
+    const {
+      addedObjects,
+      modifiedObjects,
+      deletedObjects,
+      addedLinks,
+      deletedLinks,
+      deletedObjectsCount,
+      deletedLinksCount,
+      editedObjectTypes,
+    } = edits;
 
     const deletedObjectsTruncated = (deletedObjectsCount ?? 0)
       > (deletedObjects?.length ?? 0);
@@ -159,12 +187,12 @@ export class ActionApplication {
       }
     }
 
-    // Types the server flagged but we couldn't enumerate (truncated deletes,
-    // link-only sides, type-only) fall back to type-level invalidation.
-    const coarseInvalidateTypes = new Set<string>();
+    // Types the server flagged but we couldn't enumerate per-object (truncated
+    // deletes, link-only sides, type-only) fall back to type-level invalidation.
+    const coarseTypes = new Set<string>();
     for (const apiName of editedObjectTypes) {
       if (!perObjectTypes.has(apiName)) {
-        coarseInvalidateTypes.add(apiName);
+        coarseTypes.add(apiName);
       }
     }
 
@@ -174,23 +202,15 @@ export class ActionApplication {
       for (const link of [...(addedLinks ?? []), ...(deletedLinks ?? [])]) {
         const a = link.aSideObject.objectType;
         const b = link.bSideObject.objectType;
-        if (!coarseInvalidateTypes.has(a)) {
+        if (!coarseTypes.has(a)) {
           linkKickTypes.add(a);
         }
-        if (!coarseInvalidateTypes.has(b)) {
+        if (!coarseTypes.has(b)) {
           linkKickTypes.add(b);
         }
       }
     }
 
-    await Promise.all([
-      ...perObjectInvalidations,
-      ...[...coarseInvalidateTypes].map(apiName =>
-        this.store.invalidateObjectType(apiName, undefined)
-      ),
-      ...[...linkKickTypes].map(apiName =>
-        this.store.invalidateLinkQueriesForType(apiName)
-      ),
-    ]);
-  };
+    return { perObjectInvalidations, coarseTypes, linkKickTypes };
+  }
 }

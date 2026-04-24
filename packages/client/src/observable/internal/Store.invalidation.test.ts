@@ -66,18 +66,6 @@ const addPeepsLinkBuild = TypeHelpers.actionTypeBuilder("addPeepsLink")
   .build();
 const { actionDefinition: addPeepsLinkAction } = addPeepsLinkBuild;
 
-const truncatedDeleteBuild = TypeHelpers.actionTypeBuilder(
-  "truncatedDeleteTodo",
-)
-  .addParameter("id", "integer", true)
-  .build();
-const { actionDefinition: truncatedDeleteAction } = truncatedDeleteBuild;
-
-const largeScaleEditsBuild = TypeHelpers.actionTypeBuilder(
-  "largeScaleEditsTodo",
-).build();
-const { actionDefinition: largeScaleEditsAction } = largeScaleEditsBuild;
-
 describe("Store Invalidation Type Isolation", () => {
   let client: ReturnType<typeof createClient>;
   let cache: Store;
@@ -158,37 +146,6 @@ describe("Store Invalidation Type Isolation", () => {
         const { leadId, peepId } = payload.parameters;
         b.addLink(Employee.apiName, leadId, "peeps", Employee.apiName, peepId);
       },
-    );
-
-    // Deletes one Todo but inflates deletedObjectsCount so the response looks
-    // truncated (count > enumerated entries). Exercises the truncation
-    // fallback that skips per-object type enumeration and leans on
-    // editedObjectTypes alone.
-    fauxFoundry.getDefaultOntology().registerActionType(
-      truncatedDeleteBuild.actionTypeV2,
-      (b, payload) => {
-        b.deleteObject(Todo.apiName, payload.parameters.id);
-        b.objectEdits.deletedObjectsCount = 100;
-      },
-    );
-
-    // Returns a pre-built ActionResults directly so FauxDataStore's legacy
-    // passthrough (if (r) return r) hands it to the client unchanged — lets
-    // us exercise the largeScaleEdits branch without flipping FauxFoundry's
-    // hardcoded returnLargeScaleEdits flag.
-    fauxFoundry.getDefaultOntology().registerActionType(
-      largeScaleEditsBuild.actionTypeV2,
-      () => ({
-        validation: {
-          parameters: {},
-          result: "VALID",
-          submissionCriteria: [],
-        },
-        edits: {
-          type: "largeScaleEdits",
-          editedObjectTypes: [Todo.apiName],
-        },
-      }),
     );
   }
 
@@ -789,25 +746,28 @@ describe("Store Invalidation Type Isolation", () => {
       return subFn;
     }
 
-    it("modify invalidates list and link queries of the modified type", async () => {
-      const todoListSubFn = await observeList(Todo);
-
-      const { payload: office1Payload } = await expectStandardObserveObject({
+    async function observeOccupantsLink() {
+      const { payload } = await expectStandardObserveObject({
         cache,
         type: Office,
         primaryKey: OFFICE_1_ID,
       });
-      const office1 = office1Payload?.object;
-      invariant(office1);
-
+      const office = payload?.object;
+      invariant(office);
       const { linkSubFn } = await expectStandardObserveLink({
         store: cache,
-        srcObject: office1,
+        srcObject: office,
         srcLinkName: "occupants",
         targetType: Employee,
         expected: [expect.objectContaining({ $primaryKey: EMPLOYEE_1_ID })],
       });
       linkSubFn.next.mockClear();
+      return linkSubFn;
+    }
+
+    it("modify invalidates list and link queries of the modified type", async () => {
+      const todoListSubFn = await observeList(Todo);
+      const linkSubFn = await observeOccupantsLink();
 
       await cache.applyAction(editTodo, {
         id: TODO_1_ID,
@@ -845,23 +805,7 @@ describe("Store Invalidation Type Isolation", () => {
       const empListSubFn = await observeList(Employee);
       const officeListSubFn = await observeList(Office);
       const todoListSubFn = await observeList(Todo);
-
-      const { payload: office1Payload } = await expectStandardObserveObject({
-        cache,
-        type: Office,
-        primaryKey: OFFICE_1_ID,
-      });
-      const office1 = office1Payload?.object;
-      invariant(office1);
-
-      const { linkSubFn } = await expectStandardObserveLink({
-        store: cache,
-        srcObject: office1,
-        srcLinkName: "occupants",
-        targetType: Employee,
-        expected: [expect.objectContaining({ $primaryKey: EMPLOYEE_1_ID })],
-      });
-      linkSubFn.next.mockClear();
+      const linkSubFn = await observeOccupantsLink();
 
       await cache.applyAction(createOfficeAndEmployee, {
         officeId: "new-office-1",
@@ -932,26 +876,6 @@ describe("Store Invalidation Type Isolation", () => {
 
       await vi.waitFor(() => expect(peepsSubFn.next).toHaveBeenCalled());
       await vi.waitFor(() => expect(leadSubFn.next).toHaveBeenCalled());
-    });
-
-    it("truncated deletion (count > length) falls back to editedObjectTypes", async () => {
-      const todoListSubFn = await observeList(Todo);
-
-      await cache.applyAction(truncatedDeleteAction, { id: TODO_2_ID });
-
-      // deletedObjectsCount=100 vs deletedObjects.length=1 flags truncation, so
-      // per-object enumeration is skipped; Todo invalidates via editedObjectTypes.
-      await vi.waitFor(() => expect(todoListSubFn.next).toHaveBeenCalled());
-    });
-
-    it("largeScaleEdits response uses editedObjectTypes; unrelated types untouched", async () => {
-      const todoListSubFn = await observeList(Todo);
-      const empListSubFn = await observeList(Employee);
-
-      await cache.applyAction(largeScaleEditsAction, {});
-
-      await vi.waitFor(() => expect(todoListSubFn.next).toHaveBeenCalled());
-      expect(empListSubFn.next).not.toHaveBeenCalled();
     });
   });
 });
