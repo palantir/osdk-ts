@@ -1009,7 +1009,7 @@ export const EditableTable: Story = {
       },
     ],
     editMode: "always",
-  } as any,
+  },
   parameters: {
     docs: {
       source: {
@@ -1281,6 +1281,22 @@ export const EditableWithValidation: Story = {
           },
         },
       },
+      {
+        locator: { type: "property", id: "firstFullTimeStartDate" },
+        editable: true,
+        editFieldConfig: {
+          fieldComponent: "DATE_PICKER",
+          fieldComponentProps: {
+            showTime: false,
+            placeholder: "Select date...",
+          },
+        },
+        validateEdit: async (value: unknown) => {
+          if (!value) {
+            return "Start date is required";
+          }
+        },
+      },
     ],
     editMode: "always",
     onSubmitEdits: async (edits: CellEditInfo<Osdk.Instance<Employee>>[]) => {
@@ -1384,6 +1400,7 @@ return (
           <li>Email must be a valid format</li>
           <li>Employee number must be positive</li>
           <li>Job title is required</li>
+          <li>Start date is required</li>
         </ul>
       </div>
       <ObjectTable {...args} objectType={Employee} />

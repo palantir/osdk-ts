@@ -17,7 +17,6 @@
 import classNames from "classnames";
 import React, { useCallback, useMemo } from "react";
 import { DatetimePickerField } from "../../action-form/fields/DatetimePickerField.js";
-
 import { formatDateForInput } from "../../shared/dateUtils.js";
 import styles from "../EditableCell.module.css";
 import { useRegisterPortal } from "../utils/PortalTracker.js";
@@ -25,7 +24,6 @@ import type { DatePickerEditConfig } from "../utils/types.js";
 
 interface DatePickerCellFieldProps {
   fieldComponentProps?: DatePickerEditConfig;
-  isRowFocused: boolean;
   inputValue: string;
   hasValidationError: boolean;
   isEdited: boolean;

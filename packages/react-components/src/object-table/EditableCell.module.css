@@ -100,6 +100,8 @@
   --osdk-datetime-input-padding: var(--osdk-surface-spacing)
     calc(var(--osdk-surface-spacing) * 3);
 
+  display: flex;
+  align-items: center;
   border-radius: var(--osdk-surface-border-radius);
 
   tr[data-focused="true"] & {
