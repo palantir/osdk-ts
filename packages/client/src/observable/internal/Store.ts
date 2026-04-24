@@ -82,6 +82,7 @@ import { WhereClauseCanonicalizer } from "./WhereClauseCanonicalizer.js";
 export namespace Store {
   export interface ApplyActionOptions {
     optimisticUpdate?: (ctx: OptimisticBuilder) => void;
+    keepAlive?: boolean;
   }
 }
 
