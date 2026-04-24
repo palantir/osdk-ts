@@ -26,6 +26,7 @@ interface FormFieldProps {
   helperText?: React.ReactNode;
   helperTextPlacement?: "bottom" | "tooltip";
   error?: string;
+  onBlur?: (e: React.FocusEvent<HTMLDivElement>) => void;
   children: React.ReactNode;
 }
 
@@ -36,6 +37,7 @@ export const FormField: React.FC<FormFieldProps> = memo(function FormFieldFn({
   helperText,
   helperTextPlacement = "tooltip",
   error,
+  onBlur,
   children,
 }: FormFieldProps): React.ReactElement {
   const showTooltip = helperText != null && helperTextPlacement === "tooltip";
@@ -56,7 +58,7 @@ export const FormField: React.FC<FormFieldProps> = memo(function FormFieldFn({
     : null;
 
   return (
-    <div className={styles.osdkFormField}>
+    <div className={styles.osdkFormField} onBlur={onBlur}>
       {showTooltip
         ? (
           <div className={styles.osdkFormFieldLabelRow}>

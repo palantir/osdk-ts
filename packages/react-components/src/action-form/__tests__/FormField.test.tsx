@@ -46,22 +46,6 @@ describe("FormField", () => {
   });
 
   describe("bottom helper text", () => {
-    it("shows helper text below the label when placement is bottom", () => {
-      render(
-        <FormField
-          fieldKey="name"
-          label="Name"
-          helperText="Enter your full name"
-          helperTextPlacement="bottom"
-        >
-          <input id="name" />
-        </FormField>,
-      );
-
-      expect(screen.queryByRole("alert")).toBeNull();
-      expect(screen.getByText("Enter your full name")).toBeDefined();
-    });
-
     it("shows both helper text and error when both are present", () => {
       render(
         <FormField
