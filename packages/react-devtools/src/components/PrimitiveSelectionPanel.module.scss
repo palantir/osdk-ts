@@ -1,0 +1,163 @@
+@use 'tokens' as t;
+@use 'mixins' as m;
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: t.$bg-surface;
+  border-radius: t.$radius-md;
+  overflow: hidden;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  background: t.$bg-raised;
+  border-bottom: 1px solid t.$border-default;
+}
+
+.headerContent {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.headerTitle {
+  font-size: t.$font-size-lg;
+  font-weight: t.$font-weight-semi;
+  color: t.$text-primary;
+}
+
+.headerSubtitle {
+  font-size: t.$font-size-sm;
+  color: t.$text-tertiary;
+  margin-top: 2px;
+}
+
+.content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 4px;
+  @include m.dt-scrollbar;
+}
+
+.emptyState {
+  @include m.dt-empty-state;
+}
+
+.emptySubtext {
+  font-size: t.$font-size-base;
+  color: t.$text-tertiary;
+}
+
+.section {
+  margin-bottom: 4px;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 6px 12px;
+  background: transparent;
+  border: none;
+  border-radius: t.$radius-sm;
+  cursor: pointer;
+  color: t.$text-primary;
+  font-size: t.$font-size-md;
+  font-weight: t.$font-weight-medium;
+  transition: background-color t.$transition-fast;
+
+  &:hover {
+    background: t.$bg-hover;
+  }
+}
+
+.sectionTitle {
+  flex: 1;
+}
+
+.sectionCount {
+  font-size: t.$font-size-sm;
+  color: t.$text-tertiary;
+  background: t.$bg-hover;
+  padding: 2px 6px;
+  border-radius: 10px;
+  font-family: t.$font-mono;
+}
+
+.sectionContent {
+  padding-left: 8px;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 12px;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid t.$border-subtle;
+  border-left: 2px solid transparent;
+  border-radius: 0;
+  cursor: pointer;
+  text-align: left;
+  margin-bottom: 0;
+  transition: background-color t.$transition-fast, border-left-color t.$transition-fast;
+
+  &:hover {
+    background: t.$bg-hover;
+    border-left-color: t.$text-tertiary;
+  }
+
+  &:active {
+    background: t.$bg-active;
+  }
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.itemContent {
+  flex: 1;
+  min-width: 0;
+}
+
+.itemTitle {
+  font-size: t.$font-size-md;
+  font-weight: t.$font-weight-medium;
+  color: t.$text-primary;
+  font-family: t.$font-mono;
+  margin-bottom: 2px;
+}
+
+.itemSubtitle {
+  font-size: t.$font-size-sm;
+  color: t.$text-tertiary;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.itemMetadata {
+  display: flex;
+  gap: 6px;
+  margin-top: 4px;
+  flex-wrap: wrap;
+}
+
+.metadataTag {
+  @include m.dt-badge(t.$bg-hover, t.$text-tertiary);
+  font-family: t.$font-mono;
+}
+
+.itemChevron {
+  color: t.$text-tertiary;
+  flex-shrink: 0;
+}
