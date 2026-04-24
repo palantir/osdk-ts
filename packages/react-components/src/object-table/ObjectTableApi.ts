@@ -362,7 +362,7 @@ export interface ObjectTableProps<
    * If both orderBy and defaultOrderBy are provided, orderBy takes precedence.
    */
   defaultOrderBy?: Array<{
-    property: PropertyKeys<Q>;
+    property: PropertyKeys<Q> | keyof RDPs;
     direction: "asc" | "desc";
   }>;
 
@@ -372,7 +372,7 @@ export interface ObjectTableProps<
    * If both orderBy and defaultOrderBy are provided, orderBy takes precedence.
    */
   orderBy?: Array<{
-    property: PropertyKeys<Q>;
+    property: PropertyKeys<Q> | keyof RDPs;
     direction: "asc" | "desc";
   }>;
 
@@ -384,7 +384,7 @@ export interface ObjectTableProps<
    */
   onOrderByChanged?: (
     newOrderBy: Array<{
-      property: PropertyKeys<Q>;
+      property: PropertyKeys<Q> | keyof RDPs;
       direction: "asc" | "desc";
     }>,
   ) => void;

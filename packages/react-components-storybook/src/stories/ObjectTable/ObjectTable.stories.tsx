@@ -19,6 +19,7 @@ import type {
   ObjectSet,
   Osdk,
   QueryDefinition,
+  WhereClause,
 } from "@osdk/api";
 import { ObjectTable } from "@osdk/react-components/experimental/object-table";
 import type {
@@ -373,74 +374,11 @@ export const WithInterfaceType: Story = {
   ),
 };
 
-export const WithDerivedProperty: Story = {
-  args: {
-    objectType: Employee,
-    columnDefinitions: [
-      { locator: { type: "property", id: "fullName" } },
-      { locator: { type: "property", id: "department" } },
-      {
-        locator: {
-          type: "rdp",
-          id: "managerName",
-          creator: (baseObjectSet: DerivedProperty.Builder<Employee, false>) =>
-            baseObjectSet.pivotTo("lead").selectProperty("fullName"),
-        },
-        renderHeader: () => "Manager",
-        renderCell: (object: Osdk.Instance<Employee>) => {
-          if ("managerName" in object) {
-            return <span>{object.managerName as string}</span>;
-          }
-          return <span style={{ color: "#999" }}>No Manager</span>;
-        },
-      },
-    ] as ColumnDefinition<Employee>[],
-  },
-  parameters: {
-    docs: {
-      description: {
-        story:
-          "Use derived property (RDP) columns to display data from linked objects. "
-          + "The 'Manager' column uses `pivotTo` to follow the lead link and select the fullName property.",
-      },
-      source: {
-        code: `type RDPs = { managerName: "string" };
-
-const columnDefinitions: ColumnDefinition<Employee, RDPs>[] = [
-  { locator: { type: "property", id: "fullName" } },
-  { locator: { type: "property", id: "department" } },
-  {
-    locator: {
-      type: "rdp",
-      id: "managerName",
-      creator: (baseObjectSet) =>
-        baseObjectSet.pivotTo("lead").selectProperty("fullName"),
-    },
-    renderHeader: () => "Manager",
-    renderCell: (object) => {
-      if ("managerName" in object) {
-        return <span>{object["managerName"]}</span>;
-      }
-      return <span style={{ color: "#999" }}>No Manager</span>;
-    },
-  },
-];
-
-<ObjectTable objectType={Employee} columnDefinitions={columnDefinitions} />`,
-      },
-    },
-  },
-  render: (args) => (
-    <div className="object-table-container" style={{ height: "600px" }}>
-      <ObjectTable {...args} />
-    </div>
-  ),
-};
-
 export const WithDerivedPropertyOrderingAndFilter: Story = {
-  args: {
-    objectType: Employee,
-    columnDefinitions: [
+  render: () => {
+    type RDPs = { managerName: "string" };
+
+    const columnDefinitions: ColumnDefinition<Employee, RDPs>[] = [
       { locator: { type: "property", id: "fullName" } },
       { locator: { type: "property", id: "department" } },
       {
@@ -458,21 +396,29 @@ export const WithDerivedPropertyOrderingAndFilter: Story = {
           return <span style={{ color: "#999" }}>No Manager</span>;
         },
       },
-    ] as ColumnDefinition<Employee>[],
-    defaultOrderBy: [{
-      property: "fullName",
-      direction: "asc",
-    }],
-    filter: {
-      department: "Marketing",
-    } as EmployeeTableProps["filter"],
+    ];
+
+    const filter: WhereClause<Employee, RDPs> = {
+      managerName: { $in: ["Ahmed Williams", "Fatima Zhang"] },
+    };
+
+    return (
+      <div className="object-table-container" style={{ height: "600px" }}>
+        <ObjectTable
+          objectType={Employee}
+          columnDefinitions={columnDefinitions}
+          defaultOrderBy={[{ property: "managerName", direction: "asc" }]}
+          filter={filter}
+        />
+      </div>
+    );
   },
   parameters: {
     docs: {
       description: {
         story:
           "Combines derived property columns with `defaultOrderBy` and `filter`. "
-          + "The table is pre-sorted by fullName ascending and filtered to the Marketing department.",
+          + "Demonstrates sorting by an RDP (managerName) and filtering the derived property.",
       },
       source: {
         code: `type RDPs = { managerName: "string" };
@@ -497,20 +443,19 @@ const columnDefinitions: ColumnDefinition<Employee, RDPs>[] = [
   },
 ];
 
+const filter: WhereClause<Employee, RDPs> = {
+  managerName: { $in: ["Ahmed Williams", "Fatima Zhang"] },
+};
+
 <ObjectTable
   objectType={Employee}
   columnDefinitions={columnDefinitions}
-  defaultOrderBy={[{ property: "fullName", direction: "asc" }]}
-  filter={{ department: "Marketing" }}
+  defaultOrderBy={[{ property: "managerName", direction: "asc" }]}
+  filter={filter}
 />`,
       },
     },
   },
-  render: (args) => (
-    <div className="object-table-container" style={{ height: "600px" }}>
-      <ObjectTable {...args} />
-    </div>
-  ),
 };
 
 export const WithFunctionColumn: Story = {
