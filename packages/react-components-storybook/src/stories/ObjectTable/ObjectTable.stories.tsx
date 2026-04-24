@@ -1253,13 +1253,6 @@ return (
       CellEditInfo<Osdk.Instance<typeof Employee>> | undefined
     >();
 
-    const handleCellValueChanged = useCallback(
-      (info: CellEditInfo<Osdk.Instance<typeof Employee>>) => {
-        setLastEdit(info);
-      },
-      [],
-    );
-
     return (
       <div className="object-table-container" style={{ height: "600px" }}>
         <div
@@ -1294,7 +1287,7 @@ return (
         <ObjectTable
           {...args}
           objectType={Employee}
-          onCellValueChanged={handleCellValueChanged}
+          onCellValueChanged={setLastEdit}
         />
       </div>
     );
