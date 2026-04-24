@@ -76,6 +76,28 @@ describe("RadioButtonsField", () => {
     });
   });
 
+  describe("orientation", () => {
+    it("sets horizontal orientation when specified", () => {
+      render(
+        <RadioButtonsField
+          value="red"
+          options={STRING_OPTIONS}
+          orientation="horizontal"
+        />,
+      );
+
+      const radioGroup = screen.getByRole("radiogroup");
+      expect(radioGroup.getAttribute("data-orientation")).toBe("horizontal");
+    });
+
+    it("defaults to vertical orientation", () => {
+      render(<RadioButtonsField value="red" options={STRING_OPTIONS} />);
+
+      const radioGroup = screen.getByRole("radiogroup");
+      expect(radioGroup.getAttribute("data-orientation")).toBe("vertical");
+    });
+  });
+
   describe("object values", () => {
     it("works with non-primitive option values", () => {
       const options = [

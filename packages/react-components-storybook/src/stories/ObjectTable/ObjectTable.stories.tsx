@@ -15,12 +15,12 @@
  */
 
 import type { DerivedProperty, Osdk } from "@osdk/api";
-import { ObjectTable } from "@osdk/react-components/experimental";
+import { ObjectTable } from "@osdk/react-components/experimental/object-table";
 import type {
   CellEditInfo,
   ColumnDefinition,
   ObjectTableProps,
-} from "@osdk/react-components/experimental";
+} from "@osdk/react-components/experimental/object-table";
 import { useOsdkClient } from "@osdk/react/experimental";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useCallback, useState } from "react";

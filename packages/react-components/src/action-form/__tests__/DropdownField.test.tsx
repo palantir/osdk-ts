@@ -31,7 +31,9 @@ describe("DropdownField", () => {
     });
 
     it("renders a combobox input when isSearchable is true", () => {
-      render(<DropdownField value={null} items={STRING_ITEMS} isSearchable />);
+      render(
+        <DropdownField value={null} items={STRING_ITEMS} isSearchable={true} />,
+      );
 
       expect(screen.getByRole("combobox")).toBeDefined();
     });
@@ -86,7 +88,7 @@ describe("DropdownField", () => {
         <DropdownField<string, true>
           value={["Alice"]}
           items={STRING_ITEMS}
-          isMultiple
+          isMultiple={true}
         />,
       );
 
@@ -96,14 +98,61 @@ describe("DropdownField", () => {
   });
 
   describe("searchable (Combobox variant)", () => {
-    it("renders combobox with search input", async () => {
-      render(<DropdownField value={null} items={STRING_ITEMS} isSearchable />);
+    it("renders a trigger button when isSearchable is true", () => {
+      render(
+        <DropdownField value={null} items={STRING_ITEMS} isSearchable={true} />,
+      );
 
-      const input = screen.getByRole("combobox");
-      expect(input).toBeDefined();
+      const trigger = screen.getByRole("combobox");
+      expect(trigger).toBeDefined();
+    });
 
-      fireEvent.focus(input);
-      fireEvent.keyDown(input, { key: "ArrowDown" });
+    it("displays selected value in the searchable trigger", () => {
+      render(
+        <DropdownField
+          value="Alice"
+          items={STRING_ITEMS}
+          isSearchable={true}
+        />,
+      );
+
+      const trigger = screen.getByRole("combobox");
+      expect(trigger.textContent).toContain("Alice");
+    });
+
+    it("shows placeholder when no value is selected", () => {
+      render(
+        <DropdownField
+          value={null}
+          items={STRING_ITEMS}
+          isSearchable={true}
+          placeholder="Pick one…"
+        />,
+      );
+
+      expect(screen.getByText("Pick one…")).toBeDefined();
+    });
+
+    it("hides placeholder when a value is selected", () => {
+      render(
+        <DropdownField
+          value="Alice"
+          items={STRING_ITEMS}
+          isSearchable={true}
+          placeholder="Pick one…"
+        />,
+      );
+
+      expect(screen.queryByText("Pick one…")).toBeNull();
+    });
+
+    it("renders items after clicking the trigger", async () => {
+      render(
+        <DropdownField value={null} items={STRING_ITEMS} isSearchable={true} />,
+      );
+
+      const trigger = screen.getByRole("combobox");
+      fireEvent.click(trigger);
 
       await vi.waitFor(() => {
         for (const item of STRING_ITEMS) {
@@ -112,36 +161,47 @@ describe("DropdownField", () => {
       });
     });
 
-    it("shows selected items in multi-select mode", () => {
+    it("shows search input inside popup after opening", async () => {
+      render(
+        <DropdownField value={null} items={STRING_ITEMS} isSearchable={true} />,
+      );
+
+      const trigger = screen.getByRole("combobox");
+      fireEvent.click(trigger);
+
+      await vi.waitFor(() => {
+        expect(screen.getByPlaceholderText("Search…")).toBeDefined();
+      });
+    });
+
+    it("displays selected items in multi-select trigger", () => {
       render(
         <DropdownField<string, true>
           value={["Alice"]}
           items={STRING_ITEMS}
-          isSearchable
-          isMultiple
+          isSearchable={true}
+          isMultiple={true}
         />,
       );
 
-      expect(screen.getByText("Alice")).toBeDefined();
+      const trigger = screen.getByRole("combobox");
+      expect(trigger.textContent).toContain("Alice");
     });
 
-    it("renders searchable multi-select", async () => {
+    it("renders searchable multi-select and selects items", async () => {
       const onChange = vi.fn();
       render(
         <DropdownField<string, true>
           value={[]}
           items={STRING_ITEMS}
           onChange={onChange}
-          isSearchable
-          isMultiple
+          isSearchable={true}
+          isMultiple={true}
         />,
       );
 
-      const input = screen.getByRole("combobox");
-
-      // Open popup and verify all items render
-      fireEvent.focus(input);
-      fireEvent.keyDown(input, { key: "ArrowDown" });
+      const trigger = screen.getByRole("combobox");
+      fireEvent.click(trigger);
 
       await vi.waitFor(() => {
         for (const item of STRING_ITEMS) {
@@ -149,7 +209,6 @@ describe("DropdownField", () => {
         }
       });
 
-      // Select an item and verify onChange fires
       fireEvent.click(screen.getByRole("option", { name: "Alice" }));
 
       await vi.waitFor(() => {
@@ -159,47 +218,113 @@ describe("DropdownField", () => {
 
     it("shows 'No results' when search matches nothing", async () => {
       render(
-        <DropdownField value={null} items={STRING_ITEMS} isSearchable />,
+        <DropdownField value={null} items={STRING_ITEMS} isSearchable={true} />,
       );
 
-      const input = screen.getByRole("combobox");
-      fireEvent.focus(input);
-      fireEvent.change(input, { target: { value: "zzz" } });
+      const trigger = screen.getByRole("combobox");
+      fireEvent.click(trigger);
+
+      await vi.waitFor(() => {
+        expect(screen.getByPlaceholderText("Search…")).toBeDefined();
+      });
+
+      const searchInput = screen.getByPlaceholderText("Search…");
+      fireEvent.change(searchInput, { target: { value: "zzz" } });
 
       await vi.waitFor(() => {
         expect(screen.getByText("No results")).toBeDefined();
       });
     });
-  });
 
-  describe("placeholder", () => {
-    it("falls back to 'Search…' in combobox multi-select when no placeholder is provided", () => {
-      render(
-        <DropdownField<string, true>
-          value={[]}
-          items={STRING_ITEMS}
-          isSearchable
-          isMultiple
-        />,
-      );
-
-      const input = screen.getByRole("combobox");
-      expect(input.getAttribute("placeholder")).toBe("Search…");
-    });
-
-    it("hides placeholder in combobox multi-select when items are selected", () => {
+    it("marks selected items with aria-selected in multi-select", async () => {
       render(
         <DropdownField<string, true>
           value={["Alice"]}
           items={STRING_ITEMS}
-          isSearchable
-          isMultiple
-          placeholder="Pick names"
+          isSearchable={true}
+          isMultiple={true}
         />,
       );
 
-      const input = screen.getByRole("combobox");
-      expect(input.getAttribute("placeholder")).toBe("");
+      const trigger = screen.getByRole("combobox");
+      fireEvent.click(trigger);
+
+      await vi.waitFor(() => {
+        const alice = screen.getByRole("option", { name: /Alice/ });
+        expect(alice.getAttribute("aria-selected")).toBe("true");
+
+        const bob = screen.getByRole("option", { name: /Bob/ });
+        expect(bob.getAttribute("aria-selected")).toBe("false");
+      });
+    });
+  });
+
+  describe("clear button", () => {
+    it("shows clear button in select when a value is selected", () => {
+      render(<DropdownField value="Alice" items={STRING_ITEMS} />);
+
+      expect(screen.getByLabelText("Clear")).toBeDefined();
+    });
+
+    it("does not show clear button in select when no value is selected", () => {
+      render(<DropdownField value={null} items={STRING_ITEMS} />);
+
+      expect(screen.queryByLabelText("Clear")).toBeNull();
+    });
+
+    it("calls onChange with null when clear button is clicked in single select", () => {
+      const onChange = vi.fn();
+      render(
+        <DropdownField
+          value="Alice"
+          items={STRING_ITEMS}
+          onChange={onChange}
+        />,
+      );
+
+      fireEvent.click(screen.getByLabelText("Clear"));
+
+      expect(onChange).toHaveBeenCalledWith(null);
+    });
+
+    it("calls onChange with empty array when clear button is clicked in multi select", () => {
+      const onChange = vi.fn();
+      render(
+        <DropdownField<string, true>
+          value={["Alice"]}
+          items={STRING_ITEMS}
+          onChange={onChange}
+          isMultiple={true}
+        />,
+      );
+
+      fireEvent.click(screen.getByLabelText("Clear"));
+
+      expect(onChange).toHaveBeenCalledWith([]);
+    });
+
+    it("shows clear button in searchable combobox when a value is selected", () => {
+      render(
+        <DropdownField
+          value="Alice"
+          items={STRING_ITEMS}
+          isSearchable={true}
+        />,
+      );
+
+      expect(screen.getByLabelText("Clear")).toBeDefined();
+    });
+
+    it("does not show clear button in searchable combobox when no value is selected", () => {
+      render(
+        <DropdownField
+          value={null}
+          items={STRING_ITEMS}
+          isSearchable={true}
+        />,
+      );
+
+      expect(screen.queryByLabelText("Clear")).toBeNull();
     });
   });
 });

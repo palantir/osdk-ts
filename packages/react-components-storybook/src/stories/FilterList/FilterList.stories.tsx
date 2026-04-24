@@ -15,12 +15,14 @@
  */
 
 import type { WhereClause } from "@osdk/api";
-import { FilterList, ObjectTable } from "@osdk/react-components/experimental";
+import { useOsdkClient } from "@osdk/react";
 import type {
   FilterDefinitionUnion,
   FilterListProps,
   FilterState,
-} from "@osdk/react-components/experimental";
+} from "@osdk/react-components/experimental/filter-list";
+import { FilterList } from "@osdk/react-components/experimental/filter-list";
+import { ObjectTable } from "@osdk/react-components/experimental/object-table";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useCallback, useMemo, useState } from "react";
 import { useArgs } from "storybook/preview-api";
@@ -1105,6 +1107,76 @@ export const CombinedWithObjectTable: Story = {
     },
   },
   render: (args) => <CombinedWithObjectTableStory {...args} />,
+};
+
+function CombinedWithFilteredObjectSetStory(
+  args: Partial<EmployeeFilterListProps>,
+) {
+  const client = useOsdkClient();
+  const employeeObjectSet = useMemo(
+    () => client(Employee).where({ department: "Marketing" }),
+    [client],
+  );
+  const [filterClause, setFilterClause] = useState<
+    WhereClause<Employee> | undefined
+  >(undefined);
+
+  return (
+    <div style={COMBINED_LAYOUT_STYLE}>
+      <div style={SIDEBAR_FIXED_STYLE}>
+        <FilterList
+          objectType={Employee}
+          objectSet={employeeObjectSet}
+          filterDefinitions={sharedFilterDefinitions}
+          filterClause={filterClause}
+          onFilterClauseChanged={setFilterClause}
+          {...args}
+        />
+      </div>
+      <div style={FLEX_FILL_STYLE}>
+        <ObjectTable
+          objectType={Employee}
+          objectSet={employeeObjectSet}
+          filter={filterClause}
+        />
+      </div>
+    </div>
+  );
+}
+
+export const CombinedWithFilteredObjectSet: Story = {
+  args: {
+    title: "Marketing Employees",
+    showResetButton: true,
+    showActiveFilterCount: true,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Demonstrates using a pre-filtered objectSet to scope both FilterList aggregations "
+          + "and ObjectTable data to a subset of employees.",
+      },
+      source: {
+        code: `const client = useOsdkClient();
+const employeeObjectSet = client(Employee).where({ department: "Marketing" });
+
+<FilterList
+  objectType={Employee}
+  objectSet={employeeObjectSet}
+  filterDefinitions={filterDefinitions}
+  filterClause={filterClause}
+  onFilterClauseChanged={setFilterClause}
+/>
+<ObjectTable
+  objectType={Employee}
+  objectSet={employeeObjectSet}
+  filter={filterClause}
+/>`,
+      },
+    },
+  },
+  render: (args) => <CombinedWithFilteredObjectSetStory {...args} />,
 };
 
 function WithRemovableFiltersStory(args: Partial<EmployeeFilterListProps>) {

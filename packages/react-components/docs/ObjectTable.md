@@ -25,11 +25,11 @@ Before using ObjectTable, make sure you have completed the library setup describ
 ## Import
 
 ```typescript
-import { ObjectTable } from "@osdk/react-components/experimental";
+import { ObjectTable } from "@osdk/react-components/experimental/object-table";
 import type {
   ColumnDefinition,
   EditFieldConfig,
-} from "@osdk/react-components/experimental";
+} from "@osdk/react-components/experimental/object-table";
 ```
 
 ## Basic Usage
@@ -39,7 +39,7 @@ import type {
 The simplest way to use ObjectTable is with just an object type:
 
 ```typescript
-import { ObjectTable } from "@osdk/react-components/experimental";
+import { ObjectTable } from "@osdk/react-components/experimental/object-table";
 import { Office } from "@YourApp/sdk";
 
 function OfficesPage() {
@@ -275,7 +275,7 @@ Displays header and cell with the provided custom renderers.
 import {
   type ColumnDefinition,
   ObjectTable,
-} from "@osdk/react-components/experimental";
+} from "@osdk/react-components/experimental/object-table";
 import { Employee } from "@YourApp/sdk";
 
 const columnDefinitions: Array<ColumnDefinition<typeof Employee>> = [
@@ -309,7 +309,7 @@ function EmployeesTable() {
 ### Example 2: Table with Multiple Selection
 
 ```typescript
-import { ObjectTable } from "@osdk/react-components/experimental";
+import { ObjectTable } from "@osdk/react-components/experimental/object-table";
 import { Employee } from "@YourApp/sdk";
 
 function EmployeesTable() {
@@ -325,7 +325,7 @@ function EmployeesTable() {
 ### Example 3: Table with Default Sorting
 
 ```typescript
-import { ObjectTable } from "@osdk/react-components/experimental";
+import { ObjectTable } from "@osdk/react-components/experimental/object-table";
 import { Employee } from "@YourApp/sdk";
 
 function EmployeesTable() {
@@ -347,7 +347,7 @@ function EmployeesTable() {
 import {
   type ColumnDefinition,
   ObjectTable,
-} from "@osdk/react-components/experimental";
+} from "@osdk/react-components/experimental/object-table";
 import { Employee } from "@YourApp/sdk";
 
 const columnDefinitions: Array<ColumnDefinition<typeof Employee>> = [
@@ -384,7 +384,7 @@ function EmployeesTable() {
 import {
   type ColumnDefinition,
   ObjectTable,
-} from "@osdk/react-components/experimental";
+} from "@osdk/react-components/experimental/object-table";
 import { Employee } from "@YourApp/sdk";
 
 const columnDefinitions: Array<ColumnDefinition<typeof Employee>> = [
@@ -431,7 +431,7 @@ const columnDefinitions: Array<ColumnDefinition<typeof Employee>> = [
 ### Example 7: Context Menu on Cell Right-Click
 
 ```typescript
-import { ObjectTable } from "@osdk/react-components/experimental";
+import { ObjectTable } from "@osdk/react-components/experimental/object-table";
 import { Employee } from "@YourApp/sdk";
 
 function EmployeesTable() {
@@ -468,7 +468,7 @@ function EmployeesTable() {
 ### Example 8: Row Click Handler
 
 ```typescript
-import { ObjectTable } from "@osdk/react-components/experimental";
+import { ObjectTable } from "@osdk/react-components/experimental/object-table";
 import { Employee } from "@YourApp/sdk";
 import { useRouter } from "next/router";
 
@@ -497,7 +497,7 @@ import { DerivedProperty } from "@osdk/client";
 import {
   type ColumnDefinition,
   ObjectTable,
-} from "@osdk/react-components/experimental";
+} from "@osdk/react-components/experimental/object-table";
 import { Employee } from "@YourApp/sdk";
 
 type RDPs = {
@@ -541,7 +541,7 @@ function EmployeesWithManagerTable() {
 ### Example 10: Controlled Sorting
 
 ```typescript
-import { ObjectTable } from "@osdk/react-components/experimental";
+import { ObjectTable } from "@osdk/react-components/experimental/object-table";
 import { Employee } from "@YourApp/sdk";
 import { useState } from "react";
 
@@ -568,7 +568,7 @@ function EmployeesTable() {
 ### Example 11: Controlled Row Selection
 
 ```typescript
-import { ObjectTable } from "@osdk/react-components/experimental";
+import { ObjectTable } from "@osdk/react-components/experimental/object-table";
 import { Employee } from "@YourApp/sdk";
 import { useState } from "react";
 
@@ -624,7 +624,7 @@ In a custom column type, you can render anything in the column by passing in ren
 import {
   type ColumnDefinition,
   ObjectTable,
-} from "@osdk/react-components/experimental";
+} from "@osdk/react-components/experimental/object-table";
 import { Employee } from "@YourApp/sdk";
 
 const columnDefinitions: Array<ColumnDefinition<typeof Employee>> = [
@@ -665,7 +665,7 @@ import {
   type CellEditInfo,
   type ColumnDefinition,
   ObjectTable,
-} from "@osdk/react-components/experimental";
+} from "@osdk/react-components/experimental/object-table";
 import { Employee, updateMultipleEmployees } from "@YourApp/sdk";
 
 const columnDefinitions: Array<ColumnDefinition<typeof Employee>> = [
@@ -806,7 +806,7 @@ import {
   ColumnConfigDialog,
   type ColumnDefinition,
   ObjectTable,
-} from "@osdk/react-components/experimental";
+} from "@osdk/react-components/experimental/object-table";
 import { Employee } from "@YourApp/sdk";
 import { useCallback, useMemo, useState } from "react";
 
@@ -934,7 +934,7 @@ Display values computed by OSDK functions (queries) alongside regular property c
 import {
   type ColumnDefinition,
   ObjectTable,
-} from "@osdk/react-components/experimental";
+} from "@osdk/react-components/experimental/object-table";
 import { Employee, getEmployeeMetrics } from "@YourApp/sdk";
 
 // Define a type map for your function columns
@@ -1125,7 +1125,7 @@ Use TypeScript generics to ensure type safety:
 import {
   type ColumnDefinition,
   ObjectTable,
-} from "@osdk/react-components/experimental";
+} from "@osdk/react-components/experimental/object-table";
 import { Employee } from "@YourApp/sdk";
 
 type RDPs = {

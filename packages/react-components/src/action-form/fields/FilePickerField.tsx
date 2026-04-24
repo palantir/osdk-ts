@@ -103,6 +103,10 @@ export const FilePickerField: React.FC<FilePickerProps> = memo(
         onKeyDown={handleKeyDown}
         aria-invalid={error != null || undefined}
       >
+        {
+          /* display: none removes the input from the a11y tree entirely,
+            avoiding nested-interactive. Programmatic .click() still works. */
+        }
         <input
           ref={inputRef}
           type="file"
@@ -110,7 +114,6 @@ export const FilePickerField: React.FC<FilePickerProps> = memo(
           multiple={isMulti}
           accept={acceptString}
           onChange={handleInputChange}
-          aria-hidden="true"
           tabIndex={-1}
         />
         <span
