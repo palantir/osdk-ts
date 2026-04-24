@@ -419,6 +419,10 @@ websocket subscriptions for link-traversal queries. Queries using `pivotTo` will
 still fetch data normally but won't receive real-time updates.
 :::
 
+:::tip Shapes
+For type-safe nullability handling and automatic related data loading, see [Shapes](./shapes.md).
+:::
+
 ---
 
 ## useOsdkObject
@@ -482,6 +486,10 @@ function TodoLoader({ todoId }: { todoId: string }) {
 - `isLoading` - True while fetching from server
 - `isOptimistic` - True if object has optimistic updates applied
 - `error` - Error object if fetch failed
+
+:::tip Shapes
+For type-safe nullability handling and automatic related data loading, see [Shapes](./shapes.md).
+:::
 
 ---
 
@@ -671,6 +679,10 @@ function TodoList() {
 ---
 
 ## Combining Multiple Hooks
+
+:::tip Shapes
+Shapes can replace this multi-hook pattern with a single hook call that loads the base object and all related data in parallel. See [Shapes](./shapes.md).
+:::
 
 A common pattern is using multiple hooks together:
 

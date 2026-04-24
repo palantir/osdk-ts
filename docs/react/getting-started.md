@@ -372,6 +372,7 @@ function Dashboard() {
 ## Next Steps
 
 - [Querying Data](/react/querying-data) - useOsdkObjects, useOsdkObject, useLinks, pagination, real-time updates
+- [Shapes](/react/shapes) - Type-safe nullability, derived links, reusable data projections
 - [Actions](/react/actions) - useOsdkAction, validation, optimistic updates, debouncing
 - [Advanced Queries](/react/advanced-queries) - useObjectSet, derived properties, aggregations
 - [Cache Management](/react/cache-management) - Cache behavior and manual invalidation
