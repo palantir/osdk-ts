@@ -4,6 +4,8 @@ Pre-built, Ontology-aware React components. Pass in OSDK entities and they handl
 
 ## Installing
 
+**Default: `pnpm add @osdk/react-components@latest @osdk/react@latest`** — use prereleases only if you specifically need an unreleased feature. Everything below is for when you are NOT on the latest stable.
+
 Requires `@osdk/react` AND `@osdk/client` AND `@osdk/api` together. Versions must line up tighter than the declared peer ranges. Both `@osdk/react-components` and `@osdk/react` import from the unstable `@osdk/client` surface, which moves between releases without deprecation.
 
 - **Stable `@osdk/react-components`** → latest stable `@osdk/react`, `@osdk/client`, and `@osdk/api`.

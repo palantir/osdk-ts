@@ -2,6 +2,8 @@
 
 ## Installing
 
+**Default: `pnpm add @osdk/react@latest`** — use a prerelease only if you specifically need an unreleased feature. Everything below is for when you are NOT on the latest stable.
+
 Must install `@osdk/react` AND `@osdk/client` AND `@osdk/api` together, and versions must line up tighter than the declared peer ranges. `@osdk/react` imports unstable APIs from `@osdk/client/unstable-do-not-use` that move between releases without deprecation.
 
 - **Stable `@osdk/react`** (e.g. `0.14.x`) → latest stable `@osdk/client` and `@osdk/api` (`2.x`).
