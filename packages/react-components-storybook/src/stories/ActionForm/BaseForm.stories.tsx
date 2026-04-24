@@ -791,33 +791,33 @@ function ObjectSetFieldStory(): React.ReactElement {
   );
 }
 
-const searchableDropdownFieldDefinitions: ReadonlyArray<
+const singleSelectDropdownFieldDefinitions: ReadonlyArray<
   RendererFieldDefinition
 > = [
   {
     fieldKey: "department",
     fieldComponent: "DROPDOWN",
-    label: "Department",
+    label: "Department (Select)",
     fieldComponentProps: {
       items: DEPARTMENT_ITEMS,
-      isSearchable: true,
-      placeholder: "Search departments...",
+      placeholder: "Select department...",
     },
   },
   {
-    fieldKey: "name",
-    fieldComponent: "TEXT_INPUT",
-    label: "Name",
-    isRequired: true,
+    fieldKey: "team",
+    fieldComponent: "DROPDOWN",
+    label: "Team (Searchable)",
     fieldComponentProps: {
-      placeholder: "Enter your name",
+      items: DEPARTMENT_ITEMS,
+      isSearchable: true,
+      placeholder: "Search teams...",
     },
   },
 ];
 
-export const WithSearchableDropdown: Story = {
+export const WithDropdown: Story = {
   args: {
-    fieldDefinitions: searchableDropdownFieldDefinitions,
+    fieldDefinitions: singleSelectDropdownFieldDefinitions,
     onSubmit: handleSubmit,
   },
   parameters: {
@@ -827,17 +827,25 @@ export const WithSearchableDropdown: Story = {
   {
     fieldKey: "department",
     fieldComponent: "DROPDOWN",
-    label: "Department",
+    label: "Department (Select)",
+    fieldComponentProps: {
+      items: ["Engineering", "Marketing", "Sales", "Finance", "Operations", "Legal"],
+      placeholder: "Select department...",
+    },
+  },
+  {
+    fieldKey: "team",
+    fieldComponent: "DROPDOWN",
+    label: "Team (Searchable)",
     fieldComponentProps: {
       items: ["Engineering", "Marketing", "Sales", "Finance", "Operations", "Legal"],
       isSearchable: true,
-      placeholder: "Search departments...",
+      placeholder: "Search teams...",
     },
   },
 ];
 
-// isSearchable renders a Combobox with type-ahead filtering
-// instead of a plain Select dropdown.
+// Side-by-side comparison: plain Select vs searchable Combobox.
 <BaseForm
   fieldDefinitions={fieldDefinitions}
   onSubmit={(formState) => console.log("Submitted:", formState)}
@@ -851,23 +859,24 @@ const multiSelectDropdownFieldDefinitions: ReadonlyArray<
   RendererFieldDefinition
 > = [
   {
-    fieldKey: "title",
-    fieldComponent: "TEXT_INPUT",
-    label: "Title",
-    isRequired: true,
+    fieldKey: "categories",
+    fieldComponent: "DROPDOWN",
+    label: "Categories (Select)",
     fieldComponentProps: {
-      placeholder: "Enter a title",
+      items: TAG_ITEMS,
+      isMultiple: true,
+      placeholder: "Select categories...",
     },
   },
   {
     fieldKey: "tags",
     fieldComponent: "DROPDOWN",
-    label: "Tags",
+    label: "Tags (Searchable)",
     fieldComponentProps: {
       items: TAG_ITEMS,
       isMultiple: true,
       isSearchable: true,
-      placeholder: "Select tags...",
+      placeholder: "Search tags...",
     },
   },
 ];
@@ -882,27 +891,29 @@ export const WithMultiSelectDropdown: Story = {
       source: {
         code: `const fieldDefinitions = [
   {
-    fieldKey: "title",
-    fieldComponent: "TEXT_INPUT",
-    label: "Title",
-    isRequired: true,
-    fieldComponentProps: { placeholder: "Enter a title" },
+    fieldKey: "categories",
+    fieldComponent: "DROPDOWN",
+    label: "Categories (Select)",
+    fieldComponentProps: {
+      items: ["Urgent", "Review", "Follow-up", "Archived", "Pinned"],
+      isMultiple: true,
+      placeholder: "Select categories...",
+    },
   },
   {
     fieldKey: "tags",
     fieldComponent: "DROPDOWN",
-    label: "Tags",
+    label: "Tags (Searchable)",
     fieldComponentProps: {
       items: ["Urgent", "Review", "Follow-up", "Archived", "Pinned"],
       isMultiple: true,
       isSearchable: true,
-      placeholder: "Select tags...",
+      placeholder: "Search tags...",
     },
   },
 ];
 
-// isMultiple + isSearchable renders a multi-select Combobox
-// where users can search and select multiple values.
+// Side-by-side comparison: plain multi-Select vs searchable multi-Combobox.
 <BaseForm
   fieldDefinitions={fieldDefinitions}
   onSubmit={(formState) => console.log("Submitted:", formState)}
