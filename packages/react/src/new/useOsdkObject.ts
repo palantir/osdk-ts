@@ -20,10 +20,60 @@ import type {
   PrimaryKeyType,
   PropertyKeys,
 } from "@osdk/api";
-import type { ObserveObjectCallbackArgs } from "@osdk/client/unstable-do-not-use";
+import type {
+  ObservableClient,
+  ObserveObjectCallbackArgs,
+  Observer,
+  Unsubscribable,
+} from "@osdk/client/unstable-do-not-use";
 import React from "react";
-import { devToolsMetadata, makeExternalStore } from "./makeExternalStore.js";
+import type { Snapshot } from "./makeExternalStore.js";
+import {
+  devToolsMetadata,
+  extractPayloadError,
+  makeExternalStore,
+} from "./makeExternalStore.js";
+import {
+  getClientId,
+  getSuspenseExternalStore,
+  isSuspenseOption,
+  throwIfSuspenseNeeded,
+} from "./makeSuspenseExternalStore.js";
 import { OsdkContext2 } from "./OsdkContext2.js";
+import { parseObjectArgs } from "./parseObjectArgs.js";
+
+/** @internal */
+export function _createObjectObservation<
+  Q extends ObjectOrInterfaceDefinition,
+>(
+  observableClient: ObservableClient,
+  typeOrApiName: Q["apiName"] | Q,
+  primaryKey: PrimaryKeyType<Q>,
+  options: {
+    mode?: "offline" | "force";
+    select?: readonly PropertyKeys<Q>[];
+    $loadPropertySecurityMetadata?: boolean;
+  },
+): (
+  observer: Observer<ObserveObjectCallbackArgs<Q> | undefined>,
+) => Unsubscribable {
+  return (observer) =>
+    observableClient.observeObject(
+      typeOrApiName,
+      primaryKey,
+      {
+        mode: options.mode,
+        ...(options.select ? { select: options.select } : {}),
+        ...(options.$loadPropertySecurityMetadata
+          ? {
+            $loadPropertySecurityMetadata:
+              options.$loadPropertySecurityMetadata,
+          }
+          : {}),
+      },
+      observer,
+    );
+}
 
 export interface UseOsdkObjectResult<
   Q extends ObjectOrInterfaceDefinition,
@@ -40,6 +90,39 @@ export interface UseOsdkObjectResult<
   forceUpdate: () => void;
 }
 
+export interface UseOsdkObjectSuspenseResult<
+  Q extends ObjectOrInterfaceDefinition,
+> {
+  object: Osdk.Instance<Q>;
+  isOptimistic: boolean;
+}
+
+/**
+ * Loads an object or interface instance with Suspense support.
+ *
+ * @param obj an existing `Osdk.Instance` object to get metadata for.
+ * @param options Options with `suspense: true` to enable Suspense mode
+ */
+export function useOsdkObject<
+  Q extends ObjectOrInterfaceDefinition,
+>(
+  obj: Osdk.Instance<Q>,
+  options: { suspense: true },
+): UseOsdkObjectSuspenseResult<Q>;
+/**
+ * Loads an object or interface instance by type and primary key with Suspense support.
+ *
+ * @param type The object type or interface definition
+ * @param primaryKey The primary key of the object
+ * @param options Options including $select and `suspense: true`
+ */
+export function useOsdkObject<
+  Q extends ObjectOrInterfaceDefinition,
+>(
+  type: Q,
+  primaryKey: PrimaryKeyType<Q>,
+  options: { $select?: readonly PropertyKeys<Q>[]; suspense: true },
+): UseOsdkObjectSuspenseResult<Q>;
 /**
  * @param obj an existing `Osdk.Instance` object to get metadata for.
  * @param enabled Enable or disable the query (defaults to true)
@@ -90,6 +173,7 @@ export function useOsdkObject<
 >(
   ...args:
     | [obj: Osdk.Instance<Q>, enabled?: boolean]
+    | [obj: Osdk.Instance<Q>, options: { suspense: true }]
     | [type: Q, primaryKey: PrimaryKeyType<Q>, enabled?: boolean]
     | [
       type: Q,
@@ -100,101 +184,129 @@ export function useOsdkObject<
         $loadPropertySecurityMetadata?: boolean;
       },
     ]
-): UseOsdkObjectResult<Q> {
+    | [
+      type: Q,
+      primaryKey: PrimaryKeyType<Q>,
+      options: { $select?: readonly PropertyKeys<Q>[]; suspense: true },
+    ]
+): UseOsdkObjectResult<Q> | UseOsdkObjectSuspenseResult<Q> {
   const { observableClient } = React.useContext(OsdkContext2);
 
-  // Check if first arg is an instance to discriminate signatures
-  // TypeScript cannot narrow rest parameter unions with optional parameters,
-  // so we must use type assertions after runtime discrimination
+  const { typeOrApiName, primaryKey, mode, selectArg, apiNameString } =
+    parseObjectArgs<Q>(args);
+
   const isInstanceSignature = "$objectType" in args[0];
 
-  // Extract options object if provided (3rd arg is an object with $select or enabled)
+  const isSuspense = isInstanceSignature
+    ? isSuspenseOption(args[1])
+    : isSuspenseOption(args[2]);
+
   const optionsArg = !isInstanceSignature
       && args[2] != null
       && typeof args[2] === "object"
     ? args[2] as {
-      $select?: readonly string[];
       enabled?: boolean;
       $loadPropertySecurityMetadata?: boolean;
     }
     : undefined;
-
-  // Extract enabled flag - 2nd param for instance signature, 3rd for type signature
-  const enabled = isInstanceSignature
+  const enabled = isSuspense
+    ? true
+    : isInstanceSignature
     ? (typeof args[1] === "boolean" ? args[1] : true)
     : optionsArg
     ? (optionsArg.enabled ?? true)
     : (typeof args[2] === "boolean" ? args[2] : true);
 
-  const selectArg = optionsArg?.$select;
   const loadPropertySecurityMetadata = optionsArg
     ?.$loadPropertySecurityMetadata;
-
-  const mode = isInstanceSignature ? "offline" : undefined;
-
-  const typeOrApiName = isInstanceSignature
-    ? (args[0] as Osdk.Instance<Q>).$objectType
-    : (args[0] as Q);
-
-  const primaryKey = isInstanceSignature
-    ? (args[0] as Osdk.Instance<Q>).$primaryKey
-    : (args[1] as PrimaryKeyType<Q>);
-
-  const apiNameString = typeof typeOrApiName === "string"
-    ? typeOrApiName
-    : typeOrApiName.apiName;
 
   const stableSelect = React.useMemo(
     () => selectArg,
     [JSON.stringify(selectArg)],
   );
 
-  const { subscribe, getSnapShot } = React.useMemo(
-    () => {
-      if (!enabled) {
-        return makeExternalStore<ObserveObjectCallbackArgs<Q>>(
-          () => ({ unsubscribe: () => {} }),
-          devToolsMetadata({
-            hookType: "useOsdkObject",
-            objectType: apiNameString,
-            primaryKey: String(primaryKey),
-          }),
-        );
-      }
-      return makeExternalStore<ObserveObjectCallbackArgs<Q>>(
-        (observer) =>
-          observableClient.observeObject(
-            typeOrApiName,
-            primaryKey,
-            {
-              mode,
-              ...(stableSelect ? { select: stableSelect } : {}),
-              ...(loadPropertySecurityMetadata
-                ? {
-                  $loadPropertySecurityMetadata: loadPropertySecurityMetadata,
-                }
-                : {}),
-            },
-            observer,
-          ),
-        devToolsMetadata({
-          hookType: "useOsdkObject",
-          objectType: apiNameString,
-          primaryKey: String(primaryKey),
-        }),
-      );
-    },
+  const observationFactory = React.useMemo(
+    () =>
+      _createObjectObservation<Q>(
+        observableClient,
+        typeOrApiName,
+        primaryKey,
+        {
+          mode,
+          select: stableSelect,
+          $loadPropertySecurityMetadata: loadPropertySecurityMetadata,
+        },
+      ),
     [
-      enabled,
       observableClient,
       typeOrApiName,
-      apiNameString,
       primaryKey,
       mode,
       stableSelect,
       loadPropertySecurityMetadata,
     ],
   );
+
+  const baseStore = React.useMemo(
+    () => {
+      const metadata = devToolsMetadata({
+        hookType: "useOsdkObject",
+        objectType: apiNameString,
+        primaryKey: String(primaryKey),
+      });
+      if (isSuspense || !enabled) {
+        return makeExternalStore<ObserveObjectCallbackArgs<Q>>(
+          () => ({ unsubscribe: () => {} }),
+          metadata,
+        );
+      }
+      return makeExternalStore<ObserveObjectCallbackArgs<Q>>(
+        observationFactory,
+        metadata,
+      );
+    },
+    [
+      isSuspense,
+      enabled,
+      observationFactory,
+      apiNameString,
+      primaryKey,
+    ],
+  );
+
+  const cacheKey = isSuspense
+    ? JSON.stringify([
+      getClientId(observableClient),
+      "obj",
+      apiNameString,
+      primaryKey,
+      mode ?? null,
+      stableSelect ?? null,
+      loadPropertySecurityMetadata ?? null,
+    ])
+    : null;
+
+  const hasObjectData = (
+    p: Snapshot<ObserveObjectCallbackArgs<Q>>,
+  ): boolean => p?.object != null;
+
+  const suspenseStore = React.useMemo(() => {
+    if (cacheKey === null) {
+      return undefined;
+    }
+    return getSuspenseExternalStore<ObserveObjectCallbackArgs<Q>>(
+      cacheKey,
+      observationFactory,
+      hasObjectData,
+      observableClient.peekObjectData<Q>(typeOrApiName, primaryKey),
+    );
+  }, [cacheKey]);
+
+  let { subscribe, getSnapShot } = baseStore;
+  if (suspenseStore) {
+    throwIfSuspenseNeeded(suspenseStore, hasObjectData);
+    ({ subscribe, getSnapShot } = suspenseStore);
+  }
 
   const payload = React.useSyncExternalStore(subscribe, getSnapShot);
 
@@ -203,11 +315,17 @@ export function useOsdkObject<
   }, []);
 
   return React.useMemo(() => {
-    let error: Error | undefined;
-    if (payload && "error" in payload && payload.error) {
-      error = payload.error;
-    } else if (payload?.status === "error") {
-      error = new Error("Failed to load object");
+    if (isSuspense) {
+      const obj = payload?.object;
+      if (obj == null) {
+        throw new Error(
+          "useOsdkObject: object is undefined after Suspense resolved",
+        );
+      }
+      return {
+        object: obj as Osdk.Instance<Q>,
+        isOptimistic: !!payload?.isOptimistic,
+      };
     }
 
     return {
@@ -217,8 +335,8 @@ export function useOsdkObject<
           || !payload)
         : false,
       isOptimistic: !!payload?.isOptimistic,
-      error,
+      error: extractPayloadError(payload, "Failed to load object"),
       forceUpdate,
     };
-  }, [payload, enabled, forceUpdate]);
+  }, [payload, enabled, forceUpdate, isSuspense]);
 }

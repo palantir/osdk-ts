@@ -33,9 +33,11 @@ export type {
   UseOsdkFunctionsProps,
   UseOsdkFunctionsResult,
 } from "../new/useOsdkFunctions.js";
+export type { UseOsdkObjectSuspenseResult } from "../new/useOsdkObject.js";
 export { useOsdkObject } from "../new/useOsdkObject.js";
 export type {
   UseOsdkListResult,
+  UseOsdkListSuspenseResult,
   UseOsdkObjectsOptions,
 } from "../new/useOsdkObjects.js";
 export { useOsdkObjects } from "../new/useOsdkObjects.js";
