@@ -300,6 +300,7 @@ function EditableCellInner<TData extends RowData, CellValue = unknown>({
       <Tooltip.Root disabled={!hasValidationError}>
         <Tooltip.Trigger
           className={styles.osdkEditableCellTrigger}
+          render={<span className={styles.osdkTooltipTriggerWrapper} />}
         >
           {renderFieldInput()}
         </Tooltip.Trigger>

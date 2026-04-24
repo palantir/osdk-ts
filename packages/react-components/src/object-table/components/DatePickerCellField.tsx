@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { Error } from "@blueprintjs/icons";
 import classNames from "classnames";
 import React, { useCallback, useMemo } from "react";
 import { DatetimePickerField } from "../../action-form/fields/DatetimePickerField.js";
@@ -85,6 +86,11 @@ function DatePickerCellFieldInner({
         onChange={handleChange}
         portalRef={portalRef}
       />
+      {hasValidationError && (
+        <span className={styles.errorIconWrapper}>
+          <Error className={styles.errorIcon} />
+        </span>
+      )}
     </div>
   );
 }

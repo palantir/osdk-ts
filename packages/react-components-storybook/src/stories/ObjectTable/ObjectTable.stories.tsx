@@ -1292,9 +1292,16 @@ export const EditableWithValidation: Story = {
           },
         },
         validateEdit: async (value: unknown) => {
-          if (!value) {
-            return "Start date is required";
+          if (!value || isNaN(Date.parse(value as string))) {
+            return "Please enter a valid date";
           }
+          const date = new Date(value as string);
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+          if (date < today) {
+            return "Date cannot be before today";
+          }
+          return undefined;
         },
       },
     ],
