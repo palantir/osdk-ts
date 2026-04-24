@@ -29,6 +29,7 @@ export { getBulkLinksPage } from "./generated/object-set-service/api/ObjectSetSe
 export { bulkLoadOntologyEntities } from "./generated/ontology-metadata/api/OntologyMetadataService/bulkLoadOntologyEntities.js";
 export { getLinkTypesForObjectTypes } from "./generated/ontology-metadata/api/OntologyMetadataService/getLinkTypesForObjectTypes.js";
 export { loadAllOntologies } from "./generated/ontology-metadata/api/OntologyMetadataService/loadAllOntologies.js";
+export { loadActionTypes } from "./generated/ontology-metadata/api/types/ActionTypesService/loadActionTypes.js";
 
 export * from "./generated/ontology-metadata/api/__components.js";
 

@@ -14,6 +14,20 @@
  * limitations under the License.
  */
 
+export { fetchActionFormMetadata } from "../__unstable/fetchActionFormMetadata.js";
+export type {
+  ActionFormButtonDisplayMetadata,
+  ActionFormButtonIntent,
+  ActionFormContentItem,
+  ActionFormMetadata,
+  ActionFormRichTextComponent,
+  ActionFormRichTextComponent_message,
+  ActionFormRichTextComponent_parameter,
+  ActionFormRichTextComponent_parameterProperty,
+  ActionFormSection,
+  ActionFormSectionDisplayMetadata,
+  ActionFormSectionStyle,
+} from "../__unstable/fetchActionFormMetadata.js";
 export { augment } from "../object/fetchPage.js";
 export { getWireObjectSet, isObjectSet } from "../objectSet/createObjectSet.js";
 
