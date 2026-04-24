@@ -134,6 +134,7 @@ export function createMockObservableClient(
     observeList: vitest.fn(() => ({ unsubscribe: vitest.fn() })),
     peekObjectData: vitest.fn(() => undefined),
     canonicalizeWhereClause: vitest.fn((w: unknown) => w),
+    canonicalizeOptions: vitest.fn((opts: Record<string, unknown>) => opts),
     ...overrides,
   };
 }
