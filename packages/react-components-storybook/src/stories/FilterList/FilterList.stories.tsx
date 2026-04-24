@@ -38,7 +38,7 @@ const departmentFilter: FilterDefinitionUnion<Employee> = {
   label: "Department",
   filterComponent: "LISTOGRAM",
   filterState: { type: "EXACT_MATCH", values: [] },
-} as FilterDefinitionUnion<Employee>;
+};
 
 const teamFilter: FilterDefinitionUnion<Employee> = {
   type: "PROPERTY",
@@ -47,7 +47,7 @@ const teamFilter: FilterDefinitionUnion<Employee> = {
   label: "Team",
   filterComponent: "LISTOGRAM",
   filterState: { type: "EXACT_MATCH", values: [] },
-} as FilterDefinitionUnion<Employee>;
+};
 
 const fullNameFilter: FilterDefinitionUnion<Employee> = {
   type: "PROPERTY",
@@ -56,7 +56,7 @@ const fullNameFilter: FilterDefinitionUnion<Employee> = {
   label: "Full Name",
   filterComponent: "CONTAINS_TEXT",
   filterState: { type: "CONTAINS_TEXT" },
-} as FilterDefinitionUnion<Employee>;
+};
 
 const startDateFilter: FilterDefinitionUnion<Employee> = {
   type: "PROPERTY",
@@ -65,7 +65,7 @@ const startDateFilter: FilterDefinitionUnion<Employee> = {
   label: "Start Date",
   filterComponent: "DATE_RANGE",
   filterState: { type: "DATE_RANGE" },
-} as FilterDefinitionUnion<Employee>;
+};
 
 const employeeNumberFilter: FilterDefinitionUnion<Employee> = {
   type: "PROPERTY",
@@ -74,7 +74,7 @@ const employeeNumberFilter: FilterDefinitionUnion<Employee> = {
   label: "Employee Number",
   filterComponent: "NUMBER_RANGE",
   filterState: { type: "NUMBER_RANGE" },
-} as FilterDefinitionUnion<Employee>;
+};
 
 const locationCityFilter: FilterDefinitionUnion<Employee> = {
   type: "PROPERTY",
@@ -83,7 +83,7 @@ const locationCityFilter: FilterDefinitionUnion<Employee> = {
   label: "Location City",
   filterComponent: "LISTOGRAM",
   filterState: { type: "EXACT_MATCH", values: [] },
-} as FilterDefinitionUnion<Employee>;
+};
 
 const jobTitleMultiSelectFilter: FilterDefinitionUnion<Employee> = {
   type: "PROPERTY",
@@ -92,7 +92,7 @@ const jobTitleMultiSelectFilter: FilterDefinitionUnion<Employee> = {
   label: "Job Title",
   filterComponent: "MULTI_SELECT",
   filterState: { type: "SELECT", selectedValues: [] },
-} as FilterDefinitionUnion<Employee>;
+};
 
 const sharedFilterDefinitions: FilterDefinitionUnion<Employee>[] = [
   departmentFilter,
@@ -658,7 +658,7 @@ export const KeywordSearch: Story = {
           type: "KEYWORD_SEARCH",
           properties: ["fullName", "department", "jobTitle", "locationCity"],
           label: "Search",
-        } as FilterDefinitionUnion<Employee>,
+        },
         departmentFilter,
         locationCityFilter,
       ],
@@ -687,7 +687,7 @@ function WithColorMapStory(args: Partial<EmployeeFilterListProps>) {
         label: "Department (default colors)",
         filterComponent: "LISTOGRAM",
         filterState: { type: "EXACT_MATCH", values: [] },
-      } as FilterDefinitionUnion<Employee>,
+      },
     ],
     [],
   );
@@ -706,7 +706,7 @@ function WithColorMapStory(args: Partial<EmployeeFilterListProps>) {
           Finance: "#3498db",
           Product: "#f39c12",
         },
-      } as FilterDefinitionUnion<Employee>,
+      },
     ],
     [],
   );
@@ -778,7 +778,7 @@ function WithRenderValueStory(args: Partial<EmployeeFilterListProps>) {
         label: "Department (default)",
         filterComponent: "LISTOGRAM",
         filterState: { type: "EXACT_MATCH", values: [] },
-      } as FilterDefinitionUnion<Employee>,
+      },
     ],
     [],
   );
@@ -792,7 +792,7 @@ function WithRenderValueStory(args: Partial<EmployeeFilterListProps>) {
         filterComponent: "LISTOGRAM",
         filterState: { type: "EXACT_MATCH", values: [] },
         renderValue: (value: string) => DEPARTMENT_LABELS[value] ?? value,
-      } as FilterDefinitionUnion<Employee>,
+      },
       {
         type: "PROPERTY",
         id: "team-custom",
@@ -801,7 +801,7 @@ function WithRenderValueStory(args: Partial<EmployeeFilterListProps>) {
         filterComponent: "MULTI_SELECT",
         filterState: { type: "SELECT", selectedValues: [] },
         renderValue: (value: string) => value.toUpperCase(),
-      } as FilterDefinitionUnion<Employee>,
+      },
     ],
     [],
   );
@@ -874,7 +874,7 @@ function WithListogramDisplayModesStory(
         filterComponent: "LISTOGRAM",
         filterState: { type: "EXACT_MATCH", values: [] },
         listogramConfig: { displayMode: "full" },
-      } as FilterDefinitionUnion<Employee>,
+      },
     ],
     [],
   );
@@ -888,7 +888,7 @@ function WithListogramDisplayModesStory(
         filterComponent: "LISTOGRAM",
         filterState: { type: "EXACT_MATCH", values: [] },
         listogramConfig: { displayMode: "count" },
-      } as FilterDefinitionUnion<Employee>,
+      },
     ],
     [],
   );
@@ -902,7 +902,7 @@ function WithListogramDisplayModesStory(
         filterComponent: "LISTOGRAM",
         filterState: { type: "EXACT_MATCH", values: [] },
         listogramConfig: { displayMode: "minimal" },
-      } as FilterDefinitionUnion<Employee>,
+      },
     ],
     [],
   );
@@ -963,7 +963,7 @@ function WithHiddenCountsStory(args: Partial<EmployeeFilterListProps>) {
         label: "Department (counts visible)",
         filterComponent: "LISTOGRAM",
         filterState: { type: "EXACT_MATCH", values: [] },
-      } as FilterDefinitionUnion<Employee>,
+      },
       {
         type: "PROPERTY",
         id: "team-with-count",
@@ -971,7 +971,7 @@ function WithHiddenCountsStory(args: Partial<EmployeeFilterListProps>) {
         label: "Team (counts visible)",
         filterComponent: "MULTI_SELECT",
         filterState: { type: "SELECT", selectedValues: [] },
-      } as FilterDefinitionUnion<Employee>,
+      },
     ],
     [],
   );
@@ -985,7 +985,7 @@ function WithHiddenCountsStory(args: Partial<EmployeeFilterListProps>) {
         filterComponent: "LISTOGRAM",
         filterState: { type: "EXACT_MATCH", values: [] },
         showCount: false,
-      } as FilterDefinitionUnion<Employee>,
+      },
       {
         type: "PROPERTY",
         id: "team-no-count",
@@ -994,7 +994,7 @@ function WithHiddenCountsStory(args: Partial<EmployeeFilterListProps>) {
         filterComponent: "MULTI_SELECT",
         filterState: { type: "SELECT", selectedValues: [] },
         showCount: false,
-      } as FilterDefinitionUnion<Employee>,
+      },
     ],
     [],
   );
@@ -1053,7 +1053,7 @@ function WithCheckboxStory(args: Partial<EmployeeFilterListProps>) {
         label: "Department",
         filterComponent: "LISTOGRAM",
         filterState: { type: "EXACT_MATCH", values: [] },
-      } as FilterDefinitionUnion<Employee>,
+      },
       {
         type: "PROPERTY",
         id: "team-checkbox",
@@ -1061,7 +1061,7 @@ function WithCheckboxStory(args: Partial<EmployeeFilterListProps>) {
         label: "Team",
         filterComponent: "LISTOGRAM",
         filterState: { type: "EXACT_MATCH", values: [] },
-      } as FilterDefinitionUnion<Employee>,
+      },
     ],
     [],
   );
@@ -1312,7 +1312,7 @@ function WithStaticValuesStory(args: Partial<EmployeeFilterListProps>) {
         values: ["Marketing", "Operations", "Finance", "Product"],
         filterState: { type: "EXACT_MATCH", values: [] },
         listogramConfig: { displayMode: "minimal" },
-      } as FilterDefinitionUnion<Employee>,
+      },
       {
         type: "STATIC_VALUES",
         key: "locationCity",
@@ -1320,7 +1320,7 @@ function WithStaticValuesStory(args: Partial<EmployeeFilterListProps>) {
         filterComponent: "SINGLE_SELECT",
         values: ["New York", "San Francisco", "London", "Tokyo"],
         filterState: { type: "SELECT", selectedValues: [] },
-      } as FilterDefinitionUnion<Employee>,
+      },
       {
         type: "STATIC_VALUES",
         key: "team",
@@ -1328,7 +1328,7 @@ function WithStaticValuesStory(args: Partial<EmployeeFilterListProps>) {
         filterComponent: "MULTI_SELECT",
         values: ["Alpha", "Beta", "Gamma", "Delta"],
         filterState: { type: "SELECT", selectedValues: [] },
-      } as FilterDefinitionUnion<Employee>,
+      },
       {
         type: "STATIC_VALUES",
         id: "custom-status",
@@ -1361,7 +1361,7 @@ function WithStaticValuesStory(args: Partial<EmployeeFilterListProps>) {
           }
           return undefined;
         },
-      } as FilterDefinitionUnion<Employee>,
+      },
     ],
     [],
   );
@@ -1567,7 +1567,7 @@ function WithLinkedPropertyFiltersStory(
         linkName: "lead",
         label: "Has Manager",
         filterState: { type: "hasLink", hasLink: false },
-      } as FilterDefinitionUnion<Employee>,
+      },
       {
         type: "LINKED_PROPERTY",
         linkName: "peeps",
@@ -1579,7 +1579,7 @@ function WithLinkedPropertyFiltersStory(
           linkedFilterState: { type: "EXACT_MATCH", values: [] },
         },
         label: "Reports' Department",
-      } as FilterDefinitionUnion<Employee>,
+      },
       {
         type: "STATIC_VALUES",
         key: "managerCity",
@@ -1588,17 +1588,7 @@ function WithLinkedPropertyFiltersStory(
         values: ["New York", "San Francisco", "London", "Tokyo"],
         filterState: { type: "EXACT_MATCH", values: [] },
         listogramConfig: { displayMode: "minimal" },
-        toWhereClause: (state) => {
-          if (state.type !== "EXACT_MATCH" || state.values.length === 0) {
-            return undefined;
-          }
-          return {
-            $or: state.values.map((city) => ({
-              "lead->locationCity": city,
-            })),
-          } as WhereClause<Employee>;
-        },
-      } as FilterDefinitionUnion<Employee>,
+      },
     ],
     [],
   );
