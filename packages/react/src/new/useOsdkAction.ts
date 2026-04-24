@@ -35,6 +35,21 @@ type ApplyActionParams<Q extends ActionDefinition<any>> =
       ObservableClient.ApplyActionOptions[K];
   };
 
+export interface UseOsdkActionCallbacks {
+  /**
+   * Called when the action is successfully executed.
+   * @param data The action edit response
+   */
+  onSuccess?: (data: ActionEditResponse) => void;
+
+  /**
+   * Called when the action fails with an error.
+   * The error is also re-thrown so callers can use try/catch.
+   * @param error The error that occurred
+   */
+  onError?: (error: unknown) => void;
+}
+
 export interface UseOsdkActionResult<Q extends ActionDefinition<any>> {
   applyAction: (
     args: ApplyActionParams<Q> | Array<ApplyActionParams<Q>>,
@@ -67,6 +82,7 @@ export interface UseOsdkActionResult<Q extends ActionDefinition<any>> {
 
 export function useOsdkAction<Q extends ActionDefinition<any>>(
   actionDef: Q,
+  callbacks?: UseOsdkActionCallbacks,
 ): UseOsdkActionResult<Q> {
   const { observableClient, devtoolsEnabled } = React.useContext(OsdkContext2);
   useDevToolsMetadata(devtoolsEnabled, "useOsdkAction", actionDef.apiName);
@@ -78,6 +94,11 @@ export function useOsdkAction<Q extends ActionDefinition<any>>(
     ActionValidationResponse | undefined
   >();
   const abortControllerRef = React.useRef<AbortController | null>(null);
+
+  const onSuccessRef = React.useRef(callbacks?.onSuccess);
+  const onErrorRef = React.useRef(callbacks?.onError);
+  onSuccessRef.current = callbacks?.onSuccess;
+  onErrorRef.current = callbacks?.onError;
 
   const applyAction = React.useCallback(async function applyAction(
     hookArgs: ApplyActionParams<Q> | Array<ApplyActionParams<Q>>,
@@ -112,6 +133,7 @@ export function useOsdkAction<Q extends ActionDefinition<any>>(
           },
         });
         setData(r);
+        onSuccessRef.current?.(r);
         return r;
       } else {
         const { $optimisticUpdate, ...args } = hookArgs;
@@ -120,6 +142,7 @@ export function useOsdkAction<Q extends ActionDefinition<any>>(
           optimisticUpdate: $optimisticUpdate,
         });
         setData(r);
+        onSuccessRef.current?.(r);
         return r;
       }
     } catch (e) {
@@ -130,6 +153,7 @@ export function useOsdkAction<Q extends ActionDefinition<any>>(
       } else {
         setError({ unknown: e });
       }
+      onErrorRef.current?.(e);
       throw e;
     } finally {
       setPending(false);
