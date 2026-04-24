@@ -70,6 +70,7 @@ import type { ObserveLinks } from "../ObservableClient/ObserveLink.js";
 import type { AggregationPayloadBase } from "./aggregation/AggregationQuery.js";
 import type { Canonical } from "./Canonical.js";
 import type { ObserveObjectSetOptions } from "./objectset/ObjectSetQueryOptions.js";
+import type { Rdp } from "./RdpCanonicalizer.js";
 import type { Store } from "./Store.js";
 import { UnsubscribableWrapper } from "./UnsubscribableWrapper.js";
 
@@ -333,9 +334,13 @@ export class ObservableClientImpl implements ObservableClient {
     const result = { ...options };
 
     result.where = store.whereCanonicalizer.canonicalize(result.where);
-    result.withProperties = store.genericCanonicalizer.canonicalize(
-      result.withProperties,
-    );
+    // RDPs contain user-supplied functions that never reference-equal across
+    // renders, so genericCanonicalizer (fast-deep-equal) cannot deduplicate
+    // them. rdpCanonicalizer invokes each function against a synthetic builder
+    // and keys by the extracted definition, which is stable.
+    result.withProperties = store.rdpCanonicalizer.canonicalize(
+      result.withProperties as Rdp | undefined,
+    ) as typeof result.withProperties;
     result.orderBy = store.orderByCanonicalizer.canonicalize(result.orderBy);
     result.aggregate = store.genericCanonicalizer.canonicalize(
       result.aggregate,
