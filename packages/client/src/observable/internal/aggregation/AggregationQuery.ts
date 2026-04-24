@@ -48,6 +48,7 @@ import {
   WHERE_IDX,
   WIRE_OBJECT_SET_IDX,
 } from "./AggregationCacheKey.js";
+import { buildAggregationInvalidationWireObjectSet } from "./buildAggregationInvalidationWireObjectSet.js";
 
 export interface AggregationPayload<
   Q extends ObjectOrInterfaceDefinition,
@@ -129,8 +130,21 @@ export abstract class AggregationQuery extends Query<
       this.parsedWireObjectSet = JSON.parse(
         serializedObjectSet,
       ) as WireObjectSet;
+    }
+
+    const wireDerivedProperties = this.rdpConfig
+      ? this.store.rdpCanonicalizer.getWireDerivedProperties(this.rdpConfig)
+      : undefined;
+
+    const invalidationWireObjectSet = buildAggregationInvalidationWireObjectSet(
+      this.apiName,
+      this.parsedWireObjectSet,
+      wireDerivedProperties,
+    );
+
+    if (invalidationWireObjectSet) {
       this.#invalidationTypesPromise = this.#computeInvalidationTypes(
-        this.parsedWireObjectSet,
+        invalidationWireObjectSet,
       );
     }
   }
@@ -221,14 +235,17 @@ export abstract class AggregationQuery extends Query<
     return batch.read(this.cacheKey)!;
   }
 
-  invalidateObjectType = (
+  invalidateObjectType = async (
     objectType: string,
     changes: Changes | undefined,
   ): Promise<void> => {
+    // If the invalidation set is still being computed (async for ObjectSets
+    // and RDP clauses), wait for it so we don't miss the match against
+    // RDP-referenced types on the first fire after construction.
+    await this.ensureInvalidationTypesReady();
     if (this.#invalidationTypes.has(objectType)) {
       changes?.modified.add(this.cacheKey);
-      return this.revalidate(true);
+      await this.revalidate(true);
     }
-    return Promise.resolve();
   };
 }

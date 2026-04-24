@@ -16,6 +16,7 @@
 
 import type {
   AggregateOpts,
+  DerivedObjectOrInterfaceDefinition,
   ObjectOrInterfaceDefinition,
   SimplePropertyDef,
 } from "@osdk/api";
@@ -44,10 +45,12 @@ import { ObjectAggregationQuery } from "./ObjectAggregationQuery.js";
 type AggregationOptions =
   | ObserveAggregationOptions<
     ObjectOrInterfaceDefinition,
+    Record<string, SimplePropertyDef>,
     AggregateOpts<ObjectOrInterfaceDefinition>
   >
   | ObserveAggregationOptionsWithObjectSet<
     ObjectOrInterfaceDefinition,
+    Record<string, SimplePropertyDef>,
     AggregateOpts<ObjectOrInterfaceDefinition>
   >;
 
@@ -75,10 +78,14 @@ export class AggregationsHelper extends AbstractHelper<
 
   observe<
     T extends ObjectOrInterfaceDefinition,
-    A extends AggregateOpts<T>,
     RDPs extends Record<string, SimplePropertyDef> = {},
+    A extends AggregateOpts<
+      DerivedObjectOrInterfaceDefinition.WithDerivedProperties<T, RDPs>
+    > = AggregateOpts<
+      DerivedObjectOrInterfaceDefinition.WithDerivedProperties<T, RDPs>
+    >,
   >(
-    options: ObserveAggregationOptions<T, A, RDPs>,
+    options: ObserveAggregationOptions<T, RDPs, A>,
     subFn: Observer<AggregationPayloadBase>,
   ): QuerySubscription<AggregationQuery> {
     return super.observe(options, subFn);
@@ -86,10 +93,14 @@ export class AggregationsHelper extends AbstractHelper<
 
   async observeAsync<
     T extends ObjectOrInterfaceDefinition,
-    A extends AggregateOpts<T>,
     RDPs extends Record<string, SimplePropertyDef> = {},
+    A extends AggregateOpts<
+      DerivedObjectOrInterfaceDefinition.WithDerivedProperties<T, RDPs>
+    > = AggregateOpts<
+      DerivedObjectOrInterfaceDefinition.WithDerivedProperties<T, RDPs>
+    >,
   >(
-    options: ObserveAggregationOptionsWithObjectSet<T, A, RDPs>,
+    options: ObserveAggregationOptionsWithObjectSet<T, RDPs, A>,
     subFn: Observer<AggregationPayloadBase>,
   ): Promise<QuerySubscription<AggregationQuery>> {
     const query = this.getQueryWithObjectSet(options);
@@ -103,20 +114,28 @@ export class AggregationsHelper extends AbstractHelper<
 
   getQuery<
     T extends ObjectOrInterfaceDefinition,
-    A extends AggregateOpts<T>,
     RDPs extends Record<string, SimplePropertyDef> = {},
+    A extends AggregateOpts<
+      DerivedObjectOrInterfaceDefinition.WithDerivedProperties<T, RDPs>
+    > = AggregateOpts<
+      DerivedObjectOrInterfaceDefinition.WithDerivedProperties<T, RDPs>
+    >,
   >(
-    options: ObserveAggregationOptions<T, A, RDPs>,
+    options: ObserveAggregationOptions<T, RDPs, A>,
   ): AggregationQuery {
     return this.getOrCreateQuery(options as AggregationOptions, undefined);
   }
 
   getQueryWithObjectSet<
     T extends ObjectOrInterfaceDefinition,
-    A extends AggregateOpts<T>,
     RDPs extends Record<string, SimplePropertyDef> = {},
+    A extends AggregateOpts<
+      DerivedObjectOrInterfaceDefinition.WithDerivedProperties<T, RDPs>
+    > = AggregateOpts<
+      DerivedObjectOrInterfaceDefinition.WithDerivedProperties<T, RDPs>
+    >,
   >(
-    options: ObserveAggregationOptionsWithObjectSet<T, A, RDPs>,
+    options: ObserveAggregationOptionsWithObjectSet<T, RDPs, A>,
   ): AggregationQuery {
     const serializedObjectSet = JSON.stringify(
       getWireObjectSet(options.objectSet),

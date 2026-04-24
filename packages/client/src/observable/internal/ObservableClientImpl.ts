@@ -20,6 +20,7 @@ import type {
   ActionValidationResponse,
   AggregateOpts,
   CompileTimeMetadata,
+  DerivedObjectOrInterfaceDefinition,
   ObjectOrInterfaceDefinition,
   ObjectSet,
   ObjectTypeDefinition,
@@ -128,38 +129,65 @@ export class ObservableClientImpl implements ObservableClient {
 
   public observeAggregation<
     T extends ObjectOrInterfaceDefinition,
-    A extends AggregateOpts<T>,
     RDPs extends Record<string, SimplePropertyDef> = {},
+    A extends AggregateOpts<
+      DerivedObjectOrInterfaceDefinition.WithDerivedProperties<T, RDPs>
+    > = AggregateOpts<
+      DerivedObjectOrInterfaceDefinition.WithDerivedProperties<T, RDPs>
+    >,
   >(
-    options: ObserveAggregationOptions<T, A, RDPs>,
-    subFn: Observer<ObserveAggregationArgs<T, A>>,
+    options: ObserveAggregationOptions<T, RDPs, A>,
+    subFn: Observer<
+      ObserveAggregationArgs<
+        DerivedObjectOrInterfaceDefinition.WithDerivedProperties<T, RDPs>,
+        A
+      >
+    >,
   ): Unsubscribable;
   public observeAggregation<
     T extends ObjectOrInterfaceDefinition,
-    A extends AggregateOpts<T>,
     RDPs extends Record<string, SimplePropertyDef> = {},
+    A extends AggregateOpts<
+      DerivedObjectOrInterfaceDefinition.WithDerivedProperties<T, RDPs>
+    > = AggregateOpts<
+      DerivedObjectOrInterfaceDefinition.WithDerivedProperties<T, RDPs>
+    >,
   >(
-    options: ObserveAggregationOptionsWithObjectSet<T, A, RDPs>,
-    subFn: Observer<ObserveAggregationArgs<T, A>>,
+    options: ObserveAggregationOptionsWithObjectSet<T, RDPs, A>,
+    subFn: Observer<
+      ObserveAggregationArgs<
+        DerivedObjectOrInterfaceDefinition.WithDerivedProperties<T, RDPs>,
+        A
+      >
+    >,
   ): Promise<Unsubscribable>;
   public observeAggregation<
     T extends ObjectOrInterfaceDefinition,
-    A extends AggregateOpts<T>,
     RDPs extends Record<string, SimplePropertyDef> = {},
+    A extends AggregateOpts<
+      DerivedObjectOrInterfaceDefinition.WithDerivedProperties<T, RDPs>
+    > = AggregateOpts<
+      DerivedObjectOrInterfaceDefinition.WithDerivedProperties<T, RDPs>
+    >,
   >(
     options:
-      | ObserveAggregationOptions<T, A, RDPs>
-      | ObserveAggregationOptionsWithObjectSet<T, A, RDPs>,
-    subFn: Observer<ObserveAggregationArgs<T, A>>,
+      | ObserveAggregationOptions<T, RDPs, A>
+      | ObserveAggregationOptionsWithObjectSet<T, RDPs, A>,
+    subFn: Observer<
+      ObserveAggregationArgs<
+        DerivedObjectOrInterfaceDefinition.WithDerivedProperties<T, RDPs>,
+        A
+      >
+    >,
   ): Unsubscribable | Promise<Unsubscribable> {
     if (options.objectSet) {
       return this.__experimentalStore.aggregations.observeAsync(
-        options as ObserveAggregationOptionsWithObjectSet<T, A, RDPs>,
+        options as ObserveAggregationOptionsWithObjectSet<T, RDPs, A>,
         subFn as Observer<AggregationPayloadBase>,
       );
     }
     return this.__experimentalStore.aggregations.observe(
-      options as ObserveAggregationOptions<T, A, RDPs>,
+      options as ObserveAggregationOptions<T, RDPs, A>,
       subFn as Observer<AggregationPayloadBase>,
     );
   }

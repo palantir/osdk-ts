@@ -780,6 +780,25 @@ describe("ObjectSet", () => {
         },
       });
     });
+
+    it("accepts RDP-named keys in $select / $groupBy after .withProperties", () => {
+      const objectSetWithRdps = fauxObjectSet.withProperties({
+        leadCount: (base) => base.pivotTo("lead").aggregate("$count"),
+      });
+
+      void objectSetWithRdps.aggregate({
+        $select: {
+          "leadCount:sum": "unordered",
+          "leadCount:avg": "unordered",
+          "employeeId:max": "unordered",
+        },
+      });
+
+      void objectSetWithRdps.aggregate({
+        $select: { $count: "unordered" },
+        $groupBy: { leadCount: "exact" },
+      });
+    });
   });
   describe("expressions", () => {
     "Test all property types";
