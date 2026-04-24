@@ -22,13 +22,20 @@ import { ActionButton } from "../base-components/action-button/ActionButton.js";
 import { SkeletonBar } from "../base-components/skeleton/SkeletonBar.js";
 import { Tooltip } from "../base-components/tooltip/Tooltip.js";
 import { useAsyncAction } from "../shared/hooks/useAsyncAction.js";
+import { typedReactMemo } from "../shared/typedMemo.js";
 import type { BaseFormProps } from "./ActionFormApi.js";
 import styles from "./BaseForm.module.css";
 import { FieldBridge } from "./fields/FieldBridge.js";
 import type { RendererFieldDefinition } from "./FormFieldApi.js";
 import { FormHeader } from "./FormHeader.js";
 
-export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
+// Generic component: S is only used for public type safety (fieldKey, item types,
+// onSubmit). Internally the implementation erases S to Record<string, unknown>.
+export const BaseForm: <S extends Record<string, unknown>>(
+  props: BaseFormProps<S>,
+) => React.ReactElement = typedReactMemo(function BaseFormFn<
+  S extends Record<string, unknown>,
+>({
   formTitle,
   fieldDefinitions,
   formState: controlledFormState,
@@ -38,7 +45,7 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
   isPending = false,
   isLoading = false,
   className,
-}: BaseFormProps): React.ReactElement {
+}: BaseFormProps<S>): React.ReactElement {
   const isControlled = controlledFormState != null;
 
   const defaultValues = useMemo(
@@ -89,7 +96,12 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
       // RHF's store may hold the user-typed value rather than the parent's
       // value. Using controlledFormState directly preserves the existing
       // guarantee that controlled mode submits the parent's state.
-      await executeSubmit(controlledFormState ?? getValues());
+      //
+      // Cast: RHF stores values as Record<string, unknown>, but the field
+      // definitions guarantee the shape matches S at runtime.
+      await executeSubmit(
+        controlledFormState ?? getValues() as S,
+      );
     },
     [trigger, executeSubmit, controlledFormState, getValues],
   );
@@ -97,7 +109,12 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
   const handleFieldChange = useCallback(
     (fieldKey: string, value: unknown) => {
       clearError();
-      onFieldValueChange?.(fieldKey, value);
+      // Cast: RHF gives us unknown, but field components guarantee the
+      // value matches the schema S at runtime.
+      onFieldValueChange?.(
+        fieldKey as keyof S & string,
+        value as S[keyof S & string],
+      );
     },
     [clearError, onFieldValueChange],
   );
@@ -135,14 +152,22 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
         </div>
       )}
       <div className={styles.osdkFormFields}>
-        {fieldDefinitions.map((fieldDef) => (
-          <FieldBridge
-            key={fieldDef.fieldKey}
-            fieldDef={fieldDef}
-            control={control}
-            onExternalChange={handleFieldChange}
-          />
-        ))}
+        {
+          /* Safe cast: RendererFieldDefinition<S> → RendererFieldDefinition
+            (defaults to Record<string, unknown>). The rendering layer only reads
+            fieldKey/fieldComponent and spreads fieldComponentProps — it never
+            type-checks item/option types against S. */
+        }
+        {(fieldDefinitions as ReadonlyArray<RendererFieldDefinition>).map(
+          (fieldDef) => (
+            <FieldBridge
+              key={fieldDef.fieldKey}
+              fieldDef={fieldDef}
+              control={control}
+              onExternalChange={handleFieldChange}
+            />
+          ),
+        )}
       </div>
       <div className={styles.osdkFormFooter}>
         <ErrorIndicator errorEntries={errorEntries} />
@@ -172,14 +197,18 @@ const FORM_SKELETON = Array.from(
   ),
 );
 
+// Accepts a structural subset instead of RendererFieldDefinition<S> to avoid
+// the invariance issue — this function only reads fieldKey and defaultValue.
 function buildDefaultValues(
-  fieldDefinitions: ReadonlyArray<RendererFieldDefinition>,
+  fieldDefinitions: ReadonlyArray<{
+    fieldKey: string;
+    fieldComponentProps: Record<string, unknown>;
+  }>,
 ): Record<string, unknown> {
   const values: Record<string, unknown> = {};
   for (const def of fieldDefinitions) {
-    const props: Record<string, unknown> = def.fieldComponentProps;
-    if ("defaultValue" in props) {
-      values[def.fieldKey] = props.defaultValue;
+    if ("defaultValue" in def.fieldComponentProps) {
+      values[def.fieldKey] = def.fieldComponentProps.defaultValue;
     }
   }
   return values;

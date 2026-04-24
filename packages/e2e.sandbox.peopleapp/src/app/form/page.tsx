@@ -1,13 +1,32 @@
-import type { ObjectSet, ObjectTypeDefinition } from "@osdk/api";
+import type { BaseObjectSet, ObjectOrInterfaceDefinition } from "@osdk/api";
 import { BaseForm } from "@osdk/react-components/experimental/action-form";
 import type {
   BaseFormFieldProps,
+  DateRange,
   RendererFieldDefinition,
 } from "@osdk/react-components/experimental/action-form";
 import { useCallback, useMemo, useState } from "react";
 import { $ } from "../../foundryClient.js";
 import { Employee } from "../../generatedNoCheck2/index.js";
 import "./form-page.css";
+
+interface EmployeeFormSchema {
+  employeeName: string;
+  employmentStart: Date;
+  employmentEnd: Date;
+  employmentDuration: DateRange;
+  department: string;
+  yearsOfExperience: number;
+  salary: number;
+  bio: string;
+  officeLocation: string;
+  employmentType: string;
+  resume: File;
+  portfolioFiles: File[];
+  skills: string;
+  rating: unknown;
+  team: BaseObjectSet<ObjectOrInterfaceDefinition>;
+}
 
 function RatingSlider({ id, value, onChange }: BaseFormFieldProps<unknown>) {
   const numericValue = typeof value === "number" ? value : 5;
@@ -27,7 +46,9 @@ function RatingSlider({ id, value, onChange }: BaseFormFieldProps<unknown>) {
   );
 }
 
-const fieldDefinitions: ReadonlyArray<RendererFieldDefinition> = [
+const fieldDefinitions: ReadonlyArray<
+  RendererFieldDefinition<EmployeeFormSchema>
+> = [
   {
     fieldKey: "employeeName",
     fieldComponent: "TEXT_INPUT",
@@ -194,19 +215,19 @@ export function FormPage() {
   >(undefined);
 
   const handleSubmit = useCallback(
-    async (formState: Record<string, unknown>) => {
-      setSubmittedState(formState);
+    async (formState: EmployeeFormSchema) => {
+      setSubmittedState(formState as unknown as Record<string, unknown>);
     },
     [],
   );
 
   const employeeObjectSet = useMemo(
-    () => $(Employee) as ObjectSet<ObjectTypeDefinition>,
+    () => $(Employee),
     [],
   );
 
   const allFieldDefinitions = useMemo(
-    (): ReadonlyArray<RendererFieldDefinition> => [
+    (): ReadonlyArray<RendererFieldDefinition<EmployeeFormSchema>> => [
       ...fieldDefinitions,
       {
         fieldKey: "team",

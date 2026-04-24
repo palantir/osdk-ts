@@ -15,11 +15,17 @@
  */
 
 import type { FieldType } from "../FormFieldApi.js";
+import { extractNumber } from "./fieldValueExtractors.js";
 
 /**
- * Coerces a raw form field value to match the expected type for the given
+ * Coerces a raw form field value to match the expected wire type for the given
  * field type. Returns `undefined` when coercion fails
  * (e.g. non-numeric string for a number field).
+ *
+ * Keyed on `FieldType` (not `FieldComponent`) because the target type is
+ * determined by the wire format, not the UI component.
+ *
+ * Counterpart to `coerceForRender` which coerces for rendering (UI types).
  *
  * Complex types (object, objectSet, struct, interface) are passed through
  * unchanged since they cannot be meaningfully coerced.
@@ -86,17 +92,4 @@ export function coerceFieldValue(
     default:
       return rawValue;
   }
-}
-
-function extractNumber(rawValue: unknown): number | undefined {
-  if (typeof rawValue === "number") {
-    return rawValue;
-  }
-  if (typeof rawValue === "string") {
-    const trimmed = rawValue.trim();
-    if (trimmed === "") return undefined;
-    const parsed = Number(trimmed);
-    return Number.isNaN(parsed) ? undefined : parsed;
-  }
-  return undefined;
 }

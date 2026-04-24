@@ -49,7 +49,11 @@ export type ActionFormProps<Q extends ActionDefinition<unknown>> =
   });
 
 interface ActionFormConfigProps<Q extends ActionDefinition<unknown>>
-  extends Pick<BaseFormProps, "formTitle" | "isSubmitDisabled">
+  extends
+    Pick<
+      BaseFormProps<Record<string, unknown>>,
+      "formTitle" | "isSubmitDisabled"
+    >
 {
   actionDefinition: Q;
 
@@ -114,28 +118,39 @@ export type FormError =
  * Props for the `BaseForm` component, which renders a form without
  * OSDK data fetching.
  *
+ * Generic over a form schema `S` so that `fieldDefinitions` receive
+ * typed `fieldKey` and value types, and `onSubmit` returns typed state.
+ *
  * Uses a discriminated union so that controlled mode (`formState` provided)
  * always requires `onFieldValueChange`, and uncontrolled mode omits both.
- * `onSubmit` receives the current form state so callers can access values
- * even in uncontrolled mode.
  */
-export type BaseFormProps =
-  & BaseFormCommonProps
+export type BaseFormProps<
+  S extends Record<string, unknown> = Record<string, unknown>,
+> =
+  & BaseFormCommonProps<S>
   & (
     | {
-      formState: Record<string, unknown>;
-      onFieldValueChange: (fieldKey: string, value: unknown) => void;
+      formState: S;
+      onFieldValueChange: (
+        fieldKey: keyof S & string,
+        value: S[keyof S & string],
+      ) => void;
     }
     | {
       formState?: undefined;
-      onFieldValueChange?: (fieldKey: string, value: unknown) => void;
+      onFieldValueChange?: (
+        fieldKey: keyof S & string,
+        value: S[keyof S & string],
+      ) => void;
     }
   );
 
-interface BaseFormCommonProps {
+interface BaseFormCommonProps<
+  S extends Record<string, unknown> = Record<string, unknown>,
+> {
   formTitle?: string;
-  fieldDefinitions: ReadonlyArray<RendererFieldDefinition>;
-  onSubmit: (formState: Record<string, unknown>) => Promise<void> | void;
+  fieldDefinitions: ReadonlyArray<RendererFieldDefinition<S>>;
+  onSubmit: (formState: S) => Promise<void> | void;
   isSubmitDisabled?: boolean;
   isPending?: boolean;
   isLoading?: boolean;

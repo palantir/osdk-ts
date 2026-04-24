@@ -16,11 +16,8 @@
 
 import React, { memo } from "react";
 import { FormField } from "../FormField.js";
-import {
-  type DateRange,
-  EMPTY_RANGE,
-  type RendererFieldDefinition,
-} from "../FormFieldApi.js";
+import type { RendererFieldDefinition } from "../FormFieldApi.js";
+import { coerceForRender } from "../utils/coerceForRender.js";
 import { CustomField } from "./CustomField.js";
 import { DateRangeInputField } from "./DateRangeInputField.js";
 import { DatetimePickerField } from "./DatetimePickerField.js";
@@ -82,7 +79,7 @@ function renderFieldComponent(
       return (
         <DateRangeInputField
           id={fieldDefinition.fieldKey}
-          value={coerceToDateRange(value)}
+          value={coerceForRender("DATE_RANGE_INPUT", value)}
           onChange={onChange}
           placeholderStart={fieldDefinition.placeholder}
           {...fieldDefinition.fieldComponentProps}
@@ -92,7 +89,7 @@ function renderFieldComponent(
       return (
         <TextInputField
           id={fieldDefinition.fieldKey}
-          value={value != null ? String(value) : ""}
+          value={coerceForRender("TEXT_INPUT", value)}
           onChange={onChange}
           placeholder={fieldDefinition.placeholder}
           error={error}
@@ -103,32 +100,30 @@ function renderFieldComponent(
       return (
         <TextAreaField
           id={fieldDefinition.fieldKey}
-          value={value != null ? String(value) : ""}
+          value={coerceForRender("TEXT_AREA", value)}
           onChange={onChange}
           placeholder={fieldDefinition.placeholder}
           error={error}
           {...fieldDefinition.fieldComponentProps}
         />
       );
-    case "DROPDOWN": {
+    case "DROPDOWN":
       return (
         <DropdownField
           id={fieldDefinition.fieldKey}
-          value={value}
+          value={coerceForRender("DROPDOWN", value)}
           onChange={onChange}
           placeholder={fieldDefinition.placeholder}
           error={error}
           {...fieldDefinition.fieldComponentProps}
         />
       );
-    }
     case "DATETIME_PICKER":
       return (
         <DatetimePickerField
           id={fieldDefinition.fieldKey}
           placeholder={fieldDefinition.placeholder}
-          // TODO: Use coerceFieldValue
-          value={value instanceof Date ? value : null}
+          value={coerceForRender("DATETIME_PICKER", value)}
           onChange={onChange}
           error={error}
           {...fieldDefinition.fieldComponentProps}
@@ -138,7 +133,7 @@ function renderFieldComponent(
       return (
         <RadioButtonsField
           id={fieldDefinition.fieldKey}
-          value={value}
+          value={coerceForRender("RADIO_BUTTONS", value)}
           onChange={onChange}
           error={error}
           {...fieldDefinition.fieldComponentProps}
@@ -148,18 +143,17 @@ function renderFieldComponent(
       return (
         <CustomField
           id={fieldDefinition.fieldKey}
-          value={value}
+          value={coerceForRender("CUSTOM", value)}
           onChange={onChange}
           error={error}
           {...fieldDefinition.fieldComponentProps}
         />
       );
     case "NUMBER_INPUT":
-      // TODO: Use coerceFieldValue
       return (
         <NumberInputField
           id={fieldDefinition.fieldKey}
-          value={typeof value === "number" ? value : null}
+          value={coerceForRender("NUMBER_INPUT", value)}
           onChange={onChange}
           placeholder={fieldDefinition.placeholder}
           error={error}
@@ -170,7 +164,7 @@ function renderFieldComponent(
       return (
         <FilePickerField
           id={fieldDefinition.fieldKey}
-          value={coerceToFileValue(value)}
+          value={coerceForRender("FILE_PICKER", value)}
           onChange={onChange}
           error={error}
           {...fieldDefinition.fieldComponentProps}
@@ -186,29 +180,6 @@ function renderFieldComponent(
     default:
       return assertUnreachableFieldComponent(fieldDefinition);
   }
-}
-
-function coerceToDateRange(value: unknown): DateRange {
-  if (!Array.isArray(value) || value.length !== 2) return EMPTY_RANGE;
-  const start = value[0] instanceof Date ? value[0] : null;
-  const end = value[1] instanceof Date ? value[1] : null;
-  if (start == null && end == null) return EMPTY_RANGE;
-  return [start, end];
-}
-
-// TODO: Move and share with `coerceFieldValue`
-function isFileArray(value: unknown[]): value is File[] {
-  return value.every((v) => v instanceof File);
-}
-
-function coerceToFileValue(value: unknown): File | File[] | null {
-  if (value instanceof File) {
-    return value;
-  }
-  if (Array.isArray(value) && isFileArray(value)) {
-    return value;
-  }
-  return null;
 }
 
 function assertUnreachableFieldComponent(value: never): never {

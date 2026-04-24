@@ -15,7 +15,7 @@
  */
 
 import { type IconName, IconSize } from "@blueprintjs/icons";
-import type { ObjectSet, ObjectTypeDefinition } from "@osdk/api";
+import type { ObjectSet } from "@osdk/api";
 import { useOsdkMetadata } from "@osdk/react";
 import { useObjectSet } from "@osdk/react/experimental";
 import classnames from "classnames";
@@ -33,29 +33,29 @@ const DEFAULT_OBJECT_ICON: Icon = { name: "cube", color: "#4C90F0" };
 const ICON_SIZE = IconSize.STANDARD;
 const DEFAULT_EMPTY_MESSAGE = "Object set is not defined";
 
-export const ObjectSetField: <T extends ObjectTypeDefinition>(
-  props: ObjectSetFieldProps<T>,
-) => React.ReactElement = typedReactMemo(function ObjectSetFieldFn<
-  T extends ObjectTypeDefinition,
->({
-  value,
-  emptyMessage = DEFAULT_EMPTY_MESSAGE,
-}: ObjectSetFieldProps<T>): React.ReactElement {
-  if (value == null) {
-    return (
-      <div
-        className={classnames(
-          styles.osdkObjectSetField,
-          styles.osdkObjectSetFieldEmpty,
-        )}
-      >
-        {emptyMessage}
-      </div>
-    );
-  }
+export const ObjectSetField: React.FC<ObjectSetFieldProps> = typedReactMemo(
+  function ObjectSetFieldFn({
+    value,
+    emptyMessage = DEFAULT_EMPTY_MESSAGE,
+  }: ObjectSetFieldProps): React.ReactElement {
+    if (value == null) {
+      return (
+        <div
+          className={classnames(
+            styles.osdkObjectSetField,
+            styles.osdkObjectSetFieldEmpty,
+          )}
+        >
+          {emptyMessage}
+        </div>
+      );
+    }
 
-  return <ObjectSetFieldContent objectSet={value} />;
-});
+    // Safe cast: callers always pass a real ObjectSet; we accept the wider
+    // BaseObjectSet in the public API to avoid invariance-related casts.
+    return <ObjectSetFieldContent objectSet={value as ObjectSet} />;
+  },
+);
 
 const ObjectSetFieldContent = React.memo(function ObjectSetFieldContentFn({
   objectSet,

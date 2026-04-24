@@ -26,7 +26,7 @@ import type { RendererFieldDefinition } from "../FormFieldApi.js";
  */
 export function getDefaultFieldDefinitions(
   metadata: ActionMetadata,
-): ReadonlyArray<RendererFieldDefinition> {
+): ReadonlyArray<RendererFieldDefinition<Record<string, unknown>>> {
   return Object.entries(metadata.parameters).map(
     ([key, param]) => buildFieldDefinition(key, param),
   );
@@ -43,7 +43,7 @@ const EMPTY_ITEMS: unknown[] = [];
 function buildFieldDefinition(
   key: string,
   param: ActionMetadata.Parameter,
-): RendererFieldDefinition {
+): RendererFieldDefinition<Record<string, unknown>> {
   const base = {
     fieldKey: key,
     label: key,
