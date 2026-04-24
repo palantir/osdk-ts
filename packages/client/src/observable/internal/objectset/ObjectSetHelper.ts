@@ -15,6 +15,7 @@
  */
 
 import { getWireObjectSet } from "../../../objectSet/createObjectSet.js";
+import { hasWithProperties } from "../../../util/extractRdpDefinition.js";
 import type { ObjectSetPayload } from "../../ObjectSetPayload.js";
 import type { Observer } from "../../ObservableClient/common.js";
 import { AbstractHelper } from "../AbstractHelper.js";
@@ -70,6 +71,16 @@ export class ObjectSetHelper extends AbstractHelper<
     const ret = super.observe(options, subFn);
 
     if (options.streamUpdates) {
+      if (
+        options.withProperties
+        || hasWithProperties(getWireObjectSet(options.baseObjectSet))
+      ) {
+        throw new Error(
+          "[@osdk/client] streamUpdates is not supported with withProperties. "
+            + "The server does not support websocket subscriptions for "
+            + "object sets that include derived properties.",
+        );
+      }
       if (options.pivotTo) {
         if (process.env.NODE_ENV !== "production") {
           // eslint-disable-next-line no-console

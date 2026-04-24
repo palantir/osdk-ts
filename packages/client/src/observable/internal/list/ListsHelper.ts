@@ -76,6 +76,13 @@ export class ListsHelper extends AbstractHelper<
     const ret = super.observe(options, subFn);
 
     if (options.streamUpdates) {
+      if (options.withProperties) {
+        throw new Error(
+          "[@osdk/client] streamUpdates is not supported with withProperties. "
+            + "The server does not support websocket subscriptions for "
+            + "object sets that include derived properties.",
+        );
+      }
       if (options.pivotTo) {
         if (process.env.NODE_ENV !== "production") {
           // eslint-disable-next-line no-console
