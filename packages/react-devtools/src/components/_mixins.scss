@@ -1,0 +1,211 @@
+@use 'tokens' as t;
+
+// Uppercase muted section label
+@mixin dt-label {
+  font-size: t.$font-size-xs;
+  font-weight: t.$font-weight-semi;
+  color: t.$text-tertiary;
+  text-transform: uppercase;
+  letter-spacing: t.$letter-spacing-label;
+  margin: 0;
+}
+
+// Surface card with subtle border
+@mixin dt-card {
+  background: t.$bg-surface;
+  border: 1px solid t.$border-subtle;
+  border-radius: t.$radius-lg;
+  transition: border-color t.$transition-fast;
+
+  &:hover {
+    border-color: t.$border-hover;
+  }
+}
+
+// Status badge pill
+@mixin dt-badge($bg, $color) {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 6px;
+  background: $bg;
+  color: $color;
+  border-radius: t.$radius-sm;
+  font-size: t.$font-size-xs;
+  font-weight: t.$font-weight-semi;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+  line-height: 1.4;
+}
+
+// Metric display (label + value + optional subtext)
+@mixin dt-metric {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+@mixin dt-metric-label {
+  @include dt-label;
+}
+
+@mixin dt-metric-value {
+  font-size: t.$font-size-2xl;
+  font-weight: t.$font-weight-bold;
+  font-family: t.$font-mono;
+  color: t.$text-value;
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+// Empty state
+@mixin dt-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 24px;
+  text-align: center;
+  gap: 8px;
+  color: t.$text-tertiary;
+}
+
+// Code block
+@mixin dt-code-block {
+  background: t.$bg-base;
+  border: 1px solid t.$border-subtle;
+  border-radius: t.$radius-md;
+  padding: 10px 12px;
+  font-family: t.$font-mono;
+  font-size: t.$font-size-base;
+  color: t.$text-secondary;
+  line-height: 1.5;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  margin: 0;
+}
+
+// Tab bar container
+@mixin dt-tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid t.$border-default;
+  background: transparent;
+  overflow-x: auto;
+  @include dt-scrollbar;
+}
+
+// Tab button (inactive)
+@mixin dt-tab-button {
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: t.$text-tertiary;
+  font-size: t.$font-size-sm;
+  font-weight: t.$font-weight-semi;
+  letter-spacing: t.$letter-spacing-tab;
+  text-transform: uppercase;
+  padding: 8px 12px 6px;
+  margin-bottom: -1px;
+  cursor: pointer;
+  transition: color t.$transition-fast, border-color t.$transition-fast;
+  white-space: nowrap;
+  flex-shrink: 0;
+
+  &:hover {
+    color: t.$text-secondary;
+  }
+}
+
+// Tab button (active)
+@mixin dt-tab-active {
+  color: t.$blue;
+  border-bottom-color: t.$blue;
+}
+
+// List item row
+@mixin dt-list-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-bottom: 1px solid t.$border-subtle;
+  border-left: 2px solid transparent;
+  transition: background-color t.$transition-fast, border-left-color t.$transition-fast;
+
+  &:hover {
+    background: t.$bg-hover;
+    border-left-color: t.$text-tertiary;
+  }
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+// Custom scrollbar
+@mixin dt-scrollbar {
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: var(--dt-scrollbar-track);
+    border-radius: 3px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: var(--dt-scrollbar-thumb);
+    border-radius: 3px;
+
+    &:hover {
+      background: var(--dt-scrollbar-thumb-hover);
+    }
+  }
+}
+
+// Skeleton shimmer animation
+@mixin dt-skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--dt-skeleton-from) 25%,
+    var(--dt-skeleton-to) 50%,
+    var(--dt-skeleton-from) 75%
+  );
+  background-size: 200% 100%;
+  animation: dt-shimmer 1.5s infinite;
+  border-radius: t.$radius-sm;
+}
+
+@keyframes dt-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+// Staggered entrance animation for card lists
+@mixin dt-entrance {
+  opacity: 0;
+  transform: translateY(6px);
+  animation: dt-fade-up 250ms ease-out forwards;
+  animation-delay: calc(var(--entrance-index, 0) * 40ms);
+}
+
+@keyframes dt-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  @keyframes dt-fade-up {
+    from { opacity: 1; transform: none; }
+    to { opacity: 1; transform: none; }
+  }
+}
