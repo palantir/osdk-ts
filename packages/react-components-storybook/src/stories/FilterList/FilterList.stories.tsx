@@ -23,7 +23,6 @@ import type {
 } from "@osdk/react-components/experimental/filter-list";
 import { FilterList } from "@osdk/react-components/experimental/filter-list";
 import { ObjectTable } from "@osdk/react-components/experimental/object-table";
-import { useOsdkClient } from "@osdk/react/experimental";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useCallback, useMemo, useState } from "react";
 import { useArgs } from "storybook/preview-api";
@@ -1552,4 +1551,408 @@ export const FullFeatured: Story = {
       <FullFeaturedStory {...args} onCollapsedChange={handleCollapsedChange} />
     );
   },
+};
+
+function WithLinkedPropertyFiltersStory(
+  args: Partial<EmployeeFilterListProps>,
+) {
+  const [filterClause, setFilterClause] = useState<
+    WhereClause<Employee> | undefined
+  >(undefined);
+
+  const filterDefinitions = useMemo(
+    (): FilterDefinitionUnion<Employee>[] => [
+      {
+        type: "HAS_LINK",
+        linkName: "lead",
+        label: "Has Manager",
+        filterState: { type: "hasLink", hasLink: false },
+      } as FilterDefinitionUnion<Employee>,
+      {
+        type: "LINKED_PROPERTY",
+        linkName: "peeps",
+        linkedPropertyKey: "department",
+        linkedFilterComponent: "LISTOGRAM",
+        linkedFilterState: { type: "EXACT_MATCH", values: [] },
+        filterState: {
+          type: "linkedProperty",
+          linkedFilterState: { type: "EXACT_MATCH", values: [] },
+        },
+        label: "Reports' Department",
+      } as FilterDefinitionUnion<Employee>,
+      {
+        type: "LINKED_PROPERTY",
+        linkName: "lead",
+        linkedPropertyKey: "locationCity",
+        linkedFilterComponent: "LISTOGRAM",
+        linkedFilterState: { type: "EXACT_MATCH", values: [] },
+        filterState: {
+          type: "linkedProperty",
+          linkedFilterState: { type: "EXACT_MATCH", values: [] },
+        },
+        label: "Manager's City",
+      } as FilterDefinitionUnion<Employee>,
+    ],
+    [],
+  );
+
+  return (
+    <div style={FLEX_ROW_STYLE}>
+      <div style={SIDEBAR_STYLE}>
+        <FilterList
+          objectType={Employee}
+          filterDefinitions={filterDefinitions}
+          filterClause={filterClause}
+          onFilterClauseChanged={setFilterClause}
+          {...args}
+        />
+      </div>
+      <div style={FLEX_FILL_STYLE}>
+        <strong>Filter Clause (JSON):</strong>
+        <pre style={PRE_STYLE}>
+          {filterClause
+            ? JSON.stringify(filterClause, null, 2)
+            : "(no active filters)"}
+        </pre>
+      </div>
+    </div>
+  );
+}
+
+export const WithLinkedPropertyFilters: Story = {
+  name: "Linked Property Filters",
+  parameters: {
+    docs: {
+      description: {
+        story: "Demonstrates filtering on properties of linked objects. "
+          + "HAS_LINK filters objects based on whether they have a linked object. "
+          + "LINKED_PROPERTY filters on a specific property of the linked objects. "
+          + "In this example, 'Reports' Department' filters employees by the department "
+          + "of their direct reports, and 'Manager's City' filters by the location of their manager.",
+      },
+      source: {
+        code: `const filterDefinitions = [
+  {
+    type: "HAS_LINK",
+    linkName: "lead",
+    label: "Has Manager",
+    filterState: { type: "hasLink", hasLink: false },
+  },
+  {
+    type: "LINKED_PROPERTY",
+    linkName: "peeps",
+    linkedPropertyKey: "department",
+    linkedFilterComponent: "LISTOGRAM",
+    linkedFilterState: { type: "EXACT_MATCH", values: [] },
+    filterState: {
+      type: "linkedProperty",
+      linkedFilterState: { type: "EXACT_MATCH", values: [] },
+    },
+    label: "Reports' Department",
+  },
+  {
+    type: "LINKED_PROPERTY",
+    linkName: "lead",
+    linkedPropertyKey: "locationCity",
+    linkedFilterComponent: "LISTOGRAM",
+    linkedFilterState: { type: "EXACT_MATCH", values: [] },
+    filterState: {
+      type: "linkedProperty",
+      linkedFilterState: { type: "EXACT_MATCH", values: [] },
+    },
+    label: "Manager's City",
+  },
+];
+
+<FilterList
+  objectType={Employee}
+  filterDefinitions={filterDefinitions}
+  filterClause={filterClause}
+  onFilterClauseChanged={setFilterClause}
+/>`,
+      },
+    },
+  },
+  render: (args) => <WithLinkedPropertyFiltersStory {...args} />,
+};
+
+function CustomNameContainsFilter({
+  filterState,
+  onFilterStateChanged,
+}: {
+  filterState: { type: "custom"; customState: { value: string } };
+  onFilterStateChanged: (
+    state: { type: "custom"; customState: { value: string } },
+  ) => void;
+}) {
+  const handleChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.value;
+      onFilterStateChanged({
+        type: "custom",
+        customState: { value },
+      });
+    },
+    [onFilterStateChanged],
+  );
+
+  const handleClear = useCallback(() => {
+    onFilterStateChanged({
+      type: "custom",
+      customState: { value: "" },
+    });
+  }, [onFilterStateChanged]);
+
+  return (
+    <div style={{ padding: "12px 0", display: "flex", gap: "8px" }}>
+      <input
+        type="text"
+        value={filterState.customState.value}
+        onChange={handleChange}
+        placeholder="Enter name substring..."
+        style={{
+          flex: 1,
+          padding: "6px 8px",
+          fontSize: "14px",
+          border: "1px solid #ccc",
+          borderRadius: "4px",
+        }}
+      />
+      {filterState.customState.value && (
+        <button
+          onClick={handleClear}
+          style={{
+            padding: "6px 12px",
+            fontSize: "12px",
+            backgroundColor: "#f5f5f5",
+            border: "1px solid #ccc",
+            borderRadius: "4px",
+            cursor: "pointer",
+          }}
+        >
+          Clear
+        </button>
+      )}
+    </div>
+  );
+}
+
+function CustomSeniorOnlyFilterItem({
+  filterState,
+  onFilterStateChanged,
+}: {
+  filterState: { type: "custom"; customState: { seniorOnly: boolean } };
+  onFilterStateChanged: (
+    state: { type: "custom"; customState: { seniorOnly: boolean } },
+  ) => void;
+}) {
+  const handleToggle = useCallback(() => {
+    onFilterStateChanged({
+      type: "custom",
+      customState: {
+        seniorOnly: !filterState.customState.seniorOnly,
+      },
+    });
+  }, [filterState, onFilterStateChanged]);
+
+  const isEnabled = filterState.customState.seniorOnly;
+
+  return (
+    <div
+      style={{
+        padding: "12px",
+        backgroundColor: isEnabled ? "#e8f4f8" : "#fafafa",
+        border: `2px solid ${isEnabled ? "#0066cc" : "#ddd"}`,
+        borderRadius: "6px",
+        cursor: "pointer",
+      }}
+      onClick={handleToggle}
+      role="button"
+      tabIndex={0}
+    >
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+          marginBottom: "6px",
+        }}
+      >
+        <input
+          type="checkbox"
+          checked={isEnabled}
+          onChange={() => {}}
+          style={{ cursor: "pointer" }}
+        />
+        <strong>Senior Only</strong>
+      </div>
+      <p
+        style={{
+          margin: "0",
+          fontSize: "12px",
+          color: "#666",
+          lineHeight: "1.4",
+        }}
+      >
+        Show only employees with "Senior" in their job title
+      </p>
+    </div>
+  );
+}
+
+function WithCustomFiltersStory(args: Partial<EmployeeFilterListProps>) {
+  const [filterClause, setFilterClause] = useState<
+    WhereClause<Employee> | undefined
+  >(undefined);
+
+  const filterDefinitions = useMemo(
+    (): FilterDefinitionUnion<Employee>[] => [
+      {
+        type: "CUSTOM",
+        key: "custom-name-contains",
+        label: "Name Contains",
+        filterComponent: "CUSTOM",
+        filterState: { type: "custom", customState: { value: "" } },
+        renderInput: ({ filterState, onFilterStateChanged }) => (
+          <CustomNameContainsFilter
+            filterState={filterState as {
+              type: "custom";
+              customState: { value: string };
+            }}
+            onFilterStateChanged={onFilterStateChanged}
+          />
+        ),
+        toWhereClause: (state) => {
+          const value = (state.customState as { value?: string })?.value;
+          if (!value) return undefined;
+          return {
+            fullName: { $containsAnyTerm: value },
+          } as WhereClause<Employee>;
+        },
+      } as FilterDefinitionUnion<Employee>,
+      {
+        type: "CUSTOM",
+        key: "custom-senior-only",
+        label: "Senior Only",
+        filterComponent: "CUSTOM",
+        filterState: { type: "custom", customState: { seniorOnly: false } },
+        renderItem: ({ filterState, onFilterStateChanged }) => (
+          <CustomSeniorOnlyFilterItem
+            filterState={filterState as {
+              type: "custom";
+              customState: { seniorOnly: boolean };
+            }}
+            onFilterStateChanged={onFilterStateChanged}
+          />
+        ),
+        toWhereClause: (state) => {
+          const seniorOnly = (state.customState as { seniorOnly?: boolean })
+            ?.seniorOnly;
+          if (!seniorOnly) return undefined;
+          return {
+            jobTitle: { $containsAnyTerm: "Senior" },
+          } as WhereClause<Employee>;
+        },
+      } as FilterDefinitionUnion<Employee>,
+    ],
+    [],
+  );
+
+  return (
+    <div style={FLEX_ROW_STYLE}>
+      <div style={SIDEBAR_STYLE}>
+        <FilterList
+          objectType={Employee}
+          filterDefinitions={filterDefinitions}
+          filterClause={filterClause}
+          onFilterClauseChanged={setFilterClause}
+          {...args}
+        />
+      </div>
+      <div style={FLEX_FILL_STYLE}>
+        <strong>Filter Clause (JSON):</strong>
+        <pre style={PRE_STYLE}>
+          {filterClause
+            ? JSON.stringify(filterClause, null, 2)
+            : "(no active filters)"}
+        </pre>
+      </div>
+    </div>
+  );
+}
+
+export const WithCustomFilters: Story = {
+  name: "Custom Filters",
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Custom filters provide full control over filtering logic and UI. "
+          + "The 'Name Contains' filter uses `renderInput` for a simple custom input. "
+          + "The 'Senior Only' filter uses `renderItem` for a fully custom styled component. "
+          + "Both convert their state to a WhereClause via the `toWhereClause` function.",
+      },
+      source: {
+        code: `// Custom filter with renderInput
+const nameContainsFilter = {
+  type: "CUSTOM",
+  key: "custom-name-contains",
+  label: "Name Contains",
+  filterComponent: "CUSTOM",
+  filterState: { type: "custom", customState: { value: "" } },
+  renderInput: ({ filterState, onFilterStateChanged }) => (
+    <input
+      type="text"
+      value={filterState.customState.value}
+      onChange={(e) =>
+        onFilterStateChanged({
+          type: "custom",
+          customState: { value: e.target.value },
+        })
+      }
+      placeholder="Enter name substring..."
+    />
+  ),
+  toWhereClause: (state) => {
+    const value = state.customState.value;
+    if (!value) return undefined;
+    return { fullName: { $containsAnyTerm: value } };
+  },
+};
+
+// Custom filter with renderItem (full control)
+const seniorOnlyFilter = {
+  type: "CUSTOM",
+  key: "custom-senior-only",
+  label: "Senior Only",
+  filterComponent: "CUSTOM",
+  filterState: { type: "custom", customState: { seniorOnly: false } },
+  renderItem: ({ filterState, onFilterStateChanged }) => (
+    <StyledCheckbox
+      checked={filterState.customState.seniorOnly}
+      onChange={(seniorOnly) =>
+        onFilterStateChanged({
+          type: "custom",
+          customState: { seniorOnly },
+        })
+      }
+      label="Show only senior employees"
+    />
+  ),
+  toWhereClause: (state) => {
+    if (!state.customState.seniorOnly) return undefined;
+    return { jobTitle: { $containsAnyTerm: "Senior" } };
+  },
+};
+
+<FilterList
+  objectType={Employee}
+  filterDefinitions={[nameContainsFilter, seniorOnlyFilter]}
+  filterClause={filterClause}
+  onFilterClauseChanged={setFilterClause}
+/>`,
+      },
+    },
+  },
+  render: (args) => <WithCustomFiltersStory {...args} />,
 };
