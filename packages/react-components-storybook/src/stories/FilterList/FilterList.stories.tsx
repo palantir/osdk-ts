@@ -1568,27 +1568,6 @@ function WithLinkedPropertyFiltersStory(
         label: "Has Manager",
         filterState: { type: "hasLink", hasLink: false },
       },
-      {
-        type: "LINKED_PROPERTY",
-        linkName: "peeps",
-        linkedPropertyKey: "department",
-        linkedFilterComponent: "LISTOGRAM",
-        linkedFilterState: { type: "EXACT_MATCH", values: [] },
-        filterState: {
-          type: "linkedProperty",
-          linkedFilterState: { type: "EXACT_MATCH", values: [] },
-        },
-        label: "Reports' Department",
-      },
-      {
-        type: "STATIC_VALUES",
-        key: "managerCity",
-        label: "Manager's City (static example)",
-        filterComponent: "LISTOGRAM",
-        values: ["New York", "San Francisco", "London", "Tokyo"],
-        filterState: { type: "EXACT_MATCH", values: [] },
-        listogramConfig: { displayMode: "minimal" },
-      },
     ],
     [],
   );
@@ -1616,17 +1595,13 @@ function WithLinkedPropertyFiltersStory(
   );
 }
 
-export const WithLinkedPropertyFilters: Story = {
+export const WithHasLinkFilter: Story = {
   name: "Linked Property Filters",
   parameters: {
     docs: {
       description: {
         story: "Demonstrates filtering on properties of linked objects. "
-          + "HAS_LINK filters objects based on whether they have a linked object. "
-          + "LINKED_PROPERTY filters on a specific property of the linked objects. "
-          + "The 'Reports' Department' filter uses LINKED_PROPERTY to filter by the department of direct reports. "
-          + "The 'Manager's City' filter shows an equivalent using STATIC_VALUES with a custom toWhereClause. "
-          + "NOTE: In production, LINKED_PROPERTY with aggregation requires proper backend support for aggregation on pivoted object sets.",
+          + "HAS_LINK filters objects based on whether they have a linked object. ",
       },
       source: {
         code: `// HAS_LINK and LINKED_PROPERTY filter definitions
@@ -1636,38 +1611,6 @@ const filterDefinitions = [
     linkName: "lead",
     label: "Has Manager",
     filterState: { type: "hasLink", hasLink: false },
-  },
-  {
-    // LINKED_PROPERTY: filters on properties of linked objects
-    type: "LINKED_PROPERTY",
-    linkName: "peeps", // many-to-one: "who are my direct reports?"
-    linkedPropertyKey: "department",
-    linkedFilterComponent: "LISTOGRAM",
-    linkedFilterState: { type: "EXACT_MATCH", values: [] },
-    filterState: {
-      type: "linkedProperty",
-      linkedFilterState: { type: "EXACT_MATCH", values: [] },
-    },
-    label: "Reports' Department",
-  },
-  {
-    // Alternative: use STATIC_VALUES with toWhereClause for linked filtering
-    type: "STATIC_VALUES",
-    key: "managerCity",
-    label: "Manager's City",
-    filterComponent: "LISTOGRAM",
-    values: ["New York", "San Francisco", "London", "Tokyo"],
-    filterState: { type: "EXACT_MATCH", values: [] },
-    toWhereClause: (state) => {
-      if (state.type !== "EXACT_MATCH" || state.values.length === 0) {
-        return undefined;
-      }
-      return {
-        $or: state.values.map((city) => ({
-          "lead->locationCity": city,
-        })),
-      };
-    },
   },
 ];
 
