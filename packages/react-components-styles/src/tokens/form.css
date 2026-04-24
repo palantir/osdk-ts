@@ -23,11 +23,6 @@
   /* Required indicator */
   --osdk-form-required-color: var(--osdk-intent-danger-rest);
 
-  /* Helper text info icon */
-  --osdk-form-label-row-gap: calc(var(--osdk-surface-spacing) * 1);
-  --osdk-form-info-icon-size: var(--osdk-iconography-size-small);
-  --osdk-form-info-icon-color: var(--osdk-typography-color-muted);
-
   /* Validation errors */
   --osdk-form-error-font-size: var(--osdk-typography-size-body-small);
   --osdk-form-error-color: var(--osdk-typography-color-danger-rest);
