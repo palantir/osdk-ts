@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+export { clearSuspenseErrors } from "../new/makeSuspenseExternalStore.js";
 export { useStableObjectSet } from "../new/core/useStableObjectSet.js";
 export { OsdkProvider2 } from "../new/OsdkProvider2.js";
 export { useLinks } from "../new/useLinks.js";

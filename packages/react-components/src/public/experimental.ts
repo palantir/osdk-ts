@@ -20,3 +20,5 @@ export * from "./experimental/markdown-renderer.js";
 export * from "./experimental/object-table.js";
 export * from "./experimental/pdf-viewer.js";
 export * from "./experimental/tiff-renderer.js";
+export { OsdkErrorBoundary } from "../OsdkErrorBoundary.js";
+export type { OsdkErrorBoundaryProps } from "../OsdkErrorBoundary.js";
