@@ -38,7 +38,7 @@ export class ActionApplication {
   ) => Promise<ActionEditResponse> = async (
     action,
     args,
-    { optimisticUpdate } = {},
+    { optimisticUpdate, keepAlive } = {},
   ) => {
     const logger = process.env.NODE_ENV !== "production"
       ? this.store.logger?.child({ methodName: "applyAction" })
@@ -59,7 +59,7 @@ export class ActionApplication {
             await this.store
               .client(action).batchApplyAction(
                 args,
-                { $returnEdits: true },
+                { $returnEdits: true, keepAlive },
               );
 
           await this.#invalidateActionEditResponse(results);
@@ -73,7 +73,7 @@ export class ActionApplication {
 
         const actionResults: ActionEditResponse = await this.store.client(
           action,
-        ).applyAction(args as any, { $returnEdits: true });
+        ).applyAction(args as any, { $returnEdits: true, keepAlive });
 
         if (process.env.NODE_ENV !== "production") {
           if (ACTION_DELAY > 0) {
