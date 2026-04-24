@@ -172,9 +172,10 @@ describe("Store Invalidation Type Isolation", () => {
       },
     );
 
-    // Legacy-style impl that returns the full response, bypassing the normal
-    // batch → edits remapping. Lets us exercise the largeScaleEdits branch
-    // without patching FauxFoundry's hardcoded returnLargeScaleEdits flag.
+    // Returns a pre-built ActionResults directly so FauxDataStore's legacy
+    // passthrough (if (r) return r) hands it to the client unchanged — lets
+    // us exercise the largeScaleEdits branch without flipping FauxFoundry's
+    // hardcoded returnLargeScaleEdits flag.
     fauxFoundry.getDefaultOntology().registerActionType(
       largeScaleEditsBuild.actionTypeV2,
       () => ({

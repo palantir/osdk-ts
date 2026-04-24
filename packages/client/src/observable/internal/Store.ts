@@ -589,11 +589,9 @@ export class Store {
   }
 
   /**
-   * Invalidate only specificLink queries affected by changes to an object type.
-   * Lists and object queries propagate via `#maybeRevalidateQueries` when
-   * object-level writes fire `onRevalidate`; links do not, so they need an
-   * explicit type-level kick after an action edits objects of a type that a
-   * link has on its source or target side.
+   * Invalidate only specificLink queries for an object type. Object and list
+   * queries self-invalidate via the object-level propagation pipeline; link
+   * queries don't, so they need this explicit kick.
    */
   public invalidateLinkQueriesForType(apiName: string): Promise<void> {
     const promises: Array<Promise<void>> = [];

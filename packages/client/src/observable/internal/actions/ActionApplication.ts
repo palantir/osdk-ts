@@ -143,20 +143,15 @@ export class ActionApplication {
     const deletedLinksTruncated = (deletedLinksCount ?? 0)
       > (deletedLinks?.length ?? 0);
 
-    // Per-object invalidation drives list updates via the propagation pipeline
-    // (onRevalidate → maybeRevalidateQueries → ListQuery.maybeUpdateAndRevalidate
-    // applies the edit in-place). Refetching the list directly would pull in
-    // objects the caller never had, so we prefer this path when we have the
-    // full enumeration.
+    // Per-object invalidation updates lists in-place via onRevalidate; a coarse
+    // refetch would pull in objects the caller never had.
     const perObjectInvalidations: Array<Promise<unknown>> = [];
     const perObjectTypes = new Set<string>();
-    for (const list of [addedObjects, modifiedObjects]) {
-      for (const obj of list ?? []) {
-        perObjectTypes.add(obj.objectType);
-        perObjectInvalidations.push(
-          this.store.invalidateObject(obj.objectType, obj.primaryKey),
-        );
-      }
+    for (const obj of [...(addedObjects ?? []), ...(modifiedObjects ?? [])]) {
+      perObjectTypes.add(obj.objectType);
+      perObjectInvalidations.push(
+        this.store.invalidateObject(obj.objectType, obj.primaryKey),
+      );
     }
     if (!deletedObjectsTruncated) {
       for (const obj of deletedObjects ?? []) {
@@ -164,10 +159,8 @@ export class ActionApplication {
       }
     }
 
-    // For types the server reported as edited but we couldn't enumerate
-    // per-object (deletions truncated, link-only side types, or types that
-    // only surfaced in editedObjectTypes), fall back to type-level
-    // invalidation — which refetches lists/objects/links of that type.
+    // Types the server flagged but we couldn't enumerate (truncated deletes,
+    // link-only sides, type-only) fall back to type-level invalidation.
     const coarseInvalidateTypes = new Set<string>();
     for (const apiName of editedObjectTypes) {
       if (!perObjectTypes.has(apiName)) {
@@ -175,17 +168,17 @@ export class ActionApplication {
       }
     }
 
-    // Link queries don't participate in the object-type propagation path, so
-    // per-object invalidation doesn't reach them. Kick link queries for every
-    // type we touched that isn't already going through the coarse path.
-    const linkOnlyTypes = new Set<string>(perObjectTypes);
+    // Link queries don't see object propagation — kick them explicitly.
+    const linkKickTypes = new Set<string>(perObjectTypes);
     if (!deletedLinksTruncated) {
-      for (const list of [addedLinks, deletedLinks]) {
-        for (const link of list ?? []) {
-          const a = link.aSideObject.objectType;
-          const b = link.bSideObject.objectType;
-          if (!coarseInvalidateTypes.has(a)) linkOnlyTypes.add(a);
-          if (!coarseInvalidateTypes.has(b)) linkOnlyTypes.add(b);
+      for (const link of [...(addedLinks ?? []), ...(deletedLinks ?? [])]) {
+        const a = link.aSideObject.objectType;
+        const b = link.bSideObject.objectType;
+        if (!coarseInvalidateTypes.has(a)) {
+          linkKickTypes.add(a);
+        }
+        if (!coarseInvalidateTypes.has(b)) {
+          linkKickTypes.add(b);
         }
       }
     }
@@ -195,7 +188,7 @@ export class ActionApplication {
       ...[...coarseInvalidateTypes].map(apiName =>
         this.store.invalidateObjectType(apiName, undefined)
       ),
-      ...[...linkOnlyTypes].map(apiName =>
+      ...[...linkKickTypes].map(apiName =>
         this.store.invalidateLinkQueriesForType(apiName)
       ),
     ]);
