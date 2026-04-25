@@ -114,8 +114,8 @@ describe("ObjectSet", () => {
   });
 
   it("exposes .subscribe on MinimalObjectSet (the client() fallback for generic InterfaceDefinition)", () => {
-    expectTypeOf<MinimalObjectSet<InterfaceDefinition>>().toHaveProperty(
-      "subscribe",
-    );
+    expectTypeOf<MinimalObjectSet<InterfaceDefinition>>()
+      .toHaveProperty("subscribe")
+      .toBeFunction();
   });
 });
