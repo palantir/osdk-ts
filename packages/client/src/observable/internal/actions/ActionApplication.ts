@@ -121,8 +121,6 @@ export class ActionApplication {
       deletedLinks,
     } = actionEditResponse;
 
-    // Tombstone deleted objects first so subscribers never observe a loading
-    // state for an object we already know is gone.
     this.store.batch({}, (batch) => {
       for (const { objectType, primaryKey } of deletedObjects ?? []) {
         for (
@@ -137,27 +135,24 @@ export class ActionApplication {
     });
 
     const perObjectInvalidations: Array<Promise<unknown>> = [];
-    const linkKickTypes = new Set<string>();
+    const touchedObjectTypes = new Set<string>();
     for (const obj of [...(addedObjects ?? []), ...(modifiedObjects ?? [])]) {
-      linkKickTypes.add(obj.objectType);
+      touchedObjectTypes.add(obj.objectType);
       perObjectInvalidations.push(
         this.store.invalidateObject(obj.objectType, obj.primaryKey),
       );
     }
     for (const obj of deletedObjects ?? []) {
-      linkKickTypes.add(obj.objectType);
+      touchedObjectTypes.add(obj.objectType);
     }
     for (const link of [...(addedLinks ?? []), ...(deletedLinks ?? [])]) {
-      linkKickTypes.add(link.aSideObject.objectType);
-      linkKickTypes.add(link.bSideObject.objectType);
+      touchedObjectTypes.add(link.aSideObject.objectType);
+      touchedObjectTypes.add(link.bSideObject.objectType);
     }
 
-    // Object modifications reach link queries via the RxJS subject pipeline,
-    // but deletes and link edits don't; kick link queries for every touched
-    // type.
     await Promise.all([
       ...perObjectInvalidations,
-      ...[...linkKickTypes].map(apiName =>
+      ...[...touchedObjectTypes].map(apiName =>
         this.store.invalidateLinkQueriesForType(apiName)
       ),
     ]);

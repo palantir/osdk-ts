@@ -120,8 +120,7 @@ describe("Store Invalidation Type Isolation", () => {
       createOfficeAndEmployeeActionTypeV2,
       (b, payload) => {
         const { officeId, employeeId } = payload.parameters;
-        // Widen the apiName literal so overload resolution picks the untyped
-        // addObject — otherwise TS demands every required prop on the SDK type.
+        // widen literal so addObject picks the untyped overload
         const officeType: string = Office.apiName;
         const employeeType: string = Employee.apiName;
         b.addObject(officeType, officeId, {
@@ -831,8 +830,21 @@ describe("Store Invalidation Type Isolation", () => {
 
       await cache.applyAction(deleteTodoAction, { id: TODO_1_ID });
 
-      await vi.waitFor(() => expect(todoSubFn.next).toHaveBeenCalled());
-      await vi.waitFor(() => expect(todoListSubFn.next).toHaveBeenCalled());
+      await vi.waitFor(() => {
+        expect(todoSubFn.next).toHaveBeenCalledWith(
+          expect.objectContaining({ object: undefined }),
+        );
+      });
+      await vi.waitFor(() => {
+        expect(todoListSubFn.next).toHaveBeenCalledWith(
+          expect.objectContaining({
+            status: "loaded",
+            resolvedList: expect.not.arrayContaining([
+              expect.objectContaining({ $primaryKey: TODO_1_ID }),
+            ]),
+          }),
+        );
+      });
     });
 
     it("addedLinks invalidates link queries on both sides", async () => {
@@ -874,8 +886,26 @@ describe("Store Invalidation Type Isolation", () => {
         peepId: EMPLOYEE_2_ID,
       });
 
-      await vi.waitFor(() => expect(peepsSubFn.next).toHaveBeenCalled());
-      await vi.waitFor(() => expect(leadSubFn.next).toHaveBeenCalled());
+      await vi.waitFor(() => {
+        expect(peepsSubFn.next).toHaveBeenCalledWith(
+          expect.objectContaining({
+            status: "loaded",
+            resolvedList: expect.arrayContaining([
+              expect.objectContaining({ $primaryKey: EMPLOYEE_2_ID }),
+            ]),
+          }),
+        );
+      });
+      await vi.waitFor(() => {
+        expect(leadSubFn.next).toHaveBeenCalledWith(
+          expect.objectContaining({
+            status: "loaded",
+            resolvedList: expect.arrayContaining([
+              expect.objectContaining({ $primaryKey: EMPLOYEE_1_ID }),
+            ]),
+          }),
+        );
+      });
     });
   });
 });

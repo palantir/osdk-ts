@@ -591,11 +591,21 @@ export class Store {
    * queries don't, so they need this explicit kick.
    */
   public invalidateLinkQueriesForType(apiName: string): Promise<void> {
+    if (process.env.NODE_ENV !== "production") {
+      this.logger?.child({ methodName: "invalidateLinkQueriesForType" }).debug(
+        apiName,
+      );
+    }
+
     const promises: Array<Promise<void>> = [];
     for (const cacheKey of this.queries.keys()) {
-      if (cacheKey.type !== "specificLink") continue;
+      if (cacheKey.type !== "specificLink") {
+        continue;
+      }
       const query = this.queries.peek(cacheKey);
-      if (!query) continue;
+      if (!query) {
+        continue;
+      }
       promises.push(query.invalidateObjectType(apiName, undefined));
     }
     return Promise.allSettled(promises).then(() => void 0);
