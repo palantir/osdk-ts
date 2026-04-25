@@ -72,7 +72,7 @@ To find the exact compatible `@osdk/client` and `@osdk/api` for any installed `@
 | `useOsdkObject`      | `enabled` is **positional** (2nd param for instance, 3rd for type+key)                                                                        |
 | `useLinks`           | `where`, `pageSize`, `enabled`, `mode` (`"force"` / `"offline"`), `dedupeIntervalMs`. Accepts single object or array.                         |
 | `useOsdkAction`      | Returns `applyAction`, `validateAction`, `isPending`, `error`, `validationResult`. Pass `$optimisticUpdate` with `$` prefix in action params. |
-| `useOsdkAggregation` | `where`, `aggregate: { $groupBy, $select }`. Metrics: `$count`, `sum`, `avg`, `min`, `max`, `exactDistinct`, `approximateDistinct`.           |
+| `useOsdkAggregation` | `where`, `aggregate: { $groupBy, $select }`, `objectSet`, `enabled`, `withProperties`, `intersectWith`, `dedupeIntervalMs`. Metrics: `$count`, `sum`, `avg`, `min`, `max`, `exactDistinct`, `approximateDistinct`. |
 | `useOsdkFunction`    | `params`, `dependsOn` (object types), `dependsOnObjects` (instances), `enabled`, `dedupeIntervalMs`                                           |
 
 ## Text Search Filters

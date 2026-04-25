@@ -569,6 +569,64 @@ function HighPriorityStats() {
 }
 ```
 
+### Conditional Aggregation
+
+Use the `enabled` option to skip execution until upstream data is ready. This is especially useful when aggregating a derived `ObjectSet` (built from `useObjectSet` + `subtract`/`union`/`intersect` or `pivotTo`), which is `undefined` until its dependencies resolve.
+
+```tsx
+import { Employee, Office } from "@my/osdk";
+import { useOsdkAggregation, useOsdkObjects } from "@osdk/react/experimental";
+import { useMemo } from "react";
+
+function NonHQHeadcountByDept() {
+  const { objectSet: allEmployees } = useOsdkObjects(Employee);
+  const { objectSet: hqEmployees } = useOsdkObjects(Employee, {
+    where: { officeId: { $eq: "HQ" } },
+  });
+
+  const nonHqSet = useMemo(
+    () =>
+      allEmployees && hqEmployees
+        ? allEmployees.subtract(hqEmployees)
+        : undefined,
+    [allEmployees, hqEmployees],
+  );
+
+  const { data, isLoading } = useOsdkAggregation(Employee, {
+    objectSet: nonHqSet,
+    enabled: nonHqSet != null,
+    aggregate: {
+      $groupBy: { department: "exact" },
+      $select: { $count: "unordered" },
+    },
+  });
+
+  if (isLoading || !data) return <div>Loading...</div>;
+
+  return (
+    <ul>
+      {data.map((group, idx) => (
+        <li key={idx}>
+          {group.$group.department}: {group.$count}
+        </li>
+      ))}
+    </ul>
+  );
+}
+```
+
+When `enabled: false`, no network request is made, `data` is `undefined`, and `isLoading` is `false`. Flipping `enabled` from `false` to `true` triggers the aggregation as soon as the dependencies are ready — there's no need for a conditional spread of `objectSet`.
+
+### Options
+
+- `where` - Filter objects before aggregation
+- `aggregate` - Required; `{ $groupBy, $select }` spec
+- `objectSet` - Aggregate on a pre-built `ObjectSet` (pivoted, filtered, composed). Required for derived-set aggregations.
+- `enabled` - Enable/disable execution (default: true). Use to wait on upstream data.
+- `withProperties` - Server-side derived properties available in `where` and `$groupBy`/`$select`
+- `intersectWith` - Array of additional filtered sets to intersect with
+- `dedupeIntervalMs` - Milliseconds to dedupe identical calls (default: 2000)
+
 ### Aggregation Syntax
 
 The `$select` object uses a special key format where each key is a metric and each value is an ordering directive (`"unordered"`, `"asc"`, or `"desc"`). When using `$groupBy`, the ordering determines the order results are returned.
