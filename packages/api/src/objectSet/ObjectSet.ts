@@ -112,7 +112,8 @@ export interface MinimalObjectSet<
   FetchPage<Q, RDPs>,
   AsyncIter<Q, RDPs, ORDER_BY_OPTIONS>,
   Where<Q, RDPs>,
-  AsyncIterLinks<Q>
+  AsyncIterLinks<Q>,
+  Subscribe<MergeObjectSet<Q, RDPs>>
 {
 }
 
@@ -661,7 +662,6 @@ interface ObjectSetCleanedTypes<
   SetArithmetic<MERGED>,
   PivotTo<Q>,
   FetchOne<Q, D>,
-  Subscribe<MERGED>,
   NearestNeighbors<Q>,
   NarrowToType<Q>
 {
