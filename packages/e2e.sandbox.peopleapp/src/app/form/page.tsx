@@ -211,12 +211,12 @@ const fieldDefinitions: ReadonlyArray<
 
 export function FormPage() {
   const [submittedState, setSubmittedState] = useState<
-    Record<string, unknown> | undefined
+    EmployeeFormSchema | undefined
   >(undefined);
 
   const handleSubmit = useCallback(
     async (formState: EmployeeFormSchema) => {
-      setSubmittedState(formState as unknown as Record<string, unknown>);
+      setSubmittedState(formState);
     },
     [],
   );

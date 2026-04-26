@@ -51,9 +51,7 @@ export const ObjectSetField: React.FC<ObjectSetFieldProps> = typedReactMemo(
       );
     }
 
-    // Safe cast: callers always pass a real ObjectSet; we accept the wider
-    // BaseObjectSet in the public API to avoid invariance-related casts.
-    return <ObjectSetFieldContent objectSet={value as ObjectSet} />;
+    return <ObjectSetFieldContent objectSet={value} />;
   },
 );
 

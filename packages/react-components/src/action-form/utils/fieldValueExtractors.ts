@@ -18,10 +18,6 @@ import { type DateRange, EMPTY_RANGE } from "../FormFieldApi.js";
 
 /**
  * Shared primitives for extracting typed values from `unknown`.
- *
- * Used by both:
- * - `coerceForRender` (unknown → UI type for component rendering)
- * - `coerceFieldValue` (unknown → wire type for form submission)
  */
 
 export function extractNumber(rawValue: unknown): number | undefined {

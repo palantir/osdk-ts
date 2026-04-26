@@ -18,10 +18,9 @@ import type {
   ActionDefinition,
   ActionMetadata,
   ActionParam,
-  BaseObjectSet,
   CompileTimeMetadata,
   DataValueClientToWire,
-  ObjectOrInterfaceDefinition,
+  ObjectSet,
 } from "@osdk/api";
 import type React from "react";
 
@@ -399,14 +398,12 @@ export interface Option<V> {
 /**
  * Object set field displays the summary of the count of the given object set.
  *
- * Accepts `BaseObjectSet` (covariant) so callers don't need to cast
- * concrete types like `ObjectSet<Employee>` to `ObjectSet<ObjectTypeDefinition>`.
+ * Uses `ObjectSet` (default Q = any) so concrete types like
+ * `ObjectSet<Employee>` are assignable without casting.
  */
-export interface ObjectSetFieldProps<
-  T extends ObjectOrInterfaceDefinition = ObjectOrInterfaceDefinition,
-> {
+export interface ObjectSetFieldProps {
   id?: string;
-  value: BaseObjectSet<T> | null;
+  value: ObjectSet | null;
   /**
    * Message displayed when no object set is provided.
    *
