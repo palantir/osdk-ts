@@ -1,10 +1,10 @@
-import type { BaseObjectSet, ObjectOrInterfaceDefinition } from "@osdk/api";
-import { BaseForm } from "@osdk/react-components/experimental/action-form";
+import type { ObjectSet } from "@osdk/api";
 import type {
   BaseFormFieldProps,
   DateRange,
   RendererFieldDefinition,
 } from "@osdk/react-components/experimental/action-form";
+import { BaseForm } from "@osdk/react-components/experimental/action-form";
 import { useCallback, useMemo, useState } from "react";
 import { $ } from "../../foundryClient.js";
 import { Employee } from "../../generatedNoCheck2/index.js";
@@ -25,7 +25,7 @@ interface EmployeeFormSchema {
   portfolioFiles: File[];
   skills: string;
   rating: unknown;
-  team: BaseObjectSet<ObjectOrInterfaceDefinition>;
+  team: ObjectSet;
 }
 
 function RatingSlider({ id, value, onChange }: BaseFormFieldProps<unknown>) {
@@ -214,17 +214,11 @@ export function FormPage() {
     EmployeeFormSchema | undefined
   >(undefined);
 
-  const handleSubmit = useCallback(
-    async (formState: EmployeeFormSchema) => {
-      setSubmittedState(formState);
-    },
-    [],
-  );
+  const handleSubmit = useCallback(async (formState: EmployeeFormSchema) => {
+    setSubmittedState(formState);
+  }, []);
 
-  const employeeObjectSet = useMemo(
-    () => $(Employee),
-    [],
-  );
+  const employeeObjectSet = useMemo(() => $(Employee), []);
 
   const allFieldDefinitions = useMemo(
     (): ReadonlyArray<RendererFieldDefinition<EmployeeFormSchema>> => [
