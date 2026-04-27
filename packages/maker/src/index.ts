@@ -120,3 +120,33 @@ export {
 export type { ValueTypeDefinitionVersion } from "./api/values/ValueTypeDefinitionVersion.js";
 export { wrapWithProxy } from "./api/wrapWithProxy.js";
 export { propertyTypeTypeToOntologyIrType as convertType } from "./conversion/toMarketplace/propertyTypeTypeToOntologyIrType.js";
+
+// V2 experimental APIs — client-compatible maker definitions
+export { defineActionV2 } from "./api/v2/defineActionV2.js";
+export type {
+  ActionParameterV2Config,
+  ActionPrimitiveType,
+  ActionV2Config,
+  ActionV2Def,
+} from "./api/v2/defineActionV2.js";
+export { defineLinkV2 } from "./api/v2/defineLinkV2.js";
+export type {
+  LinkV2Config,
+  LinkV2Def,
+  ManyToManyLinkV2Config,
+  OneToManyLinkV2Config,
+} from "./api/v2/defineLinkV2.js";
+export {
+  defineCreateObjectActionV2,
+  defineCreateOrModifyObjectActionV2,
+  defineDeleteObjectActionV2,
+  defineModifyObjectActionV2,
+} from "./api/v2/defineObjectActions.js";
+export type {
+  ActionV2Overrides,
+  CreateOrModifyV2Overrides,
+} from "./api/v2/defineObjectActions.js";
+export { defineObjectV2 } from "./api/v2/defineObjectV2.js";
+export type { ObjectV2Config, ObjectV2Def } from "./api/v2/defineObjectV2.js";
+export { finalizeTypes } from "./api/v2/finalizeTypes.js";
+export type { FinalizeConfig, FinalizedTypes } from "./api/v2/finalizeTypes.js";
