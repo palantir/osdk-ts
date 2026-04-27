@@ -16,39 +16,15 @@
 
 import type {
   CompileTimeMetadata,
-  LinkedType,
-  LinkNames,
-  ObjectSet,
   ObjectTypeDefinition,
   Osdk,
   Result,
 } from "@osdk/api";
 import invariant from "tiny-invariant";
+import type { MockOsdkObjectOptions } from "../api/MockOsdkObjectOptions.js";
 import { isMockObjectSet } from "./createMockObjectSet.js";
 
-/**
- * Options for customizing mock object creation.
- */
-export interface MockOsdkObjectOptions<
-  Q extends ObjectTypeDefinition = ObjectTypeDefinition,
-> {
-  /** Objects linked to this object by API name */
-  links?: LinkStubs<Q>;
-  /** The API name of the title property (optional, required for $title) */
-  titlePropertyApiName?: string;
-  /** Override the generated $rid */
-  $rid?: string;
-}
-
 // TODO: Add support for RDPs
-
-type LinkStubs<Q extends ObjectTypeDefinition> = {
-  [LINK_NAME in LinkNames<Q>]?:
-    CompileTimeMetadata<Q>["links"][LINK_NAME]["multiplicity"] extends true ?
-        | Array<Osdk.Instance<LinkedType<Q, LINK_NAME>>>
-        | ObjectSet<LinkedType<Q, LINK_NAME>>
-      : Osdk.Instance<LinkedType<Q, LINK_NAME>> | Error;
-};
 
 function createSingleLinkStub<T extends ObjectTypeDefinition>(
   linked: Osdk.Instance<T> | Error,
