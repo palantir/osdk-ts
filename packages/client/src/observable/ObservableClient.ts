@@ -128,6 +128,11 @@ export interface ObserveListOptions<
    *
    * Cannot be combined with `pivotTo`. The server does not support
    * websocket subscriptions for link-traversal queries.
+   *
+   * Cannot be combined with `withProperties`. The server does not support
+   * websocket subscriptions for object sets that include derived properties;
+   * in that case `streamUpdates` is ignored and a warning is logged in
+   * development.
    */
   streamUpdates?: boolean;
   withProperties?: DerivedProperty.Clause<Q>;
