@@ -170,7 +170,7 @@ export class FauxDataStoreBatch {
         rightObjectType,
       );
 
-    this.#fauxDataStore.registerLink(
+    const { fkUpdate } = this.#fauxDataStore.registerLink(
       { __apiName: leftObjectType, __primaryKey: leftPrimaryKey },
       leftTypeSideV2.apiName,
       { __apiName: rightObjectType, __primaryKey: rightPrimaryKey },
@@ -192,6 +192,18 @@ export class FauxDataStoreBatch {
     });
 
     this.objectEdits.addedLinksCount += 1;
+
+    // FK-backed links update the "one" side's foreign key when the link is
+    // added; record that as a modifyObject edit so the action response
+    // accurately reflects every object the action mutated.
+    if (fkUpdate) {
+      this.objectEdits.edits.push({
+        type: "modifyObject",
+        objectType: fkUpdate.objectType,
+        primaryKey: fkUpdate.primaryKey,
+      });
+      this.objectEdits.modifiedObjectsCount += 1;
+    }
   };
 
   removeLink = (
@@ -208,7 +220,7 @@ export class FauxDataStoreBatch {
         rightObjectType,
       );
 
-    this.#fauxDataStore.unregisterLink(
+    const { fkUpdate } = this.#fauxDataStore.unregisterLink(
       { __apiName: leftObjectType, __primaryKey: leftPrimaryKey },
       leftTypeSideV2.apiName,
       { __apiName: rightObjectType, __primaryKey: rightPrimaryKey },
@@ -230,5 +242,16 @@ export class FauxDataStoreBatch {
     });
 
     this.objectEdits.deletedLinksCount += 1;
+
+    // FK-backed link removal clears the "one" side's foreign key; record it
+    // as a modifyObject edit alongside the deleteLink.
+    if (fkUpdate) {
+      this.objectEdits.edits.push({
+        type: "modifyObject",
+        objectType: fkUpdate.objectType,
+        primaryKey: fkUpdate.primaryKey,
+      });
+      this.objectEdits.modifiedObjectsCount += 1;
+    }
   };
 }

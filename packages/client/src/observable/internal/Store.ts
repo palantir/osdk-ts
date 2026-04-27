@@ -567,11 +567,9 @@ export class Store {
 
     const promises: Array<Promise<void>> = [];
 
-    // Iterate every registered query, not just those with truth-layer data.
-    // A query that's still loading (or about to revalidate) has no truth entry
-    // yet but still has subscribers waiting on the result; iterating
-    // `layers.truth.keys()` here would silently drop their invalidation.
-    // `invalidateAll` uses `queries.keys()` for the same reason.
+    // truth.keys() = queries whose data has been written to the truth layer.
+    // queries.keys() = every registered query, including loading/pending ones.
+    // Use queries.keys() so we don't drop invalidations on in-flight queries.
     for (const cacheKey of this.queries.keys()) {
       if (
         cacheKey.type !== "mediaMetadata"

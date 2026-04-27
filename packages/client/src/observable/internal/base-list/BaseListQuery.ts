@@ -31,7 +31,6 @@ import { type CacheKey, DEBUG_ONLY__cacheKeysToString } from "../CacheKey.js";
 import type { Canonical } from "../Canonical.js";
 import { isObjectInstance } from "../isObjectInstance.js";
 import type { Entry } from "../Layer.js";
-import { RDP_IDX } from "../list/ListCacheKey.js";
 import { type ObjectCacheKey } from "../object/ObjectCacheKey.js";
 import { Query } from "../Query.js";
 import type { Rdp } from "../RdpCanonicalizer.js";
@@ -85,11 +84,11 @@ export abstract class BaseListQuery<
   protected sortingStrategy: SortingStrategy = new NoOpSortingStrategy();
 
   /**
-   * Get RDP configuration from the cache key
+   * RDP configuration for this collection. Subclasses extract it from their
+   * own cache key shape; the index isn't shared (e.g. SpecificLinkCacheKey
+   * has the link name where ListCacheKey has the RDP config).
    */
-  public get rdpConfig(): Canonical<Rdp> | null {
-    return this.cacheKey.otherKeys[RDP_IDX];
-  }
+  public abstract get rdpConfig(): Canonical<Rdp> | null;
 
   private _selectFieldSetMemo: ReadonlySet<string> | undefined;
 

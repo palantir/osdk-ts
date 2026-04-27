@@ -50,6 +50,7 @@ import {
 import { objectSortaMatchesWhereClause as objectMatchesWhereClause } from "../objectMatchesWhereClause.js";
 import type { OptimisticId } from "../OptimisticId.js";
 import type { PivotInfo } from "../PivotCanonicalizer.js";
+import type { Rdp } from "../RdpCanonicalizer.js";
 import type { SimpleWhereClause } from "../SimpleWhereClause.js";
 import { OrderBySortingStrategy } from "../sorting/SortingStrategy.js";
 import type { Store } from "../Store.js";
@@ -115,6 +116,10 @@ export abstract class ListQuery extends BaseListQuery<
    */
   protected registerCacheChanges(batch: BatchContext): void {
     batch.changes.registerList(this.cacheKey);
+  }
+
+  public override get rdpConfig(): Canonical<Rdp> | null {
+    return this.cacheKey.otherKeys[RDP_IDX];
   }
 
   constructor(

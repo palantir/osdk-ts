@@ -442,12 +442,20 @@ export class FauxDataStore {
     this.#objects.get(objectType).delete(String(primaryKey));
   }
 
+  /**
+   * Registers a link between two objects. In strict mode, foreign-key-backed
+   * links also update the FK property on the "one" side; that update is a real
+   * object modification and is reported back to the caller so the batch can
+   * record a `modifyObject` edit alongside the `addLink` edit.
+   */
   registerLink(
     tmpSrc: BaseServerObject,
     srcLinkName: string,
     tmpDst: BaseServerObject,
     destLinkName: string,
-  ): void {
+  ): {
+    fkUpdate?: { objectType: string; primaryKey: string | number | boolean };
+  } {
     const src = this.getObjectOrThrow(tmpSrc.__apiName, tmpSrc.__primaryKey);
     const dst = this.getObjectOrThrow(tmpDst.__apiName, tmpDst.__primaryKey);
 
@@ -494,20 +502,34 @@ export class FauxDataStore {
 
         // This method call will also do the work to update the sides
         this.replaceObjectOrThrow(newObj);
-        return;
+        return {
+          fkUpdate: {
+            objectType: oneSide.object.__apiName,
+            primaryKey: oneSide.object.__primaryKey,
+          },
+        };
       }
     }
 
     this.#updateSingleLinkSide(srcSide, srcLocator, dstSide, dstLocator);
     this.#updateSingleLinkSide(dstSide, dstLocator, srcSide, srcLocator);
+    return {};
   }
 
+  /**
+   * Unregisters a link between two objects. In strict mode, foreign-key-backed
+   * links also clear the FK property on the "one" side; that clear is a real
+   * object modification and is reported back to the caller so the batch can
+   * record a `modifyObject` edit alongside the `deleteLink` edit.
+   */
   unregisterLink(
     src: BaseServerObject,
     srcLinkName: string,
     dst: BaseServerObject,
     dstLinkName: string,
-  ): void {
+  ): {
+    fkUpdate?: { objectType: string; primaryKey: string | number | boolean };
+  } {
     const srcLocator = objectLocator(src);
     const dstLocator = objectLocator(dst);
     const [srcSide, dstSide] = this.#fauxOntology.getBothLinkTypeSides(
@@ -542,12 +564,18 @@ export class FauxDataStore {
 
         // This method call will also do the work to update the sides
         this.replaceObjectOrThrow(newObj);
-        return;
+        return {
+          fkUpdate: {
+            objectType: oneSide.object.__apiName,
+            primaryKey: oneSide.object.__primaryKey,
+          },
+        };
       }
     }
 
     this.#removeSingleSideOfLink(srcLocator, srcSide, dstLocator);
     this.#removeSingleSideOfLink(dstLocator, dstSide, srcLocator);
+    return {};
   }
 
   registerTimeSeriesData(

@@ -38,6 +38,7 @@ import type { Canonical } from "../Canonical.js";
 import type { Changes } from "../Changes.js";
 import type { Entry } from "../Layer.js";
 import type { OptimisticId } from "../OptimisticId.js";
+import type { Rdp } from "../RdpCanonicalizer.js";
 import type { SimpleWhereClause } from "../SimpleWhereClause.js";
 import { OrderBySortingStrategy } from "../sorting/SortingStrategy.js";
 import type { Store } from "../Store.js";
@@ -49,11 +50,11 @@ import {
 } from "./SpecificLinkCacheKey.js";
 
 /**
- * Query implementation for retrieving linked objects from a specific object.
- * - Stores links as ObjectCacheKey[] references
- * - Creates indirect dependencies on linked objects
+ * Query for retrieving linked objects from a specific source object.
+ * - Keyed by SpecificLinkCacheKey: (sourceType, sourcePk, linkName, where, orderBy)
  * - Supports filtering and sorting of linked collections
- * - Handles proper invalidation of related objects
+ * - Revalidates via Store.invalidateLinkQueriesForType when an action edits
+ *   either side's object type (see ActionApplication)
  */
 export class SpecificLinkQuery extends BaseListQuery<
   SpecificLinkCacheKey,
@@ -125,6 +126,11 @@ export class SpecificLinkQuery extends BaseListQuery<
 
   protected get rawSelect(): Canonical<readonly string[]> | undefined {
     return this.#select;
+  }
+
+  // SpecificLinkCacheKey has no RDP slot.
+  public override get rdpConfig(): Canonical<Rdp> | null {
+    return null;
   }
 
   /**
