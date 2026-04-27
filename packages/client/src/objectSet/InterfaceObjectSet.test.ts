@@ -118,4 +118,19 @@ describe("ObjectSet", () => {
       .toHaveProperty("subscribe")
       .toBeFunction();
   });
+
+  it("intellisense: client(InterfaceDefinition).subscribe exposes the documented listener hooks", () => {
+    const genericInterface: InterfaceDefinition = FooInterface;
+    const objectSet = client(genericInterface);
+
+    type SubscribeFn = typeof objectSet.subscribe;
+    type Listener = Parameters<SubscribeFn>[0];
+
+    expectTypeOf<keyof Listener>().toEqualTypeOf<
+      "onChange" | "onError" | "onOutOfDate" | "onSuccessfulSubscription"
+    >();
+    expectTypeOf<ReturnType<SubscribeFn>>().toEqualTypeOf<{
+      unsubscribe: () => void;
+    }>();
+  });
 });
