@@ -600,6 +600,17 @@ export interface ObservableClient extends ObserveLinks {
     options: MediaMetadataObserveOptions,
     observer: Observer<MediaMetadataPayload>,
   ): Unsubscribable;
+
+  /**
+   * Synchronously peek at cached data for a single object.
+   * Does not trigger a fetch or create an observation.
+   *
+   * @returns The object data if loaded, undefined otherwise
+   */
+  peekObjectData<T extends ObjectOrInterfaceDefinition>(
+    apiName: T["apiName"] | T,
+    pk: PrimaryKeyType<T>,
+  ): ObserveObjectCallbackArgs<T> | undefined;
 }
 
 export interface CanonicalizeOptionsInput<OS = ObjectSet<any, any>> {
