@@ -857,63 +857,34 @@ describe("ExtractOptions", () => {
     });
   });
 
-  describe("Interface load → $as object carries modifiers through to OT", () => {
-    it("$as to OT after interface load: struct prop auto-applies mainValue", async () => {
-      const result = (await createMockObjectSet<ReducerInterfaceApiTest>()
-        .fetchPage()).data[0].$as({} as EmployeeApiTest);
-      expectTypeOf(result).toEqualTypeOf<
-        Osdk.Instance<
-          EmployeeApiTest,
-          never,
-          | "addressStruct:applyMainValue"
-          | "bonusHistory:applyReducersAndExtractMainValue"
-          | "salaryHistory:applyReducers",
-          {}
-        >
-      >();
-      expectTypeOf(result.addressStruct).toEqualTypeOf<
-        { city: string; zipCode: string } | undefined
-      >();
-    });
+  describe("$as from interface to OT", () => {
+    it("interface → OT: legacy (all localProperty implementations) is always allowed and yields the plain OT type", async () => {
+      const ifaceObj = (await createMockObjectSet<FooInterfaceApiTest>()
+        .fetchPage()).data[0];
 
-    it("$as to OT after interface load: array prop auto-applies reducers", async () => {
-      const result = (await createMockObjectSet<ReducerInterfaceApiTest>()
-        .fetchPage()).data[0].$as({} as EmployeeApiTest);
-      expectTypeOf(result.salaryHistory).toEqualTypeOf<
-        number | undefined
-      >();
-    });
-
-    it("$as to OT: array-of-struct auto-applies reduce+mainValue (single field => scalar)", async () => {
-      const result = (await createMockObjectSet<ReducerInterfaceApiTest>()
-        .fetchPage()).data[0].$as({} as EmployeeApiTest);
-      expectTypeOf(result.bonusHistory).toEqualTypeOf<
-        number | undefined
-      >();
-    });
-
-    it("ConvertProps auto-applies modifier to OT props with metadata", async () => {
-      const result = (await createMockObjectSet<ReducerInterfaceApiTest>()
-        .fetchPage({ $select: ["ifaceAddress"] })).data[0].$as(
-          {} as EmployeeApiTest,
-        );
-      // addressStruct on Employee has mainValue → implicitly applied.
-      expectTypeOf(result.addressStruct).toEqualTypeOf<
-        { city: string; zipCode: string } | undefined
-      >();
-    });
-
-    it("plain OT props (no modifier metadata) stay with full type after cast", async () => {
-      // FooInterface's fooSpt maps to Employee.fullName (plain string, no
-      // mainValue/hasReducers) — no modifier should be added.
-      const result = (await createMockObjectSet<FooInterfaceApiTest>()
-        .fetchPage({ $select: ["fooSpt"] })).data[0].$as(
-          {} as EmployeeApiTest,
-        );
+      const result = ifaceObj.$as({} as EmployeeApiTest);
       expectTypeOf(result.fullName).toEqualTypeOf<string | undefined>();
     });
 
-    it("$as to interface is rejected when P carries modifier notation", async () => {
+    it("interface → OT: interface with reduced impl rejects the cast even with $includeAllBaseObjectProperties", async () => {
+      const ifaceObj = (await createMockObjectSet<ReducerInterfaceApiTest>()
+        .fetchPage({ $includeAllBaseObjectProperties: true })).data[0];
+
+      // @ts-expect-error — ReducerInterface has reduced implementations on
+      // Employee, so the cast is unconditionally rejected.
+      ifaceObj.$as({} as EmployeeApiTest);
+    });
+
+    it("interface → OT: reduced impl rejects the cast without $includeAllBaseObjectProperties too", async () => {
+      const ifaceObj = (await createMockObjectSet<ReducerInterfaceApiTest>()
+        .fetchPage()).data[0];
+
+      // @ts-expect-error — ReducerInterface has reduced implementations on
+      // Employee.
+      ifaceObj.$as({} as EmployeeApiTest);
+    });
+
+    it("OT → interface is rejected when object has modifier applied", async () => {
       const otWithModifiers = (await createMockObjectSet<EmployeeApiTest>()
         .fetchPage({
           $select: ["salaryHistory"],
@@ -926,7 +897,7 @@ describe("ExtractOptions", () => {
       otWithModifiers.$as({} as ReducerInterfaceApiTest);
     });
 
-    it("$as to interface is allowed when P has no modifier notation", async () => {
+    it("OT → interface is allowed when object has no modifier applied", async () => {
       const otWithoutModifiers = (await createMockObjectSet<EmployeeApiTest>()
         .fetchPage({ $select: ["fullName"] })).data[0];
 

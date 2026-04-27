@@ -22,7 +22,7 @@ import {
 import { createSimpleCache } from "../SimpleCache.js";
 import { createOsdkInterface } from "./createOsdkInterface.js";
 import type { InterfaceHolder } from "./InterfaceHolder.js";
-import { UnderlyingOsdkObject } from "./InternalSymbols.js";
+import { InterfaceDefRef, UnderlyingOsdkObject } from "./InternalSymbols.js";
 import type { ObjectHolder } from "./ObjectHolder.js";
 
 /** @internal */
@@ -51,6 +51,64 @@ const osdkObjectToInterfaceView = createSimpleCache(
       /* $as'd object */ WeakRef<OsdkBase<any>>
     >(),
 );
+
+/**
+ * When casting from an interface view to its underlying OT:
+ * - If any interface property is implemented with a `reduced` mapping, the
+ *   cast is unconditionally rejected — reducers transform the source value,
+ *   so the OT view cannot be faithfully reconstructed.
+ * - Otherwise, if the interface uses any non-local (struct-field / struct)
+ *   implementation, require that every OT property is loaded (i.e. the object
+ *   was fetched with `$includeAllBaseObjectProperties`).
+ * - Legacy interfaces with all `localProperty` implementations keep working
+ *   unchanged: their interface view is a faithful subset of the OT.
+ */
+function assertInterfaceToOtCastIsPermitted(
+  holder: {
+    [UnderlyingOsdkObject]: any;
+    [InterfaceDefRef]?: unknown;
+  },
+  objDef: FetchedObjectTypeDefinition,
+): void {
+  const interfaceDef = holder[InterfaceDefRef] as
+    | { apiName: string }
+    | undefined;
+  if (interfaceDef == null) return;
+  const implementations = objDef.interfaceImplementations
+    ?.[interfaceDef.apiName];
+  if (implementations == null) return;
+
+  let hasNonLocalImpl = false;
+  for (const [iptApiName, impl] of Object.entries(implementations)) {
+    if (impl.type === "localProperty") continue;
+    hasNonLocalImpl = true;
+    if (impl.type === "reduced") {
+      throw new Error(
+        `Cannot cast interface view of '${interfaceDef.apiName}' to `
+          + `'${objDef.apiName}': property '${iptApiName}' applies a reducer, `
+          + `so the underlying object type cannot be faithfully represented. `
+          + `Load the object type directly.`,
+      );
+    }
+  }
+  if (!hasNonLocalImpl) return;
+
+  const underlying = holder[UnderlyingOsdkObject];
+  const missing: string[] = [];
+  for (const propApiName of Object.keys(objDef.properties)) {
+    if (!(propApiName in underlying)) missing.push(propApiName);
+  }
+  if (missing.length > 0) {
+    throw new Error(
+      `Cannot cast interface view to '${objDef.apiName}': underlying object `
+        + `is missing ${missing.length} ${
+          missing.length === 1 ? "property" : "properties"
+        } `
+        + `(${missing.join(", ")}). Load with $includeAllBaseObjectProperties `
+        + `to populate the full OT shape before casting.`,
+    );
+  }
+}
 
 function assertInterfaceImplementationIsDirectMapping(
   objDef: FetchedObjectTypeDefinition,
@@ -81,13 +139,17 @@ function $asFactory(
   return function $as<
     NEW_Q extends ObjectOrInterfaceDefinition,
   >(
-    this: OsdkBase<any> & { [UnderlyingOsdkObject]: any },
+    this: OsdkBase<any> & {
+      [UnderlyingOsdkObject]: any;
+      [InterfaceDefRef]?: unknown;
+    },
     targetMinDef: NEW_Q | string,
   ): OsdkBase<any> {
     let targetInterfaceApiName: string;
 
     if (typeof targetMinDef === "string") {
       if (targetMinDef === objDef.apiName) {
+        assertInterfaceToOtCastIsPermitted(this, objDef);
         return this[UnderlyingOsdkObject];
       }
 
@@ -100,6 +162,7 @@ function $asFactory(
 
       targetInterfaceApiName = targetMinDef;
     } else if (targetMinDef.apiName === objDef.apiName) {
+      assertInterfaceToOtCastIsPermitted(this, objDef);
       return this[UnderlyingOsdkObject];
     } else {
       if (targetMinDef.type === "object") {

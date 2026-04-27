@@ -128,6 +128,33 @@ export interface EmployeeApiTest extends $ObjectTypeDefinition {
         bonusHistory: "ifaceBonus";
       };
     };
+    interfaceImplementations: {
+      FooInterface: {
+        fooSpt: { type: "localProperty"; propertyApiName: "fullName" };
+      };
+      ReducerInterface: {
+        ifaceAddress: {
+          type: "structField";
+          propertyApiName: "addressStruct";
+          structFieldApiName: "city";
+        };
+        ifaceSalary: {
+          type: "reduced";
+          implementation: {
+            type: "localProperty";
+            propertyApiName: "salaryHistory";
+          };
+        };
+        ifaceBonus: {
+          type: "reduced";
+          implementation: {
+            type: "structField";
+            propertyApiName: "bonusHistory";
+            structFieldApiName: "amount";
+          };
+        };
+      };
+    };
     links: {
       lead: $ObjectMetadata.Link<EmployeeApiTest, false>;
       peeps: $ObjectMetadata.Link<EmployeeApiTest, true>;

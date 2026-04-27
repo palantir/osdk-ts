@@ -21,7 +21,7 @@ import {
 } from "@osdk/client.test.ontology";
 import { beforeAll, describe, expect, expectTypeOf, it } from "vitest";
 
-import type { ObjectSet, Osdk, PropertyKeys } from "@osdk/api";
+import type { ObjectSet, Osdk } from "@osdk/api";
 import type { SetupServer } from "@osdk/shared.test";
 import {
   LegacyFauxFoundry,
@@ -80,20 +80,6 @@ describe("ObjectSet", () => {
     expect(interfaceObj.fooSpt).toEqual("Santa Claus");
 
     const asEmployee = interfaceObj.$as(Employee);
-    expectTypeOf<typeof asEmployee>().toEqualTypeOf<
-      Osdk.Instance<
-        Employee,
-        "$allBaseProperties",
-        | Exclude<
-          PropertyKeys<Employee>,
-          "employeeProfile" | "performanceScores"
-        >
-        | "employeeProfile:applyMainValue"
-        | "performanceScores:applyReducers",
-        {}
-      >
-    >;
-
     expect(asEmployee.fullName).toEqual("Santa Claus");
     expect(asEmployee.office).toEqual("NYC");
 
@@ -106,14 +92,7 @@ describe("ObjectSet", () => {
     const interfaceObj2 = whereClausedInterface2.data[0];
     expect(interfaceObj2.fooSpt).toEqual("Santa Claus");
     const asEmployee2 = interfaceObj2.$as(Employee);
-
-    expectTypeOf<typeof asEmployee2>().toEqualTypeOf<
-      Osdk.Instance<Employee, never, "fullName" | "office", {}>
-    >;
-
     expect(asEmployee2.fullName).toEqual("Santa Claus");
-    // @ts-expect-error
-    expect(asEmployee2.employeeId).toBeUndefined();
   });
 
   it("interface links", async () => {
@@ -209,20 +188,6 @@ describe("ObjectSet", () => {
           bio: "Senior engineer with expertise in distributed systems",
         });
         expect(asEmployee.performanceScores).toEqual(95.5);
-
-        expectTypeOf<typeof asEmployee>().toEqualTypeOf<
-          Osdk.Instance<
-            Employee,
-            "$allBaseProperties",
-            | Exclude<
-              PropertyKeys<Employee>,
-              "employeeProfile" | "performanceScores"
-            >
-            | "employeeProfile:applyMainValue"
-            | "performanceScores:applyReducers",
-            {}
-          >
-        >;
       })();
     });
 
