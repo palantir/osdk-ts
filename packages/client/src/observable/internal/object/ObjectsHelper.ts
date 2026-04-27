@@ -37,31 +37,40 @@ import { ObjectQuery } from "./ObjectQuery.js";
 
 export class ObjectsHelper extends AbstractHelper<
   ObjectQuery,
-  ObserveObjectOptions<any>
+  ObserveObjectOptions<any, boolean>
 > {
   observe<T extends ObjectOrInterfaceDefinition>(
-    options: ObserveObjectOptions<T>,
+    options: ObserveObjectOptions<T, boolean>,
     subFn: Observer<ObjectPayload>,
   ): QuerySubscription<ObjectQuery> {
     return super.observe(options, subFn);
   }
 
   getQuery<T extends ObjectOrInterfaceDefinition>(
-    options: ObserveObjectOptions<T>,
+    options: ObserveObjectOptions<T, boolean>,
     rdpConfig?: Canonical<Rdp> | null,
   ): ObjectQuery {
     const apiName = typeof options.apiName === "string"
       ? options.apiName
       : options.apiName.apiName;
-    const { pk, select, $loadPropertySecurityMetadata } = options;
+    const {
+      pk,
+      select,
+      $loadPropertySecurityMetadata,
+    } = options;
 
     const defType = getDefType(options.apiName);
+    // The flag only changes server behavior for interface queries. Drop it for
+    // object queries so they don't fragment the cache.
+    const $includeAllBaseObjectProperties = defType === "interface"
+      && options.$includeAllBaseObjectProperties;
 
     const objectCacheKey = this.cacheKeys.get<ObjectCacheKey>(
       "object",
       apiName,
       pk,
       rdpConfig ?? undefined,
+      $includeAllBaseObjectProperties ? true : undefined,
     );
 
     return this.store.queries.get(objectCacheKey, () =>
@@ -75,6 +84,7 @@ export class ObjectsHelper extends AbstractHelper<
         defType,
         select,
         $loadPropertySecurityMetadata,
+        $includeAllBaseObjectProperties,
       ));
   }
 
@@ -89,11 +99,13 @@ export class ObjectsHelper extends AbstractHelper<
     batch: BatchContext,
     rdpConfig?: Canonical<Rdp> | null,
     selectFields?: ReadonlySet<string>,
+    includeAllBaseObjectProperties?: boolean,
   ): ObjectCacheKey[] {
     return values.map(v =>
       this.getQuery({
         apiName: v.$objectType ?? v.$apiName,
         pk: v.$primaryKey,
+        $includeAllBaseObjectProperties: includeAllBaseObjectProperties,
       }, rdpConfig).writeToStore(
         v as ObjectHolder,
         "loaded",

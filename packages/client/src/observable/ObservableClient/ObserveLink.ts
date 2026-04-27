@@ -36,6 +36,7 @@ export namespace ObserveLinks {
   export interface Options<
     Q extends ObjectTypeDefinition | InterfaceDefinition,
     L extends keyof CompileTimeMetadata<Q>["links"] & string,
+    IncludeAllBaseProperties extends boolean = false,
   > extends CommonObserveOptions, ObserveOptions {
     srcType: Pick<Q, "type" | "apiName">;
     sourceUnderlyingObjectType: string;
@@ -47,15 +48,33 @@ export namespace ObserveLinks {
     orderBy?: OrderBy<CompileTimeMetadata<Q>["links"][L]["targetType"]>;
     invalidationMode?: InvalidationMode;
     expectedLength?: number;
+
+    /**
+     * When true, includes all properties of the underlying concrete object type
+     * when the link target is an interface. Has no effect for non-interface
+     * targets.
+     */
+    $includeAllBaseObjectProperties?: IncludeAllBaseProperties;
   }
 
   export interface CallbackArgs<
     T extends ObjectTypeDefinition | InterfaceDefinition,
+    IncludeAllBaseProperties extends boolean = false,
   > {
-    resolvedList: Osdk.Instance<T>[] | undefined;
+    resolvedList:
+      | Osdk.Instance<
+        T,
+        IncludeAllBaseProperties extends true ? "$allBaseProperties" : never
+      >[]
+      | undefined;
     linkedObjectsBySourcePrimaryKey: ReadonlyMap<
       string | number,
-      ReadonlyArray<Osdk.Instance<T>>
+      ReadonlyArray<
+        Osdk.Instance<
+          T,
+          IncludeAllBaseProperties extends true ? "$allBaseProperties" : never
+        >
+      >
     >;
     isOptimistic: boolean;
     lastUpdated: number;
@@ -69,16 +88,18 @@ export interface ObserveLinks {
   observeLinks<
     T extends ObjectTypeDefinition | InterfaceDefinition,
     L extends keyof CompileTimeMetadata<T>["links"] & string,
+    const IncludeAllBaseProperties extends boolean = false,
   >(
     objects: Osdk.Instance<T> | ReadonlyArray<Osdk.Instance<T>>,
     linkName: L,
     options: Omit<
-      ObserveLinks.Options<T, L>,
+      ObserveLinks.Options<T, L, IncludeAllBaseProperties>,
       "srcType" | "pk" | "sourceUnderlyingObjectType"
     >,
     subFn: Observer<
       ObserveLinks.CallbackArgs<
-        CompileTimeMetadata<T>["links"][L]["targetType"]
+        CompileTimeMetadata<T>["links"][L]["targetType"],
+        IncludeAllBaseProperties
       >
     >,
   ): Unsubscribable;

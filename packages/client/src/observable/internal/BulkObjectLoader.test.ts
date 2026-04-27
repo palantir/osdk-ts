@@ -325,4 +325,51 @@ describe(BulkObjectLoader, () => {
       vi.useRealTimers();
     });
   });
+
+  it("gates $includeAllBaseObjectProperties for object fetches: drops the flag and batches into a single fetchPage", async () => {
+    const loader = new BulkObjectLoader(client, 25, 100);
+    vi.useFakeTimers();
+
+    const capturedArgs: Array<Record<string, unknown>> = [];
+    const mockObjectSet: ObjectSet<ObjectTypeDefinition> = {
+      where: () => mockObjectSet,
+      fetchPage: vi.fn((args: Record<string, unknown>) => {
+        capturedArgs.push(args);
+        return Promise.resolve({
+          data: [employees[0], employees[1]],
+          nextPageToken: undefined,
+          totalCount: "2",
+        });
+      }),
+    } as Pick<
+      ObjectSet<ObjectTypeDefinition>,
+      "fetchPage" | "where"
+    > as ObjectSet<ObjectTypeDefinition>;
+    client.mockReturnValueOnce(mockObjectSet);
+
+    const without = loader.fetch(
+      "Employee",
+      0,
+      "object",
+      undefined,
+      false,
+      false,
+    );
+    const withFlag = loader.fetch(
+      "Employee",
+      1,
+      "object",
+      undefined,
+      false,
+      true,
+    );
+
+    vi.advanceTimersByTime(26);
+    await Promise.all([without, withFlag]);
+
+    expect(capturedArgs).toHaveLength(1);
+    expect(capturedArgs[0].$includeAllBaseObjectProperties).toBeUndefined();
+
+    vi.useRealTimers();
+  });
 });
