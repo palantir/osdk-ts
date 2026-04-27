@@ -38,12 +38,8 @@ export function createPlatformClient(
   options: undefined = undefined,
   fetchFn: typeof globalThis.fetch = fetch,
 ): PlatformClient {
-  const processedBaseUrl = new URL(baseUrl);
-  processedBaseUrl.pathname += processedBaseUrl.pathname.endsWith("/")
-    ? ""
-    : "/";
   return createSharedClientContext(
-    processedBaseUrl.toString(),
+    baseUrl,
     tokenProvider,
     USER_AGENT,
     fetchFn,

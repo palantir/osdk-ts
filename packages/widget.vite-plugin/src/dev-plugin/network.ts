@@ -45,11 +45,13 @@ export function setWidgetSetSettings(
       ] as const),
     ),
   );
-  const base = foundryUrl.endsWith("/") ? foundryUrl : foundryUrl + "/";
-  const url = new URL("api/v2/widgets/devModeSettings/setWidgetSetById", base);
+  const url = new URL(
+    "api/v2/widgets/devModeSettings/setWidgetSetById",
+    foundryUrl,
+  );
   url.searchParams.set("preview", "true");
   return fetch(
-    url.toString(),
+    url,
     {
       body: JSON.stringify({
         widgetSetRid,
@@ -72,11 +74,10 @@ export function enableDevMode(
   foundryUrl: string,
   viteMode: string | undefined,
 ): Promise<Response> {
-  const base = foundryUrl.endsWith("/") ? foundryUrl : foundryUrl + "/";
-  const url = new URL("api/v2/widgets/devModeSettings/enable", base);
+  const url = new URL("api/v2/widgets/devModeSettings/enable", foundryUrl);
   url.searchParams.set("preview", "true");
   return fetch(
-    url.toString(),
+    url,
     {
       method: "POST",
       headers: {

@@ -77,9 +77,12 @@ export async function publishDevModeSettings(
         "foundry.config.json file not found.",
       );
     }
-    const foundryUrl = isCodeWorkspacesMode(server.config.mode)
+    const rawFoundryUrl = isCodeWorkspacesMode(server.config.mode)
       ? getCodeWorkspacesFoundryUrl()
       : foundryConfig.foundryConfig.foundryUrl;
+    const foundryUrl = rawFoundryUrl.endsWith("/")
+      ? rawFoundryUrl
+      : rawFoundryUrl + "/";
 
     const widgetSetRid = foundryConfig.foundryConfig.widgetSet.rid;
     const settingsResponse = await setWidgetSetSettings(
@@ -125,7 +128,7 @@ export async function publishDevModeSettings(
         ? null
         : new URL(
           `workspace/custom-widgets/preview/${widgetSetRid}`,
-          foundryUrl.endsWith("/") ? foundryUrl : foundryUrl + "/",
+          foundryUrl,
         ).toString(),
     }));
   } catch (error: unknown) {

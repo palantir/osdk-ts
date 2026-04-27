@@ -20,6 +20,7 @@ import { createServer } from "node:http";
 import { exit } from "node:process";
 import { parse } from "node:url";
 import open from "open";
+import { ensureTrailingSlash } from "../../../util/ensureTrailingSlash.js";
 import type { LoginArgs } from "./LoginArgs.js";
 import type { TokenResponse, TokenSuccessResponse } from "./token.js";
 import { isTokenErrorResponse } from "./token.js";
@@ -32,6 +33,7 @@ export async function invokeLoginFlow(
   consola.start(`Authenticating using application id: ${args.clientId}`);
   const redirectUrl = "http://localhost:8080/auth/callback";
   const port = parse(redirectUrl).port;
+  const foundryUrl = ensureTrailingSlash(args.foundryUrl);
   let resolve: (value: string) => void;
   const authCode: Promise<string> = new Promise((_res) => {
     resolve = _res;
@@ -60,7 +62,7 @@ export async function invokeLoginFlow(
   const codeChallenge = await generateCodeChallenge(codeVerifier);
 
   const authorizeUrl = generateAuthorizeUrl(
-    args.foundryUrl,
+    foundryUrl,
     clientId,
     state,
     redirectUrl,
@@ -91,7 +93,7 @@ export async function invokeLoginFlow(
     clientId,
     redirectUrl,
     code,
-    args.foundryUrl,
+    foundryUrl,
     codeVerifier,
   );
 
@@ -145,8 +147,7 @@ function generateAuthorizeUrl(
   redirectUrl: string,
   codeChallenge: { codeChallenge: string; codeChallengeMethod: string },
 ) {
-  const base = baseUrl.endsWith("/") ? baseUrl : baseUrl + "/";
-  const url = new URL("multipass/api/oauth2/authorize", base);
+  const url = new URL("multipass/api/oauth2/authorize", baseUrl);
   url.searchParams.set("client_id", clientId);
   url.searchParams.set("response_type", "code");
   url.searchParams.set("state", state);
@@ -177,8 +178,7 @@ async function getTokenWithCodeVerifier(
   body.append("redirect_uri", redirectUrl);
   body.append("code_verifier", codeVerifier);
 
-  const base = baseUrl.endsWith("/") ? baseUrl : baseUrl + "/";
-  const tokenUrlObj = new URL("multipass/api/oauth2/token", base);
+  const tokenUrlObj = new URL("multipass/api/oauth2/token", baseUrl);
   tokenUrlObj.searchParams.set("state", codeVerifier);
   const tokenUrl = tokenUrlObj.toString();
   try {
