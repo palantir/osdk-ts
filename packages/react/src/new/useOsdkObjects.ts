@@ -34,6 +34,7 @@ import { OsdkContext2 } from "./OsdkContext2.js";
 export interface UseOsdkObjectsOptions<
   T extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
+  IncludeBase extends boolean = false,
 > {
   /**
    * Fetch objects by their RIDs (Resource Identifiers).
@@ -150,12 +151,27 @@ export interface UseOsdkObjectsOptions<
    * populated with conjunctive/disjunctive marking requirements per property.
    */
   $loadPropertySecurityMetadata?: boolean;
+
+  /**
+   * When true, includes all properties of the underlying concrete object type
+   * for interface queries. This allows `obj.$as(ConcreteType)` to return a
+   * fully-populated concrete instance. Has no effect for non-interface queries.
+   *
+   * @example
+   * // Query an interface and narrow to a concrete implementing type
+   * const { data } = useOsdkObjects(Athlete, {
+   *   $includeAllBaseObjectProperties: true,
+   * });
+   * const concrete = data?.[0]?.$as(NbaPlayer);
+   */
+  $includeAllBaseObjectProperties?: IncludeBase;
 }
 
 export interface UseOsdkListResult<
   T extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
   EXTRA_OPTIONS extends never | "$rid" = never,
+  IncludeBase extends boolean = false,
 > {
   /**
    * Function to fetch more pages (undefined if no more pages)
@@ -168,7 +184,8 @@ export interface UseOsdkListResult<
   data:
     | Osdk.Instance<
       T,
-      "$allBaseProperties" | EXTRA_OPTIONS,
+      | (IncludeBase extends true ? "$allBaseProperties" : never)
+      | EXTRA_OPTIONS,
       PropertyKeys<T>,
       RDPs
     >[]
@@ -210,55 +227,65 @@ export interface UseOsdkListResult<
 export function useOsdkObjects<
   Q extends ObjectOrInterfaceDefinition,
   L extends LinkNames<Q>,
+  const IncludeBase extends boolean = false,
 >(
   type: Q,
-  options: UseOsdkObjectsOptions<Q> & {
+  options: UseOsdkObjectsOptions<Q, {}, IncludeBase> & {
     pivotTo: L;
     rids: readonly string[];
     streamUpdates?: never;
   },
-): UseOsdkListResult<LinkedType<Q, L>, {}, "$rid">;
+): UseOsdkListResult<LinkedType<Q, L>, {}, "$rid", IncludeBase>;
 
 export function useOsdkObjects<
   Q extends ObjectOrInterfaceDefinition,
   L extends LinkNames<Q>,
+  const IncludeBase extends boolean = false,
 >(
   type: Q,
-  options: UseOsdkObjectsOptions<Q> & { pivotTo: L; streamUpdates?: never },
-): UseOsdkListResult<LinkedType<Q, L>>;
+  options: UseOsdkObjectsOptions<Q, {}, IncludeBase> & {
+    pivotTo: L;
+    streamUpdates?: never;
+  },
+): UseOsdkListResult<LinkedType<Q, L>, {}, never, IncludeBase>;
 
 // Non-pivotTo overloads: pivotTo is forbidden to prevent fallthrough from the
 // pivotTo overloads above (which would give the wrong return type).
 export function useOsdkObjects<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
+  const IncludeBase extends boolean = false,
 >(
   type: Q,
-  options: UseOsdkObjectsOptions<Q, RDPs> & {
+  options: UseOsdkObjectsOptions<Q, RDPs, IncludeBase> & {
     rids: readonly string[];
     pivotTo?: never;
   },
-): UseOsdkListResult<Q, RDPs, "$rid">;
+): UseOsdkListResult<Q, RDPs, "$rid", IncludeBase>;
 
 export function useOsdkObjects<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
+  const IncludeBase extends boolean = false,
 >(
   type: Q,
-  options?: UseOsdkObjectsOptions<Q, RDPs> & { pivotTo?: never },
-): UseOsdkListResult<Q, RDPs>;
+  options?:
+    & UseOsdkObjectsOptions<Q, RDPs, IncludeBase>
+    & { pivotTo?: never },
+): UseOsdkListResult<Q, RDPs, never, IncludeBase>;
 
 export function useOsdkObjects<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
+  const IncludeBase extends boolean = false,
 >(
   type: Q,
-  options?: UseOsdkObjectsOptions<Q, RDPs>,
+  options?: UseOsdkObjectsOptions<Q, RDPs, IncludeBase>,
 ):
-  | UseOsdkListResult<Q, RDPs>
-  | UseOsdkListResult<Q, RDPs, "$rid">
-  | UseOsdkListResult<LinkedType<Q, LinkNames<Q>>>
-  | UseOsdkListResult<LinkedType<Q, LinkNames<Q>>, {}, "$rid">
+  | UseOsdkListResult<Q, RDPs, never, IncludeBase>
+  | UseOsdkListResult<Q, RDPs, "$rid", IncludeBase>
+  | UseOsdkListResult<LinkedType<Q, LinkNames<Q>>, {}, never, IncludeBase>
+  | UseOsdkListResult<LinkedType<Q, LinkNames<Q>>, {}, "$rid", IncludeBase>
 {
   const { observableClient } = React.useContext(OsdkContext2);
 
@@ -276,6 +303,7 @@ export function useOsdkObjects<
     pivotTo,
     $select,
     $loadPropertySecurityMetadata,
+    $includeAllBaseObjectProperties,
   } = options ?? {};
 
   const canonOptions = observableClient.canonicalizeOptions({
@@ -295,7 +323,7 @@ export function useOsdkObjects<
     () => {
       if (!enabled) {
         return makeExternalStore<
-          ObserveObjectsCallbackArgs<Q, RDPs>
+          ObserveObjectsCallbackArgs<Q, RDPs, IncludeBase>
         >(
           () => ({ unsubscribe: () => {} }),
           devToolsMetadata({
@@ -306,10 +334,10 @@ export function useOsdkObjects<
       }
 
       return makeExternalStore<
-        ObserveObjectsCallbackArgs<Q, RDPs>
+        ObserveObjectsCallbackArgs<Q, RDPs, IncludeBase>
       >(
         (observer) =>
-          observableClient.observeList({
+          observableClient.observeList<Q, RDPs, IncludeBase>({
             type,
             rids: stableRids,
             where: canonOptions.where,
@@ -319,6 +347,7 @@ export function useOsdkObjects<
             streamUpdates,
             withProperties: canonOptions.withProperties,
             autoFetchMore,
+            $includeAllBaseObjectProperties,
             ...(canonOptions.intersectWith
               ? { intersectWith: canonOptions.intersectWith }
               : {}),
@@ -354,6 +383,7 @@ export function useOsdkObjects<
       pivotTo,
       canonOptions.$select,
       $loadPropertySecurityMetadata,
+      $includeAllBaseObjectProperties,
     ],
   );
 
@@ -373,5 +403,9 @@ export function useOsdkObjects<
     hasMore: listPayload?.hasMore ?? false,
     objectSet: listPayload?.objectSet,
     refetch,
-  }), [listPayload, enabled, refetch]);
+  } as UseOsdkListResult<Q, RDPs, never, IncludeBase>), [
+    listPayload,
+    enabled,
+    refetch,
+  ]);
 }

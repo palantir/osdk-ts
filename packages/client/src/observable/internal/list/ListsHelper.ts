@@ -37,7 +37,7 @@ import { ObjectListQuery } from "./ObjectListQuery.js";
 
 export class ListsHelper extends AbstractHelper<
   ListQuery,
-  ObserveListOptions<ObjectOrInterfaceDefinition>
+  ObserveListOptions<ObjectOrInterfaceDefinition, {}, boolean>
 > {
   whereCanonicalizer: WhereClauseCanonicalizer;
   orderByCanonicalizer: OrderByCanonicalizer;
@@ -70,7 +70,7 @@ export class ListsHelper extends AbstractHelper<
   }
 
   observe<T extends ObjectOrInterfaceDefinition>(
-    options: ObserveListOptions<T>,
+    options: ObserveListOptions<T, {}, boolean>,
     subFn: Observer<ListPayload>,
   ): QuerySubscription<ListQuery> {
     const ret = super.observe(options, subFn);
@@ -93,7 +93,7 @@ export class ListsHelper extends AbstractHelper<
   }
 
   getQuery<T extends ObjectOrInterfaceDefinition>(
-    options: ObserveListOptions<T>,
+    options: ObserveListOptions<T, {}, boolean>,
   ): ListQuery {
     const {
       type: typeDefinition,
@@ -105,6 +105,7 @@ export class ListsHelper extends AbstractHelper<
       rids,
       select,
       $loadPropertySecurityMetadata,
+      $includeAllBaseObjectProperties,
     } = options;
     const { apiName, type } = typeDefinition;
 
@@ -142,6 +143,7 @@ export class ListsHelper extends AbstractHelper<
       canonRids,
       canonSelect,
       $loadPropertySecurityMetadata ? true : undefined,
+      $includeAllBaseObjectProperties ? true : undefined,
     );
 
     return this.store.queries.get(listCacheKey, () => {

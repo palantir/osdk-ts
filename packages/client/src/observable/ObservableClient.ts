@@ -101,11 +101,19 @@ export type CacheEntry =
 
 export interface ObserveObjectOptions<
   T extends ObjectOrInterfaceDefinition,
+  IncludeBase extends boolean = false,
 > extends ObserveOptions {
   apiName: T["apiName"] | T;
   pk: PrimaryKeyType<T>;
-  select?: PropertyKeys<T>[];
+  select?: readonly PropertyKeys<T>[];
   $loadPropertySecurityMetadata?: boolean;
+
+  /**
+   * When true, includes all properties of the underlying concrete object type
+   * for interface queries. This allows `obj.$as(ConcreteType)` to return a
+   * fully-populated concrete instance. Has no effect for non-interface queries.
+   */
+  $includeAllBaseObjectProperties?: IncludeBase;
 }
 
 export type OrderBy<Q extends ObjectOrInterfaceDefinition> = {
@@ -115,6 +123,7 @@ export type OrderBy<Q extends ObjectOrInterfaceDefinition> = {
 export interface ObserveListOptions<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
+  IncludeBase extends boolean = false,
 > extends CommonObserveOptions, ObserveOptions {
   type: Pick<Q, "apiName" | "type">;
   where?: WhereClause<Q, RDPs>;
@@ -166,6 +175,13 @@ export interface ObserveListOptions<
   $loadPropertySecurityMetadata?: boolean;
 
   /**
+   * When true, includes all properties of the underlying concrete object type
+   * for interface queries. This allows `obj.$as(ConcreteType)` to return a
+   * fully-populated concrete instance. Has no effect for non-interface queries.
+   */
+  $includeAllBaseObjectProperties?: IncludeBase;
+
+  /**
    * Automatically fetch additional pages on initial load.
    *
    * - `true`: Fetch all available pages automatically
@@ -195,8 +211,14 @@ export interface ObserveListOptions<
 
 export interface ObserveObjectCallbackArgs<
   T extends ObjectOrInterfaceDefinition,
+  IncludeBase extends boolean = false,
 > {
-  object: Osdk.Instance<T> | undefined;
+  object:
+    | Osdk.Instance<
+      T,
+      IncludeBase extends true ? "$allBaseProperties" : never
+    >
+    | undefined;
   isOptimistic: boolean;
   status: Status;
   lastUpdated: number;
@@ -208,10 +230,16 @@ export interface ObserveObjectsCallbackArgs<
     string,
     WirePropertyTypes | undefined | Array<WirePropertyTypes>
   > = {},
+  IncludeBase extends boolean = false,
 > {
   resolvedList:
     | Array<
-      Osdk.Instance<T, "$allBaseProperties", PropertyKeys<T>, RDPs>
+      Osdk.Instance<
+        T,
+        IncludeBase extends true ? "$allBaseProperties" : never,
+        PropertyKeys<T>,
+        RDPs
+      >
     >
     | undefined;
   isOptimistic: boolean;
@@ -327,11 +355,22 @@ export interface ObserveFunctionCallbackArgs<
  */
 export interface ObserveLinkCallbackArgs<
   T extends ObjectOrInterfaceDefinition,
+  IncludeBase extends boolean = false,
 > {
-  resolvedList: Osdk.Instance<T>[] | undefined;
+  resolvedList:
+    | Osdk.Instance<
+      T,
+      IncludeBase extends true ? "$allBaseProperties" : never
+    >[]
+    | undefined;
   linkedObjectsBySourcePrimaryKey: ReadonlyMap<
     string | number,
-    ReadonlyArray<Osdk.Instance<T>>
+    ReadonlyArray<
+      Osdk.Instance<
+        T,
+        IncludeBase extends true ? "$allBaseProperties" : never
+      >
+    >
   >;
   isOptimistic: boolean;
   lastUpdated: number;
@@ -367,11 +406,16 @@ export interface ObservableClient extends ObserveLinks {
    * - Updates when the object changes
    * - Error state if fetch fails
    */
-  observeObject<T extends ObjectOrInterfaceDefinition>(
+  observeObject<
+    T extends ObjectOrInterfaceDefinition,
+    const IncludeBase extends boolean = false,
+  >(
     apiName: T["apiName"] | T,
     pk: PrimaryKeyType<T>,
-    options: ObserveOptions,
-    subFn: Observer<ObserveObjectCallbackArgs<T>>,
+    options:
+      & ObserveOptions
+      & Omit<ObserveObjectOptions<T, IncludeBase>, "apiName" | "pk">,
+    subFn: Observer<ObserveObjectCallbackArgs<T, IncludeBase>>,
   ): Unsubscribable;
 
   /**
@@ -390,9 +434,10 @@ export interface ObservableClient extends ObserveLinks {
   observeList<
     T extends ObjectOrInterfaceDefinition,
     RDPs extends Record<string, SimplePropertyDef> = {},
+    const IncludeBase extends boolean = false,
   >(
-    options: ObserveListOptions<T, RDPs>,
-    subFn: Observer<ObserveObjectsCallbackArgs<T, RDPs>>,
+    options: ObserveListOptions<T, RDPs, IncludeBase>,
+    subFn: Observer<ObserveObjectsCallbackArgs<T, RDPs, IncludeBase>>,
   ): Unsubscribable;
 
   /**

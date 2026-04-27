@@ -44,6 +44,7 @@ import type { Store } from "../Store.js";
 import type { SubjectPayload } from "../SubjectPayload.js";
 import { tombstone } from "../tombstone.js";
 import {
+  INCLUDE_ALL_BASE_PROPERTIES_IDX as LINK_INCLUDE_ALL_BASE_PROPERTIES_IDX,
   SELECT_IDX as LINK_SELECT_IDX,
   type SpecificLinkCacheKey,
 } from "./SpecificLinkCacheKey.js";
@@ -58,7 +59,7 @@ import {
 export class SpecificLinkQuery extends BaseListQuery<
   SpecificLinkCacheKey,
   SpecificLinkPayload,
-  ObserveLinks.Options<ObjectOrInterfaceDefinition, string>
+  ObserveLinks.Options<ObjectOrInterfaceDefinition, string, boolean>
 > {
   #sourceApiName: string;
   #sourceTypeKind: "object" | "interface";
@@ -92,7 +93,7 @@ export class SpecificLinkQuery extends BaseListQuery<
     store: Store,
     subject: Subject<SubjectPayload<SpecificLinkCacheKey>>,
     cacheKey: SpecificLinkCacheKey,
-    opts: ObserveLinks.Options<ObjectOrInterfaceDefinition, string>,
+    opts: ObserveLinks.Options<ObjectOrInterfaceDefinition, string, boolean>,
   ) {
     super(
       store,
@@ -125,6 +126,12 @@ export class SpecificLinkQuery extends BaseListQuery<
 
   protected get rawSelect(): Canonical<readonly string[]> | undefined {
     return this.#select;
+  }
+
+  public override get includeAllBaseObjectProperties(): boolean {
+    return (
+      this.cacheKey.otherKeys[LINK_INCLUDE_ALL_BASE_PROPERTIES_IDX] === true
+    );
   }
 
   /**
@@ -220,6 +227,7 @@ export class SpecificLinkQuery extends BaseListQuery<
       $orderBy?: Record<string, "asc" | "desc" | undefined>;
       $where?: Record<string, unknown>;
       $select?: readonly string[];
+      $includeAllBaseObjectProperties?: true;
     } = {
       $pageSize: this.getEffectiveFetchPageSize(),
       $nextPageToken: this.nextPageToken,
@@ -236,6 +244,10 @@ export class SpecificLinkQuery extends BaseListQuery<
 
     if (this.#whereClause && Object.keys(this.#whereClause).length > 0) {
       queryParams.$where = this.#whereClause;
+    }
+
+    if (this.includeAllBaseObjectProperties) {
+      queryParams.$includeAllBaseObjectProperties = true;
     }
 
     const response = await linkQuery.fetchPage(queryParams);

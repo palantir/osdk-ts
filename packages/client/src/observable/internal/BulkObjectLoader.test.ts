@@ -325,4 +325,58 @@ describe(BulkObjectLoader, () => {
       vi.useRealTimers();
     });
   });
+
+  it("forwards $includeAllBaseObjectProperties to fetchPage and partitions batching by it", async () => {
+    const loader = new BulkObjectLoader(client, 25, 100);
+    vi.useFakeTimers();
+
+    const capturedArgs: Array<Record<string, unknown>> = [];
+    const makeMock = (data: unknown[]): ObjectSet<ObjectTypeDefinition> => {
+      const os: ObjectSet<ObjectTypeDefinition> = {
+        where: () => os,
+        fetchPage: vi.fn((args: Record<string, unknown>) => {
+          capturedArgs.push(args);
+          return Promise.resolve({
+            data,
+            nextPageToken: undefined,
+            totalCount: String(data.length),
+          });
+        }),
+      } as Pick<
+        ObjectSet<ObjectTypeDefinition>,
+        "fetchPage" | "where"
+      > as ObjectSet<ObjectTypeDefinition>;
+      return os;
+    };
+
+    client.mockReturnValueOnce(makeMock([employees[0]]));
+    client.mockReturnValueOnce(makeMock([employees[1]]));
+
+    const without = loader.fetch(
+      "Employee",
+      0,
+      "object",
+      undefined,
+      false,
+      false,
+    );
+    const withFlag = loader.fetch(
+      "Employee",
+      1,
+      "object",
+      undefined,
+      false,
+      true,
+    );
+
+    vi.advanceTimersByTime(26);
+    await Promise.all([without, withFlag]);
+
+    // Two separate fetchPage calls because the flag differs.
+    expect(capturedArgs).toHaveLength(2);
+    expect(capturedArgs.map(a => a.$includeAllBaseObjectProperties).sort())
+      .toEqual([true, undefined]);
+
+    vi.useRealTimers();
+  });
 });

@@ -41,6 +41,7 @@ interface Accumulator {
   defType?: DefType;
   select?: readonly string[];
   loadPropertySecurityMetadata?: boolean;
+  includeAllBaseObjectProperties?: boolean;
 }
 
 const weakCache = new DefaultWeakMap<Client, BulkObjectLoader>(c =>
@@ -75,13 +76,16 @@ export class BulkObjectLoader {
     defType: DefType = "object",
     select?: readonly string[],
     loadPropertySecurityMetadata?: boolean,
+    includeAllBaseObjectProperties?: boolean,
   ): Promise<ObjectHolder> {
     const deferred = pDefer<ObjectHolder>();
 
-    const securitySuffix = loadPropertySecurityMetadata ? "\0sec" : "";
-    const selectKey = select && select.length > 0
-      ? `${apiName}\0${[...select].sort().join(",")}${securitySuffix}`
-      : `${apiName}${securitySuffix}`;
+    const selectKey = this.#buildSelectKey(
+      apiName,
+      select,
+      loadPropertySecurityMetadata,
+      includeAllBaseObjectProperties,
+    );
     const entry = this.#m.get(selectKey);
     entry.data.push({
       primaryKey: primaryKey as string,
@@ -92,6 +96,7 @@ export class BulkObjectLoader {
       entry.defType = defType;
       entry.select = select;
       entry.loadPropertySecurityMetadata = loadPropertySecurityMetadata;
+      entry.includeAllBaseObjectProperties = includeAllBaseObjectProperties;
     } else if (entry.defType !== defType) {
       deferred.reject(
         new PalantirApiError(
@@ -109,6 +114,7 @@ export class BulkObjectLoader {
           entry.defType ?? "object",
           entry.select,
           entry.loadPropertySecurityMetadata,
+          entry.includeAllBaseObjectProperties,
         );
       }, this.#maxWait);
     }
@@ -121,10 +127,26 @@ export class BulkObjectLoader {
         entry.defType ?? "object",
         entry.select,
         entry.loadPropertySecurityMetadata,
+        entry.includeAllBaseObjectProperties,
       );
     }
 
     return await deferred.promise;
+  }
+
+  #buildSelectKey(
+    apiName: string,
+    select: readonly string[] | undefined,
+    loadPropertySecurityMetadata: boolean | undefined,
+    includeAllBaseObjectProperties: boolean | undefined,
+  ): string {
+    const securitySuffix = loadPropertySecurityMetadata ? "\0sec" : "";
+    const baseSuffix = includeAllBaseObjectProperties ? "\0base" : "";
+    return select && select.length > 0
+      ? `${apiName}\0${
+        [...select].sort().join(",")
+      }${securitySuffix}${baseSuffix}`
+      : `${apiName}${securitySuffix}${baseSuffix}`;
   }
 
   #loadObjects(
@@ -133,11 +155,14 @@ export class BulkObjectLoader {
     defType: DefType,
     select?: readonly string[],
     loadPropertySecurityMetadata?: boolean,
+    includeAllBaseObjectProperties?: boolean,
   ) {
-    const securitySuffix = loadPropertySecurityMetadata ? "\0sec" : "";
-    const selectKey = select && select.length > 0
-      ? `${apiName}\0${[...select].sort().join(",")}${securitySuffix}`
-      : `${apiName}${securitySuffix}`;
+    const selectKey = this.#buildSelectKey(
+      apiName,
+      select,
+      loadPropertySecurityMetadata,
+      includeAllBaseObjectProperties,
+    );
     this.#m.delete(selectKey);
 
     const loadFn = defType === "interface"
@@ -146,12 +171,14 @@ export class BulkObjectLoader {
         arr,
         select,
         loadPropertySecurityMetadata,
+        includeAllBaseObjectProperties,
       )
       : this.#loadObjectTypeObjects(
         apiName,
         arr,
         select,
         loadPropertySecurityMetadata,
+        includeAllBaseObjectProperties,
       );
 
     loadFn.catch((e: unknown) => {
@@ -172,6 +199,7 @@ export class BulkObjectLoader {
     arr: InternalValue[],
     select?: readonly string[],
     loadPropertySecurityMetadata?: boolean,
+    includeAllBaseObjectProperties?: boolean,
   ) {
     const objectDef = { type: "object", apiName } as ObjectTypeDefinition;
     const objMetadata = await this.#client.fetchMetadata(objectDef);
@@ -192,6 +220,9 @@ export class BulkObjectLoader {
           ? { $select: select }
           : {}),
         $loadPropertySecurityMetadata: loadPropertySecurityMetadata ?? false,
+        ...(includeAllBaseObjectProperties
+          ? { $includeAllBaseObjectProperties: true }
+          : {}),
       });
 
     for (const { primaryKey, deferred } of arr) {
@@ -213,6 +244,7 @@ export class BulkObjectLoader {
     arr: InternalValue[],
     select?: readonly string[],
     loadPropertySecurityMetadata?: boolean,
+    includeAllBaseObjectProperties?: boolean,
   ) {
     const pks = arr.map(x => x.primaryKey);
 
@@ -250,6 +282,9 @@ export class BulkObjectLoader {
             : {}),
           $loadPropertySecurityMetadata:
             (loadPropertySecurityMetadata ?? false) as boolean,
+          ...(includeAllBaseObjectProperties
+            ? { $includeAllBaseObjectProperties: true }
+            : {}),
         });
 
       for (const obj of data) {

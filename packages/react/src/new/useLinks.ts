@@ -28,6 +28,7 @@ import { OsdkContext2 } from "./OsdkContext2.js";
 
 export interface UseLinksOptions<
   T extends ObjectOrInterfaceDefinition,
+  IncludeBase extends boolean = false,
 > {
   /**
    * Standard OSDK Where clause for filtering linked objects
@@ -87,12 +88,26 @@ export interface UseLinksOptions<
    * });
    */
   enabled?: boolean;
+
+  /**
+   * When true and the link target is an interface, includes all properties of
+   * the underlying concrete object type on each linked instance. Enables
+   * `link.$as(ConcreteType)` to return a fully-populated concrete instance.
+   * Has no effect when the link target is a plain object type.
+   */
+  $includeAllBaseObjectProperties?: IncludeBase;
 }
 
 export interface UseLinksResult<
   Q extends ObjectOrInterfaceDefinition,
+  IncludeBase extends boolean = false,
 > {
-  links: Osdk.Instance<Q>[] | undefined;
+  links:
+    | Osdk.Instance<
+      Q,
+      IncludeBase extends true ? "$allBaseProperties" : never
+    >[]
+    | undefined;
 
   /**
    * Maps each source object's primary key to its linked object instances.
@@ -101,7 +116,12 @@ export interface UseLinksResult<
    */
   linkedObjectsBySourcePrimaryKey: ReadonlyMap<
     string | number,
-    ReadonlyArray<Osdk.Instance<Q>>
+    ReadonlyArray<
+      Osdk.Instance<
+        Q,
+        IncludeBase extends true ? "$allBaseProperties" : never
+      >
+    >
   >;
 
   isLoading: boolean;
@@ -137,14 +157,16 @@ const emptyMap: ReadonlyMap<string | number, ReadonlyArray<never>> = new Map();
 export function useLinks<
   T extends ObjectOrInterfaceDefinition,
   L extends LinkNames<T>,
+  const IncludeBase extends boolean = false,
 >(
   objects: Osdk.Instance<T> | Array<Osdk.Instance<T>> | undefined,
   linkName: L,
-  options: UseLinksOptions<LinkedType<T, L>> = {},
-): UseLinksResult<LinkedType<T, L>> {
+  options: UseLinksOptions<LinkedType<T, L>, IncludeBase> = {},
+): UseLinksResult<LinkedType<T, L>, IncludeBase> {
   const { observableClient } = React.useContext(OsdkContext2);
 
-  const { enabled = true, ...otherOptions } = options;
+  const { enabled = true, $includeAllBaseObjectProperties, ...otherOptions } =
+    options;
 
   const canonOptions = observableClient.canonicalizeOptions({
     where: otherOptions.where,
@@ -170,7 +192,9 @@ export function useLinks<
   const { subscribe, getSnapShot } = React.useMemo(
     () => {
       if (!enabled) {
-        return makeExternalStore<ObserveLinks.CallbackArgs<T>>(
+        return makeExternalStore<
+          ObserveLinks.CallbackArgs<LinkedType<T, L>, IncludeBase>
+        >(
           () => ({ unsubscribe: () => {} }),
           devToolsMetadata({
             hookType: "useLinks",
@@ -179,9 +203,11 @@ export function useLinks<
           }),
         );
       }
-      return makeExternalStore<ObserveLinks.CallbackArgs<T>>(
+      return makeExternalStore<
+        ObserveLinks.CallbackArgs<LinkedType<T, L>, IncludeBase>
+      >(
         (observer) =>
-          observableClient.observeLinks(
+          observableClient.observeLinks<T, L, IncludeBase>(
             objectsArray,
             linkName,
             {
@@ -191,6 +217,7 @@ export function useLinks<
               orderBy: canonOptions.orderBy,
               mode: otherOptions.mode,
               dedupeInterval: otherOptions.dedupeIntervalMs ?? 2_000,
+              $includeAllBaseObjectProperties,
               ...(canonOptions.$select ? { select: canonOptions.$select } : {}),
             },
             observer,
@@ -214,6 +241,7 @@ export function useLinks<
       otherOptions.mode,
       otherOptions.dedupeIntervalMs,
       canonOptions.$select,
+      $includeAllBaseObjectProperties,
     ],
   );
 
