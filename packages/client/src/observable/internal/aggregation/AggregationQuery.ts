@@ -48,7 +48,6 @@ import {
   WHERE_IDX,
   WIRE_OBJECT_SET_IDX,
 } from "./AggregationCacheKey.js";
-import { buildAggregationInvalidationWireObjectSet } from "./buildAggregationInvalidationWireObjectSet.js";
 
 export interface AggregationPayload<
   Q extends ObjectOrInterfaceDefinition,
@@ -132,15 +131,18 @@ export abstract class AggregationQuery extends Query<
       ) as WireObjectSet;
     }
 
-    const wireDerivedProperties = this.rdpConfig
+    const wireRdps = this.rdpConfig
       ? this.store.rdpCanonicalizer.getWireDerivedProperties(this.rdpConfig)
       : undefined;
-
-    const invalidationWireObjectSet = buildAggregationInvalidationWireObjectSet(
-      this.apiName,
-      this.parsedWireObjectSet,
-      wireDerivedProperties,
-    );
+    const hasRdps = wireRdps != null && Object.keys(wireRdps).length > 0;
+    const invalidationWireObjectSet: WireObjectSet | undefined = hasRdps
+      ? {
+        type: "withProperties",
+        objectSet: this.parsedWireObjectSet
+          ?? { type: "base", objectType: this.apiName },
+        derivedProperties: wireRdps,
+      }
+      : this.parsedWireObjectSet;
 
     if (invalidationWireObjectSet) {
       this.#invalidationTypesPromise = this.#computeInvalidationTypes(
