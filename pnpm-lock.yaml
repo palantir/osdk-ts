@@ -24,6 +24,9 @@ catalogs:
     '@osdk/foundry.datasets':
       specifier: ~2.5.0
       version: 2.5.0
+    '@osdk/foundry.functions':
+      specifier: 2.57.0
+      version: 2.57.0
     '@osdk/foundry.geo':
       specifier: 2.57.0
       version: 2.57.0
@@ -1863,6 +1866,9 @@ importers:
         specifier: workspace:*
         version: link:../client.unstable
       '@osdk/foundry.core':
+        specifier: catalog:foundry-platform-typescript
+        version: 2.57.0
+      '@osdk/foundry.functions':
         specifier: catalog:foundry-platform-typescript
         version: 2.57.0
       '@osdk/foundry.mediasets':

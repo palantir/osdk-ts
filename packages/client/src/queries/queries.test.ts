@@ -45,17 +45,30 @@ import {
   threeDimensionalAggregationFunction,
   twoDimensionalAggregationFunction,
 } from "@osdk/client.test.ontology";
-import { LegacyFauxFoundry, startNodeApiServer } from "@osdk/shared.test";
-import { beforeAll, describe, expect, expectTypeOf, it } from "vitest";
+import {
+  LegacyFauxFoundry,
+  msw,
+  type SetupServer,
+  startNodeApiServer,
+} from "@osdk/shared.test";
+import {
+  afterEach,
+  beforeAll,
+  describe,
+  expect,
+  expectTypeOf,
+  it,
+} from "vitest";
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
 
 describe("queries", () => {
   let client: Client;
+  let apiServer: SetupServer;
 
   beforeAll(() => {
     const testSetup = startNodeApiServer(new LegacyFauxFoundry(), createClient);
-    ({ client } = testSetup);
+    ({ client, apiServer } = testSetup);
     return () => {
       testSetup.apiServer.close();
     };
@@ -592,6 +605,141 @@ describe("queries", () => {
       expectTypeOf<{ media: Media }>().toMatchTypeOf<InferredParamType>();
 
       expectTypeOf<{ media: MediaUpload }>().toMatchTypeOf<InferredParamType>();
+    });
+  });
+
+  describe("executeStreamingFunction", () => {
+    const STREAMING_URL_BASE =
+      "https://stack.palantir.com/api/v2/functions/queries";
+
+    function ndjsonResponse(lines: unknown[]): Response {
+      const encoder = new TextEncoder();
+      const stream = new ReadableStream<Uint8Array>({
+        start(controller) {
+          for (const line of lines) {
+            controller.enqueue(encoder.encode(JSON.stringify(line) + "\n"));
+          }
+          controller.close();
+        },
+      });
+      return new Response(stream, {
+        headers: { "Content-Type": "application/x-ndjson" },
+      });
+    }
+
+    afterEach(() => {
+      apiServer.resetHandlers();
+    });
+
+    it("yields the value of a single-line non-streaming response", async () => {
+      apiServer.use(
+        msw.http.post(
+          `${STREAMING_URL_BASE}/${addOne.apiName}/streamingExecute`,
+          () => ndjsonResponse([{ type: "data", value: 3 }]),
+        ),
+      );
+
+      const items: number[] = [];
+      for await (
+        const item of client(addOne).executeStreamingFunction({ n: 2 })
+      ) {
+        items.push(item);
+      }
+      expect(items).toEqual([3]);
+    });
+
+    it("flattens batched array results across multiple lines", async () => {
+      apiServer.use(
+        msw.http.post(
+          `${STREAMING_URL_BASE}/${queryTypeReturnsArrayOfObjects.apiName}/streamingExecute`,
+          () =>
+            ndjsonResponse([
+              { type: "data", value: [50030, 50031] },
+              { type: "data", value: [50032] },
+            ]),
+        ),
+      );
+
+      const items: Array<OsdkBase<Employee>> = [];
+      for await (
+        const item of client(queryTypeReturnsArrayOfObjects)
+          .executeStreamingFunction({ people: ["Brad", "George", "Ryan"] })
+      ) {
+        items.push(item);
+      }
+      expect(items).toEqual([
+        {
+          $apiName: "Employee",
+          $objectType: "Employee",
+          $primaryKey: 50030,
+          $objectSpecifier: "Employee:50030",
+          $title: undefined,
+        },
+        {
+          $apiName: "Employee",
+          $objectType: "Employee",
+          $primaryKey: 50031,
+          $objectSpecifier: "Employee:50031",
+          $title: undefined,
+        },
+        {
+          $apiName: "Employee",
+          $objectType: "Employee",
+          $primaryKey: 50032,
+          $objectSpecifier: "Employee:50032",
+          $title: undefined,
+        },
+      ]);
+    });
+
+    it("throws on error lines, attaching error fields", async () => {
+      apiServer.use(
+        msw.http.post(
+          `${STREAMING_URL_BASE}/${addOne.apiName}/streamingExecute`,
+          () =>
+            ndjsonResponse([
+              {
+                type: "error",
+                errorCode: "INVALID_ARGUMENT",
+                errorName: "QueryRuntimeError",
+                errorInstanceId: "abc-123",
+                errorDescription: "Division by zero",
+                parameters: {},
+              },
+            ]),
+        ),
+      );
+
+      let caught: any;
+      try {
+        for await (
+          const _ of client(addOne).executeStreamingFunction({ n: 2 })
+        ) {
+          // unreachable
+        }
+        expect.fail("expected stream to throw");
+      } catch (e) {
+        caught = e;
+      }
+      expect(caught).toBeInstanceOf(Error);
+      expect((caught as Error).message).toContain("QueryRuntimeError");
+      expect((caught as Error).message).toContain("INVALID_ARGUMENT");
+      expect((caught as Error).message).toContain("abc-123");
+      expect(caught.errorCode).toBe("INVALID_ARGUMENT");
+      expect(caught.errorInstanceId).toBe("abc-123");
+    });
+
+    it("yields elements of an array-returning query as the element type", () => {
+      const stream = client(queryTypeReturnsArrayOfObjects)
+        .executeStreamingFunction({ people: [] });
+      expectTypeOf<typeof stream>().toMatchTypeOf<
+        AsyncIterable<OsdkBase<Employee>>
+      >();
+    });
+
+    it("yields the scalar value for a non-array query", () => {
+      const stream = client(addOne).executeStreamingFunction({ n: 1 });
+      expectTypeOf<typeof stream>().toMatchTypeOf<AsyncIterable<number>>();
     });
   });
 });

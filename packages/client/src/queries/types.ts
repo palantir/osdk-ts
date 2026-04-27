@@ -31,6 +31,9 @@ import type { PartialByNotStrict } from "../util/partialBy.js";
 export type QuerySignatureFromDef<T extends QueryDefinition<any>> = {
   executeFunction: CompileTimeMetadata<T> extends never ? QuerySignature<T>
     : CompileTimeMetadata<T>["signature"];
+  executeStreamingFunction: CompileTimeMetadata<T> extends never
+    ? QueryStreamingSignature<T>
+    : ToStreamingSignature<CompileTimeMetadata<T>["signature"]>;
 };
 
 export type QuerySignature<T extends QueryDefinition<any>> =
@@ -39,6 +42,19 @@ export type QuerySignature<T extends QueryDefinition<any>> =
     : (
       params: QueryParameterType<CompileTimeMetadata<T>["parameters"]>,
     ) => Promise<QueryReturnType<CompileTimeMetadata<T>["output"]>>;
+
+export type QueryStreamingSignature<T extends QueryDefinition<any>> =
+  keyof CompileTimeMetadata<T>["parameters"] extends never
+    ? () => AsyncIterable<
+      QueryReturnType<CompileTimeMetadata<T>["output"]>
+    >
+    : (
+      params: QueryParameterType<CompileTimeMetadata<T>["parameters"]>,
+    ) => AsyncIterable<QueryReturnType<CompileTimeMetadata<T>["output"]>>;
+
+type ToStreamingSignature<F> = F extends (...args: infer A) => Promise<infer R>
+  ? (...args: A) => AsyncIterable<R extends ReadonlyArray<infer E> ? E : R>
+  : (...args: any[]) => AsyncIterable<any>;
 
 export type QueryParameterType<
   T extends Record<any, QueryDataTypeDefinition>,
