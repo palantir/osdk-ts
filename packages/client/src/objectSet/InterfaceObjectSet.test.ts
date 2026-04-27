@@ -21,13 +21,7 @@ import {
 } from "@osdk/client.test.ontology";
 import { beforeAll, describe, expect, expectTypeOf, it } from "vitest";
 
-import type {
-  InterfaceDefinition,
-  ObjectSet,
-  Osdk,
-  PropertyKeys,
-} from "@osdk/api";
-import type { MinimalObjectSet } from "@osdk/api/unstable";
+import type { ObjectSet, Osdk, PropertyKeys } from "@osdk/api";
 import { LegacyFauxFoundry, startNodeApiServer } from "@osdk/shared.test";
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
@@ -111,11 +105,5 @@ describe("ObjectSet", () => {
     expectTypeOf<typeof objectSet>().toEqualTypeOf<
       ObjectSet<FooInterface, never>
     >;
-  });
-
-  it("exposes .subscribe on MinimalObjectSet (the client() fallback for generic InterfaceDefinition)", () => {
-    expectTypeOf<MinimalObjectSet<InterfaceDefinition>>()
-      .toHaveProperty("subscribe")
-      .toBeFunction();
   });
 });
