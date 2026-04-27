@@ -18,7 +18,14 @@ import type { FauxDataStore, FauxOntology } from "@osdk/faux";
 import { FauxFoundry } from "@osdk/faux";
 import invariant from "tiny-invariant";
 import { registerLazyActions } from "./actions.js";
-import { ActionTypeWithUnsupportedTypes, editTodo } from "./actionTypes.js";
+import {
+  ActionTypeWithUnsupportedTypes,
+  addPeepsLink,
+  deletePeepsLink,
+  deleteTodo,
+  editTodo,
+  largeScaleEditEmployee,
+} from "./actionTypes.js";
 import { BarInterface, FooInterface } from "./interfaceTypes.js";
 import {
   basicPropertySecurities,
@@ -59,6 +66,10 @@ export class LegacyFauxFoundry extends FauxFoundry {
     registerLazyActions(legacyFullOntology);
     legacyFullOntology.registerActionType(ActionTypeWithUnsupportedTypes);
     legacyFullOntology.registerActionType(editTodo.actionTypeV2);
+    legacyFullOntology.registerActionType(deleteTodo.actionTypeV2);
+    legacyFullOntology.registerActionType(addPeepsLink.actionTypeV2);
+    legacyFullOntology.registerActionType(deletePeepsLink.actionTypeV2);
+    legacyFullOntology.registerActionType(largeScaleEditEmployee.actionTypeV2);
 
     registerLazyQueries(legacyFullOntology);
 

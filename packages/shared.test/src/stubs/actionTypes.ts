@@ -29,6 +29,36 @@ export const editTodo: TH.ActionTypeBuilderResult<{
   .addParameter("completed", "string")
   .build();
 
+export const deleteTodo: TH.ActionTypeBuilderResult<{
+  id: TH.ActionParameterV2<"integer", true>;
+}> = TH.actionTypeBuilder("deleteTodo")
+  .addParameter("id", "integer", true)
+  .build();
+
+export const addPeepsLink: TH.ActionTypeBuilderResult<{
+  leadId: TH.ActionParameterV2<"integer", true>;
+  peepId: TH.ActionParameterV2<"integer", true>;
+}> = TH.actionTypeBuilder("addPeepsLink")
+  .addParameter("leadId", "integer", true)
+  .addParameter("peepId", "integer", true)
+  .build();
+
+export const deletePeepsLink: TH.ActionTypeBuilderResult<{
+  leadId: TH.ActionParameterV2<"integer", true>;
+  peepId: TH.ActionParameterV2<"integer", true>;
+}> = TH.actionTypeBuilder("deletePeepsLink")
+  .addParameter("leadId", "integer", true)
+  .addParameter("peepId", "integer", true)
+  .build();
+
+export const largeScaleEditEmployee: TH.ActionTypeBuilderResult<{
+  employeeId: TH.ActionParameterV2<"integer", true>;
+  newTitle: TH.ActionParameterV2<"string", true>;
+}> = TH.actionTypeBuilder("largeScaleEditEmployee")
+  .addParameter("employeeId", "integer", true)
+  .addParameter("newTitle", "string", true)
+  .build();
+
 export const PromoteEmployee: ActionTypeV2 = {
   apiName: "promoteEmployee",
   description: "Update an employee's title and compensation",

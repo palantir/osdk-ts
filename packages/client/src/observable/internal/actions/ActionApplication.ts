@@ -104,22 +104,19 @@ export class ActionApplication {
       return;
     }
 
+    const { editedObjectTypes } = actionEditResponse;
+
     if (actionEditResponse.type !== "edits") {
       await Promise.all(
-        actionEditResponse.editedObjectTypes.map(apiName =>
+        editedObjectTypes.map(apiName =>
           this.store.invalidateObjectType(apiName, undefined)
         ),
       );
       return;
     }
 
-    const {
-      addedObjects,
-      modifiedObjects,
-      deletedObjects,
-      addedLinks,
-      deletedLinks,
-    } = actionEditResponse;
+    const { addedObjects, modifiedObjects, deletedObjects } =
+      actionEditResponse;
 
     this.store.batch({}, (batch) => {
       for (const { objectType, primaryKey } of deletedObjects ?? []) {
@@ -134,27 +131,26 @@ export class ActionApplication {
       }
     });
 
-    const perObjectInvalidations: Array<Promise<unknown>> = [];
-    const touchedObjectTypes = new Set<string>();
+    const promises: Array<Promise<unknown>> = [];
+
+    // Per-object refetch picks up the server-confirmed state for added/
+    // modified objects. Deleted objects already have a tombstone written
+    // above; calling invalidateObject on a deleted object would force a 404
+    // fetch and flicker subscribers between loading and error.
     for (const obj of [...(addedObjects ?? []), ...(modifiedObjects ?? [])]) {
-      touchedObjectTypes.add(obj.objectType);
-      perObjectInvalidations.push(
+      promises.push(
         this.store.invalidateObject(obj.objectType, obj.primaryKey),
       );
     }
-    for (const obj of deletedObjects ?? []) {
-      touchedObjectTypes.add(obj.objectType);
-    }
-    for (const link of [...(addedLinks ?? []), ...(deletedLinks ?? [])]) {
-      touchedObjectTypes.add(link.aSideObject.objectType);
-      touchedObjectTypes.add(link.bSideObject.objectType);
+
+    // editedObjectTypes is the union of per-object types and both sides of
+    // every link edit (computed by applyAction's remapActionResponse). Link
+    // queries don't react to per-object propagation since they're keyed on
+    // (srcType, srcPk, linkName), so kick them per touched type.
+    for (const apiName of editedObjectTypes) {
+      promises.push(this.store.invalidateLinkQueriesForType(apiName));
     }
 
-    await Promise.all([
-      ...perObjectInvalidations,
-      ...[...touchedObjectTypes].map(apiName =>
-        this.store.invalidateLinkQueriesForType(apiName)
-      ),
-    ]);
+    await Promise.all(promises);
   };
 }

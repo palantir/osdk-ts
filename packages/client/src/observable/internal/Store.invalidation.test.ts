@@ -15,9 +15,13 @@
  */
 
 import {
+  addPeepsLink,
   createOfficeAndEmployee,
+  deletePeepsLink,
+  deleteTodo,
   editTodo,
   Employee,
+  largeScaleEditEmployee,
   Office,
   promoteEmployee,
   Todo,
@@ -53,18 +57,6 @@ const OFFICE_1_ID = "101";
 const OFFICE_2_ID = "102";
 const TODO_1_ID = 201;
 const TODO_2_ID = 202;
-
-// Test-only actions not present in @osdk/client.test.ontology.
-const deleteTodoBuild = TypeHelpers.actionTypeBuilder("deleteTodo")
-  .addParameter("id", "integer", true)
-  .build();
-const { actionDefinition: deleteTodoAction } = deleteTodoBuild;
-
-const addPeepsLinkBuild = TypeHelpers.actionTypeBuilder("addPeepsLink")
-  .addParameter("leadId", "integer", true)
-  .addParameter("peepId", "integer", true)
-  .build();
-const { actionDefinition: addPeepsLinkAction } = addPeepsLinkBuild;
 
 describe("Store Invalidation Type Isolation", () => {
   let client: ReturnType<typeof createClient>;
@@ -133,18 +125,43 @@ describe("Store Invalidation Type Isolation", () => {
     );
 
     fauxFoundry.getDefaultOntology().registerActionType(
-      deleteTodoBuild.actionTypeV2,
+      stubData.deleteTodo.actionTypeV2,
       (b, payload) => {
         b.deleteObject(Todo.apiName, payload.parameters.id);
       },
     );
 
     fauxFoundry.getDefaultOntology().registerActionType(
-      addPeepsLinkBuild.actionTypeV2,
+      stubData.addPeepsLink.actionTypeV2,
       (b, payload) => {
         const { leadId, peepId } = payload.parameters;
         b.addLink(Employee.apiName, leadId, "peeps", Employee.apiName, peepId);
       },
+    );
+
+    fauxFoundry.getDefaultOntology().registerActionType(
+      stubData.deletePeepsLink.actionTypeV2,
+      (b, payload) => {
+        const { leadId, peepId } = payload.parameters;
+        b.removeLink(
+          Employee.apiName,
+          leadId,
+          "peeps",
+          Employee.apiName,
+          peepId,
+        );
+      },
+    );
+
+    fauxFoundry.getDefaultOntology().registerActionType(
+      stubData.largeScaleEditEmployee.actionTypeV2,
+      (b, payload) => {
+        const { employeeId, newTitle } = payload.parameters;
+        b.modifyObject<Employee>(Employee.apiName, employeeId, {
+          fullName: newTitle,
+        });
+      },
+      { returnLargeScaleEdits: true },
     );
   }
 
@@ -764,7 +781,7 @@ describe("Store Invalidation Type Isolation", () => {
       return linkSubFn;
     }
 
-    it("modify invalidates list and link queries of the modified type", async () => {
+    it("modifying invalidates list and link queries of the modified type", async () => {
       const todoListSubFn = await observeList(Todo);
       const linkSubFn = await observeOccupantsLink();
 
@@ -800,7 +817,7 @@ describe("Store Invalidation Type Isolation", () => {
       });
     });
 
-    it("add invalidates list + link queries of each added type; unrelated types untouched", async () => {
+    it("adding invalidates list + link queries of each added type; unrelated types untouched", async () => {
       const empListSubFn = await observeList(Employee);
       const officeListSubFn = await observeList(Office);
       const todoListSubFn = await observeList(Todo);
@@ -819,7 +836,7 @@ describe("Store Invalidation Type Isolation", () => {
       expect(todoListSubFn.next).not.toHaveBeenCalled();
     });
 
-    it("delete tombstones the object and refetches list queries", async () => {
+    it("deleting tombstones the object and refetches list queries", async () => {
       const { subFn: todoSubFn } = await expectStandardObserveObject({
         cache,
         type: Todo,
@@ -828,7 +845,7 @@ describe("Store Invalidation Type Isolation", () => {
       const todoListSubFn = await observeList(Todo);
       todoSubFn.next.mockClear();
 
-      await cache.applyAction(deleteTodoAction, { id: TODO_1_ID });
+      await cache.applyAction(deleteTodo, { id: TODO_1_ID });
 
       await vi.waitFor(() => {
         expect(todoSubFn.next).toHaveBeenCalledWith(
@@ -847,7 +864,7 @@ describe("Store Invalidation Type Isolation", () => {
       });
     });
 
-    it("addedLinks invalidates link queries on both sides", async () => {
+    it("adding a link invalidates link queries on both sides", async () => {
       const { payload: emp1Payload } = await expectStandardObserveObject({
         cache,
         type: Employee,
@@ -881,7 +898,7 @@ describe("Store Invalidation Type Isolation", () => {
       peepsSubFn.next.mockClear();
       leadSubFn.next.mockClear();
 
-      await cache.applyAction(addPeepsLinkAction, {
+      await cache.applyAction(addPeepsLink, {
         leadId: EMPLOYEE_1_ID,
         peepId: EMPLOYEE_2_ID,
       });
@@ -906,6 +923,95 @@ describe("Store Invalidation Type Isolation", () => {
           }),
         );
       });
+    });
+
+    it("deleting a link invalidates link queries on both sides", async () => {
+      const { payload: emp1Payload } = await expectStandardObserveObject({
+        cache,
+        type: Employee,
+        primaryKey: EMPLOYEE_1_ID,
+      });
+      const emp1 = emp1Payload?.object;
+      invariant(emp1);
+
+      const { payload: emp2Payload } = await expectStandardObserveObject({
+        cache,
+        type: Employee,
+        primaryKey: EMPLOYEE_2_ID,
+      });
+      const emp2 = emp2Payload?.object;
+      invariant(emp2);
+
+      // Seed the link via addPeepsLink so the deletion has something to remove.
+      await cache.applyAction(addPeepsLink, {
+        leadId: EMPLOYEE_1_ID,
+        peepId: EMPLOYEE_2_ID,
+      });
+
+      const { linkSubFn: peepsSubFn } = await expectStandardObserveLink({
+        store: cache,
+        srcObject: emp1,
+        srcLinkName: "peeps",
+        targetType: Employee,
+        expected: [expect.objectContaining({ $primaryKey: EMPLOYEE_2_ID })],
+      });
+      const { linkSubFn: leadSubFn } = await expectStandardObserveLink({
+        store: cache,
+        srcObject: emp2,
+        srcLinkName: "lead",
+        targetType: Employee,
+        expected: [expect.objectContaining({ $primaryKey: EMPLOYEE_1_ID })],
+      });
+      peepsSubFn.next.mockClear();
+      leadSubFn.next.mockClear();
+
+      await cache.applyAction(deletePeepsLink, {
+        leadId: EMPLOYEE_1_ID,
+        peepId: EMPLOYEE_2_ID,
+      });
+
+      await vi.waitFor(() => {
+        expect(peepsSubFn.next).toHaveBeenCalledWith(
+          expect.objectContaining({
+            status: "loaded",
+            resolvedList: expect.not.arrayContaining([
+              expect.objectContaining({ $primaryKey: EMPLOYEE_2_ID }),
+            ]),
+          }),
+        );
+      });
+      await vi.waitFor(() => {
+        expect(leadSubFn.next).toHaveBeenCalledWith(
+          expect.objectContaining({
+            status: "loaded",
+            resolvedList: expect.not.arrayContaining([
+              expect.objectContaining({ $primaryKey: EMPLOYEE_1_ID }),
+            ]),
+          }),
+        );
+      });
+    });
+
+    it("largeScaleEdits response invalidates queries via editedObjectTypes", async () => {
+      const empListSubFn = await observeList(Employee);
+      const todoListSubFn = await observeList(Todo);
+
+      await cache.applyAction(largeScaleEditEmployee, {
+        employeeId: EMPLOYEE_1_ID,
+        newTitle: "Lead Engineer",
+      });
+
+      await vi.waitFor(() => {
+        expect(empListSubFn.next).toHaveBeenCalledWith(
+          expect.objectContaining({
+            status: "loaded",
+            resolvedList: expect.arrayContaining([
+              expect.objectContaining({ fullName: "Lead Engineer" }),
+            ]),
+          }),
+        );
+      });
+      expect(todoListSubFn.next).not.toHaveBeenCalled();
     });
   });
 });

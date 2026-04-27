@@ -152,7 +152,7 @@ export class FauxDataStoreBatch {
     this.objectEdits.edits.push({
       type: "deleteObject",
       objectType,
-      primaryKey: primaryKey,
+      primaryKey,
     });
   };
 
@@ -214,5 +214,21 @@ export class FauxDataStoreBatch {
       { __apiName: rightObjectType, __primaryKey: rightPrimaryKey },
       rightTypeSideV2.apiName,
     );
+
+    this.objectEdits.edits.push({
+      type: "deleteLink",
+      aSideObject: {
+        objectType: leftObjectType,
+        primaryKey: leftPrimaryKey,
+      },
+      bSideObject: {
+        objectType: rightObjectType,
+        primaryKey: rightPrimaryKey,
+      },
+      linkTypeApiNameAtoB: leftLinkName,
+      linkTypeApiNameBtoA: rightTypeSideV2.apiName,
+    });
+
+    this.objectEdits.deletedLinksCount += 1;
   };
 }

@@ -1011,7 +1011,8 @@ export class FauxDataStore {
 
     const batch = new FauxDataStoreBatch(this);
 
-    const returnLargeScaleEdits = false;
+    const { returnLargeScaleEdits = false } = this.#fauxOntology
+      .getActionOptions(actionTypeApiName);
     for (const item of batchReq.requests) {
       actionImpl(
         batch,

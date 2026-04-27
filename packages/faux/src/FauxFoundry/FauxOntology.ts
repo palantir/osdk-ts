@@ -39,9 +39,21 @@ import type { TH_ObjectTypeFullMetadata } from "./typeHelpers/TH_ObjectTypeFullM
  * Currently Unsupported Concepts:
  * - many:many links.
  */
+export interface FauxActionOptions {
+  /**
+   * When true, the action's response is returned as `largeScaleEdits` (only
+   * `editedObjectTypes` populated) instead of `edits` (per-object/per-link
+   * arrays). Defaults to false. Use to exercise the largeScaleEdits code
+   * paths in tests.
+   */
+  returnLargeScaleEdits?: boolean;
+}
+
 export class FauxOntology {
   #ontology: OntologiesV2.OntologyFullMetadata;
   #actionImpl: Map<OntologiesV2.ActionTypeApiName, FauxActionImpl> = new Map();
+  #actionOptions: Map<OntologiesV2.ActionTypeApiName, FauxActionOptions> =
+    new Map();
   #queryImpl: Map<
     OntologiesV2.QueryApiName,
     Map<OntologiesV2.FunctionVersion, FauxQueryImpl>
@@ -165,6 +177,10 @@ export class FauxOntology {
     const impl = this.#actionImpl.get(actionTypeApiName);
     invariant(impl, "Action implementation not found for " + actionTypeApiName);
     return impl;
+  }
+
+  public getActionOptions(actionTypeApiName: string): FauxActionOptions {
+    return this.#actionOptions.get(actionTypeApiName) ?? {};
   }
 
   public getQueryDef(
@@ -334,14 +350,17 @@ export class FauxOntology {
   registerActionType<Q extends OntologiesV2.ActionTypeV2>(
     def: Q,
     implementation?: FauxActionImpl<Q>,
+    options?: FauxActionOptions,
   ): void;
   registerActionType(
     def: OntologiesV2.ActionTypeV2,
     implementation?: FauxActionImpl,
+    options?: FauxActionOptions,
   ): void;
   registerActionType(
     def: OntologiesV2.ActionTypeV2,
     implementation?: FauxActionImpl,
+    options?: FauxActionOptions,
   ): void {
     if (def.apiName in this.#ontology.actionTypes) {
       throw new Error(
@@ -351,6 +370,9 @@ export class FauxOntology {
     this.#ontology.actionTypes[def.apiName] = def;
     if (implementation) {
       this.#actionImpl.set(def.apiName, implementation);
+    }
+    if (options) {
+      this.#actionOptions.set(def.apiName, options);
     }
   }
 

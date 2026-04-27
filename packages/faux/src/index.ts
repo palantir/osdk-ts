@@ -25,7 +25,10 @@ export { FauxAdmin } from "./FauxFoundry/FauxAdmin.js";
 export { FauxDataStore } from "./FauxFoundry/FauxDataStore.js";
 export type { FauxDataStoreBatch } from "./FauxFoundry/FauxDataStoreBatch.js";
 export { FauxFoundry } from "./FauxFoundry/FauxFoundry.js";
-export { FauxOntology } from "./FauxFoundry/FauxOntology.js";
+export {
+  type FauxActionOptions,
+  FauxOntology,
+} from "./FauxFoundry/FauxOntology.js";
 export type { TH_ObjectTypeFullMetadata } from "./FauxFoundry/typeHelpers/TH_ObjectTypeFullMetadata.js";
 export { authHandlerMiddleware } from "./handlers/authHandlerMiddleware.js";
 export { OpenApiCallError } from "./handlers/util/handleOpenApiCall.js";
