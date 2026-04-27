@@ -555,6 +555,37 @@ describe.each([
           `Cannot clone interface with notImplementedFooSpt as property is not implemented by the underlying object type Employee`,
         );
       });
+      it("throws when casting to interface whose implementation applies a reducer", () => {
+        const employeeOsdkObject = createOsdkObject(
+          client[additionalContext],
+          {
+            ...EmployeeFetchedMetadata,
+            interfaceImplementations: {
+              FooInterface: {
+                fooSpt: {
+                  type: "reduced",
+                  implementation: {
+                    type: "localProperty",
+                    propertyApiName: "fullName",
+                  },
+                },
+              },
+            },
+          },
+          {
+            "$apiName": "Employee",
+            "$objectType": "Employee",
+            "$primaryKey": 50031,
+            "$title": "Jane Doe",
+            "employeeId": 50031,
+            "fullName": "Jane Doe",
+          },
+        );
+
+        expect(() => employeeOsdkObject.$as(fooInterfaceOsdkDef)).toThrowError(
+          `Cannot cast 'Employee' to interface 'FooInterface': property 'fooSpt' applies a reducer`,
+        );
+      });
     });
   });
   describe("objectSpecifier", () => {

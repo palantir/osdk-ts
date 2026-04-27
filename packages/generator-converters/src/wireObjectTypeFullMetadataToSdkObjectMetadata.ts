@@ -51,6 +51,11 @@ export function wireObjectTypeFullMetadataToSdkObjectMetadata(
     );
   }
 
+  const interfaceImplementations: Record<
+    string,
+    Record<string, ObjectMetadata.InterfacePropertyImplementation>
+  > = {};
+
   const interfaceMap = objectTypeWithLink.implementsInterfaces2
     ? Object.fromEntries(
       Object.entries(objectTypeWithLink.implementsInterfaces2).sort(
@@ -63,14 +68,26 @@ export function wireObjectTypeFullMetadataToSdkObjectMetadata(
             && Object.keys(impl.propertiesV2).length > 0
           ) {
             const propMap: Record<string, string> = {};
+            const implMap: Record<
+              string,
+              ObjectMetadata.InterfacePropertyImplementation
+            > = {};
             for (
               const [iptApiName, implementation] of Object.entries(
                 impl.propertiesV2,
               )
             ) {
-              if (implementation.type === "localPropertyImplementation") {
-                propMap[iptApiName] = implementation.propertyApiName;
+              const converted = convertInterfacePropertyImplementation(
+                implementation,
+              );
+              if (converted == null) continue;
+              implMap[iptApiName] = converted;
+              if (converted.type === "localProperty") {
+                propMap[iptApiName] = converted.propertyApiName;
               }
+            }
+            if (Object.keys(implMap).length > 0) {
+              interfaceImplementations[interfaceApiName] = implMap;
             }
             return [interfaceApiName, propMap];
           }
@@ -124,6 +141,9 @@ export function wireObjectTypeFullMetadataToSdkObjectMetadata(
         [interfaceApiName, props],
       ) => [interfaceApiName, invertProps(props)]),
     ),
+    ...(Object.keys(interfaceImplementations).length > 0
+      ? { interfaceImplementations }
+      : {}),
     icon: supportedIconTypes.includes(objectTypeWithLink.objectType.icon.type)
       ? objectTypeWithLink.objectType.icon
       : undefined,
@@ -149,6 +169,78 @@ function invertProps(
     ? Object.fromEntries(Object.entries(a).map(([k, v]) => [v, k]))
     : undefined) as typeof a extends undefined ? typeof a
       : Record<string, string>;
+}
+
+type WireInterfacePropertyImplementation = NonNullable<
+  NonNullable<
+    ObjectTypeFullMetadata["implementsInterfaces2"]
+  >[string]["propertiesV2"]
+>[string];
+
+type WireNestedInterfacePropertyImplementation = Extract<
+  WireInterfacePropertyImplementation,
+  { type: "reducedPropertyImplementation" }
+>["implementation"];
+
+function convertInterfacePropertyImplementation(
+  wire: WireInterfacePropertyImplementation,
+): ObjectMetadata.InterfacePropertyImplementation | undefined {
+  switch (wire.type) {
+    case "localPropertyImplementation":
+      return {
+        type: "localProperty",
+        propertyApiName: wire.propertyApiName,
+      };
+    case "structFieldImplementation":
+      return {
+        type: "structField",
+        propertyApiName: wire.structFieldOfProperty.propertyApiName,
+        structFieldApiName: wire.structFieldOfProperty.structFieldApiName,
+      };
+    case "structImplementation":
+      return {
+        type: "struct",
+        mapping: Object.fromEntries(
+          Object.entries(wire.mapping).map(([fieldName, entry]) => {
+            if (entry.type === "structFieldOfProperty") {
+              return [fieldName, {
+                type: "structFieldOfProperty" as const,
+                propertyApiName: entry.propertyApiName,
+                structFieldApiName: entry.structFieldApiName,
+              }];
+            }
+            return [fieldName, {
+              type: "property" as const,
+              propertyApiName: entry.propertyApiName,
+            }];
+          }),
+        ),
+      };
+    case "reducedPropertyImplementation": {
+      const inner = convertNestedInterfacePropertyImplementation(
+        wire.implementation,
+      );
+      if (inner == null) {
+        return undefined;
+      }
+      return { type: "reduced", implementation: inner };
+    }
+    default:
+      return undefined;
+  }
+}
+
+function convertNestedInterfacePropertyImplementation(
+  wire: WireNestedInterfacePropertyImplementation,
+):
+  | ObjectMetadata.InterfacePropertyLocalImplementation
+  | ObjectMetadata.InterfacePropertyStructFieldImplementation
+  | ObjectMetadata.InterfacePropertyStructImplementation
+  | undefined
+{
+  const converted = convertInterfacePropertyImplementation(wire);
+  if (converted == null || converted.type === "reduced") return undefined;
+  return converted;
 }
 
 export const supportedIconTypes = ["blueprint"] as const;

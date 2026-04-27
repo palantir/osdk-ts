@@ -1234,8 +1234,8 @@ describe("ObjectSet", () => {
             | "skillSet"
             | "skillSetEmbedding"
             | "favoriteRestaurants"
-            | "employeeProfile"
-            | "performanceScores"
+            | "employeeProfile:applyMainValue"
+            | "performanceScores:applyReducers"
           >();
 
         // We don't have a proper definition that has

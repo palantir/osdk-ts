@@ -329,6 +329,8 @@ export type CompileTimeMetadata<T extends {
 // Warning: (ae-forgotten-export) The symbol "ValidToFrom" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "ValidOsdkPropParams" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "UnionIfTrue" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "IsNever" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "RemoveModifierSelectors" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "MapPropNamesToObjectType" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "MapPropNamesToInterface" needs to be exported by the entry point index.d.ts
 //
@@ -336,9 +338,9 @@ export type CompileTimeMetadata<T extends {
 export type ConvertProps<
 	FROM extends ObjectOrInterfaceDefinition,
 	TO extends ValidToFrom<FROM>,
-	P extends ValidOsdkPropParams<FROM>,
+	P extends ValidOsdkPropParams<FROM> | string,
 	OPTIONS extends never | "$rid" | "$allBaseProperties" | "$propertySecurities" = never
-> = TO extends FROM ? P : TO extends ObjectTypeDefinition ? (UnionIfTrue<MapPropNamesToObjectType<FROM, TO, P, OPTIONS>, P extends "$rid" ? true : false, "$rid">) : TO extends InterfaceDefinition ? FROM extends ObjectTypeDefinition ? (UnionIfTrue<MapPropNamesToInterface<FROM, TO, P>, P extends "$rid" ? true : false, "$rid">) : never : never;
+> = TO extends FROM ? P : TO extends ObjectTypeDefinition ? (UnionIfTrue<IsNever<RemoveModifierSelectors<P>> extends true ? never : MapPropNamesToObjectType<FROM, TO, RemoveModifierSelectors<P> & ValidOsdkPropParams<FROM>, OPTIONS>, P extends "$rid" ? true : false, "$rid">) : TO extends InterfaceDefinition ? FROM extends ObjectTypeDefinition ? (UnionIfTrue<IsNever<RemoveModifierSelectors<P>> extends true ? never : MapPropNamesToInterface<FROM, TO, RemoveModifierSelectors<P> & ValidOsdkPropParams<FROM>>, P extends "$rid" ? true : false, "$rid">) : never : never;
 
 // @public
 export interface DataValueClientToWire {
@@ -1144,6 +1146,8 @@ export interface ObjectMetadata extends ObjectInterfaceBaseMetadata {
     // (undocumented)
     icon: Icon | undefined;
     	// (undocumented)
+    interfaceImplementations?: Record<string, Record<string, ObjectMetadata.InterfacePropertyImplementation>>;
+    	// (undocumented)
     interfaceMap: Record<string, Record<string, string>>;
     	// (undocumented)
     inverseInterfaceMap: Record<string, Record<string, string>>;
@@ -1169,6 +1173,45 @@ export interface ObjectMetadata extends ObjectInterfaceBaseMetadata {
 
 // @public (undocumented)
 export namespace ObjectMetadata {
+    	// (undocumented)
+    export type InterfacePropertyImplementation = InterfacePropertyLocalImplementation | InterfacePropertyStructFieldImplementation | InterfacePropertyStructImplementation | InterfacePropertyReducedImplementation;
+    	// (undocumented)
+    export interface InterfacePropertyLocalImplementation {
+        		// (undocumented)
+        propertyApiName: string;
+        		// (undocumented)
+        type: "localProperty";
+        	}
+    	// (undocumented)
+    export interface InterfacePropertyReducedImplementation {
+        		// (undocumented)
+        implementation: InterfacePropertyLocalImplementation | InterfacePropertyStructFieldImplementation | InterfacePropertyStructImplementation;
+        		// (undocumented)
+        type: "reduced";
+        	}
+    	// (undocumented)
+    export interface InterfacePropertyStructFieldImplementation {
+        		// (undocumented)
+        propertyApiName: string;
+        		// (undocumented)
+        structFieldApiName: string;
+        		// (undocumented)
+        type: "structField";
+        	}
+    	// (undocumented)
+    export interface InterfacePropertyStructImplementation {
+        		// (undocumented)
+        mapping: Record<string, {
+            			type: "property"
+            			propertyApiName: string
+            		} | {
+            			type: "structFieldOfProperty"
+            			propertyApiName: string
+            			structFieldApiName: string
+            		}>;
+        		// (undocumented)
+        type: "struct";
+        	}
     	// (undocumented)
     export interface Link<
     		Q extends ObjectTypeDefinition,
@@ -1358,7 +1401,6 @@ export type OrWhereClause<
     	$or: WhereClause<T, RDPs>[]
 };
 
-// Warning: (ae-forgotten-export) The symbol "IsNever" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "IsAny" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "ExtractPropsKeysFromOldPropsStyle" needs to be exported by the entry point index.d.ts
 //
@@ -1388,7 +1430,7 @@ export namespace Osdk {
         		readonly $link: Q extends {
             			linksType?: any
             		} ? Q["linksType"] : Q extends ObjectOrInterfaceDefinition ? OsdkObjectLinksObject<Q> : never
-        		readonly $as: <NEW_Q extends ValidToFrom<Q>>(type: NEW_Q | string) => Osdk.Instance<NEW_Q, OPTIONS, ConvertProps<Q, NEW_Q, P, OPTIONS>>
+        		readonly $as: <NEW_Q extends HasModifiers<P> extends true ? ValidToFrom<Q> & ObjectTypeDefinition : ValidToFrom<Q>>(type: Q extends InterfaceDefinition ? NEW_Q extends ObjectTypeDefinition ? OtHasReducedInterfaceImpl<Q, NEW_Q> extends true ? never : OtHasNonLocalInterfaceImpl<Q, NEW_Q> extends true ? "$allBaseProperties" extends OPTIONS ? NEW_Q | string : never : NEW_Q | string : NEW_Q | string : NEW_Q | string) => Osdk.Instance<NEW_Q, OPTIONS, ConvertProps<Q, NEW_Q, P, OPTIONS>>
         		readonly $clone: <NEW_PROPS extends PropertyKeys<Q>>(updatedObject?: Osdk.Instance<Q, any, NEW_PROPS> | { [K in NEW_PROPS]? : CompileTimeMetadata<Q>["props"][K] }) => Osdk.Instance<Q, OPTIONS, P | NEW_PROPS>
         		readonly $__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata: Q extends ObjectTypeDefinition ? {
             			ObjectMetadata: ObjectMetadata
@@ -2014,7 +2056,9 @@ export type WirePropertyTypes = BaseWirePropertyTypes | Record<string, BaseWireP
 // src/Definitions.ts:42:52 - (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
 // src/Definitions.ts:42:52 - (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
 // src/Definitions.ts:42:52 - (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
-// src/OsdkObjectFrom.ts:315:49 - (ae-forgotten-export) The symbol "ObjectPropertySecurities" needs to be exported by the entry point index.d.ts
+// src/OsdkObjectFrom.ts:340:73 - (ae-forgotten-export) The symbol "OtHasReducedInterfaceImpl" needs to be exported by the entry point index.d.ts
+// src/OsdkObjectFrom.ts:340:73 - (ae-forgotten-export) The symbol "OtHasNonLocalInterfaceImpl" needs to be exported by the entry point index.d.ts
+// src/OsdkObjectFrom.ts:405:49 - (ae-forgotten-export) The symbol "ObjectPropertySecurities" needs to be exported by the entry point index.d.ts
 // src/aggregate/AggregateOpts.ts:25:3 - (ae-forgotten-export) The symbol "UnorderedAggregationClause" needs to be exported by the entry point index.d.ts
 // src/aggregate/AggregateOpts.ts:25:3 - (ae-forgotten-export) The symbol "OrderedAggregationClause" needs to be exported by the entry point index.d.ts
 // src/aggregate/AggregationResultsWithGroups.ts:36:5 - (ae-forgotten-export) The symbol "MaybeNullable_2" needs to be exported by the entry point index.d.ts

@@ -30,6 +30,8 @@ import type {
   Osdk,
 } from "./OsdkObjectFrom.js";
 import type { EmployeeApiTest } from "./test/EmployeeApiTest.js";
+import type { FooInterfaceApiTest } from "./test/FooInterfaceApiTest.js";
+import type { ReducerInterfaceApiTest } from "./test/ReducerInterfaceApiTest.js";
 
 describe("ExtractOptions", () => {
   describe("NullabilityAdherence Generic", () => {
@@ -852,6 +854,55 @@ describe("ExtractOptions", () => {
           },
         });
       });
+    });
+  });
+
+  describe("$as from interface to OT", () => {
+    it("interface → OT: legacy (all localProperty implementations) is always allowed and yields the plain OT type", async () => {
+      const ifaceObj = (await createMockObjectSet<FooInterfaceApiTest>()
+        .fetchPage()).data[0];
+
+      const result = ifaceObj.$as({} as EmployeeApiTest);
+      expectTypeOf(result.fullName).toEqualTypeOf<string | undefined>();
+    });
+
+    it("interface → OT: interface with reduced impl rejects the cast even with $includeAllBaseObjectProperties", async () => {
+      const ifaceObj = (await createMockObjectSet<ReducerInterfaceApiTest>()
+        .fetchPage({ $includeAllBaseObjectProperties: true })).data[0];
+
+      // @ts-expect-error — ReducerInterface has reduced implementations on
+      // Employee, so the cast is unconditionally rejected.
+      ifaceObj.$as({} as EmployeeApiTest);
+    });
+
+    it("interface → OT: reduced impl rejects the cast without $includeAllBaseObjectProperties too", async () => {
+      const ifaceObj = (await createMockObjectSet<ReducerInterfaceApiTest>()
+        .fetchPage()).data[0];
+
+      // @ts-expect-error — ReducerInterface has reduced implementations on
+      // Employee.
+      ifaceObj.$as({} as EmployeeApiTest);
+    });
+
+    it("OT → interface is rejected when object has modifier applied", async () => {
+      const otWithModifiers = (await createMockObjectSet<EmployeeApiTest>()
+        .fetchPage({
+          $select: ["salaryHistory"],
+          $applyModifiers: { salaryHistory: "applyReducers" },
+        })).data[0];
+
+      // @ts-expect-error — cannot cast to an interface while P has modifiers
+      otWithModifiers.$as({} as FooInterfaceApiTest);
+      // @ts-expect-error — same, with ReducerInterface
+      otWithModifiers.$as({} as ReducerInterfaceApiTest);
+    });
+
+    it("OT → interface is allowed when object has no modifier applied", async () => {
+      const otWithoutModifiers = (await createMockObjectSet<EmployeeApiTest>()
+        .fetchPage({ $select: ["fullName"] })).data[0];
+
+      // No modifiers in P → interface cast is allowed.
+      otWithoutModifiers.$as({} as FooInterfaceApiTest);
     });
   });
 });

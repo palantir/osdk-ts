@@ -130,6 +130,59 @@ export type MapPropNamesToInterface<
   >[JustProps<FROM, P> & keyof PropMapToInterface<FROM, TO>],
   TO
 >;
+
+type RemoveModifierSelectors<P> = P extends `${string}:${string}` ? never : P;
+
+/**
+ * True iff the OT `TO` implements interface `FROM` with at least one
+ * non-`localProperty` implementation. Used to gate the interface→OT `$as` cast
+ * on `$allBaseProperties` only for interfaces that can't be faithfully
+ * represented as a straight subset of the OT.
+ */
+type OtHasNonLocalInterfaceImpl<
+  FROM extends ObjectOrInterfaceDefinition,
+  TO extends ObjectTypeDefinition,
+  Implementations = ApiNameAsString<FROM> extends
+    keyof NonNullable<CompileTimeMetadata<TO>["interfaceImplementations"]>
+    ? NonNullable<
+      CompileTimeMetadata<TO>["interfaceImplementations"]
+    >[ApiNameAsString<FROM>]
+    : undefined,
+> = Implementations extends undefined ? false
+  : true extends (
+    {
+      [K in keyof Implementations]: Implementations[K] extends
+        { type: "localProperty" } ? false
+        : true;
+    }[keyof Implementations]
+  ) ? true
+  : false;
+
+/**
+ * True iff the OT `TO` implements interface `FROM` with at least one `reduced`
+ * implementation. Reducers transform the source property into a new value, so
+ * there is no faithful way to represent that property on the OT view — even
+ * with `$allBaseProperties`, the OT type is ambiguous. The interface→OT `$as`
+ * cast is unconditionally rejected in this case.
+ */
+type OtHasReducedInterfaceImpl<
+  FROM extends ObjectOrInterfaceDefinition,
+  TO extends ObjectTypeDefinition,
+  Implementations = ApiNameAsString<FROM> extends
+    keyof NonNullable<CompileTimeMetadata<TO>["interfaceImplementations"]>
+    ? NonNullable<
+      CompileTimeMetadata<TO>["interfaceImplementations"]
+    >[ApiNameAsString<FROM>]
+    : undefined,
+> = Implementations extends undefined ? false
+  : true extends (
+    {
+      [K in keyof Implementations]: Implementations[K] extends
+        { type: "reduced" } ? true
+        : false;
+    }[keyof Implementations]
+  ) ? true
+  : false;
 /**
  * Older version of this helper that allows for `$rid` and co in
  * the properties field.
@@ -140,7 +193,7 @@ export type MapPropNamesToInterface<
 export type ConvertProps<
   FROM extends ObjectOrInterfaceDefinition,
   TO extends ValidToFrom<FROM>,
-  P extends ValidOsdkPropParams<FROM>,
+  P extends ValidOsdkPropParams<FROM> | string,
   OPTIONS extends
     | never
     | "$rid"
@@ -149,14 +202,25 @@ export type ConvertProps<
 > = TO extends FROM ? P
   : TO extends ObjectTypeDefinition ? (
       UnionIfTrue<
-        MapPropNamesToObjectType<FROM, TO, P, OPTIONS>,
+        IsNever<RemoveModifierSelectors<P>> extends true ? never
+          : MapPropNamesToObjectType<
+            FROM,
+            TO,
+            RemoveModifierSelectors<P> & ValidOsdkPropParams<FROM>,
+            OPTIONS
+          >,
         P extends "$rid" ? true : false,
         "$rid"
       >
     )
   : TO extends InterfaceDefinition ? FROM extends ObjectTypeDefinition ? (
         UnionIfTrue<
-          MapPropNamesToInterface<FROM, TO, P>,
+          IsNever<RemoveModifierSelectors<P>> extends true ? never
+            : MapPropNamesToInterface<
+              FROM,
+              TO,
+              RemoveModifierSelectors<P> & ValidOsdkPropParams<FROM>
+            >,
           P extends "$rid" ? true : false,
           "$rid"
         >
@@ -276,8 +340,34 @@ export namespace Osdk {
         : Q extends ObjectOrInterfaceDefinition ? OsdkObjectLinksObject<Q>
         : never;
 
-      readonly $as: <NEW_Q extends ValidToFrom<Q>>(
-        type: NEW_Q | string,
+      /**
+       * Type-level constraints on `$as`:
+       * - OT-with-modifiers: only object-type targets allowed (interface cast
+       *   rejected, since interfaces cannot represent modifier-reduced shapes).
+       * - Interface → OT with any `reduced` implementation: unconditionally
+       *   rejected (the reducer transforms the source, so the OT view cannot
+       *   be faithfully reconstructed even with `$allBaseProperties`).
+       * - Interface → OT with non-local (struct-field / struct)
+       *   implementations: requires `$allBaseProperties` in OPTIONS —
+       *   otherwise the OT view would be missing properties that the
+       *   interface didn't request.
+       * - Interface → OT with only `localProperty` implementations:
+       *   unrestricted (legacy interface; the interface view is a faithful
+       *   subset of the OT).
+       */
+      readonly $as: <
+        NEW_Q extends HasModifiers<P> extends true
+          ? ValidToFrom<Q> & ObjectTypeDefinition
+          : ValidToFrom<Q>,
+      >(
+        type: Q extends InterfaceDefinition
+          ? NEW_Q extends ObjectTypeDefinition
+            ? OtHasReducedInterfaceImpl<Q, NEW_Q> extends true ? never
+            : OtHasNonLocalInterfaceImpl<Q, NEW_Q> extends true
+              ? "$allBaseProperties" extends OPTIONS ? NEW_Q | string : never
+            : NEW_Q | string
+          : NEW_Q | string
+          : NEW_Q | string,
       ) => Osdk.Instance<
         NEW_Q,
         OPTIONS,
