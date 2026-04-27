@@ -19,17 +19,16 @@
 // This file is used for tests that check intellisense. Editing this file by hand will likely
 // break tests that have hard coded line numbers and line offsets.
 
-import type { InterfaceDefinition } from "@osdk/api";
+import type { InterfaceDefinition, Osdk } from "@osdk/api";
 import { FooInterface } from "@osdk/client.test.ontology";
 import type { Client } from "../Client.js";
 
 declare const client: Client;
 declare const someInterface: InterfaceDefinition;
+declare const fooInstance: Osdk.Instance<FooInterface>;
 
 void client(someInterface).subscribe;
 
-void client(FooInterface).where({
-  "": "",
-});
+void client(FooInterface).narrowToType;
 
-void client(FooInterface).pivotTo("");
+void fooInstance.$as;

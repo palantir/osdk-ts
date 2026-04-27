@@ -126,7 +126,7 @@ describe("intellisense", () => {
   it("interfaceObjectSetIntellisense", { timeout: 40_000 }, async () => {
     const subscribeCompletions = await tsServer.sendCompletionsRequest({
       file: intellisenseFilePath,
-      line: 29,
+      line: 30,
       offset: 28,
       triggerKind: ts.CompletionTriggerKind.Invoked,
     });
@@ -136,31 +136,29 @@ describe("intellisense", () => {
 
     const subscribeHover = await tsServer.sendQuickInfoRequest({
       file: intellisenseFilePath,
-      line: 29,
+      line: 30,
       offset: 28,
     });
     expect(subscribeHover.resp.body?.documentation).toContain(
       "Request updates when the objects in an object set are added",
     );
 
-    const whereKeyCompletions = await tsServer.sendCompletionsRequest({
+    const narrowToTypeHover = await tsServer.sendQuickInfoRequest({
       file: intellisenseFilePath,
       line: 32,
-      offset: 3,
-      triggerKind: ts.CompletionTriggerKind.Invoked,
+      offset: 27,
     });
-    expect(whereKeyCompletions.resp.body?.entries.map(e => e.name)).toEqual(
-      expect.arrayContaining(["fooSpt", "fooIdp"]),
-    );
+    expect(narrowToTypeHover.resp.body?.displayString).toContain("Employee");
+    expect(narrowToTypeHover.resp.body?.displayString).toContain("Person");
 
-    const pivotToCompletions = await tsServer.sendCompletionsRequest({
+    const instanceCompletions = await tsServer.sendCompletionsRequest({
       file: intellisenseFilePath,
-      line: 35,
-      offset: 35,
+      line: 34,
+      offset: 18,
       triggerKind: ts.CompletionTriggerKind.Invoked,
     });
-    expect(pivotToCompletions.resp.body?.entries.map(e => e.name)).toContain(
-      "\"toBar\"",
+    expect(instanceCompletions.resp.body?.entries.map(e => e.name)).toEqual(
+      expect.arrayContaining(["$as", "$objectType"]),
     );
   });
 
