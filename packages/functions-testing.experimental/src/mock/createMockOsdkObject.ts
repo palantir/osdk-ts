@@ -46,18 +46,61 @@ type LinkStubs<Q extends ObjectTypeDefinition> = {
     CompileTimeMetadata<Q>["links"][LINK_NAME]["multiplicity"] extends true ?
         | Array<Osdk.Instance<LinkedType<Q, LINK_NAME>>>
         | ObjectSet<LinkedType<Q, LINK_NAME>>
-      : Osdk.Instance<LinkedType<Q, LINK_NAME>>;
+      : Osdk.Instance<LinkedType<Q, LINK_NAME>> | Error;
 };
 
+type SingleLinkResultWithError<T extends ObjectTypeDefinition> =
+  | { value: Osdk.Instance<T>; error?: never }
+  | { error: Error; value?: never };
+
 function createSingleLinkStub<T extends ObjectTypeDefinition>(
-  linkedObject: Osdk.Instance<T>,
+  linkedObjectOrError: Osdk.Instance<T> | Error,
 ): {
   fetchOne: () => Promise<Osdk.Instance<T>>;
-  fetchOneWithErrors: () => Promise<{ value: Osdk.Instance<T> }>;
+  fetchOneWithErrors: () => Promise<SingleLinkResultWithError<T>>;
 } {
+  if (linkedObjectOrError instanceof Error) {
+    const err = linkedObjectOrError;
+    return {
+      fetchOne: () => Promise.reject(err),
+      fetchOneWithErrors: () => Promise.resolve({ error: err }),
+    };
+  }
+  const linkedObject = linkedObjectOrError;
   return {
     fetchOne: () => Promise.resolve(linkedObject),
     fetchOneWithErrors: () => Promise.resolve({ value: linkedObject }),
+  };
+}
+
+function createMissingLinkStub(
+  linkName: string,
+  objectApiName: string,
+  primaryKey: string,
+): {
+  fetchOne: () => Promise<never>;
+  fetchOneWithErrors: () => Promise<{ error: Error; value?: never }>;
+  fetchPage: () => Promise<never>;
+  asyncIter: () => never;
+  aggregate: () => never;
+} {
+  const makeError = () =>
+    new Error(
+      `Link "${linkName}" was not configured on mock ${objectApiName} `
+        + `object with primary key ${primaryKey}. `
+        + `Pass it via the \`links\` option on createMockOsdkObject, or `
+        + `pass an Error instance to simulate a link failure.`,
+    );
+  return {
+    fetchOne: () => Promise.reject(makeError()),
+    fetchOneWithErrors: () => Promise.resolve({ error: makeError() }),
+    fetchPage: () => Promise.reject(makeError()),
+    asyncIter: () => {
+      throw makeError();
+    },
+    aggregate: () => {
+      throw makeError();
+    },
   };
 }
 
@@ -222,11 +265,8 @@ export function createMockOsdkObject<
 
   Object.defineProperty(mockObject, "$link", {
     get() {
-      if (links == null) {
-        return undefined;
-      }
       const linkAccessors: Record<string, unknown> = {};
-      for (const [linkName, linkValue] of Object.entries(links)) {
+      for (const [linkName, linkValue] of Object.entries(links ?? {})) {
         if (linkValue == null) {
           continue;
         }
@@ -238,11 +278,22 @@ export function createMockOsdkObject<
           );
         } else {
           linkAccessors[linkName] = createSingleLinkStub(
-            linkValue as Osdk.Instance<ObjectTypeDefinition>,
+            linkValue as Osdk.Instance<ObjectTypeDefinition> | Error,
           );
         }
       }
-      return linkAccessors;
+      return new Proxy(linkAccessors, {
+        get(target, prop) {
+          if (typeof prop === "symbol" || prop in target) {
+            return target[prop as string];
+          }
+          return createMissingLinkStub(
+            prop,
+            objectType.apiName,
+            String($primaryKey),
+          );
+        },
+      });
     },
     enumerable: true,
   });
