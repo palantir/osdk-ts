@@ -34,7 +34,7 @@ import { OsdkContext2 } from "./OsdkContext2.js";
 export interface UseOsdkObjectsOptions<
   T extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
-  IncludeBase extends boolean = false,
+  IncludeAllBaseProperties extends boolean = false,
 > {
   /**
    * Fetch objects by their RIDs (Resource Identifiers).
@@ -154,24 +154,16 @@ export interface UseOsdkObjectsOptions<
 
   /**
    * When true, includes all properties of the underlying concrete object type
-   * for interface queries. This allows `obj.$as(ConcreteType)` to return a
-   * fully-populated concrete instance. Has no effect for non-interface queries.
-   *
-   * @example
-   * // Query an interface and narrow to a concrete implementing type
-   * const { data } = useOsdkObjects(Athlete, {
-   *   $includeAllBaseObjectProperties: true,
-   * });
-   * const concrete = data?.[0]?.$as(NbaPlayer);
+   * for interface queries. Has no effect for non-interface queries.
    */
-  $includeAllBaseObjectProperties?: IncludeBase;
+  $includeAllBaseObjectProperties?: IncludeAllBaseProperties;
 }
 
 export interface UseOsdkListResult<
   T extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
   EXTRA_OPTIONS extends never | "$rid" = never,
-  IncludeBase extends boolean = false,
+  IncludeAllBaseProperties extends boolean = false,
 > {
   /**
    * Function to fetch more pages (undefined if no more pages)
@@ -184,7 +176,7 @@ export interface UseOsdkListResult<
   data:
     | Osdk.Instance<
       T,
-      | (IncludeBase extends true ? "$allBaseProperties" : never)
+      | (IncludeAllBaseProperties extends true ? "$allBaseProperties" : never)
       | EXTRA_OPTIONS,
       PropertyKeys<T>,
       RDPs
@@ -227,65 +219,75 @@ export interface UseOsdkListResult<
 export function useOsdkObjects<
   Q extends ObjectOrInterfaceDefinition,
   L extends LinkNames<Q>,
-  const IncludeBase extends boolean = false,
+  const IncludeAllBaseProperties extends boolean = false,
 >(
   type: Q,
-  options: UseOsdkObjectsOptions<Q, {}, IncludeBase> & {
+  options: UseOsdkObjectsOptions<Q, {}, IncludeAllBaseProperties> & {
     pivotTo: L;
     rids: readonly string[];
     streamUpdates?: never;
   },
-): UseOsdkListResult<LinkedType<Q, L>, {}, "$rid", IncludeBase>;
+): UseOsdkListResult<LinkedType<Q, L>, {}, "$rid", IncludeAllBaseProperties>;
 
 export function useOsdkObjects<
   Q extends ObjectOrInterfaceDefinition,
   L extends LinkNames<Q>,
-  const IncludeBase extends boolean = false,
+  const IncludeAllBaseProperties extends boolean = false,
 >(
   type: Q,
-  options: UseOsdkObjectsOptions<Q, {}, IncludeBase> & {
+  options: UseOsdkObjectsOptions<Q, {}, IncludeAllBaseProperties> & {
     pivotTo: L;
     streamUpdates?: never;
   },
-): UseOsdkListResult<LinkedType<Q, L>, {}, never, IncludeBase>;
+): UseOsdkListResult<LinkedType<Q, L>, {}, never, IncludeAllBaseProperties>;
 
 // Non-pivotTo overloads: pivotTo is forbidden to prevent fallthrough from the
 // pivotTo overloads above (which would give the wrong return type).
 export function useOsdkObjects<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
-  const IncludeBase extends boolean = false,
+  const IncludeAllBaseProperties extends boolean = false,
 >(
   type: Q,
-  options: UseOsdkObjectsOptions<Q, RDPs, IncludeBase> & {
+  options: UseOsdkObjectsOptions<Q, RDPs, IncludeAllBaseProperties> & {
     rids: readonly string[];
     pivotTo?: never;
   },
-): UseOsdkListResult<Q, RDPs, "$rid", IncludeBase>;
+): UseOsdkListResult<Q, RDPs, "$rid", IncludeAllBaseProperties>;
 
 export function useOsdkObjects<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
-  const IncludeBase extends boolean = false,
+  const IncludeAllBaseProperties extends boolean = false,
 >(
   type: Q,
   options?:
-    & UseOsdkObjectsOptions<Q, RDPs, IncludeBase>
+    & UseOsdkObjectsOptions<Q, RDPs, IncludeAllBaseProperties>
     & { pivotTo?: never },
-): UseOsdkListResult<Q, RDPs, never, IncludeBase>;
+): UseOsdkListResult<Q, RDPs, never, IncludeAllBaseProperties>;
 
 export function useOsdkObjects<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
-  const IncludeBase extends boolean = false,
+  const IncludeAllBaseProperties extends boolean = false,
 >(
   type: Q,
-  options?: UseOsdkObjectsOptions<Q, RDPs, IncludeBase>,
+  options?: UseOsdkObjectsOptions<Q, RDPs, IncludeAllBaseProperties>,
 ):
-  | UseOsdkListResult<Q, RDPs, never, IncludeBase>
-  | UseOsdkListResult<Q, RDPs, "$rid", IncludeBase>
-  | UseOsdkListResult<LinkedType<Q, LinkNames<Q>>, {}, never, IncludeBase>
-  | UseOsdkListResult<LinkedType<Q, LinkNames<Q>>, {}, "$rid", IncludeBase>
+  | UseOsdkListResult<Q, RDPs, never, IncludeAllBaseProperties>
+  | UseOsdkListResult<Q, RDPs, "$rid", IncludeAllBaseProperties>
+  | UseOsdkListResult<
+    LinkedType<Q, LinkNames<Q>>,
+    {},
+    never,
+    IncludeAllBaseProperties
+  >
+  | UseOsdkListResult<
+    LinkedType<Q, LinkNames<Q>>,
+    {},
+    "$rid",
+    IncludeAllBaseProperties
+  >
 {
   const { observableClient } = React.useContext(OsdkContext2);
 
@@ -323,7 +325,7 @@ export function useOsdkObjects<
     () => {
       if (!enabled) {
         return makeExternalStore<
-          ObserveObjectsCallbackArgs<Q, RDPs, IncludeBase>
+          ObserveObjectsCallbackArgs<Q, RDPs, IncludeAllBaseProperties>
         >(
           () => ({ unsubscribe: () => {} }),
           devToolsMetadata({
@@ -334,10 +336,10 @@ export function useOsdkObjects<
       }
 
       return makeExternalStore<
-        ObserveObjectsCallbackArgs<Q, RDPs, IncludeBase>
+        ObserveObjectsCallbackArgs<Q, RDPs, IncludeAllBaseProperties>
       >(
         (observer) =>
-          observableClient.observeList<Q, RDPs, IncludeBase>({
+          observableClient.observeList<Q, RDPs, IncludeAllBaseProperties>({
             type,
             rids: stableRids,
             where: canonOptions.where,
@@ -393,19 +395,23 @@ export function useOsdkObjects<
     await observableClient.invalidateObjectType(type.apiName);
   }, [observableClient, type.apiName]);
 
-  return React.useMemo(() => ({
-    fetchMore: listPayload?.hasMore ? listPayload.fetchMore : undefined,
-    error: extractPayloadError(listPayload, "Failed to load objects"),
-    data: listPayload?.resolvedList,
-    isLoading: isPayloadLoading(listPayload, enabled),
-    isOptimistic: listPayload?.isOptimistic ?? false,
-    totalCount: listPayload?.totalCount,
-    hasMore: listPayload?.hasMore ?? false,
-    objectSet: listPayload?.objectSet,
-    refetch,
-  } as UseOsdkListResult<Q, RDPs, never, IncludeBase>), [
-    listPayload,
-    enabled,
-    refetch,
-  ]);
+  return React.useMemo<
+    UseOsdkListResult<Q, RDPs, never, IncludeAllBaseProperties>
+  >(
+    () => ({
+      fetchMore: listPayload?.hasMore ? listPayload.fetchMore : undefined,
+      error: extractPayloadError(listPayload, "Failed to load objects"),
+      data: listPayload?.resolvedList,
+      isLoading: isPayloadLoading(listPayload, enabled),
+      isOptimistic: listPayload?.isOptimistic ?? false,
+      totalCount: listPayload?.totalCount,
+      hasMore: listPayload?.hasMore ?? false,
+      // ObserveObjectsCallbackArgs.objectSet is ObjectSet<Q> without RDPs;
+      // the public hook return claims ObjectSet<Q, RDPs>. The RDP shape is
+      // applied lazily, so this assertion is sound at runtime.
+      objectSet: listPayload?.objectSet as ObjectSet<Q, RDPs> | undefined,
+      refetch,
+    }),
+    [listPayload, enabled, refetch],
+  );
 }

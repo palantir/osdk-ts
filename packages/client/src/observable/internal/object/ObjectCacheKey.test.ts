@@ -39,10 +39,6 @@ describe("ObjectCacheKey", () => {
     expect(keyWithoutFlag).not.toBe(keyWithFlag);
   });
 
-  // Guards the `flag ? true : undefined` normalization idiom that callers in
-  // ListsHelper, LinksHelper, ObjectsHelper, and BaseListQuery rely on. If a
-  // future refactor passes the boolean directly, `false` would form a different
-  // cache key from omitted/undefined and silently fragment the cache.
   it("treats omitted and undefined includeAllBaseObjectProperties as the same key", () => {
     const cacheKeys = new CacheKeys<ObjectCacheKey>({});
 

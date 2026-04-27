@@ -372,7 +372,6 @@ describe(BulkObjectLoader, () => {
     vi.advanceTimersByTime(26);
     await Promise.all([without, withFlag]);
 
-    // Two separate fetchPage calls because the flag differs.
     expect(capturedArgs).toHaveLength(2);
     expect(capturedArgs.map(a => a.$includeAllBaseObjectProperties).sort())
       .toEqual([true, undefined]);

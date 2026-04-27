@@ -28,7 +28,7 @@ import { OsdkContext2 } from "./OsdkContext2.js";
 
 export interface UseLinksOptions<
   T extends ObjectOrInterfaceDefinition,
-  IncludeBase extends boolean = false,
+  IncludeAllBaseProperties extends boolean = false,
 > {
   /**
    * Standard OSDK Where clause for filtering linked objects
@@ -90,22 +90,21 @@ export interface UseLinksOptions<
   enabled?: boolean;
 
   /**
-   * When true and the link target is an interface, includes all properties of
-   * the underlying concrete object type on each linked instance. Enables
-   * `link.$as(ConcreteType)` to return a fully-populated concrete instance.
-   * Has no effect when the link target is a plain object type.
+   * When true, includes all properties of the underlying concrete object type
+   * for interface link targets. Has no effect when the link target is a plain
+   * object type.
    */
-  $includeAllBaseObjectProperties?: IncludeBase;
+  $includeAllBaseObjectProperties?: IncludeAllBaseProperties;
 }
 
 export interface UseLinksResult<
   Q extends ObjectOrInterfaceDefinition,
-  IncludeBase extends boolean = false,
+  IncludeAllBaseProperties extends boolean = false,
 > {
   links:
     | Osdk.Instance<
       Q,
-      IncludeBase extends true ? "$allBaseProperties" : never
+      IncludeAllBaseProperties extends true ? "$allBaseProperties" : never
     >[]
     | undefined;
 
@@ -119,7 +118,7 @@ export interface UseLinksResult<
     ReadonlyArray<
       Osdk.Instance<
         Q,
-        IncludeBase extends true ? "$allBaseProperties" : never
+        IncludeAllBaseProperties extends true ? "$allBaseProperties" : never
       >
     >
   >;
@@ -157,12 +156,12 @@ const emptyMap: ReadonlyMap<string | number, ReadonlyArray<never>> = new Map();
 export function useLinks<
   T extends ObjectOrInterfaceDefinition,
   L extends LinkNames<T>,
-  const IncludeBase extends boolean = false,
+  const IncludeAllBaseProperties extends boolean = false,
 >(
   objects: Osdk.Instance<T> | Array<Osdk.Instance<T>> | undefined,
   linkName: L,
-  options: UseLinksOptions<LinkedType<T, L>, IncludeBase> = {},
-): UseLinksResult<LinkedType<T, L>, IncludeBase> {
+  options: UseLinksOptions<LinkedType<T, L>, IncludeAllBaseProperties> = {},
+): UseLinksResult<LinkedType<T, L>, IncludeAllBaseProperties> {
   const { observableClient } = React.useContext(OsdkContext2);
 
   const { enabled = true, $includeAllBaseObjectProperties, ...otherOptions } =
@@ -193,7 +192,7 @@ export function useLinks<
     () => {
       if (!enabled) {
         return makeExternalStore<
-          ObserveLinks.CallbackArgs<LinkedType<T, L>, IncludeBase>
+          ObserveLinks.CallbackArgs<LinkedType<T, L>, IncludeAllBaseProperties>
         >(
           () => ({ unsubscribe: () => {} }),
           devToolsMetadata({
@@ -204,10 +203,10 @@ export function useLinks<
         );
       }
       return makeExternalStore<
-        ObserveLinks.CallbackArgs<LinkedType<T, L>, IncludeBase>
+        ObserveLinks.CallbackArgs<LinkedType<T, L>, IncludeAllBaseProperties>
       >(
         (observer) =>
-          observableClient.observeLinks<T, L, IncludeBase>(
+          observableClient.observeLinks<T, L, IncludeAllBaseProperties>(
             objectsArray,
             linkName,
             {

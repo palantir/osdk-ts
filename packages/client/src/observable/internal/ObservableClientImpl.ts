@@ -97,12 +97,15 @@ export class ObservableClientImpl implements ObservableClient {
 
   public observeObject: <
     T extends ObjectOrInterfaceDefinition,
-    const IncludeBase extends boolean = false,
+    const IncludeAllBaseProperties extends boolean = false,
   >(
     apiName: T["apiName"] | T,
     pk: PrimaryKeyType<T>,
-    options: Omit<ObserveObjectOptions<T, IncludeBase>, "apiName" | "pk">,
-    subFn: Observer<ObserveObjectCallbackArgs<T, IncludeBase>>,
+    options: Omit<
+      ObserveObjectOptions<T, IncludeAllBaseProperties>,
+      "apiName" | "pk"
+    >,
+    subFn: Observer<ObserveObjectCallbackArgs<T, IncludeAllBaseProperties>>,
   ) => Unsubscribable = (apiName, pk, options, subFn) => {
     return this.__experimentalStore.objects.observe(
       {
@@ -118,10 +121,12 @@ export class ObservableClientImpl implements ObservableClient {
   public observeList: <
     T extends ObjectOrInterfaceDefinition,
     RDPs extends Record<string, SimplePropertyDef> = {},
-    const IncludeBase extends boolean = false,
+    const IncludeAllBaseProperties extends boolean = false,
   >(
-    options: ObserveListOptions<T, RDPs, IncludeBase>,
-    subFn: Observer<ObserveObjectsCallbackArgs<T, RDPs, IncludeBase>>,
+    options: ObserveListOptions<T, RDPs, IncludeAllBaseProperties>,
+    subFn: Observer<
+      ObserveObjectsCallbackArgs<T, RDPs, IncludeAllBaseProperties>
+    >,
   ) => Unsubscribable = (options, subFn) => {
     return this.__experimentalStore.lists.observe(
       options,
@@ -228,15 +233,15 @@ export class ObservableClientImpl implements ObservableClient {
   public observeLinks: <
     T extends ObjectOrInterfaceDefinition,
     L extends keyof CompileTimeMetadata<T>["links"] & string,
-    const IncludeBase extends boolean = false,
+    const IncludeAllBaseProperties extends boolean = false,
   >(
     objects: Osdk.Instance<T> | Array<Osdk.Instance<T>>,
     linkName: L,
-    options: ObserveLinks.Options<T, L, IncludeBase>,
+    options: ObserveLinks.Options<T, L, IncludeAllBaseProperties>,
     subFn: Observer<
       ObserveLinks.CallbackArgs<
         CompileTimeMetadata<T>["links"][L]["targetType"],
-        IncludeBase
+        IncludeAllBaseProperties
       >
     >,
   ) => Unsubscribable = (objects, linkName, options, subFn) => {
