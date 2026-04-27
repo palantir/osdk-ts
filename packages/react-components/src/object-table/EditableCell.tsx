@@ -263,7 +263,6 @@ function EditableCellInner<TData extends RowData, CellValue = unknown>({
         return (
           <DatePickerCellField
             fieldComponentProps={editFieldConfig.fieldComponentProps}
-            isRowFocused={isRowFocused}
             inputValue={inputValue}
             hasValidationError={hasValidationError}
             isEdited={isEdited}
@@ -274,7 +273,6 @@ function EditableCellInner<TData extends RowData, CellValue = unknown>({
         if (dataType != null && DATE_TYPES.includes(dataType)) {
           return (
             <DatePickerCellField
-              isRowFocused={isRowFocused}
               inputValue={inputValue}
               hasValidationError={hasValidationError}
               isEdited={isEdited}
@@ -302,6 +300,7 @@ function EditableCellInner<TData extends RowData, CellValue = unknown>({
       <Tooltip.Root disabled={!hasValidationError}>
         <Tooltip.Trigger
           className={styles.osdkEditableCellTrigger}
+          render={<span className={styles.osdkTooltipTriggerWrapper} />}
         >
           {renderFieldInput()}
         </Tooltip.Trigger>

@@ -189,6 +189,35 @@ describe("intellisense", () => {
   });
 
   it(
+    "useOsdkObjectsWithIncludeAllBaseObjectProperties",
+    { timeout: 40_000 },
+    async () => {
+      expect(ts.sys.fileExists(intellisenseFilePath)).toBeTruthy();
+      invariant(tsServer);
+
+      const { resp: withFlagResp } = await tsServer.sendQuickInfoRequest({
+        file: intellisenseFilePath,
+        line: 30,
+        offset: 9,
+      });
+
+      expect(withFlagResp.body?.displayString).toBeDefined();
+      expect(withFlagResp.body?.displayString).toContain("$allBaseProperties");
+
+      const { resp: withoutFlagResp } = await tsServer.sendQuickInfoRequest({
+        file: intellisenseFilePath,
+        line: 34,
+        offset: 9,
+      });
+
+      expect(withoutFlagResp.body?.displayString).toBeDefined();
+      expect(withoutFlagResp.body?.displayString).not.toContain(
+        "$allBaseProperties",
+      );
+    },
+  );
+
+  it(
     "useOsdkObjectsWithPivotStreamUpdates",
     { timeout: 40_000 },
     async () => {

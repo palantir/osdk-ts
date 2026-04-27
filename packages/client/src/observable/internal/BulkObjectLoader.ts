@@ -78,6 +78,12 @@ export class BulkObjectLoader {
     loadPropertySecurityMetadata?: boolean,
     includeAllBaseObjectProperties?: boolean,
   ): Promise<ObjectHolder> {
+    // The flag only changes server behavior for interface fetches. Drop it for
+    // object fetches so they don't fragment batches or the cache.
+    if (defType !== "interface") {
+      includeAllBaseObjectProperties = false;
+    }
+
     const deferred = pDefer<ObjectHolder>();
 
     const selectKey = this.#buildSelectKey(

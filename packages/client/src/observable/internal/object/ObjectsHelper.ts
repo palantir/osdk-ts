@@ -57,10 +57,13 @@ export class ObjectsHelper extends AbstractHelper<
       pk,
       select,
       $loadPropertySecurityMetadata,
-      $includeAllBaseObjectProperties,
     } = options;
 
     const defType = getDefType(options.apiName);
+    // The flag only changes server behavior for interface queries. Drop it for
+    // object queries so they don't fragment the cache.
+    const $includeAllBaseObjectProperties = defType === "interface"
+      && options.$includeAllBaseObjectProperties;
 
     const objectCacheKey = this.cacheKeys.get<ObjectCacheKey>(
       "object",

@@ -244,4 +244,43 @@ describe("useOsdkObjects enabled option", () => {
       expect.any(Object),
     );
   });
+
+  it("should not resubscribe when rerendered with a new inline withProperties of the same shape", () => {
+    const canonicalWithProperties = { leadName: () => {} };
+    const observableClient = {
+      observeList: mockObserveList,
+      canonicalizeOptions: vitest.fn((opts) => ({
+        ...opts,
+        withProperties: canonicalWithProperties,
+      })),
+      invalidateObjectType: mockInvalidateObjectType,
+    } as any;
+
+    const wrapper = ({ children }: React.PropsWithChildren) => (
+      <OsdkContext2.Provider
+        value={{ observableClient, devtoolsEnabled: false }}
+      >
+        {children}
+      </OsdkContext2.Provider>
+    );
+
+    const { rerender } = renderHook(
+      ({ withProperties }) =>
+        useOsdkObjects(MockObjectType, {
+          withProperties: withProperties as any,
+        }),
+      {
+        wrapper,
+        initialProps: {
+          withProperties: { leadName: () => "a" },
+        },
+      },
+    );
+
+    expect(mockObserveList).toHaveBeenCalledTimes(1);
+
+    rerender({ withProperties: { leadName: () => "a" } });
+
+    expect(mockObserveList).toHaveBeenCalledTimes(1);
+  });
 });

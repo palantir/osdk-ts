@@ -326,31 +326,26 @@ describe(BulkObjectLoader, () => {
     });
   });
 
-  it("forwards $includeAllBaseObjectProperties to fetchPage and partitions batching by it", async () => {
+  it("gates $includeAllBaseObjectProperties for object fetches: drops the flag and batches into a single fetchPage", async () => {
     const loader = new BulkObjectLoader(client, 25, 100);
     vi.useFakeTimers();
 
     const capturedArgs: Array<Record<string, unknown>> = [];
-    const makeMock = (data: unknown[]): ObjectSet<ObjectTypeDefinition> => {
-      const os: ObjectSet<ObjectTypeDefinition> = {
-        where: () => os,
-        fetchPage: vi.fn((args: Record<string, unknown>) => {
-          capturedArgs.push(args);
-          return Promise.resolve({
-            data,
-            nextPageToken: undefined,
-            totalCount: String(data.length),
-          });
-        }),
-      } as Pick<
-        ObjectSet<ObjectTypeDefinition>,
-        "fetchPage" | "where"
-      > as ObjectSet<ObjectTypeDefinition>;
-      return os;
-    };
-
-    client.mockReturnValueOnce(makeMock([employees[0]]));
-    client.mockReturnValueOnce(makeMock([employees[1]]));
+    const mockObjectSet: ObjectSet<ObjectTypeDefinition> = {
+      where: () => mockObjectSet,
+      fetchPage: vi.fn((args: Record<string, unknown>) => {
+        capturedArgs.push(args);
+        return Promise.resolve({
+          data: [employees[0], employees[1]],
+          nextPageToken: undefined,
+          totalCount: "2",
+        });
+      }),
+    } as Pick<
+      ObjectSet<ObjectTypeDefinition>,
+      "fetchPage" | "where"
+    > as ObjectSet<ObjectTypeDefinition>;
+    client.mockReturnValueOnce(mockObjectSet);
 
     const without = loader.fetch(
       "Employee",
@@ -372,9 +367,8 @@ describe(BulkObjectLoader, () => {
     vi.advanceTimersByTime(26);
     await Promise.all([without, withFlag]);
 
-    expect(capturedArgs).toHaveLength(2);
-    expect(capturedArgs.map(a => a.$includeAllBaseObjectProperties).sort())
-      .toEqual([true, undefined]);
+    expect(capturedArgs).toHaveLength(1);
+    expect(capturedArgs[0].$includeAllBaseObjectProperties).toBeUndefined();
 
     vi.useRealTimers();
   });

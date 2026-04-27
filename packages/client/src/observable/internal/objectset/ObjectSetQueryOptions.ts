@@ -71,6 +71,11 @@ export interface ObserveObjectSetOptions<
    * Cannot be combined with `pivotTo`. The server does not support
    * websocket subscriptions for link-traversal queries.
    *
+   * Cannot be combined with `withProperties` (or a `baseObjectSet` that already
+   * has derived properties applied). The server does not support websocket
+   * subscriptions for object sets that include derived properties; in that
+   * case `streamUpdates` is ignored and a warning is logged in development.
+   *
    * @default false
    */
   streamUpdates?: boolean;

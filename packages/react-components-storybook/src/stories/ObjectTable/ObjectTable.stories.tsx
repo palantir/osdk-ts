@@ -1170,7 +1170,7 @@ export const EditableTable: Story = {
       },
     ],
     editMode: "always",
-  } as any,
+  },
   parameters: {
     docs: {
       source: {
@@ -1253,13 +1253,6 @@ return (
       CellEditInfo<Osdk.Instance<typeof Employee>> | undefined
     >();
 
-    const handleCellValueChanged = useCallback(
-      (info: CellEditInfo<Osdk.Instance<typeof Employee>>) => {
-        setLastEdit(info);
-      },
-      [],
-    );
-
     return (
       <div className="object-table-container" style={{ height: "600px" }}>
         <div
@@ -1294,7 +1287,7 @@ return (
         <ObjectTable
           {...args}
           objectType={Employee}
-          onCellValueChanged={handleCellValueChanged}
+          onCellValueChanged={setLastEdit}
         />
       </div>
     );
@@ -1442,6 +1435,29 @@ export const EditableWithValidation: Story = {
           },
         },
       },
+      {
+        locator: { type: "property", id: "firstFullTimeStartDate" },
+        editable: true,
+        editFieldConfig: {
+          fieldComponent: "DATE_PICKER",
+          fieldComponentProps: {
+            showTime: false,
+            placeholder: "Select date...",
+          },
+        },
+        validateEdit: async (value: unknown) => {
+          if (!value || isNaN(Date.parse(value as string))) {
+            return "Please enter a valid date";
+          }
+          const date = new Date(value as string);
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+          if (date < today) {
+            return "Date cannot be before today";
+          }
+          return undefined;
+        },
+      },
     ],
     editMode: "always",
     onSubmitEdits: async (edits: CellEditInfo<Osdk.Instance<Employee>>[]) => {
@@ -1545,6 +1561,7 @@ return (
           <li>Email must be a valid format</li>
           <li>Employee number must be positive</li>
           <li>Job title is required</li>
+          <li>Start date is required</li>
         </ul>
       </div>
       <ObjectTable {...args} objectType={Employee} />

@@ -85,6 +85,15 @@ export class ListsHelper extends AbstractHelper<
               + "link-traversal queries. Ignoring streamUpdates.",
           );
         }
+      } else if (options.withProperties) {
+        if (process.env.NODE_ENV !== "production") {
+          // eslint-disable-next-line no-console
+          console.warn(
+            "[@osdk/client] streamUpdates is not supported with withProperties. "
+              + "The server does not support websocket subscriptions for "
+              + "object sets that include derived properties. Ignoring streamUpdates.",
+          );
+        }
       } else {
         ret.query.registerStreamUpdates(ret.subscription);
       }
@@ -105,9 +114,12 @@ export class ListsHelper extends AbstractHelper<
       rids,
       select,
       $loadPropertySecurityMetadata,
-      $includeAllBaseObjectProperties,
     } = options;
     const { apiName, type } = typeDefinition;
+    // The flag only changes server behavior for interface queries. Drop it for
+    // object queries so they don't fragment the cache.
+    const $includeAllBaseObjectProperties = type === "interface"
+      && options.$includeAllBaseObjectProperties;
 
     const canonWhere = this.whereCanonicalizer.canonicalize(where ?? {});
     const canonOrderBy = this.orderByCanonicalizer.canonicalize(orderBy ?? {});
