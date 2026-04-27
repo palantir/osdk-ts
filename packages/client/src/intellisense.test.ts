@@ -123,6 +123,25 @@ describe("intellisense", () => {
     );
   });
 
+  it("interfaceObjectSetExposesSubscribe", { timeout: 40_000 }, async () => {
+    const { resp } = await tsServer.sendCompletionsRequest({
+      file: intellisenseFilePath,
+      line: 28,
+      offset: 28,
+      triggerKind: ts.CompletionTriggerKind.Invoked,
+    });
+    expect(resp.body?.entries.map(e => e.name)).toContain("subscribe");
+
+    const { resp: hover } = await tsServer.sendQuickInfoRequest({
+      file: intellisenseFilePath,
+      line: 28,
+      offset: 28,
+    });
+    expect(hover.body?.documentation).toContain(
+      "Request updates when the objects in an object set are added",
+    );
+  });
+
   it("orderBySuggestionIsRight", { timeout: 40_000 }, async () => {
     const { resp } = await tsServer.sendCompletionsRequest({
       file: intellisenseFilePath,
