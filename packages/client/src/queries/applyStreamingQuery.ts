@@ -77,6 +77,7 @@ export async function* applyStreamingQuery<
     },
     {
       transactionId: client.transactionId,
+      preview: true,
     },
   );
 
