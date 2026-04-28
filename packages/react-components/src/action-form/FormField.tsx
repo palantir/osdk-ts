@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { Popover } from "@base-ui/react/popover";
+import { InfoSign } from "@blueprintjs/icons";
 import React, { memo } from "react";
 import styles from "./FormField.module.css";
 
@@ -21,47 +23,86 @@ interface FormFieldProps {
   fieldKey: string;
   label?: string;
   isRequired?: boolean;
-  helperText?: string;
+  helperText?: React.ReactNode;
+  helperTextPlacement?: "bottom" | "tooltip";
   error?: string;
   onBlur?: (e: React.FocusEvent<HTMLDivElement>) => void;
   children: React.ReactNode;
 }
 
-export const FormField: React.FC<FormFieldProps> = memo(
-  function FormFieldFn({
-    fieldKey,
-    label,
-    isRequired,
-    helperText,
-    error,
-    onBlur,
-    children,
-  }: FormFieldProps): React.ReactElement {
-    return (
-      <div className={styles.osdkFormField} onBlur={onBlur}>
-        {label != null && (
-          <label className={styles.osdkFormFieldLabel} htmlFor={fieldKey}>
-            {label}
-            {isRequired === true && (
-              <span
-                className={styles.osdkFormFieldRequired}
-                aria-label="required"
-              >
-                {" "}*
-              </span>
-            )}
-          </label>
+export const FormField: React.FC<FormFieldProps> = memo(function FormFieldFn({
+  fieldKey,
+  label,
+  isRequired,
+  helperText,
+  helperTextPlacement = "tooltip",
+  error,
+  onBlur,
+  children,
+}: FormFieldProps): React.ReactElement {
+  const showTooltip = helperText != null && helperTextPlacement === "tooltip";
+  const showBottomText = helperText != null && helperTextPlacement === "bottom";
+
+  const labelElement = label != null
+    ? (
+      <label className={styles.osdkFormFieldLabel} htmlFor={fieldKey}>
+        {label}
+        {isRequired === true && (
+          <span className={styles.osdkFormFieldRequired} aria-label="required">
+            {" "}
+            *
+          </span>
         )}
-        {children}
-        {error != null && (
-          <div className={styles.osdkFormFieldError} role="alert">
-            {error}
+      </label>
+    )
+    : null;
+
+  return (
+    <div className={styles.osdkFormField} onBlur={onBlur}>
+      {showTooltip
+        ? (
+          <div className={styles.osdkFormFieldLabelRow}>
+            {labelElement}
+            <InfoTip label={label}>{helperText}</InfoTip>
           </div>
-        )}
-        {helperText != null && (
-          <div className={styles.osdkFormFieldHelperText}>{helperText}</div>
-        )}
-      </div>
-    );
-  },
-);
+        )
+        : labelElement}
+      {showBottomText && (
+        <div className={styles.osdkFormFieldHelperText}>{helperText}</div>
+      )}
+      {children}
+      {error != null && (
+        <div className={styles.osdkFormFieldError} role="alert">
+          {error}
+        </div>
+      )}
+    </div>
+  );
+});
+
+interface InfoTipProps {
+  label?: string;
+  children: React.ReactNode;
+}
+
+function InfoTip({ label, children }: InfoTipProps): React.ReactElement {
+  return (
+    <Popover.Root>
+      <Popover.Trigger
+        render={<span className={styles.osdkFormFieldInfoIcon} />}
+        nativeButton={false}
+        openOnHover={true}
+        aria-label={label != null ? `Info about ${label}` : "More information"}
+      >
+        <InfoSign size={12} />
+      </Popover.Trigger>
+      <Popover.Portal>
+        <Popover.Positioner sideOffset={4}>
+          <Popover.Popup className={styles.osdkFormFieldInfoPopup}>
+            {children}
+          </Popover.Popup>
+        </Popover.Positioner>
+      </Popover.Portal>
+    </Popover.Root>
+  );
+}

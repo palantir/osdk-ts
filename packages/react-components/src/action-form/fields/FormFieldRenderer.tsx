@@ -56,7 +56,8 @@ export const FormFieldRenderer: React.FC<FormFieldRendererProps> = memo(
         label={label}
         isRequired={isRequired}
         fieldKey={fieldDefinition.fieldKey}
-        helperText={helperTextPlacement !== "tooltip" ? helperText : undefined}
+        helperText={helperText}
+        helperTextPlacement={helperTextPlacement}
         error={error}
         onBlur={onBlur}
       >
