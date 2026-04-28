@@ -1,16 +1,16 @@
-import type { ObjectSet } from "@osdk/api";
+import type { BaseObjectSet, ObjectOrInterfaceDefinition } from "@osdk/api";
 import type {
   BaseFormFieldProps,
   DateRange,
   RendererFieldDefinition,
 } from "@osdk/react-components/experimental/action-form";
 import { BaseForm } from "@osdk/react-components/experimental/action-form";
-import { useCallback, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { $ } from "../../foundryClient.js";
 import { Employee } from "../../generatedNoCheck2/index.js";
 import "./form-page.css";
 
-interface EmployeeFormSchema {
+type EmployeeFormSchema = {
   employeeName: string;
   employmentStart: Date;
   employmentEnd: Date;
@@ -25,8 +25,8 @@ interface EmployeeFormSchema {
   portfolioFiles: File[];
   skills: string;
   rating: unknown;
-  team: ObjectSet;
-}
+  team: BaseObjectSet<ObjectOrInterfaceDefinition>;
+};
 
 function RatingSlider({ id, value, onChange }: BaseFormFieldProps<unknown>) {
   const numericValue = typeof value === "number" ? value : 5;
@@ -214,10 +214,6 @@ export function FormPage() {
     EmployeeFormSchema | undefined
   >(undefined);
 
-  const handleSubmit = useCallback(async (formState: EmployeeFormSchema) => {
-    setSubmittedState(formState);
-  }, []);
-
   const employeeObjectSet = useMemo(() => $(Employee), []);
 
   const allFieldDefinitions = useMemo(
@@ -241,7 +237,7 @@ export function FormPage() {
         <BaseForm
           formTitle="Demo Base Form"
           fieldDefinitions={allFieldDefinitions}
-          onSubmit={handleSubmit}
+          onSubmit={setSubmittedState}
         />
       </div>
 

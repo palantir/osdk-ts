@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-import React, { memo, useCallback, useMemo } from "react";
+import React, { memo, useMemo } from "react";
+import type { FieldPath } from "react-hook-form";
+import { typedReactMemo } from "../../shared/typedMemo.js";
 import { FormField } from "../FormField.js";
 import type {
-  DateRange,
   FieldComponent,
   RendererFieldDefinition,
 } from "../FormFieldApi.js";
@@ -39,49 +40,54 @@ import { RadioButtonsField } from "./RadioButtonsField.js";
 import { TextAreaField } from "./TextAreaField.js";
 import { TextInputField } from "./TextInputField.js";
 
-export interface FormFieldRendererProps {
-  fieldDefinition: RendererFieldDefinition;
+export interface FormFieldRendererProps<S extends Record<string, unknown>> {
+  fieldDefinition: RendererFieldDefinition<S>;
   value: unknown;
-  onFieldValueChange: (value: unknown) => void;
+  onFieldValueChange: (value: S[FieldPath<S>]) => void;
   onBlur: (e: React.FocusEvent<HTMLDivElement>) => void;
   error: string | undefined;
 }
 
-export const FormFieldRenderer: React.FC<FormFieldRendererProps> = memo(
-  function FormFieldRendererFn({
-    fieldDefinition,
-    value,
-    onFieldValueChange,
-    onBlur,
-    error,
-  }: FormFieldRendererProps): React.ReactElement {
-    const { label, isRequired, helperText, helperTextPlacement } =
-      fieldDefinition;
-    const props = useMemo(
-      () => ({
-        value,
-        onChange: onFieldValueChange,
-        error,
-      }),
-      [value, onFieldValueChange, error],
-    );
-    return (
-      <FormField
-        label={label}
-        isRequired={isRequired}
-        fieldKey={fieldDefinition.fieldKey}
-        helperText={helperTextPlacement !== "tooltip" ? helperText : undefined}
-        error={error}
-        onBlur={onBlur}
-      >
-        {renderFieldComponent(fieldDefinition, props)}
-      </FormField>
-    );
-  },
-);
+export const FormFieldRenderer: <S extends Record<string, unknown>>(
+  props: FormFieldRendererProps<S>,
+) => React.ReactElement = typedReactMemo(function FormFieldRendererFn<
+  S extends Record<string, unknown>,
+>({
+  fieldDefinition,
+  value,
+  onFieldValueChange,
+  onBlur,
+  error,
+}: FormFieldRendererProps<S>): React.ReactElement {
+  const { label, isRequired, helperText, helperTextPlacement } =
+    fieldDefinition;
+  const props = useMemo(
+    () => ({
+      value,
+      // Field components produce concrete types (string, number, V | null)
+      // that are S[K] at runtime. Widen here so the heterogeneous wrappers
+      // can call onChange without per-type casts.
+      onChange: onFieldValueChange as (value: unknown) => void,
+      error,
+    }),
+    [value, onFieldValueChange, error],
+  );
+  return (
+    <FormField
+      label={label}
+      isRequired={isRequired}
+      fieldKey={fieldDefinition.fieldKey}
+      helperText={helperTextPlacement !== "tooltip" ? helperText : undefined}
+      error={error}
+      onBlur={onBlur}
+    >
+      {renderFieldComponent(fieldDefinition, props)}
+    </FormField>
+  );
+});
 
-function renderFieldComponent(
-  fieldDefinition: RendererFieldDefinition,
+function renderFieldComponent<S extends Record<string, unknown>>(
+  fieldDefinition: RendererFieldDefinition<S>,
   props: FieldRenderProps,
 ): React.ReactElement {
   switch (fieldDefinition.fieldComponent) {
@@ -126,14 +132,17 @@ function renderFieldComponent(
   }
 }
 
+// --- Types ---
+
 /**
  * Narrows the RendererFieldDefinition union to the member for a specific
- * FieldComponent discriminant.
+ * FieldComponent discriminant. Default S erases the schema generic for
+ * wrappers that don't need it (coercion wrappers).
  */
-type NarrowedDef<FC extends FieldComponent> = Extract<
-  RendererFieldDefinition,
-  { fieldComponent: FC }
->;
+type NarrowedDef<
+  FC extends FieldComponent,
+  S extends Record<string, unknown> = Record<string, unknown>,
+> = Extract<RendererFieldDefinition<S>, { fieldComponent: FC }>;
 
 /** Shared props passed from FieldBridge through to each wrapper. */
 interface FieldRenderProps {
@@ -142,11 +151,16 @@ interface FieldRenderProps {
   error: string | undefined;
 }
 
-interface FieldWrapperProps<FC extends FieldComponent>
-  extends FieldRenderProps
-{
-  fieldDefinition: NarrowedDef<FC>;
+interface FieldWrapperProps<
+  FC extends FieldComponent,
+  S extends Record<string, unknown> = Record<string, unknown>,
+> extends FieldRenderProps {
+  fieldDefinition: NarrowedDef<FC, S>;
 }
+
+// --- Coercion wrappers ---
+// Memoize the coerced value and provide a typed onChange handler.
+// These don't need S — their fieldComponentProps doesn't depend on it.
 
 const DateRangeInputWrapper = memo(function DateRangeInputWrapperFn({
   fieldDefinition,
@@ -155,18 +169,11 @@ const DateRangeInputWrapper = memo(function DateRangeInputWrapperFn({
 }: FieldWrapperProps<"DATE_RANGE_INPUT">) {
   const coercedValue = useMemo(() => extractDateRange(value), [value]);
 
-  const handleChange = useCallback(
-    (range: DateRange | null) => {
-      onChange(range);
-    },
-    [onChange],
-  );
-
   return (
     <DateRangeInputField
       id={fieldDefinition.fieldKey}
       value={coercedValue}
-      onChange={handleChange}
+      onChange={onChange}
       placeholderStart={fieldDefinition.placeholder}
       {...fieldDefinition.fieldComponentProps}
     />
@@ -181,18 +188,11 @@ const TextInputWrapper = memo(function TextInputWrapperFn({
 }: FieldWrapperProps<"TEXT_INPUT">) {
   const coercedValue = useMemo(() => extractString(value), [value]);
 
-  const handleChange = useCallback(
-    (text: string | null) => {
-      onChange(text);
-    },
-    [onChange],
-  );
-
   return (
     <TextInputField
       id={fieldDefinition.fieldKey}
       value={coercedValue}
-      onChange={handleChange}
+      onChange={onChange}
       placeholder={fieldDefinition.placeholder}
       error={error}
       {...fieldDefinition.fieldComponentProps}
@@ -208,18 +208,11 @@ const TextAreaWrapper = memo(function TextAreaWrapperFn({
 }: FieldWrapperProps<"TEXT_AREA">) {
   const coercedValue = useMemo(() => extractString(value), [value]);
 
-  const handleChange = useCallback(
-    (text: string | null) => {
-      onChange(text);
-    },
-    [onChange],
-  );
-
   return (
     <TextAreaField
       id={fieldDefinition.fieldKey}
       value={coercedValue}
-      onChange={handleChange}
+      onChange={onChange}
       placeholder={fieldDefinition.placeholder}
       error={error}
       {...fieldDefinition.fieldComponentProps}
@@ -235,19 +228,12 @@ const DatetimePickerWrapper = memo(function DatetimePickerWrapperFn({
 }: FieldWrapperProps<"DATETIME_PICKER">) {
   const coercedValue = useMemo(() => extractDate(value) ?? null, [value]);
 
-  const handleChange = useCallback(
-    (date: Date | null) => {
-      onChange(date);
-    },
-    [onChange],
-  );
-
   return (
     <DatetimePickerField
       id={fieldDefinition.fieldKey}
       placeholder={fieldDefinition.placeholder}
       value={coercedValue}
-      onChange={handleChange}
+      onChange={onChange}
       error={error}
       {...fieldDefinition.fieldComponentProps}
     />
@@ -262,18 +248,11 @@ const NumberInputWrapper = memo(function NumberInputWrapperFn({
 }: FieldWrapperProps<"NUMBER_INPUT">) {
   const coercedValue = useMemo(() => extractNumber(value) ?? null, [value]);
 
-  const handleChange = useCallback(
-    (num: number | null) => {
-      onChange(num);
-    },
-    [onChange],
-  );
-
   return (
     <NumberInputField
       id={fieldDefinition.fieldKey}
       value={coercedValue}
-      onChange={handleChange}
+      onChange={onChange}
       placeholder={fieldDefinition.placeholder}
       error={error}
       {...fieldDefinition.fieldComponentProps}
@@ -289,38 +268,35 @@ const FilePickerWrapper = memo(function FilePickerWrapperFn({
 }: FieldWrapperProps<"FILE_PICKER">) {
   const coercedValue = useMemo(() => extractFile(value), [value]);
 
-  const handleChange = useCallback(
-    (file: File | File[] | null) => {
-      onChange(file);
-    },
-    [onChange],
-  );
-
   return (
     <FilePickerField
       id={fieldDefinition.fieldKey}
       value={coercedValue}
-      onChange={handleChange}
+      onChange={onChange}
       error={error}
       {...fieldDefinition.fieldComponentProps}
     />
   );
 });
 
-// Passthrough wrappers: value is unknown, onChange accepts unknown which
-// is assignable to any concrete field's onChange type. No coercion needed
-// — wrappers exist for consistency so every case dispatches uniformly.
+// --- Passthrough wrappers ---
+// Generic over S because their fieldComponentProps uses S[K] (e.g. Dropdown
+// items, RadioButtons options, Custom renderer).
 
-const DropdownWrapper = memo(function DropdownWrapperFn({
+const DropdownWrapper = typedReactMemo(function DropdownWrapperFn<
+  S extends Record<string, unknown>,
+>({
   fieldDefinition,
   value,
   onChange,
   error,
-}: FieldWrapperProps<"DROPDOWN">) {
+}: FieldWrapperProps<"DROPDOWN", S>) {
   return (
     <DropdownField
       id={fieldDefinition.fieldKey}
-      value={value}
+      // FieldPathValue<S, FieldPath<S>> ≡ S[FieldPath<S>] for flat schemas;
+      // TS can't unify RHF's path resolution with direct indexed access.
+      value={value as S[FieldPath<S>] | null}
       onChange={onChange}
       placeholder={fieldDefinition.placeholder}
       error={error}
@@ -329,16 +305,18 @@ const DropdownWrapper = memo(function DropdownWrapperFn({
   );
 });
 
-const RadioButtonsWrapper = memo(function RadioButtonsWrapperFn({
+const RadioButtonsWrapper = typedReactMemo(function RadioButtonsWrapperFn<
+  S extends Record<string, unknown>,
+>({
   fieldDefinition,
   value,
   onChange,
   error,
-}: FieldWrapperProps<"RADIO_BUTTONS">) {
+}: FieldWrapperProps<"RADIO_BUTTONS", S>) {
   return (
     <RadioButtonsField
       id={fieldDefinition.fieldKey}
-      value={value}
+      value={value as S[FieldPath<S>] | null}
       onChange={onChange}
       error={error}
       {...fieldDefinition.fieldComponentProps}
@@ -346,16 +324,13 @@ const RadioButtonsWrapper = memo(function RadioButtonsWrapperFn({
   );
 });
 
-const CustomFieldWrapper = memo(function CustomFieldWrapperFn({
-  fieldDefinition,
-  value,
-  onChange,
-  error,
-}: FieldWrapperProps<"CUSTOM">) {
+const CustomFieldWrapper = typedReactMemo(function CustomFieldWrapperFn<
+  S extends Record<string, unknown>,
+>({ fieldDefinition, value, onChange, error }: FieldWrapperProps<"CUSTOM", S>) {
   return (
     <CustomField
       id={fieldDefinition.fieldKey}
-      value={value}
+      value={value as S[FieldPath<S>] | null}
       onChange={onChange}
       error={error}
       {...fieldDefinition.fieldComponentProps}
@@ -363,6 +338,7 @@ const CustomFieldWrapper = memo(function CustomFieldWrapperFn({
   );
 });
 
+// ObjectSet has no value/onChange and no S dependency.
 const ObjectSetWrapper = memo(function ObjectSetWrapperFn({
   fieldDefinition,
 }: FieldWrapperProps<"OBJECT_SET">) {

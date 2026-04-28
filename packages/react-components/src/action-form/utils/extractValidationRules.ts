@@ -14,13 +14,16 @@
  * limitations under the License.
  */
 
-import type { RegisterOptions } from "react-hook-form";
+import type { FieldPath, RegisterOptions } from "react-hook-form";
 import type {
   RendererFieldDefinition,
   ValidationError,
 } from "../FormFieldApi.js";
 
-type RhfRules = RegisterOptions<Record<string, unknown>, string>;
+type RhfRules<S extends Record<string, unknown>> = RegisterOptions<
+  S,
+  FieldPath<S>
+>;
 
 /**
  * Derives react-hook-form validation rules from a field definition's
@@ -30,10 +33,12 @@ type RhfRules = RegisterOptions<Record<string, unknown>, string>;
  * Called at rule-building time so that `onValidationError` can inject
  * custom messages into the RHF rules object.
  */
-export function extractValidationRules(
-  fieldDef: RendererFieldDefinition,
-): RhfRules {
-  const rules: RhfRules = {};
+export function extractValidationRules<
+  S extends Record<string, unknown>,
+>(
+  fieldDef: RendererFieldDefinition<S>,
+): RhfRules<S> {
+  const rules: RhfRules<S> = {};
 
   if (fieldDef.isRequired) {
     rules.required = getMessage(fieldDef, { type: "required" });
@@ -136,8 +141,8 @@ export function extractValidationRules(
   return rules;
 }
 
-function getMessage(
-  fieldDef: RendererFieldDefinition,
+function getMessage<S extends Record<string, unknown>>(
+  fieldDef: RendererFieldDefinition<S>,
   error: ValidationError,
 ): string {
   return fieldDef.onValidationError?.(error) ?? getDefaultMessage(error);

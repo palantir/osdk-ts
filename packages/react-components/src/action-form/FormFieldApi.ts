@@ -18,11 +18,13 @@ import type {
   ActionDefinition,
   ActionMetadata,
   ActionParam,
+  BaseObjectSet,
   CompileTimeMetadata,
   DataValueClientToWire,
-  ObjectSet,
+  ObjectOrInterfaceDefinition,
 } from "@osdk/api";
 import type React from "react";
+import type { FieldPath } from "react-hook-form";
 
 /**
  * A form field definition specifies configuration for a single field.
@@ -398,12 +400,12 @@ export interface Option<V> {
 /**
  * Object set field displays the summary of the count of the given object set.
  *
- * Uses `ObjectSet` (default Q = any) so concrete types like
+ * Uses `BaseObjectSet` (covariant marker) so concrete types like
  * `ObjectSet<Employee>` are assignable without casting.
  */
 export interface ObjectSetFieldProps {
   id?: string;
-  value: ObjectSet | null;
+  value: BaseObjectSet<ObjectOrInterfaceDefinition> | null;
   /**
    * Message displayed when no object set is provided.
    *
@@ -558,7 +560,7 @@ type FormManagedProps<K extends FieldComponent> = "onChange" extends
  */
 export type RendererFieldDefinition<
   S extends Record<string, unknown> = Record<string, unknown>,
-  K extends keyof S & string = keyof S & string,
+  K extends FieldPath<S> = FieldPath<S>,
 > = {
   [FC in FieldComponent]: {
     /** The field's unique key, constrained to `keyof S` */

@@ -17,6 +17,7 @@
 import { Error as ErrorIcon } from "@blueprintjs/icons";
 import classNames from "classnames";
 import React, { memo, useCallback, useMemo, useState } from "react";
+import type { DefaultValues, FieldPath } from "react-hook-form";
 import { useForm } from "react-hook-form";
 import { ActionButton } from "../base-components/action-button/ActionButton.js";
 import { SkeletonBar } from "../base-components/skeleton/SkeletonBar.js";
@@ -26,7 +27,6 @@ import { typedReactMemo } from "../shared/typedMemo.js";
 import type { BaseFormProps } from "./ActionFormApi.js";
 import styles from "./BaseForm.module.css";
 import { FieldBridge } from "./fields/FieldBridge.js";
-import type { RendererFieldDefinition } from "./FormFieldApi.js";
 import { FormHeader } from "./FormHeader.js";
 
 // Generic component: S is only used for public type safety (fieldKey, item types,
@@ -49,7 +49,7 @@ export const BaseForm: <S extends Record<string, unknown>>(
   const isControlled = controlledFormState != null;
 
   const defaultValues = useMemo(
-    () => buildDefaultValues(fieldDefinitions),
+    () => buildDefaultValues<S>(fieldDefinitions),
     [fieldDefinitions],
   );
 
@@ -57,14 +57,18 @@ export const BaseForm: <S extends Record<string, unknown>>(
     control,
     trigger,
     getValues,
-    formState: { errors },
-  } = useForm<Record<string, unknown>>({
+    formState: { errors: rawErrors },
+  } = useForm<S>({
     // Validate on blur first, then revalidate on change after the first
     // error. This gives the user a chance to finish typing before seeing
     // errors, while staying responsive once an error is surfaced.
     mode: "onTouched",
     ...(isControlled ? { values: controlledFormState } : { defaultValues }),
   });
+
+  // RHF's FieldErrors<S> resolves to complex conditional types for generic S.
+  // Narrow to the structural subset we actually read (key + message).
+  const errors = rawErrors as Record<string, { message?: string }>;
 
   const [hasAttemptedSubmit, setHasAttemptedSubmit] = useState(false);
 
@@ -96,25 +100,15 @@ export const BaseForm: <S extends Record<string, unknown>>(
       // RHF's store may hold the user-typed value rather than the parent's
       // value. Using controlledFormState directly preserves the existing
       // guarantee that controlled mode submits the parent's state.
-      //
-      // Cast: RHF stores values as Record<string, unknown>, but the field
-      // definitions guarantee the shape matches S at runtime.
-      await executeSubmit(
-        controlledFormState ?? getValues() as S,
-      );
+      await executeSubmit(controlledFormState ?? getValues());
     },
     [trigger, executeSubmit, controlledFormState, getValues],
   );
 
   const handleFieldChange = useCallback(
-    (fieldKey: string, value: unknown) => {
+    <K extends FieldPath<S>>(fieldKey: K, value: S[K]) => {
       clearError();
-      // Cast: RHF gives us unknown, but field components guarantee the
-      // value matches the schema S at runtime.
-      onFieldValueChange?.(
-        fieldKey as keyof S & string,
-        value as S[keyof S & string],
-      );
+      onFieldValueChange?.(fieldKey, value);
     },
     [clearError, onFieldValueChange],
   );
@@ -122,7 +116,10 @@ export const BaseForm: <S extends Record<string, unknown>>(
   const isFormPending = isPending || isSubmitting;
 
   const labelByFieldKey = useMemo(
-    () => new Map(fieldDefinitions.map((d) => [d.fieldKey, d.label])),
+    () =>
+      new Map<string, string>(
+        fieldDefinitions.map((d) => [d.fieldKey, d.label]),
+      ),
     [fieldDefinitions],
   );
 
@@ -152,22 +149,14 @@ export const BaseForm: <S extends Record<string, unknown>>(
         </div>
       )}
       <div className={styles.osdkFormFields}>
-        {
-          /* Safe cast: RendererFieldDefinition<S> → RendererFieldDefinition
-            (defaults to Record<string, unknown>). The rendering layer only reads
-            fieldKey/fieldComponent and spreads fieldComponentProps — it never
-            type-checks item/option types against S. */
-        }
-        {(fieldDefinitions as ReadonlyArray<RendererFieldDefinition>).map(
-          (fieldDef) => (
-            <FieldBridge
-              key={fieldDef.fieldKey}
-              fieldDef={fieldDef}
-              control={control}
-              onExternalChange={handleFieldChange}
-            />
-          ),
-        )}
+        {fieldDefinitions.map((fieldDef) => (
+          <FieldBridge
+            key={fieldDef.fieldKey}
+            fieldDef={fieldDef}
+            control={control}
+            onExternalChange={handleFieldChange}
+          />
+        ))}
       </div>
       <div className={styles.osdkFormFooter}>
         <ErrorIndicator errorEntries={errorEntries} />
@@ -199,19 +188,21 @@ const FORM_SKELETON = Array.from(
 
 // Accepts a structural subset instead of RendererFieldDefinition<S> to avoid
 // the invariance issue — this function only reads fieldKey and defaultValue.
-function buildDefaultValues(
+// Returns DefaultValues<S> — the cast is safe because field definitions
+// guarantee the keys/values match the schema S at runtime.
+function buildDefaultValues<S extends Record<string, unknown>>(
   fieldDefinitions: ReadonlyArray<{
     fieldKey: string;
     fieldComponentProps: Record<string, unknown>;
   }>,
-): Record<string, unknown> {
+): DefaultValues<S> {
   const values: Record<string, unknown> = {};
   for (const def of fieldDefinitions) {
     if ("defaultValue" in def.fieldComponentProps) {
       values[def.fieldKey] = def.fieldComponentProps.defaultValue;
     }
   }
-  return values;
+  return values as DefaultValues<S>;
 }
 
 interface ErrorEntry {
