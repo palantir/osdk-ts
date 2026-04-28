@@ -6,21 +6,17 @@ sidebar_position: 5
 
 This guide covers how the OSDK React cache system works and how to manually control it.
 
-:::info Single source of truth
-We recommend using the OSDK React cache as the **only** source of truth for OSDK data in your app. Mixing it with another cache (Redux, TanStack Query, component state) makes invalidation and optimistic updates hard to reason about, because two systems must stay in sync.
-:::
-
 ## Why use @osdk/react?
 
-You can call the OSDK client directly from event handlers or roll your own TanStack Query / SWR layer — but `@osdk/react` is purpose-built for OSDK and gives you behavior that is hard to reproduce by hand:
+`@osdk/react` gives you behavior that is hard to reproduce with a generic data layer like TanStack Query:
 
-- **Normalized object cache.** Every `Todo:1` is stored once. When an action edits it, every list, link, and detail view referencing it updates in lock-step — no manual key invalidation.
-- **Action-driven invalidation.** Action responses tell the cache exactly which objects were added, modified, or deleted. Lists are re-evaluated against their `where` clauses automatically.
-- **Optimistic updates with rollback.** `$optimisticUpdate` layers your changes on top of the truth layer; on failure they are removed without bookkeeping.
-- **Real-time via WebSockets.** `streamUpdates: true` keeps lists current without polling.
+- **Normalized object cache.** Every `Todo:1` is stored once. When an action edits it, every list, link, and detail view referencing it updates automatically.
+- **Action-driven invalidation.** Action responses specify which objects were added, modified, or deleted. Lists are re-evaluated against their `where` clauses without manual invalidation.
+- **Optimistic updates with rollback.** `$optimisticUpdate` layers your changes on top of the truth layer; on failure they're rolled back.
+- **Real-time updates.** `streamUpdates: true` keeps lists current via WebSocket without polling.
 - **Function dependency tracking.** Functions declare `dependsOn` / `dependsOnObjects` and re-run when those objects change.
 
-If you build your own cache, you re-implement all of the above and diverge from the model OSDK actions assume.
+Action responses also assume the OSDK cache, so a bring-your-own cache will fight the action flow.
 
 ## How the Cache Works
 
@@ -43,7 +39,7 @@ Per-property security metadata is loaded alongside objects when `$loadPropertySe
 ### How the cache stays in sync
 
 - **Action responses.** When an action completes, the response specifies added / modified / deleted objects. The cache applies those changes and re-evaluates lists against their where clauses.
-- **`streamUpdates: true`.** Opens a WebSocket subscription for the matching list. Updates are pushed sub-second and applied to the cache. Not available for queries that use `pivotTo` or `withProperties`.
+- **`streamUpdates: true`.** Opens a WebSocket subscription for the matching list and applies updates as the server emits them. Not available for queries that use `pivotTo` or `withProperties`.
 - **Function dependencies.** Functions registered with `dependsOn` (object types) or `dependsOnObjects` (instances) are automatically re-fetched when matching objects change after an action.
 - **Reference counting.** Cache entries are released when the last subscriber unmounts; data shared across components is not re-fetched.
 

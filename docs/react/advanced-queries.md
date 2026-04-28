@@ -14,17 +14,16 @@ Advanced querying with set operations, derived properties, and link traversal.
 
 ### When to Use useObjectSet vs useOsdkObjects
 
-Both hooks support filtering, sorting, pagination, derived properties, pivoting, and streaming updates. They differ in their **starting point**.
+Prefer `useOsdkObjects` when both hooks would work. Both support filtering, sorting, pagination, derived properties, pivoting, and streaming updates — they differ in their **starting point**.
 
-**Use `useOsdkObjects(Type, options)` when** your query starts from an object type or interface — this is most queries.
+**Use `useOsdkObjects(Type, options)`** when your query starts from an object type or interface.
 
-**Use `useObjectSet(objectSet, options)` when** you already hold an `ObjectSet` instance you want to observe — typically because:
+**Use `useObjectSet(objectSet, options)`** when you already hold an `ObjectSet` instance you want to observe — typically because:
 
 - You composed sets with `union` / `intersect` / `subtract`
 - You received an `ObjectSet` from another hook (e.g. `useOsdkObjects(...).objectSet`) and want to observe a transformation of it
-- You need to memoize a complex composed ObjectSet across renders
 
-If both hooks would work, prefer `useOsdkObjects`. Note that `pivotTo` and `streamUpdates` cannot be combined — see the note below.
+Note that `pivotTo` and `streamUpdates` cannot be combined — see the note below.
 
 ```tsx
 import { $, Todo } from "@my/osdk";
@@ -279,7 +278,7 @@ The builder provides these methods:
 
 #### What does `DerivedProperty.Builder<Employee, false>` mean?
 
-The second type parameter is `CONSTRAINED extends boolean`. At the top level it is `false`, meaning the builder can navigate links and select properties freely. Pivoting through a one-to-many link returns a _constrained_ builder (`true`) that must call `.aggregate()` rather than `.selectProperty()`, because there is no single value to select. In practice you can drop the annotation entirely and let inference do the work — TypeScript flips the flag for you as you chain.
+You usually don't need this annotation — TypeScript infers it. The flag flips from `false` to `true` after pivoting through a one-to-many link, where you must call `.aggregate()` instead of `.selectProperty()` because there's no single value to select.
 
 #### When an aggregate has no data
 

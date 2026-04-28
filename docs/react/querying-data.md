@@ -50,7 +50,7 @@ function TodoList() {
 - `isOptimistic` — True if the list order is affected by optimistic updates (see note below)
 - `fetchMore` — Function to load next page (undefined when no more pages available)
 - `hasMore` — True if more pages can be fetched
-- `totalCount` — Total count of matching objects, when available from the API
+- `totalCount` — Total count of matching objects when available from the API. Returned as a string; parse with `Number(totalCount)` if you need arithmetic
 - `objectSet` — The transformed `ObjectSet` after pivots / set ops; useful as input to a subsequent `useObjectSet` or `useOsdkAggregation`
 - `refetch` — Function to manually invalidate this object type and refetch
 - `error` — Error object if fetch failed
@@ -348,9 +348,9 @@ function LiveTodoList() {
 #### How streamUpdates works
 
 - **Initial fetch is HTTP.** The first page (and any subsequent paginated pages) still go through normal HTTP requests. Only invalidations after that come over the WebSocket.
-- **Latency is sub-second.** Once the subscription is open, updates typically apply to the cache within a second of the server-side change.
 - **Server-side filter match.** Updates only fire when the server-side filter match for your query changes. If a `where: { isComplete: false }` query is open and an action flips an object to `isComplete: true`, the cache removes it from this list.
-- **Use it for:** live dashboards, ticker-like UIs, multi-user editing, anywhere users expect to see other people's changes. Avoid it for one-shot tables, modal lookups, or large lists where the constant invalidations cost more than the freshness is worth.
+- **Use it for** live dashboards, ticker-like UIs, multi-user editing — anywhere users expect to see other people's changes.
+- **Avoid it for** one-shot tables, modal lookups, or large lists where the constant invalidations cost more than the freshness is worth.
 
 :::note Limitations
 `streamUpdates` cannot be used together with `pivotTo` or `withProperties`. The server does not support websocket subscriptions for link-traversal or derived-property queries. Those queries still fetch data normally but won't receive real-time updates.
@@ -433,14 +433,15 @@ const result = useOsdkObjects(Todo, {
   autoFetchMore: 100,
   enabled: true,
   intersectWith: [{ where: { priority: "high" } }],
-  pivotTo: "assignee",
   $select: ["title", "isComplete"],
   $loadPropertySecurityMetadata: true,
   withProperties: {
-    /* see https://palantir.github.io/osdk-ts/react/advanced-queries#derived-properties */
+    /* see /react/advanced-queries#derived-properties */
   },
 });
 ```
+
+`streamUpdates` and `pivotTo` cannot be combined — see the note above.
 
 :::note
 `streamUpdates` and `pivotTo` cannot be used together. The server does not support
@@ -522,15 +523,12 @@ Or pass a boolean to disable the query:
 const { object } = useOsdkObject(Todo, todoId, false);
 ```
 
-`useOsdkObject` also accepts `undefined` as the first argument, which short-circuits to a no-op result without subscribing — useful when an instance is conditionally available.
-
 ### Return Values
 
 - `object` — The object instance (may be undefined while loading)
 - `isLoading` — True while fetching from server
 - `isOptimistic` — True if object has optimistic updates applied
 - `error` — Error object if fetch failed (cleared once a fresh successful fetch lands)
-- `forceUpdate` — Manually trigger a re-fetch of this object
 
 ---
 

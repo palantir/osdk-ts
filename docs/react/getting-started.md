@@ -194,7 +194,8 @@ function CompleteTodoButton({ todo }: { todo: Todo.OsdkInstance }) {
       </button>
       {error && (
         <div>
-          Error: {error.actionValidation?.message ?? String(error.unknown)}
+          Error: {error.actionValidation?.message
+            ?? (error.unknown ? String(error.unknown) : "Unknown error")}
         </div>
       )}
     </div>

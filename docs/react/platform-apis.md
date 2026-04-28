@@ -8,16 +8,16 @@ This guide covers available platform APIs that can used with OSDK React hooks.
 
 ## Handling errors with PalantirApiError
 
-All platform-API hooks return errors as plain `Error` instances; when the failure originates from a Foundry API call, the error is a `PalantirApiError` (re-exported from `@osdk/client`). Narrow with `instanceof` to access the structured fields:
+All platform-API hooks return errors as plain `Error` instances; when the failure originates from a Foundry API call, the error is a `PalantirApiError` (re-exported from `@osdk/client`). Narrow with `instanceof` to access the structured fields. All fields below are optional — narrow before you use them:
 
-| Field              | Type     | Use                                                 |
-| ------------------ | -------- | --------------------------------------------------- |
-| `errorName`        | `string` | Stable machine identifier (e.g. `UserNotFound`)     |
-| `errorCode`        | `string` | HTTP-style code (e.g. `NOT_FOUND`)                  |
-| `errorDescription` | `string` | Human-readable message                              |
-| `statusCode`       | `number` | HTTP status                                         |
-| `errorInstanceId`  | `string` | Server-side correlation ID — include in bug reports |
-| `parameters`       | `object` | Server-supplied context (e.g. `{ userId }`)         |
+| Field              | Type      | Use                                                 |
+| ------------------ | --------- | --------------------------------------------------- |
+| `errorName`        | `string?` | Stable machine identifier (e.g. `UserNotFound`)     |
+| `errorCode`        | `string?` | HTTP-style code (e.g. `NOT_FOUND`)                  |
+| `errorDescription` | `string?` | Human-readable message                              |
+| `statusCode`       | `number?` | HTTP status                                         |
+| `errorInstanceId`  | `string?` | Server-side correlation ID — include in bug reports |
+| `parameters`       | `object?` | Server-supplied context (e.g. `{ userId }`)         |
 
 Switch on `errorName` for branching behavior; show `errorInstanceId` to support engineers when surfacing an opaque failure.
 

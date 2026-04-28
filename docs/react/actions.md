@@ -46,8 +46,8 @@ function TodoView({ todo }: { todo: Todo.OsdkInstance }) {
       </div>
       {error && (
         <div>
-          An error occurred:{" "}
-          {error.actionValidation?.message ?? String(error.unknown)}
+          An error occurred: {error.actionValidation?.message
+            ?? (error.unknown ? String(error.unknown) : "Unknown error")}
         </div>
       )}
     </div>
@@ -280,7 +280,8 @@ function TodoView({ todo }: { todo: Todo.OsdkInstance }) {
       {isOptimistic && "(Optimistic)"}
       {error && (
         <div className="error">
-          {error.actionValidation?.message ?? String(error.unknown)}
+          {error.actionValidation?.message
+            ?? (error.unknown ? String(error.unknown) : "Unknown error")}
         </div>
       )}
     </div>
