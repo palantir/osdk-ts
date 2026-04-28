@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeDefinition, Osdk } from "@osdk/api";
+import type { ObjectTypeDefinition } from "@osdk/api";
 import { act, renderHook } from "@testing-library/react";
 import * as React from "react";
 import { beforeEach, describe, expect, it, vitest } from "vitest";
@@ -25,12 +25,6 @@ const MockObjectType = {
   apiName: "MockObject",
   primaryKeyType: "string",
 } as unknown as ObjectTypeDefinition;
-
-const mockInstance: Osdk.Instance<typeof MockObjectType> = {
-  $objectType: "MockObject",
-  $primaryKey: "instance-123",
-  $apiName: "MockObject",
-} as any;
 
 describe("useOsdkObject", () => {
   const mockObserveObject = vitest.fn();
@@ -141,46 +135,6 @@ describe("useOsdkObject", () => {
       expect(result.current.isLoading).toBe(false);
       expect(result.current.error).toBeDefined();
       expect(result.current.error?.message).toBeTruthy();
-    });
-  });
-
-  describe("undefined input", () => {
-    // Reproduces a bug where useOsdkObject(maybeInstance) with an undefined
-    // instance throws or stays in a loading state. The fix accepts undefined
-    // and short-circuits to a non-loading no-op result.
-    it("returns a no-op result when called with undefined and does not subscribe", () => {
-      const wrapper = createWrapper();
-
-      const { result } = renderHook(
-        () => useOsdkObject(undefined),
-        { wrapper },
-      );
-
-      expect(result.current.object).toBeUndefined();
-      expect(result.current.isLoading).toBe(false);
-      expect(result.current.error).toBeUndefined();
-      expect(result.current.isOptimistic).toBe(false);
-      expect(mockObserveObject).not.toHaveBeenCalled();
-    });
-
-    it("starts subscribing once a defined instance is passed in after undefined", () => {
-      const wrapper = createWrapper();
-
-      const { rerender } = renderHook(
-        ({ obj }) => useOsdkObject(obj),
-        {
-          wrapper,
-          initialProps: {
-            obj: undefined as Osdk.Instance<typeof MockObjectType> | undefined,
-          },
-        },
-      );
-
-      expect(mockObserveObject).not.toHaveBeenCalled();
-
-      rerender({ obj: mockInstance });
-
-      expect(mockObserveObject).toHaveBeenCalledTimes(1);
     });
   });
 });

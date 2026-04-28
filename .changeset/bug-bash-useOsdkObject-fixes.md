@@ -1,8 +1,7 @@
 ---
-"@osdk/client": patch
 "@osdk/react": patch
 ---
 
-fix sparse undefined slots in useOsdkObjects, accept undefined in useOsdkObject, and surface fetch errors
+surface fetch errors through useOsdkObject's `error` and clear `isLoading`
 
-useOsdkObjects no longer emits a data array containing undefined slots while object subjects hydrate after the list cache key updates. useOsdkObject now accepts an undefined instance argument and short-circuits without subscribing. When the underlying fetch fails (e.g. PalantirApiError "Object not found"), useOsdkObject now surfaces the error through `error` and clears `isLoading`.
+When the underlying fetch fails (e.g. `PalantirApiError: Object not found`), `useOsdkObject` now returns the error through `error` and exits the loading state so consumers can render their error UI instead of waiting forever.

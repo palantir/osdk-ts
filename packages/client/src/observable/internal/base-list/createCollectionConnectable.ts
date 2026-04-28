@@ -25,7 +25,6 @@ import {
   of,
   ReplaySubject,
   scheduled,
-  skipWhile,
   switchMap,
 } from "rxjs";
 import type { CacheKey } from "../CacheKey.js";
@@ -60,12 +59,7 @@ export function createCollectionConnectable<
           : combineLatest(
             listEntry.value.data.map((cacheKey: ObjectCacheKey) =>
               subjects.get(cacheKey).pipe(
-                map(objectEntry => objectEntry?.value),
-                // Wait for each subject to emit a real value once before
-                // forwarding upstream; otherwise combineLatest emits arrays
-                // with `undefined` slots while the cache hydrates. Subsequent
-                // transitions to undefined (e.g. deletion) still pass through.
-                skipWhile(value => value === undefined),
+                map(objectEntry => objectEntry?.value!),
                 distinctUntilChanged(),
               )
             ),
