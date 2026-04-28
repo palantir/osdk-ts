@@ -567,9 +567,7 @@ export class Store {
 
     const promises: Array<Promise<void>> = [];
 
-    // truth.keys() = queries whose data has been written to the truth layer.
-    // queries.keys() = every registered query, including loading/pending ones.
-    // Use queries.keys() so we don't drop invalidations on in-flight queries.
+    // queries.keys() (not truth.keys()) so in-flight queries also get invalidated.
     for (const cacheKey of this.queries.keys()) {
       if (
         cacheKey.type !== "mediaMetadata"
@@ -590,18 +588,10 @@ export class Store {
 
   /**
    * Force every cached `specificLink` query to re-evaluate against the given
-   * apiName. Object, list, and objectset queries don't need this kick: the
-   * per-object propagation pipeline (`Store.subject` / `maybeUpdateAndRevalidate`)
-   * flushes `changes.modified`/`changes.deleted` to them when the underlying
-   * objects change. Link queries are keyed on `(srcType, srcPk, linkName, ...)`
-   * rather than the target object's PK, so they don't see those changes through
-   * the pipeline. Calling this method tells each link query "an object of this
-   * type changed; check whether either side of your link matches and revalidate".
-   *
-   * Used by `ActionApplication` after every action edit: once the action's
-   * touched types are known (via `editedObjectTypes`), we kick link queries
-   * here while objects, lists, and objectsets refresh through the normal
-   * per-object pipeline.
+   * apiName. Link queries are keyed on `(srcType, srcPk, linkName, ...)` rather
+   * than the linked object's pk, so per-object propagation never marks them as
+   * modified. Object/list/objectset queries pick up changes through the normal
+   * pipeline and don't need this kick.
    */
   public invalidateLinkQueriesForType(apiName: string): Promise<void> {
     if (process.env.NODE_ENV !== "production") {

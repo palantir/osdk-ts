@@ -143,10 +143,6 @@ export class ActionApplication {
       );
     }
 
-    // editedObjectTypes is the union of per-object types and both sides of
-    // every link edit (computed by applyAction's remapActionResponse). Link
-    // queries don't react to per-object propagation since they're keyed on
-    // (srcType, srcPk, linkName), so kick them per touched type.
     for (const apiName of editedObjectTypes) {
       promises.push(this.store.invalidateLinkQueriesForType(apiName));
     }

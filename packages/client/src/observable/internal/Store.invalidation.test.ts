@@ -852,6 +852,12 @@ describe("Store Invalidation Type Isolation", () => {
           expect.objectContaining({ object: undefined }),
         );
       });
+      // No-flicker invariant: tombstones deliver object=undefined synchronously,
+      // so subscribers must never observe a transient error state from a 404
+      // refetch against the just-deleted object.
+      expect(todoSubFn.next).not.toHaveBeenCalledWith(
+        expect.objectContaining({ status: "error" }),
+      );
       await vi.waitFor(() => {
         expect(todoListSubFn.next).toHaveBeenCalledWith(
           expect.objectContaining({
@@ -995,11 +1001,14 @@ describe("Store Invalidation Type Isolation", () => {
     it("largeScaleEdits response invalidates queries via editedObjectTypes", async () => {
       const empListSubFn = await observeList(Employee);
       const todoListSubFn = await observeList(Todo);
+      const occupantsLinkSubFn = await observeOccupantsLink();
 
-      await cache.applyAction(largeScaleEditEmployee, {
+      // Array payload routes through batchApplyAction, which honors the faux
+      // returnLargeScaleEdits flag (single applyAction does not).
+      await cache.applyAction(largeScaleEditEmployee, [{
         employeeId: EMPLOYEE_1_ID,
         newTitle: "Lead Engineer",
-      });
+      }]);
 
       await vi.waitFor(() => {
         expect(empListSubFn.next).toHaveBeenCalledWith(
@@ -1010,6 +1019,7 @@ describe("Store Invalidation Type Isolation", () => {
             ]),
           }),
         );
+        expect(occupantsLinkSubFn.next).toHaveBeenCalled();
       });
       expect(todoListSubFn.next).not.toHaveBeenCalled();
     });
