@@ -20,13 +20,27 @@ import type { PropertyV2 } from "@osdk/foundry.ontologies";
 export function propertyJsdoc(
   property: ObjectMetadata.Property,
   rawPropertyMetadata: PropertyV2 | undefined,
-  { isInherited, apiName }: { isInherited?: boolean; apiName: string },
+  {
+    isInherited,
+    apiName,
+    valueTypeDescription,
+  }: {
+    isInherited?: boolean;
+    apiName: string;
+    valueTypeDescription?: string;
+  },
 ): string {
   const ret = [];
   const renderDisplayName = property.displayName
     && property.displayName !== apiName;
   const status = rawPropertyMetadata?.status;
-  if (isInherited || renderDisplayName || property.description || status) {
+  if (
+    isInherited
+    || renderDisplayName
+    || property.description
+    || valueTypeDescription
+    || status
+  ) {
     if (status) {
       let deprecationStatus = "";
       if (status.type === "deprecated") {
@@ -51,13 +65,16 @@ export function propertyJsdoc(
     if (renderDisplayName) {
       ret.push(
         ` *   display name: '${property.displayName}'${
-          property.description ? "," : ""
+          property.description || valueTypeDescription ? "," : ""
         }\n`,
       );
     }
 
     if (property.description) {
       ret.push(` *   description: ${property.description}\n`);
+    }
+    if (valueTypeDescription) {
+      ret.push(` *   value type description: ${valueTypeDescription}\n`);
     }
   } else {
     ret.push(` * (no ontology metadata)\n`);

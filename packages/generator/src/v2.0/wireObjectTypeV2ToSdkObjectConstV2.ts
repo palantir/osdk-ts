@@ -37,6 +37,17 @@ import { stringUnionFrom } from "../util/stringUnionFrom.js";
 
 type PropertyApiNameUnion = PropertyApiName | SharedPropertyTypeApiName;
 
+function getValueTypeDescription(
+  propertyDefinition: Pick<ObjectMetadata.Property, "valueTypeApiName">,
+  valueTypeMetadata: Record<ValueTypeApiName, OntologyValueType>,
+): string | undefined {
+  if (propertyDefinition.valueTypeApiName == null) {
+    return undefined;
+  }
+
+  return valueTypeMetadata[propertyDefinition.valueTypeApiName]?.description;
+}
+
 /** @internal */
 export function wireObjectTypeV2ToSdkObjectConstV2(
   wireObject: ObjectTypeFullMetadata,
@@ -120,7 +131,15 @@ export function wireObjectTypeV2ToSdkObjectConstV2(
 
 
 
-    ${createDefinition(object, ontology, object.shortApiName, identifiers)}
+    ${
+      createDefinition(
+        object,
+        ontology,
+        object.shortApiName,
+        identifiers,
+        ontology.raw.valueTypes,
+      )
+    }
     `;
   }
 
@@ -251,6 +270,10 @@ ${
           `${
             propertyJsdoc(propertyDefinition, metadata, {
               apiName,
+              valueTypeDescription: getValueTypeDescription(
+                propertyDefinition,
+                valueTypeMetadata,
+              ),
             })
           }readonly "${maybeStripNamespace(type, apiName)}"`,
           (typeof propertyDefinition.type === "object"
@@ -285,6 +308,7 @@ export function createDefinition(
     osdkObjectStrictPropsIdentifier,
     osdkObjectLinksIdentifier,
   }: Identifiers,
+  valueTypeMetadata: Record<ValueTypeApiName, OntologyValueType>,
 ) {
   const definition = object.getCleanedUpDefinition(true);
   const propertyMetadata = object instanceof EnhancedObjectType
@@ -353,6 +377,10 @@ export function createDefinition(
                   ],
                   {
                     apiName,
+                    valueTypeDescription: getValueTypeDescription(
+                      propertyDefinition,
+                      valueTypeMetadata,
+                    ),
                   },
                 )
               }"${maybeStripNamespace(object, apiName)}"`,
