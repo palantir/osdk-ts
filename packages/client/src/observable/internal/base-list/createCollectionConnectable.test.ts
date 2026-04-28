@@ -699,7 +699,13 @@ describe("createCollectionConnectable", () => {
   });
 
   describe("error handling", () => {
-    it("should handle store.getSubject returning undefined object entry", async () => {
+    it("should not emit when an object subject has not yet been hydrated", async () => {
+      // Reproduces a bug where the first non-loading emission of useOsdkObjects
+      // contained sparse `Array(N)` of `undefined`. The cause: when the list
+      // cache key emits with new ObjectCacheKeys before each object's subject
+      // has been populated with a real value, combineLatest synchronously emits
+      // an array whose slots are `undefined`. The fix is to wait for every
+      // inner subject to have a real value before emitting upstream.
       const objectKey1: ObjectCacheKey = {
         type: "object",
         otherKeys: ["Employee", 1, undefined],
@@ -718,16 +724,209 @@ describe("createCollectionConnectable", () => {
 
       const subject = new BehaviorSubject(subjectPayload);
 
-      // Mock store.getSubject to return undefined entry - this creates an object with undefined value
-      vi.mocked(mockSubjects.get).mockReturnValue(
-        new BehaviorSubject({
-          cacheKey: objectKey1,
-          value: undefined, // This is the key - undefined value
-          status: "loaded",
-          lastUpdated: Date.now(),
-          isOptimistic: false,
-        } as any),
+      // Object subject starts in init state (value: undefined). It is later
+      // populated with the real ObjectHolder.
+      const objectSubject = new BehaviorSubject({
+        cacheKey: objectKey1,
+        value: undefined,
+        status: "init",
+        lastUpdated: 0,
+        isOptimistic: false,
+      } as any);
+      vi.mocked(mockSubjects.get).mockReturnValue(objectSubject);
+
+      const connectable = actualCreateCollectionConnectable(
+        subject,
+        mockSubjects,
+        createPayload,
       );
+
+      const subscription = connectable.connect();
+      const observer = mockObserver<TestPayload>();
+
+      connectable.subscribe(observer);
+
+      // Yield once for any pending microtasks/asapScheduler - at this point
+      // no real emission should have happened because the object's subject is
+      // still in init state.
+      await new Promise<void>(resolve => setTimeout(resolve, 10));
+
+      expect(observer.next).not.toHaveBeenCalled();
+
+      // Now hydrate the object subject - this should trigger a single emission
+      // with the real value.
+      objectSubject.next({
+        cacheKey: objectKey1,
+        value: mockEmployee1,
+        status: "loaded",
+        lastUpdated: Date.now(),
+        isOptimistic: false,
+      } as any);
+
+      await waitForCall(observer);
+
+      expect(observer.next).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: [mockEmployee1],
+          status: "loaded",
+          count: 1,
+        }),
+      );
+
+      // Verify no emission ever included an undefined slot.
+      for (const call of observer.next.mock.calls) {
+        const payload = call[0] as TestPayload;
+        if (Array.isArray(payload.data)) {
+          expect(payload.data).not.toContain(undefined);
+        }
+      }
+
+      subscription.unsubscribe();
+    });
+
+    it("should not emit a sparse array when only some object subjects are hydrated", async () => {
+      // Stronger version of the prior test: list has multiple objects, only
+      // some have been populated. We must wait for all of them.
+      const objectKey1: ObjectCacheKey = {
+        type: "object",
+        otherKeys: ["Employee", 1, undefined],
+        __cacheKey: {} as ObjectCacheKey["__cacheKey"],
+      };
+      const objectKey2: ObjectCacheKey = {
+        type: "object",
+        otherKeys: ["Employee", 2, undefined],
+        __cacheKey: {} as ObjectCacheKey["__cacheKey"],
+      };
+      const objectKey3: ObjectCacheKey = {
+        type: "object",
+        otherKeys: ["Employee", 3, undefined],
+        __cacheKey: {} as ObjectCacheKey["__cacheKey"],
+      };
+
+      const subjectPayload: SubjectPayload<typeof mockListCacheKey> = {
+        cacheKey: mockListCacheKey,
+        value: {
+          data: [objectKey1, objectKey2, objectKey3],
+        },
+        status: "loaded",
+        lastUpdated: Date.now(),
+        isOptimistic: false,
+      };
+
+      const subject = new BehaviorSubject(subjectPayload);
+
+      const objectSubject1 = new BehaviorSubject({
+        cacheKey: objectKey1,
+        value: mockEmployee1,
+        status: "loaded",
+        lastUpdated: Date.now(),
+        isOptimistic: false,
+      } as any);
+      const objectSubject2 = new BehaviorSubject({
+        cacheKey: objectKey2,
+        value: undefined,
+        status: "init",
+        lastUpdated: 0,
+        isOptimistic: false,
+      } as any);
+      const objectSubject3 = new BehaviorSubject({
+        cacheKey: objectKey3,
+        value: undefined,
+        status: "init",
+        lastUpdated: 0,
+        isOptimistic: false,
+      } as any);
+
+      vi.mocked(mockSubjects.get).mockImplementation((cacheKey: any) => {
+        if (cacheKey === objectKey1) return objectSubject1;
+        if (cacheKey === objectKey2) return objectSubject2;
+        if (cacheKey === objectKey3) return objectSubject3;
+        return new BehaviorSubject(undefined as any);
+      }) as any;
+
+      const connectable = actualCreateCollectionConnectable(
+        subject,
+        mockSubjects,
+        createPayload,
+      );
+
+      const subscription = connectable.connect();
+      const observer = mockObserver<TestPayload>();
+
+      connectable.subscribe(observer);
+
+      // Object 1 is already loaded but 2 and 3 are not; we should not emit.
+      await new Promise<void>(resolve => setTimeout(resolve, 10));
+      expect(observer.next).not.toHaveBeenCalled();
+
+      // Hydrate the remaining objects.
+      objectSubject2.next({
+        cacheKey: objectKey2,
+        value: mockEmployee2,
+        status: "loaded",
+        lastUpdated: Date.now(),
+        isOptimistic: false,
+      } as any);
+      objectSubject3.next({
+        cacheKey: objectKey3,
+        value: mockEmployee3,
+        status: "loaded",
+        lastUpdated: Date.now(),
+        isOptimistic: false,
+      } as any);
+
+      await waitForCall(observer);
+
+      expect(observer.next).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: [mockEmployee1, mockEmployee2, mockEmployee3],
+          status: "loaded",
+          count: 3,
+        }),
+      );
+
+      for (const call of observer.next.mock.calls) {
+        const payload = call[0] as TestPayload;
+        if (Array.isArray(payload.data)) {
+          expect(payload.data).not.toContain(undefined);
+        }
+      }
+
+      subscription.unsubscribe();
+    });
+
+    it("should pass through subsequent undefined values once a subject has hydrated", async () => {
+      // Once a subject has emitted a real value, later transitions to
+      // undefined (e.g. an object being deleted from the cache) must propagate
+      // upstream so the list stays consistent. Otherwise skipWhile would hide
+      // deletions entirely.
+      const objectKey1: ObjectCacheKey = {
+        type: "object",
+        otherKeys: ["Employee", 1, undefined],
+        __cacheKey: {} as ObjectCacheKey["__cacheKey"],
+      };
+
+      const subjectPayload: SubjectPayload<typeof mockListCacheKey> = {
+        cacheKey: mockListCacheKey,
+        value: {
+          data: [objectKey1],
+        },
+        status: "loaded",
+        lastUpdated: Date.now(),
+        isOptimistic: false,
+      };
+
+      const subject = new BehaviorSubject(subjectPayload);
+
+      const objectSubject = new BehaviorSubject({
+        cacheKey: objectKey1,
+        value: mockEmployee1,
+        status: "loaded",
+        lastUpdated: Date.now(),
+        isOptimistic: false,
+      } as any);
+
+      vi.mocked(mockSubjects.get).mockReturnValue(objectSubject);
 
       const connectable = actualCreateCollectionConnectable(
         subject,
@@ -742,11 +941,30 @@ describe("createCollectionConnectable", () => {
 
       await waitForCall(observer);
 
-      // Should handle undefined object entry gracefully
-      expect(observer.next).toHaveBeenCalledWith(
+      expect(observer.next).toHaveBeenLastCalledWith(
+        expect.objectContaining({
+          data: [mockEmployee1],
+          count: 1,
+        }),
+      );
+
+      observer.next.mockClear();
+
+      // Simulate a deletion: the subject still exists and stays at "loaded"
+      // status but its value transitions to undefined.
+      objectSubject.next({
+        cacheKey: objectKey1,
+        value: undefined,
+        status: "loaded",
+        lastUpdated: Date.now(),
+        isOptimistic: false,
+      } as any);
+
+      await waitForCall(observer);
+
+      expect(observer.next).toHaveBeenLastCalledWith(
         expect.objectContaining({
           data: [undefined],
-          status: "loaded",
           count: 1,
         }),
       );

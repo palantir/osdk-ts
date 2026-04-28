@@ -42,12 +42,15 @@ export interface UseOsdkObjectResult<
 
 /**
  * @param obj an existing `Osdk.Instance` object to get metadata for.
+ *   When `undefined`, the hook returns a non-loading no-op result and does
+ *   not subscribe. This lets callers pass through optional instances without
+ *   conditionally calling the hook.
  * @param enabled Enable or disable the query (defaults to true)
  */
 export function useOsdkObject<
   Q extends ObjectOrInterfaceDefinition,
 >(
-  obj: Osdk.Instance<Q>,
+  obj: Osdk.Instance<Q> | undefined,
   enabled?: boolean,
 ): UseOsdkObjectResult<Q>;
 /**
@@ -89,7 +92,7 @@ export function useOsdkObject<
   Q extends ObjectOrInterfaceDefinition,
 >(
   ...args:
-    | [obj: Osdk.Instance<Q>, enabled?: boolean]
+    | [obj: Osdk.Instance<Q> | undefined, enabled?: boolean]
     | [type: Q, primaryKey: PrimaryKeyType<Q>, enabled?: boolean]
     | [
       type: Q,
@@ -103,12 +106,10 @@ export function useOsdkObject<
 ): UseOsdkObjectResult<Q> {
   const { observableClient } = React.useContext(OsdkContext2);
 
-  // Check if first arg is an instance to discriminate signatures
-  // TypeScript cannot narrow rest parameter unions with optional parameters,
-  // so we must use type assertions after runtime discrimination
-  const isInstanceSignature = "$objectType" in args[0];
+  const firstArg = args[0];
+  const isInstanceSignature = firstArg != null
+    && "$objectType" in firstArg;
 
-  // Extract options object if provided (3rd arg is an object with $select or enabled)
   const optionsArg = !isInstanceSignature
       && args[2] != null
       && typeof args[2] === "object"
@@ -119,8 +120,9 @@ export function useOsdkObject<
     }
     : undefined;
 
-  // Extract enabled flag - 2nd param for instance signature, 3rd for type signature
-  const enabled = isInstanceSignature
+  const enabled = firstArg == null
+    ? false
+    : isInstanceSignature
     ? (typeof args[1] === "boolean" ? args[1] : true)
     : optionsArg
     ? (optionsArg.enabled ?? true)
@@ -132,15 +134,21 @@ export function useOsdkObject<
 
   const mode = isInstanceSignature ? "offline" : undefined;
 
-  const typeOrApiName = isInstanceSignature
-    ? (args[0] as Osdk.Instance<Q>).$objectType
-    : (args[0] as Q);
+  const typeOrApiName = firstArg == null
+    ? undefined
+    : isInstanceSignature
+    ? (firstArg as Osdk.Instance<Q>).$objectType
+    : (firstArg as Q);
 
-  const primaryKey = isInstanceSignature
-    ? (args[0] as Osdk.Instance<Q>).$primaryKey
+  const primaryKey = firstArg == null
+    ? undefined
+    : isInstanceSignature
+    ? (firstArg as Osdk.Instance<Q>).$primaryKey
     : (args[1] as PrimaryKeyType<Q>);
 
-  const apiNameString = typeof typeOrApiName === "string"
+  const apiNameString = typeOrApiName == null
+    ? undefined
+    : typeof typeOrApiName === "string"
     ? typeOrApiName
     : typeOrApiName.apiName;
 
@@ -151,13 +159,13 @@ export function useOsdkObject<
 
   const { subscribe, getSnapShot } = React.useMemo(
     () => {
-      if (!enabled) {
+      if (!enabled || typeOrApiName == null || primaryKey == null) {
         return makeExternalStore<ObserveObjectCallbackArgs<Q>>(
           () => ({ unsubscribe: () => {} }),
           devToolsMetadata({
             hookType: "useOsdkObject",
             objectType: apiNameString,
-            primaryKey: String(primaryKey),
+            primaryKey: primaryKey == null ? undefined : String(primaryKey),
           }),
         );
       }
@@ -212,7 +220,8 @@ export function useOsdkObject<
 
     return {
       object: payload?.object as Osdk.Instance<Q> | undefined,
-      isLoading: enabled
+      // Errors take precedence over loading state.
+      isLoading: enabled && error == null
         ? (payload?.status === "loading" || payload?.status === "init"
           || !payload)
         : false,
