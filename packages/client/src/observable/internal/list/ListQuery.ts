@@ -33,6 +33,7 @@ import type {
   ObjectHolder,
 } from "../../../object/convertWireToOsdkObjects/ObjectHolder.js";
 import { getWireObjectSet } from "../../../objectSet/createObjectSet.js";
+import { findIltLinkDef } from "../../../ontology/findIltLinkDef.js";
 import type { ListPayload } from "../../ListPayload.js";
 import type { Status } from "../../ObservableClient/common.js";
 import type { CollectionConnectableParams } from "../base-list/BaseCollectionQuery.js";
@@ -60,6 +61,7 @@ import {
   ORDER_BY_IDX,
   PIVOT_IDX,
   RDP_IDX,
+  RIDS_IDX,
   SELECT_IDX,
   WHERE_IDX,
 } from "./ListCacheKey.js";
@@ -102,6 +104,8 @@ export abstract class ListQuery extends BaseListQuery<
   #pivotInfo: Canonical<PivotInfo> | undefined;
   #objectSet: ObjectSet<ObjectTypeDefinition>;
   #pivotIntersectApplied = false;
+  #iltResolved = false;
+  #streamSub: Subscription | undefined;
 
   // The actual type of objects this query returns, resolved on first fetch
   // via getObjectTypesThatInvalidate. For simple queries this equals apiName.
@@ -212,9 +216,102 @@ export abstract class ListQuery extends BaseListQuery<
    * Implements fetchPageData from BaseCollectionQuery template method
    * Fetches a page of data
    */
+  /**
+   * On first fetch, checks whether pivotTo targets an interface link rather
+   * than a concrete link. If so, replaces the initial searchAround object set
+   * with interfaceLinkSearchAround, which the server resolves to the correct
+   * concrete links.
+   *
+   * Runs once per query lifetime — the result is stable.
+   */
+  async #resolveIltPivot(): Promise<void> {
+    if (
+      !this.#pivotInfo
+      || this.#pivotInfo.sourceTypeKind !== "object"
+      || this.#iltResolved
+    ) {
+      return;
+    }
+
+    const pivotInfo = this.#pivotInfo;
+    const mc = this.store.client[additionalContext];
+    const sourceDef = await mc.ontologyProvider.getObjectDefinition(
+      pivotInfo.sourceType,
+    );
+
+    const isConcreteLink = pivotInfo.linkName in sourceDef.links;
+    if (isConcreteLink) {
+      if (this.#streamSub) {
+        this.createWebsocketSubscription(
+          this.#objectSet,
+          this.#streamSub,
+          "observeList",
+        );
+      }
+      this.#iltResolved = true;
+      return;
+    }
+
+    const iltDef = findIltLinkDef(sourceDef, pivotInfo.linkName);
+    invariant(
+      iltDef,
+      `Link '${pivotInfo.linkName}' is not a concrete link or ILT on '${pivotInfo.sourceType}'`,
+    );
+
+    const rids = this.cacheKey.otherKeys[RIDS_IDX];
+    const sourceObjectSet = rids != null
+      ? mc.objectSetFactory(
+        {
+          type: "object",
+          apiName: pivotInfo.sourceType,
+        } as ObjectTypeDefinition,
+        mc,
+        { type: "static", objects: [...rids] },
+      )
+      : this.store.client(
+        {
+          type: "object",
+          apiName: pivotInfo.sourceType,
+        } as ObjectTypeDefinition,
+      );
+
+    const filteredSourceWire = getWireObjectSet(
+      sourceObjectSet.where(this.#whereClause as WhereClause<any>),
+    );
+
+    this.#objectSet = mc.objectSetFactory(
+      { type: "object", apiName: this.apiName } as ObjectTypeDefinition,
+      mc,
+      {
+        type: "interfaceLinkSearchAround",
+        objectSet: filteredSourceWire,
+        interfaceLink: pivotInfo.linkName,
+      },
+    ) as ObjectSet<ObjectTypeDefinition>;
+
+    const rdpConfig = this.cacheKey.otherKeys[RDP_IDX];
+    if (rdpConfig != null) {
+      this.#objectSet = this.#objectSet.withProperties(
+        rdpConfig as DerivedProperty.Clause<ObjectTypeDefinition>,
+      );
+    }
+
+    if (this.#streamSub) {
+      this.createWebsocketSubscription(
+        this.#objectSet,
+        this.#streamSub,
+        "observeList",
+      );
+    }
+
+    this.#iltResolved = true;
+  }
+
   protected async fetchPageData(
     signal: AbortSignal | undefined,
   ): Promise<PageResult<Osdk.Instance<any>>> {
+    await this.#resolveIltPivot();
+
     const needsResultType = (Object.keys(this.#orderBy).length > 0
       && !(this.sortingStrategy instanceof OrderBySortingStrategy))
       || (this.#pivotInfo != null && this.#intersectWith != null
@@ -556,7 +653,13 @@ export abstract class ListQuery extends BaseListQuery<
   ): ExtractRelevantObjectsResult;
 
   registerStreamUpdates(sub: Subscription): void {
-    this.createWebsocketSubscription(this.#objectSet, sub, "observeList");
+    this.#streamSub = sub;
+    const iltPending = this.#pivotInfo
+      && this.#pivotInfo.sourceTypeKind === "object"
+      && !this.#iltResolved;
+    if (!iltPending) {
+      this.createWebsocketSubscription(this.#objectSet, sub, "observeList");
+    }
   }
 
   protected onOswChange(

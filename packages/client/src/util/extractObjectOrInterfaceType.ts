@@ -18,6 +18,7 @@ import type { ObjectOrInterfaceDefinition } from "@osdk/api";
 import type { ObjectSet } from "@osdk/foundry.ontologies";
 import invariant from "tiny-invariant";
 import type { MinimalClient } from "../MinimalClientContext.js";
+import { findIltLinkDef } from "../ontology/findIltLinkDef.js";
 
 /* @internal
 * Returns the resultant interface or object type of the object set
@@ -131,7 +132,7 @@ export async function extractObjectOrInterfaceType(
     case "reference":
       // Static and reference object sets are always intersected with a base object set, so we can just return undefined.
       return undefined;
-    case "interfaceLinkSearchAround":
+    case "interfaceLinkSearchAround": {
       const def = await extractObjectOrInterfaceType(
         clientCtx,
         objectSet.objectSet,
@@ -139,28 +140,41 @@ export async function extractObjectOrInterfaceType(
       if (def === undefined) {
         return undefined;
       }
-      const objOrInterfaceDef = def.type === "object"
-        ? await clientCtx.ontologyProvider.getObjectDefinition(
-          def.apiName,
-        )
-        : await clientCtx.ontologyProvider.getInterfaceDefinition(
-          def.apiName,
+
+      if (def.type === "interface") {
+        const intDef = await clientCtx.ontologyProvider
+          .getInterfaceDefinition(def.apiName);
+        const linkDef = intDef.links[objectSet.interfaceLink];
+        invariant(
+          linkDef,
+          `Missing link definition for '${objectSet.interfaceLink}'`,
         );
-      const linkDef = objOrInterfaceDef.links[objectSet.interfaceLink];
-      invariant(
-        linkDef,
-        `Missing link definition for '${objectSet.interfaceLink}'`,
-      );
-      return objOrInterfaceDef.type === "object"
-        ? {
-          apiName: objOrInterfaceDef.links[objectSet.interfaceLink].targetType,
-          type: "object",
-        }
-        : {
-          apiName:
-            objOrInterfaceDef.links[objectSet.interfaceLink].targetTypeApiName,
-          type: objOrInterfaceDef.links[objectSet.interfaceLink].targetType,
+        return {
+          apiName: linkDef.targetTypeApiName,
+          type: linkDef.targetType,
         };
+      }
+
+      const objDef = await clientCtx.ontologyProvider
+        .getObjectDefinition(def.apiName);
+
+      if (objectSet.interfaceLink in objDef.links) {
+        return {
+          apiName: objDef.links[objectSet.interfaceLink].targetType,
+          type: "object",
+        };
+      }
+
+      const iltDef = findIltLinkDef(objDef, objectSet.interfaceLink);
+      invariant(
+        iltDef,
+        `Missing ILT '${objectSet.interfaceLink}' on '${def.apiName}'`,
+      );
+      return {
+        apiName: iltDef.targetTypeApiName,
+        type: iltDef.targetType,
+      };
+    }
     // We don't have to worry about new object sets being added and doing a runtime break and breaking people since the OSDK is always constructing these.
     default:
       const _: never = objectSet;

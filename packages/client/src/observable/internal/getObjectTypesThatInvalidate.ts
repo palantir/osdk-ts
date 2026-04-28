@@ -21,6 +21,7 @@ import type {
 } from "@osdk/foundry.ontologies";
 import invariant from "tiny-invariant";
 import type { MinimalClient } from "../../MinimalClientContext.js";
+import { findIltLinkDef } from "../../ontology/findIltLinkDef.js";
 import type {
   FetchedObjectTypeDefinition,
   OntologyProvider,
@@ -105,14 +106,26 @@ async function calcObjectSet(
 
     case "interfaceLinkSearchAround": {
       const srcDef = await calcObjectSet(os.objectSet, ctx);
-      invariant(srcDef.type === "interface");
 
-      for (const [k, v] of Object.entries(srcDef.links)) {
-        if (k === os.interfaceLink) {
-          if (v.targetType === "object") {
-            return await bumpObject(v.targetTypeApiName);
+      if (srcDef.type === "interface") {
+        for (const [k, v] of Object.entries(srcDef.links)) {
+          if (k === os.interfaceLink) {
+            if (v.targetType === "object") {
+              return await bumpObject(v.targetTypeApiName);
+            }
+            return await bumpInterface(v.targetTypeApiName);
           }
-          return await bumpInterface(v.targetTypeApiName);
+        }
+      } else {
+        const iltDef = findIltLinkDef(
+          srcDef as FetchedObjectTypeDefinition,
+          os.interfaceLink,
+        );
+        if (iltDef) {
+          if (iltDef.targetType === "object") {
+            return await bumpObject(iltDef.targetTypeApiName);
+          }
+          return await bumpInterface(iltDef.targetTypeApiName);
         }
       }
 

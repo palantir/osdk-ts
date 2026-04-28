@@ -112,7 +112,7 @@ export interface UseOsdkObjectsOptions<
    * Cannot be combined with `streamUpdates`. The server does not support
    * websocket subscriptions for link-traversal queries.
    */
-  pivotTo?: LinkNames<T>;
+  pivotTo?: LinkNames<T> | (string & {});
 
   /**
    * Causes the list to automatically fetch more as soon as the previous page
