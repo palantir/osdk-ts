@@ -6,18 +6,46 @@ sidebar_position: 5
 
 This guide covers how the OSDK React cache system works and how to manually control it.
 
+:::info Single source of truth
+We recommend using the OSDK React cache as the **only** source of truth for OSDK data in your app. Mixing it with another cache (Redux, TanStack Query, component state) makes invalidation and optimistic updates hard to reason about, because two systems must stay in sync.
+:::
+
+## Why use @osdk/react?
+
+You can call the OSDK client directly from event handlers or roll your own TanStack Query / SWR layer — but `@osdk/react` is purpose-built for OSDK and gives you behavior that is hard to reproduce by hand:
+
+- **Normalized object cache.** Every `Todo:1` is stored once. When an action edits it, every list, link, and detail view referencing it updates in lock-step — no manual key invalidation.
+- **Action-driven invalidation.** Action responses tell the cache exactly which objects were added, modified, or deleted. Lists are re-evaluated against their `where` clauses automatically.
+- **Optimistic updates with rollback.** `$optimisticUpdate` layers your changes on top of the truth layer; on failure they are removed without bookkeeping.
+- **Real-time via WebSockets.** `streamUpdates: true` keeps lists current without polling.
+- **Function dependency tracking.** Functions declare `dependsOn` / `dependsOnObjects` and re-run when those objects change.
+
+If you build your own cache, you re-implement all of the above and diverge from the model OSDK actions assume.
+
 ## How the Cache Works
 
 The `OsdkProvider2` creates an `ObservableClient` that maintains a normalized cache of all queries and their results.
 
 ### What Gets Cached
 
-| Data Type | Cache Key Based On |
-|-----------|-------------------|
-| **Objects** | Object type + primary key |
-| **Lists** | Object type + where clause + orderBy |
-| **Links** | Source object + link name + filters |
-| **Aggregations** | Object type + where clause + aggregate definition |
+| Data Type            | Cache Key Based On                                                       |
+| -------------------- | ------------------------------------------------------------------------ |
+| **Objects**          | Object type + primary key                                                |
+| **Lists**            | Object type + where clause + orderBy                                     |
+| **ObjectSets**       | Base object type + transforms (where, withProperties, pivotTo, set ops)  |
+| **Links**            | Source object + link name + filters                                      |
+| **Aggregations**     | Object type + where clause + aggregate definition (+ optional ObjectSet) |
+| **Function queries** | Function apiName + canonicalized parameters                              |
+| **Media metadata**   | Object instance + media property name                                    |
+
+Per-property security metadata is loaded alongside objects when `$loadPropertySecurityMetadata: true` is passed to `useOsdkObject` / `useOsdkObjects`.
+
+### How the cache stays in sync
+
+- **Action responses.** When an action completes, the response specifies added / modified / deleted objects. The cache applies those changes and re-evaluates lists against their where clauses.
+- **`streamUpdates: true`.** Opens a WebSocket subscription for the matching list. Updates are pushed sub-second and applied to the cache. Not available for queries that use `pivotTo` or `withProperties`.
+- **Function dependencies.** Functions registered with `dependsOn` (object types) or `dependsOnObjects` (instances) are automatically re-fetched when matching objects change after an action.
+- **Reference counting.** Cache entries are released when the last subscriber unmounts; data shared across components is not re-fetched.
 
 ### Cache Sharing
 
@@ -58,7 +86,7 @@ With `$optimisticUpdate`:
 
 ### Real-time Updates
 
-With `streamUpdates: true`, the cache receives WebSocket updates and applies them automatically.
+With `streamUpdates: true`, the cache receives WebSocket updates and applies them automatically. Not available for queries that use `pivotTo` or `withProperties`.
 
 ## When Manual Invalidation is Needed
 
@@ -73,7 +101,7 @@ The `ObservableClient` provides methods to manually invalidate cached data.
 
 ### Setup
 
-To use invalidation methods, create an `ObservableClient` and pass it to `OsdkProvider2`:
+`OsdkProvider2` creates its own `ObservableClient` internally — you only need to construct one yourself if you want to call invalidation methods (`invalidateObjects`, `invalidateObjectType`, `invalidateFunction`, …) from outside the React tree (for example, from a WebSocket handler in `client.ts`). In that case, create one and pass it explicitly so React and your handler share the same cache:
 
 ```tsx
 // client.ts
@@ -110,24 +138,24 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
 
 #### Object Invalidation
 
-| Method | Effect | Use Case |
-|--------|--------|----------|
-| `invalidateObjects([obj1, obj2])` | Re-fetches specific objects | You know exactly which objects are stale |
-| `invalidateObjectType(Todo)` | Re-fetches all objects and lists of that type | External bulk update |
-| `invalidateAll()` | Re-fetches everything | Last resort |
+| Method                            | Effect                                        | Use Case                                 |
+| --------------------------------- | --------------------------------------------- | ---------------------------------------- |
+| `invalidateObjects([obj1, obj2])` | Re-fetches specific objects                   | You know exactly which objects are stale |
+| `invalidateObjectType(Todo)`      | Re-fetches all objects and lists of that type | External bulk update                     |
+| `invalidateAll()`                 | Re-fetches everything                         | Last resort                              |
 
 #### Function Invalidation
 
-| Method | Effect | Use Case |
-|--------|--------|----------|
-| `invalidateFunction(queryDef, params)` | Re-fetches a specific function query | You know which function call is stale |
-| `invalidateFunction(queryDef)` | Re-fetches ALL queries for that function | External change affecting all calls |
-| `invalidateFunctionsByObject(apiName, pk)` | Re-fetches functions depending on a specific object | Object changed outside action flow |
+| Method                                     | Effect                                              | Use Case                              |
+| ------------------------------------------ | --------------------------------------------------- | ------------------------------------- |
+| `invalidateFunction(queryDef, params)`     | Re-fetches a specific function query                | You know which function call is stale |
+| `invalidateFunction(queryDef)`             | Re-fetches ALL queries for that function            | External change affecting all calls   |
+| `invalidateFunctionsByObject(apiName, pk)` | Re-fetches functions depending on a specific object | Object changed outside action flow    |
 
 ### Usage
 
 ```tsx
-import { Todo, getEmployeeMetrics } from "@my/osdk";
+import { getEmployeeMetrics, Todo } from "@my/osdk";
 import { observableClient } from "./client";
 
 // Invalidate specific objects
@@ -137,7 +165,9 @@ await observableClient.invalidateObjects([todo1, todo2]);
 await observableClient.invalidateObjectType(Todo);
 
 // Invalidate a specific function query
-await observableClient.invalidateFunction(getEmployeeMetrics, { departmentId: "sales" });
+await observableClient.invalidateFunction(getEmployeeMetrics, {
+  departmentId: "sales",
+});
 
 // Invalidate ALL queries for a function
 await observableClient.invalidateFunction(getEmployeeMetrics);
@@ -171,7 +201,10 @@ const { data } = useOsdkFunction(getEmployeeReport, {
 });
 
 // You can invalidate it by calling:
-await observableClient.invalidateFunctionsByObject("Employee", employee.$primaryKey);
+await observableClient.invalidateFunctionsByObject(
+  "Employee",
+  employee.$primaryKey,
+);
 ```
 
 This is useful when you know a specific object has changed outside of the normal action flow.
@@ -179,12 +212,12 @@ This is useful when you know a specific object has changed outside of the normal
 ## Cache with Optimistic Updates
 
 ```tsx
-import { $Actions, Todo } from "@my/osdk";
+import { completeTodo, Todo } from "@my/osdk";
 import { useOsdkAction, useOsdkObject } from "@osdk/react/experimental";
 
 function TodoView({ todo }: { todo: Todo.OsdkInstance }) {
   const { isOptimistic } = useOsdkObject(todo);
-  const { applyAction } = useOsdkAction($Actions.completeTodo);
+  const { applyAction } = useOsdkAction(completeTodo);
 
   const handleComplete = () => {
     applyAction({
@@ -208,6 +241,9 @@ function TodoView({ todo }: { todo: Todo.OsdkInstance }) {
 
 ## Best Practices
 
-1. **Be specific**: Use `invalidateObjects` when you know what data specifically changed
-2. **Use type-level invalidation**: `invalidateObjectType` for external bulk changes
-3. **Avoid multiple sources of truth**: Coordinating side effects between multiple systems is tricky; we recommend solely using the OSDK React cache when possible for data loading
+1. **Reuse query parameters.** Two components that pass identical `where` / `orderBy` / `withProperties` share one cache entry. Hoist the parameter object to a module-level constant or memoize it so React doesn't construct a new one each render.
+2. **Prefer object-level invalidation.** `invalidateObjects([todo])` is cheaper than `invalidateObjectType(Todo)`, which is cheaper than `invalidateAll()`. Reach for the broadest only when you cannot identify the affected rows.
+3. **Let actions drive invalidation.** If the change comes from an OSDK action, the cache updates automatically — do not call `invalidate*` afterward. Manual invalidation is for changes that bypass the action flow (external system, scheduled job, direct REST call).
+4. **Use `dependsOn` / `dependsOnObjects` on functions.** Declare what your function reads so the cache can re-run it after relevant actions, instead of invalidating it manually.
+5. **Avoid second sources of truth.** Don't copy OSDK data into Redux, TanStack Query, or local component state — you'll fight optimistic updates and lose normalization.
+6. **Don't `invalidateAll()` on mount.** That defeats caching and triggers a full refetch every time the component tree mounts. If you need a fresh load, scope it to a specific type.

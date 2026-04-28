@@ -8,7 +8,7 @@ This guide covers all the ways to fetch data from the server using OSDK React ho
 
 ## useOsdkObjects
 
-*Experimental - import from `@osdk/react/experimental`*
+_Experimental - import from `@osdk/react/experimental`_
 
 Retrieve and observe collections of objects with automatic cache management.
 
@@ -45,11 +45,15 @@ function TodoList() {
 
 ### Return Values
 
-- `data` - Array of objects matching the query (undefined while initially loading)
-- `isLoading` - True while fetching data from server (can be true while `data` exists during revalidation)
-- `isOptimistic` - True if the list order is affected by optimistic updates (see note below)
-- `fetchMore` - Function to load next page (undefined when no more pages available)
-- `error` - Error object if fetch failed
+- `data` — Array of objects matching the query (undefined while initially loading)
+- `isLoading` — True while fetching data from server (can be true while `data` exists during revalidation)
+- `isOptimistic` — True if the list order is affected by optimistic updates (see note below)
+- `fetchMore` — Function to load next page (undefined when no more pages available)
+- `hasMore` — True if more pages can be fetched
+- `totalCount` — Total count of matching objects, when available from the API
+- `objectSet` — The transformed `ObjectSet` after pivots / set ops; useful as input to a subsequent `useObjectSet` or `useOsdkAggregation`
+- `refetch` — Function to manually invalidate this object type and refetch
+- `error` — Error object if fetch failed
 
 :::note About isOptimistic
 `isOptimistic` refers to whether the **ordered list of objects** (considering only primary keys) is optimistic. To check if individual object contents are optimistic, use `useOsdkObject` on each object.
@@ -94,6 +98,10 @@ const { data, isLoading } = useOsdkObjects(Todo, {
 
 OSDK provides several text search operators for string properties. Understanding the differences helps you choose the right one for your use case.
 
+:::warning Term matching, not substring
+`$containsAnyTerm`, `$containsAllTerms`, and `$containsAllTermsInOrder` match whole tokens against the indexed text. Searching for `"iel"` will **not** match `"Daniel"` — the token in the index is `Daniel`. For prefix matching use `$startsWith`; for arbitrary substrings, filter client-side or model the data differently. Tokenization rules (case-folding, stemming, punctuation handling) come from the property's search-index configuration in the ontology.
+:::
+
 #### `$startsWith`
 
 Matches strings that begin with the specified prefix.
@@ -121,7 +129,9 @@ With fuzzy matching enabled, minor typos are tolerated:
 
 ```ts
 const { data } = useOsdkObjects(Article, {
-  where: { content: { $containsAnyTerm: { term: "react", fuzzySearch: true } } },
+  where: {
+    content: { $containsAnyTerm: { term: "react", fuzzySearch: true } },
+  },
 });
 // Fuzzy matching handles common typos automatically
 ```
@@ -143,7 +153,9 @@ With fuzzy matching:
 
 ```ts
 const { data } = useOsdkObjects(Article, {
-  where: { content: { $containsAllTerms: { term: "react hooks", fuzzySearch: true } } },
+  where: {
+    content: { $containsAllTerms: { term: "react hooks", fuzzySearch: true } },
+  },
 });
 ```
 
@@ -161,12 +173,14 @@ const { data } = useOsdkObjects(Document, {
 
 #### Search Filter Comparison
 
-| Filter | Match Requirement | Use Case |
-|--------|-------------------|----------|
-| `$startsWith` | Begins with prefix | Autocomplete, prefix search |
-| `$containsAnyTerm` | Any term present | Broad keyword search |
-| `$containsAllTerms` | All terms present (any order) | Precise multi-keyword search |
-| `$containsAllTermsInOrder` | All terms in exact order | Phrase/exact match search |
+| Filter                     | Match Requirement             | Fuzzy | Use Case                     |
+| -------------------------- | ----------------------------- | ----- | ---------------------------- |
+| `$startsWith`              | Begins with prefix            | no    | Autocomplete, prefix search  |
+| `$containsAnyTerm`         | Any term present              | yes   | Broad keyword search         |
+| `$containsAllTerms`        | All terms present (any order) | yes   | Precise multi-keyword search |
+| `$containsAllTermsInOrder` | All terms in exact order      | no    | Phrase / exact match search  |
+
+Fuzzy search is unavailable for `$containsAllTermsInOrder` because phrase matching requires exact token order.
 
 #### Search Example: Building a Search Box
 
@@ -180,7 +194,9 @@ function ArticleSearch() {
 
   const { data, isLoading } = useOsdkObjects(Article, {
     where: searchQuery
-      ? { title: { $containsAnyTerm: { term: searchQuery, fuzzySearch: true } } }
+      ? {
+        title: { $containsAnyTerm: { term: searchQuery, fuzzySearch: true } },
+      }
       : undefined,
     enabled: searchQuery.length >= 2,
   });
@@ -317,7 +333,11 @@ function LiveTodoList() {
       {data?.map(todo => (
         <div key={todo.$primaryKey}>
           <span>{todo.title}</span>
-          {isLoading && <span style={{ fontSize: "0.8em" }}>(Updating...)</span>}
+          {isLoading && (
+            <span style={{ fontSize: "0.8em" }}>
+              (Updating...)
+            </span>
+          )}
         </div>
       ))}
     </div>
@@ -325,10 +345,15 @@ function LiveTodoList() {
 }
 ```
 
-:::note
-`streamUpdates` cannot be used together with `pivotTo`. The server does not support
-websocket subscriptions for link-traversal queries. Queries using `pivotTo` will
-still fetch data normally but won't receive real-time updates.
+#### How streamUpdates works
+
+- **Initial fetch is HTTP.** The first page (and any subsequent paginated pages) still go through normal HTTP requests. Only invalidations after that come over the WebSocket.
+- **Latency is sub-second.** Once the subscription is open, updates typically apply to the cache within a second of the server-side change.
+- **Server-side filter match.** Updates only fire when the server-side filter match for your query changes. If a `where: { isComplete: false }` query is open and an action flips an object to `isComplete: true`, the cache removes it from this list.
+- **Use it for:** live dashboards, ticker-like UIs, multi-user editing, anywhere users expect to see other people's changes. Avoid it for one-shot tables, modal lookups, or large lists where the constant invalidations cost more than the freshness is worth.
+
+:::note Limitations
+`streamUpdates` cannot be used together with `pivotTo` or `withProperties`. The server does not support websocket subscriptions for link-traversal or derived-property queries. Those queries still fetch data normally but won't receive real-time updates.
 :::
 
 ### Set Intersections with `intersectWith`
@@ -385,9 +410,8 @@ function ManagerReports() {
   return (
     <div>
       <h3>John Smith's Direct Reports ({data?.length})</h3>
-      {data?.map(report => (
-        <div key={report.$primaryKey}>{report.fullName}</div>
-      ))}
+      {data?.map(report => <div key={report.$primaryKey}>{report.fullName}
+      </div>)}
     </div>
   );
 }
@@ -396,21 +420,26 @@ function ManagerReports() {
 ### All Options
 
 ```ts
-const { data, isLoading, isOptimistic, fetchMore, error } = useOsdkObjects(
-  Todo,
-  {
-    rids: ["ri.phonograph2-objects.main.object.abc123", "ri.phonograph2-objects.main.object.def456"],
-    where: { isComplete: false },
-    pageSize: 20,
-    orderBy: { createdAt: "desc" },
-    dedupeIntervalMs: 5000,
-    streamUpdates: true,
-    autoFetchMore: 100,
-    enabled: true,
-    intersectWith: [{ where: { priority: "high" } }],
-    withProperties: { /* see advanced-queries */ },
+const result = useOsdkObjects(Todo, {
+  rids: [
+    "ri.phonograph2-objects.main.object.abc123",
+    "ri.phonograph2-objects.main.object.def456",
+  ],
+  where: { isComplete: false },
+  pageSize: 20,
+  orderBy: { createdAt: "desc" },
+  dedupeIntervalMs: 5000,
+  streamUpdates: true,
+  autoFetchMore: 100,
+  enabled: true,
+  intersectWith: [{ where: { priority: "high" } }],
+  pivotTo: "assignee",
+  $select: ["title", "isComplete"],
+  $loadPropertySecurityMetadata: true,
+  withProperties: {
+    /* see https://palantir.github.io/osdk-ts/react/advanced-queries#derived-properties */
   },
-);
+});
 ```
 
 :::note
@@ -423,7 +452,7 @@ still fetch data normally but won't receive real-time updates.
 
 ## useOsdkObject
 
-*Experimental - import from `@osdk/react/experimental`*
+_Experimental - import from `@osdk/react/experimental`_
 
 Retrieve and observe a single object.
 
@@ -476,18 +505,38 @@ function TodoLoader({ todoId }: { todoId: string }) {
 }
 ```
 
+### Loading with options
+
+A third argument lets you restrict properties or load per-property security metadata:
+
+```tsx
+const { object } = useOsdkObject(Todo, todoId, {
+  $select: ["title", "isComplete"],
+  $loadPropertySecurityMetadata: true,
+});
+```
+
+Or pass a boolean to disable the query:
+
+```tsx
+const { object } = useOsdkObject(Todo, todoId, false);
+```
+
+`useOsdkObject` also accepts `undefined` as the first argument, which short-circuits to a no-op result without subscribing — useful when an instance is conditionally available.
+
 ### Return Values
 
-- `object` - The object instance (may be undefined while loading)
-- `isLoading` - True while fetching from server
-- `isOptimistic` - True if object has optimistic updates applied
-- `error` - Error object if fetch failed
+- `object` — The object instance (may be undefined while loading)
+- `isLoading` — True while fetching from server
+- `isOptimistic` — True if object has optimistic updates applied
+- `error` — Error object if fetch failed (cleared once a fresh successful fetch lands)
+- `forceUpdate` — Manually trigger a re-fetch of this object
 
 ---
 
 ## useLinks
 
-*Experimental - import from `@osdk/react/experimental`*
+_Experimental - import from `@osdk/react/experimental`_
 
 Observe and navigate relationships between objects.
 
@@ -551,7 +600,9 @@ import { Employee } from "@my/osdk";
 import { useLinks } from "@osdk/react/experimental";
 import { useState } from "react";
 
-function OptionalReportsList({ employee }: { employee: Employee.OsdkInstance }) {
+function OptionalReportsList(
+  { employee }: { employee: Employee.OsdkInstance },
+) {
   const [showReports, setShowReports] = useState(false);
 
   const { links, isLoading } = useLinks(employee, "reports", {
@@ -611,7 +662,7 @@ const { links } = useLinks(employee, "reports", {
 
 ## useOsdkClient
 
-*Stable - available from both `@osdk/react` and `@osdk/react/experimental`*
+_Stable - available from both `@osdk/react` and `@osdk/react/experimental`_
 
 Access the OSDK client directly for custom queries.
 

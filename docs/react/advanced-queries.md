@@ -8,24 +8,23 @@ This guide covers advanced querying patterns including useObjectSet, derived pro
 
 ## useObjectSet
 
-*Experimental - import from `@osdk/react/experimental`*
+_Experimental - import from `@osdk/react/experimental`_
 
 Advanced querying with set operations, derived properties, and link traversal.
 
 ### When to Use useObjectSet vs useOsdkObjects
 
-Both hooks support where, orderBy, pagination, withProperties, pivotTo, autoFetchMore, and streamUpdates. Note that `pivotTo` and `streamUpdates` cannot be combined, see the note below.
+Both hooks support filtering, sorting, pagination, derived properties, pivoting, and streaming updates. They differ in their **starting point**.
 
-**Use useOsdkObjects when:**
-- Passing an ObjectType or Interface directly (`Todo`)
+**Use `useOsdkObjects(Type, options)` when** your query starts from an object type or interface — this is most queries.
 
-**Use useObjectSet when:**
-- Starting from an ObjectSet instance (`$(Todo)`)
-- Need set operations (`union`, `intersect`, `subtract`) with other ObjectSets
+**Use `useObjectSet(objectSet, options)` when** you already hold an `ObjectSet` instance you want to observe — typically because:
 
-:::note
-`useOsdkObjects` is in active development to reach full OSDK TypeScript client parity as it has more performance enhancements. `useObjectSet` currently supports everything and should be used if a feature you need isn't present in `useOsdkObjects`. Check the JSDoc for current feature support.
-:::
+- You composed sets with `union` / `intersect` / `subtract`
+- You received an `ObjectSet` from another hook (e.g. `useOsdkObjects(...).objectSet`) and want to observe a transformation of it
+- You need to memoize a complex composed ObjectSet across renders
+
+If both hooks would work, prefer `useOsdkObjects`. Note that `pivotTo` and `streamUpdates` cannot be combined — see the note below.
 
 ```tsx
 import { $, Todo } from "@my/osdk";
@@ -110,23 +109,19 @@ Find objects that exist in all sets:
 import { $, Employee } from "@my/osdk";
 import { useObjectSet } from "@osdk/react/experimental";
 
-function SharedProjects({ employee1, employee2 }: {
-  employee1: Employee.OsdkInstance;
-  employee2: Employee.OsdkInstance;
-}) {
-  const set1 = $(Employee).where({ id: employee1.id });
-  const set2 = $(Employee).where({ id: employee2.id });
+function HighEarningEngineers() {
+  const engineers = $(Employee).where({ department: "Engineering" });
+  const highEarners = $(Employee).where({ salary: { $gte: 150000 } });
 
-  const { data } = useObjectSet(set1, {
-    pivotTo: "projects",
-    intersect: [set2.$pivotTo("projects")],
+  const { data } = useObjectSet(engineers, {
+    intersect: [highEarners],
   });
 
   return (
     <div>
-      <h3>Shared Projects</h3>
-      {data?.map(project => (
-        <div key={project.$primaryKey}>{project.name}</div>
+      <h3>Engineers earning over $150k</h3>
+      {data?.map(employee => (
+        <div key={employee.$primaryKey}>{employee.fullName}</div>
       ))}
     </div>
   );
@@ -165,8 +160,8 @@ function ComplexTodoQuery() {
   const completedTodos = $(Todo).where({ isComplete: true });
 
   const { data } = useObjectSet(highPriorityTodos, {
-    union: [urgentTodos],        // High priority OR urgent
-    subtract: [completedTodos],  // But not completed
+    union: [urgentTodos], // High priority OR urgent
+    subtract: [completedTodos], // But not completed
   });
 
   return <div>High priority or urgent (but not completed): {data?.length}</div>;
@@ -181,7 +176,9 @@ Navigate to linked objects:
 import { $, Employee } from "@my/osdk";
 import { useObjectSet } from "@osdk/react/experimental";
 
-function EmployeeDepartments({ employee }: { employee: Employee.OsdkInstance }) {
+function EmployeeDepartments(
+  { employee }: { employee: Employee.OsdkInstance },
+) {
   const employeeSet = $(Employee).where({ id: employee.id });
 
   const { data } = useObjectSet(employeeSet, {
@@ -204,8 +201,8 @@ import { useObjectSet } from "@osdk/react/experimental";
 
 const { data, isLoading } = useObjectSet($(Todo), {
   where: { isComplete: false },
-  autoFetchMore: 200,     // Fetch at least 200 items
-  streamUpdates: true,    // Real-time WebSocket updates
+  autoFetchMore: 200, // Fetch at least 200 items
+  streamUpdates: true, // Real-time WebSocket updates
 });
 ```
 
@@ -217,18 +214,19 @@ still fetch data normally but won't receive real-time updates.
 
 ### All Options
 
-- `where` - Filter objects
-- `withProperties` - Add derived/computed properties
-- `union` - Combine with other ObjectSets
-- `intersect` - Find common objects with other ObjectSets
-- `subtract` - Remove objects that exist in other ObjectSets
-- `pivotTo` - Traverse to linked objects (changes result type). Cannot be combined with `streamUpdates`.
-- `pageSize` - Number of objects per page
-- `orderBy` - Sort order
-- `dedupeIntervalMs` - Minimum time between re-fetches (default: 2000ms)
-- `streamUpdates` - Enable real-time websocket updates (default: false). Cannot be combined with `pivotTo`.
-- `autoFetchMore` - Auto-fetch additional pages
-- `enabled` - Enable/disable the query
+- `where` — Filter objects
+- `withProperties` — Add derived/computed properties
+- `$select` — Restrict which properties are returned for each object
+- `union` — Combine with other ObjectSets
+- `intersect` — Find common objects with other ObjectSets
+- `subtract` — Remove objects that exist in other ObjectSets
+- `pivotTo` — Traverse to linked objects (changes result type). Cannot be combined with `streamUpdates`.
+- `pageSize` — Number of objects per page
+- `orderBy` — Sort order
+- `dedupeIntervalMs` — Minimum time between re-fetches (default: 2000ms)
+- `streamUpdates` — Enable real-time websocket updates (default: false). Cannot be combined with `pivotTo` or `withProperties`.
+- `autoFetchMore` — Auto-fetch additional pages
+- `enabled` — Enable/disable the query
 
 ### Return Values
 
@@ -242,7 +240,7 @@ still fetch data normally but won't receive real-time updates.
 
 ## Derived Properties
 
-*Available in both useOsdkObjects and useObjectSet*
+_Available in both useOsdkObjects and useObjectSet_
 
 Add computed properties calculated server-side using the builder pattern.
 
@@ -251,8 +249,8 @@ Add computed properties calculated server-side using the builder pattern.
 Derived properties use a builder function that receives a `DerivedProperty.Builder`:
 
 ```tsx
-import type { DerivedProperty } from "@osdk/client";
 import { Employee } from "@my/osdk";
+import type { DerivedProperty } from "@osdk/client";
 import { useOsdkObjects } from "@osdk/react/experimental";
 
 const { data } = useOsdkObjects(Employee, {
@@ -273,10 +271,19 @@ const { data } = useOsdkObjects(Employee, {
 
 The builder provides these methods:
 
-- `.pivotTo(linkName)` - Navigate to linked objects
-- `.selectProperty(propertyName)` - Select a property value
-- `.aggregate(aggregation)` - Aggregate values (`"$count"`, `"propertyName:$avg"`, etc.)
-- `.where(clause)` - Filter before aggregating
+- `.pivotTo(linkName)` — Navigate to linked objects
+- `.selectProperty(propertyName)` — Select a property value
+- `.aggregate(specifier)` — Aggregate values; specifier is `"$count"` or `"propertyName:metric"` (see [Aggregation Syntax](#aggregation-syntax) for the full list)
+- `.where(clause)` — Filter before aggregating
+- `.constant.{double|integer|long|datetime|timestamp}(value)` — Lift a literal into the builder
+
+#### What does `DerivedProperty.Builder<Employee, false>` mean?
+
+The second type parameter is `CONSTRAINED extends boolean`. At the top level it is `false`, meaning the builder can navigate links and select properties freely. Pivoting through a one-to-many link returns a _constrained_ builder (`true`) that must call `.aggregate()` rather than `.selectProperty()`, because there is no single value to select. In practice you can drop the annotation entirely and let inference do the work — TypeScript flips the flag for you as you chain.
+
+#### When an aggregate has no data
+
+For numeric aggregates (`sum`, `avg`, `min`, `max`) over an empty result set, the property resolves to `null` rather than a number. `$count` resolves to `0`. Plan your UI for these cases when filtering can produce empty groups.
 
 ### Advanced Examples
 
@@ -292,11 +299,9 @@ const { data } = useOsdkObjects(Employee, {
         .pivotTo("reports")
         .aggregate("$count"),
 
-    // Aggregate a specific property
+    // Aggregate a specific property — `propertyName:metric` keys
     avgReportSalary: (base: DerivedProperty.Builder<Employee, false>) =>
-      base.pivotTo("reports")
-        .selectProperty("salary")
-        .aggregate("$avg"),
+      base.pivotTo("reports").aggregate("salary:avg"),
   },
 });
 ```
@@ -324,7 +329,7 @@ const { data } = useOsdkObjects(Employee, {
 
 ## useOsdkFunction
 
-*Experimental - import from `@osdk/react/experimental`*
+_Experimental - import from `@osdk/react/experimental`_
 
 Execute and observe functions with request deduplication and configurable dependency tracking for automatic refetching.
 
@@ -466,7 +471,7 @@ function ConditionalReport({ employeeId }: { employeeId: string }) {
 
 ## useOsdkAggregation
 
-*Experimental - import from `@osdk/react/experimental`*
+_Experimental - import from `@osdk/react/experimental`_
 
 Server-side grouping and aggregation.
 
@@ -574,6 +579,7 @@ function HighPriorityStats() {
 The `$select` object uses a special key format where each key is a metric and each value is an ordering directive (`"unordered"`, `"asc"`, or `"desc"`). When using `$groupBy`, the ordering determines the order results are returned.
 
 **Key formats:**
+
 - `$count` - Count of objects
 - `"propertyName:sum"` - Sum of a numeric property
 - `"propertyName:avg"` - Average of a numeric property
@@ -602,7 +608,7 @@ The `$select` object uses a special key format where each key is a metric and ea
 
 ## useOsdkMetadata
 
-*Stable - import from `@osdk/react`*
+_Stable - import from `@osdk/react`_
 
 Fetch metadata about object types or interfaces.
 
