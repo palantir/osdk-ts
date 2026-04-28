@@ -508,7 +508,7 @@ export class ObjectSetQuery extends BaseListQuery<
       hasMore: this.nextPageToken != null,
       status: params.status,
       lastUpdated: params.lastUpdated,
-      objectSet: this.#identityObjectSet,
+      objectSet: this.#composedObjectSet,
       totalCount: params.totalCount,
     };
   }

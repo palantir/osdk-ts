@@ -23,6 +23,7 @@ import type {
   SimplePropertyDef,
   WhereClause,
 } from "@osdk/api";
+import { getWireObjectSet } from "@osdk/client";
 import {
   type FunctionQueryParams,
   useOsdkFunctions,
@@ -103,13 +104,8 @@ export function useFunctionColumnsData<
   // hit the dedupeIntervalMs cache since their params are unchanged.
   const pagedObjectSets = useMemo(() => {
     if (!stableObjectSet || !stableObjects?.length) return [];
-    return buildPagedObjectSets(
-      stableObjectSet,
-      stableObjects,
-      primaryKeyApiName,
-      pageSize,
-    );
-  }, [stableObjectSet, stableObjects, primaryKeyApiName, pageSize]);
+    return [getWireObjectSet(stableObjectSet)];
+  }, [stableObjectSet, stableObjects]);
 
   const queryGrid = useMemo(() => {
     if (pagedObjectSets.length === 0 || functionColDefs.length === 0) {
