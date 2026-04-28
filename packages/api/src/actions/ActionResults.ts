@@ -21,7 +21,7 @@ export type ActionResults =
     | ObjectEdits
     | LargeScaleObjectEdits
   )
-  & { editedObjectTypes: Array<string> };
+  & { editedObjectTypes: Array<String> };
 
 interface ObjectEdits {
   type: "edits";
