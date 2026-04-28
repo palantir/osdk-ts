@@ -1,5 +1,29 @@
 # @osdk/client
 
+## 2.12.0
+
+### Minor Changes
+
+- 19b7913: fix link query refresh for per-pk invalidation and interface-typed targets
+  - kick `specificLink` queries from `Store.invalidateObject` so per-pk invalidation refreshes link queries (was only handled at type-level)
+  - fix `SpecificLinkQuery.invalidateObjectType` so interface-implementation matching on object-type targets isn't silently skipped
+  - fix `BaseListQuery.rdpConfig` index collision (`SpecificLinkCacheKey.otherKeys[4]` is the link name, not the rdp config); make `rdpConfig` abstract with concrete overrides per subclass
+
+- 01fbb74: fix infinite re-render loop when passing inline withProperties RDPs to useOsdkObjects, useObjectSet, and useOsdkAggregation
+- df1a4f8: Normalize `baseUrl` inside `createSharedClientContext` so it always ends with `/`, enabling RFC 3986-correct URL resolution at call sites. `createPlatformClient` and `createMinimalClient` rely on this normalization instead of duplicating it.
+- 46a00bc: Export `createMediaFromReference` from `@osdk/client/internal` for hydrating a `Media` object from a `MediaReference` outside of an object property context.
+- 267f324: warn and ignore streamUpdates when combined with withProperties
+
+### Patch Changes
+
+- Updated dependencies [91f34a9]
+- Updated dependencies [df1a4f8]
+  - @osdk/api@2.12.0
+  - @osdk/shared.client.impl@1.11.0
+  - @osdk/generator-converters@2.12.0
+  - @osdk/shared.test@2.10.0
+  - @osdk/client.unstable@2.12.0
+
 ## 2.11.0
 
 ### Minor Changes

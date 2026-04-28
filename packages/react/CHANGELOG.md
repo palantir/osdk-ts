@@ -1,5 +1,12 @@
 # @osdkkit/react
 
+## 0.15.0
+
+### Minor Changes
+
+- d9b03eb: document @osdk/client version compat and install-time error recovery in AGENTS.md
+- d8842f4: add react shape stores, result types, and entry point boilerplate
+
 ## 0.14.0
 
 ### Minor Changes

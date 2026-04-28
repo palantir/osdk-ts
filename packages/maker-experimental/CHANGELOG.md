@@ -1,5 +1,15 @@
 # @osdk/maker-experimental
 
+## 0.10.0
+
+### Patch Changes
+
+- Updated dependencies [9225ee3]
+- Updated dependencies [91f34a9]
+  - @osdk/maker@0.20.0
+  - @osdk/api@2.12.0
+  - @osdk/client.unstable@2.12.0
+
 ## 0.9.0
 
 ### Minor Changes

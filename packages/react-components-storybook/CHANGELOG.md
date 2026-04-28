@@ -1,5 +1,17 @@
 # @osdk/react-components-storybook
 
+## 0.6.0
+
+### Minor Changes
+
+- d40104f: Add error icon to DatePickerCell in ObjectTable
+- 5835d51: Clean up storybook mock data and update examples
+
+### Patch Changes
+
+- Updated dependencies [df1a4f8]
+  - @osdk/faux@0.9.0
+
 ## 0.5.0
 
 ### Minor Changes
