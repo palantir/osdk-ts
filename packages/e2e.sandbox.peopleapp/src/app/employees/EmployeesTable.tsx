@@ -133,7 +133,6 @@ export function EmployeesTable() {
         }]}
         onSubmitEdits={handleSubmitEdits}
         editMode="manual"
-        pageSize={5}
       />
     </div>
   );
