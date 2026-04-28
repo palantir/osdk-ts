@@ -386,6 +386,7 @@ const archetypeRules = archetypes(
         TZ: "UTC",
         LANG: "en_US.UTF-8",
       },
+      vitestPool: "threads",
     },
   )
   .addArchetype(
@@ -921,6 +922,7 @@ function minimalPackageRules(shared, options) {
  * @property { "happy-dom" } [vitestEnvironment]
  * @property { string[] } [setupFiles]
  * @property { Record<string, string> } [vitestEnv]
+ * @property { "forks" | "threads" } [vitestPool]
  * @property { boolean } [skipTsconfigReferences]
  * @property { boolean } [aliasConsola]
  * @property { Record<"esm" | "cjs" | "browser", "bundle" | "normal" | undefined>} output
@@ -1161,7 +1163,7 @@ function standardPackageRules(shared, options) {
               },`
               : ""
           }
-              pool: "forks",
+              pool: "${options.vitestPool ?? "forks"}",
               exclude: [...configDefaults.exclude, "**/build/**/*"],${
             options.vitestEnvironment
               ? `\n            environment: "${options.vitestEnvironment}",`
