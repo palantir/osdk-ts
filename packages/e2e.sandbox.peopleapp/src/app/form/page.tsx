@@ -1,13 +1,32 @@
-import type { ObjectSet, ObjectTypeDefinition } from "@osdk/api";
-import { BaseForm } from "@osdk/react-components/experimental/action-form";
+import type { BaseObjectSet, ObjectOrInterfaceDefinition } from "@osdk/api";
 import type {
   BaseFormFieldProps,
+  DateRange,
   RendererFieldDefinition,
 } from "@osdk/react-components/experimental/action-form";
-import { useCallback, useMemo, useState } from "react";
+import { BaseForm } from "@osdk/react-components/experimental/action-form";
+import { useMemo, useState } from "react";
 import { $ } from "../../foundryClient.js";
 import { Employee } from "../../generatedNoCheck2/index.js";
 import "./form-page.css";
+
+type EmployeeFormSchema = {
+  employeeName: string;
+  employmentStart: Date;
+  employmentEnd: Date;
+  employmentDuration: DateRange;
+  department: string;
+  yearsOfExperience: number;
+  salary: number;
+  bio: string;
+  officeLocation: string;
+  employmentType: string;
+  resume: File;
+  portfolioFiles: File[];
+  skills: string;
+  rating: unknown;
+  team: BaseObjectSet<ObjectOrInterfaceDefinition>;
+};
 
 function RatingSlider({ id, value, onChange }: BaseFormFieldProps<unknown>) {
   const numericValue = typeof value === "number" ? value : 5;
@@ -27,7 +46,9 @@ function RatingSlider({ id, value, onChange }: BaseFormFieldProps<unknown>) {
   );
 }
 
-const fieldDefinitions: ReadonlyArray<RendererFieldDefinition> = [
+const fieldDefinitions: ReadonlyArray<
+  RendererFieldDefinition<EmployeeFormSchema>
+> = [
   {
     fieldKey: "employeeName",
     fieldComponent: "TEXT_INPUT",
@@ -190,23 +211,13 @@ const fieldDefinitions: ReadonlyArray<RendererFieldDefinition> = [
 
 export function FormPage() {
   const [submittedState, setSubmittedState] = useState<
-    Record<string, unknown> | undefined
+    EmployeeFormSchema | undefined
   >(undefined);
 
-  const handleSubmit = useCallback(
-    async (formState: Record<string, unknown>) => {
-      setSubmittedState(formState);
-    },
-    [],
-  );
-
-  const employeeObjectSet = useMemo(
-    () => $(Employee) as ObjectSet<ObjectTypeDefinition>,
-    [],
-  );
+  const employeeObjectSet = useMemo(() => $(Employee), []);
 
   const allFieldDefinitions = useMemo(
-    (): ReadonlyArray<RendererFieldDefinition> => [
+    (): ReadonlyArray<RendererFieldDefinition<EmployeeFormSchema>> => [
       ...fieldDefinitions,
       {
         fieldKey: "team",
@@ -226,7 +237,7 @@ export function FormPage() {
         <BaseForm
           formTitle="Demo Base Form"
           fieldDefinitions={allFieldDefinitions}
-          onSubmit={handleSubmit}
+          onSubmit={setSubmittedState}
         />
       </div>
 

@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import React, { memo, useCallback, useMemo } from "react";
-import type { Control } from "react-hook-form";
+import React, { useCallback, useMemo } from "react";
+import type { Control, FieldPath } from "react-hook-form";
 import { useController } from "react-hook-form";
+import { typedReactMemo } from "../../shared/typedMemo.js";
 import type {
   FieldComponent,
   RendererFieldDefinition,
@@ -24,75 +25,75 @@ import type {
 import { extractValidationRules } from "../utils/extractValidationRules.js";
 import { FormFieldRenderer } from "./FormFieldRenderer.js";
 
-export interface FieldBridgeProps {
-  fieldDef: RendererFieldDefinition;
-  control: Control<Record<string, unknown>>;
-  onExternalChange?: (fieldKey: string, value: unknown) => void;
+export interface FieldBridgeProps<S extends Record<string, unknown>> {
+  fieldDef: RendererFieldDefinition<S>;
+  control: Control<S>;
+  onExternalChange?: <K extends FieldPath<S>>(
+    fieldKey: K,
+    value: S[K],
+  ) => void;
 }
+
 const SELECT_LIKE_FIELDS: ReadonlySet<FieldComponent> = new Set<FieldComponent>(
-  [
-    "RADIO_BUTTONS",
-    "DROPDOWN",
-  ],
+  ["RADIO_BUTTONS", "DROPDOWN"],
 );
 
-export const FieldBridge: React.FC<FieldBridgeProps> = memo(
-  function FieldBridgeFn({
-    fieldDef,
+export const FieldBridge: <S extends Record<string, unknown>>(
+  props: FieldBridgeProps<S>,
+) => React.ReactElement = typedReactMemo(function FieldBridgeFn<
+  S extends Record<string, unknown>,
+>({
+  fieldDef,
+  control,
+  onExternalChange,
+}: FieldBridgeProps<S>): React.ReactElement {
+  const rules = useMemo(() => extractValidationRules(fieldDef), [fieldDef]);
+
+  const {
+    field: { onChange, onBlur, value },
+    fieldState: { error: fieldError },
+  } = useController({
+    name: fieldDef.fieldKey,
     control,
-    onExternalChange,
-  }: FieldBridgeProps): React.ReactElement {
-    const rules = useMemo(
-      () => extractValidationRules(fieldDef),
-      [fieldDef],
-    );
+    rules,
+  });
 
-    const {
-      field: { onChange, onBlur, value },
-      fieldState: { error: fieldError },
-    } = useController({
-      name: fieldDef.fieldKey,
-      control,
-      rules,
-    });
+  const isSelectLike = SELECT_LIKE_FIELDS.has(fieldDef.fieldComponent);
 
-    const isSelectLike = SELECT_LIKE_FIELDS.has(fieldDef.fieldComponent);
-
-    const handleChange = useCallback(
-      (newValue: unknown) => {
-        onChange(newValue);
-        onExternalChange?.(fieldDef.fieldKey, newValue);
-        // Select-like fields are "pick once" interactions — mark as touched
-        // immediately so RHF revalidates (clears errors) on selection rather
-        // than waiting for focus to leave the container.
-        if (isSelectLike) {
-          onBlur();
-        }
-      },
-      [onChange, onBlur, onExternalChange, fieldDef.fieldKey, isSelectLike],
-    );
-
-    // Ignore blur events where focus stays within the field container
-    // (e.g. moving between radio buttons in a group). Only fire RHF's
-    // onBlur when focus truly leaves the field.
-    const handleBlur = useCallback(
-      (e: React.FocusEvent<HTMLDivElement>) => {
-        if (e.currentTarget.contains(e.relatedTarget)) {
-          return;
-        }
+  const handleChange = useCallback(
+    (newValue: S[FieldPath<S>]) => {
+      onChange(newValue);
+      onExternalChange?.(fieldDef.fieldKey, newValue);
+      // Select-like fields are "pick once" interactions — mark as touched
+      // immediately so RHF revalidates (clears errors) on selection rather
+      // than waiting for focus to leave the container.
+      if (isSelectLike) {
         onBlur();
-      },
-      [onBlur],
-    );
+      }
+    },
+    [onChange, onBlur, onExternalChange, fieldDef.fieldKey, isSelectLike],
+  );
 
-    return (
-      <FormFieldRenderer
-        value={value}
-        fieldDefinition={fieldDef}
-        onFieldValueChange={handleChange}
-        onBlur={handleBlur}
-        error={fieldError?.message}
-      />
-    );
-  },
-);
+  // Ignore blur events where focus stays within the field container
+  // (e.g. moving between radio buttons in a group). Only fire RHF's
+  // onBlur when focus truly leaves the field.
+  const handleBlur = useCallback(
+    (e: React.FocusEvent<HTMLDivElement>) => {
+      if (e.currentTarget.contains(e.relatedTarget)) {
+        return;
+      }
+      onBlur();
+    },
+    [onBlur],
+  );
+
+  return (
+    <FormFieldRenderer
+      value={value}
+      fieldDefinition={fieldDef}
+      onFieldValueChange={handleChange}
+      onBlur={handleBlur}
+      error={fieldError?.message}
+    />
+  );
+});

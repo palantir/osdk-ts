@@ -15,17 +15,16 @@
  */
 
 import { type IconName, IconSize } from "@blueprintjs/icons";
-import type { ObjectSet, ObjectTypeDefinition } from "@osdk/api";
+import type { ObjectSet } from "@osdk/api";
 import { useOsdkMetadata } from "@osdk/react";
 import { useObjectSet } from "@osdk/react/experimental";
 import classnames from "classnames";
-import React from "react";
+import React, { memo } from "react";
 import {
   BlueprintIcon,
   type Icon,
 } from "../../base-components/icon/BlueprintIcon.js";
 import { SkeletonBar } from "../../base-components/skeleton/SkeletonBar.js";
-import { typedReactMemo } from "../../shared/typedMemo.js";
 import type { ObjectSetFieldProps } from "../FormFieldApi.js";
 import styles from "./ObjectSetField.module.css";
 
@@ -33,29 +32,44 @@ const DEFAULT_OBJECT_ICON: Icon = { name: "cube", color: "#4C90F0" };
 const ICON_SIZE = IconSize.STANDARD;
 const DEFAULT_EMPTY_MESSAGE = "Object set is not defined";
 
-export const ObjectSetField: <T extends ObjectTypeDefinition>(
-  props: ObjectSetFieldProps<T>,
-) => React.ReactElement = typedReactMemo(function ObjectSetFieldFn<
-  T extends ObjectTypeDefinition,
->({
-  value,
-  emptyMessage = DEFAULT_EMPTY_MESSAGE,
-}: ObjectSetFieldProps<T>): React.ReactElement {
-  if (value == null) {
-    return (
-      <div
-        className={classnames(
-          styles.osdkObjectSetField,
-          styles.osdkObjectSetFieldEmpty,
-        )}
-      >
-        {emptyMessage}
-      </div>
-    );
-  }
+export const ObjectSetField: React.FC<ObjectSetFieldProps> = memo(
+  function ObjectSetFieldFn({
+    value,
+    emptyMessage = DEFAULT_EMPTY_MESSAGE,
+  }: ObjectSetFieldProps): React.ReactElement {
+    if (value == null) {
+      return (
+        <div
+          className={classnames(
+            styles.osdkObjectSetField,
+            styles.osdkObjectSetFieldEmpty,
+          )}
+        >
+          {emptyMessage}
+        </div>
+      );
+    }
 
-  return <ObjectSetFieldContent objectSet={value} />;
-});
+    if (!isObjectSet(value)) {
+      throw new Error(
+        "ObjectSetField received a BaseObjectSet without fetchPage/asyncIter."
+          + " Pass a full ObjectSet from the OSDK client.",
+      );
+    }
+
+    return <ObjectSetFieldContent objectSet={value} />;
+  },
+);
+
+/**
+ * Props accept BaseObjectSet for variance, but useObjectSet requires a full
+ * ObjectSet. Narrow by checking for fetchPage — the minimal differentiator.
+ */
+function isObjectSet(
+  value: { readonly $objectSetInternals: { def: unknown } },
+): value is ObjectSet {
+  return "fetchPage" in value;
+}
 
 const ObjectSetFieldContent = React.memo(function ObjectSetFieldContentFn({
   objectSet,
