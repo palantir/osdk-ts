@@ -74,7 +74,9 @@ export function propertyJsdoc(
       ret.push(` *   description: ${property.description}\n`);
     }
     if (valueTypeDescription) {
-      ret.push(` *   value type description: ${valueTypeDescription}\n`);
+      ret.push(
+        ` *   value type description: '${valueTypeDescription}'\n`,
+      );
     }
   } else {
     ret.push(` * (no ontology metadata)\n`);

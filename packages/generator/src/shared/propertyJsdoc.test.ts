@@ -32,7 +32,7 @@ describe(propertyJsdoc, () => {
       }),
     ).toMatchInlineSnapshot(`
       "/**
-       *   value type description: A value type for email addresses
+       *   value type description: 'A value type for email addresses'
        */
       "
     `);

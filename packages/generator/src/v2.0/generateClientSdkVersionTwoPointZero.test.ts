@@ -853,7 +853,7 @@ describe("generator", () => {
 
           export interface Props {
             /**
-             *   value type description: A value type for email addresses
+             *   value type description: 'A value type for email addresses'
              */
             readonly email: 'osdk@palantir.com' | 'foundry@palantir.com';
           }
@@ -903,7 +903,7 @@ describe("generator", () => {
             primaryKeyType: 'string';
             properties: {
               /**
-               *   value type description: A value type for email addresses
+               *   value type description: 'A value type for email addresses'
                */
               email: $PropertyDef<'string', 'non-nullable', 'single'>;
             };
@@ -952,7 +952,7 @@ describe("generator", () => {
 
           export interface Props {
             /**
-             *   value type description: A value type for arrays of strings
+             *   value type description: 'A value type for arrays of strings'
              */
             readonly array: ('a' | 'b"c' | "d'e")[] | undefined;
             /**
@@ -1024,7 +1024,7 @@ describe("generator", () => {
             primaryKeyType: 'integer';
             properties: {
               /**
-               *   value type description: A value type for arrays of strings
+               *   value type description: 'A value type for arrays of strings'
                */
               array: $PropertyDef<'string', 'nullable', 'array'>;
               /**
@@ -1538,7 +1538,7 @@ describe("generator", () => {
 
           export interface Props {
             /**
-             *   value type description: A value type for email addresses
+             *   value type description: 'A value type for email addresses'
              */
             readonly email: 'osdk@palantir.com' | 'foundry@palantir.com';
           }
@@ -1588,7 +1588,7 @@ describe("generator", () => {
             primaryKeyType: 'string';
             properties: {
               /**
-               *   value type description: A value type for email addresses
+               *   value type description: 'A value type for email addresses'
                */
               email: $PropertyDef<'string', 'non-nullable', 'single'>;
             };
@@ -1637,7 +1637,7 @@ describe("generator", () => {
 
           export interface Props {
             /**
-             *   value type description: A value type for arrays of strings
+             *   value type description: 'A value type for arrays of strings'
              */
             readonly array: ('a' | 'b"c' | "d'e")[] | undefined;
             /**
@@ -1709,7 +1709,7 @@ describe("generator", () => {
             primaryKeyType: 'integer';
             properties: {
               /**
-               *   value type description: A value type for arrays of strings
+               *   value type description: 'A value type for arrays of strings'
                */
               array: $PropertyDef<'string', 'nullable', 'array'>;
               /**

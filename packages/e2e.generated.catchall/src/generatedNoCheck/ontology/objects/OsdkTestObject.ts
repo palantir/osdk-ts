@@ -35,7 +35,7 @@ export namespace OsdkTestObject {
     /**
      *   display name: 'String Property',
      *
-     *   value type description: A value type for specific colors
+     *   value type description: 'A value type for specific colors'
      */
     readonly stringProperty: 'brown' | 'found.com' | 'it\'s "cool"' | undefined;
     /**
@@ -127,7 +127,7 @@ export interface OsdkTestObject extends $ObjectTypeDefinition {
       /**
        *   display name: 'String Property',
        *
-       *   value type description: A value type for specific colors
+       *   value type description: 'A value type for specific colors'
        */
       stringProperty: $PropertyDef<'string', 'nullable', 'single'>;
       /**

@@ -23,7 +23,7 @@ export namespace SotSensor {
     /**
      *   display name: 'Is Enum',
      *
-     *   value type description: A value type for boolean values
+     *   value type description: 'A value type for boolean values'
      */
     readonly isEnum: true | undefined;
     /**
@@ -89,7 +89,7 @@ export interface SotSensor extends $ObjectTypeDefinition {
       /**
        *   display name: 'Is Enum',
        *
-       *   value type description: A value type for boolean values
+       *   value type description: 'A value type for boolean values'
        */
       isEnum: $PropertyDef<'boolean', 'nullable', 'single'>;
       /**
