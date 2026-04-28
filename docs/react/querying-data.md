@@ -98,10 +98,6 @@ const { data, isLoading } = useOsdkObjects(Todo, {
 
 OSDK provides several text search operators for string properties. Understanding the differences helps you choose the right one for your use case.
 
-:::warning Term matching, not substring
-`$containsAnyTerm`, `$containsAllTerms`, and `$containsAllTermsInOrder` match whole tokens against the indexed text. Searching for `"iel"` will **not** match `"Daniel"` — the token in the index is `Daniel`. For prefix matching use `$startsWith`; for arbitrary substrings, filter client-side or model the data differently. Tokenization rules (case-folding, stemming, punctuation handling) come from the property's search-index configuration in the ontology.
-:::
-
 #### `$startsWith`
 
 Matches strings that begin with the specified prefix.
@@ -212,9 +208,8 @@ function ArticleSearch() {
 
       {isLoading && <div>Searching...</div>}
 
-      {data?.map(article => (
-        <div key={article.$primaryKey}>{article.title}</div>
-      ))}
+      {data?.map(article => <div key={article.$primaryKey}>{article.title}
+      </div>)}
     </div>
   );
 }
@@ -344,13 +339,6 @@ function LiveTodoList() {
   );
 }
 ```
-
-#### How streamUpdates works
-
-- **Initial fetch is HTTP.** The first page (and any subsequent paginated pages) still go through normal HTTP requests. Only invalidations after that come over the WebSocket.
-- **Server-side filter match.** Updates only fire when the server-side filter match for your query changes. If a `where: { isComplete: false }` query is open and an action flips an object to `isComplete: true`, the cache removes it from this list.
-- **Use it for** live dashboards, ticker-like UIs, multi-user editing — anywhere users expect to see other people's changes.
-- **Avoid it for** one-shot tables, modal lookups, or large lists where the constant invalidations cost more than the freshness is worth.
 
 :::note Limitations
 `streamUpdates` cannot be used together with `pivotTo` or `withProperties`. The server does not support websocket subscriptions for link-traversal or derived-property queries. Those queries still fetch data normally but won't receive real-time updates.

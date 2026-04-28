@@ -105,23 +105,21 @@ function CombinedTodoQuery() {
 Find objects that exist in all sets:
 
 ```tsx
-import { $, Employee } from "@my/osdk";
+import { $, Todo } from "@my/osdk";
 import { useObjectSet } from "@osdk/react/experimental";
 
-function HighEarningEngineers() {
-  const engineers = $(Employee).where({ department: "Engineering" });
-  const highEarners = $(Employee).where({ salary: { $gte: 150000 } });
+function StarredAndIncompleteTodos() {
+  const starred = $(Todo).where({ isStarred: true });
+  const incomplete = $(Todo).where({ isComplete: false });
 
-  const { data } = useObjectSet(engineers, {
-    intersect: [highEarners],
+  const { data } = useObjectSet(starred, {
+    intersect: [incomplete],
   });
 
   return (
     <div>
-      <h3>Engineers earning over $150k</h3>
-      {data?.map(employee => (
-        <div key={employee.$primaryKey}>{employee.fullName}</div>
-      ))}
+      <h3>Starred todos that are still open</h3>
+      {data?.map(todo => <div key={todo.$primaryKey}>{todo.title}</div>)}
     </div>
   );
 }

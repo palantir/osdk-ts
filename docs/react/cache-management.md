@@ -14,9 +14,7 @@ This guide covers how the OSDK React cache system works and how to manually cont
 - **Action-driven invalidation.** Action responses specify which objects were added, modified, or deleted. Lists are re-evaluated against their `where` clauses without manual invalidation.
 - **Optimistic updates with rollback.** `$optimisticUpdate` layers your changes on top of the truth layer; on failure they're rolled back.
 - **Real-time updates.** `streamUpdates: true` keeps lists current via WebSocket without polling.
-- **Function dependency tracking.** Functions declare `dependsOn` / `dependsOnObjects` and re-run when those objects change.
-
-Action responses also assume the OSDK cache, so a bring-your-own cache will fight the action flow.
+- **Function dependency tracking with `useOsdkFunction`.** Pass `dependsOn: [ObjectType]` to refetch when any object of that type changes, or `dependsOnObjects: [instance]` to refetch only when specific instances change. The cache wires the dependencies so your function reruns automatically after relevant actions.
 
 ## How the Cache Works
 
@@ -32,16 +30,8 @@ The `OsdkProvider2` creates an `ObservableClient` that maintains a normalized ca
 | **Links**            | Source object + link name + filters                                      |
 | **Aggregations**     | Object type + where clause + aggregate definition (+ optional ObjectSet) |
 | **Function queries** | Function apiName + canonicalized parameters                              |
-| **Media metadata**   | Object instance + media property name                                    |
 
 Per-property security metadata is loaded alongside objects when `$loadPropertySecurityMetadata: true` is passed to `useOsdkObject` / `useOsdkObjects`.
-
-### How the cache stays in sync
-
-- **Action responses.** When an action completes, the response specifies added / modified / deleted objects. The cache applies those changes and re-evaluates lists against their where clauses.
-- **`streamUpdates: true`.** Opens a WebSocket subscription for the matching list and applies updates as the server emits them. Not available for queries that use `pivotTo` or `withProperties`.
-- **Function dependencies.** Functions registered with `dependsOn` (object types) or `dependsOnObjects` (instances) are automatically re-fetched when matching objects change after an action.
-- **Reference counting.** Cache entries are released when the last subscriber unmounts; data shared across components is not re-fetched.
 
 ### Cache Sharing
 
