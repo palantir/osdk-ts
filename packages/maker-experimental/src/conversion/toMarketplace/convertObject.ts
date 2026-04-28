@@ -17,6 +17,7 @@
 import type {
   DerivedPropertiesDefinition,
   DerivedPropertyAggregation as DerivedPropertyAggregationWire,
+  EditsHistory,
   MarketplaceObjectTypeEntityMetadata,
   ObjectTypeBlockDataV2,
   ObjectTypeDatasource,
@@ -25,6 +26,7 @@ import type {
 } from "@osdk/client.unstable";
 import type {
   DerivedPropertyAggregation,
+  EditsHistoryConfig,
   InterfaceType,
   ObjectPropertyType,
   ObjectType,
@@ -186,7 +188,7 @@ export function convertObject(
       ...derivedDatasources,
       objectDatasource,
     ],
-    entityMetadata: buildEntityMetadata(objectType),
+    entityMetadata: buildEntityMetadata(objectType, ridGenerator),
     propertySecurityGroupPackagingVersion: { type: "v2", v2: {} },
     schemaMigrations: undefined,
     writebackDatasets: [],
@@ -376,15 +378,15 @@ function buildAggregation(
   // TODO: Convert property references in aggregations to RIDs
   if (type !== "count") {
     if (["collectList", "collectSet"].includes(type)) {
-      innerDef["linkedProperty"] = {
+      innerDef.linkedProperty = {
         type: "propertyType",
         propertyType: foreignProperty
           ? ridGenerator.generateRid(`property.unknown.${foreignProperty}`)
           : undefined,
       };
-      innerDef["limit"] = limit;
+      innerDef.limit = limit;
     } else {
-      innerDef["property"] = {
+      innerDef.property = {
         type: "propertyType",
         propertyType: foreignProperty
           ? ridGenerator.generateRid(`property.unknown.${foreignProperty}`)
@@ -405,6 +407,7 @@ function buildAggregation(
  */
 function buildEntityMetadata(
   objectType: ObjectType,
+  ridGenerator: OntologyRidGenerator,
 ): MarketplaceObjectTypeEntityMetadata {
   const metadata = {
     arePatchesEnabled: objectType.editsEnabled ?? false,
@@ -421,8 +424,35 @@ function buildEntityMetadata(
     },
     editsResolutionStrategies: { strategies: {} },
     targetStorageBackend: { type: "objectStorageV2", objectStorageV2: {} },
+    editsHistory: convertEditsHistory(
+      ridGenerator,
+      objectType.apiName,
+      objectType.editsHistoryConfig,
+    ),
   };
   return metadata as MarketplaceObjectTypeEntityMetadata;
+}
+
+function convertEditsHistory(
+  ridGenerator: OntologyRidGenerator,
+  apiName: string,
+  config?: EditsHistoryConfig,
+): EditsHistory | undefined {
+  if (config) {
+    return config.enabled
+      ? {
+        type: "config",
+        config: {
+          store: ridGenerator.generateRidForObjectType(apiName),
+          storeAllPreviousProperties: config.storeAllPreviousProperties,
+        },
+      }
+      : {
+        type: "none",
+        none: {},
+      };
+  }
+  return undefined;
 }
 
 export function flattenInterface(
