@@ -50,6 +50,7 @@ import {
 import { objectSortaMatchesWhereClause as objectMatchesWhereClause } from "../objectMatchesWhereClause.js";
 import type { OptimisticId } from "../OptimisticId.js";
 import type { PivotInfo } from "../PivotCanonicalizer.js";
+import type { Rdp } from "../RdpCanonicalizer.js";
 import type { SimpleWhereClause } from "../SimpleWhereClause.js";
 import { OrderBySortingStrategy } from "../sorting/SortingStrategy.js";
 import type { Store } from "../Store.js";
@@ -109,6 +110,10 @@ export abstract class ListQuery extends BaseListQuery<
   // Employee.pivotTo(Office) has apiName "Employee" but fetches Office objects.
   #fetchedObjectType: string | undefined;
   #objectTypesCache: ReadonlySet<string> | undefined;
+
+  public override get rdpConfig(): Canonical<Rdp> | undefined {
+    return this.cacheKey.otherKeys[RDP_IDX];
+  }
 
   /**
    * Register changes to the cache specific to ListQuery
