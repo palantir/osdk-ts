@@ -109,7 +109,7 @@ export class ActionApplication {
     if (actionEditResponse.type !== "edits") {
       await Promise.all(
         editedObjectTypes.map(apiName =>
-          this.store.invalidateObjectType(apiName, undefined)
+          this.store.invalidateObjectType(apiName as string, undefined)
         ),
       );
       return;
@@ -144,7 +144,7 @@ export class ActionApplication {
     }
 
     for (const apiName of editedObjectTypes) {
-      promises.push(this.store.invalidateLinkQueriesForType(apiName));
+      promises.push(this.store.invalidateLinkQueriesForType(apiName as string));
     }
 
     await Promise.all(promises);
