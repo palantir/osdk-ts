@@ -24,6 +24,7 @@ import {
 } from "./environment.js";
 import { resetPublishedCache } from "./loaders.js";
 import { model } from "./model.js";
+import { source } from "./source.js";
 import { AliasEnvironment } from "./types.js";
 
 // Read test data before mocking fs - use node:fs which is not affected by vi.mock("fs")
@@ -119,7 +120,7 @@ describe("published mode aliases", () => {
     it("loads alias successfully and returns rid", () => {
       const result = model("myModelAlias");
       expect(result).toEqual({
-        rid: "ri.foundry-ml.main.model.12345678-1234-1234-1234-123456789012",
+        rid: "ri.foundry-ml.main.model.11111111-1111-1111-1111-111111111111",
       });
     });
 
@@ -133,10 +134,36 @@ describe("published mode aliases", () => {
       const result1 = model("myModelAlias");
       const result2 = model("anotherModelAlias");
       expect(result1.rid).toBe(
-        "ri.foundry-ml.main.model.12345678-1234-1234-1234-123456789012",
+        "ri.foundry-ml.main.model.11111111-1111-1111-1111-111111111111",
       );
       expect(result2.rid).toBe(
-        "ri.foundry-ml.main.model.87654321-4321-4321-4321-210987654321",
+        "ri.foundry-ml.main.model.22222222-2222-2222-2222-222222222222",
+      );
+    });
+  });
+
+  describe("source", () => {
+    it("loads alias successfully and returns rid", () => {
+      const result = source("mySourceAlias");
+      expect(result).toEqual({
+        rid: "ri.magritte..source.33333333-3333-3333-3333-333333333333",
+      });
+    });
+
+    it("throws on nonexistent alias", () => {
+      expect(() => source("nonexistent")).toThrow(
+        "Source alias 'nonexistent' not found. Available aliases: [mySourceAlias, anotherSourceAlias]",
+      );
+    });
+
+    it("selects correct alias from multiple", () => {
+      const result1 = source("mySourceAlias");
+      const result2 = source("anotherSourceAlias");
+      expect(result1.rid).toBe(
+        "ri.magritte..source.33333333-3333-3333-3333-333333333333",
+      );
+      expect(result2.rid).toBe(
+        "ri.magritte..source.44444444-4444-4444-4444-444444444444",
       );
     });
   });
@@ -145,6 +172,7 @@ describe("published mode aliases", () => {
     it("reads file only once across multiple lookups", () => {
       custom("myCustomAlias");
       model("myModelAlias");
+      source("mySourceAlias");
       custom("anotherCustomAlias");
 
       expect(fs.readFileSync).toHaveBeenCalledTimes(1);
@@ -231,6 +259,38 @@ describe("live preview mode aliases", () => {
     it("excludes models with null or missing alias", () => {
       expect(() => model("some-random-lookup")).toThrow(
         "Available aliases: [previewModelAlias, anotherPreviewModel]",
+      );
+    });
+  });
+
+  describe("source", () => {
+    it("loads alias successfully and returns rid", () => {
+      const result = source("previewSourceAlias");
+      expect(result).toEqual({
+        rid: "ri.magritte..source.dddddddd-dddd-dddd-dddd-dddddddddddd",
+      });
+    });
+
+    it("throws on nonexistent alias", () => {
+      expect(() => source("nonexistent")).toThrow(
+        "Source alias 'nonexistent' not found. Available aliases: [previewSourceAlias, anotherPreviewSource]",
+      );
+    });
+
+    it("selects correct alias from multiple", () => {
+      const result1 = source("previewSourceAlias");
+      const result2 = source("anotherPreviewSource");
+      expect(result1.rid).toBe(
+        "ri.magritte..source.dddddddd-dddd-dddd-dddd-dddddddddddd",
+      );
+      expect(result2.rid).toBe(
+        "ri.magritte..source.eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee",
+      );
+    });
+
+    it("excludes sources with null or missing alias", () => {
+      expect(() => source("some-random-lookup")).toThrow(
+        "Available aliases: [previewSourceAlias, anotherPreviewSource]",
       );
     });
   });
