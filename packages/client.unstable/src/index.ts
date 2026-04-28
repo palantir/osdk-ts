@@ -53,6 +53,11 @@ export type {
 
 export type * from "./generated/ontology-metadata/api/blockdata/__components.ts";
 
+export type {
+  EditsHistory,
+  OntologyIrEditsHistory,
+} from "./generated/ontology-metadata/api/entitymetadata/__components.js";
+
 export type { SharedPropertyTypeGothamMapping } from "./generated/ontology-metadata/api/typemapping/__components.ts";
 
 export type { BaseType } from "./generated/type-registry/api/BaseType.js";
