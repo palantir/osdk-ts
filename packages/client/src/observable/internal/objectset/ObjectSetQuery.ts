@@ -115,8 +115,8 @@ export class ObjectSetQuery extends BaseListQuery<
     return this.#objectTypes;
   }
 
-  public override get rdpConfig(): Canonical<Rdp> | null {
-    return this.#operations.withProperties ?? null;
+  public override get rdpConfig(): Canonical<Rdp> | undefined {
+    return this.#operations.withProperties;
   }
 
   public get selectFields(): Canonical<readonly string[]> | undefined {

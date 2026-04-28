@@ -129,8 +129,8 @@ export class SpecificLinkQuery extends BaseListQuery<
   }
 
   // SpecificLinkCacheKey has no RDP slot.
-  public override get rdpConfig(): Canonical<Rdp> | null {
-    return null;
+  public override get rdpConfig(): Canonical<Rdp> | undefined {
+    return undefined;
   }
 
   /**

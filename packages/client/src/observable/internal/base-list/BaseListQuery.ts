@@ -88,7 +88,7 @@ export abstract class BaseListQuery<
    * own cache key shape; the index isn't shared (e.g. SpecificLinkCacheKey
    * has the link name where ListCacheKey has the RDP config).
    */
-  public abstract get rdpConfig(): Canonical<Rdp> | null;
+  public abstract get rdpConfig(): Canonical<Rdp> | undefined;
 
   private _selectFieldSetMemo: ReadonlySet<string> | undefined;
 

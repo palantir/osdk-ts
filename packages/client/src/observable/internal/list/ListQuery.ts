@@ -118,7 +118,7 @@ export abstract class ListQuery extends BaseListQuery<
     batch.changes.registerList(this.cacheKey);
   }
 
-  public override get rdpConfig(): Canonical<Rdp> | null {
+  public override get rdpConfig(): Canonical<Rdp> | undefined {
     return this.cacheKey.otherKeys[RDP_IDX];
   }
 
