@@ -74,7 +74,7 @@ export async function getFoundryToken(
  * ```
  */
 export function getAnthropicBaseUrl(client: PlatformClient): string {
-  return `${client.baseUrl}/api/v2/llm/proxy/anthropic`;
+  return new URL("api/v2/llm/proxy/anthropic", client.baseUrl).toString();
 }
 
 /**
@@ -90,5 +90,5 @@ export function getAnthropicBaseUrl(client: PlatformClient): string {
  * ```
  */
 export function getOpenAiBaseUrl(client: PlatformClient): string {
-  return `${client.baseUrl}/api/v2/llm/proxy/openai/v1`;
+  return new URL("api/v2/llm/proxy/openai/v1", client.baseUrl).toString();
 }

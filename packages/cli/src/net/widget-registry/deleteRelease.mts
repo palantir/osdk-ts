@@ -24,8 +24,12 @@ export async function deleteRelease(
   releaseVersion: string,
 ): Promise<void> {
   const fetch = createFetch(ctx.tokenProvider);
-  const url =
-    `${ctx.foundryUrl}/api/v2/widgets/widgetSets/${widgetSetRid}/releases/${releaseVersion}?preview=true`;
+  const urlObj = new URL(
+    `api/v2/widgets/widgetSets/${widgetSetRid}/releases/${releaseVersion}`,
+    ctx.foundryUrl,
+  );
+  urlObj.searchParams.set("preview", "true");
+  const url = urlObj.toString();
   await fetch(
     url,
     {
