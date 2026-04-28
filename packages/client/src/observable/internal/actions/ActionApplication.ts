@@ -20,7 +20,6 @@ import type {
   ActionReturnTypeForOptions,
 } from "@osdk/api";
 import type { ActionSignatureFromDef } from "../../../actions/applyAction.js";
-import { type Changes } from "../Changes.js";
 import type { Store } from "../Store.js";
 import { runOptimisticJob } from "./OptimisticJob.js";
 
@@ -104,46 +103,50 @@ export class ActionApplication {
     if (actionEditResponse == null) {
       return;
     }
-    const {
-      deletedObjects,
-      modifiedObjects,
-      addedObjects,
-      editedObjectTypes,
-      type,
-    } = actionEditResponse;
-    let changes: Changes | undefined;
-    if (type === "edits") {
-      const promisesToWait: Promise<any>[] = [];
 
-      for (const list of [deletedObjects, modifiedObjects, addedObjects]) {
-        for (const obj of list ?? []) {
-          promisesToWait.push(
-            this.store.invalidateObject(obj.objectType, obj.primaryKey),
-          );
-        }
-      }
+    const { editedObjectTypes } = actionEditResponse;
 
-      // Use the registry to find all RDP variant cache keys for each deleted object.
-      this.store.batch({}, (batch) => {
-        for (const { objectType, primaryKey } of deletedObjects ?? []) {
-          for (
-            const cacheKey of this.store.objectCacheKeyRegistry.getVariants(
-              objectType,
-              primaryKey,
-            )
-          ) {
-            this.store.queries.peek(cacheKey)?.deleteFromStore(
-              "loaded", // this is probably not the best value to use
-              batch,
-            );
-          }
-        }
-      });
-      await Promise.all(promisesToWait);
-    } else {
-      for (const apiName of editedObjectTypes) {
-        await this.store.invalidateObjectType(apiName as string, changes);
-      }
+    if (actionEditResponse.type !== "edits") {
+      await Promise.all(
+        editedObjectTypes.map(apiName =>
+          this.store.invalidateObjectType(apiName as string, undefined)
+        ),
+      );
+      return;
     }
+
+    const { addedObjects, modifiedObjects, deletedObjects } =
+      actionEditResponse;
+
+    this.store.batch({}, (batch) => {
+      for (const { objectType, primaryKey } of deletedObjects ?? []) {
+        for (
+          const cacheKey of this.store.objectCacheKeyRegistry.getVariants(
+            objectType,
+            primaryKey,
+          )
+        ) {
+          this.store.queries.peek(cacheKey)?.deleteFromStore("loaded", batch);
+        }
+      }
+    });
+
+    const promises: Array<Promise<unknown>> = [];
+
+    // Per-object refetch picks up the server-confirmed state for added/
+    // modified objects. Deleted objects already have a tombstone written
+    // above; calling invalidateObject on a deleted object would force a 404
+    // fetch and flicker subscribers between loading and error.
+    for (const obj of [...(addedObjects ?? []), ...(modifiedObjects ?? [])]) {
+      promises.push(
+        this.store.invalidateObject(obj.objectType, obj.primaryKey),
+      );
+    }
+
+    for (const apiName of editedObjectTypes) {
+      promises.push(this.store.invalidateLinkQueriesForType(apiName as string));
+    }
+
+    await Promise.all(promises);
   };
 }

@@ -152,7 +152,7 @@ export class FauxDataStoreBatch {
     this.objectEdits.edits.push({
       type: "deleteObject",
       objectType,
-      primaryKey: primaryKey,
+      primaryKey,
     });
   };
 
@@ -170,7 +170,7 @@ export class FauxDataStoreBatch {
         rightObjectType,
       );
 
-    this.#fauxDataStore.registerLink(
+    const { fkUpdate } = this.#fauxDataStore.registerLink(
       { __apiName: leftObjectType, __primaryKey: leftPrimaryKey },
       leftTypeSideV2.apiName,
       { __apiName: rightObjectType, __primaryKey: rightPrimaryKey },
@@ -192,6 +192,7 @@ export class FauxDataStoreBatch {
     });
 
     this.objectEdits.addedLinksCount += 1;
+    this.#recordFkUpdate(fkUpdate);
   };
 
   removeLink = (
@@ -208,11 +209,47 @@ export class FauxDataStoreBatch {
         rightObjectType,
       );
 
-    this.#fauxDataStore.unregisterLink(
+    const { fkUpdate } = this.#fauxDataStore.unregisterLink(
       { __apiName: leftObjectType, __primaryKey: leftPrimaryKey },
       leftTypeSideV2.apiName,
       { __apiName: rightObjectType, __primaryKey: rightPrimaryKey },
       rightTypeSideV2.apiName,
     );
+
+    this.objectEdits.edits.push({
+      type: "deleteLink",
+      aSideObject: {
+        objectType: leftObjectType,
+        primaryKey: leftPrimaryKey,
+      },
+      bSideObject: {
+        objectType: rightObjectType,
+        primaryKey: rightPrimaryKey,
+      },
+      linkTypeApiNameAtoB: leftLinkName,
+      linkTypeApiNameBtoA: rightTypeSideV2.apiName,
+    });
+
+    this.objectEdits.deletedLinksCount += 1;
+    this.#recordFkUpdate(fkUpdate);
   };
+
+  // FK-backed links mutate the "one" side's foreign key on add/remove. Record
+  // it as a modifyObject edit so action responses reflect every object the
+  // action mutated.
+  #recordFkUpdate(
+    fkUpdate:
+      | { objectType: string; primaryKey: string | number | boolean }
+      | undefined,
+  ): void {
+    if (!fkUpdate) {
+      return;
+    }
+    this.objectEdits.edits.push({
+      type: "modifyObject",
+      objectType: fkUpdate.objectType,
+      primaryKey: fkUpdate.primaryKey,
+    });
+    this.objectEdits.modifiedObjectsCount += 1;
+  }
 }

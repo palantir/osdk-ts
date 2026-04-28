@@ -14,12 +14,24 @@
  * limitations under the License.
  */
 
-import { Employee, Office, Todo } from "@osdk/client.test.ontology";
+import {
+  addPeepsLink,
+  createOfficeAndEmployee,
+  deletePeepsLink,
+  deleteTodo,
+  editTodo,
+  Employee,
+  largeScaleEditEmployee,
+  Office,
+  promoteEmployee,
+  Todo,
+} from "@osdk/client.test.ontology";
 import {
   FauxFoundry,
   ontologies,
   startNodeApiServer,
   stubData,
+  TypeHelpers,
 } from "@osdk/shared.test";
 import invariant from "tiny-invariant";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
@@ -65,6 +77,91 @@ describe("Store Invalidation Type Isolation", () => {
         const { id, ...other } = payload.parameters;
         b.modifyObject<Todo>(Todo.apiName, id, { ...other });
       },
+    );
+
+    // The builder's shortcut only covers "string"/"integer"/"boolean" — feed the
+    // full ActionParameterV2 for "double" from the stub so we keep a typed
+    // payload in the callback below.
+    const { actionTypeV2: promoteEmployeeActionTypeV2 } = TypeHelpers
+      .actionTypeBuilder("promoteEmployee")
+      .addParameter("employeeId", "integer", true)
+      .addParameter("newTitle", "string", true)
+      .addParameter(
+        "newCompensation",
+        stubData.PromoteEmployee.parameters.newCompensation,
+      )
+      .build();
+
+    fauxFoundry.getDefaultOntology().registerActionType(
+      promoteEmployeeActionTypeV2,
+      (b, payload) => {
+        const { employeeId, newTitle } = payload.parameters;
+        b.modifyObject<Employee>(Employee.apiName, employeeId, {
+          fullName: newTitle,
+        });
+      },
+    );
+
+    const { actionTypeV2: createOfficeAndEmployeeActionTypeV2 } = TypeHelpers
+      .actionTypeBuilder("createOfficeAndEmployee")
+      .addParameter("officeId", "string", true)
+      .addParameter("employeeId", "integer", true)
+      .build();
+
+    fauxFoundry.getDefaultOntology().registerActionType(
+      createOfficeAndEmployeeActionTypeV2,
+      (b, payload) => {
+        const { officeId, employeeId } = payload.parameters;
+        // widen literal so addObject picks the untyped overload
+        const officeType: string = Office.apiName;
+        const employeeType: string = Employee.apiName;
+        b.addObject(officeType, officeId, {
+          name: `Office ${officeId}`,
+        });
+        b.addObject(employeeType, employeeId, {
+          fullName: `Employee ${employeeId}`,
+        });
+      },
+    );
+
+    fauxFoundry.getDefaultOntology().registerActionType(
+      stubData.deleteTodo.actionTypeV2,
+      (b, payload) => {
+        b.deleteObject(Todo.apiName, payload.parameters.id);
+      },
+    );
+
+    fauxFoundry.getDefaultOntology().registerActionType(
+      stubData.addPeepsLink.actionTypeV2,
+      (b, payload) => {
+        const { leadId, peepId } = payload.parameters;
+        b.addLink(Employee.apiName, leadId, "peeps", Employee.apiName, peepId);
+      },
+    );
+
+    fauxFoundry.getDefaultOntology().registerActionType(
+      stubData.deletePeepsLink.actionTypeV2,
+      (b, payload) => {
+        const { leadId, peepId } = payload.parameters;
+        b.removeLink(
+          Employee.apiName,
+          leadId,
+          "peeps",
+          Employee.apiName,
+          peepId,
+        );
+      },
+    );
+
+    fauxFoundry.getDefaultOntology().registerActionType(
+      stubData.largeScaleEditEmployee.actionTypeV2,
+      (b, payload) => {
+        const { employeeId, newTitle } = payload.parameters;
+        b.modifyObject<Employee>(Employee.apiName, employeeId, {
+          fullName: newTitle,
+        });
+      },
+      { returnLargeScaleEdits: true },
     );
   }
 
@@ -645,6 +742,286 @@ describe("Store Invalidation Type Isolation", () => {
       await new Promise(resolve => setTimeout(resolve, 500));
 
       expect(empSubFn.next).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("applyAction auto-invalidation", () => {
+    async function observeList(
+      type: typeof Employee | typeof Office | typeof Todo,
+    ) {
+      const subFn = mockListSubCallback();
+      defer(cache.lists.observe({
+        type,
+        where: {},
+        orderBy: {},
+        mode: "offline",
+        pageSize: 10,
+      }, subFn));
+      await vi.waitFor(() => expect(subFn.next).toHaveBeenCalled());
+      subFn.next.mockClear();
+      return subFn;
+    }
+
+    async function observeOccupantsLink() {
+      const { payload } = await expectStandardObserveObject({
+        cache,
+        type: Office,
+        primaryKey: OFFICE_1_ID,
+      });
+      const office = payload?.object;
+      invariant(office);
+      const { linkSubFn } = await expectStandardObserveLink({
+        store: cache,
+        srcObject: office,
+        srcLinkName: "occupants",
+        targetType: Employee,
+        expected: [expect.objectContaining({ $primaryKey: EMPLOYEE_1_ID })],
+      });
+      linkSubFn.next.mockClear();
+      return linkSubFn;
+    }
+
+    it("modifying invalidates list and link queries of the modified type", async () => {
+      const todoListSubFn = await observeList(Todo);
+      const linkSubFn = await observeOccupantsLink();
+
+      await cache.applyAction(editTodo, {
+        id: TODO_1_ID,
+        text: "Todo One (updated)",
+      });
+      await vi.waitFor(() => {
+        expect(todoListSubFn.next).toHaveBeenCalledWith(
+          expect.objectContaining({
+            status: "loaded",
+            resolvedList: expect.arrayContaining([
+              expect.objectContaining({ text: "Todo One (updated)" }),
+            ]),
+          }),
+        );
+      });
+
+      await cache.applyAction(promoteEmployee, {
+        employeeId: EMPLOYEE_1_ID,
+        newTitle: "Senior Engineer",
+        newCompensation: 200000,
+      });
+      await vi.waitFor(() => {
+        expect(linkSubFn.next).toHaveBeenCalledWith(
+          expect.objectContaining({
+            status: "loaded",
+            resolvedList: expect.arrayContaining([
+              expect.objectContaining({ fullName: "Senior Engineer" }),
+            ]),
+          }),
+        );
+      });
+    });
+
+    it("adding invalidates list + link queries of each added type; unrelated types untouched", async () => {
+      const empListSubFn = await observeList(Employee);
+      const officeListSubFn = await observeList(Office);
+      const todoListSubFn = await observeList(Todo);
+      const linkSubFn = await observeOccupantsLink();
+
+      await cache.applyAction(createOfficeAndEmployee, {
+        officeId: "new-office-1",
+        employeeId: 999,
+      });
+
+      await vi.waitFor(() => {
+        expect(empListSubFn.next).toHaveBeenCalled();
+        expect(officeListSubFn.next).toHaveBeenCalled();
+        expect(linkSubFn.next).toHaveBeenCalled();
+      });
+      expect(todoListSubFn.next).not.toHaveBeenCalled();
+    });
+
+    it("deleting tombstones the object and refetches list queries", async () => {
+      const { subFn: todoSubFn } = await expectStandardObserveObject({
+        cache,
+        type: Todo,
+        primaryKey: TODO_1_ID,
+      });
+      const todoListSubFn = await observeList(Todo);
+      todoSubFn.next.mockClear();
+
+      await cache.applyAction(deleteTodo, { id: TODO_1_ID });
+
+      await vi.waitFor(() => {
+        expect(todoSubFn.next).toHaveBeenCalledWith(
+          expect.objectContaining({ object: undefined }),
+        );
+      });
+      // No-flicker invariant: tombstones deliver object=undefined synchronously,
+      // so subscribers must never observe a transient error state from a 404
+      // refetch against the just-deleted object.
+      expect(todoSubFn.next).not.toHaveBeenCalledWith(
+        expect.objectContaining({ status: "error" }),
+      );
+      await vi.waitFor(() => {
+        expect(todoListSubFn.next).toHaveBeenCalledWith(
+          expect.objectContaining({
+            status: "loaded",
+            resolvedList: expect.not.arrayContaining([
+              expect.objectContaining({ $primaryKey: TODO_1_ID }),
+            ]),
+          }),
+        );
+      });
+    });
+
+    it("adding a link invalidates link queries on both sides", async () => {
+      const { payload: emp1Payload } = await expectStandardObserveObject({
+        cache,
+        type: Employee,
+        primaryKey: EMPLOYEE_1_ID,
+      });
+      const emp1 = emp1Payload?.object;
+      invariant(emp1);
+
+      const { payload: emp2Payload } = await expectStandardObserveObject({
+        cache,
+        type: Employee,
+        primaryKey: EMPLOYEE_2_ID,
+      });
+      const emp2 = emp2Payload?.object;
+      invariant(emp2);
+
+      const { linkSubFn: peepsSubFn } = await expectStandardObserveLink({
+        store: cache,
+        srcObject: emp1,
+        srcLinkName: "peeps",
+        targetType: Employee,
+        expected: [],
+      });
+      const { linkSubFn: leadSubFn } = await expectStandardObserveLink({
+        store: cache,
+        srcObject: emp2,
+        srcLinkName: "lead",
+        targetType: Employee,
+        expected: [],
+      });
+      peepsSubFn.next.mockClear();
+      leadSubFn.next.mockClear();
+
+      await cache.applyAction(addPeepsLink, {
+        leadId: EMPLOYEE_1_ID,
+        peepId: EMPLOYEE_2_ID,
+      });
+
+      await vi.waitFor(() => {
+        expect(peepsSubFn.next).toHaveBeenCalledWith(
+          expect.objectContaining({
+            status: "loaded",
+            resolvedList: expect.arrayContaining([
+              expect.objectContaining({ $primaryKey: EMPLOYEE_2_ID }),
+            ]),
+          }),
+        );
+      });
+      await vi.waitFor(() => {
+        expect(leadSubFn.next).toHaveBeenCalledWith(
+          expect.objectContaining({
+            status: "loaded",
+            resolvedList: expect.arrayContaining([
+              expect.objectContaining({ $primaryKey: EMPLOYEE_1_ID }),
+            ]),
+          }),
+        );
+      });
+    });
+
+    it("deleting a link invalidates link queries on both sides", async () => {
+      const { payload: emp1Payload } = await expectStandardObserveObject({
+        cache,
+        type: Employee,
+        primaryKey: EMPLOYEE_1_ID,
+      });
+      const emp1 = emp1Payload?.object;
+      invariant(emp1);
+
+      const { payload: emp2Payload } = await expectStandardObserveObject({
+        cache,
+        type: Employee,
+        primaryKey: EMPLOYEE_2_ID,
+      });
+      const emp2 = emp2Payload?.object;
+      invariant(emp2);
+
+      // Seed the link via addPeepsLink so the deletion has something to remove.
+      await cache.applyAction(addPeepsLink, {
+        leadId: EMPLOYEE_1_ID,
+        peepId: EMPLOYEE_2_ID,
+      });
+
+      const { linkSubFn: peepsSubFn } = await expectStandardObserveLink({
+        store: cache,
+        srcObject: emp1,
+        srcLinkName: "peeps",
+        targetType: Employee,
+        expected: [expect.objectContaining({ $primaryKey: EMPLOYEE_2_ID })],
+      });
+      const { linkSubFn: leadSubFn } = await expectStandardObserveLink({
+        store: cache,
+        srcObject: emp2,
+        srcLinkName: "lead",
+        targetType: Employee,
+        expected: [expect.objectContaining({ $primaryKey: EMPLOYEE_1_ID })],
+      });
+      peepsSubFn.next.mockClear();
+      leadSubFn.next.mockClear();
+
+      await cache.applyAction(deletePeepsLink, {
+        leadId: EMPLOYEE_1_ID,
+        peepId: EMPLOYEE_2_ID,
+      });
+
+      await vi.waitFor(() => {
+        expect(peepsSubFn.next).toHaveBeenCalledWith(
+          expect.objectContaining({
+            status: "loaded",
+            resolvedList: expect.not.arrayContaining([
+              expect.objectContaining({ $primaryKey: EMPLOYEE_2_ID }),
+            ]),
+          }),
+        );
+      });
+      await vi.waitFor(() => {
+        expect(leadSubFn.next).toHaveBeenCalledWith(
+          expect.objectContaining({
+            status: "loaded",
+            resolvedList: expect.not.arrayContaining([
+              expect.objectContaining({ $primaryKey: EMPLOYEE_1_ID }),
+            ]),
+          }),
+        );
+      });
+    });
+
+    it("largeScaleEdits response invalidates queries via editedObjectTypes", async () => {
+      const empListSubFn = await observeList(Employee);
+      const todoListSubFn = await observeList(Todo);
+      const occupantsLinkSubFn = await observeOccupantsLink();
+
+      // Array payload routes through batchApplyAction, which honors the faux
+      // returnLargeScaleEdits flag (single applyAction does not).
+      await cache.applyAction(largeScaleEditEmployee, [{
+        employeeId: EMPLOYEE_1_ID,
+        newTitle: "Lead Engineer",
+      }]);
+
+      await vi.waitFor(() => {
+        expect(empListSubFn.next).toHaveBeenCalledWith(
+          expect.objectContaining({
+            status: "loaded",
+            resolvedList: expect.arrayContaining([
+              expect.objectContaining({ fullName: "Lead Engineer" }),
+            ]),
+          }),
+        );
+        expect(occupantsLinkSubFn.next).toHaveBeenCalled();
+      });
+      expect(todoListSubFn.next).not.toHaveBeenCalled();
     });
   });
 });

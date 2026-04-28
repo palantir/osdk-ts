@@ -179,6 +179,8 @@ export class ObjectsHelper extends AbstractHelper<
 
     if (value !== tombstone) {
       batch.changes.registerObject(sourceCacheKey, value, !existing);
+    } else {
+      batch.changes.deleteObject(sourceCacheKey);
     }
 
     const metadata = this.store.objectCacheKeyRegistry.getMetadata(

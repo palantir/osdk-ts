@@ -567,7 +567,8 @@ export class Store {
 
     const promises: Array<Promise<void>> = [];
 
-    for (const cacheKey of this.layers.truth.keys()) {
+    // queries.keys() (not truth.keys()) so in-flight queries also get invalidated.
+    for (const cacheKey of this.queries.keys()) {
       if (
         cacheKey.type !== "mediaMetadata"
         && changes
@@ -582,6 +583,34 @@ export class Store {
     }
 
     // we use allSettled here because we don't care if it succeeds or fails, just that they all complete.
+    return Promise.allSettled(promises).then(() => void 0);
+  }
+
+  /**
+   * Force every cached `specificLink` query to re-evaluate against the given
+   * apiName. Link queries are keyed on `(srcType, srcPk, linkName, ...)` rather
+   * than the linked object's pk, so per-object propagation never marks them as
+   * modified. Object/list/objectset queries pick up changes through the normal
+   * pipeline and don't need this kick.
+   */
+  public invalidateLinkQueriesForType(apiName: string): Promise<void> {
+    if (process.env.NODE_ENV !== "production") {
+      this.logger?.child({ methodName: "invalidateLinkQueriesForType" }).debug(
+        apiName,
+      );
+    }
+
+    const promises: Array<Promise<void>> = [];
+    for (const cacheKey of this.queries.keys()) {
+      if (cacheKey.type !== "specificLink") {
+        continue;
+      }
+      const query = this.queries.peek(cacheKey);
+      if (!query) {
+        continue;
+      }
+      promises.push(query.invalidateObjectType(apiName, undefined));
+    }
     return Promise.allSettled(promises).then(() => void 0);
   }
 
