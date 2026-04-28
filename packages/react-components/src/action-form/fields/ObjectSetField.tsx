@@ -52,8 +52,8 @@ export const ObjectSetField: React.FC<ObjectSetFieldProps> = memo(
 
     if (!isObjectSet(value)) {
       throw new Error(
-        "ObjectSetField received a value that is not a valid ObjectSet."
-          + " Expected an object with fetchPage/asyncIter methods.",
+        "ObjectSetField received a BaseObjectSet without fetchPage/asyncIter."
+          + " Pass a full ObjectSet from the OSDK client.",
       );
     }
 
@@ -62,15 +62,13 @@ export const ObjectSetField: React.FC<ObjectSetFieldProps> = memo(
 );
 
 /**
- * Runtime check that value is a real ObjectSet (has fetchPage/asyncIter),
- * not just a structural match for BaseObjectSet.
+ * Props accept BaseObjectSet for variance, but useObjectSet requires a full
+ * ObjectSet. Narrow by checking for fetchPage — the minimal differentiator.
  */
 function isObjectSet(
   value: { readonly $objectSetInternals: { def: unknown } },
 ): value is ObjectSet {
-  return typeof value === "object" && value != null
-    && "fetchPage" in value && typeof value.fetchPage === "function"
-    && "asyncIter" in value && typeof value.asyncIter === "function";
+  return "fetchPage" in value;
 }
 
 const ObjectSetFieldContent = React.memo(function ObjectSetFieldContentFn({
