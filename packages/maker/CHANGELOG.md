@@ -1,5 +1,17 @@
 # @osdk/maker
 
+## 0.20.0
+
+### Minor Changes
+
+- 9225ee3: interface property string analyzers
+
+### Patch Changes
+
+- Updated dependencies [91f34a9]
+  - @osdk/api@2.12.0
+  - @osdk/generator-converters.ontologyir@2.12.0
+
 ## 0.19.0
 
 ### Minor Changes
