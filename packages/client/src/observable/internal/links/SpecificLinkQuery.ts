@@ -38,6 +38,7 @@ import type { Canonical } from "../Canonical.js";
 import type { Changes } from "../Changes.js";
 import type { Entry } from "../Layer.js";
 import type { OptimisticId } from "../OptimisticId.js";
+import type { Rdp } from "../RdpCanonicalizer.js";
 import type { SimpleWhereClause } from "../SimpleWhereClause.js";
 import { OrderBySortingStrategy } from "../sorting/SortingStrategy.js";
 import type { Store } from "../Store.js";
@@ -125,6 +126,11 @@ export class SpecificLinkQuery extends BaseListQuery<
 
   protected get rawSelect(): Canonical<readonly string[]> | undefined {
     return this.#select;
+  }
+
+  // TODO: wire up RDP support for SpecificLinkCacheKey (needs its own slot).
+  public override get rdpConfig(): Canonical<Rdp> | undefined {
+    return undefined;
   }
 
   /**
@@ -328,21 +334,19 @@ export class SpecificLinkQuery extends BaseListQuery<
         }
 
         let targetTypeApiName: string | undefined;
-        let targetTypeKind: "object" | "interface" | undefined;
 
         if (this.#sourceTypeKind === "interface") {
           const interfaceMetadata = await ontologyProvider
             .getInterfaceDefinition(this.#sourceApiName);
-          const linkDef = interfaceMetadata.links?.[this.#linkName];
-          targetTypeApiName = linkDef?.targetTypeApiName;
-          targetTypeKind = linkDef?.targetType;
+          targetTypeApiName = interfaceMetadata.links?.[this.#linkName]
+            ?.targetTypeApiName;
         } else {
           const objectMetadata = await ontologyProvider
             .getObjectDefinition(this.#sourceApiName);
-          const linkDef = objectMetadata.links?.[this.#linkName];
-          // On object link defs, targetType is the target API name (not the kind)
-          targetTypeApiName = linkDef?.targetType;
-          targetTypeKind = "object";
+          // Object link def's `targetType` is the target API name; it can be
+          // either an object type or an interface name.
+          targetTypeApiName = objectMetadata.links?.[this.#linkName]
+            ?.targetType;
         }
 
         if (!targetTypeApiName) return;
@@ -352,14 +356,15 @@ export class SpecificLinkQuery extends BaseListQuery<
           return void await this.revalidate(true);
         }
 
-        if (targetTypeKind === "interface") {
-          const objectMetadata = await ontologyProvider.getObjectDefinition(
-            objectType,
-          );
-          if (targetTypeApiName in objectMetadata.interfaceMap) {
-            changes?.modified.add(this.cacheKey);
-            return void await this.revalidate(true);
-          }
+        // If the target is an interface, revalidate when objectType implements
+        // it. For object-typed targets, interfaceMap[objectTypeName] is always
+        // false, so this is a safe no-op.
+        const objectMetadata = await ontologyProvider.getObjectDefinition(
+          objectType,
+        );
+        if (targetTypeApiName in objectMetadata.interfaceMap) {
+          changes?.modified.add(this.cacheKey);
+          return void await this.revalidate(true);
         }
       } catch (e) {
         if (process.env.NODE_ENV !== "production") {
