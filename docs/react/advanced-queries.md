@@ -8,8 +8,6 @@ This guide covers advanced querying patterns including useObjectSet, derived pro
 
 ## useObjectSet
 
-_Experimental - import from `@osdk/react/experimental`_
-
 Advanced querying with set operations, derived properties, and link traversal.
 
 ### When to Use useObjectSet vs useOsdkObjects
@@ -27,7 +25,7 @@ Note that `pivotTo` and `streamUpdates` cannot be combined — see the note belo
 
 ```tsx
 import { $, Todo } from "@my/osdk";
-import { useObjectSet, useOsdkObjects } from "@osdk/react/experimental";
+import { useObjectSet, useOsdkObjects } from "@osdk/react";
 
 // Simple query - use useOsdkObjects
 const { data } = useOsdkObjects(Todo, {
@@ -53,7 +51,7 @@ The `$` function from your generated SDK creates an ObjectSet from an object typ
 
 ```tsx
 import { $, Todo } from "@my/osdk";
-import { useObjectSet } from "@osdk/react/experimental";
+import { useObjectSet } from "@osdk/react";
 
 function TodosWithSetOperations() {
   const allTodos = $(Todo);
@@ -86,7 +84,7 @@ Combine multiple object sets:
 
 ```tsx
 import { $, Todo } from "@my/osdk";
-import { useObjectSet } from "@osdk/react/experimental";
+import { useObjectSet } from "@osdk/react";
 
 function CombinedTodoQuery() {
   const highPriorityTodos = $(Todo).where({ priority: "high" });
@@ -106,7 +104,7 @@ Find objects that exist in all sets:
 
 ```tsx
 import { $, Todo } from "@my/osdk";
-import { useObjectSet } from "@osdk/react/experimental";
+import { useObjectSet } from "@osdk/react";
 
 function StarredAndIncompleteTodos() {
   const starred = $(Todo).where({ isStarred: true });
@@ -131,7 +129,7 @@ Remove objects that exist in another set:
 
 ```tsx
 import { $, Todo } from "@my/osdk";
-import { useObjectSet } from "@osdk/react/experimental";
+import { useObjectSet } from "@osdk/react";
 
 function ActiveTodos() {
   const allTodos = $(Todo);
@@ -149,7 +147,7 @@ function ActiveTodos() {
 
 ```tsx
 import { $, Todo } from "@my/osdk";
-import { useObjectSet } from "@osdk/react/experimental";
+import { useObjectSet } from "@osdk/react";
 
 function ComplexTodoQuery() {
   const highPriorityTodos = $(Todo).where({ priority: "high" });
@@ -171,7 +169,7 @@ Navigate to linked objects:
 
 ```tsx
 import { $, Employee } from "@my/osdk";
-import { useObjectSet } from "@osdk/react/experimental";
+import { useObjectSet } from "@osdk/react";
 
 function EmployeeDepartments(
   { employee }: { employee: Employee.OsdkInstance },
@@ -194,7 +192,7 @@ function EmployeeDepartments(
 
 ```tsx
 import { $, Todo } from "@my/osdk";
-import { useObjectSet } from "@osdk/react/experimental";
+import { useObjectSet } from "@osdk/react";
 
 const { data, isLoading } = useObjectSet($(Todo), {
   where: { isComplete: false },
@@ -248,7 +246,7 @@ Derived properties use a builder function that receives a `DerivedProperty.Build
 ```tsx
 import { Employee } from "@my/osdk";
 import type { DerivedProperty } from "@osdk/client";
-import { useOsdkObjects } from "@osdk/react/experimental";
+import { useOsdkObjects } from "@osdk/react";
 
 const { data } = useOsdkObjects(Employee, {
   where: { department: "Engineering" },
@@ -326,15 +324,13 @@ const { data } = useOsdkObjects(Employee, {
 
 ## useOsdkFunction
 
-_Experimental - import from `@osdk/react/experimental`_
-
 Execute and observe functions with request deduplication and configurable dependency tracking for automatic refetching.
 
 ### Basic Usage
 
 ```tsx
 import { addOne } from "@my/osdk";
-import { useOsdkFunction } from "@osdk/react/experimental";
+import { useOsdkFunction } from "@osdk/react";
 
 function AddOneDemo() {
   const { data, isLoading, error } = useOsdkFunction(addOne, {
@@ -357,7 +353,7 @@ function AddOneDemo() {
 
 ```tsx
 import { getTodoCount } from "@my/osdk";
-import { useOsdkFunction } from "@osdk/react/experimental";
+import { useOsdkFunction } from "@osdk/react";
 
 function TodoCount() {
   const { data, isLoading } = useOsdkFunction(getTodoCount);
@@ -377,7 +373,7 @@ Automatically refetch when actions modify objects of specified types:
 
 ```tsx
 import { Employee, getEmployeeMetrics } from "@my/osdk";
-import { useOsdkFunction } from "@osdk/react/experimental";
+import { useOsdkFunction } from "@osdk/react";
 
 function EmployeeMetrics({ departmentId }: { departmentId: string }) {
   const { data, isLoading, refetch } = useOsdkFunction(getEmployeeMetrics, {
@@ -401,7 +397,7 @@ For finer-grained control, depend on specific object instances:
 
 ```tsx
 import { Employee, getEmployeeReport } from "@my/osdk";
-import { useOsdkFunction, useOsdkObject } from "@osdk/react/experimental";
+import { useOsdkFunction, useOsdkObject } from "@osdk/react";
 
 function EmployeeReport({ employee }: { employee: Employee.OsdkInstance }) {
   const { data, isLoading } = useOsdkFunction(getEmployeeReport, {
@@ -424,7 +420,7 @@ Use `enabled` to control when the function executes:
 
 ```tsx
 import { Employee, getEmployeeReport } from "@my/osdk";
-import { useOsdkFunction, useOsdkObject } from "@osdk/react/experimental";
+import { useOsdkFunction, useOsdkObject } from "@osdk/react";
 
 function ConditionalReport({ employeeId }: { employeeId: string }) {
   const { object: employee } = useOsdkObject(Employee, employeeId);
@@ -468,15 +464,13 @@ function ConditionalReport({ employeeId }: { employeeId: string }) {
 
 ## useOsdkAggregation
 
-_Experimental - import from `@osdk/react/experimental`_
-
 Server-side grouping and aggregation.
 
 ### Simple Aggregation
 
 ```tsx
 import { Todo } from "@my/osdk";
-import { useOsdkAggregation } from "@osdk/react/experimental";
+import { useOsdkAggregation } from "@osdk/react";
 
 function TodoStats() {
   const { data, isLoading, error } = useOsdkAggregation(Todo, {
@@ -512,7 +506,7 @@ function TodoStats() {
 
 ```tsx
 import { Todo } from "@my/osdk";
-import { useOsdkAggregation } from "@osdk/react/experimental";
+import { useOsdkAggregation } from "@osdk/react";
 
 function TodosByStatus() {
   const { data, isLoading } = useOsdkAggregation(Todo, {
@@ -547,7 +541,7 @@ function TodosByStatus() {
 
 ```tsx
 import { Todo } from "@my/osdk";
-import { useOsdkAggregation } from "@osdk/react/experimental";
+import { useOsdkAggregation } from "@osdk/react";
 
 function HighPriorityStats() {
   const { data, isLoading } = useOsdkAggregation(Todo, {
