@@ -1,5 +1,15 @@
 # @osdk/react-components-storybook
 
+## 0.7.0
+
+### Minor Changes
+
+- 4aeb07b: ObjectTable: add `onColumnHeaderClick(columnId)` prop that fires when a user clicks on a column header (excluding the dropdown menu trigger)
+
+### Patch Changes
+
+- @osdk/faux@0.10.0
+
 ## 0.6.0
 
 ### Minor Changes
