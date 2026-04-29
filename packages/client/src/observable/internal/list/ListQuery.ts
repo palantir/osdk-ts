@@ -41,12 +41,10 @@ import type { BatchContext } from "../BatchContext.js";
 import { type CacheKey } from "../CacheKey.js";
 import type { Canonical } from "../Canonical.js";
 import { type Changes, DEBUG_ONLY__changesToString } from "../Changes.js";
+import { changesAffectObjectType } from "../changesAffectObjectType.js";
 import { getObjectTypesThatInvalidate } from "../getObjectTypesThatInvalidate.js";
 import type { Entry } from "../Layer.js";
-import {
-  API_NAME_IDX as OBJECT_API_NAME_IDX,
-  type ObjectCacheKey,
-} from "../object/ObjectCacheKey.js";
+import { type ObjectCacheKey } from "../object/ObjectCacheKey.js";
 import { objectSortaMatchesWhereClause as objectMatchesWhereClause } from "../objectMatchesWhereClause.js";
 import type { OptimisticId } from "../OptimisticId.js";
 import type { PivotInfo } from "../PivotCanonicalizer.js";
@@ -104,12 +102,12 @@ export abstract class ListQuery extends BaseListQuery<
   #objectSet: ObjectSet<ObjectTypeDefinition>;
   #pivotIntersectApplied = false;
 
-  // The actual type of objects this query returns, resolved on first fetch
-  // via getObjectTypesThatInvalidate. For simple queries this equals apiName.
-  // For transformed queries (e.g. link traversal) it may differ -- e.g.
-  // Employee.pivotTo(Office) has apiName "Employee" but fetches Office objects.
+  // Resolved on first fetch for pivot/intersect queries. Undefined for
+  // simple queries where result type always equals apiName.
   #fetchedObjectType: string | undefined;
-  #objectTypesCache: ReadonlySet<string> | undefined;
+  #resolvedObjectTypes: ReadonlySet<string> | undefined;
+  #needsResultTypeResolution: boolean;
+  #defaultObjectTypes: ReadonlySet<string>;
 
   public override get rdpConfig(): Canonical<Rdp> | undefined {
     return this.cacheKey.otherKeys[RDP_IDX];
@@ -153,7 +151,9 @@ export abstract class ListQuery extends BaseListQuery<
     this.#pivotInfo = cacheKey.otherKeys[PIVOT_IDX];
 
     this.#objectSet = this.createObjectSet(store);
-    this.#objectTypesCache = new Set([this.apiName]);
+    this.#defaultObjectTypes = new Set([this.apiName]);
+    this.#needsResultTypeResolution = this.#pivotInfo != null
+      || (this.#intersectWith != null && this.#intersectWith.length > 0);
 
     // Only initialize the sorting strategy here if there's no pivotTo.
     // When pivotTo is used, the target type differs from apiName, so we
@@ -190,14 +190,17 @@ export abstract class ListQuery extends BaseListQuery<
   }
 
   get objectTypes(): ReadonlySet<string> {
-    return this.#objectTypesCache ?? new Set([this.apiName]);
-  }
-
-  #updateFetchedObjectType(fetchedApiName: string): void {
-    this.#fetchedObjectType = fetchedApiName;
-    this.#objectTypesCache = fetchedApiName !== this.apiName
-      ? new Set([this.apiName, fetchedApiName])
-      : new Set([this.apiName]);
+    if (
+      this.#fetchedObjectType == null
+      || this.#fetchedObjectType === this.apiName
+    ) {
+      return this.#defaultObjectTypes;
+    }
+    this.#resolvedObjectTypes ??= new Set([
+      this.apiName,
+      this.#fetchedObjectType,
+    ]);
+    return this.#resolvedObjectTypes;
   }
 
   protected createPayload(
@@ -220,81 +223,64 @@ export abstract class ListQuery extends BaseListQuery<
   protected async fetchPageData(
     signal: AbortSignal | undefined,
   ): Promise<PageResult<Osdk.Instance<any>>> {
-    const needsResultType = (Object.keys(this.#orderBy).length > 0
-      && !(this.sortingStrategy instanceof OrderBySortingStrategy))
-      || (this.#pivotInfo != null && this.#intersectWith != null
-        && this.#intersectWith.length > 0 && !this.#pivotIntersectApplied);
-
-    if (needsResultType) {
-      const wireObjectSet = getWireObjectSet(this.#objectSet);
-      const { resultType } = await getObjectTypesThatInvalidate(
-        this.store.client[additionalContext],
-        wireObjectSet,
-      );
-
-      this.#updateFetchedObjectType(resultType.apiName);
-
-      if (
-        Object.keys(this.#orderBy).length > 0
-        && !(this.sortingStrategy instanceof OrderBySortingStrategy)
-      ) {
-        this.sortingStrategy = new OrderBySortingStrategy(
-          resultType.apiName,
-          this.#orderBy,
-        );
-      }
-
-      if (
-        this.#pivotInfo != null && this.#intersectWith != null
-        && this.#intersectWith.length > 0 && !this.#pivotIntersectApplied
-      ) {
-        const rdpConfig = this.cacheKey.otherKeys[RDP_IDX];
-        const intersectSets = this.#intersectWith.map(whereClause => {
-          if (resultType.type === "object") {
-            let objectSet = this.store.client({
-              type: "object",
-              apiName: resultType.apiName,
-            } as ObjectTypeDefinition);
-
-            if (rdpConfig != null) {
-              objectSet = objectSet.withProperties(
-                rdpConfig as DerivedProperty.Clause<ObjectTypeDefinition>,
-              );
-            }
-
-            return objectSet.where(whereClause as WhereClause<any>);
-          }
-
-          return this.store.client({
-            type: "interface",
-            apiName: resultType.apiName,
-          } as InterfaceDefinition).where(
-            whereClause as WhereClause<any>,
-          );
-        });
-
-        this.#objectSet = this.#objectSet.intersect(
-          ...intersectSets,
-        );
-        this.#pivotIntersectApplied = true;
-      }
-    }
-
-    // Resolve the actual result type on first fetch so revalidateObjectType
-    // can match against it. For simple queries this equals apiName; for
-    // transformed queries (link traversal, etc.) it may differ.
-    // Some ObjectSet types (static, reference) don't support result type
-    // resolution, so we fall back to apiName.
-    if (this.#fetchedObjectType == null) {
+    // Resolve the result type once for queries that need it (pivot/intersect).
+    // Simple queries skip this entirely since result type === apiName.
+    if (this.#needsResultTypeResolution && this.#fetchedObjectType == null) {
       try {
         const wireObjectSet = getWireObjectSet(this.#objectSet);
         const { resultType } = await getObjectTypesThatInvalidate(
           this.store.client[additionalContext],
           wireObjectSet,
         );
-        this.#updateFetchedObjectType(resultType.apiName);
+
+        this.#fetchedObjectType = resultType.apiName;
+
+        if (
+          Object.keys(this.#orderBy).length > 0
+          && !(this.sortingStrategy instanceof OrderBySortingStrategy)
+        ) {
+          this.sortingStrategy = new OrderBySortingStrategy(
+            resultType.apiName,
+            this.#orderBy,
+          );
+        }
+
+        if (
+          this.#pivotInfo != null && this.#intersectWith != null
+          && this.#intersectWith.length > 0 && !this.#pivotIntersectApplied
+        ) {
+          const rdpConfig = this.cacheKey.otherKeys[RDP_IDX];
+          const intersectSets = this.#intersectWith.map(whereClause => {
+            if (resultType.type === "object") {
+              let objectSet = this.store.client({
+                type: "object",
+                apiName: resultType.apiName,
+              } as ObjectTypeDefinition);
+
+              if (rdpConfig != null) {
+                objectSet = objectSet.withProperties(
+                  rdpConfig as DerivedProperty.Clause<ObjectTypeDefinition>,
+                );
+              }
+
+              return objectSet.where(whereClause as WhereClause<any>);
+            }
+
+            return this.store.client({
+              type: "interface",
+              apiName: resultType.apiName,
+            } as InterfaceDefinition).where(
+              whereClause as WhereClause<any>,
+            );
+          });
+
+          this.#objectSet = this.#objectSet.intersect(
+            ...intersectSets,
+          );
+          this.#pivotIntersectApplied = true;
+        }
       } catch {
-        this.#updateFetchedObjectType(this.apiName);
+        this.#fetchedObjectType = this.apiName;
       }
     }
 
@@ -350,17 +336,8 @@ export abstract class ListQuery extends BaseListQuery<
     );
   }
 
-  /**
-   * Determines if this query's results are affected by changes to the
-   * given object type. Base checks apiName (source type) and
-   * fetchedObjectType (actual result type when they differ).
-   * Subclasses override to add type-specific logic (e.g. interface
-   * implementation checks).
-   */
-  async revalidateObjectType(objectType: string): Promise<boolean> {
-    return this.apiName === objectType
-      || (this.#fetchedObjectType != null
-        && this.#fetchedObjectType === objectType);
+  revalidateObjectType(objectType: string): boolean {
+    return this.objectTypes.has(objectType);
   }
 
   /**
@@ -374,9 +351,8 @@ export abstract class ListQuery extends BaseListQuery<
     objectType: string,
     changes: Changes | undefined,
   ): Promise<void> => {
-    if (await this.revalidateObjectType(objectType)) {
-      changes?.modified.add(this.cacheKey);
-      return this.revalidate(true);
+    if (this.revalidateObjectType(objectType)) {
+      return this.markAffectedAndRevalidate(changes);
     }
   };
 
@@ -407,29 +383,15 @@ export abstract class ListQuery extends BaseListQuery<
     // mark ourselves as updated so we don't infinite recurse.
     changes.modified.add(this.cacheKey);
 
-    // When the fetched object type differs from apiName (e.g. a query that
-    // traverses a link), we can't locally evaluate whether result-type
-    // changes affect this query -- that depends on link relationships the
-    // client doesn't have. Fall back to a full server revalidation.
+    // For cross-type queries (e.g. link traversal where result type differs
+    // from apiName), fall back to full server revalidation since we can't
+    // locally evaluate link relationships.
     if (
       this.#fetchedObjectType != null
       && this.#fetchedObjectType !== this.apiName
+      && changesAffectObjectType(changes, this.#fetchedObjectType)
     ) {
-      const fetchedType = this.#fetchedObjectType;
-      if (
-        (changes.addedObjects.get(fetchedType)?.length ?? 0) > 0
-        || (changes.modifiedObjects.get(fetchedType)?.length ?? 0) > 0
-      ) {
-        return this.revalidate(true);
-      }
-      for (const key of changes.deleted) {
-        if (
-          key.type === "object"
-          && key.otherKeys[OBJECT_API_NAME_IDX] === fetchedType
-        ) {
-          return this.revalidate(true);
-        }
-      }
+      return this.revalidate(true);
     }
 
     try {

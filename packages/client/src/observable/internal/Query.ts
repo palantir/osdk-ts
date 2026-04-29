@@ -143,6 +143,13 @@ export abstract class Query<
     return Math.min(...this.#subscriptionDedupeIntervals.values());
   }
 
+  protected markAffectedAndRevalidate(
+    changes: Changes | undefined,
+  ): Promise<void> {
+    changes?.modified.add(this.cacheKey);
+    return this.revalidate(true);
+  }
+
   /**
    * Causes the query to revalidate. This will cause the query to fetch
    * the latest data from the server and update the store if it is deemed
