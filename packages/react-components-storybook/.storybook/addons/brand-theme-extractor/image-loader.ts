@@ -64,7 +64,10 @@ export async function loadScreenshotFromUrl(
   try {
     // Microlink returns JSON with a screenshot URL
     const json = await xhrFetchJson(apiUrl);
-    const screenshotUrl = json?.data?.screenshot?.url;
+    const data = json?.data as
+      | { screenshot?: { url?: string } }
+      | undefined;
+    const screenshotUrl = data?.screenshot?.url;
     if (!screenshotUrl) {
       throw new Error("No screenshot URL in response");
     }
