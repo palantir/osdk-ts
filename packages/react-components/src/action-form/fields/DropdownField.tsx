@@ -23,7 +23,7 @@ import { Select } from "../../base-components/select/Select.js";
 import selectStyles from "../../base-components/select/Select.module.css";
 import { typedReactMemo } from "../../shared/typedMemo.js";
 import type { DropdownFieldProps } from "../FormFieldApi.js";
-import type { VirtualItemRenderProps } from "./VirtualizedItemList.js";
+import { type VirtualItemRenderProps } from "./VirtualizedItemList.js";
 
 const EMPTY_ARRAY: [] = [];
 
@@ -211,6 +211,7 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
   disableClientSideFiltering,
   popupStatus,
   popupFooter,
+  virtualized,
   onItemHighlighted,
   renderItemList,
 }: InnerComboboxProps<V, Multiple>): React.ReactElement {
@@ -308,11 +309,7 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
         inputValue={query}
         onInputValueChange={onQueryChange}
         filter={disableClientSideFiltering ? null : undefined}
-        // Base UI's public type only exposes `boolean`, but the underlying
-        // AriaCombobox accepts `"always"` which highlights the first item on
-        // open AND whenever items change (e.g. after async search results).
-        autoHighlight={"always" as unknown as boolean}
-        virtualized={renderItemList != null}
+        virtualized={virtualized}
         onItemHighlighted={onItemHighlighted}
       >
         <Combobox.Trigger
@@ -377,21 +374,18 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
                 </div>
               )}
               {popupStatus}
+              {/* Hide "No results" when popupStatus provides its own message (e.g. "Searching…") */}
+              {popupStatus == null && (
+                <Combobox.Empty>No results</Combobox.Empty>
+              )}
               {renderItemList != null
                 ? (
-                  <>
-                    {/* Hide "No results" when popupStatus provides its own message (e.g. "Searching…") */}
-                    {popupStatus == null && (
-                      <Combobox.Empty>No results</Combobox.Empty>
-                    )}
-                    <Combobox.List>
-                      {renderItemList(renderItemByIndex, items.length)}
-                    </Combobox.List>
-                  </>
+                  <Combobox.List>
+                    {renderItemList(renderItemByIndex, items.length)}
+                  </Combobox.List>
                 )
                 : (
                   <>
-                    <Combobox.Empty>No results</Combobox.Empty>
                     <Combobox.List>
                       {isMultiple ? renderItemWithIndicator : renderItem}
                     </Combobox.List>

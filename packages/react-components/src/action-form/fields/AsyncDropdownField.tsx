@@ -16,14 +16,16 @@
 
 import React, { useCallback, useMemo, useRef } from "react";
 import { SkeletonBar } from "../../base-components/skeleton/SkeletonBar.js";
+import { useInfiniteScroll } from "../../shared/hooks/useInfiniteScroll.js";
 import { typedReactMemo } from "../../shared/typedMemo.js";
 import type { DropdownFieldProps } from "../FormFieldApi.js";
 import styles from "./AsyncDropdownField.module.css";
 import { DropdownField } from "./DropdownField.js";
-import type { VirtualItemRenderProps ,
-  VirtualizedItemList,
-  type VirtualizedItemListVirtualizer,
+import type {
+  VirtualItemRenderProps,
+  VirtualizedItemListVirtualizer,
 } from "./VirtualizedItemList.js";
+import { VirtualizedItemList } from "./VirtualizedItemList.js";
 
 export interface AsyncDropdownFieldProps<V, Multiple extends boolean = false>
   extends
@@ -37,12 +39,12 @@ export interface AsyncDropdownFieldProps<V, Multiple extends boolean = false>
   /** Whether the data source is currently searching. */
   isSearching: boolean;
   /** Whether more pages of data are available to fetch. */
-  hasMore?: boolean;
+  hasMore: boolean;
 
   /**
    * Called when the user scrolls to the bottom and more data is available.
    */
-  onFetchMore?: () => void;
+  onFetchMore: () => void;
 
   /**
    * The error from the most recent failed fetch, if any.
@@ -94,34 +96,53 @@ export const AsyncDropdownField: <V, Multiple extends boolean = false>(
     [],
   );
 
-  // Build status as a React element. This is rendered in a stable slot
-  // inside the popup so the popup's DOM structure stays stable across
-  // loading transitions and doesn't steal focus from the search input.
-  let popupStatus: React.ReactNode = null;
+  // Rendered in a stable slot inside the popup so the DOM structure stays
+  // stable across loading transitions and doesn't steal focus from the
+  // search input. Memoized so DropdownField (wrapped in memo) can skip
+  // re-renders when only unrelated props change.
+  const popupStatus = useMemo(() => {
+    if (fetchError != null) {
+      return (
+        <div className={styles.osdkAsyncDropdownError} role="alert">
+          {fetchError.message}
+        </div>
+      );
+    }
+    if (isSearching) {
+      return <div className={styles.osdkAsyncDropdownStatus}>Searching…</div>;
+    }
+    // "No results" is handled by Combobox.Empty in the virtualized path
+    return null;
+  }, [fetchError, isSearching]);
 
-  if (fetchError != null) {
-    popupStatus = (
-      <div className={styles.osdkAsyncDropdownError} role="alert">
-        {fetchError.message}
-      </div>
-    );
-  } else if (isSearching) {
-    popupStatus = (
-      <div className={styles.osdkAsyncDropdownStatus}>Searching…</div>
-    );
-  }
-  // "No results" is handled by Combobox.Empty in the virtualized path
+  // Refs store the latest renderItem and itemCount from each renderItemList
+  // call, so the wrapper callback can be a stable useCallback reference.
+  const delegateRenderItemRef = useRef<
+    ((index: number, v: VirtualItemRenderProps) => React.ReactNode) | null
+  >(null);
+  const itemCountRef = useRef(0);
 
-  const footer = useMemo(
-    () =>
-      hasMore
-        ? (
-          <div>
+  const infiniteScrollRef = useInfiniteScroll({
+    callback: onFetchMore,
+    loadedCount: itemCountRef.current,
+  });
+
+  const renderItemWithSentinel = useCallback(
+    (index: number, virtualProps: VirtualItemRenderProps): React.ReactNode => {
+      if (index >= itemCountRef.current) {
+        return (
+          <div
+            ref={infiniteScrollRef}
+            role="presentation"
+            style={virtualProps.style}
+          >
             <SkeletonBar className={styles.osdkAsyncDropdownSkeleton} />
           </div>
-        )
-        : null,
-    [hasMore],
+        );
+      }
+      return delegateRenderItemRef.current?.(index, virtualProps) ?? null;
+    },
+    [infiniteScrollRef],
   );
 
   const renderItemList = useCallback(
@@ -131,27 +152,29 @@ export const AsyncDropdownField: <V, Multiple extends boolean = false>(
         virtualProps: VirtualItemRenderProps,
       ) => React.ReactNode,
       itemCount: number,
-    ) => (
-      <VirtualizedItemList
-        count={itemCount}
-        renderItem={renderItem}
-        hasMore={hasMore}
-        onFetchMore={onFetchMore}
-        virtualizerRef={virtualizerRef}
-        footer={footer}
-      />
-    ),
-    [hasMore, onFetchMore, footer],
+    ) => {
+      delegateRenderItemRef.current = renderItem;
+      itemCountRef.current = itemCount;
+      const totalCount = itemCount + (hasMore ? 1 : 0);
+      return (
+        <VirtualizedItemList
+          count={totalCount}
+          renderItem={renderItemWithSentinel}
+          virtualizerRef={virtualizerRef}
+        />
+      );
+    },
+    [hasMore, renderItemWithSentinel, virtualizerRef],
   );
 
   return (
     <DropdownField
       {...dropdownProps}
       isSearchable={true}
-      disableClientSideFiltering={dropdownProps.onQueryChange != null}
       popupStatus={popupStatus}
       onItemHighlighted={handleItemHighlighted}
       renderItemList={renderItemList}
+      disableClientSideFiltering={dropdownProps.onQueryChange != null}
     />
   );
 });

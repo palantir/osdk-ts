@@ -332,13 +332,9 @@ export interface DropdownFieldProps<V, Multiple extends boolean = false>
   popupFooter?: React.ReactNode;
 
   /**
-   * Custom renderer for the item list region of the combobox popup.
-   * Receives a `renderItem` callback that produces `Combobox.Item` elements
-   * and the current item count. Use to wrap items in a virtualized scroll
-   * container or any other custom list layout.
-   *
-   * When provided, the combobox switches to virtualized mode (Base UI
-   * manages items by index rather than by DOM presence).
+   * Overrides the default virtualized item list rendering. Receives the
+   * per-item render callback and the item count so the caller can control
+   * the virtualizer (e.g. to append a trailing sentinel for infinite scroll).
    */
   renderItemList?: (
     renderItem: (
@@ -347,6 +343,12 @@ export interface DropdownFieldProps<V, Multiple extends boolean = false>
     ) => React.ReactNode,
     itemCount: number,
   ) => React.ReactNode;
+
+  /**
+   * Whether the list is virtualized.
+   * @default false
+   */
+  virtualized?: boolean;
 }
 
 export interface FilePickerProps extends BaseFormFieldProps<File | File[]> {
@@ -508,7 +510,7 @@ export interface ObjectSelectFieldProps extends
     | "query"
     | "onQueryChange"
     | "disableClientSideFiltering"
-    | "itemListRenderer"
+    | "renderItemList"
   >
 {
   /**

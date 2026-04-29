@@ -15,18 +15,16 @@
  */
 
 .osdkVirtualizedScroller {
-  overflow-block: auto;
   /*
-   * --available-height is set by Base UI's Positioner on the popup ancestor.
-   * --osdk-virtualized-reserved-block-size accounts for popup siblings
-   * (search input, status bar, footer, popup padding) so the scroller
-   * doesn't push the popup beyond the viewport. Consumers set this
-   * variable on the scroller element; it defaults to 0 when unset.
+   * Fill remaining space in the popup after the search input and status.
+   * The popup (flex column) and Combobox.List both participate in flex
+   * layout, so the scroller naturally gets the leftover height without
+   * needing to compute its own max-block-size from --available-height.
+   * min-block-size: 0 lets the flex child shrink below content size.
    */
-  max-block-size: calc(
-    var(--available-height, 300px)
-    - var(--osdk-virtualized-reserved-block-size, 0px)
-  );
+  flex: 1;
+  min-block-size: 0;
+  overflow-block: auto;
   /*
    * The popup has padding that insets the scroller from the popup edge,
    * making the scrollbar appear "cut" (not reaching the popup border).

@@ -16,14 +16,40 @@
 
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import React from "react";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { AsyncDropdownField } from "../fields/AsyncDropdownField.js";
+
+// useInfiniteScroll uses IntersectionObserver which HappyDOM doesn't implement.
+// This mock fires the callback immediately on observe(), simulating an
+// always-visible sentinel (matching HappyDOM's 0-dimension layout).
+beforeEach(() => {
+  vi.stubGlobal(
+    "IntersectionObserver",
+    vi.fn(function MockIntersectionObserver(
+      this: IntersectionObserver,
+      callback: IntersectionObserverCallback,
+    ) {
+      return {
+        observe: vi.fn((target: Element) => {
+          callback(
+            [{ isIntersecting: true, target } as IntersectionObserverEntry],
+            this,
+          );
+        }),
+        disconnect: vi.fn(),
+        unobserve: vi.fn(),
+      };
+    }),
+  );
+});
 
 afterEach(() => {
   cleanup();
+  vi.unstubAllGlobals();
 });
 
 const ITEMS = ["Alpha", "Beta", "Gamma"];
+const NOOP = (): void => {};
 
 function renderAsyncDropdown(overrides: {
   items?: string[];
@@ -41,6 +67,7 @@ function renderAsyncDropdown(overrides: {
       isLoading={false}
       isSearching={false}
       hasMore={false}
+      onFetchMore={NOOP}
       {...overrides}
     />,
   );
@@ -69,12 +96,13 @@ describe("AsyncDropdownField", () => {
       renderAsyncDropdown({ hasMore: true, onFetchMore });
       await openCombobox();
 
-      // VirtualizedItemList calls onFetchMore synchronously via ref callback
-      // when scrollHeight <= clientHeight (short list / HappyDOM has 0 dimensions)
+      // The virtualizer renders all items for short lists (including the
+      // sentinel at count+1). The sentinel's ref callback fires on mount,
+      // triggering onFetchMore.
       expect(onFetchMore).toHaveBeenCalled();
     });
 
-    it("hides skeleton footer after fetching all pages", async () => {
+    it("stops calling onFetchMore after fetching all pages", async () => {
       const onFetchMore = vi.fn();
       const { rerender } = render(
         <AsyncDropdownField
@@ -95,10 +123,8 @@ describe("AsyncDropdownField", () => {
         expect(getPopup()).not.toBeNull();
       });
 
-      // Skeleton should be visible while hasMore is true
-      const popup = getPopup();
-      expect(popup?.querySelectorAll("[class*='skeleton']")?.length)
-        .toBeGreaterThan(0);
+      // onFetchMore should have been called while hasMore was true
+      expect(onFetchMore).toHaveBeenCalled();
 
       // Simulate fetchMore completing — parent re-renders with all items loaded
       rerender(
@@ -113,9 +139,11 @@ describe("AsyncDropdownField", () => {
         />,
       );
 
-      // Skeleton should be gone now
-      const skeletonBars = getPopup()?.querySelectorAll("[class*='skeleton']");
-      expect(skeletonBars?.length ?? 0).toBe(0);
+      // Record calls at this point — no new calls should happen after settling
+      const callsAfterRerender = onFetchMore.mock.calls.length;
+      await vi.waitFor(() => {
+        expect(onFetchMore.mock.calls.length).toBe(callsAfterRerender);
+      });
     });
 
     it("does not call onFetchMore when hasMore is false", async () => {
@@ -128,14 +156,13 @@ describe("AsyncDropdownField", () => {
   });
 
   describe("footer and empty message", () => {
-    it("shows skeleton footer when hasMore is true and items exist", async () => {
-      renderAsyncDropdown({ hasMore: true });
+    it("calls onFetchMore when hasMore is true and items exist", async () => {
+      const onFetchMore = vi.fn();
+      renderAsyncDropdown({ hasMore: true, onFetchMore });
       await openCombobox();
 
-      const popup = getPopup();
-      expect(popup).not.toBeNull();
-      const skeletonBars = popup?.querySelectorAll("[class*='skeleton']");
-      expect(skeletonBars?.length).toBeGreaterThan(0);
+      // Sentinel mounts as a virtual item and triggers onFetchMore
+      expect(onFetchMore).toHaveBeenCalled();
     });
 
     it("shows 'Searching' status when searching with no items", async () => {
@@ -147,6 +174,7 @@ describe("AsyncDropdownField", () => {
           isLoading={true}
           isSearching={true}
           hasMore={false}
+          onFetchMore={NOOP}
         />,
       );
       const input = screen.getByRole("combobox");
@@ -169,6 +197,7 @@ describe("AsyncDropdownField", () => {
           isLoading={true}
           isSearching={true}
           hasMore={false}
+          onFetchMore={NOOP}
         />,
       );
       const input = screen.getByRole("combobox");
@@ -192,6 +221,7 @@ describe("AsyncDropdownField", () => {
           isLoading={false}
           isSearching={false}
           hasMore={false}
+          onFetchMore={NOOP}
           fetchError={new Error("Connection refused")}
         />,
       );
@@ -242,6 +272,7 @@ describe("AsyncDropdownField", () => {
           isLoading={true}
           isSearching={true}
           hasMore={false}
+          onFetchMore={NOOP}
         />,
       );
       openEmptyCombobox();
@@ -262,6 +293,7 @@ describe("AsyncDropdownField", () => {
           isLoading={false}
           isSearching={false}
           hasMore={false}
+          onFetchMore={NOOP}
         />,
       );
       openEmptyCombobox();
