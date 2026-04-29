@@ -445,6 +445,63 @@
     }
   },
   "objectTypes": {
+    "CipherTextTest": {
+      "objectType": {
+        "apiName": "CipherTextTest",
+        "displayName": "Cipher Text Test",
+        "status": "EXPERIMENTAL",
+        "description": "",
+        "pluralDisplayName": "Cipher Text Tests",
+        "icon": {
+          "type": "blueprint",
+          "color": "#4C90F0",
+          "name": "cube"
+        },
+        "primaryKey": "primaryKey_",
+        "properties": {
+          "cipherText": {
+            "displayName": "Cipher text",
+            "dataType": {
+              "type": "cipherText"
+            },
+            "rid": "ri.ontology.main.property.16e12750-3299-41c2-a2fd-ce702833fea0",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL",
+            "typeClasses": []
+          },
+          "primaryKey_": {
+            "displayName": "Primary Key",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.ac266be0-bb64-42c0-8475-4e8837954bca",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL",
+            "typeClasses": [
+              {
+                "kind": "render_hint",
+                "name": "SELECTABLE"
+              },
+              {
+                "kind": "render_hint",
+                "name": "SORTABLE"
+              }
+            ]
+          }
+        },
+        "rid": "ri.ontology.main.object-type.7782bd8f-954f-43cb-ba1a-b141d1638d6b",
+        "titleProperty": "primaryKey_",
+        "visibility": "NORMAL"
+      },
+      "linkTypes": [],
+      "implementsInterfaces": [],
+      "implementsInterfaces2": {},
+      "sharedPropertyTypeMapping": {}
+    },
     "MasonHeavyEquipment": {
       "objectType": {
         "apiName": "MasonHeavyEquipment",
@@ -6459,9 +6516,7 @@
       },
       "extendsInterfaces": [],
       "allExtendsInterfaces": [],
-      "implementedByObjectTypes": [
-        "MwaltherPersonOt"
-      ],
+      "implementedByObjectTypes": ["MwaltherPersonOt"],
       "links": {},
       "allLinks": {}
     },
@@ -6566,15 +6621,9 @@
           "requireImplementation": false
         }
       },
-      "extendsInterfaces": [
-        "MwaltherPersonV2"
-      ],
-      "allExtendsInterfaces": [
-        "MwaltherPersonV2"
-      ],
-      "implementedByObjectTypes": [
-        "MwaltherPersonOt"
-      ],
+      "extendsInterfaces": ["MwaltherPersonV2"],
+      "allExtendsInterfaces": ["MwaltherPersonV2"],
+      "implementedByObjectTypes": ["MwaltherPersonOt"],
       "links": {},
       "allLinks": {}
     },
@@ -6610,9 +6659,7 @@
       },
       "extendsInterfaces": [],
       "allExtendsInterfaces": [],
-      "implementedByObjectTypes": [
-        "MwaltherPersonOt"
-      ],
+      "implementedByObjectTypes": ["MwaltherPersonOt"],
       "links": {},
       "allLinks": {}
     }

@@ -15,6 +15,7 @@
  */
 
 import type { Attachment, AttachmentUpload } from "../object/Attachment.js";
+import type { CipherText } from "../object/CipherText.js";
 import type { Media, MediaReference } from "../object/Media.js";
 import type {
   GeotimeSeriesProperty,
@@ -28,6 +29,7 @@ export interface PropertyValueWireToClient {
   attachment: Attachment;
   boolean: boolean;
   byte: number;
+  cipherText: CipherText;
   datetime: string;
   decimal: string;
   double: number;
@@ -64,6 +66,7 @@ export interface PropertyValueClientToWire {
   attachment: string | AttachmentUpload | Blob & { readonly name: string };
   boolean: boolean;
   byte: number;
+  cipherText: never;
   datetime: string;
   decimal: string | number;
   double: number;
@@ -96,6 +99,7 @@ export interface PropertyValueWireToCreate {
   attachment: Attachment | string;
   boolean: boolean;
   byte: number;
+  cipherText: never;
   datetime: string;
   decimal: string;
   double: number;

@@ -315,7 +315,15 @@ export interface BaseObjectSet<Q extends ObjectOrInterfaceDefinition> {
 }
 
 // @public (undocumented)
-export type BaseWirePropertyTypes = "string" | "datetime" | "double" | "boolean" | "integer" | "timestamp" | "short" | "long" | "float" | "decimal" | "byte" | "marking" | "mediaReference" | "numericTimeseries" | "stringTimeseries" | "sensorTimeseries" | "attachment" | "geopoint" | "geoshape" | "geotimeSeriesReference" | "vector";
+export type BaseWirePropertyTypes = "string" | "datetime" | "double" | "boolean" | "integer" | "timestamp" | "short" | "long" | "float" | "decimal" | "byte" | "marking" | "mediaReference" | "numericTimeseries" | "stringTimeseries" | "sensorTimeseries" | "attachment" | "cipherText" | "geopoint" | "geoshape" | "geotimeSeriesReference" | "vector";
+
+// @public (undocumented)
+export interface CipherText {
+    	// (undocumented)
+    ciphertext: string;
+    	// (undocumented)
+    decrypt(): Promise<string | undefined>;
+}
 
 // @public (undocumented)
 export type CompileTimeMetadata<T extends {
@@ -1575,6 +1583,8 @@ export interface PropertyValueWireToClient {
     boolean: boolean;
     	// (undocumented)
     byte: number;
+    	// (undocumented)
+    cipherText: CipherText;
     	// (undocumented)
     datetime: string;
     	// (undocumented)
