@@ -254,11 +254,7 @@ For data-fetching hooks, errors are `PalantirApiError` instances with an `errorD
    - Support `where`, `orderBy`, and `pageSize` if the hook fetches collections.
 4. **Export the hook** from `src/public/experimental.ts`.
 5. **Write tests** in `src/new/__tests__/` or `test/`.
-6. **Update API reports** by running API Extractor:
-   ```sh
-   pnpm turbo check-api --filter=@osdk/react
-   ```
-7. **Add documentation** in `docs/react/` (see [Documentation](#documentation)).
+6. **Add documentation** in `docs/react/` (see [Documentation](#documentation)).
 
 ## Cache and Invalidation
 
