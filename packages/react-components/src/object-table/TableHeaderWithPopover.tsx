@@ -267,10 +267,7 @@ export function TableHeaderWithPopover<
             )}
           </div>
           <Menu.Portal container={document.body}>
-            <Menu.Positioner
-              className={styles.osdkHeaderPositioner}
-              sideOffset={4}
-            >
+            <Menu.Positioner sideOffset={4}>
               <Menu.Popup
                 className={styles.osdkHeaderPopup}
               >
