@@ -14,11 +14,17 @@
  * limitations under the License.
  */
 
+import React from "react";
 import {
   defaultConfig,
   type TagBadgeParameters,
 } from "storybook-addon-tag-badges/manager-helpers";
-import { addons } from "storybook/manager-api";
+import { addons, types } from "storybook/manager-api";
+import {
+  ADDON_ID,
+  PANEL_ID,
+} from "./addons/brand-theme-extractor/constants.js";
+import { Panel } from "./addons/brand-theme-extractor/Panel.js";
 
 addons.setConfig({
   tagBadges: [
@@ -70,3 +76,12 @@ addons.register(
     }, 100);
   },
 );
+
+// Brand Theme Extractor panel
+addons.register(ADDON_ID, () => {
+  addons.add(PANEL_ID, {
+    type: types.PANEL,
+    title: "Brand Theme",
+    render: ({ active }) => React.createElement(Panel, { active }),
+  });
+});
