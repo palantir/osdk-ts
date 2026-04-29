@@ -139,11 +139,10 @@ src/my-component/
 
 - **Never hardcode colors or pixel values.** Use CSS variables for all visual properties.
 - **Use `--bp` design tokens first.** Any `--bp` token used must be mapped from an `--osdk` token.
-- **Add default styles** to `@osdk/react-components-styles` (`index.css`), not inline.
+- **Add default styles** to src/tokens
 - **Use CSS modules** (`.module.css`) for component-scoped styles.
 - **Combine class names** with the `classnames` utility. Never use template literals for class names.
-- **Respect CSS layers.** Component styles belong in the `osdk.components` layer; tokens belong in `osdk.tokens`.
-  See the [README CSS Setup section](./README.md#css-setup) and `@osdk/react-components-styles` for details on the layering system.
+- **Respect CSS layers.** See the [README CSS Setup section](./README.md#css-setup)
 
 ## Testing
 
@@ -201,9 +200,9 @@ Storybook runs on `http://localhost:6006`.
    npx dprint fmt
    ```
 4. **Add a changeset** (see [Changesets](#changesets) below).
-5. **Run a global transpile check** to catch cross-package issues:
+5. **Run a global check** to catch cross-package issues:
    ```sh
-   pnpm turbo transpile
+   pnpm turbo check
    ```
 6. **Push and open a PR** against `main`. Fill out the PR template.
 7. **Do not force-push** amended commits during review — push new commits so reviewers can see incremental changes.
