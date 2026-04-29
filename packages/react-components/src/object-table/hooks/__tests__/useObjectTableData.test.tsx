@@ -54,6 +54,7 @@ interface MockReturnType extends UseOsdkListResult<TestObject> {
 }
 
 vi.mock("@osdk/react/experimental", () => ({
+  useRegisterUserAgent: vi.fn(),
   useOsdkObjects: vi.fn((objectType, options): MockReturnType => {
     return {
       data: [],
@@ -446,7 +447,7 @@ describe(useObjectTableData, () => {
     );
   });
 
-  it("when function columns are defined without objectSet, should call useFunctionColumnsData with undefined objectSet", () => {
+  it("when function columns are defined without objectSet, should call useFunctionColumnsData with the objectType", () => {
     const mockBaseData = [
       { $primaryKey: "1", $apiName: "TestObject", name: "Object 1" },
       { $primaryKey: "2", $apiName: "TestObject", name: "Object 2" },
@@ -492,11 +493,13 @@ describe(useObjectTableData, () => {
       { wrapper },
     );
 
-    expect(useFunctionColumnsData).toHaveBeenCalledWith(
-      undefined,
-      mockBaseData,
+    expect(useFunctionColumnsData).toHaveBeenCalledWith({
+      objectOrInterfaceType: TestObjectType,
+      objects: mockBaseData,
       columnDefinitions,
-    );
+      primaryKeyApiName: undefined,
+      pageSize: 50,
+    });
     expect(result.current.data).toEqual([
       {
         $primaryKey: "1",
@@ -586,11 +589,13 @@ describe(useObjectTableData, () => {
       { wrapper },
     );
 
-    expect(useFunctionColumnsData).toHaveBeenCalledWith(
-      mockObjectSet,
-      mockBaseData,
+    expect(useFunctionColumnsData).toHaveBeenCalledWith({
+      objectOrInterfaceType: TestObjectType,
+      objects: mockBaseData,
       columnDefinitions,
-    );
+      primaryKeyApiName: undefined,
+      pageSize: 50,
+    });
 
     expect(result.current.data).toEqual([
       {

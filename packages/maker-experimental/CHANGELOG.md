@@ -1,5 +1,63 @@
 # @osdk/maker-experimental
 
+## 0.10.0
+
+### Patch Changes
+
+- Updated dependencies [9225ee3]
+- Updated dependencies [91f34a9]
+  - @osdk/maker@0.20.0
+  - @osdk/api@2.12.0
+  - @osdk/client.unstable@2.12.0
+
+## 0.9.0
+
+### Minor Changes
+
+- a6f4208: configure entity perms in OAC
+
+### Patch Changes
+
+- Updated dependencies [a6f4208]
+  - @osdk/client.unstable@2.11.0
+  - @osdk/maker@0.19.0
+  - @osdk/api@2.11.0
+
+## 0.8.0
+
+### Minor Changes
+
+- f01a8f4: improvements(build): significant reduction in build task graphs
+- b1b8a8b: Support string analyzers
+- 32691ed: Make compass resource shape optional for output datasets
+- 9333a4a: Support imports in maker experimental
+
+### Patch Changes
+
+- Updated dependencies [f01a8f4]
+- Updated dependencies [151d258]
+- Updated dependencies [b1b8a8b]
+  - @osdk/client.unstable@2.10.0
+  - @osdk/maker@0.18.0
+  - @osdk/api@2.10.0
+
+## 0.7.0
+
+### Minor Changes
+
+- 492db18: Expand the set of types acceptable in references
+
+### Patch Changes
+
+- Updated dependencies [b90fb8e]
+- Updated dependencies [cbc8e9c]
+- Updated dependencies [e8d14a0]
+- Updated dependencies [2394ca7]
+- Updated dependencies [492db18]
+  - @osdk/maker@0.17.0
+  - @osdk/api@2.9.0
+  - @osdk/client.unstable@2.9.0
+
 ## 0.6.0
 
 ### Minor Changes

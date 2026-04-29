@@ -1,5 +1,25 @@
 # @osdk/cli.common
 
+## 0.36.0
+
+### Minor Changes
+
+- df1a4f8: Build OAuth authorize and token URLs via the URL constructor instead of `node:path/posix.join`, which is not URL-aware.
+
+## 0.35.0
+
+## 0.34.0
+
+### Minor Changes
+
+- f01a8f4: improvements(build): significant reduction in build task graphs
+
+## 0.33.0
+
+### Minor Changes
+
+- 40fe279: Fix cli by making referenced packages bundled
+
 ## 0.32.0
 
 ### Minor Changes

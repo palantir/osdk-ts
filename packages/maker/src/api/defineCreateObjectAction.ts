@@ -139,6 +139,7 @@ export function defineCreateObjectAction(
       }),
     ...(def.submissionMetadata
       && { submissionMetadata: def.submissionMetadata }),
+    ...(def.permission && { permission: def.permission }),
     ...(def.icon && { icon: def.icon }),
   });
 }

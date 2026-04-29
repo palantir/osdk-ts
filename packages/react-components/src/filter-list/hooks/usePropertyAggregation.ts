@@ -50,7 +50,7 @@ export function usePropertyAggregation<
 >(
   objectType: Q,
   propertyKey: K,
-  objectSet: ObjectSet<Q>,
+  objectSet: ObjectSet<Q> | undefined,
   options?: UsePropertyAggregationOptions<Q>,
 ): UsePropertyAggregationResult {
   // AggregateOpts requires specific property keys from Q, but we're dynamically
@@ -68,11 +68,15 @@ export function usePropertyAggregation<
     [propertyKey],
   );
 
-  const { data: countData, isLoading, error } = useOsdkAggregation(objectType, {
-    aggregate: aggregateOptions,
-    where: options?.where,
-    objectSet,
-  });
+  const aggregationArgs = useMemo(
+    () => ({ aggregate: aggregateOptions, where: options?.where, objectSet }),
+    [aggregateOptions, options?.where, objectSet],
+  );
+
+  const { data: countData, isLoading, error } = useOsdkAggregation(
+    objectType,
+    aggregationArgs,
+  );
 
   const result = useMemo(
     (): { data: PropertyAggregationValue[]; maxCount: number } => {

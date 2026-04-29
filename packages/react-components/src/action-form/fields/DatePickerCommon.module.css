@@ -1,0 +1,86 @@
+/* Bare input inside a date picker wrapper */
+.osdkDatePickerInput {
+  width: 100%;
+  flex: 1;
+  min-width: 0;
+  min-height: var(--osdk-datetime-input-min-height);
+  padding: var(--osdk-datetime-input-padding);
+  border: none;
+  border-radius: var(--osdk-datetime-input-border-radius);
+  background: transparent;
+  color: var(--osdk-datetime-input-color);
+  font-family: var(--osdk-datetime-input-font-family);
+  font-size: var(--osdk-datetime-input-font-size);
+  line-height: var(--osdk-datetime-input-line-height);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  &::placeholder {
+    color: var(--osdk-datetime-input-placeholder-color);
+  }
+
+  &:focus-visible {
+    outline: none;
+  }
+}
+
+/* Popover container */
+.osdkDatePickerPopover {
+  background: var(--osdk-datetime-popover-bg);
+  padding: var(--osdk-datetime-popover-padding);
+  z-index: var(--osdk-datetime-popover-z-index);
+  box-shadow: var(--osdk-datetime-popover-shadow);
+}
+
+/* Visually-hidden focus boundary for Tab cycling between input and popover */
+.osdkDatePickerFocusBoundary {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  outline: none;
+}
+
+/* Shared input wrapper — border, bg, hover, focus-within */
+.osdkDatePickerInputWrapper {
+  display: flex;
+  align-items: center;
+  border-radius: var(--osdk-datetime-input-border-radius);
+  border: var(--osdk-datetime-input-border-width) solid
+    var(--osdk-datetime-input-border-color);
+  background-color: var(--osdk-datetime-input-bg);
+  transition:
+    background-color var(--osdk-datetime-input-transition-duration)
+      var(--osdk-datetime-input-transition-ease),
+    border-color var(--osdk-datetime-input-transition-duration)
+      var(--osdk-datetime-input-transition-ease);
+  cursor: text;
+
+  &:hover {
+    background-color: var(--osdk-datetime-input-bg-hover);
+  }
+
+  &:focus-within {
+    outline: var(--osdk-datetime-input-focus-width) solid
+      var(--osdk-datetime-input-focus-color);
+    outline-offset: var(--osdk-datetime-input-focus-offset);
+    border-color: var(--osdk-datetime-input-border-color-focus);
+  }
+}
+
+.osdkDatePickerInputWrapperError {
+  border-color: var(--osdk-datetime-input-error-border-color);
+
+  &:focus-within {
+    border-color: var(--osdk-datetime-input-error-border-color);
+  }
+}
+
+/* Calendar fallback / loading skeleton */
+.osdkDatePickerFallback {
+  width: var(--osdk-datetime-calendar-fallback-width);
+  height: var(--osdk-datetime-calendar-fallback-height);
+}

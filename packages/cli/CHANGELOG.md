@@ -1,5 +1,45 @@
 # @osdk/cli
 
+## 0.36.0
+
+### Minor Changes
+
+- df1a4f8: Build API URLs in site and widgetset commands via the URL constructor. The `foundryUrl` argument coerce now ensures a trailing slash (previously stripped it), so base URLs with path prefixes resolve correctly.
+
+### Patch Changes
+
+- @osdk/widget.api@3.9.0
+
+## 0.35.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.8.0
+
+## 0.34.0
+
+### Minor Changes
+
+- f01a8f4: improvements(build): significant reduction in build task graphs
+
+### Patch Changes
+
+- Updated dependencies [f01a8f4]
+  - @osdk/foundry-config-json@1.8.0
+  - @osdk/shared.net.errors@2.9.0
+  - @osdk/shared.net.fetch@1.9.0
+  - @osdk/widget.api@3.7.0
+
+## 0.33.0
+
+### Minor Changes
+
+- 40fe279: Fix cli by making referenced packages bundled
+
+### Patch Changes
+
+- @osdk/widget.api@3.6.0
+
 ## 0.32.0
 
 ### Minor Changes

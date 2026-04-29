@@ -1,5 +1,43 @@
 # @osdk/widget.vite-plugin
 
+## 3.9.0
+
+### Minor Changes
+
+- df1a4f8: Build dev-mode settings and preview redirect URLs via the URL constructor so they handle any `foundryUrl` shape (with or without trailing slash, with path prefix).
+
+### Patch Changes
+
+- @osdk/widget.api@3.9.0
+
+## 3.8.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.8.0
+
+## 3.7.0
+
+### Minor Changes
+
+- f01a8f4: improvements(build): significant reduction in build task graphs
+
+### Patch Changes
+
+- Updated dependencies [f01a8f4]
+  - @osdk/foundry-config-json@1.8.0
+  - @osdk/widget.api@3.7.0
+
+## 3.6.0
+
+### Minor Changes
+
+- 89def41: patch bump associated with BlueprintJS upgrade
+
+### Patch Changes
+
+- @osdk/widget.api@3.6.0
+
 ## 3.5.0
 
 ### Minor Changes

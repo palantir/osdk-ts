@@ -1,7 +1,7 @@
 {
   "name": "@osdk/react-components-storybook",
   "private": true,
-  "version": "0.2.0",
+  "version": "0.6.0",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -9,7 +9,7 @@
   },
   "scripts": {
     "build": "storybook build",
-    "dev": "storybook dev -p 6006",
+    "dev": "trap 'kill 0' EXIT; pnpm turbo watch transpileBrowser --filter='@osdk/react-components-storybook^...' & storybook dev -p 6006",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "lint": "eslint . && dprint check --config $(find-up dprint.json)",
     "transpileAllDeps": "pnpm --filter @osdk/* transpileBrowser",
@@ -27,7 +27,6 @@
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@osdk/react": "workspace:*",
     "@osdk/react-components": "workspace:*",
-    "@osdk/react-components-styles": "workspace:*",
     "@storybook/addon-a11y": "^10.2.10",
     "@storybook/addon-docs": "^10.2.10",
     "@storybook/addon-links": "^10.2.10",

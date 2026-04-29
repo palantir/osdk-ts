@@ -64,6 +64,41 @@ export namespace ObservableClient {
   }
 }
 
+export interface CacheSnapshot {
+  entries: CacheEntry[];
+  stats: {
+    totalEntries: number;
+    totalSize: number;
+    totalHits?: number;
+  };
+}
+
+interface CacheEntryMetadata {
+  timestamp: number;
+  status: "init" | "loading" | "loaded" | "error";
+  hitCount?: number;
+  size: number;
+  isOptimistic?: boolean;
+}
+
+interface CacheEntryBase {
+  key: string;
+  objectType: string;
+  metadata: CacheEntryMetadata;
+  data?: unknown;
+}
+
+export type CacheEntry =
+  | CacheEntryBase & { type: "object" }
+  | CacheEntryBase & {
+    type: "list";
+    where?: unknown;
+    orderBy?: unknown;
+    pageSize?: number;
+  }
+  | CacheEntryBase & { type: "link"; linkName?: string }
+  | CacheEntryBase & { type: "objectSet" };
+
 export interface ObserveObjectOptions<
   T extends ObjectOrInterfaceDefinition,
 > extends ObserveOptions {
@@ -87,6 +122,18 @@ export interface ObserveListOptions<
   orderBy?: OrderBy<Q>;
   invalidationMode?: InvalidationMode;
   expectedLength?: number;
+
+  /**
+   * Enable streaming updates via websocket subscription.
+   *
+   * Cannot be combined with `pivotTo`. The server does not support
+   * websocket subscriptions for link-traversal queries.
+   *
+   * Cannot be combined with `withProperties`. The server does not support
+   * websocket subscriptions for object sets that include derived properties;
+   * in that case `streamUpdates` is ignored and a warning is logged in
+   * development.
+   */
   streamUpdates?: boolean;
   withProperties?: DerivedProperty.Clause<Q>;
 
@@ -142,6 +189,12 @@ export interface ObserveListOptions<
   intersectWith?: Array<{
     where: WhereClause<Q, RDPs>;
   }>;
+
+  /**
+   * Traverse to linked objects. Cannot be combined with `streamUpdates`.
+   * The server does not support websocket subscriptions for link-traversal
+   * queries.
+   */
   pivotTo?: string;
 }
 
@@ -534,6 +587,8 @@ export interface ObservableClient extends ObserveLinks {
     primaryKey: string | number,
   ): Promise<void>;
 
+  getCacheSnapshot(): Promise<CacheSnapshot>;
+
   canonicalizeWhereClause: <
     T extends ObjectOrInterfaceDefinition,
     RDPs extends Record<string, SimplePropertyDef> = {},
@@ -570,7 +625,10 @@ export type CanonicalizedOptions<
   [K in keyof T]: T[K];
 };
 
-export function createObservableClient(client: Client): ObservableClient {
+export function createObservableClient(
+  client: Client,
+  extraUserAgents?: () => string[],
+): ObservableClient {
   // First we need a modified client that adds an extra header so we know its
   // an observable client
   const tweakedClient = createClientFromContext({
@@ -584,6 +642,7 @@ export function createObservableClient(client: Client): ObservableClient {
           [
             headers.get("Fetch-User-Agent"),
             OBSERVABLE_USER_AGENT,
+            ...(extraUserAgents?.() ?? []),
           ].filter(x => x && x?.length > 0).join(" "),
         );
         return headers;

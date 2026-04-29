@@ -243,6 +243,7 @@ function LinkedPropertyInputInner<
             propertyKey={linkedPropertyKey}
             selectedValues={values}
             onChange={onSelectChange}
+            showCount={definition.showCount}
           />
         );
       }
@@ -258,6 +259,7 @@ function LinkedPropertyInputInner<
             propertyKey={linkedPropertyKey}
             selectedValue={value}
             onChange={onSingleSelectChange}
+            showCount={definition.showCount}
           />
         );
       }
@@ -334,6 +336,7 @@ function LinkedPropertyInputInner<
             selectedValues={selectedValues}
             onChange={onExactMatchChange}
             searchQuery={searchQuery}
+            showCount={definition.showCount}
           />
         );
       }
@@ -422,6 +425,7 @@ interface LinkedMultiSelectInputProps<Q extends ObjectTypeDefinition>
 {
   selectedValues: string[];
   onChange: (values: string[]) => void;
+  showCount?: boolean;
 }
 
 function LinkedMultiSelectInput<Q extends ObjectTypeDefinition>({
@@ -430,6 +434,7 @@ function LinkedMultiSelectInput<Q extends ObjectTypeDefinition>({
   propertyKey,
   selectedValues,
   onChange,
+  showCount,
 }: LinkedMultiSelectInputProps<Q>): React.ReactElement {
   const { data, isLoading, error } = usePropertyAggregation(
     objectType,
@@ -443,6 +448,7 @@ function LinkedMultiSelectInput<Q extends ObjectTypeDefinition>({
       error={error}
       selectedValues={selectedValues}
       onChange={onChange}
+      showCounts={showCount}
     />
   );
 }
@@ -452,6 +458,7 @@ interface LinkedSingleSelectInputProps<Q extends ObjectTypeDefinition>
 {
   selectedValue: string | undefined;
   onChange: (value: string | undefined) => void;
+  showCount?: boolean;
 }
 
 function LinkedSingleSelectInput<Q extends ObjectTypeDefinition>({
@@ -460,6 +467,7 @@ function LinkedSingleSelectInput<Q extends ObjectTypeDefinition>({
   propertyKey,
   selectedValue,
   onChange,
+  showCount,
 }: LinkedSingleSelectInputProps<Q>): React.ReactElement {
   const { data, isLoading, error } = usePropertyAggregation(
     objectType,
@@ -473,6 +481,7 @@ function LinkedSingleSelectInput<Q extends ObjectTypeDefinition>({
       error={error}
       selectedValue={selectedValue}
       onChange={onChange}
+      showCounts={showCount}
       ariaLabel={`Select ${propertyKey as string}`}
     />
   );
@@ -484,6 +493,7 @@ interface LinkedListogramInputProps<Q extends ObjectTypeDefinition>
   selectedValues: string[];
   onChange: (values: string[]) => void;
   searchQuery?: string;
+  showCount?: boolean;
 }
 
 function LinkedListogramInput<Q extends ObjectTypeDefinition>({
@@ -493,6 +503,7 @@ function LinkedListogramInput<Q extends ObjectTypeDefinition>({
   selectedValues,
   onChange,
   searchQuery,
+  showCount,
 }: LinkedListogramInputProps<Q>): React.ReactElement {
   const { data, maxCount, isLoading, error } = usePropertyAggregation(
     objectType,
@@ -508,6 +519,7 @@ function LinkedListogramInput<Q extends ObjectTypeDefinition>({
       selectedValues={selectedValues}
       onChange={onChange}
       searchQuery={searchQuery}
+      showCount={showCount}
     />
   );
 }

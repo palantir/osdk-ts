@@ -29,11 +29,8 @@ Built on top of [@osdk/react](../react), these components use OSDK hooks interna
 
 Run the command to install:
 
-- @osdk/react-components - The unstyled components from this package
-- @osdk/react-components-styles - The default styles for the components
-
 ```sh
-npm install @osdk/react-components@beta @osdk/react-components-styles@beta
+npm install @osdk/react-components
 ```
 
 **Peer Dependencies:**
@@ -72,28 +69,18 @@ function App() {
 
 ### CSS Setup
 
-Add the OSDK style imports to your application's entry CSS file (e.g., `index.css`).
+Add the OSDK style import to your application's entry CSS file (e.g., `index.css`). This single import includes both design tokens and component styles.
 
 #### Understanding CSS Layers
 
 OSDK uses CSS [`@layer`](https://developer.mozilla.org/en-US/docs/Web/CSS/@layer) to make theming predictable. If you're not familiar with `@layer`, here's what you need to know:
 
 **What is `@layer`?** CSS `@layer` lets you group styles into named layers and control the order in which they apply. When two styles target the same element, the style in the _later_ layer always wins — regardless of selector specificity. This is what makes the theming system maintainable.
-
-**OSDK's layers:**
-
-| Layer             | Purpose                                                    |
-| ----------------- | ---------------------------------------------------------- |
-| `osdk.tokens`     | Design tokens (colors, spacing, typography) — the defaults |
-| `osdk.components` | Component structural styles (layout, borders, sizing)      |
-
-Because `osdk.components` is declared after `osdk.tokens`, component styles take priority over token defaults when they overlap.
-
 **Adding your own layer:** You can add a custom layer (e.g., `user.brand`) after the OSDK layers to override any token or component style. Later layers always win.
 
 **When styles conflict, CSS resolves them in this order:**
 
-1. **Layer order** — Later layers always win (`user.brand` > `osdk.components` > `osdk.tokens`)
+1. **Layer order** — Later layers always win (`osdk.components` < `user.brand`)
 2. **Selector specificity** — More specific selectors win _within the same layer_
 3. **Source order** — Later declarations win when specificity is equal
 
@@ -103,47 +90,34 @@ Because `osdk.components` is declared after `osdk.tokens`, component styles take
 
 ```css
 /* index.css */
-@layer tailwind, osdk.tokens, osdk.components, user.brand;
+@layer tailwind, osdk.styles, user.brand;
 
 @import "tailwindcss" layer(tailwind);
-
-@import "@osdk/react-components-styles" layer(osdk.tokens);
-@import "@osdk/react-components/styles.css" layer(osdk.components);
+@import "@osdk/react-components/styles.css" layer(osdk.styles);
 
 /* To add your own brand overrides on top, append a custom layer: */
 @import "./user-brand.css" layer(user.brand);
-```
-
-#### Without Tailwind CSS
-
-```css
-/* index.css */
-@layer osdk.tokens, osdk.components;
-
-@import "@osdk/react-components-styles" layer(osdk.tokens);
-@import "@osdk/react-components/styles.css" layer(osdk.components);
 ```
 
 To add your own brand overrides on top:
 
 ```css
 /* index.css */
-@layer osdk.tokens, osdk.components, user.brand;
+@layer osdk.styles, user.brand;
 
-@import "@osdk/react-components-styles" layer(osdk.tokens);
-@import "@osdk/react-components/styles.css" layer(osdk.components);
+@import "@osdk/react-components/styles.css" layer(osdk.styles);
 @import "./user-brand.css" layer(user.brand);
 ```
 
 #### Portal isolation (required)
 
+Add `isolation: isolate` to your app's root element. This is required for Base UI portals. See https://base-ui.com/react/overview/quick-start#portals
+
 ```css
-.root {
+#root {
   isolation: isolate;
 }
 ```
-
-The `.root` isolation is required for Base UI portals. See https://base-ui.com/react/overview/quick-start#portals
 
 ## Components
 
@@ -222,6 +196,7 @@ When building new components:
 3. Keep the Base component API simple using primitive types
 4. For complex components, consider a building blocks tier with sub-components and hooks
 5. Document all layers for users who want to customize
+6. **Register a user agent for metrics** — wrap every OSDK component with `withOsdkMetrics` at the export barrel (see [Metrics](#metrics) below)
 
 ## Folder Structure
 
@@ -241,12 +216,18 @@ src/
 │   ├── utils/              # Helper utilities and types
 │   └── components/         # Supporting React components
 └── public/
-    └── experimental.ts     # Public API exports
+    └── experimental/       # Public API exports (one file per component)
+        ├── object-table.ts
+        ├── filter-list.ts
+        ├── pdf-viewer.ts
+        ├── markdown-renderer.ts
+        ├── tiff-renderer.ts
+        └── action-form.ts
 ```
 
 ### Export Strategy
 
-- **OSDK Components**: Exported through `experimental.ts` (e.g., `ObjectTable`, `FilterList`)
+- **OSDK Components**: Exported through individual entry points under `experimental/` (e.g., `experimental/object-table`, `experimental/filter-list`)
 - **Base Components**: Select base components are exported for advanced use cases (e.g., `BaseTable`, `BaseFilterList`)
 - **UI Primitives**: The `base-components/` folder contains internal UI primitives that are **NOT exported**
 
@@ -259,16 +240,41 @@ This package focuses on complex, Ontology-aware components with built-in data fe
 - Reduces maintenance burden
 - Encourages consistent use of existing design systems
 
+## Metrics
+
+Every OSDK component (the outermost data-fetching layer, **not** the Base component) must register a user agent string so that network requests include a `Fetch-User-Agent` header identifying which component initiated them. This enables usage tracking and debugging.
+
+This is handled automatically by the `withOsdkMetrics` HOC. Wrap your component at the **export barrel** (`public/experimental/*.ts`), not inside the component body:
+
+```ts
+// public/experimental/my-component.ts
+import { MyComponent as _MyComponent } from "../../my-component/MyComponent.js";
+import { withOsdkMetrics } from "../../util/withOsdkMetrics.js";
+export const MyComponent: typeof _MyComponent = withOsdkMetrics(
+  _MyComponent,
+  "MyComponent",
+);
+```
+
+`withOsdkMetrics` calls `useRegisterUserAgent` internally, producing a user agent string like `osdk-react-components/<version>/MyComponent`.
+
+**Checklist for new components:**
+
+- [ ] Wrap the OSDK component with `withOsdkMetrics` in the export barrel
+- [ ] Add `typeof _Component` annotation to satisfy `--isolatedDeclarations`
+- [ ] Do **not** wrap Base components — only the OSDK wrapper needs it
+- [ ] Do **not** call `useRegisterUserAgent` directly inside the component body
+
 ## Custom Styling
 
-See `@osdk/react-components-styles` README on how to apply custom themes and styling to the components.
+See the [CSS Variables Reference](./docs/CSSVariables.md) on how to apply custom themes and styling to the components.
 
 ## Example Usage
 
 ### Object Table
 
 ```ts
-import { ObjectTable } from "@osdk/react-components/experimental";
+import { ObjectTable } from "@osdk/react-components/experimental/object-table";
 import { Employee } from "@your-osdk-package";
 
 function EmployeeDirectory() {

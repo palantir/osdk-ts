@@ -56,6 +56,7 @@ export function defineDeleteObjectAction(
         ),
       }
       : {}),
+    ...(def.permission && { permission: def.permission }),
     ...(def.icon && { icon: def.icon }),
   });
 }

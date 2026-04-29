@@ -1,5 +1,85 @@
 # @osdk/foundry-sdk-generator
 
+## 2.12.0
+
+### Patch Changes
+
+- Updated dependencies [19b7913]
+- Updated dependencies [01fbb74]
+- Updated dependencies [91f34a9]
+- Updated dependencies [df1a4f8]
+- Updated dependencies [46a00bc]
+- Updated dependencies [267f324]
+  - @osdk/client@2.12.0
+  - @osdk/api@2.12.0
+  - @osdk/shared.client.impl@1.11.0
+  - @osdk/generator@2.12.0
+  - @osdk/client.unstable@2.12.0
+  - @osdk/generator-utils@2.12.0
+
+## 2.11.0
+
+### Patch Changes
+
+- Updated dependencies [a6f4208]
+- Updated dependencies [58248f8]
+- Updated dependencies [e456da5]
+  - @osdk/client.unstable@2.11.0
+  - @osdk/client@2.11.0
+  - @osdk/api@2.11.0
+  - @osdk/generator-utils@2.11.0
+  - @osdk/generator@2.11.0
+
+## 2.10.0
+
+### Minor Changes
+
+- f01a8f4: improvements(build): significant reduction in build task graphs
+
+### Patch Changes
+
+- Updated dependencies [29ab35a]
+- Updated dependencies [0fb9c8a]
+- Updated dependencies [f01a8f4]
+- Updated dependencies [f34a1ce]
+- Updated dependencies [7e7f70b]
+  - @osdk/generator@2.10.0
+  - @osdk/client@2.10.0
+  - @osdk/client.unstable.tpsa@0.11.0
+  - @osdk/shared.client.impl@1.10.0
+  - @osdk/client.unstable@2.10.0
+  - @osdk/generator-utils@2.10.0
+  - @osdk/api@2.10.0
+
+## 2.9.0
+
+### Minor Changes
+
+- cbc8e9c: Add recursive query support
+- 1d2e6c7: Bump rollup dep with ^
+
+### Patch Changes
+
+- Updated dependencies [f8b9f12]
+- Updated dependencies [bcf359f]
+- Updated dependencies [0b349bd]
+- Updated dependencies [12f9b36]
+- Updated dependencies [cbc8e9c]
+- Updated dependencies [9171453]
+- Updated dependencies [e8d14a0]
+- Updated dependencies [51ccca8]
+- Updated dependencies [fb85818]
+- Updated dependencies [ec06b26]
+- Updated dependencies [3390ea2]
+- Updated dependencies [2394ca7]
+- Updated dependencies [48e0cab]
+  - @osdk/client@2.9.0
+  - @osdk/shared.client.impl@1.9.0
+  - @osdk/generator@2.9.0
+  - @osdk/api@2.9.0
+  - @osdk/client.unstable@2.9.0
+  - @osdk/generator-utils@2.9.0
+
 ## 2.8.0
 
 ### Minor Changes

@@ -1,5 +1,60 @@
 # @osdk/maker
 
+## 0.20.0
+
+### Minor Changes
+
+- 9225ee3: interface property string analyzers
+
+### Patch Changes
+
+- Updated dependencies [91f34a9]
+  - @osdk/api@2.12.0
+  - @osdk/generator-converters.ontologyir@2.12.0
+
+## 0.19.0
+
+### Minor Changes
+
+- a6f4208: configure entity perms in OAC
+
+### Patch Changes
+
+- Updated dependencies [a6f4208]
+  - @osdk/generator-converters.ontologyir@2.11.0
+  - @osdk/api@2.11.0
+
+## 0.18.0
+
+### Minor Changes
+
+- f01a8f4: improvements(build): significant reduction in build task graphs
+- 151d258: Wire typeclasses to links and actions
+- b1b8a8b: Support string analyzers
+
+### Patch Changes
+
+- Updated dependencies [f01a8f4]
+  - @osdk/generator-converters.ontologyir@2.10.0
+  - @osdk/typescript-sdk-docs@0.8.0
+  - @osdk/api@2.10.0
+
+## 0.17.0
+
+### Minor Changes
+
+- b90fb8e: Fix typo
+- 492db18: Expand the set of types acceptable in references
+
+### Patch Changes
+
+- Updated dependencies [cbc8e9c]
+- Updated dependencies [e8d14a0]
+- Updated dependencies [3390ea2]
+- Updated dependencies [2394ca7]
+  - @osdk/api@2.9.0
+  - @osdk/generator-converters.ontologyir@2.9.0
+
 ## 0.16.0
 
 ### Minor Changes

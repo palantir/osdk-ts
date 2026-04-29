@@ -1,6 +1,6 @@
 {
   "name": "@osdk/client",
-  "version": "2.8.0",
+  "version": "2.12.0",
   "description": "",
   "access": "public",
   "license": "Apache-2.0",
@@ -68,7 +68,7 @@
     "transpileCjs": "monorepo.tool.transpile -f cjs -m bundle -t node",
     "transpileEsm": "monorepo.tool.transpile -f esm -m normal -t node",
     "transpileTypes": "monorepo.tool.transpile -f esm -m types -t node",
-    "typecheck": "tsc --noEmit --emitDeclarationOnly false"
+    "typecheck": "tsc -p tsconfig.typecheck.json --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
     "@osdk/api": "workspace:~",
@@ -93,13 +93,20 @@
     "type-fest": "^4.41.0",
     "ws": "^8.18.3"
   },
+  "peerDependencies": {
+    "@osdk/shared.test": "workspace:^"
+  },
+  "peerDependenciesMeta": {
+    "@osdk/shared.test": {
+      "optional": true
+    }
+  },
   "devDependencies": {
     "@microsoft/api-documenter": "^7.26.32",
     "@microsoft/api-extractor": "^7.52.11",
-    "@osdk/client.test.ontology": "workspace:~",
+    "@osdk/client.test.ontology": "workspace:*",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
-    "@osdk/shared.test": "workspace:~",
     "@types/geojson": "^7946.0.14",
     "@types/ws": "^8.18.1",
     "chalk": "^5.6.2",

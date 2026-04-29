@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+/* TODO: Extract each variable into its tokens file and map to default value there */
+
 .osdkSelectTrigger {
   display: inline-flex;
   align-items: center;
@@ -21,8 +23,11 @@
   gap: var(--osdk-select-spacing, var(--osdk-surface-spacing));
   width: 100%;
   min-height: var(--osdk-select-min-height, 30px);
-  padding: calc(var(--osdk-select-spacing, var(--osdk-surface-spacing)) * 1.5)
-    calc(var(--osdk-select-spacing, var(--osdk-surface-spacing)) * 2.5);
+  padding: var(
+    --osdk-select-trigger-padding,
+    calc(var(--osdk-surface-spacing) * 1.5)
+      calc(var(--osdk-surface-spacing) * 2.5)
+  );
   cursor: pointer;
   border-radius: var(
     --osdk-select-border-radius,
@@ -135,6 +140,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  line-height: 0;
   color: var(--osdk-select-icon-color, var(--osdk-iconography-color-muted));
   flex-shrink: 0;
   transition: transform
@@ -146,6 +152,48 @@
 
   [data-popup-open] > & {
     transform: rotate(180deg);
+  }
+}
+
+.osdkSelectClear {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+  line-height: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  flex-shrink: 0;
+  color: var(--osdk-select-clear-color, var(--osdk-iconography-color-muted));
+  border-radius: var(
+    --osdk-select-border-radius,
+    var(--osdk-surface-border-radius)
+  );
+  transition:
+    color
+      var(
+        --osdk-select-transition-duration,
+        var(--osdk-emphasis-transition-duration)
+      )
+      var(--osdk-select-transition-ease, var(--osdk-emphasis-ease-default)),
+    background-color
+      var(
+        --osdk-select-transition-duration,
+        var(--osdk-emphasis-transition-duration)
+      )
+      var(--osdk-select-transition-ease, var(--osdk-emphasis-ease-default));
+
+  &:hover {
+    color: var(
+      --osdk-select-clear-color-hover,
+      var(--osdk-typography-color-default-rest)
+    );
+    background-color: var(
+      --osdk-select-clear-bg-hover,
+      var(--osdk-surface-background-color-default-hover)
+    );
   }
 }
 

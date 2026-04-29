@@ -17,10 +17,10 @@
 import consola from "consola";
 import { getRandomValues, subtle } from "node:crypto";
 import { createServer } from "node:http";
-import { join } from "node:path/posix";
 import { exit } from "node:process";
 import { parse } from "node:url";
 import open from "open";
+import { ensureTrailingSlash } from "../../../util/ensureTrailingSlash.js";
 import type { LoginArgs } from "./LoginArgs.js";
 import type { TokenResponse, TokenSuccessResponse } from "./token.js";
 import { isTokenErrorResponse } from "./token.js";
@@ -33,6 +33,7 @@ export async function invokeLoginFlow(
   consola.start(`Authenticating using application id: ${args.clientId}`);
   const redirectUrl = "http://localhost:8080/auth/callback";
   const port = parse(redirectUrl).port;
+  const foundryUrl = ensureTrailingSlash(args.foundryUrl);
   let resolve: (value: string) => void;
   const authCode: Promise<string> = new Promise((_res) => {
     resolve = _res;
@@ -41,7 +42,7 @@ export async function invokeLoginFlow(
   const server = createServer((req, res) => {
     const query = parse(req.url!, true).query;
     res.end("Authenticated");
-    resolve(query["code"] as string);
+    resolve(query.code as string);
   });
 
   server.on("error", (e) => {
@@ -61,7 +62,7 @@ export async function invokeLoginFlow(
   const codeChallenge = await generateCodeChallenge(codeVerifier);
 
   const authorizeUrl = generateAuthorizeUrl(
-    args.foundryUrl,
+    foundryUrl,
     clientId,
     state,
     redirectUrl,
@@ -92,7 +93,7 @@ export async function invokeLoginFlow(
     clientId,
     redirectUrl,
     code,
-    args.foundryUrl,
+    foundryUrl,
     codeVerifier,
   );
 
@@ -146,23 +147,21 @@ function generateAuthorizeUrl(
   redirectUrl: string,
   codeChallenge: { codeChallenge: string; codeChallengeMethod: string },
 ) {
-  const queryParams = new URLSearchParams();
-  queryParams.append("client_id", clientId);
-  queryParams.append("response_type", "code");
-  queryParams.append("state", state);
-  queryParams.append("redirect_uri", redirectUrl);
-  queryParams.append("code_challenge", codeChallenge.codeChallenge);
-  queryParams.append(
+  const url = new URL("multipass/api/oauth2/authorize", baseUrl);
+  url.searchParams.set("client_id", clientId);
+  url.searchParams.set("response_type", "code");
+  url.searchParams.set("state", state);
+  url.searchParams.set("redirect_uri", redirectUrl);
+  url.searchParams.set("code_challenge", codeChallenge.codeChallenge);
+  url.searchParams.set(
     "code_challenge_method",
     codeChallenge.codeChallengeMethod,
   );
-  queryParams.append(
+  url.searchParams.set(
     "scope",
     ["offline_access", "api:read-data", "api:use-ontologies-read"].join(" "),
   );
-
-  return join(baseUrl, "multipass", "api", "oauth2", "authorize") + `?`
-    + queryParams.toString();
+  return url.toString();
 }
 
 async function getTokenWithCodeVerifier(
@@ -179,8 +178,9 @@ async function getTokenWithCodeVerifier(
   body.append("redirect_uri", redirectUrl);
   body.append("code_verifier", codeVerifier);
 
-  const tokenUrl = join(baseUrl, "multipass", "api", "oauth2", "token")
-    + `?state=${codeVerifier}`;
+  const tokenUrlObj = new URL("multipass/api/oauth2/token", baseUrl);
+  tokenUrlObj.searchParams.set("state", codeVerifier);
+  const tokenUrl = tokenUrlObj.toString();
   try {
     const response = await fetch(tokenUrl, {
       body: body.toString(),

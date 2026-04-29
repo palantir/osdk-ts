@@ -1,5 +1,131 @@
 # @osdk/react-components
 
+## 0.8.0
+
+### Minor Changes
+
+- d9b03eb: document @osdk/client version compat and install-time error recovery in AGENTS.md
+- 5a733c0: Improve DropdownField with searchable input, multi-select checkboxes, clear button, and fix Select positioning
+- 52ff28c: simplify conditional objectset aggregation args and add filtered objectset story
+- 3b8decf: Switch vitest pool from forks to threads to fix CI flake
+- a0bbaf9: fix ObjectTable zebra row colors flipping while scrolling — striping is now keyed off the row's data index instead of its DOM position
+- 5835d51: Fix type definitions in FilterList LinkedProperty and ObjectTable function column
+- d40104f: Add error icon to DatePickerCell in ObjectTable
+
+### Patch Changes
+
+- Updated dependencies [d9b03eb]
+- Updated dependencies [d8842f4]
+  - @osdk/react@0.15.0
+
+## 0.7.0
+
+### Minor Changes
+
+- 594df08: Add BaseForm storybook
+- 22b4e35: Add horizontal orientation support to RadioButtonsField
+- 83993d7: Export LoadingCells as building blocks
+- 5a45dc0: Fix stableObjectSet by using a useStableObjectSet hook
+
+### Patch Changes
+
+- Updated dependencies [5a45dc0]
+  - @osdk/react@0.14.0
+
+## 0.6.0
+
+### Minor Changes
+
+- 4f3c57c: Update docs to use new per-component experimental import paths
+
+## 0.5.0
+
+### Minor Changes
+
+- e456da5: Add Fetch-User-Agent tracing headers for React layer network calls
+
+### Patch Changes
+
+- Updated dependencies [58248f8]
+- Updated dependencies [e456da5]
+  - @osdk/react@0.13.0
+
+## 0.4.0
+
+### Minor Changes
+
+- da434c9: Merge @osdk/react-components-styles into @osdk/react-components
+
+  Design tokens and component styles are now bundled in a single package. `@osdk/react-components-styles` is deprecated and will be removed in a future release.
+
+  **Migration steps:**
+  1. Remove `@osdk/react-components-styles` from your dependencies
+  2. Replace your CSS imports:
+
+     ```css
+     /* Before */
+     @import "@osdk/react-components-styles" layer(osdk.tokens);
+     @import "@osdk/react-components/styles.css" layer(osdk.components);
+
+     /* After */
+     @import "@osdk/react-components/styles.css" layer(osdk.styles);
+     ```
+
+- e572448: Set default tooltip trigger delay to 200ms in TooltipTrigger
+- f0866c7: Pass cross-filter whereClause to DateRange and NumberRange filter inputs so histograms and null counts update when other filters are applied
+- 8e06dce: Add renderValue option to PropertyFilterDefinition for custom filter value display and search
+- 2bb6860: Add `showCount` option to filter definitions for hiding aggregation counts in dropdown options
+- f01a8f4: improvements(build): significant reduction in build task graphs
+- aba44b8: Add date picker cell to editable ObjectTable
+- 5d8edf8: feat(tiff): Tiff Renderer
+- 81ac0a1: Prevent committing overlapping date ranges and fix backspace after invalid input revert
+- 9996dd6: Add dropdown field to editable ObjectTable
+- 4bce409: feat(md): markdown renderer
+- 51739ae: Polyfill Promise.withResolvers for pdfjs-dist Node 18 test compatibility
+- 1a0f772: Show "No value" for empty filter values in ListogramInput and generate $isNull instead of $eq: "" in where clauses
+- c144b04: Add form field validation with onTouched mode, error display, and submit tooltip
+- 7f4824a: Downgrade react-markdown to ^9.0.3
+- e5a652b: Pin TZ=UTC in vitest config to prevent locale-dependent test failures
+- 0c04731: Add individual subpath exports for experimental component groups (filter-list, object-table, pdf-viewer, markdown-renderer, action-form)
+- c9c4424: Add STATIC_VALUES filter definition type for providing fixed value lists without OSDK aggregation
+- f9033fb: Consolidate onFilterClauseChanged into a single useEffect on whereClause, fixing missing callback when initialFilterStates is set and a stale closure bug in clearFilterState
+- 6c1f444: Add date-fns and date-fns-tz dependencies
+- 957a878: Rename/improve DateTimePickerField and introduce DateRangeInputField
+
+### Patch Changes
+
+- Updated dependencies [f01a8f4]
+- Updated dependencies [f34a1ce]
+  - @osdk/react@0.12.0
+
+## 0.3.0
+
+### Minor Changes
+
+- bb087ce: Ship docs folder in npm package and use relative paths in AGENTS.md
+- f8b9f12: Cache results from useOsdkFunctions
+- 236a88b: Downgrade react-day-picker from v9 to ^8.10.0
+- 0b349bd: Fix returned objectSet in ObjectSetQuery
+- c4ff35c: add shared prerequisites page and storybook link to docusaurus site
+- 8eba901: fix relative links in component docs for docusaurus compatibility
+- 89def41: patch bump associated with BlueprintJS upgrade
+- da7def7: align FilterList API with ObjectTable: add required `objectType` prop, make `objectSet` optional
+- 86d0bce: Add ObjectSetField component for action forms
+- 79b001e: Add FilePickerField component for attachment and media reference form fields
+- b2b512e: Address FilePickerField PR review comments: memoize computed values, add aria-label, rename CSS token, add keyboard interaction tests
+- f871d5c: Paginate objects for function queries and configure max concurrent requests to handle large dataset
+- 3617bab: Export MultiColumnSortDialog as a building block
+- 6786113: Add dedupeIntervalMs prop to ObjectTable to configure the dedupe interval for caching network requests
+
+### Patch Changes
+
+- Updated dependencies [f8b9f12]
+- Updated dependencies [12f9b36]
+- Updated dependencies [51ccca8]
+- Updated dependencies [f871d5c]
+- Updated dependencies [ec06b26]
+  - @osdk/react@0.11.0
+
 ## 0.2.0
 
 ### Minor Changes

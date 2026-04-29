@@ -138,6 +138,14 @@ export function resolveStub(
 
 export function deepEqual(a: unknown, b: unknown): boolean {
   if (a === b) return true;
+
+  // Support Vitest / Jest asymmetric matchers (e.g. expect.any(String),
+  // expect.anything(), expect.stringContaining(...), expect.objectContaining(...))
+  // in either position. Without this check, matchers would be compared by their
+  // raw object shape and silently never match stub params.
+  if (isAsymmetricMatcher(a)) return a.asymmetricMatch(b);
+  if (isAsymmetricMatcher(b)) return b.asymmetricMatch(a);
+
   if (a == null || b == null) return a === b;
   if (typeof a !== typeof b) return false;
   if (Array.isArray(a) && Array.isArray(b)) {
@@ -153,4 +161,13 @@ export function deepEqual(a: unknown, b: unknown): boolean {
     );
   }
   return false;
+}
+
+function isAsymmetricMatcher(
+  x: unknown,
+): x is { asymmetricMatch: (other: unknown) => boolean } {
+  return x != null
+    && typeof x === "object"
+    && typeof (x as { asymmetricMatch?: unknown }).asymmetricMatch
+      === "function";
 }

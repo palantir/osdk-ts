@@ -17,9 +17,8 @@
 import {
   type FilterDefinitionUnion,
   FilterList,
-} from "@osdk/react-components/experimental";
+} from "@osdk/react-components/experimental/filter-list";
 import React, { useCallback, useMemo, useState } from "react";
-import { $ } from "../foundryClient.js";
 import { Employee } from "../generatedNoCheck2/index.js";
 
 const ALL_FILTER_DEFINITIONS: FilterDefinitionUnion<Employee>[] = [
@@ -194,7 +193,7 @@ export function EmployeeFilters({
   return (
     <div style={containerStyle}>
       <FilterList
-        objectSet={$(Employee)}
+        objectType={Employee}
         filterDefinitions={filterDefinitions}
         onFilterClauseChanged={onFilterClauseChanged}
         onFilterRemoved={handleRemoveFilter}

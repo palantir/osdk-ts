@@ -1,5 +1,47 @@
 # @osdkkit/react
 
+## 0.15.0
+
+### Minor Changes
+
+- d9b03eb: document @osdk/client version compat and install-time error recovery in AGENTS.md
+- d8842f4: add react shape stores, result types, and entry point boilerplate
+
+## 0.14.0
+
+### Minor Changes
+
+- 5a45dc0: Fix stableObjectSet by using a useStableObjectSet hook
+
+## 0.13.0
+
+### Minor Changes
+
+- 58248f8: Move @osdk/client.test.ontology from peerDependencies to devDependencies to fix npm resolution errors in consuming repos
+- e456da5: Add Fetch-User-Agent tracing headers for React layer network calls
+
+## 0.12.0
+
+### Minor Changes
+
+- f01a8f4: improvements(build): significant reduction in build task graphs
+- f34a1ce: prevent streamUpdates from being used with pivotTo since the server does not support websocket subscriptions for link-traversal queries
+
+### Patch Changes
+
+- Updated dependencies [f01a8f4]
+  - @osdk/client.test.ontology@2.10.0
+
+## 0.11.0
+
+### Minor Changes
+
+- f8b9f12: Cache results from useOsdkFunctions
+- 12f9b36: add devtools interfaces and hook metadata for react-devtools integration
+- 51ccca8: Refactor hooks to use canonicalizeOptions for stable memo keys, add objectSet/hasMore/refetch to useOsdkObjects return, support undefined objectSet in useObjectSet
+- f871d5c: Paginate objects for function queries and configure max concurrent requests to handle large dataset
+- ec06b26: revert build improvements from #2987
+
 ## 0.10.0
 
 ### Minor Changes

@@ -1,5 +1,25 @@
 # @osdk/shared.test
 
+## 2.10.0
+
+### Patch Changes
+
+- Updated dependencies [91f34a9]
+  - @osdk/api@2.12.0
+  - @osdk/generator-converters@2.12.0
+
+## 2.9.0
+
+### Minor Changes
+
+- f01a8f4: improvements(build): significant reduction in build task graphs
+
+### Patch Changes
+
+- Updated dependencies [f01a8f4]
+  - @osdk/generator-converters@2.10.0
+  - @osdk/api@2.10.0
+
 ## 2.8.0
 
 ### Minor Changes

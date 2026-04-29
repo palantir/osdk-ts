@@ -1,5 +1,81 @@
 # @osdk/functions-testing.experimental
 
+## 0.7.0
+
+### Minor Changes
+
+- 9e9d948: `deepEqual` (used to match stub args in `when` / `whenQuery`) now recognizes Vitest/Jest asymmetric matchers (`expect.any(...)`, `expect.anything()`, `expect.stringContaining(...)`, `expect.objectContaining(...)`, etc.). Previously matchers were compared by raw object shape and silently never matched.
+
+### Patch Changes
+
+- Updated dependencies [19b7913]
+- Updated dependencies [01fbb74]
+- Updated dependencies [91f34a9]
+- Updated dependencies [df1a4f8]
+- Updated dependencies [46a00bc]
+- Updated dependencies [267f324]
+  - @osdk/client@2.12.0
+  - @osdk/api@2.12.0
+
+## 0.6.0
+
+### Minor Changes
+
+- 8e4472c: Add `thenThrow(error)` to `whenQuery(...)` stub builder. Lets tests explicitly configure a query's `executeFunction` to reject with a specific error, instead of only being able to exercise the implicit "no stub registered" error path.
+
+## 0.5.0
+
+### Minor Changes
+
+- 40fb8c1: Attach a `SharedClientContext` to the mock client so Foundry Platform API helpers (e.g. `Users.getCurrent(client)`) don't crash inside `foundryPlatformFetch` on an undefined `baseUrl` before a request is made. Callers mock the HTTP layer themselves (MSW, `vi.spyOn(globalThis, "fetch")`, etc.).
+
+### Patch Changes
+
+- Updated dependencies [58248f8]
+- Updated dependencies [e456da5]
+  - @osdk/client@2.11.0
+  - @osdk/api@2.11.0
+
+## 0.4.0
+
+### Minor Changes
+
+- 29ab35a: Use workspace:^ for peer dependencies to prevent changesets from propagating major bumps when a peer dep receives a minor version change. The internal codegen (`osdk-unstable-typescript generate --internal`) now emits `workspace:^` for peer deps while keeping `workspace:~` for regular/dev deps.
+- f01a8f4: improvements(build): significant reduction in build task graphs
+
+### Patch Changes
+
+- Updated dependencies [29ab35a]
+- Updated dependencies [0fb9c8a]
+- Updated dependencies [f01a8f4]
+- Updated dependencies [f34a1ce]
+- Updated dependencies [7e7f70b]
+  - @osdk/client@2.10.0
+  - @osdk/functions@1.7.0
+  - @osdk/api@2.10.0
+
+## 0.3.0
+
+### Minor Changes
+
+- c08d97b: Rework mock client stubbing API: rename whenObjectSet to when, add standalone createMockObjectSet with whenObjectSet for registering stubs on object sets directly, and support ObjectSet as many-link value in createMockOsdkObject
+
+### Patch Changes
+
+- Updated dependencies [f8b9f12]
+- Updated dependencies [bcf359f]
+- Updated dependencies [0b349bd]
+- Updated dependencies [12f9b36]
+- Updated dependencies [cbc8e9c]
+- Updated dependencies [9171453]
+- Updated dependencies [e8d14a0]
+- Updated dependencies [51ccca8]
+- Updated dependencies [fb85818]
+- Updated dependencies [ec06b26]
+- Updated dependencies [2394ca7]
+  - @osdk/client@2.9.0
+  - @osdk/api@2.9.0
+
 ## 0.2.0
 
 ### Minor Changes

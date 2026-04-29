@@ -1,5 +1,36 @@
 # @osdk/language-models
 
+## 0.4.0
+
+### Minor Changes
+
+- df1a4f8: Build Anthropic and OpenAI proxy URLs via the URL constructor so they work correctly regardless of whether `client.baseUrl` carries a trailing slash or a path prefix.
+
+### Patch Changes
+
+- Updated dependencies [19b7913]
+- Updated dependencies [01fbb74]
+- Updated dependencies [df1a4f8]
+- Updated dependencies [46a00bc]
+- Updated dependencies [267f324]
+  - @osdk/client@2.12.0
+
+## 0.3.0
+
+### Minor Changes
+
+- 29ab35a: Use workspace:^ for peer dependencies to prevent changesets from propagating major bumps when a peer dep receives a minor version change. The internal codegen (`osdk-unstable-typescript generate --internal`) now emits `workspace:^` for peer deps while keeping `workspace:~` for regular/dev deps.
+- f01a8f4: improvements(build): significant reduction in build task graphs
+
+### Patch Changes
+
+- Updated dependencies [29ab35a]
+- Updated dependencies [0fb9c8a]
+- Updated dependencies [f01a8f4]
+- Updated dependencies [f34a1ce]
+- Updated dependencies [7e7f70b]
+  - @osdk/client@2.10.0
+
 ## 0.2.0
 
 ### Minor Changes

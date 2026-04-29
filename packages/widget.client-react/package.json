@@ -1,6 +1,6 @@
 {
   "name": "@osdk/widget.client-react",
-  "version": "3.5.0",
+  "version": "3.9.0",
   "description": "Wrapper around @osdk/widget.client",
   "access": "public",
   "license": "Apache-2.0",
@@ -42,8 +42,8 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "peerDependencies": {
-    "@osdk/client": "workspace:~",
-    "@osdk/widget.client": "workspace:~",
+    "@osdk/client": "workspace:^",
+    "@osdk/widget.client": "workspace:^",
     "@types/react": "^18 || ^19",
     "@types/react-dom": "^18 || ^19",
     "react": "^18 || ^19",

@@ -1,5 +1,27 @@
 # @osdk/api
 
+## 2.12.0
+
+### Minor Changes
+
+- 91f34a9: expose .subscribe() on interface-typed object sets returned by client()
+
+## 2.11.0
+
+## 2.10.0
+
+### Minor Changes
+
+- f01a8f4: improvements(build): significant reduction in build task graphs
+
+## 2.9.0
+
+### Minor Changes
+
+- cbc8e9c: Add recursive query support
+- e8d14a0: Expose an experimental helper to add media transformation capabilities via transformAndWait
+- 2394ca7: Adding regex matching for string filters.
+
 ## 2.8.0
 
 ### Minor Changes

@@ -1,5 +1,43 @@
 # @osdk/generator-converters
 
+## 2.12.0
+
+### Patch Changes
+
+- Updated dependencies [91f34a9]
+  - @osdk/api@2.12.0
+
+## 2.11.0
+
+### Patch Changes
+
+- @osdk/api@2.11.0
+
+## 2.10.0
+
+### Minor Changes
+
+- f01a8f4: improvements(build): significant reduction in build task graphs
+
+### Patch Changes
+
+- Updated dependencies [f01a8f4]
+  - @osdk/api@2.10.0
+
+## 2.9.0
+
+### Minor Changes
+
+- cbc8e9c: Add recursive query support
+- 9171453: Alphabetize code generation for sdk.
+
+### Patch Changes
+
+- Updated dependencies [cbc8e9c]
+- Updated dependencies [e8d14a0]
+- Updated dependencies [2394ca7]
+  - @osdk/api@2.9.0
+
 ## 2.8.0
 
 ### Minor Changes

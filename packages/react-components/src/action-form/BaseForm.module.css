@@ -30,9 +30,52 @@
 .osdkFormFooter {
   display: flex;
   flex-direction: row;
-  justify-content: flex-end;
+  justify-content: space-between;
+  align-items: center;
   border-top: var(--osdk-surface-border-width) solid
     var(--osdk-form-footer-border-color);
   padding-block: var(--osdk-form-content-padding);
   padding-inline: var(--osdk-form-content-padding);
+}
+
+.osdkFormSubmitButton {
+  margin-inline-start: auto;
+}
+
+.osdkFormErrorIndicator {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--osdk-surface-spacing) * 2);
+  color: var(--osdk-form-footer-error-color);
+  font-size: var(--osdk-form-footer-error-font-size);
+  cursor: help;
+}
+
+/* Replaces Tooltip.Trigger's default <button> with a <span> to avoid
+   nested buttons. inline-flex keeps a real layout box for tooltip anchoring. */
+.osdkTooltipTriggerWrapper {
+  display: inline-flex;
+}
+
+/* Loading skeleton — mimics label + input per field */
+.osdkFormSkeletonField {
+  display: flex;
+  flex-direction: column;
+  gap: var(--osdk-form-label-field-gap);
+}
+
+.osdkFormSkeletonLabel {
+  width: 30%;
+  height: var(--osdk-form-label-font-size);
+}
+
+.osdkFormSkeletonInput {
+  width: 100%;
+  height: var(--osdk-input-min-height);
+}
+
+.osdkFormErrorList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
 }

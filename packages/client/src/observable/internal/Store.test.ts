@@ -325,7 +325,7 @@ describe(Store, () => {
             },
           ],
           "nextPageToken": undefined,
-          "totalCount": undefined,
+          "totalCount": "1",
         }
       `);
 

@@ -29,12 +29,14 @@ import { coerceToStringArray } from "../utils/coerceFilterValue.js";
 
 interface MultiSelectFilterInputProps<Q extends ObjectTypeDefinition> {
   objectType: Q;
-  objectSet: ObjectSet<Q>;
+  objectSet?: ObjectSet<Q>;
   propertyKey: string;
   filterState: FilterState | undefined;
   onFilterStateChanged: (state: FilterState) => void;
   whereClause: WhereClause<Q>;
   excludeRowOpen?: boolean;
+  renderValue?: (value: string) => string;
+  showCount?: boolean;
 }
 
 function MultiSelectFilterInputInner<Q extends ObjectTypeDefinition>({
@@ -45,6 +47,8 @@ function MultiSelectFilterInputInner<Q extends ObjectTypeDefinition>({
   onFilterStateChanged,
   whereClause,
   excludeRowOpen,
+  renderValue,
+  showCount,
 }: MultiSelectFilterInputProps<Q>): React.ReactElement {
   const selectedValues = useMemo(
     () =>
@@ -100,7 +104,9 @@ function MultiSelectFilterInputInner<Q extends ObjectTypeDefinition>({
         error={error}
         selectedValues={selectedValues}
         onChange={handleChange}
+        showCounts={showCount}
         ariaLabel={`Search ${propertyKey} values`}
+        renderValue={renderValue}
       />
     </FilterInputExcludeRow>
   );

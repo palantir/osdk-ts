@@ -15,7 +15,7 @@ import type {
 } from '@osdk/client';
 
 export namespace Task {
-  export type PropertyKeys = 'taskId' | 'body';
+  export type PropertyKeys = 'body' | 'taskId';
 
   export type Links = {};
 

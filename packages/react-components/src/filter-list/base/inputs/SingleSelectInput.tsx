@@ -33,6 +33,7 @@ interface SingleSelectInputProps {
   showClearButton?: boolean;
   showCounts?: boolean;
   ariaLabel?: string;
+  renderValue?: (value: string) => string;
 }
 
 function SingleSelectInputInner({
@@ -47,6 +48,7 @@ function SingleSelectInputInner({
   showClearButton = true,
   showCounts = false,
   ariaLabel = "Select value",
+  renderValue,
 }: SingleSelectInputProps): React.ReactElement {
   const handleValueChange = useCallback(
     (value: string | null) => {
@@ -65,11 +67,22 @@ function SingleSelectInputInner({
     [values],
   );
 
+  const comboboxFilter = useMemo(
+    () =>
+      renderValue
+        ? (itemValue: string, query: string) =>
+          renderValue(itemValue).toLowerCase().includes(query.toLowerCase())
+        : undefined,
+    [renderValue],
+  );
+
   const renderItem = useCallback(
     (value: string) => (
       <Combobox.Item key={value} value={value}>
         <Combobox.ItemIndicator />
-        <span className={styles.itemLabel}>{value}</span>
+        <span className={styles.itemLabel}>
+          {renderValue ? renderValue(value) : value}
+        </span>
         {showCounts && (
           <span className={styles.itemCount}>
             ({(countByValue.get(value) ?? 0).toLocaleString()})
@@ -77,7 +90,7 @@ function SingleSelectInputInner({
         )}
       </Combobox.Item>
     ),
-    [countByValue, showCounts],
+    [countByValue, showCounts, renderValue],
   );
 
   return (
@@ -110,6 +123,7 @@ function SingleSelectInputInner({
             value={selectedValue ?? null}
             onValueChange={handleValueChange}
             items={items}
+            filter={comboboxFilter}
           >
             <Combobox.SearchInput
               placeholder={placeholder}

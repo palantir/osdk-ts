@@ -1,5 +1,33 @@
 # @osdk/react-components-styles
 
+## 0.8.0
+
+## 0.7.0
+
+## 0.6.0
+
+## 0.5.0
+
+## 0.4.0
+
+### Minor Changes
+
+- f01a8f4: improvements(build): significant reduction in build task graphs
+- 5d8edf8: feat(tiff): Tiff Renderer
+- 4bce409: feat(md): markdown renderer
+- 1a0f772: Show "No value" for empty filter values in ListogramInput and generate $isNull instead of $eq: "" in where clauses
+- c144b04: Add form field validation with onTouched mode, error display, and submit tooltip
+- 957a878: Rename/improve DateTimePickerField and introduce DateRangeInputField
+
+## 0.3.0
+
+### Minor Changes
+
+- 89def41: patch bump associated with BlueprintJS upgrade
+- 86d0bce: Add ObjectSetField component for action forms
+- 79b001e: Add FilePickerField component for attachment and media reference form fields
+- b2b512e: Address FilePickerField PR review comments: memoize computed values, add aria-label, rename CSS token, add keyboard interaction tests
+
 ## 0.2.0
 
 ### Minor Changes

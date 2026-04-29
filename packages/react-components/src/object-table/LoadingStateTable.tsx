@@ -23,6 +23,11 @@ import { LoadingRow } from "./LoadingRow.js";
 import bodyStyles from "./TableBody.module.css";
 import { TableHeader } from "./TableHeader.js";
 import headerStyles from "./TableHeader.module.css";
+import {
+  DEFAULT_LOADING_COLUMN_WIDTH,
+  DEFAULT_ROW_HEIGHT,
+  MIN_LOADING_ROWS,
+} from "./utils/constants.js";
 
 interface LoadingStateTableProps<TData extends RowData> {
   table: Table<TData>;
@@ -32,14 +37,12 @@ interface LoadingStateTableProps<TData extends RowData> {
   columnWidth?: number;
 }
 
-const MIN_ROWS = 5;
-
 export function LoadingStateTable<TData extends RowData>({
   table,
   tableContainerRef,
   headerGroups,
-  rowHeight = 40,
-  columnWidth = 120,
+  rowHeight = DEFAULT_ROW_HEIGHT,
+  columnWidth = DEFAULT_LOADING_COLUMN_WIDTH,
 }: LoadingStateTableProps<TData>): React.ReactElement {
   // If selection enabled, there will be a header for the selection column
   const enableRowSelection = table.options.enableRowSelection;
@@ -52,7 +55,9 @@ export function LoadingStateTable<TData extends RowData>({
 
   const headerRef = useRef<HTMLTableSectionElement>(null);
   const bodyRef = useRef<HTMLTableSectionElement>(null);
-  const [loadingRowCount, setLoadingRowCount] = useState<number>(MIN_ROWS);
+  const [loadingRowCount, setLoadingRowCount] = useState<number>(
+    MIN_LOADING_ROWS,
+  );
   const [loadingColumnCount, setLoadingColumnCount] = useState<number>(
     headers.length,
   );
@@ -79,7 +84,7 @@ export function LoadingStateTable<TData extends RowData>({
 
       if (availableHeight > 0) {
         const rowsNeeded = Math.ceil(availableHeight / rowHeight);
-        setLoadingRowCount(Math.max(rowsNeeded, MIN_ROWS));
+        setLoadingRowCount(Math.max(rowsNeeded, MIN_LOADING_ROWS));
       }
     }
   }, [tableContainerRef, rowHeight]);

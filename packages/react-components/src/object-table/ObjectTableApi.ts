@@ -28,7 +28,9 @@ import type {
 } from "@osdk/api";
 import type { QueryParameterType } from "@osdk/client/unstable-do-not-use";
 import type * as React from "react";
-import type { CellEditInfo } from "./utils/types.js";
+import type { CellEditInfo, EditFieldConfig } from "./utils/types.js";
+
+export type { EditFieldConfig } from "./utils/types.js";
 
 export type ColumnDefinition<
   Q extends ObjectOrInterfaceDefinition,
@@ -37,7 +39,18 @@ export type ColumnDefinition<
     string,
     never
   >,
-> = {
+> =
+  | EditableColumnDefinition<Q, RDPs, FunctionColumns>
+  | ReadonlyColumnDefinition<Q, RDPs, FunctionColumns>;
+
+interface SharedColumnDefinition<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
+    string,
+    never
+  >,
+> {
   locator: ColumnDefinitionLocator<Q, RDPs, FunctionColumns>;
 
   /**
@@ -55,17 +68,6 @@ export type ColumnDefinition<
   resizable?: boolean;
   orderable?: boolean;
   filterable?: boolean;
-  editable?: boolean;
-
-  /**
-   * Additional function to validate the cell value during edit
-   *
-   * @param value the current cell value
-   * @returns a promise that resolves to an error message string if validation fails, or undefined if validation succeeds
-   */
-  validateEdit?: (
-    value: unknown,
-  ) => Promise<string | undefined>;
 
   renderCell?: (
     object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
@@ -88,7 +90,55 @@ export type ColumnDefinition<
    * When both columnName and renderHeader are provided, renderHeader will take precedence in the table header.
    */
   renderHeader?: () => React.ReactNode;
-};
+}
+
+/**
+ * Column definition for an editable column. Setting `editable: true`
+ * unlocks `editFieldConfig` and `validateEdit`.
+ */
+interface EditableColumnDefinition<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
+    string,
+    never
+  >,
+> extends SharedColumnDefinition<Q, RDPs, FunctionColumns> {
+  editable: true;
+
+  /**
+   * Configuration for the cell editor component.
+   *
+   * When provided, the column uses the specified field component
+   * (e.g. dropdown) instead of the default auto-detected text/number input.
+   */
+  editFieldConfig?: EditFieldConfig;
+
+  /**
+   * Additional function to validate the cell value during edit.
+   *
+   * @param value the current cell value
+   * @returns a promise that resolves to an error message string if validation fails, or undefined if validation succeeds
+   */
+  validateEdit?: (
+    value: unknown,
+  ) => Promise<string | undefined>;
+}
+
+/**
+ * Column definition for a read-only column (default).
+ * `editFieldConfig` and `validateEdit` are not available.
+ */
+interface ReadonlyColumnDefinition<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
+    string,
+    never
+  >,
+> extends SharedColumnDefinition<Q, RDPs, FunctionColumns> {
+  editable?: false;
+}
 
 export type ExtractQueryParameters<
   Q extends QueryDefinition,
@@ -101,21 +151,23 @@ export interface PropertyColumnLocator<Q extends ObjectOrInterfaceDefinition> {
   id: PropertyKeys<Q>;
 }
 
-export interface FunctionColumnLocator<
+/**
+ * Concrete function column locator for a single key K.
+ * Correlates the id, queryDefinition, and getFunctionParams types.
+ */
+interface FunctionColumnLocatorForKey<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
-  FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
-    string,
-    never
-  >,
+  RDPs extends Record<string, SimplePropertyDef>,
+  FunctionColumns extends Record<string, QueryDefinition<{}>>,
+  K extends keyof FunctionColumns,
 > {
   /**
    * This is equivalent to workshop's function-backed columns.
    * The function needs to meet the specifications stated in https://www.palantir.com/docs/foundry/workshop/widgets-object-table/#function-backed-columns
    */
   type: "function";
-  id: keyof FunctionColumns;
-  queryDefinition: FunctionColumns[keyof FunctionColumns];
+  id: K;
+  queryDefinition: FunctionColumns[K];
 
   /**
    * The function will be called with the current object set to get the input parameters for the function query.
@@ -124,7 +176,7 @@ export interface FunctionColumnLocator<
    */
   getFunctionParams: (
     objectSet: ObjectSet<Q, RDPs>,
-  ) => ExtractQueryParameters<FunctionColumns[keyof FunctionColumns]>;
+  ) => ExtractQueryParameters<FunctionColumns[K]>;
 
   /**
    * Function to generate keys for looking up results in the FunctionsMap.
@@ -145,11 +197,30 @@ export interface FunctionColumnLocator<
 
   /**
    * Minimum time between re-fetches of the same function with the same parameters, in milliseconds.
-   * Defaults to 5 minutes to maximize cache hits
+   * Defaults to 5 minutes as it is expensive to fetch function columns for a large object set
+   * and they are expected to be relatively static in the context of an object table
+   *
    * @default 300_000 (5 minutes)
    */
   dedupeIntervalMs?: number;
 }
+
+/**
+ * Distributes over each key in FunctionColumns so that id, queryDefinition,
+ * and getFunctionParams are correlated per key.
+ */
+export type FunctionColumnLocator<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
+    string,
+    never
+  >,
+> = keyof FunctionColumns extends infer K
+  ? K extends keyof FunctionColumns
+    ? FunctionColumnLocatorForKey<Q, RDPs, FunctionColumns, K>
+  : never
+  : never;
 
 export interface RdpColumnLocator<
   Q extends ObjectOrInterfaceDefinition,
@@ -208,6 +279,13 @@ export interface ObjectTableProps<
    * @default 60_000 1 minute
    */
   dedupeIntervalMs?: number;
+
+  /**
+   * Number of objects to fetch per page.
+   *
+   * @default 50
+   */
+  pageSize?: number;
 
   /**
    * Ordered list of column definitions to show in the table
@@ -280,7 +358,7 @@ export interface ObjectTableProps<
    * If both orderBy and defaultOrderBy are provided, orderBy takes precedence.
    */
   defaultOrderBy?: Array<{
-    property: PropertyKeys<Q>;
+    property: PropertyKeys<Q> | keyof RDPs;
     direction: "asc" | "desc";
   }>;
 
@@ -290,7 +368,7 @@ export interface ObjectTableProps<
    * If both orderBy and defaultOrderBy are provided, orderBy takes precedence.
    */
   orderBy?: Array<{
-    property: PropertyKeys<Q>;
+    property: PropertyKeys<Q> | keyof RDPs;
     direction: "asc" | "desc";
   }>;
 
@@ -302,7 +380,7 @@ export interface ObjectTableProps<
    */
   onOrderByChanged?: (
     newOrderBy: Array<{
-      property: PropertyKeys<Q>;
+      property: PropertyKeys<Q> | keyof RDPs;
       direction: "asc" | "desc";
     }>,
   ) => void;
@@ -378,6 +456,19 @@ export interface ObjectTableProps<
    */
   onRowClick?: (
     object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
+  ) => void;
+
+  /**
+   * Called when a column header is clicked.
+   *
+   * The columnId matches the `locator.id` configured on the column definition.
+   * The dropdown menu trigger is excluded — clicking the chevron opens the
+   * header menu instead of firing this callback.
+   *
+   * @param columnId The id of the clicked column
+   */
+  onColumnHeaderClick?: (
+    columnId: PropertyKeys<Q> | keyof RDPs | keyof FunctionColumns,
   ) => void;
 
   /**

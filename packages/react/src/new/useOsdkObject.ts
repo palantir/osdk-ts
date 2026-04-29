@@ -22,7 +22,7 @@ import type {
 } from "@osdk/api";
 import type { ObserveObjectCallbackArgs } from "@osdk/client/unstable-do-not-use";
 import React from "react";
-import { makeExternalStore } from "./makeExternalStore.js";
+import { devToolsMetadata, makeExternalStore } from "./makeExternalStore.js";
 import { OsdkContext2 } from "./OsdkContext2.js";
 
 export interface UseOsdkObjectResult<
@@ -154,7 +154,11 @@ export function useOsdkObject<
       if (!enabled) {
         return makeExternalStore<ObserveObjectCallbackArgs<Q>>(
           () => ({ unsubscribe: () => {} }),
-          `object ${apiNameString} ${primaryKey} [DISABLED]`,
+          devToolsMetadata({
+            hookType: "useOsdkObject",
+            objectType: apiNameString,
+            primaryKey: String(primaryKey),
+          }),
         );
       }
       return makeExternalStore<ObserveObjectCallbackArgs<Q>>(
@@ -173,7 +177,11 @@ export function useOsdkObject<
             },
             observer,
           ),
-        `object ${apiNameString} ${primaryKey}`,
+        devToolsMetadata({
+          hookType: "useOsdkObject",
+          objectType: apiNameString,
+          primaryKey: String(primaryKey),
+        }),
       );
     },
     [
@@ -204,7 +212,8 @@ export function useOsdkObject<
 
     return {
       object: payload?.object as Osdk.Instance<Q> | undefined,
-      isLoading: enabled
+      // Errors take precedence over loading state.
+      isLoading: enabled && error == null
         ? (payload?.status === "loading" || payload?.status === "init"
           || !payload)
         : false,

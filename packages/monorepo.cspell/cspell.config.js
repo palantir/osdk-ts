@@ -83,6 +83,7 @@ const cspell = {
     ".lintstagedrc.mjs",
     ".envrc.sample",
     ".monorepolint.config.mjs",
+    ".syncpackrc",
 
     // don't bother with any build directories
     "examples-extra/*/{build,dist}/**/*",
@@ -95,6 +96,7 @@ const cspell = {
     "packages/create-app.template.*/src/generatedNoCheck/**/*",
     "CHANGELOG.md",
     "CONTRIBUTING.md",
+    "CLAUDE.md",
   ],
   dictionaryDefinitions: [
     ...getDictionaryDefinitions(),

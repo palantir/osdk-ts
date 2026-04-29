@@ -1,5 +1,34 @@
 # @osdk/tool.generate-with-mock-ontology
 
+## 0.10.0
+
+### Patch Changes
+
+- Updated dependencies [19b7913]
+- Updated dependencies [01fbb74]
+- Updated dependencies [91f34a9]
+- Updated dependencies [df1a4f8]
+- Updated dependencies [46a00bc]
+- Updated dependencies [267f324]
+  - @osdk/client@2.12.0
+  - @osdk/api@2.12.0
+
+## 0.9.0
+
+### Minor Changes
+
+- f01a8f4: improvements(build): significant reduction in build task graphs
+
+### Patch Changes
+
+- Updated dependencies [29ab35a]
+- Updated dependencies [0fb9c8a]
+- Updated dependencies [f01a8f4]
+- Updated dependencies [f34a1ce]
+- Updated dependencies [7e7f70b]
+  - @osdk/client@2.10.0
+  - @osdk/api@2.10.0
+
 ## 0.8.0
 
 ### Minor Changes

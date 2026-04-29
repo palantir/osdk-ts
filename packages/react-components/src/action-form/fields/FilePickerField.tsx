@@ -26,9 +26,12 @@ export const FilePickerField: React.FC<FilePickerProps> = memo(
     id,
     value,
     onChange,
+    error,
     isMulti,
     accept,
-    // TODO: implement maxSize validation in a follow-up
+    // maxSize is enforced by form-level validation (extractValidationRules),
+    // not here. Silently dropping oversized files would leave the user with
+    // no indication of why their selection disappeared.
     maxSize: _maxSize,
     text = "No file chosen",
     buttonText = "Browse",
@@ -98,7 +101,12 @@ export const FilePickerField: React.FC<FilePickerProps> = memo(
         aria-label="Choose file"
         onClick={openFileDialog}
         onKeyDown={handleKeyDown}
+        aria-invalid={error != null || undefined}
       >
+        {
+          /* display: none removes the input from the a11y tree entirely,
+            avoiding nested-interactive. Programmatic .click() still works. */
+        }
         <input
           ref={inputRef}
           type="file"
@@ -106,7 +114,6 @@ export const FilePickerField: React.FC<FilePickerProps> = memo(
           multiple={isMulti}
           accept={acceptString}
           onChange={handleInputChange}
-          aria-hidden="true"
           tabIndex={-1}
         />
         <span

@@ -1,0 +1,10 @@
+{
+  "extends": ["//"],
+  "tasks": {
+    "test": {
+      "outputLogs": "new-only",
+      "env": ["FORCE_COLOR"],
+      "dependsOn": ["^transpileEsm", "@osdk/client.test.ontology#transpileTypes"]
+    }
+  }
+}

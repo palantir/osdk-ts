@@ -17,8 +17,10 @@
 import type { ObjectSet, ObjectTypeDefinition, WhereClause } from "@osdk/api";
 import React, { memo } from "react";
 import { FilterInputExcludeRow } from "../base/FilterInputExcludeRow.js";
-import type { FilterDefinitionUnion } from "../FilterListApi.js";
-import type { FilterState } from "../FilterListItemApi.js";
+import type {
+  FilterState,
+  PropertyFilterDefinition,
+} from "../FilterListItemApi.js";
 import { ContainsTextFilterInput } from "./ContainsTextFilterInput.js";
 import { DateRangeFilterInput } from "./DateRangeFilterInput.js";
 import { ListogramFilterInput } from "./ListogramFilterInput.js";
@@ -33,8 +35,8 @@ import { ToggleFilterInput } from "./ToggleFilterInput.js";
 
 interface PropertyFilterInputProps<Q extends ObjectTypeDefinition> {
   objectType: Q;
-  objectSet: ObjectSet<Q>;
-  definition: Extract<FilterDefinitionUnion<Q>, { type: "PROPERTY" }>;
+  objectSet?: ObjectSet<Q>;
+  definition: PropertyFilterDefinition<Q>;
   filterState: FilterState | undefined;
   onFilterStateChanged: (state: FilterState) => void;
   whereClause: WhereClause<Q>;
@@ -84,6 +86,7 @@ function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
           propertyKey={definition.key}
           filterState={filterState}
           onFilterStateChanged={onFilterStateChanged}
+          whereClause={whereClause}
         />
       );
 
@@ -95,6 +98,7 @@ function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
           propertyKey={definition.key}
           filterState={filterState}
           onFilterStateChanged={onFilterStateChanged}
+          whereClause={whereClause}
         />
       );
 
@@ -108,6 +112,8 @@ function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
           onFilterStateChanged={onFilterStateChanged}
           whereClause={whereClause}
           excludeRowOpen={excludeRowOpen}
+          renderValue={definition.renderValue}
+          showCount={definition.showCount}
         />
       );
 
@@ -121,6 +127,8 @@ function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
           onFilterStateChanged={onFilterStateChanged}
           whereClause={whereClause}
           excludeRowOpen={excludeRowOpen}
+          renderValue={definition.renderValue}
+          showCount={definition.showCount}
         />
       );
 
@@ -151,9 +159,11 @@ function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
           whereClause={whereClause}
           colorMap={definition.colorMap}
           displayMode={definition.listogramConfig?.displayMode}
+          showCount={definition.showCount}
           maxVisibleItems={definition.listogramConfig?.maxVisibleItems ?? 5}
           searchQuery={searchQuery}
           excludeRowOpen={excludeRowOpen}
+          renderValue={definition.renderValue}
         />
       );
 

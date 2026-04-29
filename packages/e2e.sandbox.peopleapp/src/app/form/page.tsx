@@ -1,9 +1,9 @@
 import type { ObjectSet, ObjectTypeDefinition } from "@osdk/api";
-import { BaseForm } from "@osdk/react-components/experimental";
+import { BaseForm } from "@osdk/react-components/experimental/action-form";
 import type {
   BaseFormFieldProps,
   RendererFieldDefinition,
-} from "@osdk/react-components/experimental";
+} from "@osdk/react-components/experimental/action-form";
 import { useCallback, useMemo, useState } from "react";
 import { $ } from "../../foundryClient.js";
 import { Employee } from "../../generatedNoCheck2/index.js";
@@ -52,6 +52,17 @@ const fieldDefinitions: ReadonlyArray<RendererFieldDefinition> = [
     label: "Employment End Date",
     placeholder: "Enter employment end date",
     fieldComponentProps: {},
+  },
+  {
+    fieldKey: "employmentDuration",
+    fieldComponent: "DATE_RANGE_INPUT",
+    label: "Employment Duration",
+    placeholder: "Enter employment duration",
+    isRequired: true,
+    fieldComponentProps: {
+      placeholderStart: "Start Date",
+      placeholderEnd: "End Date",
+    },
   },
   {
     fieldKey: "department",
@@ -133,6 +144,7 @@ const fieldDefinitions: ReadonlyArray<RendererFieldDefinition> = [
     label: "Resume",
     fieldComponentProps: {
       accept: [".pdf", ".doc", ".docx"],
+      maxSize: 100, // 100 bytes
     },
   },
   {
@@ -181,9 +193,12 @@ export function FormPage() {
     Record<string, unknown> | undefined
   >(undefined);
 
-  const handleSubmit = useCallback((formState: Record<string, unknown>) => {
-    setSubmittedState(formState);
-  }, []);
+  const handleSubmit = useCallback(
+    async (formState: Record<string, unknown>) => {
+      setSubmittedState(formState);
+    },
+    [],
+  );
 
   const employeeObjectSet = useMemo(
     () => $(Employee) as ObjectSet<ObjectTypeDefinition>,

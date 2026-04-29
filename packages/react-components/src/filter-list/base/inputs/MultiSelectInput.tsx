@@ -30,7 +30,9 @@ interface MultiSelectInputProps {
   className?: string;
   style?: React.CSSProperties;
   placeholder?: string;
+  showCounts?: boolean;
   ariaLabel?: string;
+  renderValue?: (value: string) => string;
 }
 
 function MultiSelectInputInner({
@@ -42,7 +44,9 @@ function MultiSelectInputInner({
   className,
   style,
   placeholder = "Select values...",
+  showCounts = true,
   ariaLabel = "Search values",
+  renderValue,
 }: MultiSelectInputProps): React.ReactElement {
   const handleValueChange = useCallback(
     (newValues: string[] | null) => {
@@ -61,17 +65,30 @@ function MultiSelectInputInner({
     [values],
   );
 
+  const comboboxFilter = useMemo(
+    () =>
+      renderValue
+        ? (itemValue: string, query: string) =>
+          renderValue(itemValue).toLowerCase().includes(query.toLowerCase())
+        : undefined,
+    [renderValue],
+  );
+
   const renderItem = useCallback(
     (value: string) => (
       <Combobox.Item key={value} value={value}>
         <Combobox.ItemIndicator />
-        <span className={styles.itemLabel}>{value}</span>
-        <span className={styles.itemCount}>
-          ({(countByValue.get(value) ?? 0).toLocaleString()})
+        <span className={styles.itemLabel}>
+          {renderValue ? renderValue(value) : value}
         </span>
+        {showCounts && (
+          <span className={styles.itemCount}>
+            ({(countByValue.get(value) ?? 0).toLocaleString()})
+          </span>
+        )}
       </Combobox.Item>
     ),
-    [countByValue],
+    [countByValue, showCounts, renderValue],
   );
 
   const renderChips = useCallback(
@@ -82,7 +99,7 @@ function MultiSelectInputInner({
             key={value}
             aria-label={value}
           >
-            {value}
+            {renderValue ? renderValue(value) : value}
             <Combobox.ChipRemove />
           </Combobox.Chip>
         ))}
@@ -92,7 +109,7 @@ function MultiSelectInputInner({
         />
       </>
     ),
-    [placeholder, ariaLabel],
+    [placeholder, ariaLabel, renderValue],
   );
 
   return (
@@ -119,6 +136,7 @@ function MultiSelectInputInner({
           value={selectedValues}
           onValueChange={handleValueChange}
           items={items}
+          filter={comboboxFilter}
         >
           {isLoading && (
             <div className={sharedStyles.loadingMessage}>

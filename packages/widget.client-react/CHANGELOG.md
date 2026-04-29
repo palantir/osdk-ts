@@ -1,5 +1,61 @@
 # @osdk/widget.client-react
 
+## 3.9.0
+
+### Patch Changes
+
+- Updated dependencies [19b7913]
+- Updated dependencies [01fbb74]
+- Updated dependencies [df1a4f8]
+- Updated dependencies [46a00bc]
+- Updated dependencies [267f324]
+  - @osdk/client@2.12.0
+  - @osdk/widget.client@3.9.0
+
+## 3.8.0
+
+### Patch Changes
+
+- Updated dependencies [58248f8]
+- Updated dependencies [e456da5]
+  - @osdk/client@2.11.0
+  - @osdk/widget.client@3.8.0
+
+## 3.7.0
+
+### Minor Changes
+
+- 29ab35a: Use workspace:^ for peer dependencies to prevent changesets from propagating major bumps when a peer dep receives a minor version change. The internal codegen (`osdk-unstable-typescript generate --internal`) now emits `workspace:^` for peer deps while keeping `workspace:~` for regular/dev deps.
+- f01a8f4: improvements(build): significant reduction in build task graphs
+
+### Patch Changes
+
+- Updated dependencies [29ab35a]
+- Updated dependencies [0fb9c8a]
+- Updated dependencies [f01a8f4]
+- Updated dependencies [f34a1ce]
+- Updated dependencies [7e7f70b]
+  - @osdk/client@2.10.0
+  - @osdk/widget.client@3.7.0
+
+## 3.6.0
+
+### Patch Changes
+
+- Updated dependencies [f8b9f12]
+- Updated dependencies [bcf359f]
+- Updated dependencies [0b349bd]
+- Updated dependencies [12f9b36]
+- Updated dependencies [cbc8e9c]
+- Updated dependencies [9171453]
+- Updated dependencies [e8d14a0]
+- Updated dependencies [51ccca8]
+- Updated dependencies [fb85818]
+- Updated dependencies [ec06b26]
+- Updated dependencies [2394ca7]
+  - @osdk/client@2.9.0
+  - @osdk/widget.client@3.6.0
+
 ## 3.5.0
 
 ### Minor Changes

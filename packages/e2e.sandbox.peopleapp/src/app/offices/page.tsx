@@ -1,4 +1,4 @@
-import { ObjectTable } from "@osdk/react-components/experimental";
+import { ObjectTable } from "@osdk/react-components/experimental/object-table";
 import { useState } from "react";
 import { Section } from "../../components/Section.js";
 import { Office } from "../../generatedNoCheck2/index.js";

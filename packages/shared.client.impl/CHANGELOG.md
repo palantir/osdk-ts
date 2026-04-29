@@ -1,5 +1,29 @@
 # @osdk/shared.client.impl
 
+## 1.11.0
+
+### Minor Changes
+
+- df1a4f8: Normalize `baseUrl` inside `createSharedClientContext` so it always ends with `/`, enabling RFC 3986-correct URL resolution at call sites. `createPlatformClient` and `createMinimalClient` rely on this normalization instead of duplicating it.
+
+## 1.10.0
+
+### Minor Changes
+
+- f01a8f4: improvements(build): significant reduction in build task graphs
+
+### Patch Changes
+
+- Updated dependencies [f01a8f4]
+  - @osdk/shared.net.errors@2.9.0
+  - @osdk/shared.net.fetch@1.9.0
+
+## 1.9.0
+
+### Minor Changes
+
+- bcf359f: Add new headers options for OSDK clients
+
 ## 1.8.0
 
 ### Minor Changes

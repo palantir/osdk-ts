@@ -26,14 +26,28 @@ export function convertOntologyDefinition(
   ridGenerator: OntologyRidGeneratorImpl,
   randomnessKey?: string,
 ): OntologyIrV2 {
+  const importedTypes = getImportedTypes();
+
+  // Convert imported ontology FIRST so that all imported entity RIDs and IDs
+  // are registered in the ridGenerator before the main ontology's
+  // knownIdentifiers is built.
+  const importedOntology = convertOntologyDefinitionToWireBlockData(
+    importedTypes,
+    ridGenerator,
+  );
+
+  const allOntologies = [ontology, importedTypes];
+  const mainOntology = convertOntologyDefinitionToWireBlockData(
+    ontology,
+    ridGenerator,
+    allOntologies,
+  );
+
   return {
-    ontology: convertOntologyDefinitionToWireBlockData(ontology, ridGenerator),
-    importedOntology: convertOntologyDefinitionToWireBlockData(
-      getImportedTypes(),
-      ridGenerator,
-    ),
+    ontology: mainOntology,
+    importedOntology,
     valueTypes: convertOntologyToValueTypeIr(ontology),
-    importedValueTypes: convertOntologyToValueTypeIr(getImportedTypes()),
+    importedValueTypes: convertOntologyToValueTypeIr(importedTypes),
     randomnessKey,
   };
 }

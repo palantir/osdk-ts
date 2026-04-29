@@ -23,7 +23,7 @@ import type { Osdk, PropertyKeys, WhereClause } from "@osdk/client";
 import type { ObserveLinks } from "@osdk/client/unstable-do-not-use";
 import React from "react";
 import { extractPayloadError, isPayloadLoading } from "./hookUtils.js";
-import { makeExternalStore } from "./makeExternalStore.js";
+import { devToolsMetadata, makeExternalStore } from "./makeExternalStore.js";
 import { OsdkContext2 } from "./OsdkContext2.js";
 
 export interface UseLinksOptions<
@@ -172,7 +172,11 @@ export function useLinks<
       if (!enabled) {
         return makeExternalStore<ObserveLinks.CallbackArgs<T>>(
           () => ({ unsubscribe: () => {} }),
-          `links ${linkName} for ${objectsKey} [DISABLED]`,
+          devToolsMetadata({
+            hookType: "useLinks",
+            sourceObjectType: objectsArray[0]?.$apiName,
+            linkName,
+          }),
         );
       }
       return makeExternalStore<ObserveLinks.CallbackArgs<T>>(
@@ -191,7 +195,11 @@ export function useLinks<
             },
             observer,
           ),
-        `links ${linkName} for ${objectsKey}`,
+        devToolsMetadata({
+          hookType: "useLinks",
+          sourceObjectType: objectsArray[0]?.$apiName,
+          linkName,
+        }),
       );
     },
     [

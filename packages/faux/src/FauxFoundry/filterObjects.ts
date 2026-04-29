@@ -149,7 +149,10 @@ export function filterObjects(
       }
       invariant(field);
       return objects.filter((obj) => {
-        return value ? obj[field] == null : obj[field] != null;
+        // Empty strings are also considered null to match the behavior of the backend
+        const v = obj[field];
+        const isEmpty = v == null || v === "";
+        return value ? isEmpty : !isEmpty;
       });
     }
 
@@ -248,7 +251,23 @@ export function filterObjects(
         return false;
       });
     }
-    case "regex":
+    case "regex": {
+      const { propertyIdentifier, field } = where;
+      if (propertyIdentifier) {
+        console.error("propertyIdentifier not supported", where);
+        throw new Error("propertyIdentifier not supported");
+      }
+      invariant(field);
+      const pattern = new RegExp(where.value);
+      return objects.filter((obj) => {
+        const fieldValue = obj[field];
+        if (typeof fieldValue === "string") {
+          return pattern.test(fieldValue);
+        }
+        return false;
+      });
+    }
+
     case "wildcard":
     case "interval":
     case "relativeDateRange":

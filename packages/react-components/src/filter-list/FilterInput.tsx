@@ -22,10 +22,11 @@ import type { FilterDefinitionUnion } from "./FilterListApi.js";
 import type { FilterState } from "./FilterListItemApi.js";
 import { LinkedPropertyInput } from "./inputs/LinkedPropertyInput.js";
 import { PropertyFilterInput } from "./inputs/PropertyFilterInput.js";
+import { StaticValuesFilterInput } from "./inputs/StaticValuesFilterInput.js";
 
 interface FilterInputProps<Q extends ObjectTypeDefinition> {
   objectType: Q;
-  objectSet: ObjectSet<Q>;
+  objectSet?: ObjectSet<Q>;
   definition: FilterDefinitionUnion<Q>;
   filterState: FilterState | undefined;
   onFilterStateChanged: (state: FilterState) => void;
@@ -79,7 +80,10 @@ function FilterInputContent<Q extends ObjectTypeDefinition>({
         />
       );
 
-    case "LINKED_PROPERTY":
+    case "LINKED_PROPERTY": {
+      if (objectSet == null) {
+        return <></>;
+      }
       return (
         <LinkedPropertyInput
           objectSet={objectSet}
@@ -89,6 +93,7 @@ function FilterInputContent<Q extends ObjectTypeDefinition>({
           searchQuery={searchQuery}
         />
       );
+    }
 
     case "KEYWORD_SEARCH":
       return (
@@ -111,6 +116,7 @@ function FilterInputContent<Q extends ObjectTypeDefinition>({
       return (
         <>
           {definition.renderInput({
+            objectType,
             objectSet,
             filterState: customFilterState,
             onFilterStateChanged: (state) => onFilterStateChanged(state),
@@ -128,6 +134,17 @@ function FilterInputContent<Q extends ObjectTypeDefinition>({
           filterState={filterState}
           onFilterStateChanged={onFilterStateChanged}
           whereClause={whereClause}
+          searchQuery={searchQuery}
+          excludeRowOpen={excludeRowOpen}
+        />
+      );
+
+    case "STATIC_VALUES":
+      return (
+        <StaticValuesFilterInput
+          definition={definition}
+          filterState={filterState}
+          onFilterStateChanged={onFilterStateChanged}
           searchQuery={searchQuery}
           excludeRowOpen={excludeRowOpen}
         />

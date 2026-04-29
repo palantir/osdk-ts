@@ -1,5 +1,43 @@
 # @osdk/generator-converters.ontologyir
 
+## 2.12.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.12.0
+
+## 2.11.0
+
+### Minor Changes
+
+- a6f4208: configure entity perms in OAC
+
+### Patch Changes
+
+- Updated dependencies [a6f4208]
+  - @osdk/client.unstable@2.11.0
+
+## 2.10.0
+
+### Minor Changes
+
+- f01a8f4: improvements(build): significant reduction in build task graphs
+
+### Patch Changes
+
+- Updated dependencies [f01a8f4]
+  - @osdk/client.unstable@2.10.0
+
+## 2.9.0
+
+### Minor Changes
+
+- 3390ea2: Resolve Python objectSet/object UUID references recursively and detect edit functions via output dataType when ontologyProvenance is absent
+
+### Patch Changes
+
+- @osdk/client.unstable@2.9.0
+
 ## 2.8.0
 
 ### Minor Changes

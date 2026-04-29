@@ -1,5 +1,46 @@
 # @osdk/shared.test
 
+## 0.9.0
+
+### Minor Changes
+
+- df1a4f8: Build the multipass mock URL via the URL constructor for consistency with the other handlers.
+
+### Patch Changes
+
+- Updated dependencies [91f34a9]
+  - @osdk/api@2.12.0
+  - @osdk/generator-converters@2.12.0
+
+## 0.8.0
+
+### Minor Changes
+
+- f01a8f4: improvements(build): significant reduction in build task graphs
+- 1a0f772: Show "No value" for empty filter values in ListogramInput and generate $isNull instead of $eq: "" in where clauses
+
+### Patch Changes
+
+- Updated dependencies [f01a8f4]
+  - @osdk/generator-converters@2.10.0
+  - @osdk/api@2.10.0
+
+## 0.7.0
+
+### Minor Changes
+
+- e8d14a0: Expose an experimental helper to add media transformation capabilities via transformAndWait
+- 2394ca7: Adding regex matching for string filters.
+
+### Patch Changes
+
+- Updated dependencies [cbc8e9c]
+- Updated dependencies [9171453]
+- Updated dependencies [e8d14a0]
+- Updated dependencies [2394ca7]
+  - @osdk/generator-converters@2.9.0
+  - @osdk/api@2.9.0
+
 ## 0.6.0
 
 ### Minor Changes
