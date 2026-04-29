@@ -132,6 +132,7 @@ export const AsyncDropdownField: <V, Multiple extends boolean = false>(
       if (index >= itemCountRef.current) {
         return (
           <div
+            key="sentinel"
             ref={infiniteScrollRef}
             role="presentation"
             style={virtualProps.style}
