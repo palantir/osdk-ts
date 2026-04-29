@@ -22,6 +22,7 @@ import type {
   SimplePropertyDef,
 } from "@osdk/api";
 import type { Client } from "@osdk/client";
+import type { ObservableClient } from "@osdk/client/unstable-do-not-use";
 import { OsdkProvider } from "@osdk/react";
 import type { AccessorKeyColumnDef } from "@tanstack/react-table";
 import { renderHook, waitFor } from "@testing-library/react";
@@ -67,7 +68,10 @@ describe(useColumnDefs, () => {
   const createWrapper = (client: Client) => {
     return ({ children }: React.PropsWithChildren) => {
       return (
-        <OsdkProvider client={client}>
+        <OsdkProvider
+          client={client}
+          observableClient={{} as unknown as ObservableClient}
+        >
           {children}
         </OsdkProvider>
       );

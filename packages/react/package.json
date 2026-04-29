@@ -1,6 +1,6 @@
 {
   "name": "@osdk/react",
-  "version": "0.15.0",
+  "version": "1.0.0",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -25,23 +25,14 @@
       "require": "./build/cjs/public/devtools-registry.cjs",
       "default": "./build/browser/public/devtools-registry.js"
     },
-    "./experimental": {
-      "browser": "./build/browser/public/experimental.js",
+    "./platform-apis": {
+      "browser": "./build/browser/public/platform-apis.js",
       "import": {
-        "types": "./build/types/public/experimental.d.ts",
-        "default": "./build/esm/public/experimental.js"
+        "types": "./build/types/public/platform-apis.d.ts",
+        "default": "./build/esm/public/platform-apis.js"
       },
-      "require": "./build/cjs/public/experimental.cjs",
-      "default": "./build/browser/public/experimental.js"
-    },
-    "./experimental/admin": {
-      "browser": "./build/browser/public/experimental/admin.js",
-      "import": {
-        "types": "./build/types/public/experimental/admin.d.ts",
-        "default": "./build/esm/public/experimental/admin.js"
-      },
-      "require": "./build/cjs/public/experimental/admin.cjs",
-      "default": "./build/browser/public/experimental/admin.js"
+      "require": "./build/cjs/public/platform-apis.cjs",
+      "default": "./build/browser/public/platform-apis.js"
     },
     "./*": {
       "browser": "./build/browser/public/*.js",
@@ -115,7 +106,6 @@
   "files": [
     "AGENTS.md",
     "docs",
-    "experimental",
     "build/cjs",
     "build/esm",
     "build/browser",

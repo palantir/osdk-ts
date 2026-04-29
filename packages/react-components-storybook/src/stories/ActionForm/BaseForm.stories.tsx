@@ -15,9 +15,9 @@
  */
 
 import type { ObjectSet, ObjectTypeDefinition } from "@osdk/api";
+import { useOsdkClient } from "@osdk/react";
 import type { RendererFieldDefinition } from "@osdk/react-components/experimental";
 import { BaseForm } from "@osdk/react-components/experimental";
-import { useOsdkClient } from "@osdk/react/experimental";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import React, { useCallback, useMemo, useState } from "react";
 import { fn } from "storybook/test";

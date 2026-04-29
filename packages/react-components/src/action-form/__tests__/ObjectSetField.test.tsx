@@ -19,16 +19,13 @@ import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { ObjectSetField } from "../fields/ObjectSetField.js";
 
-vi.mock("@osdk/react/experimental", () => ({
+vi.mock("@osdk/react", () => ({
   useObjectSet: vi.fn(),
   useRegisterUserAgent: vi.fn(),
-}));
-
-vi.mock("@osdk/react", () => ({
   useOsdkMetadata: vi.fn(),
 }));
 
-const { useObjectSet } = await import("@osdk/react/experimental");
+const { useObjectSet } = await import("@osdk/react");
 const { useOsdkMetadata } = await import("@osdk/react");
 
 const mockUseObjectSet = vi.mocked(useObjectSet);

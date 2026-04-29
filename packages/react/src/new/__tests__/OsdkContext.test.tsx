@@ -17,12 +17,12 @@
 import { renderHook } from "@testing-library/react";
 import React from "react";
 import { describe, expect, it } from "vitest";
-import { MISSING_PROVIDER_MESSAGE, OsdkContext2 } from "../OsdkContext2.js";
+import { MISSING_PROVIDER_MESSAGE, OsdkContext } from "../OsdkContext.js";
 
-describe("OsdkContext2", () => {
-  it("throws a helpful error when observableClient is used without OsdkProvider2", () => {
+describe("OsdkContext", () => {
+  it("throws a helpful error when observableClient is used without OsdkProvider", () => {
     const { result } = renderHook(() => {
-      const { observableClient } = React.useContext(OsdkContext2);
+      const { observableClient } = React.useContext(OsdkContext);
       return observableClient;
     });
 
@@ -30,9 +30,9 @@ describe("OsdkContext2", () => {
       .toThrowError(MISSING_PROVIDER_MESSAGE);
   });
 
-  it("throws a helpful error when client is used without OsdkProvider2", () => {
+  it("throws a helpful error when client is used without OsdkProvider", () => {
     const { result } = renderHook(() => {
-      const { client } = React.useContext(OsdkContext2);
+      const { client } = React.useContext(OsdkContext);
       return client;
     });
 

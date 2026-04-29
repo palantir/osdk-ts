@@ -35,7 +35,7 @@ import {
   makeExternalStore,
   makeExternalStoreAsync,
 } from "./makeExternalStore.js";
-import { OsdkContext2 } from "./OsdkContext2.js";
+import { OsdkContext } from "./OsdkContext.js";
 
 interface UseOsdkAggregationBaseOptions<
   T extends ObjectOrInterfaceDefinition,
@@ -170,7 +170,7 @@ export function useOsdkAggregation<
   } = options;
   const objectSet = "objectSet" in options ? options.objectSet : undefined;
 
-  const { observableClient } = React.useContext(OsdkContext2);
+  const { observableClient } = React.useContext(OsdkContext);
 
   const canonOptions = observableClient.canonicalizeOptions({
     where,

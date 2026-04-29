@@ -24,9 +24,13 @@ import type {
   WhereClause,
 } from "@osdk/api";
 import type { Client } from "@osdk/client";
-import { OsdkProvider } from "@osdk/react";
-import type { UseOsdkListResult } from "@osdk/react/experimental";
-import { useObjectSet, useOsdkObjects } from "@osdk/react/experimental";
+import type { ObservableClient } from "@osdk/client/unstable-do-not-use";
+import {
+  OsdkProvider,
+  useObjectSet,
+  type UseOsdkListResult,
+  useOsdkObjects,
+} from "@osdk/react";
 import type { SortingState } from "@tanstack/react-table";
 import { renderHook } from "@testing-library/react";
 import * as React from "react";
@@ -53,38 +57,46 @@ interface MockReturnType extends UseOsdkListResult<TestObject> {
   };
 }
 
-vi.mock("@osdk/react/experimental", () => ({
-  useRegisterUserAgent: vi.fn(),
-  useOsdkObjects: vi.fn((objectType, options): MockReturnType => {
-    return {
-      data: [],
-      isLoading: false,
-      error: undefined,
-      fetchMore: undefined,
-      isOptimistic: false,
-      hasMore: false,
-      objectSet: undefined,
-      refetch: vi.fn(),
-      // Return the options to verify they were passed correctly
-      _testOptions: options,
-    };
-  }),
-  useObjectSet: vi.fn((objectSet, options): MockReturnType => {
-    return {
-      data: [],
-      isLoading: false,
-      error: undefined,
-      fetchMore: vi.fn(),
-      totalCount: undefined,
-      isOptimistic: false,
-      hasMore: false,
-      objectSet: undefined,
-      refetch: vi.fn(),
-      // Return the options to verify they were passed correctly
-      _testOptions: options,
-    };
-  }),
-}));
+vi.mock("@osdk/react", async (importOriginal) => {
+  const actual = await importOriginal<{
+    OsdkProvider: typeof OsdkProvider;
+    useObjectSet: typeof useObjectSet;
+    useOsdkObjects: typeof useOsdkObjects;
+  }>();
+  return {
+    ...actual,
+    useRegisterUserAgent: vi.fn(),
+    useOsdkObjects: vi.fn((objectType, options): MockReturnType => {
+      return {
+        data: [],
+        isLoading: false,
+        error: undefined,
+        fetchMore: undefined,
+        isOptimistic: false,
+        hasMore: false,
+        objectSet: undefined,
+        refetch: vi.fn(),
+        // Return the options to verify they were passed correctly
+        _testOptions: options,
+      };
+    }),
+    useObjectSet: vi.fn((objectSet, options): MockReturnType => {
+      return {
+        data: [],
+        isLoading: false,
+        error: undefined,
+        fetchMore: vi.fn(),
+        totalCount: undefined,
+        isOptimistic: false,
+        hasMore: false,
+        objectSet: undefined,
+        refetch: vi.fn(),
+        // Return the options to verify they were passed correctly
+        _testOptions: options,
+      };
+    }),
+  };
+});
 
 vi.mock("../useFunctionColumnsData.js", () => ({
   useFunctionColumnsData: vi.fn(() => ({})),
@@ -102,7 +114,14 @@ describe(useObjectTableData, () => {
   });
   const createWrapper = (client: Client) => {
     return ({ children }: React.PropsWithChildren) => {
-      return <OsdkProvider client={client}>{children}</OsdkProvider>;
+      return (
+        <OsdkProvider
+          client={client}
+          observableClient={{} as unknown as ObservableClient}
+        >
+          {children}
+        </OsdkProvider>
+      );
     };
   };
 
