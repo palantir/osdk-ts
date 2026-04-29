@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-export type {
-  AggregateStubBuilder,
-  FetchOneStubBuilder,
-  FetchPageStubBuilder,
-  QueryStubBuilder,
-  StubBuilderFor,
-} from "../api/index.js";
-export { createMockAttachment } from "../mock/createMockAttachment.js";
-export { createMockClient } from "../mock/createMockClient.js";
-export { createMockObjectSet } from "../mock/createMockObjectSet.js";
-export { createMockOsdkObject } from "../mock/createMockOsdkObject.js";
+import type {
+  InterfaceDefinition,
+  ObjectSet,
+  ObjectTypeDefinition,
+} from "@osdk/api";
+
+export type StubClient = {
+  <Q extends ObjectTypeDefinition>(o: Q): ObjectSet<Q>;
+  <Q extends InterfaceDefinition>(o: Q): ObjectSet<Q>;
+};
