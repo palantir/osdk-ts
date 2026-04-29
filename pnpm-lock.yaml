@@ -4574,6 +4574,12 @@ importers:
 
   packages/react:
     dependencies:
+      '@osdk/api':
+        specifier: workspace:*
+        version: link:../api
+      '@osdk/client':
+        specifier: workspace:*
+        version: link:../client
       fast-deep-equal:
         specifier: ^3.1.3
         version: 3.1.3
@@ -4581,18 +4587,9 @@ importers:
         specifier: ^17 || ^18 || ^19
         version: 18.3.1(react@18.3.1)
     devDependencies:
-<<<<<<< HEAD
       '@osdk/aip-core':
         specifier: workspace:*
         version: link:../aip-core
-=======
-      '@osdk/api':
-        specifier: workspace:*
-        version: link:../api
-      '@osdk/client':
-        specifier: workspace:*
-        version: link:../client
->>>>>>> 4af52856f (Fix)
       '@osdk/client.test.ontology':
         specifier: workspace:*
         version: link:../client.test.ontology
@@ -8934,9 +8931,6 @@ packages:
 
   '@osdk/shared.net.errors@2.5.0-beta.2':
     resolution: {integrity: sha512-AlsMiED7KvvBD/z5fITxC9ftbdyZ4xZgVYx0rc3RWbUexDQfFpaa7PBHa1itDesGvG1zWKDZkBhNVzgDowN+Og==}
-
-  '@osdk/shared.net.errors@2.7.0':
-    resolution: {integrity: sha512-Vfl/YijHZQ/7q2BHLU9v53U1BsMMAJ4b74QCdBRo7hPPtCm1xxeI9CkaWY9YFTKvg9rLJU0lVm45XSXd9nVmjg==}
 
   '@osdk/shared.net.errors@2.9.0':
     resolution: {integrity: sha512-qkSH4C1X72Uk1UosV8bU/OJdXymP7LPwPZPShZ7RUz1rzWQtT3R90eVQ8SSm52rWcER5weoZjBrKhZqHGdp2WA==}
@@ -26117,8 +26111,6 @@ snapshots:
 
   '@osdk/shared.net.errors@2.5.0-beta.2': {}
 
-  '@osdk/shared.net.errors@2.7.0': {}
-
   '@osdk/shared.net.errors@2.9.0': {}
 
   '@osdk/shared.net.fetch@0.1.1':
@@ -26135,7 +26127,7 @@ snapshots:
     dependencies:
       '@osdk/shared.client': 1.0.1
       '@osdk/shared.client2': 1.0.0
-      '@osdk/shared.net.errors': 2.7.0
+      '@osdk/shared.net.errors': 2.9.0
 
   '@osdk/shared.net.platformapi@1.5.0':
     dependencies:
