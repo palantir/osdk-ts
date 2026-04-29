@@ -49,7 +49,7 @@ export interface IDataType {
   [key: string]: unknown;
 }
 
-interface IDiscoveredFunction {
+export interface IDiscoveredFunction {
   locator: { type: string; typescriptOsdk?: { functionName: string } };
   inputs: Array<{ name: string; dataType: IDataType }>;
   output: { single: { dataType: IDataType } };
@@ -329,7 +329,7 @@ export class OntologyIrToFullMetadataConverter {
     );
   }
 
-  private static async discoverTypeScriptFunctions(
+  static async discoverTypeScriptFunctions(
     functionsDir: string,
     nodeModulesPath?: string,
     irOutputFile?: string,

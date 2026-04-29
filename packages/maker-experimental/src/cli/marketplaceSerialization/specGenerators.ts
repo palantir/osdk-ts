@@ -79,6 +79,7 @@ export async function generateOntologyBlockSpec(
   const shapes = await getShapes(
     ontologyBlockDataV2.ontology,
     new OntologyRidGeneratorImpl(),
+    undefined,
     randomnessKey,
   );
   return {

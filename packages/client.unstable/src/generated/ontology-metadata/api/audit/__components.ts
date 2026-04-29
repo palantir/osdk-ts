@@ -79,6 +79,7 @@ import type {
   LoadAllSharedPropertyTypesPageRequest
     as _api_LoadAllSharedPropertyTypesPageRequest,
   LoadAllTypeGroupsPageRequest as _api_LoadAllTypeGroupsPageRequest,
+  LoadMergedRebaseStateRequest as _api_LoadMergedRebaseStateRequest,
   ObjectTypeId as _api_ObjectTypeId,
   ObjectTypeRid as _api_ObjectTypeRid,
   OntologyBranchRid as _api_OntologyBranchRid,
@@ -661,6 +662,7 @@ export type OntologyMetadataAuditEvent =
   | "ACTION_TYPES_SERVICE_BATCH_GET_ENRICHED_ACTION_TYPE_METADATA"
   | "ONTOLOGY_METADATA_SERVICE_BULK_LOAD_ONTOLOGY_ENTITIES"
   | "ONTOLOGY_METADATA_SERVICE_BULK_LOAD_ONTOLOGY_ENTITIES_BY_DATASOURCES"
+  | "ONTOLOGY_METADATA_SERVICE_LOAD_MERGED_REBASE_STATE"
   | "ONTOLOGY_METADATA_SERVICE_GET_FEATURE_CONFIGURATIONS"
   | "ONTOLOGY_METADATA_SERVICE_GET_ACTION_TYPES_FOR_OBJECT_TYPE"
   | "ONTOLOGY_METADATA_SERVICE_GET_ACTION_TYPES_FOR_INTERFACE_TYPE"
@@ -1045,6 +1047,12 @@ export interface OntologyMetadataServiceLoadAllTypeGroupsFromOntologyResultParam
 }
 export interface OntologyMetadataServiceLoadAllWorkflowsPageRequestParams {
   request: _workflow_api_LoadAllWorkflowsPageRequest;
+}
+export interface OntologyMetadataServiceLoadMergedRebaseStateRequestParams {
+  request: _api_LoadMergedRebaseStateRequest;
+}
+export interface OntologyMetadataServiceLoadMergedRebaseStateResultParams {
+  record: OntologyBulkLoadEntitiesAuditRecord;
 }
 export interface OntologyMetadataServiceLoadOntologyDatasourcesRequestParams {
   request: _api_OntologyLoadDatasourcesRequest;

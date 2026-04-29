@@ -16,6 +16,7 @@
 
 export { default as default } from "./cli/main.js";
 
+export type { ActionLevelValidationDefinition } from "./api/action/ActionLevelValidationDefinition.js";
 export type {
   ActionParameter,
   ActionParameterValidation,
@@ -29,8 +30,10 @@ export type {
   ActionParameterRequirementConstraint,
 } from "./api/action/ActionParameterConfiguration.js";
 export type { ActionSection } from "./api/action/ActionSection.js";
+export type { ActionStatus } from "./api/action/ActionStatus.js";
 export type { ActionType } from "./api/action/ActionType.js";
 export type { ConditionDefinition } from "./api/action/ConditionDefinition.js";
+export type { DefaultFormat } from "./api/action/DefaultFormat.js";
 export type {
   CurrentTimeMappingValue,
   CurrentUserMappingValue,
@@ -40,7 +43,9 @@ export type {
 } from "./api/action/MappingValue.js";
 export type { SectionConditionalOverride } from "./api/action/SectionConditionalOverride.js";
 export type { SubmissionMetadata } from "./api/action/SubmissionMetadata.js";
+export type { TableConfiguration } from "./api/action/TableConfiguration.js";
 export { addDependency } from "./api/addDependency.js";
+export type { BlueprintIcon } from "./api/common/BlueprintIcons.js";
 export type { EntityPermission } from "./api/common/EntityPermission.js";
 export type { OntologyDefinition } from "./api/common/OntologyDefinition.js";
 export { OntologyEntityTypeEnum } from "./api/common/OntologyEntityTypeEnum.js";
@@ -49,6 +54,7 @@ export {
   CREATE_OR_MODIFY_OBJECT_PARAMETER,
   defineAction,
   DELETE_OBJECT_PARAMETER,
+  kebab,
   MODIFY_INTERFACE_OBJECT_PARAMETER,
   MODIFY_OBJECT_PARAMETER,
 } from "./api/defineAction.js";

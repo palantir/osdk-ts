@@ -38,6 +38,7 @@ import {
   cleanAndValidateLinkTypeId,
   OntologyEntityTypeEnum,
 } from "@osdk/maker";
+import type { FunctionsIr } from "../../api/defineOntologyV2.js";
 import type { OntologyRidGenerator } from "../../util/generateRid.js";
 import { ReadableIdGenerator } from "../../util/generateRid.js";
 import { convertAction } from "./convertActionHelpers.js";
@@ -101,6 +102,7 @@ export function convertOntologyDefinitionToWireBlockData(
   ontology: OntologyDefinition,
   ridGenerator: OntologyRidGenerator,
   allOntologies?: OntologyDefinition[],
+  functionsIr?: FunctionsIr,
 ): OntologyBlockDataV2 {
   const ontologiesToScan = allOntologies ?? [ontology];
 
@@ -152,14 +154,18 @@ export function convertOntologyDefinitionToWireBlockData(
   );
 
   const actionTypes = Object.fromEntries(
-    Object.entries(ontology[OntologyEntityTypeEnum.ACTION_TYPE]).map<
-      [string, ActionTypeBlockDataV2]
-    >(([apiName, action]) => {
-      return [
-        ridGenerator.generateRidForActionType(apiName),
-        convertAction(action, ridGenerator),
-      ];
-    }),
+    Object.entries(ontology[OntologyEntityTypeEnum.ACTION_TYPE])
+      .map(([apiName, action]) => {
+        const converted = convertAction(action, ridGenerator, functionsIr);
+        if (converted === undefined) return undefined;
+        return [
+          ridGenerator.generateRidForActionType(apiName),
+          converted,
+        ] as [string, ActionTypeBlockDataV2];
+      })
+      .filter((entry): entry is [string, ActionTypeBlockDataV2] =>
+        entry !== undefined
+      ),
   );
 
   // Build knownIdentifiers from ridGenerator's BiMaps
