@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+// Dev-only CORS proxy for cross-origin image loading in Storybook.
+// Not used in production builds. May be rate-limited or unavailable.
 const CORS_PROXY = "https://corsproxy.io/?";
 
 /** Load an image from a File (upload) */
@@ -45,8 +47,9 @@ export function loadImageFromUrl(url: string): Promise<HTMLImageElement> {
 
 /**
  * Capture a webpage screenshot via Microlink API and load as an image.
- * Microlink is free (no API key), has proper CORS headers, and returns
- * a screenshot URL that we can fetch as a blob.
+ * Dev-only: Microlink is free (no API key), has proper CORS headers,
+ * and returns a screenshot URL that we can fetch as a blob.
+ * May be rate-limited or unavailable outside of dev use.
  *
  * Uses XMLHttpRequest to bypass MSW (Mock Service Worker).
  */

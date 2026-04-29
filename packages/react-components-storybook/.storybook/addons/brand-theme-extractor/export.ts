@@ -126,15 +126,13 @@ export function generateMarkdown(
   if (palette.length > 0) {
     lines.push("## Extracted Palette");
     lines.push("");
-    lines.push("| Swatch | Hex | Luminance | Chroma |");
-    lines.push("|--------|-----|-----------|--------|");
+    lines.push("| Hex | Luminance | Chroma |");
+    lines.push("|-----|-----------|--------|");
     for (const color of palette) {
       lines.push(
-        `| ![${color.hex}](https://via.placeholder.com/20/${
-          color.hex.slice(1)
-        }/${color.hex.slice(1)}) | \`${color.hex}\` | ${
-          (color.luminance * 100).toFixed(1)
-        }% | ${color.chroma.toFixed(3)} |`,
+        `| \`${color.hex}\` | ${(color.luminance * 100).toFixed(1)}% | ${
+          color.chroma.toFixed(3)
+        } |`,
       );
     }
     lines.push("");
