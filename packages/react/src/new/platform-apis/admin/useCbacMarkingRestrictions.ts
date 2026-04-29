@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { PalantirApiError } from "@osdk/client";
 import { CbacMarkingRestrictionsObjects } from "@osdk/foundry.admin";
 import React from "react";
 import { usePlatformQuery } from "../../../utils/usePlatformQuery.js";
@@ -48,13 +49,36 @@ export interface UseCbacMarkingRestrictionsResult {
   restrictions: CbacMarkingRestrictionsData | undefined;
   isLoading: boolean;
 
-  error: Error | undefined;
+  /**
+   * Error thrown by the platform API, or a generic Error on network failure.
+   *
+   * Narrow to `PalantirApiError` (re-exported from `@osdk/client`) to read
+   * `errorName`, `errorCode`, `statusCode`, `errorInstanceId`, and `parameters`.
+   * `errorInstanceId` is the trace ID to share with platform support.
+   *
+   * @example
+   * ```ts
+   * import { PalantirApiError } from "@osdk/client";
+   *
+   * if (error instanceof PalantirApiError) {
+   *   console.log(error.errorName, error.statusCode, error.errorInstanceId);
+   * }
+   * ```
+   */
+  error: PalantirApiError | Error | undefined;
 
   refetch: () => void;
 }
 
 /**
  * Get CBAC marking restrictions (implied, disallowed, required) for the given marking IDs.
+ *
+ * Requires `api:admin-read` on the token. For third-party application (3PA)
+ * OAuth2 clients, the downstream Multipass operation must also be in the
+ * gateway's `admin-read` scope expansion. A 403 whose underlying cause is
+ * Multipass's `Default:PermissionDenied` typically indicates a scope-expansion
+ * gap — share the `errorInstanceId` with platform support.
+ *
  * @param options Options to control the query.
  */
 export function useCbacMarkingRestrictions(
