@@ -1,0 +1,50 @@
+/*
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.osdkVirtualizedScroller {
+  /*
+   * Fill remaining space in the popup after the search input and status.
+   * The popup (flex column) and Combobox.List both participate in flex
+   * layout, so the scroller naturally gets the leftover height without
+   * needing to compute its own max-block-size from --available-height.
+   * min-block-size: 0 lets the flex child shrink below content size.
+   */
+  flex: 1;
+  min-block-size: 0;
+  overflow-block: auto;
+  /*
+   * The popup has padding that insets the scroller from the popup edge,
+   * making the scrollbar appear "cut" (not reaching the popup border).
+   * Negative margins push the scroller to the popup edges so the scrollbar
+   * spans the full height. Padding restores item text alignment.
+   */
+  margin-inline: calc(
+    var(--osdk-combobox-spacing, var(--osdk-surface-spacing, 4px)) * -1.5
+  );
+  margin-block-end: calc(
+    var(--osdk-combobox-spacing, var(--osdk-surface-spacing, 4px)) * -1.5
+  );
+  padding-inline: calc(
+    var(--osdk-combobox-spacing, var(--osdk-surface-spacing, 4px)) * 1.5
+  );
+  padding-block-end: calc(
+    var(--osdk-combobox-spacing, var(--osdk-surface-spacing, 4px)) * 1.5
+  );
+}
+
+.osdkVirtualizedSpacer {
+  position: relative;
+}

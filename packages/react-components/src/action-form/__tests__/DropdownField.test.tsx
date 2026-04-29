@@ -236,6 +236,25 @@ describe("DropdownField", () => {
       });
     });
 
+    it("renders tick indicators in multi-select items", async () => {
+      render(
+        <DropdownField<string, true>
+          value={["Alice"]}
+          items={STRING_ITEMS}
+          isSearchable={true}
+          isMultiple={true}
+        />,
+      );
+
+      const trigger = screen.getByRole("combobox");
+      fireEvent.click(trigger);
+
+      await vi.waitFor(() => {
+        const options = screen.getAllByRole("option");
+        expect(options.length).toBe(STRING_ITEMS.length);
+      });
+    });
+
     it("marks selected items with aria-selected in multi-select", async () => {
       render(
         <DropdownField<string, true>

@@ -22,8 +22,10 @@ import type {
   DataValueClientToWire,
   ObjectSet,
   ObjectTypeDefinition,
+  Osdk,
 } from "@osdk/api";
 import type React from "react";
+import type { VirtualItemRenderProps } from "./fields/VirtualizedItemList.js";
 
 /**
  * A form field definition specifies configuration for a single field
@@ -134,6 +136,7 @@ export interface FormFieldPropsByType {
   DROPDOWN: DropdownFieldProps<unknown, boolean>;
   FILE_PICKER: FilePickerProps;
   NUMBER_INPUT: NumberInputFieldProps;
+  OBJECT_SELECT: ObjectSelectFieldProps;
   OBJECT_SET: ObjectSetFieldProps<ObjectTypeDefinition>;
   RADIO_BUTTONS: RadioButtonsFieldProps<unknown>;
   TEXT_AREA: TextAreaFieldProps;
@@ -290,6 +293,62 @@ export interface DropdownFieldProps<V, Multiple extends boolean = false>
    * Used to track portaled content for click-outside detection.
    */
   portalRef?: React.Ref<HTMLDivElement>;
+
+  /**
+   * Controlled search input value. Must be provided together with `onQueryChange`.
+   */
+  query?: string;
+
+  /**
+   * Callback when the search input value changes. Must be provided together with `query`.
+   */
+  onQueryChange?: (query: string) => void;
+
+  /**
+   * When true, disables the combobox's built-in client-side filtering.
+   * Use when items are already filtered server-side (e.g. via `onQueryChange`).
+   */
+  disableClientSideFiltering?: boolean;
+
+  /**
+   * Callback fired when a combobox item is highlighted via keyboard or pointer.
+   * Used with virtualized rendering to scroll the virtualizer to the highlighted item.
+   */
+  onItemHighlighted?: (
+    highlightedValue: V | undefined,
+    eventDetails: { reason: string; index: number },
+  ) => void;
+
+  /**
+   * Status message rendered below the search input and above the item list
+   * inside the popup. Use for loading/error/empty messages.
+   */
+  popupStatus?: React.ReactNode;
+
+  /**
+   * Footer rendered below the item list inside the popup.
+   * Use for infinite scroll sentinels, "load more" buttons, etc.
+   */
+  popupFooter?: React.ReactNode;
+
+  /**
+   * Overrides the default virtualized item list rendering. Receives the
+   * per-item render callback and the item count so the caller can control
+   * the virtualizer (e.g. to append a trailing sentinel for infinite scroll).
+   */
+  renderItemList?: (
+    renderItem: (
+      index: number,
+      virtualProps: VirtualItemRenderProps,
+    ) => React.ReactNode,
+    itemCount: number,
+  ) => React.ReactNode;
+
+  /**
+   * Whether the list is virtualized.
+   * @default false
+   */
+  virtualized?: boolean;
 }
 
 export interface FilePickerProps extends BaseFormFieldProps<File | File[]> {
@@ -434,6 +493,34 @@ export interface ObjectSetFieldProps<T extends ObjectTypeDefinition>
 }
 
 /**
+ * Object select field props for selecting object instances.
+ * Used for action parameters that accept a single object or multiple objects.
+ *
+ * Extends DropdownFieldProps with props that ObjectSelectField manages
+ * internally (items, search, filtering) omitted from the public surface.
+ */
+export interface ObjectSelectFieldProps extends
+  Omit<
+    DropdownFieldProps<Osdk.Instance<ObjectTypeDefinition>>,
+    | "items"
+    | "itemToStringLabel"
+    | "itemToKey"
+    | "isItemEqual"
+    | "isSearchable"
+    | "query"
+    | "onQueryChange"
+    | "disableClientSideFiltering"
+    | "renderItemList"
+  >
+{
+  /**
+   * The API name of the object type to search within.
+   * Resolved from the action parameter metadata (e.g. "Employee").
+   */
+  objectTypeApiName: string;
+}
+
+/**
  * Custom field props for user-defined renderers
  */
 export interface CustomFieldProps<V> extends BaseFormFieldProps<V> {
@@ -528,8 +615,9 @@ export type FieldComponent =
   | "DROPDOWN"
   | "FILE_PICKER"
   | "NUMBER_INPUT"
-  | "RADIO_BUTTONS"
+  | "OBJECT_SELECT"
   | "OBJECT_SET"
+  | "RADIO_BUTTONS"
   | "TEXT_AREA"
   | "TEXT_INPUT"
   | "CUSTOM";
@@ -595,8 +683,9 @@ export type RendererFieldDefinition = {
  * Gets valid form field types for a given property type
  */
 export type ValidFormFieldForPropertyType<P extends FieldDescriptorType> =
-  P extends "objectSet" ? "OBJECT_SET"
-    : P extends "object" ? "DROPDOWN"
+  P extends { type: "objectSet" } ? "OBJECT_SET"
+    : P extends { type: "object" } ? "OBJECT_SELECT"
+    : P extends { type: "interface" } ? "OBJECT_SELECT"
     : P extends "mediaReference" | "attachment" ? "FILE_PICKER"
     : P extends "boolean" ? "RADIO_BUTTONS" | "DROPDOWN"
     : P extends "string" ? "TEXT_INPUT" | "TEXT_AREA"

@@ -32,8 +32,6 @@ export function getDefaultFieldDefinitions(
   );
 }
 
-const EMPTY_ITEMS: unknown[] = [];
-
 /**
  * Maps a single action parameter to its default RendererFieldDefinition.
  *
@@ -63,11 +61,14 @@ function buildFieldDefinition(
         };
       case "object":
       case "interface":
-        // TODO: provide correct items
         return {
           ...base,
-          fieldComponent: "DROPDOWN",
-          fieldComponentProps: { items: EMPTY_ITEMS },
+          fieldComponent: "OBJECT_SELECT",
+          fieldComponentProps: {
+            objectTypeApiName: paramType.type === "object"
+              ? paramType.object
+              : paramType.interface,
+          },
         };
       case "struct":
         return {

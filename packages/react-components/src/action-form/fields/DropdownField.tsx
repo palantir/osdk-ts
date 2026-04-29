@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { CaretDown, Cross, Tick } from "@blueprintjs/icons";
+import { Button } from "@base-ui/react/button";
+import { CaretDown, Cross, SmallCross, Tick } from "@blueprintjs/icons";
 import React, { useCallback, useState } from "react";
 import { Combobox } from "../../base-components/combobox/Combobox.js";
 import comboboxStyles from "../../base-components/combobox/Combobox.module.css";
@@ -22,6 +23,7 @@ import { Select } from "../../base-components/select/Select.js";
 import selectStyles from "../../base-components/select/Select.module.css";
 import { typedReactMemo } from "../../shared/typedMemo.js";
 import type { DropdownFieldProps } from "../FormFieldApi.js";
+import { type VirtualItemRenderProps } from "./VirtualizedItemList.js";
 
 const EMPTY_ARRAY: [] = [];
 
@@ -36,22 +38,40 @@ interface InnerSelectProps<V, Multiple extends boolean>
 {
   itemToStringLabel: (item: V) => string;
   getKey: (item: V) => string;
+  portalRef?: React.Ref<HTMLDivElement>;
+  query?: string;
+  onQueryChange?: (query: string) => void;
 }
 
 interface InnerComboboxProps<V, Multiple extends boolean>
-  extends DropdownFieldProps<V, Multiple>
+  extends InnerSelectProps<V, Multiple>
 {
-  itemToStringLabel: (item: V) => string;
-  getKey: (item: V) => string;
   isSearchable: boolean;
+  disableClientSideFiltering?: boolean;
+  popupStatus?: React.ReactNode;
+  popupFooter?: React.ReactNode;
+  onItemHighlighted?: DropdownFieldProps<V, Multiple>["onItemHighlighted"];
+  renderItemList?: DropdownFieldProps<V, Multiple>["renderItemList"];
 }
 
-export function DropdownField<V, Multiple extends boolean = false>({
+export const DropdownField: <V, Multiple extends boolean = false>(
+  props: DropdownFieldProps<V, Multiple>,
+) => React.ReactElement = typedReactMemo(function DropdownFieldFn<
+  V,
+  Multiple extends boolean = false,
+>({
   isSearchable = false,
   isMultiple,
   itemToStringLabel,
   itemToKey,
   value,
+  query,
+  onQueryChange,
+  disableClientSideFiltering,
+  popupStatus,
+  popupFooter,
+  onItemHighlighted,
+  renderItemList,
   ...rest
 }: DropdownFieldProps<V, Multiple>): React.ReactElement {
   // Ensure always controlled from first render: multi-select needs [],
@@ -78,6 +98,13 @@ export function DropdownField<V, Multiple extends boolean = false>({
         itemToStringLabel={resolvedItemToStringLabel}
         getKey={getKey}
         isSearchable={isSearchable}
+        query={query}
+        onQueryChange={onQueryChange}
+        disableClientSideFiltering={disableClientSideFiltering}
+        popupStatus={popupStatus}
+        popupFooter={popupFooter}
+        onItemHighlighted={onItemHighlighted}
+        renderItemList={renderItemList}
       />
     );
   }
@@ -90,7 +117,7 @@ export function DropdownField<V, Multiple extends boolean = false>({
       getKey={getKey}
     />
   );
-}
+});
 
 const SelectDropdown = typedReactMemo(function SelectDropdownFn<
   V,
@@ -111,8 +138,7 @@ const SelectDropdown = typedReactMemo(function SelectDropdownFn<
   const hasValue = value != null;
 
   const handleClear = useCallback(() => {
-    // SelectDropdown is always single-select, so cleared value is null.
-    (onChange as ((v: V | null) => void) | undefined)?.(null);
+    onChange?.(null as Parameters<NonNullable<typeof onChange>>[0]);
     setOpen(false);
   }, [onChange]);
 
@@ -136,15 +162,14 @@ const SelectDropdown = typedReactMemo(function SelectDropdownFn<
             )}
           </div>
           {hasValue && (
-            <span
-              role="button"
+            <Button
               aria-label="Clear"
               className={selectStyles.osdkSelectClear}
               onMouseDown={preventTriggerOpen}
               onClick={handleClear}
             >
-              <Cross />
-            </span>
+              <SmallCross />
+            </Button>
           )}
           <span className={selectStyles.osdkSelectIcon}>
             <CaretDown />
@@ -181,6 +206,14 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
   isSearchable,
   placeholder,
   portalRef,
+  query,
+  onQueryChange,
+  disableClientSideFiltering,
+  popupStatus,
+  popupFooter,
+  virtualized,
+  onItemHighlighted,
+  renderItemList,
 }: InnerComboboxProps<V, Multiple>): React.ReactElement {
   const [open, setOpen] = useState(false);
 
@@ -189,10 +222,8 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
     : value != null;
 
   const handleClear = useCallback(() => {
-    // TypeScript can't narrow the conditional type `Multiple extends true ? V[] : V`
-    // at runtime, so we cast through the known parameter type at this single call site.
     const cleared = isMultiple ? (EMPTY_ARRAY as V[]) : null;
-    (onChange as ((v: V[] | V | null) => void) | undefined)?.(cleared);
+    onChange?.(cleared as Parameters<NonNullable<typeof onChange>>[0]);
     // Single-select: close after clearing. Multi-select: keep open for continued selection.
     if (!isMultiple) {
       setOpen(false);
@@ -209,7 +240,7 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
           ? !isItemEqual(v, itemToRemove)
           : v !== itemToRemove
       );
-      (onChange as ((v: V[] | V | null) => void) | undefined)?.(next);
+      onChange?.(next as Parameters<NonNullable<typeof onChange>>[0]);
     },
     [isMultiple, value, onChange, isItemEqual],
   );
@@ -235,6 +266,35 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
     [getKey, itemToStringLabel],
   );
 
+  // Renders a single Combobox.Item by index — used by VirtualizedItemList
+  // to render only visible items. The `virtualProps` contain positioning styles
+  // and ARIA attributes that must go directly on the Combobox.Item for Base UI
+  // keyboard navigation and screen reader support in virtualized mode.
+  const renderItemByIndex = useCallback(
+    (index: number, virtualProps: VirtualItemRenderProps) => {
+      const item = items[index];
+      if (item == null) {
+        return null;
+      }
+      return (
+        <Combobox.Item
+          key={getKey(item)}
+          value={item}
+          index={index}
+          {...virtualProps}
+        >
+          {isMultiple && (
+            <Combobox.ItemIndicator>
+              <Tick />
+            </Combobox.ItemIndicator>
+          )}
+          {itemToStringLabel(item)}
+        </Combobox.Item>
+      );
+    },
+    [items, getKey, itemToStringLabel, isMultiple],
+  );
+
   return (
     <div>
       <Combobox.Root
@@ -246,7 +306,11 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
         itemToStringLabel={itemToStringLabel}
         isItemEqualToValue={isItemEqual}
         items={items}
-        autoHighlight={isSearchable}
+        inputValue={query}
+        onInputValueChange={onQueryChange}
+        filter={disableClientSideFiltering ? null : undefined}
+        virtualized={virtualized}
+        onItemHighlighted={onItemHighlighted}
       >
         <Combobox.Trigger
           id={id}
@@ -264,15 +328,14 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
                       className={comboboxStyles.osdkComboboxTriggerChip}
                     >
                       {itemToStringLabel(item)}
-                      <span
-                        role="button"
+                      <Button
                         aria-label={`Remove ${itemToStringLabel(item)}`}
                         className={comboboxStyles.osdkComboboxTriggerChipRemove}
                         onMouseDown={preventTriggerOpen}
                         onClick={() => handleRemoveItem(item)}
                       >
                         <Cross size={12} />
-                      </span>
+                      </Button>
                     </span>
                   ))}
                 </div>
@@ -289,15 +352,14 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
               )}
           </div>
           {hasValue && (
-            <span
-              role="button"
+            <Button
               aria-label="Clear"
               className={comboboxStyles.osdkComboboxClear}
               onMouseDown={preventTriggerOpen}
               onClick={handleClear}
             >
-              <Cross />
-            </span>
+              <SmallCross />
+            </Button>
           )}
           <Combobox.Icon>
             <CaretDown />
@@ -311,10 +373,25 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
                   <Combobox.SearchInput placeholder="Search…" />
                 </div>
               )}
-              <Combobox.Empty>No results</Combobox.Empty>
-              <Combobox.List>
-                {isMultiple ? renderItemWithIndicator : renderItem}
-              </Combobox.List>
+              {popupStatus}
+              {/* Hide "No results" when popupStatus provides its own message (e.g. "Searching…") */}
+              {popupStatus == null && (
+                <Combobox.Empty>No results</Combobox.Empty>
+              )}
+              {renderItemList != null
+                ? (
+                  <Combobox.List>
+                    {renderItemList(renderItemByIndex, items.length)}
+                  </Combobox.List>
+                )
+                : (
+                  <>
+                    <Combobox.List>
+                      {isMultiple ? renderItemWithIndicator : renderItem}
+                    </Combobox.List>
+                    {popupFooter}
+                  </>
+                )}
             </Combobox.Popup>
           </Combobox.Positioner>
         </Combobox.Portal>
