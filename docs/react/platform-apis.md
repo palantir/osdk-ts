@@ -45,7 +45,7 @@ Retrieves a specific Foundry user by their user ID.
 
 ```tsx
 import { PalantirApiError } from "@osdk/client";
-import { useFoundryUser } from "@osdk/react/experimental";
+import { useFoundryUser } from "@osdk/react/platform-apis";
 
 export function UserProfile({ userId }: { userId: string }) {
   const { user, isLoading, error } = useFoundryUser(userId);
@@ -98,7 +98,7 @@ Retrieves the currently signed-in Foundry user.
 
 ```tsx
 import { PalantirApiError } from "@osdk/client";
-import { useCurrentFoundryUser } from "@osdk/react/experimental";
+import { useCurrentFoundryUser } from "@osdk/react/platform-apis";
 
 export function CurrentUserBadge() {
   const { currentUser, isLoading, error } = useCurrentFoundryUser();
@@ -141,7 +141,7 @@ Lists all Foundry users with pagination support.
 
 ```tsx
 import { PalantirApiError } from "@osdk/client";
-import { useFoundryUsersList } from "@osdk/react/experimental";
+import { useFoundryUsersList } from "@osdk/react/platform-apis";
 
 export function UsersList() {
   const { users, isLoading, error } = useFoundryUsersList();
@@ -190,7 +190,7 @@ export function UsersList() {
 
 ```tsx
 import { PalantirApiError } from "@osdk/client";
-import { useFoundryUsersList } from "@osdk/react/experimental";
+import { useFoundryUsersList } from "@osdk/react/platform-apis";
 import { useState } from "react";
 
 export function UsersList() {
