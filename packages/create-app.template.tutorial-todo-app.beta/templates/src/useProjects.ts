@@ -1,4 +1,9 @@
-// import { useOsdkClient } from "@osdk/react";
+// Replace this hook with @osdk/react. For example:
+//   import { useOsdkObjects, useOsdkAction } from "@osdk/react";
+//   import { $Actions, $Objects } from "{{osdkPackage}}";
+//   const { data: projects, isLoading } = useOsdkObjects($Objects.YourProjectObject);
+//   const { applyAction: createProject } = useOsdkAction($Actions.createProject);
+//   const { applyAction: deleteProject } = useOsdkAction($Actions.deleteProject);
 import { useCallback } from "react";
 import useSWR from "swr";
 import Mocks from "./mocks";
@@ -10,12 +15,9 @@ export interface IProject {
 }
 
 function useProjects() {
-  // Use this client variable to access the Ontology SDK.
-  // const client = useOsdkClient();
   const { data, isLoading, isValidating, error, mutate } = useSWR<IProject[]>(
     "projects",
     async () => {
-      // Try to implement this with the Ontology SDK!
       const projectsList: IProject[] = (await Mocks.getProjects()).map((
         project,
       ) => ({
@@ -31,7 +33,6 @@ function useProjects() {
   const createProject: (name: string) => Promise<IProject["$primaryKey"]> =
     useCallback(
       async (name) => {
-        // Try to implement this with the Ontology SDK!
         const id = await Mocks.createProject({ name });
         await mutate();
         return id;
@@ -41,7 +42,6 @@ function useProjects() {
 
   const deleteProject: (project: IProject) => Promise<void> = useCallback(
     async (project) => {
-      // Try to implement this with the Ontology SDK!
       await Mocks.deleteProject(project.$primaryKey);
       await mutate();
     },

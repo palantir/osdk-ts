@@ -1,4 +1,12 @@
-// import { useOsdkClient } from "@osdk/react";
+// Replace this hook with @osdk/react. For example:
+//   import { useOsdkObjects, useOsdkAction } from "@osdk/react";
+//   import { $Actions, $Objects } from "{{osdkPackage}}";
+//   const { data: tasks, isLoading } = useOsdkObjects($Objects.YourTaskObject, {
+//     where: { projectId: { $eq: project?.$primaryKey } },
+//     enabled: project != null,
+//   });
+//   const { applyAction: createTask } = useOsdkAction($Actions.createTask);
+//   const { applyAction: deleteTask } = useOsdkAction($Actions.deleteTask);
 import { useCallback } from "react";
 import useSWR from "swr";
 import Mocks from "./mocks";
@@ -12,11 +20,8 @@ export interface ITask {
 }
 
 export function useProjectTasks(project: IProject | undefined) {
-  // Use this client variable to access the Ontology SDK.
-  // const client = useOsdkClient();
   const { data, isLoading, isValidating, error, mutate } = useSWR<ITask[]>(
     project != null ? `projects/${project.id}/tasks` : null,
-    // Try to implement this with the Ontology SDK!
     async () => {
       if (project == null) {
         return [];
@@ -32,7 +37,6 @@ export function useProjectTasks(project: IProject | undefined) {
       if (project == null) {
         return undefined;
       }
-      // Try to implement this with the Ontology SDK!
       const id = await Mocks.createTask({
         title,
         projectId: project.$primaryKey,
@@ -48,7 +52,6 @@ export function useProjectTasks(project: IProject | undefined) {
       if (project == null) {
         return;
       }
-      // Try to implement this with the Ontology SDK!
       await Mocks.deleteTask(task.$primaryKey);
       await mutate();
     },

@@ -12,16 +12,25 @@ import {
   TextField,
   Theme,
 } from "@radix-ui/themes";
+import { useOsdkObjects } from "@osdk/react";
 import React, { useCallback, useState } from "react";
 import { useWidgetContext } from "./context.js";
 import { useDarkTheme } from "./useDarkTheme.js";
-// import { useOsdkClient } from "@osdk/react";
 // View the API documentation for your widget set to learn how to use the Ontology SDK.
 
+const FirstObjectType = Object.values($Objects)[0];
+
 export const Widget: React.FC = () => {
-  // See Ontology and Platform SDK docs in Developer Console on how to
-  // use the client object to access Ontology resources and platform APIs
-  // const client = useOsdkClient();
+  // Live demo of @osdk/react: fetch the first page of the first object type
+  // exposed by your Ontology SDK package. Swap useOsdkObjects for
+  // useOsdkObject, useOsdkAction, or useOsdkFunction to fit your needs.
+  const { data: liveObjects, isLoading: isLoadingObjects } = useOsdkObjects(
+    FirstObjectType,
+    {
+      pageSize: 5,
+      enabled: FirstObjectType != null,
+    },
+  );
 
   const { parameters, emitEvent } = useWidgetContext();
   const { headerText, todoItems } = parameters.values;
@@ -136,6 +145,14 @@ export const Widget: React.FC = () => {
                 </Text>
                 <Flex direction="column" gap="1">
                   <Heading size="4">Objects ({objectApiNames.length})</Heading>
+                  {FirstObjectType != null && (
+                    <Text size="2">
+                      {isLoadingObjects
+                        ? `loading ${FirstObjectType.apiName}…`
+                        : `${liveObjects?.length
+                          ?? 0} ${FirstObjectType.apiName} loaded via useOsdkObjects`}
+                    </Text>
+                  )}
                   <pre>
                     {objectApiNames.map((objectApiName) => (
                       <div key={objectApiName}>client({objectApiName})</div>
