@@ -1,16 +1,41 @@
 import { AnchorButton, Icon, Tag } from "@blueprintjs/core";
+import { useOsdkObjects } from "@osdk/react";
 import React from "react";
+import { $Objects } from "{{osdkPackage}}";
 import css from "./Osdk.module.css";
 
 const DOCUMENTATION_URL =
   "{{foundryUrl}}/workspace/developer-console/app/{{application}}/docs/guide/loading-data?language=typescript";
 
+const FirstObjectType = Object.values($Objects)[0];
+
 function Osdk(): React.ReactElement {
+  // Live demo of @osdk/react: fetch the first page of the first object type
+  // exposed by your Ontology SDK package. Swap useOsdkObjects for
+  // useOsdkObject, useOsdkAction, or useOsdkFunction to fit your needs.
+  const { data, isLoading } = useOsdkObjects(FirstObjectType, {
+    pageSize: 5,
+    enabled: FirstObjectType != null,
+  });
+
   return (
     <div className={css.osdk}>
       <div>
         <span>OSDK: </span>
         <Tag minimal={true}>{{osdkPackage}}</Tag>
+        {FirstObjectType != null
+          ? (
+            <Tag minimal={true} intent={isLoading ? "none" : "success"}>
+              {isLoading
+                ? `loading ${FirstObjectType.apiName}…`
+                : `${data?.length ?? 0} ${FirstObjectType.apiName} loaded`}
+            </Tag>
+          )
+          : (
+            <Tag minimal={true} intent="warning">
+              no object types in {{osdkPackage}}
+            </Tag>
+          )}
       </div>
       <AnchorButton
         href={DOCUMENTATION_URL}
