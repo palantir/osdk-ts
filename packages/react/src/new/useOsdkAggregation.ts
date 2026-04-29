@@ -17,6 +17,7 @@
 import type {
   AggregateOpts,
   AggregationsResults,
+  DerivedObjectOrInterfaceDefinition,
   DerivedProperty,
   ObjectOrInterfaceDefinition,
   ObjectSet,
@@ -37,10 +38,19 @@ import {
 } from "./makeExternalStore.js";
 import { OsdkContext2 } from "./OsdkContext2.js";
 
+/**
+ * Widens `T` with any RDPs so aggregate `$select` / `$groupBy` can reference
+ * derived property names.
+ */
+type WithRDPs<
+  T extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef>,
+> = DerivedObjectOrInterfaceDefinition.WithDerivedProperties<T, RDPs>;
+
 interface UseOsdkAggregationBaseOptions<
   T extends ObjectOrInterfaceDefinition,
-  A extends AggregateOpts<T>,
-  RDPs extends Record<string, SimplePropertyDef> = {},
+  RDPs extends Record<string, SimplePropertyDef>,
+  A extends AggregateOpts<WithRDPs<T, RDPs>>,
 > {
   /**
    * Standard OSDK Where clause to filter objects before aggregation
@@ -78,15 +88,15 @@ interface UseOsdkAggregationBaseOptions<
 
 export interface UseOsdkAggregationOptions<
   T extends ObjectOrInterfaceDefinition,
-  A extends AggregateOpts<T>,
-  RDPs extends Record<string, SimplePropertyDef> = {},
-> extends UseOsdkAggregationBaseOptions<T, A, RDPs> {}
+  RDPs extends Record<string, SimplePropertyDef>,
+  A extends AggregateOpts<WithRDPs<T, RDPs>>,
+> extends UseOsdkAggregationBaseOptions<T, RDPs, A> {}
 
 export interface UseOsdkAggregationOptionsWithObjectSet<
   T extends ObjectTypeDefinition,
-  A extends AggregateOpts<T>,
-  RDPs extends Record<string, SimplePropertyDef> = {},
-> extends UseOsdkAggregationBaseOptions<T, A, RDPs> {
+  RDPs extends Record<string, SimplePropertyDef>,
+  A extends AggregateOpts<WithRDPs<T, RDPs>>,
+> extends UseOsdkAggregationBaseOptions<T, RDPs, A> {
   /**
    * The ObjectSet to aggregate on. Enables aggregation on pivoted, filtered, or composed ObjectSets.
    */
@@ -137,30 +147,36 @@ export interface UseOsdkAggregationResult<
  */
 export function useOsdkAggregation<
   Q extends ObjectOrInterfaceDefinition,
-  const A extends AggregateOpts<Q>,
   RDPs extends Record<string, SimplePropertyDef> = {},
+  const A extends AggregateOpts<WithRDPs<Q, RDPs>> = AggregateOpts<
+    WithRDPs<Q, RDPs>
+  >,
 >(
   type: Q,
-  options: UseOsdkAggregationOptions<Q, A, RDPs>,
-): UseOsdkAggregationResult<Q, A>;
+  options: UseOsdkAggregationOptions<Q, RDPs, A>,
+): UseOsdkAggregationResult<WithRDPs<Q, RDPs>, A>;
 export function useOsdkAggregation<
   Q extends ObjectTypeDefinition,
-  const A extends AggregateOpts<Q>,
   RDPs extends Record<string, SimplePropertyDef> = {},
+  const A extends AggregateOpts<WithRDPs<Q, RDPs>> = AggregateOpts<
+    WithRDPs<Q, RDPs>
+  >,
 >(
   type: Q,
-  options: UseOsdkAggregationOptionsWithObjectSet<Q, A, RDPs>,
-): UseOsdkAggregationResult<Q, A>;
+  options: UseOsdkAggregationOptionsWithObjectSet<Q, RDPs, A>,
+): UseOsdkAggregationResult<WithRDPs<Q, RDPs>, A>;
 export function useOsdkAggregation<
   Q extends ObjectTypeDefinition,
-  const A extends AggregateOpts<Q>,
   RDPs extends Record<string, SimplePropertyDef> = {},
+  const A extends AggregateOpts<WithRDPs<Q, RDPs>> = AggregateOpts<
+    WithRDPs<Q, RDPs>
+  >,
 >(
   type: Q,
   options:
-    | UseOsdkAggregationOptions<Q, A, RDPs>
-    | UseOsdkAggregationOptionsWithObjectSet<Q, A, RDPs>,
-): UseOsdkAggregationResult<Q, A> {
+    | UseOsdkAggregationOptions<Q, RDPs, A>
+    | UseOsdkAggregationOptionsWithObjectSet<Q, RDPs, A>,
+): UseOsdkAggregationResult<WithRDPs<Q, RDPs>, A> {
   const {
     where,
     withProperties,
@@ -190,7 +206,9 @@ export function useOsdkAggregation<
     () => {
       const currentObjectSet = objectSetRef.current;
       if (currentObjectSet) {
-        return makeExternalStoreAsync<ObserveAggregationArgs<Q, A>>(
+        return makeExternalStoreAsync<
+          ObserveAggregationArgs<WithRDPs<Q, RDPs>, A>
+        >(
           (observer) =>
             observableClient.observeAggregation(
               {
@@ -212,7 +230,7 @@ export function useOsdkAggregation<
           }),
         );
       }
-      return makeExternalStore<ObserveAggregationArgs<Q, A>>(
+      return makeExternalStore<ObserveAggregationArgs<WithRDPs<Q, RDPs>, A>>(
         (observer) =>
           // eslint-disable-next-line @typescript-eslint/no-deprecated
           observableClient.observeAggregation(
@@ -254,7 +272,9 @@ export function useOsdkAggregation<
   }, [observableClient, type.apiName]);
 
   return React.useMemo(() => ({
-    data: payload?.result as AggregationsResults<Q, A> | undefined,
+    data: payload?.result as
+      | AggregationsResults<WithRDPs<Q, RDPs>, A>
+      | undefined,
     isLoading: isPayloadLoading(payload, true),
     error: extractPayloadError(payload, "Failed to execute aggregation"),
     refetch,

@@ -21,6 +21,7 @@ import type {
   AggregateOpts,
   AggregationsResults,
   CompileTimeMetadata,
+  DerivedObjectOrInterfaceDefinition,
   DerivedProperty,
   ObjectOrInterfaceDefinition,
   ObjectSet,
@@ -251,8 +252,10 @@ export interface ObserveObjectSetArgs<
 
 interface ObserveAggregationBaseOptions<
   T extends ObjectOrInterfaceDefinition,
-  A extends AggregateOpts<T>,
-  RDPs extends Record<string, SimplePropertyDef> = {},
+  RDPs extends Record<string, SimplePropertyDef>,
+  A extends AggregateOpts<
+    DerivedObjectOrInterfaceDefinition.WithDerivedProperties<T, RDPs>
+  >,
 > extends CommonObserveOptions, ObserveOptions {
   type: T;
   where?: WhereClause<T, RDPs>;
@@ -268,9 +271,11 @@ interface ObserveAggregationBaseOptions<
  */
 export interface ObserveAggregationOptions<
   T extends ObjectOrInterfaceDefinition,
-  A extends AggregateOpts<T>,
-  RDPs extends Record<string, SimplePropertyDef> = {},
-> extends ObserveAggregationBaseOptions<T, A, RDPs> {
+  RDPs extends Record<string, SimplePropertyDef>,
+  A extends AggregateOpts<
+    DerivedObjectOrInterfaceDefinition.WithDerivedProperties<T, RDPs>
+  >,
+> extends ObserveAggregationBaseOptions<T, RDPs, A> {
   objectSet?: undefined;
 }
 
@@ -282,9 +287,11 @@ export interface ObserveAggregationOptions<
  */
 export interface ObserveAggregationOptionsWithObjectSet<
   T extends ObjectOrInterfaceDefinition,
-  A extends AggregateOpts<T>,
-  RDPs extends Record<string, SimplePropertyDef> = {},
-> extends ObserveAggregationBaseOptions<T, A, RDPs> {
+  RDPs extends Record<string, SimplePropertyDef>,
+  A extends AggregateOpts<
+    DerivedObjectOrInterfaceDefinition.WithDerivedProperties<T, RDPs>
+  >,
+> extends ObserveAggregationBaseOptions<T, RDPs, A> {
   objectSet: ObjectSet<T>;
 }
 
@@ -433,11 +440,20 @@ export interface ObservableClient extends ObserveLinks {
    */
   observeAggregation<
     T extends ObjectOrInterfaceDefinition,
-    A extends AggregateOpts<T>,
     RDPs extends Record<string, SimplePropertyDef> = {},
+    A extends AggregateOpts<
+      DerivedObjectOrInterfaceDefinition.WithDerivedProperties<T, RDPs>
+    > = AggregateOpts<
+      DerivedObjectOrInterfaceDefinition.WithDerivedProperties<T, RDPs>
+    >,
   >(
-    options: ObserveAggregationOptions<T, A, RDPs>,
-    subFn: Observer<ObserveAggregationArgs<T, A>>,
+    options: ObserveAggregationOptions<T, RDPs, A>,
+    subFn: Observer<
+      ObserveAggregationArgs<
+        DerivedObjectOrInterfaceDefinition.WithDerivedProperties<T, RDPs>,
+        A
+      >
+    >,
   ): Unsubscribable;
 
   /**
@@ -465,11 +481,20 @@ export interface ObservableClient extends ObserveLinks {
    */
   observeAggregation<
     T extends ObjectOrInterfaceDefinition,
-    A extends AggregateOpts<T>,
     RDPs extends Record<string, SimplePropertyDef> = {},
+    A extends AggregateOpts<
+      DerivedObjectOrInterfaceDefinition.WithDerivedProperties<T, RDPs>
+    > = AggregateOpts<
+      DerivedObjectOrInterfaceDefinition.WithDerivedProperties<T, RDPs>
+    >,
   >(
-    options: ObserveAggregationOptionsWithObjectSet<T, A, RDPs>,
-    subFn: Observer<ObserveAggregationArgs<T, A>>,
+    options: ObserveAggregationOptionsWithObjectSet<T, RDPs, A>,
+    subFn: Observer<
+      ObserveAggregationArgs<
+        DerivedObjectOrInterfaceDefinition.WithDerivedProperties<T, RDPs>,
+        A
+      >
+    >,
   ): Promise<Unsubscribable>;
 
   /**
