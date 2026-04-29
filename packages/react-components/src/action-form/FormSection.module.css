@@ -1,0 +1,143 @@
+/*
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/* Box style container */
+.osdkFormSectionBox {
+  border-width: 1px;
+  border-style: solid;
+  border-color: var(--osdk-form-section-border-color);
+  border-radius: var(--osdk-form-section-border-radius);
+  background-color: var(--osdk-form-section-background);
+}
+
+/* Header with title and collapse trigger */
+.osdkFormSectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-block: var(--osdk-form-section-header-padding-block);
+  padding-inline: var(--osdk-form-section-header-padding-inline);
+  gap: calc(var(--osdk-surface-spacing) * 2);
+}
+
+.osdkFormSectionTitleArea {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--osdk-surface-spacing) * 1);
+  flex: 1;
+  min-width: 0;
+}
+
+.osdkFormSectionTitle {
+  font-size: var(--osdk-form-section-title-font-size);
+  font-weight: var(--osdk-form-section-title-font-weight);
+  color: var(--osdk-form-section-title-color);
+}
+
+.osdkFormSectionDescription {
+  font-size: var(--osdk-form-section-description-font-size);
+  color: var(--osdk-form-section-description-color);
+}
+
+/* Collapse trigger button */
+.osdkFormSectionTrigger {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--osdk-surface-spacing) * 2);
+  background-color: transparent;
+  border-style: none;
+  cursor: pointer;
+  padding: 0;
+  color: var(--osdk-form-section-trigger-color);
+
+  &:focus-visible {
+    outline: var(--osdk-focus-outline);
+    outline-offset: var(--osdk-focus-visible-outline-offset);
+  }
+}
+
+/* Chevron rotates when panel is open */
+.osdkFormSectionChevron {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 150ms ease;
+}
+
+.osdkFormSectionTrigger[data-panel-open] .osdkFormSectionChevron {
+  transform: rotate(180deg);
+}
+
+/* Error badge shown on collapsed sections */
+.osdkFormSectionErrorBadge {
+  font-size: var(--osdk-form-section-error-font-size);
+  color: var(--osdk-form-section-error-color);
+  white-space: nowrap;
+}
+
+/* Content area containing fields */
+.osdkFormSectionContent {
+  display: flex;
+  flex-direction: column;
+  gap: var(--osdk-form-section-field-gap);
+  padding-block: var(--osdk-form-section-content-padding-block);
+  padding-inline: var(--osdk-form-section-content-padding-inline);
+}
+
+/* Divider between header and content when expanded */
+.osdkFormSectionDivider {
+  border-block-start-width: 1px;
+  border-block-start-style: solid;
+  border-block-start-color: var(--osdk-form-section-border-color);
+}
+
+/* Multi-column grid layout */
+.osdkFormSectionGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--osdk-form-section-field-gap);
+  column-gap: var(--osdk-form-section-grid-column-gap);
+  padding-block: var(--osdk-form-section-content-padding-block);
+  padding-inline: var(--osdk-form-section-content-padding-inline);
+}
+
+/* Last odd child spans both columns so it doesn't dangle alone */
+.osdkFormSectionGrid > :nth-child(odd):last-child {
+  grid-column: 1 / -1;
+}
+
+/* Minimal style — no box, just a heading */
+.osdkFormSectionMinimalHeader {
+  padding-block: var(--osdk-form-section-header-padding-block);
+}
+
+.osdkFormSectionMinimalTitle {
+  font-size: var(--osdk-form-section-minimal-title-font-size);
+  font-weight: var(--osdk-form-section-title-font-weight);
+  color: var(--osdk-form-section-title-color);
+}
+
+.osdkFormSectionMinimalDescription {
+  font-size: var(--osdk-form-section-description-font-size);
+  color: var(--osdk-form-section-description-color);
+  margin-block-start: calc(var(--osdk-surface-spacing) * 1);
+}
+
+.osdkFormSectionMinimalContent {
+  display: flex;
+  flex-direction: column;
+  gap: var(--osdk-form-section-field-gap);
+}
