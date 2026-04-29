@@ -30,6 +30,7 @@ import type {
 import { useOsdkClient } from "@osdk/react/experimental";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useCallback, useState } from "react";
+import { fn } from "storybook/test";
 import { fauxFoundry } from "../../mocks/fauxFoundry.js";
 import { Employee } from "../../types/Employee.js";
 import { WorkerInterface } from "../../types/WorkerInterface.js";
@@ -151,6 +152,14 @@ const meta: Meta<EmployeeTableProps> = {
     },
     onRowClick: {
       description: "Called when a row is clicked.",
+      control: false,
+      table: {
+        category: "Events",
+      },
+    },
+    onColumnHeaderClick: {
+      description:
+        "Called when a column header is clicked. Parameters: columnId - The ID of the clicked column.",
       control: false,
       table: {
         category: "Events",
@@ -623,6 +632,22 @@ export const CustomColumnWidths: Story = {
       width: index === 0 ? 250 : index === 1 ? 300 : 150,
     })) as any,
   },
+  parameters: {
+    docs: {
+      source: {
+        code: `const columnDefinitions = [
+  { locator: { type: "property", id: "fullName" }, width: 250 },
+  { locator: { type: "property", id: "department" }, width: 300 },
+  { locator: { type: "property", id: "jobTitle" }, width: 150 },
+];
+
+<ObjectTable
+  objectType={Employee}
+  columnDefinitions={columnDefinitions}
+/>`,
+      },
+    },
+  },
   render: (args) => (
     <div className="object-table-container" style={{ height: "600px" }}>
       <ObjectTable {...args} />
@@ -686,18 +711,29 @@ export const WithDefaultColumnPinning: Story = {
     docs: {
       source: {
         code: `const columnDefinitions = [
-    ...columnDefinitions,
-   {
-      locator: { type: "property", id: "fullName" },
-      pinned: "left",
-    },
-    {
-      locator: { type: "property", id: "department" },
-      pinned: "right",
-    },
+  {
+    locator: { type: "property", id: "fullName" },
+    pinned: "left",
+  },
+  {
+    locator: { type: "property", id: "emailPrimaryWork" },
+  },
+  {
+    locator: { type: "property", id: "jobTitle" },
+  },
+  {
+    locator: { type: "property", id: "department" },
+    pinned: "right",
+  },
+  {
+    locator: { type: "property", id: "firstFullTimeStartDate" },
+  },
 ];
 
-<ObjectTable objectType={Employee} columnDefinitions={columnDefinitions} />`,
+<ObjectTable
+  objectType={Employee}
+  columnDefinitions={columnDefinitions}
+/>`,
       },
     },
   },
@@ -800,34 +836,182 @@ export const WithCustomColumn: Story = {
   ),
 };
 
-export const WithRowClickHandler: Story = {
+export const EventListeners: Story = {
   args: {
     objectType: Employee,
     columnDefinitions: defaultEmployeeColumns,
-    onRowClick: (employee: any) => {
-      alert(`Clicked on ${employee.fullName}`);
-    },
-  },
+    selectionMode: "multiple" as const,
+    selectedRows: [],
+    orderBy: [{ property: "fullName", direction: "asc" }] as any,
+    onRowClick: fn(),
+    onColumnHeaderClick: fn(),
+    onRowSelection: fn(),
+    onOrderByChanged: fn(),
+    onColumnVisibilityChanged: fn(),
+    onColumnsPinnedChanged: fn(),
+    onColumnResize: fn(),
+  } as EmployeeTableProps,
   parameters: {
     docs: {
       source: {
         code: `<ObjectTable
   objectType={Employee}
+  columnDefinitions={defaultEmployeeColumns}
+  selectionMode="multiple"
   onRowClick={(employee) => {
-    alert(\`Clicked on \${employee["fullName"]}\`);
+    console.log("Row clicked:", employee);
+  }}
+  onColumnHeaderClick={(columnId) => {
+    console.log("Column header clicked:", columnId);
+  }}
+  onRowSelection={(selectedRows, isSelectAll) => {
+    console.log("Row selection changed:", selectedRows, isSelectAll);
+  }}
+  onOrderByChanged={(orderBy) => {
+    console.log("Sort changed:", orderBy);
+  }}
+  onColumnVisibilityChanged={(visibilityState) => {
+    console.log("Column visibility changed:", visibilityState);
+  }}
+  onColumnsPinnedChanged={(pinnedState) => {
+    console.log("Pinned columns changed:", pinnedState);
+  }}
+  onColumnResize={(columnId, newWidth) => {
+    console.log("Column resized:", columnId, newWidth);
   }}
 />`,
       },
     },
   },
-  render: (args) => (
-    <div className="object-table-container" style={{ height: "600px" }}>
-      <ObjectTable {...args} />
-    </div>
-  ),
+  render: (args) => {
+    const [clickedRow, setClickedRow] = useState<any>(null);
+    const [clickedColumn, setClickedColumn] = useState<string | null>(null);
+    const [selectedRows, setSelectedRows] = useState<any[]>([]);
+    const [isSelectAll, setIsSelectAll] = useState<boolean>(false);
+    const [orderBy, setOrderBy] = useState<any>([{
+      property: "fullName",
+      direction: "asc",
+    }]);
+    const [lastEvent, setLastEvent] = useState<string>("");
+
+    const handleRowClick = useCallback((employee: any) => {
+      args.onRowClick?.(employee);
+      setClickedRow(employee);
+      setLastEvent("onRowClick");
+    }, [args]);
+
+    const handleColumnHeaderClick = useCallback((columnId: string) => {
+      args.onColumnHeaderClick?.(columnId);
+      setClickedColumn(columnId);
+      setLastEvent("onColumnHeaderClick");
+    }, [args]);
+
+    const handleRowSelection = useCallback(
+      (newSelectedRows: any[], newIsSelectAll?: boolean) => {
+        args.onRowSelection?.(newSelectedRows, newIsSelectAll);
+        setSelectedRows(newSelectedRows);
+        if (newIsSelectAll !== undefined) {
+          setIsSelectAll(newIsSelectAll);
+        }
+        setLastEvent("onRowSelection");
+      },
+      [args],
+    );
+
+    const handleOrderByChanged = useCallback(
+      (newOrderBy: any) => {
+        args.onOrderByChanged?.(newOrderBy);
+        setOrderBy(newOrderBy);
+        setLastEvent("onOrderByChanged");
+      },
+      [args],
+    );
+
+    const handleColumnVisibilityChanged = useCallback(
+      (visibilityState: any) => {
+        args.onColumnVisibilityChanged?.(visibilityState);
+        setLastEvent("onColumnVisibilityChanged");
+      },
+      [args],
+    );
+
+    const handleColumnsPinnedChanged = useCallback(
+      (pinnedState: any) => {
+        args.onColumnsPinnedChanged?.(pinnedState);
+        setLastEvent("onColumnsPinnedChanged");
+      },
+      [args],
+    );
+
+    const handleColumnResize = useCallback(
+      (columnId: string, newWidth: number | null) => {
+        args.onColumnResize?.(columnId, newWidth);
+        setLastEvent(`onColumnResize (${columnId})`);
+      },
+      [args],
+    );
+
+    return (
+      <div>
+        <div
+          style={{
+            marginBottom: "16px",
+            padding: "12px",
+            backgroundColor: "#f0f9ff",
+            borderRadius: "4px",
+            border: "1px solid #bfdbfe",
+          }}
+        >
+          <div style={{ marginBottom: "8px", fontWeight: "bold" }}>
+            Event Monitor:
+          </div>
+          <div style={{ marginBottom: "8px", fontSize: "12px" }}>
+            <strong>Last event:</strong> {lastEvent || "None"}
+          </div>
+          <div style={{ marginBottom: "8px", fontSize: "12px" }}>
+            <strong>Row clicked:</strong>{" "}
+            {clickedRow ? <code>{clickedRow.fullName}</code> : "None"}
+          </div>
+          <div style={{ marginBottom: "8px", fontSize: "12px" }}>
+            <strong>Column clicked:</strong>{" "}
+            {clickedColumn ? <code>{clickedColumn}</code> : "None"}
+          </div>
+          <div style={{ marginBottom: "8px", fontSize: "12px" }}>
+            <strong>Selected rows:</strong>{" "}
+            {isSelectAll ? "All employees" : `${selectedRows.length} employees`}
+          </div>
+          <div style={{ fontSize: "12px" }}>
+            <strong>Current sort:</strong> {orderBy?.[0]
+              ? `${orderBy[0].property} (${orderBy[0].direction})`
+              : "None"}
+          </div>
+        </div>
+        <div className="object-table-container" style={{ height: "600px" }}>
+          <ObjectTable
+            {...args}
+            selectedRows={selectedRows}
+            orderBy={orderBy}
+            onRowClick={handleRowClick}
+            onColumnHeaderClick={handleColumnHeaderClick}
+            onRowSelection={handleRowSelection}
+            onOrderByChanged={handleOrderByChanged}
+            onColumnVisibilityChanged={handleColumnVisibilityChanged}
+            onColumnsPinnedChanged={handleColumnsPinnedChanged}
+            onColumnResize={handleColumnResize}
+          />
+        </div>
+      </div>
+    );
+  },
 };
 
 export const ControlledSorting: Story = {
+  args: {
+    objectType: Employee,
+    columnDefinitions: defaultEmployeeColumns,
+    orderBy: [{ property: "fullName", direction: "asc" }] as any,
+    onOrderByChanged: fn(),
+  } as EmployeeTableProps,
   parameters: {
     docs: {
       source: {
@@ -845,10 +1029,16 @@ return (
       },
     },
   },
-  render: () => {
-    const [orderBy, setOrderBy] = useState<any>([
-      { property: "fullName", direction: "asc" },
-    ]);
+  render: (args) => {
+    const [orderBy, setOrderBy] = useState<any>(
+      args.orderBy ?? [
+        { property: "fullName", direction: "asc" },
+      ],
+    );
+    const handleOrderByChanged = useCallback((newOrderBy: any) => {
+      args.onOrderByChanged?.(newOrderBy);
+      setOrderBy(newOrderBy);
+    }, [args]);
 
     return (
       <div>
@@ -863,10 +1053,9 @@ return (
         </div>
         <div className="object-table-container" style={{ height: "600px" }}>
           <ObjectTable
-            objectType={Employee}
-            columnDefinitions={defaultEmployeeColumns}
+            {...args}
             orderBy={orderBy}
-            onOrderByChanged={setOrderBy}
+            onOrderByChanged={handleOrderByChanged}
           />
         </div>
       </div>
@@ -875,6 +1064,13 @@ return (
 };
 
 export const ControlledSelection: Story = {
+  args: {
+    objectType: Employee,
+    columnDefinitions: defaultEmployeeColumns,
+    selectionMode: "multiple" as const,
+    selectedRows: [],
+    onRowSelection: fn(),
+  } as EmployeeTableProps,
   parameters: {
     docs: {
       source: {
@@ -891,20 +1087,23 @@ return (
       },
     },
   },
-  render: () => {
-    const [selectedRows, setSelectedRows] = useState<any[]>([]);
+  render: (args) => {
+    const [selectedRows, setSelectedRows] = useState<any[]>(
+      args.selectedRows ?? [],
+    );
     const [isSelectAll, setIsSelectAll] = useState<boolean>(false);
     const handleRowSelection = useCallback(
       (
-        selectedRows: any[],
-        isSelectAll?: boolean,
+        newSelectedRows: any[],
+        newIsSelectAll?: boolean,
       ) => {
-        setSelectedRows(selectedRows);
-        if (isSelectAll !== undefined) {
-          setIsSelectAll(isSelectAll);
+        args.onRowSelection?.(newSelectedRows, newIsSelectAll);
+        setSelectedRows(newSelectedRows);
+        if (newIsSelectAll !== undefined) {
+          setIsSelectAll(newIsSelectAll);
         }
       },
-      [],
+      [args],
     );
 
     return (
@@ -934,9 +1133,7 @@ return (
         </div>
         <div className="object-table-container" style={{ height: "600px" }}>
           <ObjectTable
-            objectType={Employee}
-            columnDefinitions={defaultEmployeeColumns}
-            selectionMode="multiple"
+            {...args}
             selectedRows={selectedRows}
             onRowSelection={handleRowSelection}
           />
@@ -1169,8 +1366,9 @@ export const EditableTable: Story = {
         },
       },
     ],
-    editMode: "always",
-  },
+    editMode: "always" as const,
+    onCellValueChanged: fn(),
+  } as EmployeeTableProps,
   parameters: {
     docs: {
       source: {
@@ -1252,6 +1450,13 @@ return (
     const [lastEdit, setLastEdit] = useState<
       CellEditInfo<Osdk.Instance<typeof Employee>> | undefined
     >();
+    const handleCellValueChanged = useCallback(
+      (editInfo: CellEditInfo<Osdk.Instance<typeof Employee>>) => {
+        args.onCellValueChanged?.(editInfo as any);
+        setLastEdit(editInfo);
+      },
+      [args],
+    );
 
     return (
       <div className="object-table-container" style={{ height: "600px" }}>
@@ -1286,8 +1491,7 @@ return (
         )}
         <ObjectTable
           {...args}
-          objectType={Employee}
-          onCellValueChanged={setLastEdit}
+          onCellValueChanged={handleCellValueChanged}
         />
       </div>
     );
@@ -1312,11 +1516,12 @@ export const WithSubmitEditsButton: Story = {
       },
     ],
     editMode: "manual",
-    onSubmitEdits: async (edits: CellEditInfo<Osdk.Instance<Employee>>[]) => {
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      alert(`Successfully submitted ${edits.length} edits`);
-      return true;
-    },
+    onSubmitEdits: fn(
+      async (edits: CellEditInfo<Osdk.Instance<Employee>>[]) => {
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        return true;
+      },
+    ),
   } as any,
   parameters: {
     docs: {
@@ -1460,9 +1665,11 @@ export const EditableWithValidation: Story = {
       },
     ],
     editMode: "always",
-    onSubmitEdits: async (edits: CellEditInfo<Osdk.Instance<Employee>>[]) => {
-      return true;
-    },
+    onSubmitEdits: fn(
+      async (edits: CellEditInfo<Osdk.Instance<Employee>>[]) => {
+        return true;
+      },
+    ),
   },
   parameters: {
     docs: {

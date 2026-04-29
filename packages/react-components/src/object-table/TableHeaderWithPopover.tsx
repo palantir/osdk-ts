@@ -97,6 +97,7 @@ interface TableHeaderWithPopoverProps<
   featureFlags?: HeaderMenuFeatureFlags;
   onOpenColumnConfig?: () => void;
   onOpenMultiSort?: () => void;
+  onColumnHeaderClick?: (columnId: string) => void;
 }
 
 export function TableHeaderWithPopover<
@@ -110,6 +111,7 @@ export function TableHeaderWithPopover<
   featureFlags,
   onOpenColumnConfig,
   onOpenMultiSort,
+  onColumnHeaderClick,
 }: TableHeaderWithPopoverProps<TData>): React.ReactElement {
   const {
     showSortingItems = false,
@@ -175,6 +177,10 @@ export function TableHeaderWithPopover<
     [],
   );
 
+  const handleHeaderClick = useCallback(() => {
+    onColumnHeaderClick?.(header.column.id);
+  }, [header.column.id, onColumnHeaderClick]);
+
   const handleOpenColumnConfig = useCallback(() => {
     onOpenColumnConfig?.();
     setIsOpen(false);
@@ -211,7 +217,9 @@ export function TableHeaderWithPopover<
               styles.osdkCenterContainer,
               styles.osdkContentGap,
               styles.osdkHeaderContentLeft,
+              onColumnHeaderClick && styles.osdkHeaderContentLeftClickable,
             )}
+            onClick={onColumnHeaderClick ? handleHeaderClick : undefined}
           >
             {isColumnPinned && (
               <Pin
@@ -259,7 +267,10 @@ export function TableHeaderWithPopover<
             )}
           </div>
           <Menu.Portal container={document.body}>
-            <Menu.Positioner sideOffset={4}>
+            <Menu.Positioner
+              className={styles.osdkHeaderPositioner}
+              sideOffset={4}
+            >
               <Menu.Popup
                 className={styles.osdkHeaderPopup}
               >
