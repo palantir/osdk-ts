@@ -162,7 +162,7 @@ export function useObjectTableData<
 
   // Call useFunctionColumnsData to get function column data
   const functionColumnData = useFunctionColumnsData<Q, RDPs, FunctionColumns>({
-    objectSet: baseResult.objectSet,
+    objectOrInterfaceType,
     objects: baseResult.data,
     columnDefinitions,
     primaryKeyApiName,
