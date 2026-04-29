@@ -24,6 +24,7 @@ import type {
   SecuredPropertyValue,
 } from "@osdk/foundry.ontologies";
 import invariant from "tiny-invariant";
+import { createCipherTextProperty } from "../../createCipherTextProperty.js";
 import { GeotimeSeriesPropertyImpl } from "../../createGeotimeSeriesProperty.js";
 import { MediaReferencePropertyImpl } from "../../createMediaReferenceProperty.js";
 import { TimeSeriesPropertyImpl } from "../../createTimeseriesProperty.js";
@@ -50,6 +51,7 @@ import type { ObjectHolder } from "./ObjectHolder.js";
 const specialPropertyTypes = new Set(
   [
     "attachment",
+    "cipherText",
     "geotimeSeriesReference",
     "mediaReference",
     "numericTimeseries",
@@ -288,6 +290,30 @@ function createSpecialProperty(
     return hydrateAttachmentFromRidInternal(
       client,
       (rawValue as Attachment).rid,
+    );
+  }
+
+  if (propDef.type === "cipherText") {
+    const objectApiName = objectDef.apiName;
+    const primaryKey = rawObject[objectDef.primaryKeyApiName as string];
+    const propertyName = p as string;
+    if (Array.isArray(rawValue)) {
+      return rawValue.map(c =>
+        createCipherTextProperty(
+          client,
+          objectApiName,
+          primaryKey,
+          propertyName,
+          c as string,
+        )
+      );
+    }
+    return createCipherTextProperty(
+      client,
+      objectApiName,
+      primaryKey,
+      propertyName,
+      rawValue as string,
     );
   }
 

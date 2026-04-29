@@ -53,6 +53,7 @@ export function wirePropertyV2ToSdkPropertyDefinition(
     case "boolean":
     case "date":
     case "attachment":
+    case "cipherText":
     case "mediaReference":
     case "geopoint":
     case "geoshape":
@@ -86,13 +87,6 @@ export function wirePropertyV2ToSdkPropertyDefinition(
           : undefined,
       };
     }
-    case "cipherText": {
-      log?.info(
-        `${JSON.stringify(input.dataType.type)} is not a supported dataType`,
-      );
-
-      return undefined;
-    }
 
     default:
       const _: never = input.dataType;
@@ -119,6 +113,7 @@ function objectPropertyTypeToSdkPropertyDefinition(
     case "short":
     case "boolean":
     case "attachment":
+    case "cipherText":
     case "geopoint":
     case "geoshape":
     case "timestamp":
@@ -148,13 +143,6 @@ function objectPropertyTypeToSdkPropertyDefinition(
         },
         {},
       );
-    }
-    case "cipherText": {
-      log?.info(
-        `${JSON.stringify(propertyType.type)} is not a supported propertyType`,
-      );
-
-      return undefined;
     }
     default: {
       const _: never = propertyType;
