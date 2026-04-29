@@ -62,7 +62,7 @@
     "rollup-plugin-visualizer": "^5.14.0",
     "tailwindcss": "^4.1.13",
     "typescript": "~5.5.4",
-    "vite": "^6.3.6"
+    "vite": "^7.3.2"
   },
   "publishConfig": {
     "access": "public"
