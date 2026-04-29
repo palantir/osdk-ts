@@ -116,6 +116,8 @@ All components follow a **layered architecture**. Understanding this pattern is 
 4. Keep the Base component API simple using primitive types.
 5. For complex components, consider a building blocks tier with sub-components and hooks.
 6. Export the OSDK component (and optionally the Base component) from `src/public/experimental.ts`.
+7. **Update documentation** add <COMPONENT>.md to `react-components/docs`. If there were changes to CSS Variables, update `docs/CSSVariables.md`.
+7. **Update storybook** update `react-components-storybook` with examples of the new component
 
 ### Folder Structure
 
