@@ -113,7 +113,7 @@ export function useFunctionColumnsData<
     [columnDefinitions],
   );
 
-  const disabled = !objectOrInterfaceType || !stableObjects?.length
+  const disabled = !baseObjectSet || !stableObjects?.length
     || functionColDefs.length === 0;
 
   // Construct object sets using the base object set (constructed with object type only)
