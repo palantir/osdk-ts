@@ -36,7 +36,6 @@ import type {
   ColumnDefinition,
   FunctionColumnLocator,
 } from "../ObjectTableApi.js";
-import { addFilterClauseToObjectSet } from "../utils/addFilterClauseToObjectSet.js";
 import {
   type AsyncCellData,
   createAsyncCellData,
@@ -46,7 +45,6 @@ import {
   DEFAULT_MAX_CONCURRENT_REQUESTS,
   DEFAULT_PAGE_SIZE,
 } from "../utils/constants.js";
-import { stripDerivedPropertiesFromParams } from "../utils/stripDerivedPropertiesFromParams.js";
 
 export interface FunctionColumnData {
   [columnId: string]: {
@@ -221,7 +219,7 @@ function buildPagedObjectSets<
   pageSize: number,
 ): unknown[] {
   if (!primaryKeyApiName) {
-    return [stripDerivedPropertiesFromParams(objectSet)];
+    return [objectSet];
   }
 
   return chunk(objects, pageSize).map(page => {
@@ -231,9 +229,7 @@ function buildPagedObjectSets<
       },
     } as WhereClause<Q, RDPs>;
 
-    return stripDerivedPropertiesFromParams(
-      addFilterClauseToObjectSet(objectSet, whereClause),
-    );
+    return objectSet.where(whereClause);
   });
 }
 
