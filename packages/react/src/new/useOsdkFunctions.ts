@@ -15,7 +15,6 @@
  */
 
 import type { QueryDefinition } from "@osdk/api";
-import { getWireObjectSet } from "@osdk/client";
 import React from "react";
 import {
   createCompositeExternalStore,
@@ -82,7 +81,10 @@ export function useOsdkFunctions(
 ): UseOsdkFunctionsResult {
   const { observableClient } = React.useContext(OsdkContext2);
 
-  const stableQueriesKey = useStableQueries(queries);
+  const stableQueriesKey = JSON.stringify(queries.map(q => ({
+    apiName: q.queryDefinition.apiName,
+    ...q.options,
+  })));
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const stableQueries = React.useMemo(() => queries, [stableQueriesKey]);
@@ -135,45 +137,4 @@ export function useOsdkFunctions(
       }),
     [stableQueries, payloads, refetches],
   );
-}
-
-/**
- * Normalizes params by converting ObjectSets to their wire representation.
- * This ensures proper comparison of queries containing ObjectSet params.
- */
-function normalizeParams(params: any): any {
-  if (!params) {
-    return params;
-  }
-  // Check if params is an ObjectSet (has $objectSetInternals)
-  if (params.$objectSetInternals) {
-    return getWireObjectSet(params);
-  }
-  // Recursively normalize object properties
-  if (typeof params === "object" && !Array.isArray(params)) {
-    return Object.fromEntries(
-      Object.entries(params).map(([key, value]) => [
-        key,
-        normalizeParams(value),
-      ]),
-    );
-  }
-  return params;
-}
-
-/**
- * Memoizes queries with proper ObjectSet serialization.
- * Uses wire representation for ObjectSet params to capture full structure.
- */
-function useStableQueries(queries: any) {
-  const wireKey = React.useMemo(() => {
-    return JSON.stringify(queries.map(q => ({
-      apiName: q.queryDefinition.apiName,
-      dedupeIntervalMs: q.options?.dedupeIntervalMs,
-      params: normalizeParams(q.options?.params),
-    })));
-  }, [queries]);
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  return React.useMemo(() => queries, [wireKey]);
 }
