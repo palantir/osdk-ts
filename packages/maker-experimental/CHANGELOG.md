@@ -1,5 +1,13 @@
 # @osdk/maker-experimental
 
+## 0.11.0
+
+### Patch Changes
+
+- @osdk/api@2.13.0
+- @osdk/client.unstable@2.13.0
+- @osdk/maker@0.21.0
+
 ## 0.10.0
 
 ### Patch Changes
