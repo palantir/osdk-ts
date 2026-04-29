@@ -21,7 +21,9 @@ export namespace SotSensor {
 
   export interface Props {
     /**
-     *   display name: 'Is Enum'
+     *   display name: 'Is Enum',
+     *
+     *   value type description: 'A value type for boolean values'
      */
     readonly isEnum: true | undefined;
     /**
@@ -85,7 +87,9 @@ export interface SotSensor extends $ObjectTypeDefinition {
     primaryKeyType: 'string';
     properties: {
       /**
-       *   display name: 'Is Enum'
+       *   display name: 'Is Enum',
+       *
+       *   value type description: 'A value type for boolean values'
        */
       isEnum: $PropertyDef<'boolean', 'nullable', 'single'>;
       /**

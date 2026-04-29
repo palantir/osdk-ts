@@ -33,7 +33,9 @@ export namespace OsdkTestObject {
      */
     readonly primaryKey_: $PropType['string'];
     /**
-     *   display name: 'String Property'
+     *   display name: 'String Property',
+     *
+     *   value type description: 'A value type for specific colors'
      */
     readonly stringProperty: 'brown' | 'found.com' | 'it\'s "cool"' | undefined;
     /**
@@ -123,7 +125,9 @@ export interface OsdkTestObject extends $ObjectTypeDefinition {
        */
       primaryKey_: $PropertyDef<'string', 'non-nullable', 'single'>;
       /**
-       *   display name: 'String Property'
+       *   display name: 'String Property',
+       *
+       *   value type description: 'A value type for specific colors'
        */
       stringProperty: $PropertyDef<'string', 'nullable', 'single'>;
       /**
