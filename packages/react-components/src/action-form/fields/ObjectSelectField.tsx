@@ -25,7 +25,7 @@ import { AsyncDropdownField } from "./AsyncDropdownField.js";
 /** Debounce search input to avoid firing a server query on every keystroke. */
 const SEARCH_DEBOUNCE_MS = 300;
 /** Number of objects fetched per page from the OSDK. */
-const PAGE_SIZE = 5;
+const PAGE_SIZE = 50;
 
 type OsdkObject = Osdk.Instance<ObjectTypeDefinition>;
 
