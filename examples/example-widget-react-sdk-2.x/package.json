@@ -17,6 +17,7 @@
   "dependencies": {
     "@osdk/client": "workspace:*",
     "@osdk/e2e.generated.catchall": "workspace:*",
+    "@osdk/react": "workspace:*",
     "@osdk/widget.client": "workspace:*",
     "@osdk/widget.client-react": "workspace:*",
     "@radix-ui/react-icons": "^1.3.2",
