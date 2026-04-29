@@ -5,12 +5,15 @@ env:
 
 on:
   push:
-    branches: 
+    branches:
       - main
       - release/*
       - next
   pull_request:
     types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
 
 jobs:
   cspell:
@@ -78,9 +81,7 @@ jobs:
     timeout-minutes: 25
     runs-on: ubuntu-latest
     permissions:
-      contents: write
-      pull-requests: write
-      issues: write
+      contents: read
     strategy:
       matrix:
         node: [18, 20, 22, 24] # We need to support any LTS versions since the GA of 2.0, which includes 18.x and up
