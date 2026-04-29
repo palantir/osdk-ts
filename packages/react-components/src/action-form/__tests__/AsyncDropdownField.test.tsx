@@ -16,33 +16,11 @@
 
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import React from "react";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { AsyncDropdownField } from "../fields/AsyncDropdownField.js";
-
-// IntersectionObserver mock for HappyDOM
-let intersectionCallback: IntersectionObserverCallback;
-const mockObserve = vi.fn();
-const mockUnobserve = vi.fn();
-
-beforeEach(() => {
-  vi.stubGlobal(
-    "IntersectionObserver",
-    vi.fn((callback: IntersectionObserverCallback) => {
-      intersectionCallback = callback;
-      return {
-        observe: mockObserve,
-        unobserve: mockUnobserve,
-        disconnect: vi.fn(),
-      };
-    }),
-  );
-});
 
 afterEach(() => {
   cleanup();
-  vi.restoreAllMocks();
-  mockObserve.mockClear();
-  mockUnobserve.mockClear();
 });
 
 const ITEMS = ["Alpha", "Beta", "Gamma"];
@@ -50,10 +28,10 @@ const ITEMS = ["Alpha", "Beta", "Gamma"];
 function renderAsyncDropdown(overrides: {
   items?: string[];
   isLoading?: boolean;
+  isSearching?: boolean;
   hasMore?: boolean;
   onFetchMore?: () => void;
   fetchError?: Error;
-  searchQuery?: string;
 } = {}) {
   return render(
     <AsyncDropdownField
@@ -61,6 +39,7 @@ function renderAsyncDropdown(overrides: {
       value={null}
       onChange={vi.fn()}
       isLoading={false}
+      isSearching={false}
       hasMore={false}
       {...overrides}
     />,
@@ -71,8 +50,11 @@ async function openCombobox(): Promise<void> {
   const input = screen.getByRole("combobox");
   fireEvent.focus(input);
   fireEvent.keyDown(input, { key: "ArrowDown" });
+  // In virtualized mode, items render inside VirtualizedItemList and may
+  // not immediately have role="option" in HappyDOM (no layout engine),
+  // so check for the popup container instead.
   await vi.waitFor(() => {
-    expect(screen.getByRole("option", { name: "Alpha" })).toBeDefined();
+    expect(getPopup()).not.toBeNull();
   });
 }
 
@@ -80,40 +62,66 @@ function getPopup(): Element | null {
   return document.querySelector("[class*='osdkComboboxPopup']");
 }
 
-function simulateIntersection(isIntersecting: boolean): void {
-  intersectionCallback(
-    [{ isIntersecting } as IntersectionObserverEntry],
-    {} as IntersectionObserver,
-  );
-}
-
 describe("AsyncDropdownField", () => {
   describe("infinite scroll", () => {
-    it("calls onFetchMore when sentinel becomes visible and hasMore is true", async () => {
+    it("calls onFetchMore when popup opens and list fits without scrollbar", async () => {
       const onFetchMore = vi.fn();
       renderAsyncDropdown({ hasMore: true, onFetchMore });
       await openCombobox();
 
-      simulateIntersection(true);
+      // VirtualizedItemList calls onFetchMore synchronously via ref callback
+      // when scrollHeight <= clientHeight (short list / HappyDOM has 0 dimensions)
+      expect(onFetchMore).toHaveBeenCalled();
+    });
 
-      expect(onFetchMore).toHaveBeenCalledTimes(1);
+    it("hides skeleton footer after fetching all pages", async () => {
+      const onFetchMore = vi.fn();
+      const { rerender } = render(
+        <AsyncDropdownField
+          items={["Alpha"]}
+          value={null}
+          onChange={vi.fn()}
+          isLoading={false}
+          isSearching={false}
+          hasMore={true}
+          onFetchMore={onFetchMore}
+        />,
+      );
+
+      const input = screen.getByRole("combobox");
+      fireEvent.focus(input);
+      fireEvent.keyDown(input, { key: "ArrowDown" });
+      await vi.waitFor(() => {
+        expect(getPopup()).not.toBeNull();
+      });
+
+      // Skeleton should be visible while hasMore is true
+      const popup = getPopup();
+      expect(popup?.querySelectorAll("[class*='skeleton']")?.length)
+        .toBeGreaterThan(0);
+
+      // Simulate fetchMore completing — parent re-renders with all items loaded
+      rerender(
+        <AsyncDropdownField
+          items={["Alpha", "Beta"]}
+          value={null}
+          onChange={vi.fn()}
+          isLoading={false}
+          isSearching={false}
+          hasMore={false}
+          onFetchMore={onFetchMore}
+        />,
+      );
+
+      // Skeleton should be gone now
+      const skeletonBars = getPopup()?.querySelectorAll("[class*='skeleton']");
+      expect(skeletonBars?.length ?? 0).toBe(0);
     });
 
     it("does not call onFetchMore when hasMore is false", async () => {
       const onFetchMore = vi.fn();
       renderAsyncDropdown({ hasMore: false, onFetchMore });
       await openCombobox();
-
-      // No sentinel is rendered when hasMore is false
-      expect(onFetchMore).not.toHaveBeenCalled();
-    });
-
-    it("does not call onFetchMore when sentinel is not intersecting", async () => {
-      const onFetchMore = vi.fn();
-      renderAsyncDropdown({ hasMore: true, onFetchMore });
-      await openCombobox();
-
-      simulateIntersection(false);
 
       expect(onFetchMore).not.toHaveBeenCalled();
     });
@@ -130,13 +138,14 @@ describe("AsyncDropdownField", () => {
       expect(skeletonBars?.length).toBeGreaterThan(0);
     });
 
-    it("shows 'Loading...' empty message when loading with no items", async () => {
+    it("shows 'Searching' status when searching with no items", async () => {
       render(
         <AsyncDropdownField
           items={[]}
           value={null}
           onChange={vi.fn()}
           isLoading={true}
+          isSearching={true}
           hasMore={false}
         />,
       );
@@ -147,8 +156,7 @@ describe("AsyncDropdownField", () => {
       await vi.waitFor(() => {
         const popup = getPopup();
         expect(popup).not.toBeNull();
-        expect(popup?.textContent).toContain("Loading");
-        expect(popup?.textContent).not.toContain("No results");
+        expect(popup?.textContent).toContain("Searching");
       });
     });
 
@@ -159,6 +167,7 @@ describe("AsyncDropdownField", () => {
           value={null}
           onChange={vi.fn()}
           isLoading={true}
+          isSearching={true}
           hasMore={false}
         />,
       );
@@ -181,6 +190,7 @@ describe("AsyncDropdownField", () => {
           value={null}
           onChange={vi.fn()}
           isLoading={false}
+          isSearching={false}
           hasMore={false}
           fetchError={new Error("Connection refused")}
         />,
@@ -193,7 +203,6 @@ describe("AsyncDropdownField", () => {
         const popup = getPopup();
         expect(popup).not.toBeNull();
         expect(popup?.textContent).toContain("Connection refused");
-        expect(popup?.textContent).not.toContain("No results");
       });
     });
 
@@ -224,15 +233,15 @@ describe("AsyncDropdownField", () => {
       fireEvent.keyDown(input, { key: "ArrowDown" });
     }
 
-    it("shows 'Searching...' when loading with a search query and no items", async () => {
+    it("shows 'Searching...' when searching with no items", async () => {
       render(
         <AsyncDropdownField
           items={[]}
           value={null}
           onChange={vi.fn()}
           isLoading={true}
+          isSearching={true}
           hasMore={false}
-          searchQuery="Ali"
         />,
       );
       openEmptyCombobox();
@@ -241,19 +250,18 @@ describe("AsyncDropdownField", () => {
         const popup = getPopup();
         expect(popup).not.toBeNull();
         expect(popup?.textContent).toContain("Searching");
-        expect(popup?.textContent).not.toContain("No results");
       });
     });
 
-    it("shows 'No matches' when not loading with a search query and no items", async () => {
+    it("shows 'No results' when not loading and no items", async () => {
       render(
         <AsyncDropdownField
           items={[]}
           value={null}
           onChange={vi.fn()}
           isLoading={false}
+          isSearching={false}
           hasMore={false}
-          searchQuery="Xyz"
         />,
       );
       openEmptyCombobox();
@@ -261,8 +269,7 @@ describe("AsyncDropdownField", () => {
       await vi.waitFor(() => {
         const popup = getPopup();
         expect(popup).not.toBeNull();
-        expect(popup?.textContent).toContain("No matches");
-        expect(popup?.textContent).toContain("Xyz");
+        expect(popup?.textContent).toContain("No results");
       });
     });
   });

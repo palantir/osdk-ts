@@ -25,6 +25,7 @@ import type {
   Osdk,
 } from "@osdk/api";
 import type React from "react";
+import type { VirtualItemRenderProps } from "./fields/VirtualizedItemList.js";
 
 /**
  * A form field definition specifies configuration for a single field
@@ -310,27 +311,42 @@ export interface DropdownFieldProps<V, Multiple extends boolean = false>
   disableClientSideFiltering?: boolean;
 
   /**
-   * Custom renderer for the popup content (item list, empty state, footer).
-   * Receives pre-built `itemList` and a `renderEmpty` wrapper so the renderer
-   * does not need to know about the underlying combobox primitives.
-   *
-   * When omitted, the default rendering is:
-   * `<>{renderEmpty("No results")}{itemList}</>`
+   * Callback fired when a combobox item is highlighted via keyboard or pointer.
+   * Used with virtualized rendering to scroll the virtualizer to the highlighted item.
    */
-  itemListRenderer?: (props: ItemListRendererProps) => React.ReactNode;
-}
+  onItemHighlighted?: (
+    highlightedValue: V | undefined,
+    eventDetails: { reason: string; index: number },
+  ) => void;
 
-/**
- * Props passed to the `itemListRenderer` callback on `DropdownFieldProps`.
- * Contains pre-built pieces that the renderer can compose with custom UI.
- */
-export interface ItemListRendererProps {
-  /** Pre-rendered item list (e.g. `<Combobox.List>` with all items). */
-  itemList: React.ReactNode;
-  /** Wraps children in the combobox empty state container (styled, hidden when items exist). */
-  renderEmpty: (children: React.ReactNode) => React.ReactNode;
-  /** Number of items currently available. */
-  itemCount: number;
+  /**
+   * Status message rendered below the search input and above the item list
+   * inside the popup. Use for loading/error/empty messages.
+   */
+  popupStatus?: React.ReactNode;
+
+  /**
+   * Footer rendered below the item list inside the popup.
+   * Use for infinite scroll sentinels, "load more" buttons, etc.
+   */
+  popupFooter?: React.ReactNode;
+
+  /**
+   * Custom renderer for the item list region of the combobox popup.
+   * Receives a `renderItem` callback that produces `Combobox.Item` elements
+   * and the current item count. Use to wrap items in a virtualized scroll
+   * container or any other custom list layout.
+   *
+   * When provided, the combobox switches to virtualized mode (Base UI
+   * manages items by index rather than by DOM presence).
+   */
+  renderItemList?: (
+    renderItem: (
+      index: number,
+      virtualProps: VirtualItemRenderProps,
+    ) => React.ReactNode,
+    itemCount: number,
+  ) => React.ReactNode;
 }
 
 export interface FilePickerProps extends BaseFormFieldProps<File | File[]> {

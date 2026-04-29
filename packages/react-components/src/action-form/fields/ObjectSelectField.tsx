@@ -121,8 +121,8 @@ export const ObjectSelectField: React.NamedExoticComponent<
       isMultiple={isMultiple}
       portalRef={portalRef}
       onQueryChange={setQuery}
-      searchQuery={query}
       isLoading={isLoading}
+      isSearching={debouncedQuery.trim() !== "" && isLoading}
       hasMore={hasMore}
       onFetchMore={handleFetchMore}
       fetchError={fetchError}

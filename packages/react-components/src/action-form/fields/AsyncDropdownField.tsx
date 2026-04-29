@@ -14,25 +14,30 @@
  * limitations under the License.
  */
 
-import React, { useCallback } from "react";
+import React, { useCallback, useMemo, useRef } from "react";
 import { SkeletonBar } from "../../base-components/skeleton/SkeletonBar.js";
-import { useInfiniteScroll } from "../../shared/hooks/useInfiniteScroll.js";
 import { typedReactMemo } from "../../shared/typedMemo.js";
-import type {
-  DropdownFieldProps,
-  ItemListRendererProps,
-} from "../FormFieldApi.js";
+import type { DropdownFieldProps } from "../FormFieldApi.js";
 import styles from "./AsyncDropdownField.module.css";
 import { DropdownField } from "./DropdownField.js";
+import type { VirtualItemRenderProps ,
+  VirtualizedItemList,
+  type VirtualizedItemListVirtualizer,
+} from "./VirtualizedItemList.js";
 
 export interface AsyncDropdownFieldProps<V, Multiple extends boolean = false>
-  extends Omit<DropdownFieldProps<V, Multiple>, "itemListRenderer">
+  extends
+    Omit<
+      DropdownFieldProps<V, Multiple>,
+      "popupStatus" | "onItemHighlighted" | "renderItemList"
+    >
 {
   /** Whether the data source is currently loading. */
   isLoading: boolean;
-
+  /** Whether the data source is currently searching. */
+  isSearching: boolean;
   /** Whether more pages of data are available to fetch. */
-  hasMore: boolean;
+  hasMore?: boolean;
 
   /**
    * Called when the user scrolls to the bottom and more data is available.
@@ -43,11 +48,6 @@ export interface AsyncDropdownFieldProps<V, Multiple extends boolean = false>
    * The error from the most recent failed fetch, if any.
    */
   fetchError?: Error;
-
-  /**
-   * Current search text entered by the user.
-   */
-  searchQuery?: string;
 }
 
 export const AsyncDropdownField: <V, Multiple extends boolean = false>(
@@ -58,60 +58,90 @@ export const AsyncDropdownField: <V, Multiple extends boolean = false>(
 >({
   isLoading,
   hasMore,
+  isSearching,
   onFetchMore,
   fetchError,
-  searchQuery,
   ...dropdownProps
 }: AsyncDropdownFieldProps<V, Multiple>): React.ReactElement {
-  const sentinelRef = useInfiniteScroll({
-    onLoadMore: onFetchMore,
-    loadedCount: dropdownProps.items.length,
-    hasMore,
-  });
+  const virtualizerRef = useRef<VirtualizedItemListVirtualizer | null>(null);
 
-  const itemListRenderer = useCallback(
-    ({ itemList, renderEmpty, itemCount }: ItemListRendererProps) => {
-      // Empty list: show a single message for the current state
-      if (itemCount === 0) {
-        const isSearching = searchQuery != null && searchQuery.trim() !== "";
-        if (fetchError != null) {
-          return renderEmpty(fetchError.message);
-        }
-        if (isLoading) {
-          return renderEmpty(isSearching ? "Searching\u2026" : "Loading\u2026");
-        }
-        if (isSearching) {
-          return renderEmpty(<>No matches for {searchQuery.trim()}</>);
-        }
-        return renderEmpty("No results");
+  // Keyboard scroll-to-index: when a combobox item is highlighted via
+  // keyboard navigation, scroll the virtualizer to keep it visible.
+  // Only scroll on keyboard wrap-around (first/last item) or programmatic
+  // highlight — NOT on pointer hover or when the highlight is removed
+  // (e.g. mouse leaves the list), to avoid jumping back to the top.
+  const handleItemHighlighted = useCallback(
+    (value: V | undefined, eventDetails: { reason: string; index: number }) => {
+      const virtualizer = virtualizerRef.current;
+      if (value == null || virtualizer == null) {
+        return;
       }
 
-      // Has items: render the list with an optional footer
-      return (
-        <>
-          {renderEmpty("No results")}
-          {itemList}
-          {fetchError != null
-            ? (
-              <div className={styles.osdkAsyncDropdownError} role="alert">
-                {fetchError.message}
-              </div>
-            )
-            : hasMore
-            ? (
-              <div ref={sentinelRef}>
-                {
-                  /* 60% width avoids a jarring full-width flash; 12px matches
-                  the line height of option text for a natural shimmer. */
-                }
-                <SkeletonBar width="60%" height={12} />
-              </div>
-            )
-            : null}
-        </>
-      );
+      const { reason, index } = eventDetails;
+      const isStart = index === 0;
+      const isEnd = index === virtualizer.options.count - 1;
+      const shouldScroll = reason === "none"
+        || (reason === "keyboard" && (isStart || isEnd));
+
+      if (shouldScroll) {
+        queueMicrotask(() => {
+          virtualizer.scrollToIndex(index, {
+            align: isEnd ? "start" : "end",
+          });
+        });
+      }
     },
-    [isLoading, fetchError, hasMore, sentinelRef, searchQuery],
+    [],
+  );
+
+  // Build status as a React element. This is rendered in a stable slot
+  // inside the popup so the popup's DOM structure stays stable across
+  // loading transitions and doesn't steal focus from the search input.
+  let popupStatus: React.ReactNode = null;
+
+  if (fetchError != null) {
+    popupStatus = (
+      <div className={styles.osdkAsyncDropdownError} role="alert">
+        {fetchError.message}
+      </div>
+    );
+  } else if (isSearching) {
+    popupStatus = (
+      <div className={styles.osdkAsyncDropdownStatus}>Searching…</div>
+    );
+  }
+  // "No results" is handled by Combobox.Empty in the virtualized path
+
+  const footer = useMemo(
+    () =>
+      hasMore
+        ? (
+          <div>
+            <SkeletonBar className={styles.osdkAsyncDropdownSkeleton} />
+          </div>
+        )
+        : null,
+    [hasMore],
+  );
+
+  const renderItemList = useCallback(
+    (
+      renderItem: (
+        index: number,
+        virtualProps: VirtualItemRenderProps,
+      ) => React.ReactNode,
+      itemCount: number,
+    ) => (
+      <VirtualizedItemList
+        count={itemCount}
+        renderItem={renderItem}
+        hasMore={hasMore}
+        onFetchMore={onFetchMore}
+        virtualizerRef={virtualizerRef}
+        footer={footer}
+      />
+    ),
+    [hasMore, onFetchMore, footer],
   );
 
   return (
@@ -119,7 +149,9 @@ export const AsyncDropdownField: <V, Multiple extends boolean = false>(
       {...dropdownProps}
       isSearchable={true}
       disableClientSideFiltering={dropdownProps.onQueryChange != null}
-      itemListRenderer={itemListRenderer}
+      popupStatus={popupStatus}
+      onItemHighlighted={handleItemHighlighted}
+      renderItemList={renderItemList}
     />
   );
 });

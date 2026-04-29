@@ -15,7 +15,7 @@
  */
 
 import { Button } from "@base-ui/react/button";
-import { CaretDown, Cross, Tick } from "@blueprintjs/icons";
+import { CaretDown, Cross, SmallCross, Tick } from "@blueprintjs/icons";
 import React, { useCallback, useState } from "react";
 import { Combobox } from "../../base-components/combobox/Combobox.js";
 import comboboxStyles from "../../base-components/combobox/Combobox.module.css";
@@ -23,6 +23,7 @@ import { Select } from "../../base-components/select/Select.js";
 import selectStyles from "../../base-components/select/Select.module.css";
 import { typedReactMemo } from "../../shared/typedMemo.js";
 import type { DropdownFieldProps } from "../FormFieldApi.js";
+import type { VirtualItemRenderProps } from "./VirtualizedItemList.js";
 
 const EMPTY_ARRAY: [] = [];
 
@@ -46,9 +47,19 @@ interface InnerComboboxProps<V, Multiple extends boolean>
   extends InnerSelectProps<V, Multiple>
 {
   isSearchable: boolean;
+  disableClientSideFiltering?: boolean;
+  popupStatus?: React.ReactNode;
+  popupFooter?: React.ReactNode;
+  onItemHighlighted?: DropdownFieldProps<V, Multiple>["onItemHighlighted"];
+  renderItemList?: DropdownFieldProps<V, Multiple>["renderItemList"];
 }
 
-export function DropdownField<V, Multiple extends boolean = false>({
+export const DropdownField: <V, Multiple extends boolean = false>(
+  props: DropdownFieldProps<V, Multiple>,
+) => React.ReactElement = typedReactMemo(function DropdownFieldFn<
+  V,
+  Multiple extends boolean = false,
+>({
   isSearchable = false,
   isMultiple,
   itemToStringLabel,
@@ -57,7 +68,10 @@ export function DropdownField<V, Multiple extends boolean = false>({
   query,
   onQueryChange,
   disableClientSideFiltering,
-  itemListRenderer,
+  popupStatus,
+  popupFooter,
+  onItemHighlighted,
+  renderItemList,
   ...rest
 }: DropdownFieldProps<V, Multiple>): React.ReactElement {
   // Ensure always controlled from first render: multi-select needs [],
@@ -87,7 +101,10 @@ export function DropdownField<V, Multiple extends boolean = false>({
         query={query}
         onQueryChange={onQueryChange}
         disableClientSideFiltering={disableClientSideFiltering}
-        itemListRenderer={itemListRenderer}
+        popupStatus={popupStatus}
+        popupFooter={popupFooter}
+        onItemHighlighted={onItemHighlighted}
+        renderItemList={renderItemList}
       />
     );
   }
@@ -100,7 +117,7 @@ export function DropdownField<V, Multiple extends boolean = false>({
       getKey={getKey}
     />
   );
-}
+});
 
 const SelectDropdown = typedReactMemo(function SelectDropdownFn<
   V,
@@ -151,7 +168,7 @@ const SelectDropdown = typedReactMemo(function SelectDropdownFn<
               onMouseDown={preventTriggerOpen}
               onClick={handleClear}
             >
-              <Cross />
+              <SmallCross />
             </Button>
           )}
           <span className={selectStyles.osdkSelectIcon}>
@@ -192,7 +209,10 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
   query,
   onQueryChange,
   disableClientSideFiltering,
-  itemListRenderer,
+  popupStatus,
+  popupFooter,
+  onItemHighlighted,
+  renderItemList,
 }: InnerComboboxProps<V, Multiple>): React.ReactElement {
   const [open, setOpen] = useState(false);
 
@@ -245,6 +265,35 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
     [getKey, itemToStringLabel],
   );
 
+  // Renders a single Combobox.Item by index — used by VirtualizedItemList
+  // to render only visible items. The `virtualProps` contain positioning styles
+  // and ARIA attributes that must go directly on the Combobox.Item for Base UI
+  // keyboard navigation and screen reader support in virtualized mode.
+  const renderItemByIndex = useCallback(
+    (index: number, virtualProps: VirtualItemRenderProps) => {
+      const item = items[index];
+      if (item == null) {
+        return null;
+      }
+      return (
+        <Combobox.Item
+          key={getKey(item)}
+          value={item}
+          index={index}
+          {...virtualProps}
+        >
+          {isMultiple && (
+            <Combobox.ItemIndicator>
+              <Tick />
+            </Combobox.ItemIndicator>
+          )}
+          {itemToStringLabel(item)}
+        </Combobox.Item>
+      );
+    },
+    [items, getKey, itemToStringLabel, isMultiple],
+  );
+
   return (
     <div>
       <Combobox.Root
@@ -259,7 +308,12 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
         inputValue={query}
         onInputValueChange={onQueryChange}
         filter={disableClientSideFiltering ? null : undefined}
-        autoHighlight={isSearchable}
+        // Base UI's public type only exposes `boolean`, but the underlying
+        // AriaCombobox accepts `"always"` which highlights the first item on
+        // open AND whenever items change (e.g. after async search results).
+        autoHighlight={"always" as unknown as boolean}
+        virtualized={renderItemList != null}
+        onItemHighlighted={onItemHighlighted}
       >
         <Combobox.Trigger
           id={id}
@@ -307,7 +361,7 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
               onMouseDown={preventTriggerOpen}
               onClick={handleClear}
             >
-              <Cross />
+              <SmallCross />
             </Button>
           )}
           <Combobox.Icon>
@@ -322,24 +376,28 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
                   <Combobox.SearchInput placeholder="Search…" />
                 </div>
               )}
-              {itemListRenderer?.({
-                itemList: (
-                  <Combobox.List>
-                    {isMultiple ? renderItemWithIndicator : renderItem}
-                  </Combobox.List>
-                ),
-                renderEmpty: (children) => (
-                  <Combobox.Empty>{children}</Combobox.Empty>
-                ),
-                itemCount: items.length,
-              }) ?? (
-                <>
-                  <Combobox.Empty>No results</Combobox.Empty>
-                  <Combobox.List>
-                    {isMultiple ? renderItemWithIndicator : renderItem}
-                  </Combobox.List>
-                </>
-              )}
+              {popupStatus}
+              {renderItemList != null
+                ? (
+                  <>
+                    {/* Hide "No results" when popupStatus provides its own message (e.g. "Searching…") */}
+                    {popupStatus == null && (
+                      <Combobox.Empty>No results</Combobox.Empty>
+                    )}
+                    <Combobox.List>
+                      {renderItemList(renderItemByIndex, items.length)}
+                    </Combobox.List>
+                  </>
+                )
+                : (
+                  <>
+                    <Combobox.Empty>No results</Combobox.Empty>
+                    <Combobox.List>
+                      {isMultiple ? renderItemWithIndicator : renderItem}
+                    </Combobox.List>
+                    {popupFooter}
+                  </>
+                )}
             </Combobox.Popup>
           </Combobox.Positioner>
         </Combobox.Portal>

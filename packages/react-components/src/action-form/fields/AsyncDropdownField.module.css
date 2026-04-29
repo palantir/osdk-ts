@@ -17,3 +17,18 @@
 .osdkAsyncDropdownError {
   color: var(--osdk-async-dropdown-error-color, var(--osdk-intent-danger-rest));
 }
+
+.osdkAsyncDropdownStatus {
+  padding: calc(var(--osdk-surface-spacing, 4px) * 2);
+  color: var(
+    --osdk-async-dropdown-status-color,
+    var(--bp-text-color-muted, #5c7080)
+  );
+}
+
+.osdkAsyncDropdownSkeleton {
+  width: 60%;
+  height: calc(var(--osdk-surface-spacing, 4px) * 3);
+  margin: calc(var(--osdk-surface-spacing, 4px) * 2);
+  border-radius: calc(var(--osdk-surface-border-radius, 4px) * 0.5);
+}
