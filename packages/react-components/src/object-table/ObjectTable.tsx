@@ -74,6 +74,7 @@ export function ObjectTable<
   onColumnsPinnedChanged,
   onColumnResize,
   onRowSelection,
+  onColumnHeaderClick,
   renderCellContextMenu,
   selectionMode = "none",
   selectedRows,
@@ -233,6 +234,20 @@ export function ObjectTable<
     [renderCellContextMenu],
   );
 
+  const handleColumnHeaderClick = useMemo(
+    () =>
+      onColumnHeaderClick
+        ? (columnId: string) =>
+          onColumnHeaderClick(
+            columnId as
+              | PropertyKeys<Q>
+              | keyof RDPs
+              | keyof FunctionColumns,
+          )
+        : undefined,
+    [onColumnHeaderClick],
+  );
+
   const isTableLoading = isLoading || isColumnsLoading;
 
   const headerMenuFeatureFlags: HeaderMenuFeatureFlags = useMemo(() => ({
@@ -253,6 +268,7 @@ export function ObjectTable<
       isLoading={isTableLoading}
       fetchNextPage={fetchMore}
       onRowClick={props.onRowClick}
+      onColumnHeaderClick={handleColumnHeaderClick}
       rowHeight={props.rowHeight}
       renderCellContextMenu={onRenderCellContextMenu}
       className={props.className}

@@ -459,6 +459,19 @@ export interface ObjectTableProps<
   ) => void;
 
   /**
+   * Called when a column header is clicked.
+   *
+   * The columnId matches the `locator.id` configured on the column definition.
+   * The dropdown menu trigger is excluded — clicking the chevron opens the
+   * header menu instead of firing this callback.
+   *
+   * @param columnId The id of the clicked column
+   */
+  onColumnHeaderClick?: (
+    columnId: PropertyKeys<Q> | keyof RDPs | keyof FunctionColumns,
+  ) => void;
+
+  /**
    * Selection mode for the table rows.
    *
    * If multiple, a checkbox will be shown for each row to allow selecting multiple rows
