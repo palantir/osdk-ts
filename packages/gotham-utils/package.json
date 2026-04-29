@@ -1,0 +1,48 @@
+{
+  "name": "@osdk/gotham-utils",
+  "version": "0.1.0-beta.0",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/palantir/osdk-ts.git"
+  },
+  "exports": {
+    ".": {
+      "browser": "./build/browser/index.js",
+      "import": {
+        "types": "./build/types/index.d.ts",
+        "default": "./build/esm/index.js"
+      },
+      "require": "./build/cjs/index.cjs",
+      "default": "./build/browser/index.js"
+    }
+  },
+  "scripts": {
+    "check-spelling": "cspell --quiet .",
+    "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
+    "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
+    "transpile": "tsup",
+    "typecheck": "tsc-absolute --noEmit"
+  },
+  "dependencies": {
+    "@osdk/api": "workspace:~",
+    "@osdk/client": "workspace:~"
+  },
+  "devDependencies": {
+    "@osdk/monorepo.tsconfig": "workspace:~",
+    "typescript": "~5.9.2"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "build/cjs",
+    "build/esm",
+    "build/browser",
+    "build/types",
+    "CHANGELOG.md",
+    "package.json"
+  ],
+  "sideEffects": false,
+  "type": "module"
+}
