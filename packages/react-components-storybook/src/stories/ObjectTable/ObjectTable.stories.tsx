@@ -21,13 +21,13 @@ import type {
   QueryDefinition,
   WhereClause,
 } from "@osdk/api";
+import { useOsdkClient } from "@osdk/react";
 import { ObjectTable } from "@osdk/react-components/experimental/object-table";
 import type {
   CellEditInfo,
   ColumnDefinition,
   ObjectTableProps,
 } from "@osdk/react-components/experimental/object-table";
-import { useOsdkClient } from "@osdk/react/experimental";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useCallback, useState } from "react";
 import { fn } from "storybook/test";

@@ -15,7 +15,7 @@
  */
 
 import { createClient } from "@osdk/client";
-import { OsdkProvider2 } from "@osdk/react/experimental";
+import { OsdkProvider } from "@osdk/react";
 import { withThemeByDataAttribute } from "@storybook/addon-themes";
 import type { Preview } from "@storybook/react-vite";
 import { initialize, mswLoader } from "msw-storybook-addon";
@@ -71,9 +71,9 @@ const preview: Preview = {
   decorators: [
     (Story) => (
       <div className="root">
-        <OsdkProvider2 client={mockClient}>
+        <OsdkProvider client={mockClient}>
           <Story />
-        </OsdkProvider2>
+        </OsdkProvider>
       </div>
     ),
     withThemeByDataAttribute({

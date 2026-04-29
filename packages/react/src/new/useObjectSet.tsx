@@ -36,7 +36,7 @@ import {
   makeExternalStore,
   type Snapshot,
 } from "./makeExternalStore.js";
-import { OsdkContext2 } from "./OsdkContext2.js";
+import { OsdkContext } from "./OsdkContext.js";
 
 export interface UseObjectSetOptions<
   Q extends ObjectOrInterfaceDefinition,
@@ -229,7 +229,7 @@ export function useObjectSet<
   baseObjectSet: ObjectSet<Q, BaseRDPs> | undefined,
   options: UseObjectSetOptions<Q, RDPs> = {},
 ): UseObjectSetResult<Q, RDPs> {
-  const { observableClient } = React.useContext(OsdkContext2);
+  const { observableClient } = React.useContext(OsdkContext);
 
   const { enabled: enabledOption = true, streamUpdates, ...otherOptions } =
     options;

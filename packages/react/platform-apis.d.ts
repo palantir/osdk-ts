@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,18 +14,4 @@
  * limitations under the License.
  */
 
-import type { Client } from "@osdk/client";
-import React from "react";
-import { OsdkContext } from "./OsdkContext.js";
-
-export function OsdkProvider({
-  children,
-  client,
-}: {
-  children: React.ReactNode;
-  client: Client;
-}): React.JSX.Element {
-  return (
-    <OsdkContext.Provider value={{ client }}>{children}</OsdkContext.Provider>
-  );
-}
+export * from "./build/cjs/public/platform-apis.cjs";

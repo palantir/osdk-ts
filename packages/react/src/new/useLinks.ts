@@ -24,7 +24,7 @@ import type { ObserveLinks } from "@osdk/client/unstable-do-not-use";
 import React from "react";
 import { extractPayloadError, isPayloadLoading } from "./hookUtils.js";
 import { devToolsMetadata, makeExternalStore } from "./makeExternalStore.js";
-import { OsdkContext2 } from "./OsdkContext2.js";
+import { OsdkContext } from "./OsdkContext.js";
 
 export interface UseLinksOptions<
   T extends ObjectOrInterfaceDefinition,
@@ -142,7 +142,7 @@ export function useLinks<
   linkName: L,
   options: UseLinksOptions<LinkedType<T, L>> = {},
 ): UseLinksResult<LinkedType<T, L>> {
-  const { observableClient } = React.useContext(OsdkContext2);
+  const { observableClient } = React.useContext(OsdkContext);
 
   const { enabled = true, ...otherOptions } = options;
 

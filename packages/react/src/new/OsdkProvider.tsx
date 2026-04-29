@@ -20,10 +20,9 @@ import {
   type ObservableClient,
 } from "@osdk/client/unstable-do-not-use";
 import React, { useCallback, useMemo, useRef } from "react";
-import { OsdkContext } from "../OsdkContext.js";
 import { getRegisteredDevTools } from "../public/devtools-registry.js";
 import { REACT_USER_AGENT } from "../util/UserAgent.js";
-import { OsdkContext2 } from "./OsdkContext2.js";
+import { OsdkContext } from "./OsdkContext.js";
 import { useDevToolsClient } from "./useDevToolsClient.js";
 import { UserAgentContext } from "./UserAgentContext.js";
 
@@ -38,7 +37,7 @@ interface OsdkProviderOptions {
   enableDevTools?: boolean;
 }
 
-export function OsdkProvider2({
+export function OsdkProvider({
   children,
   client,
   observableClient,
@@ -80,13 +79,11 @@ export function OsdkProvider2({
 
   return (
     <UserAgentContext.Provider value={addUserAgent}>
-      <OsdkContext2.Provider
+      <OsdkContext.Provider
         value={contextValue}
       >
-        <OsdkContext.Provider value={{ client }}>
-          {content}
-        </OsdkContext.Provider>
-      </OsdkContext2.Provider>
+        {content}
+      </OsdkContext.Provider>
     </UserAgentContext.Provider>
   );
 }
