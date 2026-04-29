@@ -62,11 +62,31 @@ describe("getAnthropicBaseUrl", () => {
       "https://example.palantirfoundry.com/api/v2/llm/proxy/anthropic",
     );
   });
+
+  it("returns the Anthropic proxy URL when baseUrl has a trailing slash", () => {
+    const client = createMockClient({
+      baseUrl: "https://example.palantirfoundry.com/",
+    });
+
+    expect(getAnthropicBaseUrl(client)).toBe(
+      "https://example.palantirfoundry.com/api/v2/llm/proxy/anthropic",
+    );
+  });
 });
 
 describe("getOpenAiBaseUrl", () => {
   it("returns the OpenAI proxy URL", () => {
     const client = createMockClient();
+
+    expect(getOpenAiBaseUrl(client)).toBe(
+      "https://example.palantirfoundry.com/api/v2/llm/proxy/openai/v1",
+    );
+  });
+
+  it("returns the OpenAI proxy URL when baseUrl has a trailing slash", () => {
+    const client = createMockClient({
+      baseUrl: "https://example.palantirfoundry.com/",
+    });
 
     expect(getOpenAiBaseUrl(client)).toBe(
       "https://example.palantirfoundry.com/api/v2/llm/proxy/openai/v1",

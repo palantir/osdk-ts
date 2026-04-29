@@ -1,5 +1,23 @@
 # @osdk/react-components
 
+## 0.8.0
+
+### Minor Changes
+
+- d9b03eb: document @osdk/client version compat and install-time error recovery in AGENTS.md
+- 5a733c0: Improve DropdownField with searchable input, multi-select checkboxes, clear button, and fix Select positioning
+- 52ff28c: simplify conditional objectset aggregation args and add filtered objectset story
+- 3b8decf: Switch vitest pool from forks to threads to fix CI flake
+- a0bbaf9: fix ObjectTable zebra row colors flipping while scrolling — striping is now keyed off the row's data index instead of its DOM position
+- 5835d51: Fix type definitions in FilterList LinkedProperty and ObjectTable function column
+- d40104f: Add error icon to DatePickerCell in ObjectTable
+
+### Patch Changes
+
+- Updated dependencies [d9b03eb]
+- Updated dependencies [d8842f4]
+  - @osdk/react@0.15.0
+
 ## 0.7.0
 
 ### Minor Changes

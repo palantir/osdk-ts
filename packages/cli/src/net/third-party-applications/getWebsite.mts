@@ -26,8 +26,12 @@ export async function getWebsite(
   thirdPartyAppRid: ThirdPartyAppRid,
 ): Promise<Website | undefined> {
   const fetch = createFetch(ctx.tokenProvider);
-  const url =
-    `${ctx.foundryUrl}/api/v2/thirdPartyApplications/${thirdPartyAppRid}/website?preview=true`;
+  const urlObj = new URL(
+    `api/v2/thirdPartyApplications/${thirdPartyAppRid}/website`,
+    ctx.foundryUrl,
+  );
+  urlObj.searchParams.set("preview", "true");
+  const url = urlObj.toString();
 
   try {
     const result = await fetch(url);

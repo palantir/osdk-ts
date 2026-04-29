@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,11 +14,6 @@
  * limitations under the License.
  */
 
-export type { CliCommonArgs } from "./CliCommonArgs.js";
-export type { CommonAuthArgs } from "./commands/auth/CommonAuthArgs.js";
-export type { LoginArgs } from "./commands/auth/login/LoginArgs.js";
-export { ExitProcessError } from "./ExitProcessError.js";
-export { getYargsBase } from "./getYargsBase.js";
-export { ensureTrailingSlash } from "./util/ensureTrailingSlash.js";
-export { isValidSemver } from "./util/isValidSemver.js";
-export { YargsCheckError } from "./YargsCheckError.js";
+export function ensureTrailingSlash(input: string): string {
+  return input.endsWith("/") ? input : input + "/";
+}
