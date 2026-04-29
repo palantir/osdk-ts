@@ -507,10 +507,7 @@ function PanelContent(): React.ReactElement {
       {state.assignments.length > 0 && (
         <>
           <SectionDivider />
-          <SectionToggle open={true} onClick={() => {}}>
-            <span>&#x25BE;</span>
-            <span>Export</span>
-          </SectionToggle>
+          <PresetLabel>Export</PresetLabel>
           <ExportButtons
             palette={state.palette}
             assignments={state.assignments}

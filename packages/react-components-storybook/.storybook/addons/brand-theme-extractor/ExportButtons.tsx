@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { styled } from "storybook/theming";
 import { generateCss, generateMarkdown } from "./export.js";
 import type { ExtractedColor, TokenAssignment } from "./types.js";
@@ -58,10 +58,16 @@ export function ExportButtons({
 
   const copyToClipboard = useCallback(
     (content: string, label: string) => {
-      navigator.clipboard.writeText(content).then(() => {
-        setCopied(label);
-        setTimeout(() => setCopied(null), 2000);
-      });
+      navigator.clipboard.writeText(content).then(
+        () => {
+          setCopied(label);
+          setTimeout(() => setCopied(null), 2000);
+        },
+        () => {
+          setCopied("Failed");
+          setTimeout(() => setCopied(null), 2000);
+        },
+      );
     },
     [],
   );
@@ -79,8 +85,14 @@ export function ExportButtons({
     [],
   );
 
-  const css = generateCss(palette, assignments);
-  const md = generateMarkdown(palette, assignments);
+  const css = useMemo(() => generateCss(palette, assignments), [
+    palette,
+    assignments,
+  ]);
+  const md = useMemo(() => generateMarkdown(palette, assignments), [
+    palette,
+    assignments,
+  ]);
 
   return (
     <ButtonRow>
