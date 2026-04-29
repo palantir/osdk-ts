@@ -1,4 +1,4 @@
-import { useLinks } from "@osdk/react/experimental";
+import { useLinks } from "@osdk/react";
 import React from "react";
 import {
   type ConnectionCollection,

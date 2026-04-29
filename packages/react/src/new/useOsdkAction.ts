@@ -26,7 +26,7 @@ import type {
 } from "@osdk/client/unstable-do-not-use";
 import React from "react";
 import { useDevToolsMetadata } from "./makeExternalStore.js";
-import { OsdkContext2 } from "./OsdkContext2.js";
+import { OsdkContext } from "./OsdkContext.js";
 
 type ApplyActionParams<Q extends ActionDefinition<any>> =
   & Parameters<ActionSignatureFromDef<Q>["applyAction"]>[0]
@@ -68,7 +68,7 @@ export interface UseOsdkActionResult<Q extends ActionDefinition<any>> {
 export function useOsdkAction<Q extends ActionDefinition<any>>(
   actionDef: Q,
 ): UseOsdkActionResult<Q> {
-  const { observableClient, devtoolsEnabled } = React.useContext(OsdkContext2);
+  const { observableClient, devtoolsEnabled } = React.useContext(OsdkContext);
   useDevToolsMetadata(devtoolsEnabled, "useOsdkAction", actionDef.apiName);
   const [error, setError] = React.useState<UseOsdkActionResult<Q>["error"]>();
   const [data, setData] = React.useState<ActionEditResponse | undefined>();

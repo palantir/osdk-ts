@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useCbacBanner } from "@osdk/react/experimental/admin";
+import { useCbacBanner } from "@osdk/react/platform-apis";
 import React from "react";
 import { MaxClassificationField } from "./base/MaxClassificationField.js";
 import type { MaxClassificationConstraint } from "./types.js";

@@ -18,7 +18,7 @@ import {
   useCbacBanner,
   useMarkingCategories,
   useMarkings,
-} from "@osdk/react/experimental/admin";
+} from "@osdk/react/platform-apis";
 import React from "react";
 import { BaseCbacBannerPopover } from "./base/BaseCbacBannerPopover.js";
 import { CbacPickerDialog } from "./CbacPickerDialog.js";

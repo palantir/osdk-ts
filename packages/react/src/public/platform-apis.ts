@@ -14,25 +14,25 @@
  * limitations under the License.
  */
 
-export { useCbacBanner } from "../../new/platform-apis/admin/useCbacBanner.js";
+export { useCbacBanner } from "../new/platform-apis/admin/useCbacBanner.js";
 export type {
   CbacBannerData,
   UseCbacBannerOptions,
   UseCbacBannerResult,
-} from "../../new/platform-apis/admin/useCbacBanner.js";
-export { useCbacMarkingRestrictions } from "../../new/platform-apis/admin/useCbacMarkingRestrictions.js";
+} from "../new/platform-apis/admin/useCbacBanner.js";
+export { useCbacMarkingRestrictions } from "../new/platform-apis/admin/useCbacMarkingRestrictions.js";
 export type {
   CbacMarkingRestrictionsData,
   UseCbacMarkingRestrictionsOptions,
   UseCbacMarkingRestrictionsResult,
-} from "../../new/platform-apis/admin/useCbacMarkingRestrictions.js";
-export { useCurrentFoundryUser } from "../../new/platform-apis/admin/useCurrentFoundryUser.js";
-export { useFoundryUser } from "../../new/platform-apis/admin/useFoundryUser.js";
-export { useFoundryUsersList } from "../../new/platform-apis/admin/useFoundryUsersList.js";
-export { useMarkingCategories } from "../../new/platform-apis/admin/useMarkingCategories.js";
-export { useMarkings } from "../../new/platform-apis/admin/useMarkings.js";
-export { useUserViewMarkings } from "../../new/platform-apis/admin/useUserMarkings.js";
+} from "../new/platform-apis/admin/useCbacMarkingRestrictions.js";
+export { useCurrentFoundryUser } from "../new/platform-apis/admin/useCurrentFoundryUser.js";
+export { useFoundryUser } from "../new/platform-apis/admin/useFoundryUser.js";
+export { useFoundryUsersList } from "../new/platform-apis/admin/useFoundryUsersList.js";
+export { useMarkingCategories } from "../new/platform-apis/admin/useMarkingCategories.js";
+export { useMarkings } from "../new/platform-apis/admin/useMarkings.js";
+export { useUserViewMarkings } from "../new/platform-apis/admin/useUserMarkings.js";
 export type {
   UseUserViewMarkingsOptions,
   UseUserViewMarkingsResult,
-} from "../../new/platform-apis/admin/useUserMarkings.js";
+} from "../new/platform-apis/admin/useUserMarkings.js";

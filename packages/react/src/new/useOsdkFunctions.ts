@@ -20,7 +20,7 @@ import {
   createCompositeExternalStore,
   EMPTY_STORE,
 } from "./createCompositeExternalStore.js";
-import { OsdkContext2 } from "./OsdkContext2.js";
+import { OsdkContext } from "./OsdkContext.js";
 import type {
   UseOsdkFunctionOptions,
   UseOsdkFunctionResult,
@@ -79,7 +79,7 @@ export type UseOsdkFunctionsResult = Array<
 export function useOsdkFunctions(
   { queries, enabled = true, maxConcurrent }: UseOsdkFunctionsProps,
 ): UseOsdkFunctionsResult {
-  const { observableClient } = React.useContext(OsdkContext2);
+  const { observableClient } = React.useContext(OsdkContext);
 
   const stableQueriesKey = JSON.stringify(queries.map(q => ({
     apiName: q.queryDefinition.apiName,

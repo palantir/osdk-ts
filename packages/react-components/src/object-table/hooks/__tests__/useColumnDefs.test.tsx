@@ -23,6 +23,7 @@ import type {
 } from "@osdk/api";
 import type { Client } from "@osdk/client";
 import { OsdkProvider } from "@osdk/react";
+import { fakeObservableClient } from "@osdk/react/testing";
 import type { AccessorKeyColumnDef } from "@tanstack/react-table";
 import { renderHook, waitFor } from "@testing-library/react";
 import pDefer from "p-defer";
@@ -67,7 +68,10 @@ describe(useColumnDefs, () => {
   const createWrapper = (client: Client) => {
     return ({ children }: React.PropsWithChildren) => {
       return (
-        <OsdkProvider client={client}>
+        <OsdkProvider
+          client={client}
+          observableClient={fakeObservableClient}
+        >
           {children}
         </OsdkProvider>
       );
