@@ -356,9 +356,9 @@ When adding or modifying a hook:
    npx dprint fmt
    ```
 4. **Add a changeset** (see [Changesets](#changesets) below).
-5. **Run a global transpile check** to catch cross-package issues:
+5. **Run a global check** to catch cross-package issues:
    ```sh
-   pnpm turbo transpile
+   pnpm turbo check
    ```
 6. **Push and open a PR** against `main`. Fill out the PR template.
 7. **Do not force-push** amended commits during review — push new commits so reviewers can see incremental changes.
