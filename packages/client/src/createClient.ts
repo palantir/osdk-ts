@@ -59,6 +59,7 @@ import { fetchSingle } from "./object/fetchSingle.js";
 import { createObjectSet } from "./objectSet/createObjectSet.js";
 import type { ObjectSetFactory } from "./objectSet/ObjectSetFactory.js";
 import { applyQuery } from "./queries/applyQuery.js";
+import { applyStreamingQuery } from "./queries/applyStreamingQuery.js";
 import type { QuerySignatureFromDef } from "./queries/types.js";
 
 // We import it this way to keep compatible with CJS. If we referenced the
@@ -97,9 +98,17 @@ class QueryInvoker<Q extends QueryDefinition<any>>
     queryDef: QueryDefinition<any>,
   ) {
     this.executeFunction = applyQuery.bind(undefined, clientCtx, queryDef);
+    this.executeStreamingFunction = applyStreamingQuery.bind(
+      undefined,
+      clientCtx,
+      queryDef,
+    ) as unknown as QuerySignatureFromDef<Q>["executeStreamingFunction"];
   }
 
   executeFunction: (...args: any[]) => any;
+  executeStreamingFunction: QuerySignatureFromDef<Q>[
+    "executeStreamingFunction"
+  ];
 }
 
 /** @internal */

@@ -121,3 +121,26 @@ export async function* iterateReadableStream(
     res = await readableStream.read();
   }
 }
+
+export async function* parseNdjsonStream(
+  asyncIterable: AsyncIterable<Uint8Array>,
+): AsyncGenerator<any, void, unknown> {
+  const decoder = new TextDecoder("utf-8");
+  let buffer = "";
+  for await (const chunk of asyncIterable) {
+    buffer += decoder.decode(chunk, { stream: true });
+    let newlineIdx: number;
+    while ((newlineIdx = buffer.indexOf("\n")) !== -1) {
+      const line = buffer.slice(0, newlineIdx);
+      buffer = buffer.slice(newlineIdx + 1);
+      if (line.length > 0) {
+        yield JSON.parse(line);
+      }
+    }
+  }
+  buffer += decoder.decode();
+  const trailing = buffer.trim();
+  if (trailing.length > 0) {
+    yield JSON.parse(trailing);
+  }
+}

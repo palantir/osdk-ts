@@ -74,6 +74,7 @@
     "@osdk/api": "workspace:~",
     "@osdk/client.unstable": "workspace:*",
     "@osdk/foundry.core": "catalog:foundry-platform-typescript",
+    "@osdk/foundry.functions": "catalog:foundry-platform-typescript",
     "@osdk/foundry.mediasets": "catalog:foundry-platform-typescript",
     "@osdk/foundry.ontologies": "catalog:foundry-platform-typescript",
     "@osdk/generator-converters": "workspace:*",
