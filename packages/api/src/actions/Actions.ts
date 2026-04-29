@@ -31,13 +31,17 @@ import type {
 import type { NULL_VALUE } from "./NullValue.js";
 
 export type ApplyActionOptions =
-  | { $returnEdits?: true; $validateOnly?: false }
+  | { $returnEdits?: true; $validateOnly?: false; keepAlive?: boolean }
   | {
     $validateOnly?: true;
     $returnEdits?: false;
+    keepAlive?: boolean;
   };
 
-export type ApplyBatchActionOptions = { $returnEdits?: boolean };
+export type ApplyBatchActionOptions = {
+  $returnEdits?: boolean;
+  keepAlive?: boolean;
+};
 
 /**
  * Helper types for converting action definition parameter types to typescript types
