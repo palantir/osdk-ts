@@ -108,17 +108,18 @@ src/
 
 ### Export Strategy
 
-| Entry point                        | What it exports                        | Stability    |
-| ---------------------------------- | -------------------------------------- | ------------ |
-| `@osdk/react`                      | `OsdkProvider`, `useOsdkClient`, `useOsdkMetadata` | Stable (legacy) |
-| `@osdk/react/experimental`         | `OsdkProvider2` + all modern hooks     | Experimental |
-| `@osdk/react/experimental/admin`   | Foundry admin hooks                    | Experimental |
+| Entry point                      | What it exports                                    | Stability       |
+| -------------------------------- | -------------------------------------------------- | --------------- |
+| `@osdk/react`                    | `OsdkProvider`, `useOsdkClient`, `useOsdkMetadata` | Stable (legacy) |
+| `@osdk/react/experimental`       | `OsdkProvider2` + all modern hooks                 | Experimental    |
+| `@osdk/react/experimental/admin` | Foundry admin hooks                                | Experimental    |
 
 ### What Belongs in This Package
 
 `@osdk/react` is the home for **reusable, OSDK-aware React hooks** that are not tied to a specific UI component. If a hook could be useful across multiple components or directly by application developers, it belongs here.
 
 **Examples of hooks that belong in `@osdk/react`:**
+
 - Data-fetching hooks (`useOsdkObjects`, `useOsdkObject`)
 - Action execution hooks (`useOsdkAction`)
 - Aggregation and query hooks (`useOsdkAggregation`, `useOsdkFunction`)
@@ -127,24 +128,26 @@ src/
 - General-purpose utilities (`useDebouncedCallback`)
 
 **Examples of hooks that do NOT belong here:**
+
 - Hooks tightly coupled to a specific component's internal state (e.g., table selection state, PDF page navigation) — these belong in `@osdk/react-components`
 - Hooks that depend on UI libraries or CSS — these belong in `@osdk/react-components`
 
 ### Provider Model
 
 All experimental hooks require `OsdkProvider2` at the application root. The provider accepts:
+
 - `client` — the OSDK client instance (required)
 - `observableClient` — enables cache management and automatic invalidation (optional but recommended)
 
 ```tsx
-import { OsdkProvider2 } from "@osdk/react/experimental";
 import { createObservableClient } from "@osdk/client/unstable-do-not-use";
+import { OsdkProvider2 } from "@osdk/react/experimental";
 
 const observableClient = createObservableClient(client);
 
 <OsdkProvider2 client={client} observableClient={observableClient}>
   <App />
-</OsdkProvider2>
+</OsdkProvider2>;
 ```
 
 ## Hook API Conventions
@@ -155,13 +158,13 @@ All hooks in this package follow consistent API patterns. New hooks **must** fol
 
 Data-fetching hooks accept an options object as the last parameter:
 
-| Option | Type | Purpose |
-| ------ | ---- | ------- |
-| `enabled` | `boolean` | Conditionally execute the hook without violating Rules of Hooks |
-| `dedupeIntervalMs` | `number` | Prevent duplicate requests within the interval (default varies per hook) |
-| `where` | `FilterClause` | Server-side filtering |
-| `orderBy` | `OrderByClause` | Server-side sorting |
-| `pageSize` | `number` | Number of results per page |
+| Option             | Type            | Purpose                                                                  |
+| ------------------ | --------------- | ------------------------------------------------------------------------ |
+| `enabled`          | `boolean`       | Conditionally execute the hook without violating Rules of Hooks          |
+| `dedupeIntervalMs` | `number`        | Prevent duplicate requests within the interval (default varies per hook) |
+| `where`            | `FilterClause`  | Server-side filtering                                                    |
+| `orderBy`          | `OrderByClause` | Server-side sorting                                                      |
+| `pageSize`         | `number`        | Number of results per page                                               |
 
 Not every hook uses every option — include only the ones that make sense.
 
@@ -169,14 +172,14 @@ Not every hook uses every option — include only the ones that make sense.
 
 Hooks return a consistent object shape:
 
-| Field | Type | Present in |
-| ----- | ---- | ---------- |
-| `data` / `object` / `links` | `T \| undefined` | All data hooks |
-| `isLoading` | `boolean` | All data hooks |
-| `isOptimistic` | `boolean` | Hooks that support optimistic updates |
-| `error` | `Error \| undefined` | All data hooks |
-| `fetchMore` | `(() => void) \| undefined` | Paginated hooks (undefined when no more pages) |
-| `refetch` | `() => void` | Hooks that support manual refetching |
+| Field                       | Type                        | Present in                                     |
+| --------------------------- | --------------------------- | ---------------------------------------------- |
+| `data` / `object` / `links` | `T \| undefined`            | All data hooks                                 |
+| `isLoading`                 | `boolean`                   | All data hooks                                 |
+| `isOptimistic`              | `boolean`                   | Hooks that support optimistic updates          |
+| `error`                     | `Error \| undefined`        | All data hooks                                 |
+| `fetchMore`                 | `(() => void) \| undefined` | Paginated hooks (undefined when no more pages) |
+| `refetch`                   | `() => void`                | Hooks that support manual refetching           |
 
 Use `hookUtils.ts` helpers (`extractPayloadError`, `isPayloadLoading`) to derive these fields from the internal store payload.
 
@@ -262,11 +265,11 @@ The `ObservableClient` maintains a normalized cache keyed by object type and pri
 
 ### How the Cache Works
 
-| Data type | Cache key |
-| --------- | --------- |
-| Objects | Object type + primary key |
-| Lists | Object type + where clause + orderBy |
-| Links | Source object + link name + filters |
+| Data type    | Cache key                                         |
+| ------------ | ------------------------------------------------- |
+| Objects      | Object type + primary key                         |
+| Lists        | Object type + where clause + orderBy              |
+| Links        | Source object + link name + filters               |
 | Aggregations | Object type + where clause + aggregate definition |
 
 Objects are stored once and shared across all queries that reference them. When an action modifies an object, all queries containing that object are automatically updated.
@@ -289,7 +292,9 @@ await observableClient.invalidateObjects([obj1, obj2]);
 await observableClient.invalidateObjectType(Todo);
 
 // Invalidate a specific function query
-await observableClient.invalidateFunction(getMetrics, { departmentId: "sales" });
+await observableClient.invalidateFunction(getMetrics, {
+  departmentId: "sales",
+});
 
 // Invalidate all queries for a function
 await observableClient.invalidateFunction(getMetrics);
@@ -326,16 +331,17 @@ pnpm --dir packages/react vitest
 
 User-facing documentation lives in `docs/react/` at the monorepo root:
 
-| File | Covers |
-| ---- | ------ |
-| `getting-started.md` | Installation, provider setup, basic usage |
-| `querying-data.md` | `useOsdkObjects`, `useOsdkObject`, filtering, sorting, pagination |
+| File                  | Covers                                                                                  |
+| --------------------- | --------------------------------------------------------------------------------------- |
+| `getting-started.md`  | Installation, provider setup, basic usage                                               |
+| `querying-data.md`    | `useOsdkObjects`, `useOsdkObject`, filtering, sorting, pagination                       |
 | `advanced-queries.md` | `useObjectSet`, `useOsdkAggregation`, `useOsdkFunction`, derived properties, `useLinks` |
-| `actions.md` | `useOsdkAction`, validation, optimistic updates, `useDebouncedCallback` |
-| `cache-management.md` | Cache model, automatic and manual invalidation |
-| `platform-apis.md` | `useCurrentFoundryUser`, `useFoundryUser`, `useFoundryUsersList` |
+| `actions.md`          | `useOsdkAction`, validation, optimistic updates, `useDebouncedCallback`                 |
+| `cache-management.md` | Cache model, automatic and manual invalidation                                          |
+| `platform-apis.md`    | `useCurrentFoundryUser`, `useFoundryUser`, `useFoundryUsersList`                        |
 
 When adding or modifying a hook:
+
 - Update the relevant doc file with usage examples, options, and return values.
 - If adding a new category of hook, create a new doc file and link it from `getting-started.md`.
 - Include both correct and incorrect usage patterns to guide consumers.
