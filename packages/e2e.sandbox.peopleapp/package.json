@@ -38,6 +38,7 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
+    "@osdk/aip-core": "workspace:~",
     "@osdk/api": "workspace:~",
     "@osdk/client": "workspace:~",
     "@osdk/oauth": "workspace:~",

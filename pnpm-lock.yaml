@@ -1627,6 +1627,31 @@ importers:
         specifier: ^3.2.4
         version: 3.2.4(@types/debug@4.1.12)(@types/node@24.12.0)(happy-dom@20.8.9)(jiti@2.5.1)(jsdom@20.0.3(canvas@2.11.2))(less@4.5.1)(lightningcss@1.32.0)(msw@2.11.1(@types/node@24.12.0)(typescript@5.5.4))(sass-embedded@1.97.3)(sass@1.97.3)(stylus@0.62.0)(terser@5.44.0)(tsx@4.20.5)(yaml@2.8.3)
 
+  packages/aip-core:
+    dependencies:
+      '@osdk/client':
+        specifier: workspace:^
+        version: link:../client
+      '@osdk/language-models':
+        specifier: workspace:^
+        version: link:../language-models
+    devDependencies:
+      '@osdk/monorepo.api-extractor':
+        specifier: workspace:~
+        version: link:../monorepo.api-extractor
+      '@osdk/monorepo.tsconfig':
+        specifier: workspace:~
+        version: link:../monorepo.tsconfig
+      '@types/node':
+        specifier: ^18.19.0
+        version: 18.19.124
+      ai:
+        specifier: 5.0.179
+        version: 5.0.179(zod@3.25.76)
+      typescript:
+        specifier: ~5.5.4
+        version: 5.5.4
+
   packages/api:
     dependencies:
       '@types/geojson':
@@ -3409,6 +3434,9 @@ importers:
 
   packages/e2e.sandbox.peopleapp:
     dependencies:
+      '@osdk/aip-core':
+        specifier: workspace:~
+        version: link:../aip-core
       '@osdk/api':
         specifier: workspace:~
         version: link:../api
@@ -4556,6 +4584,9 @@ importers:
         specifier: ^17 || ^18 || ^19
         version: 18.3.1(react@18.3.1)
     devDependencies:
+      '@osdk/aip-core':
+        specifier: workspace:*
+        version: link:../aip-core
       '@osdk/api':
         specifier: workspace:*
         version: link:../api
@@ -4583,6 +4614,9 @@ importers:
       '@types/react':
         specifier: ^18.3.24
         version: 18.3.24
+      ai:
+        specifier: 5.0.179
+        version: 5.0.179(zod@3.25.76)
       find-up:
         specifier: ^8.0.0
         version: 8.0.0
@@ -5735,6 +5769,22 @@ packages:
 
   '@adobe/css-tools@4.4.4':
     resolution: {integrity: sha512-Elp+iwUx5rN5+Y8xLt5/GRoG20WGoDCQ/1Fb+1LiGtvwbDavuSk0jhD/eZdckHAuzcDzccnkv+rEjyWfRx18gg==}
+
+  '@ai-sdk/gateway@2.0.82':
+    resolution: {integrity: sha512-vtoCSEBGPcxzChI3eqe9C9AJSlc/WUZp92tzpOqVd4B6Tnu4583S+qR7TknB0tPta15TEoOIkK0ENW6D/DgRJQ==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      zod: ^3.25.76 || ^4.1.8
+
+  '@ai-sdk/provider-utils@3.0.23':
+    resolution: {integrity: sha512-60GYsRj5wIJQRcq5YwYJq4KhwLeStceXEJiZdecP1miiH+6FMmrnc7lZDOJoQ6m9lrudEb+uI4LEwddLz5+rPQ==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      zod: ^3.25.76 || ^4.1.8
+
+  '@ai-sdk/provider@2.0.1':
+    resolution: {integrity: sha512-KCUwswvsC5VsW2PWFqF8eJgSCu5Ysj7m1TxiHTVA6g7k360bk0RNQENT8KTMAYEs+8fWPD3Uu4dEmzGHc+jGng==}
+    engines: {node: '>=18'}
 
   '@algolia/abtesting@1.12.0':
     resolution: {integrity: sha512-EfW0bfxjPs+C7ANkJDw2TATntfBKsFiy7APh+KO0pQ8A6HYa5I0NjFuCGCXWfzzzLXNZta3QUl3n5Kmm6aJo9Q==}
@@ -8734,6 +8784,10 @@ packages:
   '@open-draft/until@2.1.0':
     resolution: {integrity: sha512-U69T3ItWHvLwGg5eJ0n3I62nWuE6ilHlmz7zM0npLBRvPRd7e6NYmg54vvRtP5mZG7kZqZCFVdsTWo7BPtBujg==}
 
+  '@opentelemetry/api@1.9.0':
+    resolution: {integrity: sha512-3giAOQvZiH5F9bMlMiv8+GSPMeqg0dbaeo58/0SlA9sxSqZhnUtxzX9/2FzyhS9sWQf5S0GJE0AKBrFqjpeYcg==}
+    engines: {node: '>=8.0.0'}
+
   '@osdk/api@1.9.3':
     resolution: {integrity: sha512-ZGPh9iRBF+XNhOJr0dbYeLSFYQUydr1OVY5h7BNYz4DByT9l56u1C1sQTMVSPGH75KSQ77nUz7WbuJIWSDPVcA==}
 
@@ -11616,6 +11670,10 @@ packages:
     peerDependencies:
       valibot: ^1.2.0
 
+  '@vercel/oidc@3.1.0':
+    resolution: {integrity: sha512-Fw28YZpRnA3cAHHDlkt7xQHiJ0fcL+NRcIqsocZQUSmbzeIKRpwttJjik5ZGanXP+vlA4SbTg+AbA3bP363l+w==}
+    engines: {node: '>= 20'}
+
   '@vis.gl/react-mapbox@8.0.4':
     resolution: {integrity: sha512-NFk0vsWcNzSs0YCsVdt2100Zli9QWR+pje8DacpLkkGEAXFaJsFtI1oKD0Hatiate4/iAIW39SQHhgfhbeEPfQ==}
     peerDependencies:
@@ -11973,6 +12031,12 @@ packages:
   aggregate-error@3.1.0:
     resolution: {integrity: sha512-4I7Td01quW/RpocfNayFdFVk1qSuoh0E7JrbRJ16nH01HhKFQ88INq9Sd+nd72zqRySlr9BmDA8xlEJ6vJMrYA==}
     engines: {node: '>=8'}
+
+  ai@5.0.179:
+    resolution: {integrity: sha512-tuq/r2FH/pBuY3jo0yHF3UglDV73WONGLhW80DuwgO6w0ftPIqRsAm5p9cE3Bu4LfEuCkMXpiUG/pQRzqKRRaA==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      zod: ^3.25.76 || ^4.1.8
 
   ajv-draft-04@1.0.0:
     resolution: {integrity: sha512-mv00Te6nmYbRp5DCwclxtt7yV/joXJPGS7nM+97GdxvuttCOfgI3K4U25zboyeX0O+myI8ERluxQe5wljMmVIw==}
@@ -14134,6 +14198,10 @@ packages:
     resolution: {integrity: sha512-mQw+2fkQbALzQ7V0MY0IqdnXNOeTtP4r0lN9z7AAawCXgqea7bDii20AYrIBrFd/Hx0M2Ocz6S111CaFkUcb0Q==}
     engines: {node: '>=0.8.x'}
 
+  eventsource-parser@3.0.8:
+    resolution: {integrity: sha512-70QWGkr4snxr0OXLRWsFLeRBIRPuQOvt4s8QYjmUlmlkyTZkRqS7EDVRZtzU3TiyDbXSzaOeF0XUKy8PchzukQ==}
+    engines: {node: '>=18.0.0'}
+
   exec-async@2.2.0:
     resolution: {integrity: sha512-87OpwcEiMia/DeiKFzaQNBNFeN3XkkpYIh9FyOqq5mS2oKv3CBE67PXoEKcr6nodWdXNogTiQ0jE2NGuoffXPw==}
 
@@ -15902,6 +15970,9 @@ packages:
 
   json-schema-traverse@1.0.0:
     resolution: {integrity: sha512-NM8/P9n3XjXhIZn1lLhkFaACTOURQXjWhV4BA/RnOv8xvgqtqpAX9IO4mRQxSx1Rlo4tqzeqb0sOlruaOy3dug==}
+
+  json-schema@0.4.0:
+    resolution: {integrity: sha512-es94M3nTIfsEPisRafak+HDLfHXnKBhV3vU5eqPcS3flIWqcxJWgXHXiey3YrpaNsanY5ei1VoYEbOzijuq9BA==}
 
   json-stable-stringify-without-jsonify@1.0.1:
     resolution: {integrity: sha512-Bdboy+l7tA3OGW6FjyFHWkP5LuByj1Tk33Ljyq0axyzdk9//JSi2u3fP1QSmd1KNwq6VOKYGlAu87CisVir6Pw==}
@@ -21284,6 +21355,24 @@ snapshots:
 
   '@adobe/css-tools@4.4.4': {}
 
+  '@ai-sdk/gateway@2.0.82(zod@3.25.76)':
+    dependencies:
+      '@ai-sdk/provider': 2.0.1
+      '@ai-sdk/provider-utils': 3.0.23(zod@3.25.76)
+      '@vercel/oidc': 3.1.0
+      zod: 3.25.76
+
+  '@ai-sdk/provider-utils@3.0.23(zod@3.25.76)':
+    dependencies:
+      '@ai-sdk/provider': 2.0.1
+      '@standard-schema/spec': 1.1.0
+      eventsource-parser: 3.0.8
+      zod: 3.25.76
+
+  '@ai-sdk/provider@2.0.1':
+    dependencies:
+      json-schema: 0.4.0
+
   '@algolia/abtesting@1.12.0':
     dependencies:
       '@algolia/client-common': 5.46.0
@@ -25685,6 +25774,8 @@ snapshots:
 
   '@open-draft/until@2.1.0': {}
 
+  '@opentelemetry/api@1.9.0': {}
+
   '@osdk/api@1.9.3':
     dependencies:
       '@osdk/gateway': 2.4.2
@@ -29023,6 +29114,8 @@ snapshots:
     dependencies:
       valibot: 1.2.0(typescript@5.5.4)
 
+  '@vercel/oidc@3.1.0': {}
+
   '@vis.gl/react-mapbox@8.0.4(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
       react: 18.3.1
@@ -29579,6 +29672,14 @@ snapshots:
     dependencies:
       clean-stack: 2.2.0
       indent-string: 4.0.0
+
+  ai@5.0.179(zod@3.25.76):
+    dependencies:
+      '@ai-sdk/gateway': 2.0.82(zod@3.25.76)
+      '@ai-sdk/provider': 2.0.1
+      '@ai-sdk/provider-utils': 3.0.23(zod@3.25.76)
+      '@opentelemetry/api': 1.9.0
+      zod: 3.25.76
 
   ajv-draft-04@1.0.0(ajv@8.13.0):
     optionalDependencies:
@@ -32231,6 +32332,8 @@ snapshots:
 
   events@3.3.0: {}
 
+  eventsource-parser@3.0.8: {}
+
   exec-async@2.2.0: {}
 
   execa@1.0.0:
@@ -34521,6 +34624,8 @@ snapshots:
   json-schema-traverse@0.4.1: {}
 
   json-schema-traverse@1.0.0: {}
+
+  json-schema@0.4.0: {}
 
   json-stable-stringify-without-jsonify@1.0.1: {}
 

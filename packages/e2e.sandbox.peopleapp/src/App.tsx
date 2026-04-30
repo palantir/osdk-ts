@@ -1,7 +1,10 @@
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import "./App.css";
+import { foundryModel, generateText } from "@osdk/aip-core";
+import { useEffect } from "react";
 import { Button } from "./components/Button.js";
 import { H1 } from "./components/headers.js";
+import { platformClient } from "./foundryClient.js";
 
 function PeopleApp() {
   const navigate = useNavigate();
@@ -13,7 +16,23 @@ function PeopleApp() {
     ? "filter-list"
     : path === "/form"
     ? "form"
+    : path === "/chat"
+    ? "chat"
     : "offices";
+
+  useEffect(() => {
+    // Test that the token is injected and a network call can be made
+    const func = async () =>
+      await generateText({
+        model: foundryModel({ client: platformClient, model: "gpt-4o" }),
+        system: "You are a concise assistant.",
+        prompt: "Summarise this PR.",
+      });
+
+    void func().then((res) => {
+      console.log("zzz res", res);
+    });
+  }, []);
 
   return (
     <main className="flex min-h-screen flex-col items-center p-24">
@@ -47,6 +66,13 @@ function PeopleApp() {
           onClick={() => navigate("/form")}
         >
           Form
+        </Button>
+        <Button
+          variant="tab"
+          active={activeTab === "chat"}
+          onClick={() => navigate("/chat")}
+        >
+          Chat
         </Button>
       </div>
 
