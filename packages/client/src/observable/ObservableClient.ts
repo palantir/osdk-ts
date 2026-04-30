@@ -339,10 +339,10 @@ export interface ObserveFunctionCallbackArgs<
 export interface ObserveLinkCallbackArgs<
   T extends ObjectOrInterfaceDefinition,
 > {
-  resolvedList: Osdk.Instance<T>[] | undefined;
+  resolvedList: Osdk.Instance<T, "$allBaseProperties">[] | undefined;
   linkedObjectsBySourcePrimaryKey: ReadonlyMap<
     string | number,
-    ReadonlyArray<Osdk.Instance<T>>
+    ReadonlyArray<Osdk.Instance<T, "$allBaseProperties">>
   >;
   isOptimistic: boolean;
   lastUpdated: number;
