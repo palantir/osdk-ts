@@ -20,7 +20,7 @@ Thanks for your interest in contributing to `@osdk/react`! This package provides
 
 ### Prerequisites
 
-- **Node.js** (see `.nvmrc` at the repo root for the expected version; [nvm](https://github.com/nvm-sh/nvm) recommended)
+- **Node.js** — the expected version is pinned in `.nvmrc` at the repo root (run `cat .nvmrc` or check the file directly to see it). [nvm](https://github.com/nvm-sh/nvm) is recommended; if your active Node version doesn't match, run `nvm use` from the repo root to switch.
 - **pnpm** as the package manager (do **not** use npm or yarn)
 
 ### Repository Access
