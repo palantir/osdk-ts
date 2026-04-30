@@ -96,10 +96,37 @@ describe("MessageInput", () => {
     const { container } = render(<MessageInput onSendMessage={vi.fn()} />);
     const input = screen.getByPlaceholderText(
       "Type a message…",
-    ) as HTMLInputElement;
+    ) as HTMLTextAreaElement;
     fireEvent.change(input, { target: { value: "hello" } });
     submitForm(container);
     expect(input.value).toBe("");
+  });
+
+  it("submits on Enter without Shift", () => {
+    const onSendMessage = vi.fn();
+    render(<MessageInput onSendMessage={onSendMessage} />);
+    const input = screen.getByPlaceholderText("Type a message…");
+    fireEvent.change(input, { target: { value: "hello" } });
+    fireEvent.keyDown(input, { key: "Enter" });
+    expect(onSendMessage).toHaveBeenCalledWith("hello");
+  });
+
+  it("does not submit on Shift+Enter", () => {
+    const onSendMessage = vi.fn();
+    render(<MessageInput onSendMessage={onSendMessage} />);
+    const input = screen.getByPlaceholderText("Type a message…");
+    fireEvent.change(input, { target: { value: "hello" } });
+    fireEvent.keyDown(input, { key: "Enter", shiftKey: true });
+    expect(onSendMessage).not.toHaveBeenCalled();
+  });
+
+  it("does not submit while IME is composing", () => {
+    const onSendMessage = vi.fn();
+    render(<MessageInput onSendMessage={onSendMessage} />);
+    const input = screen.getByPlaceholderText("Type a message…");
+    fireEvent.change(input, { target: { value: "hello" } });
+    fireEvent.keyDown(input, { key: "Enter", isComposing: true });
+    expect(onSendMessage).not.toHaveBeenCalled();
   });
 
   it("does not send when disabled", () => {

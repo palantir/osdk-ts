@@ -17,11 +17,15 @@
   border: var(--osdk-message-input-field-border);
   border-radius: var(--osdk-surface-border-radius);
   color: var(--osdk-typography-color-default-rest);
+  field-sizing: content;
   flex: 1;
   font-family: var(--osdk-typography-family-default);
   font-size: var(--osdk-typography-size-body-medium);
+  max-height: var(--osdk-message-input-max-height);
+  min-height: var(--osdk-message-input-min-height);
   padding: calc(var(--osdk-surface-spacing) * 0.625)
     calc(var(--osdk-surface-spacing) * 0.75);
+  resize: none;
 }
 
 .input:focus-visible {

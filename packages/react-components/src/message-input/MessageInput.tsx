@@ -79,8 +79,22 @@ export const MessageInput: React.NamedExoticComponent<MessageInputProps> = React
     const canSend = trimmed.length > 0 && disabled !== true;
 
     const handleChange = React.useCallback(
-      (event: React.ChangeEvent<HTMLInputElement>) => {
+      (event: React.ChangeEvent<HTMLTextAreaElement>) => {
         setText(event.target.value);
+      },
+      [],
+    );
+
+    const handleKeyDown = React.useCallback(
+      (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+        if (
+          event.key === "Enter"
+          && !event.shiftKey
+          && !event.nativeEvent.isComposing
+        ) {
+          event.preventDefault();
+          event.currentTarget.form?.requestSubmit();
+        }
       },
       [],
     );
@@ -116,14 +130,15 @@ export const MessageInput: React.NamedExoticComponent<MessageInputProps> = React
         onSubmit={handleSubmit}
       >
         <div className={styles.inputRow}>
-          <input
-            type="text"
+          <textarea
             className={styles.input}
             value={text}
             onChange={handleChange}
+            onKeyDown={handleKeyDown}
             placeholder={placeholder}
             disabled={disabled}
             aria-label={INPUT_ARIA_LABEL}
+            rows={1}
           />
           <ActionButton
             type="submit"
