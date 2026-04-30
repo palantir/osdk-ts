@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import type { UIMessage } from "ai";
 import type { ModelMessage } from "../types.js";
+import type { UIMessage } from "../uiMessage.js";
 
 /**
- * Convert `UIMessage[]` from the `ai` package (the conversation shape
- * rendered in the UI) into `ModelMessage[]` (the shape `streamText` accepts).
+ * Convert `UIMessage[]` (the conversation shape rendered in the UI) into
+ * `ModelMessage[]` (the shape `streamText` accepts).
  *
  * v0: text-only. File parts, reasoning parts, source parts, and tool-related
  * parts are dropped. Tool-result UIMessages (none in v0 either) would map to

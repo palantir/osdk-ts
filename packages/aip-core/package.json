@@ -43,19 +43,12 @@
   },
   "peerDependencies": {
     "@osdk/client": "workspace:^",
-    "@osdk/language-models": "workspace:^",
-    "ai": "^5.0.0"
-  },
-  "peerDependenciesMeta": {
-    "ai": {
-      "optional": true
-    }
+    "@osdk/language-models": "workspace:^"
   },
   "devDependencies": {
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@types/node": "^18.19.0",
-    "ai": "5.0.179",
     "typescript": "~5.5.4"
   },
   "publishConfig": {

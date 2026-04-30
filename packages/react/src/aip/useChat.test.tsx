@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
+import type { ChatTransport, UIMessage, UIMessageChunk } from "@osdk/aip-core";
 import { act, renderHook } from "@testing-library/react";
-import type { ChatTransport, UIMessage, UIMessageChunk } from "ai";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { useChat } from "./useChat.js";
 

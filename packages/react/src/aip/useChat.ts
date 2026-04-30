@@ -15,11 +15,13 @@
  */
 
 import {
+  type ChatTransport,
   type LanguageModel,
   LmsChatTransport,
   type LmsChatTransportOptions,
+  type UIMessage,
+  type UIMessageChunk,
 } from "@osdk/aip-core";
-import type { ChatTransport, UIMessage, UIMessageChunk } from "ai";
 import React from "react";
 import { type ChatStatus, createChatStore } from "./chatStore.js";
 

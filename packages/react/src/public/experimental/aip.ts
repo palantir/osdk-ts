@@ -22,6 +22,4 @@ export type {
   UseChatReturn,
 } from "../../aip/useChat.js";
 
-// Re-export the `ai` types `useChat` exposes, so consumers don't need a
-// direct dependency on the `ai` package just to type their message list.
-export type { UIMessage, UIMessageChunk } from "ai";
+export type { UIMessage, UIMessageChunk } from "@osdk/aip-core";

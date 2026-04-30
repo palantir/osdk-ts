@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import type { UIMessage } from "ai";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { LmsChatTransport } from "./lmsChatTransport.js";
 import type { LanguageModel } from "./model.js";
@@ -23,6 +22,7 @@ import type {
   StreamTextResult,
   TextStreamChunk,
 } from "./streamText.js";
+import type { UIMessage } from "./uiMessage.js";
 
 const streamTextMock = vi.hoisted(() =>
   vi.fn<(opts: StreamTextOptions) => StreamTextResult>()

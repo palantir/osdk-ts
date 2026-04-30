@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { UIMessage } from "ai";
 import { describe, expect, it } from "vitest";
+import type { UIMessage } from "../uiMessage.js";
 import { uiMessagesToModelMessages } from "./uiMessageBridge.js";
 
 function uiMsg(

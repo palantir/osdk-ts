@@ -14,15 +14,19 @@
  * limitations under the License.
  */
 
-import type { ChatTransport, UIMessage, UIMessageChunk } from "ai";
 import { uiMessagesToModelMessages } from "./internal/uiMessageBridge.js";
 import type { LanguageModel } from "./model.js";
 import { streamText, type TextStreamChunk } from "./streamText.js";
+import type {
+  ChatTransport,
+  ChatTransportReconnectArgs,
+  ChatTransportSendMessagesArgs,
+  UIMessage,
+  UIMessageChunk,
+} from "./uiMessage.js";
 
-type SendMessagesArgs = Parameters<ChatTransport<UIMessage>["sendMessages"]>[0];
-type ReconnectArgs = Parameters<ChatTransport<UIMessage>["reconnectToStream"]>[
-  0
-];
+type SendMessagesArgs = ChatTransportSendMessagesArgs<UIMessage>;
+type ReconnectArgs = ChatTransportReconnectArgs;
 
 /**
  * Options for {@link LmsChatTransport}. Configures the streamed chat
@@ -208,10 +212,7 @@ function mergeHeaders(
   return out;
 }
 
-/**
- * Convenience factory matching the `ai` package's `DefaultChatTransport`
- * factory style.
- */
+/** Convenience factory equivalent to `new LmsChatTransport(opts)`. */
 export function lmsChatTransport(
   opts: LmsChatTransportOptions,
 ): LmsChatTransport {

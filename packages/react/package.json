@@ -87,7 +87,6 @@
     "@osdk/foundry.admin": "*",
     "@osdk/foundry.core": "*",
     "@types/react": "^17 || ^18 || ^19",
-    "ai": "^5.0.0",
     "react": "^17 || ^18 || ^19",
     "react-dom": "^17 || ^18 || ^19"
   },
@@ -99,9 +98,6 @@
       "optional": true
     },
     "@osdk/foundry.core": {
-      "optional": true
-    },
-    "ai": {
       "optional": true
     }
   },
@@ -116,7 +112,6 @@
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@testing-library/react": "^16.3.0",
     "@types/react": "^18.3.24",
-    "ai": "5.0.179",
     "find-up": "^8.0.0",
     "happy-dom": "^16.8.1",
     "p-defer": "^4.0.1",

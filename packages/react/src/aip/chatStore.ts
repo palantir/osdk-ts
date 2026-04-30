@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { UIMessage } from "ai";
+import type { UIMessage } from "@osdk/aip-core";
 
 export type ChatStatus = "ready" | "submitted" | "streaming" | "error";
 

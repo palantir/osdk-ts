@@ -42,6 +42,17 @@ export type {
 } from "./model.js";
 
 export type {
+  ChatTransport,
+  ChatTransportReconnectArgs,
+  ChatTransportSendMessagesArgs,
+  ChatTransportTrigger,
+  UIMessage,
+  UIMessageChunk,
+  UIMessagePart,
+  UIMessageRole,
+} from "./uiMessage.js";
+
+export type {
   AssistantModelMessage,
   ContentPart,
   FilePart,
