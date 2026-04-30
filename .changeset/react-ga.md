@@ -34,3 +34,18 @@ GA: promote modern hooks from `@osdk/react/experimental` to the main entry, rena
 #### `@osdk/cbac-components` (patch)
 
 - update internal imports for `@osdk/react` GA — `@osdk/react/experimental` → `@osdk/react` and `@osdk/react/experimental/admin` → `@osdk/react/platform-apis`
+
+#### Migration
+
+For consumers upgrading from `@osdk/react@0.x`:
+
+- `import { ... } from "@osdk/react/experimental"` → `import { ... } from "@osdk/react"`
+- `import { ... } from "@osdk/react/experimental/admin"` → `import { ... } from "@osdk/react/platform-apis"` (still requires the optional `@osdk/foundry.admin` + `@osdk/foundry.core` peers)
+- `<OsdkProvider2 ...>` → `<OsdkProvider ...>` (the legacy `OsdkProvider` is removed; the modern provider takes its name)
+- `useOsdkClient2()` → `useOsdkClient()` (the unified hook reads from the modern context — same `client` shape, no API change at the call site)
+- bump `@osdk/client` and `@osdk/api` to `^2.14.0` to satisfy the new peer ranges
+
+For consumers reaching directly into `@osdk/client/unstable-do-not-use` for observable APIs:
+
+- `import { createObservableClient, ObservableClient, ... } from "@osdk/client/unstable-do-not-use"` → `import { ... } from "@osdk/client/observable"`
+- the symbols moved: `createObservableClient`, `ObservableClient`, `CacheEntry`, `CacheSnapshot`, `CanonicalizedOptions`, `CanonicalizeOptionsInput`, `Observer`, `ObserveLinks`, `ObserveAggregationArgs`, `ObserveFunctionCallbackArgs`, `ObserveFunctionOptions`, `ObserveObjectCallbackArgs`, `ObserveObjectsCallbackArgs`, `ObserveObjectSetArgs`, `Unsubscribable`, `ActionSignatureFromDef`, `QueryParameterType`, `QueryReturnType`
