@@ -205,6 +205,7 @@ export function streamText<TOOLS extends ToolSet = ToolSet>(
   let streamController:
     | ReadableStreamDefaultController<TextStreamChunk>
     | undefined;
+  let streamClosed = false;
 
   const run = async (): Promise<void> => {
     try {
@@ -224,7 +225,9 @@ export function streamText<TOOLS extends ToolSet = ToolSet>(
         headers: options.headers,
         warnings,
         onChunk: async (chunk) => {
-          streamController?.enqueue(chunk);
+          if (!streamClosed) {
+            streamController?.enqueue(chunk);
+          }
           if (options.onChunk != null) {
             await options.onChunk(chunk);
           }
@@ -232,6 +235,7 @@ export function streamText<TOOLS extends ToolSet = ToolSet>(
       });
 
       streamController?.close();
+      streamClosed = true;
 
       textDeferred.resolve(result.text);
       reasoningDeferred.resolve(result.reasoningText);
@@ -257,15 +261,12 @@ export function streamText<TOOLS extends ToolSet = ToolSet>(
       }
     } catch (err) {
       const error = err instanceof Error ? err : new Error(String(err));
-      try {
+      if (!streamClosed) {
         streamController?.enqueue({ type: "error", error });
-      } catch {
-        // Controller may already be closed; ignore.
+        streamController?.error(error);
+        streamClosed = true;
       }
-      streamController?.error(error);
 
-      // Resolve warnings with whatever we accumulated before the error so
-      // consumers awaiting `result.warnings` don't lose partial context.
       warningsDeferred.resolve(warnings.length > 0 ? warnings : undefined);
 
       textDeferred.reject(error);
@@ -378,7 +379,7 @@ function resolveMessages(
   const sys: Array<SystemModelMessage> = system == null
     ? []
     : typeof system === "string"
-    ? [{ role: "system", content: system }]
+    ? (system === "" ? [] : [{ role: "system", content: system }])
     : Array.isArray(system)
     ? system
     : [system];

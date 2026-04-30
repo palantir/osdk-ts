@@ -33,7 +33,6 @@ import {
   convertTools,
   filterHeaders,
   mapFinishReason,
-  type OpenAiAssistantToolCall,
   type OpenAiMessage,
   type OpenAiTool,
   type OpenAiToolChoice,
@@ -168,7 +167,14 @@ export async function streamStep<TOOLS extends ToolSet>(
   });
 
   if (!res.ok) {
-    const errBody = await safeReadText(res);
+    // Bound the error-body read — a hung/truncated upstream connection
+    // shouldn't deadlock the streaming caller waiting for an error message.
+    const errBody = await Promise.race([
+      safeReadText(res),
+      new Promise<string>((resolve) => {
+        setTimeout(() => resolve(""), 5000);
+      }),
+    ]);
     throw new Error(
       `LMS chat/completions request failed: ${res.status} ${res.statusText}`
         + (errBody ? ` — ${errBody}` : ""),
@@ -341,6 +347,9 @@ async function parseSseStream(
             }
 
             for (const tc of delta.tool_calls ?? []) {
+              if (typeof tc.index !== "number") {
+                continue;
+              }
               const acc = toolCallAcc.get(tc.index)
                 ?? { id: "", name: "", args: "" };
               if (tc.id != null) {
@@ -358,15 +367,6 @@ async function parseSseStream(
             if (choice.finish_reason != null) {
               rawFinishReason = choice.finish_reason;
               finishReason = mapFinishReason(choice.finish_reason);
-              await finalizeText();
-              for (const [index, acc] of toolCallAcc.entries()) {
-                await args.onChunk({
-                  type: "tool-call",
-                  toolCallId: resolveToolCallId(acc, index),
-                  toolName: acc.name,
-                  input: parseToolArguments(acc.args, args.warnings),
-                });
-              }
             }
           }
         }
@@ -393,13 +393,10 @@ async function parseSseStream(
     totalTokens: undefined,
   };
 
-  await args.onChunk({
-    type: "finish",
-    finishReason,
-    rawFinishReason,
-    usage: finalUsage,
-  });
-
+  // Emit accumulated tool-call chunks once, regardless of whether
+  // finish_reason arrived. A connection drop or non-conformant provider that
+  // closes the stream without finish_reason should still surface tool calls
+  // to fullStream consumers.
   const toolCalls: Array<ToolCall> = Array.from(
     toolCallAcc.entries(),
   ).map(([index, acc]) => ({
@@ -408,6 +405,21 @@ async function parseSseStream(
     toolName: acc.name,
     input: parseToolArguments(acc.args, args.warnings),
   }));
+  for (const tc of toolCalls) {
+    await args.onChunk({
+      type: "tool-call",
+      toolCallId: tc.toolCallId,
+      toolName: tc.toolName,
+      input: tc.input,
+    });
+  }
+
+  await args.onChunk({
+    type: "finish",
+    finishReason,
+    rawFinishReason,
+    usage: finalUsage,
+  });
 
   const responseMessages = buildAssistantResponseMessages({
     text: textBuf,
@@ -439,15 +451,7 @@ function buildAssistantResponseMessages(args: {
   text: string;
   toolCalls: ReadonlyArray<ToolCall>;
 }): ResponseMetadata["messages"] {
-  const tcs: Array<OpenAiAssistantToolCall> = args.toolCalls.map((tc) => ({
-    id: tc.toolCallId,
-    type: "function",
-    function: {
-      name: tc.toolName,
-      arguments: JSON.stringify(tc.input ?? {}),
-    },
-  }));
-  if (tcs.length === 0) {
+  if (args.toolCalls.length === 0) {
     return [{ role: "assistant", content: args.text }];
   }
   const parts: Array<

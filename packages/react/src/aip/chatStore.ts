@@ -37,8 +37,12 @@ export interface ChatStore {
 
 export interface CreateChatStoreOptions {
   initialMessages?: ReadonlyArray<UIMessage>;
-  /** Min ms between subscriber notifications. 0 = synchronous. Defaults to 0. */
-  throttleMs?: number;
+  /**
+   * Min ms between subscriber notifications. 0 = synchronous. Defaults to 0.
+   * Pass a function to make the throttle dynamic — it's re-evaluated on each
+   * notification, so callers can adjust without recreating the store.
+   */
+  throttleMs?: number | (() => number);
 }
 
 /**
@@ -55,7 +59,10 @@ export function createChatStore(options: CreateChatStoreOptions): ChatStore {
   };
 
   const subscribers = new Set<() => void>();
-  const throttleMs = options.throttleMs ?? 0;
+  const getThrottleMs = (): number => {
+    const raw = options.throttleMs ?? 0;
+    return typeof raw === "function" ? raw() : raw;
+  };
   let pendingNotify: ReturnType<typeof setTimeout> | undefined;
   let lastNotifyTs = 0;
 
@@ -68,6 +75,7 @@ export function createChatStore(options: CreateChatStoreOptions): ChatStore {
   };
 
   const scheduleNotify = (force: boolean): void => {
+    const throttleMs = getThrottleMs();
     if (force || throttleMs <= 0) {
       if (pendingNotify != null) {
         clearTimeout(pendingNotify);
@@ -90,11 +98,14 @@ export function createChatStore(options: CreateChatStoreOptions): ChatStore {
       subscribers.add(notify);
       return () => {
         subscribers.delete(notify);
-        // Cancel any pending notification once nobody's listening — avoids a
-        // setTimeout firing into an empty subscriber set after unmount.
-        if (subscribers.size === 0 && pendingNotify != null) {
-          clearTimeout(pendingNotify);
-          pendingNotify = undefined;
+        if (subscribers.size === 0) {
+          if (pendingNotify != null) {
+            clearTimeout(pendingNotify);
+            pendingNotify = undefined;
+          }
+          // Reset so a re-subscription doesn't see a stale "recent notify"
+          // timestamp from a previous lifecycle and delay its first notify.
+          lastNotifyTs = 0;
         }
       };
     },

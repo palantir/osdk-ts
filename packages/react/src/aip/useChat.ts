@@ -116,6 +116,11 @@ export type SendMessageInput =
  * ```
  */
 export function useChat(options: UseChatOptions): UseChatReturn {
+  const {
+    onFinish,
+    onError,
+  } = options;
+
   const id = React.useMemo(
     () => options.id ?? generateChatId(),
     [options.id],
@@ -138,6 +143,8 @@ export function useChat(options: UseChatOptions): UseChatReturn {
           "useChat: `model` is required when no `transport` is provided.",
         );
       }
+      // Defensive copies so caller-side mutation of `headers` / `stopSequences`
+      // after construction doesn't leak into the transport's snapshot.
       const built: LmsChatTransportOptions = {
         model: options.model,
         system: options.system,
@@ -146,9 +153,11 @@ export function useChat(options: UseChatOptions): UseChatReturn {
         topP: options.topP,
         presencePenalty: options.presencePenalty,
         frequencyPenalty: options.frequencyPenalty,
-        stopSequences: options.stopSequences,
+        stopSequences: options.stopSequences != null
+          ? [...options.stopSequences]
+          : undefined,
         seed: options.seed,
-        headers: options.headers,
+        headers: options.headers != null ? { ...options.headers } : undefined,
       };
       return new LmsChatTransport(built);
     },
@@ -173,9 +182,11 @@ export function useChat(options: UseChatOptions): UseChatReturn {
         initialMessages: options.messages,
         throttleMs: options.experimental_throttle ?? 50,
       }),
-    // Recreate the store only when the chat identity changes.
-    // `experimental_throttle` and initial `messages` are read at creation
-    // time only; later changes won't recreate (use `setMessages` to update).
+    // The store is identity-keyed by `id`. `messages` is the seed snapshot,
+    // and `experimental_throttle` is the initial throttle — both are
+    // intentionally read once at creation time and not reactive. Recreating
+    // the store mid-session would lose chat state. Use `setMessages` to
+    // mutate messages at runtime; throttle changes require a new chat id.
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [id],
   );
@@ -188,15 +199,6 @@ export function useChat(options: UseChatOptions): UseChatReturn {
   );
 
   const abortRef = React.useRef<AbortController | undefined>(undefined);
-
-  // Latest-callback refs so the action handlers below can be `useCallback`-d
-  // without depending on `options.onFinish` / `options.onError` directly.
-  // Consumers commonly pass inline callbacks; lifting to refs keeps the
-  // returned action identities stable while still firing the latest callback.
-  const onFinishRef = React.useRef(options.onFinish);
-  const onErrorRef = React.useRef(options.onError);
-  onFinishRef.current = options.onFinish;
-  onErrorRef.current = options.onError;
 
   // Drain a stream into the store. Race-guarded by `capturedCtrl`: if a newer
   // sendMessage/regenerate replaces `abortRef.current`, this drain bails
@@ -216,6 +218,12 @@ export function useChat(options: UseChatOptions): UseChatReturn {
     const isStale = (): boolean =>
       abortRef.current != null && abortRef.current !== capturedCtrl;
 
+    // Caller dropped our assistant message via `setMessages` mid-stream.
+    // Treat as "the consumer no longer wants this stream" — quietly stop.
+    const isOrphaned = (): boolean =>
+      assistantAdded
+      && !store.getSnapshot().messages.some((m) => m.id === assistantMessageId);
+
     try {
       while (true) {
         const { done, value } = await reader.read();
@@ -224,6 +232,13 @@ export function useChat(options: UseChatOptions): UseChatReturn {
         }
         if (isStale()) {
           await reader.cancel();
+          return;
+        }
+        if (isOrphaned()) {
+          await reader.cancel();
+          store.setState((prev) => ({ ...prev, status: "ready" }), {
+            force: true,
+          });
           return;
         }
         if (value.type === "text-delta") {
@@ -276,7 +291,6 @@ export function useChat(options: UseChatOptions): UseChatReturn {
       const finalMessage = finalSnap.messages.find((m) =>
         m.id === assistantMessageId
       );
-      const onFinish = onFinishRef.current;
       if (finalMessage != null && onFinish != null) {
         onFinish({
           message: finalMessage,
@@ -299,7 +313,6 @@ export function useChat(options: UseChatOptions): UseChatReturn {
         (prev) => ({ ...prev, status: "error", error }),
         { force: true },
       );
-      const onError = onErrorRef.current;
       if (onError != null) {
         onError(error);
       }
@@ -310,7 +323,7 @@ export function useChat(options: UseChatOptions): UseChatReturn {
         // already released
       }
     }
-  }, [store]);
+  }, [store, onFinish, onError]);
 
   const runStream = React.useCallback(async (
     seed: ReadonlyArray<UIMessage>,
@@ -349,12 +362,11 @@ export function useChat(options: UseChatOptions): UseChatReturn {
         (prev) => ({ ...prev, status: "error", error }),
         { force: true },
       );
-      const onError = onErrorRef.current;
       if (onError != null) {
         onError(error);
       }
     }
-  }, [transport, id, store, drainStream]);
+  }, [transport, id, store, drainStream, onError]);
 
   const sendMessage = React.useCallback(
     async (input: SendMessageInput): Promise<void> => {

@@ -266,7 +266,7 @@ function resolveMessages(
   const sys: Array<SystemModelMessage> = system == null
     ? []
     : typeof system === "string"
-    ? [{ role: "system", content: system }]
+    ? (system === "" ? [] : [{ role: "system", content: system }])
     : Array.isArray(system)
     ? system
     : [system];
