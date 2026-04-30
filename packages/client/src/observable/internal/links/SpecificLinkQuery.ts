@@ -69,9 +69,6 @@ export class SpecificLinkQuery extends BaseListQuery<
   #whereClause: Canonical<SimpleWhereClause>;
   #orderBy: Canonical<Record<string, "asc" | "desc" | undefined>>;
   #select: Canonical<readonly string[]> | undefined;
-  #targetTypeKindPromise:
-    | Promise<{ apiName: string; kind: "object" | "interface" }>
-    | undefined;
 
   protected override createPayload(
     params: CollectionConnectableParams,
@@ -140,21 +137,21 @@ export class SpecificLinkQuery extends BaseListQuery<
   /**
    * Implements fetchPageData from the BaseCollectionQuery template method pattern
    */
-  /**
-   * Resolves the link target's apiName and kind. The target's kind isn't
-   * carried on the cache key, so we look it up once via the ontology provider
-   * and memoize the resulting promise per query instance.
-   */
-  #resolveTargetType(): Promise<
-    { apiName: string; kind: "object" | "interface" }
-  > {
-    if (this.#targetTypeKindPromise) {
-      return this.#targetTypeKindPromise;
-    }
-    const ontologyProvider =
-      this.store.client[additionalContext].ontologyProvider;
-    this.#targetTypeKindPromise = (async () => {
-      if (this.#sourceTypeKind === "interface") {
+  protected async fetchPageData(
+    signal: AbortSignal | undefined,
+  ): Promise<PageResult<Osdk.Instance<any>>> {
+    const client = this.store.client;
+    const ontologyProvider = client[additionalContext].ontologyProvider;
+    const isInterface = this.#sourceTypeKind === "interface";
+
+    // Resolve the link target's apiName + kind once if needed for sorting or
+    // for gating the $includeAllBaseObjectProperties param. The ontology
+    // provider caches its lookups, so calling it here is cheap.
+    const hasOrderBy = this.#orderBy
+      && Object.keys(this.#orderBy).length > 0;
+    let target: { apiName: string; kind: "object" | "interface" } | undefined;
+    if (hasOrderBy || this.includeAllBaseObjectProperties) {
+      if (isInterface) {
         const interfaceMetadata = await ontologyProvider.getInterfaceDefinition(
           this.#sourceApiName,
         );
@@ -164,32 +161,26 @@ export class SpecificLinkQuery extends BaseListQuery<
             `Missing link definition for link '${this.#linkName}' on interface '${this.#sourceApiName}'`,
           );
         }
-        return { apiName: linkDef.targetTypeApiName, kind: linkDef.targetType };
-      }
-      const objectMetadata = await ontologyProvider.getObjectDefinition(
-        this.#sourceApiName,
-      );
-      const linkDef = objectMetadata.links?.[this.#linkName];
-      if (!linkDef?.targetType) {
-        throw new Error(
-          `Missing link definition or targetType for link '${this.#linkName}' on object type '${this.#sourceApiName}'`,
+        target = {
+          apiName: linkDef.targetTypeApiName,
+          kind: linkDef.targetType,
+        };
+      } else {
+        const objectMetadata = await ontologyProvider.getObjectDefinition(
+          this.#sourceApiName,
         );
+        const linkDef = objectMetadata.links?.[this.#linkName];
+        if (!linkDef?.targetType) {
+          throw new Error(
+            `Missing link definition or targetType for link '${this.#linkName}' on object type '${this.#sourceApiName}'`,
+          );
+        }
+        // Object link defs always target an object type.
+        target = { apiName: linkDef.targetType, kind: "object" };
       }
-      // Object link defs always target an object type.
-      return { apiName: linkDef.targetType, kind: "object" };
-    })();
-    return this.#targetTypeKindPromise;
-  }
+    }
 
-  protected async fetchPageData(
-    signal: AbortSignal | undefined,
-  ): Promise<PageResult<Osdk.Instance<any>>> {
-    const client = this.store.client;
-    const ontologyProvider = client[additionalContext].ontologyProvider;
-    const isInterface = this.#sourceTypeKind === "interface";
-
-    if (this.#orderBy && Object.keys(this.#orderBy).length > 0) {
-      const target = await this.#resolveTargetType();
+    if (target && hasOrderBy) {
       this.sortingStrategy = new OrderBySortingStrategy(
         target.apiName,
         this.#orderBy,
@@ -265,14 +256,10 @@ export class SpecificLinkQuery extends BaseListQuery<
       queryParams.$where = this.#whereClause;
     }
 
-    if (this.includeAllBaseObjectProperties) {
-      // The flag only changes server behavior when the link target is an
-      // interface. Drop it for object targets to avoid sending a no-op
-      // parameter to the server.
-      const target = await this.#resolveTargetType();
-      if (target.kind === "interface") {
-        queryParams.$includeAllBaseObjectProperties = true;
-      }
+    // Only forward $includeAllBaseObjectProperties when the link target is an
+    // interface — for object targets the flag is a no-op on the server.
+    if (target?.kind === "interface") {
+      queryParams.$includeAllBaseObjectProperties = true;
     }
 
     const response = await linkQuery.fetchPage(queryParams);
