@@ -1,0 +1,97 @@
+:root {
+  /* ---- Container ---- */
+  --osdk-object-view-bg: var(--osdk-background-primary);
+  --osdk-object-view-color: var(--osdk-typography-color-default-rest);
+  --osdk-object-view-font-family: var(--osdk-typography-family-default);
+  --osdk-object-view-padding: 0;
+  --osdk-object-view-border-radius: var(--osdk-surface-border-radius);
+  --osdk-object-view-section-gap: calc(var(--osdk-surface-spacing) * 2);
+
+  /* ---- Header ---- */
+  --osdk-object-view-header-bg: var(--osdk-background-primary);
+  --osdk-object-view-header-padding: calc(var(--osdk-surface-spacing) * 2)
+    calc(var(--osdk-surface-spacing) * 3);
+  --osdk-object-view-header-gap: calc(var(--osdk-surface-spacing) * 2);
+  --osdk-object-view-header-border-bottom: var(--osdk-surface-border);
+
+  --osdk-object-view-header-icon-size: 36px;
+  --osdk-object-view-header-icon-radius: var(--osdk-surface-border-radius);
+  --osdk-object-view-header-icon-bg: var(
+    --osdk-surface-background-color-default-rest
+  );
+  --osdk-object-view-header-icon-color: var(
+    --osdk-typography-color-default-rest
+  );
+
+  --osdk-object-view-header-text-gap: 2px;
+  --osdk-object-view-header-title-size: var(
+    --osdk-typography-size-heading-small
+  );
+  --osdk-object-view-header-title-weight: var(--osdk-typography-weight-bold);
+  --osdk-object-view-header-title-color: var(
+    --osdk-typography-color-default-rest
+  );
+  --osdk-object-view-header-subtitle-size: var(
+    --osdk-typography-size-body-small
+  );
+  --osdk-object-view-header-subtitle-color: var(--osdk-typography-color-muted);
+
+  /* ---- Section ---- */
+  --osdk-object-view-section-bg: var(--osdk-background-primary);
+  --osdk-object-view-section-padding: calc(var(--osdk-surface-spacing) * 2)
+    calc(var(--osdk-surface-spacing) * 3);
+  --osdk-object-view-section-border: var(--osdk-surface-border);
+  --osdk-object-view-section-border-radius: var(--osdk-surface-border-radius);
+  --osdk-object-view-section-content-gap: calc(var(--osdk-surface-spacing) * 2);
+
+  --osdk-object-view-section-title-gap: var(--osdk-surface-spacing);
+  --osdk-object-view-section-title-size: var(
+    --osdk-typography-size-body-medium
+  );
+  --osdk-object-view-section-title-weight: var(--osdk-typography-weight-bold);
+  --osdk-object-view-section-title-color: var(
+    --osdk-typography-color-default-rest
+  );
+  --osdk-object-view-section-title-padding-bottom: var(--osdk-surface-spacing);
+  --osdk-object-view-section-title-border-bottom: var(--osdk-surface-border);
+
+  /* ---- Prominent grid ---- */
+  --osdk-object-view-prominent-min-width: 200px;
+  --osdk-object-view-prominent-grid-gap: calc(var(--osdk-surface-spacing) * 2);
+  --osdk-object-view-prominent-item-gap: var(--osdk-surface-spacing);
+  --osdk-object-view-prominent-item-padding: 0;
+  --osdk-object-view-prominent-value-size: var(
+    --osdk-typography-size-heading-small
+  );
+  --osdk-object-view-prominent-value-weight: var(--osdk-typography-weight-bold);
+  --osdk-object-view-prominent-value-color: var(
+    --osdk-typography-color-default-rest
+  );
+  --osdk-object-view-prominent-label-size: var(
+    --osdk-typography-size-body-small
+  );
+  --osdk-object-view-prominent-label-color: var(--osdk-typography-color-muted);
+
+  /* ---- Properties grid ---- */
+  --osdk-object-view-properties-grid-columns: minmax(120px, max-content) 1fr;
+  --osdk-object-view-properties-row-gap: var(--osdk-surface-spacing);
+  --osdk-object-view-properties-column-gap: calc(
+    var(--osdk-surface-spacing) * 3
+  );
+  --osdk-object-view-property-label-size: var(
+    --osdk-typography-size-body-small
+  );
+  --osdk-object-view-property-label-color: var(--osdk-typography-color-muted);
+  --osdk-object-view-property-value-size: var(
+    --osdk-typography-size-body-medium
+  );
+  --osdk-object-view-property-value-color: var(
+    --osdk-typography-color-default-rest
+  );
+
+  /* ---- Empty value ---- */
+  --osdk-object-view-empty-value-color: var(--osdk-typography-color-muted);
+
+  /* ---- State container (loading / error / not-found) ---- */
+  --osdk-object-view-state-min-height: 200px;
+}
