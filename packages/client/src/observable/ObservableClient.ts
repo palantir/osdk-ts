@@ -143,16 +143,20 @@ export interface ObserveListOptions<
    * Can be combined with `where` to filter the RID set, and with `orderBy` to sort results.
    *
    * @example
+   * ```ts
    * // Fetch specific objects by RID
-   * observeList({ type: Employee, rids: ['ri.foo.123', 'ri.foo.456'] }, observer)
+   * observeList({ type: Employee, rids: ['ri.foo.123', 'ri.foo.456'] }, observer);
+   * ```
    *
    * @example
+   * ```ts
    * // Fetch specific objects by RID, filtered by status
    * observeList({
    *   type: Employee,
    *   rids: ['ri.foo.123', 'ri.foo.456', 'ri.foo.789'],
-   *   where: { status: 'active' }
-   * }, observer)
+   *   where: { status: 'active' },
+   * }, observer);
+   * ```
    */
   rids?: readonly string[];
 
@@ -178,12 +182,16 @@ export interface ObserveListOptions<
    * - `undefined` (default): Only fetch the first page, user must call fetchMore()
    *
    * @example
+   * ```ts
    * // Fetch all todos at once
-   * observeList({ type: Todo, autoFetchMore: true }, observer)
+   * observeList({ type: Todo, autoFetchMore: true }, observer);
+   * ```
    *
    * @example
+   * ```ts
    * // Fetch at least 100 todos
-   * observeList({ type: Todo, autoFetchMore: 100, pageSize: 25 }, observer)
+   * observeList({ type: Todo, autoFetchMore: 100, pageSize: 25 }, observer);
+   * ```
    */
   autoFetchMore?: boolean | number;
   intersectWith?: Array<{
