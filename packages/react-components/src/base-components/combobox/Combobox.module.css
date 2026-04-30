@@ -147,10 +147,6 @@
   }
 }
 
-.osdkComboboxValue {
-  text-align: start;
-}
-
 .osdkComboboxPlaceholder {
   text-align: start;
   color: var(
@@ -158,10 +154,6 @@
     var(--osdk-typography-color-muted)
   );
   pointer-events: none;
-}
-
-.osdkComboboxValue:not([data-placeholder]) ~ .osdkComboboxPlaceholder {
-  display: none;
 }
 
 .osdkComboboxIcon {
@@ -538,7 +530,7 @@
 .osdkComboboxList {
   display: flex;
   flex-direction: column;
-  overflow-y: visible;
+  overflow-y: auto;
 }
 
 .osdkComboboxEmpty {

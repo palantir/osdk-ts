@@ -284,6 +284,27 @@ describe("AsyncDropdownField", () => {
       });
     });
 
+    it("shows 'Loading' when loading with no items and not searching", async () => {
+      render(
+        <AsyncDropdownField
+          items={[]}
+          value={null}
+          onChange={vi.fn()}
+          isLoading={true}
+          isSearching={false}
+          hasMore={false}
+          onFetchMore={NOOP}
+        />,
+      );
+      openEmptyCombobox();
+
+      await vi.waitFor(() => {
+        const popup = getPopup();
+        expect(popup).not.toBeNull();
+        expect(popup?.textContent).toContain("Loading");
+      });
+    });
+
     it("shows 'No results' when not loading and no items", async () => {
       render(
         <AsyncDropdownField

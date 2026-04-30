@@ -23,7 +23,6 @@ import { Select } from "../../base-components/select/Select.js";
 import selectStyles from "../../base-components/select/Select.module.css";
 import { typedReactMemo } from "../../shared/typedMemo.js";
 import type { DropdownFieldProps } from "../FormFieldApi.js";
-import { type VirtualItemRenderProps } from "./VirtualizedItemList.js";
 
 const EMPTY_ARRAY: [] = [];
 
@@ -49,9 +48,7 @@ interface InnerComboboxProps<V, Multiple extends boolean>
   isSearchable: boolean;
   disableClientSideFiltering?: boolean;
   popupStatus?: React.ReactNode;
-  popupFooter?: React.ReactNode;
-  onItemHighlighted?: DropdownFieldProps<V, Multiple>["onItemHighlighted"];
-  renderItemList?: DropdownFieldProps<V, Multiple>["renderItemList"];
+  trailingItem?: DropdownFieldProps<V, Multiple>["trailingItem"];
 }
 
 export const DropdownField: <V, Multiple extends boolean = false>(
@@ -69,9 +66,7 @@ export const DropdownField: <V, Multiple extends boolean = false>(
   onQueryChange,
   disableClientSideFiltering,
   popupStatus,
-  popupFooter,
-  onItemHighlighted,
-  renderItemList,
+  trailingItem,
   ...rest
 }: DropdownFieldProps<V, Multiple>): React.ReactElement {
   // Ensure always controlled from first render: multi-select needs [],
@@ -102,13 +97,12 @@ export const DropdownField: <V, Multiple extends boolean = false>(
         onQueryChange={onQueryChange}
         disableClientSideFiltering={disableClientSideFiltering}
         popupStatus={popupStatus}
-        popupFooter={popupFooter}
-        onItemHighlighted={onItemHighlighted}
-        renderItemList={renderItemList}
+        trailingItem={trailingItem}
       />
     );
   }
 
+  // TODO: Support trailingItem
   return (
     <SelectDropdown
       {...rest}
@@ -210,10 +204,7 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
   onQueryChange,
   disableClientSideFiltering,
   popupStatus,
-  popupFooter,
-  virtualized,
-  onItemHighlighted,
-  renderItemList,
+  trailingItem,
 }: InnerComboboxProps<V, Multiple>): React.ReactElement {
   const [open, setOpen] = useState(false);
 
@@ -248,51 +239,15 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
   const renderItem = useCallback(
     (item: V) => (
       <Combobox.Item key={getKey(item)} value={item}>
+        {isMultiple && (
+          <Combobox.ItemIndicator>
+            <Tick />
+          </Combobox.ItemIndicator>
+        )}
         {itemToStringLabel(item)}
       </Combobox.Item>
     ),
-    [getKey, itemToStringLabel],
-  );
-
-  const renderItemWithIndicator = useCallback(
-    (item: V) => (
-      <Combobox.Item key={getKey(item)} value={item}>
-        <Combobox.ItemIndicator>
-          <Tick />
-        </Combobox.ItemIndicator>
-        {itemToStringLabel(item)}
-      </Combobox.Item>
-    ),
-    [getKey, itemToStringLabel],
-  );
-
-  // Renders a single Combobox.Item by index — used by VirtualizedItemList
-  // to render only visible items. The `virtualProps` contain positioning styles
-  // and ARIA attributes that must go directly on the Combobox.Item for Base UI
-  // keyboard navigation and screen reader support in virtualized mode.
-  const renderItemByIndex = useCallback(
-    (index: number, virtualProps: VirtualItemRenderProps) => {
-      const item = items[index];
-      if (item == null) {
-        return null;
-      }
-      return (
-        <Combobox.Item
-          key={getKey(item)}
-          value={item}
-          index={index}
-          {...virtualProps}
-        >
-          {isMultiple && (
-            <Combobox.ItemIndicator>
-              <Tick />
-            </Combobox.ItemIndicator>
-          )}
-          {itemToStringLabel(item)}
-        </Combobox.Item>
-      );
-    },
-    [items, getKey, itemToStringLabel, isMultiple],
+    [getKey, isMultiple, itemToStringLabel],
   );
 
   return (
@@ -309,8 +264,6 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
         inputValue={query}
         onInputValueChange={onQueryChange}
         filter={disableClientSideFiltering ? null : undefined}
-        virtualized={virtualized}
-        onItemHighlighted={onItemHighlighted}
       >
         <Combobox.Trigger
           id={id}
@@ -378,20 +331,10 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
               {popupStatus == null && (
                 <Combobox.Empty>No results</Combobox.Empty>
               )}
-              {renderItemList != null
-                ? (
-                  <Combobox.List>
-                    {renderItemList(renderItemByIndex, items.length)}
-                  </Combobox.List>
-                )
-                : (
-                  <>
-                    <Combobox.List>
-                      {isMultiple ? renderItemWithIndicator : renderItem}
-                    </Combobox.List>
-                    {popupFooter}
-                  </>
-                )}
+              <Combobox.List>
+                {items.map(renderItem)}
+                {trailingItem}
+              </Combobox.List>
             </Combobox.Popup>
           </Combobox.Positioner>
         </Combobox.Portal>

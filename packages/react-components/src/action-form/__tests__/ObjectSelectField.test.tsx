@@ -38,14 +38,18 @@ vi.stubGlobal(
               width: 300,
               height: VIRTUAL_VIEWPORT_HEIGHT,
             } as DOMRectReadOnly,
-            borderBoxSize: [{
-              blockSize: VIRTUAL_VIEWPORT_HEIGHT,
-              inlineSize: 300,
-            }],
-            contentBoxSize: [{
-              blockSize: VIRTUAL_VIEWPORT_HEIGHT,
-              inlineSize: 300,
-            }],
+            borderBoxSize: [
+              {
+                blockSize: VIRTUAL_VIEWPORT_HEIGHT,
+                inlineSize: 300,
+              },
+            ],
+            contentBoxSize: [
+              {
+                blockSize: VIRTUAL_VIEWPORT_HEIGHT,
+                inlineSize: 300,
+              },
+            ],
             devicePixelContentBoxSize: [],
           } as ResizeObserverEntry,
         ],
@@ -73,7 +77,7 @@ const mockUseOsdkObjects = vi.mocked(useOsdkObjects);
 
 // The full return type is UseOsdkListResult<ObjectTypeDefinition> whose `data`
 // field requires full Osdk.Instance objects (including $objectSpecifier, etc.).
-// Our mock objects only carry the subset ObjectSelectField reads at runtime
+// Our mock objects only carry the subset the component reads at runtime
 // ($primaryKey, $title), so the mock value must be cast through `never`.
 
 afterEach(cleanup);
@@ -94,7 +98,7 @@ function mockLoadedState(
   }> = {},
 ) {
   // The mock return must satisfy UseOsdkListResult which has complex generics.
-  // We construct the minimal shape needed by ObjectSelectField at runtime.
+  // We construct the minimal shape needed by the component at runtime.
   mockUseOsdkObjects.mockReturnValue({
     data,
     isLoading: false,
@@ -155,14 +159,38 @@ describe("ObjectSelectField", () => {
     );
   });
 
-  it("passes objectTypeApiName to useOsdkObjects as a minimal type def", () => {
+  it("passes apiName to useOsdkObjects as a minimal object type def", () => {
     mockLoadedState();
-    renderObjectSelect({ objectTypeApiName: "Office" });
+    renderObjectSelect({ apiName: "Office" });
 
     expect(mockUseOsdkObjects).toHaveBeenCalledWith(
       expect.objectContaining({ type: "object", apiName: "Office" }),
       expect.objectContaining({ pageSize: 50 }),
     );
+  });
+
+  it("passes apiName to useOsdkObjects as an interface type def", () => {
+    mockLoadedState();
+    renderObjectSelect({ apiName: "Asset", ontologyType: "interface" });
+
+    expect(mockUseOsdkObjects).toHaveBeenCalledWith(
+      expect.objectContaining({ type: "interface", apiName: "Asset" }),
+      expect.objectContaining({ pageSize: 50 }),
+    );
+  });
+
+  it("shows 'Loading' when data is loading and empty", async () => {
+    mockLoadedState([], { isLoading: true });
+    renderObjectSelect();
+
+    const trigger = screen.getByRole("combobox");
+    fireEvent.click(trigger);
+
+    await vi.waitFor(() => {
+      const popup = document.querySelector("[class*='osdkComboboxPopup']");
+      expect(popup).not.toBeNull();
+      expect(popup?.textContent).toContain("Loading");
+    });
   });
 
   it("shows 'No results' when data is empty and not searching", async () => {
@@ -328,7 +356,8 @@ function renderObjectSelect(
 ) {
   return render(
     <ObjectSelectField
-      objectTypeApiName="Employee"
+      apiName="Employee"
+      ontologyType="object"
       value={null}
       onChange={vi.fn()}
       {...overrides}

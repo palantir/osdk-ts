@@ -44,7 +44,8 @@ describe("getDefaultFieldDefinitions", () => {
 
     expect(field.fieldComponent).toBe("OBJECT_SELECT");
     expect(field.fieldComponentProps).toEqual({
-      objectTypeApiName: "Employee",
+      apiName: "Employee",
+      ontologyType: "object",
     });
     expect(field.isRequired).toBe(true);
   });
@@ -61,7 +62,8 @@ describe("getDefaultFieldDefinitions", () => {
 
     expect(field.fieldComponent).toBe("OBJECT_SELECT");
     expect(field.fieldComponentProps).toEqual({
-      objectTypeApiName: "Asset",
+      apiName: "Asset",
+      ontologyType: "interface",
     });
     expect(field.isRequired).toBe(false);
   });

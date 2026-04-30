@@ -65,9 +65,10 @@ function buildFieldDefinition(
           ...base,
           fieldComponent: "OBJECT_SELECT",
           fieldComponentProps: {
-            objectTypeApiName: paramType.type === "object"
+            apiName: paramType.type === "object"
               ? paramType.object
               : paramType.interface,
+            ontologyType: paramType.type,
           },
         };
       case "struct":

@@ -20,12 +20,12 @@ import type {
   ActionParam,
   CompileTimeMetadata,
   DataValueClientToWire,
+  ObjectOrInterfaceDefinition,
   ObjectSet,
   ObjectTypeDefinition,
   Osdk,
 } from "@osdk/api";
 import type React from "react";
-import type { VirtualItemRenderProps } from "./fields/VirtualizedItemList.js";
 
 /**
  * A form field definition specifies configuration for a single field
@@ -311,44 +311,16 @@ export interface DropdownFieldProps<V, Multiple extends boolean = false>
   disableClientSideFiltering?: boolean;
 
   /**
-   * Callback fired when a combobox item is highlighted via keyboard or pointer.
-   * Used with virtualized rendering to scroll the virtualizer to the highlighted item.
-   */
-  onItemHighlighted?: (
-    highlightedValue: V | undefined,
-    eventDetails: { reason: string; index: number },
-  ) => void;
-
-  /**
    * Status message rendered below the search input and above the item list
    * inside the popup. Use for loading/error/empty messages.
    */
   popupStatus?: React.ReactNode;
 
   /**
-   * Footer rendered below the item list inside the popup.
+   * A React node to render after the item list.
    * Use for infinite scroll sentinels, "load more" buttons, etc.
    */
-  popupFooter?: React.ReactNode;
-
-  /**
-   * Overrides the default virtualized item list rendering. Receives the
-   * per-item render callback and the item count so the caller can control
-   * the virtualizer (e.g. to append a trailing sentinel for infinite scroll).
-   */
-  renderItemList?: (
-    renderItem: (
-      index: number,
-      virtualProps: VirtualItemRenderProps,
-    ) => React.ReactNode,
-    itemCount: number,
-  ) => React.ReactNode;
-
-  /**
-   * Whether the list is virtualized.
-   * @default false
-   */
-  virtualized?: boolean;
+  trailingItem?: React.ReactNode;
 }
 
 export interface FilePickerProps extends BaseFormFieldProps<File | File[]> {
@@ -493,15 +465,15 @@ export interface ObjectSetFieldProps<T extends ObjectTypeDefinition>
 }
 
 /**
- * Object select field props for selecting object instances.
- * Used for action parameters that accept a single object or multiple objects.
+ * Object or interface select field props for selecting ontology instances.
+ * Used for action parameters that accept a single object/interface or multiple.
  *
- * Extends DropdownFieldProps with props that ObjectSelectField manages
- * internally (items, search, filtering) omitted from the public surface.
+ * Extends DropdownFieldProps with props that ObjectSelectField
+ * manages internally (items, search, filtering) omitted from the public surface.
  */
 export interface ObjectSelectFieldProps extends
   Omit<
-    DropdownFieldProps<Osdk.Instance<ObjectTypeDefinition>>,
+    DropdownFieldProps<Osdk.Instance<ObjectOrInterfaceDefinition>>,
     | "items"
     | "itemToStringLabel"
     | "itemToKey"
@@ -514,10 +486,15 @@ export interface ObjectSelectFieldProps extends
   >
 {
   /**
-   * The API name of the object type to search within.
+   * The API name of the object type or interface to search within.
    * Resolved from the action parameter metadata (e.g. "Employee").
    */
-  objectTypeApiName: string;
+  apiName: string;
+
+  /**
+   * Whether this refers to an object type or an interface.
+   */
+  ontologyType: "object" | "interface";
 }
 
 /**
