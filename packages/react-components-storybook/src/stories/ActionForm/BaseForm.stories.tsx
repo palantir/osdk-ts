@@ -1212,8 +1212,7 @@ const objectSelectFieldDefinitions: ReadonlyArray<RendererFieldDefinition> = [
     fieldComponent: "OBJECT_SELECT",
     label: "Employee",
     fieldComponentProps: {
-      apiName: "Employee",
-      ontologyType: "object" as const,
+      objectTypeApiName: "Employee",
       placeholder: "Search employees\u2026",
     },
   },
@@ -1240,8 +1239,7 @@ export const WithObjectSelect: Story = {
     fieldComponent: "OBJECT_SELECT",
     label: "Employee",
     fieldComponentProps: {
-      apiName: "Employee",
-      ontologyType: "object",
+      objectTypeApiName: "Employee",
       placeholder: "Search employees\u2026",
     },
   },

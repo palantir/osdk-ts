@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectOrInterfaceDefinition, Osdk } from "@osdk/api";
+import type { ObjectTypeDefinition, Osdk } from "@osdk/api";
 import React, { memo } from "react";
 import { FormField } from "../FormField.js";
 import {
@@ -227,9 +227,9 @@ function coerceToFileValue(value: unknown): File | File[] | null {
 /** Narrows the untyped form value to an OsdkObject by checking for $primaryKey. */
 function narrowToOsdkObject(
   value: unknown,
-): Osdk.Instance<ObjectOrInterfaceDefinition> | null {
+): Osdk.Instance<ObjectTypeDefinition> | null {
   if (value != null && typeof value === "object" && "$primaryKey" in value) {
-    return value as Osdk.Instance<ObjectOrInterfaceDefinition>;
+    return value as Osdk.Instance<ObjectTypeDefinition>;
   }
   return null;
 }

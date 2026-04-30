@@ -60,16 +60,18 @@ function buildFieldDefinition(
           fieldComponentProps: { value: null },
         };
       case "object":
-      case "interface":
         return {
           ...base,
           fieldComponent: "OBJECT_SELECT",
           fieldComponentProps: {
-            apiName: paramType.type === "object"
-              ? paramType.object
-              : paramType.interface,
-            ontologyType: paramType.type,
+            objectTypeApiName: paramType.object,
           },
+        };
+      case "interface":
+        return {
+          ...base,
+          fieldComponent: "TEXT_INPUT",
+          fieldComponentProps: {},
         };
       case "struct":
         return {

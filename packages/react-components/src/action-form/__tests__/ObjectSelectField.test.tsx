@@ -159,22 +159,12 @@ describe("ObjectSelectField", () => {
     );
   });
 
-  it("passes apiName to useOsdkObjects as a minimal object type def", () => {
+  it("passes objectTypeApiName to useOsdkObjects as a minimal type def", () => {
     mockLoadedState();
-    renderObjectSelect({ apiName: "Office" });
+    renderObjectSelect({ objectTypeApiName: "Office" });
 
     expect(mockUseOsdkObjects).toHaveBeenCalledWith(
       expect.objectContaining({ type: "object", apiName: "Office" }),
-      expect.objectContaining({ pageSize: 50 }),
-    );
-  });
-
-  it("passes apiName to useOsdkObjects as an interface type def", () => {
-    mockLoadedState();
-    renderObjectSelect({ apiName: "Asset", ontologyType: "interface" });
-
-    expect(mockUseOsdkObjects).toHaveBeenCalledWith(
-      expect.objectContaining({ type: "interface", apiName: "Asset" }),
       expect.objectContaining({ pageSize: 50 }),
     );
   });
@@ -245,7 +235,7 @@ describe("ObjectSelectField", () => {
       await vi.waitFor(() => {
         const latestCall = mockUseOsdkObjects.mock.calls.at(-1);
         expect(latestCall?.[1]?.where).toEqual({
-          fullName: { $containsAnyTerm: "Ali" },
+          fullName: { $containsAllTermsInOrder: "Ali" },
         });
       });
     } finally {
@@ -356,8 +346,7 @@ function renderObjectSelect(
 ) {
   return render(
     <ObjectSelectField
-      apiName="Employee"
-      ontologyType="object"
+      objectTypeApiName="Employee"
       value={null}
       onChange={vi.fn()}
       {...overrides}

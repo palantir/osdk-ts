@@ -26,7 +26,7 @@ export interface AsyncDropdownFieldProps<V, Multiple extends boolean = false>
   extends
     Omit<
       DropdownFieldProps<V, Multiple>,
-      "popupStatus" | "onItemHighlighted" | "renderItemList"
+      "popupStatus" | "trailingItem"
     >
 {
   /** Whether the data source is currently loading. */
@@ -81,7 +81,7 @@ export const AsyncDropdownField: <V, Multiple extends boolean = false>(
     if (isLoading && itemCount === 0) {
       return <div className={styles.osdkAsyncDropdownStatus}>Loading…</div>;
     }
-    // "No results" is handled by Combobox.Empty in the virtualized path
+    // "No results" is handled by Combobox.Empty inside DropdownField
     return null;
   }, [fetchError, isSearching, isLoading, itemCount]);
 
@@ -95,13 +95,16 @@ export const AsyncDropdownField: <V, Multiple extends boolean = false>(
       {...dropdownProps}
       isSearchable={true}
       popupStatus={popupStatus}
-      trailingItem={hasMore
-        ? (
-          <div key="sentinel" ref={infiniteScrollRef} role="presentation">
-            <SkeletonBar className={styles.osdkAsyncDropdownSkeleton} />
-          </div>
-        )
-        : null}
+      trailingItem={
+        // Adding a trailing item that will trigger a reload when it becomes visible
+        hasMore
+          ? (
+            <div key="sentinel" ref={infiniteScrollRef} role="presentation">
+              <SkeletonBar className={styles.osdkAsyncDropdownSkeleton} />
+            </div>
+          )
+          : null
+      }
       disableClientSideFiltering={dropdownProps.onQueryChange != null}
     />
   );

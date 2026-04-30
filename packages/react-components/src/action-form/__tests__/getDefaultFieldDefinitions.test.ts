@@ -44,28 +44,9 @@ describe("getDefaultFieldDefinitions", () => {
 
     expect(field.fieldComponent).toBe("OBJECT_SELECT");
     expect(field.fieldComponentProps).toEqual({
-      apiName: "Employee",
-      ontologyType: "object",
+      objectTypeApiName: "Employee",
     });
     expect(field.isRequired).toBe(true);
-  });
-
-  it("returns OBJECT_SELECT for interface type parameters", () => {
-    const metadata = makeMetadata({
-      asset: {
-        type: { type: "interface", interface: "Asset" },
-        nullable: true,
-      },
-    });
-
-    const [field] = getDefaultFieldDefinitions(metadata);
-
-    expect(field.fieldComponent).toBe("OBJECT_SELECT");
-    expect(field.fieldComponentProps).toEqual({
-      apiName: "Asset",
-      ontologyType: "interface",
-    });
-    expect(field.isRequired).toBe(false);
   });
 
   it("returns TEXT_INPUT for string parameters, not OBJECT_SELECT", () => {

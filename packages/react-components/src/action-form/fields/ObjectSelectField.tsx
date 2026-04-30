@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectOrInterfaceDefinition, Osdk } from "@osdk/api";
+import type { ObjectTypeDefinition, Osdk } from "@osdk/api";
 import { useOsdkMetadata } from "@osdk/react";
 import { useOsdkObjects } from "@osdk/react/experimental";
 import React, { memo, useCallback, useMemo, useState } from "react";
@@ -25,9 +25,9 @@ import { AsyncDropdownField } from "./AsyncDropdownField.js";
 /** Debounce search input to avoid firing a server query on every keystroke. */
 const SEARCH_DEBOUNCE_MS = 300;
 /** Number of objects fetched per page from the OSDK. */
-const PAGE_SIZE = 5;
+const PAGE_SIZE = 50;
 
-type OsdkObject = Osdk.Instance<ObjectOrInterfaceDefinition>;
+type OsdkObject = Osdk.Instance<ObjectTypeDefinition>;
 
 /** Stable empty array so the component doesn't re-render when data is undefined. */
 const EMPTY_ITEMS: OsdkObject[] = [];
@@ -35,8 +35,7 @@ const EMPTY_ITEMS: OsdkObject[] = [];
 export const ObjectSelectField: React.NamedExoticComponent<
   ObjectSelectFieldProps
 > = memo(function ObjectSelectFieldFn({
-  apiName,
-  ontologyType,
+  objectTypeApiName,
   value,
   onChange,
   error,
@@ -59,22 +58,18 @@ export const ObjectSelectField: React.NamedExoticComponent<
   );
 
   // At runtime, useOsdkObjects only reads apiName and type from the definition.
-  // The full type definition shape is for compile-time type safety only.
-  const typeDef = useMemo(
+  // The full ObjectTypeDefinition is for compile-time type safety only.
+  const objectTypeDef = useMemo(
     () =>
       ({
-        type: ontologyType,
-        apiName,
-      }) as ObjectOrInterfaceDefinition,
-    [apiName, ontologyType],
+        type: "object" as const,
+        apiName: objectTypeApiName,
+      }) as ObjectTypeDefinition,
+    [objectTypeApiName],
   );
 
-  const { metadata } = useOsdkMetadata(typeDef);
-  // InterfaceMetadata doesn't have titleProperty — only ObjectMetadata does.
-  // When absent, search is disabled (where clause stays undefined).
-  const titleProperty = metadata != null
-      && "titleProperty" in metadata
-      && typeof metadata.titleProperty === "string"
+  const { metadata } = useOsdkMetadata(objectTypeDef);
+  const titleProperty = typeof metadata?.titleProperty === "string"
     ? metadata.titleProperty
     : undefined;
 
@@ -88,7 +83,7 @@ export const ObjectSelectField: React.NamedExoticComponent<
       return undefined;
     }
     return {
-      [titleProperty]: { $containsAnyTerm: trimmed },
+      [titleProperty]: { $containsAllTermsInOrder: trimmed },
     } as Parameters<typeof useOsdkObjects>[1] extends
       | { where?: infer W }
       | undefined ? W
@@ -101,7 +96,7 @@ export const ObjectSelectField: React.NamedExoticComponent<
     error: fetchError,
     fetchMore,
     hasMore,
-  } = useOsdkObjects(typeDef, {
+  } = useOsdkObjects(objectTypeDef, {
     where,
     pageSize: PAGE_SIZE,
   });

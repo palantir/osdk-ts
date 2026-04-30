@@ -20,7 +20,6 @@ import type {
   ActionParam,
   CompileTimeMetadata,
   DataValueClientToWire,
-  ObjectOrInterfaceDefinition,
   ObjectSet,
   ObjectTypeDefinition,
   Osdk,
@@ -473,7 +472,7 @@ export interface ObjectSetFieldProps<T extends ObjectTypeDefinition>
  */
 export interface ObjectSelectFieldProps extends
   Omit<
-    DropdownFieldProps<Osdk.Instance<ObjectOrInterfaceDefinition>>,
+    DropdownFieldProps<Osdk.Instance<ObjectTypeDefinition>>,
     | "items"
     | "itemToStringLabel"
     | "itemToKey"
@@ -486,15 +485,10 @@ export interface ObjectSelectFieldProps extends
   >
 {
   /**
-   * The API name of the object type or interface to search within.
+   * The API name of the object type to search within.
    * Resolved from the action parameter metadata (e.g. "Employee").
    */
-  apiName: string;
-
-  /**
-   * Whether this refers to an object type or an interface.
-   */
-  ontologyType: "object" | "interface";
+  objectTypeApiName: string;
 }
 
 /**

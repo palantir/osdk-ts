@@ -132,7 +132,8 @@ const SelectDropdown = typedReactMemo(function SelectDropdownFn<
   const hasValue = value != null;
 
   const handleClear = useCallback(() => {
-    onChange?.(null as Parameters<NonNullable<typeof onChange>>[0]);
+    // SelectDropdown is always single-select, so cleared value is null.
+    (onChange as ((v: V | null) => void) | undefined)?.(null);
     setOpen(false);
   }, [onChange]);
 
@@ -156,14 +157,15 @@ const SelectDropdown = typedReactMemo(function SelectDropdownFn<
             )}
           </div>
           {hasValue && (
-            <Button
+            <span
+              role="button"
               aria-label="Clear"
               className={selectStyles.osdkSelectClear}
               onMouseDown={preventTriggerOpen}
               onClick={handleClear}
             >
               <SmallCross />
-            </Button>
+            </span>
           )}
           <span className={selectStyles.osdkSelectIcon}>
             <CaretDown />
@@ -213,8 +215,10 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
     : value != null;
 
   const handleClear = useCallback(() => {
+    // TypeScript can't narrow the conditional type `Multiple extends true ? V[] : V`
+    // at runtime, so we cast through the known parameter type at this single call site.
     const cleared = isMultiple ? (EMPTY_ARRAY as V[]) : null;
-    onChange?.(cleared as Parameters<NonNullable<typeof onChange>>[0]);
+    (onChange as ((v: V[] | V | null) => void) | undefined)?.(cleared);
     // Single-select: close after clearing. Multi-select: keep open for continued selection.
     if (!isMultiple) {
       setOpen(false);
@@ -231,7 +235,7 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
           ? !isItemEqual(v, itemToRemove)
           : v !== itemToRemove
       );
-      onChange?.(next as Parameters<NonNullable<typeof onChange>>[0]);
+      (onChange as ((v: V[] | V | null) => void) | undefined)?.(next);
     },
     [isMultiple, value, onChange, isItemEqual],
   );
