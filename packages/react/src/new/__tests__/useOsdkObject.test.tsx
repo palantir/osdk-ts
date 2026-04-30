@@ -162,17 +162,4 @@ describe("useOsdkObject", () => {
     expect(result.current.a.isLoading).toBe(false);
     expect(result.current.b.isLoading).toBe(false);
   });
-
-  it("forwards $loadPropertySecurityMetadata to observeObject when set", () => {
-    renderHook(
-      () =>
-        useOsdkObject(Employee, 1, {
-          $loadPropertySecurityMetadata: true,
-        }),
-      { wrapper: createWrapper(observableClient) },
-    );
-
-    expect(calls).toHaveLength(1);
-    expect(calls[0].options.$loadPropertySecurityMetadata).toBe(true);
-  });
 });

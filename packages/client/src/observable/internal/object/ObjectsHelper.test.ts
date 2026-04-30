@@ -514,7 +514,7 @@ describe("Two variants with different RDP configs - GC of one should not affect 
   });
 });
 
-describe("ObjectsHelper.getQuery select + loadPropertySecurity in cache key", () => {
+describe("ObjectsHelper variant cache keys", () => {
   let client: Client;
   let store: Store;
   let emp: Osdk.Instance<Employee>;
@@ -632,10 +632,6 @@ describe("ObjectsHelper.getQuery select + loadPropertySecurity in cache key", ()
       queryA.writeToStore(emp as any, "loaded", batch, new Set(["fullName"]));
     });
 
-    // A separate fetch on variant B (employeeId only) writes through
-    // ObjectQuery.writeToStore which calls propagateWrite with selectFields.
-    // After propagation, A's cache entry must retain its existing fullName
-    // rather than being clobbered by B's partial data.
     store.batch({}, (batch) => {
       queryB.writeToStore(
         emp as any,
