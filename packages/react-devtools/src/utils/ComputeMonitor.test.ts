@@ -17,6 +17,13 @@
 import { describe, expect, it, vi } from "vitest";
 import type { ComputeStore } from "../store/ComputeStore.js";
 import { ComputeMonitor } from "./ComputeMonitor.js";
+import type { EventTimeline } from "./EventTimeline.js";
+
+function createMockEventTimeline(): EventTimeline {
+  return {
+    record: vi.fn(),
+  } as unknown as EventTimeline;
+}
 
 function createMockComputeStore(): ComputeStore {
   return {
@@ -24,6 +31,7 @@ function createMockComputeStore(): ComputeStore {
     getIsNetworkPaused: vi.fn().mockReturnValue(false),
     createPendingRequest: vi.fn().mockReturnValue("req-1"),
     fulfillRequest: vi.fn(),
+    fulfillWithoutUsage: vi.fn(),
     failRequest: vi.fn(),
     getSnapshot: vi.fn(),
     subscribe: vi.fn(),
@@ -35,6 +43,7 @@ function createMockComputeStore(): ComputeStore {
       lastMinuteUsage: 0,
       requestCount: 0,
       fulfilledCount: 0,
+      fulfilledWithoutUsageCount: 0,
       failedCount: 0,
       pendingCount: 0,
       averageUsagePerRequest: 0,
@@ -169,7 +178,88 @@ describe("ComputeMonitor", () => {
     expect(mockFetch).not.toHaveBeenCalled();
   });
 
-  it("fails request with no-compute-usage when response has no computeUsage", async () => {
+  it("blocks tracked endpoints when paused, even when not recording", async () => {
+    const store = createMockComputeStore();
+    vi.mocked(store.getIsNetworkPaused).mockReturnValue(true);
+    vi.mocked(store.isRecording).mockReturnValue(false);
+    const mockFetch = vi.fn();
+    const monitor = new ComputeMonitor(store, undefined, mockFetch);
+    const intercepted = monitor.createInterceptedFetch();
+
+    await expect(
+      intercepted(LOAD_OBJECTS_URL, {
+        body: JSON.stringify({ objectType: "Employee" }),
+      }),
+    ).rejects.toThrow("OSDK network requests are paused");
+
+    expect(mockFetch).not.toHaveBeenCalled();
+    expect(store.createPendingRequest).not.toHaveBeenCalled();
+  });
+
+  it("blocks action endpoints when paused (non-tracked OSDK URL)", async () => {
+    const store = createMockComputeStore();
+    vi.mocked(store.getIsNetworkPaused).mockReturnValue(true);
+    const mockFetch = vi.fn();
+    const monitor = new ComputeMonitor(store, undefined, mockFetch);
+    const intercepted = monitor.createInterceptedFetch();
+
+    const actionUrl =
+      "https://example.com/api/v2/ontologies/ri.test/actions/applyAction";
+    await expect(
+      intercepted(actionUrl, {
+        body: JSON.stringify({ parameters: {} }),
+      }),
+    ).rejects.toThrow("OSDK network requests are paused");
+
+    expect(mockFetch).not.toHaveBeenCalled();
+    expect(store.createPendingRequest).not.toHaveBeenCalled();
+    expect(store.failRequest).not.toHaveBeenCalled();
+  });
+
+  it("does not block non-OSDK URLs when paused", async () => {
+    const store = createMockComputeStore();
+    vi.mocked(store.getIsNetworkPaused).mockReturnValue(true);
+    const mockFetch = vi.fn().mockResolvedValue(new Response("ok"));
+    const monitor = new ComputeMonitor(store, undefined, mockFetch);
+    const intercepted = monitor.createInterceptedFetch();
+
+    await intercepted("https://example.com/some/other/url", {
+      body: JSON.stringify({ test: true }),
+    });
+
+    expect(mockFetch).toHaveBeenCalled();
+  });
+
+  it("records OSDK_PAUSE_BLOCK event when blocking", async () => {
+    const store = createMockComputeStore();
+    vi.mocked(store.getIsNetworkPaused).mockReturnValue(true);
+    const mockFetch = vi.fn();
+    const eventTimeline = createMockEventTimeline();
+    const monitor = new ComputeMonitor(
+      store,
+      undefined,
+      mockFetch,
+      eventTimeline,
+    );
+    const intercepted = monitor.createInterceptedFetch();
+
+    const actionUrl =
+      "https://example.com/api/v2/ontologies/ri.test/actions/applyAction";
+    await expect(
+      intercepted(actionUrl, {
+        body: JSON.stringify({ parameters: {} }),
+      }),
+    ).rejects.toThrow();
+
+    expect(eventTimeline.record).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: "OSDK_PAUSE_BLOCK",
+        pathname: "/api/v2/ontologies/ri.test/actions/applyAction",
+      }),
+    );
+  });
+
+  it("fulfills without usage when 200 has no computeUsage in response", async () => {
     const store = createMockComputeStore();
     const mockFetch = vi
       .fn()
@@ -181,9 +271,13 @@ describe("ComputeMonitor", () => {
       body: JSON.stringify({ objectType: "Employee" }),
     });
 
-    expect(store.failRequest).toHaveBeenCalledWith("req-1", {
-      type: "no-compute-usage",
-    });
+    expect(store.fulfillWithoutUsage).toHaveBeenCalledWith(
+      "req-1",
+      expect.objectContaining({
+        responsePayloadBytes: expect.any(Number),
+      }),
+    );
+    expect(store.failRequest).not.toHaveBeenCalled();
   });
 
   it("fails request with api-gateway-error for structured error responses", async () => {

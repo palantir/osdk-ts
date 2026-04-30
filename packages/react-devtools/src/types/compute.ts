@@ -35,7 +35,6 @@ export type ComputeRequestError =
     errorInstanceId: string;
     errorName: string;
   }
-  | { type: "no-compute-usage" }
   | { type: "http-error"; status: number; message?: string }
   | { type: "fetch-error"; message: string }
   | { type: "unknown" };
@@ -55,8 +54,19 @@ export interface FulfilledComputeRequest extends ComputeRequestBase {
   responsePayloadHash: number;
 }
 
+export interface FulfilledWithoutUsageComputeRequest
+  extends ComputeRequestBase
+{
+  type: "fulfilled-without-usage";
+  responseTimestamp: Date;
+  responsePayload: string;
+  responsePayloadBytes: number;
+  responsePayloadHash: number;
+}
+
 export type ComputeRequest =
   | FulfilledComputeRequest
+  | FulfilledWithoutUsageComputeRequest
   | PendingComputeRequest
   | FailedComputeRequest;
 
@@ -65,6 +75,7 @@ export interface ComputeMetrics {
   readonly lastMinuteUsage: number;
   readonly requestCount: number;
   readonly fulfilledCount: number;
+  readonly fulfilledWithoutUsageCount: number;
   readonly failedCount: number;
   readonly pendingCount: number;
   readonly averageUsagePerRequest: number;

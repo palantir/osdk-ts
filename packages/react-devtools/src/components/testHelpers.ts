@@ -278,6 +278,18 @@ export function createMockMonitorStore(): MonitorStore {
       unsuppress: vi.fn(),
       dispose: vi.fn(),
     }),
+    getWindowErrorStore: vi.fn().mockReturnValue({
+      getEntries: vi.fn().mockReturnValue([]),
+      getSize: vi.fn().mockReturnValue(0),
+      clear: vi.fn(),
+      subscribe: vi.fn().mockReturnValue(() => {}),
+      install: vi.fn(),
+      uninstall: vi.fn(),
+      suppress: vi.fn(),
+      unsuppress: vi.fn(),
+      recordError: vi.fn(),
+      dispose: vi.fn(),
+    }),
     getPrototypeOverrideStore: vi.fn().mockReturnValue({
       setOverride: vi.fn(),
       getOverride: vi.fn().mockReturnValue(undefined),
@@ -292,6 +304,7 @@ export function createMockMonitorStore(): MonitorStore {
       subscribe: vi.fn().mockReturnValue(() => {}),
     }),
     getCacheEntries: vi.fn().mockResolvedValue([]),
+    loadCacheEntries: vi.fn().mockResolvedValue([]),
     getCacheSnapshot: vi.fn().mockResolvedValue({
       entries: [],
       stats: { totalEntries: 0, totalSize: 0, totalHits: 0 },

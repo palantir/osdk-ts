@@ -44,11 +44,11 @@ describe("CacheInspectorTab", () => {
     expect(screen.queryAllByRole("button").length).toBeGreaterThan(0);
   });
 
-  it("calls getCacheEntries on mount", () => {
+  it("calls loadCacheEntries on mount", () => {
     const store = createMockMonitorStore();
 
     render(<CacheInspectorTab monitorStore={store} />);
 
-    expect(store.getCacheEntries).toHaveBeenCalled();
+    expect(store.loadCacheEntries).toHaveBeenCalled();
   });
 });

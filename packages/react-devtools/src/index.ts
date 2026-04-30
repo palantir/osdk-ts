@@ -25,6 +25,8 @@ export {
   SafeMonitoringPanel,
 } from "./components/MonitoringPanel.js";
 export type { MonitoringPanelProps } from "./components/MonitoringPanel.js";
+export { OsdkAppErrorBoundary } from "./components/OsdkAppErrorBoundary.js";
+export type { OsdkAppErrorBoundaryProps } from "./components/OsdkAppErrorBoundary.js";
 export { OsdkDevTools } from "./components/OsdkDevTools.js";
 
 export {

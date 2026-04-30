@@ -129,7 +129,7 @@ describe("MonitorStore", () => {
   });
 
   it("should return empty results for cache operations when no monitor exists", async () => {
-    const entries = await store.getCacheEntries();
+    const entries = await store.loadCacheEntries();
     expect(entries).toEqual([]);
 
     const snapshot = await store.getCacheSnapshot();
@@ -139,6 +139,13 @@ describe("MonitorStore", () => {
       totalSize: 0,
       totalHits: 0,
     });
+  });
+
+  it("getCacheEntries is a deprecated alias for loadCacheEntries", async () => {
+    // eslint-disable-next-line @typescript-eslint/no-deprecated
+    const aliasResult = await store.getCacheEntries();
+    const directResult = await store.loadCacheEntries();
+    expect(aliasResult).toEqual(directResult);
   });
 
   it("should no-op for cache invalidation when no monitor exists", async () => {
