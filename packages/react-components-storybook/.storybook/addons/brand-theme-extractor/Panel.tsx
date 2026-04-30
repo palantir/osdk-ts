@@ -27,6 +27,7 @@ import {
 } from "./image-loader.js";
 import { extractColorsFromImage } from "./kmeans.js";
 import { PaletteGrid } from "./PaletteGrid.js";
+import { PresetPicker } from "./PresetPicker.js";
 import { TokenMappingTable } from "./TokenMappingTable.js";
 import type {
   BrandThemeGlobals,
@@ -382,6 +383,18 @@ function PanelContent(): React.ReactElement {
     updateState({ active: !state.active });
   }, [state.active, updateState]);
 
+  const handlePresetSelect = useCallback(
+    (assignments: TokenAssignment[]) => {
+      updateState({
+        assignments,
+        active: true,
+        palette: [],
+      });
+      setExtractionOpen(false);
+    },
+    [updateState],
+  );
+
   const applyPreset = useCallback(
     (preset: StylePreset) => {
       const updated = state.assignments.filter(
@@ -410,6 +423,11 @@ function PanelContent(): React.ReactElement {
           </ToggleTrack>
         </ToggleRow>
       </HeaderRow>
+
+      {/* Theme presets — quick way to start with a curated theme */}
+      <PresetPicker onSelect={handlePresetSelect} />
+
+      <SectionDivider />
 
       {/* Collapsible extraction section */}
       <SectionToggle
