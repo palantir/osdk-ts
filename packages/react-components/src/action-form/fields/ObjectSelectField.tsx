@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeDefinition, Osdk } from "@osdk/api";
+import type { ObjectTypeDefinition, Osdk, WhereClause } from "@osdk/api";
 import { useOsdkMetadata } from "@osdk/react";
 import { useOsdkObjects } from "@osdk/react/experimental";
 import React, { memo, useCallback, useMemo, useState } from "react";
@@ -35,7 +35,7 @@ const EMPTY_ITEMS: OsdkObject[] = [];
 export const ObjectSelectField: React.NamedExoticComponent<
   ObjectSelectFieldProps
 > = memo(function ObjectSelectFieldFn({
-  objectTypeApiName,
+  objectType,
   value,
   onChange,
   error,
@@ -57,18 +57,7 @@ export const ObjectSelectField: React.NamedExoticComponent<
     [onChange],
   );
 
-  // At runtime, useOsdkObjects only reads apiName and type from the definition.
-  // The full ObjectTypeDefinition is for compile-time type safety only.
-  const objectTypeDef = useMemo(
-    () =>
-      ({
-        type: "object" as const,
-        apiName: objectTypeApiName,
-      }) as ObjectTypeDefinition,
-    [objectTypeApiName],
-  );
-
-  const { metadata } = useOsdkMetadata(objectTypeDef);
+  const { metadata } = useOsdkMetadata(objectType);
   const titleProperty = typeof metadata?.titleProperty === "string"
     ? metadata.titleProperty
     : undefined;
@@ -77,17 +66,14 @@ export const ObjectSelectField: React.NamedExoticComponent<
   // matches the same text displayed to the user via obj.$title.
   // The where clause is loosely typed because we resolve the property
   // name at runtime from metadata, not from compile-time type info.
-  const where = useMemo(() => {
+  const where: WhereClause<ObjectTypeDefinition> | undefined = useMemo(() => {
     const trimmed = debouncedQuery.trim();
     if (trimmed === "" || titleProperty == null) {
       return undefined;
     }
     return {
       [titleProperty]: { $containsAllTermsInOrder: trimmed },
-    } as Parameters<typeof useOsdkObjects>[1] extends
-      | { where?: infer W }
-      | undefined ? W
-      : never;
+    } as WhereClause<ObjectTypeDefinition>;
   }, [debouncedQuery, titleProperty]);
 
   const {
@@ -96,7 +82,7 @@ export const ObjectSelectField: React.NamedExoticComponent<
     error: fetchError,
     fetchMore,
     hasMore,
-  } = useOsdkObjects(objectTypeDef, {
+  } = useOsdkObjects(objectType, {
     where,
     pageSize: PAGE_SIZE,
   });

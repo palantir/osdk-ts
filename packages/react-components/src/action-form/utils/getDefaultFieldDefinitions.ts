@@ -64,7 +64,13 @@ function buildFieldDefinition(
           ...base,
           fieldComponent: "OBJECT_SELECT",
           fieldComponentProps: {
-            objectTypeApiName: paramType.object,
+            // Construct a minimal ObjectTypeDefinition from the action
+            // parameter metadata. At runtime useOsdkObjects only reads
+            // type + apiName from the definition.
+            objectType: {
+              type: "object" as const,
+              apiName: paramType.object,
+            },
           },
         };
       case "interface":

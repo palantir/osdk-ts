@@ -192,7 +192,7 @@ const fieldDefinitions: ReadonlyArray<RendererFieldDefinition> = [
     label: "Manager",
     placeholder: "Search for a manager…",
     fieldComponentProps: {
-      objectTypeApiName: "Employee",
+      objectType: Employee,
     },
   },
 ];

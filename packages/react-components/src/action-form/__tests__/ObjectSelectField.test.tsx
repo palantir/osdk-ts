@@ -257,12 +257,15 @@ function makeMockObject(primaryKey: number, title?: string) {
   };
 }
 
+/** Minimal ObjectTypeDefinition shape — useOsdkObjects only reads type + apiName at runtime. */
+const EMPLOYEE_TYPE = { type: "object" as const, apiName: "Employee" };
+
 function renderObjectSelect(
   overrides: Partial<Parameters<typeof ObjectSelectField>[0]> = {},
 ) {
   return render(
     <ObjectSelectField
-      objectTypeApiName="Employee"
+      objectType={EMPLOYEE_TYPE}
       value={null}
       onChange={vi.fn()}
       {...overrides}

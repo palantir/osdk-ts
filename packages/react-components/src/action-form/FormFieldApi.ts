@@ -135,7 +135,7 @@ export interface FormFieldPropsByType {
   DROPDOWN: DropdownFieldProps<unknown, boolean>;
   FILE_PICKER: FilePickerProps;
   NUMBER_INPUT: NumberInputFieldProps;
-  OBJECT_SELECT: ObjectSelectFieldProps;
+  OBJECT_SELECT: ObjectSelectFieldProps<ObjectTypeDefinition>;
   OBJECT_SET: ObjectSetFieldProps<ObjectTypeDefinition>;
   RADIO_BUTTONS: RadioButtonsFieldProps<unknown>;
   TEXT_AREA: TextAreaFieldProps;
@@ -299,13 +299,17 @@ export interface DropdownFieldProps<V, Multiple extends boolean = false>
   query?: string;
 
   /**
-   * Callback when the search input value changes. Must be provided together with `query`.
+   * Callback when the search input value changes.
+   * Can be used standalone as an event listener or together with `query`
+   * for fully controlled search state.
    */
   onQueryChange?: (query: string) => void;
 
   /**
    * When true, disables the combobox's built-in client-side filtering.
    * Use when items are already filtered server-side (e.g. via `onQueryChange`).
+   *
+   * @default false
    */
   disableClientSideFiltering?: boolean;
 
@@ -464,15 +468,17 @@ export interface ObjectSetFieldProps<T extends ObjectTypeDefinition>
 }
 
 /**
- * Object or interface select field props for selecting ontology instances.
- * Used for action parameters that accept a single object/interface or multiple.
+ * Object select field props for selecting object instances from the ontology.
+ * Used for action parameters that accept a single object or multiple objects.
  *
  * Extends DropdownFieldProps with props that ObjectSelectField
  * manages internally (items, search, filtering) omitted from the public surface.
  */
-export interface ObjectSelectFieldProps extends
+export interface ObjectSelectFieldProps<
+  Q extends ObjectTypeDefinition = ObjectTypeDefinition,
+> extends
   Omit<
-    DropdownFieldProps<Osdk.Instance<ObjectTypeDefinition>>,
+    DropdownFieldProps<Osdk.Instance<Q>>,
     | "items"
     | "itemToStringLabel"
     | "itemToKey"
@@ -485,10 +491,9 @@ export interface ObjectSelectFieldProps extends
   >
 {
   /**
-   * The API name of the object type to search within.
-   * Resolved from the action parameter metadata (e.g. "Employee").
+   * The object type definition to search within.
    */
-  objectTypeApiName: string;
+  objectType: Q;
 }
 
 /**

@@ -91,17 +91,28 @@ export const AsyncDropdownField: <V, Multiple extends boolean = false>(
       {...dropdownProps}
       isSearchable={true}
       popupStatus={popupStatus}
-      trailingItem={
-        // Adding a trailing item that will trigger a reload when it becomes visible
-        hasMore
-          ? (
-            <div key="sentinel" ref={infiniteScrollRef} role="presentation">
-              <SkeletonBar className={styles.osdkAsyncDropdownSkeleton} />
-            </div>
-          )
-          : null
-      }
+      trailingItem={hasMore
+        ? (
+          <InfiniteScrollSentinel
+            key="sentinel"
+            infiniteScrollRef={infiniteScrollRef}
+          />
+        )
+        : null}
       disableClientSideFiltering={dropdownProps.onQueryChange != null}
     />
   );
 });
+
+/** Skeleton placeholder that triggers the next page fetch when it scrolls into view. */
+function InfiniteScrollSentinel({
+  infiniteScrollRef,
+}: {
+  infiniteScrollRef: React.LegacyRef<HTMLDivElement>;
+}): React.ReactElement {
+  return (
+    <div ref={infiniteScrollRef} role="presentation">
+      <SkeletonBar className={styles.osdkAsyncDropdownSkeleton} />
+    </div>
+  );
+}
