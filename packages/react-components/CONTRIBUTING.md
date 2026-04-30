@@ -93,6 +93,10 @@ The `packages/e2e.sandbox.peopleapp` package serves as a live playground:
 
 All components follow a **layered architecture**. Understanding this pattern is required before contributing new components.
 
+### When does a component belong here?
+
+`@osdk/react-components` is for **OSDK-aware** components — components that fetch or operate on Foundry ontology data via `@osdk/react` hooks. If your component is a generic UI primitive (button, dropdown, dialog, etc.) with no OSDK awareness, it does **not** belong here. Contribute it to [BlueprintJS](https://blueprintjs.com/) instead, or to your application's local component library.
+
 ### Core Layers
 
 1. **OSDK Component Layer** (e.g., `ObjectTable`, `FilterList`)
@@ -108,16 +112,28 @@ All components follow a **layered architecture**. Understanding this pattern is 
    - Sub-components and hooks that can be composed into custom layouts
    - Example: `PdfViewerToolbar`, `PdfViewerSidebar`, `usePdfViewerState`
 
+### API Design
+
+Components in this package favour **minimum configuration**. A consumer should be able to pass one prop and get a fully-featured component. Use [`ObjectTableApi.ts`](./src/object-table/ObjectTableApi.ts) as the canonical reference.
+
+- **Aim for one required prop.** Question every required prop you add — most "required" inputs can be derived (e.g. column definitions from `objectType`) or defaulted. If you genuinely need more than one required prop, justify it based on the component type.
+- **Default `enable*` boolean flags to `true`** when the feature is part of the out-of-the-box experience (e.g. `enableOrdering`, `enableColumnPinning`).
+- **Document defaults inline** with `@default` JSDoc tags on every optional prop.
+- **Provide controlled and uncontrolled variants** where applicable — see how `ObjectTable` exposes both `defaultOrderBy` (uncontrolled) and `orderBy` + `onOrderByChanged` (controlled).
+- **Define the API in its own file:** `<Name>Api.ts` co-located with the component, exporting only the OSDK-aware outer-component props plus public sub-types (column definitions, locators, options). Base props live inline in `Base<Name>.tsx`.
+
 ### Adding a New Component
 
 1. Create a new folder under `src/` (e.g., `src/my-component/`).
-2. Start with the **Base component** — focus on interactions and styling first.
-3. Create the **OSDK wrapper** that handles data fetching and type conversion.
-4. Keep the Base component API simple using primitive types.
-5. For complex components, consider a building blocks tier with sub-components and hooks.
-6. Export the OSDK component (and optionally the Base component) from `src/public/experimental.ts`.
-7. **Update documentation** add <COMPONENT>.md to `react-components/docs`. If there were changes to CSS Variables, update `docs/CSSVariables.md`.
-8. **Update storybook** update `react-components-storybook` with examples of the new component
+2. **Define the API.** Write `<Name>Api.ts` in the new folder following the [API Design](#api-design) rules.
+
+3. Start with the **Base component** — focus on interactions and styling first.
+4. Create the **OSDK wrapper** that handles data fetching and type conversion.
+5. Keep the Base component API simple using primitive types.
+6. For complex components, consider a building blocks tier with sub-components and hooks.
+7. Export the OSDK component (and optionally the Base component) from `src/public/experimental.ts`.
+8. **Update documentation** add <COMPONENT>.md to `react-components/docs`. If there were changes to CSS Variables, update `docs/CSSVariables.md`.
+9. **Update storybook** update `react-components-storybook` with examples of the new component
 
 ### Folder Structure
 
