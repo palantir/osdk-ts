@@ -96,17 +96,11 @@ export class ObservableClientImpl implements ObservableClient {
     this.validateAction = store.validateAction.bind(store);
   }
 
-  public observeObject: <
-    T extends ObjectOrInterfaceDefinition,
-    const IncludeAllBaseProperties extends boolean = false,
-  >(
+  public observeObject: <T extends ObjectOrInterfaceDefinition>(
     apiName: T["apiName"] | T,
     pk: PrimaryKeyType<T>,
-    options: Omit<
-      ObserveObjectOptions<T, IncludeAllBaseProperties>,
-      "apiName" | "pk"
-    >,
-    subFn: Observer<ObserveObjectCallbackArgs<T, IncludeAllBaseProperties>>,
+    options: Omit<ObserveObjectOptions<T>, "apiName" | "pk">,
+    subFn: Observer<ObserveObjectCallbackArgs<T>>,
   ) => Unsubscribable = (apiName, pk, options, subFn) => {
     return this.__experimentalStore.objects.observe(
       {
@@ -122,12 +116,9 @@ export class ObservableClientImpl implements ObservableClient {
   public observeList: <
     T extends ObjectOrInterfaceDefinition,
     RDPs extends Record<string, SimplePropertyDef> = {},
-    const IncludeAllBaseProperties extends boolean = false,
   >(
-    options: ObserveListOptions<T, RDPs, IncludeAllBaseProperties>,
-    subFn: Observer<
-      ObserveObjectsCallbackArgs<T, RDPs, IncludeAllBaseProperties>
-    >,
+    options: ObserveListOptions<T, RDPs>,
+    subFn: Observer<ObserveObjectsCallbackArgs<T, RDPs>>,
   ) => Unsubscribable = (options, subFn) => {
     return this.__experimentalStore.lists.observe(
       options,
@@ -234,15 +225,13 @@ export class ObservableClientImpl implements ObservableClient {
   public observeLinks: <
     T extends ObjectOrInterfaceDefinition,
     L extends keyof CompileTimeMetadata<T>["links"] & string,
-    const IncludeAllBaseProperties extends boolean = false,
   >(
     objects: Osdk.Instance<T> | Array<Osdk.Instance<T>>,
     linkName: L,
-    options: ObserveLinks.Options<T, L, IncludeAllBaseProperties>,
+    options: ObserveLinks.Options<T, L>,
     subFn: Observer<
       ObserveLinks.CallbackArgs<
-        CompileTimeMetadata<T>["links"][L]["targetType"],
-        IncludeAllBaseProperties
+        CompileTimeMetadata<T>["links"][L]["targetType"]
       >
     >,
   ) => Unsubscribable = (objects, linkName, options, subFn) => {
@@ -423,7 +412,7 @@ function observeSingleLink(
   store: Store,
   objectsArray: ReadonlyArray<Osdk.Instance<ObjectOrInterfaceDefinition>>,
   linkName: string,
-  options: ObserveLinks.Options<ObjectOrInterfaceDefinition, string, boolean>,
+  options: ObserveLinks.Options<ObjectOrInterfaceDefinition, string>,
   observer: Observer<SpecificLinkPayload>,
 ): Unsubscribable {
   if (objectsArray.length === 0) {
@@ -472,7 +461,7 @@ function observeMultiLinks(
   store: Store,
   objectsArray: ReadonlyArray<Osdk.Instance<ObjectOrInterfaceDefinition>>,
   linkName: string,
-  options: ObserveLinks.Options<ObjectOrInterfaceDefinition, string, boolean>,
+  options: ObserveLinks.Options<ObjectOrInterfaceDefinition, string>,
   observer: Observer<SpecificLinkPayload>,
 ): Unsubscribable {
   const parentSub = new Subscription();

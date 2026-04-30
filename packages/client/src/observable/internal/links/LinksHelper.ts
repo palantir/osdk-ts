@@ -38,19 +38,19 @@ export interface LinksHelper {
     T extends ObjectOrInterfaceDefinition,
     L extends keyof CompileTimeMetadata<T>["links"] & string,
   >(
-    options: ObserveLinks.Options<T, L, boolean>,
+    options: ObserveLinks.Options<T, L>,
     subFn: Observer<SpecificLinkPayload>,
   ): QuerySubscription<SpecificLinkQuery>;
 
   getQuery<
     T extends ObjectOrInterfaceDefinition,
     L extends keyof CompileTimeMetadata<T>["links"] & string,
-  >(options: ObserveLinks.Options<T, L, boolean>): SpecificLinkQuery;
+  >(options: ObserveLinks.Options<T, L>): SpecificLinkQuery;
 }
 
 export class LinksHelper extends AbstractHelper<
   SpecificLinkQuery,
-  ObserveLinks.Options<ObjectOrInterfaceDefinition, string, boolean>
+  ObserveLinks.Options<ObjectOrInterfaceDefinition, string>
 > {
   whereCanonicalizer: WhereClauseCanonicalizer;
   orderByCanonicalizer: OrderByCanonicalizer;
@@ -73,7 +73,7 @@ export class LinksHelper extends AbstractHelper<
   getQuery<
     T extends ObjectOrInterfaceDefinition,
     L extends keyof CompileTimeMetadata<T>["links"] & string,
-  >(options: ObserveLinks.Options<T, L, boolean>): SpecificLinkQuery {
+  >(options: ObserveLinks.Options<T, L>): SpecificLinkQuery {
     const { apiName, type: sourceTypeKind } = options.srcType;
 
     const canonWhere = this.whereCanonicalizer.canonicalize(

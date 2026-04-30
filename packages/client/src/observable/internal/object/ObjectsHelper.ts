@@ -28,6 +28,7 @@ import type { Canonical } from "../Canonical.js";
 import type { QuerySubscription } from "../QuerySubscription.js";
 import type { Rdp } from "../RdpCanonicalizer.js";
 import { tombstone } from "../tombstone.js";
+import { gateBaseObjectPropertiesFlag } from "../utils/gateBaseObjectPropertiesFlag.js";
 import {
   mergeObjectFields,
   mergeSelectFields,
@@ -37,17 +38,17 @@ import { ObjectQuery } from "./ObjectQuery.js";
 
 export class ObjectsHelper extends AbstractHelper<
   ObjectQuery,
-  ObserveObjectOptions<any, boolean>
+  ObserveObjectOptions<any>
 > {
   observe<T extends ObjectOrInterfaceDefinition>(
-    options: ObserveObjectOptions<T, boolean>,
+    options: ObserveObjectOptions<T>,
     subFn: Observer<ObjectPayload>,
   ): QuerySubscription<ObjectQuery> {
     return super.observe(options, subFn);
   }
 
   getQuery<T extends ObjectOrInterfaceDefinition>(
-    options: ObserveObjectOptions<T, boolean>,
+    options: ObserveObjectOptions<T>,
     rdpConfig?: Canonical<Rdp> | null,
   ): ObjectQuery {
     const apiName = typeof options.apiName === "string"
@@ -60,17 +61,17 @@ export class ObjectsHelper extends AbstractHelper<
     } = options;
 
     const defType = getDefType(options.apiName);
-    // The flag only changes server behavior for interface queries. Drop it for
-    // object queries so they don't fragment the cache.
-    const $includeAllBaseObjectProperties = defType === "interface"
-      && options.$includeAllBaseObjectProperties;
+    const $includeAllBaseObjectProperties = gateBaseObjectPropertiesFlag(
+      defType,
+      options.$includeAllBaseObjectProperties,
+    );
 
     const objectCacheKey = this.cacheKeys.get<ObjectCacheKey>(
       "object",
       apiName,
       pk,
       rdpConfig ?? undefined,
-      $includeAllBaseObjectProperties ? true : undefined,
+      $includeAllBaseObjectProperties,
     );
 
     return this.store.queries.get(objectCacheKey, () =>

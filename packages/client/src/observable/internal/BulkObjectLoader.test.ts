@@ -324,6 +324,79 @@ describe(BulkObjectLoader, () => {
       await expect(loadPromise).resolves.toMatchObject({ $primaryKey: 1 });
       vi.useRealTimers();
     });
+
+    it("splits interface fetches into separate batches when $includeAllBaseObjectProperties differs", async () => {
+      const loader = new BulkObjectLoader(client, 25, 100);
+      vi.useFakeTimers();
+
+      const interfaceMeta: InterfaceMetadata = {
+        type: "interface",
+        implementedBy: ["Employee"],
+        links: {},
+        apiName: "FooInterface",
+        displayName: "FooInterface",
+        description: undefined,
+        properties: {},
+        rid: "ri.test",
+      };
+      const objectMeta = { primaryKeyApiName: "employeeId" } as ObjectMetadata;
+      // eslint-disable-next-line @typescript-eslint/unbound-method
+      vi.mocked(client.fetchMetadata).mockImplementation(
+        (def: { type?: string }) =>
+          Promise.resolve(
+            def.type === "interface"
+              ? interfaceMeta as ObjectMetadata
+              : objectMeta,
+          ),
+      );
+
+      const capturedArgs: Array<Record<string, unknown>> = [];
+      const captureMockSet = (data: unknown[]) => {
+        const os: ObjectSet<ObjectTypeDefinition> = {
+          where: () => os,
+          fetchPage: vi.fn((args: Record<string, unknown>) => {
+            capturedArgs.push(args);
+            return Promise.resolve({ data });
+          }),
+        } as Pick<
+          ObjectSet<ObjectTypeDefinition>,
+          "fetchPage" | "where"
+        > as ObjectSet<ObjectTypeDefinition>;
+        return os;
+      };
+
+      client.mockImplementation(() =>
+        captureMockSet([employees[0], employees[1]])
+      );
+
+      const without = loader.fetch(
+        "FooInterface",
+        0,
+        "interface",
+        undefined,
+        false,
+        undefined,
+      );
+      const withFlag = loader.fetch(
+        "FooInterface",
+        1,
+        "interface",
+        undefined,
+        false,
+        true,
+      );
+
+      vi.advanceTimersByTime(26);
+      await Promise.all([without, withFlag]);
+
+      expect(capturedArgs).toHaveLength(2);
+      const flagValues = capturedArgs
+        .map(a => a.$includeAllBaseObjectProperties)
+        .sort((a, b) => String(a).localeCompare(String(b)));
+      expect(flagValues).toEqual([true, undefined]);
+
+      vi.useRealTimers();
+    });
   });
 
   it("gates $includeAllBaseObjectProperties for object fetches: drops the flag and batches into a single fetchPage", async () => {

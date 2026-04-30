@@ -3,6 +3,4 @@
 "@osdk/client": minor
 ---
 
-expose $includeAllBaseObjectProperties on useOsdkObjects, useLinks, and useOsdkObject; when true, the returned Osdk.Instance options slot gains "$allBaseProperties" so obj.$as(ConcreteType) yields a fully-populated concrete object
-
-the observable ObserveObjectsCallbackArgs type's "$allBaseProperties" is now conditional on the new IncludeBase generic — callers that relied on the unconditional "$allBaseProperties" will need to pass the option or will see narrowed types
+expose $includeAllBaseObjectProperties on useOsdkObjects, useLinks, and useOsdkObject (and on the underlying ObservableClient observeObject/observeList/observeLinks). When set against an interface query, the server returns the underlying concrete object's full property set so obj.$as(ConcreteType) yields a fully-populated concrete object. The flag is a runtime-only option — it is dropped for non-interface queries and does not narrow the returned Osdk.Instance type.

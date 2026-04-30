@@ -14,24 +14,16 @@
  * limitations under the License.
  */
 
-// WARNING!
-// WARNING!
-// This file is used for tests that check intellisense. Editing this file by hand will likely
-// break tests that have hard coded line numbers and line offsets.
-
-import { FooInterface } from "@osdk/client.test.ontology";
-import { useOsdkObjects } from "@osdk/react/experimental";
-
-function TestComponent() {
-  const { data: withFlagData } = useOsdkObjects(FooInterface, {
-    $includeAllBaseObjectProperties: true,
-  });
-
-  const withFlagItem = withFlagData?.[0];
-
-  const { data: withoutFlagData } = useOsdkObjects(FooInterface);
-
-  const withoutFlagItem = withoutFlagData?.[0];
-
-  return null;
+/**
+ * `$includeAllBaseObjectProperties` only changes server behavior for interface
+ * fetches. For object queries the flag is a no-op, so we drop it before it
+ * reaches a cache key or the server. Callers fragment the cache by the
+ * returned value, so mapping object queries to `undefined` keeps with-flag
+ * and without-flag callers sharing the same entry.
+ */
+export function gateBaseObjectPropertiesFlag(
+  defType: "object" | "interface",
+  flag: boolean | undefined,
+): true | undefined {
+  return defType === "interface" && flag ? true : undefined;
 }
