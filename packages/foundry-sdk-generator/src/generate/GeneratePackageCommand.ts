@@ -16,6 +16,7 @@
 
 import { exit } from "process";
 import type { Arguments, Argv, CommandModule } from "yargs";
+import { logDuration, SlsLogger } from "../logging/index.js";
 import { OntologyMetadataResolver } from "../ontologyMetadata/index.js";
 import { isValidSemver } from "../utils/index.js";
 import { generatePackage } from "./betaClient/generatePackage.js";
@@ -184,67 +185,95 @@ export class GeneratePackageCommand
   public handler = async (
     args: Arguments<generatePackageCommandArgs>,
   ): Promise<void> => {
-    const { consola } = await import("consola");
-    consola.start(
-      `Generating OSDK: ${args.packageName} at version: ${args.packageVersion}`,
-    );
+    const logger = new SlsLogger();
+
     const ontologyRid = args.ontology as string;
+    const baseSafeParams = { ontologyRid, packageVersion: args.packageVersion };
+    const baseUnsafeParams = { packageName: args.packageName };
+
+    logger.info("Starting OSDK generation", {
+      params: baseSafeParams,
+      unsafeParams: baseUnsafeParams,
+    });
+
     const ontologyMetadataResolver = new OntologyMetadataResolver(
       args.authToken as string,
       args.foundryHostname as string,
     );
 
     if (!isValidSemver(args.packageVersion as string)) {
-      consola.error(
-        new Error(
-          `Invalid argument provided for packageVersion: ${args.packageVersion}, expected valid semver`,
-        ),
-      );
+      logger.error("Invalid package version", {
+        params: { packageVersion: args.packageVersion },
+      });
       exit(1);
     }
 
-    const packageInfo = await ontologyMetadataResolver.getInfoForPackages(
-      args.sdkPackages ?? new Map(),
+    const totalStart = Date.now();
+
+    const packageInfo = await logDuration(
+      logger,
+      "Loading package info",
+      () =>
+        ontologyMetadataResolver.getInfoForPackages(
+          args.sdkPackages ?? new Map(),
+        ),
+      { params: { externalSdkCount: args.sdkPackages?.size ?? 0 } },
     );
 
-    const timeStart = Date.now();
-
-    const wireOntologyDefinition = await ontologyMetadataResolver
-      .getWireOntologyDefinition(
-        ontologyRid,
-        {
-          objectTypesApiNamesToLoad: transformArrayArg(args.objectTypes),
-          actionTypesApiNamesToLoad: transformArrayArg(args.actionTypes),
-          queryTypesApiNamesToLoad: transformArrayArg(args.queryTypes),
-          interfaceTypesApiNamesToLoad: transformArrayArg(args.interfaceTypes),
-          linkTypesApiNamesToLoad: transformArrayArg(args.linkTypes),
-        },
-        packageInfo,
-        args.branch,
-      );
+    const wireOntologyDefinition = await logDuration(
+      logger,
+      "Loading ontology metadata",
+      () =>
+        ontologyMetadataResolver.getWireOntologyDefinition(
+          ontologyRid,
+          {
+            objectTypesApiNamesToLoad: transformArrayArg(args.objectTypes),
+            actionTypesApiNamesToLoad: transformArrayArg(args.actionTypes),
+            queryTypesApiNamesToLoad: transformArrayArg(args.queryTypes),
+            interfaceTypesApiNamesToLoad: transformArrayArg(
+              args.interfaceTypes,
+            ),
+            linkTypesApiNamesToLoad: transformArrayArg(args.linkTypes),
+          },
+          packageInfo,
+          args.branch,
+        ),
+      { params: { ontologyRid } },
+    );
 
     if (wireOntologyDefinition.isErr()) {
-      wireOntologyDefinition.error.forEach(err => {
-        consola.error(err);
+      logger.error("Failed loading ontology metadata", {
+        unsafeParams: { errors: wireOntologyDefinition.error },
       });
-      consola.error("Failed generating package");
       exit(1);
     }
 
-    await generatePackage(wireOntologyDefinition.value, {
-      packageName: args.packageName,
-      packageVersion: args.packageVersion,
-      outputDir: args.outputDir,
-      beta: !!args.beta,
-      ontologyJsonOnly: args.experimentalFeatures?.includes("ontologyJsonOnly")
-        ?? false,
-      packageRid: args.packageRid,
-    });
+    // Narrowing doesn't carry into the closure below, so extract here.
+    const ontologyInfo = wireOntologyDefinition.value;
 
-    const elapsedTime = Date.now() - timeStart;
-    consola.success(
-      `Finished generating package in ${(elapsedTime / 1000).toFixed(2)}s`,
+    await logDuration(
+      logger,
+      "Generating OSDK package",
+      () =>
+        generatePackage(ontologyInfo, {
+          packageName: args.packageName,
+          packageVersion: args.packageVersion,
+          outputDir: args.outputDir,
+          beta: !!args.beta,
+          ontologyJsonOnly:
+            args.experimentalFeatures?.includes("ontologyJsonOnly") ?? false,
+          packageRid: args.packageRid,
+        }, logger),
+      {
+        params: baseSafeParams,
+        unsafeParams: baseUnsafeParams,
+      },
     );
+
+    logger.info("OSDK generation complete", {
+      params: { ...baseSafeParams, totalDurationMs: Date.now() - totalStart },
+      unsafeParams: baseUnsafeParams,
+    });
     return;
   };
 }

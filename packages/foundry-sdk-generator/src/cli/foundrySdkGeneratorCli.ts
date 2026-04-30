@@ -17,10 +17,16 @@
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import { GeneratePackageCommand } from "../generate/index.js";
+import { SlsLogger } from "../logging/index.js";
+
+let crashHandlersInstalled = false;
 
 export async function cli(args: string[] = process.argv): Promise<
   Record<string, unknown> | undefined
 > {
+  const logger = new SlsLogger();
+  installCrashHandlers(logger);
+
   const base = yargs(hideBin(args))
     .command(new GeneratePackageCommand())
     .demandCommand()
@@ -33,7 +39,29 @@ export async function cli(args: string[] = process.argv): Promise<
   try {
     return await base.parseAsync();
   } catch (e) {
-    // eslint-disable-next-line no-console
-    console.log(e);
+    logger.error(
+      "OSDK generation failed",
+      undefined,
+      e instanceof Error ? e : new Error(String(e)),
+    );
+    process.exit(1);
   }
+}
+
+export function installCrashHandlers(logger: SlsLogger): void {
+  if (crashHandlersInstalled) return;
+  crashHandlersInstalled = true;
+
+  process.on("uncaughtException", (error: Error) => {
+    logger.error("Uncaught exception", undefined, error);
+    process.exit(1);
+  });
+  process.on("unhandledRejection", (reason: unknown) => {
+    logger.error(
+      "Unhandled promise rejection",
+      undefined,
+      reason instanceof Error ? reason : new Error(String(reason)),
+    );
+    process.exit(1);
+  });
 }
