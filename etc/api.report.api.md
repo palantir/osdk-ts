@@ -1395,12 +1395,6 @@ export type OsdkObject<N extends string> = {
     	readonly $primaryKey: PropertyValueWireToClient[PrimaryKeyTypes]
 };
 
-// Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
-// Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
-// Warning: (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
-// Warning: (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
 // Warning: (ae-forgotten-export) The symbol "MaybeArray" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "GetCreatePropertyValueFromWire" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "MaybeNullable" needs to be exported by the entry point index.d.ts
@@ -1417,12 +1411,6 @@ export type OsdkObjectCreatePropertyType<
 // @public
 export type OsdkObjectLinksObject<O extends ObjectOrInterfaceDefinition> = ObjectTypeLinkKeysFrom2<O> extends never ? never : { readonly [L in ObjectTypeLinkKeysFrom2<O>] : OsdkObjectLinksEntry<O, L> };
 
-// Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
-// Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
-// Warning: (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
-// Warning: (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
 // Warning: (ae-forgotten-export) The symbol "GetClientPropertyValueFromWire" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
@@ -1968,10 +1956,6 @@ export type WirePropertyTypes = BaseWirePropertyTypes | Record<string, BaseWireP
 
 // Warnings were encountered during analysis:
 //
-// src/Definitions.ts:42:52 - (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
-// src/Definitions.ts:42:52 - (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
-// src/Definitions.ts:42:52 - (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
-// src/Definitions.ts:42:52 - (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
 // src/OsdkObjectFrom.ts:273:49 - (ae-forgotten-export) The symbol "ObjectPropertySecurities" needs to be exported by the entry point index.d.ts
 // src/aggregate/AggregateOpts.ts:25:3 - (ae-forgotten-export) The symbol "UnorderedAggregationClause" needs to be exported by the entry point index.d.ts
 // src/aggregate/AggregateOpts.ts:25:3 - (ae-forgotten-export) The symbol "OrderedAggregationClause" needs to be exported by the entry point index.d.ts
