@@ -67,11 +67,17 @@ export class ObjectsHelper extends AbstractHelper<
       ? true
       : undefined;
 
+    const canonSelect = select && select.length > 0
+      ? this.store.selectCanonicalizer.canonicalize(select)
+      : undefined;
+
     const objectCacheKey = this.cacheKeys.get<ObjectCacheKey>(
       "object",
       apiName,
       pk,
       rdpConfig ?? undefined,
+      canonSelect,
+      $loadPropertySecurityMetadata ? true : undefined,
       $includeAllBaseObjectProperties,
     );
 
@@ -217,11 +223,23 @@ export class ObjectsHelper extends AbstractHelper<
       }
 
       const targetCurrentValue = batch.read(targetKey)?.value;
-      const merged = this.mergeForTarget(
-        value,
+      const targetHolder =
         targetCurrentValue && this.isObjectHolder(targetCurrentValue)
           ? targetCurrentValue
-          : undefined,
+          : undefined;
+
+      // When a partial-select fetch propagates to a sibling variant that
+      // already has its own data, preserve fields outside the source's select
+      // set so different-select variants converge to the union of fetched
+      // fields rather than clobbering each other.
+      const valueForTarget =
+        selectFields && selectFields.size > 0 && targetHolder
+          ? mergeSelectFields(value, selectFields, targetHolder)
+          : value;
+
+      const merged = this.mergeForTarget(
+        valueForTarget,
+        targetHolder,
         sourceCacheKey,
         targetKey,
       );
