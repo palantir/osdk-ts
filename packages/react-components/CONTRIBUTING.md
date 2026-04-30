@@ -34,10 +34,12 @@ Thanks for your interest in contributing to `@osdk/react-components`! This docum
 If you use [Claude Code](https://claude.com/claude-code), this package ships an opinionated `add-new-component` skill that wraps this guide.
 
 **To add a new component:**
+
 - Invoke the skill explicitly with the Skill tool: use `/add-new-component`
 - Or mention "create a component" and Claude will offer to run the skill for you
 
 The skill follows this `CONTRIBUTING.md` and adds three gates on top:
+
 1. An **API-first PR** — land the type contract (`<Name>Api.ts`) in a standalone PR before implementation
 2. A **user-supplied MVP checklist** — define "done" before writing code
 3. A **verification loop** — exercise the checklist in a real browser using Playwright to catch issues early
