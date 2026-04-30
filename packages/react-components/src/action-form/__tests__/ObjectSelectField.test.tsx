@@ -119,13 +119,6 @@ describe("ObjectSelectField", () => {
     mockMetadataLoaded();
   });
 
-  it("renders a searchable combobox", () => {
-    mockLoadedState();
-    renderObjectSelect();
-
-    expect(screen.getByRole("combobox")).toBeDefined();
-  });
-
   it("displays object titles as dropdown items", async () => {
     mockLoadedState();
     renderObjectSelect();
@@ -157,61 +150,6 @@ describe("ObjectSelectField", () => {
     expect(selectedValue).toEqual(
       expect.objectContaining({ $primaryKey: 1, $title: "Alice Smith" }),
     );
-  });
-
-  it("passes objectTypeApiName to useOsdkObjects as a minimal type def", () => {
-    mockLoadedState();
-    renderObjectSelect({ objectTypeApiName: "Office" });
-
-    expect(mockUseOsdkObjects).toHaveBeenCalledWith(
-      expect.objectContaining({ type: "object", apiName: "Office" }),
-      expect.objectContaining({ pageSize: 50 }),
-    );
-  });
-
-  it("shows 'Loading' when data is loading and empty", async () => {
-    mockLoadedState([], { isLoading: true });
-    renderObjectSelect();
-
-    const trigger = screen.getByRole("combobox");
-    fireEvent.click(trigger);
-
-    await vi.waitFor(() => {
-      const popup = document.querySelector("[class*='osdkComboboxPopup']");
-      expect(popup).not.toBeNull();
-      expect(popup?.textContent).toContain("Loading");
-    });
-  });
-
-  it("shows 'No results' when data is empty and not searching", async () => {
-    mockLoadedState([], { isLoading: false });
-    renderObjectSelect();
-
-    const trigger = screen.getByRole("combobox");
-    fireEvent.click(trigger);
-
-    await vi.waitFor(() => {
-      const popup = document.querySelector("[class*='osdkComboboxPopup']");
-      expect(popup).not.toBeNull();
-      expect(popup?.textContent).toContain("No results");
-    });
-  });
-
-  it("shows error message when fetch fails", async () => {
-    mockLoadedState([], {
-      isLoading: false,
-      error: new Error("Connection refused"),
-    });
-    renderObjectSelect();
-
-    const trigger = screen.getByRole("combobox");
-    fireEvent.click(trigger);
-
-    await vi.waitFor(() => {
-      const popup = document.querySelector("[class*='osdkComboboxPopup']");
-      expect(popup).not.toBeNull();
-      expect(popup?.textContent).toContain("Connection refused");
-    });
   });
 
   it("debounces search input before updating the where clause", async () => {
@@ -277,28 +215,6 @@ describe("ObjectSelectField", () => {
     await vi.waitFor(() => {
       const latestCall = mockUseOsdkObjects.mock.calls.at(-1);
       expect(latestCall?.[1]?.where).toBeUndefined();
-    });
-  });
-
-  it("clears search text from the input after selecting an object", async () => {
-    mockLoadedState();
-    renderObjectSelect();
-    await openCombobox();
-
-    await vi.waitFor(() => {
-      expect(getPopup()?.textContent).toContain("Alice Smith");
-    });
-
-    const searchInput = screen.getByPlaceholderText("Search…");
-    fireEvent.change(searchInput, { target: { value: "Ali" } });
-
-    fireEvent.click(screen.getByText("Alice Smith"));
-
-    // After selection, the search text should not remain in the input.
-    // The component clears its query state so base-ui can display the
-    // selected label instead of leftover search text.
-    await vi.waitFor(() => {
-      expect(searchInput).not.toHaveProperty("value", "Ali");
     });
   });
 

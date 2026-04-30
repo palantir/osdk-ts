@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { Button } from "@base-ui/react/button";
 import { CaretDown, Cross, SmallCross, Tick } from "@blueprintjs/icons";
 import React, { useCallback, useState } from "react";
 import { Combobox } from "../../base-components/combobox/Combobox.js";
@@ -285,14 +284,15 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
                       className={comboboxStyles.osdkComboboxTriggerChip}
                     >
                       {itemToStringLabel(item)}
-                      <Button
+                      <span
+                        role="button"
                         aria-label={`Remove ${itemToStringLabel(item)}`}
                         className={comboboxStyles.osdkComboboxTriggerChipRemove}
                         onMouseDown={preventTriggerOpen}
                         onClick={() => handleRemoveItem(item)}
                       >
                         <Cross size={12} />
-                      </Button>
+                      </span>
                     </span>
                   ))}
                 </div>
@@ -309,14 +309,15 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
               )}
           </div>
           {hasValue && (
-            <Button
+            <span
+              role="button"
               aria-label="Clear"
               className={comboboxStyles.osdkComboboxClear}
               onMouseDown={preventTriggerOpen}
               onClick={handleClear}
             >
               <SmallCross />
-            </Button>
+            </span>
           )}
           <Combobox.Icon>
             <CaretDown />

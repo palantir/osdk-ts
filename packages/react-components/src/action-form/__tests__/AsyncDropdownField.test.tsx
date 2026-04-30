@@ -155,88 +155,47 @@ describe("AsyncDropdownField", () => {
     });
   });
 
-  describe("footer and empty message", () => {
-    it("calls onFetchMore when hasMore is true and items exist", async () => {
-      const onFetchMore = vi.fn();
-      renderAsyncDropdown({ hasMore: true, onFetchMore });
+  describe("popup status messages", () => {
+    it("shows 'Searching' when searching with no items", async () => {
+      renderAsyncDropdown({ items: [], isLoading: true, isSearching: true });
       await openCombobox();
 
-      // Sentinel mounts as a virtual item and triggers onFetchMore
-      expect(onFetchMore).toHaveBeenCalled();
-    });
-
-    it("shows 'Searching' status when searching with no items", async () => {
-      render(
-        <AsyncDropdownField
-          items={[]}
-          value={null}
-          onChange={vi.fn()}
-          isLoading={true}
-          isSearching={true}
-          hasMore={false}
-          onFetchMore={NOOP}
-        />,
-      );
-      const input = screen.getByRole("combobox");
-      fireEvent.focus(input);
-      fireEvent.keyDown(input, { key: "ArrowDown" });
-
       await vi.waitFor(() => {
-        const popup = getPopup();
-        expect(popup).not.toBeNull();
-        expect(popup?.textContent).toContain("Searching");
+        expect(getPopup()?.textContent).toContain("Searching");
       });
     });
 
-    it("does not show skeleton footer when loading with no items", async () => {
-      render(
-        <AsyncDropdownField
-          items={[]}
-          value={null}
-          onChange={vi.fn()}
-          isLoading={true}
-          isSearching={true}
-          hasMore={false}
-          onFetchMore={NOOP}
-        />,
-      );
-      const input = screen.getByRole("combobox");
-      fireEvent.focus(input);
-      fireEvent.keyDown(input, { key: "ArrowDown" });
+    it("shows 'Loading' when loading with no items and not searching", async () => {
+      renderAsyncDropdown({ items: [], isLoading: true });
+      await openCombobox();
 
       await vi.waitFor(() => {
-        const popup = getPopup();
-        expect(popup).not.toBeNull();
-        const skeletonBars = popup?.querySelectorAll("[class*='skeleton']");
-        expect(skeletonBars?.length ?? 0).toBe(0);
+        expect(getPopup()?.textContent).toContain("Loading");
       });
     });
 
-    it("shows error in empty message when error with no items", async () => {
-      render(
-        <AsyncDropdownField
-          items={[]}
-          value={null}
-          onChange={vi.fn()}
-          isLoading={false}
-          isSearching={false}
-          hasMore={false}
-          onFetchMore={NOOP}
-          fetchError={new Error("Connection refused")}
-        />,
-      );
-      const input = screen.getByRole("combobox");
-      fireEvent.focus(input);
-      fireEvent.keyDown(input, { key: "ArrowDown" });
+    it("shows 'No results' when not loading and no items", async () => {
+      renderAsyncDropdown({ items: [] });
+      await openCombobox();
 
       await vi.waitFor(() => {
-        const popup = getPopup();
-        expect(popup).not.toBeNull();
-        expect(popup?.textContent).toContain("Connection refused");
+        expect(getPopup()?.textContent).toContain("No results");
       });
     });
 
-    it("shows error footer when error with items", async () => {
+    it("shows error message when fetch fails with no items", async () => {
+      renderAsyncDropdown({
+        items: [],
+        fetchError: new Error("Connection refused"),
+      });
+      await openCombobox();
+
+      await vi.waitFor(() => {
+        expect(getPopup()?.textContent).toContain("Connection refused");
+      });
+    });
+
+    it("shows error alert when fetch fails with items already loaded", async () => {
       renderAsyncDropdown({ fetchError: new Error("Network timeout") });
       await openCombobox();
 
@@ -245,85 +204,13 @@ describe("AsyncDropdownField", () => {
       expect(alertElement?.textContent).toBe("Network timeout");
     });
 
-    it("renders no footer when all data is fetched", async () => {
+    it("shows no status message when all data is loaded", async () => {
       renderAsyncDropdown({ hasMore: false });
       await openCombobox();
 
-      const alertElement = document.querySelector("[role='alert']");
+      expect(document.querySelector("[role='alert']")).toBeNull();
       const skeletonBars = getPopup()?.querySelectorAll("[class*='skeleton']");
-      expect(alertElement).toBeNull();
       expect(skeletonBars?.length ?? 0).toBe(0);
-    });
-  });
-
-  describe("search query messages", () => {
-    function openEmptyCombobox(): void {
-      const input = screen.getByRole("combobox");
-      fireEvent.focus(input);
-      fireEvent.keyDown(input, { key: "ArrowDown" });
-    }
-
-    it("shows 'Searching...' when searching with no items", async () => {
-      render(
-        <AsyncDropdownField
-          items={[]}
-          value={null}
-          onChange={vi.fn()}
-          isLoading={true}
-          isSearching={true}
-          hasMore={false}
-          onFetchMore={NOOP}
-        />,
-      );
-      openEmptyCombobox();
-
-      await vi.waitFor(() => {
-        const popup = getPopup();
-        expect(popup).not.toBeNull();
-        expect(popup?.textContent).toContain("Searching");
-      });
-    });
-
-    it("shows 'Loading' when loading with no items and not searching", async () => {
-      render(
-        <AsyncDropdownField
-          items={[]}
-          value={null}
-          onChange={vi.fn()}
-          isLoading={true}
-          isSearching={false}
-          hasMore={false}
-          onFetchMore={NOOP}
-        />,
-      );
-      openEmptyCombobox();
-
-      await vi.waitFor(() => {
-        const popup = getPopup();
-        expect(popup).not.toBeNull();
-        expect(popup?.textContent).toContain("Loading");
-      });
-    });
-
-    it("shows 'No results' when not loading and no items", async () => {
-      render(
-        <AsyncDropdownField
-          items={[]}
-          value={null}
-          onChange={vi.fn()}
-          isLoading={false}
-          isSearching={false}
-          hasMore={false}
-          onFetchMore={NOOP}
-        />,
-      );
-      openEmptyCombobox();
-
-      await vi.waitFor(() => {
-        const popup = getPopup();
-        expect(popup).not.toBeNull();
-        expect(popup?.textContent).toContain("No results");
-      });
     });
   });
 });

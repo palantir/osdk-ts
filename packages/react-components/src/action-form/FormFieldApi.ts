@@ -656,7 +656,6 @@ export type RendererFieldDefinition = {
 export type ValidFormFieldForPropertyType<P extends FieldDescriptorType> =
   P extends { type: "objectSet" } ? "OBJECT_SET"
     : P extends { type: "object" } ? "OBJECT_SELECT"
-    : P extends { type: "interface" } ? "OBJECT_SELECT"
     : P extends "mediaReference" | "attachment" ? "FILE_PICKER"
     : P extends "boolean" ? "RADIO_BUTTONS" | "DROPDOWN"
     : P extends "string" ? "TEXT_INPUT" | "TEXT_AREA"

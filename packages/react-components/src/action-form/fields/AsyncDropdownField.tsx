@@ -61,10 +61,6 @@ export const AsyncDropdownField: <V, Multiple extends boolean = false>(
   ...dropdownProps
 }: AsyncDropdownFieldProps<V, Multiple>): React.ReactElement {
   const itemCount = dropdownProps.items.length;
-  // Rendered in a stable slot inside the popup so the DOM structure stays
-  // stable across loading transitions and doesn't steal focus from the
-  // search input. Memoized so DropdownField (wrapped in memo) can skip
-  // re-renders when only unrelated props change.
   const popupStatus = useMemo(() => {
     if (fetchError != null) {
       return (
