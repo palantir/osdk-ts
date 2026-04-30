@@ -16,7 +16,6 @@
 
 import type {
   ActionTypeBlockDataV2,
-  ActionTypeStatus,
   MarketplaceActionTypeMetadata,
   ObjectTypeDatasource,
   ObjectTypeDatasourceDefinition,
@@ -306,12 +305,12 @@ function convertFunctionBackedAction(
       displayName: param.displayMetadata.displayName,
       type: param.type.type as ActionParameter["type"],
       validation: {
-        required: true as const,
-        defaultVisibility: "editable" as const,
+        required: true,
+        defaultVisibility: "editable",
         allowedValues: param.type.type === "objectReference"
             || param.type.type === "objectReferenceList"
           ? {
-            type: "objectQuery" as const,
+            type: "objectQuery",
             objectQuery: {
               type: "objectQuery",
               objectQuery: { objectSet: null },
@@ -325,21 +324,14 @@ function convertFunctionBackedAction(
   const functionRid = `ri.function-registry.main.function.${functionName}`;
 
   const formContentOrdering = parameterOrdering.map(p => ({
-    type: "parameterId" as const,
+    type: "parameterId",
     parameterId: p,
   }));
 
   const metadata = {
     rid: ridGenerator.generateRidForActionType(action.apiName),
-    version: "1.0",
+    version: "0.1.0",
     apiName: action.apiName,
-    notificationSettings: {
-      renderingSettings: {
-        type: "allNotificationRenderingMustSucceed" as const,
-        allNotificationRenderingMustSucceed: {},
-      },
-      redactionOverride: null,
-    },
     displayMetadata: {
       configuration: {
         defaultLayout: action.defaultFormat ?? "FORM",
@@ -356,14 +348,10 @@ function convertFunctionBackedAction(
       },
       description: action.description ?? "",
       displayName: action.displayName,
-      icon: {
-        type: "blueprint" as const,
-        blueprint: action.icon ?? { locator: "take-action", color: "#738091" },
-      },
       applyingMessage: [] as Array<{ type: string; message: string }>,
       successMessage: action.submissionMetadata?.successMessage
         ? [{
-          type: "message" as const,
+          type: "message",
           message: action.submissionMetadata.successMessage,
         }]
         : [],
@@ -377,13 +365,13 @@ function convertFunctionBackedAction(
       ? {
         type: action.status,
         [action.status]: {},
-      } as unknown as ActionTypeStatus
+      }
       : action.status,
     entities: {
       affectedObjectTypes: affectedObjectTypeIds,
-      affectedLinkTypes: [] as string[],
-      affectedInterfaceTypes: [] as string[],
-      typeGroups: [] as string[],
+      affectedLinkTypes: [],
+      affectedInterfaceTypes: [],
+      typeGroups: [],
     },
   };
 
@@ -416,12 +404,23 @@ function convertFunctionBackedAction(
         notifications: [],
         effects: null,
       },
-      metadata: metadata as MarketplaceActionTypeMetadata,
+      metadata,
     },
 
     parameterIds: {},
   };
 }
+
+const PRIMITIVE_TYPES: Record<string, Parameter["type"]> = {
+  "string": { type: "string", string: {} },
+  "boolean": { type: "boolean", boolean: {} },
+  "integer": { type: "integer", integer: {} },
+  "long": { type: "long", long: {} },
+  "double": { type: "double", double: {} },
+  "date": { type: "date", date: {} },
+  "timestamp": { type: "timestamp", timestamp: {} },
+  "attachment": { type: "attachment", attachment: {} },
+};
 
 function convertFunctionInputDataType(
   dataType: IDataType,
@@ -437,9 +436,9 @@ function convertFunctionInputDataType(
       );
       affectedObjectTypeIds.push(objectTypeId);
       return {
-        type: "objectReference" as const,
+        type: "objectReference",
         objectReference: { objectTypeId, maybeCreateObjectOption: null },
-      } as Parameter["type"];
+      };
     }
     case "objectSet": {
       invariant(
@@ -452,24 +451,12 @@ function convertFunctionInputDataType(
       );
       affectedObjectTypeIds.push(objectTypeId);
       return {
-        type: "objectSetRid" as const,
+        type: "objectSetRid",
         objectSetRid: {
           objectTypeId,
         },
-      } as unknown as Parameter["type"];
+      };
     }
-    case "string":
-    case "boolean":
-    case "integer":
-    case "long":
-    case "double":
-    case "date":
-    case "timestamp":
-    case "attachment":
-      return {
-        type: dataType.type,
-        [dataType.type]: {},
-      } as unknown as Parameter["type"];
     case "list": {
       const listData = dataType as IListDataType;
       const innerType = listData.list.elementsType;
@@ -488,22 +475,27 @@ function convertFunctionInputDataType(
         affectedObjectTypeIds,
       );
     }
-    default:
+    default: {
+      const key = dataType.type;
+      if (key in PRIMITIVE_TYPES) {
+        return PRIMITIVE_TYPES[key];
+      }
       throw new Error(
         `Unsupported function input data type for action parameter: ${dataType.type}`,
       );
+    }
   }
 }
 
-const PRIMITIVE_LIST_TYPES: Record<string, string> = {
-  string: "stringList",
-  boolean: "booleanList",
-  integer: "integerList",
-  long: "longList",
-  double: "doubleList",
-  date: "dateList",
-  timestamp: "timestampList",
-  attachment: "attachmentList",
+const PRIMITIVE_LIST_TYPES: Record<string, Parameter["type"]> = {
+  "string": { type: "stringList", stringList: {} },
+  "boolean": { type: "booleanList", booleanList: {} },
+  "integer": { type: "integerList", integerList: {} },
+  "long": { type: "longList", longList: {} },
+  "double": { type: "doubleList", doubleList: {} },
+  "date": { type: "dateList", dateList: {} },
+  "timestamp": { type: "timestampList", timestampList: {} },
+  "attachment": { type: "attachmentList", attachmentList: {} },
 };
 
 function convertFunctionInputListDataType(
@@ -519,72 +511,19 @@ function convertFunctionInputListDataType(
       );
       affectedObjectTypeIds.push(objectTypeId);
       return {
-        type: "objectReferenceList" as const,
-        objectReferenceList: { objectTypeId, maybeCreateObjectOption: null },
-      } as Parameter["type"];
+        type: "objectReferenceList",
+        objectReferenceList: { objectTypeId },
+      };
     }
     default: {
-      const listType = PRIMITIVE_LIST_TYPES[elementType.type];
-      if (listType) {
-        return {
-          type: listType,
-          [listType]: {},
-        } as unknown as Parameter["type"];
+      const key = elementType.type;
+      if (key in PRIMITIVE_LIST_TYPES) {
+        return PRIMITIVE_LIST_TYPES[key];
       }
       throw new Error(
         `Unsupported list element data type for action parameter: ${elementType.type}`,
       );
     }
-  }
-}
-
-function getDefaultRenderHintForBaseType(
-  paramType: Parameter["type"],
-): ParameterRenderHint {
-  switch (paramType.type) {
-    case "objectReference":
-    case "objectReferenceList":
-    case "interfaceReference":
-    case "interfaceReferenceList":
-      return {
-        type: "dropdown",
-        dropdown: { shouldRemoveListQueryAfterSelection: null },
-      };
-    case "boolean":
-      return { type: "checkbox", checkbox: {} };
-    case "integer":
-    case "long":
-    case "double":
-    case "decimal":
-      return { type: "numericInput", numericInput: {} };
-    case "date":
-    case "timestamp":
-      return { type: "dateTimePicker", dateTimePicker: {} };
-    case "attachment":
-      return { type: "filePicker", filePicker: {} };
-    default:
-      return { type: "textInput", textInput: {} };
-  }
-}
-
-function getDefaultAllowedValuesForBaseType(
-  paramType: Parameter["type"],
-): OntologyIrAllowedParameterValues {
-  switch (paramType.type) {
-    case "objectReference":
-    case "objectReferenceList":
-      return {
-        type: "objectQuery",
-        objectQuery: {
-          type: "objectQuery",
-          objectQuery: { objectSet: null },
-        },
-      } as unknown as OntologyIrAllowedParameterValues;
-    default:
-      return {
-        type: "noop",
-        noop: {},
-      } as unknown as OntologyIrAllowedParameterValues;
   }
 }
 
@@ -616,10 +555,6 @@ function buildActionMetadata(
     },
     description: action.description ?? "",
     displayName: action.displayName,
-    icon: {
-      type: "blueprint" as const,
-      blueprint: action.icon ?? { locator: "edit", color: "#000000" },
-    },
     applyingMessage: [] as Array<{ type: string; message: string }>,
     successMessage: action.submissionMetadata?.successMessage
       ? [{
@@ -660,7 +595,7 @@ function buildActionMetadata(
       ? {
         type: action.status,
         [action.status]: {},
-      } as unknown as ActionTypeStatus
+      }
       : action.status,
     entities: action.entities
       ? {
