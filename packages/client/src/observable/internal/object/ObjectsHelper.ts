@@ -228,17 +228,15 @@ export class ObjectsHelper extends AbstractHelper<
           ? targetCurrentValue
           : undefined;
 
-      // When a partial-select fetch propagates to a sibling variant that
-      // already has its own data, preserve fields outside the source's select
-      // set so different-select variants converge to the union of fetched
-      // fields rather than clobbering each other.
-      const valueForTarget =
-        selectFields && selectFields.size > 0 && targetHolder
-          ? mergeSelectFields(value, selectFields, targetHolder)
-          : value;
-
-      const merged = this.mergeForTarget(
-        valueForTarget,
+      // Preserve target-only fields when a partial-select fetch propagates
+      // to a sibling variant, so different-select variants converge to the
+      // union rather than clobbering each other.
+      let merged = value;
+      if (selectFields?.size && targetHolder) {
+        merged = mergeSelectFields(merged, selectFields, targetHolder);
+      }
+      merged = this.mergeForTarget(
+        merged,
         targetHolder,
         sourceCacheKey,
         targetKey,
