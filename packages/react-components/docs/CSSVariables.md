@@ -1076,7 +1076,7 @@ header, sections, prominent grid, and properties grid are tokenized.
 | `--osdk-object-view-prominent-label-size`         | `var(--osdk-typography-size-body-small)`                                      | Prominent label font size                    |
 | `--osdk-object-view-prominent-label-color`        | `var(--osdk-typography-color-muted)`                                          | Prominent label color                        |
 | `--osdk-object-view-properties-grid-columns`      | `minmax(120px, max-content) 1fr`                                              | Properties grid template columns             |
-| `--osdk-object-view-properties-row-gap`           | `var(--osdk-surface-spacing)`                                                 | Properties grid row gap                      |
+| `--osdk-object-view-properties-row-gap`           | `calc(var(--osdk-surface-spacing) * 2)`                                       | Properties grid row gap                      |
 | `--osdk-object-view-properties-column-gap`        | `calc(var(--osdk-surface-spacing) * 3)`                                       | Properties grid column gap                   |
 | `--osdk-object-view-property-label-size`          | `var(--osdk-typography-size-body-small)`                                      | Property label font size                     |
 | `--osdk-object-view-property-label-color`         | `var(--osdk-typography-color-muted)`                                          | Property label color                         |

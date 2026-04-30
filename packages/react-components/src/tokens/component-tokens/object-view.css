@@ -74,7 +74,7 @@
 
   /* ---- Properties grid ---- */
   --osdk-object-view-properties-grid-columns: minmax(120px, max-content) 1fr;
-  --osdk-object-view-properties-row-gap: var(--osdk-surface-spacing);
+  --osdk-object-view-properties-row-gap: calc(var(--osdk-surface-spacing) * 2);
   --osdk-object-view-properties-column-gap: calc(
     var(--osdk-surface-spacing) * 3
   );
