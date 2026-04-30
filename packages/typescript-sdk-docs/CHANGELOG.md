@@ -1,5 +1,11 @@
 # @osdk/typescript-sdk-docs
 
+## 0.9.0
+
+### Minor Changes
+
+- f522327: Render the object-action-parameter alternative hint as a block comment so the trailing comma the template appends after non-last entries isn't swallowed by a line comment
+
 ## 0.8.0
 
 ### Minor Changes

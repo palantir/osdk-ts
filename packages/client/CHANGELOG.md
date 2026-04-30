@@ -1,5 +1,18 @@
 # @osdk/client
 
+## 2.13.0
+
+### Minor Changes
+
+- 7b457a5: Fix function column with derived properties
+
+### Patch Changes
+
+- @osdk/api@2.13.0
+- @osdk/client.unstable@2.13.0
+- @osdk/generator-converters@2.13.0
+- @osdk/shared.test@2.11.0
+
 ## 2.12.0
 
 ### Minor Changes
