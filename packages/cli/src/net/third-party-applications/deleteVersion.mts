@@ -24,10 +24,14 @@ export async function deleteVersion(
   version: string,
 ): Promise<void> {
   const fetch = createFetch(ctx.tokenProvider);
-  const url =
-    `${ctx.foundryUrl}/api/v2/thirdPartyApplications/${thirdPartyAppRid}/website/versions/${
+  const urlObj = new URL(
+    `api/v2/thirdPartyApplications/${thirdPartyAppRid}/website/versions/${
       encodeURIComponent(version)
-    }?preview=true`;
+    }`,
+    ctx.foundryUrl,
+  );
+  urlObj.searchParams.set("preview", "true");
+  const url = urlObj.toString();
 
   await fetch(
     url,

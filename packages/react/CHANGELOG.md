@@ -1,5 +1,22 @@
 # @osdkkit/react
 
+## 0.16.0
+
+### Minor Changes
+
+- aa78c78: surface fetch errors through useOsdkObject's `error` and clear `isLoading`
+
+  When the underlying fetch fails (e.g. `PalantirApiError: Object not found`), `useOsdkObject` now returns the error through `error` and exits the loading state so consumers can render their error UI instead of waiting forever.
+
+- 7b457a5: Fix function column with derived properties
+
+## 0.15.0
+
+### Minor Changes
+
+- d9b03eb: document @osdk/client version compat and install-time error recovery in AGENTS.md
+- d8842f4: add react shape stores, result types, and entry point boilerplate
+
 ## 0.14.0
 
 ### Minor Changes

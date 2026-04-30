@@ -1,5 +1,22 @@
 # @osdk/functions-testing.experimental
 
+## 0.7.0
+
+### Minor Changes
+
+- 9e9d948: `deepEqual` (used to match stub args in `when` / `whenQuery`) now recognizes Vitest/Jest asymmetric matchers (`expect.any(...)`, `expect.anything()`, `expect.stringContaining(...)`, `expect.objectContaining(...)`, etc.). Previously matchers were compared by raw object shape and silently never matched.
+
+### Patch Changes
+
+- Updated dependencies [19b7913]
+- Updated dependencies [01fbb74]
+- Updated dependencies [91f34a9]
+- Updated dependencies [df1a4f8]
+- Updated dependencies [46a00bc]
+- Updated dependencies [267f324]
+  - @osdk/client@2.12.0
+  - @osdk/api@2.12.0
+
 ## 0.6.0
 
 ### Minor Changes

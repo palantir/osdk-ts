@@ -14,22 +14,18 @@
  * limitations under the License.
  */
 
+export type {
+  AggregateStubBuilder,
+  FetchOneStubBuilder,
+  FetchPageStubBuilder,
+  MockClient,
+  MockOsdkObjectOptions,
+  QueryStubBuilder,
+  StubBuilderFor,
+  StubClient,
+} from "./api/index.js";
+
 export { createMockAttachment } from "./mock/createMockAttachment.js";
-
-export {
-  createMockOsdkObject,
-  type MockOsdkObjectOptions,
-} from "./mock/createMockOsdkObject.js";
-
-export {
-  type AggregateStubBuilder,
-  createMockClient,
-  type FetchOneStubBuilder,
-  type FetchPageStubBuilder,
-  type MockClient,
-  type QueryStubBuilder,
-  type StubBuilderFor,
-  type StubClient,
-} from "./mock/createMockClient.js";
-
+export { createMockClient } from "./mock/createMockClient.js";
 export { createMockObjectSet } from "./mock/createMockObjectSet.js";
+export { createMockOsdkObject } from "./mock/createMockOsdkObject.js";

@@ -35,12 +35,21 @@ import type {
 import type { StaticValuesFilterDefinition } from "./types/StaticValuesTypes.js";
 
 /**
+ * Distributes LinkedPropertyFilterDefinition over each link name individually,
+ * so that LinkedQ/LinkedK/LinkedC defaults resolve correctly per link.
+ */
+type DistributeLinkedProperty<
+  Q extends ObjectTypeDefinition,
+  L extends LinkNames<Q>,
+> = L extends LinkNames<Q> ? LinkedPropertyFilterDefinition<Q, L> : never;
+
+/**
  * Union type of all filter definition types
  */
 export type FilterDefinitionUnion<Q extends ObjectTypeDefinition> =
   | PropertyFilterDefinition<Q>
   | HasLinkFilterDefinition<Q>
-  | LinkedPropertyFilterDefinition<Q, LinkNames<Q>>
+  | DistributeLinkedProperty<Q, LinkNames<Q>>
   | KeywordSearchFilterDefinition<Q>
   | CustomFilterDefinition<Q>
   | StaticValuesFilterDefinition<Q>;
@@ -48,20 +57,22 @@ export type FilterDefinitionUnion<Q extends ObjectTypeDefinition> =
 /**
  * Extract the key from a filter definition union
  */
-export type FilterKey<Q extends ObjectTypeDefinition> =
-  FilterDefinitionUnion<Q> extends infer D ? D extends { key: infer K } ? K
-    : D extends { linkName: infer L } ? L
-    : never
-    : never;
+type ExtractFilterKey<D> = D extends { key: infer K } ? K
+  : D extends { linkName: infer L } ? L
+  : never;
+
+export type FilterKey<Q extends ObjectTypeDefinition> = ExtractFilterKey<
+  FilterDefinitionUnion<Q>
+>;
 
 /**
  * Extract the filter state from a filter definition union
  */
-export type FilterState<Q extends ObjectTypeDefinition> =
-  FilterDefinitionUnion<Q> extends infer D
-    ? D extends { filterState: infer S } ? S
-    : never
-    : never;
+type ExtractFilterState<D> = D extends { filterState: infer S } ? S : never;
+
+export type FilterState<Q extends ObjectTypeDefinition> = ExtractFilterState<
+  FilterDefinitionUnion<Q>
+>;
 
 /**
  * Map from filter definition objects to their current state.

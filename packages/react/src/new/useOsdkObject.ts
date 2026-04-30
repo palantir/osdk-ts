@@ -212,7 +212,8 @@ export function useOsdkObject<
 
     return {
       object: payload?.object as Osdk.Instance<Q> | undefined,
-      isLoading: enabled
+      // Errors take precedence over loading state.
+      isLoading: enabled && error == null
         ? (payload?.status === "loading" || payload?.status === "init"
           || !payload)
         : false,

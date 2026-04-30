@@ -1,5 +1,27 @@
 # @osdk/react-components-storybook
 
+## 0.7.0
+
+### Minor Changes
+
+- 4aeb07b: ObjectTable: add `onColumnHeaderClick(columnId)` prop that fires when a user clicks on a column header (excluding the dropdown menu trigger)
+
+### Patch Changes
+
+- @osdk/faux@0.10.0
+
+## 0.6.0
+
+### Minor Changes
+
+- d40104f: Add error icon to DatePickerCell in ObjectTable
+- 5835d51: Clean up storybook mock data and update examples
+
+### Patch Changes
+
+- Updated dependencies [df1a4f8]
+  - @osdk/faux@0.9.0
+
 ## 0.5.0
 
 ### Minor Changes

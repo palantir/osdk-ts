@@ -100,6 +100,9 @@
   --osdk-datetime-input-padding: var(--osdk-surface-spacing)
     calc(var(--osdk-surface-spacing) * 3);
 
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   border-radius: var(--osdk-surface-border-radius);
 
   tr[data-focused="true"] & {
@@ -164,4 +167,8 @@
 
 .errorIcon {
   color: var(--osdk-intent-danger-rest);
+}
+
+.errorIconWrapper {
+  margin-right: calc(var(--osdk-surface-spacing) * 3);
 }

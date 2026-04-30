@@ -16,48 +16,31 @@
 
 import type {
   CompileTimeMetadata,
-  LinkedType,
-  LinkNames,
-  ObjectSet,
   ObjectTypeDefinition,
   Osdk,
+  Result,
 } from "@osdk/api";
 import invariant from "tiny-invariant";
+import type { MockOsdkObjectOptions } from "../api/MockOsdkObjectOptions.js";
 import { isMockObjectSet } from "./createMockObjectSet.js";
-
-/**
- * Options for customizing mock object creation.
- */
-export interface MockOsdkObjectOptions<
-  Q extends ObjectTypeDefinition = ObjectTypeDefinition,
-> {
-  /** Objects linked to this object by API name */
-  links?: LinkStubs<Q>;
-  /** The API name of the title property (optional, required for $title) */
-  titlePropertyApiName?: string;
-  /** Override the generated $rid */
-  $rid?: string;
-}
 
 // TODO: Add support for RDPs
 
-type LinkStubs<Q extends ObjectTypeDefinition> = {
-  [LINK_NAME in LinkNames<Q>]?:
-    CompileTimeMetadata<Q>["links"][LINK_NAME]["multiplicity"] extends true ?
-        | Array<Osdk.Instance<LinkedType<Q, LINK_NAME>>>
-        | ObjectSet<LinkedType<Q, LINK_NAME>>
-      : Osdk.Instance<LinkedType<Q, LINK_NAME>>;
-};
-
 function createSingleLinkStub<T extends ObjectTypeDefinition>(
-  linkedObject: Osdk.Instance<T>,
+  linked: Osdk.Instance<T> | Error,
 ): {
   fetchOne: () => Promise<Osdk.Instance<T>>;
-  fetchOneWithErrors: () => Promise<{ value: Osdk.Instance<T> }>;
+  fetchOneWithErrors: () => Promise<Result<Osdk.Instance<T>>>;
 } {
+  if (linked instanceof Error) {
+    return {
+      fetchOne: () => Promise.reject(linked),
+      fetchOneWithErrors: () => Promise.resolve({ error: linked }),
+    };
+  }
   return {
-    fetchOne: () => Promise.resolve(linkedObject),
-    fetchOneWithErrors: () => Promise.resolve({ value: linkedObject }),
+    fetchOne: () => Promise.resolve(linked),
+    fetchOneWithErrors: () => Promise.resolve({ value: linked }),
   };
 }
 
@@ -238,7 +221,7 @@ export function createMockOsdkObject<
           );
         } else {
           linkAccessors[linkName] = createSingleLinkStub(
-            linkValue as Osdk.Instance<ObjectTypeDefinition>,
+            linkValue as Osdk.Instance<ObjectTypeDefinition> | Error,
           );
         }
       }

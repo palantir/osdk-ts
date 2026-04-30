@@ -31,8 +31,6 @@ export function TimePicker({
 }: TimePickerProps): React.ReactElement {
   const [localValue, setLocalValue] = useState(value);
   const isFocusedRef = useRef(false);
-  const localValueRef = useRef(localValue);
-  localValueRef.current = localValue;
 
   // Sync from prop when not focused (parent changed the value externally)
   const prevValueRef = useRef(value);
@@ -49,18 +47,14 @@ export function TimePicker({
 
   const handleBlur = useCallback(() => {
     isFocusedRef.current = false;
-    onChange(localValueRef.current);
-  }, [onChange]);
-
-  const handleChange = useCallback((newValue: string) => {
-    setLocalValue(newValue);
-  }, []);
+    onChange(localValue);
+  }, [onChange, localValue]);
 
   return (
     <Input
       type="time"
       value={localValue}
-      onValueChange={handleChange}
+      onValueChange={setLocalValue}
       onFocus={handleFocus}
       onBlur={handleBlur}
       className={styles.osdkTimePickerInput}

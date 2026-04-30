@@ -19,7 +19,7 @@ import { describe, expect, it } from "vitest";
 import { outputModule } from "../bundleDependencies.js";
 import { ProjectMinifier } from "../minifyBundle.js";
 
-describe("minify project", () => {
+describe("minify project", { timeout: 30_000 }, () => {
   it("minifies a project", () => {
     const project = new Project({
       useInMemoryFileSystem: true,
