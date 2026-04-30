@@ -3897,9 +3897,6 @@ importers:
       '@rollup/plugin-node-resolve':
         specifier: 15.3.0
         version: 15.3.0(rollup@3.30.0)
-      consola:
-        specifier: 3.4.2
-        version: 3.4.2
       find-up:
         specifier: 7.0.0
         version: 7.0.0
