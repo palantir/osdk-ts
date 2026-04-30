@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,19 @@
  * limitations under the License.
  */
 
-export * from "./experimental/action-form.js";
-export * from "./experimental/context-item-pill.js";
-export * from "./experimental/filter-list.js";
-export * from "./experimental/markdown-renderer.js";
-export * from "./experimental/message-input.js";
-export * from "./experimental/message-list.js";
-export * from "./experimental/object-table.js";
-export * from "./experimental/pdf-viewer.js";
-export * from "./experimental/tiff-renderer.js";
-export * from "./experimental/typing-indicator.js";
+// MessageList
+export {
+  MessageList,
+  type MessageListProps,
+} from "../../message-list/MessageList.js";
+export type {
+  AgentMessage,
+  AgentMessagePart,
+  InProgressMessage,
+  Message,
+  MessageListRef,
+  RenderedContextItem,
+  ToolCall,
+  ToolCallResult,
+  UserMessage,
+} from "../../message-list/MessageListApi.js";

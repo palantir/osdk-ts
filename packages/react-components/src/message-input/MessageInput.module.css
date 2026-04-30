@@ -1,0 +1,86 @@
+.form {
+  border-top: var(--osdk-message-input-divider);
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--osdk-surface-spacing) * 0.5);
+  padding: calc(var(--osdk-surface-spacing) * 1.25);
+  background-color: var(--osdk-message-input-background);
+}
+
+.inputRow {
+  display: flex;
+  gap: calc(var(--osdk-surface-spacing) * 0.625);
+}
+
+.input {
+  background-color: var(--osdk-message-input-field-background);
+  border: var(--osdk-message-input-field-border);
+  border-radius: var(--osdk-surface-border-radius);
+  color: var(--osdk-typography-color-default-rest);
+  flex: 1;
+  font-family: var(--osdk-typography-family-default);
+  font-size: var(--osdk-typography-size-body-medium);
+  padding: calc(var(--osdk-surface-spacing) * 0.625)
+    calc(var(--osdk-surface-spacing) * 0.75);
+}
+
+.input:focus-visible {
+  outline: var(--osdk-focus-outline);
+  outline-offset: var(--osdk-focus-visible-outline-offset);
+}
+
+.input:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.input::placeholder {
+  color: var(--osdk-typography-color-muted);
+}
+
+.sendButton {
+  align-items: center;
+  display: inline-flex;
+  gap: calc(var(--osdk-surface-spacing) * 0.25);
+}
+
+.sendIcon,
+.configureIcon {
+  flex: 0 0 auto;
+}
+
+.actionsRow {
+  align-items: center;
+  display: flex;
+  gap: calc(var(--osdk-surface-spacing) * 0.625);
+}
+
+.attachmentTrigger {
+  align-items: center;
+  display: inline-flex;
+}
+
+.configureButton {
+  align-items: center;
+  display: inline-flex;
+  gap: calc(var(--osdk-surface-spacing) * 0.25);
+}
+
+.autoScrollLabel {
+  align-items: center;
+  color: var(--osdk-typography-color-muted);
+  cursor: pointer;
+  display: inline-flex;
+  font-size: var(--osdk-typography-size-body-small);
+  gap: calc(var(--osdk-surface-spacing) * 0.25);
+  margin-left: auto;
+}
+
+.autoScrollCheckbox {
+  cursor: pointer;
+  margin: 0;
+}
+
+.autoScrollCheckbox:disabled {
+  cursor: not-allowed;
+}

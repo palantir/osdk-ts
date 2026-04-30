@@ -43,6 +43,15 @@
       "require": "./build/cjs/public/experimental/action-form.cjs",
       "default": "./build/browser/public/experimental/action-form.js"
     },
+    "./experimental/context-item-pill": {
+      "browser": "./build/browser/public/experimental/context-item-pill.js",
+      "import": {
+        "types": "./build/types/public/experimental/context-item-pill.d.ts",
+        "default": "./build/esm/public/experimental/context-item-pill.js"
+      },
+      "require": "./build/cjs/public/experimental/context-item-pill.cjs",
+      "default": "./build/browser/public/experimental/context-item-pill.js"
+    },
     "./experimental/filter-list": {
       "browser": "./build/browser/public/experimental/filter-list.js",
       "import": {
@@ -60,6 +69,24 @@
       },
       "require": "./build/cjs/public/experimental/markdown-renderer.cjs",
       "default": "./build/browser/public/experimental/markdown-renderer.js"
+    },
+    "./experimental/message-input": {
+      "browser": "./build/browser/public/experimental/message-input.js",
+      "import": {
+        "types": "./build/types/public/experimental/message-input.d.ts",
+        "default": "./build/esm/public/experimental/message-input.js"
+      },
+      "require": "./build/cjs/public/experimental/message-input.cjs",
+      "default": "./build/browser/public/experimental/message-input.js"
+    },
+    "./experimental/message-list": {
+      "browser": "./build/browser/public/experimental/message-list.js",
+      "import": {
+        "types": "./build/types/public/experimental/message-list.d.ts",
+        "default": "./build/esm/public/experimental/message-list.js"
+      },
+      "require": "./build/cjs/public/experimental/message-list.cjs",
+      "default": "./build/browser/public/experimental/message-list.js"
     },
     "./experimental/object-table": {
       "browser": "./build/browser/public/experimental/object-table.js",
@@ -87,6 +114,15 @@
       },
       "require": "./build/cjs/public/experimental/tiff-renderer.cjs",
       "default": "./build/browser/public/experimental/tiff-renderer.js"
+    },
+    "./experimental/typing-indicator": {
+      "browser": "./build/browser/public/experimental/typing-indicator.js",
+      "import": {
+        "types": "./build/types/public/experimental/typing-indicator.d.ts",
+        "default": "./build/esm/public/experimental/typing-indicator.js"
+      },
+      "require": "./build/cjs/public/experimental/typing-indicator.cjs",
+      "default": "./build/browser/public/experimental/typing-indicator.js"
     },
     "./styles.css": "./build/browser/styles.css",
     "./*": {

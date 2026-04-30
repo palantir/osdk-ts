@@ -1,0 +1,170 @@
+.list {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--osdk-message-list-gap);
+  overflow-y: auto;
+  padding: var(--osdk-message-list-padding);
+}
+
+.message {
+  border-radius: var(--osdk-surface-border-radius);
+  max-width: var(--osdk-message-list-bubble-max-width);
+  padding: var(--osdk-message-list-bubble-padding);
+}
+
+.userMessage {
+  align-self: flex-end;
+  background-color: var(--osdk-message-list-user-bubble-background);
+  color: var(--osdk-message-list-user-bubble-color);
+}
+
+.agentMessage {
+  align-self: flex-start;
+  background-color: var(--osdk-message-list-agent-bubble-background);
+  color: var(--osdk-message-list-agent-bubble-color);
+}
+
+.messageContent {
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.errorContent {
+  color: var(--osdk-message-list-error-color);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.toolCall {
+  background-color: var(--osdk-message-list-tool-call-background);
+  border-radius: var(--osdk-surface-border-radius);
+  margin-top: var(--osdk-message-list-tool-call-spacing);
+  padding: var(--osdk-message-list-tool-call-padding);
+}
+
+.toolCallHeader {
+  align-items: center;
+  display: flex;
+  gap: calc(var(--osdk-surface-spacing) * 0.5);
+  justify-content: space-between;
+  margin-bottom: calc(var(--osdk-surface-spacing) * 0.5);
+}
+
+.toolCallName {
+  color: var(--osdk-message-list-tool-call-name-color);
+  font-weight: var(--osdk-typography-weight-bold);
+}
+
+.toolCallId {
+  color: var(--osdk-typography-color-muted);
+  font-size: var(--osdk-typography-size-body-x-small);
+  font-family: var(--osdk-message-list-monospace-family);
+}
+
+.toolCallSectionLabel {
+  color: var(--osdk-typography-color-muted);
+  font-size: var(--osdk-typography-size-body-x-small);
+  font-weight: var(--osdk-typography-weight-bold);
+  letter-spacing: 0.04em;
+  margin-top: calc(var(--osdk-surface-spacing) * 0.5);
+  text-transform: uppercase;
+}
+
+.toolCallInput {
+  background-color: var(--osdk-message-list-tool-call-code-background);
+  border-radius: var(--osdk-surface-border-radius);
+  font-family: var(--osdk-message-list-monospace-family);
+  font-size: var(--osdk-typography-size-body-small);
+  margin: calc(var(--osdk-surface-spacing) * 0.25) 0 0;
+  max-height: var(--osdk-message-list-tool-call-input-max-height);
+  overflow: auto;
+  padding: calc(var(--osdk-surface-spacing) * 0.5);
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.toolCallOutput {
+  margin-top: calc(var(--osdk-surface-spacing) * 0.5);
+}
+
+.contextItemList {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--osdk-surface-spacing) * 0.5);
+  margin-top: calc(var(--osdk-surface-spacing) * 0.5);
+}
+
+.contextItem {
+  border-left: var(--osdk-message-list-context-item-border);
+  font-size: var(--osdk-typography-size-body-small);
+  padding-left: calc(var(--osdk-surface-spacing) * 0.5);
+}
+
+.contextItemType {
+  color: var(--osdk-typography-color-muted);
+  font-size: var(--osdk-typography-size-body-x-small);
+  font-weight: var(--osdk-typography-weight-bold);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.contextItemData {
+  background-color: var(--osdk-message-list-tool-call-code-background);
+  border-radius: var(--osdk-surface-border-radius);
+  font-family: var(--osdk-message-list-monospace-family);
+  font-size: var(--osdk-typography-size-body-x-small);
+  margin: calc(var(--osdk-surface-spacing) * 0.25) 0 0;
+  max-height: var(--osdk-message-list-context-item-data-max-height);
+  overflow: auto;
+  padding: calc(var(--osdk-surface-spacing) * 0.5);
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.statusBadge {
+  align-items: center;
+  border-radius: var(--osdk-surface-border-radius);
+  display: inline-flex;
+  font-size: var(--osdk-typography-size-body-x-small);
+  font-weight: var(--osdk-typography-weight-bold);
+  gap: calc(var(--osdk-surface-spacing) * 0.25);
+  letter-spacing: 0.04em;
+  margin-top: calc(var(--osdk-surface-spacing) * 0.5);
+  padding: 2px calc(var(--osdk-surface-spacing) * 0.5);
+  text-transform: uppercase;
+}
+
+.statusBadgeResolving {
+  background-color: var(--osdk-intent-primary-rest);
+  color: var(--osdk-intent-primary-foreground);
+}
+
+.statusBadgeLoaded {
+  background-color: var(--osdk-intent-success-rest);
+  color: var(--osdk-intent-success-foreground);
+}
+
+.statusBadgeFailed {
+  background-color: var(--osdk-intent-danger-rest);
+  color: var(--osdk-intent-danger-foreground);
+}
+
+.statusBadgeMessage {
+  font-weight: var(--osdk-typography-weight-default);
+  text-transform: none;
+}
+
+.sending {
+  opacity: 0.7;
+}
+
+.failed {
+  border-left: var(--osdk-message-list-failed-border);
+}
+
+.errorIndicator {
+  color: var(--osdk-message-list-error-color);
+  font-size: var(--osdk-typography-size-body-small);
+  margin-top: calc(var(--osdk-surface-spacing) * 0.5);
+}

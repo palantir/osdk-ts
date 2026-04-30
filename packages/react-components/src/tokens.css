@@ -5,6 +5,7 @@
 @import "./tokens/component-tokens/button.css";
 @import "./tokens/component-tokens/cbac-picker.css";
 @import "./tokens/component-tokens/checkbox.css";
+@import "./tokens/component-tokens/context-item-pill.css";
 @import "./tokens/component-tokens/datetime-picker.css";
 @import "./tokens/component-tokens/dialog.css";
 @import "./tokens/component-tokens/draggable.css";
@@ -18,4 +19,7 @@
 @import "./tokens/component-tokens/table.css";
 @import "./tokens/component-tokens/timepicker.css";
 @import "./tokens/component-tokens/tooltip.css";
+@import "./tokens/component-tokens/typing-indicator.css";
 @import "./tokens/component-tokens/markdown-renderer.css";
+@import "./tokens/component-tokens/message-input.css";
+@import "./tokens/component-tokens/message-list.css";

@@ -1,0 +1,10 @@
+:root {
+  /* Typing Indicator - Visual */
+  --osdk-typing-indicator-color: var(--osdk-iconography-color-muted);
+  --osdk-typing-indicator-size: 6px;
+  --osdk-typing-indicator-gap: calc(var(--osdk-surface-spacing) * 0.25);
+
+  /* Typing Indicator - Animation */
+  --osdk-typing-indicator-bounce: 8px;
+  --osdk-typing-indicator-duration: 2s;
+}

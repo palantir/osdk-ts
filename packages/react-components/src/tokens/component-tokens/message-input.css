@@ -1,0 +1,10 @@
+:root {
+  /* Message Input - Background */
+  --osdk-message-input-background: var(--osdk-background-primary);
+  --osdk-message-input-divider: var(--osdk-surface-border-width) solid
+    var(--osdk-surface-border-color-default);
+
+  /* Message Input - Text field */
+  --osdk-message-input-field-background: var(--osdk-background-primary);
+  --osdk-message-input-field-border: var(--osdk-surface-border);
+}

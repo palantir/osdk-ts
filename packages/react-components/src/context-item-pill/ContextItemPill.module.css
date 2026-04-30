@@ -1,0 +1,53 @@
+.pill {
+  align-items: center;
+  background-color: var(--osdk-context-item-pill-background-rest);
+  border: var(--osdk-context-item-pill-border);
+  border-radius: var(--osdk-surface-border-radius);
+  color: var(--osdk-typography-color-default-rest);
+  cursor: pointer;
+  display: inline-flex;
+  font-family: inherit;
+  font-size: var(--osdk-typography-size-body-small);
+  gap: calc(var(--osdk-surface-spacing) * 0.75);
+  margin: 0;
+  padding: calc(var(--osdk-surface-spacing) * 0.5)
+    calc(var(--osdk-surface-spacing) * 0.75);
+  text-align: left;
+}
+
+.pill:hover {
+  background-color: var(--osdk-context-item-pill-background-hover);
+}
+
+.pill:focus-visible {
+  outline: var(--osdk-focus-outline);
+  outline-offset: var(--osdk-focus-visible-outline-offset);
+}
+
+.label {
+  color: var(--osdk-typography-color-default-rest);
+  font-family: var(--osdk-context-item-pill-label-font-family);
+}
+
+.secondaryText {
+  color: var(--osdk-typography-color-muted);
+}
+
+.loadedBadge {
+  background-color: var(--osdk-context-item-pill-loaded-badge-background);
+  border-radius: var(--osdk-surface-border-radius);
+  color: var(--osdk-context-item-pill-loaded-badge-color);
+  font-size: var(--osdk-context-item-pill-loaded-badge-font-size);
+  font-weight: var(--osdk-typography-weight-bold);
+  letter-spacing: 0.04em;
+  padding: 2px calc(var(--osdk-surface-spacing) * 0.5);
+  text-transform: uppercase;
+}
+
+.rawView {
+  font-family: var(--osdk-context-item-pill-raw-view-font-family);
+  font-size: var(--osdk-context-item-pill-raw-view-font-size);
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-all;
+}

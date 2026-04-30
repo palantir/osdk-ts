@@ -1,0 +1,30 @@
+:root {
+  /* Context Item Pill - Background */
+  --osdk-context-item-pill-background-rest: var(--osdk-background-secondary);
+  --osdk-context-item-pill-background-hover: var(--osdk-background-tertiary);
+  --osdk-context-item-pill-border: 0;
+
+  /* Context Item Pill - Label */
+  --osdk-context-item-pill-label-font-family: var(
+    --osdk-typography-family-monospace,
+    monospace
+  );
+
+  /* Context Item Pill - Loaded Badge */
+  --osdk-context-item-pill-loaded-badge-background: var(
+    --osdk-intent-success-rest
+  );
+  --osdk-context-item-pill-loaded-badge-color: var(
+    --osdk-intent-success-foreground
+  );
+  --osdk-context-item-pill-loaded-badge-font-size: 10px;
+
+  /* Context Item Pill - Raw View */
+  --osdk-context-item-pill-raw-view-font-family: var(
+    --osdk-typography-family-monospace,
+    monospace
+  );
+  --osdk-context-item-pill-raw-view-font-size: var(
+    --osdk-typography-size-body-x-small
+  );
+}

@@ -1,0 +1,80 @@
+.indicator {
+  color: var(--osdk-typing-indicator-color);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--osdk-typing-indicator-gap);
+  line-height: 0;
+}
+
+.dot {
+  width: var(--osdk-typing-indicator-size);
+  height: var(--osdk-typing-indicator-size);
+  border-radius: 50%;
+  background-color: currentColor;
+  display: inline-block;
+  animation-duration: var(--osdk-typing-indicator-duration);
+  animation-iteration-count: infinite;
+}
+
+.dot:nth-child(1) {
+  animation-name: bounce-1;
+}
+
+.dot:nth-child(2) {
+  animation-name: bounce-2;
+}
+
+.dot:nth-child(3) {
+  animation-name: bounce-3;
+}
+
+@keyframes bounce-1 {
+  10%,
+  30% {
+    animation-timing-function: ease-out;
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  20% {
+    animation-timing-function: ease-in;
+    opacity: 0.7;
+    transform: translateY(calc(-1 * var(--osdk-typing-indicator-bounce)));
+  }
+}
+
+@keyframes bounce-2 {
+  20%,
+  40% {
+    animation-timing-function: ease-out;
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  30% {
+    animation-timing-function: ease-in;
+    opacity: 0.7;
+    transform: translateY(calc(-1 * var(--osdk-typing-indicator-bounce)));
+  }
+}
+
+@keyframes bounce-3 {
+  30%,
+  50% {
+    animation-timing-function: ease-out;
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  40% {
+    animation-timing-function: ease-in;
+    opacity: 0.7;
+    transform: translateY(calc(-1 * var(--osdk-typing-indicator-bounce)));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dot {
+    animation: none;
+  }
+}

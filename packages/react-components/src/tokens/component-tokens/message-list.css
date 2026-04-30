@@ -1,0 +1,44 @@
+:root {
+  /* Message List - Layout */
+  --osdk-message-list-gap: calc(var(--osdk-surface-spacing) * 1.25);
+  --osdk-message-list-padding: calc(var(--osdk-surface-spacing) * 1.25);
+  --osdk-message-list-bubble-max-width: 80%;
+  --osdk-message-list-bubble-padding: calc(var(--osdk-surface-spacing) * 0.75);
+
+  /* Message List - User bubble */
+  --osdk-message-list-user-bubble-background: var(--osdk-intent-primary-rest);
+  --osdk-message-list-user-bubble-color: var(--osdk-intent-primary-foreground);
+
+  /* Message List - Agent bubble */
+  --osdk-message-list-agent-bubble-background: var(
+    --osdk-background-secondary
+  );
+  --osdk-message-list-agent-bubble-color: var(
+    --osdk-typography-color-default-rest
+  );
+
+  /* Message List - Tool calls */
+  --osdk-message-list-tool-call-background: var(--osdk-background-tertiary);
+  --osdk-message-list-tool-call-name-color: var(--osdk-intent-primary-rest);
+  --osdk-message-list-tool-call-spacing: calc(var(--osdk-surface-spacing) * 0.5);
+  --osdk-message-list-tool-call-padding: calc(var(--osdk-surface-spacing) * 0.75);
+  --osdk-message-list-tool-call-code-background: var(
+    --osdk-background-secondary
+  );
+  --osdk-message-list-tool-call-input-max-height: 240px;
+
+  /* Message List - Context items */
+  --osdk-message-list-context-item-border: 2px solid
+    var(--osdk-surface-border-color-default);
+  --osdk-message-list-context-item-data-max-height: 240px;
+
+  /* Message List - Errors */
+  --osdk-message-list-error-color: var(--osdk-intent-danger-rest);
+  --osdk-message-list-failed-border: 3px solid var(--osdk-intent-danger-rest);
+
+  /* Message List - Typography */
+  --osdk-message-list-monospace-family: var(
+    --osdk-typography-family-monospace,
+    monospace
+  );
+}
