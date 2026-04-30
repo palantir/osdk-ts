@@ -28,6 +28,7 @@ import type { SearchJsonQueryV2 } from "@osdk/foundry.ontologies";
 import { describe, expect, expectTypeOf, it } from "vitest";
 import { createMinimalClient } from "../createMinimalClient.js";
 import {
+  buildSelectV2,
   fetchPage,
   objectSetToSearchJsonV2,
   remapPropertyNames,
@@ -519,6 +520,130 @@ describe(fetchPage, () => {
       );
 
       expect(result).toEqual(["firstName", "lastName"]);
+    });
+  });
+
+  describe("buildSelectV2", () => {
+    it("returns empty array when both select and modifiers are undefined", () => {
+      const result = buildSelectV2(undefined, undefined, undefined);
+      expect(result).toEqual([]);
+    });
+
+    it("returns empty array when select is empty and modifiers is empty", () => {
+      const result = buildSelectV2([], {}, undefined);
+      expect(result).toEqual([]);
+    });
+
+    it("builds simple property entries for select without modifiers", () => {
+      const result = buildSelectV2(
+        ["firstName", "lastName"],
+        undefined,
+        undefined,
+      );
+      expect(result).toEqual([
+        { type: "property", apiName: "firstName" },
+        { type: "property", apiName: "lastName" },
+      ]);
+    });
+
+    it("builds selectV2 entry for applyMainValue modifier", () => {
+      const result = buildSelectV2(["myStruct"], {
+        myStruct: "applyMainValue",
+      }, undefined);
+
+      expect(result).toEqual([{
+        type: "propertyWithLoadLevel",
+        propertyIdentifier: { type: "property", apiName: "myStruct" },
+        loadLevel: { type: "extractMainValue" },
+      }]);
+    });
+
+    it("builds selectV2 entry for applyReducers modifier", () => {
+      const result = buildSelectV2(["scores"], {
+        scores: "applyReducers",
+      }, undefined);
+
+      expect(result).toEqual([{
+        type: "propertyWithLoadLevel",
+        propertyIdentifier: { type: "property", apiName: "scores" },
+        loadLevel: { type: "applyReducers" },
+      }]);
+    });
+
+    it("builds selectV2 entry for applyReducersAndExtractMainValue modifier", () => {
+      const result = buildSelectV2(["items"], {
+        items: "applyReducersAndExtractMainValue",
+      }, undefined);
+
+      expect(result).toEqual([{
+        type: "propertyWithLoadLevel",
+        propertyIdentifier: { type: "property", apiName: "items" },
+        loadLevel: { type: "applyReducersAndExtractMainValue" },
+      }]);
+    });
+
+    it("combines select and modifiers correctly", () => {
+      const result = buildSelectV2(["firstName", "myStruct", "scores"], {
+        myStruct: "applyMainValue",
+        scores: "applyReducers",
+      }, undefined);
+
+      expect(result).toHaveLength(3);
+      expect(result).toContainEqual({ type: "property", apiName: "firstName" });
+      expect(result).toContainEqual({
+        type: "propertyWithLoadLevel",
+        propertyIdentifier: { type: "property", apiName: "myStruct" },
+        loadLevel: { type: "extractMainValue" },
+      });
+      expect(result).toContainEqual({
+        type: "propertyWithLoadLevel",
+        propertyIdentifier: { type: "property", apiName: "scores" },
+        loadLevel: { type: "applyReducers" },
+      });
+    });
+
+    it("adds modifier properties not in select", () => {
+      const result = buildSelectV2(["firstName"], {
+        myStruct: "applyMainValue",
+      }, undefined);
+
+      expect(result).toHaveLength(2);
+      expect(result).toContainEqual({ type: "property", apiName: "firstName" });
+      expect(result).toContainEqual({
+        type: "propertyWithLoadLevel",
+        propertyIdentifier: { type: "property", apiName: "myStruct" },
+        loadLevel: { type: "extractMainValue" },
+      });
+    });
+
+    it("uses allProperties when select is not provided but modifiers are", () => {
+      const result = buildSelectV2(undefined, {
+        myStruct: "applyMainValue",
+      }, ["id", "firstName", "lastName", "myStruct"]);
+
+      expect(result).toHaveLength(4);
+      expect(result).toContainEqual({ type: "property", apiName: "id" });
+      expect(result).toContainEqual({ type: "property", apiName: "firstName" });
+      expect(result).toContainEqual({ type: "property", apiName: "lastName" });
+      expect(result).toContainEqual({
+        type: "propertyWithLoadLevel",
+        propertyIdentifier: { type: "property", apiName: "myStruct" },
+        loadLevel: { type: "extractMainValue" },
+      });
+    });
+
+    it("ignores allProperties when select is provided", () => {
+      const result = buildSelectV2(["firstName"], {
+        myStruct: "applyMainValue",
+      }, ["id", "firstName", "lastName", "myStruct"]);
+
+      expect(result).toHaveLength(2);
+      expect(result).toContainEqual({ type: "property", apiName: "firstName" });
+      expect(result).toContainEqual({
+        type: "propertyWithLoadLevel",
+        propertyIdentifier: { type: "property", apiName: "myStruct" },
+        loadLevel: { type: "extractMainValue" },
+      });
     });
   });
 });

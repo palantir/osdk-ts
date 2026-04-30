@@ -38,6 +38,10 @@ import type {
   CompileTimeMetadata,
   ObjectTypeDefinition,
 } from "../ontology/ObjectTypeDefinition.js";
+import type {
+  ApplyModifiersArg,
+  PropertyModifierValue,
+} from "../ontology/PropertyModifiers.js";
 import type { SimplePropertyDef } from "../ontology/SimplePropertyDef.js";
 import type { PrimaryKeyType } from "../OsdkBase.js";
 import type {
@@ -130,6 +134,22 @@ type Extract$Select<X extends FetchPageArgs<any, any>> = NonNullable<
   X["$select"]
 >[number];
 
+type ExtractModifiers<
+  Q extends ObjectOrInterfaceDefinition,
+  X,
+> = [X] extends [never] ? {}
+  : X extends
+    { $applyModifiers: infer M extends ApplyModifiersArg<Q, PropertyKeys<Q>> }
+    ? M
+  : {};
+
+type ModifiersToSelectStrings<M> = {
+  [K in keyof M]: K extends string
+    ? M[K] extends PropertyModifierValue ? `${K}:${M[K]}`
+    : never
+    : never;
+}[keyof M];
+
 interface FetchPage<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
@@ -194,6 +214,7 @@ interface FetchPageSignature<
     T extends boolean = false,
     ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<L> = {},
     PROPERTY_SECURITIES extends boolean = false,
+    MODIFIERS extends ApplyModifiersArg<Q, PropertyKeys<Q>> = {},
   >(
     args?: FetchPageArgs<
       Q,
@@ -204,7 +225,8 @@ interface FetchPageSignature<
       T,
       never,
       ORDER_BY_OPTIONS,
-      PROPERTY_SECURITIES
+      PROPERTY_SECURITIES,
+      MODIFIERS
     >,
   ): Promise<
     PageResult<
@@ -212,7 +234,11 @@ interface FetchPageSignature<
         Osdk.Instance<
           Q,
           ExtractOptions<R, S, T, PROPERTY_SECURITIES>,
-          NoInfer<SubSelectKeys<Q, NonNullable<typeof args>>>,
+          | Exclude<
+            NoInfer<SubSelectKeys<Q, NonNullable<typeof args>>>,
+            keyof MODIFIERS
+          >
+          | ModifiersToSelectStrings<MODIFIERS>,
           SubSelectRDPs<RDPs, NonNullable<typeof args>>
         >,
         ORDER_BY_OPTIONS
@@ -268,6 +294,7 @@ interface FetchPageWithErrorsSignature<
     S extends NullabilityAdherence = NullabilityAdherence.Default,
     T extends boolean = false,
     ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<L> = {},
+    const MODIFIERS extends ApplyModifiersArg<Q, PropertyKeys<Q>> = {},
   >(
     args?: FetchPageArgs<
       Q,
@@ -278,7 +305,8 @@ interface FetchPageWithErrorsSignature<
       T,
       never,
       ORDER_BY_OPTIONS,
-      PROPERTY_SECURITIES
+      PROPERTY_SECURITIES,
+      MODIFIERS
     >,
   ): Promise<
     Result<
@@ -287,7 +315,11 @@ interface FetchPageWithErrorsSignature<
           Osdk.Instance<
             Q,
             ExtractOptions<R, S, T, PROPERTY_SECURITIES>,
-            NoInfer<SubSelectKeys<Q, NonNullable<typeof args>>>,
+            | Exclude<
+              NoInfer<SubSelectKeys<Q, NonNullable<typeof args>>>,
+              keyof MODIFIERS
+            >
+            | ModifiersToSelectStrings<MODIFIERS>,
             SubSelectRDPs<RDPs, NonNullable<typeof args>>
           >,
           ORDER_BY_OPTIONS
@@ -320,7 +352,7 @@ interface Where<
 interface AsyncIterSignature<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
-  ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<PropertyKeys<Q>> = {},
+  _ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<PropertyKeys<Q>> = {},
   PROPERTY_SECURITIES extends boolean = false,
 > {
   /**
@@ -357,6 +389,7 @@ interface AsyncIterSignature<
     S extends NullabilityAdherence = NullabilityAdherence.Default,
     T extends boolean = false,
     ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<PropertyKeys<Q>> = {},
+    const MODIFIERS extends ApplyModifiersArg<Q, PropertyKeys<Q>> = {},
   >(
     args?: AsyncIterArgs<
       Q,
@@ -367,7 +400,8 @@ interface AsyncIterSignature<
       T,
       never,
       ORDER_BY_OPTIONS,
-      PROPERTY_SECURITIES
+      PROPERTY_SECURITIES,
+      MODIFIERS
     >,
   ): AsyncIterableIterator<
     MaybeScore<

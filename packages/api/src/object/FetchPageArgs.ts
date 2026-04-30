@@ -19,6 +19,7 @@ import type {
   PropertyKeys,
 } from "../ontology/ObjectOrInterface.js";
 import type { CompileTimeMetadata } from "../ontology/ObjectTypeDefinition.js";
+import type { ApplyModifiersArg } from "../ontology/PropertyModifiers.js";
 
 export type NullabilityAdherence = false | "throw" | "drop";
 export namespace NullabilityAdherence {
@@ -107,6 +108,7 @@ export interface FetchPageArgs<
   RDP_KEYS extends string = never,
   ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<K> = {},
   PROPERTY_SECURITIES extends boolean = false,
+  MODIFIERS extends ApplyModifiersArg<Q, PropertyKeys<Q>> = {},
 > extends
   AsyncIterArgs<
     Q,
@@ -117,11 +119,16 @@ export interface FetchPageArgs<
     T,
     RDP_KEYS,
     ORDER_BY_OPTIONS,
-    PROPERTY_SECURITIES
+    PROPERTY_SECURITIES,
+    MODIFIERS
   >
 {
   $nextPageToken?: string;
   $pageSize?: number;
+  $applyModifiers?:
+    & ApplyModifiersArg<Q, PropertyKeys<Q>>
+    & MODIFIERS
+    & { [P in Exclude<keyof MODIFIERS, PropertyKeys<Q>>]: never };
 }
 
 export interface AsyncIterArgs<
@@ -134,12 +141,17 @@ export interface AsyncIterArgs<
   RDP_KEYS extends string = never,
   ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<K> = never,
   PROPERTY_SECURITIES extends boolean = false,
+  MODIFIERS extends ApplyModifiersArg<Q, PropertyKeys<Q>> = {},
 > extends
   SelectArg<Q, K, R, S, RDP_KEYS, PROPERTY_SECURITIES>,
   OrderByArg<Q, PropertyKeys<Q> | RDP_KEYS, ORDER_BY_OPTIONS>
 {
   $__UNSTABLE_useOldInterfaceApis?: boolean;
   $includeAllBaseObjectProperties?: PropertyKeys<Q> extends K ? T : never;
+  $applyModifiers?:
+    & ApplyModifiersArg<Q, PropertyKeys<Q>>
+    & MODIFIERS
+    & { [P in Exclude<keyof MODIFIERS, PropertyKeys<Q>>]: never };
 }
 
 export type Augment<

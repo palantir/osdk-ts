@@ -249,6 +249,7 @@ export type ApplyBatchActionOptions = {
     	$returnEdits?: boolean
 };
 
+// Warning: (ae-forgotten-export) The symbol "ApplyModifiersArg" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "OrderByArg" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
@@ -261,10 +262,13 @@ export interface AsyncIterArgs<
 	T extends boolean = false,
 	RDP_KEYS extends string = never,
 	ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<K> = never,
-	PROPERTY_SECURITIES extends boolean = false
+	PROPERTY_SECURITIES extends boolean = false,
+	MODIFIERS extends ApplyModifiersArg<Q, PropertyKeys<Q>> = {}
 > extends SelectArg<Q, K, R, S, RDP_KEYS, PROPERTY_SECURITIES>, OrderByArg<Q, PropertyKeys<Q> | RDP_KEYS, ORDER_BY_OPTIONS> {
     	// (undocumented)
     $__UNSTABLE_useOldInterfaceApis?: boolean;
+    	// (undocumented)
+    $applyModifiers?: ApplyModifiersArg<Q, PropertyKeys<Q>> & MODIFIERS & { [P in Exclude<keyof MODIFIERS, PropertyKeys<Q>>] : never };
     	// (undocumented)
     $includeAllBaseObjectProperties?: PropertyKeys<Q> extends K ? T : never;
 }
@@ -638,8 +642,11 @@ export interface FetchPageArgs<
 	T extends boolean = false,
 	RDP_KEYS extends string = never,
 	ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<K> = {},
-	PROPERTY_SECURITIES extends boolean = false
-> extends AsyncIterArgs<Q, K, R, A, S, T, RDP_KEYS, ORDER_BY_OPTIONS, PROPERTY_SECURITIES> {
+	PROPERTY_SECURITIES extends boolean = false,
+	MODIFIERS extends ApplyModifiersArg<Q, PropertyKeys<Q>> = {}
+> extends AsyncIterArgs<Q, K, R, A, S, T, RDP_KEYS, ORDER_BY_OPTIONS, PROPERTY_SECURITIES, MODIFIERS> {
+    	// (undocumented)
+    $applyModifiers?: ApplyModifiersArg<Q, PropertyKeys<Q>> & MODIFIERS & { [P in Exclude<keyof MODIFIERS, PropertyKeys<Q>>] : never };
     	// (undocumented)
     $nextPageToken?: string;
     	// (undocumented)
@@ -647,6 +654,7 @@ export interface FetchPageArgs<
 }
 
 // Warning: (ae-forgotten-export) The symbol "ExtractOptions" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "ModifiersToSelectStrings_2" needs to be exported by the entry point index.d.ts
 //
 // @public
 export type FetchPageResult<
@@ -655,8 +663,9 @@ export type FetchPageResult<
 	R extends boolean,
 	S extends NullabilityAdherence,
 	T extends boolean = false,
-	ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<L> = {}
-> = PageResult<MaybeScore<Osdk.Instance<Q, ExtractOptions<R, S, T>, PropertyKeys<Q> extends L ? never : L>, ORDER_BY_OPTIONS>>;
+	ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<L> = {},
+	MODIFIERS extends ApplyModifiersArg<Q, PropertyKeys<Q>> = {}
+> = PageResult<MaybeScore<Osdk.Instance<Q, ExtractOptions<R, S, T>, Exclude<PropertyKeys<Q> extends L ? never : L, keyof MODIFIERS> | ModifiersToSelectStrings_2<MODIFIERS>, {}>, ORDER_BY_OPTIONS>>;
 
 // @public (undocumented)
 export type GeoFilter_Intersects = {
@@ -1179,6 +1188,12 @@ export namespace ObjectMetadata {
         		// (undocumented)
         displayName?: string;
         		// (undocumented)
+        hasReducers?: boolean;
+        		// (undocumented)
+        mainValue?: {
+            			fields: readonly string[]
+            		};
+        		// (undocumented)
         multiplicity?: boolean;
         		// (undocumented)
         nullable?: boolean;
@@ -1356,15 +1371,20 @@ export type Osdk<
 
 // @public (undocumented)
 export namespace Osdk {
-    	// Warning: (ae-forgotten-export) The symbol "GetPropsKeys" needs to be exported by the entry point index.d.ts
+    	// Warning: (ae-forgotten-export) The symbol "ReducedValues" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "GetPropsKeys" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "HasModifiers" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "ApplyModifiersToProps" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "BuildModifiersFromP" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "GetPropNamesFromP" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
     export type Instance<
     		Q extends ObjectOrInterfaceDefinition,
     		OPTIONS extends never | "$rid" | "$allBaseProperties" | "$propertySecurities" = never,
-    		P extends PropertyKeys<Q> = PropertyKeys<Q>,
+    		P extends PropertyKeys<Q> | ReducedValues<Q> = PropertyKeys<Q>,
     		R extends Record<string, SimplePropertyDef> = {}
-    	> = OsdkBase<Q> & Pick<CompileTimeMetadata<Q>["props"], GetPropsKeys<Q, P, [R] extends [{}] ? false : true>> & ([R] extends [never] ? {} : { [A in keyof R] : SimplePropertyDef.ToRuntimeProperty<R[A]> }) & {
+    	> = OsdkBase<Q> & ([P] extends [PropertyKeys<Q>] ? Pick<CompileTimeMetadata<Q>["props"], GetPropsKeys<Q, P, [R] extends [{}] ? false : true>> : Pick<HasModifiers<P> extends true ? ApplyModifiersToProps<Q, BuildModifiersFromP<P>> : CompileTimeMetadata<Q>["props"], GetPropsKeys<Q, GetPropNamesFromP<P>, [R] extends [{}] ? false : true>>) & ([R] extends [never] ? {} : { [A in keyof R] : SimplePropertyDef.ToRuntimeProperty<R[A]> }) & {
         		readonly $link: Q extends {
             			linksType?: any
             		} ? Q["linksType"] : Q extends ObjectOrInterfaceDefinition ? OsdkObjectLinksObject<Q> : never
@@ -1478,8 +1498,16 @@ export interface PropertyDateFormattingRule {
 export interface PropertyDef<
 	T extends WirePropertyTypes,
 	N extends "nullable" | "non-nullable" = "nullable",
-	M extends "array" | "single" = "single"
+	M extends "array" | "single" = "single",
+	MAIN_VALUE_FIELDS extends readonly string[] | undefined = undefined,
+	HAS_REDUCERS extends boolean = false
 > extends ObjectMetadata.Property {
+    	// (undocumented)
+    hasReducers: HAS_REDUCERS;
+    	// (undocumented)
+    mainValue: MAIN_VALUE_FIELDS extends readonly string[] ? {
+        		fields: MAIN_VALUE_FIELDS
+        	} : undefined;
     	// (undocumented)
     multiplicity: M extends "array" ? true : false;
     	// (undocumented)
@@ -1986,12 +2014,15 @@ export type WirePropertyTypes = BaseWirePropertyTypes | Record<string, BaseWireP
 // src/Definitions.ts:42:52 - (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
 // src/Definitions.ts:42:52 - (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
 // src/Definitions.ts:42:52 - (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
-// src/OsdkObjectFrom.ts:273:49 - (ae-forgotten-export) The symbol "ObjectPropertySecurities" needs to be exported by the entry point index.d.ts
+// src/OsdkObjectFrom.ts:315:49 - (ae-forgotten-export) The symbol "ObjectPropertySecurities" needs to be exported by the entry point index.d.ts
 // src/aggregate/AggregateOpts.ts:25:3 - (ae-forgotten-export) The symbol "UnorderedAggregationClause" needs to be exported by the entry point index.d.ts
 // src/aggregate/AggregateOpts.ts:25:3 - (ae-forgotten-export) The symbol "OrderedAggregationClause" needs to be exported by the entry point index.d.ts
 // src/aggregate/AggregationResultsWithGroups.ts:36:5 - (ae-forgotten-export) The symbol "MaybeNullable_2" needs to be exported by the entry point index.d.ts
 // src/aggregate/AggregationResultsWithGroups.ts:36:5 - (ae-forgotten-export) The symbol "OsdkObjectPropertyTypeNotUndefined" needs to be exported by the entry point index.d.ts
 // src/objectSet/ObjectSetLinks.ts:36:3 - (ae-forgotten-export) The symbol "LinkedObjectType" needs to be exported by the entry point index.d.ts
+// src/ontology/PropertyModifiers.ts:76:9 - (tsdoc-escape-greater-than) The ">" character should be escaped using a backslash to avoid confusion with an HTML tag
+// src/ontology/PropertyModifiers.ts:77:8 - (tsdoc-escape-greater-than) The ">" character should be escaped using a backslash to avoid confusion with an HTML tag
+// src/ontology/PropertyModifiers.ts:78:27 - (tsdoc-escape-greater-than) The ">" character should be escaped using a backslash to avoid confusion with an HTML tag
 
 // (No @packageDocumentation comment for this package)
 
