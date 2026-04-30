@@ -104,7 +104,7 @@ export interface ObserveObjectOptions<
 > extends ObserveOptions {
   apiName: T["apiName"] | T;
   pk: PrimaryKeyType<T>;
-  select?: PropertyKeys<T>[];
+  select?: readonly PropertyKeys<T>[];
   $loadPropertySecurityMetadata?: boolean;
 
   /**
@@ -207,7 +207,7 @@ export interface ObserveListOptions<
 export interface ObserveObjectCallbackArgs<
   T extends ObjectOrInterfaceDefinition,
 > {
-  object: Osdk.Instance<T> | undefined;
+  object: Osdk.Instance<T, "$allBaseProperties"> | undefined;
   isOptimistic: boolean;
   status: Status;
   lastUpdated: number;
@@ -381,7 +381,9 @@ export interface ObservableClient extends ObserveLinks {
   observeObject<T extends ObjectOrInterfaceDefinition>(
     apiName: T["apiName"] | T,
     pk: PrimaryKeyType<T>,
-    options: ObserveOptions,
+    options:
+      & ObserveOptions
+      & Omit<ObserveObjectOptions<T>, "apiName" | "pk">,
     subFn: Observer<ObserveObjectCallbackArgs<T>>,
   ): Unsubscribable;
 
