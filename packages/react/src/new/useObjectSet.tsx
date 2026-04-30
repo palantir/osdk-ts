@@ -25,10 +25,8 @@ import type {
   WhereClause,
 } from "@osdk/api";
 
-import {
-  getWireObjectSet,
-  type ObserveObjectSetArgs,
-} from "@osdk/client/unstable-do-not-use";
+import { getWireObjectSet } from "@osdk/client";
+import type { ObserveObjectSetArgs } from "@osdk/client/observable";
 import React from "react";
 import { extractPayloadError } from "./hookUtils.js";
 import {

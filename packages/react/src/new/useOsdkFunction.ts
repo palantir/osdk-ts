@@ -21,11 +21,11 @@ import type {
   Osdk,
   QueryDefinition,
 } from "@osdk/api";
+import { getWireObjectSet } from "@osdk/client";
 import type {
   ObserveFunctionCallbackArgs,
   QueryParameterType,
-} from "@osdk/client/unstable-do-not-use";
-import { getWireObjectSet } from "@osdk/client/unstable-do-not-use";
+} from "@osdk/client/observable";
 import React from "react";
 import { devToolsMetadata, makeExternalStore } from "./makeExternalStore.js";
 import { OsdkContext } from "./OsdkContext.js";

@@ -23,11 +23,8 @@ import type {
   SimplePropertyDef,
   WhereClause,
 } from "@osdk/api";
-import type { ObjectTypeDefinition } from "@osdk/client";
-import {
-  getWireObjectSet,
-  type ObserveAggregationArgs,
-} from "@osdk/client/unstable-do-not-use";
+import { getWireObjectSet, type ObjectTypeDefinition } from "@osdk/client";
+import type { ObserveAggregationArgs } from "@osdk/client/observable";
 import React from "react";
 import { extractPayloadError, isPayloadLoading } from "./hookUtils.js";
 import {

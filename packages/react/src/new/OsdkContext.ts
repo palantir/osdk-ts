@@ -15,7 +15,7 @@
  */
 
 import type { Client } from "@osdk/client";
-import type { ObservableClient } from "@osdk/client/unstable-do-not-use";
+import type { ObservableClient } from "@osdk/client/observable";
 import React from "react";
 
 export const MISSING_PROVIDER_MESSAGE =

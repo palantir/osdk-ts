@@ -16,7 +16,7 @@
 
 import type { ObjectTypeDefinition, Osdk, QueryDefinition } from "@osdk/api";
 import type { Client } from "@osdk/client";
-import type { ObservableClient } from "@osdk/client/unstable-do-not-use";
+import type { ObservableClient } from "@osdk/client/observable";
 import { act, renderHook } from "@testing-library/react";
 import React from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";

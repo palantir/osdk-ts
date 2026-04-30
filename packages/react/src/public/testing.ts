@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObservableClient } from "@osdk/client/unstable-do-not-use";
+import type { ObservableClient } from "@osdk/client/observable";
 
 const FAKE_OBSERVABLE_CLIENT_MESSAGE =
   "fakeObservableClient method called in a test. This stub throws on any access — pass a real ObservableClient if your test exercises observable client behavior.";

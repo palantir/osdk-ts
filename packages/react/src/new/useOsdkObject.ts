@@ -20,7 +20,7 @@ import type {
   PrimaryKeyType,
   PropertyKeys,
 } from "@osdk/api";
-import type { ObserveObjectCallbackArgs } from "@osdk/client/unstable-do-not-use";
+import type { ObserveObjectCallbackArgs } from "@osdk/client/observable";
 import React from "react";
 import { devToolsMetadata, makeExternalStore } from "./makeExternalStore.js";
 import { OsdkContext } from "./OsdkContext.js";

@@ -23,7 +23,7 @@ import { ActionValidationError } from "@osdk/client";
 import type {
   ActionSignatureFromDef,
   ObservableClient,
-} from "@osdk/client/unstable-do-not-use";
+} from "@osdk/client/observable";
 import React from "react";
 import { useDevToolsMetadata } from "./makeExternalStore.js";
 import { OsdkContext } from "./OsdkContext.js";

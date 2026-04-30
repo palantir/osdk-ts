@@ -20,7 +20,7 @@ import type {
   ObjectOrInterfaceDefinition,
 } from "@osdk/api";
 import type { Osdk, PropertyKeys, WhereClause } from "@osdk/client";
-import type { ObserveLinks } from "@osdk/client/unstable-do-not-use";
+import type { ObserveLinks } from "@osdk/client/observable";
 import React from "react";
 import { extractPayloadError, isPayloadLoading } from "./hookUtils.js";
 import { devToolsMetadata, makeExternalStore } from "./makeExternalStore.js";

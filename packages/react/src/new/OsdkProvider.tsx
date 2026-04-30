@@ -18,7 +18,7 @@ import type { Client } from "@osdk/client";
 import {
   createObservableClient,
   type ObservableClient,
-} from "@osdk/client/unstable-do-not-use";
+} from "@osdk/client/observable";
 import React, { useCallback, useMemo, useRef } from "react";
 import { getRegisteredDevTools } from "../public/devtools-registry.js";
 import { REACT_USER_AGENT } from "../util/UserAgent.js";
