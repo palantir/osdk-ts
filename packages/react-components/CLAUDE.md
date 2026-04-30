@@ -1,5 +1,9 @@
 This documentation provides guidance for developing in `@osdk/react-components`.
 
+## Adding a new component
+
+When the user asks to add, create, or scaffold a new component in this package, invoke the `add-new-component` skill. It walks through the API-first PR, MVP feature checklist, and verification loop on top of `CONTRIBUTING.md`. Do not improvise the workflow — follow the skill.
+
 ## TypeScript Best Practices
 
 - NEVER use `any` without asking the user first. If you think you need `any`, you probably don't understand the problem
