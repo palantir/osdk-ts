@@ -37,8 +37,7 @@ import type {
 } from "./types.js";
 
 /**
- * Options for {@link generateText}. Mirrors the surface of `generateText`
- * from Vercel AI SDK v5: https://ai-sdk.dev/docs/reference/ai-sdk-core/generate-text
+ * Options for {@link generateText}.
  *
  * Not every option is wired to LMS in v0; unsupported settings are surfaced
  * via `result.warnings` rather than silently ignored.
@@ -127,7 +126,7 @@ export interface PrepareStepResult<TOOLS extends ToolSet = ToolSet> {
 }
 
 /**
- * Result of {@link generateText}. Mirrors `GenerateTextResult` in Vercel AI SDK v5.
+ * Result of {@link generateText}.
  */
 export interface GenerateTextResult<TOOLS extends ToolSet = ToolSet> {
   content: Array<ContentPart<TOOLS>>;

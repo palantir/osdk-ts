@@ -120,7 +120,7 @@ interface OpenAiChatRequest {
   stream: false;
 }
 
-interface OpenAiMessage {
+export interface OpenAiMessage {
   role: "system" | "user" | "assistant" | "tool";
   content: string | Array<OpenAiContentPart> | null;
   tool_calls?: Array<OpenAiAssistantToolCall>;
@@ -129,7 +129,7 @@ interface OpenAiMessage {
 
 type OpenAiContentPart = { type: "text"; text: string };
 
-interface OpenAiTool {
+export interface OpenAiTool {
   type: "function";
   function: {
     name: string;
@@ -138,13 +138,13 @@ interface OpenAiTool {
   };
 }
 
-type OpenAiToolChoice =
+export type OpenAiToolChoice =
   | "auto"
   | "none"
   | "required"
   | { type: "function"; function: { name: string } };
 
-interface OpenAiAssistantToolCall {
+export interface OpenAiAssistantToolCall {
   id: string;
   type: "function";
   function: { name: string; arguments: string };
@@ -171,7 +171,7 @@ function buildRequestBody<TOOLS extends ToolSet>(
   };
 }
 
-function convertMessage(
+export function convertMessage(
   m: ModelMessage,
   warnings: Array<Warning>,
 ): Array<OpenAiMessage> {
@@ -271,7 +271,7 @@ function stringifyToolResult(
   }
 }
 
-function convertTools<TOOLS extends ToolSet>(
+export function convertTools<TOOLS extends ToolSet>(
   tools: TOOLS,
   warnings: Array<Warning>,
 ): Array<OpenAiTool> {
@@ -295,7 +295,7 @@ function convertTools<TOOLS extends ToolSet>(
   });
 }
 
-function convertToolChoice<TOOLS extends ToolSet>(
+export function convertToolChoice<TOOLS extends ToolSet>(
   choice: ToolChoice<TOOLS> | undefined,
 ): OpenAiToolChoice | undefined {
   if (choice == null) return undefined;
@@ -308,7 +308,7 @@ function convertToolChoice<TOOLS extends ToolSet>(
 function isJsonSchemaLike(value: unknown): boolean {
   return (
     typeof value === "object"
-    && value !== null
+    && value != null
     && (
       "type" in value
       || "properties" in value
@@ -471,7 +471,7 @@ function buildAssistantContent<TOOLS extends ToolSet>(
   return parts;
 }
 
-function mapFinishReason(reason: string): FinishReason {
+export function mapFinishReason(reason: string): FinishReason {
   switch (reason) {
     case "stop":
       return "stop";
@@ -487,7 +487,7 @@ function mapFinishReason(reason: string): FinishReason {
   }
 }
 
-function parseToolArguments(
+export function parseToolArguments(
   args: string,
   warnings: Array<Warning>,
 ): unknown {
@@ -508,7 +508,7 @@ function parseToolArguments(
 // Misc helpers
 // ---------------------------------------------------------------------------
 
-function filterHeaders(
+export function filterHeaders(
   input: Record<string, string | undefined>,
 ): Record<string, string> {
   const out: Record<string, string> = {};
@@ -518,7 +518,9 @@ function filterHeaders(
   return out;
 }
 
-async function safeReadText(res: Response): Promise<string | undefined> {
+export async function safeReadText(
+  res: Response,
+): Promise<string | undefined> {
   try {
     return await res.text();
   } catch {

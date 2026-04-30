@@ -16,6 +16,8 @@ function PeopleApp() {
     ? "filter-list"
     : path === "/form"
     ? "form"
+    : path === "/chat"
+    ? "chat"
     : "offices";
 
   useEffect(() => {
@@ -27,7 +29,7 @@ function PeopleApp() {
         prompt: "Summarise this PR.",
       });
 
-    func().then((res) => {
+    void func().then((res) => {
       console.log("zzz res", res);
     });
   }, []);
@@ -64,6 +66,13 @@ function PeopleApp() {
           onClick={() => navigate("/form")}
         >
           Form
+        </Button>
+        <Button
+          variant="tab"
+          active={activeTab === "chat"}
+          onClick={() => navigate("/chat")}
+        >
+          Chat
         </Button>
       </div>
 

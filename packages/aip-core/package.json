@@ -1,7 +1,7 @@
 {
   "name": "@osdk/aip-core",
   "version": "0.1.0",
-  "description": "Core building blocks for AIP applications: streaming chat completions, tool calling, and Vercel AI SDK adapters backed by the Foundry Language Model Service",
+  "description": "Core building blocks for the AIP SDK: streaming chat completions, tool calling, and chat transports backed by the Foundry Language Model Service",
   "access": "public",
   "license": "Apache-2.0",
   "repository": {
@@ -43,12 +43,19 @@
   },
   "peerDependencies": {
     "@osdk/client": "workspace:^",
-    "@osdk/language-models": "workspace:^"
+    "@osdk/language-models": "workspace:^",
+    "ai": "^5.0.0"
+  },
+  "peerDependenciesMeta": {
+    "ai": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@types/node": "^18.19.0",
+    "ai": "5.0.179",
     "typescript": "~5.5.4"
   },
   "publishConfig": {

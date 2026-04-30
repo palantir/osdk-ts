@@ -23,6 +23,16 @@ export type {
   StopCondition,
 } from "./generateText.js";
 
+export { streamText } from "./streamText.js";
+export type {
+  StreamTextOptions,
+  StreamTextResult,
+  TextStreamChunk,
+} from "./streamText.js";
+
+export { LmsChatTransport, lmsChatTransport } from "./lmsChatTransport.js";
+export type { LmsChatTransportOptions } from "./lmsChatTransport.js";
+
 export { foundryModel } from "./model.js";
 export type {
   Attribution,

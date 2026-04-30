@@ -15,11 +15,7 @@
  */
 
 /**
- * Shared types for `@osdk/aip-core`.
- *
- * Shapes intentionally mirror Vercel AI SDK v5 (`ai` package) so consumers
- * can swap between this package and Vercel's primitives with minimal churn.
- * https://ai-sdk.dev/docs/reference/ai-sdk-core/generate-text
+ * Shared types for the AIP SDK's chat completion primitives.
  */
 
 // ---------------------------------------------------------------------------
@@ -126,7 +122,7 @@ export type ToolResultOutput =
 // ---------------------------------------------------------------------------
 
 /**
- * Tool definition. Mirrors `ai`'s `Tool` shape.
+ * Tool definition.
  *
  * `inputSchema` is intentionally typed as `unknown` rather than a specific
  * schema library type — it can be a Zod schema, a JSON Schema object, or any

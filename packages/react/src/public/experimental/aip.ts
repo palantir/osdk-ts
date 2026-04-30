@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import { configDefaults, defineConfig } from "vitest/config";
+export type { ChatStatus } from "../../aip/chatStore.js";
+export { useChat } from "../../aip/useChat.js";
+export type {
+  SendMessageInput,
+  UseChatOptions,
+  UseChatReturn,
+} from "../../aip/useChat.js";
 
-export default defineConfig({
-  test: {
-    pool: "forks",
-    exclude: [...configDefaults.exclude, "**/build/**/*"],
-    fakeTimers: {
-      toFake: ["setTimeout", "clearTimeout", "Date"],
-    },
-  },
-});
+// Re-export the `ai` types `useChat` exposes, so consumers don't need a
+// direct dependency on the `ai` package just to type their message list.
+export type { UIMessage, UIMessageChunk } from "ai";
