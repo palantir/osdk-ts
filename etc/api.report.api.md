@@ -1526,8 +1526,6 @@ export interface PropertyNumberFormattingRule {
 // @public (undocumented)
 export type PropertyNumberFormattingRuleType = NumberFormatStandard | NumberFormatFixedValues | NumberFormatCurrency | NumberFormatStandardUnit | NumberFormatCustomUnit | NumberFormatAffix | NumberFormatDuration | NumberFormatScale | NumberFormatRatio;
 
-// Warning: (tsdoc-undefined-tag) The TSDoc tag "@discriminator" is not defined in this configuration
-//
 // @public
 export type PropertySecurity = ({
     	type: "propertyMarkings"
