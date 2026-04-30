@@ -28,7 +28,6 @@ import type { Canonical } from "../Canonical.js";
 import type { QuerySubscription } from "../QuerySubscription.js";
 import type { Rdp } from "../RdpCanonicalizer.js";
 import { tombstone } from "../tombstone.js";
-import { gateBaseObjectPropertiesFlag } from "../utils/gateBaseObjectPropertiesFlag.js";
 import {
   mergeObjectFields,
   mergeSelectFields,
@@ -61,10 +60,12 @@ export class ObjectsHelper extends AbstractHelper<
     } = options;
 
     const defType = getDefType(options.apiName);
-    const $includeAllBaseObjectProperties = gateBaseObjectPropertiesFlag(
-      defType,
-      options.$includeAllBaseObjectProperties,
-    );
+    // The flag is interface-only on the server. Drop it for object queries so
+    // they don't fragment the cache.
+    const $includeAllBaseObjectProperties = defType === "interface"
+        && options.$includeAllBaseObjectProperties
+      ? true
+      : undefined;
 
     const objectCacheKey = this.cacheKeys.get<ObjectCacheKey>(
       "object",

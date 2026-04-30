@@ -663,15 +663,6 @@ export abstract class ListQuery extends BaseListQuery<
     });
   }
 
-  /**
-   * Get cache key for object.
-   *
-   * `obj.$objectType` is always the underlying concrete object type, so the
-   * `$includeAllBaseObjectProperties` slot must be `undefined` here to match
-   * the key `ObjectsHelper.storeOsdkInstances` writes (which gates the flag
-   * to `undefined` for object defType). Constructing the key with `true`
-   * would silently produce a different key than the stored entry.
-   */
   private getObjectCacheKey(
     obj: { $objectType: string; $primaryKey: string | number },
   ): ObjectCacheKey {

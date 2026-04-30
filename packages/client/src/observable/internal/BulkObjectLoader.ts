@@ -29,7 +29,6 @@ import type {
 import type { DefType } from "../../util/interfaceUtils.js";
 import { DefaultMap } from "./collections/DefaultMap.js";
 import { DefaultWeakMap } from "./collections/DefaultWeakMap.js";
-import { gateBaseObjectPropertiesFlag } from "./utils/gateBaseObjectPropertiesFlag.js";
 
 interface InternalValue {
   primaryKey: string;
@@ -88,10 +87,12 @@ export class BulkObjectLoader {
       defType,
       select,
       loadPropertySecurityMetadata,
-      includeAllBaseObjectProperties: gateBaseObjectPropertiesFlag(
-        defType,
-        includeAllBaseObjectProperties,
-      ),
+      // The flag is interface-only on the server. Drop it for object fetches
+      // so they don't fragment batches or the cache.
+      includeAllBaseObjectProperties:
+        defType === "interface" && includeAllBaseObjectProperties
+          ? true
+          : undefined,
     };
 
     const deferred = pDefer<ObjectHolder>();

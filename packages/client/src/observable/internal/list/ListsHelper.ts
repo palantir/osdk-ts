@@ -29,7 +29,6 @@ import type { RdpCanonicalizer } from "../RdpCanonicalizer.js";
 import type { RidListCanonicalizer } from "../RidListCanonicalizer.js";
 import type { SelectCanonicalizer } from "../SelectCanonicalizer.js";
 import type { Store } from "../Store.js";
-import { gateBaseObjectPropertiesFlag } from "../utils/gateBaseObjectPropertiesFlag.js";
 import type { WhereClauseCanonicalizer } from "../WhereClauseCanonicalizer.js";
 import { InterfaceListQuery } from "./InterfaceListQuery.js";
 import type { ListCacheKey } from "./ListCacheKey.js";
@@ -117,10 +116,12 @@ export class ListsHelper extends AbstractHelper<
       $loadPropertySecurityMetadata,
     } = options;
     const { apiName, type } = typeDefinition;
-    const $includeAllBaseObjectProperties = gateBaseObjectPropertiesFlag(
-      type,
-      options.$includeAllBaseObjectProperties,
-    );
+    // The flag is interface-only on the server. Drop it for object queries so
+    // they don't fragment the cache.
+    const $includeAllBaseObjectProperties =
+      type === "interface" && options.$includeAllBaseObjectProperties
+        ? true
+        : undefined;
 
     const canonWhere = this.whereCanonicalizer.canonicalize(where ?? {});
     const canonOrderBy = this.orderByCanonicalizer.canonicalize(orderBy ?? {});
