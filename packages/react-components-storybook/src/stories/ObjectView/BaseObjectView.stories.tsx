@@ -132,7 +132,7 @@ export const Loading: Story = {
   },
 };
 
-export const Error: Story = {
+export const ErrorState: Story = {
   args: {
     error: new Error("Network request failed: timeout"),
   },
