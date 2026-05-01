@@ -475,6 +475,50 @@ describe("useChat", () => {
       );
       expect(result.current.messages).toHaveLength(2);
     });
+
+    it("is a no-op while a stream is in flight", async () => {
+      const m = createMockTransport();
+      const { result } = renderHook(() =>
+        useChat({ transport: m.transport, experimental_throttle: 0 })
+      );
+
+      await act(async () => {
+        void result.current.sendMessage({ text: "hi" });
+        await Promise.resolve();
+      });
+      const submittedMessages = result.current.messages;
+      expect(result.current.status).toBe("submitted");
+
+      act(() => result.current.setMessages([]));
+      expect(result.current.messages).toEqual(submittedMessages);
+
+      const sendArgs = m.sendCalls()[0];
+      assertDefined(sendArgs, "sendCalls()[0]");
+      const { messageId: assistantId } = sendArgs;
+      assertDefined(assistantId, "sendArgs.messageId");
+      await act(async () => {
+        m.push({
+          type: "text-delta",
+          id: `${assistantId}-text-0`,
+          delta: "hi",
+        });
+        await Promise.resolve();
+      });
+      expect(result.current.status).toBe("streaming");
+
+      act(() => result.current.setMessages([]));
+      expect(result.current.messages.length).toBeGreaterThan(0);
+
+      await act(async () => {
+        m.finish();
+        await Promise.resolve();
+        await Promise.resolve();
+      });
+      expect(result.current.status).toBe("ready");
+
+      act(() => result.current.setMessages([]));
+      expect(result.current.messages).toEqual([]);
+    });
   });
 
   describe("resumeStream", () => {

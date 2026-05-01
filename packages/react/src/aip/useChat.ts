@@ -81,6 +81,7 @@ export interface UseChatOptions {
 export interface UseChatReturn {
   id: string;
   messages: ReadonlyArray<UIMessage>;
+  /** No-op while a stream is in flight (`status === "streaming" | "submitted"`). Call `stop()` first to mutate during a stream. */
   setMessages: (
     messages:
       | ReadonlyArray<UIMessage>
@@ -201,10 +202,8 @@ export function useChat(options: UseChatOptions): UseChatReturn {
   );
 
   const abortRef = React.useRef<AbortController | undefined>(undefined);
+  const stoppedRef = React.useRef<boolean>(false);
 
-  // Drain a stream into the store. Race-guarded by `capturedCtrl`: if a newer
-  // sendMessage/regenerate replaces `abortRef.current`, this drain bails
-  // instead of clobbering the new request's status.
   const drainStream = React.useCallback(async (
     stream: ReadableStream<UIMessageChunk>,
     assistantMessageId: string,
@@ -214,9 +213,6 @@ export function useChat(options: UseChatOptions): UseChatReturn {
     let assistantAdded = false;
     let textBuf = "";
 
-    // Stale ONLY when a newer request has replaced our controller. After
-    // `stop()`, abortRef.current is undefined — that's still our drain's
-    // responsibility to reset to "ready", not a supersession.
     const isStale = (): boolean =>
       abortRef.current != null && abortRef.current !== capturedCtrl;
 
@@ -271,17 +267,12 @@ export function useChat(options: UseChatOptions): UseChatReturn {
             }));
           }
         } else if (value.type === "error") {
-          // If the user asked us to stop, the error chunk is just the abort
-          // bubbling up — don't promote to an error state.
-          if (capturedCtrl.signal.aborted) {
+          if (stoppedRef.current || capturedCtrl.signal.aborted) {
             return;
           }
           await reader.cancel();
           throw new Error(value.errorText);
         }
-        // start / start-step / text-start / text-end / finish-step / finish:
-        // no state changes — message insertion is driven off text-delta and
-        // status transitions to "ready" on stream end.
       }
       if (isStale()) {
         return;
@@ -304,7 +295,11 @@ export function useChat(options: UseChatOptions): UseChatReturn {
       if (isStale()) {
         return;
       }
-      if (error.name === "AbortError" || capturedCtrl.signal.aborted) {
+      if (
+        stoppedRef.current
+        || error.name === "AbortError"
+        || capturedCtrl.signal.aborted
+      ) {
         store.setState(
           (prev) => ({ ...prev, status: "ready", error: undefined }),
           { force: true },
@@ -319,11 +314,7 @@ export function useChat(options: UseChatOptions): UseChatReturn {
         onError(error);
       }
     } finally {
-      try {
-        reader.releaseLock();
-      } catch {
-        // already released
-      }
+      reader.releaseLock();
     }
   }, [store, onFinish, onError]);
 
@@ -334,6 +325,7 @@ export function useChat(options: UseChatOptions): UseChatReturn {
     abortRef.current?.abort();
     const ctrl = new AbortController();
     abortRef.current = ctrl;
+    stoppedRef.current = false;
 
     const assistantId = generateChatId();
     try {
@@ -347,13 +339,14 @@ export function useChat(options: UseChatOptions): UseChatReturn {
       await drainStream(stream, assistantId, ctrl);
     } catch (err) {
       const error = err instanceof Error ? err : new Error(String(err));
-      // Stale supersession: another sendMessage took over; don't touch state.
-      // (`abortRef.current === undefined` means stop() was called — still our
-      // responsibility to reset to "ready" below.)
       if (abortRef.current != null && abortRef.current !== ctrl) {
         return;
       }
-      if (error.name === "AbortError" || ctrl.signal.aborted) {
+      if (
+        stoppedRef.current
+        || error.name === "AbortError"
+        || ctrl.signal.aborted
+      ) {
         store.setState(
           (prev) => ({ ...prev, status: "ready", error: undefined }),
           { force: true },
@@ -416,6 +409,7 @@ export function useChat(options: UseChatOptions): UseChatReturn {
   );
 
   const stop = React.useCallback((): void => {
+    stoppedRef.current = true;
     abortRef.current?.abort();
     abortRef.current = undefined;
   }, []);
@@ -451,10 +445,15 @@ export function useChat(options: UseChatOptions): UseChatReturn {
         | ((prev: ReadonlyArray<UIMessage>) => ReadonlyArray<UIMessage>),
     ): void => {
       store.setState(
-        (prev) => ({
-          ...prev,
-          messages: typeof next === "function" ? next(prev.messages) : next,
-        }),
+        (prev) => {
+          if (prev.status === "streaming" || prev.status === "submitted") {
+            return prev;
+          }
+          return {
+            ...prev,
+            messages: typeof next === "function" ? next(prev.messages) : next,
+          };
+        },
         { force: true },
       );
     },

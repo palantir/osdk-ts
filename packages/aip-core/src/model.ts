@@ -17,15 +17,6 @@
 import type { PlatformClient } from "@osdk/client";
 
 /**
- * Attribution payload forwarded to the Foundry Language Model Service for
- * billing and rate limiting. Maps onto LMS's `IAttribution`.
- */
-export type Attribution =
-  | { type: "user"; user: string }
-  | { type: "project"; projectRid: string }
-  | { type: "service"; serviceUserToken: string };
-
-/**
  * Identifies a model in the Foundry Language Model Service.
  *
  * - `lmsModel`: a built-in LMS model addressed by `apiName` (e.g. "gpt-4o")
@@ -35,16 +26,7 @@ export type ModelIdentifier =
   | { type: "lmsModel"; apiName: string }
   | { type: "registeredModel"; registeredModelRid: string };
 
-export type RequestPriority = "CRITICAL" | "INTERACTIVE" | "BATCH";
-
-/**
- * Opaque language model handle accepted by `generateText` / `streamText`.
- *
- * Construct one via {@link foundryModel}. The handle deliberately exposes only
- * informational fields — the actual client + identifier + attribution are
- * stashed in a module-private WeakMap so they cannot be tampered with by
- * consumers.
- */
+/** Opaque language model handle accepted by `generateText` / `streamText`. */
 export interface LanguageModel {
   /** Stable identifier for logging / telemetry, e.g. "foundry/gpt-4o". */
   readonly modelId: string;
@@ -57,28 +39,12 @@ export interface FoundryModelOptions {
   client: PlatformClient;
   /** LMS model API name or registered model RID. */
   model: string | ModelIdentifier;
-  /**
-   * Attribution forwarded to LMS for billing. Defaults to the PlatformClient's
-   * own bearer token, attributed to the calling user.
-   */
-  attribution?: Attribution;
-  /**
-   * Default request priority forwarded to LMS. Defaults to `CRITICAL` to
-   * match interactive chat workloads.
-   */
-  defaultPriority?: RequestPriority;
 }
 
-/**
- * Internal handle stashed alongside a {@link LanguageModel}. Not part of the
- * public API — accessed only by `internal/runStep.ts` via
- * {@link _getFoundryInternal}.
- */
+/** @internal */
 export interface FoundryInternalHandle {
   client: PlatformClient;
   identifier: ModelIdentifier;
-  attribution: Attribution | undefined;
-  priority: RequestPriority;
 }
 
 const internals: WeakMap<LanguageModel, FoundryInternalHandle> = new WeakMap();
@@ -114,8 +80,6 @@ export function foundryModel(options: FoundryModelOptions): LanguageModel {
   internals.set(handle, {
     client: options.client,
     identifier,
-    attribution: options.attribution,
-    priority: options.defaultPriority ?? "CRITICAL",
   });
 
   return handle;

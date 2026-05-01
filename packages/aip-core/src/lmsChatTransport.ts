@@ -87,8 +87,8 @@ export class LmsChatTransport implements ChatTransport<UIMessage> {
     const assistantId = args.messageId ?? generateMessageId();
     const textPartId = `${assistantId}-text-0`;
     const reasoningPartId = `${assistantId}-reasoning-0`;
-    let textStarted = false;
-    let reasoningStarted = false;
+    let textOpen = false;
+    let reasoningOpen = false;
     let startEmitted = false;
 
     return result.fullStream.pipeThrough(
@@ -99,19 +99,34 @@ export class LmsChatTransport implements ChatTransport<UIMessage> {
             controller.enqueue({ type: "start", messageId: assistantId });
             controller.enqueue({ type: "start-step" });
           }
+          const ensureTextOpen = (): void => {
+            if (!textOpen) {
+              textOpen = true;
+              controller.enqueue({ type: "text-start", id: textPartId });
+            }
+          };
+          const closeText = (): void => {
+            if (textOpen) {
+              textOpen = false;
+              controller.enqueue({ type: "text-end", id: textPartId });
+            }
+          };
+          const closeReasoning = (): void => {
+            if (reasoningOpen) {
+              reasoningOpen = false;
+              controller.enqueue({
+                type: "reasoning-end",
+                id: reasoningPartId,
+              });
+            }
+          };
           switch (chunk.type) {
             case "text-start": {
-              if (!textStarted) {
-                textStarted = true;
-                controller.enqueue({ type: "text-start", id: textPartId });
-              }
+              ensureTextOpen();
               return;
             }
             case "text-delta": {
-              if (!textStarted) {
-                textStarted = true;
-                controller.enqueue({ type: "text-start", id: textPartId });
-              }
+              ensureTextOpen();
               controller.enqueue({
                 type: "text-delta",
                 id: textPartId,
@@ -120,14 +135,12 @@ export class LmsChatTransport implements ChatTransport<UIMessage> {
               return;
             }
             case "text-end": {
-              if (textStarted) {
-                controller.enqueue({ type: "text-end", id: textPartId });
-              }
+              closeText();
               return;
             }
             case "reasoning-delta": {
-              if (!reasoningStarted) {
-                reasoningStarted = true;
+              if (!reasoningOpen) {
+                reasoningOpen = true;
                 controller.enqueue({
                   type: "reasoning-start",
                   id: reasoningPartId,
@@ -141,8 +154,6 @@ export class LmsChatTransport implements ChatTransport<UIMessage> {
               return;
             }
             case "tool-call": {
-              // v0: forward to UI but consumers receive it raw — useChat does
-              // not auto-execute. Emitted as `tool-input-available`.
               controller.enqueue({
                 type: "tool-input-available",
                 toolCallId: chunk.toolCallId,
@@ -152,12 +163,8 @@ export class LmsChatTransport implements ChatTransport<UIMessage> {
               return;
             }
             case "finish": {
-              if (reasoningStarted) {
-                controller.enqueue({
-                  type: "reasoning-end",
-                  id: reasoningPartId,
-                });
-              }
+              closeText();
+              closeReasoning();
               controller.enqueue({ type: "finish-step" });
               controller.enqueue({
                 type: "finish",
@@ -169,6 +176,8 @@ export class LmsChatTransport implements ChatTransport<UIMessage> {
               return;
             }
             case "error": {
+              closeText();
+              closeReasoning();
               controller.enqueue({
                 type: "error",
                 errorText: chunk.error.message,

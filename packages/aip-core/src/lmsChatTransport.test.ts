@@ -244,6 +244,7 @@ describe("LmsChatTransport", () => {
       "start-step",
       "text-start",
       "text-delta",
+      "text-end",
       "finish-step",
       "finish",
     ]);
@@ -270,6 +271,37 @@ describe("LmsChatTransport", () => {
       throw new Error("expected an error chunk to be emitted");
     }
     expect(err.errorText).toBe("boom");
+  });
+
+  it("closes open text and reasoning parts before the error chunk", async () => {
+    streamTextMock.mockReturnValue(
+      fakeStreamTextResult([
+        { type: "text-delta", id: "text-0", delta: "partial" },
+        { type: "reasoning-delta", id: "r-0", delta: "thinking" },
+        { type: "error", error: new Error("boom") },
+      ]),
+    );
+    const t = new LmsChatTransport({ model: fakeModel() });
+
+    const stream = await t.sendMessages({
+      trigger: "submit-message",
+      chatId: "c1",
+      messageId: "asst-1",
+      messages: [uiMsg("user", "hi")],
+      abortSignal: undefined,
+    });
+    const types = (await collect(stream)).map((c) => c.type);
+    expect(types).toEqual([
+      "start",
+      "start-step",
+      "text-start",
+      "text-delta",
+      "reasoning-start",
+      "reasoning-delta",
+      "text-end",
+      "reasoning-end",
+      "error",
+    ]);
   });
 
   it("propagates abortSignal through to streamText", async () => {

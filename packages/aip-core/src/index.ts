@@ -35,7 +35,6 @@ export type { LmsChatTransportOptions } from "./lmsChatTransport.js";
 
 export { foundryModel } from "./model.js";
 export type {
-  Attribution,
   FoundryModelOptions,
   LanguageModel,
   ModelIdentifier,
