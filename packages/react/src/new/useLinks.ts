@@ -80,11 +80,13 @@ export interface UseLinksOptions<
    *
    * @default true
    * @example
+   * ```tsx
    * // Dependent query - wait for employee data
    * const { object: employee } = useOsdkObject(Employee, employeeId);
    * const { links: reports } = useLinks(employee, "reports", {
-   *   enabled: !!employee
+   *   enabled: !!employee,
    * });
+   * ```
    */
   enabled?: boolean;
 }
