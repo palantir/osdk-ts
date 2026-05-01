@@ -15,6 +15,7 @@
  */
 
 export interface Attachment {
+  /** The attachment RID, identifying this attachment within Foundry. */
   rid: string;
   /**
    * Fetches metadata for an attachment

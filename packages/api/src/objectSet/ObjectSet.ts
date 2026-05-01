@@ -240,7 +240,6 @@ interface NearestNeighbors<Q extends ObjectOrInterfaceDefinition> {
    * @returns An object set containing the `numNeighbors` nearest neighbors. To return the objects ordered by relevance and each
    * objects associated score, specify "relevance" in the orderBy.
    */
-
   readonly nearestNeighbors: (
     query: string | number[],
     numNeighbors: number,
@@ -727,7 +726,7 @@ interface AsyncIterLinks<Q extends ObjectOrInterfaceDefinition> {
    *   const { source, target, linkType } of venturesObjectSet
    *     .experimental_asyncIterLinks(["employees"])
    * ) {
-   *   // Build object graph using source, target, and linkType
+   *   graph.addEdge(source, target, linkType);
    * }
    * ```
    * @returns an async iterator that yields directed link instances pairing each source object with its linked target

@@ -111,7 +111,7 @@ type Filterable<
    * @param clause - A filter clause applied to the builder's current object set
    * @example
    * ```ts
-   * client(Employee).withProperties({
+   * await client(Employee).withProperties({
    *   activeReportCount: (baseObjectSet) =>
    *     baseObjectSet.pivotTo("reports")
    *       .where({ status: { $eq: "active" } })
@@ -134,7 +134,7 @@ type Pivotable<
    * @param type - The linked object type's link api name
    * @example
    * ```ts
-   * client(Employee).withProperties({
+   * await client(Employee).withProperties({
    *   leadName: (baseObjectSet) =>
    *     baseObjectSet.pivotTo("lead").selectProperty("fullName"),
    * }).fetchPage();
@@ -198,7 +198,7 @@ type Aggregatable<
    *   `approximatePercentile` accepts `{ percentile }`. Not accepted for other aggregations.
    * @example
    * ```ts
-   * client(Employee).withProperties({
+   * await client(Employee).withProperties({
    *   reportCount: (baseObjectSet) =>
    *     baseObjectSet.pivotTo("reports").aggregate("$count"),
    *   p95Salary: (baseObjectSet) =>
@@ -259,7 +259,7 @@ type Selectable<Q extends ObjectOrInterfaceDefinition> = {
    * @param propertyName - The api name of the property to expose
    * @example
    * ```ts
-   * client(Employee).withProperties({
+   * await client(Employee).withProperties({
    *   leadName: (baseObjectSet) =>
    *     baseObjectSet.pivotTo("lead").selectProperty("fullName"),
    * }).fetchPage();

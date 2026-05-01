@@ -15,11 +15,17 @@
  */
 
 export interface Logger {
+  /** Emits a log line at the `trace` level. See {@link Logger.LogFn}. */
   trace: Logger.LogFn;
+  /** Emits a log line at the `debug` level. See {@link Logger.LogFn}. */
   debug: Logger.LogFn;
+  /** Emits a log line at the `fatal` level. See {@link Logger.LogFn}. */
   fatal: Logger.LogFn;
+  /** Emits a log line at the `error` level. See {@link Logger.LogFn}. */
   error: Logger.LogFn;
+  /** Emits a log line at the `warn` level. See {@link Logger.LogFn}. */
   warn: Logger.LogFn;
+  /** Emits a log line at the `info` level. See {@link Logger.LogFn}. */
   info: Logger.LogFn;
 
   /**
@@ -29,7 +35,7 @@ export interface Logger {
    * @example
    * ```ts
    * if (logger.isLevelEnabled("debug")) {
-   *   logger.debug({ payload: serialize(data) }, "expensive debug payload");
+   *   logger.debug({ payload: JSON.stringify(data) }, "expensive debug payload");
    * }
    * ```
    * @returns `true` if log calls at the given level will be emitted

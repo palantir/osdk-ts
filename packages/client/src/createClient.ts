@@ -363,21 +363,28 @@ export function createClientFromContext(clientCtx: MinimalClient) {
  * @param ontologyRid - The ontology RID to scope the client to. May be provided directly or as a `Promise`
  *   that resolves to the RID. Typically the generated `$ontologyRid` export from your generated SDK is passed here.
  * @param tokenProvider - A function returning a `Promise` that resolves to a bearer token used to authenticate
- *   requests. Invoked when the SDK needs a bearer token; implementers are responsible for caching and refresh.
+ *   requests. Typically the OAuth client returned by `createPublicOauthClient` or `createConfidentialOauthClient`
+ *   from `@osdk/oauth`, which handles caching and refresh; you can also provide a custom function if you
+ *   manage tokens yourself.
  * @param options - Optional client configuration: a custom `logger`, an experimental `UNSTABLE_DO_NOT_USE_BRANCH`
  *   for branch-aware requests, and additional `headers` to include on every request.
  * @param fetchFn - An optional `fetch` implementation to use for all requests. Defaults to the global `fetch`.
  * @example
  * ```ts
  * import { createClient, type Client } from "@osdk/client";
+ * import { createPublicOauthClient } from "@osdk/oauth";
  * import { $ontologyRid } from "./generatedNoCheck/index.js";
  *
- * const getToken = () => Promise.resolve("<bearer token>");
+ * const auth = createPublicOauthClient(
+ *   "<your-client-id>",
+ *   "https://example.palantirfoundry.com",
+ *   `${window.location.origin}/auth/callback`,
+ * );
  *
  * export const client: Client = createClient(
  *   "https://example.palantirfoundry.com",
  *   $ontologyRid,
- *   getToken,
+ *   auth,
  * );
  * ```
  * @returns a {@link Client} configured to talk to the given Foundry stack and ontology
@@ -413,9 +420,14 @@ export const createClient: (
  * @example
  * ```ts
  * import { createClientWithTransaction } from "@osdk/client/unstable-do-not-use";
+ * import { createConfidentialOauthClient } from "@osdk/oauth";
  * import { $ontologyRid } from "./generatedNoCheck/index.js";
  *
- * const getToken = () => Promise.resolve("<bearer token>");
+ * const auth = createConfidentialOauthClient(
+ *   process.env.FOUNDRY_CLIENT_ID!,
+ *   process.env.FOUNDRY_CLIENT_SECRET!,
+ *   "https://example.palantirfoundry.com",
+ * );
  *
  * const client = createClientWithTransaction(
  *   "ri.transaction.main.transaction.0000",
@@ -424,7 +436,7 @@ export const createClient: (
  *   },
  *   "https://example.palantirfoundry.com",
  *   $ontologyRid,
- *   getToken,
+ *   auth,
  * );
  * ```
  * @returns a {@link Client} that forwards the supplied `transactionId` on every request
