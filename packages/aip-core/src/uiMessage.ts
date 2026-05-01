@@ -17,7 +17,7 @@
 /**
  * UI-level message and stream-chunk shapes for the AIP SDK's chat
  * primitives. Describes the wire format that transports produce and UI
- * consumers read — a thin local subset of the Vercel AI SDK v5 UI types
+ * consumers read — a thin local subset of the AI SDK v5 UI types
  * covering the v0 text-only surface.
  */
 

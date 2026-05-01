@@ -13,6 +13,7 @@
   "dependencies": {
     "@osdk/api": "workspace:~",
     "@osdk/client": "workspace:~",
+    "@osdk/client.unstable": "workspace:~",
     "@osdk/oauth": "workspace:~",
     "@osdk/react": "workspace:~",
     "@osdk/react-components": "workspace:~",
