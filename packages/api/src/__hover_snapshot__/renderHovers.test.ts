@@ -27,11 +27,21 @@ const here = path.dirname(fileURLToPath(import.meta.url));
 const probesPath = path.resolve(here, "probes.ts");
 const tsconfigPath = path.resolve(here, "../../tsconfig.json");
 
-interface RawProbes {
-  [name: string]: string;
+interface Probe {
+  // The TypeScript expression a user could write to get this hover, taken
+  // verbatim from the type annotation in `probes.ts`. Embedded as a comment
+  // in the snapshot so reviewers see what each rendered type corresponds to.
+  source: string;
+  // The type rendered by `checker.typeToString`, with absolute import paths
+  // scrubbed so the snapshot is identical across machines.
+  rendered: string;
 }
 
-function renderProbes(): RawProbes {
+interface Probes {
+  [name: string]: Probe;
+}
+
+function renderProbes(): Probes {
   const configText = ts.sys.readFile(tsconfigPath);
   if (configText == null) throw new Error(`cannot read ${tsconfigPath}`);
   const { config, error } = ts.parseConfigFileTextToJson(
@@ -64,7 +74,7 @@ function renderProbes(): RawProbes {
     | ts.TypeFormatFlags.WriteArrayAsGenericType
     | ts.TypeFormatFlags.InTypeAlias;
 
-  const out: RawProbes = {};
+  const out: Probes = {};
   for (const stmt of sourceFile.statements) {
     if (!ts.isVariableStatement(stmt)) continue;
     for (const decl of stmt.declarationList.declarations) {
@@ -72,15 +82,36 @@ function renderProbes(): RawProbes {
       const name = decl.name.text;
       if (!name.startsWith("probe_")) continue;
       const symbol = checker.getSymbolAtLocation(decl.name);
-      if (symbol == null) {
-        out[name] = "<no symbol>";
-        continue;
-      }
+      if (symbol == null) continue;
       const type = checker.getTypeOfSymbolAtLocation(symbol, decl.name);
-      out[name] = scrub(checker.typeToString(type, decl, flags));
+      out[name] = {
+        source: probeDescription(stmt, decl),
+        rendered: scrub(checker.typeToString(type, decl, flags)),
+      };
     }
   }
   return out;
+}
+
+// Read the user-facing description for a probe from its JSDoc. Every probe
+// must have a JSDoc (see README.md) — missing JSDoc is a test-authoring bug,
+// so we throw rather than silently falling back to the type expression.
+function probeDescription(
+  stmt: ts.VariableStatement,
+  decl: ts.VariableDeclaration,
+): string {
+  const jsdoc = ts.getJSDocCommentsAndTags(stmt).find(ts.isJSDoc);
+  const raw = jsdoc?.comment;
+  const text = typeof raw === "string"
+    ? raw
+    : raw?.map((c) => c.text).join("") ?? "";
+  if (text.trim().length === 0) {
+    const name = ts.isIdentifier(decl.name) ? decl.name.text : "<unnamed>";
+    throw new Error(
+      `probe \`${name}\` is missing a JSDoc — add a one-line description above its declaration in probes.ts`,
+    );
+  }
+  return text.replace(/\s+/g, " ").trim();
 }
 
 // Strip absolute import paths so the snapshot is hermetic across machines.
@@ -92,10 +123,12 @@ function scrub(s: string): string {
 // piping the batch through dprint, then splitting it back apart with the TS
 // compiler API. dprint is a root devDep so its binary is on PATH when this
 // test runs under `pnpm test` / `pnpm vitest`.
-function formatProbes(raw: RawProbes): RawProbes {
-  const names = Object.keys(raw).sort();
+function formatProbes(probes: Probes): Probes {
+  const names = Object.keys(probes).sort();
   if (names.length === 0) return {};
-  const wrapped = names.map((n) => `type ${n} = ${raw[n]};`).join("\n\n");
+  const wrapped = names.map((n) => `type ${n} = ${probes[n].rendered};`).join(
+    "\n\n",
+  );
   const formatted = execFileSync(
     "dprint",
     ["fmt", "--stdin", "probes.ts"],
@@ -107,12 +140,21 @@ function formatProbes(raw: RawProbes): RawProbes {
     ts.ScriptTarget.Latest,
     true,
   );
-  const out: RawProbes = {};
+  const out: Probes = {};
   for (const stmt of sf.statements) {
     if (!ts.isTypeAliasDeclaration(stmt)) continue;
-    out[stmt.name.text] = stmt.type.getText(sf).trim();
+    out[stmt.name.text] = {
+      source: probes[stmt.name.text]!.source,
+      rendered: stmt.type.getText(sf).trim(),
+    };
   }
   return out;
+}
+
+// Render each probe as `// hovering: <expr>\n<formatted type>` so the
+// snapshot self-documents what each type corresponds to in user code.
+function snapshotValue(probe: Probe): string {
+  return `// hovering: ${probe.source}\n${probe.rendered}`;
 }
 
 const probes = formatProbes(renderProbes());
@@ -123,7 +165,7 @@ describe("ObjectSet hover types", () => {
   // its own snapshot in code review. Add or edit a probe in `probes.ts` and
   // refresh with `pnpm updateSnapshots` from the repo root.
   it.each(probeNames)("%s", (name) => {
-    expect(probes[name]).toMatchSnapshot();
+    expect(snapshotValue(probes[name])).toMatchSnapshot();
   });
 
   // Force probes.ts to be updated when ObjectSet grows or loses a method.

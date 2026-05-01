@@ -1,7 +1,8 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`ObjectSet hover types > probe_aggregate_param 1`] = `
-"& AggregateOpts<
+"// hovering: The req argument of objectSet.aggregate(...).
+& AggregateOpts<
     {
       __DefinitionMetadata?:
         | { properties: {}; props?: {} | undefined }
@@ -52,7 +53,8 @@ exports[`ObjectSet hover types > probe_aggregate_param 1`] = `
 `;
 
 exports[`ObjectSet hover types > probe_asyncIter_result 1`] = `
-"AsyncIterableIterator<
+"// hovering: The result of objectSet.asyncIter().
+AsyncIterableIterator<
   | Osdk.Instance<EmployeeApiTest, never, PropertyKeys<EmployeeApiTest>, {}>
   | (
     & ObjectIdentifiers<EmployeeApiTest>
@@ -108,7 +110,8 @@ exports[`ObjectSet hover types > probe_asyncIter_result 1`] = `
 `;
 
 exports[`ObjectSet hover types > probe_fetchPage_result 1`] = `
-"PageResult<
+"// hovering: The awaited result of objectSet.fetchPage().
+PageResult<
   | Osdk.Instance<EmployeeApiTest, never, PropertyKeys<EmployeeApiTest>, {}>
   | (
     & ObjectIdentifiers<EmployeeApiTest>
@@ -163,12 +166,19 @@ exports[`ObjectSet hover types > probe_fetchPage_result 1`] = `
 >"
 `;
 
-exports[`ObjectSet hover types > probe_objectSet 1`] = `"ObjectSet<EmployeeApiTest, never>"`;
+exports[`ObjectSet hover types > probe_objectSet 1`] = `
+"// hovering: A bare ObjectSet<EmployeeApiTest> value.
+ObjectSet<EmployeeApiTest, never>"
+`;
 
-exports[`ObjectSet hover types > probe_objectSet_with_rdp 1`] = `"ObjectSet<EmployeeApiTest, { mom: "integer" }>"`;
+exports[`ObjectSet hover types > probe_objectSet_with_rdp 1`] = `
+"// hovering: An ObjectSet with a derived property mom: integer.
+ObjectSet<EmployeeApiTest, { mom: "integer" }>"
+`;
 
 exports[`ObjectSet hover types > probe_subscribe_listener_param 1`] = `
-"ObjectSetSubscription.Listener<
+"// hovering: The listener argument of objectSet.subscribe(...).
+ObjectSetSubscription.Listener<
   {
     __DefinitionMetadata?:
       | { properties: {}; props?: {} | undefined }
@@ -186,7 +196,8 @@ exports[`ObjectSet hover types > probe_subscribe_listener_param 1`] = `
 `;
 
 exports[`ObjectSet hover types > probe_where_clause_param 1`] = `
-"| OrWhereClause<
+"// hovering: The clause argument of objectSet.where(...).
+| OrWhereClause<
     {
       __DefinitionMetadata?:
         | { properties: {}; props?: {} | undefined }
@@ -232,7 +243,8 @@ exports[`ObjectSet hover types > probe_where_clause_param 1`] = `
 `;
 
 exports[`ObjectSet hover types > probe_where_clause_with_rdp 1`] = `
-"| OrWhereClause<
+"// hovering: The clause argument of .where(...) on an ObjectSet with a derived mom.
+| OrWhereClause<
     {
       __DefinitionMetadata?: {
         properties: { mom: SimplePropertyDef.ToPropertyDef<"integer"> };
@@ -282,7 +294,8 @@ exports[`ObjectSet hover types > probe_where_clause_with_rdp 1`] = `
 `;
 
 exports[`ObjectSet hover types > probe_withProperties_return 1`] = `
-"ObjectSet<
+"// hovering: The result of objectSet.withProperties({ mom: ..., dad: ... }).
+ObjectSet<
   EmployeeApiTest,
   { mom: "integer"; dad: "string" | undefined }
 >"
