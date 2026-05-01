@@ -30,7 +30,7 @@ interface MockTransport {
   sendCalls: () => Array<{
     trigger: "submit-message" | "regenerate-message";
     chatId: string;
-    messageId: string | undefined;
+    messageId: string;
     messages: Array<UIMessage>;
     abortSignal: AbortSignal | undefined;
   }>;
@@ -42,7 +42,7 @@ function createMockTransport(): MockTransport {
   const calls: Array<{
     trigger: "submit-message" | "regenerate-message";
     chatId: string;
-    messageId: string | undefined;
+    messageId: string;
     messages: Array<UIMessage>;
     abortSignal: AbortSignal | undefined;
   }> = [];
@@ -50,7 +50,7 @@ function createMockTransport(): MockTransport {
   const sendMessages = vi.fn(async (args: {
     trigger: "submit-message" | "regenerate-message";
     chatId: string;
-    messageId: string | undefined;
+    messageId: string;
     messages: Array<UIMessage>;
     abortSignal: AbortSignal | undefined;
   }) => {

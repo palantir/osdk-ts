@@ -16,6 +16,7 @@
 
 import {
   type ChatTransport,
+  generateMessageId,
   type LanguageModel,
   LmsChatTransport,
   type LmsChatTransportOptions,
@@ -125,14 +126,11 @@ export function useChat(options: UseChatOptions): UseChatReturn {
   } = options;
 
   const id = React.useMemo(
-    () => options.id ?? generateChatId(),
+    () => options.id ?? generateMessageId(),
     [options.id],
   );
 
-  // Stable string keys for object/array deps so a caller passing inline
-  // `headers={...}` or `stopSequences={[]}` doesn't rebuild the transport on
-  // every render. Matches the JSON.stringify pattern used elsewhere in
-  // @osdk/react (see useOsdkObject).
+  // JSON-stringify keys keep the memo stable when callers pass inline objects.
   const headersKey = JSON.stringify(options.headers ?? null);
   const stopSequencesKey = JSON.stringify(options.stopSequences ?? null);
 
@@ -146,8 +144,6 @@ export function useChat(options: UseChatOptions): UseChatReturn {
           "useChat: `model` is required when no `transport` is provided.",
         );
       }
-      // Defensive copies so caller-side mutation of `headers` / `stopSequences`
-      // after construction doesn't leak into the transport's snapshot.
       const built: LmsChatTransportOptions = {
         model: options.model,
         system: options.system,
@@ -156,11 +152,9 @@ export function useChat(options: UseChatOptions): UseChatReturn {
         topP: options.topP,
         presencePenalty: options.presencePenalty,
         frequencyPenalty: options.frequencyPenalty,
-        stopSequences: options.stopSequences != null
-          ? [...options.stopSequences]
-          : undefined,
+        stopSequences: options.stopSequences,
         seed: options.seed,
-        headers: options.headers != null ? { ...options.headers } : undefined,
+        headers: options.headers,
       };
       return new LmsChatTransport(built);
     },
@@ -327,7 +321,7 @@ export function useChat(options: UseChatOptions): UseChatReturn {
     abortRef.current = ctrl;
     stoppedRef.current = false;
 
-    const assistantId = generateChatId();
+    const assistantId = generateMessageId();
     try {
       const stream = await transport.sendMessages({
         trigger,
@@ -422,7 +416,7 @@ export function useChat(options: UseChatOptions): UseChatReturn {
     abortRef.current?.abort();
     const ctrl = new AbortController();
     abortRef.current = ctrl;
-    const assistantId = generateChatId();
+    const assistantId = generateMessageId();
     await drainStream(stream, assistantId, ctrl);
   }, [transport, id, drainStream]);
 
@@ -491,13 +485,13 @@ export function useChat(options: UseChatOptions): UseChatReturn {
 function normalizeUserMessage(input: SendMessageInput): UIMessage {
   if ("text" in input) {
     return {
-      id: generateChatId(),
+      id: generateMessageId(),
       role: "user",
       parts: [{ type: "text", text: input.text }],
     };
   }
   return {
-    id: generateChatId(),
+    id: generateMessageId(),
     role: input.role,
     parts: input.parts,
   };
@@ -505,22 +499,9 @@ function normalizeUserMessage(input: SendMessageInput): UIMessage {
 
 function findLastAssistantIndex(arr: ReadonlyArray<UIMessage>): number {
   for (let i = arr.length - 1; i >= 0; i--) {
-    const item = arr[i];
-    if (item == null) {
-      continue;
-    }
-    if (item.role === "assistant") {
+    if (arr[i]?.role === "assistant") {
       return i;
     }
   }
   return -1;
-}
-
-function generateChatId(): string {
-  if (
-    typeof crypto !== "undefined" && typeof crypto.randomUUID === "function"
-  ) {
-    return crypto.randomUUID();
-  }
-  return `id-${Math.random().toString(36).slice(2, 10)}-${Date.now()}`;
 }

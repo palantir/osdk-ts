@@ -1,3 +1,4 @@
+import { getUIMessageText } from "@osdk/aip-core";
 import type { UIMessage } from "@osdk/react/experimental/aip";
 import React from "react";
 import { Button } from "../../components/Button.js";
@@ -15,7 +16,7 @@ export interface ChatMessageProps {
 
 export function ChatMessage(props: ChatMessageProps) {
   const { message } = props;
-  const text = extractText(message);
+  const text = getUIMessageText(message);
   const isUser = message.role === "user";
   const isAssistant = message.role === "assistant";
 
@@ -44,14 +45,4 @@ export function ChatMessage(props: ChatMessageProps) {
       )}
     </div>
   );
-}
-
-function extractText(m: UIMessage): string {
-  let buf = "";
-  for (const p of m.parts ?? []) {
-    if (p.type === "text") {
-      buf += p.text;
-    }
-  }
-  return buf;
 }

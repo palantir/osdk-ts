@@ -28,14 +28,15 @@ import type {
   Warning,
 } from "../types.js";
 import {
-  convertMessage,
-  convertToolChoice,
-  convertTools,
+  buildAssistantContent,
+  buildOpenAiRequestBody,
+  EMPTY_USAGE,
+  getModelApiName,
+  mapUsage,
+} from "./openAi.js";
+import {
   filterHeaders,
   mapFinishReason,
-  type OpenAiMessage,
-  type OpenAiTool,
-  type OpenAiToolChoice,
   parseToolArguments,
   safeReadText,
 } from "./runStep.js";
@@ -88,22 +89,6 @@ export interface StreamStepResult {
   response: ResponseMetadata;
 }
 
-interface OpenAiStreamingChatRequest {
-  model: string;
-  messages: Array<OpenAiMessage>;
-  max_tokens?: number;
-  temperature?: number;
-  top_p?: number;
-  stop?: ReadonlyArray<string>;
-  seed?: number;
-  presence_penalty?: number;
-  frequency_penalty?: number;
-  tools?: Array<OpenAiTool>;
-  tool_choice?: OpenAiToolChoice;
-  stream: true;
-  stream_options?: { include_usage?: boolean };
-}
-
 interface OpenAiStreamChunk {
   id: string;
   object: "chat.completion.chunk";
@@ -140,20 +125,15 @@ interface ToolCallAccumulator {
   args: string;
 }
 
-const TEXT_PART_ID = "text-0";
-const REASONING_PART_ID = "reasoning-0";
-
 export async function streamStep<TOOLS extends ToolSet>(
   input: StreamStepInput<TOOLS>,
 ): Promise<StreamStepResult> {
   const handle = _getFoundryInternal(input.model);
   const baseUrl = getOpenAiBaseUrl(handle.client);
   const url = new URL("chat/completions", `${baseUrl}/`).toString();
-  const apiName = handle.identifier.type === "lmsModel"
-    ? handle.identifier.apiName
-    : handle.identifier.registeredModelRid;
+  const apiName = getModelApiName(handle.identifier);
 
-  const body = buildStreamingRequestBody({ apiName, ...input });
+  const body = buildOpenAiRequestBody<TOOLS>({ apiName, ...input }, true);
 
   const res = await handle.client.fetch(url, {
     method: "POST",
@@ -193,34 +173,15 @@ export async function streamStep<TOOLS extends ToolSet>(
   });
 }
 
-function buildStreamingRequestBody<TOOLS extends ToolSet>(
-  args: StreamStepInput<TOOLS> & { apiName: string },
-): OpenAiStreamingChatRequest {
-  return {
-    model: args.apiName,
-    messages: args.messages.map((m) => convertMessage(m, args.warnings)).flat(),
-    max_tokens: args.maxOutputTokens,
-    temperature: args.temperature,
-    top_p: args.topP,
-    stop: args.stopSequences,
-    seed: args.seed,
-    presence_penalty: args.presencePenalty,
-    frequency_penalty: args.frequencyPenalty,
-    tools: args.tools != null
-      ? convertTools(args.tools, args.warnings)
-      : undefined,
-    tool_choice: convertToolChoice(args.toolChoice),
-    stream: true,
-    stream_options: { include_usage: true },
-  };
-}
-
 interface ParseSseStreamArgs {
   body: ReadableStream<Uint8Array>;
   onChunk: (chunk: StreamChunkEvent) => void | Promise<void>;
   warnings: Array<Warning>;
   request: RequestMetadata;
 }
+
+const TEXT_PART_ID = "text-0";
+const REASONING_PART_ID = "reasoning-0";
 
 async function parseSseStream(
   args: ParseSseStreamArgs,
@@ -239,6 +200,7 @@ async function parseSseStream(
   let rawFinishReason: string | undefined;
   let usage: LanguageModelUsage | undefined;
   const toolCallAcc = new Map<number, ToolCallAccumulator>();
+  let responseInitialized = false;
   let responseId: string | undefined;
   let responseModel: string | undefined;
   let responseCreated: number | undefined;
@@ -251,19 +213,12 @@ async function parseSseStream(
     }
   };
 
-  // Resolve a stable tool-call id even if the provider only sent argument
-  // fragments without an `id` field — synthesize from the choice index so
-  // downstream code never sees an empty toolCallId.
-  const resolveToolCallId = (acc: ToolCallAccumulator, index: number): string =>
-    acc.id !== "" ? acc.id : `tool_call_${index}`;
-
   try {
     while (true) {
       const { value, done } = await reader.read();
       if (done) {
         break;
       }
-      // SSE allows either LF or CRLF separators; normalize to LF.
       buffer += value.replace(/\r\n/g, "\n");
 
       let frameEnd = buffer.indexOf("\n\n");
@@ -295,30 +250,19 @@ async function parseSseStream(
             continue;
           }
 
-          if (chunk.id != null) {
+          if (!responseInitialized) {
             responseId = chunk.id;
-          }
-          if (chunk.model != null) {
             responseModel = chunk.model;
-          }
-          if (chunk.created != null) {
             responseCreated = chunk.created;
+            responseInitialized = true;
           }
 
           if (chunk.usage != null) {
-            usage = {
-              inputTokens: chunk.usage.prompt_tokens,
-              outputTokens: chunk.usage.completion_tokens,
-              totalTokens: chunk.usage.total_tokens,
-              reasoningTokens: chunk.usage.completion_tokens_details
-                ?.reasoning_tokens,
-              cachedInputTokens: chunk.usage.prompt_tokens_details
-                ?.cached_tokens,
-            };
+            usage = mapUsage(chunk.usage);
           }
 
-          for (const choice of chunk.choices ?? []) {
-            const delta = choice.delta ?? {};
+          for (const choice of chunk.choices) {
+            const delta = choice.delta;
             const contentDelta = delta.content;
             if (typeof contentDelta === "string" && contentDelta.length > 0) {
               if (!textStarted) {
@@ -346,22 +290,24 @@ async function parseSseStream(
               });
             }
 
-            for (const tc of delta.tool_calls ?? []) {
-              if (typeof tc.index !== "number") {
-                continue;
+            if (delta.tool_calls != null) {
+              for (const tc of delta.tool_calls) {
+                if (typeof tc.index !== "number") {
+                  continue;
+                }
+                const acc = toolCallAcc.get(tc.index)
+                  ?? { id: "", name: "", args: "" };
+                if (tc.id != null) {
+                  acc.id = tc.id;
+                }
+                if (tc.function?.name != null) {
+                  acc.name = tc.function.name;
+                }
+                if (tc.function?.arguments != null) {
+                  acc.args += tc.function.arguments;
+                }
+                toolCallAcc.set(tc.index, acc);
               }
-              const acc = toolCallAcc.get(tc.index)
-                ?? { id: "", name: "", args: "" };
-              if (tc.id != null) {
-                acc.id = tc.id;
-              }
-              if (tc.function?.name != null) {
-                acc.name = tc.function.name;
-              }
-              if (tc.function?.arguments != null) {
-                acc.args += tc.function.arguments;
-              }
-              toolCallAcc.set(tc.index, acc);
             }
 
             if (choice.finish_reason != null) {
@@ -374,8 +320,6 @@ async function parseSseStream(
       }
     }
   } finally {
-    // Always emit text-end if we emitted text-start, even on read errors —
-    // consumers that pair the two for lifecycle bookkeeping must see both.
     await finalizeText();
     reader.releaseLock();
   }
@@ -387,24 +331,18 @@ async function parseSseStream(
     });
   }
 
-  const finalUsage: LanguageModelUsage = usage ?? {
-    inputTokens: undefined,
-    outputTokens: undefined,
-    totalTokens: undefined,
-  };
+  const finalUsage: LanguageModelUsage = usage ?? EMPTY_USAGE;
 
-  // Emit accumulated tool-call chunks once, regardless of whether
-  // finish_reason arrived. A connection drop or non-conformant provider that
-  // closes the stream without finish_reason should still surface tool calls
-  // to fullStream consumers.
-  const toolCalls: Array<ToolCall> = Array.from(
-    toolCallAcc.entries(),
-  ).map(([index, acc]) => ({
-    type: "tool-call" as const,
-    toolCallId: resolveToolCallId(acc, index),
-    toolName: acc.name,
-    input: parseToolArguments(acc.args, args.warnings),
-  }));
+  // A connection drop or non-conformant provider that closes the stream
+  // without finish_reason should still surface tool calls to fullStream.
+  const toolCalls: Array<ToolCall> = Array.from(toolCallAcc.entries()).map(
+    ([index, acc]) => ({
+      type: "tool-call" as const,
+      toolCallId: acc.id !== "" ? acc.id : `tool_call_${index}`,
+      toolName: acc.name,
+      input: parseToolArguments(acc.args, args.warnings),
+    }),
+  );
   for (const tc of toolCalls) {
     await args.onChunk({
       type: "tool-call",
@@ -421,18 +359,16 @@ async function parseSseStream(
     usage: finalUsage,
   });
 
-  const responseMessages = buildAssistantResponseMessages({
-    text: textBuf,
-    toolCalls,
-  });
-
   const response: ResponseMetadata = {
     id: responseId,
     modelId: responseModel,
     timestamp: responseCreated != null
       ? new Date(responseCreated * 1000)
       : undefined,
-    messages: responseMessages,
+    messages: [{
+      role: "assistant",
+      content: buildAssistantContent(textBuf, toolCalls),
+    }],
   };
 
   return {
@@ -445,34 +381,4 @@ async function parseSseStream(
     request: args.request,
     response,
   };
-}
-
-function buildAssistantResponseMessages(args: {
-  text: string;
-  toolCalls: ReadonlyArray<ToolCall>;
-}): ResponseMetadata["messages"] {
-  if (args.toolCalls.length === 0) {
-    return [{ role: "assistant", content: args.text }];
-  }
-  const parts: Array<
-    | { type: "text"; text: string }
-    | {
-      type: "tool-call";
-      toolCallId: string;
-      toolName: string;
-      input: unknown;
-    }
-  > = [];
-  if (args.text.length > 0) {
-    parts.push({ type: "text", text: args.text });
-  }
-  for (const tc of args.toolCalls) {
-    parts.push({
-      type: "tool-call",
-      toolCallId: tc.toolCallId,
-      toolName: tc.toolName,
-      input: tc.input,
-    });
-  }
-  return [{ role: "assistant", content: parts }];
 }

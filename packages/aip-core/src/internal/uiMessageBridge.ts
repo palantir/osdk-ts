@@ -15,7 +15,7 @@
  */
 
 import type { ModelMessage } from "../types.js";
-import type { UIMessage } from "../uiMessage.js";
+import { getUIMessageText, type UIMessage } from "../uiMessage.js";
 
 /**
  * Convert `UIMessage[]` (the conversation shape rendered in the UI) into
@@ -41,40 +41,15 @@ export function uiMessagesToModelMessages(
   }
 
   for (const m of ui) {
-    const text = extractText(m);
-    if (m.role === "system") {
-      if (transportSystemSet) {
-        continue;
-      }
-      if (text.length > 0) {
-        out.push({ role: "system", content: text });
-      }
+    const text = getUIMessageText(m);
+    if (text.length === 0) {
       continue;
     }
-    if (m.role === "user") {
-      if (text.length > 0) {
-        out.push({ role: "user", content: text });
-      }
+    if (m.role === "system" && transportSystemSet) {
       continue;
     }
-    if (m.role === "assistant") {
-      if (text.length > 0) {
-        out.push({ role: "assistant", content: text });
-      }
-      continue;
-    }
+    out.push({ role: m.role, content: text });
   }
 
   return out;
-}
-
-function extractText(m: UIMessage): string {
-  const parts = m.parts ?? [];
-  let buf = "";
-  for (const p of parts) {
-    if (p.type === "text") {
-      buf += p.text;
-    }
-  }
-  return buf;
 }

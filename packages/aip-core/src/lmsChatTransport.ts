@@ -26,7 +26,6 @@ import type {
 } from "./uiMessage.js";
 
 type SendMessagesArgs = ChatTransportSendMessagesArgs<UIMessage>;
-type ReconnectArgs = ChatTransportReconnectArgs;
 
 /**
  * Options for {@link LmsChatTransport}. Configures the streamed chat
@@ -84,7 +83,7 @@ export class LmsChatTransport implements ChatTransport<UIMessage> {
       abortSignal: args.abortSignal,
     });
 
-    const assistantId = args.messageId ?? generateMessageId();
+    const assistantId = args.messageId;
     const textPartId = `${assistantId}-text-0`;
     const reasoningPartId = `${assistantId}-reasoning-0`;
     let textOpen = false;
@@ -191,9 +190,8 @@ export class LmsChatTransport implements ChatTransport<UIMessage> {
   };
 
   reconnectToStream = async (
-    _args: ReconnectArgs,
+    _args: ChatTransportReconnectArgs,
   ): Promise<ReadableStream<UIMessageChunk> | null> => {
-    // LMS does not expose stream resume in v0 — signal "no resumable stream".
     return null;
   };
 }
@@ -206,17 +204,14 @@ function mergeHeaders(
     return undefined;
   }
   const out: Record<string, string | undefined> = { ...(base ?? {}) };
-  if (override == null) {
-    return out;
-  }
   if (override instanceof Headers) {
     override.forEach((value, key) => {
       out[key] = value;
     });
-    return out;
-  }
-  for (const [k, v] of Object.entries(override)) {
-    out[k] = v;
+  } else if (override != null) {
+    for (const [k, v] of Object.entries(override)) {
+      out[k] = v;
+    }
   }
   return out;
 }
@@ -226,13 +221,4 @@ export function lmsChatTransport(
   opts: LmsChatTransportOptions,
 ): LmsChatTransport {
   return new LmsChatTransport(opts);
-}
-
-function generateMessageId(): string {
-  if (
-    typeof crypto !== "undefined" && typeof crypto.randomUUID === "function"
-  ) {
-    return crypto.randomUUID();
-  }
-  return `msg-${Math.random().toString(36).slice(2, 10)}-${Date.now()}`;
 }

@@ -40,6 +40,9 @@ export type {
   ModelIdentifier,
 } from "./model.js";
 
+export { generateMessageId } from "./internal/ids.js";
+
+export { getUIMessageText } from "./uiMessage.js";
 export type {
   ChatTransport,
   ChatTransportReconnectArgs,

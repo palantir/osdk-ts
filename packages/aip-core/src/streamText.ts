@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { collectV0Warnings, resolveMessages } from "./internal/options.js";
 import { type StreamChunkEvent, streamStep } from "./internal/streamStep.js";
 import type { LanguageModel } from "./model.js";
 import type {
@@ -168,27 +169,30 @@ export interface StreamTextResult {
  * }
  * ```
  */
+interface FinalState {
+  text: string;
+  reasoningText: string | undefined;
+  usage: LanguageModelUsage;
+  finishReason: FinishReason;
+  toolCalls: Array<ToolCall>;
+  warnings: Array<Warning> | undefined;
+  response: ResponseMetadata | undefined;
+  request: RequestMetadata | undefined;
+}
+
 export function streamText<TOOLS extends ToolSet = ToolSet>(
   options: StreamTextOptions<TOOLS>,
 ): StreamTextResult {
-  const warnings: Array<Warning> = collectV0Warnings(options);
+  const warnings = collectV0Warnings(options);
   const messages = resolveMessages(
+    "streamText",
     options.system,
     options.prompt,
     options.messages,
   );
 
-  const textDeferred = createDeferred<string>();
-  const reasoningDeferred = createDeferred<string | undefined>();
-  const usageDeferred = createDeferred<LanguageModelUsage>();
-  const finishReasonDeferred = createDeferred<FinishReason>();
-  const toolCallsDeferred = createDeferred<Array<ToolCall>>();
-  const warningsDeferred = createDeferred<Array<Warning> | undefined>();
-  const responseDeferred = createDeferred<ResponseMetadata | undefined>();
-  const requestDeferred = createDeferred<RequestMetadata | undefined>();
+  const final = createDeferred<FinalState>();
 
-  // Internal controller so consumer-side stream cancel() also tears down the
-  // upstream fetch — not just the public abortSignal.
   const internalAbort = new AbortController();
   if (options.abortSignal != null) {
     if (options.abortSignal.aborted) {
@@ -237,14 +241,17 @@ export function streamText<TOOLS extends ToolSet = ToolSet>(
       streamController?.close();
       streamClosed = true;
 
-      textDeferred.resolve(result.text);
-      reasoningDeferred.resolve(result.reasoningText);
-      usageDeferred.resolve(result.usage);
-      finishReasonDeferred.resolve(result.finishReason);
-      toolCallsDeferred.resolve(result.toolCalls);
-      warningsDeferred.resolve(warnings.length > 0 ? warnings : undefined);
-      responseDeferred.resolve(result.response);
-      requestDeferred.resolve(result.request);
+      const finalWarnings = warnings.length > 0 ? warnings : undefined;
+      final.resolve({
+        text: result.text,
+        reasoningText: result.reasoningText,
+        usage: result.usage,
+        finishReason: result.finishReason,
+        toolCalls: result.toolCalls,
+        warnings: finalWarnings,
+        response: result.response,
+        request: result.request,
+      });
 
       if (options.onFinish != null) {
         await options.onFinish({
@@ -254,7 +261,7 @@ export function streamText<TOOLS extends ToolSet = ToolSet>(
           toolCalls: result.toolCalls,
           usage: result.usage,
           totalUsage: result.usage,
-          warnings: warnings.length > 0 ? warnings : undefined,
+          warnings: finalWarnings,
           response: result.response,
           request: result.request,
         });
@@ -266,16 +273,7 @@ export function streamText<TOOLS extends ToolSet = ToolSet>(
         streamController?.error(error);
         streamClosed = true;
       }
-
-      warningsDeferred.resolve(warnings.length > 0 ? warnings : undefined);
-
-      textDeferred.reject(error);
-      reasoningDeferred.reject(error);
-      usageDeferred.reject(error);
-      finishReasonDeferred.reject(error);
-      toolCallsDeferred.reject(error);
-      responseDeferred.reject(error);
-      requestDeferred.reject(error);
+      final.reject(error);
 
       if (options.onError != null) {
         await options.onError(error);
@@ -305,19 +303,35 @@ export function streamText<TOOLS extends ToolSet = ToolSet>(
     }),
   );
 
+  // Warnings settle even if the stream errors, so the consumer can read them
+  // off the failure path. Other promises propagate the error.
+  const warningsPromise: Promise<Array<Warning> | undefined> = final.promise
+    .then(
+      (s) => s.warnings,
+      () => (warnings.length > 0 ? warnings : undefined),
+    );
+
   return {
     fullStream: fullStreamBranch,
     textStream,
-    text: textDeferred.promise,
-    reasoningText: reasoningDeferred.promise,
-    usage: usageDeferred.promise,
-    totalUsage: usageDeferred.promise,
-    finishReason: finishReasonDeferred.promise,
-    toolCalls: toolCallsDeferred.promise,
-    warnings: warningsDeferred.promise,
-    response: responseDeferred.promise,
-    request: requestDeferred.promise,
+    text: silence(final.promise.then((s) => s.text)),
+    reasoningText: silence(final.promise.then((s) => s.reasoningText)),
+    usage: silence(final.promise.then((s) => s.usage)),
+    totalUsage: silence(final.promise.then((s) => s.usage)),
+    finishReason: silence(final.promise.then((s) => s.finishReason)),
+    toolCalls: silence(final.promise.then((s) => s.toolCalls)),
+    warnings: warningsPromise,
+    response: silence(final.promise.then((s) => s.response)),
+    request: silence(final.promise.then((s) => s.request)),
   };
+}
+
+// Pre-attach a no-op rejection handler so a consumer that awaits only some of
+// the result promises doesn't trigger unhandled-rejection warnings on the
+// rest. The promise still rejects for any consumer that awaits it.
+function silence<T>(p: Promise<T>): Promise<T> {
+  p.catch(() => {});
+  return p;
 }
 
 interface Deferred<T> {
@@ -333,70 +347,6 @@ function createDeferred<T>(): Deferred<T> {
     resolveFn = res;
     rejectFn = rej;
   });
-  // Pre-attach a no-op rejection handler so unhandled rejections don't fire
-  // when the consumer doesn't await every deferred.
   promise.catch(() => {});
   return { promise, resolve: resolveFn, reject: rejectFn };
-}
-
-function collectV0Warnings<TOOLS extends ToolSet>(
-  options: StreamTextOptions<TOOLS>,
-): Array<Warning> {
-  const warnings: Array<Warning> = [];
-  const unsupported: Array<[keyof StreamTextOptions<TOOLS>, string?]> = [
-    ["activeTools"],
-    ["topK", "OpenAI proxy does not accept top_k."],
-    [
-      "maxRetries",
-      "Retries are handled by the underlying PlatformClient.fetch.",
-    ],
-    ["timeout", "Use `abortSignal` with AbortSignal.timeout()."],
-    ["providerOptions"],
-  ];
-  for (const [key, details] of unsupported) {
-    if (options[key] != null) {
-      warnings.push({
-        type: "unsupported-setting",
-        setting: key,
-        details,
-      });
-    }
-  }
-  return warnings;
-}
-
-function resolveMessages(
-  system: StreamTextOptions["system"],
-  prompt: StreamTextOptions["prompt"],
-  messages: StreamTextOptions["messages"],
-): Array<ModelMessage> {
-  if (prompt != null && messages != null) {
-    throw new Error(
-      "streamText: cannot specify both `prompt` and `messages` — choose one.",
-    );
-  }
-
-  const sys: Array<SystemModelMessage> = system == null
-    ? []
-    : typeof system === "string"
-    ? (system === "" ? [] : [{ role: "system", content: system }])
-    : Array.isArray(system)
-    ? system
-    : [system];
-
-  const body: Array<ModelMessage> = messages != null
-    ? messages
-    : prompt == null
-    ? []
-    : typeof prompt === "string"
-    ? [{ role: "user", content: prompt }]
-    : prompt;
-
-  if (sys.length === 0 && body.length === 0) {
-    throw new Error(
-      "streamText: must provide at least one of `system`, `prompt`, or `messages`.",
-    );
-  }
-
-  return [...sys, ...body];
 }

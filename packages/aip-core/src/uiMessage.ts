@@ -79,7 +79,7 @@ export type ChatTransportTrigger = "submit-message" | "regenerate-message";
 export interface ChatTransportSendMessagesArgs<MSG extends UIMessage> {
   trigger: ChatTransportTrigger;
   chatId: string;
-  messageId: string | undefined;
+  messageId: string;
   messages: ReadonlyArray<MSG>;
   abortSignal: AbortSignal | undefined;
   headers?: Record<string, string> | Headers;
@@ -97,4 +97,19 @@ export interface ChatTransport<MSG extends UIMessage = UIMessage> {
   reconnectToStream(
     args: ChatTransportReconnectArgs,
   ): Promise<ReadableStream<UIMessageChunk> | null>;
+}
+
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+/** Concatenate all `text` parts of a UIMessage into a single string. */
+export function getUIMessageText(message: UIMessage): string {
+  let buf = "";
+  for (const p of message.parts) {
+    if (p.type === "text") {
+      buf += p.text;
+    }
+  }
+  return buf;
 }

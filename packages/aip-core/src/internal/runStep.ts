@@ -22,10 +22,7 @@ import type {
   FinishReason,
   LanguageModelUsage,
   ModelMessage,
-  ProviderMetadata,
   ReasoningOutput,
-  RequestMetadata,
-  ResponseMetadata,
   StepResult,
   ToolCall,
   ToolChoice,
@@ -33,6 +30,14 @@ import type {
   ToolSet,
   Warning,
 } from "../types.js";
+import {
+  buildAssistantContent,
+  buildOpenAiRequestBody,
+  EMPTY_USAGE,
+  getModelApiName,
+  mapUsage,
+  type OpenAiChatRequestNonStreaming,
+} from "./openAi.js";
 
 // ---------------------------------------------------------------------------
 // Public input/output of this module
@@ -71,11 +76,12 @@ export async function runStep<TOOLS extends ToolSet>(
   const handle = _getFoundryInternal(input.model);
   const baseUrl = getOpenAiBaseUrl(handle.client);
   const url = new URL("chat/completions", `${baseUrl}/`).toString();
-  const apiName = handle.identifier.type === "lmsModel"
-    ? handle.identifier.apiName
-    : handle.identifier.registeredModelRid;
+  const apiName = getModelApiName(handle.identifier);
 
-  const body = buildRequestBody({ apiName, ...input });
+  const body = buildOpenAiRequestBody<TOOLS>(
+    { apiName, ...input },
+    false,
+  );
 
   const res = await handle.client.fetch(url, {
     method: "POST",
@@ -102,23 +108,8 @@ export async function runStep<TOOLS extends ToolSet>(
 }
 
 // ---------------------------------------------------------------------------
-// Request body construction
+// OpenAI message / tool wire shapes
 // ---------------------------------------------------------------------------
-
-interface OpenAiChatRequest {
-  model: string;
-  messages: Array<OpenAiMessage>;
-  max_tokens?: number;
-  temperature?: number;
-  top_p?: number;
-  stop?: ReadonlyArray<string>;
-  seed?: number;
-  presence_penalty?: number;
-  frequency_penalty?: number;
-  tools?: Array<OpenAiTool>;
-  tool_choice?: OpenAiToolChoice;
-  stream: false;
-}
 
 export interface OpenAiMessage {
   role: "system" | "user" | "assistant" | "tool";
@@ -148,27 +139,6 @@ export interface OpenAiAssistantToolCall {
   id: string;
   type: "function";
   function: { name: string; arguments: string };
-}
-
-function buildRequestBody<TOOLS extends ToolSet>(
-  args: RunStepInput<TOOLS> & { apiName: string },
-): OpenAiChatRequest {
-  return {
-    model: args.apiName,
-    messages: args.messages.map((m) => convertMessage(m, args.warnings)).flat(),
-    max_tokens: args.maxOutputTokens,
-    temperature: args.temperature,
-    top_p: args.topP,
-    stop: args.stopSequences,
-    seed: args.seed,
-    presence_penalty: args.presencePenalty,
-    frequency_penalty: args.frequencyPenalty,
-    tools: args.tools != null
-      ? convertTools(args.tools, args.warnings)
-      : undefined,
-    tool_choice: convertToolChoice(args.toolChoice),
-    stream: false,
-  };
 }
 
 export function convertMessage(
@@ -355,7 +325,7 @@ interface OpenAiChatCompletionResponse {
 
 function parseResponse<TOOLS extends ToolSet>(
   res: OpenAiChatCompletionResponse,
-  request: OpenAiChatRequest,
+  request: OpenAiChatRequestNonStreaming,
   warnings: Array<Warning>,
 ): StepResult<TOOLS> {
   const choice = res.choices[0];
@@ -371,12 +341,14 @@ function parseResponse<TOOLS extends ToolSet>(
 
   const toolCalls: Array<ToolCall<keyof TOOLS & string>> = (message.tool_calls
     ?? [])
-    .map((c) => ({
-      type: "tool-call" as const,
-      toolCallId: c.id,
-      toolName: c.function.name as keyof TOOLS & string,
-      input: parseToolArguments(c.function.arguments, warnings),
-    }));
+    .map((c) =>
+      narrowToolCall<TOOLS>({
+        type: "tool-call",
+        toolCallId: c.id,
+        toolName: c.function.name,
+        input: parseToolArguments(c.function.arguments, warnings),
+      })
+    );
 
   const reasoning: Array<ReasoningOutput> = reasoningText != null
     ? [{ type: "reasoning", text: reasoningText }]
@@ -394,18 +366,8 @@ function parseResponse<TOOLS extends ToolSet>(
   }
 
   const usage: LanguageModelUsage = res.usage != null
-    ? {
-      inputTokens: res.usage.prompt_tokens,
-      outputTokens: res.usage.completion_tokens,
-      totalTokens: res.usage.total_tokens,
-      reasoningTokens: res.usage.completion_tokens_details?.reasoning_tokens,
-      cachedInputTokens: res.usage.prompt_tokens_details?.cached_tokens,
-    }
-    : {
-      inputTokens: undefined,
-      outputTokens: undefined,
-      totalTokens: undefined,
-    };
+    ? mapUsage(res.usage)
+    : EMPTY_USAGE;
 
   const finishReason = mapFinishReason(choice.finish_reason);
 
@@ -413,17 +375,6 @@ function parseResponse<TOOLS extends ToolSet>(
     role: "assistant",
     content: buildAssistantContent(text, toolCalls),
   }];
-
-  const requestMeta: RequestMetadata = { body: request };
-  const responseMeta: ResponseMetadata = {
-    id: res.id,
-    modelId: res.model,
-    timestamp: new Date(res.created * 1000),
-    body: res,
-    messages: responseMessages,
-  };
-
-  const providerMetadata: ProviderMetadata | undefined = undefined;
 
   return {
     content,
@@ -438,37 +389,22 @@ function parseResponse<TOOLS extends ToolSet>(
     rawFinishReason: choice.finish_reason,
     usage,
     warnings: warnings.length > 0 ? warnings : undefined,
-    request: requestMeta,
-    response: responseMeta,
-    providerMetadata,
+    request: { body: request },
+    response: {
+      id: res.id,
+      modelId: res.model,
+      timestamp: new Date(res.created * 1000),
+      body: res,
+      messages: responseMessages,
+    },
+    providerMetadata: undefined,
   };
 }
 
-function buildAssistantContent<TOOLS extends ToolSet>(
-  text: string,
-  toolCalls: ReadonlyArray<ToolCall<keyof TOOLS & string>>,
-): AssistantModelMessage["content"] {
-  if (toolCalls.length === 0) {
-    return text;
-  }
-  const parts: Array<
-    { type: "text"; text: string } | {
-      type: "tool-call";
-      toolCallId: string;
-      toolName: string;
-      input: unknown;
-    }
-  > = [];
-  if (text.length > 0) parts.push({ type: "text", text });
-  for (const tc of toolCalls) {
-    parts.push({
-      type: "tool-call",
-      toolCallId: tc.toolCallId,
-      toolName: tc.toolName,
-      input: tc.input,
-    });
-  }
-  return parts;
+function narrowToolCall<TOOLS extends ToolSet>(
+  call: ToolCall,
+): ToolCall<keyof TOOLS & string> {
+  return call as ToolCall<keyof TOOLS & string>;
 }
 
 export function mapFinishReason(reason: string): FinishReason {
@@ -491,7 +427,9 @@ export function parseToolArguments(
   args: string,
   warnings: Array<Warning>,
 ): unknown {
-  if (args === "" || args == null) return {};
+  if (args === "") {
+    return {};
+  }
   try {
     return JSON.parse(args);
   } catch {

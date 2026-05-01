@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { collectV0Warnings, resolveMessages } from "./internal/options.js";
 import { runStep } from "./internal/runStep.js";
 import type { LanguageModel } from "./model.js";
 import type {
@@ -169,8 +170,15 @@ export interface GenerateTextResult<TOOLS extends ToolSet = ToolSet> {
 export async function generateText<TOOLS extends ToolSet = ToolSet>(
   options: GenerateTextOptions<TOOLS>,
 ): Promise<GenerateTextResult<TOOLS>> {
-  const warnings: Array<Warning> = collectV0Warnings(options);
+  const warnings = collectV0Warnings(options, [
+    {
+      key: "stopWhen",
+      details: "Multi-step tool loops are not yet implemented in v0.",
+    },
+    { key: "prepareStep" },
+  ]);
   const messages = resolveMessages(
+    "generateText",
     options.system,
     options.prompt,
     options.messages,
@@ -222,68 +230,4 @@ export async function generateText<TOOLS extends ToolSet = ToolSet>(
     providerMetadata: step.providerMetadata,
     steps: [step],
   };
-}
-
-function collectV0Warnings<TOOLS extends ToolSet>(
-  options: GenerateTextOptions<TOOLS>,
-): Array<Warning> {
-  const warnings: Array<Warning> = [];
-  const unsupported: Array<[keyof GenerateTextOptions<TOOLS>, string?]> = [
-    ["stopWhen", "Multi-step tool loops are not yet implemented in v0."],
-    ["prepareStep"],
-    ["activeTools"],
-    ["topK", "OpenAI proxy does not accept top_k."],
-    [
-      "maxRetries",
-      "Retries are handled by the underlying PlatformClient.fetch.",
-    ],
-    ["timeout", "Use `abortSignal` with AbortSignal.timeout()."],
-    ["providerOptions"],
-  ];
-  for (const [key, details] of unsupported) {
-    if (options[key] != null) {
-      warnings.push({
-        type: "unsupported-setting",
-        setting: key,
-        details,
-      });
-    }
-  }
-  return warnings;
-}
-
-function resolveMessages(
-  system: GenerateTextOptions["system"],
-  prompt: GenerateTextOptions["prompt"],
-  messages: GenerateTextOptions["messages"],
-): Array<ModelMessage> {
-  if (prompt != null && messages != null) {
-    throw new Error(
-      "generateText: cannot specify both `prompt` and `messages` — choose one.",
-    );
-  }
-
-  const sys: Array<SystemModelMessage> = system == null
-    ? []
-    : typeof system === "string"
-    ? (system === "" ? [] : [{ role: "system", content: system }])
-    : Array.isArray(system)
-    ? system
-    : [system];
-
-  const body: Array<ModelMessage> = messages != null
-    ? messages
-    : prompt == null
-    ? []
-    : typeof prompt === "string"
-    ? [{ role: "user", content: prompt }]
-    : prompt;
-
-  if (sys.length === 0 && body.length === 0) {
-    throw new Error(
-      "generateText: must provide at least one of `system`, `prompt`, or `messages`.",
-    );
-  }
-
-  return [...sys, ...body];
 }

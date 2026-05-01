@@ -140,7 +140,7 @@ describe("LmsChatTransport", () => {
     const stream = await t.sendMessages({
       trigger: "submit-message",
       chatId: "c1",
-      messageId: undefined,
+      messageId: "asst-default",
       messages: [uiMsg("user", "hi"), uiMsg("assistant", "hello")],
       abortSignal: undefined,
     });
