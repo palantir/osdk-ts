@@ -82,8 +82,8 @@
   },
   "peerDependencies": {
     "@osdk/aip-core": "workspace:^",
-    "@osdk/api": "^2.8.0",
-    "@osdk/client": "^2.8.0",
+    "@osdk/api": "workspace:*",
+    "@osdk/client": "workspace:*",
     "@osdk/foundry.admin": "*",
     "@osdk/foundry.core": "*",
     "@types/react": "^17 || ^18 || ^19",
@@ -103,8 +103,6 @@
   },
   "devDependencies": {
     "@osdk/aip-core": "workspace:*",
-    "@osdk/api": "workspace:*",
-    "@osdk/client": "workspace:*",
     "@osdk/client.test.ontology": "workspace:*",
     "@osdk/foundry.admin": "catalog:foundry-platform-typescript",
     "@osdk/foundry.core": "catalog:foundry-platform-typescript",
