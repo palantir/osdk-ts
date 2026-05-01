@@ -1,53 +1,17 @@
 /** The req argument of objectSet.aggregate(...). */
-type probe_aggregate_param =
-  & AggregateOpts<
-    {
-      __DefinitionMetadata?:
-        | { properties: {}; props?: {} | undefined }
-        | undefined;
-    } & EmployeeApiTest
-  >
-  & {
-    $select:
-      & Pick<
-        | UnorderedAggregationClause<
-          {
-            __DefinitionMetadata?:
-              | { properties: {}; props?: {} | undefined }
-              | undefined;
-          } & EmployeeApiTest
-        >
-        | OrderedAggregationClause<
-          {
-            __DefinitionMetadata?:
-              | { properties: {}; props?: {} | undefined }
-              | undefined;
-          } & EmployeeApiTest
-        >,
-        ValidAggregationKeys<
-          {
-            __DefinitionMetadata?:
-              | { properties: {}; props?: {} | undefined }
-              | undefined;
-          } & EmployeeApiTest
-        >
-      >
-      & Record<never, never>;
-  }
-  & {
-    $groupBy:
-      & Pick<
-        GroupByClause<
-          {
-            __DefinitionMetadata?:
-              | { properties: {}; props?: {} | undefined }
-              | undefined;
-          } & EmployeeApiTest
-        > | undefined,
-        never
-      >
-      & Record<never, never>;
-  };
+type probe_aggregate_param = AggregateOpts<EmployeeApiTest> & {
+  $select:
+    & Pick<
+      | UnorderedAggregationClause<EmployeeApiTest>
+      | OrderedAggregationClause<EmployeeApiTest>,
+      ValidAggregationKeys<EmployeeApiTest>
+    >
+    & Record<never, never>;
+} & {
+  $groupBy:
+    & Pick<GroupByClause<EmployeeApiTest> | undefined, never>
+    & Record<never, never>;
+};
 
 /** The result of objectSet.asyncIter(). */
 type probe_asyncIter_result = AsyncIterableIterator<
@@ -167,47 +131,16 @@ type probe_objectSet_with_rdp = ObjectSet<EmployeeApiTest, { mom: "integer" }>;
 
 /** The listener argument of objectSet.subscribe(...). */
 type probe_subscribe_listener_param = ObjectSetSubscription.Listener<
-  {
-    __DefinitionMetadata?:
-      | { properties: {}; props?: {} | undefined }
-      | undefined;
-  } & EmployeeApiTest,
-  PropertyKeys<
-    {
-      __DefinitionMetadata?:
-        | { properties: {}; props?: {} | undefined }
-        | undefined;
-    } & EmployeeApiTest
-  >,
+  EmployeeApiTest,
+  PropertyKeys<EmployeeApiTest>,
   boolean
 >;
 
 /** The clause argument of objectSet.where(...). */
 type probe_where_clause_param =
-  | OrWhereClause<
-    {
-      __DefinitionMetadata?:
-        | { properties: {}; props?: {} | undefined }
-        | undefined;
-    } & EmployeeApiTest,
-    {}
-  >
-  | AndWhereClause<
-    {
-      __DefinitionMetadata?:
-        | { properties: {}; props?: {} | undefined }
-        | undefined;
-    } & EmployeeApiTest,
-    {}
-  >
-  | NotWhereClause<
-    {
-      __DefinitionMetadata?:
-        | { properties: {}; props?: {} | undefined }
-        | undefined;
-    } & EmployeeApiTest,
-    {}
-  >
+  | OrWhereClause<EmployeeApiTest, {}>
+  | AndWhereClause<EmployeeApiTest, {}>
+  | NotWhereClause<EmployeeApiTest, {}>
   | {
     class?: StringFilter | undefined;
     fullName?: StringFilter | undefined;
@@ -231,30 +164,24 @@ type probe_where_clause_param =
 /** The clause argument of .where(...) on an ObjectSet with a derived mom. */
 type probe_where_clause_with_rdp =
   | OrWhereClause<
-    {
-      __DefinitionMetadata?: {
-        properties: { mom: SimplePropertyDef.ToPropertyDef<"integer"> };
-        props?: { mom: number } | undefined;
-      } | undefined;
-    } & EmployeeApiTest,
+    DerivedObjectOrInterfaceDefinition.WithDerivedProperties<
+      EmployeeApiTest,
+      { mom: "integer" }
+    >,
     {}
   >
   | AndWhereClause<
-    {
-      __DefinitionMetadata?: {
-        properties: { mom: SimplePropertyDef.ToPropertyDef<"integer"> };
-        props?: { mom: number } | undefined;
-      } | undefined;
-    } & EmployeeApiTest,
+    DerivedObjectOrInterfaceDefinition.WithDerivedProperties<
+      EmployeeApiTest,
+      { mom: "integer" }
+    >,
     {}
   >
   | NotWhereClause<
-    {
-      __DefinitionMetadata?: {
-        properties: { mom: SimplePropertyDef.ToPropertyDef<"integer"> };
-        props?: { mom: number } | undefined;
-      } | undefined;
-    } & EmployeeApiTest,
+    DerivedObjectOrInterfaceDefinition.WithDerivedProperties<
+      EmployeeApiTest,
+      { mom: "integer" }
+    >,
     {}
   >
   | {
