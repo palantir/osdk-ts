@@ -19,7 +19,7 @@
 // string with `toMatchFileSnapshot`. See README.md and hoverTypes.test.ts
 // for an end-to-end example.
 
-import { execFileSync } from "node:child_process";
+import { spawnSync } from "node:child_process";
 import * as path from "node:path";
 import * as ts from "typescript";
 
@@ -148,8 +148,7 @@ function scrub(s: string): string {
 
 // Pretty-print one probes file's worth of probes as TS-flavored snapshot
 // content: `/** desc */\ntype probeName = rendered;`, joined and run through
-// dprint. dprint is a root devDep so its binary is on PATH under
-// `pnpm test` / `pnpm vitest`.
+// dprint.
 function formatSnapshot(probes: Record<string, ProbeEntry>): string {
   const names = Object.keys(probes).sort();
   if (names.length === 0) return "";
@@ -157,9 +156,15 @@ function formatSnapshot(probes: Record<string, ProbeEntry>): string {
     const { source, rendered } = probes[n];
     return `/** ${source} */\ntype ${n} = ${rendered};`;
   }).join("\n\n");
-  return execFileSync(
-    "dprint",
-    ["fmt", "--stdin", "probes.ts"],
-    { input: wrapped, encoding: "utf8" },
+  const result = spawnSync(
+    "pnpm exec dprint fmt --stdin probes.ts",
+    { input: wrapped, encoding: "utf8", shell: true },
   );
+  if (result.error) throw result.error;
+  if (result.status !== 0) {
+    throw new Error(
+      `dprint exited with status ${result.status}: ${result.stderr}`,
+    );
+  }
+  return result.stdout;
 }
