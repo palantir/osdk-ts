@@ -17,6 +17,7 @@
 import type {
   LanguageModelV3Message,
   LanguageModelV3Prompt,
+  LanguageModelV3ToolResultOutput,
   SharedV3Warning,
 } from "@ai-sdk/provider";
 
@@ -70,6 +71,9 @@ function convertMessage(
             });
             break;
         }
+      }
+      if (parts.length === 0) {
+        parts.push({ type: "text", text: "" });
       }
       return [{ role: "user", content: parts }];
     }
@@ -129,34 +133,29 @@ function convertMessage(
         )
         .map((part) => ({
           role: "tool" as const,
-          content: stringifyToolResult(part, warnings),
+          content: stringifyToolResult(part.output, warnings),
           tool_call_id: part.toolCallId,
         }));
   }
 }
 
 function stringifyToolResult(
-  part: { type: "tool-result"; output: unknown },
+  output: LanguageModelV3ToolResultOutput,
   warnings: Array<SharedV3Warning>,
 ): string {
-  const output = part.output as
-    | { type: string; value?: unknown; reason?: string }
-    | undefined;
-  if (output == null) return "";
-
   switch (output.type) {
     case "text":
     case "error-text":
-      return typeof output.value === "string" ? output.value : "";
+      return output.value;
     case "json":
     case "error-json":
       return JSON.stringify(output.value);
     case "execution-denied":
       return output.reason ?? "Tool execution denied";
     case "content":
-      return ((output.value as Array<{ type: string; text?: string }>) ?? [])
+      return output.value
         .map((c) => {
-          if (c.type === "text") return c.text ?? "";
+          if (c.type === "text") return c.text;
           warnings.push({
             type: "unsupported",
             feature: "tool result media content",
@@ -167,7 +166,5 @@ function stringifyToolResult(
         })
         .filter((s) => s.length > 0)
         .join("\n");
-    default:
-      return JSON.stringify(output);
   }
 }

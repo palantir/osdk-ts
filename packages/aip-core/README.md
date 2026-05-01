@@ -26,10 +26,6 @@ import { foundryModel } from "@osdk/aip-core";
 const model = foundryModel({
   client, // PlatformClient from @osdk/client
   model: "gpt-4o", // LMS model API name or a ModelIdentifier
-  attribution: { // optional — defaults to the calling user
-    type: "project",
-    projectRid: "ri.compass...",
-  },
 });
 ```
 
@@ -166,19 +162,6 @@ const result = streamText({
 for await (const chunk of result.textStream) {
   process.stdout.write(chunk);
 }
-```
-
-### Provider options
-
-```ts
-const foundryAI = createFoundryAI({
-  client, // PlatformClient from @osdk/client
-  attribution: { // optional
-    type: "project",
-    projectRid: "ri.compass...",
-  },
-  defaultPriority: "INTERACTIVE", // optional — defaults to "CRITICAL"
-});
 ```
 
 ### Registered models

@@ -31,13 +31,11 @@ import { getOpenAiBaseUrl } from "@osdk/language-models";
 import type { OpenAiAssistantToolCall } from "./convert-prompt.js";
 import { convertPrompt } from "./convert-prompt.js";
 import { mapFinishReason } from "./map-finish-reason.js";
-import type { Attribution, ModelIdentifier, RequestPriority } from "./types.js";
+import type { ModelIdentifier } from "./types.js";
 
 export interface FoundryChatLanguageModelConfig {
   client: PlatformClient;
   identifier: ModelIdentifier;
-  attribution: Attribution | undefined;
-  priority: RequestPriority;
 }
 
 export class FoundryChatLanguageModel implements LanguageModelV3 {

@@ -17,21 +17,11 @@
 import type { LanguageModelV3 } from "@ai-sdk/provider";
 import type { PlatformClient } from "@osdk/client";
 import { FoundryChatLanguageModel } from "./foundry-chat-language-model.js";
-import type { Attribution, ModelIdentifier, RequestPriority } from "./types.js";
+import type { ModelIdentifier } from "./types.js";
 
 export interface FoundryAIProviderOptions {
   /** Foundry PlatformClient providing the auth token + base URL. */
   client: PlatformClient;
-  /**
-   * Attribution forwarded to LMS for billing. Defaults to the PlatformClient's
-   * own bearer token, attributed to the calling user.
-   */
-  attribution?: Attribution;
-  /**
-   * Default request priority forwarded to LMS. Defaults to `CRITICAL` to
-   * match interactive chat workloads.
-   */
-  defaultPriority?: RequestPriority;
 }
 
 /**
@@ -91,8 +81,6 @@ export function createFoundryAI(
     return new FoundryChatLanguageModel(`foundry/${id}`, {
       client: options.client,
       identifier,
-      attribution: options.attribution,
-      priority: options.defaultPriority ?? "CRITICAL",
     });
   };
 

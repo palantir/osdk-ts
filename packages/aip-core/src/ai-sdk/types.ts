@@ -14,8 +14,4 @@
  * limitations under the License.
  */
 
-export type {
-  Attribution,
-  ModelIdentifier,
-  RequestPriority,
-} from "../model.js";
+export type { ModelIdentifier } from "../model.js";
