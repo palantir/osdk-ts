@@ -53,8 +53,8 @@ export interface LmsChatTransportOptions {
 
 /**
  * Stream chat completions through the Foundry Language Model Service via
- * `streamText`. Pass to `useChat({ transport })` to override the default
- * transport (e.g. to inject custom sampling).
+ * `streamText`. Implements `ChatTransport`, so any consumer that accepts a
+ * transport can plug it in (e.g. to inject custom sampling).
  */
 export class LmsChatTransport implements ChatTransport<UIMessage> {
   private readonly opts: LmsChatTransportOptions;
@@ -98,12 +98,6 @@ export class LmsChatTransport implements ChatTransport<UIMessage> {
             controller.enqueue({ type: "start", messageId: assistantId });
             controller.enqueue({ type: "start-step" });
           }
-          const ensureTextOpen = (): void => {
-            if (!textOpen) {
-              textOpen = true;
-              controller.enqueue({ type: "text-start", id: textPartId });
-            }
-          };
           const closeText = (): void => {
             if (textOpen) {
               textOpen = false;
@@ -120,21 +114,16 @@ export class LmsChatTransport implements ChatTransport<UIMessage> {
             }
           };
           switch (chunk.type) {
-            case "text-start": {
-              ensureTextOpen();
-              return;
-            }
             case "text-delta": {
-              ensureTextOpen();
+              if (!textOpen) {
+                textOpen = true;
+                controller.enqueue({ type: "text-start", id: textPartId });
+              }
               controller.enqueue({
                 type: "text-delta",
                 id: textPartId,
                 delta: chunk.delta,
               });
-              return;
-            }
-            case "text-end": {
-              closeText();
               return;
             }
             case "reasoning-delta": {
@@ -183,6 +172,13 @@ export class LmsChatTransport implements ChatTransport<UIMessage> {
               });
               return;
             }
+            default: {
+              const unhandled: { type: string } = chunk;
+              controller.enqueue({
+                type: "error",
+                errorText: `Unhandled chunk type "${unhandled.type}"`,
+              });
+            }
           }
         },
       }),
@@ -198,27 +194,16 @@ export class LmsChatTransport implements ChatTransport<UIMessage> {
 
 function mergeHeaders(
   base: Record<string, string | undefined> | undefined,
-  override: Record<string, string> | Headers | undefined,
+  override: Record<string, string> | undefined,
 ): Record<string, string | undefined> | undefined {
   if (base == null && override == null) {
     return undefined;
   }
   const out: Record<string, string | undefined> = { ...(base ?? {}) };
-  if (override instanceof Headers) {
-    override.forEach((value, key) => {
-      out[key] = value;
-    });
-  } else if (override != null) {
+  if (override != null) {
     for (const [k, v] of Object.entries(override)) {
       out[k] = v;
     }
   }
   return out;
-}
-
-/** Convenience factory equivalent to `new LmsChatTransport(opts)`. */
-export function lmsChatTransport(
-  opts: LmsChatTransportOptions,
-): LmsChatTransport {
-  return new LmsChatTransport(opts);
 }

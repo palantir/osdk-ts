@@ -126,24 +126,13 @@ export type ToolResultOutput =
  *
  * `inputSchema` is intentionally typed as `unknown` rather than a specific
  * schema library type — it can be a Zod schema, a JSON Schema object, or any
- * other validator the consumer supplies. The implementation will accept what
- * it can and surface validation through `experimental_repairToolCall` later.
+ * other validator the consumer supplies.
  */
-export interface Tool<INPUT = unknown, OUTPUT = unknown> {
+export interface Tool {
   description?: string;
   inputSchema: unknown;
-  execute?: (
-    input: INPUT,
-    context: ToolExecutionContext,
-  ) => Promise<OUTPUT> | OUTPUT;
   /** Provider-specific options, e.g. OpenAI strict mode. */
   providerOptions?: ProviderOptions;
-}
-
-export interface ToolExecutionContext {
-  toolCallId: string;
-  messages: Array<ModelMessage>;
-  abortSignal?: AbortSignal;
 }
 
 export type ToolSet = Record<string, Tool>;
@@ -207,8 +196,7 @@ export interface ProviderMetadata {
 export type ProviderOptions = ProviderMetadata;
 
 export interface Warning {
-  type: "unsupported-setting" | "unsupported-tool" | "other";
-  setting?: string;
+  type: "unsupported-tool" | "other";
   details?: string;
   message?: string;
 }
@@ -228,26 +216,12 @@ export interface ResponseMetadata {
 }
 
 // ---------------------------------------------------------------------------
-// Generated artifacts (sources, files, reasoning)
+// Reasoning
 // ---------------------------------------------------------------------------
 
 export interface ReasoningOutput {
   type: "reasoning";
   text: string;
-  providerMetadata?: ProviderMetadata;
-}
-
-export interface GeneratedFile {
-  base64: string;
-  uint8Array: Uint8Array;
-  mediaType: string;
-}
-
-export interface Source {
-  sourceType: "url" | "document";
-  id: string;
-  url?: string;
-  title?: string;
   providerMetadata?: ProviderMetadata;
 }
 
@@ -262,8 +236,6 @@ export type ContentPart<TOOLS extends ToolSet = ToolSet> =
     text: string;
     providerMetadata?: ProviderMetadata;
   }
-  | { type: "source"; source: Source }
-  | { type: "file"; file: GeneratedFile }
   | (ToolCall<keyof TOOLS & string> & { type: "tool-call" })
   | (ToolResult<keyof TOOLS & string> & { type: "tool-result" });
 
@@ -272,8 +244,6 @@ export interface StepResult<TOOLS extends ToolSet = ToolSet> {
   text: string;
   reasoning: Array<ReasoningOutput>;
   reasoningText: string | undefined;
-  files: Array<GeneratedFile>;
-  sources: Array<Source>;
   toolCalls: Array<ToolCall<keyof TOOLS & string>>;
   toolResults: Array<ToolResult<keyof TOOLS & string>>;
   finishReason: FinishReason;

@@ -28,10 +28,18 @@ export interface ChatStore {
   getSnapshot: () => ChatState;
   /** Subscribe to state changes. Returns the unsubscribe function. */
   subscribe: (notify: () => void) => () => void;
-  /** Replace state immediately. Notifies subscribers (subject to throttling). */
+  /** Replace state and notify subscribers synchronously. */
   setState: (
     next: ChatState | ((prev: ChatState) => ChatState),
-    options?: { force?: boolean },
+  ) => void;
+  /**
+   * Replace state and coalesce subscriber notifications across rapid calls.
+   * Notifications fire `throttleMs` after the first change in a quiet window.
+   * Use for high-frequency updates (e.g. token streaming) where one render per
+   * change is wasteful.
+   */
+  setStateThrottled: (
+    next: ChatState | ((prev: ChatState) => ChatState),
   ) => void;
 }
 
@@ -55,31 +63,26 @@ export function createChatStore(options: CreateChatStoreOptions): ChatStore {
   const subscribers = new Set<() => void>();
   const throttleMs = options.throttleMs ?? 0;
   let pendingNotify: ReturnType<typeof setTimeout> | undefined;
-  let lastNotifyTs = 0;
 
-  const flushNotify = (): void => {
-    pendingNotify = undefined;
-    lastNotifyTs = Date.now();
+  const notifyNow = (): void => {
+    if (pendingNotify != null) {
+      clearTimeout(pendingNotify);
+      pendingNotify = undefined;
+    }
     for (const s of subscribers) {
       s();
     }
   };
 
-  const scheduleNotify = (force: boolean): void => {
-    if (force || throttleMs <= 0) {
-      if (pendingNotify != null) {
-        clearTimeout(pendingNotify);
-        pendingNotify = undefined;
-      }
-      flushNotify();
+  const notifyThrottled = (): void => {
+    if (throttleMs <= 0) {
+      notifyNow();
       return;
     }
     if (pendingNotify != null) {
       return;
     }
-    const elapsed = Date.now() - lastNotifyTs;
-    const wait = elapsed >= throttleMs ? 0 : throttleMs - elapsed;
-    pendingNotify = setTimeout(flushNotify, wait);
+    pendingNotify = setTimeout(notifyNow, throttleMs);
   };
 
   return {
@@ -90,9 +93,13 @@ export function createChatStore(options: CreateChatStoreOptions): ChatStore {
         subscribers.delete(notify);
       };
     },
-    setState: (next, opts) => {
+    setState: (next) => {
       state = typeof next === "function" ? next(state) : next;
-      scheduleNotify(opts?.force ?? false);
+      notifyNow();
+    },
+    setStateThrottled: (next) => {
+      state = typeof next === "function" ? next(state) : next;
+      notifyThrottled();
     },
   };
 }

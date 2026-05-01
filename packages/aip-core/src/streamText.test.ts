@@ -173,7 +173,7 @@ describe("streamText", () => {
     });
   });
 
-  it("emits text-start, text-delta(s), text-end, finish in order", async () => {
+  it("emits text-delta(s) and finish in order", async () => {
     const { client } = createMockClient({
       frames: [
         chunkFrame({ delta: { content: "Hello" } }),
@@ -191,11 +191,9 @@ describe("streamText", () => {
     const chunks = await collectChunks(result.fullStream);
     const types = chunks.map((c: TextStreamChunk) => c.type);
     expect(types).toEqual([
-      "text-start",
       "text-delta",
       "text-delta",
       "text-delta",
-      "text-end",
       "finish",
     ]);
 
@@ -301,29 +299,6 @@ describe("streamText", () => {
     }]);
   });
 
-  it("warns about v0-unsupported options", async () => {
-    const { client } = createMockClient({
-      frames: [
-        chunkFrame({ delta: { content: "ok" } }),
-        chunkFrame({ finishReason: "stop" }),
-      ],
-    });
-    const model = foundryModel({ client, model: "gpt-4o" });
-    const result = streamText({
-      model,
-      prompt: "hi",
-      topK: 5,
-      maxRetries: 3,
-    });
-    await collectChunks(result.fullStream);
-    const warnings = await result.warnings;
-    if (warnings == null) {
-      throw new Error("expected warnings to be defined");
-    }
-    expect(warnings.map((w) => w.setting)).toContain("topK");
-    expect(warnings.map((w) => w.setting)).toContain("maxRetries");
-  });
-
   it("invokes onChunk and onFinish callbacks", async () => {
     const { client } = createMockClient({
       frames: [
@@ -392,7 +367,6 @@ describe("streamText", () => {
       prompt: "hi",
       abortSignal: controller.signal,
     });
-    await collectChunks(result.fullStream);
 
     const [, init] = firstFetchCall(fetch);
     const fetchSignal = init?.signal;
@@ -402,6 +376,9 @@ describe("streamText", () => {
     expect(fetchSignal.aborted).toBe(false);
     controller.abort();
     expect(fetchSignal.aborted).toBe(true);
+
+    // Drain the stream so the run finishes and detaches its abort handler.
+    await collectChunks(result.fullStream).catch(() => {});
   });
 
   it("rejects when both prompt and messages are provided", () => {
@@ -443,5 +420,39 @@ describe("streamText", () => {
     expect(await result.text).toBe("ok");
     const warnings = await result.warnings;
     expect(warnings?.some((w) => w.message?.includes("malformed"))).toBe(true);
+  });
+
+  it("surfaces an in-band SSE error frame as a thrown error", async () => {
+    const enc = new TextEncoder();
+    const body = new ReadableStream<Uint8Array>({
+      start(c) {
+        c.enqueue(
+          enc.encode(`data: ${chunkFrame({ delta: { content: "x" } })}\n\n`),
+        );
+        c.enqueue(
+          enc.encode(
+            `data: ${
+              JSON.stringify({
+                error: { message: "upstream model went away" },
+              })
+            }\n\n`,
+          ),
+        );
+        c.close();
+      },
+    });
+    const { client } = createMockClient({
+      response: new Response(body, {
+        status: 200,
+        headers: { "Content-Type": "text/event-stream" },
+      }),
+    });
+    const model = foundryModel({ client, model: "gpt-4o" });
+    const result = streamText({ model, prompt: "hi" });
+
+    const chunks = await collectChunks(result.fullStream);
+    const errChunk = chunks.find((c) => c.type === "error");
+    expect(errChunk).toBeDefined();
+    await expect(result.text).rejects.toThrow(/upstream model went away/);
   });
 });

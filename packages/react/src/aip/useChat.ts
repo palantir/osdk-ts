@@ -24,7 +24,11 @@ import {
   type UIMessageChunk,
 } from "@osdk/aip-core";
 import React from "react";
-import { type ChatStatus, createChatStore } from "./chatStore.js";
+import {
+  type ChatStatus,
+  type ChatStore,
+  createChatStore,
+} from "./chatStore.js";
 
 export type { ChatStatus } from "./chatStore.js";
 
@@ -66,7 +70,7 @@ export interface UseChatOptions {
    * Throttle subscriber notifications during streaming (ms). Default 50ms,
    * which keeps token-by-token rendering smooth without rerendering per token.
    */
-  experimental_throttle?: number;
+  experimentalThrottle?: number;
 
   /** Fires when an in-flight stream errors out. */
   onError?: (error: Error) => void;
@@ -120,70 +124,15 @@ export type SendMessageInput =
  * ```
  */
 export function useChat(options: UseChatOptions): UseChatReturn {
-  const {
-    onFinish,
-    onError,
-  } = options;
+  const { onFinish, onError } = options;
 
   const id = React.useMemo(
     () => options.id ?? generateMessageId(),
     [options.id],
   );
 
-  // JSON-stringify keys keep the memo stable when callers pass inline objects.
-  const headersKey = JSON.stringify(options.headers ?? null);
-  const stopSequencesKey = JSON.stringify(options.stopSequences ?? null);
-
-  const transport = React.useMemo<ChatTransport<UIMessage>>(
-    () => {
-      if (options.transport != null) {
-        return options.transport;
-      }
-      if (options.model == null) {
-        throw new Error(
-          "useChat: `model` is required when no `transport` is provided.",
-        );
-      }
-      const built: LmsChatTransportOptions = {
-        model: options.model,
-        system: options.system,
-        temperature: options.temperature,
-        maxOutputTokens: options.maxOutputTokens,
-        topP: options.topP,
-        presencePenalty: options.presencePenalty,
-        frequencyPenalty: options.frequencyPenalty,
-        stopSequences: options.stopSequences,
-        seed: options.seed,
-        headers: options.headers,
-      };
-      return new LmsChatTransport(built);
-    },
-    [
-      options.transport,
-      options.model,
-      options.system,
-      options.temperature,
-      options.maxOutputTokens,
-      options.topP,
-      options.presencePenalty,
-      options.frequencyPenalty,
-      options.seed,
-      headersKey,
-      stopSequencesKey,
-    ],
-  );
-
-  const store = React.useMemo(
-    () =>
-      createChatStore({
-        initialMessages: options.messages,
-        throttleMs: options.experimental_throttle ?? 50,
-      }),
-    // Recreating the store mid-session would drop chat state, so it's keyed
-    // only by `id`. Use `setMessages` to mutate messages at runtime.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [id],
-  );
+  const transport = useTransport(options);
+  const store = useStore(id, options);
 
   const state = React.useSyncExternalStore(
     store.subscribe,
@@ -194,173 +143,33 @@ export function useChat(options: UseChatOptions): UseChatReturn {
   const abortRef = React.useRef<AbortController | undefined>(undefined);
   const stoppedRef = React.useRef<boolean>(false);
 
-  const drainStream = React.useCallback(async (
-    stream: ReadableStream<UIMessageChunk>,
-    assistantMessageId: string,
-    capturedCtrl: AbortController,
-  ): Promise<void> => {
-    const reader = stream.getReader();
-    let assistantAdded = false;
-    let textBuf = "";
+  const ctxRef = React.useRef<StreamContext>({
+    store,
+    abortRef,
+    stoppedRef,
+    onFinish,
+    onError,
+  });
+  ctxRef.current = { store, abortRef, stoppedRef, onFinish, onError };
 
-    const isStale = (): boolean =>
-      abortRef.current != null && abortRef.current !== capturedCtrl;
-
-    // Caller dropped our assistant message via `setMessages` mid-stream.
-    // Treat as "the consumer no longer wants this stream" — quietly stop.
-    const isOrphaned = (): boolean =>
-      assistantAdded
-      && !store.getSnapshot().messages.some((m) => m.id === assistantMessageId);
-
-    try {
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) {
-          break;
-        }
-        if (isStale()) {
-          await reader.cancel();
-          return;
-        }
-        if (isOrphaned()) {
-          await reader.cancel();
-          store.setState((prev) => ({ ...prev, status: "ready" }), {
-            force: true,
-          });
-          return;
-        }
-        if (value.type === "text-delta") {
-          textBuf += value.delta;
-          if (!assistantAdded) {
-            assistantAdded = true;
-            store.setState((prev) => ({
-              ...prev,
-              status: "streaming",
-              messages: [
-                ...prev.messages,
-                {
-                  id: assistantMessageId,
-                  role: "assistant",
-                  parts: [{ type: "text", text: textBuf }],
-                },
-              ],
-            }));
-          } else {
-            store.setState((prev) => ({
-              ...prev,
-              status: "streaming",
-              messages: prev.messages.map((m) =>
-                m.id === assistantMessageId
-                  ? { ...m, parts: [{ type: "text", text: textBuf }] }
-                  : m
-              ),
-            }));
-          }
-        } else if (value.type === "error") {
-          if (stoppedRef.current || capturedCtrl.signal.aborted) {
-            return;
-          }
-          await reader.cancel();
-          throw new Error(value.errorText);
-        }
-      }
-      if (isStale()) {
-        return;
-      }
-      store.setState((prev) => ({ ...prev, status: "ready" }), {
-        force: true,
-      });
-      const finalSnap = store.getSnapshot();
-      const finalMessage = finalSnap.messages.find((m) =>
-        m.id === assistantMessageId
-      );
-      if (finalMessage != null && onFinish != null) {
-        onFinish({
-          message: finalMessage,
-          messages: finalSnap.messages,
-        });
-      }
-    } catch (err) {
-      const error = err instanceof Error ? err : new Error(String(err));
-      if (isStale()) {
-        return;
-      }
-      if (
-        stoppedRef.current
-        || error.name === "AbortError"
-        || capturedCtrl.signal.aborted
-      ) {
-        store.setState(
-          (prev) => ({ ...prev, status: "ready", error: undefined }),
-          { force: true },
-        );
-        return;
-      }
-      store.setState(
-        (prev) => ({ ...prev, status: "error", error }),
-        { force: true },
-      );
-      if (onError != null) {
-        onError(error);
-      }
-    } finally {
-      reader.releaseLock();
-    }
-  }, [store, onFinish, onError]);
-
-  const runStream = React.useCallback(async (
-    seed: ReadonlyArray<UIMessage>,
-    trigger: "submit-message" | "regenerate-message",
-  ): Promise<void> => {
-    abortRef.current?.abort();
-    const ctrl = new AbortController();
-    abortRef.current = ctrl;
-    stoppedRef.current = false;
-
-    const assistantId = generateMessageId();
-    try {
-      const stream = await transport.sendMessages({
-        trigger,
-        chatId: id,
-        messageId: assistantId,
-        messages: seed.slice(),
-        abortSignal: ctrl.signal,
-      });
-      await drainStream(stream, assistantId, ctrl);
-    } catch (err) {
-      const error = err instanceof Error ? err : new Error(String(err));
-      if (abortRef.current != null && abortRef.current !== ctrl) {
-        return;
-      }
-      if (
-        stoppedRef.current
-        || error.name === "AbortError"
-        || ctrl.signal.aborted
-      ) {
-        store.setState(
-          (prev) => ({ ...prev, status: "ready", error: undefined }),
-          { force: true },
-        );
-        return;
-      }
-      store.setState(
-        (prev) => ({ ...prev, status: "error", error }),
-        { force: true },
-      );
-      if (onError != null) {
-        onError(error);
-      }
-    }
-  }, [transport, id, store, drainStream, onError]);
+  const runStream = React.useCallback(
+    (
+      seed: ReadonlyArray<UIMessage>,
+      trigger: "submit-message" | "regenerate-message",
+    ): Promise<void> =>
+      runChatStream(ctxRef.current, transport, id, seed, trigger),
+    [transport, id],
+  );
 
   const sendMessage = React.useCallback(
     async (input: SendMessageInput): Promise<void> => {
       const userMsg = normalizeUserMessage(input);
       const seeded = [...store.getSnapshot().messages, userMsg];
-      store.setState(
-        { messages: seeded, status: "submitted", error: undefined },
-        { force: true },
-      );
+      store.setState({
+        messages: seeded,
+        status: "submitted",
+        error: undefined,
+      });
       await runStream(seeded, "submit-message");
     },
     [store, runStream],
@@ -369,30 +178,27 @@ export function useChat(options: UseChatOptions): UseChatReturn {
   const regenerate = React.useCallback(
     async (regenerateOpts?: { messageId?: string }): Promise<void> => {
       const messages = store.getSnapshot().messages;
-      let cutoff: number;
-      if (regenerateOpts?.messageId != null) {
-        cutoff = messages.findIndex((m) => m.id === regenerateOpts.messageId);
-        if (cutoff < 0) {
-          return;
-        }
-        const target = messages[cutoff];
-        if (target == null || target.role !== "assistant") {
-          throw new Error(
-            `useChat.regenerate: messageId "${regenerateOpts.messageId}" is `
-              + `not an assistant message; only assistant messages can be regenerated.`,
-          );
-        }
-      } else {
-        cutoff = findLastAssistantIndex(messages);
-        if (cutoff < 0) {
-          return;
-        }
-      }
-      const truncated = messages.slice(0, cutoff);
-      store.setState(
-        { messages: truncated, status: "submitted", error: undefined },
-        { force: true },
+      const cutoff = resolveRegenerateCutoff(
+        messages,
+        regenerateOpts?.messageId,
       );
+      if (cutoff.kind === "noop") {
+        return;
+      }
+      if (cutoff.kind === "error") {
+        store.setState((prev) => ({
+          ...prev,
+          status: "error",
+          error: cutoff.error,
+        }));
+        return;
+      }
+      const truncated = messages.slice(0, cutoff.index);
+      store.setState({
+        messages: truncated,
+        status: "submitted",
+        error: undefined,
+      });
       await runStream(truncated, "regenerate-message");
     },
     [store, runStream],
@@ -413,8 +219,8 @@ export function useChat(options: UseChatOptions): UseChatReturn {
     const ctrl = new AbortController();
     abortRef.current = ctrl;
     const assistantId = generateMessageId();
-    await drainStream(stream, assistantId, ctrl);
-  }, [transport, id, drainStream]);
+    await drainStream(ctxRef.current, stream, assistantId, ctrl);
+  }, [transport, id]);
 
   const clearError = React.useCallback((): void => {
     // Resetting from streaming/submitted would race the in-flight stream, so
@@ -424,7 +230,6 @@ export function useChat(options: UseChatOptions): UseChatReturn {
         prev.status === "error"
           ? { ...prev, status: "ready", error: undefined }
           : prev,
-      { force: true },
     );
   }, [store]);
 
@@ -434,18 +239,15 @@ export function useChat(options: UseChatOptions): UseChatReturn {
         | ReadonlyArray<UIMessage>
         | ((prev: ReadonlyArray<UIMessage>) => ReadonlyArray<UIMessage>),
     ): void => {
-      store.setState(
-        (prev) => {
-          if (prev.status === "streaming" || prev.status === "submitted") {
-            return prev;
-          }
-          return {
-            ...prev,
-            messages: typeof next === "function" ? next(prev.messages) : next,
-          };
-        },
-        { force: true },
-      );
+      store.setState((prev) => {
+        if (prev.status === "streaming" || prev.status === "submitted") {
+          return prev;
+        }
+        return {
+          ...prev,
+          messages: typeof next === "function" ? next(prev.messages) : next,
+        };
+      });
     },
     [store],
   );
@@ -476,6 +278,260 @@ export function useChat(options: UseChatOptions): UseChatReturn {
       clearError,
     ],
   );
+}
+
+// ---------------------------------------------------------------------------
+// Stream orchestration (extracted to keep the hook body readable)
+// ---------------------------------------------------------------------------
+
+interface StreamContext {
+  store: ChatStore;
+  abortRef: React.MutableRefObject<AbortController | undefined>;
+  stoppedRef: React.MutableRefObject<boolean>;
+  onFinish: UseChatOptions["onFinish"];
+  onError: UseChatOptions["onError"];
+}
+
+async function runChatStream(
+  ctx: StreamContext,
+  transport: ChatTransport<UIMessage>,
+  chatId: string,
+  seed: ReadonlyArray<UIMessage>,
+  trigger: "submit-message" | "regenerate-message",
+): Promise<void> {
+  ctx.abortRef.current?.abort();
+  const ctrl = new AbortController();
+  ctx.abortRef.current = ctrl;
+  ctx.stoppedRef.current = false;
+
+  const assistantId = generateMessageId();
+  try {
+    const stream = await transport.sendMessages({
+      trigger,
+      chatId,
+      messageId: assistantId,
+      messages: seed.slice(),
+      abortSignal: ctrl.signal,
+    });
+    await drainStream(ctx, stream, assistantId, ctrl);
+  } catch (err) {
+    handleStreamError(ctx, err, ctrl);
+  }
+}
+
+async function drainStream(
+  ctx: StreamContext,
+  stream: ReadableStream<UIMessageChunk>,
+  assistantMessageId: string,
+  capturedCtrl: AbortController,
+): Promise<void> {
+  const { store } = ctx;
+  const reader = stream.getReader();
+  let textBuf = "";
+
+  const isStale = (): boolean =>
+    ctx.abortRef.current != null && ctx.abortRef.current !== capturedCtrl;
+
+  // Caller dropped our assistant message via `setMessages` mid-stream.
+  // Treat as "the consumer no longer wants this stream" — quietly stop.
+  const isOrphaned = (): boolean => {
+    const messages = store.getSnapshot().messages;
+    return textBuf.length > 0
+      && !messages.some((m) => m.id === assistantMessageId);
+  };
+
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) {
+        break;
+      }
+      if (isStale()) {
+        await reader.cancel();
+        return;
+      }
+      if (isOrphaned()) {
+        await reader.cancel();
+        store.setState((prev) => ({ ...prev, status: "ready" }));
+        return;
+      }
+      if (value.type === "text-delta") {
+        textBuf += value.delta;
+        upsertAssistantText(store, assistantMessageId, textBuf);
+      } else if (value.type === "error") {
+        if (ctx.stoppedRef.current || capturedCtrl.signal.aborted) {
+          return;
+        }
+        await reader.cancel();
+        throw new Error(value.errorText);
+      }
+    }
+    if (isStale()) {
+      return;
+    }
+    store.setState((prev) => ({ ...prev, status: "ready" }));
+    const finalSnap = store.getSnapshot();
+    const finalMessage = finalSnap.messages.find(
+      (m) => m.id === assistantMessageId,
+    );
+    if (finalMessage != null && ctx.onFinish != null) {
+      ctx.onFinish({ message: finalMessage, messages: finalSnap.messages });
+    }
+  } catch (err) {
+    handleStreamError(ctx, err, capturedCtrl);
+  } finally {
+    reader.releaseLock();
+  }
+}
+
+function upsertAssistantText(
+  store: ChatStore,
+  assistantMessageId: string,
+  text: string,
+): void {
+  store.setStateThrottled((prev) => {
+    const exists = prev.messages.some((m) => m.id === assistantMessageId);
+    const messages = exists
+      ? prev.messages.map((m) =>
+        m.id === assistantMessageId
+          ? { ...m, parts: [{ type: "text" as const, text }] }
+          : m
+      )
+      : [
+        ...prev.messages,
+        {
+          id: assistantMessageId,
+          role: "assistant" as const,
+          parts: [{ type: "text" as const, text }],
+        },
+      ];
+    return { ...prev, status: "streaming", messages };
+  });
+}
+
+function handleStreamError(
+  ctx: StreamContext,
+  err: unknown,
+  capturedCtrl: AbortController,
+): void {
+  if (ctx.abortRef.current != null && ctx.abortRef.current !== capturedCtrl) {
+    return;
+  }
+  const error = err instanceof Error ? err : new Error(String(err));
+  if (
+    ctx.stoppedRef.current
+    || error.name === "AbortError"
+    || capturedCtrl.signal.aborted
+  ) {
+    ctx.store.setState((prev) => ({
+      ...prev,
+      status: "ready",
+      error: undefined,
+    }));
+    return;
+  }
+  ctx.store.setState((prev) => ({ ...prev, status: "error", error }));
+  ctx.onError?.(error);
+}
+
+// ---------------------------------------------------------------------------
+// Setup helpers (memoization shape kept inside the hook)
+// ---------------------------------------------------------------------------
+
+function useTransport(options: UseChatOptions): ChatTransport<UIMessage> {
+  // JSON-stringify keys keep the memo stable when callers pass inline objects.
+  const headersKey = JSON.stringify(options.headers ?? null);
+  const stopSequencesKey = JSON.stringify(options.stopSequences ?? null);
+  return React.useMemo<ChatTransport<UIMessage>>(
+    () => {
+      if (options.transport != null) {
+        return options.transport;
+      }
+      if (options.model == null) {
+        throw new Error(
+          "useChat: `model` is required when no `transport` is provided.",
+        );
+      }
+      const built: LmsChatTransportOptions = {
+        model: options.model,
+        system: options.system,
+        temperature: options.temperature,
+        maxOutputTokens: options.maxOutputTokens,
+        topP: options.topP,
+        presencePenalty: options.presencePenalty,
+        frequencyPenalty: options.frequencyPenalty,
+        stopSequences: options.stopSequences,
+        seed: options.seed,
+        headers: options.headers,
+      };
+      return new LmsChatTransport(built);
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [
+      options.transport,
+      options.model,
+      options.system,
+      options.temperature,
+      options.maxOutputTokens,
+      options.topP,
+      options.presencePenalty,
+      options.frequencyPenalty,
+      options.seed,
+      headersKey,
+      stopSequencesKey,
+    ],
+  );
+}
+
+function useStore(id: string, options: UseChatOptions): ChatStore {
+  return React.useMemo(
+    () =>
+      createChatStore({
+        initialMessages: options.messages,
+        throttleMs: options.experimentalThrottle ?? 50,
+      }),
+    // Recreating the store mid-session would drop chat state, so it's keyed
+    // only by `id`. Use `setMessages` to mutate messages at runtime.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [id],
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Pure helpers
+// ---------------------------------------------------------------------------
+
+type RegenerateCutoff =
+  | { kind: "noop" }
+  | { kind: "error"; error: Error }
+  | { kind: "ok"; index: number };
+
+function resolveRegenerateCutoff(
+  messages: ReadonlyArray<UIMessage>,
+  messageId: string | undefined,
+): RegenerateCutoff {
+  if (messageId != null) {
+    const index = messages.findIndex((m) => m.id === messageId);
+    if (index < 0) {
+      return { kind: "noop" };
+    }
+    const target = messages[index];
+    if (target == null || target.role !== "assistant") {
+      return {
+        kind: "error",
+        error: new Error(
+          `useChat.regenerate: messageId "${messageId}" is `
+            + `not an assistant message; only assistant messages can be regenerated.`,
+        ),
+      };
+    }
+    return { kind: "ok", index };
+  }
+  const lastAssistant = findLastAssistantIndex(messages);
+  if (lastAssistant < 0) {
+    return { kind: "noop" };
+  }
+  return { kind: "ok", index: lastAssistant };
 }
 
 function normalizeUserMessage(input: SendMessageInput): UIMessage {

@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-import { collectV0Warnings, resolveMessages } from "./internal/options.js";
+import { resolveMessages } from "./internal/options.js";
 import { type StreamChunkEvent, streamStep } from "./internal/streamStep.js";
 import type { LanguageModel } from "./model.js";
 import type {
   FinishReason,
   LanguageModelUsage,
   ModelMessage,
-  ProviderMetadata,
   RequestMetadata,
   ResponseMetadata,
   SystemModelMessage,
@@ -33,9 +32,6 @@ import type {
 
 /**
  * Options for {@link streamText}.
- *
- * Not every option is wired to LMS in v0; unsupported settings are surfaced
- * via `result.warnings` rather than silently ignored.
  */
 export interface StreamTextOptions<TOOLS extends ToolSet = ToolSet> {
   /** The language model to use. Build one via `foundryModel(...)`. */
@@ -54,16 +50,12 @@ export interface StreamTextOptions<TOOLS extends ToolSet = ToolSet> {
 
   tools?: TOOLS;
   toolChoice?: ToolChoice<TOOLS>;
-  /** v0: ignored, warns. */
-  activeTools?: Array<keyof TOOLS & string>;
 
   // Sampling -----------------------------------------------------------------
 
   maxOutputTokens?: number;
   temperature?: number;
   topP?: number;
-  /** v0: ignored, warns. OpenAI proxy doesn't accept top_k. */
-  topK?: number;
   presencePenalty?: number;
   frequencyPenalty?: number;
   stopSequences?: Array<string>;
@@ -71,15 +63,8 @@ export interface StreamTextOptions<TOOLS extends ToolSet = ToolSet> {
 
   // Execution ----------------------------------------------------------------
 
-  /** v0: ignored, warns. Retries are handled by the underlying PlatformClient. */
-  maxRetries?: number;
-  /** v0: ignored, warns. Use `abortSignal` with `AbortSignal.timeout()`. */
-  timeout?: number | { totalMs?: number; stepMs?: number };
   abortSignal?: AbortSignal;
   headers?: Record<string, string | undefined>;
-
-  /** v0: ignored, warns. */
-  providerOptions?: ProviderMetadata;
 
   // Callbacks ----------------------------------------------------------------
 
@@ -183,7 +168,7 @@ interface FinalState {
 export function streamText<TOOLS extends ToolSet = ToolSet>(
   options: StreamTextOptions<TOOLS>,
 ): StreamTextResult {
-  const warnings = collectV0Warnings(options);
+  const warnings: Array<Warning> = [];
   const messages = resolveMessages(
     "streamText",
     options.system,
@@ -194,17 +179,17 @@ export function streamText<TOOLS extends ToolSet = ToolSet>(
   const final = createDeferred<FinalState>();
 
   const internalAbort = new AbortController();
+  const abortHandler = (): void => internalAbort.abort();
   if (options.abortSignal != null) {
     if (options.abortSignal.aborted) {
       internalAbort.abort();
     } else {
-      options.abortSignal.addEventListener(
-        "abort",
-        () => internalAbort.abort(),
-        { once: true },
-      );
+      options.abortSignal.addEventListener("abort", abortHandler);
     }
   }
+  const detachAbortHandler = (): void => {
+    options.abortSignal?.removeEventListener("abort", abortHandler);
+  };
 
   let streamController:
     | ReadableStreamDefaultController<TextStreamChunk>
@@ -278,6 +263,8 @@ export function streamText<TOOLS extends ToolSet = ToolSet>(
       if (options.onError != null) {
         await options.onError(error);
       }
+    } finally {
+      detachAbortHandler();
     }
   };
 
@@ -288,6 +275,7 @@ export function streamText<TOOLS extends ToolSet = ToolSet>(
     },
     cancel() {
       internalAbort.abort();
+      detachAbortHandler();
     },
   });
 

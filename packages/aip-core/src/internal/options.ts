@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ModelMessage, SystemModelMessage, Warning } from "../types.js";
+import type { ModelMessage, SystemModelMessage } from "../types.js";
 
 export type SystemOption =
   | string
@@ -75,34 +75,4 @@ function resolveBody(
     return [{ role: "user", content: prompt }];
   }
   return prompt;
-}
-
-export interface UnsupportedSetting<KEY extends string> {
-  key: KEY;
-  details?: string;
-}
-
-const COMMON_V0_UNSUPPORTED: ReadonlyArray<UnsupportedSetting<string>> = [
-  { key: "activeTools" },
-  { key: "topK", details: "OpenAI proxy does not accept top_k." },
-  {
-    key: "maxRetries",
-    details: "Retries are handled by the underlying PlatformClient.fetch.",
-  },
-  { key: "timeout", details: "Use `abortSignal` with AbortSignal.timeout()." },
-  { key: "providerOptions" },
-];
-
-export function collectV0Warnings(
-  options: object,
-  extras: ReadonlyArray<UnsupportedSetting<string>> = [],
-): Array<Warning> {
-  const bag = options as Record<string, unknown>;
-  const warnings: Array<Warning> = [];
-  for (const { key, details } of [...extras, ...COMMON_V0_UNSUPPORTED]) {
-    if (bag[key] != null) {
-      warnings.push({ type: "unsupported-setting", setting: key, details });
-    }
-  }
-  return warnings;
 }

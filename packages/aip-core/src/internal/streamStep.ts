@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { getOpenAiBaseUrl } from "@osdk/language-models";
 import { _getFoundryInternal, type LanguageModel } from "../model.js";
 import type {
   FinishReason,
@@ -32,19 +31,14 @@ import {
   buildOpenAiRequestBody,
   EMPTY_USAGE,
   getModelApiName,
-  mapUsage,
-} from "./openAi.js";
-import {
-  filterHeaders,
   mapFinishReason,
+  mapUsage,
   parseToolArguments,
-  safeReadText,
-} from "./runStep.js";
+  postChatCompletions,
+} from "./openAi.js";
 
 export type StreamChunkEvent =
-  | { type: "text-start"; id: string }
   | { type: "text-delta"; id: string; delta: string }
-  | { type: "text-end"; id: string }
   | { type: "reasoning-delta"; id: string; delta: string }
   | {
     type: "tool-call";
@@ -128,37 +122,16 @@ interface ToolCallAccumulator {
 export async function streamStep<TOOLS extends ToolSet>(
   input: StreamStepInput<TOOLS>,
 ): Promise<StreamStepResult> {
-  const handle = _getFoundryInternal(input.model);
-  const baseUrl = getOpenAiBaseUrl(handle.client);
-  const url = new URL("chat/completions", `${baseUrl}/`).toString();
-  const apiName = getModelApiName(handle.identifier);
-
+  const apiName = getModelApiName(_getFoundryInternal(input.model).identifier);
   const body = buildOpenAiRequestBody<TOOLS>({ apiName, ...input }, true);
 
-  const res = await handle.client.fetch(url, {
-    method: "POST",
-    headers: filterHeaders({
-      "Content-Type": "application/json",
-      "Accept": "text/event-stream",
-      ...(input.headers ?? {}),
-    }),
-    body: JSON.stringify(body),
-    signal: input.abortSignal,
+  const res = await postChatCompletions({
+    model: input.model,
+    body,
+    accept: "text/event-stream",
+    headers: input.headers,
+    abortSignal: input.abortSignal,
   });
-
-  if (!res.ok) {
-    // Bound the error-body read so a hung upstream doesn't deadlock the caller.
-    const errBody = await Promise.race([
-      safeReadText(res),
-      new Promise<string>((resolve) => {
-        setTimeout(() => resolve(""), 5000);
-      }),
-    ]);
-    throw new Error(
-      `LMS chat/completions request failed: ${res.status} ${res.statusText}`
-        + (errBody ? `: ${errBody}` : ""),
-    );
-  }
 
   if (res.body == null) {
     throw new Error("LMS chat/completions response had no streaming body");
@@ -190,8 +163,6 @@ async function parseSseStream(
     .getReader();
 
   let buffer = "";
-  let textStarted = false;
-  let textEnded = false;
   let textBuf = "";
   let reasoningStarted = false;
   let reasoningBuf = "";
@@ -203,14 +174,6 @@ async function parseSseStream(
   let responseId: string | undefined;
   let responseModel: string | undefined;
   let responseCreated: number | undefined;
-  let sawDone = false;
-
-  const finalizeText = async (): Promise<void> => {
-    if (textStarted && !textEnded) {
-      await args.onChunk({ type: "text-end", id: TEXT_PART_ID });
-      textEnded = true;
-    }
-  };
 
   try {
     while (true) {
@@ -234,13 +197,12 @@ async function parseSseStream(
             continue;
           }
           if (payload === "[DONE]") {
-            sawDone = true;
             continue;
           }
 
-          let chunk: OpenAiStreamChunk;
+          let parsed: unknown;
           try {
-            chunk = JSON.parse(payload) as OpenAiStreamChunk;
+            parsed = JSON.parse(payload);
           } catch {
             args.warnings.push({
               type: "other",
@@ -248,6 +210,12 @@ async function parseSseStream(
             });
             continue;
           }
+
+          if (isErrorFrame(parsed)) {
+            throw new Error(extractErrorMessage(parsed));
+          }
+
+          const chunk = parsed as OpenAiStreamChunk;
 
           if (!responseInitialized) {
             responseId = chunk.id;
@@ -260,14 +228,10 @@ async function parseSseStream(
             usage = mapUsage(chunk.usage);
           }
 
-          for (const choice of chunk.choices) {
+          for (const choice of chunk.choices ?? []) {
             const delta = choice.delta;
             const contentDelta = delta.content;
             if (typeof contentDelta === "string" && contentDelta.length > 0) {
-              if (!textStarted) {
-                textStarted = true;
-                await args.onChunk({ type: "text-start", id: TEXT_PART_ID });
-              }
               textBuf += contentDelta;
               await args.onChunk({
                 type: "text-delta",
@@ -319,15 +283,7 @@ async function parseSseStream(
       }
     }
   } finally {
-    await finalizeText();
     reader.releaseLock();
-  }
-
-  if (!sawDone && rawFinishReason == null) {
-    args.warnings.push({
-      type: "other",
-      message: "SSE stream closed without a [DONE] sentinel or finish_reason",
-    });
   }
 
   const finalUsage: LanguageModelUsage = usage ?? EMPTY_USAGE;
@@ -380,4 +336,27 @@ async function parseSseStream(
     request: args.request,
     response,
   };
+}
+
+function isErrorFrame(payload: unknown): payload is { error: unknown } {
+  return (
+    typeof payload === "object"
+    && payload != null
+    && "error" in payload
+    && (payload as { error: unknown }).error != null
+  );
+}
+
+function extractErrorMessage(payload: { error: unknown }): string {
+  const err = payload.error;
+  if (typeof err === "string") {
+    return err;
+  }
+  if (typeof err === "object" && err != null) {
+    const message = (err as { message?: unknown }).message;
+    if (typeof message === "string") {
+      return message;
+    }
+  }
+  return "LMS chat/completions stream emitted an error frame";
 }

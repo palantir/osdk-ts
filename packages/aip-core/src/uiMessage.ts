@@ -16,9 +16,9 @@
 
 /**
  * UI-level message and stream-chunk shapes for the AIP SDK's chat
- * primitives. These describe the wire format `useChat` consumes and
- * `LmsChatTransport` produces — a thin local subset of the Vercel AI SDK v5
- * UI types covering the v0 text-only surface.
+ * primitives. Describes the wire format that transports produce and UI
+ * consumers read — a thin local subset of the Vercel AI SDK v5 UI types
+ * covering the v0 text-only surface.
  */
 
 import type { FinishReason, LanguageModelUsage } from "./types.js";
@@ -71,7 +71,7 @@ export type UIMessageChunk =
   | { type: "error"; errorText: string };
 
 // ---------------------------------------------------------------------------
-// ChatTransport — abstraction useChat plugs into
+// ChatTransport — pluggable adapter that produces UIMessageChunk streams
 // ---------------------------------------------------------------------------
 
 export type ChatTransportTrigger = "submit-message" | "regenerate-message";
@@ -82,7 +82,7 @@ export interface ChatTransportSendMessagesArgs<MSG extends UIMessage> {
   messageId: string;
   messages: ReadonlyArray<MSG>;
   abortSignal: AbortSignal | undefined;
-  headers?: Record<string, string> | Headers;
+  headers?: Record<string, string>;
 }
 
 export interface ChatTransportReconnectArgs {

@@ -14,34 +14,20 @@
  * limitations under the License.
  */
 
-import { collectV0Warnings, resolveMessages } from "./internal/options.js";
+import { resolveMessages } from "./internal/options.js";
 import { runStep } from "./internal/runStep.js";
 import type { LanguageModel } from "./model.js";
 import type {
-  ContentPart,
-  FinishReason,
-  GeneratedFile,
   LanguageModelUsage,
   ModelMessage,
-  ProviderMetadata,
-  ReasoningOutput,
-  RequestMetadata,
-  ResponseMetadata,
-  Source,
   StepResult,
   SystemModelMessage,
-  ToolCall,
   ToolChoice,
-  ToolResult,
   ToolSet,
-  Warning,
 } from "./types.js";
 
 /**
  * Options for {@link generateText}.
- *
- * Not every option is wired to LMS in v0; unsupported settings are surfaced
- * via `result.warnings` rather than silently ignored.
  */
 export interface GenerateTextOptions<TOOLS extends ToolSet = ToolSet> {
   /** The language model to use. Build one via `foundryModel(...)`. */
@@ -60,26 +46,12 @@ export interface GenerateTextOptions<TOOLS extends ToolSet = ToolSet> {
 
   tools?: TOOLS;
   toolChoice?: ToolChoice<TOOLS>;
-  /** Subset of `tools` the model is allowed to call this turn (v0: ignored, warns). */
-  activeTools?: Array<keyof TOOLS & string>;
-
-  /** Stop the multi-step loop when this predicate returns true (v0: ignored, warns). */
-  stopWhen?:
-    | StopCondition<TOOLS>
-    | Array<StopCondition<TOOLS>>;
-
-  /** Hook invoked before each step (v0: ignored, warns). */
-  prepareStep?: (
-    options: PrepareStepOptions<TOOLS>,
-  ) => PrepareStepResult<TOOLS> | Promise<PrepareStepResult<TOOLS>>;
 
   // Sampling -----------------------------------------------------------------
 
   maxOutputTokens?: number;
   temperature?: number;
   topP?: number;
-  /** v0: ignored, warns. OpenAI proxy doesn't accept top_k. */
-  topK?: number;
   presencePenalty?: number;
   frequencyPenalty?: number;
   stopSequences?: Array<string>;
@@ -87,15 +59,8 @@ export interface GenerateTextOptions<TOOLS extends ToolSet = ToolSet> {
 
   // Execution ----------------------------------------------------------------
 
-  /** v0: ignored, warns. Retries are handled by the underlying PlatformClient. */
-  maxRetries?: number;
-  /** v0: ignored, warns. Use `abortSignal` with `AbortSignal.timeout()`. */
-  timeout?: number | { totalMs?: number; stepMs?: number };
   abortSignal?: AbortSignal;
   headers?: Record<string, string | undefined>;
-
-  /** v0: ignored, warns. */
-  providerOptions?: ProviderMetadata;
 
   // Callbacks ----------------------------------------------------------------
 
@@ -107,54 +72,21 @@ export interface GenerateTextOptions<TOOLS extends ToolSet = ToolSet> {
   ) => void | PromiseLike<void>;
 }
 
-export interface StopCondition<TOOLS extends ToolSet = ToolSet> {
-  (event: { steps: Array<StepResult<TOOLS>> }): boolean | Promise<boolean>;
-}
-
-export interface PrepareStepOptions<TOOLS extends ToolSet = ToolSet> {
-  steps: Array<StepResult<TOOLS>>;
-  stepNumber: number;
-  model: LanguageModel;
-  messages: Array<ModelMessage>;
-}
-
-export interface PrepareStepResult<TOOLS extends ToolSet = ToolSet> {
-  model?: LanguageModel;
-  toolChoice?: ToolChoice<TOOLS>;
-  activeTools?: Array<keyof TOOLS & string>;
-  messages?: Array<ModelMessage>;
-  system?: string;
-}
-
 /**
  * Result of {@link generateText}.
  */
-export interface GenerateTextResult<TOOLS extends ToolSet = ToolSet> {
-  content: Array<ContentPart<TOOLS>>;
-  text: string;
-  reasoning: Array<ReasoningOutput>;
-  reasoningText: string | undefined;
-  files: Array<GeneratedFile>;
-  sources: Array<Source>;
-  toolCalls: Array<ToolCall<keyof TOOLS & string>>;
-  toolResults: Array<ToolResult<keyof TOOLS & string>>;
-  finishReason: FinishReason;
-  rawFinishReason: string | undefined;
-  usage: LanguageModelUsage;
-  totalUsage: LanguageModelUsage;
-  request?: RequestMetadata;
-  response?: ResponseMetadata;
-  warnings: Array<Warning> | undefined;
-  providerMetadata: ProviderMetadata | undefined;
-  steps: Array<StepResult<TOOLS>>;
-}
+export type GenerateTextResult<TOOLS extends ToolSet = ToolSet> =
+  & StepResult<TOOLS>
+  & {
+    totalUsage: LanguageModelUsage;
+    steps: Array<StepResult<TOOLS>>;
+  };
 
 /**
  * Generate a text completion via the Foundry Language Model Service.
  *
  * v0: single-step. Multi-step tool execution loops, image/file content,
- * structured output, and Zod tool schemas are not yet supported. Unsupported
- * options surface as entries in `result.warnings` rather than throwing.
+ * structured output, and Zod tool schemas are not yet supported.
  *
  * @example
  * ```ts
@@ -170,13 +102,6 @@ export interface GenerateTextResult<TOOLS extends ToolSet = ToolSet> {
 export async function generateText<TOOLS extends ToolSet = ToolSet>(
   options: GenerateTextOptions<TOOLS>,
 ): Promise<GenerateTextResult<TOOLS>> {
-  const warnings = collectV0Warnings(options, [
-    {
-      key: "stopWhen",
-      details: "Multi-step tool loops are not yet implemented in v0.",
-    },
-    { key: "prepareStep" },
-  ]);
   const messages = resolveMessages(
     "generateText",
     options.system,
@@ -198,7 +123,7 @@ export async function generateText<TOOLS extends ToolSet = ToolSet>(
     frequencyPenalty: options.frequencyPenalty,
     abortSignal: options.abortSignal,
     headers: options.headers,
-    warnings,
+    warnings: [],
   });
 
   await options.onStepFinish?.(step);
@@ -211,23 +136,5 @@ export async function generateText<TOOLS extends ToolSet = ToolSet>(
     totalUsage,
   });
 
-  return {
-    content: step.content,
-    text: step.text,
-    reasoning: step.reasoning,
-    reasoningText: step.reasoningText,
-    files: step.files,
-    sources: step.sources,
-    toolCalls: step.toolCalls,
-    toolResults: step.toolResults,
-    finishReason: step.finishReason,
-    rawFinishReason: step.rawFinishReason,
-    usage: step.usage,
-    totalUsage,
-    request: step.request,
-    response: step.response,
-    warnings: step.warnings,
-    providerMetadata: step.providerMetadata,
-    steps: [step],
-  };
+  return { ...step, totalUsage, steps: [step] };
 }

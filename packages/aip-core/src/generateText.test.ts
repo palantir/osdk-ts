@@ -184,25 +184,6 @@ describe("generateText", () => {
     expect(result.text).toBe("");
   });
 
-  it("warns about v0-unsupported options", async () => {
-    const { client } = createMockClient();
-    const model = foundryModel({ client, model: "gpt-4o" });
-
-    const result = await generateText({
-      model,
-      prompt: "hi",
-      topK: 5,
-      maxRetries: 3,
-      providerOptions: { foundry: { attribution: "x" } },
-    });
-
-    assertDefined(result.warnings, "result.warnings");
-    const settings = result.warnings.map((w) => w.setting);
-    expect(settings).toContain("topK");
-    expect(settings).toContain("maxRetries");
-    expect(settings).toContain("providerOptions");
-  });
-
   it("invokes onStepFinish and onFinish", async () => {
     const { client } = createMockClient();
     const model = foundryModel({ client, model: "gpt-4o" });

@@ -163,10 +163,8 @@ describe("LmsChatTransport", () => {
   it("emits start, start-step, text-start, text-delta(s), text-end, finish-step, finish", async () => {
     streamTextMock.mockReturnValue(
       fakeStreamTextResult([
-        { type: "text-start", id: "text-0" },
         { type: "text-delta", id: "text-0", delta: "hel" },
         { type: "text-delta", id: "text-0", delta: "lo" },
-        { type: "text-end", id: "text-0" },
         {
           type: "finish",
           finishReason: "stop",
@@ -213,41 +211,6 @@ describe("LmsChatTransport", () => {
       finishReason: "stop",
       usage: { inputTokens: 1, outputTokens: 2, totalTokens: 3 },
     });
-  });
-
-  it("auto-starts the text part on the first delta if text-start was missed", async () => {
-    // Some upstream streams skip the text-start event. The transform should
-    // still emit a synthetic text-start before the first delta.
-    streamTextMock.mockReturnValue(
-      fakeStreamTextResult([
-        { type: "text-delta", id: "text-0", delta: "x" },
-        {
-          type: "finish",
-          finishReason: "stop",
-          rawFinishReason: "stop",
-          usage: { inputTokens: 0, outputTokens: 0, totalTokens: 0 },
-        },
-      ]),
-    );
-    const t = new LmsChatTransport({ model: fakeModel() });
-
-    const stream = await t.sendMessages({
-      trigger: "submit-message",
-      chatId: "c1",
-      messageId: "asst-1",
-      messages: [uiMsg("user", "hi")],
-      abortSignal: undefined,
-    });
-    const types = (await collect(stream)).map((c) => c.type);
-    expect(types).toEqual([
-      "start",
-      "start-step",
-      "text-start",
-      "text-delta",
-      "text-end",
-      "finish-step",
-      "finish",
-    ]);
   });
 
   it("forwards a streamText error chunk as a UIMessage error chunk", async () => {

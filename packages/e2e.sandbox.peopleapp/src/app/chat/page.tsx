@@ -12,7 +12,7 @@ const SYSTEM_PROMPT = "You are a concise assistant. Keep answers short.";
 
 export function ChatPage() {
   const model = useMemo(
-    () => foundryModel({ client: platformClient, model: "gpt-4o" }),
+    () => foundryModel({ client: platformClient, model: "gpt-5.4" }),
     [],
   );
 

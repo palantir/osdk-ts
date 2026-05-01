@@ -18,9 +18,6 @@ export { generateText } from "./generateText.js";
 export type {
   GenerateTextOptions,
   GenerateTextResult,
-  PrepareStepOptions,
-  PrepareStepResult,
-  StopCondition,
 } from "./generateText.js";
 
 export { streamText } from "./streamText.js";
@@ -30,7 +27,7 @@ export type {
   TextStreamChunk,
 } from "./streamText.js";
 
-export { LmsChatTransport, lmsChatTransport } from "./lmsChatTransport.js";
+export { LmsChatTransport } from "./lmsChatTransport.js";
 export type { LmsChatTransportOptions } from "./lmsChatTransport.js";
 
 export { foundryModel } from "./model.js";
@@ -59,7 +56,6 @@ export type {
   ContentPart,
   FilePart,
   FinishReason,
-  GeneratedFile,
   ImagePart,
   LanguageModelUsage,
   ModelMessage,
@@ -70,7 +66,6 @@ export type {
   RequestMetadata,
   ResponseMetadata,
   Role,
-  Source,
   StepResult,
   SystemModelMessage,
   TextPart,
@@ -78,7 +73,6 @@ export type {
   ToolCall,
   ToolCallPart,
   ToolChoice,
-  ToolExecutionContext,
   ToolModelMessage,
   ToolResult,
   ToolResultOutput,

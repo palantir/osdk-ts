@@ -14,24 +14,57 @@
  * limitations under the License.
  */
 
-import type { ModelIdentifier } from "../model.js";
+import { getOpenAiBaseUrl } from "@osdk/language-models";
+import {
+  _getFoundryInternal,
+  type LanguageModel,
+  type ModelIdentifier,
+} from "../model.js";
 import type {
   AssistantModelMessage,
+  FinishReason,
   LanguageModelUsage,
   ModelMessage,
   ToolCall,
   ToolChoice,
+  ToolResultPart,
   ToolSet,
   Warning,
 } from "../types.js";
-import {
-  convertMessage,
-  convertToolChoice,
-  convertTools,
-  type OpenAiMessage,
-  type OpenAiTool,
-  type OpenAiToolChoice,
-} from "./runStep.js";
+
+// ---------------------------------------------------------------------------
+// OpenAI message / tool wire shapes
+// ---------------------------------------------------------------------------
+
+export interface OpenAiMessage {
+  role: "system" | "user" | "assistant" | "tool";
+  content: string | Array<OpenAiContentPart> | null;
+  tool_calls?: Array<OpenAiAssistantToolCall>;
+  tool_call_id?: string;
+}
+
+type OpenAiContentPart = { type: "text"; text: string };
+
+export interface OpenAiTool {
+  type: "function";
+  function: {
+    name: string;
+    description?: string;
+    parameters: unknown;
+  };
+}
+
+export type OpenAiToolChoice =
+  | "auto"
+  | "none"
+  | "required"
+  | { type: "function"; function: { name: string } };
+
+export interface OpenAiAssistantToolCall {
+  id: string;
+  type: "function";
+  function: { name: string; arguments: string };
+}
 
 export function getModelApiName(identifier: ModelIdentifier): string {
   return identifier.type === "lmsModel"
@@ -62,6 +95,193 @@ export const EMPTY_USAGE: LanguageModelUsage = {
   outputTokens: undefined,
   totalTokens: undefined,
 };
+
+export function mapFinishReason(reason: string): FinishReason {
+  switch (reason) {
+    case "stop":
+      return "stop";
+    case "length":
+      return "length";
+    case "tool_calls":
+    case "function_call":
+      return "tool-calls";
+    case "content_filter":
+      return "content-filter";
+    default:
+      return "other";
+  }
+}
+
+export function convertMessage(
+  m: ModelMessage,
+  warnings: Array<Warning>,
+): Array<OpenAiMessage> {
+  switch (m.role) {
+    case "system":
+      return [{ role: "system", content: m.content }];
+
+    case "user": {
+      if (typeof m.content === "string") {
+        return [{ role: "user", content: m.content }];
+      }
+      const parts: Array<OpenAiContentPart> = [];
+      for (const p of m.content) {
+        if (p.type === "text") {
+          parts.push({ type: "text", text: p.text });
+        } else {
+          warnings.push({
+            type: "other",
+            message: `Unsupported user content part "${p.type}": ignored in v0`,
+          });
+        }
+      }
+      return [{ role: "user", content: parts }];
+    }
+
+    case "assistant": {
+      if (typeof m.content === "string") {
+        return [{ role: "assistant", content: m.content }];
+      }
+      let text = "";
+      const toolCalls: Array<OpenAiAssistantToolCall> = [];
+      for (const p of m.content) {
+        switch (p.type) {
+          case "text":
+            text += p.text;
+            break;
+          case "tool-call":
+            toolCalls.push({
+              id: p.toolCallId,
+              type: "function",
+              function: {
+                name: p.toolName,
+                arguments: JSON.stringify(p.input ?? {}),
+              },
+            });
+            break;
+          case "reasoning":
+          case "file":
+            warnings.push({
+              type: "other",
+              message:
+                `Unsupported assistant content part "${p.type}": ignored in v0`,
+            });
+            break;
+        }
+      }
+      return [{
+        role: "assistant",
+        content: text.length > 0 ? text : null,
+        tool_calls: toolCalls.length > 0 ? toolCalls : undefined,
+      }];
+    }
+
+    case "tool":
+      return m.content.map((part: ToolResultPart) => ({
+        role: "tool" as const,
+        content: stringifyToolResult(part, warnings),
+        tool_call_id: part.toolCallId,
+      }));
+  }
+}
+
+function stringifyToolResult(
+  part: ToolResultPart,
+  warnings: Array<Warning>,
+): string {
+  switch (part.output.type) {
+    case "text":
+    case "error-text":
+      return part.output.value;
+    case "json":
+    case "error-json":
+      return JSON.stringify(part.output.value);
+    case "content":
+      return part.output.value
+        .map((c) => {
+          if (c.type === "text") {
+            return c.text;
+          }
+          warnings.push({
+            type: "other",
+            message: `Unsupported tool result media: ignored in v0`,
+          });
+          return "";
+        })
+        .filter((s) => s.length > 0)
+        .join("\n");
+  }
+}
+
+export function convertTools<TOOLS extends ToolSet>(
+  tools: TOOLS,
+  warnings: Array<Warning>,
+): Array<OpenAiTool> {
+  return Object.entries(tools).map(([name, tool]) => {
+    const parameters = isJsonSchemaLike(tool.inputSchema)
+      ? tool.inputSchema
+      : (warnings.push({
+        type: "unsupported-tool",
+        details:
+          `Tool "${name}" inputSchema is not a JSON Schema; v0 only supports plain JSON Schema objects. Defaulting to {} parameters.`,
+      }),
+        { type: "object", properties: {} });
+    return {
+      type: "function" as const,
+      function: {
+        name,
+        description: tool.description,
+        parameters,
+      },
+    };
+  });
+}
+
+export function convertToolChoice<TOOLS extends ToolSet>(
+  choice: ToolChoice<TOOLS> | undefined,
+): OpenAiToolChoice | undefined {
+  if (choice == null) {
+    return undefined;
+  }
+  if (choice === "auto" || choice === "none" || choice === "required") {
+    return choice;
+  }
+  return { type: "function", function: { name: choice.toolName } };
+}
+
+function isJsonSchemaLike(value: unknown): boolean {
+  return (
+    typeof value === "object"
+    && value != null
+    && (
+      "type" in value
+      || "properties" in value
+      || "$ref" in value
+      || "oneOf" in value
+      || "anyOf" in value
+      || "allOf" in value
+    )
+  );
+}
+
+export function parseToolArguments(
+  args: string,
+  warnings: Array<Warning>,
+): unknown {
+  if (args === "") {
+    return {};
+  }
+  try {
+    return JSON.parse(args);
+  } catch {
+    warnings.push({
+      type: "other",
+      message:
+        `Tool call arguments were not valid JSON; passing through as a raw string`,
+    });
+    return args;
+  }
+}
 
 export interface BuildRequestBodyArgs<TOOLS extends ToolSet> {
   apiName: string;
@@ -161,4 +381,71 @@ export function buildAssistantContent(
     });
   }
   return parts;
+}
+
+export function filterHeaders(
+  input: Record<string, string | undefined>,
+): Record<string, string> {
+  const out: Record<string, string> = {};
+  for (const [k, v] of Object.entries(input)) {
+    if (v != null) {
+      out[k] = v;
+    }
+  }
+  return out;
+}
+
+export async function safeReadText(
+  res: Response,
+): Promise<string | undefined> {
+  try {
+    return await res.text();
+  } catch {
+    return undefined;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Shared request execution
+// ---------------------------------------------------------------------------
+
+export interface PostChatCompletionsArgs {
+  model: LanguageModel;
+  body: OpenAiChatRequestNonStreaming | OpenAiChatRequestStreaming;
+  accept: "application/json" | "text/event-stream";
+  headers: Record<string, string | undefined> | undefined;
+  abortSignal: AbortSignal | undefined;
+}
+
+/**
+ * POST against the LMS OpenAI proxy's chat/completions endpoint and return
+ * the raw response. Throws on a non-2xx response.
+ */
+export async function postChatCompletions(
+  args: PostChatCompletionsArgs,
+): Promise<Response> {
+  const handle = _getFoundryInternal(args.model);
+  const baseUrl = getOpenAiBaseUrl(handle.client);
+  const url = new URL("chat/completions", `${baseUrl}/`).toString();
+
+  const res = await handle.client.fetch(url, {
+    method: "POST",
+    headers: filterHeaders({
+      "Content-Type": "application/json",
+      Accept: args.accept,
+      ...(args.headers ?? {}),
+    }),
+    body: JSON.stringify(args.body),
+    signal: args.abortSignal,
+  });
+
+  if (!res.ok) {
+    const errBody = await safeReadText(res);
+    throw new Error(
+      `LMS chat/completions request failed: ${res.status} ${res.statusText}`
+        + (errBody ? `: ${errBody}` : ""),
+    );
+  }
+
+  return res;
 }
