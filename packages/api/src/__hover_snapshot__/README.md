@@ -22,8 +22,8 @@ declare const probe_where_clause_param: Parameters<
 `renderHovers.test.ts` loads `probes.ts` via the TypeScript compiler API,
 calls `checker.typeToString` on each `probe_*` declaration, formats the
 output through `dprint` for diff readability, and snapshots one entry per
-probe. Each snapshot value is prefixed with the JSDoc as a
-`// hovering: …` comment so the rendered type is self-documenting.
+probe. Each snapshot value is prefixed with the JSDoc as a leading
+`// …` comment so the rendered type is self-documenting.
 
 ## How to add a probe
 

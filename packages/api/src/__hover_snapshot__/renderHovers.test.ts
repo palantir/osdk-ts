@@ -151,10 +151,10 @@ function formatProbes(probes: Probes): Probes {
   return out;
 }
 
-// Render each probe as `// hovering: <expr>\n<formatted type>` so the
-// snapshot self-documents what each type corresponds to in user code.
+// Render each probe as `// <description>\n<formatted type>` so the snapshot
+// self-documents what each type corresponds to in user code.
 function snapshotValue(probe: Probe): string {
-  return `// hovering: ${probe.source}\n${probe.rendered}`;
+  return `// ${probe.source}\n${probe.rendered}`;
 }
 
 const probes = formatProbes(renderProbes());
