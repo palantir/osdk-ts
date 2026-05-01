@@ -139,6 +139,7 @@ export function EmployeePanel({
     {
       where: { employeeNumber: employee.employeeNumber },
       pageSize: 1,
+      $includeAllBaseObjectProperties: true,
     },
   );
   const worker = workerData?.[0];
@@ -148,6 +149,7 @@ export function EmployeePanel({
     {
       where: { employeeNumber: employee.employeeNumber },
       pageSize: 1,
+      $includeAllBaseObjectProperties: true,
     },
   );
   const person = personData?.[0];
@@ -614,8 +616,23 @@ export function EmployeePanel({
                       {person?.employeeNumber ?? "—"}
                     </span>
                   </div>
+                  <div className="grid grid-cols-4 gap-1 text-[10px]">
+                    <span className="text-[var(--officenetwork-text-muted)] officenetwork-mono">
+                      jobTitle
+                    </span>
+                    <span className="text-[var(--officenetwork-text-secondary)] truncate">
+                      {employee.jobTitle ?? "—"}
+                    </span>
+                    <span className="text-[var(--officenetwork-accent-teal)] truncate">
+                      {worker?.$as(Employee).jobTitle ?? "—"}
+                    </span>
+                    <span className="text-[var(--officenetwork-status-ready)] truncate">
+                      {person?.$as(Employee).jobTitle ?? "—"}
+                    </span>
+                  </div>
                   <div className="mt-2 text-[9px] text-[var(--officenetwork-text-muted)] italic">
-                    Same data accessed via 3 different views
+                    Worker/Person columns use $includeAllBaseObjectProperties to
+                    expose concrete fields (jobTitle) via $as(Employee)
                   </div>
                 </div>
               )}

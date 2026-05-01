@@ -177,6 +177,12 @@ export interface ObserveListOptions<
   $loadPropertySecurityMetadata?: boolean;
 
   /**
+   * When true, includes all properties of the underlying concrete object type
+   * for interface queries. Has no effect for non-interface queries.
+   */
+  $includeAllBaseObjectProperties?: boolean;
+
+  /**
    * Automatically fetch additional pages on initial load.
    *
    * - `true`: Fetch all available pages automatically
@@ -221,9 +227,7 @@ export interface ObserveObjectsCallbackArgs<
   > = {},
 > {
   resolvedList:
-    | Array<
-      Osdk.Instance<T, "$allBaseProperties", PropertyKeys<T>, RDPs>
-    >
+    | Array<Osdk.Instance<T, "$allBaseProperties", PropertyKeys<T>, RDPs>>
     | undefined;
   isOptimistic: boolean;
   lastUpdated: number;
@@ -231,7 +235,7 @@ export interface ObserveObjectsCallbackArgs<
   hasMore: boolean;
   status: Status;
   totalCount?: string;
-  objectSet: ObjectSet<T>;
+  objectSet: ObjectSet<T, RDPs>;
 }
 
 export interface ObserveObjectSetArgs<

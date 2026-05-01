@@ -37,7 +37,7 @@ import { ObjectListQuery } from "./ObjectListQuery.js";
 
 export class ListsHelper extends AbstractHelper<
   ListQuery,
-  ObserveListOptions<ObjectOrInterfaceDefinition>
+  ObserveListOptions<ObjectOrInterfaceDefinition, {}>
 > {
   whereCanonicalizer: WhereClauseCanonicalizer;
   orderByCanonicalizer: OrderByCanonicalizer;
@@ -70,7 +70,7 @@ export class ListsHelper extends AbstractHelper<
   }
 
   observe<T extends ObjectOrInterfaceDefinition>(
-    options: ObserveListOptions<T>,
+    options: ObserveListOptions<T, {}>,
     subFn: Observer<ListPayload>,
   ): QuerySubscription<ListQuery> {
     const ret = super.observe(options, subFn);
@@ -102,7 +102,7 @@ export class ListsHelper extends AbstractHelper<
   }
 
   getQuery<T extends ObjectOrInterfaceDefinition>(
-    options: ObserveListOptions<T>,
+    options: ObserveListOptions<T, {}>,
   ): ListQuery {
     const {
       type: typeDefinition,
@@ -116,6 +116,12 @@ export class ListsHelper extends AbstractHelper<
       $loadPropertySecurityMetadata,
     } = options;
     const { apiName, type } = typeDefinition;
+    // The flag is interface-only on the server. Drop it for object queries so
+    // they don't fragment the cache.
+    const $includeAllBaseObjectProperties =
+      type === "interface" && options.$includeAllBaseObjectProperties
+        ? true
+        : undefined;
 
     const canonWhere = this.whereCanonicalizer.canonicalize(where ?? {});
     const canonOrderBy = this.orderByCanonicalizer.canonicalize(orderBy ?? {});
@@ -151,6 +157,7 @@ export class ListsHelper extends AbstractHelper<
       canonRids,
       canonSelect,
       $loadPropertySecurityMetadata ? true : undefined,
+      $includeAllBaseObjectProperties,
     );
 
     return this.store.queries.get(listCacheKey, () => {
