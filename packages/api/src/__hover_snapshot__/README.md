@@ -14,9 +14,9 @@ expressions will surface here as snapshot diffs.
 - `<surface>Probes.ts` — one file per type-graph surface we want to
   pin. `objectSetProbes.ts` is the only one today; new surfaces should
   add a sibling file (e.g. `osdkInstanceProbes.ts`).
-- `*.test.ts` — one test per surface. Each test points
-  `renderHoverProbes` at its probes file and `it.each`'s the result
-  through `expect(...).toMatchSnapshot()`.
+- `hoverTypes.test.ts` — single test entry point. One `describe` block
+  per surface; each block calls `snapshotProbes("<name>Probes.ts")`
+  plus any surface-specific compile-time assertions.
 
 ## How a probe file works
 
@@ -37,7 +37,8 @@ comment so the rendered type is self-documenting.
 ## How to add a probe
 
 1. Pick the right `<surface>Probes.ts` (or create a new one for a new
-   surface, plus a matching `*.test.ts`).
+   surface, plus a `describe` block in `hoverTypes.test.ts` calling
+   `snapshotProbes("<surface>Probes.ts")`).
 2. Add `declare const probe_<name>: <YourType>;` with a JSDoc above
    describing what user-facing code yields this hover.
 3. From the repo root: `pnpm updateSnapshots --filter=@osdk/api` (or
@@ -64,6 +65,6 @@ snapshot (internal markers, trivial `this` returns, methods covered by
 sibling probes, etc.).
 
 If a new member is added to `ObjectSet`, the type-level assertion in
-`renderHovers.test.ts` fails to typecheck until the new key is
+`hoverTypes.test.ts` fails to typecheck until the new key is
 acknowledged in `KnownObjectSetMethods` — at which point the author
 decides whether to add a probe or to mark it skipped.

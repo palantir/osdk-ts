@@ -23,28 +23,34 @@ import { renderHoverProbes, snapshotValue } from "./hoverProbes.js";
 import type { KnownObjectSetMethods } from "./objectSetProbes.js";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
+const tsconfigPath = path.resolve(here, "../../tsconfig.json");
 
-const probes = renderHoverProbes({
-  probesPath: path.resolve(here, "objectSetProbes.ts"),
-  tsconfigPath: path.resolve(here, "../../tsconfig.json"),
-});
-const probeNames = Object.keys(probes).sort();
+// Wire one probes file into a flat `it.each` of snapshot assertions. Add a
+// new surface by dropping a `<name>Probes.ts` file alongside this one and
+// adding another `snapshotProbes(...)` call inside its own `describe`.
+function snapshotProbes(probesFile: string): void {
+  const probes = renderHoverProbes({
+    probesPath: path.resolve(here, probesFile),
+    tsconfigPath,
+  });
+  it.each(Object.keys(probes).sort())("%s", (name) => {
+    expect(snapshotValue(probes[name])).toMatchSnapshot();
+  });
+}
 
 describe("ObjectSet hover types", () => {
   // Each probe gets its own snapshot key, so changing one type only dirties
   // its own snapshot in code review. Add or edit a probe in
   // `objectSetProbes.ts` and refresh with `pnpm updateSnapshots` from the
   // repo root.
-  it.each(probeNames)("%s", (name) => {
-    expect(snapshotValue(probes[name])).toMatchSnapshot();
-  });
+  snapshotProbes("objectSetProbes.ts");
 
   // Force objectSetProbes.ts to be updated when ObjectSet grows or loses a
-  // method.
-  // Compile-time assertion: every key of `ObjectSet<EmployeeApiTest>` must be
-  // listed in `KnownObjectSetMethods` (probed or intentionally skipped). When
-  // someone adds a new method, this fails to typecheck and names the missing
-  // key — at which point the author decides whether to add a probe.
+  // method. Compile-time assertion: every key of `ObjectSet<EmployeeApiTest>`
+  // must be listed in `KnownObjectSetMethods` (probed or intentionally
+  // skipped). When someone adds a new method, this fails to typecheck and
+  // names the missing key — at which point the author decides whether to
+  // add a probe.
   it("KnownObjectSetMethods covers all ObjectSet members", () => {
     expectTypeOf<keyof ObjectSet<EmployeeApiTest>>()
       .toEqualTypeOf<KnownObjectSetMethods>();
