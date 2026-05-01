@@ -116,6 +116,7 @@ import type {
   InterfaceSettings as _api_entitymetadata_InterfaceSettings,
   LinkTypeEntityMetadata as _api_entitymetadata_LinkTypeEntityMetadata,
   ObjectTypeAlias as _api_entitymetadata_ObjectTypeAlias,
+  OntologyIrEditsHistory as _api_entitymetadata_OntologyIrEditsHistory,
   OntologyIrLinkTypeEntityMetadata
     as _api_entitymetadata_OntologyIrLinkTypeEntityMetadata,
   PatchApplicationStrategy as _api_entitymetadata_PatchApplicationStrategy,
@@ -142,8 +143,8 @@ export interface ActionTypePermissionInformation {
 }
 export interface ActionTypeRestrictionStatus {
   hasRolesApplied: boolean;
-  publicProject: boolean;
   ontologyPackageRid?: _api_OntologyPackageRid | null | undefined;
+  publicProject?: boolean | null | undefined;
 }
 export type BlockInternalId = string;
 export interface BlockPermissionInformation {
@@ -218,8 +219,8 @@ export interface InterfaceTypePermissionInformation {
   restrictionStatus: InterfaceTypeRestrictionStatus;
 }
 export interface InterfaceTypeRestrictionStatus {
-  publicProject: boolean;
   ontologyPackageRid?: _api_OntologyPackageRid | null | undefined;
+  publicProject?: boolean | null | undefined;
 }
 /**
  * Will only match if there is a single datasource that matches the output type (e.g. a dataset datasource
@@ -284,8 +285,8 @@ export interface LinkTypePermissionInformation {
 }
 export interface LinkTypeRestrictionStatus {
   editRestrictedByDatasources: boolean;
-  publicProject: boolean;
   ontologyPackageRid?: _api_OntologyPackageRid | null | undefined;
+  publicProject?: boolean | null | undefined;
   restrictedByDatasources: boolean;
 }
 export interface MarketplaceActionType {
@@ -519,8 +520,8 @@ export interface ObjectTypePermissionInformation {
 }
 export interface ObjectTypeRestrictionStatus {
   editRestrictedByDatasources: boolean;
-  publicProject: boolean;
   ontologyPackageRid?: _api_OntologyPackageRid | null | undefined;
+  publicProject?: boolean | null | undefined;
   restrictedByDatasources: boolean;
 }
 export interface OntologyBlockDataV2 {
@@ -624,6 +625,7 @@ export interface OntologyIrMarketplaceActionTypeDisplayMetadata {
   icon?: _api_Icon | null | undefined;
   submitButtonDisplayMetadata?: _api_ButtonDisplayMetadata | null | undefined;
   successMessage: Array<_api_OntologyIrActionTypeRichTextComponent>;
+  successMessageEnabled?: boolean | null | undefined;
   toolDescription?: string | null | undefined;
   typeClasses: Array<_api_TypeClass>;
   undoButtonConfiguration?: boolean | null | undefined;
@@ -740,6 +742,7 @@ export type OntologyIrMarketplaceInterfaceTypeStatus =
 export interface OntologyIrMarketplaceObjectTypeEntityMetadata {
   aliases: Array<_api_entitymetadata_ObjectTypeAlias>;
   arePatchesEnabled: boolean;
+  editsHistory?: _api_entitymetadata_OntologyIrEditsHistory | null | undefined;
   interfaceSettings?: _api_entitymetadata_InterfaceSettings | null | undefined;
 }
 export interface OntologyIrMarketplaceSharedPropertyBasedPropertyType {
@@ -910,8 +913,8 @@ export interface SharedPropertyTypePermissionInformation {
   restrictionStatus: SharedPropertyTypeRestrictionStatus;
 }
 export interface SharedPropertyTypeRestrictionStatus {
-  publicProject: boolean;
   ontologyPackageRid?: _api_OntologyPackageRid | null | undefined;
+  publicProject?: boolean | null | undefined;
 }
 /**
  * Ontology as code uses this as a stable ID for the stream input

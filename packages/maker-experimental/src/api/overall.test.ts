@@ -399,6 +399,7 @@ describe("Experimental Test Suite", () => {
               "entityMetadata": {
                 "aliases": [],
                 "arePatchesEnabled": false,
+                "editsHistory": undefined,
               },
               "objectType": {
                 "allImplementsInterfaces": {},
@@ -596,6 +597,7 @@ describe("Experimental Test Suite", () => {
               "entityMetadata": {
                 "aliases": [],
                 "arePatchesEnabled": false,
+                "editsHistory": undefined,
               },
               "objectType": {
                 "allImplementsInterfaces": {},

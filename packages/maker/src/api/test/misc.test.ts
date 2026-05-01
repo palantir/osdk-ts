@@ -1227,6 +1227,7 @@ describe("Miscellaneous Tests", () => {
                 "entityMetadata": {
                   "aliases": [],
                   "arePatchesEnabled": false,
+                  "editsHistory": undefined,
                 },
                 "objectType": {
                   "allImplementsInterfaces": {},

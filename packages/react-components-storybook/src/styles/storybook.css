@@ -50,7 +50,7 @@ body {
   margin-bottom: calc(var(--osdk-surface-spacing) * 2);
   padding: calc(var(--osdk-surface-spacing) * 2)
     calc(var(--osdk-surface-spacing) * 3);
-  background: var(--osdk-intent-success-background);
+  background: var(--osdk-intent-success-rest);
   color: var(--osdk-intent-success-foreground);
   border-radius: var(--osdk-surface-border-radius);
   font-size: var(--osdk-typography-size-body-small);
