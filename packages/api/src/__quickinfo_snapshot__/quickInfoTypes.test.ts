@@ -20,7 +20,7 @@ import { fileURLToPath } from "node:url";
 import { describe, expect, expectTypeOf, it } from "vitest";
 import type { ObjectSet } from "../objectSet/ObjectSet.js";
 import type { EmployeeApiTest } from "../test/EmployeeApiTest.js";
-import { renderHoverProbes } from "./probeUtils.js";
+import { renderQuickInfoProbes } from "./probeUtils.js";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const tsconfigPath = path.resolve(here, "../../tsconfig.json");
@@ -31,7 +31,7 @@ const probesDir = path.resolve(here, "probes");
 // it up on the next run. All probe files share one TS program.
 const probesFiles = fs.readdirSync(probesDir).filter((f) => f.endsWith(".ts"))
   .sort();
-const allProbes = renderHoverProbes({
+const allProbes = renderQuickInfoProbes({
   probesPaths: probesFiles.map((f) => path.join(probesDir, f)),
   tsconfigPath,
 });
@@ -63,7 +63,7 @@ type SkippedObjectSetMethods =
   | "fetchOne" // shape mirrors fetchPage's element type
   | "fetchOneWithErrors" // shape mirrors fetchOne
   | "experimental_asyncIterLinks" // experimental; not stable enough to pin
-  | "intersect" // returns `this` — uninteresting hover
+  | "intersect" // returns `this` — uninteresting quickinfo
   | "subtract" // returns `this`
   | "union" // returns `this`
   | "narrowToType" // exhaustively covered in ObjectSet.test.ts

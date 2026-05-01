@@ -1,10 +1,12 @@
-# Hover-type snapshots
+# Quickinfo snapshots
 
-This directory captures the rendered hover output of high-traffic SDK
-types (currently `ObjectSet` methods — `where`, `subscribe`, `fetchPage`,
-`asyncIter`, `aggregate`, `withProperties`, …). Future type-graph
-refactors that change what users see when they hover over those
-expressions will surface here as snapshot diffs.
+This directory captures the rendered quickinfo output of high-traffic
+SDK types (currently `ObjectSet` methods — `where`, `subscribe`,
+`fetchPage`, `asyncIter`, `aggregate`, `withProperties`, …). Quickinfo
+is the TypeScript-compiler-rendered type string editors show as the
+hover tooltip; pinning it means future type-graph refactors that change
+what users see hovering those expressions will surface as snapshot
+diffs.
 
 ## Layout
 
@@ -14,7 +16,7 @@ expressions will surface here as snapshot diffs.
   probes file.
 - `probes/<surface>.ts` — one file per type-graph surface we want to
   pin (e.g. `probes/objectSet.ts`, `probes/osdkInstance.ts`).
-- `hoverTypes.test.ts` — single test entry point. Auto-discovers every
+- `quickInfoTypes.test.ts` — single test entry point. Auto-discovers every
   `probes/*.ts` file and asserts each one against
   `__snapshots__/<surface>.snap` via `toMatchFileSnapshot`.
 - `__snapshots__/<surface>.snap` — one snapshot file per surface,
@@ -59,14 +61,14 @@ Useful built-ins for sculpting the type you want to snapshot:
 1. Pick the right `probes/<surface>.ts` (or create a new one for a new
    surface — the test auto-discovers it).
 2. Add `declare const probe_<name>: <YourType>;` with a JSDoc above
-   describing what user-facing code yields this hover.
+   describing what user-facing code yields this quickinfo.
 3. From the repo root: `pnpm updateSnapshots --filter=@osdk/api` (or
    `pnpm updateSnapshots` from `packages/api/`).
 4. Commit the probe file and the updated `__snapshots__/*.snap`.
 
 ## How to update an existing snapshot
 
-If a refactor intentionally changes a type's hover output:
+If a refactor intentionally changes a type's quickinfo output:
 
 1. Run `pnpm updateSnapshots` (same command as above).
 2. Inspect the resulting diff — the change should look like the
