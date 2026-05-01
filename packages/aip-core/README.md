@@ -1,6 +1,6 @@
 # @osdk/aip-core
 
-Core building blocks for AIP applications backed by the Foundry Language Model Service (LMS). Provides streaming chat completions, tool calling, and a Vercel AI SDK adapter.
+Core building blocks for AIP applications backed by the Foundry Language Model Service (LMS). Provides streaming chat completions, tool calling, and an AI SDK adapter.
 
 ## Installation
 
@@ -126,9 +126,9 @@ const result = await generateText({
 | `stopSequences`    | Stop generation at these strings |
 | `seed`             | Deterministic sampling seed      |
 
-## Vercel AI SDK Provider
+## AI SDK Provider
 
-`@osdk/aip-core` ships a custom provider for the [Vercel AI SDK](https://ai-sdk.dev), allowing you to use Foundry LMS models with `generateText`, `streamText`, and other AI SDK functions.
+`@osdk/aip-core` ships a custom provider for the [AI SDK](https://ai-sdk.dev), allowing you to use Foundry LMS models with `generateText`, `streamText`, and other AI SDK functions.
 
 ### Additional dependencies
 

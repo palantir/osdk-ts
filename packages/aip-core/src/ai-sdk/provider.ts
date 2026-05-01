@@ -35,7 +35,7 @@ export interface FoundryAIProviderOptions {
 }
 
 /**
- * A Foundry AI provider for the Vercel AI SDK.
+ * A Foundry AI provider for the AI SDK.
  *
  * Can be called directly as a function to get a language model, or use
  * the `.languageModel()` method.
@@ -69,7 +69,7 @@ export interface FoundryAIProvider {
 }
 
 /**
- * Create a Foundry AI provider for the Vercel AI SDK.
+ * Create a Foundry AI provider for the AI SDK.
  *
  * @param options - Configuration including the Foundry PlatformClient.
  * @returns A provider that can be called directly or via `.languageModel()`.
