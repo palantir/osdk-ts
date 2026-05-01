@@ -868,8 +868,7 @@ export type LinkTypeApiNamesFor<Q extends ObjectOrInterfaceDefinition> = Extract
 
 // @public (undocumented)
 export interface Logger {
-    	// (undocumented)
-    child(bindings: Record<string, any>, options?: {
+    	child(bindings: Record<string, any>, options?: {
         		level?: string
         		msgPrefix?: string
         	}): Logger;
@@ -881,8 +880,7 @@ export interface Logger {
     fatal: Logger.LogFn;
     	// (undocumented)
     info: Logger.LogFn;
-    	// (undocumented)
-    isLevelEnabled(level: string): boolean;
+    	isLevelEnabled(level: string): boolean;
     	// (undocumented)
     trace: Logger.LogFn;
     	// (undocumented)
