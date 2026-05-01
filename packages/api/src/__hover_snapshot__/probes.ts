@@ -80,3 +80,34 @@ export type _probes =
   | typeof probe_objectSet_with_rdp
   | typeof probe_where_clause_with_rdp
   | typeof probe_withProperties_return;
+
+// Every public member of `ObjectSet`. Split for documentation: methods we
+// have probes for vs methods we've intentionally chosen to skip (covered by
+// other probes, internal-only, or low-value to snapshot). When a new method
+// is added to `ObjectSet`, the type-level assertion in `renderHovers.test.ts`
+// fails to typecheck until the new key is acknowledged here — at which point
+// the author decides whether to add a probe or to skip it.
+export type ProbedObjectSetMethods =
+  | "where"
+  | "subscribe"
+  | "fetchPage"
+  | "asyncIter"
+  | "aggregate"
+  | "withProperties";
+
+export type SkippedObjectSetMethods =
+  | "$objectSetInternals" // internal marker, not part of user-facing surface
+  | "fetchPageWithErrors" // shape mirrors fetchPage
+  | "fetchOne" // shape mirrors fetchPage's element type
+  | "fetchOneWithErrors" // shape mirrors fetchOne
+  | "experimental_asyncIterLinks" // experimental; not stable enough to pin
+  | "intersect" // returns `this` — uninteresting hover
+  | "subtract" // returns `this`
+  | "union" // returns `this`
+  | "narrowToType" // exhaustively covered in ObjectSet.test.ts
+  | "nearestNeighbors" // exhaustively covered in ObjectSet.test.ts
+  | "pivotTo"; // exhaustively covered in ObjectSet.test.ts
+
+export type KnownObjectSetMethods =
+  | ProbedObjectSetMethods
+  | SkippedObjectSetMethods;

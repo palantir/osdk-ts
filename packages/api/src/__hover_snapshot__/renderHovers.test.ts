@@ -18,7 +18,10 @@ import { execFileSync } from "node:child_process";
 import * as path from "node:path";
 import { fileURLToPath } from "node:url";
 import * as ts from "typescript";
-import { describe, expect, it } from "vitest";
+import { describe, expect, expectTypeOf, it } from "vitest";
+import type { ObjectSet } from "../objectSet/ObjectSet.js";
+import type { EmployeeApiTest } from "../test/EmployeeApiTest.js";
+import type { KnownObjectSetMethods } from "./probes.js";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const probesPath = path.resolve(here, "probes.ts");
@@ -121,5 +124,15 @@ describe("ObjectSet hover types", () => {
   // refresh with `pnpm updateSnapshots` from the repo root.
   it.each(probeNames)("%s", (name) => {
     expect(probes[name]).toMatchSnapshot();
+  });
+
+  // Force probes.ts to be updated when ObjectSet grows or loses a method.
+  // Compile-time assertion: every key of `ObjectSet<EmployeeApiTest>` must be
+  // listed in `KnownObjectSetMethods` (probed or intentionally skipped). When
+  // someone adds a new method, this fails to typecheck and names the missing
+  // key — at which point the author decides whether to add a probe.
+  it("KnownObjectSetMethods covers all ObjectSet members", () => {
+    expectTypeOf<keyof ObjectSet<EmployeeApiTest>>()
+      .toEqualTypeOf<KnownObjectSetMethods>();
   });
 });
