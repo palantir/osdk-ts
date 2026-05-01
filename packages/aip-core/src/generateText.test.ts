@@ -17,6 +17,10 @@
 import type { PlatformClient } from "@osdk/client";
 import { describe, expect, it, vi } from "vitest";
 import { generateText } from "./generateText.js";
+import {
+  assertDefined,
+  mockPlatformClient,
+} from "./internal/__test__/mockPlatformClient.js";
 import { foundryModel } from "./model.js";
 
 interface MockClientOptions {
@@ -30,21 +34,18 @@ function createMockClient(options: MockClientOptions = {}): {
   client: PlatformClient;
   fetch: ReturnType<typeof vi.fn>;
 } {
-  const fetchMock = vi.fn(
-    async (_input: RequestInfo | URL, _init?: RequestInit) => {
-      const body = options.responseBody ?? defaultResponse();
-      return new Response(JSON.stringify(body), {
-        status: options.responseStatus ?? 200,
-        statusText: options.responseStatusText ?? "OK",
-        headers: { "Content-Type": "application/json" },
-      });
-    },
-  );
-  const client = {
+  const fetchMock = vi.fn<typeof globalThis.fetch>(async (_input, _init) => {
+    const body = options.responseBody ?? defaultResponse();
+    return new Response(JSON.stringify(body), {
+      status: options.responseStatus ?? 200,
+      statusText: options.responseStatusText ?? "OK",
+      headers: { "Content-Type": "application/json" },
+    });
+  });
+  const client = mockPlatformClient({
     baseUrl: options.baseUrl ?? "https://example.palantirfoundry.com",
-    tokenProvider: async () => "test-token",
     fetch: fetchMock,
-  } as unknown as PlatformClient;
+  });
   return { client, fetch: fetchMock };
 }
 
@@ -81,7 +82,9 @@ describe("generateText", () => {
     });
 
     expect(fetch).toHaveBeenCalledTimes(1);
-    const [url, init] = fetch.mock.calls[0]!;
+    const firstCall = fetch.mock.calls[0];
+    assertDefined(firstCall, "fetch.mock.calls[0]");
+    const [url, init] = firstCall;
     expect(url).toBe(
       "https://example.palantirfoundry.com/api/v2/llm/proxy/openai/v1/chat/completions",
     );
@@ -193,8 +196,8 @@ describe("generateText", () => {
       providerOptions: { foundry: { attribution: "x" } },
     });
 
-    expect(result.warnings).toBeDefined();
-    const settings = result.warnings!.map((w) => w.setting);
+    assertDefined(result.warnings, "result.warnings");
+    const settings = result.warnings.map((w) => w.setting);
     expect(settings).toContain("topK");
     expect(settings).toContain("maxRetries");
     expect(settings).toContain("providerOptions");
@@ -215,7 +218,9 @@ describe("generateText", () => {
 
     expect(onStepFinish).toHaveBeenCalledTimes(1);
     expect(onFinish).toHaveBeenCalledTimes(1);
-    const finishArg = onFinish.mock.calls[0]![0];
+    const finishCall = onFinish.mock.calls[0];
+    assertDefined(finishCall, "onFinish.mock.calls[0]");
+    const finishArg = finishCall[0];
     expect(finishArg.steps).toHaveLength(1);
     expect(finishArg.totalUsage.totalTokens).toBe(15);
   });
@@ -257,7 +262,10 @@ describe("generateText", () => {
       abortSignal: controller.signal,
     });
 
-    const init = fetch.mock.calls[0]![1] as RequestInit;
+    const callArgs = fetch.mock.calls[0];
+    assertDefined(callArgs, "fetch.mock.calls[0]");
+    const init = callArgs[1];
+    assertDefined(init, "fetch init");
     expect(init.signal).toBe(controller.signal);
   });
 });

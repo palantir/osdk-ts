@@ -147,8 +147,7 @@ export async function streamStep<TOOLS extends ToolSet>(
   });
 
   if (!res.ok) {
-    // Bound the error-body read — a hung/truncated upstream connection
-    // shouldn't deadlock the streaming caller waiting for an error message.
+    // Bound the error-body read so a hung upstream doesn't deadlock the caller.
     const errBody = await Promise.race([
       safeReadText(res),
       new Promise<string>((resolve) => {
@@ -157,7 +156,7 @@ export async function streamStep<TOOLS extends ToolSet>(
     ]);
     throw new Error(
       `LMS chat/completions request failed: ${res.status} ${res.statusText}`
-        + (errBody ? ` — ${errBody}` : ""),
+        + (errBody ? `: ${errBody}` : ""),
     );
   }
 

@@ -31,6 +31,10 @@
 import type { PlatformClient } from "@osdk/client";
 import { describe, expect, it } from "vitest";
 import { generateText } from "./generateText.js";
+import {
+  assertDefined,
+  mockPlatformClient,
+} from "./internal/__test__/mockPlatformClient.js";
 import { foundryModel } from "./model.js";
 
 const baseUrl = process.env.FOUNDRY_BASE_URL;
@@ -40,31 +44,26 @@ const modelApiName = process.env.FOUNDRY_LLM_MODEL_API_NAME ?? "gpt-4o-mini";
 const describeIfConfigured = baseUrl && token ? describe : describe.skip;
 const E2E_TIMEOUT_MS = 30_000;
 
-/**
- * Minimal PlatformClient that injects `Authorization: Bearer ${token}` on
- * every fetch. Real apps build one via `createPlatformClient` from
- * `@osdk/client`; we hand-roll here to keep this test runnable without the
- * full build graph of the OSDK client package.
- */
 function makeClient(baseUrlIn: string, tokenIn: string): PlatformClient {
-  const tokenProvider = async () => tokenIn;
   const fetchFn: typeof globalThis.fetch = async (input, init) => {
     const headers = new Headers(init?.headers);
-    headers.set("Authorization", `Bearer ${await tokenProvider()}`);
+    headers.set("Authorization", `Bearer ${tokenIn}`);
     return fetch(input, { ...init, headers });
   };
-  return {
+  return mockPlatformClient({
     baseUrl: baseUrlIn,
-    tokenProvider,
     fetch: fetchFn,
-  } as unknown as PlatformClient;
+    token: tokenIn,
+  });
 }
 
 describeIfConfigured("generateText (e2e)", () => {
   it(
     "answers a simple factual prompt against a live LMS",
     async () => {
-      const client = makeClient(baseUrl!, token!);
+      assertDefined(baseUrl, "FOUNDRY_BASE_URL");
+      assertDefined(token, "FOUNDRY_TOKEN");
+      const client = makeClient(baseUrl, token);
       const model = foundryModel({ client, model: modelApiName });
 
       const result = await generateText({
@@ -89,7 +88,9 @@ describeIfConfigured("generateText (e2e)", () => {
   it(
     "produces a tool call when a tool matches the prompt",
     async () => {
-      const client = makeClient(baseUrl!, token!);
+      assertDefined(baseUrl, "FOUNDRY_BASE_URL");
+      assertDefined(token, "FOUNDRY_TOKEN");
+      const client = makeClient(baseUrl, token);
       const model = foundryModel({ client, model: modelApiName });
 
       const result = await generateText({
@@ -115,11 +116,12 @@ describeIfConfigured("generateText (e2e)", () => {
 
       expect(result.finishReason).toBe("tool-calls");
       expect(result.toolCalls).toHaveLength(1);
-      const call = result.toolCalls[0]!;
+      const call = result.toolCalls[0];
+      assertDefined(call, "result.toolCalls[0]");
       expect(call.toolName).toBe("getWeather");
       const input = call.input as { city?: string };
-      expect(typeof input.city).toBe("string");
-      expect(input.city!.toLowerCase()).toMatch(/san\s*francisco|sf/);
+      assertDefined(input.city, "tool call city");
+      expect(input.city.toLowerCase()).toMatch(/san\s*francisco|sf/);
     },
     E2E_TIMEOUT_MS,
   );
@@ -127,7 +129,9 @@ describeIfConfigured("generateText (e2e)", () => {
   it(
     "honours abortSignal when the caller cancels mid-flight",
     async () => {
-      const client = makeClient(baseUrl!, token!);
+      assertDefined(baseUrl, "FOUNDRY_BASE_URL");
+      assertDefined(token, "FOUNDRY_TOKEN");
+      const client = makeClient(baseUrl, token);
       const model = foundryModel({ client, model: modelApiName });
 
       const controller = new AbortController();

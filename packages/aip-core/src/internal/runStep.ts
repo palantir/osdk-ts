@@ -98,7 +98,7 @@ export async function runStep<TOOLS extends ToolSet>(
     const errBody = await safeReadText(res);
     throw new Error(
       `LMS chat/completions request failed: ${res.status} ${res.statusText}`
-        + (errBody ? ` — ${errBody}` : ""),
+        + (errBody ? `: ${errBody}` : ""),
     );
   }
 
@@ -160,8 +160,7 @@ export function convertMessage(
         } else {
           warnings.push({
             type: "other",
-            message:
-              `Unsupported user content part "${p.type}" — ignored in v0`,
+            message: `Unsupported user content part "${p.type}": ignored in v0`,
           });
         }
       }
@@ -194,7 +193,7 @@ export function convertMessage(
             warnings.push({
               type: "other",
               message:
-                `Unsupported assistant content part "${p.type}" — ignored in v0`,
+                `Unsupported assistant content part "${p.type}": ignored in v0`,
             });
             break;
         }
@@ -232,7 +231,7 @@ function stringifyToolResult(
           if (c.type === "text") return c.text;
           warnings.push({
             type: "other",
-            message: `Unsupported tool result media — ignored in v0`,
+            message: `Unsupported tool result media: ignored in v0`,
           });
           return "";
         })

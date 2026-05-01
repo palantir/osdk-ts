@@ -179,11 +179,8 @@ export function useChat(options: UseChatOptions): UseChatReturn {
         initialMessages: options.messages,
         throttleMs: options.experimental_throttle ?? 50,
       }),
-    // The store is identity-keyed by `id`. `messages` is the seed snapshot,
-    // and `experimental_throttle` is the initial throttle — both are
-    // intentionally read once at creation time and not reactive. Recreating
-    // the store mid-session would lose chat state. Use `setMessages` to
-    // mutate messages at runtime; throttle changes require a new chat id.
+    // Recreating the store mid-session would drop chat state, so it's keyed
+    // only by `id`. Use `setMessages` to mutate messages at runtime.
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [id],
   );
@@ -191,7 +188,6 @@ export function useChat(options: UseChatOptions): UseChatReturn {
   const state = React.useSyncExternalStore(
     store.subscribe,
     store.getSnapshot,
-    // SSR fallback: same snapshot. Chats start empty; nothing to hydrate.
     store.getSnapshot,
   );
 
@@ -383,7 +379,7 @@ export function useChat(options: UseChatOptions): UseChatReturn {
         if (target == null || target.role !== "assistant") {
           throw new Error(
             `useChat.regenerate: messageId "${regenerateOpts.messageId}" is `
-              + `not an assistant message — only assistant messages can be regenerated.`,
+              + `not an assistant message; only assistant messages can be regenerated.`,
           );
         }
       } else {
@@ -421,8 +417,8 @@ export function useChat(options: UseChatOptions): UseChatReturn {
   }, [transport, id, drainStream]);
 
   const clearError = React.useCallback((): void => {
-    // No-op unless we're actually in an error state. Resetting from
-    // "streaming" or "submitted" would race the in-flight stream.
+    // Resetting from streaming/submitted would race the in-flight stream, so
+    // only reset when status === "error".
     store.setState(
       (prev) =>
         prev.status === "error"
