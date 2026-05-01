@@ -212,7 +212,7 @@ Implementation lives on a **separate branch stacked on the API branch** so the A
    Wait for all four sub-agents to return before proceeding to documentation (step 13) and Step 3 verification. If any sub-agent reports a blocker (missing primitive, ambiguous behaviour, routing conflict), pause and ask the user via `AskUserQuestion` before continuing.
 
 7. **Then build the OSDK wrapper.** `<Name>.tsx` at `packages/react-components/src/<name>/<Name>.tsx`:
-   - Uses `@osdk/react` hooks for data fetching (see [`packages/react/AGENTS.md`](../../../../react/AGENTS.md) for available hooks and provider setup).
+   - **ALWAYS use a hook from `@osdk/react` to make network requests.** Data fetching must go through the OSDK hook layer (see [`packages/react/AGENTS.md`](../../../../react/AGENTS.md) for available hooks and provider setup). Never fetch data directly with `fetch`, `axios`, or other HTTP clients — all network requests must use `@osdk/react` hooks to ensure proper integration with Foundry's auth, caching, and error handling.
    - Converts OSDK types to the primitive shapes that `Base<Name>` expects.
    - Contains no styling or UI interaction logic.
 
