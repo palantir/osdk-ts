@@ -56,3 +56,7 @@ describe("ObjectSet hover types", () => {
       .toEqualTypeOf<KnownObjectSetMethods>();
   });
 });
+
+describe("Osdk.Instance hover types", () => {
+  snapshotProbes("osdkInstanceProbes.ts");
+});
