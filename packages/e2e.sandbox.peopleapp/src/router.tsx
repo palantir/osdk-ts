@@ -1,5 +1,6 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import PeopleApp from "./App.js";
+import { AipAgentChatPage } from "./app/aip-agent-chat/page.js";
 import { AuthCallbackPage } from "./app/auth/callback/page.js";
 import { ChatPage } from "./app/chat/page.js";
 import { EmployeesFilterListPage } from "./app/employees/filterListPage.js";
@@ -41,6 +42,10 @@ const router = createBrowserRouter([
       {
         path: "/chat",
         element: <ChatPage />,
+      },
+      {
+        path: "/aip-agent-chat",
+        element: <AipAgentChatPage />,
       },
     ],
   },
