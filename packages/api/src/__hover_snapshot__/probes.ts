@@ -20,8 +20,31 @@
 // shape of high-traffic ObjectSet methods so future type-graph refactors
 // surface as snapshot diffs in code review.
 //
-// Adding a probe: declare a `probe_<name>: <type>` here and re-run vitest with
-// --update to refresh the snapshot. Removing one is the same in reverse.
+// Adding a probe: write `declare const probe_<name>: <type>` with a JSDoc
+// describing the user-facing intent (the JSDoc is required and becomes the
+// snapshot's leading comment). Then run `pnpm updateSnapshots` from
+// packages/api/.
+//
+// Useful TypeScript built-ins for sculpting the type you want to snapshot:
+//   - `Parameters<F>[N]` — the Nth parameter type of a function/method.
+//     Example: `Parameters<ObjectSet<E>["where"]>[0]` for the clause arg.
+//   - `ReturnType<F>` — the return type of a function/method.
+//     Example: `ReturnType<ObjectSet<E>["asyncIter"]>` for the iter result.
+//   - `Awaited<T>` — unwrap a `Promise<X>` to `X`.
+//     Example: `Awaited<ReturnType<ObjectSet<E>["fetchPage"]>>`.
+//   - `typeof <value>` — reference a value's type. Combine with TS 4.7+
+//     instantiation-expression syntax `typeof fn<T>` to capture what a
+//     generic method returns when called with a specific type argument.
+//     Example: see `_withProperties` below — declaring an intermediate
+//     value lets us write `typeof _withProperties<{...}>` to model the
+//     post-call shape, which is otherwise buried behind a constraint default.
+//   - Index access (`["key"]`, `[number]`) — drill into an object/tuple
+//     type. Example: `Foo["bar"]` or `Tuple[0]`.
+//
+// The JSDoc on each probe should describe the user-facing situation in
+// plain English ("The clause argument of objectSet.where(...)") rather than
+// restating the type-level expression. This is what reviewers see in the
+// snapshot diff to understand what's being captured.
 
 import type { ObjectSet } from "../objectSet/ObjectSet.js";
 import type { EmployeeApiTest } from "../test/EmployeeApiTest.js";
