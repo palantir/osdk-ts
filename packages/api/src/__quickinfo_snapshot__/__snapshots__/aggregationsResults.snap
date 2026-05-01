@@ -29,9 +29,9 @@ type probe_groupBy_ranges = Array<
 
 /** Aggregation across multiple properties, including $count. */
 type probe_mixed_props = {
-  $count: number;
-  fullName: { approximateDistinct: number };
   employeeId: { sum: number | undefined };
+  fullName: { approximateDistinct: number };
+  $count: number;
 };
 
 /** Aggregation across one property with multiple metrics. */

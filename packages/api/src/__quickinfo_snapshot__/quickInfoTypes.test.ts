@@ -53,13 +53,13 @@ type ProbedObjectSetMethods =
   | "where"
   | "subscribe"
   | "fetchPage"
+  | "fetchPageWithErrors"
   | "asyncIter"
   | "aggregate"
   | "withProperties";
 
 type SkippedObjectSetMethods =
   | "$objectSetInternals" // internal marker, not part of user-facing surface
-  | "fetchPageWithErrors" // shape mirrors fetchPage
   | "fetchOne" // shape mirrors fetchPage's element type
   | "fetchOneWithErrors" // shape mirrors fetchOne
   | "experimental_asyncIterLinks" // experimental; not stable enough to pin

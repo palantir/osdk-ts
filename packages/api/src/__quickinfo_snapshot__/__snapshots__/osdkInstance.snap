@@ -3,6 +3,44 @@
 // Update: pnpm updateSnapshots --filter=@osdk/api
 // See packages/api/src/__quickinfo_snapshot__/README.md for details.
 
+/** The result of instance.$as(FooInterface) — recasting to the interface view. */
+type probe_$as_to_interface =
+  & ObjectIdentifiers<FooInterfaceApiTest>
+  & {
+    readonly $objectSpecifier: ObjectSpecifier<FooInterfaceApiTest>;
+    readonly $objectType: string;
+    readonly $title: string | undefined;
+  }
+  & Pick<FooInterfaceApiTest.Props, "fooSpt">
+  & {}
+  & {
+    readonly $link: never;
+    readonly $as: <NEW_Q extends ObjectOrInterfaceDefinition>(
+      type: string | NEW_Q,
+    ) => Osdk.Instance<
+      NEW_Q,
+      never,
+      ConvertProps<FooInterfaceApiTest, NEW_Q, "fooSpt", never>,
+      {}
+    >;
+    readonly $clone: <NEW_PROPS extends PropertyKeys<FooInterfaceApiTest>>(
+      updatedObject?:
+        | Osdk.Instance<FooInterfaceApiTest, any, NEW_PROPS, {}>
+        | { [K in NEW_PROPS]?: FooInterfaceApiTest.Props[K] | undefined }
+        | undefined,
+    ) => Osdk.Instance<FooInterfaceApiTest, never, "fooSpt" | NEW_PROPS, {}>;
+    readonly $__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata: {
+      ObjectMetadata: ObjectMetadata;
+      InterfaceMetadata: InterfaceMetadata;
+    };
+    readonly $__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue: <
+      PropertyApiName extends PropertyKeys<FooInterfaceApiTest>,
+    >(
+      propertyApiName: PropertyApiName,
+      options?: { locale?: string; timezoneId?: string },
+    ) => string | undefined;
+  };
+
 /** An instance fetched with $includeAllBaseObjectProperties: true. */
 type probe_all_base_props =
   & ObjectIdentifiers<EmployeeApiTest>
@@ -202,13 +240,13 @@ type probe_property_securities =
   }
   & {
     readonly $propertySecurities: {
+      employeeId: Array<PropertySecurity>;
+      fullName: Array<PropertySecurity>;
+      class: Array<PropertySecurity>;
+      mediaReference: Array<PropertySecurity>;
       attachment: Array<PropertySecurity>;
       geopoint: Array<PropertySecurity>;
-      mediaReference: Array<PropertySecurity>;
       geotimeSeriesReference: Array<PropertySecurity>;
-      class: Array<PropertySecurity>;
-      fullName: Array<PropertySecurity>;
-      employeeId: Array<PropertySecurity>;
       timeseries: Array<PropertySecurity>;
       isActive: Array<PropertySecurity>;
       yearsOfExperience: Array<PropertySecurity>;
@@ -230,7 +268,7 @@ type probe_select_subset =
     readonly $objectType: string;
     readonly $title: string | undefined;
   }
-  & Pick<EmployeeApiTest.Props, "fullName" | "employeeId">
+  & Pick<EmployeeApiTest.Props, "employeeId" | "fullName">
   & {}
   & {
     readonly $link: {
@@ -242,7 +280,7 @@ type probe_select_subset =
     ) => Osdk.Instance<
       NEW_Q,
       never,
-      ConvertProps<EmployeeApiTest, NEW_Q, "fullName" | "employeeId", never>,
+      ConvertProps<EmployeeApiTest, NEW_Q, "employeeId" | "fullName", never>,
       {}
     >;
     readonly $clone: <NEW_PROPS extends PropertyKeys<EmployeeApiTest>>(
@@ -253,7 +291,7 @@ type probe_select_subset =
     ) => Osdk.Instance<
       EmployeeApiTest,
       never,
-      "fullName" | "employeeId" | NEW_PROPS,
+      "employeeId" | "fullName" | NEW_PROPS,
       {}
     >;
     readonly $__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata: {

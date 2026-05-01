@@ -59,3 +59,13 @@ declare const probe_property_securities: Osdk.Instance<
 
 /** An instance whose Q is an interface rather than an object type. */
 declare const probe_interface_default: Osdk.Instance<FooInterfaceApiTest>;
+
+// === $as cast ===
+
+// TS instantiation-expression form so we capture the post-call shape, not the
+// constraint default `<NEW_Q extends InterfaceDefinition>(...) => ...`.
+declare const _$as: Osdk.Instance<EmployeeApiTest>["$as"];
+/** The result of instance.$as(FooInterface) — recasting to the interface view. */
+declare const probe_$as_to_interface: ReturnType<
+  typeof _$as<FooInterfaceApiTest>
+>;

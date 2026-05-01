@@ -8,6 +8,42 @@ hover tooltip; pinning it means future type-graph refactors that change
 what users see hovering those expressions will surface as snapshot
 diffs.
 
+## Philosophy
+
+These snapshots aren't a type-correctness test. The goal is to make the
+hover output users actually see in their editor visible in code review,
+so we can notice when it stops being reasonable (a refactor leaks an
+internal helper into the tooltip, a generic stops resolving, an
+overload renders as `any`, etc.). Snapshot diffs are meant to be read,
+not just to fail.
+
+That makes one rule load-bearing:
+
+> **A probe must render the same string TS would show on hover.**
+
+Concretely, only use type expressions a user would write in their own
+code:
+
+- ✅ `Parameters<F>[N]`, `ReturnType<F>`, `Awaited<P>`, `NonNullable<T>`
+- ✅ Index access (`Foo["bar"]`) and instantiation expressions
+  (`typeof fn<T>`)
+- ✅ Pre-instantiated aliases as shorthand (`type L = Listener<EmployeeApiTest>;`)
+- ❌ `Expand<T> = { [K in keyof T]: T[K] }` — flattens an interface to a
+  structural literal that hover never shows
+- ❌ `Force<T> = [T][0]` / `Reduce<T> = T extends T ? T : never` — coax
+  a conditional alias to evaluate when hover would have shown the
+  unevaluated form
+- ❌ Anything else that produces a richer or more reduced view than the
+  editor tooltip
+
+When a probe lands as just an opaque alias name (e.g.
+`ObjectSetSubscription.Options<E, ...>`), don't reach for `Expand` to
+"make the snapshot useful." Instead, drill in the way a user would —
+hover `options.properties`, hover `builder.where` — by switching to
+per-field index access (`Options["properties"]`,
+`Builder["where"]`). The result is still hover-faithful, and the
+snapshot now shows the part you actually wanted to pin.
+
 ## Layout
 
 - `probeUtils.ts` — the reusable renderer. Loads probes files via the

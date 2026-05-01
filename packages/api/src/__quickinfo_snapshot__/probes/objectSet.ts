@@ -37,6 +37,11 @@ declare const probe_fetchPage_result: Awaited<
   ReturnType<ObjectSet<EmployeeApiTest>["fetchPage"]>
 >;
 
+/** The awaited result of objectSet.fetchPageWithErrors() — Result-wrapped envelope around the fetchPage shape. */
+declare const probe_fetchPageWithErrors_result: Awaited<
+  ReturnType<ObjectSet<EmployeeApiTest>["fetchPageWithErrors"]>
+>;
+
 /** The result of objectSet.asyncIter(). */
 declare const probe_asyncIter_result: ReturnType<
   ObjectSet<EmployeeApiTest>["asyncIter"]

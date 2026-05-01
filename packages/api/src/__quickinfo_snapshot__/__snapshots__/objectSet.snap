@@ -109,6 +109,65 @@ type probe_asyncIter_result = AsyncIterableIterator<
   )
 >;
 
+/** The awaited result of objectSet.fetchPageWithErrors() — Result-wrapped envelope around the fetchPage shape. */
+type probe_fetchPageWithErrors_result =
+  | ErrorResult
+  | OkResult<
+    PageResult<
+      | Osdk.Instance<EmployeeApiTest, never, PropertyKeys<EmployeeApiTest>, {}>
+      | (
+        & ObjectIdentifiers<EmployeeApiTest>
+        & {
+          readonly $objectSpecifier: ObjectSpecifier<EmployeeApiTest>;
+          readonly $objectType: string;
+          readonly $title: string | undefined;
+        }
+        & Pick<EmployeeApiTest.Props, PropertyKeys<EmployeeApiTest>>
+        & {}
+        & {
+          readonly $link: {
+            readonly lead: SingleLinkAccessor<EmployeeApiTest>;
+            readonly peeps: ObjectSet<EmployeeApiTest, never>;
+          };
+          readonly $as: <NEW_Q extends InterfaceDefinition>(
+            type: string | NEW_Q,
+          ) => Osdk.Instance<
+            NEW_Q,
+            never,
+            ConvertProps<
+              EmployeeApiTest,
+              NEW_Q,
+              PropertyKeys<EmployeeApiTest>,
+              never
+            >,
+            {}
+          >;
+          readonly $clone: <NEW_PROPS extends PropertyKeys<EmployeeApiTest>>(
+            updatedObject?:
+              | Osdk.Instance<EmployeeApiTest, any, NEW_PROPS, {}>
+              | { [K in NEW_PROPS]?: EmployeeApiTest.Props[K] | undefined }
+              | undefined,
+          ) => Osdk.Instance<
+            EmployeeApiTest,
+            never,
+            PropertyKeys<EmployeeApiTest> | NEW_PROPS,
+            {}
+          >;
+          readonly $__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata: {
+            ObjectMetadata: ObjectMetadata;
+          };
+          readonly $__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue: <
+            PropertyApiName extends PropertyKeys<EmployeeApiTest>,
+          >(
+            propertyApiName: PropertyApiName,
+            options?: { locale?: string; timezoneId?: string },
+          ) => string | undefined;
+        }
+        & { $score: number }
+      )
+    >
+  >;
+
 /** The awaited result of objectSet.fetchPage(). */
 type probe_fetchPage_result = PageResult<
   | Osdk.Instance<EmployeeApiTest, never, PropertyKeys<EmployeeApiTest>, {}>
