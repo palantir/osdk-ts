@@ -513,7 +513,7 @@ export function EmployeePanel({
                 depth={0}
                 onSelectEmployee={onSelectEmployee}
                 onToggleExpand={toggleExpand}
-                isRoot
+                isRoot={true}
               />
             </div>
           </div>

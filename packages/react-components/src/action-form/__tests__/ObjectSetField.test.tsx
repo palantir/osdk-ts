@@ -42,7 +42,9 @@ const TestObjectType: ObjectTypeDefinition = {
 function createMockObjectSet(): ObjectSet<ObjectTypeDefinition> {
   return {
     $objectSetInternals: { def: TestObjectType },
-  } as ObjectSet<ObjectTypeDefinition>;
+    // fetchPage satisfies the isObjectSet guard in ObjectSetField
+    fetchPage: vi.fn(),
+  } as unknown as ObjectSet<ObjectTypeDefinition>;
 }
 
 afterEach(cleanup);

@@ -18,100 +18,79 @@ import type {
   ActionDefinition,
   ActionMetadata,
   ActionParam,
+  BaseObjectSet,
   CompileTimeMetadata,
   DataValueClientToWire,
-  ObjectSet,
+  ObjectOrInterfaceDefinition,
   ObjectTypeDefinition,
   Osdk,
 } from "@osdk/api";
 import type React from "react";
+import type { FieldPath } from "react-hook-form";
 
 /**
- * A form field definition specifies configuration for a single field
+ * A form field definition specifies configuration for a single field.
+ *
+ * Implemented as a distributed mapped type so that choosing a `fieldComponent`
+ * narrows `fieldComponentProps` to the correct props — e.g. selecting
+ * `"DROPDOWN"` requires `items`, selecting `"RADIO_BUTTONS"` requires `options`.
+ *
+ * Dropdown, RadioButtons, and Custom fields receive the concrete value type
+ * from the action parameter (`FieldValueType<Q, K>`) instead of `unknown`.
  */
-export interface FormFieldDefinition<
+export type FormFieldDefinition<
   Q extends ActionDefinition<unknown>,
   K extends FieldKey<Q> = FieldKey<Q>,
-> {
-  /**
-   * The field's unique key
-   */
-  fieldKey: K;
-
-  /**
-   * Display label for the field
-   */
-  label: string;
-
-  /**
-   * Default value of the field
-   */
-  defaultValue?: FieldValueType<Q, K>;
-
-  /**
-   * The form field component type to render
-   */
-  fieldComponent: ValidFormFieldForPropertyType<FieldDescriptorType<Q, K>>;
-
-  /**
-   * Whether the field is required
-   */
-  isRequired?: boolean;
-
-  /**
-   * Placeholder text
-   */
-  placeholder?: string;
-
-  /**
-   * Additional information to display on this field
-   * The placement of helper text depends on the value of helperTextPlacement prop
-   */
-  helperText?: string;
-
-  /**
-   * The placement of the helper text either below the field or in a tooltip
-   *
-   * @default "tooltip"
-   */
-  helperTextPlacement?: "bottom" | "tooltip";
-
-  /**
-   * Whether the field is disabled
-   */
-  isDisabled?: boolean;
-
-  /**
-   * A callback to customize error messages when a built-in validation rule fails.
-   * Receives a discriminated union with the constraint data (e.g., the min value
-   * that was exceeded) so the message can reference the threshold.
-   *
-   * Return a string to override the default message, or `undefined` to keep it.
-   */
-  onValidationError?: (error: ValidationError) => string | undefined;
-
-  /**
-   * Additional function to validate the field.
-   *
-   * Return `undefined` if valid, or an error message string if invalid.
-   */
-  validate?: (value: FieldValueType<Q, K>) => Promise<string | undefined>;
-
-  /**
-   * The component props for the form field.
-   * Excludes runtime props (value, onChange) which are managed by ActionForm.
-   */
-  fieldComponentProps: Omit<
-    FormFieldPropsByType[
-      ValidFormFieldForPropertyType<
-        FieldDescriptorType<Q, K>
-      >
-    ],
-    FormManagedProps<
-      ValidFormFieldForPropertyType<FieldDescriptorType<Q, K>>
-    >
-  >;
-}
+> = {
+  [FC in ValidFormFieldForPropertyType<FieldDescriptorType<Q, K>>]: {
+    /** The field's unique key */
+    fieldKey: K;
+    /** Display label for the field */
+    label: string;
+    /** Default value of the field */
+    defaultValue?: FieldValueType<Q, K>;
+    /** The form field component type to render */
+    fieldComponent: FC;
+    /** Whether the field is required */
+    isRequired?: boolean;
+    /** Placeholder text */
+    placeholder?: string;
+    /**
+     * Additional information to display on this field.
+     * The placement depends on the value of `helperTextPlacement`.
+     */
+    helperText?: string;
+    /**
+     * The placement of the helper text either below the field or in a tooltip.
+     * @default "tooltip"
+     */
+    helperTextPlacement?: "bottom" | "tooltip";
+    /** Whether the field is disabled */
+    isDisabled?: boolean;
+    /**
+     * A callback to customize error messages when a built-in validation rule fails.
+     * Return a string to override the default message, or `undefined` to keep it.
+     */
+    onValidationError?: (error: ValidationError) => string | undefined;
+    /**
+     * Additional function to validate the field.
+     * Return `undefined` if valid, or an error message string if invalid.
+     */
+    validate?: (value: FieldValueType<Q, K>) => Promise<string | undefined>;
+    /**
+     * The component props for the form field.
+     * Excludes runtime props (value, onChange) which are managed by ActionForm.
+     */
+    fieldComponentProps: Omit<
+      FC extends "DROPDOWN" ? DropdownFieldProps<FieldValueType<Q, K>, boolean>
+        : FC extends "RADIO_BUTTONS"
+          ? RadioButtonsFieldProps<FieldValueType<Q, K>>
+        : FC extends "CUSTOM" ? CustomFieldProps<FieldValueType<Q, K>>
+        : FormFieldPropsByType[FC],
+      FormManagedProps<FC>
+    >;
+  };
+}[ValidFormFieldForPropertyType<FieldDescriptorType<Q, K>>];
 
 /**
  * A discriminated union describing which validation rule failed and the
@@ -136,7 +115,7 @@ export interface FormFieldPropsByType {
   FILE_PICKER: FilePickerProps;
   NUMBER_INPUT: NumberInputFieldProps;
   OBJECT_SELECT: ObjectSelectFieldProps<ObjectTypeDefinition>;
-  OBJECT_SET: ObjectSetFieldProps<ObjectTypeDefinition>;
+  OBJECT_SET: ObjectSetFieldProps;
   RADIO_BUTTONS: RadioButtonsFieldProps<unknown>;
   TEXT_AREA: TextAreaFieldProps;
   TEXT_INPUT: TextInputFieldProps;
@@ -454,11 +433,14 @@ export interface Option<V> {
 }
 
 /**
- * Object set field displays the summary of the count of the given object set
+ * Object set field displays the summary of the count of the given object set.
+ *
+ * Uses `BaseObjectSet` (covariant marker) so concrete types like
+ * `ObjectSet<Employee>` are assignable without casting.
  */
-export interface ObjectSetFieldProps<T extends ObjectTypeDefinition>
-  extends Pick<BaseFormFieldProps<ObjectSet<T>>, "id" | "value">
-{
+export interface ObjectSetFieldProps {
+  id?: string;
+  value: BaseObjectSet<ObjectOrInterfaceDefinition> | null;
   /**
    * Message displayed when no object set is provided.
    *
@@ -633,25 +615,62 @@ type FormManagedProps<K extends FieldComponent> = "onChange" extends
 
 /**
  * An OSDK-agnostic field definition used by BaseForm and FormFieldRenderer.
- * Contains only the information needed to render a single field — no generics,
- * no compile-time parameter constraints.
+ *
+ * Generic over a form schema `S` so that `fieldKey` is constrained to
+ * `keyof S` and Dropdown/RadioButtons/Custom receive `S[fieldKey]` as
+ * their value type — catching item/option type mismatches at compile time.
  *
  * Implemented as a distributed mapped type: switching on `fieldComponent`
  * narrows `fieldComponentProps` to the correct props type automatically.
  */
-export type RendererFieldDefinition = {
-  [K in FieldComponent]: {
-    fieldKey: string;
-    fieldComponent: K;
+export type RendererFieldDefinition<
+  S extends Record<string, unknown> = Record<string, unknown>,
+  K extends FieldPath<S> = FieldPath<S>,
+> = {
+  [FC in FieldComponent]: {
+    /** The field's unique key, constrained to `keyof S` */
+    fieldKey: K;
+    /** The form field component type to render */
+    fieldComponent: FC;
+    /** The data type of the field, used for submit-time coercion */
     fieldType?: FieldType;
+    /** Display label for the field */
     label: string;
+    /** Whether the field is required */
     isRequired?: boolean;
+    /** Placeholder text */
     placeholder?: string;
+    /**
+     * Additional information to display on this field.
+     * The placement depends on the value of `helperTextPlacement`.
+     */
     helperText?: string;
+    /**
+     * The placement of the helper text either below the field or in a tooltip.
+     * @default "tooltip"
+     */
     helperTextPlacement?: "bottom" | "tooltip";
+    /**
+     * Additional function to validate the field.
+     * Return `undefined` if valid, or an error message string if invalid.
+     */
     validate?: (value: unknown) => Promise<string | undefined>;
+    /**
+     * A callback to customize error messages when a built-in validation rule fails.
+     * Return a string to override the default message, or `undefined` to keep it.
+     */
     onValidationError?: (error: ValidationError) => string | undefined;
-    fieldComponentProps: Omit<FormFieldPropsByType[K], FormManagedProps<K>>;
+    /**
+     * The component props for the form field.
+     * Excludes runtime props (value, onChange) which are managed by BaseForm.
+     */
+    fieldComponentProps: Omit<
+      FC extends "DROPDOWN" ? DropdownFieldProps<S[K], boolean>
+        : FC extends "RADIO_BUTTONS" ? RadioButtonsFieldProps<S[K]>
+        : FC extends "CUSTOM" ? CustomFieldProps<S[K]>
+        : FormFieldPropsByType[FC],
+      FormManagedProps<FC>
+    >;
   };
 }[FieldComponent];
 

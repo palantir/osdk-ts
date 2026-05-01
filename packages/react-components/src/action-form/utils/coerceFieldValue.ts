@@ -15,6 +15,7 @@
  */
 
 import type { FieldType } from "../FormFieldApi.js";
+import { extractNumber } from "./fieldValueExtractors.js";
 
 /**
  * Coerces a raw form field value to match the expected type for the given
@@ -86,17 +87,4 @@ export function coerceFieldValue(
     default:
       return rawValue;
   }
-}
-
-function extractNumber(rawValue: unknown): number | undefined {
-  if (typeof rawValue === "number") {
-    return rawValue;
-  }
-  if (typeof rawValue === "string") {
-    const trimmed = rawValue.trim();
-    if (trimmed === "") return undefined;
-    const parsed = Number(trimmed);
-    return Number.isNaN(parsed) ? undefined : parsed;
-  }
-  return undefined;
 }

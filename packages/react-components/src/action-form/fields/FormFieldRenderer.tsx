@@ -15,13 +15,21 @@
  */
 
 import type { ObjectTypeDefinition, Osdk } from "@osdk/api";
-import React, { memo } from "react";
+import React, { memo, useMemo } from "react";
+import type { FieldPath } from "react-hook-form";
+import { typedReactMemo } from "../../shared/typedMemo.js";
 import { FormField } from "../FormField.js";
-import {
-  type DateRange,
-  EMPTY_RANGE,
-  type RendererFieldDefinition,
+import type {
+  FieldComponent,
+  RendererFieldDefinition,
 } from "../FormFieldApi.js";
+import {
+  extractDate,
+  extractDateRange,
+  extractFile,
+  extractNumber,
+  extractString,
+} from "../utils/fieldValueExtractors.js";
 import { CustomField } from "./CustomField.js";
 import { DateRangeInputField } from "./DateRangeInputField.js";
 import { DatetimePickerField } from "./DatetimePickerField.js";
@@ -34,195 +42,337 @@ import { RadioButtonsField } from "./RadioButtonsField.js";
 import { TextAreaField } from "./TextAreaField.js";
 import { TextInputField } from "./TextInputField.js";
 
-export interface FormFieldRendererProps {
-  fieldDefinition: RendererFieldDefinition;
+export interface FormFieldRendererProps<S extends Record<string, unknown>> {
+  fieldDefinition: RendererFieldDefinition<S>;
   value: unknown;
-  onFieldValueChange: (value: unknown) => void;
+  onFieldValueChange: (value: S[FieldPath<S>]) => void;
   onBlur: (e: React.FocusEvent<HTMLDivElement>) => void;
   error: string | undefined;
 }
 
-export const FormFieldRenderer: React.FC<FormFieldRendererProps> = memo(
-  function FormFieldRendererFn({
-    fieldDefinition,
-    value,
-    onFieldValueChange,
-    onBlur,
-    error,
-  }: FormFieldRendererProps): React.ReactElement {
-    const { label, isRequired, helperText, helperTextPlacement } =
-      fieldDefinition;
+export const FormFieldRenderer: <S extends Record<string, unknown>>(
+  props: FormFieldRendererProps<S>,
+) => React.ReactElement = typedReactMemo(function FormFieldRendererFn<
+  S extends Record<string, unknown>,
+>({
+  fieldDefinition,
+  value,
+  onFieldValueChange,
+  onBlur,
+  error,
+}: FormFieldRendererProps<S>): React.ReactElement {
+  const { label, isRequired, helperText, helperTextPlacement } =
+    fieldDefinition;
+  const props = useMemo(
+    () => ({
+      value,
+      // Field components produce concrete types (string, number, V | null)
+      // that are S[K] at runtime. Widen here so the heterogeneous wrappers
+      // can call onChange without per-type casts.
+      onChange: onFieldValueChange as (value: unknown) => void,
+      error,
+    }),
+    [value, onFieldValueChange, error],
+  );
+  return (
+    <FormField
+      label={label}
+      isRequired={isRequired}
+      fieldKey={fieldDefinition.fieldKey}
+      helperText={helperTextPlacement !== "tooltip" ? helperText : undefined}
+      error={error}
+      onBlur={onBlur}
+    >
+      {renderFieldComponent(fieldDefinition, props)}
+    </FormField>
+  );
+});
 
-    return (
-      <FormField
-        label={label}
-        isRequired={isRequired}
-        fieldKey={fieldDefinition.fieldKey}
-        helperText={helperTextPlacement !== "tooltip" ? helperText : undefined}
-        error={error}
-        onBlur={onBlur}
-      >
-        {renderFieldComponent(
-          fieldDefinition,
-          value,
-          onFieldValueChange,
-          error,
-        )}
-      </FormField>
-    );
-  },
-);
-
-function renderFieldComponent(
-  fieldDefinition: RendererFieldDefinition,
-  value: unknown,
-  onChange: (value: unknown) => void,
-  error: string | undefined,
+function renderFieldComponent<S extends Record<string, unknown>>(
+  fieldDefinition: RendererFieldDefinition<S>,
+  props: FieldRenderProps,
 ): React.ReactElement {
   switch (fieldDefinition.fieldComponent) {
     case "DATE_RANGE_INPUT":
       return (
-        <DateRangeInputField
-          id={fieldDefinition.fieldKey}
-          value={coerceToDateRange(value)}
-          onChange={onChange}
-          placeholderStart={fieldDefinition.placeholder}
-          {...fieldDefinition.fieldComponentProps}
-        />
+        <DateRangeInputWrapper fieldDefinition={fieldDefinition} {...props} />
       );
     case "TEXT_INPUT":
-      return (
-        <TextInputField
-          id={fieldDefinition.fieldKey}
-          value={value != null ? String(value) : ""}
-          onChange={onChange}
-          placeholder={fieldDefinition.placeholder}
-          error={error}
-          {...fieldDefinition.fieldComponentProps}
-        />
-      );
+      return <TextInputWrapper fieldDefinition={fieldDefinition} {...props} />;
     case "TEXT_AREA":
-      return (
-        <TextAreaField
-          id={fieldDefinition.fieldKey}
-          value={value != null ? String(value) : ""}
-          onChange={onChange}
-          placeholder={fieldDefinition.placeholder}
-          error={error}
-          {...fieldDefinition.fieldComponentProps}
-        />
-      );
-    case "DROPDOWN": {
-      return (
-        <DropdownField
-          id={fieldDefinition.fieldKey}
-          value={value}
-          onChange={onChange}
-          placeholder={fieldDefinition.placeholder}
-          error={error}
-          {...fieldDefinition.fieldComponentProps}
-        />
-      );
-    }
+      return <TextAreaWrapper fieldDefinition={fieldDefinition} {...props} />;
     case "DATETIME_PICKER":
       return (
-        <DatetimePickerField
-          id={fieldDefinition.fieldKey}
-          placeholder={fieldDefinition.placeholder}
-          // TODO: Use coerceFieldValue
-          value={value instanceof Date ? value : null}
-          onChange={onChange}
-          error={error}
-          {...fieldDefinition.fieldComponentProps}
-        />
-      );
-    case "RADIO_BUTTONS":
-      return (
-        <RadioButtonsField
-          id={fieldDefinition.fieldKey}
-          value={value}
-          onChange={onChange}
-          error={error}
-          {...fieldDefinition.fieldComponentProps}
-        />
-      );
-    case "CUSTOM":
-      return (
-        <CustomField
-          id={fieldDefinition.fieldKey}
-          value={value}
-          onChange={onChange}
-          error={error}
-          {...fieldDefinition.fieldComponentProps}
-        />
+        <DatetimePickerWrapper fieldDefinition={fieldDefinition} {...props} />
       );
     case "NUMBER_INPUT":
-      // TODO: Use coerceFieldValue
       return (
-        <NumberInputField
-          id={fieldDefinition.fieldKey}
-          value={typeof value === "number" ? value : null}
-          onChange={onChange}
-          placeholder={fieldDefinition.placeholder}
-          error={error}
-          {...fieldDefinition.fieldComponentProps}
+        <NumberInputWrapper
+          fieldDefinition={fieldDefinition}
+          {...props}
         />
       );
     case "FILE_PICKER":
+      return <FilePickerWrapper fieldDefinition={fieldDefinition} {...props} />;
+    case "DROPDOWN":
+      return <DropdownWrapper fieldDefinition={fieldDefinition} {...props} />;
+    case "RADIO_BUTTONS":
       return (
-        <FilePickerField
-          id={fieldDefinition.fieldKey}
-          value={coerceToFileValue(value)}
-          onChange={onChange}
-          error={error}
-          {...fieldDefinition.fieldComponentProps}
+        <RadioButtonsWrapper fieldDefinition={fieldDefinition} {...props} />
+      );
+    case "CUSTOM":
+      return (
+        <CustomFieldWrapper
+          fieldDefinition={fieldDefinition}
+          {...props}
         />
       );
     case "OBJECT_SELECT":
       return (
-        <ObjectSelectField
-          id={fieldDefinition.fieldKey}
-          value={narrowToOsdkObject(value)}
-          onChange={onChange}
-          placeholder={fieldDefinition.placeholder}
-          error={error}
-          {...fieldDefinition.fieldComponentProps}
-        />
+        <ObjectSelectWrapper fieldDefinition={fieldDefinition} {...props} />
       );
     case "OBJECT_SET":
-      return (
-        <ObjectSetField
-          id={fieldDefinition.fieldKey}
-          {...fieldDefinition.fieldComponentProps}
-        />
-      );
+      return <ObjectSetWrapper fieldDefinition={fieldDefinition} {...props} />;
     default:
       return assertUnreachableFieldComponent(fieldDefinition);
   }
 }
 
-function coerceToDateRange(value: unknown): DateRange {
-  if (!Array.isArray(value) || value.length !== 2) return EMPTY_RANGE;
-  const start = value[0] instanceof Date ? value[0] : null;
-  const end = value[1] instanceof Date ? value[1] : null;
-  if (start == null && end == null) return EMPTY_RANGE;
-  return [start, end];
+// --- Types ---
+
+/**
+ * Narrows the RendererFieldDefinition union to the member for a specific
+ * FieldComponent discriminant. Default S erases the schema generic for
+ * wrappers that don't need it (coercion wrappers).
+ */
+type NarrowedDef<
+  FC extends FieldComponent,
+  S extends Record<string, unknown> = Record<string, unknown>,
+> = Extract<RendererFieldDefinition<S>, { fieldComponent: FC }>;
+
+/** Shared props passed from FieldBridge through to each wrapper. */
+interface FieldRenderProps {
+  value: unknown;
+  onChange: (value: unknown) => void;
+  error: string | undefined;
 }
 
-// TODO: Move and share with `coerceFieldValue`
-function isFileArray(value: unknown[]): value is File[] {
-  return value.every((v) => v instanceof File);
+interface FieldWrapperProps<
+  FC extends FieldComponent,
+  S extends Record<string, unknown> = Record<string, unknown>,
+> extends FieldRenderProps {
+  fieldDefinition: NarrowedDef<FC, S>;
 }
 
-function coerceToFileValue(value: unknown): File | File[] | null {
-  if (value instanceof File) {
-    return value;
-  }
-  if (Array.isArray(value) && isFileArray(value)) {
-    return value;
-  }
-  return null;
-}
+// --- Coercion wrappers ---
+// Memoize the coerced value and provide a typed onChange handler.
+// These don't need S — their fieldComponentProps doesn't depend on it.
+
+const DateRangeInputWrapper = memo(function DateRangeInputWrapperFn({
+  fieldDefinition,
+  value,
+  onChange,
+}: FieldWrapperProps<"DATE_RANGE_INPUT">) {
+  const coercedValue = useMemo(() => extractDateRange(value), [value]);
+
+  return (
+    <DateRangeInputField
+      id={fieldDefinition.fieldKey}
+      value={coercedValue}
+      onChange={onChange}
+      placeholderStart={fieldDefinition.placeholder}
+      {...fieldDefinition.fieldComponentProps}
+    />
+  );
+});
+
+const TextInputWrapper = memo(function TextInputWrapperFn({
+  fieldDefinition,
+  value,
+  onChange,
+  error,
+}: FieldWrapperProps<"TEXT_INPUT">) {
+  const coercedValue = useMemo(() => extractString(value), [value]);
+
+  return (
+    <TextInputField
+      id={fieldDefinition.fieldKey}
+      value={coercedValue}
+      onChange={onChange}
+      placeholder={fieldDefinition.placeholder}
+      error={error}
+      {...fieldDefinition.fieldComponentProps}
+    />
+  );
+});
+
+const TextAreaWrapper = memo(function TextAreaWrapperFn({
+  fieldDefinition,
+  value,
+  onChange,
+  error,
+}: FieldWrapperProps<"TEXT_AREA">) {
+  const coercedValue = useMemo(() => extractString(value), [value]);
+
+  return (
+    <TextAreaField
+      id={fieldDefinition.fieldKey}
+      value={coercedValue}
+      onChange={onChange}
+      placeholder={fieldDefinition.placeholder}
+      error={error}
+      {...fieldDefinition.fieldComponentProps}
+    />
+  );
+});
+
+const DatetimePickerWrapper = memo(function DatetimePickerWrapperFn({
+  fieldDefinition,
+  value,
+  onChange,
+  error,
+}: FieldWrapperProps<"DATETIME_PICKER">) {
+  const coercedValue = useMemo(() => extractDate(value) ?? null, [value]);
+
+  return (
+    <DatetimePickerField
+      id={fieldDefinition.fieldKey}
+      placeholder={fieldDefinition.placeholder}
+      value={coercedValue}
+      onChange={onChange}
+      error={error}
+      {...fieldDefinition.fieldComponentProps}
+    />
+  );
+});
+
+const NumberInputWrapper = memo(function NumberInputWrapperFn({
+  fieldDefinition,
+  value,
+  onChange,
+  error,
+}: FieldWrapperProps<"NUMBER_INPUT">) {
+  const coercedValue = useMemo(() => extractNumber(value) ?? null, [value]);
+
+  return (
+    <NumberInputField
+      id={fieldDefinition.fieldKey}
+      value={coercedValue}
+      onChange={onChange}
+      placeholder={fieldDefinition.placeholder}
+      error={error}
+      {...fieldDefinition.fieldComponentProps}
+    />
+  );
+});
+
+const FilePickerWrapper = memo(function FilePickerWrapperFn({
+  fieldDefinition,
+  value,
+  onChange,
+  error,
+}: FieldWrapperProps<"FILE_PICKER">) {
+  const coercedValue = useMemo(() => extractFile(value), [value]);
+
+  return (
+    <FilePickerField
+      id={fieldDefinition.fieldKey}
+      value={coercedValue}
+      onChange={onChange}
+      error={error}
+      {...fieldDefinition.fieldComponentProps}
+    />
+  );
+});
+
+// --- Passthrough wrappers ---
+// Generic over S because their fieldComponentProps uses S[K] (e.g. Dropdown
+// items, RadioButtons options, Custom renderer).
+
+const DropdownWrapper = typedReactMemo(function DropdownWrapperFn<
+  S extends Record<string, unknown>,
+>({
+  fieldDefinition,
+  value,
+  onChange,
+  error,
+}: FieldWrapperProps<"DROPDOWN", S>) {
+  return (
+    <DropdownField
+      id={fieldDefinition.fieldKey}
+      // FieldPathValue<S, FieldPath<S>> ≡ S[FieldPath<S>] for flat schemas;
+      // TS can't unify RHF's path resolution with direct indexed access.
+      value={value as S[FieldPath<S>] | null}
+      onChange={onChange}
+      placeholder={fieldDefinition.placeholder}
+      error={error}
+      {...fieldDefinition.fieldComponentProps}
+    />
+  );
+});
+
+const RadioButtonsWrapper = typedReactMemo(function RadioButtonsWrapperFn<
+  S extends Record<string, unknown>,
+>({
+  fieldDefinition,
+  value,
+  onChange,
+  error,
+}: FieldWrapperProps<"RADIO_BUTTONS", S>) {
+  return (
+    <RadioButtonsField
+      id={fieldDefinition.fieldKey}
+      value={value as S[FieldPath<S>] | null}
+      onChange={onChange}
+      error={error}
+      {...fieldDefinition.fieldComponentProps}
+    />
+  );
+});
+
+const CustomFieldWrapper = typedReactMemo(function CustomFieldWrapperFn<
+  S extends Record<string, unknown>,
+>({ fieldDefinition, value, onChange, error }: FieldWrapperProps<"CUSTOM", S>) {
+  return (
+    <CustomField
+      id={fieldDefinition.fieldKey}
+      value={value as S[FieldPath<S>] | null}
+      onChange={onChange}
+      error={error}
+      {...fieldDefinition.fieldComponentProps}
+    />
+  );
+});
+
+const ObjectSelectWrapper = memo(function ObjectSelectWrapperFn({
+  fieldDefinition,
+  value,
+  onChange,
+  error,
+}: FieldWrapperProps<"OBJECT_SELECT">) {
+  return (
+    <ObjectSelectField
+      id={fieldDefinition.fieldKey}
+      value={narrowToOsdkObject(value)}
+      onChange={onChange}
+      placeholder={fieldDefinition.placeholder}
+      error={error}
+      {...fieldDefinition.fieldComponentProps}
+    />
+  );
+});
+
+// ObjectSet has no value/onChange and no S dependency.
+const ObjectSetWrapper = memo(function ObjectSetWrapperFn({
+  fieldDefinition,
+}: FieldWrapperProps<"OBJECT_SET">) {
+  return (
+    <ObjectSetField
+      id={fieldDefinition.fieldKey}
+      {...fieldDefinition.fieldComponentProps}
+    />
+  );
+});
 
 /** Narrows the untyped form value to an OsdkObject by checking for $primaryKey. */
 function narrowToOsdkObject(

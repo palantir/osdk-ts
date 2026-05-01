@@ -17,18 +17,25 @@
 import { Error as ErrorIcon } from "@blueprintjs/icons";
 import classNames from "classnames";
 import React, { memo, useCallback, useMemo, useState } from "react";
+import type { DefaultValues, FieldPath } from "react-hook-form";
 import { useForm } from "react-hook-form";
 import { ActionButton } from "../base-components/action-button/ActionButton.js";
 import { SkeletonBar } from "../base-components/skeleton/SkeletonBar.js";
 import { Tooltip } from "../base-components/tooltip/Tooltip.js";
 import { useAsyncAction } from "../shared/hooks/useAsyncAction.js";
+import { typedReactMemo } from "../shared/typedMemo.js";
 import type { BaseFormProps } from "./ActionFormApi.js";
 import styles from "./BaseForm.module.css";
 import { FieldBridge } from "./fields/FieldBridge.js";
-import type { RendererFieldDefinition } from "./FormFieldApi.js";
 import { FormHeader } from "./FormHeader.js";
 
-export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
+// Generic component: S is only used for public type safety (fieldKey, item types,
+// onSubmit). Internally the implementation erases S to Record<string, unknown>.
+export const BaseForm: <S extends Record<string, unknown>>(
+  props: BaseFormProps<S>,
+) => React.ReactElement = typedReactMemo(function BaseFormFn<
+  S extends Record<string, unknown>,
+>({
   formTitle,
   fieldDefinitions,
   formState: controlledFormState,
@@ -38,11 +45,11 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
   isPending = false,
   isLoading = false,
   className,
-}: BaseFormProps): React.ReactElement {
+}: BaseFormProps<S>): React.ReactElement {
   const isControlled = controlledFormState != null;
 
   const defaultValues = useMemo(
-    () => buildDefaultValues(fieldDefinitions),
+    () => buildDefaultValues<S>(fieldDefinitions),
     [fieldDefinitions],
   );
 
@@ -50,14 +57,18 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
     control,
     trigger,
     getValues,
-    formState: { errors },
-  } = useForm<Record<string, unknown>>({
+    formState: { errors: rawErrors },
+  } = useForm<S>({
     // Validate on blur first, then revalidate on change after the first
     // error. This gives the user a chance to finish typing before seeing
     // errors, while staying responsive once an error is surfaced.
     mode: "onTouched",
     ...(isControlled ? { values: controlledFormState } : { defaultValues }),
   });
+
+  // RHF's FieldErrors<S> resolves to complex conditional types for generic S.
+  // Narrow to the structural subset we actually read (key + message).
+  const errors = rawErrors as Record<string, { message?: string }>;
 
   const [hasAttemptedSubmit, setHasAttemptedSubmit] = useState(false);
 
@@ -95,7 +106,7 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
   );
 
   const handleFieldChange = useCallback(
-    (fieldKey: string, value: unknown) => {
+    <K extends FieldPath<S>>(fieldKey: K, value: S[K]) => {
       clearError();
       onFieldValueChange?.(fieldKey, value);
     },
@@ -105,7 +116,10 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
   const isFormPending = isPending || isSubmitting;
 
   const labelByFieldKey = useMemo(
-    () => new Map(fieldDefinitions.map((d) => [d.fieldKey, d.label])),
+    () =>
+      new Map<string, string>(
+        fieldDefinitions.map((d) => [d.fieldKey, d.label]),
+      ),
     [fieldDefinitions],
   );
 
@@ -172,17 +186,23 @@ const FORM_SKELETON = Array.from(
   ),
 );
 
-function buildDefaultValues(
-  fieldDefinitions: ReadonlyArray<RendererFieldDefinition>,
-): Record<string, unknown> {
+// Accepts a structural subset instead of RendererFieldDefinition<S> to avoid
+// the invariance issue — this function only reads fieldKey and defaultValue.
+// Returns DefaultValues<S> — the cast is safe because field definitions
+// guarantee the keys/values match the schema S at runtime.
+function buildDefaultValues<S extends Record<string, unknown>>(
+  fieldDefinitions: ReadonlyArray<{
+    fieldKey: string;
+    fieldComponentProps: Record<string, unknown>;
+  }>,
+): DefaultValues<S> {
   const values: Record<string, unknown> = {};
   for (const def of fieldDefinitions) {
-    const props: Record<string, unknown> = def.fieldComponentProps;
-    if ("defaultValue" in props) {
-      values[def.fieldKey] = props.defaultValue;
+    if ("defaultValue" in def.fieldComponentProps) {
+      values[def.fieldKey] = def.fieldComponentProps.defaultValue;
     }
   }
-  return values;
+  return values as DefaultValues<S>;
 }
 
 interface ErrorEntry {
