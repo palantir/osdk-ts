@@ -22,8 +22,32 @@ export interface Logger {
   warn: Logger.LogFn;
   info: Logger.LogFn;
 
+  /**
+   * Checks whether the given log level is enabled, allowing callers to skip
+   * expensive message construction when the output would be discarded.
+   * @param level - The log level to check (e.g., `"debug"`, `"info"`)
+   * @example
+   * ```ts
+   * if (logger.isLevelEnabled("debug")) {
+   *   logger.debug("expensive payload", { payload: serialize(data) });
+   * }
+   * ```
+   * @returns `true` if log calls at the given level will be emitted
+   */
   isLevelEnabled(level: string): boolean;
 
+  /**
+   * Creates a child logger that inherits this logger's configuration and
+   * automatically includes the given bindings on every log line.
+   * @param bindings - Key/value pairs to attach to every log line emitted by the child
+   * @param options - Optional overrides for the child's level or message prefix
+   * @example
+   * ```ts
+   * const requestLogger = logger.child({ requestId: req.id });
+   * requestLogger.info("handling request");
+   * ```
+   * @returns a new logger that includes `bindings` on every log line
+   */
   child(
     bindings: Record<string, any>,
     options?: { level?: string; msgPrefix?: string },
@@ -31,6 +55,22 @@ export interface Logger {
 }
 
 export namespace Logger {
+  /**
+   * A log function for a single level (e.g., `info`, `debug`, `error`).
+   *
+   * Can be invoked either with a metadata object followed by an optional
+   * message, or with a message string directly. Trailing arguments are
+   * interpolated into the message in the same style as `printf`/`util.format`.
+   * @param obj - A metadata object to attach to the log line, or a message string
+   * @param msg - The message string when `obj` is a metadata object
+   * @param args - Additional arguments interpolated into the message
+   * @example
+   * ```ts
+   * logger.info("user logged in");
+   * logger.info({ userId: "abc" }, "user logged in");
+   * logger.error({ err }, "request failed: %s", req.url);
+   * ```
+   */
   export interface LogFn {
     (obj: unknown, msg?: string, ...args: any[]): void;
     (msg: string, ...args: any[]): void;

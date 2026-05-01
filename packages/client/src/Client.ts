@@ -51,24 +51,77 @@ export type CheckVersionBound<Q> = Q extends VersionBound<infer V> ? (
   : Q;
 
 export interface Client extends SharedClient, OldSharedClient {
+  /**
+   * Returns the operation surface for the given ontology definition. The shape of the
+   * returned value is dispatched on what kind of definition is passed:
+   * - object type → an {@link ObjectSet} (or the generated subclass declared on the type)
+   * - interface → a {@link MinimalObjectSet} for the interface
+   * - action → a callable with `applyAction` / `batchApplyAction`
+   * - query → a callable with `executeFunction`
+   * - experiment → the unstable feature surface for that experiment
+   *
+   * @param o - The object type definition to wrap.
+   * @example
+   * ```ts
+   * const employees = await client(Employee).fetchPage({ $pageSize: 30 });
+   * const employee = await client(Employee).fetchOne(12345);
+   * ```
+   * @returns an object set scoped to all objects of this type.
+   */
   <Q extends ObjectTypeDefinition>(
     o: Q,
   ): unknown extends CompileTimeMetadata<Q>["objectSet"] ? ObjectSet<Q>
     : CompileTimeMetadata<Q>["objectSet"];
 
+  /**
+   * @param o - The interface definition to wrap.
+   * @example
+   * ```ts
+   * const page = await client(MyInterface).fetchPage({ $pageSize: 30 });
+   * ```
+   * @returns a minimal object set over all objects implementing the interface.
+   */
   <Q extends (InterfaceDefinition)>(
     o: Q,
   ): unknown extends CompileTimeMetadata<Q>["objectSet"] ? MinimalObjectSet<Q>
     : CompileTimeMetadata<Q>["objectSet"];
 
+  /**
+   * @param o - The action definition to invoke.
+   * @example
+   * ```ts
+   * const result = await client(createEmployee).applyAction(
+   *   { name: "Jane", department: "Engineering" },
+   *   { $returnEdits: true },
+   * );
+   * ```
+   * @returns a callable for applying (or batch-applying) the action.
+   */
   <Q extends ActionDefinition<any>>(
     o: Q,
   ): ActionSignatureFromDef<Q>;
 
+  /**
+   * @param o - The query definition to invoke.
+   * @example
+   * ```ts
+   * const result = await client(getEmployeeCount).executeFunction({ department: "Engineering" });
+   * ```
+   * @returns a callable for executing the query function.
+   */
   <Q extends QueryDefinition<any>>(
     o: Q,
   ): QuerySignatureFromDef<Q>;
 
+  /**
+   * @param experiment - The experiment marker that gates an unstable feature.
+   * @example
+   * ```ts
+   * const ref = await client(__EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference)
+   *   .createMediaReference({ data: blob, fileName: "media.mp4", objectType: Employee, propertyType: "photo" });
+   * ```
+   * @returns the experiment-specific function surface.
+   */
   <
     Q extends
       | Experiment<"2.0.8">
@@ -79,6 +132,18 @@ export interface Client extends SharedClient, OldSharedClient {
     experiment: Q,
   ): ExperimentFns<Q>;
 
+  /**
+   * Fetches runtime metadata for the given ontology definition. The returned shape
+   * is dispatched on the kind of definition passed: {@link ObjectMetadata},
+   * {@link InterfaceMetadata}, {@link ActionMetadata}, or {@link QueryMetadata}.
+   * @param o - The object type, interface, action, or query definition to look up.
+   * @example
+   * ```ts
+   * const meta = await client.fetchMetadata(Employee);
+   * console.log(meta.displayName, meta.description);
+   * ```
+   * @returns a promise resolving to the metadata for the given definition.
+   */
   fetchMetadata<
     Q extends (
       | ObjectTypeDefinition

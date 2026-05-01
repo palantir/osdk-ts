@@ -355,6 +355,33 @@ export function createClientFromContext(clientCtx: MinimalClient) {
   return client;
 }
 
+/**
+ * Creates a {@link Client} for interacting with a Foundry Ontology. This is the primary entry point for
+ * the OSDK and is typically called once per application during setup. The returned client is then used
+ * to load object sets, apply actions, and execute queries against the configured ontology.
+ * @param baseUrl - The base URL of the Foundry stack (e.g. `"https://example.palantirfoundry.com"`).
+ * @param ontologyRid - The ontology RID to scope the client to. May be provided directly or as a `Promise`
+ *   that resolves to the RID. Typically the generated `$ontologyRid` export from your generated SDK is passed here.
+ * @param tokenProvider - A function returning a `Promise` that resolves to a bearer token used to authenticate
+ *   requests. Called for each request, so it should cache and refresh tokens as appropriate.
+ * @param options - Optional client configuration: a custom `logger`, an experimental `UNSTABLE_DO_NOT_USE_BRANCH`
+ *   for branch-aware requests, and additional `headers` to include on every request.
+ * @param fetchFn - An optional `fetch` implementation to use for all requests. Defaults to the global `fetch`.
+ * @example
+ * ```ts
+ * import { createClient, type Client } from "@osdk/client";
+ * import { $ontologyRid } from "./generatedNoCheck/index.js";
+ *
+ * const getToken = () => Promise.resolve("<bearer token>");
+ *
+ * export const client: Client = createClient(
+ *   "https://example.palantirfoundry.com",
+ *   $ontologyRid,
+ *   getToken,
+ * );
+ * ```
+ * @returns a {@link Client} configured to talk to the given Foundry stack and ontology
+ */
 export const createClient: (
   baseUrl: string,
   ontologyRid: string | Promise<string>,
@@ -373,6 +400,35 @@ export const createClient: (
   undefined,
 );
 
+/**
+ * Creates a {@link Client} that scopes all of its requests to a Foundry transaction. Used by transactional
+ * write flows (for example, {@link createWriteableClient} in `@osdk/functions`) to forward a `transactionId`
+ * on every request and to flush buffered edits when needed. Aside from the additional transaction parameters,
+ * the remaining arguments behave exactly as in {@link createClient}.
+ * @param transactionId - The transaction RID that scopes all requests issued by the returned client.
+ * @param flushEdits - A callback invoked to flush any buffered edits associated with the transaction. Implementers
+ *   typically batch edits and apply them when this is called (e.g. before a read needs to observe pending writes).
+ * @param args - The remaining arguments forwarded to {@link createClient}: `baseUrl`, `ontologyRid`,
+ *   `tokenProvider`, optional `options`, and an optional `fetchFn`.
+ * @example
+ * ```ts
+ * import { createClientWithTransaction } from "@osdk/client/unstable-do-not-use";
+ * import { $ontologyRid } from "./generatedNoCheck/index.js";
+ *
+ * const getToken = () => Promise.resolve("<bearer token>");
+ *
+ * const client = createClientWithTransaction(
+ *   "ri.transaction.main.transaction.0000",
+ *   async () => {
+ *     // flush any buffered edits for this transaction
+ *   },
+ *   "https://example.palantirfoundry.com",
+ *   $ontologyRid,
+ *   getToken,
+ * );
+ * ```
+ * @returns a {@link Client} that forwards the supplied `transactionId` on every request
+ */
 export const createClientWithTransaction: (
   transactionId: string,
   flushEdits: () => Promise<void>,

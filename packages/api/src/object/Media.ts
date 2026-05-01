@@ -17,20 +17,49 @@
 export interface Media {
   /**
    * Fetches metadata for media reference property
+   * @example
+   * ```ts
+   * const equipment = await client(Equipment).fetchOne(12345);
+   * const mediaMetadata = await equipment.trainingMaterial?.fetchMetadata();
+   * console.log(mediaMetadata?.mediaType, mediaMetadata?.sizeBytes, mediaMetadata?.path);
+   * ```
+   * @returns the media metadata, including media type, size, and (when available) path
    */
   fetchMetadata(): Promise<MediaMetadata>;
   /**
    * Fetches content of a media reference property
+   * @example
+   * ```ts
+   * const equipment = await client(Equipment).fetchOne(12345);
+   * const mediaContent = await equipment.trainingMaterial?.fetchContents();
+   * if (mediaContent?.ok) {
+   *   const data = await mediaContent.blob();
+   * }
+   * ```
+   * @returns a `Response` whose body contains the media item's binary contents
    */
   fetchContents(): Promise<Response>;
   /**
    * Returns the media reference
+   * @example
+   * ```ts
+   * const equipment = await client(Equipment).fetchOne(12345);
+   * const mediaReference = equipment.trainingMaterial?.getMediaReference();
+   * ```
+   * @returns the underlying `MediaReference` identifying this media item in Foundry
    */
   getMediaReference(): MediaReference;
   /**
    * Returns the source location of this media (object type, primary key, property name).
    *
    * Optional because not all media has a source location (e.g., transient/uploaded media).
+   * @example
+   * ```ts
+   * const equipment = await client(Equipment).fetchOne(12345);
+   * const location = equipment.trainingMaterial?.getMediaSourceLocation?.();
+   * console.log(location?.objectType, location?.primaryKey, location?.propertyName);
+   * ```
+   * @returns the `MediaPropertyLocation` identifying which object property this media came from
    */
   getMediaSourceLocation?(): MediaPropertyLocation;
 }
