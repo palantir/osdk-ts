@@ -25,6 +25,8 @@ import {
   NihalbCastingInterfaceB,
   NihalbCastingInterfaceTypeA,
   NihalbCastingLinkedInterfaceTypeA,
+  ReducerTest,
+  ReducerTestInterface,
 } from "@osdk/e2e.generated.catchall";
 import invariant from "tiny-invariant";
 import type { TypeOf } from "ts-expect";
@@ -186,6 +188,20 @@ export async function runInterfacesTest2(): Promise<void> {
     myFilteredInterfaceIdpData.data[0].idpAge,
     myFilteredInterfaceIdpData.data[1].mwaltherName,
   );
+
+  const interfaceObjectWithNonLocalImplementations =
+    (await client(ReducerTestInterface).fetchPage()).data[0];
+
+  console.log(
+    JSON.stringify(interfaceObjectWithNonLocalImplementations, null, 1),
+  );
+
+  try {
+    // @ts-expect-error
+    interfaceObjectWithNonLocalImplementations.$as(ReducerTest);
+  } catch (e) {
+    console.log(e);
+  }
 }
 
 void runInterfacesTest2();
