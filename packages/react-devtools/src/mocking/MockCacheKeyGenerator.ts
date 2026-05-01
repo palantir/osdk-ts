@@ -92,7 +92,7 @@ export class MockCacheKeyGenerator {
       type: "list",
       apiName: data.type,
       where: whereClause,
-      orderBy,
+      orderBy: orderBy,
       otherKeys: [
         data.type,
         this.canonicalizeWhereClause(whereClause),
@@ -111,7 +111,7 @@ export class MockCacheKeyGenerator {
       sourcePk: data.sourcePk,
       linkName: data.linkName,
       where: whereClause,
-      orderBy,
+      orderBy: orderBy,
       otherKeys: [
         data.sourceType,
         data.sourcePk,
@@ -132,7 +132,7 @@ export class MockCacheKeyGenerator {
       type: "aggregation",
       apiName: data.type,
       where: whereClause,
-      aggregate,
+      aggregate: aggregate,
       otherKeys: [
         "object",
         data.type,

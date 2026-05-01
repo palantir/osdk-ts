@@ -89,13 +89,13 @@ export const ComponentCard: React.FC<ComponentCardProps> = ({
         <div className={styles.headerRight}>
           {hasWarnings && (
             <Tooltip content="This component has many hooks">
-              <Tag minimal={true} intent="warning" className={styles.warningTag}>
+              <Tag minimal intent="warning" className={styles.warningTag}>
                 <Icon icon="warning-sign" size={10} />
               </Tag>
             </Tooltip>
           )}
           <Tooltip content={`${bindings.length} OSDK hooks`}>
-            <Tag minimal={true} intent="primary" className={styles.hookCountTag}>
+            <Tag minimal intent="primary" className={styles.hookCountTag}>
               {bindings.length}
             </Tag>
           </Tooltip>
@@ -106,7 +106,7 @@ export const ComponentCard: React.FC<ComponentCardProps> = ({
               }`}
             >
               <Tag
-                minimal={true}
+                minimal
                 intent={errorCount > 0 ? "danger" : "warning"}
                 className={styles.issueCountTag}
               >
