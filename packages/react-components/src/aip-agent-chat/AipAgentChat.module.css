@@ -11,7 +11,7 @@
 }
 
 .error {
-  align-items: center;
+  align-items: flex-start;
   background: var(--osdk-aip-agent-chat-error-background);
   border-bottom: 1px solid var(--osdk-aip-agent-chat-border-color);
   color: var(--osdk-aip-agent-chat-error-color);
@@ -23,9 +23,28 @@
     var(--osdk-aip-agent-chat-padding);
 }
 
-.errorMessage {
+.errorBody {
+  display: flex;
   flex: 1 1 auto;
+  flex-direction: column;
+  gap: calc(var(--osdk-surface-spacing) * 0.5);
+  min-width: 0;
+}
+
+.errorTitle {
+  font-size: var(--osdk-typography-size-body-medium);
+  font-weight: var(--osdk-typography-weight-bold);
+}
+
+.errorMessage {
   font-size: var(--osdk-typography-size-body-small);
+  word-break: break-word;
+}
+
+.errorActions {
+  display: flex;
+  flex: 0 0 auto;
+  gap: calc(var(--osdk-surface-spacing) * 1);
 }
 
 .messageList {

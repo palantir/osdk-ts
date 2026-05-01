@@ -41,9 +41,7 @@
   /* Empty state */
   --osdk-aip-agent-chat-empty-color: var(--osdk-typography-color-muted);
   --osdk-aip-agent-chat-empty-icon-color: var(--osdk-intent-primary-rest);
-  --osdk-aip-agent-chat-empty-icon-size: calc(
-    var(--osdk-surface-spacing) * 12
-  );
+  --osdk-aip-agent-chat-empty-icon-size: calc(var(--osdk-surface-spacing) * 12);
 
   /* Loader (3-dot bouncing) */
   --osdk-aip-agent-chat-loader-color: var(--osdk-typography-color-muted);
@@ -53,8 +51,6 @@
   --osdk-aip-agent-chat-loader-dot-gap: calc(var(--osdk-surface-spacing) * 0.5);
 
   /* Error banner */
-  --osdk-aip-agent-chat-error-color: var(--osdk-typography-color-danger-rest);
-  --osdk-aip-agent-chat-error-background: var(
-    --osdk-surface-background-color-danger-rest
-  );
+  --osdk-aip-agent-chat-error-color: var(--osdk-intent-danger-foreground);
+  --osdk-aip-agent-chat-error-background: var(--osdk-intent-danger-rest);
 }

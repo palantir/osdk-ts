@@ -370,6 +370,50 @@ describe("BaseAipAgentChat", () => {
     expect(screen.getByRole("button", { name: /send/i })).toBeDefined();
   });
 
+  it("re-sends the failed message when Retry is clicked", async () => {
+    const firstAttempt = defer<UIMessage>();
+    const secondAttempt = defer<UIMessage>();
+    let callCount = 0;
+    const onSendMessage = vi.fn(async (_text: string) => {
+      callCount += 1;
+      return callCount === 1 ? firstAttempt.promise : secondAttempt.promise;
+    });
+
+    render(<BaseAipAgentChat onSendMessage={onSendMessage} />);
+
+    fireEvent.change(screen.getByLabelText("Message input"), {
+      target: { value: "boom" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: /send/i }));
+
+    await act(async () => {
+      firstAttempt.reject(new Error("first failure"));
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+
+    expect(screen.getByRole("alert").textContent).toContain("first failure");
+    expect(onSendMessage).toHaveBeenCalledTimes(1);
+    expect(screen.getAllByLabelText("User message").length).toBe(1);
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole("button", { name: /retry/i }));
+    });
+
+    // Retry pops the failed user bubble and re-sends; should still be one
+    // user bubble in the conversation, not two.
+    expect(screen.getAllByLabelText("User message").length).toBe(1);
+    expect(onSendMessage).toHaveBeenCalledTimes(2);
+    expect(onSendMessage.mock.calls[1]![0]).toBe("boom");
+    expect(screen.queryByRole("alert")).toBeNull();
+
+    // Resolve the retry so we don't leak the open promise.
+    await act(async () => {
+      secondAttempt.resolve(makeMessage("assistant", "ok"));
+      await Promise.resolve();
+    });
+  });
+
   it("renders composerFooter content inside the composer footer", () => {
     render(
       <BaseAipAgentChat

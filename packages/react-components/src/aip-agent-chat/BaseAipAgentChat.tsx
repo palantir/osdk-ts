@@ -155,6 +155,12 @@ export const BaseAipAgentChat: React.NamedExoticComponent<
   const [status, setStatus] = React.useState<BaseAipAgentChatStatus>("ready");
   const [error, setError] = React.useState<Error | undefined>(undefined);
   const [streamingText, setStreamingText] = React.useState<string>("");
+  // Text of the user message that failed to get a response; used to power
+  // the Retry button on the error banner. Cleared when a send succeeds or
+  // the user dismisses the error.
+  const [lastFailedText, setLastFailedText] = React.useState<
+    string | undefined
+  >(undefined);
   const abortRef = React.useRef<AbortController | null>(null);
 
   // Abort any in-flight request on unmount.
@@ -164,21 +170,12 @@ export const BaseAipAgentChat: React.NamedExoticComponent<
     };
   }, []);
 
-  const handleSendMessage = React.useCallback(
-    async (text: string) => {
-      const userMessage: UIMessage = {
-        id: generateMessageId(),
-        role: "user",
-        parts: [{ type: "text", text }],
-      };
-
-      const historySnapshot = messages;
-      const messagesAfterSend = [...historySnapshot, userMessage];
-      setMessages(messagesAfterSend);
+  const runSend = React.useCallback(
+    async (text: string, history: ReadonlyArray<UIMessage>) => {
       setStatus("submitted");
       setError(undefined);
+      setLastFailedText(undefined);
       setStreamingText("");
-      onMessageSent?.(userMessage);
 
       const controller = new AbortController();
       abortRef.current?.abort();
@@ -187,7 +184,7 @@ export const BaseAipAgentChat: React.NamedExoticComponent<
       try {
         const assistantMessage = await onSendMessage(text, {
           signal: controller.signal,
-          history: historySnapshot,
+          history,
           setStreamingText: (next: string) => {
             setStatus("streaming");
             setStreamingText(next);
@@ -212,6 +209,7 @@ export const BaseAipAgentChat: React.NamedExoticComponent<
         const err = e instanceof Error ? e : new Error(String(e));
         setStatus("error");
         setError(err);
+        setLastFailedText(text);
         setStreamingText("");
         onError?.(err);
       } finally {
@@ -220,7 +218,22 @@ export const BaseAipAgentChat: React.NamedExoticComponent<
         }
       }
     },
-    [messages, onMessageSent, onResponseReceived, onError, onSendMessage],
+    [onSendMessage, onResponseReceived, onError],
+  );
+
+  const handleSendMessage = React.useCallback(
+    async (text: string) => {
+      const userMessage: UIMessage = {
+        id: generateMessageId(),
+        role: "user",
+        parts: [{ type: "text", text }],
+      };
+      const historySnapshot = messages;
+      setMessages((prev) => [...prev, userMessage]);
+      onMessageSent?.(userMessage);
+      await runSend(text, historySnapshot);
+    },
+    [messages, onMessageSent, runSend],
   );
 
   const handleStop = React.useCallback(() => {
@@ -229,8 +242,20 @@ export const BaseAipAgentChat: React.NamedExoticComponent<
 
   const handleClearError = React.useCallback(() => {
     setError(undefined);
+    setLastFailedText(undefined);
     setStatus("ready");
   }, []);
+
+  const handleRetry = React.useCallback(() => {
+    if (lastFailedText == null) {
+      return;
+    }
+    // The failed user message is already at the end of `messages`. Use it
+    // as-is and pass the conversation excluding it as history; runSend
+    // does not re-append it.
+    const history = messages.slice(0, -1);
+    void runSend(lastFailedText, history);
+  }, [lastFailedText, messages, runSend]);
 
   const isInFlight = status === "submitted" || status === "streaming";
 
@@ -255,10 +280,28 @@ export const BaseAipAgentChat: React.NamedExoticComponent<
     <div className={classNames(styles.chat, className)}>
       {error != null && (
         <div aria-live="polite" className={styles.error} role="alert">
-          <span className={styles.errorMessage}>{error.message}</span>
-          <ActionButton onClick={handleClearError} type="button">
-            Dismiss
-          </ActionButton>
+          <div className={styles.errorBody}>
+            <div className={styles.errorTitle}>Something went wrong</div>
+            <div className={styles.errorMessage}>
+              {error.message.length > 0
+                ? error.message
+                : "An unknown error occurred. Try again, or dismiss to keep the conversation."}
+            </div>
+          </div>
+          <div className={styles.errorActions}>
+            {lastFailedText != null && (
+              <ActionButton
+                onClick={handleRetry}
+                type="button"
+                variant="primary"
+              >
+                Retry
+              </ActionButton>
+            )}
+            <ActionButton onClick={handleClearError} type="button">
+              Dismiss
+            </ActionButton>
+          </div>
         </div>
       )}
       <AipAgentChatMessageList
