@@ -41,15 +41,19 @@ export interface UseOsdkObjectsOptions<
    * Can be combined with `where` to filter the RID set, and with `orderBy` to sort results.
    *
    * @example
+   * ```tsx
    * // Fetch specific objects by RID
-   * useOsdkObjects(Employee, { rids: ['ri.foo.123', 'ri.foo.456'] })
+   * useOsdkObjects(Employee, { rids: ['ri.foo.123', 'ri.foo.456'] });
+   * ```
    *
    * @example
+   * ```tsx
    * // Fetch specific objects by RID, filtered by status
    * useOsdkObjects(Employee, {
    *   rids: ['ri.foo.123', 'ri.foo.456', 'ri.foo.789'],
-   *   where: { status: 'active' }
-   * })
+   *   where: { status: 'active' },
+   * });
+   * ```
    */
   rids?: readonly string[];
 
@@ -139,8 +143,10 @@ export interface UseOsdkObjectsOptions<
    * reducing payload sizes for list views.
    *
    * @example
+   * ```tsx
    * // Only fetch name and status properties
-   * useOsdkObjects(Employee, { $select: ["name", "status"] })
+   * useOsdkObjects(Employee, { $select: ["name", "status"] });
+   * ```
    */
   $select?: readonly PropertyKeys<T>[];
 
