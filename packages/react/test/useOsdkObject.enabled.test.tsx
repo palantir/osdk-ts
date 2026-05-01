@@ -128,4 +128,20 @@ describe("useOsdkObject enabled option", () => {
 
     expect(mockObserveObject).toHaveBeenCalledTimes(1);
   });
+
+  it("should forward $includeAllBaseObjectProperties to observeObject", () => {
+    const wrapper = createWrapper();
+
+    renderHook(
+      () =>
+        useOsdkObject(MockObjectType, "pk-777", {
+          $includeAllBaseObjectProperties: true,
+        }),
+      { wrapper },
+    );
+
+    expect(mockObserveObject).toHaveBeenCalledTimes(1);
+    const options = mockObserveObject.mock.calls[0][2];
+    expect(options.$includeAllBaseObjectProperties).toBe(true);
+  });
 });

@@ -6,7 +6,7 @@
 
 import type { Attachment } from '@osdk/api';
 import type { AttachmentMetadata } from '@osdk/api';
-import { Client } from '@osdk/client';
+import type { Client } from '@osdk/client';
 import type { CompileTimeMetadata } from '@osdk/api';
 import type { InterfaceDefinition } from '@osdk/api';
 import type { LinkedType } from '@osdk/api';
@@ -89,7 +89,16 @@ export interface QueryStubBuilder<T> {
 // Warning: (ae-forgotten-export) The symbol "IsOsdkObject" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
-export type StubBuilderFor<T> = T extends PageResult<infer U> ? FetchPageStubBuilder<U> : IsOsdkObject<T> extends true ? FetchOneStubBuilder<T> : AggregateStubBuilder<T>;
+export type StubBuilderFor<T> = T extends Promise<infer R> ? StubBuilderFor<R> : T extends AsyncIterableIterator<infer U> ? FetchPageStubBuilder<U> : T extends PageResult<infer U> ? FetchPageStubBuilder<U> : T extends {
+    	value: PageResult<infer U>
+    	error?: never
+} ? FetchPageStubBuilder<U> : T extends {
+    	value: infer U
+    	error?: never
+} ? (IsOsdkObject<U> extends true ? FetchOneStubBuilder<U> : AggregateStubBuilder<U>) : T extends {
+    	error: Error
+    	value?: never
+} ? never : IsOsdkObject<T> extends true ? FetchOneStubBuilder<T> : AggregateStubBuilder<T>;
 
 // @public (undocumented)
 export type StubClient = {

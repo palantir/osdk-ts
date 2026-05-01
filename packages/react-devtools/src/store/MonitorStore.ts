@@ -56,6 +56,7 @@ import { PropertyAccessTracker } from "../utils/PropertyAccessTracker.js";
 import { ComputeStore } from "./ComputeStore.js";
 import { ConsoleLogStore } from "./ConsoleLogStore.js";
 import { MetricsStore } from "./MetricsStore.js";
+import { WindowErrorStore } from "./WindowErrorStore.js";
 
 const monitorStoreMap = new WeakMap<object, MonitorStore>();
 
@@ -79,6 +80,7 @@ export class MonitorStore {
   private readonly recommendationEngine: PerformanceRecommendationEngine;
   private readonly prototypeOverrideStore: PrototypeOverrideStore;
   private readonly consoleLogStore: ConsoleLogStore;
+  private readonly windowErrorStore: WindowErrorStore;
   private monitor: ObservableClientMonitor | null = null;
   private originalGlobalFetch: typeof globalThis.fetch | null = null;
   private interceptedGlobalFetch: typeof globalThis.fetch | null = null;
@@ -92,11 +94,16 @@ export class MonitorStore {
       this.config.timeSeriesSize,
     );
     this.computeStore = new ComputeStore();
-    this.computeMonitor = new ComputeMonitor(this.computeStore, this.logger);
     this.componentRegistry = new ComponentQueryRegistry();
     this.linkTraversalTracker = new LinkTraversalTracker();
     this.propertyAccessTracker = new PropertyAccessTracker();
     this.eventTimeline = new EventTimeline(10000);
+    this.computeMonitor = new ComputeMonitor(
+      this.computeStore,
+      this.logger,
+      undefined,
+      this.eventTimeline,
+    );
     this.primitiveDiscovery = new ComponentPrimitiveDiscovery(
       this.componentRegistry,
     );
@@ -124,6 +131,8 @@ export class MonitorStore {
     this.prototypeOverrideStore = new PrototypeOverrideStore();
     this.consoleLogStore = new ConsoleLogStore(1000);
     this.consoleLogStore.install();
+    this.windowErrorStore = new WindowErrorStore(1000);
+    this.windowErrorStore.install();
     this.recommendationEngine = new PerformanceRecommendationEngine(
       this.metricsStore,
       this.componentRegistry,
@@ -282,6 +291,10 @@ export class MonitorStore {
     return this.consoleLogStore;
   }
 
+  getWindowErrorStore(): WindowErrorStore {
+    return this.windowErrorStore;
+  }
+
   dispose(): void {
     this.unsubscribeFiberCommit?.();
     this.unsubscribeFiberCommit = null;
@@ -297,13 +310,14 @@ export class MonitorStore {
     this.eventTimeline.clear();
     this.clickToInspect.dispose();
     this.consoleLogStore.dispose();
+    this.windowErrorStore.dispose();
     this.mockManager.clear();
     this.prototypeOverrideStore.clearAll();
     this.monitor?.dispose();
     this.monitor = null;
   }
 
-  async getCacheEntries(): Promise<CacheEntry[]> {
+  async loadCacheEntries(): Promise<CacheEntry[]> {
     if (!this.monitor) {
       return [];
     }
@@ -314,6 +328,11 @@ export class MonitorStore {
     } catch {
       return [];
     }
+  }
+
+  /** @deprecated Use `loadCacheEntries()` — name was misleading because the method is async. */
+  getCacheEntries(): Promise<CacheEntry[]> {
+    return this.loadCacheEntries();
   }
 
   async getCacheSnapshot(): Promise<CacheSnapshot> {

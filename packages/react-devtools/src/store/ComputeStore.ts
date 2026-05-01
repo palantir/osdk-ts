@@ -43,6 +43,7 @@ export class ComputeStore extends SubscribableStore {
   private totalUsage = 0;
   private totalResponseBytes = 0;
   private fulfilledCount = 0;
+  private fulfilledWithoutUsageCount = 0;
   private failedCount = 0;
   private pendingCount = 0;
 
@@ -103,6 +104,38 @@ export class ComputeStore extends SubscribableStore {
     this.invalidate();
   }
 
+  fulfillWithoutUsage(
+    requestId: string,
+    responseInfo: {
+      responsePayloadBytes: number;
+      responsePayloadHash: number;
+      responsePayload: string;
+    },
+  ): void {
+    const pending = this.requestMap.get(requestId);
+
+    if (!pending || pending.type !== "pending") {
+      return;
+    }
+
+    const fulfilled: ComputeRequest = {
+      type: "fulfilled-without-usage",
+      id: pending.id,
+      requestTimestamp: pending.requestTimestamp,
+      requestUrl: pending.requestUrl,
+      requestPayload: pending.requestPayload,
+      requestPayloadHash: pending.requestPayloadHash,
+      responseTimestamp: new Date(),
+      ...responseInfo,
+    };
+
+    this.requestMap.set(requestId, fulfilled);
+    this.pendingCount--;
+    this.fulfilledWithoutUsageCount++;
+    this.totalResponseBytes += responseInfo.responsePayloadBytes;
+    this.invalidate();
+  }
+
   failRequest(requestId: string, error: ComputeRequestError): void {
     const pending = this.requestMap.get(requestId);
 
@@ -144,6 +177,7 @@ export class ComputeStore extends SubscribableStore {
       this.totalUsage = 0;
       this.totalResponseBytes = 0;
       this.fulfilledCount = 0;
+      this.fulfilledWithoutUsageCount = 0;
       this.failedCount = 0;
       this.pendingCount = 0;
     } else if (this.lastRecordingEvent?.type === "started") {
@@ -182,6 +216,7 @@ export class ComputeStore extends SubscribableStore {
     this.totalUsage = 0;
     this.totalResponseBytes = 0;
     this.fulfilledCount = 0;
+    this.fulfilledWithoutUsageCount = 0;
     this.failedCount = 0;
     this.pendingCount = 0;
     this.invalidate();
@@ -243,21 +278,25 @@ export class ComputeStore extends SubscribableStore {
       }
     }
 
-    const requestCount = this.fulfilledCount + this.failedCount
-      + this.pendingCount;
+    const requestCount = this.fulfilledCount + this.fulfilledWithoutUsageCount
+      + this.failedCount + this.pendingCount;
+
+    const completedWithResponseBytes = this.fulfilledCount
+      + this.fulfilledWithoutUsageCount;
 
     const newMetrics: ComputeMetrics = {
       totalUsage: Math.round(this.totalUsage),
       lastMinuteUsage: Math.round(lastMinuteUsage),
       requestCount,
       fulfilledCount: this.fulfilledCount,
+      fulfilledWithoutUsageCount: this.fulfilledWithoutUsageCount,
       failedCount: this.failedCount,
       pendingCount: this.pendingCount,
       averageUsagePerRequest: this.fulfilledCount > 0
         ? Math.round(this.totalUsage / this.fulfilledCount)
         : 0,
-      averageResponseBytes: this.fulfilledCount > 0
-        ? Math.round(this.totalResponseBytes / this.fulfilledCount)
+      averageResponseBytes: completedWithResponseBytes > 0
+        ? Math.round(this.totalResponseBytes / completedWithResponseBytes)
         : 0,
     };
 
@@ -282,6 +321,7 @@ export class ComputeStore extends SubscribableStore {
     this.totalUsage = 0;
     this.totalResponseBytes = 0;
     this.fulfilledCount = 0;
+    this.fulfilledWithoutUsageCount = 0;
     this.failedCount = 0;
     this.pendingCount = 0;
     this.lastSnapshot = null;
@@ -317,6 +357,7 @@ export class ComputeStore extends SubscribableStore {
       && a.lastMinuteUsage === b.lastMinuteUsage
       && a.requestCount === b.requestCount
       && a.fulfilledCount === b.fulfilledCount
+      && a.fulfilledWithoutUsageCount === b.fulfilledWithoutUsageCount
       && a.failedCount === b.failedCount
       && a.pendingCount === b.pendingCount
       && a.averageUsagePerRequest === b.averageUsagePerRequest

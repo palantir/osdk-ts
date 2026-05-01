@@ -103,7 +103,7 @@ export const CacheInspectorTab: React.FC<CacheInspectorTabProps> = (
   const snapshotStore = React.useMemo(
     () =>
       createPollingStore(async () => {
-        const entries = await monitorStore.getCacheEntries();
+        const entries = await monitorStore.loadCacheEntries();
         const totalSize = entries.reduce(
           (sum: number, e: CacheEntry) => sum + e.metadata.size,
           0,

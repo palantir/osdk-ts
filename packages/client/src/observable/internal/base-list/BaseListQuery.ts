@@ -86,6 +86,15 @@ export abstract class BaseListQuery<
   /** RDP configuration for this collection. */
   public abstract get rdpConfig(): Canonical<Rdp> | undefined;
 
+  /**
+   * Whether this query requests all properties of underlying concrete object
+   * types for interface results. Subclasses that wire the option through
+   * their cache key tuple override this to read the value out.
+   */
+  public get includeAllBaseObjectProperties(): boolean {
+    return false;
+  }
+
   private _selectFieldSetMemo: ReadonlySet<string> | undefined;
 
   protected abstract get rawSelect(): Canonical<readonly string[]> | undefined;
@@ -157,6 +166,7 @@ export abstract class BaseListQuery<
         batch,
         this.rdpConfig,
         this.selectFieldSet,
+        this.includeAllBaseObjectProperties,
       );
     } else {
       // Items are already cache keys
@@ -510,6 +520,7 @@ export abstract class BaseListQuery<
           batch,
           this.rdpConfig,
           this.selectFieldSet,
+          this.includeAllBaseObjectProperties,
         );
 
         return this._updateList(
@@ -629,6 +640,7 @@ export abstract class BaseListQuery<
         batch,
         this.rdpConfig,
         this.selectFieldSet,
+        this.includeAllBaseObjectProperties,
       );
     } else {
       // Items are already cache keys
@@ -764,6 +776,8 @@ export abstract class BaseListQuery<
           [object as Osdk.Instance<ObjectTypeDefinition>],
           batch,
           this.rdpConfig, // Safe - null for queries without RDPs
+          undefined,
+          this.includeAllBaseObjectProperties,
         );
       });
     } else if (state === "REMOVED") {
