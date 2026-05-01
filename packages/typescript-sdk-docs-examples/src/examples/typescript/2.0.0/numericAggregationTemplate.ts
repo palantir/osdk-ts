@@ -24,6 +24,6 @@ import { Employee } from "../../../generatedNoCheck/index.js";
 import { client } from "./client.js";
 
 const sumEmployee = await client(Employee)
-    .aggregate({
-        $select: { "salary:sum" : "unordered" }
-    });
+  .aggregate({
+    $select: { "salary:sum": "unordered" },
+  });

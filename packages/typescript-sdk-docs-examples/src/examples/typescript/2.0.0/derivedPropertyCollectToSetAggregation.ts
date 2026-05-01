@@ -25,7 +25,10 @@ import { client } from "./client.js";
 
 const maxObjectsInSet = 75; // Adjust this value as needed between 1 and 100
 const sumEmployee = await client(Employee)
-    .withProperties({
-      "newPropertyName": (baseObjectSet) =>
-        baseObjectSet.pivotTo("assignedEquipment").aggregate("purchasePrice:collectSet", { limit: maxObjectsInSet })
-    }).fetchPage();
+  .withProperties({
+    "newPropertyName": (baseObjectSet) =>
+      baseObjectSet.pivotTo("assignedEquipment").aggregate(
+        "purchasePrice:collectSet",
+        { limit: maxObjectsInSet },
+      ),
+  }).fetchPage();

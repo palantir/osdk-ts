@@ -24,8 +24,8 @@ import { Employee } from "../../../generatedNoCheck/index.js";
 import { client } from "./client.js";
 
 const EmployeeWithExpression = await client(Employee)
-    .withProperties({
-          "YEARS_part_of_birthDate_of_lead": (baseObjectSet) =>
-          baseObjectSet.pivotTo("lead")
-              .selectProperty("birthDate").extractPart("YEARS")
-    }).fetchPage();
+  .withProperties({
+    "YEARS_part_of_birthDate_of_lead": (baseObjectSet) =>
+      baseObjectSet.pivotTo("lead")
+        .selectProperty("birthDate").extractPart("YEARS"),
+  }).fetchPage();

@@ -24,6 +24,6 @@ import { Employee } from "../../../generatedNoCheck/index.js";
 import { client } from "./client.js";
 
 const filteredObjects = client(Employee)
-    .where({
-        previousTitles: { $contains: "Product manager" }
-    })
+  .where({
+    previousTitles: { $contains: "Product manager" },
+  });

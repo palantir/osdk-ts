@@ -65,4 +65,4 @@
 "@osdk/widget.vite-plugin": patch
 ---
 
-Drop redundant `--config $(find-up dprint.json)` from `lint`/`fix-lint` scripts. dprint already auto-discovers `dprint.json` by walking up from cwd; the flag was carried over from the prettier-era scripts. No behavior change.
+Drop redundant `--config $(find-up dprint.json)` from `lint`, `fix-lint`, and `format` scripts. dprint already auto-discovers `dprint.json` by walking up from cwd; the substitution was a no-op anyway since `find-up` is an npm package, not a CLI. Also fix the `uploadMediaOntologyEdits` documentation example so its `// @ts-ignore` survives dprint reformatting (the broken `format` step had been masking this).
