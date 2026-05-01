@@ -196,7 +196,8 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
 /**
  * Extracts all RendererFieldDefinitions from formContent, flattening
  * section fields into a single array. RHF sees a flat field namespace
- * regardless of visual grouping.
+ * regardless of visual grouping, so this is used to build default values
+ * and the field-key-to-label map for error display.
  */
 function flattenFieldDefinitions(
   formContent: ReadonlyArray<FormContentItem>,

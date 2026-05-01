@@ -212,25 +212,7 @@ describe("FormSection", () => {
   });
 
   describe("multi-column grid", () => {
-    it("renders children in grid with columnCount 2", () => {
-      const { container } = render(
-        <FormSection
-          definition={makeDefinition({ columnCount: 2 })}
-          errorCount={0}
-        >
-          <div data-testid="field-1">Field 1</div>
-          <div data-testid="field-2">Field 2</div>
-          <div data-testid="field-3">Field 3</div>
-        </FormSection>,
-      );
-
-      // All 3 children are rendered
-      expect(screen.getByTestId("field-1")).toBeDefined();
-      expect(screen.getByTestId("field-2")).toBeDefined();
-      expect(screen.getByTestId("field-3")).toBeDefined();
-    });
-
-    it("renders children in grid with columnCount 2 and even count", () => {
+    it("renders all children when columnCount is 2", () => {
       render(
         <FormSection
           definition={makeDefinition({ columnCount: 2 })}
@@ -239,15 +221,12 @@ describe("FormSection", () => {
           <div data-testid="field-1">Field 1</div>
           <div data-testid="field-2">Field 2</div>
           <div data-testid="field-3">Field 3</div>
-          <div data-testid="field-4">Field 4</div>
         </FormSection>,
       );
 
-      // All 4 children are rendered
       expect(screen.getByTestId("field-1")).toBeDefined();
       expect(screen.getByTestId("field-2")).toBeDefined();
       expect(screen.getByTestId("field-3")).toBeDefined();
-      expect(screen.getByTestId("field-4")).toBeDefined();
     });
   });
 });

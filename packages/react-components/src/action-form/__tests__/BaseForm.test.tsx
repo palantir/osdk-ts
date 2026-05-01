@@ -560,9 +560,17 @@ describe("BaseForm", () => {
         />,
       );
 
-      expect(screen.getByText("Personal Info")).toBeDefined();
-      expect(screen.getByRole("textbox", { name: /name/ })).toBeDefined();
-      expect(screen.getByRole("textbox", { name: /email/ })).toBeDefined();
+      const sectionTitle = screen.getByText("Personal Info");
+      const sectionRoot = sectionTitle.closest(
+        "[class*='osdkFormSectionBox']",
+      );
+      expect(sectionRoot).not.toBeNull();
+      expect(
+        sectionRoot!.querySelector("input[id='name']"),
+      ).not.toBeNull();
+      expect(
+        sectionRoot!.querySelector("input[id='email']"),
+      ).not.toBeNull();
     });
 
     it("shows section error badge for required fields after submit", async () => {

@@ -27,78 +27,83 @@ export interface FormSectionProps {
   children: React.ReactNode;
 }
 
-export const FormSection = memo(function FormSectionFn({
-  definition,
-  errorCount,
-  children,
-}: FormSectionProps): React.ReactElement {
-  const {
-    title,
-    description,
-    collapsedByDefault = false,
-    showTitleBar = true,
-    columnCount = 1,
-    style = "box",
-  } = definition;
+export const FormSection: React.NamedExoticComponent<FormSectionProps> = memo(
+  function FormSectionFn({
+    definition,
+    errorCount,
+    children,
+  }: FormSectionProps): React.ReactElement {
+    const {
+      title,
+      description,
+      collapsedByDefault = false,
+      showTitleBar = true,
+      columnCount = 1,
+      style = "box",
+    } = definition;
 
-  const isMinimal = style === "minimal";
+    const isMinimal = style === "minimal";
 
-  if (isMinimal) {
-    return (
-      <MinimalSection title={title} description={description}>
-        {children}
-      </MinimalSection>
+    if (isMinimal) {
+      return (
+        <MinimalSection title={title} description={description}>
+          {children}
+        </MinimalSection>
+      );
+    }
+
+    const contentClassName = classNames(
+      columnCount === 2
+        ? styles.osdkFormSectionGrid
+        : styles.osdkFormSectionContent,
+      styles.osdkFormSectionDivider,
     );
-  }
 
-  const contentClassName = columnCount === 2
-    ? styles.osdkFormSectionGrid
-    : classNames(styles.osdkFormSectionContent, styles.osdkFormSectionDivider);
-
-  if (!showTitleBar) {
-    return (
-      <div className={styles.osdkFormSectionBox}>
-        <div className={contentClassName}>{children}</div>
-      </div>
-    );
-  }
-
-  return (
-    <Collapsible.Root
-      // Inverted: Base UI uses "open" semantics, our API uses "collapsed" semantics
-      defaultOpen={!collapsedByDefault}
-      className={styles.osdkFormSectionBox}
-    >
-      <div className={styles.osdkFormSectionHeader}>
-        <div className={styles.osdkFormSectionTitleArea}>
-          <span className={styles.osdkFormSectionTitle}>{title}</span>
-          {description != null && (
-            <span className={styles.osdkFormSectionDescription}>
-              {description}
-            </span>
-          )}
+    if (!showTitleBar) {
+      return (
+        <div className={styles.osdkFormSectionBox}>
+          <div className={contentClassName}>{children}</div>
         </div>
-        <Collapsible.Trigger
-          className={styles.osdkFormSectionTrigger}
-          aria-label={title}
-        >
-          {errorCount > 0 && (
-            <span className={styles.osdkFormSectionErrorBadge} role="status">
-              {errorCount === 1 ? "1 error" : `${errorCount} errors`}
+      );
+    }
+
+    return (
+      <Collapsible.Root
+        // Inverted: Base UI uses "open" semantics, our API uses "collapsed" semantics
+        defaultOpen={!collapsedByDefault}
+        className={styles.osdkFormSectionBox}
+      >
+        <div className={styles.osdkFormSectionHeader}>
+          <div className={styles.osdkFormSectionTitleArea}>
+            <span className={styles.osdkFormSectionTitle}>{title}</span>
+            {description != null && (
+              <span className={styles.osdkFormSectionDescription}>
+                {description}
+              </span>
+            )}
+          </div>
+          <Collapsible.Trigger
+            className={styles.osdkFormSectionTrigger}
+            aria-label={title}
+          >
+            {errorCount > 0 && (
+              <span className={styles.osdkFormSectionErrorBadge} role="status">
+                {errorCount === 1 ? "1 error" : `${errorCount} errors`}
+              </span>
+            )}
+            <span className={styles.osdkFormSectionChevron}>
+              <CaretDown size={16} />
             </span>
-          )}
-          <span className={styles.osdkFormSectionChevron}>
-            <CaretDown size={16} />
-          </span>
-        </Collapsible.Trigger>
-      </div>
-      {/* keepMounted: RHF needs fields in the DOM even when collapsed for validation */}
-      <Collapsible.Panel keepMounted={true}>
-        <div className={contentClassName}>{children}</div>
-      </Collapsible.Panel>
-    </Collapsible.Root>
-  );
-});
+          </Collapsible.Trigger>
+        </div>
+        {/* keepMounted: RHF needs fields in the DOM even when collapsed for validation */}
+        <Collapsible.Panel keepMounted={true}>
+          <div className={contentClassName}>{children}</div>
+        </Collapsible.Panel>
+      </Collapsible.Root>
+    );
+  },
+);
 
 interface MinimalSectionProps {
   title: string;

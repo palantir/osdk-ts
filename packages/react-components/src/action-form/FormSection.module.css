@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-/* Box style container */
+/* Box style container — matches input border tokens so collapsed
+   sections blend with the rest of the form fields. */
 .osdkFormSectionBox {
-  border-width: 1px;
+  border-width: var(--osdk-form-section-border-width);
   border-style: solid;
   border-color: var(--osdk-form-section-border-color);
   border-radius: var(--osdk-form-section-border-radius);
@@ -108,7 +109,7 @@
 .osdkFormSectionGrid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: var(--osdk-form-section-field-gap);
+  row-gap: var(--osdk-form-section-field-gap);
   column-gap: var(--osdk-form-section-grid-column-gap);
   padding-block: var(--osdk-form-section-content-padding-block);
   padding-inline: var(--osdk-form-section-content-padding-inline);
