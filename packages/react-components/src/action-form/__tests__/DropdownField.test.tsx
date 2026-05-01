@@ -317,11 +317,7 @@ describe("DropdownField", () => {
 
     it("does not show clear button in searchable combobox when no value is selected", () => {
       render(
-        <DropdownField
-          value={null}
-          items={STRING_ITEMS}
-          isSearchable={true}
-        />,
+        <DropdownField value={null} items={STRING_ITEMS} isSearchable={true} />,
       );
 
       expect(screen.queryByLabelText("Clear")).toBeNull();

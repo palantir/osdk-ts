@@ -1,6 +1,6 @@
 {
   "name": "@osdk/cli",
-  "version": "0.36.0",
+  "version": "0.37.0",
   "description": "",
   "access": "public",
   "license": "Apache-2.0",
@@ -26,6 +26,7 @@
   },
   "scripts": {
     "check-attw": "attw --profile esm-only --pack .",
+    "check-bundle": "monorepo.tool.check-bundle",
     "check-spelling": "cspell --quiet .",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
@@ -55,6 +56,7 @@
     "@osdk/cli.cmd.typescript": "workspace:~",
     "@osdk/cli.common": "workspace:~",
     "@osdk/monorepo.api-extractor": "workspace:~",
+    "@osdk/monorepo.tool.check-bundle": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@types/archiver": "^6.0.3",
     "@types/ngeohash": "^0.6.8",

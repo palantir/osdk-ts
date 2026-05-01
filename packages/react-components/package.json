@@ -1,6 +1,6 @@
 {
   "name": "@osdk/react-components",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -105,7 +105,7 @@
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
-    "test": "vitest run",
+    "test": "LANG=en_US.UTF-8 vitest run",
     "transpileAllDeps": "pnpm --filter @osdk/api --filter @osdk/client --filter @osdk/react run transpileBrowser",
     "transpileBrowser": "monorepo.tool.transpile -f esm -m normal -t browser && node scripts/build-css.mjs",
     "transpileCjs": "monorepo.tool.transpile -f cjs -m bundle -t node",
@@ -134,7 +134,7 @@
   "peerDependencies": {
     "@osdk/api": "^2.8.0",
     "@osdk/client": "^2.8.0",
-    "@osdk/react": "^0.15.0",
+    "@osdk/react": "^0.16.0",
     "@types/react": "^17 || ^18 || ^19",
     "classnames": "^2.0.0",
     "react": "^17 || ^18 || ^19",

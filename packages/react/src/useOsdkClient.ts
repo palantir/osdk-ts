@@ -16,8 +16,13 @@
 
 import type { Client } from "@osdk/client";
 import React from "react";
+import { OsdkContext2 } from "./new/OsdkContext2.js";
 import { OsdkContext } from "./OsdkContext.js";
 
 export function useOsdkClient(): Client {
   return React.useContext(OsdkContext).client;
+}
+
+export function useOsdkClient2(): Client {
+  return React.useContext(OsdkContext2).client;
 }

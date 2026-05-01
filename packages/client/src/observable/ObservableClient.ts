@@ -104,8 +104,14 @@ export interface ObserveObjectOptions<
 > extends ObserveOptions {
   apiName: T["apiName"] | T;
   pk: PrimaryKeyType<T>;
-  select?: PropertyKeys<T>[];
+  select?: readonly PropertyKeys<T>[];
   $loadPropertySecurityMetadata?: boolean;
+
+  /**
+   * When true, includes all properties of the underlying concrete object type
+   * for interface queries. Has no effect for non-interface queries.
+   */
+  $includeAllBaseObjectProperties?: boolean;
 }
 
 export type OrderBy<Q extends ObjectOrInterfaceDefinition> = {
@@ -171,6 +177,12 @@ export interface ObserveListOptions<
   $loadPropertySecurityMetadata?: boolean;
 
   /**
+   * When true, includes all properties of the underlying concrete object type
+   * for interface queries. Has no effect for non-interface queries.
+   */
+  $includeAllBaseObjectProperties?: boolean;
+
+  /**
    * Automatically fetch additional pages on initial load.
    *
    * - `true`: Fetch all available pages automatically
@@ -201,7 +213,7 @@ export interface ObserveListOptions<
 export interface ObserveObjectCallbackArgs<
   T extends ObjectOrInterfaceDefinition,
 > {
-  object: Osdk.Instance<T> | undefined;
+  object: Osdk.Instance<T, "$allBaseProperties"> | undefined;
   isOptimistic: boolean;
   status: Status;
   lastUpdated: number;
@@ -215,9 +227,7 @@ export interface ObserveObjectsCallbackArgs<
   > = {},
 > {
   resolvedList:
-    | Array<
-      Osdk.Instance<T, "$allBaseProperties", PropertyKeys<T>, RDPs>
-    >
+    | Array<Osdk.Instance<T, "$allBaseProperties", PropertyKeys<T>, RDPs>>
     | undefined;
   isOptimistic: boolean;
   lastUpdated: number;
@@ -225,7 +235,7 @@ export interface ObserveObjectsCallbackArgs<
   hasMore: boolean;
   status: Status;
   totalCount?: string;
-  objectSet: ObjectSet<T>;
+  objectSet: ObjectSet<T, RDPs>;
 }
 
 export interface ObserveObjectSetArgs<
@@ -375,7 +385,9 @@ export interface ObservableClient extends ObserveLinks {
   observeObject<T extends ObjectOrInterfaceDefinition>(
     apiName: T["apiName"] | T,
     pk: PrimaryKeyType<T>,
-    options: ObserveOptions,
+    options:
+      & ObserveOptions
+      & Omit<ObserveObjectOptions<T>, "apiName" | "pk">,
     subFn: Observer<ObserveObjectCallbackArgs<T>>,
   ): Unsubscribable;
 

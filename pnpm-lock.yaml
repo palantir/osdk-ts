@@ -865,6 +865,9 @@ importers:
       '@osdk/oauth':
         specifier: workspace:*
         version: link:../../packages/oauth
+      '@osdk/react':
+        specifier: workspace:*
+        version: link:../../packages/react
       normalize.css:
         specifier: ^8.0.1
         version: 8.0.1
@@ -965,6 +968,9 @@ importers:
       '@osdk/oauth':
         specifier: workspace:*
         version: link:../../packages/oauth
+      '@osdk/react':
+        specifier: workspace:*
+        version: link:../../packages/react
       normalize.css:
         specifier: ^8.0.1
         version: 8.0.1
@@ -1456,6 +1462,9 @@ importers:
       '@blueprintjs/core':
         specifier: ^6.10.0
         version: 6.11.3(@types/react@18.3.24)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@osdk/react':
+        specifier: workspace:*
+        version: link:../../packages/react
       '@osdk/widget.client':
         specifier: workspace:*
         version: link:../../packages/widget.client
@@ -1538,6 +1547,9 @@ importers:
       '@osdk/e2e.generated.catchall':
         specifier: workspace:*
         version: link:../../packages/e2e.generated.catchall
+      '@osdk/react':
+        specifier: workspace:*
+        version: link:../../packages/react
       '@osdk/widget.client':
         specifier: workspace:*
         version: link:../../packages/widget.client
@@ -1768,6 +1780,9 @@ importers:
       '@osdk/monorepo.api-extractor':
         specifier: workspace:~
         version: link:../monorepo.api-extractor
+      '@osdk/monorepo.tool.check-bundle':
+        specifier: workspace:~
+        version: link:../monorepo.tool.check-bundle
       '@osdk/monorepo.tsconfig':
         specifier: workspace:~
         version: link:../monorepo.tsconfig
@@ -2037,6 +2052,9 @@ importers:
       '@osdk/monorepo.api-extractor':
         specifier: workspace:~
         version: link:../monorepo.api-extractor
+      '@osdk/monorepo.tool.check-bundle':
+        specifier: workspace:~
+        version: link:../monorepo.tool.check-bundle
       '@osdk/monorepo.tsconfig':
         specifier: workspace:~
         version: link:../monorepo.tsconfig
@@ -2053,6 +2071,9 @@ importers:
       '@osdk/monorepo.api-extractor':
         specifier: workspace:~
         version: link:../monorepo.api-extractor
+      '@osdk/monorepo.tool.check-bundle':
+        specifier: workspace:~
+        version: link:../monorepo.tool.check-bundle
       '@osdk/monorepo.tsconfig':
         specifier: workspace:~
         version: link:../monorepo.tsconfig
@@ -2108,6 +2129,9 @@ importers:
       '@osdk/monorepo.api-extractor':
         specifier: workspace:~
         version: link:../monorepo.api-extractor
+      '@osdk/monorepo.tool.check-bundle':
+        specifier: workspace:~
+        version: link:../monorepo.tool.check-bundle
       '@osdk/monorepo.tsconfig':
         specifier: workspace:~
         version: link:../monorepo.tsconfig
@@ -2929,6 +2953,9 @@ importers:
       '@osdk/monorepo.api-extractor':
         specifier: workspace:~
         version: link:../monorepo.api-extractor
+      '@osdk/monorepo.tool.check-bundle':
+        specifier: workspace:~
+        version: link:../monorepo.tool.check-bundle
       '@osdk/monorepo.tsconfig':
         specifier: workspace:~
         version: link:../monorepo.tsconfig
@@ -3883,6 +3910,9 @@ importers:
       '@osdk/monorepo.api-extractor':
         specifier: workspace:~
         version: link:../monorepo.api-extractor
+      '@osdk/monorepo.tool.check-bundle':
+        specifier: workspace:~
+        version: link:../monorepo.tool.check-bundle
       '@osdk/monorepo.tsconfig':
         specifier: workspace:~
         version: link:../monorepo.tsconfig
@@ -4335,6 +4365,8 @@ importers:
         specifier: ^18.19.124
         version: 18.19.124
 
+  packages/monorepo.tool.check-bundle: {}
+
   packages/monorepo.tool.transpile:
     dependencies:
       '@babel/preset-typescript':
@@ -4474,6 +4506,9 @@ importers:
       '@osdk/monorepo.api-extractor':
         specifier: workspace:~
         version: link:../monorepo.api-extractor
+      '@osdk/monorepo.tool.check-bundle':
+        specifier: workspace:~
+        version: link:../monorepo.tool.check-bundle
       '@osdk/monorepo.tsconfig':
         specifier: workspace:~
         version: link:../monorepo.tsconfig

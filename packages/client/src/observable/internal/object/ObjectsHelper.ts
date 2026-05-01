@@ -53,15 +53,26 @@ export class ObjectsHelper extends AbstractHelper<
     const apiName = typeof options.apiName === "string"
       ? options.apiName
       : options.apiName.apiName;
-    const { pk, select, $loadPropertySecurityMetadata } = options;
+    const {
+      pk,
+      select,
+      $loadPropertySecurityMetadata,
+    } = options;
 
     const defType = getDefType(options.apiName);
+    // The flag is interface-only on the server. Drop it for object queries so
+    // they don't fragment the cache.
+    const $includeAllBaseObjectProperties = defType === "interface"
+        && options.$includeAllBaseObjectProperties
+      ? true
+      : undefined;
 
     const objectCacheKey = this.cacheKeys.get<ObjectCacheKey>(
       "object",
       apiName,
       pk,
       rdpConfig ?? undefined,
+      $includeAllBaseObjectProperties,
     );
 
     return this.store.queries.get(objectCacheKey, () =>
@@ -75,6 +86,7 @@ export class ObjectsHelper extends AbstractHelper<
         defType,
         select,
         $loadPropertySecurityMetadata,
+        $includeAllBaseObjectProperties,
       ));
   }
 
@@ -89,11 +101,13 @@ export class ObjectsHelper extends AbstractHelper<
     batch: BatchContext,
     rdpConfig?: Canonical<Rdp> | null,
     selectFields?: ReadonlySet<string>,
+    includeAllBaseObjectProperties?: boolean,
   ): ObjectCacheKey[] {
     return values.map(v =>
       this.getQuery({
         apiName: v.$objectType ?? v.$apiName,
         pk: v.$primaryKey,
+        $includeAllBaseObjectProperties: includeAllBaseObjectProperties,
       }, rdpConfig).writeToStore(
         v as ObjectHolder,
         "loaded",

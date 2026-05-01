@@ -1,5 +1,18 @@
 # @osdk/react-components
 
+## 0.9.0
+
+### Minor Changes
+
+- 4aeb07b: ObjectTable: add `onColumnHeaderClick(columnId)` prop that fires when a user clicks on a column header (excluding the dropdown menu trigger)
+- 7b457a5: Fix function column with derived properties
+
+### Patch Changes
+
+- Updated dependencies [aa78c78]
+- Updated dependencies [7b457a5]
+  - @osdk/react@0.16.0
+
 ## 0.8.0
 
 ### Minor Changes
