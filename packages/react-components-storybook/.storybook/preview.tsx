@@ -20,6 +20,8 @@ import { withThemeByDataAttribute } from "@storybook/addon-themes";
 import type { Preview } from "@storybook/react-vite";
 import { initialize, mswLoader } from "msw-storybook-addon";
 import { fauxFoundry, setupFauxFoundry } from "../src/mocks/fauxFoundry.js";
+import { GLOBALS_KEY } from "./addons/brand-theme-extractor/constants.js";
+import { BrandThemeDecorator } from "./addons/brand-theme-extractor/decorator.js";
 import "./styles.css";
 
 // Initialize MSW with proper options
@@ -47,6 +49,13 @@ const mockClient = createClient(
 );
 
 const preview: Preview = {
+  initialGlobals: {
+    [GLOBALS_KEY]: JSON.stringify({
+      active: false,
+      palette: [],
+      assignments: [],
+    }),
+  },
   parameters: {
     controls: {
       matchers: {
@@ -76,6 +85,7 @@ const preview: Preview = {
         </OsdkProvider2>
       </div>
     ),
+    BrandThemeDecorator,
     withThemeByDataAttribute({
       themes: {
         light: "light",
