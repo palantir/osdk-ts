@@ -21,6 +21,7 @@ import {
   stringifyPayload,
   truncatePayload,
 } from "./computePayload.js";
+import type { EventTimeline } from "./EventTimeline.js";
 import { createMonitorLogger } from "./logger.js";
 
 const RID_PLACEHOLDER = "ri.compute.tools.rid.placeholder";
@@ -30,6 +31,18 @@ const COMPUTE_COST_ENDPOINTS = [
   `/api/v2/ontologies/${RID_PLACEHOLDER}/objectSets/loadObjectsMultipleObjectTypes`,
 ];
 
+const OSDK_URL_PREFIXES = [
+  "/api/v2/ontologies/",
+  "/multipass/",
+  "/ontology-metadata/",
+  "/object-set-watcher/",
+  "/object-set-service/",
+];
+
+function isOsdkUrl(pathname: string): boolean {
+  return OSDK_URL_PREFIXES.some((prefix) => pathname.startsWith(prefix));
+}
+
 const RID_REGEX =
   /ri\.([a-z][a-z0-9-]*)\.([a-z0-9][a-z0-9-]*)?\.([a-z][a-z0-9-]*)\.([a-zA-Z0-9\-._]+)/;
 
@@ -37,15 +50,18 @@ export class ComputeMonitor {
   private readonly originalFetch: typeof globalThis.fetch;
   private readonly computeStore: ComputeStore;
   private readonly logger: Logger;
+  private readonly eventTimeline: EventTimeline | undefined;
   private interceptedFetch: typeof globalThis.fetch | null = null;
 
   constructor(
     computeStore: ComputeStore,
     logger: Logger = createMonitorLogger(),
     originalFetch: typeof globalThis.fetch = globalThis.fetch,
+    eventTimeline?: EventTimeline,
   ) {
     this.computeStore = computeStore;
     this.logger = logger;
+    this.eventTimeline = eventTimeline;
     this.originalFetch = originalFetch.bind(globalThis);
   }
 
@@ -65,14 +81,49 @@ export class ComputeMonitor {
 
       const isRecording = self.computeStore.isRecording();
       const shouldTrack = self.doesEndpointTrackComputeCost(pathname);
+      const isPaused = self.computeStore.getIsNetworkPaused();
+      const isOsdk = isOsdkUrl(pathname);
 
       self.logger.debug("Fetch intercepted:", {
         pathname,
         isRecording,
         shouldTrack,
+        isPaused,
+        isOsdk,
         hasBody: init?.body !== undefined,
         bodyType: typeof init?.body,
       });
+
+      if (isPaused && isOsdk) {
+        self.logger.debug("Network paused, blocking OSDK request");
+        self.eventTimeline?.record({
+          type: "OSDK_PAUSE_BLOCK",
+          pathname,
+          timestamp: Date.now(),
+        });
+        if (shouldTrack && isRecording && typeof init?.body === "string") {
+          let parsed: unknown;
+          try {
+            parsed = JSON.parse(init.body);
+          } catch {
+            parsed = undefined;
+          }
+          if (parsed !== undefined) {
+            const requestId = self.computeStore.createPendingRequest({
+              requestUrl: pathname,
+              requestTimestamp: new Date(),
+              requestPayload: truncatePayload(init.body),
+              requestPayloadHash: hashPayload(parsed),
+            });
+            self.computeStore.failRequest(requestId, {
+              type: "osdk-network-paused",
+            });
+          }
+        }
+        throw new Error(
+          "OSDK network requests are paused by OSDK ComputeTools",
+        );
+      }
 
       if (!shouldTrack || !isRecording || typeof init?.body !== "string") {
         self.logger.debug("Skipping tracking:", {
@@ -105,16 +156,6 @@ export class ComputeMonitor {
       });
 
       self.logger.debug("Created pending request:", requestId);
-
-      if (self.computeStore.getIsNetworkPaused()) {
-        self.logger.debug("Network paused, failing request");
-        self.computeStore.failRequest(requestId, {
-          type: "osdk-network-paused",
-        });
-        throw new Error(
-          "OSDK network requests are paused by OSDK ComputeTools",
-        );
-      }
 
       try {
         const res = await self.originalFetch(input, { ...init, body: newBody });
@@ -158,8 +199,10 @@ export class ComputeMonitor {
           self.logger.warn(
             "Request succeeded but no computeUsage in response",
           );
-          self.computeStore.failRequest(requestId, {
-            type: "no-compute-usage",
+          self.computeStore.fulfillWithoutUsage(requestId, {
+            responsePayloadBytes: arrayBuffer.byteLength,
+            responsePayloadHash: hashPayload(jsonRes),
+            responsePayload: truncatePayload(stringifyPayload(jsonRes)),
           });
         } else if (
           typeof jsonRes.errorCode === "string"

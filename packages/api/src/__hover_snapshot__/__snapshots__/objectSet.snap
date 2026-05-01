@@ -1,0 +1,285 @@
+/** The req argument of objectSet.aggregate(...). */
+type probe_aggregate_param =
+  & AggregateOpts<
+    {
+      __DefinitionMetadata?:
+        | { properties: {}; props?: {} | undefined }
+        | undefined;
+    } & EmployeeApiTest
+  >
+  & {
+    $select:
+      & Pick<
+        | UnorderedAggregationClause<
+          {
+            __DefinitionMetadata?:
+              | { properties: {}; props?: {} | undefined }
+              | undefined;
+          } & EmployeeApiTest
+        >
+        | OrderedAggregationClause<
+          {
+            __DefinitionMetadata?:
+              | { properties: {}; props?: {} | undefined }
+              | undefined;
+          } & EmployeeApiTest
+        >,
+        ValidAggregationKeys<
+          {
+            __DefinitionMetadata?:
+              | { properties: {}; props?: {} | undefined }
+              | undefined;
+          } & EmployeeApiTest
+        >
+      >
+      & Record<never, never>;
+  }
+  & {
+    $groupBy:
+      & Pick<
+        GroupByClause<
+          {
+            __DefinitionMetadata?:
+              | { properties: {}; props?: {} | undefined }
+              | undefined;
+          } & EmployeeApiTest
+        > | undefined,
+        never
+      >
+      & Record<never, never>;
+  };
+
+/** The result of objectSet.asyncIter(). */
+type probe_asyncIter_result = AsyncIterableIterator<
+  | Osdk.Instance<EmployeeApiTest, never, PropertyKeys<EmployeeApiTest>, {}>
+  | (
+    & ObjectIdentifiers<EmployeeApiTest>
+    & {
+      readonly $objectSpecifier: ObjectSpecifier<EmployeeApiTest>;
+      readonly $objectType: string;
+      readonly $title: string | undefined;
+    }
+    & Pick<EmployeeApiTest.Props, PropertyKeys<EmployeeApiTest>>
+    & {}
+    & {
+      readonly $link: {
+        readonly lead: SingleLinkAccessor<EmployeeApiTest>;
+        readonly peeps: ObjectSet<EmployeeApiTest, never>;
+      };
+      readonly $as: <NEW_Q extends InterfaceDefinition>(
+        type: string | NEW_Q,
+      ) => Osdk.Instance<
+        NEW_Q,
+        never,
+        ConvertProps<
+          EmployeeApiTest,
+          NEW_Q,
+          PropertyKeys<EmployeeApiTest>,
+          never
+        >,
+        {}
+      >;
+      readonly $clone: <NEW_PROPS extends PropertyKeys<EmployeeApiTest>>(
+        updatedObject?:
+          | Osdk.Instance<EmployeeApiTest, any, NEW_PROPS, {}>
+          | { [K in NEW_PROPS]?: EmployeeApiTest.Props[K] | undefined }
+          | undefined,
+      ) => Osdk.Instance<
+        EmployeeApiTest,
+        never,
+        PropertyKeys<EmployeeApiTest> | NEW_PROPS,
+        {}
+      >;
+      readonly $__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata: {
+        ObjectMetadata: ObjectMetadata;
+      };
+      readonly $__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue: <
+        PropertyApiName extends PropertyKeys<EmployeeApiTest>,
+      >(
+        propertyApiName: PropertyApiName,
+        options?: { locale?: string; timezoneId?: string },
+      ) => string | undefined;
+    }
+    & { $score: number }
+  )
+>;
+
+/** The awaited result of objectSet.fetchPage(). */
+type probe_fetchPage_result = PageResult<
+  | Osdk.Instance<EmployeeApiTest, never, PropertyKeys<EmployeeApiTest>, {}>
+  | (
+    & ObjectIdentifiers<EmployeeApiTest>
+    & {
+      readonly $objectSpecifier: ObjectSpecifier<EmployeeApiTest>;
+      readonly $objectType: string;
+      readonly $title: string | undefined;
+    }
+    & Pick<EmployeeApiTest.Props, PropertyKeys<EmployeeApiTest>>
+    & {}
+    & {
+      readonly $link: {
+        readonly lead: SingleLinkAccessor<EmployeeApiTest>;
+        readonly peeps: ObjectSet<EmployeeApiTest, never>;
+      };
+      readonly $as: <NEW_Q extends InterfaceDefinition>(
+        type: string | NEW_Q,
+      ) => Osdk.Instance<
+        NEW_Q,
+        never,
+        ConvertProps<
+          EmployeeApiTest,
+          NEW_Q,
+          PropertyKeys<EmployeeApiTest>,
+          never
+        >,
+        {}
+      >;
+      readonly $clone: <NEW_PROPS extends PropertyKeys<EmployeeApiTest>>(
+        updatedObject?:
+          | Osdk.Instance<EmployeeApiTest, any, NEW_PROPS, {}>
+          | { [K in NEW_PROPS]?: EmployeeApiTest.Props[K] | undefined }
+          | undefined,
+      ) => Osdk.Instance<
+        EmployeeApiTest,
+        never,
+        PropertyKeys<EmployeeApiTest> | NEW_PROPS,
+        {}
+      >;
+      readonly $__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata: {
+        ObjectMetadata: ObjectMetadata;
+      };
+      readonly $__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue: <
+        PropertyApiName extends PropertyKeys<EmployeeApiTest>,
+      >(
+        propertyApiName: PropertyApiName,
+        options?: { locale?: string; timezoneId?: string },
+      ) => string | undefined;
+    }
+    & { $score: number }
+  )
+>;
+
+/** A bare ObjectSet<EmployeeApiTest> value. */
+type probe_objectSet = ObjectSet<EmployeeApiTest, never>;
+
+/** An ObjectSet with a derived property mom: integer. */
+type probe_objectSet_with_rdp = ObjectSet<EmployeeApiTest, { mom: "integer" }>;
+
+/** The listener argument of objectSet.subscribe(...). */
+type probe_subscribe_listener_param = ObjectSetSubscription.Listener<
+  {
+    __DefinitionMetadata?:
+      | { properties: {}; props?: {} | undefined }
+      | undefined;
+  } & EmployeeApiTest,
+  PropertyKeys<
+    {
+      __DefinitionMetadata?:
+        | { properties: {}; props?: {} | undefined }
+        | undefined;
+    } & EmployeeApiTest
+  >,
+  boolean
+>;
+
+/** The clause argument of objectSet.where(...). */
+type probe_where_clause_param =
+  | OrWhereClause<
+    {
+      __DefinitionMetadata?:
+        | { properties: {}; props?: {} | undefined }
+        | undefined;
+    } & EmployeeApiTest,
+    {}
+  >
+  | AndWhereClause<
+    {
+      __DefinitionMetadata?:
+        | { properties: {}; props?: {} | undefined }
+        | undefined;
+    } & EmployeeApiTest,
+    {}
+  >
+  | NotWhereClause<
+    {
+      __DefinitionMetadata?:
+        | { properties: {}; props?: {} | undefined }
+        | undefined;
+    } & EmployeeApiTest,
+    {}
+  >
+  | {
+    class?: StringFilter | undefined;
+    fullName?: StringFilter | undefined;
+    employeeId?: NumberFilter | undefined;
+    attachment?: BaseFilter<string> | undefined;
+    geopoint?: GeoFilter | undefined;
+    timeseries?: BaseFilter<string> | undefined;
+    mediaReference?: BaseFilter<string> | undefined;
+    geotimeSeriesReference?: BaseFilter<string> | undefined;
+    isActive?: BooleanFilter | undefined;
+    yearsOfExperience?: NumberFilter | undefined;
+    rank?: BaseFilter<string> | undefined;
+    performanceScore?: NumberFilter | undefined;
+    hourlyRate?: NumberFilter | undefined;
+    dateOfJoining?: DatetimeFilter | undefined;
+    lastUpdated?: DatetimeFilter | undefined;
+    skillSet?: StringFilter | undefined;
+    skillSetEmbedding?: BaseFilter<string> | undefined;
+  };
+
+/** The clause argument of .where(...) on an ObjectSet with a derived mom. */
+type probe_where_clause_with_rdp =
+  | OrWhereClause<
+    {
+      __DefinitionMetadata?: {
+        properties: { mom: SimplePropertyDef.ToPropertyDef<"integer"> };
+        props?: { mom: number } | undefined;
+      } | undefined;
+    } & EmployeeApiTest,
+    {}
+  >
+  | AndWhereClause<
+    {
+      __DefinitionMetadata?: {
+        properties: { mom: SimplePropertyDef.ToPropertyDef<"integer"> };
+        props?: { mom: number } | undefined;
+      } | undefined;
+    } & EmployeeApiTest,
+    {}
+  >
+  | NotWhereClause<
+    {
+      __DefinitionMetadata?: {
+        properties: { mom: SimplePropertyDef.ToPropertyDef<"integer"> };
+        props?: { mom: number } | undefined;
+      } | undefined;
+    } & EmployeeApiTest,
+    {}
+  >
+  | {
+    mom?: NumberFilter | undefined;
+    class?: StringFilter | undefined;
+    fullName?: StringFilter | undefined;
+    employeeId?: NumberFilter | undefined;
+    attachment?: BaseFilter<string> | undefined;
+    geopoint?: GeoFilter | undefined;
+    timeseries?: BaseFilter<string> | undefined;
+    mediaReference?: BaseFilter<string> | undefined;
+    geotimeSeriesReference?: BaseFilter<string> | undefined;
+    isActive?: BooleanFilter | undefined;
+    yearsOfExperience?: NumberFilter | undefined;
+    rank?: BaseFilter<string> | undefined;
+    performanceScore?: NumberFilter | undefined;
+    hourlyRate?: NumberFilter | undefined;
+    dateOfJoining?: DatetimeFilter | undefined;
+    lastUpdated?: DatetimeFilter | undefined;
+    skillSet?: StringFilter | undefined;
+    skillSetEmbedding?: BaseFilter<string> | undefined;
+  };
+
+/** The result of objectSet.withProperties({ mom: ..., dad: ... }). */
+type probe_withProperties_return = ObjectSet<
+  EmployeeApiTest,
+  { mom: "integer"; dad: "string" | undefined }
+>;

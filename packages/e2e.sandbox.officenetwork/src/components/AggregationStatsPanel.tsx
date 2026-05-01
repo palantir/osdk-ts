@@ -78,9 +78,18 @@ export function AggregationStatsPanel() {
 
   return (
     <div className="bg-[var(--officenetwork-bg-surface)]/95 backdrop-blur border border-[var(--officenetwork-border-default)] rounded-lg shadow-xl min-w-56">
-      <button
+      <div
+        role="button"
+        tabIndex={0}
+        aria-expanded={isExpanded}
         onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full flex items-center justify-between p-3 hover:bg-[var(--officenetwork-bg-elevated)]/50 transition-colors"
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            setIsExpanded(!isExpanded);
+          }
+        }}
+        className="w-full flex items-center justify-between p-3 hover:bg-[var(--officenetwork-bg-elevated)]/50 transition-colors cursor-pointer"
       >
         <div className="flex items-center gap-2">
           <svg
@@ -126,7 +135,7 @@ export function AggregationStatsPanel() {
             </svg>
           </button>
         </div>
-      </button>
+      </div>
 
       {isExpanded && (
         <div className="px-3 pb-3 space-y-3">

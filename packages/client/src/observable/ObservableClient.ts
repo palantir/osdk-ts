@@ -104,7 +104,7 @@ export interface ObserveObjectOptions<
 > extends ObserveOptions {
   apiName: T["apiName"] | T;
   pk: PrimaryKeyType<T>;
-  select?: PropertyKeys<T>[];
+  select?: readonly PropertyKeys<T>[];
   $loadPropertySecurityMetadata?: boolean;
 
   /**
@@ -149,16 +149,20 @@ export interface ObserveListOptions<
    * Can be combined with `where` to filter the RID set, and with `orderBy` to sort results.
    *
    * @example
+   * ```ts
    * // Fetch specific objects by RID
-   * observeList({ type: Employee, rids: ['ri.foo.123', 'ri.foo.456'] }, observer)
+   * observeList({ type: Employee, rids: ['ri.foo.123', 'ri.foo.456'] }, observer);
+   * ```
    *
    * @example
+   * ```ts
    * // Fetch specific objects by RID, filtered by status
    * observeList({
    *   type: Employee,
    *   rids: ['ri.foo.123', 'ri.foo.456', 'ri.foo.789'],
-   *   where: { status: 'active' }
-   * }, observer)
+   *   where: { status: 'active' },
+   * }, observer);
+   * ```
    */
   rids?: readonly string[];
 
@@ -177,6 +181,12 @@ export interface ObserveListOptions<
   $loadPropertySecurityMetadata?: boolean;
 
   /**
+   * When true, includes all properties of the underlying concrete object type
+   * for interface queries. Has no effect for non-interface queries.
+   */
+  $includeAllBaseObjectProperties?: boolean;
+
+  /**
    * Automatically fetch additional pages on initial load.
    *
    * - `true`: Fetch all available pages automatically
@@ -184,12 +194,16 @@ export interface ObserveListOptions<
    * - `undefined` (default): Only fetch the first page, user must call fetchMore()
    *
    * @example
+   * ```ts
    * // Fetch all todos at once
-   * observeList({ type: Todo, autoFetchMore: true }, observer)
+   * observeList({ type: Todo, autoFetchMore: true }, observer);
+   * ```
    *
    * @example
+   * ```ts
    * // Fetch at least 100 todos
-   * observeList({ type: Todo, autoFetchMore: 100, pageSize: 25 }, observer)
+   * observeList({ type: Todo, autoFetchMore: 100, pageSize: 25 }, observer);
+   * ```
    */
   autoFetchMore?: boolean | number;
   intersectWith?: Array<{
@@ -207,7 +221,7 @@ export interface ObserveListOptions<
 export interface ObserveObjectCallbackArgs<
   T extends ObjectOrInterfaceDefinition,
 > {
-  object: Osdk.Instance<T> | undefined;
+  object: Osdk.Instance<T, "$allBaseProperties"> | undefined;
   isOptimistic: boolean;
   status: Status;
   lastUpdated: number;
@@ -221,9 +235,7 @@ export interface ObserveObjectsCallbackArgs<
   > = {},
 > {
   resolvedList:
-    | Array<
-      Osdk.Instance<T, "$allBaseProperties", PropertyKeys<T>, RDPs>
-    >
+    | Array<Osdk.Instance<T, "$allBaseProperties", PropertyKeys<T>, RDPs>>
     | undefined;
   isOptimistic: boolean;
   lastUpdated: number;
@@ -231,7 +243,7 @@ export interface ObserveObjectsCallbackArgs<
   hasMore: boolean;
   status: Status;
   totalCount?: string;
-  objectSet: ObjectSet<T>;
+  objectSet: ObjectSet<T, RDPs>;
 }
 
 export interface ObserveObjectSetArgs<
@@ -381,7 +393,9 @@ export interface ObservableClient extends ObserveLinks {
   observeObject<T extends ObjectOrInterfaceDefinition>(
     apiName: T["apiName"] | T,
     pk: PrimaryKeyType<T>,
-    options: ObserveOptions,
+    options:
+      & ObserveOptions
+      & Omit<ObserveObjectOptions<T>, "apiName" | "pk">,
     subFn: Observer<ObserveObjectCallbackArgs<T>>,
   ): Unsubscribable;
 

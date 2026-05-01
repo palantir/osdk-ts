@@ -17,6 +17,7 @@
     "tag-release": "./scripts/tag-release.sh",
     "test": "FORCE_COLOR=1 turbo run test",
     "test:watch": "FORCE_COLOR=1 turbo run test:watch",
+    "updateSnapshots": "FORCE_COLOR=1 turbo run updateSnapshots",
     "typecheckAll": "tsc --build packages/* examples-extra/basic/*"
   },
   "devDependencies": {

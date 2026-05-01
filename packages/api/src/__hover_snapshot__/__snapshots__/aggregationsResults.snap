@@ -1,0 +1,45 @@
+/** The result of objectSet.aggregate({ $select: { $count: "unordered" } }). */
+type probe_count_only = { $count: number };
+
+/** GroupBy a numeric property by $fixedWidth — group is the bucket's numeric value. */
+type probe_groupBy_fixedWidth = Array<
+  & { $group: { employeeId: number } }
+  & AggregationResultsWithoutGroups<EmployeeApiTest, { $count: "unordered" }>
+>;
+
+/** GroupBy with $includeNullValue: true — the group key becomes nullable. */
+type probe_groupBy_includeNullValue = Array<
+  & { $group: { class: string | null } }
+  & AggregationResultsWithoutGroups<EmployeeApiTest, { $count: "unordered" }>
+>;
+
+/** GroupBy a numeric property by $ranges — group becomes a startValue/endValue pair. */
+type probe_groupBy_ranges = Array<
+  {
+    $group: {
+      employeeId: { startValue: 0 | 100 | 200; endValue: 0 | 100 | 200 };
+    };
+  } & AggregationResultsWithoutGroups<EmployeeApiTest, { $count: "unordered" }>
+>;
+
+/** Aggregation across multiple properties, including $count. */
+type probe_mixed_props = {
+  $count: number;
+  fullName: { approximateDistinct: number };
+  employeeId: { sum: number | undefined };
+};
+
+/** Aggregation across one property with multiple metrics. */
+type probe_single_prop_multi_metrics = {
+  employeeId: {
+    avg: number | undefined;
+    min: number | undefined;
+    max: number | undefined;
+  };
+};
+
+/** Aggregation grouped by a single property — result becomes an array of $group plus aggregations. */
+type probe_with_groupBy = Array<
+  & { $group: { class: string } }
+  & AggregationResultsWithoutGroups<EmployeeApiTest, { $count: "unordered" }>
+>;

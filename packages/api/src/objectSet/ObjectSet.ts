@@ -179,12 +179,13 @@ interface FetchPageSignature<
    * Gets a page of objects of this type, with a result wrapper
    * @param args - Args to specify next page token and page size, if applicable
    * @example
-   *  const myObjs = await objectSet.fetchPage({
-      $pageSize: 10,
-      $nextPageToken: "nextPage"
-    });
-     const myObjsResult = myObjs.data;
-
+   * ```ts
+   * const myObjs = await objectSet.fetchPage({
+   *   $pageSize: 10,
+   *   $nextPageToken: "nextPage",
+   * });
+   * const myObjsResult = myObjs.data;
+   * ```
    * @returns a page of objects
    */
   <
@@ -252,14 +253,16 @@ interface FetchPageWithErrorsSignature<
    * Gets a page of objects of this type, with a result wrapper
    * @param args - Args to specify next page token and page size, if applicable
    * @example
-   *  const myObjs = await objectSet.fetchPage({
-      $pageSize: 10,
-      $nextPageToken: "nextPage"
-    });
-
-     if(isOk(myObjs)){
-     const myObjsResult = myObjs.value.data;
-    }
+   * ```ts
+   * const myObjs = await objectSet.fetchPage({
+   *   $pageSize: 10,
+   *   $nextPageToken: "nextPage",
+   * });
+   *
+   * if (isOk(myObjs)) {
+   *   const myObjsResult = myObjs.value.data;
+   * }
+   * ```
    * @returns a page of objects, wrapped in a result wrapper
    */
   <
@@ -304,15 +307,17 @@ interface Where<
   RDPs extends Record<string, SimplePropertyDef> = {},
 > {
   /**
- * Allows you to filter an object set with a given clause
- * @param clause - Takes a filter clause
- * @example
- * await client(Office).where({
-    meetingRooms: { $contains: "Grand Central" },
-    meetingRoomCapacities: { $contains: 30 },
-});
-* @returns an objectSet
-  */
+   * Allows you to filter an object set with a given clause
+   * @param clause - Takes a filter clause
+   * @example
+   * ```ts
+   * await client(Office).where({
+   *   meetingRooms: { $contains: "Grand Central" },
+   *   meetingRoomCapacities: { $contains: 30 },
+   * });
+   * ```
+   * @returns an objectSet
+   */
   readonly where: (
     clause: WhereClause<MergeObjectSet<Q, RDPs>>,
   ) => this;
@@ -327,9 +332,11 @@ interface AsyncIterSignature<
   /**
    * Returns an async iterator to load all objects of this type
    * @example
-   * for await (const obj of myObjectSet.asyncIter()){
-   * // Handle obj
+   * ```ts
+   * for await (const obj of myObjectSet.asyncIter()) {
+   *   // Handle obj
    * }
+   * ```
    * @returns an async iterator to load all objects
    */
   <X extends ValidAsyncIterArgs<Q, RDPs> = never>(
@@ -346,9 +353,11 @@ interface AsyncIterSignature<
   /**
    * Returns an async iterator to load all objects of this type
    * @example
-   * for await (const obj of myObjectSet.asyncIter()){
-   * // Handle obj
+   * ```ts
+   * for await (const obj of myObjectSet.asyncIter()) {
+   *   // Handle obj
    * }
+   * ```
    * @returns an async iterator to load all objects
    */
   <
@@ -434,22 +443,23 @@ interface Aggregate<
    * @param req - an aggregation request where you can select fields and choose how to aggregate, e.g., max, min, avg, and also choose
    * whether or not you order your results. You can also specify a groupBy field to group your aggregations
    * @example
+   * ```ts
    * const testAggregateCountWithGroups = await client(BoundariesUsState)
-    .aggregate({
-      $select: {
-        $count: "unordered",
-        "latitude:max": "unordered",
-        "latitude:min": "unordered",
-        "latitude:avg": "unordered",
-      },
-      $groupBy: {
-        usState: "exact",
-        longitude: {
-          $fixedWidth: 10,
-        },
-      },
-    });
-
+   *   .aggregate({
+   *     $select: {
+   *       $count: "unordered",
+   *       "latitude:max": "unordered",
+   *       "latitude:min": "unordered",
+   *       "latitude:avg": "unordered",
+   *     },
+   *     $groupBy: {
+   *       usState: "exact",
+   *       longitude: {
+   *         $fixedWidth: 10,
+   *       },
+   *     },
+   *   });
+   * ```
    * @returns aggregation results, sorted in the groups based on the groupBy clause (if applicable)
    */
   readonly aggregate: <AO extends AggregateOpts<Q>>(
@@ -465,9 +475,11 @@ interface SetArithmetic<
    * Unions object sets together
    * @param objectSets - objectSets you want to union with
    * @example
+   * ```ts
    * const unionObjectSet = complexFilteredEmployeeObjectSet.union(
-    simpleFilteredEmployeeObjectSet,
-  );
+   *   simpleFilteredEmployeeObjectSet,
+   * );
+   * ```
    * @returns the unioned object set
    */
   readonly union: (
@@ -478,9 +490,11 @@ interface SetArithmetic<
    * Computes the intersection of object sets
    * @param objectSets - objectSets you want to intersect with
    * @example
+   * ```ts
    * const intersectedObjectSet = complexFilteredEmployeeObjectSet.intersect(
-    simpleFilteredEmployeeObjectSet,
-  );
+   *   simpleFilteredEmployeeObjectSet,
+   * );
+   * ```
    * @returns the intersected object set
    */
   readonly intersect: (
@@ -491,9 +505,11 @@ interface SetArithmetic<
    * Computes the subtraction of object sets
    * @param objectSets - objectSets you want to subtract from
    * @example
+   * ```ts
    * const subtractObjectSet = complexFilteredEmployeeObjectSet.subtract(
-    simpleFilteredEmployeeObjectSet,
-  );
+   *   simpleFilteredEmployeeObjectSet,
+   * );
+   * ```
    * @returns the subtract object set
    */
   readonly subtract: (

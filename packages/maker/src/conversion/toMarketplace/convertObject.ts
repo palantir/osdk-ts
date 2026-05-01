@@ -17,6 +17,7 @@
 import type {
   OntologyIrDerivedPropertiesDefinition,
   OntologyIrDerivedPropertyAggregation,
+  OntologyIrEditsHistory,
   OntologyIrObjectTypeBlockDataV2,
   OntologyIrObjectTypeDatasource,
   OntologyIrObjectTypeDatasourceDefinition,
@@ -27,6 +28,7 @@ import {
   cleanAndValidateLinkTypeId,
   convertObjectStatus,
 } from "../../api/defineOntology.js";
+import type { EditsHistoryConfig } from "../../api/object/EditsHistoryConfig.js";
 import type { ObjectPropertyType } from "../../api/object/ObjectPropertyType.js";
 import type { ObjectType } from "../../api/object/ObjectType.js";
 import type {
@@ -125,6 +127,10 @@ export function convertObject(
     entityMetadata: {
       arePatchesEnabled: objectType.editsEnabled ?? false,
       aliases: objectType.aliases ?? [],
+      editsHistory: convertEditsHistory(
+        objectType.apiName,
+        objectType.editsHistoryConfig,
+      ),
     },
     propertySecurityGroupPackagingVersion: {
       type: "v2",
@@ -275,13 +281,13 @@ function buildAggregation(
   const innerDef: any = {};
   if (type !== "count") {
     if (["collectList", "collectSet"].includes(type)) {
-      innerDef["linkedProperty"] = {
+      innerDef.linkedProperty = {
         type: "propertyType",
         propertyType: foreignProperty,
       };
-      innerDef["limit"] = limit;
+      innerDef.limit = limit;
     } else {
-      innerDef["property"] = {
+      innerDef.property = {
         type: "propertyType",
         propertyType: foreignProperty,
       };
@@ -291,4 +297,25 @@ function buildAggregation(
     type,
     [type]: innerDef,
   } as unknown as OntologyIrDerivedPropertyAggregation;
+}
+
+function convertEditsHistory(
+  apiName: string,
+  config?: EditsHistoryConfig,
+): OntologyIrEditsHistory | undefined {
+  if (config) {
+    return config.enabled
+      ? {
+        type: "config",
+        config: {
+          store: apiName,
+          storeAllPreviousProperties: config.storeAllPreviousProperties,
+        },
+      }
+      : {
+        type: "none",
+        none: {},
+      };
+  }
+  return undefined;
 }

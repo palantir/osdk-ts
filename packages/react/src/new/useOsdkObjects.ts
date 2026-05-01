@@ -41,15 +41,19 @@ export interface UseOsdkObjectsOptions<
    * Can be combined with `where` to filter the RID set, and with `orderBy` to sort results.
    *
    * @example
+   * ```tsx
    * // Fetch specific objects by RID
-   * useOsdkObjects(Employee, { rids: ['ri.foo.123', 'ri.foo.456'] })
+   * useOsdkObjects(Employee, { rids: ['ri.foo.123', 'ri.foo.456'] });
+   * ```
    *
    * @example
+   * ```tsx
    * // Fetch specific objects by RID, filtered by status
    * useOsdkObjects(Employee, {
    *   rids: ['ri.foo.123', 'ri.foo.456', 'ri.foo.789'],
-   *   where: { status: 'active' }
-   * })
+   *   where: { status: 'active' },
+   * });
+   * ```
    */
   rids?: readonly string[];
 
@@ -139,8 +143,10 @@ export interface UseOsdkObjectsOptions<
    * reducing payload sizes for list views.
    *
    * @example
+   * ```tsx
    * // Only fetch name and status properties
-   * useOsdkObjects(Employee, { $select: ["name", "status"] })
+   * useOsdkObjects(Employee, { $select: ["name", "status"] });
+   * ```
    */
   $select?: readonly PropertyKeys<T>[];
 
@@ -150,6 +156,12 @@ export interface UseOsdkObjectsOptions<
    * populated with conjunctive/disjunctive marking requirements per property.
    */
   $loadPropertySecurityMetadata?: boolean;
+
+  /**
+   * When true, includes all properties of the underlying concrete object type
+   * for interface queries. Has no effect for non-interface queries.
+   */
+  $includeAllBaseObjectProperties?: boolean;
 }
 
 export interface UseOsdkListResult<
@@ -212,7 +224,7 @@ export function useOsdkObjects<
   L extends LinkNames<Q>,
 >(
   type: Q,
-  options: UseOsdkObjectsOptions<Q> & {
+  options: UseOsdkObjectsOptions<Q, {}> & {
     pivotTo: L;
     rids: readonly string[];
     streamUpdates?: never;
@@ -224,8 +236,11 @@ export function useOsdkObjects<
   L extends LinkNames<Q>,
 >(
   type: Q,
-  options: UseOsdkObjectsOptions<Q> & { pivotTo: L; streamUpdates?: never },
-): UseOsdkListResult<LinkedType<Q, L>>;
+  options: UseOsdkObjectsOptions<Q, {}> & {
+    pivotTo: L;
+    streamUpdates?: never;
+  },
+): UseOsdkListResult<LinkedType<Q, L>, {}>;
 
 // Non-pivotTo overloads: pivotTo is forbidden to prevent fallthrough from the
 // pivotTo overloads above (which would give the wrong return type).
@@ -245,7 +260,9 @@ export function useOsdkObjects<
   RDPs extends Record<string, SimplePropertyDef> = {},
 >(
   type: Q,
-  options?: UseOsdkObjectsOptions<Q, RDPs> & { pivotTo?: never },
+  options?:
+    & UseOsdkObjectsOptions<Q, RDPs>
+    & { pivotTo?: never },
 ): UseOsdkListResult<Q, RDPs>;
 
 export function useOsdkObjects<
@@ -257,7 +274,7 @@ export function useOsdkObjects<
 ):
   | UseOsdkListResult<Q, RDPs>
   | UseOsdkListResult<Q, RDPs, "$rid">
-  | UseOsdkListResult<LinkedType<Q, LinkNames<Q>>>
+  | UseOsdkListResult<LinkedType<Q, LinkNames<Q>>, {}>
   | UseOsdkListResult<LinkedType<Q, LinkNames<Q>>, {}, "$rid">
 {
   const { observableClient } = React.useContext(OsdkContext2);
@@ -276,6 +293,7 @@ export function useOsdkObjects<
     pivotTo,
     $select,
     $loadPropertySecurityMetadata,
+    $includeAllBaseObjectProperties,
   } = options ?? {};
 
   const canonOptions = observableClient.canonicalizeOptions({
@@ -294,9 +312,7 @@ export function useOsdkObjects<
   const { subscribe, getSnapShot } = React.useMemo(
     () => {
       if (!enabled) {
-        return makeExternalStore<
-          ObserveObjectsCallbackArgs<Q, RDPs>
-        >(
+        return makeExternalStore<ObserveObjectsCallbackArgs<Q, RDPs>>(
           () => ({ unsubscribe: () => {} }),
           devToolsMetadata({
             hookType: "useOsdkObjects",
@@ -305,11 +321,9 @@ export function useOsdkObjects<
         );
       }
 
-      return makeExternalStore<
-        ObserveObjectsCallbackArgs<Q, RDPs>
-      >(
+      return makeExternalStore<ObserveObjectsCallbackArgs<Q, RDPs>>(
         (observer) =>
-          observableClient.observeList({
+          observableClient.observeList<Q, RDPs>({
             type,
             rids: stableRids,
             where: canonOptions.where,
@@ -319,6 +333,7 @@ export function useOsdkObjects<
             streamUpdates,
             withProperties: canonOptions.withProperties,
             autoFetchMore,
+            $includeAllBaseObjectProperties,
             ...(canonOptions.intersectWith
               ? { intersectWith: canonOptions.intersectWith }
               : {}),
@@ -354,6 +369,7 @@ export function useOsdkObjects<
       pivotTo,
       canonOptions.$select,
       $loadPropertySecurityMetadata,
+      $includeAllBaseObjectProperties,
     ],
   );
 
@@ -363,15 +379,18 @@ export function useOsdkObjects<
     await observableClient.invalidateObjectType(type.apiName);
   }, [observableClient, type.apiName]);
 
-  return React.useMemo(() => ({
-    fetchMore: listPayload?.hasMore ? listPayload.fetchMore : undefined,
-    error: extractPayloadError(listPayload, "Failed to load objects"),
-    data: listPayload?.resolvedList,
-    isLoading: isPayloadLoading(listPayload, enabled),
-    isOptimistic: listPayload?.isOptimistic ?? false,
-    totalCount: listPayload?.totalCount,
-    hasMore: listPayload?.hasMore ?? false,
-    objectSet: listPayload?.objectSet,
-    refetch,
-  }), [listPayload, enabled, refetch]);
+  return React.useMemo<UseOsdkListResult<Q, RDPs>>(
+    () => ({
+      fetchMore: listPayload?.hasMore ? listPayload.fetchMore : undefined,
+      error: extractPayloadError(listPayload, "Failed to load objects"),
+      data: listPayload?.resolvedList,
+      isLoading: isPayloadLoading(listPayload, enabled),
+      isOptimistic: listPayload?.isOptimistic ?? false,
+      totalCount: listPayload?.totalCount,
+      hasMore: listPayload?.hasMore ?? false,
+      objectSet: listPayload?.objectSet,
+      refetch,
+    }),
+    [listPayload, enabled, refetch],
+  );
 }

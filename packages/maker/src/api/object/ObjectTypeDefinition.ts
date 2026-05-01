@@ -17,6 +17,7 @@
 import type { Visibility } from "@osdk/client.unstable";
 import type { BlueprintIcon } from "../common/BlueprintIcons.js";
 import type { EntityPermission } from "../common/EntityPermission.js";
+import type { EditsHistoryConfig } from "./EditsHistoryConfig.js";
 import type { InterfaceImplementation } from "./InterfaceImplementation.js";
 import type { ObjectPropertyTypeUserDefinition } from "./ObjectPropertyTypeUserDefinition.js";
 import type { ObjectTypeDatasourceDefinition } from "./ObjectTypeDatasourceDefinition.js";
@@ -34,6 +35,7 @@ export type ObjectTypeDefinition = {
   icon?: { locator: BlueprintIcon; color: string };
   visibility?: Visibility;
   editsEnabled?: boolean;
+  editsHistoryConfig?: EditsHistoryConfig;
   status?: ObjectTypeStatus;
   datasources?: Array<ObjectTypeDatasourceDefinition>;
   aliases?: Array<string>;

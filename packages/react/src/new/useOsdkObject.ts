@@ -28,7 +28,7 @@ import { OsdkContext2 } from "./OsdkContext2.js";
 export interface UseOsdkObjectResult<
   Q extends ObjectOrInterfaceDefinition,
 > {
-  object: Osdk.Instance<Q> | undefined;
+  object: Osdk.Instance<Q, "$allBaseProperties"> | undefined;
   isLoading: boolean;
 
   error: Error | undefined;
@@ -38,6 +38,20 @@ export interface UseOsdkObjectResult<
    */
   isOptimistic: boolean;
   forceUpdate: () => void;
+}
+
+export interface UseOsdkObjectOptions<
+  Q extends ObjectOrInterfaceDefinition,
+> {
+  $select?: readonly PropertyKeys<Q>[];
+  enabled?: boolean;
+  $loadPropertySecurityMetadata?: boolean;
+
+  /**
+   * When true, includes all properties of the underlying concrete object type
+   * for interface queries. Has no effect for non-interface queries.
+   */
+  $includeAllBaseObjectProperties?: boolean;
 }
 
 /**
@@ -69,18 +83,15 @@ export function useOsdkObject<
  *
  * @param type The object type or interface definition
  * @param primaryKey The primary key of the object
- * @param options Options including $select, enabled, and $loadPropertySecurityMetadata
+ * @param options Options including $select, enabled, $loadPropertySecurityMetadata,
+ *                and $includeAllBaseObjectProperties
  */
 export function useOsdkObject<
   Q extends ObjectOrInterfaceDefinition,
 >(
   type: Q,
   primaryKey: PrimaryKeyType<Q>,
-  options?: {
-    $select?: readonly PropertyKeys<Q>[];
-    enabled?: boolean;
-    $loadPropertySecurityMetadata?: boolean;
-  },
+  options?: UseOsdkObjectOptions<Q>,
 ): UseOsdkObjectResult<Q>;
 /*
     Implementation of useOsdkObject
@@ -94,11 +105,7 @@ export function useOsdkObject<
     | [
       type: Q,
       primaryKey: PrimaryKeyType<Q>,
-      options?: {
-        $select?: readonly PropertyKeys<Q>[];
-        enabled?: boolean;
-        $loadPropertySecurityMetadata?: boolean;
-      },
+      options?: UseOsdkObjectOptions<Q>,
     ]
 ): UseOsdkObjectResult<Q> {
   const { observableClient } = React.useContext(OsdkContext2);
@@ -112,11 +119,7 @@ export function useOsdkObject<
   const optionsArg = !isInstanceSignature
       && args[2] != null
       && typeof args[2] === "object"
-    ? args[2] as {
-      $select?: readonly string[];
-      enabled?: boolean;
-      $loadPropertySecurityMetadata?: boolean;
-    }
+    ? args[2]
     : undefined;
 
   // Extract enabled flag - 2nd param for instance signature, 3rd for type signature
@@ -129,6 +132,8 @@ export function useOsdkObject<
   const selectArg = optionsArg?.$select;
   const loadPropertySecurityMetadata = optionsArg
     ?.$loadPropertySecurityMetadata;
+  const includeAllBaseObjectProperties = optionsArg
+    ?.$includeAllBaseObjectProperties;
 
   const mode = isInstanceSignature ? "offline" : undefined;
 
@@ -163,11 +168,12 @@ export function useOsdkObject<
       }
       return makeExternalStore<ObserveObjectCallbackArgs<Q>>(
         (observer) =>
-          observableClient.observeObject(
+          observableClient.observeObject<Q>(
             typeOrApiName,
             primaryKey,
             {
               mode,
+              $includeAllBaseObjectProperties: includeAllBaseObjectProperties,
               ...(stableSelect ? { select: stableSelect } : {}),
               ...(loadPropertySecurityMetadata
                 ? {
@@ -193,6 +199,7 @@ export function useOsdkObject<
       mode,
       stableSelect,
       loadPropertySecurityMetadata,
+      includeAllBaseObjectProperties,
     ],
   );
 
@@ -211,7 +218,7 @@ export function useOsdkObject<
     }
 
     return {
-      object: payload?.object as Osdk.Instance<Q> | undefined,
+      object: payload?.object,
       // Errors take precedence over loading state.
       isLoading: enabled && error == null
         ? (payload?.status === "loading" || payload?.status === "init"

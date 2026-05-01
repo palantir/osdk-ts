@@ -1,0 +1,354 @@
+/** An instance fetched with $includeAllBaseObjectProperties: true. */
+type probe_all_base_props =
+  & ObjectIdentifiers<EmployeeApiTest>
+  & {
+    readonly $objectSpecifier: ObjectSpecifier<EmployeeApiTest>;
+    readonly $objectType: string;
+    readonly $title: string | undefined;
+  }
+  & Pick<EmployeeApiTest.Props, PropertyKeys<EmployeeApiTest>>
+  & {}
+  & {
+    readonly $link: {
+      readonly lead: SingleLinkAccessor<EmployeeApiTest>;
+      readonly peeps: ObjectSet<EmployeeApiTest, never>;
+    };
+    readonly $as: <NEW_Q extends InterfaceDefinition>(
+      type: string | NEW_Q,
+    ) => Osdk.Instance<
+      NEW_Q,
+      "$allBaseProperties",
+      ConvertProps<
+        EmployeeApiTest,
+        NEW_Q,
+        PropertyKeys<EmployeeApiTest>,
+        "$allBaseProperties"
+      >,
+      {}
+    >;
+    readonly $clone: <NEW_PROPS extends PropertyKeys<EmployeeApiTest>>(
+      updatedObject?:
+        | Osdk.Instance<EmployeeApiTest, any, NEW_PROPS, {}>
+        | { [K in NEW_PROPS]?: EmployeeApiTest.Props[K] | undefined }
+        | undefined,
+    ) => Osdk.Instance<
+      EmployeeApiTest,
+      "$allBaseProperties",
+      PropertyKeys<EmployeeApiTest> | NEW_PROPS,
+      {}
+    >;
+    readonly $__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata: {
+      ObjectMetadata: ObjectMetadata;
+    };
+    readonly $__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue: <
+      PropertyApiName extends PropertyKeys<EmployeeApiTest>,
+    >(
+      propertyApiName: PropertyApiName,
+      options?: { locale?: string; timezoneId?: string },
+    ) => string | undefined;
+  };
+
+/** A bare Osdk.Instance — what users get when iterating fetchPage results without options. */
+type probe_default =
+  & ObjectIdentifiers<EmployeeApiTest>
+  & {
+    readonly $objectSpecifier: ObjectSpecifier<EmployeeApiTest>;
+    readonly $objectType: string;
+    readonly $title: string | undefined;
+  }
+  & Pick<EmployeeApiTest.Props, PropertyKeys<EmployeeApiTest>>
+  & {}
+  & {
+    readonly $link: {
+      readonly lead: SingleLinkAccessor<EmployeeApiTest>;
+      readonly peeps: ObjectSet<EmployeeApiTest, never>;
+    };
+    readonly $as: <NEW_Q extends InterfaceDefinition>(
+      type: string | NEW_Q,
+    ) => Osdk.Instance<
+      NEW_Q,
+      never,
+      ConvertProps<
+        EmployeeApiTest,
+        NEW_Q,
+        PropertyKeys<EmployeeApiTest>,
+        never
+      >,
+      {}
+    >;
+    readonly $clone: <NEW_PROPS extends PropertyKeys<EmployeeApiTest>>(
+      updatedObject?:
+        | Osdk.Instance<EmployeeApiTest, any, NEW_PROPS, {}>
+        | { [K in NEW_PROPS]?: EmployeeApiTest.Props[K] | undefined }
+        | undefined,
+    ) => Osdk.Instance<
+      EmployeeApiTest,
+      never,
+      PropertyKeys<EmployeeApiTest> | NEW_PROPS,
+      {}
+    >;
+    readonly $__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata: {
+      ObjectMetadata: ObjectMetadata;
+    };
+    readonly $__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue: <
+      PropertyApiName extends PropertyKeys<EmployeeApiTest>,
+    >(
+      propertyApiName: PropertyApiName,
+      options?: { locale?: string; timezoneId?: string },
+    ) => string | undefined;
+  };
+
+/** An instance whose Q is an interface rather than an object type. */
+type probe_interface_default =
+  & ObjectIdentifiers<FooInterfaceApiTest>
+  & {
+    readonly $objectSpecifier: ObjectSpecifier<FooInterfaceApiTest>;
+    readonly $objectType: string;
+    readonly $title: string | undefined;
+  }
+  & Pick<FooInterfaceApiTest.Props, PropertyKeys<FooInterfaceApiTest>>
+  & {}
+  & {
+    readonly $link: never;
+    readonly $as: <NEW_Q extends ObjectOrInterfaceDefinition>(
+      type: string | NEW_Q,
+    ) => Osdk.Instance<
+      NEW_Q,
+      never,
+      ConvertProps<
+        FooInterfaceApiTest,
+        NEW_Q,
+        PropertyKeys<FooInterfaceApiTest>,
+        never
+      >,
+      {}
+    >;
+    readonly $clone: <NEW_PROPS extends PropertyKeys<FooInterfaceApiTest>>(
+      updatedObject?:
+        | Osdk.Instance<FooInterfaceApiTest, any, NEW_PROPS, {}>
+        | { [K in NEW_PROPS]?: FooInterfaceApiTest.Props[K] | undefined }
+        | undefined,
+    ) => Osdk.Instance<
+      FooInterfaceApiTest,
+      never,
+      PropertyKeys<FooInterfaceApiTest> | NEW_PROPS,
+      {}
+    >;
+    readonly $__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata: {
+      ObjectMetadata: ObjectMetadata;
+      InterfaceMetadata: InterfaceMetadata;
+    };
+    readonly $__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue: <
+      PropertyApiName extends PropertyKeys<FooInterfaceApiTest>,
+    >(
+      propertyApiName: PropertyApiName,
+      options?: { locale?: string; timezoneId?: string },
+    ) => string | undefined;
+  };
+
+/** An instance fetched with $includePropertySecurities: true. */
+type probe_property_securities =
+  & ObjectIdentifiers<EmployeeApiTest>
+  & {
+    readonly $objectSpecifier: ObjectSpecifier<EmployeeApiTest>;
+    readonly $objectType: string;
+    readonly $title: string | undefined;
+  }
+  & Pick<EmployeeApiTest.Props, PropertyKeys<EmployeeApiTest>>
+  & {}
+  & {
+    readonly $link: {
+      readonly lead: SingleLinkAccessor<EmployeeApiTest>;
+      readonly peeps: ObjectSet<EmployeeApiTest, never>;
+    };
+    readonly $as: <NEW_Q extends InterfaceDefinition>(
+      type: string | NEW_Q,
+    ) => Osdk.Instance<
+      NEW_Q,
+      "$propertySecurities",
+      ConvertProps<
+        EmployeeApiTest,
+        NEW_Q,
+        PropertyKeys<EmployeeApiTest>,
+        "$propertySecurities"
+      >,
+      {}
+    >;
+    readonly $clone: <NEW_PROPS extends PropertyKeys<EmployeeApiTest>>(
+      updatedObject?:
+        | Osdk.Instance<EmployeeApiTest, any, NEW_PROPS, {}>
+        | { [K in NEW_PROPS]?: EmployeeApiTest.Props[K] | undefined }
+        | undefined,
+    ) => Osdk.Instance<
+      EmployeeApiTest,
+      "$propertySecurities",
+      PropertyKeys<EmployeeApiTest> | NEW_PROPS,
+      {}
+    >;
+    readonly $__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata: {
+      ObjectMetadata: ObjectMetadata;
+    };
+    readonly $__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue: <
+      PropertyApiName extends PropertyKeys<EmployeeApiTest>,
+    >(
+      propertyApiName: PropertyApiName,
+      options?: { locale?: string; timezoneId?: string },
+    ) => string | undefined;
+  }
+  & {
+    readonly $propertySecurities: {
+      attachment: Array<PropertySecurity>;
+      geopoint: Array<PropertySecurity>;
+      mediaReference: Array<PropertySecurity>;
+      geotimeSeriesReference: Array<PropertySecurity>;
+      class: Array<PropertySecurity>;
+      fullName: Array<PropertySecurity>;
+      employeeId: Array<PropertySecurity>;
+      timeseries: Array<PropertySecurity>;
+      isActive: Array<PropertySecurity>;
+      yearsOfExperience: Array<PropertySecurity>;
+      rank: Array<PropertySecurity>;
+      performanceScore: Array<PropertySecurity>;
+      hourlyRate: Array<PropertySecurity>;
+      dateOfJoining: Array<PropertySecurity>;
+      lastUpdated: Array<PropertySecurity>;
+      skillSet: Array<PropertySecurity>;
+      skillSetEmbedding: Array<PropertySecurity>;
+    };
+  };
+
+/** An instance with $select narrowing the property set to a subset. */
+type probe_select_subset =
+  & ObjectIdentifiers<EmployeeApiTest>
+  & {
+    readonly $objectSpecifier: ObjectSpecifier<EmployeeApiTest>;
+    readonly $objectType: string;
+    readonly $title: string | undefined;
+  }
+  & Pick<EmployeeApiTest.Props, "fullName" | "employeeId">
+  & {}
+  & {
+    readonly $link: {
+      readonly lead: SingleLinkAccessor<EmployeeApiTest>;
+      readonly peeps: ObjectSet<EmployeeApiTest, never>;
+    };
+    readonly $as: <NEW_Q extends InterfaceDefinition>(
+      type: string | NEW_Q,
+    ) => Osdk.Instance<
+      NEW_Q,
+      never,
+      ConvertProps<EmployeeApiTest, NEW_Q, "fullName" | "employeeId", never>,
+      {}
+    >;
+    readonly $clone: <NEW_PROPS extends PropertyKeys<EmployeeApiTest>>(
+      updatedObject?:
+        | Osdk.Instance<EmployeeApiTest, any, NEW_PROPS, {}>
+        | { [K in NEW_PROPS]?: EmployeeApiTest.Props[K] | undefined }
+        | undefined,
+    ) => Osdk.Instance<
+      EmployeeApiTest,
+      never,
+      "fullName" | "employeeId" | NEW_PROPS,
+      {}
+    >;
+    readonly $__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata: {
+      ObjectMetadata: ObjectMetadata;
+    };
+    readonly $__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue: <
+      PropertyApiName extends PropertyKeys<EmployeeApiTest>,
+    >(
+      propertyApiName: PropertyApiName,
+      options?: { locale?: string; timezoneId?: string },
+    ) => string | undefined;
+  };
+
+/** An instance with derived properties added via withProperties. */
+type probe_with_rdps =
+  & ObjectIdentifiers<EmployeeApiTest>
+  & {
+    readonly $objectSpecifier: ObjectSpecifier<EmployeeApiTest>;
+    readonly $objectType: string;
+    readonly $title: string | undefined;
+  }
+  & Pick<EmployeeApiTest.Props, "employeeId">
+  & { mom: number; dad: string | undefined }
+  & {
+    readonly $link: {
+      readonly lead: SingleLinkAccessor<EmployeeApiTest>;
+      readonly peeps: ObjectSet<EmployeeApiTest, never>;
+    };
+    readonly $as: <NEW_Q extends InterfaceDefinition>(
+      type: string | NEW_Q,
+    ) => Osdk.Instance<
+      NEW_Q,
+      never,
+      ConvertProps<EmployeeApiTest, NEW_Q, "employeeId", never>,
+      {}
+    >;
+    readonly $clone: <NEW_PROPS extends PropertyKeys<EmployeeApiTest>>(
+      updatedObject?:
+        | Osdk.Instance<EmployeeApiTest, any, NEW_PROPS, {}>
+        | { [K in NEW_PROPS]?: EmployeeApiTest.Props[K] | undefined }
+        | undefined,
+    ) => Osdk.Instance<EmployeeApiTest, never, "employeeId" | NEW_PROPS, {}>;
+    readonly $__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata: {
+      ObjectMetadata: ObjectMetadata;
+    };
+    readonly $__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue: <
+      PropertyApiName extends PropertyKeys<EmployeeApiTest>,
+    >(
+      propertyApiName: PropertyApiName,
+      options?: { locale?: string; timezoneId?: string },
+    ) => string | undefined;
+  };
+
+/** An instance fetched with $includeRid: true — exposes $rid. */
+type probe_with_rid =
+  & ObjectIdentifiers<EmployeeApiTest>
+  & {
+    readonly $objectSpecifier: ObjectSpecifier<EmployeeApiTest>;
+    readonly $objectType: string;
+    readonly $title: string | undefined;
+  }
+  & Pick<EmployeeApiTest.Props, PropertyKeys<EmployeeApiTest>>
+  & {}
+  & {
+    readonly $link: {
+      readonly lead: SingleLinkAccessor<EmployeeApiTest>;
+      readonly peeps: ObjectSet<EmployeeApiTest, never>;
+    };
+    readonly $as: <NEW_Q extends InterfaceDefinition>(
+      type: string | NEW_Q,
+    ) => Osdk.Instance<
+      NEW_Q,
+      "$rid",
+      ConvertProps<
+        EmployeeApiTest,
+        NEW_Q,
+        PropertyKeys<EmployeeApiTest>,
+        "$rid"
+      >,
+      {}
+    >;
+    readonly $clone: <NEW_PROPS extends PropertyKeys<EmployeeApiTest>>(
+      updatedObject?:
+        | Osdk.Instance<EmployeeApiTest, any, NEW_PROPS, {}>
+        | { [K in NEW_PROPS]?: EmployeeApiTest.Props[K] | undefined }
+        | undefined,
+    ) => Osdk.Instance<
+      EmployeeApiTest,
+      "$rid",
+      PropertyKeys<EmployeeApiTest> | NEW_PROPS,
+      {}
+    >;
+    readonly $__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata: {
+      ObjectMetadata: ObjectMetadata;
+    };
+    readonly $__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue: <
+      PropertyApiName extends PropertyKeys<EmployeeApiTest>,
+    >(
+      propertyApiName: PropertyApiName,
+      options?: { locale?: string; timezoneId?: string },
+    ) => string | undefined;
+  }
+  & { readonly $rid: string };
