@@ -402,7 +402,7 @@ export const createClient: (
 
 /**
  * Creates a {@link Client} that scopes all of its requests to a Foundry transaction. Used by transactional
- * write flows (for example, {@link createWriteableClient} in `@osdk/functions`) to forward a `transactionId`
+ * write flows (for example, `createWriteableClient` in `@osdk/functions`) to forward a `transactionId`
  * on every request and to flush buffered edits when needed. Aside from the additional transaction parameters,
  * the remaining arguments behave exactly as in {@link createClient}.
  * @param transactionId - The transaction RID that scopes all requests issued by the returned client.
