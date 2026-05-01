@@ -556,40 +556,6 @@ describe.each([
           `Cannot clone interface with notImplementedFooSpt as property is not implemented by the underlying object type Employee`,
         );
       });
-      it("OT → interface cast with non-local implementations extracts derived property values", () => {
-        const employeeOsdkObject = createOsdkObject(
-          client[additionalContext],
-          {
-            ...EmployeeFetchedMetadata,
-            interfaceImplementations: {
-              FooInterface: {
-                fooSpt: {
-                  type: "reduced",
-                  implementation: {
-                    type: "localProperty",
-                    propertyApiName: "fullName",
-                  },
-                },
-              },
-            },
-          },
-          {
-            "$apiName": "Employee",
-            "$objectType": "Employee",
-            "$primaryKey": 50031,
-            "$title": "Jane Doe",
-            "employeeId": 50031,
-            "fullName": "Jane Doe",
-          },
-        );
-
-        const ifaceView = employeeOsdkObject.$as(fooInterfaceOsdkDef);
-        expect((ifaceView as any).fooSpt).toEqual("Jane Doe");
-
-        expect(() => ifaceView.$as("Employee")).toThrowError(
-          `property 'fooSpt' has a non-local implementation (reduced)`,
-        );
-      });
     });
   });
   describe("objectSpecifier", () => {

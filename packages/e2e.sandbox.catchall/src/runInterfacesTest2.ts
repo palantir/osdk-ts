@@ -193,6 +193,7 @@ export async function runInterfacesTest2(): Promise<void> {
     (await client(ReducerTestInterface).fetchPage()).data[0];
 
   console.log(
+    "Interface object with non local impl directly loaded: ",
     JSON.stringify(interfaceObjectWithNonLocalImplementations, null, 1),
   );
 
@@ -200,8 +201,24 @@ export async function runInterfacesTest2(): Promise<void> {
     // @ts-expect-error
     interfaceObjectWithNonLocalImplementations.$as(ReducerTest);
   } catch (e) {
-    console.log(e);
+    console.log("Correctly got error when casting to object: ", e);
   }
+
+  const objectForNonLocalInterface =
+    (await client(ReducerTest).fetchPage()).data[0];
+
+  console.log(
+    "Object loaded directly: ",
+    JSON.stringify(objectForNonLocalInterface, null, 1),
+  );
+  console.log(
+    "Object casted to interface works: ",
+    JSON.stringify(
+      objectForNonLocalInterface.$as(ReducerTestInterface),
+      null,
+      1,
+    ),
+  );
 }
 
 void runInterfacesTest2();

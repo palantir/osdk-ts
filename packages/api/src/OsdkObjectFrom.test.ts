@@ -858,7 +858,7 @@ describe("ExtractOptions", () => {
   });
 
   describe("$as from interface to OT", () => {
-    it("interface → OT: legacy (all localProperty implementations) is always allowed and yields the plain OT type", async () => {
+    it("all localProperty implementations is always allowed and yields the plain OT type", async () => {
       const ifaceObj = (await createMockObjectSet<FooInterfaceApiTest>()
         .fetchPage()).data[0];
 
@@ -873,27 +873,6 @@ describe("ExtractOptions", () => {
       // @ts-expect-error — ReducerInterface has structField / reduced
       // implementations on Employee.
       ifaceObj.$as({} as EmployeeApiTest);
-    });
-
-    it("OT → interface is rejected when object has modifier applied", async () => {
-      const otWithModifiers = (await createMockObjectSet<EmployeeApiTest>()
-        .fetchPage({
-          $select: ["salaryHistory"],
-          $applyModifiers: { salaryHistory: "applyReducers" },
-        })).data[0];
-
-      // @ts-expect-error — cannot cast to an interface while P has modifiers
-      otWithModifiers.$as({} as FooInterfaceApiTest);
-      // @ts-expect-error — same, with ReducerInterface
-      otWithModifiers.$as({} as ReducerInterfaceApiTest);
-    });
-
-    it("OT → interface is allowed when object has no modifier applied", async () => {
-      const otWithoutModifiers = (await createMockObjectSet<EmployeeApiTest>()
-        .fetchPage({ $select: ["fullName"] })).data[0];
-
-      // No modifiers in P → interface cast is allowed.
-      otWithoutModifiers.$as({} as FooInterfaceApiTest);
     });
   });
 });

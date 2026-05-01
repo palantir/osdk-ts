@@ -329,8 +329,6 @@ export type CompileTimeMetadata<T extends {
 // Warning: (ae-forgotten-export) The symbol "ValidToFrom" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "ValidOsdkPropParams" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "UnionIfTrue" needs to be exported by the entry point index.d.ts
-// Warning: (ae-forgotten-export) The symbol "IsNever" needs to be exported by the entry point index.d.ts
-// Warning: (ae-forgotten-export) The symbol "RemoveModifierSelectors" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "MapPropNamesToObjectType" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "MapPropNamesToInterface" needs to be exported by the entry point index.d.ts
 //
@@ -338,9 +336,9 @@ export type CompileTimeMetadata<T extends {
 export type ConvertProps<
 	FROM extends ObjectOrInterfaceDefinition,
 	TO extends ValidToFrom<FROM>,
-	P extends ValidOsdkPropParams<FROM> | string,
+	P extends ValidOsdkPropParams<FROM>,
 	OPTIONS extends never | "$rid" | "$allBaseProperties" | "$propertySecurities" = never
-> = TO extends FROM ? P : TO extends ObjectTypeDefinition ? (UnionIfTrue<IsNever<RemoveModifierSelectors<P>> extends true ? never : MapPropNamesToObjectType<FROM, TO, RemoveModifierSelectors<P> & ValidOsdkPropParams<FROM>, OPTIONS>, P extends "$rid" ? true : false, "$rid">) : TO extends InterfaceDefinition ? FROM extends ObjectTypeDefinition ? (UnionIfTrue<IsNever<RemoveModifierSelectors<P>> extends true ? never : MapPropNamesToInterface<FROM, TO, RemoveModifierSelectors<P> & ValidOsdkPropParams<FROM>>, P extends "$rid" ? true : false, "$rid">) : never : never;
+> = TO extends FROM ? P : TO extends ObjectTypeDefinition ? (UnionIfTrue<MapPropNamesToObjectType<FROM, TO, P, OPTIONS>, P extends "$rid" ? true : false, "$rid">) : TO extends InterfaceDefinition ? FROM extends ObjectTypeDefinition ? (UnionIfTrue<MapPropNamesToInterface<FROM, TO, P>, P extends "$rid" ? true : false, "$rid">) : never : never;
 
 // @public
 export interface DataValueClientToWire {
@@ -1401,6 +1399,7 @@ export type OrWhereClause<
     	$or: WhereClause<T, RDPs>[]
 };
 
+// Warning: (ae-forgotten-export) The symbol "IsNever" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "IsAny" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "ExtractPropsKeysFromOldPropsStyle" needs to be exported by the entry point index.d.ts
 //
@@ -2056,8 +2055,8 @@ export type WirePropertyTypes = BaseWirePropertyTypes | Record<string, BaseWireP
 // src/Definitions.ts:42:52 - (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
 // src/Definitions.ts:42:52 - (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
 // src/Definitions.ts:42:52 - (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
-// src/OsdkObjectFrom.ts:314:73 - (ae-forgotten-export) The symbol "OtHasNonLocalInterfaceImpl" needs to be exported by the entry point index.d.ts
-// src/OsdkObjectFrom.ts:374:49 - (ae-forgotten-export) The symbol "ObjectPropertySecurities" needs to be exported by the entry point index.d.ts
+// src/OsdkObjectFrom.ts:299:73 - (ae-forgotten-export) The symbol "OtHasNonLocalInterfaceImpl" needs to be exported by the entry point index.d.ts
+// src/OsdkObjectFrom.ts:347:49 - (ae-forgotten-export) The symbol "ObjectPropertySecurities" needs to be exported by the entry point index.d.ts
 // src/aggregate/AggregateOpts.ts:25:3 - (ae-forgotten-export) The symbol "UnorderedAggregationClause" needs to be exported by the entry point index.d.ts
 // src/aggregate/AggregateOpts.ts:25:3 - (ae-forgotten-export) The symbol "OrderedAggregationClause" needs to be exported by the entry point index.d.ts
 // src/aggregate/AggregationResultsWithGroups.ts:36:5 - (ae-forgotten-export) The symbol "MaybeNullable_2" needs to be exported by the entry point index.d.ts

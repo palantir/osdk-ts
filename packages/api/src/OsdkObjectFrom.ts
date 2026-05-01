@@ -131,8 +131,6 @@ export type MapPropNamesToInterface<
   TO
 >;
 
-type RemoveModifierSelectors<P> = P extends `${string}:${string}` ? never : P;
-
 /**
  * True iff the OT `TO` implements interface `FROM` with at least one
  * non-`localProperty` implementation.
@@ -165,7 +163,7 @@ type OtHasNonLocalInterfaceImpl<
 export type ConvertProps<
   FROM extends ObjectOrInterfaceDefinition,
   TO extends ValidToFrom<FROM>,
-  P extends ValidOsdkPropParams<FROM> | string,
+  P extends ValidOsdkPropParams<FROM>,
   OPTIONS extends
     | never
     | "$rid"
@@ -174,25 +172,14 @@ export type ConvertProps<
 > = TO extends FROM ? P
   : TO extends ObjectTypeDefinition ? (
       UnionIfTrue<
-        IsNever<RemoveModifierSelectors<P>> extends true ? never
-          : MapPropNamesToObjectType<
-            FROM,
-            TO,
-            RemoveModifierSelectors<P> & ValidOsdkPropParams<FROM>,
-            OPTIONS
-          >,
+        MapPropNamesToObjectType<FROM, TO, P, OPTIONS>,
         P extends "$rid" ? true : false,
         "$rid"
       >
     )
   : TO extends InterfaceDefinition ? FROM extends ObjectTypeDefinition ? (
         UnionIfTrue<
-          IsNever<RemoveModifierSelectors<P>> extends true ? never
-            : MapPropNamesToInterface<
-              FROM,
-              TO,
-              RemoveModifierSelectors<P> & ValidOsdkPropParams<FROM>
-            >,
+          MapPropNamesToInterface<FROM, TO, P>,
           P extends "$rid" ? true : false,
           "$rid"
         >
