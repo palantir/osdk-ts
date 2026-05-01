@@ -29,7 +29,7 @@ export interface Logger {
    * @example
    * ```ts
    * if (logger.isLevelEnabled("debug")) {
-   *   logger.debug("expensive payload", { payload: serialize(data) });
+   *   logger.debug({ payload: serialize(data) }, "expensive debug payload");
    * }
    * ```
    * @returns `true` if log calls at the given level will be emitted
@@ -56,7 +56,9 @@ export interface Logger {
 
 export namespace Logger {
   /**
-   * A log function for a single level (e.g., `info`, `debug`, `error`).
+   * A log line emitter. The `Logger` interface declares one of these per
+   * level (`trace`, `debug`, `info`, etc.); the level is determined by
+   * which method on `Logger` is invoked.
    *
    * Can be invoked either with a metadata object followed by an optional
    * message, or with a message string directly. Trailing arguments are

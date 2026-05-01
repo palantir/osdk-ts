@@ -54,7 +54,7 @@ export interface Client extends SharedClient, OldSharedClient {
   /**
    * Returns the operation surface for the given ontology definition. The shape of the
    * returned value is dispatched on what kind of definition is passed:
-   * - object type → an {@link ObjectSet} (or the generated subclass declared on the type)
+   * - object type → the object set type for that ontology object (typically a generated extension of {@link ObjectSet})
    * - interface → a {@link MinimalObjectSet} for the interface
    * - action → a callable with `applyAction` / `batchApplyAction`
    * - query → a callable with `executeFunction`

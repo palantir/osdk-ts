@@ -194,8 +194,8 @@ type Aggregatable<
    * Aggregates over the builder's object set to produce a derived property value.
    * @param aggregationSpecifier - Either `"$count"` or a `"<propertyName>:<aggregation>"` key
    *   (e.g., `"salary:max"`, `"salary:approximatePercentile"`, `"name:collectList"`)
-   * @param opts - Required for `collectList` / `collectSet` (`{ limit }`) and
-   *   `approximatePercentile` (`{ percentile }`); not accepted for other aggregations
+   * @param opts - For `collectList` / `collectSet` accepts `{ limit }`; for
+   *   `approximatePercentile` accepts `{ percentile }`. Not accepted for other aggregations.
    * @example
    * ```ts
    * client(Employee).withProperties({
