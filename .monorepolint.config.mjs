@@ -1045,9 +1045,8 @@ function standardPackageRules(shared, options) {
           "check-bundle": options.output.esm === "bundle"
             ? "monorepo.tool.check-bundle"
             : DELETE_SCRIPT_ENTRY,
-          lint: "eslint . && dprint check  --config $(find-up dprint.json)",
-          "fix-lint":
-            "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
+          lint: "eslint . && dprint check",
+          "fix-lint": "eslint . --fix && dprint fmt",
           transpile: DELETE_SCRIPT_ENTRY,
           transpileEsm: options.output.esm
             ? `monorepo.tool.transpile -f esm -m ${options.output.esm} -t node`
@@ -1195,7 +1194,7 @@ function standardPackageRules(shared, options) {
               },
             },
           });
-     
+
           `,
           "js",
         ),
