@@ -33,6 +33,26 @@ export interface AipAgentChatProps {
   model: LanguageModel;
 
   /**
+   * When provided, the chat renders an in-header model picker populated
+   * with these options. Selecting a different option fires
+   * {@link AipAgentChatProps.onModelChange}; the consumer is expected to
+   * update {@link AipAgentChatProps.model} in response.
+   *
+   * If omitted, no picker is rendered.
+   */
+  availableModels?: ReadonlyArray<LanguageModel>;
+
+  /**
+   * Fires when the user selects a different model from the in-header
+   * picker. Has no effect unless {@link AipAgentChatProps.availableModels}
+   * is provided. Consumers are expected to update
+   * {@link AipAgentChatProps.model} in response.
+   *
+   * @param model The model the user just selected.
+   */
+  onModelChange?: (model: LanguageModel) => void;
+
+  /**
    * System prompt prepended to every request.
    */
   system?: string;
