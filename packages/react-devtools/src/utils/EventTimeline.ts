@@ -28,7 +28,8 @@ export type MonitorEvent =
   | PropertyAccessEvent
   | LinkTraversalEvent
   | ObjectModifiedEvent
-  | MockHitEvent;
+  | MockHitEvent
+  | OsdkPauseBlockEvent;
 
 export interface RenderEvent {
   type: "RENDER";
@@ -94,6 +95,12 @@ export interface MockHitEvent {
   subscriptionId: string;
   timestamp: number;
   mockId?: string;
+}
+
+export interface OsdkPauseBlockEvent {
+  type: "OSDK_PAUSE_BLOCK";
+  pathname: string;
+  timestamp: number;
 }
 
 export interface ActionCausality {

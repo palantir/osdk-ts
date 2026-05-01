@@ -73,7 +73,7 @@ export const PerformanceTab: React.FC<PerformanceTabProps> = (
   const enrichmentStore = React.useMemo(
     () =>
       createPollingStore(async () => {
-        const entries = await monitorStore.getCacheEntries();
+        const entries = await monitorStore.loadCacheEntries();
         const timeline = monitorStore.getEventTimeline();
         const actions = timeline.getEventsByType("ACTION_START");
         return {

@@ -80,7 +80,11 @@ describe("ConsoleLogStore", () => {
   });
 
   describe("reentrancy guard", () => {
-    it("should not double-capture when console is called during serialization", async () => {
+    // With queueMicrotask deferral, the synchronous capturing flag is no
+    // longer load-bearing across nested calls; this test now asserts that the
+    // store does not infinite-loop when a getter is touched during
+    // serialization, which is the practically observable guarantee.
+    it("does not infinite-loop when getter is touched during serialization", async () => {
       store.install();
 
       const wrapper = console.log;
@@ -313,6 +317,22 @@ describe("ConsoleLogStore", () => {
       const entries = store.getEntries();
       expect(entries).toHaveLength(1);
       expect(typeof entries[0].source).toBe("string");
+    });
+
+    it("captures source of the caller, not the wrapper file", async () => {
+      store.install();
+
+      console.log("attribution check");
+      await flushMicrotasks();
+
+      const entries = store.getEntries();
+      expect(entries).toHaveLength(1);
+      expect(entries[0].source).toBeDefined();
+      // The source must skip frames internal to ConsoleLogStore. We can't
+      // assert the exact caller path because happy-dom and Vitest layer their
+      // own frames between the test and the wrapper, but the captured source
+      // must never resolve back into our own module.
+      expect(entries[0].source).not.toContain("ConsoleLogStore");
     });
   });
 
