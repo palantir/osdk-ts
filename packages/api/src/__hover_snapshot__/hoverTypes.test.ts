@@ -60,3 +60,7 @@ describe("ObjectSet hover types", () => {
 describe("Osdk.Instance hover types", () => {
   snapshotProbes("osdkInstanceProbes.ts");
 });
+
+describe("AggregationsResults hover types", () => {
+  snapshotProbes("aggregationsResultsProbes.ts");
+});

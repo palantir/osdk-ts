@@ -1,5 +1,65 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
+exports[`AggregationsResults hover types > probe_count_only 1`] = `
+"// The result of objectSet.aggregate({ $select: { $count: "unordered" } }).
+{ $count: number }"
+`;
+
+exports[`AggregationsResults hover types > probe_groupBy_fixedWidth 1`] = `
+"// GroupBy a numeric property by $fixedWidth — group is the bucket's numeric value.
+Array<
+  & { $group: { employeeId: number } }
+  & AggregationResultsWithoutGroups<EmployeeApiTest, { $count: "unordered" }>
+>"
+`;
+
+exports[`AggregationsResults hover types > probe_groupBy_includeNullValue 1`] = `
+"// GroupBy with $includeNullValue: true — the group key becomes nullable.
+Array<
+  & { $group: { class: string | null } }
+  & AggregationResultsWithoutGroups<EmployeeApiTest, { $count: "unordered" }>
+>"
+`;
+
+exports[`AggregationsResults hover types > probe_groupBy_ranges 1`] = `
+"// GroupBy a numeric property by $ranges — group becomes a startValue/endValue pair.
+Array<
+  {
+    $group: {
+      employeeId: { startValue: 0 | 100 | 200; endValue: 0 | 100 | 200 };
+    };
+  } & AggregationResultsWithoutGroups<EmployeeApiTest, { $count: "unordered" }>
+>"
+`;
+
+exports[`AggregationsResults hover types > probe_mixed_props 1`] = `
+"// Aggregation across multiple properties, including $count.
+{
+  $count: number;
+  fullName: { approximateDistinct: number };
+  employeeId: { sum: number | undefined };
+}"
+`;
+
+exports[`AggregationsResults hover types > probe_single_prop_multi_metrics 1`] = `
+"// Aggregation across one property with multiple metrics.
+{
+  employeeId: {
+    avg: number | undefined;
+    min: number | undefined;
+    max: number | undefined;
+  };
+}"
+`;
+
+exports[`AggregationsResults hover types > probe_with_groupBy 1`] = `
+"// Aggregation grouped by a single property — result becomes an array of $group plus aggregations.
+Array<
+  & { $group: { class: string } }
+  & AggregationResultsWithoutGroups<EmployeeApiTest, { $count: "unordered" }>
+>"
+`;
+
 exports[`ObjectSet hover types > probe_aggregate_param 1`] = `
 "// The req argument of objectSet.aggregate(...).
 & AggregateOpts<
