@@ -129,14 +129,7 @@ function renderFieldComponent<S extends Record<string, unknown>>(
       );
     case "OBJECT_SELECT":
       return (
-        <ObjectSelectField
-          id={fieldDefinition.fieldKey}
-          value={narrowToOsdkObject(value)}
-          onChange={onChange}
-          placeholder={fieldDefinition.placeholder}
-          error={error}
-          {...fieldDefinition.fieldComponentProps}
-        />
+        <ObjectSelectWrapper fieldDefinition={fieldDefinition} {...props} />
       );
     case "OBJECT_SET":
       return <ObjectSetWrapper fieldDefinition={fieldDefinition} {...props} />;
@@ -345,6 +338,24 @@ const CustomFieldWrapper = typedReactMemo(function CustomFieldWrapperFn<
       id={fieldDefinition.fieldKey}
       value={value as S[FieldPath<S>] | null}
       onChange={onChange}
+      error={error}
+      {...fieldDefinition.fieldComponentProps}
+    />
+  );
+});
+
+const ObjectSelectWrapper = memo(function ObjectSelectWrapperFn({
+  fieldDefinition,
+  value,
+  onChange,
+  error,
+}: FieldWrapperProps<"OBJECT_SELECT">) {
+  return (
+    <ObjectSelectField
+      id={fieldDefinition.fieldKey}
+      value={narrowToOsdkObject(value)}
+      onChange={onChange}
+      placeholder={fieldDefinition.placeholder}
       error={error}
       {...fieldDefinition.fieldComponentProps}
     />

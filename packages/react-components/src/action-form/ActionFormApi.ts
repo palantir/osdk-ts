@@ -20,7 +20,6 @@ import type {
   ActionValidationResponse,
 } from "@osdk/api";
 import type { ActionValidationError } from "@osdk/client";
-import type { FieldPath } from "react-hook-form";
 import type {
   ActionParameters,
   FieldKey,
@@ -132,14 +131,14 @@ export type BaseFormProps<
   & (
     | {
       formState: S;
-      onFieldValueChange: <K extends FieldPath<S>>(
+      onFieldValueChange: <K extends keyof S & string>(
         fieldKey: K,
         value: S[K],
       ) => void;
     }
     | {
       formState?: undefined;
-      onFieldValueChange?: <K extends FieldPath<S>>(
+      onFieldValueChange?: <K extends keyof S & string>(
         fieldKey: K,
         value: S[K],
       ) => void;
