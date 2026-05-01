@@ -127,33 +127,20 @@ export const createClient: (baseUrl: string, ontologyRid: string | Promise<strin
 // @public
 export function createObjectSpecifierFromPrimaryKey<Q extends ObjectTypeDefinition>(objectDef: Q, primaryKey: PrimaryKeyType<Q>): ObjectSpecifier<Q>;
 
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-//
 // @public
 export function createPlatformClient(baseUrl: string, tokenProvider: () => Promise<string>, options?: undefined, fetchFn?: typeof globalThis.fetch): PlatformClient;
 
 export { DerivedProperty }
 
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-//
 // @public
 export const extractDate: (dateTime: string) => string;
 
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-//
 // @public
 export const extractDateInLocalTime: (date: Date) => string;
 
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-//
 // @public
 export const extractDateInUTC: (date: Date) => string;
 
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-//
 // @public
 export function extractPrimaryKeyFromObjectSpecifier(ObjectSpecifier: ObjectSpecifier<any>): string;
 
