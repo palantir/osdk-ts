@@ -50,7 +50,7 @@ export interface IDataType {
 }
 
 interface IDiscoveredFunction {
-  locator: { type: string; typescriptOsdk?: { functionName: string } };
+  locator: { type: string; typescript?: { functionName: string } };
   inputs: Array<{ name: string; dataType: IDataType }>;
   output: { single: { dataType: IDataType } };
   customTypes: Record<string, unknown>;
@@ -423,22 +423,21 @@ export class OntologyIrToFullMetadataConverter {
     }
 
     const tsFunctions = functions.discoveredFunctions.filter(
-      (func: IDiscoveredFunction) => func.locator.type === "typescriptOsdk",
+      (func: IDiscoveredFunction) => func.locator.type === "typescript",
     );
 
     if (tsFunctions.length === 0) {
       consola.warn(
         `No TypeScript OSDK functions discovered in ${functionsDir}. `
           + `Found ${functions.discoveredFunctions.length} total function(s) `
-          + `but none with locator type "typescriptOsdk".`,
+          + `but none with locator type "typescript".`,
       );
     } else {
       consola.info(
         `Discovered ${tsFunctions.length} TypeScript function(s): ${
           tsFunctions
             .map(
-              (f: IDiscoveredFunction) =>
-                f.locator.typescriptOsdk!.functionName,
+              (f: IDiscoveredFunction) => f.locator.typescript!.functionName,
             )
             .join(", ")
         }`,
@@ -450,7 +449,7 @@ export class OntologyIrToFullMetadataConverter {
     }
 
     return tsFunctions.map((func: IDiscoveredFunction) => {
-      const functionName = func.locator.typescriptOsdk!.functionName;
+      const functionName = func.locator.typescript!.functionName;
       return {
         apiName: functionName,
         rid: `ri.function-registry.main.function.${functionName}`,
