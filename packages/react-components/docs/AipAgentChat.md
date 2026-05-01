@@ -143,8 +143,8 @@ loops, custom transports), call `useChat` from `@osdk/react/experimental/aip`
 yourself and feed the result into your own UI.
 
 ```tsx
-import { useChat } from "@osdk/react/experimental/aip";
 import { foundryModel } from "@osdk/aip-core";
+import { useChat } from "@osdk/react/experimental/aip";
 
 function MyChat() {
   const lmsModel = useMemo(

@@ -69,7 +69,8 @@ export interface AipAgentChatProps {
    * {@link AipAgentChatProps.model} is also provided (controlled mode
    * wins).
    *
-   * @default "gpt-4o"
+   * @default the first entry of {@link AipAgentChatProps.availableModels}
+   * when provided, otherwise `"gpt-4o"`.
    */
   defaultModel?: string;
 
