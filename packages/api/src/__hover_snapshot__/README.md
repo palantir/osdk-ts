@@ -19,11 +19,16 @@ declare const probe_where_clause_param: Parameters<
 >[0];
 ```
 
-`renderHovers.test.ts` loads `probes.ts` via the TypeScript compiler API,
-calls `checker.typeToString` on each `probe_*` declaration, formats the
-output through `dprint` for diff readability, and snapshots one entry per
-probe. Each snapshot value is prefixed with the JSDoc as a leading
+`renderHovers.test.ts` is the wiring: it points `renderHoverProbes` (in
+`hoverProbes.ts`) at `probes.ts`, then `it.each`'s the result through
+`expect(...).toMatchSnapshot()`. The renderer is the reusable piece —
+load probes via the TypeScript compiler API, render each declaration's
+type with `checker.typeToString`, and pretty-print through `dprint`.
+Each snapshot value is prefixed with the probe's JSDoc as a leading
 `// …` comment so the rendered type is self-documenting.
+
+Future hover-snapshot tests (for surfaces other than `ObjectSet`) can
+reuse `hoverProbes.ts` by passing in their own probes file path.
 
 ## How to add a probe
 
