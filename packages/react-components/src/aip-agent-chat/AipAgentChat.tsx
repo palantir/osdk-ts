@@ -14,16 +14,10 @@
  * limitations under the License.
  */
 
-import {
-  foundryModel,
-  generateMessageId,
-  getUIMessageText,
-  streamText,
-  type UIMessage,
-} from "@osdk/aip-core";
+import { foundryModel } from "@osdk/aip-core";
+import { useChat } from "@osdk/react/experimental/aip";
 import * as React from "react";
 import type { AipAgentChatProps } from "./AipAgentChatApi.js";
-import type { BaseAipAgentChatSendContext } from "./BaseAipAgentChat.js";
 import { BaseAipAgentChat } from "./BaseAipAgentChat.js";
 import { AipAgentChatModelPicker } from "./components/AipAgentChatModelPicker.js";
 
@@ -33,9 +27,9 @@ const FALLBACK_MODEL_API_NAME = "gpt-4o";
 
 /**
  * OSDK-aware chat surface backed by Foundry's Language Model Service.
- * Constructs the LMS-backed model internally and runs `streamText`
- * against it, so consumers never need to import `streamText` or
- * `foundryModel` themselves.
+ * Constructs the LMS-backed model internally and uses `useChat` to
+ * manage conversation state, so consumers never need to import `useChat`,
+ * `streamText`, or `foundryModel` themselves.
  */
 export function AipAgentChat({
   client,
@@ -77,59 +71,31 @@ export function AipAgentChat({
     [isControlled, onModelChange],
   );
 
-  const lmsModel = React.useMemo(
+  const model = React.useMemo(
     () => foundryModel({ client, model: activeModel }),
     [client, activeModel],
   );
 
+  const {
+    messages,
+    status,
+    error,
+    sendMessage,
+    stop,
+    clearError,
+  } = useChat({
+    model,
+    system,
+    messages: initialMessages,
+    onError,
+    onFinish,
+  });
+
   const handleSendMessage = React.useCallback(
-    async (
-      text: string,
-      ctx: BaseAipAgentChatSendContext,
-    ): Promise<UIMessage> => {
-      const userMessage: UIMessage = {
-        id: generateMessageId(),
-        role: "user",
-        parts: [{ type: "text", text }],
-      };
-      const conversation = [...ctx.history, userMessage];
-
-      const stream = streamText({
-        model: lmsModel,
-        messages: uiMessagesToModelMessages(conversation),
-        system,
-        abortSignal: ctx.signal,
-      });
-
-      let accumulated = "";
-      const reader = stream.textStream.getReader();
-      try {
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) {
-            break;
-          }
-          accumulated += value;
-          ctx.setStreamingText(accumulated);
-        }
-      } finally {
-        reader.releaseLock();
-      }
-
-      const assistantMessage: UIMessage = {
-        id: generateMessageId(),
-        role: "assistant",
-        parts: [{ type: "text", text: accumulated }],
-      };
-
-      onFinish?.({
-        message: assistantMessage,
-        messages: [...conversation, assistantMessage],
-      });
-
-      return assistantMessage;
+    (text: string) => {
+      return sendMessage({ text });
     },
-    [lmsModel, system, onFinish],
+    [sendMessage],
   );
 
   const composerFooter = availableModels != null && availableModels.length > 0
@@ -147,34 +113,15 @@ export function AipAgentChat({
       className={className}
       composerFooter={composerFooter}
       enableAutoScroll={enableAutoScroll}
-      initialMessages={initialMessages}
-      onError={onError}
+      messages={messages}
+      status={status}
+      error={error}
+      onClearError={clearError}
       onSendMessage={handleSendMessage}
+      onStop={stop}
       placeholder={placeholder}
       renderEmptyState={renderEmptyState}
       renderMessage={renderMessage}
     />
   );
-}
-
-/**
- * Convert UI messages (the conversation shape rendered in the chat)
- * into the `ModelMessage[]` shape `streamText` accepts. v0: text-only.
- * Mirrors `uiMessagesToModelMessages` in `@osdk/aip-core/internal`,
- * which is not part of the public surface.
- */
-function uiMessagesToModelMessages(
-  ui: ReadonlyArray<UIMessage>,
-): Array<{ role: "user" | "assistant" | "system"; content: string }> {
-  const out: Array<
-    { role: "user" | "assistant" | "system"; content: string }
-  > = [];
-  for (const m of ui) {
-    const text = getUIMessageText(m);
-    if (text.length === 0) {
-      continue;
-    }
-    out.push({ role: m.role, content: text });
-  }
-  return out;
 }

@@ -21,11 +21,7 @@ export { AipAgentChat } from "../../aip-agent-chat/AipAgentChat.js";
 export type { AipAgentChatProps } from "../../aip-agent-chat/AipAgentChatApi.js";
 
 export { BaseAipAgentChat } from "../../aip-agent-chat/BaseAipAgentChat.js";
-export type {
-  BaseAipAgentChatProps,
-  BaseAipAgentChatSendContext,
-  BaseAipAgentChatStatus,
-} from "../../aip-agent-chat/BaseAipAgentChat.js";
+export type { BaseAipAgentChatProps } from "../../aip-agent-chat/BaseAipAgentChat.js";
 
 // Re-exported from @osdk/aip-core so consumers can write a fully-typed
 // `renderMessage` / `onFinish` / `initialMessages` without reaching into

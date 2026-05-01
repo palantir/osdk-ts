@@ -15,13 +15,7 @@
  */
 
 import { getUIMessageText, type UIMessage } from "@osdk/aip-core";
-import {
-  act,
-  cleanup,
-  fireEvent,
-  render,
-  screen,
-} from "@testing-library/react";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import * as React from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { BaseAipAgentChat } from "../BaseAipAgentChat.js";
@@ -37,31 +31,23 @@ function makeMessage(
   };
 }
 
-function defer<T>(): {
-  promise: Promise<T>;
-  resolve: (v: T) => void;
-  reject: (e: Error) => void;
-} {
-  let resolve!: (v: T) => void;
-  let reject!: (e: Error) => void;
-  const promise = new Promise<T>((res, rej) => {
-    resolve = res;
-    reject = rej;
-  });
-  return { promise, resolve, reject };
-}
-
-const NOOP_SEND: (text: string) => Promise<UIMessage> = async (text) =>
-  makeMessage("assistant", `echo: ${text}`);
-
 describe("BaseAipAgentChat", () => {
   afterEach(() => {
     cleanup();
     vi.clearAllMocks();
   });
 
-  it("renders the default empty state when there are no messages and no in-flight send", () => {
-    render(<BaseAipAgentChat onSendMessage={NOOP_SEND} />);
+  it("renders the default empty state when there are no messages", () => {
+    render(
+      <BaseAipAgentChat
+        messages={[]}
+        status="ready"
+        error={undefined}
+        onSendMessage={vi.fn()}
+        onStop={vi.fn()}
+        onClearError={vi.fn()}
+      />,
+    );
 
     expect(screen.getByText("Start a conversation")).toBeDefined();
     expect(
@@ -69,14 +55,18 @@ describe("BaseAipAgentChat", () => {
     ).toBeDefined();
   });
 
-  it("renders initialMessages immediately on mount", () => {
+  it("renders messages passed as props", () => {
     const userMsg = makeMessage("user", "Hello there");
     const assistantMsg = makeMessage("assistant", "Hi back!");
 
     render(
       <BaseAipAgentChat
-        initialMessages={[userMsg, assistantMsg]}
-        onSendMessage={NOOP_SEND}
+        messages={[userMsg, assistantMsg]}
+        status="ready"
+        error={undefined}
+        onSendMessage={vi.fn()}
+        onStop={vi.fn()}
+        onClearError={vi.fn()}
       />,
     );
 
@@ -90,21 +80,53 @@ describe("BaseAipAgentChat", () => {
   });
 
   it("disables the Send button when the textarea is empty", () => {
-    render(<BaseAipAgentChat onSendMessage={NOOP_SEND} />);
+    render(
+      <BaseAipAgentChat
+        messages={[]}
+        status="ready"
+        error={undefined}
+        onSendMessage={vi.fn()}
+        onStop={vi.fn()}
+        onClearError={vi.fn()}
+      />,
+    );
 
     const sendButton = screen.getByRole("button", { name: /send/i });
     expect((sendButton as HTMLButtonElement).disabled).toBe(true);
   });
 
-  it("appends a user bubble, fires onMessageSent, and clears the textarea on Send click", async () => {
-    const deferred = defer<UIMessage>();
-    const onSendMessage = vi.fn(async (_text: string) => deferred.promise);
-    const onMessageSent = vi.fn();
+  it("enables Send button when textarea has text", () => {
+    render(
+      <BaseAipAgentChat
+        messages={[]}
+        status="ready"
+        error={undefined}
+        onSendMessage={vi.fn()}
+        onStop={vi.fn()}
+        onClearError={vi.fn()}
+      />,
+    );
+
+    const textarea = screen.getByLabelText(
+      "Message input",
+    ) as HTMLTextAreaElement;
+    fireEvent.change(textarea, { target: { value: "hello" } });
+
+    const sendButton = screen.getByRole("button", { name: /send/i });
+    expect((sendButton as HTMLButtonElement).disabled).toBe(false);
+  });
+
+  it("calls onSendMessage when Send button is clicked", async () => {
+    const onSendMessage = vi.fn(() => Promise.resolve());
 
     render(
       <BaseAipAgentChat
-        onMessageSent={onMessageSent}
+        messages={[]}
+        status="ready"
+        error={undefined}
         onSendMessage={onSendMessage}
+        onStop={vi.fn()}
+        onClearError={vi.fn()}
       />,
     );
 
@@ -112,306 +134,81 @@ describe("BaseAipAgentChat", () => {
       "Message input",
     ) as HTMLTextAreaElement;
     fireEvent.change(textarea, { target: { value: "hello world" } });
+    fireEvent.click(screen.getByRole("button", { name: /send/i }));
 
-    const sendButton = screen.getByRole("button", { name: /send/i });
-    expect((sendButton as HTMLButtonElement).disabled).toBe(false);
-
-    fireEvent.click(sendButton);
-
-    expect(onSendMessage).toHaveBeenCalledTimes(1);
-    expect(onSendMessage.mock.calls[0]![0]).toBe("hello world");
-    expect(textarea.value).toBe("");
-
-    const userGroup = screen.getByLabelText("User message");
-    expect(userGroup.textContent).toContain("hello world");
-
-    expect(onMessageSent).toHaveBeenCalledTimes(1);
-    const sentMessage = onMessageSent.mock.calls[0]![0] as UIMessage;
-    expect(sentMessage.role).toBe("user");
-    expect(getUIMessageText(sentMessage)).toBe("hello world");
-
-    // Resolve to settle the deferred and avoid open promise leaks.
-    await act(async () => {
-      deferred.resolve(makeMessage("assistant", "ok"));
-      await deferred.promise;
-    });
+    expect(onSendMessage).toHaveBeenCalledWith("hello world");
   });
 
-  it("fires the same flow when Enter is pressed without Shift", async () => {
-    const deferred = defer<UIMessage>();
-    const onSendMessage = vi.fn(async (_text: string) => deferred.promise);
-    const onMessageSent = vi.fn();
-
+  it("shows Stop button when status is submitted", () => {
     render(
       <BaseAipAgentChat
-        onMessageSent={onMessageSent}
-        onSendMessage={onSendMessage}
+        messages={[]}
+        status="submitted"
+        error={undefined}
+        onSendMessage={vi.fn()}
+        onStop={vi.fn()}
+        onClearError={vi.fn()}
       />,
     );
 
-    const textarea = screen.getByLabelText(
-      "Message input",
-    ) as HTMLTextAreaElement;
-    fireEvent.change(textarea, { target: { value: "ping" } });
-
-    const enterEvent = new KeyboardEvent("keydown", {
-      key: "Enter",
-      shiftKey: false,
-      bubbles: true,
-      cancelable: true,
-    });
-    let dispatched = true;
-    await act(async () => {
-      dispatched = textarea.dispatchEvent(enterEvent);
-    });
-
-    // dispatchEvent returns false when preventDefault was called.
-    expect(dispatched).toBe(false);
-    expect(enterEvent.defaultPrevented).toBe(true);
-    expect(onSendMessage).toHaveBeenCalledTimes(1);
-    expect(onSendMessage.mock.calls[0]![0]).toBe("ping");
-    expect(textarea.value).toBe("");
-
-    expect(onMessageSent).toHaveBeenCalledTimes(1);
-    expect(getUIMessageText(onMessageSent.mock.calls[0]![0] as UIMessage))
-      .toBe("ping");
-
-    await act(async () => {
-      deferred.resolve(makeMessage("assistant", "pong"));
-      await deferred.promise;
-    });
-  });
-
-  it("does not fire onSendMessage and does not prevent default on Shift+Enter", () => {
-    const onSendMessage = vi.fn(async (_text: string) =>
-      makeMessage("assistant", "x")
-    );
-
-    render(<BaseAipAgentChat onSendMessage={onSendMessage} />);
-
-    const textarea = screen.getByLabelText(
-      "Message input",
-    ) as HTMLTextAreaElement;
-    fireEvent.change(textarea, { target: { value: "line one" } });
-
-    const shiftEnterEvent = new KeyboardEvent("keydown", {
-      key: "Enter",
-      shiftKey: true,
-      bubbles: true,
-      cancelable: true,
-    });
-    const dispatched = textarea.dispatchEvent(shiftEnterEvent);
-
-    expect(dispatched).toBe(true);
-    expect(shiftEnterEvent.defaultPrevented).toBe(false);
-    expect(onSendMessage).not.toHaveBeenCalled();
-    // The default browser behavior for Shift+Enter on a textarea inserts a
-    // newline. dispatchEvent in jsdom does not simulate that default action,
-    // so we verify the contract by checking the handler did not block the
-    // default — meaning the browser would have inserted a newline.
-    expect(textarea.value).toBe("line one");
-  });
-
-  it("swaps Send for Stop while the send is in flight; clicking Stop aborts and returns to ready", async () => {
-    const deferred = defer<UIMessage>();
-    let capturedSignal: AbortSignal | undefined;
-    const onSendMessage = vi.fn(async (_text: string, ctx) => {
-      capturedSignal = ctx.signal;
-      return deferred.promise;
-    });
-
-    render(<BaseAipAgentChat onSendMessage={onSendMessage} />);
-
-    const textarea = screen.getByLabelText(
-      "Message input",
-    ) as HTMLTextAreaElement;
-    fireEvent.change(textarea, { target: { value: "hi" } });
-    fireEvent.click(screen.getByRole("button", { name: /send/i }));
-
-    // While in-flight, Send is replaced by Stop.
     expect(screen.queryByRole("button", { name: /send/i })).toBeNull();
-    const stopButton = screen.getByRole("button", { name: /stop/i });
-
-    fireEvent.click(stopButton);
-
-    expect(capturedSignal).toBeDefined();
-    expect(capturedSignal!.aborted).toBe(true);
-
-    // Resolve the deferred via rejection (the signal is aborted, so the
-    // component treats the rejection as a clean cancel and returns to ready).
-    await act(async () => {
-      deferred.reject(new Error("aborted"));
-      // Allow the awaited rejection to be processed by the component.
-      await Promise.resolve();
-      await Promise.resolve();
-    });
-
-    // Stop is gone; Send is back; no error banner.
-    expect(screen.queryByRole("alert")).toBeNull();
-    expect(screen.queryByRole("button", { name: /stop/i })).toBeNull();
-    expect(screen.getByRole("button", { name: /send/i })).toBeDefined();
+    expect(screen.getByRole("button", { name: /stop/i })).toBeDefined();
   });
 
-  it("renders the resolved assistant message and fires onResponseReceived once", async () => {
-    const deferred = defer<UIMessage>();
-    const onSendMessage = vi.fn(async (_text: string) => deferred.promise);
-    const onResponseReceived = vi.fn();
+  it("calls onStop when Stop button is clicked", () => {
+    const onStop = vi.fn();
 
     render(
       <BaseAipAgentChat
-        onResponseReceived={onResponseReceived}
-        onSendMessage={onSendMessage}
+        messages={[]}
+        status="streaming"
+        error={undefined}
+        onSendMessage={vi.fn()}
+        onStop={onStop}
+        onClearError={vi.fn()}
       />,
     );
 
-    fireEvent.change(screen.getByLabelText("Message input"), {
-      target: { value: "what's up" },
-    });
-    fireEvent.click(screen.getByRole("button", { name: /send/i }));
+    fireEvent.click(screen.getByRole("button", { name: /stop/i }));
 
-    const finalAssistant = makeMessage("assistant", "all good");
-    await act(async () => {
-      deferred.resolve(finalAssistant);
-      await deferred.promise;
-    });
-
-    const assistantBubbles = screen.getAllByLabelText("Assistant message");
-    const lastBubble = assistantBubbles[assistantBubbles.length - 1]!;
-    expect(lastBubble.textContent).toContain(getUIMessageText(finalAssistant));
-
-    expect(onResponseReceived).toHaveBeenCalledTimes(1);
-    expect(onResponseReceived.mock.calls[0]![0]).toBe(finalAssistant);
+    expect(onStop).toHaveBeenCalled();
   });
 
-  it("renders a transient assistant bubble while setStreamingText is called", async () => {
-    const deferred = defer<UIMessage>();
-    let captureSet: ((text: string) => void) | undefined;
-    const onSendMessage = vi.fn(async (_text: string, ctx) => {
-      captureSet = ctx.setStreamingText;
-      return deferred.promise;
-    });
-
-    render(<BaseAipAgentChat onSendMessage={onSendMessage} />);
-
-    fireEvent.change(screen.getByLabelText("Message input"), {
-      target: { value: "stream me" },
-    });
-    fireEvent.click(screen.getByRole("button", { name: /send/i }));
-
-    expect(captureSet).toBeDefined();
-    await act(async () => {
-      captureSet!("partial");
-    });
-
-    const assistantBubbles = screen.getAllByLabelText("Assistant message");
-    const lastBubble = assistantBubbles[assistantBubbles.length - 1]!;
-    expect(lastBubble.textContent).toContain("partial");
-
-    // Settle the deferred so we leave a clean state.
-    await act(async () => {
-      deferred.resolve(makeMessage("assistant", "final"));
-      await deferred.promise;
-    });
-  });
-
-  it("renders the error banner and fires onError when onSendMessage rejects", async () => {
-    const deferred = defer<UIMessage>();
-    const onSendMessage = vi.fn(async (_text: string) => deferred.promise);
-    const onError = vi.fn();
+  it("renders error banner when error is present", () => {
+    const error = new Error("Something went wrong");
 
     render(
       <BaseAipAgentChat
-        onError={onError}
-        onSendMessage={onSendMessage}
+        messages={[]}
+        status="error"
+        error={error}
+        onSendMessage={vi.fn()}
+        onStop={vi.fn()}
+        onClearError={vi.fn()}
       />,
     );
-
-    fireEvent.change(screen.getByLabelText("Message input"), {
-      target: { value: "boom" },
-    });
-    fireEvent.click(screen.getByRole("button", { name: /send/i }));
-
-    const failure = new Error("Something went wrong");
-    await act(async () => {
-      deferred.reject(failure);
-      await Promise.resolve();
-      await Promise.resolve();
-    });
 
     const banner = screen.getByRole("alert");
     expect(banner.textContent).toContain("Something went wrong");
-
-    expect(onError).toHaveBeenCalledTimes(1);
-    expect(onError.mock.calls[0]![0]).toBe(failure);
   });
 
-  it("clears the error banner and returns to ready when Dismiss is clicked", async () => {
-    const deferred = defer<UIMessage>();
-    const onSendMessage = vi.fn(async (_text: string) => deferred.promise);
+  it("calls onClearError when Dismiss is clicked", () => {
+    const onClearError = vi.fn();
 
-    render(<BaseAipAgentChat onSendMessage={onSendMessage} />);
-
-    fireEvent.change(screen.getByLabelText("Message input"), {
-      target: { value: "boom" },
-    });
-    fireEvent.click(screen.getByRole("button", { name: /send/i }));
-
-    await act(async () => {
-      deferred.reject(new Error("Something went wrong"));
-      await Promise.resolve();
-      await Promise.resolve();
-    });
-
-    expect(screen.getByRole("alert")).toBeDefined();
+    render(
+      <BaseAipAgentChat
+        messages={[]}
+        status="error"
+        error={new Error("Something went wrong")}
+        onSendMessage={vi.fn()}
+        onStop={vi.fn()}
+        onClearError={onClearError}
+      />,
+    );
 
     fireEvent.click(screen.getByRole("button", { name: /dismiss/i }));
 
-    expect(screen.queryByRole("alert")).toBeNull();
-    expect(screen.getByRole("button", { name: /send/i })).toBeDefined();
-  });
-
-  it("re-sends the failed message when Retry is clicked", async () => {
-    const firstAttempt = defer<UIMessage>();
-    const secondAttempt = defer<UIMessage>();
-    let callCount = 0;
-    const onSendMessage = vi.fn(async (_text: string) => {
-      callCount += 1;
-      return callCount === 1 ? firstAttempt.promise : secondAttempt.promise;
-    });
-
-    render(<BaseAipAgentChat onSendMessage={onSendMessage} />);
-
-    fireEvent.change(screen.getByLabelText("Message input"), {
-      target: { value: "boom" },
-    });
-    fireEvent.click(screen.getByRole("button", { name: /send/i }));
-
-    await act(async () => {
-      firstAttempt.reject(new Error("first failure"));
-      await Promise.resolve();
-      await Promise.resolve();
-    });
-
-    expect(screen.getByRole("alert").textContent).toContain("first failure");
-    expect(onSendMessage).toHaveBeenCalledTimes(1);
-    expect(screen.getAllByLabelText("User message").length).toBe(1);
-
-    await act(async () => {
-      fireEvent.click(screen.getByRole("button", { name: /retry/i }));
-    });
-
-    // Retry pops the failed user bubble and re-sends; should still be one
-    // user bubble in the conversation, not two.
-    expect(screen.getAllByLabelText("User message").length).toBe(1);
-    expect(onSendMessage).toHaveBeenCalledTimes(2);
-    expect(onSendMessage.mock.calls[1]![0]).toBe("boom");
-    expect(screen.queryByRole("alert")).toBeNull();
-
-    // Resolve the retry so we don't leak the open promise.
-    await act(async () => {
-      secondAttempt.resolve(makeMessage("assistant", "ok"));
-      await Promise.resolve();
-    });
+    expect(onClearError).toHaveBeenCalled();
   });
 
   it("renders composerFooter content inside the composer footer", () => {
@@ -420,7 +217,12 @@ describe("BaseAipAgentChat", () => {
         composerFooter={
           <span data-testid="footer-slot">model-picker-stub</span>
         }
-        onSendMessage={NOOP_SEND}
+        messages={[]}
+        status="ready"
+        error={undefined}
+        onSendMessage={vi.fn()}
+        onStop={vi.fn()}
+        onClearError={vi.fn()}
       />,
     );
 
@@ -428,15 +230,20 @@ describe("BaseAipAgentChat", () => {
     expect(slot.textContent).toBe("model-picker-stub");
   });
 
-  it("calls renderEmptyState when there are no messages and no in-flight state", () => {
+  it("calls renderEmptyState when there are no messages", () => {
     const renderEmptyState = vi.fn(() => (
       <div data-testid="custom-empty">no messages yet</div>
     ));
 
     render(
       <BaseAipAgentChat
-        onSendMessage={NOOP_SEND}
         renderEmptyState={renderEmptyState}
+        messages={[]}
+        status="ready"
+        error={undefined}
+        onSendMessage={vi.fn()}
+        onStop={vi.fn()}
+        onClearError={vi.fn()}
       />,
     );
 
@@ -457,9 +264,13 @@ describe("BaseAipAgentChat", () => {
 
     render(
       <BaseAipAgentChat
-        initialMessages={[userMsg, assistantMsg]}
-        onSendMessage={NOOP_SEND}
         renderMessage={renderMessage}
+        messages={[userMsg, assistantMsg]}
+        status="ready"
+        error={undefined}
+        onSendMessage={vi.fn()}
+        onStop={vi.fn()}
+        onClearError={vi.fn()}
       />,
     );
 

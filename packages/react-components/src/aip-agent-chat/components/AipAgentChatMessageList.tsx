@@ -41,9 +41,9 @@ const DEFAULT_EMPTY_STATE: React.ReactNode = (
 );
 
 export function AipAgentChatMessageList({
-  messages,
-  isStreaming,
-  enableAutoScroll,
+  messages = [],
+  isStreaming = false,
+  enableAutoScroll = true,
   className,
   renderEmptyState,
   renderMessage,
