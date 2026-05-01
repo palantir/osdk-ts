@@ -26,6 +26,13 @@
   /* Info icon (tooltip trigger) */
   --osdk-form-info-icon-color: var(--osdk-typography-color-muted);
 
+  /* Info popup (tooltip-styled popup for helper text) */
+  --osdk-form-info-popup-padding: var(--osdk-tooltip-padding);
+  --osdk-form-info-popup-bg: var(--osdk-tooltip-bg);
+  --osdk-form-info-popup-shadow: var(--osdk-tooltip-shadow);
+  --osdk-form-info-popup-max-width: var(--osdk-tooltip-max-width);
+  --osdk-form-info-popup-font-size: var(--osdk-tooltip-font-size);
+
   /* Required indicator */
   --osdk-form-required-color: var(--osdk-intent-danger-rest);
 

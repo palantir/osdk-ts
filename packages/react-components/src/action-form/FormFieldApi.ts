@@ -65,7 +65,8 @@ export interface FormFieldDefinition<
   /**
    * Additional information to display on this field.
    * Accepts plain text or rich content (e.g. JSX with links or formatting).
-   * Rendered below the label and above the input.
+   * Rendered as a tooltip icon next to the label by default, or below the
+   * label when helperTextPlacement is "bottom".
    */
   helperText?: React.ReactNode;
 

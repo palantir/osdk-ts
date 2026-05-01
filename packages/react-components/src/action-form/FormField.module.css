@@ -50,12 +50,12 @@
 }
 
 .osdkFormFieldInfoPopup {
-  padding: var(--osdk-tooltip-padding);
-  background-color: var(--osdk-tooltip-bg);
+  padding: var(--osdk-form-info-popup-padding);
+  background-color: var(--osdk-form-info-popup-bg);
   border-radius: var(--osdk-surface-border-radius);
-  box-shadow: var(--osdk-tooltip-shadow);
-  max-width: var(--osdk-tooltip-max-width);
-  font-size: var(--osdk-tooltip-font-size);
+  box-shadow: var(--osdk-form-info-popup-shadow);
+  max-width: var(--osdk-form-info-popup-max-width);
+  font-size: var(--osdk-form-info-popup-font-size);
 }
 
 .osdkFormFieldHelperText {

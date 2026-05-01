@@ -40,8 +40,9 @@ export const FormField: React.FC<FormFieldProps> = memo(function FormFieldFn({
   onBlur,
   children,
 }: FormFieldProps): React.ReactElement {
-  const showTooltip = helperText != null && helperTextPlacement === "tooltip";
-  const showBottomText = helperText != null && helperTextPlacement === "bottom";
+  const hasHelperText = helperText != null && helperText !== "";
+  const showTooltip = hasHelperText && helperTextPlacement === "tooltip";
+  const showBottomText = hasHelperText && helperTextPlacement === "bottom";
 
   const labelElement = label != null
     ? (
@@ -85,6 +86,9 @@ interface InfoTipProps {
   children: React.ReactNode;
 }
 
+// Uses Popover (not Tooltip) because helper text may contain interactive
+// content like links that need focus management and keyboard navigation.
+// See https://base-ui.com/react/components/tooltip#infotips
 function InfoTip({ label, children }: InfoTipProps): React.ReactElement {
   return (
     <Popover.Root>
