@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { ObjectSet } from "../objectSet/ObjectSet.js";
-import type { EmployeeApiTest } from "../test/EmployeeApiTest.js";
+import type { ObjectSet } from "../../objectSet/ObjectSet.js";
+import type { EmployeeApiTest } from "../../test/EmployeeApiTest.js";
 
 // === No derived properties ===
 

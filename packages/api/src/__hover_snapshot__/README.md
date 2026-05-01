@@ -8,15 +8,19 @@ expressions will surface here as snapshot diffs.
 
 ## Layout
 
-- `probeUtils.ts` — the reusable renderer. Loads a probes file via the
+- `probeUtils.ts` — the reusable renderer. Loads probes files via the
   TypeScript compiler API, walks `declare const probe_*: T;`
-  declarations, and returns one rendered+formatted entry per probe.
-- `<surface>Probes.ts` — one file per type-graph surface we want to
-  pin. `objectSetProbes.ts` is the only one today; new surfaces should
-  add a sibling file (e.g. `osdkInstanceProbes.ts`).
-- `hoverTypes.test.ts` — single test entry point. One `describe` block
-  per surface; each block calls `snapshotProbes("<name>Probes.ts")`
-  plus any surface-specific compile-time assertions.
+  declarations, and returns one TS-formatted snapshot string per
+  probes file.
+- `probes/<surface>.ts` — one file per type-graph surface we want to
+  pin (e.g. `probes/objectSet.ts`, `probes/osdkInstance.ts`).
+- `hoverTypes.test.ts` — single test entry point. Auto-discovers every
+  `probes/*.ts` file and asserts each one against
+  `__snapshots__/<surface>.snap` via `toMatchFileSnapshot`.
+- `__snapshots__/<surface>.snap` — one snapshot file per surface,
+  containing `type probe_<name> = ...;` declarations with their JSDoc
+  descriptions. Each file is syntactically valid TypeScript so
+  reviewers can read it like source.
 
 ## How a probe file works
 
@@ -31,8 +35,9 @@ declare const probe_where_clause_param: Parameters<
 >[0];
 ```
 
-The snapshot value is prefixed with the JSDoc as a leading `// …`
-comment so the rendered type is self-documenting.
+In the snapshot file, each probe lands as `/** <description> */` plus
+`type <probe_name> = <rendered>;`, so the snapshot reads like a
+documented TypeScript module.
 
 ### Type-utility cheat sheet
 
@@ -45,15 +50,14 @@ Useful built-ins for sculpting the type you want to snapshot:
 - `typeof <value>` — reference a value's type. Combine with TS 4.7+
   instantiation-expression syntax `typeof fn<T>` to capture what a
   generic method returns when called with a specific type argument.
-  See `_withProperties` in `objectSetProbes.ts` for an example.
+  See `_withProperties` in `probes/objectSet.ts` for an example.
 - Index access (`Foo["bar"]`, `Tuple[0]`) — drill into an
   object/tuple.
 
 ## How to add a probe
 
-1. Pick the right `<surface>Probes.ts` (or create a new one for a new
-   surface, plus a `describe` block in `hoverTypes.test.ts` calling
-   `snapshotProbes("<surface>Probes.ts")`).
+1. Pick the right `probes/<surface>.ts` (or create a new one for a new
+   surface — the test auto-discovers it).
 2. Add `declare const probe_<name>: <YourType>;` with a JSDoc above
    describing what user-facing code yields this hover.
 3. From the repo root: `pnpm updateSnapshots --filter=@osdk/api` (or

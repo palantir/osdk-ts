@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { AggregationsResults } from "../aggregate/AggregationsResults.js";
-import type { EmployeeApiTest } from "../test/EmployeeApiTest.js";
+import type { AggregationsResults } from "../../aggregate/AggregationsResults.js";
+import type { EmployeeApiTest } from "../../test/EmployeeApiTest.js";
 
 // === No groupBy ===
 

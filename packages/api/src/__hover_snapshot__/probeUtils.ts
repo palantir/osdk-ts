@@ -14,61 +14,56 @@
  * limitations under the License.
  */
 
-// Shared rendering pipeline for hover-snapshot tests. A test wiring up its
-// own probes file passes its paths to `renderHoverProbes` and snapshots each
-// returned entry. See README.md and renderHovers.test.ts for an end-to-end
-// example.
+// Shared rendering pipeline for hover-snapshot tests. A test passes a list
+// of probes-file paths to `renderHoverProbes` and snapshots each returned
+// string with `toMatchFileSnapshot`. See README.md and hoverTypes.test.ts
+// for an end-to-end example.
 
 import { execFileSync } from "node:child_process";
 import * as path from "node:path";
 import * as ts from "typescript";
 
-export interface HoverProbe {
-  /** Plain-English description from the probe's JSDoc. */
-  source: string;
-  /**
-   * Type rendered by `checker.typeToString`, with absolute import paths
-   * scrubbed and pretty-printed via dprint.
-   */
-  rendered: string;
-}
-
 export interface RenderHoverProbesOptions {
-  /** Absolute path to a probes file containing `declare const probe_*: T;` declarations. */
-  probesPath: string;
-  /** Absolute path to a tsconfig.json that can compile the probes file. */
+  /** Absolute paths to probes files containing `declare const probe_*: T;` declarations. */
+  probesPaths: string[];
+  /** Absolute path to a tsconfig.json that can compile the probes files. */
   tsconfigPath: string;
 }
 
 /**
- * Walks every `declare const probe_*: <Type>;` declaration in the probes file,
- * renders its type via the TypeScript compiler API, and pretty-prints the
- * result through dprint. Returns one entry per probe keyed by declaration
- * name.
+ * Walks every `declare const probe_*: <Type>;` declaration across the given
+ * probes files, renders its type via the TypeScript compiler API, and
+ * pretty-prints the result through dprint. Returns a map keyed by probes
+ * path; each value is the rendered, dprint-formatted snapshot content for
+ * that file (one `type <name> = ...;` declaration per probe).
+ *
+ * All probes files share one TS program, so types imported by multiple
+ * files are parsed and checked only once.
  *
  * Every probe declaration must have a JSDoc above it describing the
  * user-facing situation it captures; a missing JSDoc throws.
  */
 export function renderHoverProbes(
   opts: RenderHoverProbesOptions,
-): Record<string, HoverProbe> {
-  return formatProbes(extractProbes(opts));
+): Record<string, string> {
+  const { probesPaths, tsconfigPath } = opts;
+  const program = buildProgram(probesPaths, tsconfigPath);
+  const checker = program.getTypeChecker();
+  const out: Record<string, string> = {};
+  for (const probesPath of probesPaths) {
+    out[probesPath] = formatSnapshot(
+      extractProbes(program, checker, probesPath),
+    );
+  }
+  return out;
 }
 
-/**
- * Compose a `HoverProbe` into the standard snapshot value:
- * `// <description>\n<formatted type>`. Tests can call this directly inside
- * an `it.each` or build their own composition if they want a different
- * layout.
- */
-export function snapshotValue(probe: HoverProbe): string {
-  return `// ${probe.source}\n${probe.rendered}`;
+interface ProbeEntry {
+  source: string;
+  rendered: string;
 }
 
-function extractProbes(
-  opts: RenderHoverProbesOptions,
-): Record<string, HoverProbe> {
-  const { probesPath, tsconfigPath } = opts;
+function buildProgram(probesPaths: string[], tsconfigPath: string): ts.Program {
   const configText = ts.sys.readFile(tsconfigPath);
   if (configText == null) throw new Error(`cannot read ${tsconfigPath}`);
   const { config, error } = ts.parseConfigFileTextToJson(
@@ -83,8 +78,8 @@ function extractProbes(
     ts.sys,
     path.dirname(tsconfigPath),
   );
-  const program = ts.createProgram({
-    rootNames: [probesPath],
+  return ts.createProgram({
+    rootNames: probesPaths,
     options: {
       ...parsed.options,
       noEmit: true,
@@ -92,16 +87,22 @@ function extractProbes(
       declarationMap: false,
     },
   });
+}
+
+function extractProbes(
+  program: ts.Program,
+  checker: ts.TypeChecker,
+  probesPath: string,
+): Record<string, ProbeEntry> {
   const sourceFile = program.getSourceFile(probesPath);
   if (sourceFile == null) {
     throw new Error(`probes file not part of program: ${probesPath}`);
   }
-  const checker = program.getTypeChecker();
   const flags = ts.TypeFormatFlags.NoTruncation
     | ts.TypeFormatFlags.WriteArrayAsGenericType
     | ts.TypeFormatFlags.InTypeAlias;
 
-  const out: Record<string, HoverProbe> = {};
+  const out: Record<string, ProbeEntry> = {};
   for (const stmt of sourceFile.statements) {
     if (!ts.isVariableStatement(stmt)) continue;
     for (const decl of stmt.declarationList.declarations) {
@@ -120,8 +121,8 @@ function extractProbes(
   return out;
 }
 
-// Read the user-facing description for a probe from its JSDoc. Missing JSDoc
-// is a test-authoring bug, so we throw rather than silently falling back.
+// Missing JSDoc is a test-authoring bug, so we throw rather than silently
+// falling back to an empty description.
 function probeDescription(
   stmt: ts.VariableStatement,
   decl: ts.VariableDeclaration,
@@ -145,36 +146,20 @@ function scrub(s: string): string {
   return s.replace(/import\("[^"]+"\)\./g, "");
 }
 
-// Pretty-print all probes by wrapping them as `type <name> = <type>;`,
-// piping the batch through dprint, then splitting it back apart with the TS
-// compiler API. dprint is a root devDep so its binary is on PATH when this
-// runs under `pnpm test` / `pnpm vitest`.
-function formatProbes(
-  probes: Record<string, HoverProbe>,
-): Record<string, HoverProbe> {
-  const names = Object.keys(probes);
-  if (names.length === 0) return {};
-  const wrapped = names.map((n) => `type ${n} = ${probes[n].rendered};`).join(
-    "\n\n",
-  );
-  const formatted = execFileSync(
+// Pretty-print one probes file's worth of probes as TS-flavored snapshot
+// content: `/** desc */\ntype probeName = rendered;`, joined and run through
+// dprint. dprint is a root devDep so its binary is on PATH under
+// `pnpm test` / `pnpm vitest`.
+function formatSnapshot(probes: Record<string, ProbeEntry>): string {
+  const names = Object.keys(probes).sort();
+  if (names.length === 0) return "";
+  const wrapped = names.map((n) => {
+    const { source, rendered } = probes[n];
+    return `/** ${source} */\ntype ${n} = ${rendered};`;
+  }).join("\n\n");
+  return execFileSync(
     "dprint",
     ["fmt", "--stdin", "probes.ts"],
     { input: wrapped, encoding: "utf8" },
   );
-  const sf = ts.createSourceFile(
-    "probes.ts",
-    formatted,
-    ts.ScriptTarget.Latest,
-    true,
-  );
-  const out: Record<string, HoverProbe> = {};
-  for (const stmt of sf.statements) {
-    if (!ts.isTypeAliasDeclaration(stmt)) continue;
-    out[stmt.name.text] = {
-      source: probes[stmt.name.text]!.source,
-      rendered: stmt.type.getText(sf).trim(),
-    };
-  }
-  return out;
 }

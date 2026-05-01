@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import type { Osdk } from "../OsdkObjectFrom.js";
-import type { EmployeeApiTest } from "../test/EmployeeApiTest.js";
-import type { FooInterfaceApiTest } from "../test/FooInterfaceApiTest.js";
+import type { Osdk } from "../../OsdkObjectFrom.js";
+import type { EmployeeApiTest } from "../../test/EmployeeApiTest.js";
+import type { FooInterfaceApiTest } from "../../test/FooInterfaceApiTest.js";
 
 // === Default and common variants ===
 
