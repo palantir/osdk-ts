@@ -12,14 +12,14 @@ This skill is a **companion** to [`packages/react-components/CONTRIBUTING.md`](.
 
 1. An **API-first PR** that lands the type contract before any implementation, designed for **small interface, hidden complexity** (Ousterhout's "deep modules" principle).
 2. A **user-supplied MVP checklist** that defines "done" before code is written.
-3. **Parallel implementation fan-out** — once the API is approved, the OSDK wrapper, Storybook story, and tests are written by three sub-agents in parallel via the Task tool.
-4. **Named user checkpoints** — explicit `AskUserQuestion` gates at API approval, MVP completion, and the final review.
-5. A **verification loop** that exercises the MVP checklist in a real browser and backports findings as code fixes and tests.
+3. **Parallel implementation fan-out** — once the API is approved, the OSDK wrapper, Storybook story, and tests are written by three sub-agents in parallel via the Task tool. (Empirically: when the Base API was refactored, two sub-agents finished both rewrites in ~2 min concurrently. Always parallelize tests + Storybook + wrapper rather than serialising them.)
+4. **Named user checkpoints** — explicit `AskUserQuestion` gates at API approval and the final review. **Use the `preview` field on options** to render rendered code (or markdown) previews; multiple-choice with previews collapses each iteration into a single tool call instead of looping back-and-forth across multiple turns.
+5. A **verification loop** that exercises the MVP checklist in a real browser and backports findings as code fixes and tests. The agent **runs this automatically** after Step 2 — it does not stop at the end of Step 2 and wait for the user to ask for verification.
 6. A **review fan-out** before pushing — invoke the official `review` and `security-review` skills in parallel and consolidate findings into one edit pass.
 
 If this skill ever conflicts with CONTRIBUTING.md, **CONTRIBUTING.md wins** — flag the conflict to the user.
 
-The skill never auto-commits or auto-pushes. It leaves staged-able diffs and asks the user how to proceed at the end.
+**Git policy.** The skill **asks the user every single time** before running `git commit` or `git push` — first commit, second commit, every commit. Do not assume an earlier confirmation extends to the next commit. Do not auto-commit, do not auto-push, do not amend. The skill stages diffs and proposes a message; the user approves each commit and each push individually. PR creation is the same — explicit per-action confirmation.
 
 ## Authoritative sources
 
@@ -42,9 +42,8 @@ Read these in roughly this order. The skill cites them by name throughout; do no
 
 Ask the user, in order. Do not skip.
 
-1. **Does this component fetch OSDK data?**
-   - If **no** → the component does not belong in `@osdk/react-components`. This package is purpose-built for Ontology-aware components (see CONTRIBUTING.md "When does a component belong here?" and README.md "What this package is (and isn't)"). Suggest [BlueprintJS](https://blueprintjs.com/) or another design system instead. Stop.
-   - If **yes** → continue.
+1. **Does this component fetch OSDK data OR hit an api-gateway endpoint?**
+   - If **no to both** → the component probably does not belong in `@osdk/react-components`. This package is purpose-built for Ontology-aware components and API-gateway integrations (see CONTRIBUTING.md "When does a component belong here?" and README.md "What this package is (and isn't)"). Suggest [BlueprintJS](https://blueprintjs.com/) or another design system instead. If user insists that it should live here, ask the user to justify why it belongs here rather than blueprintjs. Note the justification in PR description later. Continue.
 2. **Reference component or source.** Most new components have a closest analog elsewhere — another codebase, a prototype, or a pasted snippet. Ask the user for **one** of:
    - **A local path** — file or directory inside the repo or any working directory.
    - **A GitHub URL** — file, blob, or PR link.
@@ -133,11 +132,15 @@ The API is the contract. It is reviewed and approved **before** any implementati
    - Provide controlled and uncontrolled variants where applicable (e.g. `filter` + `onFilterChanged`, `defaultOrderBy` + `orderBy` + `onOrderByChanged`). Match `ObjectTableApi.ts` exactly.
    - **Render overrides for flexibility.** Expose `render*` slots (e.g. `renderHeader`, `renderProperty`, `renderRow`) where consumers may legitimately want to deviate from the default rendering. Default rendering must remain feature-complete with no overrides supplied. Don't add slots speculatively — add them where the surface is obviously customisable (header, individual cell/property, empty state). When in doubt, add the override; we want to enable flexibility where we can.
    - **Event listeners on top of default behaviour.** For every state change that has a built-in default behaviour (sort, filter, select, edit, navigate, load), expose a non-controlling `on*` listener so consumers can layer extra handling — analytics, scroll-to-top, telemetry, side effects — without replacing the default. The default still runs whether or not the listener is provided. This is distinct from controlled-mode `on*Changed` handlers, which DO take over the state.
-4. **Checkpoint — API approval.** Before opening the PR, present the proposed surface to the user via `AskUserQuestion` with two or three named alternatives where there is a real design choice (granularity, controlled-vs-uncontrolled scope, render-slot placement). Iterate until the user picks one. This is the first of three named checkpoints in the skill.
+4. **Checkpoint — API approval.** Before opening the PR, present the proposed surface to the user via `AskUserQuestion` with two or three named alternatives where there is a real design choice (granularity, controlled-vs-uncontrolled scope, render-slot placement). **Use the `preview` field on each option to render the candidate TypeScript interface inline** — that lets the user compare full prop shapes side-by-side in one tool call instead of asking, getting one option, asking again. Iterate until the user picks one. This is the first of two named checkpoints in the skill.
 
 5. **Open a PR with only `<Name>Api.ts`** — no exports wired, no implementation. The package still compiles because this is types-only.
 
    The PR description should describe the API surface concisely. Do **not** restate package guidelines or call out "documented exceptions" to internal heuristics (e.g. the one-required-prop guideline) in the PR body — those are reviewer-side concerns, not contract details. Keep the description focused on what consumers see.
+
+   **If user provided justification for an exception that the component should live here (noted in preflight)**, include a brief justification in the PR description -- why should this component be in this package and not in blueprintjs?
+
+   **Do not include "Generated with Claude Code", "Co-Authored-By: Claude", `🤖`, or any other AI-attribution footer in the PR description or commit messages** — write the description as the human author would. The same rule applies to every PR opened from this skill (API PR, impl PR, follow-ups).
 
 6. **Proceed to Step 2 once the API PR is open.** The implementation branch stacks on the API branch (next step), so review feedback on the API can flow back into both branches without blocking implementation.
 
@@ -169,7 +172,9 @@ Implementation lives on a **separate branch stacked on the API branch** so the A
 
 4. **Build the Base component first** (CONTRIBUTING.md "Component Architecture", README.md "Component Architecture", CLAUDE.md "OSDK Component Architecture"):
    - `Base<Name>.tsx` at `packages/react-components/src/<name>/Base<Name>.tsx`.
-   - **No OSDK imports** in this file.
+   - **The Base component encapsulates ALL out-of-the-box features**, including built-in event handlers (e.g. `BaseObjectTable` owns `onRowSelect`, sort/filter wiring, keyboard navigation, etc.). Default behaviour belongs in Base — the OSDK wrapper only wires data in. Consumers who want to layer extra logic on top use the non-controlling `on*` listeners from the API; consumers who want to take over use the controlled-mode `on*Changed` props.
+   - **Component interactions live in a hook** (e.g. `useBase<Name>State` or `useBase<Name>` under `hooks/`) so the same logic can be exported later as a **headless component** without rewriting. Keep state, event handlers, and orchestration in the hook; keep markup in `Base<Name>.tsx`. Treat Base as `<headless-hook> + <markup>` from day one.
+   - **No OSDK imports** in this file by default.
    - Accepts only primitive props (`string[]`, plain objects, callbacks). Do not leak OSDK types here.
    - All UI rendering, interactions, and styling live here.
    - For complex components, split into a **building blocks tier**: sub-components and hooks under `components/` and `hooks/` subfolders. `PdfViewer` is the canonical in-package example (`PdfViewerToolbar`, `PdfViewerSidebar`, `usePdfViewerState`).
@@ -188,15 +193,18 @@ Implementation lives on a **separate branch stacked on the API branch** so the A
    - **Combine class names with the `classnames` utility.** Never use template literals for class names (CLAUDE.md "React Best Practices").
    - **Respect CSS layers** — see README.md "CSS Setup" for layer order and how brand overrides plug in.
 
-6. **Parallelization point — fan out the remaining implementation work.** Once `Base<Name>` compiles cleanly and renders against placeholder data, the OSDK wrapper, Storybook story, and tests can be authored in parallel. Spawn three `general-purpose` sub-agents in **a single message with three Task tool calls** so they run concurrently:
+6. **Parallelization point — fan out the remaining implementation work.** Once `Base<Name>` compiles cleanly and renders against placeholder data, the OSDK wrapper, Storybook story, tests, and live peopleapp example can be authored in parallel. Spawn four `general-purpose` sub-agents in **a single message with four Agent tool calls** so they run concurrently — this is empirically the biggest wall-clock win in the workflow (when the Base API was refactored, two sub-agents finished both rewrites in ~2 min concurrently; serialising would have taken 6+).
 
    - **Sub-agent A — OSDK wrapper + exports + metrics** (steps 7–10 below).
    - **Sub-agent B — Storybook story** (step 12 below).
    - **Sub-agent C — Tests** (step 11 below).
+   - **Sub-agent D — Live peopleapp example** (step 14 below).
 
-   Each sub-agent receives, in its prompt: the path to `<Name>Api.ts` (the approved API), the path to the just-written `Base<Name>.tsx`, the token-mapping decisions from sub-step 5, and the user's MVP feature checklist.
+   Each sub-agent receives, in its prompt: the path to `<Name>Api.ts` (the approved API), the path to the just-written `Base<Name>.tsx`, the token-mapping decisions from sub-step 5, and the user's MVP feature checklist. Sub-agent D additionally receives the path to `packages/e2e.sandbox.peopleapp/` and the ontology types available (Employee, Office, etc.). **Sub-agent D uses the OSDK Component (`<Name>.tsx`), not the Base component** — the example showcases real Foundry data fetching, which requires the full OSDK wrapper.
 
-   Wait for all three sub-agents to return before proceeding to documentation (step 13) and Step 3 verification. If any sub-agent reports a blocker (missing primitive, ambiguous behaviour), pause and ask the user via `AskUserQuestion` before continuing.
+   **Re-fan-out on Base API refactors.** If a later round of feedback changes the Base component's API, re-spawn the tests + Storybook + peopleapp sub-agents in parallel (single message, three Agent calls) rather than rewriting them serially yourself. Three concurrent rewrites finish in roughly the time of one serial one.
+
+   Wait for all four sub-agents to return before proceeding to documentation (step 13) and Step 3 verification. If any sub-agent reports a blocker (missing primitive, ambiguous behaviour, routing conflict), pause and ask the user via `AskUserQuestion` before continuing.
 
 7. **Then build the OSDK wrapper.** `<Name>.tsx` at `packages/react-components/src/<name>/<Name>.tsx`:
    - Uses `@osdk/react` hooks for data fetching (see [`packages/react/AGENTS.md`](../../../../react/AGENTS.md) for available hooks and provider setup).
@@ -264,11 +272,13 @@ Implementation lives on a **separate branch stacked on the API branch** so the A
     - If you added CSS variables, update [`docs/CSSVariables.md`](../../../docs/CSSVariables.md).
     - Add a one-line entry to the components table in [`AGENTS.md`](../../../AGENTS.md) and [`README.md`](../../../README.md).
 
-14. **Live example in [`@osdk/e2e.sandbox.peopleapp`](../../../../e2e.sandbox.peopleapp/README.md):**
-    - Add an example usage of the new component against real Foundry data, using the existing `Employee`, `Office`, etc. types in the sandbox's ontology.
+14. **Live example in [`@osdk/e2e.sandbox.peopleapp`](../../../../e2e.sandbox.peopleapp/README.md) — required, not optional. Authored in parallel as Sub-agent D in step 6.**
+    - Add an example usage of the new component against real Foundry data, using the existing `Employee`, `Office`, etc. types in the sandbox's ontology. Wire the example into the sandbox's existing routing/navigation so it actually shows up in the running app, not just as an unreferenced file.
     - Keep it minimal — MVP-feature usage only. The goal is to give reviewers (and you yourself) a quick way to exercise the component end-to-end against a real Foundry instance, complementing the MSW-mocked Storybook story.
+    - **Do not skip this step or defer it to a follow-up PR.** Treat the peopleapp example as part of the MVP DoD.
+    - **Parallelized execution:** Sub-agent D in step 6 handles this automatically. The agent reads the peopleapp router, identifies an appropriate page to add the example, and wires it into the navigation. If the peopleapp structure requires clarification, the agent will ask the user.
 
-15. **Checkpoint — MVP completion.** Before moving on to Step 3 verification, present the implementation summary to the user via `AskUserQuestion`: list the new files, the props that were defaulted vs required, any prop the implementation exposed beyond the API PR (rare; flag if so), and the MVP checklist items that are believed satisfied. Wait for the user to confirm before continuing. This is the second of three named checkpoints.
+15. **No checkpoint here — auto-proceed to Step 3.** The Step 2 → Step 3 transition is automatic. The only Step 2-side gate is a short status update to the user (one sentence: "Implementation done across N files; running Storybook verification next.") so the user knows what's happening, then the agent immediately starts Step 3.
 
 ## Step 3 — Verify against reference
 
@@ -312,7 +322,16 @@ playwright-cli install --skills    # registers the agent-friendly skills
 
 ## Step 4 — Ship
 
-Run these in order (CONTRIBUTING.md "Submitting a Pull Request"). Stop and fix if any fails. **The skill never auto-commits or auto-pushes.** It leaves staged-able diffs and asks the user how to proceed at the end (final checkpoint).
+Run these in order (CONTRIBUTING.md "Submitting a Pull Request"). Stop and fix if any fails.
+
+**Git policy (repeat — this is the most-violated rule).** Ask the user via `AskUserQuestion` **every single time** before:
+
+- `git commit` (every commit, including the first)
+- `git push` (every push, including subsequent pushes after PR feedback)
+- `gh pr create` / opening or editing a PR
+- Any `git` action that mutates remote state
+
+A "yes" once does not extend to the next action. The user has been burned by skills that asked once and then started pushing automatically — do not do that. PR descriptions and commit messages must **not** include "Generated with Claude Code", `Co-Authored-By: Claude`, `🤖`, or other AI-attribution footers.
 
 1. **All MVP checklist items pass** when exercised in Storybook.
 2. **Visual match with the reference is acceptable** — user makes the call.
@@ -365,14 +384,18 @@ Run these in order (CONTRIBUTING.md "Submitting a Pull Request"). Stop and fix i
 
    Consolidate their findings and apply **one** consolidated edit pass. If either skill still surfaces critical findings on a second pass, escalate to the user via `AskUserQuestion` rather than looping further.
 
-9. **Final checkpoint — the user decides whether to stage, commit, or push.** Present the full list of created/modified files and a one-line summary of the review findings to the user via `AskUserQuestion` with options:
+9. **Final checkpoint — the user decides whether to stage, commit, or push.** Present the full list of created/modified files and a one-line summary of the review findings to the user via `AskUserQuestion`. **Where the choice is between concrete artifacts (commit message variants, PR description variants), use the `preview` field on each option to render the candidate text inline** — this collapses what would otherwise be 2–3 conversational turns into a single tool call.
+
+   Options:
 
    - **Stage all** — `git add` everything (do **not** commit).
    - **Stage selected** — user picks a subset.
-   - **Open PR** — only if the user explicitly says so. The skill itself does not push or open a PR.
+   - **Commit** — propose the commit message via a separate `AskUserQuestion` with `preview` blocks; only run `git commit` after explicit approval.
+   - **Push** — only after the user explicitly approves the push (separate question from the commit approval).
+   - **Open PR** — only after the user explicitly approves; propose title and body via `AskUserQuestion` with `preview` blocks before running `gh pr create`.
    - **Leave unstaged** — bail out and let the user inspect.
 
-   This is the third and last named checkpoint. Stop here. Do not commit, do not force-push, do not open a PR unless the user picks the **Open PR** path. When pushing, follow CONTRIBUTING.md step 7: do not force-push during review — push new commits so reviewers can see incremental changes.
+   **Every git/gh write is a fresh question.** Approval to stage does not extend to commit; approval to commit does not extend to push; approval to push does not extend to PR creation. When subsequent PR-feedback commits land on the same branch, **ask again for each new commit and each new push** — do not assume the original approval still applies. When pushing follow-up commits, push new commits rather than force-pushing during review (CONTRIBUTING.md step 7).
 
 ## Common pitfalls
 
