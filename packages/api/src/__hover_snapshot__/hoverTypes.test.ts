@@ -19,8 +19,8 @@ import { fileURLToPath } from "node:url";
 import { describe, expect, expectTypeOf, it } from "vitest";
 import type { ObjectSet } from "../objectSet/ObjectSet.js";
 import type { EmployeeApiTest } from "../test/EmployeeApiTest.js";
-import { renderHoverProbes, snapshotValue } from "./hoverProbes.js";
 import type { KnownObjectSetMethods } from "./objectSetProbes.js";
+import { renderHoverProbes, snapshotValue } from "./probeUtils.js";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const tsconfigPath = path.resolve(here, "../../tsconfig.json");

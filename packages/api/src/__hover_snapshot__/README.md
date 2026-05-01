@@ -8,7 +8,7 @@ expressions will surface here as snapshot diffs.
 
 ## Layout
 
-- `hoverProbes.ts` — the reusable renderer. Loads a probes file via the
+- `probeUtils.ts` — the reusable renderer. Loads a probes file via the
   TypeScript compiler API, walks `declare const probe_*: T;`
   declarations, and returns one rendered+formatted entry per probe.
 - `<surface>Probes.ts` — one file per type-graph surface we want to
