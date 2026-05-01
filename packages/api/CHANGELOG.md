@@ -1,5 +1,13 @@
 # @osdk/api
 
+## 2.13.0
+
+## 2.12.0
+
+### Minor Changes
+
+- 91f34a9: expose .subscribe() on interface-typed object sets returned by client()
+
 ## 2.11.0
 
 ## 2.10.0

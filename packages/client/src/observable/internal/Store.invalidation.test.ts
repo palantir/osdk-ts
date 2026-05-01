@@ -647,4 +647,80 @@ describe("Store Invalidation Type Isolation", () => {
       expect(empSubFn.next).not.toHaveBeenCalled();
     });
   });
+
+  describe("invalidateObject link kick", () => {
+    it("invalidateObject on the source type refreshes link queries", async () => {
+      const { payload: emp1Payload } = await expectStandardObserveObject({
+        cache,
+        type: Employee,
+        primaryKey: EMPLOYEE_1_ID,
+      });
+      const emp1 = emp1Payload?.object;
+      invariant(emp1);
+
+      const { linkSubFn: officeLinkSubFn } = await expectStandardObserveLink({
+        store: cache,
+        srcObject: emp1,
+        srcLinkName: "officeLink",
+        targetType: Office,
+        expected: [expect.objectContaining({ $primaryKey: OFFICE_1_ID })],
+      });
+      officeLinkSubFn.next.mockClear();
+
+      await cache.invalidateObject(Employee, EMPLOYEE_1_ID);
+
+      await vi.waitFor(() => {
+        expect(officeLinkSubFn.next).toHaveBeenCalled();
+      });
+    });
+
+    it("invalidateObject on the target type refreshes link queries", async () => {
+      const { payload: emp1Payload } = await expectStandardObserveObject({
+        cache,
+        type: Employee,
+        primaryKey: EMPLOYEE_1_ID,
+      });
+      const emp1 = emp1Payload?.object;
+      invariant(emp1);
+
+      const { linkSubFn: officeLinkSubFn } = await expectStandardObserveLink({
+        store: cache,
+        srcObject: emp1,
+        srcLinkName: "officeLink",
+        targetType: Office,
+        expected: [expect.objectContaining({ $primaryKey: OFFICE_1_ID })],
+      });
+      officeLinkSubFn.next.mockClear();
+
+      await cache.invalidateObject(Office, OFFICE_1_ID);
+
+      await vi.waitFor(() => {
+        expect(officeLinkSubFn.next).toHaveBeenCalled();
+      });
+    });
+
+    it("invalidateObject on an unrelated type does not refresh link queries", async () => {
+      const { payload: emp1Payload } = await expectStandardObserveObject({
+        cache,
+        type: Employee,
+        primaryKey: EMPLOYEE_1_ID,
+      });
+      const emp1 = emp1Payload?.object;
+      invariant(emp1);
+
+      const { linkSubFn: officeLinkSubFn } = await expectStandardObserveLink({
+        store: cache,
+        srcObject: emp1,
+        srcLinkName: "officeLink",
+        targetType: Office,
+        expected: [expect.objectContaining({ $primaryKey: OFFICE_1_ID })],
+      });
+      officeLinkSubFn.next.mockClear();
+
+      await cache.invalidateObject(Todo, TODO_1_ID);
+
+      await new Promise(resolve => setTimeout(resolve, 500));
+      expect(officeLinkSubFn.next).not.toHaveBeenCalled();
+    });
+  });
 });

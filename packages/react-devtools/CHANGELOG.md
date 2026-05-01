@@ -1,5 +1,11 @@
 # @osdk/react-devtools
 
+## 0.3.0
+
+### Minor Changes
+
+- 41b94dc: implement v0 of react devtools panel
+
 ## 0.2.0
 
 ### Minor Changes

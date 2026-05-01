@@ -27,8 +27,8 @@
     border-bottom: var(--osdk-table-border);
   }
 
-  /* Zebra rows */
-  &:nth-child(even) {
+  /* Zebra rows — keyed off data index, not DOM position, because rows are virtualized */
+  &[data-row-parity="odd"] {
     background-color: var(
       --osdk-table-row-bg-alternate,
       var(--osdk-table-row-bg-default)

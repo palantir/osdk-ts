@@ -76,7 +76,7 @@ describe("ObjectSetHelper RDP canonicalization", () => {
 
     // The canonical RDP reference should be identical
     expect(query1.rdpConfig).toBe(query2.rdpConfig);
-    expect(query1.rdpConfig).not.toBeNull();
+    expect(query1.rdpConfig).toBeDefined();
   });
 
   it("getQuery returns distinct rdpConfig references for different withProperties", () => {
@@ -103,12 +103,12 @@ describe("ObjectSetHelper RDP canonicalization", () => {
     expect(queryA.rdpConfig).not.toBe(queryB.rdpConfig);
   });
 
-  it("getQuery returns null rdpConfig when withProperties is not specified", () => {
+  it("getQuery returns undefined rdpConfig when withProperties is not specified", () => {
     const query = store.objectSets.getQuery({
       baseObjectSet: client(Employee) as ObjectSet<any>,
       mode: "offline",
     });
 
-    expect(query.rdpConfig).toBeNull();
+    expect(query.rdpConfig).toBeUndefined();
   });
 });

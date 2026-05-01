@@ -35,12 +35,17 @@ interface InternalValue {
   deferred: DeferredPromise<ObjectHolder>;
 }
 
-interface Accumulator {
-  data: InternalValue[];
-  timer?: ReturnType<typeof setTimeout>;
-  defType?: DefType;
+interface LoadParams {
+  apiName: string;
+  defType: DefType;
   select?: readonly string[];
   loadPropertySecurityMetadata?: boolean;
+  includeAllBaseObjectProperties: true | undefined;
+}
+
+interface Accumulator extends Partial<LoadParams> {
+  data: InternalValue[];
+  timer?: ReturnType<typeof setTimeout>;
 }
 
 const weakCache = new DefaultWeakMap<Client, BulkObjectLoader>(c =>
@@ -75,13 +80,24 @@ export class BulkObjectLoader {
     defType: DefType = "object",
     select?: readonly string[],
     loadPropertySecurityMetadata?: boolean,
+    includeAllBaseObjectProperties?: boolean,
   ): Promise<ObjectHolder> {
+    const params: LoadParams = {
+      apiName,
+      defType,
+      select,
+      loadPropertySecurityMetadata,
+      // The flag is interface-only on the server. Drop it for object fetches
+      // so they don't fragment batches or the cache.
+      includeAllBaseObjectProperties:
+        defType === "interface" && includeAllBaseObjectProperties
+          ? true
+          : undefined,
+    };
+
     const deferred = pDefer<ObjectHolder>();
 
-    const securitySuffix = loadPropertySecurityMetadata ? "\0sec" : "";
-    const selectKey = select && select.length > 0
-      ? `${apiName}\0${[...select].sort().join(",")}${securitySuffix}`
-      : `${apiName}${securitySuffix}`;
+    const selectKey = this.#buildSelectKey(params);
     const entry = this.#m.get(selectKey);
     entry.data.push({
       primaryKey: primaryKey as string,
@@ -89,9 +105,12 @@ export class BulkObjectLoader {
     });
 
     if (entry.defType === undefined) {
-      entry.defType = defType;
-      entry.select = select;
-      entry.loadPropertySecurityMetadata = loadPropertySecurityMetadata;
+      entry.apiName = params.apiName;
+      entry.defType = params.defType;
+      entry.select = params.select;
+      entry.loadPropertySecurityMetadata = params.loadPropertySecurityMetadata;
+      entry.includeAllBaseObjectProperties =
+        params.includeAllBaseObjectProperties;
     } else if (entry.defType !== defType) {
       deferred.reject(
         new PalantirApiError(
@@ -101,58 +120,36 @@ export class BulkObjectLoader {
       return deferred.promise;
     }
 
+    const fire = () => this.#loadObjects(entry.data, params);
+
     if (!entry.timer) {
-      entry.timer = setTimeout(() => {
-        this.#loadObjects(
-          apiName,
-          entry.data,
-          entry.defType ?? "object",
-          entry.select,
-          entry.loadPropertySecurityMetadata,
-        );
-      }, this.#maxWait);
+      entry.timer = setTimeout(fire, this.#maxWait);
     }
 
     if (entry.data.length >= this.#maxEntries) {
       clearTimeout(entry.timer);
-      this.#loadObjects(
-        apiName,
-        entry.data,
-        entry.defType ?? "object",
-        entry.select,
-        entry.loadPropertySecurityMetadata,
-      );
+      fire();
     }
 
     return await deferred.promise;
   }
 
-  #loadObjects(
-    apiName: string,
-    arr: InternalValue[],
-    defType: DefType,
-    select?: readonly string[],
-    loadPropertySecurityMetadata?: boolean,
-  ) {
-    const securitySuffix = loadPropertySecurityMetadata ? "\0sec" : "";
-    const selectKey = select && select.length > 0
-      ? `${apiName}\0${[...select].sort().join(",")}${securitySuffix}`
-      : `${apiName}${securitySuffix}`;
-    this.#m.delete(selectKey);
+  #buildSelectKey(params: LoadParams): string {
+    const securitySuffix = params.loadPropertySecurityMetadata ? "\0sec" : "";
+    const baseSuffix = params.includeAllBaseObjectProperties ? "\0base" : "";
+    return params.select && params.select.length > 0
+      ? `${params.apiName}\0${
+        [...params.select].sort().join(",")
+      }${securitySuffix}${baseSuffix}`
+      : `${params.apiName}${securitySuffix}${baseSuffix}`;
+  }
 
-    const loadFn = defType === "interface"
-      ? this.#loadInterfaceObjects(
-        apiName,
-        arr,
-        select,
-        loadPropertySecurityMetadata,
-      )
-      : this.#loadObjectTypeObjects(
-        apiName,
-        arr,
-        select,
-        loadPropertySecurityMetadata,
-      );
+  #loadObjects(arr: InternalValue[], params: LoadParams) {
+    this.#m.delete(this.#buildSelectKey(params));
+
+    const loadFn = params.defType === "interface"
+      ? this.#loadInterfaceObjects(arr, params)
+      : this.#loadObjectTypeObjects(arr, params);
 
     loadFn.catch((e: unknown) => {
       this.#logger?.error("Unhandled exception", e);
@@ -160,20 +157,18 @@ export class BulkObjectLoader {
         const errorMessage = e instanceof Error ? e.message : String(e);
         deferred.reject(
           new PalantirApiError(
-            `Failed to load ${apiName} with pk ${primaryKey}: ${errorMessage}`,
+            `Failed to load ${params.apiName} with pk ${primaryKey}: ${errorMessage}`,
           ),
         );
       }
     });
   }
 
-  async #loadObjectTypeObjects(
-    apiName: string,
-    arr: InternalValue[],
-    select?: readonly string[],
-    loadPropertySecurityMetadata?: boolean,
-  ) {
-    const objectDef = { type: "object", apiName } as ObjectTypeDefinition;
+  async #loadObjectTypeObjects(arr: InternalValue[], params: LoadParams) {
+    const objectDef = {
+      type: "object",
+      apiName: params.apiName,
+    } as ObjectTypeDefinition;
     const objMetadata = await this.#client.fetchMetadata(objectDef);
 
     const pks = arr.map(x => x.primaryKey);
@@ -188,10 +183,14 @@ export class BulkObjectLoader {
       .where(whereClause).fetchPage({
         $pageSize: pks.length,
         $includeRid: true,
-        ...(select && select.length > 0
-          ? { $select: select }
+        ...(params.select && params.select.length > 0
+          ? { $select: params.select }
           : {}),
-        $loadPropertySecurityMetadata: loadPropertySecurityMetadata ?? false,
+        $loadPropertySecurityMetadata: params.loadPropertySecurityMetadata
+          ?? false,
+        ...(params.includeAllBaseObjectProperties
+          ? { $includeAllBaseObjectProperties: true }
+          : {}),
       });
 
     for (const { primaryKey, deferred } of arr) {
@@ -208,17 +207,12 @@ export class BulkObjectLoader {
     }
   }
 
-  async #loadInterfaceObjects(
-    apiName: string,
-    arr: InternalValue[],
-    select?: readonly string[],
-    loadPropertySecurityMetadata?: boolean,
-  ) {
+  async #loadInterfaceObjects(arr: InternalValue[], params: LoadParams) {
     const pks = arr.map(x => x.primaryKey);
 
     const interfaceDef = {
       type: "interface",
-      apiName,
+      apiName: params.apiName,
     } as InterfaceDefinition;
 
     const interfaceMetadata = await this.#client.fetchMetadata(interfaceDef);
@@ -245,11 +239,14 @@ export class BulkObjectLoader {
       const { data } = await this.#client(objectDef)
         .where(whereClause).fetchPage({
           $pageSize: remainingPks.length,
-          ...(select && select.length > 0
-            ? { $select: select }
+          ...(params.select && params.select.length > 0
+            ? { $select: params.select }
             : {}),
           $loadPropertySecurityMetadata:
-            (loadPropertySecurityMetadata ?? false) as boolean,
+            (params.loadPropertySecurityMetadata ?? false) as boolean,
+          ...(params.includeAllBaseObjectProperties
+            ? { $includeAllBaseObjectProperties: true }
+            : {}),
         });
 
       for (const obj of data) {
@@ -264,7 +261,7 @@ export class BulkObjectLoader {
       } else {
         deferred.reject(
           new PalantirApiError(
-            `Interface ${apiName} object not found: ${primaryKey}`,
+            `Interface ${params.apiName} object not found: ${primaryKey}`,
           ),
         );
       }

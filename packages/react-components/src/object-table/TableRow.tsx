@@ -58,6 +58,7 @@ export function TableRow<TData extends RowData>({
     <tr
       data-selected={row.getIsSelected()}
       data-focused={isFocused}
+      data-row-parity={virtualRow.index % 2 === 0 ? "even" : "odd"}
       className={styles.osdkTableRow}
       style={{
         height: `${virtualRow.size}px`,

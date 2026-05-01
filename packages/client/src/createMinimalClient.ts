@@ -67,13 +67,9 @@ export function createMinimalClient(
       throw new Error(`Invalid stack URL: ${baseUrl}${hint}`);
     }
   }
-  const processedBaseUrl = new URL(baseUrl);
-  processedBaseUrl.pathname += processedBaseUrl.pathname.endsWith("/")
-    ? ""
-    : "/";
   const minimalClient: MinimalClient = {
     ...createSharedClientContext(
-      processedBaseUrl.toString(),
+      baseUrl,
       tokenProvider,
       USER_AGENT,
       fetchFn,

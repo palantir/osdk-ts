@@ -2,6 +2,7 @@
 @import "./tokens/base-tokens/base.css";
 
 /* Component tokens: component-specific tokens that reference base tokens */
+@import "./tokens/component-tokens/async-dropdown.css";
 @import "./tokens/component-tokens/button.css";
 @import "./tokens/component-tokens/cbac-picker.css";
 @import "./tokens/component-tokens/checkbox.css";

@@ -170,7 +170,7 @@ function TextTagsInputInner({
       )}
 
       <Combobox.Root<string, true>
-        multiple
+        multiple={true}
         value={tags}
         onValueChange={handleValueChange}
         inputValue={inputValue}

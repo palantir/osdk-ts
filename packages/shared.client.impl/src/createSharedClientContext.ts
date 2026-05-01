@@ -37,6 +37,12 @@ export function createSharedClientContext(
     throw new Error("baseUrl cannot be empty");
   }
 
+  const parsedBaseUrl = new URL(baseUrl);
+  if (!parsedBaseUrl.pathname.endsWith("/")) {
+    parsedBaseUrl.pathname += "/";
+  }
+  const normalizedBaseUrl = parsedBaseUrl.toString();
+
   const retryingFetchWithAuthOrThrow = createFetchHeaderMutator(
     createRetryingFetch(createFetchOrThrow(fetchFn)),
     async (headers) => {
@@ -95,7 +101,7 @@ export function createSharedClientContext(
   };
 
   return {
-    baseUrl,
+    baseUrl: normalizedBaseUrl,
     fetch: fetchWrapper,
     tokenProvider,
   };
