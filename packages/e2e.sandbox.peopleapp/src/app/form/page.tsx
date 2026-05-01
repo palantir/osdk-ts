@@ -207,6 +207,15 @@ const fieldDefinitions: ReadonlyArray<
       customRenderer: RatingSlider,
     },
   },
+  {
+    fieldKey: "manager",
+    fieldComponent: "OBJECT_SELECT",
+    label: "Manager",
+    placeholder: "Search for a manager…",
+    fieldComponentProps: {
+      objectType: Employee,
+    },
+  },
 ];
 
 export function FormPage() {

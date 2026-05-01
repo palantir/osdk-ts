@@ -13,6 +13,7 @@ if [[ $(git rev-parse --abbrev-ref HEAD | sed -E 's/^changeset-release\/.*$/ABOR
     exit 1
 fi
 
-pnpm exec turbo transpile --filter "./packages/tool.release"
+# generator needed by turbo codegen in postVersionCmd
+pnpm exec turbo transpileEsm --filter "./packages/tool.release" --filter "@osdk/cli.cmd.typescript..."
 node ./packages/tool.release/build/esm/index.js --repo palantir/osdk-ts
 echo "WARNING: You are probably on the pr branch"

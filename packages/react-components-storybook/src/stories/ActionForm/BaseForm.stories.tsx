@@ -1196,3 +1196,62 @@ export const WithDefaultValues: Story = {
     },
   },
 };
+
+const objectSelectFieldDefinitions: ReadonlyArray<RendererFieldDefinition> = [
+  {
+    fieldKey: "name",
+    fieldComponent: "TEXT_INPUT",
+    label: "Name",
+    isRequired: true,
+    fieldComponentProps: {
+      placeholder: "Enter a name",
+    },
+  },
+  {
+    fieldKey: "employee",
+    fieldComponent: "OBJECT_SELECT",
+    label: "Employee",
+    fieldComponentProps: {
+      objectType: { type: "object" as const, apiName: "Employee" },
+      placeholder: "Search employees\u2026",
+    },
+  },
+];
+
+export const WithObjectSelect: Story = {
+  args: {
+    fieldDefinitions: objectSelectFieldDefinitions,
+    onSubmit: handleSubmit,
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `const fieldDefinitions = [
+  {
+    fieldKey: "name",
+    fieldComponent: "TEXT_INPUT",
+    label: "Name",
+    isRequired: true,
+    fieldComponentProps: { placeholder: "Enter a name" },
+  },
+  {
+    fieldKey: "employee",
+    fieldComponent: "OBJECT_SELECT",
+    label: "Employee",
+    fieldComponentProps: {
+      objectType: { type: "object" as const, apiName: "Employee" },
+      placeholder: "Search employees\u2026",
+    },
+  },
+];
+
+// OBJECT_SELECT renders a searchable dropdown that queries
+// the Foundry ontology for objects matching the search term.
+<BaseForm
+  fieldDefinitions={fieldDefinitions}
+  onSubmit={(formState) => console.log("Submitted:", formState)}
+/>`,
+      },
+    },
+  },
+};

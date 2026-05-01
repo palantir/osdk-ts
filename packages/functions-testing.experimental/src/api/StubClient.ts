@@ -15,26 +15,12 @@
  */
 
 import type {
-  ObjectOrInterfaceDefinition,
+  InterfaceDefinition,
   ObjectSet,
-  SimplePropertyDef,
+  ObjectTypeDefinition,
 } from "@osdk/api";
-import type { WhereClause } from "@osdk/client";
-import { isObjectSet } from "@osdk/client";
 
-export function addFilterClauseToObjectSet<
-  Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
->(
-  objectSet: ObjectSet<Q, RDPs>,
-  whereClause: WhereClause<Q>,
-): ObjectSet<Q, RDPs> {
-  if (
-    objectSet == null || typeof objectSet !== "object"
-    || !isObjectSet(objectSet)
-  ) {
-    return objectSet;
-  }
-
-  return objectSet.where(whereClause);
-}
+export type StubClient = {
+  <Q extends ObjectTypeDefinition>(o: Q): ObjectSet<Q>;
+  <Q extends InterfaceDefinition>(o: Q): ObjectSet<Q>;
+};

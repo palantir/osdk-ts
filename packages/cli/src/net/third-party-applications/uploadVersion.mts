@@ -26,10 +26,13 @@ export async function uploadVersion(
   zipFile: ReadableStream | Blob | BufferSource,
 ): Promise<Version> {
   const fetch = createFetch(ctx.tokenProvider);
-  const url =
-    `${ctx.foundryUrl}/api/v2/thirdPartyApplications/${thirdPartyAppRid}/website/versions/upload?version=${
-      encodeURIComponent(version)
-    }&preview=true`;
+  const urlObj = new URL(
+    `api/v2/thirdPartyApplications/${thirdPartyAppRid}/website/versions/upload`,
+    ctx.foundryUrl,
+  );
+  urlObj.searchParams.set("version", version);
+  urlObj.searchParams.set("preview", "true");
+  const url = urlObj.toString();
 
   const result = await fetch(
     url,

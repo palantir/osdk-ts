@@ -16,15 +16,19 @@
 
 import type {
   CompileTimeMetadata,
-  InterfaceDefinition,
   ObjectOrInterfaceDefinition,
   ObjectSet,
-  ObjectTypeDefinition,
-  PageResult,
   QueryDefinition,
 } from "@osdk/api";
-import { type Client, createPlatformClient } from "@osdk/client";
+import { createPlatformClient } from "@osdk/client";
 import invariant from "tiny-invariant";
+import type {
+  MockClient,
+  ObjectSetStubCallback,
+  StubPatternCallback,
+} from "../api/MockClient.js";
+import type { QueryStubBuilder, StubBuilderFor } from "../api/StubBuilders.js";
+import type { StubClient } from "../api/StubClient.js";
 import { type MockObjectSetBranded } from "./createMockObjectSet.js";
 import {
   type Call,
@@ -43,35 +47,6 @@ type QueryStub = {
   error?: Error;
 };
 
-type IsOsdkObject<T> = T extends { $apiName: string } ? true : false;
-
-// Well-known string key used by Foundry Platform APIs to pull the
-// SharedClientContext (baseUrl, tokenProvider, fetch) off a client. Matches
-// the value of `symbolClientContext` in `@osdk/shared.client2`.
-const SYMBOL_CLIENT_CONTEXT = "__osdkClientContext";
-
-export interface FetchPageStubBuilder<T> {
-  thenReturnObjects(objects: T[]): void;
-}
-
-export interface FetchOneStubBuilder<T> {
-  thenReturnObject(object: T): void;
-}
-
-export interface AggregateStubBuilder<T> {
-  thenReturnAggregation(result: T): void;
-}
-
-export interface QueryStubBuilder<T> {
-  thenReturn(result: T): void;
-  thenThrow(error: Error): void;
-}
-
-export type StubBuilderFor<T> = T extends PageResult<infer U>
-  ? FetchPageStubBuilder<U>
-  : IsOsdkObject<T> extends true ? FetchOneStubBuilder<T>
-  : AggregateStubBuilder<T>;
-
 type QueryReturnTypeFromDef<Q extends QueryDefinition> = ReturnType<
   CompileTimeMetadata<Q>["signature"]
 > extends Promise<infer R> ? R : never;
@@ -80,29 +55,10 @@ type QueryParamsFromDef<Q extends QueryDefinition> =
   Parameters<CompileTimeMetadata<Q>["signature"]> extends [infer P] ? P
     : undefined;
 
-export type StubClient = {
-  <Q extends ObjectTypeDefinition>(o: Q): ObjectSet<Q>;
-  <Q extends InterfaceDefinition>(o: Q): ObjectSet<Q>;
-};
-
-export type StubPatternCallback<T> = (client: StubClient) => Promise<T>;
-
-export type ObjectSetStubCallback<Q extends ObjectOrInterfaceDefinition, T> = (
-  os: ObjectSet<Q>,
-) => Promise<T>;
-
-export interface MockClient extends Client {
-  when<T>(callback: StubPatternCallback<T>): StubBuilderFor<T>;
-  whenObjectSet<Q extends ObjectOrInterfaceDefinition, T>(
-    objectSet: ObjectSet<Q>,
-    callback: ObjectSetStubCallback<Q, T>,
-  ): StubBuilderFor<T>;
-  whenQuery<Q extends QueryDefinition>(
-    query: Q,
-    params?: QueryParamsFromDef<Q>,
-  ): QueryStubBuilder<QueryReturnTypeFromDef<Q>>;
-  clearStubs(): void;
-}
+// Well-known string key used by Foundry Platform APIs to pull the
+// SharedClientContext (baseUrl, tokenProvider, fetch) off a client. Matches
+// the value of `symbolClientContext` in `@osdk/shared.client2`.
+const SYMBOL_CLIENT_CONTEXT = "__osdkClientContext";
 
 export function createMockClient(): MockClient {
   const stubs: ClientStub[] = [];

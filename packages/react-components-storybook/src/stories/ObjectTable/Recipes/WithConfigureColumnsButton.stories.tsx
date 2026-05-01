@@ -42,7 +42,7 @@ const meta: Meta<EmployeeTableProps> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const WithColumnConfigDialog: Story = {
+export const WithConfigureColumnsButton: Story = {
   parameters: {
     docs: {
       source: {

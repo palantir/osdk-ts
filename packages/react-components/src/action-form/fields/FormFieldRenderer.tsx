@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { ObjectTypeDefinition, Osdk } from "@osdk/api";
 import React, { memo, useMemo } from "react";
 import type { FieldPath } from "react-hook-form";
 import { typedReactMemo } from "../../shared/typedMemo.js";
@@ -35,6 +36,7 @@ import { DatetimePickerField } from "./DatetimePickerField.js";
 import { DropdownField } from "./DropdownField.js";
 import { FilePickerField } from "./FilePickerField.js";
 import { NumberInputField } from "./NumberInputField.js";
+import { ObjectSelectField } from "./ObjectSelectField.js";
 import { ObjectSetField } from "./ObjectSetField.js";
 import { RadioButtonsField } from "./RadioButtonsField.js";
 import { TextAreaField } from "./TextAreaField.js";
@@ -123,6 +125,17 @@ function renderFieldComponent<S extends Record<string, unknown>>(
         <CustomFieldWrapper
           fieldDefinition={fieldDefinition}
           {...props}
+        />
+      );
+    case "OBJECT_SELECT":
+      return (
+        <ObjectSelectField
+          id={fieldDefinition.fieldKey}
+          value={narrowToOsdkObject(value)}
+          onChange={onChange}
+          placeholder={fieldDefinition.placeholder}
+          error={error}
+          {...fieldDefinition.fieldComponentProps}
         />
       );
     case "OBJECT_SET":
@@ -349,6 +362,16 @@ const ObjectSetWrapper = memo(function ObjectSetWrapperFn({
     />
   );
 });
+
+/** Narrows the untyped form value to an OsdkObject by checking for $primaryKey. */
+function narrowToOsdkObject(
+  value: unknown,
+): Osdk.Instance<ObjectTypeDefinition> | null {
+  if (value != null && typeof value === "object" && "$primaryKey" in value) {
+    return value as Osdk.Instance<ObjectTypeDefinition>;
+  }
+  return null;
+}
 
 function assertUnreachableFieldComponent(value: never): never {
   throw new Error(`Unhandled field component: ${String(value)}`);
