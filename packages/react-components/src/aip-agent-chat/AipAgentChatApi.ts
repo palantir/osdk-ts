@@ -22,8 +22,11 @@ import type * as React from "react";
  * Props for {@link AipAgentChat}, an OSDK-aware chat surface that wires
  * `useChat` from `@osdk/react/experimental/aip` against a Foundry LMS
  * model. Consumers do not need to import `useChat` or `foundryModel`
- * themselves — passing the platform client and a model API name is
- * enough to render a working chat.
+ * themselves — passing the platform client is enough to render a
+ * working chat.
+ *
+ * If neither `model` nor `defaultModel` is supplied, the chat falls
+ * back to the LMS model API name `"gpt-4o"`.
  *
  * Default rendering is feature-complete with no overrides supplied;
  * render slots and `on*` listeners are layered on top of the built-in
@@ -46,9 +49,7 @@ export interface AipAgentChatProps {
    * the consumer is expected to update this prop in response.
    *
    * Uncontrolled mode: omit and pass {@link AipAgentChatProps.defaultModel}
-   * instead.
-   *
-   * At least one of `model` or `defaultModel` is required.
+   * instead. If both are omitted, the chat falls back to `"gpt-4o"`.
    */
   model?: string;
 
@@ -59,7 +60,7 @@ export interface AipAgentChatProps {
    * {@link AipAgentChatProps.model} is also provided (controlled mode
    * wins).
    *
-   * At least one of `model` or `defaultModel` is required.
+   * @default "gpt-4o"
    */
   defaultModel?: string;
 
