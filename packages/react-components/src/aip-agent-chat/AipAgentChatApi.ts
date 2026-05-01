@@ -18,44 +18,12 @@ import type { UIMessage } from "@osdk/aip-core";
 import type { PlatformClient } from "@osdk/client";
 import type * as React from "react";
 
-/**
- * Foundry LMS model API names known at the time this package was built.
- *
- * The list mirrors the catalog of Palantir-provided models in
- * `quiver-language-model-service-utils`. Custom or registered-model API
- * names are still accepted because {@link AipModelApiName} widens to
- * `string` for the autocomplete-with-escape-hatch pattern.
- */
-export type AipKnownLmsModelApiName =
-  | "AnthropicClaude_4_6_Sonnet"
-  | "AnthropicClaude_4_5_Sonnet"
-  | "AnthropicClaude_4_6_Opus"
-  | "AnthropicClaude_4_5_Opus"
-  | "AnthropicClaude_4_Sonnet"
-  | "AnthropicClaude_4_5_Haiku"
-  | "AnthropicClaude_3_7_Sonnet"
-  | "AnthropicClaude_3_5_Sonnet_V2"
-  | "AnthropicClaude_3_5_Sonnet"
-  | "GPT_5_2"
-  | "GPT_5_1"
-  | "GPT_5"
-  | "GPT_4_5"
-  | "GPT_4_1"
-  | "GPT_4o"
-  | "Gemini_2_5_Pro"
-  | "Gemini_2_5_Flash"
-  | "grok_experimental"
-  | "grok_experimental_reasoning"
-  | "grok_3"
-  | "o3_mini"
-  | "o1_mini";
-
-/**
- * Foundry LMS model API name. Accepts any of the well-known
- * {@link AipKnownLmsModelApiName} values for autocomplete; falls back
- * to `string` so registered-model API names still type-check.
- */
-export type AipModelApiName = AipKnownLmsModelApiName | (string & {});
+// TODO: replace `string` with a literal union of well-known LMS model API
+// names (mirrored from `quiver-language-model-service-utils`'
+// PREFERRED_MODEL_IDENTIFIERS) so consumers get IDE autocomplete on the
+// `model` / `defaultModel` / `availableModels` props. The union should
+// widen via `T | (string & {})` so registered-model API names still
+// type-check.
 
 /**
  * Props for {@link AipAgentChat}, an OSDK-aware chat surface backed by
@@ -92,7 +60,7 @@ export interface AipAgentChatProps {
    * entry of {@link AipAgentChatProps.availableModels} (when provided),
    * or to `"GPT_4o"`.
    */
-  model?: AipModelApiName;
+  model?: string;
 
   /**
    * Initial LMS model API name for uncontrolled mode. The component
@@ -103,7 +71,7 @@ export interface AipAgentChatProps {
    *
    * @default "GPT_4o"
    */
-  defaultModel?: AipModelApiName;
+  defaultModel?: string;
 
   /**
    * When provided, the chat renders a model picker in the composer
@@ -111,7 +79,7 @@ export interface AipAgentChatProps {
    *
    * If omitted, no picker is rendered.
    */
-  availableModels?: ReadonlyArray<AipModelApiName>;
+  availableModels?: ReadonlyArray<string>;
 
   /**
    * Fires when the user selects a different model API name from the
@@ -129,7 +97,7 @@ export interface AipAgentChatProps {
    *
    * @param model The model API name the user just selected.
    */
-  onModelChange?: (model: AipModelApiName) => void;
+  onModelChange?: (model: string) => void;
 
   /**
    * System prompt prepended to every request.

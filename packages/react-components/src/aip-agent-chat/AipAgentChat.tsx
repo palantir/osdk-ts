@@ -22,14 +22,14 @@ import {
   type UIMessage,
 } from "@osdk/aip-core";
 import * as React from "react";
-import type { AipAgentChatProps, AipModelApiName } from "./AipAgentChatApi.js";
+import type { AipAgentChatProps } from "./AipAgentChatApi.js";
 import type { BaseAipAgentChatSendContext } from "./BaseAipAgentChat.js";
 import { BaseAipAgentChat } from "./BaseAipAgentChat.js";
 import { AipAgentChatModelPicker } from "./components/AipAgentChatModelPicker.js";
 
 export type { AipAgentChatProps } from "./AipAgentChatApi.js";
 
-const FALLBACK_MODEL_API_NAME: AipModelApiName = "GPT_4o";
+const FALLBACK_MODEL_API_NAME = "GPT_4o";
 
 /**
  * OSDK-aware chat surface backed by Foundry's Language Model Service.
@@ -56,7 +56,7 @@ export function AipAgentChat({
   // Internal state used only in uncontrolled mode. Initialized once
   // from the first available source: `controlledModel` → `defaultModel`
   // → first entry of `availableModels` → `FALLBACK_MODEL_API_NAME`.
-  const [internalModel, setInternalModel] = React.useState<AipModelApiName>(
+  const [internalModel, setInternalModel] = React.useState<string>(
     () =>
       controlledModel
         ?? defaultModel
@@ -68,7 +68,7 @@ export function AipAgentChat({
   const activeModel = isControlled ? controlledModel : internalModel;
 
   const handleModelChange = React.useCallback(
-    (next: AipModelApiName) => {
+    (next: string) => {
       if (!isControlled) {
         setInternalModel(next);
       }
