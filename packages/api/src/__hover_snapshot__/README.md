@@ -69,17 +69,3 @@ If a refactor intentionally changes a type's hover output:
    improvement you intended.
 3. Commit the updated `.snap` file. Reviewers will see the before/after
    directly in the diff.
-
-## What's covered for ObjectSet
-
-`hoverTypes.test.ts` defines a `KnownObjectSetMethods` union enumerating
-every member of `ObjectSet`. The split is documentation only:
-`ProbedObjectSetMethods` for things that have a probe;
-`SkippedObjectSetMethods` for things we've intentionally chosen not to
-snapshot (internal markers, trivial `this` returns, methods covered by
-sibling probes, etc.).
-
-If a new member is added to `ObjectSet`, the type-level assertion in
-`hoverTypes.test.ts` fails to typecheck until the new key is
-acknowledged in `KnownObjectSetMethods` — at which point the author
-decides whether to add a probe or to mark it skipped.
