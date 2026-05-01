@@ -130,6 +130,29 @@ export type MapPropNamesToInterface<
   >[JustProps<FROM, P> & keyof PropMapToInterface<FROM, TO>],
   TO
 >;
+
+/**
+ * True iff the OT `TO` implements interface `FROM` with at least one
+ * non-`localProperty` implementation.
+ */
+type OtHasNonLocalInterfaceImpl<
+  FROM extends ObjectOrInterfaceDefinition,
+  TO extends ObjectTypeDefinition,
+  Implementations = ApiNameAsString<FROM> extends
+    keyof NonNullable<CompileTimeMetadata<TO>["interfaceImplementations"]>
+    ? NonNullable<
+      CompileTimeMetadata<TO>["interfaceImplementations"]
+    >[ApiNameAsString<FROM>]
+    : undefined,
+> = Implementations extends undefined ? false
+  : true extends (
+    {
+      [K in keyof Implementations]: Implementations[K] extends
+        { type: "localProperty" } ? false
+        : true;
+    }[keyof Implementations]
+  ) ? true
+  : false;
 /**
  * Older version of this helper that allows for `$rid` and co in
  * the properties field.
@@ -276,8 +299,17 @@ export namespace Osdk {
         : Q extends ObjectOrInterfaceDefinition ? OsdkObjectLinksObject<Q>
         : never;
 
-      readonly $as: <NEW_Q extends ValidToFrom<Q>>(
-        type: NEW_Q | string,
+      readonly $as: <
+        NEW_Q extends HasModifiers<P> extends true
+          ? ValidToFrom<Q> & ObjectTypeDefinition
+          : ValidToFrom<Q>,
+      >(
+        type: Q extends InterfaceDefinition
+          ? NEW_Q extends ObjectTypeDefinition
+            ? OtHasNonLocalInterfaceImpl<Q, NEW_Q> extends true ? never
+            : NEW_Q | string
+          : NEW_Q | string
+          : NEW_Q | string,
       ) => Osdk.Instance<
         NEW_Q,
         OPTIONS,

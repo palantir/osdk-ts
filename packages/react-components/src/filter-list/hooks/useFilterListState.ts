@@ -18,7 +18,10 @@ import type { ObjectTypeDefinition, WhereClause } from "@osdk/api";
 import { useOsdkMetadata } from "@osdk/react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { assertUnreachable } from "../../shared/assertUnreachable.js";
-import type { FilterListProps } from "../FilterListApi.js";
+import type {
+  FilterDefinitionUnion,
+  FilterListProps,
+} from "../FilterListApi.js";
 import type { FilterState } from "../FilterListItemApi.js";
 import type { LinkedPropertyFilterState } from "../types/LinkedFilterTypes.js";
 import {
@@ -46,7 +49,7 @@ export interface UseFilterListStateResult<Q extends ObjectTypeDefinition> {
  * Uses string keys derived from getFilterKey() for stable lookups.
  */
 function buildInitialStates<Q extends ObjectTypeDefinition>(
-  definitions: FilterListProps<Q>["filterDefinitions"],
+  definitions: Array<FilterDefinitionUnion<Q>> | undefined,
 ): Map<string, FilterState> {
   const states = new Map<string, FilterState>();
 
