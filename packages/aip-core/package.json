@@ -18,6 +18,15 @@
       "require": "./build/cjs/index.cjs",
       "default": "./build/browser/index.js"
     },
+    "./ai-sdk": {
+      "browser": "./build/browser/public/ai-sdk.js",
+      "import": {
+        "types": "./build/types/public/ai-sdk.d.ts",
+        "default": "./build/esm/public/ai-sdk.js"
+      },
+      "require": "./build/cjs/public/ai-sdk.cjs",
+      "default": "./build/browser/public/ai-sdk.js"
+    },
     "./*": {
       "browser": "./build/browser/public/*.js",
       "import": {
