@@ -1,5 +1,17 @@
 # @osdk/generator-converters.ontologyir
 
+## 2.13.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.13.0
+
+## 2.12.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.12.0
+
 ## 2.11.0
 
 ### Minor Changes

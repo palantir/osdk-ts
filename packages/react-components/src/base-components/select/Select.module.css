@@ -140,6 +140,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  line-height: 0;
   color: var(--osdk-select-icon-color, var(--osdk-iconography-color-muted));
   flex-shrink: 0;
   transition: transform
@@ -151,6 +152,48 @@
 
   [data-popup-open] > & {
     transform: rotate(180deg);
+  }
+}
+
+.osdkSelectClear {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+  line-height: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  flex-shrink: 0;
+  color: var(--osdk-select-clear-color, var(--osdk-iconography-color-muted));
+  border-radius: var(
+    --osdk-select-border-radius,
+    var(--osdk-surface-border-radius)
+  );
+  transition:
+    color
+      var(
+        --osdk-select-transition-duration,
+        var(--osdk-emphasis-transition-duration)
+      )
+      var(--osdk-select-transition-ease, var(--osdk-emphasis-ease-default)),
+    background-color
+      var(
+        --osdk-select-transition-duration,
+        var(--osdk-emphasis-transition-duration)
+      )
+      var(--osdk-select-transition-ease, var(--osdk-emphasis-ease-default));
+
+  &:hover {
+    color: var(
+      --osdk-select-clear-color-hover,
+      var(--osdk-typography-color-default-rest)
+    );
+    background-color: var(
+      --osdk-select-clear-bg-hover,
+      var(--osdk-surface-background-color-default-hover)
+    );
   }
 }
 

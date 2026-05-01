@@ -106,6 +106,12 @@ export interface ObserveObjectOptions<
   pk: PrimaryKeyType<T>;
   select?: PropertyKeys<T>[];
   $loadPropertySecurityMetadata?: boolean;
+
+  /**
+   * When true, includes all properties of the underlying concrete object type
+   * for interface queries. Has no effect for non-interface queries.
+   */
+  $includeAllBaseObjectProperties?: boolean;
 }
 
 export type OrderBy<Q extends ObjectOrInterfaceDefinition> = {
@@ -128,6 +134,11 @@ export interface ObserveListOptions<
    *
    * Cannot be combined with `pivotTo`. The server does not support
    * websocket subscriptions for link-traversal queries.
+   *
+   * Cannot be combined with `withProperties`. The server does not support
+   * websocket subscriptions for object sets that include derived properties;
+   * in that case `streamUpdates` is ignored and a warning is logged in
+   * development.
    */
   streamUpdates?: boolean;
   withProperties?: DerivedProperty.Clause<Q>;

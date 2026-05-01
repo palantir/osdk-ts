@@ -219,6 +219,33 @@ describe("createMockOsdkObject", () => {
 
         const result = await mockEmployee.$link.officeLink.fetchOneWithErrors();
         expect(result.value).toBe(mockOffice);
+        expect(result.error).toBeUndefined();
+      });
+
+      it("fetchOne rejects when link value is an Error", async () => {
+        const error = new Error("link missing");
+        const mockEmployee = createMockOsdkObject(
+          Employee,
+          { employeeId: 3 },
+          { links: { officeLink: error } },
+        );
+
+        await expect(mockEmployee.$link.officeLink.fetchOne()).rejects.toBe(
+          error,
+        );
+      });
+
+      it("simulates link failure where fetchOneWithErrors returns { error } (isOk === false)", async () => {
+        const boom = new Error("link missing");
+        const mockEmployee = createMockOsdkObject(
+          Employee,
+          { employeeId: 4 },
+          { links: { officeLink: boom } },
+        );
+
+        const result = await mockEmployee.$link.officeLink.fetchOneWithErrors();
+        expect(result.error).toBe(boom);
+        expect(result.value).toBeUndefined();
       });
     });
 

@@ -447,7 +447,7 @@ describe(useObjectTableData, () => {
     );
   });
 
-  it("when function columns are defined without objectSet, should call useFunctionColumnsData with undefined objectSet", () => {
+  it("when function columns are defined without objectSet, should call useFunctionColumnsData with the objectType", () => {
     const mockBaseData = [
       { $primaryKey: "1", $apiName: "TestObject", name: "Object 1" },
       { $primaryKey: "2", $apiName: "TestObject", name: "Object 2" },
@@ -494,7 +494,7 @@ describe(useObjectTableData, () => {
     );
 
     expect(useFunctionColumnsData).toHaveBeenCalledWith({
-      objectSet: undefined,
+      objectOrInterfaceType: TestObjectType,
       objects: mockBaseData,
       columnDefinitions,
       primaryKeyApiName: undefined,
@@ -590,7 +590,7 @@ describe(useObjectTableData, () => {
     );
 
     expect(useFunctionColumnsData).toHaveBeenCalledWith({
-      objectSet: mockObjectSet,
+      objectOrInterfaceType: TestObjectType,
       objects: mockBaseData,
       columnDefinitions,
       primaryKeyApiName: undefined,

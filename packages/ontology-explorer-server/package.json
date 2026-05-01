@@ -25,6 +25,7 @@
   "scripts": {
     "build": "cp -r node_modules/@osdk/ontology-explorer-app/build/site build/site",
     "check-attw": "attw --profile esm-only --pack .",
+    "check-bundle": "monorepo.tool.check-bundle",
     "check-spelling": "cspell --quiet .",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
@@ -40,6 +41,7 @@
   },
   "devDependencies": {
     "@osdk/monorepo.api-extractor": "workspace:~",
+    "@osdk/monorepo.tool.check-bundle": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@osdk/ontology-explorer-app": "workspace:~",
     "@types/express": "^4.17.21",

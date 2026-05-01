@@ -85,6 +85,15 @@ export class ListsHelper extends AbstractHelper<
               + "link-traversal queries. Ignoring streamUpdates.",
           );
         }
+      } else if (options.withProperties) {
+        if (process.env.NODE_ENV !== "production") {
+          // eslint-disable-next-line no-console
+          console.warn(
+            "[@osdk/client] streamUpdates is not supported with withProperties. "
+              + "The server does not support websocket subscriptions for "
+              + "object sets that include derived properties. Ignoring streamUpdates.",
+          );
+        }
       } else {
         ret.query.registerStreamUpdates(ret.subscription);
       }

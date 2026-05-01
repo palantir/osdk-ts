@@ -31,7 +31,6 @@ import { type CacheKey, DEBUG_ONLY__cacheKeysToString } from "../CacheKey.js";
 import type { Canonical } from "../Canonical.js";
 import { isObjectInstance } from "../isObjectInstance.js";
 import type { Entry } from "../Layer.js";
-import { RDP_IDX } from "../list/ListCacheKey.js";
 import { type ObjectCacheKey } from "../object/ObjectCacheKey.js";
 import { Query } from "../Query.js";
 import type { Rdp } from "../RdpCanonicalizer.js";
@@ -84,11 +83,16 @@ export abstract class BaseListQuery<
    */
   protected sortingStrategy: SortingStrategy = new NoOpSortingStrategy();
 
+  /** RDP configuration for this collection. */
+  public abstract get rdpConfig(): Canonical<Rdp> | undefined;
+
   /**
-   * Get RDP configuration from the cache key
+   * Whether this query requests all properties of underlying concrete object
+   * types for interface results. Subclasses that wire the option through
+   * their cache key tuple override this to read the value out.
    */
-  public get rdpConfig(): Canonical<Rdp> | null {
-    return this.cacheKey.otherKeys[RDP_IDX];
+  public get includeAllBaseObjectProperties(): boolean {
+    return false;
   }
 
   private _selectFieldSetMemo: ReadonlySet<string> | undefined;
@@ -162,6 +166,7 @@ export abstract class BaseListQuery<
         batch,
         this.rdpConfig,
         this.selectFieldSet,
+        this.includeAllBaseObjectProperties,
       );
     } else {
       // Items are already cache keys
@@ -515,6 +520,7 @@ export abstract class BaseListQuery<
           batch,
           this.rdpConfig,
           this.selectFieldSet,
+          this.includeAllBaseObjectProperties,
         );
 
         return this._updateList(
@@ -634,6 +640,7 @@ export abstract class BaseListQuery<
         batch,
         this.rdpConfig,
         this.selectFieldSet,
+        this.includeAllBaseObjectProperties,
       );
     } else {
       // Items are already cache keys
@@ -769,6 +776,8 @@ export abstract class BaseListQuery<
           [object as Osdk.Instance<ObjectTypeDefinition>],
           batch,
           this.rdpConfig, // Safe - null for queries without RDPs
+          undefined,
+          this.includeAllBaseObjectProperties,
         );
       });
     } else if (state === "REMOVED") {

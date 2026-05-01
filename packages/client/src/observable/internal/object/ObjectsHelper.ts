@@ -89,11 +89,13 @@ export class ObjectsHelper extends AbstractHelper<
     batch: BatchContext,
     rdpConfig?: Canonical<Rdp> | null,
     selectFields?: ReadonlySet<string>,
+    includeAllBaseObjectProperties?: boolean,
   ): ObjectCacheKey[] {
     return values.map(v =>
       this.getQuery({
         apiName: v.$objectType ?? v.$apiName,
         pk: v.$primaryKey,
+        $includeAllBaseObjectProperties: includeAllBaseObjectProperties,
       }, rdpConfig).writeToStore(
         v as ObjectHolder,
         "loaded",

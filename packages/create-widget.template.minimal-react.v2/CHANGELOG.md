@@ -1,5 +1,13 @@
 # @osdk/create-widget.template.react.v2
 
+## 3.10.0
+
+### Minor Changes
+
+- e2bad8f: add @osdk/react dep and OsdkProvider wrapping in app and widget react templates so the commented useOsdkClient example works when uncommented
+
+## 3.9.0
+
 ## 3.8.0
 
 ## 3.7.0

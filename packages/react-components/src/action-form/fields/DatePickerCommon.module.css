@@ -1,5 +1,6 @@
 /* Bare input inside a date picker wrapper */
 .osdkDatePickerInput {
+  width: 100%;
   flex: 1;
   min-width: 0;
   min-height: var(--osdk-datetime-input-min-height);
@@ -11,6 +12,9 @@
   font-family: var(--osdk-datetime-input-font-family);
   font-size: var(--osdk-datetime-input-font-size);
   line-height: var(--osdk-datetime-input-line-height);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 
   &::placeholder {
     color: var(--osdk-datetime-input-placeholder-color);

@@ -1,5 +1,21 @@
 # @osdk/widget.vite-plugin
 
+## 3.10.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.10.0
+
+## 3.9.0
+
+### Minor Changes
+
+- df1a4f8: Build dev-mode settings and preview redirect URLs via the URL constructor so they handle any `foundryUrl` shape (with or without trailing slash, with path prefix).
+
+### Patch Changes
+
+- @osdk/widget.api@3.9.0
+
 ## 3.8.0
 
 ### Patch Changes
