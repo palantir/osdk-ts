@@ -4696,6 +4696,9 @@ importers:
         specifier: ^3.1.0
         version: 3.1.0
     devDependencies:
+      '@osdk/aip-core':
+        specifier: workspace:*
+        version: link:../aip-core
       '@osdk/api':
         specifier: workspace:*
         version: link:../api
