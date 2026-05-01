@@ -38,7 +38,10 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
+    "@ai-sdk/provider": "^3.0.8",
+    "@ai-sdk/react": "^3.0.170",
     "@osdk/aip-core": "workspace:~",
+    "ai": "^6.0.168",
     "@osdk/api": "workspace:~",
     "@osdk/client": "workspace:~",
     "@osdk/oauth": "workspace:~",
