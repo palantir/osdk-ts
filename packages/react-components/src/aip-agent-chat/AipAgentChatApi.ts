@@ -19,14 +19,53 @@ import type { PlatformClient } from "@osdk/client";
 import type * as React from "react";
 
 /**
- * Props for {@link AipAgentChat}, an OSDK-aware chat surface that wires
- * `useChat` from `@osdk/react/experimental/aip` against a Foundry LMS
- * model. Consumers do not need to import `useChat` or `foundryModel`
- * themselves — passing the platform client is enough to render a
- * working chat.
+ * Foundry LMS model API names known at the time this package was built.
+ *
+ * The list mirrors the catalog of Palantir-provided models in
+ * `quiver-language-model-service-utils`. Custom or registered-model API
+ * names are still accepted because {@link AipModelApiName} widens to
+ * `string` for the autocomplete-with-escape-hatch pattern.
+ */
+export type AipKnownLmsModelApiName =
+  | "AnthropicClaude_4_6_Sonnet"
+  | "AnthropicClaude_4_5_Sonnet"
+  | "AnthropicClaude_4_6_Opus"
+  | "AnthropicClaude_4_5_Opus"
+  | "AnthropicClaude_4_Sonnet"
+  | "AnthropicClaude_4_5_Haiku"
+  | "AnthropicClaude_3_7_Sonnet"
+  | "AnthropicClaude_3_5_Sonnet_V2"
+  | "AnthropicClaude_3_5_Sonnet"
+  | "GPT_5_2"
+  | "GPT_5_1"
+  | "GPT_5"
+  | "GPT_4_5"
+  | "GPT_4_1"
+  | "GPT_4o"
+  | "Gemini_2_5_Pro"
+  | "Gemini_2_5_Flash"
+  | "grok_experimental"
+  | "grok_experimental_reasoning"
+  | "grok_3"
+  | "o3_mini"
+  | "o1_mini";
+
+/**
+ * Foundry LMS model API name. Accepts any of the well-known
+ * {@link AipKnownLmsModelApiName} values for autocomplete; falls back
+ * to `string` so registered-model API names still type-check.
+ */
+export type AipModelApiName = AipKnownLmsModelApiName | (string & {});
+
+/**
+ * Props for {@link AipAgentChat}, an OSDK-aware chat surface backed by
+ * Foundry's Language Model Service. Consumers do not need to import
+ * `streamText` or `foundryModel` themselves — passing the platform
+ * client is enough to render a working chat.
  *
  * If neither `model` nor `defaultModel` is supplied, the chat falls
- * back to the LMS model API name `"gpt-4o"`.
+ * back to the first entry of `availableModels` (when provided), or to
+ * the LMS model API name `"GPT_4o"`.
  *
  * Default rendering is feature-complete with no overrides supplied;
  * render slots and `on*` listeners are layered on top of the built-in
@@ -41,7 +80,7 @@ export interface AipAgentChatProps {
   client: PlatformClient;
 
   /**
-   * Active LMS model API name (for example `"gpt-4o"`). Resolved
+   * Active LMS model API name (for example `"GPT_4o"`). Resolved
    * internally via `foundryModel({ client, model })`.
    *
    * Controlled mode: when provided, the consumer holds the model state.
@@ -49,9 +88,11 @@ export interface AipAgentChatProps {
    * the consumer is expected to update this prop in response.
    *
    * Uncontrolled mode: omit and pass {@link AipAgentChatProps.defaultModel}
-   * instead. If both are omitted, the chat falls back to `"gpt-4o"`.
+   * instead. If both are omitted, the chat falls back to the first
+   * entry of {@link AipAgentChatProps.availableModels} (when provided),
+   * or to `"GPT_4o"`.
    */
-  model?: string;
+  model?: AipModelApiName;
 
   /**
    * Initial LMS model API name for uncontrolled mode. The component
@@ -60,9 +101,9 @@ export interface AipAgentChatProps {
    * {@link AipAgentChatProps.model} is also provided (controlled mode
    * wins).
    *
-   * @default "gpt-4o"
+   * @default "GPT_4o"
    */
-  defaultModel?: string;
+  defaultModel?: AipModelApiName;
 
   /**
    * When provided, the chat renders a model picker in the composer
@@ -70,7 +111,7 @@ export interface AipAgentChatProps {
    *
    * If omitted, no picker is rendered.
    */
-  availableModels?: ReadonlyArray<string>;
+  availableModels?: ReadonlyArray<AipModelApiName>;
 
   /**
    * Fires when the user selects a different model API name from the
@@ -88,7 +129,7 @@ export interface AipAgentChatProps {
    *
    * @param model The model API name the user just selected.
    */
-  onModelChange?: (model: string) => void;
+  onModelChange?: (model: AipModelApiName) => void;
 
   /**
    * System prompt prepended to every request.
