@@ -38,16 +38,34 @@ export interface AipAgentChatProps {
   client: PlatformClient;
 
   /**
-   * Foundry LMS model API name to chat with (for example `"gpt-4o"`).
-   * Resolved internally via `foundryModel({ client, model })`.
+   * Active LMS model API name (for example `"gpt-4o"`). Resolved
+   * internally via `foundryModel({ client, model })`.
+   *
+   * Controlled mode: when provided, the consumer holds the model state.
+   * Updates from the picker fire {@link AipAgentChatProps.onModelChange};
+   * the consumer is expected to update this prop in response.
+   *
+   * Uncontrolled mode: omit and pass {@link AipAgentChatProps.defaultModel}
+   * instead.
+   *
+   * At least one of `model` or `defaultModel` is required.
    */
-  model: string;
+  model?: string;
+
+  /**
+   * Initial LMS model API name for uncontrolled mode. The component
+   * manages model state internally, switching when the user picks a
+   * different option from the picker. Ignored when
+   * {@link AipAgentChatProps.model} is also provided (controlled mode
+   * wins).
+   *
+   * At least one of `model` or `defaultModel` is required.
+   */
+  defaultModel?: string;
 
   /**
    * When provided, the chat renders a model picker in the composer
-   * footer populated with these API names. Selecting a different option
-   * fires {@link AipAgentChatProps.onModelChange}; the consumer is
-   * expected to update {@link AipAgentChatProps.model} in response.
+   * footer populated with these API names.
    *
    * If omitted, no picker is rendered.
    */
@@ -55,9 +73,17 @@ export interface AipAgentChatProps {
 
   /**
    * Fires when the user selects a different model API name from the
-   * picker. Has no effect unless
-   * {@link AipAgentChatProps.availableModels} is provided. Consumers are
-   * expected to update {@link AipAgentChatProps.model} in response.
+   * picker.
+   *
+   * - **Controlled mode** (`model` is set): the consumer is expected to
+   *   update {@link AipAgentChatProps.model} in response.
+   * - **Uncontrolled mode** (only `defaultModel` is set): a
+   *   non-controlling listener; the picker still mutates internal state
+   *   regardless. Use this for analytics or to persist the user's
+   *   choice.
+   *
+   * Has no effect unless {@link AipAgentChatProps.availableModels} is
+   * provided.
    *
    * @param model The model API name the user just selected.
    */
