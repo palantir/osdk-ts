@@ -64,10 +64,12 @@ export interface FormFieldDefinition<
   placeholder?: string;
 
   /**
-   * Additional information to display on this field
-   * The placement of helper text depends on the value of helperTextPlacement prop
+   * Additional information to display on this field.
+   * Accepts plain text or rich content (e.g. JSX with links or formatting).
+   * Rendered as a tooltip icon next to the label by default, or below the
+   * label when helperTextPlacement is "bottom".
    */
-  helperText?: string;
+  helperText?: React.ReactNode;
 
   /**
    * The placement of the helper text either below the field or in a tooltip
@@ -647,7 +649,7 @@ export type RendererFieldDefinition = {
     label: string;
     isRequired?: boolean;
     placeholder?: string;
-    helperText?: string;
+    helperText?: React.ReactNode;
     helperTextPlacement?: "bottom" | "tooltip";
     validate?: (value: unknown) => Promise<string | undefined>;
     onValidationError?: (error: ValidationError) => string | undefined;

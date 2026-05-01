@@ -1113,6 +1113,114 @@ export const WithMultiFilePicker: Story = {
   },
 };
 
+const helperTextFieldDefinitions: ReadonlyArray<RendererFieldDefinition> = [
+  {
+    fieldKey: "email",
+    fieldComponent: "TEXT_INPUT",
+    label: "Email",
+    isRequired: true,
+    helperText: (
+      <span>
+        We'll use this to send you a confirmation.{" "}
+        <a href="#privacy" style={{ color: "inherit" }}>
+          Privacy policy
+        </a>
+      </span>
+    ),
+    helperTextPlacement: "tooltip",
+    fieldComponentProps: {
+      placeholder: "you@example.com",
+    },
+  },
+  {
+    fieldKey: "bio",
+    fieldComponent: "TEXT_AREA",
+    label: "Bio",
+    helperText: (
+      <span>
+        Write a short bio. <strong>Markdown</strong> is supported.
+      </span>
+    ),
+    helperTextPlacement: "bottom",
+    fieldComponentProps: {
+      placeholder: "Tell us about yourself",
+      rows: 3,
+    },
+  },
+  {
+    fieldKey: "department",
+    fieldComponent: "DROPDOWN",
+    label: "Department",
+    helperText: "Select the department you belong to",
+    helperTextPlacement: "tooltip",
+    fieldComponentProps: {
+      items: DEPARTMENT_ITEMS,
+      placeholder: "Select department",
+    },
+  },
+];
+
+export const WithHelperText: Story = {
+  args: {
+    fieldDefinitions: helperTextFieldDefinitions,
+    onSubmit: handleSubmit,
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `const fieldDefinitions = [
+  {
+    fieldKey: "email",
+    fieldComponent: "TEXT_INPUT",
+    label: "Email",
+    isRequired: true,
+    helperText: (
+      <span>
+        We'll use this to send you a confirmation.{" "}
+        <a href="#privacy">Privacy policy</a>
+      </span>
+    ),
+    helperTextPlacement: "tooltip",
+    fieldComponentProps: { placeholder: "you@example.com" },
+  },
+  {
+    fieldKey: "bio",
+    fieldComponent: "TEXT_AREA",
+    label: "Bio",
+    helperText: (
+      <span>
+        Write a short bio. <strong>Markdown</strong> is supported.
+      </span>
+    ),
+    helperTextPlacement: "bottom",
+    fieldComponentProps: { placeholder: "Tell us about yourself", rows: 3 },
+  },
+  {
+    fieldKey: "department",
+    fieldComponent: "DROPDOWN",
+    label: "Department",
+    helperText: "Select the department you belong to",
+    helperTextPlacement: "tooltip",
+    fieldComponentProps: {
+      items: ["Engineering", "Marketing", "Sales"],
+      placeholder: "Select department",
+    },
+  },
+];
+
+// helperText accepts React.ReactNode — plain strings, JSX with links,
+// bold text, or any valid React node.
+// "tooltip" (default) shows an info icon next to the label.
+// "bottom" renders the text below the label, above the input.
+<BaseForm
+  fieldDefinitions={fieldDefinitions}
+  onSubmit={(formState) => console.log("Submitted:", formState)}
+/>`,
+      },
+    },
+  },
+};
+
 const defaultValueFieldDefinitions: ReadonlyArray<RendererFieldDefinition> = [
   {
     fieldKey: "name",
