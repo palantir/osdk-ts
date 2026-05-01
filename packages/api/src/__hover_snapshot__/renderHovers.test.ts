@@ -108,7 +108,7 @@ function probeDescription(
   if (text.trim().length === 0) {
     const name = ts.isIdentifier(decl.name) ? decl.name.text : "<unnamed>";
     throw new Error(
-      `probe \`${name}\` is missing a JSDoc — add a one-line description above its declaration in probes.ts`,
+      `probe \`${name}\` is missing a JSDoc — add a /** ... */ block above its declaration in probes.ts`,
     );
   }
   return text.replace(/\s+/g, " ").trim();
@@ -124,7 +124,7 @@ function scrub(s: string): string {
 // compiler API. dprint is a root devDep so its binary is on PATH when this
 // test runs under `pnpm test` / `pnpm vitest`.
 function formatProbes(probes: Probes): Probes {
-  const names = Object.keys(probes).sort();
+  const names = Object.keys(probes);
   if (names.length === 0) return {};
   const wrapped = names.map((n) => `type ${n} = ${probes[n].rendered};`).join(
     "\n\n",

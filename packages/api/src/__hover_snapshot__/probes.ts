@@ -14,37 +14,18 @@
  * limitations under the License.
  */
 
-// Probes for the hover-snapshot test in renderHovers.test.ts. Each
-// `declare const probe_*: ...` declaration is rendered as a string via the
-// TypeScript compiler API and snapshotted. This pins the user-facing hover
-// shape of high-traffic ObjectSet methods so future type-graph refactors
-// surface as snapshot diffs in code review.
-//
-// Adding a probe: write `declare const probe_<name>: <type>` with a JSDoc
-// describing the user-facing intent (the JSDoc is required and becomes the
-// snapshot's leading comment). Then run `pnpm updateSnapshots` from
-// packages/api/.
+// Probes for the hover-snapshot test. See README.md for workflow.
 //
 // Useful TypeScript built-ins for sculpting the type you want to snapshot:
 //   - `Parameters<F>[N]` — the Nth parameter type of a function/method.
 //     Example: `Parameters<ObjectSet<E>["where"]>[0]` for the clause arg.
 //   - `ReturnType<F>` — the return type of a function/method.
-//     Example: `ReturnType<ObjectSet<E>["asyncIter"]>` for the iter result.
 //   - `Awaited<T>` — unwrap a `Promise<X>` to `X`.
-//     Example: `Awaited<ReturnType<ObjectSet<E>["fetchPage"]>>`.
 //   - `typeof <value>` — reference a value's type. Combine with TS 4.7+
 //     instantiation-expression syntax `typeof fn<T>` to capture what a
 //     generic method returns when called with a specific type argument.
-//     Example: see `_withProperties` below — declaring an intermediate
-//     value lets us write `typeof _withProperties<{...}>` to model the
-//     post-call shape, which is otherwise buried behind a constraint default.
-//   - Index access (`["key"]`, `[number]`) — drill into an object/tuple
-//     type. Example: `Foo["bar"]` or `Tuple[0]`.
-//
-// The JSDoc on each probe should describe the user-facing situation in
-// plain English ("The clause argument of objectSet.where(...)") rather than
-// restating the type-level expression. This is what reviewers see in the
-// snapshot diff to understand what's being captured.
+//     See `_withProperties` below for an example.
+//   - Index access (`Foo["bar"]`, `Tuple[0]`) — drill into an object/tuple.
 
 import type { ObjectSet } from "../objectSet/ObjectSet.js";
 import type { EmployeeApiTest } from "../test/EmployeeApiTest.js";
@@ -99,19 +80,6 @@ declare const _withProperties: ObjectSet<EmployeeApiTest>["withProperties"];
 declare const probe_withProperties_return: ReturnType<
   typeof _withProperties<{ mom: "integer"; dad: "string" | undefined }>
 >;
-
-// Force these to be considered "used" so a future tsconfig change with
-// `noUnusedLocals` does not silently break the test.
-export type _probes =
-  | typeof probe_objectSet
-  | typeof probe_where_clause_param
-  | typeof probe_subscribe_listener_param
-  | typeof probe_fetchPage_result
-  | typeof probe_asyncIter_result
-  | typeof probe_aggregate_param
-  | typeof probe_objectSet_with_rdp
-  | typeof probe_where_clause_with_rdp
-  | typeof probe_withProperties_return;
 
 // Every public member of `ObjectSet`. Split for documentation: methods we
 // have probes for vs methods we've intentionally chosen to skip (covered by
