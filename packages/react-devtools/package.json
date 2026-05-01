@@ -45,8 +45,8 @@
     "zustand": "^4.5.5"
   },
   "peerDependencies": {
-    "@osdk/api": "*",
-    "@osdk/client": "*",
+    "@osdk/api": "workspace:*",
+    "@osdk/client": "workspace:*",
     "@osdk/react": "*",
     "@types/react": "^17 || ^18 || ^19",
     "react": "^17 || ^18 || ^19",
