@@ -108,16 +108,16 @@ const config: Config = {
         },
         {
           type: "docSidebar",
-          sidebarId: "functionsTesting",
-          position: "left",
-          label: "Functions Testing",
-        },
-        {
-          type: "docSidebar",
           sidebarId: "docs",
           docsPluginId: "react-components",
           position: "left",
           label: "Components",
+        },
+        {
+          type: "docSidebar",
+          sidebarId: "functionsTesting",
+          position: "left",
+          label: "Functions Testing",
         },
         {
           href: "https://palantir.github.io/osdk-ts/storybook/",
