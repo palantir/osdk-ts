@@ -29,7 +29,10 @@ import type {
   LocalizedTitleAndDescription,
   OutputShape,
 } from "@osdk/client.unstable/api";
-import type { IDiscoveredFunction } from "@osdk/generator-converters.ontologyir";
+import type {
+  IDataType,
+  IDiscoveredFunction,
+} from "@osdk/generator-converters.ontologyir";
 import type { FunctionsIr } from "../../../api/defineOntologyV2.js";
 import type { InputMappingEntry } from "../../../cli/marketplaceSerialization/index.js";
 import {
@@ -335,7 +338,7 @@ class BaseParameterTypeConverter {
 }
 
 function convertShapeDataType(
-  dataType: { type: string; [key: string]: unknown },
+  dataType: IDataType,
   objectTypeIds: Record<string, string>,
   ridGenerator: OntologyRidGenerator,
 ): { type: string; [key: string]: unknown } {
@@ -580,7 +583,7 @@ export class ActionTypeShapeExtractor {
         .split(".").pop() ?? functionRule.functionRule.functionRid;
 
       const discoveredFunction = functionsIr.discoveredFunctions.find(
-        f => f.locator.typescriptOsdk?.functionName === functionApiName,
+        f => f.locator.typescript?.functionName === functionApiName,
       );
 
       if (discoveredFunction) {

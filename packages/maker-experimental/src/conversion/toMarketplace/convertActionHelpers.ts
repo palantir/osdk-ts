@@ -254,7 +254,7 @@ function convertFunctionBackedAction(
   const functionName = rule.functionRule.functionRid;
 
   const discoveredFunction = functionsIr.discoveredFunctions.find(
-    f => f.locator.typescriptOsdk?.functionName === functionName,
+    f => f.locator.typescript?.functionName === functionName,
   );
   invariant(
     discoveredFunction != null,
@@ -267,10 +267,11 @@ function convertFunctionBackedAction(
     { type: "parameterId"; parameterId: string }
   > = {};
   const parameterOrdering: string[] = [];
-  const affectedObjectTypeIds: string[] = [];
 
   for (const input of discoveredFunction.inputs) {
-    if (input.dataType.type === "ontologyEdit") continue;
+    if (
+      input.dataType.type === "ontologyEdit" || input.dataType.type === "client"
+    ) continue;
 
     const paramId = input.name;
     parameterOrdering.push(paramId);
@@ -282,7 +283,6 @@ function convertFunctionBackedAction(
     const paramType = convertFunctionInputDataType(
       input.dataType,
       ridGenerator,
-      affectedObjectTypeIds,
     );
 
     parameters[paramId] = {
@@ -319,68 +319,29 @@ function convertFunctionBackedAction(
           : undefined,
       },
     }));
-  action = { ...action, parameters: syntheticParameters };
-
-  const functionRid = `ri.function-registry.main.function.${functionName}`;
-
-  const formContentOrdering = parameterOrdering.map(p => ({
-    type: "parameterId",
-    parameterId: p,
-  }));
-
-  const metadata = {
-    rid: ridGenerator.generateRidForActionType(action.apiName),
-    version: "0.1.0",
-    apiName: action.apiName,
-    displayMetadata: {
-      configuration: {
-        defaultLayout: action.defaultFormat ?? "FORM",
-        displayAndFormat: action.displayAndFormat ?? {
-          table: {
-            columnWidthByParameterRid: {},
-            enableFileImport: true,
-            fitHorizontally: false,
-            frozenColumnCount: 0,
-            rowHeightInLines: 1,
-          },
-        },
-        enableLayoutUserSwitch: action.enableLayoutSwitch ?? false,
-      },
-      description: action.description ?? "",
-      displayName: action.displayName,
-      applyingMessage: [] as Array<{ type: string; message: string }>,
-      successMessage: action.submissionMetadata?.successMessage
-        ? [{
-          type: "message",
-          message: action.submissionMetadata.successMessage,
-        }]
-        : [],
-      typeClasses: [],
-    },
-    parameterOrdering,
-    formContentOrdering,
-    parameters,
-    sections: {},
-    status: typeof action.status === "string"
-      ? {
-        type: action.status,
-        [action.status]: {},
-      }
-      : action.status,
+  action = {
+    ...action,
+    parameters: syntheticParameters,
     entities: {
-      affectedObjectTypes: affectedObjectTypeIds,
+      affectedObjectTypes: Object.keys(
+        discoveredFunction.ontologyProvenance?.editedObjects ?? {},
+      ),
       affectedLinkTypes: [],
-      affectedInterfaceTypes: [],
+      affectedInterfaceTypes: Object.keys(
+        discoveredFunction.ontologyProvenance?.editedInterfaces ?? {},
+      ),
       typeGroups: [],
     },
   };
+
+  const functionRid = `ri.function-registry.main.function.${functionName}`;
 
   return {
     actionType: {
       actionTypeLogic: {
         logic: {
           rules: [{
-            type: "functionRule" as const,
+            type: "functionRule",
             functionRule: {
               functionRid,
               functionVersion: "0.1.0",
@@ -404,9 +365,14 @@ function convertFunctionBackedAction(
         notifications: [],
         effects: null,
       },
-      metadata,
+      metadata: buildActionMetadata(
+        action,
+        ridGenerator,
+        parameterOrdering,
+        parameters,
+        {},
+      ),
     },
-
     parameterIds: {},
   };
 }
@@ -425,7 +391,6 @@ const PRIMITIVE_TYPES: Record<string, Parameter["type"]> = {
 function convertFunctionInputDataType(
   dataType: IDataType,
   ridGenerator: OntologyRidGenerator,
-  affectedObjectTypeIds: string[],
 ): Parameter["type"] {
   switch (dataType.type) {
     case "object": {
@@ -434,7 +399,6 @@ function convertFunctionInputDataType(
       const objectTypeId = ridGenerator.generateObjectTypeId(
         objectData.object.objectTypeId,
       );
-      affectedObjectTypeIds.push(objectTypeId);
       return {
         type: "objectReference",
         objectReference: { objectTypeId, maybeCreateObjectOption: null },
@@ -449,7 +413,6 @@ function convertFunctionInputDataType(
       const objectTypeId = ridGenerator.generateObjectTypeId(
         objectSetData.objectSet.objectTypeId,
       );
-      affectedObjectTypeIds.push(objectTypeId);
       return {
         type: "objectSetRid",
         objectSetRid: {
@@ -463,7 +426,6 @@ function convertFunctionInputDataType(
       return convertFunctionInputListDataType(
         innerType,
         ridGenerator,
-        affectedObjectTypeIds,
       );
     }
     case "set": {
@@ -472,7 +434,6 @@ function convertFunctionInputDataType(
       return convertFunctionInputListDataType(
         innerType,
         ridGenerator,
-        affectedObjectTypeIds,
       );
     }
     default: {
@@ -501,7 +462,6 @@ const PRIMITIVE_LIST_TYPES: Record<string, Parameter["type"]> = {
 function convertFunctionInputListDataType(
   elementType: IDataType,
   ridGenerator: OntologyRidGenerator,
-  affectedObjectTypeIds: string[],
 ): Parameter["type"] {
   switch (elementType.type) {
     case "object": {
@@ -509,7 +469,6 @@ function convertFunctionInputListDataType(
       const objectTypeId = ridGenerator.generateObjectTypeId(
         objectData.object.objectTypeId,
       );
-      affectedObjectTypeIds.push(objectTypeId);
       return {
         type: "objectReferenceList",
         objectReferenceList: { objectTypeId },
