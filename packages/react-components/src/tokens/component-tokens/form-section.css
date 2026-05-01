@@ -30,6 +30,16 @@
 
   /* Collapse trigger */
   --osdk-form-section-trigger-color: var(--osdk-typography-color-muted);
+  --osdk-form-section-trigger-gap: calc(var(--osdk-surface-spacing) * 2);
+
+  /* Chevron transition */
+  --osdk-form-section-transition-duration: var(
+    --osdk-emphasis-transition-duration
+  );
+
+  /* Gaps */
+  --osdk-form-section-header-gap: calc(var(--osdk-surface-spacing) * 2);
+  --osdk-form-section-title-gap: calc(var(--osdk-surface-spacing) * 1);
 
   /* Content area */
   --osdk-form-section-content-padding-block: calc(

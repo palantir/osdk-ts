@@ -31,13 +31,13 @@
   justify-content: space-between;
   padding-block: var(--osdk-form-section-header-padding-block);
   padding-inline: var(--osdk-form-section-header-padding-inline);
-  gap: calc(var(--osdk-surface-spacing) * 2);
+  gap: var(--osdk-form-section-header-gap);
 }
 
 .osdkFormSectionTitleArea {
   display: flex;
   flex-direction: column;
-  gap: calc(var(--osdk-surface-spacing) * 1);
+  gap: var(--osdk-form-section-title-gap);
   flex: 1;
   min-width: 0;
 }
@@ -57,7 +57,7 @@
 .osdkFormSectionTrigger {
   display: flex;
   align-items: center;
-  gap: calc(var(--osdk-surface-spacing) * 2);
+  gap: var(--osdk-form-section-trigger-gap);
   background-color: transparent;
   border-style: none;
   cursor: pointer;
@@ -75,7 +75,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform 150ms ease;
+  transition: transform var(--osdk-form-section-transition-duration) ease;
 }
 
 .osdkFormSectionTrigger[data-panel-open] .osdkFormSectionChevron {
@@ -100,7 +100,7 @@
 
 /* Divider between header and content when expanded */
 .osdkFormSectionDivider {
-  border-block-start-width: 1px;
+  border-block-start-width: var(--osdk-form-section-border-width);
   border-block-start-style: solid;
   border-block-start-color: var(--osdk-form-section-border-color);
 }
@@ -134,7 +134,7 @@
 .osdkFormSectionMinimalDescription {
   font-size: var(--osdk-form-section-description-font-size);
   color: var(--osdk-form-section-description-color);
-  margin-block-start: calc(var(--osdk-surface-spacing) * 1);
+  margin-block-start: var(--osdk-form-section-title-gap);
 }
 
 .osdkFormSectionMinimalContent {
