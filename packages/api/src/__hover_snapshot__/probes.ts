@@ -30,7 +30,7 @@
 import type { ObjectSet } from "../objectSet/ObjectSet.js";
 import type { EmployeeApiTest } from "../test/EmployeeApiTest.js";
 
-// === No derived properties (the overwhelmingly common path) ===
+// === No derived properties ===
 
 /** A bare ObjectSet<EmployeeApiTest> value. */
 declare const probe_objectSet: ObjectSet<EmployeeApiTest>;
