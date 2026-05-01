@@ -34,6 +34,21 @@ declare const probe_where_clause_param: Parameters<
 The snapshot value is prefixed with the JSDoc as a leading `// …`
 comment so the rendered type is self-documenting.
 
+### Type-utility cheat sheet
+
+Useful built-ins for sculpting the type you want to snapshot:
+
+- `Parameters<F>[N]` — the Nth parameter type of a function/method.
+  Example: `Parameters<ObjectSet<E>["where"]>[0]` for the clause arg.
+- `ReturnType<F>` — the return type of a function/method.
+- `Awaited<T>` — unwrap a `Promise<X>` to `X`.
+- `typeof <value>` — reference a value's type. Combine with TS 4.7+
+  instantiation-expression syntax `typeof fn<T>` to capture what a
+  generic method returns when called with a specific type argument.
+  See `_withProperties` in `objectSetProbes.ts` for an example.
+- Index access (`Foo["bar"]`, `Tuple[0]`) — drill into an
+  object/tuple.
+
 ## How to add a probe
 
 1. Pick the right `<surface>Probes.ts` (or create a new one for a new
@@ -57,7 +72,7 @@ If a refactor intentionally changes a type's hover output:
 
 ## What's covered for ObjectSet
 
-`objectSetProbes.ts` exports a `KnownObjectSetMethods` union enumerating
+`hoverTypes.test.ts` defines a `KnownObjectSetMethods` union enumerating
 every member of `ObjectSet`. The split is documentation only:
 `ProbedObjectSetMethods` for things that have a probe;
 `SkippedObjectSetMethods` for things we've intentionally chosen not to

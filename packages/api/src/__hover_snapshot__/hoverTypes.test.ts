@@ -19,11 +19,40 @@ import { fileURLToPath } from "node:url";
 import { describe, expect, expectTypeOf, it } from "vitest";
 import type { ObjectSet } from "../objectSet/ObjectSet.js";
 import type { EmployeeApiTest } from "../test/EmployeeApiTest.js";
-import type { KnownObjectSetMethods } from "./objectSetProbes.js";
 import { renderHoverProbes, snapshotValue } from "./probeUtils.js";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const tsconfigPath = path.resolve(here, "../../tsconfig.json");
+
+// === ObjectSet method-coverage registry ===
+//
+// Every public member of `ObjectSet` must be acknowledged in one of these
+// unions. The compile-time assertion below pins them: when a new method is
+// added to `ObjectSet`, typecheck fails and names the missing key, forcing
+// the author to decide whether to add a probe or to skip it.
+
+type ProbedObjectSetMethods =
+  | "where"
+  | "subscribe"
+  | "fetchPage"
+  | "asyncIter"
+  | "aggregate"
+  | "withProperties";
+
+type SkippedObjectSetMethods =
+  | "$objectSetInternals" // internal marker, not part of user-facing surface
+  | "fetchPageWithErrors" // shape mirrors fetchPage
+  | "fetchOne" // shape mirrors fetchPage's element type
+  | "fetchOneWithErrors" // shape mirrors fetchOne
+  | "experimental_asyncIterLinks" // experimental; not stable enough to pin
+  | "intersect" // returns `this` — uninteresting hover
+  | "subtract" // returns `this`
+  | "union" // returns `this`
+  | "narrowToType" // exhaustively covered in ObjectSet.test.ts
+  | "nearestNeighbors" // exhaustively covered in ObjectSet.test.ts
+  | "pivotTo"; // exhaustively covered in ObjectSet.test.ts
+
+type KnownObjectSetMethods = ProbedObjectSetMethods | SkippedObjectSetMethods;
 
 // Wire one probes file into a flat `it.each` of snapshot assertions. Add a
 // new surface by dropping a `<name>Probes.ts` file alongside this one and
@@ -45,12 +74,6 @@ describe("ObjectSet hover types", () => {
   // repo root.
   snapshotProbes("objectSetProbes.ts");
 
-  // Force objectSetProbes.ts to be updated when ObjectSet grows or loses a
-  // method. Compile-time assertion: every key of `ObjectSet<EmployeeApiTest>`
-  // must be listed in `KnownObjectSetMethods` (probed or intentionally
-  // skipped). When someone adds a new method, this fails to typecheck and
-  // names the missing key — at which point the author decides whether to
-  // add a probe.
   it("KnownObjectSetMethods covers all ObjectSet members", () => {
     expectTypeOf<keyof ObjectSet<EmployeeApiTest>>()
       .toEqualTypeOf<KnownObjectSetMethods>();

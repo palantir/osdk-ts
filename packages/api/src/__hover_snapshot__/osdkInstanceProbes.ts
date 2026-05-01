@@ -14,9 +14,6 @@
  * limitations under the License.
  */
 
-// Probes for the hover-snapshot test. See README.md for workflow and
-// objectSetProbes.ts for the type-utility cheat sheet.
-
 import type { Osdk } from "../OsdkObjectFrom.js";
 import type { EmployeeApiTest } from "../test/EmployeeApiTest.js";
 import type { FooInterfaceApiTest } from "../test/FooInterfaceApiTest.js";

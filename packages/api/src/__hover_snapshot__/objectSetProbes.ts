@@ -14,19 +14,6 @@
  * limitations under the License.
  */
 
-// Probes for the hover-snapshot test. See README.md for workflow.
-//
-// Useful TypeScript built-ins for sculpting the type you want to snapshot:
-//   - `Parameters<F>[N]` — the Nth parameter type of a function/method.
-//     Example: `Parameters<ObjectSet<E>["where"]>[0]` for the clause arg.
-//   - `ReturnType<F>` — the return type of a function/method.
-//   - `Awaited<T>` — unwrap a `Promise<X>` to `X`.
-//   - `typeof <value>` — reference a value's type. Combine with TS 4.7+
-//     instantiation-expression syntax `typeof fn<T>` to capture what a
-//     generic method returns when called with a specific type argument.
-//     See `_withProperties` below for an example.
-//   - Index access (`Foo["bar"]`, `Tuple[0]`) — drill into an object/tuple.
-
 import type { ObjectSet } from "../objectSet/ObjectSet.js";
 import type { EmployeeApiTest } from "../test/EmployeeApiTest.js";
 
@@ -80,34 +67,3 @@ declare const _withProperties: ObjectSet<EmployeeApiTest>["withProperties"];
 declare const probe_withProperties_return: ReturnType<
   typeof _withProperties<{ mom: "integer"; dad: "string" | undefined }>
 >;
-
-// Every public member of `ObjectSet`. Split for documentation: methods we
-// have probes for vs methods we've intentionally chosen to skip (covered by
-// other probes, internal-only, or low-value to snapshot). When a new method
-// is added to `ObjectSet`, the type-level assertion in `renderHovers.test.ts`
-// fails to typecheck until the new key is acknowledged here — at which point
-// the author decides whether to add a probe or to skip it.
-export type ProbedObjectSetMethods =
-  | "where"
-  | "subscribe"
-  | "fetchPage"
-  | "asyncIter"
-  | "aggregate"
-  | "withProperties";
-
-export type SkippedObjectSetMethods =
-  | "$objectSetInternals" // internal marker, not part of user-facing surface
-  | "fetchPageWithErrors" // shape mirrors fetchPage
-  | "fetchOne" // shape mirrors fetchPage's element type
-  | "fetchOneWithErrors" // shape mirrors fetchOne
-  | "experimental_asyncIterLinks" // experimental; not stable enough to pin
-  | "intersect" // returns `this` — uninteresting hover
-  | "subtract" // returns `this`
-  | "union" // returns `this`
-  | "narrowToType" // exhaustively covered in ObjectSet.test.ts
-  | "nearestNeighbors" // exhaustively covered in ObjectSet.test.ts
-  | "pivotTo"; // exhaustively covered in ObjectSet.test.ts
-
-export type KnownObjectSetMethods =
-  | ProbedObjectSetMethods
-  | SkippedObjectSetMethods;
