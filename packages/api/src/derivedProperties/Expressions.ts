@@ -95,10 +95,29 @@ type ExtractWirePropertyTypeFromNumericArg<
     ? NonNullable<CompileTimeMetadata<Q>["properties"][ARG]["type"]>
   : never;
 
+/**
+ * Numeric expression methods chainable off a numeric derived property.
+ * Each binary method accepts either a numeric literal or another numeric derived
+ * property as its right-hand side; unary methods (`abs`, `negate`) take no argument.
+ * @example
+ * ```ts
+ * client(Employee).withProperties({
+ *   profitPerReport: (baseObjectSet) =>
+ *     baseObjectSet.pivotTo("reports").aggregate("revenue:sum")
+ *       .subtract(baseObjectSet.pivotTo("reports").aggregate("cost:sum"))
+ *       .divide(baseObjectSet.pivotTo("reports").aggregate("$count")),
+ * }).fetchPage();
+ * ```
+ */
 export type NumericExpressions<
   Q extends ObjectOrInterfaceDefinition,
   LEFT_PROPERTY_TYPE extends SimplePropertyDef,
 > = {
+  /**
+   * Adds a numeric value or another numeric derived property.
+   * @param value - A number literal or another numeric derived property
+   * @returns a numeric derived property holding the sum
+   */
   readonly add: <A extends NumericExpressionArg<Q>>(
     value: A,
   ) => ReturnTypeForNumericMethod<
@@ -107,6 +126,11 @@ export type NumericExpressions<
     ExtractWirePropertyTypeFromNumericArg<Q, A>
   >;
 
+  /**
+   * Subtracts a numeric value or another numeric derived property.
+   * @param value - A number literal or another numeric derived property
+   * @returns a numeric derived property holding the difference
+   */
   readonly subtract: <A extends NumericExpressionArg<Q>>(
     value: A,
   ) => ReturnTypeForNumericMethod<
@@ -115,6 +139,11 @@ export type NumericExpressions<
     ExtractWirePropertyTypeFromNumericArg<Q, A>
   >;
 
+  /**
+   * Multiplies by a numeric value or another numeric derived property.
+   * @param value - A number literal or another numeric derived property
+   * @returns a numeric derived property holding the product
+   */
   readonly multiply: <A extends NumericExpressionArg<Q>>(
     value: A,
   ) => ReturnTypeForNumericMethod<
@@ -123,6 +152,11 @@ export type NumericExpressions<
     ExtractWirePropertyTypeFromNumericArg<Q, A>
   >;
 
+  /**
+   * Divides by a numeric value or another numeric derived property.
+   * @param value - A number literal or another numeric derived property
+   * @returns a numeric derived property holding the quotient
+   */
   readonly divide: <A extends NumericExpressionArg<Q>>(
     value: A,
   ) => ReturnTypeForNumericMethod<
@@ -131,16 +165,29 @@ export type NumericExpressions<
     ExtractWirePropertyTypeFromNumericArg<Q, A>
   >;
 
+  /**
+   * Returns the absolute value.
+   * @returns a numeric derived property holding the absolute value
+   */
   readonly abs: () => DerivedProperty.NumericPropertyDefinition<
     LEFT_PROPERTY_TYPE,
     Q
   >;
 
+  /**
+   * Negates the value (multiplies by -1).
+   * @returns a numeric derived property holding the negated value
+   */
   readonly negate: () => DerivedProperty.NumericPropertyDefinition<
     LEFT_PROPERTY_TYPE,
     Q
   >;
 
+  /**
+   * Takes the larger of this value and another numeric value or derived property.
+   * @param value - A number literal or another numeric derived property
+   * @returns a numeric derived property holding the maximum
+   */
   readonly max: <A extends NumericExpressionArg<Q>>(
     value: A,
   ) => ReturnTypeForNumericMethod<
@@ -149,6 +196,11 @@ export type NumericExpressions<
     ExtractWirePropertyTypeFromNumericArg<Q, A>
   >;
 
+  /**
+   * Takes the smaller of this value and another numeric value or derived property.
+   * @param value - A number literal or another numeric derived property
+   * @returns a numeric derived property holding the minimum
+   */
   readonly min: <A extends NumericExpressionArg<Q>>(
     value: A,
   ) => ReturnTypeForNumericMethod<
@@ -171,10 +223,25 @@ type ExtractPropertyTypeFromDatetimeArg<
     ? NonNullable<CompileTimeMetadata<Q>["properties"][ARG]["type"]>
   : never;
 
+/**
+ * Datetime expression methods chainable off a datetime or timestamp derived property.
+ * @example
+ * ```ts
+ * client(Employee).withProperties({
+ *   hireYear: (baseObjectSet) =>
+ *     baseObjectSet.selectProperty("hiredAt").extractPart("YEARS"),
+ * }).fetchPage();
+ * ```
+ */
 export type DatetimeExpressions<
   Q extends ObjectOrInterfaceDefinition,
   LEFT_PROPERTY_TYPE extends SimplePropertyDef,
 > = {
+  /**
+   * Takes the earlier of this datetime and another datetime derived property.
+   * @param value - Another datetime or timestamp derived property
+   * @returns a datetime derived property holding the earlier value
+   */
   readonly min: <A extends DatetimeExpressionArg<Q>>(
     value: A,
   ) => ReturnTypeForDatetimeMethod<
@@ -182,6 +249,11 @@ export type DatetimeExpressions<
     SimplePropertyDef.ExtractWirePropertyType<LEFT_PROPERTY_TYPE>,
     ExtractPropertyTypeFromDatetimeArg<Q, A>
   >;
+  /**
+   * Takes the later of this datetime and another datetime derived property.
+   * @param value - Another datetime or timestamp derived property
+   * @returns a datetime derived property holding the later value
+   */
   readonly max: (
     value: DatetimeExpressionArg<Q>,
   ) => ReturnTypeForDatetimeMethod<
@@ -189,6 +261,18 @@ export type DatetimeExpressions<
     SimplePropertyDef.ExtractWirePropertyType<LEFT_PROPERTY_TYPE>,
     ExtractPropertyTypeFromDatetimeArg<Q, typeof value>
   >;
+  /**
+   * Extracts a calendar part from the datetime as a string.
+   * @param value - The part to extract: `"DAYS"`, `"MONTHS"`, `"QUARTERS"`, or `"YEARS"`
+   * @example
+   * ```ts
+   * client(Employee).withProperties({
+   *   hireYear: (baseObjectSet) =>
+   *     baseObjectSet.selectProperty("hiredAt").extractPart("YEARS"),
+   * }).fetchPage();
+   * ```
+   * @returns a string derived property holding the extracted part
+   */
   readonly extractPart: (
     value: DerivedProperty.ValidParts,
   ) => DerivedProperty.Definition<

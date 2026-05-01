@@ -106,6 +106,20 @@ type Filterable<
   Q extends ObjectOrInterfaceDefinition,
   CONSTRAINED extends boolean,
 > = {
+  /**
+   * Filters the builder's object set with a where clause before further chaining.
+   * @param clause - A filter clause applied to the builder's current object set
+   * @example
+   * ```ts
+   * client(Employee).withProperties({
+   *   activeReportCount: (baseObjectSet) =>
+   *     baseObjectSet.pivotTo("reports")
+   *       .where({ status: { $eq: "active" } })
+   *       .aggregate("$count"),
+   * }).fetchPage();
+   * ```
+   * @returns the builder, narrowed to objects matching the clause
+   */
   readonly where: (
     clause: WhereClause<Q>,
   ) => BuilderTypeFromConstraint<Q, CONSTRAINED>;
@@ -115,6 +129,18 @@ type Pivotable<
   Q extends ObjectOrInterfaceDefinition,
   CONSTRAINED extends boolean,
 > = {
+  /**
+   * Traverses a link from the builder's object set to its linked object type.
+   * @param type - The linked object type's link api name
+   * @example
+   * ```ts
+   * client(Employee).withProperties({
+   *   leadName: (baseObjectSet) =>
+   *     baseObjectSet.pivotTo("lead").selectProperty("fullName"),
+   * }).fetchPage();
+   * ```
+   * @returns a builder over the linked object type
+   */
   readonly pivotTo: <L extends LinkNames<Q>>(
     type: L,
   ) => CONSTRAINED extends true
@@ -164,6 +190,24 @@ type Constant<Q extends ObjectOrInterfaceDefinition> = {
 type Aggregatable<
   Q extends ObjectOrInterfaceDefinition,
 > = {
+  /**
+   * Aggregates over the builder's object set to produce a derived property value.
+   * @param aggregationSpecifier - Either `"$count"` or a `"<propertyName>:<aggregation>"` key
+   *   (e.g., `"salary:max"`, `"salary:approximatePercentile"`, `"name:collectList"`)
+   * @param opts - Required for `collectList` / `collectSet` (`{ limit }`) and
+   *   `approximatePercentile` (`{ percentile }`); not accepted for other aggregations
+   * @example
+   * ```ts
+   * client(Employee).withProperties({
+   *   reportCount: (baseObjectSet) =>
+   *     baseObjectSet.pivotTo("reports").aggregate("$count"),
+   *   p95Salary: (baseObjectSet) =>
+   *     baseObjectSet.pivotTo("reports")
+   *       .aggregate("salary:approximatePercentile", { percentile: 95 }),
+   * }).fetchPage();
+   * ```
+   * @returns a derived property definition holding the aggregation result
+   */
   readonly aggregate: <
     V extends ValidAggregationKeys<
       Q,
@@ -210,6 +254,18 @@ type Aggregatable<
 };
 
 type Selectable<Q extends ObjectOrInterfaceDefinition> = {
+  /**
+   * Exposes an existing property of the builder's object type as a derived property value.
+   * @param propertyName - The api name of the property to expose
+   * @example
+   * ```ts
+   * client(Employee).withProperties({
+   *   leadName: (baseObjectSet) =>
+   *     baseObjectSet.pivotTo("lead").selectProperty("fullName"),
+   * }).fetchPage();
+   * ```
+   * @returns a derived property definition holding the property value
+   */
   readonly selectProperty: <R extends PropertyKeys<Q>>(
     propertyName: R,
   ) => DefinitionForType<
