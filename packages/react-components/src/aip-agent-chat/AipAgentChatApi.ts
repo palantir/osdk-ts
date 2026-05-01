@@ -14,43 +14,54 @@
  * limitations under the License.
  */
 
-import type { LanguageModel, UIMessage } from "@osdk/aip-core";
+import type { UIMessage } from "@osdk/aip-core";
+import type { PlatformClient } from "@osdk/client";
 import type * as React from "react";
 
 /**
- * Props for {@link AipAgentChat}, an OSDK-aware chat surface that drives the
- * `useChat` hook from `@osdk/react/experimental/aip` against an AIP language
- * model.
+ * Props for {@link AipAgentChat}, an OSDK-aware chat surface that wires
+ * `useChat` from `@osdk/react/experimental/aip` against a Foundry LMS
+ * model. Consumers do not need to import `useChat` or `foundryModel`
+ * themselves — passing the platform client and a model API name is
+ * enough to render a working chat.
  *
- * Default rendering is feature-complete with no overrides supplied; render
- * slots and `on*` listeners are layered on top of the built-in behavior.
+ * Default rendering is feature-complete with no overrides supplied;
+ * render slots and `on*` listeners are layered on top of the built-in
+ * behavior.
  */
 export interface AipAgentChatProps {
   /**
-   * The AIP language model to chat with. Construct via `foundryModel()` from
-   * `@osdk/aip-core`. Drives the underlying `useChat` hook.
+   * Foundry platform client returned by `createPlatformClient` from
+   * `@osdk/client`. Used internally to construct the LMS-backed model
+   * for `useChat`.
    */
-  model: LanguageModel;
+  client: PlatformClient;
 
   /**
-   * When provided, the chat renders an in-header model picker populated
-   * with these options. Selecting a different option fires
-   * {@link AipAgentChatProps.onModelChange}; the consumer is expected to
-   * update {@link AipAgentChatProps.model} in response.
+   * Foundry LMS model API name to chat with (for example `"gpt-4o"`).
+   * Resolved internally via `foundryModel({ client, model })`.
+   */
+  model: string;
+
+  /**
+   * When provided, the chat renders a model picker in the composer
+   * footer populated with these API names. Selecting a different option
+   * fires {@link AipAgentChatProps.onModelChange}; the consumer is
+   * expected to update {@link AipAgentChatProps.model} in response.
    *
    * If omitted, no picker is rendered.
    */
-  availableModels?: ReadonlyArray<LanguageModel>;
+  availableModels?: ReadonlyArray<string>;
 
   /**
-   * Fires when the user selects a different model from the in-header
-   * picker. Has no effect unless {@link AipAgentChatProps.availableModels}
-   * is provided. Consumers are expected to update
-   * {@link AipAgentChatProps.model} in response.
+   * Fires when the user selects a different model API name from the
+   * picker. Has no effect unless
+   * {@link AipAgentChatProps.availableModels} is provided. Consumers are
+   * expected to update {@link AipAgentChatProps.model} in response.
    *
-   * @param model The model the user just selected.
+   * @param model The model API name the user just selected.
    */
-  onModelChange?: (model: LanguageModel) => void;
+  onModelChange?: (model: string) => void;
 
   /**
    * System prompt prepended to every request.
@@ -58,8 +69,8 @@ export interface AipAgentChatProps {
   system?: string;
 
   /**
-   * Seed messages — used as the initial conversation snapshot. Forwarded to
-   * `useChat`'s `messages` option.
+   * Seed messages — used as the initial conversation snapshot. Forwarded
+   * to `useChat`'s `messages` option.
    */
   initialMessages?: ReadonlyArray<UIMessage>;
 
@@ -76,8 +87,8 @@ export interface AipAgentChatProps {
   placeholder?: string;
 
   /**
-   * Whether the message list automatically scrolls to the most recent message
-   * as the conversation grows.
+   * Whether the message list automatically scrolls to the most recent
+   * message as the conversation grows.
    *
    * @default true
    */
@@ -93,10 +104,11 @@ export interface AipAgentChatProps {
   onError?: (error: Error) => void;
 
   /**
-   * Listener fired once after a stream completes successfully. Forwarded to
-   * `useChat`'s `onFinish`.
+   * Listener fired once after a stream completes successfully. Forwarded
+   * to `useChat`'s `onFinish`.
    *
-   * @param event The completed assistant message and the resulting messages array.
+   * @param event The completed assistant message and the resulting
+   *   messages array.
    */
   onFinish?: (event: {
     message: UIMessage;
@@ -104,8 +116,8 @@ export interface AipAgentChatProps {
   }) => void;
 
   /**
-   * Render override for the empty state shown when no messages exist yet.
-   * If omitted, a default welcome panel is rendered.
+   * Render override for the empty state shown when no messages exist
+   * yet. If omitted, a default welcome panel is rendered.
    *
    * @returns A React node rendered in place of the default empty state.
    */
@@ -116,7 +128,8 @@ export interface AipAgentChatProps {
    * default user/assistant bubble layout is used.
    *
    * @param message The {@link UIMessage} to render.
-   * @returns A React node rendered in place of the default message bubble.
+   * @returns A React node rendered in place of the default message
+   *   bubble.
    */
   renderMessage?: (message: UIMessage) => React.ReactNode;
 }
