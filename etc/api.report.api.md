@@ -239,14 +239,17 @@ export type AndWhereClause<
 export type ApplyActionOptions = {
     	$returnEdits?: true
     	$validateOnly?: false
+    	keepAlive?: boolean
 } | {
     	$validateOnly?: true
     	$returnEdits?: false
+    	keepAlive?: boolean
 };
 
 // @public (undocumented)
 export type ApplyBatchActionOptions = {
     	$returnEdits?: boolean
+    	keepAlive?: boolean
 };
 
 // Warning: (ae-forgotten-export) The symbol "OrderByArg" needs to be exported by the entry point index.d.ts

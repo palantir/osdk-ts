@@ -128,9 +128,22 @@ export async function applyAction<
     augmentRequestContext(client, _ => ({ finalMethodCall: "applyAction" })),
     action,
   );
+
+  const effectiveClient = options?.keepAlive
+    ? {
+      ...clientWithHeaders,
+      fetch:
+        ((url: string, init?: RequestInit) =>
+          clientWithHeaders.fetch(url, {
+            ...init,
+            keepalive: true,
+          })) as typeof clientWithHeaders.fetch,
+    }
+    : clientWithHeaders;
+
   if (Array.isArray(parameters)) {
     const response = await Actions.applyBatch(
-      clientWithHeaders,
+      effectiveClient,
       await client.ontologyRid,
       action.unsanitizedApiName ?? action.apiName,
       {
@@ -156,7 +169,7 @@ export async function applyAction<
       : undefined) as ActionReturnTypeForOptions<Op>;
   } else {
     const response = await Actions.apply(
-      clientWithHeaders,
+      effectiveClient,
       await client.ontologyRid,
       action.unsanitizedApiName ?? action.apiName,
       {
