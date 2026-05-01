@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { UIMessage } from "@osdk/aip-core";
+import { generateMessageId, type UIMessage } from "@osdk/aip-core";
 import classNames from "classnames";
 import * as React from "react";
 import { ActionButton } from "../base-components/action-button/ActionButton.js";
@@ -23,9 +23,10 @@ import { AipAgentChatComposer } from "./components/AipAgentChatComposer.js";
 import { AipAgentChatMessageList } from "./components/AipAgentChatMessageList.js";
 
 /**
- * Lifecycle of a chat as exposed to {@link BaseAipAgentChat}. Mirrors
- * `ChatStatus` from `@osdk/react/experimental/aip` but is duplicated here
- * intentionally so this component remains independent of OSDK packages.
+ * Lifecycle of a chat as exposed by {@link BaseAipAgentChat}. Mirrors
+ * `ChatStatus` from `@osdk/react/experimental/aip` but is duplicated
+ * here intentionally so this component remains independent of OSDK
+ * packages.
  */
 export type BaseAipAgentChatStatus =
   | "ready"
@@ -33,59 +34,93 @@ export type BaseAipAgentChatStatus =
   | "streaming"
   | "error";
 
+/**
+ * Context passed to {@link BaseAipAgentChatProps.onSendMessage}.
+ */
+export interface BaseAipAgentChatSendContext {
+  /**
+   * Aborted when the user clicks the in-flight Stop button or the
+   * component unmounts. Implementors should forward this signal to the
+   * underlying network call so requests can be cancelled.
+   */
+  signal: AbortSignal;
+
+  /**
+   * Conversation history at the time of the send, **excluding** the
+   * current user message. Useful for backends that require the full
+   * conversation context.
+   */
+  history: ReadonlyArray<UIMessage>;
+
+  /**
+   * Push partial assistant text while the response is streaming. Each
+   * call replaces the in-flight assistant bubble's text. Use this from
+   * a streaming backend; non-streaming backends can ignore it and
+   * simply return the final {@link UIMessage} from `onSendMessage`.
+   */
+  setStreamingText: (text: string) => void;
+}
+
 export interface BaseAipAgentChatProps {
   /**
-   * Conversation snapshot. Driven by the consumer's chat hook.
+   * Called when the user sends a message. The component manages
+   * conversation state and rendering; the implementor is only
+   * responsible for producing the assistant's response.
+   *
+   * Return a finalized {@link UIMessage} (typically with role
+   * `"assistant"`). For streaming backends, push partial text via
+   * {@link BaseAipAgentChatSendContext.setStreamingText} as it arrives;
+   * the resolved value is appended to the conversation when the
+   * promise settles.
+   *
+   * Throwing (or rejecting) flips the chat into the `error` lifecycle
+   * and surfaces the error in a banner with a Dismiss button.
+   *
+   * @param text The text the user just submitted (already trimmed).
+   * @param ctx Abort signal, conversation history, and streaming hook.
    */
-  messages: ReadonlyArray<UIMessage>;
+  onSendMessage: (
+    text: string,
+    ctx: BaseAipAgentChatSendContext,
+  ) => Promise<UIMessage>;
 
   /**
-   * Current chat lifecycle.
+   * Seed messages used as the initial conversation snapshot.
    */
-  status: BaseAipAgentChatStatus;
+  initialMessages?: ReadonlyArray<UIMessage>;
 
   /**
-   * Last error reported by the chat backend, if any.
+   * Listener fired immediately after a user message is appended to the
+   * conversation (before the assistant response starts).
    */
-  error?: Error;
+  onMessageSent?: (message: UIMessage) => void;
 
   /**
-   * Send a new user message. Wired to the composer's send button and the
-   * Enter keypress.
+   * Listener fired once the assistant response has been finalized and
+   * appended to the conversation.
    */
-  onSendMessage: (text: string) => void;
+  onResponseReceived?: (message: UIMessage) => void;
 
   /**
-   * Cancel the in-flight stream. When provided, the composer renders a
-   * "Stop" button while `status === "streaming" | "submitted"`.
+   * Listener fired when `onSendMessage` rejects.
    */
-  onStop?: () => void;
+  onError?: (error: Error) => void;
 
   /**
-   * Clear the current error from the underlying chat hook. When provided,
-   * the error banner renders a "Dismiss" button.
-   */
-  onClearError?: () => void;
-
-  /**
-   * Optional content rendered in the composer footer, to the left of the
-   * send button. The OSDK wrapper uses this slot for the model picker.
+   * Optional content rendered in the composer footer, to the left of
+   * the send button. The OSDK wrapper uses this slot for the model
+   * picker.
    */
   composerFooter?: React.ReactNode;
 
   className?: string;
 
   /**
-   * Placeholder text for the message composer textarea.
-   *
    * @default "Type a message..."
    */
   placeholder?: string;
 
   /**
-   * Whether the message list automatically scrolls to the most recent
-   * message as the conversation grows.
-   *
    * @default true
    */
   enableAutoScroll?: boolean;
@@ -95,19 +130,18 @@ export interface BaseAipAgentChatProps {
 }
 
 /**
- * OSDK-agnostic chat surface. Pairs a message list with a composer and
- * renders streaming and error UI. Consumers wire it to a chat
- * hook (typically `useChat` from `@osdk/react/experimental/aip`).
+ * OSDK-agnostic chat surface. Manages conversation state, streaming UI,
+ * and error display internally; the consumer only provides an
+ * `onSendMessage` callback that produces the assistant's reply.
  */
 export const BaseAipAgentChat: React.NamedExoticComponent<
   BaseAipAgentChatProps
 > = React.memo(function BaseAipAgentChat({
-  messages,
-  status,
-  error,
   onSendMessage,
-  onStop,
-  onClearError,
+  initialMessages,
+  onMessageSent,
+  onResponseReceived,
+  onError,
   composerFooter,
   className,
   placeholder = "Type a message...",
@@ -115,34 +149,135 @@ export const BaseAipAgentChat: React.NamedExoticComponent<
   renderEmptyState,
   renderMessage,
 }) {
+  const [messages, setMessages] = React.useState<ReadonlyArray<UIMessage>>(
+    () => initialMessages ?? EMPTY_MESSAGES,
+  );
+  const [status, setStatus] = React.useState<BaseAipAgentChatStatus>("ready");
+  const [error, setError] = React.useState<Error | undefined>(undefined);
+  const [streamingText, setStreamingText] = React.useState<string>("");
+  const abortRef = React.useRef<AbortController | null>(null);
+
+  // Abort any in-flight request on unmount.
+  React.useEffect(() => {
+    return () => {
+      abortRef.current?.abort();
+    };
+  }, []);
+
+  const handleSendMessage = React.useCallback(
+    async (text: string) => {
+      const userMessage: UIMessage = {
+        id: generateMessageId(),
+        role: "user",
+        parts: [{ type: "text", text }],
+      };
+
+      const historySnapshot = messages;
+      const messagesAfterSend = [...historySnapshot, userMessage];
+      setMessages(messagesAfterSend);
+      setStatus("submitted");
+      setError(undefined);
+      setStreamingText("");
+      onMessageSent?.(userMessage);
+
+      const controller = new AbortController();
+      abortRef.current?.abort();
+      abortRef.current = controller;
+
+      try {
+        const assistantMessage = await onSendMessage(text, {
+          signal: controller.signal,
+          history: historySnapshot,
+          setStreamingText: (next: string) => {
+            setStatus("streaming");
+            setStreamingText(next);
+          },
+        });
+
+        if (controller.signal.aborted) {
+          return;
+        }
+
+        setMessages((prev) => [...prev, assistantMessage]);
+        setStreamingText("");
+        setStatus("ready");
+        onResponseReceived?.(assistantMessage);
+      } catch (e) {
+        if (controller.signal.aborted) {
+          // Stop button was pressed; treat as a clean cancel.
+          setStatus("ready");
+          setStreamingText("");
+          return;
+        }
+        const err = e instanceof Error ? e : new Error(String(e));
+        setStatus("error");
+        setError(err);
+        setStreamingText("");
+        onError?.(err);
+      } finally {
+        if (abortRef.current === controller) {
+          abortRef.current = null;
+        }
+      }
+    },
+    [messages, onMessageSent, onResponseReceived, onError, onSendMessage],
+  );
+
+  const handleStop = React.useCallback(() => {
+    abortRef.current?.abort();
+  }, []);
+
+  const handleClearError = React.useCallback(() => {
+    setError(undefined);
+    setStatus("ready");
+  }, []);
+
   const isInFlight = status === "submitted" || status === "streaming";
+
+  // While streaming, show the buffered assistant text as a transient
+  // bubble at the end of the message list. The buffer is replaced with
+  // the finalized message once `onSendMessage` resolves.
+  const displayMessages = React.useMemo(() => {
+    if (!isInFlight || streamingText.length === 0) {
+      return messages;
+    }
+    return [
+      ...messages,
+      {
+        id: STREAMING_MESSAGE_ID,
+        role: "assistant" as const,
+        parts: [{ type: "text" as const, text: streamingText }],
+      },
+    ];
+  }, [messages, streamingText, isInFlight]);
 
   return (
     <div className={classNames(styles.chat, className)}>
       {error != null && (
         <div aria-live="polite" className={styles.error} role="alert">
           <span className={styles.errorMessage}>{error.message}</span>
-          {onClearError != null && (
-            <ActionButton onClick={onClearError} type="button">
-              Dismiss
-            </ActionButton>
-          )}
+          <ActionButton onClick={handleClearError} type="button">
+            Dismiss
+          </ActionButton>
         </div>
       )}
       <AipAgentChatMessageList
         enableAutoScroll={enableAutoScroll}
         isStreaming={isInFlight}
-        messages={messages}
+        messages={displayMessages}
         renderEmptyState={renderEmptyState}
         renderMessage={renderMessage}
       />
       <AipAgentChatComposer
         footerLeft={composerFooter}
         isInFlight={isInFlight}
-        onSendMessage={onSendMessage}
-        onStop={onStop}
+        onSendMessage={handleSendMessage}
+        onStop={handleStop}
         placeholder={placeholder}
       />
     </div>
   );
 });
+
+const EMPTY_MESSAGES: ReadonlyArray<UIMessage> = Object.freeze([]);
+const STREAMING_MESSAGE_ID = "__aip-agent-chat-streaming__";

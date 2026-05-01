@@ -14,127 +14,50 @@
  * limitations under the License.
  */
 
-import type { UIMessage } from "@osdk/aip-core";
-import type {
-  BaseAipAgentChatProps,
-  BaseAipAgentChatStatus,
-} from "@osdk/react-components/experimental/aip-agent-chat";
+import { getUIMessageText, type UIMessage } from "@osdk/aip-core";
+import type { BaseAipAgentChatSendContext } from "@osdk/react-components/experimental/aip-agent-chat";
 import { BaseAipAgentChat } from "@osdk/react-components/experimental/aip-agent-chat";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import * as React from "react";
+
+const meta: Meta<typeof BaseAipAgentChat> = {
+  title: "Experimental/AipAgentChat",
+  tags: ["experimental"],
+  component: BaseAipAgentChat,
+};
+export default meta;
+type Story = StoryObj<typeof meta>;
 
 const STORY_CONTAINER_STYLE: React.CSSProperties = {
   height: "600px",
   display: "flex",
 };
 
-const FAKE_ASSISTANT_REPLY =
-  "Thanks for your message — here is a stubbed assistant response from the Storybook harness.";
-const STREAM_DELAY_MS = 600;
-
-function makeUserMessage(text: string): UIMessage {
-  return {
-    id: `user-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
-    role: "user",
-    parts: [{ type: "text", text }],
-  };
+function sleep(ms: number): Promise<void> {
+  return new Promise((r) => setTimeout(r, ms));
 }
 
-function makeAssistantMessage(text: string): UIMessage {
+function makeAssistantReply(text: string): UIMessage {
   return {
-    id: `assistant-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+    id: `assistant-${Math.random()}`,
     role: "assistant",
     parts: [{ type: "text", text }],
   };
 }
 
-interface ChatHarnessProps {
-  initialMessages?: ReadonlyArray<UIMessage>;
-  initialStatus?: BaseAipAgentChatStatus;
-  initialError?: Error;
-  composerFooter?: React.ReactNode;
-  renderEmptyState?: BaseAipAgentChatProps["renderEmptyState"];
-  renderMessage?: BaseAipAgentChatProps["renderMessage"];
-  placeholder?: string;
+const FAKE_ASSISTANT_REPLY =
+  "Thanks for your message — here is a stubbed assistant response from the Storybook harness.";
+
+async function staticReply(
+  _text: string,
+  ctx: BaseAipAgentChatSendContext,
+): Promise<UIMessage> {
+  await sleep(600);
+  if (ctx.signal.aborted) {
+    throw new Error("aborted");
+  }
+  return makeAssistantReply(FAKE_ASSISTANT_REPLY);
 }
-
-function ChatHarness({
-  initialMessages,
-  initialStatus = "ready",
-  initialError,
-  composerFooter,
-  renderEmptyState,
-  renderMessage,
-  placeholder,
-}: ChatHarnessProps): React.ReactElement {
-  const [messages, setMessages] = React.useState<ReadonlyArray<UIMessage>>(
-    initialMessages ?? [],
-  );
-  const [status, setStatus] = React.useState<BaseAipAgentChatStatus>(
-    initialStatus,
-  );
-  const [error, setError] = React.useState<Error | undefined>(initialError);
-  const timeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  React.useEffect(() => {
-    return () => {
-      if (timeoutRef.current != null) {
-        clearTimeout(timeoutRef.current);
-      }
-    };
-  }, []);
-
-  const handleSendMessage = React.useCallback((text: string) => {
-    setError(undefined);
-    setMessages((prev) => [...prev, makeUserMessage(text)]);
-    setStatus("submitted");
-    timeoutRef.current = setTimeout(() => {
-      setMessages((
-        prev,
-      ) => [...prev, makeAssistantMessage(FAKE_ASSISTANT_REPLY)]);
-      setStatus("ready");
-    }, STREAM_DELAY_MS);
-  }, []);
-
-  const handleStop = React.useCallback(() => {
-    if (timeoutRef.current != null) {
-      clearTimeout(timeoutRef.current);
-      timeoutRef.current = null;
-    }
-    setStatus("ready");
-  }, []);
-
-  const handleClearError = React.useCallback(() => {
-    setError(undefined);
-    setStatus("ready");
-  }, []);
-
-  return (
-    <div style={STORY_CONTAINER_STYLE}>
-      <BaseAipAgentChat
-        composerFooter={composerFooter}
-        error={error}
-        messages={messages}
-        onClearError={error != null ? handleClearError : undefined}
-        onSendMessage={handleSendMessage}
-        onStop={handleStop}
-        placeholder={placeholder}
-        renderEmptyState={renderEmptyState}
-        renderMessage={renderMessage}
-        status={status}
-      />
-    </div>
-  );
-}
-
-const meta: Meta<typeof BaseAipAgentChat> = {
-  title: "Experimental/AipAgentChat",
-  component: BaseAipAgentChat,
-  tags: ["experimental"],
-};
-
-export default meta;
-type Story = StoryObj<typeof meta>;
 
 const SEEDED_CONVERSATION: ReadonlyArray<UIMessage> = [
   {
@@ -171,63 +94,109 @@ const SEEDED_CONVERSATION: ReadonlyArray<UIMessage> = [
   },
 ];
 
-const STREAMING_CONVERSATION: ReadonlyArray<UIMessage> = [
-  {
-    id: "stream-user-1",
-    role: "user",
-    parts: [{ type: "text", text: "Tell me a joke." }],
-  },
-  {
-    id: "stream-assistant-1",
-    role: "assistant",
-    parts: [{ type: "text", text: "Why did" }],
-  },
-];
-
 export const Default: Story = {
-  render: () => <ChatHarness />,
+  render: () => (
+    <div style={STORY_CONTAINER_STYLE}>
+      <BaseAipAgentChat onSendMessage={staticReply} />
+    </div>
+  ),
 };
 
 export const WithConversation: Story = {
-  render: () => <ChatHarness initialMessages={SEEDED_CONVERSATION} />,
+  render: () => (
+    <div style={STORY_CONTAINER_STYLE}>
+      <BaseAipAgentChat
+        initialMessages={SEEDED_CONVERSATION}
+        onSendMessage={staticReply}
+      />
+    </div>
+  ),
 };
+
+const STREAMING_TOKENS = [
+  "Sure",
+  "—",
+  "here",
+  "is",
+  "a",
+  "streamed",
+  "response",
+  "arriving",
+  "one",
+  "word",
+  "at",
+  "a",
+  "time.",
+];
+
+async function streamingReply(
+  _text: string,
+  ctx: BaseAipAgentChatSendContext,
+): Promise<UIMessage> {
+  let buffer = "";
+  for (const token of STREAMING_TOKENS) {
+    await sleep(80);
+    if (ctx.signal.aborted) {
+      throw new Error("aborted");
+    }
+    buffer = buffer.length === 0 ? token : `${buffer} ${token}`;
+    ctx.setStreamingText(buffer);
+  }
+  return makeAssistantReply(buffer);
+}
 
 export const Streaming: Story = {
   render: () => (
-    <ChatHarness
-      initialMessages={STREAMING_CONVERSATION}
-      initialStatus="streaming"
-    />
+    <div style={STORY_CONTAINER_STYLE}>
+      <BaseAipAgentChat onSendMessage={streamingReply} />
+    </div>
   ),
 };
+
+async function failingReply(
+  _text: string,
+  ctx: BaseAipAgentChatSendContext,
+): Promise<UIMessage> {
+  await sleep(300);
+  if (ctx.signal.aborted) {
+    throw new Error("aborted");
+  }
+  throw new Error("Stream failed: rate limited");
+}
 
 export const WithError: Story = {
   render: () => (
-    <ChatHarness
-      initialMessages={[
-        {
-          id: "err-user-1",
-          role: "user",
-          parts: [{ type: "text", text: "Run the analysis on Q3 revenue." }],
-        },
-      ]}
-      initialStatus="error"
-      initialError={new Error("Stream failed: rate limited")}
-    />
+    <div style={STORY_CONTAINER_STYLE}>
+      <BaseAipAgentChat onSendMessage={failingReply} />
+    </div>
   ),
 };
 
-const MODEL_OPTIONS = ["gpt-4o", "gpt-4o-mini"] as const;
+const MODEL_OPTIONS = ["GPT_4o", "AnthropicClaude_4_6_Sonnet"] as const;
 type ModelOption = (typeof MODEL_OPTIONS)[number];
 
-function ModelPickerHarness(): React.ReactElement {
-  const [selectedModel, setSelectedModel] = React.useState<ModelOption>(
-    MODEL_OPTIONS[0],
-  );
+function ModelPickerStory(): React.ReactElement {
+  const [model, setModel] = React.useState<ModelOption>(MODEL_OPTIONS[0]);
+  const modelRef = React.useRef<ModelOption>(model);
+  modelRef.current = model;
 
   const handleChange = React.useCallback(
     (event: React.ChangeEvent<HTMLSelectElement>) => {
-      setSelectedModel(event.target.value as ModelOption);
+      setModel(event.target.value as ModelOption);
+    },
+    [],
+  );
+
+  const handleSendMessage = React.useCallback(
+    async (
+      _text: string,
+      ctx: BaseAipAgentChatSendContext,
+    ): Promise<UIMessage> => {
+      await sleep(600);
+      if (ctx.signal.aborted) {
+        throw new Error("aborted");
+      }
+      return makeAssistantReply(`Routed to model: ${modelRef.current}`);
     },
     [],
   );
@@ -242,46 +211,74 @@ function ModelPickerHarness(): React.ReactElement {
       }}
     >
       Model:
-      <select onChange={handleChange} value={selectedModel}>
-        {MODEL_OPTIONS.map((model) => (
-          <option key={model} value={model}>
-            {model}
+      <select onChange={handleChange} value={model}>
+        {MODEL_OPTIONS.map((option) => (
+          <option key={option} value={option}>
+            {option}
           </option>
         ))}
       </select>
     </label>
   );
 
-  return <ChatHarness composerFooter={composerFooter} />;
+  return (
+    <div style={STORY_CONTAINER_STYLE}>
+      <BaseAipAgentChat
+        composerFooter={composerFooter}
+        onSendMessage={handleSendMessage}
+      />
+    </div>
+  );
 }
 
 export const WithModelPicker: Story = {
-  render: () => <ModelPickerHarness />,
+  render: () => <ModelPickerStory />,
 };
 
-const renderCustomEmptyState = () => (
-  <div style={{ textAlign: "center", padding: "24px" }}>
-    <div style={{ fontSize: "48px" }}>{"\u{1F44B}"}</div>
-    <div style={{ fontWeight: 600, marginTop: "8px" }}>
-      Welcome to Acme Assistant
-    </div>
-    <div style={{ marginTop: "4px", color: "#666" }}>
-      Ask anything about your ontology, dashboards, or workflows.
-    </div>
-  </div>
-);
+async function echoReply(
+  text: string,
+  ctx: BaseAipAgentChatSendContext,
+): Promise<UIMessage> {
+  await sleep(400);
+  if (ctx.signal.aborted) {
+    throw new Error("aborted");
+  }
+  return makeAssistantReply(`echoed: ${text}`);
+}
+
+const renderCustomEmptyState = () => <p>Custom welcome.</p>;
 
 export const CustomEmptyState: Story = {
-  render: () => <ChatHarness renderEmptyState={renderCustomEmptyState} />,
+  render: () => (
+    <div style={STORY_CONTAINER_STYLE}>
+      <BaseAipAgentChat
+        onSendMessage={echoReply}
+        renderEmptyState={renderCustomEmptyState}
+      />
+    </div>
+  ),
+};
+
+const CUSTOM_BUBBLE_STYLE: React.CSSProperties = {
+  background: "#f3f4f6",
+  color: "#111827",
+  padding: "8px 12px",
+  borderRadius: "12px",
+  maxWidth: "80%",
+};
+
+const CUSTOM_USER_BUBBLE_STYLE: React.CSSProperties = {
+  ...CUSTOM_BUBBLE_STYLE,
+  background: "#dbeafe",
+};
+
+const CUSTOM_TIMESTAMP_STYLE: React.CSSProperties = {
+  fontSize: "10px",
+  color: "#6b7280",
+  marginTop: "2px",
 };
 
 const renderCustomMessage = (message: UIMessage) => {
-  let text = "";
-  for (const part of message.parts) {
-    if (part.type === "text") {
-      text += part.text;
-    }
-  }
   const isUser = message.role === "user";
   return (
     <div
@@ -292,18 +289,10 @@ const renderCustomMessage = (message: UIMessage) => {
         margin: "8px 0",
       }}
     >
-      <div
-        style={{
-          background: isUser ? "#dbeafe" : "#f3f4f6",
-          color: "#111827",
-          padding: "8px 12px",
-          borderRadius: "12px",
-          maxWidth: "80%",
-        }}
-      >
-        {text}
+      <div style={isUser ? CUSTOM_USER_BUBBLE_STYLE : CUSTOM_BUBBLE_STYLE}>
+        {getUIMessageText(message)}
       </div>
-      <div style={{ fontSize: "10px", color: "#6b7280", marginTop: "2px" }}>
+      <div style={CUSTOM_TIMESTAMP_STYLE}>
         {new Date().toLocaleTimeString()} - {message.role}
       </div>
     </div>
@@ -312,9 +301,12 @@ const renderCustomMessage = (message: UIMessage) => {
 
 export const CustomMessageRender: Story = {
   render: () => (
-    <ChatHarness
-      initialMessages={SEEDED_CONVERSATION}
-      renderMessage={renderCustomMessage}
-    />
+    <div style={STORY_CONTAINER_STYLE}>
+      <BaseAipAgentChat
+        initialMessages={SEEDED_CONVERSATION}
+        onSendMessage={staticReply}
+        renderMessage={renderCustomMessage}
+      />
+    </div>
   ),
 };

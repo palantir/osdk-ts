@@ -15,11 +15,12 @@
  */
 
 import * as React from "react";
+import type { AipModelApiName } from "../AipAgentChatApi.js";
 
 export interface AipAgentChatModelPickerProps {
-  models: ReadonlyArray<string>;
-  activeModel: string;
-  onModelChange: (model: string) => void;
+  models: ReadonlyArray<AipModelApiName>;
+  activeModel: AipModelApiName;
+  onModelChange: (model: AipModelApiName) => void;
 }
 
 /**

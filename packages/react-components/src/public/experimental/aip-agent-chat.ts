@@ -14,19 +14,16 @@
  * limitations under the License.
  */
 
-import { AipAgentChat as _AipAgentChat } from "../../aip-agent-chat/AipAgentChat.js";
-import { withOsdkMetrics } from "../../util/withOsdkMetrics.js";
-
-export const AipAgentChat: typeof _AipAgentChat = withOsdkMetrics(
-  _AipAgentChat,
-  "AipAgentChat",
-);
+// TODO: Add osdk metrics
+// This component uses platformClient, maybe we want to add userAgent header to the platformClient instead
+export { AipAgentChat } from "../../aip-agent-chat/AipAgentChat.js";
 
 export type { AipAgentChatProps } from "../../aip-agent-chat/AipAgentChatApi.js";
 
 export { BaseAipAgentChat } from "../../aip-agent-chat/BaseAipAgentChat.js";
 export type {
   BaseAipAgentChatProps,
+  BaseAipAgentChatSendContext,
   BaseAipAgentChatStatus,
 } from "../../aip-agent-chat/BaseAipAgentChat.js";
 

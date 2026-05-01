@@ -14,21 +14,27 @@
  * limitations under the License.
  */
 
-import { foundryModel } from "@osdk/aip-core";
-import { useChat } from "@osdk/react/experimental/aip";
+import {
+  foundryModel,
+  generateMessageId,
+  getUIMessageText,
+  streamText,
+  type UIMessage,
+} from "@osdk/aip-core";
 import * as React from "react";
-import type { AipAgentChatProps } from "./AipAgentChatApi.js";
+import type { AipAgentChatProps, AipModelApiName } from "./AipAgentChatApi.js";
+import type { BaseAipAgentChatSendContext } from "./BaseAipAgentChat.js";
 import { BaseAipAgentChat } from "./BaseAipAgentChat.js";
 import { AipAgentChatModelPicker } from "./components/AipAgentChatModelPicker.js";
 
 export type { AipAgentChatProps } from "./AipAgentChatApi.js";
 
-const FALLBACK_MODEL_API_NAME = "gpt-4o";
+const FALLBACK_MODEL_API_NAME: AipModelApiName = "GPT_4o";
 
 /**
- * OSDK-aware chat surface backed by `useChat` from
- * `@osdk/react/experimental/aip`. Constructs the LMS-backed model
- * internally, so consumers never need to import `useChat` or
+ * OSDK-aware chat surface backed by Foundry's Language Model Service.
+ * Constructs the LMS-backed model internally and runs `streamText`
+ * against it, so consumers never need to import `streamText` or
  * `foundryModel` themselves.
  */
 export function AipAgentChat({
@@ -50,8 +56,7 @@ export function AipAgentChat({
   // Internal state used only in uncontrolled mode. Initialized once
   // from the first available source: `controlledModel` → `defaultModel`
   // → first entry of `availableModels` → `FALLBACK_MODEL_API_NAME`.
-  // Ignored when `controlledModel` is provided.
-  const [internalModel, setInternalModel] = React.useState<string>(
+  const [internalModel, setInternalModel] = React.useState<AipModelApiName>(
     () =>
       controlledModel
         ?? defaultModel
@@ -63,7 +68,7 @@ export function AipAgentChat({
   const activeModel = isControlled ? controlledModel : internalModel;
 
   const handleModelChange = React.useCallback(
-    (next: string) => {
+    (next: AipModelApiName) => {
       if (!isControlled) {
         setInternalModel(next);
       }
@@ -77,26 +82,54 @@ export function AipAgentChat({
     [client, activeModel],
   );
 
-  const {
-    messages,
-    status,
-    error,
-    sendMessage,
-    stop,
-    clearError,
-  } = useChat({
-    model: lmsModel,
-    system,
-    messages: initialMessages,
-    onError,
-    onFinish,
-  });
-
   const handleSendMessage = React.useCallback(
-    (text: string) => {
-      void sendMessage({ text });
+    async (
+      text: string,
+      ctx: BaseAipAgentChatSendContext,
+    ): Promise<UIMessage> => {
+      const userMessage: UIMessage = {
+        id: generateMessageId(),
+        role: "user",
+        parts: [{ type: "text", text }],
+      };
+      const conversation = [...ctx.history, userMessage];
+
+      const stream = streamText({
+        model: lmsModel,
+        messages: uiMessagesToModelMessages(conversation),
+        system,
+        abortSignal: ctx.signal,
+      });
+
+      let accumulated = "";
+      const reader = stream.textStream.getReader();
+      try {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) {
+            break;
+          }
+          accumulated += value;
+          ctx.setStreamingText(accumulated);
+        }
+      } finally {
+        reader.releaseLock();
+      }
+
+      const assistantMessage: UIMessage = {
+        id: generateMessageId(),
+        role: "assistant",
+        parts: [{ type: "text", text: accumulated }],
+      };
+
+      onFinish?.({
+        message: assistantMessage,
+        messages: [...conversation, assistantMessage],
+      });
+
+      return assistantMessage;
     },
-    [sendMessage],
+    [lmsModel, system, onFinish],
   );
 
   const composerFooter = availableModels != null && availableModels.length > 0
@@ -114,15 +147,34 @@ export function AipAgentChat({
       className={className}
       composerFooter={composerFooter}
       enableAutoScroll={enableAutoScroll}
-      error={error}
-      messages={messages}
-      onClearError={clearError}
+      initialMessages={initialMessages}
+      onError={onError}
       onSendMessage={handleSendMessage}
-      onStop={stop}
       placeholder={placeholder}
       renderEmptyState={renderEmptyState}
       renderMessage={renderMessage}
-      status={status}
     />
   );
+}
+
+/**
+ * Convert UI messages (the conversation shape rendered in the chat)
+ * into the `ModelMessage[]` shape `streamText` accepts. v0: text-only.
+ * Mirrors `uiMessagesToModelMessages` in `@osdk/aip-core/internal`,
+ * which is not part of the public surface.
+ */
+function uiMessagesToModelMessages(
+  ui: ReadonlyArray<UIMessage>,
+): Array<{ role: "user" | "assistant" | "system"; content: string }> {
+  const out: Array<
+    { role: "user" | "assistant" | "system"; content: string }
+  > = [];
+  for (const m of ui) {
+    const text = getUIMessageText(m);
+    if (text.length === 0) {
+      continue;
+    }
+    out.push({ role: m.role, content: text });
+  }
+  return out;
 }
