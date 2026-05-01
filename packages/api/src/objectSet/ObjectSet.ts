@@ -59,7 +59,8 @@ import type { ObjectSetSubscription } from "./ObjectSetListener.js";
 type MergeObjectSet<
   Q extends ObjectOrInterfaceDefinition,
   D extends Record<string, SimplePropertyDef> = {},
-> = DerivedObjectOrInterfaceDefinition.WithDerivedProperties<Q, D>;
+> = keyof D extends never ? Q
+  : DerivedObjectOrInterfaceDefinition.WithDerivedProperties<Q, D>;
 
 type ExtractRdp<
   D extends
