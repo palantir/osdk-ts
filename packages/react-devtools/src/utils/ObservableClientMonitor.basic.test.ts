@@ -162,4 +162,37 @@ describe("ObservableClientMonitor", () => {
 
     expect(mockClient.__unsubscribable.unsubscribe).toHaveBeenCalledTimes(1);
   });
+
+  it("forwards prototype methods that use private fields without throwing", () => {
+    class FakeClient {
+      #cache = new Map<string, number>();
+      seed(): void {
+        this.#cache.set("a", 1);
+      }
+      lookup(key: string): number {
+        return this.#cache.get(key) ?? 0;
+      }
+    }
+    const fake = new FakeClient();
+    fake.seed();
+    const wrapped = monitor.wrapClient(fake as never) as unknown as FakeClient;
+
+    expect(() => wrapped.lookup("a")).not.toThrow();
+    expect(wrapped.lookup("a")).toBe(1);
+  });
+
+  it("returns a stable bound reference for unwrapped methods", () => {
+    const mockClient = createMockClient();
+    const wrapped = monitor.wrapClient(
+      mockClient as never,
+    ) as unknown as Record<
+      string,
+      unknown
+    >;
+
+    expect(wrapped.canonicalizeWhereClause).toBe(
+      wrapped.canonicalizeWhereClause,
+    );
+    expect(typeof wrapped.canonicalizeWhereClause).toBe("function");
+  });
 });

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { CaretDown, Cross, Tick } from "@blueprintjs/icons";
+import { CaretDown, Cross, SmallCross, Tick } from "@blueprintjs/icons";
 import React, { useCallback, useState } from "react";
 import { Combobox } from "../../base-components/combobox/Combobox.js";
 import comboboxStyles from "../../base-components/combobox/Combobox.module.css";
@@ -36,22 +36,36 @@ interface InnerSelectProps<V, Multiple extends boolean>
 {
   itemToStringLabel: (item: V) => string;
   getKey: (item: V) => string;
+  portalRef?: React.Ref<HTMLDivElement>;
+  query?: string;
+  onQueryChange?: (query: string) => void;
 }
 
 interface InnerComboboxProps<V, Multiple extends boolean>
-  extends DropdownFieldProps<V, Multiple>
+  extends InnerSelectProps<V, Multiple>
 {
-  itemToStringLabel: (item: V) => string;
-  getKey: (item: V) => string;
   isSearchable: boolean;
+  disableClientSideFiltering?: boolean;
+  popupStatus?: React.ReactNode;
+  trailingItem?: DropdownFieldProps<V, Multiple>["trailingItem"];
 }
 
-export function DropdownField<V, Multiple extends boolean = false>({
+export const DropdownField: <V, Multiple extends boolean = false>(
+  props: DropdownFieldProps<V, Multiple>,
+) => React.ReactElement = typedReactMemo(function DropdownFieldFn<
+  V,
+  Multiple extends boolean = false,
+>({
   isSearchable = false,
   isMultiple,
   itemToStringLabel,
   itemToKey,
   value,
+  query,
+  onQueryChange,
+  disableClientSideFiltering,
+  popupStatus,
+  trailingItem,
   ...rest
 }: DropdownFieldProps<V, Multiple>): React.ReactElement {
   // Ensure always controlled from first render: multi-select needs [],
@@ -78,10 +92,16 @@ export function DropdownField<V, Multiple extends boolean = false>({
         itemToStringLabel={resolvedItemToStringLabel}
         getKey={getKey}
         isSearchable={isSearchable}
+        query={query}
+        onQueryChange={onQueryChange}
+        disableClientSideFiltering={disableClientSideFiltering}
+        popupStatus={popupStatus}
+        trailingItem={trailingItem}
       />
     );
   }
 
+  // TODO: Support trailingItem
   return (
     <SelectDropdown
       {...rest}
@@ -90,7 +110,7 @@ export function DropdownField<V, Multiple extends boolean = false>({
       getKey={getKey}
     />
   );
-}
+});
 
 const SelectDropdown = typedReactMemo(function SelectDropdownFn<
   V,
@@ -143,7 +163,7 @@ const SelectDropdown = typedReactMemo(function SelectDropdownFn<
               onMouseDown={preventTriggerOpen}
               onClick={handleClear}
             >
-              <Cross />
+              <SmallCross />
             </span>
           )}
           <span className={selectStyles.osdkSelectIcon}>
@@ -181,6 +201,11 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
   isSearchable,
   placeholder,
   portalRef,
+  query,
+  onQueryChange,
+  disableClientSideFiltering,
+  popupStatus,
+  trailingItem,
 }: InnerComboboxProps<V, Multiple>): React.ReactElement {
   const [open, setOpen] = useState(false);
 
@@ -217,22 +242,15 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
   const renderItem = useCallback(
     (item: V) => (
       <Combobox.Item key={getKey(item)} value={item}>
+        {isMultiple && (
+          <Combobox.ItemIndicator>
+            <Tick />
+          </Combobox.ItemIndicator>
+        )}
         {itemToStringLabel(item)}
       </Combobox.Item>
     ),
-    [getKey, itemToStringLabel],
-  );
-
-  const renderItemWithIndicator = useCallback(
-    (item: V) => (
-      <Combobox.Item key={getKey(item)} value={item}>
-        <Combobox.ItemIndicator>
-          <Tick />
-        </Combobox.ItemIndicator>
-        {itemToStringLabel(item)}
-      </Combobox.Item>
-    ),
-    [getKey, itemToStringLabel],
+    [getKey, isMultiple, itemToStringLabel],
   );
 
   return (
@@ -246,7 +264,9 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
         itemToStringLabel={itemToStringLabel}
         isItemEqualToValue={isItemEqual}
         items={items}
-        autoHighlight={isSearchable}
+        inputValue={query}
+        onInputValueChange={onQueryChange}
+        filter={disableClientSideFiltering ? null : undefined}
       >
         <Combobox.Trigger
           id={id}
@@ -296,7 +316,7 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
               onMouseDown={preventTriggerOpen}
               onClick={handleClear}
             >
-              <Cross />
+              <SmallCross />
             </span>
           )}
           <Combobox.Icon>
@@ -311,9 +331,14 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
                   <Combobox.SearchInput placeholder="Search…" />
                 </div>
               )}
-              <Combobox.Empty>No results</Combobox.Empty>
+              {popupStatus}
+              {/* Hide "No results" when popupStatus provides its own message (e.g. "Searching…") */}
+              {popupStatus == null && (
+                <Combobox.Empty>No results</Combobox.Empty>
+              )}
               <Combobox.List>
-                {isMultiple ? renderItemWithIndicator : renderItem}
+                {items.map(renderItem)}
+                {trailingItem}
               </Combobox.List>
             </Combobox.Popup>
           </Combobox.Positioner>

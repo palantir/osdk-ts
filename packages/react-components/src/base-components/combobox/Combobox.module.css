@@ -322,6 +322,26 @@
   box-shadow: var(--osdk-combobox-popup-shadow, var(--osdk-surface-shadow-2));
 }
 
+/*
+ * When the popup contains a sticky search input, delegate scrolling to the
+ * list so the scrollbar doesn't render behind the pinned search input.
+ * The popup becomes a non-scrolling flex column; the list fills remaining
+ * space and scrolls its own content.
+ */
+.osdkComboboxPopup:has(> .osdkComboboxPopupSearchInput) {
+  overflow: hidden;
+}
+
+/*
+ * When the popup has a search input it stops scrolling (overflow: hidden above).
+ * The list fills the remaining space so either its own content or the
+ * VirtualizedScroller inside can scroll independently.
+ */
+.osdkComboboxPopup:has(> .osdkComboboxPopupSearchInput) > .osdkComboboxList {
+  flex: 1;
+  min-block-size: 0;
+}
+
 .osdkComboboxItem {
   display: flex;
   align-items: center;
@@ -510,11 +530,12 @@
 .osdkComboboxList {
   display: flex;
   flex-direction: column;
+  overflow-y: auto;
 }
 
 .osdkComboboxEmpty {
-  padding: calc(var(--osdk-combobox-spacing, var(--osdk-surface-spacing)) * 3)
-    calc(var(--osdk-combobox-spacing, var(--osdk-surface-spacing)) * 2);
+  padding: var(--osdk-combobox-spacing, var(--osdk-surface-spacing))
+    var(--osdk-combobox-spacing, var(--osdk-surface-spacing));
   text-align: center;
   color: var(--osdk-combobox-empty-color, var(--osdk-typography-color-muted));
   font-family: var(
