@@ -29,7 +29,7 @@ import { AipAgentChatModelPicker } from "./components/AipAgentChatModelPicker.js
 
 export type { AipAgentChatProps } from "./AipAgentChatApi.js";
 
-const FALLBACK_MODEL_API_NAME = "GPT_4o";
+const FALLBACK_MODEL_API_NAME = "gpt-4o";
 
 /**
  * OSDK-aware chat surface backed by Foundry's Language Model Service.

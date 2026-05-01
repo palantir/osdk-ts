@@ -4,14 +4,10 @@ import { H1 } from "../../components/headers.js";
 import { platformClient } from "../../foundryClient.js";
 
 const SYSTEM_PROMPT = "You are a concise assistant. Keep answers short.";
-const AVAILABLE_MODELS = [
-  "GPT_4o",
-  "AnthropicClaude_4_6_Sonnet",
-  "Gemini_2_5_Pro",
-];
+const AVAILABLE_MODELS = ["gpt-4o", "gpt-5.4"];
 
 export function AipAgentChatPage() {
-  const [model, setModel] = useState<string>("GPT_4o");
+  const [model, setModel] = useState<string>("gpt-4o");
 
   return (
     <div className="w-full max-w-2xl flex flex-col h-[70vh]">

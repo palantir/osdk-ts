@@ -172,7 +172,7 @@ export const WithError: Story = {
   ),
 };
 
-const MODEL_OPTIONS = ["GPT_4o", "AnthropicClaude_4_6_Sonnet"] as const;
+const MODEL_OPTIONS = ["gpt-4o", "gpt-5.4"] as const;
 type ModelOption = (typeof MODEL_OPTIONS)[number];
 
 function ModelPickerStory(): React.ReactElement {

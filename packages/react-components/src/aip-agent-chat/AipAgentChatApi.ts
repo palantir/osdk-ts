@@ -33,7 +33,7 @@ import type * as React from "react";
  *
  * If neither `model` nor `defaultModel` is supplied, the chat falls
  * back to the first entry of `availableModels` (when provided), or to
- * the LMS model API name `"GPT_4o"`.
+ * the LMS model API name `"gpt-4o"`.
  *
  * Default rendering is feature-complete with no overrides supplied;
  * render slots and `on*` listeners are layered on top of the built-in
@@ -48,7 +48,7 @@ export interface AipAgentChatProps {
   client: PlatformClient;
 
   /**
-   * Active LMS model API name (for example `"GPT_4o"`). Resolved
+   * Active LMS model API name (for example `"gpt-4o"`). Resolved
    * internally via `foundryModel({ client, model })`.
    *
    * Controlled mode: when provided, the consumer holds the model state.
@@ -58,7 +58,7 @@ export interface AipAgentChatProps {
    * Uncontrolled mode: omit and pass {@link AipAgentChatProps.defaultModel}
    * instead. If both are omitted, the chat falls back to the first
    * entry of {@link AipAgentChatProps.availableModels} (when provided),
-   * or to `"GPT_4o"`.
+   * or to `"gpt-4o"`.
    */
   model?: string;
 
@@ -69,7 +69,7 @@ export interface AipAgentChatProps {
    * {@link AipAgentChatProps.model} is also provided (controlled mode
    * wins).
    *
-   * @default "GPT_4o"
+   * @default "gpt-4o"
    */
   defaultModel?: string;
 

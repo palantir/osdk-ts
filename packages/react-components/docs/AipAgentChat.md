@@ -30,7 +30,7 @@ import {
 import { AipAgentChat } from "@osdk/react-components/experimental/aip-agent-chat";
 import { platformClient } from "./foundryClient.js";
 
-// `model` and `defaultModel` are both optional — falls back to "GPT_4o".
+// `model` and `defaultModel` are both optional — falls back to "gpt-4o".
 <AipAgentChat client={platformClient} />;
 ```
 
@@ -39,7 +39,7 @@ import { platformClient } from "./foundryClient.js";
 ```tsx
 <AipAgentChat
   client={platformClient}
-  model="GPT_4o"
+  model="gpt-4o"
   system="You are a concise assistant. Keep answers short."
 />;
 ```
@@ -48,12 +48,12 @@ import { platformClient } from "./foundryClient.js";
 
 ```tsx
 function MyChat() {
-  const [model, setModel] = useState("GPT_4o");
+  const [model, setModel] = useState("gpt-4o");
   return (
     <AipAgentChat
       client={platformClient}
       model={model}
-      availableModels={["GPT_4o", "AnthropicClaude_4_6_Sonnet"]}
+      availableModels={["gpt-4o", "AnthropicClaude_4_6_Sonnet"]}
       onModelChange={setModel}
     />
   );
@@ -65,8 +65,8 @@ function MyChat() {
 ```tsx
 <AipAgentChat
   client={platformClient}
-  defaultModel="GPT_4o"
-  availableModels={["GPT_4o", "AnthropicClaude_4_6_Sonnet"]}
+  defaultModel="gpt-4o"
+  availableModels={["gpt-4o", "AnthropicClaude_4_6_Sonnet"]}
   onModelChange={(modelName) => analytics.track({ modelName })}
 />;
 ```
@@ -85,7 +85,7 @@ import {
 
 <AipAgentChat
   client={platformClient}
-  model="GPT_4o"
+  model="gpt-4o"
   renderMessage={(message: UIMessage) => (
     <div>
       <strong>{message.role}:</strong> {getUIMessageText(message)}
@@ -148,7 +148,7 @@ import { foundryModel } from "@osdk/aip-core";
 
 function MyChat() {
   const lmsModel = useMemo(
-    () => foundryModel({ client: platformClient, model: "GPT_4o" }),
+    () => foundryModel({ client: platformClient, model: "gpt-4o" }),
     [],
   );
   const { messages, status, error, sendMessage, stop, clearError } = useChat({
@@ -174,7 +174,7 @@ See [`AipAgentChatApi.ts`](../src/aip-agent-chat/AipAgentChatApi.ts) for
 the full prop list with JSDoc. `client` is the only required prop.
 `model` (controlled) and `defaultModel` (uncontrolled) are both
 optional; if neither is supplied the chat falls back to the first
-entry of `availableModels` (when provided), or to `"GPT_4o"`. Notable
+entry of `availableModels` (when provided), or to `"gpt-4o"`. Notable
 optional props:
 
 - `availableModels` + `onModelChange` — render a model picker in the
