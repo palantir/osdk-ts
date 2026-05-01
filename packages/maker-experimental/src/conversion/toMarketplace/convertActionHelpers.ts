@@ -40,7 +40,11 @@ import type {
   ActionType,
   InterfaceType,
 } from "@osdk/maker";
-import { getOntologyDefinition, uppercaseFirstLetter } from "@osdk/maker";
+import {
+  getOntologyDefinition,
+  isActionParameterTypePrimitive,
+  uppercaseFirstLetter,
+} from "@osdk/maker";
 import consola from "consola";
 import invariant from "tiny-invariant";
 import type { FunctionsIr } from "../../api/defineOntologyV2.js";
@@ -261,12 +265,12 @@ function convertFunctionBackedAction(
     `Function "${functionName}" not found in functions IR`,
   );
 
-  const parameters: Record<ParameterId, Parameter> = {};
   const functionInputValues: Record<
     string,
     { type: "parameterId"; parameterId: string }
   > = {};
   const parameterOrdering: string[] = [];
+  const syntheticParameters: ActionParameter[] = [];
 
   for (const input of discoveredFunction.inputs) {
     if (
@@ -280,45 +284,26 @@ function convertFunctionBackedAction(
       parameterId: paramId,
     };
 
-    const paramType = convertFunctionInputDataType(
-      input.dataType,
-      ridGenerator,
-    );
+    const paramType = dataTypeToActionParameterType(input.dataType);
+    const isObjectParam = input.dataType.type === "object"
+      || (input.dataType.type === "list"
+        && (input.dataType as IListDataType).list.elementsType.type
+          === "object");
 
-    parameters[paramId] = {
+    syntheticParameters.push({
       id: paramId,
-      rid: ridGenerator.generateRidForParameter(action.apiName, paramId),
+      displayName: uppercaseFirstLetter(paramId),
       type: paramType,
-      displayMetadata: {
-        displayName: uppercaseFirstLetter(paramId),
-        description: "",
-        typeClasses: [],
-        structFields: {},
-        structFieldsV2: [],
-      },
-    };
-  }
-
-  const syntheticParameters: ActionParameter[] = Object.entries(parameters)
-    .map(([paramId, param]) => ({
-      id: paramId,
-      displayName: param.displayMetadata.displayName,
-      type: param.type.type as ActionParameter["type"],
       validation: {
         required: true,
         defaultVisibility: "editable",
-        allowedValues: param.type.type === "objectReference"
-            || param.type.type === "objectReferenceList"
-          ? {
-            type: "objectQuery",
-            objectQuery: {
-              type: "objectQuery",
-              objectQuery: { objectSet: null },
-            },
-          }
+        allowedValues: isObjectParam
+          ? { type: "objectQuery" }
           : undefined,
       },
-    }));
+    });
+  }
+
   action = {
     ...action,
     parameters: syntheticParameters,
@@ -334,6 +319,7 @@ function convertFunctionBackedAction(
     },
   };
 
+  const actionParameters = convertActionParameters(action, ridGenerator);
   const functionRid = `ri.function-registry.main.function.${functionName}`;
 
   return {
@@ -369,7 +355,7 @@ function convertFunctionBackedAction(
         action,
         ridGenerator,
         parameterOrdering,
-        parameters,
+        actionParameters,
         {},
       ),
     },
@@ -377,69 +363,40 @@ function convertFunctionBackedAction(
   };
 }
 
-const PRIMITIVE_TYPES: Record<string, Parameter["type"]> = {
-  "string": { type: "string", string: {} },
-  "boolean": { type: "boolean", boolean: {} },
-  "integer": { type: "integer", integer: {} },
-  "long": { type: "long", long: {} },
-  "double": { type: "double", double: {} },
-  "date": { type: "date", date: {} },
-  "timestamp": { type: "timestamp", timestamp: {} },
-  "attachment": { type: "attachment", attachment: {} },
-};
-
-function convertFunctionInputDataType(
+function dataTypeToActionParameterType(
   dataType: IDataType,
-  ridGenerator: OntologyRidGenerator,
-): Parameter["type"] {
+): ActionParameter["type"] {
   switch (dataType.type) {
     case "object": {
-      invariant(dataType.object, "object data type missing object field");
       const objectData = dataType as IObjectDataType;
-      const objectTypeId = ridGenerator.generateObjectTypeId(
-        objectData.object.objectTypeId,
-      );
       return {
         type: "objectReference",
-        objectReference: { objectTypeId, maybeCreateObjectOption: null },
+        objectReference: {
+          objectTypeId: objectData.object.objectTypeId,
+          maybeCreateObjectOption: null,
+        },
       };
     }
     case "objectSet": {
-      invariant(
-        dataType.objectSet,
-        "objectSet data type missing objectSet field",
-      );
       const objectSetData = dataType as IObjectSetDataType;
-      const objectTypeId = ridGenerator.generateObjectTypeId(
-        objectSetData.objectSet.objectTypeId,
-      );
       return {
         type: "objectSetRid",
         objectSetRid: {
-          objectTypeId,
+          objectTypeId: objectSetData.objectSet.objectTypeId,
         },
       };
     }
     case "list": {
       const listData = dataType as IListDataType;
-      const innerType = listData.list.elementsType;
-      return convertFunctionInputListDataType(
-        innerType,
-        ridGenerator,
-      );
+      return dataTypeToActionParameterListType(listData.list.elementsType);
     }
     case "set": {
       const setData = dataType as ISetDataType;
-      const innerType = setData.set.elementsType;
-      return convertFunctionInputListDataType(
-        innerType,
-        ridGenerator,
-      );
+      return dataTypeToActionParameterListType(setData.set.elementsType);
     }
     default: {
-      const key = dataType.type;
-      if (key in PRIMITIVE_TYPES) {
-        return PRIMITIVE_TYPES[key];
+      if (isActionParameterTypePrimitive(dataType.type)) {
+        return dataType.type;
       }
       throw new Error(
         `Unsupported function input data type for action parameter: ${dataType.type}`,
@@ -448,42 +405,36 @@ function convertFunctionInputDataType(
   }
 }
 
-const PRIMITIVE_LIST_TYPES: Record<string, Parameter["type"]> = {
-  "string": { type: "stringList", stringList: {} },
-  "boolean": { type: "booleanList", booleanList: {} },
-  "integer": { type: "integerList", integerList: {} },
-  "long": { type: "longList", longList: {} },
-  "double": { type: "doubleList", doubleList: {} },
-  "date": { type: "dateList", dateList: {} },
-  "timestamp": { type: "timestampList", timestampList: {} },
-  "attachment": { type: "attachmentList", attachmentList: {} },
+const PRIMITIVE_LIST_TYPES: Record<string, ActionParameter["type"]> = {
+  "string": "stringList",
+  "boolean": "booleanList",
+  "integer": "integerList",
+  "long": "longList",
+  "double": "doubleList",
+  "date": "dateList",
+  "timestamp": "timestampList",
+  "attachment": "attachmentList",
 };
 
-function convertFunctionInputListDataType(
+function dataTypeToActionParameterListType(
   elementType: IDataType,
-  ridGenerator: OntologyRidGenerator,
-): Parameter["type"] {
-  switch (elementType.type) {
-    case "object": {
-      const objectData = elementType as IObjectDataType;
-      const objectTypeId = ridGenerator.generateObjectTypeId(
-        objectData.object.objectTypeId,
-      );
-      return {
-        type: "objectReferenceList",
-        objectReferenceList: { objectTypeId },
-      };
-    }
-    default: {
-      const key = elementType.type;
-      if (key in PRIMITIVE_LIST_TYPES) {
-        return PRIMITIVE_LIST_TYPES[key];
-      }
-      throw new Error(
-        `Unsupported list element data type for action parameter: ${elementType.type}`,
-      );
-    }
+): ActionParameter["type"] {
+  if (elementType.type === "object") {
+    const objectData = elementType as IObjectDataType;
+    return {
+      type: "objectReferenceList",
+      objectReferenceList: {
+        objectTypeId: objectData.object.objectTypeId,
+      },
+    };
   }
+  const listType = PRIMITIVE_LIST_TYPES[elementType.type];
+  if (listType != null) {
+    return listType;
+  }
+  throw new Error(
+    `Unsupported list element data type for action parameter: ${elementType.type}`,
+  );
 }
 
 /**

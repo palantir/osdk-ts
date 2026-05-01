@@ -161,7 +161,7 @@ export function convertOntologyDefinitionToWireBlockData(
         return [
           ridGenerator.generateRidForActionType(apiName),
           converted,
-        ] as [string, ActionTypeBlockDataV2];
+        ];
       })
       .filter((entry): entry is [string, ActionTypeBlockDataV2] =>
         entry !== undefined

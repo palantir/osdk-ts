@@ -29,6 +29,9 @@ export type {
   ActionParameterConfiguration,
   ActionParameterRequirementConstraint,
 } from "./api/action/ActionParameterConfiguration.js";
+export {
+  isActionParameterTypePrimitive,
+} from "./api/action/ActionParameterType.js";
 export type { ActionSection } from "./api/action/ActionSection.js";
 export type { ActionStatus } from "./api/action/ActionStatus.js";
 export type { ActionType } from "./api/action/ActionType.js";
