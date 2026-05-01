@@ -21,7 +21,6 @@ import {
   LmsChatTransport,
   type LmsChatTransportOptions,
   type UIMessage,
-  type UIMessageChunk,
 } from "@osdk/aip-core";
 import React from "react";
 import {
@@ -29,6 +28,11 @@ import {
   type ChatStore,
   createChatStore,
 } from "./chatStore.js";
+import {
+  drainStream,
+  runChatStream,
+  type StreamContext,
+} from "./chatStream.js";
 
 export type { ChatStatus } from "./chatStore.js";
 
@@ -54,8 +58,6 @@ export interface UseChatOptions {
   stopSequences?: Array<string>;
   seed?: number;
   headers?: Record<string, string | undefined>;
-
-  // AIP SDK surface ----------------------------------------------------------
 
   /** Stable chat id. A stable id is generated if not provided. */
   id?: string;
@@ -96,9 +98,7 @@ export interface UseChatReturn {
   status: ChatStatus;
   error: Error | undefined;
 
-  sendMessage: (
-    message: SendMessageInput,
-  ) => Promise<void>;
+  sendMessage: (message: SendMessageInput) => Promise<void>;
   regenerate: (options?: { messageId?: string }) => Promise<void>;
   stop: () => void;
   /** Calls `transport.reconnectToStream`. v0: LMS returns null, so this is a no-op. */
@@ -131,8 +131,60 @@ export function useChat(options: UseChatOptions): UseChatReturn {
     [options.id],
   );
 
-  const transport = useTransport(options);
-  const store = useStore(id, options);
+  // JSON-stringify keys keep the memo stable when callers pass inline objects.
+  const headersKey = JSON.stringify(options.headers ?? null);
+  const stopSequencesKey = JSON.stringify(options.stopSequences ?? null);
+  const transport = React.useMemo<ChatTransport<UIMessage>>(
+    () => {
+      if (options.transport != null) {
+        return options.transport;
+      }
+      if (options.model == null) {
+        throw new Error(
+          "useChat: `model` is required when no `transport` is provided.",
+        );
+      }
+      const built: LmsChatTransportOptions = {
+        model: options.model,
+        system: options.system,
+        temperature: options.temperature,
+        maxOutputTokens: options.maxOutputTokens,
+        topP: options.topP,
+        presencePenalty: options.presencePenalty,
+        frequencyPenalty: options.frequencyPenalty,
+        stopSequences: options.stopSequences,
+        seed: options.seed,
+        headers: options.headers,
+      };
+      return new LmsChatTransport(built);
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [
+      options.transport,
+      options.model,
+      options.system,
+      options.temperature,
+      options.maxOutputTokens,
+      options.topP,
+      options.presencePenalty,
+      options.frequencyPenalty,
+      options.seed,
+      headersKey,
+      stopSequencesKey,
+    ],
+  );
+
+  const store = React.useMemo<ChatStore>(
+    () =>
+      createChatStore({
+        initialMessages: options.messages,
+        throttleMs: options.experimentalThrottle ?? 50,
+      }),
+    // Recreating the store mid-session would drop chat state, so it's keyed
+    // only by `id`. Use `setMessages` to mutate messages at runtime.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [id],
+  );
 
   const state = React.useSyncExternalStore(
     store.subscribe,
@@ -279,227 +331,6 @@ export function useChat(options: UseChatOptions): UseChatReturn {
     ],
   );
 }
-
-// ---------------------------------------------------------------------------
-// Stream orchestration (extracted to keep the hook body readable)
-// ---------------------------------------------------------------------------
-
-interface StreamContext {
-  store: ChatStore;
-  abortRef: React.MutableRefObject<AbortController | undefined>;
-  stoppedRef: React.MutableRefObject<boolean>;
-  onFinish: UseChatOptions["onFinish"];
-  onError: UseChatOptions["onError"];
-}
-
-async function runChatStream(
-  ctx: StreamContext,
-  transport: ChatTransport<UIMessage>,
-  chatId: string,
-  seed: ReadonlyArray<UIMessage>,
-  trigger: "submit-message" | "regenerate-message",
-): Promise<void> {
-  ctx.abortRef.current?.abort();
-  const ctrl = new AbortController();
-  ctx.abortRef.current = ctrl;
-  ctx.stoppedRef.current = false;
-
-  const assistantId = generateMessageId();
-  try {
-    const stream = await transport.sendMessages({
-      trigger,
-      chatId,
-      messageId: assistantId,
-      messages: seed.slice(),
-      abortSignal: ctrl.signal,
-    });
-    await drainStream(ctx, stream, assistantId, ctrl);
-  } catch (err) {
-    handleStreamError(ctx, err, ctrl);
-  }
-}
-
-async function drainStream(
-  ctx: StreamContext,
-  stream: ReadableStream<UIMessageChunk>,
-  assistantMessageId: string,
-  capturedCtrl: AbortController,
-): Promise<void> {
-  const { store } = ctx;
-  const reader = stream.getReader();
-  let textBuf = "";
-
-  const isStale = (): boolean =>
-    ctx.abortRef.current != null && ctx.abortRef.current !== capturedCtrl;
-
-  // Caller dropped our assistant message via `setMessages` mid-stream.
-  // Treat as "the consumer no longer wants this stream" — quietly stop.
-  const isOrphaned = (): boolean => {
-    const messages = store.getSnapshot().messages;
-    return textBuf.length > 0
-      && !messages.some((m) => m.id === assistantMessageId);
-  };
-
-  try {
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) {
-        break;
-      }
-      if (isStale()) {
-        await reader.cancel();
-        return;
-      }
-      if (isOrphaned()) {
-        await reader.cancel();
-        store.setState((prev) => ({ ...prev, status: "ready" }));
-        return;
-      }
-      if (value.type === "text-delta") {
-        textBuf += value.delta;
-        upsertAssistantText(store, assistantMessageId, textBuf);
-      } else if (value.type === "error") {
-        if (ctx.stoppedRef.current || capturedCtrl.signal.aborted) {
-          return;
-        }
-        await reader.cancel();
-        throw new Error(value.errorText);
-      }
-    }
-    if (isStale()) {
-      return;
-    }
-    store.setState((prev) => ({ ...prev, status: "ready" }));
-    const finalSnap = store.getSnapshot();
-    const finalMessage = finalSnap.messages.find(
-      (m) => m.id === assistantMessageId,
-    );
-    if (finalMessage != null && ctx.onFinish != null) {
-      ctx.onFinish({ message: finalMessage, messages: finalSnap.messages });
-    }
-  } catch (err) {
-    handleStreamError(ctx, err, capturedCtrl);
-  } finally {
-    reader.releaseLock();
-  }
-}
-
-function upsertAssistantText(
-  store: ChatStore,
-  assistantMessageId: string,
-  text: string,
-): void {
-  store.setStateThrottled((prev) => {
-    const exists = prev.messages.some((m) => m.id === assistantMessageId);
-    const messages = exists
-      ? prev.messages.map((m) =>
-        m.id === assistantMessageId
-          ? { ...m, parts: [{ type: "text" as const, text }] }
-          : m
-      )
-      : [
-        ...prev.messages,
-        {
-          id: assistantMessageId,
-          role: "assistant" as const,
-          parts: [{ type: "text" as const, text }],
-        },
-      ];
-    return { ...prev, status: "streaming", messages };
-  });
-}
-
-function handleStreamError(
-  ctx: StreamContext,
-  err: unknown,
-  capturedCtrl: AbortController,
-): void {
-  if (ctx.abortRef.current != null && ctx.abortRef.current !== capturedCtrl) {
-    return;
-  }
-  const error = err instanceof Error ? err : new Error(String(err));
-  if (
-    ctx.stoppedRef.current
-    || error.name === "AbortError"
-    || capturedCtrl.signal.aborted
-  ) {
-    ctx.store.setState((prev) => ({
-      ...prev,
-      status: "ready",
-      error: undefined,
-    }));
-    return;
-  }
-  ctx.store.setState((prev) => ({ ...prev, status: "error", error }));
-  ctx.onError?.(error);
-}
-
-// ---------------------------------------------------------------------------
-// Setup helpers (memoization shape kept inside the hook)
-// ---------------------------------------------------------------------------
-
-function useTransport(options: UseChatOptions): ChatTransport<UIMessage> {
-  // JSON-stringify keys keep the memo stable when callers pass inline objects.
-  const headersKey = JSON.stringify(options.headers ?? null);
-  const stopSequencesKey = JSON.stringify(options.stopSequences ?? null);
-  return React.useMemo<ChatTransport<UIMessage>>(
-    () => {
-      if (options.transport != null) {
-        return options.transport;
-      }
-      if (options.model == null) {
-        throw new Error(
-          "useChat: `model` is required when no `transport` is provided.",
-        );
-      }
-      const built: LmsChatTransportOptions = {
-        model: options.model,
-        system: options.system,
-        temperature: options.temperature,
-        maxOutputTokens: options.maxOutputTokens,
-        topP: options.topP,
-        presencePenalty: options.presencePenalty,
-        frequencyPenalty: options.frequencyPenalty,
-        stopSequences: options.stopSequences,
-        seed: options.seed,
-        headers: options.headers,
-      };
-      return new LmsChatTransport(built);
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [
-      options.transport,
-      options.model,
-      options.system,
-      options.temperature,
-      options.maxOutputTokens,
-      options.topP,
-      options.presencePenalty,
-      options.frequencyPenalty,
-      options.seed,
-      headersKey,
-      stopSequencesKey,
-    ],
-  );
-}
-
-function useStore(id: string, options: UseChatOptions): ChatStore {
-  return React.useMemo(
-    () =>
-      createChatStore({
-        initialMessages: options.messages,
-        throttleMs: options.experimentalThrottle ?? 50,
-      }),
-    // Recreating the store mid-session would drop chat state, so it's keyed
-    // only by `id`. Use `setMessages` to mutate messages at runtime.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [id],
-  );
-}
-
-// ---------------------------------------------------------------------------
-// Pure helpers
-// ---------------------------------------------------------------------------
 
 type RegenerateCutoff =
   | { kind: "noop" }

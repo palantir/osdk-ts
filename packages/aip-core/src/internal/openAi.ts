@@ -32,10 +32,6 @@ import type {
   Warning,
 } from "../types.js";
 
-// ---------------------------------------------------------------------------
-// OpenAI message / tool wire shapes
-// ---------------------------------------------------------------------------
-
 export interface OpenAiMessage {
   role: "system" | "user" | "assistant" | "tool";
   content: string | Array<OpenAiContentPart> | null;
@@ -404,10 +400,6 @@ export async function safeReadText(
     return undefined;
   }
 }
-
-// ---------------------------------------------------------------------------
-// Shared request execution
-// ---------------------------------------------------------------------------
 
 export interface PostChatCompletionsArgs {
   model: LanguageModel;

@@ -18,10 +18,6 @@
  * Shared types for the AIP SDK's chat completion primitives.
  */
 
-// ---------------------------------------------------------------------------
-// Messages
-// ---------------------------------------------------------------------------
-
 export type Role = "system" | "user" | "assistant" | "tool";
 
 export interface SystemModelMessage {
@@ -55,10 +51,6 @@ export type ModelMessage =
   | UserModelMessage
   | AssistantModelMessage
   | ToolModelMessage;
-
-// ---------------------------------------------------------------------------
-// Content parts
-// ---------------------------------------------------------------------------
 
 export interface TextPart {
   type: "text";
@@ -117,10 +109,6 @@ export type ToolResultOutput =
     >;
   };
 
-// ---------------------------------------------------------------------------
-// Tools
-// ---------------------------------------------------------------------------
-
 /**
  * Tool definition.
  *
@@ -143,10 +131,6 @@ export type ToolChoice<TOOLS extends ToolSet = ToolSet> =
   | "required"
   | { type: "tool"; toolName: keyof TOOLS & string };
 
-// ---------------------------------------------------------------------------
-// Tool calls / results (model output)
-// ---------------------------------------------------------------------------
-
 export interface ToolCall<NAME extends string = string, INPUT = unknown> {
   type: "tool-call";
   toolCallId: string;
@@ -168,10 +152,6 @@ export interface ToolResult<
   output: OUTPUT;
   providerMetadata?: ProviderMetadata;
 }
-
-// ---------------------------------------------------------------------------
-// Usage / finish reason / metadata
-// ---------------------------------------------------------------------------
 
 export type FinishReason =
   | "stop"
@@ -215,19 +195,11 @@ export interface ResponseMetadata {
   messages?: Array<AssistantModelMessage | ToolModelMessage>;
 }
 
-// ---------------------------------------------------------------------------
-// Reasoning
-// ---------------------------------------------------------------------------
-
 export interface ReasoningOutput {
   type: "reasoning";
   text: string;
   providerMetadata?: ProviderMetadata;
 }
-
-// ---------------------------------------------------------------------------
-// Step / final result content parts
-// ---------------------------------------------------------------------------
 
 export type ContentPart<TOOLS extends ToolSet = ToolSet> =
   | { type: "text"; text: string; providerMetadata?: ProviderMetadata }

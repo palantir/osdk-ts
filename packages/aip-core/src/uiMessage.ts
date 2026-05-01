@@ -23,10 +23,6 @@
 
 import type { FinishReason, LanguageModelUsage } from "./types.js";
 
-// ---------------------------------------------------------------------------
-// UIMessage
-// ---------------------------------------------------------------------------
-
 export type UIMessageRole = "system" | "user" | "assistant";
 
 export type UIMessagePart =
@@ -40,10 +36,6 @@ export interface UIMessage {
   parts: Array<UIMessagePart>;
   metadata?: Record<string, unknown>;
 }
-
-// ---------------------------------------------------------------------------
-// UIMessageChunk — discriminated union streamed by transports
-// ---------------------------------------------------------------------------
 
 export type UIMessageChunk =
   | { type: "start"; messageId: string }
@@ -70,10 +62,6 @@ export type UIMessageChunk =
   }
   | { type: "error"; errorText: string };
 
-// ---------------------------------------------------------------------------
-// ChatTransport — pluggable adapter that produces UIMessageChunk streams
-// ---------------------------------------------------------------------------
-
 export type ChatTransportTrigger = "submit-message" | "regenerate-message";
 
 export interface ChatTransportSendMessagesArgs<MSG extends UIMessage> {
@@ -98,10 +86,6 @@ export interface ChatTransport<MSG extends UIMessage = UIMessage> {
     args: ChatTransportReconnectArgs,
   ): Promise<ReadableStream<UIMessageChunk> | null>;
 }
-
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
 
 /** Concatenate all `text` parts of a UIMessage into a single string. */
 export function getUIMessageText(message: UIMessage): string {
