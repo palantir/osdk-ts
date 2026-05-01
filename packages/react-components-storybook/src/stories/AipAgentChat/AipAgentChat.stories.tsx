@@ -15,7 +15,6 @@
  */
 
 import { getUIMessageText, type UIMessage } from "@osdk/aip-core";
-import type { BaseAipAgentChatSendContext } from "@osdk/react-components/experimental/aip-agent-chat";
 import { BaseAipAgentChat } from "@osdk/react-components/experimental/aip-agent-chat";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import * as React from "react";
@@ -35,28 +34,6 @@ const STORY_CONTAINER_STYLE: React.CSSProperties = {
 
 function sleep(ms: number): Promise<void> {
   return new Promise((r) => setTimeout(r, ms));
-}
-
-function makeAssistantReply(text: string): UIMessage {
-  return {
-    id: `assistant-${Math.random()}`,
-    role: "assistant",
-    parts: [{ type: "text", text }],
-  };
-}
-
-const FAKE_ASSISTANT_REPLY =
-  "Thanks for your message — here is a stubbed assistant response from the Storybook harness.";
-
-async function staticReply(
-  _text: string,
-  ctx: BaseAipAgentChatSendContext,
-): Promise<UIMessage> {
-  await sleep(600);
-  if (ctx.signal.aborted) {
-    throw new Error("aborted");
-  }
-  return makeAssistantReply(FAKE_ASSISTANT_REPLY);
 }
 
 const SEEDED_CONVERSATION: ReadonlyArray<UIMessage> = [
@@ -97,7 +74,16 @@ const SEEDED_CONVERSATION: ReadonlyArray<UIMessage> = [
 export const Default: Story = {
   render: () => (
     <div style={STORY_CONTAINER_STYLE}>
-      <BaseAipAgentChat onSendMessage={staticReply} />
+      <BaseAipAgentChat
+        messages={[]}
+        status="ready"
+        error={undefined}
+        onSendMessage={async () => {
+          await sleep(600);
+        }}
+        onStop={() => {}}
+        onClearError={() => {}}
+      />
     </div>
   ),
 };
@@ -106,68 +92,49 @@ export const WithConversation: Story = {
   render: () => (
     <div style={STORY_CONTAINER_STYLE}>
       <BaseAipAgentChat
-        initialMessages={SEEDED_CONVERSATION}
-        onSendMessage={staticReply}
+        messages={SEEDED_CONVERSATION}
+        status="ready"
+        error={undefined}
+        onSendMessage={async () => {
+          await sleep(600);
+        }}
+        onStop={() => {}}
+        onClearError={() => {}}
       />
     </div>
   ),
 };
 
-const STREAMING_TOKENS = [
-  "Sure",
-  "—",
-  "here",
-  "is",
-  "a",
-  "streamed",
-  "response",
-  "arriving",
-  "one",
-  "word",
-  "at",
-  "a",
-  "time.",
-];
-
-async function streamingReply(
-  _text: string,
-  ctx: BaseAipAgentChatSendContext,
-): Promise<UIMessage> {
-  let buffer = "";
-  for (const token of STREAMING_TOKENS) {
-    await sleep(80);
-    if (ctx.signal.aborted) {
-      throw new Error("aborted");
-    }
-    buffer = buffer.length === 0 ? token : `${buffer} ${token}`;
-    ctx.setStreamingText(buffer);
-  }
-  return makeAssistantReply(buffer);
-}
-
 export const Streaming: Story = {
   render: () => (
     <div style={STORY_CONTAINER_STYLE}>
-      <BaseAipAgentChat onSendMessage={streamingReply} />
+      <BaseAipAgentChat
+        messages={[]}
+        status="streaming"
+        error={undefined}
+        onSendMessage={async () => {
+          await sleep(600);
+        }}
+        onStop={() => {}}
+        onClearError={() => {}}
+      />
     </div>
   ),
 };
 
-async function failingReply(
-  _text: string,
-  ctx: BaseAipAgentChatSendContext,
-): Promise<UIMessage> {
-  await sleep(300);
-  if (ctx.signal.aborted) {
-    throw new Error("aborted");
-  }
-  throw new Error("Stream failed: rate limited");
-}
-
 export const WithError: Story = {
   render: () => (
     <div style={STORY_CONTAINER_STYLE}>
-      <BaseAipAgentChat onSendMessage={failingReply} />
+      <BaseAipAgentChat
+        messages={[]}
+        status="error"
+        error={new Error("Stream failed: rate limited")}
+        onSendMessage={async () => {
+          await sleep(600);
+        }}
+        onStop={() => {}}
+        onClearError={() => {}}
+      />
     </div>
   ),
 };
@@ -183,20 +150,6 @@ function ModelPickerStory(): React.ReactElement {
   const handleChange = React.useCallback(
     (event: React.ChangeEvent<HTMLSelectElement>) => {
       setModel(event.target.value as ModelOption);
-    },
-    [],
-  );
-
-  const handleSendMessage = React.useCallback(
-    async (
-      _text: string,
-      ctx: BaseAipAgentChatSendContext,
-    ): Promise<UIMessage> => {
-      await sleep(600);
-      if (ctx.signal.aborted) {
-        throw new Error("aborted");
-      }
-      return makeAssistantReply(`Routed to model: ${modelRef.current}`);
     },
     [],
   );
@@ -225,7 +178,14 @@ function ModelPickerStory(): React.ReactElement {
     <div style={STORY_CONTAINER_STYLE}>
       <BaseAipAgentChat
         composerFooter={composerFooter}
-        onSendMessage={handleSendMessage}
+        messages={[]}
+        status="ready"
+        error={undefined}
+        onSendMessage={async () => {
+          await sleep(600);
+        }}
+        onStop={() => {}}
+        onClearError={() => {}}
       />
     </div>
   );
@@ -235,24 +195,20 @@ export const WithModelPicker: Story = {
   render: () => <ModelPickerStory />,
 };
 
-async function echoReply(
-  text: string,
-  ctx: BaseAipAgentChatSendContext,
-): Promise<UIMessage> {
-  await sleep(400);
-  if (ctx.signal.aborted) {
-    throw new Error("aborted");
-  }
-  return makeAssistantReply(`echoed: ${text}`);
-}
-
 const renderCustomEmptyState = () => <p>Custom welcome.</p>;
 
 export const CustomEmptyState: Story = {
   render: () => (
     <div style={STORY_CONTAINER_STYLE}>
       <BaseAipAgentChat
-        onSendMessage={echoReply}
+        messages={[]}
+        status="ready"
+        error={undefined}
+        onSendMessage={async () => {
+          await sleep(400);
+        }}
+        onStop={() => {}}
+        onClearError={() => {}}
         renderEmptyState={renderCustomEmptyState}
       />
     </div>
@@ -303,8 +259,14 @@ export const CustomMessageRender: Story = {
   render: () => (
     <div style={STORY_CONTAINER_STYLE}>
       <BaseAipAgentChat
-        initialMessages={SEEDED_CONVERSATION}
-        onSendMessage={staticReply}
+        messages={SEEDED_CONVERSATION}
+        status="ready"
+        error={undefined}
+        onSendMessage={async () => {
+          await sleep(600);
+        }}
+        onStop={() => {}}
+        onClearError={() => {}}
         renderMessage={renderCustomMessage}
       />
     </div>

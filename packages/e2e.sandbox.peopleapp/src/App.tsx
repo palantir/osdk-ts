@@ -13,8 +13,6 @@ function PeopleApp() {
     ? "filter-list"
     : path === "/form"
     ? "form"
-    : path === "/chat"
-    ? "chat"
     : path === "/aip-agent-chat"
     ? "aip-agent-chat"
     : "offices";
@@ -51,13 +49,6 @@ function PeopleApp() {
           onClick={() => navigate("/form")}
         >
           Form
-        </Button>
-        <Button
-          variant="tab"
-          active={activeTab === "chat"}
-          onClick={() => navigate("/chat")}
-        >
-          Chat
         </Button>
         <Button
           variant="tab"
