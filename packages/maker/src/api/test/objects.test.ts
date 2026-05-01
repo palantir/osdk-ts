@@ -334,6 +334,7 @@ describe("Object Types", () => {
                 "alias2",
               ],
               "arePatchesEnabled": false,
+              "editsHistory": undefined,
             },
             "objectType": {
               "allImplementsInterfaces": {},
@@ -639,6 +640,7 @@ describe("Object Types", () => {
             "entityMetadata": {
               "aliases": [],
               "arePatchesEnabled": false,
+              "editsHistory": undefined,
             },
             "objectType": {
               "allImplementsInterfaces": {},
@@ -743,6 +745,7 @@ describe("Object Types", () => {
             "entityMetadata": {
               "aliases": [],
               "arePatchesEnabled": false,
+              "editsHistory": undefined,
             },
             "objectType": {
               "allImplementsInterfaces": {},
@@ -884,6 +887,7 @@ describe("Object Types", () => {
             "entityMetadata": {
               "aliases": [],
               "arePatchesEnabled": false,
+              "editsHistory": undefined,
             },
             "objectType": {
               "allImplementsInterfaces": {},
@@ -1034,6 +1038,7 @@ describe("Object Types", () => {
               "entityMetadata": {
                 "aliases": [],
                 "arePatchesEnabled": false,
+                "editsHistory": undefined,
               },
               "objectType": {
                 "allImplementsInterfaces": {},
@@ -1198,6 +1203,7 @@ describe("Object Types", () => {
               "entityMetadata": {
                 "aliases": [],
                 "arePatchesEnabled": false,
+                "editsHistory": undefined,
               },
               "objectType": {
                 "allImplementsInterfaces": {},
@@ -1450,6 +1456,7 @@ describe("Object Types", () => {
               "entityMetadata": {
                 "aliases": [],
                 "arePatchesEnabled": false,
+                "editsHistory": undefined,
               },
               "objectType": {
                 "allImplementsInterfaces": {},
@@ -2397,6 +2404,7 @@ describe("Object Types", () => {
               "entityMetadata": {
                 "aliases": [],
                 "arePatchesEnabled": true,
+                "editsHistory": undefined,
               },
               "objectType": {
                 "allImplementsInterfaces": {},
@@ -2548,6 +2556,7 @@ describe("Object Types", () => {
               "entityMetadata": {
                 "aliases": [],
                 "arePatchesEnabled": true,
+                "editsHistory": undefined,
               },
               "objectType": {
                 "allImplementsInterfaces": {},
@@ -2915,6 +2924,7 @@ describe("Object Types", () => {
               "entityMetadata": {
                 "aliases": [],
                 "arePatchesEnabled": false,
+                "editsHistory": undefined,
               },
               "objectType": {
                 "allImplementsInterfaces": {},
@@ -3244,6 +3254,7 @@ describe("Object Types", () => {
               "entityMetadata": {
                 "aliases": [],
                 "arePatchesEnabled": false,
+                "editsHistory": undefined,
               },
               "objectType": {
                 "allImplementsInterfaces": {},
@@ -3661,6 +3672,7 @@ describe("Object Types", () => {
               "entityMetadata": {
                 "aliases": [],
                 "arePatchesEnabled": false,
+                "editsHistory": undefined,
               },
               "objectType": {
                 "allImplementsInterfaces": {},
@@ -4032,6 +4044,7 @@ describe("Object Types", () => {
               "entityMetadata": {
                 "aliases": [],
                 "arePatchesEnabled": false,
+                "editsHistory": undefined,
               },
               "objectType": {
                 "allImplementsInterfaces": {},
@@ -4477,5 +4490,63 @@ describe("Object Types", () => {
         ontologyPackageRid: "ri.ontology-package.main.ontology-package.abc-123",
       });
     }, "/tmp/");
+  });
+
+  describe("EditsHistoryConfig", () => {
+    it("editsHistory is undefined when no config is provided", () => {
+      defineObject({
+        titlePropertyApiName: "bar",
+        displayName: "Foo",
+        pluralDisplayName: "Foo",
+        apiName: "foo",
+        primaryKeyPropertyApiName: "bar",
+        properties: { "bar": { type: "string" } },
+      });
+
+      const objectData = dumpOntologyFullMetadata().ontology
+        .objectTypes["com.palantir.foo"];
+      expect(objectData.entityMetadata?.editsHistory).toBeUndefined();
+    });
+
+    it("editsHistory is set to config when enabled", () => {
+      defineObject({
+        titlePropertyApiName: "bar",
+        displayName: "Foo",
+        pluralDisplayName: "Foo",
+        apiName: "foo",
+        primaryKeyPropertyApiName: "bar",
+        properties: { "bar": { type: "string" } },
+        editsHistoryConfig: { enabled: true },
+      });
+
+      const objectData = dumpOntologyFullMetadata().ontology
+        .objectTypes["com.palantir.foo"];
+      expect(objectData.entityMetadata?.editsHistory).toEqual({
+        type: "config",
+        config: {
+          store: "com.palantir.foo",
+          storeAllPreviousProperties: undefined,
+        },
+      });
+    });
+
+    it("editsHistory is set to none when disabled", () => {
+      defineObject({
+        titlePropertyApiName: "bar",
+        displayName: "Foo",
+        pluralDisplayName: "Foo",
+        apiName: "foo",
+        primaryKeyPropertyApiName: "bar",
+        properties: { "bar": { type: "string" } },
+        editsHistoryConfig: { enabled: false },
+      });
+
+      const objectData = dumpOntologyFullMetadata().ontology
+        .objectTypes["com.palantir.foo"];
+      expect(objectData.entityMetadata?.editsHistory).toEqual({
+        type: "none",
+        none: {},
+      });
+    });
   });
 });

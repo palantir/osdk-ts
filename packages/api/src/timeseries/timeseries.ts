@@ -100,30 +100,34 @@ export interface TimeSeriesProperty<T extends number | string> {
    */
   readonly getLastPoint: () => Promise<TimeSeriesPoint<T>>;
   /**
-     * Loads all points, within the given time range if that's provided
-     * @param query - a query representing either an absolute or relative range of time
-     * @example
-     *  const points = await employee.employeeStatus?.getAllPoints({
-        $after: 1,
-        $unit: "month",
-      });
-     */
+   * Loads all points, within the given time range if that's provided
+   * @param query - a query representing either an absolute or relative range of time
+   * @example
+   * ```ts
+   * const points = await employee.employeeStatus?.getAllPoints({
+   *   $after: 1,
+   *   $unit: "month",
+   * });
+   * ```
+   */
   readonly getAllPoints: (
     query?: TimeSeriesQuery,
   ) => Promise<Array<TimeSeriesPoint<T>>>;
   /**
-     * Returns an async iterator to load all points
-     * within the given time range if that's provided
-     * @param query - a query representing either an absolute or relative range of time
-     * @example
-     *  const iterator = employee.employeeStatus?.asyncIter({
-        $after: 1,
-        $unit: "month",
-      });
-      for await (const point of iterator) {
-          // Handle time series point
-      }
-     */
+   * Returns an async iterator to load all points
+   * within the given time range if that's provided
+   * @param query - a query representing either an absolute or relative range of time
+   * @example
+   * ```ts
+   * const iterator = employee.employeeStatus?.asyncIter({
+   *   $after: 1,
+   *   $unit: "month",
+   * });
+   * for await (const point of iterator) {
+   *   // Handle time series point
+   * }
+   * ```
+   */
   readonly asyncIterPoints: (
     query?: TimeSeriesQuery,
   ) => AsyncGenerator<TimeSeriesPoint<T>>;
@@ -135,30 +139,34 @@ export interface GeotimeSeriesProperty<T extends GeoJSON.Point> {
    */
   readonly getLatestValue: () => Promise<TimeSeriesPoint<T> | undefined>;
   /**
-     * Loads all points, within the given time range if that's provided
-     * @param query - a query representing either an absolute or relative range of time
-     * @example
-     *  const points = await employee.employeeStatus?.getAllPoints({
-        $after: 1,
-        $unit: "month",
-      });
-     */
+   * Loads all points, within the given time range if that's provided
+   * @param query - a query representing either an absolute or relative range of time
+   * @example
+   * ```ts
+   * const points = await employee.employeeStatus?.getAllPoints({
+   *   $after: 1,
+   *   $unit: "month",
+   * });
+   * ```
+   */
   readonly getAllValues: (
     query?: TimeSeriesQuery,
   ) => Promise<Array<TimeSeriesPoint<T>>>;
   /**
-     * Returns an async iterator to load all points
-     * within the given time range if that's provided
-     * @param query - a query representing either an absolute or relative range of time
-     * @example
-     *  const iterator = employee.employeeStatus?.asyncIter({
-        $after: 1,
-        $unit: "month",
-      });
-      for await (const point of iterator) {
-          // Handle time series point
-      }
-     */
+   * Returns an async iterator to load all points
+   * within the given time range if that's provided
+   * @param query - a query representing either an absolute or relative range of time
+   * @example
+   * ```ts
+   * const iterator = employee.employeeStatus?.asyncIter({
+   *   $after: 1,
+   *   $unit: "month",
+   * });
+   * for await (const point of iterator) {
+   *   // Handle time series point
+   * }
+   * ```
+   */
   readonly asyncIterValues: (
     query?: TimeSeriesQuery,
   ) => AsyncGenerator<TimeSeriesPoint<T>>;
