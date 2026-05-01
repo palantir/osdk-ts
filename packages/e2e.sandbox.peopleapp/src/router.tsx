@@ -1,6 +1,7 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import PeopleApp from "./App.js";
 import { AuthCallbackPage } from "./app/auth/callback/page.js";
+import { ChatPage } from "./app/chat/page.js";
 import { EmployeesFilterListPage } from "./app/employees/filterListPage.js";
 import { EmployeesPage } from "./app/employees/page.js";
 import { FormPage } from "./app/form/page.js";
@@ -36,6 +37,10 @@ const router = createBrowserRouter([
       {
         path: "/form",
         element: <FormPage />,
+      },
+      {
+        path: "/chat",
+        element: <ChatPage />,
       },
     ],
   },

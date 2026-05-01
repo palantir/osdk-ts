@@ -13,6 +13,8 @@ function PeopleApp() {
     ? "filter-list"
     : path === "/form"
     ? "form"
+    : path === "/chat"
+    ? "chat"
     : "offices";
 
   return (
@@ -47,6 +49,13 @@ function PeopleApp() {
           onClick={() => navigate("/form")}
         >
           Form
+        </Button>
+        <Button
+          variant="tab"
+          active={activeTab === "chat"}
+          onClick={() => navigate("/chat")}
+        >
+          Chat
         </Button>
       </div>
 
