@@ -1,16 +1,28 @@
-# ObjectSet hover-type snapshots
+# Hover-type snapshots
 
-This directory captures the rendered hover output of high-traffic
-`ObjectSet` methods (`where`, `subscribe`, `fetchPage`, `asyncIter`,
-`aggregate`, `withProperties`, …). Future type-graph refactors that
-change what users see when they hover over `ObjectSet`-typed expressions
-will surface here as snapshot diffs.
+This directory captures the rendered hover output of high-traffic SDK
+types (currently `ObjectSet` methods — `where`, `subscribe`, `fetchPage`,
+`asyncIter`, `aggregate`, `withProperties`, …). Future type-graph
+refactors that change what users see when they hover over those
+expressions will surface here as snapshot diffs.
 
-## How it works
+## Layout
 
-`probes.ts` declares variables whose types are the things we care about
-hovering over. Every probe has a one-line JSDoc above it describing the
-user-facing intent — the test fails loudly if one is missing.
+- `hoverProbes.ts` — the reusable renderer. Loads a probes file via the
+  TypeScript compiler API, walks `declare const probe_*: T;`
+  declarations, and returns one rendered+formatted entry per probe.
+- `<surface>Probes.ts` — one file per type-graph surface we want to
+  pin. `objectSetProbes.ts` is the only one today; new surfaces should
+  add a sibling file (e.g. `osdkInstanceProbes.ts`).
+- `*.test.ts` — one test per surface. Each test points
+  `renderHoverProbes` at its probes file and `it.each`'s the result
+  through `expect(...).toMatchSnapshot()`.
+
+## How a probe file works
+
+Every probe declares a variable whose type is the thing we want to pin,
+with a one-line JSDoc describing the user-facing intent — the renderer
+fails loudly if a JSDoc is missing.
 
 ```ts
 /** The clause argument of objectSet.where(...). */
@@ -19,24 +31,18 @@ declare const probe_where_clause_param: Parameters<
 >[0];
 ```
 
-`renderHovers.test.ts` is the wiring: it points `renderHoverProbes` (in
-`hoverProbes.ts`) at `probes.ts`, then `it.each`'s the result through
-`expect(...).toMatchSnapshot()`. The renderer is the reusable piece —
-load probes via the TypeScript compiler API, render each declaration's
-type with `checker.typeToString`, and pretty-print through `dprint`.
-Each snapshot value is prefixed with the probe's JSDoc as a leading
-`// …` comment so the rendered type is self-documenting.
-
-Future hover-snapshot tests (for surfaces other than `ObjectSet`) can
-reuse `hoverProbes.ts` by passing in their own probes file path.
+The snapshot value is prefixed with the JSDoc as a leading `// …`
+comment so the rendered type is self-documenting.
 
 ## How to add a probe
 
-1. Add `declare const probe_<name>: <YourType>;` to `probes.ts`, with a
-   JSDoc above describing what user-facing code yields this hover.
-2. From the repo root: `pnpm updateSnapshots --filter=@osdk/api`
-   (or `pnpm updateSnapshots` from `packages/api/`).
-3. Commit `probes.ts` and the updated `__snapshots__/*.snap`.
+1. Pick the right `<surface>Probes.ts` (or create a new one for a new
+   surface, plus a matching `*.test.ts`).
+2. Add `declare const probe_<name>: <YourType>;` with a JSDoc above
+   describing what user-facing code yields this hover.
+3. From the repo root: `pnpm updateSnapshots --filter=@osdk/api` (or
+   `pnpm updateSnapshots` from `packages/api/`).
+4. Commit the probe file and the updated `__snapshots__/*.snap`.
 
 ## How to update an existing snapshot
 
@@ -48,13 +54,14 @@ If a refactor intentionally changes a type's hover output:
 3. Commit the updated `.snap` file. Reviewers will see the before/after
    directly in the diff.
 
-## What's covered
+## What's covered for ObjectSet
 
-`probes.ts` contains a `KnownObjectSetMethods` union enumerating every
-member of `ObjectSet`. The split is documentation only:
-`ProbedObjectSetMethods` for things that have a probe; `SkippedObjectSetMethods`
-for things we've intentionally chosen not to snapshot (internal markers,
-trivial `this` returns, methods covered by sibling probes, etc.).
+`objectSetProbes.ts` exports a `KnownObjectSetMethods` union enumerating
+every member of `ObjectSet`. The split is documentation only:
+`ProbedObjectSetMethods` for things that have a probe;
+`SkippedObjectSetMethods` for things we've intentionally chosen not to
+snapshot (internal markers, trivial `this` returns, methods covered by
+sibling probes, etc.).
 
 If a new member is added to `ObjectSet`, the type-level assertion in
 `renderHovers.test.ts` fails to typecheck until the new key is

@@ -20,25 +20,27 @@ import { describe, expect, expectTypeOf, it } from "vitest";
 import type { ObjectSet } from "../objectSet/ObjectSet.js";
 import type { EmployeeApiTest } from "../test/EmployeeApiTest.js";
 import { renderHoverProbes, snapshotValue } from "./hoverProbes.js";
-import type { KnownObjectSetMethods } from "./probes.js";
+import type { KnownObjectSetMethods } from "./objectSetProbes.js";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 
 const probes = renderHoverProbes({
-  probesPath: path.resolve(here, "probes.ts"),
+  probesPath: path.resolve(here, "objectSetProbes.ts"),
   tsconfigPath: path.resolve(here, "../../tsconfig.json"),
 });
 const probeNames = Object.keys(probes).sort();
 
 describe("ObjectSet hover types", () => {
   // Each probe gets its own snapshot key, so changing one type only dirties
-  // its own snapshot in code review. Add or edit a probe in `probes.ts` and
-  // refresh with `pnpm updateSnapshots` from the repo root.
+  // its own snapshot in code review. Add or edit a probe in
+  // `objectSetProbes.ts` and refresh with `pnpm updateSnapshots` from the
+  // repo root.
   it.each(probeNames)("%s", (name) => {
     expect(snapshotValue(probes[name])).toMatchSnapshot();
   });
 
-  // Force probes.ts to be updated when ObjectSet grows or loses a method.
+  // Force objectSetProbes.ts to be updated when ObjectSet grows or loses a
+  // method.
   // Compile-time assertion: every key of `ObjectSet<EmployeeApiTest>` must be
   // listed in `KnownObjectSetMethods` (probed or intentionally skipped). When
   // someone adds a new method, this fails to typecheck and names the missing
