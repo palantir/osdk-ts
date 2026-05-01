@@ -15,7 +15,7 @@
  */
 
 import { describe, expect, it } from "vitest";
-import { mapFinishReason } from "./map-finish-reason.js";
+import { mapFinishReason } from "../map-finish-reason.js";
 
 describe("mapFinishReason", () => {
   it("maps 'stop' correctly", () => {

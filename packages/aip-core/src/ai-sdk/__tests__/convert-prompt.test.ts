@@ -16,7 +16,7 @@
 
 import type { LanguageModelV3Prompt, SharedV3Warning } from "@ai-sdk/provider";
 import { describe, expect, it } from "vitest";
-import { convertPrompt } from "./convert-prompt.js";
+import { convertPrompt } from "../convert-prompt.js";
 
 describe("convertPrompt", () => {
   it("converts system messages", () => {

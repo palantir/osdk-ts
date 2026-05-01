@@ -19,8 +19,8 @@ import type {
   LanguageModelV3Prompt,
 } from "@ai-sdk/provider";
 import { describe, expect, it, vi } from "vitest";
-import { mockPlatformClient } from "../internal/__test__/mockPlatformClient.js";
-import { FoundryChatLanguageModel } from "./foundry-chat-language-model.js";
+import { mockPlatformClient } from "../../internal/__test__/mockPlatformClient.js";
+import { FoundryChatLanguageModel } from "../foundry-chat-language-model.js";
 
 function createModel(opts: {
   responseBody?: unknown;
