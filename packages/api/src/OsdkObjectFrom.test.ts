@@ -866,21 +866,12 @@ describe("ExtractOptions", () => {
       expectTypeOf(result.fullName).toEqualTypeOf<string | undefined>();
     });
 
-    it("interface → OT: interface with reduced impl rejects the cast even with $includeAllBaseObjectProperties", async () => {
-      const ifaceObj = (await createMockObjectSet<ReducerInterfaceApiTest>()
-        .fetchPage({ $includeAllBaseObjectProperties: true })).data[0];
-
-      // @ts-expect-error — ReducerInterface has reduced implementations on
-      // Employee, so the cast is unconditionally rejected.
-      ifaceObj.$as({} as EmployeeApiTest);
-    });
-
-    it("interface → OT: reduced impl rejects the cast without $includeAllBaseObjectProperties too", async () => {
+    it("interface → OT: any non-local impl rejects the cast", async () => {
       const ifaceObj = (await createMockObjectSet<ReducerInterfaceApiTest>()
         .fetchPage()).data[0];
 
-      // @ts-expect-error — ReducerInterface has reduced implementations on
-      // Employee.
+      // @ts-expect-error — ReducerInterface has structField / reduced
+      // implementations on Employee.
       ifaceObj.$as({} as EmployeeApiTest);
     });
 

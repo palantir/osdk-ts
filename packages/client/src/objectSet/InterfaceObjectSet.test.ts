@@ -16,17 +16,20 @@
 
 import {
   BarInterface,
+  ComplexImplementationInterface,
+  ComplexImplementationObject,
   Employee,
   FooInterface,
 } from "@osdk/client.test.ontology";
 import { beforeAll, describe, expect, expectTypeOf, it } from "vitest";
 
-import type { ObjectSet, Osdk } from "@osdk/api";
+import type { ObjectSet } from "@osdk/api";
 import type { SetupServer } from "@osdk/shared.test";
 import {
   LegacyFauxFoundry,
   MockOntologiesV2,
   startNodeApiServer,
+  stubData,
 } from "@osdk/shared.test";
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
@@ -102,136 +105,75 @@ describe("ObjectSet", () => {
     >;
   });
 
-  describe("interface → $as(objectType) carries modifier-bearing data", () => {
+  describe("ComplexImplementationInterface (one prop per impl kind)", () => {
     const baseUrl = "https://stack.palantir.com/";
 
-    const interfaceToObjectMappings = {
+    const complexImplPropertiesV2 = stubData
+      .complexImplementationObjectTypeWithLinkTypes
+      .implementsInterfaces2!.ComplexImplementationInterface.propertiesV2!;
+
+    const wireMappings = {
       interfaceToObjectTypeMappings: {
-        FooInterface: { Employee: { fooSpt: "fullName", fooIdp: "office" } },
+        ComplexImplementationInterface: {
+          ComplexImplementationObject: Object.fromEntries(
+            Object.entries(complexImplPropertiesV2)
+              .filter(([, impl]) => impl.type === "localPropertyImplementation")
+              .map(([k, impl]) => [
+                k,
+                (impl as { propertyApiName: string }).propertyApiName,
+              ]),
+          ),
+        },
       },
       interfaceToObjectTypeMappingsV2: {
-        FooInterface: {
-          Employee: {
-            fooSpt: {
-              type: "localPropertyImplementation" as const,
-              propertyApiName: "fullName",
-            },
-            fooIdp: {
-              type: "localPropertyImplementation" as const,
-              propertyApiName: "office",
-            },
-          },
+        ComplexImplementationInterface: {
+          ComplexImplementationObject: complexImplPropertiesV2,
         },
       },
     };
 
-    it("explicit $as(Employee): server returns reduced/mainValue data for interface loads, cast type reflects this", async () => {
+    it("derives interface property values from non-local implementations and rejects $as back to the OT", async () => {
       await apiServer.boundary(async () => {
-        let capturedRequest: unknown;
-
         apiServer.use(
           MockOntologiesV2.OntologyObjectSets.loadMultipleObjectTypes(
             baseUrl,
-            async ({ request }) => {
-              capturedRequest = await request.json();
-              return {
-                data: [
-                  {
-                    __rid:
-                      "ri.phonograph2-objects.main.object.88a6fccb-f333-46d6-a07e-7725c5f18b61",
-                    __primaryKey: 50030,
-                    __apiName: "Employee",
-                    employeeId: 50030,
-                    fullName: "John Doe",
-                    office: "NYC",
-                    employeeProfile: {
-                      bio:
-                        "Senior engineer with expertise in distributed systems",
-                    },
-                    performanceScores: 95.5,
+            () => ({
+              data: [
+                {
+                  __rid: "ri.phonograph2-objects.main.object.complex-impl-1",
+                  __primaryKey: "k1",
+                  __apiName: "ComplexImplementationObject",
+                  id: "k1",
+                  localValue: "hello",
+                  nestedStruct: { label: "nested-label", count: 7 },
+                  multiStruct: {
+                    alpha: "a-val",
+                    beta: 42,
+                    gamma: "ignored",
                   },
-                ],
-                ...interfaceToObjectMappings,
-                totalCount: "1",
-                propertySecurities: [],
-              };
-            },
+                  arrayValue: [1, 2, 3],
+                },
+              ],
+              ...wireMappings,
+              totalCount: "1",
+              propertySecurities: [],
+            }),
           ),
         );
 
-        const result = await client(FooInterface).fetchPage({
-          $includeAllBaseObjectProperties: true,
-        });
-
+        const result = await client(ComplexImplementationInterface).fetchPage();
         expect(result.data).toHaveLength(1);
-        expect(capturedRequest).toMatchObject({
-          objectSet: {
-            type: "intersect",
-            objectSets: [
-              { type: "interfaceBase", interfaceType: "FooInterface" },
-              {
-                type: "interfaceBase",
-                interfaceType: "FooInterface",
-                includeAllBaseObjectProperties: true,
-              },
-            ],
-          },
-        });
 
-        const interfaceObj = result.data[0];
-        expect(interfaceObj.fooSpt).toEqual("John Doe");
+        const ifaceObj = result.data[0];
+        expect(ifaceObj.iLocal).toEqual("hello");
+        expect(ifaceObj.iStructField).toEqual("nested-label");
+        expect(ifaceObj.iStruct).toEqual({ theAlpha: "a-val", theBeta: 42 });
+        expect(ifaceObj.iReduced).toEqual([1, 2, 3]);
 
-        const asEmployee = interfaceObj.$as(Employee);
-        expect(asEmployee.fullName).toEqual("John Doe");
-        expect(asEmployee.office).toEqual("NYC");
-        expect(asEmployee.employeeProfile).toEqual({
-          bio: "Senior engineer with expertise in distributed systems",
-        });
-        expect(asEmployee.performanceScores).toEqual(95.5);
-      })();
-    });
-
-    it("implicit cast (interface load): $as(FooInterface) on underlying object happens internally", async () => {
-      await apiServer.boundary(async () => {
-        apiServer.use(
-          MockOntologiesV2.OntologyObjectSets.loadMultipleObjectTypes(
-            baseUrl,
-            () => {
-              return {
-                data: [
-                  {
-                    __rid:
-                      "ri.phonograph2-objects.main.object.88a6fccb-f333-46d6-a07e-7725c5f18b61",
-                    __primaryKey: 50030,
-                    __apiName: "Employee",
-                    fullName: "John Doe",
-                    office: "NYC",
-                  },
-                ],
-                ...interfaceToObjectMappings,
-                totalCount: "1",
-                propertySecurities: [],
-              };
-            },
-          ),
+        // @ts-expect-error
+        expect(() => ifaceObj.$as(ComplexImplementationObject)).toThrowError(
+          /has a non-local implementation/,
         );
-
-        const result = await client(FooInterface).fetchPage();
-        const interfaceObj = result.data[0];
-
-        expect(interfaceObj.$apiName).toEqual("FooInterface");
-        expect(interfaceObj.$objectType).toEqual("Employee");
-        expect(interfaceObj.fooSpt).toEqual("John Doe");
-        expect(interfaceObj.fooIdp).toEqual("NYC");
-
-        const backToEmployee = interfaceObj.$as(Employee);
-        expect(backToEmployee.$apiName).toEqual("Employee");
-        expect(backToEmployee.fullName).toEqual("John Doe");
-        expect(backToEmployee.office).toEqual("NYC");
-
-        expectTypeOf<typeof backToEmployee>().toEqualTypeOf<
-          Osdk.Instance<Employee, never, "fullName" | "office", {}>
-        >;
       })();
     });
   });

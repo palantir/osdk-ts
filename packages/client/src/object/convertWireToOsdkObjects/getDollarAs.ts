@@ -52,22 +52,8 @@ const osdkObjectToInterfaceView = createSimpleCache(
     >(),
 );
 
-/**
- * When casting from an interface view to its underlying OT:
- * - If any interface property is implemented with a `reduced` mapping, the
- *   cast is unconditionally rejected — reducers transform the source value,
- *   so the OT view cannot be faithfully reconstructed.
- * - Otherwise, if the interface uses any non-local (struct-field / struct)
- *   implementation, require that every OT property is loaded (i.e. the object
- *   was fetched with `$includeAllBaseObjectProperties`).
- * - Legacy interfaces with all `localProperty` implementations keep working
- *   unchanged: their interface view is a faithful subset of the OT.
- */
 function assertInterfaceToOtCastIsPermitted(
-  holder: {
-    [UnderlyingOsdkObject]: any;
-    [InterfaceDefRef]?: unknown;
-  },
+  holder: { [InterfaceDefRef]?: unknown },
   objDef: FetchedObjectTypeDefinition,
 ): void {
   const interfaceDef = holder[InterfaceDefRef] as
@@ -78,55 +64,13 @@ function assertInterfaceToOtCastIsPermitted(
     ?.[interfaceDef.apiName];
   if (implementations == null) return;
 
-  let hasNonLocalImpl = false;
   for (const [iptApiName, impl] of Object.entries(implementations)) {
     if (impl.type === "localProperty") continue;
-    hasNonLocalImpl = true;
-    if (impl.type === "reduced") {
-      throw new Error(
-        `Cannot cast interface view of '${interfaceDef.apiName}' to `
-          + `'${objDef.apiName}': property '${iptApiName}' applies a reducer, `
-          + `so the underlying object type cannot be faithfully represented. `
-          + `Load the object type directly.`,
-      );
-    }
-  }
-  if (!hasNonLocalImpl) return;
-
-  const underlying = holder[UnderlyingOsdkObject];
-  const missing: string[] = [];
-  for (const propApiName of Object.keys(objDef.properties)) {
-    if (!(propApiName in underlying)) missing.push(propApiName);
-  }
-  if (missing.length > 0) {
     throw new Error(
-      `Cannot cast interface view to '${objDef.apiName}': underlying object `
-        + `is missing ${missing.length} ${
-          missing.length === 1 ? "property" : "properties"
-        } `
-        + `(${missing.join(", ")}). Load with $includeAllBaseObjectProperties `
-        + `to populate the full OT shape before casting.`,
-    );
-  }
-}
-
-function assertInterfaceImplementationIsDirectMapping(
-  objDef: FetchedObjectTypeDefinition,
-  interfaceApiName: string,
-): void {
-  const implementations = objDef.interfaceImplementations?.[interfaceApiName];
-  if (implementations == null) return;
-  for (
-    const [iptApiName, implementation] of Object.entries(implementations)
-  ) {
-    if (implementation.type === "localProperty") continue;
-    const reason = implementation.type === "reduced"
-      ? "applies a reducer"
-      : "extracts a struct main value / field";
-    throw new Error(
-      `Cannot cast '${objDef.apiName}' to interface '${interfaceApiName}': `
-        + `property '${iptApiName}' ${reason}, which is not representable on `
-        + `the interface type. Load the object directly`,
+      `Cannot cast interface view of '${interfaceDef.apiName}' to `
+        + `'${objDef.apiName}': property '${iptApiName}' has a non-local `
+        + `implementation (${impl.type}), so the underlying object type cannot `
+        + `be faithfully represented. Load the object type directly.`,
     );
   }
 }
@@ -179,11 +123,6 @@ function $asFactory(
         `Object does not implement interface '${targetInterfaceApiName}'.`,
       );
     }
-
-    assertInterfaceImplementationIsDirectMapping(
-      objDef,
-      targetInterfaceApiName,
-    );
 
     const underlying = this[UnderlyingOsdkObject];
 

@@ -200,6 +200,7 @@ describe.each([
       const objects = Object.keys($Objects);
       expect(objects.sort()).toStrictEqual([
         "BgaoNflPlayer",
+        "ComplexImplementationObject",
         "Employee",
         "ObjectWithTimestampPrimaryKey",
         "Office",
@@ -555,7 +556,7 @@ describe.each([
           `Cannot clone interface with notImplementedFooSpt as property is not implemented by the underlying object type Employee`,
         );
       });
-      it("throws when casting to interface whose implementation applies a reducer", () => {
+      it("OT → interface cast with non-local implementations extracts derived property values", () => {
         const employeeOsdkObject = createOsdkObject(
           client[additionalContext],
           {
@@ -582,8 +583,11 @@ describe.each([
           },
         );
 
-        expect(() => employeeOsdkObject.$as(fooInterfaceOsdkDef)).toThrowError(
-          `Cannot cast 'Employee' to interface 'FooInterface': property 'fooSpt' applies a reducer`,
+        const ifaceView = employeeOsdkObject.$as(fooInterfaceOsdkDef);
+        expect((ifaceView as any).fooSpt).toEqual("Jane Doe");
+
+        expect(() => ifaceView.$as("Employee")).toThrowError(
+          `property 'fooSpt' has a non-local implementation (reduced)`,
         );
       });
     });
