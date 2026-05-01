@@ -247,7 +247,13 @@ export class ObservableClientMonitor {
           return wrapped;
         }
 
-        return Reflect.get(target, prop);
+        const value = Reflect.get(target, prop);
+        if (typeof value === "function") {
+          const bound = value.bind(target);
+          methodCache.set(prop, bound);
+          return bound;
+        }
+        return value;
       },
     }) as ObservableClient;
   }
