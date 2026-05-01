@@ -1,5 +1,15 @@
 # @osdk/client.unstable
 
+## 2.13.0
+
+## 2.12.0
+
+## 2.11.0
+
+### Minor Changes
+
+- a6f4208: configure entity perms in OAC
+
 ## 2.10.0
 
 ### Minor Changes

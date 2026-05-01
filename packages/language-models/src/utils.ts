@@ -74,7 +74,7 @@ export async function getFoundryToken(
  * ```
  */
 export function getAnthropicBaseUrl(client: PlatformClient): string {
-  return `${client.baseUrl}/api/v2/llm/proxy/anthropic`;
+  return new URL("api/v2/llm/proxy/anthropic", client.baseUrl).toString();
 }
 
 /**
@@ -90,5 +90,29 @@ export function getAnthropicBaseUrl(client: PlatformClient): string {
  * ```
  */
 export function getOpenAiBaseUrl(client: PlatformClient): string {
-  return `${client.baseUrl}/api/v2/llm/proxy/openai/v1`;
+  return new URL("api/v2/llm/proxy/openai/v1", client.baseUrl).toString();
+}
+
+/**
+ * Constructs the Google proxy base URL from the PlatformClient's base URL.
+ *
+ * @param client - A PlatformClient instance.
+ * @returns The Google proxy base URL (e.g., "https://example.palantirfoundry.com/api/v2/llm/proxy/google")
+ *
+ * @example
+ * ```typescript
+ * import { GoogleGenAI } from "@google/genai";
+ * import { createFetch, getFoundryToken, getGoogleBaseUrl } from "@osdk/language-models";
+ *
+ * const ai = new GoogleGenAI({
+ *   apiKey: await getFoundryToken(platformClient),
+ *   httpOptions: {
+ *     baseUrl: getGoogleBaseUrl(platformClient),
+ *     fetch: createFetch(platformClient),
+ *   },
+ * });
+ * ```
+ */
+export function getGoogleBaseUrl(client: PlatformClient): string {
+  return new URL("api/v2/llm/proxy/google", client.baseUrl).toString();
 }

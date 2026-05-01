@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+export { useStableObjectSet } from "../new/core/useStableObjectSet.js";
 export { OsdkProvider2 } from "../new/OsdkProvider2.js";
 export { useLinks } from "../new/useLinks.js";
 export { useObjectSet } from "../new/useObjectSet.js";
@@ -38,7 +39,7 @@ export type {
 } from "../new/useOsdkObjects.js";
 export { useOsdkObjects } from "../new/useOsdkObjects.js";
 export { useRegisterUserAgent } from "../new/useRegisterUserAgent.js";
-export { useOsdkClient } from "../useOsdkClient.js";
+export { useOsdkClient, useOsdkClient2 } from "../useOsdkClient.js";
 export { useOsdkMetadata } from "../useOsdkMetadata.js";
 export type { UseOsdkMetadataResult } from "../useOsdkMetadata.js";
 export { useDebouncedCallback } from "../utils/useDebouncedCallback.js";

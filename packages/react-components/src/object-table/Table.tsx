@@ -75,6 +75,7 @@ export interface BaseTableProps<
   isLoading?: boolean;
   fetchNextPage?: () => Promise<void>;
   onRowClick?: (row: TData) => void;
+  onColumnHeaderClick?: (columnId: string) => void;
   rowHeight?: number;
   renderCellContextMenu?: (
     row: TData,
@@ -104,6 +105,7 @@ function BaseTableInner<
     isLoading,
     fetchNextPage,
     onRowClick,
+    onColumnHeaderClick,
     rowHeight,
     renderCellContextMenu,
     className,
@@ -218,6 +220,7 @@ function BaseTableInner<
                 <TableHeader
                   table={table}
                   headerMenuFeatureFlags={headerMenuFeatureFlags}
+                  onColumnHeaderClick={onColumnHeaderClick}
                 />
                 <TableBody
                   rows={rows}

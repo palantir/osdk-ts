@@ -30,6 +30,7 @@ All `@osdk/*` packages must use **compatible versions**. Mismatched versions (e.
   }
 }
 ```
+
 :::
 
 You can find the latest versions on npm:
@@ -66,9 +67,9 @@ If you haven't generated an SDK yet:
 | ----------------- | --------------------------- | --------------------------------------------- |
 | **Use when**      | You only need client access | You want reactive data hooks (most apps)      |
 | **Features**      | Client provider, metadata   | Queries, actions, caching, optimistic updates |
-| **API stability** | Stable                      | APIs may change between releases              |
+| **API stability** | Stable                      | Surface may evolve before promotion           |
 
-**We recommend starting with experimental.** The "experimental" label indicates the API surface may evolve, not that the features are unstable or buggy. Most applications benefit from the reactive hooks, automatic caching, and optimistic update support.
+**We recommend starting with experimental.** Despite the label, the hooks are production-ready and where new development is happening. They live under `/experimental` because the surface may still evolve before being promoted to `@osdk/react`.
 
 ### Stable Features (`@osdk/react`)
 
@@ -100,7 +101,7 @@ Stable exports (use with `OsdkProvider`):
 For reactive data management, cache, and optimistic updates.
 
 :::tip About Experimental Hooks
-The hooks in `@osdk/react/experimental` are production-ready and recommended for new projects. They are labeled "experimental" because they represent a newer architecture that is under active development. Once stabilized, these hooks will be promoted to the main `@osdk/react` package.
+The hooks in `@osdk/react/experimental` are production-ready and where new development is happening. The "experimental" label means the API surface may still evolve before being promoted to `@osdk/react`; it does not mean the features are unstable. New apps should use these hooks.
 :::
 
 ```tsx
@@ -160,7 +161,7 @@ function TodoList() {
   }
 
   if (error) {
-    return <div>Error: {JSON.stringify(error)}</div>;
+    return <div>Error: {error.message}</div>;
   }
 
   return (
@@ -176,13 +177,11 @@ See [Querying Data](/react/querying-data) for filtering, pagination, real-time u
 ## First Action
 
 ```tsx
-import { $Actions, Todo } from "@my/osdk";
+import { completeTodo, Todo } from "@my/osdk";
 import { useOsdkAction } from "@osdk/react/experimental";
 
 function CompleteTodoButton({ todo }: { todo: Todo.OsdkInstance }) {
-  const { applyAction, isPending, error } = useOsdkAction(
-    $Actions.completeTodo,
-  );
+  const { applyAction, isPending, error } = useOsdkAction(completeTodo);
 
   const handleClick = () => {
     applyAction({ todo, isComplete: true });
@@ -193,7 +192,12 @@ function CompleteTodoButton({ todo }: { todo: Todo.OsdkInstance }) {
       <button onClick={handleClick} disabled={isPending}>
         {isPending ? "Saving..." : "Complete"}
       </button>
-      {error && <div>Error: {JSON.stringify(error)}</div>}
+      {error && (
+        <div>
+          Error: {error.actionValidation?.message
+            ?? (error.unknown ? String(error.unknown) : "Unknown error")}
+        </div>
+      )}
     </div>
   );
 }

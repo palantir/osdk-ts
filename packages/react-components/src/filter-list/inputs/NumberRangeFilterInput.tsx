@@ -82,10 +82,7 @@ function NumberRangeFilterInputInner<Q extends ObjectTypeDefinition>({
   );
 
   const histogramArgs = useMemo(
-    () =>
-      objectSet != null
-        ? { aggregate: aggregateOptions, objectSet, where: whereClause }
-        : { aggregate: aggregateOptions, where: whereClause },
+    () => ({ aggregate: aggregateOptions, objectSet, where: whereClause }),
     [aggregateOptions, objectSet, whereClause],
   );
 
@@ -132,17 +129,11 @@ function NumberRangeFilterInputInner<Q extends ObjectTypeDefinition>({
   );
 
   const nullCountArgs = useMemo(
-    () =>
-      objectSet != null
-        ? {
-          where: nullCountWhereClause,
-          aggregate: nullCountAggregateOptions,
-          objectSet,
-        }
-        : {
-          where: nullCountWhereClause,
-          aggregate: nullCountAggregateOptions,
-        },
+    () => ({
+      where: nullCountWhereClause,
+      aggregate: nullCountAggregateOptions,
+      objectSet,
+    }),
     [nullCountWhereClause, nullCountAggregateOptions, objectSet],
   );
 

@@ -1,6 +1,6 @@
 {
   "name": "@osdk/functions-testing.experimental",
-  "version": "0.4.0",
+  "version": "0.7.0",
   "description": "",
   "access": "public",
   "license": "Apache-2.0",
@@ -66,9 +66,11 @@
     "@osdk/api": "workspace:~",
     "@osdk/client": "workspace:~",
     "@osdk/client.test.ontology": "workspace:~",
+    "@osdk/foundry.admin": "catalog:foundry-platform-typescript",
     "@osdk/functions": "workspace:~",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
+    "msw": "^2.11.1",
     "typescript": "~5.5.4"
   },
   "publishConfig": {

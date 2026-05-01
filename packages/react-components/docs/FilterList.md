@@ -23,7 +23,7 @@ Before using FilterList, make sure you have completed the library setup describe
 ## Import
 
 ```typescript
-import { FilterList } from "@osdk/react-components/experimental";
+import { FilterList } from "@osdk/react-components/experimental/filter-list";
 ```
 
 ## Basic Usage
@@ -31,7 +31,7 @@ import { FilterList } from "@osdk/react-components/experimental";
 The simplest way to use FilterList is with an objectSet and a few filter definitions:
 
 ```typescript
-import { FilterList } from "@osdk/react-components/experimental";
+import { FilterList } from "@osdk/react-components/experimental/filter-list";
 import { Employee } from "@YourApp/sdk";
 import { $ } from "@YourApp/sdk";
 
@@ -157,7 +157,8 @@ Use controlled `filterClause` to connect FilterList and ObjectTable:
 
 ```typescript
 import type { WhereClause } from "@osdk/api";
-import { FilterList, ObjectTable } from "@osdk/react-components/experimental";
+import { FilterList } from "@osdk/react-components/experimental/filter-list";
+import { ObjectTable } from "@osdk/react-components/experimental/object-table";
 import { Employee } from "@YourApp/sdk";
 import { $ } from "@YourApp/sdk";
 import { useMemo, useState } from "react";
@@ -275,7 +276,7 @@ const handleFilterRemoved = (filterKey) => {
 Pass a `.where()` objectSet to scope filter dropdown values. For example, to only show Engineering employees:
 
 ```typescript
-import { FilterList } from "@osdk/react-components/experimental";
+import { FilterList } from "@osdk/react-components/experimental/filter-list";
 import { Employee } from "@YourApp/sdk";
 import { $ } from "@YourApp/sdk";
 import { useMemo } from "react";

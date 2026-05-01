@@ -42,3 +42,65 @@ body {
 .header-link:hover {
   color: #2563eb;
 }
+
+/* Submit toast — auto-dismissing success banner */
+.osdkSubmitToast {
+  max-width: 480px;
+  width: 100%;
+  margin-bottom: calc(var(--osdk-surface-spacing) * 2);
+  padding: calc(var(--osdk-surface-spacing) * 2)
+    calc(var(--osdk-surface-spacing) * 3);
+  background: var(--osdk-intent-success-rest);
+  color: var(--osdk-intent-success-foreground);
+  border-radius: var(--osdk-surface-border-radius);
+  font-size: var(--osdk-typography-size-body-small);
+  font-weight: 500;
+  animation: osdkToastFadeIn 0.2s ease-out;
+}
+
+@keyframes osdkToastFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.osdkFormCard {
+  --osdk-form-label-font-size: var(--osdk-typography-size-body-small);
+
+  max-width: 480px;
+  width: 100%;
+  background: var(--osdk-background-primary);
+  border: var(--osdk-surface-border-width) solid
+    var(--osdk-surface-border-color-default);
+  border-radius: var(--osdk-surface-border-radius);
+}
+
+.osdkFormStorySpacing {
+  margin-bottom: calc(var(--osdk-surface-spacing) * 4);
+}
+
+.osdkCustomTextarea {
+  width: 100%;
+  min-height: calc(var(--osdk-surface-spacing) * 15);
+  padding: calc(var(--osdk-surface-spacing) * 2);
+  border: var(--osdk-surface-border-width) solid
+    var(--osdk-surface-border-color-default);
+  border-radius: var(--osdk-surface-border-radius);
+  font-family: inherit;
+}
+
+.osdkCodeOutput {
+  margin: 0;
+  padding: calc(var(--osdk-surface-spacing) * 3);
+  border-radius: var(--osdk-surface-border-radius);
+  background: var(--osdk-background-secondary);
+  overflow: auto;
+  font-size: var(--osdk-typography-size-body-small);
+  max-height: 300px;
+}

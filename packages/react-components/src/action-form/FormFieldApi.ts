@@ -22,6 +22,7 @@ import type {
   DataValueClientToWire,
   ObjectSet,
   ObjectTypeDefinition,
+  Osdk,
 } from "@osdk/api";
 import type React from "react";
 
@@ -63,10 +64,12 @@ export interface FormFieldDefinition<
   placeholder?: string;
 
   /**
-   * Additional information to display on this field
-   * The placement of helper text depends on the value of helperTextPlacement prop
+   * Additional information to display on this field.
+   * Accepts plain text or rich content (e.g. JSX with links or formatting).
+   * Rendered as a tooltip icon next to the label by default, or below the
+   * label when helperTextPlacement is "bottom".
    */
-  helperText?: string;
+  helperText?: React.ReactNode;
 
   /**
    * The placement of the helper text either below the field or in a tooltip
@@ -134,6 +137,7 @@ export interface FormFieldPropsByType {
   DROPDOWN: DropdownFieldProps<unknown, boolean>;
   FILE_PICKER: FilePickerProps;
   NUMBER_INPUT: NumberInputFieldProps;
+  OBJECT_SELECT: ObjectSelectFieldProps<ObjectTypeDefinition>;
   OBJECT_SET: ObjectSetFieldProps<ObjectTypeDefinition>;
   RADIO_BUTTONS: RadioButtonsFieldProps<unknown>;
   TEXT_AREA: TextAreaFieldProps;
@@ -290,6 +294,38 @@ export interface DropdownFieldProps<V, Multiple extends boolean = false>
    * Used to track portaled content for click-outside detection.
    */
   portalRef?: React.Ref<HTMLDivElement>;
+
+  /**
+   * Controlled search input value. Must be provided together with `onQueryChange`.
+   */
+  query?: string;
+
+  /**
+   * Callback when the search input value changes.
+   * Can be used standalone as an event listener or together with `query`
+   * for fully controlled search state.
+   */
+  onQueryChange?: (query: string) => void;
+
+  /**
+   * When true, disables the combobox's built-in client-side filtering.
+   * Use when items are already filtered server-side (e.g. via `onQueryChange`).
+   *
+   * @default false
+   */
+  disableClientSideFiltering?: boolean;
+
+  /**
+   * Status message rendered below the search input and above the item list
+   * inside the popup. Use for loading/error/empty messages.
+   */
+  popupStatus?: React.ReactNode;
+
+  /**
+   * A React node to render after the item list.
+   * Use for infinite scroll sentinels, "load more" buttons, etc.
+   */
+  trailingItem?: React.ReactNode;
 }
 
 export interface FilePickerProps extends BaseFormFieldProps<File | File[]> {
@@ -401,6 +437,14 @@ export interface RadioButtonsFieldProps<V> extends BaseFormFieldProps<V> {
    * the corresponding option entry.
    */
   options: Option<V>[];
+
+  /**
+   * Controls the layout direction of the radio buttons.
+   *
+   * - `"vertical"` (default): options are stacked in a column
+   * - `"horizontal"`: options are laid out in a row, wrapping when needed
+   */
+  orientation?: "horizontal" | "vertical";
 }
 
 /**
@@ -423,6 +467,35 @@ export interface ObjectSetFieldProps<T extends ObjectTypeDefinition>
    * @default "Object set is not defined"
    */
   emptyMessage?: string;
+}
+
+/**
+ * Object select field props for selecting object instances from the ontology.
+ * Used for action parameters that accept a single object or multiple objects.
+ *
+ * Extends DropdownFieldProps with props that ObjectSelectField
+ * manages internally (items, search, filtering) omitted from the public surface.
+ */
+export interface ObjectSelectFieldProps<
+  Q extends ObjectTypeDefinition = ObjectTypeDefinition,
+> extends
+  Omit<
+    DropdownFieldProps<Osdk.Instance<Q>>,
+    | "items"
+    | "itemToStringLabel"
+    | "itemToKey"
+    | "isItemEqual"
+    | "isSearchable"
+    | "query"
+    | "onQueryChange"
+    | "disableClientSideFiltering"
+    | "renderItemList"
+  >
+{
+  /**
+   * The object type definition to search within.
+   */
+  objectType: Q;
 }
 
 /**
@@ -520,8 +593,9 @@ export type FieldComponent =
   | "DROPDOWN"
   | "FILE_PICKER"
   | "NUMBER_INPUT"
-  | "RADIO_BUTTONS"
+  | "OBJECT_SELECT"
   | "OBJECT_SET"
+  | "RADIO_BUTTONS"
   | "TEXT_AREA"
   | "TEXT_INPUT"
   | "CUSTOM";
@@ -575,7 +649,7 @@ export type RendererFieldDefinition = {
     label: string;
     isRequired?: boolean;
     placeholder?: string;
-    helperText?: string;
+    helperText?: React.ReactNode;
     helperTextPlacement?: "bottom" | "tooltip";
     validate?: (value: unknown) => Promise<string | undefined>;
     onValidationError?: (error: ValidationError) => string | undefined;
@@ -587,8 +661,8 @@ export type RendererFieldDefinition = {
  * Gets valid form field types for a given property type
  */
 export type ValidFormFieldForPropertyType<P extends FieldDescriptorType> =
-  P extends "objectSet" ? "OBJECT_SET"
-    : P extends "object" ? "DROPDOWN"
+  P extends { type: "objectSet" } ? "OBJECT_SET"
+    : P extends { type: "object" } ? "OBJECT_SELECT"
     : P extends "mediaReference" | "attachment" ? "FILE_PICKER"
     : P extends "boolean" ? "RADIO_BUTTONS" | "DROPDOWN"
     : P extends "string" ? "TEXT_INPUT" | "TEXT_AREA"

@@ -1,5 +1,24 @@
 # @osdk/shared.test
 
+## 0.10.0
+
+### Patch Changes
+
+- @osdk/api@2.13.0
+- @osdk/generator-converters@2.13.0
+
+## 0.9.0
+
+### Minor Changes
+
+- df1a4f8: Build the multipass mock URL via the URL constructor for consistency with the other handlers.
+
+### Patch Changes
+
+- Updated dependencies [91f34a9]
+  - @osdk/api@2.12.0
+  - @osdk/generator-converters@2.12.0
+
 ## 0.8.0
 
 ### Minor Changes

@@ -17,6 +17,7 @@
 import type {
   ObjectOrInterfaceDefinition,
   ObjectSet,
+  ObjectTypeDefinition,
   Osdk,
   PropertyKeys,
   QueryDefinition,
@@ -25,6 +26,7 @@ import type {
 } from "@osdk/api";
 import {
   type FunctionQueryParams,
+  useOsdkClient2,
   useOsdkFunctions,
   type UseOsdkFunctionsResult,
 } from "@osdk/react/experimental";
@@ -34,7 +36,6 @@ import type {
   ColumnDefinition,
   FunctionColumnLocator,
 } from "../ObjectTableApi.js";
-import { addFilterClauseToObjectSet } from "../utils/addFilterClauseToObjectSet.js";
 import {
   type AsyncCellData,
   createAsyncCellData,
@@ -44,7 +45,6 @@ import {
   DEFAULT_MAX_CONCURRENT_REQUESTS,
   DEFAULT_PAGE_SIZE,
 } from "../utils/constants.js";
-import { stripDerivedPropertiesFromParams } from "../utils/stripDerivedPropertiesFromParams.js";
 
 export interface FunctionColumnData {
   [columnId: string]: {
@@ -60,7 +60,7 @@ export interface UseFunctionColumnsDataOptions<
     never
   >,
 > {
-  objectSet: ObjectSet<Q, RDPs> | undefined;
+  objectOrInterfaceType: Q;
   objects:
     | Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>[]
     | undefined;
@@ -68,6 +68,12 @@ export interface UseFunctionColumnsDataOptions<
   primaryKeyApiName?: string;
   pageSize?: number;
 }
+
+const isObjectType = (
+  objectOrInterfaceType: ObjectOrInterfaceDefinition,
+): objectOrInterfaceType is ObjectTypeDefinition => {
+  return objectOrInterfaceType.type === "object";
+};
 
 export function useFunctionColumnsData<
   Q extends ObjectOrInterfaceDefinition,
@@ -78,39 +84,53 @@ export function useFunctionColumnsData<
   >,
 >(
   {
-    objectSet,
+    objectOrInterfaceType,
     objects,
     columnDefinitions,
     primaryKeyApiName,
     pageSize = DEFAULT_PAGE_SIZE,
   }: UseFunctionColumnsDataOptions<Q, RDPs, FunctionColumns>,
 ): FunctionColumnData {
+  const client = useOsdkClient2();
   const prevDataRef = useRef<FunctionColumnData>({});
 
+  const isObjectTypeDefinition = objectOrInterfaceType
+    && isObjectType(objectOrInterfaceType);
+
   const stableObjects = useStableObjects(objects);
-  // TODO: replace with useDeepEqual when it's added
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const stableObjectSet = useMemo(() => objectSet, [JSON.stringify(objectSet)]);
+
+  const baseObjectSet: ObjectSet<Q, RDPs> | undefined = useMemo(
+    () => {
+      return isObjectTypeDefinition
+        ? client(objectOrInterfaceType) as ObjectSet<Q, RDPs>
+        : undefined;
+    },
+    [client, isObjectTypeDefinition, objectOrInterfaceType],
+  );
 
   const functionColDefs = useMemo(
     () => extractFunctionLocators<Q, RDPs, FunctionColumns>(columnDefinitions),
     [columnDefinitions],
   );
 
-  const disabled = !stableObjectSet || !stableObjects?.length
+  const disabled = !baseObjectSet || !stableObjects?.length
     || functionColDefs.length === 0;
 
+  // Construct object sets using the base object set (constructed with object type only)
+  // + filter with primary keys of each page's objects
+  //
   // When a new page loads, only that page's queries fire — old pages
   // hit the dedupeIntervalMs cache since their params are unchanged.
   const pagedObjectSets = useMemo(() => {
-    if (!stableObjectSet || !stableObjects?.length) return [];
+    if (!baseObjectSet || !stableObjects?.length) return [];
+
     return buildPagedObjectSets(
-      stableObjectSet,
+      baseObjectSet,
       stableObjects,
       primaryKeyApiName,
       pageSize,
     );
-  }, [stableObjectSet, stableObjects, primaryKeyApiName, pageSize]);
+  }, [baseObjectSet, stableObjects, primaryKeyApiName, pageSize]);
 
   const queryGrid = useMemo(() => {
     if (pagedObjectSets.length === 0 || functionColDefs.length === 0) {
@@ -199,7 +219,7 @@ function buildPagedObjectSets<
   pageSize: number,
 ): unknown[] {
   if (!primaryKeyApiName) {
-    return [stripDerivedPropertiesFromParams(objectSet)];
+    return [objectSet];
   }
 
   return chunk(objects, pageSize).map(page => {
@@ -209,9 +229,7 @@ function buildPagedObjectSets<
       },
     } as WhereClause<Q, RDPs>;
 
-    return stripDerivedPropertiesFromParams(
-      addFilterClauseToObjectSet(objectSet, whereClause),
-    );
+    return objectSet.where(whereClause);
   });
 }
 

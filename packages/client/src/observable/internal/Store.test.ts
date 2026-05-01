@@ -325,7 +325,7 @@ describe(Store, () => {
             },
           ],
           "nextPageToken": undefined,
-          "totalCount": undefined,
+          "totalCount": "1",
         }
       `);
 
@@ -1354,6 +1354,89 @@ describe(Store, () => {
           s.next.mockClear();
         }
       });
+    });
+
+    describe(".observeObject (independent variants per cache-key dimension)", () => {
+      const subFn1 = mockSingleSubCallback();
+      const subFn2 = mockSingleSubCallback();
+
+      beforeEach(() => {
+        for (const s of [subFn1, subFn2]) {
+          s.complete.mockClear();
+          s.next.mockClear();
+          s.error.mockClear();
+        }
+      });
+
+      // Two subscribers that share apiName + pk but differ in any cache-key
+      // dimension should observe independent fetches, not share a stale query.
+      // Add a new case here whenever a new dimension is added to ObjectCacheKey
+      // (currently: $select, $loadPropertySecurityMetadata, withProperties/Rdp).
+      // Cache-key uniqueness for dimensions the FauxFoundry can't fetch (e.g.
+      // $loadPropertySecurityMetadata) is unit-tested at the ObjectsHelper
+      // level instead.
+      const cases: Array<{
+        name: string;
+        optionsA: ObserveObjectOptions<typeof Employee>;
+        optionsB: ObserveObjectOptions<typeof Employee>;
+        // Optional dimension-specific assertion on subscriber B's loaded payload.
+        expectLoadedB?: (object: ObjectHolder | undefined) => void;
+      }> = [
+        {
+          name: "$select",
+          optionsA: {
+            apiName: Employee,
+            pk: JOHN_DOE_ID,
+            mode: "force",
+            select: ["fullName"],
+          },
+          optionsB: {
+            apiName: Employee,
+            pk: JOHN_DOE_ID,
+            mode: "force",
+            select: ["employeeId"],
+          },
+          expectLoadedB: (object) =>
+            expect(object).toEqual(
+              expect.objectContaining({
+                $primaryKey: JOHN_DOE_ID,
+                employeeId: JOHN_DOE_ID,
+              }),
+            ),
+        },
+      ];
+
+      it.each(cases)(
+        "subscribers differing in $name observe independent fetches",
+        async ({ optionsA, optionsB, expectLoadedB }) => {
+          // Subscriber A subscribes first and reaches "loaded".
+          defer(cache.objects.observe(optionsA, subFn1));
+          expectSingleObjectCallAndClear(subFn1, undefined!, "loading");
+          await waitForCall(subFn1);
+          const aLoaded = subFn1.next.mock.lastCall?.[0]!;
+          expect(aLoaded.object).toEqual(
+            expect.objectContaining({ $primaryKey: JOHN_DOE_ID }),
+          );
+          expect(aLoaded.status).toBe("loaded");
+          subFn1.next.mockClear();
+
+          // Subscriber B differs only in the cache-key dimension under test.
+          // Pre-fix, B would silently share A's query and its first emission
+          // would be A's already-loaded payload. Post-fix, B has its own
+          // query in init state, so its first emission is loading with no
+          // object yet — proving the queries are independent.
+          defer(cache.objects.observe(optionsB, subFn2));
+          expectSingleObjectCallAndClear(subFn2, undefined!, "loading");
+
+          await waitForCall(subFn2);
+          const bLoaded = subFn2.next.mock.lastCall?.[0]!;
+          expect(bLoaded.status).toBe("loaded");
+          expect(bLoaded.object).toEqual(
+            expect.objectContaining({ $primaryKey: JOHN_DOE_ID }),
+          );
+          expectLoadedB?.(bLoaded.object);
+        },
+      );
     });
 
     describe(".observeObject (offline)", () => {

@@ -1,5 +1,27 @@
 # @osdk/cli
 
+## 0.37.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.10.0
+
+## 0.36.0
+
+### Minor Changes
+
+- df1a4f8: Build API URLs in site and widgetset commands via the URL constructor. The `foundryUrl` argument coerce now ensures a trailing slash (previously stripped it), so base URLs with path prefixes resolve correctly.
+
+### Patch Changes
+
+- @osdk/widget.api@3.9.0
+
+## 0.35.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.8.0
+
 ## 0.34.0
 
 ### Minor Changes

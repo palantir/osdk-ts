@@ -1,5 +1,41 @@
 # @osdk/functions-testing.experimental
 
+## 0.7.0
+
+### Minor Changes
+
+- 9e9d948: `deepEqual` (used to match stub args in `when` / `whenQuery`) now recognizes Vitest/Jest asymmetric matchers (`expect.any(...)`, `expect.anything()`, `expect.stringContaining(...)`, `expect.objectContaining(...)`, etc.). Previously matchers were compared by raw object shape and silently never matched.
+
+### Patch Changes
+
+- Updated dependencies [19b7913]
+- Updated dependencies [01fbb74]
+- Updated dependencies [91f34a9]
+- Updated dependencies [df1a4f8]
+- Updated dependencies [46a00bc]
+- Updated dependencies [267f324]
+  - @osdk/client@2.12.0
+  - @osdk/api@2.12.0
+
+## 0.6.0
+
+### Minor Changes
+
+- 8e4472c: Add `thenThrow(error)` to `whenQuery(...)` stub builder. Lets tests explicitly configure a query's `executeFunction` to reject with a specific error, instead of only being able to exercise the implicit "no stub registered" error path.
+
+## 0.5.0
+
+### Minor Changes
+
+- 40fb8c1: Attach a `SharedClientContext` to the mock client so Foundry Platform API helpers (e.g. `Users.getCurrent(client)`) don't crash inside `foundryPlatformFetch` on an undefined `baseUrl` before a request is made. Callers mock the HTTP layer themselves (MSW, `vi.spyOn(globalThis, "fetch")`, etc.).
+
+### Patch Changes
+
+- Updated dependencies [58248f8]
+- Updated dependencies [e456da5]
+  - @osdk/client@2.11.0
+  - @osdk/api@2.11.0
+
 ## 0.4.0
 
 ### Minor Changes

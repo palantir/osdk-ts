@@ -132,6 +132,7 @@ export function convertDataType(
         objectTypeApiName: objectData.object.objectTypeId,
       };
     }
+    case "client":
     case "ontologyEdit": {
       // ontologyEdit represents a function's side-effect declaration (e.g. edits to
       // objects). There is no QueryDataType equivalent, so we map it to string as a

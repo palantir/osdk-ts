@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { ObjectTypeDefinition, Osdk } from "@osdk/api";
 import React, { memo } from "react";
 import { FormField } from "../FormField.js";
 import {
@@ -27,6 +28,7 @@ import { DatetimePickerField } from "./DatetimePickerField.js";
 import { DropdownField } from "./DropdownField.js";
 import { FilePickerField } from "./FilePickerField.js";
 import { NumberInputField } from "./NumberInputField.js";
+import { ObjectSelectField } from "./ObjectSelectField.js";
 import { ObjectSetField } from "./ObjectSetField.js";
 import { RadioButtonsField } from "./RadioButtonsField.js";
 import { TextAreaField } from "./TextAreaField.js";
@@ -56,7 +58,8 @@ export const FormFieldRenderer: React.FC<FormFieldRendererProps> = memo(
         label={label}
         isRequired={isRequired}
         fieldKey={fieldDefinition.fieldKey}
-        helperText={helperTextPlacement !== "tooltip" ? helperText : undefined}
+        helperText={helperText}
+        helperTextPlacement={helperTextPlacement}
         error={error}
         onBlur={onBlur}
       >
@@ -113,6 +116,7 @@ function renderFieldComponent(
     case "DROPDOWN": {
       return (
         <DropdownField
+          id={fieldDefinition.fieldKey}
           value={value}
           onChange={onChange}
           placeholder={fieldDefinition.placeholder}
@@ -175,6 +179,17 @@ function renderFieldComponent(
           {...fieldDefinition.fieldComponentProps}
         />
       );
+    case "OBJECT_SELECT":
+      return (
+        <ObjectSelectField
+          id={fieldDefinition.fieldKey}
+          value={narrowToOsdkObject(value)}
+          onChange={onChange}
+          placeholder={fieldDefinition.placeholder}
+          error={error}
+          {...fieldDefinition.fieldComponentProps}
+        />
+      );
     case "OBJECT_SET":
       return (
         <ObjectSetField
@@ -206,6 +221,16 @@ function coerceToFileValue(value: unknown): File | File[] | null {
   }
   if (Array.isArray(value) && isFileArray(value)) {
     return value;
+  }
+  return null;
+}
+
+/** Narrows the untyped form value to an OsdkObject by checking for $primaryKey. */
+function narrowToOsdkObject(
+  value: unknown,
+): Osdk.Instance<ObjectTypeDefinition> | null {
+  if (value != null && typeof value === "object" && "$primaryKey" in value) {
+    return value as Osdk.Instance<ObjectTypeDefinition>;
   }
   return null;
 }

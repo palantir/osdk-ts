@@ -31,3 +31,5 @@ widgetregistry
 widgetset
 dsmtClient
 sidc
+Summarise
+chatcmpl

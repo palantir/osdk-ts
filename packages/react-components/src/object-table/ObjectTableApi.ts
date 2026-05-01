@@ -30,11 +30,7 @@ import type { QueryParameterType } from "@osdk/client/unstable-do-not-use";
 import type * as React from "react";
 import type { CellEditInfo, EditFieldConfig } from "./utils/types.js";
 
-export type {
-  DatePickerEditConfig,
-  DropdownEditConfig,
-  EditFieldConfig,
-} from "./utils/types.js";
+export type { EditFieldConfig } from "./utils/types.js";
 
 export type ColumnDefinition<
   Q extends ObjectOrInterfaceDefinition,
@@ -155,21 +151,23 @@ export interface PropertyColumnLocator<Q extends ObjectOrInterfaceDefinition> {
   id: PropertyKeys<Q>;
 }
 
-export interface FunctionColumnLocator<
+/**
+ * Concrete function column locator for a single key K.
+ * Correlates the id, queryDefinition, and getFunctionParams types.
+ */
+interface FunctionColumnLocatorForKey<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
-  FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
-    string,
-    never
-  >,
+  RDPs extends Record<string, SimplePropertyDef>,
+  FunctionColumns extends Record<string, QueryDefinition<{}>>,
+  K extends keyof FunctionColumns,
 > {
   /**
    * This is equivalent to workshop's function-backed columns.
    * The function needs to meet the specifications stated in https://www.palantir.com/docs/foundry/workshop/widgets-object-table/#function-backed-columns
    */
   type: "function";
-  id: keyof FunctionColumns;
-  queryDefinition: FunctionColumns[keyof FunctionColumns];
+  id: K;
+  queryDefinition: FunctionColumns[K];
 
   /**
    * The function will be called with the current object set to get the input parameters for the function query.
@@ -178,7 +176,7 @@ export interface FunctionColumnLocator<
    */
   getFunctionParams: (
     objectSet: ObjectSet<Q, RDPs>,
-  ) => ExtractQueryParameters<FunctionColumns[keyof FunctionColumns]>;
+  ) => ExtractQueryParameters<FunctionColumns[K]>;
 
   /**
    * Function to generate keys for looking up results in the FunctionsMap.
@@ -206,6 +204,23 @@ export interface FunctionColumnLocator<
    */
   dedupeIntervalMs?: number;
 }
+
+/**
+ * Distributes over each key in FunctionColumns so that id, queryDefinition,
+ * and getFunctionParams are correlated per key.
+ */
+export type FunctionColumnLocator<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
+    string,
+    never
+  >,
+> = keyof FunctionColumns extends infer K
+  ? K extends keyof FunctionColumns
+    ? FunctionColumnLocatorForKey<Q, RDPs, FunctionColumns, K>
+  : never
+  : never;
 
 export interface RdpColumnLocator<
   Q extends ObjectOrInterfaceDefinition,
@@ -343,7 +358,7 @@ export interface ObjectTableProps<
    * If both orderBy and defaultOrderBy are provided, orderBy takes precedence.
    */
   defaultOrderBy?: Array<{
-    property: PropertyKeys<Q>;
+    property: PropertyKeys<Q> | keyof RDPs;
     direction: "asc" | "desc";
   }>;
 
@@ -353,7 +368,7 @@ export interface ObjectTableProps<
    * If both orderBy and defaultOrderBy are provided, orderBy takes precedence.
    */
   orderBy?: Array<{
-    property: PropertyKeys<Q>;
+    property: PropertyKeys<Q> | keyof RDPs;
     direction: "asc" | "desc";
   }>;
 
@@ -365,7 +380,7 @@ export interface ObjectTableProps<
    */
   onOrderByChanged?: (
     newOrderBy: Array<{
-      property: PropertyKeys<Q>;
+      property: PropertyKeys<Q> | keyof RDPs;
       direction: "asc" | "desc";
     }>,
   ) => void;
@@ -441,6 +456,19 @@ export interface ObjectTableProps<
    */
   onRowClick?: (
     object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
+  ) => void;
+
+  /**
+   * Called when a column header is clicked.
+   *
+   * The columnId matches the `locator.id` configured on the column definition.
+   * The dropdown menu trigger is excluded — clicking the chevron opens the
+   * header menu instead of firing this callback.
+   *
+   * @param columnId The id of the clicked column
+   */
+  onColumnHeaderClick?: (
+    columnId: PropertyKeys<Q> | keyof RDPs | keyof FunctionColumns,
   ) => void;
 
   /**

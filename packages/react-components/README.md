@@ -6,6 +6,25 @@ React components for building Foundry applications. These components are Ontolog
 
 Built on top of [@osdk/react](../react), these components use OSDK hooks internally to provide ready-to-use UI elements. While @osdk/react gives you low-level hooks for data fetching, @osdk/react-components provides UI widgets for common patterns like tables and forms.
 
+## Table of Contents
+
+- [Installation](#installation)
+- [Setup](#setup)
+  - [App Setup](#app-setup)
+  - [CSS Setup](#css-setup)
+- [Components](#components)
+- [Component Architecture](#component-architecture)
+  - [Core layers](#core-layers-all-components)
+  - [Building blocks](#building-blocks-select-components)
+- [Folder Structure](#folder-structure)
+- [Custom Styling](#custom-styling)
+- [Example Usage](#example-usage)
+- [Contributing](#contributing)
+- [Development Workflow](#development-workflow)
+- [Why this package?](#why-this-package)
+- [What this package is (and isn't)](#what-this-package-is-and-isnt)
+- [License](#license)
+
 ## Installation
 
 Run the command to install:
@@ -197,12 +216,18 @@ src/
 │   ├── utils/              # Helper utilities and types
 │   └── components/         # Supporting React components
 └── public/
-    └── experimental.ts     # Public API exports
+    └── experimental/       # Public API exports (one file per component)
+        ├── object-table.ts
+        ├── filter-list.ts
+        ├── pdf-viewer.ts
+        ├── markdown-renderer.ts
+        ├── tiff-renderer.ts
+        └── action-form.ts
 ```
 
 ### Export Strategy
 
-- **OSDK Components**: Exported through `experimental.ts` (e.g., `ObjectTable`, `FilterList`)
+- **OSDK Components**: Exported through individual entry points under `experimental/` (e.g., `experimental/object-table`, `experimental/filter-list`)
 - **Base Components**: Select base components are exported for advanced use cases (e.g., `BaseTable`, `BaseFilterList`)
 - **UI Primitives**: The `base-components/` folder contains internal UI primitives that are **NOT exported**
 
@@ -249,7 +274,7 @@ See the [CSS Variables Reference](./docs/CSSVariables.md) on how to apply custom
 ### Object Table
 
 ```ts
-import { ObjectTable } from "@osdk/react-components/experimental";
+import { ObjectTable } from "@osdk/react-components/experimental/object-table";
 import { Employee } from "@your-osdk-package";
 
 function EmployeeDirectory() {
@@ -260,6 +285,10 @@ function EmployeeDirectory() {
   );
 }
 ```
+
+## Contributing
+
+Looking to contribute to the codebase? Read the [contribution guidelines](./CONTRIBUTING.md)
 
 ## Development Workflow
 

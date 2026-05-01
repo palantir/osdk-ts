@@ -134,6 +134,7 @@ const archetypeRules = archetypes(
   .addArchetype(
     "standardLibraries",
     [
+      "@osdk/aip-core",
       "@osdk/foundry-config-json",
       "@osdk/generator-converters",
       "@osdk/language-models",
@@ -386,6 +387,7 @@ const archetypeRules = archetypes(
         TZ: "UTC",
         LANG: "en_US.UTF-8",
       },
+      vitestPool: "threads",
     },
   )
   .addArchetype(
@@ -921,6 +923,7 @@ function minimalPackageRules(shared, options) {
  * @property { "happy-dom" } [vitestEnvironment]
  * @property { string[] } [setupFiles]
  * @property { Record<string, string> } [vitestEnv]
+ * @property { "forks" | "threads" } [vitestPool]
  * @property { boolean } [skipTsconfigReferences]
  * @property { boolean } [aliasConsola]
  * @property { Record<"esm" | "cjs" | "browser", "bundle" | "normal" | undefined>} output
@@ -1015,6 +1018,9 @@ function standardPackageRules(shared, options) {
         devDependencies: {
           "@osdk/monorepo.tsconfig": "workspace:~",
           "@osdk/monorepo.api-extractor": "workspace:~",
+          ...(options.output.esm === "bundle"
+            ? { "@osdk/monorepo.tool.check-bundle": "workspace:~" }
+            : {}),
         },
       },
     }),
@@ -1036,6 +1042,9 @@ function standardPackageRules(shared, options) {
                 }`
                 : ""
             }`,
+          "check-bundle": options.output.esm === "bundle"
+            ? "monorepo.tool.check-bundle"
+            : DELETE_SCRIPT_ENTRY,
           lint: "eslint . && dprint check  --config $(find-up dprint.json)",
           "fix-lint":
             "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
@@ -1161,7 +1170,7 @@ function standardPackageRules(shared, options) {
               },`
               : ""
           }
-              pool: "forks",
+              pool: "${options.vitestPool ?? "forks"}",
               exclude: [...configDefaults.exclude, "**/build/**/*"],${
             options.vitestEnvironment
               ? `\n            environment: "${options.vitestEnvironment}",`

@@ -1,5 +1,68 @@
 # @osdk/react-components
 
+## 0.9.0
+
+### Minor Changes
+
+- 4aeb07b: ObjectTable: add `onColumnHeaderClick(columnId)` prop that fires when a user clicks on a column header (excluding the dropdown menu trigger)
+- 7b457a5: Fix function column with derived properties
+
+### Patch Changes
+
+- Updated dependencies [aa78c78]
+- Updated dependencies [7b457a5]
+  - @osdk/react@0.16.0
+
+## 0.8.0
+
+### Minor Changes
+
+- d9b03eb: document @osdk/client version compat and install-time error recovery in AGENTS.md
+- 5a733c0: Improve DropdownField with searchable input, multi-select checkboxes, clear button, and fix Select positioning
+- 52ff28c: simplify conditional objectset aggregation args and add filtered objectset story
+- 3b8decf: Switch vitest pool from forks to threads to fix CI flake
+- a0bbaf9: fix ObjectTable zebra row colors flipping while scrolling — striping is now keyed off the row's data index instead of its DOM position
+- 5835d51: Fix type definitions in FilterList LinkedProperty and ObjectTable function column
+- d40104f: Add error icon to DatePickerCell in ObjectTable
+
+### Patch Changes
+
+- Updated dependencies [d9b03eb]
+- Updated dependencies [d8842f4]
+  - @osdk/react@0.15.0
+
+## 0.7.0
+
+### Minor Changes
+
+- 594df08: Add BaseForm storybook
+- 22b4e35: Add horizontal orientation support to RadioButtonsField
+- 83993d7: Export LoadingCells as building blocks
+- 5a45dc0: Fix stableObjectSet by using a useStableObjectSet hook
+
+### Patch Changes
+
+- Updated dependencies [5a45dc0]
+  - @osdk/react@0.14.0
+
+## 0.6.0
+
+### Minor Changes
+
+- 4f3c57c: Update docs to use new per-component experimental import paths
+
+## 0.5.0
+
+### Minor Changes
+
+- e456da5: Add Fetch-User-Agent tracing headers for React layer network calls
+
+### Patch Changes
+
+- Updated dependencies [58248f8]
+- Updated dependencies [e456da5]
+  - @osdk/react@0.13.0
+
 ## 0.4.0
 
 ### Minor Changes

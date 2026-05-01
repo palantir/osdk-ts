@@ -1,6 +1,6 @@
 import type { DerivedProperty, Osdk } from "@osdk/api";
-import type { ColumnDefinition } from "@osdk/react-components/experimental";
-import { ObjectTable } from "@osdk/react-components/experimental";
+import type { ColumnDefinition } from "@osdk/react-components/experimental/object-table";
+import { ObjectTable } from "@osdk/react-components/experimental/object-table";
 import { useOsdkClient } from "@osdk/react/experimental";
 import React, { useCallback } from "react";
 import {
@@ -39,13 +39,14 @@ const columnDefinitions: Array<
   // Function-backed column
   {
     locator: {
-      type: "function" as const,
-      id: "daysSinceStart" as const,
+      type: "function",
+      id: "daysSinceStart",
       queryDefinition: getEmployeeDaysSinceStart,
-      getFunctionParams: (objectSet: any) => ({ employees: objectSet }),
-      getKey: (obj: any) => `${obj.$objectType}:${obj.$primaryKey}`,
-      getValue: (data: { daysSinceStart: any }) => data?.daysSinceStart,
-    } as any,
+      getFunctionParams: (objectSet) => ({ employees: objectSet }),
+      getKey: (obj) => `${obj.$objectType}:${obj.$primaryKey}`,
+      getValue: (data) =>
+        (data as { daysSinceStart?: number } | undefined)?.daysSinceStart,
+    },
     columnName: "Days Since Start",
     width: 150,
   },
@@ -132,7 +133,6 @@ export function EmployeesTable() {
         }]}
         onSubmitEdits={handleSubmitEdits}
         editMode="manual"
-        pageSize={5}
       />
     </div>
   );

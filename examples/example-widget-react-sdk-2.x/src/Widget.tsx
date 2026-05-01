@@ -15,10 +15,14 @@ import {
 import React, { useCallback, useState } from "react";
 import { useWidgetContext } from "./context.js";
 import { useDarkTheme } from "./useDarkTheme.js";
-// import { client } from "./client.js";
+// import { useOsdkClient } from "@osdk/react";
 // View the API documentation for your widget set to learn how to use the Ontology SDK.
 
 export const Widget: React.FC = () => {
+  // See Ontology and Platform SDK docs in Developer Console on how to
+  // use the client object to access Ontology resources and platform APIs
+  // const client = useOsdkClient();
+
   const { parameters, emitEvent } = useWidgetContext();
   const { headerText, todoItems } = parameters.values;
   const [newTodoItem, setNewTodoItem] = useState("");
