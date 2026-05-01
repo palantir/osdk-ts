@@ -131,6 +131,7 @@ The components that this package will provide are:
 | `PdfViewer`   | Renders PDF documents with annotations, search, sidebar navigation, and zoom       | [Guide](./docs/PdfViewer.md)   |
 | `FilterList`  | Visualize a high-level summary of objects data to allow users to filter that data. | [Guide](./docs/FilterList.md)  |
 | `ActionForm`  | Auto-generated form for executing Ontology Actions                                 | -                              |
+| `AipAgentChat` | Chat surface backed by Foundry LMS via `useChat` — takes a `PlatformClient` and model API name. | [Guide](./docs/AipAgentChat.md) |
 
 ## Component Architecture
 

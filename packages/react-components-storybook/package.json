@@ -21,6 +21,7 @@
     "msw-storybook-addon": "^2.0.0"
   },
   "devDependencies": {
+    "@osdk/aip-core": "workspace:*",
     "@osdk/api": "workspace:*",
     "@osdk/cbac-components": "workspace:*",
     "@osdk/client": "workspace:*",

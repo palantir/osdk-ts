@@ -219,6 +219,38 @@ Component-specific semantic tokens that may reference Blueprint tokens or define
 | `--osdk-focus-visible-outline-offset` | `var(--osdk-emphasis-focus-offset)`                                               | Focus ring offset from element |
 | `--osdk-surface-border`               | `var(--osdk-surface-border-width) solid var(--osdk-surface-border-color-default)` | Reusable border shorthand      |
 
+### AIP Agent Chat
+
+Tokens for the `AipAgentChat` chat surface (container, message bubbles, composer, empty state, loader, error banner).
+
+| Variable                                                | Default Value                                       | Description                                       |
+| ------------------------------------------------------- | --------------------------------------------------- | ------------------------------------------------- |
+| `--osdk-aip-agent-chat-background`                      | `var(--osdk-background-primary)`                    | Chat container background                         |
+| `--osdk-aip-agent-chat-border-color`                    | `var(--osdk-surface-border-color-default)`          | Container, error, composer separator color        |
+| `--osdk-aip-agent-chat-border-radius`                   | `var(--osdk-surface-border-radius)`                 | Container and bubble corner radius                |
+| `--osdk-aip-agent-chat-padding`                         | `calc(var(--osdk-surface-spacing) * 5)`             | Outer padding for message list and composer       |
+| `--osdk-aip-agent-chat-message-gap`                     | `calc(var(--osdk-surface-spacing) * 5)`             | Vertical gap between messages                     |
+| `--osdk-aip-agent-chat-section-gap`                     | `calc(var(--osdk-surface-spacing) * 2.5)`           | Gap between composer rows / footer items          |
+| `--osdk-aip-agent-chat-bubble-padding`                  | `calc(var(--osdk-surface-spacing) * 3)`             | Padding inside each message bubble                |
+| `--osdk-aip-agent-chat-bubble-border-radius`            | `var(--osdk-surface-border-radius)`                 | Bubble corner radius                              |
+| `--osdk-aip-agent-chat-bubble-max-width`                | `80%`                                               | Maximum bubble width                              |
+| `--osdk-aip-agent-chat-user-bubble-background`          | `var(--osdk-intent-primary-rest)`                   | User-message bubble background                    |
+| `--osdk-aip-agent-chat-user-bubble-color`               | `var(--osdk-intent-primary-foreground)`             | User-message text color                           |
+| `--osdk-aip-agent-chat-assistant-bubble-background`     | `var(--osdk-background-secondary)`                  | Assistant-message bubble background               |
+| `--osdk-aip-agent-chat-assistant-bubble-color`          | `var(--osdk-typography-color-default-rest)`         | Assistant-message text color                      |
+| `--osdk-aip-agent-chat-composer-background`             | `var(--osdk-surface-background-color-default-rest)` | Composer background                               |
+| `--osdk-aip-agent-chat-composer-border-color`           | `var(--osdk-surface-border-color-default)`          | Composer top-border color                         |
+| `--osdk-aip-agent-chat-composer-textarea-min-height`    | `calc(var(--osdk-surface-spacing) * 14)`            | Textarea minimum height                           |
+| `--osdk-aip-agent-chat-composer-textarea-max-height`    | `200px`                                             | Textarea maximum height                           |
+| `--osdk-aip-agent-chat-empty-color`                     | `var(--osdk-typography-color-muted)`                | Empty-state subtext color                         |
+| `--osdk-aip-agent-chat-empty-icon-color`                | `var(--osdk-intent-primary-rest)`                   | Empty-state icon color                            |
+| `--osdk-aip-agent-chat-empty-icon-size`                 | `calc(var(--osdk-surface-spacing) * 12)`            | Empty-state icon size                             |
+| `--osdk-aip-agent-chat-loader-color`                    | `var(--osdk-typography-color-muted)`                | 3-dot streaming loader color                      |
+| `--osdk-aip-agent-chat-loader-dot-size`                 | `calc(var(--osdk-surface-spacing) * 1.5)`           | Loader dot diameter                               |
+| `--osdk-aip-agent-chat-loader-dot-gap`                  | `calc(var(--osdk-surface-spacing) * 0.5)`           | Loader dot gap                                    |
+| `--osdk-aip-agent-chat-error-color`                     | `var(--osdk-typography-color-danger-rest)`          | Error banner text color                           |
+| `--osdk-aip-agent-chat-error-background`                | `var(--osdk-surface-background-color-danger-rest)`  | Error banner background                           |
+
 ### Drag Handle
 
 Shared tokens for drag handle styling across components.
