@@ -172,4 +172,20 @@ describe("useLinks enabled option", () => {
     expect(result.current.linkedObjectsBySourcePrimaryKey.get("obj-123"))
       .toEqual([linkedObj]);
   });
+
+  it("should forward $includeAllBaseObjectProperties to observeLinks", () => {
+    const wrapper = createWrapper();
+
+    renderHook(
+      () =>
+        useLinks(mockObject, "relatedObjects", {
+          $includeAllBaseObjectProperties: true,
+        }),
+      { wrapper },
+    );
+
+    expect(mockObserveLinks).toHaveBeenCalledTimes(1);
+    const options = mockObserveLinks.mock.calls[0][2];
+    expect(options.$includeAllBaseObjectProperties).toBe(true);
+  });
 });
