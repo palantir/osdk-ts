@@ -1,5 +1,22 @@
 # @osdkkit/react
 
+## 0.17.0
+
+### Minor Changes
+
+- f747fa3: Add `@osdk/aip-core` — the AIP SDK's chat completion primitives, backed by the Foundry Language Model Service's OpenAI-compatible proxy. Construct a model via `foundryModel({ client, model })` and call `generateText` for non-streaming completions or `streamText` for streaming. `LmsChatTransport` plugs into UI hooks; `useChat` is exposed from `@osdk/react/experimental/aip` and returns `messages`, `status`, `sendMessage`, `regenerate`, `stop`, `clearError`, and accepts a `transport` override. v0 is text-only and single-step — tool round-trips, multi-step loops, image/file content, Zod tool schemas, and stream resume are deferred.
+- d892397: expose `$includeAllBaseObjectProperties` on `useLinks` and on the underlying `ObservableClient.observeLinks`. When set against a link whose target is an interface, the server returns the underlying concrete object's full property set so `obj.$as(ConcreteType)` yields a fully-populated concrete object. The flag is dropped at fetch time when the link target is an object type and does not narrow the returned `Osdk.Instance` type.
+- c5a6047: expose `$includeAllBaseObjectProperties` on `useOsdkObject` and on the underlying `ObservableClient.observeObject`. When set against an interface query, the server returns the underlying concrete object's full property set so `obj.$as(ConcreteType)` yields a fully-populated concrete object. The flag is dropped for non-interface queries and does not narrow the returned `Osdk.Instance` type.
+- 45be476: expose `$includeAllBaseObjectProperties` on `useOsdkObjects` and on the underlying `ObservableClient.observeList`. When set against an interface query, the server returns the underlying concrete object's full property set so `obj.$as(ConcreteType)` yields a fully-populated concrete object. The flag is dropped for non-interface queries and does not narrow the returned `Osdk.Instance` type.
+- b355bc3: Add CONTRIBUTING.md for @osdk/react and @osdk/react-components
+- 20e9678: Wrap `@example` JSDoc blocks in fenced ts/tsx code blocks so VS Code's Markdown renderer preserves whitespace and applies syntax highlighting.
+
+### Patch Changes
+
+- Updated dependencies [86cc68c]
+- Updated dependencies [f747fa3]
+  - @osdk/aip-core@0.2.0
+
 ## 0.16.0
 
 ### Minor Changes

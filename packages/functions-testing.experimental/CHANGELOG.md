@@ -1,5 +1,26 @@
 # @osdk/functions-testing.experimental
 
+## 0.8.0
+
+### Minor Changes
+
+- d1a7d90: Accessing a link that wasn't configured on a `createMockOsdkObject` mock no longer silently returns `undefined`. The accessor now exists, and its `fetchOne()` rejects / `fetchOneWithErrors()` resolves with a descriptive error naming the link, object type, and primary key.
+- 9a06a62: Move user-facing types (`MockClient`, `StubClient`, `StubBuilderFor`, `FetchPageStubBuilder`, `FetchOneStubBuilder`, `AggregateStubBuilder`, `QueryStubBuilder`, `MockOsdkObjectOptions`) to dedicated files under `src/api/`. No public API changes.
+- 9a06a62: Fix `StubBuilderFor<T>` so `fetchOneWithErrors` / `fetchPageWithErrors` / `asyncIter` resolve to the correct stub builders instead of falling through to `AggregateStubBuilder`. Allow `Error` as a single-link stub value in `createMockOsdkObject` so link `fetchOne` rejects and `fetchOneWithErrors` returns `{ error }` (previously wrapped the Error in `{ value: ... }`, making `isOk` always true).
+
+### Patch Changes
+
+- Updated dependencies [f12977d]
+- Updated dependencies [eb36e21]
+- Updated dependencies [d892397]
+- Updated dependencies [c5a6047]
+- Updated dependencies [45be476]
+- Updated dependencies [2c51525]
+- Updated dependencies [20e9678]
+  - @osdk/client@2.14.0
+  - @osdk/functions@1.8.0
+  - @osdk/api@2.14.0
+
 ## 0.7.0
 
 ### Minor Changes

@@ -1,3 +1,4 @@
+import { osdkDevTools } from "@osdk/react-devtools/vite";
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import { visualizer } from "rollup-plugin-visualizer";
@@ -10,6 +11,7 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [
       react(),
+      osdkDevTools(),
       visualizer({
         filename: "build/site-stats.html",
       }) as unknown as PluginOption,
