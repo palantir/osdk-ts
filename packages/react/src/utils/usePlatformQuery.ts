@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { PalantirApiError } from "@osdk/client";
 import type { Observer } from "@osdk/client/unstable-do-not-use";
 import React from "react";
 import {
@@ -43,7 +44,7 @@ export interface UseQueryOptions<T> {
 export interface QueryResult<T> {
   data: T | undefined;
   isLoading: boolean;
-  error: Error | undefined;
+  error: PalantirApiError | Error | undefined;
   refetch: () => void;
 }
 
@@ -111,12 +112,10 @@ export function usePlatformQuery<T>(
 
   const payload = React.useSyncExternalStore(subscribe, getSnapShot);
 
-  let error: Error | undefined;
-  if (payload && "error" in payload && payload.error != null) {
-    error = payload.error;
-  } else if (payload?.status === "error") {
-    error = new Error(`Failed to query platform API: ${queryName}`);
-  }
+  const error: PalantirApiError | Error | undefined =
+    payload && "error" in payload && payload.error != null
+      ? payload.error
+      : undefined;
 
   return {
     data: payload?.data,
