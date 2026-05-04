@@ -311,6 +311,62 @@ describe("DropdownField", () => {
       });
     });
 
+    it("filters items to matching subset when searching", async () => {
+      render(
+        <DropdownField value={null} items={STRING_ITEMS} isSearchable={true} />,
+      );
+
+      fireEvent.click(screen.getByRole("combobox"));
+
+      await vi.waitFor(() => {
+        expect(screen.getByPlaceholderText("Search…")).toBeDefined();
+      });
+
+      fireEvent.change(screen.getByPlaceholderText("Search…"), {
+        target: { value: "Al" },
+      });
+
+      await vi.waitFor(() => {
+        expect(screen.getByRole("option", { name: "Alice" })).toBeDefined();
+        expect(screen.queryByRole("option", { name: "Bob" })).toBeNull();
+        expect(screen.queryByRole("option", { name: "Charlie" })).toBeNull();
+      });
+    });
+
+    it("filters items when portalContainer is set", async () => {
+      const portalContainer = document.createElement("div");
+      document.body.append(portalContainer);
+
+      try {
+        render(
+          <DropdownField
+            value={null}
+            items={STRING_ITEMS}
+            isSearchable={true}
+            portalContainer={portalContainer}
+          />,
+        );
+
+        fireEvent.click(screen.getByRole("combobox"));
+
+        await vi.waitFor(() => {
+          expect(screen.getByPlaceholderText("Search…")).toBeDefined();
+        });
+
+        fireEvent.change(screen.getByPlaceholderText("Search…"), {
+          target: { value: "Al" },
+        });
+
+        await vi.waitFor(() => {
+          expect(screen.getByRole("option", { name: "Alice" })).toBeDefined();
+          expect(screen.queryByRole("option", { name: "Bob" })).toBeNull();
+          expect(screen.queryByRole("option", { name: "Charlie" })).toBeNull();
+        });
+      } finally {
+        portalContainer.remove();
+      }
+    });
+
     it("marks selected items with aria-selected in multi-select", async () => {
       render(
         <DropdownField<string, true>

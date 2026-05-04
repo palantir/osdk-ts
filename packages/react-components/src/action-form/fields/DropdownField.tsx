@@ -361,7 +361,9 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
                 <Combobox.Empty>No results</Combobox.Empty>
               )}
               <Combobox.List>
-                {items.map(renderItem)}
+                <Combobox.Collection>
+                  {renderItem}
+                </Combobox.Collection>
                 {trailingItem}
               </Combobox.List>
             </Combobox.Popup>
