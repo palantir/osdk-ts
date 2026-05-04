@@ -81,6 +81,24 @@ body {
   border-radius: var(--osdk-surface-border-radius);
 }
 
+.osdkFormStoryCanvas {
+  padding-block: calc(var(--osdk-surface-spacing) * 4);
+  padding-inline: calc(var(--osdk-surface-spacing) * 4);
+}
+
+.osdkFormCard [class*="osdkFormHeader"],
+.osdkFormCard [class*="osdkFormFields"],
+.osdkFormCard [class*="osdkFormFooter"] {
+  box-sizing: border-box;
+  width: 100%;
+  padding-inline: calc(var(--osdk-surface-spacing) * 4);
+}
+
+.osdkFormCard [class*="osdkFormFields"],
+.osdkFormCard [class*="osdkFormFooter"] {
+  padding-block: calc(var(--osdk-surface-spacing) * 4);
+}
+
 .osdkFormStorySpacing {
   margin-bottom: calc(var(--osdk-surface-spacing) * 4);
 }

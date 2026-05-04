@@ -1,6 +1,6 @@
 :root {
   /* Form layout */
-  --osdk-form-content-padding: calc(var(--osdk-surface-spacing) * 4);
+  --osdk-form-region-gap: calc(var(--osdk-surface-spacing) * 3);
   --osdk-form-field-gap: calc(var(--osdk-surface-spacing) * 4);
 
   /* Form header */
@@ -8,8 +8,7 @@
   --osdk-form-header-font-size: var(--osdk-typography-size-body-large);
   --osdk-form-header-font-weight: var(--osdk-typography-weight-bold);
   --osdk-form-header-color: var(--osdk-typography-color-default-rest);
-  --osdk-form-header-block-padding: calc(var(--osdk-surface-spacing) * 3);
-  --osdk-form-header-inline-padding: var(--osdk-form-content-padding);
+  --osdk-form-header-block-padding: calc(var(--osdk-surface-spacing) * 2);
 
   /* Form footer */
   --osdk-form-footer-border-color: var(--osdk-surface-border-color-default);
@@ -19,6 +18,19 @@
   --osdk-form-label-font-weight: var(--osdk-typography-weight-bold);
   --osdk-form-label-color: var(--osdk-typography-color-default-rest);
   --osdk-form-label-field-gap: calc(var(--osdk-surface-spacing) * 1.5);
+
+  /* Label row (label + info icon) */
+  --osdk-form-label-row-gap: calc(var(--osdk-surface-spacing) * 1);
+
+  /* Info icon (tooltip trigger) */
+  --osdk-form-info-icon-color: var(--osdk-typography-color-muted);
+
+  /* Info popup (tooltip-styled popup for helper text) */
+  --osdk-form-info-popup-padding: var(--osdk-tooltip-padding);
+  --osdk-form-info-popup-bg: var(--osdk-tooltip-bg);
+  --osdk-form-info-popup-shadow: var(--osdk-tooltip-shadow);
+  --osdk-form-info-popup-max-width: var(--osdk-tooltip-max-width);
+  --osdk-form-info-popup-font-size: var(--osdk-tooltip-font-size);
 
   /* Required indicator */
   --osdk-form-required-color: var(--osdk-intent-danger-rest);

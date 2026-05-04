@@ -58,8 +58,8 @@ describe("DateRangeInputField", () => {
         "Start date",
       ) as HTMLInputElement;
       const endInput = screen.getByLabelText("End date") as HTMLInputElement;
-      expect(startInput.value).toBe("Jan 15, 2024");
-      expect(endInput.value).toBe("Jun 30, 2024");
+      expect(startInput.value).toBe("2024-01-15");
+      expect(endInput.value).toBe("2024-06-30");
     });
 
     it("renders empty inputs when value is null", () => {
@@ -81,6 +81,14 @@ describe("DateRangeInputField", () => {
       fireEvent.focus(startInput);
       expect(startInput.getAttribute("aria-expanded")).toBe("true");
       expect(screen.getByRole("dialog")).toBeDefined();
+    });
+
+    it("does not render single-date calendar action buttons", () => {
+      render(<DateRangeInputField value={[null, null]} onChange={vi.fn()} />);
+      fireEvent.focus(screen.getByLabelText("Start date"));
+
+      expect(screen.queryByRole("button", { name: "Today" })).toBeNull();
+      expect(screen.queryByRole("button", { name: "Clear" })).toBeNull();
     });
 
     it("opens popover when end input is focused", () => {
@@ -173,7 +181,7 @@ describe("DateRangeInputField", () => {
       fireEvent.change(startInput, { target: { value: "2099-12-31" } });
       fireEvent.keyDown(startInput, { key: "Escape" });
 
-      expect(startInput.value).toBe("Jan 15, 2024");
+      expect(startInput.value).toBe("2024-01-15");
     });
   });
 
@@ -242,7 +250,7 @@ describe("DateRangeInputField", () => {
       fireEvent.blur(startInput);
 
       expect(onChange).not.toHaveBeenCalled();
-      expect(startInput.value).toBe("Jan 1, 2024");
+      expect(startInput.value).toBe("2024-01-01");
     });
 
     it("reverts end input on blur when typed end would overlap start", () => {
@@ -259,7 +267,7 @@ describe("DateRangeInputField", () => {
       fireEvent.blur(endInput);
 
       expect(onChange).not.toHaveBeenCalled();
-      expect(endInput.value).toBe("Dec 31, 2024");
+      expect(endInput.value).toBe("2024-12-31");
     });
 
     it("reverts start input on Enter when typed start would overlap end", () => {
@@ -311,7 +319,7 @@ describe("DateRangeInputField", () => {
       fireEvent.blur(endInput);
 
       expect(onChange).not.toHaveBeenCalled();
-      expect(endInput.value).toBe("Dec 31, 2024");
+      expect(endInput.value).toBe("2024-12-31");
     });
   });
 
@@ -416,7 +424,7 @@ describe("DateRangeInputField", () => {
   });
 
   describe("time picker (showTime)", () => {
-    it("renders time inputs when showTime is true", () => {
+    it("renders segmented time inputs when showTime is true", () => {
       render(
         <DateRangeInputField
           value={[new Date(2024, 0, 15, 10, 30), new Date(2024, 0, 20, 14, 0)]}
@@ -427,8 +435,10 @@ describe("DateRangeInputField", () => {
       const startInput = screen.getByLabelText("Start date");
       fireEvent.focus(startInput);
 
-      const timeInputs = document.querySelectorAll("input[type=\"time\"]");
-      expect(timeInputs.length).toBe(2);
+      expect(screen.getByLabelText("Start time hours")).toBeDefined();
+      expect(screen.getByLabelText("Start time minutes")).toBeDefined();
+      expect(screen.getByLabelText("End time hours")).toBeDefined();
+      expect(screen.getByLabelText("End time minutes")).toBeDefined();
     });
 
     it("does not render time inputs when showTime is false", () => {
@@ -441,11 +451,11 @@ describe("DateRangeInputField", () => {
       const startInput = screen.getByLabelText("Start date");
       fireEvent.focus(startInput);
 
-      const timeInputs = document.querySelectorAll("input[type=\"time\"]");
-      expect(timeInputs.length).toBe(0);
+      expect(screen.queryByLabelText("Start time hours")).toBeNull();
+      expect(screen.queryByLabelText("End time hours")).toBeNull();
     });
 
-    it("calls onChange with updated start time on blur", () => {
+    it("calls onChange with updated start time when valid time segments change", () => {
       const onChange = vi.fn();
       render(
         <DateRangeInputField
@@ -457,20 +467,21 @@ describe("DateRangeInputField", () => {
       const startInput = screen.getByLabelText("Start date");
       fireEvent.focus(startInput);
 
-      const startTimeInput = document.querySelector(
-        "input[aria-label='Start time']",
-      ) as HTMLInputElement;
-      fireEvent.change(startTimeInput, { target: { value: "14:30" } });
-      fireEvent.blur(startTimeInput);
+      fireEvent.change(screen.getByLabelText("Start time hours"), {
+        target: { value: "14" },
+      });
+      fireEvent.change(screen.getByLabelText("Start time minutes"), {
+        target: { value: "30" },
+      });
 
-      expect(onChange).toHaveBeenCalledTimes(1);
-      const [start] = onChange.mock.calls[0][0];
+      expect(onChange).toHaveBeenCalledTimes(2);
+      const [start] = onChange.mock.calls[1][0];
       expect(start?.getHours()).toBe(14);
       expect(start?.getMinutes()).toBe(30);
       expect(start?.getDate()).toBe(15);
     });
 
-    it("calls onChange with updated end time on blur", () => {
+    it("calls onChange with updated end time when valid time segments change", () => {
       const onChange = vi.fn();
       render(
         <DateRangeInputField
@@ -482,14 +493,15 @@ describe("DateRangeInputField", () => {
       const startInput = screen.getByLabelText("Start date");
       fireEvent.focus(startInput);
 
-      const endTimeInput = document.querySelector(
-        "input[aria-label='End time']",
-      ) as HTMLInputElement;
-      fireEvent.change(endTimeInput, { target: { value: "16:45" } });
-      fireEvent.blur(endTimeInput);
+      fireEvent.change(screen.getByLabelText("End time hours"), {
+        target: { value: "16" },
+      });
+      fireEvent.change(screen.getByLabelText("End time minutes"), {
+        target: { value: "45" },
+      });
 
-      expect(onChange).toHaveBeenCalledTimes(1);
-      const [, end] = onChange.mock.calls[0][0];
+      expect(onChange).toHaveBeenCalledTimes(2);
+      const [, end] = onChange.mock.calls[1][0];
       expect(end?.getHours()).toBe(16);
       expect(end?.getMinutes()).toBe(45);
       expect(end?.getDate()).toBe(20);

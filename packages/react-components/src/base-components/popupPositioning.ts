@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,9 @@
  * limitations under the License.
  */
 
-.osdkFormHeader {
-  margin: 0;
-  padding-block: var(--osdk-form-header-block-padding);
-  border-bottom: var(--osdk-surface-border-width) solid
-    var(--osdk-form-header-border-color);
-  font-size: var(--osdk-form-header-font-size);
-  font-weight: var(--osdk-form-header-font-weight);
-  color: var(--osdk-form-header-color);
-}
+// Keep popups visually detached from their trigger so dropdowns and calendars
+// never appear to overlap the input that opened them.
+export const POPUP_SIDE_OFFSET = 8;
+
+// Leave a small viewport gutter when Base UI shifts a popup to avoid clipping.
+export const POPUP_COLLISION_PADDING = 8;

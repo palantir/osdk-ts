@@ -49,9 +49,15 @@ export type ActionFormProps<Q extends ActionDefinition<unknown>> =
   });
 
 interface ActionFormConfigProps<Q extends ActionDefinition<unknown>>
-  extends Pick<BaseFormProps, "formTitle" | "isSubmitDisabled">
+  extends Pick<BaseFormProps, "isSubmitDisabled">
 {
   actionDefinition: Q;
+
+  /**
+   * Title shown above the form. When omitted, the action display name (or API
+   * name fallback) is used. Pass `null` to hide the title.
+   */
+  formTitle?: string | null;
 
   /**
    * If not supplied, field definitions are constructed from `ActionParameters`.

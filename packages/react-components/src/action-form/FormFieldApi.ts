@@ -140,6 +140,7 @@ export interface FormFieldPropsByType {
   OBJECT_SELECT: ObjectSelectFieldProps<ObjectTypeDefinition>;
   OBJECT_SET: ObjectSetFieldProps<ObjectTypeDefinition>;
   RADIO_BUTTONS: RadioButtonsFieldProps<unknown>;
+  SWITCH: SwitchFieldProps;
   TEXT_AREA: TextAreaFieldProps;
   TEXT_INPUT: TextInputFieldProps;
   CUSTOM: CustomFieldProps<unknown>;
@@ -448,6 +449,16 @@ export interface RadioButtonsFieldProps<V> extends BaseFormFieldProps<V> {
 }
 
 /**
+ * Switch field props for boolean values.
+ */
+export interface SwitchFieldProps extends BaseFormFieldProps<boolean> {
+  /**
+   * Accessible label for the switch control.
+   */
+  "aria-label"?: string;
+}
+
+/**
  * Option interface for radio button options
  */
 export interface Option<V> {
@@ -596,6 +607,7 @@ export type FieldComponent =
   | "OBJECT_SELECT"
   | "OBJECT_SET"
   | "RADIO_BUTTONS"
+  | "SWITCH"
   | "TEXT_AREA"
   | "TEXT_INPUT"
   | "CUSTOM";
@@ -664,7 +676,7 @@ export type ValidFormFieldForPropertyType<P extends FieldDescriptorType> =
   P extends { type: "objectSet" } ? "OBJECT_SET"
     : P extends { type: "object" } ? "OBJECT_SELECT"
     : P extends "mediaReference" | "attachment" ? "FILE_PICKER"
-    : P extends "boolean" ? "RADIO_BUTTONS" | "DROPDOWN"
+    : P extends "boolean" ? "RADIO_BUTTONS" | "DROPDOWN" | "SWITCH"
     : P extends "string" ? "TEXT_INPUT" | "TEXT_AREA"
     : P extends "datetime" | "timestamp" ? "DATETIME_PICKER"
     : P extends

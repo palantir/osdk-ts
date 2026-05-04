@@ -19,13 +19,14 @@ import { Popover } from "@base-ui/react/popover";
 import classnames from "classnames";
 import React, { useCallback, useId, useRef, useState } from "react";
 import {
-  formatDateForDisplay,
+  POPUP_COLLISION_PADDING,
+  POPUP_SIDE_OFFSET,
+} from "../../base-components/popupPositioning.js";
+import {
   formatDateForInput,
   formatDatetimeForInput,
-  getTimeValue,
   parseDateFromInput,
   parseDatetimeFromInput,
-  parseTimeString,
 } from "../../shared/dateUtils.js";
 import type { DatetimePickerFieldProps } from "../FormFieldApi.js";
 import { stopPropagation } from "./calendarShared.js";
@@ -64,10 +65,11 @@ export const DatetimePickerField: React.NamedExoticComponent<
 
   // Format/parse: pick between date-only and datetime variants.
   // editFormatFn produces a parsable string for typing (e.g. "2024-01-15" or "2024-01-15 14:30").
-  // displayFormatFn produces a human-readable string for idle state (e.g. "Jan 15, 2024").
+  // displayFormatFn produces the idle string. Defaults stay deterministic so
+  // users in different browser locales see the same date in form inputs.
   const editFormatFn = showTime ? formatDatetimeForInput : formatDateForInput;
   const displayFormatFn = formatDate
-    ?? (showTime ? formatDatetimeForInput : formatDateForDisplay);
+    ?? (showTime ? formatDatetimeForInput : formatDateForInput);
   const parseFn = parseDate
     ?? (showTime ? parseDatetimeFromInput : parseDateFromInput);
 
@@ -202,14 +204,11 @@ export const DatetimePickerField: React.NamedExoticComponent<
   );
 
   const handleTimeChange = useCallback(
-    (timeString: string) => {
-      const { hours, minutes } = parseTimeString(timeString);
-      const base = value != null ? new Date(value.getTime()) : new Date();
-      base.setHours(hours, minutes, 0, 0);
-      onChange?.(base);
-      setDateValue(base);
+    (time: Date) => {
+      onChange?.(time);
+      setDateValue(time);
     },
-    [value, onChange, setDateValue],
+    [onChange, setDateValue],
   );
 
   // --- Focus boundary handlers ---
@@ -249,7 +248,7 @@ export const DatetimePickerField: React.NamedExoticComponent<
   const timeFooter = showTime
     ? (
       <div className={styles.osdkDatetimeTimeFooter}>
-        <TimePicker value={getTimeValue(value)} onChange={handleTimeChange} />
+        <TimePicker value={value} onChange={handleTimeChange} />
       </div>
     )
     : undefined;
@@ -286,7 +285,10 @@ export const DatetimePickerField: React.NamedExoticComponent<
         />
       </Popover.Trigger>
       <Popover.Portal ref={portalRef}>
-        <Popover.Positioner sideOffset={4}>
+        <Popover.Positioner
+          sideOffset={POPUP_SIDE_OFFSET}
+          collisionPadding={POPUP_COLLISION_PADDING}
+        >
           <Popover.Popup
             ref={popoverRef}
             className={commonStyles.osdkDatePickerPopover}
@@ -306,6 +308,7 @@ export const DatetimePickerField: React.NamedExoticComponent<
             <LazyDateCalendar
               dateSelected={value ?? undefined}
               onSelect={handleCalendarSelect}
+              onClear={() => onChange?.(null)}
               min={min}
               max={max}
             />

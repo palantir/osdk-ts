@@ -4,8 +4,11 @@
   --osdk-time-picker-padding-top: calc(var(--osdk-surface-spacing) * 2);
   --osdk-time-picker-border-top: var(--osdk-surface-border);
   --osdk-time-picker-gap: calc(var(--osdk-surface-spacing) * 4);
+  --osdk-time-picker-segment-gap: var(--osdk-surface-spacing);
+  --osdk-time-picker-segment-width: calc(var(--osdk-surface-spacing) * 9);
   --osdk-time-picker-input-font-family: var(--osdk-input-font-family);
   --osdk-time-picker-input-font-size: var(--osdk-input-font-size);
+  --osdk-time-picker-input-line-height: var(--osdk-input-line-height);
   --osdk-time-picker-input-padding: var(--osdk-input-padding);
   --osdk-time-picker-input-border: var(--osdk-input-border-width) solid
     var(--osdk-input-border-color);
@@ -18,4 +21,5 @@
   --osdk-time-picker-input-focus-outline: var(--osdk-input-focus-width) solid
     var(--osdk-input-focus-color);
   --osdk-time-picker-input-focus-offset: var(--osdk-input-focus-offset);
+  --osdk-time-picker-separator-color: var(--osdk-typography-color-muted);
 }

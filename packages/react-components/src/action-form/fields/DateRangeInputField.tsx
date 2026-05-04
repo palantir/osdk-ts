@@ -20,13 +20,14 @@ import classnames from "classnames";
 import React, { useCallback, useId, useRef, useState } from "react";
 import type { DateRange as RdpDateRange } from "react-day-picker";
 import {
-  formatDateForDisplay,
+  POPUP_COLLISION_PADDING,
+  POPUP_SIDE_OFFSET,
+} from "../../base-components/popupPositioning.js";
+import {
   formatDateForInput,
   formatDatetimeForInput,
-  getTimeValue,
   parseDateFromInput,
   parseDatetimeFromInput,
-  parseTimeString,
 } from "../../shared/dateUtils.js";
 import { type DateRangeInputFieldProps, EMPTY_RANGE } from "../FormFieldApi.js";
 import { stopPropagation } from "./calendarShared.js";
@@ -79,10 +80,11 @@ export const DateRangeInputField: React.NamedExoticComponent<
   const [startDate, endDate] = value ?? EMPTY_RANGE;
 
   // editFormatFn produces a parsable string for typing (e.g. "2024-01-15" or "2024-01-15 14:30").
-  // displayFormatFn produces a human-readable string for idle state (e.g. "Jan 15, 2024").
+  // displayFormatFn produces the idle string. Defaults stay deterministic so
+  // users in different browser locales see the same date in form inputs.
   const editFormatFn = showTime ? formatDatetimeForInput : formatDateForInput;
   const displayFormatFn = formatDate
-    ?? (showTime ? formatDatetimeForInput : formatDateForDisplay);
+    ?? (showTime ? formatDatetimeForInput : formatDateForInput);
   const parseFn = parseDate
     ?? (showTime ? parseDatetimeFromInput : parseDateFromInput);
 
@@ -322,27 +324,19 @@ export const DateRangeInputField: React.NamedExoticComponent<
   // --- Time handlers ---
 
   const handleStartTimeChange = useCallback(
-    (timeString: string) => {
-      const { hours, minutes } = parseTimeString(timeString);
-      const base = startDate != null
-        ? new Date(startDate.getTime())
-        : new Date();
-      base.setHours(hours, minutes, 0, 0);
-      onChange?.([base, endDate ?? null]);
-      setStartDateValue(base);
+    (time: Date) => {
+      onChange?.([time, endDate ?? null]);
+      setStartDateValue(time);
     },
-    [startDate, endDate, onChange, setStartDateValue],
+    [endDate, onChange, setStartDateValue],
   );
 
   const handleEndTimeChange = useCallback(
-    (timeString: string) => {
-      const { hours, minutes } = parseTimeString(timeString);
-      const base = endDate != null ? new Date(endDate.getTime()) : new Date();
-      base.setHours(hours, minutes, 0, 0);
-      onChange?.([startDate ?? null, base]);
-      setEndDateValue(base);
+    (time: Date) => {
+      onChange?.([startDate ?? null, time]);
+      setEndDateValue(time);
     },
-    [startDate, endDate, onChange, setEndDateValue],
+    [startDate, onChange, setEndDateValue],
   );
 
   // --- Focus boundary handlers ---
@@ -388,12 +382,12 @@ export const DateRangeInputField: React.NamedExoticComponent<
     ? (
       <div className={styles.osdkDateRangeTimeRow}>
         <TimePicker
-          value={getTimeValue(startDate)}
+          value={startDate}
           onChange={handleStartTimeChange}
           label="Start time"
         />
         <TimePicker
-          value={getTimeValue(endDate)}
+          value={endDate}
           onChange={handleEndTimeChange}
           label="End time"
         />
@@ -458,7 +452,10 @@ export const DateRangeInputField: React.NamedExoticComponent<
         </div>
       </Popover.Trigger>
       <Popover.Portal>
-        <Popover.Positioner sideOffset={4}>
+        <Popover.Positioner
+          sideOffset={POPUP_SIDE_OFFSET}
+          collisionPadding={POPUP_COLLISION_PADDING}
+        >
           <Popover.Popup
             ref={popoverRef}
             className={commonStyles.osdkDatePickerPopover}

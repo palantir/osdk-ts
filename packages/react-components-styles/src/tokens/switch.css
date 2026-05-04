@@ -1,0 +1,25 @@
+:root {
+  /* Switch dimensions */
+  --osdk-switch-track-width: 28px;
+  --osdk-switch-track-height: 16px;
+  --osdk-switch-thumb-size: 12px;
+  --osdk-switch-thumb-offset: 2px;
+  --osdk-switch-border-radius: var(--osdk-surface-border-radius);
+  --osdk-switch-disabled-opacity: var(--osdk-input-disabled-opacity);
+
+  /* Switch colors */
+  --osdk-switch-track-bg: var(--osdk-intent-default-rest);
+  --osdk-switch-track-bg-hover: var(--osdk-intent-default-hover);
+  --osdk-switch-track-bg-active: var(--osdk-intent-default-active);
+  --osdk-switch-track-bg-checked: var(--osdk-intent-primary-rest);
+  --osdk-switch-track-bg-checked-hover: var(--osdk-intent-primary-hover);
+  --osdk-switch-track-bg-checked-active: var(--osdk-intent-primary-active);
+  --osdk-switch-thumb-bg: var(--osdk-palette-white);
+
+  /* Switch focus and motion */
+  --osdk-switch-focus-width: var(--osdk-emphasis-focus-width);
+  --osdk-switch-focus-color: var(--osdk-emphasis-focus-color);
+  --osdk-switch-focus-offset: var(--osdk-emphasis-focus-offset);
+  --osdk-switch-transition-duration: var(--osdk-emphasis-transition-duration);
+  --osdk-switch-transition-ease: var(--osdk-emphasis-ease-default);
+}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,15 @@
  * limitations under the License.
  */
 
-.osdkFormHeader {
-  margin: 0;
-  padding-block: var(--osdk-form-header-block-padding);
-  border-bottom: var(--osdk-surface-border-width) solid
-    var(--osdk-form-header-border-color);
-  font-size: var(--osdk-form-header-font-size);
-  font-weight: var(--osdk-form-header-font-weight);
-  color: var(--osdk-form-header-color);
-}
+import { describe, expect, it } from "vitest";
+import {
+  POPUP_COLLISION_PADDING,
+  POPUP_SIDE_OFFSET,
+} from "../popupPositioning.js";
+
+describe("popup positioning constants", () => {
+  it("keeps shared popups visually separated from their trigger", () => {
+    expect(POPUP_SIDE_OFFSET).toBe(8);
+    expect(POPUP_COLLISION_PADDING).toBe(8);
+  });
+});

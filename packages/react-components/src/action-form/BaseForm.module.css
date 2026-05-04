@@ -17,6 +17,7 @@
 .osdkForm {
   display: flex;
   flex-direction: column;
+  gap: var(--osdk-form-region-gap);
   width: 100%;
 }
 
@@ -24,7 +25,6 @@
   display: flex;
   flex-direction: column;
   gap: var(--osdk-form-field-gap);
-  padding: var(--osdk-form-content-padding);
 }
 
 .osdkFormFooter {
@@ -34,8 +34,6 @@
   align-items: center;
   border-top: var(--osdk-surface-border-width) solid
     var(--osdk-form-footer-border-color);
-  padding-block: var(--osdk-form-content-padding);
-  padding-inline: var(--osdk-form-content-padding);
 }
 
 .osdkFormSubmitButton {

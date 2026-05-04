@@ -10,4 +10,12 @@
   --osdk-radio-bg-checked-hover: var(--osdk-intent-primary-hover);
   --osdk-radio-bg-checked-active: var(--osdk-intent-primary-active);
   --osdk-radio-indicator-color: var(--osdk-intent-primary-foreground);
+  --osdk-radio-focus-outline: var(--osdk-focus-outline);
+  --osdk-radio-focus-outline-offset: calc(
+    -1 * var(--osdk-focus-visible-outline-offset)
+  );
+  --osdk-radio-label-font-family: var(--osdk-typography-family-default);
+  --osdk-radio-label-font-size: var(--osdk-typography-size-body-medium);
+  --osdk-radio-label-line-height: var(--osdk-typography-line-height-default);
+  --osdk-radio-label-color: var(--osdk-typography-color-default-rest);
 }

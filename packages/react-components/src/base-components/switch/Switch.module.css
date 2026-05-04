@@ -15,56 +15,51 @@
  */
 
 .osdkSwitchRoot {
-  --osdk-switch-track-width: var(--osdk-switch-track-width-override, 28px);
-  --osdk-switch-track-height: var(--osdk-switch-track-height-override, 16px);
-  --osdk-switch-thumb-size: var(--osdk-switch-thumb-size-override, 12px);
-  --osdk-switch-thumb-offset: var(--osdk-switch-thumb-offset-override, 2px);
-
   display: inline-flex;
   align-items: center;
   width: var(--osdk-switch-track-width);
   height: var(--osdk-switch-track-height);
   padding: 0;
   cursor: pointer;
-  border-radius: var(--osdk-switch-border-radius, var(--osdk-surface-border-radius));
+  border-radius: var(--osdk-switch-border-radius);
   position: relative;
   border: none;
-  transition: background-color var(--osdk-switch-transition-duration, var(--osdk-emphasis-transition-duration))
-    var(--osdk-switch-transition-ease, var(--osdk-emphasis-ease-default));
+  transition: background-color var(--osdk-switch-transition-duration)
+    var(--osdk-switch-transition-ease);
 
   &[data-unchecked] {
-    background-color: var(--osdk-switch-track-bg, var(--osdk-intent-default-rest));
+    background-color: var(--osdk-switch-track-bg);
 
     &:hover {
-      background-color: var(--osdk-switch-track-bg-hover, var(--osdk-intent-default-hover));
+      background-color: var(--osdk-switch-track-bg-hover);
     }
 
     &:active {
-      background-color: var(--osdk-switch-track-bg-active, var(--osdk-intent-default-active));
+      background-color: var(--osdk-switch-track-bg-active);
     }
   }
 
   &[data-checked] {
-    background-color: var(--osdk-switch-track-bg-checked, var(--osdk-intent-primary-rest));
+    background-color: var(--osdk-switch-track-bg-checked);
 
     &:hover {
-      background-color: var(--osdk-switch-track-bg-checked-hover, var(--osdk-intent-primary-hover));
+      background-color: var(--osdk-switch-track-bg-checked-hover);
     }
 
     &:active {
-      background-color: var(--osdk-switch-track-bg-checked-active, var(--osdk-intent-primary-active));
+      background-color: var(--osdk-switch-track-bg-checked-active);
     }
   }
 
   &[data-disabled] {
     cursor: not-allowed;
-    opacity: 0.5;
+    opacity: var(--osdk-switch-disabled-opacity);
   }
 
   &:focus-visible {
-    outline: var(--osdk-switch-focus-width, var(--osdk-emphasis-focus-width)) solid
-      var(--osdk-switch-focus-color, var(--osdk-emphasis-focus-color));
-    outline-offset: var(--osdk-switch-focus-offset, var(--osdk-emphasis-focus-offset));
+    outline: var(--osdk-switch-focus-width) solid
+      var(--osdk-switch-focus-color);
+    outline-offset: var(--osdk-switch-focus-offset);
   }
 }
 
@@ -72,19 +67,22 @@
   display: block;
   width: var(--osdk-switch-thumb-size);
   height: var(--osdk-switch-thumb-size);
-  background-color: var(--osdk-switch-thumb-bg, var(--osdk-palette-white));
+  background-color: var(--osdk-switch-thumb-bg);
   border-radius: 50%;
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  transition: left var(--osdk-switch-transition-duration, var(--osdk-emphasis-transition-duration))
-    var(--osdk-switch-transition-ease, var(--osdk-emphasis-ease-default));
+  transition: left var(--osdk-switch-transition-duration)
+    var(--osdk-switch-transition-ease);
 
   &[data-unchecked] {
     left: var(--osdk-switch-thumb-offset);
   }
 
   &[data-checked] {
-    left: calc(var(--osdk-switch-track-width) - var(--osdk-switch-thumb-size) - var(--osdk-switch-thumb-offset));
+    left: calc(
+      var(--osdk-switch-track-width) - var(--osdk-switch-thumb-size) -
+        var(--osdk-switch-thumb-offset)
+    );
   }
 }

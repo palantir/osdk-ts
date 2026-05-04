@@ -14,95 +14,53 @@
  * limitations under the License.
  */
 
-/* TODO: Extract each variable into its tokens file and map to default value there */
-
 .osdkSelectTrigger {
   display: inline-flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--osdk-select-spacing, var(--osdk-surface-spacing));
+  gap: var(--osdk-select-spacing);
   width: 100%;
-  min-height: var(--osdk-select-min-height, 30px);
-  padding: var(
-    --osdk-select-trigger-padding,
-    calc(var(--osdk-surface-spacing) * 1.5)
-      calc(var(--osdk-surface-spacing) * 2.5)
-  );
+  min-height: var(--osdk-select-min-height);
+  padding: var(--osdk-select-trigger-padding);
   cursor: pointer;
-  border-radius: var(
-    --osdk-select-border-radius,
-    var(--osdk-surface-border-radius)
-  );
-  border: var(--osdk-select-border-width, var(--osdk-surface-border-width))
+  border-radius: var(--osdk-select-border-radius);
+  border: var(--osdk-select-border-width)
     solid
-    var(--osdk-select-border-color, var(--osdk-surface-border-color-default));
-  background-color: var(
-    --osdk-select-trigger-bg,
-    var(--osdk-surface-background-color-default-rest)
-  );
-  color: var(
-    --osdk-select-trigger-color,
-    var(--osdk-typography-color-default-rest)
-  );
-  font-family: var(
-    --osdk-select-font-family,
-    var(--osdk-typography-family-default)
-  );
-  font-size: var(
-    --osdk-select-font-size,
-    var(--osdk-typography-size-body-medium)
-  );
-  line-height: var(
-    --osdk-select-line-height,
-    var(--osdk-typography-line-height-default)
-  );
+    var(--osdk-select-border-color);
+  background-color: var(--osdk-select-trigger-bg);
+  color: var(--osdk-select-trigger-color);
+  font-family: var(--osdk-select-font-family);
+  font-size: var(--osdk-select-font-size);
+  line-height: var(--osdk-select-line-height);
   transition:
     background-color
-      var(
-        --osdk-select-transition-duration,
-        var(--osdk-emphasis-transition-duration)
-      )
-      var(--osdk-select-transition-ease, var(--osdk-emphasis-ease-default)),
+      var(--osdk-select-transition-duration)
+      var(--osdk-select-transition-ease),
     border-color
-      var(
-        --osdk-select-transition-duration,
-        var(--osdk-emphasis-transition-duration)
-      )
-      var(--osdk-select-transition-ease, var(--osdk-emphasis-ease-default));
+      var(--osdk-select-transition-duration)
+      var(--osdk-select-transition-ease);
 
   &:hover {
-    background-color: var(
-      --osdk-select-trigger-bg-hover,
-      var(--osdk-surface-background-color-default-hover)
-    );
+    background-color: var(--osdk-select-trigger-bg-hover);
   }
 
   &:active {
-    background-color: var(
-      --osdk-select-trigger-bg-active,
-      var(--osdk-surface-background-color-default-active)
-    );
+    background-color: var(--osdk-select-trigger-bg-active);
   }
 
   &:focus-visible {
-    outline: var(--osdk-select-focus-width, var(--osdk-emphasis-focus-width))
-      solid var(--osdk-select-focus-color, var(--osdk-emphasis-focus-color));
-    outline-offset: var(
-      --osdk-select-focus-offset,
-      var(--osdk-emphasis-focus-offset)
-    );
+    outline: var(--osdk-select-focus-width)
+      solid var(--osdk-select-focus-color);
+    outline-offset: var(--osdk-select-focus-offset);
   }
 
   &[data-disabled] {
     cursor: not-allowed;
-    opacity: var(--osdk-disabled-opacity, 0.5);
+    opacity: var(--osdk-select-disabled-opacity);
   }
 
   &[data-popup-open] {
-    border-color: var(
-      --osdk-select-border-color-active,
-      var(--osdk-intent-primary-rest)
-    );
+    border-color: var(--osdk-select-border-color-active);
   }
 }
 
@@ -125,10 +83,7 @@
 
 .osdkSelectPlaceholder {
   text-align: left;
-  color: var(
-    --osdk-select-placeholder-color,
-    var(--osdk-typography-color-muted)
-  );
+  color: var(--osdk-select-placeholder-color);
   pointer-events: none;
 }
 
@@ -141,14 +96,11 @@
   align-items: center;
   justify-content: center;
   line-height: 0;
-  color: var(--osdk-select-icon-color, var(--osdk-iconography-color-muted));
+  color: var(--osdk-select-icon-color);
   flex-shrink: 0;
   transition: transform
-    var(
-      --osdk-select-transition-duration,
-      var(--osdk-emphasis-transition-duration)
-    )
-    var(--osdk-select-transition-ease, var(--osdk-emphasis-ease-default));
+    var(--osdk-select-transition-duration)
+    var(--osdk-select-transition-ease);
 
   [data-popup-open] > & {
     transform: rotate(180deg);
@@ -166,116 +118,68 @@
   background: transparent;
   cursor: pointer;
   flex-shrink: 0;
-  color: var(--osdk-select-clear-color, var(--osdk-iconography-color-muted));
-  border-radius: var(
-    --osdk-select-border-radius,
-    var(--osdk-surface-border-radius)
-  );
+  color: var(--osdk-select-clear-color);
+  border-radius: var(--osdk-select-border-radius);
   transition:
     color
-      var(
-        --osdk-select-transition-duration,
-        var(--osdk-emphasis-transition-duration)
-      )
-      var(--osdk-select-transition-ease, var(--osdk-emphasis-ease-default)),
+      var(--osdk-select-transition-duration)
+      var(--osdk-select-transition-ease),
     background-color
-      var(
-        --osdk-select-transition-duration,
-        var(--osdk-emphasis-transition-duration)
-      )
-      var(--osdk-select-transition-ease, var(--osdk-emphasis-ease-default));
+      var(--osdk-select-transition-duration)
+      var(--osdk-select-transition-ease);
 
   &:hover {
-    color: var(
-      --osdk-select-clear-color-hover,
-      var(--osdk-typography-color-default-rest)
-    );
-    background-color: var(
-      --osdk-select-clear-bg-hover,
-      var(--osdk-surface-background-color-default-hover)
-    );
+    color: var(--osdk-select-clear-color-hover);
+    background-color: var(--osdk-select-clear-bg-hover);
   }
 }
 
 .osdkSelectPositioner {
-  z-index: var(--osdk-select-z-index, var(--osdk-surface-z-index-3));
+  z-index: var(--osdk-select-z-index);
 }
 
 .osdkSelectPopup {
   display: flex;
   flex-direction: column;
   min-width: var(--anchor-width);
-  max-height: var(--available-height);
+  max-height: var(--osdk-select-popup-max-height);
   overflow-y: auto;
-  padding: calc(var(--osdk-select-spacing, var(--osdk-surface-spacing)) * 1.5);
-  border-radius: var(
-    --osdk-select-border-radius,
-    var(--osdk-surface-border-radius)
-  );
-  border: var(--osdk-select-border-width, var(--osdk-surface-border-width))
+  padding: calc(var(--osdk-select-spacing) * 1.5);
+  border-radius: var(--osdk-select-border-radius);
+  border: var(--osdk-select-border-width)
     solid
-    var(--osdk-select-border-color, var(--osdk-surface-border-color-default));
-  background-color: var(
-    --osdk-select-popup-bg,
-    var(--osdk-surface-background-color-default-rest)
-  );
-  box-shadow: var(--osdk-select-popup-shadow, var(--osdk-surface-shadow-2));
+    var(--osdk-select-border-color);
+  background-color: var(--osdk-select-popup-bg);
+  box-shadow: var(--osdk-select-popup-shadow);
 }
 
 .osdkSelectItem {
   display: flex;
   align-items: center;
-  padding: calc(var(--osdk-select-spacing, var(--osdk-surface-spacing)) * 1.5)
-    calc(var(--osdk-select-spacing, var(--osdk-surface-spacing)) * 2);
-  border-radius: var(
-    --osdk-select-border-radius,
-    var(--osdk-surface-border-radius)
-  );
+  padding: calc(var(--osdk-select-spacing) * 1.5)
+    calc(var(--osdk-select-spacing) * 2);
+  border-radius: var(--osdk-select-border-radius);
   cursor: pointer;
-  font-family: var(
-    --osdk-select-font-family,
-    var(--osdk-typography-family-default)
-  );
-  font-size: var(
-    --osdk-select-font-size,
-    var(--osdk-typography-size-body-medium)
-  );
-  line-height: var(
-    --osdk-select-line-height,
-    var(--osdk-typography-line-height-default)
-  );
-  color: var(
-    --osdk-select-item-color,
-    var(--osdk-typography-color-default-rest)
-  );
+  font-family: var(--osdk-select-font-family);
+  font-size: var(--osdk-select-font-size);
+  line-height: var(--osdk-select-line-height);
+  color: var(--osdk-select-item-color);
   transition: background-color
-    var(
-      --osdk-select-transition-duration,
-      var(--osdk-emphasis-transition-duration)
-    )
-    var(--osdk-select-transition-ease, var(--osdk-emphasis-ease-default));
+    var(--osdk-select-transition-duration)
+    var(--osdk-select-transition-ease);
 
   &[data-highlighted] {
-    background-color: var(
-      --osdk-select-item-bg-highlighted,
-      var(--osdk-surface-background-color-default-hover)
-    );
+    background-color: var(--osdk-select-item-bg-highlighted);
     outline: none;
   }
 
   &[data-selected] {
-    background-color: var(
-      --osdk-select-item-bg-selected,
-      var(--osdk-surface-layer-primary)
-    );
-    color: var(
-      --osdk-select-item-color-selected,
-      var(--osdk-intent-primary-rest)
-    );
+    background-color: var(--osdk-select-item-bg-selected);
+    color: var(--osdk-select-item-color-selected);
   }
 
   &[data-disabled] {
     cursor: not-allowed;
-    opacity: var(--osdk-disabled-opacity, 0.5);
+    opacity: var(--osdk-select-disabled-opacity);
   }
 }

@@ -147,8 +147,9 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
     [onFormStateChange],
   );
 
-  const resolvedTitle = formTitle ?? metadata?.displayName
-    ?? actionDefinition.apiName;
+  const resolvedTitle = Object.is(formTitle, null)
+    ? undefined
+    : formTitle ?? metadata?.displayName ?? actionDefinition.apiName;
 
   const isControlled = controlledFormState != null;
 

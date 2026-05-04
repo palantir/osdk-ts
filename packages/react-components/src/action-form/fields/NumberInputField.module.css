@@ -52,10 +52,7 @@
   color: var(--osdk-input-color);
   font-family: var(--osdk-input-font-family);
   font-size: var(--osdk-input-font-size);
-  line-height: var(
-    --osdk-input-line-height,
-    var(--osdk-typography-line-height-default)
-  );
+  line-height: var(--osdk-input-line-height);
 
   &::placeholder {
     color: var(--osdk-input-placeholder-color);

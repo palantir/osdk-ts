@@ -1,6 +1,6 @@
 :root {
   /* Form layout */
-  --osdk-form-content-padding: calc(var(--osdk-surface-spacing) * 4);
+  --osdk-form-region-gap: calc(var(--osdk-surface-spacing) * 3);
   --osdk-form-field-gap: calc(var(--osdk-surface-spacing) * 4);
 
   /* Form header */
@@ -8,8 +8,7 @@
   --osdk-form-header-font-size: var(--osdk-typography-size-body-large);
   --osdk-form-header-font-weight: var(--osdk-typography-weight-bold);
   --osdk-form-header-color: var(--osdk-typography-color-default-rest);
-  --osdk-form-header-block-padding: calc(var(--osdk-surface-spacing) * 3);
-  --osdk-form-header-inline-padding: var(--osdk-form-content-padding);
+  --osdk-form-header-block-padding: calc(var(--osdk-surface-spacing) * 2);
 
   /* Form footer */
   --osdk-form-footer-border-color: var(--osdk-surface-border-color-default);

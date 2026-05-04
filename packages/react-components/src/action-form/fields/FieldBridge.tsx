@@ -33,6 +33,7 @@ const SELECT_LIKE_FIELDS: ReadonlySet<FieldComponent> = new Set<FieldComponent>(
   [
     "RADIO_BUTTONS",
     "DROPDOWN",
+    "SWITCH",
   ],
 );
 

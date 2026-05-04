@@ -54,10 +54,28 @@ interface TestActionDef extends ActionDefinition<unknown> {
   };
 }
 
+interface BooleanActionDef extends ActionDefinition<unknown> {
+  __DefinitionMetadata: {
+    signatures: unknown;
+    parameters: {
+      enabled: { type: "boolean" };
+    };
+    type: "action";
+    apiName: "BooleanAction";
+    status: "ACTIVE";
+    rid: string;
+  };
+}
+
 const TestAction: TestActionDef = {
   type: "action",
   apiName: "TestAction",
 } as TestActionDef;
+
+const BooleanAction: BooleanActionDef = {
+  type: "action",
+  apiName: "BooleanAction",
+} as BooleanActionDef;
 
 const mockApplyAction = vi.fn().mockResolvedValue({
   editedObjectTypes: [],
@@ -124,6 +142,12 @@ describe("ActionForm", () => {
       expect(screen.getByRole("heading").textContent).toBe("Custom Title");
     });
 
+    it("does not render a form title when explicitly set to null", () => {
+      render(<ActionForm actionDefinition={TestAction} formTitle={null} />);
+
+      expect(screen.queryByRole("heading")).toBeNull();
+    });
+
     it("falls back to apiName when metadata has no displayName", () => {
       vi.mocked(useOsdkMetadata).mockReturnValue({
         loading: false,
@@ -172,6 +196,26 @@ describe("ActionForm", () => {
       );
 
       expect(screen.getByText("Full Name")).toBeDefined();
+    });
+
+    it("renders a boolean field as a switch when configured", () => {
+      const customDefs: Array<FormFieldDefinition<BooleanActionDef>> = [
+        {
+          fieldKey: "enabled",
+          label: "Enabled",
+          fieldComponent: "SWITCH",
+          fieldComponentProps: {},
+        },
+      ];
+
+      render(
+        <ActionForm
+          actionDefinition={BooleanAction}
+          formFieldDefinitions={customDefs}
+        />,
+      );
+
+      expect(screen.getByRole("switch", { name: /^Enabled/ })).toBeDefined();
     });
   });
 

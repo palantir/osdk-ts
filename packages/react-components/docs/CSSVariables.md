@@ -923,21 +923,20 @@ Styling for form components.
 
 #### Layout
 
-| Variable                      | Default Value                           | Description          |
-| ----------------------------- | --------------------------------------- | -------------------- |
-| `--osdk-form-content-padding` | `calc(var(--osdk-surface-spacing) * 4)` | Form content padding |
-| `--osdk-form-field-gap`       | `calc(var(--osdk-surface-spacing) * 4)` | Gap between fields   |
+| Variable                 | Default Value                           | Description              |
+| ------------------------ | --------------------------------------- | ------------------------ |
+| `--osdk-form-region-gap` | `calc(var(--osdk-surface-spacing) * 3)` | Gap between form regions |
+| `--osdk-form-field-gap`  | `calc(var(--osdk-surface-spacing) * 4)` | Gap between fields       |
 
 #### Header
 
-| Variable                            | Default Value                               | Description           |
-| ----------------------------------- | ------------------------------------------- | --------------------- |
-| `--osdk-form-header-border-color`   | `var(--osdk-surface-border-color-default)`  | Header border color   |
-| `--osdk-form-header-font-size`      | `var(--osdk-typography-size-body-large)`    | Header font size      |
-| `--osdk-form-header-font-weight`    | `var(--osdk-typography-weight-bold)`        | Header font weight    |
-| `--osdk-form-header-color`          | `var(--osdk-typography-color-default-rest)` | Header text color     |
-| `--osdk-form-header-block-padding`  | `calc(var(--osdk-surface-spacing) * 3)`     | Header block padding  |
-| `--osdk-form-header-inline-padding` | `var(--osdk-form-content-padding)`          | Header inline padding |
+| Variable                           | Default Value                               | Description          |
+| ---------------------------------- | ------------------------------------------- | -------------------- |
+| `--osdk-form-header-border-color`  | `var(--osdk-surface-border-color-default)`  | Header border color  |
+| `--osdk-form-header-font-size`     | `var(--osdk-typography-size-body-large)`    | Header font size     |
+| `--osdk-form-header-font-weight`   | `var(--osdk-typography-weight-bold)`        | Header font weight   |
+| `--osdk-form-header-color`         | `var(--osdk-typography-color-default-rest)` | Header text color    |
+| `--osdk-form-header-block-padding` | `calc(var(--osdk-surface-spacing) * 2)`     | Header block padding |
 
 #### Footer
 
@@ -1100,22 +1099,90 @@ Styling for radio button components.
 | `--osdk-radio-bg-checked-active` | `var(--osdk-intent-primary-active)`                  | Checked active background   |
 | `--osdk-radio-indicator-color`   | `var(--osdk-intent-primary-foreground)`              | Indicator dot color         |
 
+### Select
+
+Styling for shared select dropdown components.
+
+| Variable                            | Default Value                                                          | Description                 |
+| ----------------------------------- | ---------------------------------------------------------------------- | --------------------------- |
+| `--osdk-select-spacing`             | `var(--osdk-surface-spacing)`                                          | Internal spacing unit       |
+| `--osdk-select-min-height`          | `var(--osdk-input-min-height)`                                         | Trigger minimum height      |
+| `--osdk-select-trigger-padding`     | `var(--osdk-input-padding)`                                            | Trigger padding             |
+| `--osdk-select-disabled-opacity`    | `var(--osdk-input-disabled-opacity)`                                   | Disabled opacity            |
+| `--osdk-select-border-radius`       | `var(--osdk-input-border-radius)`                                      | Border radius               |
+| `--osdk-select-border-width`        | `var(--osdk-input-border-width)`                                       | Border width                |
+| `--osdk-select-border-color`        | `var(--osdk-input-border-color)`                                       | Border color                |
+| `--osdk-select-border-color-active` | `var(--osdk-input-border-color-focus)`                                 | Open/focused border color   |
+| `--osdk-select-trigger-bg`          | `var(--osdk-input-bg)`                                                 | Trigger background          |
+| `--osdk-select-trigger-bg-hover`    | `var(--osdk-input-bg-hover)`                                           | Trigger hover background    |
+| `--osdk-select-trigger-bg-active`   | `var(--osdk-surface-background-color-default-active)`                  | Trigger active background   |
+| `--osdk-select-popup-bg`            | `var(--osdk-surface-background-color-default-rest)`                    | Popup background            |
+| `--osdk-select-popup-shadow`        | `var(--osdk-surface-shadow-2)`                                         | Popup shadow                |
+| `--osdk-select-popup-max-height`    | `min(var(--available-height), calc(var(--osdk-surface-spacing) * 80))` | Popup maximum height        |
+| `--osdk-select-z-index`             | `var(--osdk-surface-z-index-3)`                                        | Popup z-index               |
+| `--osdk-select-trigger-color`       | `var(--osdk-input-color)`                                              | Trigger text color          |
+| `--osdk-select-placeholder-color`   | `var(--osdk-input-placeholder-color)`                                  | Placeholder text color      |
+| `--osdk-select-font-family`         | `var(--osdk-input-font-family)`                                        | Font family                 |
+| `--osdk-select-font-size`           | `var(--osdk-input-font-size)`                                          | Font size                   |
+| `--osdk-select-line-height`         | `var(--osdk-input-line-height)`                                        | Line height                 |
+| `--osdk-select-icon-color`          | `var(--osdk-iconography-color-muted)`                                  | Icon color                  |
+| `--osdk-select-focus-width`         | `var(--osdk-input-focus-width)`                                        | Focus ring width            |
+| `--osdk-select-focus-color`         | `var(--osdk-input-focus-color)`                                        | Focus ring color            |
+| `--osdk-select-focus-offset`        | `var(--osdk-input-focus-offset)`                                       | Focus ring offset           |
+| `--osdk-select-item-color`          | `var(--osdk-typography-color-default-rest)`                            | Item text color             |
+| `--osdk-select-item-color-selected` | `var(--osdk-intent-primary-rest)`                                      | Selected item text color    |
+| `--osdk-select-item-bg-highlighted` | `var(--osdk-surface-background-color-default-hover)`                   | Highlighted item background |
+| `--osdk-select-item-bg-selected`    | `var(--osdk-surface-layer-primary)`                                    | Selected item background    |
+
+### Combobox
+
+Styling for shared searchable combobox components.
+
+| Variable                              | Default Value                                                                   | Description                  |
+| ------------------------------------- | ------------------------------------------------------------------------------- | ---------------------------- |
+| `--osdk-combobox-spacing`             | `var(--osdk-surface-spacing)`                                                   | Internal spacing unit        |
+| `--osdk-combobox-min-height`          | `var(--osdk-input-min-height)`                                                  | Input minimum height         |
+| `--osdk-combobox-trigger-padding`     | `var(--osdk-input-padding)`                                                     | Trigger padding              |
+| `--osdk-combobox-input-padding`       | `calc(var(--osdk-surface-spacing) * 1.5) calc(var(--osdk-surface-spacing) * 2)` | Search input padding         |
+| `--osdk-combobox-disabled-opacity`    | `var(--osdk-input-disabled-opacity)`                                            | Disabled opacity             |
+| `--osdk-combobox-border-radius`       | `var(--osdk-input-border-radius)`                                               | Border radius                |
+| `--osdk-combobox-border-width`        | `var(--osdk-input-border-width)`                                                | Border width                 |
+| `--osdk-combobox-border-color`        | `var(--osdk-input-border-color)`                                                | Border color                 |
+| `--osdk-combobox-trigger-bg`          | `var(--osdk-input-bg)`                                                          | Trigger background           |
+| `--osdk-combobox-trigger-bg-hover`    | `var(--osdk-input-bg-hover)`                                                    | Trigger hover background     |
+| `--osdk-combobox-trigger-bg-active`   | `var(--osdk-surface-background-color-default-active)`                           | Trigger active background    |
+| `--osdk-combobox-input-bg`            | `var(--osdk-input-bg)`                                                          | Search input background      |
+| `--osdk-combobox-popup-bg`            | `var(--osdk-surface-background-color-default-rest)`                             | Popup background             |
+| `--osdk-combobox-popup-shadow`        | `var(--osdk-surface-shadow-2)`                                                  | Popup shadow                 |
+| `--osdk-combobox-popup-max-height`    | `min(var(--available-height), calc(var(--osdk-surface-spacing) * 80))`          | Popup maximum height         |
+| `--osdk-combobox-z-index`             | `var(--osdk-surface-z-index-3)`                                                 | Popup z-index                |
+| `--osdk-combobox-trigger-color`       | `var(--osdk-input-color)`                                                       | Trigger text color           |
+| `--osdk-combobox-input-color`         | `var(--osdk-input-color)`                                                       | Search input text color      |
+| `--osdk-combobox-placeholder-color`   | `var(--osdk-input-placeholder-color)`                                           | Placeholder text color       |
+| `--osdk-combobox-font-family`         | `var(--osdk-input-font-family)`                                                 | Font family                  |
+| `--osdk-combobox-font-size`           | `var(--osdk-input-font-size)`                                                   | Font size                    |
+| `--osdk-combobox-line-height`         | `var(--osdk-input-line-height)`                                                 | Line height                  |
+| `--osdk-combobox-icon-color`          | `var(--osdk-iconography-color-muted)`                                           | Icon color                   |
+| `--osdk-combobox-focus-border-color`  | `var(--osdk-input-border-color-focus)`                                          | Focus border color           |
+| `--osdk-combobox-item-color`          | `var(--osdk-typography-color-default-rest)`                                     | Item text color              |
+| `--osdk-combobox-item-color-selected` | `var(--osdk-intent-primary-rest)`                                               | Selected item text color     |
+| `--osdk-combobox-item-bg-highlighted` | `var(--osdk-surface-background-color-default-hover)`                            | Highlighted item background  |
+| `--osdk-combobox-item-bg-selected`    | `var(--osdk-surface-layer-primary)`                                             | Selected item background     |
+| `--osdk-combobox-chip-bg`             | `var(--osdk-surface-background-color-default-hover)`                            | Multi-select chip background |
+| `--osdk-combobox-chip-color`          | `var(--osdk-typography-color-default-rest)`                                     | Multi-select chip text color |
+
 ### Switch
 
-Styling for toggle switch components. These tokens use CSS fallback values with override tokens.
+Styling for toggle switch components.
 
-| Variable                     | Default Value                                    | Description                  |
-| ---------------------------- | ------------------------------------------------ | ---------------------------- |
-| `--osdk-switch-track-width`  | `var(--osdk-switch-track-width-override, 28px)`  | Track width                  |
-| `--osdk-switch-track-height` | `var(--osdk-switch-track-height-override, 16px)` | Track height                 |
-| `--osdk-switch-thumb-size`   | `var(--osdk-switch-thumb-size-override, 12px)`   | Thumb size                   |
-| `--osdk-switch-thumb-offset` | `var(--osdk-switch-thumb-offset-override, 2px)`  | Thumb offset from track edge |
-
-The switch component also supports additional override tokens via CSS fallback values:
-
-| Override Token                          | Fallback                                   | Description                       |
+| Variable                                | Default Value                              | Description                       |
 | --------------------------------------- | ------------------------------------------ | --------------------------------- |
+| `--osdk-switch-track-width`             | `28px`                                     | Track width                       |
+| `--osdk-switch-track-height`            | `16px`                                     | Track height                      |
+| `--osdk-switch-thumb-size`              | `12px`                                     | Thumb size                        |
+| `--osdk-switch-thumb-offset`            | `2px`                                      | Thumb offset from track edge      |
 | `--osdk-switch-border-radius`           | `var(--osdk-surface-border-radius)`        | Track border radius               |
+| `--osdk-switch-disabled-opacity`        | `var(--osdk-input-disabled-opacity)`       | Disabled opacity                  |
 | `--osdk-switch-transition-duration`     | `var(--osdk-emphasis-transition-duration)` | Transition duration               |
 | `--osdk-switch-transition-ease`         | `var(--osdk-emphasis-ease-default)`        | Transition easing                 |
 | `--osdk-switch-track-bg`                | `var(--osdk-intent-default-rest)`          | Unchecked track background        |
@@ -1243,22 +1310,26 @@ Styling for column resize handles.
 
 Styling for time picker components.
 
-| Variable                                      | Default Value                                                         | Description          |
-| --------------------------------------------- | --------------------------------------------------------------------- | -------------------- |
-| `--osdk-time-picker-margin-top`               | `calc(var(--osdk-surface-spacing) * 2)`                               | Top margin           |
-| `--osdk-time-picker-padding-top`              | `calc(var(--osdk-surface-spacing) * 2)`                               | Top padding          |
-| `--osdk-time-picker-border-top`               | `var(--osdk-surface-border)`                                          | Top border           |
-| `--osdk-time-picker-gap`                      | `calc(var(--osdk-surface-spacing) * 4)`                               | Gap between elements |
-| `--osdk-time-picker-input-font-family`        | `var(--osdk-input-font-family)`                                       | Input font family    |
-| `--osdk-time-picker-input-font-size`          | `var(--osdk-input-font-size)`                                         | Input font size      |
-| `--osdk-time-picker-input-padding`            | `var(--osdk-input-padding)`                                           | Input padding        |
-| `--osdk-time-picker-input-border`             | `var(--osdk-input-border-width) solid var(--osdk-input-border-color)` | Input border         |
-| `--osdk-time-picker-input-border-radius`      | `var(--osdk-input-border-radius)`                                     | Input border radius  |
-| `--osdk-time-picker-input-bg`                 | `var(--osdk-input-bg)`                                                | Input background     |
-| `--osdk-time-picker-input-color`              | `var(--osdk-input-color)`                                             | Input text color     |
-| `--osdk-time-picker-input-border-color-focus` | `var(--osdk-input-border-color-focus)`                                | Focused border color |
-| `--osdk-time-picker-input-focus-outline`      | `var(--osdk-input-focus-width) solid var(--osdk-input-focus-color)`   | Focus outline        |
-| `--osdk-time-picker-input-focus-offset`       | `var(--osdk-input-focus-offset)`                                      | Focus offset         |
+| Variable                                      | Default Value                                                         | Description                   |
+| --------------------------------------------- | --------------------------------------------------------------------- | ----------------------------- |
+| `--osdk-time-picker-margin-top`               | `calc(var(--osdk-surface-spacing) * 2)`                               | Top margin                    |
+| `--osdk-time-picker-padding-top`              | `calc(var(--osdk-surface-spacing) * 2)`                               | Top padding                   |
+| `--osdk-time-picker-border-top`               | `var(--osdk-surface-border)`                                          | Top border                    |
+| `--osdk-time-picker-gap`                      | `calc(var(--osdk-surface-spacing) * 4)`                               | Gap between elements          |
+| `--osdk-time-picker-segment-gap`              | `var(--osdk-surface-spacing)`                                         | Gap between time segments     |
+| `--osdk-time-picker-segment-width`            | `calc(var(--osdk-surface-spacing) * 9)`                               | Width of hour/minute segments |
+| `--osdk-time-picker-input-font-family`        | `var(--osdk-input-font-family)`                                       | Input font family             |
+| `--osdk-time-picker-input-font-size`          | `var(--osdk-input-font-size)`                                         | Input font size               |
+| `--osdk-time-picker-input-line-height`        | `var(--osdk-input-line-height)`                                       | Input line height             |
+| `--osdk-time-picker-input-padding`            | `var(--osdk-input-padding)`                                           | Input padding                 |
+| `--osdk-time-picker-input-border`             | `var(--osdk-input-border-width) solid var(--osdk-input-border-color)` | Input border                  |
+| `--osdk-time-picker-input-border-radius`      | `var(--osdk-input-border-radius)`                                     | Input border radius           |
+| `--osdk-time-picker-input-bg`                 | `var(--osdk-input-bg)`                                                | Input background              |
+| `--osdk-time-picker-input-color`              | `var(--osdk-input-color)`                                             | Input text color              |
+| `--osdk-time-picker-input-border-color-focus` | `var(--osdk-input-border-color-focus)`                                | Focused border color          |
+| `--osdk-time-picker-input-focus-outline`      | `var(--osdk-input-focus-width) solid var(--osdk-input-focus-color)`   | Focus outline                 |
+| `--osdk-time-picker-input-focus-offset`       | `var(--osdk-input-focus-offset)`                                      | Focus offset                  |
+| `--osdk-time-picker-separator-color`          | `var(--osdk-typography-color-muted)`                                  | Segment separator color       |
 
 ### Tooltip
 

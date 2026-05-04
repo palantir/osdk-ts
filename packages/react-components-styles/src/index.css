@@ -2,14 +2,19 @@
 @import "./tokens/base.css";
 
 /* Level 2 tokens */
+@import "./tokens/async-dropdown.css";
 @import "./tokens/button.css";
 @import "./tokens/cbac-picker.css";
 @import "./tokens/checkbox.css";
+@import "./tokens/combobox.css";
 @import "./tokens/dialog.css";
 @import "./tokens/draggable.css";
 @import "./tokens/filter-list.css";
 @import "./tokens/form.css";
+@import "./tokens/form-section.css";
 @import "./tokens/input.css";
+@import "./tokens/select.css";
+@import "./tokens/switch.css";
 @import "./tokens/table.css";
 @import "./tokens/tooltip.css";
 @import "./tokens/datetime-picker.css";

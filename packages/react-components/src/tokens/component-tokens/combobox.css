@@ -1,0 +1,101 @@
+:root {
+  /* Combobox layout */
+  --osdk-combobox-spacing: var(--osdk-surface-spacing);
+  --osdk-combobox-min-height: var(--osdk-input-min-height);
+  --osdk-combobox-trigger-spacing: var(--osdk-surface-spacing);
+  --osdk-combobox-trigger-min-height: var(--osdk-input-min-height);
+  --osdk-combobox-trigger-padding: var(--osdk-input-padding);
+  --osdk-combobox-input-padding: calc(var(--osdk-surface-spacing) * 1.5)
+    calc(var(--osdk-surface-spacing) * 2);
+  --osdk-combobox-disabled-opacity: var(--osdk-input-disabled-opacity);
+
+  /* Combobox surface */
+  --osdk-combobox-border-radius: var(--osdk-input-border-radius);
+  --osdk-combobox-border-width: var(--osdk-input-border-width);
+  --osdk-combobox-border-color: var(--osdk-input-border-color);
+  --osdk-combobox-trigger-border-radius: var(--osdk-input-border-radius);
+  --osdk-combobox-trigger-border-width: var(--osdk-input-border-width);
+  --osdk-combobox-trigger-border-color: var(--osdk-input-border-color);
+  --osdk-combobox-trigger-border-color-active: var(
+    --osdk-input-border-color-focus
+  );
+  --osdk-combobox-trigger-bg: var(--osdk-input-bg);
+  --osdk-combobox-trigger-bg-hover: var(--osdk-input-bg-hover);
+  --osdk-combobox-trigger-bg-active: var(
+    --osdk-surface-background-color-default-active
+  );
+  --osdk-combobox-input-bg: var(--osdk-input-bg);
+  --osdk-combobox-popup-bg: var(--osdk-surface-background-color-default-rest);
+  --osdk-combobox-popup-shadow: var(--osdk-surface-shadow-2);
+  --osdk-combobox-popup-max-height: min(
+    var(--available-height),
+    calc(var(--osdk-surface-spacing) * 80)
+  );
+  --osdk-combobox-z-index: var(--osdk-surface-z-index-3);
+
+  /* Combobox typography */
+  --osdk-combobox-trigger-color: var(--osdk-input-color);
+  --osdk-combobox-input-color: var(--osdk-input-color);
+  --osdk-combobox-placeholder-color: var(--osdk-input-placeholder-color);
+  --osdk-combobox-font-family: var(--osdk-input-font-family);
+  --osdk-combobox-font-size: var(--osdk-input-font-size);
+  --osdk-combobox-line-height: var(--osdk-input-line-height);
+  --osdk-combobox-icon-color: var(--osdk-iconography-color-muted);
+  --osdk-combobox-empty-color: var(--osdk-typography-color-muted);
+
+  /* Combobox focus and motion */
+  --osdk-combobox-focus-border-color: var(--osdk-input-border-color-focus);
+  --osdk-combobox-focus-width: var(--osdk-input-focus-width);
+  --osdk-combobox-focus-color: var(--osdk-input-focus-color);
+  --osdk-combobox-focus-offset: var(--osdk-input-focus-offset);
+  --osdk-combobox-trigger-focus-width: var(--osdk-input-focus-width);
+  --osdk-combobox-trigger-focus-color: var(--osdk-input-focus-color);
+  --osdk-combobox-trigger-focus-offset: var(--osdk-input-focus-offset);
+  --osdk-combobox-transition-duration: var(--osdk-input-transition-duration);
+  --osdk-combobox-transition-ease: var(--osdk-input-transition-ease);
+
+  /* Combobox items */
+  --osdk-combobox-item-color: var(--osdk-typography-color-default-rest);
+  --osdk-combobox-item-color-selected: var(--osdk-intent-primary-rest);
+  --osdk-combobox-item-bg-highlighted: var(
+    --osdk-surface-background-color-default-hover
+  );
+  --osdk-combobox-item-bg-selected: var(--osdk-surface-layer-primary);
+
+  /* Combobox chips */
+  --osdk-combobox-chip-bg: var(
+    --osdk-surface-background-color-default-hover
+  );
+  --osdk-combobox-chip-color: var(--osdk-typography-color-default-rest);
+  --osdk-combobox-chip-font-size: var(--osdk-typography-size-body-small);
+  --osdk-combobox-chip-remove-color: var(--osdk-iconography-color-muted);
+  --osdk-combobox-chip-remove-color-hover: var(
+    --osdk-typography-color-default-rest
+  );
+
+  /* Combobox clear button */
+  --osdk-combobox-clear-color: var(--osdk-iconography-color-muted);
+  --osdk-combobox-clear-color-hover: var(
+    --osdk-typography-color-default-rest
+  );
+  --osdk-combobox-clear-bg-hover: var(
+    --osdk-surface-background-color-default-hover
+  );
+
+  /* Combobox checkbox item */
+  --osdk-combobox-checkbox-border-radius: var(--osdk-surface-border-radius);
+  --osdk-combobox-checkbox-border-width: var(--osdk-surface-border-width);
+  --osdk-combobox-checkbox-border-color: var(
+    --osdk-surface-border-color-default
+  );
+  --osdk-combobox-checkbox-bg: var(
+    --osdk-surface-background-color-default-rest
+  );
+  --osdk-combobox-checkbox-bg-checked: var(--osdk-intent-primary-rest);
+  --osdk-combobox-checkbox-border-color-checked: var(
+    --osdk-intent-primary-rest
+  );
+  --osdk-combobox-checkbox-color-checked: var(
+    --osdk-intent-primary-foreground
+  );
+}

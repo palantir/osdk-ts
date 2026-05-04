@@ -73,22 +73,49 @@ export const CALENDAR_COMPONENTS: {
 export interface DateCalendarProps {
   dateSelected: Date | undefined;
   onSelect: (date: Date | undefined) => void;
+  onClear: () => void;
   min?: Date;
   max?: Date;
   footer?: React.ReactNode;
+  todayButtonText?: string;
+  clearButtonText?: string;
 }
 
 export default function DateCalendar({
   dateSelected,
   onSelect,
+  onClear,
   min,
   max,
   footer,
+  todayButtonText = "Today",
+  clearButtonText = "Clear",
 }: DateCalendarProps): React.ReactElement {
   const disabled = useMemo(() => buildDisabledMatchers(min, max), [min, max]);
 
   const fromYear = min != null ? min.getFullYear() : DEFAULT_FROM_YEAR;
   const toYear = max != null ? max.getFullYear() : DEFAULT_TO_YEAR;
+  const calendarFooter = (
+    <>
+      <div className={styles.calendarActionBar}>
+        <button
+          className={styles.calendarActionButton}
+          type="button"
+          onClick={() => onSelect(new Date())}
+        >
+          {todayButtonText}
+        </button>
+        <button
+          className={styles.calendarActionButton}
+          type="button"
+          onClick={onClear}
+        >
+          {clearButtonText}
+        </button>
+      </div>
+      {footer}
+    </>
+  );
 
   return (
     <DayPicker
@@ -99,7 +126,7 @@ export default function DateCalendar({
       defaultMonth={dateSelected}
       classNames={CLASS_NAMES}
       components={CALENDAR_COMPONENTS}
-      footer={footer}
+      footer={calendarFooter}
       // Render month/year as dropdown selects + prev/next arrows,
       // so users can jump directly to any month/year without paging.
       captionLayout="dropdown-buttons"

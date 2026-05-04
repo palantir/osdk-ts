@@ -237,3 +237,22 @@
   border-top: var(--osdk-time-picker-border-top);
 }
 
+.calendarActionBar {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--osdk-surface-spacing);
+}
+
+.calendarActionButton {
+  border: none;
+  border-radius: var(--osdk-input-border-radius);
+  background: transparent;
+  color: var(--osdk-intent-primary-rest);
+  cursor: pointer;
+  font: inherit;
+  padding: var(--osdk-datetime-calendar-dropdown-padding);
+
+  &:hover {
+    background: var(--osdk-datetime-calendar-nav-button-hover-bg);
+  }
+}

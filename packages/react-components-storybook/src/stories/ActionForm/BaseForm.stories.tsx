@@ -186,8 +186,10 @@ const meta: Meta<BaseFormStoryProps> = {
     (Story) => (
       <>
         <SubmitToast />
-        <div className="osdkFormCard">
-          <Story />
+        <div className="osdkFormStoryCanvas">
+          <div className="osdkFormCard">
+            <Story />
+          </div>
         </div>
       </>
     ),
