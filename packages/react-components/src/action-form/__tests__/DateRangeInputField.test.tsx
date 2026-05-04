@@ -412,7 +412,7 @@ describe("DateRangeInputField", () => {
       expect(screen.queryByRole("dialog")).toBeNull();
     });
 
-    it("blurs inputs when tabbing past end of popover", () => {
+    it("returns focus to the active input when tabbing past end of popover", () => {
       render(
         <DateRangeInputField
           value={[new Date(2024, 0, 15), null]}
@@ -434,9 +434,34 @@ describe("DateRangeInputField", () => {
       // Simulate Tab reaching the sentinel from inside the popover.
       fireEvent.focus(endSentinel, { relatedTarget: dialog });
 
-      expect(document.activeElement).not.toBe(startInput);
-      const endInput = screen.getByLabelText("End date");
-      expect(document.activeElement).not.toBe(endInput);
+      expect(document.activeElement).toBe(startInput);
+      expect(screen.queryByRole("dialog")).toBeNull();
+    });
+
+    it("does not reopen the popover on the next Tab after boundary exit", () => {
+      render(
+        <DateRangeInputField
+          value={[new Date(2024, 0, 15), null]}
+          onChange={vi.fn()}
+        />,
+      );
+      const endInput = screen.getByLabelText("End date") as HTMLInputElement;
+      endInput.focus();
+      fireEvent.focus(endInput);
+      expect(document.activeElement).toBe(endInput);
+
+      const dialog = screen.getByRole("dialog");
+      const endSentinel = dialog.querySelector(
+        "[aria-label='End of date range picker dialog']",
+      ) as HTMLElement;
+
+      fireEvent.focus(endSentinel, { relatedTarget: dialog });
+      expect(document.activeElement).toBe(endInput);
+      expect(screen.queryByRole("dialog")).toBeNull();
+
+      fireEvent.keyDown(endInput, { key: "Tab" });
+
+      expect(screen.queryByRole("dialog")).toBeNull();
     });
 
     it("closes popover on Escape from end input", () => {
