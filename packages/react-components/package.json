@@ -132,6 +132,7 @@
     "utif": "^3.1.0"
   },
   "peerDependencies": {
+    "@osdk/aip-core": "workspace:^",
     "@osdk/api": "^2.8.0",
     "@osdk/client": "^2.8.0",
     "@osdk/react": "^0.16.0",
@@ -140,7 +141,13 @@
     "react": "^17 || ^18 || ^19",
     "react-dom": "^17 || ^18 || ^19"
   },
+  "peerDependenciesMeta": {
+    "@osdk/aip-core": {
+      "optional": true
+    }
+  },
   "devDependencies": {
+    "@osdk/aip-core": "workspace:*",
     "@osdk/api": "workspace:*",
     "@osdk/client": "workspace:*",
     "@osdk/monorepo.api-extractor": "workspace:~",
