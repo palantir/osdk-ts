@@ -1,5 +1,19 @@
 # @osdk/maker
 
+## 0.22.0
+
+### Minor Changes
+
+- 02a5765: fix ts discovery api break
+- 2f40eee: Support edits history
+
+### Patch Changes
+
+- Updated dependencies [02a5765]
+- Updated dependencies [20e9678]
+  - @osdk/generator-converters.ontologyir@2.14.0
+  - @osdk/api@2.14.0
+
 ## 0.21.0
 
 ### Patch Changes

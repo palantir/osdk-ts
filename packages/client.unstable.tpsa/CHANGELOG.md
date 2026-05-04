@@ -1,5 +1,11 @@
 # @osdk/client.unstable.tpsa
 
+## 0.12.0
+
+### Minor Changes
+
+- bab1421: Add check for bundling to ensure entry points work even if dev deps change.
+
 ## 0.11.0
 
 ### Minor Changes
