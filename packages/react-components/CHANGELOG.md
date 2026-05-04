@@ -1,5 +1,24 @@
 # @osdk/react-components
 
+## 0.10.0
+
+### Minor Changes
+
+- b355bc3: Add CONTRIBUTING.md for @osdk/react and @osdk/react-components
+- 9b45e7b: Add form section support to BaseForm with collapsible groups, multi-column grid, and custom submit button
+- 3a4528c: Add ObjectSelect field for selecting object instances in action forms
+- 5dc557e: Add helperText tooltip using Popover and widen type to React.ReactNode
+
+### Patch Changes
+
+- Updated dependencies [f747fa3]
+- Updated dependencies [d892397]
+- Updated dependencies [c5a6047]
+- Updated dependencies [45be476]
+- Updated dependencies [b355bc3]
+- Updated dependencies [20e9678]
+  - @osdk/react@0.17.0
+
 ## 0.9.0
 
 ### Minor Changes

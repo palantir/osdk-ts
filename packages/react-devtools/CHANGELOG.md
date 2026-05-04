@@ -1,5 +1,12 @@
 # @osdk/react-devtools
 
+## 0.4.0
+
+### Minor Changes
+
+- 645363b: fix devtools: errors panel surfaces console.error, uncaught errors, and unhandled rejections; compute tab classifies success-without-usage as its own state instead of failure; pause network blocks all OSDK traffic regardless of recording; rename getCacheEntries to loadCacheEntries (deprecated alias kept); add OsdkAppErrorBoundary for production render-error capture; emit OSDK_PAUSE_BLOCK MonitorEvent; bind unwrapped prototype methods on the wrapped ObservableClient so callers (e.g. canonicalizeOptions, which uses private fields) don't fail with "Receiver must be an instance of class ObservableClientImpl".
+- 3e8db28: add devtools registration, vite plugin, and e2e wiring
+
 ## 0.3.0
 
 ### Minor Changes

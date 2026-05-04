@@ -1,5 +1,17 @@
 # @osdk/generator-converters.ontologyir
 
+## 2.14.0
+
+### Minor Changes
+
+- 02a5765: fix ts discovery api break
+
+### Patch Changes
+
+- Updated dependencies [bab1421]
+- Updated dependencies [2f40eee]
+  - @osdk/client.unstable@2.14.0
+
 ## 2.13.0
 
 ### Patch Changes

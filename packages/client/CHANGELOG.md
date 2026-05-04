@@ -1,5 +1,26 @@
 # @osdk/client
 
+## 2.14.0
+
+### Minor Changes
+
+- f12977d: fix useOsdkObject returning stale data when two hooks request the same object with different $select
+- eb36e21: internal plumbing for upcoming `$includeAllBaseObjectProperties` option on observable hooks; no public behavior change. adds a no-op getter on `BaseListQuery` (subclasses opt in), threads the flag through `ObjectsHelper.storeOsdkInstances`, and exposes a `$includeAllBaseObjectProperties` field on `ObserveObjectOptions` that has no consumer yet.
+- d892397: expose `$includeAllBaseObjectProperties` on `useLinks` and on the underlying `ObservableClient.observeLinks`. When set against a link whose target is an interface, the server returns the underlying concrete object's full property set so `obj.$as(ConcreteType)` yields a fully-populated concrete object. The flag is dropped at fetch time when the link target is an object type and does not narrow the returned `Osdk.Instance` type.
+- c5a6047: expose `$includeAllBaseObjectProperties` on `useOsdkObject` and on the underlying `ObservableClient.observeObject`. When set against an interface query, the server returns the underlying concrete object's full property set so `obj.$as(ConcreteType)` yields a fully-populated concrete object. The flag is dropped for non-interface queries and does not narrow the returned `Osdk.Instance` type.
+- 45be476: expose `$includeAllBaseObjectProperties` on `useOsdkObjects` and on the underlying `ObservableClient.observeList`. When set against an interface query, the server returns the underlying concrete object's full property set so `obj.$as(ConcreteType)` yields a fully-populated concrete object. The flag is dropped for non-interface queries and does not narrow the returned `Osdk.Instance` type.
+- 20e9678: Wrap `@example` JSDoc blocks in fenced ts/tsx code blocks so VS Code's Markdown renderer preserves whitespace and applies syntax highlighting.
+
+### Patch Changes
+
+- Updated dependencies [bab1421]
+- Updated dependencies [2f40eee]
+- Updated dependencies [20e9678]
+  - @osdk/client.unstable@2.14.0
+  - @osdk/api@2.14.0
+  - @osdk/generator-converters@2.14.0
+  - @osdk/shared.test@2.12.0
+
 ## 2.13.0
 
 ### Minor Changes

@@ -1,5 +1,21 @@
 # @osdk/functions
 
+## 1.8.0
+
+### Minor Changes
+
+- 2c51525: Add `Aliases.source` API for resolving egress connection aliases
+
+### Patch Changes
+
+- Updated dependencies [f12977d]
+- Updated dependencies [eb36e21]
+- Updated dependencies [d892397]
+- Updated dependencies [c5a6047]
+- Updated dependencies [45be476]
+- Updated dependencies [20e9678]
+  - @osdk/client@2.14.0
+
 ## 1.7.0
 
 ### Minor Changes

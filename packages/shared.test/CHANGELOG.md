@@ -1,5 +1,13 @@
 # @osdk/shared.test
 
+## 2.12.0
+
+### Patch Changes
+
+- Updated dependencies [20e9678]
+  - @osdk/api@2.14.0
+  - @osdk/generator-converters@2.14.0
+
 ## 2.11.0
 
 ### Patch Changes
