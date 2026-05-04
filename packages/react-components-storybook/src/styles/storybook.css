@@ -85,6 +85,10 @@ body {
   margin-bottom: calc(var(--osdk-surface-spacing) * 4);
 }
 
+.osdkBlueprintDialogForm {
+  width: min(480px, calc(100vw - calc(var(--osdk-surface-spacing) * 8)));
+}
+
 .osdkCustomTextarea {
   width: 100%;
   min-height: calc(var(--osdk-surface-spacing) * 15);

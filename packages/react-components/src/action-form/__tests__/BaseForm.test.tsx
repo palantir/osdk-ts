@@ -174,6 +174,42 @@ describe("BaseForm", () => {
 
       expect(screen.getByRole("combobox")).toBeDefined();
     });
+
+    it("renders dropdown portals inside the form-level portal container", async () => {
+      const portalContainer = document.createElement("div");
+      document.body.append(portalContainer);
+
+      try {
+        render(
+          <BaseForm
+            formContent={[
+              field({
+                fieldKey: "color",
+                label: "Color",
+                fieldComponent: "DROPDOWN" as const,
+                fieldComponentProps: {
+                  items: ["Red", "Blue", "Green"],
+                },
+              }),
+            ]}
+            portalContainer={portalContainer}
+            onSubmit={vi.fn()}
+          />,
+        );
+
+        fireEvent.click(screen.getByRole("combobox"));
+
+        await waitFor(() => {
+          expect(
+            portalContainer.contains(screen.getByRole("option", {
+              name: "Red",
+            })),
+          ).toBe(true);
+        });
+      } finally {
+        portalContainer.remove();
+      }
+    });
   });
 
   describe("helper text", () => {

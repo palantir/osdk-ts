@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { DateRangeInputField } from "../fields/DateRangeInputField.js";
 
@@ -90,6 +96,42 @@ describe("DateRangeInputField", () => {
       fireEvent.focus(endInput);
       expect(endInput.getAttribute("aria-expanded")).toBe("true");
       expect(screen.getByRole("dialog")).toBeDefined();
+    });
+
+    it("closes when clicking inside the portal container but outside the popover", async () => {
+      const portalContainer = document.createElement("div");
+      const outsideButton = document.createElement("button");
+      outsideButton.textContent = "Outside popover";
+      portalContainer.append(outsideButton);
+      document.body.append(portalContainer);
+
+      try {
+        render(
+          <DateRangeInputField
+            value={[null, null]}
+            onChange={vi.fn()}
+            portalContainer={portalContainer}
+          />,
+        );
+
+        fireEvent.focus(screen.getByLabelText("Start date"));
+        expect(screen.getByRole("dialog")).toBeDefined();
+
+        const dismissLayer = portalContainer.querySelector(
+          "[data-osdk-portal-dismiss-layer]",
+        );
+        if (!(dismissLayer instanceof HTMLElement)) {
+          throw new Error("Expected date picker dismiss layer to be rendered");
+        }
+
+        fireEvent.pointerDown(dismissLayer);
+
+        await waitFor(() => {
+          expect(screen.queryByRole("dialog")).toBeNull();
+        });
+      } finally {
+        portalContainer.remove();
+      }
     });
   });
 

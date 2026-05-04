@@ -33,6 +33,7 @@ import { stopPropagation } from "./calendarShared.js";
 import commonStyles from "./DatePickerCommon.module.css";
 import styles from "./DateRangeInputField.module.css";
 import { LazyDateRangeCalendar } from "./LazyDateRangeCalendar.js";
+import { PortalDismissLayer } from "./PortalDismissLayer.js";
 import { TimePicker } from "./TimePicker.js";
 import { useDateEditState } from "./useDateEditState.js";
 
@@ -63,6 +64,7 @@ export const DateRangeInputField: React.NamedExoticComponent<
   showTime = false,
   formatDate,
   parseDate,
+  portalContainer,
 }: DateRangeInputFieldProps) {
   const shouldCloseOnSelection = !showTime;
   const popoverId = useId();
@@ -407,7 +409,13 @@ export const DateRangeInputField: React.NamedExoticComponent<
   };
 
   return (
-    <Popover.Root open={isOpen} onOpenChange={handleOpenChange}>
+    <Popover.Root
+      open={isOpen}
+      onOpenChange={handleOpenChange}
+      // Uses pointer-down outside dismissal so the click that opens the picker
+      // is not reinterpreted after the portal dismiss layer appears.
+      modal="trap-focus"
+    >
       <Popover.Trigger
         nativeButton={false}
         render={<div className={styles.osdkDateRangeContainer} />}
@@ -457,8 +465,15 @@ export const DateRangeInputField: React.NamedExoticComponent<
           />
         </div>
       </Popover.Trigger>
-      <Popover.Portal>
-        <Popover.Positioner sideOffset={4}>
+      <Popover.Portal container={portalContainer}>
+        <PortalDismissLayer
+          className={commonStyles.osdkDatePickerDismissLayer}
+          onDismiss={closePopover}
+        />
+        <Popover.Positioner
+          className={commonStyles.osdkDatePickerPositioner}
+          sideOffset={4}
+        >
           <Popover.Popup
             ref={popoverRef}
             className={commonStyles.osdkDatePickerPopover}

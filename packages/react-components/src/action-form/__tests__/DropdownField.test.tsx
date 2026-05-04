@@ -80,6 +80,56 @@ describe("DropdownField", () => {
 
       expect(screen.getByRole("combobox").textContent).toContain("Alice");
     });
+
+    it("renders the popup portal inside the provided container", async () => {
+      const portalContainer = document.createElement("div");
+      document.body.append(portalContainer);
+
+      try {
+        render(
+          <DropdownField
+            value={null}
+            items={STRING_ITEMS}
+            portalContainer={portalContainer}
+          />,
+        );
+
+        fireEvent.click(screen.getByRole("combobox"));
+
+        await vi.waitFor(() => {
+          expect(
+            portalContainer.contains(screen.getByRole("option", {
+              name: "Alice",
+            })),
+          ).toBe(true);
+        });
+      } finally {
+        portalContainer.remove();
+      }
+    });
+
+    it("closes when pressing the portal dismiss layer", async () => {
+      render(<DropdownField value={null} items={STRING_ITEMS} />);
+
+      fireEvent.click(screen.getByRole("combobox"));
+
+      await vi.waitFor(() => {
+        expect(screen.getByRole("option", { name: "Alice" })).toBeDefined();
+      });
+
+      const dismissLayer = document.querySelector(
+        "[data-osdk-portal-dismiss-layer]",
+      );
+      if (!(dismissLayer instanceof HTMLElement)) {
+        throw new Error("Expected dropdown dismiss layer to be rendered");
+      }
+
+      fireEvent.pointerDown(dismissLayer);
+
+      await vi.waitFor(() => {
+        expect(screen.queryByRole("option", { name: "Alice" })).toBeNull();
+      });
+    });
   });
 
   describe("multi select (Select variant)", () => {
@@ -171,6 +221,31 @@ describe("DropdownField", () => {
 
       await vi.waitFor(() => {
         expect(screen.getByPlaceholderText("Search…")).toBeDefined();
+      });
+    });
+
+    it("closes searchable popup when pressing the portal dismiss layer", async () => {
+      render(
+        <DropdownField value={null} items={STRING_ITEMS} isSearchable={true} />,
+      );
+
+      fireEvent.click(screen.getByRole("combobox"));
+
+      await vi.waitFor(() => {
+        expect(screen.getByRole("option", { name: "Alice" })).toBeDefined();
+      });
+
+      const dismissLayer = document.querySelector(
+        "[data-osdk-portal-dismiss-layer]",
+      );
+      if (!(dismissLayer instanceof HTMLElement)) {
+        throw new Error("Expected dropdown dismiss layer to be rendered");
+      }
+
+      fireEvent.pointerDown(dismissLayer);
+
+      await vi.waitFor(() => {
+        expect(screen.queryByRole("option", { name: "Alice" })).toBeNull();
       });
     });
 
