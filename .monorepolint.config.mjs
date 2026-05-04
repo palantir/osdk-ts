@@ -398,7 +398,7 @@ const archetypeRules = archetypes(
     {
       ...LIBRARY_RULES,
       react: true,
-      extraPublishFiles: ["AGENTS.md", "docs"],
+      extraPublishFiles: ["AGENTS.md", "docs", "experimental"],
       customTsconfigExcludes: ["./src/intellisense.test.helpers/**"],
     },
   )

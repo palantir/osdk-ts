@@ -43,6 +43,24 @@
       "require": "./build/cjs/public/testing.cjs",
       "default": "./build/browser/public/testing.js"
     },
+    "./experimental": {
+      "browser": "./build/browser/public/experimental.js",
+      "import": {
+        "types": "./build/types/public/experimental.d.ts",
+        "default": "./build/esm/public/experimental.js"
+      },
+      "require": "./build/cjs/public/experimental.cjs",
+      "default": "./build/browser/public/experimental.js"
+    },
+    "./experimental/admin": {
+      "browser": "./build/browser/public/experimental/admin.js",
+      "import": {
+        "types": "./build/types/public/experimental/admin.d.ts",
+        "default": "./build/esm/public/experimental/admin.js"
+      },
+      "require": "./build/cjs/public/experimental/admin.cjs",
+      "default": "./build/browser/public/experimental/admin.js"
+    },
     "./experimental/aip": {
       "browser": "./build/browser/public/experimental/aip.js",
       "import": {
@@ -129,6 +147,7 @@
   "files": [
     "AGENTS.md",
     "docs",
+    "experimental",
     "build/cjs",
     "build/esm",
     "build/browser",

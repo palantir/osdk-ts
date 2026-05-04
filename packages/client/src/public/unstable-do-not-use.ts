@@ -31,3 +31,29 @@ export {
   buildObjectSetFromLinkDefByType,
   getLinkQueryOptions,
 } from "../shapes/index.js";
+
+/** @deprecated Import from `@osdk/client/observable` instead. */
+export type { ActionSignatureFromDef } from "../actions/applyAction.js";
+/** @deprecated Import from `@osdk/client/observable` instead. */
+export { createObservableClient } from "../observable/ObservableClient.js";
+/** @deprecated Import from `@osdk/client/observable` instead. */
+export type {
+  CacheEntry,
+  CacheSnapshot,
+  CanonicalizedOptions,
+  CanonicalizeOptionsInput,
+  ObservableClient,
+  ObserveAggregationArgs,
+  ObserveFunctionCallbackArgs,
+  ObserveFunctionOptions,
+  ObserveObjectCallbackArgs,
+  ObserveObjectsCallbackArgs,
+  ObserveObjectSetArgs,
+  Unsubscribable,
+} from "../observable/ObservableClient.js";
+/** @deprecated Import from `@osdk/client/observable` instead. */
+export type { Observer } from "../observable/ObservableClient/common.js";
+/** @deprecated Import from `@osdk/client/observable` instead. */
+export type { ObserveLinks } from "../observable/ObservableClient/ObserveLink.js";
+/** @deprecated Import from `@osdk/client/observable` instead. */
+export type { QueryParameterType, QueryReturnType } from "../queries/types.js";
