@@ -49,18 +49,6 @@ export interface Media {
    * @returns the underlying `MediaReference` identifying this media item in Foundry
    */
   getMediaReference(): MediaReference;
-  /**
-   * Returns the source location of this media (object type, primary key, property name).
-   *
-   * Optional because not all media has a source location (e.g., transient/uploaded media).
-   * @example
-   * ```ts
-   * const equipment = await client(Equipment).fetchOne(12345);
-   * const location = equipment.trainingMaterial?.getMediaSourceLocation?.();
-   * console.log(location?.objectType, location?.primaryKey, location?.propertyName);
-   * ```
-   * @returns the `MediaPropertyLocation` identifying which object property this media came from
-   */
   getMediaSourceLocation?(): MediaPropertyLocation;
 }
 

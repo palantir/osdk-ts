@@ -107,10 +107,14 @@ type Filterable<
   CONSTRAINED extends boolean,
 > = {
   /**
-   * Filters the builder's object set with a where clause before further chaining.
-   * @param clause - A filter clause applied to the builder's current object set
+   * Narrows the builder's object set to only the objects matching the given clause, so that any
+   * subsequent pivot, aggregation, or selection in the chain runs against the filtered subset
+   * rather than the full object set.
+   * @param clause - A {@link WhereClause} used to filter the builder's current object set; only objects
+   *   matching all conditions remain.
    * @example
    * ```ts
+   * // Count only the reports whose status is "active" rather than every report.
    * await client(Employee).withProperties({
    *   activeReportCount: (baseObjectSet) =>
    *     baseObjectSet.pivotTo("reports")

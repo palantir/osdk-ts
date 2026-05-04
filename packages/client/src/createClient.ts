@@ -407,40 +407,6 @@ export const createClient: (
   undefined,
 );
 
-/**
- * Creates a {@link Client} that scopes all of its requests to a Foundry transaction. Used by transactional
- * write flows (for example, `createWriteableClient` in `@osdk/functions`) to forward a `transactionId`
- * on every request and to flush buffered edits when needed. Aside from the additional transaction parameters,
- * the remaining arguments behave exactly as in {@link createClient}.
- * @param transactionId - The transaction RID that scopes all requests issued by the returned client.
- * @param flushEdits - A callback invoked to flush any buffered edits associated with the transaction. Implementers
- *   typically batch edits and apply them when this is called (e.g. before a read needs to observe pending writes).
- * @param args - The remaining arguments forwarded to {@link createClient}: `baseUrl`, `ontologyRid`,
- *   `tokenProvider`, optional `options`, and an optional `fetchFn`.
- * @example
- * ```ts
- * import { createClientWithTransaction } from "@osdk/client/unstable-do-not-use";
- * import { createConfidentialOauthClient } from "@osdk/oauth";
- * import { $ontologyRid } from "./generatedNoCheck/index.js";
- *
- * const auth = createConfidentialOauthClient(
- *   process.env.FOUNDRY_CLIENT_ID!,
- *   process.env.FOUNDRY_CLIENT_SECRET!,
- *   "https://example.palantirfoundry.com",
- * );
- *
- * const client = createClientWithTransaction(
- *   "ri.transaction.main.transaction.0000",
- *   async () => {
- *     // flush any buffered edits for this transaction
- *   },
- *   "https://example.palantirfoundry.com",
- *   $ontologyRid,
- *   auth,
- * );
- * ```
- * @returns a {@link Client} that forwards the supplied `transactionId` on every request
- */
 export const createClientWithTransaction: (
   transactionId: string,
   flushEdits: () => Promise<void>,
