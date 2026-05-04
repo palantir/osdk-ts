@@ -15,10 +15,7 @@
  */
 
 import type { Client } from "@osdk/client";
-import {
-  createObservableClient,
-  type ObservableClient,
-} from "@osdk/client/observable";
+import { createObservableClient } from "@osdk/client/observable";
 import React, { useCallback, useMemo, useRef } from "react";
 import { getRegisteredDevTools } from "../public/devtools-registry.js";
 import { REACT_USER_AGENT } from "../util/UserAgent.js";
@@ -33,14 +30,12 @@ const __DEV__ = typeof process === "undefined"
 interface OsdkProviderOptions {
   children: React.ReactNode;
   client: Client;
-  observableClient?: ObservableClient;
   enableDevTools?: boolean;
 }
 
 export function OsdkProvider({
   children,
   client,
-  observableClient,
   enableDevTools,
 }: OsdkProviderOptions): React.JSX.Element {
   const devtoolsEnabled = __DEV__
@@ -57,12 +52,11 @@ export function OsdkProvider({
 
   const baseObservableClient = useMemo(
     () =>
-      observableClient
-        ?? createObservableClient(
-          client,
-          () => [...userAgentsRef.current],
-        ),
-    [client, observableClient],
+      createObservableClient(
+        client,
+        () => [...userAgentsRef.current],
+      ),
+    [client],
   );
 
   const { client: devToolsClient, wrapChildren } = useDevToolsClient(

@@ -24,8 +24,8 @@ import type {
   WhereClause,
 } from "@osdk/api";
 import type { Client } from "@osdk/client";
-import { OsdkProvider, useObjectSet, useOsdkObjects } from "@osdk/react";
-import { fakeObservableClient } from "@osdk/react/testing";
+import { useObjectSet, useOsdkObjects } from "@osdk/react";
+import { fakeObservableClient, TestOsdkProvider } from "@osdk/react/testing";
 import type { SortingState } from "@tanstack/react-table";
 import { renderHook } from "@testing-library/react";
 import * as React from "react";
@@ -44,7 +44,6 @@ type TestObjectKeys = PropertyKeys<TestObject>;
 
 vi.mock("@osdk/react", async (importOriginal) => {
   const actual = await importOriginal<{
-    OsdkProvider: typeof OsdkProvider;
     useObjectSet: typeof useObjectSet;
     useOsdkObjects: typeof useOsdkObjects;
   }>();
@@ -97,12 +96,12 @@ describe(useObjectTableData, () => {
   const createWrapper = (client: Client) => {
     return ({ children }: React.PropsWithChildren) => {
       return (
-        <OsdkProvider
+        <TestOsdkProvider
           client={client}
           observableClient={fakeObservableClient}
         >
           {children}
-        </OsdkProvider>
+        </TestOsdkProvider>
       );
     };
   };

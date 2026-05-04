@@ -18,8 +18,10 @@ import type { Client } from "@osdk/client";
 import { renderHook } from "@testing-library/react";
 import * as React from "react";
 import { describe, expect, it, vitest } from "vitest";
-import { OsdkProvider } from "../src/index.js";
-import { fakeObservableClient } from "../src/public/testing.js";
+import {
+  fakeObservableClient,
+  TestOsdkProvider,
+} from "../src/public/testing.js";
 import { useOsdkClient } from "../src/useOsdkClient.js";
 import { useOsdkMetadata } from "../src/useOsdkMetadata.js";
 
@@ -32,12 +34,12 @@ describe(useOsdkMetadata, () => {
     } as any as Client;
 
     const wrapper = ({ children }: React.PropsWithChildren) => (
-      <OsdkProvider
+      <TestOsdkProvider
         client={fakeClient}
         observableClient={fakeObservableClient}
       >
         {children}
-      </OsdkProvider>
+      </TestOsdkProvider>
     );
 
     const { result, rerender } = renderHook(

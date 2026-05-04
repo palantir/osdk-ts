@@ -22,8 +22,7 @@ import type {
   SimplePropertyDef,
 } from "@osdk/api";
 import type { Client } from "@osdk/client";
-import { OsdkProvider } from "@osdk/react";
-import { fakeObservableClient } from "@osdk/react/testing";
+import { fakeObservableClient, TestOsdkProvider } from "@osdk/react/testing";
 import type { AccessorKeyColumnDef } from "@tanstack/react-table";
 import { renderHook, waitFor } from "@testing-library/react";
 import pDefer from "p-defer";
@@ -68,12 +67,12 @@ describe(useColumnDefs, () => {
   const createWrapper = (client: Client) => {
     return ({ children }: React.PropsWithChildren) => {
       return (
-        <OsdkProvider
+        <TestOsdkProvider
           client={client}
           observableClient={fakeObservableClient}
         >
           {children}
-        </OsdkProvider>
+        </TestOsdkProvider>
       );
     };
   };
