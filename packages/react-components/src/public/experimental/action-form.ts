@@ -23,7 +23,9 @@ export const ActionForm: typeof _ActionForm = withOsdkMetrics(
 export type {
   ActionFormProps,
   BaseFormProps,
+  FormContentItem,
   FormError,
+  FormSectionDefinition,
   FormState,
 } from "../../action-form/ActionFormApi.js";
 export { BaseForm } from "../../action-form/BaseForm.js";
