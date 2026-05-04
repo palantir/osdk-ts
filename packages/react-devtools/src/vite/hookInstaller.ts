@@ -40,19 +40,21 @@ export function generateHookInstallationScript(
 
     // Store fiber roots per renderer ID
     const fiberRootsByRenderer = new Map();
+    // Renderer registry (closure-scoped so inject() does not depend on \`this\`)
+    const renderers = new Map();
 
     // Install our hook
     window.__REACT_DEVTOOLS_GLOBAL_HOOK__ = {
-      // Renderer registry
-      renderers: new Map(),
+      // Renderer registry (same Map instance as the closure variable)
+      renderers,
 
       // Indicate we support React Fiber architecture
       supportsFiber: true,
 
       // Called by React when a renderer initializes
       inject(renderer) {
-        const id = this.renderers.size + 1;
-        this.renderers.set(id, renderer);
+        const id = renderers.size + 1;
+        renderers.set(id, renderer);
         fiberRootsByRenderer.set(id, new Set());
 
         ${
