@@ -45,7 +45,6 @@ export type {
   NumberInputFieldProps,
   ObjectSetFieldProps,
   Option,
-  PortalContainer,
   RadioButtonsFieldProps,
   RendererFieldDefinition,
   TextAreaFieldProps,

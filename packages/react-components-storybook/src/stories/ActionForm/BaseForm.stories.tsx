@@ -1036,7 +1036,7 @@ const blueprintDialogFormContent: ReadonlyArray<FormContentItem> = [
 ];
 
 function BlueprintDialogBaseForm(): React.ReactElement {
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
   const portalContainerRef = useRef<HTMLDivElement>(null);
 
   const handleOpen = useCallback(() => {
