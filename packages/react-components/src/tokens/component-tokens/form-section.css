@@ -1,0 +1,58 @@
+:root {
+  /* Box style container */
+  --osdk-form-section-border-color: var(--osdk-surface-border-color-default);
+  --osdk-form-section-border-width: var(--osdk-surface-border-width);
+  --osdk-form-section-border-radius: var(--osdk-surface-border-radius);
+  --osdk-form-section-background: var(
+    --osdk-surface-background-color-default-rest
+  );
+
+  /* Header */
+  --osdk-form-section-header-padding-block: calc(
+    var(--osdk-surface-spacing) * 2.5
+  );
+  --osdk-form-section-header-padding-inline: calc(
+    var(--osdk-surface-spacing) * 2.5
+  );
+  --osdk-form-section-title-font-size: var(--osdk-typography-size-body-medium);
+  --osdk-form-section-title-font-weight: var(--osdk-typography-weight-bold);
+  --osdk-form-section-title-color: var(--osdk-typography-color-default-rest);
+
+  /* Description */
+  --osdk-form-section-description-font-size: var(
+    --osdk-typography-size-body-small
+  );
+  --osdk-form-section-description-color: var(--osdk-typography-color-muted);
+
+  /* Error badge */
+  --osdk-form-section-error-color: var(--osdk-form-error-color);
+  --osdk-form-section-error-font-size: var(--osdk-typography-size-body-small);
+
+  /* Collapse trigger */
+  --osdk-form-section-trigger-color: var(--osdk-typography-color-muted);
+  --osdk-form-section-trigger-gap: calc(var(--osdk-surface-spacing) * 2);
+
+  /* Chevron transition */
+  --osdk-form-section-transition-duration: var(
+    --osdk-emphasis-transition-duration
+  );
+
+  /* Gaps */
+  --osdk-form-section-header-gap: calc(var(--osdk-surface-spacing) * 2);
+  --osdk-form-section-title-gap: calc(var(--osdk-surface-spacing) * 1);
+
+  /* Content area */
+  --osdk-form-section-content-padding-block: calc(
+    var(--osdk-surface-spacing) * 2.5
+  );
+  --osdk-form-section-content-padding-inline: calc(
+    var(--osdk-surface-spacing) * 2.5
+  );
+  --osdk-form-section-field-gap: var(--osdk-form-field-gap);
+  --osdk-form-section-grid-column-gap: calc(var(--osdk-surface-spacing) * 4);
+
+  /* Minimal style */
+  --osdk-form-section-minimal-title-font-size: var(
+    --osdk-typography-size-body-large
+  );
+}

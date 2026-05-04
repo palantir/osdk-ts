@@ -2,6 +2,7 @@ import type { ObjectSet, ObjectTypeDefinition } from "@osdk/api";
 import { BaseForm } from "@osdk/react-components/experimental/action-form";
 import type {
   BaseFormFieldProps,
+  FormContentItem,
   RendererFieldDefinition,
 } from "@osdk/react-components/experimental/action-form";
 import { useCallback, useMemo, useState } from "react";
@@ -27,16 +28,20 @@ function RatingSlider({ id, value, onChange }: BaseFormFieldProps<unknown>) {
   );
 }
 
-const fieldDefinitions: ReadonlyArray<RendererFieldDefinition> = [
-  {
+function field(definition: RendererFieldDefinition): FormContentItem {
+  return { type: "field", definition };
+}
+
+const formContent: ReadonlyArray<FormContentItem> = [
+  field({
     fieldKey: "employeeName",
     fieldComponent: "TEXT_INPUT",
     label: "Employee Name",
     placeholder: "Enter employee name",
     isRequired: true,
     fieldComponentProps: {},
-  },
-  {
+  }),
+  field({
     fieldKey: "employmentStart",
     fieldComponent: "DATETIME_PICKER",
     label: "Employment Start Date",
@@ -45,15 +50,15 @@ const fieldDefinitions: ReadonlyArray<RendererFieldDefinition> = [
     fieldComponentProps: {
       showTime: true,
     },
-  },
-  {
+  }),
+  field({
     fieldKey: "employmentEnd",
     fieldComponent: "DATETIME_PICKER",
     label: "Employment End Date",
     placeholder: "Enter employment end date",
     fieldComponentProps: {},
-  },
-  {
+  }),
+  field({
     fieldKey: "employmentDuration",
     fieldComponent: "DATE_RANGE_INPUT",
     label: "Employment Duration",
@@ -63,8 +68,8 @@ const fieldDefinitions: ReadonlyArray<RendererFieldDefinition> = [
       placeholderStart: "Start Date",
       placeholderEnd: "End Date",
     },
-  },
-  {
+  }),
+  field({
     fieldKey: "department",
     fieldComponent: "DROPDOWN",
     placeholder: "Select a department",
@@ -73,8 +78,8 @@ const fieldDefinitions: ReadonlyArray<RendererFieldDefinition> = [
     fieldComponentProps: {
       items: ["Engineering", "Design", "Marketing", "Sales"],
     },
-  },
-  {
+  }),
+  field({
     fieldKey: "yearsOfExperience",
     fieldComponent: "NUMBER_INPUT",
     label: "Years of Experience",
@@ -84,8 +89,8 @@ const fieldDefinitions: ReadonlyArray<RendererFieldDefinition> = [
       min: 0,
       max: 50,
     },
-  },
-  {
+  }),
+  field({
     fieldKey: "salary",
     fieldComponent: "NUMBER_INPUT",
     label: "Salary",
@@ -94,8 +99,8 @@ const fieldDefinitions: ReadonlyArray<RendererFieldDefinition> = [
       min: 0,
       step: 1000,
     },
-  },
-  {
+  }),
+  field({
     fieldKey: "bio",
     fieldComponent: "TEXT_AREA",
     label: "Bio",
@@ -104,8 +109,8 @@ const fieldDefinitions: ReadonlyArray<RendererFieldDefinition> = [
       rows: 4,
       maxLength: 500,
     },
-  },
-  {
+  }),
+  field({
     fieldKey: "officeLocation",
     fieldComponent: "DROPDOWN",
     label: "Office Location",
@@ -123,8 +128,8 @@ const fieldDefinitions: ReadonlyArray<RendererFieldDefinition> = [
       ],
       isSearchable: true,
     },
-  },
-  {
+  }),
+  field({
     fieldKey: "employmentType",
     fieldComponent: "RADIO_BUTTONS",
     label: "Employment Type",
@@ -137,8 +142,8 @@ const fieldDefinitions: ReadonlyArray<RendererFieldDefinition> = [
         { label: "Internship", value: "internship" },
       ],
     },
-  },
-  {
+  }),
+  field({
     fieldKey: "resume",
     fieldComponent: "FILE_PICKER",
     label: "Resume",
@@ -146,8 +151,8 @@ const fieldDefinitions: ReadonlyArray<RendererFieldDefinition> = [
       accept: [".pdf", ".doc", ".docx"],
       maxSize: 100, // 100 bytes
     },
-  },
-  {
+  }),
+  field({
     fieldKey: "portfolioFiles",
     fieldComponent: "FILE_PICKER",
     label: "Portfolio Files",
@@ -155,8 +160,8 @@ const fieldDefinitions: ReadonlyArray<RendererFieldDefinition> = [
       isMulti: true,
       accept: "image/*",
     },
-  },
-  {
+  }),
+  field({
     fieldKey: "skills",
     fieldComponent: "DROPDOWN",
     label: "Skills",
@@ -176,8 +181,8 @@ const fieldDefinitions: ReadonlyArray<RendererFieldDefinition> = [
       isSearchable: true,
       isMultiple: true,
     },
-  },
-  {
+  }),
+  field({
     fieldKey: "rating",
     fieldComponent: "CUSTOM",
     label: "Rating",
@@ -185,8 +190,8 @@ const fieldDefinitions: ReadonlyArray<RendererFieldDefinition> = [
       defaultValue: 5,
       customRenderer: RatingSlider,
     },
-  },
-  {
+  }),
+  field({
     fieldKey: "manager",
     fieldComponent: "OBJECT_SELECT",
     label: "Manager",
@@ -194,7 +199,7 @@ const fieldDefinitions: ReadonlyArray<RendererFieldDefinition> = [
     fieldComponentProps: {
       objectType: Employee,
     },
-  },
+  }),
 ];
 
 export function FormPage() {
@@ -214,17 +219,17 @@ export function FormPage() {
     [],
   );
 
-  const allFieldDefinitions = useMemo(
-    (): ReadonlyArray<RendererFieldDefinition> => [
-      ...fieldDefinitions,
-      {
+  const allFormContent = useMemo(
+    (): ReadonlyArray<FormContentItem> => [
+      ...formContent,
+      field({
         fieldKey: "team",
         fieldComponent: "OBJECT_SET",
         label: "Team Members",
         fieldComponentProps: {
           value: employeeObjectSet,
         },
-      },
+      }),
     ],
     [employeeObjectSet],
   );
@@ -234,7 +239,7 @@ export function FormPage() {
       <div className="formCard">
         <BaseForm
           formTitle="Demo Base Form"
-          fieldDefinitions={allFieldDefinitions}
+          formContent={allFormContent}
           onSubmit={handleSubmit}
         />
       </div>

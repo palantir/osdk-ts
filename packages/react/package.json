@@ -43,6 +43,15 @@
       "require": "./build/cjs/public/testing.cjs",
       "default": "./build/browser/public/testing.js"
     },
+    "./experimental/aip": {
+      "browser": "./build/browser/public/experimental/aip.js",
+      "import": {
+        "types": "./build/types/public/experimental/aip.d.ts",
+        "default": "./build/esm/public/experimental/aip.js"
+      },
+      "require": "./build/cjs/public/experimental/aip.cjs",
+      "default": "./build/browser/public/experimental/aip.js"
+    },
     "./*": {
       "browser": "./build/browser/public/*.js",
       "import": {
@@ -74,6 +83,7 @@
   "peerDependencies": {
     "@osdk/api": "^2.14.0",
     "@osdk/client": "^2.14.0",
+    "@osdk/aip-core": "workspace:^",
     "@osdk/foundry.admin": "*",
     "@osdk/foundry.core": "*",
     "@types/react": "^17 || ^18 || ^19",
@@ -81,6 +91,9 @@
     "react-dom": "^17 || ^18 || ^19"
   },
   "peerDependenciesMeta": {
+    "@osdk/aip-core": {
+      "optional": true
+    },
     "@osdk/foundry.admin": {
       "optional": true
     },
@@ -89,6 +102,7 @@
     }
   },
   "devDependencies": {
+    "@osdk/aip-core": "workspace:*",
     "@osdk/api": "workspace:*",
     "@osdk/client": "workspace:*",
     "@osdk/client.test.ontology": "workspace:*",

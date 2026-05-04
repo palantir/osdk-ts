@@ -181,12 +181,41 @@ describe("createMockOsdkObject", () => {
   });
 
   describe("$link", () => {
-    it("returns undefined when $link is accessed without configuration", () => {
+    it("missing link: accessor exists, fetchOne rejects, fetchOneWithErrors returns error", async () => {
       const mockEmployee = createMockOsdkObject(Employee, {
         employeeId: 1,
       });
 
-      expect(mockEmployee.$link).toBeUndefined();
+      expect(mockEmployee.$link.officeLink).toBeDefined();
+
+      await expect(mockEmployee.$link.officeLink.fetchOne()).rejects.toThrow(
+        /Link "officeLink" was not configured on mock Employee/,
+      );
+
+      const result = await mockEmployee.$link.officeLink
+        .fetchOneWithErrors();
+      expect(result.error).toBeInstanceOf(Error);
+      expect(result.error!.message).toMatch(
+        /Link "officeLink" was not configured on mock Employee/,
+      );
+      expect(result.value).toBeUndefined();
+    });
+
+    it("missing link is isolated: other configured links still work", async () => {
+      const mockOffice = createMockOsdkObject(Office, {
+        officeId: "nyc",
+        name: "New York Office",
+      });
+      const mockEmployee = createMockOsdkObject(
+        Employee,
+        { employeeId: 1 },
+        { links: { officeLink: mockOffice } },
+      );
+
+      expect(await mockEmployee.$link.officeLink.fetchOne()).toBe(mockOffice);
+      await expect(mockEmployee.$link.lead.fetchOne()).rejects.toThrow(
+        /Link "lead" was not configured on mock Employee/,
+      );
     });
 
     describe("single links", () => {

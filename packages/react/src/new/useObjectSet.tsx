@@ -131,11 +131,13 @@ export interface UseObjectSetOptions<
    *
    * @default true
    * @example
+   * ```tsx
    * // Dependent query - wait for filter selection
    * const { data: filteredObjects } = useObjectSet(MyObject.all(), {
    *   where: { status: selectedStatus },
-   *   enabled: !!selectedStatus
+   *   enabled: !!selectedStatus,
    * });
+   * ```
    */
   enabled?: boolean;
 }

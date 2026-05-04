@@ -1326,6 +1326,7 @@ describe("Action Types", () => {
                 "entityMetadata": {
                   "aliases": [],
                   "arePatchesEnabled": false,
+                  "editsHistory": undefined,
                 },
                 "objectType": {
                   "allImplementsInterfaces": {},
@@ -7368,6 +7369,7 @@ describe("Action Types", () => {
                 "entityMetadata": {
                   "aliases": [],
                   "arePatchesEnabled": false,
+                  "editsHistory": undefined,
                 },
                 "objectType": {
                   "allImplementsInterfaces": {},
@@ -9006,6 +9008,7 @@ describe("Action Types", () => {
                 "entityMetadata": {
                   "aliases": [],
                   "arePatchesEnabled": false,
+                  "editsHistory": undefined,
                 },
                 "objectType": {
                   "allImplementsInterfaces": {},
@@ -10260,6 +10263,7 @@ describe("Action Types", () => {
                 "entityMetadata": {
                   "aliases": [],
                   "arePatchesEnabled": false,
+                  "editsHistory": undefined,
                 },
                 "objectType": {
                   "allImplementsInterfaces": {},
@@ -12106,6 +12110,7 @@ describe("Action Types", () => {
                 "entityMetadata": {
                   "aliases": [],
                   "arePatchesEnabled": false,
+                  "editsHistory": undefined,
                 },
                 "objectType": {
                   "allImplementsInterfaces": {},
@@ -12914,6 +12919,7 @@ describe("Action Types", () => {
                 "entityMetadata": {
                   "aliases": [],
                   "arePatchesEnabled": false,
+                  "editsHistory": undefined,
                 },
                 "objectType": {
                   "allImplementsInterfaces": {},
@@ -13055,6 +13061,7 @@ describe("Action Types", () => {
                 "entityMetadata": {
                   "aliases": [],
                   "arePatchesEnabled": true,
+                  "editsHistory": undefined,
                 },
                 "objectType": {
                   "allImplementsInterfaces": {},
@@ -13442,6 +13449,7 @@ describe("Action Types", () => {
                 "entityMetadata": {
                   "aliases": [],
                   "arePatchesEnabled": false,
+                  "editsHistory": undefined,
                 },
                 "objectType": {
                   "allImplementsInterfaces": {},
@@ -13900,6 +13908,7 @@ describe("Action Types", () => {
                 "entityMetadata": {
                   "aliases": [],
                   "arePatchesEnabled": false,
+                  "editsHistory": undefined,
                 },
                 "objectType": {
                   "allImplementsInterfaces": {},
@@ -14679,6 +14688,7 @@ describe("Action Types", () => {
                 "entityMetadata": {
                   "aliases": [],
                   "arePatchesEnabled": false,
+                  "editsHistory": undefined,
                 },
                 "objectType": {
                   "allImplementsInterfaces": {},
@@ -15241,6 +15251,7 @@ describe("Action Types", () => {
                 "entityMetadata": {
                   "aliases": [],
                   "arePatchesEnabled": false,
+                  "editsHistory": undefined,
                 },
                 "objectType": {
                   "allImplementsInterfaces": {},
@@ -15820,6 +15831,7 @@ describe("Action Types", () => {
                 "entityMetadata": {
                   "aliases": [],
                   "arePatchesEnabled": false,
+                  "editsHistory": undefined,
                 },
                 "objectType": {
                   "allImplementsInterfaces": {},
@@ -16402,6 +16414,7 @@ describe("Action Types", () => {
                 "entityMetadata": {
                   "aliases": [],
                   "arePatchesEnabled": false,
+                  "editsHistory": undefined,
                 },
                 "objectType": {
                   "allImplementsInterfaces": {},

@@ -134,6 +134,7 @@ const archetypeRules = archetypes(
   .addArchetype(
     "standardLibraries",
     [
+      "@osdk/aip-core",
       "@osdk/foundry-config-json",
       "@osdk/generator-converters",
       "@osdk/language-models",

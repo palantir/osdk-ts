@@ -18,13 +18,18 @@ import type { ActionDefinition } from "@osdk/api";
 import { useOsdkAction, useOsdkMetadata } from "@osdk/react";
 import React, { useCallback, useEffect, useMemo } from "react";
 import { typedReactMemo } from "../shared/typedMemo.js";
-import type { ActionFormProps, FormState } from "./ActionFormApi.js";
+import type {
+  ActionFormProps,
+  FormContentItem,
+  FormState,
+} from "./ActionFormApi.js";
 import { BaseForm } from "./BaseForm.js";
 import type { RendererFieldDefinition } from "./FormFieldApi.js";
 import { coerceFieldValue } from "./utils/coerceFieldValue.js";
 import { getDefaultFieldDefinitions } from "./utils/getDefaultFieldDefinitions.js";
 
-const EMPTY_FIELD_DEFINITIONS: readonly [] = [];
+const EMPTY_FIELD_DEFINITIONS: ReadonlyArray<RendererFieldDefinition> = [];
+const EMPTY_FORM_CONTENT: ReadonlyArray<FormContentItem> = [];
 
 export const ActionForm: <Q extends ActionDefinition<unknown>>(
   props: ActionFormProps<Q>,
@@ -90,6 +95,16 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
     [customFieldDefinitions, metadata],
   );
 
+  const formContent = useMemo(
+    (): ReadonlyArray<FormContentItem> =>
+      rendererFieldDefinitions.length === 0
+        ? EMPTY_FORM_CONTENT
+        : rendererFieldDefinitions.map(
+          (def): FormContentItem => ({ type: "field", definition: def }),
+        ),
+    [rendererFieldDefinitions],
+  );
+
   const coerceFormState = useCallback(
     (rawState: Record<string, unknown>): Record<string, unknown> => {
       const coerced: Record<string, unknown> = {};
@@ -138,7 +153,7 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
 
   const commonProps = {
     formTitle: resolvedTitle,
-    fieldDefinitions: rendererFieldDefinitions,
+    formContent,
     onSubmit: handleSubmit,
     isSubmitDisabled,
     isPending,

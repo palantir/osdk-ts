@@ -35,6 +35,29 @@
   color: var(--osdk-form-error-color);
 }
 
+.osdkFormFieldLabelRow {
+  display: flex;
+  align-items: center;
+  gap: var(--osdk-form-label-row-gap);
+}
+
+.osdkFormFieldInfoIcon {
+  display: inline-flex;
+  align-items: center;
+  color: var(--osdk-form-info-icon-color);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.osdkFormFieldInfoPopup {
+  padding: var(--osdk-form-info-popup-padding);
+  background-color: var(--osdk-form-info-popup-bg);
+  border-radius: var(--osdk-surface-border-radius);
+  box-shadow: var(--osdk-form-info-popup-shadow);
+  max-width: var(--osdk-form-info-popup-max-width);
+  font-size: var(--osdk-form-info-popup-font-size);
+}
+
 .osdkFormFieldHelperText {
   font-size: var(--osdk-typography-size-body-small);
   color: var(--osdk-typography-color-muted);
