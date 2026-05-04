@@ -25,6 +25,15 @@
       "require": "./build/cjs/public/devtools-registry.cjs",
       "default": "./build/browser/public/devtools-registry.js"
     },
+    "./experimental": {
+      "browser": "./build/browser/public/experimental.js",
+      "import": {
+        "types": "./build/types/public/experimental.d.ts",
+        "default": "./build/esm/public/experimental.js"
+      },
+      "require": "./build/cjs/public/experimental.cjs",
+      "default": "./build/browser/public/experimental.js"
+    },
     "./platform-apis": {
       "browser": "./build/browser/public/platform-apis.js",
       "import": {
@@ -42,15 +51,6 @@
       },
       "require": "./build/cjs/public/testing.cjs",
       "default": "./build/browser/public/testing.js"
-    },
-    "./experimental": {
-      "browser": "./build/browser/public/experimental.js",
-      "import": {
-        "types": "./build/types/public/experimental.d.ts",
-        "default": "./build/esm/public/experimental.js"
-      },
-      "require": "./build/cjs/public/experimental.cjs",
-      "default": "./build/browser/public/experimental.js"
     },
     "./experimental/admin": {
       "browser": "./build/browser/public/experimental/admin.js",
@@ -99,9 +99,9 @@
     "fast-deep-equal": "^3.1.3"
   },
   "peerDependencies": {
+    "@osdk/aip-core": "workspace:^",
     "@osdk/api": "^2.14.0",
     "@osdk/client": "^2.14.0",
-    "@osdk/aip-core": "workspace:^",
     "@osdk/foundry.admin": "*",
     "@osdk/foundry.core": "*",
     "@types/react": "^17 || ^18 || ^19",
