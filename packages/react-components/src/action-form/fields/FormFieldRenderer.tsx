@@ -229,10 +229,7 @@ function resolvePortalContainer(
 ): PortalContainer | undefined {
   // A field-level value, including null, is an explicit override. That lets a
   // single field opt out of a form-level dialog portal when needed.
-  return Object.prototype.hasOwnProperty.call(
-      fieldComponentProps,
-      "portalContainer",
-    )
+  return Object.hasOwn(fieldComponentProps, "portalContainer")
     ? fieldComponentProps.portalContainer
     : formPortalContainer;
 }
