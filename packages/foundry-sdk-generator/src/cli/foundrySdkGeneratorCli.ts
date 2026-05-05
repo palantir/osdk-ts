@@ -19,13 +19,10 @@ import { hideBin } from "yargs/helpers";
 import { GeneratePackageCommand } from "../generate/index.js";
 import { SlsLogger } from "../logging/index.js";
 
-let crashHandlersInstalled = false;
-
 export async function cli(args: string[] = process.argv): Promise<
   Record<string, unknown> | undefined
 > {
   const logger = new SlsLogger();
-  installCrashHandlers(logger);
 
   const base = yargs(hideBin(args))
     .command(new GeneratePackageCommand())
@@ -46,22 +43,4 @@ export async function cli(args: string[] = process.argv): Promise<
     );
     process.exit(1);
   }
-}
-
-export function installCrashHandlers(logger: SlsLogger): void {
-  if (crashHandlersInstalled) return;
-  crashHandlersInstalled = true;
-
-  process.on("uncaughtException", (error: Error) => {
-    logger.error("Uncaught exception", undefined, error);
-    process.exit(1);
-  });
-  process.on("unhandledRejection", (reason: unknown) => {
-    logger.error(
-      "Unhandled promise rejection",
-      undefined,
-      reason instanceof Error ? reason : new Error(String(reason)),
-    );
-    process.exit(1);
-  });
 }

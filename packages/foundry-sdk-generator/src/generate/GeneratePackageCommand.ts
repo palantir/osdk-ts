@@ -202,9 +202,10 @@ export class GeneratePackageCommand
     );
 
     if (!isValidSemver(args.packageVersion as string)) {
-      logger.error("Invalid package version", {
-        params: { packageVersion: args.packageVersion },
-      });
+      logger.error(
+        "Invalid argument provided for packageVersion, expected valid semver",
+        { unsafeParams: { packageVersion: args.packageVersion } },
+      );
       exit(1);
     }
 
