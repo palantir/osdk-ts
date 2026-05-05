@@ -38,8 +38,21 @@ const numberConfig: RangeInputConfig<number> = {
   formatTooltip: (min, max, count) =>
     `${min.toFixed(1)} - ${max.toFixed(1)}: ${count.toLocaleString()}`,
   formatPlaceholder: (value) => value.toFixed(0),
+  // Numeric histograms only render the first/last x-axis ticks (the data
+  // min and max) — see Item 7 AC #8: "x-axis labels are min/max only".
+  formatTick: (value) => formatTickNumber(value),
   inputProps: { step: "any" },
 };
+
+function formatTickNumber(value: number): string {
+  if (Number.isInteger(value) && Math.abs(value) < 10_000) {
+    return String(value);
+  }
+  return value.toLocaleString(undefined, {
+    maximumFractionDigits: 1,
+    notation: Math.abs(value) >= 10_000 ? "compact" : "standard",
+  });
+}
 
 interface NumberRangeInputProps {
   valueCountPairs: Array<{ value: number; count: number }>;

@@ -257,6 +257,15 @@
       --osdk-emphasis-transition-duration
     )
     var(--osdk-emphasis-ease-default);
+  --osdk-filter-range-histogram-axis-line-color: var(--osdk-palette-gray-100);
+  --osdk-filter-range-histogram-axis-color: var(--osdk-typography-color-muted);
+  --osdk-filter-range-histogram-axis-font-size: 9px;
+  --osdk-filter-range-histogram-label-color: var(--osdk-typography-color-muted);
+  --osdk-filter-range-histogram-label-font-size: 9px;
+  --osdk-filter-range-histogram-subtitle-color: var(
+    --osdk-typography-color-default-rest
+  );
+  --osdk-filter-range-histogram-subtitle-font-size: 10px;
   --osdk-filter-range-inputs-gap: calc(var(--osdk-surface-spacing) * 0.5);
   --osdk-filter-range-input-wrapper-gap: var(--osdk-surface-spacing);
   --osdk-filter-range-label-font-family: var(--osdk-typography-family-default);

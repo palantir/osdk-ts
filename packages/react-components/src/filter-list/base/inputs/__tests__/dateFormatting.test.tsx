@@ -165,14 +165,14 @@ describe("formatDate / parseDate plumbing", () => {
             formatDate={slashFormat}
           />,
         );
-        // The histogram bar's title attribute is set from
-        // config.formatTooltip(min, max, count) — when formatDate is
-        // provided, the dates inside the title use the slash format.
-        const bars = document.querySelectorAll("[title]");
-        const titles = Array.from(bars).map((b) => b.getAttribute("title"));
-        // At least one tooltip should match the MM/DD/YYYY shape.
+        // The histogram bar's tooltip is an SVG `<title>` child of each
+        // `<rect>`. When formatDate is provided, the dates inside the
+        // title text use the slash format.
+        const titleEls = document.querySelectorAll("rect > title");
+        const titles = Array.from(titleEls).map((t) => t.textContent ?? "");
+        expect(titles.length).toBeGreaterThan(0);
         expect(
-          titles.some((t) => t != null && /\d{2}\/\d{2}\/\d{4}/.test(t)),
+          titles.some((t) => /\d{2}\/\d{2}\/\d{4}/.test(t)),
         ).toBe(true);
       },
     );
@@ -209,11 +209,12 @@ describe("formatDate / parseDate plumbing", () => {
             onChange={vi.fn()}
           />,
         );
-        const bars = document.querySelectorAll("[title]");
-        const titles = Array.from(bars).map((b) => b.getAttribute("title"));
-        // ISO format only when formatDate is omitted.
+        const titleEls = document.querySelectorAll("rect > title");
+        const titles = Array.from(titleEls).map((t) => t.textContent ?? "");
+        expect(titles.length).toBeGreaterThan(0);
+        // ISO format when formatDate is omitted.
         expect(
-          titles.every((t) => t == null || /^\d{4}-\d{2}-\d{2}/.test(t)),
+          titles.every((t) => /^\d{4}-\d{2}-\d{2}/.test(t)),
         ).toBe(true);
       },
     );
