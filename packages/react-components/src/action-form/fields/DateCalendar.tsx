@@ -108,7 +108,9 @@ export default function DateCalendar({
 
   const calendarFooter = (
     <>
-      {footer}
+      {footer != null && (
+        <div className={styles.calendarTimeFooter}>{footer}</div>
+      )}
       <div className={styles.calendarActionBar}>
         <ActionButton
           type="button"

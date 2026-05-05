@@ -377,7 +377,7 @@ export const DateRangeInputField: React.NamedExoticComponent<
 
   const timeFooter = showTime
     ? (
-      <div className={styles.osdkDateRangeTimeRow}>
+      <>
         <TimePicker
           value={startDate}
           onChange={handleStartTimeChange}
@@ -388,7 +388,7 @@ export const DateRangeInputField: React.NamedExoticComponent<
           onChange={handleEndTimeChange}
           label="End time"
         />
-      </div>
+      </>
     )
     : undefined;
 
@@ -473,8 +473,8 @@ export const DateRangeInputField: React.NamedExoticComponent<
               onSelect={handleRangeSelect}
               min={min}
               max={max}
+              footer={timeFooter}
             />
-            {timeFooter}
             <div
               onFocus={handleEndFocusBoundary}
               tabIndex={0}

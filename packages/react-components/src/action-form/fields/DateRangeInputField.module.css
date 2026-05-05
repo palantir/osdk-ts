@@ -15,16 +15,3 @@
   flex: 1;
   min-width: 0;
 }
-
-/* Two TimePickers side-by-side, each centered under its calendar month.
-   Negative horizontal margin counters the popover padding so the border-top
-   spans the full width of the popover. */
-.osdkDateRangeTimeRow {
-  display: flex;
-  gap: var(--osdk-time-picker-gap);
-  padding: var(--osdk-time-picker-padding-top)
-    var(--osdk-datetime-popover-padding) 0;
-  margin: var(--osdk-time-picker-margin-top)
-    calc(var(--osdk-datetime-popover-padding) * -1) 0;
-  border-top: var(--osdk-time-picker-border-top);
-}
