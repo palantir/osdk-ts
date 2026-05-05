@@ -50,6 +50,7 @@ import type { ActionSignatureFromDef } from "./actions/applyAction.js";
 import { applyAction } from "./actions/applyAction.js";
 import { additionalContext, type Client } from "./Client.js";
 import { createMinimalClient } from "./createMinimalClient.js";
+import { __EXPERIMENTAL__NOT_SUPPORTED_YET__withFetch } from "./experimental/withFetch.js";
 import { fetchMetadataInternal } from "./fetchMetadata.js";
 import { makeMediaTransformation } from "./internal/conversions/makeMediaTransformation.js";
 import { MinimalLogger } from "./logger/MinimalLogger.js";
@@ -162,13 +163,17 @@ export function createClientFromContext(clientCtx: MinimalClient) {
       | QueryDefinition<any>
       | Experiment<"2.0.8">
       | Experiment<"2.1.0">
-      | Experiment<"2.8.0">,
+      | Experiment<"2.8.0">
+      | Experiment<"2.13.0">,
   >(o: T): T extends ObjectTypeDefinition ? ObjectSet<T>
     : T extends InterfaceDefinition ? MinimalObjectSet<T>
     : T extends ActionDefinition<any> ? ActionSignatureFromDef<T>
     : T extends QueryDefinition<any> ? QuerySignatureFromDef<T>
-    : T extends Experiment<"2.0.8"> | Experiment<"2.1.0"> | Experiment<"2.8.0">
-      ? { invoke: ExperimentFns<T> }
+    : T extends
+      | Experiment<"2.0.8">
+      | Experiment<"2.1.0">
+      | Experiment<"2.8.0">
+      | Experiment<"2.13.0"> ? { invoke: ExperimentFns<T> }
     : never
   {
     if (o.type === "object" || o.type === "interface") {
@@ -318,6 +323,14 @@ export function createClientFromContext(clientCtx: MinimalClient) {
                 args.options,
               );
             },
+          } as any;
+
+        case __EXPERIMENTAL__NOT_SUPPORTED_YET__withFetch.name:
+          // Caches are not shared amongst newly created clients, which
+          // can lead to duplicated metadata calls amongst repeated calls
+          return {
+            withFetch: (fetchFn: typeof globalThis.fetch): Client =>
+              createClientFromContext(clientCtx.withFetch(fetchFn)),
           } as any;
       }
 

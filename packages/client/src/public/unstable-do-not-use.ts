@@ -24,6 +24,7 @@ export {
 export type { OsdkConfig } from "../public-utils/osdkConfig.js";
 
 export { createClientWithTransaction } from "../createClient.js";
+export { __EXPERIMENTAL__NOT_SUPPORTED_YET__withFetch } from "../experimental/withFetch.js";
 
 export {
   applyShapeTransformations,
