@@ -25,6 +25,7 @@ import {
   PANEL_ID,
 } from "./addons/brand-theme-extractor/constants.js";
 import { Panel } from "./addons/brand-theme-extractor/Panel.js";
+import { ThemeToolbar } from "./addons/brand-theme-extractor/ThemeToolbar.js";
 
 addons.setConfig({
   tagBadges: [
@@ -79,6 +80,14 @@ addons.register(
 
 // Brand Theme Extractor panel
 addons.register(ADDON_ID, () => {
+  addons.add(`${ADDON_ID}/theme-toolbar`, {
+    type: types.TOOL,
+    title: "Theme",
+    match: ({ viewMode, tabId }) =>
+      Boolean(viewMode?.match(/^(story|docs)$/)) && !tabId,
+    render: ThemeToolbar,
+  });
+
   addons.add(PANEL_ID, {
     type: types.PANEL,
     title: "Brand Theme",

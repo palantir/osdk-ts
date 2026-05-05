@@ -17,8 +17,8 @@
 import type { Decorator } from "@storybook/react-vite";
 import React, { useEffect, useMemo } from "react";
 import { GLOBALS_KEY } from "./constants.js";
+import { parseBrandThemeState } from "./state.js";
 import { getTokenRole } from "./token-map.js";
-import type { BrandThemeGlobals } from "./types.js";
 
 const STYLE_ID = "brand-theme-overrides";
 
@@ -28,18 +28,10 @@ const STYLE_ID = "brand-theme-overrides";
  * document head. Uses :root with high specificity to override theme values.
  */
 export const BrandThemeDecorator: Decorator = (Story, context) => {
-  const brandTheme: BrandThemeGlobals | undefined = React.useMemo(() => {
-    const raw = context.globals[GLOBALS_KEY];
-    if (!raw) return undefined;
-    if (typeof raw === "string") {
-      try {
-        return JSON.parse(raw) as BrandThemeGlobals;
-      } catch {
-        return undefined;
-      }
-    }
-    return raw as BrandThemeGlobals;
-  }, [context.globals]);
+  const brandTheme = React.useMemo(
+    () => parseBrandThemeState(context.globals[GLOBALS_KEY]),
+    [context.globals],
+  );
 
   const cssText = useMemo(() => {
     if (!brandTheme?.active) return "";
@@ -85,7 +77,7 @@ export const BrandThemeDecorator: Decorator = (Story, context) => {
     return `:root:root {\n${declarations.join("\n")}\n}`;
   }, [brandTheme]);
 
-  useEffect(() => {
+  useEffect(function syncBrandThemeOverrideStyle() {
     let styleEl = document.getElementById(STYLE_ID) as HTMLStyleElement | null;
 
     if (cssText) {
@@ -104,6 +96,15 @@ export const BrandThemeDecorator: Decorator = (Story, context) => {
       if (el) el.remove();
     };
   }, [cssText]);
+
+  useEffect(function applyBlueprintColorMode() {
+    const root = document.documentElement;
+    root.setAttribute("data-bp-color-scheme", brandTheme.colorMode);
+
+    return () => {
+      root.removeAttribute("data-bp-color-scheme");
+    };
+  }, [brandTheme.colorMode]);
 
   return <Story />;
 };

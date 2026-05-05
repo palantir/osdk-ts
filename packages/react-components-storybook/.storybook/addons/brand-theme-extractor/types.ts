@@ -30,8 +30,12 @@ export interface TokenAssignment {
   customValue?: string;
 }
 
+export type ThemeColorMode = "light" | "dark";
+
 export interface BrandThemeGlobals {
   active: boolean;
+  colorMode: ThemeColorMode;
+  selectedPresetId: string;
   palette: ExtractedColor[];
   assignments: TokenAssignment[];
 }

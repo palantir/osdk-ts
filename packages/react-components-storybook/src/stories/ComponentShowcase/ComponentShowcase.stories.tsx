@@ -19,7 +19,7 @@ import { fauxFoundry } from "../../mocks/fauxFoundry.js";
 import { ComponentShowcase } from "./ComponentShowcase.js";
 
 const meta: Meta<typeof ComponentShowcase> = {
-  title: "Component Showcase",
+  title: "Showcase",
   component: ComponentShowcase,
   parameters: {
     layout: "fullscreen",

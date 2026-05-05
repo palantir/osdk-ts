@@ -14,12 +14,20 @@
  * limitations under the License.
  */
 
-import type { TokenAssignment } from "./types.js";
+import type { ThemeColorMode, TokenAssignment } from "./types.js";
 
 export interface ThemePreset {
   id: string;
   label: string;
   description: string;
+  modes?: Record<ThemeColorMode, ThemePresetMode>;
+  /** Preview swatch colors for legacy single-mode presets. */
+  swatches?: [string, string, string];
+  /** Token assignments for legacy single-mode presets. */
+  assignments?: TokenAssignment[];
+}
+
+export interface ThemePresetMode {
   /** Preview swatch colors: [background, primary, text] */
   swatches: [string, string, string];
   assignments: TokenAssignment[];
@@ -31,6 +39,20 @@ function colorAssignment(role: string, hex: string): TokenAssignment {
 
 function valueAssignment(role: string, value: string): TokenAssignment {
   return { role, colorIndex: -1, customValue: value };
+}
+
+export function getThemePresetMode(
+  preset: ThemePreset,
+  colorMode: ThemeColorMode,
+): ThemePresetMode {
+  if (preset.modes) {
+    return preset.modes[colorMode];
+  }
+
+  return {
+    swatches: preset.swatches ?? ["#ffffff", "#2d72d2", "#1c2127"],
+    assignments: preset.assignments ?? [],
+  };
 }
 
 /** Shared non-color defaults used across most presets */
@@ -66,25 +88,95 @@ function baseDefaults(overrides?: {
 
 export const THEME_PRESETS: ThemePreset[] = [
   {
-    id: "blueprint-light",
-    label: "Blueprint Light",
-    description: "Default OSDK light theme",
-    swatches: ["#ffffff", "#2d72d2", "#1c2127"],
-    assignments: [
-      colorAssignment("background", "#ffffff"),
-      colorAssignment("surface", "#f6f7f9"),
-      colorAssignment("text", "#1c2127"),
-      colorAssignment("text-muted", "#5f6b7c"),
-      colorAssignment("primary", "#2d72d2"),
-      colorAssignment("primary-foreground", "#ffffff"),
-      colorAssignment("secondary", "#edeff2"),
-      colorAssignment("secondary-foreground", "#1c2127"),
-      colorAssignment("icon-color", "#5f6b7c"),
-      colorAssignment("border", "#dce0e5"),
-      colorAssignment("danger", "#cd4246"),
-      colorAssignment("success", "#238551"),
-      ...baseDefaults(),
-    ],
+    id: "workshop",
+    label: "Workshop",
+    description: "Default Blueprint theme used by Workshop-style apps",
+    modes: {
+      light: {
+        swatches: ["#ffffff", "#2d72d2", "#1c2127"],
+        assignments: [
+          colorAssignment("background", "#ffffff"),
+          colorAssignment("surface", "#f6f7f9"),
+          colorAssignment("text", "#1c2127"),
+          colorAssignment("text-muted", "#5f6b7c"),
+          colorAssignment("primary", "#2d72d2"),
+          colorAssignment("primary-foreground", "#ffffff"),
+          colorAssignment("secondary", "#edeff2"),
+          colorAssignment("secondary-foreground", "#1c2127"),
+          colorAssignment("icon-color", "#5f6b7c"),
+          colorAssignment("border", "#dce0e5"),
+          colorAssignment("danger", "#cd4246"),
+          colorAssignment("success", "#238551"),
+          ...baseDefaults(),
+        ],
+      },
+      dark: {
+        swatches: ["#111418", "#2d72d2", "#a5aab3"],
+        assignments: [
+          colorAssignment("background", "#111418"),
+          colorAssignment("surface", "#1c2127"),
+          colorAssignment("text", "#a5aab3"),
+          colorAssignment("text-muted", "#8f99a8"),
+          colorAssignment("primary", "#2d72d2"),
+          colorAssignment("primary-foreground", "#ffffff"),
+          colorAssignment("secondary", "#252a31"),
+          colorAssignment("secondary-foreground", "#f6f7f9"),
+          colorAssignment("icon-color", "#8f99a8"),
+          colorAssignment("border", "#ffffff33"),
+          colorAssignment("danger", "#cd4246"),
+          colorAssignment("success", "#238551"),
+          ...baseDefaults({
+            shadow:
+              "inset 0 0 0 1px rgba(255,255,255,0.2), 0 4px 6px -4px rgba(0,0,0,0.5), 0 10px 30px -5px rgba(0,0,0,0.5)",
+          }),
+        ],
+      },
+    },
+  },
+  {
+    id: "devcon",
+    label: "DevCon",
+    description: "Green DevCon theme for high-contrast demos",
+    modes: {
+      light: {
+        swatches: ["#f0fdf4", "#16a34a", "#14532d"],
+        assignments: [
+          colorAssignment("background", "#f0fdf4"),
+          colorAssignment("surface", "#dcfce7"),
+          colorAssignment("text", "#14532d"),
+          colorAssignment("text-muted", "#15803d"),
+          colorAssignment("primary", "#16a34a"),
+          colorAssignment("primary-foreground", "#ffffff"),
+          colorAssignment("secondary", "#bbf7d0"),
+          colorAssignment("secondary-foreground", "#14532d"),
+          colorAssignment("icon-color", "#16a34a"),
+          colorAssignment("border", "#86efac"),
+          colorAssignment("danger", "#dc2626"),
+          colorAssignment("success", "#16a34a"),
+          ...baseDefaults(),
+        ],
+      },
+      dark: {
+        swatches: ["#0a0a0a", "#16a34a", "#86efac"],
+        assignments: [
+          colorAssignment("background", "#0a0a0a"),
+          colorAssignment("surface", "#111111"),
+          colorAssignment("text", "#86efac"),
+          colorAssignment("text-muted", "#16a34a"),
+          colorAssignment("primary", "#16a34a"),
+          colorAssignment("primary-foreground", "#0a0a0a"),
+          colorAssignment("secondary", "#1a1a1a"),
+          colorAssignment("secondary-foreground", "#86efac"),
+          colorAssignment("icon-color", "#22c55e"),
+          colorAssignment("border", "#15803d"),
+          colorAssignment("danger", "#ef4444"),
+          colorAssignment("success", "#4ade80"),
+          ...baseDefaults({
+            shadow: "0 1px 3px rgba(0,0,0,0.4), 0 1px 2px rgba(0,0,0,0.3)",
+          }),
+        ],
+      },
+    },
   },
   {
     id: "dark-emerald",

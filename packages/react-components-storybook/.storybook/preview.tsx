@@ -22,12 +22,16 @@ import { initialize, mswLoader } from "msw-storybook-addon";
 import { fauxFoundry, setupFauxFoundry } from "../src/mocks/fauxFoundry.js";
 import { GLOBALS_KEY } from "./addons/brand-theme-extractor/constants.js";
 import { BrandThemeDecorator } from "./addons/brand-theme-extractor/decorator.js";
+import {
+  getDefaultBrandThemeState,
+  stringifyBrandThemeState,
+} from "./addons/brand-theme-extractor/state.js";
 import "./styles.css";
 
 // Initialize MSW with proper options
 // This is synchronous, it only configures MSW
 // The actual service worker registration happens in the mswLoader, which runs before each story
-const basePath = (import.meta as any).env?.BASE_URL ?? "/";
+const basePath = import.meta.env.BASE_URL ?? "/";
 const serviceWorkerUrl = `${basePath}${
   basePath.endsWith("/") ? "" : "/"
 }mockServiceWorker.js`;
@@ -50,11 +54,7 @@ const mockClient = createClient(
 
 const preview: Preview = {
   initialGlobals: {
-    [GLOBALS_KEY]: JSON.stringify({
-      active: false,
-      palette: [],
-      assignments: [],
-    }),
+    [GLOBALS_KEY]: stringifyBrandThemeState(getDefaultBrandThemeState()),
   },
   parameters: {
     controls: {
@@ -86,15 +86,6 @@ const preview: Preview = {
       </div>
     ),
     BrandThemeDecorator,
-    withThemeByDataAttribute({
-      themes: {
-        light: "light",
-        modern: "modern",
-        devcon: "devcon",
-      },
-      defaultTheme: "light",
-      attributeName: "data-theme",
-    }),
   ],
 };
 
