@@ -21,7 +21,7 @@ import {
   _clearSuspenseCache,
   clearSuspenseErrors,
 } from "../src/new/makeSuspenseExternalStore.js";
-import { OsdkContext2 } from "../src/new/OsdkContext2.js";
+import { OsdkContext } from "../src/new/OsdkContext.js";
 
 export function mockObjectPayload(name: string, pk: string) {
   return {
@@ -94,7 +94,7 @@ export function TestSuspenseWrapper(
   },
 ) {
   return React.createElement(
-    OsdkContext2.Provider,
+    OsdkContext.Provider,
     // @ts-expect-error - test mock provides only observableClient, not client
     { value: { observableClient } },
     React.createElement(
