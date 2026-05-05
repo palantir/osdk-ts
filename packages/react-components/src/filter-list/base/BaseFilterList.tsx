@@ -41,6 +41,7 @@ export function BaseFilterList<D>(
     onReset,
     onFilterAdded,
     onFilterRemoved,
+    onOrderChange,
     showResetButton = false,
     showActiveFilterCount = false,
     hasVisibilityChanges,
@@ -104,6 +105,7 @@ export function BaseFilterList<D>(
             filterStates={filterStates}
             onFilterStateChanged={onFilterStateChanged}
             onFilterRemoved={onFilterRemoved}
+            onOrderChange={onOrderChange}
             renderInput={renderInput}
             getFilterKey={getFilterKey}
             getFilterLabel={getFilterLabel}

@@ -177,6 +177,28 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
   onFilterRemoved?: (filterKey: FilterKey<Q>) => void;
 
   /**
+   * Called when filter visibility or ordering changes, i.e. when filters
+   * are reordered, or (in uncontrolled mode) added or
+   * removed via the built-in show/remove controls.
+   *
+   * Useful for persisting filter configuration in saved states. The
+   * returned array lists every filter in current display order, with
+   * visible filters first followed by hidden filters.
+   *
+   * In controlled mode (`addFilterMode: "controlled"`), this fires only
+   * for reorder events; show/hide are managed externally via
+   * `filterDefinitions`.
+   *
+   * @param newStates The filters in current display order with their visibility state
+   */
+  onFilterVisibilityChange?: (
+    newStates: Array<{
+      filterKey: FilterKey<Q>;
+      isVisible: boolean;
+    }>,
+  ) => void;
+
+  /**
    * Enable drag-and-drop reordering of filters.
    * When true, drag handles are rendered and filters can be reordered.
    * Reorder state is managed internally; consumers who need to track order

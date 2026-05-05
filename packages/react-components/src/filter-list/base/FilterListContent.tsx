@@ -70,6 +70,7 @@ interface FilterListContentProps<D> {
     state: FilterState,
   ) => void;
   onFilterRemoved?: (filterKey: string) => void;
+  onOrderChange?: (orderedKeys: string[]) => void;
   renderInput: RenderFilterInput<D>;
   getFilterKey: (definition: D) => string;
   getFilterLabel: (definition: D) => string;
@@ -83,6 +84,7 @@ export function FilterListContent<D>({
   filterStates,
   onFilterStateChanged,
   onFilterRemoved,
+  onOrderChange,
   renderInput,
   getFilterKey,
   getFilterLabel,
@@ -154,10 +156,12 @@ export function FilterListContent<D>({
       const oldIndex = sortableIds.indexOf(String(active.id));
       const newIndex = sortableIds.indexOf(String(over.id));
       if (oldIndex !== -1 && newIndex !== -1) {
-        setDragOrder(arrayMove(sortableIds, oldIndex, newIndex));
+        const next = arrayMove(sortableIds, oldIndex, newIndex);
+        setDragOrder(next);
+        onOrderChange?.(next);
       }
     },
-    [sortableIds],
+    [sortableIds, onOrderChange],
   );
 
   const handleDragCancel = useCallback(() => {
