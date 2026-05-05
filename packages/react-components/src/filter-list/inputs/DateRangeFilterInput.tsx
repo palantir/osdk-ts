@@ -35,6 +35,7 @@ interface DateRangeFilterInputProps<Q extends ObjectTypeDefinition> {
   whereClause: WhereClause<Q>;
   formatDate?: (date: Date) => string;
   parseDate?: (text: string) => Date | undefined;
+  clickToFilter?: boolean;
 }
 
 function DateRangeFilterInputInner<Q extends ObjectTypeDefinition>({
@@ -46,6 +47,7 @@ function DateRangeFilterInputInner<Q extends ObjectTypeDefinition>({
   whereClause,
   formatDate,
   parseDate,
+  clickToFilter,
 }: DateRangeFilterInputProps<Q>): React.ReactElement {
   const dateRangeState = filterState?.type === "DATE_RANGE"
     ? filterState
@@ -173,6 +175,7 @@ function DateRangeFilterInputInner<Q extends ObjectTypeDefinition>({
         onChange={handleRangeChange}
         formatDate={formatDate}
         parseDate={parseDate}
+        clickToFilter={clickToFilter}
       />
     </NullValueWrapper>
   );

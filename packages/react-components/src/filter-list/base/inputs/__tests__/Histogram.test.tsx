@@ -281,6 +281,126 @@ describe("RangeInput SVG histogram", () => {
     },
   );
 
+  describe("clickToFilter", () => {
+    it("does not invoke onChange when clickToFilter is omitted", () => {
+      const onChange = vi.fn();
+      const { container } = render(
+        <DateRangeInput
+          valueCountPairs={dateBuckets}
+          isLoading={false}
+          minValue={undefined}
+          maxValue={undefined}
+          onChange={onChange}
+        />,
+      );
+      const rects = container.querySelectorAll(
+        "rect[class*=\"histogramBar\"]",
+      );
+      expect(rects.length).toBeGreaterThan(0);
+      (rects[0] as SVGRectElement).dispatchEvent(
+        new MouseEvent("click", { bubbles: true }),
+      );
+      expect(onChange).not.toHaveBeenCalled();
+    });
+
+    it(
+      "invokes onChange with the bucket's [min, max] when clicked",
+      () => {
+        const onChange = vi.fn();
+        const { container } = render(
+          <DateRangeInput
+            valueCountPairs={dateBuckets}
+            isLoading={false}
+            minValue={undefined}
+            maxValue={undefined}
+            onChange={onChange}
+            clickToFilter={true}
+          />,
+        );
+        const rects = container.querySelectorAll(
+          "rect[class*=\"histogramBar\"]",
+        );
+        const firstBar = rects[0] as SVGRectElement;
+        firstBar.dispatchEvent(
+          new MouseEvent("click", { bubbles: true }),
+        );
+        expect(onChange).toHaveBeenCalledTimes(1);
+        const [min, max] = onChange.mock.calls[0];
+        expect(min).toBeInstanceOf(Date);
+        expect(max).toBeInstanceOf(Date);
+        // First bar is May 1; daily granularity → bucket [May 1, May 2]
+        expect((min as Date).getDate()).toBe(1);
+        expect((max as Date).getDate()).toBe(2);
+      },
+    );
+
+    it("replaces (not unions) when a second bar is clicked", () => {
+      const onChange = vi.fn();
+      const { container } = render(
+        <DateRangeInput
+          valueCountPairs={dateBuckets}
+          isLoading={false}
+          minValue={undefined}
+          maxValue={undefined}
+          onChange={onChange}
+          clickToFilter={true}
+        />,
+      );
+      const rects = container.querySelectorAll(
+        "rect[class*=\"histogramBar\"]",
+      );
+      const firstBar = rects[0] as SVGRectElement;
+      const secondBar = rects[2] as SVGRectElement;
+      firstBar.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+      secondBar.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+      expect(onChange).toHaveBeenCalledTimes(2);
+      // Second call must be the third bucket's range, not a union with
+      // the first.
+      const [min2, max2] = onChange.mock.calls[1];
+      expect((min2 as Date).getDate()).toBe(3);
+      expect((max2 as Date).getDate()).toBe(4);
+    });
+
+    it("sets data-click-to-filter=\"true\" on rects when enabled", () => {
+      const { container } = render(
+        <DateRangeInput
+          valueCountPairs={dateBuckets}
+          isLoading={false}
+          minValue={undefined}
+          maxValue={undefined}
+          onChange={vi.fn()}
+          clickToFilter={true}
+        />,
+      );
+      const rects = container.querySelectorAll(
+        "rect[class*=\"histogramBar\"]",
+      );
+      const allEnabled = Array.from(rects).every(
+        (r) => r.getAttribute("data-click-to-filter") === "true",
+      );
+      expect(allEnabled).toBe(true);
+    });
+
+    it("does NOT set data-click-to-filter when disabled", () => {
+      const { container } = render(
+        <DateRangeInput
+          valueCountPairs={dateBuckets}
+          isLoading={false}
+          minValue={undefined}
+          maxValue={undefined}
+          onChange={vi.fn()}
+        />,
+      );
+      const rects = container.querySelectorAll(
+        "rect[class*=\"histogramBar\"]",
+      );
+      const noneEnabled = Array.from(rects).every(
+        (r) => !r.hasAttribute("data-click-to-filter"),
+      );
+      expect(noneEnabled).toBe(true);
+    });
+  });
+
   it(
     "numeric histogram x-axis ticks are min/max only — no per-bucket numeric labels",
     () => {

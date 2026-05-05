@@ -57,6 +57,7 @@ interface DateRangeInputProps {
    * because the browser controls parsing of `<input type="date">` values.
    */
   parseDate?: (text: string) => Date | undefined;
+  clickToFilter?: boolean;
 }
 
 function DateRangeInputInner({

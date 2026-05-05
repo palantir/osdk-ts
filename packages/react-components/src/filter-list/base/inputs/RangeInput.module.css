@@ -51,6 +51,14 @@
   fill: var(--osdk-filter-range-histogram-bar-active-color);
 }
 
+.histogramBar[data-click-to-filter="true"] {
+  cursor: pointer;
+}
+
+.histogramBar[data-click-to-filter="true"]:hover {
+  fill: var(--osdk-filter-range-histogram-bar-active-color);
+}
+
 .axisLine {
   stroke: var(--osdk-filter-range-histogram-axisLine-color);
   stroke-width: 1;
