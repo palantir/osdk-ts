@@ -235,7 +235,7 @@
     "test": {
       "outputLogs": "new-only",
       "env": ["FORCE_COLOR"],
-      "dependsOn": ["^transpileEsm"]
+      "dependsOn": ["transpileEsm", "^transpileEsm"]
     },
 
     "//#check-mrl": {
