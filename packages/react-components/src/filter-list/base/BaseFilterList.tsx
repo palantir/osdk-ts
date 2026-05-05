@@ -41,6 +41,7 @@ export function BaseFilterList<D>(
     onReset,
     onFilterAdded,
     onFilterRemoved,
+    perFilterWhereClauses,
     showResetButton = false,
     showActiveFilterCount = false,
     hasVisibilityChanges,
@@ -108,6 +109,7 @@ export function BaseFilterList<D>(
             getFilterKey={getFilterKey}
             getFilterLabel={getFilterLabel}
             enableSorting={enableSorting}
+            perFilterWhereClauses={perFilterWhereClauses}
           />
         </div>
 

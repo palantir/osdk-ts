@@ -73,6 +73,7 @@ interface FilterListItemProps<D> {
   ) => void;
   onFilterRemoved?: (filterKey: string) => void;
   renderInput: RenderFilterInput<D>;
+  whereClauseForFilter?: unknown;
   dragHandleAttributes?: DraggableAttributes;
   dragHandleListeners?: DraggableSyntheticListeners;
   className?: string;
@@ -87,6 +88,7 @@ function FilterListItemInner<D>({
   onFilterStateChanged,
   onFilterRemoved,
   renderInput,
+  whereClauseForFilter,
   dragHandleAttributes,
   dragHandleListeners,
   className,
@@ -229,6 +231,7 @@ function FilterListItemInner<D>({
             onFilterStateChanged: handleFilterStateChanged,
             searchQuery: searchQueryForInput,
             excludeRowOpen,
+            whereClauseForFilter,
           })}
         </ErrorBoundary>
       </div>
