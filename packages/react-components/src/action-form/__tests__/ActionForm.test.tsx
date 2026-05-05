@@ -15,20 +15,16 @@
  */
 
 import type { ActionDefinition, ActionMetadata } from "@osdk/api";
-import { useOsdkMetadata } from "@osdk/react";
-import { useOsdkAction } from "@osdk/react/experimental";
+import { useOsdkAction, useOsdkMetadata } from "@osdk/react";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { useState } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { ActionForm } from "../ActionForm.js";
 import type { FormFieldDefinition } from "../FormFieldApi.js";
 
-vi.mock("@osdk/react/experimental", () => ({
+vi.mock("@osdk/react", () => ({
   useOsdkAction: vi.fn(),
   useRegisterUserAgent: vi.fn(),
-}));
-
-vi.mock("@osdk/react", () => ({
   useOsdkMetadata: vi.fn(),
 }));
 

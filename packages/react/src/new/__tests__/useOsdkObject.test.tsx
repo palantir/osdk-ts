@@ -17,11 +17,11 @@
 import type { Osdk } from "@osdk/api";
 import type { Client } from "@osdk/client";
 import { Employee } from "@osdk/client.test.ontology";
-import type { ObservableClient } from "@osdk/client/unstable-do-not-use";
+import type { ObservableClient } from "@osdk/client/observable";
 import { act, renderHook } from "@testing-library/react";
 import React from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { OsdkContext2 } from "../OsdkContext2.js";
+import { OsdkContext } from "../OsdkContext.js";
 import { useOsdkObject } from "../useOsdkObject.js";
 
 type Observer = {
@@ -67,7 +67,7 @@ function createMockObservableClient(): {
 function createWrapper(observableClient: ObservableClient) {
   return function Wrapper({ children }: { children: React.ReactNode }) {
     return (
-      <OsdkContext2.Provider
+      <OsdkContext.Provider
         value={{
           client: {} as Client,
           observableClient,
@@ -75,7 +75,7 @@ function createWrapper(observableClient: ObservableClient) {
         }}
       >
         {children}
-      </OsdkContext2.Provider>
+      </OsdkContext.Provider>
     );
   };
 }

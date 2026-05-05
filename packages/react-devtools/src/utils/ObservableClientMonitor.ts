@@ -25,7 +25,7 @@ import type {
   ObserveObjectCallbackArgs,
   ObserveObjectsCallbackArgs,
   Unsubscribable,
-} from "@osdk/client/unstable-do-not-use";
+} from "@osdk/client/observable";
 import type { MockManager } from "../mocking/MockManager.js";
 import { MetricsStore } from "../store/MetricsStore.js";
 import type {
@@ -223,7 +223,7 @@ export class ObservableClientMonitor {
           wrapped = this.wrapObserveList(target.observeList.bind(target));
         } else if (prop === "observeAggregation") {
           wrapped = this.wrapObserveAggregation(
-            // eslint-disable-next-line @typescript-eslint/no-deprecated
+             
             target.observeAggregation.bind(target),
           );
         } else if (prop === "observeLinks" && ext.observeLinks) {

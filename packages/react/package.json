@@ -1,6 +1,6 @@
 {
   "name": "@osdk/react",
-  "version": "0.16.0",
+  "version": "0.17.0",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -33,6 +33,24 @@
       },
       "require": "./build/cjs/public/experimental.cjs",
       "default": "./build/browser/public/experimental.js"
+    },
+    "./platform-apis": {
+      "browser": "./build/browser/public/platform-apis.js",
+      "import": {
+        "types": "./build/types/public/platform-apis.d.ts",
+        "default": "./build/esm/public/platform-apis.js"
+      },
+      "require": "./build/cjs/public/platform-apis.cjs",
+      "default": "./build/browser/public/platform-apis.js"
+    },
+    "./testing": {
+      "browser": "./build/browser/public/testing.js",
+      "import": {
+        "types": "./build/types/public/testing.d.ts",
+        "default": "./build/esm/public/testing.js"
+      },
+      "require": "./build/cjs/public/testing.cjs",
+      "default": "./build/browser/public/testing.js"
     },
     "./experimental/admin": {
       "browser": "./build/browser/public/experimental/admin.js",
@@ -82,8 +100,8 @@
   },
   "peerDependencies": {
     "@osdk/aip-core": "workspace:^",
-    "@osdk/api": "^2.8.0",
-    "@osdk/client": "^2.8.0",
+    "@osdk/api": "workspace:^",
+    "@osdk/client": "workspace:^",
     "@osdk/foundry.admin": "*",
     "@osdk/foundry.core": "*",
     "@types/react": "^17 || ^18 || ^19",

@@ -1,5 +1,5 @@
 import type { DerivedProperty } from "@osdk/api";
-import { useLinks, useOsdkObjects } from "@osdk/react/experimental";
+import { useLinks, useOsdkObjects } from "@osdk/react";
 import React from "react";
 import type { Office } from "../generatedNoCheck2/index.js";
 import { $Interfaces, Employee } from "../generatedNoCheck2/index.js";

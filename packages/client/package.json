@@ -1,6 +1,6 @@
 {
   "name": "@osdk/client",
-  "version": "2.13.0",
+  "version": "2.14.0",
   "description": "",
   "access": "public",
   "license": "Apache-2.0",
@@ -35,6 +35,15 @@
       },
       "require": "./build/cjs/public/internal.cjs",
       "default": "./build/browser/public/internal.js"
+    },
+    "./observable": {
+      "browser": "./build/browser/public/observable.js",
+      "import": {
+        "types": "./build/types/public/observable.d.ts",
+        "default": "./build/esm/public/observable.js"
+      },
+      "require": "./build/cjs/public/observable.cjs",
+      "default": "./build/browser/public/observable.js"
     },
     "./unstable-do-not-use": {
       "browser": "./build/browser/public/unstable-do-not-use.js",

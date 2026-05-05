@@ -20,10 +20,10 @@ import type {
   PrimaryKeyType,
   PropertyKeys,
 } from "@osdk/api";
-import type { ObserveObjectCallbackArgs } from "@osdk/client/unstable-do-not-use";
+import type { ObserveObjectCallbackArgs } from "@osdk/client/observable";
 import React from "react";
 import { devToolsMetadata, makeExternalStore } from "./makeExternalStore.js";
-import { OsdkContext2 } from "./OsdkContext2.js";
+import { OsdkContext } from "./OsdkContext.js";
 
 export interface UseOsdkObjectResult<
   Q extends ObjectOrInterfaceDefinition,
@@ -108,7 +108,7 @@ export function useOsdkObject<
       options?: UseOsdkObjectOptions<Q>,
     ]
 ): UseOsdkObjectResult<Q> {
-  const { observableClient } = React.useContext(OsdkContext2);
+  const { observableClient } = React.useContext(OsdkContext);
 
   // Check if first arg is an instance to discriminate signatures
   // TypeScript cannot narrow rest parameter unions with optional parameters,

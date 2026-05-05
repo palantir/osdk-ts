@@ -23,7 +23,7 @@ import type {
   ShapeInstance,
 } from "@osdk/api/unstable";
 import { ShapeNullabilityError } from "@osdk/api/unstable";
-import type { Unsubscribable } from "@osdk/client/unstable-do-not-use";
+import type { Unsubscribable } from "@osdk/client/observable";
 
 export type AnyShapeInstance = ShapeInstance<
   ShapeDefinition<ObjectOrInterfaceDefinition>
