@@ -179,8 +179,7 @@ function SubmitToast(): React.ReactElement | null {
 }
 
 const meta: Meta<BaseFormStoryProps> = {
-  title: "Experimental/BaseForm",
-  tags: ["experimental"],
+  title: "Experimental/ActionForm/Building Blocks/BaseForm",
   component: BaseForm,
   decorators: [
     (Story) => (
@@ -200,6 +199,12 @@ const meta: Meta<BaseFormStoryProps> = {
     },
     controls: {
       expanded: true,
+    },
+    docs: {
+      description: {
+        component:
+          "BaseForm is the lower-level form renderer used by ActionForm. Use it directly when you already have form content definitions or need custom form composition.",
+      },
     },
   },
   argTypes: {

@@ -1,15 +1,15 @@
 :root {
   /* Switch dimensions */
-  --osdk-switch-track-width: 28px;
-  --osdk-switch-track-height: 16px;
-  --osdk-switch-thumb-size: 12px;
+  --osdk-switch-track-width: 36px;
+  --osdk-switch-track-height: 20px;
+  --osdk-switch-thumb-size: 16px;
   --osdk-switch-thumb-offset: 2px;
-  --osdk-switch-border-radius: var(--osdk-surface-border-radius);
+  --osdk-switch-border-radius: 9999px;
   --osdk-switch-disabled-opacity: var(--osdk-input-disabled-opacity);
 
   /* Switch colors */
-  --osdk-switch-track-bg: var(--osdk-intent-default-rest);
-  --osdk-switch-track-bg-hover: var(--osdk-intent-default-hover);
+  --osdk-switch-track-bg: var(--osdk-palette-gray-4);
+  --osdk-switch-track-bg-hover: var(--osdk-palette-gray-2);
   --osdk-switch-track-bg-active: var(--osdk-intent-default-active);
   --osdk-switch-track-bg-checked: var(--osdk-intent-primary-rest);
   --osdk-switch-track-bg-checked-hover: var(--osdk-intent-primary-hover);

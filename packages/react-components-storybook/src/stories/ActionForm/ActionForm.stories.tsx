@@ -66,7 +66,6 @@ function handleSuccess(result: ActionEditResponse | undefined): void {
 
 const meta = {
   title: "Experimental/ActionForm",
-  tags: ["experimental"],
   component: ActionForm,
   decorators: [
     (Story) => (
@@ -81,7 +80,7 @@ const meta = {
     docs: {
       description: {
         component:
-          "ActionForm fetches action metadata through @osdk/react and renders a submit-ready form. These stories use FauxFoundry + MSW, not mocked hooks.",
+          "ActionForm fetches action metadata through @osdk/react and renders a submit-ready BaseForm. These stories use FauxFoundry + MSW, not mocked hooks.",
       },
     },
   },
