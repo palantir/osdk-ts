@@ -25,6 +25,8 @@
   display: flex;
   flex-direction: column;
   gap: var(--osdk-form-field-gap);
+  padding-block: var(--osdk-form-fields-block-padding);
+  padding-inline: var(--osdk-form-padding-inline);
 }
 
 .osdkFormFooter {
@@ -32,8 +34,11 @@
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  border-top: var(--osdk-surface-border-width) solid
-    var(--osdk-form-footer-border-color);
+  padding-block: var(--osdk-form-footer-block-padding);
+  padding-inline: var(--osdk-form-padding-inline);
+  border-block-start-width: var(--osdk-surface-border-width);
+  border-block-start-style: solid;
+  border-block-start-color: var(--osdk-form-footer-border-color);
 }
 
 .osdkFormSubmitButton {

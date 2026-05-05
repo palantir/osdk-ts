@@ -104,7 +104,7 @@ describe("ActionForm token integrity", () => {
     expect(mismatches).toEqual([]);
   });
 
-  it("uses region gap instead of generic form content padding", () => {
+  it("uses explicit form padding tokens instead of Storybook internals", () => {
     const formTokens = readFileSync(
       join(PACKAGE_ROOT, "src", "tokens", "component-tokens", "form.css"),
       "utf8",
@@ -117,13 +117,28 @@ describe("ActionForm token integrity", () => {
       join(PACKAGE_ROOT, "src", "action-form", "FormHeader.module.css"),
       "utf8",
     );
+    const storybookStyles = readFileSync(
+      join(
+        PACKAGE_ROOT,
+        "..",
+        "react-components-storybook",
+        "src",
+        "styles",
+        "storybook.css",
+      ),
+      "utf8",
+    );
 
     expect(formTokens).not.toContain("--osdk-form-content-padding");
-    expect(formTokens).not.toContain("--osdk-form-header-inline-padding");
+    expect(formTokens).toContain("--osdk-form-padding-inline: 0");
     expect(baseFormStyles).toContain("gap: var(--osdk-form-region-gap)");
-    expect(baseFormStyles).not.toMatch(/\.osdkFormFields\s*\{[^}]*padding/);
-    expect(baseFormStyles).not.toMatch(/\.osdkFormFooter\s*\{[^}]*padding/);
-    expect(formHeaderStyles).not.toContain("padding-inline");
+    expect(baseFormStyles).toContain(
+      "padding-inline: var(--osdk-form-padding-inline)",
+    );
+    expect(formHeaderStyles).toContain(
+      "padding-inline: var(--osdk-form-padding-inline)",
+    );
+    expect(storybookStyles).not.toContain("[class*=\"osdkForm");
   });
 
   it("caps select-like popups through component tokens only", () => {

@@ -923,10 +923,12 @@ Styling for form components.
 
 #### Layout
 
-| Variable                 | Default Value                           | Description              |
-| ------------------------ | --------------------------------------- | ------------------------ |
-| `--osdk-form-region-gap` | `calc(var(--osdk-surface-spacing) * 3)` | Gap between form regions |
-| `--osdk-form-field-gap`  | `calc(var(--osdk-surface-spacing) * 4)` | Gap between fields       |
+| Variable                           | Default Value                           | Description                              |
+| ---------------------------------- | --------------------------------------- | ---------------------------------------- |
+| `--osdk-form-region-gap`           | `calc(var(--osdk-surface-spacing) * 3)` | Gap between form regions                 |
+| `--osdk-form-field-gap`            | `calc(var(--osdk-surface-spacing) * 4)` | Gap between fields                       |
+| `--osdk-form-padding-inline`       | `0`                                     | Shared inline padding for form regions   |
+| `--osdk-form-fields-block-padding` | `0`                                     | Block padding for the form fields region |
 
 #### Header
 
@@ -943,6 +945,7 @@ Styling for form components.
 | Variable                             | Default Value                              | Description                  |
 | ------------------------------------ | ------------------------------------------ | ---------------------------- |
 | `--osdk-form-footer-border-color`    | `var(--osdk-surface-border-color-default)` | Footer border color          |
+| `--osdk-form-footer-block-padding`   | `0`                                        | Footer block padding         |
 | `--osdk-form-footer-error-color`     | `var(--osdk-form-error-color)`             | Footer error indicator color |
 | `--osdk-form-footer-error-font-size` | `var(--osdk-typography-size-body-medium)`  | Footer error font size       |
 
