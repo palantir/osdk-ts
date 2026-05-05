@@ -14,6 +14,5 @@
  * limitations under the License.
  */
 
-export type { OsdkDevToolsOptions } from "../vite/index.js";
-export { osdkDevTools } from "../vite/index.js";
+export * from "../vite/index.js";
 export { default } from "../vite/index.js";

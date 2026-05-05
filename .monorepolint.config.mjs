@@ -968,6 +968,30 @@ function standardPackageRules(shared, options) {
     skipAttw: options.skipAttw ?? options.skipTypes,
   };
 
+  // CSS bundling runs from the leaf transpile step. For ESM-only packages it
+  // hooks onto transpileEsm; for browser-targeted packages it hooks onto
+  // transpileBrowser so the browser build sees the freshly-bundled CSS.
+  const buildCssSuffix = cssExports.length > 0
+    ? " && node scripts/build-css.mjs"
+    : "";
+
+  const getTranspileEsmScript = () => {
+    if (!options.output.esm) {
+      return DELETE_SCRIPT_ENTRY;
+    }
+    const base =
+      `monorepo.tool.transpile -f esm -m ${options.output.esm} -t node`;
+    return options.output.browser ? base : base + buildCssSuffix;
+  };
+
+  const getTranspileBrowserScript = () => {
+    if (!options.output.browser) {
+      return DELETE_SCRIPT_ENTRY;
+    }
+    return `monorepo.tool.transpile -f esm -m ${options.output.esm} -t browser`
+      + buildCssSuffix;
+  };
+
   if (options.minimalChangesOnly) {
     return minimalPackageRules(shared, options);
   }
@@ -1061,18 +1085,8 @@ function standardPackageRules(shared, options) {
           "fix-lint":
             "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
           transpile: DELETE_SCRIPT_ENTRY,
-          transpileEsm: options.output.esm
-            ? `monorepo.tool.transpile -f esm -m ${options.output.esm} -t node${
-              !options.output.browser && cssExports.length > 0
-                ? " && node scripts/build-css.mjs"
-                : ""
-            }`
-            : DELETE_SCRIPT_ENTRY,
-          transpileBrowser: options.output.browser
-            ? `monorepo.tool.transpile -f esm -m ${options.output.esm} -t browser${
-              cssExports.length > 0 ? " && node scripts/build-css.mjs" : ""
-            }`
-            : DELETE_SCRIPT_ENTRY,
+          transpileEsm: getTranspileEsmScript(),
+          transpileBrowser: getTranspileBrowserScript(),
           transpileCjs: options.output.cjs === "bundle"
             ? "monorepo.tool.transpile -f cjs -m bundle -t node"
             : DELETE_SCRIPT_ENTRY,
