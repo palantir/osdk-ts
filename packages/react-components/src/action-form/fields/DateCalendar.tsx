@@ -105,14 +105,14 @@ export default function DateCalendar({
       <div className={styles.calendarActionBar}>
         <ActionButton
           type="button"
-          variant="minimal"
+          variant="neutral"
           onClick={handleTodayClick}
         >
           {todayButtonText}
         </ActionButton>
         <ActionButton
           type="button"
-          variant="minimal"
+          variant="neutral"
           onClick={onClear}
         >
           {clearButtonText}

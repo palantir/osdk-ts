@@ -15,14 +15,10 @@
  */
 
 import type { ActionDefinition, ActionEditResponse } from "@osdk/api";
-import type { FormFieldDefinition } from "@osdk/react-components/experimental";
 import { ActionForm } from "@osdk/react-components/experimental";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { fn } from "storybook/test";
-import {
-  toggleRemoteStoryAction,
-  updateEmployeeStoryAction,
-} from "../../mocks/fauxFoundry.js";
+import { updateEmployeeStoryAction } from "../../mocks/fauxFoundry.js";
 
 interface UpdateEmployeeStoryAction extends ActionDefinition<unknown> {
   __DefinitionMetadata: {
@@ -39,23 +35,8 @@ interface UpdateEmployeeStoryAction extends ActionDefinition<unknown> {
   };
 }
 
-interface ToggleRemoteStoryAction extends ActionDefinition<unknown> {
-  __DefinitionMetadata: {
-    signatures: unknown;
-    parameters: {
-      isRemote: { type: "boolean" };
-    };
-    type: "action";
-    apiName: "toggleRemoteStoryAction";
-    status: "ACTIVE";
-    rid: string;
-  };
-}
-
 const actionDefinition = updateEmployeeStoryAction
   .actionDefinition as unknown as UpdateEmployeeStoryAction;
-const toggleActionDefinition = toggleRemoteStoryAction
-  .actionDefinition as unknown as ToggleRemoteStoryAction;
 
 const successSpy = fn().mockName("onSuccess");
 const errorSpy = fn().mockName("onError");
@@ -69,10 +50,8 @@ const meta = {
   component: ActionForm,
   decorators: [
     (Story) => (
-      <div className="osdkFormStoryCanvas">
-        <div className="osdkFormCard">
-          <Story />
-        </div>
+      <div className="osdkFormCard">
+        <Story />
       </div>
     ),
   ],
@@ -80,7 +59,7 @@ const meta = {
     docs: {
       description: {
         component:
-          "ActionForm fetches action metadata through @osdk/react and renders a submit-ready BaseForm. These stories use FauxFoundry + MSW, not mocked hooks.",
+          "ActionForm fetches action metadata through @osdk/react and renders a submit-ready BaseForm. These stories use MSW to mock OSDK network requests.",
       },
     },
   },
@@ -126,48 +105,6 @@ export const WithoutTitle: Story = {
         code: `<ActionForm
   actionDefinition={updateEmployeeStoryAction}
   formTitle={null}
-/>`,
-      },
-    },
-  },
-};
-
-const switchFieldDefinitions = [
-  {
-    fieldKey: "isRemote",
-    label: "Remote employee",
-    fieldComponent: "SWITCH",
-    helperText: "Switch is available as an explicit boolean field override.",
-    fieldComponentProps: {},
-  },
-] satisfies ReadonlyArray<FormFieldDefinition<typeof toggleActionDefinition>>;
-
-export const WithSwitchOverride: Story = {
-  render: () => (
-    <ActionForm
-      actionDefinition={toggleActionDefinition}
-      formTitle="Update employee"
-      formFieldDefinitions={switchFieldDefinitions}
-      onSuccess={handleSuccess}
-      onError={errorSpy}
-    />
-  ),
-  parameters: {
-    docs: {
-      source: {
-        code: `const formFieldDefinitions = [
-  {
-    fieldKey: "isRemote",
-    label: "Remote employee",
-    fieldComponent: "SWITCH",
-    fieldComponentProps: {},
-  },
-];
-
-<ActionForm
-  actionDefinition={toggleRemoteStoryAction}
-  formTitle="Update employee"
-  formFieldDefinitions={formFieldDefinitions}
 />`,
       },
     },

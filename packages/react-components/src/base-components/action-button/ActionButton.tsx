@@ -22,8 +22,7 @@ import styles from "./ActionButton.module.css";
 export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>
 {
-  variant?: "primary" | "secondary" | "minimal";
-  size?: "default" | "small";
+  variant?: "primary" | "secondary" | "neutral";
 }
 
 export const ActionButton: React.MemoExoticComponent<
@@ -33,7 +32,7 @@ export const ActionButton: React.MemoExoticComponent<
 > = React.memo(
   React.forwardRef<HTMLButtonElement, ButtonProps>(
     function ActionButton(
-      { variant = "secondary", size = "default", className, ...rest },
+      { variant = "secondary", className, ...rest },
       ref,
     ) {
       return (
@@ -43,10 +42,9 @@ export const ActionButton: React.MemoExoticComponent<
             styles.button,
             variant === "primary"
               ? styles.primaryButton
-              : variant === "minimal"
-              ? styles.minimalButton
+              : variant === "neutral"
+              ? styles.neutralButton
               : styles.secondaryButton,
-            size === "small" && styles.smallButton,
             className,
           )}
           {...rest}

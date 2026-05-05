@@ -1,11 +1,8 @@
 :root {
   --osdk-button-padding-block: calc(var(--osdk-surface-spacing) * 2);
   --osdk-button-padding-inline: calc(var(--osdk-surface-spacing) * 4);
-  --osdk-button-small-padding-block: var(--osdk-surface-spacing);
-  --osdk-button-small-padding-inline: calc(var(--osdk-surface-spacing) * 2);
   --osdk-button-border-radius: var(--osdk-surface-border-radius);
   --osdk-button-font-size: var(--osdk-typography-size-body-medium);
-  --osdk-button-small-font-size: var(--osdk-typography-size-body-small);
 
   /* Primary Button */
   --osdk-button-primary-color: var(--osdk-intent-primary-foreground);
@@ -23,13 +20,13 @@
     --osdk-surface-background-color-default-active
   );
 
-  /* Minimal Button */
-  --osdk-button-minimal-color: var(--osdk-typography-color-default-rest);
-  --osdk-button-minimal-bg: transparent;
-  --osdk-button-minimal-bg-hover: var(
+  /* Neutral Button */
+  --osdk-button-neutral-color: var(--osdk-typography-color-default-rest);
+  --osdk-button-neutral-bg: transparent;
+  --osdk-button-neutral-bg-hover: var(
     --osdk-surface-background-color-default-hover
   );
-  --osdk-button-minimal-bg-active: var(
+  --osdk-button-neutral-bg-active: var(
     --osdk-surface-background-color-default-active
   );
 }

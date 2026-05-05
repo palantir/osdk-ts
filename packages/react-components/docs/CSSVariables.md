@@ -234,15 +234,12 @@ Shared tokens for drag handle styling across components.
 
 Styling for button components.
 
-| Variable                             | Default Value                             | Description                 |
-| ------------------------------------ | ----------------------------------------- | --------------------------- |
-| `--osdk-button-padding-block`        | `calc(var(--osdk-surface-spacing) * 2)`   | Button block padding        |
-| `--osdk-button-padding-inline`       | `calc(var(--osdk-surface-spacing) * 4)`   | Button inline padding       |
-| `--osdk-button-small-padding-block`  | `var(--osdk-surface-spacing)`             | Small button block padding  |
-| `--osdk-button-small-padding-inline` | `calc(var(--osdk-surface-spacing) * 2)`   | Small button inline padding |
-| `--osdk-button-border-radius`        | `var(--osdk-surface-border-radius)`       | Button border radius        |
-| `--osdk-button-font-size`            | `var(--osdk-typography-size-body-medium)` | Button font size            |
-| `--osdk-button-small-font-size`      | `var(--osdk-typography-size-body-small)`  | Small button font size      |
+| Variable                       | Default Value                             | Description           |
+| ------------------------------ | ----------------------------------------- | --------------------- |
+| `--osdk-button-padding-block`  | `calc(var(--osdk-surface-spacing) * 2)`   | Button block padding  |
+| `--osdk-button-padding-inline` | `calc(var(--osdk-surface-spacing) * 4)`   | Button inline padding |
+| `--osdk-button-border-radius`  | `var(--osdk-surface-border-radius)`       | Button border radius  |
+| `--osdk-button-font-size`      | `var(--osdk-typography-size-body-medium)` | Button font size      |
 
 #### Primary Button
 
@@ -262,14 +259,14 @@ Styling for button components.
 | `--osdk-button-secondary-bg-hover`  | `var(--osdk-surface-background-color-default-hover)`  | Secondary button hover background  |
 | `--osdk-button-secondary-bg-active` | `var(--osdk-surface-background-color-default-active)` | Secondary button active background |
 
-#### Minimal Button
+#### Neutral Button
 
 | Variable                          | Default Value                                         | Description                      |
 | --------------------------------- | ----------------------------------------------------- | -------------------------------- |
-| `--osdk-button-minimal-color`     | `var(--osdk-typography-color-default-rest)`           | Minimal button text color        |
-| `--osdk-button-minimal-bg`        | `transparent`                                         | Minimal button background        |
-| `--osdk-button-minimal-bg-hover`  | `var(--osdk-surface-background-color-default-hover)`  | Minimal button hover background  |
-| `--osdk-button-minimal-bg-active` | `var(--osdk-surface-background-color-default-active)` | Minimal button active background |
+| `--osdk-button-neutral-color`     | `var(--osdk-typography-color-default-rest)`           | Neutral button text color        |
+| `--osdk-button-neutral-bg`        | `transparent`                                         | Neutral button background        |
+| `--osdk-button-neutral-bg-hover`  | `var(--osdk-surface-background-color-default-hover)`  | Neutral button hover background  |
+| `--osdk-button-neutral-bg-active` | `var(--osdk-surface-background-color-default-active)` | Neutral button active background |
 
 ### Checkbox
 
@@ -942,12 +939,12 @@ Styling for form components.
 
 #### Layout
 
-| Variable                           | Default Value                           | Description                              |
-| ---------------------------------- | --------------------------------------- | ---------------------------------------- |
-| `--osdk-form-region-gap`           | `calc(var(--osdk-surface-spacing) * 3)` | Gap between form regions                 |
-| `--osdk-form-field-gap`            | `calc(var(--osdk-surface-spacing) * 4)` | Gap between fields                       |
-| `--osdk-form-padding-inline`       | `0`                                     | Shared inline padding for form regions   |
-| `--osdk-form-fields-block-padding` | `0`                                     | Block padding for the form fields region |
+| Variable                            | Default Value                           | Description                              |
+| ----------------------------------- | --------------------------------------- | ---------------------------------------- |
+| `--osdk-form-region-gap`            | `calc(var(--osdk-surface-spacing) * 3)` | Gap between form regions                 |
+| `--osdk-form-field-gap`             | `calc(var(--osdk-surface-spacing) * 4)` | Gap between fields                       |
+| `--osdk-form-padding-inline`        | `0`                                     | Shared inline padding for form regions   |
+| `--osdk-form-content-padding-block` | `0`                                     | Block padding for the form fields region |
 
 #### Header
 

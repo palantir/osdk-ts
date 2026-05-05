@@ -215,7 +215,7 @@ describe("ActionForm", () => {
         />,
       );
 
-      expect(screen.getByRole("switch", { name: /^Enabled/ })).toBeDefined();
+      expect(screen.getByRole("switch")).toBeDefined();
     });
   });
 

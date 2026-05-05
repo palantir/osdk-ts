@@ -91,6 +91,24 @@ describe("DateRangeInputField", () => {
       expect(screen.queryByRole("button", { name: "Clear" })).toBeNull();
     });
 
+    it("renders calendar navigation buttons when the popover is open", () => {
+      render(
+        <DateRangeInputField
+          value={[new Date(2024, 0, 15), null]}
+          onChange={vi.fn()}
+        />,
+      );
+      fireEvent.focus(screen.getByLabelText("Start date"));
+
+      expect(screen.getByRole("dialog")).toBeDefined();
+      expect(
+        screen.getByRole("button", { name: "Go to previous month" }),
+      ).toBeDefined();
+      expect(
+        screen.getByRole("button", { name: "Go to next month" }),
+      ).toBeDefined();
+    });
+
     it("opens popover when end input is focused", () => {
       render(<DateRangeInputField value={[null, null]} onChange={vi.fn()} />);
       const endInput = screen.getByLabelText("End date");
@@ -424,7 +442,7 @@ describe("DateRangeInputField", () => {
   });
 
   describe("time picker (showTime)", () => {
-    it("renders segmented time inputs when showTime is true", () => {
+    it("renders time inputs when showTime is true", () => {
       render(
         <DateRangeInputField
           value={[new Date(2024, 0, 15, 10, 30), new Date(2024, 0, 20, 14, 0)]}

@@ -15,8 +15,7 @@
  */
 
 .button {
-  padding-block: var(--osdk-button-padding-block);
-  padding-inline: var(--osdk-button-padding-inline);
+  padding: var(--osdk-button-padding-block) var(--osdk-button-padding-inline);
   border-radius: var(--osdk-button-border-radius);
   font-size: var(--osdk-button-font-size);
   cursor: pointer;
@@ -25,12 +24,6 @@
     outline: var(--osdk-focus-outline);
     outline-offset: var(--osdk-focus-visible-outline-offset);
   }
-}
-
-.smallButton {
-  padding-block: var(--osdk-button-small-padding-block);
-  padding-inline: var(--osdk-button-small-padding-inline);
-  font-size: var(--osdk-button-small-font-size);
 }
 
 .secondaryButton {
@@ -52,17 +45,17 @@
   }
 }
 
-.minimalButton {
-  background-color: var(--osdk-button-minimal-bg);
+.neutralButton {
+  background-color: var(--osdk-button-neutral-bg);
   border: none;
-  color: var(--osdk-button-minimal-color);
+  color: var(--osdk-button-neutral-color);
 
   &:hover:not(:disabled) {
-    background-color: var(--osdk-button-minimal-bg-hover);
+    background-color: var(--osdk-button-neutral-bg-hover);
   }
 
   &:active:not(:disabled) {
-    background-color: var(--osdk-button-minimal-bg-active);
+    background-color: var(--osdk-button-neutral-bg-active);
   }
 
   &:disabled {

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useCallback } from "react";
+import React from "react";
 import { Switch } from "../../base-components/switch/Switch.js";
 import type { SwitchFieldProps } from "../FormFieldApi.js";
 
@@ -24,22 +24,13 @@ export const SwitchField: React.NamedExoticComponent<SwitchFieldProps> = React
     value,
     onChange,
     error,
-    "aria-label": ariaLabel,
   }: SwitchFieldProps): React.ReactElement {
-    const handleCheckedChange = useCallback(
-      (checked: boolean) => {
-        onChange?.(checked);
-      },
-      [onChange],
-    );
-
     return (
       <Switch
         id={id}
         checked={value ?? false}
-        onCheckedChange={handleCheckedChange}
+        onCheckedChange={onChange}
         aria-invalid={error != null || undefined}
-        aria-label={ariaLabel}
       />
     );
   });

@@ -153,7 +153,7 @@ describe("DatetimePickerField", () => {
   });
 
   describe("time input", () => {
-    it("renders segmented time inputs when showTime is true", () => {
+    it("renders time inputs when showTime is true", () => {
       render(
         <DatetimePickerField
           value={new Date(2024, 0, 15, 14, 30)}
@@ -168,27 +168,6 @@ describe("DatetimePickerField", () => {
         .toBe("14");
       expect((screen.getByLabelText("Time minutes") as HTMLInputElement).value)
         .toBe("30");
-    });
-
-    it("renders time input before the calendar action bar", () => {
-      render(
-        <DatetimePickerField
-          value={new Date(2024, 0, 15, 14, 30)}
-          onChange={vi.fn()}
-          showTime={true}
-        />,
-      );
-      fireEvent.focus(screen.getByRole("combobox"));
-
-      const timeInput = screen.getByLabelText("Time hours");
-      const todayButton = screen.getByRole("button", { name: "Today" });
-      const controls = Array.from(document.body.querySelectorAll(
-        "input, button",
-      ));
-
-      expect(controls.indexOf(timeInput)).toBeLessThan(
-        controls.indexOf(todayButton),
-      );
     });
 
     it("calls onChange with updated time when a valid time segment changes", () => {

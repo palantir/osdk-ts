@@ -451,12 +451,7 @@ export interface RadioButtonsFieldProps<V> extends BaseFormFieldProps<V> {
 /**
  * Switch field props for boolean values.
  */
-export interface SwitchFieldProps extends BaseFormFieldProps<boolean> {
-  /**
-   * Accessible label for the switch control.
-   */
-  "aria-label"?: string;
-}
+export interface SwitchFieldProps extends BaseFormFieldProps<boolean> {}
 
 /**
  * Option interface for radio button options

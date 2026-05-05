@@ -24,7 +24,7 @@ afterEach(() => {
 });
 
 describe("TimePicker", () => {
-  it("renders segmented hour and minute inputs from a Date value", () => {
+  it("renders hour and minute time inputs from a Date value", () => {
     const { rerender } = render(
       <TimePicker
         value={new Date(2024, 0, 15, 9, 5)}
@@ -98,6 +98,42 @@ describe("TimePicker", () => {
 
     expect(onChange).not.toHaveBeenCalled();
     expect(hourInput.value).toBe("9");
+  });
+
+  it("marks segment as aria-invalid for out-of-range values", () => {
+    render(
+      <TimePicker
+        value={new Date(2024, 0, 15, 9, 5)}
+        onChange={vi.fn()}
+      />,
+    );
+
+    const hourInput = screen.getByLabelText("Time hours") as HTMLInputElement;
+    fireEvent.change(hourInput, { target: { value: "99" } });
+    expect(hourInput.getAttribute("aria-invalid")).toBe("true");
+
+    const minuteInput = screen.getByLabelText(
+      "Time minutes",
+    ) as HTMLInputElement;
+    fireEvent.change(minuteInput, { target: { value: "75" } });
+    expect(minuteInput.getAttribute("aria-invalid")).toBe("true");
+  });
+
+  it("does not mark segment as aria-invalid for valid values", () => {
+    render(
+      <TimePicker
+        value={new Date(2024, 0, 15, 9, 5)}
+        onChange={vi.fn()}
+      />,
+    );
+
+    const hourInput = screen.getByLabelText("Time hours") as HTMLInputElement;
+    expect(hourInput.getAttribute("aria-invalid")).toBeNull();
+
+    const minuteInput = screen.getByLabelText(
+      "Time minutes",
+    ) as HTMLInputElement;
+    expect(minuteInput.getAttribute("aria-invalid")).toBeNull();
   });
 
   it("clamps an out-of-range minute on blur", () => {

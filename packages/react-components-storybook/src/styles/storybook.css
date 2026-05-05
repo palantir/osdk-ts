@@ -73,20 +73,16 @@ body {
 .osdkFormCard {
   --osdk-form-label-font-size: var(--osdk-typography-size-body-small);
   --osdk-form-padding-inline: calc(var(--osdk-surface-spacing) * 4);
-  --osdk-form-fields-block-padding: calc(var(--osdk-surface-spacing) * 4);
+  --osdk-form-content-padding-block: calc(var(--osdk-surface-spacing) * 4);
   --osdk-form-footer-block-padding: calc(var(--osdk-surface-spacing) * 4);
 
   max-width: 480px;
   width: 100%;
+  padding: calc(var(--osdk-surface-spacing) * 4);
   background: var(--osdk-background-primary);
   border: var(--osdk-surface-border-width) solid
     var(--osdk-surface-border-color-default);
   border-radius: var(--osdk-surface-border-radius);
-}
-
-.osdkFormStoryCanvas {
-  padding-block: calc(var(--osdk-surface-spacing) * 4);
-  padding-inline: calc(var(--osdk-surface-spacing) * 4);
 }
 
 .osdkFormStorySpacing {

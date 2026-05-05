@@ -185,10 +185,8 @@ const meta: Meta<BaseFormStoryProps> = {
     (Story) => (
       <>
         <SubmitToast />
-        <div className="osdkFormStoryCanvas">
-          <div className="osdkFormCard">
-            <Story />
-          </div>
+        <div className="osdkFormCard">
+          <Story />
         </div>
       </>
     ),
@@ -1543,5 +1541,42 @@ export const WithGridSection: Story = {
   args: {
     formContent: gridSectionFormContent,
     onSubmit: handleSubmit,
+  },
+};
+
+const switchFormContent: ReadonlyArray<FormContentItem> = [
+  field({
+    fieldKey: "isRemote",
+    fieldComponent: "SWITCH",
+    label: "Remote employee",
+    helperText: "Switch is available as an explicit boolean field override.",
+    fieldComponentProps: {},
+  }),
+];
+
+export const WithSwitch: Story = {
+  args: {
+    formContent: switchFormContent,
+    onSubmit: handleSubmit,
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `const formContent = [
+  {
+    fieldKey: "isRemote",
+    fieldComponent: "SWITCH",
+    label: "Remote employee",
+    helperText: "Switch is available as an explicit boolean field override.",
+    fieldComponentProps: {},
+  },
+];
+
+<BaseForm
+  formContent={formContent}
+  onSubmit={(formState) => console.log("Submitted:", formState)}
+/>`,
+      },
+    },
   },
 };
