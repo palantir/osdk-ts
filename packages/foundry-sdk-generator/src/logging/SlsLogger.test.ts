@@ -70,10 +70,10 @@ describe("SlsLogger", () => {
       level: "INFO",
       message: "hello world",
       thread: "main",
+      origin: "@osdk/foundry-sdk-generator",
       params: {},
     });
     expect(typeof entry.time).toBe("string");
-    expect(entry.origin).toMatch(/^[^/]+:\d+$/);
   });
 
   it("appends a newline after each entry", () => {

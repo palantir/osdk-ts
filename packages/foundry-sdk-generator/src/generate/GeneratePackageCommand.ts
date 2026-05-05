@@ -191,16 +191,6 @@ export class GeneratePackageCommand
     const baseSafeParams = { ontologyRid, packageVersion: args.packageVersion };
     const baseUnsafeParams = { packageName: args.packageName };
 
-    logger.info("Starting OSDK generation", {
-      params: baseSafeParams,
-      unsafeParams: baseUnsafeParams,
-    });
-
-    const ontologyMetadataResolver = new OntologyMetadataResolver(
-      args.authToken as string,
-      args.foundryHostname as string,
-    );
-
     if (!isValidSemver(args.packageVersion as string)) {
       logger.error(
         "Invalid argument provided for packageVersion, expected valid semver",
@@ -209,72 +199,73 @@ export class GeneratePackageCommand
       exit(1);
     }
 
-    const totalStart = Date.now();
-
-    const packageInfo = await logDuration(
-      logger,
-      "Loading package info",
-      () =>
-        ontologyMetadataResolver.getInfoForPackages(
-          args.sdkPackages ?? new Map(),
-        ),
-      { params: { externalSdkCount: args.sdkPackages?.size ?? 0 } },
+    const ontologyMetadataResolver = new OntologyMetadataResolver(
+      args.authToken as string,
+      args.foundryHostname as string,
     );
-
-    const wireOntologyDefinition = await logDuration(
-      logger,
-      "Loading ontology metadata",
-      () =>
-        ontologyMetadataResolver.getWireOntologyDefinition(
-          ontologyRid,
-          {
-            objectTypesApiNamesToLoad: transformArrayArg(args.objectTypes),
-            actionTypesApiNamesToLoad: transformArrayArg(args.actionTypes),
-            queryTypesApiNamesToLoad: transformArrayArg(args.queryTypes),
-            interfaceTypesApiNamesToLoad: transformArrayArg(
-              args.interfaceTypes,
-            ),
-            linkTypesApiNamesToLoad: transformArrayArg(args.linkTypes),
-          },
-          packageInfo,
-          args.branch,
-        ),
-      { params: { ontologyRid } },
-    );
-
-    if (wireOntologyDefinition.isErr()) {
-      logger.error("Failed loading ontology metadata", {
-        unsafeParams: { errors: wireOntologyDefinition.error },
-      });
-      exit(1);
-    }
-
-    // Narrowing doesn't carry into the closure below, so extract here.
-    const ontologyInfo = wireOntologyDefinition.value;
 
     await logDuration(
       logger,
-      "Generating OSDK package",
-      () =>
-        generatePackage(ontologyInfo, {
-          packageName: args.packageName,
-          packageVersion: args.packageVersion,
-          outputDir: args.outputDir,
-          beta: !!args.beta,
-          ontologyJsonOnly:
-            args.experimentalFeatures?.includes("ontologyJsonOnly") ?? false,
-          packageRid: args.packageRid,
-        }, logger),
-      {
-        params: baseSafeParams,
-        unsafeParams: baseUnsafeParams,
-      },
-    );
+      "OSDK generation",
+      async () => {
+        const packageInfo = await logDuration(
+          logger,
+          "Loading package info",
+          () =>
+            ontologyMetadataResolver.getInfoForPackages(
+              args.sdkPackages ?? new Map(),
+            ),
+          { params: { externalSdkCount: args.sdkPackages?.size ?? 0 } },
+        );
 
-    logger.info("OSDK generation complete", {
-      params: { ...baseSafeParams, totalDurationMs: Date.now() - totalStart },
-      unsafeParams: baseUnsafeParams,
-    });
-    return;
+        const wireOntologyDefinition = await logDuration(
+          logger,
+          "Loading ontology metadata",
+          () =>
+            ontologyMetadataResolver.getWireOntologyDefinition(
+              ontologyRid,
+              {
+                objectTypesApiNamesToLoad: transformArrayArg(args.objectTypes),
+                actionTypesApiNamesToLoad: transformArrayArg(args.actionTypes),
+                queryTypesApiNamesToLoad: transformArrayArg(args.queryTypes),
+                interfaceTypesApiNamesToLoad: transformArrayArg(
+                  args.interfaceTypes,
+                ),
+                linkTypesApiNamesToLoad: transformArrayArg(args.linkTypes),
+              },
+              packageInfo,
+              args.branch,
+            ),
+          { params: { ontologyRid } },
+        );
+
+        if (wireOntologyDefinition.isErr()) {
+          logger.error("Failed loading ontology metadata", {
+            unsafeParams: { errors: wireOntologyDefinition.error },
+          });
+          exit(1);
+        }
+
+        // Narrowing doesn't carry into the closure below, so extract here.
+        const ontologyInfo = wireOntologyDefinition.value;
+
+        await logDuration(
+          logger,
+          "Rendering OSDK",
+          () =>
+            generatePackage(ontologyInfo, {
+              packageName: args.packageName,
+              packageVersion: args.packageVersion,
+              outputDir: args.outputDir,
+              beta: !!args.beta,
+              ontologyJsonOnly:
+                args.experimentalFeatures?.includes("ontologyJsonOnly")
+                  ?? false,
+              packageRid: args.packageRid,
+            }, logger),
+        );
+      },
+      { params: baseSafeParams, unsafeParams: baseUnsafeParams },
+    );
   };
 }

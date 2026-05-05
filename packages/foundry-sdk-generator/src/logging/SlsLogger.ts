@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-// Adapted from palantir/typescript-compute-module's SlsLogger:
-// https://github.com/palantir/typescript-compute-module/blob/develop/typescript-compute-module/src/logging/SlsLogger.ts
-
 import { isMainThread, threadId } from "node:worker_threads";
 
 type SlsLogLevel = "DEBUG" | "INFO" | "WARN" | "ERROR";
+
+const ORIGIN = "@osdk/foundry-sdk-generator";
 
 export interface SlsLogParams {
   /** Safe params — RIDs, counts, durations, type identifiers. */
@@ -87,7 +86,7 @@ export class SlsLogger {
       type: "service.1",
       level,
       time: new Date().toISOString(),
-      origin: getCallerOrigin(),
+      origin: ORIGIN,
       thread: isMainThread ? "main" : `worker-${threadId}`,
       message,
       params: { ...this.envParams, ...params?.params },
@@ -99,28 +98,5 @@ export class SlsLogger {
       entry.stacktrace = error.stack;
     }
     this.stream.write(JSON.stringify(entry) + "\n");
-  }
-}
-
-// Frame index 3 skips: getCallerOrigin, SlsLogger.write, SlsLogger.<level>.
-function getCallerOrigin(): string {
-  // eslint-disable-next-line @typescript-eslint/unbound-method -- saving a static property, not invoking it
-  const original = Error.prepareStackTrace;
-  try {
-    Error.prepareStackTrace = (_err, stack) => stack;
-    const { stack } = new Error();
-
-    const callSites = stack as unknown as NodeJS.CallSite[] | undefined;
-    const caller = callSites?.[3];
-    if (caller == null) return "unknown";
-
-    const filePath = caller.getFileName();
-    const lineNumber = caller.getLineNumber();
-    if (filePath == null || lineNumber == null) return "unknown";
-
-    const fileName = filePath.split("/").pop() ?? filePath;
-    return `${fileName}:${lineNumber}`;
-  } finally {
-    Error.prepareStackTrace = original;
   }
 }
