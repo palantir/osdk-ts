@@ -91,6 +91,11 @@ export interface RangeInputProps<T> {
     buckets: Array<HistogramBucket<T>>;
     subtitle?: string;
   };
+  /**
+   * When true, clicking a histogram bar replaces the filter range with
+   * that bucket's `[min, max]`. Default `false` (no behavior change).
+   */
+  clickToFilter?: boolean;
 }
 
 function RangeInputInner<T>({
@@ -104,6 +109,7 @@ function RangeInputInner<T>({
   style,
   config,
   histogramData,
+  clickToFilter = false,
 }: RangeInputProps<T>): React.ReactElement {
   const minInputId = useId();
   const maxInputId = useId();
@@ -221,6 +227,14 @@ function RangeInputInner<T>({
     [buckets.length],
   );
 
+  const handleBucketClick = useCallback(
+    (bucket: HistogramBucket<T>) => {
+      if (!clickToFilter) return;
+      onChangeRef.current(bucket.min, bucket.max);
+    },
+    [clickToFilter],
+  );
+
   const handleMinChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const newValue = e.target.value;
@@ -305,10 +319,15 @@ function RangeInputInner<T>({
                   key={index}
                   className={styles.histogramBar}
                   data-in-range={isInRange}
+                  data-click-to-filter={clickToFilter || undefined}
                   x={x}
                   y={y}
                   width={Math.max(barW, 0.5)}
                   height={barH}
+                  onClick={clickToFilter
+                     
+                    ? () => handleBucketClick(bucket)
+                    : undefined}
                 >
                   <title>
                     {config.formatTooltip(bucket.min, bucket.max, bucket.count)}

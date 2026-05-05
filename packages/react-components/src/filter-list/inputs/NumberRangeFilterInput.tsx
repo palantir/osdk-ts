@@ -33,6 +33,7 @@ interface NumberRangeFilterInputProps<Q extends ObjectTypeDefinition> {
   filterState: FilterState | undefined;
   onFilterStateChanged: (state: FilterState) => void;
   whereClause: WhereClause<Q>;
+  clickToFilter?: boolean;
 }
 
 function NumberRangeFilterInputInner<Q extends ObjectTypeDefinition>({
@@ -42,6 +43,7 @@ function NumberRangeFilterInputInner<Q extends ObjectTypeDefinition>({
   filterState,
   onFilterStateChanged,
   whereClause,
+  clickToFilter,
 }: NumberRangeFilterInputProps<Q>): React.ReactElement {
   const numberRangeState = filterState?.type === "NUMBER_RANGE"
     ? filterState
@@ -171,6 +173,7 @@ function NumberRangeFilterInputInner<Q extends ObjectTypeDefinition>({
         minValue={numberRangeState?.minValue}
         maxValue={numberRangeState?.maxValue}
         onChange={handleRangeChange}
+        clickToFilter={clickToFilter}
       />
     </NullValueWrapper>
   );

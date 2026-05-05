@@ -2032,3 +2032,48 @@ export const FormatDate: Story = {
     </div>
   ),
 };
+
+const CLICK_TO_FILTER_DEFINITIONS: FilterDefinitionUnion<Employee>[] = [
+  {
+    type: "PROPERTY",
+    id: "startDate-click",
+    key: "firstFullTimeStartDate",
+    label: "Start date (click bars)",
+    filterComponent: "DATE_RANGE",
+    filterState: { type: "DATE_RANGE" },
+    clickToFilter: true,
+  },
+  {
+    type: "PROPERTY",
+    id: "employeeNumber-click",
+    key: "employeeNumber",
+    label: "Employee number (click bars)",
+    filterComponent: "NUMBER_RANGE",
+    filterState: { type: "NUMBER_RANGE" },
+    clickToFilter: true,
+  },
+];
+
+export const ClickToFilter: Story = {
+  name: "Click bar to set range",
+  parameters: {
+    docs: {
+      description: {
+        story: "When `clickToFilter: true` is set on a `DATE_RANGE` or "
+          + "`NUMBER_RANGE` property filter definition, clicking a bar in "
+          + "the histogram replaces the filter range with that bucket's "
+          + "`[min, max]`. Clicking a second bar replaces the previous "
+          + "selection — multi-bucket / shift+click union is not supported "
+          + "in v1.",
+      },
+    },
+  },
+  render: () => (
+    <div style={SIDEBAR_STYLE}>
+      <FilterList
+        objectType={Employee}
+        filterDefinitions={CLICK_TO_FILTER_DEFINITIONS}
+      />
+    </div>
+  ),
+};

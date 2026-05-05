@@ -312,6 +312,20 @@ interface PropertyFilterDefinitionBase<
   showCount?: boolean;
 
   /**
+   * When true, clicking a bar in the histogram replaces the filter range
+   * with that bucket's `[min, max]`. Only applies to histogram-rendering
+   * filter components (`NUMBER_RANGE` and `DATE_RANGE`); ignored on other
+   * component types.
+   *
+   * Click replaces the current range — clicking a second bar discards the
+   * previous selection. Multi-bucket selection / shift+click union is NOT
+   * supported in v1.
+   *
+   * @default false
+   */
+  clickToFilter?: boolean;
+
+  /**
    * Controls whether this filter is rendered.
    * When false, the filter is hidden but its state is preserved.
    * @default true
