@@ -167,6 +167,7 @@ export class ObjectTypeShapeExtractor {
       inputShapes: new Map(),
       outputShapes: new Map(),
       inputShapeMetadata: new Map(),
+      inputMappings: [],
     };
 
     // Add property output shapes

@@ -15,12 +15,14 @@
  */
 
 import type { OntologyIrV2 } from "@osdk/client.unstable";
+import type { IDiscoveredFunction } from "@osdk/generator-converters.ontologyir";
 import type { LinkType, ObjectType } from "@osdk/maker";
 import {
   getOntologyDefinition,
   initializeOntologyState,
   OntologyEntityTypeEnum,
 } from "@osdk/maker";
+import * as fs from "fs";
 import { convertOntologyDefinition } from "../conversion/toMarketplace/convertOntologyDefinition.js";
 import { getImportedShapes } from "../conversion/toMarketplace/shapeExtractors/ImportedShapeExtractor.js";
 import { getShapes } from "../conversion/toMarketplace/shapeExtractors/IrShapeExtractor.js";
@@ -34,9 +36,14 @@ export interface OntologyV2Result {
   backingDatasourceLinkApiNames: string[];
 }
 
+export interface FunctionsIr {
+  discoveredFunctions: Array<IDiscoveredFunction>;
+}
+
 export async function defineOntologyV2(
   ns: string,
   body: () => void | Promise<void>,
+  functionsIrFile?: string,
   randomnessKey?: string,
 ): Promise<OntologyV2Result> {
   initializeOntologyState(ns);
@@ -54,16 +61,25 @@ export async function defineOntologyV2(
 
   const ontologyDefinition = getOntologyDefinition();
 
+  let functionsIr: FunctionsIr | undefined;
+  if (functionsIrFile) {
+    functionsIr = JSON.parse(
+      fs.readFileSync(functionsIrFile, "utf-8"),
+    );
+  }
+
   const ridGenerator = new OntologyRidGeneratorImpl(randomnessKey);
   const ontDef = convertOntologyDefinition(
     ontologyDefinition,
     ridGenerator,
+    functionsIr,
     randomnessKey,
   );
 
   const shapes = await getShapes(
     ontDef.ontology,
     ridGenerator,
+    functionsIr,
     randomnessKey,
   );
 

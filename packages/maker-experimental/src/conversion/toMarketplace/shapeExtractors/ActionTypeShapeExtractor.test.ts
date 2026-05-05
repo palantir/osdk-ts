@@ -210,6 +210,11 @@ describe("ActionTypeShapeExtractor", () => {
               },
             },
           },
+          actionTypeLogic: {
+            logic: {
+              rules: [],
+            },
+          },
         } as any,
         parameterIds: {
           title: "title",
@@ -319,6 +324,11 @@ describe("ActionTypeShapeExtractor", () => {
             status: { type: "active", active: {} },
             parameters: {},
           },
+          actionTypeLogic: {
+            logic: {
+              rules: [],
+            },
+          },
         } as any,
         parameterIds: {},
       };
@@ -399,6 +409,11 @@ describe("ActionTypeShapeExtractor", () => {
             },
             status: { type: "active", active: {} },
             parameters: {},
+          },
+          actionTypeLogic: {
+            logic: {
+              rules: [],
+            },
           },
         } as any,
         parameterIds: {},
@@ -497,6 +512,11 @@ describe("ActionTypeShapeExtractor", () => {
                 },
                 required: false,
               },
+            },
+          },
+          actionTypeLogic: {
+            logic: {
+              rules: [],
             },
           },
         } as any,
@@ -608,6 +628,11 @@ describe("ActionTypeShapeExtractor", () => {
                 },
                 required: true,
               },
+            },
+          },
+          actionTypeLogic: {
+            logic: {
+              rules: [],
             },
           },
         } as any,

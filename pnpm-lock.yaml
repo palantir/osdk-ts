@@ -4303,6 +4303,12 @@ importers:
       '@osdk/client.unstable':
         specifier: workspace:~
         version: link:../client.unstable
+      '@osdk/generator-converters.ontologyir':
+        specifier: workspace:~
+        version: link:../generator-converters.ontologyir
+      '@osdk/generator-converters.preview':
+        specifier: workspace:~
+        version: link:../generator-converters.preview
       '@osdk/maker':
         specifier: workspace:~
         version: link:../maker

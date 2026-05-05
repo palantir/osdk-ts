@@ -472,6 +472,7 @@ export interface LoadEntityMetadataResponse {
  * Contains configuration for Phonograph to Funnel/Highbury migration.
  */
 export interface MigrationConfiguration {
+  enableWriteback?: boolean | null | undefined;
   entityMigrationCategory: EntityMigrationCategory;
   importEditsHistory?: boolean | null | undefined;
   minMigrationDuration: string;
@@ -767,7 +768,8 @@ export type StreamingProfileConfigId =
   | "SMALL"
   | "MEDIUM"
   | "LARGE"
-  | "EXTRA_LARGE";
+  | "EXTRA_LARGE"
+  | "EXTRA_EXTRA_LARGE";
 
 /**
  * No distinct SyncConfig is supported at the moment.
