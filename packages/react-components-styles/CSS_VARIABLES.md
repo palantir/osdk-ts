@@ -258,10 +258,10 @@ Shared form-control tokens used by ActionForm, ObjectTable editable cells, and o
 | `--osdk-input-line-height`           | `var(--osdk-typography-line-height-default)`                           | Shared input line height      |
 | `--osdk-select-popup-max-height`     | `min(var(--available-height), calc(var(--osdk-surface-spacing) * 80))` | Select popup maximum height   |
 | `--osdk-combobox-popup-max-height`   | `min(var(--available-height), calc(var(--osdk-surface-spacing) * 80))` | Combobox popup maximum height |
-| `--osdk-switch-track-width`          | `36px`                                                                 | Switch track width            |
-| `--osdk-switch-track-height`         | `20px`                                                                 | Switch track height           |
-| `--osdk-switch-thumb-size`           | `16px`                                                                 | Switch thumb size             |
-| `--osdk-switch-thumb-offset`         | `2px`                                                                  | Switch thumb offset           |
+| `--osdk-switch-track-width`          | `calc(var(--osdk-surface-spacing) * 9)`                                | Switch track width            |
+| `--osdk-switch-track-height`         | `calc(var(--osdk-surface-spacing) * 5)`                                | Switch track height           |
+| `--osdk-switch-thumb-size`           | `calc(var(--osdk-surface-spacing) * 4)`                                | Switch thumb size             |
+| `--osdk-switch-thumb-offset`         | `calc(var(--osdk-surface-spacing) * 0.5)`                              | Switch thumb offset           |
 | `--osdk-time-picker-segment-gap`     | `var(--osdk-surface-spacing)`                                          | Gap between time segments     |
 | `--osdk-time-picker-segment-width`   | `calc(var(--osdk-surface-spacing) * 10)`                               | Width of hour/minute inputs   |
 | `--osdk-time-picker-separator-color` | `var(--osdk-typography-color-muted)`                                   | Time segment separator color  |

@@ -1,9 +1,9 @@
 :root {
   /* Switch dimensions */
-  --osdk-switch-track-width: 36px;
-  --osdk-switch-track-height: 20px;
-  --osdk-switch-thumb-size: 16px;
-  --osdk-switch-thumb-offset: 2px;
+  --osdk-switch-track-width: calc(var(--osdk-surface-spacing) * 9);
+  --osdk-switch-track-height: calc(var(--osdk-surface-spacing) * 5);
+  --osdk-switch-thumb-size: calc(var(--osdk-surface-spacing) * 4);
+  --osdk-switch-thumb-offset: calc(var(--osdk-surface-spacing) * 0.5);
   --osdk-switch-border-radius: 9999px;
   --osdk-switch-disabled-opacity: var(--osdk-input-disabled-opacity);
 

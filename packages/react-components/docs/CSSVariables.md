@@ -1199,10 +1199,10 @@ Styling for toggle switch components.
 
 | Variable                                | Default Value                              | Description                       |
 | --------------------------------------- | ------------------------------------------ | --------------------------------- |
-| `--osdk-switch-track-width`             | `36px`                                     | Track width                       |
-| `--osdk-switch-track-height`            | `20px`                                     | Track height                      |
-| `--osdk-switch-thumb-size`              | `16px`                                     | Thumb size                        |
-| `--osdk-switch-thumb-offset`            | `2px`                                      | Thumb offset from track edge      |
+| `--osdk-switch-track-width`             | `calc(var(--osdk-surface-spacing) * 9)`    | Track width                       |
+| `--osdk-switch-track-height`            | `calc(var(--osdk-surface-spacing) * 5)`    | Track height                      |
+| `--osdk-switch-thumb-size`              | `calc(var(--osdk-surface-spacing) * 4)`    | Thumb size                        |
+| `--osdk-switch-thumb-offset`            | `calc(var(--osdk-surface-spacing) * 0.5)`  | Thumb offset from track edge      |
 | `--osdk-switch-border-radius`           | `9999px`                                   | Track border radius               |
 | `--osdk-switch-disabled-opacity`        | `var(--osdk-input-disabled-opacity)`       | Disabled opacity                  |
 | `--osdk-switch-transition-duration`     | `var(--osdk-emphasis-transition-duration)` | Transition duration               |

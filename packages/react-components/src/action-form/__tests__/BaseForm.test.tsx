@@ -113,6 +113,39 @@ describe("BaseForm", () => {
       });
     });
 
+    it("does not submit on Enter when the field consumes the key event", async () => {
+      const onSubmit = vi.fn();
+      const customField: RendererFieldDefinition = {
+        fieldKey: "custom",
+        fieldComponent: "CUSTOM",
+        label: "custom",
+        fieldComponentProps: {
+          customRenderer: () => (
+            <input
+              aria-label="custom input"
+              onKeyDown={(event) => {
+                event.preventDefault();
+              }}
+            />
+          ),
+        },
+      };
+
+      render(
+        <BaseForm
+          formContent={[field(customField)]}
+          onSubmit={onSubmit}
+        />,
+      );
+
+      fireEvent.keyDown(screen.getByLabelText("custom input"), {
+        key: "Enter",
+      });
+
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      expect(onSubmit).not.toHaveBeenCalled();
+    });
+
     it("submits undefined for fields without defaults", async () => {
       const onSubmit = vi.fn();
 

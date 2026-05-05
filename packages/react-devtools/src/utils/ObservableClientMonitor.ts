@@ -223,7 +223,7 @@ export class ObservableClientMonitor {
           wrapped = this.wrapObserveList(target.observeList.bind(target));
         } else if (prop === "observeAggregation") {
           wrapped = this.wrapObserveAggregation(
-             
+            // eslint-disable-next-line @typescript-eslint/no-deprecated
             target.observeAggregation.bind(target),
           );
         } else if (prop === "observeLinks" && ext.observeLinks) {

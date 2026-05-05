@@ -118,7 +118,29 @@ describe("DatetimePickerField", () => {
       fireEvent.click(screen.getByRole("button", { name: "Today" }));
 
       expect(onChange).toHaveBeenCalledTimes(1);
-      expect(onChange.mock.calls[0][0]).toEqual(new Date(2024, 6, 4, 9, 30));
+      expect(onChange.mock.calls[0][0]).toEqual(new Date(2024, 6, 4));
+    });
+
+    it("does not select today when it is outside the allowed range", () => {
+      vi.useFakeTimers();
+      vi.setSystemTime(new Date(2024, 6, 4, 9, 30));
+      const onChange = vi.fn();
+      render(
+        <DatetimePickerField
+          value={null}
+          onChange={onChange}
+          max={new Date(2024, 6, 3)}
+        />,
+      );
+      fireEvent.focus(screen.getByRole("combobox"));
+
+      const todayButton = screen.getByRole("button", {
+        name: "Today",
+      }) as HTMLButtonElement;
+      expect(todayButton.disabled).toBe(true);
+      fireEvent.click(todayButton);
+
+      expect(onChange).not.toHaveBeenCalled();
     });
 
     it("clears the selected date from the calendar action bar", () => {

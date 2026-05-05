@@ -322,7 +322,8 @@ function shouldSubmitOnEnter(
   event: React.KeyboardEvent<HTMLFormElement>,
 ): boolean {
   if (
-    event.key !== "Enter"
+    event.defaultPrevented
+    || event.key !== "Enter"
     || event.metaKey
     || event.ctrlKey
     || event.altKey

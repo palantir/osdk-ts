@@ -17,7 +17,7 @@
 
 ```typescript
 import { ActionForm } from "@osdk/react-components/experimental";
-import type { FormFieldDefinition } from "@osdk/react-components/experimental";
+import type { FormFieldDefinitionForAction } from "@osdk/react-components/experimental";
 ```
 
 ## Basic Usage
@@ -90,7 +90,7 @@ const fields = [
     fieldComponent: "SWITCH",
     fieldComponentProps: {},
   },
-] satisfies Array<FormFieldDefinition<typeof updateEmployee>>;
+] satisfies Array<FormFieldDefinitionForAction<typeof updateEmployee>>;
 
 <ActionForm actionDefinition={updateEmployee} formFieldDefinitions={fields} />;
 ```
@@ -112,7 +112,7 @@ const fields = [
       ),
     },
   },
-] satisfies Array<FormFieldDefinition<typeof approveEmployee>>;
+] satisfies Array<FormFieldDefinitionForAction<typeof approveEmployee>>;
 
 <ActionForm actionDefinition={approveEmployee} formFieldDefinitions={fields} />;
 ```

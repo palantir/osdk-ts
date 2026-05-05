@@ -221,7 +221,7 @@ export const WithDefaultValues: Story = {
       ],
     },
   },
-] satisfies Array<FormFieldDefinition<typeof updateEmployeeStoryAction>>;
+] satisfies Array<FormFieldDefinitionForAction<typeof updateEmployeeStoryAction>>;
 
 <ActionForm
   actionDefinition={updateEmployeeStoryAction}
@@ -262,7 +262,7 @@ export const WithFieldOverrides: Story = {
     helperText: "Turn on when the employee is not assigned to an office.",
     fieldComponentProps: {},
   },
-] satisfies Array<FormFieldDefinition<typeof updateEmployeeStoryAction>>;
+] satisfies Array<FormFieldDefinitionForAction<typeof updateEmployeeStoryAction>>;
 
 <ActionForm
   actionDefinition={updateEmployeeStoryAction}

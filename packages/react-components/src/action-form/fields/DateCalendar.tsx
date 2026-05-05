@@ -20,6 +20,7 @@ import React, { useCallback, useMemo } from "react";
 import type { ClassNames } from "react-day-picker";
 import { DayPicker } from "react-day-picker";
 import { ActionButton } from "../../base-components/action-button/ActionButton.js";
+import { isDateInRange } from "../../shared/dateUtils.js";
 import {
   buildDisabledMatchers,
   DEFAULT_FROM_YEAR,
@@ -74,7 +75,7 @@ export const CALENDAR_COMPONENTS: {
 export interface DateCalendarProps {
   dateSelected: Date | undefined;
   onSelect: (date: Date | undefined) => void;
-  onClear: () => void;
+  onClear?: () => void;
   min?: Date;
   max?: Date;
   footer?: React.ReactNode;
@@ -96,9 +97,14 @@ export default function DateCalendar({
 
   const fromYear = min != null ? min.getFullYear() : DEFAULT_FROM_YEAR;
   const toYear = max != null ? max.getFullYear() : DEFAULT_TO_YEAR;
+  const today = getLocalToday();
+  const isTodaySelectable = isDateInRange(today, min, max);
   const handleTodayClick = useCallback(() => {
-    onSelect(new Date());
-  }, [onSelect]);
+    if (!isTodaySelectable) {
+      return;
+    }
+    onSelect(getLocalToday());
+  }, [isTodaySelectable, onSelect]);
 
   const calendarFooter = (
     <>
@@ -107,17 +113,20 @@ export default function DateCalendar({
         <ActionButton
           type="button"
           appearance="minimal"
+          disabled={!isTodaySelectable}
           onClick={handleTodayClick}
         >
           {todayButtonText}
         </ActionButton>
-        <ActionButton
-          type="button"
-          appearance="minimal"
-          onClick={onClear}
-        >
-          {clearButtonText}
-        </ActionButton>
+        {onClear != null && (
+          <ActionButton
+            type="button"
+            appearance="minimal"
+            onClick={onClear}
+          >
+            {clearButtonText}
+          </ActionButton>
+        )}
       </div>
     </>
   );
@@ -142,4 +151,12 @@ export default function DateCalendar({
       fixedWeeks={true}
     />
   );
+}
+
+function getLocalToday(): Date {
+  const today = new Date();
+  // Date-only picker actions should match calendar-day selection, which emits
+  // local midnight rather than the current wall-clock time.
+  today.setHours(0, 0, 0, 0);
+  return today;
 }
