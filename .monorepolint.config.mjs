@@ -124,7 +124,6 @@ const archetypeRules = archetypes(
       "@psdk/examples.*",
       "@osdk/monorepo.*",
       "@osdk/react-components-storybook",
-      "@osdk/react-devtools",
     ],
     {
       ...LIBRARY_RULES,
@@ -400,6 +399,18 @@ const archetypeRules = archetypes(
       react: true,
       extraPublishFiles: ["AGENTS.md", "docs", "experimental"],
       customTsconfigExcludes: ["./src/intellisense.test.helpers/**"],
+    },
+  )
+  .addArchetype(
+    "esmReactLibraryWithCss",
+    [
+      "@osdk/react-devtools",
+    ],
+    {
+      ...LIBRARY_RULES,
+      react: true,
+      output: OUTPUT_ESM_ONLY,
+      cssExport: ["styles.css"],
     },
   )
   .addArchetype(
@@ -691,8 +702,9 @@ const ourExportsConvention = createRuleFactory({
     }
 
     // add CSS exports if any (must come before the wildcard)
+    const cssDir = options.browser ? "build/browser" : "build/esm";
     for (const cssFile of options.cssExports ?? []) {
-      expectedExports.exports[`./${cssFile}`] = `./build/browser/${cssFile}`;
+      expectedExports.exports[`./${cssFile}`] = `./${cssDir}/${cssFile}`;
     }
 
     // include the fallback for the * for now, as it will make development easier
@@ -1050,7 +1062,11 @@ function standardPackageRules(shared, options) {
             "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
           transpile: DELETE_SCRIPT_ENTRY,
           transpileEsm: options.output.esm
-            ? `monorepo.tool.transpile -f esm -m ${options.output.esm} -t node`
+            ? `monorepo.tool.transpile -f esm -m ${options.output.esm} -t node${
+              !options.output.browser && cssExports.length > 0
+                ? " && node scripts/build-css.mjs"
+                : ""
+            }`
             : DELETE_SCRIPT_ENTRY,
           transpileBrowser: options.output.browser
             ? `monorepo.tool.transpile -f esm -m ${options.output.esm} -t browser${
