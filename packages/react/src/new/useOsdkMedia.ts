@@ -20,7 +20,7 @@ import type {
   MediaContentPayload,
 } from "@osdk/client/unstable-do-not-use";
 import React from "react";
-import { makeExternalStore } from "./makeExternalStore.js";
+import { devToolsMetadata, makeExternalStore } from "./makeExternalStore.js";
 import { OsdkContext2 } from "./OsdkContext2.js";
 
 export interface UseOsdkMediaOptions {
@@ -115,20 +115,20 @@ export function useOsdkMedia(
     if (!sourceKey || !effectiveEnabled) {
       return makeExternalStore<MediaContentPayload>(
         () => ({ unsubscribe: () => {} }),
-        `media [DISABLED]`,
+        devToolsMetadata({ hookType: "useOsdkMedia" }),
       );
     }
     const currentSource = sourceRef.current;
     if (!currentSource) {
       return makeExternalStore<MediaContentPayload>(
         () => ({ unsubscribe: () => {} }),
-        `media [DISABLED]`,
+        devToolsMetadata({ hookType: "useOsdkMedia" }),
       );
     }
     return makeExternalStore<MediaContentPayload>(
       (observer) =>
         observableClient.observeMedia(currentSource, observeOpts, observer),
-      `media ${sourceKey}`,
+      devToolsMetadata({ hookType: "useOsdkMedia" }),
     );
   }, [observableClient, sourceKey, effectiveEnabled, observeOpts]);
 

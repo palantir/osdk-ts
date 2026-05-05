@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
+import type { Media } from "@osdk/api";
 import type { Client } from "@osdk/client";
 import type {
   MediaContentPayload,
-  MediaPropertyLocation,
   ObservableClient,
   Observer,
 } from "@osdk/client/unstable-do-not-use";
@@ -27,11 +27,19 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { OsdkProvider2 } from "../src/new/OsdkProvider2.js";
 import { useOsdkMedia } from "../src/new/useOsdkMedia.js";
 
-const coords: MediaPropertyLocation = {
-  objectType: "TestObject",
-  primaryKey: 123,
-  propertyName: "media",
-};
+const fakeMedia = {
+  getMediaReference: () => ({
+    mimeType: "image/jpeg",
+    reference: {
+      type: "mediaSetViewItem" as const,
+      mediaSetViewItem: {
+        mediaSetRid: "set1",
+        mediaSetViewRid: "view1",
+        mediaItemRid: "item1",
+      },
+    },
+  }),
+} as unknown as Media;
 
 function createMockClient(): Client {
   return { fetchMetadata: vi.fn() } as Partial<Client> as Client;
@@ -80,7 +88,7 @@ function createMockObservableClient(
 
 function renderMediaHook(
   mockObservableClient: ObservableClient,
-  source?: MediaPropertyLocation,
+  source?: Media,
   options?: Parameters<typeof useOsdkMedia>[1],
 ) {
   const mockClient = createMockClient();
@@ -128,7 +136,7 @@ describe("useOsdkMedia", () => {
 
     const { result: disabledResult } = renderMediaHook(
       mockObservableClient,
-      coords,
+      fakeMedia,
       { enabled: false },
     );
 
@@ -149,10 +157,10 @@ describe("useOsdkMedia", () => {
   it("subscribes to observeMedia when enabled", () => {
     const mockObservableClient = createMockObservableClient();
 
-    renderMediaHook(mockObservableClient, coords);
+    renderMediaHook(mockObservableClient, fakeMedia);
 
     expect(mockObservableClient.observeMedia).toHaveBeenCalledWith(
-      coords,
+      fakeMedia,
       expect.objectContaining({ preview: true }),
       expect.any(Object),
     );
@@ -162,7 +170,7 @@ describe("useOsdkMedia", () => {
     const { mockObservableClient, getCapturedObserver } =
       createCapturingObservableClient();
 
-    const { result } = renderMediaHook(mockObservableClient, coords);
+    const { result } = renderMediaHook(mockObservableClient, fakeMedia);
 
     const mockBlob = new Blob(["content"], { type: "image/jpeg" });
 
@@ -200,7 +208,7 @@ describe("useOsdkMedia", () => {
     const { mockObservableClient, getCapturedObserver } =
       createCapturingObservableClient();
 
-    const { result } = renderMediaHook(mockObservableClient, coords);
+    const { result } = renderMediaHook(mockObservableClient, fakeMedia);
 
     act(() => {
       getCapturedObserver()?.next({
@@ -225,7 +233,7 @@ describe("useOsdkMedia", () => {
     const { mockObservableClient, getCapturedObserver } =
       createCapturingObservableClient();
 
-    const { result } = renderMediaHook(mockObservableClient, coords);
+    const { result } = renderMediaHook(mockObservableClient, fakeMedia);
 
     act(() => {
       getCapturedObserver()?.next({
@@ -250,13 +258,15 @@ describe("useOsdkMedia", () => {
   it("calls invalidateMedia on refetch", () => {
     const mockObservableClient = createMockObservableClient();
 
-    const { result } = renderMediaHook(mockObservableClient, coords);
+    const { result } = renderMediaHook(mockObservableClient, fakeMedia);
 
     act(() => {
       result.current.refetch();
     });
 
-    expect(mockObservableClient.invalidateMedia).toHaveBeenCalledWith(coords);
+    expect(mockObservableClient.invalidateMedia).toHaveBeenCalledWith(
+      fakeMedia,
+    );
   });
 
   it("unsubscribes on unmount", () => {
@@ -267,7 +277,7 @@ describe("useOsdkMedia", () => {
       }),
     });
 
-    const { unmount } = renderMediaHook(mockObservableClient, coords);
+    const { unmount } = renderMediaHook(mockObservableClient, fakeMedia);
 
     unmount();
 
