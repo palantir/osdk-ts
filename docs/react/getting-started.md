@@ -15,7 +15,7 @@ npm install @osdk/api @osdk/client @osdk/react
 ```
 
 :::warning Version Compatibility
-All `@osdk/*` packages must use **compatible versions**. Mismatched versions (e.g., mixing an old `@osdk/client` with a newer `@osdk/react`) will cause TypeScript errors. See [troubleshooting](#property-store-is-missing-with-osdkprovider2) if you encounter issues.
+All `@osdk/*` packages must use **compatible versions**. Mismatched versions (e.g., mixing an old `@osdk/client` with a newer `@osdk/react`) will cause TypeScript errors. See [troubleshooting](#property-store-is-missing-with-osdkprovider) if you encounter issues.
 :::
 
 You can find the latest versions on npm:
