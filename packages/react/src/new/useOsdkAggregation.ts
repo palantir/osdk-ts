@@ -211,7 +211,7 @@ export function useOsdkAggregation<
       }
       return makeExternalStore<ObserveAggregationArgs<Q, A>>(
         (observer) =>
-           
+          // eslint-disable-next-line @typescript-eslint/no-deprecated
           observableClient.observeAggregation(
             {
               type,
