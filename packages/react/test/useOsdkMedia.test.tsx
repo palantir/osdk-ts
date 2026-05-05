@@ -24,7 +24,7 @@ import type {
 import { act, renderHook, waitFor } from "@testing-library/react";
 import * as React from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { OsdkProvider2 } from "../src/new/OsdkProvider2.js";
+import { OsdkContext } from "../src/new/OsdkContext.js";
 import { useOsdkMedia } from "../src/new/useOsdkMedia.js";
 
 const fakeMedia = {
@@ -91,14 +91,15 @@ function renderMediaHook(
   source?: Media,
   options?: Parameters<typeof useOsdkMedia>[1],
 ) {
-  const mockClient = createMockClient();
   const wrapper = ({ children }: React.PropsWithChildren) => (
-    <OsdkProvider2
-      client={mockClient}
-      observableClient={mockObservableClient}
+    <OsdkContext.Provider
+      value={{
+        observableClient: mockObservableClient,
+        devtoolsEnabled: false,
+      }}
     >
       {children}
-    </OsdkProvider2>
+    </OsdkContext.Provider>
   );
 
   return renderHook(
