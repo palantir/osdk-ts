@@ -24,11 +24,16 @@ import classnames from "classnames";
 import React, { memo, useCallback, useState } from "react";
 import { ErrorBoundary } from "../../shared/ErrorBoundary.js";
 import type { FilterState } from "../FilterListItemApi.js";
-import { supportsExcluding, supportsSearch } from "../utils/filterValues.js";
+import {
+  filterHasActiveState,
+  supportsExcluding,
+  supportsSearch,
+} from "../utils/filterValues.js";
 import type { RenderFilterInput } from "./BaseFilterListApi.js";
 import { DragHandleIcon } from "./DragHandleIcon.js";
 import { OverflowMenuIcon, RemoveIcon, SearchIcon } from "./FilterIcons.js";
 import styles from "./FilterListItem.module.css";
+import { HorizontalFilterTrigger } from "./inputs/HorizontalFilterTrigger.js";
 
 function hasActiveSelection(filterState: FilterState | undefined): boolean {
   if (filterState == null) {
@@ -78,6 +83,16 @@ interface FilterListItemProps<D> {
   dragHandleListeners?: DraggableSyntheticListeners;
   className?: string;
   style?: React.CSSProperties;
+  /** Layout orientation. Defaults to "vertical". */
+  orientation?: "vertical" | "horizontal";
+  /**
+   * In horizontal mode, classifies this filter as either inline (input
+   * renders next to label) or trigger (popover-collapsed). Ignored in
+   * vertical mode. Defaults to "inline".
+   */
+  renderMode?: "inline" | "trigger";
+  /** Summary text shown inside the trigger when `renderMode === "trigger"`. */
+  triggerSummary?: React.ReactNode;
 }
 
 function FilterListItemInner<D>({
@@ -93,6 +108,9 @@ function FilterListItemInner<D>({
   dragHandleListeners,
   className,
   style,
+  orientation = "vertical",
+  renderMode = "inline",
+  triggerSummary,
 }: FilterListItemProps<D>): React.ReactElement {
   const [searchState, setSearchState] = useState<
     { type: "closed" } | { type: "open"; query: string }
@@ -145,9 +163,38 @@ function FilterListItemInner<D>({
     ? searchState.query
     : undefined;
 
+  const isHorizontal = orientation === "horizontal";
+
+  if (isHorizontal && renderMode === "trigger") {
+    return (
+      <HorizontalFilterTrigger
+        label={label}
+        summary={triggerSummary}
+        isActive={filterHasActiveState(filterState)}
+        onRemove={onFilterRemoved ? handleRemove : undefined}
+      >
+        <ErrorBoundary errorMessage="Error loading filter">
+          {renderInput({
+            definition,
+            filterKey,
+            filterState,
+            onFilterStateChanged: handleFilterStateChanged,
+            searchQuery: undefined,
+            excludeRowOpen: false,
+            whereClauseForFilter,
+          })}
+        </ErrorBoundary>
+      </HorizontalFilterTrigger>
+    );
+  }
+
   return (
     <div
-      className={classnames(styles.filterItem, className)}
+      className={classnames(
+        styles.filterItem,
+        isHorizontal && styles.horizontal,
+        className,
+      )}
       style={style}
       data-has-selection={hasActiveSelection(filterState) || undefined}
     >

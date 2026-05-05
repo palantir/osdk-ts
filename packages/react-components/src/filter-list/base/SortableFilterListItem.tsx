@@ -36,6 +36,9 @@ interface SortableFilterListItemProps<D> {
   onFilterRemoved?: (filterKey: string) => void;
   renderInput: RenderFilterInput<D>;
   whereClauseForFilter?: unknown;
+  orientation?: "vertical" | "horizontal";
+  renderMode?: "inline" | "trigger";
+  triggerSummary?: React.ReactNode;
 }
 
 function SortableFilterListItemInner<D>({
@@ -48,6 +51,9 @@ function SortableFilterListItemInner<D>({
   onFilterRemoved,
   renderInput,
   whereClauseForFilter,
+  orientation,
+  renderMode,
+  triggerSummary,
 }: SortableFilterListItemProps<D>): React.ReactElement {
   const {
     attributes,
@@ -80,6 +86,9 @@ function SortableFilterListItemInner<D>({
         whereClauseForFilter={whereClauseForFilter}
         dragHandleAttributes={attributes}
         dragHandleListeners={listeners}
+        orientation={orientation}
+        renderMode={renderMode}
+        triggerSummary={triggerSummary}
       />
     </div>
   );

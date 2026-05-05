@@ -48,10 +48,15 @@ export function BaseFilterList<D>(
     enableSorting,
     className,
     renderAddFilterButton,
+    orientation = "vertical",
+    getFilterRenderMode,
+    summarizeFilterValue,
   } = props;
 
-  const showHeader = title || titleIcon || showResetButton
-    || showActiveFilterCount || onCollapsedChange;
+  const isHorizontal = orientation === "horizontal";
+  const showHeader = !isHorizontal
+    && (title || titleIcon || showResetButton
+      || showActiveFilterCount || onCollapsedChange);
 
   const showAddButton = renderAddFilterButton != null || onFilterAdded != null;
 
@@ -81,10 +86,16 @@ export function BaseFilterList<D>(
       <div
         className={classnames(
           styles.expandedContent,
+          isHorizontal && styles.horizontal,
           isCollapsed && styles.hiddenContent,
         )}
         data-active-count={activeFilterCount}
+        data-orientation={orientation}
       >
+        {isHorizontal && title && (
+          <span className={styles.horizontalTitle}>{title}</span>
+        )}
+
         {showHeader && (
           <FilterListHeader
             title={title}
@@ -110,11 +121,19 @@ export function BaseFilterList<D>(
             getFilterLabel={getFilterLabel}
             enableSorting={enableSorting}
             perFilterWhereClauses={perFilterWhereClauses}
+            orientation={orientation}
+            getFilterRenderMode={getFilterRenderMode}
+            summarizeFilterValue={summarizeFilterValue}
           />
         </div>
 
         {showAddButton && (
-          <div className={styles.addButtonContainer}>
+          <div
+            className={classnames(
+              styles.addButtonContainer,
+              isHorizontal && styles.horizontalAddButton,
+            )}
+          >
             {renderAddFilterButton
               ? renderAddFilterButton()
               : (
@@ -122,8 +141,9 @@ export function BaseFilterList<D>(
                   type="button"
                   className={styles.addButton}
                   onClick={onFilterAdded}
+                  aria-label={isHorizontal ? "Add filter" : undefined}
                 >
-                  + Add filter
+                  {isHorizontal ? "+" : "+ Add filter"}
                 </Button>
               )}
           </div>

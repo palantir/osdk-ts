@@ -2054,6 +2054,50 @@ const CLICK_TO_FILTER_DEFINITIONS: FilterDefinitionUnion<Employee>[] = [
   },
 ];
 
+const HORIZONTAL_FILTERS: FilterDefinitionUnion<Employee>[] = [
+  fullNameFilter,
+  departmentFilter,
+  jobTitleMultiSelectFilter,
+  startDateFilter,
+  employeeNumberFilter,
+  locationCityFilter,
+];
+
+const HORIZONTAL_BAR_STYLE = {
+  width: "100%",
+  maxWidth: 1000,
+  border: "1px solid #e5e7eb",
+  borderRadius: 6,
+  background: "#fff",
+} as const;
+
+export const Horizontal: Story = {
+  name: "Horizontal orientation",
+  parameters: {
+    docs: {
+      description: {
+        story: "When `orientation=\"horizontal\"`, FilterList renders as a "
+          + "row of label-left filters. Compact filters (`CONTAINS_TEXT`, "
+          + "`SINGLE_DATE`, `TOGGLE`) render inline; tall filters collapse "
+          + "into a button trigger that opens the existing input UI in a "
+          + "popover. The popover content only mounts when opened, so "
+          + "aggregation queries don't fire until the user interacts with "
+          + "the filter.",
+      },
+    },
+  },
+  render: () => (
+    <div style={HORIZONTAL_BAR_STYLE}>
+      <FilterList
+        objectType={Employee}
+        title="Filters"
+        filterDefinitions={HORIZONTAL_FILTERS}
+        orientation="horizontal"
+      />
+    </div>
+  ),
+};
+
 export const ClickToFilter: Story = {
   name: "Click bar to set range",
   parameters: {

@@ -20,6 +20,19 @@
   gap: var(--osdk-filter-list-content-gap);
 }
 
+/* Horizontal mode: filters render side-by-side with horizontal scroll
+   for overflow. */
+.content.horizontal {
+  flex-direction: row;
+  gap: var(
+    --osdk-filter-horizontal-gap,
+    calc(var(--osdk-surface-spacing) * 1)
+  );
+  overflow-x: auto;
+  overflow-y: visible;
+  align-items: center;
+}
+
 .emptyMessage {
   margin: 0;
   color: var(--osdk-filter-list-empty-text-color);

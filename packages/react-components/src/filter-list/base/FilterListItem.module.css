@@ -22,6 +22,32 @@
   padding: var(--osdk-filter-item-padding);
 }
 
+/* Horizontal mode: label sits left of the input, padding is tighter. */
+.filterItem.horizontal {
+  flex-direction: row;
+  align-items: center;
+  padding: 0;
+  gap: calc(var(--osdk-surface-spacing) * 1);
+  flex-shrink: 0;
+}
+
+.filterItem.horizontal .itemHeader {
+  display: contents;
+}
+
+.filterItem.horizontal .itemLabel {
+  flex: 0 0 auto;
+  font-weight: var(--osdk-filter-item-label-font-weight);
+}
+
+.filterItem.horizontal .itemContent {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  min-width: 0;
+  overflow: visible;
+}
+
 .itemHeader {
   display: flex;
   align-items: center;

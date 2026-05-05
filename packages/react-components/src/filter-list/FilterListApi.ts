@@ -230,4 +230,15 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
    *   The consumer is responsible for all add-filter behavior.
    */
   renderAddFilterButton?: () => React.ReactNode;
+
+  /**
+   * Layout orientation. When `"horizontal"`, filters render as a row of
+   * label-left inputs. Compact inputs (`CONTAINS_TEXT`, `SINGLE_DATE`,
+   * `TOGGLE`) render inline; tall/complex inputs collapse into a button
+   * trigger that opens the existing input UI in a popover. Defaults to
+   * `"vertical"`.
+   *
+   * @default "vertical"
+   */
+  orientation?: "vertical" | "horizontal";
 }

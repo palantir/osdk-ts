@@ -33,6 +33,7 @@ import {
 } from "@dnd-kit/core";
 import {
   arrayMove,
+  horizontalListSortingStrategy,
   SortableContext,
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
@@ -50,8 +51,14 @@ const restrictToVerticalAxis: Modifier = ({ transform }) => ({
   x: 0,
 });
 
+const restrictToHorizontalAxis: Modifier = ({ transform }) => ({
+  ...transform,
+  y: 0,
+});
+
 const POINTER_ACTIVATION_CONSTRAINT = { distance: 8 } as const;
-const MODIFIERS: Modifier[] = [restrictToVerticalAxis];
+const MODIFIERS_VERTICAL: Modifier[] = [restrictToVerticalAxis];
+const MODIFIERS_HORIZONTAL: Modifier[] = [restrictToHorizontalAxis];
 
 const DRAG_OVERLAY_HANDLE_ATTRIBUTES: DraggableAttributes = {
   role: "button",
@@ -77,6 +84,12 @@ interface FilterListContentProps<D> {
   perFilterWhereClauses?: ReadonlyMap<string, unknown>;
   className?: string;
   style?: React.CSSProperties;
+  orientation?: "vertical" | "horizontal";
+  getFilterRenderMode?: (definition: D) => "inline" | "trigger";
+  summarizeFilterValue?: (
+    definition: D,
+    filterState: FilterState | undefined,
+  ) => React.ReactNode;
 }
 
 export function FilterListContent<D>({
@@ -91,7 +104,11 @@ export function FilterListContent<D>({
   perFilterWhereClauses,
   className,
   style,
+  orientation = "vertical",
+  getFilterRenderMode,
+  summarizeFilterValue,
 }: FilterListContentProps<D>): React.ReactElement {
+  const isHorizontal = orientation === "horizontal";
   const [dragOrder, setDragOrder] = useState<string[] | null>(null);
   const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
 
@@ -215,23 +232,36 @@ export function FilterListContent<D>({
   if (!renderDefinitions || renderDefinitions.length === 0) {
     return (
       <div
-        className={classnames(styles.content, className)}
+        className={classnames(
+          styles.content,
+          isHorizontal && styles.horizontal,
+          className,
+        )}
         style={style}
         data-empty="true"
       />
     );
   }
 
+  const resolveRenderMode = (def: D): "inline" | "trigger" => {
+    if (!isHorizontal) return "inline";
+    return getFilterRenderMode ? getFilterRenderMode(def) : "trigger";
+  };
+
   if (enableSorting) {
     return (
       <div
-        className={classnames(styles.content, className)}
+        className={classnames(
+          styles.content,
+          isHorizontal && styles.horizontal,
+          className,
+        )}
         style={style}
       >
         <DndContext
           sensors={sensors}
           collisionDetection={closestCenter}
-          modifiers={MODIFIERS}
+          modifiers={isHorizontal ? MODIFIERS_HORIZONTAL : MODIFIERS_VERTICAL}
           onDragStart={handleDragStart}
           onDragEnd={handleDragEnd}
           onDragCancel={handleDragCancel}
@@ -239,7 +269,9 @@ export function FilterListContent<D>({
         >
           <SortableContext
             items={sortableIds}
-            strategy={verticalListSortingStrategy}
+            strategy={isHorizontal
+              ? horizontalListSortingStrategy
+              : verticalListSortingStrategy}
           >
             {renderDefinitions.map((definition, index) => {
               const id = sortableIds[index];
@@ -249,6 +281,7 @@ export function FilterListContent<D>({
               const whereClauseForFilter = perFilterWhereClauses?.get(
                 filterKey,
               );
+              const renderMode = resolveRenderMode(definition);
 
               return (
                 <SortableFilterListItem
@@ -262,6 +295,12 @@ export function FilterListContent<D>({
                   onFilterRemoved={onFilterRemoved}
                   renderInput={renderInput}
                   whereClauseForFilter={whereClauseForFilter}
+                  orientation={orientation}
+                  renderMode={renderMode}
+                  triggerSummary={renderMode === "trigger"
+                      && summarizeFilterValue
+                    ? summarizeFilterValue(definition, state)
+                    : undefined}
                 />
               );
             })}
@@ -284,6 +323,16 @@ export function FilterListContent<D>({
                   activeFilterKey,
                 )}
                 dragHandleAttributes={DRAG_OVERLAY_HANDLE_ATTRIBUTES}
+                orientation={orientation}
+                renderMode={resolveRenderMode(activeDefinition)}
+                triggerSummary={resolveRenderMode(activeDefinition)
+                      === "trigger"
+                    && summarizeFilterValue
+                  ? summarizeFilterValue(
+                    activeDefinition,
+                    filterStates.get(activeFilterKey),
+                  )
+                  : undefined}
               />
             )}
           </DragOverlay>
@@ -294,13 +343,18 @@ export function FilterListContent<D>({
 
   return (
     <div
-      className={classnames(styles.content, className)}
+      className={classnames(
+        styles.content,
+        isHorizontal && styles.horizontal,
+        className,
+      )}
       style={style}
     >
       {renderDefinitions.map((definition) => {
         const filterKey = getFilterKey(definition);
         const state = filterStates.get(filterKey);
         const whereClauseForFilter = perFilterWhereClauses?.get(filterKey);
+        const renderMode = resolveRenderMode(definition);
 
         return (
           <FilterListItem
@@ -313,6 +367,11 @@ export function FilterListContent<D>({
             onFilterRemoved={onFilterRemoved}
             renderInput={renderInput}
             whereClauseForFilter={whereClauseForFilter}
+            orientation={orientation}
+            renderMode={renderMode}
+            triggerSummary={renderMode === "trigger" && summarizeFilterValue
+              ? summarizeFilterValue(definition, state)
+              : undefined}
           />
         );
       })}
