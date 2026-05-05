@@ -1904,3 +1904,51 @@ export const NoValueRendering: Story = {
     </div>
   ),
 };
+
+const LONG_DROPDOWN_VALUES = Array.from(
+  { length: 100 },
+  (_, i) => `Option ${String(i + 1).padStart(3, "0")}`,
+);
+
+const LONG_DROPDOWN_FILTERS: FilterDefinitionUnion<Employee>[] = [
+  {
+    type: "STATIC_VALUES",
+    key: "department",
+    label: "Long single-select",
+    filterComponent: "SINGLE_SELECT",
+    values: LONG_DROPDOWN_VALUES,
+    filterState: { type: "SELECT", selectedValues: [] },
+  },
+  {
+    type: "STATIC_VALUES",
+    key: "team",
+    label: "Long multi-select",
+    filterComponent: "MULTI_SELECT",
+    values: LONG_DROPDOWN_VALUES,
+    filterState: { type: "SELECT", selectedValues: [] },
+  },
+];
+
+export const LongDropdown: Story = {
+  name: "Long dropdown (popup max-height)",
+  parameters: {
+    docs: {
+      description: {
+        story: "Combobox popup is capped at 320px (configurable via "
+          + "`--osdk-combobox-popup-max-height`). With 100 options, the popup "
+          + "becomes scrollable instead of growing tall enough to push other "
+          + "UI off-screen. When the available browser height is less than "
+          + "320px, the cap is lowered automatically because the rule "
+          + "resolves to `min(320px, var(--available-height))`.",
+      },
+    },
+  },
+  render: () => (
+    <div style={SIDEBAR_STYLE}>
+      <FilterList
+        objectType={Employee}
+        filterDefinitions={LONG_DROPDOWN_FILTERS}
+      />
+    </div>
+  ),
+};
