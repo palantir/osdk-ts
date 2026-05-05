@@ -14,9 +14,20 @@
  * limitations under the License.
  */
 
-// Keep popups visually detached from their trigger so dropdowns and calendars
-// never appear to overlap the input that opened them.
-export const POPUP_SIDE_OFFSET = 8;
+interface PopupSideOffsetParams {
+  anchor: {
+    height: number;
+  };
+}
 
-// Leave a small viewport gutter when Base UI shifts a popup to avoid clipping.
-export const POPUP_COLLISION_PADDING = 8;
+const MIN_POPUP_SIDE_OFFSET = 4;
+const MAX_POPUP_SIDE_OFFSET = 8;
+
+export function getPopupSideOffset({
+  anchor,
+}: PopupSideOffsetParams): number {
+  return Math.min(
+    MAX_POPUP_SIDE_OFFSET,
+    Math.max(MIN_POPUP_SIDE_OFFSET, Math.round(anchor.height / 4)),
+  );
+}

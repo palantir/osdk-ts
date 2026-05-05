@@ -22,11 +22,9 @@
 .osdkDateRangeTimeRow {
   display: flex;
   gap: var(--osdk-time-picker-gap);
-  padding-top: var(--osdk-time-picker-padding-top);
-  padding-left: var(--osdk-datetime-popover-padding);
-  padding-right: var(--osdk-datetime-popover-padding);
-  margin-top: var(--osdk-time-picker-margin-top);
-  margin-left: calc(var(--osdk-datetime-popover-padding) * -1);
-  margin-right: calc(var(--osdk-datetime-popover-padding) * -1);
+  padding: var(--osdk-time-picker-padding-top)
+    var(--osdk-datetime-popover-padding) 0;
+  margin: var(--osdk-time-picker-margin-top)
+    calc(var(--osdk-datetime-popover-padding) * -1) 0;
   border-top: var(--osdk-time-picker-border-top);
 }

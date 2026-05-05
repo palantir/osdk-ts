@@ -53,6 +53,7 @@ export const CLASS_NAMES: ClassNames = {
   dropdown_year: styles.calendarDropdown,
   nav_icon: styles.calendarChevron,
   vhidden: styles.calendarVhidden,
+  tfoot: styles.calendarFooter,
 };
 
 const NAV_ICON_SIZE = 12;
@@ -100,47 +101,45 @@ export default function DateCalendar({
   }, [onSelect]);
 
   const calendarFooter = (
-    <div className={styles.calendarFooter}>
+    <>
       {footer}
       <div className={styles.calendarActionBar}>
         <ActionButton
           type="button"
-          variant="minimal"
+          appearance="minimal"
           onClick={handleTodayClick}
         >
           {todayButtonText}
         </ActionButton>
         <ActionButton
           type="button"
-          variant="minimal"
+          appearance="minimal"
           onClick={onClear}
         >
           {clearButtonText}
         </ActionButton>
       </div>
-    </div>
+    </>
   );
 
   return (
-    <div className={styles.calendarWrapper}>
-      <DayPicker
-        mode="single"
-        selected={dateSelected}
-        onSelect={onSelect}
-        disabled={disabled}
-        defaultMonth={dateSelected}
-        classNames={CLASS_NAMES}
-        components={CALENDAR_COMPONENTS}
-        // Render month/year as dropdown selects + prev/next arrows,
-        // so users can jump directly to any month/year without paging.
-        captionLayout="dropdown-buttons"
-        fromYear={fromYear}
-        toYear={toYear}
-        showOutsideDays={true}
-        // Always render 6 rows so the calendar height doesn't jump between months.
-        fixedWeeks={true}
-      />
-      {calendarFooter}
-    </div>
+    <DayPicker
+      mode="single"
+      selected={dateSelected}
+      onSelect={onSelect}
+      disabled={disabled}
+      defaultMonth={dateSelected}
+      classNames={CLASS_NAMES}
+      components={CALENDAR_COMPONENTS}
+      footer={calendarFooter}
+      // Render month/year as dropdown selects + prev/next arrows,
+      // so users can jump directly to any month/year without paging.
+      captionLayout="dropdown-buttons"
+      fromYear={fromYear}
+      toYear={toYear}
+      showOutsideDays={true}
+      // Always render 6 rows so the calendar height doesn't jump between months.
+      fixedWeeks={true}
+    />
   );
 }

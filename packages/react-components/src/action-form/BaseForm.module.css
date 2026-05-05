@@ -25,7 +25,7 @@
   display: flex;
   flex-direction: column;
   gap: var(--osdk-form-field-gap);
-  padding-block: var(--osdk-form-fields-block-padding);
+  padding-block: var(--osdk-form-content-padding-block);
   padding-inline: var(--osdk-form-padding-inline);
 }
 

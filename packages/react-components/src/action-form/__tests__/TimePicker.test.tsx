@@ -24,7 +24,7 @@ afterEach(() => {
 });
 
 describe("TimePicker", () => {
-  it("renders segmented hour and minute inputs from a Date value", () => {
+  it("renders hour and minute inputs from a Date value", () => {
     const { rerender } = render(
       <TimePicker
         value={new Date(2024, 0, 15, 9, 5)}
@@ -50,7 +50,27 @@ describe("TimePicker", () => {
       .toBe("45");
   });
 
-  it("emits a Date with the existing date portion when a valid hour is typed", () => {
+  it("emits a Date with the existing date portion when a valid hour is blurred", () => {
+    const onChange = vi.fn();
+    render(
+      <TimePicker
+        value={new Date(2024, 0, 15, 9, 5)}
+        onChange={onChange}
+      />,
+    );
+
+    const hourInput = screen.getByLabelText("Time hours");
+    fireEvent.change(hourInput, {
+      target: { value: "14" },
+    });
+    fireEvent.blur(hourInput);
+
+    expect(onChange).toHaveBeenCalledTimes(1);
+    const changedDate: Date = onChange.mock.calls[0][0];
+    expect(changedDate).toEqual(new Date(2024, 0, 15, 14, 5));
+  });
+
+  it("does not emit a Date before the edited hour is blurred", () => {
     const onChange = vi.fn();
     render(
       <TimePicker
@@ -63,27 +83,43 @@ describe("TimePicker", () => {
       target: { value: "14" },
     });
 
-    expect(onChange).toHaveBeenCalledTimes(1);
-    const changedDate: Date = onChange.mock.calls[0][0];
-    expect(changedDate).toEqual(new Date(2024, 0, 15, 14, 5));
+    expect(onChange).not.toHaveBeenCalled();
   });
 
-  it("seeds emitted dates from today when value is null", () => {
+  it("seeds emitted dates from today when a null value is committed", () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date(2024, 6, 4, 12, 34));
     const onChange = vi.fn();
     render(<TimePicker value={null} onChange={onChange} />);
 
-    fireEvent.change(screen.getByLabelText("Time minutes"), {
+    const minuteInput = screen.getByLabelText("Time minutes");
+    fireEvent.change(minuteInput, {
       target: { value: "45" },
     });
+    fireEvent.blur(minuteInput);
 
     expect(onChange).toHaveBeenCalledTimes(1);
     const changedDate: Date = onChange.mock.calls[0][0];
     expect(changedDate).toEqual(new Date(2024, 6, 4, 0, 45));
   });
 
-  it("restores an invalid segment on blur", () => {
+  it("does not emit a Date before the edited minute is blurred", () => {
+    const onChange = vi.fn();
+    render(
+      <TimePicker
+        value={new Date(2024, 0, 15, 9, 5)}
+        onChange={onChange}
+      />,
+    );
+
+    fireEvent.change(screen.getByLabelText("Time minutes"), {
+      target: { value: "45" },
+    });
+
+    expect(onChange).not.toHaveBeenCalled();
+  });
+
+  it("marks an invalid segment before restoring it on blur", () => {
     const onChange = vi.fn();
     render(
       <TimePicker
@@ -94,13 +130,16 @@ describe("TimePicker", () => {
 
     const hourInput = screen.getByLabelText("Time hours") as HTMLInputElement;
     fireEvent.change(hourInput, { target: { value: "xx" } });
+    expect(hourInput.getAttribute("aria-invalid")).toBe("true");
+
     fireEvent.blur(hourInput);
 
     expect(onChange).not.toHaveBeenCalled();
     expect(hourInput.value).toBe("9");
+    expect(hourInput.getAttribute("aria-invalid")).toBeNull();
   });
 
-  it("clamps an out-of-range minute on blur", () => {
+  it("marks an out-of-range minute invalid before clamping it on blur", () => {
     const onChange = vi.fn();
     render(
       <TimePicker
@@ -113,11 +152,14 @@ describe("TimePicker", () => {
       "Time minutes",
     ) as HTMLInputElement;
     fireEvent.change(minuteInput, { target: { value: "99" } });
+    expect(minuteInput.getAttribute("aria-invalid")).toBe("true");
+
     fireEvent.blur(minuteInput);
 
     expect(onChange).toHaveBeenCalledTimes(1);
     const changedDate: Date = onChange.mock.calls[0][0];
     expect(changedDate).toEqual(new Date(2024, 0, 15, 9, 59));
     expect(minuteInput.value).toBe("59");
+    expect(minuteInput.getAttribute("aria-invalid")).toBeNull();
   });
 });

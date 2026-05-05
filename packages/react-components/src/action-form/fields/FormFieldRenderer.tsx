@@ -152,10 +152,10 @@ function renderFieldComponent(
       return (
         <SwitchField
           id={fieldDefinition.fieldKey}
-          value={typeof value === "boolean" ? value : null}
+          label={fieldDefinition.label}
+          value={!!value}
           onChange={onChange}
           error={error}
-          aria-label={fieldDefinition.label}
           {...fieldDefinition.fieldComponentProps}
         />
       );

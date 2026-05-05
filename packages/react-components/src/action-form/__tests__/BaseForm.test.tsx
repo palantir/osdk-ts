@@ -72,6 +72,47 @@ describe("BaseForm", () => {
       });
     });
 
+    it("submits from the button click instead of the form submit event", async () => {
+      const onSubmit = vi.fn();
+
+      render(
+        <BaseForm
+          formContent={[field(makeDef("name"))]}
+          onSubmit={onSubmit}
+        />,
+      );
+
+      const form = document.querySelector("form");
+      expect(form).not.toBeNull();
+
+      fireEvent.submit(form!);
+      expect(onSubmit).not.toHaveBeenCalled();
+
+      fireEvent.click(screen.getByRole("button", { name: /submit/i }));
+
+      await vi.waitFor(() => {
+        expect(onSubmit).toHaveBeenCalledTimes(1);
+      });
+    });
+
+    it("keeps Enter key submission without relying on native form submission", async () => {
+      const onSubmit = vi.fn();
+
+      render(
+        <BaseForm
+          formContent={[field(makeDef("name"))]}
+          onSubmit={onSubmit}
+        />,
+      );
+
+      const input = screen.getByRole("textbox", { name: /name/ });
+      fireEvent.keyDown(input, { key: "Enter" });
+
+      await vi.waitFor(() => {
+        expect(onSubmit).toHaveBeenCalledTimes(1);
+      });
+    });
+
     it("submits undefined for fields without defaults", async () => {
       const onSubmit = vi.fn();
 
@@ -443,9 +484,7 @@ describe("BaseForm", () => {
       );
 
       const getSubmitButton = () =>
-        document.querySelector(
-          "button[type='submit']",
-        ) as HTMLButtonElement;
+        screen.getByRole("button", { name: /submit/i }) as HTMLButtonElement;
 
       expect(getSubmitButton().disabled).toBe(false);
 
@@ -465,9 +504,7 @@ describe("BaseForm", () => {
       );
 
       const getSubmitButton = () =>
-        document.querySelector(
-          "button[type='submit']",
-        ) as HTMLButtonElement;
+        screen.getByRole("button", { name: /submit/i }) as HTMLButtonElement;
 
       // Touch the field first so RHF tracks it for revalidation
       const input = screen.getByRole("textbox", { name: /name/ });

@@ -24,7 +24,7 @@ import type {
   ActionParameters,
   FieldKey,
   FieldValueType,
-  FormFieldDefinition,
+  FormFieldDefinitionForAction,
   RendererFieldDefinition,
 } from "./FormFieldApi.js";
 
@@ -62,7 +62,7 @@ interface ActionFormConfigProps<Q extends ActionDefinition<unknown>>
   /**
    * If not supplied, field definitions are constructed from `ActionParameters`.
    */
-  formFieldDefinitions?: ReadonlyArray<FormFieldDefinition<Q>>;
+  formFieldDefinitions?: ReadonlyArray<FormFieldDefinitionForAction<Q>>;
 
   /**
    * If supplied, this will override the default submit action

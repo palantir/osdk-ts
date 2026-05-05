@@ -8,8 +8,8 @@
   --osdk-switch-disabled-opacity: var(--osdk-input-disabled-opacity);
 
   /* Switch colors */
-  --osdk-switch-track-bg: var(--osdk-palette-gray-4);
-  --osdk-switch-track-bg-hover: var(--osdk-palette-gray-2);
+  --osdk-switch-track-bg: var(--osdk-intent-default-rest);
+  --osdk-switch-track-bg-hover: var(--osdk-intent-default-hover);
   --osdk-switch-track-bg-active: var(--osdk-intent-default-active);
   --osdk-switch-track-bg-checked: var(--osdk-intent-primary-rest);
   --osdk-switch-track-bg-checked-hover: var(--osdk-intent-primary-hover);

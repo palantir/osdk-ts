@@ -2,12 +2,8 @@
    All values reference --osdk-datetime-calendar-* tokens defined in
    react-components-styles/tokens/datetime-picker.css. */
 
-.calendarWrapper {
-  position: relative;
-  width: 100%;
-}
-
 .calendar {
+  position: relative;
   width: 100%;
   font-family: var(--osdk-datetime-calendar-font-family);
   font-size: var(--osdk-datetime-calendar-font-size);
@@ -235,20 +231,13 @@
 
 
 .calendarFooter {
-  width: 100%;
+  padding-block-start: var(--osdk-time-picker-padding-top);
+  margin-block-start: var(--osdk-time-picker-margin-top);
+  border-block-start: var(--osdk-time-picker-border-top);
 }
 
 .calendarActionBar {
   display: flex;
   justify-content: space-between;
   gap: var(--osdk-surface-spacing);
-  margin-block-start: var(--osdk-time-picker-margin-top);
-  margin-inline-start: calc(var(--osdk-datetime-popover-padding) * -1);
-  margin-inline-end: calc(var(--osdk-datetime-popover-padding) * -1);
-  padding-block-start: var(--osdk-time-picker-padding-top);
-  padding-inline-start: var(--osdk-datetime-popover-padding);
-  padding-inline-end: var(--osdk-datetime-popover-padding);
-  border-block-start-width: var(--osdk-surface-border-width);
-  border-block-start-style: solid;
-  border-block-start-color: var(--osdk-surface-border-color-default);
 }

@@ -99,6 +99,15 @@ describe("DatetimePickerField", () => {
       expect(calledDate).toEqual(new Date(2024, 0, 20));
     });
 
+    it("renders calendar action buttons when opened", () => {
+      render(<DatetimePickerField value={null} onChange={vi.fn()} />);
+
+      fireEvent.focus(screen.getByRole("combobox"));
+
+      expect(screen.getByRole("button", { name: "Today" })).toBeDefined();
+      expect(screen.getByRole("button", { name: "Clear" })).toBeDefined();
+    });
+
     it("selects local today from the calendar action bar", () => {
       vi.useFakeTimers();
       vi.setSystemTime(new Date(2024, 6, 4, 9, 30));
@@ -153,7 +162,7 @@ describe("DatetimePickerField", () => {
   });
 
   describe("time input", () => {
-    it("renders segmented time inputs when showTime is true", () => {
+    it("renders time inputs when showTime is true", () => {
       render(
         <DatetimePickerField
           value={new Date(2024, 0, 15, 14, 30)}
@@ -170,28 +179,7 @@ describe("DatetimePickerField", () => {
         .toBe("30");
     });
 
-    it("renders time input before the calendar action bar", () => {
-      render(
-        <DatetimePickerField
-          value={new Date(2024, 0, 15, 14, 30)}
-          onChange={vi.fn()}
-          showTime={true}
-        />,
-      );
-      fireEvent.focus(screen.getByRole("combobox"));
-
-      const timeInput = screen.getByLabelText("Time hours");
-      const todayButton = screen.getByRole("button", { name: "Today" });
-      const controls = Array.from(document.body.querySelectorAll(
-        "input, button",
-      ));
-
-      expect(controls.indexOf(timeInput)).toBeLessThan(
-        controls.indexOf(todayButton),
-      );
-    });
-
-    it("calls onChange with updated time when a valid time segment changes", () => {
+    it("calls onChange with updated time when a valid time segment blurs", () => {
       const onChange = vi.fn();
       render(
         <DatetimePickerField
@@ -203,12 +191,17 @@ describe("DatetimePickerField", () => {
       const input = screen.getByRole("combobox");
       fireEvent.focus(input);
 
-      fireEvent.change(screen.getByLabelText("Time hours"), {
+      const hourInput = screen.getByLabelText("Time hours");
+      fireEvent.change(hourInput, {
         target: { value: "16" },
       });
-      fireEvent.change(screen.getByLabelText("Time minutes"), {
+      fireEvent.blur(hourInput);
+
+      const minuteInput = screen.getByLabelText("Time minutes");
+      fireEvent.change(minuteInput, {
         target: { value: "45" },
       });
+      fireEvent.blur(minuteInput);
 
       expect(onChange).toHaveBeenCalledTimes(2);
       const calledDate: Date = onChange.mock.calls[1][0];
@@ -217,7 +210,25 @@ describe("DatetimePickerField", () => {
       expect(calledDate.getDate()).toBe(15);
     });
 
-    it("updates input text when time is committed", () => {
+    it("does not call onChange before a valid time segment blurs", () => {
+      const onChange = vi.fn();
+      render(
+        <DatetimePickerField
+          value={new Date(2024, 0, 15, 14, 30)}
+          onChange={onChange}
+          showTime={true}
+        />,
+      );
+      fireEvent.focus(screen.getByRole("combobox"));
+
+      fireEvent.change(screen.getByLabelText("Time hours"), {
+        target: { value: "16" },
+      });
+
+      expect(onChange).not.toHaveBeenCalled();
+    });
+
+    it("updates input text when time is committed on blur", () => {
       const onChange = vi.fn();
       render(
         <DatetimePickerField
@@ -229,12 +240,17 @@ describe("DatetimePickerField", () => {
       const input = screen.getByRole("combobox") as HTMLInputElement;
       fireEvent.focus(input);
 
-      fireEvent.change(screen.getByLabelText("Time hours"), {
+      const hourInput = screen.getByLabelText("Time hours");
+      fireEvent.change(hourInput, {
         target: { value: "16" },
       });
-      fireEvent.change(screen.getByLabelText("Time minutes"), {
+      fireEvent.blur(hourInput);
+
+      const minuteInput = screen.getByLabelText("Time minutes");
+      fireEvent.change(minuteInput, {
         target: { value: "45" },
       });
+      fireEvent.blur(minuteInput);
 
       // The main input text should reflect the new time after commit
       expect(input.value).toBe("2024-01-15 16:45");

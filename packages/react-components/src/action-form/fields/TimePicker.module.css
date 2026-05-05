@@ -1,4 +1,4 @@
-/* TimePicker — segmented HH:mm control. Outer layout is owned by the parent. */
+/* TimePicker — HH:mm control. Outer layout is owned by the parent. */
 
 .osdkTimePickerRoot {
   display: inline-flex;
@@ -23,6 +23,10 @@
     border-color: var(--osdk-time-picker-input-border-color-focus);
     outline: var(--osdk-time-picker-input-focus-outline);
     outline-offset: var(--osdk-time-picker-input-focus-offset);
+  }
+
+  &[aria-invalid] {
+    border-color: var(--osdk-input-border-color-error);
   }
 }
 

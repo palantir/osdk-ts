@@ -424,7 +424,7 @@ describe("DateRangeInputField", () => {
   });
 
   describe("time picker (showTime)", () => {
-    it("renders segmented time inputs when showTime is true", () => {
+    it("renders time inputs when showTime is true", () => {
       render(
         <DateRangeInputField
           value={[new Date(2024, 0, 15, 10, 30), new Date(2024, 0, 20, 14, 0)]}
@@ -455,7 +455,7 @@ describe("DateRangeInputField", () => {
       expect(screen.queryByLabelText("End time hours")).toBeNull();
     });
 
-    it("calls onChange with updated start time when valid time segments change", () => {
+    it("calls onChange with updated start time when valid time segments blur", () => {
       const onChange = vi.fn();
       render(
         <DateRangeInputField
@@ -467,12 +467,17 @@ describe("DateRangeInputField", () => {
       const startInput = screen.getByLabelText("Start date");
       fireEvent.focus(startInput);
 
-      fireEvent.change(screen.getByLabelText("Start time hours"), {
+      const hourInput = screen.getByLabelText("Start time hours");
+      fireEvent.change(hourInput, {
         target: { value: "14" },
       });
-      fireEvent.change(screen.getByLabelText("Start time minutes"), {
+      fireEvent.blur(hourInput);
+
+      const minuteInput = screen.getByLabelText("Start time minutes");
+      fireEvent.change(minuteInput, {
         target: { value: "30" },
       });
+      fireEvent.blur(minuteInput);
 
       expect(onChange).toHaveBeenCalledTimes(2);
       const [start] = onChange.mock.calls[1][0];
@@ -481,7 +486,25 @@ describe("DateRangeInputField", () => {
       expect(start?.getDate()).toBe(15);
     });
 
-    it("calls onChange with updated end time when valid time segments change", () => {
+    it("does not call onChange before a valid start time segment blurs", () => {
+      const onChange = vi.fn();
+      render(
+        <DateRangeInputField
+          value={[new Date(2024, 0, 15, 10, 30), new Date(2024, 0, 20, 14, 0)]}
+          onChange={onChange}
+          showTime={true}
+        />,
+      );
+      fireEvent.focus(screen.getByLabelText("Start date"));
+
+      fireEvent.change(screen.getByLabelText("Start time hours"), {
+        target: { value: "14" },
+      });
+
+      expect(onChange).not.toHaveBeenCalled();
+    });
+
+    it("calls onChange with updated end time when valid time segments blur", () => {
       const onChange = vi.fn();
       render(
         <DateRangeInputField
@@ -493,12 +516,17 @@ describe("DateRangeInputField", () => {
       const startInput = screen.getByLabelText("Start date");
       fireEvent.focus(startInput);
 
-      fireEvent.change(screen.getByLabelText("End time hours"), {
+      const hourInput = screen.getByLabelText("End time hours");
+      fireEvent.change(hourInput, {
         target: { value: "16" },
       });
-      fireEvent.change(screen.getByLabelText("End time minutes"), {
+      fireEvent.blur(hourInput);
+
+      const minuteInput = screen.getByLabelText("End time minutes");
+      fireEvent.change(minuteInput, {
         target: { value: "45" },
       });
+      fireEvent.blur(minuteInput);
 
       expect(onChange).toHaveBeenCalledTimes(2);
       const [, end] = onChange.mock.calls[1][0];

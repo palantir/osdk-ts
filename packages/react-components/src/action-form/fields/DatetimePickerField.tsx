@@ -18,10 +18,7 @@ import { Input } from "@base-ui/react/input";
 import { Popover } from "@base-ui/react/popover";
 import classnames from "classnames";
 import React, { useCallback, useId, useRef, useState } from "react";
-import {
-  POPUP_COLLISION_PADDING,
-  POPUP_SIDE_OFFSET,
-} from "../../base-components/popupPositioning.js";
+import { getPopupSideOffset } from "../../base-components/popupPositioning.js";
 import {
   formatDateForInput,
   formatDatetimeForInput,
@@ -290,8 +287,7 @@ export const DatetimePickerField: React.NamedExoticComponent<
       </Popover.Trigger>
       <Popover.Portal ref={portalRef}>
         <Popover.Positioner
-          sideOffset={POPUP_SIDE_OFFSET}
-          collisionPadding={POPUP_COLLISION_PADDING}
+          sideOffset={getPopupSideOffset}
         >
           <Popover.Popup
             ref={popoverRef}

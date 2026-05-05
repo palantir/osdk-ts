@@ -3,7 +3,7 @@
   --osdk-form-region-gap: calc(var(--osdk-surface-spacing) * 3);
   --osdk-form-field-gap: calc(var(--osdk-surface-spacing) * 4);
   --osdk-form-padding-inline: 0;
-  --osdk-form-fields-block-padding: 0;
+  --osdk-form-content-padding-block: 0;
 
   /* Form header */
   --osdk-form-header-border-color: var(--osdk-surface-border-color-default);

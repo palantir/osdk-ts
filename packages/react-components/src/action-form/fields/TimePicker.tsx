@@ -27,9 +27,11 @@ export interface TimePickerProps {
 type TimeSegment = "hours" | "minutes";
 type TimeSegments = Record<TimeSegment, string>;
 
-interface SegmentDraft extends TimeSegments {
-  valueKey: number | null;
+interface InternalSegments extends TimeSegments {
+  valueTimestamp: number | null;
 }
+
+const NUMERIC_INPUT_PATTERN = "[0-9]*";
 
 const SEGMENT_LIMITS: Record<TimeSegment, { min: number; max: number }> = {
   hours: { min: 0, max: 23 },
@@ -42,22 +44,31 @@ export const TimePicker: React.NamedExoticComponent<TimePickerProps> = React
     onChange,
     label = "Time",
   }: TimePickerProps): React.ReactElement {
-    const valueKey = value?.getTime() ?? null;
-    const [segmentDraft, setSegmentDraft] = useState<SegmentDraft>(() =>
-      createSegmentDraft(valueKey, segmentsFromTimestamp(valueKey))
+    const valueTimestamp = value?.getTime() ?? null;
+    // Keep typed text locally so users can enter temporarily invalid values
+    // like "99" or "" without immediately mutating/clamping the parent Date.
+    const [internalSegments, setInternalSegments] = useState<InternalSegments>(
+      () =>
+        createInternalSegments(
+          valueTimestamp,
+          segmentsFromTimestamp(valueTimestamp),
+        ),
     );
     const valueSegments = useMemo(
-      () => segmentsFromTimestamp(valueKey),
-      [valueKey],
+      () => segmentsFromTimestamp(valueTimestamp),
+      [valueTimestamp],
     );
-    // Keep local draft text only while it still corresponds to the current
-    // value prop. If the parent changes the Date, derive fresh text during
-    // render instead of syncing with an effect and causing an extra render.
-    const activeSegments = segmentDraft.valueKey === valueKey
-      ? segmentDraft
-      : createSegmentDraft(valueKey, valueSegments);
+
+    // Track which external value this internal text was derived from. If the
+    // parent commits a different Date, ignore stale internal text and render
+    // from the new value instead.
+    const activeSegments = internalSegments.valueTimestamp === valueTimestamp
+      ? internalSegments
+      : createInternalSegments(valueTimestamp, valueSegments);
     const hourText = activeSegments.hours;
     const minuteText = activeSegments.minutes;
+    const hourInvalid = isSegmentInvalid(hourText, "hours");
+    const minuteInvalid = isSegmentInvalid(minuteText, "minutes");
 
     const emitChange = useCallback(
       (hours: number, minutes: number) => {
@@ -70,62 +81,64 @@ export const TimePicker: React.NamedExoticComponent<TimePickerProps> = React
 
     const handleSegmentChange = useCallback(
       (segment: TimeSegment, nextText: string) => {
-        const nextSegments = segment === "hours"
-          ? { hours: nextText, minutes: minuteText }
-          : { hours: hourText, minutes: nextText };
-
-        setSegmentDraft({ valueKey, ...nextSegments });
-
-        const parsedSegment = parseSegment(nextText, segment);
-        const parsedOtherSegment = parseSegment(
-          segment === "hours" ? nextSegments.minutes : nextSegments.hours,
-          segment === "hours" ? "minutes" : "hours",
-        );
-        if (parsedSegment == null || parsedOtherSegment == null) {
-          return;
-        }
-
-        emitChange(
-          segment === "hours" ? parsedSegment : parsedOtherSegment,
-          segment === "minutes" ? parsedSegment : parsedOtherSegment,
-        );
+        setInternalSegments({
+          valueTimestamp,
+          ...replaceSegmentText(
+            { hours: hourText, minutes: minuteText },
+            { segment, nextText },
+          ),
+        });
       },
-      [emitChange, hourText, minuteText, valueKey],
+      [hourText, minuteText, valueTimestamp],
     );
 
     const handleSegmentBlur = useCallback(
       (segment: TimeSegment, text: string) => {
         const parsedSegment = parseNumber(text);
         if (parsedSegment == null) {
-          setSegmentDraft(createSegmentDraft(valueKey, valueSegments));
+          // Non-numeric text cannot be converted into a valid time segment, so
+          // restore the displayed value instead of emitting an arbitrary Date.
+          setInternalSegments(
+            createInternalSegments(valueTimestamp, valueSegments),
+          );
           return;
         }
 
         const clampedSegment = clampSegment(parsedSegment, segment);
-        const formattedSegment = formatSegment(clampedSegment, segment);
-        const parsedOtherSegment = parseSegment(
-          segment === "hours" ? minuteText : hourText,
-          segment === "hours" ? "minutes" : "hours",
+        const nextSegments = replaceSegmentText(
+          { hours: hourText, minutes: minuteText },
+          { segment, nextText: formatSegment(clampedSegment, segment) },
         );
-        const fallbackOtherSegment = Number(
-          segment === "hours" ? valueSegments.minutes : valueSegments.hours,
-        );
-        const otherSegment = parsedOtherSegment ?? fallbackOtherSegment;
+        // Only the blurred segment should commit. If the other segment is
+        // currently invalid, preserve the committed value for that segment.
+        const nextHours = parseSegment(nextSegments.hours, "hours")
+          ?? Number(valueSegments.hours);
+        const nextMinutes = parseSegment(nextSegments.minutes, "minutes")
+          ?? Number(valueSegments.minutes);
 
-        setSegmentDraft({
-          valueKey,
-          hours: segment === "hours" ? formattedSegment : hourText,
-          minutes: segment === "minutes" ? formattedSegment : minuteText,
+        setInternalSegments({
+          valueTimestamp,
+          hours: formatSegment(nextHours, "hours"),
+          minutes: formatSegment(nextMinutes, "minutes"),
         });
 
-        if (parsedSegment !== clampedSegment) {
-          emitChange(
-            segment === "hours" ? clampedSegment : otherSegment,
-            segment === "minutes" ? clampedSegment : otherSegment,
-          );
+        const currentHours = Number(valueSegments.hours);
+        const currentMinutes = Number(valueSegments.minutes);
+        if (
+          valueTimestamp == null
+          || nextHours !== currentHours
+          || nextMinutes !== currentMinutes
+        ) {
+          emitChange(nextHours, nextMinutes);
         }
       },
-      [emitChange, hourText, minuteText, valueKey, valueSegments],
+      [
+        emitChange,
+        hourText,
+        minuteText,
+        valueTimestamp,
+        valueSegments,
+      ],
     );
 
     const handleHourChange = useCallback(
@@ -154,12 +167,13 @@ export const TimePicker: React.NamedExoticComponent<TimePickerProps> = React
         <Input
           type="text"
           inputMode="numeric"
-          pattern="[0-9]*"
+          pattern={NUMERIC_INPUT_PATTERN}
           value={hourText}
           onValueChange={handleHourChange}
           onBlur={handleHourBlur}
           className={styles.osdkTimePickerInput}
           aria-label={`${label} hours`}
+          aria-invalid={hourInvalid || undefined}
         />
         <span className={styles.osdkTimePickerSeparator} aria-hidden="true">
           :
@@ -167,32 +181,49 @@ export const TimePicker: React.NamedExoticComponent<TimePickerProps> = React
         <Input
           type="text"
           inputMode="numeric"
-          pattern="[0-9]*"
+          pattern={NUMERIC_INPUT_PATTERN}
           value={minuteText}
           onValueChange={handleMinuteChange}
           onBlur={handleMinuteBlur}
           className={styles.osdkTimePickerInput}
           aria-label={`${label} minutes`}
+          aria-invalid={minuteInvalid || undefined}
         />
       </div>
     );
   });
 
-function createSegmentDraft(
-  valueKey: number | null,
+function createInternalSegments(
+  valueTimestamp: number | null,
   segments: TimeSegments,
-): SegmentDraft {
-  return { valueKey, ...segments };
+): InternalSegments {
+  return { valueTimestamp, ...segments };
 }
 
-function segmentsFromTimestamp(valueKey: number | null): TimeSegments {
-  if (valueKey == null) {
+function replaceSegmentText(
+  segments: TimeSegments,
+  {
+    segment,
+    nextText,
+  }: {
+    segment: TimeSegment;
+    nextText: string;
+  },
+): TimeSegments {
+  return {
+    ...segments,
+    [segment]: nextText,
+  };
+}
+
+function segmentsFromTimestamp(valueTimestamp: number | null): TimeSegments {
+  if (valueTimestamp == null) {
     return {
       hours: formatSegment(0, "hours"),
       minutes: formatSegment(0, "minutes"),
     };
   }
-  const value = new Date(valueKey);
+  const value = new Date(valueTimestamp);
   return {
     hours: formatSegment(value.getHours(), "hours"),
     minutes: formatSegment(value.getMinutes(), "minutes"),
@@ -200,8 +231,8 @@ function segmentsFromTimestamp(valueKey: number | null): TimeSegments {
 }
 
 function formatSegment(value: number, segment: TimeSegment): string {
-  // Match Blueprint's TimePicker: 24-hour hours are not padded, while minute
-  // values stay two digits so "0 : 00" remains visually scannable.
+  // Hours stay compact while minutes stay two digits so the HH:mm control
+  // remains easy to scan.
   return segment === "hours" ? String(value) : String(value).padStart(2, "0");
 }
 
@@ -223,6 +254,10 @@ function parseSegment(
   }
   const { min, max } = SEGMENT_LIMITS[segment];
   return parsed >= min && parsed <= max ? parsed : undefined;
+}
+
+function isSegmentInvalid(text: string, segment: TimeSegment): boolean {
+  return parseSegment(text, segment) == null;
 }
 
 function clampSegment(value: number, segment: TimeSegment): number {

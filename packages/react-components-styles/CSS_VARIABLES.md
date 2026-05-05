@@ -250,22 +250,21 @@ Styling for checkbox components.
 
 Shared form-control tokens used by ActionForm, ObjectTable editable cells, and other built-in inputs.
 
-| Variable                             | Default Value                                                              | Description                   |
-| ------------------------------------ | -------------------------------------------------------------------------- | ----------------------------- |
-| `--osdk-form-region-gap`             | `calc(var(--osdk-surface-spacing) * 3)`                                    | Gap between form regions      |
-| `--osdk-form-field-gap`              | `calc(var(--osdk-surface-spacing) * 4)`                                    | Gap between form fields       |
-| `--osdk-form-header-block-padding`   | `calc(var(--osdk-surface-spacing) * 2)`                                    | Form header block padding     |
-| `--osdk-input-line-height`           | `var(--osdk-typography-line-height-default)`                               | Shared input line height      |
-| `--osdk-select-popup-max-height`     | `min(var(--available-height), calc(var(--osdk-surface-spacing) * 80))`     | Select popup maximum height   |
-| `--osdk-combobox-popup-max-height`   | `min(var(--available-height), calc(var(--osdk-surface-spacing) * 80))`     | Combobox popup maximum height |
-| `--osdk-switch-track-width`          | `36px`                                                                     | Switch track width            |
-| `--osdk-switch-track-height`         | `20px`                                                                     | Switch track height           |
-| `--osdk-switch-thumb-size`           | `16px`                                                                     | Switch thumb size             |
-| `--osdk-switch-thumb-offset`         | `2px`                                                                      | Switch thumb offset           |
-| `--osdk-switch-thumb-shadow`         | `0 1px 2px color-mix(in srgb, var(--osdk-palette-black) 25%, transparent)` | Switch thumb shadow           |
-| `--osdk-time-picker-segment-gap`     | `var(--osdk-surface-spacing)`                                              | Gap between time segments     |
-| `--osdk-time-picker-segment-width`   | `calc(var(--osdk-surface-spacing) * 10)`                                   | Width of hour/minute inputs   |
-| `--osdk-time-picker-separator-color` | `var(--osdk-typography-color-muted)`                                       | Time segment separator color  |
+| Variable                             | Default Value                                                          | Description                   |
+| ------------------------------------ | ---------------------------------------------------------------------- | ----------------------------- |
+| `--osdk-form-region-gap`             | `calc(var(--osdk-surface-spacing) * 3)`                                | Gap between form regions      |
+| `--osdk-form-field-gap`              | `calc(var(--osdk-surface-spacing) * 4)`                                | Gap between form fields       |
+| `--osdk-form-header-block-padding`   | `calc(var(--osdk-surface-spacing) * 2)`                                | Form header block padding     |
+| `--osdk-input-line-height`           | `var(--osdk-typography-line-height-default)`                           | Shared input line height      |
+| `--osdk-select-popup-max-height`     | `min(var(--available-height), calc(var(--osdk-surface-spacing) * 80))` | Select popup maximum height   |
+| `--osdk-combobox-popup-max-height`   | `min(var(--available-height), calc(var(--osdk-surface-spacing) * 80))` | Combobox popup maximum height |
+| `--osdk-switch-track-width`          | `36px`                                                                 | Switch track width            |
+| `--osdk-switch-track-height`         | `20px`                                                                 | Switch track height           |
+| `--osdk-switch-thumb-size`           | `16px`                                                                 | Switch thumb size             |
+| `--osdk-switch-thumb-offset`         | `2px`                                                                  | Switch thumb offset           |
+| `--osdk-time-picker-segment-gap`     | `var(--osdk-surface-spacing)`                                          | Gap between time segments     |
+| `--osdk-time-picker-segment-width`   | `calc(var(--osdk-surface-spacing) * 10)`                               | Width of hour/minute inputs   |
+| `--osdk-time-picker-separator-color` | `var(--osdk-typography-color-muted)`                                   | Time segment separator color  |
 
 ### Dialog
 

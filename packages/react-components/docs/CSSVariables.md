@@ -942,12 +942,12 @@ Styling for form components.
 
 #### Layout
 
-| Variable                           | Default Value                           | Description                              |
-| ---------------------------------- | --------------------------------------- | ---------------------------------------- |
-| `--osdk-form-region-gap`           | `calc(var(--osdk-surface-spacing) * 3)` | Gap between form regions                 |
-| `--osdk-form-field-gap`            | `calc(var(--osdk-surface-spacing) * 4)` | Gap between fields                       |
-| `--osdk-form-padding-inline`       | `0`                                     | Shared inline padding for form regions   |
-| `--osdk-form-fields-block-padding` | `0`                                     | Block padding for the form fields region |
+| Variable                            | Default Value                           | Description                                      |
+| ----------------------------------- | --------------------------------------- | ------------------------------------------------ |
+| `--osdk-form-region-gap`            | `calc(var(--osdk-surface-spacing) * 3)` | Gap between form regions                         |
+| `--osdk-form-field-gap`             | `calc(var(--osdk-surface-spacing) * 4)` | Gap between fields                               |
+| `--osdk-form-padding-inline`        | `0`                                     | Shared inline padding for form regions           |
+| `--osdk-form-content-padding-block` | `0`                                     | Content block padding for the form fields region |
 
 #### Header
 
@@ -1199,11 +1199,11 @@ Styling for toggle switch components.
 
 | Variable                                | Default Value                              | Description                       |
 | --------------------------------------- | ------------------------------------------ | --------------------------------- |
-| `--osdk-switch-track-width`             | `28px`                                     | Track width                       |
-| `--osdk-switch-track-height`            | `16px`                                     | Track height                      |
-| `--osdk-switch-thumb-size`              | `12px`                                     | Thumb size                        |
+| `--osdk-switch-track-width`             | `36px`                                     | Track width                       |
+| `--osdk-switch-track-height`            | `20px`                                     | Track height                      |
+| `--osdk-switch-thumb-size`              | `16px`                                     | Thumb size                        |
 | `--osdk-switch-thumb-offset`            | `2px`                                      | Thumb offset from track edge      |
-| `--osdk-switch-border-radius`           | `var(--osdk-surface-border-radius)`        | Track border radius               |
+| `--osdk-switch-border-radius`           | `9999px`                                   | Track border radius               |
 | `--osdk-switch-disabled-opacity`        | `var(--osdk-input-disabled-opacity)`       | Disabled opacity                  |
 | `--osdk-switch-transition-duration`     | `var(--osdk-emphasis-transition-duration)` | Transition duration               |
 | `--osdk-switch-transition-ease`         | `var(--osdk-emphasis-ease-default)`        | Transition easing                 |

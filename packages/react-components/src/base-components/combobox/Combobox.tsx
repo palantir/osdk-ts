@@ -31,10 +31,7 @@ import {
 import { CaretDown, Cross, Search, Tick } from "@blueprintjs/icons";
 import classnames from "classnames";
 import React from "react";
-import {
-  POPUP_COLLISION_PADDING,
-  POPUP_SIDE_OFFSET,
-} from "../popupPositioning.js";
+import { getPopupSideOffset } from "../popupPositioning.js";
 import styles from "./Combobox.module.css";
 
 interface ComboboxTriggerComponentProps
@@ -130,8 +127,7 @@ function ComboboxPositioner({
   return (
     <BaseUICombobox.Positioner
       className={classnames(styles.osdkComboboxPositioner, className)}
-      sideOffset={POPUP_SIDE_OFFSET}
-      collisionPadding={POPUP_COLLISION_PADDING}
+      sideOffset={getPopupSideOffset}
       {...rest}
     >
       {children}

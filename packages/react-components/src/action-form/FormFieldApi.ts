@@ -26,10 +26,7 @@ import type {
 } from "@osdk/api";
 import type React from "react";
 
-/**
- * A form field definition specifies configuration for a single field
- */
-export interface FormFieldDefinition<
+interface FormFieldDefinitionBase<
   Q extends ActionDefinition<unknown>,
   K extends FieldKey<Q> = FieldKey<Q>,
 > {
@@ -47,11 +44,6 @@ export interface FormFieldDefinition<
    * Default value of the field
    */
   defaultValue?: FieldValueType<Q, K>;
-
-  /**
-   * The form field component type to render
-   */
-  fieldComponent: ValidFormFieldForPropertyType<FieldDescriptorType<Q, K>>;
 
   /**
    * Whether the field is required
@@ -98,22 +90,38 @@ export interface FormFieldDefinition<
    * Return `undefined` if valid, or an error message string if invalid.
    */
   validate?: (value: FieldValueType<Q, K>) => Promise<string | undefined>;
-
-  /**
-   * The component props for the form field.
-   * Excludes runtime props (value, onChange) which are managed by ActionForm.
-   */
-  fieldComponentProps: Omit<
-    FormFieldPropsByType[
-      ValidFormFieldForPropertyType<
-        FieldDescriptorType<Q, K>
-      >
-    ],
-    FormManagedProps<
-      ValidFormFieldForPropertyType<FieldDescriptorType<Q, K>>
-    >
-  >;
 }
+
+/**
+ * A form field definition specifies configuration for a single field.
+ * Implemented as a distributed mapped type so `fieldComponent` narrows
+ * `fieldComponentProps` to the matching component prop type.
+ */
+export type FormFieldDefinition<
+  Q extends ActionDefinition<unknown>,
+  K extends FieldKey<Q> = FieldKey<Q>,
+> = {
+  [C in ValidFormFieldForPropertyType<FieldDescriptorType<Q, K>>]:
+    & FormFieldDefinitionBase<Q, K>
+    & {
+      /**
+       * The form field component type to render
+       */
+      fieldComponent: C;
+
+      /**
+       * The component props for the form field.
+       * Excludes runtime props (value, onChange) which are managed by ActionForm.
+       */
+      fieldComponentProps: Omit<FormFieldPropsByType[C], FormManagedProps<C>>;
+    };
+}[ValidFormFieldForPropertyType<FieldDescriptorType<Q, K>>];
+
+export type FormFieldDefinitionForAction<
+  Q extends ActionDefinition<unknown>,
+> = {
+  [K in FieldKey<Q>]: FormFieldDefinition<Q, K>;
+}[FieldKey<Q>];
 
 /**
  * A discriminated union describing which validation rule failed and the
@@ -451,12 +459,7 @@ export interface RadioButtonsFieldProps<V> extends BaseFormFieldProps<V> {
 /**
  * Switch field props for boolean values.
  */
-export interface SwitchFieldProps extends BaseFormFieldProps<boolean> {
-  /**
-   * Accessible label for the switch control.
-   */
-  "aria-label"?: string;
-}
+export type SwitchFieldProps = BaseFormFieldProps<boolean>;
 
 /**
  * Option interface for radio button options
@@ -659,6 +662,7 @@ export type RendererFieldDefinition = {
     fieldComponent: K;
     fieldType?: FieldType;
     label: string;
+    defaultValue?: unknown;
     isRequired?: boolean;
     placeholder?: string;
     helperText?: React.ReactNode;
@@ -673,7 +677,8 @@ export type RendererFieldDefinition = {
  * Gets valid form field types for a given property type
  */
 export type ValidFormFieldForPropertyType<P extends FieldDescriptorType> =
-  P extends { type: "objectSet" } ? "OBJECT_SET"
+  | "CUSTOM"
+  | (P extends { type: "objectSet" } ? "OBJECT_SET"
     : P extends { type: "object" } ? "OBJECT_SELECT"
     : P extends "mediaReference" | "attachment" ? "FILE_PICKER"
     : P extends "boolean" ? "RADIO_BUTTONS" | "DROPDOWN" | "SWITCH"
@@ -687,4 +692,4 @@ export type ValidFormFieldForPropertyType<P extends FieldDescriptorType> =
       | "short"
       | "byte"
       | "decimal" ? "NUMBER_INPUT"
-    : never;
+    : never);

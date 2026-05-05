@@ -15,14 +15,15 @@
  */
 
 import type { ActionDefinition, ActionEditResponse } from "@osdk/api";
-import type { FormFieldDefinition } from "@osdk/react-components/experimental";
+import type {
+  FormFieldDefinitionForAction,
+  FormState,
+} from "@osdk/react-components/experimental";
 import { ActionForm } from "@osdk/react-components/experimental";
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import React, { useState } from "react";
 import { fn } from "storybook/test";
-import {
-  toggleRemoteStoryAction,
-  updateEmployeeStoryAction,
-} from "../../mocks/fauxFoundry.js";
+import { updateEmployeeStoryAction } from "../../mocks/fauxFoundry.js";
 
 interface UpdateEmployeeStoryAction extends ActionDefinition<unknown> {
   __DefinitionMetadata: {
@@ -34,19 +35,7 @@ interface UpdateEmployeeStoryAction extends ActionDefinition<unknown> {
     };
     type: "action";
     apiName: "updateEmployeeStoryAction";
-    status: "ACTIVE";
-    rid: string;
-  };
-}
-
-interface ToggleRemoteStoryAction extends ActionDefinition<unknown> {
-  __DefinitionMetadata: {
-    signatures: unknown;
-    parameters: {
-      isRemote: { type: "boolean" };
-    };
-    type: "action";
-    apiName: "toggleRemoteStoryAction";
+    displayName: "Update employee";
     status: "ACTIVE";
     rid: string;
   };
@@ -54,8 +43,71 @@ interface ToggleRemoteStoryAction extends ActionDefinition<unknown> {
 
 const actionDefinition = updateEmployeeStoryAction
   .actionDefinition as unknown as UpdateEmployeeStoryAction;
-const toggleActionDefinition = toggleRemoteStoryAction
-  .actionDefinition as unknown as ToggleRemoteStoryAction;
+
+const actionFormDefaultValueFields: ReadonlyArray<
+  FormFieldDefinitionForAction<UpdateEmployeeStoryAction>
+> = [
+  {
+    fieldKey: "fullName",
+    label: "Full name",
+    fieldComponent: "TEXT_INPUT",
+    defaultValue: "Grace Hopper",
+    fieldComponentProps: {},
+  },
+  {
+    fieldKey: "yearsExperience",
+    label: "Years of experience",
+    fieldComponent: "NUMBER_INPUT",
+    defaultValue: 42,
+    fieldComponentProps: {
+      min: 0,
+    },
+  },
+  {
+    fieldKey: "isRemote",
+    label: "Remote employee",
+    fieldComponent: "RADIO_BUTTONS",
+    defaultValue: true,
+    fieldComponentProps: {
+      options: [
+        { label: "True", value: true },
+        { label: "False", value: false },
+      ],
+    },
+  },
+];
+
+const actionFormOverrideFields: ReadonlyArray<
+  FormFieldDefinitionForAction<UpdateEmployeeStoryAction>
+> = [
+  {
+    fieldKey: "fullName",
+    label: "Employee legal name",
+    fieldComponent: "TEXT_INPUT",
+    helperText: "Use the name that should appear in HR records.",
+    fieldComponentProps: {
+      placeholder: "Ada Lovelace",
+      minLength: 2,
+    },
+  },
+  {
+    fieldKey: "yearsExperience",
+    label: "Relevant experience",
+    fieldComponent: "NUMBER_INPUT",
+    helperText: "Whole years only.",
+    fieldComponentProps: {
+      min: 0,
+      max: 80,
+    },
+  },
+  {
+    fieldKey: "isRemote",
+    label: "Remote employee",
+    fieldComponent: "SWITCH",
+    helperText: "Turn on when the employee is not assigned to an office.",
+    fieldComponentProps: {},
+  },
+];
 
 const successSpy = fn().mockName("onSuccess");
 const errorSpy = fn().mockName("onError");
@@ -69,10 +121,8 @@ const meta = {
   component: ActionForm,
   decorators: [
     (Story) => (
-      <div className="osdkFormStoryCanvas">
-        <div className="osdkFormCard">
-          <Story />
-        </div>
+      <div className="osdkFormCard">
+        <Story />
       </div>
     ),
   ],
@@ -80,7 +130,7 @@ const meta = {
     docs: {
       description: {
         component:
-          "ActionForm fetches action metadata through @osdk/react and renders a submit-ready BaseForm. These stories use FauxFoundry + MSW, not mocked hooks.",
+          "ActionForm fetches action metadata through @osdk/react and renders a submit-ready BaseForm. These stories exercise the same metadata and action hooks used by applications.",
       },
     },
   },
@@ -132,22 +182,11 @@ export const WithoutTitle: Story = {
   },
 };
 
-const switchFieldDefinitions = [
-  {
-    fieldKey: "isRemote",
-    label: "Remote employee",
-    fieldComponent: "SWITCH",
-    helperText: "Switch is available as an explicit boolean field override.",
-    fieldComponentProps: {},
-  },
-] satisfies ReadonlyArray<FormFieldDefinition<typeof toggleActionDefinition>>;
-
-export const WithSwitchOverride: Story = {
+export const WithDefaultValues: Story = {
   render: () => (
     <ActionForm
-      actionDefinition={toggleActionDefinition}
-      formTitle="Update employee"
-      formFieldDefinitions={switchFieldDefinitions}
+      actionDefinition={actionDefinition}
+      formFieldDefinitions={actionFormDefaultValueFields}
       onSuccess={handleSuccess}
       onError={errorSpy}
     />
@@ -155,21 +194,130 @@ export const WithSwitchOverride: Story = {
   parameters: {
     docs: {
       source: {
-        code: `const formFieldDefinitions = [
+        code: `const fields = [
+  {
+    fieldKey: "fullName",
+    label: "Full name",
+    fieldComponent: "TEXT_INPUT",
+    defaultValue: "Grace Hopper",
+    fieldComponentProps: {},
+  },
+  {
+    fieldKey: "yearsExperience",
+    label: "Years of experience",
+    fieldComponent: "NUMBER_INPUT",
+    defaultValue: 42,
+    fieldComponentProps: { min: 0 },
+  },
   {
     fieldKey: "isRemote",
     label: "Remote employee",
-    fieldComponent: "SWITCH",
-    fieldComponentProps: {},
+    fieldComponent: "RADIO_BUTTONS",
+    defaultValue: true,
+    fieldComponentProps: {
+      options: [
+        { label: "True", value: true },
+        { label: "False", value: false },
+      ],
+    },
   },
-];
+] satisfies Array<FormFieldDefinition<typeof updateEmployeeStoryAction>>;
 
 <ActionForm
-  actionDefinition={toggleRemoteStoryAction}
-  formTitle="Update employee"
-  formFieldDefinitions={formFieldDefinitions}
+  actionDefinition={updateEmployeeStoryAction}
+  formFieldDefinitions={fields}
 />`,
       },
     },
   },
 };
+
+export const WithFieldOverrides: Story = {
+  render: () => (
+    <ActionForm
+      actionDefinition={actionDefinition}
+      formFieldDefinitions={actionFormOverrideFields}
+      onSuccess={handleSuccess}
+      onError={errorSpy}
+    />
+  ),
+  parameters: {
+    docs: {
+      source: {
+        code: `const fields = [
+  {
+    fieldKey: "fullName",
+    label: "Employee legal name",
+    fieldComponent: "TEXT_INPUT",
+    helperText: "Use the name that should appear in HR records.",
+    fieldComponentProps: {
+      placeholder: "Ada Lovelace",
+      minLength: 2,
+    },
+  },
+  {
+    fieldKey: "isRemote",
+    label: "Remote employee",
+    fieldComponent: "SWITCH",
+    helperText: "Turn on when the employee is not assigned to an office.",
+    fieldComponentProps: {},
+  },
+] satisfies Array<FormFieldDefinition<typeof updateEmployeeStoryAction>>;
+
+<ActionForm
+  actionDefinition={updateEmployeeStoryAction}
+  formFieldDefinitions={fields}
+/>`,
+      },
+    },
+  },
+};
+
+export const ControlledFormState: Story = {
+  render: () => <ControlledActionFormStory />,
+  parameters: {
+    docs: {
+      source: {
+        code: `const [formState, setFormState] = useState({
+  fullName: "Ada Lovelace",
+  yearsExperience: 5,
+  isRemote: true,
+});
+
+<ActionForm
+  actionDefinition={updateEmployeeStoryAction}
+  formState={formState}
+  onFormStateChange={setFormState}
+/>`,
+      },
+    },
+  },
+};
+
+function ControlledActionFormStory(): React.ReactElement {
+  const [formState, setFormState] = useState<
+    FormState<UpdateEmployeeStoryAction>
+  >({
+    fullName: "Ada Lovelace",
+    yearsExperience: 5,
+    isRemote: true,
+  });
+
+  return (
+    <>
+      <div className="osdkFormStorySpacing">
+        <strong>Current Form State:</strong>
+        <pre className="osdkCodeOutput">
+          {JSON.stringify(formState, null, 2)}
+        </pre>
+      </div>
+      <ActionForm
+        actionDefinition={actionDefinition}
+        formState={formState}
+        onFormStateChange={setFormState}
+        onSuccess={handleSuccess}
+        onError={errorSpy}
+      />
+    </>
+  );
+}

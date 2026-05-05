@@ -82,9 +82,8 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
       : "Submission failed"
     : undefined;
 
-  const handleFormSubmit = useCallback(
-    async (e: React.FormEvent) => {
-      e.preventDefault();
+  const submitForm = useCallback(
+    async () => {
       setHasAttemptedSubmit(true);
 
       const isValid = await trigger();
@@ -110,8 +109,6 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
     [clearError, onFieldValueChange],
   );
 
-  const isFormPending = isPending || isSubmitting;
-
   const labelByFieldKey = useMemo(
     () => new Map(allFieldDefinitions.map((d) => [d.fieldKey, d.label])),
     [allFieldDefinitions],
@@ -126,11 +123,30 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
   const buttonErrorMessage = areErrorsPresent
     ? "Some fields are invalid"
     : submissionErrorMessage;
+  const isFormPending = isPending || isSubmitting;
+  const isSubmitButtonDisabled = isSubmitDisabled
+    || (hasAttemptedSubmit && areErrorsPresent);
+
+  const handleSubmitKeyDown = useCallback(
+    (event: React.KeyboardEvent<HTMLFormElement>) => {
+      if (!shouldSubmitOnEnter(event)) {
+        return;
+      }
+      event.preventDefault();
+      if (!isSubmitButtonDisabled && !isFormPending) {
+        void submitForm();
+      }
+    },
+    [isFormPending, isSubmitButtonDisabled, submitForm],
+  );
 
   return (
     <form
       className={classNames(styles.osdkForm, className)}
-      onSubmit={handleFormSubmit}
+      // Workshop widgets can run in iframes without `allow-forms`, where
+      // native form submission is blocked. Keep the form landmark, but route
+      // submit behavior through explicit click/keyboard handlers instead.
+      onKeyDown={handleSubmitKeyDown}
     >
       {formTitle != null && <FormHeader title={formTitle} />}
       {isLoading && allFieldDefinitions.length === 0 && (
@@ -181,11 +197,11 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
         <div className={styles.osdkFormSubmitButton}>
           <SubmitButton
             isPending={isFormPending}
-            isSubmitDisabled={isSubmitDisabled
-              || (hasAttemptedSubmit && areErrorsPresent)}
+            isSubmitDisabled={isSubmitButtonDisabled}
             errorMessage={buttonErrorMessage}
             buttonText={submitButtonText}
             buttonVariant={submitButtonVariant}
+            onClick={submitForm}
           />
         </div>
       </div>
@@ -233,6 +249,10 @@ function buildDefaultValues(
 ): Record<string, unknown> {
   const values: Record<string, unknown> = {};
   for (const def of fieldDefinitions) {
+    if (def.defaultValue !== undefined) {
+      values[def.fieldKey] = def.defaultValue;
+      continue;
+    }
     const props: Record<string, unknown> = def.fieldComponentProps;
     if ("defaultValue" in props) {
       values[def.fieldKey] = props.defaultValue;
@@ -252,6 +272,7 @@ interface SubmitButtonProps {
   errorMessage: string | undefined;
   buttonText: string;
   buttonVariant: "primary" | "secondary";
+  onClick: () => void;
 }
 
 const SubmitButton = memo(function SubmitButtonFn({
@@ -260,13 +281,15 @@ const SubmitButton = memo(function SubmitButtonFn({
   errorMessage,
   buttonText,
   buttonVariant,
+  onClick,
 }: SubmitButtonProps): React.ReactElement {
   const buttonLabel = isPending ? "Submitting\u2026" : buttonText;
   const button = (
     <ActionButton
-      type="submit"
+      type="button"
       variant={buttonVariant}
       disabled={isSubmitDisabled || isPending}
+      onClick={onClick}
     >
       {buttonLabel}
     </ActionButton>
@@ -294,6 +317,23 @@ const SubmitButton = memo(function SubmitButtonFn({
     </Tooltip.Root>
   );
 });
+
+function shouldSubmitOnEnter(
+  event: React.KeyboardEvent<HTMLFormElement>,
+): boolean {
+  if (
+    event.key !== "Enter"
+    || event.metaKey
+    || event.ctrlKey
+    || event.altKey
+    || event.shiftKey
+  ) {
+    return false;
+  }
+
+  const target = event.target;
+  return target instanceof HTMLTextAreaElement ? false : true;
+}
 
 interface ErrorIndicatorProps {
   errorEntries: ReadonlyArray<ErrorEntry>;

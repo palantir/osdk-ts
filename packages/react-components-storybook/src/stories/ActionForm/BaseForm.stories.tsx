@@ -185,10 +185,8 @@ const meta: Meta<BaseFormStoryProps> = {
     (Story) => (
       <>
         <SubmitToast />
-        <div className="osdkFormStoryCanvas">
-          <div className="osdkFormCard">
-            <Story />
-          </div>
+        <div className="osdkFormCard">
+          <Story />
         </div>
       </>
     ),
@@ -481,6 +479,44 @@ export const Pending: Story = {
         code: `<BaseForm
   formContent={formContent}
   isPending={true}
+  onSubmit={(formState) => console.log("Submitted:", formState)}
+/>`,
+      },
+    },
+  },
+};
+
+const switchFormContent: ReadonlyArray<FormContentItem> = [
+  field({
+    fieldKey: "isRemote",
+    fieldComponent: "SWITCH",
+    label: "Remote employee",
+    helperText: "Use a switch for boolean settings that map to on/off state.",
+    fieldComponentProps: {},
+  }),
+];
+
+export const WithSwitch: Story = {
+  args: {
+    formTitle: "Update employee",
+    formContent: switchFormContent,
+    onSubmit: handleSubmit,
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `const formContent = [
+  {
+    fieldKey: "isRemote",
+    fieldComponent: "SWITCH",
+    label: "Remote employee",
+    fieldComponentProps: {},
+  },
+];
+
+<BaseForm
+  formTitle="Update employee"
+  formContent={formContent}
   onSubmit={(formState) => console.log("Submitted:", formState)}
 />`,
       },

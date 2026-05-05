@@ -41,6 +41,7 @@ export type {
   FieldValueType,
   FilePickerProps,
   FormFieldDefinition,
+  FormFieldDefinitionForAction,
   FormFieldPropsByType,
   NumberInputFieldProps,
   ObjectSetFieldProps,

@@ -8,5 +8,4 @@
 .osdkDatetimeTimeFooter {
   display: flex;
   justify-content: center;
-  padding-block-start: var(--osdk-time-picker-padding-top);
 }

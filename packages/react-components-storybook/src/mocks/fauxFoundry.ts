@@ -35,7 +35,13 @@ const SAMPLE_PDF_PATH =
 export const MEDIA_EMPLOYEE_PK = 657495071;
 
 export const updateEmployeeStoryAction = TypeHelpers
-  .actionTypeBuilder("updateEmployeeStoryAction")
+  .actionTypeBuilder(
+    TypeHelpers.createActionType({
+      apiName: "updateEmployeeStoryAction",
+      displayName: "Update employee",
+      parameters: {},
+    }),
+  )
   .addParameter("fullName", "string", true)
   .addParameter("yearsExperience", "integer", false)
   .addParameter("isRemote", "boolean", false)
