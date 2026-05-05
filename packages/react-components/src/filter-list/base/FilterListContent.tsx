@@ -74,6 +74,7 @@ interface FilterListContentProps<D> {
   getFilterKey: (definition: D) => string;
   getFilterLabel: (definition: D) => string;
   enableSorting?: boolean;
+  perFilterWhereClauses?: ReadonlyMap<string, unknown>;
   className?: string;
   style?: React.CSSProperties;
 }
@@ -87,6 +88,7 @@ export function FilterListContent<D>({
   getFilterKey,
   getFilterLabel,
   enableSorting,
+  perFilterWhereClauses,
   className,
   style,
 }: FilterListContentProps<D>): React.ReactElement {
@@ -244,6 +246,9 @@ export function FilterListContent<D>({
               const filterKey = getFilterKey(definition);
               const label = getFilterLabel(definition);
               const state = filterStates.get(filterKey);
+              const whereClauseForFilter = perFilterWhereClauses?.get(
+                filterKey,
+              );
 
               return (
                 <SortableFilterListItem
@@ -256,6 +261,7 @@ export function FilterListContent<D>({
                   onFilterStateChanged={onFilterStateChanged}
                   onFilterRemoved={onFilterRemoved}
                   renderInput={renderInput}
+                  whereClauseForFilter={whereClauseForFilter}
                 />
               );
             })}
@@ -274,6 +280,9 @@ export function FilterListContent<D>({
                 onFilterStateChanged={onFilterStateChanged}
                 onFilterRemoved={onFilterRemoved}
                 renderInput={renderInput}
+                whereClauseForFilter={perFilterWhereClauses?.get(
+                  activeFilterKey,
+                )}
                 dragHandleAttributes={DRAG_OVERLAY_HANDLE_ATTRIBUTES}
               />
             )}
@@ -291,6 +300,7 @@ export function FilterListContent<D>({
       {renderDefinitions.map((definition) => {
         const filterKey = getFilterKey(definition);
         const state = filterStates.get(filterKey);
+        const whereClauseForFilter = perFilterWhereClauses?.get(filterKey);
 
         return (
           <FilterListItem
@@ -302,6 +312,7 @@ export function FilterListContent<D>({
             onFilterStateChanged={onFilterStateChanged}
             onFilterRemoved={onFilterRemoved}
             renderInput={renderInput}
+            whereClauseForFilter={whereClauseForFilter}
           />
         );
       })}

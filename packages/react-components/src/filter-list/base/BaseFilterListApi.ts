@@ -24,6 +24,15 @@ export type RenderFilterInput<D> = (props: {
   onFilterStateChanged: (state: FilterState) => void;
   searchQuery?: string;
   excludeRowOpen?: boolean;
+  /**
+   * Per-filter where clause supplied by `FilterList`'s internal pipeline.
+   *
+   * Type-erased here so this OSDK-agnostic base does not depend on
+   * `WhereClause<Q>`. The FilterList wrapper casts it back to the typed
+   * shape before passing it to `FilterInput`. Consumers passing their own
+   * `renderInput` function can ignore this field.
+   */
+  whereClauseForFilter?: unknown;
 }) => React.ReactNode;
 
 export interface BaseFilterListProps<D> {
@@ -37,6 +46,13 @@ export interface BaseFilterListProps<D> {
   onReset?: () => void;
   onFilterAdded?: () => void;
   onFilterRemoved?: (filterKey: string) => void;
+  /**
+   * Per-filter where clauses keyed by `filterKey`. Forwarded down to each
+   * `FilterListItem` so the internal `renderInput` can read its filter's
+   * clause without closing over the whole map (which would invalidate
+   * memoization on every selection).
+   */
+  perFilterWhereClauses?: ReadonlyMap<string, unknown>;
 
   collapsed?: boolean;
   onCollapsedChange?: (collapsed: boolean) => void;
