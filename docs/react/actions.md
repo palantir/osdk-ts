@@ -8,15 +8,13 @@ This guide covers executing actions, validation, optimistic updates, and debounc
 
 ## useOsdkAction
 
-_Experimental - import from `@osdk/react/experimental`_
-
 Execute and validate actions with automatic state management.
 
 ### Basic Usage
 
 ```tsx
 import { completeTodo, Todo } from "@my/osdk";
-import { useOsdkAction, useOsdkObject } from "@osdk/react/experimental";
+import { useOsdkAction, useOsdkObject } from "@osdk/react";
 import { useCallback } from "react";
 
 function TodoView({ todo }: { todo: Todo.OsdkInstance }) {
@@ -87,7 +85,7 @@ Example:
 
 ```tsx
 import { completeTodo, Todo } from "@my/osdk";
-import { useOsdkAction } from "@osdk/react/experimental";
+import { useOsdkAction } from "@osdk/react";
 
 function TodoActionWithErrorHandling({ todo }: { todo: Todo.OsdkInstance }) {
   const { applyAction, error, isPending } = useOsdkAction(completeTodo);
@@ -130,7 +128,7 @@ Validate action parameters without executing using `validateAction`.
 
 ```tsx
 import { createTodo } from "@my/osdk";
-import { useOsdkAction } from "@osdk/react/experimental";
+import { useOsdkAction } from "@osdk/react";
 import { useState } from "react";
 
 function TodoForm() {
@@ -220,7 +218,7 @@ Apply the same action to multiple items in a single call:
 
 ```tsx
 import { completeTodo, Todo } from "@my/osdk";
-import { useOsdkAction } from "@osdk/react/experimental";
+import { useOsdkAction } from "@osdk/react";
 import { useCallback } from "react";
 
 function BulkCompleteButton({ todos }: { todos: Todo.OsdkInstance[] }) {
@@ -251,7 +249,7 @@ Apply changes to the cache immediately while waiting for the server response.
 
 ```tsx
 import { completeTodo, Todo } from "@my/osdk";
-import { useOsdkAction, useOsdkObject } from "@osdk/react/experimental";
+import { useOsdkAction, useOsdkObject } from "@osdk/react";
 import { useCallback } from "react";
 
 function TodoView({ todo }: { todo: Todo.OsdkInstance }) {
@@ -327,14 +325,12 @@ const updatedTodo = todo.$clone({
 
 ## useDebouncedCallback
 
-_Experimental - import from `@osdk/react/experimental`_
-
 Debounce callback functions for auto-save patterns or expensive operations.
 
 ### Basic Usage
 
 ```tsx
-import { useDebouncedCallback } from "@osdk/react/experimental";
+import { useDebouncedCallback } from "@osdk/react";
 import { useState } from "react";
 
 function SearchableList({ onSearch }: { onSearch: (query: string) => void }) {
@@ -366,7 +362,7 @@ Combine with actions for auto-saving:
 
 ```tsx
 import { Todo, updateTodo } from "@my/osdk";
-import { useDebouncedCallback, useOsdkAction } from "@osdk/react/experimental";
+import { useDebouncedCallback, useOsdkAction } from "@osdk/react";
 import { useState } from "react";
 
 function AutoSaveTodo({ todo }: { todo: Todo.OsdkInstance }) {
@@ -404,7 +400,7 @@ function AutoSaveTodo({ todo }: { todo: Todo.OsdkInstance }) {
 The returned function has utility methods:
 
 ```tsx
-import { useDebouncedCallback } from "@osdk/react/experimental";
+import { useDebouncedCallback } from "@osdk/react";
 
 const debouncedFn = useDebouncedCallback((value: string) => {
   console.log("Called with:", value);
