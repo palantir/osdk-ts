@@ -303,7 +303,10 @@
   display: flex;
   flex-direction: column;
   min-width: var(--anchor-width);
-  max-height: var(--available-height);
+  max-height: min(
+    var(--osdk-combobox-popup-max-height, 320px),
+    var(--available-height)
+  );
   overflow-y: auto;
   padding: calc(
     var(--osdk-combobox-spacing, var(--osdk-surface-spacing)) * 1.5
