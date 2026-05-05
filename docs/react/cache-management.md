@@ -18,7 +18,7 @@ This guide covers how the OSDK React cache system works and how to manually cont
 
 ## How the Cache Works
 
-The `OsdkProvider2` creates an `ObservableClient` that maintains a normalized cache of all queries and their results.
+The `OsdkProvider` creates an `ObservableClient` that maintains a normalized cache of all queries and their results.
 
 ### What Gets Cached
 
@@ -87,37 +87,20 @@ The `ObservableClient` provides methods to manually invalidate cached data.
 
 ### Setup
 
-`OsdkProvider2` creates its own `ObservableClient` internally — you only need to construct one yourself if you want to call invalidation methods (`invalidateObjects`, `invalidateObjectType`, `invalidateFunction`, …) from outside the React tree (for example, from a WebSocket handler in `client.ts`). In that case, create one and pass it explicitly so React and your handler share the same cache:
+`OsdkProvider` owns its `ObservableClient` — there is no `observableClient` prop and no need to construct one yourself for the React side. To call invalidation methods (`invalidateObjects`, `invalidateObjectType`, `invalidateFunction`, …) from a component, read the provider's instance with `useObservableClient`:
 
 ```tsx
-// client.ts
-import { createClient } from "@osdk/client";
-import {
-  createObservableClient,
-  type ObservableClient,
-} from "@osdk/client/unstable-do-not-use";
+import { Todo } from "@my/osdk";
+import { useObservableClient } from "@osdk/react";
 
-const client = createClient(
-  "https://your-stack.palantirfoundry.com",
-  "your-ontology-rid",
-  authProvider,
-);
-
-// Create and export the observable client for invalidation
-export const observableClient = createObservableClient(client);
-export { client };
-```
-
-```tsx
-// main.tsx
-import { OsdkProvider2 } from "@osdk/react/experimental";
-import { client, observableClient } from "./client";
-
-ReactDOM.createRoot(document.getElementById("root")!).render(
-  <OsdkProvider2 client={client} observableClient={observableClient}>
-    <App />
-  </OsdkProvider2>,
-);
+function RefreshTodosButton() {
+  const observableClient = useObservableClient();
+  return (
+    <button onClick={() => observableClient.invalidateObjectType(Todo)}>
+      Refresh
+    </button>
+  );
+}
 ```
 
 ### Invalidation Methods
@@ -140,9 +123,13 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
 
 ### Usage
 
+Get the `ObservableClient` with `useObservableClient` from any component below `OsdkProvider`:
+
 ```tsx
 import { getEmployeeMetrics, Todo } from "@my/osdk";
-import { observableClient } from "./client";
+import { useObservableClient } from "@osdk/react";
+
+const observableClient = useObservableClient();
 
 // Invalidate specific objects
 await observableClient.invalidateObjects([todo1, todo2]);
@@ -199,7 +186,7 @@ This is useful when you know a specific object has changed outside of the normal
 
 ```tsx
 import { completeTodo, Todo } from "@my/osdk";
-import { useOsdkAction, useOsdkObject } from "@osdk/react/experimental";
+import { useOsdkAction, useOsdkObject } from "@osdk/react";
 
 function TodoView({ todo }: { todo: Todo.OsdkInstance }) {
   const { isOptimistic } = useOsdkObject(todo);

@@ -48,6 +48,7 @@ export {
   getRegisteredDevTools,
   registerDevTools,
 } from "./public/devtools-registry.js";
+export { useObservableClient } from "./useObservableClient.js";
 export { useOsdkClient } from "./useOsdkClient.js";
 export { useOsdkMetadata } from "./useOsdkMetadata.js";
 export type { UseOsdkMetadataResult } from "./useOsdkMetadata.js";
