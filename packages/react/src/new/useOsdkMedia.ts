@@ -21,7 +21,7 @@ import type {
 } from "@osdk/client/unstable-do-not-use";
 import React from "react";
 import { devToolsMetadata, makeExternalStore } from "./makeExternalStore.js";
-import { OsdkContext2 } from "./OsdkContext2.js";
+import { OsdkContext } from "./OsdkContext.js";
 
 export interface UseOsdkMediaOptions {
   enabled?: boolean;
@@ -50,7 +50,7 @@ export function useOsdkMedia(
   source?: Media | Attachment,
   options: UseOsdkMediaOptions = {},
 ): UseOsdkMediaResult {
-  const { observableClient } = React.useContext(OsdkContext2);
+  const { observableClient } = React.useContext(OsdkContext);
   const {
     enabled = true,
     preview = true,
