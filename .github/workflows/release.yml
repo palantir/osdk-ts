@@ -9,6 +9,7 @@ on:
       - main
       - release/*
       - next
+      - jzhang/add-logging
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
@@ -50,7 +51,7 @@ jobs:
   snapshot:
     name: Snapshot
     needs: release
-    if: ${{ !failure() && !cancelled() }}
+    if: ${{ always() && !failure() && !cancelled() }}
     runs-on: ubuntu-latest
     permissions:
       contents: read
