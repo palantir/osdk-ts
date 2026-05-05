@@ -16,7 +16,7 @@
 
 import type { MediaReference } from "@osdk/api";
 import React from "react";
-import { OsdkContext2 } from "./OsdkContext2.js";
+import { OsdkContext } from "./OsdkContext.js";
 
 export interface UseOsdkMediaUploadResult {
   upload: (
@@ -30,7 +30,7 @@ export interface UseOsdkMediaUploadResult {
 }
 
 export function useOsdkMediaUpload(): UseOsdkMediaUploadResult {
-  const { observableClient } = React.useContext(OsdkContext2);
+  const { observableClient } = React.useContext(OsdkContext);
   const [data, setData] = React.useState<MediaReference>();
   const [error, setError] = React.useState<Error>();
   const [isPending, setIsPending] = React.useState(false);
