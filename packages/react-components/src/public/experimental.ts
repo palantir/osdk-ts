@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+export { OsdkErrorBoundary } from "../OsdkErrorBoundary.js";
+export type { OsdkErrorBoundaryProps } from "../OsdkErrorBoundary.js";
 export * from "./experimental/action-form.js";
 export * from "./experimental/filter-list.js";
 export * from "./experimental/markdown-renderer.js";
