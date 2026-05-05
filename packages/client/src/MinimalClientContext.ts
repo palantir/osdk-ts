@@ -50,6 +50,8 @@ export interface MinimalClient extends SharedClientContext {
   clientCacheKey: ClientCacheKey;
   requestContext: RequestContext;
   narrowTypeInterfaceOrObjectMapping: Record<string, "object" | "interface">;
+  /** @internal */
+  withFetch: (fetchFn: typeof globalThis.fetch) => MinimalClient;
 }
 
 export type MinimalClientParams = {

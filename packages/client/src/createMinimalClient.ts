@@ -85,6 +85,16 @@ export function createMinimalClient(
     requestContext: {},
     branch: options.branch,
     narrowTypeInterfaceOrObjectMapping: {},
+    withFetch: (newFetchFn) =>
+      createMinimalClient(
+        metadata,
+        baseUrl,
+        tokenProvider,
+        options,
+        newFetchFn,
+        objectSetFactory,
+        createOntologyProviderFactory,
+      ),
   } satisfies Omit<
     MinimalClient,
     "ontologyProvider"
