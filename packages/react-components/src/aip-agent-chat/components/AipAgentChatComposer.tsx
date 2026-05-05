@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { Input } from "@base-ui/react/input";
 import classNames from "classnames";
 import * as React from "react";
 import { ActionButton } from "../../base-components/action-button/ActionButton.js";
@@ -72,23 +73,22 @@ export function AipAgentChatComposer({
     [draft, isInFlight, onSendMessage],
   );
 
-  const handleChange = React.useCallback(
-    (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-      setDraft(event.target.value);
-    },
-    [],
+  const renderTextarea = React.useCallback(
+    (props: React.ComponentPropsWithRef<"textarea">) => (
+      <textarea {...props} rows={3} onKeyDown={handleKeyDown} />
+    ),
+    [handleKeyDown],
   );
 
   return (
     <div className={classNames(styles.composer, className)}>
-      <textarea
+      <Input
         aria-label="Message input"
         className={styles.textarea}
-        onChange={handleChange}
-        onKeyDown={handleKeyDown}
+        onValueChange={setDraft}
         placeholder={placeholder}
-        rows={3}
         value={draft}
+        render={renderTextarea}
       />
       <div className={styles.composerActions}>
         <div className={styles.composerFooterLeft}>{footerLeft}</div>
