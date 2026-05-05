@@ -234,15 +234,12 @@ Shared tokens for drag handle styling across components.
 
 Styling for button components.
 
-| Variable                             | Default Value                             | Description                 |
-| ------------------------------------ | ----------------------------------------- | --------------------------- |
-| `--osdk-button-padding-block`        | `calc(var(--osdk-surface-spacing) * 2)`   | Button block padding        |
-| `--osdk-button-padding-inline`       | `calc(var(--osdk-surface-spacing) * 4)`   | Button inline padding       |
-| `--osdk-button-small-padding-block`  | `var(--osdk-surface-spacing)`             | Small button block padding  |
-| `--osdk-button-small-padding-inline` | `calc(var(--osdk-surface-spacing) * 2)`   | Small button inline padding |
-| `--osdk-button-border-radius`        | `var(--osdk-surface-border-radius)`       | Button border radius        |
-| `--osdk-button-font-size`            | `var(--osdk-typography-size-body-medium)` | Button font size            |
-| `--osdk-button-small-font-size`      | `var(--osdk-typography-size-body-small)`  | Small button font size      |
+| Variable                       | Default Value                             | Description           |
+| ------------------------------ | ----------------------------------------- | --------------------- |
+| `--osdk-button-padding-block`  | `calc(var(--osdk-surface-spacing) * 2)`   | Button block padding  |
+| `--osdk-button-padding-inline` | `calc(var(--osdk-surface-spacing) * 4)`   | Button inline padding |
+| `--osdk-button-border-radius`  | `var(--osdk-surface-border-radius)`       | Button border radius  |
+| `--osdk-button-font-size`      | `var(--osdk-typography-size-body-medium)` | Button font size      |
 
 #### Primary Button
 

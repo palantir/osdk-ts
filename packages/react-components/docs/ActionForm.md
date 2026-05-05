@@ -17,7 +17,7 @@
 
 ```typescript
 import { ActionForm } from "@osdk/react-components/experimental";
-import type { FormFieldDefinitionForAction } from "@osdk/react-components/experimental";
+import type { FormFieldDefinition } from "@osdk/react-components/experimental";
 ```
 
 ## Basic Usage
@@ -90,7 +90,7 @@ const fields = [
     fieldComponent: "SWITCH",
     fieldComponentProps: {},
   },
-] satisfies Array<FormFieldDefinitionForAction<typeof updateEmployee>>;
+] satisfies Array<FormFieldDefinition<typeof updateEmployee>>;
 
 <ActionForm actionDefinition={updateEmployee} formFieldDefinitions={fields} />;
 ```
@@ -112,7 +112,7 @@ const fields = [
       ),
     },
   },
-] satisfies Array<FormFieldDefinitionForAction<typeof approveEmployee>>;
+] satisfies Array<FormFieldDefinition<typeof approveEmployee>>;
 
 <ActionForm actionDefinition={approveEmployee} formFieldDefinitions={fields} />;
 ```
@@ -154,24 +154,24 @@ const [formState, setFormState] = useState({
 />;
 ```
 
-### Date and time fields
-
-`DATETIME_PICKER` uses deterministic values by default:
-
-- Date only: `YYYY-MM-DD`
-- Date and time: `YYYY-MM-DD HH:mm`
-
-```tsx
-{
-  fieldKey: "scheduledAt",
-  label: "Scheduled at",
-  fieldComponent: "DATETIME_PICKER",
-  fieldComponentProps: {
-    showTime: true,
-  },
-}
-```
-
 ## Styling
 
 `ActionForm` is built on `BaseForm`, so the form layout and field styling use the same CSS variables documented in [CSSVariables.md](./CSSVariables.md).
+
+`ActionForm` does not add outer padding by default. Apply internal spacing by setting the form padding variables on the form or a wrapper element:
+
+```css
+.employeeForm {
+  --osdk-form-padding-inline: calc(var(--osdk-surface-spacing) * 4);
+  --osdk-form-content-padding-block: calc(var(--osdk-surface-spacing) * 4);
+  --osdk-form-footer-block-padding: calc(var(--osdk-surface-spacing) * 4);
+}
+```
+
+```tsx
+<div className="employeeForm">
+  <ActionForm actionDefinition={updateEmployee} />
+</div>;
+```
+
+Use `--osdk-form-padding-inline` for shared horizontal padding across the header, fields, and footer. Use `--osdk-form-content-padding-block` and `--osdk-form-footer-block-padding` when the fields and footer need different vertical spacing. For card-style outer spacing, put margin, border, background, and border radius on the wrapper instead of the form itself.

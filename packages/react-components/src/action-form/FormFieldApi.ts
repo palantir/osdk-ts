@@ -26,72 +26,6 @@ import type {
 } from "@osdk/api";
 import type React from "react";
 
-interface FormFieldDefinitionBase<
-  Q extends ActionDefinition<unknown>,
-  K extends FieldKey<Q> = FieldKey<Q>,
-> {
-  /**
-   * The field's unique key
-   */
-  fieldKey: K;
-
-  /**
-   * Display label for the field
-   */
-  label: string;
-
-  /**
-   * Default value of the field
-   */
-  defaultValue?: FieldValueType<Q, K>;
-
-  /**
-   * Whether the field is required
-   */
-  isRequired?: boolean;
-
-  /**
-   * Placeholder text
-   */
-  placeholder?: string;
-
-  /**
-   * Additional information to display on this field.
-   * Accepts plain text or rich content (e.g. JSX with links or formatting).
-   * Rendered as a tooltip icon next to the label by default, or below the
-   * label when helperTextPlacement is "bottom".
-   */
-  helperText?: React.ReactNode;
-
-  /**
-   * The placement of the helper text either below the field or in a tooltip
-   *
-   * @default "tooltip"
-   */
-  helperTextPlacement?: "bottom" | "tooltip";
-
-  /**
-   * Whether the field is disabled
-   */
-  isDisabled?: boolean;
-
-  /**
-   * A callback to customize error messages when a built-in validation rule fails.
-   * Receives a discriminated union with the constraint data (e.g., the min value
-   * that was exceeded) so the message can reference the threshold.
-   *
-   * Return a string to override the default message, or `undefined` to keep it.
-   */
-  onValidationError?: (error: ValidationError) => string | undefined;
-
-  /**
-   * Additional function to validate the field.
-   *
-   * Return `undefined` if valid, or an error message string if invalid.
-   */
-  validate?: (value: FieldValueType<Q, K>) => Promise<string | undefined>;
-}
-
 /**
  * A form field definition specifies configuration for a single field.
  * Implemented as a distributed mapped type so `fieldComponent` narrows
@@ -100,10 +34,73 @@ interface FormFieldDefinitionBase<
 export type FormFieldDefinition<
   Q extends ActionDefinition<unknown>,
   K extends FieldKey<Q> = FieldKey<Q>,
-> = {
-  [C in ValidFormFieldForPropertyType<FieldDescriptorType<Q, K>>]:
-    & FormFieldDefinitionBase<Q, K>
-    & {
+> = K extends unknown ? {
+    // Distribute over each field key so a field's key, value type, and allowed
+    // components stay correlated when K is the default union of all keys.
+    [C in ValidFormFieldForPropertyType<FieldDescriptorType<Q, K>>]: {
+      /**
+       * The field's unique key
+       */
+      fieldKey: K;
+
+      /**
+       * Display label for the field
+       */
+      label: string;
+
+      /**
+       * Default value of the field
+       */
+      defaultValue?: FieldValueType<Q, K>;
+
+      /**
+       * Whether the field is required
+       */
+      isRequired?: boolean;
+
+      /**
+       * Placeholder text
+       */
+      placeholder?: string;
+
+      /**
+       * Additional information to display on this field.
+       * Accepts plain text or rich content (e.g. JSX with links or formatting).
+       * Rendered as a tooltip icon next to the label by default, or below the
+       * label when helperTextPlacement is "bottom".
+       */
+      helperText?: React.ReactNode;
+
+      /**
+       * The placement of the helper text either below the field or in a tooltip
+       *
+       * @default "tooltip"
+       */
+      helperTextPlacement?: "bottom" | "tooltip";
+
+      /**
+       * Whether the field is disabled
+       */
+      isDisabled?: boolean;
+
+      /**
+       * A callback to customize error messages when a built-in validation rule fails.
+       * Receives a discriminated union with the constraint data (e.g., the min value
+       * that was exceeded) so the message can reference the threshold.
+       *
+       * Return a string to override the default message, or `undefined` to keep it.
+       */
+      onValidationError?: (error: ValidationError) => string | undefined;
+
+      /**
+       * Additional function to validate the field.
+       *
+       * Return `undefined` if valid, or an error message string if invalid.
+       */
+      validate?: (
+        value: FieldValueType<Q, K>,
+      ) => Promise<string | undefined>;
+
       /**
        * The form field component type to render
        */
@@ -113,15 +110,13 @@ export type FormFieldDefinition<
        * The component props for the form field.
        * Excludes runtime props (value, onChange) which are managed by ActionForm.
        */
-      fieldComponentProps: Omit<FormFieldPropsByType[C], FormManagedProps<C>>;
+      fieldComponentProps: Omit<
+        FormFieldPropsByType[C],
+        FormManagedProps<C>
+      >;
     };
-}[ValidFormFieldForPropertyType<FieldDescriptorType<Q, K>>];
-
-export type FormFieldDefinitionForAction<
-  Q extends ActionDefinition<unknown>,
-> = {
-  [K in FieldKey<Q>]: FormFieldDefinition<Q, K>;
-}[FieldKey<Q>];
+  }[ValidFormFieldForPropertyType<FieldDescriptorType<Q, K>>]
+  : never;
 
 /**
  * A discriminated union describing which validation rule failed and the
@@ -662,7 +657,6 @@ export type RendererFieldDefinition = {
     fieldComponent: K;
     fieldType?: FieldType;
     label: string;
-    defaultValue?: unknown;
     isRequired?: boolean;
     placeholder?: string;
     helperText?: React.ReactNode;

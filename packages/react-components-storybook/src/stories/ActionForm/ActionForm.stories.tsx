@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import type { ActionDefinition, ActionEditResponse } from "@osdk/api";
+import type { ActionEditResponse } from "@osdk/api";
 import type {
-  FormFieldDefinitionForAction,
+  FormFieldDefinition,
   FormState,
 } from "@osdk/react-components/experimental";
 import { ActionForm } from "@osdk/react-components/experimental";
@@ -25,27 +25,10 @@ import React, { useState } from "react";
 import { fn } from "storybook/test";
 import { updateEmployeeStoryAction } from "../../mocks/fauxFoundry.js";
 
-interface UpdateEmployeeStoryAction extends ActionDefinition<unknown> {
-  __DefinitionMetadata: {
-    signatures: unknown;
-    parameters: {
-      fullName: { type: "string" };
-      yearsExperience: { type: "integer" };
-      isRemote: { type: "boolean" };
-    };
-    type: "action";
-    apiName: "updateEmployeeStoryAction";
-    displayName: "Update employee";
-    status: "ACTIVE";
-    rid: string;
-  };
-}
-
-const actionDefinition = updateEmployeeStoryAction
-  .actionDefinition as unknown as UpdateEmployeeStoryAction;
+const actionDefinition = updateEmployeeStoryAction.actionDefinition;
 
 const actionFormDefaultValueFields: ReadonlyArray<
-  FormFieldDefinitionForAction<UpdateEmployeeStoryAction>
+  FormFieldDefinition<typeof actionDefinition>
 > = [
   {
     fieldKey: "fullName",
@@ -78,7 +61,7 @@ const actionFormDefaultValueFields: ReadonlyArray<
 ];
 
 const actionFormOverrideFields: ReadonlyArray<
-  FormFieldDefinitionForAction<UpdateEmployeeStoryAction>
+  FormFieldDefinition<typeof actionDefinition>
 > = [
   {
     fieldKey: "fullName",
@@ -221,7 +204,7 @@ export const WithDefaultValues: Story = {
       ],
     },
   },
-] satisfies Array<FormFieldDefinitionForAction<typeof updateEmployeeStoryAction>>;
+] satisfies Array<FormFieldDefinition<typeof updateEmployeeStoryAction>>;
 
 <ActionForm
   actionDefinition={updateEmployeeStoryAction}
@@ -262,7 +245,7 @@ export const WithFieldOverrides: Story = {
     helperText: "Turn on when the employee is not assigned to an office.",
     fieldComponentProps: {},
   },
-] satisfies Array<FormFieldDefinitionForAction<typeof updateEmployeeStoryAction>>;
+] satisfies Array<FormFieldDefinition<typeof updateEmployeeStoryAction>>;
 
 <ActionForm
   actionDefinition={updateEmployeeStoryAction}
@@ -296,7 +279,7 @@ export const ControlledFormState: Story = {
 
 function ControlledActionFormStory(): React.ReactElement {
   const [formState, setFormState] = useState<
-    FormState<UpdateEmployeeStoryAction>
+    FormState<typeof actionDefinition>
   >({
     fullName: "Ada Lovelace",
     yearsExperience: 5,

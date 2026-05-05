@@ -193,26 +193,6 @@ describe("ActionForm", () => {
 
       expect(screen.getByText("Full Name")).toBeDefined();
     });
-
-    it("renders a boolean field as a switch when configured", () => {
-      const customDefs: Array<FormFieldDefinition<BooleanActionDef>> = [
-        {
-          fieldKey: "enabled",
-          label: "Enabled",
-          fieldComponent: "SWITCH",
-          fieldComponentProps: {},
-        },
-      ];
-
-      render(
-        <ActionForm
-          actionDefinition={BooleanAction}
-          formFieldDefinitions={customDefs}
-        />,
-      );
-
-      expect(screen.getByRole("switch", { name: /^Enabled/ })).toBeDefined();
-    });
   });
 
   describe("submit button", () => {
@@ -324,6 +304,33 @@ describe("ActionForm", () => {
 
       await vi.waitFor(() => {
         expect(onSuccess).toHaveBeenCalledWith(result);
+      });
+    });
+
+    it("submits top-level field definition default values", async () => {
+      const customDefs: Array<FormFieldDefinition<TestActionDef>> = [
+        {
+          fieldKey: "name",
+          label: "Full Name",
+          fieldComponent: "TEXT_INPUT",
+          defaultValue: "Ada Lovelace",
+          fieldComponentProps: {},
+        },
+      ];
+
+      render(
+        <ActionForm
+          actionDefinition={TestAction}
+          formFieldDefinitions={customDefs}
+        />,
+      );
+
+      fireEvent.click(screen.getByRole("button", { name: /submit/i }));
+
+      await vi.waitFor(() => {
+        expect(mockApplyAction).toHaveBeenCalledWith(
+          expect.objectContaining({ name: "Ada Lovelace" }),
+        );
       });
     });
   });

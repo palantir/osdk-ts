@@ -49,6 +49,20 @@ function field(definition: RendererFieldDefinition): FormContentItem {
 describe("BaseForm", () => {
   afterEach(cleanup);
 
+  describe("form title", () => {
+    it("does not render a form title when explicitly set to null", () => {
+      render(
+        <BaseForm
+          formTitle={null}
+          formContent={[field(makeDef("name"))]}
+          onSubmit={vi.fn()}
+        />,
+      );
+
+      expect(screen.queryByRole("heading")).toBeNull();
+    });
+  });
+
   describe("uncontrolled mode", () => {
     it("submits entered field values", async () => {
       const onSubmit = vi.fn();

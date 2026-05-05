@@ -26,12 +26,6 @@
   }
 }
 
-.smallButton {
-  padding: var(--osdk-button-small-padding-block)
-    var(--osdk-button-small-padding-inline);
-  font-size: var(--osdk-button-small-font-size);
-}
-
 .secondaryButton {
   background-color: var(--osdk-button-secondary-bg);
   border: var(--osdk-surface-border);

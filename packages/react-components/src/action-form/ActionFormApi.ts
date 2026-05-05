@@ -24,7 +24,7 @@ import type {
   ActionParameters,
   FieldKey,
   FieldValueType,
-  FormFieldDefinitionForAction,
+  FormFieldDefinition,
   RendererFieldDefinition,
 } from "./FormFieldApi.js";
 
@@ -49,20 +49,14 @@ export type ActionFormProps<Q extends ActionDefinition<unknown>> =
   });
 
 interface ActionFormConfigProps<Q extends ActionDefinition<unknown>>
-  extends Pick<BaseFormProps, "isSubmitDisabled">
+  extends Pick<BaseFormProps, "formTitle" | "isSubmitDisabled">
 {
   actionDefinition: Q;
 
   /**
-   * Title shown above the form. When omitted, the action display name (or API
-   * name fallback) is used. Pass `null` to hide the title.
-   */
-  formTitle?: string | null;
-
-  /**
    * If not supplied, field definitions are constructed from `ActionParameters`.
    */
-  formFieldDefinitions?: ReadonlyArray<FormFieldDefinitionForAction<Q>>;
+  formFieldDefinitions?: ReadonlyArray<FormFieldDefinition<Q>>;
 
   /**
    * If supplied, this will override the default submit action
@@ -165,7 +159,10 @@ export type BaseFormProps =
   );
 
 interface BaseFormCommonProps {
-  formTitle?: string;
+  /**
+   * Title shown above the form. Pass `null` to hide the title.
+   */
+  formTitle?: string | null;
   formContent: ReadonlyArray<FormContentItem>;
   onSubmit: (formState: Record<string, unknown>) => Promise<void> | void;
   isSubmitDisabled?: boolean;

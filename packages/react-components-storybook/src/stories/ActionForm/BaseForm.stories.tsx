@@ -35,7 +35,7 @@ import { Employee } from "../../types/Employee.js";
  * This type covers the uncontrolled variant used by most stories.
  */
 interface BaseFormStoryProps {
-  formTitle?: string;
+  formTitle?: string | null;
   formContent: ReadonlyArray<FormContentItem>;
   onSubmit: (formState: Record<string, unknown>) => void;
   isSubmitDisabled?: boolean;
