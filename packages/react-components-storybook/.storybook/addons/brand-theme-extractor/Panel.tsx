@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { MoonIcon, SunIcon } from "@storybook/icons";
 import React, { useCallback, useRef, useState } from "react";
 import { useGlobals } from "storybook/manager-api";
 import { styled } from "storybook/theming";
@@ -27,11 +28,17 @@ import {
 } from "./image-loader.js";
 import { extractColorsFromImage } from "./kmeans.js";
 import { PaletteGrid } from "./PaletteGrid.js";
-import { PresetPicker } from "./PresetPicker.js";
+import {
+  createThemeStateForMode,
+  findThemePreset,
+  parseBrandThemeState,
+  stringifyBrandThemeState,
+} from "./state.js";
 import { TokenMappingTable } from "./TokenMappingTable.js";
 import type {
   BrandThemeGlobals,
   ExtractedColor,
+  ThemeColorMode,
   TokenAssignment,
 } from "./types.js";
 
@@ -86,6 +93,36 @@ const Title = styled.span(({ theme }) => ({
   fontWeight: 600,
   fontSize: 14,
   color: theme.color.defaultText,
+}));
+
+const CurrentThemeRow = styled.div(({ theme }) => ({
+  alignItems: "center",
+  color: theme.color.mediumdark,
+  display: "flex",
+  fontSize: 12,
+  gap: 8,
+  justifyContent: "space-between",
+  marginBlockEnd: 8,
+}));
+
+const ModeButton = styled.button(({ theme }) => ({
+  alignItems: "center",
+  background: theme.background.hoverable,
+  borderColor: theme.appBorderColor,
+  borderRadius: 999,
+  borderStyle: "solid",
+  borderWidth: 1,
+  color: theme.color.defaultText,
+  cursor: "pointer",
+  display: "flex",
+  fontSize: 11,
+  gap: 4,
+  fontWeight: 600,
+  paddingBlock: 2,
+  paddingInline: 8,
+  "&:hover": {
+    borderColor: theme.color.secondary,
+  },
 }));
 
 const ToggleRow = styled.div({
@@ -228,12 +265,6 @@ const SectionDivider = styled.div(({ theme }) => ({
   margin: "4px 0",
 }));
 
-// ── Helpers ───────────────────────────────────────────────
-
-function getDefaults(): BrandThemeGlobals {
-  return { active: false, palette: [], assignments: [] };
-}
-
 // ── Components ────────────────────────────────────────────
 
 export function Panel({ active }: PanelProps): React.ReactElement | null {
@@ -246,30 +277,10 @@ function PanelContent(): React.ReactElement {
 
   // Storybook globals can lose nested object fields during serialization.
   // Store the full state as a JSON string to preserve structure.
-  const state: BrandThemeGlobals = React.useMemo(() => {
-    const raw = globals[GLOBALS_KEY];
-    if (!raw) return getDefaults();
-    let parsed: Record<string, unknown>;
-    if (typeof raw === "string") {
-      try {
-        parsed = JSON.parse(raw);
-      } catch {
-        return getDefaults();
-      }
-    } else {
-      parsed = raw as Record<string, unknown>;
-    }
-    // Normalize: ensure all required fields exist
-    return {
-      active: Boolean(parsed.active),
-      palette: Array.isArray(parsed.palette)
-        ? parsed.palette as ExtractedColor[]
-        : [],
-      assignments: Array.isArray(parsed.assignments)
-        ? parsed.assignments as TokenAssignment[]
-        : [],
-    };
-  }, [globals]);
+  const state: BrandThemeGlobals = React.useMemo(
+    () => parseBrandThemeState(globals[GLOBALS_KEY]),
+    [globals],
+  );
 
   const [extractionOpen, setExtractionOpen] = useState(true);
   const [urlValue, setUrlValue] = useState("");
@@ -277,11 +288,15 @@ function PanelContent(): React.ReactElement {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const selectedPresetLabel = React.useMemo(
+    () => findThemePreset(state.selectedPresetId)?.label ?? "Custom",
+    [state.selectedPresetId],
+  );
 
   const updateState = useCallback(
     (partial: Partial<BrandThemeGlobals>) => {
       const newState = { ...state, ...partial };
-      updateGlobals({ [GLOBALS_KEY]: JSON.stringify(newState) });
+      updateGlobals({ [GLOBALS_KEY]: stringifyBrandThemeState(newState) });
     },
     [state, updateGlobals],
   );
@@ -293,6 +308,7 @@ function PanelContent(): React.ReactElement {
         palette,
         assignments,
         active: true,
+        selectedPresetId: "custom",
       });
       setExtractionOpen(false);
     },
@@ -366,7 +382,10 @@ function PanelContent(): React.ReactElement {
         colorIndex: partial.colorIndex ?? current?.colorIndex ?? -1,
         customValue: partial.customValue ?? current?.customValue,
       };
-      updateState({ assignments: [...existing, updated] });
+      updateState({
+        assignments: [...existing, updated],
+        selectedPresetId: "custom",
+      });
     },
     [state.assignments, updateState],
   );
@@ -374,7 +393,7 @@ function PanelContent(): React.ReactElement {
   const handleReset = useCallback(
     (role: string) => {
       const filtered = state.assignments.filter((a) => a.role !== role);
-      updateState({ assignments: filtered });
+      updateState({ assignments: filtered, selectedPresetId: "custom" });
     },
     [state.assignments, updateState],
   );
@@ -383,17 +402,24 @@ function PanelContent(): React.ReactElement {
     updateState({ active: !state.active });
   }, [state.active, updateState]);
 
-  const handlePresetSelect = useCallback(
-    (assignments: TokenAssignment[]) => {
-      updateState({
-        assignments,
-        active: true,
-        palette: [],
+  const handleColorModeToggle = useCallback(() => {
+    const nextColorMode: ThemeColorMode = state.colorMode === "dark"
+      ? "light"
+      : "dark";
+    const selectedPreset = findThemePreset(state.selectedPresetId);
+    if (selectedPreset) {
+      const presetState = createThemeStateForMode({
+        presetId: selectedPreset.id,
+        colorMode: nextColorMode,
       });
-      setExtractionOpen(false);
-    },
-    [updateState],
-  );
+      updateGlobals({
+        [GLOBALS_KEY]: stringifyBrandThemeState(presetState),
+      });
+      return;
+    }
+
+    updateState({ colorMode: nextColorMode });
+  }, [state.colorMode, state.selectedPresetId, updateGlobals, updateState]);
 
   const applyPreset = useCallback(
     (preset: StylePreset) => {
@@ -404,7 +430,7 @@ function PanelContent(): React.ReactElement {
         { role: "border-radius", colorIndex: -1, customValue: preset.radius },
         { role: "spacing", colorIndex: -1, customValue: preset.spacing },
       );
-      updateState({ assignments: updated });
+      updateState({ assignments: updated, selectedPresetId: "custom" });
     },
     [state.assignments, updateState],
   );
@@ -424,10 +450,31 @@ function PanelContent(): React.ReactElement {
         </ToggleRow>
       </HeaderRow>
 
-      {/* Theme presets — quick way to start with a curated theme */}
-      <PresetPicker onSelect={handlePresetSelect} />
+      <CurrentThemeRow>
+        <span>Editing {selectedPresetLabel}</span>
+        <ModeButton
+          type="button"
+          aria-label={state.colorMode === "dark"
+            ? "Switch to light mode"
+            : "Switch to dark mode"}
+          onClick={handleColorModeToggle}
+        >
+          {state.colorMode === "dark" ? <SunIcon /> : <MoonIcon />}
+          {state.colorMode === "dark" ? "Dark" : "Light"}
+        </ModeButton>
+      </CurrentThemeRow>
 
-      <SectionDivider />
+      {/* Export actions are intentionally first so a selected preset can be downloaded immediately. */}
+      {state.assignments.length > 0 && (
+        <>
+          <PresetLabel>Export</PresetLabel>
+          <ExportButtons
+            palette={state.palette}
+            assignments={state.assignments}
+          />
+          <SectionDivider />
+        </>
+      )}
 
       {/* Collapsible extraction section */}
       <SectionToggle
@@ -520,18 +567,6 @@ function PanelContent(): React.ReactElement {
         onAssignmentChange={handleAssignmentChange}
         onReset={handleReset}
       />
-
-      {/* Export */}
-      {state.assignments.length > 0 && (
-        <>
-          <SectionDivider />
-          <PresetLabel>Export</PresetLabel>
-          <ExportButtons
-            palette={state.palette}
-            assignments={state.assignments}
-          />
-        </>
-      )}
     </PanelWrapper>
   );
 }

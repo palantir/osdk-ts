@@ -31,7 +31,7 @@
     "@storybook/addon-docs": "^10.2.10",
     "@storybook/addon-links": "^10.2.10",
     "@storybook/addon-mcp": "^0.2.3",
-    "@storybook/addon-themes": "^10.2.10",
+    "@storybook/icons": "^2.0.1",
     "@storybook/react-vite": "^10.2.10",
     "@tanstack/react-table": "^8.21.3",
     "@types/node": "^20.19.13",

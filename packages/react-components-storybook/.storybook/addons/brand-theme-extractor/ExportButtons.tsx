@@ -57,17 +57,19 @@ export function ExportButtons({
   const [copied, setCopied] = useState<string | null>(null);
 
   const copyToClipboard = useCallback(
-    (content: string, label: string) => {
-      navigator.clipboard.writeText(content).then(
-        () => {
-          setCopied(label);
-          setTimeout(() => setCopied(null), 2000);
-        },
-        () => {
-          setCopied("Failed");
-          setTimeout(() => setCopied(null), 2000);
-        },
-      );
+    async (content: string, label: string) => {
+      try {
+        if (navigator.clipboard) {
+          await navigator.clipboard.writeText(content);
+        } else {
+          copyWithTextAreaFallback(content);
+        }
+        setCopied(label);
+      } catch {
+        setCopied("Failed");
+      } finally {
+        window.setTimeout(() => setCopied(null), 2000);
+      }
     },
     [],
   );
@@ -79,8 +81,15 @@ export function ExportButtons({
       const a = document.createElement("a");
       a.href = url;
       a.download = filename;
+      a.rel = "noopener";
+      // Some browsers ignore programmatic downloads unless the anchor is in the
+      // document. Keep it attached until after the click has been processed.
+      document.body.appendChild(a);
       a.click();
-      URL.revokeObjectURL(url);
+      window.setTimeout(() => {
+        a.remove();
+        URL.revokeObjectURL(url);
+      }, 0);
     },
     [],
   );
@@ -118,4 +127,21 @@ export function ExportButtons({
       </ExportButton>
     </ButtonRow>
   );
+}
+
+function copyWithTextAreaFallback(content: string): void {
+  const textArea = document.createElement("textarea");
+  textArea.value = content;
+  textArea.setAttribute("readonly", "");
+  textArea.style.position = "fixed";
+  textArea.style.insetBlockStart = "0";
+  textArea.style.insetInlineStart = "-9999px";
+  document.body.appendChild(textArea);
+  textArea.select();
+
+  try {
+    document.execCommand("copy");
+  } finally {
+    textArea.remove();
+  }
 }
