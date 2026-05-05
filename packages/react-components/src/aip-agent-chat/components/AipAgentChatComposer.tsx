@@ -60,7 +60,7 @@ export function AipAgentChatComposer({
   }, [draft, onSendMessage]);
 
   const handleKeyDown = React.useCallback(
-    (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    (event: React.KeyboardEvent<HTMLInputElement>) => {
       if (event.key === "Enter" && !event.shiftKey) {
         event.preventDefault();
         if (!isInFlight && draft.trim().length > 0) {
@@ -75,9 +75,9 @@ export function AipAgentChatComposer({
 
   const renderTextarea = React.useCallback(
     (props: React.ComponentPropsWithRef<"textarea">) => (
-      <textarea {...props} rows={3} onKeyDown={handleKeyDown} />
+      <textarea {...props} rows={3} />
     ),
-    [handleKeyDown],
+    [],
   );
 
   return (
@@ -85,6 +85,7 @@ export function AipAgentChatComposer({
       <Input
         aria-label="Message input"
         className={styles.textarea}
+        onKeyDown={handleKeyDown}
         onValueChange={setDraft}
         placeholder={placeholder}
         value={draft}
