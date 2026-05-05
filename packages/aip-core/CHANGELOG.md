@@ -1,5 +1,16 @@
 # @osdk/aip-core
 
+## 0.3.0
+
+### Minor Changes
+
+- 72fcb52: mark `@osdk/aip-core` as private to unblock the release pipeline; the package isn't ready to ship to npm yet
+
+### Patch Changes
+
+- Updated dependencies [203331e]
+  - @osdk/client@2.15.0
+
 ## 0.2.0
 
 ### Minor Changes
