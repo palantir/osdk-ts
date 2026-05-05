@@ -15,12 +15,11 @@
  */
 
 import type { MediaReference } from "@osdk/api";
-import type { Client } from "@osdk/client";
 import type { ObservableClient } from "@osdk/client/unstable-do-not-use";
 import { act, renderHook } from "@testing-library/react";
 import * as React from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { OsdkProvider2 } from "../src/new/OsdkProvider2.js";
+import { OsdkContext } from "../src/new/OsdkContext.js";
 import { useOsdkMediaUpload } from "../src/new/useOsdkMediaUpload.js";
 
 const mockMediaReference: MediaReference = {
@@ -49,14 +48,15 @@ function createMockObservableClient(
 }
 
 function renderUploadHook(mockObservableClient: ObservableClient) {
-  const mockClient = { fetchMetadata: vi.fn() } as Partial<Client> as Client;
   const wrapper = ({ children }: React.PropsWithChildren) => (
-    <OsdkProvider2
-      client={mockClient}
-      observableClient={mockObservableClient}
+    <OsdkContext.Provider
+      value={{
+        observableClient: mockObservableClient,
+        devtoolsEnabled: false,
+      }}
     >
       {children}
-    </OsdkProvider2>
+    </OsdkContext.Provider>
   );
 
   return renderHook(() => useOsdkMediaUpload(), { wrapper });
