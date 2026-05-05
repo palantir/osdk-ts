@@ -15,8 +15,7 @@
  */
 
 import type { ObjectTypeDefinition, Osdk, WhereClause } from "@osdk/api";
-import { useOsdkMetadata } from "@osdk/react";
-import { useOsdkObjects } from "@osdk/react/experimental";
+import { useOsdkMetadata, useOsdkObjects } from "@osdk/react";
 import React, { memo, useCallback, useMemo, useState } from "react";
 import { useDebouncedValue } from "../../shared/hooks/useDebouncedValue.js";
 import type { ObjectSelectFieldProps } from "../FormFieldApi.js";

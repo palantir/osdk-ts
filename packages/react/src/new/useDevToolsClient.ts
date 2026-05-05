@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObservableClient } from "@osdk/client/unstable-do-not-use";
+import type { ObservableClient } from "@osdk/client/observable";
 import type React from "react";
 import { useMemo, useRef } from "react";
 import {

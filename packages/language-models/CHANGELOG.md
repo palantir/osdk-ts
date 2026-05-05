@@ -1,5 +1,21 @@
 # @osdk/language-models
 
+## 0.5.0
+
+### Minor Changes
+
+- d9c891e: Add getGoogleBaseUrl utility for Google's model provider SDK
+
+### Patch Changes
+
+- Updated dependencies [f12977d]
+- Updated dependencies [eb36e21]
+- Updated dependencies [d892397]
+- Updated dependencies [c5a6047]
+- Updated dependencies [45be476]
+- Updated dependencies [20e9678]
+  - @osdk/client@2.14.0
+
 ## 0.4.0
 
 ### Minor Changes

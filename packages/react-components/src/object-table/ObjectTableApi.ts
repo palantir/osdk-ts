@@ -26,7 +26,7 @@ import type {
   SimplePropertyDef,
   WhereClause,
 } from "@osdk/api";
-import type { QueryParameterType } from "@osdk/client/unstable-do-not-use";
+import type { QueryParameterType } from "@osdk/client/observable";
 import type * as React from "react";
 import type { CellEditInfo, EditFieldConfig } from "./utils/types.js";
 

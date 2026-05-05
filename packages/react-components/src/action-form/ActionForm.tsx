@@ -15,8 +15,7 @@
  */
 
 import type { ActionDefinition } from "@osdk/api";
-import { useOsdkMetadata } from "@osdk/react";
-import { useOsdkAction } from "@osdk/react/experimental";
+import { useOsdkAction, useOsdkMetadata } from "@osdk/react";
 import React, { useCallback, useEffect, useMemo } from "react";
 import { typedReactMemo } from "../shared/typedMemo.js";
 import type {

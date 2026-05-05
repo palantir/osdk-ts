@@ -24,6 +24,7 @@ export default defineConfig({
     lib: {
       entry: {
         index: resolve(__dirname, "src/index.ts"),
+        "vite/index": resolve(__dirname, "src/vite/index.ts"),
       },
       formats: ["es"],
     },

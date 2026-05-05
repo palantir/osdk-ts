@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useRegisterUserAgent } from "@osdk/react/experimental";
+import { useRegisterUserAgent } from "@osdk/react";
 import type { FunctionComponent } from "react";
 import React from "react";
 import { componentUserAgent } from "./UserAgent.js";

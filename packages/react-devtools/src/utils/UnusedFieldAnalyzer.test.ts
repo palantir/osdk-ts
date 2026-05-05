@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { CacheSnapshot } from "@osdk/client/unstable-do-not-use";
+import type { CacheSnapshot } from "@osdk/client/observable";
 import { describe, expect, it, vi } from "vitest";
 import type {
   ComponentHookBinding,

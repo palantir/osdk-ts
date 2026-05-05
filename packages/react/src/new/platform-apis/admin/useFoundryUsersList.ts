@@ -18,7 +18,7 @@ import { type ListUsersResponse, Users } from "@osdk/foundry.admin";
 import type { UserStatus } from "@osdk/foundry.core";
 import React from "react";
 import { usePlatformQuery } from "../../../utils/usePlatformQuery.js";
-import { OsdkContext2 } from "../../OsdkContext2.js";
+import { OsdkContext } from "../../OsdkContext.js";
 
 export interface UseFoundryUsersListOptions {
   /**
@@ -80,7 +80,7 @@ export function useFoundryUsersList(
   { enabled = true, include = "ACTIVE", pageSize = 1000, pageToken }:
     UseFoundryUsersListOptions = {},
 ): UseFoundryUsersListResult {
-  const { client } = React.useContext(OsdkContext2);
+  const { client } = React.useContext(OsdkContext);
 
   const handleQuery = React.useCallback(() => {
     return Users.list(client, { include, pageSize, pageToken });
