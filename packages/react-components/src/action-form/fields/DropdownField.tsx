@@ -22,6 +22,8 @@ import { Select } from "../../base-components/select/Select.js";
 import selectStyles from "../../base-components/select/Select.module.css";
 import { typedReactMemo } from "../../shared/typedMemo.js";
 import type { DropdownFieldProps } from "../FormFieldApi.js";
+import dropdownStyles from "./DropdownField.module.css";
+import { PortalDismissLayer } from "./PortalDismissLayer.js";
 
 const EMPTY_ARRAY: [] = [];
 
@@ -125,6 +127,7 @@ const SelectDropdown = typedReactMemo(function SelectDropdownFn<
   isItemEqual,
   placeholder,
   portalRef,
+  portalContainer,
 }: InnerSelectProps<V, Multiple>): React.ReactElement {
   const [open, setOpen] = useState(false);
 
@@ -135,6 +138,10 @@ const SelectDropdown = typedReactMemo(function SelectDropdownFn<
     (onChange as ((v: V | null) => void) | undefined)?.(null);
     setOpen(false);
   }, [onChange]);
+
+  const handleDismiss = useCallback(() => {
+    setOpen(false);
+  }, []);
 
   return (
     <div>
@@ -170,7 +177,13 @@ const SelectDropdown = typedReactMemo(function SelectDropdownFn<
             <CaretDown />
           </span>
         </Select.Trigger>
-        <Select.Portal ref={portalRef}>
+        <Select.Portal ref={portalRef} container={portalContainer}>
+          {open && (
+            <PortalDismissLayer
+              className={dropdownStyles.osdkSelectDismissLayer}
+              onDismiss={handleDismiss}
+            />
+          )}
           <Select.Positioner>
             <Select.Popup>
               {items.map((item) => (
@@ -201,6 +214,7 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
   isSearchable,
   placeholder,
   portalRef,
+  portalContainer,
   query,
   onQueryChange,
   disableClientSideFiltering,
@@ -238,6 +252,10 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
     },
     [isMultiple, value, onChange, isItemEqual],
   );
+
+  const handleDismiss = useCallback(() => {
+    setOpen(false);
+  }, []);
 
   const renderItem = useCallback(
     (item: V) => (
@@ -323,7 +341,13 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
             <CaretDown />
           </Combobox.Icon>
         </Combobox.Trigger>
-        <Combobox.Portal ref={portalRef}>
+        <Combobox.Portal ref={portalRef} container={portalContainer}>
+          {open && (
+            <PortalDismissLayer
+              className={dropdownStyles.osdkComboboxDismissLayer}
+              onDismiss={handleDismiss}
+            />
+          )}
           <Combobox.Positioner>
             <Combobox.Popup>
               {isSearchable && (
@@ -337,7 +361,9 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
                 <Combobox.Empty>No results</Combobox.Empty>
               )}
               <Combobox.List>
-                {items.map(renderItem)}
+                <Combobox.Collection>
+                  {renderItem}
+                </Combobox.Collection>
                 {trailingItem}
               </Combobox.List>
             </Combobox.Popup>

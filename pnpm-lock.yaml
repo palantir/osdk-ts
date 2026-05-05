@@ -4772,6 +4772,9 @@ importers:
         specifier: ^2.0.0
         version: 2.0.6(msw@2.11.1(@types/node@20.19.13)(typescript@5.5.4))
     devDependencies:
+      '@blueprintjs/core':
+        specifier: ^6.10.0
+        version: 6.11.3(@types/react@18.3.24)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@osdk/api':
         specifier: workspace:*
         version: link:../api

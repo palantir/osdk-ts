@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { Button, Dialog } from "@blueprintjs/core";
 import type { ObjectSet, ObjectTypeDefinition } from "@osdk/api";
 import type {
   FormContentItem,
@@ -22,7 +23,7 @@ import type {
 import { BaseForm } from "@osdk/react-components/experimental";
 import { useOsdkClient } from "@osdk/react/experimental";
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useMemo, useRef, useState } from "react";
 import { fn } from "storybook/test";
 import { fauxFoundry } from "../../mocks/fauxFoundry.js";
 import { Employee } from "../../types/Employee.js";
@@ -979,6 +980,114 @@ export const WithDateTimePicker: Story = {
   formContent={formContent}
   onSubmit={(formState) => console.log("Submitted:", formState)}
 />`,
+      },
+    },
+  },
+};
+
+const blueprintDialogFormContent: ReadonlyArray<FormContentItem> = [
+  field({
+    fieldKey: "scheduledAt",
+    fieldComponent: "DATETIME_PICKER",
+    label: "Scheduled At",
+    fieldComponentProps: {
+      showTime: true,
+      placeholder: "Select date and time",
+    },
+  }),
+  field({
+    fieldKey: "deadline",
+    fieldComponent: "DATETIME_PICKER",
+    label: "Deadline",
+    fieldComponentProps: {
+      placeholder: "Select date",
+    },
+  }),
+  field({
+    fieldKey: "meetingWindow",
+    fieldComponent: "DATE_RANGE_INPUT",
+    label: "Meeting Window",
+    fieldComponentProps: {
+      showTime: true,
+      placeholderStart: "Start",
+      placeholderEnd: "End",
+    },
+  }),
+  field({
+    fieldKey: "department",
+    fieldComponent: "DROPDOWN",
+    label: "Department",
+    isRequired: true,
+    fieldComponentProps: {
+      items: DEPARTMENT_ITEMS,
+      placeholder: "Select department...",
+    },
+  }),
+  field({
+    fieldKey: "team",
+    fieldComponent: "DROPDOWN",
+    label: "Team",
+    fieldComponentProps: {
+      items: DEPARTMENT_ITEMS,
+      isSearchable: true,
+      placeholder: "Search teams...",
+    },
+  }),
+];
+
+function BlueprintDialogBaseForm(): React.ReactElement {
+  const [isOpen, setIsOpen] = useState(false);
+  const portalContainerRef = useRef<HTMLDivElement>(null);
+
+  const handleOpen = useCallback(() => {
+    setIsOpen(true);
+  }, []);
+
+  const handleClose = useCallback(() => {
+    setIsOpen(false);
+  }, []);
+
+  return (
+    <>
+      <Button text="Open dialog" onClick={handleOpen} />
+      <Dialog
+        className="osdkBlueprintDialogForm"
+        isOpen={isOpen}
+        onClose={handleClose}
+        title="Action form"
+      >
+        <div ref={portalContainerRef}>
+          <BaseForm
+            formContent={blueprintDialogFormContent}
+            onSubmit={handleSubmit}
+            portalContainer={portalContainerRef}
+          />
+        </div>
+      </Dialog>
+    </>
+  );
+}
+
+export const InsideBlueprintDialog: Story = {
+  render: () => <BlueprintDialogBaseForm />,
+  parameters: {
+    docs: {
+      source: {
+        code: `function BlueprintDialogBaseForm() {
+  const portalContainerRef = useRef(null);
+
+  return (
+    <Dialog isOpen={true} title="Action form">
+      <div ref={portalContainerRef}>
+        <BaseForm
+          formContent={formContent}
+          onSubmit={handleSubmit}
+          portalContainer={portalContainerRef}
+        />
+      </div>
+    </Dialog>
+  );
+}`,
       },
     },
   },

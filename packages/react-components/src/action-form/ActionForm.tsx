@@ -46,6 +46,7 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
   onValidationResponse: _onValidationResponse,
   onSuccess,
   onError,
+  portalContainer,
 }: ActionFormProps<Q>): React.ReactElement {
   const { applyAction: osdkApplyAction, isPending } = useOsdkAction(
     actionDefinition,
@@ -159,6 +160,7 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
     isPending,
     isLoading: metadataLoading,
     onFieldValueChange: handleFieldValueChange,
+    portalContainer,
   };
 
   if (!isControlled) {

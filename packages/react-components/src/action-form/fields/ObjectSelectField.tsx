@@ -42,6 +42,7 @@ export const ObjectSelectField: React.NamedExoticComponent<
   placeholder,
   isMultiple,
   portalRef,
+  portalContainer,
 }): React.ReactElement {
   // Tracks the user's search text. Cleared on selection so the selected
   // label (managed by base-ui) doesn't trigger a server-side search.
@@ -105,6 +106,7 @@ export const ObjectSelectField: React.NamedExoticComponent<
       placeholder={placeholder ?? "Search…"}
       isMultiple={isMultiple}
       portalRef={portalRef}
+      portalContainer={portalContainer}
       onQueryChange={setQuery}
       isLoading={isLoading}
       isSearching={debouncedQuery.trim() !== "" && isLoading}

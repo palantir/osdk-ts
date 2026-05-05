@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { DateRangeInputField } from "../fields/DateRangeInputField.js";
 
@@ -90,6 +96,42 @@ describe("DateRangeInputField", () => {
       fireEvent.focus(endInput);
       expect(endInput.getAttribute("aria-expanded")).toBe("true");
       expect(screen.getByRole("dialog")).toBeDefined();
+    });
+
+    it("closes when clicking inside the portal container but outside the popover", async () => {
+      const portalContainer = document.createElement("div");
+      const outsideButton = document.createElement("button");
+      outsideButton.textContent = "Outside popover";
+      portalContainer.append(outsideButton);
+      document.body.append(portalContainer);
+
+      try {
+        render(
+          <DateRangeInputField
+            value={[null, null]}
+            onChange={vi.fn()}
+            portalContainer={portalContainer}
+          />,
+        );
+
+        fireEvent.focus(screen.getByLabelText("Start date"));
+        expect(screen.getByRole("dialog")).toBeDefined();
+
+        const dismissLayer = portalContainer.querySelector(
+          "[data-osdk-portal-dismiss-layer]",
+        );
+        if (!(dismissLayer instanceof HTMLElement)) {
+          throw new Error("Expected date picker dismiss layer to be rendered");
+        }
+
+        fireEvent.pointerDown(dismissLayer);
+
+        await waitFor(() => {
+          expect(screen.queryByRole("dialog")).toBeNull();
+        });
+      } finally {
+        portalContainer.remove();
+      }
     });
   });
 
@@ -370,7 +412,7 @@ describe("DateRangeInputField", () => {
       expect(screen.queryByRole("dialog")).toBeNull();
     });
 
-    it("blurs inputs when tabbing past end of popover", () => {
+    it("returns focus to the active input when tabbing past end of popover", () => {
       render(
         <DateRangeInputField
           value={[new Date(2024, 0, 15), null]}
@@ -392,9 +434,34 @@ describe("DateRangeInputField", () => {
       // Simulate Tab reaching the sentinel from inside the popover.
       fireEvent.focus(endSentinel, { relatedTarget: dialog });
 
-      expect(document.activeElement).not.toBe(startInput);
-      const endInput = screen.getByLabelText("End date");
-      expect(document.activeElement).not.toBe(endInput);
+      expect(document.activeElement).toBe(startInput);
+      expect(screen.queryByRole("dialog")).toBeNull();
+    });
+
+    it("does not reopen the popover on the next Tab after boundary exit", () => {
+      render(
+        <DateRangeInputField
+          value={[new Date(2024, 0, 15), null]}
+          onChange={vi.fn()}
+        />,
+      );
+      const endInput = screen.getByLabelText("End date") as HTMLInputElement;
+      endInput.focus();
+      fireEvent.focus(endInput);
+      expect(document.activeElement).toBe(endInput);
+
+      const dialog = screen.getByRole("dialog");
+      const endSentinel = dialog.querySelector(
+        "[aria-label='End of date range picker dialog']",
+      ) as HTMLElement;
+
+      fireEvent.focus(endSentinel, { relatedTarget: dialog });
+      expect(document.activeElement).toBe(endInput);
+      expect(screen.queryByRole("dialog")).toBeNull();
+
+      fireEvent.keyDown(endInput, { key: "Tab" });
+
+      expect(screen.queryByRole("dialog")).toBeNull();
     });
 
     it("closes popover on Escape from end input", () => {

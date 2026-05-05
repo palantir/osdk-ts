@@ -41,6 +41,7 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
   className,
   submitButtonText = "Submit",
   submitButtonVariant = "primary",
+  portalContainer,
 }: BaseFormProps): React.ReactElement {
   const isControlled = controlledFormState != null;
 
@@ -151,6 +152,7 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
                 fieldDef={item.definition}
                 control={control}
                 onExternalChange={handleFieldChange}
+                portalContainer={portalContainer}
               />
             );
           }
@@ -170,6 +172,7 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
                   fieldDef={fieldDef}
                   control={control}
                   onExternalChange={handleFieldChange}
+                  portalContainer={portalContainer}
                 />
               ))}
             </FormSection>
