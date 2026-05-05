@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { createFoundryAI } from "@osdk/aip-core/ai-sdk";
+import { foundryModel } from "@osdk/aip-core";
 import { useChat } from "@osdk/react/experimental/aip";
 import * as React from "react";
 import type { AipAgentChatProps } from "./AipAgentChatApi.js";
@@ -29,7 +29,7 @@ const FALLBACK_MODEL_API_NAME = "gpt-4o";
  * OSDK-aware chat surface backed by Foundry's Language Model Service.
  * Constructs the LMS-backed model internally and uses `useChat` to
  * manage conversation state, so consumers never need to import `useChat`,
- * `streamText`, or `createFoundryAI` themselves.
+ * `streamText`, or `foundryModel` themselves.
  */
 export function AipAgentChat({
   client,
@@ -71,10 +71,10 @@ export function AipAgentChat({
     [isControlled, onModelChange],
   );
 
-  const model = React.useMemo(() => {
-    const foundryAI = createFoundryAI({ client });
-    return foundryAI(activeModel);
-  }, [client, activeModel]);
+  const model = React.useMemo(
+    () => foundryModel({ client, model: activeModel }),
+    [client, activeModel],
+  );
 
   const {
     messages,
