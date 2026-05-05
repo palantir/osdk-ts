@@ -349,7 +349,7 @@ export class ObservableClientImpl implements ObservableClient {
 
     return {
       // ObjectHolder is Osdk.Instance via cast across the type boundary
-      object: payload.value as unknown as Osdk.Instance<T>,
+      object: payload.value as unknown as Osdk.Instance<T, "$allBaseProperties">,
       status: payload.status,
       lastUpdated: payload.lastUpdated,
       isOptimistic: payload.isOptimistic,
