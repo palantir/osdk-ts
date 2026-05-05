@@ -31,22 +31,13 @@ Thanks for your interest in contributing to `@osdk/react-components`! This docum
 
 ## Using Claude Code
 
-If you use [Claude Code](https://claude.com/claude-code), this package ships an opinionated `add-new-component` skill that wraps this guide.
+If you use [Claude Code](https://claude.com/claude-code), this package ships an opinionated skill that wraps this guide:
 
-**To add a new component:**
+- **`add-new-component`** — for scaffolding a fresh OSDK-aware component. Mention "create a component" / "add a component" or invoke `/add-new-component`. Adds three gates on top of this document: an API-first design checkpoint (agree on `<Name>Api.ts` before writing implementation, on the same branch), a user-supplied MVP checklist, and a verification loop driven by Playwright
 
-- Invoke the skill explicitly with the Skill tool: use `/add-new-component`
-- Or mention "create a component" and Claude will offer to run the skill for you
+If a skill ever conflicts with this document, this document wins — flag the conflict.
 
-The skill follows this `CONTRIBUTING.md` and adds three gates on top:
-
-1. An **API-first PR** — land the type contract (`<Name>Api.ts`) in a standalone PR before implementation
-2. A **user-supplied MVP checklist** — define "done" before writing code
-3. A **verification loop** — exercise the checklist in a real browser using Playwright to catch issues early
-
-If the skill ever conflicts with this document, this document wins — flag the conflict.
-
-**Skill source:** `packages/react-components/.claude/skills/add-new-component/SKILL.md` if you want to read or refine it.
+**Skill sources:** `packages/react-components/.claude/skills/add-new-component/SKILL.md` if you want to read or refine them.
 
 ## Development Setup
 
@@ -115,7 +106,14 @@ All components follow a **layered architecture**. Understanding this pattern is 
 
 ### When does a component belong here?
 
-`@osdk/react-components` is for **OSDK-aware** components — components that fetch or operate on Foundry ontology data via `@osdk/react` hooks. If your component is a generic UI primitive (button, dropdown, dialog, etc.) with no OSDK awareness, it does **not** belong here. Contribute it to [BlueprintJS](https://blueprintjs.com/) instead, or to your application's local component library.
+`@osdk/react-components` is for **OSDK-aware** components — components that fetch or operate on Foundry ontology data via `@osdk/react` hooks, OR that integrate with an api-gateway endpoint.
+
+Use this gate before you start:
+
+> Does this component fetch OSDK data **OR** hit an api-gateway endpoint?
+
+- **No to both** → the component does not belong here. Contribute it to [BlueprintJS](https://blueprintjs.com/) instead, or to your application's local component library
+- **Yes to either** → continue. Note the justification in the PR description if the answer isn't obvious
 
 ### Core Layers
 
@@ -146,14 +144,18 @@ Components in this package favour **minimum configuration**. A consumer should b
 
 1. Create a new folder under `src/` (e.g., `src/my-component/`).
 2. **Define the API.** Write `<Name>Api.ts` in the new folder following the [API Design](#api-design) rules.
-
 3. Start with the **Base component** — focus on interactions and styling first.
 4. Create the **OSDK wrapper** that handles data fetching and type conversion.
 5. Keep the Base component API simple using primitive types.
 6. For complex components, consider a building blocks tier with sub-components and hooks.
-7. Export the OSDK component (and optionally the Base component) from `src/public/experimental.ts`.
-8. **Update documentation** add <COMPONENT>.md to `react-components/docs`. If there were changes to CSS Variables, update `docs/CSSVariables.md`.
-9. **Update storybook** update `react-components-storybook` with examples of the new component
+7. **Reuse before writing.** Check `src/base-components/` for existing primitives, and consult `src/public/primitives.ts` (the sanctioned-reuse barrel) before creating new UI primitives. If a primitive is reusable across components, add it to `src/base-components/` rather than co-locating it in the component folder.
+8. Export the OSDK component (and optionally the Base component) from `src/public/experimental/<name>.ts`.
+9. **Update documentation:**
+   - Add `docs/<Name>.md` with usage and a minimal example, matching the structure of existing per-component docs
+   - If you added CSS variables, update `docs/CSSVariables.md`
+   - Add a one-line entry to the components table in `AGENTS.md` and `README.md`
+10. **Update Storybook** with examples of the new component (see [Storybook](#storybook) below).
+11. **Add a live example in `@osdk/e2e.sandbox.peopleapp`.** Wire it into the sandbox's existing routing/navigation against real Foundry types (`Employee`, `Office`, etc.) so reviewers can exercise the component end-to-end against a real Foundry instance. Treat the peopleapp example as part of the MVP definition of done; do not defer to a follow-up PR.
 
 ### Folder Structure
 
@@ -169,9 +171,9 @@ src/my-component/
 
 ### Export Rules
 
-- **OSDK components** are exported through `src/public/experimental.ts`.
-- **Base components** may be exported for advanced use cases.
-- **UI primitives** in `src/base-components/` are internal and must **not** be exported.
+- **OSDK components** are exported through per-component files in `src/public/experimental/<name>.ts`. Check `package.json` `exports` first — the existing wildcard pattern (`"./experimental/*"`) may already cover the new sub-path; only add an explicit entry if the wildcard doesn't resolve to it
+- **Base components** may be exported for advanced use cases
+- **UI primitives** in `src/base-components/` are internal and must **not** be exported. The sanctioned reuse list is `src/public/primitives.ts`
 
 ## Styling Guidelines
 
@@ -221,10 +223,21 @@ Storybook runs on `http://localhost:6006`.
 
 ### Writing Stories
 
-- Story files live in `packages/react-components-storybook/src/stories/`.
-- Follow the [Component Story Format (CSF)](https://storybook.js.org/docs/api/csf).
-- Include stories that demonstrate the component's key states: default, loading, error, empty, and edge cases.
-- Use the MSW addon for mocking API responses when needed.
+- Story files live in `packages/react-components-storybook/src/stories/<Name>/<Name>.stories.tsx`. Folders match the component name; sub-stories live alongside, optionally under a `Recipes/` or `Features/` subfolder
+- Follow the [Component Story Format (CSF)](https://storybook.js.org/docs/api/csf)
+- **Tier placement is via the meta `title:`, not the folder path.** New components belong under the `Experimental/` category:
+
+  ```ts
+  const meta: Meta<typeof MyComponent> = {
+    title: "Experimental/<Name>", // or "Experimental/<Parent>/<Subfeature>"
+    tags: ["experimental"],
+    component: MyComponent,
+  };
+  ```
+
+  This produces URLs like `experimental-myname--default`, matching the existing pattern (`experimental-baseform--default`, `experimental-objecttable-building-blocks-basetable--default`)
+- Include stories that demonstrate the component's key states: default, loading, error, empty, and edge cases
+- **OSDK-aware components must accept mocked data via props in stories** — Storybook runs without a Foundry stack. Either expose a `data` / `objects` / `value` prop the story can populate, or render the `Base<Name>` component (not the OSDK wrapper) in the story. Use the MSW addon for stories that exercise hook-level fetch paths against a fake server
 
 ## Submitting a Pull Request
 
