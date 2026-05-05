@@ -14,23 +14,4 @@
  * limitations under the License.
  */
 
-// WARNING!
-// WARNING!
-// This file is used for tests that check intellisense. Editing this file by hand will likely
-// break tests that have hard coded line numbers and line offsets.
-
-import { Employee } from "@osdk/client.test.ontology";
-import { useOsdkObjects } from "@osdk/react";
-
-declare const MyComponent: () => void;
-
-function TestComponent() {
-  const { data } = useOsdkObjects(Employee, {
-    pivotTo: "lead",
-  });
-
-  // Line 31: Check that data has the correct pivoted type
-  const firstItem = data?.[0];
-
-  return null;
-}
+export * from "./build/cjs/public/testing.cjs";

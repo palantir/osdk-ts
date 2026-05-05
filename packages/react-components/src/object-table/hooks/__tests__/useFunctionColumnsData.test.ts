@@ -22,10 +22,7 @@ import type {
   PropertyKeys,
   QueryDefinition,
 } from "@osdk/api";
-import {
-  useOsdkFunctions,
-  type UseOsdkFunctionsResult,
-} from "@osdk/react/experimental";
+import { useOsdkFunctions, type UseOsdkFunctionsResult } from "@osdk/react";
 import { renderHook } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { ColumnDefinition } from "../../ObjectTableApi.js";
@@ -36,12 +33,18 @@ import {
 } from "../../utils/constants.js";
 import { useFunctionColumnsData } from "../useFunctionColumnsData.js";
 
-vi.mock("@osdk/react/experimental", () => ({
-  useOsdkFunctions: vi.fn(),
-  useRegisterUserAgent: vi.fn(),
-  useStableObjectSet: vi.fn((objectSet: unknown) => objectSet),
-  useOsdkClient2: vi.fn(() => (objectType: unknown) => mockObjectSet),
-}));
+vi.mock("@osdk/react", async (importOriginal) => {
+  const actual = await importOriginal<{
+    useOsdkFunctions: typeof useOsdkFunctions;
+  }>();
+  return {
+    ...actual,
+    useOsdkFunctions: vi.fn(),
+    useRegisterUserAgent: vi.fn(),
+    useStableObjectSet: vi.fn((objectSet: unknown) => objectSet),
+    useOsdkClient: vi.fn(() => (objectType: unknown) => mockObjectSet),
+  };
+});
 
 vi.mock("../../utils/addFilterClauseToObjectSet.js", () => ({
   addFilterClauseToObjectSet: vi.fn(

@@ -21,7 +21,7 @@ import {
   type CacheSnapshot,
   createObservableClient,
   type ObservableClient,
-} from "@osdk/client/unstable-do-not-use";
+} from "@osdk/client/observable";
 
 /**
  * Configuration for creating a monitored OSDK client.

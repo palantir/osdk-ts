@@ -1,5 +1,5 @@
 import type { DerivedProperty } from "@osdk/client";
-import { useOsdkObjects } from "@osdk/react/experimental";
+import { useOsdkObjects } from "@osdk/react";
 import { List } from "../../components/List.js";
 import { ListItem } from "../../components/ListItem.js";
 import { Employee } from "../../generatedNoCheck2/index.js";

@@ -15,22 +15,22 @@
  */
 
 import type { Client } from "@osdk/client";
-import type { ObservableClient } from "@osdk/client/unstable-do-not-use";
+import type { ObservableClient } from "@osdk/client/observable";
 import React from "react";
 
 export const MISSING_PROVIDER_MESSAGE =
-  "No OsdkProvider2 found. Did you forget to wrap your component tree with <OsdkProvider2>?";
+  "No OsdkProvider found. Did you forget to wrap your component tree with <OsdkProvider>?";
 
-function fakeClientFn(..._args: any[]) {
+function fakeClientFn(..._args: unknown[]): never {
   throw new Error(MISSING_PROVIDER_MESSAGE);
 }
 
 const fakeClient = Object.assign(fakeClientFn, {
   fetchMetadata: fakeClientFn,
-} as Client);
+}) as unknown as Client;
 
 // Proxy that throws a clear error when any method is called, so hooks like
-// useOsdkObjects get "Did you forget <OsdkProvider2>?" instead of
+// useOsdkObjects get "Did you forget <OsdkProvider>?" instead of
 // "cannot read canonicalizeWhereClause of undefined".
 // We intercept `get` so every property access returns a throwing function,
 // without needing to enumerate every ObservableClient method.
@@ -42,7 +42,7 @@ const fakeObservableClient = new Proxy({} as ObservableClient, {
     if (prop === Symbol.toPrimitive || prop === Symbol.toStringTag) {
       return undefined;
     }
-    return (..._args: any[]) => {
+    return (..._args: unknown[]): never => {
       throw new Error(MISSING_PROVIDER_MESSAGE);
     };
   },
@@ -50,15 +50,11 @@ const fakeObservableClient = new Proxy({} as ObservableClient, {
 
 interface OsdkContextContents {
   client: Client;
-  // keeping the old name for now intentionally
-  // in case i need both for a while
-  // in the future we can just make
-  // this `client: ObservableClient`
   observableClient: ObservableClient;
   devtoolsEnabled: boolean;
 }
 
-export const OsdkContext2: React.Context<OsdkContextContents> = React
+export const OsdkContext: React.Context<OsdkContextContents> = React
   .createContext<OsdkContextContents>({
     client: fakeClient,
     observableClient: fakeObservableClient,

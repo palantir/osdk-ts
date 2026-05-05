@@ -15,15 +15,11 @@
  */
 
 import type { Client } from "@osdk/client";
-import {
-  createObservableClient,
-  type ObservableClient,
-} from "@osdk/client/unstable-do-not-use";
+import { createObservableClient } from "@osdk/client/observable";
 import React, { useCallback, useMemo, useRef } from "react";
-import { OsdkContext } from "../OsdkContext.js";
 import { getRegisteredDevTools } from "../public/devtools-registry.js";
 import { REACT_USER_AGENT } from "../util/UserAgent.js";
-import { OsdkContext2 } from "./OsdkContext2.js";
+import { OsdkContext } from "./OsdkContext.js";
 import { useDevToolsClient } from "./useDevToolsClient.js";
 import { UserAgentContext } from "./UserAgentContext.js";
 
@@ -34,14 +30,12 @@ const __DEV__ = typeof process === "undefined"
 interface OsdkProviderOptions {
   children: React.ReactNode;
   client: Client;
-  observableClient?: ObservableClient;
   enableDevTools?: boolean;
 }
 
-export function OsdkProvider2({
+export function OsdkProvider({
   children,
   client,
-  observableClient,
   enableDevTools,
 }: OsdkProviderOptions): React.JSX.Element {
   const devtoolsEnabled = __DEV__
@@ -58,12 +52,11 @@ export function OsdkProvider2({
 
   const baseObservableClient = useMemo(
     () =>
-      observableClient
-        ?? createObservableClient(
-          client,
-          () => [...userAgentsRef.current],
-        ),
-    [client, observableClient],
+      createObservableClient(
+        client,
+        () => [...userAgentsRef.current],
+      ),
+    [client],
   );
 
   const { client: devToolsClient, wrapChildren } = useDevToolsClient(
@@ -80,13 +73,11 @@ export function OsdkProvider2({
 
   return (
     <UserAgentContext.Provider value={addUserAgent}>
-      <OsdkContext2.Provider
+      <OsdkContext.Provider
         value={contextValue}
       >
-        <OsdkContext.Provider value={{ client }}>
-          {content}
-        </OsdkContext.Provider>
-      </OsdkContext2.Provider>
+        {content}
+      </OsdkContext.Provider>
     </UserAgentContext.Provider>
   );
 }

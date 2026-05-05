@@ -14,29 +14,8 @@
  * limitations under the License.
  */
 
-export { augment } from "../object/fetchPage.js";
-export { getWireObjectSet, isObjectSet } from "../objectSet/createObjectSet.js";
-
-export {
-  getMetaTagContent,
-  getOsdkConfig,
-} from "../public-utils/osdkConfig.js";
-export type { OsdkConfig } from "../public-utils/osdkConfig.js";
-
-export { createClientWithTransaction } from "../createClient.js";
-
-export {
-  applyShapeTransformations,
-  applyShapeTransformationsToArray,
-  buildObjectSetFromLinkDefByType,
-  getLinkQueryOptions,
-} from "../shapes/index.js";
-
-/** @deprecated Import from `@osdk/client/observable` instead. */
 export type { ActionSignatureFromDef } from "../actions/applyAction.js";
-/** @deprecated Import from `@osdk/client/observable` instead. */
 export { createObservableClient } from "../observable/ObservableClient.js";
-/** @deprecated Import from `@osdk/client/observable` instead. */
 export type {
   CacheEntry,
   CacheSnapshot,
@@ -51,9 +30,6 @@ export type {
   ObserveObjectSetArgs,
   Unsubscribable,
 } from "../observable/ObservableClient.js";
-/** @deprecated Import from `@osdk/client/observable` instead. */
 export type { Observer } from "../observable/ObservableClient/common.js";
-/** @deprecated Import from `@osdk/client/observable` instead. */
 export type { ObserveLinks } from "../observable/ObservableClient/ObserveLink.js";
-/** @deprecated Import from `@osdk/client/observable` instead. */
 export type { QueryParameterType, QueryReturnType } from "../queries/types.js";

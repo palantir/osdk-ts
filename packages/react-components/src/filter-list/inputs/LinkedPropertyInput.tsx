@@ -20,7 +20,7 @@ import type {
   ObjectTypeDefinition,
   PropertyKeys,
 } from "@osdk/api";
-import { useOsdkAggregation } from "@osdk/react/experimental";
+import { useOsdkAggregation } from "@osdk/react";
 import classnames from "classnames";
 import React, { memo, useCallback, useMemo } from "react";
 import { assertUnreachable } from "../../shared/assertUnreachable.js";
