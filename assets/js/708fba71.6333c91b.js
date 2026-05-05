@@ -1,0 +1,1 @@
+"use strict";(globalThis.webpackChunk_osdk_docs=globalThis.webpackChunk_osdk_docs||[]).push([[703],{6510(s){s.exports=JSON.parse('{"name":"docusaurus-plugin-content-docs","id":"cbac-components"}')}}]);
