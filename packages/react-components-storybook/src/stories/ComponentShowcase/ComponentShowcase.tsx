@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-import React, { useCallback, useState } from "react";
+import type {
+  FilterDefinitionUnion,
+  FilterState,
+} from "@osdk/react-components/experimental/filter-list";
+import React, { useCallback, useMemo, useState } from "react";
+import type { Employee } from "../../types/Employee.js";
 import styles from "./ComponentShowcase.module.css";
 import { ShowcaseFilterList } from "./ShowcaseFilterList.js";
 import {
@@ -25,7 +30,8 @@ import {
   UploadForm,
 } from "./ShowcaseForm.js";
 import { ShowcasePdfViewer } from "./ShowcasePdfViewer.js";
-import { ShowcaseTable } from "./ShowcaseTable.js";
+import { MOCK_DATA, ShowcaseTable } from "./ShowcaseTable.js";
+import type { Person } from "./ShowcaseTable.js";
 
 const TABS = [
   { id: "data", label: "Data" },
@@ -89,18 +95,99 @@ const ShowcaseTab = React.memo(function ShowcaseTabFn(
   );
 });
 
+/**
+ * Maps filter definition keys (Employee property names) to Person field names.
+ */
+const FILTER_KEY_TO_PERSON_FIELD: Record<string, keyof Person> = {
+  department: "department",
+  fullName: "name",
+  emailPrimaryWork: "email",
+  locationCity: "city",
+  team: "team",
+  firstFullTimeStartDate: "startDate",
+};
+
+function applyFilters(
+  data: Person[],
+  filterStates: Map<string, FilterState>,
+): Person[] {
+  let filtered = data;
+
+  for (const [key, state] of filterStates) {
+    const field = FILTER_KEY_TO_PERSON_FIELD[key];
+    if (field == null) {
+      continue;
+    }
+
+    if (state.type === "CONTAINS_TEXT") {
+      const query = (state as { value?: string }).value?.toLowerCase();
+      if (query) {
+        filtered = filtered.filter((row) =>
+          String(row[field]).toLowerCase().includes(query)
+        );
+      }
+    } else if (state.type === "EXACT_MATCH") {
+      const values = (state as { values: string[] }).values;
+      if (values.length > 0) {
+        const valueSet = new Set(values);
+        filtered = filtered.filter((row) => valueSet.has(String(row[field])));
+      }
+    } else if (state.type === "DATE_RANGE") {
+      const { minValue, maxValue } = state as {
+        minValue?: Date;
+        maxValue?: Date;
+      };
+      if (minValue != null || maxValue != null) {
+        filtered = filtered.filter((row) => {
+          const rowDate = new Date(String(row[field]));
+          if (minValue != null && rowDate < minValue) {
+            return false;
+          }
+          if (maxValue != null && rowDate > maxValue) {
+            return false;
+          }
+          return true;
+        });
+      }
+    }
+  }
+
+  return filtered;
+}
+
 const DataPanel = React.memo(function DataPanelFn(): React.ReactElement {
+  const [filterStates, setFilterStates] = useState(
+    () => new Map<string, FilterState>(),
+  );
+
+  const handleFilterStateChanged = useCallback(
+    (definition: FilterDefinitionUnion<Employee>, newState: FilterState) => {
+      setFilterStates((prev) => {
+        const next = new Map(prev);
+        const key = "key" in definition ? definition.key as string : "";
+        if (key) {
+          next.set(key, newState);
+        }
+        return next;
+      });
+    },
+    [],
+  );
+
+  const filteredData = useMemo(
+    () => applyFilters(MOCK_DATA, filterStates),
+    [filterStates],
+  );
+
   return (
     <div className={styles.osdkShowcaseDataLayout}>
       <div className={styles.osdkShowcaseDataSidebar}>
-        <div className={styles.osdkShowcaseCard}>
-          <ShowcaseFilterList />
-        </div>
+        <ShowcaseFilterList
+          onFilterStateChanged={handleFilterStateChanged}
+        />
       </div>
       <div className={styles.osdkShowcaseDataMain}>
-        <div className={styles.osdkShowcaseCard}>
-          <ShowcaseTable />
-        </div>
+        <ShowcaseTable data={filteredData} />
       </div>
     </div>
   );

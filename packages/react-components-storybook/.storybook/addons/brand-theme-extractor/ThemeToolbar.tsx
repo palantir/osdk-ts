@@ -17,10 +17,8 @@
 import {
   CheckIcon,
   ChevronDownIcon,
-  MoonIcon,
   PaintBrushIcon,
   SearchIcon,
-  SunIcon,
 } from "@storybook/icons";
 import React, {
   useCallback,
@@ -188,24 +186,6 @@ export const ThemeToolbar = React.memo(function ThemeToolbarFn() {
     [openBrandThemePanel, themeState.colorMode, updateGlobals],
   );
 
-  const toggleColorMode = useCallback(() => {
-    const nextColorMode: ThemeColorMode = themeState.colorMode === "dark"
-      ? "light"
-      : "dark";
-    const nextState = selectedPreset
-      ? createThemeStateForMode({
-        presetId: selectedPreset.id,
-        colorMode: nextColorMode,
-      })
-      : { ...themeState, colorMode: nextColorMode };
-    updateGlobals({ [GLOBALS_KEY]: stringifyBrandThemeState(nextState) });
-  }, [
-    selectedPreset,
-    themeState.colorMode,
-    themeState,
-    updateGlobals,
-  ]);
-
   return (
     <ToolbarRoot ref={rootRef}>
       <ToolbarButton
@@ -246,20 +226,6 @@ export const ThemeToolbar = React.memo(function ThemeToolbarFn() {
 
           <DropdownHeaderRow>
             <DropdownCount>{visiblePresets.length} themes</DropdownCount>
-            <IconButton
-              type="button"
-              aria-label={themeState.colorMode === "dark"
-                ? "Switch to light mode"
-                : "Switch to dark mode"}
-              title={themeState.colorMode === "dark"
-                ? "Switch to light mode"
-                : "Switch to dark mode"}
-              onClick={toggleColorMode}
-            >
-              {themeState.colorMode === "dark"
-                ? <SunIcon />
-                : <MoonIcon />}
-            </IconButton>
           </DropdownHeaderRow>
 
           <SectionLabel>Built-in themes</SectionLabel>
@@ -274,6 +240,18 @@ export const ThemeToolbar = React.memo(function ThemeToolbarFn() {
               />
             ))}
           </PresetList>
+
+          <DropdownDivider />
+          <OpenPanelButton
+            type="button"
+            onClick={() => {
+              openBrandThemePanel();
+              setOpen(false);
+            }}
+          >
+            <PaintBrushIcon />
+            Customize
+          </OpenPanelButton>
         </Dropdown>,
         document.body,
       )}
@@ -416,21 +394,6 @@ const DropdownCount = styled.span(({ theme }) => ({
   fontSize: 13,
 }));
 
-const IconButton = styled.button(({ theme }) => ({
-  alignItems: "center",
-  backgroundColor: "transparent",
-  borderWidth: 0,
-  color: theme.color.defaultText,
-  cursor: "pointer",
-  display: "flex",
-  height: 28,
-  justifyContent: "center",
-  width: 28,
-  "&:hover": {
-    backgroundColor: theme.background.hoverable,
-  },
-}));
-
 const SectionLabel = styled.div(({ theme }) => ({
   color: theme.color.mediumdark,
   fontSize: 12,
@@ -477,6 +440,31 @@ const PresetSwatch = styled.span<{ color: string }>(({ color, theme }) => ({
   borderWidth: 1,
   height: 14,
   width: 14,
+}));
+
+const DropdownDivider = styled.div(({ theme }) => ({
+  borderBlockStartColor: theme.appBorderColor,
+  borderBlockStartStyle: "solid",
+  borderBlockStartWidth: 1,
+  marginBlock: 8,
+}));
+
+const OpenPanelButton = styled.button(({ theme }) => ({
+  alignItems: "center",
+  backgroundColor: "transparent",
+  borderRadius: 4,
+  borderWidth: 0,
+  color: theme.color.defaultText,
+  cursor: "pointer",
+  display: "flex",
+  fontSize: 13,
+  gap: 8,
+  paddingBlock: 8,
+  paddingInline: 8,
+  width: "100%",
+  "&:hover": {
+    backgroundColor: theme.background.hoverable,
+  },
 }));
 
 const PresetLabel = styled.span({

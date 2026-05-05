@@ -136,52 +136,7 @@ export const THEME_PRESETS: ThemePreset[] = [
   {
     id: "devcon",
     label: "DevCon",
-    description: "Green DevCon theme for high-contrast demos",
-    modes: {
-      light: {
-        swatches: ["#f0fdf4", "#16a34a", "#14532d"],
-        assignments: [
-          colorAssignment("background", "#f0fdf4"),
-          colorAssignment("surface", "#dcfce7"),
-          colorAssignment("text", "#14532d"),
-          colorAssignment("text-muted", "#15803d"),
-          colorAssignment("primary", "#16a34a"),
-          colorAssignment("primary-foreground", "#ffffff"),
-          colorAssignment("secondary", "#bbf7d0"),
-          colorAssignment("secondary-foreground", "#14532d"),
-          colorAssignment("icon-color", "#16a34a"),
-          colorAssignment("border", "#86efac"),
-          colorAssignment("danger", "#dc2626"),
-          colorAssignment("success", "#16a34a"),
-          ...baseDefaults(),
-        ],
-      },
-      dark: {
-        swatches: ["#0a0a0a", "#16a34a", "#86efac"],
-        assignments: [
-          colorAssignment("background", "#0a0a0a"),
-          colorAssignment("surface", "#111111"),
-          colorAssignment("text", "#86efac"),
-          colorAssignment("text-muted", "#16a34a"),
-          colorAssignment("primary", "#16a34a"),
-          colorAssignment("primary-foreground", "#0a0a0a"),
-          colorAssignment("secondary", "#1a1a1a"),
-          colorAssignment("secondary-foreground", "#86efac"),
-          colorAssignment("icon-color", "#22c55e"),
-          colorAssignment("border", "#15803d"),
-          colorAssignment("danger", "#ef4444"),
-          colorAssignment("success", "#4ade80"),
-          ...baseDefaults({
-            shadow: "0 1px 3px rgba(0,0,0,0.4), 0 1px 2px rgba(0,0,0,0.3)",
-          }),
-        ],
-      },
-    },
-  },
-  {
-    id: "dark-emerald",
-    label: "Dark Emerald",
-    description: "Dark theme with green accents",
+    description: "Dark theme with green accents for DevCon demos",
     swatches: ["#0a0a0a", "#16a34a", "#86efac"],
     assignments: [
       colorAssignment("background", "#0a0a0a"),

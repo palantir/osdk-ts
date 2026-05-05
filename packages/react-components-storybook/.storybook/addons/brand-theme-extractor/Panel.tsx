@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { MoonIcon, SunIcon } from "@storybook/icons";
 import React, { useCallback, useRef, useState } from "react";
 import { useGlobals } from "storybook/manager-api";
 import { styled } from "storybook/theming";
@@ -28,17 +27,11 @@ import {
 } from "./image-loader.js";
 import { extractColorsFromImage } from "./kmeans.js";
 import { PaletteGrid } from "./PaletteGrid.js";
-import {
-  createThemeStateForMode,
-  findThemePreset,
-  parseBrandThemeState,
-  stringifyBrandThemeState,
-} from "./state.js";
+import { parseBrandThemeState, stringifyBrandThemeState } from "./state.js";
 import { TokenMappingTable } from "./TokenMappingTable.js";
 import type {
   BrandThemeGlobals,
   ExtractedColor,
-  ThemeColorMode,
   TokenAssignment,
 } from "./types.js";
 
@@ -93,36 +86,6 @@ const Title = styled.span(({ theme }) => ({
   fontWeight: 600,
   fontSize: 14,
   color: theme.color.defaultText,
-}));
-
-const CurrentThemeRow = styled.div(({ theme }) => ({
-  alignItems: "center",
-  color: theme.color.mediumdark,
-  display: "flex",
-  fontSize: 12,
-  gap: 8,
-  justifyContent: "space-between",
-  marginBlockEnd: 8,
-}));
-
-const ModeButton = styled.button(({ theme }) => ({
-  alignItems: "center",
-  background: theme.background.hoverable,
-  borderColor: theme.appBorderColor,
-  borderRadius: 999,
-  borderStyle: "solid",
-  borderWidth: 1,
-  color: theme.color.defaultText,
-  cursor: "pointer",
-  display: "flex",
-  fontSize: 11,
-  gap: 4,
-  fontWeight: 600,
-  paddingBlock: 2,
-  paddingInline: 8,
-  "&:hover": {
-    borderColor: theme.color.secondary,
-  },
 }));
 
 const ToggleRow = styled.div({
@@ -283,16 +246,12 @@ function PanelContent(): React.ReactElement {
   );
 
   const [extractionOpen, setExtractionOpen] = useState(true);
+  const [exportOpen, setExportOpen] = useState(true);
   const [urlValue, setUrlValue] = useState("");
   const [webpageUrl, setWebpageUrl] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const selectedPresetLabel = React.useMemo(
-    () => findThemePreset(state.selectedPresetId)?.label ?? "Custom",
-    [state.selectedPresetId],
-  );
-
   const updateState = useCallback(
     (partial: Partial<BrandThemeGlobals>) => {
       const newState = { ...state, ...partial };
@@ -310,7 +269,6 @@ function PanelContent(): React.ReactElement {
         active: true,
         selectedPresetId: "custom",
       });
-      setExtractionOpen(false);
     },
     [updateState],
   );
@@ -402,25 +360,6 @@ function PanelContent(): React.ReactElement {
     updateState({ active: !state.active });
   }, [state.active, updateState]);
 
-  const handleColorModeToggle = useCallback(() => {
-    const nextColorMode: ThemeColorMode = state.colorMode === "dark"
-      ? "light"
-      : "dark";
-    const selectedPreset = findThemePreset(state.selectedPresetId);
-    if (selectedPreset) {
-      const presetState = createThemeStateForMode({
-        presetId: selectedPreset.id,
-        colorMode: nextColorMode,
-      });
-      updateGlobals({
-        [GLOBALS_KEY]: stringifyBrandThemeState(presetState),
-      });
-      return;
-    }
-
-    updateState({ colorMode: nextColorMode });
-  }, [state.colorMode, state.selectedPresetId, updateGlobals, updateState]);
-
   const applyPreset = useCallback(
     (preset: StylePreset) => {
       const updated = state.assignments.filter(
@@ -449,32 +388,6 @@ function PanelContent(): React.ReactElement {
           </ToggleTrack>
         </ToggleRow>
       </HeaderRow>
-
-      <CurrentThemeRow>
-        <span>Editing {selectedPresetLabel}</span>
-        <ModeButton
-          type="button"
-          aria-label={state.colorMode === "dark"
-            ? "Switch to light mode"
-            : "Switch to dark mode"}
-          onClick={handleColorModeToggle}
-        >
-          {state.colorMode === "dark" ? <SunIcon /> : <MoonIcon />}
-          {state.colorMode === "dark" ? "Dark" : "Light"}
-        </ModeButton>
-      </CurrentThemeRow>
-
-      {/* Export actions are intentionally first so a selected preset can be downloaded immediately. */}
-      {state.assignments.length > 0 && (
-        <>
-          <PresetLabel>Export</PresetLabel>
-          <ExportButtons
-            palette={state.palette}
-            assignments={state.assignments}
-          />
-          <SectionDivider />
-        </>
-      )}
 
       {/* Collapsible extraction section */}
       <SectionToggle
@@ -537,6 +450,26 @@ function PanelContent(): React.ReactElement {
           {error && <ErrorMessage>{error}</ErrorMessage>}
           <PaletteGrid palette={state.palette} />
         </div>
+      )}
+
+      {/* Collapsible export section */}
+      {state.assignments.length > 0 && (
+        <>
+          <SectionToggle
+            open={exportOpen}
+            onClick={() => setExportOpen(!exportOpen)}
+          >
+            <span>&#x25BE;</span>
+            <span>Export</span>
+          </SectionToggle>
+
+          {exportOpen && (
+            <ExportButtons
+              palette={state.palette}
+              assignments={state.assignments}
+            />
+          )}
+        </>
       )}
 
       {/* Style presets — quick way to set radius/spacing */}
