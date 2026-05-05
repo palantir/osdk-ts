@@ -102,7 +102,11 @@ const columnDefinitions: Array<
   },
 ];
 
-export function EmployeesTable() {
+interface EmployeesTableProps {
+  onRowClick?: (object: Osdk.Instance<Employee>) => void;
+}
+
+export function EmployeesTable({ onRowClick }: EmployeesTableProps) {
   const handleSubmitEdits = useCallback(
     async () => {
       alert(`Submitting edits...`);
@@ -133,6 +137,7 @@ export function EmployeesTable() {
         }]}
         onSubmitEdits={handleSubmitEdits}
         editMode="manual"
+        onRowClick={onRowClick}
       />
     </div>
   );

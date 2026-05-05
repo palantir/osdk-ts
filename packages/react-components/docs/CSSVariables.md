@@ -1028,6 +1028,63 @@ Styling for object set display components.
 | `--osdk-object-set-icon-skeleton-width`  | `calc(var(--osdk-surface-spacing) * 4)`      | Icon skeleton width    |
 | `--osdk-object-set-label-skeleton-width` | `calc(var(--osdk-surface-spacing) * 30)`     | Label skeleton width   |
 
+### Object View
+
+Styling for the `ObjectView` and `BaseObjectView` components. All visual properties of the
+header, sections, prominent grid, and properties grid are tokenized.
+
+| Variable                                          | Default Value                                                                 | Description                                  |
+| ------------------------------------------------- | ----------------------------------------------------------------------------- | -------------------------------------------- |
+| `--osdk-object-view-bg`                           | `var(--osdk-background-primary)`                                              | Container background                         |
+| `--osdk-object-view-color`                        | `var(--osdk-typography-color-default-rest)`                                   | Default text color                           |
+| `--osdk-object-view-font-family`                  | `var(--osdk-typography-family-default)`                                       | Container font family                        |
+| `--osdk-object-view-padding`                      | `0`                                                                           | Container padding                            |
+| `--osdk-object-view-border-radius`                | `var(--osdk-surface-border-radius)`                                           | Container border radius                      |
+| `--osdk-object-view-section-gap`                  | `calc(var(--osdk-surface-spacing) * 2)`                                       | Gap between header and sections              |
+| `--osdk-object-view-header-bg`                    | `var(--osdk-background-primary)`                                              | Header background                            |
+| `--osdk-object-view-header-padding`               | `calc(var(--osdk-surface-spacing) * 2) calc(var(--osdk-surface-spacing) * 3)` | Header padding                               |
+| `--osdk-object-view-header-gap`                   | `calc(var(--osdk-surface-spacing) * 2)`                                       | Gap between icon and text in header          |
+| `--osdk-object-view-header-border-bottom`         | `var(--osdk-surface-border)`                                                  | Border below header                          |
+| `--osdk-object-view-header-icon-size`             | `36px`                                                                        | Icon container size                          |
+| `--osdk-object-view-header-icon-radius`           | `var(--osdk-surface-border-radius)`                                           | Icon container border radius                 |
+| `--osdk-object-view-header-icon-bg`               | `var(--osdk-surface-background-color-default-rest)`                           | Icon container background                    |
+| `--osdk-object-view-header-icon-color`            | `var(--osdk-typography-color-default-rest)`                                   | Icon foreground color                        |
+| `--osdk-object-view-header-text-gap`              | `2px`                                                                         | Gap between title and subtitle               |
+| `--osdk-object-view-header-title-size`            | `var(--osdk-typography-size-heading-small)`                                   | Header title font size                       |
+| `--osdk-object-view-header-title-weight`          | `var(--osdk-typography-weight-bold)`                                          | Header title font weight                     |
+| `--osdk-object-view-header-title-color`           | `var(--osdk-typography-color-default-rest)`                                   | Header title color                           |
+| `--osdk-object-view-header-subtitle-size`         | `var(--osdk-typography-size-body-small)`                                      | Header subtitle font size                    |
+| `--osdk-object-view-header-subtitle-color`        | `var(--osdk-typography-color-muted)`                                          | Header subtitle color                        |
+| `--osdk-object-view-section-bg`                   | `var(--osdk-background-primary)`                                              | Section background                           |
+| `--osdk-object-view-section-padding`              | `calc(var(--osdk-surface-spacing) * 2) calc(var(--osdk-surface-spacing) * 3)` | Section padding                              |
+| `--osdk-object-view-section-border`               | `var(--osdk-surface-border)`                                                  | Section border                               |
+| `--osdk-object-view-section-border-radius`        | `var(--osdk-surface-border-radius)`                                           | Section border radius                        |
+| `--osdk-object-view-section-content-gap`          | `calc(var(--osdk-surface-spacing) * 2)`                                       | Gap between section title and content        |
+| `--osdk-object-view-section-title-gap`            | `var(--osdk-surface-spacing)`                                                 | Gap between section title icon and text      |
+| `--osdk-object-view-section-title-size`           | `var(--osdk-typography-size-body-medium)`                                     | Section title font size                      |
+| `--osdk-object-view-section-title-weight`         | `var(--osdk-typography-weight-bold)`                                          | Section title font weight                    |
+| `--osdk-object-view-section-title-color`          | `var(--osdk-typography-color-default-rest)`                                   | Section title color                          |
+| `--osdk-object-view-section-title-padding-bottom` | `var(--osdk-surface-spacing)`                                                 | Section title bottom padding                 |
+| `--osdk-object-view-section-title-border-bottom`  | `var(--osdk-surface-border)`                                                  | Section title bottom border                  |
+| `--osdk-object-view-prominent-min-width`          | `200px`                                                                       | Prominent grid minimum column width          |
+| `--osdk-object-view-prominent-grid-gap`           | `calc(var(--osdk-surface-spacing) * 2)`                                       | Prominent grid gap                           |
+| `--osdk-object-view-prominent-item-gap`           | `var(--osdk-surface-spacing)`                                                 | Prominent item internal gap                  |
+| `--osdk-object-view-prominent-item-padding`       | `0`                                                                           | Prominent item padding                       |
+| `--osdk-object-view-prominent-value-size`         | `var(--osdk-typography-size-heading-small)`                                   | Prominent value font size                    |
+| `--osdk-object-view-prominent-value-weight`       | `var(--osdk-typography-weight-bold)`                                          | Prominent value font weight                  |
+| `--osdk-object-view-prominent-value-color`        | `var(--osdk-typography-color-default-rest)`                                   | Prominent value color                        |
+| `--osdk-object-view-prominent-label-size`         | `var(--osdk-typography-size-body-small)`                                      | Prominent label font size                    |
+| `--osdk-object-view-prominent-label-color`        | `var(--osdk-typography-color-muted)`                                          | Prominent label color                        |
+| `--osdk-object-view-properties-grid-columns`      | `minmax(120px, max-content) 1fr`                                              | Properties grid template columns             |
+| `--osdk-object-view-properties-row-gap`           | `calc(var(--osdk-surface-spacing) * 2)`                                       | Properties grid row gap                      |
+| `--osdk-object-view-properties-column-gap`        | `calc(var(--osdk-surface-spacing) * 3)`                                       | Properties grid column gap                   |
+| `--osdk-object-view-property-label-size`          | `var(--osdk-typography-size-body-small)`                                      | Property label font size                     |
+| `--osdk-object-view-property-label-color`         | `var(--osdk-typography-color-muted)`                                          | Property label color                         |
+| `--osdk-object-view-property-value-size`          | `var(--osdk-typography-size-body-medium)`                                     | Property value font size                     |
+| `--osdk-object-view-property-value-color`         | `var(--osdk-typography-color-default-rest)`                                   | Property value color                         |
+| `--osdk-object-view-empty-value-color`            | `var(--osdk-typography-color-muted)`                                          | Color for null/empty property values         |
+| `--osdk-object-view-state-min-height`             | `200px`                                                                       | Minimum height for loading/error/empty state |
+
 ### PDF Viewer
 
 Styling for PDF viewer components.

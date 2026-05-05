@@ -39,6 +39,7 @@ See `@osdk/react`'s `AGENTS.md` for optional peers (`@osdk/foundry.admin`, `@osd
 Components are imported from their individual entry points under `@osdk/react-components/experimental/`:
 
 - `@osdk/react-components/experimental/object-table` — ObjectTable, BaseTable, ColumnConfigDialog
+- `@osdk/react-components/experimental/object-view` — ObjectView, BaseObjectView
 - `@osdk/react-components/experimental/filter-list` — FilterList, BaseFilterList
 - `@osdk/react-components/experimental/pdf-viewer` — PdfViewer, BasePdfViewer, and building blocks/hooks
 - `@osdk/react-components/experimental/tiff-renderer` — TiffRenderer
@@ -48,6 +49,8 @@ Components are imported from their individual entry points under `@osdk/react-co
 | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
 | **ObjectTable**        | Table for displaying OSDK object sets with sorting, filtering, inline editing, column pinning/resizing, row selection, and infinite scroll. |
 | **BaseTable**          | OSDK-agnostic base table — use when building custom data fetching on top of the table UI.                                                   |
+| **ObjectView**         | Single-object view that fetches an ontology object by primary key and renders it as a header + Properties section.                          |
+| **BaseObjectView**     | OSDK-agnostic base object view — accepts a primitive object shape directly. Use when you already have a fetched object.                     |
 | **FilterList**         | Aggregation-based filter UI for object sets with draggable reordering.                                                                      |
 | **BaseFilterList**     | OSDK-agnostic base filter list — use for custom filter implementations.                                                                     |
 | **ColumnConfigDialog** | Dialog for managing column visibility and drag-and-drop reordering.                                                                         |
