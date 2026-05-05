@@ -496,6 +496,20 @@ export interface DatetimeTimezoneUser {
 }
 
 // @public (undocumented)
+export namespace DerivedObjectOrInterfaceDefinition {
+    	// (undocumented)
+    export type WithDerivedProperties<
+    		K extends ObjectOrInterfaceDefinition,
+    		D extends Record<string, SimplePropertyDef>
+    	> = {
+        		__DefinitionMetadata?: {
+            			properties: { [T in keyof D] : SimplePropertyDef.ToPropertyDef<D[T]> }
+            			props?: { [T in keyof D] : SimplePropertyDef.ToRuntimeProperty<D[T]> }
+            		}
+        	} & K;
+}
+
+// @public (undocumented)
 export namespace DerivedProperty {
     	// Warning: (ae-forgotten-export) The symbol "Aggregatable" needs to be exported by the entry point index.d.ts
     //
