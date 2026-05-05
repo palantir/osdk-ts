@@ -65,11 +65,15 @@ export type {
 } from "../new/useOsdkFunctions.js";
 
 /** @deprecated Import from `@osdk/react` instead. */
+export type { UseOsdkObjectSuspenseResult } from "../new/useOsdkObject.js";
+
+/** @deprecated Import from `@osdk/react` instead. */
 export { useOsdkObject } from "../new/useOsdkObject.js";
 
 /** @deprecated Import from `@osdk/react` instead. */
 export type {
   UseOsdkListResult,
+  UseOsdkListSuspenseResult,
   UseOsdkObjectsOptions,
 } from "../new/useOsdkObjects.js";
 
