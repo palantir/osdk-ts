@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import type { FilterDefinitionUnion } from "@osdk/react-components/experimental/filter-list";
+import type {
+  FilterDefinitionUnion,
+  FilterState,
+} from "@osdk/react-components/experimental/filter-list";
 import { FilterList } from "@osdk/react-components/experimental/filter-list";
 import React from "react";
 import { Employee } from "../../types/Employee.js";
@@ -32,18 +35,60 @@ const FILTER_DEFINITIONS: Array<FilterDefinitionUnion<Employee>> = [
     type: "PROPERTY",
     id: "fullName",
     key: "fullName",
-    label: "Full Name",
+    label: "Name",
     filterComponent: "CONTAINS_TEXT",
     filterState: { type: "CONTAINS_TEXT" },
   },
+  {
+    type: "PROPERTY",
+    id: "emailPrimaryWork",
+    key: "emailPrimaryWork",
+    label: "Email",
+    filterComponent: "CONTAINS_TEXT",
+    filterState: { type: "CONTAINS_TEXT" },
+  },
+  {
+    type: "PROPERTY",
+    id: "locationCity",
+    key: "locationCity",
+    label: "City",
+    filterComponent: "LISTOGRAM",
+    filterState: { type: "EXACT_MATCH", values: [] },
+  },
+  {
+    type: "PROPERTY",
+    id: "team",
+    key: "team",
+    label: "Team",
+    filterComponent: "TEXT_TAGS",
+    filterState: { type: "EXACT_MATCH", values: [] },
+  },
+  {
+    type: "PROPERTY",
+    id: "firstFullTimeStartDate",
+    key: "firstFullTimeStartDate",
+    label: "Start Date",
+    filterComponent: "DATE_RANGE",
+    filterState: { type: "DATE_RANGE" },
+  },
 ];
 
+interface ShowcaseFilterListProps {
+  readonly onFilterStateChanged?: (
+    definition: FilterDefinitionUnion<Employee>,
+    newState: FilterState,
+  ) => void;
+}
+
 export const ShowcaseFilterList = React.memo(
-  function ShowcaseFilterListFn(): React.ReactElement {
+  function ShowcaseFilterListFn(
+    { onFilterStateChanged }: ShowcaseFilterListProps,
+  ): React.ReactElement {
     return (
       <FilterList
         objectType={Employee}
         filterDefinitions={FILTER_DEFINITIONS}
+        onFilterStateChanged={onFilterStateChanged}
       />
     );
   },
