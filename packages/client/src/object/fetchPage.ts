@@ -117,7 +117,7 @@ export async function fetchStaticRidPage<
   R extends boolean,
   S extends NullabilityAdherence,
   T extends boolean,
-  PROPERTY_SECURITIES extends boolean = false,
+  P extends boolean = false,
 >(
   client: MinimalClient,
   rids: readonly string[],
@@ -130,7 +130,7 @@ export async function fetchStaticRidPage<
     T,
     never,
     {},
-    PROPERTY_SECURITIES
+    P
   >,
   useSnapshot: boolean = false,
 ): Promise<
@@ -141,7 +141,7 @@ export async function fetchStaticRidPage<
     S,
     T,
     {},
-    PROPERTY_SECURITIES
+    P
   >
 > {
   const shouldLoadPropertySecurities = args.$loadPropertySecurityMetadata
@@ -196,7 +196,7 @@ export async function fetchStaticRidPage<
       S,
       T,
       {},
-      PROPERTY_SECURITIES
+      P
     >
   >;
 }
@@ -337,7 +337,7 @@ export async function fetchPageInternal<
   S extends NullabilityAdherence,
   T extends boolean,
   ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<L>,
-  PROPERTY_SECURITIES extends boolean = false,
+  P extends boolean = false,
 >(
   client: MinimalClient,
   objectType: Q,
@@ -351,11 +351,11 @@ export async function fetchPageInternal<
     T,
     never,
     ORDER_BY_OPTIONS,
-    PROPERTY_SECURITIES
+    P
   > = {},
   useSnapshot: boolean = false,
 ): Promise<
-  FetchPageResult<Q, L, R, S, T, ORDER_BY_OPTIONS, PROPERTY_SECURITIES>
+  FetchPageResult<Q, L, R, S, T, ORDER_BY_OPTIONS, P>
 > {
   if (objectType.type === "interface") {
     return await fetchInterfacePage(
@@ -433,13 +433,13 @@ export async function fetchPage<
   R extends boolean,
   S extends NullabilityAdherence,
   T extends boolean,
-  PROPERTY_SECURITIES extends boolean = false,
+  P extends boolean = false,
 >(
   client: MinimalClient,
   objectType: Q,
-  args: FetchPageArgs<Q, L, R, any, S, T, never, {}, PROPERTY_SECURITIES>,
+  args: FetchPageArgs<Q, L, R, any, S, T, never, {}, P>,
   objectSet: ObjectSet = resolveBaseObjectSetType(objectType),
-): Promise<FetchPageResult<Q, L, R, S, T, {}, PROPERTY_SECURITIES>> {
+): Promise<FetchPageResult<Q, L, R, S, T, {}, P>> {
   return fetchPageInternal(client, objectType, objectSet, args);
 }
 

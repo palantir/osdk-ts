@@ -261,8 +261,8 @@ export interface AsyncIterArgs<
 	T extends boolean = false,
 	RDP_KEYS extends string = never,
 	ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<K> = never,
-	PROPERTY_SECURITIES extends boolean = false
-> extends SelectArg<Q, K, R, S, RDP_KEYS, PROPERTY_SECURITIES>, OrderByArg<Q, PropertyKeys<Q> | RDP_KEYS, ORDER_BY_OPTIONS> {
+	P extends boolean = false
+> extends SelectArg<Q, K, R, S, RDP_KEYS, P>, OrderByArg<Q, PropertyKeys<Q> | RDP_KEYS, ORDER_BY_OPTIONS> {
     	// (undocumented)
     $__UNSTABLE_useOldInterfaceApis?: boolean;
     	// (undocumented)
@@ -638,8 +638,8 @@ export interface FetchPageArgs<
 	T extends boolean = false,
 	RDP_KEYS extends string = never,
 	ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<K> = {},
-	PROPERTY_SECURITIES extends boolean = false
-> extends AsyncIterArgs<Q, K, R, A, S, T, RDP_KEYS, ORDER_BY_OPTIONS, PROPERTY_SECURITIES> {
+	P extends boolean = false
+> extends AsyncIterArgs<Q, K, R, A, S, T, RDP_KEYS, ORDER_BY_OPTIONS, P> {
     	// (undocumented)
     $nextPageToken?: string;
     	// (undocumented)
@@ -656,8 +656,8 @@ export type FetchPageResult<
 	S extends NullabilityAdherence,
 	T extends boolean = false,
 	ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<L> = {},
-	PROPERTY_SECURITIES extends boolean = false
-> = PageResult<MaybeScore<Osdk.Instance<Q, ExtractOptions<R, S, T, PROPERTY_SECURITIES>, PropertyKeys<Q> extends L ? never : L>, ORDER_BY_OPTIONS>>;
+	P extends boolean = false
+> = PageResult<MaybeScore<Osdk.Instance<Q, ExtractOptions<R, S, T, P>, PropertyKeys<Q> extends L ? never : L>, ORDER_BY_OPTIONS>>;
 
 // @public (undocumented)
 export type GeoFilter_Intersects = {
@@ -1750,12 +1750,12 @@ export interface SelectArg<
 	R extends boolean = false,
 	S extends NullabilityAdherence = NullabilityAdherence.Default,
 	RDP_KEYS extends string = never,
-	PROPERTY_SECURITIES extends boolean = false
+	P extends boolean = false
 > {
     	// (undocumented)
     $includeRid?: R;
     	// (undocumented)
-    $loadPropertySecurityMetadata?: PROPERTY_SECURITIES;
+    $loadPropertySecurityMetadata?: P;
     	// (undocumented)
     $select?: readonly L[];
 }
