@@ -21,6 +21,13 @@ import type { FilterState } from "../FilterListItemApi.js";
 interface SingleDateFilterInputProps {
   filterState: FilterState | undefined;
   onFilterStateChanged: (state: FilterState) => void;
+  /**
+   * Plumbed for API parity with the other date filter inputs. SingleDateInput
+   * renders only the HTML `<input type="date">` whose value attribute must be
+   * ISO `YYYY-MM-DD`, so `formatDate` has no display surface in v1.
+   */
+  formatDate?: (date: Date) => string;
+  parseDate?: (text: string) => Date | undefined;
 }
 
 function SingleDateFilterInputInner({

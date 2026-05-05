@@ -1952,3 +1952,83 @@ export const LongDropdown: Story = {
     </div>
   ),
 };
+
+const slashDate = (d: Date): string =>
+  `${String(d.getMonth() + 1).padStart(2, "0")}/${
+    String(d.getDate()).padStart(2, "0")
+  }/${d.getFullYear()}`;
+
+const slashDateParse = (text: string): Date | undefined => {
+  const match = text.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+  if (!match) return undefined;
+  return new Date(
+    Number(match[3]),
+    Number(match[1]) - 1,
+    Number(match[2]),
+  );
+};
+
+const FORMAT_DATE_FILTERS: FilterDefinitionUnion<Employee>[] = [
+  {
+    type: "PROPERTY",
+    id: "startDate-range",
+    key: "firstFullTimeStartDate",
+    label: "Start date (range)",
+    filterComponent: "DATE_RANGE",
+    filterState: { type: "DATE_RANGE" },
+    formatDate: slashDate,
+    parseDate: slashDateParse,
+  },
+  {
+    type: "PROPERTY",
+    id: "startDate-multi",
+    key: "firstFullTimeStartDate",
+    label: "Start date (multi)",
+    filterComponent: "MULTI_DATE",
+    filterState: {
+      type: "SELECT",
+      selectedValues: [new Date(2020, 4, 1), new Date(2021, 8, 15)],
+    },
+    formatDate: slashDate,
+    parseDate: slashDateParse,
+  },
+  {
+    type: "PROPERTY",
+    id: "startDate-timeline",
+    key: "firstFullTimeStartDate",
+    label: "Start date (timeline)",
+    filterComponent: "TIMELINE",
+    filterState: {
+      type: "TIMELINE",
+      startDate: new Date(2020, 0, 1),
+      endDate: new Date(2024, 11, 31),
+    },
+    formatDate: slashDate,
+    parseDate: slashDateParse,
+  },
+];
+
+export const FormatDate: Story = {
+  name: "Per-property formatDate",
+  parameters: {
+    docs: {
+      description: {
+        story: "Date-typed property filter definitions accept optional "
+          + "`formatDate` and `parseDate` callbacks (see `PropertyFilterDateExtras`). "
+          + "When provided, `formatDate` is used for the date-range histogram "
+          + "tooltip, multi-date chip text, and timeline labels. The HTML "
+          + "`<input type=\"date\">` value attribute is unaffected and always "
+          + "uses ISO `YYYY-MM-DD`. `parseDate` is plumbed through for "
+          + "completeness; the built-in HTML date inputs do not invoke it.",
+      },
+    },
+  },
+  render: () => (
+    <div style={SIDEBAR_STYLE}>
+      <FilterList
+        objectType={Employee}
+        filterDefinitions={FORMAT_DATE_FILTERS}
+      />
+    </div>
+  ),
+};
