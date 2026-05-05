@@ -18,7 +18,7 @@ This guide covers how the OSDK React cache system works and how to manually cont
 
 ## How the Cache Works
 
-The `OsdkProvider2` creates an `ObservableClient` that maintains a normalized cache of all queries and their results.
+The `OsdkProvider` creates an `ObservableClient` that maintains a normalized cache of all queries and their results.
 
 ### What Gets Cached
 
@@ -87,7 +87,7 @@ The `ObservableClient` provides methods to manually invalidate cached data.
 
 ### Setup
 
-`OsdkProvider2` creates its own `ObservableClient` internally — you only need to construct one yourself if you want to call invalidation methods (`invalidateObjects`, `invalidateObjectType`, `invalidateFunction`, …) from outside the React tree (for example, from a WebSocket handler in `client.ts`). In that case, create one and pass it explicitly so React and your handler share the same cache:
+`OsdkProvider` creates its own `ObservableClient` internally — you only need to construct one yourself if you want to call invalidation methods (`invalidateObjects`, `invalidateObjectType`, `invalidateFunction`, …) from outside the React tree (for example, from a WebSocket handler in `client.ts`). In that case, create one and pass it explicitly so React and your handler share the same cache:
 
 ```tsx
 // client.ts
@@ -110,13 +110,13 @@ export { client };
 
 ```tsx
 // main.tsx
-import { OsdkProvider2 } from "@osdk/react/experimental";
+import { OsdkProvider } from "@osdk/react";
 import { client, observableClient } from "./client";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
-  <OsdkProvider2 client={client} observableClient={observableClient}>
+  <OsdkProvider client={client} observableClient={observableClient}>
     <App />
-  </OsdkProvider2>,
+  </OsdkProvider>,
 );
 ```
 
@@ -199,7 +199,7 @@ This is useful when you know a specific object has changed outside of the normal
 
 ```tsx
 import { completeTodo, Todo } from "@my/osdk";
-import { useOsdkAction, useOsdkObject } from "@osdk/react/experimental";
+import { useOsdkAction, useOsdkObject } from "@osdk/react";
 
 function TodoView({ todo }: { todo: Todo.OsdkInstance }) {
   const { isOptimistic } = useOsdkObject(todo);
