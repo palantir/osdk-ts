@@ -43,6 +43,7 @@ Components are imported from their individual entry points under `@osdk/react-co
 - `@osdk/react-components/experimental/pdf-viewer` — PdfViewer, BasePdfViewer, and building blocks/hooks
 - `@osdk/react-components/experimental/tiff-renderer` — TiffRenderer
 - `@osdk/react-components/experimental/markdown-renderer` — MarkdownRenderer
+- `@osdk/react-components/experimental/aip-agent-chat` — AipAgentChat, BaseAipAgentChat
 
 | Component              | Description                                                                                                                                 |
 | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -55,6 +56,8 @@ Components are imported from their individual entry points under `@osdk/react-co
 | **BasePdfViewer**      | OSDK-agnostic base PDF viewer — accepts a URL or ArrayBuffer directly. Use when building custom data fetching on top of the viewer UI.      |
 | **TiffRenderer**       | TIFF image renderer — accepts a `Uint8Array` and renders onto a canvas with size validation and error handling.                             |
 | **MarkdownRenderer**   | Markdown renderer that accepts a markdown string and renders it with styled headings, code blocks, tables, and links.                       |
+| **AipAgentChat**       | Chat surface backed by Foundry LMS via `useChat`. Takes a `PlatformClient` + model API name and renders messages, composer, and streaming.  |
+| **BaseAipAgentChat**   | OSDK-agnostic base chat — accepts `messages`/`status`/`onSendMessage` directly. Use for custom chat-state plumbing.                         |
 
 ## Documentation
 

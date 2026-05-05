@@ -1,0 +1,226 @@
+.chat {
+  background: var(--osdk-aip-agent-chat-background);
+  border: 1px solid var(--osdk-aip-agent-chat-border-color);
+  border-radius: var(--osdk-aip-agent-chat-border-radius);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  width: 100%;
+}
+
+.error {
+  align-items: flex-start;
+  background: var(--osdk-aip-agent-chat-error-background);
+  border-bottom: 1px solid var(--osdk-aip-agent-chat-border-color);
+  color: var(--osdk-aip-agent-chat-error-color);
+  display: flex;
+  flex: 0 0 auto;
+  gap: var(--osdk-aip-agent-chat-section-gap);
+  justify-content: space-between;
+  padding: var(--osdk-aip-agent-chat-section-gap)
+    var(--osdk-aip-agent-chat-padding);
+}
+
+.errorBody {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: calc(var(--osdk-surface-spacing) * 0.5);
+  min-width: 0;
+}
+
+.errorTitle {
+  font-size: var(--osdk-typography-size-body-medium);
+  font-weight: var(--osdk-typography-weight-bold);
+}
+
+.errorMessage {
+  font-size: var(--osdk-typography-size-body-small);
+  word-break: break-word;
+}
+
+.errorActions {
+  display: flex;
+  flex: 0 0 auto;
+  gap: calc(var(--osdk-surface-spacing) * 1);
+}
+
+.messageList {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: var(--osdk-aip-agent-chat-message-gap);
+  min-height: 0;
+  overflow-y: auto;
+  padding: var(--osdk-aip-agent-chat-padding);
+}
+
+.empty {
+  align-items: center;
+  color: var(--osdk-aip-agent-chat-empty-color);
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: var(--osdk-aip-agent-chat-section-gap);
+  justify-content: center;
+  padding: var(--osdk-aip-agent-chat-padding);
+  text-align: center;
+}
+
+.emptyIcon {
+  color: var(--osdk-aip-agent-chat-empty-icon-color);
+  font-size: var(--osdk-aip-agent-chat-empty-icon-size);
+}
+
+.emptyTitle {
+  color: var(--osdk-typography-color-default-rest);
+  font-size: var(--osdk-typography-size-body-large);
+  font-weight: var(--osdk-typography-weight-bold);
+}
+
+.message {
+  display: flex;
+  flex-direction: column;
+}
+
+.userMessage {
+  align-items: flex-end;
+}
+
+.assistantMessage {
+  align-items: flex-start;
+}
+
+.systemMessage {
+  align-items: center;
+}
+
+.bubble {
+  border-radius: var(--osdk-aip-agent-chat-bubble-border-radius);
+  max-width: var(--osdk-aip-agent-chat-bubble-max-width);
+  overflow-wrap: break-word;
+  padding: var(--osdk-aip-agent-chat-bubble-padding);
+  text-align: left;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.userBubble {
+  background: var(--osdk-aip-agent-chat-user-bubble-background);
+  color: var(--osdk-aip-agent-chat-user-bubble-color);
+}
+
+.assistantBubble {
+  background: var(--osdk-aip-agent-chat-assistant-bubble-background);
+  color: var(--osdk-aip-agent-chat-assistant-bubble-color);
+}
+
+.systemBubble {
+  background: var(--osdk-background-tertiary);
+  color: var(--osdk-typography-color-muted);
+  font-size: var(--osdk-typography-size-body-small);
+  font-style: italic;
+}
+
+.streamingPlaceholder {
+  color: var(--osdk-typography-color-muted);
+}
+
+.composer {
+  background: var(--osdk-aip-agent-chat-composer-background);
+  border-top: 1px solid var(--osdk-aip-agent-chat-composer-border-color);
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  gap: var(--osdk-aip-agent-chat-section-gap);
+  padding: var(--osdk-aip-agent-chat-padding);
+}
+
+.textarea {
+  background: var(--osdk-background-primary);
+  border: 1px solid var(--osdk-surface-border-color-default);
+  border-radius: var(--osdk-aip-agent-chat-border-radius);
+  color: var(--osdk-typography-color-default-rest);
+  font-family: inherit;
+  font-size: var(--osdk-typography-size-body-medium);
+  line-height: var(--osdk-typography-line-height-default);
+  max-height: var(--osdk-aip-agent-chat-composer-textarea-max-height);
+  min-height: var(--osdk-aip-agent-chat-composer-textarea-min-height);
+  outline: none;
+  padding: var(--osdk-aip-agent-chat-section-gap);
+  resize: vertical;
+  width: 100%;
+}
+
+.textarea:focus {
+  border-color: var(--osdk-emphasis-focus-color);
+}
+
+.composerActions {
+  align-items: center;
+  display: flex;
+  gap: var(--osdk-aip-agent-chat-section-gap);
+  justify-content: space-between;
+}
+
+.composerFooterLeft {
+  align-items: center;
+  display: flex;
+  flex: 1 1 auto;
+  gap: var(--osdk-aip-agent-chat-section-gap);
+  min-width: 0;
+}
+
+.composerFooterRight {
+  align-items: center;
+  display: flex;
+  flex: 0 0 auto;
+  gap: var(--osdk-aip-agent-chat-section-gap);
+}
+
+.loader {
+  align-items: center;
+  color: var(--osdk-aip-agent-chat-loader-color);
+  display: inline-flex;
+  gap: var(--osdk-aip-agent-chat-loader-dot-gap);
+}
+
+.loaderDot {
+  animation-duration: 1.4s;
+  animation-iteration-count: infinite;
+  animation-name: aipAgentChatLoaderBounce;
+  animation-timing-function: ease-in-out;
+  background: currentColor;
+  border-radius: 50%;
+  display: inline-block;
+  height: var(--osdk-aip-agent-chat-loader-dot-size);
+  width: var(--osdk-aip-agent-chat-loader-dot-size);
+}
+
+.loaderDot:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.loaderDot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.loaderDot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes aipAgentChatLoaderBounce {
+  0%,
+  60%,
+  100% {
+    opacity: 0.3;
+    transform: translateY(0);
+  }
+
+  30% {
+    opacity: 1;
+    transform: translateY(-25%);
+  }
+}
