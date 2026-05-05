@@ -10,6 +10,7 @@ import type { CompileTimeMetadata } from '@osdk/client';
 import { Geometry } from 'geojson';
 import type { GroupId as GroupId_2 } from '@osdk/foundry.core';
 import type { InterfaceDefinition } from '@osdk/client';
+import type { Media } from '@osdk/client';
 import { MediaReference } from '@osdk/client';
 import { MediaUpload } from '@osdk/client';
 import type { ObjectMetadata } from '@osdk/client';
@@ -254,7 +255,7 @@ export type TimestampISOString<T extends string = string> = T & {
 export { TwoDimensionalAggregation }
 
 // @public (undocumented)
-export function uploadMedia(client: Client, mediaUpload: MediaUpload): Promise<MediaReference>;
+export function uploadMedia(client: Client, mediaUpload: MediaUpload): Promise<Media>;
 
 // @public (undocumented)
 export interface UrlLinkTarget {
