@@ -655,8 +655,9 @@ export type FetchPageResult<
 	R extends boolean,
 	S extends NullabilityAdherence,
 	T extends boolean = false,
-	ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<L> = {}
-> = PageResult<MaybeScore<Osdk.Instance<Q, ExtractOptions<R, S, T>, PropertyKeys<Q> extends L ? never : L>, ORDER_BY_OPTIONS>>;
+	ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<L> = {},
+	PROPERTY_SECURITIES extends boolean = false
+> = PageResult<MaybeScore<Osdk.Instance<Q, ExtractOptions<R, S, T, PROPERTY_SECURITIES>, PropertyKeys<Q> extends L ? never : L>, ORDER_BY_OPTIONS>>;
 
 // @public (undocumented)
 export type GeoFilter_Intersects = {

@@ -117,6 +117,7 @@ export async function fetchStaticRidPage<
   R extends boolean,
   S extends NullabilityAdherence,
   T extends boolean,
+  PROPERTY_SECURITIES extends boolean = false,
 >(
   client: MinimalClient,
   rids: readonly string[],
@@ -126,7 +127,10 @@ export async function fetchStaticRidPage<
     R,
     any,
     S,
-    T
+    T,
+    never,
+    {},
+    PROPERTY_SECURITIES
   >,
   useSnapshot: boolean = false,
 ): Promise<
@@ -135,7 +139,9 @@ export async function fetchStaticRidPage<
     PropertyKeys<ObjectOrInterfaceDefinition>,
     R,
     S,
-    T
+    T,
+    {},
+    PROPERTY_SECURITIES
   >
 > {
   const shouldLoadPropertySecurities = args.$loadPropertySecurityMetadata
@@ -188,7 +194,9 @@ export async function fetchStaticRidPage<
       PropertyKeys<ObjectOrInterfaceDefinition>,
       R,
       S,
-      T
+      T,
+      {},
+      PROPERTY_SECURITIES
     >
   >;
 }
@@ -329,13 +337,26 @@ export async function fetchPageInternal<
   S extends NullabilityAdherence,
   T extends boolean,
   ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<L>,
+  PROPERTY_SECURITIES extends boolean = false,
 >(
   client: MinimalClient,
   objectType: Q,
   objectSet: ObjectSet,
-  args: FetchPageArgs<Q, L, R, A, S, T, never, ORDER_BY_OPTIONS> = {},
+  args: FetchPageArgs<
+    Q,
+    L,
+    R,
+    A,
+    S,
+    T,
+    never,
+    ORDER_BY_OPTIONS,
+    PROPERTY_SECURITIES
+  > = {},
   useSnapshot: boolean = false,
-): Promise<FetchPageResult<Q, L, R, S, T, ORDER_BY_OPTIONS>> {
+): Promise<
+  FetchPageResult<Q, L, R, S, T, ORDER_BY_OPTIONS, PROPERTY_SECURITIES>
+> {
   if (objectType.type === "interface") {
     return await fetchInterfacePage(
       client,
@@ -412,12 +433,13 @@ export async function fetchPage<
   R extends boolean,
   S extends NullabilityAdherence,
   T extends boolean,
+  PROPERTY_SECURITIES extends boolean = false,
 >(
   client: MinimalClient,
   objectType: Q,
-  args: FetchPageArgs<Q, L, R, any, S, T>,
+  args: FetchPageArgs<Q, L, R, any, S, T, never, {}, PROPERTY_SECURITIES>,
   objectSet: ObjectSet = resolveBaseObjectSetType(objectType),
-): Promise<FetchPageResult<Q, L, R, S, T>> {
+): Promise<FetchPageResult<Q, L, R, S, T, {}, PROPERTY_SECURITIES>> {
   return fetchPageInternal(client, objectType, objectSet, args);
 }
 
@@ -521,7 +543,8 @@ async function applyFetchArgs<
     any,
     any,
     any,
-    ObjectSetArgs.OrderByOptions<any>
+    ObjectSetArgs.OrderByOptions<any>,
+    boolean
   >,
   body: X,
   _client: MinimalClient,
