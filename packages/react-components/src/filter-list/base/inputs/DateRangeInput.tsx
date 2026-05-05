@@ -19,6 +19,7 @@ import {
   formatDateForInput,
   parseDateFromInput,
 } from "../../../shared/dateUtils.js";
+import { createDateHistogramBuckets } from "./createDateHistogramBuckets.js";
 import { RangeInput, type RangeInputConfig } from "./RangeInput.js";
 
 const defaultDateConfig: RangeInputConfig<Date> = {
@@ -61,6 +62,7 @@ interface DateRangeInputProps {
 function DateRangeInputInner({
   formatDate,
   parseDate,
+  valueCountPairs,
   ...rest
 }: DateRangeInputProps): React.ReactElement {
   const config = useMemo<RangeInputConfig<Date>>(
@@ -76,7 +78,33 @@ function DateRangeInputInner({
         : defaultDateConfig,
     [formatDate, parseDate],
   );
-  return <RangeInput {...rest} config={config} />;
+
+  const histogramData = useMemo(() => {
+    if (valueCountPairs.length === 0) return undefined;
+    let minMs = Infinity;
+    let maxMs = -Infinity;
+    for (const { value } of valueCountPairs) {
+      const t = value.getTime();
+      if (t < minMs) minMs = t;
+      if (t > maxMs) maxMs = t;
+    }
+    if (!Number.isFinite(minMs) || !Number.isFinite(maxMs)) return undefined;
+    const { buckets, subtitle } = createDateHistogramBuckets(
+      valueCountPairs,
+      { min: new Date(minMs), max: new Date(maxMs) },
+      formatDate,
+    );
+    return { buckets, subtitle };
+  }, [valueCountPairs, formatDate]);
+
+  return (
+    <RangeInput
+      {...rest}
+      valueCountPairs={valueCountPairs}
+      config={config}
+      histogramData={histogramData}
+    />
+  );
 }
 
 export const DateRangeInput = memo(
