@@ -326,11 +326,11 @@ export type ExtractOptions<
   RID extends boolean,
   UNUSED extends NullabilityAdherence = NullabilityAdherence.Default,
   ALL_PROPERTIES extends boolean = false,
-  P extends boolean = false,
+  PROPERTY_SECURITIES extends boolean = false,
 > =
   | ExtractRidOption<RID>
   | ExtractAllPropertiesOption<ALL_PROPERTIES>
-  | ExtractPropertySecurityOption<P>;
+  | ExtractPropertySecurityOption<PROPERTY_SECURITIES>;
 
 type ObjectPropertySecurities<
   Q extends ObjectOrInterfaceDefinition,

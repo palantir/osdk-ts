@@ -117,7 +117,7 @@ export async function fetchStaticRidPage<
   R extends boolean,
   S extends NullabilityAdherence,
   T extends boolean,
-  P extends boolean = false,
+  PROPERTY_SECURITIES extends boolean = false,
 >(
   client: MinimalClient,
   rids: readonly string[],
@@ -130,7 +130,7 @@ export async function fetchStaticRidPage<
     T,
     never,
     {},
-    P
+    PROPERTY_SECURITIES
   >,
   useSnapshot: boolean = false,
 ): Promise<
@@ -141,7 +141,7 @@ export async function fetchStaticRidPage<
     S,
     T,
     {},
-    P
+    PROPERTY_SECURITIES
   >
 > {
   const shouldLoadPropertySecurities = args.$loadPropertySecurityMetadata
@@ -196,7 +196,7 @@ export async function fetchStaticRidPage<
       S,
       T,
       {},
-      P
+      PROPERTY_SECURITIES
     >
   >;
 }
@@ -337,7 +337,7 @@ export async function fetchPageInternal<
   S extends NullabilityAdherence,
   T extends boolean,
   ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<L>,
-  P extends boolean = false,
+  PROPERTY_SECURITIES extends boolean = false,
 >(
   client: MinimalClient,
   objectType: Q,
@@ -351,11 +351,11 @@ export async function fetchPageInternal<
     T,
     never,
     ORDER_BY_OPTIONS,
-    P
+    PROPERTY_SECURITIES
   > = {},
   useSnapshot: boolean = false,
 ): Promise<
-  FetchPageResult<Q, L, R, S, T, ORDER_BY_OPTIONS, P>
+  FetchPageResult<Q, L, R, S, T, ORDER_BY_OPTIONS, PROPERTY_SECURITIES>
 > {
   if (objectType.type === "interface") {
     return await fetchInterfacePage(
@@ -433,13 +433,13 @@ export async function fetchPage<
   R extends boolean,
   S extends NullabilityAdherence,
   T extends boolean,
-  P extends boolean = false,
+  PROPERTY_SECURITIES extends boolean = false,
 >(
   client: MinimalClient,
   objectType: Q,
-  args: FetchPageArgs<Q, L, R, any, S, T, never, {}, P>,
+  args: FetchPageArgs<Q, L, R, any, S, T, never, {}, PROPERTY_SECURITIES>,
   objectSet: ObjectSet = resolveBaseObjectSetType(objectType),
-): Promise<FetchPageResult<Q, L, R, S, T, {}, P>> {
+): Promise<FetchPageResult<Q, L, R, S, T, {}, PROPERTY_SECURITIES>> {
   return fetchPageInternal(client, objectType, objectSet, args);
 }
 

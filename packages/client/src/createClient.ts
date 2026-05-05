@@ -263,7 +263,7 @@ export function createClientFromContext(clientCtx: MinimalClient) {
               const R extends boolean,
               const S extends false | "throw" = NullabilityAdherence.Default,
               const T extends boolean = false,
-              const P extends boolean = false,
+              const PROPERTY_SECURITIES extends boolean = false,
             >(
               objectOrInterfaceType: Q,
               rids: string[],
@@ -276,7 +276,7 @@ export function createClientFromContext(clientCtx: MinimalClient) {
                 T,
                 never,
                 {},
-                P
+                PROPERTY_SECURITIES
               > = {},
             ) => {
               return await fetchPage(
@@ -290,7 +290,7 @@ export function createClientFromContext(clientCtx: MinimalClient) {
               const R extends boolean,
               const S extends NullabilityAdherence,
               const T extends boolean,
-              const P extends boolean = false,
+              const PROPERTY_SECURITIES extends boolean = false,
             >(
               rids: readonly string[],
               options?: FetchPageArgs<
@@ -302,7 +302,7 @@ export function createClientFromContext(clientCtx: MinimalClient) {
                 T,
                 never,
                 {},
-                P
+                PROPERTY_SECURITIES
               >,
             ) => {
               return await fetchStaticRidPage(

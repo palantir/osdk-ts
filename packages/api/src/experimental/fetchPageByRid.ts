@@ -32,12 +32,12 @@ type fetchPageByRidFn = <
   const R extends boolean,
   const S extends NullabilityAdherence,
   const T extends boolean,
-  const P extends boolean = false,
+  const PROPERTY_SECURITIES extends boolean = false,
 >(
   objectType: Q,
   rids: string[],
-  options?: FetchPageArgs<Q, L, R, any, S, T, never, {}, P>,
-) => Promise<FetchPageResult<Q, L, R, S, T, {}, P>>;
+  options?: FetchPageArgs<Q, L, R, any, S, T, never, {}, PROPERTY_SECURITIES>,
+) => Promise<FetchPageResult<Q, L, R, S, T, {}, PROPERTY_SECURITIES>>;
 
 export type FetchPageByRidPayload = {
   fetchPageByRid: fetchPageByRidFn;
@@ -48,7 +48,7 @@ type fetchPageByRidNoTypeFn = <
   const R extends boolean,
   const S extends NullabilityAdherence,
   const T extends boolean,
-  const P extends boolean = false,
+  const PROPERTY_SECURITIES extends boolean = false,
 >(
   rids: readonly string[],
   options?: FetchPageArgs<
@@ -60,7 +60,7 @@ type fetchPageByRidNoTypeFn = <
     T,
     never,
     {},
-    P
+    PROPERTY_SECURITIES
   >,
 ) => Promise<
   FetchPageResult<
@@ -70,7 +70,7 @@ type fetchPageByRidNoTypeFn = <
     S,
     T,
     {},
-    P
+    PROPERTY_SECURITIES
   >
 >;
 

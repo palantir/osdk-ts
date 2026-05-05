@@ -58,12 +58,12 @@ export type FetchPageResult<
   S extends NullabilityAdherence,
   T extends boolean = false,
   ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<L> = {},
-  P extends boolean = false,
+  PROPERTY_SECURITIES extends boolean = false,
 > = PageResult<
   MaybeScore<
     Osdk.Instance<
       Q,
-      ExtractOptions<R, S, T, P>,
+      ExtractOptions<R, S, T, PROPERTY_SECURITIES>,
       PropertyKeys<Q> extends L ? never : L
     >,
     ORDER_BY_OPTIONS
