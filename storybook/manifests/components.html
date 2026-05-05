@@ -509,7 +509,7 @@
 <header>
   <div class="wrap">
     <h1>Components Manifest</h1>
-    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><a class="filter-pill err" data-k="errors" href="#filter-errors">20/20 prop type errors</a><a class="filter-pill info" data-k="infos" href="#filter-infos">20/20 infos</a><a class="filter-pill err" data-k="story-errors" href="#filter-story-errors">2/121 story errors</a></div>
+    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><a class="filter-pill err" data-k="errors" href="#filter-errors">20/20 prop type errors</a><a class="filter-pill info" data-k="infos" href="#filter-infos">20/20 infos</a><a class="filter-pill err" data-k="story-errors" href="#filter-story-errors">2/122 story errors</a></div>
   </div>
 </header>
 <main>
@@ -902,7 +902,7 @@ export const BannerOnly: Story = {
       <div class="badges">
         <label for="c-1-experimental-baseform-err" class="badge err as-toggle">prop type error</label>
         <label for="c-1-experimental-baseform-info" class="badge info as-toggle">1 info</label>
-        <label for="c-1-experimental-baseform-stories" class="badge ok as-toggle">21 stories</label>
+        <label for="c-1-experimental-baseform-stories" class="badge ok as-toggle">22 stories</label>
       </div>
     </div>
     <div class="meta" title="./src/stories/ActionForm/BaseForm.stories.tsx">experimental-baseform · ./src/stories/ActionForm/BaseForm.stories.tsx</div>
@@ -924,13 +924,13 @@ export const BannerOnly: Story = {
     <div class="note err">
       <div class="note-title">Prop type error</div>
       <div class="note-body"><pre><code>No component file found for the &quot;BaseForm&quot; component.
-  179 | }
-  180 |
-&gt; 181 | const meta: Meta&lt;BaseFormStoryProps&gt; = {
+  180 | }
+  181 |
+&gt; 182 | const meta: Meta&lt;BaseFormStoryProps&gt; = {
       | ^
-  182 |   title: &quot;Experimental/BaseForm&quot;,
-  183 |   tags: [&quot;experimental&quot;],
-  184 |   component: BaseForm,
+  183 |   title: &quot;Experimental/BaseForm&quot;,
+  184 |   tags: [&quot;experimental&quot;],
+  185 |   component: BaseForm,
 
 ./src/stories/ActionForm/BaseForm.stories.tsx:
 /*
@@ -949,6 +949,7 @@ export const BannerOnly: Story = {
  * limitations under the License.
  */
 
+import { Button, Dialog } from &quot;@blueprintjs/core&quot;;
 import type { ObjectSet, ObjectTypeDefinition } from &quot;@osdk/api&quot;;
 import type {
   FormContentItem,
@@ -957,7 +958,7 @@ import type {
 import { BaseForm } from &quot;@osdk/react-components/experimental&quot;;
 import { useOsdkClient } from &quot;@osdk/react/experimental&quot;;
 import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
-import React, { useCallback, useMemo, useState } from &quot;react&quot;;
+import React, { useCallback, useMemo, useRef, useState } from &quot;react&quot;;
 import { fn } from &quot;storybook/test&quot;;
 import { fauxFoundry } from &quot;../../mocks/fauxFoundry.js&quot;;
 import { Employee } from &quot;../../types/Employee.js&quot;;
@@ -1919,6 +1920,114 @@ export const WithDateTimePicker: Story = {
   },
 };
 
+const blueprintDialogFormContent: ReadonlyArray&lt;FormContentItem&gt; = [
+  field({
+    fieldKey: &quot;scheduledAt&quot;,
+    fieldComponent: &quot;DATETIME_PICKER&quot;,
+    label: &quot;Scheduled At&quot;,
+    fieldComponentProps: {
+      showTime: true,
+      placeholder: &quot;Select date and time&quot;,
+    },
+  }),
+  field({
+    fieldKey: &quot;deadline&quot;,
+    fieldComponent: &quot;DATETIME_PICKER&quot;,
+    label: &quot;Deadline&quot;,
+    fieldComponentProps: {
+      placeholder: &quot;Select date&quot;,
+    },
+  }),
+  field({
+    fieldKey: &quot;meetingWindow&quot;,
+    fieldComponent: &quot;DATE_RANGE_INPUT&quot;,
+    label: &quot;Meeting Window&quot;,
+    fieldComponentProps: {
+      showTime: true,
+      placeholderStart: &quot;Start&quot;,
+      placeholderEnd: &quot;End&quot;,
+    },
+  }),
+  field({
+    fieldKey: &quot;department&quot;,
+    fieldComponent: &quot;DROPDOWN&quot;,
+    label: &quot;Department&quot;,
+    isRequired: true,
+    fieldComponentProps: {
+      items: DEPARTMENT_ITEMS,
+      placeholder: &quot;Select department...&quot;,
+    },
+  }),
+  field({
+    fieldKey: &quot;team&quot;,
+    fieldComponent: &quot;DROPDOWN&quot;,
+    label: &quot;Team&quot;,
+    fieldComponentProps: {
+      items: DEPARTMENT_ITEMS,
+      isSearchable: true,
+      placeholder: &quot;Search teams...&quot;,
+    },
+  }),
+];
+
+function BlueprintDialogBaseForm(): React.ReactElement {
+  const [isOpen, setIsOpen] = useState(false);
+  const portalContainerRef = useRef&lt;HTMLDivElement&gt;(null);
+
+  const handleOpen = useCallback(() =&gt; {
+    setIsOpen(true);
+  }, []);
+
+  const handleClose = useCallback(() =&gt; {
+    setIsOpen(false);
+  }, []);
+
+  return (
+    &lt;&gt;
+      &lt;Button text=&quot;Open dialog&quot; onClick={handleOpen} /&gt;
+      &lt;Dialog
+        className=&quot;osdkBlueprintDialogForm&quot;
+        isOpen={isOpen}
+        onClose={handleClose}
+        title=&quot;Action form&quot;
+      &gt;
+        &lt;div ref={portalContainerRef}&gt;
+          &lt;BaseForm
+            formContent={blueprintDialogFormContent}
+            onSubmit={handleSubmit}
+            portalContainer={portalContainerRef}
+          /&gt;
+        &lt;/div&gt;
+      &lt;/Dialog&gt;
+    &lt;/&gt;
+  );
+}
+
+export const InsideBlueprintDialog: Story = {
+  render: () =&gt; &lt;BlueprintDialogBaseForm /&gt;,
+  parameters: {
+    docs: {
+      source: {
+        code: `function BlueprintDialogBaseForm() {
+  const portalContainerRef = useRef(null);
+
+  return (
+    &lt;Dialog isOpen={true} title=&quot;Action form&quot;&gt;
+      &lt;div ref={portalContainerRef}&gt;
+        &lt;BaseForm
+          formContent={formContent}
+          onSubmit={handleSubmit}
+          portalContainer={portalContainerRef}
+        /&gt;
+      &lt;/div&gt;
+    &lt;/Dialog&gt;
+  );
+}`,
+      },
+    },
+  },
+};
+
 const dateRangeFormContent: ReadonlyArray&lt;FormContentItem&gt; = [
   field({
     fieldKey: &quot;vacationDates&quot;,
@@ -2494,7 +2603,8 @@ export const WithGridSection: Story = {
                 <div class="row">
                   <span class="ex-name">Imports</span>
                 </div>
-                <pre><code>import { BaseForm } from "@osdk/react-components-storybook";</code></pre>
+                <pre><code>import { BaseForm } from "@osdk/react-components-storybook";
+import { Button, Dialog } from "@blueprintjs/core";</code></pre>
               </div>
           
           
@@ -2617,6 +2727,15 @@ export const WithGridSection: Story = {
               
               
               <pre><code>const WithDateTimePicker = () =&gt; &lt;BaseForm formContent={dateTimeFormContent} onSubmit={handleSubmit} /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Inside Blueprint Dialog</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const InsideBlueprintDialog = () =&gt; &lt;BlueprintDialogBaseForm /&gt;;</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
@@ -13175,7 +13294,7 @@ export const BannerOnly: Story = {
       <div class="badges">
         <label for="c-error-1-experimental-baseform-err" class="badge err as-toggle">prop type error</label>
         <label for="c-error-1-experimental-baseform-info" class="badge info as-toggle">1 info</label>
-        <label for="c-error-1-experimental-baseform-stories" class="badge ok as-toggle">21 stories</label>
+        <label for="c-error-1-experimental-baseform-stories" class="badge ok as-toggle">22 stories</label>
       </div>
     </div>
     <div class="meta" title="./src/stories/ActionForm/BaseForm.stories.tsx">experimental-baseform · ./src/stories/ActionForm/BaseForm.stories.tsx</div>
@@ -13197,13 +13316,13 @@ export const BannerOnly: Story = {
     <div class="note err">
       <div class="note-title">Prop type error</div>
       <div class="note-body"><pre><code>No component file found for the &quot;BaseForm&quot; component.
-  179 | }
-  180 |
-&gt; 181 | const meta: Meta&lt;BaseFormStoryProps&gt; = {
+  180 | }
+  181 |
+&gt; 182 | const meta: Meta&lt;BaseFormStoryProps&gt; = {
       | ^
-  182 |   title: &quot;Experimental/BaseForm&quot;,
-  183 |   tags: [&quot;experimental&quot;],
-  184 |   component: BaseForm,
+  183 |   title: &quot;Experimental/BaseForm&quot;,
+  184 |   tags: [&quot;experimental&quot;],
+  185 |   component: BaseForm,
 
 ./src/stories/ActionForm/BaseForm.stories.tsx:
 /*
@@ -13222,6 +13341,7 @@ export const BannerOnly: Story = {
  * limitations under the License.
  */
 
+import { Button, Dialog } from &quot;@blueprintjs/core&quot;;
 import type { ObjectSet, ObjectTypeDefinition } from &quot;@osdk/api&quot;;
 import type {
   FormContentItem,
@@ -13230,7 +13350,7 @@ import type {
 import { BaseForm } from &quot;@osdk/react-components/experimental&quot;;
 import { useOsdkClient } from &quot;@osdk/react/experimental&quot;;
 import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
-import React, { useCallback, useMemo, useState } from &quot;react&quot;;
+import React, { useCallback, useMemo, useRef, useState } from &quot;react&quot;;
 import { fn } from &quot;storybook/test&quot;;
 import { fauxFoundry } from &quot;../../mocks/fauxFoundry.js&quot;;
 import { Employee } from &quot;../../types/Employee.js&quot;;
@@ -14192,6 +14312,114 @@ export const WithDateTimePicker: Story = {
   },
 };
 
+const blueprintDialogFormContent: ReadonlyArray&lt;FormContentItem&gt; = [
+  field({
+    fieldKey: &quot;scheduledAt&quot;,
+    fieldComponent: &quot;DATETIME_PICKER&quot;,
+    label: &quot;Scheduled At&quot;,
+    fieldComponentProps: {
+      showTime: true,
+      placeholder: &quot;Select date and time&quot;,
+    },
+  }),
+  field({
+    fieldKey: &quot;deadline&quot;,
+    fieldComponent: &quot;DATETIME_PICKER&quot;,
+    label: &quot;Deadline&quot;,
+    fieldComponentProps: {
+      placeholder: &quot;Select date&quot;,
+    },
+  }),
+  field({
+    fieldKey: &quot;meetingWindow&quot;,
+    fieldComponent: &quot;DATE_RANGE_INPUT&quot;,
+    label: &quot;Meeting Window&quot;,
+    fieldComponentProps: {
+      showTime: true,
+      placeholderStart: &quot;Start&quot;,
+      placeholderEnd: &quot;End&quot;,
+    },
+  }),
+  field({
+    fieldKey: &quot;department&quot;,
+    fieldComponent: &quot;DROPDOWN&quot;,
+    label: &quot;Department&quot;,
+    isRequired: true,
+    fieldComponentProps: {
+      items: DEPARTMENT_ITEMS,
+      placeholder: &quot;Select department...&quot;,
+    },
+  }),
+  field({
+    fieldKey: &quot;team&quot;,
+    fieldComponent: &quot;DROPDOWN&quot;,
+    label: &quot;Team&quot;,
+    fieldComponentProps: {
+      items: DEPARTMENT_ITEMS,
+      isSearchable: true,
+      placeholder: &quot;Search teams...&quot;,
+    },
+  }),
+];
+
+function BlueprintDialogBaseForm(): React.ReactElement {
+  const [isOpen, setIsOpen] = useState(false);
+  const portalContainerRef = useRef&lt;HTMLDivElement&gt;(null);
+
+  const handleOpen = useCallback(() =&gt; {
+    setIsOpen(true);
+  }, []);
+
+  const handleClose = useCallback(() =&gt; {
+    setIsOpen(false);
+  }, []);
+
+  return (
+    &lt;&gt;
+      &lt;Button text=&quot;Open dialog&quot; onClick={handleOpen} /&gt;
+      &lt;Dialog
+        className=&quot;osdkBlueprintDialogForm&quot;
+        isOpen={isOpen}
+        onClose={handleClose}
+        title=&quot;Action form&quot;
+      &gt;
+        &lt;div ref={portalContainerRef}&gt;
+          &lt;BaseForm
+            formContent={blueprintDialogFormContent}
+            onSubmit={handleSubmit}
+            portalContainer={portalContainerRef}
+          /&gt;
+        &lt;/div&gt;
+      &lt;/Dialog&gt;
+    &lt;/&gt;
+  );
+}
+
+export const InsideBlueprintDialog: Story = {
+  render: () =&gt; &lt;BlueprintDialogBaseForm /&gt;,
+  parameters: {
+    docs: {
+      source: {
+        code: `function BlueprintDialogBaseForm() {
+  const portalContainerRef = useRef(null);
+
+  return (
+    &lt;Dialog isOpen={true} title=&quot;Action form&quot;&gt;
+      &lt;div ref={portalContainerRef}&gt;
+        &lt;BaseForm
+          formContent={formContent}
+          onSubmit={handleSubmit}
+          portalContainer={portalContainerRef}
+        /&gt;
+      &lt;/div&gt;
+    &lt;/Dialog&gt;
+  );
+}`,
+      },
+    },
+  },
+};
+
 const dateRangeFormContent: ReadonlyArray&lt;FormContentItem&gt; = [
   field({
     fieldKey: &quot;vacationDates&quot;,
@@ -14767,7 +14995,8 @@ export const WithGridSection: Story = {
                 <div class="row">
                   <span class="ex-name">Imports</span>
                 </div>
-                <pre><code>import { BaseForm } from "@osdk/react-components-storybook";</code></pre>
+                <pre><code>import { BaseForm } from "@osdk/react-components-storybook";
+import { Button, Dialog } from "@blueprintjs/core";</code></pre>
               </div>
           
           
@@ -14890,6 +15119,15 @@ export const WithGridSection: Story = {
               
               
               <pre><code>const WithDateTimePicker = () =&gt; &lt;BaseForm formContent={dateTimeFormContent} onSubmit={handleSubmit} /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Inside Blueprint Dialog</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const InsideBlueprintDialog = () =&gt; &lt;BlueprintDialogBaseForm /&gt;;</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
