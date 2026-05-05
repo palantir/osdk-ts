@@ -99,6 +99,8 @@ function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
           filterState={filterState}
           onFilterStateChanged={onFilterStateChanged}
           whereClause={whereClause}
+          formatDate={definition.formatDate}
+          parseDate={definition.parseDate}
         />
       );
 
@@ -137,6 +139,8 @@ function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
         <SingleDateFilterInput
           filterState={filterState}
           onFilterStateChanged={onFilterStateChanged}
+          formatDate={definition.formatDate}
+          parseDate={definition.parseDate}
         />
       );
 
@@ -145,6 +149,8 @@ function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
         <MultiDateFilterInput
           filterState={filterState}
           onFilterStateChanged={onFilterStateChanged}
+          formatDate={definition.formatDate}
+          parseDate={definition.parseDate}
         />
       );
 
@@ -190,6 +196,8 @@ function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
           <TimelineFilterInput
             filterState={filterState}
             onFilterStateChanged={onFilterStateChanged}
+            formatDate={definition.formatDate}
+            parseDate={definition.parseDate}
           />
         </FilterInputExcludeRow>
       );

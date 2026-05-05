@@ -21,11 +21,15 @@ import type { FilterState } from "../FilterListItemApi.js";
 interface MultiDateFilterInputProps {
   filterState: FilterState | undefined;
   onFilterStateChanged: (state: FilterState) => void;
+  formatDate?: (date: Date) => string;
+  parseDate?: (text: string) => Date | undefined;
 }
 
 function MultiDateFilterInputInner({
   filterState,
   onFilterStateChanged,
+  formatDate,
+  parseDate,
 }: MultiDateFilterInputProps): React.ReactElement {
   const selectedDates = useMemo(
     () =>
@@ -48,7 +52,12 @@ function MultiDateFilterInputInner({
   );
 
   return (
-    <MultiDateInput selectedDates={selectedDates} onChange={handleChange} />
+    <MultiDateInput
+      selectedDates={selectedDates}
+      onChange={handleChange}
+      formatDate={formatDate}
+      parseDate={parseDate}
+    />
   );
 }
 

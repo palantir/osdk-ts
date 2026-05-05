@@ -33,6 +33,8 @@ interface DateRangeFilterInputProps<Q extends ObjectTypeDefinition> {
   filterState: FilterState | undefined;
   onFilterStateChanged: (state: FilterState) => void;
   whereClause: WhereClause<Q>;
+  formatDate?: (date: Date) => string;
+  parseDate?: (text: string) => Date | undefined;
 }
 
 function DateRangeFilterInputInner<Q extends ObjectTypeDefinition>({
@@ -42,6 +44,8 @@ function DateRangeFilterInputInner<Q extends ObjectTypeDefinition>({
   filterState,
   onFilterStateChanged,
   whereClause,
+  formatDate,
+  parseDate,
 }: DateRangeFilterInputProps<Q>): React.ReactElement {
   const dateRangeState = filterState?.type === "DATE_RANGE"
     ? filterState
@@ -167,6 +171,8 @@ function DateRangeFilterInputInner<Q extends ObjectTypeDefinition>({
         minValue={dateRangeState?.minValue}
         maxValue={dateRangeState?.maxValue}
         onChange={handleRangeChange}
+        formatDate={formatDate}
+        parseDate={parseDate}
       />
     </NullValueWrapper>
   );

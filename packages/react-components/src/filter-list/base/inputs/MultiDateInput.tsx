@@ -34,6 +34,10 @@ interface MultiDateInputProps {
   minDate?: Date;
   maxDate?: Date;
   showClearAll?: boolean;
+  /** Optional callback used for chip text. */
+  formatDate?: (date: Date) => string;
+  /** Reserved for future custom text-entry inputs; not invoked by the built-in HTML `<input type="date">`. */
+  parseDate?: (text: string) => Date | undefined;
 }
 
 function MultiDateInputInner({
@@ -44,7 +48,9 @@ function MultiDateInputInner({
   minDate,
   maxDate,
   showClearAll = true,
+  formatDate,
 }: MultiDateInputProps): React.ReactElement {
+  const renderDate = formatDate ?? formatDateForDisplay;
   const addDate = useCallback(
     (date: Date) => {
       const dateStr = formatDateForInput(date);
@@ -91,12 +97,12 @@ function MultiDateInputInner({
         <div className={sharedStyles.tagContainer}>
           {selectedDates.map((date) => (
             <span key={date.toISOString()} className={sharedStyles.tag}>
-              {formatDateForDisplay(date)}
+              {renderDate(date)}
               <Button
                 className={sharedStyles.tagRemove}
                 onClick={() =>
                   removeDate(date)}
-                aria-label={`Remove ${formatDateForDisplay(date)}`}
+                aria-label={`Remove ${renderDate(date)}`}
               >
                 ×
               </Button>

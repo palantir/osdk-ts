@@ -208,13 +208,38 @@ export interface ToggleFilterState extends BaseFilterState {
 }
 
 /**
- * A property filter definition specifies configuration for filtering on a single property
+ * Optional date formatting/parsing callbacks. Mixed into
+ * `PropertyFilterDefinition` only when the property is `datetime` or
+ * `timestamp` — see {@link PropertyFilterDateExtras}.
  *
- * The component type C must be compatible with the property type derived from the key.
- * For example, boolean properties can only use LISTOGRAM or SINGLE_SELECT,
- * while string properties can use LISTOGRAM, TEXT_TAGS, CONTAINS_TEXT, SINGLE_SELECT, or MULTI_SELECT.
+ * Display surfaces (date-range histogram tooltip, multi-date chip text,
+ * timeline labels) call `formatDate` when provided; otherwise dates render
+ * via the default locale-aware formatter.
+ *
+ * `parseDate` is the inverse of `formatDate`. It is plumbed through for
+ * consumers that build text-based date inputs but is not invoked by the
+ * built-in HTML `<input type="date">` controls (the browser handles those).
+ *
+ * Both functions receive/return `Date` instances in local time. If the
+ * property is a UTC ISO string and you want a different timezone, do that
+ * conversion inside your callback.
  */
-export interface PropertyFilterDefinition<
+export interface DateFormattingProps {
+  formatDate?: (date: Date) => string;
+  parseDate?: (text: string) => Date | undefined;
+}
+
+/**
+ * Conditionally adds `formatDate` / `parseDate` to a property filter
+ * definition only for `datetime` / `timestamp` properties. For other
+ * property types these fields are typed as `never` so attempting to set
+ * them is a TypeScript error.
+ */
+export type PropertyFilterDateExtras<P extends WirePropertyTypes> = P extends
+  "datetime" | "timestamp" ? DateFormattingProps
+  : { formatDate?: never; parseDate?: never };
+
+interface PropertyFilterDefinitionBase<
   Q extends ObjectTypeDefinition,
   K extends PropertyKeys<Q> = PropertyKeys<Q>,
   C extends ValidComponentsForPropertyType<
@@ -295,16 +320,36 @@ export interface PropertyFilterDefinition<
 }
 
 /**
- * Props for a single filter list item component.
- * Extends PropertyFilterDefinition with runtime props for rendering.
+ * A property filter definition specifies configuration for filtering on a single property
+ *
+ * The component type C must be compatible with the property type derived from the key.
+ * For example, boolean properties can only use LISTOGRAM or SINGLE_SELECT,
+ * while string properties can use LISTOGRAM, TEXT_TAGS, CONTAINS_TEXT, SINGLE_SELECT, or MULTI_SELECT.
+ *
+ * Date and datetime properties may additionally specify `formatDate` and `parseDate` — see
+ * {@link PropertyFilterDateExtras}.
  */
-export interface FilterListItemProps<
+export type PropertyFilterDefinition<
   Q extends ObjectTypeDefinition,
   K extends PropertyKeys<Q> = PropertyKeys<Q>,
   C extends ValidComponentsForPropertyType<
     PropertyTypeFromKey<Q, K>
   > = ValidComponentsForPropertyType<PropertyTypeFromKey<Q, K>>,
-> extends PropertyFilterDefinition<Q, K, C> {
+> =
+  & PropertyFilterDefinitionBase<Q, K, C>
+  & PropertyFilterDateExtras<PropertyTypeFromKey<Q, K>>;
+
+/**
+ * Props for a single filter list item component.
+ * Extends PropertyFilterDefinition with runtime props for rendering.
+ */
+export type FilterListItemProps<
+  Q extends ObjectTypeDefinition,
+  K extends PropertyKeys<Q> = PropertyKeys<Q>,
+  C extends ValidComponentsForPropertyType<
+    PropertyTypeFromKey<Q, K>
+  > = ValidComponentsForPropertyType<PropertyTypeFromKey<Q, K>>,
+> = PropertyFilterDefinition<Q, K, C> & {
   objectSet: ObjectSet<Q>;
 
   /**
@@ -314,4 +359,4 @@ export interface FilterListItemProps<
   onFilterStateChanged: (state: FilterStateByComponentType[C]) => void;
 
   onFilterRemoved?: (key: PropertyKeys<Q>) => void;
-}
+};
