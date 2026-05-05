@@ -18,20 +18,41 @@
 
 import type { SeedOutput } from "@osdk/seed-helpers";
 import { describe, expect, it } from "vitest";
-import {
-  buildSchemaMap,
-  mergeSeedOutputs,
-  validateStringFormats,
-} from "./compileSeedData.js";
+import { mergeSeedOutputs, validateSeedOutput } from "./compileSeedData.js";
+import type { SchemaMap } from "./schema.js";
 
 const makeOutput = (
   objects: SeedOutput["objects"],
   links: SeedOutput["links"] = [],
 ): SeedOutput => ({ objects, links });
 
+/** Builds a minimal SchemaMap fixture with Employee and Department. */
+function fixtureSchema(): SchemaMap {
+  const employeeProps = new Map<string, string>([
+    ["employeeId", "string"],
+    ["firstName", "string"],
+    ["age", "integer"],
+    ["createdAt", "timestamp"],
+    ["score", "long"],
+  ]);
+  const departmentProps = new Map<string, string>([
+    ["departmentId", "string"],
+    ["name", "string"],
+  ]);
+  return new Map([
+    ["Employee", {
+      properties: employeeProps,
+      primaryKeyApiName: "employeeId",
+    }],
+    [
+      "Department",
+      { properties: departmentProps, primaryKeyApiName: "departmentId" },
+    ],
+  ]);
+}
+
 describe("mergeSeedOutputs", () => {
-  // Build schema map once from the shared mock ontology.
-  const schema = buildSchemaMap(mockOntology());
+  const schema = fixtureSchema();
 
   it("should return the single output unchanged", () => {
     const output = makeOutput({
@@ -121,179 +142,76 @@ describe("mergeSeedOutputs", () => {
   });
 });
 
-// Minimal mock of OntologyBlockDataV2 shape
-function mockOntology() {
-  return {
-    objectTypes: {
-      "ri.ot.employee": {
-        objectType: {
-          apiName: "Employee",
-          rid: "ri.ot.employee",
-          id: "employee",
-          primaryKeys: ["ri.pt.employeeId"],
-          propertyTypes: {
-            "ri.pt.employeeId": {
-              apiName: "employeeId",
-              rid: "ri.pt.employeeId",
-              type: { type: "string", string: {} },
-            },
-            "ri.pt.firstName": {
-              apiName: "firstName",
-              rid: "ri.pt.firstName",
-              type: { type: "string", string: {} },
-            },
-            "ri.pt.age": {
-              apiName: "age",
-              rid: "ri.pt.age",
-              type: { type: "integer", integer: {} },
-            },
-            "ri.pt.createdAt": {
-              apiName: "createdAt",
-              rid: "ri.pt.createdAt",
-              type: { type: "timestamp", timestamp: {} },
-            },
-            "ri.pt.score": {
-              apiName: "score",
-              rid: "ri.pt.score",
-              type: { type: "long", long: {} },
-            },
-          },
-          titlePropertyTypeRid: "ri.pt.firstName",
-          displayMetadata: {},
-          status: "ACTIVE",
-          implementsInterfaces: [],
-          implementsInterfaces2: [],
-          allImplementsInterfaces: {},
-          traits: {},
-          typeGroups: [],
-        },
-        datasources: [],
-        writebackDatasets: [],
-      },
-      "ri.ot.department": {
-        objectType: {
-          apiName: "Department",
-          rid: "ri.ot.department",
-          id: "department",
-          primaryKeys: ["ri.pt.deptId"],
-          propertyTypes: {
-            "ri.pt.deptId": {
-              apiName: "departmentId",
-              rid: "ri.pt.deptId",
-              type: { type: "string", string: {} },
-            },
-            "ri.pt.deptName": {
-              apiName: "name",
-              rid: "ri.pt.deptName",
-              type: { type: "string", string: {} },
-            },
-          },
-          titlePropertyTypeRid: "ri.pt.deptName",
-          displayMetadata: {},
-          status: "ACTIVE",
-          implementsInterfaces: [],
-          implementsInterfaces2: [],
-          allImplementsInterfaces: {},
-          traits: {},
-          typeGroups: [],
-        },
-        datasources: [],
-        writebackDatasets: [],
-      },
-    },
-    linkTypes: {
-      "ri.lt.emp-dept": {
-        linkType: {
-          id: "empDept",
-          rid: "ri.lt.emp-dept",
-          definition: {
-            objectTypeA: { objectTypeApiName: "Employee" },
-            objectTypeB: { objectTypeApiName: "Department" },
-            linkTypeApiNameAtoB: "department",
-            linkTypeApiNameBtoA: "employees",
-          },
-          status: "ACTIVE",
-        },
-        datasources: [],
-      },
-    },
-  } as any;
-}
-
-describe("buildSchemaMap", () => {
-  it("should throw when object type has no resolvable primary key", () => {
-    const brokenOntology = {
-      objectTypes: {
-        "ri.ot.broken": {
-          objectType: {
-            apiName: "Broken",
-            rid: "ri.ot.broken",
-            id: "broken",
-            primaryKeys: [],
-            propertyTypes: {},
-            titlePropertyTypeRid: "",
-            displayMetadata: {},
-            status: "ACTIVE",
-            implementsInterfaces: [],
-            implementsInterfaces2: [],
-            allImplementsInterfaces: {},
-            traits: {},
-            typeGroups: [],
-          },
-          datasources: [],
-          writebackDatasets: [],
-        },
-      },
-      linkTypes: {},
-    } as any;
-
-    expect(() => buildSchemaMap(brokenOntology)).toThrow(
-      /Object type 'Broken' has no resolvable primary key API name/,
-    );
-  });
-});
-
-describe("validateStringFormats", () => {
-  const schema = buildSchemaMap(mockOntology());
+describe("validateSeedOutput", () => {
+  const schema = fixtureSchema();
 
   it("should pass for valid seed data", () => {
     const output = makeOutput({
       Employee: [{ employeeId: "emp-001", firstName: "Alice", age: 30 }],
     });
-    expect(() => validateStringFormats(output, schema)).not.toThrow();
+    expect(() => validateSeedOutput(output, schema)).not.toThrow();
   });
 
-  it("should skip unknown object types silently", () => {
+  it("should throw on unknown object types", () => {
     const output = makeOutput({ Ghost: [{ id: "1" }] });
-    expect(() => validateStringFormats(output, schema)).not.toThrow();
+    expect(() => validateSeedOutput(output, schema)).toThrow(
+      /Object type 'Ghost' in seed data is not defined in the ontology/,
+    );
   });
 
-  it("should skip unknown property names silently", () => {
+  it("should throw on unknown property names", () => {
     const output = makeOutput({
       Employee: [{ employeeId: "emp-001", badProp: "x" }],
     });
-    expect(() => validateStringFormats(output, schema)).not.toThrow();
+    expect(() => validateSeedOutput(output, schema)).toThrow(
+      /Property 'badProp' on 'Employee' object \(index 0\) is not defined in the ontology/,
+    );
   });
 
-  it("should skip null property values", () => {
+  it("should throw on null property values", () => {
     const output = makeOutput({
       Employee: [{ employeeId: "emp-001", firstName: null }],
     });
-    expect(() => validateStringFormats(output, schema)).not.toThrow();
+    expect(() => validateSeedOutput(output, schema)).toThrow(
+      /Property 'firstName' on 'Employee' object \(index 0\) is null or undefined/,
+    );
   });
 
-  it("should skip non-string values", () => {
+  it("should pass when JS type matches the wire type", () => {
+    // age is integer (number-typed) and 30 is a number; firstName is string
+    // and "Alice" is a string. Both pass the JS-type check.
     const output = makeOutput({
-      Employee: [{ employeeId: "emp-001", age: 30 }],
+      Employee: [{ employeeId: "emp-001", firstName: "Alice", age: 30 }],
     });
-    expect(() => validateStringFormats(output, schema)).not.toThrow();
+    expect(() => validateSeedOutput(output, schema)).not.toThrow();
+  });
+
+  it("should throw when a string-encoded wire type gets a non-string", () => {
+    // createdAt is a timestamp (string-encoded). Passing a number is a
+    // type-system violation that only `as any` callers can produce.
+    const output = makeOutput({
+      Employee: [{ employeeId: "emp-001", createdAt: 12345 }],
+    });
+    expect(() => validateSeedOutput(output, schema)).toThrow(
+      /Property 'createdAt' on 'Employee' object \(index 0\) expects timestamp \(a string\) but got number/,
+    );
+  });
+
+  it("should throw when a number-typed wire type gets a string", () => {
+    // age is an integer; passing a string is a type-system violation.
+    const output = makeOutput({
+      Employee: [{ employeeId: "emp-001", age: "30" }],
+    });
+    expect(() => validateSeedOutput(output, schema)).toThrow(
+      /Property 'age' on 'Employee' object \(index 0\) expects integer \(a number\) but got string/,
+    );
   });
 
   it("should error on invalid timestamp format", () => {
     const output = makeOutput({
       Employee: [{ employeeId: "emp-001", createdAt: "qdeqd" }],
     });
-    expect(() => validateStringFormats(output, schema)).toThrow(
+    expect(() => validateSeedOutput(output, schema)).toThrow(
       /property 'createdAt' has invalid timestamp format: 'qdeqd'/,
     );
   });
@@ -302,14 +220,14 @@ describe("validateStringFormats", () => {
     const output = makeOutput({
       Employee: [{ employeeId: "emp-001", createdAt: "2025-01-01T00:00:00Z" }],
     });
-    expect(() => validateStringFormats(output, schema)).not.toThrow();
+    expect(() => validateSeedOutput(output, schema)).not.toThrow();
   });
 
   it("should error on invalid long format", () => {
     const output = makeOutput({
       Employee: [{ employeeId: "emp-001", score: "not-a-number" }],
     });
-    expect(() => validateStringFormats(output, schema)).toThrow(
+    expect(() => validateSeedOutput(output, schema)).toThrow(
       /property 'score' has invalid long format/,
     );
   });
@@ -318,7 +236,7 @@ describe("validateStringFormats", () => {
     const output = makeOutput({
       Employee: [{ employeeId: "emp-001", score: "9007199254740993" }],
     });
-    expect(() => validateStringFormats(output, schema)).not.toThrow();
+    expect(() => validateSeedOutput(output, schema)).not.toThrow();
   });
 
   it("should report all format errors at once", () => {
@@ -328,7 +246,7 @@ describe("validateStringFormats", () => {
       ],
     });
     try {
-      validateStringFormats(output, schema);
+      validateSeedOutput(output, schema);
       expect.unreachable("should have thrown");
     } catch (e: unknown) {
       const msg = (e as Error).message;

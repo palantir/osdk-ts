@@ -14,35 +14,57 @@
  * limitations under the License.
  */
 
-import type { OntologyBlockDataV2 } from "@osdk/client.unstable";
 import type { SeedLinkEntry, SeedOutput } from "@osdk/seed-helpers";
 import { consola } from "consola";
 import { createJiti } from "jiti";
 import * as fs from "node:fs";
 import * as path from "node:path";
+import type { SchemaMap } from "./schema.js";
 
 /**
- * Minimal schema for one object type — only what the compiler needs.
- *
- * - `properties`: property API name → wire type (e.g. `"timestamp"`, `"long"`),
- *   used for string format validation.
- * - `primaryKeyApiName`: PK field name (for cross-file duplicate detection in merge).
+ * One string-format validation failure (e.g., a timestamp value that doesn't
+ * match the wire format regex). Format failures are collected across the
+ * whole output and reported together at the end so users can fix many
+ * content mistakes in one pass. Structural failures (unknown object type,
+ * unknown property name, null value, wrong JS type) throw immediately
+ * instead — they're not aggregated, so they don't need this struct.
  */
-interface ObjectTypeSchema {
-  properties: Map<string, string>;
-  primaryKeyApiName: string;
-}
-
-/** Maps object type API name → its schema. */
-type SchemaMap = Map<string, ObjectTypeSchema>;
-
-/** A single string format validation failure. */
 interface FormatError {
   objectType: string;
   objectIndex: number;
   field: string;
   message: string;
 }
+
+/**
+ * Expected runtime JS type for each cataloged wire type.
+ *
+ * Used to fail fast on `as any` callers that pass a value of the wrong shape
+ * (e.g., `age: "30"` when `age` is an integer). Wire types not listed here
+ * are not strictly typed by this validator — currently `attachment`,
+ * `mediaReference`, `geopoint`, `geoshape`, `vector`, `array`, `struct`,
+ * which have non-primitive runtime shapes that need bespoke validation.
+ */
+const EXPECTED_JS_TYPE: Record<string, "string" | "number" | "boolean"> = {
+  // string-encoded primitives
+  string: "string",
+  marking: "string",
+  timestamp: "string",
+  date: "string",
+  datetime: "string",
+  long: "string",
+  decimal: "string",
+  ipAddress: "string",
+  cipherText: "string",
+  // numeric primitives
+  integer: "number",
+  byte: "number",
+  short: "number",
+  double: "number",
+  float: "number",
+  // boolean
+  boolean: "boolean",
+};
 
 /**
  * Regex patterns for string-encoded wire types that TypeScript cannot validate.
@@ -86,18 +108,22 @@ const WIRE_TYPE_FORMAT: Record<string, { pattern: RegExp; example: string }> = {
 /**
  * Compiles one or more seed data files into a single merged JSON output.
  *
- * Pipeline: load each file → merge → validate string formats → write JSON.
+ * Pipeline: load each file → merge → validate against schema → write JSON.
  *
  * @param seedFiles - Absolute paths to seed `.mts` / `.ts` files.
  * @param outputPath - Where to write the merged seed JSON.
- * @param ontology - The compiled ontology block data (for schema-aware validation).
- * @throws if any seed file fails to compile, has an invalid export, contains
- *         duplicate PKs across files, or has invalid string format values.
+ * @param schema - Per-object-type schema, typically built from
+ *                 {@link import("./schema.js").schemaFromMetadata}.
+ * @throws if any seed file fails to compile or has an invalid export, if any
+ *         object type or property name is unknown to the schema, if any
+ *         primary key is duplicated across files, if any property value is
+ *         null/undefined or has the wrong JS type, or if any string-encoded
+ *         value has an invalid format.
  */
 export async function compileSeedData(
   seedFiles: string[],
   outputPath: string,
-  ontology: OntologyBlockDataV2,
+  schema: SchemaMap,
 ): Promise<void> {
   consola.info(`Compiling seed data from ${seedFiles.length} file(s)...`);
 
@@ -106,9 +132,8 @@ export async function compileSeedData(
     outputs.push(await loadSeedFile(seedFile));
   }
 
-  const schemaMap = buildSchemaMap(ontology);
-  const merged = mergeSeedOutputs(outputs, schemaMap);
-  validateStringFormats(merged, schemaMap);
+  const merged = mergeSeedOutputs(outputs, schema);
+  validateSeedOutput(merged, schema);
 
   const totalObjects = Object.values(merged.objects)
     .reduce((sum, arr) => sum + arr.length, 0);
@@ -120,45 +145,6 @@ export async function compileSeedData(
   consola.success(
     `Seed data compiled successfully (${totalObjects} objects, ${merged.links.length} links)`,
   );
-}
-
-/**
- * Builds a lookup map from the ontology block data.
- *
- * The ontology's `objectTypes` is keyed by RID (not API name), so we iterate
- * all entries and index by `objectType.apiName` for O(1) lookup during
- * validation and merge.
- */
-export function buildSchemaMap(ontology: OntologyBlockDataV2): SchemaMap {
-  const map: SchemaMap = new Map();
-
-  for (const block of Object.values(ontology.objectTypes)) {
-    const ot = block.objectType;
-    const apiName = ot.apiName;
-    if (!apiName) continue;
-
-    const properties = new Map<string, string>();
-    for (const prop of Object.values(ot.propertyTypes)) {
-      if (prop.apiName) {
-        properties.set(prop.apiName, prop.type.type);
-      }
-    }
-
-    const pkRid = ot.primaryKeys[0];
-    const pkProp = pkRid ? ot.propertyTypes[pkRid] : undefined;
-    const primaryKeyApiName = pkProp?.apiName ?? undefined;
-
-    if (!primaryKeyApiName) {
-      throw new Error(
-        `Object type '${apiName}' has no resolvable primary key API name. `
-          + `The ontology definition may be broken.`,
-      );
-    }
-
-    map.set(apiName, { properties, primaryKeyApiName });
-  }
-
-  return map;
 }
 
 /**
@@ -256,24 +242,36 @@ function getOrInit<K, V>(map: Map<K, V>, key: K, init: () => V): V {
 }
 
 /**
- * Validates string-encoded property values against the ontology schema.
+ * Validates the seed output against the ontology schema.
  *
- * All other seed data checks — object type existence, property names, JS value
- * types, link names, link targets, duplicate PKs, null PKs — are enforced at
- * compile time by the SeedBuilder's TypeScript generics or at runtime by the
- * builder itself. The one thing TypeScript cannot distinguish is whether a
- * `string` value matches its wire format (e.g., `"not-a-date"` vs `"2025-01-01T00:00:00Z"`
- * are both valid `string` to the type system).
+ * Hard errors (thrown immediately) for any of:
  *
- * This function fills that gap. It checks every string property value against
- * the format regex for its wire type (timestamp, date, datetime, long, decimal).
- * Properties with wire types that accept any string (e.g., `string`, `marking`)
- * are not checked. Non-string values, nulls, and unknown types/properties are
- * silently skipped — those are already guaranteed correct by the builder.
+ *   - Object types in the seed output not defined in the ontology.
+ *   - Property names on a seed object not defined on that type.
+ *   - `null`/`undefined` property values. Typed callers can't reach this
+ *     (the builder's `SeedProps<Q>` rejects `null`); any null at runtime is
+ *     a sign of `as any` or a hand-rolled output.
+ *   - JS type mismatches against the cataloged wire-type-to-JS-type map
+ *     (e.g., `age: "30"` when `age` is an integer, or `score: 30` when
+ *     `score` is a long).
  *
- * @throws Error listing all format failures grouped by object type.
+ * For wire types whose runtime shape this validator doesn't catalog
+ * (`attachment`, `mediaReference`, `geopoint`, `geoshape`, `vector`,
+ * `array`, `struct`), JS-type checking is skipped — they have non-primitive
+ * shapes that would need bespoke validation. They still go through the
+ * earlier object-type / property-name / null checks.
+ *
+ * After JS-type validation, string values are checked against the format
+ * regex for their wire type (timestamp, date, datetime, long, decimal).
+ * The one thing TypeScript cannot distinguish on its own is whether a
+ * `string` value matches its wire format (e.g., `"not-a-date"` vs
+ * `"2025-01-01T00:00:00Z"` are both valid `string` to the type system);
+ * format validation fills that gap.
+ *
+ * @throws Error on any structural violation listed above, or listing all
+ *         format failures grouped by object type.
  */
-export function validateStringFormats(
+export function validateSeedOutput(
   output: SeedOutput,
   schemaMap: SchemaMap,
 ): void {
@@ -291,26 +289,54 @@ function collectFormatErrors(
 
   for (const [apiName, objects] of Object.entries(output.objects)) {
     const schema = schemaMap.get(apiName);
-    if (!schema) continue;
+    if (!schema) {
+      throw new Error(
+        `Object type '${apiName}' in seed data is not defined in the ontology`,
+      );
+    }
 
     for (const [i, obj] of objects.entries()) {
       for (const [key, value] of Object.entries(obj)) {
-        if (value == null) continue;
-        if (typeof value !== "string") continue;
-
         const wireType = schema.properties.get(key);
-        if (!wireType) continue;
+        if (wireType === undefined) {
+          throw new Error(
+            `Property '${key}' on '${apiName}' object`
+              + ` (index ${i}) is not defined in the ontology`,
+          );
+        }
+
+        if (value == null) {
+          throw new Error(
+            `Property '${key}' on '${apiName}' object`
+              + ` (index ${i}) is null or undefined`,
+          );
+        }
+
+        const expectedJsType = EXPECTED_JS_TYPE[wireType];
+        if (expectedJsType !== undefined && typeof value !== expectedJsType) {
+          throw new Error(
+            `Property '${key}' on '${apiName}' object`
+              + ` (index ${i}) expects ${wireType} (a ${expectedJsType})`
+              + ` but got ${typeof value}`,
+          );
+        }
 
         const format = WIRE_TYPE_FORMAT[wireType];
         if (!format) continue;
-        if (format.pattern.test(value)) continue;
+
+        // Format regex only applies to string-encoded wire types, all of
+        // which have EXPECTED_JS_TYPE === "string"; the cast is safe here
+        // because the JS-type check above would have thrown otherwise.
+        if (format.pattern.test(value as string)) continue;
 
         errors.push({
           objectType: apiName,
           objectIndex: i,
           field: key,
           message: `property '${key}' has invalid ${wireType}`
-            + ` format: '${value}'. Expected format like '${format.example}'`,
+            + ` format: '${
+              String(value)
+            }'. Expected format like '${format.example}'`,
         });
       }
     }

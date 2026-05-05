@@ -51,8 +51,6 @@ export default async function main(
     apiNamespace: string;
     buildDir: string;
     randomnessKey?: string;
-    seedDir?: string;
-    seedOutput: string;
   } = await yargs(hideBin(args))
     .version(process.env.PACKAGE_VERSION ?? "")
     .wrap(Math.min(150, yargs().terminalWidth()))
@@ -88,19 +86,6 @@ export default async function main(
       randomnessKey: {
         describe: "Value used to assure uniqueness of entities",
         type: "string",
-      },
-      seedDir: {
-        describe:
-          "Directory containing seed data .mts files. All top-level .mts "
-          + "files are compiled (sorted by filename for deterministic output).",
-        type: "string" as const,
-        coerce: path.resolve,
-      },
-      seedOutput: {
-        describe: "Output path for compiled seed data JSON",
-        type: "string" as const,
-        default: "build/seed-data.json",
-        coerce: path.resolve,
       },
     })
     .parseAsync();
@@ -321,28 +306,6 @@ export default async function main(
   consola.info(
     `Block data directory: ${blockDataDir}`,
   );
-
-  if (commandLineOpts.seedDir !== undefined) {
-    const dir = commandLineOpts.seedDir;
-    const stat = fs.statSync(dir);
-    invariant(
-      stat.isDirectory(),
-      `--seedDir '${dir}' is not a directory`,
-    );
-    const seedFiles = fs.readdirSync(dir)
-      .filter((f) => f.endsWith(".mts"))
-      .sort()
-      .map((f) => path.join(dir, f));
-
-    if (seedFiles.length > 0) {
-      const { compileSeedData } = await import("./compileSeedData.js");
-      await compileSeedData(
-        seedFiles,
-        commandLineOpts.seedOutput,
-        ontologyIr.ontology,
-      );
-    }
-  }
 }
 
 async function loadOntology(

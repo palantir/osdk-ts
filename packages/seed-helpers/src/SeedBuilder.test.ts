@@ -42,27 +42,6 @@ const Product = {
   primaryKeyType: "integer" as const,
 };
 
-// Shorthand for calling link() without compile-time link-name constraints.
-const linkByRef = (
-  b: SeedBuilder,
-  name: string,
-  src: any,
-  srcLink: string,
-  dst: any,
-  dstLink: string,
-) => (b.link as any)(name, src, srcLink, dst, dstLink);
-
-const linkByPk = (
-  b: SeedBuilder,
-  name: string,
-  srcType: any,
-  srcPk: string | number,
-  srcLink: string,
-  dstType: any,
-  dstPk: string | number,
-  dstLink: string,
-) => (b.link as any)(name, srcType, srcPk, srcLink, dstType, dstPk, dstLink);
-
 describe("SeedBuilder", () => {
   let builder: SeedBuilder;
 
@@ -166,7 +145,7 @@ describe("SeedBuilder", () => {
       const emp = builder.add(Employee, { employeeId: "emp-001" });
       const dept = builder.add(Department, { departmentId: "dept-001" });
 
-      linkByRef(builder, "emp-dept", emp, "department", dept, "employees");
+      (builder.link as any)("emp-dept", emp, "department", dept, "employees");
 
       const output = builder.build();
       expect(output.links).toHaveLength(1);
@@ -185,7 +164,7 @@ describe("SeedBuilder", () => {
       const fake = { __objectTypeApiName: "Employee", __primaryKey: "emp-999" };
 
       expect(() =>
-        linkByRef(builder, "bad", fake, "department", dept, "employees")
+        (builder.link as any)("bad", fake, "department", dept, "employees")
       )
         .toThrow("Source 'Employee:emp-999' not registered (link 'bad')");
     });
@@ -198,7 +177,7 @@ describe("SeedBuilder", () => {
       };
 
       expect(() =>
-        linkByRef(builder, "bad", emp, "department", fake, "employees")
+        (builder.link as any)("bad", emp, "department", fake, "employees")
       )
         .toThrow("Target 'Department:dept-999' not registered (link 'bad')");
     });
@@ -209,8 +188,7 @@ describe("SeedBuilder", () => {
       builder.add(Employee, { employeeId: "emp-001" });
       builder.add(Department, { departmentId: "dept-001" });
 
-      linkByPk(
-        builder,
+      (builder.link as any)(
         "emp-dept",
         Employee,
         "emp-001",
@@ -236,8 +214,7 @@ describe("SeedBuilder", () => {
       builder.add(Product, { productId: 42 });
       builder.add(Department, { departmentId: "dept-001" });
 
-      linkByPk(
-        builder,
+      (builder.link as any)(
         "prod-dept",
         Product,
         42,
@@ -256,8 +233,7 @@ describe("SeedBuilder", () => {
       builder.add(Department, { departmentId: "dept-001" });
 
       expect(() =>
-        linkByPk(
-          builder,
+        (builder.link as any)(
           "bad",
           Employee,
           "emp-999",
@@ -273,8 +249,7 @@ describe("SeedBuilder", () => {
       builder.add(Employee, { employeeId: "emp-001" });
 
       expect(() =>
-        linkByPk(
-          builder,
+        (builder.link as any)(
           "bad",
           Employee,
           "emp-001",
@@ -293,9 +268,8 @@ describe("SeedBuilder", () => {
       builder.add(Employee, { employeeId: "emp-002" });
       const dept = builder.add(Department, { departmentId: "dept-001" });
 
-      linkByRef(builder, "by-ref", emp, "department", dept, "employees");
-      linkByPk(
-        builder,
+      (builder.link as any)("by-ref", emp, "department", dept, "employees");
+      (builder.link as any)(
         "by-pk",
         Employee,
         "emp-002",
@@ -372,8 +346,7 @@ describe("SeedBuilder", () => {
         __primaryKey: "emp-001",
       };
       expect(() =>
-        linkByRef(
-          builder,
+        (builder.link as any)(
           "bad",
           wrongRef,
           "employees",

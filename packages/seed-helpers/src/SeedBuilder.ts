@@ -146,23 +146,9 @@ export class SeedBuilder {
   /**
    * Register a link between two seed objects.
    *
-   * Two calling conventions are supported — both produce identical output.
-   *
-   * **By reference** — full compile-time safety on link names and target types:
-   * ```ts
-   * const prod = seed.add(Product, { pk: "prod-001", title: "Widget" });
-   * const alice = seed.add(Seller, { pk: "seller-001", name: "Alice" });
-   * seed.link("widget-seller", prod, "sellers", alice, "products");
-   * ```
-   *
-   * **By type + primary key** — no refs needed, useful for bulk or deferred linking:
-   * ```ts
-   * seed.link("widget-seller", Product, "prod-001", "sellers", Seller, "seller-001", "products");
-   * ```
-   *
-   * The `dstLinkName` parameter (the reverse link name) is required for
-   * compile-time target type validation but is not stored in the output —
-   * the downstream consumer resolves the reverse from the ontology schema.
+   * Supports two calling conventions that produce identical output:
+   * by-reference (passing `SeedRef`s returned from {@link add}) or by-type
+   * and primary-key. See the `@osdk/seed-compiler` README for usage examples.
    *
    * @param name - A descriptive label for this link (included in seed output and error messages).
    * @throws if either source or target object was not registered via {@link add}.
