@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObservableClient } from "@osdk/client/unstable-do-not-use";
+import type { ObservableClient } from "@osdk/client/observable";
 import { registerDevTools } from "@osdk/react/devtools-registry";
 import React from "react";
 import { SafeMonitoringPanel } from "./components/MonitoringPanel.js";

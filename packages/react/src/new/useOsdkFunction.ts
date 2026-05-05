@@ -21,14 +21,14 @@ import type {
   Osdk,
   QueryDefinition,
 } from "@osdk/api";
+import { getWireObjectSet } from "@osdk/client";
 import type {
   ObserveFunctionCallbackArgs,
   QueryParameterType,
-} from "@osdk/client/unstable-do-not-use";
-import { getWireObjectSet } from "@osdk/client/unstable-do-not-use";
+} from "@osdk/client/observable";
 import React from "react";
 import { devToolsMetadata, makeExternalStore } from "./makeExternalStore.js";
-import { OsdkContext2 } from "./OsdkContext2.js";
+import { OsdkContext } from "./OsdkContext.js";
 
 export interface UseOsdkFunctionOptions<Q extends QueryDefinition<unknown>> {
   /**
@@ -167,7 +167,7 @@ export function useOsdkFunction<Q extends QueryDefinition<unknown>>(
   queryDef: Q,
   options: UseOsdkFunctionOptions<Q> = {},
 ): UseOsdkFunctionResult<Q> {
-  const { observableClient } = React.useContext(OsdkContext2);
+  const { observableClient } = React.useContext(OsdkContext);
   const {
     params,
     dependsOn,

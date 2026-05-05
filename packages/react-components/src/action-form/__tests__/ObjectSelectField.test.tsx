@@ -63,16 +63,11 @@ vi.stubGlobal(
 
 vi.mock("@osdk/react", () => ({
   useOsdkMetadata: vi.fn(),
-}));
-
-vi.mock("@osdk/react/experimental", () => ({
   useOsdkObjects: vi.fn(),
 }));
 
-const { useOsdkMetadata } = await import("@osdk/react");
+const { useOsdkMetadata, useOsdkObjects } = await import("@osdk/react");
 const mockUseOsdkMetadata = vi.mocked(useOsdkMetadata);
-
-const { useOsdkObjects } = await import("@osdk/react/experimental");
 const mockUseOsdkObjects = vi.mocked(useOsdkObjects);
 
 // The full return type is UseOsdkListResult<ObjectTypeDefinition> whose `data`

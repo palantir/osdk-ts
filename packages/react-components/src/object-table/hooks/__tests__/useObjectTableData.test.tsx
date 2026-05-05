@@ -24,9 +24,8 @@ import type {
   WhereClause,
 } from "@osdk/api";
 import type { Client } from "@osdk/client";
-import { OsdkProvider } from "@osdk/react";
-import type { UseOsdkListResult } from "@osdk/react/experimental";
-import { useObjectSet, useOsdkObjects } from "@osdk/react/experimental";
+import { useObjectSet, useOsdkObjects } from "@osdk/react";
+import { fakeObservableClient, TestOsdkProvider } from "@osdk/react/testing";
 import type { SortingState } from "@tanstack/react-table";
 import { renderHook } from "@testing-library/react";
 import * as React from "react";
@@ -43,20 +42,15 @@ const TestObjectType = {
 type TestObject = typeof TestObjectType;
 type TestObjectKeys = PropertyKeys<TestObject>;
 
-interface MockReturnType extends UseOsdkListResult<TestObject> {
-  _testOptions: {
-    withProperties?: Record<string, unknown>;
-    pageSize: number;
-    where?: WhereClause<any>;
-    enabled?: boolean;
-    orderBy?: Record<string, "asc" | "desc">;
-  };
-}
-
-vi.mock("@osdk/react/experimental", () => ({
-  useRegisterUserAgent: vi.fn(),
-  useOsdkObjects: vi.fn((objectType, options): MockReturnType => {
-    return {
+vi.mock("@osdk/react", async (importOriginal) => {
+  const actual = await importOriginal<{
+    useObjectSet: typeof useObjectSet;
+    useOsdkObjects: typeof useOsdkObjects;
+  }>();
+  return {
+    ...actual,
+    useRegisterUserAgent: vi.fn(),
+    useOsdkObjects: vi.fn(() => ({
       data: [],
       isLoading: false,
       error: undefined,
@@ -65,12 +59,8 @@ vi.mock("@osdk/react/experimental", () => ({
       hasMore: false,
       objectSet: undefined,
       refetch: vi.fn(),
-      // Return the options to verify they were passed correctly
-      _testOptions: options,
-    };
-  }),
-  useObjectSet: vi.fn((objectSet, options): MockReturnType => {
-    return {
+    })),
+    useObjectSet: vi.fn(() => ({
       data: [],
       isLoading: false,
       error: undefined,
@@ -80,11 +70,9 @@ vi.mock("@osdk/react/experimental", () => ({
       hasMore: false,
       objectSet: undefined,
       refetch: vi.fn(),
-      // Return the options to verify they were passed correctly
-      _testOptions: options,
-    };
-  }),
-}));
+    })),
+  };
+});
 
 vi.mock("../useFunctionColumnsData.js", () => ({
   useFunctionColumnsData: vi.fn(() => ({})),
@@ -95,6 +83,11 @@ const TestInterfaceType = {
   apiName: "TestInterface",
 } as const satisfies InterfaceDefinition;
 
+function lastOsdkObjectsOptions() {
+  const calls = vi.mocked(useOsdkObjects).mock.calls;
+  return calls[calls.length - 1]?.[1];
+}
+
 describe(useObjectTableData, () => {
   beforeEach(() => {
     vi.mocked(useOsdkObjects).mockClear();
@@ -102,7 +95,14 @@ describe(useObjectTableData, () => {
   });
   const createWrapper = (client: Client) => {
     return ({ children }: React.PropsWithChildren) => {
-      return <OsdkProvider client={client}>{children}</OsdkProvider>;
+      return (
+        <TestOsdkProvider
+          client={client}
+          observableClient={fakeObservableClient}
+        >
+          {children}
+        </TestOsdkProvider>
+      );
     };
   };
 
@@ -123,28 +123,34 @@ describe(useObjectTableData, () => {
       id: "name",
       desc: false,
     }];
-    const { result } = renderHook(
+    renderHook(
       () =>
         useObjectTableData(TestObjectType, undefined, filterClause, orderBy),
       { wrapper },
     );
 
-    const mockResult = result.current as unknown as MockReturnType;
-    expect(mockResult._testOptions.where).toEqual(filterClause);
-    expect(mockResult._testOptions.orderBy).toEqual({
-      "name": "asc",
-    });
+    expect(useOsdkObjects).toHaveBeenLastCalledWith(
+      TestObjectType,
+      expect.objectContaining({
+        where: filterClause,
+        orderBy: { name: "asc" },
+      }),
+    );
   });
 
   it("calls useOsdkObjects without withProperties when no columnDefinitions provided", () => {
-    const { result } = renderHook(
+    renderHook(
       () => useObjectTableData(TestObjectType, undefined),
       { wrapper },
     );
 
-    const mockResult = result.current as unknown as MockReturnType;
-    expect(mockResult._testOptions.withProperties).toBeUndefined();
-    expect(mockResult._testOptions.pageSize).toBe(50);
+    expect(useOsdkObjects).toHaveBeenLastCalledWith(
+      TestObjectType,
+      expect.objectContaining({
+        withProperties: undefined,
+        pageSize: 50,
+      }),
+    );
   });
 
   it("calls useOsdkObjects without withProperties when columnDefinitions have no RDP columns", () => {
@@ -157,14 +163,18 @@ describe(useObjectTableData, () => {
       },
     ];
 
-    const { result } = renderHook(
+    renderHook(
       () => useObjectTableData(TestObjectType, columnDefinitions),
       { wrapper },
     );
 
-    const mockResult = result.current as unknown as MockReturnType;
-    expect(mockResult._testOptions.withProperties).toBeUndefined();
-    expect(mockResult._testOptions.pageSize).toBe(50);
+    expect(useOsdkObjects).toHaveBeenLastCalledWith(
+      TestObjectType,
+      expect.objectContaining({
+        withProperties: undefined,
+        pageSize: 50,
+      }),
+    );
   });
 
   it("extracts RDP creators and passes them to useOsdkObjects", () => {
@@ -204,16 +214,17 @@ describe(useObjectTableData, () => {
       },
     ];
 
-    const { result } = renderHook(
+    renderHook(
       () => useObjectTableData(TestObjectType, columnDefinitions),
       { wrapper },
     );
 
-    const mockResult = result.current as unknown as MockReturnType;
-    expect(mockResult._testOptions.withProperties).toEqual({
-      rdp1: mockRdpCreator1,
-      rdp2: mockRdpCreator2,
-    });
+    expect(useOsdkObjects).toHaveBeenLastCalledWith(
+      TestObjectType,
+      expect.objectContaining({
+        withProperties: { rdp1: mockRdpCreator1, rdp2: mockRdpCreator2 },
+      }),
+    );
   });
 
   it("memoizes withProperties based on columnDefinitions", () => {
@@ -230,7 +241,7 @@ describe(useObjectTableData, () => {
       },
     ];
 
-    const { result, rerender } = renderHook(
+    const { rerender } = renderHook(
       ({ colDefs }) => useObjectTableData(TestObjectType, colDefs),
       {
         initialProps: { colDefs: columnDefinitions },
@@ -238,19 +249,11 @@ describe(useObjectTableData, () => {
       },
     );
 
-    const firstMockResult = result
-      .current as unknown as MockReturnType;
-    const firstWithProperties = firstMockResult._testOptions.withProperties;
+    const firstWithProperties = lastOsdkObjectsOptions()?.withProperties;
 
-    // Rerender with same columnDefinitions reference
     rerender({ colDefs: columnDefinitions });
 
-    // Should be the same reference (memoized)
-    const secondMockResult = result
-      .current as unknown as MockReturnType;
-    expect(secondMockResult._testOptions.withProperties).toBe(
-      firstWithProperties,
-    );
+    expect(lastOsdkObjectsOptions()?.withProperties).toBe(firstWithProperties);
   });
 
   it("updates withProperties when columnDefinitions change", () => {
@@ -277,7 +280,7 @@ describe(useObjectTableData, () => {
       >
       | undefined;
 
-    const { result, rerender } = renderHook(
+    const { rerender } = renderHook(
       ({ colDefs }: { colDefs: ColDefs }) =>
         useObjectTableData(TestObjectType, colDefs),
       {
@@ -286,9 +289,7 @@ describe(useObjectTableData, () => {
       },
     );
 
-    const firstMockResult = result
-      .current as unknown as MockReturnType;
-    expect(firstMockResult._testOptions.withProperties).toEqual({
+    expect(lastOsdkObjectsOptions()?.withProperties).toEqual({
       rdp1: mockRdpCreator1,
     });
 
@@ -302,9 +303,7 @@ describe(useObjectTableData, () => {
 
     rerender({ colDefs: updatedColumnDefinitions as ColDefs });
 
-    const secondMockResult = result
-      .current as unknown as MockReturnType;
-    expect(secondMockResult._testOptions.withProperties).toEqual({
+    expect(lastOsdkObjectsOptions()?.withProperties).toEqual({
       rdp2: mockRdpCreator2,
     });
   });
@@ -322,7 +321,7 @@ describe(useObjectTableData, () => {
   });
 
   it("when no objectSet provided, only enables useOsdkObjects", () => {
-    const { result } = renderHook(
+    renderHook(
       () => useObjectTableData(TestObjectType),
       { wrapper },
     );
@@ -345,7 +344,7 @@ describe(useObjectTableData, () => {
   });
 
   it(" when objectSet is provided, only enables useObjectSet", () => {
-    const { result } = renderHook(
+    renderHook(
       () =>
         useObjectTableData(
           TestObjectType,
@@ -459,7 +458,6 @@ describe(useObjectTableData, () => {
       error: undefined,
       fetchMore: vi.fn(),
       isOptimistic: false,
-      _testOptions: { pageSize: 50, enabled: true },
     } as any);
 
     const columnDefinitions: Array<
@@ -546,7 +544,6 @@ describe(useObjectTableData, () => {
       fetchMore: vi.fn(),
       isOptimistic: false,
       objectSet: mockObjectSet,
-      _testOptions: { pageSize: 50, enabled: true },
     } as any);
 
     vi.mocked(useFunctionColumnsData).mockReturnValue(mockFunctionColumnData);

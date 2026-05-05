@@ -23,11 +23,8 @@ import type {
   SimplePropertyDef,
   WhereClause,
 } from "@osdk/api";
-import type { ObjectTypeDefinition } from "@osdk/client";
-import {
-  getWireObjectSet,
-  type ObserveAggregationArgs,
-} from "@osdk/client/unstable-do-not-use";
+import { getWireObjectSet, type ObjectTypeDefinition } from "@osdk/client";
+import type { ObserveAggregationArgs } from "@osdk/client/observable";
 import React from "react";
 import { extractPayloadError, isPayloadLoading } from "./hookUtils.js";
 import {
@@ -35,7 +32,7 @@ import {
   makeExternalStore,
   makeExternalStoreAsync,
 } from "./makeExternalStore.js";
-import { OsdkContext2 } from "./OsdkContext2.js";
+import { OsdkContext } from "./OsdkContext.js";
 
 interface UseOsdkAggregationBaseOptions<
   T extends ObjectOrInterfaceDefinition,
@@ -170,7 +167,7 @@ export function useOsdkAggregation<
   } = options;
   const objectSet = "objectSet" in options ? options.objectSet : undefined;
 
-  const { observableClient } = React.useContext(OsdkContext2);
+  const { observableClient } = React.useContext(OsdkContext);
 
   const canonOptions = observableClient.canonicalizeOptions({
     where,

@@ -1,5 +1,28 @@
 # @osdk/foundry-sdk-generator
 
+## 2.14.0
+
+### Minor Changes
+
+- bab1421: Add check for bundling to ensure entry points work even if dev deps change.
+
+### Patch Changes
+
+- Updated dependencies [f12977d]
+- Updated dependencies [eb36e21]
+- Updated dependencies [d892397]
+- Updated dependencies [c5a6047]
+- Updated dependencies [45be476]
+- Updated dependencies [bab1421]
+- Updated dependencies [2f40eee]
+- Updated dependencies [20e9678]
+  - @osdk/client@2.14.0
+  - @osdk/client.unstable.tpsa@0.12.0
+  - @osdk/client.unstable@2.14.0
+  - @osdk/api@2.14.0
+  - @osdk/generator-utils@2.14.0
+  - @osdk/generator@2.14.0
+
 ## 2.13.0
 
 ### Patch Changes

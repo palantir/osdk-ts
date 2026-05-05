@@ -1,4 +1,4 @@
-import { useOsdkAction } from "@osdk/react/experimental";
+import { useOsdkAction } from "@osdk/react";
 import React from "react";
 import { Button } from "./Button.js";
 import { $Actions, Todo } from "./generatedNoCheck2/index.js";

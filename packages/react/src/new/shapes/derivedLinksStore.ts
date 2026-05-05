@@ -37,14 +37,11 @@ import type {
   ShapeDerivedLinks,
 } from "@osdk/api/unstable";
 import type { Client } from "@osdk/client";
+import type { ObservableClient, Observer } from "@osdk/client/observable";
 import {
   applyShapeTransformationsToArray,
   buildObjectSetFromLinkDefByType,
   getLinkQueryOptions,
-} from "@osdk/client/unstable-do-not-use";
-import type {
-  ObservableClient,
-  Observer,
 } from "@osdk/client/unstable-do-not-use";
 import {
   createCachingNotifier,
