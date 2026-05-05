@@ -211,6 +211,11 @@ export const DatetimePickerField: React.NamedExoticComponent<
     [onChange, setDateValue],
   );
 
+  const handleCalendarClear = useCallback(() => {
+    onChange?.(null);
+    setDateValue(null);
+  }, [onChange, setDateValue]);
+
   // --- Focus boundary handlers ---
   // Visually-hidden elements at the start/end of the popover that trap Tab
   // cycling between the text input and calendar. Without these, Tab would
@@ -242,8 +247,7 @@ export const DatetimePickerField: React.NamedExoticComponent<
     [stopEditing],
   );
 
-  // --- Time picker (rendered as a popover sibling, not a DayPicker footer,
-  // so the border-top can span the full popover width via negative margins) ---
+  // --- Time picker ---
 
   const timeFooter = showTime
     ? (
@@ -308,11 +312,11 @@ export const DatetimePickerField: React.NamedExoticComponent<
             <LazyDateCalendar
               dateSelected={value ?? undefined}
               onSelect={handleCalendarSelect}
-              onClear={() => onChange?.(null)}
+              onClear={handleCalendarClear}
               min={min}
               max={max}
+              footer={timeFooter}
             />
-            {timeFooter}
             <div
               onFocus={handleEndFocusBoundary}
               tabIndex={0}

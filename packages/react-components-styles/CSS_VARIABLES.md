@@ -192,6 +192,16 @@ Component-specific semantic tokens that may reference Blueprint tokens or define
 
 Styling for button components.
 
+| Variable                             | Default Value                             | Description                 |
+| ------------------------------------ | ----------------------------------------- | --------------------------- |
+| `--osdk-button-padding-block`        | `calc(var(--osdk-surface-spacing) * 2)`   | Button block padding        |
+| `--osdk-button-padding-inline`       | `calc(var(--osdk-surface-spacing) * 4)`   | Button inline padding       |
+| `--osdk-button-small-padding-block`  | `var(--osdk-surface-spacing)`             | Small button block padding  |
+| `--osdk-button-small-padding-inline` | `calc(var(--osdk-surface-spacing) * 2)`   | Small button inline padding |
+| `--osdk-button-border-radius`        | `var(--osdk-surface-border-radius)`       | Button border radius        |
+| `--osdk-button-font-size`            | `var(--osdk-typography-size-body-medium)` | Button font size            |
+| `--osdk-button-small-font-size`      | `var(--osdk-typography-size-body-small)`  | Small button font size      |
+
 #### Primary Button
 
 | Variable                          | Default Value                           | Description                      |
@@ -209,6 +219,15 @@ Styling for button components.
 | `--osdk-button-secondary-bg`        | `var(--osdk-background-secondary)`                    | Secondary button background        |
 | `--osdk-button-secondary-bg-hover`  | `var(--osdk-surface-background-color-default-hover)`  | Secondary button hover background  |
 | `--osdk-button-secondary-bg-active` | `var(--osdk-surface-background-color-default-active)` | Secondary button active background |
+
+#### Minimal Button
+
+| Variable                          | Default Value                                         | Description                      |
+| --------------------------------- | ----------------------------------------------------- | -------------------------------- |
+| `--osdk-button-minimal-color`     | `var(--osdk-typography-color-default-rest)`           | Minimal button text color        |
+| `--osdk-button-minimal-bg`        | `transparent`                                         | Minimal button background        |
+| `--osdk-button-minimal-bg-hover`  | `var(--osdk-surface-background-color-default-hover)`  | Minimal button hover background  |
+| `--osdk-button-minimal-bg-active` | `var(--osdk-surface-background-color-default-active)` | Minimal button active background |
 
 ### Checkbox
 
@@ -244,7 +263,7 @@ Shared form-control tokens used by ActionForm, ObjectTable editable cells, and o
 | `--osdk-switch-thumb-size`           | `12px`                                                                 | Switch thumb size             |
 | `--osdk-switch-thumb-offset`         | `2px`                                                                  | Switch thumb offset           |
 | `--osdk-time-picker-segment-gap`     | `var(--osdk-surface-spacing)`                                          | Gap between time segments     |
-| `--osdk-time-picker-segment-width`   | `calc(var(--osdk-surface-spacing) * 9)`                                | Width of hour/minute inputs   |
+| `--osdk-time-picker-segment-width`   | `calc(var(--osdk-surface-spacing) * 10)`                               | Width of hour/minute inputs   |
 | `--osdk-time-picker-separator-color` | `var(--osdk-typography-color-muted)`                                   | Time segment separator color  |
 
 ### Dialog

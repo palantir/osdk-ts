@@ -16,9 +16,10 @@
 
 import { ChevronLeft, ChevronRight } from "@blueprintjs/icons";
 import classnames from "classnames";
-import React, { useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 import type { ClassNames } from "react-day-picker";
 import { DayPicker } from "react-day-picker";
+import { ActionButton } from "../../base-components/action-button/ActionButton.js";
 import {
   buildDisabledMatchers,
   DEFAULT_FROM_YEAR,
@@ -52,7 +53,6 @@ export const CLASS_NAMES: ClassNames = {
   dropdown_year: styles.calendarDropdown,
   nav_icon: styles.calendarChevron,
   vhidden: styles.calendarVhidden,
-  tfoot: styles.calendarFooter,
 };
 
 const NAV_ICON_SIZE = 12;
@@ -95,46 +95,52 @@ export default function DateCalendar({
 
   const fromYear = min != null ? min.getFullYear() : DEFAULT_FROM_YEAR;
   const toYear = max != null ? max.getFullYear() : DEFAULT_TO_YEAR;
+  const handleTodayClick = useCallback(() => {
+    onSelect(new Date());
+  }, [onSelect]);
+
   const calendarFooter = (
-    <>
+    <div className={styles.calendarFooter}>
+      {footer}
       <div className={styles.calendarActionBar}>
-        <button
-          className={styles.calendarActionButton}
+        <ActionButton
           type="button"
-          onClick={() => onSelect(new Date())}
+          variant="minimal"
+          onClick={handleTodayClick}
         >
           {todayButtonText}
-        </button>
-        <button
-          className={styles.calendarActionButton}
+        </ActionButton>
+        <ActionButton
           type="button"
+          variant="minimal"
           onClick={onClear}
         >
           {clearButtonText}
-        </button>
+        </ActionButton>
       </div>
-      {footer}
-    </>
+    </div>
   );
 
   return (
-    <DayPicker
-      mode="single"
-      selected={dateSelected}
-      onSelect={onSelect}
-      disabled={disabled}
-      defaultMonth={dateSelected}
-      classNames={CLASS_NAMES}
-      components={CALENDAR_COMPONENTS}
-      footer={calendarFooter}
-      // Render month/year as dropdown selects + prev/next arrows,
-      // so users can jump directly to any month/year without paging.
-      captionLayout="dropdown-buttons"
-      fromYear={fromYear}
-      toYear={toYear}
-      showOutsideDays={true}
-      // Always render 6 rows so the calendar height doesn't jump between months.
-      fixedWeeks={true}
-    />
+    <div className={styles.calendarWrapper}>
+      <DayPicker
+        mode="single"
+        selected={dateSelected}
+        onSelect={onSelect}
+        disabled={disabled}
+        defaultMonth={dateSelected}
+        classNames={CLASS_NAMES}
+        components={CALENDAR_COMPONENTS}
+        // Render month/year as dropdown selects + prev/next arrows,
+        // so users can jump directly to any month/year without paging.
+        captionLayout="dropdown-buttons"
+        fromYear={fromYear}
+        toYear={toYear}
+        showOutsideDays={true}
+        // Always render 6 rows so the calendar height doesn't jump between months.
+        fixedWeeks={true}
+      />
+      {calendarFooter}
+    </div>
   );
 }

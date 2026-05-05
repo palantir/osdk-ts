@@ -120,11 +120,13 @@ describe("DatetimePickerField", () => {
           onChange={onChange}
         />,
       );
-      fireEvent.focus(screen.getByRole("combobox"));
+      const input = screen.getByRole("combobox") as HTMLInputElement;
+      fireEvent.focus(input);
 
       fireEvent.click(screen.getByRole("button", { name: "Clear" }));
 
       expect(onChange).toHaveBeenCalledWith(null);
+      expect(input.value).toBe("");
     });
 
     it("preserves time when selecting a calendar day with showTime", () => {
@@ -166,6 +168,27 @@ describe("DatetimePickerField", () => {
         .toBe("14");
       expect((screen.getByLabelText("Time minutes") as HTMLInputElement).value)
         .toBe("30");
+    });
+
+    it("renders time input before the calendar action bar", () => {
+      render(
+        <DatetimePickerField
+          value={new Date(2024, 0, 15, 14, 30)}
+          onChange={vi.fn()}
+          showTime={true}
+        />,
+      );
+      fireEvent.focus(screen.getByRole("combobox"));
+
+      const timeInput = screen.getByLabelText("Time hours");
+      const todayButton = screen.getByRole("button", { name: "Today" });
+      const controls = Array.from(document.body.querySelectorAll(
+        "input, button",
+      ));
+
+      expect(controls.indexOf(timeInput)).toBeLessThan(
+        controls.indexOf(todayButton),
+      );
     });
 
     it("calls onChange with updated time when a valid time segment changes", () => {

@@ -25,7 +25,7 @@ afterEach(() => {
 
 describe("TimePicker", () => {
   it("renders segmented hour and minute inputs from a Date value", () => {
-    render(
+    const { rerender } = render(
       <TimePicker
         value={new Date(2024, 0, 15, 9, 5)}
         onChange={vi.fn()}
@@ -33,9 +33,21 @@ describe("TimePicker", () => {
     );
 
     expect((screen.getByLabelText("Time hours") as HTMLInputElement).value)
-      .toBe("09");
+      .toBe("9");
     expect((screen.getByLabelText("Time minutes") as HTMLInputElement).value)
       .toBe("05");
+
+    rerender(
+      <TimePicker
+        value={new Date(2024, 0, 15, 14, 45)}
+        onChange={vi.fn()}
+      />,
+    );
+
+    expect((screen.getByLabelText("Time hours") as HTMLInputElement).value)
+      .toBe("14");
+    expect((screen.getByLabelText("Time minutes") as HTMLInputElement).value)
+      .toBe("45");
   });
 
   it("emits a Date with the existing date portion when a valid hour is typed", () => {
@@ -85,7 +97,7 @@ describe("TimePicker", () => {
     fireEvent.blur(hourInput);
 
     expect(onChange).not.toHaveBeenCalled();
-    expect(hourInput.value).toBe("09");
+    expect(hourInput.value).toBe("9");
   });
 
   it("clamps an out-of-range minute on blur", () => {

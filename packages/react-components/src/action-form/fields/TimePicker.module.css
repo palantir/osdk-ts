@@ -4,7 +4,6 @@
   display: inline-flex;
   align-items: center;
   gap: var(--osdk-time-picker-segment-gap);
-  width: 100%;
 }
 
 .osdkTimePickerInput {

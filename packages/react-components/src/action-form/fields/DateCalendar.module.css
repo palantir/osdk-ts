@@ -2,8 +2,12 @@
    All values reference --osdk-datetime-calendar-* tokens defined in
    react-components-styles/tokens/datetime-picker.css. */
 
-.calendar {
+.calendarWrapper {
   position: relative;
+  width: 100%;
+}
+
+.calendar {
   width: 100%;
   font-family: var(--osdk-datetime-calendar-font-family);
   font-size: var(--osdk-datetime-calendar-font-size);
@@ -230,29 +234,21 @@
 }
 
 
-/* Footer — content rendered inside DayPicker's <tfoot> (constrained by the table). */
 .calendarFooter {
-  padding-top: var(--osdk-time-picker-padding-top);
-  margin-top: var(--osdk-time-picker-margin-top);
-  border-top: var(--osdk-time-picker-border-top);
+  width: 100%;
 }
 
 .calendarActionBar {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   gap: var(--osdk-surface-spacing);
-}
-
-.calendarActionButton {
-  border: none;
-  border-radius: var(--osdk-input-border-radius);
-  background: transparent;
-  color: var(--osdk-intent-primary-rest);
-  cursor: pointer;
-  font: inherit;
-  padding: var(--osdk-datetime-calendar-dropdown-padding);
-
-  &:hover {
-    background: var(--osdk-datetime-calendar-nav-button-hover-bg);
-  }
+  margin-block-start: var(--osdk-time-picker-margin-top);
+  margin-inline-start: calc(var(--osdk-datetime-popover-padding) * -1);
+  margin-inline-end: calc(var(--osdk-datetime-popover-padding) * -1);
+  padding-block-start: var(--osdk-time-picker-padding-top);
+  padding-inline-start: var(--osdk-datetime-popover-padding);
+  padding-inline-end: var(--osdk-datetime-popover-padding);
+  border-block-start-width: var(--osdk-surface-border-width);
+  border-block-start-style: solid;
+  border-block-start-color: var(--osdk-surface-border-color-default);
 }

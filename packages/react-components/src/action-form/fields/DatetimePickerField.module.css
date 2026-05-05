@@ -5,14 +5,8 @@
   outline: none;
 }
 
-/* Time footer — rendered as a popover sibling (not a DayPicker tfoot) so the
-   border-top can span the full popover width via negative margins. */
 .osdkDatetimeTimeFooter {
-  padding-top: var(--osdk-time-picker-padding-top);
-  padding-left: var(--osdk-datetime-popover-padding);
-  padding-right: var(--osdk-datetime-popover-padding);
-  margin-top: var(--osdk-time-picker-margin-top);
-  margin-left: calc(var(--osdk-datetime-popover-padding) * -1);
-  margin-right: calc(var(--osdk-datetime-popover-padding) * -1);
-  border-top: var(--osdk-time-picker-border-top);
+  display: flex;
+  justify-content: center;
+  padding-block-start: var(--osdk-time-picker-padding-top);
 }

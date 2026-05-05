@@ -15,16 +15,22 @@
  */
 
 .button {
-  padding: calc(var(--osdk-surface-spacing) * 2)
-    calc(var(--osdk-surface-spacing) * 4);
-  border-radius: var(--osdk-surface-border-radius);
-  font-size: var(--osdk-typography-size-body-medium);
+  padding-block: var(--osdk-button-padding-block);
+  padding-inline: var(--osdk-button-padding-inline);
+  border-radius: var(--osdk-button-border-radius);
+  font-size: var(--osdk-button-font-size);
   cursor: pointer;
 
   &:focus-visible {
     outline: var(--osdk-focus-outline);
     outline-offset: var(--osdk-focus-visible-outline-offset);
   }
+}
+
+.smallButton {
+  padding-block: var(--osdk-button-small-padding-block);
+  padding-inline: var(--osdk-button-small-padding-inline);
+  font-size: var(--osdk-button-small-font-size);
 }
 
 .secondaryButton {
@@ -38,6 +44,25 @@
 
   &:active:not(:disabled) {
     background-color: var(--osdk-button-secondary-bg-active);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.minimalButton {
+  background-color: var(--osdk-button-minimal-bg);
+  border: none;
+  color: var(--osdk-button-minimal-color);
+
+  &:hover:not(:disabled) {
+    background-color: var(--osdk-button-minimal-bg-hover);
+  }
+
+  &:active:not(:disabled) {
+    background-color: var(--osdk-button-minimal-bg-active);
   }
 
   &:disabled {

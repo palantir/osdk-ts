@@ -15,7 +15,7 @@
  */
 
 import { Input } from "@base-ui/react/input";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import styles from "./TimePicker.module.css";
 
 export interface TimePickerProps {
@@ -25,6 +25,11 @@ export interface TimePickerProps {
 }
 
 type TimeSegment = "hours" | "minutes";
+type TimeSegments = Record<TimeSegment, string>;
+
+interface SegmentDraft extends TimeSegments {
+  valueKey: number | null;
+}
 
 const SEGMENT_LIMITS: Record<TimeSegment, { min: number; max: number }> = {
   hours: { min: 0, max: 23 },
@@ -37,14 +42,22 @@ export const TimePicker: React.NamedExoticComponent<TimePickerProps> = React
     onChange,
     label = "Time",
   }: TimePickerProps): React.ReactElement {
-    const valueSegments = useMemo(() => segmentsFromDate(value), [value]);
-    const [hourText, setHourText] = useState(valueSegments.hours);
-    const [minuteText, setMinuteText] = useState(valueSegments.minutes);
-
-    useEffect(function syncSegmentsFromValue() {
-      setHourText(valueSegments.hours);
-      setMinuteText(valueSegments.minutes);
-    }, [valueSegments]);
+    const valueKey = value?.getTime() ?? null;
+    const [segmentDraft, setSegmentDraft] = useState<SegmentDraft>(() =>
+      createSegmentDraft(valueKey, segmentsFromTimestamp(valueKey))
+    );
+    const valueSegments = useMemo(
+      () => segmentsFromTimestamp(valueKey),
+      [valueKey],
+    );
+    // Keep local draft text only while it still corresponds to the current
+    // value prop. If the parent changes the Date, derive fresh text during
+    // render instead of syncing with an effect and causing an extra render.
+    const activeSegments = segmentDraft.valueKey === valueKey
+      ? segmentDraft
+      : createSegmentDraft(valueKey, valueSegments);
+    const hourText = activeSegments.hours;
+    const minuteText = activeSegments.minutes;
 
     const emitChange = useCallback(
       (hours: number, minutes: number) => {
@@ -61,11 +74,7 @@ export const TimePicker: React.NamedExoticComponent<TimePickerProps> = React
           ? { hours: nextText, minutes: minuteText }
           : { hours: hourText, minutes: nextText };
 
-        if (segment === "hours") {
-          setHourText(nextText);
-        } else {
-          setMinuteText(nextText);
-        }
+        setSegmentDraft({ valueKey, ...nextSegments });
 
         const parsedSegment = parseSegment(nextText, segment);
         const parsedOtherSegment = parseSegment(
@@ -81,23 +90,19 @@ export const TimePicker: React.NamedExoticComponent<TimePickerProps> = React
           segment === "minutes" ? parsedSegment : parsedOtherSegment,
         );
       },
-      [emitChange, hourText, minuteText],
+      [emitChange, hourText, minuteText, valueKey],
     );
 
     const handleSegmentBlur = useCallback(
       (segment: TimeSegment, text: string) => {
         const parsedSegment = parseNumber(text);
         if (parsedSegment == null) {
-          if (segment === "hours") {
-            setHourText(valueSegments.hours);
-          } else {
-            setMinuteText(valueSegments.minutes);
-          }
+          setSegmentDraft(createSegmentDraft(valueKey, valueSegments));
           return;
         }
 
         const clampedSegment = clampSegment(parsedSegment, segment);
-        const formattedSegment = formatSegment(clampedSegment);
+        const formattedSegment = formatSegment(clampedSegment, segment);
         const parsedOtherSegment = parseSegment(
           segment === "hours" ? minuteText : hourText,
           segment === "hours" ? "minutes" : "hours",
@@ -107,11 +112,11 @@ export const TimePicker: React.NamedExoticComponent<TimePickerProps> = React
         );
         const otherSegment = parsedOtherSegment ?? fallbackOtherSegment;
 
-        if (segment === "hours") {
-          setHourText(formattedSegment);
-        } else {
-          setMinuteText(formattedSegment);
-        }
+        setSegmentDraft({
+          valueKey,
+          hours: segment === "hours" ? formattedSegment : hourText,
+          minutes: segment === "minutes" ? formattedSegment : minuteText,
+        });
 
         if (parsedSegment !== clampedSegment) {
           emitChange(
@@ -120,7 +125,24 @@ export const TimePicker: React.NamedExoticComponent<TimePickerProps> = React
           );
         }
       },
-      [emitChange, hourText, minuteText, valueSegments],
+      [emitChange, hourText, minuteText, valueKey, valueSegments],
+    );
+
+    const handleHourChange = useCallback(
+      (nextText: string) => handleSegmentChange("hours", nextText),
+      [handleSegmentChange],
+    );
+    const handleMinuteChange = useCallback(
+      (nextText: string) => handleSegmentChange("minutes", nextText),
+      [handleSegmentChange],
+    );
+    const handleHourBlur = useCallback(
+      () => handleSegmentBlur("hours", hourText),
+      [handleSegmentBlur, hourText],
+    );
+    const handleMinuteBlur = useCallback(
+      () => handleSegmentBlur("minutes", minuteText),
+      [handleSegmentBlur, minuteText],
     );
 
     return (
@@ -134,8 +156,8 @@ export const TimePicker: React.NamedExoticComponent<TimePickerProps> = React
           inputMode="numeric"
           pattern="[0-9]*"
           value={hourText}
-          onValueChange={(nextText) => handleSegmentChange("hours", nextText)}
-          onBlur={() => handleSegmentBlur("hours", hourText)}
+          onValueChange={handleHourChange}
+          onBlur={handleHourBlur}
           className={styles.osdkTimePickerInput}
           aria-label={`${label} hours`}
         />
@@ -147,8 +169,8 @@ export const TimePicker: React.NamedExoticComponent<TimePickerProps> = React
           inputMode="numeric"
           pattern="[0-9]*"
           value={minuteText}
-          onValueChange={(nextText) => handleSegmentChange("minutes", nextText)}
-          onBlur={() => handleSegmentBlur("minutes", minuteText)}
+          onValueChange={handleMinuteChange}
+          onBlur={handleMinuteBlur}
           className={styles.osdkTimePickerInput}
           aria-label={`${label} minutes`}
         />
@@ -156,18 +178,31 @@ export const TimePicker: React.NamedExoticComponent<TimePickerProps> = React
     );
   });
 
-function segmentsFromDate(value: Date | null): Record<TimeSegment, string> {
-  if (value == null) {
-    return { hours: "00", minutes: "00" };
+function createSegmentDraft(
+  valueKey: number | null,
+  segments: TimeSegments,
+): SegmentDraft {
+  return { valueKey, ...segments };
+}
+
+function segmentsFromTimestamp(valueKey: number | null): TimeSegments {
+  if (valueKey == null) {
+    return {
+      hours: formatSegment(0, "hours"),
+      minutes: formatSegment(0, "minutes"),
+    };
   }
+  const value = new Date(valueKey);
   return {
-    hours: formatSegment(value.getHours()),
-    minutes: formatSegment(value.getMinutes()),
+    hours: formatSegment(value.getHours(), "hours"),
+    minutes: formatSegment(value.getMinutes(), "minutes"),
   };
 }
 
-function formatSegment(value: number): string {
-  return String(value).padStart(2, "0");
+function formatSegment(value: number, segment: TimeSegment): string {
+  // Match Blueprint's TimePicker: 24-hour hours are not padded, while minute
+  // values stay two digits so "0 : 00" remains visually scannable.
+  return segment === "hours" ? String(value) : String(value).padStart(2, "0");
 }
 
 function parseNumber(text: string): number | undefined {

@@ -234,6 +234,16 @@ Shared tokens for drag handle styling across components.
 
 Styling for button components.
 
+| Variable                             | Default Value                             | Description                 |
+| ------------------------------------ | ----------------------------------------- | --------------------------- |
+| `--osdk-button-padding-block`        | `calc(var(--osdk-surface-spacing) * 2)`   | Button block padding        |
+| `--osdk-button-padding-inline`       | `calc(var(--osdk-surface-spacing) * 4)`   | Button inline padding       |
+| `--osdk-button-small-padding-block`  | `var(--osdk-surface-spacing)`             | Small button block padding  |
+| `--osdk-button-small-padding-inline` | `calc(var(--osdk-surface-spacing) * 2)`   | Small button inline padding |
+| `--osdk-button-border-radius`        | `var(--osdk-surface-border-radius)`       | Button border radius        |
+| `--osdk-button-font-size`            | `var(--osdk-typography-size-body-medium)` | Button font size            |
+| `--osdk-button-small-font-size`      | `var(--osdk-typography-size-body-small)`  | Small button font size      |
+
 #### Primary Button
 
 | Variable                          | Default Value                           | Description                      |
@@ -251,6 +261,15 @@ Styling for button components.
 | `--osdk-button-secondary-bg`        | `var(--osdk-background-secondary)`                    | Secondary button background        |
 | `--osdk-button-secondary-bg-hover`  | `var(--osdk-surface-background-color-default-hover)`  | Secondary button hover background  |
 | `--osdk-button-secondary-bg-active` | `var(--osdk-surface-background-color-default-active)` | Secondary button active background |
+
+#### Minimal Button
+
+| Variable                          | Default Value                                         | Description                      |
+| --------------------------------- | ----------------------------------------------------- | -------------------------------- |
+| `--osdk-button-minimal-color`     | `var(--osdk-typography-color-default-rest)`           | Minimal button text color        |
+| `--osdk-button-minimal-bg`        | `transparent`                                         | Minimal button background        |
+| `--osdk-button-minimal-bg-hover`  | `var(--osdk-surface-background-color-default-hover)`  | Minimal button hover background  |
+| `--osdk-button-minimal-bg-active` | `var(--osdk-surface-background-color-default-active)` | Minimal button active background |
 
 ### Checkbox
 
@@ -1320,7 +1339,7 @@ Styling for time picker components.
 | `--osdk-time-picker-border-top`               | `var(--osdk-surface-border)`                                          | Top border                    |
 | `--osdk-time-picker-gap`                      | `calc(var(--osdk-surface-spacing) * 4)`                               | Gap between elements          |
 | `--osdk-time-picker-segment-gap`              | `var(--osdk-surface-spacing)`                                         | Gap between time segments     |
-| `--osdk-time-picker-segment-width`            | `calc(var(--osdk-surface-spacing) * 9)`                               | Width of hour/minute segments |
+| `--osdk-time-picker-segment-width`            | `calc(var(--osdk-surface-spacing) * 10)`                              | Width of hour/minute segments |
 | `--osdk-time-picker-input-font-family`        | `var(--osdk-input-font-family)`                                       | Input font family             |
 | `--osdk-time-picker-input-font-size`          | `var(--osdk-input-font-size)`                                         | Input font size               |
 | `--osdk-time-picker-input-line-height`        | `var(--osdk-input-line-height)`                                       | Input line height             |
