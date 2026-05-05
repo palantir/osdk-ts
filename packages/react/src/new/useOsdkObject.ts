@@ -306,7 +306,7 @@ export function useOsdkObject<
 
   const suspenseStore = React.useMemo(
     () =>
-      cacheKey === null
+      cacheKey == null
         ? undefined
         : getSuspenseExternalStore<ObserveObjectCallbackArgs<Q>>(
           cacheKey,
