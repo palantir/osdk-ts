@@ -20,6 +20,47 @@ export interface HistogramBucket<T> {
   min: T;
   max: T;
   count: number;
+  /**
+   * Optional short label shown beneath the bucket on the SVG x-axis.
+   * Date histograms populate this with day/month/year text; numeric
+   * histograms leave it unset (the SVG renders min/max only).
+   */
+  tickLabel?: string;
+}
+
+/**
+ * Returns "nice" tick positions covering the [0, max] range — values that
+ * round to 1/2/5 × 10^n so the tick labels read cleanly. Used for
+ * y-axis axis lines on the histogram.
+ *
+ * Edge cases:
+ *  - max ≤ 0          → returns [0]
+ *  - max ≤ 1/2/3      → returns [0, ..., max] without rounding to 5/10
+ *  - otherwise        → between 3 and 6 ticks aligned on a nice step
+ */
+export function niceTicks(max: number, desiredCount = 5): number[] {
+  if (!Number.isFinite(max) || max <= 0) return [0];
+  if (max <= 3) {
+    const out: number[] = [];
+    for (let i = 0; i <= Math.ceil(max); i++) out.push(i);
+    return out;
+  }
+  const rough = max / desiredCount;
+  const exponent = Math.floor(Math.log10(rough));
+  const fraction = rough / Math.pow(10, exponent);
+  const niceFraction = fraction <= 1
+    ? 1
+    : fraction <= 2
+    ? 2
+    : fraction <= 5
+    ? 5
+    : 10;
+  const step = niceFraction * Math.pow(10, exponent);
+  const ticks: number[] = [];
+  for (let v = 0; v <= max + step / 2; v += step) {
+    ticks.push(Math.round(v / step) * step);
+  }
+  return ticks;
 }
 
 interface ValueCountPair<T> {

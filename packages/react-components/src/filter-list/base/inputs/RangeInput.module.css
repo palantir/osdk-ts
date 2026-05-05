@@ -26,25 +26,54 @@
   opacity: 0.5;
 }
 
-.histogramContainer {
-  display: flex;
-  align-items: flex-end;
+.histogramSvg {
+  display: block;
+  width: 100%;
   height: var(--osdk-filter-range-histogram-height);
-  gap: var(--osdk-filter-range-histogram-bar-gap);
-  padding-bottom: var(--osdk-filter-range-histogram-padding-bottom);
-  padding-inline: var(--osdk-filter-range-histogram-padding-inline);
-  overflow: hidden;
+  overflow: visible;
 }
 
+/* Empty rules — exist purely so postcss-modules emits matching hashed
+ * class names for the SVG layer groups. The groups themselves don't need
+ * their own visual style; the children (.axisLine / .countLabel / etc.)
+ * carry the actual styling. */
+.axisLines,
+.bars,
+.countLabels,
+.xTicks {}
+
 .histogramBar {
-  flex: 1;
-  background: var(--osdk-filter-range-histogram-bar-color);
-  min-width: var(--osdk-filter-range-histogram-bar-min-width);
-  transition: background-color var(--osdk-filter-range-histogram-bar-transition);
+  fill: var(--osdk-filter-range-histogram-bar-color);
+  transition: fill var(--osdk-filter-range-histogram-bar-transition);
 }
 
 .histogramBar[data-in-range="true"] {
-  background: var(--osdk-filter-range-histogram-bar-active-color);
+  fill: var(--osdk-filter-range-histogram-bar-active-color);
+}
+
+.axisLine {
+  stroke: var(--osdk-filter-range-histogram-axisLine-color);
+  stroke-width: 1;
+  stroke-dasharray: 2 2;
+}
+
+.yAxisLabel,
+.xTickLabel {
+  fill: var(--osdk-filter-range-histogram-axis-color);
+  font-family: var(--osdk-filter-range-label-font-family);
+  font-size: var(--osdk-filter-range-histogram-axis-font-size);
+}
+
+.countLabel {
+  fill: var(--osdk-filter-range-histogram-label-color);
+  font-family: var(--osdk-filter-range-label-font-family);
+  font-size: var(--osdk-filter-range-histogram-label-font-size);
+}
+
+.subtitle {
+  fill: var(--osdk-filter-range-histogram-subtitle-color);
+  font-family: var(--osdk-filter-range-label-font-family);
+  font-size: var(--osdk-filter-range-histogram-subtitle-font-size);
 }
 
 .rangeInputs {
