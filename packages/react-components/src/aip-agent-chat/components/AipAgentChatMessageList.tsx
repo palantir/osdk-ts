@@ -48,9 +48,10 @@ export function AipAgentChatMessageList({
   renderEmptyState,
   renderMessage,
 }: AipAgentChatMessageListProps): React.ReactElement {
-  const lastMessageTextLength = messages.length === 0
-    ? 0
-    : getUIMessageText(messages[messages.length - 1]!).length;
+  const lastMessage = messages.at(-1);
+  const lastMessageTextLength = lastMessage != null
+    ? getUIMessageText(lastMessage).length
+    : 0;
   const scrollSignal = `${messages.length}:${lastMessageTextLength}`;
 
   const containerRef = useChatAutoScroll<HTMLDivElement>(
@@ -97,8 +98,5 @@ export function AipAgentChatMessageList({
 function trailingMessageRole(
   messages: ReadonlyArray<UIMessage>,
 ): UIMessage["role"] | undefined {
-  if (messages.length === 0) {
-    return undefined;
-  }
-  return messages[messages.length - 1]!.role;
+  return messages.at(-1)?.role;
 }

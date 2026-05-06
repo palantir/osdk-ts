@@ -132,10 +132,6 @@ function MyChat() {
 }
 ```
 
-The previous (controlled) form of `BaseAipAgentChat` — which accepted
-`messages`, `status`, `error`, etc. — has been replaced by this
-self-managed contract.
-
 ### Drop further: useChat directly
 
 For full control over the chat hook (regenerate, multi-step agent
