@@ -78,7 +78,13 @@ export function FilterList<Q extends ObjectTypeDefinition>(
     resetVisibility,
   } = useFilterVisibility(filterDefinitions, getFilterKey, getIsVisible);
 
+  // TODO: Refactor to consolidate dragOrder management in useFilterVisibility.
+  // This ref shadows dragOrder so we can compute the visible-key
+  // order for onFilterVisibilityChange without lifting state.
   const orderedVisibleKeysRef = useRef<string[] | null>(null);
+  const setDragOrderRef = useRef<((next: string[] | null) => void) | null>(
+    null,
+  );
 
   const fireOnFilterVisibilityChange = useCallback(
     (
@@ -107,6 +113,7 @@ export function FilterList<Q extends ObjectTypeDefinition>(
     reset();
     resetVisibility();
     orderedVisibleKeysRef.current = null;
+    setDragOrderRef.current?.(null);
     onReset?.();
   }, [reset, resetVisibility, onReset]);
 
@@ -160,6 +167,9 @@ export function FilterList<Q extends ObjectTypeDefinition>(
         ?? managedVisibleDefinitions.map(getFilterKey);
       const nextOrder = [...currentOrder, filterKey];
       orderedVisibleKeysRef.current = nextOrder;
+      // Sync FilterListContent's drag order so the newly-added filter renders
+      // at the bottom of the list, matching the callback semantics.
+      setDragOrderRef.current?.(nextOrder);
       const nextHidden = managedHiddenDefinitions.filter(
         (d) => getFilterKey(d) !== filterKey,
       );
@@ -265,6 +275,7 @@ export function FilterList<Q extends ObjectTypeDefinition>(
       enableSorting={enableSorting}
       onFilterRemoved={effectiveOnFilterRemoved}
       onOrderChange={handleOrderChange}
+      setDragOrderRef={setDragOrderRef}
       className={className}
       renderAddFilterButton={effectiveRenderAddFilterButton}
     />

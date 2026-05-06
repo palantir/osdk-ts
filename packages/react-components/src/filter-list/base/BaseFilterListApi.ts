@@ -38,6 +38,14 @@ export interface BaseFilterListProps<D> {
   onFilterAdded?: () => void;
   onFilterRemoved?: (filterKey: string) => void;
   onOrderChange?: (orderedKeys: string[]) => void;
+  /**
+   * Optional ref that receives an imperative setter for the internal drag
+   * order. Pass `null` to reset, or an explicit ordered key list to keep the
+   * visual order in sync with externally-driven changes (e.g. add/remove).
+   */
+  setDragOrderRef?: React.MutableRefObject<
+    ((next: string[] | null) => void) | null
+  >;
 
   collapsed?: boolean;
   onCollapsedChange?: (collapsed: boolean) => void;

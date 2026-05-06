@@ -38,7 +38,7 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import classnames from "classnames";
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import type { FilterState } from "../FilterListItemApi.js";
 import type { RenderFilterInput } from "./BaseFilterListApi.js";
 import styles from "./FilterListContent.module.css";
@@ -71,6 +71,14 @@ interface FilterListContentProps<D> {
   ) => void;
   onFilterRemoved?: (filterKey: string) => void;
   onOrderChange?: (orderedKeys: string[]) => void;
+  /**
+   * Optional ref that receives an imperative setter for the internal drag
+   * order. Pass `null` to reset, or an explicit ordered key list to keep the
+   * visual order in sync with externally-driven changes (e.g. add/remove).
+   */
+  setDragOrderRef?: React.MutableRefObject<
+    ((next: string[] | null) => void) | null
+  >;
   renderInput: RenderFilterInput<D>;
   getFilterKey: (definition: D) => string;
   getFilterLabel: (definition: D) => string;
@@ -85,6 +93,7 @@ export function FilterListContent<D>({
   onFilterStateChanged,
   onFilterRemoved,
   onOrderChange,
+  setDragOrderRef,
   renderInput,
   getFilterKey,
   getFilterLabel,
@@ -95,8 +104,18 @@ export function FilterListContent<D>({
   const [dragOrder, setDragOrder] = useState<string[] | null>(null);
   const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
 
+  useEffect(() => {
+    if (!setDragOrderRef) {
+      return;
+    }
+    setDragOrderRef.current = (next: string[] | null) => setDragOrder(next);
+    return () => {
+      setDragOrderRef.current = null;
+    };
+  }, [setDragOrderRef]);
+
   const renderDefinitions = useMemo(() => {
-    if (!enableSorting || !dragOrder || !filterDefinitions) {
+    if (!dragOrder || !filterDefinitions) {
       return filterDefinitions;
     }
     const defsByKey = new Map(filterDefinitions.map(d => [getFilterKey(d), d]));
@@ -112,7 +131,7 @@ export function FilterListContent<D>({
       ordered.push(def);
     }
     return ordered;
-  }, [enableSorting, dragOrder, filterDefinitions, getFilterKey]);
+  }, [dragOrder, filterDefinitions, getFilterKey]);
 
   const sortableIds = useMemo(
     () =>

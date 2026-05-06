@@ -220,4 +220,31 @@ describe("FilterList drag and drop", () => {
 
     expect(onOrderChange).not.toHaveBeenCalled();
   });
+
+  it("populates setDragOrderRef with an imperative setter", () => {
+    const definitions = createDefinitions();
+    const filterStates = createFilterStates(definitions);
+    const setDragOrderRef: React.MutableRefObject<
+      ((next: string[] | null) => void) | null
+    > = {
+      current: null,
+    };
+
+    render(
+      <FilterListContent
+        filterDefinitions={definitions}
+        filterStates={filterStates}
+        onFilterStateChanged={vi.fn()}
+        enableSorting={true}
+        setDragOrderRef={setDragOrderRef}
+        renderInput={stubRenderInput}
+        getFilterKey={getFilterKey}
+        getFilterLabel={getFilterLabel}
+      />,
+    );
+
+    expect(setDragOrderRef.current).toBeInstanceOf(Function);
+    expect(() => setDragOrderRef.current?.(null)).not.toThrow();
+    expect(() => setDragOrderRef.current?.(["age", "name"])).not.toThrow();
+  });
 });

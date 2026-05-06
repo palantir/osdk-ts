@@ -42,6 +42,7 @@ export function BaseFilterList<D>(
     onFilterAdded,
     onFilterRemoved,
     onOrderChange,
+    setDragOrderRef,
     showResetButton = false,
     showActiveFilterCount = false,
     hasVisibilityChanges,
@@ -106,6 +107,7 @@ export function BaseFilterList<D>(
             onFilterStateChanged={onFilterStateChanged}
             onFilterRemoved={onFilterRemoved}
             onOrderChange={onOrderChange}
+            setDragOrderRef={setDragOrderRef}
             renderInput={renderInput}
             getFilterKey={getFilterKey}
             getFilterLabel={getFilterLabel}
