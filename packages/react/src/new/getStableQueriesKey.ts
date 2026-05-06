@@ -21,10 +21,9 @@ import type { FunctionQueryParams } from "./useOsdkFunctions.js";
 /**
  * Builds a stable string key for an array of function queries.
  *
- * Uses a JSON.stringify replacer to substitute any ObjectSet (at any depth,
- * typically nested under `options.params`) with its wire representation,
+ * Uses a JSON.stringify replacer to substitute any ObjectSet with its wire representation,
  * so composed operations (where/union/intersect) participate in the key
- * — plain JSON.stringify would not capture them.
+ * - plain JSON.stringify would not capture them.
  */
 export function getStableQueriesKey(
   queries: ReadonlyArray<FunctionQueryParams<QueryDefinition<unknown>>>,
