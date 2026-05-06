@@ -17,10 +17,10 @@
 import type { Media, MediaMetadata, MediaReference } from "@osdk/api";
 import { MediaSets } from "@osdk/foundry.mediasets";
 import invariant from "tiny-invariant";
-import type { MinimalClient } from "./MinimalClientContext.js";
+import type { Client } from "./Client.js";
 
 export function createMediaFromReference(
-  client: MinimalClient,
+  client: Client,
   mediaReference: MediaReference,
 ): Media {
   const { mediaSetRid, mediaItemRid } =
