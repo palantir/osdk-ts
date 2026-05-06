@@ -21,12 +21,12 @@
   --osdk-table-row-bg-default: var(--osdk-background-primary);
   --osdk-table-row-bg-alternate: var(--osdk-background-tertiary);
   --osdk-table-row-bg-hover: color-mix(
-    in srgb,
+    in oklch,
     var(--osdk-intent-primary-hover) 10%,
     var(--osdk-background-primary)
   );
   --osdk-table-row-bg-active: color-mix(
-    in srgb,
+    in oklch,
     var(--osdk-intent-primary-hover) 10%,
     var(--osdk-background-primary)
   );
