@@ -2,4 +2,4 @@
 "@osdk/react": patch
 ---
 
-Extract stable queries key logic into a dedicated function for better maintainability
+Fixed function column not reloaded when where clause changes by updating the stable queries key to get wire object set.
