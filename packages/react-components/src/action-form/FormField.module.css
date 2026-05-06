@@ -32,7 +32,12 @@
 
 .osdkFormFieldError {
   font-size: var(--osdk-form-error-font-size);
+  line-height: var(--osdk-form-error-line-height);
   color: var(--osdk-form-error-color);
+}
+
+.osdkFormFieldErrorSlot {
+  min-block-size: var(--osdk-form-error-reserved-block-size);
 }
 
 .osdkFormFieldLabelRow {

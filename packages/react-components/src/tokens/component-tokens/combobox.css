@@ -26,9 +26,7 @@
   );
   --osdk-combobox-input-bg: var(--osdk-input-bg);
   --osdk-combobox-popup-bg: var(--osdk-surface-background-color-default-rest);
-  --osdk-combobox-popup-shadow:
-    0px 4px 6px -4px rgba(0, 0, 0, 0.1),
-    0px 10px 15px -3px rgba(0, 0, 0, 0.1);
+  --osdk-combobox-popup-shadow: var(--osdk-surface-shadow-2);
   /* Base UI sets --available-height after positioning; fall back to the design
      cap so long async/object lists never briefly render at full height. */
   --osdk-combobox-popup-max-height: min(
@@ -67,9 +65,7 @@
   --osdk-combobox-item-bg-selected: var(--osdk-surface-layer-primary);
 
   /* Combobox chips */
-  --osdk-combobox-chip-bg: var(
-    --osdk-surface-background-color-default-hover
-  );
+  --osdk-combobox-chip-bg: var(--osdk-surface-background-color-default-hover);
   --osdk-combobox-chip-color: var(--osdk-typography-color-default-rest);
   --osdk-combobox-chip-font-size: var(--osdk-typography-size-body-small);
   --osdk-combobox-chip-remove-color: var(--osdk-iconography-color-muted);
@@ -79,9 +75,7 @@
 
   /* Combobox clear button */
   --osdk-combobox-clear-color: var(--osdk-iconography-color-muted);
-  --osdk-combobox-clear-color-hover: var(
-    --osdk-typography-color-default-rest
-  );
+  --osdk-combobox-clear-color-hover: var(--osdk-typography-color-default-rest);
   --osdk-combobox-clear-bg-hover: var(
     --osdk-surface-background-color-default-hover
   );
@@ -99,7 +93,5 @@
   --osdk-combobox-checkbox-border-color-checked: var(
     --osdk-intent-primary-rest
   );
-  --osdk-combobox-checkbox-color-checked: var(
-    --osdk-intent-primary-foreground
-  );
+  --osdk-combobox-checkbox-color-checked: var(--osdk-intent-primary-foreground);
 }

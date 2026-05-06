@@ -1,7 +1,6 @@
 :root {
   /* Form layout */
-  --osdk-form-region-gap: calc(var(--osdk-surface-spacing) * 3);
-  --osdk-form-field-gap: calc(var(--osdk-surface-spacing) * 4);
+  --osdk-form-field-gap: var(--osdk-surface-spacing);
   --osdk-form-padding-inline: 0;
   --osdk-form-content-padding-block: 0;
 
@@ -40,6 +39,10 @@
 
   /* Validation errors */
   --osdk-form-error-font-size: var(--osdk-typography-size-body-small);
+  --osdk-form-error-line-height: var(--osdk-typography-line-height-default);
+  --osdk-form-error-reserved-block-size: calc(
+    var(--osdk-form-error-font-size) * var(--osdk-form-error-line-height)
+  );
   --osdk-form-error-color: var(--osdk-typography-color-danger-rest);
 
   /* Form footer error indicator */

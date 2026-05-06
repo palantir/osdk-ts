@@ -17,7 +17,6 @@
 .osdkForm {
   display: flex;
   flex-direction: column;
-  gap: var(--osdk-form-region-gap);
   width: 100%;
 }
 
