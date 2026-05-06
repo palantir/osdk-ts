@@ -20,10 +20,12 @@ export interface ThemePreset {
   id: string;
   label: string;
   description: string;
+  /** The color mode this preset targets. Defaults to "light". */
+  colorMode?: ThemeColorMode;
   modes?: Record<ThemeColorMode, ThemePresetMode>;
-  /** Preview swatch colors for legacy single-mode presets. */
+  /** Preview swatch colors for single-mode presets. */
   swatches?: [string, string, string];
-  /** Token assignments for legacy single-mode presets. */
+  /** Token assignments for single-mode presets. */
   assignments?: TokenAssignment[];
 }
 
@@ -78,7 +80,7 @@ function baseDefaults(overrides?: {
     valueAssignment(
       "shadow",
       overrides?.shadow
-        ?? "0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08)",
+        ?? "0 1px 3px oklch(0 0 0 / 0.12), 0 1px 2px oklch(0 0 0 / 0.08)",
     ),
     valueAssignment("focus-width", "2"),
     valueAssignment("focus-offset", "2"),
@@ -88,55 +90,58 @@ function baseDefaults(overrides?: {
 
 export const THEME_PRESETS: ThemePreset[] = [
   {
-    id: "workshop",
-    label: "Workshop",
-    description: "Default Blueprint theme used by Workshop-style apps",
-    modes: {
-      light: {
-        swatches: ["#ffffff", "#2d72d2", "#1c2127"],
-        assignments: [
-          colorAssignment("background", "#ffffff"),
-          colorAssignment("surface", "#f6f7f9"),
-          colorAssignment("text", "#1c2127"),
-          colorAssignment("text-muted", "#5f6b7c"),
-          colorAssignment("primary", "#2d72d2"),
-          colorAssignment("primary-foreground", "#ffffff"),
-          colorAssignment("secondary", "#edeff2"),
-          colorAssignment("secondary-foreground", "#1c2127"),
-          colorAssignment("icon-color", "#5f6b7c"),
-          colorAssignment("border", "#dce0e5"),
-          colorAssignment("danger", "#cd4246"),
-          colorAssignment("success", "#238551"),
-          ...baseDefaults(),
-        ],
-      },
-      dark: {
-        swatches: ["#111418", "#2d72d2", "#a5aab3"],
-        assignments: [
-          colorAssignment("background", "#111418"),
-          colorAssignment("surface", "#1c2127"),
-          colorAssignment("text", "#a5aab3"),
-          colorAssignment("text-muted", "#8f99a8"),
-          colorAssignment("primary", "#2d72d2"),
-          colorAssignment("primary-foreground", "#ffffff"),
-          colorAssignment("secondary", "#252a31"),
-          colorAssignment("secondary-foreground", "#f6f7f9"),
-          colorAssignment("icon-color", "#8f99a8"),
-          colorAssignment("border", "#ffffff33"),
-          colorAssignment("danger", "#cd4246"),
-          colorAssignment("success", "#238551"),
-          ...baseDefaults({
-            shadow:
-              "inset 0 0 0 1px rgba(255,255,255,0.2), 0 4px 6px -4px rgba(0,0,0,0.5), 0 10px 30px -5px rgba(0,0,0,0.5)",
-          }),
-        ],
-      },
-    },
+    id: "workshop-light",
+    label: "Workshop Light",
+    description: "Default Blueprint light theme used by Workshop-style apps",
+    swatches: ["#ffffff", "#2d72d2", "#1c2127"],
+    assignments: [
+      colorAssignment("background", "#ffffff"),
+      colorAssignment("surface", "#f6f7f9"),
+      colorAssignment("text", "#1c2127"),
+      colorAssignment("text-muted", "#5f6b7c"),
+      colorAssignment("primary", "#2d72d2"),
+      colorAssignment("primary-foreground", "#ffffff"),
+      colorAssignment("secondary", "#f6f7f9"),
+      colorAssignment("secondary-foreground", "#1c2127"),
+      colorAssignment("icon-color", "#5f6b7c"),
+      colorAssignment("border", "#dce0e5"),
+      colorAssignment("danger", "#cd4246"),
+      colorAssignment("success", "#238551"),
+      ...baseDefaults({
+        shadow: "inset 0 1px 1px oklch(0 0 0 / 0.15)",
+      }),
+    ],
+  },
+  {
+    id: "workshop-dark",
+    label: "Workshop Dark",
+    description: "Default Blueprint dark theme used by Workshop-style apps",
+    colorMode: "dark",
+    swatches: ["#111418", "#2d72d2", "#a5aab3"],
+    assignments: [
+      colorAssignment("background", "#111418"),
+      colorAssignment("surface", "#1c2127"),
+      colorAssignment("text", "#a5aab3"),
+      colorAssignment("text-muted", "#8f99a8"),
+      colorAssignment("primary", "#2d72d2"),
+      colorAssignment("primary-foreground", "#ffffff"),
+      colorAssignment("secondary", "#252a31"),
+      colorAssignment("secondary-foreground", "#f6f7f9"),
+      colorAssignment("icon-color", "#8f99a8"),
+      colorAssignment("border", "#ffffff33"),
+      colorAssignment("danger", "#cd4246"),
+      colorAssignment("success", "#238551"),
+      ...baseDefaults({
+        shadow:
+          "inset 0 0 0 1px oklch(1 0 0 / 0.2), 0 4px 6px -4px oklch(0 0 0 / 0.5), 0 10px 30px -5px oklch(0 0 0 / 0.5)",
+      }),
+    ],
   },
   {
     id: "devcon",
     label: "DevCon",
     description: "Dark theme with green accents for DevCon demos",
+    colorMode: "dark",
     swatches: ["#0a0a0a", "#16a34a", "#86efac"],
     assignments: [
       colorAssignment("background", "#0a0a0a"),
@@ -152,7 +157,7 @@ export const THEME_PRESETS: ThemePreset[] = [
       colorAssignment("danger", "#ef4444"),
       colorAssignment("success", "#4ade80"),
       ...baseDefaults({
-        shadow: "0 1px 3px rgba(0,0,0,0.4), 0 1px 2px rgba(0,0,0,0.3)",
+        shadow: "0 1px 3px oklch(0 0 0 / 0.4), 0 1px 2px oklch(0 0 0 / 0.3)",
       }),
     ],
   },
@@ -160,23 +165,24 @@ export const THEME_PRESETS: ThemePreset[] = [
     id: "midnight-blue",
     label: "Midnight Blue",
     description: "Dark theme with blue accents",
-    swatches: ["#0f172a", "#3b82f6", "#e2e8f0"],
+    colorMode: "dark",
+    swatches: ["#0f172a", "#2563eb", "#e2e8f0"],
     assignments: [
       colorAssignment("background", "#0f172a"),
       colorAssignment("surface", "#1e293b"),
       colorAssignment("text", "#e2e8f0"),
       colorAssignment("text-muted", "#94a3b8"),
-      colorAssignment("primary", "#3b82f6"),
+      colorAssignment("primary", "#2563eb"),
       colorAssignment("primary-foreground", "#ffffff"),
       colorAssignment("secondary", "#334155"),
       colorAssignment("secondary-foreground", "#e2e8f0"),
-      colorAssignment("icon-color", "#64748b"),
+      colorAssignment("icon-color", "#8b9bb5"),
       colorAssignment("border", "#334155"),
       colorAssignment("danger", "#ef4444"),
       colorAssignment("success", "#22c55e"),
       ...baseDefaults({
         radius: "6",
-        shadow: "0 1px 3px rgba(0,0,0,0.4), 0 1px 2px rgba(0,0,0,0.3)",
+        shadow: "0 1px 3px oklch(0 0 0 / 0.4), 0 1px 2px oklch(0 0 0 / 0.3)",
       }),
     ],
   },
@@ -194,31 +200,10 @@ export const THEME_PRESETS: ThemePreset[] = [
       colorAssignment("primary-foreground", "#ffffff"),
       colorAssignment("secondary", "#e7e5e4"),
       colorAssignment("secondary-foreground", "#44403c"),
-      colorAssignment("icon-color", "#a8a29e"),
+      colorAssignment("icon-color", "#78716c"),
       colorAssignment("border", "#d6d3d1"),
       colorAssignment("danger", "#dc2626"),
-      colorAssignment("success", "#16a34a"),
-      ...baseDefaults({ radius: "8" }),
-    ],
-  },
-  {
-    id: "ocean-breeze",
-    label: "Ocean Breeze",
-    description: "Cool light theme with teal accents",
-    swatches: ["#f0fdfa", "#0d9488", "#134e4a"],
-    assignments: [
-      colorAssignment("background", "#f0fdfa"),
-      colorAssignment("surface", "#ccfbf1"),
-      colorAssignment("text", "#134e4a"),
-      colorAssignment("text-muted", "#5eead4"),
-      colorAssignment("primary", "#0d9488"),
-      colorAssignment("primary-foreground", "#ffffff"),
-      colorAssignment("secondary", "#99f6e4"),
-      colorAssignment("secondary-foreground", "#134e4a"),
-      colorAssignment("icon-color", "#2dd4bf"),
-      colorAssignment("border", "#99f6e4"),
-      colorAssignment("danger", "#e11d48"),
-      colorAssignment("success", "#059669"),
+      colorAssignment("success", "#15803d"),
       ...baseDefaults({ radius: "8" }),
     ],
   },
@@ -226,13 +211,14 @@ export const THEME_PRESETS: ThemePreset[] = [
     id: "royal-purple",
     label: "Royal Purple",
     description: "Dark theme with purple accents",
+    colorMode: "dark",
     swatches: ["#1a1025", "#a855f7", "#e9d5ff"],
     assignments: [
       colorAssignment("background", "#1a1025"),
       colorAssignment("surface", "#2d1b4e"),
       colorAssignment("text", "#e9d5ff"),
       colorAssignment("text-muted", "#a78bfa"),
-      colorAssignment("primary", "#a855f7"),
+      colorAssignment("primary", "#9333ea"),
       colorAssignment("primary-foreground", "#ffffff"),
       colorAssignment("secondary", "#3b2563"),
       colorAssignment("secondary-foreground", "#e9d5ff"),
@@ -242,7 +228,7 @@ export const THEME_PRESETS: ThemePreset[] = [
       colorAssignment("success", "#34d399"),
       ...baseDefaults({
         radius: "6",
-        shadow: "0 1px 3px rgba(0,0,0,0.4), 0 1px 2px rgba(0,0,0,0.3)",
+        shadow: "0 1px 3px oklch(0 0 0 / 0.4), 0 1px 2px oklch(0 0 0 / 0.3)",
       }),
     ],
   },

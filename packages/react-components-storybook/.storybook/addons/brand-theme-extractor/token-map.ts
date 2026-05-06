@@ -63,8 +63,6 @@ export const TOKEN_ROLES: TokenRoleDefinition[] = [
       "--bp-surface-background-color-default-hover",
       // Table header
       "--osdk-table-header-bg",
-      // Table row hover
-      "--osdk-table-row-bg-hover",
       // Checkbox hover background
       "--osdk-checkbox-bg-hover",
     ],
@@ -85,8 +83,6 @@ export const TOKEN_ROLES: TokenRoleDefinition[] = [
       // Table text
       "--osdk-table-header-color",
       "--osdk-table-cell-color",
-      // Checkbox foreground
-      "--osdk-checkbox-checked-foreground",
     ],
   },
   {
@@ -110,16 +106,18 @@ export const TOKEN_ROLES: TokenRoleDefinition[] = [
     category: "color",
     inputType: "color",
     cssProperties: [
-      // Intent primary
+      // Intent primary (rest, hover, active)
       "--osdk-intent-primary-rest",
       "--bp-intent-primary-rest",
+      "--osdk-intent-primary-hover",
+      "--bp-intent-primary-hover",
+      "--osdk-intent-primary-active",
+      "--bp-intent-primary-active",
       // Focus ring
       "--osdk-emphasis-focus-color",
       "--bp-emphasis-focus-color",
       // Checkbox checked
       "--osdk-checkbox-bg-checked",
-      // Table active row
-      "--osdk-table-row-bg-active",
     ],
   },
   {
@@ -130,6 +128,8 @@ export const TOKEN_ROLES: TokenRoleDefinition[] = [
     cssProperties: [
       "--osdk-intent-primary-foreground",
       "--bp-intent-primary-foreground",
+      // Checkbox tick color
+      "--osdk-checkbox-checked-foreground",
     ],
   },
   {
@@ -179,7 +179,6 @@ export const TOKEN_ROLES: TokenRoleDefinition[] = [
       "--bp-surface-border-color-strong",
       // Table border
       "--osdk-table-border-color",
-      "--osdk-table-row-border-color-hover",
       // Checkbox border color (used inside shorthand)
       "--osdk-checkbox-border-color",
     ],
@@ -192,6 +191,12 @@ export const TOKEN_ROLES: TokenRoleDefinition[] = [
     cssProperties: [
       "--osdk-intent-danger-rest",
       "--bp-intent-danger-rest",
+      "--osdk-intent-danger-hover",
+      "--bp-intent-danger-hover",
+      "--osdk-intent-danger-active",
+      "--bp-intent-danger-active",
+      "--osdk-intent-danger-foreground",
+      "--bp-intent-danger-foreground",
     ],
   },
   {
@@ -202,6 +207,12 @@ export const TOKEN_ROLES: TokenRoleDefinition[] = [
     cssProperties: [
       "--osdk-intent-success-rest",
       "--bp-intent-success-rest",
+      "--osdk-intent-success-hover",
+      "--bp-intent-success-hover",
+      "--osdk-intent-success-active",
+      "--bp-intent-success-active",
+      "--osdk-intent-success-foreground",
+      "--bp-intent-success-foreground",
     ],
   },
 
@@ -316,6 +327,9 @@ export const TOKEN_ROLES: TokenRoleDefinition[] = [
     cssProperties: [
       "--osdk-surface-shadow-2",
       "--bp-surface-shadow-2",
+      // Button and input shadows
+      "--osdk-button-shadow",
+      "--osdk-input-shadow",
     ],
   },
 

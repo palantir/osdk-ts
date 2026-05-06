@@ -26,7 +26,7 @@ import type {
   TokenAssignment,
 } from "./types.js";
 
-export const WORKSHOP_PRESET_ID = "workshop";
+export const WORKSHOP_PRESET_ID = "workshop-light";
 export const DEFAULT_COLOR_MODE: ThemeColorMode = "light";
 
 interface CreateThemeStateParams {
@@ -55,11 +55,12 @@ export function createThemeStateForMode(
     };
   }
 
-  const presetMode = getThemePresetMode(preset, colorMode);
+  const effectiveColorMode = preset.colorMode ?? colorMode;
+  const presetMode = getThemePresetMode(preset, effectiveColorMode);
 
   return {
     active: true,
-    colorMode,
+    colorMode: effectiveColorMode,
     selectedPresetId: preset.id,
     palette: [],
     assignments: presetMode.assignments,
