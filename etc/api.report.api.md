@@ -273,8 +273,7 @@ export interface AsyncIterArgs<
 export interface Attachment {
     	fetchContents(): Promise<Response>;
     	fetchMetadata(): Promise<AttachmentMetadata>;
-    	// (undocumented)
-    rid: string;
+    	rid: string;
 }
 
 // @public (undocumented)
@@ -646,6 +645,16 @@ export interface FetchPageArgs<
     $pageSize?: number;
 }
 
+// @public
+export type FetchPageOptions<
+	Q extends ObjectOrInterfaceDefinition,
+	L extends string = PropertyKeys<Q>,
+	R extends boolean = false,
+	S extends NullabilityAdherence = NullabilityAdherence.Default,
+	T extends boolean = false,
+	PROPERTY_SECURITIES extends boolean = false
+> = FetchPageArgs<Q, L, R, any, S, T, never, {}, PROPERTY_SECURITIES>;
+
 // Warning: (ae-forgotten-export) The symbol "ExtractOptions" needs to be exported by the entry point index.d.ts
 //
 // @public
@@ -658,6 +667,16 @@ export type FetchPageResult<
 	ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<L> = {},
 	PROPERTY_SECURITIES extends boolean = false
 > = PageResult<MaybeScore<Osdk.Instance<Q, ExtractOptions<R, S, T, PROPERTY_SECURITIES>, PropertyKeys<Q> extends L ? never : L>, ORDER_BY_OPTIONS>>;
+
+// @public
+export type FetchPageReturn<
+	Q extends ObjectOrInterfaceDefinition,
+	L extends PropertyKeys<Q>,
+	R extends boolean,
+	S extends NullabilityAdherence,
+	T extends boolean = false,
+	PROPERTY_SECURITIES extends boolean = false
+> = FetchPageResult<Q, L, R, S, T, {}, PROPERTY_SECURITIES>;
 
 // @public (undocumented)
 export type GeoFilter_Intersects = {
@@ -869,25 +888,17 @@ export type LinkTypeApiNamesFor<Q extends ObjectOrInterfaceDefinition> = Extract
 
 // @public (undocumented)
 export interface Logger {
-    	// (undocumented)
-    child(bindings: Record<string, any>, options?: {
+    	child(bindings: Record<string, any>, options?: {
         		level?: string
         		msgPrefix?: string
         	}): Logger;
-    	// (undocumented)
-    debug: Logger.LogFn;
-    	// (undocumented)
-    error: Logger.LogFn;
-    	// (undocumented)
-    fatal: Logger.LogFn;
-    	// (undocumented)
-    info: Logger.LogFn;
-    	// (undocumented)
-    isLevelEnabled(level: string): boolean;
-    	// (undocumented)
-    trace: Logger.LogFn;
-    	// (undocumented)
-    warn: Logger.LogFn;
+    	debug: Logger.LogFn;
+    	error: Logger.LogFn;
+    	fatal: Logger.LogFn;
+    	info: Logger.LogFn;
+    	isLevelEnabled(level: string): boolean;
+    	trace: Logger.LogFn;
+    	warn: Logger.LogFn;
 }
 
 // @public (undocumented)
@@ -914,7 +925,8 @@ export interface Media {
     	fetchContents(): Promise<Response>;
     	fetchMetadata(): Promise<MediaMetadata_2>;
     	getMediaReference(): MediaReference;
-    	getMediaSourceLocation?(): MediaPropertyLocation;
+    	// (undocumented)
+    getMediaSourceLocation?(): MediaPropertyLocation;
 }
 
 // @public

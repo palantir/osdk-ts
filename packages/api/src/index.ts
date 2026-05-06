@@ -76,6 +76,7 @@ export type {
   Augment,
   Augments,
   FetchPageArgs,
+  FetchPageOptions,
   NullabilityAdherence,
   ObjectSetArgs,
   SelectArg,
@@ -83,6 +84,7 @@ export type {
 } from "./object/FetchPageArgs.js";
 export type {
   FetchPageResult,
+  FetchPageReturn,
   SingleOsdkResult,
 } from "./object/FetchPageResult.js";
 export type {

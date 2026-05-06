@@ -16,7 +16,7 @@
 
 import type {
   ActionDefinition,
-  FetchPageArgs,
+  FetchPageOptions,
   InterfaceDefinition,
   Logger,
   MediaReference,
@@ -267,15 +267,12 @@ export function createClientFromContext(clientCtx: MinimalClient) {
             >(
               objectOrInterfaceType: Q,
               rids: string[],
-              options: FetchPageArgs<
+              options: FetchPageOptions<
                 Q,
                 L,
                 R,
-                any,
                 S,
                 T,
-                never,
-                {},
                 PROPERTY_SECURITIES
               > = {},
             ) => {
@@ -293,15 +290,12 @@ export function createClientFromContext(clientCtx: MinimalClient) {
               const PROPERTY_SECURITIES extends boolean = false,
             >(
               rids: readonly string[],
-              options?: FetchPageArgs<
+              options?: FetchPageOptions<
                 ObjectOrInterfaceDefinition,
                 any,
                 R,
-                any,
                 S,
                 T,
-                never,
-                {},
                 PROPERTY_SECURITIES
               >,
             ) => {

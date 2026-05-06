@@ -18,7 +18,9 @@ import type {
   Augment,
   Augments,
   FetchPageArgs,
+  FetchPageOptions,
   FetchPageResult,
+  FetchPageReturn,
   InterfaceDefinition,
   NullabilityAdherence,
   ObjectOrInterfaceDefinition,
@@ -121,26 +123,22 @@ export async function fetchStaticRidPage<
 >(
   client: MinimalClient,
   rids: readonly string[],
-  args: FetchPageArgs<
+  args: FetchPageOptions<
     ObjectOrInterfaceDefinition,
     PropertyKeys<ObjectOrInterfaceDefinition>,
     R,
-    any,
     S,
     T,
-    never,
-    {},
     PROPERTY_SECURITIES
   >,
   useSnapshot: boolean = false,
 ): Promise<
-  FetchPageResult<
+  FetchPageReturn<
     ObjectOrInterfaceDefinition,
     PropertyKeys<ObjectOrInterfaceDefinition>,
     R,
     S,
     T,
-    {},
     PROPERTY_SECURITIES
   >
 > {
@@ -189,13 +187,12 @@ export async function fetchStaticRidPage<
     nextPageToken: result.nextPageToken,
     totalCount: result.totalCount,
   }) as unknown as Promise<
-    FetchPageResult<
+    FetchPageReturn<
       ObjectOrInterfaceDefinition,
       PropertyKeys<ObjectOrInterfaceDefinition>,
       R,
       S,
       T,
-      {},
       PROPERTY_SECURITIES
     >
   >;
@@ -437,9 +434,9 @@ export async function fetchPage<
 >(
   client: MinimalClient,
   objectType: Q,
-  args: FetchPageArgs<Q, L, R, any, S, T, never, {}, PROPERTY_SECURITIES>,
+  args: FetchPageOptions<Q, L, R, S, T, PROPERTY_SECURITIES>,
   objectSet: ObjectSet = resolveBaseObjectSetType(objectType),
-): Promise<FetchPageResult<Q, L, R, S, T, {}, PROPERTY_SECURITIES>> {
+): Promise<FetchPageReturn<Q, L, R, S, T, PROPERTY_SECURITIES>> {
   return fetchPageInternal(client, objectType, objectSet, args);
 }
 

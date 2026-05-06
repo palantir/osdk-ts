@@ -71,6 +71,21 @@ export type FetchPageResult<
 >;
 
 /**
+ * The shape of the value returned by `fetchPage` and thin wrappers around it
+ * (e.g. the experimental `fetchPageByRid`). It pins the order-by slot of
+ * {@link FetchPageResult} to `{}` so wrappers cannot drift from the
+ * underlying call.
+ */
+export type FetchPageReturn<
+  Q extends ObjectOrInterfaceDefinition,
+  L extends PropertyKeys<Q>,
+  R extends boolean,
+  S extends NullabilityAdherence,
+  T extends boolean = false,
+  PROPERTY_SECURITIES extends boolean = false,
+> = FetchPageResult<Q, L, R, S, T, {}, PROPERTY_SECURITIES>;
+
+/**
  * Helper type for converting fetch options into an Osdk object
  */
 export type SingleOsdkResult<

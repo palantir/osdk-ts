@@ -124,6 +124,21 @@ export interface FetchPageArgs<
   $pageSize?: number;
 }
 
+/**
+ * The shape of the options bag accepted by `fetchPage` and thin wrappers
+ * around it (e.g. the experimental `fetchPageByRid`). It pins the
+ * augment / RDP / order-by slots of {@link FetchPageArgs} to their
+ * `fetchPage` defaults so wrappers cannot drift from the underlying call.
+ */
+export type FetchPageOptions<
+  Q extends ObjectOrInterfaceDefinition,
+  L extends string = PropertyKeys<Q>,
+  R extends boolean = false,
+  S extends NullabilityAdherence = NullabilityAdherence.Default,
+  T extends boolean = false,
+  PROPERTY_SECURITIES extends boolean = false,
+> = FetchPageArgs<Q, L, R, any, S, T, never, {}, PROPERTY_SECURITIES>;
+
 export interface AsyncIterArgs<
   Q extends ObjectOrInterfaceDefinition,
   K extends string = PropertyKeys<Q>,

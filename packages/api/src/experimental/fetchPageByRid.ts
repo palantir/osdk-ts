@@ -15,10 +15,10 @@
  */
 
 import type {
-  FetchPageArgs,
+  FetchPageOptions,
   NullabilityAdherence,
 } from "../object/FetchPageArgs.js";
-import type { FetchPageResult } from "../object/FetchPageResult.js";
+import type { FetchPageReturn } from "../object/FetchPageResult.js";
 
 import type {
   ObjectOrInterfaceDefinition,
@@ -36,8 +36,8 @@ type fetchPageByRidFn = <
 >(
   objectType: Q,
   rids: string[],
-  options?: FetchPageArgs<Q, L, R, any, S, T, never, {}, PROPERTY_SECURITIES>,
-) => Promise<FetchPageResult<Q, L, R, S, T, {}, PROPERTY_SECURITIES>>;
+  options?: FetchPageOptions<Q, L, R, S, T, PROPERTY_SECURITIES>,
+) => Promise<FetchPageReturn<Q, L, R, S, T, PROPERTY_SECURITIES>>;
 
 export type FetchPageByRidPayload = {
   fetchPageByRid: fetchPageByRidFn;
@@ -51,25 +51,21 @@ type fetchPageByRidNoTypeFn = <
   const PROPERTY_SECURITIES extends boolean = false,
 >(
   rids: readonly string[],
-  options?: FetchPageArgs<
+  options?: FetchPageOptions<
     ObjectOrInterfaceDefinition,
     any,
     R,
-    any,
     S,
     T,
-    never,
-    {},
     PROPERTY_SECURITIES
   >,
 ) => Promise<
-  FetchPageResult<
+  FetchPageReturn<
     ObjectOrInterfaceDefinition,
     any,
     R,
     S,
     T,
-    {},
     PROPERTY_SECURITIES
   >
 >;
