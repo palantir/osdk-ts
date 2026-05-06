@@ -178,9 +178,7 @@
 
   &[data-highlighted] {
     background-color: var(--osdk-select-item-bg-highlighted);
-    outline: var(--osdk-select-focus-width)
-      solid var(--osdk-select-focus-color);
-    outline-offset: calc(-1 * var(--osdk-select-focus-width));
+    outline: none;
   }
 
   &[data-selected] {

@@ -48,7 +48,13 @@ export const updateEmployeeStoryAction = TypeHelpers
   .build();
 
 export const toggleRemoteStoryAction = TypeHelpers
-  .actionTypeBuilder("toggleRemoteStoryAction")
+  .actionTypeBuilder(
+    TypeHelpers.createActionType({
+      apiName: "toggleRemoteStoryAction",
+      displayName: "Toggle remote status",
+      parameters: {},
+    }),
+  )
   .addParameter("isRemote", "boolean", false)
   .build();
 
