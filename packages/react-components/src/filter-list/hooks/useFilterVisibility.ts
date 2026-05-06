@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 interface FilterVisibilityResult<D> {
   visibleDefinitions: Array<D>;
   hiddenDefinitions: Array<D>;
   showFilter: (key: string) => void;
   hideFilter: (key: string) => void;
+  reorderVisible: (keys: string[]) => void;
   hasVisibilityChanges: boolean;
   resetVisibility: () => void;
 }
@@ -29,10 +30,52 @@ export function useFilterVisibility<D>(
   filterDefinitions: Array<D> | undefined,
   getFilterKey: (definition: D) => string,
   getIsVisible: (definition: D) => boolean,
+  onVisibilityChange?: (visibleKeys: string[], hiddenKeys: string[]) => void,
 ): FilterVisibilityResult<D> {
-  const [visibilityOverrides, setVisibilityOverrides] = useState<
-    Map<string, boolean>
-  >(() => new Map());
+  const allKeys = useMemo(
+    () => filterDefinitions?.map(getFilterKey) ?? [],
+    [filterDefinitions, getFilterKey],
+  );
+
+  const defaultVisibleKeyOrder = useMemo(
+    () =>
+      filterDefinitions
+        ?.filter(getIsVisible)
+        .map(getFilterKey) ?? [],
+    [filterDefinitions, getFilterKey, getIsVisible],
+  );
+
+  const [visibleKeyOrder, setVisibleKeyOrder] = useState<string[]>(
+    () => defaultVisibleKeyOrder,
+  );
+
+  // Sync state when filterDefinitions changes
+  useEffect(() => {
+    setVisibleKeyOrder(defaultVisibleKeyOrder);
+  }, [defaultVisibleKeyOrder]);
+
+  // Keep a ref to onVisibilityChange so callbacks don't need it as a dependency
+  const onVisibilityChangeRef = useRef(onVisibilityChange);
+  onVisibilityChangeRef.current = onVisibilityChange;
+
+  const fireVisibilityChange = useCallback(
+    (nextVisibleKeyOrder: string[]) => {
+      if (!onVisibilityChangeRef.current) return;
+      const visibleSet = new Set(nextVisibleKeyOrder);
+      const hiddenKeys = allKeys.filter((k) => !visibleSet.has(k));
+      onVisibilityChangeRef.current(nextVisibleKeyOrder, hiddenKeys);
+    },
+    [allKeys],
+  );
+
+  const defByKey = useMemo(() => {
+    const map = new Map<string, D>();
+    if (filterDefinitions == null) return map;
+    for (const def of filterDefinitions) {
+      map.set(getFilterKey(def), def);
+    }
+    return map;
+  }, [filterDefinitions, getFilterKey]);
 
   const { visibleDefinitions, hiddenDefinitions } = useMemo(() => {
     if (filterDefinitions == null) {
@@ -42,51 +85,87 @@ export function useFilterVisibility<D>(
       };
     }
 
+    const visibleSet = new Set(visibleKeyOrder);
     const visible: Array<D> = [];
     const hidden: Array<D> = [];
 
-    for (const def of filterDefinitions) {
-      const key = getFilterKey(def);
-      const override = visibilityOverrides.get(key);
-      const isVisible = override ?? getIsVisible(def);
-
-      if (isVisible) {
+    for (const key of visibleKeyOrder) {
+      const def = defByKey.get(key);
+      if (def != null) {
         visible.push(def);
-      } else {
-        hidden.push(def);
       }
     }
 
-    return { visibleDefinitions: visible, hiddenDefinitions: hidden };
-  }, [filterDefinitions, getFilterKey, getIsVisible, visibilityOverrides]);
+    for (const key of allKeys) {
+      if (!visibleSet.has(key)) {
+        const def = defByKey.get(key);
+        if (def != null) {
+          hidden.push(def);
+        }
+      }
+    }
+
+    return {
+      visibleDefinitions: visible,
+      hiddenDefinitions: hidden,
+    };
+  }, [filterDefinitions, defByKey, visibleKeyOrder, allKeys]);
 
   const showFilter = useCallback((key: string) => {
-    setVisibilityOverrides((prev) => {
-      const next = new Map(prev);
-      next.set(key, true);
+    setVisibleKeyOrder((prev) => {
+      if (prev.includes(key)) return prev;
+      const next = [...prev, key];
+      fireVisibilityChange(next);
       return next;
     });
-  }, []);
+  }, [fireVisibilityChange]);
 
   const hideFilter = useCallback((key: string) => {
-    setVisibilityOverrides((prev) => {
-      const next = new Map(prev);
-      next.set(key, false);
+    setVisibleKeyOrder((prev) => {
+      const next = prev.filter((k) => k !== key);
+      fireVisibilityChange(next);
       return next;
     });
-  }, []);
+  }, [fireVisibilityChange]);
 
-  const hasVisibilityChanges = visibilityOverrides.size > 0;
+  const reorderVisible = useCallback((keys: string[]) => {
+    setVisibleKeyOrder((prev) => {
+      if (keys.length === prev.length && keys.every((k, i) => k === prev[i])) {
+        return prev;
+      }
+      fireVisibilityChange(keys);
+      return keys;
+    });
+  }, [fireVisibilityChange]);
 
   const resetVisibility = useCallback(() => {
-    setVisibilityOverrides(new Map());
-  }, []);
+    setVisibleKeyOrder((prev) => {
+      if (
+        defaultVisibleKeyOrder.length === prev.length
+        && defaultVisibleKeyOrder.every((k, i) => k === prev[i])
+      ) {
+        return prev;
+      }
+      fireVisibilityChange(defaultVisibleKeyOrder);
+      return defaultVisibleKeyOrder;
+    });
+  }, [defaultVisibleKeyOrder, fireVisibilityChange]);
+
+  const hasVisibilityChanges = useMemo(() => {
+    if (visibleKeyOrder.length !== defaultVisibleKeyOrder.length) {
+      return true;
+    }
+    return !visibleKeyOrder.every((key, i) =>
+      key === defaultVisibleKeyOrder[i]
+    );
+  }, [visibleKeyOrder, defaultVisibleKeyOrder]);
 
   return {
     visibleDefinitions,
     hiddenDefinitions,
     showFilter,
     hideFilter,
+    reorderVisible,
     hasVisibilityChanges,
     resetVisibility,
   };

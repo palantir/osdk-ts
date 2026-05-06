@@ -38,7 +38,7 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import classnames from "classnames";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import type { FilterState } from "../FilterListItemApi.js";
 import type { RenderFilterInput } from "./BaseFilterListApi.js";
 import styles from "./FilterListContent.module.css";
@@ -71,14 +71,6 @@ interface FilterListContentProps<D> {
   ) => void;
   onFilterRemoved?: (filterKey: string) => void;
   onOrderChange?: (orderedKeys: string[]) => void;
-  /**
-   * Optional ref that receives an imperative setter for the internal drag
-   * order. Pass `null` to reset, or an explicit ordered key list to keep the
-   * visual order in sync with externally-driven changes (e.g. add/remove).
-   */
-  setDragOrderRef?: React.MutableRefObject<
-    ((next: string[] | null) => void) | null
-  >;
   renderInput: RenderFilterInput<D>;
   getFilterKey: (definition: D) => string;
   getFilterLabel: (definition: D) => string;
@@ -93,7 +85,6 @@ export function FilterListContent<D>({
   onFilterStateChanged,
   onFilterRemoved,
   onOrderChange,
-  setDragOrderRef,
   renderInput,
   getFilterKey,
   getFilterLabel,
@@ -101,37 +92,11 @@ export function FilterListContent<D>({
   className,
   style,
 }: FilterListContentProps<D>): React.ReactElement {
-  const [dragOrder, setDragOrder] = useState<string[] | null>(null);
   const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
 
-  useEffect(() => {
-    if (!setDragOrderRef) {
-      return;
-    }
-    setDragOrderRef.current = (next: string[] | null) => setDragOrder(next);
-    return () => {
-      setDragOrderRef.current = null;
-    };
-  }, [setDragOrderRef]);
-
-  const renderDefinitions = useMemo(() => {
-    if (!dragOrder || !filterDefinitions) {
-      return filterDefinitions;
-    }
-    const defsByKey = new Map(filterDefinitions.map(d => [getFilterKey(d), d]));
-    const ordered: Array<D> = [];
-    for (const key of dragOrder) {
-      const def = defsByKey.get(key);
-      if (def) {
-        ordered.push(def);
-        defsByKey.delete(key);
-      }
-    }
-    for (const def of defsByKey.values()) {
-      ordered.push(def);
-    }
-    return ordered;
-  }, [dragOrder, filterDefinitions, getFilterKey]);
+  // The parent owns ordering state (e.g. via useFilterVisibility); we just
+  // render filterDefinitions in the order we receive them.
+  const renderDefinitions = filterDefinitions;
 
   const sortableIds = useMemo(
     () =>
@@ -176,7 +141,6 @@ export function FilterListContent<D>({
       const newIndex = sortableIds.indexOf(String(over.id));
       if (oldIndex !== -1 && newIndex !== -1) {
         const next = arrayMove(sortableIds, oldIndex, newIndex);
-        setDragOrder(next);
         onOrderChange?.(next);
       }
     },

@@ -15,7 +15,7 @@
  */
 
 import type { ObjectTypeDefinition, WhereClause } from "@osdk/api";
-import React, { useCallback, useMemo, useRef } from "react";
+import React, { useCallback, useMemo } from "react";
 import { AddFilterPopover } from "./base/AddFilterPopover.js";
 import { BaseFilterList } from "./base/BaseFilterList.js";
 import type { RenderFilterInput } from "./base/BaseFilterListApi.js";
@@ -69,51 +69,44 @@ export function FilterList<Q extends ObjectTypeDefinition>(
     [],
   );
 
-  const {
-    visibleDefinitions: managedVisibleDefinitions,
-    hiddenDefinitions: managedHiddenDefinitions,
-    showFilter,
-    hideFilter,
-    hasVisibilityChanges,
-    resetVisibility,
-  } = useFilterVisibility(filterDefinitions, getFilterKey, getIsVisible);
-
-  // TODO: Refactor to consolidate dragOrder management in useFilterVisibility.
-  // This ref shadows dragOrder so we can compute the visible-key
-  // order for onFilterVisibilityChange without lifting state.
-  const orderedVisibleKeysRef = useRef<string[] | null>(null);
-  const setDragOrderRef = useRef<((next: string[] | null) => void) | null>(
-    null,
-  );
-
-  const fireOnFilterVisibilityChange = useCallback(
-    (
-      visibleKeys: string[],
-      hiddenDefs: Array<FilterDefinitionUnion<Q>>,
-    ) => {
+  const handleVisibilityChange = useCallback(
+    (visibleKeys: string[], hiddenKeys: string[]) => {
       if (!onFilterVisibilityChange) {
         return;
       }
-      const states: Array<{ filterKey: FilterKey<Q>; isVisible: boolean }> = [];
-      for (const key of visibleKeys) {
-        states.push({ filterKey: key as FilterKey<Q>, isVisible: true });
-      }
-      for (const def of hiddenDefs) {
-        states.push({
-          filterKey: getFilterKey(def) as FilterKey<Q>,
+      const states: Array<{ filterKey: FilterKey<Q>; isVisible: boolean }> = [
+        ...visibleKeys.map((key) => ({
+          filterKey: key as FilterKey<Q>,
+          isVisible: true,
+        })),
+        ...hiddenKeys.map((key) => ({
+          filterKey: key as FilterKey<Q>,
           isVisible: false,
-        });
-      }
+        })),
+      ];
       onFilterVisibilityChange(states);
     },
     [onFilterVisibilityChange],
   );
 
+  const {
+    visibleDefinitions: managedVisibleDefinitions,
+    hiddenDefinitions: managedHiddenDefinitions,
+    showFilter,
+    hideFilter,
+    reorderVisible,
+    hasVisibilityChanges,
+    resetVisibility,
+  } = useFilterVisibility(
+    filterDefinitions,
+    getFilterKey,
+    getIsVisible,
+    uncontrolledAddFilterMode ? handleVisibilityChange : undefined,
+  );
+
   const handleReset = useCallback(() => {
     reset();
     resetVisibility();
-    orderedVisibleKeysRef.current = null;
-    setDragOrderRef.current?.(null);
     onReset?.();
   }, [reset, resetVisibility, onReset]);
 
@@ -135,63 +128,25 @@ export function FilterList<Q extends ObjectTypeDefinition>(
       clearFilterState(filterKey);
       if (uncontrolledAddFilterMode) {
         hideFilter(filterKey);
-        const currentOrder = orderedVisibleKeysRef.current
-          ?? managedVisibleDefinitions.map(getFilterKey);
-        const nextOrder = currentOrder.filter((k) => k !== filterKey);
-        orderedVisibleKeysRef.current = nextOrder;
-        const removedDef = managedVisibleDefinitions.find(
-          (d) => getFilterKey(d) === filterKey,
-        );
-        const nextHidden = removedDef
-          ? [...managedHiddenDefinitions, removedDef]
-          : managedHiddenDefinitions;
-        fireOnFilterVisibilityChange(nextOrder, nextHidden);
       }
       onFilterRemoved?.(filterKey);
     },
-    [
-      clearFilterState,
-      uncontrolledAddFilterMode,
-      hideFilter,
-      onFilterRemoved,
-      managedVisibleDefinitions,
-      managedHiddenDefinitions,
-      fireOnFilterVisibilityChange,
-    ],
+    [clearFilterState, uncontrolledAddFilterMode, hideFilter, onFilterRemoved],
   );
 
   const handleFilterShown = useCallback(
     (filterKey: string) => {
       showFilter(filterKey);
-      const currentOrder = orderedVisibleKeysRef.current
-        ?? managedVisibleDefinitions.map(getFilterKey);
-      const nextOrder = [...currentOrder, filterKey];
-      orderedVisibleKeysRef.current = nextOrder;
-      // Sync FilterListContent's drag order so the newly-added filter renders
-      // at the bottom of the list, matching the callback semantics.
-      setDragOrderRef.current?.(nextOrder);
-      const nextHidden = managedHiddenDefinitions.filter(
-        (d) => getFilterKey(d) !== filterKey,
-      );
-      fireOnFilterVisibilityChange(nextOrder, nextHidden);
       onFilterAdded?.(filterKey, filterDefinitions ?? []);
     },
-    [
-      showFilter,
-      onFilterAdded,
-      filterDefinitions,
-      managedVisibleDefinitions,
-      managedHiddenDefinitions,
-      fireOnFilterVisibilityChange,
-    ],
+    [showFilter, onFilterAdded, filterDefinitions],
   );
 
   const handleOrderChange = useCallback(
     (orderedKeys: string[]) => {
-      orderedVisibleKeysRef.current = orderedKeys;
-      fireOnFilterVisibilityChange(orderedKeys, managedHiddenDefinitions);
+      reorderVisible(orderedKeys);
     },
-    [fireOnFilterVisibilityChange, managedHiddenDefinitions],
+    [reorderVisible],
   );
 
   const hiddenFilterItems = useMemo(
@@ -275,7 +230,6 @@ export function FilterList<Q extends ObjectTypeDefinition>(
       enableSorting={enableSorting}
       onFilterRemoved={effectiveOnFilterRemoved}
       onOrderChange={handleOrderChange}
-      setDragOrderRef={setDragOrderRef}
       className={className}
       renderAddFilterButton={effectiveRenderAddFilterButton}
     />

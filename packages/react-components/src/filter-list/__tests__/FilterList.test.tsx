@@ -379,4 +379,34 @@ describe("FilterList onFilterVisibilityChange", () => {
 
     expect(onFilterVisibilityChange).not.toHaveBeenCalled();
   });
+
+  it("fires with the original visibility state on reset", () => {
+    const onFilterVisibilityChange = vi.fn();
+    const definitions: Def[] = [
+      visibleDef("name"),
+      visibleDef("age"),
+      hiddenDef("active"),
+    ];
+
+    render(
+      <FilterList
+        objectType={MockObjectType}
+        filterDefinitions={definitions}
+        showResetButton={true}
+        onFilterVisibilityChange={onFilterVisibilityChange}
+      />,
+    );
+
+    fireEvent.click(screen.getByLabelText("Remove name filter"));
+    expect(onFilterVisibilityChange).toHaveBeenCalledTimes(1);
+
+    fireEvent.click(screen.getByRole("button", { name: /Reset filters/ }));
+
+    expect(onFilterVisibilityChange).toHaveBeenCalledTimes(2);
+    expect(onFilterVisibilityChange).toHaveBeenLastCalledWith([
+      { filterKey: "name", isVisible: true },
+      { filterKey: "age", isVisible: true },
+      { filterKey: "active", isVisible: false },
+    ]);
+  });
 });
