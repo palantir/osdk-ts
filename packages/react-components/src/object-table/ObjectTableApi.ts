@@ -92,14 +92,6 @@ interface SharedColumnDefinition<
   renderHeader?: () => React.ReactNode;
 }
 
-/**
- * Column definition for an editable column. Setting `editable` to a truthy
- * value unlocks `editFieldConfig` and `validateEdit`.
- *
- * `editable` can be a boolean or a predicate that receives the row data and
- * returns whether the cell is editable. Use the predicate form to make
- * editability depend on the row's values.
- */
 interface EditableColumnDefinition<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
@@ -108,6 +100,11 @@ interface EditableColumnDefinition<
     never
   >,
 > extends SharedColumnDefinition<Q, RDPs, FunctionColumns> {
+  /**
+   * `editable` can be a boolean or a predicate that receives the row data and
+   * returns whether the cell is editable. Use the predicate form to make
+   * editing depend on the row's values.
+   */
   editable:
     | true
     | ((
@@ -375,6 +372,10 @@ export interface ObjectTableProps<
    * editable (i.e. any column with `editable: true` or `editable: (row) => boolean`).
    * Set this to `false` to hide the footer when you want to drive edit mode
    * and submission entirely from your own UI.
+   *
+   * **Note:** When `editMode` is `"manual"` and `onSubmitEdits` is provided,
+   * the footer is always shown regardless of this prop, since it provides the
+   * only way for users to enter edit mode and submit edits.
    */
   showEditFooter?: boolean;
 
@@ -425,7 +426,10 @@ export interface ObjectTableProps<
   ) => void;
 
   /**
-   * If provided, the button Submit Edits will be shown in the table
+   * If provided, the "Submit Edits" button will be shown in the edit footer.
+   *
+   * When `editMode` is `"manual"`, the edit footer is automatically shown
+   * regardless of `showEditFooter` so the user can trigger submission.
    *
    * @param edits an array of edit info containing details about the edited cells
    * including the rowId, columnId, new and old values, and the row data before the edit

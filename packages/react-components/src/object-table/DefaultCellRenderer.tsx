@@ -18,6 +18,7 @@ import type { CellContext, RowData } from "@tanstack/react-table";
 import React from "react";
 import { AsyncValueCell } from "./components/AsyncValueCell.js";
 import { EditableCell } from "./EditableCell.js";
+import styles from "./EditableCell.module.css";
 import { isAsyncCellData } from "./utils/AsyncCellData.js";
 import { isCellEditable } from "./utils/editableUtils.js";
 import { getCellId } from "./utils/getCellId.js";
@@ -44,6 +45,14 @@ export function renderDefaultCell<TData extends RowData>(
   const isEditable = isCellEditable(columnMeta?.editable, rowData);
 
   if (!isEditable || !meta?.onCellEdit || !meta?.isInEditMode) {
+    // Align non editable cells with the editable cells
+    if (meta?.isInEditMode) {
+      return (
+        <span className={styles.nonEditableCellInEditMode}>
+          {cellValue as React.ReactNode}
+        </span>
+      );
+    }
     return <>{cellValue}</>;
   }
 

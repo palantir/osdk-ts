@@ -147,12 +147,12 @@ Each column header has a menu with items for sorting, filtering, pinning, resizi
 
 > The editable feature allows inline editing with validation and bulk submission capabilities. Editable cells support text inputs, number inputs, and dropdown selectors.
 
-| Prop                 | Type                                          | Description                                                                                                                                                                                                                                     |
-| -------------------- | --------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `editMode`           | `"always" \| "manual"`                        | Controls edit mode behavior. "always": Table is always in edit mode. "manual": User toggles edit mode on/off. Default: "manual"                                                                                                                 |
-| `onCellValueChanged` | `(info: CellEditInfo) => void`                | Called when a cell value is edited. The info object contains rowId, columnId, newValue, oldValue, and originalRowData                                                                                                                           |
-| `onSubmitEdits`      | `(edits: CellEditInfo[]) => Promise<boolean>` | When provided, shows a "Submit Edits" button that calls this function with all pending edits. Return true on success                                                                                                                            |
-| `showEditFooter`     | `boolean`                                     | Whether to render the bottom edit footer (Edit Table / Cancel / Submit Edits). Defaults to `true`; the footer is only shown when the table has at least one editable column. Set to `false` to drive edit mode and submission from your own UI. |
+| Prop                 | Type                                          | Description                                                                                                                                                                                                                                                                                                                                                          |
+| -------------------- | --------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `editMode`           | `"always" \| "manual"`                        | Controls edit mode behavior. "always": Table is always in edit mode. "manual": User toggles edit mode on/off. Default: "manual"                                                                                                                                                                                                                                      |
+| `onCellValueChanged` | `(info: CellEditInfo) => void`                | Called when a cell value is edited. The info object contains rowId, columnId, newValue, oldValue, and originalRowData                                                                                                                                                                                                                                                |
+| `onSubmitEdits`      | `(edits: CellEditInfo[]) => Promise<boolean>` | When provided, shows a "Submit Edits" button in the edit footer. When `editMode` is `"manual"`, the edit footer is automatically shown regardless of `showEditFooter`. Return true on success                                                                                                                                                                        |
+| `showEditFooter`     | `boolean`                                     | Whether to render the bottom edit footer (Edit Table / Cancel / Submit Edits). Defaults to `true`; the footer is only shown when the table has at least one editable column. Set to `false` to drive edit mode and submission from your own UI. **Ignored when `editMode` is `"manual"` and `onSubmitEdits` is provided — the footer is always shown in that case.** |
 
 ## Column Definitions
 
@@ -169,7 +169,7 @@ type ColumnDefinition<Q, RDPs, FunctionColumns> = {
   resizable?: boolean; // Allow column resizing
   orderable?: boolean; // Allow column sorting
   filterable?: boolean; // Allow column filtering
-  editable?: boolean | ((rowData) => boolean); // Allow inline editing for this column. Pass a function to make editability conditional per row
+  editable?: boolean | ((rowData) => boolean); // Allow inline editing for this column. Pass a function to make it conditional per row
   editFieldConfig?: EditFieldConfig; // Optional editor component config (e.g. dropdown)
   validateEdit?: (value: unknown) => Promise<string | undefined>; // Custom validation function for cell edits
   renderCell?: (object, locator) => React.ReactNode; // Custom cell renderer
@@ -183,7 +183,7 @@ type ColumnDefinition<Q, RDPs, FunctionColumns> = {
 `editable` accepts either a boolean or a function `(rowData) => boolean`:
 
 - `editable: true` — every cell in the column is editable.
-- `editable: (rowData) => boolean` — editability is decided per row. The function receives the row's data and returns whether the cell should be editable.
+- `editable: (rowData) => boolean` — configurable per row. The function receives the row's data and returns whether the cell should be editable.
 
 ```typescript
 {
@@ -834,7 +834,7 @@ function EditableEmployeesTable() {
    - All edits are submitted together
    - Return `true` from `onSubmitEdits` to clear edits after successful submission
 
-#### Conditional Editability and Per-Row Editor Configuration
+#### Per-Row Configuration for Editable and FieldComponentProps
 
 Pass a function to `editable` to gate editing per row, and a `getFieldComponentProps` function to compute editor props from the row's data:
 

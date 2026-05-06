@@ -139,6 +139,10 @@
   padding: calc(var(--osdk-surface-spacing) * 0.5) 0;
 }
 
+.nonEditableCellInEditMode {
+  padding-left: calc(var(--osdk-surface-spacing) * 3);
+}
+
 .osdkEditableInput {
   width: 100%;
   overflow: hidden;

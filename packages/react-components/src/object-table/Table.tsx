@@ -121,9 +121,14 @@ function BaseTableInner<
     headerMenuFeatureFlags,
     editableConfig,
     getRowAttributes,
-    showEditFooter = true,
+    showEditFooter: showEditFooterProp = true,
   }: BaseTableProps<TData>,
 ): ReactElement {
+  // The footer is required to show Submit Edits / Edit Table buttons
+  const showEditFooter = editableConfig?.editModeState.type === "manual"
+    || editableConfig?.onSubmitEdits != null
+    || showEditFooterProp;
+
   const tableContainerRef = useRef<HTMLDivElement>(null);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [focusedRowId, setFocusedRowId] = useState<string | null>(null);
