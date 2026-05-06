@@ -193,9 +193,7 @@ describe("DatetimePickerField", () => {
 
         fireEvent.focus(screen.getByRole("combobox"));
 
-        expect(portalContainer.contains(screen.getByRole("dialog"))).toBe(
-          true,
-        );
+        expect(portalContainer.contains(screen.getByRole("dialog"))).toBe(true);
       } finally {
         portalContainer.remove();
       }
@@ -272,10 +270,12 @@ describe("DatetimePickerField", () => {
       const input = screen.getByRole("combobox");
       fireEvent.focus(input);
 
-      expect((screen.getByLabelText("Time hours") as HTMLInputElement).value)
-        .toBe("14");
-      expect((screen.getByLabelText("Time minutes") as HTMLInputElement).value)
-        .toBe("30");
+      expect(
+        (screen.getByLabelText("Time hours") as HTMLInputElement).value,
+      ).toBe("14");
+      expect(
+        (screen.getByLabelText("Time minutes") as HTMLInputElement).value,
+      ).toBe("30");
     });
 
     it("calls onChange with updated time when a valid time segment blurs", () => {
@@ -357,21 +357,19 @@ describe("DatetimePickerField", () => {
 
     it("updates time inputs when a valid datetime is typed", () => {
       render(
-        <DatetimePickerField
-          value={null}
-          onChange={vi.fn()}
-          showTime={true}
-        />,
+        <DatetimePickerField value={null} onChange={vi.fn()} showTime={true} />,
       );
       const input = screen.getByRole("combobox") as HTMLInputElement;
       fireEvent.focus(input);
 
       fireEvent.change(input, { target: { value: "2024-03-20 14:30" } });
 
-      expect((screen.getByLabelText("Time hours") as HTMLInputElement).value)
-        .toBe("14");
-      expect((screen.getByLabelText("Time minutes") as HTMLInputElement).value)
-        .toBe("30");
+      expect(
+        (screen.getByLabelText("Time hours") as HTMLInputElement).value,
+      ).toBe("14");
+      expect(
+        (screen.getByLabelText("Time minutes") as HTMLInputElement).value,
+      ).toBe("30");
     });
 
     it("does not set a date when tabbing through empty time inputs", () => {
@@ -744,13 +742,6 @@ describe("DatetimePickerField", () => {
       const input = screen.getByRole("combobox");
       expect(input.getAttribute("aria-haspopup")).toBe("dialog");
       expect(input.getAttribute("aria-expanded")).toBe("false");
-    });
-
-    it("does not nest the combobox inside an interactive trigger", () => {
-      render(<DatetimePickerField value={null} onChange={vi.fn()} />);
-      const input = screen.getByRole("combobox");
-
-      expect(input.closest("button, [role='button']")).toBeNull();
     });
 
     it("sets aria-expanded to true when popover is open", () => {

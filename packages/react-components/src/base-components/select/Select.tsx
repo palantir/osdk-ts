@@ -26,7 +26,6 @@ import {
 import { CaretDown } from "@blueprintjs/icons";
 import classnames from "classnames";
 import React from "react";
-import { getPopupSideOffset } from "../popupPositioning.js";
 import styles from "./Select.module.css";
 
 export interface SelectProps<Value, Multiple extends boolean = false>
@@ -105,7 +104,7 @@ function SelectPositioner({
   return (
     <BaseUISelect.Positioner
       className={classnames(styles.osdkSelectPositioner, className)}
-      sideOffset={getPopupSideOffset}
+      sideOffset={4}
       /* Disable Base UI's default behavior of aligning the selected item in
          the popup with the trigger. This causes layout jumps when the popup
          opens because the list scrolls to center the selected item. A static

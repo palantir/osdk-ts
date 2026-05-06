@@ -30,8 +30,8 @@
   /* Base UI sets --available-height after positioning; fall back to the design
      cap so long async/object lists never briefly render at full height. */
   --osdk-combobox-popup-max-height: min(
-    var(--available-height, calc(var(--osdk-surface-spacing) * 80)),
-    calc(var(--osdk-surface-spacing) * 80)
+    var(--available-height, calc(var(--osdk-surface-spacing) * 90)),
+    calc(var(--osdk-surface-spacing) * 90)
   );
   --osdk-combobox-z-index: var(--osdk-surface-z-index-3);
 
