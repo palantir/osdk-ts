@@ -28,6 +28,14 @@ If a skill ever conflicts with this file or `CONTRIBUTING.md`, those win — fla
 - Component interactions live in a hook (e.g. `useBase<Name>State`) so the same logic can later be exported as a headless component without rewriting. Treat Base as `<headless-hook> + <markup>` from day one
 - For complex components, split into a building blocks tier: sub-components and hooks under `components/` and `hooks/` subfolders (e.g. `PdfViewerToolbar`, `PdfViewerSidebar`, `usePdfViewerState`)
 
+### Why `@osdk/react` hooks
+
+`@osdk/react` hooks share a single client and observable cache across every component on the page. This provides:
+
+- **Consistent state across components.** All mutations through `useOsdkAction` (and other `@osdk/react` mutations) automatically propagate to every component reading that data. Users see the latest writes immediately, with no stale rows or inconsistencies
+- **Coalesced network requests.** Multiple components asking for the same objects automatically share a single request, eliminating duplicate traffic and improving load time
+- **Automatic reactivity to invalidations.** When any component invalidates a query, all components reading that data re-render automatically without manual refetch logic or remounting
+
 ### Reuse before writing
 
 - **Reuse from `src/base-components/` first.** This folder contains shared internal UI primitives (`action-button/`, `checkbox/`, `combobox/`, `dialog/`, `draggable-list/`, `icon/`, `search-bar/`, `searchable-menu/`, `select/`, `skeleton/`, `switch/`, `tooltip/`). Check this folder before writing a new UI primitive — reusing avoids visual / behavioral drift
@@ -54,7 +62,7 @@ Every feature that holds state the user can change (selection, sort, filter, exp
 
 ### Render override slots
 
-Expose `render*` slots (e.g. `renderHeader`, `renderProperty`, `renderRow`) where consumers may legitimately want to deviate from default rendering. Default rendering must remain feature-complete with no overrides supplied. Don't add slots speculatively — add them where the surface is obviously customisable (header, individual cell/property, empty state). When in doubt, add the override; we want to enable flexibility where we can.
+Expose `render*` slots (e.g. `renderHeader`, `renderProperty`, `renderRow`) where consumers may legitimately want to deviate from default rendering. Default rendering must remain feature-complete with no overrides supplied. Don't add slots speculatively — add them where the surface is obviously customisable (header, individual cell/property, empty state). When in doubt, don't add — every slot is API surface we have to maintain.
 
 ### Event listeners on top of default behavior
 

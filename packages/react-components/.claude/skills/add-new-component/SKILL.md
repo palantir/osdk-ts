@@ -21,16 +21,7 @@ If this skill conflicts with `CONTRIBUTING.md` or `CLAUDE.md`, **those win** —
 
 ## Git policy
 
-The skill **asks the user every single time** before:
-
-- `git commit` (every commit, including the first)
-- `git push` (every push, including subsequent pushes after PR feedback)
-- `gh pr create` / opening or editing a PR
-- Any `git` action that mutates remote state
-
-A "yes" once does not extend to the next action. The user has been burned by skills that asked once and then started pushing automatically — do not do that.
-
-PR descriptions and commit messages must **not** include "Generated with Claude Code", `Co-Authored-By: Claude`, `🤖`, or other AI-attribution footers — write as the human author would.
+Ask the user before every git/gh action that mutates remote state (`git commit`, `git push`, `gh pr create`, edits to a PR). A "yes" once does not extend to the next action.
 
 ## Preflight — before writing any code
 
@@ -47,7 +38,6 @@ Ask the user, in order. Do not skip.
 3. **Figma URL or reference screenshot** (optional but strongly preferred). If a Figma URL is provided, use **figma-mcp** to read it.
 4. **Demo URL for the reference** (optional). If the reference already runs somewhere — Storybook deployment, staging app, localhost — ask for the URL. Reference analysis will visit it via `playwright-cli` to capture appearance and interaction. No demo is fine; analysis falls back to source-only.
 5. **MVP feature list.** Spell out what "MVP" means for this component (e.g. _"when `objectType` is passed, data renders in the table"_). This is the checklist Step 3 verifies against.
-6. **`@playwright/cli` install check.** Step 3 needs `@playwright/cli` on PATH. If absent: `npm install -g @playwright/cli@latest && playwright-cli install --skills`. Confirm with the user before running a global install.
 
 ## Reference analysis — before Step 1
 
@@ -154,6 +144,7 @@ Implementation continues on the same branch as Step 1. No new branch.
    - Add `docs/<Name>.md` with usage and a minimal example
    - If you added CSS variables, update `docs/CSSVariables.md`
    - Add a one-line entry to the components table in `AGENTS.md` and `README.md`
+   - **Register with Docusaurus.** Add `"<Name>"` to the `@osdk/react-components` category in `docs/sidebarsReactComponents.ts` at the repo root — without this the doc ships in the package but does not appear on the public docs site
 
 6. **No checkpoint here — auto-proceed to Step 3.** Status update only ("Implementation done across N files; running Storybook verification next.") so the user knows what's happening, then immediately start Step 3.
 
