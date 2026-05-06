@@ -20,9 +20,7 @@ export { __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference } from "../expe
 export { __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchOneByRid } from "../experimental/fetchOneByRid.js";
 export {
   __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchPageByRid,
-  type FetchPageByRidArgs,
   type FetchPageByRidPayload,
-  type FetchPageByRidResult,
 } from "../experimental/fetchPageByRid.js";
 export { __EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks } from "../experimental/getBulkLinks.js";
 export type {

@@ -26,24 +26,6 @@ import type {
 } from "../ontology/ObjectOrInterface.js";
 import type { Experiment } from "./Experiment.js";
 
-export type FetchPageByRidArgs<
-  Q extends ObjectOrInterfaceDefinition,
-  L extends PropertyKeys<Q>,
-  R extends boolean,
-  S extends NullabilityAdherence,
-  T extends boolean,
-  P extends boolean,
-> = FetchPageArgs<Q, L, R, any, S, T, never, {}, P>;
-
-export type FetchPageByRidResult<
-  Q extends ObjectOrInterfaceDefinition,
-  L extends PropertyKeys<Q>,
-  R extends boolean,
-  S extends NullabilityAdherence,
-  T extends boolean,
-  P extends boolean,
-> = FetchPageResult<Q, L, R, S, T, {}, P>;
-
 type fetchPageByRidFn = <
   Q extends ObjectOrInterfaceDefinition,
   const L extends PropertyKeys<Q>,
@@ -54,8 +36,8 @@ type fetchPageByRidFn = <
 >(
   objectType: Q,
   rids: string[],
-  options?: FetchPageByRidArgs<Q, L, R, S, T, PROPERTY_SECURITIES>,
-) => Promise<FetchPageByRidResult<Q, L, R, S, T, PROPERTY_SECURITIES>>;
+  options?: FetchPageArgs<Q, L, R, any, S, T, never, {}, PROPERTY_SECURITIES>,
+) => Promise<FetchPageResult<Q, L, R, S, T, {}, PROPERTY_SECURITIES>>;
 
 export type FetchPageByRidPayload = {
   fetchPageByRid: fetchPageByRidFn;
@@ -69,21 +51,25 @@ type fetchPageByRidNoTypeFn = <
   const PROPERTY_SECURITIES extends boolean = false,
 >(
   rids: readonly string[],
-  options?: FetchPageByRidArgs<
+  options?: FetchPageArgs<
     ObjectOrInterfaceDefinition,
     any,
     R,
+    any,
     S,
     T,
+    never,
+    {},
     PROPERTY_SECURITIES
   >,
 ) => Promise<
-  FetchPageByRidResult<
+  FetchPageResult<
     ObjectOrInterfaceDefinition,
     any,
     R,
     S,
     T,
+    {},
     PROPERTY_SECURITIES
   >
 >;
