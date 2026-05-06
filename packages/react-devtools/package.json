@@ -75,7 +75,7 @@
     "@types/react-dom": "^18.3.5",
     "@types/react-reconciler": "^0.28.0",
     "@vitejs/plugin-react": "^4.3.4",
-    "happy-dom": "^16.8.1",
+    "happy-dom": "^20.8.9",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "sass-embedded": "^1.89.2",
