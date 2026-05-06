@@ -32,17 +32,17 @@ import type {
   ShapeInstance,
 } from "@osdk/api/unstable";
 import { ShapeNullabilityError } from "@osdk/api/unstable";
+import type {
+  ObserveObjectCallbackArgs,
+  ObserveObjectsCallbackArgs,
+} from "@osdk/client/observable";
 import {
   applyShapeTransformations,
   applyShapeTransformationsToArray,
 } from "@osdk/client/unstable-do-not-use";
-import type {
-  ObserveObjectCallbackArgs,
-  ObserveObjectsCallbackArgs,
-} from "@osdk/client/unstable-do-not-use";
 import React from "react";
 import { devToolsMetadata, makeExternalStore } from "../makeExternalStore.js";
-import { OsdkContext2 } from "../OsdkContext2.js";
+import { OsdkContext } from "../OsdkContext.js";
 import { useStableValue } from "../shared/storeUtils.js";
 import {
   createBatchedDerivedLinksStore,
@@ -130,7 +130,7 @@ export function useShapeSingle<
   },
 ): UseShapeResult<S> {
   const { enabled = true, links: linkConfig = {} } = options ?? {};
-  const { observableClient, client } = React.useContext(OsdkContext2);
+  const { observableClient, client } = React.useContext(OsdkContext);
   const objectType = shape.__baseTypeApiName;
 
   const selectProps = React.useMemo(
@@ -327,7 +327,7 @@ export function useShapeList<
     links: linkConfig = {},
   } = options;
 
-  const { observableClient, client } = React.useContext(OsdkContext2);
+  const { observableClient, client } = React.useContext(OsdkContext);
   const objectType = shape.__baseType;
   const canonWhere = observableClient.canonicalizeWhereClause(where ?? {});
   const stableCanonWhere = React.useMemo(
