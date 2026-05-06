@@ -25,7 +25,7 @@
   flex-direction: column;
   gap: var(--osdk-form-field-gap);
   padding-block: var(--osdk-form-content-padding-block);
-  padding-inline: var(--osdk-form-padding-inline);
+  padding-inline: var(--osdk-form-content-padding-inline);
 }
 
 .osdkFormFooter {
@@ -33,8 +33,8 @@
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  padding-block: var(--osdk-form-footer-block-padding);
-  padding-inline: var(--osdk-form-padding-inline);
+  padding-block: var(--osdk-form-content-padding-inline);
+  padding-inline: var(--osdk-form-content-padding-inline);
   border-block-start-width: var(--osdk-surface-border-width);
   border-block-start-style: solid;
   border-block-start-color: var(--osdk-form-footer-border-color);

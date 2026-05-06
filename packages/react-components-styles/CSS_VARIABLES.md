@@ -252,7 +252,6 @@ Shared form-control tokens used by ActionForm, ObjectTable editable cells, and o
 
 | Variable                             | Default Value                                                          | Description                   |
 | ------------------------------------ | ---------------------------------------------------------------------- | ----------------------------- |
-| `--osdk-form-region-gap`             | `calc(var(--osdk-surface-spacing) * 3)`                                | Gap between form regions      |
 | `--osdk-form-field-gap`              | `calc(var(--osdk-surface-spacing) * 4)`                                | Gap between form fields       |
 | `--osdk-form-header-block-padding`   | `calc(var(--osdk-surface-spacing) * 2)`                                | Form header block padding     |
 | `--osdk-input-line-height`           | `var(--osdk-typography-line-height-default)`                           | Shared input line height      |

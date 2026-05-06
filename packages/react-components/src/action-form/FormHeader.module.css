@@ -17,7 +17,7 @@
 .osdkFormHeader {
   margin: 0;
   padding-block: var(--osdk-form-header-block-padding);
-  padding-inline: var(--osdk-form-padding-inline);
+  padding-inline: var(--osdk-form-content-padding-inline);
   border-block-end-width: var(--osdk-surface-border-width);
   border-block-end-style: solid;
   border-block-end-color: var(--osdk-form-header-border-color);

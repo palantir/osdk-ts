@@ -939,12 +939,11 @@ Styling for form components.
 
 #### Layout
 
-| Variable                            | Default Value                           | Description                                      |
-| ----------------------------------- | --------------------------------------- | ------------------------------------------------ |
-| `--osdk-form-region-gap`            | `calc(var(--osdk-surface-spacing) * 3)` | Gap between form regions                         |
-| `--osdk-form-field-gap`             | `calc(var(--osdk-surface-spacing) * 4)` | Gap between fields                               |
-| `--osdk-form-padding-inline`        | `0`                                     | Shared inline padding for form regions           |
-| `--osdk-form-content-padding-block` | `0`                                     | Content block padding for the form fields region |
+| Variable                             | Default Value                           | Description                                      |
+| ------------------------------------ | --------------------------------------- | ------------------------------------------------ |
+| `--osdk-form-field-gap`              | `calc(var(--osdk-surface-spacing) * 4)` | Gap between fields                               |
+| `--osdk-form-content-padding-inline` | `0`                                     | Shared inline padding for form regions           |
+| `--osdk-form-content-padding-block`  | `0`                                     | Content block padding for the form fields region |
 
 #### Header
 
@@ -961,7 +960,6 @@ Styling for form components.
 | Variable                             | Default Value                              | Description                  |
 | ------------------------------------ | ------------------------------------------ | ---------------------------- |
 | `--osdk-form-footer-border-color`    | `var(--osdk-surface-border-color-default)` | Footer border color          |
-| `--osdk-form-footer-block-padding`   | `0`                                        | Footer block padding         |
 | `--osdk-form-footer-error-color`     | `var(--osdk-form-error-color)`             | Footer error indicator color |
 | `--osdk-form-footer-error-font-size` | `var(--osdk-typography-size-body-medium)`  | Footer error font size       |
 
@@ -1383,7 +1381,7 @@ To create a custom theme, override the tokens at the appropriate level. You can 
     --osdk-table-header-bg: #f0f0f0;
     --osdk-table-row-bg-default: white;
     --osdk-table-border-color: #e0e0e0;
-    
+
     /* Customize editable table styling */
     --osdk-table-cell-editable-border: 1px solid #3b82f6;
     --osdk-table-cell-edited-border: 2px solid #10b981;

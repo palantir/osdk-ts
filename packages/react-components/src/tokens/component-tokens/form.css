@@ -1,7 +1,7 @@
 :root {
   /* Form layout */
   --osdk-form-field-gap: var(--osdk-surface-spacing);
-  --osdk-form-padding-inline: 0;
+  --osdk-form-content-padding-inline: 0;
   --osdk-form-content-padding-block: 0;
 
   /* Form header */
@@ -13,7 +13,6 @@
 
   /* Form footer */
   --osdk-form-footer-border-color: var(--osdk-surface-border-color-default);
-  --osdk-form-footer-block-padding: 0;
 
   /* Form labels */
   --osdk-form-label-font-size: var(--osdk-typography-size-body-medium);
