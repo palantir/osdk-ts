@@ -34,13 +34,16 @@ interface SlsLogEntry {
   origin: string;
   thread: string;
   message: string;
+  safe?: true;
   params: Record<string, unknown>;
   unsafeParams?: Record<string, unknown>;
   stacktrace?: string;
+  traceId?: string;
 }
 
 export class SlsLogger {
   private readonly envParams: Record<string, string>;
+  private readonly traceId?: string;
   private readonly stream: NodeJS.WritableStream;
 
   constructor(stream: NodeJS.WritableStream = process.stdout) {
@@ -50,10 +53,7 @@ export class SlsLogger {
     if (jobId) {
       this.envParams.jobId = jobId;
     }
-    const traceId = process.env.TRACE_ID;
-    if (traceId) {
-      this.envParams.traceId = traceId;
-    }
+    this.traceId = process.env.TRACE_ID || undefined;
   }
 
   public debug(message: string, params?: SlsLogParams): void {
@@ -91,8 +91,13 @@ export class SlsLogger {
       message,
       params: { ...this.envParams, ...params?.params },
     };
+    if (this.traceId) {
+      entry.traceId = this.traceId;
+    }
     if (params?.unsafeParams && Object.keys(params.unsafeParams).length > 0) {
       entry.unsafeParams = params.unsafeParams;
+    } else {
+      entry.safe = true;
     }
     if (error?.stack) {
       entry.stacktrace = error.stack;
