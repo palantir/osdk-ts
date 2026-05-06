@@ -83,6 +83,17 @@ describe("DateRangeInputField", () => {
       expect(screen.getByRole("dialog")).toBeDefined();
     });
 
+    it("opens popover when start input is clicked", () => {
+      render(<DateRangeInputField value={[null, null]} onChange={vi.fn()} />);
+      const startInput = screen.getByLabelText("Start date");
+      expect(screen.queryByRole("dialog")).toBeNull();
+      fireEvent.pointerDown(startInput);
+      fireEvent.click(startInput);
+      expect(screen.getByLabelText("Start date").getAttribute("aria-expanded"))
+        .toBe("true");
+      expect(screen.getByRole("dialog")).toBeDefined();
+    });
+
     it("does not render single-date calendar action buttons", () => {
       render(<DateRangeInputField value={[null, null]} onChange={vi.fn()} />);
       fireEvent.focus(screen.getByLabelText("Start date"));
@@ -637,6 +648,15 @@ describe("DateRangeInputField", () => {
       expect(endInput.getAttribute("role")).toBe("combobox");
       expect(endInput.getAttribute("aria-haspopup")).toBe("dialog");
       expect(endInput.getAttribute("aria-expanded")).toBe("false");
+    });
+
+    it("does not nest the comboboxes inside an interactive trigger", () => {
+      render(<DateRangeInputField value={[null, null]} onChange={vi.fn()} />);
+      const startInput = screen.getByLabelText("Start date");
+      const endInput = screen.getByLabelText("End date");
+
+      expect(startInput.closest("button, [role='button']")).toBeNull();
+      expect(endInput.closest("button, [role='button']")).toBeNull();
     });
   });
 });

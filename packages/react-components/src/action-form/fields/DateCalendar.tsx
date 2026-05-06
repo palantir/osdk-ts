@@ -76,6 +76,8 @@ export interface DateCalendarProps {
   dateSelected: Date | undefined;
   onSelect: (date: Date | undefined) => void;
   onClear?: () => void;
+  month?: Date;
+  onMonthChange?: (month: Date) => void;
   min?: Date;
   max?: Date;
   footer?: React.ReactNode;
@@ -87,6 +89,8 @@ export default function DateCalendar({
   dateSelected,
   onSelect,
   onClear,
+  month,
+  onMonthChange,
   min,
   max,
   footer,
@@ -138,6 +142,8 @@ export default function DateCalendar({
       mode="single"
       selected={dateSelected}
       onSelect={onSelect}
+      month={month}
+      onMonthChange={onMonthChange}
       disabled={disabled}
       defaultMonth={dateSelected}
       classNames={CLASS_NAMES}

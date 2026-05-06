@@ -64,6 +64,10 @@ export const DateRangeInputField: React.NamedExoticComponent<
 }: DateRangeInputFieldProps) {
   const shouldCloseOnSelection = !showTime;
   const popoverId = useId();
+  // The range container anchors the shared popover without becoming a trigger.
+  // Each input is its own Popover.Trigger so the comboboxes are not nested in an
+  // interactive wrapper.
+  const triggerRef = useRef<HTMLDivElement>(null);
   const startInputRef = useRef<HTMLInputElement>(null);
   const endInputRef = useRef<HTMLInputElement>(null);
   const popoverRef = useRef<HTMLDivElement>(null);
@@ -176,6 +180,20 @@ export const DateRangeInputField: React.NamedExoticComponent<
     setActiveBoundary("end");
     setIsOpen(true);
   }, [beginEndEditing]);
+
+  const handleStartPointerDown = useCallback(() => {
+    // Opening from pointer-down keeps mouse interactions in sync with focus
+    // editing before Base UI's later click trigger handler runs.
+    startInputRef.current?.focus();
+    handleStartFocus();
+  }, [handleStartFocus]);
+
+  const handleEndPointerDown = useCallback(() => {
+    // Opening from pointer-down keeps mouse interactions in sync with focus
+    // editing before Base UI's later click trigger handler runs.
+    endInputRef.current?.focus();
+    handleEndFocus();
+  }, [handleEndFocus]);
 
   // --- Blur handlers ---
 
@@ -397,11 +415,14 @@ export const DateRangeInputField: React.NamedExoticComponent<
     "aria-controls": popoverId,
   };
 
+  // Keep Popover.Trigger on each input itself. Moving it to the range wrapper
+  // would make click handling simpler, but it would also nest interactive
+  // comboboxes inside an interactive trigger and reintroduce the axe violation.
   return (
     <Popover.Root open={isOpen} onOpenChange={handleOpenChange}>
-      <Popover.Trigger
-        nativeButton={false}
-        render={<div className={styles.osdkDateRangeContainer} />}
+      <div
+        ref={triggerRef}
+        className={styles.osdkDateRangeContainer}
       >
         <div
           className={classnames(
@@ -410,19 +431,25 @@ export const DateRangeInputField: React.NamedExoticComponent<
             startInvalid && commonStyles.osdkDatePickerInputWrapperError,
           )}
         >
-          <Input
-            ref={startInputRef}
-            id={id != null ? `${id}-start` : undefined}
-            value={displayedStart}
-            onValueChange={setStartInputValue}
-            onFocus={handleStartFocus}
-            onBlur={handleStartBlur}
-            onKeyDown={handleStartKeyDown}
-            placeholder={placeholderStart}
-            aria-expanded={isOpen && activeBoundary === "start"}
-            aria-label="Start date"
-            aria-invalid={startInvalid || undefined}
-            {...sharedInputProps}
+          <Popover.Trigger
+            nativeButton={false}
+            render={
+              <Input
+                ref={startInputRef}
+                id={id != null ? `${id}-start` : undefined}
+                value={displayedStart}
+                onValueChange={setStartInputValue}
+                onFocus={handleStartFocus}
+                onPointerDown={handleStartPointerDown}
+                onBlur={handleStartBlur}
+                onKeyDown={handleStartKeyDown}
+                placeholder={placeholderStart}
+                aria-expanded={isOpen && activeBoundary === "start"}
+                aria-label="Start date"
+                aria-invalid={startInvalid || undefined}
+                {...sharedInputProps}
+              />
+            }
           />
         </div>
         <div
@@ -432,24 +459,31 @@ export const DateRangeInputField: React.NamedExoticComponent<
             endInvalid && commonStyles.osdkDatePickerInputWrapperError,
           )}
         >
-          <Input
-            ref={endInputRef}
-            id={id != null ? `${id}-end` : undefined}
-            value={displayedEnd}
-            onValueChange={setEndInputValue}
-            onFocus={handleEndFocus}
-            onBlur={handleEndBlur}
-            onKeyDown={handleEndKeyDown}
-            placeholder={placeholderEnd}
-            aria-expanded={isOpen && activeBoundary === "end"}
-            aria-label="End date"
-            aria-invalid={endInvalid || undefined}
-            {...sharedInputProps}
+          <Popover.Trigger
+            nativeButton={false}
+            render={
+              <Input
+                ref={endInputRef}
+                id={id != null ? `${id}-end` : undefined}
+                value={displayedEnd}
+                onValueChange={setEndInputValue}
+                onBlur={handleEndBlur}
+                onKeyDown={handleEndKeyDown}
+                onFocus={handleEndFocus}
+                onPointerDown={handleEndPointerDown}
+                placeholder={placeholderEnd}
+                aria-expanded={isOpen && activeBoundary === "end"}
+                aria-label="End date"
+                aria-invalid={endInvalid || undefined}
+                {...sharedInputProps}
+              />
+            }
           />
         </div>
-      </Popover.Trigger>
+      </div>
       <Popover.Portal>
         <Popover.Positioner
+          anchor={triggerRef}
           sideOffset={getPopupSideOffset}
         >
           <Popover.Popup
