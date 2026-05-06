@@ -153,11 +153,11 @@ export function FilterList<Q extends ObjectTypeDefinition>(
     (
       {
         definition,
-        filterKey,
         filterState,
         onFilterStateChanged,
         searchQuery,
         excludeRowOpen,
+        whereClauseForFilter,
       },
     ) => (
       <FilterInput
@@ -166,13 +166,13 @@ export function FilterList<Q extends ObjectTypeDefinition>(
         definition={definition}
         filterState={filterState}
         onFilterStateChanged={onFilterStateChanged}
-        whereClause={perFilterWhereClauses.get(filterKey)
+        whereClause={(whereClauseForFilter as WhereClause<Q> | undefined)
           ?? ({} as WhereClause<Q>)}
         searchQuery={searchQuery}
         excludeRowOpen={excludeRowOpen}
       />
     ),
-    [objectType, objectSet, perFilterWhereClauses],
+    [objectType, objectSet],
   );
 
   return (
@@ -196,6 +196,7 @@ export function FilterList<Q extends ObjectTypeDefinition>(
       onFilterRemoved={effectiveOnFilterRemoved}
       className={className}
       renderAddFilterButton={effectiveRenderAddFilterButton}
+      perFilterWhereClauses={perFilterWhereClauses}
     />
   );
 }
