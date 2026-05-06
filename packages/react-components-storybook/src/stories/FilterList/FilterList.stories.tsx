@@ -26,6 +26,7 @@ import { ObjectTable } from "@osdk/react-components/experimental/object-table";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useCallback, useMemo, useState } from "react";
 import { useArgs } from "storybook/preview-api";
+import { fn } from "storybook/test";
 import { fauxFoundry } from "../../mocks/fauxFoundry.js";
 import { Employee } from "../../types/Employee.js";
 
@@ -139,6 +140,13 @@ const meta: Meta<EmployeeFilterListProps> = {
     showResetButton: false,
     showActiveFilterCount: false,
     collapsed: false,
+    onFilterClauseChanged: fn(),
+    onFilterStateChanged: fn(),
+    onFilterAdded: fn(),
+    onFilterRemoved: fn(),
+    onFilterVisibilityChange: fn(),
+    onCollapsedChange: fn(),
+    onReset: fn(),
   },
   parameters: {
     msw: {
@@ -224,6 +232,12 @@ const meta: Meta<EmployeeFilterListProps> = {
     onFilterRemoved: {
       description:
         "Called when a filter is removed. If provided, users can remove filters.",
+      control: false,
+      table: { category: "Events" },
+    },
+    onFilterVisibilityChange: {
+      description:
+        "Called when filter visibility or ordering changes (reorder, add, remove).",
       control: false,
       table: { category: "Events" },
     },
@@ -415,15 +429,24 @@ function WithAllFilterTypesStory(args: Partial<EmployeeFilterListProps>) {
     WhereClause<Employee> | undefined
   >(undefined);
 
+  const argsOnFilterClauseChanged = args.onFilterClauseChanged;
+  const handleFilterClauseChanged = useCallback(
+    (clause: WhereClause<Employee>) => {
+      setFilterClause(clause);
+      argsOnFilterClauseChanged?.(clause);
+    },
+    [argsOnFilterClauseChanged],
+  );
+
   return (
     <div style={FLEX_ROW_STYLE}>
       <div style={SIDEBAR_STYLE}>
         <FilterList
           objectType={Employee}
           filterDefinitions={sharedFilterDefinitions}
-          filterClause={filterClause}
-          onFilterClauseChanged={setFilterClause}
           {...args}
+          filterClause={filterClause}
+          onFilterClauseChanged={handleFilterClauseChanged}
         />
       </div>
       <div style={FLEX_FILL_STYLE}>
@@ -489,18 +512,20 @@ export const WithTitleAndIcon: Story = {
 };
 
 function WithResetButtonStory(args: Partial<EmployeeFilterListProps>) {
+  const argsOnReset = args.onReset;
   const handleReset = useCallback(() => {
     // eslint-disable-next-line no-console
     console.log("Reset clicked");
-  }, []);
+    argsOnReset?.();
+  }, [argsOnReset]);
 
   return (
     <div style={SIDEBAR_STYLE}>
       <FilterList
         objectType={Employee}
         filterDefinitions={sharedFilterDefinitions}
-        onReset={handleReset}
         {...args}
+        onReset={handleReset}
       />
     </div>
   );
@@ -624,9 +649,13 @@ export const CollapsiblePanel: Story = {
   },
   render: (args) => {
     const [, updateArgs] = useArgs<Partial<EmployeeFilterListProps>>();
+    const argsOnCollapsedChange = args.onCollapsedChange;
     const handleCollapsedChange = useCallback(
-      (collapsed: boolean) => updateArgs({ collapsed }),
-      [updateArgs],
+      (collapsed: boolean) => {
+        updateArgs({ collapsed });
+        argsOnCollapsedChange?.(collapsed);
+      },
+      [updateArgs, argsOnCollapsedChange],
     );
     return (
       <CollapsiblePanelStory
@@ -1106,10 +1135,21 @@ function CombinedWithObjectTableStory(
     WhereClause<Employee> | undefined
   >(undefined);
 
+  const argsOnFilterRemoved = args.onFilterRemoved;
   const handleFilterRemoved = useCallback((filterKey: string) => {
     // eslint-disable-next-line no-console
     console.log("Removed filter:", filterKey);
-  }, []);
+    argsOnFilterRemoved?.(filterKey);
+  }, [argsOnFilterRemoved]);
+
+  const argsOnFilterClauseChanged = args.onFilterClauseChanged;
+  const handleFilterClauseChanged = useCallback(
+    (clause: WhereClause<Employee>) => {
+      setFilterClause(clause);
+      argsOnFilterClauseChanged?.(clause);
+    },
+    [argsOnFilterClauseChanged],
+  );
 
   return (
     <div style={COMBINED_LAYOUT_STYLE}>
@@ -1117,10 +1157,10 @@ function CombinedWithObjectTableStory(
         <FilterList
           objectType={Employee}
           filterDefinitions={sharedFilterDefinitions}
+          {...args}
           onFilterRemoved={handleFilterRemoved}
           filterClause={filterClause}
-          onFilterClauseChanged={setFilterClause}
-          {...args}
+          onFilterClauseChanged={handleFilterClauseChanged}
         />
       </div>
       <div style={FLEX_FILL_STYLE}>
@@ -1178,6 +1218,15 @@ function CombinedWithFilteredObjectSetStory(
     WhereClause<Employee> | undefined
   >(undefined);
 
+  const argsOnFilterClauseChanged = args.onFilterClauseChanged;
+  const handleFilterClauseChanged = useCallback(
+    (clause: WhereClause<Employee>) => {
+      setFilterClause(clause);
+      argsOnFilterClauseChanged?.(clause);
+    },
+    [argsOnFilterClauseChanged],
+  );
+
   return (
     <div style={COMBINED_LAYOUT_STYLE}>
       <div style={SIDEBAR_FIXED_STYLE}>
@@ -1185,9 +1234,9 @@ function CombinedWithFilteredObjectSetStory(
           objectType={Employee}
           objectSet={employeeObjectSet}
           filterDefinitions={sharedFilterDefinitions}
-          filterClause={filterClause}
-          onFilterClauseChanged={setFilterClause}
           {...args}
+          filterClause={filterClause}
+          onFilterClauseChanged={handleFilterClauseChanged}
         />
       </div>
       <div style={FLEX_FILL_STYLE}>
@@ -1241,6 +1290,7 @@ function WithRemovableFiltersStory(args: Partial<EmployeeFilterListProps>) {
     FilterDefinitionUnion<Employee>[]
   >(sharedFilterDefinitions);
 
+  const argsOnFilterRemoved = args.onFilterRemoved;
   const handleFilterRemoved = useCallback((filterKey: string) => {
     setDefinitions((prev) =>
       prev.filter((def) => {
@@ -1250,15 +1300,16 @@ function WithRemovableFiltersStory(args: Partial<EmployeeFilterListProps>) {
         return true;
       })
     );
-  }, []);
+    argsOnFilterRemoved?.(filterKey);
+  }, [argsOnFilterRemoved]);
 
   return (
     <div style={SIDEBAR_STYLE}>
       <FilterList
         objectType={Employee}
         filterDefinitions={definitions}
-        onFilterRemoved={handleFilterRemoved}
         {...args}
+        onFilterRemoved={handleFilterRemoved}
       />
     </div>
   );
@@ -1366,15 +1417,24 @@ function WithStaticValuesStory(args: Partial<EmployeeFilterListProps>) {
     [],
   );
 
+  const argsOnFilterClauseChanged = args.onFilterClauseChanged;
+  const handleFilterClauseChanged = useCallback(
+    (clause: WhereClause<Employee>) => {
+      setFilterClause(clause);
+      argsOnFilterClauseChanged?.(clause);
+    },
+    [argsOnFilterClauseChanged],
+  );
+
   return (
     <div style={FLEX_ROW_STYLE}>
       <div style={SIDEBAR_STYLE}>
         <FilterList
           objectType={Employee}
           filterDefinitions={filterDefinitions}
-          filterClause={filterClause}
-          onFilterClauseChanged={setFilterClause}
           {...args}
+          filterClause={filterClause}
+          onFilterClauseChanged={handleFilterClauseChanged}
         />
       </div>
       <div style={FLEX_FILL_STYLE}>
@@ -1467,6 +1527,7 @@ function FullFeaturedStory(
     FilterDefinitionUnion<Employee>[]
   >(sharedFilterDefinitions);
 
+  const argsOnFilterRemoved = args.onFilterRemoved;
   const handleFilterRemoved = useCallback((filterKey: string) => {
     setDefinitions((prev) =>
       prev.filter((def) => {
@@ -1476,11 +1537,23 @@ function FullFeaturedStory(
         return true;
       })
     );
-  }, []);
+    argsOnFilterRemoved?.(filterKey);
+  }, [argsOnFilterRemoved]);
 
+  const argsOnReset = args.onReset;
   const handleReset = useCallback(() => {
     setDefinitions(sharedFilterDefinitions);
-  }, []);
+    argsOnReset?.();
+  }, [argsOnReset]);
+
+  const argsOnFilterClauseChanged = args.onFilterClauseChanged;
+  const handleFilterClauseChanged = useCallback(
+    (clause: WhereClause<Employee>) => {
+      setFilterClause(clause);
+      argsOnFilterClauseChanged?.(clause);
+    },
+    [argsOnFilterClauseChanged],
+  );
 
   return (
     <div style={COMBINED_LAYOUT_STYLE}>
@@ -1489,11 +1562,11 @@ function FullFeaturedStory(
           objectType={Employee}
           filterDefinitions={definitions}
           titleIcon={FILTER_ICON}
+          {...args}
           onReset={handleReset}
           onFilterRemoved={handleFilterRemoved}
           filterClause={filterClause}
-          onFilterClauseChanged={setFilterClause}
-          {...args}
+          onFilterClauseChanged={handleFilterClauseChanged}
         />
       </div>
       <div style={FLEX_FILL_STYLE}>
@@ -1543,9 +1616,13 @@ export const FullFeatured: Story = {
   },
   render: (args) => {
     const [, updateArgs] = useArgs<Partial<EmployeeFilterListProps>>();
+    const argsOnCollapsedChange = args.onCollapsedChange;
     const handleCollapsedChange = useCallback(
-      (collapsed: boolean) => updateArgs({ collapsed }),
-      [updateArgs],
+      (collapsed: boolean) => {
+        updateArgs({ collapsed });
+        argsOnCollapsedChange?.(collapsed);
+      },
+      [updateArgs, argsOnCollapsedChange],
     );
     return (
       <FullFeaturedStory {...args} onCollapsedChange={handleCollapsedChange} />
@@ -1572,15 +1649,24 @@ function WithLinkedPropertyFiltersStory(
     [],
   );
 
+  const argsOnFilterClauseChanged = args.onFilterClauseChanged;
+  const handleFilterClauseChanged = useCallback(
+    (clause: WhereClause<Employee>) => {
+      setFilterClause(clause);
+      argsOnFilterClauseChanged?.(clause);
+    },
+    [argsOnFilterClauseChanged],
+  );
+
   return (
     <div style={FLEX_ROW_STYLE}>
       <div style={SIDEBAR_STYLE}>
         <FilterList
           objectType={Employee}
           filterDefinitions={filterDefinitions}
-          filterClause={filterClause}
-          onFilterClauseChanged={setFilterClause}
           {...args}
+          filterClause={filterClause}
+          onFilterClauseChanged={handleFilterClauseChanged}
         />
       </div>
       <div style={FLEX_FILL_STYLE}>
@@ -1784,15 +1870,24 @@ function WithCustomFiltersStory(args: Partial<EmployeeFilterListProps>) {
     [],
   );
 
+  const argsOnFilterClauseChanged = args.onFilterClauseChanged;
+  const handleFilterClauseChanged = useCallback(
+    (clause: WhereClause<Employee>) => {
+      setFilterClause(clause);
+      argsOnFilterClauseChanged?.(clause);
+    },
+    [argsOnFilterClauseChanged],
+  );
+
   return (
     <div style={FLEX_ROW_STYLE}>
       <div style={SIDEBAR_STYLE}>
         <FilterList
           objectType={Employee}
           filterDefinitions={filterDefinitions}
-          filterClause={filterClause}
-          onFilterClauseChanged={setFilterClause}
           {...args}
+          filterClause={filterClause}
+          onFilterClauseChanged={handleFilterClauseChanged}
         />
       </div>
       <div style={FLEX_FILL_STYLE}>
