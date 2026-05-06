@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { cleanup, render } from "@testing-library/react";
+import { cleanup, fireEvent, render } from "@testing-library/react";
 import React from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { createDateHistogramBuckets } from "../createDateHistogramBuckets.js";
@@ -281,7 +281,12 @@ describe("RangeInput SVG histogram", () => {
     },
   );
 
-  describe("clickToFilter", () => {
+  describe("clickToFilter (drag-to-select range)", () => {
+    const fireMouseDown = (el: Element) => fireEvent.mouseDown(el);
+    const fireMouseEnter = (el: Element) => fireEvent.mouseEnter(el);
+    const fireDocumentMouseUp = () =>
+      document.dispatchEvent(new MouseEvent("mouseup", { bubbles: true }));
+
     it("does not invoke onChange when clickToFilter is omitted", () => {
       const onChange = vi.fn();
       const { container } = render(
@@ -297,14 +302,13 @@ describe("RangeInput SVG histogram", () => {
         "rect[class*=\"histogramBar\"]",
       );
       expect(rects.length).toBeGreaterThan(0);
-      (rects[0] as SVGRectElement).dispatchEvent(
-        new MouseEvent("click", { bubbles: true }),
-      );
+      fireMouseDown(rects[0]);
+      fireDocumentMouseUp();
       expect(onChange).not.toHaveBeenCalled();
     });
 
     it(
-      "invokes onChange with the bucket's [min, max] when clicked",
+      "single mousedown+mouseup on one bar sets the range to that bucket",
       () => {
         const onChange = vi.fn();
         const { container } = render(
@@ -320,21 +324,47 @@ describe("RangeInput SVG histogram", () => {
         const rects = container.querySelectorAll(
           "rect[class*=\"histogramBar\"]",
         );
-        const firstBar = rects[0] as SVGRectElement;
-        firstBar.dispatchEvent(
-          new MouseEvent("click", { bubbles: true }),
-        );
+        fireMouseDown(rects[0]);
+        fireDocumentMouseUp();
         expect(onChange).toHaveBeenCalledTimes(1);
         const [min, max] = onChange.mock.calls[0];
-        expect(min).toBeInstanceOf(Date);
-        expect(max).toBeInstanceOf(Date);
-        // First bar is May 1; daily granularity → bucket [May 1, May 2]
         expect((min as Date).getDate()).toBe(1);
         expect((max as Date).getDate()).toBe(2);
       },
     );
 
-    it("replaces (not unions) when a second bar is clicked", () => {
+    it(
+      "drag from bar 0 to bar 3 commits a range covering all four buckets",
+      () => {
+        const onChange = vi.fn();
+        const { container } = render(
+          <DateRangeInput
+            valueCountPairs={dateBuckets}
+            isLoading={false}
+            minValue={undefined}
+            maxValue={undefined}
+            onChange={onChange}
+            clickToFilter={true}
+          />,
+        );
+        const rects = container.querySelectorAll(
+          "rect[class*=\"histogramBar\"]",
+        );
+        fireMouseDown(rects[0]);
+        fireMouseEnter(rects[1]);
+        fireMouseEnter(rects[2]);
+        fireMouseEnter(rects[3]);
+        fireDocumentMouseUp();
+        expect(onChange).toHaveBeenCalledTimes(1);
+        const [min, max] = onChange.mock.calls[0];
+        // Daily buckets May 1..10; bucket 0 is [May 1, May 2], bucket 3 is
+        // [May 4, May 5] → committed range = [May 1, May 5]
+        expect((min as Date).getDate()).toBe(1);
+        expect((max as Date).getDate()).toBe(5);
+      },
+    );
+
+    it("drag in reverse (bar 3 → bar 0) still commits with min < max", () => {
       const onChange = vi.fn();
       const { container } = render(
         <DateRangeInput
@@ -349,16 +379,15 @@ describe("RangeInput SVG histogram", () => {
       const rects = container.querySelectorAll(
         "rect[class*=\"histogramBar\"]",
       );
-      const firstBar = rects[0] as SVGRectElement;
-      const secondBar = rects[2] as SVGRectElement;
-      firstBar.dispatchEvent(new MouseEvent("click", { bubbles: true }));
-      secondBar.dispatchEvent(new MouseEvent("click", { bubbles: true }));
-      expect(onChange).toHaveBeenCalledTimes(2);
-      // Second call must be the third bucket's range, not a union with
-      // the first.
-      const [min2, max2] = onChange.mock.calls[1];
-      expect((min2 as Date).getDate()).toBe(3);
-      expect((max2 as Date).getDate()).toBe(4);
+      fireMouseDown(rects[3]);
+      fireMouseEnter(rects[2]);
+      fireMouseEnter(rects[1]);
+      fireMouseEnter(rects[0]);
+      fireDocumentMouseUp();
+      expect(onChange).toHaveBeenCalledTimes(1);
+      const [min, max] = onChange.mock.calls[0];
+      expect((min as Date).getDate()).toBe(1);
+      expect((max as Date).getDate()).toBe(5);
     });
 
     it("sets data-click-to-filter=\"true\" on rects when enabled", () => {

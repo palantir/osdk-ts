@@ -227,10 +227,54 @@ function RangeInputInner<T>({
     [buckets.length],
   );
 
-  const handleBucketClick = useCallback(
-    (bucket: HistogramBucket<T>) => {
+  // Drag range tracked in a ref so synchronous read/write across
+  // mousedown → mousemove → mouseup is reliable. A separate state value
+  // mirrors the ref so the SVG re-renders to highlight the dragged range
+  // while the user is dragging.
+  const dragRangeRef = useRef<{ start: number; end: number } | null>(null);
+  const [dragRange, setDragRange] = useState<
+    { start: number; end: number } | null
+  >(null);
+
+  const bucketsRef = useRef(buckets);
+  bucketsRef.current = buckets;
+
+  const commitDragRange = useCallback((start: number, end: number) => {
+    const currentBuckets = bucketsRef.current;
+    const lo = Math.min(start, end);
+    const hi = Math.max(start, end);
+    const minBucket = currentBuckets[lo];
+    const maxBucket = currentBuckets[hi];
+    if (minBucket == null || maxBucket == null) return;
+    onChangeRef.current(minBucket.min, maxBucket.max);
+  }, []);
+
+  const handleBucketMouseDown = useCallback(
+    (index: number, e: React.MouseEvent) => {
       if (!clickToFilter) return;
-      onChangeRef.current(bucket.min, bucket.max);
+      e.preventDefault();
+      dragRangeRef.current = { start: index, end: index };
+      setDragRange(dragRangeRef.current);
+      const handleUp = () => {
+        document.removeEventListener("mouseup", handleUp);
+        const current = dragRangeRef.current;
+        if (current != null) {
+          commitDragRange(current.start, current.end);
+        }
+        dragRangeRef.current = null;
+        setDragRange(null);
+      };
+      document.addEventListener("mouseup", handleUp);
+    },
+    [clickToFilter, commitDragRange],
+  );
+
+  const handleBucketMouseEnter = useCallback(
+    (index: number) => {
+      if (!clickToFilter) return;
+      if (dragRangeRef.current == null) return;
+      dragRangeRef.current = { ...dragRangeRef.current, end: index };
+      setDragRange(dragRangeRef.current);
     },
     [clickToFilter],
   );
@@ -314,18 +358,25 @@ function RangeInputInner<T>({
                 || config.toNumber(bucket.max) >= config.toNumber(minValue))
                 && (maxValue === undefined
                   || config.toNumber(bucket.min) <= config.toNumber(maxValue));
+              const isInDragRange = dragRange != null
+                && index >= Math.min(dragRange.start, dragRange.end)
+                && index <= Math.max(dragRange.start, dragRange.end);
               return (
                 <rect
                   key={index}
                   className={styles.histogramBar}
-                  data-in-range={isInRange}
+                  data-in-range={isInRange || isInDragRange}
                   data-click-to-filter={clickToFilter || undefined}
+                  data-dragging={isInDragRange || undefined}
                   x={x}
                   y={y}
                   width={Math.max(barW, 0.5)}
                   height={barH}
-                  onClick={clickToFilter
-                    ? () => handleBucketClick(bucket)
+                  onMouseDown={clickToFilter
+                    ? (e) => handleBucketMouseDown(index, e)
+                    : undefined}
+                  onMouseEnter={clickToFilter
+                    ? () => handleBucketMouseEnter(index)
                     : undefined}
                 >
                   <title>
