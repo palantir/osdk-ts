@@ -25,11 +25,23 @@ import type {
   SimplePropertyDef,
   WhereClause,
 } from "@osdk/api";
+import type {
+  InferShapeDefinition,
+  InlineShapeConfig,
+  LinkStatus,
+  NullabilityViolation,
+  ShapeDefinition,
+  ShapeDerivedLinks,
+  ShapeInstance,
+} from "@osdk/api/unstable";
+import { configToShapeDefinition } from "@osdk/api/unstable";
 import type { ObserveObjectsCallbackArgs } from "@osdk/client/observable";
 import React from "react";
 import { extractPayloadError, isPayloadLoading } from "./hookUtils.js";
 import { devToolsMetadata, makeExternalStore } from "./makeExternalStore.js";
 import { OsdkContext } from "./OsdkContext.js";
+import type { PerItemLinkStatus } from "./shapes/useShape.js";
+import { useShapeList } from "./shapes/useShape.js";
 
 export interface UseOsdkObjectsOptions<
   T extends ObjectOrInterfaceDefinition,
@@ -217,6 +229,39 @@ export interface UseOsdkListResult<
   refetch: () => Promise<void>;
 }
 
+export interface UseOsdkObjectsShapeResult<
+  Q extends ObjectOrInterfaceDefinition,
+  C extends InlineShapeConfig<Q>,
+> {
+  data: ShapeInstance<InferShapeDefinition<Q, C>>[] | undefined;
+  shape: InferShapeDefinition<Q, C>;
+  isLoading: boolean;
+  error: Error | undefined;
+  isOptimistic: boolean;
+  fetchMore: (() => Promise<void>) | undefined;
+  droppedCount: number;
+  nullabilityViolations: readonly NullabilityViolation[];
+  itemLinkStatus: PerItemLinkStatus<InferShapeDefinition<Q, C>>;
+  linkStatus: Partial<
+    {
+      [K in keyof ShapeDerivedLinks<InferShapeDefinition<Q, C>>]: LinkStatus;
+    }
+  >;
+  loadDeferred: (
+    primaryKey: string | number,
+    linkName: keyof ShapeDerivedLinks<InferShapeDefinition<Q, C>>,
+  ) => void;
+  retry: (
+    primaryKey?: string | number,
+    linkName?: keyof ShapeDerivedLinks<InferShapeDefinition<Q, C>>,
+  ) => void;
+  invalidate: (
+    linkName?: keyof ShapeDerivedLinks<InferShapeDefinition<Q, C>>,
+  ) => void;
+}
+
+const EMPTY_WHERE = {};
+
 // pivotTo overloads: streamUpdates is forbidden (the server does not support
 // websocket subscriptions for link-traversal queries).
 export function useOsdkObjects<
@@ -239,6 +284,7 @@ export function useOsdkObjects<
   options: UseOsdkObjectsOptions<Q, {}> & {
     pivotTo: L;
     streamUpdates?: never;
+    shape?: never;
   },
 ): UseOsdkListResult<LinkedType<Q, L>, {}>;
 
@@ -257,6 +303,19 @@ export function useOsdkObjects<
 
 export function useOsdkObjects<
   Q extends ObjectOrInterfaceDefinition,
+  const C extends InlineShapeConfig<Q>,
+>(
+  type: Q,
+  options:
+    & Omit<
+      UseOsdkObjectsOptions<Q>,
+      "pivotTo" | "withProperties" | "rids" | "intersectWith"
+    >
+    & { shape: C; pivotTo?: never },
+): UseOsdkObjectsShapeResult<Q, C>;
+
+export function useOsdkObjects<
+  Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
 >(
   type: Q,
@@ -266,6 +325,40 @@ export function useOsdkObjects<
 ): UseOsdkListResult<Q, RDPs>;
 
 export function useOsdkObjects<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = {},
+  C extends InlineShapeConfig<Q> = InlineShapeConfig<Q>,
+>(
+  type: Q,
+  options?: UseOsdkObjectsOptions<Q, RDPs> & { shape?: C },
+):
+  | UseOsdkListResult<Q, RDPs>
+  | UseOsdkListResult<Q, RDPs, "$rid">
+  | UseOsdkListResult<LinkedType<Q, LinkNames<Q>>>
+  | UseOsdkListResult<LinkedType<Q, LinkNames<Q>>, {}, "$rid">
+  | UseOsdkObjectsShapeResult<Q, C>
+{
+  const hasShape = options !== undefined && "shape" in options
+    && options.shape !== undefined;
+
+  const modeRef = React.useRef(hasShape);
+  if (modeRef.current !== hasShape) {
+    throw new Error(
+      "useOsdkObjects: cannot switch between shape/non-shape mode",
+    );
+  }
+
+  if (hasShape) {
+    return useOsdkObjectsWithShape(
+      type,
+      options as UseOsdkObjectsOptions<Q> & { shape: C },
+    );
+  }
+
+  return useOsdkObjectsBase(type, options);
+}
+
+function useOsdkObjectsBase<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
 >(
@@ -280,11 +373,11 @@ export function useOsdkObjects<
   const { observableClient } = React.useContext(OsdkContext);
 
   const {
+    rids,
     pageSize,
     dedupeIntervalMs,
     withProperties,
     enabled = true,
-    rids,
     where,
     orderBy,
     streamUpdates,
@@ -393,4 +486,59 @@ export function useOsdkObjects<
     }),
     [listPayload, enabled, refetch],
   );
+}
+
+function useOsdkObjectsWithShape<
+  Q extends ObjectOrInterfaceDefinition,
+  C extends InlineShapeConfig<Q>,
+>(
+  type: Q,
+  options: UseOsdkObjectsOptions<Q> & { shape: C },
+): UseOsdkObjectsShapeResult<Q, C> {
+  type S = InferShapeDefinition<Q, C>;
+
+  const configRef = React.useRef(options.shape);
+  const shapeDef = React.useMemo(
+    () => configToShapeDefinition(type, configRef.current),
+    [type],
+  ) as S;
+
+  const result = useShapeList(
+    shapeDef as ShapeDefinition<Q>,
+    {
+      where: options.where,
+      pageSize: options.pageSize,
+      orderBy: options.orderBy,
+      autoFetchMore: options.autoFetchMore,
+      dedupeIntervalMs: options.dedupeIntervalMs,
+      streamUpdates: options.streamUpdates,
+      enabled: options.enabled,
+      links: undefined,
+    },
+  );
+
+  return {
+    data: result.data as ShapeInstance<S>[] | undefined,
+    shape: shapeDef,
+    isLoading: result.isLoading,
+    error: result.error,
+    isOptimistic: result.isOptimistic,
+    fetchMore: result.fetchMore,
+    droppedCount: result.droppedCount,
+    nullabilityViolations: result.nullabilityViolations,
+    itemLinkStatus: result.itemLinkStatus as PerItemLinkStatus<S>,
+    linkStatus: result.linkStatus as UseOsdkObjectsShapeResult<
+      Q,
+      C
+    >["linkStatus"],
+    loadDeferred: result.loadDeferred as UseOsdkObjectsShapeResult<
+      Q,
+      C
+    >["loadDeferred"],
+    retry: result.retry as UseOsdkObjectsShapeResult<Q, C>["retry"],
+    invalidate: result.invalidate as UseOsdkObjectsShapeResult<
+      Q,
+      C
+    >["invalidate"],
+  };
 }
