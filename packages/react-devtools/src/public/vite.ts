@@ -14,9 +14,5 @@
  * limitations under the License.
  */
 
-// Placeholder. scripts/build-css.mjs replaces the transpiled
-// build/esm/styles.js with a runtime-injection module that adds devtools
-// styles (including Blueprint) to document.head when the package is
-// imported.
-
-export {};
+export * from "../vite/index.js";
+export { default } from "../vite/index.js";
