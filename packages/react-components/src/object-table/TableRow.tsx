@@ -31,7 +31,9 @@ interface TableRowProps<TData extends RowData> {
   isFocused: boolean;
   setFocusedRowId?: (rowId: string | null) => void;
   isInEditMode?: boolean;
-  getRowAttributes?: (rowData: TData) => Record<string, string | undefined>;
+  getRowAttributes?: (
+    rowData: TData,
+  ) => Record<string, string | boolean | undefined>;
 }
 
 export function TableRow<TData extends RowData>({
@@ -58,17 +60,14 @@ export function TableRow<TData extends RowData>({
 
   const customRowAttributes = useMemo(() => {
     if (!getRowAttributes) {
-      return undefined;
+      return;
     }
-    const raw = getRowAttributes(row.original);
-    const filtered: Record<string, string> = {};
-    for (const key in raw) {
-      const value = raw[key];
-      if (value !== undefined) {
-        filtered[key] = value;
-      }
-    }
-    return filtered;
+    return Object.fromEntries(
+      Object.entries(getRowAttributes(row.original))
+        .filter((entry): entry is [string, string | boolean] =>
+          entry[1] != null
+        ),
+    );
   }, [getRowAttributes, row.original]);
 
   return (

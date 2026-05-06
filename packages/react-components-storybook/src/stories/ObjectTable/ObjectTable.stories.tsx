@@ -108,6 +108,15 @@ const meta: Meta<EmployeeTableProps> = {
         defaultValue: { summary: "manual" },
       },
     },
+    showEditFooter: {
+      description:
+        "Whether to render the bottom edit footer. Defaults to `true`. Ignored when `editMode` is manual or `onSubmitEdits` is provided — the footer is always shown in that case.",
+      control: "boolean",
+      defaultValue: true,
+      table: {
+        defaultValue: { summary: "true" },
+      },
+    },
     defaultOrderBy: {
       description:
         "The default order by clause to sort the objects in the table. If provided without orderBy prop, the sorting is uncontrolled. If both orderBy and defaultOrderBy are provided, orderBy takes precedence.",
@@ -1468,8 +1477,9 @@ return (
             borderRadius: "4px",
           }}
         >
-          Try changing edit mode to "manual" to enable inline editing with an
-          Edit Table button.
+          Try changing showEditFooter to false to hide the edit footer bar.
+          Change edit mode to "manual" to enable inline editing with an Edit
+          Table button.
         </div>
         {lastEdit != null && (
           <div
@@ -1784,7 +1794,6 @@ export const PerRowEditableAndFieldConfig: Story = {
       {
         locator: { type: "property", id: "jobTitle" },
         editable: (rowData) => {
-          // Only allow editing for Senior Product Manager
           const jobTitle = rowData.jobTitle ?? "";
           return jobTitle === "Senior Product Manager";
         },
@@ -1795,11 +1804,10 @@ export const PerRowEditableAndFieldConfig: Story = {
         editFieldConfig: {
           fieldComponent: "DROPDOWN",
           getFieldComponentProps: (employee) => ({
-            items: employee.department === "Engineering"
+            items: employee.department === "Operations"
               ? [
-                "Engineering",
-                "Product",
-                "Design",
+                "Sales",
+                "Marketing",
               ]
               : [
                 "Sales",
@@ -1819,7 +1827,7 @@ export const PerRowEditableAndFieldConfig: Story = {
       description: {
         story:
           "Demonstrates per-row configuration with `editable` as a predicate function and dynamic `getFieldComponentProps` that computes dropdown items from the row's data. "
-          + "jobTitle is only editable for 'Senior Product Manager' rows. Department uses a dropdown that shows tech-adjacent options for Engineering rows and business options for all others.",
+          + "jobTitle is only editable for 'Senior Product Manager' rows. Department uses a dropdown that shows only 2 options for Operations rows",
       },
       source: {
         code: `const columnDefinitions = [
@@ -1868,8 +1876,7 @@ return (
         }}
       >
         JobTitle is only editable for "Senior Product Manager" rows. Department
-        dropdown shows tech-adjacent options for Engineering rows and business
-        options for all others.
+        dropdown shows only 2 options for Operations rows.
       </div>
       <ObjectTable {...args} />
     </div>
@@ -1890,42 +1897,42 @@ export const RowAttributesForStyling: Story = {
     docs: {
       description: {
         story:
-          "Demonstrates using getRowAttributes to apply custom data attributes to rows for CSS styling. New York employees have a light blue background.",
+          "Demonstrates using `getRowAttributes` to set data attributes on rows and a `className` on the table to scope CSS overrides via the data attribute selector. "
+          + "New York employees get a light blue background through the `[data-highlight-row=\"true\"]` CSS selector scoped under the table's className.",
       },
       source: {
-        code: `const getRowAttributes = useCallback((rowData) => {
-  const city = String(rowData.locationCity ?? "");
-  return {
-    "data-highlight-row": city === "New York" ? "true" : undefined,
-  };
-}, []);
+        code: `/* CSS (imported stylesheet):
+.customTableStyling {
+  tr[data-highlight-row="true"] {
+    --osdk-table-row-bg-default: #f0f8ff;
+    --osdk-table-row-bg-alternate: #e8f4ff;
+    --osdk-table-row-bg-hover: #e0f0ff;
+  }
+}
+*/
+
+const getRowAttributes = useCallback((rowData) => ({
+  "data-highlight-row": rowData.locationCity === "New York" ? "true" : undefined,
+}), []);
 
 return (
-  <>
-    <ObjectTable
-      objectType={Employee}
-      columnDefinitions={columnDefinitions}
-      getRowAttributes={getRowAttributes}
-    />
-    <style>{\`
-      [data-highlight-row="true"] {
-        --osdk-table-row-bg-default: #f0f8ff;
-        --osdk-table-row-bg-alternate: #f0f8ff;
-      }
-    \`}</style>
-  </>
+  <ObjectTable
+    objectType={Employee}
+    columnDefinitions={columnDefinitions}
+    getRowAttributes={getRowAttributes}
+    className="customTableStyling"
+  />
 );`,
       },
     },
   },
   render: (args) => {
     const getRowAttributes = useCallback(
-      (rowData: Osdk.Instance<typeof Employee>) => {
-        const city = rowData.locationCity ?? "";
-        return {
-          "data-highlight-row": city === "New York" ? "true" : undefined,
-        };
-      },
+      (rowData: Osdk.Instance<typeof Employee>) => ({
+        "data-highlight-row": rowData.locationCity === "New York"
+          ? "true"
+          : undefined,
+      }),
       [],
     );
 
@@ -1939,111 +1946,17 @@ return (
             borderRadius: "4px",
           }}
         >
-          <strong>Row attributes for styling:</strong>{" "}
-          New York employees have a light blue background. Look for rows with
-          "New York" in the Location City column.
-        </div>
-        <div
-          style={{
-            marginBottom: "8px",
-            fontSize: "12px",
-            color: "#666",
-          }}
-        >
-          CSS applied: <code>[data-highlight-row="true"]</code>{" "}
-          rows have background-color: #f0f8ff
+          <strong>Row attributes + className for CSS override:</strong>{" "}
+          New York employees have a light blue background via{" "}
+          <code>tr[data-highlight-row="true"]</code> scoped under{" "}
+          <code>.customTableStyling</code>.
         </div>
         <ObjectTable
           {...args}
           getRowAttributes={getRowAttributes}
+          className="customTableStyling"
         />
-        <style>
-          {`
-          [data-highlight-row="true"] {
-            --osdk-table-row-bg-default: #f0f8ff;
-            --osdk-table-row-bg-alternate: #f0f8ff;
-          }
-        `}
-        </style>
       </div>
     );
   },
-};
-
-export const ShowEditFooterToggle: Story = {
-  args: {
-    objectType: Employee,
-    columnDefinitions: [
-      {
-        locator: { type: "property", id: "fullName" },
-        editable: true,
-      },
-      {
-        locator: { type: "property", id: "emailPrimaryWork" },
-        editable: true,
-      },
-      {
-        locator: { type: "property", id: "jobTitle" },
-        editable: true,
-        editFieldConfig: {
-          fieldComponent: "DROPDOWN",
-          getFieldComponentProps: () => ({
-            items: [
-              "Software Engineer",
-              "Senior Software Engineer",
-              "Staff Engineer",
-              "Engineering Manager",
-            ],
-            isSearchable: true,
-          }),
-        },
-      },
-    ],
-    editMode: "manual" as const,
-    showEditFooter: true,
-    onCellValueChanged: fn(),
-  } as EmployeeTableProps,
-  parameters: {
-    docs: {
-      description: {
-        story:
-          "Demonstrates the showEditFooter prop. When true (default), the edit footer is shown. Toggle the showEditFooter prop in the controls to hide/show the footer while maintaining edit mode functionality.",
-      },
-      source: {
-        code: `// With edit footer (default)
-<ObjectTable
-  objectType={Employee}
-  columnDefinitions={columnDefinitions}
-  editMode="manual"
-  showEditFooter={true}
-/>
-
-// Without edit footer
-<ObjectTable
-  objectType={Employee}
-  columnDefinitions={columnDefinitions}
-  editMode="manual"
-  showEditFooter={false}
-/>`,
-      },
-    },
-  },
-  render: (args) => (
-    <div className="object-table-container" style={{ height: "600px" }}>
-      <div
-        style={{
-          padding: "12px",
-          backgroundColor: "#fff3cd",
-          marginBottom: "8px",
-          borderRadius: "4px",
-        }}
-      >
-        <strong>showEditFooter prop:</strong>{" "}
-        Toggle the prop in Storybook controls to show/hide the bottom edit
-        footer. When hidden, edit mode can still be triggered programmatically
-        or via keyboard shortcuts.
-      </div>
-      <ObjectTable {...args} />
-    </div>
-  ),
 };

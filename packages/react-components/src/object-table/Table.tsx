@@ -86,7 +86,9 @@ export interface BaseTableProps<
   error?: Error;
   headerMenuFeatureFlags?: HeaderMenuFeatureFlags;
   editableConfig?: EditableConfig<TData, unknown>;
-  getRowAttributes?: (rowData: TData) => Record<string, string | undefined>;
+  getRowAttributes?: (
+    rowData: TData,
+  ) => Record<string, string | boolean | undefined>;
   /**
    * Whether to render the bottom edit footer. Defaults to `true`; the
    * footer is only rendered when the table has at least one editable

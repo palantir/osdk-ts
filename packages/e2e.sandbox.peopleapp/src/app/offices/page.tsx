@@ -1,6 +1,5 @@
-import type { Osdk } from "@osdk/api";
 import { ObjectTable } from "@osdk/react-components/experimental/object-table";
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import { Section } from "../../components/Section.js";
 import { Office } from "../../generatedNoCheck2/index.js";
 import { OfficeDetails } from "./OfficeDetails.js";
@@ -19,19 +18,6 @@ export function OfficesPage() {
   const handleOfficeDeleted = () => {
     setSelectedOffice(undefined);
   };
-
-  const getRowAttributes = useCallback(
-    (rowData: Osdk.Instance<typeof Office>) => {
-      const officeType = String(rowData.officeType ?? "");
-      // Highlight headquarter offices with a different background
-      const isHQ = officeType === "Headquarters";
-      return {
-        "data-office-type": officeType,
-        "data-is-hq": isHQ ? "true" : undefined,
-      };
-    },
-    [],
-  );
 
   return (
     <div className="flex flex-col">
@@ -60,17 +46,7 @@ export function OfficesPage() {
           objectType={Office}
           className={styles.officeTable}
           selectionMode="single"
-          getRowAttributes={getRowAttributes}
         />
-        <style>
-          {`
-          /* Highlight headquarters with a subtle gold background */
-          [data-is-hq="true"] {
-            --osdk-table-row-bg-default: #fffbf0;
-            --osdk-table-row-bg-alternate: #fff8e6;
-          }
-        `}
-        </style>
       </div>
     </div>
   );

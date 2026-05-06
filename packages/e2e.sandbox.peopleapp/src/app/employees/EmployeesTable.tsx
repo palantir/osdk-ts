@@ -7,6 +7,7 @@ import {
   Employee,
   getEmployeeDaysSinceStart,
 } from "../../generatedNoCheck2/index.js";
+import "./EmployeesTable.css";
 
 type RDPs = {
   managerName: "string";
@@ -111,6 +112,13 @@ export function EmployeesTable() {
     [],
   );
 
+  const getRowAttributes = useCallback(
+    (employee: Osdk.Instance<Employee>) => ({
+      "data-highlight-row": employee.jobTitle === "Content Manager",
+    }),
+    [],
+  );
+
   const client = useOsdkClient();
 
   const os = client(Employee);
@@ -132,16 +140,9 @@ export function EmployeesTable() {
           direction: "desc",
         }]}
         onSubmitEdits={handleSubmitEdits}
+        getRowAttributes={getRowAttributes}
+        className={"customEmployeesTable"}
       />
-      <style>
-        {`
-        /* Highlight senior employees with a subtle background */
-        [data-seniority-level="senior"] {
-          --osdk-table-row-bg-default: #f5f0ff;
-          --osdk-table-row-bg-alternate: #ede8ff;
-        }
-      `}
-      </style>
     </div>
   );
 }

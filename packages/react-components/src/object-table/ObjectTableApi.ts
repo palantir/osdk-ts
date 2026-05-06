@@ -102,8 +102,7 @@ interface EditableColumnDefinition<
 > extends SharedColumnDefinition<Q, RDPs, FunctionColumns> {
   /**
    * `editable` can be a boolean or a predicate that receives the row data and
-   * returns whether the cell is editable. Use the predicate form to make
-   * editing depend on the row's values.
+   * returns whether the cell is editable
    */
   editable:
     | true
@@ -373,7 +372,7 @@ export interface ObjectTableProps<
    * Set this to `false` to hide the footer when you want to drive edit mode
    * and submission entirely from your own UI.
    *
-   * **Note:** When `editMode` is `"manual"` and `onSubmitEdits` is provided,
+   * **Note:** When `editMode` is `"manual"` or `onSubmitEdits` is provided,
    * the footer is always shown regardless of this prop, since it provides the
    * only way for users to enter edit mode and submit edits.
    */
@@ -551,26 +550,11 @@ export interface ObjectTableProps<
 
   /**
    * Returns extra HTML attributes (typically `data-*`) to apply to each
-   * row's `<tr>` element. Use this to drive conditional row styling via
-   * CSS attribute selectors (e.g. row background color based on status).
-   *
-   * Entries with an `undefined` value are skipped, so consumers can
-   * conditionally include attributes.
-   *
-   * @example
-   * ```tsx
-   * const getRowAttributes = useCallback(
-   *   (employee: Osdk.Instance<typeof Employee>) => ({
-   *     "data-status": employee.status,
-   *     "data-overdue": employee.daysOverdue > 0 ? "true" : undefined,
-   *   }),
-   *   [],
-   * );
-   * ```
+   * row element. Use this to drive conditional row styling
    */
   getRowAttributes?: (
     rowData: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
-  ) => Record<string, string | undefined>;
+  ) => Record<string, string | boolean | undefined>;
 
   className?: string;
 }
