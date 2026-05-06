@@ -1,14 +1,10 @@
 :root {
   /* Button shared */
   --osdk-button-min-height: calc(var(--osdk-surface-spacing) * 7.5);
-  --osdk-button-padding: calc(var(--osdk-surface-spacing) * 1.5)
-    calc(var(--osdk-surface-spacing) * 1.75);
-  --osdk-button-border-radius: var(--osdk-surface-border-radius);
   --osdk-button-border-color: var(--osdk-surface-border-color-default);
   --osdk-button-border: var(--osdk-surface-border-width) solid
     var(--osdk-button-border-color);
   --osdk-button-shadow: 0 1px 1px var(--osdk-surface-border-color-default);
-  --osdk-button-font-size: var(--osdk-typography-size-body-medium);
 
   /* Primary Button */
   --osdk-button-primary-color: var(--osdk-intent-primary-foreground);

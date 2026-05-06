@@ -16,11 +16,12 @@
 
 .button {
   min-height: var(--osdk-button-min-height);
-  padding: var(--osdk-button-padding);
+  padding: calc(var(--osdk-surface-spacing) * 2)
+    calc(var(--osdk-surface-spacing) * 4);
   border: var(--osdk-button-border);
-  border-radius: var(--osdk-button-border-radius);
+  border-radius: var(--osdk-surface-border-radius);
   box-shadow: var(--osdk-button-shadow);
-  font-size: var(--osdk-button-font-size);
+  font-size: var(--osdk-typography-size-body-medium);
   cursor: pointer;
 
   &:focus-visible {
