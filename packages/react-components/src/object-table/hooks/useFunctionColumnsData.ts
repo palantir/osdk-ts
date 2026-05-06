@@ -227,9 +227,9 @@ function buildPagedObjectSets<
       [primaryKeyApiName]: {
         $in: page.map(obj => obj.$primaryKey),
       },
-    } as WhereClause<Q, RDPs>;
+    } as WhereClause<any>;
 
-    return objectSet.where(whereClause);
+    return (objectSet as ObjectSet<any, any>).where(whereClause);
   });
 }
 
