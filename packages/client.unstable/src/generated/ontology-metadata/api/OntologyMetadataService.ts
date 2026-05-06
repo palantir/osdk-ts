@@ -39,6 +39,7 @@ export { loadAllOntology } from "./OntologyMetadataService/loadAllOntology.js";
 export { loadAllOntologyEntities } from "./OntologyMetadataService/loadAllOntologyEntities.js";
 export { loadAllSharedPropertyTypesFromOntology } from "./OntologyMetadataService/loadAllSharedPropertyTypesFromOntology.js";
 export { loadAllTypeGroupsFromOntology } from "./OntologyMetadataService/loadAllTypeGroupsFromOntology.js";
+export { loadMergedRebaseState } from "./OntologyMetadataService/loadMergedRebaseState.js";
 export { loadOntology } from "./OntologyMetadataService/loadOntology.js";
 export { loadOntologyDatasources } from "./OntologyMetadataService/loadOntologyDatasources.js";
 export { loadOntologyEntities } from "./OntologyMetadataService/loadOntologyEntities.js";

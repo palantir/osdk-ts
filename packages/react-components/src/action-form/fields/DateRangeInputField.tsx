@@ -19,7 +19,6 @@ import { Popover } from "@base-ui/react/popover";
 import classnames from "classnames";
 import React, { useCallback, useId, useRef, useState } from "react";
 import type { DateRange as RdpDateRange } from "react-day-picker";
-import { getPopupSideOffset } from "../../base-components/popupPositioning.js";
 import {
   formatDateForInput,
   formatDatetimeForInput,
@@ -31,6 +30,7 @@ import { stopPropagation } from "./calendarShared.js";
 import commonStyles from "./DatePickerCommon.module.css";
 import styles from "./DateRangeInputField.module.css";
 import { LazyDateRangeCalendar } from "./LazyDateRangeCalendar.js";
+import { PortalDismissLayer } from "./PortalDismissLayer.js";
 import { TimePicker } from "./TimePicker.js";
 import { useDateEditState } from "./useDateEditState.js";
 
@@ -61,6 +61,7 @@ export const DateRangeInputField: React.NamedExoticComponent<
   showTime = false,
   formatDate,
   parseDate,
+  portalContainer,
 }: DateRangeInputFieldProps) {
   const shouldCloseOnSelection = !showTime;
   const popoverId = useId();
@@ -73,6 +74,10 @@ export const DateRangeInputField: React.NamedExoticComponent<
   const popoverRef = useRef<HTMLDivElement>(null);
 
   const [isOpen, setIsOpen] = useState(false);
+  // When focus returns to an input after Tab exits the popover boundary, the
+  // next input focus should not reopen the calendar before native Tab can
+  // continue to the following form field.
+  const skipReopenRef = useRef(false);
   // Tracks which input (start/end) owns the shared calendar popover.
   // Used to restore focus to the correct input when Tab-cycling through
   // focus boundaries and when the calendar selects a range endpoint.
@@ -169,17 +174,50 @@ export const DateRangeInputField: React.NamedExoticComponent<
 
   // --- Focus handlers ---
 
+  const getActiveInputRef = useCallback(
+    () => activeBoundary === "start" ? startInputRef : endInputRef,
+    [activeBoundary],
+  );
+
+  const beginEditing = useCallback(
+    (boundary: ActiveBoundary) => {
+      if (boundary === "start") {
+        beginStartEditing();
+      } else {
+        beginEndEditing();
+      }
+      setActiveBoundary(boundary);
+    },
+    [beginStartEditing, beginEndEditing],
+  );
+
+  const handleInputFocus = useCallback(
+    (boundary: ActiveBoundary) => {
+      beginEditing(boundary);
+      if (skipReopenRef.current) {
+        skipReopenRef.current = false;
+        return;
+      }
+      setIsOpen(true);
+    },
+    [beginEditing],
+  );
+
   const handleStartFocus = useCallback(() => {
-    beginStartEditing();
-    setActiveBoundary("start");
-    setIsOpen(true);
-  }, [beginStartEditing]);
+    handleInputFocus("start");
+  }, [handleInputFocus]);
 
   const handleEndFocus = useCallback(() => {
-    beginEndEditing();
-    setActiveBoundary("end");
-    setIsOpen(true);
-  }, [beginEndEditing]);
+    handleInputFocus("end");
+  }, [handleInputFocus]);
+
+  const closePopoverForBoundaryExit = useCallback(() => {
+    skipReopenRef.current = true;
+    setIsOpen(false);
+    stopStartEditing();
+    stopEndEditing();
+    getActiveInputRef().current?.focus();
+  }, [getActiveInputRef, stopStartEditing, stopEndEditing]);
 
   const handleStartPointerDown = useCallback(() => {
     // Opening from pointer-down keeps mouse interactions in sync with focus
@@ -361,20 +399,20 @@ export const DateRangeInputField: React.NamedExoticComponent<
   // Start boundary (top): Shift+Tab past the first calendar element redirects
   // focus to whichever input is currently active.
   const handleStartFocusBoundary = useCallback(() => {
-    const activeRef = activeBoundary === "start" ? startInputRef : endInputRef;
-    activeRef.current?.focus();
-  }, [activeBoundary]);
+    getActiveInputRef().current?.focus();
+  }, [getActiveInputRef]);
 
   // End boundary (bottom): Two cases —
   // (1) Tab past the last calendar element (focus came from inside the popover)
-  //     → close the popover and blur both inputs.
+  //     → close the popover and return focus to the active input so the next
+  //       native Tab continues to the next form field.
   // (2) Focus entered from outside the popover (e.g. reverse Tab from the page)
   //     → redirect to the last interactive element inside the popover.
   const handleEndFocusBoundary = useCallback(
     (e: React.FocusEvent<HTMLDivElement>) => {
       const related = e.relatedTarget ?? document.activeElement;
       if (popoverRef.current?.contains(related as Node)) {
-        closePopover();
+        closePopoverForBoundaryExit();
       } else {
         const buttons = popoverRef.current?.querySelectorAll<HTMLElement>(
           "button, select",
@@ -383,7 +421,7 @@ export const DateRangeInputField: React.NamedExoticComponent<
         lastButton?.focus();
       }
     },
-    [closePopover],
+    [closePopoverForBoundaryExit],
   );
 
   // --- Calendar selected range ---
@@ -419,7 +457,13 @@ export const DateRangeInputField: React.NamedExoticComponent<
   // would make click handling simpler, but it would also nest interactive
   // comboboxes inside an interactive trigger and reintroduce the axe violation.
   return (
-    <Popover.Root open={isOpen} onOpenChange={handleOpenChange}>
+    <Popover.Root
+      open={isOpen}
+      onOpenChange={handleOpenChange}
+      // Uses pointer-down outside dismissal so the click that opens the picker
+      // is not reinterpreted after the portal dismiss layer appears.
+      modal="trap-focus"
+    >
       <div
         ref={triggerRef}
         className={styles.osdkDateRangeContainer}
@@ -481,10 +525,15 @@ export const DateRangeInputField: React.NamedExoticComponent<
           />
         </div>
       </div>
-      <Popover.Portal>
+      <Popover.Portal container={portalContainer}>
+        <PortalDismissLayer
+          className={commonStyles.osdkDatePickerDismissLayer}
+          onDismiss={closePopover}
+        />
         <Popover.Positioner
           anchor={triggerRef}
-          sideOffset={getPopupSideOffset}
+          className={commonStyles.osdkDatePickerPositioner}
+          sideOffset={4}
         >
           <Popover.Popup
             ref={popoverRef}

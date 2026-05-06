@@ -18,7 +18,6 @@ import { Input } from "@base-ui/react/input";
 import { Popover } from "@base-ui/react/popover";
 import classnames from "classnames";
 import React, { useCallback, useId, useRef, useState } from "react";
-import { getPopupSideOffset } from "../../base-components/popupPositioning.js";
 import {
   formatDateForInput,
   formatDatetimeForInput,
@@ -31,6 +30,7 @@ import { stopPropagation } from "./calendarShared.js";
 import commonStyles from "./DatePickerCommon.module.css";
 import styles from "./DatetimePickerField.module.css";
 import { LazyDateCalendar } from "./LazyDateCalendar.js";
+import { PortalDismissLayer } from "./PortalDismissLayer.js";
 import { TimePicker } from "./TimePicker.js";
 import { useDateEditState } from "./useDateEditState.js";
 
@@ -49,6 +49,7 @@ export const DatetimePickerField: React.NamedExoticComponent<
   showTime = false,
   closeOnSelection,
   portalRef,
+  portalContainer,
 }: DatetimePickerFieldProps) {
   const shouldCloseOnSelection = closeOnSelection ?? !showTime;
   const popoverId = useId();
@@ -304,7 +305,13 @@ export const DatetimePickerField: React.NamedExoticComponent<
   // make click handling simpler, but it would also nest an interactive combobox
   // inside an interactive trigger and reintroduce the axe violation.
   return (
-    <Popover.Root open={isOpen} onOpenChange={handleOpenChange}>
+    <Popover.Root
+      open={isOpen}
+      onOpenChange={handleOpenChange}
+      // Uses pointer-down outside dismissal so the click that opens the picker
+      // is not reinterpreted after the portal dismiss layer appears.
+      modal="trap-focus"
+    >
       <div ref={wrapperRef} className={wrapperClassName}>
         <Popover.Trigger
           nativeButton={false}
@@ -331,10 +338,15 @@ export const DatetimePickerField: React.NamedExoticComponent<
           }
         />
       </div>
-      <Popover.Portal ref={portalRef}>
+      <Popover.Portal ref={portalRef} container={portalContainer}>
+        <PortalDismissLayer
+          className={commonStyles.osdkDatePickerDismissLayer}
+          onDismiss={closePopover}
+        />
         <Popover.Positioner
           anchor={wrapperRef}
-          sideOffset={getPopupSideOffset}
+          className={commonStyles.osdkDatePickerPositioner}
+          sideOffset={4}
         >
           <Popover.Popup
             ref={popoverRef}

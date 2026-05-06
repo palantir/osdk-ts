@@ -24,3 +24,5 @@ export type {
   ImportObjectDefinition,
   ImportPropertyTypeDefinition,
 } from "./api/types.js";
+
+export { defineFunctionBackedAction } from "./api/defineFunctionBackedAction.js";

@@ -29,6 +29,12 @@ import type {
 import type { RuleSetIdentifier as _api_formatting_RuleSetIdentifier } from "../formatting/__components.js";
 
 /**
+ * The action type's logic rule value refers to a schedule run RID but there is no synchronous schedule run
+ * effect in the action type.
+ */
+export interface ActionLogicRuleValueContainsUnknownScheduleRunRid {
+}
+/**
  * Action log property is not a struct type but is mapped using struct field values.
  */
 export interface ActionLogPropertyIsNotStructButMappedAsStruct {
@@ -319,6 +325,16 @@ export interface ActionTypeHasRevertsEnabledForInvalidLinkTypeStorageBackendCate
  * ActionType has reverts enabled but references Object Types that are not in Object Storage V2.
  */
 export interface ActionTypeHasRevertsEnabledForInvalidObjectTypeStorageBackendCategory {
+}
+/**
+ * Action type is not allowed to have both a synchronous webhook and a synchronous effect.
+ */
+export interface ActionTypeHasSynchronousWebhookAndSynchronousEffect {
+}
+/**
+ * An Inline ActionType must be referenced by one and only one ObjectType.
+ */
+export interface ActionTypeInlineActionTypeCannotBeReferencedByMultipleObjectTypes {
 }
 /**
  * There are some properties on the ObjectType for which the ActionType is listed as inline but the ModifyObjectRule does not modify those properties of the ObjectType.
@@ -660,6 +676,26 @@ export interface ActionTypeReferencesOptionalInterfacePropertyTypesInInterfaceTy
 export interface ActionTypeReferencesOptionalSharedPropertyTypesInInterfaceTypes {
 }
 /**
+ * Action type references a schedule with parameterized pipelines disabled.
+ */
+export interface ActionTypeScheduleDoesNotHaveDeploymentConfig {
+}
+/**
+ * Action type references a schedule that does not exist.
+ */
+export interface ActionTypeScheduleNotFound {
+}
+/**
+ * Action type's schedule expects different parameters than what was provided.
+ */
+export interface ActionTypeScheduleParametersMismatch {
+}
+/**
+ * Action type's schedule expects different parameter types than what was provided.
+ */
+export interface ActionTypeScheduleParameterTypeMismatch {
+}
+/**
  * The description of a section in an action type exceeds the maximum length.
  */
 export interface ActionTypeSectionDescriptionTooLong {
@@ -850,10 +886,12 @@ export interface ActionTypeValidationsOrderingNotExactlySameAsValidationRuleSet 
 export interface BranchIndexingConfigCanOnlyBeSetForManyToManyLinkTypes {
 }
 /**
- * Pipeline Builder cannot remove property security groups that were set on the parent branch (by Ontology Manager).
- * To modify property security groups for this object type, please use Ontology Manager.
+ * Pipeline Builder cannot modify the property security groups of an object type that was LAST MODIFIED outside
+ * of Pipeline Builder. As a workaround, perform a deployment with Pipeline Builder that does not modify the
+ * PSGs, then deploy a subsequent change with the property security group modifications. Alternatively, use
+ * Ontology Manager to modify the object type.
  */
-export interface BuilderCannotDeletePropertySecurityGroupsSetOnParentBranch {
+export interface BuilderCannotModifyPropertySecurityGroupsSetOnParentBranch {
 }
 /**
  * CipherText property types can only have string plainText types.
@@ -881,6 +919,12 @@ export interface CompassFolderEntityResourceNameIsIllegalValue {
 export interface CompassFolderEntityResourceNameIsTooLong {
 }
 /**
+ * Executing the migration request to move entities into projects would result in entities that violate one or
+ * more projects' max classifications.
+ */
+export interface CompassFoldersMigrationWouldViolateMarkingsConstraint {
+}
+/**
  * Entities cannot be created in (or migrated to) Compass folders if used in a CBAC-enabled environment.
  */
 export interface CompassFoldersUsedInCbacEnvironment {
@@ -894,6 +938,12 @@ export interface CompassFoldersUsedInDefaultOntology {
  * An updated or created entity type is referencing Shared Property Types that do not exist.
  */
 export interface CreatedOrUpdatedEntityTypeReferencingNonExistentSharedPropertyTypes {
+}
+/**
+ * A datasource's data security classification constraint would violate the max classification constraint of the
+ * project folder containing the parent object type.
+ */
+export interface DatasourceDataSecurityWouldViolateMarkingsConstraint {
 }
 export interface EasedPipelineBuilderError {
 }
@@ -921,14 +971,20 @@ export interface ErrorTag_easedPipelineBuilderError {
  */
 export type ErrorTag = ErrorTag_easedPipelineBuilderError;
 
-export interface ErrorType_ontologyEntityApiNameConflicts {
-  type: "ontologyEntityApiNameConflicts";
-  ontologyEntityApiNameConflicts: OntologyEntityApiNameConflicts;
+export interface ErrorType_objectTypeOrInterfaceTypeApiNameConflict {
+  type: "objectTypeOrInterfaceTypeApiNameConflict";
+  objectTypeOrInterfaceTypeApiNameConflict:
+    ObjectTypeOrInterfaceTypeApiNameConflict;
 }
 
 export interface ErrorType_objectTypeFieldApiNameConflict {
   type: "objectTypeFieldApiNameConflict";
   objectTypeFieldApiNameConflict: ObjectTypeFieldApiNameConflict;
+}
+
+export interface ErrorType_sharedPropertyTypeApiNameConflict {
+  type: "sharedPropertyTypeApiNameConflict";
+  sharedPropertyTypeApiNameConflict: SharedPropertyTypeApiNameConflict;
 }
 
 export interface ErrorType_ontologyBranchConflictsWithMain {
@@ -1040,12 +1096,6 @@ export interface ErrorType_linkTypeOneToManyWithDatasourcesNotAllowed {
     LinkTypeOneToManyWithDatasourcesNotAllowed;
 }
 
-export interface ErrorType_linkTypeStatusAndObjectTypePropertyTypeStatusConflict {
-  type: "linkTypeStatusAndObjectTypePropertyTypeStatusConflict";
-  linkTypeStatusAndObjectTypePropertyTypeStatusConflict:
-    LinkTypeStatusAndObjectTypePropertyTypeStatusConflict;
-}
-
 export interface ErrorType_linkTypeInvalidOneToManyCardinalityHint {
   type: "linkTypeInvalidOneToManyCardinalityHint";
   linkTypeInvalidOneToManyCardinalityHint:
@@ -1071,12 +1121,6 @@ export interface ErrorType_linkTypeInvalidDeletionsWithReferencingDatasources {
   type: "linkTypeInvalidDeletionsWithReferencingDatasources";
   linkTypeInvalidDeletionsWithReferencingDatasources:
     LinkTypeInvalidDeletionsWithReferencingDatasources;
-}
-
-export interface ErrorType_linkTypeStatusAndPropertyTypeStatusConflict {
-  type: "linkTypeStatusAndPropertyTypeStatusConflict";
-  linkTypeStatusAndPropertyTypeStatusConflict:
-    LinkTypeStatusAndPropertyTypeStatusConflict;
 }
 
 export interface ErrorType_linkTypeInvalidVisibility {
@@ -1317,6 +1361,12 @@ export interface ErrorType_interfaceTypeContainsTooManyProperties {
 export interface ErrorType_interfaceLinkTypeApiNameConflict {
   type: "interfaceLinkTypeApiNameConflict";
   interfaceLinkTypeApiNameConflict: InterfaceLinkTypeApiNameConflict;
+}
+
+export interface ErrorType_interfaceActionTypeConstraintApiNameConflict {
+  type: "interfaceActionTypeConstraintApiNameConflict";
+  interfaceActionTypeConstraintApiNameConflict:
+    InterfaceActionTypeConstraintApiNameConflict;
 }
 
 export interface ErrorType_interfacePropertyTypeApiNameConflict {
@@ -1635,10 +1685,10 @@ export interface ErrorType_objectTypePropertySecurityGroupsNotSupportedOnBranche
     ObjectTypePropertySecurityGroupsNotSupportedOnBranches;
 }
 
-export interface ErrorType_builderCannotDeletePropertySecurityGroupsSetOnParentBranch {
-  type: "builderCannotDeletePropertySecurityGroupsSetOnParentBranch";
-  builderCannotDeletePropertySecurityGroupsSetOnParentBranch:
-    BuilderCannotDeletePropertySecurityGroupsSetOnParentBranch;
+export interface ErrorType_builderCannotModifyPropertySecurityGroupsSetOnParentBranch {
+  type: "builderCannotModifyPropertySecurityGroupsSetOnParentBranch";
+  builderCannotModifyPropertySecurityGroupsSetOnParentBranch:
+    BuilderCannotModifyPropertySecurityGroupsSetOnParentBranch;
 }
 
 export interface ErrorType_objectTypePropertyIncompatibleBackingColumnType {
@@ -2207,12 +2257,6 @@ export interface ErrorType_objectTypePrimaryKeyTimeDependentPropertyMustBeIndexe
     ObjectTypePrimaryKeyTimeDependentPropertyMustBeIndexedForSearch;
 }
 
-export interface ErrorType_objectTypePropertyTypeStatusAndObjectTypeStatusConflict {
-  type: "objectTypePropertyTypeStatusAndObjectTypeStatusConflict";
-  objectTypePropertyTypeStatusAndObjectTypeStatusConflict:
-    ObjectTypePropertyTypeStatusAndObjectTypeStatusConflict;
-}
-
 export interface ErrorType_objectTypeBaseFormatterReferencedPropertiesDoNotExist {
   type: "objectTypeBaseFormatterReferencedPropertiesDoNotExist";
   objectTypeBaseFormatterReferencedPropertiesDoNotExist:
@@ -2581,6 +2625,12 @@ export interface ErrorType_objectTypeInterfaceImplementationConflictingPropertyI
     ObjectTypeInterfaceImplementationConflictingPropertyImplementation;
 }
 
+export interface ErrorType_objectTypeInterfaceImplementationConflictingReducerImplementation {
+  type: "objectTypeInterfaceImplementationConflictingReducerImplementation";
+  objectTypeInterfaceImplementationConflictingReducerImplementation:
+    ObjectTypeInterfaceImplementationConflictingReducerImplementation;
+}
+
 export interface ErrorType_objectTypeInterfaceImplementationPropertyHasDifferentType {
   type: "objectTypeInterfaceImplementationPropertyHasDifferentType";
   objectTypeInterfaceImplementationPropertyHasDifferentType:
@@ -2733,6 +2783,42 @@ export interface ErrorType_objectTypeRequiredInterfaceLinkTypeNotImplemented {
   type: "objectTypeRequiredInterfaceLinkTypeNotImplemented";
   objectTypeRequiredInterfaceLinkTypeNotImplemented:
     ObjectTypeRequiredInterfaceLinkTypeNotImplemented;
+}
+
+export interface ErrorType_objectTypeRequiredInterfaceActionTypeConstraintNotImplemented {
+  type: "objectTypeRequiredInterfaceActionTypeConstraintNotImplemented";
+  objectTypeRequiredInterfaceActionTypeConstraintNotImplemented:
+    ObjectTypeRequiredInterfaceActionTypeConstraintNotImplemented;
+}
+
+export interface ErrorType_objectTypeInterfaceActionTypeConstraintNotFound {
+  type: "objectTypeInterfaceActionTypeConstraintNotFound";
+  objectTypeInterfaceActionTypeConstraintNotFound:
+    ObjectTypeInterfaceActionTypeConstraintNotFound;
+}
+
+export interface ErrorType_objectTypeInterfaceParameterTypeMismatch {
+  type: "objectTypeInterfaceParameterTypeMismatch";
+  objectTypeInterfaceParameterTypeMismatch:
+    ObjectTypeInterfaceParameterTypeMismatch;
+}
+
+export interface ErrorType_objectTypeRequiredInterfaceParameterConstraintNotImplemented {
+  type: "objectTypeRequiredInterfaceParameterConstraintNotImplemented";
+  objectTypeRequiredInterfaceParameterConstraintNotImplemented:
+    ObjectTypeRequiredInterfaceParameterConstraintNotImplemented;
+}
+
+export interface ErrorType_objectTypeInterfaceParameterConstraintNotFound {
+  type: "objectTypeInterfaceParameterConstraintNotFound";
+  objectTypeInterfaceParameterConstraintNotFound:
+    ObjectTypeInterfaceParameterConstraintNotFound;
+}
+
+export interface ErrorType_objectTypeDuplicateActionTypeParameterMapping {
+  type: "objectTypeDuplicateActionTypeParameterMapping";
+  objectTypeDuplicateActionTypeParameterMapping:
+    ObjectTypeDuplicateActionTypeParameterMapping;
 }
 
 export interface ErrorType_objectTypeCountExceeded {
@@ -3706,6 +3792,12 @@ export interface ErrorType_actionTypeInvalidLogicRuleProvidedForInlineActionType
     ActionTypeInvalidLogicRuleProvidedForInlineActionTypeProperty;
 }
 
+export interface ErrorType_actionTypeInlineActionTypeCannotBeReferencedByMultipleObjectTypes {
+  type: "actionTypeInlineActionTypeCannotBeReferencedByMultipleObjectTypes";
+  actionTypeInlineActionTypeCannotBeReferencedByMultipleObjectTypes:
+    ActionTypeInlineActionTypeCannotBeReferencedByMultipleObjectTypes;
+}
+
 export interface ErrorType_actionTypeInlineActionTypeDoesNotModifyAllPropertyTypesForWhichActionTypeIsInline {
   type:
     "actionTypeInlineActionTypeDoesNotModifyAllPropertyTypesForWhichActionTypeIsInline";
@@ -3748,6 +3840,40 @@ export interface ErrorType_actionTypeHasRevertsEnabledAndSynchronousWebhook {
   type: "actionTypeHasRevertsEnabledAndSynchronousWebhook";
   actionTypeHasRevertsEnabledAndSynchronousWebhook:
     ActionTypeHasRevertsEnabledAndSynchronousWebhook;
+}
+
+export interface ErrorType_actionTypeHasSynchronousWebhookAndSynchronousEffect {
+  type: "actionTypeHasSynchronousWebhookAndSynchronousEffect";
+  actionTypeHasSynchronousWebhookAndSynchronousEffect:
+    ActionTypeHasSynchronousWebhookAndSynchronousEffect;
+}
+
+export interface ErrorType_actionTypeScheduleNotFound {
+  type: "actionTypeScheduleNotFound";
+  actionTypeScheduleNotFound: ActionTypeScheduleNotFound;
+}
+
+export interface ErrorType_actionTypeScheduleDoesNotHaveDeploymentConfig {
+  type: "actionTypeScheduleDoesNotHaveDeploymentConfig";
+  actionTypeScheduleDoesNotHaveDeploymentConfig:
+    ActionTypeScheduleDoesNotHaveDeploymentConfig;
+}
+
+export interface ErrorType_actionTypeScheduleParameterTypeMismatch {
+  type: "actionTypeScheduleParameterTypeMismatch";
+  actionTypeScheduleParameterTypeMismatch:
+    ActionTypeScheduleParameterTypeMismatch;
+}
+
+export interface ErrorType_actionTypeScheduleParametersMismatch {
+  type: "actionTypeScheduleParametersMismatch";
+  actionTypeScheduleParametersMismatch: ActionTypeScheduleParametersMismatch;
+}
+
+export interface ErrorType_actionLogicRuleValueContainsUnknownScheduleRunRid {
+  type: "actionLogicRuleValueContainsUnknownScheduleRunRid";
+  actionLogicRuleValueContainsUnknownScheduleRunRid:
+    ActionLogicRuleValueContainsUnknownScheduleRunRid;
 }
 
 export interface ErrorType_actionTypeValidationsOrderingNotExactlySameAsValidationRuleSet {
@@ -4246,6 +4372,24 @@ export interface ErrorType_compassFoldersUsedInDefaultOntology {
   compassFoldersUsedInDefaultOntology: CompassFoldersUsedInDefaultOntology;
 }
 
+export interface ErrorType_compassFoldersMigrationWouldViolateMarkingsConstraint {
+  type: "compassFoldersMigrationWouldViolateMarkingsConstraint";
+  compassFoldersMigrationWouldViolateMarkingsConstraint:
+    CompassFoldersMigrationWouldViolateMarkingsConstraint;
+}
+
+export interface ErrorType_ontologyEntityCreatedInProjectWouldViolateMarkingsConstraint {
+  type: "ontologyEntityCreatedInProjectWouldViolateMarkingsConstraint";
+  ontologyEntityCreatedInProjectWouldViolateMarkingsConstraint:
+    OntologyEntityCreatedInProjectWouldViolateMarkingsConstraint;
+}
+
+export interface ErrorType_datasourceDataSecurityWouldViolateMarkingsConstraint {
+  type: "datasourceDataSecurityWouldViolateMarkingsConstraint";
+  datasourceDataSecurityWouldViolateMarkingsConstraint:
+    DatasourceDataSecurityWouldViolateMarkingsConstraint;
+}
+
 export interface ErrorType_compassFoldersUsedInCbacEnvironment {
   type: "compassFoldersUsedInCbacEnvironment";
   compassFoldersUsedInCbacEnvironment: CompassFoldersUsedInCbacEnvironment;
@@ -4313,8 +4457,9 @@ export interface ErrorType_maxClassificationConstraintMustBeNonEmptyIfAllowEmpty
  * A union that represents all possible ontology modification validation errors.
  */
 export type ErrorType =
-  | ErrorType_ontologyEntityApiNameConflicts
+  | ErrorType_objectTypeOrInterfaceTypeApiNameConflict
   | ErrorType_objectTypeFieldApiNameConflict
+  | ErrorType_sharedPropertyTypeApiNameConflict
   | ErrorType_ontologyBranchConflictsWithMain
   | ErrorType_intermediaryLinkTypeInvalidAssociatedLinkType
   | ErrorType_intermediaryLinkTypeMustBeOsv2
@@ -4335,13 +4480,11 @@ export type ErrorType =
   | ErrorType_linkTypeToDeleteIsReferencedByExistingTypes
   | ErrorType_linkTypeHasNoDatasources
   | ErrorType_linkTypeOneToManyWithDatasourcesNotAllowed
-  | ErrorType_linkTypeStatusAndObjectTypePropertyTypeStatusConflict
   | ErrorType_linkTypeInvalidOneToManyCardinalityHint
   | ErrorType_linkTypeReferencedObjectTypesNotFound
   | ErrorType_linkTypeReferencedObjectTypesDeleted
   | ErrorType_linkTypeInvalidApiName
   | ErrorType_linkTypeInvalidDeletionsWithReferencingDatasources
-  | ErrorType_linkTypeStatusAndPropertyTypeStatusConflict
   | ErrorType_linkTypeInvalidVisibility
   | ErrorType_linkTypeCannotEditPrivilegedProvenance
   | ErrorType_linkTypeReadOnlyV1V2NotAllowed
@@ -4386,6 +4529,7 @@ export type ErrorType =
   | ErrorType_interfaceTypeLinkedEntityTypeNotFound
   | ErrorType_interfaceTypeContainsTooManyProperties
   | ErrorType_interfaceLinkTypeApiNameConflict
+  | ErrorType_interfaceActionTypeConstraintApiNameConflict
   | ErrorType_interfacePropertyTypeApiNameConflict
   | ErrorType_interfacePropertyTypeApiNameIgnoringNamespaceConflict
   | ErrorType_interfaceTypeImplementedTooOften
@@ -4440,7 +4584,7 @@ export type ErrorType =
   | ErrorType_objectTypeWithStreamDatasourceCannotHaveMaterializations
   | ErrorType_editsOnlyObjectTypeMustHavePropertySecurityGroups
   | ErrorType_objectTypePropertySecurityGroupsNotSupportedOnBranches
-  | ErrorType_builderCannotDeletePropertySecurityGroupsSetOnParentBranch
+  | ErrorType_builderCannotModifyPropertySecurityGroupsSetOnParentBranch
   | ErrorType_objectTypePropertyIncompatibleBackingColumnType
   | ErrorType_objectTypePropertyIncompatibleDecimalColumnType
   | ErrorType_objectTypeStructColumnFieldMissingFromBackingDatasource
@@ -4537,7 +4681,6 @@ export type ErrorType =
   | ErrorType_objectTypePrimaryKeyTypeForbidden
   | ErrorType_objectTypeReferenceDeletedInlineActionTypes
   | ErrorType_objectTypePrimaryKeyTimeDependentPropertyMustBeIndexedForSearch
-  | ErrorType_objectTypePropertyTypeStatusAndObjectTypeStatusConflict
   | ErrorType_objectTypeBaseFormatterReferencedPropertiesDoNotExist
   | ErrorType_objectTypeAttachmentPropertyShouldNotBePrimaryKeyOrTitle
   | ErrorType_objectTypeAttachmentPropertyShouldNotBeSearchable
@@ -4600,6 +4743,7 @@ export type ErrorType =
   | ErrorType_objectTypeInterfaceImplementationInvalidIsIndexedForSearch
   | ErrorType_objectTypeInterfaceImplementationInvalidDataConstraints
   | ErrorType_objectTypeInterfaceImplementationConflictingPropertyImplementation
+  | ErrorType_objectTypeInterfaceImplementationConflictingReducerImplementation
   | ErrorType_objectTypeInterfaceImplementationPropertyHasDifferentType
   | ErrorType_objectTypeInterfaceImplementationPropertyNotFound
   | ErrorType_objectTypeInterfaceImplementationPropertyTypesHaveConflictingApiNames
@@ -4625,6 +4769,12 @@ export type ErrorType =
   | ErrorType_objectTypeInterfaceLinkNotFound
   | ErrorType_objectTypeInterfaceLinkTypeImplementedTooOften
   | ErrorType_objectTypeRequiredInterfaceLinkTypeNotImplemented
+  | ErrorType_objectTypeRequiredInterfaceActionTypeConstraintNotImplemented
+  | ErrorType_objectTypeInterfaceActionTypeConstraintNotFound
+  | ErrorType_objectTypeInterfaceParameterTypeMismatch
+  | ErrorType_objectTypeRequiredInterfaceParameterConstraintNotImplemented
+  | ErrorType_objectTypeInterfaceParameterConstraintNotFound
+  | ErrorType_objectTypeDuplicateActionTypeParameterMapping
   | ErrorType_objectTypeCountExceeded
   | ErrorType_objectTypeTooManyPropertiesAndStructFields
   | ErrorType_objectTypeStreamDatasourceTooManyPropertiesAndStructFields
@@ -4791,6 +4941,7 @@ export type ErrorType =
   | ErrorType_actionTypeInvalidLogicRuleForObjectType
   | ErrorType_actionTypeInvalidParameterIdProvidedForInlineActionType
   | ErrorType_actionTypeInvalidLogicRuleProvidedForInlineActionTypeProperty
+  | ErrorType_actionTypeInlineActionTypeCannotBeReferencedByMultipleObjectTypes
   | ErrorType_actionTypeInlineActionTypeDoesNotModifyAllPropertyTypesForWhichActionTypeIsInline
   | ErrorType_actionTypeInlineActionTypeLogicRuleMustModifyObjectTypeWhichReferencesTheActionTypeAsInline
   | ErrorType_actionTypeInlineActionTypeLogicMustConsistOfOneAndOnlyOneModifyObjectRule
@@ -4798,6 +4949,12 @@ export type ErrorType =
   | ErrorType_actionTypeApiNameConflict
   | ErrorType_actionTypeObjectParameterPropertyValueCannotReferenceStructProperty
   | ErrorType_actionTypeHasRevertsEnabledAndSynchronousWebhook
+  | ErrorType_actionTypeHasSynchronousWebhookAndSynchronousEffect
+  | ErrorType_actionTypeScheduleNotFound
+  | ErrorType_actionTypeScheduleDoesNotHaveDeploymentConfig
+  | ErrorType_actionTypeScheduleParameterTypeMismatch
+  | ErrorType_actionTypeScheduleParametersMismatch
+  | ErrorType_actionLogicRuleValueContainsUnknownScheduleRunRid
   | ErrorType_actionTypeValidationsOrderingNotExactlySameAsValidationRuleSet
   | ErrorType_actionTypeValidationsOrderingContainsDuplicates
   | ErrorType_actionTypeHasRevertsEnabledForInvalidObjectTypeStorageBackendCategory
@@ -4884,6 +5041,9 @@ export type ErrorType =
   | ErrorType_validationBlockOverrideContainsValueType
   | ErrorType_invalidCompassFoldersForEntities
   | ErrorType_compassFoldersUsedInDefaultOntology
+  | ErrorType_compassFoldersMigrationWouldViolateMarkingsConstraint
+  | ErrorType_ontologyEntityCreatedInProjectWouldViolateMarkingsConstraint
+  | ErrorType_datasourceDataSecurityWouldViolateMarkingsConstraint
   | ErrorType_compassFoldersUsedInCbacEnvironment
   | ErrorType_compassFolderEntityResourceNameIsEmpty
   | ErrorType_compassFolderEntityResourceNameContainsIllegalSubstrings
@@ -4897,6 +5057,11 @@ export type ErrorType =
   | ErrorType_maxClassificationConstraintMustBeNonEmptyIfAllowEmptyMarkingsIsFalse;
 
 export interface IndeterminateErrorCategory {
+}
+/**
+ * Two interface action type constraints have the same API name. API Names must be unique within the context of an interface. I.e. across all action type constraints in an interface and its super interfaces.
+ */
+export interface InterfaceActionTypeConstraintApiNameConflict {
 }
 /**
  * Two interface link types have the same API name. API Names must be unique within the context of an interface. I.e. across all links in an interface and its super interfaces.
@@ -5551,19 +5716,9 @@ export interface LinkTypeReferencedObjectTypesDeleted {
 export interface LinkTypeReferencedObjectTypesNotFound {
 }
 /**
- * There is a conflict between Link Type Status, they must be compatible.
- */
-export interface LinkTypeStatusAndObjectTypePropertyTypeStatusConflict {
-}
-/**
  * Link Type Status conflicts with Object types' statuses.
  */
 export interface LinkTypeStatusAndObjectTypeStatusConflict {
-}
-/**
- * Link Type status conflicts with property types' statuses of the associated object types.
- */
-export interface LinkTypeStatusAndPropertyTypeStatusConflict {
 }
 /**
  * The many to many datasource backing a link type has an invalid retention policy.
@@ -5876,6 +6031,11 @@ export interface ObjectTypeDescriptionTooLong {
 export interface ObjectTypeDisplayNameTooLong {
 }
 /**
+ * Multiple parameter constraints in the implementation map to the same action type parameter.
+ */
+export interface ObjectTypeDuplicateActionTypeParameterMapping {
+}
+/**
  * Two or more datasource struct fields map to the same property type struct field API name on an object type.
  */
 export interface ObjectTypeDuplicateStructDatasourceMapping {
@@ -6082,9 +6242,19 @@ export interface ObjectTypeInlineActionTypesCannotBeAssociatedWithObjectTypePrim
 export interface ObjectTypeInPrivatePackageContainsGothamMapping {
 }
 /**
+ * The object type specifies an interface action type constraint implementation for a constraint which does not exist.
+ */
+export interface ObjectTypeInterfaceActionTypeConstraintNotFound {
+}
+/**
  * An interface property is fulfilled more than once for an interface and the multiple implementations are not the same. When an interface and its super interface are both explicitly implemented by an object type, the implementation for an inherited property on the interface must be the same as the implementation of the property for the super interface. Additionally, the implementation of two child interfaces of the same super interface must have the same implementation for any inherited properties.
  */
 export interface ObjectTypeInterfaceImplementationConflictingPropertyImplementation {
+}
+/**
+ * A property type implements multiple interface properties on the same interface with conflicting reducer usage.
+ */
+export interface ObjectTypeInterfaceImplementationConflictingReducerImplementation {
 }
 /**
  * The object type was declared to implement the interface but is missing one or more shared property types from the interface.
@@ -6214,6 +6384,16 @@ export interface ObjectTypeInterfaceLinkNotFound {
  * Interface link type with a SINGLE cardinality is implemented more than once.
  */
 export interface ObjectTypeInterfaceLinkTypeImplementedTooOften {
+}
+/**
+ * The implementation maps a parameter constraint that does not exist on the action type constraint.
+ */
+export interface ObjectTypeInterfaceParameterConstraintNotFound {
+}
+/**
+ * The implementing action type parameter's type does not match the interface parameter constraint's type.
+ */
+export interface ObjectTypeInterfaceParameterTypeMismatch {
 }
 /**
  * The supplied value for Analyzer in a string property was invalid.
@@ -6446,6 +6626,11 @@ export interface ObjectTypeNullablePropertyInSecurityGroupGranularPolicyMarkingC
 export interface ObjectTypeObjectStorageV1MappedToGotham {
 }
 /**
+ * There are object types or interface types with the same API name.
+ */
+export interface ObjectTypeOrInterfaceTypeApiNameConflict {
+}
+/**
  * Cannot create Object Type with Storage Backend set to ObjectStorageV1. Please use ObjectStorageV2 instead.
  */
 export interface ObjectTypeOsv1CannotCreate {
@@ -6599,11 +6784,6 @@ export interface ObjectTypePropertyTypeMarkingMustBeReferencedInGranularPolicy {
 export interface ObjectTypePropertyTypeMarkingMustHaveAssociatedMarkingConstraintsOnDatasource {
 }
 /**
- * Property type status conflicts with Object Type status.
- */
-export interface ObjectTypePropertyTypeStatusAndObjectTypeStatusConflict {
-}
-/**
  * The specified ObjectTypeModification is invalid. Field replaceById contains a PropertyId which is not present in the same ObjectType.
  */
 export interface ObjectTypePropertyTypeWithReplaceByIdNotFound {
@@ -6669,9 +6849,19 @@ export interface ObjectTypeReferencedPropertyTypeMismatch {
 export interface ObjectTypeReferencedTypeGroupsDoNotExist {
 }
 /**
+ * Required interface action type constraint is missing an implementation.
+ */
+export interface ObjectTypeRequiredInterfaceActionTypeConstraintNotImplemented {
+}
+/**
  * Required interface link type is missing an implementation.
  */
 export interface ObjectTypeRequiredInterfaceLinkTypeNotImplemented {
+}
+/**
+ * A required interface parameter constraint is missing an implementation in the action type constraint mapping.
+ */
+export interface ObjectTypeRequiredInterfaceParameterConstraintNotImplemented {
 }
 /**
  * Invalid ObjectTypeEntityMetadata encountered. Restricted view datasource V2 is supported only by object storage v2.
@@ -7030,9 +7220,10 @@ export interface OntologyBranchConflictsWithMain {
   conflictingEntitiesSummary: _branch_api_ConflictingEntitiesSummary;
 }
 /**
- * There are API name conflicts between Object types, Interface types, Object and Interface types, or Shared Property types.
+ * An ontology entity being created in a public project would violate the max classification constraint of the
+ * project folder.
  */
-export interface OntologyEntityApiNameConflicts {
+export interface OntologyEntityCreatedInProjectWouldViolateMarkingsConstraint {
 }
 export interface OntologyValidationError {
   errorData: ErrorData;
@@ -7156,6 +7347,11 @@ export interface SensorLinkTypesNotFound {
  * The alias of a shared property type exceeds the maximum length.
  */
 export interface SharedPropertyTypeAliasTooLong {
+}
+/**
+ * There are multiple shared property types with the same API name.
+ */
+export interface SharedPropertyTypeApiNameConflict {
 }
 /**
  * Attachment properties should not be marked as indexed for search.

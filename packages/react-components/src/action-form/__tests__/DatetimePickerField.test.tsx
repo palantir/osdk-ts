@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { DatetimePickerField } from "../fields/DatetimePickerField.js";
 
@@ -170,6 +176,65 @@ describe("DatetimePickerField", () => {
 
       expect(onChange).toHaveBeenCalledWith(null);
       expect(input.value).toBe("");
+    });
+
+    it("renders the popover portal inside the provided container", () => {
+      const portalContainer = document.createElement("div");
+      document.body.append(portalContainer);
+
+      try {
+        render(
+          <DatetimePickerField
+            value={new Date(2024, 0, 15)}
+            onChange={vi.fn()}
+            portalContainer={portalContainer}
+          />,
+        );
+
+        fireEvent.focus(screen.getByRole("combobox"));
+
+        expect(portalContainer.contains(screen.getByRole("dialog"))).toBe(
+          true,
+        );
+      } finally {
+        portalContainer.remove();
+      }
+    });
+
+    it("closes when clicking inside the portal container but outside the popover", async () => {
+      const portalContainer = document.createElement("div");
+      const outsideButton = document.createElement("button");
+      outsideButton.textContent = "Outside popover";
+      portalContainer.append(outsideButton);
+      document.body.append(portalContainer);
+
+      try {
+        render(
+          <DatetimePickerField
+            value={new Date(2024, 0, 15)}
+            onChange={vi.fn()}
+            portalContainer={portalContainer}
+          />,
+        );
+
+        fireEvent.focus(screen.getByRole("combobox"));
+        expect(screen.getByRole("dialog")).toBeDefined();
+
+        const dismissLayer = portalContainer.querySelector(
+          "[data-osdk-portal-dismiss-layer]",
+        );
+        if (!(dismissLayer instanceof HTMLElement)) {
+          throw new Error("Expected date picker dismiss layer to be rendered");
+        }
+
+        fireEvent.pointerDown(dismissLayer);
+
+        await waitFor(() => {
+          expect(screen.queryByRole("dialog")).toBeNull();
+        });
+      } finally {
+        portalContainer.remove();
+      }
     });
 
     it("preserves time when selecting a calendar day with showTime", () => {

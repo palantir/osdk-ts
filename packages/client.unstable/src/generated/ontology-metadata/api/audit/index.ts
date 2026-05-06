@@ -194,6 +194,8 @@ export type {
   OntologyMetadataServiceLoadAllTypeGroupsFromOntologyRequestParams,
   OntologyMetadataServiceLoadAllTypeGroupsFromOntologyResultParams,
   OntologyMetadataServiceLoadAllWorkflowsPageRequestParams,
+  OntologyMetadataServiceLoadMergedRebaseStateRequestParams,
+  OntologyMetadataServiceLoadMergedRebaseStateResultParams,
   OntologyMetadataServiceLoadOntologyDatasourcesRequestParams,
   OntologyMetadataServiceLoadOntologyDatasourcesResultParams,
   OntologyMetadataServiceLoadOntologyEntitiesRequestParams,
