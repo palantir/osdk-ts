@@ -103,6 +103,15 @@ describe("TimePicker", () => {
     expect(changedDate).toEqual(new Date(2024, 6, 4, 0, 45));
   });
 
+  it("does not emit a Date when a null value segment blurs without edits", () => {
+    const onChange = vi.fn();
+    render(<TimePicker value={null} onChange={onChange} />);
+
+    fireEvent.blur(screen.getByLabelText("Time hours"));
+
+    expect(onChange).not.toHaveBeenCalled();
+  });
+
   it("does not emit a Date before the edited minute is blurred", () => {
     const onChange = vi.fn();
     render(

@@ -124,11 +124,7 @@ export const TimePicker: React.NamedExoticComponent<TimePickerProps> = React
 
         const currentHours = Number(valueSegments.hours);
         const currentMinutes = Number(valueSegments.minutes);
-        if (
-          valueTimestamp == null
-          || nextHours !== currentHours
-          || nextMinutes !== currentMinutes
-        ) {
+        if (nextHours !== currentHours || nextMinutes !== currentMinutes) {
           emitChange(nextHours, nextMinutes);
         }
       },

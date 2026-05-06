@@ -45,7 +45,7 @@ export function generateBlockSetSpec(
   codeBlocks: Record<UUID, CodeBlockSpec>,
 ): CodeBlockSetSpec {
   return {
-    version,
+    version: version,
     creationTimestamp: new Date().toISOString(),
     about: {
       fallbackDescription: productName,

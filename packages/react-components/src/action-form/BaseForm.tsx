@@ -128,26 +128,13 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
   const isSubmitButtonDisabled = isSubmitDisabled
     || (hasAttemptedSubmit && areErrorsPresent);
 
-  const handleSubmitKeyDown = useCallback(
-    (event: React.KeyboardEvent<HTMLFormElement>) => {
-      if (!shouldSubmitOnEnter(event)) {
-        return;
-      }
-      event.preventDefault();
-      if (!isSubmitButtonDisabled && !isFormPending) {
-        void submitForm();
-      }
-    },
-    [isFormPending, isSubmitButtonDisabled, submitForm],
-  );
-
   return (
     <form
       className={classNames(styles.osdkForm, className)}
       // Workshop widgets can run in iframes without `allow-forms`, where
-      // native form submission is blocked. Keep the form landmark, but route
-      // submit behavior through explicit click/keyboard handlers instead.
-      onKeyDown={handleSubmitKeyDown}
+      // native form submission is blocked. Keep the form landmark, but do not
+      // wire any form-level submit handlers; the submit button invokes our
+      // JavaScript submit path directly.
     >
       {formTitle != null && <FormHeader title={formTitle} />}
       {isLoading && allFieldDefinitions.length === 0 && (
@@ -316,24 +303,6 @@ const SubmitButton = memo(function SubmitButtonFn({
     </Tooltip.Root>
   );
 });
-
-function shouldSubmitOnEnter(
-  event: React.KeyboardEvent<HTMLFormElement>,
-): boolean {
-  if (
-    event.defaultPrevented
-    || event.key !== "Enter"
-    || event.metaKey
-    || event.ctrlKey
-    || event.altKey
-    || event.shiftKey
-  ) {
-    return false;
-  }
-
-  const target = event.target;
-  return target instanceof HTMLTextAreaElement ? false : true;
-}
 
 interface ErrorIndicatorProps {
   errorEntries: ReadonlyArray<ErrorEntry>;

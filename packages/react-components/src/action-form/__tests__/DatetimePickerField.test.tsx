@@ -373,6 +373,23 @@ describe("DatetimePickerField", () => {
       expect((screen.getByLabelText("Time minutes") as HTMLInputElement).value)
         .toBe("30");
     });
+
+    it("does not set a date when tabbing through empty time inputs", () => {
+      const onChange = vi.fn();
+      render(
+        <DatetimePickerField
+          value={null}
+          onChange={onChange}
+          showTime={true}
+        />,
+      );
+      fireEvent.focus(screen.getByRole("combobox"));
+
+      fireEvent.focus(screen.getByLabelText("Time hours"));
+      fireEvent.blur(screen.getByLabelText("Time hours"));
+
+      expect(onChange).not.toHaveBeenCalled();
+    });
   });
 
   describe("custom format", () => {

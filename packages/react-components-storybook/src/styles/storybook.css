@@ -90,6 +90,10 @@ body {
 }
 
 .osdkBlueprintDialogForm {
+  --osdk-form-padding-inline: calc(var(--osdk-surface-spacing) * 4);
+  --osdk-form-content-padding-block: calc(var(--osdk-surface-spacing) * 4);
+  --osdk-form-footer-block-padding: calc(var(--osdk-surface-spacing) * 4);
+
   width: min(480px, calc(100vw - calc(var(--osdk-surface-spacing) * 8)));
 }
 
