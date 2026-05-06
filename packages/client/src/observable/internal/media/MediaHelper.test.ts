@@ -131,12 +131,14 @@ describe("MediaHelper", () => {
 
     mockStore.queries.keys = vi.fn().mockReturnValue([
       { type: "mediaMetadata" },
+      { type: "mediaContent" },
       { type: "otherType" },
       { type: "mediaMetadata" },
     ]);
 
     mediaHelper.clearAll();
-    expect(mockStore.queries.delete).toHaveBeenCalledTimes(3);
+    // clearCache: 1 metadata + 1 content, clearAll: 2 metadata + 1 content
+    expect(mockStore.queries.delete).toHaveBeenCalledTimes(5);
   });
 
   it("creates and releases blob URLs for cached content", () => {
@@ -182,24 +184,15 @@ describe("MediaHelper", () => {
       );
     }
 
-    it("getCachedContent returns blob after fetchContent with preview", async () => {
-      mockFetchResponse();
-      await mediaHelper.fetchContent(coords, { preview: true });
-      const cached = mediaHelper.getCachedContent(coords, { preview: true });
-      expect(cached).toBeInstanceOf(Blob);
-    });
-
-    it("getCachedContent defaults to preview=true", async () => {
+    it("getCachedContent returns blob after fetchContent", async () => {
       mockFetchResponse();
       await mediaHelper.fetchContent(coords);
       const cached = mediaHelper.getCachedContent(coords);
       expect(cached).toBeInstanceOf(Blob);
     });
 
-    it("getCachedContent with preview=false returns undefined for preview-cached content", async () => {
-      mockFetchResponse();
-      await mediaHelper.fetchContent(coords, { preview: true });
-      const cached = mediaHelper.getCachedContent(coords, { preview: false });
+    it("getCachedContent returns undefined when not cached", () => {
+      const cached = mediaHelper.getCachedContent(coords);
       expect(cached).toBeUndefined();
     });
   });
