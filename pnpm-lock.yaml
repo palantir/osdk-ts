@@ -4240,8 +4240,8 @@ importers:
         specifier: workspace:~
         version: link:../generator-converters.ontologyir
       '@osdk/typescript-sdk-docs':
-        specifier: ^0.2.0
-        version: 0.2.0
+        specifier: ^0.9.0
+        version: 0.9.0
       consola:
         specifier: ^3.4.2
         version: 3.4.2
@@ -8821,14 +8821,8 @@ packages:
   '@osdk/client@2.7.5':
     resolution: {integrity: sha512-E60AdqmpdsYc2w9rfFdxMfjdJURUyS18l6z8xqtsyxU0L+BRsQRExfjWPgEbCkarga8Wr3w0kD3fky7UGFQfRg==}
 
-  '@osdk/docs-spec-core@0.5.0':
-    resolution: {integrity: sha512-sHkNoGV5MdcZWfjIslZWWqmJlgSJfWJbnM4vC1RcGyyzKDpZXRMJ4AjSpKr9VqtuTlNHGmD2Y3bQUO/wpSQBbw==}
-
   '@osdk/docs-spec-core@0.6.0':
     resolution: {integrity: sha512-fR5E67XrAVk6R4h8dzq+lu8wWH+nFnWllDsIC2+pXtZKbMIS4TjArH15Qa1G6NeiGQazFjvXbsJYXYqMbblk8g==}
-
-  '@osdk/docs-spec-sdk@0.1.0':
-    resolution: {integrity: sha512-xGW/bBjlQvyg4YdRaEC+GdaKoh6qoWmyp7uLEfH2h4XCWDKpDGaQD5dLgkGjNqao1jk2mTZb6YrTjkz0CB+9JA==}
 
   '@osdk/docs-spec-sdk@0.17.0':
     resolution: {integrity: sha512-uiC2wfUf3i2tQ9wQlcgwLOxHObdjxfwwvy4X04N0tZnpnXEIn7zIIa7WJqpcNUMH3g07tJLEu/wZNdUgxCnS2Q==}
@@ -8995,8 +8989,8 @@ packages:
   '@osdk/shared.net@1.12.3':
     resolution: {integrity: sha512-LjUKKNMzfzqM6m9WdxpW+51GhEcMPYZ/KBlwuCf2P8leJ9R4vbZgGiSoKubc0r90icwbgoEp22D72CE1dwEeJg==}
 
-  '@osdk/typescript-sdk-docs@0.2.0':
-    resolution: {integrity: sha512-6x1s2d9ifTljWouSe/gDxVZEl6ihuULmd1UAWdyLoVIQ8T0TBrV3DygR0CRme4M0C/xsuRSfrO7GFrxPCJSdXw==}
+  '@osdk/typescript-sdk-docs@0.9.0':
+    resolution: {integrity: sha512-riXztleG8Rhw1xG4gJwww1DJakxEr+EiAQEuEK9/s2rdninTHJ1qwBk0PVZDpaoJ5Ec2hHxo07uvucKcxwP/Vw==}
 
   '@oxc-project/types@0.124.0':
     resolution: {integrity: sha512-VBFWMTBvHxS11Z5Lvlr3IWgrwhMTXV+Md+EQF0Xf60+wAdsGFTBx7X7K/hP4pi8N7dcm1RvcHwDxZ16Qx8keUg==}
@@ -25852,13 +25846,7 @@ snapshots:
       - bufferutil
       - utf-8-validate
 
-  '@osdk/docs-spec-core@0.5.0': {}
-
   '@osdk/docs-spec-core@0.6.0': {}
-
-  '@osdk/docs-spec-sdk@0.1.0':
-    dependencies:
-      '@osdk/docs-spec-core': 0.5.0
 
   '@osdk/docs-spec-sdk@0.17.0':
     dependencies:
@@ -26243,10 +26231,10 @@ snapshots:
       '@osdk/shared.net.errors': 1.1.1
       '@osdk/shared.net.fetch': 0.1.1
 
-  '@osdk/typescript-sdk-docs@0.2.0':
+  '@osdk/typescript-sdk-docs@0.9.0':
     dependencies:
-      '@osdk/docs-spec-core': 0.5.0
-      '@osdk/docs-spec-sdk': 0.1.0
+      '@osdk/docs-spec-core': 0.6.0
+      '@osdk/docs-spec-sdk': 0.17.0
       outdent: 0.8.0
 
   '@oxc-project/types@0.124.0': {}
