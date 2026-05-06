@@ -4564,13 +4564,13 @@ export const WithValidation: Story = {
     <div class="note err">
       <div class="note-title">Prop type error</div>
       <div class="note-body"><pre><code>No component file found for the &quot;FilterList&quot; component.
-  130 | );
-  131 |
-&gt; 132 | const meta: Meta&lt;EmployeeFilterListProps&gt; = {
+  131 | );
+  132 |
+&gt; 133 | const meta: Meta&lt;EmployeeFilterListProps&gt; = {
       | ^
-  133 |   title: &quot;Experimental/FilterList&quot;,
-  134 |   tags: [&quot;experimental&quot;],
-  135 |   component: FilterList,
+  134 |   title: &quot;Experimental/FilterList&quot;,
+  135 |   tags: [&quot;experimental&quot;],
+  136 |   component: FilterList,
 
 ./src/stories/FilterList/FilterList.stories.tsx:
 /*
@@ -4601,6 +4601,7 @@ import { ObjectTable } from &quot;@osdk/react-components/experimental/object-tab
 import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
 import { useCallback, useMemo, useState } from &quot;react&quot;;
 import { useArgs } from &quot;storybook/preview-api&quot;;
+import { fn } from &quot;storybook/test&quot;;
 import { fauxFoundry } from &quot;../../mocks/fauxFoundry.js&quot;;
 import { Employee } from &quot;../../types/Employee.js&quot;;
 
@@ -4714,6 +4715,13 @@ const meta: Meta&lt;EmployeeFilterListProps&gt; = {
     showResetButton: false,
     showActiveFilterCount: false,
     collapsed: false,
+    onFilterClauseChanged: fn(),
+    onFilterStateChanged: fn(),
+    onFilterAdded: fn(),
+    onFilterRemoved: fn(),
+    onFilterVisibilityChange: fn(),
+    onCollapsedChange: fn(),
+    onReset: fn(),
   },
   parameters: {
     msw: {
@@ -4799,6 +4807,12 @@ const meta: Meta&lt;EmployeeFilterListProps&gt; = {
     onFilterRemoved: {
       description:
         &quot;Called when a filter is removed. If provided, users can remove filters.&quot;,
+      control: false,
+      table: { category: &quot;Events&quot; },
+    },
+    onFilterVisibilityChange: {
+      description:
+        &quot;Called when filter visibility or ordering changes (reorder, add, remove).&quot;,
       control: false,
       table: { category: &quot;Events&quot; },
     },
@@ -4990,15 +5004,24 @@ function WithAllFilterTypesStory(args: Partial&lt;EmployeeFilterListProps&gt;) {
     WhereClause&lt;Employee&gt; | undefined
   &gt;(undefined);
 
+  const argsOnFilterClauseChanged = args.onFilterClauseChanged;
+  const handleFilterClauseChanged = useCallback(
+    (clause: WhereClause&lt;Employee&gt;) =&gt; {
+      setFilterClause(clause);
+      argsOnFilterClauseChanged?.(clause);
+    },
+    [argsOnFilterClauseChanged],
+  );
+
   return (
     &lt;div style={FLEX_ROW_STYLE}&gt;
       &lt;div style={SIDEBAR_STYLE}&gt;
         &lt;FilterList
           objectType={Employee}
           filterDefinitions={sharedFilterDefinitions}
-          filterClause={filterClause}
-          onFilterClauseChanged={setFilterClause}
           {...args}
+          filterClause={filterClause}
+          onFilterClauseChanged={handleFilterClauseChanged}
         /&gt;
       &lt;/div&gt;
       &lt;div style={FLEX_FILL_STYLE}&gt;
@@ -5064,18 +5087,20 @@ export const WithTitleAndIcon: Story = {
 };
 
 function WithResetButtonStory(args: Partial&lt;EmployeeFilterListProps&gt;) {
+  const argsOnReset = args.onReset;
   const handleReset = useCallback(() =&gt; {
     // eslint-disable-next-line no-console
     console.log(&quot;Reset clicked&quot;);
-  }, []);
+    argsOnReset?.();
+  }, [argsOnReset]);
 
   return (
     &lt;div style={SIDEBAR_STYLE}&gt;
       &lt;FilterList
         objectType={Employee}
         filterDefinitions={sharedFilterDefinitions}
-        onReset={handleReset}
         {...args}
+        onReset={handleReset}
       /&gt;
     &lt;/div&gt;
   );
@@ -5199,9 +5224,13 @@ export const CollapsiblePanel: Story = {
   },
   render: (args) =&gt; {
     const [, updateArgs] = useArgs&lt;Partial&lt;EmployeeFilterListProps&gt;&gt;();
+    const argsOnCollapsedChange = args.onCollapsedChange;
     const handleCollapsedChange = useCallback(
-      (collapsed: boolean) =&gt; updateArgs({ collapsed }),
-      [updateArgs],
+      (collapsed: boolean) =&gt; {
+        updateArgs({ collapsed });
+        argsOnCollapsedChange?.(collapsed);
+      },
+      [updateArgs, argsOnCollapsedChange],
     );
     return (
       &lt;CollapsiblePanelStory
@@ -5681,10 +5710,21 @@ function CombinedWithObjectTableStory(
     WhereClause&lt;Employee&gt; | undefined
   &gt;(undefined);
 
+  const argsOnFilterRemoved = args.onFilterRemoved;
   const handleFilterRemoved = useCallback((filterKey: string) =&gt; {
     // eslint-disable-next-line no-console
     console.log(&quot;Removed filter:&quot;, filterKey);
-  }, []);
+    argsOnFilterRemoved?.(filterKey);
+  }, [argsOnFilterRemoved]);
+
+  const argsOnFilterClauseChanged = args.onFilterClauseChanged;
+  const handleFilterClauseChanged = useCallback(
+    (clause: WhereClause&lt;Employee&gt;) =&gt; {
+      setFilterClause(clause);
+      argsOnFilterClauseChanged?.(clause);
+    },
+    [argsOnFilterClauseChanged],
+  );
 
   return (
     &lt;div style={COMBINED_LAYOUT_STYLE}&gt;
@@ -5692,10 +5732,10 @@ function CombinedWithObjectTableStory(
         &lt;FilterList
           objectType={Employee}
           filterDefinitions={sharedFilterDefinitions}
+          {...args}
           onFilterRemoved={handleFilterRemoved}
           filterClause={filterClause}
-          onFilterClauseChanged={setFilterClause}
-          {...args}
+          onFilterClauseChanged={handleFilterClauseChanged}
         /&gt;
       &lt;/div&gt;
       &lt;div style={FLEX_FILL_STYLE}&gt;
@@ -5753,6 +5793,15 @@ function CombinedWithFilteredObjectSetStory(
     WhereClause&lt;Employee&gt; | undefined
   &gt;(undefined);
 
+  const argsOnFilterClauseChanged = args.onFilterClauseChanged;
+  const handleFilterClauseChanged = useCallback(
+    (clause: WhereClause&lt;Employee&gt;) =&gt; {
+      setFilterClause(clause);
+      argsOnFilterClauseChanged?.(clause);
+    },
+    [argsOnFilterClauseChanged],
+  );
+
   return (
     &lt;div style={COMBINED_LAYOUT_STYLE}&gt;
       &lt;div style={SIDEBAR_FIXED_STYLE}&gt;
@@ -5760,9 +5809,9 @@ function CombinedWithFilteredObjectSetStory(
           objectType={Employee}
           objectSet={employeeObjectSet}
           filterDefinitions={sharedFilterDefinitions}
-          filterClause={filterClause}
-          onFilterClauseChanged={setFilterClause}
           {...args}
+          filterClause={filterClause}
+          onFilterClauseChanged={handleFilterClauseChanged}
         /&gt;
       &lt;/div&gt;
       &lt;div style={FLEX_FILL_STYLE}&gt;
@@ -5816,6 +5865,7 @@ function WithRemovableFiltersStory(args: Partial&lt;EmployeeFilterListProps&gt;)
     FilterDefinitionUnion&lt;Employee&gt;[]
   &gt;(sharedFilterDefinitions);
 
+  const argsOnFilterRemoved = args.onFilterRemoved;
   const handleFilterRemoved = useCallback((filterKey: string) =&gt; {
     setDefinitions((prev) =&gt;
       prev.filter((def) =&gt; {
@@ -5825,15 +5875,16 @@ function WithRemovableFiltersStory(args: Partial&lt;EmployeeFilterListProps&gt;)
         return true;
       })
     );
-  }, []);
+    argsOnFilterRemoved?.(filterKey);
+  }, [argsOnFilterRemoved]);
 
   return (
     &lt;div style={SIDEBAR_STYLE}&gt;
       &lt;FilterList
         objectType={Employee}
         filterDefinitions={definitions}
-        onFilterRemoved={handleFilterRemoved}
         {...args}
+        onFilterRemoved={handleFilterRemoved}
       /&gt;
     &lt;/div&gt;
   );
@@ -5941,15 +5992,24 @@ function WithStaticValuesStory(args: Partial&lt;EmployeeFilterListProps&gt;) {
     [],
   );
 
+  const argsOnFilterClauseChanged = args.onFilterClauseChanged;
+  const handleFilterClauseChanged = useCallback(
+    (clause: WhereClause&lt;Employee&gt;) =&gt; {
+      setFilterClause(clause);
+      argsOnFilterClauseChanged?.(clause);
+    },
+    [argsOnFilterClauseChanged],
+  );
+
   return (
     &lt;div style={FLEX_ROW_STYLE}&gt;
       &lt;div style={SIDEBAR_STYLE}&gt;
         &lt;FilterList
           objectType={Employee}
           filterDefinitions={filterDefinitions}
-          filterClause={filterClause}
-          onFilterClauseChanged={setFilterClause}
           {...args}
+          filterClause={filterClause}
+          onFilterClauseChanged={handleFilterClauseChanged}
         /&gt;
       &lt;/div&gt;
       &lt;div style={FLEX_FILL_STYLE}&gt;
@@ -6042,6 +6102,7 @@ function FullFeaturedStory(
     FilterDefinitionUnion&lt;Employee&gt;[]
   &gt;(sharedFilterDefinitions);
 
+  const argsOnFilterRemoved = args.onFilterRemoved;
   const handleFilterRemoved = useCallback((filterKey: string) =&gt; {
     setDefinitions((prev) =&gt;
       prev.filter((def) =&gt; {
@@ -6051,11 +6112,23 @@ function FullFeaturedStory(
         return true;
       })
     );
-  }, []);
+    argsOnFilterRemoved?.(filterKey);
+  }, [argsOnFilterRemoved]);
 
+  const argsOnReset = args.onReset;
   const handleReset = useCallback(() =&gt; {
     setDefinitions(sharedFilterDefinitions);
-  }, []);
+    argsOnReset?.();
+  }, [argsOnReset]);
+
+  const argsOnFilterClauseChanged = args.onFilterClauseChanged;
+  const handleFilterClauseChanged = useCallback(
+    (clause: WhereClause&lt;Employee&gt;) =&gt; {
+      setFilterClause(clause);
+      argsOnFilterClauseChanged?.(clause);
+    },
+    [argsOnFilterClauseChanged],
+  );
 
   return (
     &lt;div style={COMBINED_LAYOUT_STYLE}&gt;
@@ -6064,11 +6137,11 @@ function FullFeaturedStory(
           objectType={Employee}
           filterDefinitions={definitions}
           titleIcon={FILTER_ICON}
+          {...args}
           onReset={handleReset}
           onFilterRemoved={handleFilterRemoved}
           filterClause={filterClause}
-          onFilterClauseChanged={setFilterClause}
-          {...args}
+          onFilterClauseChanged={handleFilterClauseChanged}
         /&gt;
       &lt;/div&gt;
       &lt;div style={FLEX_FILL_STYLE}&gt;
@@ -6118,9 +6191,13 @@ export const FullFeatured: Story = {
   },
   render: (args) =&gt; {
     const [, updateArgs] = useArgs&lt;Partial&lt;EmployeeFilterListProps&gt;&gt;();
+    const argsOnCollapsedChange = args.onCollapsedChange;
     const handleCollapsedChange = useCallback(
-      (collapsed: boolean) =&gt; updateArgs({ collapsed }),
-      [updateArgs],
+      (collapsed: boolean) =&gt; {
+        updateArgs({ collapsed });
+        argsOnCollapsedChange?.(collapsed);
+      },
+      [updateArgs, argsOnCollapsedChange],
     );
     return (
       &lt;FullFeaturedStory {...args} onCollapsedChange={handleCollapsedChange} /&gt;
@@ -6147,15 +6224,24 @@ function WithLinkedPropertyFiltersStory(
     [],
   );
 
+  const argsOnFilterClauseChanged = args.onFilterClauseChanged;
+  const handleFilterClauseChanged = useCallback(
+    (clause: WhereClause&lt;Employee&gt;) =&gt; {
+      setFilterClause(clause);
+      argsOnFilterClauseChanged?.(clause);
+    },
+    [argsOnFilterClauseChanged],
+  );
+
   return (
     &lt;div style={FLEX_ROW_STYLE}&gt;
       &lt;div style={SIDEBAR_STYLE}&gt;
         &lt;FilterList
           objectType={Employee}
           filterDefinitions={filterDefinitions}
-          filterClause={filterClause}
-          onFilterClauseChanged={setFilterClause}
           {...args}
+          filterClause={filterClause}
+          onFilterClauseChanged={handleFilterClauseChanged}
         /&gt;
       &lt;/div&gt;
       &lt;div style={FLEX_FILL_STYLE}&gt;
@@ -6359,15 +6445,24 @@ function WithCustomFiltersStory(args: Partial&lt;EmployeeFilterListProps&gt;) {
     [],
   );
 
+  const argsOnFilterClauseChanged = args.onFilterClauseChanged;
+  const handleFilterClauseChanged = useCallback(
+    (clause: WhereClause&lt;Employee&gt;) =&gt; {
+      setFilterClause(clause);
+      argsOnFilterClauseChanged?.(clause);
+    },
+    [argsOnFilterClauseChanged],
+  );
+
   return (
     &lt;div style={FLEX_ROW_STYLE}&gt;
       &lt;div style={SIDEBAR_STYLE}&gt;
         &lt;FilterList
           objectType={Employee}
           filterDefinitions={filterDefinitions}
-          filterClause={filterClause}
-          onFilterClauseChanged={setFilterClause}
           {...args}
+          filterClause={filterClause}
+          onFilterClauseChanged={handleFilterClauseChanged}
         /&gt;
       &lt;/div&gt;
       &lt;div style={FLEX_FILL_STYLE}&gt;
@@ -6480,7 +6575,14 @@ const nameContainsFilter = {
                 enableSorting={false}
                 showResetButton={false}
                 showActiveFilterCount={false}
-                collapsed={false} /&gt;
+                collapsed={false}
+                onFilterClauseChanged={fn()}
+                onFilterStateChanged={fn()}
+                onFilterAdded={fn()}
+                onFilterRemoved={fn()}
+                onFilterVisibilityChange={fn()}
+                onCollapsedChange={fn()}
+                onReset={fn()} /&gt;
         &lt;/div&gt;
     );
 };</code></pre>
@@ -6497,7 +6599,14 @@ const nameContainsFilter = {
     enableSorting={false}
     showResetButton={false}
     showActiveFilterCount={false}
-    collapsed={false} /&gt;;</code></pre>
+    collapsed={false}
+    onFilterClauseChanged={fn()}
+    onFilterStateChanged={fn()}
+    onFilterAdded={fn()}
+    onFilterRemoved={fn()}
+    onFilterVisibilityChange={fn()}
+    onCollapsedChange={fn()}
+    onReset={fn()} /&gt;;</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
@@ -6511,7 +6620,14 @@ const nameContainsFilter = {
     enableSorting={false}
     showResetButton
     showActiveFilterCount={false}
-    collapsed={false} /&gt;;</code></pre>
+    collapsed={false}
+    onFilterClauseChanged={fn()}
+    onFilterStateChanged={fn()}
+    onFilterAdded={fn()}
+    onFilterRemoved={fn()}
+    onFilterVisibilityChange={fn()}
+    onCollapsedChange={fn()}
+    onReset={fn()} /&gt;;</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
@@ -6525,7 +6641,14 @@ const nameContainsFilter = {
     enableSorting={false}
     showResetButton={false}
     showActiveFilterCount={false}
-    collapsed={false} /&gt;;</code></pre>
+    collapsed={false}
+    onFilterClauseChanged={fn()}
+    onFilterStateChanged={fn()}
+    onFilterAdded={fn()}
+    onFilterRemoved={fn()}
+    onFilterVisibilityChange={fn()}
+    onCollapsedChange={fn()}
+    onReset={fn()} /&gt;;</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
@@ -6545,7 +6668,14 @@ const nameContainsFilter = {
                 enableSorting={false}
                 showResetButton={false}
                 showActiveFilterCount={false}
-                collapsed={false} /&gt;
+                collapsed={false}
+                onFilterClauseChanged={fn()}
+                onFilterStateChanged={fn()}
+                onFilterAdded={fn()}
+                onFilterRemoved={fn()}
+                onFilterVisibilityChange={fn()}
+                onCollapsedChange={fn()}
+                onReset={fn()} /&gt;
         &lt;/div&gt;
     );
 };</code></pre>
@@ -6562,7 +6692,14 @@ const nameContainsFilter = {
     enableSorting={false}
     showResetButton
     showActiveFilterCount={false}
-    collapsed={false} /&gt;;</code></pre>
+    collapsed={false}
+    onFilterClauseChanged={fn()}
+    onFilterStateChanged={fn()}
+    onFilterAdded={fn()}
+    onFilterRemoved={fn()}
+    onFilterVisibilityChange={fn()}
+    onCollapsedChange={fn()}
+    onReset={fn()} /&gt;;</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
@@ -6581,7 +6718,14 @@ const nameContainsFilter = {
                 enableSorting={false}
                 showResetButton={false}
                 showActiveFilterCount
-                collapsed={false} /&gt;
+                collapsed={false}
+                onFilterClauseChanged={fn()}
+                onFilterStateChanged={fn()}
+                onFilterAdded={fn()}
+                onFilterRemoved={fn()}
+                onFilterVisibilityChange={fn()}
+                onCollapsedChange={fn()}
+                onReset={fn()} /&gt;
         &lt;/div&gt;
     );
 };</code></pre>
@@ -6603,7 +6747,14 @@ const nameContainsFilter = {
                 enableSorting
                 showResetButton={false}
                 showActiveFilterCount={false}
-                collapsed={false} /&gt;
+                collapsed={false}
+                onFilterClauseChanged={fn()}
+                onFilterStateChanged={fn()}
+                onFilterAdded={fn()}
+                onFilterRemoved={fn()}
+                onFilterVisibilityChange={fn()}
+                onCollapsedChange={fn()}
+                onReset={fn()} /&gt;
         &lt;/div&gt;
     );
 };</code></pre>
@@ -6617,9 +6768,13 @@ const nameContainsFilter = {
               
               <pre><code>const CollapsiblePanel = () =&gt; {
     const [, updateArgs] = useArgs&lt;Partial&lt;EmployeeFilterListProps&gt;&gt;();
+    const argsOnCollapsedChange = args.onCollapsedChange;
     const handleCollapsedChange = useCallback(
-      (collapsed: boolean) =&gt; updateArgs({ collapsed }),
-      [updateArgs],
+      (collapsed: boolean) =&gt; {
+        updateArgs({ collapsed });
+        argsOnCollapsedChange?.(collapsed);
+      },
+      [updateArgs, argsOnCollapsedChange],
     );
 
     return (
@@ -6629,6 +6784,12 @@ const nameContainsFilter = {
             showResetButton={false}
             showActiveFilterCount
             collapsed={false}
+            onFilterClauseChanged={fn()}
+            onFilterStateChanged={fn()}
+            onFilterAdded={fn()}
+            onFilterRemoved={fn()}
+            onFilterVisibilityChange={fn()}
+            onReset={fn()}
             onCollapsedChange={handleCollapsedChange} /&gt;
     );
 };</code></pre>
@@ -6663,7 +6824,14 @@ const nameContainsFilter = {
                 enableSorting={false}
                 showResetButton={false}
                 showActiveFilterCount={false}
-                collapsed={false} /&gt;
+                collapsed={false}
+                onFilterClauseChanged={fn()}
+                onFilterStateChanged={fn()}
+                onFilterAdded={fn()}
+                onFilterRemoved={fn()}
+                onFilterVisibilityChange={fn()}
+                onCollapsedChange={fn()}
+                onReset={fn()} /&gt;
         &lt;/div&gt;
     );
 };</code></pre>
@@ -6680,7 +6848,14 @@ const nameContainsFilter = {
     enableSorting={false}
     showResetButton={false}
     showActiveFilterCount={false}
-    collapsed={false} /&gt;;</code></pre>
+    collapsed={false}
+    onFilterClauseChanged={fn()}
+    onFilterStateChanged={fn()}
+    onFilterAdded={fn()}
+    onFilterRemoved={fn()}
+    onFilterVisibilityChange={fn()}
+    onCollapsedChange={fn()}
+    onReset={fn()} /&gt;;</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
@@ -6694,7 +6869,14 @@ const nameContainsFilter = {
     enableSorting={false}
     showResetButton={false}
     showActiveFilterCount={false}
-    collapsed={false} /&gt;;</code></pre>
+    collapsed={false}
+    onFilterClauseChanged={fn()}
+    onFilterStateChanged={fn()}
+    onFilterAdded={fn()}
+    onFilterRemoved={fn()}
+    onFilterVisibilityChange={fn()}
+    onCollapsedChange={fn()}
+    onReset={fn()} /&gt;;</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
@@ -6708,7 +6890,14 @@ const nameContainsFilter = {
     enableSorting={false}
     showResetButton={false}
     showActiveFilterCount={false}
-    collapsed={false} /&gt;;</code></pre>
+    collapsed={false}
+    onFilterClauseChanged={fn()}
+    onFilterStateChanged={fn()}
+    onFilterAdded={fn()}
+    onFilterRemoved={fn()}
+    onFilterVisibilityChange={fn()}
+    onCollapsedChange={fn()}
+    onReset={fn()} /&gt;;</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
@@ -6722,7 +6911,14 @@ const nameContainsFilter = {
     enableSorting={false}
     showResetButton={false}
     showActiveFilterCount={false}
-    collapsed={false} /&gt;;</code></pre>
+    collapsed={false}
+    onFilterClauseChanged={fn()}
+    onFilterStateChanged={fn()}
+    onFilterAdded={fn()}
+    onFilterRemoved={fn()}
+    onFilterVisibilityChange={fn()}
+    onCollapsedChange={fn()}
+    onReset={fn()} /&gt;;</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
@@ -6736,7 +6932,14 @@ const nameContainsFilter = {
     enableSorting={false}
     showResetButton={false}
     showActiveFilterCount={false}
-    collapsed={false} /&gt;;</code></pre>
+    collapsed={false}
+    onFilterClauseChanged={fn()}
+    onFilterStateChanged={fn()}
+    onFilterAdded={fn()}
+    onFilterRemoved={fn()}
+    onFilterVisibilityChange={fn()}
+    onCollapsedChange={fn()}
+    onReset={fn()} /&gt;;</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
@@ -6750,7 +6953,14 @@ const nameContainsFilter = {
     enableSorting
     showResetButton
     showActiveFilterCount
-    collapsed={false} /&gt;;</code></pre>
+    collapsed={false}
+    onFilterClauseChanged={fn()}
+    onFilterStateChanged={fn()}
+    onFilterAdded={fn()}
+    onFilterRemoved={fn()}
+    onFilterVisibilityChange={fn()}
+    onCollapsedChange={fn()}
+    onReset={fn()} /&gt;;</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
@@ -6764,7 +6974,14 @@ const nameContainsFilter = {
     enableSorting={false}
     showResetButton
     showActiveFilterCount
-    collapsed={false} /&gt;;</code></pre>
+    collapsed={false}
+    onFilterClauseChanged={fn()}
+    onFilterStateChanged={fn()}
+    onFilterAdded={fn()}
+    onFilterRemoved={fn()}
+    onFilterVisibilityChange={fn()}
+    onCollapsedChange={fn()}
+    onReset={fn()} /&gt;;</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
@@ -6778,7 +6995,14 @@ const nameContainsFilter = {
     enableSorting={false}
     showResetButton={false}
     showActiveFilterCount
-    collapsed={false} /&gt;;</code></pre>
+    collapsed={false}
+    onFilterClauseChanged={fn()}
+    onFilterStateChanged={fn()}
+    onFilterAdded={fn()}
+    onFilterRemoved={fn()}
+    onFilterVisibilityChange={fn()}
+    onCollapsedChange={fn()}
+    onReset={fn()} /&gt;;</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
@@ -6792,7 +7016,14 @@ const nameContainsFilter = {
     enableSorting={false}
     showResetButton={false}
     showActiveFilterCount={false}
-    collapsed={false} /&gt;;</code></pre>
+    collapsed={false}
+    onFilterClauseChanged={fn()}
+    onFilterStateChanged={fn()}
+    onFilterAdded={fn()}
+    onFilterRemoved={fn()}
+    onFilterVisibilityChange={fn()}
+    onCollapsedChange={fn()}
+    onReset={fn()} /&gt;;</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
@@ -6803,9 +7034,13 @@ const nameContainsFilter = {
               
               <pre><code>const FullFeatured = () =&gt; {
     const [, updateArgs] = useArgs&lt;Partial&lt;EmployeeFilterListProps&gt;&gt;();
+    const argsOnCollapsedChange = args.onCollapsedChange;
     const handleCollapsedChange = useCallback(
-      (collapsed: boolean) =&gt; updateArgs({ collapsed }),
-      [updateArgs],
+      (collapsed: boolean) =&gt; {
+        updateArgs({ collapsed });
+        argsOnCollapsedChange?.(collapsed);
+      },
+      [updateArgs, argsOnCollapsedChange],
     );
 
     return (
@@ -6815,6 +7050,12 @@ const nameContainsFilter = {
             showResetButton
             showActiveFilterCount
             collapsed={false}
+            onFilterClauseChanged={fn()}
+            onFilterStateChanged={fn()}
+            onFilterAdded={fn()}
+            onFilterRemoved={fn()}
+            onFilterVisibilityChange={fn()}
+            onReset={fn()}
             onCollapsedChange={handleCollapsedChange} /&gt;
     );
 };</code></pre>
@@ -6831,7 +7072,14 @@ const nameContainsFilter = {
     enableSorting={false}
     showResetButton={false}
     showActiveFilterCount={false}
-    collapsed={false} /&gt;;</code></pre>
+    collapsed={false}
+    onFilterClauseChanged={fn()}
+    onFilterStateChanged={fn()}
+    onFilterAdded={fn()}
+    onFilterRemoved={fn()}
+    onFilterVisibilityChange={fn()}
+    onCollapsedChange={fn()}
+    onReset={fn()} /&gt;;</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
@@ -6845,7 +7093,14 @@ const nameContainsFilter = {
     enableSorting={false}
     showResetButton={false}
     showActiveFilterCount={false}
-    collapsed={false} /&gt;;</code></pre>
+    collapsed={false}
+    onFilterClauseChanged={fn()}
+    onFilterStateChanged={fn()}
+    onFilterAdded={fn()}
+    onFilterRemoved={fn()}
+    onFilterVisibilityChange={fn()}
+    onCollapsedChange={fn()}
+    onReset={fn()} /&gt;;</code></pre>
             </div>
         </div>
   </div>
@@ -16965,13 +17220,13 @@ export const WithValidation: Story = {
     <div class="note err">
       <div class="note-title">Prop type error</div>
       <div class="note-body"><pre><code>No component file found for the &quot;FilterList&quot; component.
-  130 | );
-  131 |
-&gt; 132 | const meta: Meta&lt;EmployeeFilterListProps&gt; = {
+  131 | );
+  132 |
+&gt; 133 | const meta: Meta&lt;EmployeeFilterListProps&gt; = {
       | ^
-  133 |   title: &quot;Experimental/FilterList&quot;,
-  134 |   tags: [&quot;experimental&quot;],
-  135 |   component: FilterList,
+  134 |   title: &quot;Experimental/FilterList&quot;,
+  135 |   tags: [&quot;experimental&quot;],
+  136 |   component: FilterList,
 
 ./src/stories/FilterList/FilterList.stories.tsx:
 /*
@@ -17002,6 +17257,7 @@ import { ObjectTable } from &quot;@osdk/react-components/experimental/object-tab
 import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
 import { useCallback, useMemo, useState } from &quot;react&quot;;
 import { useArgs } from &quot;storybook/preview-api&quot;;
+import { fn } from &quot;storybook/test&quot;;
 import { fauxFoundry } from &quot;../../mocks/fauxFoundry.js&quot;;
 import { Employee } from &quot;../../types/Employee.js&quot;;
 
@@ -17115,6 +17371,13 @@ const meta: Meta&lt;EmployeeFilterListProps&gt; = {
     showResetButton: false,
     showActiveFilterCount: false,
     collapsed: false,
+    onFilterClauseChanged: fn(),
+    onFilterStateChanged: fn(),
+    onFilterAdded: fn(),
+    onFilterRemoved: fn(),
+    onFilterVisibilityChange: fn(),
+    onCollapsedChange: fn(),
+    onReset: fn(),
   },
   parameters: {
     msw: {
@@ -17200,6 +17463,12 @@ const meta: Meta&lt;EmployeeFilterListProps&gt; = {
     onFilterRemoved: {
       description:
         &quot;Called when a filter is removed. If provided, users can remove filters.&quot;,
+      control: false,
+      table: { category: &quot;Events&quot; },
+    },
+    onFilterVisibilityChange: {
+      description:
+        &quot;Called when filter visibility or ordering changes (reorder, add, remove).&quot;,
       control: false,
       table: { category: &quot;Events&quot; },
     },
@@ -17391,15 +17660,24 @@ function WithAllFilterTypesStory(args: Partial&lt;EmployeeFilterListProps&gt;) {
     WhereClause&lt;Employee&gt; | undefined
   &gt;(undefined);
 
+  const argsOnFilterClauseChanged = args.onFilterClauseChanged;
+  const handleFilterClauseChanged = useCallback(
+    (clause: WhereClause&lt;Employee&gt;) =&gt; {
+      setFilterClause(clause);
+      argsOnFilterClauseChanged?.(clause);
+    },
+    [argsOnFilterClauseChanged],
+  );
+
   return (
     &lt;div style={FLEX_ROW_STYLE}&gt;
       &lt;div style={SIDEBAR_STYLE}&gt;
         &lt;FilterList
           objectType={Employee}
           filterDefinitions={sharedFilterDefinitions}
-          filterClause={filterClause}
-          onFilterClauseChanged={setFilterClause}
           {...args}
+          filterClause={filterClause}
+          onFilterClauseChanged={handleFilterClauseChanged}
         /&gt;
       &lt;/div&gt;
       &lt;div style={FLEX_FILL_STYLE}&gt;
@@ -17465,18 +17743,20 @@ export const WithTitleAndIcon: Story = {
 };
 
 function WithResetButtonStory(args: Partial&lt;EmployeeFilterListProps&gt;) {
+  const argsOnReset = args.onReset;
   const handleReset = useCallback(() =&gt; {
     // eslint-disable-next-line no-console
     console.log(&quot;Reset clicked&quot;);
-  }, []);
+    argsOnReset?.();
+  }, [argsOnReset]);
 
   return (
     &lt;div style={SIDEBAR_STYLE}&gt;
       &lt;FilterList
         objectType={Employee}
         filterDefinitions={sharedFilterDefinitions}
-        onReset={handleReset}
         {...args}
+        onReset={handleReset}
       /&gt;
     &lt;/div&gt;
   );
@@ -17600,9 +17880,13 @@ export const CollapsiblePanel: Story = {
   },
   render: (args) =&gt; {
     const [, updateArgs] = useArgs&lt;Partial&lt;EmployeeFilterListProps&gt;&gt;();
+    const argsOnCollapsedChange = args.onCollapsedChange;
     const handleCollapsedChange = useCallback(
-      (collapsed: boolean) =&gt; updateArgs({ collapsed }),
-      [updateArgs],
+      (collapsed: boolean) =&gt; {
+        updateArgs({ collapsed });
+        argsOnCollapsedChange?.(collapsed);
+      },
+      [updateArgs, argsOnCollapsedChange],
     );
     return (
       &lt;CollapsiblePanelStory
@@ -18082,10 +18366,21 @@ function CombinedWithObjectTableStory(
     WhereClause&lt;Employee&gt; | undefined
   &gt;(undefined);
 
+  const argsOnFilterRemoved = args.onFilterRemoved;
   const handleFilterRemoved = useCallback((filterKey: string) =&gt; {
     // eslint-disable-next-line no-console
     console.log(&quot;Removed filter:&quot;, filterKey);
-  }, []);
+    argsOnFilterRemoved?.(filterKey);
+  }, [argsOnFilterRemoved]);
+
+  const argsOnFilterClauseChanged = args.onFilterClauseChanged;
+  const handleFilterClauseChanged = useCallback(
+    (clause: WhereClause&lt;Employee&gt;) =&gt; {
+      setFilterClause(clause);
+      argsOnFilterClauseChanged?.(clause);
+    },
+    [argsOnFilterClauseChanged],
+  );
 
   return (
     &lt;div style={COMBINED_LAYOUT_STYLE}&gt;
@@ -18093,10 +18388,10 @@ function CombinedWithObjectTableStory(
         &lt;FilterList
           objectType={Employee}
           filterDefinitions={sharedFilterDefinitions}
+          {...args}
           onFilterRemoved={handleFilterRemoved}
           filterClause={filterClause}
-          onFilterClauseChanged={setFilterClause}
-          {...args}
+          onFilterClauseChanged={handleFilterClauseChanged}
         /&gt;
       &lt;/div&gt;
       &lt;div style={FLEX_FILL_STYLE}&gt;
@@ -18154,6 +18449,15 @@ function CombinedWithFilteredObjectSetStory(
     WhereClause&lt;Employee&gt; | undefined
   &gt;(undefined);
 
+  const argsOnFilterClauseChanged = args.onFilterClauseChanged;
+  const handleFilterClauseChanged = useCallback(
+    (clause: WhereClause&lt;Employee&gt;) =&gt; {
+      setFilterClause(clause);
+      argsOnFilterClauseChanged?.(clause);
+    },
+    [argsOnFilterClauseChanged],
+  );
+
   return (
     &lt;div style={COMBINED_LAYOUT_STYLE}&gt;
       &lt;div style={SIDEBAR_FIXED_STYLE}&gt;
@@ -18161,9 +18465,9 @@ function CombinedWithFilteredObjectSetStory(
           objectType={Employee}
           objectSet={employeeObjectSet}
           filterDefinitions={sharedFilterDefinitions}
-          filterClause={filterClause}
-          onFilterClauseChanged={setFilterClause}
           {...args}
+          filterClause={filterClause}
+          onFilterClauseChanged={handleFilterClauseChanged}
         /&gt;
       &lt;/div&gt;
       &lt;div style={FLEX_FILL_STYLE}&gt;
@@ -18217,6 +18521,7 @@ function WithRemovableFiltersStory(args: Partial&lt;EmployeeFilterListProps&gt;)
     FilterDefinitionUnion&lt;Employee&gt;[]
   &gt;(sharedFilterDefinitions);
 
+  const argsOnFilterRemoved = args.onFilterRemoved;
   const handleFilterRemoved = useCallback((filterKey: string) =&gt; {
     setDefinitions((prev) =&gt;
       prev.filter((def) =&gt; {
@@ -18226,15 +18531,16 @@ function WithRemovableFiltersStory(args: Partial&lt;EmployeeFilterListProps&gt;)
         return true;
       })
     );
-  }, []);
+    argsOnFilterRemoved?.(filterKey);
+  }, [argsOnFilterRemoved]);
 
   return (
     &lt;div style={SIDEBAR_STYLE}&gt;
       &lt;FilterList
         objectType={Employee}
         filterDefinitions={definitions}
-        onFilterRemoved={handleFilterRemoved}
         {...args}
+        onFilterRemoved={handleFilterRemoved}
       /&gt;
     &lt;/div&gt;
   );
@@ -18342,15 +18648,24 @@ function WithStaticValuesStory(args: Partial&lt;EmployeeFilterListProps&gt;) {
     [],
   );
 
+  const argsOnFilterClauseChanged = args.onFilterClauseChanged;
+  const handleFilterClauseChanged = useCallback(
+    (clause: WhereClause&lt;Employee&gt;) =&gt; {
+      setFilterClause(clause);
+      argsOnFilterClauseChanged?.(clause);
+    },
+    [argsOnFilterClauseChanged],
+  );
+
   return (
     &lt;div style={FLEX_ROW_STYLE}&gt;
       &lt;div style={SIDEBAR_STYLE}&gt;
         &lt;FilterList
           objectType={Employee}
           filterDefinitions={filterDefinitions}
-          filterClause={filterClause}
-          onFilterClauseChanged={setFilterClause}
           {...args}
+          filterClause={filterClause}
+          onFilterClauseChanged={handleFilterClauseChanged}
         /&gt;
       &lt;/div&gt;
       &lt;div style={FLEX_FILL_STYLE}&gt;
@@ -18443,6 +18758,7 @@ function FullFeaturedStory(
     FilterDefinitionUnion&lt;Employee&gt;[]
   &gt;(sharedFilterDefinitions);
 
+  const argsOnFilterRemoved = args.onFilterRemoved;
   const handleFilterRemoved = useCallback((filterKey: string) =&gt; {
     setDefinitions((prev) =&gt;
       prev.filter((def) =&gt; {
@@ -18452,11 +18768,23 @@ function FullFeaturedStory(
         return true;
       })
     );
-  }, []);
+    argsOnFilterRemoved?.(filterKey);
+  }, [argsOnFilterRemoved]);
 
+  const argsOnReset = args.onReset;
   const handleReset = useCallback(() =&gt; {
     setDefinitions(sharedFilterDefinitions);
-  }, []);
+    argsOnReset?.();
+  }, [argsOnReset]);
+
+  const argsOnFilterClauseChanged = args.onFilterClauseChanged;
+  const handleFilterClauseChanged = useCallback(
+    (clause: WhereClause&lt;Employee&gt;) =&gt; {
+      setFilterClause(clause);
+      argsOnFilterClauseChanged?.(clause);
+    },
+    [argsOnFilterClauseChanged],
+  );
 
   return (
     &lt;div style={COMBINED_LAYOUT_STYLE}&gt;
@@ -18465,11 +18793,11 @@ function FullFeaturedStory(
           objectType={Employee}
           filterDefinitions={definitions}
           titleIcon={FILTER_ICON}
+          {...args}
           onReset={handleReset}
           onFilterRemoved={handleFilterRemoved}
           filterClause={filterClause}
-          onFilterClauseChanged={setFilterClause}
-          {...args}
+          onFilterClauseChanged={handleFilterClauseChanged}
         /&gt;
       &lt;/div&gt;
       &lt;div style={FLEX_FILL_STYLE}&gt;
@@ -18519,9 +18847,13 @@ export const FullFeatured: Story = {
   },
   render: (args) =&gt; {
     const [, updateArgs] = useArgs&lt;Partial&lt;EmployeeFilterListProps&gt;&gt;();
+    const argsOnCollapsedChange = args.onCollapsedChange;
     const handleCollapsedChange = useCallback(
-      (collapsed: boolean) =&gt; updateArgs({ collapsed }),
-      [updateArgs],
+      (collapsed: boolean) =&gt; {
+        updateArgs({ collapsed });
+        argsOnCollapsedChange?.(collapsed);
+      },
+      [updateArgs, argsOnCollapsedChange],
     );
     return (
       &lt;FullFeaturedStory {...args} onCollapsedChange={handleCollapsedChange} /&gt;
@@ -18548,15 +18880,24 @@ function WithLinkedPropertyFiltersStory(
     [],
   );
 
+  const argsOnFilterClauseChanged = args.onFilterClauseChanged;
+  const handleFilterClauseChanged = useCallback(
+    (clause: WhereClause&lt;Employee&gt;) =&gt; {
+      setFilterClause(clause);
+      argsOnFilterClauseChanged?.(clause);
+    },
+    [argsOnFilterClauseChanged],
+  );
+
   return (
     &lt;div style={FLEX_ROW_STYLE}&gt;
       &lt;div style={SIDEBAR_STYLE}&gt;
         &lt;FilterList
           objectType={Employee}
           filterDefinitions={filterDefinitions}
-          filterClause={filterClause}
-          onFilterClauseChanged={setFilterClause}
           {...args}
+          filterClause={filterClause}
+          onFilterClauseChanged={handleFilterClauseChanged}
         /&gt;
       &lt;/div&gt;
       &lt;div style={FLEX_FILL_STYLE}&gt;
@@ -18760,15 +19101,24 @@ function WithCustomFiltersStory(args: Partial&lt;EmployeeFilterListProps&gt;) {
     [],
   );
 
+  const argsOnFilterClauseChanged = args.onFilterClauseChanged;
+  const handleFilterClauseChanged = useCallback(
+    (clause: WhereClause&lt;Employee&gt;) =&gt; {
+      setFilterClause(clause);
+      argsOnFilterClauseChanged?.(clause);
+    },
+    [argsOnFilterClauseChanged],
+  );
+
   return (
     &lt;div style={FLEX_ROW_STYLE}&gt;
       &lt;div style={SIDEBAR_STYLE}&gt;
         &lt;FilterList
           objectType={Employee}
           filterDefinitions={filterDefinitions}
-          filterClause={filterClause}
-          onFilterClauseChanged={setFilterClause}
           {...args}
+          filterClause={filterClause}
+          onFilterClauseChanged={handleFilterClauseChanged}
         /&gt;
       &lt;/div&gt;
       &lt;div style={FLEX_FILL_STYLE}&gt;
@@ -18881,7 +19231,14 @@ const nameContainsFilter = {
                 enableSorting={false}
                 showResetButton={false}
                 showActiveFilterCount={false}
-                collapsed={false} /&gt;
+                collapsed={false}
+                onFilterClauseChanged={fn()}
+                onFilterStateChanged={fn()}
+                onFilterAdded={fn()}
+                onFilterRemoved={fn()}
+                onFilterVisibilityChange={fn()}
+                onCollapsedChange={fn()}
+                onReset={fn()} /&gt;
         &lt;/div&gt;
     );
 };</code></pre>
@@ -18898,7 +19255,14 @@ const nameContainsFilter = {
     enableSorting={false}
     showResetButton={false}
     showActiveFilterCount={false}
-    collapsed={false} /&gt;;</code></pre>
+    collapsed={false}
+    onFilterClauseChanged={fn()}
+    onFilterStateChanged={fn()}
+    onFilterAdded={fn()}
+    onFilterRemoved={fn()}
+    onFilterVisibilityChange={fn()}
+    onCollapsedChange={fn()}
+    onReset={fn()} /&gt;;</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
@@ -18912,7 +19276,14 @@ const nameContainsFilter = {
     enableSorting={false}
     showResetButton
     showActiveFilterCount={false}
-    collapsed={false} /&gt;;</code></pre>
+    collapsed={false}
+    onFilterClauseChanged={fn()}
+    onFilterStateChanged={fn()}
+    onFilterAdded={fn()}
+    onFilterRemoved={fn()}
+    onFilterVisibilityChange={fn()}
+    onCollapsedChange={fn()}
+    onReset={fn()} /&gt;;</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
@@ -18926,7 +19297,14 @@ const nameContainsFilter = {
     enableSorting={false}
     showResetButton={false}
     showActiveFilterCount={false}
-    collapsed={false} /&gt;;</code></pre>
+    collapsed={false}
+    onFilterClauseChanged={fn()}
+    onFilterStateChanged={fn()}
+    onFilterAdded={fn()}
+    onFilterRemoved={fn()}
+    onFilterVisibilityChange={fn()}
+    onCollapsedChange={fn()}
+    onReset={fn()} /&gt;;</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
@@ -18946,7 +19324,14 @@ const nameContainsFilter = {
                 enableSorting={false}
                 showResetButton={false}
                 showActiveFilterCount={false}
-                collapsed={false} /&gt;
+                collapsed={false}
+                onFilterClauseChanged={fn()}
+                onFilterStateChanged={fn()}
+                onFilterAdded={fn()}
+                onFilterRemoved={fn()}
+                onFilterVisibilityChange={fn()}
+                onCollapsedChange={fn()}
+                onReset={fn()} /&gt;
         &lt;/div&gt;
     );
 };</code></pre>
@@ -18963,7 +19348,14 @@ const nameContainsFilter = {
     enableSorting={false}
     showResetButton
     showActiveFilterCount={false}
-    collapsed={false} /&gt;;</code></pre>
+    collapsed={false}
+    onFilterClauseChanged={fn()}
+    onFilterStateChanged={fn()}
+    onFilterAdded={fn()}
+    onFilterRemoved={fn()}
+    onFilterVisibilityChange={fn()}
+    onCollapsedChange={fn()}
+    onReset={fn()} /&gt;;</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
@@ -18982,7 +19374,14 @@ const nameContainsFilter = {
                 enableSorting={false}
                 showResetButton={false}
                 showActiveFilterCount
-                collapsed={false} /&gt;
+                collapsed={false}
+                onFilterClauseChanged={fn()}
+                onFilterStateChanged={fn()}
+                onFilterAdded={fn()}
+                onFilterRemoved={fn()}
+                onFilterVisibilityChange={fn()}
+                onCollapsedChange={fn()}
+                onReset={fn()} /&gt;
         &lt;/div&gt;
     );
 };</code></pre>
@@ -19004,7 +19403,14 @@ const nameContainsFilter = {
                 enableSorting
                 showResetButton={false}
                 showActiveFilterCount={false}
-                collapsed={false} /&gt;
+                collapsed={false}
+                onFilterClauseChanged={fn()}
+                onFilterStateChanged={fn()}
+                onFilterAdded={fn()}
+                onFilterRemoved={fn()}
+                onFilterVisibilityChange={fn()}
+                onCollapsedChange={fn()}
+                onReset={fn()} /&gt;
         &lt;/div&gt;
     );
 };</code></pre>
@@ -19018,9 +19424,13 @@ const nameContainsFilter = {
               
               <pre><code>const CollapsiblePanel = () =&gt; {
     const [, updateArgs] = useArgs&lt;Partial&lt;EmployeeFilterListProps&gt;&gt;();
+    const argsOnCollapsedChange = args.onCollapsedChange;
     const handleCollapsedChange = useCallback(
-      (collapsed: boolean) =&gt; updateArgs({ collapsed }),
-      [updateArgs],
+      (collapsed: boolean) =&gt; {
+        updateArgs({ collapsed });
+        argsOnCollapsedChange?.(collapsed);
+      },
+      [updateArgs, argsOnCollapsedChange],
     );
 
     return (
@@ -19030,6 +19440,12 @@ const nameContainsFilter = {
             showResetButton={false}
             showActiveFilterCount
             collapsed={false}
+            onFilterClauseChanged={fn()}
+            onFilterStateChanged={fn()}
+            onFilterAdded={fn()}
+            onFilterRemoved={fn()}
+            onFilterVisibilityChange={fn()}
+            onReset={fn()}
             onCollapsedChange={handleCollapsedChange} /&gt;
     );
 };</code></pre>
@@ -19064,7 +19480,14 @@ const nameContainsFilter = {
                 enableSorting={false}
                 showResetButton={false}
                 showActiveFilterCount={false}
-                collapsed={false} /&gt;
+                collapsed={false}
+                onFilterClauseChanged={fn()}
+                onFilterStateChanged={fn()}
+                onFilterAdded={fn()}
+                onFilterRemoved={fn()}
+                onFilterVisibilityChange={fn()}
+                onCollapsedChange={fn()}
+                onReset={fn()} /&gt;
         &lt;/div&gt;
     );
 };</code></pre>
@@ -19081,7 +19504,14 @@ const nameContainsFilter = {
     enableSorting={false}
     showResetButton={false}
     showActiveFilterCount={false}
-    collapsed={false} /&gt;;</code></pre>
+    collapsed={false}
+    onFilterClauseChanged={fn()}
+    onFilterStateChanged={fn()}
+    onFilterAdded={fn()}
+    onFilterRemoved={fn()}
+    onFilterVisibilityChange={fn()}
+    onCollapsedChange={fn()}
+    onReset={fn()} /&gt;;</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
@@ -19095,7 +19525,14 @@ const nameContainsFilter = {
     enableSorting={false}
     showResetButton={false}
     showActiveFilterCount={false}
-    collapsed={false} /&gt;;</code></pre>
+    collapsed={false}
+    onFilterClauseChanged={fn()}
+    onFilterStateChanged={fn()}
+    onFilterAdded={fn()}
+    onFilterRemoved={fn()}
+    onFilterVisibilityChange={fn()}
+    onCollapsedChange={fn()}
+    onReset={fn()} /&gt;;</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
@@ -19109,7 +19546,14 @@ const nameContainsFilter = {
     enableSorting={false}
     showResetButton={false}
     showActiveFilterCount={false}
-    collapsed={false} /&gt;;</code></pre>
+    collapsed={false}
+    onFilterClauseChanged={fn()}
+    onFilterStateChanged={fn()}
+    onFilterAdded={fn()}
+    onFilterRemoved={fn()}
+    onFilterVisibilityChange={fn()}
+    onCollapsedChange={fn()}
+    onReset={fn()} /&gt;;</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
@@ -19123,7 +19567,14 @@ const nameContainsFilter = {
     enableSorting={false}
     showResetButton={false}
     showActiveFilterCount={false}
-    collapsed={false} /&gt;;</code></pre>
+    collapsed={false}
+    onFilterClauseChanged={fn()}
+    onFilterStateChanged={fn()}
+    onFilterAdded={fn()}
+    onFilterRemoved={fn()}
+    onFilterVisibilityChange={fn()}
+    onCollapsedChange={fn()}
+    onReset={fn()} /&gt;;</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
@@ -19137,7 +19588,14 @@ const nameContainsFilter = {
     enableSorting={false}
     showResetButton={false}
     showActiveFilterCount={false}
-    collapsed={false} /&gt;;</code></pre>
+    collapsed={false}
+    onFilterClauseChanged={fn()}
+    onFilterStateChanged={fn()}
+    onFilterAdded={fn()}
+    onFilterRemoved={fn()}
+    onFilterVisibilityChange={fn()}
+    onCollapsedChange={fn()}
+    onReset={fn()} /&gt;;</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
@@ -19151,7 +19609,14 @@ const nameContainsFilter = {
     enableSorting
     showResetButton
     showActiveFilterCount
-    collapsed={false} /&gt;;</code></pre>
+    collapsed={false}
+    onFilterClauseChanged={fn()}
+    onFilterStateChanged={fn()}
+    onFilterAdded={fn()}
+    onFilterRemoved={fn()}
+    onFilterVisibilityChange={fn()}
+    onCollapsedChange={fn()}
+    onReset={fn()} /&gt;;</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
@@ -19165,7 +19630,14 @@ const nameContainsFilter = {
     enableSorting={false}
     showResetButton
     showActiveFilterCount
-    collapsed={false} /&gt;;</code></pre>
+    collapsed={false}
+    onFilterClauseChanged={fn()}
+    onFilterStateChanged={fn()}
+    onFilterAdded={fn()}
+    onFilterRemoved={fn()}
+    onFilterVisibilityChange={fn()}
+    onCollapsedChange={fn()}
+    onReset={fn()} /&gt;;</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
@@ -19179,7 +19651,14 @@ const nameContainsFilter = {
     enableSorting={false}
     showResetButton={false}
     showActiveFilterCount
-    collapsed={false} /&gt;;</code></pre>
+    collapsed={false}
+    onFilterClauseChanged={fn()}
+    onFilterStateChanged={fn()}
+    onFilterAdded={fn()}
+    onFilterRemoved={fn()}
+    onFilterVisibilityChange={fn()}
+    onCollapsedChange={fn()}
+    onReset={fn()} /&gt;;</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
@@ -19193,7 +19672,14 @@ const nameContainsFilter = {
     enableSorting={false}
     showResetButton={false}
     showActiveFilterCount={false}
-    collapsed={false} /&gt;;</code></pre>
+    collapsed={false}
+    onFilterClauseChanged={fn()}
+    onFilterStateChanged={fn()}
+    onFilterAdded={fn()}
+    onFilterRemoved={fn()}
+    onFilterVisibilityChange={fn()}
+    onCollapsedChange={fn()}
+    onReset={fn()} /&gt;;</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
@@ -19204,9 +19690,13 @@ const nameContainsFilter = {
               
               <pre><code>const FullFeatured = () =&gt; {
     const [, updateArgs] = useArgs&lt;Partial&lt;EmployeeFilterListProps&gt;&gt;();
+    const argsOnCollapsedChange = args.onCollapsedChange;
     const handleCollapsedChange = useCallback(
-      (collapsed: boolean) =&gt; updateArgs({ collapsed }),
-      [updateArgs],
+      (collapsed: boolean) =&gt; {
+        updateArgs({ collapsed });
+        argsOnCollapsedChange?.(collapsed);
+      },
+      [updateArgs, argsOnCollapsedChange],
     );
 
     return (
@@ -19216,6 +19706,12 @@ const nameContainsFilter = {
             showResetButton
             showActiveFilterCount
             collapsed={false}
+            onFilterClauseChanged={fn()}
+            onFilterStateChanged={fn()}
+            onFilterAdded={fn()}
+            onFilterRemoved={fn()}
+            onFilterVisibilityChange={fn()}
+            onReset={fn()}
             onCollapsedChange={handleCollapsedChange} /&gt;
     );
 };</code></pre>
@@ -19232,7 +19728,14 @@ const nameContainsFilter = {
     enableSorting={false}
     showResetButton={false}
     showActiveFilterCount={false}
-    collapsed={false} /&gt;;</code></pre>
+    collapsed={false}
+    onFilterClauseChanged={fn()}
+    onFilterStateChanged={fn()}
+    onFilterAdded={fn()}
+    onFilterRemoved={fn()}
+    onFilterVisibilityChange={fn()}
+    onCollapsedChange={fn()}
+    onReset={fn()} /&gt;;</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
@@ -19246,7 +19749,14 @@ const nameContainsFilter = {
     enableSorting={false}
     showResetButton={false}
     showActiveFilterCount={false}
-    collapsed={false} /&gt;;</code></pre>
+    collapsed={false}
+    onFilterClauseChanged={fn()}
+    onFilterStateChanged={fn()}
+    onFilterAdded={fn()}
+    onFilterRemoved={fn()}
+    onFilterVisibilityChange={fn()}
+    onCollapsedChange={fn()}
+    onReset={fn()} /&gt;;</code></pre>
             </div>
         </div>
   </div>
