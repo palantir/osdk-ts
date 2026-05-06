@@ -8985,6 +8985,15 @@ export const EditableTable: Story = {
       {
         locator: { type: &quot;property&quot;, id: &quot;firstInternStartDate&quot; },
         editable: true,
+        renderCell: (object: Osdk.Instance&lt;Employee&gt;) =&gt; {
+          return (
+            &lt;div&gt;
+              {object.firstInternStartDate
+                ? new Date(object.firstInternStartDate).toISOString()
+                : &quot;No value&quot;}
+            &lt;/div&gt;
+          );
+        },
       },
       {
         locator: { type: &quot;property&quot;, id: &quot;firstFullTimeStartDate&quot; },
@@ -8998,7 +9007,7 @@ export const EditableTable: Story = {
         },
       },
     ],
-    editMode: &quot;always&quot; as const,
+    editMode: &quot;manual&quot; as const,
     onCellValueChanged: fn(),
   } as EmployeeTableProps,
   parameters: {
@@ -21377,6 +21386,15 @@ export const EditableTable: Story = {
       {
         locator: { type: &quot;property&quot;, id: &quot;firstInternStartDate&quot; },
         editable: true,
+        renderCell: (object: Osdk.Instance&lt;Employee&gt;) =&gt; {
+          return (
+            &lt;div&gt;
+              {object.firstInternStartDate
+                ? new Date(object.firstInternStartDate).toISOString()
+                : &quot;No value&quot;}
+            &lt;/div&gt;
+          );
+        },
       },
       {
         locator: { type: &quot;property&quot;, id: &quot;firstFullTimeStartDate&quot; },
@@ -21390,7 +21408,7 @@ export const EditableTable: Story = {
         },
       },
     ],
-    editMode: &quot;always&quot; as const,
+    editMode: &quot;manual&quot; as const,
     onCellValueChanged: fn(),
   } as EmployeeTableProps,
   parameters: {

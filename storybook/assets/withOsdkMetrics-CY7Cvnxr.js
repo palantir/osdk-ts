@@ -1,1 +1,0 @@
-import{R as n}from"./iframe-BoTPPcu9.js";import{u as o}from"./useRegisterUserAgent-BEri_jKU.js";const c="osdk-react-components/0.11.0";function i(t){return`${c}/${t}`}function m(t,e){const r=s=>(o(i(e)),n.createElement(t,s));return r.displayName=`withOsdkMetrics(${e})`,r}export{m as w};
