@@ -16,7 +16,6 @@
 
 import type {
   ActionDefinition,
-  FetchPageOptions,
   InterfaceDefinition,
   Logger,
   MediaReference,
@@ -33,6 +32,7 @@ import type {
 import type {
   Experiment,
   ExperimentFns,
+  FetchPageOptions,
   MediaTransformation,
   MinimalObjectSet,
   TransformOptions,

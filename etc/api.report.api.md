@@ -645,16 +645,6 @@ export interface FetchPageArgs<
     $pageSize?: number;
 }
 
-// @public
-export type FetchPageOptions<
-	Q extends ObjectOrInterfaceDefinition,
-	L extends string = PropertyKeys<Q>,
-	R extends boolean = false,
-	S extends NullabilityAdherence = NullabilityAdherence.Default,
-	T extends boolean = false,
-	PROPERTY_SECURITIES extends boolean = false
-> = FetchPageArgs<Q, L, R, any, S, T, never, {}, PROPERTY_SECURITIES>;
-
 // Warning: (ae-forgotten-export) The symbol "ExtractOptions" needs to be exported by the entry point index.d.ts
 //
 // @public
@@ -667,16 +657,6 @@ export type FetchPageResult<
 	ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<L> = {},
 	PROPERTY_SECURITIES extends boolean = false
 > = PageResult<MaybeScore<Osdk.Instance<Q, ExtractOptions<R, S, T, PROPERTY_SECURITIES>, PropertyKeys<Q> extends L ? never : L>, ORDER_BY_OPTIONS>>;
-
-// @public
-export type FetchPageReturn<
-	Q extends ObjectOrInterfaceDefinition,
-	L extends PropertyKeys<Q>,
-	R extends boolean,
-	S extends NullabilityAdherence,
-	T extends boolean = false,
-	PROPERTY_SECURITIES extends boolean = false
-> = FetchPageResult<Q, L, R, S, T, {}, PROPERTY_SECURITIES>;
 
 // @public (undocumented)
 export type GeoFilter_Intersects = {

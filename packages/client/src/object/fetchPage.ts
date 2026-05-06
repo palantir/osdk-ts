@@ -18,9 +18,7 @@ import type {
   Augment,
   Augments,
   FetchPageArgs,
-  FetchPageOptions,
   FetchPageResult,
-  FetchPageReturn,
   InterfaceDefinition,
   NullabilityAdherence,
   ObjectOrInterfaceDefinition,
@@ -29,6 +27,7 @@ import type {
   PropertyKeys,
   Result,
 } from "@osdk/api";
+import type { FetchPageOptions, FetchPageReturn } from "@osdk/api/unstable";
 import type { PageSize, PageToken } from "@osdk/foundry.core";
 import type {
   LoadObjectSetV2MultipleObjectTypesRequest,
