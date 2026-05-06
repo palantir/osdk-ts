@@ -17,8 +17,10 @@
   );
   --osdk-select-popup-bg: var(--osdk-surface-background-color-default-rest);
   --osdk-select-popup-shadow: var(--osdk-surface-shadow-2);
+  /* Base UI sets --available-height after positioning; fall back to the design
+     cap so long option lists never briefly render at full height. */
   --osdk-select-popup-max-height: min(
-    var(--available-height),
+    var(--available-height, calc(var(--osdk-surface-spacing) * 80)),
     calc(var(--osdk-surface-spacing) * 80)
   );
   --osdk-select-z-index: var(--osdk-surface-z-index-3);

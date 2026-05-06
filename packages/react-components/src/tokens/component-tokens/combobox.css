@@ -26,9 +26,13 @@
   );
   --osdk-combobox-input-bg: var(--osdk-input-bg);
   --osdk-combobox-popup-bg: var(--osdk-surface-background-color-default-rest);
-  --osdk-combobox-popup-shadow: var(--osdk-surface-shadow-2);
+  --osdk-combobox-popup-shadow:
+    0px 4px 6px -4px rgba(0, 0, 0, 0.1),
+    0px 10px 15px -3px rgba(0, 0, 0, 0.1);
+  /* Base UI sets --available-height after positioning; fall back to the design
+     cap so long async/object lists never briefly render at full height. */
   --osdk-combobox-popup-max-height: min(
-    var(--available-height),
+    var(--available-height, calc(var(--osdk-surface-spacing) * 80)),
     calc(var(--osdk-surface-spacing) * 80)
   );
   --osdk-combobox-z-index: var(--osdk-surface-z-index-3);

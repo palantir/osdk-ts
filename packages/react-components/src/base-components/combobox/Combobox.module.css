@@ -204,9 +204,6 @@
     var(--osdk-combobox-spacing) * 1.5
   );
   border-radius: var(--osdk-combobox-border-radius);
-  border: var(--osdk-combobox-border-width)
-    solid
-    var(--osdk-combobox-border-color);
   background-color: var(--osdk-combobox-popup-bg);
   box-shadow: var(--osdk-combobox-popup-shadow);
 
