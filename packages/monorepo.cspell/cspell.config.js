@@ -97,6 +97,7 @@ const cspell = {
     "CHANGELOG.md",
     "CONTRIBUTING.md",
     "CLAUDE.md",
+    "SKILL.md",
   ],
   dictionaryDefinitions: [
     ...getDictionaryDefinitions(),
