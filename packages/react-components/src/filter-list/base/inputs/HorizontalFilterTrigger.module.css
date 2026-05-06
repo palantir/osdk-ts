@@ -14,35 +14,45 @@
  * limitations under the License.
  */
 
-.trigger {
+.fieldGroup {
   display: inline-flex;
   align-items: center;
   gap: calc(var(--osdk-surface-spacing) * 1);
-  min-height: var(--osdk-filter-horizontal-trigger-min-height, 30px);
-  max-width: var(--osdk-filter-horizontal-trigger-max-width, 240px);
-  padding: calc(var(--osdk-surface-spacing) * 1)
-    calc(var(--osdk-surface-spacing) * 2);
+  position: relative;
+  flex-shrink: 0;
+}
+
+.label {
+  font-family: var(--osdk-typography-family-default);
+  font-size: var(--osdk-typography-size-body-small);
+  color: var(--osdk-typography-color-muted);
+  white-space: nowrap;
+}
+
+.trigger {
+  display: inline-flex;
+  align-items: center;
+  width: var(--osdk-filter-horizontal-trigger-width, 160px);
+  min-height: var(--osdk-filter-horizontal-trigger-min-height, 28px);
+  padding: 0 calc(var(--osdk-surface-spacing) * 2);
   border-radius: var(--osdk-surface-border-radius);
   border: var(--osdk-surface-border-width) solid
     var(--osdk-surface-border-color-default);
-  background: var(--osdk-filter-horizontal-trigger-bg, transparent);
+  background: transparent;
   color: var(--osdk-typography-color-default-rest);
   font-family: var(--osdk-typography-family-default);
   font-size: var(--osdk-typography-size-body-small);
   cursor: pointer;
-  transition: background-color var(--osdk-emphasis-transition-duration)
+  transition: border-color var(--osdk-emphasis-transition-duration)
     var(--osdk-emphasis-ease-default);
+  text-align: left;
 }
 
 .trigger:hover {
-  background: var(--osdk-surface-background-color-default-hover);
+  border-color: var(--osdk-typography-color-muted);
 }
 
 .trigger[data-active="true"] {
-  background: var(
-    --osdk-filter-horizontal-trigger-active-bg,
-    var(--osdk-surface-layer-primary)
-  );
   border-color: var(--osdk-intent-primary-rest);
 }
 
@@ -52,17 +62,49 @@
   outline-offset: var(--osdk-emphasis-focus-offset);
 }
 
-.label {
-  font-weight: var(--osdk-typography-weight-bold);
-  white-space: nowrap;
-}
-
 .summary {
-  color: var(--osdk-typography-color-muted);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   min-width: 0;
+  flex: 1;
+}
+
+.placeholder {
+  color: var(--osdk-typography-color-muted);
+}
+
+.removeButton {
+  position: absolute;
+  top: 50%;
+  right: calc(var(--osdk-surface-spacing) * 0.5);
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: calc(var(--osdk-surface-spacing) * 3);
+  height: calc(var(--osdk-surface-spacing) * 3);
+  padding: 0;
+  border: none;
+  background: var(--osdk-background-primary);
+  cursor: pointer;
+  color: var(--osdk-typography-color-muted);
+  border-radius: var(--osdk-surface-border-radius);
+  opacity: 0;
+  transition: opacity var(--osdk-emphasis-transition-duration)
+    var(--osdk-emphasis-ease-default);
+  pointer-events: none;
+}
+
+.fieldGroup:hover .removeButton,
+.fieldGroup:focus-within .removeButton {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.removeButton:hover {
+  color: var(--osdk-typography-color-default-rest);
+  background: var(--osdk-custom-color-gray-1);
 }
 
 .popup {
@@ -74,22 +116,4 @@
   min-width: 280px;
   max-width: 480px;
   z-index: var(--osdk-surface-z-index-3, 1000);
-}
-
-.removeButton {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  margin-left: calc(var(--osdk-surface-spacing) * 0.5);
-  padding: calc(var(--osdk-surface-spacing) * 0.5);
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  color: var(--osdk-typography-color-muted);
-  border-radius: var(--osdk-surface-border-radius);
-}
-
-.removeButton:hover {
-  color: var(--osdk-typography-color-default-rest);
-  background: var(--osdk-custom-color-gray-1);
 }

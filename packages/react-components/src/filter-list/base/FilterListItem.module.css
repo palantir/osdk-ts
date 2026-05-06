@@ -22,30 +22,32 @@
   padding: var(--osdk-filter-item-padding);
 }
 
-/* Horizontal mode: label sits left of the input, padding is tighter. */
-.filterItem.horizontal {
-  flex-direction: row;
+/* Horizontal mode, "inline" render — plain label sibling next to the
+   existing inline input, constrained to the same width as the popover
+   trigger so the row reads evenly. */
+.horizontalInline {
+  display: inline-flex;
   align-items: center;
-  padding: 0;
   gap: calc(var(--osdk-surface-spacing) * 1);
   flex-shrink: 0;
 }
 
-.filterItem.horizontal .itemHeader {
-  display: contents;
+.horizontalInlineLabel {
+  font-family: var(--osdk-typography-family-default);
+  font-size: var(--osdk-typography-size-body-small);
+  color: var(--osdk-typography-color-muted);
+  white-space: nowrap;
 }
 
-.filterItem.horizontal .itemLabel {
-  flex: 0 0 auto;
-  font-weight: var(--osdk-filter-item-label-font-weight);
-}
-
-.filterItem.horizontal .itemContent {
+.horizontalInlineInput {
+  width: var(--osdk-filter-horizontal-trigger-width, 160px);
+  min-height: var(--osdk-filter-horizontal-trigger-min-height, 28px);
   display: flex;
-  flex-direction: row;
   align-items: center;
-  min-width: 0;
-  overflow: visible;
+}
+
+.horizontalInlineInput > * {
+  width: 100%;
 }
 
 .itemHeader {

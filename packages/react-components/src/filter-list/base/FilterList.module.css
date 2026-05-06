@@ -64,15 +64,6 @@
   overflow: visible;
 }
 
-.horizontalTitle {
-  flex-shrink: 0;
-  font-family: var(--osdk-filter-header-font-family);
-  font-size: var(--osdk-filter-header-font-size);
-  font-weight: var(--osdk-filter-header-font-weight);
-  color: var(--osdk-filter-header-color);
-  margin-right: calc(var(--osdk-surface-spacing) * 1);
-}
-
 .horizontalAddButton {
   flex-shrink: 0;
   padding: 0;

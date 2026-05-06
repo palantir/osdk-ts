@@ -92,10 +92,6 @@ export function BaseFilterList<D>(
         data-active-count={activeFilterCount}
         data-orientation={orientation}
       >
-        {isHorizontal && title && (
-          <span className={styles.horizontalTitle}>{title}</span>
-        )}
-
         {showHeader && (
           <FilterListHeader
             title={title}

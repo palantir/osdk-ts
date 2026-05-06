@@ -188,6 +188,27 @@ function FilterListItemInner<D>({
     );
   }
 
+  if (isHorizontal && renderMode === "inline") {
+    return (
+      <span className={classnames(styles.horizontalInline, className)}>
+        <span className={styles.horizontalInlineLabel}>{label}</span>
+        <div className={styles.horizontalInlineInput}>
+          <ErrorBoundary errorMessage="Error loading filter">
+            {renderInput({
+              definition,
+              filterKey,
+              filterState,
+              onFilterStateChanged: handleFilterStateChanged,
+              searchQuery: undefined,
+              excludeRowOpen: false,
+              whereClauseForFilter,
+            })}
+          </ErrorBoundary>
+        </div>
+      </span>
+    );
+  }
+
   return (
     <div
       className={classnames(

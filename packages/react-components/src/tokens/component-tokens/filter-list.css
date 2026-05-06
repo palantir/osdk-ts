@@ -448,13 +448,8 @@
   --osdk-filter-skeleton-count-width: calc(var(--osdk-surface-spacing) * 2.5);
 
   /* Horizontal Mode */
-  --osdk-filter-horizontal-gap: calc(var(--osdk-surface-spacing) * 1);
-  --osdk-filter-horizontal-trigger-min-height: calc(
-    var(--osdk-surface-spacing) * 7
-  );
-  --osdk-filter-horizontal-trigger-max-width: calc(
-    var(--osdk-surface-spacing) * 60
-  );
+  --osdk-filter-horizontal-gap: calc(var(--osdk-surface-spacing) * 4);
+  --osdk-filter-horizontal-trigger-min-height: 28px;
+  --osdk-filter-horizontal-trigger-width: 160px;
   --osdk-filter-horizontal-trigger-bg: transparent;
-  --osdk-filter-horizontal-trigger-active-bg: var(--osdk-surface-layer-primary);
 }

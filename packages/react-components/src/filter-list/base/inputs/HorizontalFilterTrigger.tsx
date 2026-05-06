@@ -32,12 +32,15 @@ interface HorizontalFilterTriggerProps {
    */
   children: React.ReactNode;
   className?: string;
+  /** Placeholder text shown inside the trigger when no value is selected. */
+  placeholder?: string;
 }
 
 /**
- * Button trigger for horizontal-mode filter rows. The trigger shows the
- * filter label and a summary of the current value; clicking it opens a
- * popover with the existing input UI.
+ * Horizontal-mode filter pair: a plain label sitting next to a
+ * thin-bordered input-shaped popover trigger. Clicking the trigger opens
+ * the existing input UI in a Base UI Popover; the × remove button
+ * absolute-positions over the trigger and is hidden until hover/focus.
  *
  * @internal
  */
@@ -49,6 +52,7 @@ export function HorizontalFilterTrigger(
     onRemove,
     children,
     className,
+    placeholder = "Search…",
   }: HorizontalFilterTriggerProps,
 ): React.ReactElement {
   const [open, setOpen] = useState(false);
@@ -64,15 +68,21 @@ export function HorizontalFilterTrigger(
 
   return (
     <Popover.Root open={open} onOpenChange={setOpen}>
-      <Popover.Trigger
-        className={classnames(styles.trigger, className)}
-        data-active={isActive}
-      >
-        <span className={styles.label}>
-          {label}
-          {summaryHasValue ? ":" : ""}
-        </span>
-        {summaryHasValue && <span className={styles.summary}>{summary}</span>}
+      <span className={classnames(styles.fieldGroup, className)}>
+        <span className={styles.label}>{label}</span>
+        <Popover.Trigger
+          className={styles.trigger}
+          data-active={isActive || undefined}
+        >
+          <span
+            className={classnames(
+              styles.summary,
+              !summaryHasValue && styles.placeholder,
+            )}
+          >
+            {summaryHasValue ? summary : placeholder}
+          </span>
+        </Popover.Trigger>
         {onRemove && (
           <button
             type="button"
@@ -83,7 +93,7 @@ export function HorizontalFilterTrigger(
             <RemoveIcon />
           </button>
         )}
-      </Popover.Trigger>
+      </span>
       <Popover.Portal>
         <Popover.Positioner sideOffset={4}>
           <Popover.Popup className={styles.popup}>
