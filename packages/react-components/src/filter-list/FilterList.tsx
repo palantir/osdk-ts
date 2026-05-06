@@ -64,11 +64,6 @@ export function FilterList<Q extends ObjectTypeDefinition>(
 
   const uncontrolledAddFilterMode = addFilterMode === "uncontrolled";
 
-  const getIsVisible = useCallback(
-    (def: FilterDefinitionUnion<Q>) => def.isVisible !== false,
-    [],
-  );
-
   const handleVisibilityChange = useCallback(
     (visibleKeys: string[], hiddenKeys: string[]) => {
       if (!onFilterVisibilityChange) {
@@ -99,8 +94,6 @@ export function FilterList<Q extends ObjectTypeDefinition>(
     resetVisibility,
   } = useFilterVisibility(
     filterDefinitions,
-    getFilterKey,
-    getIsVisible,
     uncontrolledAddFilterMode ? handleVisibilityChange : undefined,
   );
 

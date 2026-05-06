@@ -94,16 +94,12 @@ export function FilterListContent<D>({
 }: FilterListContentProps<D>): React.ReactElement {
   const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
 
-  // The parent owns ordering state (e.g. via useFilterVisibility); we just
-  // render filterDefinitions in the order we receive them.
-  const renderDefinitions = filterDefinitions;
-
   const sortableIds = useMemo(
     () =>
-      enableSorting && renderDefinitions
-        ? renderDefinitions.map((def) => getFilterKey(def))
+      enableSorting && filterDefinitions
+        ? filterDefinitions.map((def) => getFilterKey(def))
         : [],
-    [enableSorting, renderDefinitions, getFilterKey],
+    [enableSorting, filterDefinitions, getFilterKey],
   );
 
   const pointerSensor = useSensor(PointerSensor, {
@@ -117,8 +113,8 @@ export function FilterListContent<D>({
   const activeIndex = activeId != null
     ? sortableIds.indexOf(String(activeId))
     : -1;
-  const activeDefinition = activeIndex >= 0 && renderDefinitions
-    ? renderDefinitions[activeIndex]
+  const activeDefinition = activeIndex >= 0 && filterDefinitions
+    ? filterDefinitions[activeIndex]
     : undefined;
 
   const activeFilterKey = useMemo(
@@ -155,8 +151,8 @@ export function FilterListContent<D>({
     () => ({
       onDragStart({ active }) {
         const idx = sortableIds.indexOf(String(active.id));
-        const def = idx >= 0 && renderDefinitions
-          ? renderDefinitions[idx]
+        const def = idx >= 0 && filterDefinitions
+          ? filterDefinitions[idx]
           : undefined;
         const label = def ? getFilterLabel(def) : "filter";
         return `Picked up ${label} filter`;
@@ -170,8 +166,8 @@ export function FilterListContent<D>({
       },
       onDragEnd({ active, over }) {
         const idx = sortableIds.indexOf(String(active.id));
-        const def = idx >= 0 && renderDefinitions
-          ? renderDefinitions[idx]
+        const def = idx >= 0 && filterDefinitions
+          ? filterDefinitions[idx]
           : undefined;
         const label = def ? getFilterLabel(def) : "filter";
         if (over && active.id !== over.id) {
@@ -182,14 +178,14 @@ export function FilterListContent<D>({
       },
       onDragCancel({ active }) {
         const idx = sortableIds.indexOf(String(active.id));
-        const def = idx >= 0 && renderDefinitions
-          ? renderDefinitions[idx]
+        const def = idx >= 0 && filterDefinitions
+          ? filterDefinitions[idx]
           : undefined;
         const label = def ? getFilterLabel(def) : "filter";
         return `Cancelled dragging ${label} filter`;
       },
     }),
-    [renderDefinitions, sortableIds, getFilterLabel],
+    [filterDefinitions, sortableIds, getFilterLabel],
   );
 
   const accessibility = useMemo(
@@ -197,7 +193,7 @@ export function FilterListContent<D>({
     [announcements],
   );
 
-  if (!renderDefinitions || renderDefinitions.length === 0) {
+  if (!filterDefinitions || filterDefinitions.length === 0) {
     return (
       <div
         className={classnames(styles.content, className)}
@@ -226,7 +222,7 @@ export function FilterListContent<D>({
             items={sortableIds}
             strategy={verticalListSortingStrategy}
           >
-            {renderDefinitions.map((definition, index) => {
+            {filterDefinitions.map((definition, index) => {
               const id = sortableIds[index];
               const filterKey = getFilterKey(definition);
               const label = getFilterLabel(definition);
@@ -275,7 +271,7 @@ export function FilterListContent<D>({
       className={classnames(styles.content, className)}
       style={style}
     >
-      {renderDefinitions.map((definition) => {
+      {filterDefinitions.map((definition) => {
         const filterKey = getFilterKey(definition);
         const state = filterStates.get(filterKey);
 

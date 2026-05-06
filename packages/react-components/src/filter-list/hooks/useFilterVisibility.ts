@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
+import type { ObjectTypeDefinition } from "@osdk/api";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import type { FilterDefinitionUnion } from "../FilterListApi.js";
+import { getFilterKey } from "../utils/getFilterKey.js";
 
 interface FilterVisibilityResult<D> {
   visibleDefinitions: Array<D>;
@@ -26,23 +29,23 @@ interface FilterVisibilityResult<D> {
   resetVisibility: () => void;
 }
 
-export function useFilterVisibility<D>(
-  filterDefinitions: Array<D> | undefined,
-  getFilterKey: (definition: D) => string,
-  getIsVisible: (definition: D) => boolean,
+export function useFilterVisibility<
+  Q extends ObjectTypeDefinition,
+>(
+  filterDefinitions: Array<FilterDefinitionUnion<Q>> | undefined,
   onVisibilityChange?: (visibleKeys: string[], hiddenKeys: string[]) => void,
-): FilterVisibilityResult<D> {
+): FilterVisibilityResult<FilterDefinitionUnion<Q>> {
   const allKeys = useMemo(
     () => filterDefinitions?.map(getFilterKey) ?? [],
-    [filterDefinitions, getFilterKey],
+    [filterDefinitions],
   );
 
   const defaultVisibleKeyOrder = useMemo(
     () =>
       filterDefinitions
-        ?.filter(getIsVisible)
+        ?.filter(def => def.isVisible !== false)
         .map(getFilterKey) ?? [],
-    [filterDefinitions, getFilterKey, getIsVisible],
+    [filterDefinitions],
   );
 
   const [visibleKeyOrder, setVisibleKeyOrder] = useState<string[]>(
@@ -69,25 +72,25 @@ export function useFilterVisibility<D>(
   );
 
   const defByKey = useMemo(() => {
-    const map = new Map<string, D>();
+    const map = new Map<string, FilterDefinitionUnion<Q>>();
     if (filterDefinitions == null) return map;
     for (const def of filterDefinitions) {
       map.set(getFilterKey(def), def);
     }
     return map;
-  }, [filterDefinitions, getFilterKey]);
+  }, [filterDefinitions]);
 
   const { visibleDefinitions, hiddenDefinitions } = useMemo(() => {
     if (filterDefinitions == null) {
       return {
-        visibleDefinitions: [] as Array<D>,
-        hiddenDefinitions: [] as Array<D>,
+        visibleDefinitions: [] as Array<FilterDefinitionUnion<Q>>,
+        hiddenDefinitions: [] as Array<FilterDefinitionUnion<Q>>,
       };
     }
 
     const visibleSet = new Set(visibleKeyOrder);
-    const visible: Array<D> = [];
-    const hidden: Array<D> = [];
+    const visible: Array<FilterDefinitionUnion<Q>> = [];
+    const hidden: Array<FilterDefinitionUnion<Q>> = [];
 
     for (const key of visibleKeyOrder) {
       const def = defByKey.get(key);
