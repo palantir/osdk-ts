@@ -181,14 +181,6 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
    * are reordered, or (in uncontrolled mode) added or
    * removed via the built-in show/remove controls.
    *
-   * Useful for persisting filter configuration in saved states. The
-   * returned array lists every filter in current display order, with
-   * visible filters first followed by hidden filters.
-   *
-   * In controlled mode (`addFilterMode: "controlled"`), this fires only
-   * for reorder events; show/hide are managed externally via
-   * `filterDefinitions`.
-   *
    * @param newStates The filters in current display order with their visibility state
    */
   onFilterVisibilityChange?: (
