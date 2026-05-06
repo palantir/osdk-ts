@@ -1775,3 +1775,419 @@ return (
     </div>
   ),
 };
+
+export const ConditionalRowEditability: Story = {
+  args: {
+    objectType: Employee,
+    columnDefinitions: [
+      { locator: { type: "property", id: "fullName" } },
+      {
+        locator: { type: "property", id: "jobTitle" },
+        editable: (rowData) => {
+          // Only allow editing for Senior engineers and above
+          const jobTitle = String(rowData.jobTitle ?? "");
+          return (
+            jobTitle.includes("Senior")
+            || jobTitle.includes("Staff")
+            || jobTitle.includes("Manager")
+          );
+        },
+      },
+      {
+        locator: { type: "property", id: "department" },
+        editable: (rowData) => {
+          // Only allow editing for specific departments
+          const dept = String(rowData.department ?? "");
+          return dept === "Engineering" || dept === "Product";
+        },
+        editFieldConfig: {
+          fieldComponent: "DROPDOWN",
+          getFieldComponentProps: () => ({
+            items: [
+              "Engineering",
+              "Product",
+              "Design",
+              "Sales",
+              "Marketing",
+              "Finance",
+              "Human Resources",
+            ],
+          }),
+        },
+      },
+    ],
+    editMode: "always" as const,
+    onCellValueChanged: fn(),
+  } as EmployeeTableProps,
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Demonstrates conditional per-row editability. Only certain rows can edit jobTitle and department based on their data. Try scrolling to see different values and their editability.",
+      },
+      source: {
+        code: `const columnDefinitions = [
+  { locator: { type: "property", id: "fullName" } },
+  {
+    locator: { type: "property", id: "jobTitle" },
+    editable: (rowData) => {
+      // Only allow editing for Senior engineers and above
+      const jobTitle = String(rowData.jobTitle ?? "");
+      return (
+        jobTitle.includes("Senior")
+        || jobTitle.includes("Staff")
+        || jobTitle.includes("Manager")
+      );
+    },
+  },
+  {
+    locator: { type: "property", id: "department" },
+    editable: (rowData) => {
+      // Only allow editing for Engineering and Product departments
+      const dept = String(rowData.department ?? "");
+      return dept === "Engineering" || dept === "Product";
+    },
+    editFieldConfig: {
+      fieldComponent: "DROPDOWN",
+      getFieldComponentProps: () => ({
+        items: [
+          "Engineering",
+          "Product",
+          "Design",
+          "Sales",
+          "Marketing",
+          "Finance",
+          "Human Resources",
+        ],
+      }),
+    },
+  },
+];
+
+return (
+  <ObjectTable
+    objectType={Employee}
+    columnDefinitions={columnDefinitions}
+    editMode="always"
+  />
+);`,
+      },
+    },
+  },
+  render: (args) => (
+    <div className="object-table-container" style={{ height: "600px" }}>
+      <div
+        style={{
+          padding: "12px",
+          backgroundColor: "#fff3cd",
+          marginBottom: "8px",
+          borderRadius: "4px",
+        }}
+      >
+        <strong>Per-row editability:</strong>{" "}
+        jobTitle is only editable for Senior/Staff/Manager roles. Department is
+        only editable for Engineering and Product departments.
+      </div>
+      <ObjectTable {...args} />
+    </div>
+  ),
+};
+
+export const RowAttributesForStyling: Story = {
+  args: {
+    objectType: Employee,
+    columnDefinitions: [
+      { locator: { type: "property", id: "fullName" } },
+      { locator: { type: "property", id: "jobTitle" } },
+      { locator: { type: "property", id: "department" } },
+      { locator: { type: "property", id: "locationCity" } },
+    ],
+  } as EmployeeTableProps,
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Demonstrates using getRowAttributes to apply custom data attributes to rows for CSS styling. Remote employees have a different background color.",
+      },
+      source: {
+        code: `const getRowAttributes = useCallback((rowData) => {
+  const city = String(rowData.locationCity ?? "");
+  return {
+    "data-location": city,
+    "data-is-remote": city === "Remote" ? "true" : "false",
+  };
+}, []);
+
+return (
+  <ObjectTable
+    objectType={Employee}
+    columnDefinitions={columnDefinitions}
+    getRowAttributes={getRowAttributes}
+  />
+);
+
+// CSS to style rows
+// [data-is-remote="true"] {
+//   --osdk-table-row-bg-default: #f0f8ff;
+//   --osdk-table-row-bg-alternate: #e6f2ff;
+// }`,
+      },
+    },
+  },
+  render: (args) => {
+    const getRowAttributes = useCallback(
+      (rowData: Osdk.Instance<typeof Employee>) => {
+        const city = String(rowData.locationCity ?? "");
+        const isRemote = city === "Remote";
+        return {
+          "data-location": city,
+          "data-is-remote": isRemote ? "true" : undefined,
+        };
+      },
+      [],
+    );
+
+    return (
+      <div className="object-table-container" style={{ height: "600px" }}>
+        <div
+          style={{
+            padding: "12px",
+            backgroundColor: "#fff3cd",
+            marginBottom: "8px",
+            borderRadius: "4px",
+          }}
+        >
+          <strong>Row attributes for styling:</strong>{" "}
+          Remote employees have a light blue background. Look for rows with
+          "Remote" in the Location City column.
+        </div>
+        <div
+          style={{
+            marginBottom: "8px",
+            fontSize: "12px",
+            color: "#666",
+          }}
+        >
+          CSS applied: <code>[data-is-remote="true"]</code>{" "}
+          rows have background-color: #f0f8ff
+        </div>
+        <ObjectTable
+          {...args}
+          getRowAttributes={getRowAttributes}
+        />
+        <style>
+          {`
+          [data-is-remote="true"] {
+            --osdk-table-row-bg-default: #f0f8ff !important;
+            --osdk-table-row-bg-alternate: #e6f2ff !important;
+          }
+        `}
+        </style>
+      </div>
+    );
+  },
+};
+
+export const PerRowEditorConfiguration: Story = {
+  args: {
+    objectType: Employee,
+    columnDefinitions: [
+      { locator: { type: "property", id: "fullName" } },
+      { locator: { type: "property", id: "jobTitle" } },
+      {
+        locator: { type: "property", id: "department" },
+        editable: true,
+        editFieldConfig: {
+          fieldComponent: "DROPDOWN",
+          getFieldComponentProps: (rowData) => {
+            // Different departments have different available options based on current department
+            const currentDept = String(rowData.department ?? "");
+            let items: string[] = [];
+
+            if (currentDept === "Engineering") {
+              items = [
+                "Engineering",
+                "Product",
+                "Design",
+              ];
+            } else if (currentDept === "Sales") {
+              items = [
+                "Sales",
+                "Marketing",
+              ];
+            } else {
+              items = [
+                "Engineering",
+                "Product",
+                "Design",
+                "Sales",
+                "Marketing",
+                "Finance",
+                "Human Resources",
+              ];
+            }
+
+            return {
+              items,
+              placeholder: `Currently: ${currentDept}`,
+            };
+          },
+        },
+      },
+    ],
+    editMode: "always" as const,
+    onCellValueChanged: fn(),
+  } as EmployeeTableProps,
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Demonstrates per-row editor configuration. The department dropdown offers different available options based on the employee's current department.",
+      },
+      source: {
+        code: `const columnDefinitions = [
+  { locator: { type: "property", id: "fullName" } },
+  { locator: { type: "property", id: "jobTitle" } },
+  {
+    locator: { type: "property", id: "department" },
+    editable: true,
+    editFieldConfig: {
+      fieldComponent: "DROPDOWN",
+      getFieldComponentProps: (rowData) => {
+        // Different departments have different available options
+        const currentDept = String(rowData.department ?? "");
+        let items: string[] = [];
+
+        if (currentDept === "Engineering") {
+          items = ["Engineering", "Product", "Design"];
+        } else if (currentDept === "Sales") {
+          items = ["Sales", "Marketing"];
+        } else {
+          items = [
+            "Engineering",
+            "Product",
+            "Design",
+            "Sales",
+            "Marketing",
+            "Finance",
+            "Human Resources",
+          ];
+        }
+
+        return {
+          items,
+          placeholder: \`Currently: \${currentDept}\`,
+        };
+      },
+    },
+  },
+];
+
+return (
+  <ObjectTable
+    objectType={Employee}
+    columnDefinitions={columnDefinitions}
+    editMode="always"
+  />
+);`,
+      },
+    },
+  },
+  render: (args) => (
+    <div className="object-table-container" style={{ height: "600px" }}>
+      <div
+        style={{
+          padding: "12px",
+          backgroundColor: "#fff3cd",
+          marginBottom: "8px",
+          borderRadius: "4px",
+        }}
+      >
+        <strong>Per-row editor configuration:</strong>{" "}
+        The department dropdown shows different available options based on each
+        employee's current department. Engineering employees can move to
+        Product/Design, Sales employees can move to Marketing, and others see
+        all options.
+      </div>
+      <ObjectTable {...args} />
+    </div>
+  ),
+};
+
+export const ShowEditFooterToggle: Story = {
+  args: {
+    objectType: Employee,
+    columnDefinitions: [
+      {
+        locator: { type: "property", id: "fullName" },
+        editable: true,
+      },
+      {
+        locator: { type: "property", id: "emailPrimaryWork" },
+        editable: true,
+      },
+      {
+        locator: { type: "property", id: "jobTitle" },
+        editable: true,
+        editFieldConfig: {
+          fieldComponent: "DROPDOWN",
+          getFieldComponentProps: () => ({
+            items: [
+              "Software Engineer",
+              "Senior Software Engineer",
+              "Staff Engineer",
+              "Engineering Manager",
+            ],
+            isSearchable: true,
+          }),
+        },
+      },
+    ],
+    editMode: "manual" as const,
+    showEditFooter: true,
+    onCellValueChanged: fn(),
+  } as EmployeeTableProps,
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Demonstrates the showEditFooter prop. When true (default), the edit footer is shown. Toggle the showEditFooter prop in the controls to hide/show the footer while maintaining edit mode functionality.",
+      },
+      source: {
+        code: `// With edit footer (default)
+<ObjectTable
+  objectType={Employee}
+  columnDefinitions={columnDefinitions}
+  editMode="manual"
+  showEditFooter={true}
+/>
+
+// Without edit footer
+<ObjectTable
+  objectType={Employee}
+  columnDefinitions={columnDefinitions}
+  editMode="manual"
+  showEditFooter={false}
+/>`,
+      },
+    },
+  },
+  render: (args) => (
+    <div className="object-table-container" style={{ height: "600px" }}>
+      <div
+        style={{
+          padding: "12px",
+          backgroundColor: "#fff3cd",
+          marginBottom: "8px",
+          borderRadius: "4px",
+        }}
+      >
+        <strong>showEditFooter prop:</strong>{" "}
+        Toggle the prop in Storybook controls to show/hide the bottom edit
+        footer. When hidden, edit mode can still be triggered programmatically
+        or via keyboard shortcuts.
+      </div>
+      <ObjectTable {...args} />
+    </div>
+  ),
+};

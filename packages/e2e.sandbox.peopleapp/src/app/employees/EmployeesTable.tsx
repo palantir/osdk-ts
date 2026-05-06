@@ -59,6 +59,15 @@ const columnDefinitions: Array<
   },
   {
     locator: { type: "property", id: "jobTitle" },
+    // Per-row editability: only senior roles can edit
+    editable: (rowData) => {
+      const jobTitle = String(rowData.jobTitle ?? "");
+      return (
+        jobTitle.includes("Senior")
+        || jobTitle.includes("Staff")
+        || jobTitle.includes("Manager")
+      );
+    },
   },
   {
     locator: { type: "property", id: "firstFullTimeStartDate" },
@@ -111,6 +120,20 @@ export function EmployeesTable() {
     [],
   );
 
+  const getRowAttributes = useCallback(
+    (rowData: Osdk.Instance<Employee>) => {
+      const jobTitle = String(rowData.jobTitle ?? "");
+      // Highlight rows for senior engineers with a subtle background
+      const isSenior = jobTitle.includes("Senior")
+        || jobTitle.includes("Staff")
+        || jobTitle.includes("Manager");
+      return {
+        "data-seniority-level": isSenior ? "senior" : "junior",
+      };
+    },
+    [],
+  );
+
   const client = useOsdkClient();
 
   const os = client(Employee);
@@ -133,7 +156,18 @@ export function EmployeesTable() {
         }]}
         onSubmitEdits={handleSubmitEdits}
         editMode="manual"
+        getRowAttributes={getRowAttributes}
+        showEditFooter={true}
       />
+      <style>
+        {`
+        /* Highlight senior employees with a subtle background */
+        [data-seniority-level="senior"] {
+          --osdk-table-row-bg-default: #f5f0ff;
+          --osdk-table-row-bg-alternate: #ede8ff;
+        }
+      `}
+      </style>
     </div>
   );
 }
