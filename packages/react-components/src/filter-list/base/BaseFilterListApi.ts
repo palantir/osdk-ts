@@ -24,6 +24,15 @@ export type RenderFilterInput<D> = (props: {
   onFilterStateChanged: (state: FilterState) => void;
   searchQuery?: string;
   excludeRowOpen?: boolean;
+  /**
+   * Per-filter where clause supplied by `FilterList`'s internal pipeline.
+   *
+   * Type-erased here so this OSDK-agnostic base does not depend on
+   * `WhereClause<Q>`. The FilterList wrapper casts it back to the typed
+   * shape before passing it to `FilterInput`. Consumers passing their own
+   * `renderInput` function can ignore this field.
+   */
+  whereClauseForFilter?: unknown;
 }) => React.ReactNode;
 
 export interface BaseFilterListProps<D> {
@@ -37,6 +46,13 @@ export interface BaseFilterListProps<D> {
   onReset?: () => void;
   onFilterAdded?: () => void;
   onFilterRemoved?: (filterKey: string) => void;
+  /**
+   * Per-filter where clauses keyed by `filterKey`. Forwarded down to each
+   * `FilterListItem` so the internal `renderInput` can read its filter's
+   * clause without closing over the whole map (which would invalidate
+   * memoization on every selection).
+   */
+  perFilterWhereClauses?: ReadonlyMap<string, unknown>;
 
   collapsed?: boolean;
   onCollapsedChange?: (collapsed: boolean) => void;
@@ -48,4 +64,26 @@ export interface BaseFilterListProps<D> {
   enableSorting?: boolean;
   className?: string;
   renderAddFilterButton?: () => React.ReactNode;
+  /**
+   * Layout orientation. When `"horizontal"`, the filter list arranges its
+   * items as a row instead of a column. Default `"vertical"`.
+   */
+  orientation?: "vertical" | "horizontal";
+  /**
+   * In horizontal mode, classifies each filter as either an inline input
+   * (rendered directly next to its label) or a popover trigger (rendered
+   * as a button that opens the input UI in a popover). Ignored in
+   * vertical mode where everything renders inline.
+   */
+  getFilterRenderMode?: (definition: D) => "inline" | "trigger";
+  /**
+   * In horizontal mode, the trigger label shown above the filter's
+   * popover. Receives the filter definition and current state and returns
+   * a short summary like "Status: Active" or "Sites: 3 selected". Ignored
+   * for `"inline"` filters.
+   */
+  summarizeFilterValue?: (
+    definition: D,
+    filterState: FilterState | undefined,
+  ) => React.ReactNode;
 }

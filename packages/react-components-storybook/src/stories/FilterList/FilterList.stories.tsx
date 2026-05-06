@@ -1855,3 +1855,269 @@ const nameContainsFilter = {
   },
   render: (args) => <WithCustomFiltersStory {...args} />,
 };
+
+const departmentMultiSelectFilter: FilterDefinitionUnion<Employee> = {
+  type: "PROPERTY",
+  id: "department-multi",
+  key: "department",
+  label: "Department",
+  filterComponent: "MULTI_SELECT",
+  filterState: { type: "SELECT", selectedValues: [] },
+};
+
+const departmentSingleSelectFilter: FilterDefinitionUnion<Employee> = {
+  type: "PROPERTY",
+  id: "department-single",
+  key: "department",
+  label: "Department (single)",
+  filterComponent: "SINGLE_SELECT",
+  filterState: { type: "SELECT", selectedValues: [] },
+};
+
+const NO_VALUE_FILTER_DEFINITIONS: FilterDefinitionUnion<Employee>[] = [
+  departmentFilter,
+  departmentMultiSelectFilter,
+  departmentSingleSelectFilter,
+  employeeNumberFilter,
+];
+
+export const NoValueRendering: Story = {
+  name: "No value rendering",
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Empty/null filter values render via the canonical `<NoValueLabel />` "
+          + "component — italic, muted, with the literal text 'No value' — across "
+          + "listogram buckets, single-select dropdown options, multi-select dropdown "
+          + "options, and multi-select chips. The mock dataset includes one Employee "
+          + "with `department: \"\"` so the No value row is visible in the listogram.",
+      },
+    },
+  },
+  render: () => (
+    <div style={SIDEBAR_STYLE}>
+      <FilterList
+        objectType={Employee}
+        filterDefinitions={NO_VALUE_FILTER_DEFINITIONS}
+      />
+    </div>
+  ),
+};
+
+const LONG_DROPDOWN_VALUES = Array.from(
+  { length: 100 },
+  (_, i) => `Option ${String(i + 1).padStart(3, "0")}`,
+);
+
+const LONG_DROPDOWN_FILTERS: FilterDefinitionUnion<Employee>[] = [
+  {
+    type: "STATIC_VALUES",
+    key: "department",
+    label: "Long single-select",
+    filterComponent: "SINGLE_SELECT",
+    values: LONG_DROPDOWN_VALUES,
+    filterState: { type: "SELECT", selectedValues: [] },
+  },
+  {
+    type: "STATIC_VALUES",
+    key: "team",
+    label: "Long multi-select",
+    filterComponent: "MULTI_SELECT",
+    values: LONG_DROPDOWN_VALUES,
+    filterState: { type: "SELECT", selectedValues: [] },
+  },
+];
+
+export const LongDropdown: Story = {
+  name: "Long dropdown (popup max-height)",
+  parameters: {
+    docs: {
+      description: {
+        story: "Combobox popup is capped at 320px (configurable via "
+          + "`--osdk-combobox-popup-max-height`). With 100 options, the popup "
+          + "becomes scrollable instead of growing tall enough to push other "
+          + "UI off-screen. When the available browser height is less than "
+          + "320px, the cap is lowered automatically because the rule "
+          + "resolves to `min(320px, var(--available-height))`.",
+      },
+    },
+  },
+  render: () => (
+    <div style={SIDEBAR_STYLE}>
+      <FilterList
+        objectType={Employee}
+        filterDefinitions={LONG_DROPDOWN_FILTERS}
+      />
+    </div>
+  ),
+};
+
+const slashDate = (d: Date): string =>
+  `${String(d.getMonth() + 1).padStart(2, "0")}/${
+    String(d.getDate()).padStart(2, "0")
+  }/${d.getFullYear()}`;
+
+const slashDateParse = (text: string): Date | undefined => {
+  const match = text.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+  if (!match) return undefined;
+  return new Date(
+    Number(match[3]),
+    Number(match[1]) - 1,
+    Number(match[2]),
+  );
+};
+
+const FORMAT_DATE_FILTERS: FilterDefinitionUnion<Employee>[] = [
+  {
+    type: "PROPERTY",
+    id: "startDate-range",
+    key: "firstFullTimeStartDate",
+    label: "Start date (range)",
+    filterComponent: "DATE_RANGE",
+    filterState: { type: "DATE_RANGE" },
+    formatDate: slashDate,
+    parseDate: slashDateParse,
+  },
+  {
+    type: "PROPERTY",
+    id: "startDate-multi",
+    key: "firstFullTimeStartDate",
+    label: "Start date (multi)",
+    filterComponent: "MULTI_DATE",
+    filterState: {
+      type: "SELECT",
+      selectedValues: [new Date(2020, 4, 1), new Date(2021, 8, 15)],
+    },
+    formatDate: slashDate,
+    parseDate: slashDateParse,
+  },
+  {
+    type: "PROPERTY",
+    id: "startDate-timeline",
+    key: "firstFullTimeStartDate",
+    label: "Start date (timeline)",
+    filterComponent: "TIMELINE",
+    filterState: {
+      type: "TIMELINE",
+      startDate: new Date(2020, 0, 1),
+      endDate: new Date(2024, 11, 31),
+    },
+    formatDate: slashDate,
+    parseDate: slashDateParse,
+  },
+];
+
+export const FormatDate: Story = {
+  name: "Per-property formatDate",
+  parameters: {
+    docs: {
+      description: {
+        story: "Date-typed property filter definitions accept optional "
+          + "`formatDate` and `parseDate` callbacks (see `PropertyFilterDateExtras`). "
+          + "When provided, `formatDate` is used for the date-range histogram "
+          + "tooltip, multi-date chip text, and timeline labels. The HTML "
+          + "`<input type=\"date\">` value attribute is unaffected and always "
+          + "uses ISO `YYYY-MM-DD`. `parseDate` is plumbed through for "
+          + "completeness; the built-in HTML date inputs do not invoke it.",
+      },
+    },
+  },
+  render: () => (
+    <div style={SIDEBAR_STYLE}>
+      <FilterList
+        objectType={Employee}
+        filterDefinitions={FORMAT_DATE_FILTERS}
+      />
+    </div>
+  ),
+};
+
+const CLICK_TO_FILTER_DEFINITIONS: FilterDefinitionUnion<Employee>[] = [
+  {
+    type: "PROPERTY",
+    id: "startDate-click",
+    key: "firstFullTimeStartDate",
+    label: "Start date (click bars)",
+    filterComponent: "DATE_RANGE",
+    filterState: { type: "DATE_RANGE" },
+    clickToFilter: true,
+  },
+  {
+    type: "PROPERTY",
+    id: "employeeNumber-click",
+    key: "employeeNumber",
+    label: "Employee number (click bars)",
+    filterComponent: "NUMBER_RANGE",
+    filterState: { type: "NUMBER_RANGE" },
+    clickToFilter: true,
+  },
+];
+
+const HORIZONTAL_FILTERS: FilterDefinitionUnion<Employee>[] = [
+  fullNameFilter,
+  departmentFilter,
+  jobTitleMultiSelectFilter,
+  startDateFilter,
+  employeeNumberFilter,
+  locationCityFilter,
+];
+
+const HORIZONTAL_BAR_STYLE = {
+  width: "100%",
+  maxWidth: 1000,
+  border: "1px solid #e5e7eb",
+  borderRadius: 6,
+  background: "#fff",
+} as const;
+
+export const Horizontal: Story = {
+  name: "Horizontal orientation",
+  parameters: {
+    docs: {
+      description: {
+        story: "When `orientation=\"horizontal\"`, FilterList renders as a "
+          + "row of label-left filters. Compact filters (`CONTAINS_TEXT`, "
+          + "`SINGLE_DATE`, `TOGGLE`) render inline; tall filters collapse "
+          + "into a button trigger that opens the existing input UI in a "
+          + "popover. The popover content only mounts when opened, so "
+          + "aggregation queries don't fire until the user interacts with "
+          + "the filter.",
+      },
+    },
+  },
+  render: () => (
+    <div style={HORIZONTAL_BAR_STYLE}>
+      <FilterList
+        objectType={Employee}
+        title="Filters"
+        filterDefinitions={HORIZONTAL_FILTERS}
+        orientation="horizontal"
+      />
+    </div>
+  ),
+};
+
+export const ClickToFilter: Story = {
+  name: "Click bar to set range",
+  parameters: {
+    docs: {
+      description: {
+        story: "When `clickToFilter: true` is set on a `DATE_RANGE` or "
+          + "`NUMBER_RANGE` property filter definition, clicking a bar in "
+          + "the histogram replaces the filter range with that bucket's "
+          + "`[min, max]`. Clicking a second bar replaces the previous "
+          + "selection — multi-bucket / shift+click union is not supported "
+          + "in v1.",
+      },
+    },
+  },
+  render: () => (
+    <div style={SIDEBAR_STYLE}>
+      <FilterList
+        objectType={Employee}
+        filterDefinitions={CLICK_TO_FILTER_DEFINITIONS}
+      />
+    </div>
+  ),
+};

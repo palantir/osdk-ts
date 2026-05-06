@@ -24,10 +24,14 @@ import type {
   FilterDefinitionUnion,
   FilterListProps,
 } from "./FilterListApi.js";
+import type { FilterState } from "./FilterListItemApi.js";
 import { useFilterListState } from "./hooks/useFilterListState.js";
 import { useFilterVisibility } from "./hooks/useFilterVisibility.js";
 import { getFilterKey } from "./utils/getFilterKey.js";
-import { getFilterLabel } from "./utils/getFilterLabel.js";
+import {
+  getFilterLabel,
+  summarizeFilterValue,
+} from "./utils/getFilterLabel.js";
 
 export function FilterList<Q extends ObjectTypeDefinition>(
   props: FilterListProps<Q>,
@@ -49,6 +53,7 @@ export function FilterList<Q extends ObjectTypeDefinition>(
     onFilterAdded,
     onFilterRemoved,
     renderAddFilterButton,
+    orientation = "vertical",
   } = props;
 
   const {
@@ -149,15 +154,41 @@ export function FilterList<Q extends ObjectTypeDefinition>(
     ? handleFilterRemoved
     : onFilterRemoved;
 
+  const getFilterRenderMode = useCallback(
+    (def: FilterDefinitionUnion<Q>): "inline" | "trigger" => {
+      // Compact filters render inline next to their label; everything
+      // else collapses into a trigger that opens its UI in a popover.
+      if (def.type === "PROPERTY" || def.type === "STATIC_VALUES") {
+        const fc = def.filterComponent;
+        if (
+          fc === "CONTAINS_TEXT" || fc === "SINGLE_DATE" || fc === "TOGGLE"
+        ) {
+          return "inline";
+        }
+      }
+      if (def.type === "HAS_LINK") return "inline";
+      return "trigger";
+    },
+    [],
+  );
+
+  const summarize = useCallback(
+    (
+      def: FilterDefinitionUnion<Q>,
+      filterState: FilterState | undefined,
+    ): React.ReactNode => summarizeFilterValue(def, filterState),
+    [],
+  );
+
   const renderInput = useCallback<RenderFilterInput<FilterDefinitionUnion<Q>>>(
     (
       {
         definition,
-        filterKey,
         filterState,
         onFilterStateChanged,
         searchQuery,
         excludeRowOpen,
+        whereClauseForFilter,
       },
     ) => (
       <FilterInput
@@ -166,13 +197,13 @@ export function FilterList<Q extends ObjectTypeDefinition>(
         definition={definition}
         filterState={filterState}
         onFilterStateChanged={onFilterStateChanged}
-        whereClause={perFilterWhereClauses.get(filterKey)
+        whereClause={(whereClauseForFilter as WhereClause<Q> | undefined)
           ?? ({} as WhereClause<Q>)}
         searchQuery={searchQuery}
         excludeRowOpen={excludeRowOpen}
       />
     ),
-    [objectType, objectSet, perFilterWhereClauses],
+    [objectType, objectSet],
   );
 
   return (
@@ -196,6 +227,10 @@ export function FilterList<Q extends ObjectTypeDefinition>(
       onFilterRemoved={effectiveOnFilterRemoved}
       className={className}
       renderAddFilterButton={effectiveRenderAddFilterButton}
+      perFilterWhereClauses={perFilterWhereClauses}
+      orientation={orientation}
+      getFilterRenderMode={getFilterRenderMode}
+      summarizeFilterValue={summarize}
     />
   );
 }

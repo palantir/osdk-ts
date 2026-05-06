@@ -1,0 +1,8 @@
+:root {
+  /* Combobox popup: cap the dropdown's max-height so very long option lists
+     scroll inside the popup instead of forcing the popup to grow tall enough
+     to push other UI off-screen. The actual `max-height` rule uses
+     `min(this token, --available-height)` so the cap is automatically lowered
+     on short viewports. */
+  --osdk-combobox-popup-max-height: 320px;
+}

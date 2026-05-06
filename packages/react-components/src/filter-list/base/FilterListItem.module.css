@@ -22,6 +22,60 @@
   padding: var(--osdk-filter-item-padding);
 }
 
+/* Horizontal mode, "inline" render — plain label sibling next to the
+   existing inline input, constrained to the same width as the popover
+   trigger so the row reads evenly. */
+.horizontalInline {
+  display: inline-flex;
+  align-items: center;
+  gap: calc(var(--osdk-surface-spacing) * 1);
+  flex-shrink: 0;
+}
+
+.horizontalInlineLabel {
+  font-family: var(--osdk-typography-family-default);
+  font-size: var(--osdk-typography-size-body-small);
+  color: var(--osdk-typography-color-muted);
+  white-space: nowrap;
+}
+
+.horizontalInlineInput {
+  width: var(--osdk-filter-horizontal-trigger-width, 160px);
+  min-height: var(--osdk-filter-horizontal-trigger-min-height, 28px);
+  display: flex;
+  align-items: center;
+  border-radius: var(--osdk-surface-border-radius);
+  border: var(--osdk-surface-border-width) solid
+    var(--osdk-surface-border-color-default);
+  background: transparent;
+  padding: 0 calc(var(--osdk-surface-spacing) * 1);
+  transition: border-color var(--osdk-emphasis-transition-duration)
+    var(--osdk-emphasis-ease-default);
+}
+
+.horizontalInlineInput:hover {
+  border-color: var(--osdk-typography-color-muted);
+}
+
+.horizontalInlineInput:focus-within {
+  border-color: var(--osdk-intent-primary-rest);
+}
+
+.horizontalInlineInput > * {
+  width: 100%;
+}
+
+/* Zero out the inner input's own border / focus ring — the wrapper's
+   border is the single source of truth for the focus visual. */
+.horizontalInlineInput input,
+.horizontalInlineInput [class*="osdkInput"],
+.horizontalInlineInput [class*="ContainsTextInput"] {
+  border: none;
+  outline: none;
+  background: transparent;
+  box-shadow: none;
+}
+
 .itemHeader {
   display: flex;
   align-items: center;

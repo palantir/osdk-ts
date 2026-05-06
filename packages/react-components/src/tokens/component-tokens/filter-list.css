@@ -207,8 +207,18 @@
   --osdk-filter-listogram-label-color: var(
     --osdk-typography-color-default-rest
   );
-  --osdk-filter-listogram-empty-label-color: var(--osdk-typography-color-muted);
-  --osdk-filter-listogram-empty-label-font-style: italic;
+
+  /* Canonical "No value" tokens (Item 2). Used by NoValueLabel everywhere. */
+  --osdk-filter-no-value-color: var(--osdk-typography-color-muted);
+  --osdk-filter-no-value-font-style: italic;
+
+  /* Legacy aliases — kept so existing theme overrides continue to work.
+     Each one defaults to the canonical no-value token; consumers may
+     override the legacy token to scope a different style to listogram. */
+  --osdk-filter-listogram-empty-label-color: var(--osdk-filter-no-value-color);
+  --osdk-filter-listogram-empty-label-font-style: var(
+    --osdk-filter-no-value-font-style
+  );
   --osdk-filter-listogram-bar-height: calc(var(--osdk-surface-spacing) * 2);
   --osdk-filter-listogram-bar-width: calc(var(--osdk-surface-spacing) * 12.5);
   --osdk-filter-listogram-bar-bg: var(--osdk-palette-gray-100);
@@ -247,6 +257,15 @@
       --osdk-emphasis-transition-duration
     )
     var(--osdk-emphasis-ease-default);
+  --osdk-filter-range-histogram-axis-line-color: var(--osdk-palette-gray-100);
+  --osdk-filter-range-histogram-axis-color: var(--osdk-typography-color-muted);
+  --osdk-filter-range-histogram-axis-font-size: 11px;
+  --osdk-filter-range-histogram-label-color: var(--osdk-typography-color-muted);
+  --osdk-filter-range-histogram-label-font-size: 11px;
+  --osdk-filter-range-histogram-subtitle-color: var(
+    --osdk-typography-color-default-rest
+  );
+  --osdk-filter-range-histogram-subtitle-font-size: 12px;
   --osdk-filter-range-inputs-gap: calc(var(--osdk-surface-spacing) * 0.5);
   --osdk-filter-range-input-wrapper-gap: var(--osdk-surface-spacing);
   --osdk-filter-range-label-font-family: var(--osdk-typography-family-default);
@@ -286,10 +305,11 @@
   --osdk-filter-null-row-padding: calc(var(--osdk-surface-spacing) * 1) 0;
   --osdk-filter-null-row-border-top: none;
   --osdk-filter-null-label-gap: var(--osdk-surface-spacing);
-  --osdk-filter-null-label-font-family: var(--osdk-typography-family-default);
-  --osdk-filter-null-label-font-size: var(--osdk-typography-size-body-medium);
-  --osdk-filter-null-label-line-height: 1.4;
-  --osdk-filter-null-label-color: var(--osdk-typography-color-default-rest);
+  /* Legacy null-label-color is now an alias for the canonical no-value token
+     so NullValueWrapper matches dropdown/listogram by default. Consumers
+     can still override --osdk-filter-null-label-color to scope a different
+     color to NullValueWrapper. */
+  --osdk-filter-null-label-color: var(--osdk-filter-no-value-color);
   --osdk-filter-null-count-font-family: var(--osdk-typography-family-default);
   --osdk-filter-null-count-font-size: var(--osdk-typography-size-body-small);
   --osdk-filter-null-count-color: var(--osdk-typography-color-muted);
@@ -426,4 +446,10 @@
   /* Skeleton Loading */
   --osdk-filter-skeleton-text-height: calc(var(--osdk-surface-spacing) * 1.5);
   --osdk-filter-skeleton-count-width: calc(var(--osdk-surface-spacing) * 2.5);
+
+  /* Horizontal Mode */
+  --osdk-filter-horizontal-gap: calc(var(--osdk-surface-spacing) * 4);
+  --osdk-filter-horizontal-trigger-min-height: 28px;
+  --osdk-filter-horizontal-trigger-width: 160px;
+  --osdk-filter-horizontal-trigger-bg: transparent;
 }
