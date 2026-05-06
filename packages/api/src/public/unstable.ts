@@ -15,6 +15,8 @@
  */
 
 export type { Experiment, ExperimentFns } from "../experimental/Experiment.js";
+export type { FetchPageOptions } from "../object/FetchPageArgs.js";
+export type { FetchPageReturn } from "../object/FetchPageResult.js";
 
 export { __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference } from "../experimental/createMediaReference.js";
 export { __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchOneByRid } from "../experimental/fetchOneByRid.js";
