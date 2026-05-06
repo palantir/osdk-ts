@@ -48,6 +48,12 @@
     background-color: var(--osdk-select-trigger-bg-active);
   }
 
+  /* Override global :focus rules (e.g. Blueprint) that add an outline on
+     mouse click. Only show the ring on keyboard focus (:focus-visible). */
+  &:focus:not(:focus-visible) {
+    outline: none;
+  }
+
   &:focus-visible {
     outline: var(--osdk-select-focus-width)
       solid var(--osdk-select-focus-color);
