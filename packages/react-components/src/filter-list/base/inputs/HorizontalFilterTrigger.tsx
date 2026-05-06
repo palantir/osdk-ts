@@ -95,7 +95,7 @@ export function HorizontalFilterTrigger(
         )}
       </span>
       <Popover.Portal>
-        <Popover.Positioner sideOffset={4}>
+        <Popover.Positioner sideOffset={4} align="start">
           <Popover.Popup className={styles.popup}>
             {children}
           </Popover.Popup>

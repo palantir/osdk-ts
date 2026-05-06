@@ -44,10 +44,36 @@
   min-height: var(--osdk-filter-horizontal-trigger-min-height, 28px);
   display: flex;
   align-items: center;
+  border-radius: var(--osdk-surface-border-radius);
+  border: var(--osdk-surface-border-width) solid
+    var(--osdk-surface-border-color-default);
+  background: transparent;
+  padding: 0 calc(var(--osdk-surface-spacing) * 1);
+  transition: border-color var(--osdk-emphasis-transition-duration)
+    var(--osdk-emphasis-ease-default);
+}
+
+.horizontalInlineInput:hover {
+  border-color: var(--osdk-typography-color-muted);
+}
+
+.horizontalInlineInput:focus-within {
+  border-color: var(--osdk-intent-primary-rest);
 }
 
 .horizontalInlineInput > * {
   width: 100%;
+}
+
+/* Zero out the inner input's own border / focus ring — the wrapper's
+   border is the single source of truth for the focus visual. */
+.horizontalInlineInput input,
+.horizontalInlineInput [class*="osdkInput"],
+.horizontalInlineInput [class*="ContainsTextInput"] {
+  border: none;
+  outline: none;
+  background: transparent;
+  box-shadow: none;
 }
 
 .itemHeader {

@@ -20,17 +20,19 @@
   gap: var(--osdk-filter-list-content-gap);
 }
 
-/* Horizontal mode: filters render side-by-side with horizontal scroll
-   for overflow. */
+/* Horizontal mode: filters render side-by-side. Both axes need to stay
+   visible so popovers (the per-filter popup, the add-filter menu) can
+   pop above without clipping. Consumers wrap FilterList in their own
+   scroller if the row gets too long. */
 .content.horizontal {
   flex-direction: row;
   gap: var(
     --osdk-filter-horizontal-gap,
     calc(var(--osdk-surface-spacing) * 1)
   );
-  overflow-x: auto;
-  overflow-y: visible;
+  overflow: visible;
   align-items: center;
+  flex-wrap: wrap;
 }
 
 .emptyMessage {

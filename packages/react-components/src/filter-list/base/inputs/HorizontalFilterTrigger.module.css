@@ -18,8 +18,8 @@
   display: inline-flex;
   align-items: center;
   gap: calc(var(--osdk-surface-spacing) * 1);
-  position: relative;
   flex-shrink: 0;
+  position: relative;
 }
 
 .label {
@@ -30,11 +30,13 @@
 }
 
 .trigger {
+  position: relative;
   display: inline-flex;
   align-items: center;
   width: var(--osdk-filter-horizontal-trigger-width, 160px);
   min-height: var(--osdk-filter-horizontal-trigger-min-height, 28px);
-  padding: 0 calc(var(--osdk-surface-spacing) * 2);
+  padding: 0 calc(var(--osdk-surface-spacing) * 6)
+    0 calc(var(--osdk-surface-spacing) * 2);
   border-radius: var(--osdk-surface-border-radius);
   border: var(--osdk-surface-border-width) solid
     var(--osdk-surface-border-color-default);
@@ -74,19 +76,21 @@
   color: var(--osdk-typography-color-muted);
 }
 
+/* Anchored INSIDE the trigger so the × never overlaps the next filter. The
+   trigger reserves right padding to leave space for the icon. */
 .removeButton {
   position: absolute;
   top: 50%;
-  right: calc(var(--osdk-surface-spacing) * 0.5);
+  right: calc(var(--osdk-surface-spacing) * 0.75);
   transform: translateY(-50%);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: calc(var(--osdk-surface-spacing) * 3);
-  height: calc(var(--osdk-surface-spacing) * 3);
+  width: calc(var(--osdk-surface-spacing) * 4);
+  height: calc(var(--osdk-surface-spacing) * 4);
   padding: 0;
   border: none;
-  background: var(--osdk-background-primary);
+  background: transparent;
   cursor: pointer;
   color: var(--osdk-typography-color-muted);
   border-radius: var(--osdk-surface-border-radius);
@@ -116,4 +120,11 @@
   min-width: 280px;
   max-width: 480px;
   z-index: var(--osdk-surface-z-index-3, 1000);
+}
+
+/* Hide the histogram inside horizontal-mode popovers — the SVG renders
+   cramped at the popover width. The numeric/date inputs below the
+   histogram still work normally. */
+.popup [class*="histogramSvg"] {
+  display: none;
 }
