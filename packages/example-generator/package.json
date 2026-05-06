@@ -1,7 +1,7 @@
 {
   "name": "@osdk/example-generator",
   "private": true,
-  "version": "0.19.0",
+  "version": "0.21.0",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -26,9 +26,9 @@
   "scripts": {
     "check-spelling": "cspell --quiet .",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
-    "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
+    "fix-lint": "eslint . --fix && dprint fmt",
     "generate": "./bin/exampleGenerator.mjs ../../examples",
-    "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
+    "lint": "eslint . && dprint check",
     "test": "vitest run --pool=forks",
     "transpileEsm": "monorepo.tool.transpile -f esm -m normal -t node",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"

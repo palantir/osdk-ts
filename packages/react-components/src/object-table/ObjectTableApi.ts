@@ -26,7 +26,7 @@ import type {
   SimplePropertyDef,
   WhereClause,
 } from "@osdk/api";
-import type { QueryParameterType } from "@osdk/client/unstable-do-not-use";
+import type { QueryParameterType } from "@osdk/client/observable";
 import type * as React from "react";
 import type { CellEditInfo, EditFieldConfig } from "./utils/types.js";
 
@@ -69,6 +69,19 @@ interface SharedColumnDefinition<
   orderable?: boolean;
   filterable?: boolean;
 
+  /**
+   * Custom renderer for the cell value.
+   *
+   * Interaction with `editable` columns:
+   * - When `editMode: "manual"` (default), `renderCell` is used while the
+   *   table is read-only (Edit Table button visible) and the editable cell
+   *   takes over once the user enters edit mode.
+   * - When `editMode: "always"`, the editable cell always wins on editable
+   *   columns and `renderCell` is ignored — `editMode: "always"` opts the
+   *   column into a permanently-editable surface, leaving no read-only
+   *   state for `renderCell` to render. Use `editMode: "manual"` if you
+   *   need a custom display alongside editing.
+   */
   renderCell?: (
     object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
     locator: ColumnDefinitionLocator<Q, RDPs, FunctionColumns>,

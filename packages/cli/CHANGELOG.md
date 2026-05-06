@@ -1,5 +1,21 @@
 # @osdk/cli
 
+## 0.39.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.12.0
+
+## 0.38.0
+
+### Minor Changes
+
+- bab1421: Add check for bundling to ensure entry points work even if dev deps change.
+
+### Patch Changes
+
+- @osdk/widget.api@3.11.0
+
 ## 0.37.0
 
 ### Patch Changes

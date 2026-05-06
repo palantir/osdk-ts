@@ -25,6 +25,7 @@ import type {
   FieldKey,
   FieldValueType,
   FormFieldDefinition,
+  PortalContainer,
   RendererFieldDefinition,
 } from "./FormFieldApi.js";
 
@@ -49,7 +50,11 @@ export type ActionFormProps<Q extends ActionDefinition<unknown>> =
   });
 
 interface ActionFormConfigProps<Q extends ActionDefinition<unknown>>
-  extends Pick<BaseFormProps, "formTitle" | "isSubmitDisabled">
+  extends
+    Pick<
+      BaseFormProps,
+      "formTitle" | "isSubmitDisabled" | "portalContainer"
+    >
 {
   actionDefinition: Q;
 
@@ -111,6 +116,32 @@ export type FormError =
   | { type: "unknown"; error: unknown };
 
 /**
+ * A single item in the form content array — either a standalone field
+ * or a section that groups multiple fields.
+ */
+export type FormContentItem =
+  | { type: "field"; definition: RendererFieldDefinition }
+  | { type: "section"; key: string; definition: FormSectionDefinition };
+
+/**
+ * Configuration for a form section — a visual group of fields with
+ * optional title bar, collapse behavior, and multi-column layout.
+ */
+export interface FormSectionDefinition {
+  title: string;
+  description?: string;
+  fields: ReadonlyArray<RendererFieldDefinition>;
+  /** Whether the section starts collapsed. Default `false`. */
+  collapsedByDefault?: boolean;
+  /** Whether to show the title bar. Default `true`. */
+  showTitleBar?: boolean;
+  /** Number of columns for fields. Default `1`. */
+  columnCount?: 1 | 2;
+  /** Visual style. `"box"` = bordered card, `"minimal"` = heading only. Default `"box"`. */
+  style?: "box" | "minimal";
+}
+
+/**
  * Props for the `BaseForm` component, which renders a form without
  * OSDK data fetching.
  *
@@ -134,10 +165,20 @@ export type BaseFormProps =
 
 interface BaseFormCommonProps {
   formTitle?: string;
-  fieldDefinitions: ReadonlyArray<RendererFieldDefinition>;
+  formContent: ReadonlyArray<FormContentItem>;
   onSubmit: (formState: Record<string, unknown>) => Promise<void> | void;
   isSubmitDisabled?: boolean;
   isPending?: boolean;
   isLoading?: boolean;
   className?: string;
+  /** Label for the submit button. Default `"Submit"`. */
+  submitButtonText?: string;
+  /** Visual variant of the submit button. Default `"primary"`. */
+  submitButtonVariant?: "primary" | "secondary";
+  /**
+   * Element that receives popover/dropdown portals for fields rendered by this
+   * form. Use this when rendering inside modal dialogs so popups stay in the
+   * dialog's stacking and focus context.
+   */
+  portalContainer?: PortalContainer;
 }

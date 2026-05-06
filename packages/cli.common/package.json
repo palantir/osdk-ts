@@ -1,7 +1,7 @@
 {
   "name": "@osdk/cli.common",
   "private": true,
-  "version": "0.37.0",
+  "version": "0.39.0",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -33,8 +33,8 @@
   "scripts": {
     "check-spelling": "cspell --quiet .",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
-    "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
-    "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
+    "fix-lint": "eslint . --fix && dprint fmt",
+    "lint": "eslint . && dprint check",
     "transpileEsm": "monorepo.tool.transpile -f esm -m normal -t node",
     "transpileTypes": "monorepo.tool.transpile -f esm -m types -t node",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"

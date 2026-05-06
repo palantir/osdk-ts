@@ -75,6 +75,18 @@ export function convertActionParameters(
               ),
             },
           };
+          break;
+
+        case "objectSetRid":
+          convertedType = {
+            type: "objectSetRid",
+            objectSetRid: {
+              objectTypeId: ridGenerator.generateObjectTypeId(
+                parameter.type.objectSetRid.objectTypeId,
+              ),
+            },
+          };
+          break;
 
         default:
           // Pass through other types unchanged

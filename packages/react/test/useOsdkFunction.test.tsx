@@ -15,11 +15,11 @@
  */
 
 import type { ObjectTypeDefinition, Osdk, QueryDefinition } from "@osdk/api";
-import type { ObservableClient } from "@osdk/client/unstable-do-not-use";
+import type { ObservableClient } from "@osdk/client/observable";
 import { act, renderHook } from "@testing-library/react";
 import * as React from "react";
 import { beforeEach, describe, expect, it, vitest } from "vitest";
-import { OsdkContext2 } from "../src/new/OsdkContext2.js";
+import { OsdkContext } from "../src/new/OsdkContext.js";
 import { useOsdkFunction } from "../src/new/useOsdkFunction.js";
 
 const MockQueryDef: QueryDefinition<unknown> = {
@@ -51,14 +51,14 @@ describe("useOsdkFunction", () => {
     };
 
     return ({ children }: React.PropsWithChildren) => (
-      <OsdkContext2.Provider
+      <OsdkContext.Provider
         value={{
           observableClient: observableClient as ObservableClient,
           devtoolsEnabled: false,
         }}
       >
         {children}
-      </OsdkContext2.Provider>
+      </OsdkContext.Provider>
     );
   };
 

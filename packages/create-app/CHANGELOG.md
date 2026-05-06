@@ -1,5 +1,21 @@
 # @osdk/create-app
 
+## 2.15.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.15.0
+
+## 2.14.0
+
+### Minor Changes
+
+- bab1421: Add check for bundling to ensure entry points work even if dev deps change.
+
+### Patch Changes
+
+- @osdk/generator-utils@2.14.0
+
 ## 2.13.0
 
 ### Patch Changes

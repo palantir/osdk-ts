@@ -21,13 +21,13 @@ import type {
   QueryDefinition,
   WhereClause,
 } from "@osdk/api";
+import { useOsdkClient } from "@osdk/react";
 import { ObjectTable } from "@osdk/react-components/experimental/object-table";
 import type {
   CellEditInfo,
   ColumnDefinition,
   ObjectTableProps,
 } from "@osdk/react-components/experimental/object-table";
-import { useOsdkClient } from "@osdk/react/experimental";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useCallback, useState } from "react";
 import { fn } from "storybook/test";
@@ -1353,6 +1353,15 @@ export const EditableTable: Story = {
       {
         locator: { type: "property", id: "firstInternStartDate" },
         editable: true,
+        renderCell: (object: Osdk.Instance<Employee>) => {
+          return (
+            <div>
+              {object.firstInternStartDate
+                ? new Date(object.firstInternStartDate).toISOString()
+                : "No value"}
+            </div>
+          );
+        },
       },
       {
         locator: { type: "property", id: "firstFullTimeStartDate" },
@@ -1366,7 +1375,7 @@ export const EditableTable: Story = {
         },
       },
     ],
-    editMode: "always" as const,
+    editMode: "manual" as const,
     onCellValueChanged: fn(),
   } as EmployeeTableProps,
   parameters: {

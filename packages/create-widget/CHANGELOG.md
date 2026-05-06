@@ -1,5 +1,21 @@
 # @osdk/create-widget
 
+## 3.12.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.15.0
+
+## 3.11.0
+
+### Minor Changes
+
+- bab1421: Add check for bundling to ensure entry points work even if dev deps change.
+
+### Patch Changes
+
+- @osdk/generator-utils@2.14.0
+
 ## 3.10.0
 
 ### Patch Changes

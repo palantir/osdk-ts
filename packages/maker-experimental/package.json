@@ -1,6 +1,6 @@
 {
   "name": "@osdk/maker-experimental",
-  "version": "0.11.0",
+  "version": "0.13.0",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -30,8 +30,8 @@
     "check-attw": "attw --pack .",
     "check-spelling": "cspell --quiet .",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
-    "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
-    "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
+    "fix-lint": "eslint . --fix && dprint fmt",
+    "lint": "eslint . && dprint check",
     "test": "vitest run",
     "transpileBrowser": "monorepo.tool.transpile -f esm -m normal -t browser",
     "transpileCjs": "monorepo.tool.transpile -f cjs -m bundle -t node",
@@ -42,6 +42,8 @@
   "dependencies": {
     "@osdk/api": "workspace:~",
     "@osdk/client.unstable": "workspace:~",
+    "@osdk/generator-converters.ontologyir": "workspace:~",
+    "@osdk/generator-converters.preview": "workspace:~",
     "@osdk/maker": "workspace:~",
     "consola": "^3.4.2",
     "jiti": "^2.5.1",

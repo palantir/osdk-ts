@@ -1,5 +1,14 @@
 # @osdk/client.unstable
 
+## 2.15.0
+
+## 2.14.0
+
+### Minor Changes
+
+- bab1421: Add check for bundling to ensure entry points work even if dev deps change.
+- 2f40eee: Support edits history
+
 ## 2.13.0
 
 ## 2.12.0

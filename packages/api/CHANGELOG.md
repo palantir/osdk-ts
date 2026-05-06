@@ -1,5 +1,13 @@
 # @osdk/api
 
+## 2.15.0
+
+## 2.14.0
+
+### Minor Changes
+
+- 20e9678: Wrap `@example` JSDoc blocks in fenced ts/tsx code blocks so VS Code's Markdown renderer preserves whitespace and applies syntax highlighting.
+
 ## 2.13.0
 
 ## 2.12.0

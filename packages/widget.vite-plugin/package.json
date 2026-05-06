@@ -1,6 +1,6 @@
 {
   "name": "@osdk/widget.vite-plugin",
-  "version": "3.10.0",
+  "version": "3.12.0",
   "description": "A vite plugin that will extract parameter definitions from TS/JS files + entrypoint info into a manifest file to be uploaded to Foundry ",
   "access": "public",
   "license": "Apache-2.0",
@@ -30,8 +30,8 @@
     "check-spelling": "cspell --quiet .",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
     "dev": "vite",
-    "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
-    "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
+    "fix-lint": "eslint . --fix && dprint fmt",
+    "lint": "eslint . && dprint check",
     "preview": "vite preview",
     "test": "vitest run",
     "transpileEsm": "monorepo.tool.transpile -f esm -m normal -t node",

@@ -1,4 +1,4 @@
-import { useOsdkObject } from "@osdk/react/experimental";
+import { useOsdkObject } from "@osdk/react";
 import React from "react";
 import { $Objects } from "./generatedNoCheck2/index.js";
 import { H2 } from "./H2.js";

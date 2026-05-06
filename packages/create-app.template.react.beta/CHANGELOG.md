@@ -1,5 +1,9 @@
 # @osdk/create-app.template.react
 
+## 2.15.0
+
+## 2.14.0
+
 ## 2.13.0
 
 ### Minor Changes

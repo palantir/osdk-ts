@@ -24,6 +24,16 @@ import { Employee } from "../../../generatedNoCheck/index.js";
 import { client } from "./client.js";
 
 const EmployeeObjectSet = client(Employee)
-    .where({
-        contactInfo: { entrance: { $within: { type: "Polygon", coordinates: [[[10.0, 40.0], [20.0, 50.0], [20.0, 30.0], [10.0, 40.0]]]}}}
-    });
+  .where({
+    contactInfo: {
+      entrance: {
+        $within: {
+          type: "Polygon",
+          coordinates: [[[10.0, 40.0], [20.0, 50.0], [20.0, 30.0], [
+            10.0,
+            40.0,
+          ]]],
+        },
+      },
+    },
+  });

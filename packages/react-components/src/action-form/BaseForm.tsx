@@ -22,15 +22,16 @@ import { ActionButton } from "../base-components/action-button/ActionButton.js";
 import { SkeletonBar } from "../base-components/skeleton/SkeletonBar.js";
 import { Tooltip } from "../base-components/tooltip/Tooltip.js";
 import { useAsyncAction } from "../shared/hooks/useAsyncAction.js";
-import type { BaseFormProps } from "./ActionFormApi.js";
+import type { BaseFormProps, FormContentItem } from "./ActionFormApi.js";
 import styles from "./BaseForm.module.css";
 import { FieldBridge } from "./fields/FieldBridge.js";
 import type { RendererFieldDefinition } from "./FormFieldApi.js";
 import { FormHeader } from "./FormHeader.js";
+import { FormSection } from "./FormSection.js";
 
 export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
   formTitle,
-  fieldDefinitions,
+  formContent,
   formState: controlledFormState,
   onFieldValueChange,
   onSubmit,
@@ -38,12 +39,20 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
   isPending = false,
   isLoading = false,
   className,
+  submitButtonText = "Submit",
+  submitButtonVariant = "primary",
+  portalContainer,
 }: BaseFormProps): React.ReactElement {
   const isControlled = controlledFormState != null;
 
+  const allFieldDefinitions = useMemo(
+    () => flattenFieldDefinitions(formContent),
+    [formContent],
+  );
+
   const defaultValues = useMemo(
-    () => buildDefaultValues(fieldDefinitions),
-    [fieldDefinitions],
+    () => buildDefaultValues(allFieldDefinitions),
+    [allFieldDefinitions],
   );
 
   const {
@@ -105,8 +114,8 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
   const isFormPending = isPending || isSubmitting;
 
   const labelByFieldKey = useMemo(
-    () => new Map(fieldDefinitions.map((d) => [d.fieldKey, d.label])),
-    [fieldDefinitions],
+    () => new Map(allFieldDefinitions.map((d) => [d.fieldKey, d.label])),
+    [allFieldDefinitions],
   );
 
   // RHF reuses the same errors object reference across renders so we cannot memoize errorEntries
@@ -125,7 +134,7 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
       onSubmit={handleFormSubmit}
     >
       {formTitle != null && <FormHeader title={formTitle} />}
-      {isLoading && fieldDefinitions.length === 0 && (
+      {isLoading && allFieldDefinitions.length === 0 && (
         <div
           role="status"
           aria-label="Loading form fields"
@@ -135,14 +144,40 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
         </div>
       )}
       <div className={styles.osdkFormFields}>
-        {fieldDefinitions.map((fieldDef) => (
-          <FieldBridge
-            key={fieldDef.fieldKey}
-            fieldDef={fieldDef}
-            control={control}
-            onExternalChange={handleFieldChange}
-          />
-        ))}
+        {formContent.map((item) => {
+          if (item.type === "field") {
+            return (
+              <FieldBridge
+                key={item.definition.fieldKey}
+                fieldDef={item.definition}
+                control={control}
+                onExternalChange={handleFieldChange}
+                portalContainer={portalContainer}
+              />
+            );
+          }
+          const sectionErrorCount = item.definition.fields.reduce(
+            (count, field) => count + (errors[field.fieldKey] != null ? 1 : 0),
+            0,
+          );
+          return (
+            <FormSection
+              key={item.key}
+              definition={item.definition}
+              errorCount={sectionErrorCount}
+            >
+              {item.definition.fields.map((fieldDef) => (
+                <FieldBridge
+                  key={fieldDef.fieldKey}
+                  fieldDef={fieldDef}
+                  control={control}
+                  onExternalChange={handleFieldChange}
+                  portalContainer={portalContainer}
+                />
+              ))}
+            </FormSection>
+          );
+        })}
       </div>
       <div className={styles.osdkFormFooter}>
         <ErrorIndicator errorEntries={errorEntries} />
@@ -152,12 +187,36 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
             isSubmitDisabled={isSubmitDisabled
               || (hasAttemptedSubmit && areErrorsPresent)}
             errorMessage={buttonErrorMessage}
+            buttonText={submitButtonText}
+            buttonVariant={submitButtonVariant}
           />
         </div>
       </div>
     </form>
   );
 });
+
+/**
+ * Extracts all RendererFieldDefinitions from formContent, flattening
+ * section fields into a single array. RHF sees a flat field namespace
+ * regardless of visual grouping, so this is used to build default values
+ * and the field-key-to-label map for error display.
+ */
+function flattenFieldDefinitions(
+  formContent: ReadonlyArray<FormContentItem>,
+): ReadonlyArray<RendererFieldDefinition> {
+  const result: RendererFieldDefinition[] = [];
+  for (const item of formContent) {
+    if (item.type === "field") {
+      result.push(item.definition);
+    } else {
+      for (const fieldDef of item.definition.fields) {
+        result.push(fieldDef);
+      }
+    }
+  }
+  return result;
+}
 
 const SKELETON_FIELD_COUNT = 3;
 
@@ -194,18 +253,22 @@ interface SubmitButtonProps {
   isPending: boolean;
   isSubmitDisabled: boolean;
   errorMessage: string | undefined;
+  buttonText: string;
+  buttonVariant: "primary" | "secondary";
 }
 
 const SubmitButton = memo(function SubmitButtonFn({
   isPending,
   isSubmitDisabled,
   errorMessage,
+  buttonText,
+  buttonVariant,
 }: SubmitButtonProps): React.ReactElement {
-  const buttonLabel = isPending ? "Submitting\u2026" : "Submit";
+  const buttonLabel = isPending ? "Submitting\u2026" : buttonText;
   const button = (
     <ActionButton
       type="submit"
-      variant="primary"
+      variant={buttonVariant}
       disabled={isSubmitDisabled || isPending}
     >
       {buttonLabel}

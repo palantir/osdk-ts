@@ -1,6 +1,6 @@
 {
   "name": "@osdk/create-app",
-  "version": "2.13.0",
+  "version": "2.15.0",
   "description": "",
   "access": "public",
   "license": "Apache-2.0",
@@ -30,8 +30,8 @@
     "check-spelling": "cspell --quiet .",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
     "codegen": "node codegen.mjs",
-    "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
-    "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
+    "fix-lint": "eslint . --fix && dprint fmt",
+    "lint": "eslint . && dprint check",
     "test": "vitest run --pool=forks",
     "test:watch": "vitest",
     "transpileEsm": "monorepo.tool.transpile -f esm -m bundle -t node",

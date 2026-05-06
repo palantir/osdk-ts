@@ -25,7 +25,17 @@
   }
 }
 
+.osdkDatePickerDismissLayer {
+  --osdk-portal-dismiss-layer-z-index: var(--osdk-datetime-popover-z-index);
+}
+
 /* Popover container */
+.osdkDatePickerPositioner {
+  /* Match the dismiss layer's dialog stack level so the later positioner stays
+     clickable above it without escalating z-index values. */
+  z-index: var(--osdk-datetime-popover-z-index);
+}
+
 .osdkDatePickerPopover {
   background: var(--osdk-datetime-popover-bg);
   padding: var(--osdk-datetime-popover-padding);
@@ -51,6 +61,7 @@
   border-radius: var(--osdk-datetime-input-border-radius);
   border: var(--osdk-datetime-input-border-width) solid
     var(--osdk-datetime-input-border-color);
+  box-shadow: var(--osdk-input-shadow);
   background-color: var(--osdk-datetime-input-bg);
   transition:
     background-color var(--osdk-datetime-input-transition-duration)

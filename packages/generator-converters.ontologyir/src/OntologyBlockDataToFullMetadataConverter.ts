@@ -362,7 +362,7 @@ export class OntologyBlockDataToFullMetadataConverter {
     objectTypeLookup: BlockDataApiNameLookup | undefined,
     interfaceTypeLookup: BlockDataApiNameLookup | undefined,
   ): Ontologies.LogicRule[] {
-    return action.actionType.actionTypeLogic.logic.rules.map(irLogic => {
+    return action.actionType.actionTypeLogic.logic.rules.flatMap(irLogic => {
       switch (irLogic.type) {
         case "addInterfaceRule": {
           const r = irLogic.addInterfaceRule;
@@ -474,6 +474,8 @@ export class OntologyBlockDataToFullMetadataConverter {
             );
           }
         }
+        case "functionRule":
+          return [];
         default:
           throw new Error("Unknown logic rule type");
       }

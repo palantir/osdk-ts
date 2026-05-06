@@ -26,6 +26,12 @@ import type {
 } from "@osdk/api";
 import type React from "react";
 
+export type PortalContainer =
+  | HTMLElement
+  | ShadowRoot
+  | null
+  | React.RefObject<HTMLElement | ShadowRoot | null>;
+
 /**
  * A form field definition specifies configuration for a single field
  */
@@ -199,6 +205,13 @@ export interface DatetimePickerFieldProps extends BaseFormFieldProps<Date> {
    * Used to track portaled content for click-outside detection.
    */
   portalRef?: React.Ref<HTMLDivElement>;
+
+  /**
+   * Element that receives the date picker portal. Use this when rendering
+   * inside modal dialogs so popovers stay in the dialog's stacking and focus
+   * context instead of being appended directly to document.body.
+   */
+  portalContainer?: PortalContainer;
 }
 
 /**
@@ -242,6 +255,13 @@ export interface DateRangeInputFieldProps
 
   /** Parses a user-typed string back into a Date. */
   parseDate?: (text: string) => Date | undefined;
+
+  /**
+   * Element that receives the date range picker portal. Use this when rendering
+   * inside modal dialogs so popovers stay in the dialog's stacking and focus
+   * context instead of being appended directly to document.body.
+   */
+  portalContainer?: PortalContainer;
 }
 
 /**
@@ -294,6 +314,13 @@ export interface DropdownFieldProps<V, Multiple extends boolean = false>
    * Used to track portaled content for click-outside detection.
    */
   portalRef?: React.Ref<HTMLDivElement>;
+
+  /**
+   * Element that receives the dropdown portal. Use this when rendering inside
+   * modal dialogs so popups stay in the dialog's stacking and focus context
+   * instead of being appended directly to document.body.
+   */
+  portalContainer?: PortalContainer;
 
   /**
    * Controlled search input value. Must be provided together with `onQueryChange`.

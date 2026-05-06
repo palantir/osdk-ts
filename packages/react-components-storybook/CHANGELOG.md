@@ -1,5 +1,21 @@
 # @osdk/react-components-storybook
 
+## 0.9.0
+
+### Patch Changes
+
+- @osdk/faux@0.12.0
+
+## 0.8.0
+
+### Minor Changes
+
+- 5dc557e: Add helperText tooltip using Popover and widen type to React.ReactNode
+
+### Patch Changes
+
+- @osdk/faux@0.11.0
+
 ## 0.7.0
 
 ### Minor Changes
