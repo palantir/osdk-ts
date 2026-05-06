@@ -1,11 +1,23 @@
 :root {
+  /* Button shared */
+  --osdk-button-min-height: calc(var(--osdk-surface-spacing) * 7.5);
+  --osdk-button-padding: calc(var(--osdk-surface-spacing) * 1.5)
+    calc(var(--osdk-surface-spacing) * 1.75);
+  --osdk-button-border-radius: var(--osdk-surface-border-radius);
+  --osdk-button-border-color: var(--osdk-surface-border-color-default);
+  --osdk-button-border: var(--osdk-surface-border-width) solid
+    var(--osdk-button-border-color);
+  --osdk-button-shadow: 0 1px 1px var(--osdk-surface-border-color-default);
+  --osdk-button-font-size: var(--osdk-typography-size-body-medium);
+
   /* Primary Button */
   --osdk-button-primary-color: var(--osdk-intent-primary-foreground);
   --osdk-button-primary-bg: var(--osdk-intent-primary-rest);
   --osdk-button-primary-bg-hover: var(--osdk-intent-primary-hover);
   --osdk-button-primary-bg-active: var(--osdk-intent-primary-active);
+  --osdk-button-primary-border-color: var(--osdk-intent-primary-rest);
 
-  /* Secondary Button */
+  /* Secondary / None Button */
   --osdk-button-secondary-color: var(--osdk-typography-color-default-rest);
   --osdk-button-secondary-bg: var(--osdk-background-secondary);
   --osdk-button-secondary-bg-hover: var(
@@ -14,4 +26,26 @@
   --osdk-button-secondary-bg-active: var(
     --osdk-surface-background-color-default-active
   );
+  --osdk-button-secondary-border-color: var(--osdk-surface-border-color-default);
+
+  /* Success Button */
+  --osdk-button-success-color: var(--osdk-intent-success-foreground);
+  --osdk-button-success-bg: var(--osdk-intent-success-rest);
+  --osdk-button-success-bg-hover: var(--osdk-intent-success-hover);
+  --osdk-button-success-bg-active: var(--osdk-intent-success-active);
+  --osdk-button-success-border-color: var(--osdk-intent-success-rest);
+
+  /* Warning Button */
+  --osdk-button-warning-color: var(--osdk-typography-color-default-rest);
+  --osdk-button-warning-bg: var(--osdk-intent-warning-rest);
+  --osdk-button-warning-bg-hover: var(--osdk-intent-warning-hover);
+  --osdk-button-warning-bg-active: var(--osdk-intent-warning-active);
+  --osdk-button-warning-border-color: var(--osdk-intent-warning-rest);
+
+  /* Danger Button */
+  --osdk-button-danger-color: var(--osdk-intent-danger-foreground);
+  --osdk-button-danger-bg: var(--osdk-intent-danger-rest);
+  --osdk-button-danger-bg-hover: var(--osdk-intent-danger-hover);
+  --osdk-button-danger-bg-active: var(--osdk-intent-danger-active);
+  --osdk-button-danger-border-color: var(--osdk-intent-danger-rest);
 }
