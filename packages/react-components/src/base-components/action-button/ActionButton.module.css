@@ -16,8 +16,8 @@
 
 .button {
   min-height: var(--osdk-button-min-height);
-  padding: calc(var(--osdk-surface-spacing) * 2)
-    calc(var(--osdk-surface-spacing) * 4);
+  padding: calc(var(--osdk-surface-spacing) * 1.5)
+    calc(var(--osdk-surface-spacing) * 1.75);
   border: var(--osdk-button-border);
   border-radius: var(--osdk-surface-border-radius);
   box-shadow: var(--osdk-button-shadow);
