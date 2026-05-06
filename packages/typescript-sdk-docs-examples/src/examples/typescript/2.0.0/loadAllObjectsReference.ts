@@ -21,19 +21,19 @@
 
 import { Employee } from "../../../generatedNoCheck/index.js";
 // Edit this import if your client location differs
-import { client } from "./client.js";
 import type { Osdk } from "@osdk/client";
+import { client } from "./client.js";
 
 async function getAll(): Promise<Array<Osdk.Instance<Employee>>> {
-    const objects: Osdk.Instance<Employee>[]= [];
-    for await(const obj of client(Employee).asyncIter()) {
-        objects.push(obj);
-    }
+  const objects: Osdk.Instance<Employee>[] = [];
+  for await (const obj of client(Employee).asyncIter()) {
+    objects.push(obj);
+  }
 
-    return objects;
+  return objects;
 }
 
 // If Array.fromAsync() is available in your target environment
 function getAllFromAsync(): Promise<Array<Osdk.Instance<Employee>>> {
-    return Array.fromAsync(client(Employee).asyncIter());
+  return Array.fromAsync(client(Employee).asyncIter());
 }

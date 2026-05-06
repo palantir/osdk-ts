@@ -181,9 +181,6 @@ importers:
       find-up:
         specifier: ^7.0.0
         version: 7.0.0
-      find-up-cli:
-        specifier: ^6.0.0
-        version: 6.0.0
       globals:
         specifier: ^15.15.0
         version: 15.15.0
@@ -14596,11 +14593,6 @@ packages:
     resolution: {integrity: sha512-JmO9lEBUEYOiRw/bdbdgFWpGFgBZBGLcK/5GjQKo3ZN+zR6jmQOh9gWyZoqxlQmnldZ9WBWhna0QYyuq6BxvRg==}
     engines: {node: '>=14.6'}
 
-  find-up-cli@6.0.0:
-    resolution: {integrity: sha512-3vDn6BBgpPwVcX6lkuDiZK5tEMY+eK8z/WYgbpkFZM41T0YDEdq2YsxVjxywr8CjfpXG1Pyn4/MfxQmlccgXow==}
-    engines: {node: '>=18'}
-    hasBin: true
-
   find-up@3.0.0:
     resolution: {integrity: sha512-1yD6RmLI1XBfxugvORwlck6f75tYL+iR0jqwsOrOxMZyGYqUuDhJ0l4AXdO1iX/FTs9cBAMEk1gWSEx1kSbylg==}
     engines: {node: '>=6'}
@@ -16624,10 +16616,6 @@ packages:
 
   memoizerific@1.11.3:
     resolution: {integrity: sha512-/EuHYwAPdLtXwAwSZkh/Gutery6pD2KYd44oQLhAvQp/50mpyduZh8Q7PYHXTCJ+wuXxt7oij2LXyIJOOYFPog==}
-
-  meow@13.2.0:
-    resolution: {integrity: sha512-pxQJQzB6djGPXh08dacEloMFopsOqGVRKFPYvPOt9XDZ1HasbgDZA74CJGreSU4G3Ak7EFJGoiH2auq+yXISgA==}
-    engines: {node: '>=18'}
 
   merge-descriptors@1.0.3:
     resolution: {integrity: sha512-gaNvAS7TZ897/rVaZ0nMtAyxNyi/pdbjbAwUpFQpN70GqnVfOiXpeUUMKRBmzXaSQ8DdTX4/0ms62r2K+hE6mQ==}
@@ -32915,11 +32903,6 @@ snapshots:
       fast-glob: 3.3.3
       p-filter: 2.1.0
 
-  find-up-cli@6.0.0:
-    dependencies:
-      find-up: 7.0.0
-      meow: 13.2.0
-
   find-up@3.0.0:
     dependencies:
       locate-path: 3.0.0
@@ -35380,8 +35363,6 @@ snapshots:
   memoizerific@1.11.3:
     dependencies:
       map-or-similar: 1.5.0
-
-  meow@13.2.0: {}
 
   merge-descriptors@1.0.3: {}
 
