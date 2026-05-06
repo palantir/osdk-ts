@@ -188,6 +188,10 @@
 
 .osdkComboboxPositioner {
   z-index: var(--osdk-combobox-z-index);
+  /* Base UI may focus popup containers so they can own roving keyboard
+     navigation. Keep visible focus on the trigger/input or highlighted option
+     instead of drawing a browser-default ring around this wrapper. */
+  outline: none;
 }
 
 .osdkComboboxPopup {
@@ -205,6 +209,10 @@
     var(--osdk-combobox-border-color);
   background-color: var(--osdk-combobox-popup-bg);
   box-shadow: var(--osdk-combobox-popup-shadow);
+
+  &:focus {
+    outline: none;
+  }
 }
 
 /*
@@ -245,7 +253,9 @@
 
   &[data-highlighted] {
     background-color: var(--osdk-combobox-item-bg-highlighted);
-    outline: none;
+    outline: var(--osdk-combobox-focus-width)
+      solid var(--osdk-combobox-focus-color);
+    outline-offset: calc(-1 * var(--osdk-combobox-focus-width));
   }
 
   &[data-selected] {
@@ -344,6 +354,10 @@
   display: flex;
   flex-direction: column;
   overflow-y: auto;
+
+  &:focus {
+    outline: none;
+  }
 }
 
 .osdkComboboxEmpty {

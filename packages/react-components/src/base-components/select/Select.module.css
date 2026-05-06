@@ -136,6 +136,10 @@
 
 .osdkSelectPositioner {
   z-index: var(--osdk-select-z-index);
+  /* Base UI may focus the popup/positioner so it can own select keyboard
+     navigation. Keep the visual focus affordance on the active option instead
+     of drawing a browser-default ring around this non-interactive wrapper. */
+  outline: none;
 }
 
 .osdkSelectPopup {
@@ -151,6 +155,10 @@
     var(--osdk-select-border-color);
   background-color: var(--osdk-select-popup-bg);
   box-shadow: var(--osdk-select-popup-shadow);
+
+  &:focus {
+    outline: none;
+  }
 }
 
 .osdkSelectItem {
@@ -170,7 +178,9 @@
 
   &[data-highlighted] {
     background-color: var(--osdk-select-item-bg-highlighted);
-    outline: none;
+    outline: var(--osdk-select-focus-width)
+      solid var(--osdk-select-focus-color);
+    outline-offset: calc(-1 * var(--osdk-select-focus-width));
   }
 
   &[data-selected] {
