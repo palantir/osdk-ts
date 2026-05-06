@@ -105,7 +105,7 @@ describe("SlsLogger", () => {
     expect(entry.level).toBe(level);
   });
 
-  it("injects jobId and traceId from env into params", () => {
+  it("injects jobId from env into params and traceId as a top-level field", () => {
     process.env.JOB_ID = "job-123";
     process.env.TRACE_ID = "trace-abc";
     const { stream, writes } = captureStream();
@@ -116,9 +116,10 @@ describe("SlsLogger", () => {
     const [entry] = parseEntries(writes);
     expect(entry.params).toEqual({
       jobId: "job-123",
-      traceId: "trace-abc",
       count: 5,
     });
+    expect(entry.traceId).toBe("trace-abc");
+    expect(entry.params).not.toHaveProperty("traceId");
   });
 
   it("omits jobId and traceId when env vars are absent", () => {
@@ -129,9 +130,10 @@ describe("SlsLogger", () => {
 
     const [entry] = parseEntries(writes);
     expect(entry.params).toEqual({});
+    expect(entry).not.toHaveProperty("traceId");
   });
 
-  it("keeps params and unsafeParams in separate fields", () => {
+  it("keeps params and unsafeParams in separate fields and omits safe", () => {
     const { stream, writes } = captureStream();
     const logger = new SlsLogger(stream);
 
@@ -143,9 +145,21 @@ describe("SlsLogger", () => {
     const [entry] = parseEntries(writes);
     expect(entry.params).toEqual({ durationMs: 42 });
     expect(entry.unsafeParams).toEqual({ apiName: "Employee" });
+    expect(entry).not.toHaveProperty("safe");
   });
 
-  it("omits unsafeParams field when empty", () => {
+  it("marks records with no unsafeParams as safe:true", () => {
+    const { stream, writes } = captureStream();
+    const logger = new SlsLogger(stream);
+
+    logger.info("msg", { params: { count: 5 } });
+
+    const [entry] = parseEntries(writes);
+    expect(entry.safe).toBe(true);
+    expect(entry).not.toHaveProperty("unsafeParams");
+  });
+
+  it("treats empty unsafeParams as no unsafe data and marks safe:true", () => {
     const { stream, writes } = captureStream();
     const logger = new SlsLogger(stream);
 
@@ -153,6 +167,7 @@ describe("SlsLogger", () => {
 
     const [entry] = parseEntries(writes);
     expect(entry).not.toHaveProperty("unsafeParams");
+    expect(entry.safe).toBe(true);
   });
 
   it("includes stacktrace on error() with an Error", () => {
