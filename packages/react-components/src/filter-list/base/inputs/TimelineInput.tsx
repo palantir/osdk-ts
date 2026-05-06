@@ -32,6 +32,13 @@ interface TimelineInputProps {
   className?: string;
   minDate?: Date;
   maxDate?: Date;
+  /**
+   * Optional callback used for the period subtitle labels above the date
+   * inputs. The HTML `<input type="date">` value attribute is unaffected.
+   */
+  formatDate?: (date: Date) => string;
+  /** Reserved for future custom text inputs; not invoked by the built-in HTML `<input type="date">`. */
+  parseDate?: (text: string) => Date | undefined;
 }
 
 function TimelineInputInner({
@@ -41,7 +48,14 @@ function TimelineInputInner({
   className,
   minDate,
   maxDate,
+  formatDate,
 }: TimelineInputProps): React.ReactElement {
+  const renderDate = (date: Date | undefined, fallback: string): string =>
+    date == null
+      ? fallback
+      : formatDate
+      ? formatDate(date)
+      : formatDateForDisplay(date, fallback);
   const handleStartChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const date = parseDateFromInput(e.target.value);
@@ -74,9 +88,9 @@ function TimelineInputInner({
   return (
     <div className={classnames(styles.timeline, className)}>
       <div className={styles.labels}>
-        <span>{formatDateForDisplay(startDate, "—")}</span>
+        <span>{renderDate(startDate, "—")}</span>
         <span>to</span>
-        <span>{formatDateForDisplay(endDate, "—")}</span>
+        <span>{renderDate(endDate, "—")}</span>
         {(startDate || endDate) && (
           <Button
             type="button"
