@@ -17,6 +17,6 @@
 import type { BaseOauthClient } from "./BaseOauthClient.js";
 
 export interface ConfidentialOauthClient
-  extends BaseOauthClient<"signIn" | "signOut">
+  extends BaseOauthClient<"signIn" | "signOut" | "refresh">
 {
 }
