@@ -9,6 +9,7 @@ on:
       - main
       - release/*
       - next
+      - jzhang/add-logging
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
@@ -50,7 +51,7 @@ jobs:
   snapshot:
     name: Snapshot
     needs: release
-    if: ${{ !failure() && !cancelled() }}
+    if: ${{ always() && !failure() && !cancelled() }}
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -76,7 +77,7 @@ jobs:
         run: pnpm exec turbo run build
 
       - name: Update versions for snapshots
-        run: pnpm exec changeset version --snapshot ${GITHUB_REF_NAME//\//__}
+        run: pnpm exec changeset version --snapshot pr-jzhang
 
       - name: Make sure code is up to date
         run: pnpm exec turbo run postVersioning
@@ -85,4 +86,4 @@ jobs:
         run: pnpm exec turbo run build
 
       - name: Publish results
-        run: pnpm exec changeset publish --no-git-tag --tag next-${GITHUB_REF_NAME//\//__}
+        run: pnpm exec changeset publish --no-git-tag --tag pr-jzhang

@@ -173,6 +173,7 @@
       "dependsOn": [
         "//#babel-config",
         "@osdk/monorepo.tsconfig#typecheck",
+        "^transpileEsm",
         "codegen"
       ],
       "inputs": [
@@ -234,7 +235,7 @@
     "test": {
       "outputLogs": "new-only",
       "env": ["FORCE_COLOR"],
-      "dependsOn": ["^transpileEsm"]
+      "dependsOn": ["transpileEsm", "^transpileEsm"]
     },
 
     "//#check-mrl": {
