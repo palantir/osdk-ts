@@ -16,7 +16,7 @@
 
 import type { Cell, Row, RowData } from "@tanstack/react-table";
 import type { VirtualItem } from "@tanstack/react-virtual";
-import React, { useCallback } from "react";
+import React, { useCallback, useMemo } from "react";
 import { TableCell } from "./TableCell.js";
 import styles from "./TableRow.module.css";
 
@@ -31,6 +31,7 @@ interface TableRowProps<TData extends RowData> {
   isFocused: boolean;
   setFocusedRowId?: (rowId: string | null) => void;
   isInEditMode?: boolean;
+  getRowAttributes?: (rowData: TData) => Record<string, string | undefined>;
 }
 
 export function TableRow<TData extends RowData>({
@@ -41,6 +42,7 @@ export function TableRow<TData extends RowData>({
   isFocused,
   setFocusedRowId,
   isInEditMode,
+  getRowAttributes,
 }: TableRowProps<TData>): React.ReactElement {
   // Use the capture phase so row focus is set even when children call
   // stopPropagation on the click event (e.g. DatetimePickerField's input).
@@ -54,8 +56,24 @@ export function TableRow<TData extends RowData>({
     }
   }, [isInEditMode, onRowClick, row.original]);
 
+  const customRowAttributes = useMemo(() => {
+    if (!getRowAttributes) {
+      return undefined;
+    }
+    const raw = getRowAttributes(row.original);
+    const filtered: Record<string, string> = {};
+    for (const key in raw) {
+      const value = raw[key];
+      if (value !== undefined) {
+        filtered[key] = value;
+      }
+    }
+    return filtered;
+  }, [getRowAttributes, row.original]);
+
   return (
     <tr
+      {...customRowAttributes}
       data-selected={row.getIsSelected()}
       data-focused={isFocused}
       data-row-parity={virtualRow.index % 2 === 0 ? "even" : "odd"}

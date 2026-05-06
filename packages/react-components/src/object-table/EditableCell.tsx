@@ -57,7 +57,7 @@ export interface EditableCellProps<TData extends RowData, CellValue = unknown> {
   rowId: string;
   columnId: string;
   validateEdit?: (value: unknown) => Promise<string | undefined>;
-  editFieldConfig?: EditFieldConfig;
+  editFieldConfig?: EditFieldConfig<TData>;
   isRowFocused?: boolean;
 }
 
@@ -251,7 +251,9 @@ function EditableCellInner<TData extends RowData, CellValue = unknown>({
       case "DROPDOWN":
         return (
           <DropdownCellField
-            fieldComponentProps={editFieldConfig.fieldComponentProps}
+            fieldComponentProps={editFieldConfig.getFieldComponentProps(
+              originalRowData,
+            )}
             isRowFocused={isRowFocused}
             inputValue={inputValue}
             hasValidationError={hasValidationError}
@@ -262,7 +264,9 @@ function EditableCellInner<TData extends RowData, CellValue = unknown>({
       case "DATE_PICKER":
         return (
           <DatePickerCellField
-            fieldComponentProps={editFieldConfig.fieldComponentProps}
+            fieldComponentProps={editFieldConfig.getFieldComponentProps(
+              originalRowData,
+            )}
             inputValue={inputValue}
             hasValidationError={hasValidationError}
             isEdited={isEdited}

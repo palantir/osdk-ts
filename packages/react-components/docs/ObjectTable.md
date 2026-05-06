@@ -137,20 +137,22 @@ Each column header has a menu with items for sorting, filtering, pinning, resizi
 
 ### Interactions
 
-| Prop                    | Type                            | Description                                  |
-| ----------------------- | ------------------------------- | -------------------------------------------- |
-| `onRowClick`            | `(object) => void`              | Called when a row is clicked                 |
-| `renderCellContextMenu` | `(row, cellValue) => ReactNode` | Custom context menu for right-click on cells |
+| Prop                    | Type                                               | Description                                                                                                                          |
+| ----------------------- | -------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| `onRowClick`            | `(object) => void`                                 | Called when a row is clicked                                                                                                         |
+| `renderCellContextMenu` | `(row, cellValue) => ReactNode`                    | Custom context menu for right-click on cells                                                                                         |
+| `getRowAttributes`      | `(rowData) => Record<string, string \| undefined>` | Extra HTML attributes (typically `data-*`) applied to each `<tr>`. See [Row Attributes](#row-attributes-and-conditional-row-styling) |
 
 ### Cell Editing
 
 > The editable feature allows inline editing with validation and bulk submission capabilities. Editable cells support text inputs, number inputs, and dropdown selectors.
 
-| Prop                 | Type                                          | Description                                                                                                                     |
-| -------------------- | --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| `editMode`           | `"always" \| "manual"`                        | Controls edit mode behavior. "always": Table is always in edit mode. "manual": User toggles edit mode on/off. Default: "manual" |
-| `onCellValueChanged` | `(info: CellEditInfo) => void`                | Called when a cell value is edited. The info object contains rowId, columnId, newValue, oldValue, and originalRowData           |
-| `onSubmitEdits`      | `(edits: CellEditInfo[]) => Promise<boolean>` | When provided, shows a "Submit Edits" button that calls this function with all pending edits. Return true on success            |
+| Prop                 | Type                                          | Description                                                                                                                                                                                                                                     |
+| -------------------- | --------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `editMode`           | `"always" \| "manual"`                        | Controls edit mode behavior. "always": Table is always in edit mode. "manual": User toggles edit mode on/off. Default: "manual"                                                                                                                 |
+| `onCellValueChanged` | `(info: CellEditInfo) => void`                | Called when a cell value is edited. The info object contains rowId, columnId, newValue, oldValue, and originalRowData                                                                                                                           |
+| `onSubmitEdits`      | `(edits: CellEditInfo[]) => Promise<boolean>` | When provided, shows a "Submit Edits" button that calls this function with all pending edits. Return true on success                                                                                                                            |
+| `showEditFooter`     | `boolean`                                     | Whether to render the bottom edit footer (Edit Table / Cancel / Submit Edits). Defaults to `true`; the footer is only shown when the table has at least one editable column. Set to `false` to drive edit mode and submission from your own UI. |
 
 ## Column Definitions
 
@@ -167,7 +169,7 @@ type ColumnDefinition<Q, RDPs, FunctionColumns> = {
   resizable?: boolean; // Allow column resizing
   orderable?: boolean; // Allow column sorting
   filterable?: boolean; // Allow column filtering
-  editable?: boolean; // Allow inline editing for this column
+  editable?: boolean | ((rowData) => boolean); // Allow inline editing for this column. Pass a function to make editability conditional per row
   editFieldConfig?: EditFieldConfig; // Optional editor component config (e.g. dropdown)
   validateEdit?: (value: unknown) => Promise<string | undefined>; // Custom validation function for cell edits
   renderCell?: (object, locator) => React.ReactNode; // Custom cell renderer
@@ -176,19 +178,54 @@ type ColumnDefinition<Q, RDPs, FunctionColumns> = {
 };
 ```
 
+#### `editable`
+
+`editable` accepts either a boolean or a function `(rowData) => boolean`:
+
+- `editable: true` — every cell in the column is editable.
+- `editable: (rowData) => boolean` — editability is decided per row. The function receives the row's data and returns whether the cell should be editable.
+
+```typescript
+{
+  locator: { type: "property", id: "salary" },
+  // Only editable for active employees
+  editable: (employee) => employee.status === "Active",
+}
+```
+
+When `editable` is a function, the column is still considered "potentially editable" at the table level — the bottom edit-mode bar is shown so users can enter and exit edit mode. The per-row predicate decides whether each cell renders the editor or the read-only value.
+
 #### `editFieldConfig`
 
-When `editable` is `true`, columns default to a text or number input (auto-detected from the property type). Use `editFieldConfig` to specify a different editor component.
+When `editable` is truthy, columns default to a text or number input (auto-detected from the property type). Use `editFieldConfig` to specify a different editor component.
 
 **Supported editor components:**
 
 | `fieldComponent` | Description                              | Renders                                                      |
 | ---------------- | ---------------------------------------- | ------------------------------------------------------------ |
 | `"DROPDOWN"`     | A select dropdown or searchable combobox | `Select` (default) or `Combobox` (when `isSearchable: true`) |
+| `"DATE_PICKER"`  | A date or datetime picker                | `DatetimePicker`                                             |
 
 Without `editFieldConfig`, editable columns use a text input for string properties and a number input for numeric properties (`double`, `integer`, `long`, `float`, `decimal`, `byte`, `short`).
 
-**Dropdown `fieldComponentProps`:**
+`getFieldComponentProps` receives the row's data and returns the props passed to the field component, so editor configuration can vary per row (e.g. dropdown items computed from the row's state).
+
+```typescript
+{
+  locator: { type: "property", id: "department" },
+  editable: true,
+  editFieldConfig: {
+    fieldComponent: "DROPDOWN",
+    getFieldComponentProps: (employee) => ({
+      // Allow the user to pick from departments compatible with the
+      // employee's role
+      items: getCompatibleDepartments(employee.role),
+    }),
+  },
+}
+```
+
+**Dropdown `fieldComponentProps` (returned from `getFieldComponentProps`):**
 
 | Prop                | Type                      | Default        | Description                                              |
 | ------------------- | ------------------------- | -------------- | -------------------------------------------------------- |
@@ -688,7 +725,7 @@ const columnDefinitions: Array<ColumnDefinition<typeof Employee>> = [
     editable: true,
     editFieldConfig: {
       fieldComponent: "DROPDOWN",
-      fieldComponentProps: {
+      getFieldComponentProps: () => ({
         items: [
           "Engineering",
           "Product",
@@ -698,7 +735,7 @@ const columnDefinitions: Array<ColumnDefinition<typeof Employee>> = [
           "Finance",
           "Human Resources",
         ],
-      },
+      }),
     },
   },
   {
@@ -706,7 +743,7 @@ const columnDefinitions: Array<ColumnDefinition<typeof Employee>> = [
     editable: true,
     editFieldConfig: {
       fieldComponent: "DROPDOWN",
-      fieldComponentProps: {
+      getFieldComponentProps: () => ({
         items: [
           "Software Engineer",
           "Senior Software Engineer",
@@ -717,7 +754,7 @@ const columnDefinitions: Array<ColumnDefinition<typeof Employee>> = [
         ],
         isSearchable: true, // Renders a searchable combobox
         placeholder: "Search job titles…",
-      },
+      }),
     },
   },
 ];
@@ -796,6 +833,37 @@ function EditableEmployeesTable() {
    - When `onSubmitEdits` is provided, a "Submit Edits" button appears
    - All edits are submitted together
    - Return `true` from `onSubmitEdits` to clear edits after successful submission
+
+#### Conditional Editability and Per-Row Editor Configuration
+
+Pass a function to `editable` to gate editing per row, and a `getFieldComponentProps` function to compute editor props from the row's data:
+
+```typescript
+import {
+  type ColumnDefinition,
+  ObjectTable,
+} from "@osdk/react-components/experimental/object-table";
+import { Employee } from "@YourApp/sdk";
+
+const columnDefinitions: Array<ColumnDefinition<typeof Employee>> = [
+  {
+    locator: { type: "property", id: "salary" },
+    // Only editable for active employees
+    editable: (employee) => employee.status === "Active",
+  },
+  {
+    locator: { type: "property", id: "department" },
+    editable: true,
+    editFieldConfig: {
+      fieldComponent: "DROPDOWN",
+      // Items depend on the employee's role
+      getFieldComponentProps: (employee) => ({
+        items: getCompatibleDepartments(employee.role),
+      }),
+    },
+  },
+];
+```
 
 ### Example 14: Custom Column Configuration Dialog
 
@@ -1100,6 +1168,63 @@ Adjust row height for better readability:
   rowHeight={56} // Larger rows for more content
 />;
 ```
+
+### Row Attributes and Conditional Row Styling
+
+Use `getRowAttributes` to apply custom HTML attributes (typically `data-*` attributes) to each `<tr>` element. This is the recommended pattern for conditional row styling — for example, changing a row's background color based on the underlying object's state.
+
+```tsx
+import type { Osdk } from "@osdk/api";
+import { ObjectTable } from "@osdk/react-components/experimental/object-table";
+import { Employee } from "@YourApp/sdk";
+import { useCallback } from "react";
+
+function EmployeesTable() {
+  const getRowAttributes = useCallback(
+    (employee: Osdk.Instance<typeof Employee>) => ({
+      "data-status": employee.status,
+      "data-overdue": employee.daysOverdue > 0 ? "true" : undefined,
+    }),
+    [],
+  );
+
+  return (
+    <ObjectTable
+      objectType={Employee}
+      className="employees-table"
+      getRowAttributes={getRowAttributes}
+    />
+  );
+}
+```
+
+Entries whose value is `undefined` are skipped, so you can include attributes conditionally without emitting empty values.
+
+Then drive your row styling in CSS using attribute selectors. Row background colors come from `--osdk-table-row-bg-default` (and `--osdk-table-row-bg-alternate` for odd zebra rows) — overriding both on a `<tr>` for matching rows takes precedence:
+
+```css
+.employees-table tr[data-status="Inactive"] {
+  --osdk-table-row-bg-default: #f3f4f6;
+  --osdk-table-row-bg-alternate: #f3f4f6;
+  color: #6b7280;
+}
+
+.employees-table tr[data-overdue="true"] {
+  --osdk-table-row-bg-default: #fef2f2;
+  --osdk-table-row-bg-alternate: #fef2f2;
+}
+
+.employees-table tr[data-status="Active"][data-overdue="true"] {
+  --osdk-table-row-bg-default: #fffbeb;
+  --osdk-table-row-bg-alternate: #fffbeb;
+}
+```
+
+Notes:
+
+- Combine multiple attribute selectors to express priority (the most specific selector wins, per normal CSS rules).
+- The table sets its own attributes (`data-selected`, `data-focused`, `data-row-parity`, `data-pinned`) on rows and cells. Avoid using these names in `getRowAttributes` since they would override the built-in behavior.
+- `getRowAttributes` runs for every visible row, so memoize it with `useCallback` to keep referential equality across renders.
 
 ### Loading and Empty States
 

@@ -275,6 +275,8 @@ export function ObjectTable<
       error={error}
       headerMenuFeatureFlags={headerMenuFeatureFlags}
       editableConfig={editableConfig}
+      getRowAttributes={props.getRowAttributes}
+      showEditFooter={props.showEditFooter}
     />
   );
 }

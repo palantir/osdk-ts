@@ -1318,7 +1318,7 @@ export const EditableTable: Story = {
         editable: true,
         editFieldConfig: {
           fieldComponent: "DROPDOWN",
-          fieldComponentProps: {
+          getFieldComponentProps: () => ({
             items: [
               "Software Engineer",
               "Senior Software Engineer",
@@ -1329,7 +1329,7 @@ export const EditableTable: Story = {
             ],
             isSearchable: true,
             placeholder: "Search job titles…",
-          },
+          }),
         },
       },
       {
@@ -1337,7 +1337,7 @@ export const EditableTable: Story = {
         editable: true,
         editFieldConfig: {
           fieldComponent: "DROPDOWN",
-          fieldComponentProps: {
+          getFieldComponentProps: () => ({
             items: [
               "Engineering",
               "Product",
@@ -1347,7 +1347,7 @@ export const EditableTable: Story = {
               "Finance",
               "Human Resources",
             ],
-          },
+          }),
         },
       },
       {
@@ -1359,10 +1359,10 @@ export const EditableTable: Story = {
         editable: true,
         editFieldConfig: {
           fieldComponent: "DATE_PICKER",
-          fieldComponentProps: {
+          getFieldComponentProps: () => ({
             showTime: false,
             placeholder: "Select date...",
-          },
+          }),
         },
       },
     ],
@@ -1386,7 +1386,7 @@ export const EditableTable: Story = {
     editable: true,
     editFieldConfig: {
       fieldComponent: "DROPDOWN",
-      fieldComponentProps: {
+      getFieldComponentProps: () => ({
         items: [
           "Software Engineer",
           "Senior Software Engineer",
@@ -1397,7 +1397,7 @@ export const EditableTable: Story = {
         ],
         isSearchable: true,
         placeholder: "Search job titles…",
-      },
+      }),
     },
   },
   {
@@ -1405,7 +1405,7 @@ export const EditableTable: Story = {
     editable: true,
     editFieldConfig: {
       fieldComponent: "DROPDOWN",
-      fieldComponentProps: {
+      getFieldComponentProps: () => ({
         items: [
           "Engineering",
           "Product",
@@ -1415,7 +1415,7 @@ export const EditableTable: Story = {
           "Finance",
           "Human Resources",
         ],
-      },
+      }),
     },
   },
   // Example where the field is inferred from datatype
@@ -1428,10 +1428,10 @@ export const EditableTable: Story = {
     editable: true,
     editFieldConfig: {
       fieldComponent: "DATE_PICKER",
-      fieldComponentProps: {
+      getFieldComponentProps: () => ({
         showTime: false,
         placeholder: "Select date...",
-      },
+      }),
     },
   },
 ];
@@ -1605,7 +1605,7 @@ export const EditableWithValidation: Story = {
         editable: true,
         editFieldConfig: {
           fieldComponent: "DROPDOWN",
-          fieldComponentProps: {
+          getFieldComponentProps: () => ({
             items: [
               "Software Engineer",
               "Senior Software Engineer",
@@ -1616,7 +1616,7 @@ export const EditableWithValidation: Story = {
             ],
             isSearchable: true,
             placeholder: "Search job titles…",
-          },
+          }),
         },
         validateEdit: async (value: unknown) => {
           return value ? undefined : "Job title is required";
@@ -1627,7 +1627,7 @@ export const EditableWithValidation: Story = {
         editable: true,
         editFieldConfig: {
           fieldComponent: "DROPDOWN",
-          fieldComponentProps: {
+          getFieldComponentProps: () => ({
             items: [
               "Engineering",
               "Product",
@@ -1637,7 +1637,7 @@ export const EditableWithValidation: Story = {
               "Finance",
               "Human Resources",
             ],
-          },
+          }),
         },
       },
       {
@@ -1645,10 +1645,10 @@ export const EditableWithValidation: Story = {
         editable: true,
         editFieldConfig: {
           fieldComponent: "DATE_PICKER",
-          fieldComponentProps: {
+          getFieldComponentProps: () => ({
             showTime: false,
             placeholder: "Select date...",
-          },
+          }),
         },
         validateEdit: async (value: unknown) => {
           if (!value || isNaN(Date.parse(value as string))) {
@@ -1702,7 +1702,7 @@ export const EditableWithValidation: Story = {
     editable: true,
     editFieldConfig: {
       fieldComponent: "DROPDOWN",
-      fieldComponentProps: {
+      getFieldComponentProps: () => ({
         items: [
           "Software Engineer",
           "Senior Software Engineer",
@@ -1713,7 +1713,7 @@ export const EditableWithValidation: Story = {
         ],
         isSearchable: true,
         placeholder: "Search job titles…",
-      },
+      }),
     },
     validateEdit: async (value: unknown) => {
       return value ? undefined : "Job title is required";
@@ -1724,7 +1724,7 @@ export const EditableWithValidation: Story = {
     editable: true,
     editFieldConfig: {
       fieldComponent: "DROPDOWN",
-      fieldComponentProps: {
+      getFieldComponentProps: () => ({
         items: [
           "Engineering",
           "Product",
@@ -1734,7 +1734,7 @@ export const EditableWithValidation: Story = {
           "Finance",
           "Human Resources",
         ],
-      },
+      }),
     },
   },
 ];

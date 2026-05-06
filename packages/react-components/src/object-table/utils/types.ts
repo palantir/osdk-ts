@@ -168,19 +168,22 @@ type EditFieldComponent = keyof EditFieldPropsByType;
 /**
  * Configuration for an editable cell's field component.
  *
+ * `getFieldComponentProps` is called with the row's data so the configuration
+ * can vary per row (e.g. dropdown items that depend on row state).
+ *
  * @example
  * ```ts
  * editFieldConfig: {
  *   fieldComponent: "DROPDOWN",
- *   fieldComponentProps: {
- *     items: ["Active", "Inactive", "Pending"],
- *   },
+ *   getFieldComponentProps: (employee) => ({
+ *     items: getDepartmentOptions(employee),
+ *   }),
  * }
  * ```
  */
-export type EditFieldConfig = {
+export type EditFieldConfig<TData = unknown> = {
   [K in EditFieldComponent]: {
     fieldComponent: K;
-    fieldComponentProps: EditFieldPropsByType[K];
+    getFieldComponentProps: (rowData: TData) => EditFieldPropsByType[K];
   };
 }[EditFieldComponent];

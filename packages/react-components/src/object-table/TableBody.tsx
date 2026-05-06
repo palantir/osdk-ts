@@ -36,6 +36,7 @@ interface TableBodyProps<TData extends RowData> {
   focusedRowId?: string | null;
   setFocusedRowId?: (rowId: string | null) => void;
   isInEditMode?: boolean;
+  getRowAttributes?: (rowData: TData) => Record<string, string | undefined>;
 }
 
 export function TableBody<TData extends RowData>({
@@ -49,6 +50,7 @@ export function TableBody<TData extends RowData>({
   focusedRowId,
   setFocusedRowId,
   isInEditMode,
+  getRowAttributes,
 }: TableBodyProps<TData>): React.ReactElement {
   // Important: Keep the row virtualizer in the lowest component possible to avoid unnecessary re-renders.
   const rowVirtualizer = useVirtualizer<HTMLDivElement, HTMLTableRowElement>({
@@ -90,6 +92,7 @@ export function TableBody<TData extends RowData>({
             isFocused={focusedRowId === row.id}
             setFocusedRowId={setFocusedRowId}
             isInEditMode={isInEditMode}
+            getRowAttributes={getRowAttributes}
           />
         );
       })}

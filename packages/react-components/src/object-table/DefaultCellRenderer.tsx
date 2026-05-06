@@ -19,6 +19,7 @@ import React from "react";
 import { AsyncValueCell } from "./components/AsyncValueCell.js";
 import { EditableCell } from "./EditableCell.js";
 import { isAsyncCellData } from "./utils/AsyncCellData.js";
+import { isCellEditable } from "./utils/editableUtils.js";
 import { getCellId } from "./utils/getCellId.js";
 
 export function renderDefaultCell<TData extends RowData>(
@@ -39,7 +40,10 @@ export function renderDefaultCell<TData extends RowData>(
     return <AsyncValueCell {...asyncCellData} />;
   }
 
-  if (!columnMeta?.editable || !meta?.onCellEdit || !meta?.isInEditMode) {
+  const rowData = cellContext.row.original;
+  const isEditable = isCellEditable(columnMeta?.editable, rowData);
+
+  if (!isEditable || !meta?.onCellEdit || !meta?.isInEditMode) {
     return <>{cellValue}</>;
   }
 
@@ -66,7 +70,7 @@ export function renderDefaultCell<TData extends RowData>(
       onCellEdit={meta.onCellEdit}
       onCellValidationError={meta.onCellValidationError}
       clearCellValidationError={meta.clearCellValidationError}
-      originalRowData={cellContext.row.original}
+      originalRowData={rowData}
       rowId={rowId}
       columnId={columnId}
       validateEdit={columnMeta?.validateEdit}

@@ -31,6 +31,7 @@ import { TableEditContainer } from "./TableEditContainer.js";
 import { TableHeader } from "./TableHeader.js";
 import type { HeaderMenuFeatureFlags } from "./TableHeaderWithPopover.js";
 import { SCROLL_FETCH_THRESHOLD } from "./utils/constants.js";
+import { isColumnDeclaredEditable } from "./utils/editableUtils.js";
 import {
   PortalTrackerProvider,
   usePortalTracker,
@@ -46,9 +47,9 @@ declare module "@tanstack/react-table" {
     columnName?: string;
     isAsyncColumn?: boolean;
     isVisible?: boolean;
-    editable?: boolean;
+    editable?: boolean | ((rowData: TData) => boolean);
     dataType?: string;
-    editFieldConfig?: EditFieldConfig;
+    editFieldConfig?: EditFieldConfig<TData>;
     validateEdit?: (value: unknown) => Promise<string | undefined>;
   }
   interface TableMeta<TData extends RowData = unknown> {
@@ -85,6 +86,13 @@ export interface BaseTableProps<
   error?: Error;
   headerMenuFeatureFlags?: HeaderMenuFeatureFlags;
   editableConfig?: EditableConfig<TData, unknown>;
+  getRowAttributes?: (rowData: TData) => Record<string, string | undefined>;
+  /**
+   * Whether to render the bottom edit footer. Defaults to `true`; the
+   * footer is only rendered when the table has at least one editable
+   * column (`hasEditableColumns`).
+   */
+  showEditFooter?: boolean;
 }
 
 export function BaseTable<
@@ -112,6 +120,8 @@ function BaseTableInner<
     error,
     headerMenuFeatureFlags,
     editableConfig,
+    getRowAttributes,
+    showEditFooter = true,
   }: BaseTableProps<TData>,
 ): ReactElement {
   const tableContainerRef = useRef<HTMLDivElement>(null);
@@ -171,7 +181,9 @@ function BaseTableInner<
 
   const hasEditableColumns = table
     .getAllColumns()
-    .some(column => column.columnDef.meta?.editable === true);
+    .some((column) =>
+      isColumnDeclaredEditable(column.columnDef.meta?.editable)
+    );
 
   // Use pointerdown instead of click to detect outside interactions.
   // base-ui's Select renders a full-screen backdrop that intercepts
@@ -233,6 +245,7 @@ function BaseTableInner<
                   focusedRowId={focusedRowId}
                   setFocusedRowId={setFocusedRowId}
                   isInEditMode={editableConfig?.editModeState.isActive}
+                  getRowAttributes={getRowAttributes}
                 />
               </>
             )}
@@ -242,7 +255,7 @@ function BaseTableInner<
           <NonIdealState message={`Error Loading Data: ${error.message}`} />
         )}
       </div>
-      {hasEditableColumns && editableConfig && (
+      {showEditFooter && hasEditableColumns && editableConfig && (
         <TableEditContainer
           editableConfig={editableConfig}
           focusedRowId={focusedRowId}
