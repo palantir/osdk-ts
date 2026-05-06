@@ -20,6 +20,7 @@ import { AsyncValueCell } from "./components/AsyncValueCell.js";
 import { EditableCell } from "./EditableCell.js";
 import { isAsyncCellData } from "./utils/AsyncCellData.js";
 import { getCellId } from "./utils/getCellId.js";
+import { shouldShowEditableCell } from "./utils/shouldShowEditableCell.js";
 
 export function renderDefaultCell<TData extends RowData>(
   cellContext: CellContext<TData, unknown>,
@@ -39,7 +40,14 @@ export function renderDefaultCell<TData extends RowData>(
     return <AsyncValueCell {...asyncCellData} />;
   }
 
-  if (!columnMeta?.editable || !meta?.onCellEdit || !meta?.isInEditMode) {
+  if (
+    !meta?.onCellEdit // Type guard
+    || !shouldShowEditableCell(
+      columnMeta?.editable,
+      meta?.onCellEdit,
+      meta?.isInEditMode,
+    )
+  ) {
     return <>{cellValue}</>;
   }
 
