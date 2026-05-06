@@ -36,21 +36,18 @@
   }
 
   &:hover {
-    z-index: 1;
-    background-color: var(
-      --osdk-table-row-bg-hover,
-      var(--osdk-surface-background-color-default-hover)
-    );
-    border-top-color: var(--osdk-table-row-border-color-hover);
-    border-bottom-color: var(--osdk-table-row-border-color-hover);
+    z-index: 3;
+    background-color: var(--osdk-table-row-bg-hover);
+    border-top: var(--osdk-table-border-width) solid var(--osdk-table-row-border-color-hover);
+    border-bottom: var(--osdk-table-border-width) solid var(--osdk-table-row-border-color-hover);
   }
 
   &[data-selected="true"],
   &[data-focused="true"] {
     z-index: 2;
     background-color: var(--osdk-table-row-bg-active);
-    border-top-color: var(--osdk-table-row-border-color-active);
-    border-bottom-color: var(--osdk-table-row-border-color-active);
+    border-top: var(--osdk-table-border-width) solid var(--osdk-table-row-border-color-active);
+    border-bottom: var(--osdk-table-border-width) solid var(--osdk-table-row-border-color-active);
   }
 
   &[data-selected="true"] + &[data-selected="true"] {
