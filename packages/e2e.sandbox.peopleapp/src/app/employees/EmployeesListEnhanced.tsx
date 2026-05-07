@@ -70,9 +70,6 @@ export function EmployeesListEnhanced(props: EmployeesListEnhancedProps) {
       teamSize: (base) =>
         base.pivotTo("lead").pivotTo("peeps").aggregate("$count"),
     },
-    where: {
-      department: "Media Team",
-    },
     orderBy: {
       fullName: "asc",
     },
@@ -165,7 +162,7 @@ export function EmployeesListEnhanced(props: EmployeesListEnhancedProps) {
         break;
       default:
         displayData = basicEmployees;
-        headerText = "All Media Team Employees";
+        headerText = "All Employees";
     }
   }
 
