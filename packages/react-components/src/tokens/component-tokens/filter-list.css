@@ -207,8 +207,15 @@
   --osdk-filter-listogram-label-color: var(
     --osdk-typography-color-default-rest
   );
-  --osdk-filter-listogram-empty-label-color: var(--osdk-typography-color-muted);
-  --osdk-filter-listogram-empty-label-font-style: italic;
+
+  /* Canonical "No value" tokens. Used by NoValueLabel everywhere.
+     Legacy --osdk-filter-listogram-empty-label-* and
+     --osdk-filter-null-label-* tokens are honored as opt-in overrides
+     by the per-container className passed to NoValueLabel; they are
+     not declared here so that the cascade does not cycle through them. */
+  --osdk-filter-no-value-color: var(--osdk-typography-color-muted);
+  --osdk-filter-no-value-font-style: italic;
+
   --osdk-filter-listogram-bar-height: calc(var(--osdk-surface-spacing) * 2);
   --osdk-filter-listogram-bar-width: calc(var(--osdk-surface-spacing) * 12.5);
   --osdk-filter-listogram-bar-bg: var(--osdk-palette-gray-100);
@@ -286,10 +293,6 @@
   --osdk-filter-null-row-padding: calc(var(--osdk-surface-spacing) * 1) 0;
   --osdk-filter-null-row-border-top: none;
   --osdk-filter-null-label-gap: var(--osdk-surface-spacing);
-  --osdk-filter-null-label-font-family: var(--osdk-typography-family-default);
-  --osdk-filter-null-label-font-size: var(--osdk-typography-size-body-medium);
-  --osdk-filter-null-label-line-height: 1.4;
-  --osdk-filter-null-label-color: var(--osdk-typography-color-default-rest);
   --osdk-filter-null-count-font-family: var(--osdk-typography-family-default);
   --osdk-filter-null-count-font-size: var(--osdk-typography-size-body-small);
   --osdk-filter-null-count-color: var(--osdk-typography-color-muted);

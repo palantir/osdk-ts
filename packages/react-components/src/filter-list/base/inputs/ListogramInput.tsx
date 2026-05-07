@@ -19,9 +19,13 @@ import classnames from "classnames";
 import React, { memo, useCallback, useMemo, useState } from "react";
 import { Checkbox } from "../../../base-components/checkbox/Checkbox.js";
 import type { PropertyAggregationValue } from "../../types/AggregationTypes.js";
-import { filterValuesBySearch } from "../../utils/filterValues.js";
+import {
+  filterValuesBySearch,
+  isEmptyValue,
+} from "../../utils/filterValues.js";
 import styles from "./ListogramInput.module.css";
 import { ListogramSkeleton } from "./ListogramSkeleton.js";
+import { NoValueLabel } from "./NoValueLabel.js";
 import sharedStyles from "./shared.module.css";
 import { useStableData } from "./useStableData.js";
 
@@ -64,7 +68,33 @@ function ListogramInputInner({
 }: ListogramInputProps): React.ReactElement {
   const [isExpanded, setIsExpanded] = useState(false);
 
-  const stableValues = useStableData(values, isLoading);
+  // Aggregations may return both "" and null as separate rows; merge them
+  // into a single "No value" placeholder at the position of the first match.
+  const dedupedValues = useMemo(() => {
+    const out: PropertyAggregationValue[] = [];
+    let emptyCount = 0;
+    let firstEmptyIndex = -1;
+    for (const v of values) {
+      if (v.value === "" || v.value == null) {
+        if (firstEmptyIndex === -1) {
+          firstEmptyIndex = out.length;
+        }
+        emptyCount += v.count;
+      } else {
+        out.push(v);
+      }
+    }
+    if (firstEmptyIndex >= 0 && emptyCount > 0) {
+      out.splice(firstEmptyIndex, 0, {
+        value: "",
+        count: emptyCount,
+        isNull: true,
+      });
+    }
+    return out;
+  }, [values]);
+
+  const stableValues = useStableData(dedupedValues, isLoading);
 
   const selectedSet = useMemo(() => new Set(selectedValues), [selectedValues]);
 
@@ -128,10 +158,7 @@ function ListogramInputInner({
           {displayValues.map(({ value, count }) => {
             const percentage = maxCount > 0 ? (count / maxCount) * 100 : 0;
             const perRowColor = colorMap?.[value];
-            const isEmpty = value === "";
-            const displayLabel = isEmpty
-              ? "No value"
-              : (renderValue?.(value) ?? value);
+            const isEmpty = isEmptyValue(value);
 
             return (
               <Button
@@ -163,14 +190,13 @@ function ListogramInputInner({
                   />
                 </span>
                 <span
-                  className={classnames(
-                    styles.label,
-                    isEmpty && styles.emptyLabel,
-                  )}
+                  className={styles.label}
                   data-excluding={(isExcluding && selectedSet.has(value))
                     || undefined}
                 >
-                  {displayLabel}
+                  {isEmpty
+                    ? <NoValueLabel className={styles.noValueLabel} />
+                    : (renderValue?.(value) ?? value)}
                 </span>
                 {showCount && displayMode !== "minimal" && (
                   <span className={styles.count}>{count.toLocaleString()}</span>
