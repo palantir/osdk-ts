@@ -113,12 +113,36 @@ describe("FilePickerField", () => {
       expect(clickSpy).toHaveBeenCalledOnce();
     });
 
-    it("trigger is focusable via tabIndex", () => {
+    it("uses a native button for the file dialog trigger", () => {
       render(<FilePickerField value={null} />);
 
       const trigger = screen.getByRole("button", { name: "Choose file" });
 
-      expect(trigger.getAttribute("tabindex")).toBe("0");
+      expect(trigger.tagName).toBe("BUTTON");
+    });
+
+    it("uses ActionButton for the browse trigger", () => {
+      render(<FilePickerField value={null} />);
+
+      const browse = screen.getByRole("button", { name: "Browse" });
+
+      expect(browse.tagName).toBe("BUTTON");
+      expect(browse.getAttribute("tabindex")).toBe("-1");
+    });
+
+    it("focuses the file dialog trigger from the browse trigger", () => {
+      render(<FilePickerField value={null} />);
+
+      const trigger = screen.getByRole("button", { name: "Choose file" });
+      const browse = screen.getByRole("button", { name: "Browse" });
+      const clickSpy = vi.spyOn(getFileInput(), "click")
+        .mockImplementation(() => {});
+
+      fireEvent.pointerDown(browse);
+      fireEvent.click(browse);
+
+      expect(document.activeElement).toBe(trigger);
+      expect(clickSpy).toHaveBeenCalledOnce();
     });
 
     it("clear button is a separate tab stop", () => {

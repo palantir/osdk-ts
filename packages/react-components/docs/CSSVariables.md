@@ -534,6 +534,7 @@ Styling for file picker components.
 | `--osdk-file-picker-trigger-border-color-error` | `var(--osdk-input-border-color-error)`                                | Trigger error border color   |
 | `--osdk-file-picker-trigger-bg`                 | `var(--osdk-input-bg)`                                                | Trigger background           |
 | `--osdk-file-picker-trigger-bg-hover`           | `var(--osdk-input-bg-hover)`                                          | Trigger hover background     |
+| `--osdk-file-picker-trigger-bg-active`          | `var(--osdk-surface-background-color-default-active)`                 | Trigger active background    |
 | `--osdk-file-picker-trigger-color`              | `var(--osdk-input-color)`                                             | Trigger text color           |
 | `--osdk-file-picker-trigger-font-size`          | `var(--osdk-input-font-size)`                                         | Trigger font size            |
 | `--osdk-file-picker-trigger-font-family`        | `var(--osdk-input-font-family)`                                       | Trigger font family          |
@@ -565,14 +566,10 @@ Styling for file picker components.
 
 #### Browse Button
 
-| Variable                                | Default Value                                                                   | Description                     |
-| --------------------------------------- | ------------------------------------------------------------------------------- | ------------------------------- |
-| `--osdk-file-picker-browse-bg`          | `var(--osdk-button-secondary-bg)`                                               | Browse button background        |
-| `--osdk-file-picker-browse-bg-hover`    | `var(--osdk-button-secondary-bg-hover)`                                         | Browse button hover background  |
-| `--osdk-file-picker-browse-bg-active`   | `var(--osdk-button-secondary-bg-active)`                                        | Browse button active background |
-| `--osdk-file-picker-browse-color`       | `var(--osdk-button-secondary-color)`                                            | Browse button text color        |
-| `--osdk-file-picker-browse-padding`     | `calc(var(--osdk-surface-spacing) * 1.5) calc(var(--osdk-surface-spacing) * 3)` | Browse button padding           |
-| `--osdk-file-picker-browse-border-left` | `var(--osdk-input-border-width) solid var(--osdk-input-border-color)`           | Browse button left border       |
+| Variable                                  | Default Value                             | Description                 |
+| ----------------------------------------- | ----------------------------------------- | --------------------------- |
+| `--osdk-file-picker-browse-margin-block`  | `calc(var(--osdk-surface-spacing) * 0.5)` | Browse button block margin  |
+| `--osdk-file-picker-browse-margin-inline` | `calc(var(--osdk-surface-spacing) * 0.5)` | Browse button inline margin |
 
 ### Filter List
 

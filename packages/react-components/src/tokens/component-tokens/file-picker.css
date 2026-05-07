@@ -10,6 +10,9 @@
   );
   --osdk-file-picker-trigger-bg: var(--osdk-input-bg);
   --osdk-file-picker-trigger-bg-hover: var(--osdk-input-bg-hover);
+  --osdk-file-picker-trigger-bg-active: var(
+    --osdk-surface-background-color-default-active
+  );
   --osdk-file-picker-trigger-color: var(--osdk-input-color);
   --osdk-file-picker-trigger-font-size: var(--osdk-input-font-size);
   --osdk-file-picker-trigger-font-family: var(--osdk-input-font-family);
@@ -40,12 +43,6 @@
   );
 
   /* Browse button */
-  --osdk-file-picker-browse-bg: var(--osdk-button-secondary-bg);
-  --osdk-file-picker-browse-bg-hover: var(--osdk-button-secondary-bg-hover);
-  --osdk-file-picker-browse-bg-active: var(--osdk-button-secondary-bg-active);
-  --osdk-file-picker-browse-color: var(--osdk-button-secondary-color);
-  --osdk-file-picker-browse-padding: calc(var(--osdk-surface-spacing) * 1.5)
-    calc(var(--osdk-surface-spacing) * 3);
-  --osdk-file-picker-browse-border-left: var(--osdk-input-border-width) solid
-    var(--osdk-input-border-color);
+  --osdk-file-picker-browse-margin-block: calc(var(--osdk-surface-spacing) * 0.5);
+  --osdk-file-picker-browse-margin-inline: calc(var(--osdk-surface-spacing) * 0.5);
 }

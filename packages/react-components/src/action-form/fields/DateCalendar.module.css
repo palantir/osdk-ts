@@ -112,7 +112,6 @@
   }
 }
 
-
 /* Range-middle needs .calendarDayButton prefix to match specificity of
    .calendarDayButton.calendarSelected (rdp applies both to range-middle days). */
 .calendarDayButton.calendarRangeMiddle {
@@ -221,6 +220,9 @@
 
 /* Month/year selects — borderless, matching caption text weight */
 .calendarDropdown {
+  /* Native selects otherwise reserve room for the longest option, which makes
+     the month caret drift away from short month names like "May". */
+  field-sizing: content;
   font-family: var(--osdk-datetime-calendar-font-family);
   font-size: var(--osdk-datetime-calendar-caption-font-size);
   font-weight: var(--osdk-datetime-calendar-caption-font-weight);
