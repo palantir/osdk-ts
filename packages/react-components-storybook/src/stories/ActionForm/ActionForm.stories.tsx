@@ -58,6 +58,16 @@ const actionFormDefaultValueFields: ReadonlyArray<
       ],
     },
   },
+  {
+    fieldKey: "isFullTime",
+    label: "Employment type",
+    fieldComponent: "DROPDOWN",
+    defaultValue: true,
+    fieldComponentProps: {
+      items: [true, false],
+      itemToStringLabel: (value) => value === true ? "Full-time" : "Contractor",
+    },
+  },
 ];
 
 const actionFormOverrideFields: ReadonlyArray<
@@ -89,6 +99,16 @@ const actionFormOverrideFields: ReadonlyArray<
     fieldComponent: "SWITCH",
     helperText: "Turn on when the employee is not assigned to an office.",
     fieldComponentProps: {},
+  },
+  {
+    fieldKey: "isFullTime",
+    label: "Employment type",
+    fieldComponent: "DROPDOWN",
+    helperText: "Choose whether this employee is full-time or a contractor.",
+    fieldComponentProps: {
+      items: [true, false],
+      itemToStringLabel: (value) => value === true ? "Full-time" : "Contractor",
+    },
   },
 ];
 
@@ -144,11 +164,11 @@ export const Default: Story = {
   },
 };
 
-export const WithoutTitle: Story = {
+export const WithTitle: Story = {
   render: () => (
     <ActionForm
       actionDefinition={actionDefinition}
-      formTitle={null}
+      showFormTitle={true}
       onSuccess={handleSuccess}
       onError={errorSpy}
     />
@@ -158,7 +178,7 @@ export const WithoutTitle: Story = {
       source: {
         code: `<ActionForm
   actionDefinition={updateEmployeeStoryAction}
-  formTitle={null}
+  showFormTitle={true}
 />`,
       },
     },
@@ -204,6 +224,17 @@ export const WithDefaultValues: Story = {
       ],
     },
   },
+  {
+    fieldKey: "isFullTime",
+    label: "Employment type",
+    fieldComponent: "DROPDOWN",
+    defaultValue: true,
+    fieldComponentProps: {
+      items: [true, false],
+      itemToStringLabel: (value) =>
+        value === true ? "Full-time" : "Contractor",
+    },
+  },
 ] satisfies Array<FormFieldDefinition<typeof updateEmployeeStoryAction>>;
 
 <ActionForm
@@ -245,6 +276,17 @@ export const WithFieldOverrides: Story = {
     helperText: "Turn on when the employee is not assigned to an office.",
     fieldComponentProps: {},
   },
+  {
+    fieldKey: "isFullTime",
+    label: "Employment type",
+    fieldComponent: "DROPDOWN",
+    helperText: "Choose whether this employee is full-time or a contractor.",
+    fieldComponentProps: {
+      items: [true, false],
+      itemToStringLabel: (value) =>
+        value === true ? "Full-time" : "Contractor",
+    },
+  },
 ] satisfies Array<FormFieldDefinition<typeof updateEmployeeStoryAction>>;
 
 <ActionForm
@@ -265,6 +307,7 @@ export const ControlledFormState: Story = {
   fullName: "Ada Lovelace",
   yearsExperience: 5,
   isRemote: true,
+  isFullTime: true,
 });
 
 <ActionForm
@@ -284,6 +327,7 @@ function ControlledActionFormStory(): React.ReactElement {
     fullName: "Ada Lovelace",
     yearsExperience: 5,
     isRemote: true,
+    isFullTime: true,
   });
 
   return (

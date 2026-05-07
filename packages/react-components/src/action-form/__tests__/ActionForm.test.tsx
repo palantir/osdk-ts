@@ -124,22 +124,34 @@ describe("ActionForm", () => {
   });
 
   describe("form title", () => {
-    it("renders form title from metadata displayName", () => {
+    it("does not render a form title by default", () => {
       render(<ActionForm actionDefinition={TestAction} />);
+
+      expect(screen.queryByRole("heading")).toBeNull();
+    });
+
+    it("renders form title from metadata displayName when showFormTitle is true", () => {
+      render(<ActionForm actionDefinition={TestAction} showFormTitle={true} />);
 
       expect(screen.getByRole("heading").textContent).toBe("Test Action");
     });
 
-    it("renders custom form title when provided", () => {
+    it("renders custom form title when showFormTitle is true", () => {
       render(
-        <ActionForm actionDefinition={TestAction} formTitle="Custom Title" />,
+        <ActionForm
+          actionDefinition={TestAction}
+          formTitle="Custom Title"
+          showFormTitle={true}
+        />,
       );
 
       expect(screen.getByRole("heading").textContent).toBe("Custom Title");
     });
 
-    it("does not render a form title when explicitly set to null", () => {
-      render(<ActionForm actionDefinition={TestAction} formTitle={null} />);
+    it("does not render a form title when showFormTitle is false", () => {
+      render(
+        <ActionForm actionDefinition={TestAction} showFormTitle={false} />,
+      );
 
       expect(screen.queryByRole("heading")).toBeNull();
     });
@@ -153,7 +165,7 @@ describe("ActionForm", () => {
         },
       });
 
-      render(<ActionForm actionDefinition={TestAction} />);
+      render(<ActionForm actionDefinition={TestAction} showFormTitle={true} />);
 
       expect(screen.getByRole("heading").textContent).toBe("TestAction");
     });

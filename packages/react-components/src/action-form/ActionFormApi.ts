@@ -59,6 +59,13 @@ interface ActionFormConfigProps<Q extends ActionDefinition<unknown>>
   actionDefinition: Q;
 
   /**
+   * Whether to show the form title.
+   *
+   * @default false
+   */
+  showFormTitle?: boolean;
+
+  /**
    * If not supplied, field definitions are constructed from `ActionParameters`.
    */
   formFieldDefinitions?: ReadonlyArray<FormFieldDefinition<Q>>;
@@ -165,9 +172,9 @@ export type BaseFormProps =
 
 interface BaseFormCommonProps {
   /**
-   * Title shown above the form. Pass `null` to hide the title.
+   * Title shown above the form.
    */
-  formTitle?: string | null;
+  formTitle?: string;
   formContent: ReadonlyArray<FormContentItem>;
   onSubmit: (formState: Record<string, unknown>) => Promise<void> | void;
   isSubmitDisabled?: boolean;

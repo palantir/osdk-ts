@@ -50,16 +50,27 @@ describe("BaseForm", () => {
   afterEach(cleanup);
 
   describe("form title", () => {
-    it("does not render a form title when explicitly set to null", () => {
+    it("does not render a form title when formTitle is omitted", () => {
       render(
         <BaseForm
-          formTitle={null}
           formContent={[field(makeDef("name"))]}
           onSubmit={vi.fn()}
         />,
       );
 
       expect(screen.queryByRole("heading")).toBeNull();
+    });
+
+    it("renders a form title when formTitle is provided", () => {
+      render(
+        <BaseForm
+          formTitle="Create employee"
+          formContent={[field(makeDef("name"))]}
+          onSubmit={vi.fn()}
+        />,
+      );
+
+      expect(screen.getByRole("heading").textContent).toBe("Create employee");
     });
   });
 

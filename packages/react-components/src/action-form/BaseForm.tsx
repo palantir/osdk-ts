@@ -83,24 +83,21 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
       : "Submission failed"
     : undefined;
 
-  const submitForm = useCallback(
-    async () => {
-      setHasAttemptedSubmit(true);
+  const submitForm = useCallback(async () => {
+    setHasAttemptedSubmit(true);
 
-      const isValid = await trigger();
-      if (!isValid) {
-        return;
-      }
+    const isValid = await trigger();
+    if (!isValid) {
+      return;
+    }
 
-      // In controlled mode, always submit the controlled state, not RHF's
-      // internal state. Between a user keystroke and the parent re-rendering,
-      // RHF's store may hold the user-typed value rather than the parent's
-      // value. Using controlledFormState directly preserves the existing
-      // guarantee that controlled mode submits the parent's state.
-      await executeSubmit(controlledFormState ?? getValues());
-    },
-    [trigger, executeSubmit, controlledFormState, getValues],
-  );
+    // In controlled mode, always submit the controlled state, not RHF's
+    // internal state. Between a user keystroke and the parent re-rendering,
+    // RHF's store may hold the user-typed value rather than the parent's
+    // value. Using controlledFormState directly preserves the existing
+    // guarantee that controlled mode submits the parent's state.
+    await executeSubmit(controlledFormState ?? getValues());
+  }, [trigger, executeSubmit, controlledFormState, getValues]);
 
   const handleFieldChange = useCallback(
     (fieldKey: string, value: unknown) => {

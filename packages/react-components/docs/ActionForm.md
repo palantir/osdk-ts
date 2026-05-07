@@ -31,7 +31,7 @@ function UpdateEmployeeForm() {
 }
 ```
 
-`ActionForm` fetches action metadata, renders fields for the action parameters, validates the form, and calls the OSDK action when the user submits. The form title uses `formTitle` when provided, otherwise the action display name, otherwise the action API name. Pass `formTitle={null}` to hide the title.
+`ActionForm` fetches action metadata, renders fields for the action parameters, validates the form, and calls the OSDK action when the user submits. The form title is hidden by default. Pass `showFormTitle={true}` to show it; the title uses `formTitle` when provided, otherwise the action display name, otherwise the action API name.
 
 ## Choosing ActionForm vs BaseForm
 

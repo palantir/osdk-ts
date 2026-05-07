@@ -77,7 +77,6 @@ body {
 
   max-width: 480px;
   width: 100%;
-  margin: calc(var(--osdk-surface-spacing) * 4);
   background: var(--osdk-background-primary);
   border: var(--osdk-surface-border-width) solid
     var(--osdk-surface-border-color-default);

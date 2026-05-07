@@ -45,6 +45,7 @@ export const updateEmployeeStoryAction = TypeHelpers
   .addParameter("fullName", "string", true)
   .addParameter("yearsExperience", "integer", false)
   .addParameter("isRemote", "boolean", false)
+  .addParameter("isFullTime", "boolean", false)
   .build();
 
 export const toggleRemoteStoryAction = TypeHelpers

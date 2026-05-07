@@ -38,6 +38,7 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
 >({
   actionDefinition,
   formTitle,
+  showFormTitle = false,
   formFieldDefinitions,
   formState: controlledFormState,
   onFormStateChange,
@@ -149,9 +150,9 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
     [onFormStateChange],
   );
 
-  const resolvedTitle = formTitle === undefined
-    ? metadata?.displayName
-    : formTitle;
+  const resolvedTitle = showFormTitle
+    ? (formTitle ?? metadata?.displayName ?? actionDefinition.apiName)
+    : undefined;
 
   const isControlled = controlledFormState != null;
 
