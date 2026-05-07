@@ -202,4 +202,27 @@ describe("intellisense", () => {
       "relevance",
     ]);
   });
+
+  it("fetchPageByRidLoadPropertySecurityMetadata", {
+    timeout: 40_000,
+  }, async () => {
+    const { resp } = await tsServer.sendCompletionsRequest({
+      file: intellisenseFilePath,
+      line: 32,
+      offset: 5,
+      triggerKind: ts.CompletionTriggerKind.Invoked,
+    });
+    expect(resp.body?.entries.map(e => e.name)).toContain(
+      "$loadPropertySecurityMetadata",
+    );
+
+    const { resp: hover } = await tsServer.sendQuickInfoRequest({
+      file: intellisenseFilePath,
+      line: 32,
+      offset: 8,
+    });
+    expect(hover.body?.displayString).toContain(
+      "$loadPropertySecurityMetadata",
+    );
+  });
 });
