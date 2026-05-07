@@ -10,9 +10,6 @@
   );
   --osdk-file-picker-trigger-bg: var(--osdk-input-bg);
   --osdk-file-picker-trigger-bg-hover: var(--osdk-input-bg-hover);
-  --osdk-file-picker-trigger-bg-active: var(
-    --osdk-surface-background-color-default-active
-  );
   --osdk-file-picker-trigger-color: var(--osdk-input-color);
   --osdk-file-picker-trigger-font-size: var(--osdk-input-font-size);
   --osdk-file-picker-trigger-font-family: var(--osdk-input-font-family);
@@ -41,8 +38,4 @@
   --osdk-file-picker-trigger-border-color-error: var(
     --osdk-input-border-color-error
   );
-
-  /* Browse button */
-  --osdk-file-picker-browse-margin-block: calc(var(--osdk-surface-spacing) * 0.5);
-  --osdk-file-picker-browse-margin-inline: calc(var(--osdk-surface-spacing) * 0.5);
 }

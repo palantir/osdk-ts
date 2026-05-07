@@ -518,7 +518,6 @@ Styling for file picker components.
 | `--osdk-file-picker-trigger-border-color-error` | `var(--osdk-input-border-color-error)`                                | Trigger error border color   |
 | `--osdk-file-picker-trigger-bg`                 | `var(--osdk-input-bg)`                                                | Trigger background           |
 | `--osdk-file-picker-trigger-bg-hover`           | `var(--osdk-input-bg-hover)`                                          | Trigger hover background     |
-| `--osdk-file-picker-trigger-bg-active`          | `var(--osdk-surface-background-color-default-active)`                 | Trigger active background    |
 | `--osdk-file-picker-trigger-color`              | `var(--osdk-input-color)`                                             | Trigger text color           |
 | `--osdk-file-picker-trigger-font-size`          | `var(--osdk-input-font-size)`                                         | Trigger font size            |
 | `--osdk-file-picker-trigger-font-family`        | `var(--osdk-input-font-family)`                                       | Trigger font family          |
@@ -547,13 +546,6 @@ Styling for file picker components.
 | `--osdk-file-picker-clear-margin`      | `0 calc(var(--osdk-surface-spacing) * 1)`   | Clear button margin      |
 | `--osdk-file-picker-clear-color`       | `var(--osdk-typography-color-muted)`        | Clear button color       |
 | `--osdk-file-picker-clear-color-hover` | `var(--osdk-typography-color-default-rest)` | Clear button hover color |
-
-#### Browse Button
-
-| Variable                                  | Default Value                             | Description                 |
-| ----------------------------------------- | ----------------------------------------- | --------------------------- |
-| `--osdk-file-picker-browse-margin-block`  | `calc(var(--osdk-surface-spacing) * 0.5)` | Browse button block margin  |
-| `--osdk-file-picker-browse-margin-inline` | `calc(var(--osdk-surface-spacing) * 0.5)` | Browse button inline margin |
 
 ### Filter List
 
@@ -1240,26 +1232,22 @@ Styling for column resize handles.
 
 Styling for time picker components.
 
-| Variable                                      | Default Value                                                         | Description                   |
-| --------------------------------------------- | --------------------------------------------------------------------- | ----------------------------- |
-| `--osdk-time-picker-margin-top`               | `calc(var(--osdk-surface-spacing) * 2)`                               | Top margin                    |
-| `--osdk-time-picker-padding-top`              | `calc(var(--osdk-surface-spacing) * 2)`                               | Top padding                   |
-| `--osdk-time-picker-border-top`               | `var(--osdk-surface-border)`                                          | Top border                    |
-| `--osdk-time-picker-gap`                      | `calc(var(--osdk-surface-spacing) * 4)`                               | Gap between elements          |
-| `--osdk-time-picker-segment-gap`              | `var(--osdk-surface-spacing)`                                         | Gap between time segments     |
-| `--osdk-time-picker-segment-width`            | `calc(var(--osdk-surface-spacing) * 10)`                              | Width of hour/minute segments |
-| `--osdk-time-picker-input-font-family`        | `var(--osdk-input-font-family)`                                       | Input font family             |
-| `--osdk-time-picker-input-font-size`          | `var(--osdk-input-font-size)`                                         | Input font size               |
-| `--osdk-time-picker-input-line-height`        | `var(--osdk-input-line-height)`                                       | Input line height             |
-| `--osdk-time-picker-input-padding`            | `var(--osdk-input-padding)`                                           | Input padding                 |
-| `--osdk-time-picker-input-border`             | `var(--osdk-input-border-width) solid var(--osdk-input-border-color)` | Input border                  |
-| `--osdk-time-picker-input-border-radius`      | `var(--osdk-input-border-radius)`                                     | Input border radius           |
-| `--osdk-time-picker-input-bg`                 | `var(--osdk-input-bg)`                                                | Input background              |
-| `--osdk-time-picker-input-color`              | `var(--osdk-input-color)`                                             | Input text color              |
-| `--osdk-time-picker-input-border-color-focus` | `var(--osdk-input-border-color-focus)`                                | Focused border color          |
-| `--osdk-time-picker-input-focus-outline`      | `var(--osdk-input-focus-width) solid var(--osdk-input-focus-color)`   | Focus outline                 |
-| `--osdk-time-picker-input-focus-offset`       | `var(--osdk-input-focus-offset)`                                      | Focus offset                  |
-| `--osdk-time-picker-separator-color`          | `var(--osdk-typography-color-muted)`                                  | Segment separator color       |
+| Variable                                      | Default Value                                                         | Description          |
+| --------------------------------------------- | --------------------------------------------------------------------- | -------------------- |
+| `--osdk-time-picker-margin-top`               | `calc(var(--osdk-surface-spacing) * 2)`                               | Top margin           |
+| `--osdk-time-picker-padding-top`              | `calc(var(--osdk-surface-spacing) * 2)`                               | Top padding          |
+| `--osdk-time-picker-border-top`               | `var(--osdk-surface-border)`                                          | Top border           |
+| `--osdk-time-picker-gap`                      | `calc(var(--osdk-surface-spacing) * 4)`                               | Gap between elements |
+| `--osdk-time-picker-input-font-family`        | `var(--osdk-input-font-family)`                                       | Input font family    |
+| `--osdk-time-picker-input-font-size`          | `var(--osdk-input-font-size)`                                         | Input font size      |
+| `--osdk-time-picker-input-padding`            | `var(--osdk-input-padding)`                                           | Input padding        |
+| `--osdk-time-picker-input-border`             | `var(--osdk-input-border-width) solid var(--osdk-input-border-color)` | Input border         |
+| `--osdk-time-picker-input-border-radius`      | `var(--osdk-input-border-radius)`                                     | Input border radius  |
+| `--osdk-time-picker-input-bg`                 | `var(--osdk-input-bg)`                                                | Input background     |
+| `--osdk-time-picker-input-color`              | `var(--osdk-input-color)`                                             | Input text color     |
+| `--osdk-time-picker-input-border-color-focus` | `var(--osdk-input-border-color-focus)`                                | Focused border color |
+| `--osdk-time-picker-input-focus-outline`      | `var(--osdk-input-focus-width) solid var(--osdk-input-focus-color)`   | Focus outline        |
+| `--osdk-time-picker-input-focus-offset`       | `var(--osdk-input-focus-offset)`                                      | Focus offset         |
 
 ### Tooltip
 
