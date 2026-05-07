@@ -193,11 +193,7 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
 
   const perFilterWhereClauses = useMemo(() => {
     const next = new Map<string, WhereClause<Q>>();
-    if (!filterDefinitions) {
-      previousClausesRef.current = next;
-      return next;
-    }
-    for (const definition of filterDefinitions) {
+    for (const definition of filterDefinitions ?? []) {
       const key = getFilterKey(definition);
       const fresh = buildWhereClause(
         filterDefinitions,
@@ -206,11 +202,7 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
         key,
       );
       const prev = previousClausesRef.current.get(key);
-      if (prev != null && isEqual(prev, fresh)) {
-        next.set(key, prev);
-      } else {
-        next.set(key, fresh);
-      }
+      next.set(key, prev != null && isEqual(prev, fresh) ? prev : fresh);
     }
     previousClausesRef.current = next;
     return next;

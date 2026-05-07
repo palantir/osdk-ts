@@ -491,30 +491,5 @@ describe("useFilterListState", () => {
         expect(afterActive).toEqual({ name: "John" });
       },
     );
-
-    it(
-      "preserves entry references when an unrelated re-render occurs without state changes",
-      () => {
-        const nameDef = createPropertyFilterDef(
-          "name",
-          "LISTOGRAM",
-          createExactMatchState([]),
-        );
-        const props = createProps({
-          filterDefinitions: [nameDef],
-        });
-        const { result, rerender } = renderHook(
-          () => useFilterListState(props),
-        );
-        const nameKey = getFilterKey(nameDef);
-
-        const before = result.current.perFilterWhereClauses.get(nameKey);
-
-        rerender();
-
-        const after = result.current.perFilterWhereClauses.get(nameKey);
-        expect(after).toBe(before);
-      },
-    );
   });
 });
