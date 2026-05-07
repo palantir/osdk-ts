@@ -164,7 +164,10 @@ export type BaseFormProps =
   );
 
 interface BaseFormCommonProps {
-  formTitle?: string;
+  /**
+   * Title shown above the form. Pass `null` to hide the title.
+   */
+  formTitle?: string | null;
   formContent: ReadonlyArray<FormContentItem>;
   onSubmit: (formState: Record<string, unknown>) => Promise<void> | void;
   isSubmitDisabled?: boolean;

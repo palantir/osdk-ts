@@ -1,0 +1,55 @@
+:root {
+  /* Select layout */
+  --osdk-select-spacing: var(--osdk-surface-spacing);
+  --osdk-select-min-height: var(--osdk-input-min-height);
+  --osdk-select-trigger-padding: var(--osdk-input-padding);
+  --osdk-select-disabled-opacity: var(--osdk-input-disabled-opacity);
+
+  /* Select surface */
+  --osdk-select-border-radius: var(--osdk-input-border-radius);
+  --osdk-select-border-width: var(--osdk-input-border-width);
+  --osdk-select-border-color: var(--osdk-input-border-color);
+  --osdk-select-border-color-active: var(--osdk-input-border-color-focus);
+  --osdk-select-trigger-bg: var(--osdk-input-bg);
+  --osdk-select-trigger-bg-hover: var(--osdk-input-bg-hover);
+  --osdk-select-trigger-bg-active: var(
+    --osdk-surface-background-color-default-active
+  );
+  --osdk-select-popup-bg: var(--osdk-surface-background-color-default-rest);
+  --osdk-select-popup-shadow: var(--osdk-surface-shadow-2);
+  --osdk-select-popup-max-height: min(
+    var(--available-height),
+    calc(var(--osdk-surface-spacing) * 80)
+  );
+  --osdk-select-z-index: var(--osdk-surface-z-index-3);
+
+  /* Select typography */
+  --osdk-select-trigger-color: var(--osdk-input-color);
+  --osdk-select-placeholder-color: var(--osdk-input-placeholder-color);
+  --osdk-select-font-family: var(--osdk-input-font-family);
+  --osdk-select-font-size: var(--osdk-input-font-size);
+  --osdk-select-line-height: var(--osdk-input-line-height);
+  --osdk-select-icon-color: var(--osdk-iconography-color-muted);
+
+  /* Select focus and motion */
+  --osdk-select-focus-width: var(--osdk-input-focus-width);
+  --osdk-select-focus-color: var(--osdk-input-focus-color);
+  --osdk-select-focus-offset: var(--osdk-input-focus-offset);
+  --osdk-select-transition-duration: var(--osdk-input-transition-duration);
+  --osdk-select-transition-ease: var(--osdk-input-transition-ease);
+
+  /* Select items */
+  --osdk-select-item-color: var(--osdk-typography-color-default-rest);
+  --osdk-select-item-color-selected: var(--osdk-intent-primary-rest);
+  --osdk-select-item-bg-highlighted: var(
+    --osdk-surface-background-color-default-hover
+  );
+  --osdk-select-item-bg-selected: var(--osdk-surface-layer-primary);
+
+  /* Select clear button */
+  --osdk-select-clear-color: var(--osdk-iconography-color-muted);
+  --osdk-select-clear-color-hover: var(--osdk-typography-color-default-rest);
+  --osdk-select-clear-bg-hover: var(
+    --osdk-surface-background-color-default-hover
+  );
+}

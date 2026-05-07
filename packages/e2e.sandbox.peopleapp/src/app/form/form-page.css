@@ -5,6 +5,8 @@
   border: var(--osdk-surface-border-width) solid
     var(--osdk-surface-border-color-default);
   border-radius: var(--osdk-surface-border-radius);
+  padding-block: calc(var(--osdk-surface-spacing) * 4);
+  padding-inline: calc(var(--osdk-surface-spacing) * 4);
 }
 
 .submittedOutput {

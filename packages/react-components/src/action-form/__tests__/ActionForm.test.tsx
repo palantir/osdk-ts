@@ -50,10 +50,28 @@ interface TestActionDef extends ActionDefinition<unknown> {
   };
 }
 
+interface BooleanActionDef extends ActionDefinition<unknown> {
+  __DefinitionMetadata: {
+    signatures: unknown;
+    parameters: {
+      enabled: { type: "boolean" };
+    };
+    type: "action";
+    apiName: "BooleanAction";
+    status: "ACTIVE";
+    rid: string;
+  };
+}
+
 const TestAction: TestActionDef = {
   type: "action",
   apiName: "TestAction",
 } as TestActionDef;
+
+const BooleanAction: BooleanActionDef = {
+  type: "action",
+  apiName: "BooleanAction",
+} as BooleanActionDef;
 
 const mockApplyAction = vi.fn().mockResolvedValue({
   editedObjectTypes: [],
@@ -118,6 +136,12 @@ describe("ActionForm", () => {
       );
 
       expect(screen.getByRole("heading").textContent).toBe("Custom Title");
+    });
+
+    it("does not render a form title when explicitly set to null", () => {
+      render(<ActionForm actionDefinition={TestAction} formTitle={null} />);
+
+      expect(screen.queryByRole("heading")).toBeNull();
     });
 
     it("falls back to apiName when metadata has no displayName", () => {
@@ -280,6 +304,33 @@ describe("ActionForm", () => {
 
       await vi.waitFor(() => {
         expect(onSuccess).toHaveBeenCalledWith(result);
+      });
+    });
+
+    it("submits top-level field definition default values", async () => {
+      const customDefs: Array<FormFieldDefinition<TestActionDef>> = [
+        {
+          fieldKey: "name",
+          label: "Full Name",
+          fieldComponent: "TEXT_INPUT",
+          defaultValue: "Ada Lovelace",
+          fieldComponentProps: {},
+        },
+      ];
+
+      render(
+        <ActionForm
+          actionDefinition={TestAction}
+          formFieldDefinitions={customDefs}
+        />,
+      );
+
+      fireEvent.click(screen.getByRole("button", { name: /submit/i }));
+
+      await vi.waitFor(() => {
+        expect(mockApplyAction).toHaveBeenCalledWith(
+          expect.objectContaining({ name: "Ada Lovelace" }),
+        );
       });
     });
   });

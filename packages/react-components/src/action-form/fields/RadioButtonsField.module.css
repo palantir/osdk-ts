@@ -63,8 +63,8 @@
   }
 
   &:focus-visible {
-    outline: var(--osdk-focus-outline);
-    outline-offset: calc(-1 * var(--osdk-focus-visible-outline-offset));
+    outline: var(--osdk-radio-focus-outline);
+    outline-offset: var(--osdk-radio-focus-outline-offset);
   }
 }
 
@@ -80,9 +80,9 @@
 }
 
 .osdkRadioLabel {
-  font-family: var(--osdk-typography-font-family);
-  font-size: var(--osdk-typography-font-size-default);
-  line-height: var(--osdk-typography-line-height-default);
-  color: var(--osdk-typography-color-default);
+  font-family: var(--osdk-radio-label-font-family);
+  font-size: var(--osdk-radio-label-font-size);
+  line-height: var(--osdk-radio-label-line-height);
+  color: var(--osdk-radio-label-color);
   cursor: pointer;
 }

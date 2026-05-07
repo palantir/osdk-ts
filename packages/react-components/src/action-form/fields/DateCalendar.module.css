@@ -131,6 +131,14 @@
   }
 }
 
+.calendarRangeFooter {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: var(--osdk-datetime-calendar-months-gap);
+  justify-items: center;
+  padding-block-start: var(--osdk-time-picker-padding-top);
+}
+
 .calendarHidden {
   visibility: hidden;
 }
@@ -230,10 +238,19 @@
 }
 
 
-/* Footer — content rendered inside DayPicker's <tfoot> (constrained by the table). */
-.calendarFooter {
-  padding-top: var(--osdk-time-picker-padding-top);
-  margin-top: var(--osdk-time-picker-margin-top);
-  border-top: var(--osdk-time-picker-border-top);
+.calendarTimeFooter {
+  display: flex;
+  justify-content: center;
+  padding-block-start: var(--osdk-time-picker-padding-top);
 }
 
+.calendarActionBar {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--osdk-surface-spacing);
+  padding-block-start: var(--osdk-time-picker-padding-top);
+  padding-inline: var(--osdk-datetime-popover-padding);
+  margin-block-start: var(--osdk-time-picker-margin-top);
+  margin-inline: calc(var(--osdk-datetime-popover-padding) * -1);
+  border-block-start: var(--osdk-time-picker-border-top);
+}

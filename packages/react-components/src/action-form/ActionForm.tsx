@@ -76,15 +76,17 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
       // RendererFieldDefinition is a discriminated union keyed by fieldComponent.
       // TypeScript can't verify that the spread preserves the fieldComponent ↔
       // fieldComponentProps pairing, but FormFieldDefinition guarantees it.
-      return formFieldDefinitions.map(
-        (def) =>
-          ({
-            ...def,
-            fieldKey: String(def.fieldKey),
-            fieldType: parameters?.[String(def.fieldKey)]?.type,
-            defaultValue: def.defaultValue,
-          }) as RendererFieldDefinition,
-      );
+      return formFieldDefinitions.map((def) => {
+        const { defaultValue, ...fieldDefinition } = def;
+        return {
+          ...fieldDefinition,
+          fieldKey: String(def.fieldKey),
+          fieldType: parameters?.[String(def.fieldKey)]?.type,
+          fieldComponentProps: defaultValue === undefined
+            ? def.fieldComponentProps
+            : { ...def.fieldComponentProps, defaultValue },
+        } as RendererFieldDefinition;
+      });
     }, [formFieldDefinitions, parameters]);
 
   const rendererFieldDefinitions = useMemo(
@@ -147,8 +149,9 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
     [onFormStateChange],
   );
 
-  const resolvedTitle = formTitle ?? metadata?.displayName
-    ?? actionDefinition.apiName;
+  const resolvedTitle = formTitle === undefined
+    ? metadata?.displayName
+    : formTitle;
 
   const isControlled = controlledFormState != null;
 

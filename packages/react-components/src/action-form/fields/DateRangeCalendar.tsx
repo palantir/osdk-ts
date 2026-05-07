@@ -58,22 +58,27 @@ export default function DateRangeCalendar({
 
   const fromYear = min != null ? min.getFullYear() : DEFAULT_FROM_YEAR;
   const toYear = max != null ? max.getFullYear() : DEFAULT_TO_YEAR;
+  const calendarFooter = footer == null
+    ? undefined
+    : <div className={styles.calendarRangeFooter}>{footer}</div>;
 
   return (
-    <DayPicker
-      mode="range"
-      selected={selected}
-      onSelect={onSelect}
-      disabled={disabled}
-      defaultMonth={selected?.from}
-      classNames={CLASS_NAMES}
-      components={CALENDAR_COMPONENTS}
-      footer={footer}
-      captionLayout="dropdown-buttons"
-      fromYear={fromYear}
-      toYear={toYear}
-      numberOfMonths={2}
-      pagedNavigation={true}
-    />
+    <>
+      <DayPicker
+        mode="range"
+        selected={selected}
+        onSelect={onSelect}
+        disabled={disabled}
+        defaultMonth={selected?.from}
+        classNames={CLASS_NAMES}
+        components={CALENDAR_COMPONENTS}
+        captionLayout="dropdown-buttons"
+        fromYear={fromYear}
+        toYear={toYear}
+        numberOfMonths={2}
+        pagedNavigation={true}
+      />
+      {calendarFooter}
+    </>
   );
 }

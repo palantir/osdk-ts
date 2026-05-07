@@ -1,9 +1,17 @@
-/* TimePicker — bare time input. Layout (spacing, borders) owned by the parent. */
+/* TimePicker — HH:mm control. Outer layout is owned by the parent. */
+
+.osdkTimePickerRoot {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--osdk-time-picker-segment-gap);
+}
 
 .osdkTimePickerInput {
-  width: 100%;
+  width: var(--osdk-time-picker-segment-width);
   font-family: var(--osdk-time-picker-input-font-family);
   font-size: var(--osdk-time-picker-input-font-size);
+  line-height: var(--osdk-time-picker-input-line-height);
+  text-align: center;
   padding: var(--osdk-time-picker-input-padding);
   border: var(--osdk-time-picker-input-border);
   border-radius: var(--osdk-time-picker-input-border-radius);
@@ -16,4 +24,15 @@
     outline: var(--osdk-time-picker-input-focus-outline);
     outline-offset: var(--osdk-time-picker-input-focus-offset);
   }
+
+  &[aria-invalid] {
+    border-color: var(--osdk-input-border-color-error);
+  }
+}
+
+.osdkTimePickerSeparator {
+  color: var(--osdk-time-picker-separator-color);
+  font-family: var(--osdk-time-picker-input-font-family);
+  font-size: var(--osdk-time-picker-input-font-size);
+  line-height: var(--osdk-time-picker-input-line-height);
 }

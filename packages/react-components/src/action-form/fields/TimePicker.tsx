@@ -15,50 +15,248 @@
  */
 
 import { Input } from "@base-ui/react/input";
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import styles from "./TimePicker.module.css";
 
-interface TimePickerProps {
-  value: string;
-  onChange: (timeString: string) => void;
+export interface TimePickerProps {
+  value: Date | null;
+  onChange?: (newTime: Date) => void;
   label?: string;
 }
 
-export function TimePicker({
-  value,
-  onChange,
-  label = "Time",
-}: TimePickerProps): React.ReactElement {
-  const [localValue, setLocalValue] = useState(value);
-  const isFocusedRef = useRef(false);
+type TimeSegment = "hours" | "minutes";
+type TimeSegments = Record<TimeSegment, string>;
 
-  // Sync from prop when not focused (parent changed the value externally)
-  const prevValueRef = useRef(value);
-  if (prevValueRef.current !== value) {
-    prevValueRef.current = value;
-    if (!isFocusedRef.current) {
-      setLocalValue(value);
-    }
+interface InternalSegments extends TimeSegments {
+  valueTimestamp: number | null;
+}
+
+const NUMERIC_INPUT_PATTERN = "[0-9]*";
+
+const SEGMENT_LIMITS: Record<TimeSegment, { min: number; max: number }> = {
+  hours: { min: 0, max: 23 },
+  minutes: { min: 0, max: 59 },
+} as const;
+
+export const TimePicker: React.NamedExoticComponent<TimePickerProps> = React
+  .memo(function TimePickerFn({
+    value,
+    onChange,
+    label = "Time",
+  }: TimePickerProps): React.ReactElement {
+    const valueTimestamp = value?.getTime() ?? null;
+    // Keep typed text locally so users can enter temporarily invalid values
+    // like "99" or "" without immediately mutating/clamping the parent Date.
+    const [internalSegments, setInternalSegments] = useState<InternalSegments>(
+      () =>
+        createInternalSegments(
+          valueTimestamp,
+          segmentsFromTimestamp(valueTimestamp),
+        ),
+    );
+    const valueSegments = useMemo(
+      () => segmentsFromTimestamp(valueTimestamp),
+      [valueTimestamp],
+    );
+
+    // Track which external value this internal text was derived from. If the
+    // parent commits a different Date, ignore stale internal text and render
+    // from the new value instead.
+    const activeSegments = internalSegments.valueTimestamp === valueTimestamp
+      ? internalSegments
+      : createInternalSegments(valueTimestamp, valueSegments);
+    const hourText = activeSegments.hours;
+    const minuteText = activeSegments.minutes;
+    const hourInvalid = isSegmentInvalid(hourText, "hours");
+    const minuteInvalid = isSegmentInvalid(minuteText, "minutes");
+
+    const emitChange = useCallback(
+      (hours: number, minutes: number) => {
+        const nextDate = value != null ? new Date(value.getTime()) : new Date();
+        nextDate.setHours(hours, minutes, 0, 0);
+        onChange?.(nextDate);
+      },
+      [onChange, value],
+    );
+
+    const handleSegmentChange = useCallback(
+      (segment: TimeSegment, nextText: string) => {
+        setInternalSegments({
+          valueTimestamp,
+          ...replaceSegmentText(
+            { hours: hourText, minutes: minuteText },
+            { segment, nextText },
+          ),
+        });
+      },
+      [hourText, minuteText, valueTimestamp],
+    );
+
+    const handleSegmentBlur = useCallback(
+      (segment: TimeSegment, text: string) => {
+        const parsedSegment = parseNumber(text);
+        if (parsedSegment == null) {
+          // Non-numeric text cannot be converted into a valid time segment, so
+          // restore the displayed value instead of emitting an arbitrary Date.
+          setInternalSegments(
+            createInternalSegments(valueTimestamp, valueSegments),
+          );
+          return;
+        }
+
+        const clampedSegment = clampSegment(parsedSegment, segment);
+        const nextSegments = replaceSegmentText(
+          { hours: hourText, minutes: minuteText },
+          { segment, nextText: formatSegment(clampedSegment, segment) },
+        );
+        // Only the blurred segment should commit. If the other segment is
+        // currently invalid, preserve the committed value for that segment.
+        const nextHours = parseSegment(nextSegments.hours, "hours")
+          ?? Number(valueSegments.hours);
+        const nextMinutes = parseSegment(nextSegments.minutes, "minutes")
+          ?? Number(valueSegments.minutes);
+
+        setInternalSegments({
+          valueTimestamp,
+          hours: formatSegment(nextHours, "hours"),
+          minutes: formatSegment(nextMinutes, "minutes"),
+        });
+
+        const currentHours = Number(valueSegments.hours);
+        const currentMinutes = Number(valueSegments.minutes);
+        if (nextHours !== currentHours || nextMinutes !== currentMinutes) {
+          emitChange(nextHours, nextMinutes);
+        }
+      },
+      [
+        emitChange,
+        hourText,
+        minuteText,
+        valueTimestamp,
+        valueSegments,
+      ],
+    );
+
+    const handleHourChange = useCallback(
+      (nextText: string) => handleSegmentChange("hours", nextText),
+      [handleSegmentChange],
+    );
+    const handleMinuteChange = useCallback(
+      (nextText: string) => handleSegmentChange("minutes", nextText),
+      [handleSegmentChange],
+    );
+    const handleHourBlur = useCallback(
+      () => handleSegmentBlur("hours", hourText),
+      [handleSegmentBlur, hourText],
+    );
+    const handleMinuteBlur = useCallback(
+      () => handleSegmentBlur("minutes", minuteText),
+      [handleSegmentBlur, minuteText],
+    );
+
+    return (
+      <div
+        className={styles.osdkTimePickerRoot}
+        role="group"
+        aria-label={label}
+      >
+        <Input
+          type="text"
+          inputMode="numeric"
+          pattern={NUMERIC_INPUT_PATTERN}
+          value={hourText}
+          onValueChange={handleHourChange}
+          onBlur={handleHourBlur}
+          className={styles.osdkTimePickerInput}
+          aria-label={`${label} hours`}
+          aria-invalid={hourInvalid || undefined}
+        />
+        <span className={styles.osdkTimePickerSeparator} aria-hidden="true">
+          :
+        </span>
+        <Input
+          type="text"
+          inputMode="numeric"
+          pattern={NUMERIC_INPUT_PATTERN}
+          value={minuteText}
+          onValueChange={handleMinuteChange}
+          onBlur={handleMinuteBlur}
+          className={styles.osdkTimePickerInput}
+          aria-label={`${label} minutes`}
+          aria-invalid={minuteInvalid || undefined}
+        />
+      </div>
+    );
+  });
+
+function createInternalSegments(
+  valueTimestamp: number | null,
+  segments: TimeSegments,
+): InternalSegments {
+  return { valueTimestamp, ...segments };
+}
+
+function replaceSegmentText(
+  segments: TimeSegments,
+  {
+    segment,
+    nextText,
+  }: {
+    segment: TimeSegment;
+    nextText: string;
+  },
+): TimeSegments {
+  return {
+    ...segments,
+    [segment]: nextText,
+  };
+}
+
+function segmentsFromTimestamp(valueTimestamp: number | null): TimeSegments {
+  if (valueTimestamp == null) {
+    return {
+      hours: formatSegment(0, "hours"),
+      minutes: formatSegment(0, "minutes"),
+    };
   }
+  const value = new Date(valueTimestamp);
+  return {
+    hours: formatSegment(value.getHours(), "hours"),
+    minutes: formatSegment(value.getMinutes(), "minutes"),
+  };
+}
 
-  const handleFocus = useCallback(() => {
-    isFocusedRef.current = true;
-  }, []);
+function formatSegment(value: number, segment: TimeSegment): string {
+  // Hours stay compact while minutes stay two digits so the HH:mm control
+  // remains easy to scan.
+  return segment === "hours" ? String(value) : String(value).padStart(2, "0");
+}
 
-  const handleBlur = useCallback(() => {
-    isFocusedRef.current = false;
-    onChange(localValue);
-  }, [onChange, localValue]);
+function parseNumber(text: string): number | undefined {
+  if (!/^\d{1,2}$/.test(text)) {
+    return undefined;
+  }
+  const parsed = Number(text);
+  return Number.isNaN(parsed) ? undefined : parsed;
+}
 
-  return (
-    <Input
-      type="time"
-      value={localValue}
-      onValueChange={setLocalValue}
-      onFocus={handleFocus}
-      onBlur={handleBlur}
-      className={styles.osdkTimePickerInput}
-      aria-label={label}
-    />
-  );
+function parseSegment(
+  text: string,
+  segment: TimeSegment,
+): number | undefined {
+  const parsed = parseNumber(text);
+  if (parsed == null) {
+    return undefined;
+  }
+  const { min, max } = SEGMENT_LIMITS[segment];
+  return parsed >= min && parsed <= max ? parsed : undefined;
+}
+
+function isSegmentInvalid(text: string, segment: TimeSegment): boolean {
+  return parseSegment(text, segment) == null;
+}
+
+function clampSegment(value: number, segment: TimeSegment): number {
+  const { min, max } = SEGMENT_LIMITS[segment];
+  return Math.min(Math.max(value, min), max);
 }

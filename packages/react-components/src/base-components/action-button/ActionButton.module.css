@@ -16,12 +16,11 @@
 
 .button {
   min-height: var(--osdk-button-min-height);
-  padding: calc(var(--osdk-surface-spacing) * 1.5)
-    calc(var(--osdk-surface-spacing) * 1.75);
+  padding: var(--osdk-button-padding-block) var(--osdk-button-padding-inline);
   border: var(--osdk-button-border);
-  border-radius: var(--osdk-surface-border-radius);
+  border-radius: var(--osdk-button-border-radius);
   box-shadow: var(--osdk-button-shadow);
-  font-size: var(--osdk-typography-size-body-medium);
+  font-size: var(--osdk-button-font-size);
   cursor: pointer;
 
   &:focus-visible {
@@ -61,4 +60,27 @@
   &:active:not(:disabled) {
     background-color: var(--osdk-button-primary-bg-active);
   }
+}
+
+.minimalButton {
+  background-color: var(--osdk-button-minimal-bg);
+  border: none;
+  color: var(--osdk-button-minimal-color);
+
+  &:hover:not(:disabled) {
+    background-color: var(--osdk-button-minimal-bg-hover);
+  }
+
+  &:active:not(:disabled) {
+    background-color: var(--osdk-button-minimal-bg-active);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.primaryButton.minimalButton {
+  color: var(--osdk-button-primary-bg);
 }

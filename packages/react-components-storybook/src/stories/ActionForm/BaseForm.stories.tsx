@@ -36,7 +36,7 @@ import { Employee } from "../../types/Employee.js";
  * This type covers the uncontrolled variant used by most stories.
  */
 interface BaseFormStoryProps {
-  formTitle?: string;
+  formTitle?: string | null;
   formContent: ReadonlyArray<FormContentItem>;
   onSubmit: (formState: Record<string, unknown>) => void;
   isSubmitDisabled?: boolean;
@@ -180,8 +180,7 @@ function SubmitToast(): React.ReactElement | null {
 }
 
 const meta: Meta<BaseFormStoryProps> = {
-  title: "Experimental/BaseForm",
-  tags: ["experimental"],
+  title: "Experimental/ActionForm/Building Blocks/BaseForm",
   component: BaseForm,
   decorators: [
     (Story) => (
@@ -199,6 +198,12 @@ const meta: Meta<BaseFormStoryProps> = {
     },
     controls: {
       expanded: true,
+    },
+    docs: {
+      description: {
+        component:
+          "BaseForm is the lower-level form renderer used by ActionForm. Use it directly when you already have form content definitions or need custom form composition.",
+      },
     },
   },
   argTypes: {
@@ -475,6 +480,44 @@ export const Pending: Story = {
         code: `<BaseForm
   formContent={formContent}
   isPending={true}
+  onSubmit={(formState) => console.log("Submitted:", formState)}
+/>`,
+      },
+    },
+  },
+};
+
+const switchFormContent: ReadonlyArray<FormContentItem> = [
+  field({
+    fieldKey: "isRemote",
+    fieldComponent: "SWITCH",
+    label: "Remote employee",
+    helperText: "Use a switch for boolean settings that map to on/off state.",
+    fieldComponentProps: {},
+  }),
+];
+
+export const WithSwitch: Story = {
+  args: {
+    formTitle: "Update employee",
+    formContent: switchFormContent,
+    onSubmit: handleSubmit,
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `const formContent = [
+  {
+    fieldKey: "isRemote",
+    fieldComponent: "SWITCH",
+    label: "Remote employee",
+    fieldComponentProps: {},
+  },
+];
+
+<BaseForm
+  formTitle="Update employee"
+  formContent={formContent}
   onSubmit={(formState) => console.log("Submitted:", formState)}
 />`,
       },

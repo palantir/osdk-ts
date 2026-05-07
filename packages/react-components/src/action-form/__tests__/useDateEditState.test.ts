@@ -404,7 +404,7 @@ describe("useDateEditState", () => {
         {
           initialProps: makeConfig({
             value: new Date(2024, 0, 15),
-            displayFormatFn: formatDateForDisplay, // locale format
+            displayFormatFn: formatDateForDisplay, // custom display format
             editFormatFn: formatDateForInput,
           }),
         },

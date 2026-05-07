@@ -21,8 +21,8 @@ export interface UseDateEditStateConfig {
   /** The current committed date value (controlled by the parent). */
   value: Date | null;
   /**
-   * Formats the date when the input is idle (not focused). Can be locale-friendly
-   * like "Jan 15, 2024" — it doesn't need to be parsable since the user isn't typing.
+   * Formats the date when the input is idle (not focused). It doesn't need to
+   * be parsable since the user isn't typing.
    * When no custom formatDate prop is provided, this is the same as editFormatFn.
    */
   displayFormatFn: (date: Date) => string;
@@ -103,10 +103,9 @@ export function useDateEditState({
   }
 
   // During editing the user needs parsable text they can modify and that
-  // round-trips through parseFn (e.g. "2024-01-15"). When idle the input
-  // shows a locale-friendly string that may not be parsable (e.g. "Jan 15, 2024")
-  // but is more readable. displayedValue is the single source of truth
-  // for the input's visible text.
+  // round-trips through parseFn (e.g. "2024-01-15"). When idle the input may
+  // show a different display string. displayedValue is the single source of
+  // truth for the input's visible text.
   const displayedValue = isEditing
     ? inputValue
     : (value != null ? displayFormatFn(value) : "");

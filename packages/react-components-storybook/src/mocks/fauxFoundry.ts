@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { FauxFoundry } from "@osdk/faux";
+import { FauxFoundry, TypeHelpers } from "@osdk/faux";
 import type { Employee } from "../types/Employee.js";
 import { employeeData } from "./employeeData.js";
 import { employeeMetadata } from "./employeeMetadata.js";
@@ -34,6 +34,30 @@ const SAMPLE_PDF_PATH =
 
 export const MEDIA_EMPLOYEE_PK = 657495071;
 
+export const updateEmployeeStoryAction = TypeHelpers
+  .actionTypeBuilder(
+    TypeHelpers.createActionType({
+      apiName: "updateEmployeeStoryAction",
+      displayName: "Update employee",
+      parameters: {},
+    }),
+  )
+  .addParameter("fullName", "string", true)
+  .addParameter("yearsExperience", "integer", false)
+  .addParameter("isRemote", "boolean", false)
+  .build();
+
+export const toggleRemoteStoryAction = TypeHelpers
+  .actionTypeBuilder(
+    TypeHelpers.createActionType({
+      apiName: "toggleRemoteStoryAction",
+      displayName: "Toggle remote status",
+      parameters: {},
+    }),
+  )
+  .addParameter("isRemote", "boolean", false)
+  .build();
+
 let isInitialized = false;
 
 export async function setupFauxFoundry(): Promise<void> {
@@ -49,6 +73,15 @@ export async function setupFauxFoundry(): Promise<void> {
   // Register Employee object type using metadata from JSON
   fauxFoundry.getDefaultOntology().registerObjectType<Employee>(
     employeeMetadata,
+  );
+
+  fauxFoundry.getDefaultOntology().registerActionType(
+    updateEmployeeStoryAction.actionTypeV2,
+    () => undefined,
+  );
+  fauxFoundry.getDefaultOntology().registerActionType(
+    toggleRemoteStoryAction.actionTypeV2,
+    () => undefined,
   );
 
   // Add mock data from JSON file

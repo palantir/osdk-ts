@@ -19,6 +19,7 @@
   --osdk-input-placeholder-color: var(--osdk-typography-color-muted);
   --osdk-input-font-size: var(--osdk-typography-size-body-medium);
   --osdk-input-font-family: var(--osdk-typography-family-default);
+  --osdk-input-line-height: var(--osdk-typography-line-height-default);
 
   /* Input transitions */
   --osdk-input-transition-duration: var(--osdk-emphasis-transition-duration);
