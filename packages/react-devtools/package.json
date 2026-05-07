@@ -1,6 +1,6 @@
 {
   "name": "@osdk/react-devtools",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "Developer tools and debugging utilities for OSDK React Toolkit",
   "license": "Apache-2.0",
   "repository": {
