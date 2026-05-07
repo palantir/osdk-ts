@@ -1117,17 +1117,13 @@ export const InsideBlueprintDialog: Story = {
     docs: {
       source: {
         code: `function BlueprintDialogBaseForm() {
-  const portalContainerRef = useRef(null);
-
   return (
     <Dialog isOpen={true} title="Action form">
-      <div ref={portalContainerRef}>
         <BaseForm
           formContent={formContent}
           onSubmit={handleSubmit}
           portalContainer={portalContainerRef}
         />
-      </div>
     </Dialog>
   );
 }`,

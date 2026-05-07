@@ -16,7 +16,7 @@
 
 import { Error as ErrorIcon } from "@blueprintjs/icons";
 import classNames from "classnames";
-import React, { memo, useCallback, useMemo, useState } from "react";
+import React, { memo, useCallback, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { ActionButton } from "../base-components/action-button/ActionButton.js";
 import { SkeletonBar } from "../base-components/skeleton/SkeletonBar.js";
@@ -41,8 +41,9 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
   className,
   submitButtonText = "Submit",
   submitButtonVariant = "primary",
-  portalContainer,
+  // portalContainer,
 }: BaseFormProps): React.ReactElement {
+  const portalContainerRef = useRef(null);
   const isControlled = controlledFormState != null;
 
   const allFieldDefinitions = useMemo(
@@ -127,6 +128,7 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
 
   return (
     <form
+      ref={portalContainerRef}
       className={classNames(styles.osdkForm, className)}
       // Workshop widgets can run in iframes without `allow-forms`, where
       // native form submission is blocked. Keep the form landmark, but do not
@@ -152,7 +154,7 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
                 fieldDef={item.definition}
                 control={control}
                 onExternalChange={handleFieldChange}
-                portalContainer={portalContainer}
+                portalContainer={portalContainerRef}
               />
             );
           }
@@ -172,7 +174,7 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
                   fieldDef={fieldDef}
                   control={control}
                   onExternalChange={handleFieldChange}
-                  portalContainer={portalContainer}
+                  portalContainer={portalContainerRef}
                 />
               ))}
             </FormSection>
