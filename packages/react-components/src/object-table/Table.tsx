@@ -47,7 +47,7 @@ declare module "@tanstack/react-table" {
     columnName?: string;
     isAsyncColumn?: boolean;
     isVisible?: boolean;
-    editable?: boolean | ((rowData: TData) => boolean);
+    editable?: boolean | ((object: TData) => boolean);
     dataType?: string;
     editFieldConfig?: EditFieldConfig<TData>;
     validateEdit?: (value: unknown) => Promise<string | undefined>;
@@ -87,8 +87,8 @@ export interface BaseTableProps<
   headerMenuFeatureFlags?: HeaderMenuFeatureFlags;
   editableConfig?: EditableConfig<TData, unknown>;
   getRowAttributes?: (
-    rowData: TData,
-  ) => Record<string, string | boolean | undefined>;
+    object: TData,
+  ) => Record<string, string | undefined>;
   /**
    * Whether to render the bottom edit footer. Defaults to `true`; the
    * footer is only rendered when the table has at least one editable
@@ -123,14 +123,9 @@ function BaseTableInner<
     headerMenuFeatureFlags,
     editableConfig,
     getRowAttributes,
-    showEditFooter: showEditFooterProp = true,
+    showEditFooter = true,
   }: BaseTableProps<TData>,
 ): ReactElement {
-  // The footer is required to show Submit Edits / Edit Table buttons
-  const showEditFooter = editableConfig?.editModeState.type === "manual"
-    || editableConfig?.onSubmitEdits != null
-    || showEditFooterProp;
-
   const tableContainerRef = useRef<HTMLDivElement>(null);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [focusedRowId, setFocusedRowId] = useState<string | null>(null);
