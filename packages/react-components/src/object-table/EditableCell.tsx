@@ -217,9 +217,14 @@ function EditableCellInner<TData extends RowData, CellValue = unknown>({
       return;
     }
 
+    // No-op when the input wasn't actually changed by the user
+    if (inputValue === valueToString(currentValue)) {
+      return;
+    }
+
     const parsedValue = parseValueByType(inputValue, dataType) as CellValue;
     commitEdit(parsedValue);
-  }, [inputValue, dataType, commitEdit]);
+  }, [inputValue, currentValue, dataType, commitEdit]);
 
   const handleInputChange = useCallback((value: string) => {
     // Cancel any in-flight validation
