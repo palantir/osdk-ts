@@ -36,9 +36,10 @@
   border: var(--osdk-select-border-width, var(--osdk-surface-border-width))
     solid
     var(--osdk-select-border-color, var(--osdk-surface-border-color-default));
+  box-shadow: var(--osdk-button-shadow);
   background-color: var(
     --osdk-select-trigger-bg,
-    var(--osdk-surface-background-color-default-rest)
+    var(--osdk-button-secondary-bg)
   );
   color: var(
     --osdk-select-trigger-color,
@@ -73,14 +74,14 @@
   &:hover {
     background-color: var(
       --osdk-select-trigger-bg-hover,
-      var(--osdk-surface-background-color-default-hover)
+      var(--osdk-button-secondary-bg-hover)
     );
   }
 
   &:active {
     background-color: var(
       --osdk-select-trigger-bg-active,
-      var(--osdk-surface-background-color-default-active)
+      var(--osdk-button-secondary-bg-active)
     );
   }
 

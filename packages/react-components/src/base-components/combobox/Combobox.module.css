@@ -42,9 +42,10 @@
       --osdk-combobox-trigger-border-color,
       var(--osdk-surface-border-color-default)
     );
+  box-shadow: var(--osdk-button-shadow);
   background-color: var(
     --osdk-combobox-trigger-bg,
-    var(--osdk-surface-background-color-default-rest)
+    var(--osdk-button-secondary-bg)
   );
   color: var(
     --osdk-combobox-trigger-color,
@@ -79,14 +80,14 @@
   &:hover {
     background-color: var(
       --osdk-combobox-trigger-bg-hover,
-      var(--osdk-surface-background-color-default-hover)
+      var(--osdk-button-secondary-bg-hover)
     );
   }
 
   &:active {
     background-color: var(
       --osdk-combobox-trigger-bg-active,
-      var(--osdk-surface-background-color-default-active)
+      var(--osdk-button-secondary-bg-active)
     );
   }
 
@@ -121,14 +122,14 @@
   &:hover {
     background-color: var(
       --osdk-combobox-trigger-bg,
-      var(--osdk-surface-background-color-default-rest)
+      var(--osdk-button-secondary-bg)
     );
   }
 
   &:active {
     background-color: var(
       --osdk-combobox-trigger-bg,
-      var(--osdk-surface-background-color-default-rest)
+      var(--osdk-button-secondary-bg)
     );
   }
 }

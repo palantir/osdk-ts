@@ -376,6 +376,8 @@ describe(useColumnDefs, () => {
       const mockCellContext = {
         row: { original: mockObject },
         getValue: () => "John",
+        table: { options: { meta: {} } },
+        column: { columnDef: { meta: {} } },
       };
 
       if (typeof nameColumn.cell === "function") {
@@ -389,6 +391,125 @@ describe(useColumnDefs, () => {
         { type: "property", id: "name" },
       );
     });
+
+    it(
+      "uses custom renderCell when column is editable but table is not in edit mode",
+      async () => {
+        const deferred = pDefer();
+        const fakeClient = {
+          fetchMetadata: vitest.fn(() => deferred.promise),
+        } as unknown as Client;
+
+        const wrapper = createWrapper(fakeClient);
+
+        const customRenderCell = vitest.fn((
+          object: Osdk.Instance<TestObject>,
+        ) => <div>Custom: {(object as unknown as { name: string }).name}</div>);
+
+        const columnDefinitions: Array<ColumnDefinition<TestObject, {}, {}>> = [
+          {
+            locator: { type: "property", id: "name" as TestObjectKeys },
+            editable: true,
+            renderCell: customRenderCell,
+          },
+        ];
+
+        const { result } = renderHook(
+          () => useColumnDefs(TestObjectType, columnDefinitions),
+          { wrapper },
+        );
+
+        deferred.resolve(mockMetadata);
+
+        await waitFor(() => {
+          expect(result.current.loading).toBe(false);
+        });
+
+        const nameColumn = result.current.columns[0];
+        const mockObject = { name: "John" } as unknown as Osdk.Instance<
+          TestObject
+        >;
+        const mockCellContext = {
+          row: { original: mockObject },
+          getValue: () => "John",
+          table: {
+            options: {
+              meta: { onCellEdit: vitest.fn(), isInEditMode: false },
+            },
+          },
+          column: { columnDef: { meta: { editable: true } } },
+        };
+
+        if (typeof nameColumn.cell === "function") {
+          (nameColumn.cell as unknown as (
+            ctx: typeof mockCellContext,
+          ) => unknown)(mockCellContext);
+        }
+
+        expect(customRenderCell).toHaveBeenCalledWith(
+          mockObject,
+          { type: "property", id: "name" },
+        );
+      },
+    );
+
+    it(
+      "skips renderCell and renders editable cell when in edit mode",
+      async () => {
+        const deferred = pDefer();
+        const fakeClient = {
+          fetchMetadata: vitest.fn(() => deferred.promise),
+        } as unknown as Client;
+
+        const wrapper = createWrapper(fakeClient);
+
+        const customRenderCell = vitest.fn((
+          object: Osdk.Instance<TestObject>,
+        ) => <div>Custom: {(object as unknown as { name: string }).name}</div>);
+
+        const columnDefinitions: Array<ColumnDefinition<TestObject, {}, {}>> = [
+          {
+            locator: { type: "property", id: "name" as TestObjectKeys },
+            editable: true,
+            renderCell: customRenderCell,
+          },
+        ];
+
+        const { result } = renderHook(
+          () => useColumnDefs(TestObjectType, columnDefinitions),
+          { wrapper },
+        );
+
+        deferred.resolve(mockMetadata);
+
+        await waitFor(() => {
+          expect(result.current.loading).toBe(false);
+        });
+
+        const nameColumn = result.current.columns[0];
+        const mockObject = { name: "John" } as unknown as Osdk.Instance<
+          TestObject
+        >;
+        const mockCellContext = {
+          row: { original: mockObject, id: "row-0" },
+          column: { id: "name", columnDef: { meta: { editable: true } } },
+          getValue: () => "John",
+          table: {
+            options: {
+              meta: { onCellEdit: vitest.fn(), isInEditMode: true },
+            },
+          },
+        };
+
+        if (typeof nameColumn.cell === "function") {
+          (nameColumn.cell as unknown as (
+            ctx: typeof mockCellContext,
+          ) => unknown)(mockCellContext);
+        }
+
+        expect(customRenderCell).not.toHaveBeenCalled();
+      },
+    );
 
     it("defaults to getValue when renderCell is not provided", async () => {
       const deferred = pDefer();

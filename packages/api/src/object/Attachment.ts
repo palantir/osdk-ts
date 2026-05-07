@@ -15,13 +15,30 @@
  */
 
 export interface Attachment {
+  /** The attachment RID, identifying this attachment within Foundry. */
   rid: string;
   /**
    * Fetches metadata for an attachment
+   * @example
+   * ```ts
+   * const employee = await client(Employee).fetchOne(12345);
+   * const attachmentMetadata = await employee.resume?.fetchMetadata();
+   * console.log(attachmentMetadata?.filename, attachmentMetadata?.sizeBytes);
+   * ```
+   * @returns the attachment metadata, including filename, size, and media type
    */
   fetchMetadata(): Promise<AttachmentMetadata>;
   /**
    * Fetches actual content of attachment in Blob form
+   * @example
+   * ```ts
+   * const employee = await client(Employee).fetchOne(12345);
+   * const attachmentContent = await employee.resume?.fetchContents();
+   * if (attachmentContent?.ok) {
+   *   const data = await attachmentContent.blob();
+   * }
+   * ```
+   * @returns a `Response` whose body contains the attachment's binary contents
    */
   fetchContents(): Promise<Response>;
 }

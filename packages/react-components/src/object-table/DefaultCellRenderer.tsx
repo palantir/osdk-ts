@@ -22,6 +22,7 @@ import styles from "./EditableCell.module.css";
 import { isAsyncCellData } from "./utils/AsyncCellData.js";
 import { isCellEditable } from "./utils/editableUtils.js";
 import { getCellId } from "./utils/getCellId.js";
+import { shouldShowEditableCell } from "./utils/shouldShowEditableCell.js";
 
 export function renderDefaultCell<TData extends RowData>(
   cellContext: CellContext<TData, unknown>,
@@ -44,7 +45,14 @@ export function renderDefaultCell<TData extends RowData>(
   const rowData = cellContext.row.original;
   const isEditable = isCellEditable(columnMeta?.editable, rowData);
 
-  if (!isEditable || !meta?.onCellEdit || !meta?.isInEditMode) {
+  if (
+    !meta?.onCellEdit // Type guard
+    || !shouldShowEditableCell(
+      isEditable,
+      meta?.onCellEdit,
+      meta?.isInEditMode,
+    )
+  ) {
     // Align non editable cells with the editable cells
     if (meta?.isInEditMode) {
       return (
@@ -53,6 +61,7 @@ export function renderDefaultCell<TData extends RowData>(
         </span>
       );
     }
+
     return <>{cellValue}</>;
   }
 

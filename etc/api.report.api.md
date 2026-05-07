@@ -273,8 +273,7 @@ export interface AsyncIterArgs<
 export interface Attachment {
     	fetchContents(): Promise<Response>;
     	fetchMetadata(): Promise<AttachmentMetadata>;
-    	// (undocumented)
-    rid: string;
+    	rid: string;
 }
 
 // @public (undocumented)
@@ -868,25 +867,17 @@ export type LinkTypeApiNamesFor<Q extends ObjectOrInterfaceDefinition> = Extract
 
 // @public (undocumented)
 export interface Logger {
-    	// (undocumented)
-    child(bindings: Record<string, any>, options?: {
+    	child(bindings: Record<string, any>, options?: {
         		level?: string
         		msgPrefix?: string
         	}): Logger;
-    	// (undocumented)
-    debug: Logger.LogFn;
-    	// (undocumented)
-    error: Logger.LogFn;
-    	// (undocumented)
-    fatal: Logger.LogFn;
-    	// (undocumented)
-    info: Logger.LogFn;
-    	// (undocumented)
-    isLevelEnabled(level: string): boolean;
-    	// (undocumented)
-    trace: Logger.LogFn;
-    	// (undocumented)
-    warn: Logger.LogFn;
+    	debug: Logger.LogFn;
+    	error: Logger.LogFn;
+    	fatal: Logger.LogFn;
+    	info: Logger.LogFn;
+    	isLevelEnabled(level: string): boolean;
+    	trace: Logger.LogFn;
+    	warn: Logger.LogFn;
 }
 
 // @public (undocumented)
@@ -913,7 +904,8 @@ export interface Media {
     	fetchContents(): Promise<Response>;
     	fetchMetadata(): Promise<MediaMetadata_2>;
     	getMediaReference(): MediaReference;
-    	getMediaSourceLocation?(): MediaPropertyLocation;
+    	// (undocumented)
+    getMediaSourceLocation?(): MediaPropertyLocation;
 }
 
 // @public

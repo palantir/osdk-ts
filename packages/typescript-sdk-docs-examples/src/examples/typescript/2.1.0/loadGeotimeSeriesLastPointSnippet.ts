@@ -23,5 +23,5 @@ import type { Osdk } from "@osdk/client";
 import { type Employee } from "../../../generatedNoCheck/index.js";
 
 function getLastTimeSeriesPoint(obj: Osdk.Instance<Employee>) {
-    return obj.travelHistory?.getLatestValue();
+  return obj.travelHistory?.getLatestValue();
 }
