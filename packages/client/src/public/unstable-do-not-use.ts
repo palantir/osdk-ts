@@ -54,6 +54,13 @@ export type {
 /** @deprecated Import from `@osdk/client/observable` instead. */
 export type { Observer } from "../observable/ObservableClient/common.js";
 /** @deprecated Import from `@osdk/client/observable` instead. */
+export type {
+  MediaContentObserveOptions,
+  MediaContentPayload,
+  MediaMetadataObserveOptions,
+  MediaMetadataPayload,
+} from "../observable/ObservableClient/MediaObservableTypes.js";
+/** @deprecated Import from `@osdk/client/observable` instead. */
 export type { ObserveLinks } from "../observable/ObservableClient/ObserveLink.js";
 /** @deprecated Import from `@osdk/client/observable` instead. */
 export type { QueryParameterType, QueryReturnType } from "../queries/types.js";

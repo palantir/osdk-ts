@@ -36,6 +36,8 @@ export type {
   UseOsdkFunctionsProps,
   UseOsdkFunctionsResult,
 } from "./new/useOsdkFunctions.js";
+export { useOsdkMediaUpload } from "./new/useOsdkMediaUpload.js";
+export type { UseOsdkMediaUploadResult } from "./new/useOsdkMediaUpload.js";
 export { useOsdkObject } from "./new/useOsdkObject.js";
 export type {
   UseOsdkListResult,
