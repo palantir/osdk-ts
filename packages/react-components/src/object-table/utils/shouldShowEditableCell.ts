@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import type { EditablePredicate } from "./editableUtils.js";
+
 /**
  * Determines if a cell should be rendered as editable
  *
@@ -22,12 +24,13 @@
  * @param isInEditMode - Whether the table is currently in edit mode
  * @returns true if the cell should be rendered with edit controls
  */
-export function shouldShowEditableCell(
-  editable: boolean | undefined,
+export function shouldShowEditableCell<TData>(
+  editable: EditablePredicate<TData> | undefined,
   onCellEdit: unknown,
   isInEditMode: boolean | undefined,
 ): boolean {
-  return editable === true
+  return editable != null
+    && editable !== false
     && onCellEdit != null
     && isInEditMode === true;
 }

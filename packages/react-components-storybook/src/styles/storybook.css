@@ -99,6 +99,15 @@ body {
   font-family: inherit;
 }
 
+/* Row highlight for RowAttributesForStyling story */
+.customTableStyling {
+  tr[data-highlight-row="true"] {
+    --osdk-table-row-bg-default: #f0f8ff;
+    --osdk-table-row-bg-alternate: #e8f4ff;
+    --osdk-table-row-bg-hover: #e0f0ff;
+  }
+}
+
 .osdkCodeOutput {
   margin: 0;
   padding: calc(var(--osdk-surface-spacing) * 3);

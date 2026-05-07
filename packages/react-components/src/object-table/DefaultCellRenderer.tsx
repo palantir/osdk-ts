@@ -18,7 +18,9 @@ import type { CellContext, RowData } from "@tanstack/react-table";
 import React from "react";
 import { AsyncValueCell } from "./components/AsyncValueCell.js";
 import { EditableCell } from "./EditableCell.js";
+import styles from "./EditableCell.module.css";
 import { isAsyncCellData } from "./utils/AsyncCellData.js";
+import { isCellEditable } from "./utils/editableUtils.js";
 import { getCellId } from "./utils/getCellId.js";
 import { shouldShowEditableCell } from "./utils/shouldShowEditableCell.js";
 
@@ -40,14 +42,26 @@ export function renderDefaultCell<TData extends RowData>(
     return <AsyncValueCell {...asyncCellData} />;
   }
 
+  const rowData = cellContext.row.original;
+  const isEditable = isCellEditable(columnMeta?.editable, rowData);
+
   if (
     !meta?.onCellEdit // Type guard
     || !shouldShowEditableCell(
-      columnMeta?.editable,
+      isEditable,
       meta?.onCellEdit,
       meta?.isInEditMode,
     )
   ) {
+    // Align non editable cells with the editable cells
+    if (meta?.isInEditMode) {
+      return (
+        <span className={styles.nonEditableCellInEditMode}>
+          {cellValue as React.ReactNode}
+        </span>
+      );
+    }
+
     return <>{cellValue}</>;
   }
 
@@ -74,7 +88,7 @@ export function renderDefaultCell<TData extends RowData>(
       onCellEdit={meta.onCellEdit}
       onCellValidationError={meta.onCellValidationError}
       clearCellValidationError={meta.clearCellValidationError}
-      originalRowData={cellContext.row.original}
+      originalRowData={rowData}
       rowId={rowId}
       columnId={columnId}
       validateEdit={columnMeta?.validateEdit}
