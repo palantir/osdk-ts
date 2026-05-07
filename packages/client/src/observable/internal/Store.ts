@@ -541,7 +541,12 @@ export class Store {
       } else if (cacheKey.type === "mediaMetadata") {
         return cacheKey.otherKeys[0];
       } else if (cacheKey.type === "mediaContent") {
-        return cacheKey.otherKeys[0] || undefined;
+        // MediaHelper.getContentCacheKey uses an empty-string sentinel for
+        // sources that have no associated object type (e.g. transient or
+        // attachment media). Map it back to undefined so the caller treats it
+        // as "no object type" and skips object-type-based propagation.
+        const objectType = cacheKey.otherKeys[0];
+        return objectType === "" ? undefined : objectType;
       }
       // Links would have apiName at a different position
     }

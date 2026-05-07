@@ -298,15 +298,13 @@ export class MediaHelper {
   dispose(): void {
     this.blobManager.dispose();
 
-    for (const cacheKey of this.store.queries.keys()) {
-      if (
-        cacheKey.type === "mediaMetadata" || cacheKey.type === "mediaContent"
-      ) {
-        const query = this.store.queries.peek(cacheKey);
-        if (query) {
-          query.dispose?.();
-        }
-      }
+    // Snapshot the keys before mutating — Queries.delete (called below) mutates
+    // the underlying Map during iteration.
+    const mediaKeys = Array.from(this.store.queries.keys()).filter((key) =>
+      key.type === "mediaMetadata" || key.type === "mediaContent"
+    );
+    for (const cacheKey of mediaKeys) {
+      this.store.queries.delete(cacheKey);
     }
   }
 }
