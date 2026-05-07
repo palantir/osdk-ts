@@ -16,6 +16,7 @@
 
 import type { ObjectTypeDefinition, WhereClause } from "@osdk/api";
 import { useOsdkMetadata } from "@osdk/react";
+import { isEqual } from "lodash-es";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { assertUnreachable } from "../../shared/assertUnreachable.js";
 import type { FilterListProps } from "../FilterListApi.js";
@@ -186,24 +187,33 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
     onFilterClauseChangedRef.current?.(whereClause);
   }, [whereClause]);
 
+  // Preserve per-key clause references when content hasn't changed so
+  // FilterInput.memo can hold and aggregations don't refetch unnecessarily.
+  const previousClausesRef = useRef<Map<string, WhereClause<Q>>>(new Map());
+
   const perFilterWhereClauses = useMemo(() => {
-    const map = new Map<string, WhereClause<Q>>();
+    const next = new Map<string, WhereClause<Q>>();
     if (!filterDefinitions) {
-      return map;
+      previousClausesRef.current = next;
+      return next;
     }
     for (const definition of filterDefinitions) {
       const key = getFilterKey(definition);
-      map.set(
+      const fresh = buildWhereClause(
+        filterDefinitions,
+        filterStates,
+        propertyTypes,
         key,
-        buildWhereClause(
-          filterDefinitions,
-          filterStates,
-          propertyTypes,
-          key,
-        ),
       );
+      const prev = previousClausesRef.current.get(key);
+      if (prev != null && isEqual(prev, fresh)) {
+        next.set(key, prev);
+      } else {
+        next.set(key, fresh);
+      }
     }
-    return map;
+    previousClausesRef.current = next;
+    return next;
   }, [filterDefinitions, filterStates, propertyTypes]);
 
   const activeFilterCount = useMemo(() => {
