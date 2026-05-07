@@ -19,6 +19,8 @@ import classnames from "classnames";
 import React, { memo, useCallback, useMemo, useState } from "react";
 import { Combobox } from "../../../base-components/combobox/Combobox.js";
 import type { PropertyAggregationValue } from "../../types/AggregationTypes.js";
+import { isEmptyValue } from "../../utils/filterValues.js";
+import { NoValueLabel } from "./NoValueLabel.js";
 import sharedStyles from "./shared.module.css";
 import styles from "./TextTagsInput.module.css";
 
@@ -34,14 +36,17 @@ const TagItem = memo(function TagItem({ tag, onRemove }: TagItemProps) {
     onRemove(tag);
   }, [tag, onRemove]);
 
+  const isEmpty = isEmptyValue(tag);
+  const displayLabel = isEmpty ? "No value" : tag;
+
   return (
     <span className={sharedStyles.tag}>
-      {tag}
+      {isEmpty ? <NoValueLabel /> : tag}
       <Button
         type="button"
         className={sharedStyles.tagRemove}
         onClick={handleRemove}
-        aria-label={`Remove ${tag}`}
+        aria-label={`Remove ${displayLabel}`}
       >
         ×
       </Button>
