@@ -163,8 +163,15 @@ export class MediaContentQuery extends Query<
 
     const cachedBlob = this.#blobManager.get(this.#blobCacheKey);
     if (cachedBlob) {
+      // Release both URL slots before re-creating — otherwise a prior preview
+      // refcount leaks until _dispose runs.
       if (this.#activeUrlKey) {
         this.#blobManager.releaseBlobUrl(this.#activeUrlKey);
+        this.#activeUrlKey = undefined;
+      }
+      if (this.#activePreviewUrlKey) {
+        this.#blobManager.releaseBlobUrl(this.#activePreviewUrlKey);
+        this.#activePreviewUrlKey = undefined;
       }
       const url = this.#blobManager.createBlobUrl(this.#blobCacheKey);
       if (url) {
@@ -299,6 +306,40 @@ export class MediaContentQuery extends Query<
       return undefined;
     }
 
+    // Skip optimistic-layer updates: the action will roll back, then a real
+    // commit will fire another change. Acting on the optimistic write would
+    // double the network roundtrips per action.
+    if (_optimisticId != null) {
+      return undefined;
+    }
+
+    // Check deletion first — a deleted object should not trigger a refetch
+    // even if it also appears in the modified/added sets.
+    const pkString = String(this.#primaryKey);
+    for (const cacheKey of changes.deleted) {
+      if (
+        cacheKey.type === "object"
+        && cacheKey.otherKeys[0] === this.#objectType
+        && String(cacheKey.otherKeys[1]) === pkString
+      ) {
+        // Drop URLs we hold so the underlying blob can be evicted.
+        if (this.#activeUrlKey) {
+          this.#blobManager.releaseBlobUrl(this.#activeUrlKey);
+          this.#activeUrlKey = undefined;
+        }
+        if (this.#activePreviewUrlKey) {
+          this.#blobManager.releaseBlobUrl(this.#activePreviewUrlKey);
+          this.#activePreviewUrlKey = undefined;
+        }
+        this.#blobManager.evictIfUnreferenced(this.#blobCacheKey);
+        this.#blobManager.evictIfUnreferenced(`${this.#blobCacheKey}:preview`);
+        this.store.batch({}, (batch) => {
+          this.writeToStore(undefined, "error", batch);
+        });
+        return Promise.resolve();
+      }
+    }
+
     for (
       const objects of [
         changes.modifiedObjects.get(this.#objectType),
@@ -306,24 +347,9 @@ export class MediaContentQuery extends Query<
       ]
     ) {
       for (const obj of objects ?? []) {
-        if (obj.$primaryKey === this.#primaryKey) {
+        if (String(obj.$primaryKey) === pkString) {
           return this.invalidate();
         }
-      }
-    }
-
-    for (const cacheKey of changes.deleted) {
-      if (
-        cacheKey.type === "object"
-        && cacheKey.otherKeys[0] === this.#objectType
-        && cacheKey.otherKeys[1] === this.#primaryKey
-      ) {
-        this.#blobManager.remove(this.#blobCacheKey);
-        this.#blobManager.remove(`${this.#blobCacheKey}:preview`);
-        this.store.batch({}, (batch) => {
-          this.writeToStore(undefined, "error", batch);
-        });
-        return Promise.resolve();
       }
     }
 
@@ -341,8 +367,20 @@ export class MediaContentQuery extends Query<
   };
 
   invalidate(): Promise<void> {
-    this.#blobManager.remove(this.#blobCacheKey);
-    this.#blobManager.remove(`${this.#blobCacheKey}:preview`);
+    // Release our refcounts first so unreferenced cache entries can be evicted
+    // immediately. Active observers (e.g. an <img> already in the DOM rendered
+    // by another query for the same source) keep the URL alive via their own
+    // refcounts — evictIfUnreferenced respects those.
+    if (this.#activeUrlKey) {
+      this.#blobManager.releaseBlobUrl(this.#activeUrlKey);
+      this.#activeUrlKey = undefined;
+    }
+    if (this.#activePreviewUrlKey) {
+      this.#blobManager.releaseBlobUrl(this.#activePreviewUrlKey);
+      this.#activePreviewUrlKey = undefined;
+    }
+    this.#blobManager.evictIfUnreferenced(this.#blobCacheKey);
+    this.#blobManager.evictIfUnreferenced(`${this.#blobCacheKey}:preview`);
 
     this.store.batch({}, (batch) => {
       const entry = batch.read(this.cacheKey);

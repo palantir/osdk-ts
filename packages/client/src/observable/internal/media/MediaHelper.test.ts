@@ -184,11 +184,10 @@ describe("MediaHelper", () => {
       );
     }
 
-    it("getCachedContent returns blob after fetchContent", async () => {
+    it("fetchContent returns a blob from the server", async () => {
       mockFetchResponse();
-      await mediaHelper.fetchContent(coords);
-      const cached = mediaHelper.getCachedContent(coords);
-      expect(cached).toBeInstanceOf(Blob);
+      const blob = await mediaHelper.fetchContent(coords);
+      expect(blob).toBeInstanceOf(Blob);
     });
 
     it("getCachedContent returns undefined when not cached", () => {

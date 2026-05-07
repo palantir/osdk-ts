@@ -121,14 +121,13 @@ async function loadWithPreview(opts: FetchMediaContentOpts): Promise<void> {
     isPreview: true,
   });
 
-  blobManager.remove(blobCacheKey);
+  // Ownership of the preview URL refcount transferred to the consumer via
+  // onResult (MediaContentQuery tracks it as #activePreviewUrlKey and releases
+  // it when the full result lands). Do NOT release here — that would
+  // double-release.
 
   const fullBlob = await fetchContent(source, { preview: false });
   if (isCancelled()) {
-    if (previewUrl) {
-      blobManager.releaseBlobUrl(previewBlobKey);
-    }
-    blobManager.remove(previewBlobKey);
     return;
   }
 
@@ -143,8 +142,6 @@ async function loadWithPreview(opts: FetchMediaContentOpts): Promise<void> {
     blobManager.remove(blobCacheKey);
     return;
   }
-
-  blobManager.releaseBlobUrl(previewBlobKey);
 
   onResult({
     blob: fullBlob,

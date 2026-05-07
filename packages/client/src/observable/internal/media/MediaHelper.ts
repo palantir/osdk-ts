@@ -22,9 +22,7 @@ import type {
 } from "@osdk/api";
 import * as OntologiesV2 from "@osdk/foundry.ontologies";
 import { additionalContext } from "../../../Client.js";
-import type {
-  Observer,
-} from "../../ObservableClient/common.js";
+import type { Observer } from "../../ObservableClient/common.js";
 import type {
   MediaContentObserveOptions,
   MediaContentPayload,
@@ -184,17 +182,14 @@ export class MediaHelper {
     };
   }
 
+  // Fetches a blob from the server. Caching is owned by the caller
+  // (fetchMediaContent / loadDirect / loadWithPreview) so each blob has exactly
+  // one add() per cache key — calling add() here too would risk revoking a URL
+  // that another concurrent caller had already retained.
   async fetchContent(
     mediaOrLocation: MediaSource,
     options?: { preview?: boolean },
   ): Promise<Blob> {
-    const cacheKey = this.getCacheKey(mediaOrLocation);
-
-    const cached = this.blobManager.get(cacheKey);
-    if (cached) {
-      return cached;
-    }
-
     let response: Response;
 
     if ("fetchContents" in mediaOrLocation) {
@@ -220,11 +215,7 @@ export class MediaHelper {
     const arrayBuffer = await response.arrayBuffer();
     const contentType = response.headers.get("content-type")
       || "application/octet-stream";
-    const blob = new Blob([arrayBuffer], { type: contentType });
-
-    this.blobManager.add(cacheKey, blob);
-
-    return blob;
+    return new Blob([arrayBuffer], { type: contentType });
   }
 
   getCachedContent(mediaOrLocation: MediaSource): Blob | undefined {
