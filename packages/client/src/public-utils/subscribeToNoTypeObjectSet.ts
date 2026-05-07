@@ -20,6 +20,7 @@ import type {
 } from "@osdk/api";
 import type { Client } from "../Client.js";
 import { additionalContext } from "../Client.js";
+import { ObjectSetListenerWebsocket } from "../objectSet/ObjectSetListenerWebsocket.js";
 
 /**
  * Subscribes to changes on an object set RID without knowing its underlying
@@ -54,21 +55,16 @@ export function subscribeToNoTypeObjectSet<R extends boolean = false>(
     "includeRid"
   >,
 ): { unsubscribe: () => void } {
-  const clientCtx = client[additionalContext];
-  const pendingSubscribe = import("../objectSet/ObjectSetListenerWebsocket.js")
-    .then(({ ObjectSetListenerWebsocket }) =>
-      ObjectSetListenerWebsocket.getInstance(clientCtx)
-        .subscribeWithoutType(
-          { type: "reference", reference: rid },
-          listener as ObjectSetSubscription.Listener<
-            ObjectOrInterfaceDefinition,
-            never
-          >,
-          opts?.includeRid ?? false,
-        )
+  const unsubscribe = ObjectSetListenerWebsocket
+    .getInstance(client[additionalContext])
+    .subscribeWithoutType(
+      { type: "reference", reference: rid },
+      listener as ObjectSetSubscription.Listener<
+        ObjectOrInterfaceDefinition,
+        never
+      >,
+      opts?.includeRid ?? false,
     );
 
-  return { unsubscribe: async () => (await pendingSubscribe)() } as {
-    unsubscribe: () => void;
-  };
+  return { unsubscribe };
 }

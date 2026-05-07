@@ -255,14 +255,14 @@ export class ObjectSetListenerWebsocket {
    * so emitted `object` payloads carry only `$apiName` (and `$rid` when
    * `shouldLoadRids` is true). `$primaryKey` will be `undefined`.
    */
-  async subscribeWithoutType(
+  subscribeWithoutType(
     objectSet: ObjectSet,
     listener: ObjectSetSubscription.Listener<
       ObjectOrInterfaceDefinition,
       never
     >,
     shouldLoadRids: boolean = false,
-  ): Promise<() => void> {
+  ): () => void {
     const sub: Subscription<ObjectOrInterfaceDefinition, never> = {
       listener: fillOutListener(listener),
       objectSet,
