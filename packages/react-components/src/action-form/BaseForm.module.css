@@ -23,7 +23,7 @@
 .osdkFormFields {
   display: flex;
   flex-direction: column;
-  gap: var(--osdk-form-field-gap);
+  gap: var(--osdk-form-fields-gap);
   padding-block: var(--osdk-form-content-padding-block);
   padding-inline: var(--osdk-form-content-padding-inline);
 }
@@ -63,7 +63,7 @@
 .osdkFormSkeletonField {
   display: flex;
   flex-direction: column;
-  gap: var(--osdk-form-label-field-gap);
+  gap: var(--osdk-form-field-gap);
 }
 
 .osdkFormSkeletonLabel {

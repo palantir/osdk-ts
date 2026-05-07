@@ -17,7 +17,7 @@
 .osdkFormField {
   display: flex;
   flex-direction: column;
-  gap: var(--osdk-form-label-field-gap);
+  gap: var(--osdk-form-field-gap);
 }
 
 .osdkFormFieldLabel {

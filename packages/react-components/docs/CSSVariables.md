@@ -939,11 +939,11 @@ Styling for form components.
 
 #### Layout
 
-| Variable                             | Default Value                           | Description                                      |
-| ------------------------------------ | --------------------------------------- | ------------------------------------------------ |
-| `--osdk-form-field-gap`              | `calc(var(--osdk-surface-spacing) * 4)` | Gap between fields                               |
-| `--osdk-form-content-padding-inline` | `0`                                     | Shared inline padding for form regions           |
-| `--osdk-form-content-padding-block`  | `0`                                     | Content block padding for the form fields region |
+| Variable                             | Default Value                             | Description                                      |
+| ------------------------------------ | ----------------------------------------- | ------------------------------------------------ |
+| `--osdk-form-fields-gap`             | `calc(var(--osdk-surface-spacing) * 1.5)` | Gap between fields                               |
+| `--osdk-form-content-padding-inline` | `0`                                       | Shared inline padding for form regions           |
+| `--osdk-form-content-padding-block`  | `0`                                       | Content block padding for the form fields region |
 
 #### Header
 
@@ -965,12 +965,12 @@ Styling for form components.
 
 #### Labels
 
-| Variable                        | Default Value                               | Description                 |
-| ------------------------------- | ------------------------------------------- | --------------------------- |
-| `--osdk-form-label-font-size`   | `var(--osdk-typography-size-body-medium)`   | Label font size             |
-| `--osdk-form-label-font-weight` | `var(--osdk-typography-weight-bold)`        | Label font weight           |
-| `--osdk-form-label-color`       | `var(--osdk-typography-color-default-rest)` | Label text color            |
-| `--osdk-form-label-field-gap`   | `calc(var(--osdk-surface-spacing) * 1.5)`   | Gap between label and field |
+| Variable                        | Default Value                               | Description                  |
+| ------------------------------- | ------------------------------------------- | ---------------------------- |
+| `--osdk-form-label-font-size`   | `var(--osdk-typography-size-body-medium)`   | Label font size              |
+| `--osdk-form-label-font-weight` | `var(--osdk-typography-weight-bold)`        | Label font weight            |
+| `--osdk-form-label-color`       | `var(--osdk-typography-color-default-rest)` | Label text color             |
+| `--osdk-form-field-gap`         | `var(--osdk-surface-spacing)`               | Gap between items in a field |
 
 #### Validation
 

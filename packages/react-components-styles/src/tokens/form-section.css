@@ -48,7 +48,7 @@
   --osdk-form-section-content-padding-inline: calc(
     var(--osdk-surface-spacing) * 2.5
   );
-  --osdk-form-section-field-gap: var(--osdk-form-field-gap);
+  --osdk-form-section-field-gap: var(--osdk-form-fields-gap);
   --osdk-form-section-grid-column-gap: calc(var(--osdk-surface-spacing) * 4);
 
   /* Minimal style */
