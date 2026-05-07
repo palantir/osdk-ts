@@ -70,14 +70,15 @@ export function supportsExcluding(state: FilterState | undefined): boolean {
 
 /**
  * Returns true if the given value should render as a "No value" placeholder
- * in dropdown options, listogram buckets, tag chips, and trigger summaries.
+ * in dropdown options, listogram buckets, and tag chips.
  *
  * Treats null, undefined, and empty/whitespace strings as empty.
  */
-export function isEmptyValue(value: unknown): boolean {
-  if (value == null) return true;
-  if (typeof value === "string") return value.trim() === "";
-  return false;
+export function isEmptyValue(value: string | null | undefined): boolean {
+  if (value == null) {
+    return true;
+  }
+  return value.trim() === "";
 }
 
 /** Case-insensitive substring filter for search functionality. */

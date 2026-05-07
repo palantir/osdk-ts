@@ -15,7 +15,7 @@
  */
 
 import classnames from "classnames";
-import React from "react";
+import React, { memo } from "react";
 import styles from "./NoValueLabel.module.css";
 
 interface NoValueLabelProps {
@@ -24,13 +24,13 @@ interface NoValueLabelProps {
 
 /**
  * Canonical "No value" rendering for empty/null filter values.
- * Italic, muted span used in dropdowns, listogram buckets, NullValueWrapper,
- * and horizontal-trigger summaries.
+ * Italic, muted span used in dropdowns, listogram buckets, and
+ * NullValueWrapper.
  *
  * Style is configurable via the `--osdk-filter-no-value-color` and
  * `--osdk-filter-no-value-font-style` CSS variables.
  */
-export function NoValueLabel(
+function NoValueLabelInner(
   { className }: NoValueLabelProps,
 ): React.ReactElement {
   return (
@@ -39,3 +39,5 @@ export function NoValueLabel(
     </span>
   );
 }
+
+export const NoValueLabel = memo(NoValueLabelInner) as typeof NoValueLabelInner;

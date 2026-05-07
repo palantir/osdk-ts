@@ -68,23 +68,28 @@ function ListogramInputInner({
 }: ListogramInputProps): React.ReactElement {
   const [isExpanded, setIsExpanded] = useState(false);
 
-  // Aggregations may return separate rows for each empty-ish value
-  // (e.g. "" and undefined). Merge them into a single "No value" row so
-  // the listogram doesn't render duplicate placeholder labels.
+  // Aggregations may return both "" and null as separate rows; merge them
+  // into a single "No value" placeholder at the position of the first match.
   const dedupedValues = useMemo(() => {
     const out: PropertyAggregationValue[] = [];
     let emptyCount = 0;
-    let sawEmpty = false;
+    let firstEmptyIndex = -1;
     for (const v of values) {
-      if (isEmptyValue(v.value)) {
+      if (v.value === "" || v.value == null) {
+        if (firstEmptyIndex === -1) {
+          firstEmptyIndex = out.length;
+        }
         emptyCount += v.count;
-        sawEmpty = true;
       } else {
         out.push(v);
       }
     }
-    if (sawEmpty) {
-      out.push({ value: "", count: emptyCount, isNull: true });
+    if (firstEmptyIndex >= 0 && emptyCount > 0) {
+      out.splice(firstEmptyIndex, 0, {
+        value: "",
+        count: emptyCount,
+        isNull: true,
+      });
     }
     return out;
   }, [values]);
@@ -190,7 +195,7 @@ function ListogramInputInner({
                     || undefined}
                 >
                   {isEmpty
-                    ? <NoValueLabel />
+                    ? <NoValueLabel className={styles.noValueLabel} />
                     : (renderValue?.(value) ?? value)}
                 </span>
                 {showCount && displayMode !== "minimal" && (

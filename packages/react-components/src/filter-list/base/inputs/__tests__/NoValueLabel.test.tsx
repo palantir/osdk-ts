@@ -65,9 +65,4 @@ describe("isEmptyValue", () => {
     expect(isEmptyValue("0")).toBe(false);
     expect(isEmptyValue(" a ")).toBe(false);
   });
-
-  it("treats numbers and booleans as non-empty", () => {
-    expect(isEmptyValue(0)).toBe(false);
-    expect(isEmptyValue(false)).toBe(false);
-  });
 });

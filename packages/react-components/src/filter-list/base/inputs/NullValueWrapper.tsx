@@ -59,7 +59,7 @@ function NullValueWrapperInner({
       >
         <label className={styles.nullLabel}>
           <Checkbox checked={includeNull} onCheckedChange={handleToggle} />
-          <NoValueLabel />
+          <NoValueLabel className={styles.noValueLabel} />
         </label>
         {showNullCount && !error && (
           <span className={styles.count}>

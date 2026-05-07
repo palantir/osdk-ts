@@ -208,17 +208,14 @@
     --osdk-typography-color-default-rest
   );
 
-  /* Canonical "No value" tokens (Item 2). Used by NoValueLabel everywhere. */
+  /* Canonical "No value" tokens. Used by NoValueLabel everywhere.
+     Legacy --osdk-filter-listogram-empty-label-* and
+     --osdk-filter-null-label-* tokens are honored as opt-in overrides
+     by the per-container className passed to NoValueLabel; they are
+     not declared here so that the cascade does not cycle through them. */
   --osdk-filter-no-value-color: var(--osdk-typography-color-muted);
   --osdk-filter-no-value-font-style: italic;
 
-  /* Legacy aliases — kept so existing theme overrides continue to work.
-     Each one defaults to the canonical no-value token; consumers may
-     override the legacy token to scope a different style to listogram. */
-  --osdk-filter-listogram-empty-label-color: var(--osdk-filter-no-value-color);
-  --osdk-filter-listogram-empty-label-font-style: var(
-    --osdk-filter-no-value-font-style
-  );
   --osdk-filter-listogram-bar-height: calc(var(--osdk-surface-spacing) * 2);
   --osdk-filter-listogram-bar-width: calc(var(--osdk-surface-spacing) * 12.5);
   --osdk-filter-listogram-bar-bg: var(--osdk-palette-gray-100);
@@ -296,11 +293,6 @@
   --osdk-filter-null-row-padding: calc(var(--osdk-surface-spacing) * 1) 0;
   --osdk-filter-null-row-border-top: none;
   --osdk-filter-null-label-gap: var(--osdk-surface-spacing);
-  /* Legacy null-label-color is now an alias for the canonical no-value token
-     so NullValueWrapper matches dropdown/listogram by default. Consumers
-     can still override --osdk-filter-null-label-color to scope a different
-     color to NullValueWrapper. */
-  --osdk-filter-null-label-color: var(--osdk-filter-no-value-color);
   --osdk-filter-null-count-font-family: var(--osdk-typography-family-default);
   --osdk-filter-null-count-font-size: var(--osdk-typography-size-body-small);
   --osdk-filter-null-count-color: var(--osdk-typography-color-muted);

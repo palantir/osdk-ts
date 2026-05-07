@@ -18,13 +18,16 @@
   display: flex;
   flex-direction: column;
   transition: opacity var(--osdk-filter-content-fade-duration);
+}
 
-  /* Forward the legacy listogram-specific empty-label tokens onto the
-     canonical no-value tokens so old theme overrides keep working
-     (NoValueLabel reads --osdk-filter-no-value-*). */
-  --osdk-filter-no-value-color: var(--osdk-filter-listogram-empty-label-color);
-  --osdk-filter-no-value-font-style: var(
-    --osdk-filter-listogram-empty-label-font-style
+.noValueLabel {
+  color: var(
+    --osdk-filter-listogram-empty-label-color,
+    var(--osdk-filter-no-value-color)
+  );
+  font-style: var(
+    --osdk-filter-listogram-empty-label-font-style,
+    var(--osdk-filter-no-value-font-style)
   );
 }
 

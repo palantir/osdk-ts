@@ -18,11 +18,16 @@
   display: flex;
   flex-direction: column;
   gap: var(--osdk-filter-null-wrapper-gap);
+}
 
-  /* Forward the legacy null-label-color token onto the canonical no-value
-     token so old theme overrides keep working. NoValueLabel reads
-     --osdk-filter-no-value-color directly. */
-  --osdk-filter-no-value-color: var(--osdk-filter-null-label-color);
+.noValueLabel {
+  color: var(
+    --osdk-filter-null-label-color,
+    var(--osdk-filter-no-value-color)
+  );
+  font-family: var(--osdk-filter-null-label-font-family, inherit);
+  font-size: var(--osdk-filter-null-label-font-size, inherit);
+  line-height: var(--osdk-filter-null-label-line-height, inherit);
 }
 
 .nullValueRow {
