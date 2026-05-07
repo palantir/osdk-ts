@@ -1,4 +1,4 @@
-import type { DerivedProperty, Osdk } from "@osdk/api";
+import type { DerivedProperty, Osdk, PropertyKeys } from "@osdk/api";
 import { useOsdkClient } from "@osdk/react";
 import type { ColumnDefinition } from "@osdk/react-components/experimental/object-table";
 import { ObjectTable } from "@osdk/react-components/experimental/object-table";
@@ -113,8 +113,17 @@ export function EmployeesTable() {
   );
 
   const getRowAttributes = useCallback(
-    (employee: Osdk.Instance<Employee>) => ({
-      "data-highlight-row": employee.jobTitle === "Content Manager",
+    (
+      employee: Osdk.Instance<
+        Employee,
+        "$allBaseProperties",
+        PropertyKeys<Employee>,
+        RDPs
+      >,
+    ): Record<string, string | undefined> => ({
+      "data-highlight-row": employee.jobTitle === "Content Manager"
+        ? "true"
+        : undefined,
     }),
     [],
   );
