@@ -23,7 +23,7 @@ import type {
 import { BaseForm } from "@osdk/react-components/experimental";
 import { useOsdkClient } from "@osdk/react/experimental";
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import React, { useCallback, useMemo, useRef, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { fn } from "storybook/test";
 import { fauxFoundry } from "../../mocks/fauxFoundry.js";
 import { Employee } from "../../types/Employee.js";
@@ -1080,7 +1080,6 @@ const blueprintDialogFormContent: ReadonlyArray<FormContentItem> = [
 
 function BlueprintDialogBaseForm(): React.ReactElement {
   const [isOpen, setIsOpen] = useState(false);
-  const portalContainerRef = useRef<HTMLDivElement>(null);
 
   const handleOpen = useCallback(() => {
     setIsOpen(true);
@@ -1099,13 +1098,10 @@ function BlueprintDialogBaseForm(): React.ReactElement {
         onClose={handleClose}
         title="Action form"
       >
-        <div ref={portalContainerRef}>
-          <BaseForm
-            formContent={blueprintDialogFormContent}
-            onSubmit={handleSubmit}
-            portalContainer={portalContainerRef}
-          />
-        </div>
+        <BaseForm
+          formContent={blueprintDialogFormContent}
+          onSubmit={handleSubmit}
+        />
       </Dialog>
     </>
   );
@@ -1119,11 +1115,7 @@ export const InsideBlueprintDialog: Story = {
         code: `function BlueprintDialogBaseForm() {
   return (
     <Dialog isOpen={true} title="Action form">
-        <BaseForm
-          formContent={formContent}
-          onSubmit={handleSubmit}
-          portalContainer={portalContainerRef}
-        />
+      <BaseForm formContent={formContent} onSubmit={handleSubmit} />
     </Dialog>
   );
 }`,

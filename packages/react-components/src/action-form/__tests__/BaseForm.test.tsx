@@ -52,10 +52,7 @@ describe("BaseForm", () => {
   describe("form title", () => {
     it("does not render a form title when formTitle is omitted", () => {
       render(
-        <BaseForm
-          formContent={[field(makeDef("name"))]}
-          onSubmit={vi.fn()}
-        />,
+        <BaseForm formContent={[field(makeDef("name"))]} onSubmit={vi.fn()} />,
       );
 
       expect(screen.queryByRole("heading")).toBeNull();
@@ -228,42 +225,36 @@ describe("BaseForm", () => {
       expect(screen.getByRole("combobox")).toBeDefined();
     });
 
-    it("renders dropdown portals inside the form-level portal container", async () => {
-      const portalContainer = document.createElement("div");
-      document.body.append(portalContainer);
+    it("renders dropdown portals inside the form element", async () => {
+      render(
+        <BaseForm
+          formContent={[
+            field({
+              fieldKey: "color",
+              label: "Color",
+              fieldComponent: "DROPDOWN" as const,
+              fieldComponentProps: {
+                items: ["Red", "Blue", "Green"],
+              },
+            }),
+          ]}
+          onSubmit={vi.fn()}
+        />,
+      );
 
-      try {
-        render(
-          <BaseForm
-            formContent={[
-              field({
-                fieldKey: "color",
-                label: "Color",
-                fieldComponent: "DROPDOWN" as const,
-                fieldComponentProps: {
-                  items: ["Red", "Blue", "Green"],
-                },
-              }),
-            ]}
-            portalContainer={portalContainer}
-            onSubmit={vi.fn()}
-          />,
-        );
+      fireEvent.click(screen.getByRole("combobox"));
 
-        fireEvent.click(screen.getByRole("combobox"));
-
-        await waitFor(() => {
-          expect(
-            portalContainer.contains(
-              screen.getByRole("option", {
-                name: "Red",
-              }),
-            ),
-          ).toBe(true);
-        });
-      } finally {
-        portalContainer.remove();
-      }
+      const form = document.querySelector("form");
+      expect(form).not.toBeNull();
+      await waitFor(() => {
+        expect(
+          form?.contains(
+            screen.getByRole("option", {
+              name: "Red",
+            }),
+          ),
+        ).toBe(true);
+      });
     });
   });
 
