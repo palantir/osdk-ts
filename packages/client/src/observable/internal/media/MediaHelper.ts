@@ -23,7 +23,6 @@ import type {
 import * as OntologiesV2 from "@osdk/foundry.ontologies";
 import { additionalContext } from "../../../Client.js";
 import type {
-  CommonObserveOptions,
   Observer,
 } from "../../ObservableClient/common.js";
 import type {
@@ -31,9 +30,10 @@ import type {
   MediaContentPayload,
 } from "../../ObservableClient/MediaObservableTypes.js";
 
-import { AbstractHelper } from "../AbstractHelper.js";
+import type { CacheKeys } from "../CacheKeys.js";
 import type { KnownCacheKey } from "../KnownCacheKey.js";
-import type { Query } from "../Query.js";
+import type { Store } from "../Store.js";
+import { subscribeQuery } from "../subscribeQuery.js";
 import type { UnsubscribableWrapper } from "../UnsubscribableWrapper.js";
 import { createBlobMemoryManager } from "./BlobMemoryManager.js";
 import {
@@ -50,14 +50,14 @@ import type {
 } from "./MediaMetadataQuery.js";
 import { MediaMetadataQuery } from "./MediaMetadataQuery.js";
 
-export class MediaHelper extends AbstractHelper<
-  Query<KnownCacheKey, unknown, CommonObserveOptions>,
-  CommonObserveOptions
-> {
+export class MediaHelper {
+  private readonly store: Store;
+  private readonly cacheKeys: CacheKeys<KnownCacheKey>;
   private blobManager = createBlobMemoryManager();
 
-  getQuery(): never {
-    throw new Error("Use observeMedia or observeMediaMetadata");
+  constructor(store: Store, cacheKeys: CacheKeys<KnownCacheKey>) {
+    this.store = store;
+    this.cacheKeys = cacheKeys;
   }
 
   getCacheKey(mediaOrLocation: MediaSource): string {
@@ -67,7 +67,7 @@ export class MediaHelper extends AbstractHelper<
   private getMetadataCacheKey(
     coords: MediaPropertyLocation,
   ): MediaMetadataCacheKey {
-    return this.cacheKeys.get(
+    return this.cacheKeys.get<MediaMetadataCacheKey>(
       "mediaMetadata",
       coords.objectType,
       coords.primaryKey,
@@ -85,11 +85,11 @@ export class MediaHelper extends AbstractHelper<
         objectType = coords.objectType;
       }
     }
-    return this.cacheKeys.get(
+    return this.cacheKeys.get<MediaContentCacheKey>(
       "mediaContent",
       objectType,
       this.getCacheKey(source),
-    ) as MediaContentCacheKey;
+    );
   }
 
   private resolveCoords(source: Media): MediaPropertyLocation {
@@ -123,7 +123,7 @@ export class MediaHelper extends AbstractHelper<
       );
     });
 
-    return this._subscribe(query, options, observer);
+    return subscribeQuery(this.store, query, options, observer);
   }
 
   observeMedia(
@@ -150,16 +150,14 @@ export class MediaHelper extends AbstractHelper<
       );
     });
 
-    return this._subscribe(query, options, observer);
+    return subscribeQuery(this.store, query, options, observer);
   }
 
   invalidateMedia(source: Media | Attachment): void {
     const typedCacheKey = this.getContentCacheKey(source);
-    const query = this.store.queries.peek(typedCacheKey) as
-      | MediaContentQuery
-      | undefined;
+    const query = this.store.queries.peek(typedCacheKey);
     if (query) {
-      query.invalidate().catch((e: unknown) => {
+      query.invalidate().catch((e) => {
         if (process.env.NODE_ENV !== "production") {
           this.store.logger?.error("Error invalidating media", e);
         }
