@@ -24,9 +24,9 @@ import { Employee } from "../../../generatedNoCheck/index.js";
 import { client } from "./client.js";
 
 const EmployeeWithExpression = await client(Employee)
-    .withProperties({
-          "derivedPropertyDatetime_min": (baseObjectSet) =>
-          baseObjectSet.pivotTo("lead")
-              .selectProperty("startDate")
-              .min(baseObjectSet.pivotTo("lead").selectProperty("startDate"))
-    }).fetchPage();
+  .withProperties({
+    "derivedPropertyDatetime_min": (baseObjectSet) =>
+      baseObjectSet.pivotTo("lead")
+        .selectProperty("startDate")
+        .min(baseObjectSet.pivotTo("lead").selectProperty("startDate")),
+  }).fetchPage();

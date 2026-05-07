@@ -26,12 +26,28 @@
   border-radius: var(--osdk-select-border-radius);
   border: var(--osdk-select-border-width)
     solid
-    var(--osdk-select-border-color);
-  background-color: var(--osdk-select-trigger-bg);
-  color: var(--osdk-select-trigger-color);
-  font-family: var(--osdk-select-font-family);
-  font-size: var(--osdk-select-font-size);
-  line-height: var(--osdk-select-line-height);
+    var(--osdk-select-border-color, var(--osdk-surface-border-color-default));
+  box-shadow: var(--osdk-button-shadow);
+  background-color: var(
+    --osdk-select-trigger-bg,
+    var(--osdk-button-secondary-bg)
+  );
+  color: var(
+    --osdk-select-trigger-color,
+    var(--osdk-typography-color-default-rest)
+  );
+  font-family: var(
+    --osdk-select-font-family,
+    var(--osdk-typography-family-default)
+  );
+  font-size: var(
+    --osdk-select-font-size,
+    var(--osdk-typography-size-body-medium)
+  );
+  line-height: var(
+    --osdk-select-line-height,
+    var(--osdk-typography-line-height-default)
+  );
   transition:
     background-color
       var(--osdk-select-transition-duration)
@@ -41,11 +57,17 @@
       var(--osdk-select-transition-ease);
 
   &:hover {
-    background-color: var(--osdk-select-trigger-bg-hover);
+    background-color: var(
+      --osdk-select-trigger-bg-hover,
+      var(--osdk-button-secondary-bg-hover)
+    );
   }
 
   &:active {
-    background-color: var(--osdk-select-trigger-bg-active);
+    background-color: var(
+      --osdk-select-trigger-bg-active,
+      var(--osdk-button-secondary-bg-active)
+    );
   }
 
   /* Override global :focus rules (e.g. Blueprint) that add an outline on

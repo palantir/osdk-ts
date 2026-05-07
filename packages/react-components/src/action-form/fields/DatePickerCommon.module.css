@@ -61,6 +61,7 @@
   border-radius: var(--osdk-datetime-input-border-radius);
   border: var(--osdk-datetime-input-border-width) solid
     var(--osdk-datetime-input-border-color);
+  box-shadow: var(--osdk-input-shadow);
   background-color: var(--osdk-datetime-input-bg);
   transition:
     background-color var(--osdk-datetime-input-transition-duration)

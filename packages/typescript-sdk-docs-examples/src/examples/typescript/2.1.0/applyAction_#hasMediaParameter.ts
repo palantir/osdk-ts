@@ -20,41 +20,48 @@
 // Example: applyAction (Variation: #hasMediaParameter)
 
 // Edit this import if your client location differs
-import { client } from "./client.js";
-import type { AttachmentUpload , MediaReference, MediaUpload  } from "@osdk/api";
+import type { AttachmentUpload, MediaReference, MediaUpload } from "@osdk/api";
 import { createAttachmentUpload } from "@osdk/client";
-import { documentEquipment , Equipment  } from "../../../generatedNoCheck/index.js";
+import {
+  documentEquipment,
+  Equipment,
+} from "../../../generatedNoCheck/index.js";
+import { client } from "./client.js";
 
 async function callAction() {
-    // Create attachment upload
-    const attachmentFile = await fetch("file.json");
-    const attachmentBlob = await attachmentFile.blob();
-    const attachment: AttachmentUpload = createAttachmentUpload(attachmentBlob, "myFile");
-    // alternatively, you can get the Rid from the attachment property on the object type you are modifying 
-    // const attachmentRid = objectTypeWithAttachment.{attachmentProperty}?.rid;
+  // Create attachment upload
+  const attachmentFile = await fetch("file.json");
+  const attachmentBlob = await attachmentFile.blob();
+  const attachment: AttachmentUpload = createAttachmentUpload(
+    attachmentBlob,
+    "myFile",
+  );
+  // alternatively, you can get the Rid from the attachment property on the object type you are modifying
+  // const attachmentRid = objectTypeWithAttachment.{attachmentProperty}?.rid;
 
-    // You can upload media data via your Action
-    const mediaFile = await fetch("media.mp4");
-    const mediaBlob = await mediaFile.blob();
-    const mediaUpload: MediaUpload = { data: mediaBlob, fileName: "myMedia" };
-    
-    // You can also pass an existing media reference into your Action
-    const objectPage = await client(Equipment).fetchPage();
-    const mediaReference: MediaReference = objectPage.data[0].trainingMaterial!.getMediaReference();
+  // You can upload media data via your Action
+  const mediaFile = await fetch("media.mp4");
+  const mediaBlob = await mediaFile.blob();
+  const mediaUpload: MediaUpload = { data: mediaBlob, fileName: "myMedia" };
 
-    const result = await client(documentEquipment).applyAction(
-        {
-            "equipmentId": "mac-1234",
-            "documentFile": attachment,
-            "instructionalVideo": mediaReference,
-        },
-        {
-            $returnEdits: true,
-        }
-    );
-    if (result.type === "edits") {
-        // use the result object to report back on action results
-        const updatedObject = result.editedObjectTypes[0];
-        console.log("Updated object", updatedObject);
-    }
+  // You can also pass an existing media reference into your Action
+  const objectPage = await client(Equipment).fetchPage();
+  const mediaReference: MediaReference = objectPage.data[0].trainingMaterial!
+    .getMediaReference();
+
+  const result = await client(documentEquipment).applyAction(
+    {
+      "equipmentId": "mac-1234",
+      "documentFile": attachment,
+      "instructionalVideo": mediaReference,
+    },
+    {
+      $returnEdits: true,
+    },
+  );
+  if (result.type === "edits") {
+    // use the result object to report back on action results
+    const updatedObject = result.editedObjectTypes[0];
+    console.log("Updated object", updatedObject);
+  }
 }

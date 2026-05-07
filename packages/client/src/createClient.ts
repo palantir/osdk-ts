@@ -355,6 +355,40 @@ export function createClientFromContext(clientCtx: MinimalClient) {
   return client;
 }
 
+/**
+ * Creates a {@link Client} for interacting with a Foundry Ontology. This is the primary entry point for
+ * the OSDK and is typically called once per application during setup. The returned client is then used
+ * to load object sets, apply actions, and execute queries against the configured ontology.
+ * @param baseUrl - The base URL of the Foundry stack (e.g. `"https://example.palantirfoundry.com"`).
+ * @param ontologyRid - The ontology RID to scope the client to. May be provided directly or as a `Promise`
+ *   that resolves to the RID. Typically the generated `$ontologyRid` export from your generated SDK is passed here.
+ * @param tokenProvider - A function returning a `Promise` that resolves to a bearer token used to authenticate
+ *   requests. Typically the OAuth client returned by `createPublicOauthClient` or `createConfidentialOauthClient`
+ *   from `@osdk/oauth`, which handles caching and refresh; you can also provide a custom function if you
+ *   manage tokens yourself.
+ * @param options - Optional client configuration: a custom `logger`, an experimental `UNSTABLE_DO_NOT_USE_BRANCH`
+ *   for branch-aware requests, and additional `headers` to include on every request.
+ * @param fetchFn - An optional `fetch` implementation to use for all requests. Defaults to the global `fetch`.
+ * @example
+ * ```ts
+ * import { createClient, type Client } from "@osdk/client";
+ * import { createPublicOauthClient } from "@osdk/oauth";
+ * import { $ontologyRid } from "./generatedNoCheck/index.js";
+ *
+ * const auth = createPublicOauthClient(
+ *   "<your-client-id>",
+ *   "https://example.palantirfoundry.com",
+ *   `${window.location.origin}/auth/callback`,
+ * );
+ *
+ * export const client: Client = createClient(
+ *   "https://example.palantirfoundry.com",
+ *   $ontologyRid,
+ *   auth,
+ * );
+ * ```
+ * @returns a {@link Client} configured to talk to the given Foundry stack and ontology
+ */
 export const createClient: (
   baseUrl: string,
   ontologyRid: string | Promise<string>,

@@ -181,9 +181,6 @@ importers:
       find-up:
         specifier: ^7.0.0
         version: 7.0.0
-      find-up-cli:
-        specifier: ^6.0.0
-        version: 6.0.0
       globals:
         specifier: ^15.15.0
         version: 15.15.0
@@ -4932,12 +4929,15 @@ importers:
       '@types/react-reconciler':
         specifier: ^0.28.0
         version: 0.28.9(@types/react@18.3.24)
-      '@vitejs/plugin-react':
-        specifier: ^4.3.4
-        version: 4.7.0(vite@6.4.2(@types/node@24.12.0)(jiti@2.5.1)(less@4.5.1)(lightningcss@1.32.0)(sass-embedded@1.97.3)(sass@1.97.3)(stylus@0.62.0)(terser@5.44.0)(tsx@4.20.5)(yaml@2.8.3))
       happy-dom:
         specifier: ^16.8.1
         version: 16.8.1
+      postcss:
+        specifier: ^8.4
+        version: 8.5.9
+      postcss-modules:
+        specifier: ^6.0.1
+        version: 6.0.1(postcss@8.5.9)
       react:
         specifier: ^18.0.0
         version: 18.3.1
@@ -14596,11 +14596,6 @@ packages:
     resolution: {integrity: sha512-JmO9lEBUEYOiRw/bdbdgFWpGFgBZBGLcK/5GjQKo3ZN+zR6jmQOh9gWyZoqxlQmnldZ9WBWhna0QYyuq6BxvRg==}
     engines: {node: '>=14.6'}
 
-  find-up-cli@6.0.0:
-    resolution: {integrity: sha512-3vDn6BBgpPwVcX6lkuDiZK5tEMY+eK8z/WYgbpkFZM41T0YDEdq2YsxVjxywr8CjfpXG1Pyn4/MfxQmlccgXow==}
-    engines: {node: '>=18'}
-    hasBin: true
-
   find-up@3.0.0:
     resolution: {integrity: sha512-1yD6RmLI1XBfxugvORwlck6f75tYL+iR0jqwsOrOxMZyGYqUuDhJ0l4AXdO1iX/FTs9cBAMEk1gWSEx1kSbylg==}
     engines: {node: '>=6'}
@@ -16624,10 +16619,6 @@ packages:
 
   memoizerific@1.11.3:
     resolution: {integrity: sha512-/EuHYwAPdLtXwAwSZkh/Gutery6pD2KYd44oQLhAvQp/50mpyduZh8Q7PYHXTCJ+wuXxt7oij2LXyIJOOYFPog==}
-
-  meow@13.2.0:
-    resolution: {integrity: sha512-pxQJQzB6djGPXh08dacEloMFopsOqGVRKFPYvPOt9XDZ1HasbgDZA74CJGreSU4G3Ak7EFJGoiH2auq+yXISgA==}
-    engines: {node: '>=18'}
 
   merge-descriptors@1.0.3:
     resolution: {integrity: sha512-gaNvAS7TZ897/rVaZ0nMtAyxNyi/pdbjbAwUpFQpN70GqnVfOiXpeUUMKRBmzXaSQ8DdTX4/0ms62r2K+hE6mQ==}
@@ -32915,11 +32906,6 @@ snapshots:
       fast-glob: 3.3.3
       p-filter: 2.1.0
 
-  find-up-cli@6.0.0:
-    dependencies:
-      find-up: 7.0.0
-      meow: 13.2.0
-
   find-up@3.0.0:
     dependencies:
       locate-path: 3.0.0
@@ -35380,8 +35366,6 @@ snapshots:
   memoizerific@1.11.3:
     dependencies:
       map-or-similar: 1.5.0
-
-  meow@13.2.0: {}
 
   merge-descriptors@1.0.3: {}
 

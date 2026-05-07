@@ -26,12 +26,31 @@
   border-radius: var(--osdk-combobox-trigger-border-radius);
   border: var(--osdk-combobox-trigger-border-width)
     solid
-    var(--osdk-combobox-trigger-border-color);
-  background-color: var(--osdk-combobox-trigger-bg);
-  color: var(--osdk-combobox-trigger-color);
-  font-family: var(--osdk-combobox-font-family);
-  font-size: var(--osdk-combobox-font-size);
-  line-height: var(--osdk-combobox-line-height);
+    var(
+      --osdk-combobox-trigger-border-color,
+      var(--osdk-surface-border-color-default)
+    );
+  box-shadow: var(--osdk-button-shadow);
+  background-color: var(
+    --osdk-combobox-trigger-bg,
+    var(--osdk-button-secondary-bg)
+  );
+  color: var(
+    --osdk-combobox-trigger-color,
+    var(--osdk-typography-color-default-rest)
+  );
+  font-family: var(
+    --osdk-combobox-font-family,
+    var(--osdk-typography-family-default)
+  );
+  font-size: var(
+    --osdk-combobox-font-size,
+    var(--osdk-typography-size-body-medium)
+  );
+  line-height: var(
+    --osdk-combobox-line-height,
+    var(--osdk-typography-line-height-default)
+  );
   transition:
     background-color
       var(--osdk-combobox-transition-duration)
@@ -41,11 +60,17 @@
       var(--osdk-combobox-transition-ease);
 
   &:hover {
-    background-color: var(--osdk-combobox-trigger-bg-hover);
+    background-color: var(
+      --osdk-combobox-trigger-bg-hover,
+      var(--osdk-button-secondary-bg-hover)
+    );
   }
 
   &:active {
-    background-color: var(--osdk-combobox-trigger-bg-active);
+    background-color: var(
+      --osdk-combobox-trigger-bg-active,
+      var(--osdk-button-secondary-bg-active)
+    );
   }
 
   /* Override global :focus rules (e.g. Blueprint) that add an outline on
@@ -74,11 +99,17 @@
 /* Multi-select trigger: no hover/active background since chips are interactive */
 .osdkComboboxTriggerMulti {
   &:hover {
-    background-color: var(--osdk-combobox-trigger-bg);
+    background-color: var(
+      --osdk-combobox-trigger-bg,
+      var(--osdk-button-secondary-bg)
+    );
   }
 
   &:active {
-    background-color: var(--osdk-combobox-trigger-bg);
+    background-color: var(
+      --osdk-combobox-trigger-bg,
+      var(--osdk-button-secondary-bg)
+    );
   }
 }
 

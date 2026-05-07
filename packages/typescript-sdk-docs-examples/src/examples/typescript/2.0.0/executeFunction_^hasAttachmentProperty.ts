@@ -20,9 +20,9 @@
 // Example: executeFunction (Variation: ^hasAttachmentProperty)
 
 // Edit this import if your client location differs
-import { client } from "./client.js";
 import { getTotalEmployeeCount } from "../../../generatedNoCheck/index.js";
+import { client } from "./client.js";
 
 const result = await client(getTotalEmployeeCount).executeFunction({
-          "departmentId": "engineering"
-        });
+  "departmentId": "engineering",
+});

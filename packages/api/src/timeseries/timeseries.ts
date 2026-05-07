@@ -93,10 +93,20 @@ export interface TimeSeriesPoint<T extends string | number | GeoJSON.Point> {
 export interface TimeSeriesProperty<T extends number | string> {
   /**
    * Queries the first point of the Timeseries
+   * @example
+   * ```ts
+   * const firstPoint = await employee.employeeStatus?.getFirstPoint();
+   * ```
+   * @returns the first point of the Timeseries
    */
   readonly getFirstPoint: () => Promise<TimeSeriesPoint<T>>;
   /**
    * Queries the last point of the Timeseries
+   * @example
+   * ```ts
+   * const lastPoint = await employee.employeeStatus?.getLastPoint();
+   * ```
+   * @returns the last point of the Timeseries
    */
   readonly getLastPoint: () => Promise<TimeSeriesPoint<T>>;
   /**
@@ -136,6 +146,11 @@ export interface TimeSeriesProperty<T extends number | string> {
 export interface GeotimeSeriesProperty<T extends GeoJSON.Point> {
   /**
    * Queries the last point of the Geotime series
+   * @example
+   * ```ts
+   * const latestValue = await employee.travelHistory?.getLatestValue();
+   * ```
+   * @returns the last point of the Geotime series, or undefined if there are no points
    */
   readonly getLatestValue: () => Promise<TimeSeriesPoint<T> | undefined>;
   /**

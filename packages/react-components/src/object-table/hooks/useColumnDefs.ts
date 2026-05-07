@@ -27,6 +27,7 @@ import type { AccessorColumnDef } from "@tanstack/react-table";
 import { useMemo } from "react";
 import { renderDefaultCell } from "../DefaultCellRenderer.js";
 import type { ColumnDefinition } from "../ObjectTableApi.js";
+import { shouldShowEditableCell } from "../utils/shouldShowEditableCell.js";
 
 interface UseColumnDefsResult<
   Q extends ObjectOrInterfaceDefinition,
@@ -156,7 +157,14 @@ function getColumnsFromColumnDefinitions<
           RDPs
         > = cellContext.row.original;
 
-        if (renderCell) {
+        const meta = cellContext.table.options.meta;
+        const isEditable = shouldShowEditableCell(
+          editable,
+          meta?.onCellEdit,
+          meta?.isInEditMode,
+        );
+
+        if (renderCell && !isEditable) {
           return renderCell(object, locator);
         }
 

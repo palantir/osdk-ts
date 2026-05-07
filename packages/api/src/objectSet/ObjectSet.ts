@@ -227,15 +227,19 @@ interface NearestNeighbors<Q extends ObjectOrInterfaceDefinition> {
    * Finds the nearest neighbors for a given text or vector within the object set.
    *
    * @param query - Queries support either a vector matching the embedding model defined on the property, or text that is
-        automatically embedded.
+   *   automatically embedded.
    * @param numNeighbors - The number of objects to return. If the number of documents in the objectType is less than the provided
-            value, all objects will be returned. This value is limited to 1 &le; numNeighbors &ge; 500.
+   *   value, all objects will be returned. This value is limited to 1 &le; numNeighbors &le; 500.
    * @param property - The property key with a defined embedding model to search over.
-   *
+   * @example
+   * ```ts
+   * const result = await client(Document)
+   *   .nearestNeighbors("coffee", 5, "embedding")
+   *   .fetchPage();
+   * ```
    * @returns An object set containing the `numNeighbors` nearest neighbors. To return the objects ordered by relevance and each
    * objects associated score, specify "relevance" in the orderBy.
- */
-
+   */
   readonly nearestNeighbors: (
     query: string | number[],
     numNeighbors: number,
@@ -330,6 +334,7 @@ interface AsyncIterSignature<
 > {
   /**
    * Returns an async iterator to load all objects of this type
+   * @param args - Optional args to refine the iteration (e.g., `$select`, `$orderBy`, `$pageSize`)
    * @example
    * ```ts
    * for await (const obj of myObjectSet.asyncIter()) {
@@ -351,6 +356,7 @@ interface AsyncIterSignature<
 
   /**
    * Returns an async iterator to load all objects of this type
+   * @param args - Optional args to refine the iteration (e.g., `$select`, `$orderBy`, `$pageSize`)
    * @example
    * ```ts
    * for await (const obj of myObjectSet.asyncIter()) {
@@ -403,6 +409,20 @@ interface WithProperties<
   Q extends ObjectOrInterfaceDefinition = any,
   RDPs extends Record<string, SimplePropertyDef> = {},
 > {
+  /**
+   * Adds derived properties to objects in this object set
+   * @param clause - A map of new property names to a function that derives each property from the base object set
+   * @example
+   * ```ts
+   * const employeesWithLeadCount = await client(Employee)
+   *   .withProperties({
+   *     leadCount: (baseObjectSet) =>
+   *       baseObjectSet.pivotTo("lead").aggregate("$count"),
+   *   })
+   *   .fetchPage();
+   * ```
+   * @returns an object set with the derived properties available for selection
+   */
   readonly withProperties: <
     NEW extends Record<string, SimplePropertyDef>,
   >(
@@ -523,6 +543,12 @@ interface PivotTo<
   /**
    * Pivots the object set over to all its linked objects of the specified type
    * @param type - The linked object type you want to pivot to
+   * @example
+   * ```ts
+   * const linkedEmployees = await client(Office)
+   *   .pivotTo("employees")
+   *   .fetchPage();
+   * ```
    * @returns an object set of the specified linked type
    */
   readonly pivotTo: <L extends LinkNames<Q>>(
@@ -536,6 +562,13 @@ interface FetchOneSignature<
 > {
   /**
    * Fetches one object with the specified primary key, without a result wrapper
+   * @param primaryKey - The primary key of the object to fetch
+   * @param options - Optional select/include options to refine the returned object
+   * @example
+   * ```ts
+   * const employee = await client(Employee).fetchOne(12345);
+   * ```
+   * @returns the object with the specified primary key
    */
   <
     const L extends PropertyKeys<Q> | (string & keyof RDPs),
@@ -561,6 +594,16 @@ interface FetchOneWithErrorsSignature<
 > {
   /**
    * Fetches one object with the specified primary key, with a result wrapper
+   * @param primaryKey - The primary key of the object to fetch
+   * @param options - Optional select/include options to refine the returned object
+   * @example
+   * ```ts
+   * const result = await client(Employee).fetchOneWithErrors(12345);
+   * if (isOk(result)) {
+   *   const employee = result.value;
+   * }
+   * ```
+   * @returns the object wrapped in a result, or an error if the fetch fails
    */
   <
     const L extends PropertyKeys<Q> | (string & keyof RDPs),
@@ -600,6 +643,21 @@ interface Subscribe<
    * Request updates when the objects in an object set are added, updated, or removed.
    * @param listener - The handlers to be executed during the lifecycle of the subscription.
    * @param opts - Options to modify what properties are returned on subscription updates.
+   * @example
+   * ```ts
+   * const subscription = client(Employee).subscribe(
+   *   {
+   *     onChange(update) {
+   *       // Handle ADDED_OR_UPDATED / REMOVED events
+   *     },
+   *     onSuccessfulSubscription() {},
+   *     onError(err) {},
+   *     onOutOfDate() {},
+   *   },
+   *   { properties: ["fullName", "salary"] },
+   * );
+   * subscription.unsubscribe();
+   * ```
    * @returns an object containing a function to unsubscribe.
    */
   readonly subscribe: <
@@ -618,6 +676,10 @@ interface NarrowToType<Q extends ObjectOrInterfaceDefinition> {
    * performed on the specified type. Objects from the original object set that do not
    * implement the specified interface or match the specified object set will be filtered out.
    * @param type - The object type you want to cast to.
+   * @example
+   * ```ts
+   * const employees = client(Person).narrowToType(Employee);
+   * ```
    * @returns an object set of the specified type.
    */
   readonly narrowToType: <
@@ -656,6 +718,18 @@ interface AsyncIterLinks<Q extends ObjectOrInterfaceDefinition> {
    *   than 100,000 links present, results are limited to 100,000 links and should be considered partial.
    * - This method does not support OSv1 links and will throw an exception if links provided are backed by OSv1.
    * - This method currently does not support interface links, but support will be added in the near future.
+   *
+   * @param links - The link type api names to load on each object in the object set
+   * @example
+   * ```ts
+   * for await (
+   *   const { source, target, linkType } of venturesObjectSet
+   *     .experimental_asyncIterLinks(["employees"])
+   * ) {
+   *   graph.addEdge(source, target, linkType);
+   * }
+   * ```
+   * @returns an async iterator that yields directed link instances pairing each source object with its linked target
    */
   readonly experimental_asyncIterLinks: <
     LINK_TYPE_API_NAME extends LinkTypeApiNamesFor<Q>,
