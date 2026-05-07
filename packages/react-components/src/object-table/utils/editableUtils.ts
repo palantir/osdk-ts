@@ -18,7 +18,7 @@ import type { RowData } from "@tanstack/react-table";
 
 export type EditablePredicate<TData extends RowData = RowData> =
   | boolean
-  | ((rowData: TData) => boolean);
+  | ((object: TData) => boolean);
 
 /**
  * Whether a column declares any editing behavior.
@@ -28,22 +28,22 @@ export type EditablePredicate<TData extends RowData = RowData> =
  * made per-cell via {@link isCellEditable}. This function answers the
  * column-level question used to drive table-wide UI like the bottom edit bar.
  */
-export function isColumnDeclaredEditable(
-  editable: boolean | ((rowData: never) => boolean) | undefined,
+export function isColumnDeclaredEditable<TData extends RowData>(
+  editable: EditablePredicate<TData> | undefined,
 ): boolean {
   return editable === true || typeof editable === "function";
 }
 
 /**
  * Whether a specific cell is editable, given the column's `editable` value
- * and the row's data. Used at render time per cell.
+ * and the row's object. Used at render time per cell.
  */
 export function isCellEditable<TData extends RowData>(
   editable: EditablePredicate<TData> | undefined,
-  rowData: TData,
+  object: TData,
 ): boolean {
   if (typeof editable === "function") {
-    return editable(rowData);
+    return editable(object);
   }
   return editable === true;
 }

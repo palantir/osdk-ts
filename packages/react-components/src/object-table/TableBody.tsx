@@ -37,8 +37,8 @@ interface TableBodyProps<TData extends RowData> {
   setFocusedRowId?: (rowId: string | null) => void;
   isInEditMode?: boolean;
   getRowAttributes?: (
-    rowData: TData,
-  ) => Record<string, string | boolean | undefined>;
+    object: TData,
+  ) => Record<string, string | undefined>;
 }
 
 export function TableBody<TData extends RowData>({

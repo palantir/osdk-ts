@@ -114,13 +114,13 @@ interface EditableColumnDefinition<
   >,
 > extends SharedColumnDefinition<Q, RDPs, FunctionColumns> {
   /**
-   * `editable` can be a boolean or a predicate that receives the row data and
-   * returns whether the cell is editable
+   * `editable` can be a boolean or a predicate that receives the row's object
+   * and returns whether the cell is editable
    */
   editable:
     | true
     | ((
-      rowData: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
+      object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
     ) => boolean);
 
   /**
@@ -129,8 +129,8 @@ interface EditableColumnDefinition<
    * When provided, the column uses the specified field component
    * (e.g. dropdown) instead of the default auto-detected text/number input.
    *
-   * `getFieldComponentProps` receives the row data and returns the props to
-   * pass to the field component, so editor configuration can depend on the
+   * `getFieldComponentProps` receives the row's object and returns the props
+   * to pass to the field component, so editor configuration can depend on the
    * current row.
    */
   editFieldConfig?: EditFieldConfig<
@@ -380,14 +380,9 @@ export interface ObjectTableProps<
    * "Edit Table" / "Cancel" / "Submit Edits" buttons and the edit-state
    * indicators (modification count, validation errors).
    *
-   * Defaults to `true` whenever the table has at least one column declared
-   * editable (i.e. any column with `editable: true` or `editable: (row) => boolean`).
-   * Set this to `false` to hide the footer when you want to drive edit mode
-   * and submission entirely from your own UI.
-   *
-   * **Note:** When `editMode` is `"manual"` or `onSubmitEdits` is provided,
-   * the footer is always shown regardless of this prop, since it provides the
-   * only way for users to enter edit mode and submit edits.
+   * @default true whenever the table has at least one column declared
+   * editable (i.e. any column with `editable: true` or `editable: (object) => boolean`).
+   * When `false`, the "Edit Table" and "Submit Edits" buttons will not be shown.
    */
   showEditFooter?: boolean;
 
@@ -439,9 +434,6 @@ export interface ObjectTableProps<
 
   /**
    * If provided, the "Submit Edits" button will be shown in the edit footer.
-   *
-   * When `editMode` is `"manual"`, the edit footer is automatically shown
-   * regardless of `showEditFooter` so the user can trigger submission.
    *
    * @param edits an array of edit info containing details about the edited cells
    * including the rowId, columnId, new and old values, and the row data before the edit
@@ -566,8 +558,8 @@ export interface ObjectTableProps<
    * row element. Use this to drive conditional row styling
    */
   getRowAttributes?: (
-    rowData: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
-  ) => Record<string, string | boolean | undefined>;
+    object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
+  ) => Record<string, string | undefined>;
 
   className?: string;
 }

@@ -147,12 +147,12 @@ Each column header has a menu with items for sorting, filtering, pinning, resizi
 
 > The editable feature allows inline editing with validation and bulk submission capabilities. Editable cells support text inputs, number inputs, and dropdown selectors.
 
-| Prop                 | Type                                          | Description                                                                                                                                                                                                            |
-| -------------------- | --------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `editMode`           | `"always" \| "manual"`                        | Controls edit mode behavior. "always": Table is always in edit mode. "manual": User toggles edit mode on/off. Default: "manual"                                                                                        |
-| `onCellValueChanged` | `(info: CellEditInfo) => void`                | Called when a cell value is edited. The info object contains rowId, columnId, newValue, oldValue, and originalRowData                                                                                                  |
-| `onSubmitEdits`      | `(edits: CellEditInfo[]) => Promise<boolean>` | When provided, shows a "Submit Edits" button in the edit footer. When `editMode` is `"manual"`, the edit footer is automatically shown regardless of `showEditFooter`. Return true on success                          |
-| `showEditFooter`     | `boolean`                                     | Whether to render the bottom edit footer (Edit Table / Cancel / Submit Edits). Defaults to `true`. **Ignored when `editMode` is `"manual"` or `onSubmitEdits` is provided — the footer is always shown in that case.** |
+| Prop                 | Type                                          | Description                                                                                                                                                                     |
+| -------------------- | --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `editMode`           | `"always" \| "manual"`                        | Controls edit mode behavior. "always": Table is always in edit mode. "manual": User toggles edit mode on/off. Default: "manual"                                                 |
+| `onCellValueChanged` | `(info: CellEditInfo) => void`                | Called when a cell value is edited. The info object contains rowId, columnId, newValue, oldValue, and originalRowData                                                           |
+| `onSubmitEdits`      | `(edits: CellEditInfo[]) => Promise<boolean>` | When provided, shows a "Submit Edits" button in the edit footer. Return true on success                                                                                         |
+| `showEditFooter`     | `boolean`                                     | Whether to render the bottom edit footer (Edit Table / Cancel / Submit Edits). Defaults to `true`. When `false`, the "Edit Table" and "Submit Edits" buttons will not be shown. |
 
 ## Column Definitions
 

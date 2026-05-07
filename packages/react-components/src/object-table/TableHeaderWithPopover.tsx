@@ -198,6 +198,7 @@ export function TableHeaderWithPopover<
 
   const hasAnyMenuItems = showPinningItems
     || (showSortingItems && isSortable)
+    || showResizeItem
     || showConfigItem;
 
   return (
