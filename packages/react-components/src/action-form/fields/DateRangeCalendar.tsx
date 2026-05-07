@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import classnames from "classnames";
 import React, { useMemo } from "react";
 import type {
   ClassNames,
@@ -34,9 +35,15 @@ import styles from "./DateCalendar.module.css";
 
 const CLASS_NAMES: ClassNames = {
   ...BASE_CLASS_NAMES,
-  day_range_start: styles.calendarRangeEndpoint,
+  day_range_start: classnames(
+    styles.calendarRangeEndpoint,
+    styles.calendarRangeStart,
+  ),
   day_range_middle: styles.calendarRangeMiddle,
-  day_range_end: styles.calendarRangeEndpoint,
+  day_range_end: classnames(
+    styles.calendarRangeEndpoint,
+    styles.calendarRangeEnd,
+  ),
 };
 
 export interface DateRangeCalendarProps {

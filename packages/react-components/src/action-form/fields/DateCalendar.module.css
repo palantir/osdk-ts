@@ -28,6 +28,7 @@
 }
 
 .calendarDay {
+  position: relative;
   padding: var(--osdk-datetime-calendar-gap);
   text-align: center;
 }
@@ -112,17 +113,46 @@
   }
 }
 
-/* Range-middle needs .calendarDayButton prefix to match specificity of
-   .calendarDayButton.calendarSelected (rdp applies both to range-middle days). */
-.calendarDayButton.calendarRangeMiddle {
+/* Day buttons are inset by cell padding; paint the range on the table cell too
+   so the range spans horizontal gaps while staying the same height as a day. */
+.calendarDay:has(.calendarRangeStart)::before,
+.calendarDay:has(.calendarRangeMiddle)::before,
+.calendarDay:has(.calendarRangeEnd)::before {
+  content: "";
+  position: absolute;
+  inset-block: var(--osdk-datetime-calendar-gap);
   background: var(--osdk-datetime-calendar-range-middle-bg);
+  pointer-events: none;
+}
+
+.calendarDay:has(.calendarRangeStart)::before {
+  inset-inline-start: 50%;
+  inset-inline-end: 0;
+}
+
+.calendarDay:has(.calendarRangeMiddle)::before {
+  inset-inline: 0;
+}
+
+.calendarDay:has(.calendarRangeEnd)::before {
+  inset-inline-start: 0;
+  inset-inline-end: 50%;
+}
+
+.calendarDay:has(.calendarRangeStart.calendarRangeEnd)::before {
+  content: none;
+}
+
+/* The table cell owns the translucent range fill. Keeping the middle button
+   transparent avoids alpha-stacking the same token over itself. */
+.calendarDayButton.calendarRangeMiddle {
+  background: transparent;
   color: var(--osdk-datetime-calendar-day-color);
   border-radius: 0;
 
   &:hover {
-    background: var(--osdk-datetime-calendar-range-middle-bg);
+    background: transparent;
     color: var(--osdk-datetime-calendar-day-hover-color);
-    filter: brightness(0.95);
   }
 
   &:active {
