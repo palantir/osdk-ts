@@ -17,6 +17,8 @@
 export { augment } from "../object/fetchPage.js";
 export { getWireObjectSet, isObjectSet } from "../objectSet/createObjectSet.js";
 
+export { subscribeToNoTypeObjectSet } from "../public-utils/subscribeToNoTypeObjectSet.js";
+
 export {
   getMetaTagContent,
   getOsdkConfig,
