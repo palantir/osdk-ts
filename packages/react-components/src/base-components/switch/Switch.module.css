@@ -15,51 +15,68 @@
  */
 
 .osdkSwitchRoot {
+  --osdk-switch-track-width: var(
+    --osdk-switch-track-width-override,
+    calc(var(--osdk-surface-spacing) * 9)
+  );
+  --osdk-switch-track-height: var(
+    --osdk-switch-track-height-override,
+    calc(var(--osdk-surface-spacing) * 5)
+  );
+  --osdk-switch-thumb-size: var(
+    --osdk-switch-thumb-size-override,
+    calc(var(--osdk-surface-spacing) * 4)
+  );
+  --osdk-switch-thumb-offset: var(
+    --osdk-switch-thumb-offset-override,
+    calc(var(--osdk-surface-spacing) * 0.5)
+  );
+
   display: inline-flex;
   align-items: center;
   width: var(--osdk-switch-track-width);
   height: var(--osdk-switch-track-height);
   padding: 0;
   cursor: pointer;
-  border-radius: var(--osdk-switch-border-radius);
+  border-radius: var(--osdk-switch-border-radius, 9999px);
   position: relative;
   border: none;
-  transition-property: background-color;
-  transition-duration: var(--osdk-switch-transition-duration);
-  transition-timing-function: var(--osdk-switch-transition-ease);
+  transition: background-color var(--osdk-switch-transition-duration, var(--osdk-emphasis-transition-duration))
+    var(--osdk-switch-transition-ease, var(--osdk-emphasis-ease-default));
 
   &[data-unchecked] {
-    background-color: var(--osdk-switch-track-bg);
+    background-color: var(--osdk-switch-track-bg, var(--osdk-intent-default-rest));
 
     &:hover {
-      background-color: var(--osdk-switch-track-bg-hover);
+      background-color: var(--osdk-switch-track-bg-hover, var(--osdk-intent-default-hover));
     }
 
     &:active {
-      background-color: var(--osdk-switch-track-bg-active);
+      background-color: var(--osdk-switch-track-bg-active, var(--osdk-intent-default-active));
     }
   }
 
   &[data-checked] {
-    background-color: var(--osdk-switch-track-bg-checked);
+    background-color: var(--osdk-switch-track-bg-checked, var(--osdk-intent-primary-rest));
 
     &:hover {
-      background-color: var(--osdk-switch-track-bg-checked-hover);
+      background-color: var(--osdk-switch-track-bg-checked-hover, var(--osdk-intent-primary-hover));
     }
 
     &:active {
-      background-color: var(--osdk-switch-track-bg-checked-active);
+      background-color: var(--osdk-switch-track-bg-checked-active, var(--osdk-intent-primary-active));
     }
   }
 
   &[data-disabled] {
     cursor: not-allowed;
-    opacity: var(--osdk-switch-disabled-opacity);
+    opacity: var(--osdk-switch-disabled-opacity, var(--osdk-input-disabled-opacity));
   }
 
   &:focus-visible {
-    outline: var(--osdk-switch-focus-width) solid var(--osdk-switch-focus-color);
-    outline-offset: var(--osdk-switch-focus-offset);
+    outline: var(--osdk-switch-focus-width, var(--osdk-emphasis-focus-width)) solid
+      var(--osdk-switch-focus-color, var(--osdk-emphasis-focus-color));
+    outline-offset: var(--osdk-switch-focus-offset, var(--osdk-emphasis-focus-offset));
   }
 }
 
@@ -67,20 +84,19 @@
   display: block;
   width: var(--osdk-switch-thumb-size);
   height: var(--osdk-switch-thumb-size);
-  background-color: var(--osdk-switch-thumb-bg);
+  background-color: var(--osdk-switch-thumb-bg, var(--osdk-palette-white));
   border-radius: 50%;
   position: absolute;
-  inset-block-start: 50%;
-  inset-inline-start: var(--osdk-switch-thumb-offset);
+  top: 50%;
   transform: translateY(-50%);
-  transition-property: inset-inline-start;
-  transition-duration: var(--osdk-switch-transition-duration);
-  transition-timing-function: var(--osdk-switch-transition-ease);
+  transition: left var(--osdk-switch-transition-duration, var(--osdk-emphasis-transition-duration))
+    var(--osdk-switch-transition-ease, var(--osdk-emphasis-ease-default));
+
+  &[data-unchecked] {
+    left: var(--osdk-switch-thumb-offset);
+  }
 
   &[data-checked] {
-    inset-inline-start: calc(
-      var(--osdk-switch-track-width) - var(--osdk-switch-thumb-size) -
-        var(--osdk-switch-thumb-offset)
-    );
+    left: calc(var(--osdk-switch-track-width) - var(--osdk-switch-thumb-size) - var(--osdk-switch-thumb-offset));
   }
 }

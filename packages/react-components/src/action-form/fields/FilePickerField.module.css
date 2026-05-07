@@ -120,8 +120,6 @@
 /* Browse button (right section) */
 .osdkFilePickerBrowse {
   --osdk-button-min-height: 0;
-  --osdk-button-padding-block: calc(var(--osdk-surface-spacing) * 0.5);
-  --osdk-button-padding-inline: calc(var(--osdk-surface-spacing) * 3);
 
   display: flex;
   align-items: center;
@@ -137,4 +135,9 @@
   &:focus {
     outline: none;
   }
+}
+
+.osdkFilePickerBrowse.osdkFilePickerBrowse {
+  padding-block: calc(var(--osdk-surface-spacing) * 0.5);
+  padding-inline: calc(var(--osdk-surface-spacing) * 3);
 }

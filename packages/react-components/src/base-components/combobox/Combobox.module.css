@@ -14,17 +14,29 @@
  * limitations under the License.
  */
 
+/* TODO: Extract each variable into its tokens file and map to default value there */
+
 .osdkComboboxTrigger {
   display: inline-flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--osdk-combobox-trigger-spacing);
+  gap: var(--osdk-combobox-trigger-spacing, var(--osdk-surface-spacing));
   width: 100%;
-  min-height: var(--osdk-combobox-trigger-min-height);
-  padding: var(--osdk-combobox-trigger-padding);
+  min-height: var(--osdk-combobox-trigger-min-height, 30px);
+  padding: var(
+    --osdk-combobox-trigger-padding,
+    calc(var(--osdk-surface-spacing) * 1.5)
+      calc(var(--osdk-surface-spacing) * 2.5)
+  );
   cursor: pointer;
-  border-radius: var(--osdk-combobox-trigger-border-radius);
-  border: var(--osdk-combobox-trigger-border-width)
+  border-radius: var(
+    --osdk-combobox-trigger-border-radius,
+    var(--osdk-surface-border-radius)
+  );
+  border: var(
+      --osdk-combobox-trigger-border-width,
+      var(--osdk-surface-border-width)
+    )
     solid
     var(
       --osdk-combobox-trigger-border-color,
@@ -53,11 +65,17 @@
   );
   transition:
     background-color
-      var(--osdk-combobox-transition-duration)
-      var(--osdk-combobox-transition-ease),
+      var(
+        --osdk-combobox-transition-duration,
+        var(--osdk-emphasis-transition-duration)
+      )
+      var(--osdk-combobox-transition-ease, var(--osdk-emphasis-ease-default)),
     border-color
-      var(--osdk-combobox-transition-duration)
-      var(--osdk-combobox-transition-ease);
+      var(
+        --osdk-combobox-transition-duration,
+        var(--osdk-emphasis-transition-duration)
+      )
+      var(--osdk-combobox-transition-ease, var(--osdk-emphasis-ease-default));
 
   &:hover {
     background-color: var(
@@ -80,19 +98,32 @@
   }
 
   &:focus-visible {
-    outline: var(--osdk-combobox-trigger-focus-width)
+    outline: var(
+        --osdk-combobox-trigger-focus-width,
+        var(--osdk-emphasis-focus-width)
+      )
       solid
-      var(--osdk-combobox-trigger-focus-color);
-    outline-offset: var(--osdk-combobox-trigger-focus-offset);
+      var(--osdk-combobox-trigger-focus-color, var(--osdk-emphasis-focus-color));
+    outline-offset: var(
+      --osdk-combobox-trigger-focus-offset,
+      var(--osdk-emphasis-focus-offset)
+    );
+  }
+
+  &[data-popup-open]:focus-visible {
+    outline: none;
   }
 
   &[data-disabled] {
     cursor: not-allowed;
-    opacity: var(--osdk-combobox-disabled-opacity);
+    opacity: var(--osdk-disabled-opacity, 0.5);
   }
 
   &[data-popup-open] {
-    border-color: var(--osdk-combobox-trigger-border-color-active);
+    border-color: var(
+      --osdk-combobox-trigger-border-color-active,
+      var(--osdk-intent-primary-rest)
+    );
   }
 }
 
@@ -129,7 +160,10 @@
 
 .osdkComboboxPlaceholder {
   text-align: start;
-  color: var(--osdk-combobox-placeholder-color);
+  color: var(
+    --osdk-combobox-placeholder-color,
+    var(--osdk-typography-color-muted)
+  );
   pointer-events: none;
 }
 
@@ -138,11 +172,14 @@
   align-items: center;
   justify-content: center;
   line-height: 0;
-  color: var(--osdk-combobox-icon-color);
+  color: var(--osdk-combobox-icon-color, var(--osdk-iconography-color-muted));
   flex-shrink: 0;
   transition: transform
-    var(--osdk-combobox-transition-duration)
-    var(--osdk-combobox-transition-ease);
+    var(
+      --osdk-combobox-transition-duration,
+      var(--osdk-emphasis-transition-duration)
+    )
+    var(--osdk-combobox-transition-ease, var(--osdk-emphasis-ease-default));
 
   [data-popup-open] > & {
     transform: rotate(180deg);
@@ -153,31 +190,46 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: var(--osdk-combobox-spacing);
+  gap: var(--osdk-combobox-spacing, var(--osdk-surface-spacing));
   width: 100%;
-  min-height: var(--osdk-combobox-min-height);
-  padding: calc(var(--osdk-combobox-spacing) * 1.5)
-    calc(var(--osdk-combobox-spacing) * 2);
-  border-radius: var(--osdk-combobox-border-radius);
-  border: var(--osdk-combobox-border-width)
+  min-height: var(--osdk-combobox-min-height, 30px);
+  padding: calc(var(--osdk-combobox-spacing, var(--osdk-surface-spacing)) * 1.5)
+    calc(var(--osdk-combobox-spacing, var(--osdk-surface-spacing)) * 2);
+  border-radius: var(
+    --osdk-combobox-border-radius,
+    var(--osdk-surface-border-radius)
+  );
+  border: var(--osdk-combobox-border-width, var(--osdk-surface-border-width))
     solid
-    var(--osdk-combobox-border-color);
-  background-color: var(--osdk-combobox-input-bg);
+    var(--osdk-combobox-border-color, var(--osdk-surface-border-color-default));
+  background-color: var(
+    --osdk-combobox-input-bg,
+    var(--osdk-surface-background-color-default-rest)
+  );
   transition: border-color
-    var(--osdk-combobox-transition-duration)
-    var(--osdk-combobox-transition-ease);
+    var(
+      --osdk-combobox-transition-duration,
+      var(--osdk-emphasis-transition-duration)
+    )
+    var(--osdk-combobox-transition-ease, var(--osdk-emphasis-ease-default));
 
   &:focus-within {
-    border-color: var(--osdk-combobox-focus-border-color);
-    outline: var(--osdk-combobox-focus-width)
-      solid var(--osdk-combobox-focus-color);
-    outline-offset: var(--osdk-combobox-focus-offset);
+    border-color: var(
+      --osdk-combobox-focus-border-color,
+      var(--osdk-intent-primary-rest)
+    );
+    outline: var(--osdk-combobox-focus-width, var(--osdk-emphasis-focus-width))
+      solid var(--osdk-combobox-focus-color, var(--osdk-emphasis-focus-color));
+    outline-offset: var(
+      --osdk-combobox-focus-offset,
+      var(--osdk-emphasis-focus-offset)
+    );
   }
 }
 
 .osdkComboboxSearchIcon {
   flex-shrink: 0;
-  color: var(--osdk-combobox-icon-color);
+  color: var(--osdk-combobox-icon-color, var(--osdk-iconography-color-muted));
 }
 
 .osdkComboboxInput {
@@ -185,18 +237,34 @@
   min-width: 0;
   width: 100%;
   text-overflow: ellipsis;
-  padding: var(--osdk-combobox-input-padding);
-  border-radius: var(--osdk-combobox-border-radius);
-  border: var(--osdk-combobox-border-width)
+  padding: var(
+    --osdk-combobox-input-padding,
+    calc(var(--osdk-surface-spacing) * 1.5)
+      calc(var(--osdk-surface-spacing) * 2)
+  );
+  border-radius: var(
+    --osdk-combobox-border-radius,
+    var(--osdk-surface-border-radius)
+  );
+  border: var(--osdk-combobox-border-width, var(--osdk-surface-border-width))
     solid
-    var(--osdk-combobox-border-color);
-  background-color: var(--osdk-combobox-input-bg);
+    var(--osdk-combobox-border-color, var(--osdk-surface-border-color-default));
+  background-color: var(
+    --osdk-combobox-input-bg,
+    var(--osdk-surface-background-color-default-rest)
+  );
   transition: border-color
-    var(--osdk-combobox-transition-duration)
-    var(--osdk-combobox-transition-ease);
+    var(
+      --osdk-combobox-transition-duration,
+      var(--osdk-emphasis-transition-duration)
+    )
+    var(--osdk-combobox-transition-ease, var(--osdk-emphasis-ease-default));
 
   &:focus {
-    border-color: var(--osdk-combobox-focus-border-color);
+    border-color: var(
+      --osdk-combobox-focus-border-color,
+      var(--osdk-intent-primary-rest)
+    );
     outline: none;
   }
 
@@ -212,19 +280,34 @@
       outline-offset: unset;
     }
   }
-  font-family: var(--osdk-combobox-font-family);
-  font-size: var(--osdk-combobox-font-size);
-  line-height: var(--osdk-combobox-line-height);
-  color: var(--osdk-combobox-input-color);
+  font-family: var(
+    --osdk-combobox-font-family,
+    var(--osdk-typography-family-default)
+  );
+  font-size: var(
+    --osdk-combobox-font-size,
+    var(--osdk-typography-size-body-medium)
+  );
+  line-height: var(
+    --osdk-combobox-line-height,
+    var(--osdk-typography-line-height-default)
+  );
+  color: var(
+    --osdk-combobox-input-color,
+    var(--osdk-typography-color-default-rest)
+  );
   outline: none;
 
   &::placeholder {
-    color: var(--osdk-combobox-placeholder-color);
+    color: var(
+      --osdk-combobox-placeholder-color,
+      var(--osdk-typography-color-muted)
+    );
   }
 }
 
 .osdkComboboxPositioner {
-  z-index: var(--osdk-combobox-z-index);
+  z-index: var(--osdk-combobox-z-index, var(--osdk-surface-z-index-3));
   /* Base UI may focus popup containers so they can own roving keyboard
      navigation. Keep visible focus on the trigger/input or highlighted option
      instead of drawing a browser-default ring around this wrapper. */
@@ -235,17 +318,23 @@
   display: flex;
   flex-direction: column;
   min-width: var(--anchor-width);
-  max-height: var(--osdk-combobox-popup-max-height);
+  max-height: var(--available-height);
   overflow-y: auto;
   padding: calc(
-    var(--osdk-combobox-spacing) * 1.5
+    var(--osdk-combobox-spacing, var(--osdk-surface-spacing)) * 1.5
   );
-  border-radius: var(--osdk-combobox-border-radius);
-  border: var(--osdk-combobox-border-width)
+  border-radius: var(
+    --osdk-combobox-border-radius,
+    var(--osdk-surface-border-radius)
+  );
+  border: var(--osdk-combobox-border-width, var(--osdk-surface-border-width))
     solid
-    var(--osdk-combobox-border-color);
-  background-color: var(--osdk-combobox-popup-bg);
-  box-shadow: var(--osdk-combobox-popup-shadow);
+    var(--osdk-combobox-border-color, var(--osdk-surface-border-color-default));
+  background-color: var(
+    --osdk-combobox-popup-bg,
+    var(--osdk-surface-background-color-default-rest)
+  );
+  box-shadow: var(--osdk-combobox-popup-shadow, var(--osdk-surface-shadow-2));
 
   &:focus {
     outline: none;
@@ -275,32 +364,59 @@
 .osdkComboboxItem {
   display: flex;
   align-items: center;
-  gap: calc(var(--osdk-combobox-spacing) * 1.5);
-  padding: calc(var(--osdk-combobox-spacing) * 1.5)
-    calc(var(--osdk-combobox-spacing) * 2);
-  border-radius: var(--osdk-combobox-border-radius);
+  gap: calc(var(--osdk-combobox-spacing, var(--osdk-surface-spacing)) * 1.5);
+  padding: calc(var(--osdk-combobox-spacing, var(--osdk-surface-spacing)) * 1.5)
+    calc(var(--osdk-combobox-spacing, var(--osdk-surface-spacing)) * 2);
+  border-radius: var(
+    --osdk-combobox-border-radius,
+    var(--osdk-surface-border-radius)
+  );
   cursor: pointer;
-  font-family: var(--osdk-combobox-font-family);
-  font-size: var(--osdk-combobox-font-size);
-  line-height: var(--osdk-combobox-line-height);
-  color: var(--osdk-combobox-item-color);
+  font-family: var(
+    --osdk-combobox-font-family,
+    var(--osdk-typography-family-default)
+  );
+  font-size: var(
+    --osdk-combobox-font-size,
+    var(--osdk-typography-size-body-medium)
+  );
+  line-height: var(
+    --osdk-combobox-line-height,
+    var(--osdk-typography-line-height-default)
+  );
+  color: var(
+    --osdk-combobox-item-color,
+    var(--osdk-typography-color-default-rest)
+  );
   transition: background-color
-    var(--osdk-combobox-transition-duration)
-    var(--osdk-combobox-transition-ease);
+    var(
+      --osdk-combobox-transition-duration,
+      var(--osdk-emphasis-transition-duration)
+    )
+    var(--osdk-combobox-transition-ease, var(--osdk-emphasis-ease-default));
 
   &[data-highlighted] {
-    background-color: var(--osdk-combobox-item-bg-highlighted);
+    background-color: var(
+      --osdk-combobox-item-bg-highlighted,
+      var(--osdk-surface-background-color-default-hover)
+    );
     outline: none;
   }
 
   &[data-selected] {
-    background-color: var(--osdk-combobox-item-bg-selected);
-    color: var(--osdk-combobox-item-color-selected);
+    background-color: var(
+      --osdk-combobox-item-bg-selected,
+      var(--osdk-surface-layer-primary)
+    );
+    color: var(
+      --osdk-combobox-item-color-selected,
+      var(--osdk-intent-primary-rest)
+    );
   }
 
   &[data-disabled] {
     cursor: not-allowed;
-    opacity: var(--osdk-combobox-disabled-opacity);
+    opacity: var(--osdk-disabled-opacity, 0.5);
   }
 }
 
@@ -308,9 +424,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: calc(var(--osdk-combobox-spacing) * 4);
+  width: calc(var(--osdk-combobox-spacing, var(--osdk-surface-spacing)) * 4);
   flex-shrink: 0;
-  color: var(--osdk-combobox-item-color-selected);
+  color: var(
+    --osdk-combobox-item-color-selected,
+    var(--osdk-intent-primary-rest)
+  );
   visibility: hidden;
 
   &[data-selected] {
@@ -321,24 +440,42 @@
 .osdkComboboxChips {
   display: flex;
   flex-wrap: wrap;
-  gap: calc(var(--osdk-combobox-spacing) * 1.5);
+  gap: calc(var(--osdk-combobox-spacing, var(--osdk-surface-spacing)) * 1.5);
   margin-bottom: calc(
-    var(--osdk-combobox-spacing) * 2
+    var(--osdk-combobox-spacing, var(--osdk-surface-spacing)) * 2
   );
 }
 
 .osdkComboboxChip {
   display: inline-flex;
   align-items: center;
-  gap: var(--osdk-combobox-spacing);
-  padding: calc(var(--osdk-combobox-spacing) * 0.5)
-    calc(var(--osdk-combobox-spacing) * 1.5);
-  border-radius: var(--osdk-combobox-border-radius);
-  background-color: var(--osdk-combobox-chip-bg);
-  font-family: var(--osdk-combobox-font-family);
-  font-size: var(--osdk-combobox-chip-font-size);
-  line-height: var(--osdk-combobox-line-height);
-  color: var(--osdk-combobox-chip-color);
+  gap: var(--osdk-combobox-spacing, var(--osdk-surface-spacing));
+  padding: calc(var(--osdk-combobox-spacing, var(--osdk-surface-spacing)) * 0.5)
+    calc(var(--osdk-combobox-spacing, var(--osdk-surface-spacing)) * 1.5);
+  border-radius: var(
+    --osdk-combobox-border-radius,
+    var(--osdk-surface-border-radius)
+  );
+  background-color: var(
+    --osdk-combobox-chip-bg,
+    var(--osdk-custom-color-gray-4)
+  );
+  font-family: var(
+    --osdk-combobox-font-family,
+    var(--osdk-typography-family-default)
+  );
+  font-size: var(
+    --osdk-combobox-chip-font-size,
+    var(--osdk-typography-size-body-small)
+  );
+  line-height: var(
+    --osdk-combobox-line-height,
+    var(--osdk-typography-line-height-default)
+  );
+  color: var(
+    --osdk-combobox-chip-color,
+    var(--osdk-typography-color-default-rest)
+  );
 }
 
 .osdkComboboxChipRemove {
@@ -349,13 +486,22 @@
   border: none;
   background: transparent;
   cursor: pointer;
-  color: var(--osdk-combobox-chip-remove-color);
+  color: var(
+    --osdk-combobox-chip-remove-color,
+    var(--osdk-iconography-color-muted)
+  );
   transition: color
-    var(--osdk-combobox-transition-duration)
-    var(--osdk-combobox-transition-ease);
+    var(
+      --osdk-combobox-transition-duration,
+      var(--osdk-emphasis-transition-duration)
+    )
+    var(--osdk-combobox-transition-ease, var(--osdk-emphasis-ease-default));
 
   &:hover {
-    color: var(--osdk-combobox-chip-remove-color-hover);
+    color: var(
+      --osdk-combobox-chip-remove-color-hover,
+      var(--osdk-typography-color-default-rest)
+    );
   }
 }
 
@@ -369,19 +515,34 @@
   border: none;
   background: transparent;
   cursor: pointer;
-  color: var(--osdk-combobox-clear-color);
-  border-radius: var(--osdk-combobox-border-radius);
+  color: var(--osdk-combobox-clear-color, var(--osdk-iconography-color-muted));
+  border-radius: var(
+    --osdk-combobox-border-radius,
+    var(--osdk-surface-border-radius)
+  );
   transition:
     color
-      var(--osdk-combobox-transition-duration)
-      var(--osdk-combobox-transition-ease),
+      var(
+        --osdk-combobox-transition-duration,
+        var(--osdk-emphasis-transition-duration)
+      )
+      var(--osdk-combobox-transition-ease, var(--osdk-emphasis-ease-default)),
     background-color
-      var(--osdk-combobox-transition-duration)
-      var(--osdk-combobox-transition-ease);
+      var(
+        --osdk-combobox-transition-duration,
+        var(--osdk-emphasis-transition-duration)
+      )
+      var(--osdk-combobox-transition-ease, var(--osdk-emphasis-ease-default));
 
   &:hover {
-    color: var(--osdk-combobox-clear-color-hover);
-    background-color: var(--osdk-combobox-clear-bg-hover);
+    color: var(
+      --osdk-combobox-clear-color-hover,
+      var(--osdk-typography-color-default-rest)
+    );
+    background-color: var(
+      --osdk-combobox-clear-bg-hover,
+      var(--osdk-surface-background-color-default-hover)
+    );
   }
 }
 
@@ -390,18 +551,27 @@
   flex-direction: column;
   overflow-y: auto;
 
+  /* Base UI moves focus into the list when the popup opens for keyboard
+     navigation. Highlighted options provide the visible affordance, so do not
+     draw a browser/default focus ring around the whole popup list. */
   &:focus {
     outline: none;
   }
 }
 
 .osdkComboboxEmpty {
-  padding: var(--osdk-combobox-spacing)
-    var(--osdk-combobox-spacing);
+  padding: var(--osdk-combobox-spacing, var(--osdk-surface-spacing))
+    var(--osdk-combobox-spacing, var(--osdk-surface-spacing));
   text-align: center;
-  color: var(--osdk-combobox-empty-color);
-  font-family: var(--osdk-combobox-font-family);
-  font-size: var(--osdk-combobox-font-size);
+  color: var(--osdk-combobox-empty-color, var(--osdk-typography-color-muted));
+  font-family: var(
+    --osdk-combobox-font-family,
+    var(--osdk-typography-family-default)
+  );
+  font-size: var(
+    --osdk-combobox-font-size,
+    var(--osdk-typography-size-body-medium)
+  );
 
   &:empty {
     display: none;
@@ -412,34 +582,61 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: calc(var(--osdk-combobox-spacing) * 4);
-  height: calc(var(--osdk-combobox-spacing) * 4);
+  width: calc(var(--osdk-combobox-spacing, var(--osdk-surface-spacing)) * 4);
+  height: calc(var(--osdk-combobox-spacing, var(--osdk-surface-spacing)) * 4);
   flex-shrink: 0;
-  border-radius: var(--osdk-combobox-checkbox-border-radius);
-  border: var(--osdk-combobox-checkbox-border-width)
+  border-radius: var(
+    --osdk-combobox-checkbox-border-radius,
+    var(--osdk-surface-border-radius)
+  );
+  border: var(
+      --osdk-combobox-checkbox-border-width,
+      var(--osdk-surface-border-width)
+    )
     solid
-    var(--osdk-combobox-checkbox-border-color);
+    var(
+      --osdk-combobox-checkbox-border-color,
+      var(--osdk-surface-border-color-default)
+    );
   color: transparent;
-  background-color: var(--osdk-combobox-checkbox-bg);
+  background-color: var(
+    --osdk-combobox-checkbox-bg,
+    var(--osdk-surface-background-color-default-rest)
+  );
   transition:
     background-color
-      var(--osdk-combobox-transition-duration)
-      var(--osdk-combobox-transition-ease),
+      var(
+        --osdk-combobox-transition-duration,
+        var(--osdk-emphasis-transition-duration)
+      )
+      var(--osdk-combobox-transition-ease, var(--osdk-emphasis-ease-default)),
     color
-      var(--osdk-combobox-transition-duration)
-      var(--osdk-combobox-transition-ease);
+      var(
+        --osdk-combobox-transition-duration,
+        var(--osdk-emphasis-transition-duration)
+      )
+      var(--osdk-combobox-transition-ease, var(--osdk-emphasis-ease-default));
 
   &[data-selected] {
-    background-color: var(--osdk-combobox-checkbox-bg-checked);
-    border-color: var(--osdk-combobox-checkbox-border-color-checked);
-    color: var(--osdk-combobox-checkbox-color-checked);
+    background-color: var(
+      --osdk-combobox-checkbox-bg-checked,
+      var(--osdk-intent-primary-rest)
+    );
+    border-color: var(
+      --osdk-combobox-checkbox-border-color-checked,
+      var(--osdk-intent-primary-rest)
+    );
+    color: var(
+      --osdk-combobox-checkbox-color-checked,
+      var(--osdk-surface-background-color-default-rest)
+    );
   }
 }
 
 .osdkComboboxTriggerChips {
   display: flex;
   flex-wrap: wrap;
-  gap: calc(var(--osdk-combobox-spacing) * 1);
+  gap: calc(var(--osdk-combobox-spacing, var(--osdk-surface-spacing)) * 1);
   grid-area: 1 / 1;
   align-items: center;
 }
@@ -447,14 +644,26 @@
 .osdkComboboxTriggerChip {
   display: inline-flex;
   align-items: center;
-  gap: calc(var(--osdk-combobox-spacing) * 1);
-  padding: calc(var(--osdk-combobox-spacing) * 1)
-    calc(var(--osdk-combobox-spacing) * 1.5);
-  border-radius: var(--osdk-combobox-border-radius);
-  background-color: var(--osdk-combobox-chip-bg);
-  font-size: var(--osdk-combobox-chip-font-size);
+  gap: calc(var(--osdk-combobox-spacing, var(--osdk-surface-spacing)) * 1);
+  padding: calc(var(--osdk-combobox-spacing, var(--osdk-surface-spacing)) * 1)
+    calc(var(--osdk-combobox-spacing, var(--osdk-surface-spacing)) * 1.5);
+  border-radius: var(
+    --osdk-combobox-border-radius,
+    var(--osdk-surface-border-radius)
+  );
+  background-color: var(
+    --osdk-combobox-chip-bg,
+    var(--osdk-custom-color-gray-4)
+  );
+  font-size: var(
+    --osdk-combobox-chip-font-size,
+    var(--osdk-typography-size-body-small)
+  );
   line-height: 1;
-  color: var(--osdk-combobox-chip-color);
+  color: var(
+    --osdk-combobox-chip-color,
+    var(--osdk-typography-color-default-rest)
+  );
   white-space: nowrap;
 }
 
@@ -468,10 +677,16 @@
   background: transparent;
   cursor: pointer;
   line-height: 0;
-  color: var(--osdk-combobox-chip-remove-color);
+  color: var(
+    --osdk-combobox-chip-remove-color,
+    var(--osdk-iconography-color-muted)
+  );
 
   &:hover {
-    color: var(--osdk-combobox-chip-remove-color-hover);
+    color: var(
+      --osdk-combobox-chip-remove-color-hover,
+      var(--osdk-typography-color-default-rest)
+    );
   }
 }
 
@@ -480,8 +695,11 @@
   inset-block-start: 0;
   /* Keeps the sticky search input above scrolled list items */
   z-index: 1;
-  background-color: var(--osdk-combobox-popup-bg);
+  background-color: var(
+    --osdk-combobox-popup-bg,
+    var(--osdk-surface-background-color-default-rest)
+  );
   margin-block-end: calc(
-    var(--osdk-combobox-spacing) * 1.5
+    var(--osdk-combobox-spacing, var(--osdk-surface-spacing)) * 1.5
   );
 }

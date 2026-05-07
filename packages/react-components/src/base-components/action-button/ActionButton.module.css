@@ -16,11 +16,12 @@
 
 .button {
   min-height: var(--osdk-button-min-height);
-  padding: var(--osdk-button-padding-block) var(--osdk-button-padding-inline);
+  padding: calc(var(--osdk-surface-spacing) * 1.5)
+    calc(var(--osdk-surface-spacing) * 1.75);
   border: var(--osdk-button-border);
-  border-radius: var(--osdk-button-border-radius);
+  border-radius: var(--osdk-surface-border-radius);
   box-shadow: var(--osdk-button-shadow);
-  font-size: var(--osdk-button-font-size);
+  font-size: var(--osdk-typography-size-body-medium);
   cursor: pointer;
 
   &:focus-visible {
@@ -63,16 +64,16 @@
 }
 
 .minimalButton {
-  background-color: var(--osdk-button-minimal-bg);
+  background-color: transparent;
   border: none;
-  color: var(--osdk-button-minimal-color);
+  color: var(--osdk-typography-color-default-rest);
 
   &:hover:not(:disabled) {
-    background-color: var(--osdk-button-minimal-bg-hover);
+    background-color: var(--osdk-surface-background-color-default-hover);
   }
 
   &:active:not(:disabled) {
-    background-color: var(--osdk-button-minimal-bg-active);
+    background-color: var(--osdk-surface-background-color-default-active);
   }
 
   &:disabled {
