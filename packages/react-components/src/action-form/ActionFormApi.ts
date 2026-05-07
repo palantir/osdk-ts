@@ -171,9 +171,6 @@ export type BaseFormProps =
   );
 
 interface BaseFormCommonProps {
-  /**
-   * Title shown above the form.
-   */
   formTitle?: string;
   formContent: ReadonlyArray<FormContentItem>;
   onSubmit: (formState: Record<string, unknown>) => Promise<void> | void;

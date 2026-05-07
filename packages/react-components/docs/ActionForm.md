@@ -162,9 +162,8 @@ const [formState, setFormState] = useState({
 
 ```css
 .employeeForm {
-  --osdk-form-padding-inline: calc(var(--osdk-surface-spacing) * 4);
+  --osdk-form-content-padding-inline: calc(var(--osdk-surface-spacing) * 4);
   --osdk-form-content-padding-block: calc(var(--osdk-surface-spacing) * 4);
-  --osdk-form-footer-block-padding: calc(var(--osdk-surface-spacing) * 4);
 }
 ```
 
@@ -174,4 +173,4 @@ const [formState, setFormState] = useState({
 </div>;
 ```
 
-Use `--osdk-form-padding-inline` for shared horizontal padding across the header, fields, and footer. Use `--osdk-form-content-padding-block` and `--osdk-form-footer-block-padding` when the fields and footer need different vertical spacing. For card-style outer spacing, put margin, border, background, and border radius on the wrapper instead of the form itself.
+Use `--osdk-form-content-padding-inline` for shared horizontal padding across the header, fields, and footer. Use `--osdk-form-content-padding-block` for block padding on the fields section. For card-style outer spacing, put margin, border, background, and border radius on the wrapper instead of the form itself.

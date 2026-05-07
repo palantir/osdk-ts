@@ -64,24 +64,20 @@
 }
 
 .minimalButton {
-  background-color: transparent;
-  border: none;
-  color: var(--osdk-typography-color-default-rest);
+  background-color: var(--osdk-button-minimal-bg);
+  border: var(--osdk-button-minimal-border);
+  box-shadow: var(--osdk-button-minimal-shadow);
+  color: var(--osdk-button-secondary-minimal-color);
 
   &:hover:not(:disabled) {
-    background-color: var(--osdk-surface-background-color-default-hover);
+    background-color: var(--osdk-button-minimal-bg-hover);
   }
 
   &:active:not(:disabled) {
-    background-color: var(--osdk-surface-background-color-default-active);
-  }
-
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
+    background-color: var(--osdk-button-minimal-bg-active);
   }
 }
 
 .primaryButton.minimalButton {
-  color: var(--osdk-button-primary-bg);
+  color: var(--osdk-button-primary-minimal-color);
 }
