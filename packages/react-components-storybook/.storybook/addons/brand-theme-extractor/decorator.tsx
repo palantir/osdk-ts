@@ -18,7 +18,7 @@ import type { Decorator } from "@storybook/react-vite";
 import React, { useEffect, useMemo } from "react";
 import { GLOBALS_KEY } from "./constants.js";
 import { parseBrandThemeState } from "./state.js";
-import { getTokenRole } from "./token-map.js";
+import { getTokenRole, TOKEN_ROLES } from "./token-map.js";
 
 const STYLE_ID = "brand-theme-overrides";
 
@@ -39,7 +39,17 @@ export const BrandThemeDecorator: Decorator = (Story, context) => {
       return "";
     }
 
-    const declarations: string[] = [];
+    // First, reset ALL token-map properties so stale values from a
+    // previous preset don't linger when switching themes.
+    const resets: string[] = [];
+    for (const role of TOKEN_ROLES) {
+      for (const prop of role.cssProperties) {
+        resets.push(`  ${prop}: initial;`);
+      }
+    }
+
+    // Then apply the current preset's overrides.
+    const overrides: string[] = [];
 
     for (const assignment of brandTheme.assignments) {
       const roleDef = getTokenRole(assignment.role);
@@ -65,16 +75,17 @@ export const BrandThemeDecorator: Decorator = (Story, context) => {
       }
 
       for (const prop of roleDef.cssProperties) {
-        declarations.push(`  ${prop}: ${value};`);
+        overrides.push(`  ${prop}: ${value};`);
       }
     }
 
-    if (declarations.length === 0) return "";
+    if (overrides.length === 0) return "";
 
     // Use @layer to ensure overrides sit above theme layers.
     // The styles.css layers are: storybook, osdk.styles, cbac.components, themes.
     // An unlayered style block always beats layered styles in the cascade.
-    return `:root:root {\n${declarations.join("\n")}\n}`;
+    // Reset block reverts stale tokens; override block applies the new theme.
+    return `:root:root {\n${resets.join("\n")}\n${overrides.join("\n")}\n}`;
   }, [brandTheme]);
 
   useEffect(function syncBrandThemeOverrideStyle() {
@@ -99,7 +110,11 @@ export const BrandThemeDecorator: Decorator = (Story, context) => {
 
   useEffect(function applyBlueprintColorMode() {
     const root = document.documentElement;
-    root.setAttribute("data-bp-color-scheme", brandTheme.colorMode);
+    if (brandTheme.colorMode === "dark") {
+      root.setAttribute("data-bp-color-scheme", "dark");
+    } else {
+      root.removeAttribute("data-bp-color-scheme");
+    }
 
     return () => {
       root.removeAttribute("data-bp-color-scheme");

@@ -219,9 +219,7 @@ const DocumentsPanel = React.memo(
   function DocumentsPanelFn(): React.ReactElement {
     return (
       <div className={styles.osdkShowcasePdfLayout}>
-        <div className={styles.osdkShowcaseCard}>
-          <ShowcasePdfViewer />
-        </div>
+        <ShowcasePdfViewer />
       </div>
     );
   },

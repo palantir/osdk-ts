@@ -23,8 +23,10 @@ import type { TokenRoleDefinition } from "./types.js";
  * Each role cascades into ALL component-level tokens that derive
  * from it, ensuring a complete theme when colors are set.
  *
- * Derived from: base.css, themes.css (light/modern/devcon), and
- * component-tokens/*.css
+ * NOTE: Only override semantic tokens here — avoid palette primitives
+ * (e.g. --bp-palette-black) as they feed into oklch derivation chains.
+ * Only override rest-state intent tokens — hover/active are derived
+ * from rest via CSS defaults or oklch formulas.
  */
 export const TOKEN_ROLES: TokenRoleDefinition[] = [
   // ── Colors ──────────────────────────────────────────────
@@ -34,15 +36,12 @@ export const TOKEN_ROLES: TokenRoleDefinition[] = [
     category: "color",
     inputType: "color",
     cssProperties: [
-      // Base palette
-      "--osdk-palette-white",
-      "--bp-palette-white",
       // Semantic background
       "--osdk-background-primary",
-      // Table row backgrounds
+      // Table row backgrounds (both default and alternate use the same color)
       "--osdk-table-row-bg-default",
       "--osdk-table-row-bg-alternate",
-      // Surface default
+      // Surface default rest
       "--osdk-surface-background-color-default-rest",
       "--bp-surface-background-color-default-rest",
     ],
@@ -56,11 +55,11 @@ export const TOKEN_ROLES: TokenRoleDefinition[] = [
       // Semantic backgrounds
       "--osdk-background-secondary",
       "--osdk-background-tertiary",
-      "--osdk-palette-light-gray-5",
-      "--bp-palette-light-gray-5",
-      // Surface hover
+      // Surface hover/active (needed for filter list, select, combobox states)
       "--osdk-surface-background-color-default-hover",
       "--bp-surface-background-color-default-hover",
+      "--osdk-surface-background-color-default-active",
+      "--bp-surface-background-color-default-active",
       // Table header
       "--osdk-table-header-bg",
       // Checkbox hover background
@@ -73,11 +72,8 @@ export const TOKEN_ROLES: TokenRoleDefinition[] = [
     category: "color",
     inputType: "color",
     cssProperties: [
-      // Base palette
-      "--osdk-palette-black",
-      "--bp-palette-black",
-      "--bp-palette-dark-gray-1",
-      // Typography
+      // Typography (semantic only — palette primitives excluded
+      // to preserve oklch derivation chains)
       "--osdk-typography-color-default-rest",
       "--bp-typography-color-default-rest",
       // Table text
@@ -106,13 +102,9 @@ export const TOKEN_ROLES: TokenRoleDefinition[] = [
     category: "color",
     inputType: "color",
     cssProperties: [
-      // Intent primary (rest, hover, active)
+      // Intent primary (rest only — hover/active derive from CSS defaults)
       "--osdk-intent-primary-rest",
       "--bp-intent-primary-rest",
-      "--osdk-intent-primary-hover",
-      "--bp-intent-primary-hover",
-      "--osdk-intent-primary-active",
-      "--bp-intent-primary-active",
       // Focus ring
       "--osdk-emphasis-focus-color",
       "--bp-emphasis-focus-color",
@@ -138,11 +130,9 @@ export const TOKEN_ROLES: TokenRoleDefinition[] = [
     category: "color",
     inputType: "color",
     cssProperties: [
-      // Secondary button background
+      // Secondary button background only — intent-default-hover
+      // intentionally excluded to preserve oklch derivation chain
       "--osdk-button-secondary-bg",
-      // Intent default (secondary UI elements)
-      "--osdk-intent-default-hover",
-      "--bp-intent-default-hover",
     ],
   },
   {
@@ -172,14 +162,13 @@ export const TOKEN_ROLES: TokenRoleDefinition[] = [
     category: "color",
     inputType: "color",
     cssProperties: [
-      // Surface borders
+      // Surface border (default only — strong derives from default
+      // via oklch with higher opacity)
       "--osdk-surface-border-color-default",
       "--bp-surface-border-color-default",
-      "--osdk-surface-border-color-strong",
-      "--bp-surface-border-color-strong",
       // Table border
       "--osdk-table-border-color",
-      // Checkbox border color (used inside shorthand)
+      // Checkbox border color
       "--osdk-checkbox-border-color",
     ],
   },
@@ -189,12 +178,9 @@ export const TOKEN_ROLES: TokenRoleDefinition[] = [
     category: "color",
     inputType: "color",
     cssProperties: [
+      // Rest only — hover/active derive from CSS defaults
       "--osdk-intent-danger-rest",
       "--bp-intent-danger-rest",
-      "--osdk-intent-danger-hover",
-      "--bp-intent-danger-hover",
-      "--osdk-intent-danger-active",
-      "--bp-intent-danger-active",
       "--osdk-intent-danger-foreground",
       "--bp-intent-danger-foreground",
     ],
@@ -205,14 +191,23 @@ export const TOKEN_ROLES: TokenRoleDefinition[] = [
     category: "color",
     inputType: "color",
     cssProperties: [
+      // Rest only — hover/active derive from CSS defaults
       "--osdk-intent-success-rest",
       "--bp-intent-success-rest",
-      "--osdk-intent-success-hover",
-      "--bp-intent-success-hover",
-      "--osdk-intent-success-active",
-      "--bp-intent-success-active",
       "--osdk-intent-success-foreground",
       "--bp-intent-success-foreground",
+    ],
+  },
+  {
+    role: "warning",
+    label: "Warning",
+    category: "color",
+    inputType: "color",
+    cssProperties: [
+      "--osdk-intent-warning-rest",
+      "--bp-intent-warning-rest",
+      "--osdk-intent-warning-foreground",
+      "--bp-intent-warning-foreground",
     ],
   },
 
@@ -327,8 +322,7 @@ export const TOKEN_ROLES: TokenRoleDefinition[] = [
     cssProperties: [
       "--osdk-surface-shadow-2",
       "--bp-surface-shadow-2",
-      // Button and input shadows
-      "--osdk-button-shadow",
+      // Input shadow
       "--osdk-input-shadow",
     ],
   },

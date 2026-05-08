@@ -40,10 +40,9 @@
 
   /* Table Header Menu */
   --osdk-table-header-menu-padding: calc(var(--osdk-surface-spacing) * 0.25);
-  /* Try to use surface for backgrounds */
-  --osdk-table-header-menu-bg: var(--osdk-custom-color-light-gray-2);
+  --osdk-table-header-menu-bg: transparent;
   --osdk-table-header-menu-border: var(--osdk-surface-border-width) solid
-    var(--osdk-custom-color-gray-4);
+    var(--osdk-surface-border-color-default);
   --osdk-table-header-menu-color: var(--osdk-typography-color-muted);
   --osdk-table-header-menu-color-active: var(
     --osdk-typography-color-default-rest
@@ -51,8 +50,12 @@
   --osdk-table-header-menu-icon-color: var(
     --osdk-table-header-menu-color
   );
-  --osdk-table-header-menu-bg-hover: var(--osdk-custom-color-gray-1);
-  --osdk-table-header-menu-bg-active: var(--osdk-custom-color-gray-2);
+  --osdk-table-header-menu-bg-hover: var(
+    --osdk-surface-background-color-default-hover
+  );
+  --osdk-table-header-menu-bg-active: var(
+    --osdk-surface-background-color-default-active
+  );
 
   /* Resizer */
   --osdk-table-resizer-color-hover: var(--osdk-custom-color-primary-1);

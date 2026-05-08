@@ -14,9 +14,18 @@
  * limitations under the License.
  */
 
-import type { RendererFieldDefinition } from "@osdk/react-components/experimental";
+import type {
+  FormContentItem,
+  RendererFieldDefinition,
+} from "@osdk/react-components/experimental";
 import { BaseForm } from "@osdk/react-components/experimental";
 import React from "react";
+
+function fieldsToContent(
+  fields: ReadonlyArray<RendererFieldDefinition>,
+): ReadonlyArray<FormContentItem> {
+  return fields.map((definition) => ({ type: "field" as const, definition }));
+}
 
 function noop(_formState: Record<string, unknown>): void {
   // Showcase-only — submissions are discarded
@@ -52,7 +61,7 @@ export const ContactForm = React.memo(
     return (
       <BaseForm
         formTitle="Contact Us"
-        fieldDefinitions={CONTACT_FIELDS}
+        formContent={fieldsToContent(CONTACT_FIELDS)}
         onSubmit={noop}
       />
     );
@@ -113,7 +122,7 @@ export const SettingsForm = React.memo(
     return (
       <BaseForm
         formTitle="User Settings"
-        fieldDefinitions={SETTINGS_FIELDS}
+        formContent={fieldsToContent(SETTINGS_FIELDS)}
         onSubmit={noop}
       />
     );
@@ -152,7 +161,7 @@ export const SchedulingForm = React.memo(
     return (
       <BaseForm
         formTitle="Schedule Event"
-        fieldDefinitions={SCHEDULING_FIELDS}
+        formContent={fieldsToContent(SCHEDULING_FIELDS)}
         onSubmit={noop}
       />
     );
@@ -195,7 +204,7 @@ export const UploadForm = React.memo(
     return (
       <BaseForm
         formTitle="Upload Document"
-        fieldDefinitions={UPLOAD_FIELDS}
+        formContent={fieldsToContent(UPLOAD_FIELDS)}
         onSubmit={noop}
       />
     );
@@ -234,7 +243,7 @@ export const DateRangeForm = React.memo(
     return (
       <BaseForm
         formTitle="Generate Report"
-        fieldDefinitions={DATE_RANGE_FIELDS}
+        formContent={fieldsToContent(DATE_RANGE_FIELDS)}
         onSubmit={noop}
       />
     );
