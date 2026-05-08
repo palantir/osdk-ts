@@ -55,7 +55,7 @@ export interface UseDateEditState {
   /**
    * Live parse of inputValue — the Date if parsable, undefined if empty/invalid.
    * Re-derived every render from parseFn(inputValue).
-   * Used for cross-input validation (e.g. DateRangeInputField's overlapping check).
+   * Used for cross-input validation (e.g. DateRangePicker's overlapping check).
    */
   dateValue: Date | undefined;
   /** Enter editing mode: sets isEditing=true and populates inputValue from the current value. */

@@ -28,22 +28,11 @@ import type React from "react";
 
 import type {
   DatePickerProps,
-  DateRange,
   DateRangePickerProps,
 } from "../shared/calendar/index.js";
 import type { PortalContainer } from "../shared/PortalDismissLayer.js";
 
-export { EMPTY_RANGE } from "../shared/calendar/index.js";
-export type { DateRange, PortalContainer };
-
-/**
- * Backwards-compatible aliases for the date input prop types. The
- * underlying components moved to `shared/calendar/` as `DatePicker` /
- * `DateRangePicker`; these names remain part of the experimental
- * action-form public surface.
- */
-export type DatetimePickerFieldProps = DatePickerProps;
-export type DateRangeInputFieldProps = DateRangePickerProps;
+export type { PortalContainer };
 
 /**
  * A form field definition specifies configuration for a single field.
@@ -154,8 +143,8 @@ export type ValidationError =
  * Maps field types to their corresponding props
  */
 export interface FormFieldPropsByType {
-  DATE_RANGE_INPUT: DateRangeInputFieldProps;
-  DATETIME_PICKER: DatetimePickerFieldProps;
+  DATE_RANGE_INPUT: DateRangePickerProps;
+  DATETIME_PICKER: DatePickerProps;
   DROPDOWN: DropdownFieldProps<unknown, boolean>;
   FILE_PICKER: FilePickerProps;
   NUMBER_INPUT: NumberInputFieldProps;
@@ -167,11 +156,6 @@ export interface FormFieldPropsByType {
   TEXT_INPUT: TextInputFieldProps;
   CUSTOM: CustomFieldProps<unknown>;
 }
-
-// `DatetimePickerFieldProps`, `DateRangeInputFieldProps`, `DateRange`, and
-// `EMPTY_RANGE` were extracted into `shared/calendar/` (see `DatePickerProps`
-// / `DateRangePickerProps`). They are re-exported above for backwards
-// compatibility with the experimental public action-form surface.
 
 /**
  * Dropdown field props with selectable items
