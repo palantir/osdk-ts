@@ -84,6 +84,9 @@
 }
 
 .osdkShowcaseFormCard {
+  --osdk-form-content-padding-inline: calc(var(--osdk-surface-spacing, 4px) * 4);
+  --osdk-form-content-padding-block: calc(var(--osdk-surface-spacing, 4px) * 4);
+
   background-color: var(--osdk-background-primary, #ffffff);
   border: 1px solid var(--osdk-surface-border-color-default, #e5e8eb);
   border-radius: var(--osdk-surface-border-radius, 4px);
