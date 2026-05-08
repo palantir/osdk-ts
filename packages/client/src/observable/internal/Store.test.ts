@@ -1103,15 +1103,9 @@ describe(Store, () => {
         });
 
         it("removes deleted objects via deleteFromStore without leaving undefined slots in the list", async () => {
-          // Regression for the action-driven delete path: when an action
-          // returns `deletedObjects`, ActionApplication runs
-          // `ObjectQuery.deleteFromStore` inside a non-optimistic batch.
-          // Previously `propagateWrite` wrote a tombstone to the per-PK
-          // cache without registering the deletion in `changes.deleted`,
-          // so list watchers kept the cache key in their `data` array and
-          // the `combineLatest` resolved the slot to `undefined`. Consumers
-          // that trusted the non-null type of `useOsdkObjects().data`
-          // crashed during that one render.
+          // Regression for the action-driven delete path: tombstone writes
+          // didn't register in changes.deleted, so list watchers kept the
+          // cache key and combineLatest resolved the slot to undefined.
           const emp = employeesAsServerReturns[0];
           updateList(cache, { type: Employee, where: {}, orderBy: {} }, [
             emp,
@@ -1154,19 +1148,11 @@ describe(Store, () => {
           expectSingleObjectCallAndClear(subFn, undefined);
 
           await waitForCall(subListFn, 1);
-          const payload = expectSingleListCallAndClear(
+          expectSingleListCallAndClear(
             subListFn,
             [],
             { status: "loaded", isOptimistic: false },
           );
-
-          // Belt-and-suspenders: assert the array contains no undefined
-          // entries. `expectSingleListCallAndClear([], …)` already enforces
-          // an empty array, but stating the regression invariant in plain
-          // terms makes the intent explicit.
-          expect(
-            (payload?.resolvedList ?? []).every((x) => x != null),
-          ).toBe(true);
         });
       });
     });
@@ -2848,13 +2834,10 @@ describe(Store, () => {
       });
 
       it("removes streamed-out objects from object-set without leaving undefined slots", async () => {
-        // Regression for BaseListQuery.onOswRemoved: the streaming-driven
-        // removal path used to call batch.delete(cacheKey) on each
-        // variant without registering the deletion in changes.deleted, so
-        // ObjectSetQuery (which inherits onOswRemoved from BaseListQuery
-        // — ListQuery overrides it) emitted a list containing `undefined`
-        // for the streamed-out slot. With no async server revalidation
-        // following the OSW event, the list could stay in that state.
+        // Regression for BaseListQuery.onOswRemoved: streaming "REMOVED"
+        // events wrote tombstones via batch.delete without registering
+        // changes.deleted, so ObjectSetQuery emitted an undefined slot
+        // for the removed object.
         fauxFoundry.getDefaultDataStore().clear();
 
         fauxFoundry.getDefaultDataStore().registerObject(Employee, {
@@ -2871,10 +2854,21 @@ describe(Store, () => {
           },
         );
 
+        const baseObjectSet = client(Employee) as ObjectSet<Employee>;
+
+        // Spy on the public subscribe seam invoked by
+        // BaseListQuery.createWebsocketSubscription when streamUpdates
+        // is true. Capturing the listener here lets us drive a real
+        // REMOVED update through onOswChange → onOswRemoved without
+        // reaching protected internals.
+        const subscribeSpy = vi.spyOn(baseObjectSet, "subscribe")
+          .mockReturnValue({ unsubscribe: () => {} });
+
         const sub = mockObserver<ObjectSetPayload | undefined>();
         defer(
           store.objectSets.observe({
-            baseObjectSet: client(Employee) as ObjectSet<Employee>,
+            baseObjectSet,
+            streamUpdates: true,
           }, sub),
         );
 
@@ -2897,22 +2891,19 @@ describe(Store, () => {
           }),
         );
 
+        await vi.waitFor(() => {
+          expect(subscribeSpy).toHaveBeenCalled();
+        });
+
+        const osdkB = await client(Employee).fetchOne(empB.$primaryKey);
+
         sub.next.mockClear();
 
-        // Simulate the websocket "REMOVED" event by invoking the
-        // BaseListQuery.onOswRemoved hook on the underlying query.
-        // `onOswRemoved` is protected; reach it via a structural cast.
-        const query = store.objectSets.getQuery({
-          baseObjectSet: client(Employee) as ObjectSet<Employee>,
-        });
-        (query as unknown as {
-          onOswRemoved: (
-            o: { $objectType: string; $primaryKey: unknown },
-          ) => void;
-        }).onOswRemoved({
-          $objectType: "Employee",
-          $primaryKey: empB.$primaryKey,
-        });
+        const listener = subscribeSpy.mock.calls[0]?.[0];
+        if (!listener?.onChange) {
+          throw new Error("expected captured listener to define onChange");
+        }
+        listener.onChange({ object: osdkB, state: "REMOVED" });
 
         await vi.waitFor(
           () => {
@@ -2925,9 +2916,6 @@ describe(Store, () => {
         expect(lastCall?.resolvedList).toEqual([
           expect.objectContaining({ employeeId: 800 }),
         ]);
-        expect(
-          (lastCall?.resolvedList ?? []).every((x) => x != null),
-        ).toBe(true);
       });
 
       it("should trigger revalidation when object is deleted from complex ObjectSet", async () => {
