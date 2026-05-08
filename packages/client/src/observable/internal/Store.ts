@@ -567,7 +567,11 @@ export class Store {
 
     const promises: Array<Promise<void>> = [];
 
-    // queries.keys() (not truth.keys()) so in-flight queries also get invalidated.
+    // Iterate queries.keys() rather than layers.truth.keys() so we also
+    // invalidate queries that haven't yet completed their first fetch — those
+    // queries are tracked in `queries` but have no row in `layers.truth` yet.
+    // Missing them here would let an in-flight read return stale data after
+    // an action edit, even though every other observer was invalidated.
     for (const cacheKey of this.queries.keys()) {
       if (
         cacheKey.type !== "mediaMetadata"
@@ -588,10 +592,22 @@ export class Store {
 
   /**
    * Force every cached `specificLink` query to re-evaluate against the given
-   * apiName. Link queries are keyed on `(srcType, srcPk, linkName, ...)` rather
-   * than the linked object's pk, so per-object propagation never marks them as
-   * modified. Object/list/objectset queries pick up changes through the normal
-   * pipeline and don't need this kick.
+   * apiName.
+   *
+   * Why this exists: link queries are keyed on `(srcType, srcPk, linkName, ...)`
+   * — the *source* side of the relationship. They never mention the linked
+   * object's pk in the cache key, so per-object propagation (which fans out
+   * from `(objectType, primaryKey)` to subscribers) cannot reach them. After
+   * an action edits or deletes a linked object, every other query type
+   * (object / list / objectset) gets invalidated through the normal pipeline,
+   * but `specificLink` queries silently keep stale linked-object payloads
+   * unless we explicitly walk them and re-fetch.
+   *
+   * Scope is intentionally `apiName`-wide: callers don't know which specific
+   * source `(srcType, srcPk)` pairs hold links to the changed object, so we
+   * conservatively invalidate every link query whose linked side could match
+   * the given type. The cost is one refetch per affected link query; the
+   * alternative is missed updates.
    */
   public invalidateLinkQueriesForType(apiName: string): Promise<void> {
     if (process.env.NODE_ENV !== "production") {

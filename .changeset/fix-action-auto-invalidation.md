@@ -5,7 +5,7 @@
 
 fix applyAction: process every ActionResults field so useList and useLinks refresh without a manual invalidateObjectType call after actions
 
-- mark deleted objects with a "tombstone" sentinel in the cache (so subscribers immediately see object: undefined) before invalidating, instead of triggering a refetch that would 404 against the just-deleted object
+- when an action reports deleted objects, write a "tombstone" entry into the cache for each one — a sentinel record that resolves to `object: undefined` for any subscriber reading the deleted `(type, pk)` pair, so listeners immediately observe the deletion without us having to fetch the now-404 object from the backend
 - kick every cached specificLink query per type in editedObjectTypes via Store.invalidateLinkQueriesForType, so link queries refresh after actions (object/list queries already pick up changes through the per-object pipeline)
 - fix BaseListQuery.rdpConfig: it read otherKeys[RDP_IDX=4] which is LINK_NAME_IDX in SpecificLinkCacheKey, returning the link name string as the RDP config and corrupting derived ObjectCacheKeys; rdpConfig is now abstract with concrete overrides on ListQuery and SpecificLinkQuery
 - faux: FauxDataStore.registerLink/unregisterLink now report FK-side modifications so FauxDataStoreBatch can record a modifyObject edit alongside addLink/deleteLink for foreign-key-backed links
