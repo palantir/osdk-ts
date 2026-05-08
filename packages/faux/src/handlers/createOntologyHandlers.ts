@@ -101,7 +101,7 @@ export const createOntologyHandlers: FauxFoundryHandlersFactory = (
         new URL(req.request.url).searchParams.entries(),
       );
 
-      const version = queryParams.version;
+      const version = queryParams["version"];
       return fauxFoundry
         .getOntology(req.params.ontologyApiName)
         .getQueryDef(
