@@ -14,7 +14,15 @@
  * limitations under the License.
  */
 
-import { addOne, editTodo, Employee, Todo } from "@osdk/client.test.ontology";
+import type { DerivedProperty } from "@osdk/api";
+import {
+  addOne,
+  editTodo,
+  Employee,
+  moveOffice,
+  Office,
+  Todo,
+} from "@osdk/client.test.ontology";
 import {
   FauxFoundry,
   ontologies,
@@ -34,8 +42,10 @@ import {
 import type { Client } from "../../../Client.js";
 import { createClient } from "../../../createClient.js";
 import type { FunctionPayload } from "../../FunctionPayload.js";
+import type { ListPayload } from "../../ListPayload.js";
 import type { Observer } from "../../ObservableClient/common.js";
 import { Store } from "../Store.js";
+import { mockObserver } from "../testUtils.js";
 
 function mockFunctionSubCallback(): MockedObject<
   Observer<FunctionPayload | undefined>
@@ -78,6 +88,13 @@ describe("ActionApplication invalidation", () => {
         b.modifyObject<typeof Todo>(Todo.apiName, id, { ...other });
       },
     );
+    fauxOntology.registerActionType(stubData.MoveOffice, (b, payload) => {
+      b.modifyObject<typeof Office>(
+        Office.apiName,
+        payload.parameters.officeId as string,
+        { capacity: payload.parameters.newCapacity as number },
+      );
+    });
     stubData.registerLazyQueries(fauxOntology);
 
     return () => {
@@ -86,17 +103,31 @@ describe("ActionApplication invalidation", () => {
   });
 
   beforeEach(() => {
-    fauxFoundry.getDefaultDataStore().clear();
-    fauxFoundry.getDefaultDataStore().registerObject(Todo, {
+    const dataStore = fauxFoundry.getDefaultDataStore();
+    dataStore.clear();
+    dataStore.registerObject(Todo, {
       $apiName: "Todo",
       id: 0,
       text: "original",
     });
-    fauxFoundry.getDefaultDataStore().registerObject(Todo, {
+    dataStore.registerObject(Todo, {
       $apiName: "Todo",
       id: 1,
       text: "second",
     });
+
+    const officeA = dataStore.registerObject(Office, {
+      $apiName: "Office",
+      officeId: "office-a",
+      name: "Alpha Office",
+    });
+    const emp1 = dataStore.registerObject(Employee, {
+      $apiName: "Employee",
+      employeeId: 1,
+      fullName: "Alice",
+    });
+    dataStore.registerLink(emp1, "officeLink", officeA, "occupants");
+
     store = new Store(client);
   });
 
@@ -215,6 +246,40 @@ describe("ActionApplication invalidation", () => {
     subscription.unsubscribe();
   });
 
+  it("revalidates a list whose RDP traverses an edited object type", async () => {
+    const subFn = mockObserver<ListPayload | undefined>();
+
+    const withProperties: DerivedProperty.Clause<typeof Employee> = {
+      officeName: (b) => b.pivotTo("officeLink").selectProperty("name"),
+    };
+    const subscription = store.lists.observe(
+      { type: Employee, withProperties, dedupeInterval: 0 },
+      subFn,
+    );
+
+    // Wait for initial loaded emission.
+    await vi.waitFor(() => {
+      expect(subFn.next).toHaveBeenCalled();
+      const last = subFn.next.mock.lastCall?.[0];
+      expect(last?.status).toBe("loaded");
+    });
+    subFn.next.mockClear();
+
+    // Edit Office (NOT Employee). RDP traverses officeLink → Office; the list
+    // must refetch even though no Employee was edited.
+    await store.applyAction(moveOffice, {
+      officeId: "office-a",
+      newCapacity: 99,
+      newAddress: "new-address",
+    });
+
+    await vi.waitFor(() => {
+      expect(subFn.next).toHaveBeenCalled();
+    });
+
+    subscription.unsubscribe();
+  });
+
   it("does not fan out per-type invalidation when an action throws", async () => {
     const subFn = mockFunctionSubCallback();
 
@@ -237,7 +302,7 @@ describe("ActionApplication invalidation", () => {
       store.applyAction(editTodo, { id: 999, text: "fail" }),
     ).rejects.toBeDefined();
 
-    // No actionResults were assigned, so #invalidatePerTypeFunctionEdits is
+    // No actionResults were assigned, so #invalidatePerTypeEdits is
     // never reached. The dependsOn sub stays silent — no fan-out occurred.
     expect(subFn.next).not.toHaveBeenCalled();
 
