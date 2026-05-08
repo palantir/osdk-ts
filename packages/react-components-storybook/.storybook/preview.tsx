@@ -48,6 +48,19 @@ const mockClient = createClient(
 
 const preview: Preview = {
   parameters: {
+    options: {
+      storySort: {
+        order: [
+          "Foundations",
+          ["Prerequisites", "CSS Variables"],
+          "Experimental",
+          [
+            "*",
+            ["Docs", "*"],
+          ],
+        ],
+      },
+    },
     controls: {
       matchers: {
         color: /(background|color)$/i,
