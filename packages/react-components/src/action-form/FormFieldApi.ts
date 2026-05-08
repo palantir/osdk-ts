@@ -212,6 +212,20 @@ export interface DatetimePickerFieldProps extends BaseFormFieldProps<Date> {
    * context instead of being appended directly to document.body.
    */
   portalContainer?: PortalContainer;
+
+  /**
+   * Accessible label for the input when there is no adjacent `<label>` element.
+   */
+  ariaLabel?: string;
+
+  /**
+   * Popover modality. Defaults to `"trap-focus"`, which traps Tab cycling
+   * inside the calendar and renders a transparent dismiss layer over the
+   * page. Pass `false` when nesting this picker inside another popover so
+   * the inner dismiss layer doesn't intercept clicks intended for the outer
+   * popover and base-ui's default outside-click handles dismissal instead.
+   */
+  modal?: "trap-focus" | false;
 }
 
 /**

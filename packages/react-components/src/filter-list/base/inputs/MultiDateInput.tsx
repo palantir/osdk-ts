@@ -17,11 +17,11 @@
 import { Button } from "@base-ui/react/button";
 import classnames from "classnames";
 import React, { memo, useCallback } from "react";
+import { DatetimePickerField } from "../../../action-form/fields/DatetimePickerField.js";
 import {
   formatDateForDisplay,
   formatDateForInput,
 } from "../../../shared/dateUtils.js";
-import { FilterDatePicker } from "./FilterDatePicker.js";
 import styles from "./MultiDateInput.module.css";
 import sharedStyles from "./shared.module.css";
 
@@ -45,7 +45,7 @@ function MultiDateInputInner({
   showClearAll = true,
 }: MultiDateInputProps): React.ReactElement {
   const addDate = useCallback(
-    (date: Date | undefined) => {
+    (date: Date | null) => {
       if (date == null) return;
       const dateStr = formatDateForInput(date);
       const exists = selectedDates.some(
@@ -98,13 +98,13 @@ function MultiDateInputInner({
       )}
 
       <div className={styles.calendarContainer}>
-        <FilterDatePicker
-          className={styles.input}
-          selectedDate={undefined}
+        <DatetimePickerField
+          value={null}
           onChange={addDate}
-          minDate={minDate}
-          maxDate={maxDate}
+          min={minDate}
+          max={maxDate}
           ariaLabel="Add date"
+          modal={false}
         />
       </div>
     </div>
