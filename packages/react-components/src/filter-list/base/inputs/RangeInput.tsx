@@ -32,6 +32,7 @@ import {
   type HistogramBucket,
   niceTicks,
 } from "./createHistogramBuckets.js";
+import { HistogramTooltip } from "./HistogramTooltip.js";
 import styles from "./RangeInput.module.css";
 import sharedStyles from "./shared.module.css";
 import { useStableData } from "./useStableData.js";
@@ -41,14 +42,89 @@ const DEBOUNCE_MS = 300;
 /** SVG viewBox. The bars/axisLines stretch with the container; text font
  *  size is in viewBox units so it stays readable across container widths. */
 const SVG_W = 400;
-const SVG_H = 140;
+const SVG_H = 180;
 const PAD_LEFT = 30;
 const PAD_RIGHT = 10;
-const PAD_TOP = 16;
-const PAD_BOTTOM = 32;
+const PAD_TOP = 20;
+const PAD_BOTTOM = 48;
 const PLOT_W = SVG_W - PAD_LEFT - PAD_RIGHT;
 const PLOT_H = SVG_H - PAD_TOP - PAD_BOTTOM;
 const BAR_GAP = 2;
+/** Must match --osdk-filter-range-histogram-label-font-size. */
+const COUNT_LABEL_FONT_SIZE = 16;
+const X_TICK_LABEL_Y = PAD_TOP + PLOT_H + 22;
+
+interface BarLayout {
+  barW: number;
+  xLeft: (i: number) => number;
+  xCenter: (i: number) => number;
+}
+
+function computeBarLayout(bucketCount: number): BarLayout | null {
+  if (bucketCount === 0) {
+    return null;
+  }
+  const barW = (PLOT_W - BAR_GAP * (bucketCount - 1)) / bucketCount;
+  return {
+    barW,
+    xLeft: (i: number) => PAD_LEFT + i * (barW + BAR_GAP),
+    xCenter: (i: number) => PAD_LEFT + i * (barW + BAR_GAP) + barW / 2,
+  };
+}
+
+/** Round `rough` to the nearest 1/2/5 × 10^n — produces "nice" axis steps. */
+function niceStep(rough: number): number {
+  if (rough <= 0) {
+    return 1;
+  }
+  const exponent = Math.floor(Math.log10(rough));
+  const fraction = rough / Math.pow(10, exponent);
+  const niceFraction = fraction <= 1
+    ? 1
+    : fraction <= 2
+    ? 2
+    : fraction <= 5
+    ? 5
+    : 10;
+  return niceFraction * Math.pow(10, exponent);
+}
+
+/**
+ * Format a numeric tick label with precision derived from the step size, so
+ * adjacent ticks always render to distinct strings even on tightly-clustered
+ * data (where compact notation with 1 decimal would round multiple ticks to
+ * the same label).
+ */
+function formatTickAdaptive(value: number, step: number): string {
+  const absValue = Math.abs(value);
+  if (
+    absValue < 10_000
+    && Number.isInteger(value)
+    && Number.isInteger(step)
+  ) {
+    return String(value);
+  }
+  if (absValue >= 1000) {
+    const magnitudeExp = Math.floor(Math.log10(absValue) / 3) * 3;
+    const magnitude = Math.pow(10, magnitudeExp);
+    const compactStep = step / magnitude;
+    if (compactStep >= 0.05) {
+      const decimals = Math.max(
+        0,
+        Math.min(2, Math.ceil(-Math.log10(compactStep))),
+      );
+      return value.toLocaleString(undefined, {
+        notation: "compact",
+        maximumFractionDigits: decimals,
+        minimumFractionDigits: 0,
+      });
+    }
+  }
+  return value.toLocaleString(undefined, {
+    maximumFractionDigits: 0,
+    useGrouping: true,
+  });
+}
 
 export interface RangeInputConfig<T> {
   inputType: "number" | "date";
@@ -60,13 +136,6 @@ export interface RangeInputConfig<T> {
   maxLabel: string;
   formatTooltip: (min: T, max: T, count: number) => string;
   formatPlaceholder?: (value: T) => string;
-  /**
-   * Optional formatter for x-axis tick labels. If a bucket's
-   * `tickLabel` is already populated (e.g. by the date bucketer) that
-   * takes precedence. Numeric histograms typically only render the
-   * first/last tick — supply a formatter and `xAxisMode: "endpoints"`.
-   */
-  formatTick?: (value: T) => string;
   inputProps?: React.InputHTMLAttributes<HTMLInputElement>;
 }
 
@@ -215,6 +284,45 @@ function RangeInputInner<T>({
   const yTicks = useMemo(() => niceTicks(maxBucketCount), [maxBucketCount]);
   const yTopValue = yTicks[yTicks.length - 1] || maxBucketCount || 1;
 
+  const barLayout = useMemo(
+    () => computeBarLayout(buckets.length),
+    [buckets.length],
+  );
+
+  const dataBounds = useMemo<{ minN: number; maxN: number } | null>(() => {
+    if (buckets.length === 0) {
+      return null;
+    }
+    return {
+      minN: config.toNumber(buckets[0].min),
+      maxN: config.toNumber(buckets[buckets.length - 1].max),
+    };
+  }, [buckets, config]);
+
+  // Date histograms ship per-bucket `tickLabel` (Jan, Feb, …); numeric
+  // histograms don't. For the latter we compute "nice" tick values
+  // *within* the data range so labels reflect the actual values rather
+  // than offsets-from-zero.
+  const isDateLike = buckets.length > 0 && buckets[0].tickLabel != null;
+  const numericTicks = useMemo<Array<{ value: number; label: string }>>(() => {
+    if (isDateLike || dataBounds == null) {
+      return [];
+    }
+    const { minN, maxN } = dataBounds;
+    if (maxN <= minN) {
+      return [];
+    }
+    const step = niceStep((maxN - minN) / 8);
+    const start = Math.ceil(minN / step) * step;
+    const end = Math.floor(maxN / step) * step;
+    const result: Array<{ value: number; label: string }> = [];
+    for (let v = start; v <= end + step / 2; v += step) {
+      const rounded = Math.round(v / step) * step;
+      result.push({ value: rounded, label: formatTickAdaptive(rounded, step) });
+    }
+    return result;
+  }, [dataBounds, isDateLike]);
+
   // Skip count labels when there are too many bars to fit them readably.
   // Threshold of 10 matches the PRD heuristic.
   const COUNT_LABEL_THRESHOLD = 10;
@@ -238,25 +346,164 @@ function RangeInputInner<T>({
 
   const bucketsRef = useRef(buckets);
   bucketsRef.current = buckets;
+  const configRef = useRef(config);
+  configRef.current = config;
+
+  // Bucket-index bounds [lo, hi] for the translucent selection band that sits
+  // behind the bars. During a drag we use the live drag range; otherwise we
+  // map the committed minValue/maxValue back to the buckets they cover.
+  const selectionBandIndices = useMemo<
+    { lo: number; hi: number } | null
+  >(() => {
+    if (dragRange != null) {
+      return {
+        lo: Math.min(dragRange.start, dragRange.end),
+        hi: Math.max(dragRange.start, dragRange.end),
+      };
+    }
+    if (
+      minValue === undefined
+      || maxValue === undefined
+      || buckets.length === 0
+    ) {
+      return null;
+    }
+    const minN = config.toNumber(minValue);
+    const maxN = config.toNumber(maxValue);
+    let lo = -1;
+    let hi = -1;
+    for (let i = 0; i < buckets.length; i++) {
+      if (lo === -1 && config.toNumber(buckets[i].max) >= minN) {
+        lo = i;
+      }
+      if (config.toNumber(buckets[i].min) <= maxN) {
+        hi = i;
+      }
+    }
+    if (lo === -1 || hi === -1 || lo > hi) {
+      return null;
+    }
+    return { lo, hi };
+  }, [dragRange, minValue, maxValue, buckets, config]);
 
   const commitDragRange = useCallback((start: number, end: number) => {
     const currentBuckets = bucketsRef.current;
+    const currentConfig = configRef.current;
     const lo = Math.min(start, end);
     const hi = Math.max(start, end);
     const minBucket = currentBuckets[lo];
     const maxBucket = currentBuckets[hi];
-    if (minBucket == null || maxBucket == null) return;
+    if (minBucket == null || maxBucket == null) {
+      return;
+    }
+
+    // Click within the existing selection band clears the filter, so a stray
+    // click anywhere inside the highlighted area can be undone without
+    // reaching for the inputs.
+    const currentMin = minValueRef.current;
+    const currentMax = maxValueRef.current;
+    if (start === end && currentMin !== undefined && currentMax !== undefined) {
+      const minN = currentConfig.toNumber(currentMin);
+      const maxN = currentConfig.toNumber(currentMax);
+      const bucketMinN = currentConfig.toNumber(minBucket.min);
+      const bucketMaxN = currentConfig.toNumber(minBucket.max);
+      const inBand = minN <= bucketMaxN && maxN >= bucketMinN;
+      if (inBand) {
+        onChangeRef.current(undefined, undefined);
+        return;
+      }
+    }
     onChangeRef.current(minBucket.min, maxBucket.max);
   }, []);
 
-  const handleBucketMouseDown = useCallback(
-    (index: number, e: React.MouseEvent) => {
-      if (!clickToFilter) return;
+  const svgRef = useRef<SVGSVGElement | null>(null);
+  // Active drag teardown stored so unmount-during-drag can release the
+  // document-level listeners that handlePlotMouseDown attached.
+  const dragCleanupRef = useRef<(() => void) | null>(null);
+  const setSvgRef = useCallback((el: SVGSVGElement | null) => {
+    svgRef.current = el;
+    if (el == null && dragCleanupRef.current != null) {
+      dragCleanupRef.current();
+      dragCleanupRef.current = null;
+    }
+  }, []);
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+
+  const bucketIndexAtClient = useCallback(
+    (clientX: number, clientY: number): number | null => {
+      const svg = svgRef.current;
+      const bucketCount = bucketsRef.current.length;
+      if (!svg || bucketCount === 0) {
+        return null;
+      }
+      const ctm = svg.getScreenCTM();
+      if (!ctm) {
+        return null;
+      }
+      const pt = svg.createSVGPoint();
+      pt.x = clientX;
+      pt.y = clientY;
+      const local = pt.matrixTransform(ctm.inverse());
+      const localX = local.x - PAD_LEFT;
+      const slotW = (PLOT_W + BAR_GAP) / bucketCount;
+      const idx = Math.floor(localX / slotW);
+      return Math.max(0, Math.min(bucketCount - 1, idx));
+    },
+    [],
+  );
+
+  const bucketIndexFromTarget = useCallback(
+    (target: EventTarget | null): number | null => {
+      if (!(target instanceof Element)) {
+        return null;
+      }
+      const dataIdx = target.getAttribute("data-bucket-index");
+      if (dataIdx == null) {
+        return null;
+      }
+      const parsed = parseInt(dataIdx, 10);
+      return Number.isNaN(parsed) ? null : parsed;
+    },
+    [],
+  );
+
+  const handlePlotMouseDown = useCallback(
+    (e: React.MouseEvent) => {
+      if (!clickToFilter) {
+        return;
+      }
+      // Prefer the bucket index stamped on the bar via `data-bucket-index`
+      // for the common case (also avoids `getScreenCTM` coord math). Fall
+      // back to client-coord math when the click lands on the empty plot
+      // background between bars.
+      const startIdx = bucketIndexFromTarget(e.target)
+        ?? bucketIndexAtClient(e.clientX, e.clientY);
+      if (startIdx == null) {
+        return;
+      }
       e.preventDefault();
-      dragRangeRef.current = { start: index, end: index };
-      setDragRange(dragRangeRef.current);
-      const handleUp = () => {
+      setHoveredIndex(null);
+      dragRangeRef.current = { start: startIdx, end: startIdx };
+      setDragRange({ start: startIdx, end: startIdx });
+
+      const handleMove = (ev: MouseEvent) => {
+        const idx = bucketIndexAtClient(ev.clientX, ev.clientY);
+        if (idx == null || dragRangeRef.current == null) {
+          return;
+        }
+        const next = { ...dragRangeRef.current, end: idx };
+        dragRangeRef.current = next;
+        setDragRange(next);
+      };
+
+      const teardown = () => {
+        document.removeEventListener("mousemove", handleMove);
         document.removeEventListener("mouseup", handleUp);
+        dragCleanupRef.current = null;
+      };
+
+      const handleUp = () => {
+        teardown();
         const current = dragRangeRef.current;
         if (current != null) {
           commitDragRange(current.start, current.end);
@@ -264,20 +511,47 @@ function RangeInputInner<T>({
         dragRangeRef.current = null;
         setDragRange(null);
       };
+
+      dragCleanupRef.current = teardown;
+      document.addEventListener("mousemove", handleMove);
       document.addEventListener("mouseup", handleUp);
     },
-    [clickToFilter, commitDragRange],
+    [
+      clickToFilter,
+      bucketIndexFromTarget,
+      bucketIndexAtClient,
+      commitDragRange,
+    ],
   );
 
-  const handleBucketMouseEnter = useCallback(
-    (index: number) => {
-      if (!clickToFilter) return;
-      if (dragRangeRef.current == null) return;
-      dragRangeRef.current = { ...dragRangeRef.current, end: index };
-      setDragRange(dragRangeRef.current);
+  // Delegated mouseover on the bars `<g>` — single handler instead of one
+  // closure per bar. Updates hover state and, if a drag is in progress,
+  // extends the drag range to the bar under the cursor.
+  const handleBarsMouseOver = useCallback(
+    (e: React.MouseEvent) => {
+      const idx = bucketIndexFromTarget(e.target);
+      if (idx == null) {
+        return;
+      }
+      setHoveredIndex(idx);
+      if (dragRangeRef.current != null) {
+        const next = { ...dragRangeRef.current, end: idx };
+        dragRangeRef.current = next;
+        setDragRange(next);
+      }
     },
-    [clickToFilter],
+    [bucketIndexFromTarget],
   );
+
+  const handleSvgMouseLeave = useCallback(() => {
+    setHoveredIndex(null);
+  }, []);
+
+  const handleClearFilter = useCallback(() => {
+    onChangeRef.current(undefined, undefined);
+  }, []);
+
+  const hasActiveFilter = minValue !== undefined || maxValue !== undefined;
 
   const handleMinChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -309,151 +583,219 @@ function RangeInputInner<T>({
         </div>
       )}
 
-      {showHistogram && buckets.length > 0 && (
-        <svg
-          className={styles.histogramSvg}
-          viewBox={`0 0 ${SVG_W} ${SVG_H}`}
-          preserveAspectRatio="none"
-          role="img"
-          aria-label="Histogram of value counts"
+      {clickToFilter && hasActiveFilter && (
+        <button
+          type="button"
+          className={styles.clearButton}
+          onClick={handleClearFilter}
         >
-          <g className={styles.axisLines}>
-            {yTicks.map((tickValue) => {
-              const yFrac = yTopValue > 0 ? tickValue / yTopValue : 0;
-              const y = PAD_TOP + PLOT_H - yFrac * PLOT_H;
-              return (
-                <g key={tickValue}>
-                  <line
-                    className={styles.axisLine}
-                    x1={PAD_LEFT}
-                    x2={SVG_W - PAD_RIGHT}
-                    y1={y}
-                    y2={y}
-                    vectorEffect="non-scaling-stroke"
-                  />
-                  <text
-                    className={styles.yAxisLabel}
-                    x={PAD_LEFT - 4}
-                    y={y + 3}
-                    textAnchor="end"
+          Clear
+        </button>
+      )}
+
+      {showHistogram && buckets.length > 0 && barLayout != null && (
+        <div className={styles.histogramWrapper}>
+          <svg
+            ref={setSvgRef}
+            className={styles.histogramSvg}
+            data-click-to-filter={clickToFilter || undefined}
+            viewBox={`0 0 ${SVG_W} ${SVG_H}`}
+            preserveAspectRatio="xMidYMid meet"
+            role="img"
+            aria-label="Histogram of value counts"
+            onMouseDown={clickToFilter ? handlePlotMouseDown : undefined}
+            onMouseLeave={handleSvgMouseLeave}
+          >
+            <g className={styles.axisLines}>
+              {yTicks.map((tickValue) => {
+                const yFrac = yTopValue > 0 ? tickValue / yTopValue : 0;
+                const y = PAD_TOP + PLOT_H - yFrac * PLOT_H;
+                return (
+                  <g key={tickValue}>
+                    <line
+                      className={styles.axisLine}
+                      x1={PAD_LEFT}
+                      x2={SVG_W - PAD_RIGHT}
+                      y1={y}
+                      y2={y}
+                      vectorEffect="non-scaling-stroke"
+                    />
+                    <text
+                      className={styles.yAxisLabel}
+                      x={PAD_LEFT - 4}
+                      y={y + 3}
+                      textAnchor="end"
+                    >
+                      {tickValue}
+                    </text>
+                  </g>
+                );
+              })}
+            </g>
+
+            {selectionBandIndices != null && (
+              <rect
+                className={styles.selectionBand}
+                x={barLayout.xLeft(selectionBandIndices.lo)}
+                y={PAD_TOP}
+                width={barLayout.xLeft(selectionBandIndices.hi)
+                  + barLayout.barW
+                  - barLayout.xLeft(selectionBandIndices.lo)}
+                height={PLOT_H}
+                data-dragging={dragRange != null || undefined}
+              />
+            )}
+
+            <g className={styles.bars} onMouseOver={handleBarsMouseOver}>
+              {buckets.map((bucket, index) => {
+                const x = barLayout.xLeft(index);
+                const heightFrac = yTopValue > 0
+                  ? bucket.count / yTopValue
+                  : 0;
+                const barH = Math.max(0, heightFrac * PLOT_H);
+                const y = PAD_TOP + PLOT_H - barH;
+                const isInRange = (minValue === undefined
+                  || config.toNumber(bucket.max) >= config.toNumber(minValue))
+                  && (maxValue === undefined
+                    || config.toNumber(bucket.min)
+                      <= config.toNumber(maxValue));
+                const isInDragRange = dragRange != null
+                  && index >= Math.min(dragRange.start, dragRange.end)
+                  && index <= Math.max(dragRange.start, dragRange.end);
+                return (
+                  <rect
+                    key={index}
+                    className={styles.histogramBar}
+                    data-in-range={isInRange || isInDragRange}
+                    data-click-to-filter={clickToFilter || undefined}
+                    data-dragging={isInDragRange || undefined}
+                    x={x}
+                    y={y}
+                    width={Math.max(barLayout.barW, 0.5)}
+                    height={barH}
+                    data-bucket-index={index}
                   >
-                    {tickValue}
+                    <title>
+                      {config.formatTooltip(
+                        bucket.min,
+                        bucket.max,
+                        bucket.count,
+                      )}
+                    </title>
+                  </rect>
+                );
+              })}
+            </g>
+
+            <g className={styles.countLabels}>
+              {buckets.map((bucket, index) => {
+                if (bucket.count === 0) {
+                  return null;
+                }
+                if (skipCountLabel(index)) {
+                  return null;
+                }
+                const cx = barLayout.xCenter(index);
+                const heightFrac = yTopValue > 0
+                  ? bucket.count / yTopValue
+                  : 0;
+                const barH = heightFrac * PLOT_H;
+                const barTop = PAD_TOP + PLOT_H - barH;
+                // If the label would render above the SVG's content area,
+                // tuck it inside the top of the bar instead so it doesn't
+                // get clipped by the popover/container.
+                const insideBar = barTop - COUNT_LABEL_FONT_SIZE - 2 < 0;
+                const y = insideBar
+                  ? barTop + COUNT_LABEL_FONT_SIZE
+                  : barTop - 4;
+                return (
+                  <text
+                    key={index}
+                    className={styles.countLabel}
+                    data-inside-bar={insideBar || undefined}
+                    x={cx}
+                    y={y}
+                    textAnchor="middle"
+                  >
+                    {bucket.count.toLocaleString()}
                   </text>
-                </g>
-              );
-            })}
-          </g>
+                );
+              })}
+            </g>
 
-          <g className={styles.bars}>
-            {buckets.map((bucket, index) => {
-              const barW = (PLOT_W - BAR_GAP * (buckets.length - 1))
-                / buckets.length;
-              const x = PAD_LEFT + index * (barW + BAR_GAP);
-              const heightFrac = yTopValue > 0
-                ? bucket.count / yTopValue
-                : 0;
-              const barH = Math.max(0, heightFrac * PLOT_H);
-              const y = PAD_TOP + PLOT_H - barH;
-              const isInRange = (minValue === undefined
-                || config.toNumber(bucket.max) >= config.toNumber(minValue))
-                && (maxValue === undefined
-                  || config.toNumber(bucket.min) <= config.toNumber(maxValue));
-              const isInDragRange = dragRange != null
-                && index >= Math.min(dragRange.start, dragRange.end)
-                && index <= Math.max(dragRange.start, dragRange.end);
-              return (
-                <rect
-                  key={index}
-                  className={styles.histogramBar}
-                  data-in-range={isInRange || isInDragRange}
-                  data-click-to-filter={clickToFilter || undefined}
-                  data-dragging={isInDragRange || undefined}
-                  x={x}
-                  y={y}
-                  width={Math.max(barW, 0.5)}
-                  height={barH}
-                  onMouseDown={clickToFilter
-                    ? (e) => handleBucketMouseDown(index, e)
-                    : undefined}
-                  onMouseEnter={clickToFilter
-                    ? () => handleBucketMouseEnter(index)
-                    : undefined}
-                >
-                  <title>
-                    {config.formatTooltip(bucket.min, bucket.max, bucket.count)}
-                  </title>
-                </rect>
-              );
-            })}
-          </g>
+            <g className={styles.xTicks}>
+              {isDateLike
+                ? buckets.map((bucket, index) => {
+                  if (bucket.tickLabel == null) {
+                    return null;
+                  }
+                  if (
+                    buckets.length > COUNT_LABEL_THRESHOLD
+                    && skipCountLabel(index)
+                  ) {
+                    return null;
+                  }
+                  return (
+                    <text
+                      key={index}
+                      className={styles.xTickLabel}
+                      x={barLayout.xCenter(index)}
+                      y={X_TICK_LABEL_Y}
+                      textAnchor="middle"
+                    >
+                      {bucket.tickLabel}
+                    </text>
+                  );
+                })
+                : dataBounds != null
+                ? numericTicks.map(({ value, label }, i) => {
+                  const xFrac = (value - dataBounds.minN)
+                    / (dataBounds.maxN - dataBounds.minN);
+                  const x = PAD_LEFT + xFrac * PLOT_W;
+                  return (
+                    <text
+                      key={i}
+                      className={styles.xTickLabel}
+                      x={x}
+                      y={X_TICK_LABEL_Y}
+                      textAnchor="middle"
+                    >
+                      {label}
+                    </text>
+                  );
+                })
+                : null}
+            </g>
 
-          <g className={styles.countLabels}>
-            {buckets.map((bucket, index) => {
-              if (bucket.count === 0) return null;
-              if (skipCountLabel(index)) return null;
-              const barW = (PLOT_W - BAR_GAP * (buckets.length - 1))
-                / buckets.length;
-              const cx = PAD_LEFT + index * (barW + BAR_GAP) + barW / 2;
-              const heightFrac = yTopValue > 0
-                ? bucket.count / yTopValue
-                : 0;
-              const barH = heightFrac * PLOT_H;
-              const y = PAD_TOP + PLOT_H - barH - 2;
-              return (
-                <text
-                  key={index}
-                  className={styles.countLabel}
-                  x={cx}
-                  y={y}
-                  textAnchor="middle"
-                >
-                  {bucket.count.toLocaleString()}
-                </text>
-              );
-            })}
-          </g>
-
-          <g className={styles.xTicks}>
-            {buckets.map((bucket, index) => {
-              const tickLabel = bucket.tickLabel
-                ?? renderEndpointTick(buckets, index, config);
-              if (!tickLabel) return null;
-              if (
-                buckets.length > COUNT_LABEL_THRESHOLD
-                && bucket.tickLabel
-                && skipCountLabel(index)
-              ) {
-                return null;
-              }
-              const barW = (PLOT_W - BAR_GAP * (buckets.length - 1))
-                / buckets.length;
-              const cx = PAD_LEFT + index * (barW + BAR_GAP) + barW / 2;
-              const y = PAD_TOP + PLOT_H + 12;
-              return (
-                <text
-                  key={index}
-                  className={styles.xTickLabel}
-                  x={cx}
-                  y={y}
-                  textAnchor="middle"
-                >
-                  {tickLabel}
-                </text>
-              );
-            })}
-          </g>
-
-          {subtitle && (
-            <text
-              className={styles.subtitle}
-              x={SVG_W / 2}
-              y={SVG_H - 4}
-              textAnchor="middle"
-            >
-              {subtitle}
-            </text>
+            {subtitle && (
+              <text
+                className={styles.subtitle}
+                x={SVG_W / 2}
+                y={SVG_H - 8}
+                textAnchor="middle"
+              >
+                {subtitle}
+              </text>
+            )}
+          </svg>
+          {hoveredIndex != null && dragRange == null
+            && buckets[hoveredIndex] != null && (
+            <HistogramTooltip
+              text={config.formatTooltip(
+                buckets[hoveredIndex].min,
+                buckets[hoveredIndex].max,
+                buckets[hoveredIndex].count,
+              )}
+              cx={barLayout.xCenter(hoveredIndex)}
+              barTop={PAD_TOP + PLOT_H
+                - (yTopValue > 0
+                    ? buckets[hoveredIndex].count / yTopValue
+                    : 0) * PLOT_H}
+              svgWidth={SVG_W}
+              svgHeight={SVG_H}
+            />
           )}
-        </svg>
+        </div>
       )}
 
       <div className={styles.rangeInputs}>
@@ -499,24 +841,6 @@ function RangeInputInner<T>({
       </div>
     </div>
   );
-}
-
-/**
- * Numeric histograms only render the first and last x-axis ticks — per
- * AC #8 of Item 7: "x-axis labels are min/max only — no per-bucket
- * numeric labels".
- */
-function renderEndpointTick<T>(
-  buckets: ReadonlyArray<HistogramBucket<T>>,
-  index: number,
-  config: RangeInputConfig<T>,
-): string | undefined {
-  if (!config.formatTick) return undefined;
-  if (index === 0) return config.formatTick(buckets[0].min);
-  if (index === buckets.length - 1) {
-    return config.formatTick(buckets[buckets.length - 1].max);
-  }
-  return undefined;
 }
 
 export const RangeInput = memo(RangeInputInner) as typeof RangeInputInner;

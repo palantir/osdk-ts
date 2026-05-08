@@ -65,6 +65,7 @@ const startDateFilter: FilterDefinitionUnion<Employee> = {
   label: "Start Date",
   filterComponent: "DATE_RANGE",
   filterState: { type: "DATE_RANGE" },
+  clickToFilter: true,
 };
 
 const employeeNumberFilter: FilterDefinitionUnion<Employee> = {
@@ -74,6 +75,7 @@ const employeeNumberFilter: FilterDefinitionUnion<Employee> = {
   label: "Employee Number",
   filterComponent: "NUMBER_RANGE",
   filterState: { type: "NUMBER_RANGE" },
+  clickToFilter: true,
 };
 
 const locationCityFilter: FilterDefinitionUnion<Employee> = {
