@@ -22,6 +22,12 @@
   position: relative;
 }
 
+.fieldGroupTop {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: calc(var(--osdk-surface-spacing) * 0.5);
+}
+
 .label {
   font-family: var(--osdk-filter-popover-label-font-family);
   font-size: var(--osdk-filter-popover-label-font-size);
