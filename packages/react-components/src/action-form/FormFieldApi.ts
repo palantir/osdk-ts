@@ -212,6 +212,11 @@ export interface DatetimePickerFieldProps extends BaseFormFieldProps<Date> {
    * context instead of being appended directly to document.body.
    */
   portalContainer?: PortalContainer;
+
+  /**
+   * Accessible label for the input when there is no adjacent `<label>` element.
+   */
+  ariaLabel?: string;
 }
 
 /**

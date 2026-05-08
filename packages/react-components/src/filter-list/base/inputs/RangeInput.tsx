@@ -26,6 +26,7 @@ import React, {
   useRef,
   useState,
 } from "react";
+import { DatetimePickerField } from "../../../action-form/fields/DatetimePickerField.js";
 import {
   formatDateForInput,
   parseDateFromInput,
@@ -35,7 +36,6 @@ import {
   getMaxBucketCount,
   type HistogramBucket,
 } from "./createHistogramBuckets.js";
-import { FilterDatePicker } from "./FilterDatePicker.js";
 import styles from "./RangeInput.module.css";
 import sharedStyles from "./shared.module.css";
 import { useStableData } from "./useStableData.js";
@@ -297,16 +297,15 @@ function RangeBoundInput({
     [onChange],
   );
   const handleDatePickerChange = useCallback(
-    (date: Date | undefined) => {
+    (date: Date | null) => {
       onChange(date != null ? formatDateForInput(date) : "");
     },
     [onChange],
   );
   if (inputType === "date") {
     return (
-      <FilterDatePicker
-        className={styles.input}
-        selectedDate={parseDateFromInput(value)}
+      <DatetimePickerField
+        value={parseDateFromInput(value) ?? null}
         onChange={handleDatePickerChange}
         placeholder={placeholder}
         ariaLabel={ariaLabel}
