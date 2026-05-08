@@ -23,6 +23,7 @@ import type {
   NullabilityAdherence,
   ObjectOrInterfaceDefinition,
   ObjectSet,
+  ObjectSetSubscription,
   ObjectTypeDefinition,
   Osdk,
   OsdkBase,
@@ -42,6 +43,7 @@ import {
   __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchOneByRid,
   __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchPageByRid,
   __EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks,
+  __EXPERIMENTAL__NOT_SUPPORTED_YET__subscribeToNoTypeObjectSet,
   __EXPERIMENTAL__NOT_SUPPORTED_YET__transformAndWait,
 } from "@osdk/api/unstable";
 import type { ObjectSet as WireObjectSet } from "@osdk/foundry.ontologies";
@@ -57,6 +59,7 @@ import type { MinimalClient } from "./MinimalClientContext.js";
 import { fetchPage, fetchStaticRidPage } from "./object/fetchPage.js";
 import { fetchSingle } from "./object/fetchSingle.js";
 import { createObjectSet } from "./objectSet/createObjectSet.js";
+import { ObjectSetListenerWebsocket } from "./objectSet/ObjectSetListenerWebsocket.js";
 import type { ObjectSetFactory } from "./objectSet/ObjectSetFactory.js";
 import { applyQuery } from "./queries/applyQuery.js";
 import type { QuerySignatureFromDef } from "./queries/types.js";
@@ -310,6 +313,29 @@ export function createClientFromContext(clientCtx: MinimalClient) {
                 rids,
                 options ?? {},
               );
+            },
+          } as any;
+
+        case __EXPERIMENTAL__NOT_SUPPORTED_YET__subscribeToNoTypeObjectSet
+          .name:
+          return {
+            subscribeToNoTypeObjectSet: <R extends boolean = false>(
+              rid: string,
+              listener: ObjectSetSubscription.Listener<
+                ObjectOrInterfaceDefinition,
+                never,
+                R
+              >,
+              opts?: { includeRid?: R },
+            ) => {
+              const unsubscribe = ObjectSetListenerWebsocket
+                .getInstance(clientCtx)
+                .subscribeWithoutType(
+                  { type: "reference", reference: rid },
+                  listener,
+                  opts?.includeRid ?? false,
+                );
+              return { unsubscribe };
             },
           } as any;
 
