@@ -81,6 +81,20 @@ export class FunctionsHelper extends AbstractHelper<
       ));
   }
 
+  *#functionQueries(): IterableIterator<FunctionQuery> {
+    for (const cacheKey of this.store.queries.keys()) {
+      if (cacheKey.type !== "function") {
+        continue;
+      }
+      const query = this.store.queries.peek(cacheKey) as
+        | FunctionQuery
+        | undefined;
+      if (query) {
+        yield query;
+      }
+    }
+  }
+
   async invalidateFunction(
     apiName: string | QueryDefinition<unknown>,
     params?: FunctionParams,
@@ -95,34 +109,16 @@ export class FunctionsHelper extends AbstractHelper<
     }
 
     const promises: Array<Promise<void>> = [];
-
-    for (const cacheKey of this.store.queries.keys()) {
-      if (cacheKey.type !== "function") {
-        continue;
-      }
-
-      const query = this.store.queries.peek(cacheKey) as
-        | FunctionQuery
-        | undefined;
-      if (!query) {
-        continue;
-      }
-
-      // Check if apiName matches
+    for (const query of this.#functionQueries()) {
       if (query.apiName !== functionApiName) {
         continue;
       }
-
-      // If params provided, check for exact match
       if (canonicalParams !== undefined) {
-        const queryCacheKey = cacheKey as FunctionCacheKey;
-        const queryParams = queryCacheKey.otherKeys[PARAMS_IDX];
+        const queryParams = query.cacheKey.otherKeys[PARAMS_IDX];
         if (queryParams !== canonicalParams) {
           continue;
         }
       }
-
-      // Invalidate this query
       promises.push(query.revalidate(true));
     }
 
@@ -134,24 +130,21 @@ export class FunctionsHelper extends AbstractHelper<
     primaryKey: PrimaryKeyValue,
   ): Promise<void> {
     const promises: Array<Promise<void>> = [];
-
-    for (const cacheKey of this.store.queries.keys()) {
-      if (cacheKey.type !== "function") {
-        continue;
-      }
-
-      const query = this.store.queries.peek(cacheKey) as
-        | FunctionQuery
-        | undefined;
-      if (!query) {
-        continue;
-      }
-
+    for (const query of this.#functionQueries()) {
       if (query.dependsOnObject(apiName, primaryKey)) {
         promises.push(query.revalidate(true));
       }
     }
+    await Promise.allSettled(promises);
+  }
 
+  async invalidateFunctionsByObjectType(
+    apiName: string,
+  ): Promise<void> {
+    const promises: Array<Promise<void>> = [];
+    for (const query of this.#functionQueries()) {
+      promises.push(query.invalidateObjectType(apiName, undefined));
+    }
     await Promise.allSettled(promises);
   }
 }
