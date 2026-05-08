@@ -92,7 +92,7 @@ describe("BaseAipAgentChat", () => {
     );
 
     const sendButton = screen.getByRole("button", { name: /send/i });
-    expect((sendButton as HTMLButtonElement).disabled).toBe(true);
+    expect(sendButton.matches(":disabled")).toBe(true);
   });
 
   it("enables Send button when textarea has text", () => {
@@ -107,13 +107,11 @@ describe("BaseAipAgentChat", () => {
       />,
     );
 
-    const textarea = screen.getByLabelText(
-      "Message input",
-    ) as HTMLTextAreaElement;
+    const textarea = screen.getByLabelText("Message input");
     fireEvent.change(textarea, { target: { value: "hello" } });
 
     const sendButton = screen.getByRole("button", { name: /send/i });
-    expect((sendButton as HTMLButtonElement).disabled).toBe(false);
+    expect(sendButton.matches(":disabled")).toBe(false);
   });
 
   it("calls onSendMessage when Send button is clicked", async () => {
@@ -130,9 +128,7 @@ describe("BaseAipAgentChat", () => {
       />,
     );
 
-    const textarea = screen.getByLabelText(
-      "Message input",
-    ) as HTMLTextAreaElement;
+    const textarea = screen.getByLabelText("Message input");
     fireEvent.change(textarea, { target: { value: "hello world" } });
     fireEvent.click(screen.getByRole("button", { name: /send/i }));
 

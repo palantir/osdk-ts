@@ -15,6 +15,7 @@
  */
 
 import type { UIMessage } from "@osdk/aip-core";
+import type { ChatStatus } from "@osdk/react/experimental/aip";
 import classNames from "classnames";
 import * as React from "react";
 import { ActionButton } from "../base-components/action-button/ActionButton.js";
@@ -31,7 +32,7 @@ export interface BaseAipAgentChatProps {
   /**
    * Current status of the chat lifecycle.
    */
-  status: "ready" | "submitted" | "streaming" | "error";
+  status: ChatStatus;
 
   /**
    * Current error, if any.
@@ -102,13 +103,6 @@ export const BaseAipAgentChat: React.NamedExoticComponent<
 }) {
   const isInFlight = status === "submitted" || status === "streaming";
 
-  const handleSendMessage = React.useCallback(
-    async (text: string) => {
-      await onSendMessage(text);
-    },
-    [onSendMessage],
-  );
-
   return (
     <div className={classNames(styles.chat, className)}>
       {error != null && (
@@ -138,7 +132,7 @@ export const BaseAipAgentChat: React.NamedExoticComponent<
       <AipAgentChatComposer
         footerLeft={composerFooter}
         isInFlight={isInFlight}
-        onSendMessage={handleSendMessage}
+        onSendMessage={onSendMessage}
         onStop={onStop}
         placeholder={placeholder}
       />

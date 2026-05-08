@@ -14,24 +14,32 @@
  * limitations under the License.
  */
 
+import classNames from "classnames";
 import * as React from "react";
+import styles from "../AipAgentChat.module.css";
 
 export interface AipAgentChatModelPickerProps {
   models: ReadonlyArray<string>;
   activeModel: string;
   onModelChange: (model: string) => void;
+  disabled?: boolean;
+  className?: string;
 }
 
 /**
  * Native-select model picker rendered in the composer footer when the
  * OSDK wrapper is given an `availableModels` list. Operates on Foundry
- * LMS model API names.
+ * LMS model API names. Renders a read-only label when exactly one model
+ * is available so the active model stays visible without offering a
+ * dropdown the user can't act on; renders nothing when the list is empty.
  */
 export function AipAgentChatModelPicker({
   models,
   activeModel,
   onModelChange,
-}: AipAgentChatModelPickerProps): React.ReactElement {
+  disabled,
+  className,
+}: AipAgentChatModelPickerProps): React.ReactElement | null {
   const handleChange = React.useCallback(
     (event: React.ChangeEvent<HTMLSelectElement>) => {
       onModelChange(event.target.value);
@@ -39,9 +47,23 @@ export function AipAgentChatModelPicker({
     [onModelChange],
   );
 
+  if (models.length === 0) {
+    return null;
+  }
+
+  if (models.length === 1) {
+    return (
+      <span className={classNames(styles.modelPickerLabel, className)}>
+        Model: {activeModel}
+      </span>
+    );
+  }
+
   return (
     <select
       aria-label="Active model"
+      className={classNames(styles.modelPicker, className)}
+      disabled={disabled}
       onChange={handleChange}
       value={activeModel}
     >

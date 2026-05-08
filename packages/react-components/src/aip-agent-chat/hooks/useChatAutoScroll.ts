@@ -18,23 +18,27 @@ import * as React from "react";
 
 /**
  * Keeps a scrollable container pinned to its bottom whenever `signal` changes
- * (typically the messages array length, the streaming token count, or both).
+ * (typically a string encoding the messages array length and streaming token
+ * count).
  *
  * Disengages temporarily once the user scrolls up — pinning resumes when the
- * user scrolls back near the bottom. Returns the ref to attach to the
- * scrollable element.
+ * user scrolls back near the bottom. Returns a callback ref to attach to the
+ * scrollable element; the listener follows the element across re-mounts.
  */
 export function useChatAutoScroll<T extends HTMLElement>(
-  signal: unknown,
+  signal: string,
   enabled: boolean,
-): React.RefObject<T> {
-  const ref = React.useRef<T>(null);
+): React.RefCallback<T> {
+  const elRef = React.useRef<T | null>(null);
+  const cleanupRef = React.useRef<(() => void) | null>(null);
   const isPinnedRef = React.useRef<boolean>(true);
 
-  React.useEffect(() => {
-    const el = ref.current;
+  const setRef = React.useCallback<React.RefCallback<T>>((el) => {
+    cleanupRef.current?.();
+    cleanupRef.current = null;
+    elRef.current = el;
     if (el == null) {
-      return undefined;
+      return;
     }
     const onScroll = () => {
       const distanceFromBottom = el.scrollHeight - el.scrollTop
@@ -42,21 +46,21 @@ export function useChatAutoScroll<T extends HTMLElement>(
       isPinnedRef.current = distanceFromBottom <= NEAR_BOTTOM_THRESHOLD_PX;
     };
     el.addEventListener("scroll", onScroll, { passive: true });
-    return () => el.removeEventListener("scroll", onScroll);
+    cleanupRef.current = () => el.removeEventListener("scroll", onScroll);
   }, []);
 
   React.useEffect(() => {
     if (!enabled) {
       return;
     }
-    const el = ref.current;
+    const el = elRef.current;
     if (el == null || !isPinnedRef.current) {
       return;
     }
     el.scrollTop = el.scrollHeight;
   }, [signal, enabled]);
 
-  return ref;
+  return setRef;
 }
 
 const NEAR_BOTTOM_THRESHOLD_PX = 32;

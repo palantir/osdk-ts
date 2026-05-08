@@ -139,17 +139,14 @@ export const WithError: Story = {
   ),
 };
 
-const MODEL_OPTIONS = ["gpt-4o", "gpt-5.4"] as const;
-type ModelOption = (typeof MODEL_OPTIONS)[number];
+const MODEL_OPTIONS = ["gpt-4o", "gpt-5.4"];
 
 function ModelPickerStory(): React.ReactElement {
-  const [model, setModel] = React.useState<ModelOption>(MODEL_OPTIONS[0]);
-  const modelRef = React.useRef<ModelOption>(model);
-  modelRef.current = model;
+  const [model, setModel] = React.useState<string>(MODEL_OPTIONS[0]);
 
   const handleChange = React.useCallback(
     (event: React.ChangeEvent<HTMLSelectElement>) => {
-      setModel(event.target.value as ModelOption);
+      setModel(event.target.value);
     },
     [],
   );

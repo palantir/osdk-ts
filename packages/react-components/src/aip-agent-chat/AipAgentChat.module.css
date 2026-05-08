@@ -173,6 +173,32 @@
   min-width: 0;
 }
 
+.modelPicker {
+  background: var(--osdk-background-primary);
+  border: 1px solid var(--osdk-surface-border-color-default);
+  border-radius: var(--osdk-aip-agent-chat-border-radius);
+  color: var(--osdk-typography-color-default-rest);
+  font-family: inherit;
+  font-size: var(--osdk-typography-size-body-small);
+  outline: none;
+  padding: calc(var(--osdk-surface-spacing) * 1)
+    calc(var(--osdk-surface-spacing) * 2);
+}
+
+.modelPicker:focus {
+  border-color: var(--osdk-emphasis-focus-color);
+}
+
+.modelPicker:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.modelPickerLabel {
+  color: var(--osdk-typography-color-muted);
+  font-size: var(--osdk-typography-size-body-small);
+}
+
 .composerFooterRight {
   align-items: center;
   display: flex;

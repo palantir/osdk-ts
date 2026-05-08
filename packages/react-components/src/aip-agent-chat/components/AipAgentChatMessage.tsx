@@ -34,19 +34,15 @@ export function AipAgentChatMessage(
 ): React.ReactElement {
   const text = getUIMessageText(message);
   const role = message.role;
+  const styling = ROLE_STYLING[role];
 
   return (
     <div
-      aria-label={MESSAGE_ROLE_LABELS[role]}
-      className={classNames(styles.message, ROLE_TO_CONTAINER_CLASS[role])}
+      aria-label={styling.label}
+      className={classNames(styles.message, styling.container)}
       role="group"
     >
-      <div
-        className={classNames(
-          styles.bubble,
-          ROLE_TO_BUBBLE_CLASS[role],
-        )}
-      >
+      <div className={classNames(styles.bubble, styling.bubble)}>
         {text.length > 0
           ? text
           : <span className={styles.streamingPlaceholder}>…</span>}
@@ -55,20 +51,26 @@ export function AipAgentChatMessage(
   );
 }
 
-const ROLE_TO_CONTAINER_CLASS: Record<UIMessage["role"], string> = {
-  user: styles.userMessage,
-  assistant: styles.assistantMessage,
-  system: styles.systemMessage,
-};
+interface RoleStyling {
+  container: string;
+  bubble: string;
+  label: string;
+}
 
-const ROLE_TO_BUBBLE_CLASS: Record<UIMessage["role"], string> = {
-  user: styles.userBubble,
-  assistant: styles.assistantBubble,
-  system: styles.systemBubble,
-};
-
-const MESSAGE_ROLE_LABELS: Record<UIMessage["role"], string> = {
-  user: "User message",
-  assistant: "Assistant message",
-  system: "System message",
+const ROLE_STYLING: Record<UIMessage["role"], RoleStyling> = {
+  user: {
+    container: styles.userMessage,
+    bubble: styles.userBubble,
+    label: "User message",
+  },
+  assistant: {
+    container: styles.assistantMessage,
+    bubble: styles.assistantBubble,
+    label: "Assistant message",
+  },
+  system: {
+    container: styles.systemMessage,
+    bubble: styles.systemBubble,
+    label: "System message",
+  },
 };

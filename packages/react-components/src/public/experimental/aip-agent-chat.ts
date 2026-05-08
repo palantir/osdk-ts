@@ -23,8 +23,7 @@ export type { AipAgentChatProps } from "../../aip-agent-chat/AipAgentChatApi.js"
 export { BaseAipAgentChat } from "../../aip-agent-chat/BaseAipAgentChat.js";
 export type { BaseAipAgentChatProps } from "../../aip-agent-chat/BaseAipAgentChat.js";
 
-// Re-exported from @osdk/aip-core so consumers can write a fully-typed
-// `renderMessage` / `onFinish` / `initialMessages` without reaching into
-// the AIP SDK directly.
 export type { UIMessage, UIMessageRole } from "@osdk/aip-core";
 export { getUIMessageText } from "@osdk/aip-core";
+
+export type { ChatStatus } from "@osdk/react/experimental/aip";

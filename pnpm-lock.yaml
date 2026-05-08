@@ -4726,6 +4726,9 @@ importers:
       '@osdk/client':
         specifier: workspace:*
         version: link:../client
+      '@osdk/language-models':
+        specifier: workspace:*
+        version: link:../language-models
       '@osdk/monorepo.api-extractor':
         specifier: workspace:~
         version: link:../monorepo.api-extractor

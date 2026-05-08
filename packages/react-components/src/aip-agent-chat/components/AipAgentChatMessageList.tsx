@@ -41,9 +41,9 @@ const DEFAULT_EMPTY_STATE: React.ReactNode = (
 );
 
 export function AipAgentChatMessageList({
-  messages = [],
-  isStreaming = false,
-  enableAutoScroll = true,
+  messages,
+  isStreaming,
+  enableAutoScroll,
   className,
   renderEmptyState,
   renderMessage,
@@ -54,49 +54,49 @@ export function AipAgentChatMessageList({
     : 0;
   const scrollSignal = `${messages.length}:${lastMessageTextLength}`;
 
-  const containerRef = useChatAutoScroll<HTMLDivElement>(
+  const setContainerRef = useChatAutoScroll<HTMLDivElement>(
     scrollSignal,
     enableAutoScroll,
   );
 
-  if (messages.length === 0 && !isStreaming) {
-    return (
-      <div
-        className={classNames(styles.messageList, styles.empty, className)}
-        ref={containerRef}
-      >
-        {renderEmptyState != null ? renderEmptyState() : DEFAULT_EMPTY_STATE}
-      </div>
-    );
-  }
+  const isEmpty = messages.length === 0 && !isStreaming;
+  const showLoader = isStreaming && lastMessage?.role !== "assistant";
 
   return (
     <div
-      aria-live="polite"
-      className={classNames(styles.messageList, className)}
-      ref={containerRef}
-      role="log"
-    >
-      {messages.map(message => (
-        <React.Fragment key={message.id}>
-          {renderMessage != null
-            ? renderMessage(message)
-            : <AipAgentChatMessage message={message} />}
-        </React.Fragment>
-      ))}
-      {isStreaming && trailingMessageRole(messages) !== "assistant" && (
-        <div className={classNames(styles.message, styles.assistantMessage)}>
-          <div className={classNames(styles.bubble, styles.assistantBubble)}>
-            <AipAgentChatLoader />
-          </div>
-        </div>
+      aria-live={isEmpty ? undefined : "polite"}
+      className={classNames(
+        styles.messageList,
+        isEmpty && styles.empty,
+        className,
       )}
+      ref={setContainerRef}
+      role={isEmpty ? undefined : "log"}
+    >
+      {isEmpty
+        ? (renderEmptyState != null ? renderEmptyState() : DEFAULT_EMPTY_STATE)
+        : (
+          <>
+            {messages.map(message => (
+              <React.Fragment key={message.id}>
+                {renderMessage != null
+                  ? renderMessage(message)
+                  : <AipAgentChatMessage message={message} />}
+              </React.Fragment>
+            ))}
+            {showLoader && (
+              <div
+                className={classNames(styles.message, styles.assistantMessage)}
+              >
+                <div
+                  className={classNames(styles.bubble, styles.assistantBubble)}
+                >
+                  <AipAgentChatLoader />
+                </div>
+              </div>
+            )}
+          </>
+        )}
     </div>
   );
-}
-
-function trailingMessageRole(
-  messages: ReadonlyArray<UIMessage>,
-): UIMessage["role"] | undefined {
-  return messages.at(-1)?.role;
 }

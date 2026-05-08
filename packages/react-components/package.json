@@ -160,6 +160,7 @@
     "@osdk/aip-core": "workspace:*",
     "@osdk/api": "workspace:*",
     "@osdk/client": "workspace:*",
+    "@osdk/language-models": "workspace:*",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@osdk/react": "workspace:*",

@@ -91,6 +91,19 @@ export function AipAgentChat({
     onFinish,
   });
 
+  // Snap the uncontrolled model to the first available option whenever the
+  // current selection isn't in `availableModels` (e.g. on first async resolve).
+  React.useEffect(() => {
+    if (
+      isControlled || availableModels == null || availableModels.length === 0
+    ) {
+      return;
+    }
+    if (!availableModels.includes(internalModel)) {
+      setInternalModel(availableModels[0]);
+    }
+  }, [isControlled, availableModels, internalModel]);
+
   const handleSendMessage = React.useCallback(
     (text: string) => {
       return sendMessage({ text });
@@ -98,12 +111,15 @@ export function AipAgentChat({
     [sendMessage],
   );
 
+  const isInFlight = status === "submitted" || status === "streaming";
+
   const composerFooter = availableModels != null && availableModels.length > 0
     ? (
       <AipAgentChatModelPicker
         activeModel={activeModel}
         models={availableModels}
         onModelChange={handleModelChange}
+        disabled={isInFlight}
       />
     )
     : undefined;

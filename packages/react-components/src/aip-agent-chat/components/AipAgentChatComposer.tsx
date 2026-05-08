@@ -55,29 +55,38 @@ export function AipAgentChatComposer({
     if (trimmed.length === 0) {
       return;
     }
-    onSendMessage(trimmed);
+    // Absorb sync throws and unhandled rejections; chat-level errors are
+    // surfaced via `onError` on the upstream useChat hook.
+    try {
+      const result = onSendMessage(trimmed) as void | Promise<void>;
+      if (result instanceof Promise) {
+        result.catch(noop);
+      }
+    } catch {
+      // swallow sync throws
+    }
     setDraft("");
   }, [draft, onSendMessage]);
 
   const handleKeyDown = React.useCallback(
-    (event: React.KeyboardEvent<HTMLInputElement>) => {
+    (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
       if (event.key === "Enter" && !event.shiftKey) {
         event.preventDefault();
-        if (!isInFlight && draft.trim().length > 0) {
-          const trimmed = draft.trim();
-          onSendMessage(trimmed);
-          setDraft("");
+        if (!isInFlight) {
+          handleSend();
         }
       }
     },
-    [draft, isInFlight, onSendMessage],
+    [handleSend, isInFlight],
   );
 
+  // Attach the keydown handler in the `render` prop so it can be typed against
+  // the actual rendered <textarea> element rather than base-ui's HTMLInputElement.
   const renderTextarea = React.useCallback(
     (props: React.ComponentPropsWithRef<"textarea">) => (
-      <textarea {...props} rows={3} />
+      <textarea {...props} onKeyDown={handleKeyDown} rows={3} />
     ),
-    [],
+    [handleKeyDown],
   );
 
   return (
@@ -85,7 +94,6 @@ export function AipAgentChatComposer({
       <Input
         aria-label="Message input"
         className={styles.textarea}
-        onKeyDown={handleKeyDown}
         onValueChange={setDraft}
         placeholder={placeholder}
         value={draft}
@@ -115,3 +123,5 @@ export function AipAgentChatComposer({
     </div>
   );
 }
+
+function noop(): void {}

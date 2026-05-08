@@ -97,36 +97,53 @@ import {
 
 ### Drop down to BaseAipAgentChat
 
-`BaseAipAgentChat` is OSDK-agnostic — it manages conversation state
-internally and only needs an `onSendMessage` callback that produces
-the assistant's reply. Use it for non-OSDK backends, custom transports,
-or unit tests.
+`BaseAipAgentChat` is OSDK-agnostic — the consumer drives the chat by
+passing the current `messages`, `status`, `error`, and an `onSendMessage`
+callback that resolves once the user's message has been forwarded.
+Use it for non-OSDK backends, custom transports, or unit tests.
 
 ```tsx
 import {
   BaseAipAgentChat,
-  type BaseAipAgentChatSendContext,
+  type ChatStatus,
   type UIMessage,
 } from "@osdk/react-components/experimental/aip-agent-chat";
 
 function MyChat() {
+  const [messages, setMessages] = useState<ReadonlyArray<UIMessage>>([]);
+  const [status, setStatus] = useState<ChatStatus>("ready");
+  const [error, setError] = useState<Error | undefined>();
+
   return (
     <BaseAipAgentChat
-      onSendMessage={async (text, ctx: BaseAipAgentChatSendContext) => {
-        // ctx.history is the conversation before `text` was added.
-        // ctx.signal aborts when the user presses Stop.
-        // ctx.setStreamingText(partial) updates the in-flight bubble.
-        const reply = await callMyBackend(text, {
-          history: ctx.history,
-          signal: ctx.signal,
-          onToken: ctx.setStreamingText,
-        });
-        return {
-          id: crypto.randomUUID(),
-          role: "assistant",
-          parts: [{ type: "text", text: reply }],
-        } satisfies UIMessage;
+      messages={messages}
+      status={status}
+      error={error}
+      onSendMessage={async (text) => {
+        setStatus("submitted");
+        try {
+          const reply = await callMyBackend(text, { history: messages });
+          setMessages((prev) => [
+            ...prev,
+            {
+              id: crypto.randomUUID(),
+              role: "user",
+              parts: [{ type: "text", text }],
+            },
+            {
+              id: crypto.randomUUID(),
+              role: "assistant",
+              parts: [{ type: "text", text: reply }],
+            },
+          ]);
+          setStatus("ready");
+        } catch (err) {
+          setError(err as Error);
+          setStatus("error");
+        }
       }}
+      onStop={() => setStatus("ready")}
+      onClearError={() => setError(undefined)}
     />
   );
 }
