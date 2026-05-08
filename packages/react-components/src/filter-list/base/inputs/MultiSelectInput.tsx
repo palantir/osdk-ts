@@ -15,12 +15,21 @@
  */
 
 import classnames from "classnames";
-import React, { memo, useCallback, useContext, useMemo } from "react";
+import React, { memo, useCallback, useMemo } from "react";
 import { Combobox } from "../../../base-components/combobox/Combobox.js";
 import type { PropertyAggregationValue } from "../../types/AggregationTypes.js";
-import { FilterPopoverContext } from "../FilterPopoverContext.js";
 import styles from "./MultiSelectInput.module.css";
 import sharedStyles from "./shared.module.css";
+
+/**
+ * Layout for the value list:
+ * - `"dropdown"` (default): chips inline + portaled Combobox popup. Use when
+ *   the input drives its own surface (e.g. standalone in a row).
+ * - `"inline"`: search input + always-visible value list rendered in flow.
+ *   Use when wrapping the input in your own popover so the values are
+ *   immediately visible without an extra inner trigger.
+ */
+export type MultiSelectInputLayout = "dropdown" | "inline";
 
 interface MultiSelectInputProps {
   values: PropertyAggregationValue[];
@@ -34,6 +43,7 @@ interface MultiSelectInputProps {
   showCounts?: boolean;
   ariaLabel?: string;
   renderValue?: (value: string) => string;
+  layout?: MultiSelectInputLayout;
 }
 
 function MultiSelectInputInner({
@@ -48,6 +58,7 @@ function MultiSelectInputInner({
   showCounts = true,
   ariaLabel = "Search values",
   renderValue,
+  layout = "dropdown",
 }: MultiSelectInputProps): React.ReactElement {
   const handleValueChange = useCallback(
     (newValues: string[] | null) => {
@@ -91,8 +102,6 @@ function MultiSelectInputInner({
     ),
     [countByValue, showCounts, renderValue],
   );
-
-  const inFilterPopover = useContext(FilterPopoverContext);
 
   const renderChips = useCallback(
     (selectedItems: string[]) => (
@@ -147,7 +156,7 @@ function MultiSelectInputInner({
             </div>
           )}
 
-          {inFilterPopover
+          {layout === "inline"
             ? (
               <>
                 <Combobox.Input
