@@ -38,14 +38,4 @@
   --osdk-file-picker-trigger-border-color-error: var(
     --osdk-input-border-color-error
   );
-
-  /* Browse button */
-  --osdk-file-picker-browse-bg: var(--osdk-button-secondary-bg);
-  --osdk-file-picker-browse-bg-hover: var(--osdk-button-secondary-bg-hover);
-  --osdk-file-picker-browse-bg-active: var(--osdk-button-secondary-bg-active);
-  --osdk-file-picker-browse-color: var(--osdk-button-secondary-color);
-  --osdk-file-picker-browse-padding: calc(var(--osdk-surface-spacing) * 1.5)
-    calc(var(--osdk-surface-spacing) * 3);
-  --osdk-file-picker-browse-border-left: var(--osdk-input-border-width) solid
-    var(--osdk-input-border-color);
 }

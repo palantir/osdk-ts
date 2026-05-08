@@ -93,7 +93,8 @@ describe("FilePickerField", () => {
       const trigger = screen.getByRole("button", { name: "Choose file" });
       // Mock click to prevent infinite recursion — HappyDOM has no native
       // file dialog to absorb the event, so the click bubbles back up.
-      const clickSpy = vi.spyOn(getFileInput(), "click")
+      const clickSpy = vi
+        .spyOn(getFileInput(), "click")
         .mockImplementation(() => {});
 
       fireEvent.keyDown(trigger, { key: "Enter" });
@@ -105,7 +106,8 @@ describe("FilePickerField", () => {
       render(<FilePickerField value={null} />);
 
       const trigger = screen.getByRole("button", { name: "Choose file" });
-      const clickSpy = vi.spyOn(getFileInput(), "click")
+      const clickSpy = vi
+        .spyOn(getFileInput(), "click")
         .mockImplementation(() => {});
 
       fireEvent.keyDown(trigger, { key: " " });
@@ -113,12 +115,28 @@ describe("FilePickerField", () => {
       expect(clickSpy).toHaveBeenCalledOnce();
     });
 
-    it("trigger is focusable via tabIndex", () => {
+    it("uses a native button for the file dialog trigger", () => {
       render(<FilePickerField value={null} />);
 
       const trigger = screen.getByRole("button", { name: "Choose file" });
 
-      expect(trigger.getAttribute("tabindex")).toBe("0");
+      expect(trigger.tagName).toBe("BUTTON");
+    });
+
+    it("focuses the file dialog trigger from the browse trigger", () => {
+      render(<FilePickerField value={null} />);
+
+      const trigger = screen.getByRole("button", { name: "Choose file" });
+      const browse = screen.getByRole("button", { name: "Browse" });
+      const clickSpy = vi
+        .spyOn(getFileInput(), "click")
+        .mockImplementation(() => {});
+
+      fireEvent.pointerDown(browse);
+      fireEvent.click(browse);
+
+      expect(document.activeElement).toBe(trigger);
+      expect(clickSpy).toHaveBeenCalledOnce();
     });
 
     it("clear button is a separate tab stop", () => {

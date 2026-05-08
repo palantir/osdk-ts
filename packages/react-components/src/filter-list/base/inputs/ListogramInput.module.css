@@ -20,6 +20,17 @@
   transition: opacity var(--osdk-filter-content-fade-duration);
 }
 
+.noValueLabel {
+  color: var(
+    --osdk-filter-listogram-empty-label-color,
+    var(--osdk-filter-no-value-color)
+  );
+  font-style: var(
+    --osdk-filter-listogram-empty-label-font-style,
+    var(--osdk-filter-no-value-font-style)
+  );
+}
+
 .listogram[data-loading="true"] {
   opacity: 0.5;
 }
@@ -75,11 +86,6 @@
 
 .label[data-excluding] {
   text-decoration: line-through;
-}
-
-.emptyLabel {
-  color: var(--osdk-filter-listogram-empty-label-color);
-  font-style: var(--osdk-filter-listogram-empty-label-font-style);
 }
 
 .bar {

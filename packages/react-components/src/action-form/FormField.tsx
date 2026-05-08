@@ -72,11 +72,16 @@ export const FormField: React.FC<FormFieldProps> = memo(function FormFieldFn({
         <div className={styles.osdkFormFieldHelperText}>{helperText}</div>
       )}
       {children}
-      {error != null && (
-        <div className={styles.osdkFormFieldError} role="alert">
-          {error}
-        </div>
-      )}
+      <div
+        className={styles.osdkFormFieldErrorSlot}
+        data-osdk-form-field-error-slot=""
+      >
+        {error != null && (
+          <div className={styles.osdkFormFieldError} role="alert">
+            {error}
+          </div>
+        )}
+      </div>
     </div>
   );
 });
