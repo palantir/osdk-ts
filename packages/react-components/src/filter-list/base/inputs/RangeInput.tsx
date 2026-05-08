@@ -26,6 +26,11 @@ import React, {
   useRef,
   useState,
 } from "react";
+import { DatetimePickerField } from "../../../action-form/fields/DatetimePickerField.js";
+import {
+  formatDateForInput,
+  parseDateFromInput,
+} from "../../../shared/dateUtils.js";
 import {
   createHistogramBuckets,
   getMaxBucketCount,
@@ -569,19 +574,17 @@ function RangeInputInner<T>({
   const hasActiveFilter = minValue !== undefined || maxValue !== undefined;
 
   const handleMinChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const newValue = e.target.value;
-      setLocalMin(newValue);
-      debouncedMinChange(newValue);
+    (next: string) => {
+      setLocalMin(next);
+      debouncedMinChange(next);
     },
     [debouncedMinChange],
   );
 
   const handleMaxChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const newValue = e.target.value;
-      setLocalMax(newValue);
-      debouncedMaxChange(newValue);
+    (next: string) => {
+      setLocalMax(next);
+      debouncedMaxChange(next);
     },
     [debouncedMaxChange],
   );
@@ -819,17 +822,17 @@ function RangeInputInner<T>({
           <label htmlFor={minInputId} className={styles.inputLabel}>
             {config.minLabel}
           </label>
-          <Input
+          <RangeBoundInput
             id={minInputId}
-            type={config.inputType}
-            className={styles.input}
+            inputType={config.inputType}
             value={localMin}
             onChange={handleMinChange}
             placeholder={dataRange.dataMin !== undefined
                 && config.formatPlaceholder
               ? config.formatPlaceholder(dataRange.dataMin)
               : undefined}
-            {...config.inputProps}
+            inputProps={config.inputProps}
+            ariaLabel={config.minLabel}
           />
         </div>
 
@@ -841,21 +844,77 @@ function RangeInputInner<T>({
           <label htmlFor={maxInputId} className={styles.inputLabel}>
             {config.maxLabel}
           </label>
-          <Input
+          <RangeBoundInput
             id={maxInputId}
-            type={config.inputType}
-            className={styles.input}
+            inputType={config.inputType}
             value={localMax}
             onChange={handleMaxChange}
             placeholder={dataRange.dataMax !== undefined
                 && config.formatPlaceholder
               ? config.formatPlaceholder(dataRange.dataMax)
               : undefined}
-            {...config.inputProps}
+            inputProps={config.inputProps}
+            ariaLabel={config.maxLabel}
           />
         </div>
       </div>
     </div>
+  );
+}
+
+interface RangeBoundInputProps {
+  id: string;
+  inputType: "number" | "date";
+  value: string;
+  onChange: (next: string) => void;
+  placeholder: string | undefined;
+  inputProps: React.InputHTMLAttributes<HTMLInputElement> | undefined;
+  ariaLabel: string;
+}
+
+function RangeBoundInput({
+  id,
+  inputType,
+  value,
+  onChange,
+  placeholder,
+  inputProps,
+  ariaLabel,
+}: RangeBoundInputProps): React.ReactElement {
+  const handleNativeChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      onChange(e.target.value);
+    },
+    [onChange],
+  );
+  const handleDatePickerChange = useCallback(
+    (date: Date | null) => {
+      onChange(date != null ? formatDateForInput(date) : "");
+    },
+    [onChange],
+  );
+  if (inputType === "date") {
+    return (
+      <DatetimePickerField
+        value={parseDateFromInput(value) ?? null}
+        onChange={handleDatePickerChange}
+        placeholder={placeholder}
+        ariaLabel={ariaLabel}
+        modal={false}
+      />
+    );
+  }
+  return (
+    <Input
+      id={id}
+      type="number"
+      className={styles.input}
+      value={value}
+      onChange={handleNativeChange}
+      placeholder={placeholder}
+      aria-label={ariaLabel}
+      {...inputProps}
+    />
   );
 }
 

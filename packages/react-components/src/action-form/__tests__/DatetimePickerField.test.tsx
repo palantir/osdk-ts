@@ -27,11 +27,11 @@ import { DatetimePickerField } from "../fields/DatetimePickerField.js";
 // Replace React.lazy wrapper with synchronous DateCalendar to avoid
 // Suspense resolution issues in happy-dom. This is a legitimate test
 // boundary — we test DatetimePickerField behavior, not the lazy loading mechanism.
-vi.mock("../fields/LazyDateCalendar.js", async () => {
+vi.mock("../../shared/calendar/LazyDateCalendar.js", async () => {
   const { default: DateCalendar } = await vi.importActual<
     // eslint-disable-next-line @typescript-eslint/consistent-type-imports
-    typeof import("../fields/DateCalendar.js")
-  >("../fields/DateCalendar.js");
+    typeof import("../../shared/calendar/DateCalendar.js")
+  >("../../shared/calendar/DateCalendar.js");
   return { LazyDateCalendar: DateCalendar };
 });
 
@@ -230,6 +230,31 @@ describe("DatetimePickerField", () => {
         await waitFor(() => {
           expect(screen.queryByRole("dialog")).toBeNull();
         });
+      } finally {
+        portalContainer.remove();
+      }
+    });
+
+    it("does not render the dismiss layer when modal={false}", () => {
+      const portalContainer = document.createElement("div");
+      document.body.append(portalContainer);
+
+      try {
+        render(
+          <DatetimePickerField
+            value={new Date(2024, 0, 15)}
+            onChange={vi.fn()}
+            portalContainer={portalContainer}
+            modal={false}
+          />,
+        );
+
+        fireEvent.focus(screen.getByRole("combobox"));
+        expect(screen.getByRole("dialog")).toBeDefined();
+
+        expect(
+          portalContainer.querySelector("[data-osdk-portal-dismiss-layer]"),
+        ).toBeNull();
       } finally {
         portalContainer.remove();
       }
