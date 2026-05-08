@@ -1,5 +1,16 @@
 # @osdk/react-components
 
+## 0.13.0
+
+### Minor Changes
+
+- 53e5f4f: Cap the Combobox popup at 320px (configurable via `--osdk-combobox-popup-max-height`) with overflow scrolling. Long option lists no longer push other UI off-screen — they scroll inside the popup. A short browser window still gets a smaller cap because the rule resolves to `min(320px, var(--available-height))`.
+- aca2466: Standardize "No value" rendering in FilterList — introduce a shared `NoValueLabel` component (italic, muted) used by listogram buckets, single-select and multi-select dropdown options, multi-select chips, text-tag chips, and the `NullValueWrapper` include-null row. Adds an `isEmptyValue` helper. The `NullValueWrapper` include-null row's default visual flips from upright/default-color to italic/muted so it matches the dropdown and listogram surfaces. Legacy `--osdk-filter-listogram-empty-label-color`, `--osdk-filter-listogram-empty-label-font-style`, `--osdk-filter-null-label-color`, `--osdk-filter-null-label-font-family`, `--osdk-filter-null-label-font-size`, and `--osdk-filter-null-label-line-height` tokens are honored as opt-in overrides on the listogram and null-wrapper containers; consumers who explicitly set them continue to override the new italic-muted defaults.
+- fe39be0: Stabilize per-filter where-clause references inside `useFilterListState` via deep-equality caching, so `FilterInput.memo` holds when the cross-filter context for a given filter is unchanged across selections. Eliminates redundant aggregation requests on every value selection. Internal-only — no public API changes.
+- 76ab0a3: ObjectTable: Fix bug when cell is marked edited on clicking into and out of an empty cell
+- 72e928b: ObjectTable: support per-row edit configuration via `editable: (rowData) => boolean`, add `getRowAttributes` prop for conditional row styling via data attributes, replace `editFieldConfig.fieldComponentProps` with `editFieldConfig.getFieldComponentProps(rowData)` so editor configuration can vary per row, and add a `showEditFooter` prop to opt out of the built-in edit footer.
+- 9be8339: Polish ActionForm date/time controls, boolean switch fields, form submission, popup positioning, component tokens, and FauxFoundry action typings.
+
 ## 0.12.0
 
 ### Minor Changes

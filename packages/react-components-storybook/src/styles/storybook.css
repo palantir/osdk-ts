@@ -72,6 +72,8 @@ body {
 
 .osdkFormCard {
   --osdk-form-label-font-size: var(--osdk-typography-size-body-small);
+  --osdk-form-content-padding-inline: calc(var(--osdk-surface-spacing) * 4);
+  --osdk-form-content-padding-block: calc(var(--osdk-surface-spacing) * 4);
 
   max-width: 480px;
   width: 100%;
@@ -86,6 +88,9 @@ body {
 }
 
 .osdkBlueprintDialogForm {
+  --osdk-form-content-padding-inline: calc(var(--osdk-surface-spacing) * 4);
+  --osdk-form-content-padding-block: calc(var(--osdk-surface-spacing) * 4);
+
   width: min(480px, calc(100vw - calc(var(--osdk-surface-spacing) * 8)));
 }
 

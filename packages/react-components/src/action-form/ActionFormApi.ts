@@ -25,7 +25,6 @@ import type {
   FieldKey,
   FieldValueType,
   FormFieldDefinition,
-  PortalContainer,
   RendererFieldDefinition,
 } from "./FormFieldApi.js";
 
@@ -50,13 +49,16 @@ export type ActionFormProps<Q extends ActionDefinition<unknown>> =
   });
 
 interface ActionFormConfigProps<Q extends ActionDefinition<unknown>>
-  extends
-    Pick<
-      BaseFormProps,
-      "formTitle" | "isSubmitDisabled" | "portalContainer"
-    >
+  extends Pick<BaseFormProps, "formTitle" | "isSubmitDisabled">
 {
   actionDefinition: Q;
+
+  /**
+   * Whether to show the form title.
+   *
+   * @default false
+   */
+  showFormTitle?: boolean;
 
   /**
    * If not supplied, field definitions are constructed from `ActionParameters`.
@@ -175,10 +177,4 @@ interface BaseFormCommonProps {
   submitButtonText?: string;
   /** Visual variant of the submit button. Default `"primary"`. */
   submitButtonVariant?: "primary" | "secondary";
-  /**
-   * Element that receives popover/dropdown portals for fields rendered by this
-   * form. Use this when rendering inside modal dialogs so popups stay in the
-   * dialog's stacking and focus context.
-   */
-  portalContainer?: PortalContainer;
 }

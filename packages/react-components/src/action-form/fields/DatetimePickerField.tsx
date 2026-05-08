@@ -22,13 +22,11 @@ import { stopPropagation } from "../../shared/calendar/calendarShared.js";
 import commonStyles from "../../shared/calendar/DatePickerCommon.module.css";
 import { LazyDateCalendar } from "../../shared/calendar/LazyDateCalendar.js";
 import {
-  formatDateForDisplay,
   formatDateForInput,
   formatDatetimeForInput,
-  getTimeValue,
+  isDateInRange,
   parseDateFromInput,
   parseDatetimeFromInput,
-  parseTimeString,
 } from "../../shared/dateUtils.js";
 import type { DatetimePickerFieldProps } from "../FormFieldApi.js";
 import styles from "./DatetimePickerField.module.css";
@@ -58,10 +56,20 @@ export const DatetimePickerField: React.NamedExoticComponent<
   const isModal = modal !== false;
   const shouldCloseOnSelection = closeOnSelection ?? !showTime;
   const popoverId = useId();
+  // The wrapper is only a visual/positioning anchor. The input itself remains
+  // the Popover.Trigger so axe does not see an interactive wrapper around an
+  // interactive combobox.
+  const wrapperRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const popoverRef = useRef<HTMLDivElement>(null);
 
   const [isOpen, setIsOpen] = useState(false);
+  // activeDateValue is the selected/typed date; visibleCalendarMonth is only
+  // the calendar viewport. Keeping the viewport separate lets typed dates jump
+  // the calendar while next/previous month navigation still works.
+  const [visibleCalendarMonth, setVisibleCalendarMonth] = useState<
+    Date | undefined
+  >(value ?? new Date());
   // When true, the next handleFocus call skips reopening the popover.
   // Set before focusing the input from a popover boundary exit so that
   // Tab/Shift-Tab proceeds to the adjacent form field naturally.
@@ -69,16 +77,19 @@ export const DatetimePickerField: React.NamedExoticComponent<
 
   // Format/parse: pick between date-only and datetime variants.
   // editFormatFn produces a parsable string for typing (e.g. "2024-01-15" or "2024-01-15 14:30").
-  // displayFormatFn produces a human-readable string for idle state (e.g. "Jan 15, 2024").
+  // displayFormatFn produces the idle string. Defaults stay deterministic so
+  // users in different browser locales see the same date in form inputs.
   const editFormatFn = showTime ? formatDatetimeForInput : formatDateForInput;
   const displayFormatFn = formatDate
-    ?? (showTime ? formatDatetimeForInput : formatDateForDisplay);
+    ?? (showTime ? formatDatetimeForInput : formatDateForInput);
   const parseFn = parseDate
     ?? (showTime ? parseDatetimeFromInput : parseDateFromInput);
 
   const {
+    isEditing,
     displayedValue,
     inputError,
+    dateValue,
     startEditing,
     stopEditing,
     commitAndStopEditing,
@@ -103,8 +114,27 @@ export const DatetimePickerField: React.NamedExoticComponent<
       return;
     }
     startEditing();
+    setVisibleCalendarMonth(value ?? undefined);
     setIsOpen(true);
-  }, [startEditing]);
+  }, [startEditing, value]);
+
+  const handlePointerDown = useCallback(() => {
+    // Opening from pointer-down keeps mouse interactions in sync with focus
+    // editing before Base UI's later click trigger handler runs.
+    inputRef.current?.focus();
+    handleFocus();
+  }, [handleFocus]);
+
+  const handleInputValueChange = useCallback(
+    (nextValue: string) => {
+      setInputValue(nextValue);
+      const parsedDate = nextValue !== "" ? parseFn(nextValue) : undefined;
+      if (parsedDate != null && isDateInRange(parsedDate, min, max)) {
+        setVisibleCalendarMonth(parsedDate);
+      }
+    },
+    [max, min, parseFn, setInputValue],
+  );
 
   const handleBlur = useCallback(
     (e: React.FocusEvent<HTMLInputElement>) => {
@@ -192,6 +222,7 @@ export const DatetimePickerField: React.NamedExoticComponent<
 
       onChange?.(date);
       setDateValue(date);
+      setVisibleCalendarMonth(date);
 
       if (shouldCloseOnSelection) {
         closePopover();
@@ -209,15 +240,17 @@ export const DatetimePickerField: React.NamedExoticComponent<
   );
 
   const handleTimeChange = useCallback(
-    (timeString: string) => {
-      const { hours, minutes } = parseTimeString(timeString);
-      const base = value != null ? new Date(value.getTime()) : new Date();
-      base.setHours(hours, minutes, 0, 0);
-      onChange?.(base);
-      setDateValue(base);
+    (time: Date) => {
+      onChange?.(time);
+      setDateValue(time);
     },
-    [value, onChange, setDateValue],
+    [onChange, setDateValue],
   );
+
+  const handleCalendarClear = useCallback(() => {
+    onChange?.(null);
+    setDateValue(null);
+  }, [onChange, setDateValue]);
 
   // --- Focus boundary handlers ---
   // Visually-hidden elements at the start/end of the popover that trap Tab
@@ -250,13 +283,19 @@ export const DatetimePickerField: React.NamedExoticComponent<
     [stopEditing],
   );
 
-  // --- Time picker (rendered as a popover sibling, not a DayPicker footer,
-  // so the border-top can span the full popover width via negative margins) ---
+  // --- Time picker ---
+
+  const activeDateValue = isEditing && inputError == null
+    ? dateValue
+    : (value ?? undefined);
 
   const timeFooter = showTime
     ? (
       <div className={styles.osdkDatetimeTimeFooter}>
-        <TimePicker value={getTimeValue(value)} onChange={handleTimeChange} />
+        <TimePicker
+          value={activeDateValue ?? null}
+          onChange={handleTimeChange}
+        />
       </div>
     )
     : undefined;
@@ -267,6 +306,9 @@ export const DatetimePickerField: React.NamedExoticComponent<
     inputError != null && commonStyles.osdkDatePickerInputWrapperError,
   );
 
+  // Keep Popover.Trigger on the input itself. Moving it to the wrapper would
+  // make click handling simpler, but it would also nest an interactive combobox
+  // inside an interactive trigger and reintroduce the axe violation.
   return (
     <Popover.Root
       open={isOpen}
@@ -278,30 +320,33 @@ export const DatetimePickerField: React.NamedExoticComponent<
       // intercept clicks intended for the parent.
       modal={modal}
     >
-      <Popover.Trigger
-        nativeButton={false}
-        render={<div className={wrapperClassName} tabIndex={-1} />}
-      >
-        <Input
-          ref={inputRef}
-          id={id}
-          className={commonStyles.osdkDatePickerInput}
-          type="text"
-          value={displayedValue}
-          onValueChange={setInputValue}
-          onFocus={handleFocus}
-          onBlur={handleBlur}
-          onClick={stopPropagation}
-          onKeyDown={handleKeyDown}
-          placeholder={placeholder}
-          autoComplete="off"
-          role="combobox"
-          aria-expanded={isOpen}
-          aria-controls={popoverId}
-          aria-haspopup="dialog"
-          aria-label={ariaLabel}
+      <div ref={wrapperRef} className={wrapperClassName}>
+        <Popover.Trigger
+          nativeButton={false}
+          render={
+            <Input
+              ref={inputRef}
+              id={id}
+              className={commonStyles.osdkDatePickerInput}
+              type="text"
+              value={displayedValue}
+              onValueChange={handleInputValueChange}
+              onFocus={handleFocus}
+              onPointerDown={handlePointerDown}
+              onBlur={handleBlur}
+              onClick={stopPropagation}
+              onKeyDown={handleKeyDown}
+              placeholder={placeholder}
+              autoComplete="off"
+              role="combobox"
+              aria-expanded={isOpen}
+              aria-controls={popoverId}
+              aria-haspopup="dialog"
+              aria-label={ariaLabel}
+            />
+          }
         />
-      </Popover.Trigger>
+      </div>
       <Popover.Portal ref={portalRef} container={portalContainer}>
         {isModal && (
           <PortalDismissLayer
@@ -310,6 +355,7 @@ export const DatetimePickerField: React.NamedExoticComponent<
           />
         )}
         <Popover.Positioner
+          anchor={wrapperRef}
           className={commonStyles.osdkDatePickerPositioner}
           sideOffset={4}
         >
@@ -332,12 +378,15 @@ export const DatetimePickerField: React.NamedExoticComponent<
               />
             )}
             <LazyDateCalendar
-              dateSelected={value ?? undefined}
+              dateSelected={activeDateValue}
               onSelect={handleCalendarSelect}
+              onClear={handleCalendarClear}
+              month={visibleCalendarMonth}
+              onMonthChange={setVisibleCalendarMonth}
               min={min}
               max={max}
+              footer={timeFooter}
             />
-            {timeFooter}
             {isModal && (
               <div
                 onFocus={handleEndFocusBoundary}

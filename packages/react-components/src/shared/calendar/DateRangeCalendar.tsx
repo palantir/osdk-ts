@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import classnames from "classnames";
 import React, { useMemo } from "react";
 import type {
   ClassNames,
@@ -34,9 +35,15 @@ import styles from "./DateCalendar.module.css";
 
 const CLASS_NAMES: ClassNames = {
   ...BASE_CLASS_NAMES,
-  day_range_start: styles.calendarRangeEndpoint,
+  day_range_start: classnames(
+    styles.calendarRangeEndpoint,
+    styles.calendarRangeStart,
+  ),
   day_range_middle: styles.calendarRangeMiddle,
-  day_range_end: styles.calendarRangeEndpoint,
+  day_range_end: classnames(
+    styles.calendarRangeEndpoint,
+    styles.calendarRangeEnd,
+  ),
 };
 
 export interface DateRangeCalendarProps {
@@ -58,22 +65,27 @@ export default function DateRangeCalendar({
 
   const fromYear = min != null ? min.getFullYear() : DEFAULT_FROM_YEAR;
   const toYear = max != null ? max.getFullYear() : DEFAULT_TO_YEAR;
+  const calendarFooter = footer == null
+    ? undefined
+    : <div className={styles.calendarRangeFooter}>{footer}</div>;
 
   return (
-    <DayPicker
-      mode="range"
-      selected={selected}
-      onSelect={onSelect}
-      disabled={disabled}
-      defaultMonth={selected?.from}
-      classNames={CLASS_NAMES}
-      components={CALENDAR_COMPONENTS}
-      footer={footer}
-      captionLayout="dropdown-buttons"
-      fromYear={fromYear}
-      toYear={toYear}
-      numberOfMonths={2}
-      pagedNavigation={true}
-    />
+    <>
+      <DayPicker
+        mode="range"
+        selected={selected}
+        onSelect={onSelect}
+        disabled={disabled}
+        defaultMonth={selected?.from}
+        classNames={CLASS_NAMES}
+        components={CALENDAR_COMPONENTS}
+        captionLayout="dropdown-buttons"
+        fromYear={fromYear}
+        toYear={toYear}
+        numberOfMonths={2}
+        pagedNavigation={true}
+      />
+      {calendarFooter}
+    </>
   );
 }
