@@ -44,6 +44,37 @@ function createSingleLinkStub<T extends ObjectTypeDefinition>(
   };
 }
 
+function createMissingLinkStub(
+  linkName: string,
+  objectApiName: string,
+  primaryKey: string,
+): {
+  fetchOne: () => Promise<never>;
+  fetchOneWithErrors: () => Promise<{ error: Error; value?: never }>;
+  fetchPage: () => Promise<never>;
+  asyncIter: () => never;
+  aggregate: () => never;
+} {
+  const makeError = () =>
+    new Error(
+      `Link "${linkName}" was not configured on mock ${objectApiName} `
+        + `object with primary key ${primaryKey}. `
+        + `Pass it via the \`links\` option on createMockOsdkObject, or `
+        + `pass an Error instance to simulate a link failure.`,
+    );
+  return {
+    fetchOne: () => Promise.reject(makeError()),
+    fetchOneWithErrors: () => Promise.resolve({ error: makeError() }),
+    fetchPage: () => Promise.reject(makeError()),
+    asyncIter: () => {
+      throw makeError();
+    },
+    aggregate: () => {
+      throw makeError();
+    },
+  };
+}
+
 function createManyLinkStub<T extends ObjectTypeDefinition>(
   linkedObjects: Array<Osdk.Instance<T>>,
 ): {
@@ -205,11 +236,8 @@ export function createMockOsdkObject<
 
   Object.defineProperty(mockObject, "$link", {
     get() {
-      if (links == null) {
-        return undefined;
-      }
       const linkAccessors: Record<string, unknown> = {};
-      for (const [linkName, linkValue] of Object.entries(links)) {
+      for (const [linkName, linkValue] of Object.entries(links ?? {})) {
         if (linkValue == null) {
           continue;
         }
@@ -225,7 +253,18 @@ export function createMockOsdkObject<
           );
         }
       }
-      return linkAccessors;
+      return new Proxy(linkAccessors, {
+        get(target, prop) {
+          if (typeof prop === "symbol" || prop in target) {
+            return target[prop as string];
+          }
+          return createMissingLinkStub(
+            prop,
+            objectType.apiName,
+            String($primaryKey),
+          );
+        },
+      });
     },
     enumerable: true,
   });

@@ -21,7 +21,7 @@ import type {
   PropertyKeys,
   WhereClause,
 } from "@osdk/api";
-import { useOsdkAggregation } from "@osdk/react/experimental";
+import { useOsdkAggregation } from "@osdk/react";
 import { useMemo } from "react";
 import type { AggregationGroupResult } from "../utils/aggregationHelpers.js";
 

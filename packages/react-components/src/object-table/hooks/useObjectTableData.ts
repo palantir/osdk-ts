@@ -23,8 +23,11 @@ import type {
   SimplePropertyDef,
   WhereClause,
 } from "@osdk/api";
-import type { UseOsdkListResult } from "@osdk/react/experimental";
-import { useObjectSet, useOsdkObjects } from "@osdk/react/experimental";
+import {
+  useObjectSet,
+  type UseOsdkListResult,
+  useOsdkObjects,
+} from "@osdk/react";
 import type { SortingState } from "@tanstack/react-table";
 import { useMemo } from "react";
 import type { ColumnDefinition, ObjectSetOptions } from "../ObjectTableApi.js";

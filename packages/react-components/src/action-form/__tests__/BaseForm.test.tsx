@@ -20,9 +20,11 @@ import {
   render,
   screen,
   waitFor,
+  within,
 } from "@testing-library/react";
 import React, { useState } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import type { FormContentItem } from "../ActionFormApi.js";
 import { BaseForm } from "../BaseForm.js";
 import type { RendererFieldDefinition } from "../FormFieldApi.js";
 
@@ -41,8 +43,34 @@ function makeDef(
   };
 }
 
+function field(definition: RendererFieldDefinition): FormContentItem {
+  return { type: "field", definition };
+}
+
 describe("BaseForm", () => {
   afterEach(cleanup);
+
+  describe("form title", () => {
+    it("does not render a form title when formTitle is omitted", () => {
+      render(
+        <BaseForm formContent={[field(makeDef("name"))]} onSubmit={vi.fn()} />,
+      );
+
+      expect(screen.queryByRole("heading")).toBeNull();
+    });
+
+    it("renders a form title when formTitle is provided", () => {
+      render(
+        <BaseForm
+          formTitle="Create employee"
+          formContent={[field(makeDef("name"))]}
+          onSubmit={vi.fn()}
+        />,
+      );
+
+      expect(screen.getByRole("heading").textContent).toBe("Create employee");
+    });
+  });
 
   describe("uncontrolled mode", () => {
     it("submits entered field values", async () => {
@@ -50,7 +78,7 @@ describe("BaseForm", () => {
 
       render(
         <BaseForm
-          fieldDefinitions={[makeDef("name"), makeDef("email")]}
+          formContent={[field(makeDef("name")), field(makeDef("email"))]}
           onSubmit={onSubmit}
         />,
       );
@@ -67,12 +95,32 @@ describe("BaseForm", () => {
       });
     });
 
+    it("submits from the button click instead of the form submit event", async () => {
+      const onSubmit = vi.fn();
+
+      render(
+        <BaseForm formContent={[field(makeDef("name"))]} onSubmit={onSubmit} />,
+      );
+
+      const form = document.querySelector("form");
+      expect(form).not.toBeNull();
+
+      fireEvent.submit(form!);
+      expect(onSubmit).not.toHaveBeenCalled();
+
+      fireEvent.click(screen.getByRole("button", { name: /submit/i }));
+
+      await vi.waitFor(() => {
+        expect(onSubmit).toHaveBeenCalledTimes(1);
+      });
+    });
+
     it("submits undefined for fields without defaults", async () => {
       const onSubmit = vi.fn();
 
       render(
         <BaseForm
-          fieldDefinitions={[makeDef("name"), makeDef("email")]}
+          formContent={[field(makeDef("name")), field(makeDef("email"))]}
           onSubmit={onSubmit}
         />,
       );
@@ -91,13 +139,17 @@ describe("BaseForm", () => {
 
       render(
         <BaseForm
-          fieldDefinitions={[
-            makeDef("name", {
-              fieldComponentProps: { defaultValue: "Default Name" },
-            }),
-            makeDef("email", {
-              fieldComponentProps: { defaultValue: "default@test.com" },
-            }),
+          formContent={[
+            field(
+              makeDef("name", {
+                fieldComponentProps: { defaultValue: "Default Name" },
+              }),
+            ),
+            field(
+              makeDef("email", {
+                fieldComponentProps: { defaultValue: "default@test.com" },
+              }),
+            ),
           ]}
           onSubmit={onSubmit}
         />,
@@ -123,13 +175,17 @@ describe("BaseForm", () => {
 
       render(
         <BaseForm
-          fieldDefinitions={[
-            makeDef("name", {
-              fieldComponentProps: { defaultValue: "Bob" },
-            }),
-            makeDef("email", {
-              fieldComponentProps: { defaultValue: "bob@test.com" },
-            }),
+          formContent={[
+            field(
+              makeDef("name", {
+                fieldComponentProps: { defaultValue: "Bob" },
+              }),
+            ),
+            field(
+              makeDef("email", {
+                fieldComponentProps: { defaultValue: "bob@test.com" },
+              }),
+            ),
           ]}
           onSubmit={onSubmit}
         />,
@@ -150,18 +206,18 @@ describe("BaseForm", () => {
 
   // TODO: expand this test to cover all field types
   describe("dropdown field", () => {
-    it("renders dropdown from fieldDefinitions", () => {
+    it("renders dropdown from formContent", () => {
       render(
         <BaseForm
-          fieldDefinitions={[
-            {
+          formContent={[
+            field({
               fieldKey: "color",
               label: "Color",
               fieldComponent: "DROPDOWN" as const,
               fieldComponentProps: {
                 items: ["Red", "Blue", "Green"],
               },
-            },
+            }),
           ]}
           onSubmit={vi.fn()}
         />,
@@ -169,17 +225,46 @@ describe("BaseForm", () => {
 
       expect(screen.getByRole("combobox")).toBeDefined();
     });
+
+    it("renders dropdown portals inside the form element", async () => {
+      render(
+        <BaseForm
+          formContent={[
+            field({
+              fieldKey: "color",
+              label: "Color",
+              fieldComponent: "DROPDOWN" as const,
+              fieldComponentProps: {
+                items: ["Red", "Blue", "Green"],
+              },
+            }),
+          ]}
+          onSubmit={vi.fn()}
+        />,
+      );
+
+      fireEvent.click(screen.getByRole("combobox"));
+
+      const form = document.querySelector("form");
+      await waitFor(() => {
+        expect(
+          within(form!).getByRole("option", { name: "Red" }),
+        ).toBeDefined();
+      });
+    });
   });
 
   describe("helper text", () => {
     it("renders helper text when placement is bottom", () => {
       render(
         <BaseForm
-          fieldDefinitions={[
-            makeDef("name", {
-              helperText: "Enter your full name",
-              helperTextPlacement: "bottom",
-            }),
+          formContent={[
+            field(
+              makeDef("name", {
+                helperText: "Enter your full name",
+                helperTextPlacement: "bottom",
+              }),
+            ),
           ]}
           onSubmit={vi.fn()}
         />,
@@ -191,11 +276,13 @@ describe("BaseForm", () => {
     it("renders tooltip trigger when placement is tooltip", () => {
       render(
         <BaseForm
-          fieldDefinitions={[
-            makeDef("name", {
-              helperText: "Enter your full name",
-              helperTextPlacement: "tooltip",
-            }),
+          formContent={[
+            field(
+              makeDef("name", {
+                helperText: "Enter your full name",
+                helperTextPlacement: "tooltip",
+              }),
+            ),
           ]}
           onSubmit={vi.fn()}
         />,
@@ -208,10 +295,12 @@ describe("BaseForm", () => {
     it("defaults to tooltip placement when helperTextPlacement is omitted", () => {
       render(
         <BaseForm
-          fieldDefinitions={[
-            makeDef("name", {
-              helperText: "Enter your full name",
-            }),
+          formContent={[
+            field(
+              makeDef("name", {
+                helperText: "Enter your full name",
+              }),
+            ),
           ]}
           onSubmit={vi.fn()}
         />,
@@ -223,10 +312,7 @@ describe("BaseForm", () => {
 
     it("does not render helper text or icon when helperText is absent", () => {
       render(
-        <BaseForm
-          fieldDefinitions={[makeDef("name")]}
-          onSubmit={vi.fn()}
-        />,
+        <BaseForm formContent={[field(makeDef("name"))]} onSubmit={vi.fn()} />,
       );
 
       expect(screen.queryByLabelText("Info about name")).toBeNull();
@@ -239,7 +325,7 @@ describe("BaseForm", () => {
 
       render(
         <BaseForm
-          fieldDefinitions={[makeDef("name"), makeDef("email")]}
+          formContent={[field(makeDef("name")), field(makeDef("email"))]}
           formState={{ name: "Initial", email: "initial@test.com" }}
           onFieldValueChange={onFieldValueChange}
           onSubmit={vi.fn()}
@@ -257,7 +343,7 @@ describe("BaseForm", () => {
 
       render(
         <BaseForm
-          fieldDefinitions={[makeDef("name"), makeDef("email")]}
+          formContent={[field(makeDef("name")), field(makeDef("email"))]}
           formState={{ name: "Alice", email: "alice@test.com" }}
           onFieldValueChange={vi.fn()}
           onSubmit={onSubmit}
@@ -277,7 +363,10 @@ describe("BaseForm", () => {
     });
     it("submits the latest parent state after re-render", async () => {
       const onSubmit = vi.fn();
-      const defs = [makeDef("name"), makeDef("email")];
+      const content: ReadonlyArray<FormContentItem> = [
+        field(makeDef("name")),
+        field(makeDef("email")),
+      ];
 
       function ControlledWrapper() {
         const [formState, setFormState] = useState<Record<string, unknown>>({
@@ -291,7 +380,7 @@ describe("BaseForm", () => {
 
         return (
           <BaseForm
-            fieldDefinitions={defs}
+            formContent={content}
             formState={formState}
             onFieldValueChange={handleFieldChange}
             onSubmit={onSubmit}
@@ -321,7 +410,7 @@ describe("BaseForm", () => {
 
       render(
         <BaseForm
-          fieldDefinitions={[makeDef("name"), makeDef("email")]}
+          formContent={[field(makeDef("name")), field(makeDef("email"))]}
           formState={{ name: "Parent", email: "parent@test.com" }}
           onFieldValueChange={vi.fn()}
           onSubmit={onSubmit}
@@ -345,7 +434,7 @@ describe("BaseForm", () => {
     it("shows error for required field after blur with empty value", async () => {
       render(
         <BaseForm
-          fieldDefinitions={[makeDef("name", { isRequired: true })]}
+          formContent={[field(makeDef("name", { isRequired: true }))]}
           onSubmit={vi.fn()}
         />,
       );
@@ -365,10 +454,12 @@ describe("BaseForm", () => {
     it("shows minLength error after blur", async () => {
       render(
         <BaseForm
-          fieldDefinitions={[
-            makeDef("name", {
-              fieldComponentProps: { minLength: 3 },
-            }),
+          formContent={[
+            field(
+              makeDef("name", {
+                fieldComponentProps: { minLength: 3 },
+              }),
+            ),
           ]}
           onSubmit={vi.fn()}
         />,
@@ -388,7 +479,7 @@ describe("BaseForm", () => {
     it("clears error after value becomes valid", async () => {
       render(
         <BaseForm
-          fieldDefinitions={[makeDef("name", { isRequired: true })]}
+          formContent={[field(makeDef("name", { isRequired: true }))]}
           onSubmit={vi.fn()}
         />,
       );
@@ -412,7 +503,7 @@ describe("BaseForm", () => {
       const onSubmit = vi.fn();
       render(
         <BaseForm
-          fieldDefinitions={[makeDef("name", { isRequired: true })]}
+          formContent={[field(makeDef("name", { isRequired: true }))]}
           onSubmit={onSubmit}
         />,
       );
@@ -429,15 +520,13 @@ describe("BaseForm", () => {
     it("disables submit button after failed attempt while errors exist", async () => {
       render(
         <BaseForm
-          fieldDefinitions={[makeDef("name", { isRequired: true })]}
+          formContent={[field(makeDef("name", { isRequired: true }))]}
           onSubmit={vi.fn()}
         />,
       );
 
       const getSubmitButton = () =>
-        document.querySelector(
-          "button[type='submit']",
-        ) as HTMLButtonElement;
+        screen.getByRole("button", { name: /submit/i }) as HTMLButtonElement;
 
       expect(getSubmitButton().disabled).toBe(false);
 
@@ -451,15 +540,13 @@ describe("BaseForm", () => {
     it("re-enables submit button after fixing errors", async () => {
       render(
         <BaseForm
-          fieldDefinitions={[makeDef("name", { isRequired: true })]}
+          formContent={[field(makeDef("name", { isRequired: true }))]}
           onSubmit={vi.fn()}
         />,
       );
 
       const getSubmitButton = () =>
-        document.querySelector(
-          "button[type='submit']",
-        ) as HTMLButtonElement;
+        screen.getByRole("button", { name: /submit/i }) as HTMLButtonElement;
 
       // Touch the field first so RHF tracks it for revalidation
       const input = screen.getByRole("textbox", { name: /name/ });
@@ -488,14 +575,9 @@ describe("BaseForm", () => {
     });
 
     it("shows submission error on button when onSubmit rejects", async () => {
-      const onSubmit = vi.fn().mockRejectedValue(
-        new Error("Server error"),
-      );
+      const onSubmit = vi.fn().mockRejectedValue(new Error("Server error"));
       render(
-        <BaseForm
-          fieldDefinitions={[makeDef("name")]}
-          onSubmit={onSubmit}
-        />,
+        <BaseForm formContent={[field(makeDef("name"))]} onSubmit={onSubmit} />,
       );
 
       fireEvent.click(screen.getByRole("button", { name: /submit/i }));
@@ -506,14 +588,9 @@ describe("BaseForm", () => {
     });
 
     it("clears submission error when a field is edited", async () => {
-      const onSubmit = vi.fn().mockRejectedValue(
-        new Error("Server error"),
-      );
+      const onSubmit = vi.fn().mockRejectedValue(new Error("Server error"));
       render(
-        <BaseForm
-          fieldDefinitions={[makeDef("name")]}
-          onSubmit={onSubmit}
-        />,
+        <BaseForm formContent={[field(makeDef("name"))]} onSubmit={onSubmit} />,
       );
 
       fireEvent.click(screen.getByRole("button", { name: /submit/i }));
@@ -533,7 +610,7 @@ describe("BaseForm", () => {
     it("shows error count indicator when validation errors exist", async () => {
       render(
         <BaseForm
-          fieldDefinitions={[makeDef("name", { isRequired: true })]}
+          formContent={[field(makeDef("name", { isRequired: true }))]}
           onSubmit={vi.fn()}
         />,
       );
@@ -554,10 +631,7 @@ describe("BaseForm", () => {
           }),
       );
       render(
-        <BaseForm
-          fieldDefinitions={[makeDef("name")]}
-          onSubmit={onSubmit}
-        />,
+        <BaseForm formContent={[field(makeDef("name"))]} onSubmit={onSubmit} />,
       );
 
       fireEvent.click(screen.getByRole("button", { name: /submit/i }));
@@ -571,9 +645,7 @@ describe("BaseForm", () => {
       resolveSubmit!();
 
       await waitFor(() => {
-        expect(
-          screen.getByRole("button", { name: /^submit$/i }),
-        ).toBeDefined();
+        expect(screen.getByRole("button", { name: /^submit$/i })).toBeDefined();
       });
     });
 
@@ -581,7 +653,7 @@ describe("BaseForm", () => {
       const onSubmit = vi.fn();
       render(
         <BaseForm
-          fieldDefinitions={[makeDef("name"), makeDef("email")]}
+          formContent={[field(makeDef("name")), field(makeDef("email"))]}
           onSubmit={onSubmit}
         />,
       );
@@ -593,6 +665,111 @@ describe("BaseForm", () => {
       });
 
       expect(screen.queryByRole("alert")).toBeNull();
+    });
+  });
+
+  describe("sections", () => {
+    it("renders fields inside a section", () => {
+      render(
+        <BaseForm
+          formContent={[
+            {
+              type: "section",
+              key: "s1",
+              definition: {
+                title: "Personal Info",
+                fields: [makeDef("name"), makeDef("email")],
+              },
+            },
+          ]}
+          onSubmit={vi.fn()}
+        />,
+      );
+
+      const sectionTitle = screen.getByText("Personal Info");
+      const sectionRoot = sectionTitle.closest("[class*='osdkFormSectionBox']");
+      expect(sectionRoot).not.toBeNull();
+      expect(sectionRoot!.querySelector("input[id='name']")).not.toBeNull();
+      expect(sectionRoot!.querySelector("input[id='email']")).not.toBeNull();
+    });
+
+    it("shows section error badge for required fields after submit", async () => {
+      render(
+        <BaseForm
+          formContent={[
+            {
+              type: "section",
+              key: "s1",
+              definition: {
+                title: "Required Section",
+                fields: [
+                  makeDef("name", { isRequired: true }),
+                  makeDef("email", { isRequired: true }),
+                ],
+              },
+            },
+          ]}
+          onSubmit={vi.fn()}
+        />,
+      );
+
+      fireEvent.click(screen.getByRole("button", { name: /submit/i }));
+
+      await waitFor(() => {
+        expect(screen.getByText("2 errors")).toBeDefined();
+      });
+    });
+
+    it("renders custom submit button text", () => {
+      render(
+        <BaseForm
+          formContent={[field(makeDef("name"))]}
+          onSubmit={vi.fn()}
+          submitButtonText="Save"
+        />,
+      );
+
+      expect(screen.getByRole("button", { name: "Save" })).toBeDefined();
+    });
+
+    it("defaults to Submit when no custom text is provided", () => {
+      render(
+        <BaseForm formContent={[field(makeDef("name"))]} onSubmit={vi.fn()} />,
+      );
+
+      expect(screen.getByRole("button", { name: /^submit$/i })).toBeDefined();
+    });
+
+    it("submits values from fields inside sections", async () => {
+      const onSubmit = vi.fn();
+
+      render(
+        <BaseForm
+          formContent={[
+            field(makeDef("department")),
+            {
+              type: "section",
+              key: "s1",
+              definition: {
+                title: "Personal",
+                fields: [makeDef("name"), makeDef("email")],
+              },
+            },
+          ]}
+          onSubmit={onSubmit}
+        />,
+      );
+
+      const nameInput = screen.getByRole("textbox", { name: /name/ });
+      fireEvent.change(nameInput, { target: { value: "Alice" } });
+
+      fireEvent.click(screen.getByRole("button", { name: /submit/i }));
+
+      await vi.waitFor(() => {
+        expect(onSubmit).toHaveBeenCalledWith(
+          expect.objectContaining({ name: "Alice" }),
+        );
+      });
     });
   });
 });

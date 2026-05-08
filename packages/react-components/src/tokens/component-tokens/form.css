@@ -1,15 +1,15 @@
 :root {
   /* Form layout */
-  --osdk-form-content-padding: calc(var(--osdk-surface-spacing) * 4);
-  --osdk-form-field-gap: calc(var(--osdk-surface-spacing) * 4);
+  --osdk-form-fields-gap: calc(var(--osdk-surface-spacing) * 1.5);
+  --osdk-form-content-padding-inline: 0;
+  --osdk-form-content-padding-block: 0;
 
   /* Form header */
   --osdk-form-header-border-color: var(--osdk-surface-border-color-default);
   --osdk-form-header-font-size: var(--osdk-typography-size-body-large);
   --osdk-form-header-font-weight: var(--osdk-typography-weight-bold);
   --osdk-form-header-color: var(--osdk-typography-color-default-rest);
-  --osdk-form-header-block-padding: calc(var(--osdk-surface-spacing) * 3);
-  --osdk-form-header-inline-padding: var(--osdk-form-content-padding);
+  --osdk-form-header-block-padding: calc(var(--osdk-surface-spacing) * 2);
 
   /* Form footer */
   --osdk-form-footer-border-color: var(--osdk-surface-border-color-default);
@@ -18,7 +18,7 @@
   --osdk-form-label-font-size: var(--osdk-typography-size-body-medium);
   --osdk-form-label-font-weight: var(--osdk-typography-weight-bold);
   --osdk-form-label-color: var(--osdk-typography-color-default-rest);
-  --osdk-form-label-field-gap: calc(var(--osdk-surface-spacing) * 1.5);
+  --osdk-form-field-gap: var(--osdk-surface-spacing);
 
   /* Label row (label + info icon) */
   --osdk-form-label-row-gap: calc(var(--osdk-surface-spacing) * 1);
@@ -38,6 +38,10 @@
 
   /* Validation errors */
   --osdk-form-error-font-size: var(--osdk-typography-size-body-small);
+  --osdk-form-error-line-height: var(--osdk-typography-line-height-default);
+  --osdk-form-error-reserved-block-size: calc(
+    var(--osdk-form-error-font-size) * var(--osdk-form-error-line-height)
+  );
   --osdk-form-error-color: var(--osdk-typography-color-danger-rest);
 
   /* Form footer error indicator */

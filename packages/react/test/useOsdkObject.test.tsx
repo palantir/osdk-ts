@@ -18,7 +18,7 @@ import type { ObjectTypeDefinition } from "@osdk/api";
 import { act, renderHook } from "@testing-library/react";
 import * as React from "react";
 import { beforeEach, describe, expect, it, vitest } from "vitest";
-import { OsdkContext2 } from "../src/new/OsdkContext2.js";
+import { OsdkContext } from "../src/new/OsdkContext.js";
 import { useOsdkObject } from "../src/new/useOsdkObject.js";
 
 const MockObjectType = {
@@ -36,11 +36,11 @@ describe("useOsdkObject", () => {
     } as any;
 
     return ({ children }: React.PropsWithChildren) => (
-      <OsdkContext2.Provider
+      <OsdkContext.Provider
         value={{ observableClient, devtoolsEnabled: false }}
       >
         {children}
-      </OsdkContext2.Provider>
+      </OsdkContext.Provider>
     );
   };
 

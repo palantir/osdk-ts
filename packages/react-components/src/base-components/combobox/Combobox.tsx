@@ -333,6 +333,7 @@ export const Combobox: {
   List: typeof ComboboxList;
   Item: typeof ComboboxItem;
   ItemIndicator: typeof ComboboxItemIndicator;
+  Collection: typeof BaseUICombobox.Collection;
   Chips: typeof ComboboxChips;
   Chip: typeof ComboboxChip;
   ChipRemove: typeof ComboboxChipRemove;
@@ -351,6 +352,7 @@ export const Combobox: {
   List: ComboboxList,
   Item: ComboboxItem,
   ItemIndicator: ComboboxItemIndicator,
+  Collection: BaseUICombobox.Collection,
   Chips: ComboboxChips,
   Chip: ComboboxChip,
   ChipRemove: ComboboxChipRemove,

@@ -7,7 +7,7 @@ A comprehensive guide for using the FilterList component from `@osdk/react-compo
 Before using FilterList, make sure you have completed the library setup described in the [README](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/README.md#setup), including:
 
 - Installing the required dependencies
-- Wrapping your app with `OsdkProvider2`
+- Wrapping your app with `OsdkProvider`
 - Adding the CSS imports
 
 ## Table of Contents

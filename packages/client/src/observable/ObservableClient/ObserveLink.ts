@@ -47,15 +47,22 @@ export namespace ObserveLinks {
     orderBy?: OrderBy<CompileTimeMetadata<Q>["links"][L]["targetType"]>;
     invalidationMode?: InvalidationMode;
     expectedLength?: number;
+
+    /**
+     * When true, includes all properties of the underlying concrete object type
+     * when the link target is an interface. Has no effect for non-interface
+     * targets.
+     */
+    $includeAllBaseObjectProperties?: boolean;
   }
 
   export interface CallbackArgs<
     T extends ObjectTypeDefinition | InterfaceDefinition,
   > {
-    resolvedList: Osdk.Instance<T>[] | undefined;
+    resolvedList: Osdk.Instance<T, "$allBaseProperties">[] | undefined;
     linkedObjectsBySourcePrimaryKey: ReadonlyMap<
       string | number,
-      ReadonlyArray<Osdk.Instance<T>>
+      ReadonlyArray<Osdk.Instance<T, "$allBaseProperties">>
     >;
     isOptimistic: boolean;
     lastUpdated: number;

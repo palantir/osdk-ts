@@ -21,13 +21,13 @@ import type {
   QueryDefinition,
   WhereClause,
 } from "@osdk/api";
+import { useOsdkClient } from "@osdk/react";
 import { ObjectTable } from "@osdk/react-components/experimental/object-table";
 import type {
   CellEditInfo,
   ColumnDefinition,
   ObjectTableProps,
 } from "@osdk/react-components/experimental/object-table";
-import { useOsdkClient } from "@osdk/react/experimental";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useCallback, useState } from "react";
 import { fn } from "storybook/test";
@@ -106,6 +106,15 @@ const meta: Meta<EmployeeTableProps> = {
       defaultValue: "manual",
       table: {
         defaultValue: { summary: "manual" },
+      },
+    },
+    showEditFooter: {
+      description:
+        "Whether to render the bottom edit footer. Defaults to `true`. Ignored when `editMode` is manual or `onSubmitEdits` is provided — the footer is always shown in that case.",
+      control: "boolean",
+      defaultValue: true,
+      table: {
+        defaultValue: { summary: "true" },
       },
     },
     defaultOrderBy: {
@@ -1318,7 +1327,7 @@ export const EditableTable: Story = {
         editable: true,
         editFieldConfig: {
           fieldComponent: "DROPDOWN",
-          fieldComponentProps: {
+          getFieldComponentProps: () => ({
             items: [
               "Software Engineer",
               "Senior Software Engineer",
@@ -1329,7 +1338,7 @@ export const EditableTable: Story = {
             ],
             isSearchable: true,
             placeholder: "Search job titles…",
-          },
+          }),
         },
       },
       {
@@ -1337,7 +1346,7 @@ export const EditableTable: Story = {
         editable: true,
         editFieldConfig: {
           fieldComponent: "DROPDOWN",
-          fieldComponentProps: {
+          getFieldComponentProps: () => ({
             items: [
               "Engineering",
               "Product",
@@ -1347,26 +1356,35 @@ export const EditableTable: Story = {
               "Finance",
               "Human Resources",
             ],
-          },
+          }),
         },
       },
       {
         locator: { type: "property", id: "firstInternStartDate" },
         editable: true,
+        renderCell: (object: Osdk.Instance<Employee>) => {
+          return (
+            <div>
+              {object.firstInternStartDate
+                ? new Date(object.firstInternStartDate).toISOString()
+                : "No value"}
+            </div>
+          );
+        },
       },
       {
         locator: { type: "property", id: "firstFullTimeStartDate" },
         editable: true,
         editFieldConfig: {
           fieldComponent: "DATE_PICKER",
-          fieldComponentProps: {
+          getFieldComponentProps: () => ({
             showTime: false,
             placeholder: "Select date...",
-          },
+          }),
         },
       },
     ],
-    editMode: "always" as const,
+    editMode: "manual" as const,
     onCellValueChanged: fn(),
   } as EmployeeTableProps,
   parameters: {
@@ -1386,7 +1404,7 @@ export const EditableTable: Story = {
     editable: true,
     editFieldConfig: {
       fieldComponent: "DROPDOWN",
-      fieldComponentProps: {
+      getFieldComponentProps: () => ({
         items: [
           "Software Engineer",
           "Senior Software Engineer",
@@ -1397,7 +1415,7 @@ export const EditableTable: Story = {
         ],
         isSearchable: true,
         placeholder: "Search job titles…",
-      },
+      }),
     },
   },
   {
@@ -1405,7 +1423,7 @@ export const EditableTable: Story = {
     editable: true,
     editFieldConfig: {
       fieldComponent: "DROPDOWN",
-      fieldComponentProps: {
+      getFieldComponentProps: () => ({
         items: [
           "Engineering",
           "Product",
@@ -1415,7 +1433,7 @@ export const EditableTable: Story = {
           "Finance",
           "Human Resources",
         ],
-      },
+      }),
     },
   },
   // Example where the field is inferred from datatype
@@ -1428,10 +1446,10 @@ export const EditableTable: Story = {
     editable: true,
     editFieldConfig: {
       fieldComponent: "DATE_PICKER",
-      fieldComponentProps: {
+      getFieldComponentProps: () => ({
         showTime: false,
         placeholder: "Select date...",
-      },
+      }),
     },
   },
 ];
@@ -1468,8 +1486,9 @@ return (
             borderRadius: "4px",
           }}
         >
-          Try changing edit mode to "manual" to enable inline editing with an
-          Edit Table button.
+          Try changing showEditFooter to false to hide the edit footer bar.
+          Change edit mode to "manual" to enable inline editing with an Edit
+          Table button.
         </div>
         {lastEdit != null && (
           <div
@@ -1605,7 +1624,7 @@ export const EditableWithValidation: Story = {
         editable: true,
         editFieldConfig: {
           fieldComponent: "DROPDOWN",
-          fieldComponentProps: {
+          getFieldComponentProps: () => ({
             items: [
               "Software Engineer",
               "Senior Software Engineer",
@@ -1616,7 +1635,7 @@ export const EditableWithValidation: Story = {
             ],
             isSearchable: true,
             placeholder: "Search job titles…",
-          },
+          }),
         },
         validateEdit: async (value: unknown) => {
           return value ? undefined : "Job title is required";
@@ -1627,7 +1646,7 @@ export const EditableWithValidation: Story = {
         editable: true,
         editFieldConfig: {
           fieldComponent: "DROPDOWN",
-          fieldComponentProps: {
+          getFieldComponentProps: () => ({
             items: [
               "Engineering",
               "Product",
@@ -1637,7 +1656,7 @@ export const EditableWithValidation: Story = {
               "Finance",
               "Human Resources",
             ],
-          },
+          }),
         },
       },
       {
@@ -1645,10 +1664,10 @@ export const EditableWithValidation: Story = {
         editable: true,
         editFieldConfig: {
           fieldComponent: "DATE_PICKER",
-          fieldComponentProps: {
+          getFieldComponentProps: () => ({
             showTime: false,
             placeholder: "Select date...",
-          },
+          }),
         },
         validateEdit: async (value: unknown) => {
           if (!value || isNaN(Date.parse(value as string))) {
@@ -1702,7 +1721,7 @@ export const EditableWithValidation: Story = {
     editable: true,
     editFieldConfig: {
       fieldComponent: "DROPDOWN",
-      fieldComponentProps: {
+      getFieldComponentProps: () => ({
         items: [
           "Software Engineer",
           "Senior Software Engineer",
@@ -1713,7 +1732,7 @@ export const EditableWithValidation: Story = {
         ],
         isSearchable: true,
         placeholder: "Search job titles…",
-      },
+      }),
     },
     validateEdit: async (value: unknown) => {
       return value ? undefined : "Job title is required";
@@ -1724,7 +1743,7 @@ export const EditableWithValidation: Story = {
     editable: true,
     editFieldConfig: {
       fieldComponent: "DROPDOWN",
-      fieldComponentProps: {
+      getFieldComponentProps: () => ({
         items: [
           "Engineering",
           "Product",
@@ -1734,7 +1753,7 @@ export const EditableWithValidation: Story = {
           "Finance",
           "Human Resources",
         ],
-      },
+      }),
     },
   },
 ];
@@ -1774,4 +1793,179 @@ return (
       <ObjectTable {...args} objectType={Employee} />
     </div>
   ),
+};
+
+export const PerRowEditableAndFieldConfig: Story = {
+  args: {
+    objectType: Employee,
+    columnDefinitions: [
+      { locator: { type: "property", id: "fullName" } },
+      {
+        locator: { type: "property", id: "jobTitle" },
+        editable: (rowData) => {
+          const jobTitle = rowData.jobTitle ?? "";
+          return jobTitle === "Senior Product Manager";
+        },
+      },
+      {
+        locator: { type: "property", id: "department" },
+        editable: true,
+        editFieldConfig: {
+          fieldComponent: "DROPDOWN",
+          getFieldComponentProps: (employee) => ({
+            items: employee.department === "Operations"
+              ? [
+                "Sales",
+                "Marketing",
+              ]
+              : [
+                "Sales",
+                "Marketing",
+                "Finance",
+                "Human Resources",
+              ],
+          }),
+        },
+      },
+    ],
+    editMode: "always" as const,
+    onCellValueChanged: fn(),
+  } as EmployeeTableProps,
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Demonstrates per-row configuration with `editable` as a predicate function and dynamic `getFieldComponentProps` that computes dropdown items from the row's data. "
+          + "jobTitle is only editable for 'Senior Product Manager' rows. Department uses a dropdown that shows only 2 options for Operations rows",
+      },
+      source: {
+        code: `const columnDefinitions = [
+  { locator: { type: "property", id: "fullName" } },
+  {
+    locator: { type: "property", id: "jobTitle" },
+    // Only allow editing for Senior Product Manager
+    editable: (rowData) => {
+      const jobTitle = String(rowData.jobTitle ?? "");
+      return jobTitle === "Senior Product Manager";
+    },
+  },
+  {
+    locator: { type: "property", id: "department" },
+    editable: true,
+    editFieldConfig: {
+      fieldComponent: "DROPDOWN",
+      // Dropdown items depend on the row's current department
+      getFieldComponentProps: (employee) => ({
+        items: employee.department === "Engineering"
+          ? ["Engineering", "Product", "Design"]
+          : ["Sales", "Marketing", "Finance", "Human Resources"],
+      }),
+    },
+  },
+];
+
+return (
+  <ObjectTable
+    objectType={Employee}
+    columnDefinitions={columnDefinitions}
+    editMode="always"
+  />
+);`,
+      },
+    },
+  },
+  render: (args) => (
+    <div className="object-table-container" style={{ height: "600px" }}>
+      <div
+        style={{
+          padding: "12px",
+          backgroundColor: "#fff3cd",
+          marginBottom: "8px",
+          borderRadius: "4px",
+        }}
+      >
+        JobTitle is only editable for "Senior Product Manager" rows. Department
+        dropdown shows only 2 options for Operations rows.
+      </div>
+      <ObjectTable {...args} />
+    </div>
+  ),
+};
+
+export const RowAttributesForStyling: Story = {
+  args: {
+    objectType: Employee,
+    columnDefinitions: [
+      { locator: { type: "property", id: "fullName" } },
+      { locator: { type: "property", id: "jobTitle" } },
+      { locator: { type: "property", id: "department" } },
+      { locator: { type: "property", id: "locationCity" } },
+    ],
+  } as EmployeeTableProps,
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Demonstrates using `getRowAttributes` to set data attributes on rows and a `className` on the table to scope CSS overrides via the data attribute selector. "
+          + "New York employees get a light blue background through the `[data-highlight-row=\"true\"]` CSS selector scoped under the table's className.",
+      },
+      source: {
+        code: `/* CSS (imported stylesheet):
+.customTableStyling {
+  tr[data-highlight-row="true"] {
+    --osdk-table-row-bg-default: #f0f8ff;
+    --osdk-table-row-bg-alternate: #e8f4ff;
+    --osdk-table-row-bg-hover: #e0f0ff;
+  }
+}
+*/
+
+const getRowAttributes = useCallback((rowData) => ({
+  "data-highlight-row": rowData.locationCity === "New York" ? "true" : undefined,
+}), []);
+
+return (
+  <ObjectTable
+    objectType={Employee}
+    columnDefinitions={columnDefinitions}
+    getRowAttributes={getRowAttributes}
+    className="customTableStyling"
+  />
+);`,
+      },
+    },
+  },
+  render: (args) => {
+    const getRowAttributes = useCallback(
+      (rowData: Osdk.Instance<typeof Employee>) => ({
+        "data-highlight-row": rowData.locationCity === "New York"
+          ? "true"
+          : undefined,
+      }),
+      [],
+    );
+
+    return (
+      <div className="object-table-container" style={{ height: "600px" }}>
+        <div
+          style={{
+            padding: "12px",
+            backgroundColor: "#fff3cd",
+            marginBottom: "8px",
+            borderRadius: "4px",
+          }}
+        >
+          <strong>Row attributes + className for CSS override:</strong>{" "}
+          New York employees have a light blue background via{" "}
+          <code>tr[data-highlight-row="true"]</code> scoped under{" "}
+          <code>.customTableStyling</code>.
+        </div>
+        <ObjectTable
+          {...args}
+          getRowAttributes={getRowAttributes}
+          className="customTableStyling"
+        />
+      </div>
+    );
+  },
 };

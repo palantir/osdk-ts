@@ -26,10 +26,10 @@ import type {
 } from "@osdk/api";
 import {
   type FunctionQueryParams,
-  useOsdkClient2,
+  useOsdkClient,
   useOsdkFunctions,
   type UseOsdkFunctionsResult,
-} from "@osdk/react/experimental";
+} from "@osdk/react";
 import { chunk } from "lodash-es";
 import { useMemo, useRef } from "react";
 import type {
@@ -91,7 +91,7 @@ export function useFunctionColumnsData<
     pageSize = DEFAULT_PAGE_SIZE,
   }: UseFunctionColumnsDataOptions<Q, RDPs, FunctionColumns>,
 ): FunctionColumnData {
-  const client = useOsdkClient2();
+  const client = useOsdkClient();
   const prevDataRef = useRef<FunctionColumnData>({});
 
   const isObjectTypeDefinition = objectOrInterfaceType

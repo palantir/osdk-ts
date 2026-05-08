@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { CacheSnapshot } from "@osdk/client/unstable-do-not-use";
+import type { CacheSnapshot } from "@osdk/client/observable";
 import type {
   ComponentHookBinding,
   ComponentQueryRegistry,

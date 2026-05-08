@@ -17,6 +17,7 @@
 /* cspell:disable */
 
 import type { Media } from "@osdk/api";
+import { useOsdkObject } from "@osdk/react";
 import type {
   PdfTextHighlightEvent,
   PdfViewerMediaProps,
@@ -26,7 +27,6 @@ import {
   BasePdfViewer,
   PdfViewer,
 } from "@osdk/react-components/experimental/pdf-viewer";
-import { useOsdkObject } from "@osdk/react/experimental";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { delay, http } from "msw";
 import { fn } from "storybook/test";

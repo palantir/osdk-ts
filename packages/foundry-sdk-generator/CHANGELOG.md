@@ -1,5 +1,58 @@
 # @osdk/foundry-sdk-generator
 
+## 2.16.0
+
+### Minor Changes
+
+- 56c5630: Drop redundant `--config $(find-up dprint.json)` from `lint`, `fix-lint`, and `format` scripts. dprint already auto-discovers `dprint.json` by walking up from cwd; the substitution was a no-op anyway since `find-up` is an npm package, not a CLI. Also fix the `uploadMediaOntologyEdits` documentation example so its `// @ts-ignore` survives dprint reformatting (the broken `format` step had been masking this).
+
+### Patch Changes
+
+- Updated dependencies [56c5630]
+- Updated dependencies [ebc5f0c]
+- Updated dependencies [17d7ba2]
+  - @osdk/api@2.16.0
+  - @osdk/client@2.16.0
+  - @osdk/client.unstable@2.16.0
+  - @osdk/client.unstable.tpsa@0.13.0
+  - @osdk/generator@2.16.0
+  - @osdk/generator-utils@2.16.0
+  - @osdk/shared.client.impl@1.12.0
+
+## 2.15.0
+
+### Patch Changes
+
+- Updated dependencies [203331e]
+  - @osdk/client@2.15.0
+  - @osdk/api@2.15.0
+  - @osdk/client.unstable@2.15.0
+  - @osdk/generator-utils@2.15.0
+  - @osdk/generator@2.15.0
+
+## 2.14.0
+
+### Minor Changes
+
+- bab1421: Add check for bundling to ensure entry points work even if dev deps change.
+
+### Patch Changes
+
+- Updated dependencies [f12977d]
+- Updated dependencies [eb36e21]
+- Updated dependencies [d892397]
+- Updated dependencies [c5a6047]
+- Updated dependencies [45be476]
+- Updated dependencies [bab1421]
+- Updated dependencies [2f40eee]
+- Updated dependencies [20e9678]
+  - @osdk/client@2.14.0
+  - @osdk/client.unstable.tpsa@0.12.0
+  - @osdk/client.unstable@2.14.0
+  - @osdk/api@2.14.0
+  - @osdk/generator-utils@2.14.0
+  - @osdk/generator@2.14.0
+
 ## 2.13.0
 
 ### Patch Changes

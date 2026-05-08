@@ -28,7 +28,9 @@ declare namespace Aliases {
         custom,
         Custom,
         model,
-        Model
+        Model,
+        source,
+        Source
     }
 }
 
@@ -232,6 +234,15 @@ export interface RidLinkTarget {
     	// (undocumented)
     type: "rid";
 }
+
+// @public (undocumented)
+interface Source {
+    	// (undocumented)
+    rid: string;
+}
+
+// @public (undocumented)
+function source(alias: string): Source;
 
 export { ThreeDimensionalAggregation }
 

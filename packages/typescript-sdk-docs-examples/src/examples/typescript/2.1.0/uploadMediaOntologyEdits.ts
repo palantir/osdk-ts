@@ -20,20 +20,24 @@
 // Example: uploadMediaOntologyEdits
 
 import type { Client } from "@osdk/client";
-import { Employee } from "../../../generatedNoCheck/index.js";
 import type { Edits } from "@osdk/functions";
 import { createEditBatch, uploadMedia } from "@osdk/functions";
+import { Employee } from "../../../generatedNoCheck/index.js";
 
 async function createObject(client: Client): Promise<Edits.Object<Employee>[]> {
-    const batch = createEditBatch<Edits.Object<Employee>>(client);
-    
-    const blob = new Blob(["Hello, world"], { type: "text/plain" });
-    const mediaReference = await uploadMedia(client, { data: blob, fileName: "foundryFile.txt" });
+  const batch = createEditBatch<Edits.Object<Employee>>(client);
 
-    // @ts-ignore 
-    batch.create(Employee, { myMediaProperty: mediaReference, /* Other properties... */ });
+  const blob = new Blob(["Hello, world"], { type: "text/plain" });
+  const mediaReference = await uploadMedia(client, {
+    data: blob,
+    fileName: "foundryFile.txt",
+  });
 
-    return batch.getEdits();
+  const props = { myMediaProperty: mediaReference /* Other properties... */ };
+  // @ts-ignore
+  batch.create(Employee, props);
+
+  return batch.getEdits();
 }
 
 export default createObject;

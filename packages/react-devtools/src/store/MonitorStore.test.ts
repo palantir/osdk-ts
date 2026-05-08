@@ -28,12 +28,12 @@ vi.mock("@osdk/client", () => ({
   createClient: vi.fn(() => ({})),
 }));
 
-vi.mock("@osdk/client/unstable-do-not-use", () => ({
+vi.mock("@osdk/client/observable", () => ({
   createObservableClient: vi.fn(() => ({})),
 }));
 
 import { createClient } from "@osdk/client";
-import { createObservableClient } from "@osdk/client/unstable-do-not-use";
+import { createObservableClient } from "@osdk/client/observable";
 import { getMonitorStore, MonitorStore } from "./MonitorStore.js";
 
 function createMockObservableClient() {

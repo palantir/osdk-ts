@@ -20,7 +20,7 @@ import {
   FilterList,
 } from "@osdk/react-components/experimental/filter-list";
 import "@osdk/react-components/styles.css";
-import { useOsdkObjects } from "@osdk/react/experimental";
+import { useOsdkObjects } from "@osdk/react";
 import { useState } from "react";
 
 import { List } from "../../components/List.js";

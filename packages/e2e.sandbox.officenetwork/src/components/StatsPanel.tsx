@@ -1,4 +1,4 @@
-import { useOsdkFunction } from "@osdk/react/experimental";
+import { useOsdkFunction } from "@osdk/react";
 import { fooEa } from "../generatedNoCheck2/index.js";
 import { LoadingIndicator } from "./LoadingIndicator.js";
 

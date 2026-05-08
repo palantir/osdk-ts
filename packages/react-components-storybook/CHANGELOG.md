@@ -1,5 +1,32 @@
 # @osdk/react-components-storybook
 
+## 0.10.0
+
+### Minor Changes
+
+- 56c5630: Drop redundant `--config $(find-up dprint.json)` from `lint`, `fix-lint`, and `format` scripts. dprint already auto-discovers `dprint.json` by walking up from cwd; the substitution was a no-op anyway since `find-up` is an npm package, not a CLI. Also fix the `uploadMediaOntologyEdits` documentation example so its `// @ts-ignore` survives dprint reformatting (the broken `format` step had been masking this).
+
+### Patch Changes
+
+- Updated dependencies [56c5630]
+  - @osdk/faux@0.13.0
+
+## 0.9.0
+
+### Patch Changes
+
+- @osdk/faux@0.12.0
+
+## 0.8.0
+
+### Minor Changes
+
+- 5dc557e: Add helperText tooltip using Popover and widen type to React.ReactNode
+
+### Patch Changes
+
+- @osdk/faux@0.11.0
+
 ## 0.7.0
 
 ### Minor Changes

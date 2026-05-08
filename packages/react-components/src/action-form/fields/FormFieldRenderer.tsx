@@ -20,6 +20,7 @@ import { FormField } from "../FormField.js";
 import {
   type DateRange,
   EMPTY_RANGE,
+  type PortalContainer,
   type RendererFieldDefinition,
 } from "../FormFieldApi.js";
 import { CustomField } from "./CustomField.js";
@@ -31,6 +32,7 @@ import { NumberInputField } from "./NumberInputField.js";
 import { ObjectSelectField } from "./ObjectSelectField.js";
 import { ObjectSetField } from "./ObjectSetField.js";
 import { RadioButtonsField } from "./RadioButtonsField.js";
+import { SwitchField } from "./SwitchField.js";
 import { TextAreaField } from "./TextAreaField.js";
 import { TextInputField } from "./TextInputField.js";
 
@@ -40,6 +42,7 @@ export interface FormFieldRendererProps {
   onFieldValueChange: (value: unknown) => void;
   onBlur: (e: React.FocusEvent<HTMLDivElement>) => void;
   error: string | undefined;
+  portalContainer?: PortalContainer;
 }
 
 export const FormFieldRenderer: React.FC<FormFieldRendererProps> = memo(
@@ -49,6 +52,7 @@ export const FormFieldRenderer: React.FC<FormFieldRendererProps> = memo(
     onFieldValueChange,
     onBlur,
     error,
+    portalContainer,
   }: FormFieldRendererProps): React.ReactElement {
     const { label, isRequired, helperText, helperTextPlacement } =
       fieldDefinition;
@@ -68,6 +72,7 @@ export const FormFieldRenderer: React.FC<FormFieldRendererProps> = memo(
           value,
           onFieldValueChange,
           error,
+          portalContainer,
         )}
       </FormField>
     );
@@ -79,6 +84,7 @@ function renderFieldComponent(
   value: unknown,
   onChange: (value: unknown) => void,
   error: string | undefined,
+  portalContainer: PortalContainer | undefined,
 ): React.ReactElement {
   switch (fieldDefinition.fieldComponent) {
     case "DATE_RANGE_INPUT":
@@ -89,6 +95,10 @@ function renderFieldComponent(
           onChange={onChange}
           placeholderStart={fieldDefinition.placeholder}
           {...fieldDefinition.fieldComponentProps}
+          portalContainer={resolvePortalContainer(
+            fieldDefinition.fieldComponentProps,
+            portalContainer,
+          )}
         />
       );
     case "TEXT_INPUT":
@@ -122,6 +132,10 @@ function renderFieldComponent(
           placeholder={fieldDefinition.placeholder}
           error={error}
           {...fieldDefinition.fieldComponentProps}
+          portalContainer={resolvePortalContainer(
+            fieldDefinition.fieldComponentProps,
+            portalContainer,
+          )}
         />
       );
     }
@@ -135,6 +149,10 @@ function renderFieldComponent(
           onChange={onChange}
           error={error}
           {...fieldDefinition.fieldComponentProps}
+          portalContainer={resolvePortalContainer(
+            fieldDefinition.fieldComponentProps,
+            portalContainer,
+          )}
         />
       );
     case "RADIO_BUTTONS":
@@ -142,6 +160,17 @@ function renderFieldComponent(
         <RadioButtonsField
           id={fieldDefinition.fieldKey}
           value={value}
+          onChange={onChange}
+          error={error}
+          {...fieldDefinition.fieldComponentProps}
+        />
+      );
+    case "SWITCH":
+      return (
+        <SwitchField
+          id={fieldDefinition.fieldKey}
+          label={fieldDefinition.label}
+          value={!!value}
           onChange={onChange}
           error={error}
           {...fieldDefinition.fieldComponentProps}
@@ -188,6 +217,10 @@ function renderFieldComponent(
           placeholder={fieldDefinition.placeholder}
           error={error}
           {...fieldDefinition.fieldComponentProps}
+          portalContainer={resolvePortalContainer(
+            fieldDefinition.fieldComponentProps,
+            portalContainer,
+          )}
         />
       );
     case "OBJECT_SET":
@@ -200,6 +233,17 @@ function renderFieldComponent(
     default:
       return assertUnreachableFieldComponent(fieldDefinition);
   }
+}
+
+function resolvePortalContainer(
+  fieldComponentProps: { portalContainer?: PortalContainer },
+  formPortalContainer: PortalContainer | undefined,
+): PortalContainer | undefined {
+  // A field-level value, including null, is an explicit override. That lets a
+  // single field opt out of a form-level dialog portal when needed.
+  return Object.hasOwn(fieldComponentProps, "portalContainer")
+    ? fieldComponentProps.portalContainer
+    : formPortalContainer;
 }
 
 function coerceToDateRange(value: unknown): DateRange {

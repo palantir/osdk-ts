@@ -1,12 +1,13 @@
-import type { DerivedProperty, Osdk } from "@osdk/api";
+import type { DerivedProperty, Osdk, PropertyKeys } from "@osdk/api";
+import { useOsdkClient } from "@osdk/react";
 import type { ColumnDefinition } from "@osdk/react-components/experimental/object-table";
 import { ObjectTable } from "@osdk/react-components/experimental/object-table";
-import { useOsdkClient } from "@osdk/react/experimental";
 import React, { useCallback } from "react";
 import {
   Employee,
   getEmployeeDaysSinceStart,
 } from "../../generatedNoCheck2/index.js";
+import "./EmployeesTable.css";
 
 type RDPs = {
   managerName: "string";
@@ -111,6 +112,22 @@ export function EmployeesTable() {
     [],
   );
 
+  const getRowAttributes = useCallback(
+    (
+      employee: Osdk.Instance<
+        Employee,
+        "$allBaseProperties",
+        PropertyKeys<Employee>,
+        RDPs
+      >,
+    ): Record<string, string | undefined> => ({
+      "data-highlight-row": employee.jobTitle === "Content Manager"
+        ? "true"
+        : undefined,
+    }),
+    [],
+  );
+
   const client = useOsdkClient();
 
   const os = client(Employee);
@@ -132,7 +149,8 @@ export function EmployeesTable() {
           direction: "desc",
         }]}
         onSubmitEdits={handleSubmitEdits}
-        editMode="manual"
+        getRowAttributes={getRowAttributes}
+        className={"customEmployeesTable"}
       />
     </div>
   );

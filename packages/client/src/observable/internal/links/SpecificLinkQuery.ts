@@ -45,6 +45,7 @@ import type { Store } from "../Store.js";
 import type { SubjectPayload } from "../SubjectPayload.js";
 import { tombstone } from "../tombstone.js";
 import {
+  INCLUDE_ALL_BASE_PROPERTIES_IDX as LINK_INCLUDE_ALL_BASE_PROPERTIES_IDX,
   SELECT_IDX as LINK_SELECT_IDX,
   type SpecificLinkCacheKey,
 } from "./SpecificLinkCacheKey.js";
@@ -133,6 +134,12 @@ export class SpecificLinkQuery extends BaseListQuery<
     return undefined;
   }
 
+  public override get includeAllBaseObjectProperties(): boolean {
+    return (
+      this.cacheKey.otherKeys[LINK_INCLUDE_ALL_BASE_PROPERTIES_IDX] === true
+    );
+  }
+
   /**
    * Implements fetchPageData from the BaseCollectionQuery template method pattern
    */
@@ -143,9 +150,13 @@ export class SpecificLinkQuery extends BaseListQuery<
     const ontologyProvider = client[additionalContext].ontologyProvider;
     const isInterface = this.#sourceTypeKind === "interface";
 
-    if (this.#orderBy && Object.keys(this.#orderBy).length > 0) {
-      let targetTypeApiName: string;
-
+    // Resolve the link target's apiName + kind once if needed for sorting or
+    // for gating the $includeAllBaseObjectProperties param. The ontology
+    // provider caches its lookups, so calling it here is cheap.
+    const hasOrderBy = this.#orderBy
+      && Object.keys(this.#orderBy).length > 0;
+    let target: { apiName: string; kind: "object" | "interface" } | undefined;
+    if (hasOrderBy || this.includeAllBaseObjectProperties) {
       if (isInterface) {
         const interfaceMetadata = await ontologyProvider.getInterfaceDefinition(
           this.#sourceApiName,
@@ -156,7 +167,10 @@ export class SpecificLinkQuery extends BaseListQuery<
             `Missing link definition for link '${this.#linkName}' on interface '${this.#sourceApiName}'`,
           );
         }
-        targetTypeApiName = linkDef.targetTypeApiName;
+        target = {
+          apiName: linkDef.targetTypeApiName,
+          kind: linkDef.targetType,
+        };
       } else {
         const objectMetadata = await ontologyProvider.getObjectDefinition(
           this.#sourceApiName,
@@ -167,11 +181,14 @@ export class SpecificLinkQuery extends BaseListQuery<
             `Missing link definition or targetType for link '${this.#linkName}' on object type '${this.#sourceApiName}'`,
           );
         }
-        targetTypeApiName = linkDef.targetType;
+        // Object link defs always target an object type.
+        target = { apiName: linkDef.targetType, kind: "object" };
       }
+    }
 
+    if (target && hasOrderBy) {
       this.sortingStrategy = new OrderBySortingStrategy(
-        targetTypeApiName,
+        target.apiName,
         this.#orderBy,
       );
     }
@@ -226,6 +243,7 @@ export class SpecificLinkQuery extends BaseListQuery<
       $orderBy?: Record<string, "asc" | "desc" | undefined>;
       $where?: Record<string, unknown>;
       $select?: readonly string[];
+      $includeAllBaseObjectProperties?: true;
     } = {
       $pageSize: this.getEffectiveFetchPageSize(),
       $nextPageToken: this.nextPageToken,
@@ -242,6 +260,12 @@ export class SpecificLinkQuery extends BaseListQuery<
 
     if (this.#whereClause && Object.keys(this.#whereClause).length > 0) {
       queryParams.$where = this.#whereClause;
+    }
+
+    // Only forward $includeAllBaseObjectProperties when the link target is an
+    // interface — for object targets the flag is a no-op on the server.
+    if (target?.kind === "interface") {
+      queryParams.$includeAllBaseObjectProperties = true;
     }
 
     const response = await linkQuery.fetchPage(queryParams);

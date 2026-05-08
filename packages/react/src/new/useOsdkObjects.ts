@@ -25,11 +25,11 @@ import type {
   SimplePropertyDef,
   WhereClause,
 } from "@osdk/api";
-import type { ObserveObjectsCallbackArgs } from "@osdk/client/unstable-do-not-use";
+import type { ObserveObjectsCallbackArgs } from "@osdk/client/observable";
 import React from "react";
 import { extractPayloadError, isPayloadLoading } from "./hookUtils.js";
 import { devToolsMetadata, makeExternalStore } from "./makeExternalStore.js";
-import { OsdkContext2 } from "./OsdkContext2.js";
+import { OsdkContext } from "./OsdkContext.js";
 
 export interface UseOsdkObjectsOptions<
   T extends ObjectOrInterfaceDefinition,
@@ -277,7 +277,7 @@ export function useOsdkObjects<
   | UseOsdkListResult<LinkedType<Q, LinkNames<Q>>, {}>
   | UseOsdkListResult<LinkedType<Q, LinkNames<Q>>, {}, "$rid">
 {
-  const { observableClient } = React.useContext(OsdkContext2);
+  const { observableClient } = React.useContext(OsdkContext);
 
   const {
     pageSize,

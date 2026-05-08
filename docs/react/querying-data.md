@@ -8,18 +8,13 @@ This guide covers all the ways to fetch data from the server using OSDK React ho
 
 ## useOsdkObjects
 
-_Experimental - import from `@osdk/react/experimental`_
-
 Retrieve and observe collections of objects with automatic cache management.
 
 ### Basic Usage
 
 ```tsx
 import { Todo } from "@my/osdk";
-import {
-  type UseOsdkListResult,
-  useOsdkObjects,
-} from "@osdk/react/experimental";
+import { type UseOsdkListResult, useOsdkObjects } from "@osdk/react";
 
 function TodoList() {
   const {
@@ -65,7 +60,7 @@ Fetch specific objects by their RIDs:
 
 ```tsx
 import { Employee } from "@my/osdk";
-import { useOsdkObjects } from "@osdk/react/experimental";
+import { useOsdkObjects } from "@osdk/react";
 
 function SelectedEmployees({ selectedRids }: { selectedRids: string[] }) {
   const { data, isLoading } = useOsdkObjects(Employee, {
@@ -182,7 +177,7 @@ Fuzzy search is unavailable for `$containsAllTermsInOrder` because phrase matchi
 
 ```tsx
 import { Article } from "@my/osdk";
-import { useOsdkObjects } from "@osdk/react/experimental";
+import { useOsdkObjects } from "@osdk/react";
 import { useState } from "react";
 
 function ArticleSearch() {
@@ -274,7 +269,7 @@ Control when a query executes:
 
 ```tsx
 import { Todo } from "@my/osdk";
-import { useOsdkObjects } from "@osdk/react/experimental";
+import { useOsdkObjects } from "@osdk/react";
 import { useState } from "react";
 
 function ConditionalTodoFetch() {
@@ -304,7 +299,7 @@ Enable WebSocket-based real-time updates:
 
 ```tsx
 import { Todo } from "@my/osdk";
-import { useOsdkObjects } from "@osdk/react/experimental";
+import { useOsdkObjects } from "@osdk/react";
 
 function LiveTodoList() {
   const { data, isLoading } = useOsdkObjects(Todo, {
@@ -350,7 +345,7 @@ Find objects matching multiple where clauses:
 
 ```tsx
 import { Employee } from "@my/osdk";
-import { useOsdkObjects } from "@osdk/react/experimental";
+import { useOsdkObjects } from "@osdk/react";
 
 function EmployeesIntersection() {
   const { data, isLoading } = useOsdkObjects(Employee, {
@@ -383,7 +378,7 @@ Traverse relationships and return linked objects:
 
 ```tsx
 import { Employee } from "@my/osdk";
-import { useOsdkObjects } from "@osdk/react/experimental";
+import { useOsdkObjects } from "@osdk/react";
 
 function ManagerReports() {
   const { data, isLoading } = useOsdkObjects(Employee, {
@@ -441,8 +436,6 @@ still fetch data normally but won't receive real-time updates.
 
 ## useOsdkObject
 
-_Experimental - import from `@osdk/react/experimental`_
-
 Retrieve and observe a single object.
 
 ### Tracking an Existing Instance
@@ -451,7 +444,7 @@ Pass an object instance to track its loading and optimistic state:
 
 ```tsx
 import { Todo } from "@my/osdk";
-import { useOsdkObject } from "@osdk/react/experimental";
+import { useOsdkObject } from "@osdk/react";
 
 function TodoView({ todo }: { todo: Todo.OsdkInstance }) {
   const { object, isLoading, isOptimistic, error } = useOsdkObject(todo);
@@ -473,7 +466,7 @@ Fetch an object by its type and primary key:
 
 ```tsx
 import { Todo } from "@my/osdk";
-import { useOsdkObject } from "@osdk/react/experimental";
+import { useOsdkObject } from "@osdk/react";
 
 function TodoLoader({ todoId }: { todoId: string }) {
   const { object, isLoading, error } = useOsdkObject(Todo, todoId);
@@ -522,15 +515,13 @@ const { object } = useOsdkObject(Todo, todoId, false);
 
 ## useLinks
 
-_Experimental - import from `@osdk/react/experimental`_
-
 Observe and navigate relationships between objects.
 
 ### Basic Usage
 
 ```tsx
 import { Employee } from "@my/osdk";
-import { useLinks } from "@osdk/react/experimental";
+import { useLinks } from "@osdk/react";
 
 function EmployeeReports({ employee }: { employee: Employee.OsdkInstance }) {
   const { links, isLoading, fetchMore, hasMore } = useLinks(
@@ -583,7 +574,7 @@ function TeamMembers({ employees }: { employees: Employee.OsdkInstance[] }) {
 
 ```tsx
 import { Employee } from "@my/osdk";
-import { useLinks } from "@osdk/react/experimental";
+import { useLinks } from "@osdk/react";
 import { useState } from "react";
 
 function OptionalReportsList(
@@ -648,7 +639,7 @@ const { links } = useLinks(employee, "reports", {
 
 ## useOsdkClient
 
-_Stable - available from both `@osdk/react` and `@osdk/react/experimental`_
+_Stable - available from both `@osdk/react` and `@osdk/react`_
 
 Access the OSDK client directly for custom queries.
 
@@ -678,7 +669,7 @@ All hooks return an `error` field. A basic pattern:
 
 ```tsx
 import { Todo } from "@my/osdk";
-import { useOsdkObjects } from "@osdk/react/experimental";
+import { useOsdkObjects } from "@osdk/react";
 
 function TodoList() {
   const { data, isLoading, error } = useOsdkObjects(Todo);
@@ -713,7 +704,7 @@ A common pattern is using multiple hooks together:
 
 ```tsx
 import { Todo } from "@my/osdk";
-import { useLinks, useOsdkObject } from "@osdk/react/experimental";
+import { useLinks, useOsdkObject } from "@osdk/react";
 
 function TodoWithDetails({ todoId }: { todoId: string }) {
   const { object: todo, isLoading: todoLoading } = useOsdkObject(Todo, todoId);

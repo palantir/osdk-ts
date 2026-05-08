@@ -39,6 +39,7 @@ import type {
   ActionTypeEntities as _api_ActionTypeEntities,
   ActionTypeIdentifier as _api_ActionTypeIdentifier,
   ActionTypeIdInRequest as _api_ActionTypeIdInRequest,
+  ActionTypeParameterIdentifier as _api_ActionTypeParameterIdentifier,
   ActionTypeProvenanceModification as _api_ActionTypeProvenanceModification,
   ActionTypeRid as _api_ActionTypeRid,
   ActionTypeScenarioSettingsModification
@@ -58,6 +59,8 @@ import type {
   DataNullability as _api_DataNullability,
   DataNullabilityV2 as _api_DataNullabilityV2,
   DataSecurity as _api_DataSecurity,
+  DataSecurityRequirementModification
+    as _api_DataSecurityRequirementModification,
   DatasetRid as _api_DatasetRid,
   DatasourceRid as _api_DatasourceRid,
   DataType as _api_DataType,
@@ -241,7 +244,8 @@ import type {
     as _api_typemapping_SharedPropertyTypeGothamMappingModification,
 } from "../typemapping/__components.js";
 import type {
-  BaseParameterTypeModification as _api_types_BaseParameterTypeModification,
+  BaseParameterConstraintTypeModification
+    as _api_types_BaseParameterConstraintTypeModification,
   LinkTypeSide as _api_types_LinkTypeSide,
 } from "../types/__components.js";
 import type { OntologyValidationError as _api_validation_OntologyValidationError } from "../validation/__components.js";
@@ -294,6 +298,10 @@ export interface ActionTypeModification {
   actionLogConfiguration?: _api_ActionLogConfiguration | null | undefined;
   apiName: _api_ActionTypeApiName;
   branchSettings?: _api_ActionTypeBranchSettingsModification | null | undefined;
+  dataSecurityRequirement?:
+    | _api_DataSecurityRequirementModification
+    | null
+    | undefined;
   displayMetadata: _api_ActionTypeDisplayMetadataModification;
   effects?: _api_ActionEffectsModification | null | undefined;
   entities?: _api_ActionTypeEntities | null | undefined;
@@ -632,9 +640,18 @@ export interface GetModifiedEntitiesResponse {
   diff: OntologyDiff;
   newOntologyVesion: _api_OntologyVersion;
 }
+export interface ImplementingActionTypeModification {
+  actionTypeIdentifier: _api_ActionTypeIdentifier;
+  parameters: Array<ImplementingParameterModification>;
+}
 export interface ImplementingLinkTypeModification {
   linkTypeRidOrId: _api_LinkTypeRidOrId;
   linkTypeSide?: _api_types_LinkTypeSide | null | undefined;
+}
+export interface ImplementingParameterModification {
+  interfaceParameterConstraintRidOrIdInRequest:
+    _api_InterfaceParameterConstraintRidOrIdInRequest;
+  parameterIdentifier: _api_ActionTypeParameterIdentifier;
 }
 /**
  * A request to import SharedPropertyTypes into another ontology
@@ -651,6 +668,11 @@ export interface InlineActionTypeModification {
   actionTypeIdentifier: _api_ActionTypeIdentifier;
   displayOptions: _api_InlineActionDisplayOptions;
   parameterId?: _api_ParameterId | null | undefined;
+}
+export interface InterfaceActionTypeConstraintImplementationModification {
+  actionType: ImplementingActionTypeModification;
+  interfaceActionTypeConstraintRidOrIdInRequest:
+    _api_InterfaceActionTypeConstraintRidOrIdInRequest;
 }
 export interface InterfaceActionTypeConstraintModification {
   id: _api_InterfaceActionTypeConstraintRidOrIdInRequest;
@@ -703,7 +725,7 @@ export interface InterfaceParameterConstraintModification {
   id: _api_InterfaceParameterConstraintRidOrIdInRequest;
   metadata: _api_InterfaceParameterConstraintDisplayMetadata;
   requireImplementation: boolean;
-  type: _api_types_BaseParameterTypeModification;
+  type: _api_types_BaseParameterConstraintTypeModification;
 }
 export interface InterfacePropertyImplementationModification {
   propertyTypeId: _api_PropertyTypeId;
@@ -1114,6 +1136,7 @@ export interface ManyToManyLinkTypeStreamDatasourceModification {
  * Request to set the migration configuration for the Phonograph to Highbury migration for an entity.
  */
 export interface MigrationConfigurationModification {
+  enableWriteback?: boolean | null | undefined;
   importEditsHistory?: boolean | null | undefined;
   minMigrationDuration: string;
   transitionRetryLimit: number;
@@ -1599,6 +1622,7 @@ export interface ObjectTypeIndexingSettingsModification {
     | undefined;
 }
 export interface ObjectTypeInterfaceImplementationModification {
+  actionTypes: Array<InterfaceActionTypeConstraintImplementationModification>;
   interfaceTypeRidOrIdInRequest: _api_InterfaceTypeRidOrIdInRequest;
   links: Array<InterfaceLinkTypeImplementationModification>;
   linksV2: Array<InterfaceLinkTypeImplementationModificationV2>;
@@ -1984,6 +2008,7 @@ export interface OntologyModificationRequest {
   >;
   ontologyBranchRid?: _api_OntologyBranchRid | null | undefined;
   rebasedOntologyVersion?: _api_OntologyVersion | null | undefined;
+  rebasingConfiguration?: RebasingConfiguration | null | undefined;
   ruleSetsToCreate: Record<
     _api_formatting_RuleSetIdInRequest,
     _api_formatting_RuleSetCreate
@@ -2212,6 +2237,9 @@ export interface PutSectionRequestWithId {
  * remap to an `ObjectStorageV2Modification` instead.
  */
 export interface ReadOnlyV1V2Modification {
+}
+export interface RebasingConfiguration {
+  isOntologyMetadataAppRebasing: boolean;
 }
 /**
  * Use the reduced value of the implementation to implement the interface property.

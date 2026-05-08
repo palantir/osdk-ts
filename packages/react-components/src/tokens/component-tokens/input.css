@@ -9,6 +9,7 @@
   --osdk-input-border-width: var(--osdk-surface-border-width);
   --osdk-input-border-color: var(--osdk-surface-border-color-default);
   --osdk-input-border-color-focus: var(--osdk-intent-primary-rest);
+  --osdk-input-shadow: inset 0 1px 1px var(--osdk-surface-border-color-default);
 
   /* Input backgrounds */
   --osdk-input-bg: var(--osdk-surface-background-color-default-rest);

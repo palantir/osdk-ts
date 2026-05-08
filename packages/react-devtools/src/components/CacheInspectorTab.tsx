@@ -24,7 +24,7 @@ import {
   Tag,
   Tooltip,
 } from "@blueprintjs/core";
-import type { CacheEntry } from "@osdk/client/unstable-do-not-use";
+import type { CacheEntry } from "@osdk/client/observable";
 import React, { useMemo, useState } from "react";
 import { createPollingStore } from "../hooks/createPollingStore.js";
 import type { MonitorStore } from "../store/MonitorStore.js";

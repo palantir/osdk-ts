@@ -53,4 +53,11 @@ export function buildDisabledMatchers(
  */
 export const stopPropagation: (e: React.MouseEvent) => void = (e) => {
   e.stopPropagation();
+  // Base UI chains its trigger handler after this click handler. When focus or
+  // pointer-down already opened the popover, suppress that handler so the same
+  // click does not immediately toggle the popover closed again.
+  const preventBaseUIHandler =
+    (e as React.MouseEvent & { preventBaseUIHandler?: () => void })
+      .preventBaseUIHandler;
+  preventBaseUIHandler?.();
 };

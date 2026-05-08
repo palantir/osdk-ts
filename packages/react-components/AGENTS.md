@@ -27,12 +27,12 @@ See `@osdk/react`'s `AGENTS.md` for optional peers (`@osdk/foundry.admin`, `@osd
 
 ## Install-time errors
 
-| Error                                                                                      | Cause                                                                                                             | Fix                                                                                                                                                  |
-| ------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `"<name>" is not exported by @osdk/client/.../unstable-do-not-use.js` (or `@osdk/api/...`) | `@osdk/client` or `@osdk/api` or `@osdk/react` version mismatches what `@osdk/react-components` was built against | Do NOT delete the import or downgrade silently. Follow the CHANGELOG recipe in `## Installing` and pin all three peers to the exact versions listed. |
-| `"<name>" is not exported by @osdk/react/...`                                              | `@osdk/react` version mismatches what `@osdk/react-components` was built against                                  | Do NOT delete the import or downgrade silently. Follow the CHANGELOG recipe in `## Installing` and pin `@osdk/react` to the exact version listed.    |
-| `Rollup failed to resolve import "@osdk/foundry.admin"` (or `@osdk/foundry.core`)          | Transitive import from `@osdk/react/experimental/admin` without the optional peers                                | Install `@osdk/foundry.admin` + `@osdk/foundry.core`, OR avoid surfaces that use the admin hooks.                                                    |
-| pnpm/npm peer warning about `@osdk/client` or `@osdk/react` range                          | Declared peer ranges are broad; prerelease coupling is tighter                                                    | Follow the CHANGELOG recipe; pin to exact versions.                                                                                                  |
+| Error                                                                                                                           | Cause                                                                                                             | Fix                                                                                                                                                  |
+| ------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `"<name>" is not exported by @osdk/client/.../observable.js` (or `@osdk/client/.../unstable-do-not-use.js`, or `@osdk/api/...`) | `@osdk/client` or `@osdk/api` or `@osdk/react` version mismatches what `@osdk/react-components` was built against | Do NOT delete the import or downgrade silently. Follow the CHANGELOG recipe in `## Installing` and pin all three peers to the exact versions listed. |
+| `"<name>" is not exported by @osdk/react/...`                                                                                   | `@osdk/react` version mismatches what `@osdk/react-components` was built against                                  | Do NOT delete the import or downgrade silently. Follow the CHANGELOG recipe in `## Installing` and pin `@osdk/react` to the exact version listed.    |
+| `Rollup failed to resolve import "@osdk/foundry.admin"` (or `@osdk/foundry.core`)                                               | Transitive import from `@osdk/react/platform-apis` without the optional peers                                     | Install `@osdk/foundry.admin` + `@osdk/foundry.core`, OR avoid surfaces that use the admin hooks.                                                    |
+| pnpm/npm peer warning about `@osdk/client` or `@osdk/react` range                                                               | Declared peer ranges are broad; prerelease coupling is tighter                                                    | Follow the CHANGELOG recipe; pin to exact versions.                                                                                                  |
 
 ## Components
 
@@ -40,6 +40,7 @@ Components are imported from their individual entry points under `@osdk/react-co
 
 - `@osdk/react-components/experimental/object-table` — ObjectTable, BaseTable, ColumnConfigDialog
 - `@osdk/react-components/experimental/filter-list` — FilterList, BaseFilterList
+- `@osdk/react-components/experimental/action-form` — ActionForm, BaseForm, and form field definitions
 - `@osdk/react-components/experimental/pdf-viewer` — PdfViewer, BasePdfViewer, and building blocks/hooks
 - `@osdk/react-components/experimental/tiff-renderer` — TiffRenderer
 - `@osdk/react-components/experimental/markdown-renderer` — MarkdownRenderer
@@ -51,6 +52,8 @@ Components are imported from their individual entry points under `@osdk/react-co
 | **BaseTable**          | OSDK-agnostic base table — use when building custom data fetching on top of the table UI.                                                   |
 | **FilterList**         | Aggregation-based filter UI for object sets with draggable reordering.                                                                      |
 | **BaseFilterList**     | OSDK-agnostic base filter list — use for custom filter implementations.                                                                     |
+| **ActionForm**         | Form for applying OSDK actions with generated or custom field definitions.                                                                  |
+| **BaseForm**           | OSDK-agnostic base action form — use when supplying explicit field content and submit handling.                                             |
 | **ColumnConfigDialog** | Dialog for managing column visibility and drag-and-drop reordering.                                                                         |
 | **PdfViewer**          | PDF viewer for OSDK Media objects with toolbar, search, annotations, sidebar (thumbnails/outline), highlight mode, and form fields.         |
 | **BasePdfViewer**      | OSDK-agnostic base PDF viewer — accepts a URL or ArrayBuffer directly. Use when building custom data fetching on top of the viewer UI.      |
@@ -65,6 +68,7 @@ Before using any component, read the relevant doc from this package:
 
 - **Setup & installation**: Read [README.md](./README.md) for provider, CSS layers, and peer dependencies
 - **ObjectTable**: Read [docs/ObjectTable.md](./docs/ObjectTable.md) for props, column definitions, examples, theming, and troubleshooting
+- **ActionForm**: Read [docs/ActionForm.md](./docs/ActionForm.md) for generated fields, title behavior, custom field definitions, switch fields, and date/time behavior
 - **PdfViewer**: Read [docs/PdfViewer.md](./docs/PdfViewer.md) for props, annotations, building blocks, hooks, examples, and theming
 - **TiffRenderer**: Read [docs/TiffViewer.md](./docs/TiffViewer.md) for props and usage
 - **MarkdownRenderer**: Read [docs/MarkdownRenderer.md](./docs/MarkdownRenderer.md) for props, examples, and theming

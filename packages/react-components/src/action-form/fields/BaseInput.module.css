@@ -21,6 +21,7 @@
   padding: var(--osdk-input-padding);
   border-radius: var(--osdk-input-border-radius);
   border: var(--osdk-input-border-width) solid var(--osdk-input-border-color);
+  box-shadow: var(--osdk-input-shadow);
   background-color: var(--osdk-input-bg);
   color: var(--osdk-input-color);
   font-family: var(--osdk-input-font-family);
