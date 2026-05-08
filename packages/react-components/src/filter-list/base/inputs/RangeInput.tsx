@@ -26,7 +26,7 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { DatetimePickerField } from "../../../action-form/fields/DatetimePickerField.js";
+import { DatePicker } from "../../../shared/calendar/index.js";
 import {
   formatDateForInput,
   parseDateFromInput,
@@ -895,7 +895,7 @@ function RangeBoundInput({
   );
   if (inputType === "date") {
     return (
-      <DatetimePickerField
+      <DatePicker
         value={parseDateFromInput(value) ?? null}
         onChange={handleDatePickerChange}
         placeholder={placeholder}

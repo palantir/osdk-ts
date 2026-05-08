@@ -22,16 +22,16 @@ import {
   waitFor,
 } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { DatetimePickerField } from "../fields/DatetimePickerField.js";
+import { DatePicker } from "../DatePicker.js";
 
 // Replace React.lazy wrapper with synchronous DateCalendar to avoid
 // Suspense resolution issues in happy-dom. This is a legitimate test
-// boundary — we test DatetimePickerField behavior, not the lazy loading mechanism.
-vi.mock("../../shared/calendar/LazyDateCalendar.js", async () => {
+// boundary — we test DatePicker behavior, not the lazy loading mechanism.
+vi.mock("../LazyDateCalendar.js", async () => {
   const { default: DateCalendar } = await vi.importActual<
     // eslint-disable-next-line @typescript-eslint/consistent-type-imports
-    typeof import("../../shared/calendar/DateCalendar.js")
-  >("../../shared/calendar/DateCalendar.js");
+    typeof import("../DateCalendar.js")
+  >("../DateCalendar.js");
   return { LazyDateCalendar: DateCalendar };
 });
 
@@ -40,11 +40,11 @@ afterEach(() => {
   vi.useRealTimers();
 });
 
-describe("DatetimePickerField", () => {
+describe("DatePicker", () => {
   describe("rendering", () => {
     it("renders an input with deterministic date value", () => {
       render(
-        <DatetimePickerField
+        <DatePicker
           value={new Date(2024, 0, 15)}
           onChange={vi.fn()}
         />,
@@ -55,14 +55,14 @@ describe("DatetimePickerField", () => {
     });
 
     it("renders empty input when value is null", () => {
-      render(<DatetimePickerField value={null} onChange={vi.fn()} />);
+      render(<DatePicker value={null} onChange={vi.fn()} />);
       const input = screen.getByRole("combobox") as HTMLInputElement;
       expect(input.value).toBe("");
     });
 
     it("renders with datetime format when showTime is true", () => {
       render(
-        <DatetimePickerField
+        <DatePicker
           value={new Date(2024, 0, 15, 14, 30)}
           onChange={vi.fn()}
           showTime={true}
@@ -74,7 +74,7 @@ describe("DatetimePickerField", () => {
 
     it("renders placeholder when value is null and placeholder is set", () => {
       render(
-        <DatetimePickerField
+        <DatePicker
           value={null}
           onChange={vi.fn()}
           placeholder="Pick a date"
@@ -89,7 +89,7 @@ describe("DatetimePickerField", () => {
     it("calls onChange when a calendar day is clicked", () => {
       const onChange = vi.fn();
       render(
-        <DatetimePickerField
+        <DatePicker
           value={new Date(2024, 0, 15)}
           onChange={onChange}
         />,
@@ -106,7 +106,7 @@ describe("DatetimePickerField", () => {
     });
 
     it("renders calendar action buttons when opened", () => {
-      render(<DatetimePickerField value={null} onChange={vi.fn()} />);
+      render(<DatePicker value={null} onChange={vi.fn()} />);
 
       fireEvent.focus(screen.getByRole("combobox"));
 
@@ -115,7 +115,7 @@ describe("DatetimePickerField", () => {
     });
 
     it("opens calendar when the input is clicked", () => {
-      render(<DatetimePickerField value={null} onChange={vi.fn()} />);
+      render(<DatePicker value={null} onChange={vi.fn()} />);
       const input = screen.getByRole("combobox");
       expect(screen.queryByRole("dialog")).toBeNull();
 
@@ -130,7 +130,7 @@ describe("DatetimePickerField", () => {
       vi.useFakeTimers();
       vi.setSystemTime(new Date(2024, 6, 4, 9, 30));
       const onChange = vi.fn();
-      render(<DatetimePickerField value={null} onChange={onChange} />);
+      render(<DatePicker value={null} onChange={onChange} />);
       fireEvent.focus(screen.getByRole("combobox"));
 
       fireEvent.click(screen.getByRole("button", { name: "Today" }));
@@ -144,7 +144,7 @@ describe("DatetimePickerField", () => {
       vi.setSystemTime(new Date(2024, 6, 4, 9, 30));
       const onChange = vi.fn();
       render(
-        <DatetimePickerField
+        <DatePicker
           value={null}
           onChange={onChange}
           max={new Date(2024, 6, 3)}
@@ -164,7 +164,7 @@ describe("DatetimePickerField", () => {
     it("clears the selected date from the calendar action bar", () => {
       const onChange = vi.fn();
       render(
-        <DatetimePickerField
+        <DatePicker
           value={new Date(2024, 0, 15)}
           onChange={onChange}
         />,
@@ -184,7 +184,7 @@ describe("DatetimePickerField", () => {
 
       try {
         render(
-          <DatetimePickerField
+          <DatePicker
             value={new Date(2024, 0, 15)}
             onChange={vi.fn()}
             portalContainer={portalContainer}
@@ -208,7 +208,7 @@ describe("DatetimePickerField", () => {
 
       try {
         render(
-          <DatetimePickerField
+          <DatePicker
             value={new Date(2024, 0, 15)}
             onChange={vi.fn()}
             portalContainer={portalContainer}
@@ -241,7 +241,7 @@ describe("DatetimePickerField", () => {
 
       try {
         render(
-          <DatetimePickerField
+          <DatePicker
             value={new Date(2024, 0, 15)}
             onChange={vi.fn()}
             portalContainer={portalContainer}
@@ -263,7 +263,7 @@ describe("DatetimePickerField", () => {
     it("preserves time when selecting a calendar day with showTime", () => {
       const onChange = vi.fn();
       render(
-        <DatetimePickerField
+        <DatePicker
           value={new Date(2024, 0, 15, 14, 30)}
           onChange={onChange}
           showTime={true}
@@ -286,7 +286,7 @@ describe("DatetimePickerField", () => {
   describe("time input", () => {
     it("renders time inputs when showTime is true", () => {
       render(
-        <DatetimePickerField
+        <DatePicker
           value={new Date(2024, 0, 15, 14, 30)}
           onChange={vi.fn()}
           showTime={true}
@@ -306,7 +306,7 @@ describe("DatetimePickerField", () => {
     it("calls onChange with updated time when a valid time segment blurs", () => {
       const onChange = vi.fn();
       render(
-        <DatetimePickerField
+        <DatePicker
           value={new Date(2024, 0, 15, 14, 30)}
           onChange={onChange}
           showTime={true}
@@ -337,7 +337,7 @@ describe("DatetimePickerField", () => {
     it("does not call onChange before a valid time segment blurs", () => {
       const onChange = vi.fn();
       render(
-        <DatetimePickerField
+        <DatePicker
           value={new Date(2024, 0, 15, 14, 30)}
           onChange={onChange}
           showTime={true}
@@ -355,7 +355,7 @@ describe("DatetimePickerField", () => {
     it("updates input text when time is committed on blur", () => {
       const onChange = vi.fn();
       render(
-        <DatetimePickerField
+        <DatePicker
           value={new Date(2024, 0, 15, 14, 30)}
           onChange={onChange}
           showTime={true}
@@ -382,7 +382,7 @@ describe("DatetimePickerField", () => {
 
     it("updates time inputs when a valid datetime is typed", () => {
       render(
-        <DatetimePickerField value={null} onChange={vi.fn()} showTime={true} />,
+        <DatePicker value={null} onChange={vi.fn()} showTime={true} />,
       );
       const input = screen.getByRole("combobox") as HTMLInputElement;
       fireEvent.focus(input);
@@ -400,7 +400,7 @@ describe("DatetimePickerField", () => {
     it("does not set a date when tabbing through empty time inputs", () => {
       const onChange = vi.fn();
       render(
-        <DatetimePickerField
+        <DatePicker
           value={null}
           onChange={onChange}
           showTime={true}
@@ -418,7 +418,7 @@ describe("DatetimePickerField", () => {
   describe("custom format", () => {
     it("uses custom formatDate for display when not editing", () => {
       render(
-        <DatetimePickerField
+        <DatePicker
           value={new Date(2024, 0, 15)}
           onChange={vi.fn()}
           formatDate={(d) =>
@@ -433,7 +433,7 @@ describe("DatetimePickerField", () => {
   describe("text input editing", () => {
     it("commits a valid typed date on blur", () => {
       const onChange = vi.fn();
-      render(<DatetimePickerField value={null} onChange={onChange} />);
+      render(<DatePicker value={null} onChange={onChange} />);
       const input = screen.getByRole("combobox") as HTMLInputElement;
       fireEvent.focus(input);
       fireEvent.change(input, { target: { value: "2024-03-20" } });
@@ -445,7 +445,7 @@ describe("DatetimePickerField", () => {
     });
 
     it("updates the open calendar month when a valid date is typed", () => {
-      render(<DatetimePickerField value={null} onChange={vi.fn()} />);
+      render(<DatePicker value={null} onChange={vi.fn()} />);
       const input = screen.getByRole("combobox") as HTMLInputElement;
       fireEvent.focus(input);
 
@@ -461,7 +461,7 @@ describe("DatetimePickerField", () => {
     it("does not call onChange for invalid input on blur", () => {
       const onChange = vi.fn();
       render(
-        <DatetimePickerField
+        <DatePicker
           value={new Date(2024, 0, 15)}
           onChange={onChange}
         />,
@@ -477,7 +477,7 @@ describe("DatetimePickerField", () => {
     it("fires onChange(null) when input is cleared and blurred", () => {
       const onChange = vi.fn();
       render(
-        <DatetimePickerField
+        <DatePicker
           value={new Date(2024, 0, 15)}
           onChange={onChange}
         />,
@@ -492,7 +492,7 @@ describe("DatetimePickerField", () => {
 
     it("commits on Enter key and closes popover", () => {
       const onChange = vi.fn();
-      render(<DatetimePickerField value={null} onChange={onChange} />);
+      render(<DatePicker value={null} onChange={onChange} />);
       const input = screen.getByRole("combobox") as HTMLInputElement;
       fireEvent.focus(input);
       fireEvent.change(input, { target: { value: "2024-06-01" } });
@@ -513,7 +513,7 @@ describe("DatetimePickerField", () => {
 
     it("reverts on Escape key", () => {
       render(
-        <DatetimePickerField
+        <DatePicker
           value={new Date(2024, 0, 15)}
           onChange={vi.fn()}
         />,
@@ -530,7 +530,7 @@ describe("DatetimePickerField", () => {
     it("does not call onChange for out-of-range date on blur", () => {
       const onChange = vi.fn();
       render(
-        <DatetimePickerField
+        <DatePicker
           value={null}
           onChange={onChange}
           min={new Date(2024, 0, 1)}
@@ -548,7 +548,7 @@ describe("DatetimePickerField", () => {
     it("uses custom parseDate prop", () => {
       const onChange = vi.fn();
       render(
-        <DatetimePickerField
+        <DatePicker
           value={null}
           onChange={onChange}
           formatDate={(d) =>
@@ -573,7 +573,7 @@ describe("DatetimePickerField", () => {
 
     it("switches between display and edit format on focus/blur", () => {
       render(
-        <DatetimePickerField
+        <DatePicker
           value={new Date(2024, 0, 15)}
           onChange={vi.fn()}
         />,
@@ -596,7 +596,7 @@ describe("DatetimePickerField", () => {
   describe("error recovery", () => {
     it("reverts displayed value to last valid on blur with invalid input", () => {
       render(
-        <DatetimePickerField
+        <DatePicker
           value={new Date(2024, 0, 15)}
           onChange={vi.fn()}
         />,
@@ -613,7 +613,7 @@ describe("DatetimePickerField", () => {
 
   describe("focus management", () => {
     it("does not auto-focus calendar dropdowns when the popover opens", () => {
-      render(<DatetimePickerField value={null} onChange={vi.fn()} />);
+      render(<DatePicker value={null} onChange={vi.fn()} />);
       const input = screen.getByRole("combobox");
       fireEvent.focus(input);
 
@@ -625,7 +625,7 @@ describe("DatetimePickerField", () => {
     });
 
     it("blurs input after Enter key closes popover", () => {
-      render(<DatetimePickerField value={null} onChange={vi.fn()} />);
+      render(<DatePicker value={null} onChange={vi.fn()} />);
       const input = screen.getByRole("combobox") as HTMLInputElement;
       input.focus();
       expect(document.activeElement).toBe(input);
@@ -637,7 +637,7 @@ describe("DatetimePickerField", () => {
 
     it("popover stays open when Tab moves focus from input into calendar", () => {
       render(
-        <DatetimePickerField
+        <DatePicker
           value={new Date(2024, 0, 15)}
           onChange={vi.fn()}
         />,
@@ -658,7 +658,7 @@ describe("DatetimePickerField", () => {
 
     it("returns focus to input and closes popover when tabbing past end of popover", () => {
       render(
-        <DatetimePickerField
+        <DatePicker
           value={new Date(2024, 0, 15)}
           onChange={vi.fn()}
         />,
@@ -689,7 +689,7 @@ describe("DatetimePickerField", () => {
 
     it("Tab from input after boundary exit does not reopen the popover", () => {
       render(
-        <DatetimePickerField
+        <DatePicker
           value={new Date(2024, 0, 15)}
           onChange={vi.fn()}
         />,
@@ -720,7 +720,7 @@ describe("DatetimePickerField", () => {
     it("popover closes after selecting a date (closeOnSelection)", () => {
       const onChange = vi.fn();
       render(
-        <DatetimePickerField
+        <DatePicker
           value={new Date(2024, 0, 15)}
           onChange={onChange}
         />,
@@ -738,7 +738,7 @@ describe("DatetimePickerField", () => {
 
     it("allows month navigation after selecting a date", () => {
       render(
-        <DatetimePickerField
+        <DatePicker
           value={new Date(2024, 0, 15)}
           onChange={vi.fn()}
         />,
@@ -763,14 +763,14 @@ describe("DatetimePickerField", () => {
 
   describe("accessibility", () => {
     it("has combobox role and aria attributes", () => {
-      render(<DatetimePickerField value={null} onChange={vi.fn()} />);
+      render(<DatePicker value={null} onChange={vi.fn()} />);
       const input = screen.getByRole("combobox");
       expect(input.getAttribute("aria-haspopup")).toBe("dialog");
       expect(input.getAttribute("aria-expanded")).toBe("false");
     });
 
     it("sets aria-expanded to true when popover is open", () => {
-      render(<DatetimePickerField value={null} onChange={vi.fn()} />);
+      render(<DatePicker value={null} onChange={vi.fn()} />);
       const input = screen.getByRole("combobox");
       expect(screen.queryByRole("dialog")).toBeNull();
       fireEvent.focus(input);

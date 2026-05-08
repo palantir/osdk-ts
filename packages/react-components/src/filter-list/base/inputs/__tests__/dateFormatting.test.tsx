@@ -179,7 +179,7 @@ describe("formatDate / parseDate plumbing", () => {
     );
 
     it(
-      "keeps the HTML <input type=\"date\"> value as ISO regardless of formatDate",
+      "keeps the DatePicker input value as ISO regardless of formatDate",
       () => {
         const min = new Date(2024, 0, 15);
         render(
@@ -193,7 +193,6 @@ describe("formatDate / parseDate plumbing", () => {
           />,
         );
         const input = screen.getByLabelText("From") as HTMLInputElement;
-        expect(input.type).toBe("date");
         expect(input.value).toBe("2024-01-15");
       },
     );

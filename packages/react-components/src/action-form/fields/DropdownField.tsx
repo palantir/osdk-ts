@@ -20,10 +20,10 @@ import { Combobox } from "../../base-components/combobox/Combobox.js";
 import comboboxStyles from "../../base-components/combobox/Combobox.module.css";
 import { Select } from "../../base-components/select/Select.js";
 import selectStyles from "../../base-components/select/Select.module.css";
+import { PortalDismissLayer } from "../../shared/PortalDismissLayer.js";
 import { typedReactMemo } from "../../shared/typedMemo.js";
 import type { DropdownFieldProps } from "../FormFieldApi.js";
 import dropdownStyles from "./DropdownField.module.css";
-import { PortalDismissLayer } from "./PortalDismissLayer.js";
 
 const EMPTY_ARRAY: [] = [];
 

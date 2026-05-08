@@ -17,7 +17,7 @@
 import { Button } from "@base-ui/react/button";
 import classnames from "classnames";
 import React, { memo, useCallback } from "react";
-import { DatetimePickerField } from "../../../action-form/fields/DatetimePickerField.js";
+import { DatePicker } from "../../../shared/calendar/index.js";
 import {
   formatDateForDisplay,
   formatDateForInput,
@@ -104,7 +104,7 @@ function MultiDateInputInner({
       )}
 
       <div className={styles.calendarContainer}>
-        <DatetimePickerField
+        <DatePicker
           value={null}
           onChange={addDate}
           min={minDate}

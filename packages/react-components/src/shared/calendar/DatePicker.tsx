@@ -18,25 +18,119 @@ import { Input } from "@base-ui/react/input";
 import { Popover } from "@base-ui/react/popover";
 import classnames from "classnames";
 import React, { useCallback, useId, useRef, useState } from "react";
-import { stopPropagation } from "../../shared/calendar/calendarShared.js";
-import commonStyles from "../../shared/calendar/DatePickerCommon.module.css";
-import { LazyDateCalendar } from "../../shared/calendar/LazyDateCalendar.js";
 import {
   formatDateForInput,
   formatDatetimeForInput,
   isDateInRange,
   parseDateFromInput,
   parseDatetimeFromInput,
-} from "../../shared/dateUtils.js";
-import type { DatetimePickerFieldProps } from "../FormFieldApi.js";
-import styles from "./DatetimePickerField.module.css";
-import { PortalDismissLayer } from "./PortalDismissLayer.js";
+} from "../dateUtils.js";
+import {
+  type PortalContainer,
+  PortalDismissLayer,
+} from "../PortalDismissLayer.js";
+import { stopPropagation } from "./calendarShared.js";
+import styles from "./DatePicker.module.css";
+import commonStyles from "./DatePickerCommon.module.css";
+import { LazyDateCalendar } from "./LazyDateCalendar.js";
 import { TimePicker } from "./TimePicker.js";
 import { useDateEditState } from "./useDateEditState.js";
 
-export const DatetimePickerField: React.NamedExoticComponent<
-  DatetimePickerFieldProps
-> = React.memo(function DatetimePickerField({
+/**
+ * Props for the shared DatePicker. Used directly by filter-list and
+ * object-table; wrapped by action-form's FormFieldRenderer for the
+ * `DATETIME_PICKER` field kind. `id` and `error` are optional so non-form
+ * callers can omit them.
+ *
+ * When `formatDate` is omitted, ISO-like format is used (YYYY-MM-DD /
+ * YYYY-MM-DD HH:mm).
+ */
+export interface DatePickerProps {
+  /**
+   * The HTML `id` attribute for the input element. Used for `<label htmlFor>`
+   * association in form contexts. Optional in non-form contexts.
+   */
+  id?: string;
+
+  /**
+   * Visual error state for the input. Set by form validation in
+   * action-form contexts; non-form callers typically omit it.
+   */
+  error?: string;
+
+  /** The currently-selected Date, or `null` for empty. */
+  value: Date | null;
+
+  /** Called when the user selects or types a new date. */
+  onChange?: (value: Date | null) => void;
+
+  /** The earliest date the user can select. */
+  min?: Date;
+
+  /** The latest date the user can select. */
+  max?: Date;
+
+  /** Whether to show a time picker alongside the date. */
+  showTime?: boolean;
+
+  /**
+   * Whether to close the popover after selecting a date.
+   * @default true when `showTime` is false, false when `showTime` is true
+   */
+  closeOnSelection?: boolean;
+
+  /** Placeholder text shown when no value is selected. */
+  placeholder?: string;
+
+  /**
+   * Formats a Date for display in the input field when not editing.
+   * When typing, the input shows the parsable format (YYYY-MM-DD or
+   * YYYY-MM-DD HH:mm). Provide a matching `parseDate` if using a custom
+   * format.
+   */
+  formatDate?: (date: Date) => string;
+
+  /**
+   * Parses a user-typed string back into a Date. Must be the inverse of
+   * `formatDate` — if `formatDate(d)` produces string `s`, then
+   * `parseDate(s)` must return an equivalent Date. When omitted, defaults
+   * to parsing "YYYY-MM-DD" (date-only) or "YYYY-MM-DD HH:mm" (with time).
+   */
+  parseDate?: (text: string) => Date | undefined;
+
+  /**
+   * Ref forwarded to the portal container element. Used to track portaled
+   * content for click-outside detection.
+   */
+  portalRef?: React.Ref<HTMLDivElement>;
+
+  /**
+   * Element that receives the date picker portal. Use this when rendering
+   * inside modal dialogs so popovers stay in the dialog's stacking and
+   * focus context instead of being appended directly to document.body.
+   */
+  portalContainer?: PortalContainer;
+
+  /**
+   * Accessible label for the input when there is no adjacent `<label>`
+   * element.
+   */
+  ariaLabel?: string;
+
+  /**
+   * Popover modality. Defaults to `"trap-focus"`, which traps Tab cycling
+   * inside the calendar and renders a transparent dismiss layer over the
+   * page. Pass `false` when nesting this picker inside another popover so
+   * the inner dismiss layer doesn't intercept clicks intended for the
+   * outer popover and base-ui's default outside-click handles dismissal
+   * instead.
+   */
+  modal?: "trap-focus" | false;
+}
+
+export const DatePicker: React.NamedExoticComponent<
+  DatePickerProps
+> = React.memo(function DatePicker({
   id,
   value,
   onChange,
@@ -52,7 +146,7 @@ export const DatetimePickerField: React.NamedExoticComponent<
   portalContainer,
   ariaLabel,
   modal = "trap-focus",
-}: DatetimePickerFieldProps) {
+}: DatePickerProps) {
   const isModal = modal !== false;
   const shouldCloseOnSelection = closeOnSelection ?? !showTime;
   const popoverId = useId();
