@@ -15,6 +15,7 @@
  */
 
 import type { FilterState } from "../FilterListItemApi.js";
+import type { PropertyAggregationValue } from "../types/AggregationTypes.js";
 
 /** Returns true for filter state types that support in-filter search. */
 export function supportsSearch(state: FilterState | undefined): boolean {
@@ -79,6 +80,39 @@ export function isEmptyValue(value: string | null | undefined): boolean {
     return true;
   }
   return value.trim() === "";
+}
+
+/**
+ * Merges every empty/null/whitespace-only aggregation row into a single
+ * "No value" bucket placed at the position of the first empty row encountered.
+ * Backends sometimes return separate rows for null, undefined, "", and
+ * whitespace-only strings; this collapses them so consumers (listogram,
+ * dropdown, multi-select) all see one canonical row.
+ */
+export function dedupeEmptyAggregationRows(
+  values: PropertyAggregationValue[],
+): PropertyAggregationValue[] {
+  const out: PropertyAggregationValue[] = [];
+  let emptyCount = 0;
+  let firstEmptyIndex = -1;
+  for (const v of values) {
+    if (isEmptyValue(v.value)) {
+      if (firstEmptyIndex === -1) {
+        firstEmptyIndex = out.length;
+      }
+      emptyCount += v.count;
+    } else {
+      out.push(v);
+    }
+  }
+  if (firstEmptyIndex >= 0 && emptyCount > 0) {
+    out.splice(firstEmptyIndex, 0, {
+      value: "",
+      count: emptyCount,
+      isNull: true,
+    });
+  }
+  return out;
 }
 
 /** Case-insensitive substring filter for search functionality. */
