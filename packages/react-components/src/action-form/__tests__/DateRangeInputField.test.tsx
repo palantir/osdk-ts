@@ -24,11 +24,11 @@ import {
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { DateRangeInputField } from "../fields/DateRangeInputField.js";
 
-vi.mock("../fields/LazyDateRangeCalendar.js", async () => {
+vi.mock("../../shared/calendar/LazyDateRangeCalendar.js", async () => {
   const { default: DateRangeCalendar } = await vi.importActual<
     // eslint-disable-next-line @typescript-eslint/consistent-type-imports
-    typeof import("../fields/DateRangeCalendar.js")
-  >("../fields/DateRangeCalendar.js");
+    typeof import("../../shared/calendar/DateRangeCalendar.js")
+  >("../../shared/calendar/DateRangeCalendar.js");
   return { LazyDateRangeCalendar: DateRangeCalendar };
 });
 

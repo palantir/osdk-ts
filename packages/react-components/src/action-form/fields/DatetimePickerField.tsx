@@ -18,6 +18,9 @@ import { Input } from "@base-ui/react/input";
 import { Popover } from "@base-ui/react/popover";
 import classnames from "classnames";
 import React, { useCallback, useId, useRef, useState } from "react";
+import { stopPropagation } from "../../shared/calendar/calendarShared.js";
+import commonStyles from "../../shared/calendar/DatePickerCommon.module.css";
+import { LazyDateCalendar } from "../../shared/calendar/LazyDateCalendar.js";
 import {
   formatDateForDisplay,
   formatDateForInput,
@@ -28,10 +31,7 @@ import {
   parseTimeString,
 } from "../../shared/dateUtils.js";
 import type { DatetimePickerFieldProps } from "../FormFieldApi.js";
-import { stopPropagation } from "./calendarShared.js";
-import commonStyles from "./DatePickerCommon.module.css";
 import styles from "./DatetimePickerField.module.css";
-import { LazyDateCalendar } from "./LazyDateCalendar.js";
 import { PortalDismissLayer } from "./PortalDismissLayer.js";
 import { TimePicker } from "./TimePicker.js";
 import { useDateEditState } from "./useDateEditState.js";
