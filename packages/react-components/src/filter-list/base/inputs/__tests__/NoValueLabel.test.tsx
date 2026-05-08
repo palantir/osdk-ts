@@ -56,7 +56,6 @@ describe("isEmptyValue", () => {
 
   it("treats only the empty string as empty", () => {
     expect(isEmptyValue("")).toBe(true);
-    // Whitespace-only strings are real values — Workshop convention.
     expect(isEmptyValue("   ")).toBe(false);
     expect(isEmptyValue("\t\n")).toBe(false);
   });

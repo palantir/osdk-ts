@@ -74,7 +74,7 @@ export function supportsExcluding(state: FilterState | undefined): boolean {
  * in dropdown options, listogram buckets, and tag chips.
  *
  * Whitespace-only strings (e.g. " ", "\t") are real values and remain
- * distinct from "No value" — matching Workshop and the rest of tables.
+ * distinct from "No value".
  */
 export function isEmptyValue(value: string | null | undefined): boolean {
   return value == null || value === "";

@@ -25,7 +25,6 @@ describe("filterValues", () => {
         [null, true],
         [undefined, true],
         ["", true],
-        // Whitespace-only strings are real values — Workshop convention.
         [" ", false],
         ["   ", false],
         ["\t\n", false],
