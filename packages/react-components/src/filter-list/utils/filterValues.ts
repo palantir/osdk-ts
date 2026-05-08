@@ -73,21 +73,19 @@ export function supportsExcluding(state: FilterState | undefined): boolean {
  * Returns true if the given value should render as a "No value" placeholder
  * in dropdown options, listogram buckets, and tag chips.
  *
- * Treats null, undefined, and empty/whitespace strings as empty.
+ * Whitespace-only strings (e.g. " ", "\t") are real values and remain
+ * distinct from "No value" — matching Workshop and the rest of tables.
  */
 export function isEmptyValue(value: string | null | undefined): boolean {
-  if (value == null) {
-    return true;
-  }
-  return value.trim() === "";
+  return value == null || value === "";
 }
 
 /**
- * Merges every empty/null/whitespace-only aggregation row into a single
+ * Merges every null/undefined/empty-string aggregation row into a single
  * "No value" bucket placed at the position of the first empty row encountered.
- * Backends sometimes return separate rows for null, undefined, "", and
- * whitespace-only strings; this collapses them so consumers (listogram,
- * dropdown, multi-select) all see one canonical row.
+ * Backends sometimes return separate rows for null, undefined, and ""; this
+ * collapses them so consumers (listogram, dropdown, multi-select) all see one
+ * canonical row.
  */
 export function dedupeEmptyAggregationRows(
   values: PropertyAggregationValue[],

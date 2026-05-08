@@ -25,8 +25,10 @@ describe("filterValues", () => {
         [null, true],
         [undefined, true],
         ["", true],
-        ["   ", true],
-        ["\t\n", true],
+        // Whitespace-only strings are real values — Workshop convention.
+        [" ", false],
+        ["   ", false],
+        ["\t\n", false],
         ["foo", false],
         ["  foo  ", false],
         ["0", false],
@@ -72,16 +74,13 @@ describe("filterValues", () => {
       ]);
     });
 
-    it("treats whitespace-only strings as empty", () => {
+    it("leaves whitespace-only strings as their own rows", () => {
       const input: PropertyAggregationValue[] = [
         { value: "alpha", count: 5 },
         { value: "   ", count: 4 },
         { value: "\t", count: 2 },
       ];
-      expect(dedupeEmptyAggregationRows(input)).toEqual([
-        { value: "alpha", count: 5 },
-        { value: "", count: 6, isNull: true },
-      ]);
+      expect(dedupeEmptyAggregationRows(input)).toEqual(input);
     });
 
     it("returns an empty array when given an empty array", () => {
