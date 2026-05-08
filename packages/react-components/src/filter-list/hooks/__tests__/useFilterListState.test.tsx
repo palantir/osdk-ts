@@ -492,100 +492,90 @@ describe("useFilterListState", () => {
       },
     );
 
-    it(
-      "preserves every entry reference when setFilterState writes a deep-equal value",
-      () => {
-        const nameDef = createPropertyFilterDef(
-          "name",
-          "LISTOGRAM",
-          createExactMatchState([]),
+    it("preserves all entry refs when setFilterState writes an equal value", () => {
+      const nameDef = createPropertyFilterDef(
+        "name",
+        "LISTOGRAM",
+        createExactMatchState([]),
+      );
+      const activeDef = createPropertyFilterDef(
+        "active",
+        "TOGGLE",
+        createToggleState(false),
+      );
+      const props = createProps({
+        filterDefinitions: [nameDef, activeDef],
+      });
+      const { result } = renderHook(() => useFilterListState(props));
+      const nameKey = getFilterKey(nameDef);
+      const activeKey = getFilterKey(activeDef);
+
+      act(() => {
+        result.current.setFilterState(
+          nameKey,
+          createExactMatchState(["John"]),
         );
-        const activeDef = createPropertyFilterDef(
-          "active",
-          "TOGGLE",
-          createToggleState(false),
+      });
+
+      const beforeName = result.current.perFilterWhereClauses.get(nameKey);
+      const beforeActive = result.current.perFilterWhereClauses.get(activeKey);
+      expect(beforeName).toBeDefined();
+      expect(beforeActive).toBeDefined();
+
+      act(() => {
+        result.current.setFilterState(
+          nameKey,
+          createExactMatchState(["John"]),
         );
-        const props = createProps({
-          filterDefinitions: [nameDef, activeDef],
-        });
-        const { result } = renderHook(() => useFilterListState(props));
-        const nameKey = getFilterKey(nameDef);
-        const activeKey = getFilterKey(activeDef);
+      });
 
-        act(() => {
-          result.current.setFilterState(
-            nameKey,
-            createExactMatchState(["John"]),
-          );
-        });
+      const afterName = result.current.perFilterWhereClauses.get(nameKey);
+      const afterActive = result.current.perFilterWhereClauses.get(activeKey);
+      expect(afterName).toBe(beforeName);
+      expect(afterActive).toBe(beforeActive);
+    });
 
-        const beforeName = result.current.perFilterWhereClauses.get(nameKey);
-        const beforeActive = result.current.perFilterWhereClauses.get(
-          activeKey,
-        );
+    it("preserves all entry refs when filterDefinitions is a fresh array", () => {
+      const nameDef = createPropertyFilterDef(
+        "name",
+        "LISTOGRAM",
+        createExactMatchState(["John"]),
+      );
+      const activeDef = createPropertyFilterDef(
+        "active",
+        "TOGGLE",
+        createToggleState(false),
+      );
+      const { result, rerender } = renderHook(
+        (defs: FilterListProps<typeof MockObjectType>["filterDefinitions"]) =>
+          useFilterListState(createProps({ filterDefinitions: defs })),
+        { initialProps: [nameDef, activeDef] },
+      );
+      const nameKey = getFilterKey(nameDef);
+      const activeKey = getFilterKey(activeDef);
 
-        act(() => {
-          result.current.setFilterState(
-            nameKey,
-            createExactMatchState(["John"]),
-          );
-        });
+      const beforeName = result.current.perFilterWhereClauses.get(nameKey);
+      const beforeActive = result.current.perFilterWhereClauses.get(activeKey);
+      expect(beforeName).toBeDefined();
+      expect(beforeActive).toBeDefined();
 
-        const afterName = result.current.perFilterWhereClauses.get(nameKey);
-        const afterActive = result.current.perFilterWhereClauses.get(activeKey);
-        expect(afterName).toBe(beforeName);
-        expect(afterActive).toBe(beforeActive);
-      },
-    );
-
-    it(
-      "preserves every entry reference when filterDefinitions is a fresh array of equal definitions",
-      () => {
-        const initialNameDef = createPropertyFilterDef(
+      rerender([
+        createPropertyFilterDef(
           "name",
           "LISTOGRAM",
           createExactMatchState(["John"]),
-        );
-        const initialActiveDef = createPropertyFilterDef(
+        ),
+        createPropertyFilterDef(
           "active",
           "TOGGLE",
           createToggleState(false),
-        );
-        const { result, rerender } = renderHook(
-          (
-            definitions: FilterListProps<typeof MockObjectType>[
-              "filterDefinitions"
-            ],
-          ) =>
-            useFilterListState(createProps({ filterDefinitions: definitions })),
-          { initialProps: [initialNameDef, initialActiveDef] },
-        );
-        const nameKey = getFilterKey(initialNameDef);
-        const activeKey = getFilterKey(initialActiveDef);
+        ),
+      ]);
 
-        const beforeName = result.current.perFilterWhereClauses.get(nameKey);
-        const beforeActive = result.current.perFilterWhereClauses.get(
-          activeKey,
-        );
-
-        rerender([
-          createPropertyFilterDef(
-            "name",
-            "LISTOGRAM",
-            createExactMatchState(["John"]),
-          ),
-          createPropertyFilterDef(
-            "active",
-            "TOGGLE",
-            createToggleState(false),
-          ),
-        ]);
-
-        const afterName = result.current.perFilterWhereClauses.get(nameKey);
-        const afterActive = result.current.perFilterWhereClauses.get(activeKey);
-        expect(afterName).toBe(beforeName);
-        expect(afterActive).toBe(beforeActive);
-      },
-    );
+      const afterName = result.current.perFilterWhereClauses.get(nameKey);
+      const afterActive = result.current.perFilterWhereClauses.get(activeKey);
+      expect(afterName).toBe(beforeName);
+      expect(afterActive).toBe(beforeActive);
+    });
   });
 });
