@@ -169,6 +169,7 @@ function FilterToolbarItem({
       summary={summarizeFilterValue(definition, filterState)}
       isActive={filterHasActiveState(filterState)}
       onRemove={handleRemove}
+      labelPlacement="top"
     >
       <FilterInput
         objectType={objectType}
