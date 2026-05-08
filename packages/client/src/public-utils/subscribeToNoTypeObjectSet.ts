@@ -59,10 +59,7 @@ export function subscribeToNoTypeObjectSet<R extends boolean = false>(
     .getInstance(client[additionalContext])
     .subscribeWithoutType(
       { type: "reference", reference: rid },
-      listener as ObjectSetSubscription.Listener<
-        ObjectOrInterfaceDefinition,
-        never
-      >,
+      listener,
       opts?.includeRid ?? false,
     );
 
