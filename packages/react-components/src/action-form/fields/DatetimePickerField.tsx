@@ -50,7 +50,10 @@ export const DatetimePickerField: React.NamedExoticComponent<
   closeOnSelection,
   portalRef,
   portalContainer,
+  ariaLabel,
+  modal = "trap-focus",
 }: DatetimePickerFieldProps) {
+  const isModal = modal !== false;
   const shouldCloseOnSelection = closeOnSelection ?? !showTime;
   const popoverId = useId();
   // The wrapper is only a visual/positioning anchor. The input itself remains
@@ -168,10 +171,12 @@ export const DatetimePickerField: React.NamedExoticComponent<
       } else if (e.key === "Escape") {
         e.preventDefault();
         closePopover();
-      } else if (e.key === "Tab" && !e.shiftKey && isOpen) {
+      } else if (e.key === "Tab" && !e.shiftKey && isOpen && isModal) {
         // Move focus from the text input into the calendar popover.
         // The popover doesn't auto-focus on open (to keep the cursor in the input),
         // so Tab manually bridges focus to the first interactive calendar element.
+        // Only meaningful when the popover traps focus; when non-modal we let
+        // the browser advance focus naturally to the next document element.
         const firstFocusable = popoverRef.current?.querySelector<HTMLElement>(
           "button, select",
         );
@@ -183,7 +188,7 @@ export const DatetimePickerField: React.NamedExoticComponent<
         setIsOpen(false);
       }
     },
-    [commitAndStopEditing, closePopover, isOpen],
+    [commitAndStopEditing, closePopover, isOpen, isModal],
   );
 
   // --- Popover handlers ---
@@ -308,9 +313,12 @@ export const DatetimePickerField: React.NamedExoticComponent<
     <Popover.Root
       open={isOpen}
       onOpenChange={handleOpenChange}
-      // Uses pointer-down outside dismissal so the click that opens the picker
-      // is not reinterpreted after the portal dismiss layer appears.
-      modal="trap-focus"
+      // When `modal === "trap-focus"`, base-ui traps Tab cycling and we render
+      // a transparent dismiss layer for outside-click. When `false`, we rely
+      // on base-ui's default outside-click — required for nested popover use
+      // (e.g. inside FilterPopover) where a fullscreen dismiss layer would
+      // intercept clicks intended for the parent.
+      modal={modal}
     >
       <div ref={wrapperRef} className={wrapperClassName}>
         <Popover.Trigger
@@ -334,15 +342,18 @@ export const DatetimePickerField: React.NamedExoticComponent<
               aria-expanded={isOpen}
               aria-controls={popoverId}
               aria-haspopup="dialog"
+              aria-label={ariaLabel}
             />
           }
         />
       </div>
       <Popover.Portal ref={portalRef} container={portalContainer}>
-        <PortalDismissLayer
-          className={commonStyles.osdkDatePickerDismissLayer}
-          onDismiss={closePopover}
-        />
+        {isModal && (
+          <PortalDismissLayer
+            className={commonStyles.osdkDatePickerDismissLayer}
+            onDismiss={closePopover}
+          />
+        )}
         <Popover.Positioner
           anchor={wrapperRef}
           className={commonStyles.osdkDatePickerPositioner}
@@ -353,17 +364,19 @@ export const DatetimePickerField: React.NamedExoticComponent<
             className={commonStyles.osdkDatePickerPopover}
             id={popoverId}
             role="dialog"
-            aria-label="date picker"
+            aria-label="Date picker"
             // Disable base-ui's automatic focus restoration to the trigger on close.
             // We manage focus ourselves via closePopover() which blurs the input.
             finalFocus={false}
           >
-            <div
-              onFocus={handleStartFocusBoundary}
-              tabIndex={0}
-              aria-label="Start of date picker dialog"
-              className={commonStyles.osdkDatePickerFocusBoundary}
-            />
+            {isModal && (
+              <div
+                onFocus={handleStartFocusBoundary}
+                tabIndex={0}
+                aria-label="Start of date picker dialog"
+                className={commonStyles.osdkDatePickerFocusBoundary}
+              />
+            )}
             <LazyDateCalendar
               dateSelected={activeDateValue}
               onSelect={handleCalendarSelect}
@@ -374,12 +387,14 @@ export const DatetimePickerField: React.NamedExoticComponent<
               max={max}
               footer={timeFooter}
             />
-            <div
-              onFocus={handleEndFocusBoundary}
-              tabIndex={0}
-              aria-label="End of date picker dialog"
-              className={commonStyles.osdkDatePickerFocusBoundary}
-            />
+            {isModal && (
+              <div
+                onFocus={handleEndFocusBoundary}
+                tabIndex={0}
+                aria-label="End of date picker dialog"
+                className={commonStyles.osdkDatePickerFocusBoundary}
+              />
+            )}
           </Popover.Popup>
         </Popover.Positioner>
       </Popover.Portal>

@@ -235,6 +235,31 @@ describe("DatetimePickerField", () => {
       }
     });
 
+    it("does not render the dismiss layer when modal={false}", () => {
+      const portalContainer = document.createElement("div");
+      document.body.append(portalContainer);
+
+      try {
+        render(
+          <DatetimePickerField
+            value={new Date(2024, 0, 15)}
+            onChange={vi.fn()}
+            portalContainer={portalContainer}
+            modal={false}
+          />,
+        );
+
+        fireEvent.focus(screen.getByRole("combobox"));
+        expect(screen.getByRole("dialog")).toBeDefined();
+
+        expect(
+          portalContainer.querySelector("[data-osdk-portal-dismiss-layer]"),
+        ).toBeNull();
+      } finally {
+        portalContainer.remove();
+      }
+    });
+
     it("preserves time when selecting a calendar day with showTime", () => {
       const onChange = vi.fn();
       render(

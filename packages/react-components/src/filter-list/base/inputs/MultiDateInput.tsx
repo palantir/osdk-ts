@@ -17,11 +17,11 @@
 import { Button } from "@base-ui/react/button";
 import classnames from "classnames";
 import React, { memo, useCallback } from "react";
+import { DatetimePickerField } from "../../../action-form/fields/DatetimePickerField.js";
 import {
   formatDateForDisplay,
   formatDateForInput,
 } from "../../../shared/dateUtils.js";
-import { FilterDatePicker } from "./FilterDatePicker.js";
 import styles from "./MultiDateInput.module.css";
 import sharedStyles from "./shared.module.css";
 
@@ -51,7 +51,7 @@ function MultiDateInputInner({
 }: MultiDateInputProps): React.ReactElement {
   const renderDate = formatDate ?? formatDateForDisplay;
   const addDate = useCallback(
-    (date: Date | undefined) => {
+    (date: Date | null) => {
       if (date == null) return;
       const dateStr = formatDateForInput(date);
       const exists = selectedDates.some(
@@ -85,18 +85,12 @@ function MultiDateInputInner({
       {selectedDates.length > 0 && (
         <div className={sharedStyles.tagContainer}>
           {selectedDates.map((date) => (
-            <span key={date.toISOString()} className={sharedStyles.tag}>
-              {renderDate(date)}
-              <Button
-                className={sharedStyles.tagRemove}
-                // eslint-disable-next-line react/jsx-no-bind
-                onClick={() =>
-                  removeDate(date)}
-                aria-label={`Remove ${renderDate(date)}`}
-              >
-                ×
-              </Button>
-            </span>
+            <DateTag
+              key={date.toISOString()}
+              date={date}
+              onRemove={removeDate}
+              renderDate={renderDate}
+            />
           ))}
           {showClearAll && selectedDates.length > 1 && (
             <Button
@@ -111,13 +105,13 @@ function MultiDateInputInner({
       )}
 
       <div className={styles.calendarContainer}>
-        <FilterDatePicker
-          className={styles.input}
-          selectedDate={undefined}
+        <DatetimePickerField
+          value={null}
           onChange={addDate}
-          minDate={minDate}
-          maxDate={maxDate}
+          min={minDate}
+          max={maxDate}
           ariaLabel="Add date"
+          modal={false}
         />
       </div>
     </div>
@@ -126,3 +120,30 @@ function MultiDateInputInner({
 
 export const MultiDateInput: React.NamedExoticComponent<MultiDateInputProps> =
   memo(MultiDateInputInner);
+
+interface DateTagProps {
+  date: Date;
+  onRemove: (date: Date) => void;
+  renderDate: (date: Date) => string;
+}
+
+function DateTag(
+  { date, onRemove, renderDate }: DateTagProps,
+): React.ReactElement {
+  const handleRemove = useCallback(() => {
+    onRemove(date);
+  }, [onRemove, date]);
+  const label = renderDate(date);
+  return (
+    <span className={sharedStyles.tag}>
+      {label}
+      <Button
+        className={sharedStyles.tagRemove}
+        onClick={handleRemove}
+        aria-label={`Remove ${label}`}
+      >
+        ×
+      </Button>
+    </span>
+  );
+}

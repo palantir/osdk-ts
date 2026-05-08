@@ -26,6 +26,7 @@ import React, {
   useRef,
   useState,
 } from "react";
+import { DatetimePickerField } from "../../../action-form/fields/DatetimePickerField.js";
 import {
   formatDateForInput,
   parseDateFromInput,
@@ -36,7 +37,6 @@ import {
   type HistogramBucket,
   niceTicks,
 } from "./createHistogramBuckets.js";
-import { FilterDatePicker } from "./FilterDatePicker.js";
 import { HistogramTooltip } from "./HistogramTooltip.js";
 import styles from "./RangeInput.module.css";
 import sharedStyles from "./shared.module.css";
@@ -141,6 +141,8 @@ export interface RangeInputConfig<T> {
   maxLabel: string;
   formatTooltip: (min: T, max: T, count: number) => string;
   formatPlaceholder?: (value: T) => string;
+  /** Renders the leftmost / rightmost x-axis tick label. */
+  formatTick?: (value: T) => string;
   inputProps?: React.InputHTMLAttributes<HTMLInputElement>;
 }
 
@@ -872,19 +874,19 @@ function RangeBoundInput({
     [onChange],
   );
   const handleDatePickerChange = useCallback(
-    (date: Date | undefined) => {
+    (date: Date | null) => {
       onChange(date != null ? formatDateForInput(date) : "");
     },
     [onChange],
   );
   if (inputType === "date") {
     return (
-      <FilterDatePicker
-        className={styles.input}
-        selectedDate={parseDateFromInput(value)}
+      <DatetimePickerField
+        value={parseDateFromInput(value) ?? null}
         onChange={handleDatePickerChange}
         placeholder={placeholder}
         ariaLabel={ariaLabel}
+        modal={false}
       />
     );
   }
