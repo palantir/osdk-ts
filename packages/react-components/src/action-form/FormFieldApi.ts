@@ -147,7 +147,7 @@ export interface FormFieldPropsByType {
   OBJECT_SET: ObjectSetFieldProps<ObjectTypeDefinition>;
   RADIO_BUTTONS: RadioButtonsFieldProps<unknown>;
   TEXT_AREA: TextAreaFieldProps;
-  TEXT_INPUT: TextInputFieldProps;
+  TEXT_INPUT: TextInputFieldProps<boolean>;
   CUSTOM: CustomFieldProps<unknown>;
 }
 
@@ -408,21 +408,27 @@ export interface TextAreaFieldProps extends
   placeholder?: string;
 }
 
-export interface TextInputFieldProps extends
-  BaseFormFieldProps<string>,
-  Pick<
-    React.InputHTMLAttributes<HTMLInputElement>,
-    /**
-     * If provided, this will be added to the field validation
-     */
-    | "minLength"
-    /**
-     * If provided, this will be added to the field validation
-     */
-    | "maxLength"
-  >
+export interface TextInputFieldProps<Multiple extends boolean = false>
+  extends
+    BaseFormFieldProps<Multiple extends true ? readonly string[] : string>,
+    Pick<
+      React.InputHTMLAttributes<HTMLInputElement>,
+      /**
+       * If provided, this will be added to the field validation
+       */
+      | "minLength"
+      /**
+       * If provided, this will be added to the field validation
+       */
+      | "maxLength"
+    >
 {
   placeholder?: string;
+
+  /**
+   * Whether this text input accepts multiple string values as chips.
+   */
+  isMultiple?: Multiple;
 }
 
 /**
@@ -589,6 +595,13 @@ export type ActionParameters<Q extends ActionDefinition<unknown>> =
  * TODO: Re-use `BaseType`
  */
 export type FieldValueType<
+  Q extends ActionDefinition<unknown>,
+  K extends keyof ActionParameters<Q> = keyof ActionParameters<Q>,
+> = ActionParameters<Q>[K] extends { multiplicity: true }
+  ? ReadonlyArray<FieldScalarValueType<Q, K>>
+  : FieldScalarValueType<Q, K>;
+
+type FieldScalarValueType<
   Q extends ActionDefinition<unknown>,
   K extends keyof ActionParameters<Q> = keyof ActionParameters<Q>,
 > = ActionParameters<Q>[K]["type"] extends

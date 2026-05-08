@@ -154,6 +154,29 @@ describe("BaseForm", () => {
   });
 
   // TODO: expand this test to cover all field types
+  describe("multi text input field", () => {
+    it("renders default string array values as chips", () => {
+      render(
+        <BaseForm
+          formContent={[
+            field({
+              fieldKey: "tags",
+              label: "Tags",
+              fieldComponent: "TEXT_INPUT" as const,
+              fieldComponentProps: {
+                isMultiple: true,
+                defaultValue: ["existing"],
+              },
+            }),
+          ]}
+          onSubmit={vi.fn()}
+        />,
+      );
+
+      expect(screen.getByText("existing")).toBeDefined();
+    });
+  });
+
   describe("dropdown field", () => {
     it("renders dropdown from formContent", () => {
       render(

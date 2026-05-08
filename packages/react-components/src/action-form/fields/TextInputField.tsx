@@ -15,11 +15,20 @@
  */
 
 import { Input } from "@base-ui/react/input";
-import React from "react";
+import React, { memo } from "react";
 import type { TextInputFieldProps } from "../FormFieldApi.js";
 import styles from "./BaseInput.module.css";
+import { MultiTextInputField } from "./MultiTextInputField.js";
 
-export function TextInputField({
+const EMPTY_STRING_ARRAY: readonly string[] = [];
+
+type TextInputFieldRuntimeProps = TextInputFieldProps<boolean> & {
+  id?: string;
+};
+
+export const TextInputField: React.NamedExoticComponent<
+  TextInputFieldRuntimeProps
+> = memo(function TextInputFieldFn({
   id,
   value,
   onChange,
@@ -27,18 +36,35 @@ export function TextInputField({
   placeholder,
   minLength,
   maxLength,
-}: TextInputFieldProps & { id?: string }): React.ReactElement {
+  isMultiple,
+}: TextInputFieldRuntimeProps): React.ReactElement {
+  if (isMultiple) {
+    return (
+      <MultiTextInputField
+        id={id}
+        value={Array.isArray(value) ? value : EMPTY_STRING_ARRAY}
+        onChange={onChange as
+          | ((value: readonly string[] | null) => void)
+          | undefined}
+        error={error}
+        placeholder={placeholder}
+        minLength={minLength}
+        maxLength={maxLength}
+      />
+    );
+  }
+
   return (
     <Input
       id={id}
       className={styles.osdkBaseInput}
       type="text"
-      value={value ?? ""}
-      onValueChange={onChange}
+      value={typeof value === "string" ? value : ""}
+      onValueChange={onChange as ((value: string) => void) | undefined}
       placeholder={placeholder}
       minLength={minLength}
       maxLength={maxLength}
       aria-invalid={error != null || undefined}
     />
   );
-}
+});

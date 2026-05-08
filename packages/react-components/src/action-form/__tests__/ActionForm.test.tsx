@@ -55,6 +55,24 @@ const TestAction: TestActionDef = {
   apiName: "TestAction",
 } as TestActionDef;
 
+interface ArrayActionDef extends ActionDefinition<unknown> {
+  __DefinitionMetadata: {
+    signatures: unknown;
+    parameters: {
+      tags: { type: "string"; multiplicity: true };
+    };
+    type: "action";
+    apiName: "ArrayAction";
+    status: "ACTIVE";
+    rid: string;
+  };
+}
+
+const ArrayAction: ArrayActionDef = {
+  type: "action",
+  apiName: "ArrayAction",
+} as ArrayActionDef;
+
 const mockApplyAction = vi.fn().mockResolvedValue({
   editedObjectTypes: [],
 });
@@ -212,6 +230,37 @@ describe("ActionForm", () => {
 
       await vi.waitFor(() => {
         expect(onSuccess).toHaveBeenCalledWith(result);
+      });
+    });
+
+    it("submits multiplicity string parameters as arrays", async () => {
+      vi.mocked(useOsdkMetadata).mockReturnValue({
+        loading: false,
+        metadata: {
+          type: "action",
+          apiName: "ArrayAction",
+          displayName: "Array Action",
+          parameters: {
+            tags: {
+              type: "string",
+              nullable: false,
+              multiplicity: true,
+            },
+          },
+          status: "ACTIVE",
+          rid: "ri.ontology.main.action-type.array",
+        },
+      });
+
+      render(<ActionForm actionDefinition={ArrayAction} />);
+
+      const tagsInput = screen.getByRole("textbox", { name: /^tags/ });
+      fireEvent.input(tagsInput, { target: { value: "tag1" } });
+      fireEvent.keyDown(tagsInput, { key: "Enter" });
+      fireEvent.click(screen.getByRole("button", { name: /submit/i }));
+
+      await vi.waitFor(() => {
+        expect(mockApplyAction).toHaveBeenCalledWith({ tags: ["tag1"] });
       });
     });
 

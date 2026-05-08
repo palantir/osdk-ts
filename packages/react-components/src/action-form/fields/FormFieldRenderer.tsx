@@ -35,6 +35,8 @@ import { RadioButtonsField } from "./RadioButtonsField.js";
 import { TextAreaField } from "./TextAreaField.js";
 import { TextInputField } from "./TextInputField.js";
 
+const EMPTY_STRING_ARRAY: readonly string[] = [];
+
 export interface FormFieldRendererProps {
   fieldDefinition: RendererFieldDefinition;
   value: unknown;
@@ -104,7 +106,10 @@ function renderFieldComponent(
       return (
         <TextInputField
           id={fieldDefinition.fieldKey}
-          value={value != null ? String(value) : ""}
+          value={coerceToTextInputValue(
+            value,
+            fieldDefinition.fieldComponentProps.isMultiple === true,
+          )}
           onChange={onChange}
           placeholder={fieldDefinition.placeholder}
           error={error}
@@ -232,6 +237,21 @@ function resolvePortalContainer(
   return Object.hasOwn(fieldComponentProps, "portalContainer")
     ? fieldComponentProps.portalContainer
     : formPortalContainer;
+}
+
+function coerceToTextInputValue(
+  value: unknown,
+  isMultiple: boolean,
+): string | readonly string[] {
+  if (isMultiple) {
+    if (!Array.isArray(value)) {
+      return EMPTY_STRING_ARRAY;
+    }
+    return value.every((item) => typeof item === "string")
+      ? value
+      : value.map(String);
+  }
+  return value != null ? String(value) : "";
 }
 
 function coerceToDateRange(value: unknown): DateRange {

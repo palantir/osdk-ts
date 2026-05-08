@@ -110,7 +110,12 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
     (rawState: Record<string, unknown>): Record<string, unknown> => {
       const coerced: Record<string, unknown> = {};
       for (const [key, value] of Object.entries(rawState)) {
-        coerced[key] = coerceFieldValue(parameters?.[key]?.type, value);
+        const parameter = parameters?.[key];
+        coerced[key] = coerceFieldValue(
+          parameter?.type,
+          value,
+          parameter?.multiplicity === true,
+        );
       }
       return coerced;
     },

@@ -50,6 +50,7 @@ function buildFieldDefinition(
   };
 
   const paramType = param.type;
+  const isMultiple = param.multiplicity === true;
 
   if (typeof paramType === "object") {
     switch (paramType.type) {
@@ -90,6 +91,11 @@ function buildFieldDefinition(
 
   switch (paramType) {
     case "string":
+      return {
+        ...base,
+        fieldComponent: "TEXT_INPUT",
+        fieldComponentProps: isMultiple ? { isMultiple: true } : {},
+      };
     case "marking":
     case "geohash":
     case "geoshape":

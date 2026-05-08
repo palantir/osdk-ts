@@ -27,6 +27,7 @@ import type { FieldType } from "../FormFieldApi.js";
 export function coerceFieldValue(
   parameterType: FieldType | undefined,
   rawValue: unknown,
+  isMultiple = false,
 ): unknown {
   if (rawValue == null) {
     return undefined;
@@ -36,6 +37,23 @@ export function coerceFieldValue(
     return rawValue;
   }
 
+  if (isMultiple) {
+    if (!Array.isArray(rawValue)) {
+      return undefined;
+    }
+    const coercedValues = rawValue.map((value) =>
+      coerceSingleFieldValue(parameterType, value)
+    );
+    return coercedValues.includes(undefined) ? undefined : coercedValues;
+  }
+
+  return coerceSingleFieldValue(parameterType, rawValue);
+}
+
+function coerceSingleFieldValue(
+  parameterType: FieldType,
+  rawValue: unknown,
+): unknown {
   // TODO: Handle complex object types later
   if (typeof parameterType === "object") {
     return rawValue;

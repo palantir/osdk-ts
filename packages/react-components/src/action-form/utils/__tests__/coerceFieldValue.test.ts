@@ -33,6 +33,16 @@ describe("coerceFieldValue", () => {
     });
   });
 
+  describe("multi-value fields", () => {
+    it("coerces each array item when multiplicity is true", () => {
+      expect(coerceFieldValue("string", ["a", 2], true)).toEqual(["a", "2"]);
+    });
+
+    it("preserves an empty array when multiplicity is true", () => {
+      expect(coerceFieldValue("string", [], true)).toEqual([]);
+    });
+  });
+
   describe("string types", () => {
     it("passes through strings for string type", () => {
       expect(coerceFieldValue("string", "hello")).toBe("hello");
