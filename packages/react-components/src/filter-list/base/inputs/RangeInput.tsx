@@ -26,11 +26,7 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { DatePicker } from "../../../shared/calendar/index.js";
-import {
-  formatDateForInput,
-  parseDateFromInput,
-} from "../../../shared/dateUtils.js";
+import { DateRangePicker } from "../../../shared/calendar/index.js";
 import {
   createHistogramBuckets,
   getMaxBucketCount,
@@ -144,6 +140,13 @@ export interface RangeInputConfig<T> {
   formatTooltip: (min: T, max: T, count: number) => string;
   formatPlaceholder?: (value: T) => string;
   inputProps?: React.InputHTMLAttributes<HTMLInputElement>;
+  /**
+   * For `inputType === "date"`: forwarded to the shared `DateRangePicker`'s
+   * `formatDate` so the date-range histogram From/To inputs render the
+   * consumer-provided display string instead of ISO. Ignored for number
+   * ranges.
+   */
+  formatDate?: (date: Date) => string;
 }
 
 export interface RangeInputProps<T> {
@@ -241,7 +244,9 @@ function RangeInputInner<T>({
   const displayPairs = useStableData(valueCountPairs, isLoading);
 
   const computedRange = useMemo(() => {
-    if (displayPairs.length === 0) return { min: undefined, max: undefined };
+    if (displayPairs.length === 0) {
+      return { min: undefined, max: undefined };
+    }
     const min = displayPairs.reduce(
       (acc, p) => Math.min(acc, config.toNumber(p.value)),
       Infinity,
@@ -262,7 +267,9 @@ function RangeInputInner<T>({
   }), [computedRange.min, computedRange.max]);
 
   const buckets = useMemo<Array<HistogramBucket<T>>>(() => {
-    if (histogramData) return histogramData.buckets;
+    if (histogramData) {
+      return histogramData.buckets;
+    }
     if (
       !showHistogram
       || displayPairs.length === 0
@@ -327,11 +334,15 @@ function RangeInputInner<T>({
       const rounded = Math.round(v / step) * step;
       all.push({ value: rounded, label: formatTickAdaptive(rounded, step) });
     }
-    if (all.length <= 2) return all;
+    if (all.length <= 2) {
+      return all;
+    }
     const maxLabelLen = Math.max(...all.map((t) => t.label.length));
     const minSpacing = maxLabelLen * X_TICK_FONT_SIZE * 0.6 + 8;
     const fits = Math.max(2, Math.floor(PLOT_W / minSpacing) + 1);
-    if (all.length <= fits) return all;
+    if (all.length <= fits) {
+      return all;
+    }
     const stride = Math.ceil((all.length - 1) / (fits - 1));
     const picked: Array<{ value: number; label: string }> = [];
     for (let i = 0; i < all.length; i += stride) {
@@ -348,7 +359,9 @@ function RangeInputInner<T>({
   const COUNT_LABEL_THRESHOLD = 10;
   const skipCountLabel = useCallback(
     (i: number) => {
-      if (buckets.length <= COUNT_LABEL_THRESHOLD) return false;
+      if (buckets.length <= COUNT_LABEL_THRESHOLD) {
+        return false;
+      }
       const stride = Math.ceil(buckets.length / COUNT_LABEL_THRESHOLD);
       return i % stride !== 0;
     },
@@ -817,54 +830,110 @@ function RangeInputInner<T>({
         </div>
       )}
 
-      <div className={styles.rangeInputs}>
-        <div className={styles.inputWrapper}>
-          <label htmlFor={minInputId} className={styles.inputLabel}>
-            {config.minLabel}
-          </label>
-          <RangeBoundInput
-            id={minInputId}
-            inputType={config.inputType}
-            value={localMin}
-            onChange={handleMinChange}
-            placeholder={dataRange.dataMin !== undefined
-                && config.formatPlaceholder
-              ? config.formatPlaceholder(dataRange.dataMin)
-              : undefined}
-            inputProps={config.inputProps}
-            ariaLabel={config.minLabel}
+      {config.inputType === "date"
+        ? (
+          <DateRangeInputs
+            minValue={minValue as Date | undefined}
+            maxValue={maxValue as Date | undefined}
+            onChange={onChange as RangeOnChange<Date>}
+            formatDate={config.formatDate}
+            minLabel={config.minLabel}
+            maxLabel={config.maxLabel}
           />
-        </div>
+        )
+        : (
+          <div className={styles.rangeInputs}>
+            <div className={styles.inputWrapper}>
+              <label htmlFor={minInputId} className={styles.inputLabel}>
+                {config.minLabel}
+              </label>
+              <RangeBoundInput
+                id={minInputId}
+                value={localMin}
+                onChange={handleMinChange}
+                placeholder={dataRange.dataMin !== undefined
+                    && config.formatPlaceholder
+                  ? config.formatPlaceholder(dataRange.dataMin)
+                  : undefined}
+                inputProps={config.inputProps}
+                ariaLabel={config.minLabel}
+              />
+            </div>
 
-        <span className={styles.separator} aria-hidden="true">
-          –
-        </span>
+            <span className={styles.separator} aria-hidden="true">
+              –
+            </span>
 
-        <div className={styles.inputWrapper}>
-          <label htmlFor={maxInputId} className={styles.inputLabel}>
-            {config.maxLabel}
-          </label>
-          <RangeBoundInput
-            id={maxInputId}
-            inputType={config.inputType}
-            value={localMax}
-            onChange={handleMaxChange}
-            placeholder={dataRange.dataMax !== undefined
-                && config.formatPlaceholder
-              ? config.formatPlaceholder(dataRange.dataMax)
-              : undefined}
-            inputProps={config.inputProps}
-            ariaLabel={config.maxLabel}
-          />
-        </div>
-      </div>
+            <div className={styles.inputWrapper}>
+              <label htmlFor={maxInputId} className={styles.inputLabel}>
+                {config.maxLabel}
+              </label>
+              <RangeBoundInput
+                id={maxInputId}
+                value={localMax}
+                onChange={handleMaxChange}
+                placeholder={dataRange.dataMax !== undefined
+                    && config.formatPlaceholder
+                  ? config.formatPlaceholder(dataRange.dataMax)
+                  : undefined}
+                inputProps={config.inputProps}
+                ariaLabel={config.maxLabel}
+              />
+            </div>
+          </div>
+        )}
+    </div>
+  );
+}
+
+type RangeOnChange<T> = (
+  min: T | undefined,
+  max: T | undefined,
+) => void;
+
+interface DateRangeInputsProps {
+  minValue: Date | undefined;
+  maxValue: Date | undefined;
+  onChange: RangeOnChange<Date>;
+  formatDate: ((date: Date) => string) | undefined;
+  minLabel: string;
+  maxLabel: string;
+}
+
+function DateRangeInputs({
+  minValue,
+  maxValue,
+  onChange,
+  formatDate,
+  minLabel,
+  maxLabel,
+}: DateRangeInputsProps): React.ReactElement {
+  const handleChange = useCallback(
+    (next: readonly [Date | null, Date | null] | null) => {
+      const [start, end] = next ?? [null, null];
+      onChange(start ?? undefined, end ?? undefined);
+    },
+    [onChange],
+  );
+  const value = useMemo<readonly [Date | null, Date | null]>(
+    () => [minValue ?? null, maxValue ?? null],
+    [minValue, maxValue],
+  );
+  return (
+    <div className={styles.rangeInputs}>
+      <DateRangePicker
+        value={value}
+        onChange={handleChange}
+        placeholderStart={minLabel}
+        placeholderEnd={maxLabel}
+        formatDate={formatDate}
+      />
     </div>
   );
 }
 
 interface RangeBoundInputProps {
   id: string;
-  inputType: "number" | "date";
   value: string;
   onChange: (next: string) => void;
   placeholder: string | undefined;
@@ -874,7 +943,6 @@ interface RangeBoundInputProps {
 
 function RangeBoundInput({
   id,
-  inputType,
   value,
   onChange,
   placeholder,
@@ -887,23 +955,6 @@ function RangeBoundInput({
     },
     [onChange],
   );
-  const handleDatePickerChange = useCallback(
-    (date: Date | null) => {
-      onChange(date != null ? formatDateForInput(date) : "");
-    },
-    [onChange],
-  );
-  if (inputType === "date") {
-    return (
-      <DatePicker
-        value={parseDateFromInput(value) ?? null}
-        onChange={handleDatePickerChange}
-        placeholder={placeholder}
-        ariaLabel={ariaLabel}
-        modal={false}
-      />
-    );
-  }
   return (
     <Input
       id={id}

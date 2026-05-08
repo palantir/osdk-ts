@@ -19,7 +19,7 @@ import React from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { createDateHistogramBuckets } from "../createDateHistogramBuckets.js";
 import { niceTicks } from "../createHistogramBuckets.js";
-import { DateRangeInput } from "../DateRangeInput.js";
+import { DateRangeHistogramInput } from "../DateRangeHistogramInput.js";
 import { NumberRangeInput } from "../NumberRangeInput.js";
 
 afterEach(cleanup);
@@ -78,7 +78,7 @@ describe("createDateHistogramBuckets", () => {
     });
     expect(result.granularity).toBe("day");
     expect(result.buckets).toHaveLength(31);
-    expect(result.subtitle).toBe("May 2020");
+    expect(result.subtitle).toBe("2020-05");
     // Bucket for May 15 should have count 3
     expect(result.buckets[14].count).toBe(3);
     expect(result.buckets[14].tickLabel).toBe("15");
@@ -97,7 +97,7 @@ describe("createDateHistogramBuckets", () => {
     expect(result.granularity).toBe("month");
     expect(result.buckets).toHaveLength(12);
     expect(result.subtitle).toBe("2020");
-    expect(result.buckets[5].tickLabel).toBe("Jun");
+    expect(result.buckets[5].tickLabel).toBe("06");
     expect(result.buckets[5].count).toBe(7);
   });
 
@@ -139,7 +139,7 @@ describe("RangeInput SVG histogram", () => {
 
   it("renders the histogram as an <svg> element", () => {
     const { container } = render(
-      <DateRangeInput
+      <DateRangeHistogramInput
         valueCountPairs={dateBuckets}
         isLoading={false}
         minValue={undefined}
@@ -153,7 +153,7 @@ describe("RangeInput SVG histogram", () => {
 
   it("renders one <rect> per bucket", () => {
     const { container } = render(
-      <DateRangeInput
+      <DateRangeHistogramInput
         valueCountPairs={dateBuckets}
         isLoading={false}
         minValue={undefined}
@@ -168,7 +168,7 @@ describe("RangeInput SVG histogram", () => {
 
   it("renders bar count <text> labels for buckets with count > 0", () => {
     const { container } = render(
-      <DateRangeInput
+      <DateRangeHistogramInput
         valueCountPairs={dateBuckets}
         isLoading={false}
         minValue={undefined}
@@ -186,7 +186,7 @@ describe("RangeInput SVG histogram", () => {
 
   it("renders x-axis tick <text> labels for date histograms", () => {
     const { container } = render(
-      <DateRangeInput
+      <DateRangeHistogramInput
         valueCountPairs={dateBuckets}
         isLoading={false}
         minValue={undefined}
@@ -200,7 +200,7 @@ describe("RangeInput SVG histogram", () => {
 
   it("renders the subtitle <text> below the histogram", () => {
     const { container } = render(
-      <DateRangeInput
+      <DateRangeHistogramInput
         valueCountPairs={dateBuckets}
         isLoading={false}
         minValue={undefined}
@@ -209,12 +209,12 @@ describe("RangeInput SVG histogram", () => {
       />,
     );
     const subtitle = container.querySelector("text[class*=\"subtitle\"]");
-    expect(subtitle?.textContent).toBe("May 2020");
+    expect(subtitle?.textContent).toBe("2020-05");
   });
 
   it("renders y-axis axisLines + numeric tick labels", () => {
     const { container } = render(
-      <DateRangeInput
+      <DateRangeHistogramInput
         valueCountPairs={dateBuckets}
         isLoading={false}
         minValue={undefined}
@@ -236,7 +236,7 @@ describe("RangeInput SVG histogram", () => {
       { value: new Date(2020, 4, 15), count: 3 },
     ];
     const { container } = render(
-      <DateRangeInput
+      <DateRangeHistogramInput
         valueCountPairs={tinyBuckets}
         isLoading={false}
         minValue={undefined}
@@ -290,9 +290,11 @@ describe("RangeInput SVG histogram", () => {
       document.dispatchEvent(new MouseEvent("mouseup", { bubbles: true }));
 
     it("does not invoke onChange when clickToFilter is omitted", () => {
-      const onChange = vi.fn();
+      const onChange = vi.fn<
+        (min: Date | undefined, max: Date | undefined) => void
+      >();
       const { container } = render(
-        <DateRangeInput
+        <DateRangeHistogramInput
           valueCountPairs={dateBuckets}
           isLoading={false}
           minValue={undefined}
@@ -312,9 +314,11 @@ describe("RangeInput SVG histogram", () => {
     it(
       "single mousedown+mouseup on one bar sets the range to that bucket",
       () => {
-        const onChange = vi.fn();
+        const onChange = vi.fn<
+          (min: Date | undefined, max: Date | undefined) => void
+        >();
         const { container } = render(
-          <DateRangeInput
+          <DateRangeHistogramInput
             valueCountPairs={dateBuckets}
             isLoading={false}
             minValue={undefined}
@@ -330,17 +334,19 @@ describe("RangeInput SVG histogram", () => {
         fireDocumentMouseUp();
         expect(onChange).toHaveBeenCalledTimes(1);
         const [min, max] = onChange.mock.calls[0];
-        expect((min as Date).getDate()).toBe(1);
-        expect((max as Date).getDate()).toBe(2);
+        expect(min?.getDate()).toBe(1);
+        expect(max?.getDate()).toBe(2);
       },
     );
 
     it(
       "drag from bar 0 to bar 3 commits a range covering all four buckets",
       () => {
-        const onChange = vi.fn();
+        const onChange = vi.fn<
+          (min: Date | undefined, max: Date | undefined) => void
+        >();
         const { container } = render(
-          <DateRangeInput
+          <DateRangeHistogramInput
             valueCountPairs={dateBuckets}
             isLoading={false}
             minValue={undefined}
@@ -361,15 +367,17 @@ describe("RangeInput SVG histogram", () => {
         const [min, max] = onChange.mock.calls[0];
         // Daily buckets May 1..10; bucket 0 is [May 1, May 2], bucket 3 is
         // [May 4, May 5] → committed range = [May 1, May 5]
-        expect((min as Date).getDate()).toBe(1);
-        expect((max as Date).getDate()).toBe(5);
+        expect(min?.getDate()).toBe(1);
+        expect(max?.getDate()).toBe(5);
       },
     );
 
     it("drag in reverse (bar 3 → bar 0) still commits with min < max", () => {
-      const onChange = vi.fn();
+      const onChange = vi.fn<
+        (min: Date | undefined, max: Date | undefined) => void
+      >();
       const { container } = render(
-        <DateRangeInput
+        <DateRangeHistogramInput
           valueCountPairs={dateBuckets}
           isLoading={false}
           minValue={undefined}
@@ -388,13 +396,13 @@ describe("RangeInput SVG histogram", () => {
       fireDocumentMouseUp();
       expect(onChange).toHaveBeenCalledTimes(1);
       const [min, max] = onChange.mock.calls[0];
-      expect((min as Date).getDate()).toBe(1);
-      expect((max as Date).getDate()).toBe(5);
+      expect(min?.getDate()).toBe(1);
+      expect(max?.getDate()).toBe(5);
     });
 
     it("sets data-click-to-filter=\"true\" on rects when enabled", () => {
       const { container } = render(
-        <DateRangeInput
+        <DateRangeHistogramInput
           valueCountPairs={dateBuckets}
           isLoading={false}
           minValue={undefined}
@@ -414,7 +422,7 @@ describe("RangeInput SVG histogram", () => {
 
     it("does NOT set data-click-to-filter when disabled", () => {
       const { container } = render(
-        <DateRangeInput
+        <DateRangeHistogramInput
           valueCountPairs={dateBuckets}
           isLoading={false}
           minValue={undefined}

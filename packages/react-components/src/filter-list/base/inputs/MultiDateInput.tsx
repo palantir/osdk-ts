@@ -33,10 +33,11 @@ interface MultiDateInputProps {
   minDate?: Date;
   maxDate?: Date;
   showClearAll?: boolean;
-  /** Optional callback used for chip text. */
+  /**
+   * Consumer-provided display formatter for chip text. Falls back to
+   * `formatDateForDisplay` (locale-aware) when omitted.
+   */
   formatDate?: (date: Date) => string;
-  /** Reserved for future custom text-entry inputs; not invoked by the built-in HTML `<input type="date">`. */
-  parseDate?: (text: string) => Date | undefined;
 }
 
 function MultiDateInputInner({

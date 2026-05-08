@@ -24,16 +24,9 @@
 
 import type { PropertyFilterDateExtras } from "../FilterListItemApi.js";
 
-/**
- * For datetime / timestamp, the extras include `formatDate` and `parseDate`
- * with the documented callback signatures.
- */
+// For datetime / timestamp, the extras include `formatDate`.
 const dateExtras: PropertyFilterDateExtras<"timestamp"> = {
   formatDate: (d) => d.toISOString(),
-  parseDate: (text) => {
-    const t = new Date(text);
-    return isNaN(t.getTime()) ? undefined : t;
-  },
 };
 void dateExtras;
 
@@ -42,8 +35,8 @@ const datetimeExtras: PropertyFilterDateExtras<"datetime"> = {
 };
 void datetimeExtras;
 
-// For non-date property types, `formatDate` and `parseDate` are typed as
-// `never`. Attempting to set them to a function must be a TS error.
+// For non-date property types, `formatDate` is typed as `never`. Setting
+// it to a function must be a TS error.
 const numberExtras: PropertyFilterDateExtras<"integer"> = {
   // @ts-expect-error formatDate is `never` for number-typed properties
   formatDate: (d: Date): string => d.toISOString(),
@@ -51,14 +44,13 @@ const numberExtras: PropertyFilterDateExtras<"integer"> = {
 void numberExtras;
 
 const stringExtras: PropertyFilterDateExtras<"string"> = {
-  // @ts-expect-error parseDate is `never` for string-typed properties
-  parseDate: (text: string): Date | undefined => new Date(text),
+  // @ts-expect-error formatDate is `never` for string-typed properties
+  formatDate: (d: Date): string => d.toISOString(),
 };
 void stringExtras;
 
-// Empty object literals are still allowed — both fields are optional on
-// all property types (since the extras either provide them or type them
-// as optional `never`).
+// Empty object literals are still allowed — `formatDate` is optional on
+// all property types (either documented or typed as optional `never`).
 const numberEmpty: PropertyFilterDateExtras<"integer"> = {};
 void numberEmpty;
 const stringEmpty: PropertyFilterDateExtras<"string"> = {};

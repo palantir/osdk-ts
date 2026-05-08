@@ -255,6 +255,7 @@
     )
     var(--osdk-emphasis-ease-default);
   --osdk-filter-range-histogram-axis-line-color: var(--osdk-palette-gray-1);
+  --osdk-filter-range-clear-button-bg-hover: var(--osdk-custom-color-gray-1);
   --osdk-filter-range-histogram-axis-color: var(--osdk-typography-color-muted);
   --osdk-filter-range-histogram-axis-font-size: var(
     --osdk-typography-size-body-large

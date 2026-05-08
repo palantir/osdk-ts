@@ -17,7 +17,7 @@
 import type { ObjectSet, ObjectTypeDefinition, WhereClause } from "@osdk/api";
 import { useOsdkAggregation } from "@osdk/react";
 import React, { memo, useCallback, useMemo } from "react";
-import { DateRangeInput } from "../base/inputs/DateRangeInput.js";
+import { DateRangeHistogramInput } from "../base/inputs/DateRangeHistogramInput.js";
 import { NullValueWrapper } from "../base/inputs/NullValueWrapper.js";
 import type { FilterState } from "../FilterListItemApi.js";
 import {
@@ -34,7 +34,6 @@ interface DateRangeFilterInputProps<Q extends ObjectTypeDefinition> {
   onFilterStateChanged: (state: FilterState) => void;
   whereClause: WhereClause<Q>;
   formatDate?: (date: Date) => string;
-  parseDate?: (text: string) => Date | undefined;
   clickToFilter?: boolean;
 }
 
@@ -46,7 +45,6 @@ function DateRangeFilterInputInner<Q extends ObjectTypeDefinition>({
   onFilterStateChanged,
   whereClause,
   formatDate,
-  parseDate,
   clickToFilter,
 }: DateRangeFilterInputProps<Q>): React.ReactElement {
   const dateRangeState = filterState?.type === "DATE_RANGE"
@@ -167,14 +165,13 @@ function DateRangeFilterInputInner<Q extends ObjectTypeDefinition>({
       includeNull={includeNull}
       onIncludeNullChange={handleNullChange}
     >
-      <DateRangeInput
+      <DateRangeHistogramInput
         valueCountPairs={valueCountPairs}
         isLoading={isLoading}
         minValue={dateRangeState?.minValue}
         maxValue={dateRangeState?.maxValue}
         onChange={handleRangeChange}
         formatDate={formatDate}
-        parseDate={parseDate}
         clickToFilter={clickToFilter}
       />
     </NullValueWrapper>

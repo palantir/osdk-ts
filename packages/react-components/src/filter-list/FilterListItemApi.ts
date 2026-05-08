@@ -208,36 +208,33 @@ export interface ToggleFilterState extends BaseFilterState {
 }
 
 /**
- * Optional date formatting/parsing callbacks. Mixed into
- * `PropertyFilterDefinition` only when the property is `datetime` or
- * `timestamp` — see {@link PropertyFilterDateExtras}.
+ * Optional date display formatter. Mixed into `PropertyFilterDefinition`
+ * only when the property is `datetime` or `timestamp` — see
+ * {@link PropertyFilterDateExtras}.
  *
- * Display surfaces (date-range histogram tooltip, multi-date chip text,
- * timeline labels) call `formatDate` when provided; otherwise dates render
- * via the default locale-aware formatter.
+ * `formatDate` overrides the displayed string everywhere the filter
+ * surfaces a date: the shared `DateRangePicker` / `DatePicker` idle text,
+ * the date-range histogram tooltip and period subtitle, the histogram
+ * x-tick labels (when no `formatTickLabel` is provided), the multi-date
+ * chip text, and timeline labels. The picker's internal value remains ISO
+ * `YYYY-MM-DD` so cross-locale viewers see a consistent input format
+ * regardless of `formatDate`.
  *
- * `parseDate` is the inverse of `formatDate`. It is plumbed through for
- * consumers that build text-based date inputs but is not invoked by the
- * built-in HTML `<input type="date">` controls (the browser handles those).
- *
- * Both functions receive/return `Date` instances in local time. If the
- * property is a UTC ISO string and you want a different timezone, do that
- * conversion inside your callback.
+ * Receives a `Date` in local time. If the property is a UTC ISO string and
+ * you want a different timezone, do that conversion inside your callback.
  */
 export interface DateFormattingProps {
   formatDate?: (date: Date) => string;
-  parseDate?: (text: string) => Date | undefined;
 }
 
 /**
- * Conditionally adds `formatDate` / `parseDate` to a property filter
- * definition only for `datetime` / `timestamp` properties. For other
- * property types these fields are typed as `never` so attempting to set
- * them is a TypeScript error.
+ * Conditionally adds `formatDate` to a property filter definition only for
+ * `datetime` / `timestamp` properties. For other property types this field
+ * is typed as `never` so attempting to set it is a TypeScript error.
  */
 export type PropertyFilterDateExtras<P extends WirePropertyTypes> = P extends
   "datetime" | "timestamp" ? DateFormattingProps
-  : { formatDate?: never; parseDate?: never };
+  : { formatDate?: never };
 
 interface PropertyFilterDefinitionBase<
   Q extends ObjectTypeDefinition,
@@ -340,7 +337,7 @@ interface PropertyFilterDefinitionBase<
  * For example, boolean properties can only use LISTOGRAM or SINGLE_SELECT,
  * while string properties can use LISTOGRAM, TEXT_TAGS, CONTAINS_TEXT, SINGLE_SELECT, or MULTI_SELECT.
  *
- * Date and datetime properties may additionally specify `formatDate` and `parseDate` — see
+ * Date and datetime properties may additionally specify `formatDate` — see
  * {@link PropertyFilterDateExtras}.
  */
 export type PropertyFilterDefinition<

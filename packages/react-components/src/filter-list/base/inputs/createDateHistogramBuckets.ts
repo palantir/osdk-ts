@@ -30,7 +30,7 @@ export type DateHistogramGranularity = "day" | "month" | "year";
 
 export interface DateHistogramData {
   buckets: Array<HistogramBucket<Date>>;
-  /** Period label rendered as the bottom-center subtitle (e.g. "May 2020"). */
+  /** Period label rendered as the bottom-center subtitle (e.g. "2020-05"). */
   subtitle: string;
   granularity: DateHistogramGranularity;
 }
@@ -45,23 +45,35 @@ interface ValueCountPair {
  *
  * Granularity is chosen from the data span:
  *   span ≤ 31 days   → daily buckets, ticks "1" / "2" / ... / "31"
- *   span ≤ 365 days  → monthly buckets, ticks "Jan" / "Feb" / ...
+ *   span ≤ 365 days  → monthly buckets, ticks "01" / "02" / ... / "12"
  *   span >  365 days → yearly buckets, ticks "2020" / "2021" / ...
  *
- * The subtitle reflects the surrounding calendar context — e.g. "May 2020"
+ * Tick labels follow the same ISO-style convention used by the shared
+ * date pickers — zero-padded month numbers, locale-neutral years, plain
+ * day-of-month integers — so cross-locale viewers see identical tick
+ * labels regardless of browser locale.
+ *
+ * The subtitle reflects the surrounding calendar context — e.g. "2020-05"
  * for a daily histogram inside one month, "2020" for a monthly histogram
  * inside one year. When the data straddles multiple periods (e.g. monthly
  * histogram across multiple years) the subtitle is empty so the per-bucket
  * tick labels stay self-describing.
  *
- * @param formatDate Optional callback used for the subtitle text in place of
- * the default date-fns format. Per-bucket `tickLabel` strings stay short
- * (number-only or 3-letter month) regardless of `formatDate`.
+ * @param formatDate Consumer-provided display formatter. Used for the
+ * subtitle and (when `formatTickLabel` is omitted) for monthly tick
+ * labels. Day-of-month and year ticks stay numeric regardless.
+ * @param formatTickLabel Optional override for per-bucket tick labels.
+ * Receives the bucket's start `Date` and the chosen granularity. Takes
+ * precedence over `formatDate` for ticks.
  */
 export function createDateHistogramBuckets(
   pairs: ReadonlyArray<ValueCountPair>,
   range: { min: Date; max: Date },
   formatDate?: (date: Date) => string,
+  formatTickLabel?: (
+    date: Date,
+    granularity: DateHistogramGranularity,
+  ) => string,
 ): DateHistogramData {
   if (pairs.length === 0) {
     return { buckets: [], subtitle: "", granularity: "day" };
@@ -97,7 +109,9 @@ export function createDateHistogramBuckets(
         min,
         max,
         count: counts[i],
-        tickLabel: format(min, "d"),
+        tickLabel: formatTickLabel != null
+          ? formatTickLabel(min, "day")
+          : format(min, "d"),
       });
     }
   } else if (granularity === "month") {
@@ -113,14 +127,25 @@ export function createDateHistogramBuckets(
     for (const { value, count } of pairs) {
       const monthStart = startOfMonth(value).getTime();
       const idx = months.findIndex((m) => m.getTime() === monthStart);
-      if (idx >= 0) counts[idx] += count;
+      if (idx >= 0) {
+        counts[idx] += count;
+      }
     }
     for (let i = 0; i < months.length; i++) {
+      const monthStart = months[i];
+      // Default monthly ticks are zero-padded `01`/`02`/.../`12` so a
+      // German viewer sees the same labels as an English viewer (vs the
+      // English-only `Jan`/`Feb` from `format(d, "MMM")`).
+      const defaultLabel = formatDate != null
+        ? formatDate(monthStart)
+        : format(monthStart, "MM");
       buckets.push({
-        min: months[i],
-        max: addMonths(months[i], 1),
+        min: monthStart,
+        max: addMonths(monthStart, 1),
         count: counts[i],
-        tickLabel: format(months[i], "MMM"),
+        tickLabel: formatTickLabel != null
+          ? formatTickLabel(monthStart, "month")
+          : defaultLabel,
       });
     }
   } else {
@@ -136,14 +161,19 @@ export function createDateHistogramBuckets(
     for (const { value, count } of pairs) {
       const yearStart = startOfYear(value).getTime();
       const idx = years.findIndex((y) => y.getTime() === yearStart);
-      if (idx >= 0) counts[idx] += count;
+      if (idx >= 0) {
+        counts[idx] += count;
+      }
     }
     for (let i = 0; i < years.length; i++) {
+      const yearStart = years[i];
       buckets.push({
-        min: years[i],
-        max: addYears(years[i], 1),
+        min: yearStart,
+        max: addYears(yearStart, 1),
         count: counts[i],
-        tickLabel: format(years[i], "yyyy"),
+        tickLabel: formatTickLabel != null
+          ? formatTickLabel(yearStart, "year")
+          : format(yearStart, "yyyy"),
       });
     }
   }
@@ -164,22 +194,29 @@ function computeSubtitle(
   formatDate?: (date: Date) => string,
 ): string {
   if (granularity === "day") {
-    // Daily within one month: "May 2020". Across months: just the year(s).
+    // Daily within one month: "2020-05". Across months: the year(s) when
+    // the data still fits inside one calendar year.
     const sameMonth = rangeMin.getFullYear() === rangeMax.getFullYear()
       && rangeMin.getMonth() === rangeMax.getMonth();
     if (sameMonth) {
-      return formatDate ? formatDate(rangeMin) : format(rangeMin, "MMMM yyyy");
+      return formatDate != null
+        ? formatDate(rangeMin)
+        : format(rangeMin, "yyyy-MM");
     }
     const sameYear = rangeMin.getFullYear() === rangeMax.getFullYear();
     if (sameYear) {
-      return formatDate ? formatDate(rangeMin) : format(rangeMin, "yyyy");
+      return formatDate != null
+        ? formatDate(rangeMin)
+        : format(rangeMin, "yyyy");
     }
     return "";
   }
   if (granularity === "month") {
     const sameYear = rangeMin.getFullYear() === rangeMax.getFullYear();
     if (sameYear) {
-      return formatDate ? formatDate(rangeMin) : format(rangeMin, "yyyy");
+      return formatDate != null
+        ? formatDate(rangeMin)
+        : format(rangeMin, "yyyy");
     }
     return "";
   }

@@ -101,7 +101,6 @@ function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
           onFilterStateChanged={onFilterStateChanged}
           whereClause={whereClause}
           formatDate={definition.formatDate}
-          parseDate={definition.parseDate}
           clickToFilter={definition.clickToFilter}
         />
       );
@@ -150,7 +149,6 @@ function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
           filterState={filterState}
           onFilterStateChanged={onFilterStateChanged}
           formatDate={definition.formatDate}
-          parseDate={definition.parseDate}
         />
       );
 
@@ -197,7 +195,6 @@ function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
             filterState={filterState}
             onFilterStateChanged={onFilterStateChanged}
             formatDate={definition.formatDate}
-            parseDate={definition.parseDate}
           />
         </FilterInputExcludeRow>
       );

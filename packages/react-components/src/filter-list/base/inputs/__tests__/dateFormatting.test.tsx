@@ -17,7 +17,7 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import React from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { DateRangeInput } from "../DateRangeInput.js";
+import { DateRangeHistogramInput } from "../DateRangeHistogramInput.js";
 import { MultiDateInput } from "../MultiDateInput.js";
 import { TimelineInput } from "../TimelineInput.js";
 
@@ -146,7 +146,7 @@ describe("formatDate / parseDate plumbing", () => {
     );
   });
 
-  describe("DateRangeInput", () => {
+  describe("DateRangeHistogramInput", () => {
     const buckets = [
       { value: new Date(2024, 0, 1), count: 5 },
       { value: new Date(2024, 5, 30), count: 7 },
@@ -156,7 +156,7 @@ describe("formatDate / parseDate plumbing", () => {
       "uses formatDate for the histogram bar tooltip when provided",
       () => {
         const { container } = render(
-          <DateRangeInput
+          <DateRangeHistogramInput
             valueCountPairs={buckets}
             isLoading={false}
             minValue={undefined}
@@ -183,7 +183,7 @@ describe("formatDate / parseDate plumbing", () => {
       () => {
         const min = new Date(2024, 0, 15);
         render(
-          <DateRangeInput
+          <DateRangeHistogramInput
             valueCountPairs={buckets}
             isLoading={false}
             minValue={min}
@@ -192,8 +192,14 @@ describe("formatDate / parseDate plumbing", () => {
             formatDate={slashFormat}
           />,
         );
-        const input = screen.getByLabelText("From") as HTMLInputElement;
-        expect(input.value).toBe("2024-01-15");
+        const startInput = screen.getByLabelText(
+          "Start date",
+        ) as HTMLInputElement;
+        // The shared DateRangePicker shows the consumer-pinned format in the
+        // idle text, but the underlying calendar value remains ISO. Tests
+        // rely on the displayed value here, which now goes through
+        // formatDate when provided.
+        expect(startInput.value).toBe(slashFormat(min));
       },
     );
 
@@ -201,7 +207,7 @@ describe("formatDate / parseDate plumbing", () => {
       "uses the default tooltip format when formatDate is omitted",
       () => {
         const { container } = render(
-          <DateRangeInput
+          <DateRangeHistogramInput
             valueCountPairs={buckets}
             isLoading={false}
             minValue={undefined}
@@ -244,7 +250,10 @@ describe("formatDate / parseDate plumbing", () => {
       const text = "06/30/2024";
       const parsed = slashParse(text);
       expect(parsed).toBeDefined();
-      const reformatted = slashFormat(parsed!);
+      if (parsed === undefined) {
+        return;
+      }
+      const reformatted = slashFormat(parsed);
       expect(reformatted).toBe(text);
     });
   });
