@@ -55,34 +55,6 @@ function FilterInputInner<Q extends ObjectTypeDefinition>({
   excludeRowOpen,
   layout,
 }: FilterInputProps<Q>): React.ReactElement {
-  return (
-    <FilterInputContent
-      objectType={objectType}
-      objectSet={objectSet}
-      definition={definition}
-      filterState={filterState}
-      onFilterStateChanged={onFilterStateChanged}
-      whereClause={whereClause}
-      searchQuery={searchQuery}
-      excludeRowOpen={excludeRowOpen}
-      layout={layout}
-    />
-  );
-}
-
-export const FilterInput = memo(FilterInputInner) as typeof FilterInputInner;
-
-function FilterInputContent<Q extends ObjectTypeDefinition>({
-  objectType,
-  objectSet,
-  definition,
-  filterState,
-  onFilterStateChanged,
-  whereClause,
-  searchQuery,
-  excludeRowOpen,
-  layout,
-}: FilterInputProps<Q>): React.ReactElement {
   switch (definition.type) {
     case "HAS_LINK":
       return (
@@ -169,6 +141,8 @@ function FilterInputContent<Q extends ObjectTypeDefinition>({
       return <div data-unsupported="true">Unsupported filter type</div>;
   }
 }
+
+export const FilterInput = memo(FilterInputInner) as typeof FilterInputInner;
 
 interface HasLinkInputProps {
   filterState: FilterState | undefined;
