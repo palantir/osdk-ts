@@ -18,6 +18,7 @@ import type { RequestHandler } from "msw";
 import type { FauxFoundry } from "../FauxFoundry/FauxFoundry.js";
 import { getObjectsFromSet } from "../FauxFoundry/getObjectsFromSet.js";
 import { OntologiesV2 } from "../mock/index.js";
+import { computeAggregationMetric } from "./util/computeAggregationMetric.js";
 
 export const createObjectSetHandlers = (
   baseUrl: string,
@@ -57,12 +58,12 @@ export const createObjectSetHandlers = (
       }
 
       if (exactGroupBys.length === 0) {
+        const metrics = body.aggregation.map(agg =>
+          computeAggregationMetric(agg, objects)
+        );
         return {
           accuracy: "ACCURATE",
-          data: [{
-            group: {},
-            metrics: [{ name: "count", value: objects.length }],
-          }],
+          data: [{ group: {}, metrics }],
         };
       }
 
@@ -82,7 +83,11 @@ export const createObjectSetHandlers = (
           "FauxFoundry aggregate: exact groupBy requires a field",
         );
       }
-      const groups = new Map<string | null, number>();
+
+      const groupedObjects = new Map<
+        string | null,
+        Array<typeof objects[number]>
+      >();
 
       for (const obj of objects) {
         const rawValue = obj[groupField];
@@ -92,13 +97,20 @@ export const createObjectSetHandlers = (
           continue;
         }
 
-        groups.set(key, (groups.get(key) ?? 0) + 1);
+        const bucket = groupedObjects.get(key);
+        if (bucket) {
+          bucket.push(obj);
+        } else {
+          groupedObjects.set(key, [obj]);
+        }
       }
 
-      const data = Array.from(groups.entries()).map(
-        ([key, count]: [string | null, number]) => ({
+      const data = Array.from(groupedObjects.entries()).map(
+        ([key, bucketObjects]) => ({
           group: { [groupField]: key },
-          metrics: [{ name: "count", value: count }],
+          metrics: body.aggregation.map(agg =>
+            computeAggregationMetric(agg, bucketObjects)
+          ),
         }),
       );
 
