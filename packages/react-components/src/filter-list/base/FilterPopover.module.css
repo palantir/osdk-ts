@@ -101,6 +101,17 @@
   pointer-events: none;
 }
 
+.fieldGroupTop .removeButton {
+  top: auto;
+  bottom: calc(
+    (
+        var(--osdk-filter-popover-trigger-min-height)
+          - var(--osdk-filter-popover-remove-size)
+      ) / 2
+  );
+  transform: none;
+}
+
 .fieldGroup:hover .removeButton,
 .fieldGroup:focus-within .removeButton {
   opacity: 1;
