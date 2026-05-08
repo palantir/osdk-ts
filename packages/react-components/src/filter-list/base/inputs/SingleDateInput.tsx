@@ -15,13 +15,9 @@
  */
 
 import { Button } from "@base-ui/react/button";
-import { Input } from "@base-ui/react/input";
 import classnames from "classnames";
 import React, { memo, useCallback } from "react";
-import {
-  formatDateForInput,
-  parseDateFromInput,
-} from "../../../shared/dateUtils.js";
+import { FilterDatePicker } from "./FilterDatePicker.js";
 import styles from "./SingleDateInput.module.css";
 
 interface SingleDateInputProps {
@@ -42,17 +38,9 @@ function SingleDateInputInner({
   style,
   minDate,
   maxDate,
-  placeholder = "Select a date...",
+  placeholder,
   showClearButton = true,
 }: SingleDateInputProps): React.ReactElement {
-  const handleChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const date = parseDateFromInput(e.target.value);
-      onChange(date);
-    },
-    [onChange],
-  );
-
   const handleClear = useCallback(() => {
     onChange(undefined);
   }, [onChange]);
@@ -60,15 +48,14 @@ function SingleDateInputInner({
   return (
     <div className={classnames(styles.singleDate, className)} style={style}>
       <div className={styles.dateContainer}>
-        <Input
-          type="date"
+        <FilterDatePicker
           className={styles.input}
-          value={formatDateForInput(selectedDate)}
-          onChange={handleChange}
-          min={minDate ? formatDateForInput(minDate) : undefined}
-          max={maxDate ? formatDateForInput(maxDate) : undefined}
+          selectedDate={selectedDate}
+          onChange={onChange}
+          minDate={minDate}
+          maxDate={maxDate}
           placeholder={placeholder}
-          aria-label="Select date"
+          ariaLabel="Select date"
         />
         {showClearButton && selectedDate !== undefined && (
           <Button
