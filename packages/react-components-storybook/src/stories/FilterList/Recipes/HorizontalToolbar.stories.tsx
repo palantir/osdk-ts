@@ -140,7 +140,9 @@ function FilterToolbarItem({
   );
 
   // CONTAINS_TEXT renders inline — the trigger area IS the search input, so
-  // there is no nested input or popover indirection.
+  // there is no nested input or popover indirection. Any future filter
+  // component that's already a single inline control (rather than a popover
+  // surface) would need the same special case here.
   if (
     definition.type === "PROPERTY"
     && definition.filterComponent === "CONTAINS_TEXT"
