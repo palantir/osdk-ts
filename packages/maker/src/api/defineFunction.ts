@@ -37,7 +37,7 @@ type IFunctionDiscoverer = new(
 
 interface IDiscoveredFunction {
   locator:
-    | { type: "typescriptOsdk"; typescriptOsdk: { functionName: string } }
+    | { type: "typescript"; typescript: { functionName: string } }
     | { type: string };
   [key: string]: unknown;
 }
@@ -85,15 +85,15 @@ function extractFunctionEntries(
   discoveredFunctions: IDiscoveredFunction[],
 ): Array<[string, IDiscoveredFunction]> {
   return discoveredFunctions.map((fn: IDiscoveredFunction) => {
-    if (fn.locator.type !== "typescriptOsdk") {
+    if (fn.locator.type !== "typescript") {
       throw new Error(
         `OAC functions must be TypeScript, got type: ${fn.locator.type}`,
       );
     }
     const locator = fn.locator as {
-      typescriptOsdk: { functionName: string };
+      typescript: { functionName: string };
     };
-    return [locator.typescriptOsdk.functionName, fn];
+    return [locator.typescript.functionName, fn];
   });
 }
 

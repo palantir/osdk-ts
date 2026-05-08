@@ -27,6 +27,7 @@ import {
 } from "../utils/filterStateToWhereClause.js";
 import { filterHasActiveState } from "../utils/filterValues.js";
 import { getFilterKey } from "../utils/getFilterKey.js";
+import { useStableMapEntries } from "./useStableMapEntries.js";
 
 export interface UseFilterListStateResult<Q extends ObjectTypeDefinition> {
   filterStates: Map<string, FilterState>;
@@ -186,25 +187,26 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
     onFilterClauseChangedRef.current?.(whereClause);
   }, [whereClause]);
 
-  const perFilterWhereClauses = useMemo(() => {
-    const map = new Map<string, WhereClause<Q>>();
-    if (!filterDefinitions) {
-      return map;
-    }
-    for (const definition of filterDefinitions) {
-      const key = getFilterKey(definition);
-      map.set(
-        key,
-        buildWhereClause(
-          filterDefinitions,
-          filterStates,
-          propertyTypes,
+  // Preserve per-key clause references when content hasn't changed so
+  // FilterInput.memo can hold and aggregations don't refetch unnecessarily.
+  const perFilterWhereClauses = useStableMapEntries(
+    useMemo(() => {
+      const map = new Map<string, WhereClause<Q>>();
+      for (const definition of filterDefinitions ?? []) {
+        const key = getFilterKey(definition);
+        map.set(
           key,
-        ),
-      );
-    }
-    return map;
-  }, [filterDefinitions, filterStates, propertyTypes]);
+          buildWhereClause(
+            filterDefinitions,
+            filterStates,
+            propertyTypes,
+            key,
+          ),
+        );
+      }
+      return map;
+    }, [filterDefinitions, filterStates, propertyTypes]),
+  );
 
   const activeFilterCount = useMemo(() => {
     let count = 0;

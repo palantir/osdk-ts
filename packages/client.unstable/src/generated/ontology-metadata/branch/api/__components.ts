@@ -26,7 +26,11 @@ import type {
   GenericOntologyMetadataError as _api_GenericOntologyMetadataError,
   GeotimeSeriesIntegrationRid as _api_GeotimeSeriesIntegrationRid,
   GlobalBranchRid as _api_GlobalBranchRid,
+  InterfaceActionTypeConstraintRidOrIdInRequest
+    as _api_InterfaceActionTypeConstraintRidOrIdInRequest,
   InterfaceLinkTypeRidOrIdInRequest as _api_InterfaceLinkTypeRidOrIdInRequest,
+  InterfaceParameterConstraintRidOrIdInRequest
+    as _api_InterfaceParameterConstraintRidOrIdInRequest,
   InterfacePropertyTypeRidOrIdInRequest
     as _api_InterfacePropertyTypeRidOrIdInRequest,
   InterfacePropertyTypeType as _api_InterfacePropertyTypeType,
@@ -45,6 +49,7 @@ import type {
   OntologyRid as _api_OntologyRid,
   OntologyVersion as _api_OntologyVersion,
   OrganizationRid as _api_OrganizationRid,
+  ParameterRid as _api_ParameterRid,
   PropertyTypeId as _api_PropertyTypeId,
   PropertyTypeRid as _api_PropertyTypeRid,
   RestrictedViewRid as _api_RestrictedViewRid,
@@ -253,6 +258,18 @@ export interface ConflictingPropertyImplementationError {
   objectTypeId?: _api_ObjectTypeId | null | undefined;
   propertyTypeIds: Array<_api_PropertyTypeId>;
   sharedPropertyTypeRidOrIdInRequest: _api_SharedPropertyTypeRidOrIdInRequest;
+}
+/**
+ * A property type implements multiple interface properties on the same interface with conflicting reducer
+ * usage. Some interface property implementations use a reduced value while others use the raw value. OSS
+ * cannot handle this case because it must return reduced values for interface object sets.
+ */
+export interface ConflictingReducerImplementationError {
+  interfaceTypeRidOrIdInRequest: _api_InterfaceTypeRidOrIdInRequest;
+  objectRid: _api_ObjectTypeRid;
+  objectTypeId?: _api_ObjectTypeId | null | undefined;
+  propertyTypeId?: _api_PropertyTypeId | null | undefined;
+  propertyTypeRid: _api_PropertyTypeRid;
 }
 /**
  * A type to represent OntologyBranch creation request.
@@ -617,6 +634,17 @@ export interface DiscardChangesSuccessStatus {
   ontologyVersion: _api_OntologyVersion;
 }
 /**
+ * Multiple parameter constraints in the implementation map to the same action type parameter.
+ */
+export interface DuplicateActionTypeParameterMappingError {
+  interfaceActionTypeConstraintRidOrIdInRequest:
+    _api_InterfaceActionTypeConstraintRidOrIdInRequest;
+  interfaceTypeRidOrIdInRequest: _api_InterfaceTypeRidOrIdInRequest;
+  objectTypeId?: _api_ObjectTypeId | null | undefined;
+  objectTypeRid?: _api_ObjectTypeRid | null | undefined;
+  parameterRid: _api_ParameterRid;
+}
+/**
  * An error representing when two or more datasource struct fields map to the same property type struct field API name on an object type.
  */
 export interface DuplicateStructDatasourceMappingForObjectTypeError {
@@ -894,6 +922,16 @@ export interface ImplicitAndExplicitPropertyImplementationError {
 export interface IndexedBranchConfig {
   entityConfig?: EntityIndexingConfiguration | null | undefined;
 }
+/**
+ * The object type specifies an interface action type constraint implementation for a constraint which does not exist.
+ */
+export interface InterfaceActionTypeConstraintNotFoundError {
+  interfaceActionTypeConstraintRidOrIdInRequest:
+    _api_InterfaceActionTypeConstraintRidOrIdInRequest;
+  interfaceTypeRidOrIdInRequest: _api_InterfaceTypeRidOrIdInRequest;
+  objectTypeId?: _api_ObjectTypeId | null | undefined;
+  objectTypeRid?: _api_ObjectTypeRid | null | undefined;
+}
 export interface InterfaceImplementationError_missingSharedProperty {
   type: "missingSharedProperty";
   missingSharedProperty: MissingSharedPropertyError;
@@ -989,6 +1027,45 @@ export interface InterfaceImplementationError_objectTypeImplementsTooManyInterfa
   objectTypeImplementsTooManyInterfacesError:
     ObjectTypeImplementsTooManyInterfacesError;
 }
+
+export interface InterfaceImplementationError_conflictingReducerImplementation {
+  type: "conflictingReducerImplementation";
+  conflictingReducerImplementation: ConflictingReducerImplementationError;
+}
+
+export interface InterfaceImplementationError_requiredInterfaceActionTypeConstraintNotImplemented {
+  type: "requiredInterfaceActionTypeConstraintNotImplemented";
+  requiredInterfaceActionTypeConstraintNotImplemented:
+    RequiredInterfaceActionTypeConstraintNotImplementedError;
+}
+
+export interface InterfaceImplementationError_interfaceActionTypeConstraintNotFound {
+  type: "interfaceActionTypeConstraintNotFound";
+  interfaceActionTypeConstraintNotFound:
+    InterfaceActionTypeConstraintNotFoundError;
+}
+
+export interface InterfaceImplementationError_interfaceParameterTypeMismatch {
+  type: "interfaceParameterTypeMismatch";
+  interfaceParameterTypeMismatch: InterfaceParameterTypeMismatchError;
+}
+
+export interface InterfaceImplementationError_requiredInterfaceParameterConstraintNotImplemented {
+  type: "requiredInterfaceParameterConstraintNotImplemented";
+  requiredInterfaceParameterConstraintNotImplemented:
+    RequiredInterfaceParameterConstraintNotImplementedError;
+}
+
+export interface InterfaceImplementationError_interfaceParameterConstraintNotFound {
+  type: "interfaceParameterConstraintNotFound";
+  interfaceParameterConstraintNotFound:
+    InterfaceParameterConstraintNotFoundError;
+}
+
+export interface InterfaceImplementationError_duplicateActionTypeParameterMapping {
+  type: "duplicateActionTypeParameterMapping";
+  duplicateActionTypeParameterMapping: DuplicateActionTypeParameterMappingError;
+}
 /**
  * A type representing validation errors associated with interface implementations. Since we only validate on
  * branches, we use RIDs instead of the ID/RID union.
@@ -1010,7 +1087,14 @@ export type InterfaceImplementationError =
   | InterfaceImplementationError_implementingLinkTypeSideDoesNotMatchLinkDefinitionType
   | InterfaceImplementationError_implementingLinkTypeSideIsIncorrect
   | InterfaceImplementationError_invalidLinkedEntityImplementingInterfaceLinkType
-  | InterfaceImplementationError_objectTypeImplementsTooManyInterfacesError;
+  | InterfaceImplementationError_objectTypeImplementsTooManyInterfacesError
+  | InterfaceImplementationError_conflictingReducerImplementation
+  | InterfaceImplementationError_requiredInterfaceActionTypeConstraintNotImplemented
+  | InterfaceImplementationError_interfaceActionTypeConstraintNotFound
+  | InterfaceImplementationError_interfaceParameterTypeMismatch
+  | InterfaceImplementationError_requiredInterfaceParameterConstraintNotImplemented
+  | InterfaceImplementationError_interfaceParameterConstraintNotFound
+  | InterfaceImplementationError_duplicateActionTypeParameterMapping;
 
 /**
  * The object type specifies an interface link mapping for an interface link which does not exist.
@@ -1028,6 +1112,30 @@ export interface InterfaceLinkTypeImplementedTooOftenError {
   interfaceLinkTypeRidOrIdInRequest: _api_InterfaceLinkTypeRidOrIdInRequest;
   interfaceTypeRidOrIdInRequest: _api_InterfaceTypeRidOrIdInRequest;
   linkTypeIds: Array<_api_LinkTypeId>;
+  objectTypeId?: _api_ObjectTypeId | null | undefined;
+  objectTypeRid?: _api_ObjectTypeRid | null | undefined;
+}
+/**
+ * The implementation maps a parameter constraint that does not exist on the action type constraint.
+ */
+export interface InterfaceParameterConstraintNotFoundError {
+  interfaceActionTypeConstraintRidOrIdInRequest:
+    _api_InterfaceActionTypeConstraintRidOrIdInRequest;
+  interfaceParameterConstraintRidOrIdInRequest:
+    _api_InterfaceParameterConstraintRidOrIdInRequest;
+  interfaceTypeRidOrIdInRequest: _api_InterfaceTypeRidOrIdInRequest;
+  objectTypeId?: _api_ObjectTypeId | null | undefined;
+  objectTypeRid?: _api_ObjectTypeRid | null | undefined;
+}
+/**
+ * The implementing action type parameter's type does not match the interface parameter constraint's type.
+ */
+export interface InterfaceParameterTypeMismatchError {
+  interfaceActionTypeConstraintRidOrIdInRequest:
+    _api_InterfaceActionTypeConstraintRidOrIdInRequest;
+  interfaceParameterConstraintRidOrIdInRequest:
+    _api_InterfaceParameterConstraintRidOrIdInRequest;
+  interfaceTypeRidOrIdInRequest: _api_InterfaceTypeRidOrIdInRequest;
   objectTypeId?: _api_ObjectTypeId | null | undefined;
   objectTypeRid?: _api_ObjectTypeRid | null | undefined;
 }
@@ -2222,10 +2330,32 @@ export interface ReducedPropertyMissingReducersError {
     | undefined;
 }
 /**
+ * A required interface action type constraint is missing an implementation.
+ */
+export interface RequiredInterfaceActionTypeConstraintNotImplementedError {
+  interfaceActionTypeConstraintRidOrIdInRequest:
+    _api_InterfaceActionTypeConstraintRidOrIdInRequest;
+  interfaceTypeRidOrIdInRequest: _api_InterfaceTypeRidOrIdInRequest;
+  objectTypeId?: _api_ObjectTypeId | null | undefined;
+  objectTypeRid?: _api_ObjectTypeRid | null | undefined;
+}
+/**
  * A required interface link type is missing an implementation.
  */
 export interface RequiredInterfaceLinkTypeNotImplementedError {
   interfaceLinkTypeRidOrIdInRequest: _api_InterfaceLinkTypeRidOrIdInRequest;
+  interfaceTypeRidOrIdInRequest: _api_InterfaceTypeRidOrIdInRequest;
+  objectTypeId?: _api_ObjectTypeId | null | undefined;
+  objectTypeRid?: _api_ObjectTypeRid | null | undefined;
+}
+/**
+ * A required interface parameter constraint is missing an implementation in the action type constraint mapping.
+ */
+export interface RequiredInterfaceParameterConstraintNotImplementedError {
+  interfaceActionTypeConstraintRidOrIdInRequest:
+    _api_InterfaceActionTypeConstraintRidOrIdInRequest;
+  interfaceParameterConstraintRidOrIdInRequest:
+    _api_InterfaceParameterConstraintRidOrIdInRequest;
   interfaceTypeRidOrIdInRequest: _api_InterfaceTypeRidOrIdInRequest;
   objectTypeId?: _api_ObjectTypeId | null | undefined;
   objectTypeRid?: _api_ObjectTypeRid | null | undefined;

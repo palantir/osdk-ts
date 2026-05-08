@@ -17,6 +17,7 @@
 import type { OntologyIrV2 } from "@osdk/client.unstable";
 import type { OntologyDefinition } from "@osdk/maker";
 import { getImportedTypes } from "@osdk/maker";
+import type { FunctionsIr } from "../../api/defineOntologyV2.js";
 import type { OntologyRidGeneratorImpl } from "../../util/generateRid.js";
 import { convertOntologyDefinitionToWireBlockData } from "./convertOntologyDefinitionToWireBlockData.js";
 import { convertOntologyToValueTypeIr } from "./convertOntologyToValueTypeIr.js";
@@ -24,6 +25,7 @@ import { convertOntologyToValueTypeIr } from "./convertOntologyToValueTypeIr.js"
 export function convertOntologyDefinition(
   ontology: OntologyDefinition,
   ridGenerator: OntologyRidGeneratorImpl,
+  functionsIr?: FunctionsIr,
   randomnessKey?: string,
 ): OntologyIrV2 {
   const importedTypes = getImportedTypes();
@@ -41,6 +43,7 @@ export function convertOntologyDefinition(
     ontology,
     ridGenerator,
     allOntologies,
+    functionsIr,
   );
 
   return {

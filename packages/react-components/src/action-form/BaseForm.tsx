@@ -16,20 +16,22 @@
 
 import { Error as ErrorIcon } from "@blueprintjs/icons";
 import classNames from "classnames";
-import React, { memo, useCallback, useMemo, useState } from "react";
+import React, { memo, useCallback, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { ActionButton } from "../base-components/action-button/ActionButton.js";
+import { SkeletonBar } from "../base-components/skeleton/SkeletonBar.js";
 import { Tooltip } from "../base-components/tooltip/Tooltip.js";
 import { useAsyncAction } from "../shared/hooks/useAsyncAction.js";
-import type { BaseFormProps } from "./ActionFormApi.js";
+import type { BaseFormProps, FormContentItem } from "./ActionFormApi.js";
 import styles from "./BaseForm.module.css";
 import { FieldBridge } from "./fields/FieldBridge.js";
 import type { RendererFieldDefinition } from "./FormFieldApi.js";
 import { FormHeader } from "./FormHeader.js";
+import { FormSection } from "./FormSection.js";
 
 export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
   formTitle,
-  fieldDefinitions,
+  formContent,
   formState: controlledFormState,
   onFieldValueChange,
   onSubmit,
@@ -37,12 +39,20 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
   isPending = false,
   isLoading = false,
   className,
+  submitButtonText = "Submit",
+  submitButtonVariant = "primary",
 }: BaseFormProps): React.ReactElement {
+  const portalContainerRef = useRef<HTMLFormElement>(null);
   const isControlled = controlledFormState != null;
 
+  const allFieldDefinitions = useMemo(
+    () => flattenFieldDefinitions(formContent),
+    [formContent],
+  );
+
   const defaultValues = useMemo(
-    () => buildDefaultValues(fieldDefinitions),
-    [fieldDefinitions],
+    () => buildDefaultValues(allFieldDefinitions),
+    [allFieldDefinitions],
   );
 
   const {
@@ -73,25 +83,21 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
       : "Submission failed"
     : undefined;
 
-  const handleFormSubmit = useCallback(
-    async (e: React.FormEvent) => {
-      e.preventDefault();
-      setHasAttemptedSubmit(true);
+  const submitForm = useCallback(async () => {
+    setHasAttemptedSubmit(true);
 
-      const isValid = await trigger();
-      if (!isValid) {
-        return;
-      }
+    const isValid = await trigger();
+    if (!isValid) {
+      return;
+    }
 
-      // In controlled mode, always submit the controlled state, not RHF's
-      // internal state. Between a user keystroke and the parent re-rendering,
-      // RHF's store may hold the user-typed value rather than the parent's
-      // value. Using controlledFormState directly preserves the existing
-      // guarantee that controlled mode submits the parent's state.
-      await executeSubmit(controlledFormState ?? getValues());
-    },
-    [trigger, executeSubmit, controlledFormState, getValues],
-  );
+    // In controlled mode, always submit the controlled state, not RHF's
+    // internal state. Between a user keystroke and the parent re-rendering,
+    // RHF's store may hold the user-typed value rather than the parent's
+    // value. Using controlledFormState directly preserves the existing
+    // guarantee that controlled mode submits the parent's state.
+    await executeSubmit(controlledFormState ?? getValues());
+  }, [trigger, executeSubmit, controlledFormState, getValues]);
 
   const handleFieldChange = useCallback(
     (fieldKey: string, value: unknown) => {
@@ -101,11 +107,9 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
     [clearError, onFieldValueChange],
   );
 
-  const isFormPending = isPending || isSubmitting;
-
   const labelByFieldKey = useMemo(
-    () => new Map(fieldDefinitions.map((d) => [d.fieldKey, d.label])),
-    [fieldDefinitions],
+    () => new Map(allFieldDefinitions.map((d) => [d.fieldKey, d.label])),
+    [allFieldDefinitions],
   );
 
   // RHF reuses the same errors object reference across renders so we cannot memoize errorEntries
@@ -117,40 +121,116 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
   const buttonErrorMessage = areErrorsPresent
     ? "Some fields are invalid"
     : submissionErrorMessage;
+  const isFormPending = isPending || isSubmitting;
+  const isSubmitButtonDisabled = isSubmitDisabled
+    || (hasAttemptedSubmit && areErrorsPresent);
 
   return (
     <form
+      ref={portalContainerRef}
       className={classNames(styles.osdkForm, className)}
-      onSubmit={handleFormSubmit}
+      // Workshop widgets can run in iframes without `allow-forms`, where
+      // native form submission is blocked. Keep the form landmark, but do not
+      // wire any form-level submit handlers; the submit button invokes our
+      // JavaScript submit path directly.
     >
       {formTitle != null && <FormHeader title={formTitle} />}
-      {isLoading && fieldDefinitions.length === 0 && (
-        <div role="status">Loading form fields...</div>
+      {isLoading && allFieldDefinitions.length === 0 && (
+        <div
+          role="status"
+          aria-label="Loading form fields"
+          className={styles.osdkFormFields}
+        >
+          {FORM_SKELETON}
+        </div>
       )}
       <div className={styles.osdkFormFields}>
-        {fieldDefinitions.map((fieldDef) => (
-          <FieldBridge
-            key={fieldDef.fieldKey}
-            fieldDef={fieldDef}
-            control={control}
-            onExternalChange={handleFieldChange}
-          />
-        ))}
+        {formContent.map((item) => {
+          if (item.type === "field") {
+            return (
+              <FieldBridge
+                key={item.definition.fieldKey}
+                fieldDef={item.definition}
+                control={control}
+                onExternalChange={handleFieldChange}
+                portalContainer={portalContainerRef}
+              />
+            );
+          }
+          const sectionErrorCount = item.definition.fields.reduce(
+            (count, field) => count + (errors[field.fieldKey] != null ? 1 : 0),
+            0,
+          );
+          return (
+            <FormSection
+              key={item.key}
+              definition={item.definition}
+              errorCount={sectionErrorCount}
+            >
+              {item.definition.fields.map((fieldDef) => (
+                <FieldBridge
+                  key={fieldDef.fieldKey}
+                  fieldDef={fieldDef}
+                  control={control}
+                  onExternalChange={handleFieldChange}
+                  portalContainer={portalContainerRef}
+                />
+              ))}
+            </FormSection>
+          );
+        })}
       </div>
       <div className={styles.osdkFormFooter}>
         <ErrorIndicator errorEntries={errorEntries} />
         <div className={styles.osdkFormSubmitButton}>
           <SubmitButton
             isPending={isFormPending}
-            isSubmitDisabled={isSubmitDisabled
-              || (hasAttemptedSubmit && areErrorsPresent)}
+            isSubmitDisabled={isSubmitButtonDisabled}
             errorMessage={buttonErrorMessage}
+            buttonText={submitButtonText}
+            buttonVariant={submitButtonVariant}
+            onClick={submitForm}
           />
         </div>
       </div>
     </form>
   );
 });
+
+/**
+ * Extracts all RendererFieldDefinitions from formContent, flattening
+ * section fields into a single array. RHF sees a flat field namespace
+ * regardless of visual grouping, so this is used to build default values
+ * and the field-key-to-label map for error display.
+ */
+function flattenFieldDefinitions(
+  formContent: ReadonlyArray<FormContentItem>,
+): ReadonlyArray<RendererFieldDefinition> {
+  const result: RendererFieldDefinition[] = [];
+  for (const item of formContent) {
+    if (item.type === "field") {
+      result.push(item.definition);
+    } else {
+      for (const fieldDef of item.definition.fields) {
+        result.push(fieldDef);
+      }
+    }
+  }
+  return result;
+}
+
+const SKELETON_FIELD_COUNT = 3;
+
+// Mimics the label + input layout of real form fields.
+const FORM_SKELETON = Array.from(
+  { length: SKELETON_FIELD_COUNT },
+  (_, i) => (
+    <div key={i} className={styles.osdkFormSkeletonField}>
+      <SkeletonBar className={styles.osdkFormSkeletonLabel} />
+      <SkeletonBar className={styles.osdkFormSkeletonInput} />
+    </div>
+  ),
+);
 
 function buildDefaultValues(
   fieldDefinitions: ReadonlyArray<RendererFieldDefinition>,
@@ -174,19 +254,26 @@ interface SubmitButtonProps {
   isPending: boolean;
   isSubmitDisabled: boolean;
   errorMessage: string | undefined;
+  buttonText: string;
+  buttonVariant: "primary" | "secondary";
+  onClick: () => void;
 }
 
 const SubmitButton = memo(function SubmitButtonFn({
   isPending,
   isSubmitDisabled,
   errorMessage,
+  buttonText,
+  buttonVariant,
+  onClick,
 }: SubmitButtonProps): React.ReactElement {
-  const buttonLabel = isPending ? "Submitting\u2026" : "Submit";
+  const buttonLabel = isPending ? "Submitting\u2026" : buttonText;
   const button = (
     <ActionButton
-      type="submit"
-      variant="primary"
+      type="button"
+      variant={buttonVariant}
       disabled={isSubmitDisabled || isPending}
+      onClick={onClick}
     >
       {buttonLabel}
     </ActionButton>
@@ -198,7 +285,9 @@ const SubmitButton = memo(function SubmitButtonFn({
 
   return (
     <Tooltip.Root defaultOpen={true}>
-      <Tooltip.Trigger>
+      <Tooltip.Trigger
+        render={<span className={styles.osdkTooltipTriggerWrapper} />}
+      >
         {button}
       </Tooltip.Trigger>
       <Tooltip.Portal>

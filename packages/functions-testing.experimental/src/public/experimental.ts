@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-export { createMockAttachment } from "../mock/createMockAttachment.js";
-export { createMockClient } from "../mock/createMockClient.js";
 export type {
   AggregateStubBuilder,
   FetchOneStubBuilder,
   FetchPageStubBuilder,
   QueryStubBuilder,
   StubBuilderFor,
-} from "../mock/createMockClient.js";
+} from "../api/index.js";
+export { createMockAttachment } from "../mock/createMockAttachment.js";
+export { createMockClient } from "../mock/createMockClient.js";
+export { createMockObjectSet } from "../mock/createMockObjectSet.js";
 export { createMockOsdkObject } from "../mock/createMockOsdkObject.js";

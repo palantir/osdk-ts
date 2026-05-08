@@ -6,4 +6,5 @@
   --osdk-tooltip-border-color: var(--osdk-palette-gray-4);
   --osdk-tooltip-shadow: var(--osdk-surface-shadow-2);
   --osdk-tooltip-max-width: 300px;
+  --osdk-tooltip-font-size: var(--osdk-typography-size-body-small);
 }

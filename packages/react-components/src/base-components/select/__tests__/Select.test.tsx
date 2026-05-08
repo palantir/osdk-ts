@@ -143,7 +143,7 @@ describe("Select", () => {
     it("renders with multiple selected values", () => {
       render(
         <Select.Root<string, true>
-          multiple
+          multiple={true}
           defaultValue={["alice", "bob"]}
         >
           <Select.Trigger data-testid="trigger" />
@@ -167,7 +167,7 @@ describe("Select", () => {
     it("renders multi-select with object values", () => {
       render(
         <Select.Root<User, true>
-          multiple
+          multiple={true}
           defaultValue={[USERS[0], USERS[1]]}
           isItemEqualToValue={(a, b) => a.id === b.id}
           itemToStringLabel={(user) => user.name}

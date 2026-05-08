@@ -15,7 +15,7 @@
  */
 
 import type { ObjectSet, ObjectTypeDefinition, WhereClause } from "@osdk/api";
-import { useOsdkAggregation } from "@osdk/react/experimental";
+import { useOsdkAggregation } from "@osdk/react";
 import React, { memo, useCallback, useMemo } from "react";
 import { DateRangeInput } from "../base/inputs/DateRangeInput.js";
 import { NullValueWrapper } from "../base/inputs/NullValueWrapper.js";
@@ -78,10 +78,7 @@ function DateRangeFilterInputInner<Q extends ObjectTypeDefinition>({
   );
 
   const histogramArgs = useMemo(
-    () =>
-      objectSet != null
-        ? { aggregate: aggregateOptions, objectSet, where: whereClause }
-        : { aggregate: aggregateOptions, where: whereClause },
+    () => ({ aggregate: aggregateOptions, objectSet, where: whereClause }),
     [aggregateOptions, objectSet, whereClause],
   );
 
@@ -128,17 +125,11 @@ function DateRangeFilterInputInner<Q extends ObjectTypeDefinition>({
   );
 
   const nullCountArgs = useMemo(
-    () =>
-      objectSet != null
-        ? {
-          where: nullCountWhereClause,
-          aggregate: nullCountAggregateOptions,
-          objectSet,
-        }
-        : {
-          where: nullCountWhereClause,
-          aggregate: nullCountAggregateOptions,
-        },
+    () => ({
+      where: nullCountWhereClause,
+      aggregate: nullCountAggregateOptions,
+      objectSet,
+    }),
     [nullCountWhereClause, nullCountAggregateOptions, objectSet],
   );
 

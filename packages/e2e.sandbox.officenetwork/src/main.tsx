@@ -1,4 +1,4 @@
-import { OsdkProvider2 } from "@osdk/react/experimental";
+import { OsdkProvider } from "@osdk/react";
 import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App.js";
@@ -14,8 +14,8 @@ if (!rootElement) {
 
 ReactDOM.createRoot(rootElement).render(
   <React.StrictMode>
-    <OsdkProvider2 client={$}>
+    <OsdkProvider client={$}>
       <App />
-    </OsdkProvider2>
+    </OsdkProvider>
   </React.StrictMode>,
 );

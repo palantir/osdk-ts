@@ -1,5 +1,6 @@
 /* Bare input inside a date picker wrapper */
 .osdkDatePickerInput {
+  width: 100%;
   flex: 1;
   min-width: 0;
   min-height: var(--osdk-datetime-input-min-height);
@@ -11,6 +12,9 @@
   font-family: var(--osdk-datetime-input-font-family);
   font-size: var(--osdk-datetime-input-font-size);
   line-height: var(--osdk-datetime-input-line-height);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 
   &::placeholder {
     color: var(--osdk-datetime-input-placeholder-color);
@@ -21,7 +25,17 @@
   }
 }
 
+.osdkDatePickerDismissLayer {
+  --osdk-portal-dismiss-layer-z-index: var(--osdk-datetime-popover-z-index);
+}
+
 /* Popover container */
+.osdkDatePickerPositioner {
+  /* Match the dismiss layer's dialog stack level so the later positioner stays
+     clickable above it without escalating z-index values. */
+  z-index: var(--osdk-datetime-popover-z-index);
+}
+
 .osdkDatePickerPopover {
   background: var(--osdk-datetime-popover-bg);
   padding: var(--osdk-datetime-popover-padding);
@@ -47,6 +61,7 @@
   border-radius: var(--osdk-datetime-input-border-radius);
   border: var(--osdk-datetime-input-border-width) solid
     var(--osdk-datetime-input-border-color);
+  box-shadow: var(--osdk-input-shadow);
   background-color: var(--osdk-datetime-input-bg);
   transition:
     background-color var(--osdk-datetime-input-transition-duration)

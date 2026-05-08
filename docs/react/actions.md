@@ -8,21 +8,19 @@ This guide covers executing actions, validation, optimistic updates, and debounc
 
 ## useOsdkAction
 
-*Experimental - import from `@osdk/react/experimental`*
-
 Execute and validate actions with automatic state management.
 
 ### Basic Usage
 
 ```tsx
-import { $Actions, Todo } from "@my/osdk";
-import { useOsdkAction, useOsdkObject } from "@osdk/react/experimental";
+import { completeTodo, Todo } from "@my/osdk";
+import { useOsdkAction, useOsdkObject } from "@osdk/react";
 import { useCallback } from "react";
 
 function TodoView({ todo }: { todo: Todo.OsdkInstance }) {
   const { isLoading } = useOsdkObject(todo);
   const { applyAction, data, error, isPending } = useOsdkAction(
-    $Actions.completeTodo,
+    completeTodo,
   );
 
   const onClick = useCallback(() => {
@@ -46,8 +44,8 @@ function TodoView({ todo }: { todo: Todo.OsdkInstance }) {
       </div>
       {error && (
         <div>
-          An error occurred:
-          <pre>{JSON.stringify(error, null, 2)}</pre>
+          An error occurred: {error.actionValidation?.message
+            ?? (error.unknown ? String(error.unknown) : "Unknown error")}
         </div>
       )}
     </div>
@@ -79,17 +77,18 @@ The `error` object has the following structure:
 ```
 
 `ActionValidationError` extends `Error` and has:
+
 - `message` - Error message string
 - `validation` - Full validation response from server
 
 Example:
 
 ```tsx
-import { $Actions, Todo } from "@my/osdk";
-import { useOsdkAction } from "@osdk/react/experimental";
+import { completeTodo, Todo } from "@my/osdk";
+import { useOsdkAction } from "@osdk/react";
 
 function TodoActionWithErrorHandling({ todo }: { todo: Todo.OsdkInstance }) {
-  const { applyAction, error, isPending } = useOsdkAction($Actions.completeTodo);
+  const { applyAction, error, isPending } = useOsdkAction(completeTodo);
 
   const onClick = async () => {
     try {
@@ -106,13 +105,13 @@ function TodoActionWithErrorHandling({ todo }: { todo: Todo.OsdkInstance }) {
       </button>
 
       {error?.actionValidation && (
-        <div style={{ color: "red" }}>
-          Validation failed: {JSON.stringify(error.actionValidation.validation)}
+        <div className="error">
+          Validation failed: {error.actionValidation.message}
         </div>
       )}
 
       {error?.unknown && (
-        <div style={{ color: "red" }}>
+        <div className="error">
           An unexpected error occurred: {String(error.unknown)}
         </div>
       )}
@@ -128,8 +127,8 @@ function TodoActionWithErrorHandling({ todo }: { todo: Todo.OsdkInstance }) {
 Validate action parameters without executing using `validateAction`.
 
 ```tsx
-import { $Actions } from "@my/osdk";
-import { useOsdkAction } from "@osdk/react/experimental";
+import { createTodo } from "@my/osdk";
+import { useOsdkAction } from "@osdk/react";
 import { useState } from "react";
 
 function TodoForm() {
@@ -143,7 +142,7 @@ function TodoForm() {
     validationResult,
     isPending,
     error,
-  } = useOsdkAction($Actions.createTodo);
+  } = useOsdkAction(createTodo);
 
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newTitle = e.target.value;
@@ -182,20 +181,19 @@ function TodoForm() {
       {isValidating && <span>Validating...</span>}
 
       {validationResult?.result === "INVALID" && (
-        <div style={{ color: "red" }}>
-          Invalid: {JSON.stringify(validationResult)}
-        </div>
+        <div className="error">Invalid: please check required fields</div>
       )}
 
       <button
         type="submit"
-        disabled={isPending || isValidating || validationResult?.result !== "VALID"}
+        disabled={isPending || isValidating
+          || validationResult?.result !== "VALID"}
       >
         Create Todo
       </button>
 
       {error?.actionValidation && (
-        <div style={{ color: "red" }}>
+        <div className="error">
           Validation error: {error.actionValidation.message}
         </div>
       )}
@@ -219,12 +217,12 @@ Key features:
 Apply the same action to multiple items in a single call:
 
 ```tsx
-import { $Actions, Todo } from "@my/osdk";
-import { useOsdkAction } from "@osdk/react/experimental";
+import { completeTodo, Todo } from "@my/osdk";
+import { useOsdkAction } from "@osdk/react";
 import { useCallback } from "react";
 
 function BulkCompleteButton({ todos }: { todos: Todo.OsdkInstance[] }) {
-  const { applyAction, isPending } = useOsdkAction($Actions.completeTodo);
+  const { applyAction, isPending } = useOsdkAction(completeTodo);
 
   const onClick = useCallback(() => {
     applyAction(
@@ -250,13 +248,13 @@ function BulkCompleteButton({ todos }: { todos: Todo.OsdkInstance[] }) {
 Apply changes to the cache immediately while waiting for the server response.
 
 ```tsx
-import { $Actions, Todo } from "@my/osdk";
-import { useOsdkAction, useOsdkObject } from "@osdk/react/experimental";
+import { completeTodo, Todo } from "@my/osdk";
+import { useOsdkAction, useOsdkObject } from "@osdk/react";
 import { useCallback } from "react";
 
 function TodoView({ todo }: { todo: Todo.OsdkInstance }) {
   const { isLoading, isOptimistic } = useOsdkObject(todo);
-  const { applyAction, error, isPending } = useOsdkAction($Actions.completeTodo);
+  const { applyAction, error, isPending } = useOsdkAction(completeTodo);
 
   const onClick = useCallback(() => {
     applyAction({
@@ -279,8 +277,9 @@ function TodoView({ todo }: { todo: Todo.OsdkInstance }) {
       {isLoading && "(Loading)"}
       {isOptimistic && "(Optimistic)"}
       {error && (
-        <div style={{ color: "red" }}>
-          {error.actionValidation?.message ?? String(error.unknown)}
+        <div className="error">
+          {error.actionValidation?.message
+            ?? (error.unknown ? String(error.unknown) : "Unknown error")}
         </div>
       )}
     </div>
@@ -319,20 +318,19 @@ const updatedTodo = todo.$clone({
   priority: "high",
 });
 ```
+
 :::
 
 ---
 
 ## useDebouncedCallback
 
-*Experimental - import from `@osdk/react/experimental`*
-
 Debounce callback functions for auto-save patterns or expensive operations.
 
 ### Basic Usage
 
 ```tsx
-import { useDebouncedCallback } from "@osdk/react/experimental";
+import { useDebouncedCallback } from "@osdk/react";
 import { useState } from "react";
 
 function SearchableList({ onSearch }: { onSearch: (query: string) => void }) {
@@ -363,13 +361,13 @@ function SearchableList({ onSearch }: { onSearch: (query: string) => void }) {
 Combine with actions for auto-saving:
 
 ```tsx
-import { $Actions, Todo } from "@my/osdk";
-import { useDebouncedCallback, useOsdkAction } from "@osdk/react/experimental";
+import { Todo, updateTodo } from "@my/osdk";
+import { useDebouncedCallback, useOsdkAction } from "@osdk/react";
 import { useState } from "react";
 
 function AutoSaveTodo({ todo }: { todo: Todo.OsdkInstance }) {
   const [title, setTitle] = useState(todo.title);
-  const { applyAction } = useOsdkAction($Actions.updateTodo);
+  const { applyAction } = useOsdkAction(updateTodo);
 
   const debouncedSave = useDebouncedCallback((newTitle: string) => {
     applyAction({
@@ -402,7 +400,7 @@ function AutoSaveTodo({ todo }: { todo: Todo.OsdkInstance }) {
 The returned function has utility methods:
 
 ```tsx
-import { useDebouncedCallback } from "@osdk/react/experimental";
+import { useDebouncedCallback } from "@osdk/react";
 
 const debouncedFn = useDebouncedCallback((value: string) => {
   console.log("Called with:", value);

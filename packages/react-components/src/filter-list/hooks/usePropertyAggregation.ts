@@ -21,7 +21,7 @@ import type {
   PropertyKeys,
   WhereClause,
 } from "@osdk/api";
-import { useOsdkAggregation } from "@osdk/react/experimental";
+import { useOsdkAggregation } from "@osdk/react";
 import { useMemo } from "react";
 import type { AggregationGroupResult } from "../utils/aggregationHelpers.js";
 
@@ -69,10 +69,7 @@ export function usePropertyAggregation<
   );
 
   const aggregationArgs = useMemo(
-    () =>
-      objectSet != null
-        ? { aggregate: aggregateOptions, where: options?.where, objectSet }
-        : { aggregate: aggregateOptions, where: options?.where },
+    () => ({ aggregate: aggregateOptions, where: options?.where, objectSet }),
     [aggregateOptions, options?.where, objectSet],
   );
 

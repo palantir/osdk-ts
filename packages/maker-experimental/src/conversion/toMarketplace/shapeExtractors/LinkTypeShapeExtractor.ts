@@ -140,6 +140,7 @@ export class LinkTypeShapeExtractor {
         } as LinkTypeOutputShape,
       }]]),
       inputShapeMetadata: new Map(),
+      inputMappings: [],
     };
   }
 
@@ -270,6 +271,7 @@ export class LinkTypeShapeExtractor {
         } as LinkTypeOutputShape,
       }]]),
       inputShapeMetadata: new Map(),
+      inputMappings: [],
     };
   }
 
@@ -323,6 +325,7 @@ export class LinkTypeShapeExtractor {
         } as LinkTypeOutputShape,
       }]]),
       inputShapeMetadata: new Map(),
+      inputMappings: [],
     };
   }
 

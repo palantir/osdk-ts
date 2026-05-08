@@ -17,8 +17,10 @@
 import type { ObjectSet, ObjectTypeDefinition, WhereClause } from "@osdk/api";
 import React, { memo } from "react";
 import { FilterInputExcludeRow } from "../base/FilterInputExcludeRow.js";
-import type { FilterDefinitionUnion } from "../FilterListApi.js";
-import type { FilterState } from "../FilterListItemApi.js";
+import type {
+  FilterState,
+  PropertyFilterDefinition,
+} from "../FilterListItemApi.js";
 import { ContainsTextFilterInput } from "./ContainsTextFilterInput.js";
 import { DateRangeFilterInput } from "./DateRangeFilterInput.js";
 import { ListogramFilterInput } from "./ListogramFilterInput.js";
@@ -34,7 +36,7 @@ import { ToggleFilterInput } from "./ToggleFilterInput.js";
 interface PropertyFilterInputProps<Q extends ObjectTypeDefinition> {
   objectType: Q;
   objectSet?: ObjectSet<Q>;
-  definition: Extract<FilterDefinitionUnion<Q>, { type: "PROPERTY" }>;
+  definition: PropertyFilterDefinition<Q>;
   filterState: FilterState | undefined;
   onFilterStateChanged: (state: FilterState) => void;
   whereClause: WhereClause<Q>;

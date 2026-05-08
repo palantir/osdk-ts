@@ -18,6 +18,11 @@
   display: flex;
   flex-direction: column;
   gap: var(--osdk-radio-gap);
+
+  &[data-orientation="horizontal"] {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
 }
 
 .osdkRadioItem {
@@ -75,9 +80,9 @@
 }
 
 .osdkRadioLabel {
-  font-family: var(--osdk-typography-font-family);
-  font-size: var(--osdk-typography-font-size-default);
+  font-family: var(--osdk-typography-family-default);
+  font-size: var(--osdk-typography-size-body-medium);
   line-height: var(--osdk-typography-line-height-default);
-  color: var(--osdk-typography-color-default);
+  color: var(--osdk-typography-color-default-rest);
   cursor: pointer;
 }

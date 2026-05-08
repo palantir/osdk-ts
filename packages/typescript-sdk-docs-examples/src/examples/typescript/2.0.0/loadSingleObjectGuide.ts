@@ -21,12 +21,13 @@
 
 import { Employee } from "../../../generatedNoCheck/index.js";
 // Edit this import if your client location differs
-import { client } from "./client.js";
 import { type Osdk } from "@osdk/client";
+import { client } from "./client.js";
 
 try {
-    const object: Osdk.Instance<Employee> = await client(Employee).fetchOne(12345);
-}
-catch(e) {
-    throw e;
+  const object: Osdk.Instance<Employee> = await client(Employee).fetchOne(
+    12345,
+  );
+} catch (e) {
+  throw e;
 }

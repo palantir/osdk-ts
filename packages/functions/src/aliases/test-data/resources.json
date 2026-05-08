@@ -35,6 +35,22 @@
     }
   },
   "egress": {
-    "connections": []
+    "connections": [
+      {
+        "rid": "ri.magritte..source.aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+        "alias": "previewSourceAlias"
+      },
+      {
+        "rid": "ri.magritte..source.bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+        "alias": "anotherPreviewSource"
+      },
+      {
+        "rid": "ri.magritte..source.cccccccc-cccc-cccc-cccc-cccccccccccc",
+        "alias": null
+      },
+      {
+        "rid": "ri.magritte..source.dddddddd-dddd-dddd-dddd-dddddddddddd"
+      }
+    ]
   }
 }

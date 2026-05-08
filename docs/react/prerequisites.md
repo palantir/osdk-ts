@@ -9,17 +9,17 @@ Setup required before using `@osdk/react` hooks.
 ## Install dependencies
 
 ```bash
-npm install @osdk/api@beta @osdk/client@beta @osdk/react@beta
+npm install @osdk/api @osdk/client @osdk/react
 npm install react react-dom
 ```
 
 ## Configure the OSDK client
 
-Create an OSDK client and wrap your app with `OsdkProvider2`:
+Create an OSDK client and wrap your app with `OsdkProvider`:
 
 ```tsx
 import { createClient } from "@osdk/client";
-import { OsdkProvider2 } from "@osdk/react/experimental";
+import { OsdkProvider } from "@osdk/react";
 
 const client = createClient(
   "https://your-stack.palantirfoundry.com",
@@ -30,8 +30,8 @@ const client = createClient(
 );
 
 function App() {
-  return <OsdkProvider2 client={client}>{/* your app */}</OsdkProvider2>;
+  return <OsdkProvider client={client}>{/* your app */}</OsdkProvider>;
 }
 ```
 
-All `@osdk/react` hooks must be called inside an `OsdkProvider2`. Without it, hooks will throw.
+All `@osdk/react` hooks must be called inside an `OsdkProvider`. Without it, hooks will throw.

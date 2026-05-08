@@ -1,5 +1,57 @@
 # @osdk/functions-testing.experimental
 
+## 0.9.0
+
+### Minor Changes
+
+- 56c5630: Drop redundant `--config $(find-up dprint.json)` from `lint`, `fix-lint`, and `format` scripts. dprint already auto-discovers `dprint.json` by walking up from cwd; the substitution was a no-op anyway since `find-up` is an npm package, not a CLI. Also fix the `uploadMediaOntologyEdits` documentation example so its `// @ts-ignore` survives dprint reformatting (the broken `format` step had been masking this).
+
+### Patch Changes
+
+- Updated dependencies [56c5630]
+- Updated dependencies [17d7ba2]
+  - @osdk/api@2.16.0
+  - @osdk/client@2.16.0
+  - @osdk/functions@1.9.0
+
+## 0.8.0
+
+### Minor Changes
+
+- d1a7d90: Accessing a link that wasn't configured on a `createMockOsdkObject` mock no longer silently returns `undefined`. The accessor now exists, and its `fetchOne()` rejects / `fetchOneWithErrors()` resolves with a descriptive error naming the link, object type, and primary key.
+- 9a06a62: Move user-facing types (`MockClient`, `StubClient`, `StubBuilderFor`, `FetchPageStubBuilder`, `FetchOneStubBuilder`, `AggregateStubBuilder`, `QueryStubBuilder`, `MockOsdkObjectOptions`) to dedicated files under `src/api/`. No public API changes.
+- 9a06a62: Fix `StubBuilderFor<T>` so `fetchOneWithErrors` / `fetchPageWithErrors` / `asyncIter` resolve to the correct stub builders instead of falling through to `AggregateStubBuilder`. Allow `Error` as a single-link stub value in `createMockOsdkObject` so link `fetchOne` rejects and `fetchOneWithErrors` returns `{ error }` (previously wrapped the Error in `{ value: ... }`, making `isOk` always true).
+
+### Patch Changes
+
+- Updated dependencies [f12977d]
+- Updated dependencies [eb36e21]
+- Updated dependencies [d892397]
+- Updated dependencies [c5a6047]
+- Updated dependencies [45be476]
+- Updated dependencies [2c51525]
+- Updated dependencies [20e9678]
+  - @osdk/client@2.14.0
+  - @osdk/functions@1.8.0
+  - @osdk/api@2.14.0
+
+## 0.7.0
+
+### Minor Changes
+
+- 9e9d948: `deepEqual` (used to match stub args in `when` / `whenQuery`) now recognizes Vitest/Jest asymmetric matchers (`expect.any(...)`, `expect.anything()`, `expect.stringContaining(...)`, `expect.objectContaining(...)`, etc.). Previously matchers were compared by raw object shape and silently never matched.
+
+### Patch Changes
+
+- Updated dependencies [19b7913]
+- Updated dependencies [01fbb74]
+- Updated dependencies [91f34a9]
+- Updated dependencies [df1a4f8]
+- Updated dependencies [46a00bc]
+- Updated dependencies [267f324]
+  - @osdk/client@2.12.0
+  - @osdk/api@2.12.0
+
 ## 0.6.0
 
 ### Minor Changes

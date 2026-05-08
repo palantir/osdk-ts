@@ -1,4 +1,4 @@
-import { createClient } from "@osdk/client";
+import { createClient, createPlatformClient } from "@osdk/client";
 import { BrowserLogger } from "@osdk/client/internal";
 import { createPublicOauthClient } from "@osdk/oauth";
 import invariant from "tiny-invariant";
@@ -25,4 +25,9 @@ export const $ = createClient(
   $ontologyRid,
   auth,
   { logger },
+);
+
+export const platformClient = createPlatformClient(
+  "http://localhost:8080",
+  auth,
 );

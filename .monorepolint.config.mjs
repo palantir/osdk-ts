@@ -118,12 +118,12 @@ const archetypeRules = archetypes(
   .addArchetype(
     "minimal packages",
     [
+      "@osdk/aip-core",
       "@osdk/e2e.generated.1.1.x",
       "@osdk/examples.*",
       "@psdk/examples.*",
       "@osdk/monorepo.*",
       "@osdk/react-components-storybook",
-      "@osdk/react-devtools",
     ],
     {
       ...LIBRARY_RULES,
@@ -375,6 +375,7 @@ const archetypeRules = archetypes(
       extraPublishFiles: ["AGENTS.md", "docs"],
       attwExcludeEntrypoints: [
         "./experimental/action-form",
+        "./experimental/aip-agent-chat",
         "./experimental/filter-list",
         "./experimental/markdown-renderer",
         "./experimental/object-table",
@@ -386,6 +387,7 @@ const archetypeRules = archetypes(
         TZ: "UTC",
         LANG: "en_US.UTF-8",
       },
+      vitestPool: "threads",
     },
   )
   .addArchetype(
@@ -398,6 +400,18 @@ const archetypeRules = archetypes(
       react: true,
       extraPublishFiles: ["AGENTS.md", "docs", "experimental"],
       customTsconfigExcludes: ["./src/intellisense.test.helpers/**"],
+    },
+  )
+  .addArchetype(
+    "esmReactLibraryWithCss",
+    [
+      "@osdk/react-devtools",
+    ],
+    {
+      ...LIBRARY_RULES,
+      react: true,
+      output: OUTPUT_ESM_ONLY,
+      cssExport: ["styles.css"],
     },
   )
   .addArchetype(
@@ -689,8 +703,9 @@ const ourExportsConvention = createRuleFactory({
     }
 
     // add CSS exports if any (must come before the wildcard)
+    const cssDir = options.browser ? "build/browser" : "build/esm";
     for (const cssFile of options.cssExports ?? []) {
-      expectedExports.exports[`./${cssFile}`] = `./build/browser/${cssFile}`;
+      expectedExports.exports[`./${cssFile}`] = `./${cssDir}/${cssFile}`;
     }
 
     // include the fallback for the * for now, as it will make development easier
@@ -921,6 +936,7 @@ function minimalPackageRules(shared, options) {
  * @property { "happy-dom" } [vitestEnvironment]
  * @property { string[] } [setupFiles]
  * @property { Record<string, string> } [vitestEnv]
+ * @property { "forks" | "threads" } [vitestPool]
  * @property { boolean } [skipTsconfigReferences]
  * @property { boolean } [aliasConsola]
  * @property { Record<"esm" | "cjs" | "browser", "bundle" | "normal" | undefined>} output
@@ -951,6 +967,30 @@ function standardPackageRules(shared, options) {
     vitestEnvironment: options.vitestEnvironment
       ?? (options.react ? "happy-dom" : undefined),
     skipAttw: options.skipAttw ?? options.skipTypes,
+  };
+
+  // CSS bundling runs from the leaf transpile step. For ESM-only packages it
+  // hooks onto transpileEsm; for browser-targeted packages it hooks onto
+  // transpileBrowser so the browser build sees the freshly-bundled CSS.
+  const buildCssSuffix = cssExports.length > 0
+    ? " && node scripts/build-css.mjs"
+    : "";
+
+  const getTranspileEsmScript = () => {
+    if (!options.output.esm) {
+      return DELETE_SCRIPT_ENTRY;
+    }
+    const base =
+      `monorepo.tool.transpile -f esm -m ${options.output.esm} -t node`;
+    return options.output.browser ? base : base + buildCssSuffix;
+  };
+
+  const getTranspileBrowserScript = () => {
+    if (!options.output.browser) {
+      return DELETE_SCRIPT_ENTRY;
+    }
+    return `monorepo.tool.transpile -f esm -m ${options.output.esm} -t browser`
+      + buildCssSuffix;
   };
 
   if (options.minimalChangesOnly) {
@@ -1015,6 +1055,9 @@ function standardPackageRules(shared, options) {
         devDependencies: {
           "@osdk/monorepo.tsconfig": "workspace:~",
           "@osdk/monorepo.api-extractor": "workspace:~",
+          ...(options.output.esm === "bundle"
+            ? { "@osdk/monorepo.tool.check-bundle": "workspace:~" }
+            : {}),
         },
       },
     }),
@@ -1036,18 +1079,14 @@ function standardPackageRules(shared, options) {
                 }`
                 : ""
             }`,
-          lint: "eslint . && dprint check  --config $(find-up dprint.json)",
-          "fix-lint":
-            "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
+          "check-bundle": options.output.esm === "bundle"
+            ? "monorepo.tool.check-bundle"
+            : DELETE_SCRIPT_ENTRY,
+          lint: "eslint . && dprint check",
+          "fix-lint": "eslint . --fix && dprint fmt",
           transpile: DELETE_SCRIPT_ENTRY,
-          transpileEsm: options.output.esm
-            ? `monorepo.tool.transpile -f esm -m ${options.output.esm} -t node`
-            : DELETE_SCRIPT_ENTRY,
-          transpileBrowser: options.output.browser
-            ? `monorepo.tool.transpile -f esm -m ${options.output.esm} -t browser${
-              cssExports.length > 0 ? " && node scripts/build-css.mjs" : ""
-            }`
-            : DELETE_SCRIPT_ENTRY,
+          transpileEsm: getTranspileEsmScript(),
+          transpileBrowser: getTranspileBrowserScript(),
           transpileCjs: options.output.cjs === "bundle"
             ? "monorepo.tool.transpile -f cjs -m bundle -t node"
             : DELETE_SCRIPT_ENTRY,
@@ -1161,7 +1200,7 @@ function standardPackageRules(shared, options) {
               },`
               : ""
           }
-              pool: "forks",
+              pool: "${options.vitestPool ?? "forks"}",
               exclude: [...configDefaults.exclude, "**/build/**/*"],${
             options.vitestEnvironment
               ? `\n            environment: "${options.vitestEnvironment}",`
@@ -1186,7 +1225,7 @@ function standardPackageRules(shared, options) {
               },
             },
           });
-     
+
           `,
           "js",
         ),

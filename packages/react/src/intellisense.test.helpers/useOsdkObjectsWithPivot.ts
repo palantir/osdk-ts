@@ -20,7 +20,7 @@
 // break tests that have hard coded line numbers and line offsets.
 
 import { Employee } from "@osdk/client.test.ontology";
-import { useOsdkObjects } from "@osdk/react/experimental";
+import { useOsdkObjects } from "@osdk/react";
 
 declare const MyComponent: () => void;
 

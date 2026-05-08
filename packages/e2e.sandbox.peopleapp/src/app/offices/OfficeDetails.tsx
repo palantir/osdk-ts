@@ -1,8 +1,4 @@
-import {
-  useDebouncedCallback,
-  useLinks,
-  useOsdkAction,
-} from "@osdk/react/experimental";
+import { useDebouncedCallback, useLinks, useOsdkAction } from "@osdk/react";
 import type { Point } from "geojson";
 import { useEffect, useState } from "react";
 import { Button } from "../../components/Button.js";

@@ -4,6 +4,7 @@ consola
 dprint
 Emittery
 execa
+genai
 immer
 jiti
 luxon

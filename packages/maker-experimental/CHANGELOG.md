@@ -1,5 +1,65 @@
 # @osdk/maker-experimental
 
+## 0.14.0
+
+### Minor Changes
+
+- 56c5630: Drop redundant `--config $(find-up dprint.json)` from `lint`, `fix-lint`, and `format` scripts. dprint already auto-discovers `dprint.json` by walking up from cwd; the substitution was a no-op anyway since `find-up` is an npm package, not a CLI. Also fix the `uploadMediaOntologyEdits` documentation example so its `// @ts-ignore` survives dprint reformatting (the broken `format` step had been masking this).
+- ebc5f0c: Experimental function backed actions in OAC
+
+### Patch Changes
+
+- Updated dependencies [56c5630]
+- Updated dependencies [ebc5f0c]
+- Updated dependencies [17d7ba2]
+  - @osdk/api@2.16.0
+  - @osdk/client.unstable@2.16.0
+  - @osdk/generator-converters.ontologyir@2.16.0
+  - @osdk/generator-converters.preview@0.8.0
+  - @osdk/maker@0.24.0
+
+## 0.13.0
+
+### Patch Changes
+
+- @osdk/api@2.15.0
+- @osdk/client.unstable@2.15.0
+- @osdk/maker@0.23.0
+
+## 0.12.0
+
+### Minor Changes
+
+- 2f40eee: Support edits history
+
+### Patch Changes
+
+- Updated dependencies [02a5765]
+- Updated dependencies [bab1421]
+- Updated dependencies [2f40eee]
+- Updated dependencies [20e9678]
+  - @osdk/maker@0.22.0
+  - @osdk/client.unstable@2.14.0
+  - @osdk/api@2.14.0
+
+## 0.11.0
+
+### Patch Changes
+
+- @osdk/api@2.13.0
+- @osdk/client.unstable@2.13.0
+- @osdk/maker@0.21.0
+
+## 0.10.0
+
+### Patch Changes
+
+- Updated dependencies [9225ee3]
+- Updated dependencies [91f34a9]
+  - @osdk/maker@0.20.0
+  - @osdk/api@2.12.0
+  - @osdk/client.unstable@2.12.0
+
 ## 0.9.0
 
 ### Minor Changes

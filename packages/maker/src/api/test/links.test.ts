@@ -169,6 +169,7 @@ describe("Link Types", () => {
               "entityMetadata": {
                 "aliases": [],
                 "arePatchesEnabled": false,
+                "editsHistory": undefined,
               },
               "objectType": {
                 "allImplementsInterfaces": {},
@@ -310,6 +311,7 @@ describe("Link Types", () => {
               "entityMetadata": {
                 "aliases": [],
                 "arePatchesEnabled": false,
+                "editsHistory": undefined,
               },
               "objectType": {
                 "allImplementsInterfaces": {},
@@ -572,6 +574,7 @@ describe("Link Types", () => {
               "entityMetadata": {
                 "aliases": [],
                 "arePatchesEnabled": false,
+                "editsHistory": undefined,
               },
               "objectType": {
                 "allImplementsInterfaces": {},
@@ -713,6 +716,7 @@ describe("Link Types", () => {
               "entityMetadata": {
                 "aliases": [],
                 "arePatchesEnabled": false,
+                "editsHistory": undefined,
               },
               "objectType": {
                 "allImplementsInterfaces": {},
@@ -1277,6 +1281,7 @@ describe("Link Types", () => {
               "entityMetadata": {
                 "aliases": [],
                 "arePatchesEnabled": false,
+                "editsHistory": undefined,
               },
               "objectType": {
                 "allImplementsInterfaces": {},
@@ -1386,6 +1391,7 @@ describe("Link Types", () => {
               "entityMetadata": {
                 "aliases": [],
                 "arePatchesEnabled": false,
+                "editsHistory": undefined,
               },
               "objectType": {
                 "allImplementsInterfaces": {},
@@ -1567,6 +1573,7 @@ describe("Link Types", () => {
               "entityMetadata": {
                 "aliases": [],
                 "arePatchesEnabled": false,
+                "editsHistory": undefined,
               },
               "objectType": {
                 "allImplementsInterfaces": {},
@@ -1782,6 +1789,7 @@ describe("Link Types", () => {
               "entityMetadata": {
                 "aliases": [],
                 "arePatchesEnabled": false,
+                "editsHistory": undefined,
               },
               "objectType": {
                 "allImplementsInterfaces": {},
@@ -1923,6 +1931,7 @@ describe("Link Types", () => {
               "entityMetadata": {
                 "aliases": [],
                 "arePatchesEnabled": false,
+                "editsHistory": undefined,
               },
               "objectType": {
                 "allImplementsInterfaces": {},

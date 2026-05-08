@@ -42,6 +42,12 @@
       "inputs": ["build/{esm,cjs,browser,types}", "package.json", "*.d.ts"]
     },
 
+    "check-bundle": {
+      "outputLogs": "new-only",
+      "dependsOn": ["transpileEsm"],
+      "inputs": ["build/esm/**", "bin/**", "package.json"]
+    },
+
     "check-spelling": {
       "outputLogs": "new-only",
       "dependsOn": ["codegen"],
@@ -253,6 +259,7 @@
         "typecheck",
         "test",
         "check-attw",
+        "check-bundle",
         "check-api",
         "check-spelling"
       ]
