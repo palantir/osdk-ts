@@ -56,6 +56,12 @@ describe("formatDateForDisplay", () => {
     expect(formatDateForDisplay(undefined)).toBe("");
     expect(formatDateForDisplay(new Date(2024, 5, 15))).toContain("2024");
   });
+
+  it("pins format to the explicit locale when provided", () => {
+    const date = new Date(2024, 0, 15);
+    expect(formatDateForDisplay(date, "", "en-US")).toBe("Jan 15, 2024");
+    expect(formatDateForDisplay(date, "", "en-GB")).toBe("15 Jan 2024");
+  });
 });
 
 describe("parseDateFromISO", () => {

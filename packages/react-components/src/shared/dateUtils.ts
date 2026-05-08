@@ -51,12 +51,19 @@ export function parseDateFromInput(
   return isNaN(date.getTime()) ? undefined : date;
 }
 
+/**
+ * Formats a Date for human-readable display. Defaults to the browser's locale,
+ * which means viewers in en-US see "Jan 15, 2024" while viewers in en-GB see
+ * "15 Jan 2024". Pass an explicit `locale` (e.g. "en-US", "de-DE") to pin the
+ * format across viewers.
+ */
 export function formatDateForDisplay(
   date: Date | undefined | null,
   fallback: string = "",
+  locale?: string,
 ): string {
   if (date == null) return fallback;
-  return date.toLocaleDateString(undefined, {
+  return date.toLocaleDateString(locale, {
     year: "numeric",
     month: "short",
     day: "numeric",

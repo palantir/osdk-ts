@@ -19,6 +19,9 @@ import { Popover } from "@base-ui/react/popover";
 import classnames from "classnames";
 import React, { useCallback, useId, useRef, useState } from "react";
 import type { DateRange as RdpDateRange } from "react-day-picker";
+import { stopPropagation } from "../../shared/calendar/calendarShared.js";
+import commonStyles from "../../shared/calendar/DatePickerCommon.module.css";
+import { LazyDateRangeCalendar } from "../../shared/calendar/LazyDateRangeCalendar.js";
 import {
   formatDateForInput,
   formatDatetimeForInput,
@@ -26,10 +29,7 @@ import {
   parseDatetimeFromInput,
 } from "../../shared/dateUtils.js";
 import { type DateRangeInputFieldProps, EMPTY_RANGE } from "../FormFieldApi.js";
-import { stopPropagation } from "./calendarShared.js";
-import commonStyles from "./DatePickerCommon.module.css";
 import styles from "./DateRangeInputField.module.css";
-import { LazyDateRangeCalendar } from "./LazyDateRangeCalendar.js";
 import { PortalDismissLayer } from "./PortalDismissLayer.js";
 import { TimePicker } from "./TimePicker.js";
 import { useDateEditState } from "./useDateEditState.js";

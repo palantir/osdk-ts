@@ -15,14 +15,13 @@
  */
 
 import { Button } from "@base-ui/react/button";
-import { Input } from "@base-ui/react/input";
 import classnames from "classnames";
 import React, { memo, useCallback } from "react";
 import {
   formatDateForDisplay,
   formatDateForInput,
-  parseDateFromInput,
 } from "../../../shared/dateUtils.js";
+import { FilterDatePicker } from "./FilterDatePicker.js";
 import styles from "./MultiDateInput.module.css";
 import sharedStyles from "./shared.module.css";
 
@@ -46,7 +45,8 @@ function MultiDateInputInner({
   showClearAll = true,
 }: MultiDateInputProps): React.ReactElement {
   const addDate = useCallback(
-    (date: Date) => {
+    (date: Date | undefined) => {
+      if (date == null) return;
       const dateStr = formatDateForInput(date);
       const exists = selectedDates.some(
         (d) => formatDateForInput(d) === dateStr,
@@ -74,17 +74,6 @@ function MultiDateInputInner({
     onChange([]);
   }, [onChange]);
 
-  const handleDateChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const date = parseDateFromInput(e.target.value);
-      if (date) {
-        addDate(date);
-        e.target.value = "";
-      }
-    },
-    [addDate],
-  );
-
   return (
     <div className={classnames(styles.multiDate, className)} style={style}>
       {selectedDates.length > 0 && (
@@ -94,6 +83,7 @@ function MultiDateInputInner({
               {formatDateForDisplay(date)}
               <Button
                 className={sharedStyles.tagRemove}
+                // eslint-disable-next-line react/jsx-no-bind
                 onClick={() =>
                   removeDate(date)}
                 aria-label={`Remove ${formatDateForDisplay(date)}`}
@@ -115,13 +105,13 @@ function MultiDateInputInner({
       )}
 
       <div className={styles.calendarContainer}>
-        <Input
-          type="date"
+        <FilterDatePicker
           className={styles.input}
-          onChange={handleDateChange}
-          min={minDate ? formatDateForInput(minDate) : undefined}
-          max={maxDate ? formatDateForInput(maxDate) : undefined}
-          aria-label="Add date"
+          selectedDate={undefined}
+          onChange={addDate}
+          minDate={minDate}
+          maxDate={maxDate}
+          ariaLabel="Add date"
         />
       </div>
     </div>
