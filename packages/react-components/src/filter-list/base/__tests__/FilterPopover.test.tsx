@@ -135,6 +135,31 @@ describe("FilterPopover", () => {
     expect(onRemove).toHaveBeenCalledTimes(1);
   });
 
+  it("stacks label on top when labelPlacement is 'top'", () => {
+    const { container } = render(
+      <FilterPopover
+        label="Sites"
+        summary=""
+        isActive={false}
+        labelPlacement="top"
+      >
+        <div>popup body</div>
+      </FilterPopover>,
+    );
+    const wrapper = container.firstElementChild;
+    expect(wrapper?.className).toMatch(/fieldGroupTop/);
+  });
+
+  it("does not apply fieldGroupTop when labelPlacement defaults to inline", () => {
+    const { container } = render(
+      <FilterPopover label="Sites" summary="" isActive={false}>
+        <div>popup body</div>
+      </FilterPopover>,
+    );
+    const wrapper = container.firstElementChild;
+    expect(wrapper?.className).not.toMatch(/fieldGroupTop/);
+  });
+
   it("forwards the className to the field group wrapper", () => {
     const { container } = render(
       <FilterPopover

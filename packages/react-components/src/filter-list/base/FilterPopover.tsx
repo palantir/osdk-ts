@@ -30,6 +30,12 @@ export interface FilterPopoverProps {
   children: React.ReactNode;
   className?: string;
   placeholder?: string;
+  /**
+   * Where the label sits relative to the trigger.
+   * - `"inline"` (default): label and trigger sit on one row.
+   * - `"top"`: label stacks above the trigger.
+   */
+  labelPlacement?: "inline" | "top";
 }
 
 /** Labeled, popover-backed filter trigger. Pair with `FilterInput` for the popup body. */
@@ -42,6 +48,7 @@ function FilterPopoverInner(
     children,
     className,
     placeholder = "Any",
+    labelPlacement = "inline",
   }: FilterPopoverProps,
 ): React.ReactElement {
   const [open, setOpen] = useState(false);
@@ -49,7 +56,13 @@ function FilterPopoverInner(
 
   return (
     <Popover.Root open={open} onOpenChange={setOpen}>
-      <span className={classnames(styles.fieldGroup, className)}>
+      <span
+        className={classnames(
+          styles.fieldGroup,
+          labelPlacement === "top" && styles.fieldGroupTop,
+          className,
+        )}
+      >
         <span className={styles.label}>{label}</span>
         <Popover.Trigger
           className={styles.trigger}
