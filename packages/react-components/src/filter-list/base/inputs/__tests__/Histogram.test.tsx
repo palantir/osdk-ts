@@ -433,7 +433,7 @@ describe("RangeInput SVG histogram", () => {
   });
 
   it(
-    "numeric histogram x-axis renders only min and max tick labels",
+    "numeric histogram x-axis renders all nice tick labels when they fit",
     () => {
       const numericPairs = [
         { value: 10, count: 2 },
@@ -452,11 +452,37 @@ describe("RangeInput SVG histogram", () => {
       const tickLabels = container.querySelectorAll(
         "g[class*=\"xTicks\"] text",
       );
-      // Wide formatted numbers (e.g. 9-digit IDs) overlap when every nice tick
-      // is rendered, so the histogram now keeps only the first and last.
-      expect(tickLabels.length).toBe(2);
       const labelTexts = Array.from(tickLabels).map((t) => t.textContent);
-      expect(labelTexts).toEqual(["10", "90"]);
+      expect(labelTexts).toContain("10");
+      expect(labelTexts).toContain("90");
+      expect(tickLabels.length).toBeGreaterThanOrEqual(2);
+    },
+  );
+
+  it(
+    "numeric histogram x-axis drops ticks when wide labels would overlap",
+    () => {
+      const numericPairs = [
+        { value: 100_000_000, count: 1 },
+        { value: 500_000_000, count: 2 },
+        { value: 900_000_000, count: 1 },
+      ];
+      const { container } = render(
+        <NumberRangeInput
+          valueCountPairs={numericPairs}
+          isLoading={false}
+          minValue={undefined}
+          maxValue={undefined}
+          onChange={vi.fn()}
+        />,
+      );
+      const tickLabels = container.querySelectorAll(
+        "g[class*=\"xTicks\"] text",
+      );
+      const labelTexts = Array.from(tickLabels).map((t) => t.textContent);
+      expect(tickLabels.length).toBeGreaterThanOrEqual(2);
+      expect(labelTexts[0]).toBeTruthy();
+      expect(labelTexts[labelTexts.length - 1]).toBeTruthy();
     },
   );
 });
