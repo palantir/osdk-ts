@@ -308,6 +308,14 @@
   --osdk-filter-date-clear-color: var(--osdk-intent-primary-rest);
   --osdk-filter-date-clear-padding: calc(var(--osdk-surface-spacing) * 0.5);
 
+  /* Date Picker Popup */
+  --osdk-filter-date-picker-popup-bg: var(--osdk-background-primary);
+  --osdk-filter-date-picker-popup-border: var(--osdk-surface-border);
+  --osdk-filter-date-picker-popup-border-radius: var(--osdk-surface-border-radius);
+  --osdk-filter-date-picker-popup-shadow: var(--osdk-surface-shadow-2);
+  --osdk-filter-date-picker-popup-padding: calc(var(--osdk-surface-spacing) * 2);
+  --osdk-filter-date-picker-popup-z-index: 9999;
+
   /* Single Select Tokens */
   --osdk-filter-select-clear-padding: calc(var(--osdk-surface-spacing) * 0.5);
   --osdk-filter-select-clear-color: var(--osdk-typography-color-muted);

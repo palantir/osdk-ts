@@ -17,7 +17,7 @@
 import { Button } from "@base-ui/react/button";
 import classnames from "classnames";
 import React, { memo, useCallback } from "react";
-import { DatetimePickerField } from "../../../action-form/fields/DatetimePickerField.js";
+import { FilterDatePicker } from "./FilterDatePicker.js";
 import styles from "./SingleDateInput.module.css";
 
 interface SingleDateInputProps {
@@ -45,21 +45,15 @@ function SingleDateInputInner({
     onChange(undefined);
   }, [onChange]);
 
-  const handleChange = useCallback(
-    (value: Date | null) => {
-      onChange(value ?? undefined);
-    },
-    [onChange],
-  );
-
   return (
     <div className={classnames(styles.singleDate, className)} style={style}>
       <div className={styles.dateContainer}>
-        <DatetimePickerField
-          value={selectedDate ?? null}
-          onChange={handleChange}
-          min={minDate}
-          max={maxDate}
+        <FilterDatePicker
+          className={styles.input}
+          selectedDate={selectedDate}
+          onChange={onChange}
+          minDate={minDate}
+          maxDate={maxDate}
           placeholder={placeholder}
           ariaLabel="Select date"
         />
