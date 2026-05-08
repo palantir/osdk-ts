@@ -137,14 +137,4 @@ export class FunctionsHelper extends AbstractHelper<
     }
     await Promise.allSettled(promises);
   }
-
-  async invalidateFunctionsByObjectType(
-    apiName: string,
-  ): Promise<void> {
-    const promises: Array<Promise<void>> = [];
-    for (const query of this.#functionQueries()) {
-      promises.push(query.invalidateObjectType(apiName, undefined));
-    }
-    await Promise.allSettled(promises);
-  }
 }

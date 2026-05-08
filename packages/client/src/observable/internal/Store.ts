@@ -666,12 +666,6 @@ export class Store {
     return this.functions.invalidateFunctionsByObject(apiName, primaryKey);
   }
 
-  public async invalidateFunctionsByObjectType(
-    apiName: string,
-  ): Promise<void> {
-    return this.functions.invalidateFunctionsByObjectType(apiName);
-  }
-
   #sizeCache: WeakMap<object, number> | undefined;
 
   public getCacheSnapshot(): CacheSnapshot {

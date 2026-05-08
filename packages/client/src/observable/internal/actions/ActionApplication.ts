@@ -16,6 +16,7 @@
 
 import type { ActionDefinition, ActionEditResponse } from "@osdk/api";
 import type { ActionSignatureFromDef } from "../../../actions/applyAction.js";
+import { API_NAME_IDX } from "../list/ListCacheKey.js";
 import type { Store } from "../Store.js";
 import { runOptimisticJob } from "./OptimisticJob.js";
 
@@ -85,8 +86,8 @@ export class ActionApplication {
       await removeOptimisticResult();
     }
 
-    // After optimistic removal so the function refetch sees post-action state.
-    await this.#invalidatePerTypeFunctionEdits(actionResults);
+    // After optimistic removal so the refetch sees post-action server state.
+    await this.#invalidatePerTypeEdits(actionResults);
     return actionResults;
   };
 
@@ -127,30 +128,58 @@ export class ActionApplication {
     await Promise.all(promisesToWait);
   };
 
-  #invalidatePerTypeFunctionEdits = async (
+  #invalidatePerTypeEdits = async (
     actionEditResponse: ActionEditResponse | undefined,
   ): Promise<void> => {
     if (actionEditResponse == null) {
       return;
     }
+
+    const editedObjectTypeSet = new Set<string>();
     if (actionEditResponse.type === "edits") {
       const { deletedObjects, modifiedObjects, addedObjects } =
         actionEditResponse;
-      const editedObjectTypeSet = new Set<string>();
       for (const list of [deletedObjects, modifiedObjects, addedObjects]) {
         for (const obj of list ?? []) {
           editedObjectTypeSet.add(obj.objectType);
         }
       }
-      await Promise.allSettled(
-        [...editedObjectTypeSet].map(apiName =>
-          this.store.invalidateFunctionsByObjectType(apiName)
-        ),
-      );
     } else {
       for (const apiName of actionEditResponse.editedObjectTypes) {
-        await this.store.invalidateObjectType(apiName as string, undefined);
+        editedObjectTypeSet.add(apiName as string);
       }
     }
+
+    if (editedObjectTypeSet.size === 0) {
+      return;
+    }
+
+    // Walk the cache once and dispatch per (query, editedType) pair. The two
+    // skips below mean each query is touched at most once on the path that's
+    // right for it: ObjectQueries via the per-PK pass, primary-type lists via
+    // Subject reactions from that refetch, and everything else (RDP-traversed
+    // lists, FunctionQueries with dependsOn) via this walk.
+    const isEditsBranch = actionEditResponse.type === "edits";
+    const promises: Promise<unknown>[] = [];
+    for (const cacheKey of this.store.queries.keys()) {
+      if (isEditsBranch && cacheKey.type === "object") {
+        continue;
+      }
+      const query = this.store.queries.peek(cacheKey);
+      if (!query) {
+        continue;
+      }
+      for (const apiName of editedObjectTypeSet) {
+        if (
+          isEditsBranch
+          && cacheKey.type === "list"
+          && cacheKey.otherKeys[API_NAME_IDX] === apiName
+        ) {
+          continue;
+        }
+        promises.push(query.invalidateObjectType(apiName, undefined));
+      }
+    }
+    await Promise.allSettled(promises);
   };
 }
