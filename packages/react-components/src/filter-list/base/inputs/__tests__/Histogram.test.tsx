@@ -282,12 +282,29 @@ describe("RangeInput SVG histogram", () => {
   );
 
   describe("clickToFilter (drag-to-select range)", () => {
-    const fireMouseDown = (el: Element) => fireEvent.mouseDown(el);
-    // The bars `<g>` listens for `mouseover` (which bubbles) instead of
-    // per-bar `mouseenter` so a single delegated handler covers all bars.
-    const fireMouseEnter = (el: Element) => fireEvent.mouseOver(el);
-    const fireDocumentMouseUp = () =>
-      document.dispatchEvent(new MouseEvent("mouseup", { bubbles: true }));
+    // RangeInput migrated from mouse* to pointer* + setPointerCapture so
+    // touch and stylus work, and so dragging that exits the SVG still
+    // resolves cleanly via pointercancel. Tests dispatch matching
+    // pointer events. The clientX/Y on bare fireEvent calls is 0/0 in
+    // happy-dom, so the handler falls back to the bar's data-bucket-index
+    // attribute (which is set on each rect).
+    const firePointerDown = (el: Element) =>
+      fireEvent.pointerDown(el, { pointerId: 1 });
+    const firePointerMove = (el: Element) =>
+      fireEvent.pointerMove(el, { pointerId: 1 });
+    const firePointerUp = (el: Element) =>
+      fireEvent.pointerUp(el, { pointerId: 1 });
+    // Aliases mirror the original test names so existing assertions stay
+    // readable. fireEnd targets the SVG (where setPointerCapture routes
+    // the up event) instead of the document.
+    const fireMouseDown = firePointerDown;
+    const fireMouseEnter = firePointerMove;
+    const fireDocumentMouseUp = () => {
+      const svg = document.querySelector("svg");
+      if (svg != null) {
+        firePointerUp(svg);
+      }
+    };
 
     it("does not invoke onChange when clickToFilter is omitted", () => {
       const onChange = vi.fn<

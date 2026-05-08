@@ -369,10 +369,13 @@ function RangeInputInner<T>({
   );
 
   // Drag range tracked in a ref so synchronous read/write across
-  // mousedown → mousemove → mouseup is reliable. A separate state value
-  // mirrors the ref so the SVG re-renders to highlight the dragged range
-  // while the user is dragging.
+  // pointerdown → pointermove → pointerup is reliable. A separate state
+  // value mirrors the ref so the SVG re-renders to highlight the dragged
+  // range while the user is dragging. Start coords are tracked separately
+  // so a near-zero-movement pointerup gets treated as a click (which can
+  // clear an in-band filter) instead of a single-bucket drag commit.
   const dragRangeRef = useRef<{ start: number; end: number } | null>(null);
+  const dragStartCoordsRef = useRef<{ x: number; y: number } | null>(null);
   const [dragRange, setDragRange] = useState<
     { start: number; end: number } | null
   >(null);
@@ -419,46 +422,53 @@ function RangeInputInner<T>({
     return { lo, hi };
   }, [dragRange, minValue, maxValue, buckets, config]);
 
-  const commitDragRange = useCallback((start: number, end: number) => {
-    const currentBuckets = bucketsRef.current;
-    const currentConfig = configRef.current;
-    const lo = Math.min(start, end);
-    const hi = Math.max(start, end);
-    const minBucket = currentBuckets[lo];
-    const maxBucket = currentBuckets[hi];
-    if (minBucket == null || maxBucket == null) {
-      return;
-    }
-
-    // Click within the existing selection band clears the filter, so a stray
-    // click anywhere inside the highlighted area can be undone without
-    // reaching for the inputs.
-    const currentMin = minValueRef.current;
-    const currentMax = maxValueRef.current;
-    if (start === end && currentMin !== undefined && currentMax !== undefined) {
-      const minN = currentConfig.toNumber(currentMin);
-      const maxN = currentConfig.toNumber(currentMax);
-      const bucketMinN = currentConfig.toNumber(minBucket.min);
-      const bucketMaxN = currentConfig.toNumber(minBucket.max);
-      const inBand = minN <= bucketMaxN && maxN >= bucketMinN;
-      if (inBand) {
-        onChangeRef.current(undefined, undefined);
+  const commitDragRange = useCallback(
+    (start: number, end: number, treatAsClick: boolean) => {
+      const currentBuckets = bucketsRef.current;
+      const currentConfig = configRef.current;
+      const lo = Math.min(start, end);
+      const hi = Math.max(start, end);
+      const minBucket = currentBuckets[lo];
+      const maxBucket = currentBuckets[hi];
+      if (minBucket == null || maxBucket == null) {
         return;
       }
-    }
-    onChangeRef.current(minBucket.min, maxBucket.max);
-  }, []);
+
+      // A click (vs a drag) within the existing selection band clears the
+      // filter — a stray click anywhere inside the highlighted area can be
+      // undone without reaching for the inputs. A short drag inside one
+      // bucket no longer triggers the clear path because the threshold
+      // disambiguates click from micro-drag.
+      const currentMin = minValueRef.current;
+      const currentMax = maxValueRef.current;
+      if (
+        treatAsClick
+        && start === end
+        && currentMin !== undefined
+        && currentMax !== undefined
+      ) {
+        const minN = currentConfig.toNumber(currentMin);
+        const maxN = currentConfig.toNumber(currentMax);
+        const bucketMinN = currentConfig.toNumber(minBucket.min);
+        const bucketMaxN = currentConfig.toNumber(minBucket.max);
+        const inBand = minN <= bucketMaxN && maxN >= bucketMinN;
+        if (inBand) {
+          onChangeRef.current(undefined, undefined);
+          return;
+        }
+      }
+      onChangeRef.current(minBucket.min, maxBucket.max);
+    },
+    [],
+  );
+
+  // Distance (in client px) below which a pointerup is treated as a click
+  // — see commitDragRange for the reason. 4px squared = 16.
+  const DRAG_VS_CLICK_THRESHOLD_SQ = 16;
 
   const svgRef = useRef<SVGSVGElement | null>(null);
-  // Active drag teardown stored so unmount-during-drag can release the
-  // document-level listeners that handlePlotMouseDown attached.
-  const dragCleanupRef = useRef<(() => void) | null>(null);
   const setSvgRef = useCallback((el: SVGSVGElement | null) => {
     svgRef.current = el;
-    if (el == null && dragCleanupRef.current != null) {
-      dragCleanupRef.current();
-      dragCleanupRef.current = null;
-    }
   }, []);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
@@ -500,14 +510,14 @@ function RangeInputInner<T>({
     [],
   );
 
-  const handlePlotMouseDown = useCallback(
-    (e: React.MouseEvent) => {
+  const handlePlotPointerDown = useCallback(
+    (e: React.PointerEvent<SVGSVGElement>) => {
       if (!clickToFilter) {
         return;
       }
       // Prefer the bucket index stamped on the bar via `data-bucket-index`
       // for the common case (also avoids `getScreenCTM` coord math). Fall
-      // back to client-coord math when the click lands on the empty plot
+      // back to client-coord math when the press lands on the empty plot
       // background between bars.
       const startIdx = bucketIndexFromTarget(e.target)
         ?? bucketIndexAtClient(e.clientX, e.clientY);
@@ -515,69 +525,68 @@ function RangeInputInner<T>({
         return;
       }
       e.preventDefault();
+      // setPointerCapture routes subsequent move/up/cancel events to the
+      // SVG even when the pointer leaves it, so we don't need
+      // document-level listeners — and pointercancel handles
+      // release-outside-window cases that mouseup can't.
+      e.currentTarget.setPointerCapture(e.pointerId);
       setHoveredIndex(null);
+      dragStartCoordsRef.current = { x: e.clientX, y: e.clientY };
       dragRangeRef.current = { start: startIdx, end: startIdx };
       setDragRange({ start: startIdx, end: startIdx });
-
-      const handleMove = (ev: MouseEvent) => {
-        const idx = bucketIndexAtClient(ev.clientX, ev.clientY);
-        if (idx == null || dragRangeRef.current == null) {
-          return;
-        }
-        const next = { ...dragRangeRef.current, end: idx };
-        dragRangeRef.current = next;
-        setDragRange(next);
-      };
-
-      const teardown = () => {
-        document.removeEventListener("mousemove", handleMove);
-        document.removeEventListener("mouseup", handleUp);
-        dragCleanupRef.current = null;
-      };
-
-      const handleUp = () => {
-        teardown();
-        const current = dragRangeRef.current;
-        if (current != null) {
-          commitDragRange(current.start, current.end);
-        }
-        dragRangeRef.current = null;
-        setDragRange(null);
-      };
-
-      dragCleanupRef.current = teardown;
-      document.addEventListener("mousemove", handleMove);
-      document.addEventListener("mouseup", handleUp);
     },
-    [
-      clickToFilter,
-      bucketIndexFromTarget,
-      bucketIndexAtClient,
-      commitDragRange,
-    ],
+    [clickToFilter, bucketIndexFromTarget, bucketIndexAtClient],
   );
 
-  // Delegated mouseover on the bars `<g>` — single handler instead of one
-  // closure per bar. Updates hover state and, if a drag is in progress,
-  // extends the drag range to the bar under the cursor.
-  const handleBarsMouseOver = useCallback(
-    (e: React.MouseEvent) => {
-      const idx = bucketIndexFromTarget(e.target);
+  const handlePlotPointerMove = useCallback(
+    (e: React.PointerEvent<SVGSVGElement>) => {
+      // Prefer the bucket-index attribute on the bar; fall back to client
+      // coords for moves that land on the empty plot background between
+      // bars (or that cross gaps during a drag).
+      const idx = bucketIndexFromTarget(e.target)
+        ?? bucketIndexAtClient(e.clientX, e.clientY);
       if (idx == null) {
         return;
       }
-      setHoveredIndex(idx);
-      if (dragRangeRef.current != null) {
-        const next = { ...dragRangeRef.current, end: idx };
-        dragRangeRef.current = next;
-        setDragRange(next);
+      if (dragRangeRef.current == null) {
+        setHoveredIndex(idx);
+        return;
       }
+      const next = { ...dragRangeRef.current, end: idx };
+      dragRangeRef.current = next;
+      setDragRange(next);
     },
-    [bucketIndexFromTarget],
+    [bucketIndexFromTarget, bucketIndexAtClient],
   );
 
-  const handleSvgMouseLeave = useCallback(() => {
-    setHoveredIndex(null);
+  const handlePlotPointerUp = useCallback(
+    (e: React.PointerEvent<SVGSVGElement>) => {
+      const current = dragRangeRef.current;
+      const startCoords = dragStartCoordsRef.current;
+      dragRangeRef.current = null;
+      dragStartCoordsRef.current = null;
+      setDragRange(null);
+      if (current == null || startCoords == null) {
+        return;
+      }
+      const dx = e.clientX - startCoords.x;
+      const dy = e.clientY - startCoords.y;
+      const treatAsClick = dx * dx + dy * dy < DRAG_VS_CLICK_THRESHOLD_SQ;
+      commitDragRange(current.start, current.end, treatAsClick);
+    },
+    [commitDragRange],
+  );
+
+  const handlePlotPointerCancel = useCallback(() => {
+    dragRangeRef.current = null;
+    dragStartCoordsRef.current = null;
+    setDragRange(null);
+  }, []);
+
+  const handlePlotPointerLeave = useCallback(() => {
+    if (dragRangeRef.current == null) {
+      setHoveredIndex(null);
+    }
   }, []);
 
   const handleClearFilter = useCallback(() => {
@@ -614,7 +623,7 @@ function RangeInputInner<T>({
         </div>
       )}
 
-      {clickToFilter && hasActiveFilter && (
+      {hasActiveFilter && (
         <button
           type="button"
           className={styles.clearButton}
@@ -634,8 +643,13 @@ function RangeInputInner<T>({
             preserveAspectRatio="xMidYMid meet"
             role="img"
             aria-label="Histogram of value counts"
-            onMouseDown={clickToFilter ? handlePlotMouseDown : undefined}
-            onMouseLeave={handleSvgMouseLeave}
+            onPointerDown={clickToFilter ? handlePlotPointerDown : undefined}
+            onPointerUp={clickToFilter ? handlePlotPointerUp : undefined}
+            onPointerCancel={clickToFilter
+              ? handlePlotPointerCancel
+              : undefined}
+            onPointerMove={handlePlotPointerMove}
+            onPointerLeave={handlePlotPointerLeave}
           >
             <g className={styles.axisLines}>
               {yTicks.map((tickValue) => {
@@ -677,7 +691,7 @@ function RangeInputInner<T>({
               />
             )}
 
-            <g className={styles.bars} onMouseOver={handleBarsMouseOver}>
+            <g className={styles.bars}>
               {buckets.map((bucket, index) => {
                 const x = barLayout.xLeft(index);
                 const heightFrac = yTopValue > 0
