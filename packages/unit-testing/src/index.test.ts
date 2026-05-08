@@ -16,7 +16,7 @@
 
 import { describe, expect, it } from "vitest";
 
-describe("functions-testing.experimental", () => {
+describe("unit-testing", () => {
   it("should run tests", () => {
     expect(true).toBe(true);
   });
