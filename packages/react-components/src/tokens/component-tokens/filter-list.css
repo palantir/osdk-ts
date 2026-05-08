@@ -506,5 +506,5 @@
   --osdk-filter-popover-popup-max-width: calc(
     var(--osdk-surface-spacing) * 120
   );
-  --osdk-filter-popover-popup-z-index: 1000;
+  --osdk-filter-popover-popup-z-index: var(--osdk-surface-z-index-3);
 }

@@ -111,6 +111,16 @@ function LayersIcon(): React.ReactElement {
   );
 }
 
+const TOOLBAR_ICONS: ReadonlyArray<{
+  label: string;
+  Icon: React.ComponentType;
+  extraClass?: string;
+}> = [
+  { label: "Settings", Icon: GearIcon },
+  { label: "History", Icon: ClockIcon },
+  { label: "Layers", Icon: LayersIcon, extraClass: styles.layersButton },
+];
+
 interface FilterToolbarItemProps {
   filterKey: string;
   definition: FilterDefinitionUnion<Employee>;
@@ -121,7 +131,35 @@ interface FilterToolbarItemProps {
   clearFilterState: (key: string) => void;
 }
 
-function FilterToolbarItem({
+function InlineFilterField({
+  filterKey,
+  definition,
+  filterState,
+  whereClause,
+  objectType,
+  setFilterState,
+}: FilterToolbarItemProps): React.ReactElement {
+  const handleStateChange = useCallback(
+    (state: FilterState) => setFilterState(filterKey, state),
+    [filterKey, setFilterState],
+  );
+  return (
+    <span className={styles.inlineFieldGroup}>
+      <span className={styles.label}>{getFilterLabel(definition)}</span>
+      <span className={styles.inlineInputWrapper}>
+        <FilterInput
+          objectType={objectType}
+          definition={definition}
+          filterState={filterState}
+          onFilterStateChanged={handleStateChange}
+          whereClause={whereClause}
+        />
+      </span>
+    </span>
+  );
+}
+
+function PopoverFilterField({
   filterKey,
   definition,
   filterState,
@@ -138,31 +176,6 @@ function FilterToolbarItem({
     () => clearFilterState(filterKey),
     [filterKey, clearFilterState],
   );
-
-  // CONTAINS_TEXT renders inline — the trigger area IS the search input, so
-  // there is no nested input or popover indirection. Any future filter
-  // component that's already a single inline control (rather than a popover
-  // surface) would need the same special case here.
-  if (
-    definition.type === "PROPERTY"
-    && definition.filterComponent === "CONTAINS_TEXT"
-  ) {
-    return (
-      <span className={styles.inlineFieldGroup}>
-        <span className={styles.label}>{getFilterLabel(definition)}</span>
-        <span className={styles.inlineInputWrapper}>
-          <FilterInput
-            objectType={objectType}
-            definition={definition}
-            filterState={filterState}
-            onFilterStateChanged={handleStateChange}
-            whereClause={whereClause}
-          />
-        </span>
-      </span>
-    );
-  }
-
   return (
     <FilterPopover
       label={getFilterLabel(definition)}
@@ -181,6 +194,15 @@ function FilterToolbarItem({
       />
     </FilterPopover>
   );
+}
+
+function FilterToolbarItem(props: FilterToolbarItemProps): React.ReactElement {
+  const { definition } = props;
+  const isInline = definition.type === "PROPERTY"
+    && definition.filterComponent === "CONTAINS_TEXT";
+  return isInline
+    ? <InlineFilterField {...props} />
+    : <PopoverFilterField {...props} />;
 }
 
 interface HorizontalFilterToolbarProps {
@@ -216,27 +238,16 @@ function HorizontalFilterToolbar(
         );
       })}
       <div className={styles.iconButtonGroup}>
-        <button
-          type="button"
-          className={styles.iconButton}
-          aria-label="Settings"
-        >
-          <GearIcon />
-        </button>
-        <button
-          type="button"
-          className={styles.iconButton}
-          aria-label="History"
-        >
-          <ClockIcon />
-        </button>
-        <button
-          type="button"
-          className={classnames(styles.iconButton, styles.layersButton)}
-          aria-label="Layers"
-        >
-          <LayersIcon />
-        </button>
+        {TOOLBAR_ICONS.map(({ label, Icon, extraClass }) => (
+          <button
+            key={label}
+            type="button"
+            className={classnames(styles.iconButton, extraClass)}
+            aria-label={label}
+          >
+            <Icon />
+          </button>
+        ))}
       </div>
     </div>
   );

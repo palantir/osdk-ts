@@ -18,6 +18,8 @@ import classnames from "classnames";
 import React, { memo, useCallback, useMemo } from "react";
 import { Combobox } from "../../../base-components/combobox/Combobox.js";
 import type { PropertyAggregationValue } from "../../types/AggregationTypes.js";
+import { MultiSelectDropdownLayout } from "./MultiSelectDropdownLayout.js";
+import { MultiSelectInlineLayout } from "./MultiSelectInlineLayout.js";
 import styles from "./MultiSelectInput.module.css";
 import sharedStyles from "./shared.module.css";
 
@@ -158,34 +160,17 @@ function MultiSelectInputInner({
 
           {layout === "inline"
             ? (
-              <>
-                <Combobox.Input
-                  className={styles.inlineInput}
-                  placeholder={placeholder}
-                  aria-label={ariaLabel}
-                />
-                <Combobox.Empty className={styles.inlineEmpty}>
-                  No matching options
-                </Combobox.Empty>
-                <Combobox.List className={styles.inlineList}>
-                  {renderItem}
-                </Combobox.List>
-              </>
+              <MultiSelectInlineLayout
+                placeholder={placeholder}
+                ariaLabel={ariaLabel}
+                renderItem={renderItem}
+              />
             )
             : (
-              <>
-                <Combobox.Chips>
-                  <Combobox.Value>{renderChips}</Combobox.Value>
-                </Combobox.Chips>
-                <Combobox.Portal>
-                  <Combobox.Positioner>
-                    <Combobox.Popup>
-                      <Combobox.Empty>No matching options</Combobox.Empty>
-                      <Combobox.List>{renderItem}</Combobox.List>
-                    </Combobox.Popup>
-                  </Combobox.Positioner>
-                </Combobox.Portal>
-              </>
+              <MultiSelectDropdownLayout
+                renderChips={renderChips}
+                renderItem={renderItem}
+              />
             )}
         </Combobox.Root>
       )}

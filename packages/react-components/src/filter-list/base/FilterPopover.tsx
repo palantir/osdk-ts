@@ -16,7 +16,7 @@
 
 import { Popover } from "@base-ui/react/popover";
 import classnames from "classnames";
-import React, { memo, useState } from "react";
+import React, { memo, useCallback, useState } from "react";
 import { RemoveIcon } from "./FilterIcons.js";
 import styles from "./FilterPopover.module.css";
 
@@ -53,6 +53,13 @@ function FilterPopoverInner(
 ): React.ReactElement {
   const [open, setOpen] = useState(false);
   const summaryHasValue = summary !== "";
+  const handleRemoveClick = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation();
+      onRemove?.();
+    },
+    [onRemove],
+  );
 
   return (
     <Popover.Root open={open} onOpenChange={setOpen}>
@@ -80,10 +87,7 @@ function FilterPopoverInner(
         {onRemove && (
           <button
             type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              onRemove();
-            }}
+            onClick={handleRemoveClick}
             className={styles.removeButton}
             aria-label={`Remove ${label} filter`}
           >
