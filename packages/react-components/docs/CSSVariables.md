@@ -252,6 +252,18 @@ Styling for button components.
 | `--osdk-button-secondary-bg-hover`  | `var(--osdk-surface-background-color-default-hover)`  | Secondary button hover background  |
 | `--osdk-button-secondary-bg-active` | `var(--osdk-surface-background-color-default-active)` | Secondary button active background |
 
+#### Minimal Button
+
+| Variable                                | Default Value                                         | Description                         |
+| --------------------------------------- | ----------------------------------------------------- | ----------------------------------- |
+| `--osdk-button-minimal-bg`              | `transparent`                                         | Minimal button background           |
+| `--osdk-button-minimal-bg-hover`        | `var(--osdk-surface-background-color-default-hover)`  | Minimal button hover background     |
+| `--osdk-button-minimal-bg-active`       | `var(--osdk-surface-background-color-default-active)` | Minimal button active background    |
+| `--osdk-button-minimal-border`          | `none`                                                | Minimal button border               |
+| `--osdk-button-minimal-shadow`          | `none`                                                | Minimal button shadow               |
+| `--osdk-button-secondary-minimal-color` | `var(--osdk-typography-color-default-rest)`           | Secondary minimal button text color |
+| `--osdk-button-primary-minimal-color`   | `var(--osdk-button-primary-bg)`                       | Primary minimal button text color   |
+
 ### Checkbox
 
 Styling for checkbox components.
@@ -546,17 +558,6 @@ Styling for file picker components.
 | `--osdk-file-picker-clear-margin`      | `0 calc(var(--osdk-surface-spacing) * 1)`   | Clear button margin      |
 | `--osdk-file-picker-clear-color`       | `var(--osdk-typography-color-muted)`        | Clear button color       |
 | `--osdk-file-picker-clear-color-hover` | `var(--osdk-typography-color-default-rest)` | Clear button hover color |
-
-#### Browse Button
-
-| Variable                                | Default Value                                                                   | Description                     |
-| --------------------------------------- | ------------------------------------------------------------------------------- | ------------------------------- |
-| `--osdk-file-picker-browse-bg`          | `var(--osdk-button-secondary-bg)`                                               | Browse button background        |
-| `--osdk-file-picker-browse-bg-hover`    | `var(--osdk-button-secondary-bg-hover)`                                         | Browse button hover background  |
-| `--osdk-file-picker-browse-bg-active`   | `var(--osdk-button-secondary-bg-active)`                                        | Browse button active background |
-| `--osdk-file-picker-browse-color`       | `var(--osdk-button-secondary-color)`                                            | Browse button text color        |
-| `--osdk-file-picker-browse-padding`     | `calc(var(--osdk-surface-spacing) * 1.5) calc(var(--osdk-surface-spacing) * 3)` | Browse button padding           |
-| `--osdk-file-picker-browse-border-left` | `var(--osdk-input-border-width) solid var(--osdk-input-border-color)`           | Browse button left border       |
 
 ### Filter List
 
@@ -923,21 +924,21 @@ Styling for form components.
 
 #### Layout
 
-| Variable                      | Default Value                           | Description          |
-| ----------------------------- | --------------------------------------- | -------------------- |
-| `--osdk-form-content-padding` | `calc(var(--osdk-surface-spacing) * 4)` | Form content padding |
-| `--osdk-form-field-gap`       | `calc(var(--osdk-surface-spacing) * 4)` | Gap between fields   |
+| Variable                             | Default Value                             | Description                                      |
+| ------------------------------------ | ----------------------------------------- | ------------------------------------------------ |
+| `--osdk-form-fields-gap`             | `calc(var(--osdk-surface-spacing) * 1.5)` | Gap between fields                               |
+| `--osdk-form-content-padding-inline` | `0`                                       | Shared inline padding for form regions           |
+| `--osdk-form-content-padding-block`  | `0`                                       | Content block padding for the form fields region |
 
 #### Header
 
-| Variable                            | Default Value                               | Description           |
-| ----------------------------------- | ------------------------------------------- | --------------------- |
-| `--osdk-form-header-border-color`   | `var(--osdk-surface-border-color-default)`  | Header border color   |
-| `--osdk-form-header-font-size`      | `var(--osdk-typography-size-body-large)`    | Header font size      |
-| `--osdk-form-header-font-weight`    | `var(--osdk-typography-weight-bold)`        | Header font weight    |
-| `--osdk-form-header-color`          | `var(--osdk-typography-color-default-rest)` | Header text color     |
-| `--osdk-form-header-block-padding`  | `calc(var(--osdk-surface-spacing) * 3)`     | Header block padding  |
-| `--osdk-form-header-inline-padding` | `var(--osdk-form-content-padding)`          | Header inline padding |
+| Variable                           | Default Value                               | Description          |
+| ---------------------------------- | ------------------------------------------- | -------------------- |
+| `--osdk-form-header-border-color`  | `var(--osdk-surface-border-color-default)`  | Header border color  |
+| `--osdk-form-header-font-size`     | `var(--osdk-typography-size-body-large)`    | Header font size     |
+| `--osdk-form-header-font-weight`   | `var(--osdk-typography-weight-bold)`        | Header font weight   |
+| `--osdk-form-header-color`         | `var(--osdk-typography-color-default-rest)` | Header text color    |
+| `--osdk-form-header-block-padding` | `calc(var(--osdk-surface-spacing) * 2)`     | Header block padding |
 
 #### Footer
 
@@ -949,12 +950,12 @@ Styling for form components.
 
 #### Labels
 
-| Variable                        | Default Value                               | Description                 |
-| ------------------------------- | ------------------------------------------- | --------------------------- |
-| `--osdk-form-label-font-size`   | `var(--osdk-typography-size-body-medium)`   | Label font size             |
-| `--osdk-form-label-font-weight` | `var(--osdk-typography-weight-bold)`        | Label font weight           |
-| `--osdk-form-label-color`       | `var(--osdk-typography-color-default-rest)` | Label text color            |
-| `--osdk-form-label-field-gap`   | `calc(var(--osdk-surface-spacing) * 1.5)`   | Gap between label and field |
+| Variable                        | Default Value                               | Description                  |
+| ------------------------------- | ------------------------------------------- | ---------------------------- |
+| `--osdk-form-label-font-size`   | `var(--osdk-typography-size-body-medium)`   | Label font size              |
+| `--osdk-form-label-font-weight` | `var(--osdk-typography-weight-bold)`        | Label font weight            |
+| `--osdk-form-label-color`       | `var(--osdk-typography-color-default-rest)` | Label text color             |
+| `--osdk-form-field-gap`         | `var(--osdk-surface-spacing)`               | Gap between items in a field |
 
 #### Validation
 
@@ -1293,7 +1294,7 @@ To create a custom theme, override the tokens at the appropriate level. You can 
     --osdk-table-header-bg: #f0f0f0;
     --osdk-table-row-bg-default: white;
     --osdk-table-border-color: #e0e0e0;
-    
+
     /* Customize editable table styling */
     --osdk-table-cell-editable-border: 1px solid #3b82f6;
     --osdk-table-cell-edited-border: 2px solid #10b981;
