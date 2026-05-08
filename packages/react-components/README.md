@@ -288,7 +288,9 @@ function EmployeeDirectory() {
 
 ## Contributing
 
-Looking to contribute to the codebase? Read the [contribution guidelines](./CONTRIBUTING.md)
+Looking to contribute to the codebase? Read the [contribution guidelines](./CONTRIBUTING.md).
+
+If you use [Claude Code](https://claude.com/claude-code), run `/add-new-component` (or just describe the component you want to add) — the [`add-new-component` skill](./.claude/skills/add-new-component/SKILL.md) walks you through the API-first PR, MVP checklist, and verification loop on top of `CONTRIBUTING.md`.
 
 ## Development Workflow
 
