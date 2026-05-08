@@ -320,6 +320,11 @@ function RangeInputInner<T>({
       const rounded = Math.round(v / step) * step;
       result.push({ value: rounded, label: formatTickAdaptive(rounded, step) });
     }
+    // Render only the min and max axis labels so wide formatted numbers
+    // (e.g. 9-digit IDs) don't crash into each other across the bottom.
+    if (result.length > 2) {
+      return [result[0], result[result.length - 1]];
+    }
     return result;
   }, [dataBounds, isDateLike]);
 
@@ -793,6 +798,7 @@ function RangeInputInner<T>({
                     : 0) * PLOT_H}
               svgWidth={SVG_W}
               svgHeight={SVG_H}
+              svgElement={svgRef.current}
             />
           )}
         </div>
