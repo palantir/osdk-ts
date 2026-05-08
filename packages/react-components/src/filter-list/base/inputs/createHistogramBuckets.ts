@@ -74,7 +74,9 @@ export function createHistogramBuckets<T>(
   toNumber: (value: T) => number,
   fromNumber: (value: number) => T,
 ): Array<HistogramBucket<T>> {
-  if (pairs.length === 0) return [];
+  if (pairs.length === 0) {
+    return [];
+  }
 
   const minNum = toNumber(range.min);
   const maxNum = toNumber(range.max);

@@ -17,7 +17,6 @@
 import type { ObjectSet, ObjectTypeDefinition, WhereClause } from "@osdk/api";
 import React, { memo } from "react";
 import { FilterInputExcludeRow } from "../base/FilterInputExcludeRow.js";
-import type { MultiSelectInputLayout } from "../base/inputs/MultiSelectInput.js";
 import type {
   FilterState,
   PropertyFilterDefinition,
@@ -43,7 +42,6 @@ interface PropertyFilterInputProps<Q extends ObjectTypeDefinition> {
   whereClause: WhereClause<Q>;
   searchQuery?: string;
   excludeRowOpen?: boolean;
-  layout?: MultiSelectInputLayout;
 }
 
 function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
@@ -55,7 +53,6 @@ function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
   whereClause,
   searchQuery,
   excludeRowOpen,
-  layout,
 }: PropertyFilterInputProps<Q>): React.ReactElement {
   switch (definition.filterComponent) {
     case "CONTAINS_TEXT":
@@ -104,7 +101,6 @@ function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
           onFilterStateChanged={onFilterStateChanged}
           whereClause={whereClause}
           formatDate={definition.formatDate}
-          parseDate={definition.parseDate}
           clickToFilter={definition.clickToFilter}
         />
       );
@@ -136,7 +132,6 @@ function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
           excludeRowOpen={excludeRowOpen}
           renderValue={definition.renderValue}
           showCount={definition.showCount}
-          layout={layout}
         />
       );
 
@@ -154,7 +149,6 @@ function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
           filterState={filterState}
           onFilterStateChanged={onFilterStateChanged}
           formatDate={definition.formatDate}
-          parseDate={definition.parseDate}
         />
       );
 
@@ -201,7 +195,6 @@ function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
             filterState={filterState}
             onFilterStateChanged={onFilterStateChanged}
             formatDate={definition.formatDate}
-            parseDate={definition.parseDate}
           />
         </FilterInputExcludeRow>
       );

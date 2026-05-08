@@ -17,7 +17,7 @@
 import { Button } from "@base-ui/react/button";
 import classnames from "classnames";
 import React, { memo, useCallback } from "react";
-import { DatetimePickerField } from "../../../action-form/fields/DatetimePickerField.js";
+import { DatePicker } from "../../../shared/calendar/index.js";
 import {
   formatDateForDisplay,
   formatDateForInput,
@@ -33,10 +33,11 @@ interface MultiDateInputProps {
   minDate?: Date;
   maxDate?: Date;
   showClearAll?: boolean;
-  /** Optional callback used for chip text. */
+  /**
+   * Consumer-provided display formatter for chip text. Falls back to
+   * `formatDateForDisplay` (locale-aware) when omitted.
+   */
   formatDate?: (date: Date) => string;
-  /** Reserved for future custom text-entry inputs; not invoked by the built-in HTML `<input type="date">`. */
-  parseDate?: (text: string) => Date | undefined;
 }
 
 function MultiDateInputInner({
@@ -49,7 +50,6 @@ function MultiDateInputInner({
   showClearAll = true,
   formatDate,
 }: MultiDateInputProps): React.ReactElement {
-  const renderDate = formatDate ?? formatDateForDisplay;
   const addDate = useCallback(
     (date: Date | null) => {
       if (date == null) return;
@@ -88,8 +88,8 @@ function MultiDateInputInner({
             <DateTag
               key={date.toISOString()}
               date={date}
+              formatDate={formatDate}
               onRemove={removeDate}
-              renderDate={renderDate}
             />
           ))}
           {showClearAll && selectedDates.length > 1 && (
@@ -105,7 +105,7 @@ function MultiDateInputInner({
       )}
 
       <div className={styles.calendarContainer}>
-        <DatetimePickerField
+        <DatePicker
           value={null}
           onChange={addDate}
           min={minDate}
@@ -123,17 +123,19 @@ export const MultiDateInput: React.NamedExoticComponent<MultiDateInputProps> =
 
 interface DateTagProps {
   date: Date;
+  formatDate: ((date: Date) => string) | undefined;
   onRemove: (date: Date) => void;
-  renderDate: (date: Date) => string;
 }
 
 function DateTag(
-  { date, onRemove, renderDate }: DateTagProps,
+  { date, formatDate, onRemove }: DateTagProps,
 ): React.ReactElement {
   const handleRemove = useCallback(() => {
     onRemove(date);
   }, [onRemove, date]);
-  const label = renderDate(date);
+  const label = formatDate != null
+    ? formatDate(date)
+    : formatDateForDisplay(date);
   return (
     <span className={sharedStyles.tag}>
       {label}

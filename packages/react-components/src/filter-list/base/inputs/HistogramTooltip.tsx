@@ -44,9 +44,14 @@ function HistogramTooltipInner({
 }: HistogramTooltipProps): React.ReactElement | null {
   const tooltipRef = useRef<HTMLDivElement | null>(null);
   const [position, setPosition] = useState<
-    { left: number; top: number; placement: "above" | "below" } | null
+    { left: number; top: number } | null
   >(null);
 
+  // Portal-positioned tooltip: needs the SVG's viewport rect plus the
+  // rendered tooltip's height to flip above/below the bar without
+  // overflowing the page. Both are post-render measurements, so this is
+  // the canonical `useLayoutEffect` + `getBoundingClientRect` pattern.
+  // Approved exception to the project-wide "no useEffect" guidance.
   useLayoutEffect(() => {
     if (svgElement == null) {
       setPosition(null);
@@ -58,22 +63,22 @@ function HistogramTooltipInner({
     const anchorX = rect.left + cx * scaleX;
     const barTopPx = rect.top + barTop * scaleY;
     const tooltipHeight = tooltipRef.current?.offsetHeight ?? 0;
-    const above = barTopPx - GAP_PX - tooltipHeight;
-    const placement: "above" | "below" = above < 0 ? "below" : "above";
-    const top = placement === "above"
-      ? barTopPx - GAP_PX - tooltipHeight
-      : barTopPx + GAP_PX;
-    setPosition({ left: anchorX, top, placement });
+    const aboveTop = barTopPx - GAP_PX - tooltipHeight;
+    const top = aboveTop < 0 ? barTopPx + GAP_PX : aboveTop;
+    setPosition({ left: anchorX, top });
   }, [svgElement, cx, barTop, svgWidth, svgHeight, text]);
 
-  if (typeof document === "undefined") return null;
+  if (typeof document === "undefined") {
+    return null;
+  }
 
   return createPortal(
     <div
       ref={tooltipRef}
       className={styles.tooltip}
+      data-state={position == null ? "hidden" : "visible"}
       style={position == null
-        ? { left: 0, top: 0, visibility: "hidden" }
+        ? { left: 0, top: 0 }
         : { left: position.left, top: position.top }}
     >
       {text}

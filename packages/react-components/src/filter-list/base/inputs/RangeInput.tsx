@@ -26,11 +26,7 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { DatetimePickerField } from "../../../action-form/fields/DatetimePickerField.js";
-import {
-  formatDateForInput,
-  parseDateFromInput,
-} from "../../../shared/dateUtils.js";
+import { DateRangePicker } from "../../../shared/calendar/index.js";
 import {
   createHistogramBuckets,
   getMaxBucketCount,
@@ -143,9 +139,14 @@ export interface RangeInputConfig<T> {
   maxLabel: string;
   formatTooltip: (min: T, max: T, count: number) => string;
   formatPlaceholder?: (value: T) => string;
-  /** Renders the leftmost / rightmost x-axis tick label. */
-  formatTick?: (value: T) => string;
   inputProps?: React.InputHTMLAttributes<HTMLInputElement>;
+  /**
+   * For `inputType === "date"`: forwarded to the shared `DateRangePicker`'s
+   * `formatDate` so the date-range histogram From/To inputs render the
+   * consumer-provided display string instead of ISO. Ignored for number
+   * ranges.
+   */
+  formatDate?: (date: Date) => string;
 }
 
 export interface RangeInputProps<T> {
@@ -243,7 +244,9 @@ function RangeInputInner<T>({
   const displayPairs = useStableData(valueCountPairs, isLoading);
 
   const computedRange = useMemo(() => {
-    if (displayPairs.length === 0) return { min: undefined, max: undefined };
+    if (displayPairs.length === 0) {
+      return { min: undefined, max: undefined };
+    }
     const min = displayPairs.reduce(
       (acc, p) => Math.min(acc, config.toNumber(p.value)),
       Infinity,
@@ -264,7 +267,9 @@ function RangeInputInner<T>({
   }), [computedRange.min, computedRange.max]);
 
   const buckets = useMemo<Array<HistogramBucket<T>>>(() => {
-    if (histogramData) return histogramData.buckets;
+    if (histogramData) {
+      return histogramData.buckets;
+    }
     if (
       !showHistogram
       || displayPairs.length === 0
@@ -329,11 +334,15 @@ function RangeInputInner<T>({
       const rounded = Math.round(v / step) * step;
       all.push({ value: rounded, label: formatTickAdaptive(rounded, step) });
     }
-    if (all.length <= 2) return all;
+    if (all.length <= 2) {
+      return all;
+    }
     const maxLabelLen = Math.max(...all.map((t) => t.label.length));
     const minSpacing = maxLabelLen * X_TICK_FONT_SIZE * 0.6 + 8;
     const fits = Math.max(2, Math.floor(PLOT_W / minSpacing) + 1);
-    if (all.length <= fits) return all;
+    if (all.length <= fits) {
+      return all;
+    }
     const stride = Math.ceil((all.length - 1) / (fits - 1));
     const picked: Array<{ value: number; label: string }> = [];
     for (let i = 0; i < all.length; i += stride) {
@@ -350,7 +359,9 @@ function RangeInputInner<T>({
   const COUNT_LABEL_THRESHOLD = 10;
   const skipCountLabel = useCallback(
     (i: number) => {
-      if (buckets.length <= COUNT_LABEL_THRESHOLD) return false;
+      if (buckets.length <= COUNT_LABEL_THRESHOLD) {
+        return false;
+      }
       const stride = Math.ceil(buckets.length / COUNT_LABEL_THRESHOLD);
       return i % stride !== 0;
     },
@@ -358,10 +369,13 @@ function RangeInputInner<T>({
   );
 
   // Drag range tracked in a ref so synchronous read/write across
-  // mousedown → mousemove → mouseup is reliable. A separate state value
-  // mirrors the ref so the SVG re-renders to highlight the dragged range
-  // while the user is dragging.
+  // pointerdown → pointermove → pointerup is reliable. A separate state
+  // value mirrors the ref so the SVG re-renders to highlight the dragged
+  // range while the user is dragging. Start coords are tracked separately
+  // so a near-zero-movement pointerup gets treated as a click (which can
+  // clear an in-band filter) instead of a single-bucket drag commit.
   const dragRangeRef = useRef<{ start: number; end: number } | null>(null);
+  const dragStartCoordsRef = useRef<{ x: number; y: number } | null>(null);
   const [dragRange, setDragRange] = useState<
     { start: number; end: number } | null
   >(null);
@@ -408,46 +422,53 @@ function RangeInputInner<T>({
     return { lo, hi };
   }, [dragRange, minValue, maxValue, buckets, config]);
 
-  const commitDragRange = useCallback((start: number, end: number) => {
-    const currentBuckets = bucketsRef.current;
-    const currentConfig = configRef.current;
-    const lo = Math.min(start, end);
-    const hi = Math.max(start, end);
-    const minBucket = currentBuckets[lo];
-    const maxBucket = currentBuckets[hi];
-    if (minBucket == null || maxBucket == null) {
-      return;
-    }
-
-    // Click within the existing selection band clears the filter, so a stray
-    // click anywhere inside the highlighted area can be undone without
-    // reaching for the inputs.
-    const currentMin = minValueRef.current;
-    const currentMax = maxValueRef.current;
-    if (start === end && currentMin !== undefined && currentMax !== undefined) {
-      const minN = currentConfig.toNumber(currentMin);
-      const maxN = currentConfig.toNumber(currentMax);
-      const bucketMinN = currentConfig.toNumber(minBucket.min);
-      const bucketMaxN = currentConfig.toNumber(minBucket.max);
-      const inBand = minN <= bucketMaxN && maxN >= bucketMinN;
-      if (inBand) {
-        onChangeRef.current(undefined, undefined);
+  const commitDragRange = useCallback(
+    (start: number, end: number, treatAsClick: boolean) => {
+      const currentBuckets = bucketsRef.current;
+      const currentConfig = configRef.current;
+      const lo = Math.min(start, end);
+      const hi = Math.max(start, end);
+      const minBucket = currentBuckets[lo];
+      const maxBucket = currentBuckets[hi];
+      if (minBucket == null || maxBucket == null) {
         return;
       }
-    }
-    onChangeRef.current(minBucket.min, maxBucket.max);
-  }, []);
+
+      // A click (vs a drag) within the existing selection band clears the
+      // filter — a stray click anywhere inside the highlighted area can be
+      // undone without reaching for the inputs. A short drag inside one
+      // bucket no longer triggers the clear path because the threshold
+      // disambiguates click from micro-drag.
+      const currentMin = minValueRef.current;
+      const currentMax = maxValueRef.current;
+      if (
+        treatAsClick
+        && start === end
+        && currentMin !== undefined
+        && currentMax !== undefined
+      ) {
+        const minN = currentConfig.toNumber(currentMin);
+        const maxN = currentConfig.toNumber(currentMax);
+        const bucketMinN = currentConfig.toNumber(minBucket.min);
+        const bucketMaxN = currentConfig.toNumber(minBucket.max);
+        const inBand = minN <= bucketMaxN && maxN >= bucketMinN;
+        if (inBand) {
+          onChangeRef.current(undefined, undefined);
+          return;
+        }
+      }
+      onChangeRef.current(minBucket.min, maxBucket.max);
+    },
+    [],
+  );
+
+  // Distance (in client px) below which a pointerup is treated as a click
+  // — see commitDragRange for the reason. 4px squared = 16.
+  const DRAG_VS_CLICK_THRESHOLD_SQ = 16;
 
   const svgRef = useRef<SVGSVGElement | null>(null);
-  // Active drag teardown stored so unmount-during-drag can release the
-  // document-level listeners that handlePlotMouseDown attached.
-  const dragCleanupRef = useRef<(() => void) | null>(null);
   const setSvgRef = useCallback((el: SVGSVGElement | null) => {
     svgRef.current = el;
-    if (el == null && dragCleanupRef.current != null) {
-      dragCleanupRef.current();
-      dragCleanupRef.current = null;
-    }
   }, []);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
@@ -489,14 +510,14 @@ function RangeInputInner<T>({
     [],
   );
 
-  const handlePlotMouseDown = useCallback(
-    (e: React.MouseEvent) => {
+  const handlePlotPointerDown = useCallback(
+    (e: React.PointerEvent<SVGSVGElement>) => {
       if (!clickToFilter) {
         return;
       }
       // Prefer the bucket index stamped on the bar via `data-bucket-index`
       // for the common case (also avoids `getScreenCTM` coord math). Fall
-      // back to client-coord math when the click lands on the empty plot
+      // back to client-coord math when the press lands on the empty plot
       // background between bars.
       const startIdx = bucketIndexFromTarget(e.target)
         ?? bucketIndexAtClient(e.clientX, e.clientY);
@@ -504,69 +525,68 @@ function RangeInputInner<T>({
         return;
       }
       e.preventDefault();
+      // setPointerCapture routes subsequent move/up/cancel events to the
+      // SVG even when the pointer leaves it, so we don't need
+      // document-level listeners — and pointercancel handles
+      // release-outside-window cases that mouseup can't.
+      e.currentTarget.setPointerCapture(e.pointerId);
       setHoveredIndex(null);
+      dragStartCoordsRef.current = { x: e.clientX, y: e.clientY };
       dragRangeRef.current = { start: startIdx, end: startIdx };
       setDragRange({ start: startIdx, end: startIdx });
-
-      const handleMove = (ev: MouseEvent) => {
-        const idx = bucketIndexAtClient(ev.clientX, ev.clientY);
-        if (idx == null || dragRangeRef.current == null) {
-          return;
-        }
-        const next = { ...dragRangeRef.current, end: idx };
-        dragRangeRef.current = next;
-        setDragRange(next);
-      };
-
-      const teardown = () => {
-        document.removeEventListener("mousemove", handleMove);
-        document.removeEventListener("mouseup", handleUp);
-        dragCleanupRef.current = null;
-      };
-
-      const handleUp = () => {
-        teardown();
-        const current = dragRangeRef.current;
-        if (current != null) {
-          commitDragRange(current.start, current.end);
-        }
-        dragRangeRef.current = null;
-        setDragRange(null);
-      };
-
-      dragCleanupRef.current = teardown;
-      document.addEventListener("mousemove", handleMove);
-      document.addEventListener("mouseup", handleUp);
     },
-    [
-      clickToFilter,
-      bucketIndexFromTarget,
-      bucketIndexAtClient,
-      commitDragRange,
-    ],
+    [clickToFilter, bucketIndexFromTarget, bucketIndexAtClient],
   );
 
-  // Delegated mouseover on the bars `<g>` — single handler instead of one
-  // closure per bar. Updates hover state and, if a drag is in progress,
-  // extends the drag range to the bar under the cursor.
-  const handleBarsMouseOver = useCallback(
-    (e: React.MouseEvent) => {
-      const idx = bucketIndexFromTarget(e.target);
+  const handlePlotPointerMove = useCallback(
+    (e: React.PointerEvent<SVGSVGElement>) => {
+      // Prefer the bucket-index attribute on the bar; fall back to client
+      // coords for moves that land on the empty plot background between
+      // bars (or that cross gaps during a drag).
+      const idx = bucketIndexFromTarget(e.target)
+        ?? bucketIndexAtClient(e.clientX, e.clientY);
       if (idx == null) {
         return;
       }
-      setHoveredIndex(idx);
-      if (dragRangeRef.current != null) {
-        const next = { ...dragRangeRef.current, end: idx };
-        dragRangeRef.current = next;
-        setDragRange(next);
+      if (dragRangeRef.current == null) {
+        setHoveredIndex(idx);
+        return;
       }
+      const next = { ...dragRangeRef.current, end: idx };
+      dragRangeRef.current = next;
+      setDragRange(next);
     },
-    [bucketIndexFromTarget],
+    [bucketIndexFromTarget, bucketIndexAtClient],
   );
 
-  const handleSvgMouseLeave = useCallback(() => {
-    setHoveredIndex(null);
+  const handlePlotPointerUp = useCallback(
+    (e: React.PointerEvent<SVGSVGElement>) => {
+      const current = dragRangeRef.current;
+      const startCoords = dragStartCoordsRef.current;
+      dragRangeRef.current = null;
+      dragStartCoordsRef.current = null;
+      setDragRange(null);
+      if (current == null || startCoords == null) {
+        return;
+      }
+      const dx = e.clientX - startCoords.x;
+      const dy = e.clientY - startCoords.y;
+      const treatAsClick = dx * dx + dy * dy < DRAG_VS_CLICK_THRESHOLD_SQ;
+      commitDragRange(current.start, current.end, treatAsClick);
+    },
+    [commitDragRange],
+  );
+
+  const handlePlotPointerCancel = useCallback(() => {
+    dragRangeRef.current = null;
+    dragStartCoordsRef.current = null;
+    setDragRange(null);
+  }, []);
+
+  const handlePlotPointerLeave = useCallback(() => {
+    if (dragRangeRef.current == null) {
+      setHoveredIndex(null);
+    }
   }, []);
 
   const handleClearFilter = useCallback(() => {
@@ -603,7 +623,7 @@ function RangeInputInner<T>({
         </div>
       )}
 
-      {clickToFilter && hasActiveFilter && (
+      {hasActiveFilter && (
         <button
           type="button"
           className={styles.clearButton}
@@ -623,8 +643,13 @@ function RangeInputInner<T>({
             preserveAspectRatio="xMidYMid meet"
             role="img"
             aria-label="Histogram of value counts"
-            onMouseDown={clickToFilter ? handlePlotMouseDown : undefined}
-            onMouseLeave={handleSvgMouseLeave}
+            onPointerDown={clickToFilter ? handlePlotPointerDown : undefined}
+            onPointerUp={clickToFilter ? handlePlotPointerUp : undefined}
+            onPointerCancel={clickToFilter
+              ? handlePlotPointerCancel
+              : undefined}
+            onPointerMove={handlePlotPointerMove}
+            onPointerLeave={handlePlotPointerLeave}
           >
             <g className={styles.axisLines}>
               {yTicks.map((tickValue) => {
@@ -666,7 +691,7 @@ function RangeInputInner<T>({
               />
             )}
 
-            <g className={styles.bars} onMouseOver={handleBarsMouseOver}>
+            <g className={styles.bars}>
               {buckets.map((bucket, index) => {
                 const x = barLayout.xLeft(index);
                 const heightFrac = yTopValue > 0
@@ -819,54 +844,110 @@ function RangeInputInner<T>({
         </div>
       )}
 
-      <div className={styles.rangeInputs}>
-        <div className={styles.inputWrapper}>
-          <label htmlFor={minInputId} className={styles.inputLabel}>
-            {config.minLabel}
-          </label>
-          <RangeBoundInput
-            id={minInputId}
-            inputType={config.inputType}
-            value={localMin}
-            onChange={handleMinChange}
-            placeholder={dataRange.dataMin !== undefined
-                && config.formatPlaceholder
-              ? config.formatPlaceholder(dataRange.dataMin)
-              : undefined}
-            inputProps={config.inputProps}
-            ariaLabel={config.minLabel}
+      {config.inputType === "date"
+        ? (
+          <DateRangeInputs
+            minValue={minValue as Date | undefined}
+            maxValue={maxValue as Date | undefined}
+            onChange={onChange as RangeOnChange<Date>}
+            formatDate={config.formatDate}
+            minLabel={config.minLabel}
+            maxLabel={config.maxLabel}
           />
-        </div>
+        )
+        : (
+          <div className={styles.rangeInputs}>
+            <div className={styles.inputWrapper}>
+              <label htmlFor={minInputId} className={styles.inputLabel}>
+                {config.minLabel}
+              </label>
+              <RangeBoundInput
+                id={minInputId}
+                value={localMin}
+                onChange={handleMinChange}
+                placeholder={dataRange.dataMin !== undefined
+                    && config.formatPlaceholder
+                  ? config.formatPlaceholder(dataRange.dataMin)
+                  : undefined}
+                inputProps={config.inputProps}
+                ariaLabel={config.minLabel}
+              />
+            </div>
 
-        <span className={styles.separator} aria-hidden="true">
-          –
-        </span>
+            <span className={styles.separator} aria-hidden="true">
+              –
+            </span>
 
-        <div className={styles.inputWrapper}>
-          <label htmlFor={maxInputId} className={styles.inputLabel}>
-            {config.maxLabel}
-          </label>
-          <RangeBoundInput
-            id={maxInputId}
-            inputType={config.inputType}
-            value={localMax}
-            onChange={handleMaxChange}
-            placeholder={dataRange.dataMax !== undefined
-                && config.formatPlaceholder
-              ? config.formatPlaceholder(dataRange.dataMax)
-              : undefined}
-            inputProps={config.inputProps}
-            ariaLabel={config.maxLabel}
-          />
-        </div>
-      </div>
+            <div className={styles.inputWrapper}>
+              <label htmlFor={maxInputId} className={styles.inputLabel}>
+                {config.maxLabel}
+              </label>
+              <RangeBoundInput
+                id={maxInputId}
+                value={localMax}
+                onChange={handleMaxChange}
+                placeholder={dataRange.dataMax !== undefined
+                    && config.formatPlaceholder
+                  ? config.formatPlaceholder(dataRange.dataMax)
+                  : undefined}
+                inputProps={config.inputProps}
+                ariaLabel={config.maxLabel}
+              />
+            </div>
+          </div>
+        )}
+    </div>
+  );
+}
+
+type RangeOnChange<T> = (
+  min: T | undefined,
+  max: T | undefined,
+) => void;
+
+interface DateRangeInputsProps {
+  minValue: Date | undefined;
+  maxValue: Date | undefined;
+  onChange: RangeOnChange<Date>;
+  formatDate: ((date: Date) => string) | undefined;
+  minLabel: string;
+  maxLabel: string;
+}
+
+function DateRangeInputs({
+  minValue,
+  maxValue,
+  onChange,
+  formatDate,
+  minLabel,
+  maxLabel,
+}: DateRangeInputsProps): React.ReactElement {
+  const handleChange = useCallback(
+    (next: readonly [Date | null, Date | null] | null) => {
+      const [start, end] = next ?? [null, null];
+      onChange(start ?? undefined, end ?? undefined);
+    },
+    [onChange],
+  );
+  const value = useMemo<readonly [Date | null, Date | null]>(
+    () => [minValue ?? null, maxValue ?? null],
+    [minValue, maxValue],
+  );
+  return (
+    <div className={styles.rangeInputs}>
+      <DateRangePicker
+        value={value}
+        onChange={handleChange}
+        placeholderStart={minLabel}
+        placeholderEnd={maxLabel}
+        formatDate={formatDate}
+      />
     </div>
   );
 }
 
 interface RangeBoundInputProps {
   id: string;
-  inputType: "number" | "date";
   value: string;
   onChange: (next: string) => void;
   placeholder: string | undefined;
@@ -876,7 +957,6 @@ interface RangeBoundInputProps {
 
 function RangeBoundInput({
   id,
-  inputType,
   value,
   onChange,
   placeholder,
@@ -889,23 +969,6 @@ function RangeBoundInput({
     },
     [onChange],
   );
-  const handleDatePickerChange = useCallback(
-    (date: Date | null) => {
-      onChange(date != null ? formatDateForInput(date) : "");
-    },
-    [onChange],
-  );
-  if (inputType === "date") {
-    return (
-      <DatetimePickerField
-        value={parseDateFromInput(value) ?? null}
-        onChange={handleDatePickerChange}
-        placeholder={placeholder}
-        ariaLabel={ariaLabel}
-        modal={false}
-      />
-    );
-  }
   return (
     <Input
       id={id}
@@ -918,24 +981,6 @@ function RangeBoundInput({
       {...inputProps}
     />
   );
-}
-
-/**
- * Numeric histograms only render the first and last x-axis ticks — per
- * AC #8 of Item 7: "x-axis labels are min/max only — no per-bucket
- * numeric labels".
- */
-function renderEndpointTick<T>(
-  buckets: ReadonlyArray<HistogramBucket<T>>,
-  index: number,
-  config: RangeInputConfig<T>,
-): string | undefined {
-  if (!config.formatTick) return undefined;
-  if (index === 0) return config.formatTick(buckets[0].min);
-  if (index === buckets.length - 1) {
-    return config.formatTick(buckets[buckets.length - 1].max);
-  }
-  return undefined;
 }
 
 export const RangeInput = memo(RangeInputInner) as typeof RangeInputInner;

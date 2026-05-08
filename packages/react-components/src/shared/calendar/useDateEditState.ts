@@ -15,7 +15,7 @@
  */
 
 import { useCallback, useRef, useState } from "react";
-import { isDateInRange } from "../../shared/dateUtils.js";
+import { isDateInRange } from "../dateUtils.js";
 
 export interface UseDateEditStateConfig {
   /** The current committed date value (controlled by the parent). */

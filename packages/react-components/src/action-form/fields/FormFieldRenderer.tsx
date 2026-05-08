@@ -16,16 +16,18 @@
 
 import type { ObjectTypeDefinition, Osdk } from "@osdk/api";
 import React, { memo } from "react";
+import {
+  DatePicker,
+  type DateRange,
+  DateRangePicker,
+  EMPTY_RANGE,
+} from "../../shared/calendar/index.js";
 import { FormField } from "../FormField.js";
 import {
-  type DateRange,
-  EMPTY_RANGE,
   type PortalContainer,
   type RendererFieldDefinition,
 } from "../FormFieldApi.js";
 import { CustomField } from "./CustomField.js";
-import { DateRangeInputField } from "./DateRangeInputField.js";
-import { DatetimePickerField } from "./DatetimePickerField.js";
 import { DropdownField } from "./DropdownField.js";
 import { FilePickerField } from "./FilePickerField.js";
 import { NumberInputField } from "./NumberInputField.js";
@@ -89,7 +91,7 @@ function renderFieldComponent(
   switch (fieldDefinition.fieldComponent) {
     case "DATE_RANGE_INPUT":
       return (
-        <DateRangeInputField
+        <DateRangePicker
           id={fieldDefinition.fieldKey}
           value={coerceToDateRange(value)}
           onChange={onChange}
@@ -141,7 +143,7 @@ function renderFieldComponent(
     }
     case "DATETIME_PICKER":
       return (
-        <DatetimePickerField
+        <DatePicker
           id={fieldDefinition.fieldKey}
           placeholder={fieldDefinition.placeholder}
           // TODO: Use coerceFieldValue

@@ -25,7 +25,7 @@ import classnames from "classnames";
 import React, { memo, useCallback, useMemo } from "react";
 import { assertUnreachable } from "../../shared/assertUnreachable.js";
 import { ContainsTextInput } from "../base/inputs/ContainsTextInput.js";
-import { DateRangeInput } from "../base/inputs/DateRangeInput.js";
+import { DateRangeHistogramInput } from "../base/inputs/DateRangeHistogramInput.js";
 import styles from "../base/inputs/LinkedPropertyInput.module.css";
 import { ListogramInput } from "../base/inputs/ListogramInput.js";
 import { MultiDateInput } from "../base/inputs/MultiDateInput.js";
@@ -736,7 +736,7 @@ function LinkedDateRangeInput<Q extends ObjectTypeDefinition>({
       includeNull={includeNull}
       onIncludeNullChange={onNullChange}
     >
-      <DateRangeInput
+      <DateRangeHistogramInput
         valueCountPairs={valueCountPairs}
         isLoading={histLoading}
         minValue={minValue}

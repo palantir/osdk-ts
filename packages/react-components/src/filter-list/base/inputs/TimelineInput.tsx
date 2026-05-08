@@ -33,12 +33,11 @@ interface TimelineInputProps {
   minDate?: Date;
   maxDate?: Date;
   /**
-   * Optional callback used for the period subtitle labels above the date
-   * inputs. The HTML `<input type="date">` value attribute is unaffected.
+   * Optional callback used for the period labels above the date inputs.
+   * The HTML `<input type="date">` value attribute is unaffected and stays
+   * ISO `YYYY-MM-DD`.
    */
   formatDate?: (date: Date) => string;
-  /** Reserved for future custom text inputs; not invoked by the built-in HTML `<input type="date">`. */
-  parseDate?: (text: string) => Date | undefined;
 }
 
 function TimelineInputInner({

@@ -15,17 +15,14 @@
  */
 
 import React, { memo, useMemo } from "react";
-import {
-  formatDateForInput,
-  parseDateFromInput,
-} from "../../../shared/dateUtils.js";
+import { formatDateForInput } from "../../../shared/dateUtils.js";
 import { createDateHistogramBuckets } from "./createDateHistogramBuckets.js";
 import { RangeInput, type RangeInputConfig } from "./RangeInput.js";
 
 const defaultDateConfig: RangeInputConfig<Date> = {
   inputType: "date",
   formatValue: formatDateForInput,
-  parseValue: parseDateFromInput,
+  parseValue: () => undefined,
   toNumber: (d) => d.getTime(),
   fromNumber: (t) => new Date(t),
   minLabel: "From",
@@ -36,7 +33,7 @@ const defaultDateConfig: RangeInputConfig<Date> = {
     }: ${count.toLocaleString()}`,
 };
 
-interface DateRangeInputProps {
+interface DateRangeHistogramInputProps {
   valueCountPairs: Array<{ value: Date; count: number }>;
   isLoading: boolean;
   minValue: Date | undefined;
@@ -46,50 +43,53 @@ interface DateRangeInputProps {
   className?: string;
   style?: React.CSSProperties;
   /**
-   * Optional callback used for tooltip + display text. The HTML
-   * `<input type="date">` value attribute is unaffected — it always uses
-   * ISO `YYYY-MM-DD`.
+   * Consumer-provided display formatter. Routes through the shared
+   * `DateRangePicker`'s idle text, the histogram tooltip, the period
+   * subtitle, and (when `formatTickLabel` is omitted) the histogram x-tick
+   * labels. The picker's internal value remains ISO `YYYY-MM-DD`.
    */
   formatDate?: (date: Date) => string;
-  /**
-   * Optional inverse of `formatDate`. Plumbed through `RangeInputConfig`
-   * for completeness; the built-in HTML date inputs do not invoke it
-   * because the browser controls parsing of `<input type="date">` values.
-   */
-  parseDate?: (text: string) => Date | undefined;
   clickToFilter?: boolean;
 }
 
-function DateRangeInputInner({
+function DateRangeHistogramInputInner({
   formatDate,
-  parseDate,
   valueCountPairs,
   ...rest
-}: DateRangeInputProps): React.ReactElement {
+}: DateRangeHistogramInputProps): React.ReactElement {
   const config = useMemo<RangeInputConfig<Date>>(
     () =>
-      formatDate || parseDate
+      formatDate != null
         ? {
           ...defaultDateConfig,
+          formatDate,
           formatTooltip: (min, max, count) =>
-            `${formatDate ? formatDate(min) : formatDateForInput(min)} - ${
-              formatDate ? formatDate(max) : formatDateForInput(max)
+            `${formatDate(min)} - ${
+              formatDate(max)
             }: ${count.toLocaleString()}`,
         }
         : defaultDateConfig,
-    [formatDate, parseDate],
+    [formatDate],
   );
 
   const histogramData = useMemo(() => {
-    if (valueCountPairs.length === 0) return undefined;
+    if (valueCountPairs.length === 0) {
+      return undefined;
+    }
     let minMs = Infinity;
     let maxMs = -Infinity;
     for (const { value } of valueCountPairs) {
       const t = value.getTime();
-      if (t < minMs) minMs = t;
-      if (t > maxMs) maxMs = t;
+      if (t < minMs) {
+        minMs = t;
+      }
+      if (t > maxMs) {
+        maxMs = t;
+      }
     }
-    if (!Number.isFinite(minMs) || !Number.isFinite(maxMs)) return undefined;
+    if (!Number.isFinite(minMs) || !Number.isFinite(maxMs)) {
+      return undefined;
+    }
     const { buckets, subtitle } = createDateHistogramBuckets(
       valueCountPairs,
       { min: new Date(minMs), max: new Date(maxMs) },
@@ -108,6 +108,6 @@ function DateRangeInputInner({
   );
 }
 
-export const DateRangeInput = memo(
-  DateRangeInputInner,
-) as typeof DateRangeInputInner;
+export const DateRangeHistogramInput = memo(
+  DateRangeHistogramInputInner,
+) as typeof DateRangeHistogramInputInner;
