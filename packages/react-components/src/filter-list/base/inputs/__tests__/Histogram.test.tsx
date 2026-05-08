@@ -283,7 +283,9 @@ describe("RangeInput SVG histogram", () => {
 
   describe("clickToFilter (drag-to-select range)", () => {
     const fireMouseDown = (el: Element) => fireEvent.mouseDown(el);
-    const fireMouseEnter = (el: Element) => fireEvent.mouseEnter(el);
+    // The bars `<g>` listens for `mouseover` (which bubbles) instead of
+    // per-bar `mouseenter` so a single delegated handler covers all bars.
+    const fireMouseEnter = (el: Element) => fireEvent.mouseOver(el);
     const fireDocumentMouseUp = () =>
       document.dispatchEvent(new MouseEvent("mouseup", { bubbles: true }));
 
@@ -431,7 +433,7 @@ describe("RangeInput SVG histogram", () => {
   });
 
   it(
-    "numeric histogram x-axis ticks are min/max only — no per-bucket numeric labels",
+    "numeric histogram x-axis renders evenly-spaced 'nice' tick labels",
     () => {
       const numericPairs = [
         { value: 10, count: 2 },
@@ -450,10 +452,21 @@ describe("RangeInput SVG histogram", () => {
       const tickLabels = container.querySelectorAll(
         "g[class*=\"xTicks\"] text",
       );
-      // niceNum-style helper rounds to 5/10 etc., but the bucketer creates
-      // 20 evenly-spaced buckets across [10, 90]. We only render ticks at
-      // the first and last buckets — exactly 2 tick texts.
-      expect(tickLabels.length).toBe(2);
+      // For span 80 with niceStep((maxN-minN)/8) = 10, ticks land at
+      // 10, 20, …, 90 — exactly 9 evenly-spaced labels.
+      expect(tickLabels.length).toBe(9);
+      const labelTexts = Array.from(tickLabels).map((t) => t.textContent);
+      expect(labelTexts).toEqual([
+        "10",
+        "20",
+        "30",
+        "40",
+        "50",
+        "60",
+        "70",
+        "80",
+        "90",
+      ]);
     },
   );
 });

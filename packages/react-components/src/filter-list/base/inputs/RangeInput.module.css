@@ -26,11 +26,54 @@
   opacity: 0.5;
 }
 
+.histogramWrapper {
+  position: relative;
+  width: 100%;
+}
+
 .histogramSvg {
   display: block;
   width: 100%;
-  height: var(--osdk-filter-range-histogram-height);
+  aspect-ratio: 400 / 180;
   overflow: visible;
+}
+
+.histogramSvg[data-click-to-filter="true"] {
+  cursor: pointer;
+}
+
+.clearButton {
+  align-self: flex-end;
+  font-family: var(--osdk-filter-range-label-font-family);
+  font-size: var(--osdk-filter-range-label-font-size);
+  color: var(--osdk-intent-primary-rest);
+  background: transparent;
+  border: none;
+  padding: calc(var(--osdk-surface-spacing) * 0.5)
+    var(--osdk-surface-spacing);
+  cursor: pointer;
+  border-radius: var(--osdk-surface-border-radius);
+
+  &:hover {
+    background: var(--osdk-custom-color-gray-1);
+  }
+}
+
+.tooltip {
+  position: absolute;
+  transform: translate(-50%, calc(-100% - var(--osdk-surface-spacing)));
+  display: inline-block;
+  background: var(--osdk-typography-color-default-rest);
+  color: var(--osdk-background-primary);
+  padding: calc(var(--osdk-surface-spacing) * 0.5)
+    var(--osdk-surface-spacing);
+  border-radius: var(--osdk-surface-border-radius);
+  font-family: var(--osdk-filter-range-label-font-family);
+  font-size: var(--osdk-typography-size-body-small);
+  white-space: nowrap;
+  pointer-events: none;
+  box-shadow: var(--osdk-surface-shadow-2);
+  z-index: 1;
 }
 
 /* Empty rules — exist purely so postcss-modules emits matching hashed
@@ -41,6 +84,15 @@
 .bars,
 .countLabels,
 .xTicks {}
+
+.selectionBand {
+  fill: var(
+    --osdk-filter-range-histogram-band-bg,
+    color-mix(in srgb, var(--osdk-intent-primary-rest) 12%, transparent)
+  );
+  pointer-events: none;
+  rx: var(--osdk-surface-border-radius);
+}
 
 .histogramBar {
   fill: var(--osdk-filter-range-histogram-bar-color);
@@ -76,6 +128,13 @@
   fill: var(--osdk-filter-range-histogram-label-color);
   font-family: var(--osdk-filter-range-label-font-family);
   font-size: var(--osdk-filter-range-histogram-label-font-size);
+}
+
+.countLabel[data-inside-bar="true"] {
+  fill: var(
+    --osdk-filter-range-histogram-label-color-inside,
+    var(--osdk-background-primary)
+  );
 }
 
 .subtitle {
