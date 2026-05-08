@@ -376,7 +376,8 @@
     )
     var(--osdk-combobox-transition-ease, var(--osdk-emphasis-ease-default));
 
-  &[data-highlighted] {
+  &[data-highlighted],
+  &:not([data-disabled]):hover {
     background-color: var(
       --osdk-combobox-item-bg-highlighted,
       var(--osdk-surface-background-color-default-hover)

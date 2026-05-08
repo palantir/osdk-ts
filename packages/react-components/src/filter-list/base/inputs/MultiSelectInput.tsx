@@ -15,9 +15,10 @@
  */
 
 import classnames from "classnames";
-import React, { memo, useCallback, useMemo } from "react";
+import React, { memo, useCallback, useContext, useMemo } from "react";
 import { Combobox } from "../../../base-components/combobox/Combobox.js";
 import type { PropertyAggregationValue } from "../../types/AggregationTypes.js";
+import { FilterPopoverContext } from "../FilterPopoverContext.js";
 import styles from "./MultiSelectInput.module.css";
 import sharedStyles from "./shared.module.css";
 
@@ -91,6 +92,8 @@ function MultiSelectInputInner({
     [countByValue, showCounts, renderValue],
   );
 
+  const inFilterPopover = useContext(FilterPopoverContext);
+
   const renderChips = useCallback(
     (selectedItems: string[]) => (
       <>
@@ -144,18 +147,37 @@ function MultiSelectInputInner({
             </div>
           )}
 
-          <Combobox.Chips>
-            <Combobox.Value>{renderChips}</Combobox.Value>
-          </Combobox.Chips>
-
-          <Combobox.Portal>
-            <Combobox.Positioner>
-              <Combobox.Popup>
-                <Combobox.Empty>No matching options</Combobox.Empty>
-                <Combobox.List>{renderItem}</Combobox.List>
-              </Combobox.Popup>
-            </Combobox.Positioner>
-          </Combobox.Portal>
+          {inFilterPopover
+            ? (
+              <>
+                <Combobox.Input
+                  className={styles.inlineInput}
+                  placeholder={placeholder}
+                  aria-label={ariaLabel}
+                />
+                <Combobox.Empty className={styles.inlineEmpty}>
+                  No matching options
+                </Combobox.Empty>
+                <Combobox.List className={styles.inlineList}>
+                  {renderItem}
+                </Combobox.List>
+              </>
+            )
+            : (
+              <>
+                <Combobox.Chips>
+                  <Combobox.Value>{renderChips}</Combobox.Value>
+                </Combobox.Chips>
+                <Combobox.Portal>
+                  <Combobox.Positioner>
+                    <Combobox.Popup>
+                      <Combobox.Empty>No matching options</Combobox.Empty>
+                      <Combobox.List>{renderItem}</Combobox.List>
+                    </Combobox.Popup>
+                  </Combobox.Positioner>
+                </Combobox.Portal>
+              </>
+            )}
         </Combobox.Root>
       )}
     </div>

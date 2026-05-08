@@ -24,7 +24,7 @@ import { LinkedPropertyInput } from "./inputs/LinkedPropertyInput.js";
 import { PropertyFilterInput } from "./inputs/PropertyFilterInput.js";
 import { StaticValuesFilterInput } from "./inputs/StaticValuesFilterInput.js";
 
-interface FilterInputProps<Q extends ObjectTypeDefinition> {
+export interface FilterInputProps<Q extends ObjectTypeDefinition> {
   objectType: Q;
   objectSet?: ObjectSet<Q>;
   definition: FilterDefinitionUnion<Q>;
