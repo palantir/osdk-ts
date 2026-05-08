@@ -176,6 +176,7 @@ function FilterToolbarItem({
         filterState={filterState}
         onFilterStateChanged={handleStateChange}
         whereClause={whereClause}
+        layout="inline"
       />
     </FilterPopover>
   );

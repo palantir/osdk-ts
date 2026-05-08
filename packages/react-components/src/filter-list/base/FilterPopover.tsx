@@ -19,7 +19,6 @@ import classnames from "classnames";
 import React, { memo, useState } from "react";
 import { RemoveIcon } from "./FilterIcons.js";
 import styles from "./FilterPopover.module.css";
-import { FilterPopoverContext } from "./FilterPopoverContext.js";
 
 export interface FilterPopoverProps {
   label: string;
@@ -82,9 +81,7 @@ function FilterPopoverInner(
       <Popover.Portal>
         <Popover.Positioner sideOffset={4} align="start">
           <Popover.Popup className={styles.popup}>
-            <FilterPopoverContext.Provider value={true}>
-              {children}
-            </FilterPopoverContext.Provider>
+            {children}
           </Popover.Popup>
         </Popover.Positioner>
       </Popover.Portal>
