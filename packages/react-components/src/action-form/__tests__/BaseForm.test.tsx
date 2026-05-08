@@ -20,6 +20,7 @@ import {
   render,
   screen,
   waitFor,
+  within,
 } from "@testing-library/react";
 import React, { useState } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -245,15 +246,10 @@ describe("BaseForm", () => {
       fireEvent.click(screen.getByRole("combobox"));
 
       const form = document.querySelector("form");
-      expect(form).not.toBeNull();
       await waitFor(() => {
         expect(
-          form?.contains(
-            screen.getByRole("option", {
-              name: "Red",
-            }),
-          ),
-        ).toBe(true);
+          within(form!).getByRole("option", { name: "Red" }),
+        ).toBeDefined();
       });
     });
   });
