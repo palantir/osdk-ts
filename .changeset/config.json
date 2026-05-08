@@ -48,7 +48,8 @@
     "@osdk/e2e.sandbox.*",
     "@osdk/ontology-explorer-app",
     "@osdk/ontology-explorer-server",
-    "@osdk/react-devtools"
+    "@osdk/react-devtools",
+    "@osdk/e2e.sandbox.officenetwork"
   ],
   "bumpVersionsWithWorkspaceProtocolOnly": true,
   "snapshot": {
