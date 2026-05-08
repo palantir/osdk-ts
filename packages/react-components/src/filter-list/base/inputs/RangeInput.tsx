@@ -52,6 +52,8 @@ const PLOT_H = SVG_H - PAD_TOP - PAD_BOTTOM;
 const BAR_GAP = 2;
 /** Must match --osdk-filter-range-histogram-label-font-size. */
 const COUNT_LABEL_FONT_SIZE = 16;
+/** Must match --osdk-filter-range-histogram-axis-font-size (body-large = 16px). */
+const X_TICK_FONT_SIZE = 16;
 const X_TICK_LABEL_Y = PAD_TOP + PLOT_H + 22;
 
 interface BarLayout {
@@ -315,17 +317,25 @@ function RangeInputInner<T>({
     const step = niceStep((maxN - minN) / 8);
     const start = Math.ceil(minN / step) * step;
     const end = Math.floor(maxN / step) * step;
-    const result: Array<{ value: number; label: string }> = [];
+    const all: Array<{ value: number; label: string }> = [];
     for (let v = start; v <= end + step / 2; v += step) {
       const rounded = Math.round(v / step) * step;
-      result.push({ value: rounded, label: formatTickAdaptive(rounded, step) });
+      all.push({ value: rounded, label: formatTickAdaptive(rounded, step) });
     }
-    // Render only the min and max axis labels so wide formatted numbers
-    // (e.g. 9-digit IDs) don't crash into each other across the bottom.
-    if (result.length > 2) {
-      return [result[0], result[result.length - 1]];
+    if (all.length <= 2) return all;
+    const maxLabelLen = Math.max(...all.map((t) => t.label.length));
+    const minSpacing = maxLabelLen * X_TICK_FONT_SIZE * 0.6 + 8;
+    const fits = Math.max(2, Math.floor(PLOT_W / minSpacing) + 1);
+    if (all.length <= fits) return all;
+    const stride = Math.ceil((all.length - 1) / (fits - 1));
+    const picked: Array<{ value: number; label: string }> = [];
+    for (let i = 0; i < all.length; i += stride) {
+      picked.push(all[i]);
     }
-    return result;
+    if (picked[picked.length - 1] !== all[all.length - 1]) {
+      picked.push(all[all.length - 1]);
+    }
+    return picked;
   }, [dataBounds, isDateLike]);
 
   // Skip count labels when there are too many bars to fit them readably.
