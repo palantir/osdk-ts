@@ -1101,6 +1101,73 @@ describe(Store, () => {
             { isOptimistic: true, status: "loading" },
           );
         });
+
+        it("removes deleted objects via deleteFromStore without leaving undefined slots in the list", async () => {
+          // Regression for the action-driven delete path: when an action
+          // returns `deletedObjects`, ActionApplication runs
+          // `ObjectQuery.deleteFromStore` inside a non-optimistic batch.
+          // Previously `propagateWrite` wrote a tombstone to the per-PK
+          // cache without registering the deletion in `changes.deleted`,
+          // so list watchers kept the cache key in their `data` array and
+          // the `combineLatest` resolved the slot to `undefined`. Consumers
+          // that trusted the non-null type of `useOsdkObjects().data`
+          // crashed during that one render.
+          const emp = employeesAsServerReturns[0];
+          updateList(cache, { type: Employee, where: {}, orderBy: {} }, [
+            emp,
+          ]);
+
+          const subFn = mockSingleSubCallback();
+          defer(
+            cache.objects.observe({
+              apiName: Employee,
+              pk: emp.$primaryKey,
+              mode: "offline",
+            }, subFn),
+          );
+          expectSingleObjectCallAndClear(subFn, emp);
+
+          const subListFn = mockListSubCallback();
+          defer(
+            cache.lists.observe({
+              type: Employee,
+              mode: "offline",
+            }, subListFn),
+          );
+
+          await waitForCall(subListFn, 1);
+          expectSingleListCallAndClear(
+            subListFn,
+            [emp],
+            { status: "loaded" },
+          );
+
+          testStage("delete via the production path: deleteFromStore");
+
+          cache.batch({}, (batch) => {
+            cache.objects.getQuery({
+              apiName: Employee,
+              pk: emp.$primaryKey,
+            }, undefined).deleteFromStore("loaded", batch);
+          });
+
+          expectSingleObjectCallAndClear(subFn, undefined);
+
+          await waitForCall(subListFn, 1);
+          const payload = expectSingleListCallAndClear(
+            subListFn,
+            [],
+            { status: "loaded", isOptimistic: false },
+          );
+
+          // Belt-and-suspenders: assert the array contains no undefined
+          // entries. `expectSingleListCallAndClear([], …)` already enforces
+          // an empty array, but stating the regression invariant in plain
+          // terms makes the intent explicit.
+          expect(
+            (payload?.resolvedList ?? []).every((x) => x != null),
+          ).toBe(true);
+        });
       });
     });
 
@@ -2778,6 +2845,89 @@ describe(Store, () => {
             ],
           }),
         );
+      });
+
+      it("removes streamed-out objects from object-set without leaving undefined slots", async () => {
+        // Regression for BaseListQuery.onOswRemoved: the streaming-driven
+        // removal path used to call batch.delete(cacheKey) on each
+        // variant without registering the deletion in changes.deleted, so
+        // ObjectSetQuery (which inherits onOswRemoved from BaseListQuery
+        // — ListQuery overrides it) emitted a list containing `undefined`
+        // for the streamed-out slot. With no async server revalidation
+        // following the OSW event, the list could stay in that state.
+        fauxFoundry.getDefaultDataStore().clear();
+
+        fauxFoundry.getDefaultDataStore().registerObject(Employee, {
+          $apiName: "Employee",
+          employeeId: 800,
+          fullName: "Stay",
+        });
+        const empB = fauxFoundry.getDefaultDataStore().registerObject(
+          Employee,
+          {
+            $apiName: "Employee",
+            employeeId: 801,
+            fullName: "Goodbye",
+          },
+        );
+
+        const sub = mockObserver<ObjectSetPayload | undefined>();
+        defer(
+          store.objectSets.observe({
+            baseObjectSet: client(Employee) as ObjectSet<Employee>,
+          }, sub),
+        );
+
+        await vi.waitFor(
+          () => {
+            expect(sub.next).toHaveBeenLastCalledWith(
+              expect.objectContaining({ status: "loaded" }),
+            );
+          },
+          { timeout: 5000 },
+        );
+
+        expect(sub.next).toHaveBeenLastCalledWith(
+          expect.objectContaining({
+            status: "loaded",
+            resolvedList: expect.arrayContaining([
+              expect.objectContaining({ employeeId: 800 }),
+              expect.objectContaining({ employeeId: 801 }),
+            ]),
+          }),
+        );
+
+        sub.next.mockClear();
+
+        // Simulate the websocket "REMOVED" event by invoking the
+        // BaseListQuery.onOswRemoved hook on the underlying query.
+        // `onOswRemoved` is protected; reach it via a structural cast.
+        const query = store.objectSets.getQuery({
+          baseObjectSet: client(Employee) as ObjectSet<Employee>,
+        });
+        (query as unknown as {
+          onOswRemoved: (
+            o: { $objectType: string; $primaryKey: unknown },
+          ) => void;
+        }).onOswRemoved({
+          $objectType: "Employee",
+          $primaryKey: empB.$primaryKey,
+        });
+
+        await vi.waitFor(
+          () => {
+            expect(sub.next).toHaveBeenCalled();
+          },
+          { timeout: 5000 },
+        );
+
+        const lastCall = sub.next.mock.calls.at(-1)?.[0];
+        expect(lastCall?.resolvedList).toEqual([
+          expect.objectContaining({ employeeId: 800 }),
+        ]);
+        expect(
+          (lastCall?.resolvedList ?? []).every((x) => x != null),
+        ).toBe(true);
       });
 
       it("should trigger revalidation when object is deleted from complex ObjectSet", async () => {
