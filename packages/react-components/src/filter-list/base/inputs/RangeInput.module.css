@@ -60,8 +60,8 @@
 }
 
 .tooltip {
-  position: absolute;
-  transform: translate(-50%, calc(-100% - var(--osdk-surface-spacing)));
+  position: fixed;
+  transform: translateX(-50%);
   display: inline-block;
   background: var(--osdk-typography-color-default-rest);
   color: var(--osdk-background-primary);
@@ -73,7 +73,7 @@
   white-space: nowrap;
   pointer-events: none;
   box-shadow: var(--osdk-surface-shadow-2);
-  z-index: 1;
+  z-index: var(--osdk-surface-z-index-3, 9999);
 }
 
 /* Empty rules — exist purely so postcss-modules emits matching hashed
