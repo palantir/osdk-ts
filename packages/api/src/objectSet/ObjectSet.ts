@@ -137,9 +137,7 @@ type ExtractModifiers<
   Q extends ObjectOrInterfaceDefinition,
   X,
 > = [X] extends [never] ? {}
-  : X extends
-    { $applyModifiers: infer M extends ApplyModifiersArg<Q, PropertyKeys<Q>> }
-    ? M
+  : X extends { $applyModifiers: infer M extends ApplyModifiersArg<Q> } ? M
   : {};
 
 type ModifiersToSelectStrings<M> = {
@@ -213,7 +211,7 @@ interface FetchPageSignature<
     T extends boolean = false,
     ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<L> = {},
     PROPERTY_SECURITIES extends boolean = false,
-    MODIFIERS extends ApplyModifiersArg<Q, PropertyKeys<Q>> = {},
+    MODIFIERS extends ApplyModifiersArg<Q> = {},
   >(
     args?: FetchPageArgs<
       Q,
@@ -293,7 +291,7 @@ interface FetchPageWithErrorsSignature<
     S extends NullabilityAdherence = NullabilityAdherence.Default,
     T extends boolean = false,
     ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<L> = {},
-    const MODIFIERS extends ApplyModifiersArg<Q, PropertyKeys<Q>> = {},
+    const MODIFIERS extends ApplyModifiersArg<Q> = {},
   >(
     args?: FetchPageArgs<
       Q,
@@ -388,7 +386,7 @@ interface AsyncIterSignature<
     S extends NullabilityAdherence = NullabilityAdherence.Default,
     T extends boolean = false,
     ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<PropertyKeys<Q>> = {},
-    const MODIFIERS extends ApplyModifiersArg<Q, PropertyKeys<Q>> = {},
+    const MODIFIERS extends ApplyModifiersArg<Q> = {},
   >(
     args?: AsyncIterArgs<
       Q,

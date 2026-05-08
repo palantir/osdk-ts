@@ -56,7 +56,7 @@ import { resolveBaseObjectSetType } from "../util/objectSetUtils.js";
  */
 function modifierToLoadLevelType(
   modifier: PropertyModifierValue,
-): "extractMainValue" | "applyReducers" | "applyReducersAndExtractMainValue" {
+): LoadLevelType {
   switch (modifier) {
     case "applyMainValue":
       return "extractMainValue";
@@ -101,6 +101,12 @@ export function buildSelectV2(
   const entries: SelectV2Entry[] = [];
 
   if (select && select.length > 0) {
+    for (const [prop, _] of Object.entries(modifiersMap)) {
+      invariant(
+        select.includes(prop),
+        "Modified properties must be included in $select when manually specifying properties",
+      );
+    }
     for (const prop of select) {
       if (modifierProps.has(prop)) {
         entries.push({
@@ -110,16 +116,6 @@ export function buildSelectV2(
         });
       } else {
         entries.push({ type: "property", apiName: prop });
-      }
-    }
-
-    for (const [prop, modifier] of Object.entries(modifiersMap)) {
-      if (!select.includes(prop)) {
-        entries.push({
-          type: "propertyWithLoadLevel",
-          propertyIdentifier: { type: "property", apiName: prop },
-          loadLevel: { type: modifierToLoadLevelType(modifier) },
-        });
       }
     }
   } else if (hasModifiers && allProperties && allProperties.length > 0) {

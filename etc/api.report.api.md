@@ -263,12 +263,12 @@ export interface AsyncIterArgs<
 	RDP_KEYS extends string = never,
 	ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<K> = never,
 	PROPERTY_SECURITIES extends boolean = false,
-	MODIFIERS extends ApplyModifiersArg<Q, PropertyKeys<Q>> = {}
+	MODIFIERS extends ApplyModifiersArg<Q> = {}
 > extends SelectArg<Q, K, R, S, RDP_KEYS, PROPERTY_SECURITIES>, OrderByArg<Q, PropertyKeys<Q> | RDP_KEYS, ORDER_BY_OPTIONS> {
     	// (undocumented)
     $__UNSTABLE_useOldInterfaceApis?: boolean;
     	// (undocumented)
-    $applyModifiers?: ApplyModifiersArg<Q, PropertyKeys<Q>> & MODIFIERS & { [P in Exclude<keyof MODIFIERS, PropertyKeys<Q>>] : never };
+    $applyModifiers?: ApplyModifiersArg<Q> & MODIFIERS & { [P in Exclude<keyof MODIFIERS, PropertyKeys<Q>>] : never };
     	// (undocumented)
     $includeAllBaseObjectProperties?: PropertyKeys<Q> extends K ? T : never;
 }
@@ -643,10 +643,10 @@ export interface FetchPageArgs<
 	RDP_KEYS extends string = never,
 	ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<K> = {},
 	PROPERTY_SECURITIES extends boolean = false,
-	MODIFIERS extends ApplyModifiersArg<Q, PropertyKeys<Q>> = {}
+	MODIFIERS extends ApplyModifiersArg<Q> = {}
 > extends AsyncIterArgs<Q, K, R, A, S, T, RDP_KEYS, ORDER_BY_OPTIONS, PROPERTY_SECURITIES, MODIFIERS> {
     	// (undocumented)
-    $applyModifiers?: ApplyModifiersArg<Q, PropertyKeys<Q>> & MODIFIERS & { [P in Exclude<keyof MODIFIERS, PropertyKeys<Q>>] : never };
+    $applyModifiers?: ApplyModifiersArg<Q> & MODIFIERS & { [P in Exclude<keyof MODIFIERS, PropertyKeys<Q>>] : never };
     	// (undocumented)
     $nextPageToken?: string;
     	// (undocumented)
@@ -664,7 +664,7 @@ export type FetchPageResult<
 	S extends NullabilityAdherence,
 	T extends boolean = false,
 	ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<L> = {},
-	MODIFIERS extends ApplyModifiersArg<Q, PropertyKeys<Q>> = {}
+	MODIFIERS extends ApplyModifiersArg<Q> = {}
 > = PageResult<MaybeScore<Osdk.Instance<Q, ExtractOptions<R, S, T>, Exclude<PropertyKeys<Q> extends L ? never : L, keyof MODIFIERS> | ModifiersToSelectStrings_2<MODIFIERS>, {}>, ORDER_BY_OPTIONS>>;
 
 // @public (undocumented)

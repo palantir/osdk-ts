@@ -69,7 +69,7 @@ export type FetchPageResult<
   S extends NullabilityAdherence,
   T extends boolean = false,
   ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<L> = {},
-  MODIFIERS extends ApplyModifiersArg<Q, PropertyKeys<Q>> = {},
+  MODIFIERS extends ApplyModifiersArg<Q> = {},
 > = PageResult<
   MaybeScore<
     Osdk.Instance<

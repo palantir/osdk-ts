@@ -117,7 +117,6 @@ export type PropsWithOnlyReducers<Q extends ObjectOrInterfaceDefinition> =
 
 export type ApplyModifiersArg<
   Q extends ObjectOrInterfaceDefinition,
-  K extends PropertyKeys<Q> = PropertyKeys<Q>,
 > =
   & {
     [P in PropsWithOnlyMainValue<Q>]?: "applyMainValue";
