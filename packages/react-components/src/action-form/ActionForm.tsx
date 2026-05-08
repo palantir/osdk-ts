@@ -14,9 +14,19 @@
  * limitations under the License.
  */
 
-import type { ActionDefinition } from "@osdk/api";
-import { useOsdkAction, useOsdkMetadata } from "@osdk/react";
-import React, { useCallback, useEffect, useMemo } from "react";
+import type { ActionDefinition, ActionValidationResponse } from "@osdk/api";
+import {
+  useDebouncedCallback,
+  useOsdkAction,
+  useOsdkMetadata,
+} from "@osdk/react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { typedReactMemo } from "../shared/typedMemo.js";
 import type {
   ActionFormProps,
@@ -25,11 +35,15 @@ import type {
 } from "./ActionFormApi.js";
 import { BaseForm } from "./BaseForm.js";
 import type { RendererFieldDefinition } from "./FormFieldApi.js";
+import { applyValidationResponseToFieldDefinitions } from "./utils/applyValidationResponseToFieldDefinitions.js";
 import { coerceFieldValue } from "./utils/coerceFieldValue.js";
 import { getDefaultFieldDefinitions } from "./utils/getDefaultFieldDefinitions.js";
 
 const EMPTY_FIELD_DEFINITIONS: ReadonlyArray<RendererFieldDefinition> = [];
 const EMPTY_FORM_CONTENT: ReadonlyArray<FormContentItem> = [];
+// Mirrors Forge's validation cadence so the form stays responsive without
+// sending a validation request for every keystroke.
+const VALIDATION_DEBOUNCE_MS = 500;
 
 export const ActionForm: <Q extends ActionDefinition<unknown>>(
   props: ActionFormProps<Q>,
@@ -43,14 +57,16 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
   onFormStateChange,
   isSubmitDisabled,
   onSubmit,
-  onValidationResponse: _onValidationResponse,
+  onValidationResponse,
   onSuccess,
   onError,
   portalContainer,
 }: ActionFormProps<Q>): React.ReactElement {
-  const { applyAction: osdkApplyAction, isPending } = useOsdkAction(
-    actionDefinition,
-  );
+  const {
+    applyAction: osdkApplyAction,
+    validateAction: osdkValidateAction,
+    isPending,
+  } = useOsdkAction(actionDefinition);
   const {
     metadata,
     loading: metadataLoading,
@@ -67,6 +83,12 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
   );
 
   const parameters = metadata?.parameters;
+  const isControlled = controlledFormState != null;
+  const [validationResponse, setValidationResponse] = useState<
+    ActionValidationResponse | undefined
+  >();
+  const uncontrolledValidationStateRef = useRef<Record<string, unknown>>({});
+  const validationRequestIdRef = useRef(0);
 
   const customFieldDefinitions: ReadonlyArray<RendererFieldDefinition> | null =
     useMemo(() => {
@@ -96,14 +118,24 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
     [customFieldDefinitions, metadata],
   );
 
+  const validatedRendererFieldDefinitions = useMemo(
+    () =>
+      applyValidationResponseToFieldDefinitions(
+        rendererFieldDefinitions,
+        validationResponse,
+        { allowFieldComponentConversion: customFieldDefinitions == null },
+      ),
+    [customFieldDefinitions, rendererFieldDefinitions, validationResponse],
+  );
+
   const formContent = useMemo(
     (): ReadonlyArray<FormContentItem> =>
-      rendererFieldDefinitions.length === 0
+      validatedRendererFieldDefinitions.length === 0
         ? EMPTY_FORM_CONTENT
-        : rendererFieldDefinitions.map(
+        : validatedRendererFieldDefinitions.map(
           (def): FormContentItem => ({ type: "field", definition: def }),
         ),
-    [rendererFieldDefinitions],
+    [validatedRendererFieldDefinitions],
   );
 
   const coerceFormState = useCallback(
@@ -127,15 +159,60 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
           const result = await osdkApplyAction(formState);
           onSuccess?.(result);
         }
-      } catch (e) {
+      } catch (e: unknown) {
         onError?.({ type: "submission", error: e });
       }
     },
     [coerceFormState, onSubmit, osdkApplyAction, onSuccess, onError],
   );
 
+  const debouncedValidate = useDebouncedCallback(
+    async (rawFormState: Record<string, unknown>, requestId: number) => {
+      try {
+        const formState = coerceFormState(rawFormState);
+        // The form state keys come from the action metadata/field definitions
+        // and values are coerced before validation, matching submit behavior.
+        const response = await osdkValidateAction(
+          formState as Parameters<typeof osdkValidateAction>[0],
+        );
+        if (response != null && requestId === validationRequestIdRef.current) {
+          setValidationResponse(response);
+          onValidationResponse?.(response);
+        }
+      } catch (e: unknown) {
+        if (requestId === validationRequestIdRef.current) {
+          onError?.({ type: "unknown", error: e });
+        }
+      }
+    },
+    VALIDATION_DEBOUNCE_MS,
+  );
+
+  const scheduleValidation = useCallback(
+    (rawFormState: Record<string, unknown>) => {
+      const requestId = validationRequestIdRef.current + 1;
+      validationRequestIdRef.current = requestId;
+      debouncedValidate(rawFormState, requestId);
+    },
+    [debouncedValidate],
+  );
+
   const handleFieldValueChange = useCallback(
     (fieldKey: string, value: unknown) => {
+      if (isControlled) {
+        scheduleValidation({
+          ...controlledFormState,
+          [fieldKey]: value,
+        });
+      } else {
+        const next = {
+          ...uncontrolledValidationStateRef.current,
+          [fieldKey]: value,
+        };
+        uncontrolledValidationStateRef.current = next;
+        scheduleValidation(next);
+      }
+
       onFormStateChange?.(
         (prev) =>
           ({
@@ -144,13 +221,16 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
           }) as FormState<Q>,
       );
     },
-    [onFormStateChange],
+    [
+      controlledFormState,
+      isControlled,
+      onFormStateChange,
+      scheduleValidation,
+    ],
   );
 
   const resolvedTitle = formTitle ?? metadata?.displayName
     ?? actionDefinition.apiName;
-
-  const isControlled = controlledFormState != null;
 
   const commonProps = {
     formTitle: resolvedTitle,
