@@ -16,6 +16,7 @@
 
 import type { ObjectTypeDefinition } from "@osdk/api";
 import { assertUnreachable } from "../../shared/assertUnreachable.js";
+import { formatDateForInput } from "../../shared/dateUtils.js";
 import type { FilterDefinitionUnion } from "../FilterListApi.js";
 import type { FilterState } from "../FilterListItemApi.js";
 
@@ -76,7 +77,7 @@ export function summarizeFilterValue<Q extends ObjectTypeDefinition>(
   const formatDate: (d: Date) => string =
     "formatDate" in definition && definition.formatDate
       ? definition.formatDate
-      : (d) => d.toLocaleDateString();
+      : formatDateForInput;
   switch (state.type) {
     case "EXACT_MATCH":
       return summarizeSelectionValues(state.values, formatDate);
@@ -118,7 +119,7 @@ export function summarizeFilterValue<Q extends ObjectTypeDefinition>(
       );
     }
     case "TOGGLE":
-      return state.enabled ? "On" : "";
+      return state.enabled ? "Enabled" : "";
     case "hasLink":
       return state.hasLink ? "Has link" : "";
     case "linkedProperty":
@@ -126,7 +127,7 @@ export function summarizeFilterValue<Q extends ObjectTypeDefinition>(
     case "keywordSearch":
       return state.searchTerm ?? "";
     case "custom":
-      return "Active";
+      return "Custom";
     default:
       return assertUnreachable(state);
   }
