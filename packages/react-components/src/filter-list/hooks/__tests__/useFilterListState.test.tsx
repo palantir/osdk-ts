@@ -419,4 +419,77 @@ describe("useFilterListState", () => {
       $and: [{ name: "John" }, { active: true }],
     });
   });
+
+  describe("perFilterWhereClauses ref stability", () => {
+    it(
+      "preserves the entry reference for the just-changed filter (its excluding-self clause is unchanged)",
+      () => {
+        const nameDef = createPropertyFilterDef(
+          "name",
+          "LISTOGRAM",
+          createExactMatchState([]),
+        );
+        const activeDef = createPropertyFilterDef(
+          "active",
+          "TOGGLE",
+          createToggleState(false),
+        );
+        const props = createProps({
+          filterDefinitions: [nameDef, activeDef],
+        });
+        const { result } = renderHook(() => useFilterListState(props));
+        const nameKey = getFilterKey(nameDef);
+
+        const beforeName = result.current.perFilterWhereClauses.get(nameKey);
+        expect(beforeName).toBeDefined();
+
+        act(() => {
+          result.current.setFilterState(
+            nameKey,
+            createExactMatchState(["John"]),
+          );
+        });
+
+        const afterName = result.current.perFilterWhereClauses.get(nameKey);
+        expect(afterName).toBe(beforeName);
+      },
+    );
+
+    it(
+      "rebuilds the entry reference for sibling filters whose excluding-self clause content changed",
+      () => {
+        const nameDef = createPropertyFilterDef(
+          "name",
+          "LISTOGRAM",
+          createExactMatchState([]),
+        );
+        const activeDef = createPropertyFilterDef(
+          "active",
+          "TOGGLE",
+          createToggleState(false),
+        );
+        const props = createProps({
+          filterDefinitions: [nameDef, activeDef],
+        });
+        const { result } = renderHook(() => useFilterListState(props));
+        const nameKey = getFilterKey(nameDef);
+        const activeKey = getFilterKey(activeDef);
+
+        const beforeActive = result.current.perFilterWhereClauses.get(
+          activeKey,
+        );
+
+        act(() => {
+          result.current.setFilterState(
+            nameKey,
+            createExactMatchState(["John"]),
+          );
+        });
+
+        const afterActive = result.current.perFilterWhereClauses.get(activeKey);
+        expect(afterActive).not.toBe(beforeActive);
+        expect(afterActive).toEqual({ name: "John" });
+      },
+    );
+  });
 });

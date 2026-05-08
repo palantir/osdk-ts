@@ -18,6 +18,8 @@ import classnames from "classnames";
 import React, { memo, useCallback, useMemo } from "react";
 import { Combobox } from "../../../base-components/combobox/Combobox.js";
 import type { PropertyAggregationValue } from "../../types/AggregationTypes.js";
+import { isEmptyValue } from "../../utils/filterValues.js";
+import { NoValueLabel } from "./NoValueLabel.js";
 import sharedStyles from "./shared.module.css";
 import styles from "./SingleSelectInput.module.css";
 
@@ -77,19 +79,24 @@ function SingleSelectInputInner({
   );
 
   const renderItem = useCallback(
-    (value: string) => (
-      <Combobox.Item key={value} value={value}>
-        <Combobox.ItemIndicator />
-        <span className={styles.itemLabel}>
-          {renderValue ? renderValue(value) : value}
-        </span>
-        {showCounts && (
-          <span className={styles.itemCount}>
-            ({(countByValue.get(value) ?? 0).toLocaleString()})
+    (value: string) => {
+      const isEmpty = isEmptyValue(value);
+      return (
+        <Combobox.Item key={value} value={value}>
+          <Combobox.ItemIndicator />
+          <span className={styles.itemLabel}>
+            {isEmpty
+              ? <NoValueLabel />
+              : (renderValue ? renderValue(value) : value)}
           </span>
-        )}
-      </Combobox.Item>
-    ),
+          {showCounts && (
+            <span className={styles.itemCount}>
+              ({(countByValue.get(value) ?? 0).toLocaleString()})
+            </span>
+          )}
+        </Combobox.Item>
+      );
+    },
     [countByValue, showCounts, renderValue],
   );
 

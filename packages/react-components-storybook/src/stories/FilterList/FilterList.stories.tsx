@@ -1950,3 +1950,52 @@ const nameContainsFilter = {
   },
   render: (args) => <WithCustomFiltersStory {...args} />,
 };
+
+const departmentMultiSelectFilter: FilterDefinitionUnion<Employee> = {
+  type: "PROPERTY",
+  id: "department-multi",
+  key: "department",
+  label: "Department",
+  filterComponent: "MULTI_SELECT",
+  filterState: { type: "SELECT", selectedValues: [] },
+};
+
+const departmentSingleSelectFilter: FilterDefinitionUnion<Employee> = {
+  type: "PROPERTY",
+  id: "department-single",
+  key: "department",
+  label: "Department (single)",
+  filterComponent: "SINGLE_SELECT",
+  filterState: { type: "SELECT", selectedValues: [] },
+};
+
+const NO_VALUE_FILTER_DEFINITIONS: FilterDefinitionUnion<Employee>[] = [
+  departmentFilter,
+  departmentMultiSelectFilter,
+  departmentSingleSelectFilter,
+  employeeNumberFilter,
+];
+
+export const NoValueRendering: Story = {
+  name: "No value rendering",
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Empty/null filter values render via the canonical `<NoValueLabel />` "
+          + "component — italic, muted, with the literal text 'No value' — across "
+          + "listogram buckets, single-select dropdown options, multi-select dropdown "
+          + "options, and multi-select chips. The mock dataset includes one Employee "
+          + "with `department: \"\"` so the No value row is visible in the listogram.",
+      },
+    },
+  },
+  render: () => (
+    <div style={SIDEBAR_STYLE}>
+      <FilterList
+        objectType={Employee}
+        filterDefinitions={NO_VALUE_FILTER_DEFINITIONS}
+      />
+    </div>
+  ),
+};

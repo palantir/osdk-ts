@@ -20,6 +20,16 @@
   gap: var(--osdk-filter-null-wrapper-gap);
 }
 
+.noValueLabel {
+  color: var(
+    --osdk-filter-null-label-color,
+    var(--osdk-filter-no-value-color)
+  );
+  font-family: var(--osdk-filter-null-label-font-family, inherit);
+  font-size: var(--osdk-filter-null-label-font-size, inherit);
+  line-height: var(--osdk-filter-null-label-line-height, inherit);
+}
+
 .nullValueRow {
   display: flex;
   align-items: center;
@@ -33,13 +43,6 @@
   align-items: center;
   gap: var(--osdk-filter-null-label-gap);
   cursor: pointer;
-}
-
-.nullLabelText {
-  font-family: var(--osdk-filter-null-label-font-family);
-  font-size: var(--osdk-filter-null-label-font-size);
-  line-height: var(--osdk-filter-null-label-line-height);
-  color: var(--osdk-filter-null-label-color);
 }
 
 .count {

@@ -1,6 +1,6 @@
 {
   "name": "@osdk/language-models",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "Utility methods for calling language models through the Foundry proxy endpoint",
   "access": "public",
   "license": "Apache-2.0",

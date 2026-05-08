@@ -16,7 +16,13 @@
 
 import { Error } from "@blueprintjs/icons";
 import type { RowData } from "@tanstack/react-table";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { Tooltip } from "../base-components/tooltip/Tooltip.js";
 import { DatePickerCellField } from "./components/DatePickerCellField.js";
 import { DropdownCellField } from "./components/DropdownCellField.js";
@@ -57,7 +63,7 @@ export interface EditableCellProps<TData extends RowData, CellValue = unknown> {
   rowId: string;
   columnId: string;
   validateEdit?: (value: unknown) => Promise<string | undefined>;
-  editFieldConfig?: EditFieldConfig;
+  editFieldConfig?: EditFieldConfig<TData>;
   isRowFocused?: boolean;
 }
 
@@ -246,12 +252,30 @@ function EditableCellInner<TData extends RowData, CellValue = unknown>({
     ? "number"
     : "text";
 
+  // Compute field-component props once per (editFieldConfig, originalRowData).
+  // The narrowed return type is preserved in each useMemo
+  const dropdownFieldProps = useMemo(
+    () =>
+      editFieldConfig?.fieldComponent === "DROPDOWN"
+        ? editFieldConfig.getFieldComponentProps(originalRowData)
+        : undefined,
+    [editFieldConfig, originalRowData],
+  );
+
+  const datePickerFieldProps = useMemo(
+    () =>
+      editFieldConfig?.fieldComponent === "DATE_PICKER"
+        ? editFieldConfig.getFieldComponentProps(originalRowData)
+        : undefined,
+    [editFieldConfig, originalRowData],
+  );
+
   const renderFieldInput = () => {
     switch (editFieldConfig?.fieldComponent) {
       case "DROPDOWN":
         return (
           <DropdownCellField
-            fieldComponentProps={editFieldConfig.fieldComponentProps}
+            fieldComponentProps={dropdownFieldProps!}
             isRowFocused={isRowFocused}
             inputValue={inputValue}
             hasValidationError={hasValidationError}
@@ -262,7 +286,7 @@ function EditableCellInner<TData extends RowData, CellValue = unknown>({
       case "DATE_PICKER":
         return (
           <DatePickerCellField
-            fieldComponentProps={editFieldConfig.fieldComponentProps}
+            fieldComponentProps={datePickerFieldProps}
             inputValue={inputValue}
             hasValidationError={hasValidationError}
             isEdited={isEdited}
