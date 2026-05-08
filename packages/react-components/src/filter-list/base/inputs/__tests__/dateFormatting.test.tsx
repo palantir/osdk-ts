@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import React from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { DateRangeInput } from "../DateRangeInput.js";
@@ -155,7 +155,7 @@ describe("formatDate / parseDate plumbing", () => {
     it(
       "uses formatDate for the histogram bar tooltip when provided",
       () => {
-        render(
+        const { container } = render(
           <DateRangeInput
             valueCountPairs={buckets}
             isLoading={false}
@@ -165,15 +165,17 @@ describe("formatDate / parseDate plumbing", () => {
             formatDate={slashFormat}
           />,
         );
-        // The histogram bar's tooltip is an SVG `<title>` child of each
-        // `<rect>`. When formatDate is provided, the dates inside the
-        // title text use the slash format.
-        const titleEls = document.querySelectorAll("rect > title");
-        const titles = Array.from(titleEls).map((t) => t.textContent ?? "");
-        expect(titles.length).toBeGreaterThan(0);
-        expect(
-          titles.some((t) => /\d{2}\/\d{2}\/\d{4}/.test(t)),
-        ).toBe(true);
+        // The histogram bar tooltip is rendered as an HTML overlay sibling
+        // of the SVG when a bar is hovered. Trigger the hover via
+        // `mouseEnter` and read the tooltip's text content.
+        const rects = container.querySelectorAll(
+          "rect[class*=\"histogramBar\"]",
+        );
+        expect(rects.length).toBeGreaterThan(0);
+        fireEvent.mouseOver(rects[0]);
+        const tooltip = container.querySelector("div[class*=\"tooltip\"]");
+        expect(tooltip).not.toBeNull();
+        expect(tooltip?.textContent ?? "").toMatch(/\d{2}\/\d{2}\/\d{4}/);
       },
     );
 
@@ -200,7 +202,7 @@ describe("formatDate / parseDate plumbing", () => {
     it(
       "uses the default tooltip format when formatDate is omitted",
       () => {
-        render(
+        const { container } = render(
           <DateRangeInput
             valueCountPairs={buckets}
             isLoading={false}
@@ -209,13 +211,15 @@ describe("formatDate / parseDate plumbing", () => {
             onChange={vi.fn()}
           />,
         );
-        const titleEls = document.querySelectorAll("rect > title");
-        const titles = Array.from(titleEls).map((t) => t.textContent ?? "");
-        expect(titles.length).toBeGreaterThan(0);
+        const rects = container.querySelectorAll(
+          "rect[class*=\"histogramBar\"]",
+        );
+        expect(rects.length).toBeGreaterThan(0);
+        fireEvent.mouseOver(rects[0]);
+        const tooltip = container.querySelector("div[class*=\"tooltip\"]");
+        expect(tooltip).not.toBeNull();
         // ISO format when formatDate is omitted.
-        expect(
-          titles.every((t) => /^\d{4}-\d{2}-\d{2}/.test(t)),
-        ).toBe(true);
+        expect(tooltip?.textContent ?? "").toMatch(/^\d{4}-\d{2}-\d{2}/);
       },
     );
   });
