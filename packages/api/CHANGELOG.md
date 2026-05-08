@@ -1,5 +1,11 @@
 # @osdk/api
 
+## 2.17.0
+
+### Minor Changes
+
+- 147166c: fix typing so `$loadPropertySecurityMetadata: true` is accepted on the experimental `fetchPageByRid` client method, and `$propertySecurities` is properly typed on returned objects.
+
 ## 2.16.0
 
 ### Minor Changes
