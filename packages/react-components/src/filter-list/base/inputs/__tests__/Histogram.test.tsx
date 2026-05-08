@@ -433,7 +433,7 @@ describe("RangeInput SVG histogram", () => {
   });
 
   it(
-    "numeric histogram x-axis renders evenly-spaced 'nice' tick labels",
+    "numeric histogram x-axis renders only min and max tick labels",
     () => {
       const numericPairs = [
         { value: 10, count: 2 },
@@ -452,21 +452,11 @@ describe("RangeInput SVG histogram", () => {
       const tickLabels = container.querySelectorAll(
         "g[class*=\"xTicks\"] text",
       );
-      // For span 80 with niceStep((maxN-minN)/8) = 10, ticks land at
-      // 10, 20, …, 90 — exactly 9 evenly-spaced labels.
-      expect(tickLabels.length).toBe(9);
+      // Wide formatted numbers (e.g. 9-digit IDs) overlap when every nice tick
+      // is rendered, so the histogram now keeps only the first and last.
+      expect(tickLabels.length).toBe(2);
       const labelTexts = Array.from(tickLabels).map((t) => t.textContent);
-      expect(labelTexts).toEqual([
-        "10",
-        "20",
-        "30",
-        "40",
-        "50",
-        "60",
-        "70",
-        "80",
-        "90",
-      ]);
+      expect(labelTexts).toEqual(["10", "90"]);
     },
   );
 });

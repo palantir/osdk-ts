@@ -165,15 +165,14 @@ describe("formatDate / parseDate plumbing", () => {
             formatDate={slashFormat}
           />,
         );
-        // The histogram bar tooltip is rendered as an HTML overlay sibling
-        // of the SVG when a bar is hovered. Trigger the hover via
-        // `mouseEnter` and read the tooltip's text content.
+        // The histogram bar tooltip is portaled to document.body when a bar
+        // is hovered, so we query there rather than the local container.
         const rects = container.querySelectorAll(
           "rect[class*=\"histogramBar\"]",
         );
         expect(rects.length).toBeGreaterThan(0);
         fireEvent.mouseOver(rects[0]);
-        const tooltip = container.querySelector("div[class*=\"tooltip\"]");
+        const tooltip = document.body.querySelector("div[class*=\"tooltip\"]");
         expect(tooltip).not.toBeNull();
         expect(tooltip?.textContent ?? "").toMatch(/\d{2}\/\d{2}\/\d{4}/);
       },
@@ -216,7 +215,7 @@ describe("formatDate / parseDate plumbing", () => {
         );
         expect(rects.length).toBeGreaterThan(0);
         fireEvent.mouseOver(rects[0]);
-        const tooltip = container.querySelector("div[class*=\"tooltip\"]");
+        const tooltip = document.body.querySelector("div[class*=\"tooltip\"]");
         expect(tooltip).not.toBeNull();
         // ISO format when formatDate is omitted.
         expect(tooltip?.textContent ?? "").toMatch(/^\d{4}-\d{2}-\d{2}/);

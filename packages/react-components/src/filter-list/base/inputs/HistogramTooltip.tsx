@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import React, { memo } from "react";
+import React, { memo, useLayoutEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import styles from "./RangeInput.module.css";
 
 export interface HistogramTooltipProps {
@@ -27,7 +28,11 @@ export interface HistogramTooltipProps {
   svgWidth: number;
   /** SVG viewBox height. */
   svgHeight: number;
+  /** The SVG element used to map viewBox coordinates to viewport pixels. */
+  svgElement: SVGSVGElement | null;
 }
+
+const GAP_PX = 6;
 
 function HistogramTooltipInner({
   text,
@@ -35,20 +40,45 @@ function HistogramTooltipInner({
   barTop,
   svgWidth,
   svgHeight,
-}: HistogramTooltipProps): React.ReactElement {
-  // Position via percent of the wrapper's rendered size — wrapper width
-  // matches SVG width and the SVG's aspect-ratio fixes its height, so the
-  // percent map to viewBox coordinates 1:1.
-  return (
+  svgElement,
+}: HistogramTooltipProps): React.ReactElement | null {
+  const tooltipRef = useRef<HTMLDivElement | null>(null);
+  const [position, setPosition] = useState<
+    { left: number; top: number; placement: "above" | "below" } | null
+  >(null);
+
+  useLayoutEffect(() => {
+    if (svgElement == null) {
+      setPosition(null);
+      return;
+    }
+    const rect = svgElement.getBoundingClientRect();
+    const scaleX = rect.width / svgWidth;
+    const scaleY = rect.height / svgHeight;
+    const anchorX = rect.left + cx * scaleX;
+    const barTopPx = rect.top + barTop * scaleY;
+    const tooltipHeight = tooltipRef.current?.offsetHeight ?? 0;
+    const above = barTopPx - GAP_PX - tooltipHeight;
+    const placement: "above" | "below" = above < 0 ? "below" : "above";
+    const top = placement === "above"
+      ? barTopPx - GAP_PX - tooltipHeight
+      : barTopPx + GAP_PX;
+    setPosition({ left: anchorX, top, placement });
+  }, [svgElement, cx, barTop, svgWidth, svgHeight, text]);
+
+  if (typeof document === "undefined") return null;
+
+  return createPortal(
     <div
+      ref={tooltipRef}
       className={styles.tooltip}
-      style={{
-        left: `${(cx / svgWidth) * 100}%`,
-        top: `${(barTop / svgHeight) * 100}%`,
-      }}
+      style={position == null
+        ? { left: 0, top: 0, visibility: "hidden" }
+        : { left: position.left, top: position.top }}
     >
       {text}
-    </div>
+    </div>,
+    document.body,
   );
 }
 
