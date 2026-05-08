@@ -17,6 +17,7 @@
 import type { ObjectSet, ObjectTypeDefinition, WhereClause } from "@osdk/api";
 import React, { memo, useCallback } from "react";
 import { ContainsTextInput } from "./base/inputs/ContainsTextInput.js";
+import type { MultiSelectInputLayout } from "./base/inputs/MultiSelectInput.js";
 import { ToggleInput } from "./base/inputs/ToggleInput.js";
 import type { FilterDefinitionUnion } from "./FilterListApi.js";
 import type { FilterState } from "./FilterListItemApi.js";
@@ -33,6 +34,14 @@ export interface FilterInputProps<Q extends ObjectTypeDefinition> {
   whereClause: WhereClause<Q>;
   searchQuery?: string;
   excludeRowOpen?: boolean;
+  /**
+   * Layout for `MULTI_SELECT` filter components. Pass `"inline"` when this
+   * input renders inside a popover (or any container where chips would feel
+   * redundant) so the value list is always visible. Defaults to `"dropdown"`,
+   * which renders chips + a portaled Combobox popup. Ignored by other
+   * filter components.
+   */
+  layout?: MultiSelectInputLayout;
 }
 
 function FilterInputInner<Q extends ObjectTypeDefinition>({
@@ -44,6 +53,7 @@ function FilterInputInner<Q extends ObjectTypeDefinition>({
   whereClause,
   searchQuery,
   excludeRowOpen,
+  layout,
 }: FilterInputProps<Q>): React.ReactElement {
   return (
     <FilterInputContent
@@ -55,6 +65,7 @@ function FilterInputInner<Q extends ObjectTypeDefinition>({
       whereClause={whereClause}
       searchQuery={searchQuery}
       excludeRowOpen={excludeRowOpen}
+      layout={layout}
     />
   );
 }
@@ -70,6 +81,7 @@ function FilterInputContent<Q extends ObjectTypeDefinition>({
   whereClause,
   searchQuery,
   excludeRowOpen,
+  layout,
 }: FilterInputProps<Q>): React.ReactElement {
   switch (definition.type) {
     case "HAS_LINK":
@@ -91,6 +103,7 @@ function FilterInputContent<Q extends ObjectTypeDefinition>({
           filterState={filterState}
           onFilterStateChanged={onFilterStateChanged}
           searchQuery={searchQuery}
+          layout={layout}
         />
       );
     }
@@ -136,6 +149,7 @@ function FilterInputContent<Q extends ObjectTypeDefinition>({
           whereClause={whereClause}
           searchQuery={searchQuery}
           excludeRowOpen={excludeRowOpen}
+          layout={layout}
         />
       );
 
@@ -147,6 +161,7 @@ function FilterInputContent<Q extends ObjectTypeDefinition>({
           onFilterStateChanged={onFilterStateChanged}
           searchQuery={searchQuery}
           excludeRowOpen={excludeRowOpen}
+          layout={layout}
         />
       );
 

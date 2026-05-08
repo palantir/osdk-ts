@@ -16,10 +16,18 @@
 
 import type { ObjectTypeDefinition } from "@osdk/api";
 import { assertUnreachable } from "../../shared/assertUnreachable.js";
+import { formatDateForInput } from "../../shared/dateUtils.js";
 import type { FilterDefinitionUnion } from "../FilterListApi.js";
 import type { FilterState } from "../FilterListItemApi.js";
 
+// Range bounds (DATE_RANGE / TIMELINE) read naturally with an em-dash:
+// "— – Jan 1" reads as "unbounded below, up to Jan 1". The full string
+// "(No value)" would feel verbose in that slot.
 const NO_VALUE_PLACEHOLDER = "—";
+
+// SELECT triggers stand alone, so the explicit phrase is more discoverable
+// than a single em-dash glyph that screen readers may skip.
+const SELECT_NO_VALUE_LABEL = "(No value)";
 
 function isEmptySelectionValue(
   value: string | number | boolean | Date | null | undefined,
@@ -48,7 +56,7 @@ function summarizeSelectionValues(
     return formatDate(v);
   }
   if (isEmptySelectionValue(v)) {
-    return NO_VALUE_PLACEHOLDER;
+    return SELECT_NO_VALUE_LABEL;
   }
   return String(v);
 }
@@ -76,7 +84,7 @@ export function summarizeFilterValue<Q extends ObjectTypeDefinition>(
   const formatDate: (d: Date) => string =
     "formatDate" in definition && definition.formatDate
       ? definition.formatDate
-      : (d) => d.toLocaleDateString();
+      : formatDateForInput;
   switch (state.type) {
     case "EXACT_MATCH":
       return summarizeSelectionValues(state.values, formatDate);
@@ -118,7 +126,7 @@ export function summarizeFilterValue<Q extends ObjectTypeDefinition>(
       );
     }
     case "TOGGLE":
-      return state.enabled ? "On" : "";
+      return state.enabled ? "Enabled" : "";
     case "hasLink":
       return state.hasLink ? "Has link" : "";
     case "linkedProperty":
@@ -126,7 +134,7 @@ export function summarizeFilterValue<Q extends ObjectTypeDefinition>(
     case "keywordSearch":
       return state.searchTerm ?? "";
     case "custom":
-      return "Active";
+      return "Custom";
     default:
       return assertUnreachable(state);
   }
