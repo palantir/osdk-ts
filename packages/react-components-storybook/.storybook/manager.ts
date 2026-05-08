@@ -31,8 +31,6 @@ addons.setConfig({
       },
       display: {
         sidebar: [
-          { type: "story", skipInherited: true },
-          { type: "docs", skipInherited: true },
           { type: "component", skipInherited: false },
           { type: "group", skipInherited: false },
         ],
