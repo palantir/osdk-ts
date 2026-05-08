@@ -173,4 +173,4 @@ const [formState, setFormState] = useState({
 </div>;
 ```
 
-Use `--osdk-form-content-padding-inline` for shared horizontal padding across the header, fields, and footer. Use `--osdk-form-content-padding-block` for block padding on the fields section. For card-style outer spacing, put margin, border, background, and border radius on the wrapper instead of the form itself.
+Use `--osdk-form-content-padding-inline` to apply shared horizontal padding to the header, fields, and footer. Use `--osdk-form-content-padding-block` to control vertical padding for the form fields section. For card-style outer spacing, apply margin, border, background, and border radius to the wrapper rather than the form itself.
