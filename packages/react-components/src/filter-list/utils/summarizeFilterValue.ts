@@ -20,13 +20,10 @@ import { formatDateForInput } from "../../shared/dateUtils.js";
 import type { FilterDefinitionUnion } from "../FilterListApi.js";
 import type { FilterState } from "../FilterListItemApi.js";
 
-// Range bounds (DATE_RANGE / TIMELINE) read naturally with an em-dash:
-// "— – Jan 1" reads as "unbounded below, up to Jan 1". The full string
-// "(No value)" would feel verbose in that slot.
+// Em-dash reads naturally as an unbounded range half (e.g. "— – Jan 1").
 const NO_VALUE_PLACEHOLDER = "—";
 
-// SELECT triggers stand alone, so the explicit phrase is more discoverable
-// than a single em-dash glyph that screen readers may skip.
+// Standalone SELECT triggers need the explicit phrase; a bare em-dash isn't discoverable.
 const SELECT_NO_VALUE_LABEL = "(No value)";
 
 function isEmptySelectionValue(
