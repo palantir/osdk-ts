@@ -20,6 +20,8 @@ import type {
   AggregationGroupValueV2,
   AggregationMetricResultV2,
   AggregationV2,
+  PropertyApiName,
+  PropertyIdentifier,
 } from "@osdk/foundry.ontologies";
 import {
   startOfDay,
@@ -38,7 +40,7 @@ interface GroupBucket {
   objects: BaseServerObject[];
 }
 
-const durationStartFns: Record<string, (date: Date) => Date> = {
+const DURATION_START_FNS: Record<string, (date: Date) => Date> = {
   SECONDS: startOfSecond,
   MINUTES: startOfMinute,
   HOURS: startOfHour,
@@ -134,7 +136,7 @@ function computeSingleGroupValue(
   obj: BaseServerObject,
   groupBy: AggregationGroupByV2,
 ): { keyPart: string; value: AggregationGroupValueV2 } | undefined {
-  const field: string = groupBy.field;
+  const field = getPropertyField(groupBy.field, groupBy.propertyIdentifier);
   const rawValue = obj[field];
 
   switch (groupBy.type) {
@@ -239,7 +241,7 @@ function compareValue(
 }
 
 function computeDurationBucketStart(date: Date, unit: string): string {
-  const fn = durationStartFns[unit];
+  const fn = DURATION_START_FNS[unit];
   if (fn == null) {
     throw new Error(`FauxFoundry: unsupported duration unit: ${unit}`);
   }
@@ -264,18 +266,23 @@ function computeSingleMetric(
   switch (aggregation.type) {
     case "count":
       return { name: aggregation.name ?? "count", value: objects.length };
-
     case "min": {
-      const field: string = aggregation.field;
+      const field = getPropertyField(
+        aggregation.field,
+        aggregation.propertyIdentifier,
+      );
       return numericAgg(
         objects,
         field,
-        aggregation.name ?? `${field}.min`,
+        aggregation.name ?? `${aggregation.field}.min`,
         vals => Math.min(...vals),
       );
     }
     case "max": {
-      const field: string = aggregation.field;
+      const field = getPropertyField(
+        aggregation.field,
+        aggregation.propertyIdentifier,
+      );
       return numericAgg(
         objects,
         field,
@@ -284,14 +291,20 @@ function computeSingleMetric(
       );
     }
     case "sum": {
-      const field: string = aggregation.field;
+      const field = getPropertyField(
+        aggregation.field,
+        aggregation.propertyIdentifier,
+      );
       const name = aggregation.name ?? `${field}.sum`;
       const values = getNumericValues(objects, field);
       return { name, value: values.reduce((a, b) => a + b, 0) };
     }
 
     case "avg": {
-      const field: string = aggregation.field;
+      const field = getPropertyField(
+        aggregation.field,
+        aggregation.propertyIdentifier,
+      );
       return numericAgg(
         objects,
         field,
@@ -301,7 +314,10 @@ function computeSingleMetric(
     }
     case "approximateDistinct":
     case "exactDistinct": {
-      const field: string = aggregation.field;
+      const field = getPropertyField(
+        aggregation.field,
+        aggregation.propertyIdentifier,
+      );
       const name = aggregation.name
         ?? `${field}.${aggregation.type}`;
       const uniqueValues = new Set(
@@ -311,7 +327,10 @@ function computeSingleMetric(
     }
 
     case "approximatePercentile": {
-      const field: string = aggregation.field;
+      const field = getPropertyField(
+        aggregation.field,
+        aggregation.propertyIdentifier,
+      );
       const name = aggregation.name
         ?? `${field}.approximatePercentile`;
       const values = getNumericValues(objects, field);
@@ -340,4 +359,30 @@ function getNumericValues(
   return objects
     .map(obj => obj[field])
     .filter((v): v is number => typeof v === "number" && !isNaN(v));
+}
+
+function getPropertyField(
+  field: PropertyApiName | undefined,
+  propertyIdentifier: PropertyIdentifier | undefined,
+): string {
+  if (field != null) {
+    return field;
+  }
+
+  if (propertyIdentifier != null) {
+    switch (propertyIdentifier.type) {
+      case "property":
+        return propertyIdentifier.apiName;
+      case "propertyWithLoadLevel":
+        throw new Error(
+          "Property identifiers with load level are not supported",
+        );
+      case "structField":
+        throw new Error("Struct field property identifiers are not supported");
+    }
+  }
+
+  throw new Error(
+    "Field or property identifier are both undefined, exactly one must be defined",
+  );
 }
