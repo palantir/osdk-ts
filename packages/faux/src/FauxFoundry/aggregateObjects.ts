@@ -134,7 +134,7 @@ function computeSingleGroupValue(
   obj: BaseServerObject,
   groupBy: AggregationGroupByV2,
 ): { keyPart: string; value: AggregationGroupValueV2 } | undefined {
-  const field = groupBy.field;
+  const field: string = groupBy.field;
   const rawValue = obj[field];
 
   switch (groupBy.type) {
@@ -265,50 +265,56 @@ function computeSingleMetric(
     case "count":
       return { name: aggregation.name ?? "count", value: objects.length };
 
-    case "min":
+    case "min": {
+      const field: string = aggregation.field;
       return numericAgg(
         objects,
-        aggregation.field,
-        aggregation.name ?? `${aggregation.field}.min`,
+        field,
+        aggregation.name ?? `${field}.min`,
         vals => Math.min(...vals),
       );
-
-    case "max":
+    }
+    case "max": {
+      const field: string = aggregation.field;
       return numericAgg(
         objects,
-        aggregation.field,
-        aggregation.name ?? `${aggregation.field}.max`,
+        field,
+        aggregation.name ?? `${field}.max`,
         vals => Math.max(...vals),
       );
-
+    }
     case "sum": {
-      const name = aggregation.name ?? `${aggregation.field}.sum`;
-      const values = getNumericValues(objects, aggregation.field);
+      const field: string = aggregation.field;
+      const name = aggregation.name ?? `${field}.sum`;
+      const values = getNumericValues(objects, field);
       return { name, value: values.reduce((a, b) => a + b, 0) };
     }
 
-    case "avg":
+    case "avg": {
+      const field: string = aggregation.field;
       return numericAgg(
         objects,
-        aggregation.field,
-        aggregation.name ?? `${aggregation.field}.avg`,
+        field,
+        aggregation.name ?? `${field}.avg`,
         vals => vals.reduce((a, b) => a + b, 0) / vals.length,
       );
-
+    }
     case "approximateDistinct":
     case "exactDistinct": {
+      const field: string = aggregation.field;
       const name = aggregation.name
-        ?? `${aggregation.field}.${aggregation.type}`;
+        ?? `${field}.${aggregation.type}`;
       const uniqueValues = new Set(
-        objects.map(obj => obj[aggregation.field]).filter(v => v != null),
+        objects.map(obj => obj[field]).filter(v => v != null),
       );
       return { name, value: uniqueValues.size };
     }
 
     case "approximatePercentile": {
+      const field: string = aggregation.field;
       const name = aggregation.name
-        ?? `${aggregation.field}.approximatePercentile`;
-      const values = getNumericValues(objects, aggregation.field);
+        ?? `${field}.approximatePercentile`;
+      const values = getNumericValues(objects, field);
       if (values.length === 0) {
         return { name, value: undefined };
       }
