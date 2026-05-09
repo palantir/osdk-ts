@@ -110,7 +110,7 @@ describe("aggregateObjects", () => {
       }]);
     });
 
-    it("returns null for empty set on min/max/avg", () => {
+    it("returns undefined for empty set on min/max/avg", () => {
       const result = aggregateObjects(
         [],
         [
@@ -122,9 +122,9 @@ describe("aggregateObjects", () => {
       );
 
       expect(result.data[0].metrics).toEqual([
-        { name: "value.min", value: null },
-        { name: "value.max", value: null },
-        { name: "value.avg", value: null },
+        { name: "value.min", value: undefined },
+        { name: "value.max", value: undefined },
+        { name: "value.avg", value: undefined },
       ]);
     });
 
@@ -145,7 +145,7 @@ describe("aggregateObjects", () => {
       createTestObject({ id: "2", category: "B" }),
       createTestObject({ id: "3", category: "A" }),
       createTestObject({ id: "4", category: "C" }),
-      createTestObject({ id: "5", category: null }),
+      createTestObject({ id: "5", category: undefined }),
     ];
 
     it("computes approximateDistinct", () => {
