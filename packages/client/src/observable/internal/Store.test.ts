@@ -2845,14 +2845,12 @@ describe(Store, () => {
           employeeId: 800,
           fullName: "Stay",
         });
-        const empB = fauxFoundry.getDefaultDataStore().registerObject(
-          Employee,
-          {
-            $apiName: "Employee",
-            employeeId: 801,
-            fullName: "Goodbye",
-          },
-        );
+        const empBId = 801;
+        fauxFoundry.getDefaultDataStore().registerObject(Employee, {
+          $apiName: "Employee",
+          employeeId: empBId,
+          fullName: "Goodbye",
+        });
 
         const baseObjectSet = client(Employee) as ObjectSet<Employee>;
 
@@ -2895,7 +2893,7 @@ describe(Store, () => {
           expect(subscribeSpy).toHaveBeenCalled();
         });
 
-        const osdkB = await client(Employee).fetchOne(empB.$primaryKey);
+        const osdkB = await client(Employee).fetchOne(empBId);
 
         sub.next.mockClear();
 
