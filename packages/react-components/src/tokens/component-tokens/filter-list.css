@@ -448,6 +448,7 @@
 
   /* Filter Popover (composable label + popover-trigger primitive) */
   --osdk-filter-popover-gap: calc(var(--osdk-surface-spacing) * 1);
+  --osdk-filter-popover-stack-gap: calc(var(--osdk-surface-spacing) * 0.5);
   --osdk-filter-popover-label-font-family: var(
     --osdk-typography-family-default
   );

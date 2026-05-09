@@ -127,6 +127,9 @@ export function summarizeFilterValue<Q extends ObjectTypeDefinition>(
     case "hasLink":
       return state.hasLink ? "Has link" : "";
     case "linkedProperty":
+      // Forwards the outer definition so options like formatDate flow into the
+      // linked summary; assumes the linked property shares the outer property's
+      // type (true for current consumers).
       return summarizeFilterValue(definition, state.linkedFilterState);
     case "keywordSearch":
       return state.searchTerm ?? "";
