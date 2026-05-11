@@ -319,7 +319,7 @@ jobs:
     needs: [build, e2e, cspell]
     runs-on: ubuntu-latest
     steps:
-      - name: Verify dependencies succeeded
+      - name: Verify dependent jobs succeeded
         run: |
           if [[ "${{ needs.build.result }}" != "success" ]]; then
             echo "build did not succeed: ${{ needs.build.result }}"
