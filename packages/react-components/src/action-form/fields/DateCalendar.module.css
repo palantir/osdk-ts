@@ -81,7 +81,7 @@
 }
 
 .calendarDayButton.calendarToday {
-  font-weight: var(--osdk-datetime-calendar-today-font-weight);
+  border: var(--osdk-datetime-calendar-today-border);
 }
 
 .calendarDayButton.calendarOutside {
