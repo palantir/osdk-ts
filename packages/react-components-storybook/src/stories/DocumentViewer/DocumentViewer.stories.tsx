@@ -20,10 +20,13 @@ import type { Media } from "@osdk/api";
 import type { DocumentViewerProps } from "@osdk/react-components/experimental/document-viewer";
 import { DocumentViewer } from "@osdk/react-components/experimental/document-viewer";
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import { http, passthrough } from "msw";
 import { utils, write } from "xlsx";
 
 const SAMPLE_PDF_URL =
   `${import.meta.env.BASE_URL}compressed.tracemonkey-pldi-09.pdf`;
+
+const SAMPLE_DOCX_URL = `${import.meta.env.BASE_URL}notional-word-example.docx`;
 
 /**
  * Creates a sample PNG image as a Blob.
@@ -120,8 +123,8 @@ const mockVideoMedia = createMockMedia(
 
 const mockDocxMedia = createMockMedia(
   "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-  () => Promise.resolve(new Response(new ArrayBuffer(0))),
-  "document.docx",
+  () => fetch(SAMPLE_DOCX_URL),
+  "notional-word-example.docx",
 );
 
 const SAMPLE_EML = `From: Alice <alice@example.com>
@@ -269,6 +272,13 @@ export const UnsupportedType: Story = {
 export const Docx: Story = {
   args: {
     media: mockDocxMedia,
+  },
+  parameters: {
+    msw: {
+      handlers: [
+        http.get("*/notional-word-example.docx", () => passthrough()),
+      ],
+    },
   },
 };
 

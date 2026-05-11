@@ -17,43 +17,28 @@
 /* cspell:words openxmlformats officedocument wordprocessingml */
 
 import type { Media } from "@osdk/api";
-import type {
-  BaseDocxViewerProps,
-  DocxViewerMediaProps,
-} from "@osdk/react-components/experimental/docx-viewer";
-import {
-  BaseDocxViewer,
-  DocxViewer,
-} from "@osdk/react-components/experimental/docx-viewer";
+import type { DocxViewerMediaProps } from "@osdk/react-components/experimental/docx-viewer";
+import { DocxViewer } from "@osdk/react-components/experimental/docx-viewer";
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import { http, passthrough } from "msw";
 import { fn } from "storybook/test";
 
-/**
- * Creates a minimal DOCX file (ZIP containing XML) as an ArrayBuffer.
- * This is a simplified version — docx-preview may not render it perfectly,
- * but it exercises the component lifecycle.
- */
-function createMinimalDocxBuffer(): ArrayBuffer {
-  // A real .docx is a ZIP file. For the story, we use an empty ArrayBuffer
-  // which will trigger the error state, demonstrating error handling.
-  return new ArrayBuffer(0);
-}
+const SAMPLE_DOCX_URL = `${import.meta.env.BASE_URL}notional-word-example.docx`;
 
-const sampleDocxBuffer = createMinimalDocxBuffer();
+const DOCX_MIME_TYPE =
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
 
-function createMockDocxMedia(buffer: ArrayBuffer): Media {
+function createMockMedia(url: string, filename: string): Media {
   return {
-    fetchContents: () => Promise.resolve(new Response(buffer)),
+    fetchContents: () => fetch(url),
     fetchMetadata: () =>
       Promise.resolve({
-        path: "sample.docx",
-        sizeBytes: buffer.byteLength,
-        mediaType:
-          "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        path: filename,
+        sizeBytes: 0,
+        mediaType: DOCX_MIME_TYPE,
       }),
     getMediaReference: () => ({
-      mimeType:
-        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      mimeType: DOCX_MIME_TYPE,
       reference: {
         type: "mediaSetViewItem" as const,
         mediaSetViewItem: {
@@ -66,24 +51,34 @@ function createMockDocxMedia(buffer: ArrayBuffer): Media {
   };
 }
 
-const meta: Meta<BaseDocxViewerProps> = {
+const mockMedia = createMockMedia(
+  SAMPLE_DOCX_URL,
+  "notional-word-example.docx",
+);
+
+const meta: Meta<DocxViewerMediaProps> = {
   title: "Experimental/DocxViewer",
   tags: ["experimental"],
-  component: BaseDocxViewer,
+  component: DocxViewer,
   args: {
-    src: sampleDocxBuffer,
+    media: mockMedia,
   },
-  render: (args: BaseDocxViewerProps) => (
+  render: (args: DocxViewerMediaProps) => (
     <div style={{ height: "600px" }}>
-      <BaseDocxViewer {...args} />
+      <DocxViewer media={args.media} onError={args.onError} />
     </div>
   ),
   parameters: {
     controls: { expanded: true },
+    msw: {
+      handlers: [
+        http.get("*/notional-word-example.docx", () => passthrough()),
+      ],
+    },
   },
   argTypes: {
-    src: {
-      description: "DOCX file contents as an ArrayBuffer",
+    media: {
+      description: "The OSDK Media object to fetch DOCX from",
       control: false,
     },
     className: {
@@ -106,9 +101,9 @@ export const Default: Story = {
     docs: {
       source: {
         code:
-          `import { BaseDocxViewer } from "@osdk/react-components/experimental/docx-viewer";
+          `import { DocxViewer } from "@osdk/react-components/experimental/docx-viewer";
 
-<BaseDocxViewer src={docxArrayBuffer} />`,
+<DocxViewer media={myOsdkMedia} />`,
       },
     },
   },
@@ -116,27 +111,27 @@ export const Default: Story = {
 
 export const WithErrorCallback: Story = {
   args: {
-    onError: fn(),
-  },
-};
-
-export const WithMedia: StoryObj<DocxViewerMediaProps> = {
-  args: {
-    media: createMockDocxMedia(sampleDocxBuffer),
-  },
-  render: (args: DocxViewerMediaProps) => (
-    <div style={{ height: "600px" }}>
-      <DocxViewer {...args} />
-    </div>
-  ),
-  parameters: {
-    docs: {
-      source: {
-        code:
-          `import { DocxViewer } from "@osdk/react-components/experimental/docx-viewer";
-
-<DocxViewer media={myOsdkMedia} />`,
-      },
+    media: {
+      fetchContents: () =>
+        Promise.reject(new Error("Failed to fetch document")),
+      fetchMetadata: () =>
+        Promise.resolve({
+          path: "broken.docx",
+          sizeBytes: 0,
+          mediaType: DOCX_MIME_TYPE,
+        }),
+      getMediaReference: () => ({
+        mimeType: DOCX_MIME_TYPE,
+        reference: {
+          type: "mediaSetViewItem" as const,
+          mediaSetViewItem: {
+            mediaItemRid: "ri.mio.main.media-item.mock-error",
+            mediaSetRid: "ri.mio.main.media-set.mock-set",
+            mediaSetViewRid: "ri.mio.main.media-set-view.mock-view",
+          },
+        },
+      }),
     },
+    onError: fn(),
   },
 };
