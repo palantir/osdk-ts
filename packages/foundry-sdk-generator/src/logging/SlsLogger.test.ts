@@ -216,6 +216,22 @@ describe("logDuration", () => {
     });
   });
 
+  it("propagates unsafeParams from errors that carry them", async () => {
+    const { stream, writes } = captureStream();
+    const logger = new SlsLogger(stream);
+    const err = Object.assign(new Error("Something failed"), {
+      unsafeParams: { apiName: "MyObject" },
+    });
+
+    await expect(
+      logDuration(logger, "Loading", () => Promise.reject(err)),
+    ).rejects.toBe(err);
+
+    const entries = parseEntries(writes);
+    expect(entries[1].unsafeParams).toEqual({ apiName: "MyObject" });
+    expect(entries[1]).not.toHaveProperty("safe");
+  });
+
   it("emits start and failure with durationMs on throw, then re-throws", async () => {
     const { stream, writes } = captureStream();
     const logger = new SlsLogger(stream);

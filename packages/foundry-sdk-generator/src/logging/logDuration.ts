@@ -32,11 +32,17 @@ export async function logDuration<T>(
     });
     return result;
   } catch (e) {
+    const errorUnsafeParams = e instanceof Error && "unsafeParams" in e
+      ? (e as { unsafeParams: Record<string, unknown> }).unsafeParams
+      : undefined;
     logger.error(
       `${message} failed.`,
       {
         params: { ...extraParams?.params, durationMs: Date.now() - start },
-        unsafeParams: extraParams?.unsafeParams,
+        unsafeParams: {
+          ...extraParams?.unsafeParams,
+          ...errorUnsafeParams,
+        },
       },
       e instanceof Error ? e : undefined,
     );
