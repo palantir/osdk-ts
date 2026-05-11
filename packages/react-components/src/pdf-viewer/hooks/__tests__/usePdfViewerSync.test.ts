@@ -82,8 +82,10 @@ describe("usePdfViewerSync", () => {
         usePdfViewerSync({
           pdfViewerRef,
           eventBusRef,
+          containerRef: { current: null } as RefObject<HTMLDivElement>,
           document,
           scale,
+          autoSize: false,
           onScaleChange,
           onPageChange,
         }),
@@ -163,8 +165,10 @@ describe("usePdfViewerSync", () => {
       usePdfViewerSync({
         pdfViewerRef,
         eventBusRef,
+        containerRef: { current: null } as RefObject<HTMLDivElement>,
         document: {} as PDFDocumentProxy,
         scale: 1.0,
+        autoSize: false,
         onScaleChange: vi.fn(),
         onPageChange: vi.fn(),
       })
@@ -174,6 +178,34 @@ describe("usePdfViewerSync", () => {
     act(() => {
       result.current.scrollToPage(2);
     });
+  });
+
+  it("should not sync numeric scale to PDFViewer when autoSize is true", () => {
+    const eventBus = createMockEventBus();
+    const pdfViewer = createMockPdfViewer(1.0);
+
+    const pdfViewerRef = { current: pdfViewer } as RefObject<PDFViewer>;
+    const eventBusRef = { current: eventBus } as RefObject<EventBus>;
+
+    const { rerender } = renderHook(
+      ({ scale }: { scale: number }) =>
+        usePdfViewerSync({
+          pdfViewerRef,
+          eventBusRef,
+          containerRef: { current: null } as RefObject<HTMLDivElement>,
+          document: {} as PDFDocumentProxy,
+          scale,
+          autoSize: true,
+          onScaleChange: vi.fn(),
+          onPageChange: vi.fn(),
+        }),
+      { initialProps: { scale: 1.0 } },
+    );
+
+    rerender({ scale: 2.0 });
+
+    // Scale should not be updated since autoSize is true
+    expect(pdfViewer.currentScale).toBe(1.0);
   });
 
   it("should handle null eventBusRef without subscribing", () => {
@@ -186,8 +218,10 @@ describe("usePdfViewerSync", () => {
       usePdfViewerSync({
         pdfViewerRef,
         eventBusRef,
+        containerRef: { current: null } as RefObject<HTMLDivElement>,
         document: {} as PDFDocumentProxy,
         scale: 1.0,
+        autoSize: false,
         onScaleChange: vi.fn(),
         onPageChange,
       })
