@@ -103,6 +103,16 @@ export interface DateRangePickerProps {
    * document.body.
    */
   portalContainer?: PortalContainer;
+
+  /**
+   * Popover modality. Defaults to `"trap-focus"`, which traps Tab cycling
+   * inside the calendar and renders a transparent dismiss layer over the
+   * page. Pass `false` when nesting this picker inside another popover so
+   * the inner dismiss layer doesn't intercept clicks intended for the
+   * outer popover and base-ui's default outside-click handles dismissal
+   * instead.
+   */
+  modal?: "trap-focus" | false;
 }
 
 type ActiveBoundary = "start" | "end";
@@ -133,6 +143,7 @@ export const DateRangePicker: React.NamedExoticComponent<
   formatDate,
   parseDate,
   portalContainer,
+  modal = "trap-focus",
 }: DateRangePickerProps) {
   const shouldCloseOnSelection = !showTime;
   const popoverId = useId();
@@ -531,9 +542,7 @@ export const DateRangePicker: React.NamedExoticComponent<
     <Popover.Root
       open={isOpen}
       onOpenChange={handleOpenChange}
-      // Uses pointer-down outside dismissal so the click that opens the picker
-      // is not reinterpreted after the portal dismiss layer appears.
-      modal="trap-focus"
+      modal={modal}
     >
       <div
         ref={triggerRef}
@@ -605,6 +614,8 @@ export const DateRangePicker: React.NamedExoticComponent<
           anchor={triggerRef}
           className={commonStyles.osdkDatePickerPositioner}
           sideOffset={4}
+          side="bottom"
+          align="start"
         >
           <Popover.Popup
             ref={popoverRef}

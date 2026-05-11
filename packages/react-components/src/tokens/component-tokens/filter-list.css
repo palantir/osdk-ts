@@ -108,7 +108,7 @@
   --osdk-filter-input-focus-outline-offset: var(--osdk-emphasis-focus-offset);
   --osdk-filter-input-icon-color: var(--osdk-typography-color-muted);
   --osdk-filter-input-font-family: var(--osdk-typography-family-default);
-  --osdk-filter-input-font-size: var(--osdk-typography-size-body-small);
+  --osdk-filter-input-font-size: var(--osdk-typography-size-body-medium);
   --osdk-filter-input-color: var(--osdk-typography-color-default-rest);
   --osdk-filter-input-placeholder-color: var(--osdk-typography-color-muted);
   --osdk-filter-input-clear-padding: calc(var(--osdk-surface-spacing) * 0.5);
@@ -215,6 +215,7 @@
      not declared here so that the cascade does not cycle through them. */
   --osdk-filter-no-value-color: var(--osdk-typography-color-muted);
   --osdk-filter-no-value-font-style: italic;
+  --osdk-filter-no-value-font-size: var(--osdk-typography-size-body-medium);
 
   --osdk-filter-listogram-bar-height: calc(var(--osdk-surface-spacing) * 2);
   --osdk-filter-listogram-bar-width: calc(var(--osdk-surface-spacing) * 12.5);
@@ -480,7 +481,7 @@
     --osdk-typography-family-default
   );
   --osdk-filter-popover-trigger-font-size: var(
-    --osdk-typography-size-body-small
+    --osdk-typography-size-body-medium
   );
   --osdk-filter-popover-trigger-transition: var(
       --osdk-emphasis-transition-duration

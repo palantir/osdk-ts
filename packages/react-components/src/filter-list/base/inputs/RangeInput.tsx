@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { Button } from "@base-ui/react/button";
 import { Input } from "@base-ui/react/input";
 import classnames from "classnames";
 import { debounce } from "lodash-es";
@@ -408,11 +409,15 @@ function RangeInputInner<T>({
     const maxN = config.toNumber(maxValue);
     let lo = -1;
     let hi = -1;
+    // Buckets are half-open [min, max). Use strict inequality on the shared
+    // endpoints so a bucket that ends exactly at the filter's minN (or starts
+    // exactly at maxN) is NOT pulled into the band — otherwise the band over-
+    // extends by one bucket on each side after commit.
     for (let i = 0; i < buckets.length; i++) {
-      if (lo === -1 && config.toNumber(buckets[i].max) >= minN) {
+      if (lo === -1 && config.toNumber(buckets[i].max) > minN) {
         lo = i;
       }
-      if (config.toNumber(buckets[i].min) <= maxN) {
+      if (config.toNumber(buckets[i].min) < maxN) {
         hi = i;
       }
     }
@@ -489,7 +494,10 @@ function RangeInputInner<T>({
       const local = pt.matrixTransform(ctm.inverse());
       const localX = local.x - PAD_LEFT;
       const slotW = (PLOT_W + BAR_GAP) / bucketCount;
-      const idx = Math.floor(localX / slotW);
+      const barW = slotW - BAR_GAP;
+      // Snap to the bar whose center is nearest, so a pointer that lands in
+      // the inter-bar gap selects the visually-closer bar.
+      const idx = Math.round((localX - barW / 2) / slotW);
       return Math.max(0, Math.min(bucketCount - 1, idx));
     },
     [],
@@ -623,15 +631,14 @@ function RangeInputInner<T>({
         </div>
       )}
 
-      {hasActiveFilter && (
-        <button
-          type="button"
-          className={styles.clearButton}
-          onClick={handleClearFilter}
-        >
-          Clear
-        </button>
-      )}
+      <Button
+        className={styles.clearButton}
+        data-active={hasActiveFilter || undefined}
+        onClick={handleClearFilter}
+        disabled={!hasActiveFilter}
+      >
+        Clear
+      </Button>
 
       {showHistogram && buckets.length > 0 && barLayout != null && (
         <div className={styles.histogramWrapper}>
@@ -699,11 +706,14 @@ function RangeInputInner<T>({
                   : 0;
                 const barH = Math.max(0, heightFrac * PLOT_H);
                 const y = PAD_TOP + PLOT_H - barH;
+                // Buckets are half-open [min, max). Strict inequality on the
+                // shared endpoints keeps adjacent buckets out of the active
+                // styling when the filter starts/ends exactly on a boundary.
                 const isInRange = (minValue === undefined
-                  || config.toNumber(bucket.max) >= config.toNumber(minValue))
+                  || config.toNumber(bucket.max) > config.toNumber(minValue))
                   && (maxValue === undefined
                     || config.toNumber(bucket.min)
-                      <= config.toNumber(maxValue));
+                      < config.toNumber(maxValue));
                 const isInDragRange = dragRange != null
                   && index >= Math.min(dragRange.start, dragRange.end)
                   && index <= Math.max(dragRange.start, dragRange.end);

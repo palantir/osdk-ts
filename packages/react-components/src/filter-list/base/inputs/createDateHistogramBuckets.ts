@@ -26,6 +26,10 @@ import {
 } from "date-fns";
 import type { HistogramBucket } from "./createHistogramBuckets.js";
 
+const SHORT_MONTH_FORMATTER = new Intl.DateTimeFormat(undefined, {
+  month: "short",
+});
+
 export type DateHistogramGranularity = "day" | "month" | "year";
 
 export interface DateHistogramData {
@@ -45,13 +49,12 @@ interface ValueCountPair {
  *
  * Granularity is chosen from the data span:
  *   span ≤ 31 days   → daily buckets, ticks "1" / "2" / ... / "31"
- *   span ≤ 365 days  → monthly buckets, ticks "01" / "02" / ... / "12"
+ *   span ≤ 365 days  → monthly buckets, ticks "Jan" / "Feb" / ... (locale-aware)
  *   span >  365 days → yearly buckets, ticks "2020" / "2021" / ...
  *
- * Tick labels follow the same ISO-style convention used by the shared
- * date pickers — zero-padded month numbers, locale-neutral years, plain
- * day-of-month integers — so cross-locale viewers see identical tick
- * labels regardless of browser locale.
+ * Month ticks use `Intl.DateTimeFormat(..., { month: "short" })` so each
+ * browser locale renders its native short-month names rather than getting
+ * English-only "Jan"/"Feb". Day and year ticks remain locale-neutral integers.
  *
  * The subtitle reflects the surrounding calendar context — e.g. "2020-05"
  * for a daily histogram inside one month, "2020" for a monthly histogram
@@ -133,12 +136,9 @@ export function createDateHistogramBuckets(
     }
     for (let i = 0; i < months.length; i++) {
       const monthStart = months[i];
-      // Default monthly ticks are zero-padded `01`/`02`/.../`12` so a
-      // German viewer sees the same labels as an English viewer (vs the
-      // English-only `Jan`/`Feb` from `format(d, "MMM")`).
       const defaultLabel = formatDate != null
         ? formatDate(monthStart)
-        : format(monthStart, "MM");
+        : SHORT_MONTH_FORMATTER.format(monthStart);
       buckets.push({
         min: monthStart,
         max: addMonths(monthStart, 1),

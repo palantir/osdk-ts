@@ -97,7 +97,10 @@ describe("createDateHistogramBuckets", () => {
     expect(result.granularity).toBe("month");
     expect(result.buckets).toHaveLength(12);
     expect(result.subtitle).toBe("2020");
-    expect(result.buckets[5].tickLabel).toBe("06");
+    const expectedJune = new Intl.DateTimeFormat(undefined, {
+      month: "short",
+    }).format(new Date(2020, 5, 1));
+    expect(result.buckets[5].tickLabel).toBe(expectedJune);
     expect(result.buckets[5].count).toBe(7);
   });
 
@@ -455,6 +458,161 @@ describe("RangeInput SVG histogram", () => {
       );
       expect(noneEnabled).toBe(true);
     });
+
+    it(
+      "pointer fallback in inter-bar gap snaps to the nearer bar",
+      () => {
+        // happy-dom does not implement SVG matrix transforms, so by default
+        // `bucketIndexAtClient` short-circuits to null and only the bar-rect
+        // `data-bucket-index` path runs. Mock the minimum surface so the
+        // pixel-fallback (round-to-nearest-bar-center) is exercised.
+        const ctm = {
+          inverse() {
+            return this;
+          },
+        };
+        const getScreenCTMSpy = vi
+          .spyOn(SVGSVGElement.prototype, "getScreenCTM")
+          .mockReturnValue(ctm as unknown as DOMMatrix);
+        const createSVGPointSpy = vi
+          .spyOn(SVGSVGElement.prototype, "createSVGPoint")
+          .mockImplementation(() => {
+            const pt = { x: 0, y: 0 } as {
+              x: number;
+              y: number;
+              matrixTransform: (m: unknown) => { x: number; y: number };
+            };
+            pt.matrixTransform = () => ({ x: pt.x, y: pt.y });
+            return pt as unknown as DOMPoint;
+          });
+
+        try {
+          const onChange = vi.fn<
+            (min: number | undefined, max: number | undefined) => void
+          >();
+          const numericPairs = [
+            { value: 10, count: 1 },
+            { value: 20, count: 1 },
+            { value: 30, count: 1 },
+            { value: 40, count: 1 },
+            { value: 50, count: 1 },
+          ];
+          const { container } = render(
+            <NumberRangeInput
+              valueCountPairs={numericPairs}
+              isLoading={false}
+              minValue={undefined}
+              maxValue={undefined}
+              onChange={onChange}
+              clickToFilter={true}
+            />,
+          );
+          const svg = container.querySelector("svg");
+          expect(svg).not.toBeNull();
+          const rects = container.querySelectorAll(
+            "rect[class*=\"histogramBar\"]",
+          );
+          const bucketCount = rects.length;
+          expect(bucketCount).toBeGreaterThanOrEqual(3);
+          // SVG geometry constants — must match RangeInput.tsx.
+          const PAD_LEFT = 30;
+          const PLOT_W = 360;
+          const BAR_GAP = 2;
+          const slotW = (PLOT_W + BAR_GAP) / bucketCount;
+          // Pixel in the gap between bar 1 and bar 2, biased toward bar 2.
+          // Old Math.floor formula would map this to bar 1; new
+          // round-to-nearest-bar-center maps it to bar 2.
+          const bar2LeftEdge = PAD_LEFT + 2 * slotW;
+          const closerToBar2 = bar2LeftEdge - BAR_GAP / 2 + 0.5;
+          if (svg != null) {
+            fireEvent.pointerDown(svg, {
+              pointerId: 1,
+              clientX: closerToBar2,
+              clientY: 50,
+            });
+            fireEvent.pointerUp(svg, {
+              pointerId: 1,
+              clientX: closerToBar2,
+              clientY: 50,
+            });
+          }
+          expect(onChange).toHaveBeenCalledTimes(1);
+          // Cross-check: clicking directly on bar 2's rect should yield the
+          // same onChange args as the gap-click. If they match, the fallback
+          // correctly snaps to bar 2 rather than bar 1.
+          const gapCall = onChange.mock.calls[0];
+          onChange.mockClear();
+          cleanup();
+          getScreenCTMSpy.mockRestore();
+          createSVGPointSpy.mockRestore();
+
+          const onChange2 = vi.fn<
+            (min: number | undefined, max: number | undefined) => void
+          >();
+          const { container: container2 } = render(
+            <NumberRangeInput
+              valueCountPairs={numericPairs}
+              isLoading={false}
+              minValue={undefined}
+              maxValue={undefined}
+              onChange={onChange2}
+              clickToFilter={true}
+            />,
+          );
+          const rects2 = container2.querySelectorAll(
+            "rect[class*=\"histogramBar\"]",
+          );
+          firePointerDown(rects2[2]);
+          const svg2 = container2.querySelector("svg");
+          if (svg2 != null) {
+            firePointerUp(svg2);
+          }
+          expect(onChange2).toHaveBeenCalledTimes(1);
+          expect(onChange2.mock.calls[0]).toEqual(gapCall);
+        } finally {
+          getScreenCTMSpy.mockRestore();
+          createSVGPointSpy.mockRestore();
+        }
+      },
+    );
+
+    it(
+      "selection band does not extend to buckets adjacent to the filter boundaries",
+      () => {
+        // Reproduces the off-by-one band bug: with a filter aligned exactly
+        // on bucket boundaries — the same shape committed by drag-to-select
+        // (`onChange(bucket[lo].min, bucket[hi].max)`) — the band must cover
+        // only bars lo..hi, not lo-1..hi+1. Because buckets are half-open
+        // [min, max), the shared endpoints between adjacent buckets must use
+        // strict comparison to avoid pulling neighbors into the band.
+        const pairs = [
+          { value: new Date(2020, 4, 1), count: 1 },
+          { value: new Date(2020, 4, 5), count: 1 },
+          { value: new Date(2020, 4, 10), count: 1 },
+        ];
+        // 10 daily buckets May 1..10. minValue=bucket[3].min=May 4,
+        // maxValue=bucket[5].max=May 7. Bars 3, 4, 5 should be in-range.
+        const { container } = render(
+          <DateRangeHistogramInput
+            valueCountPairs={pairs}
+            isLoading={false}
+            minValue={new Date(2020, 4, 4)}
+            maxValue={new Date(2020, 4, 7)}
+            onChange={vi.fn()}
+          />,
+        );
+        const rects = container.querySelectorAll(
+          "rect[class*=\"histogramBar\"]",
+        );
+        const inRangeIndices: number[] = [];
+        rects.forEach((r, i) => {
+          if (r.getAttribute("data-in-range") === "true") {
+            inRangeIndices.push(i);
+          }
+        });
+        expect(inRangeIndices).toEqual([3, 4, 5]);
+      },
+    );
   });
 
   it(

@@ -59,6 +59,11 @@
   }
 }
 
+.clearButton:not([data-active]) {
+  visibility: hidden;
+  pointer-events: none;
+}
+
 .tooltip {
   position: fixed;
   transform: translateX(-50%);

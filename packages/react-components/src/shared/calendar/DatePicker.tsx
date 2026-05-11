@@ -452,6 +452,8 @@ export const DatePicker: React.NamedExoticComponent<
           anchor={wrapperRef}
           className={commonStyles.osdkDatePickerPositioner}
           sideOffset={4}
+          side="bottom"
+          align="start"
         >
           <Popover.Popup
             ref={popoverRef}

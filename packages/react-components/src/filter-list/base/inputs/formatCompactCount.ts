@@ -14,8 +14,15 @@
  * limitations under the License.
  */
 
-.noValue {
-  color: var(--osdk-filter-no-value-color);
-  font-style: var(--osdk-filter-no-value-font-style);
-  font-size: var(--osdk-filter-no-value-font-size);
+const COMPACT_NUMBER = new Intl.NumberFormat(undefined, {
+  notation: "compact",
+});
+
+/**
+ * Compact locale-aware formatter for filter-list bucket and null-row counts
+ * (e.g. "1.2K", "1.5M"). Call sites should pair this with
+ * `title={n.toLocaleString()}` so the full count remains discoverable.
+ */
+export function formatCompactCount(n: number): string {
+  return COMPACT_NUMBER.format(n);
 }
