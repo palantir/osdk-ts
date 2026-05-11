@@ -2,4 +2,4 @@
 "@osdk/react-components": patch
 ---
 
-Fix broken CSS token references and improve dark theme compatibility: switch table hover/active to oklch color-mix, replace hardcoded colors with surface tokens, fix datetime-picker and pdf-viewer token names
+Replace hardcoded table header colors with surface tokens, fix table row hover token, change calendar today indicator to font-weight
