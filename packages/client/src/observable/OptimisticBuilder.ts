@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeDefinition, Osdk, PrimaryKeyType } from "@osdk/api";
+import type {
+  ObjectTypeDefinition,
+  Osdk,
+  PrimaryKeyType,
+  PropertyKeys,
+} from "@osdk/api";
 
 export interface OptimisticBuilder {
   updateObject: <T extends ObjectTypeDefinition>(
@@ -23,7 +28,7 @@ export interface OptimisticBuilder {
   createObject: <T extends ObjectTypeDefinition>(
     type: T,
     primaryKey: PrimaryKeyType<T>,
-    properties: Partial<Osdk.Instance<T>>,
+    properties: Pick<Osdk.Instance<T>, PropertyKeys<T>>,
   ) => this;
   deleteObject: <T extends ObjectTypeDefinition>(
     value: Osdk.Instance<T>,

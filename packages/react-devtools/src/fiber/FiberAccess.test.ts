@@ -70,8 +70,7 @@ describe("FiberAccess", () => {
       // (set by React's markContainerAsRoot(root.current, container))
       const hostRootFiber = createMockFiber({ tag: 3 });
       const element = document.createElement("div");
-      (element as unknown as Record<string, unknown>).__reactContainer$abc123 =
-        hostRootFiber;
+      (element as unknown as Record<string, unknown>).__reactContainer$abc123 = hostRootFiber;
 
       const result = getFiberFromElement(element);
       expect(result).toBe(hostRootFiber);
