@@ -69,7 +69,6 @@ export const DropdownField: <V, Multiple extends boolean = false>(
   disableClientSideFiltering,
   popupStatus,
   trailingItem,
-  onBlur,
   ...rest
 }: DropdownFieldProps<V, Multiple> & {
   onBlur?: () => void;
@@ -103,7 +102,6 @@ export const DropdownField: <V, Multiple extends boolean = false>(
         disableClientSideFiltering={disableClientSideFiltering}
         popupStatus={popupStatus}
         trailingItem={trailingItem}
-        onBlur={onBlur}
       />
     );
   }
@@ -115,7 +113,6 @@ export const DropdownField: <V, Multiple extends boolean = false>(
       value={normalizedValue}
       itemToStringLabel={resolvedItemToStringLabel}
       getKey={getKey}
-      onBlur={onBlur}
     />
   );
 });
@@ -140,14 +137,17 @@ const SelectDropdown = typedReactMemo(function SelectDropdownFn<
 
   const hasValue = value != null;
 
-  const handleOpenChange = useCallback((nextOpen: boolean) => {
-    setOpen(nextOpen);
-    // Mark the field as touched when the popover closes so RHF validates.
-    // Opening the popover does not trigger validation.
-    if (!nextOpen) {
-      onBlur?.();
-    }
-  }, [onBlur]);
+  const handleOpenChange = useCallback(
+    (nextOpen: boolean) => {
+      setOpen(nextOpen);
+      // Mark the field as touched when the popover closes so RHF validates.
+      // Opening the popover does not trigger validation.
+      if (!nextOpen) {
+        onBlur?.();
+      }
+    },
+    [onBlur],
+  );
 
   const handleValueChange = useCallback(
     (...args: Parameters<NonNullable<typeof onChange>>) => {
@@ -252,12 +252,15 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
     ? Array.isArray(value) && value.length > 0
     : value != null;
 
-  const handleOpenChange = useCallback((nextOpen: boolean) => {
-    setOpen(nextOpen);
-    if (!nextOpen) {
-      onBlur?.();
-    }
-  }, [onBlur]);
+  const handleOpenChange = useCallback(
+    (nextOpen: boolean) => {
+      setOpen(nextOpen);
+      if (!nextOpen) {
+        onBlur?.();
+      }
+    },
+    [onBlur],
+  );
 
   const handleClear = useCallback(() => {
     // TypeScript can't narrow the conditional type `Multiple extends true ? V[] : V`
@@ -406,9 +409,7 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
                 <Combobox.Empty>No results</Combobox.Empty>
               )}
               <Combobox.List>
-                <Combobox.Collection>
-                  {renderItem}
-                </Combobox.Collection>
+                <Combobox.Collection>{renderItem}</Combobox.Collection>
                 {trailingItem}
               </Combobox.List>
             </Combobox.Popup>

@@ -410,7 +410,7 @@ describe("DropdownField", () => {
       expect(onBlur).not.toHaveBeenCalled();
     });
 
-    it("calls onBlur when popover closes via dismiss layer", async () => {
+    it("calls onBlur when popover closes", async () => {
       const onBlur = vi.fn();
       render(
         <DropdownField
@@ -426,14 +426,7 @@ describe("DropdownField", () => {
         expect(screen.getByRole("option", { name: "Alice" })).toBeDefined();
       });
 
-      const dismissLayer = document.querySelector(
-        "[data-osdk-portal-dismiss-layer]",
-      );
-      if (!(dismissLayer instanceof HTMLElement)) {
-        throw new Error("Expected dropdown dismiss layer to be rendered");
-      }
-
-      fireEvent.pointerDown(dismissLayer);
+      fireEvent.keyDown(screen.getByRole("combobox"), { key: "Escape" });
 
       await vi.waitFor(() => {
         expect(onBlur).toHaveBeenCalled();
@@ -465,7 +458,7 @@ describe("DropdownField", () => {
       });
     });
 
-    it("calls onBlur when searchable popover closes via dismiss layer", async () => {
+    it("calls onBlur when searchable popover closes", async () => {
       const onBlur = vi.fn();
       render(
         <DropdownField
@@ -476,20 +469,17 @@ describe("DropdownField", () => {
         />,
       );
 
-      fireEvent.click(screen.getByRole("combobox"));
+      const trigger = screen.getByRole("combobox");
+      fireEvent.click(trigger);
 
       await vi.waitFor(() => {
         expect(screen.getByRole("option", { name: "Alice" })).toBeDefined();
       });
 
-      const dismissLayer = document.querySelector(
-        "[data-osdk-portal-dismiss-layer]",
-      );
-      if (!(dismissLayer instanceof HTMLElement)) {
-        throw new Error("Expected dropdown dismiss layer to be rendered");
-      }
-
-      fireEvent.pointerDown(dismissLayer);
+      // Escape on the search input closes the popover
+      fireEvent.keyDown(screen.getByPlaceholderText("Search…"), {
+        key: "Escape",
+      });
 
       await vi.waitFor(() => {
         expect(onBlur).toHaveBeenCalled();
