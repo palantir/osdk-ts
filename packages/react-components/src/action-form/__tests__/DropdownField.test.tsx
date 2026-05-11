@@ -390,6 +390,140 @@ describe("DropdownField", () => {
     });
   });
 
+  describe("onBlur", () => {
+    it("does not call onBlur when popover opens", async () => {
+      const onBlur = vi.fn();
+      render(
+        <DropdownField
+          value={null}
+          items={STRING_ITEMS}
+          onBlur={onBlur}
+        />,
+      );
+
+      fireEvent.click(screen.getByRole("combobox"));
+
+      await vi.waitFor(() => {
+        expect(screen.getByRole("option", { name: "Alice" })).toBeDefined();
+      });
+
+      expect(onBlur).not.toHaveBeenCalled();
+    });
+
+    it("calls onBlur when popover closes via dismiss layer", async () => {
+      const onBlur = vi.fn();
+      render(
+        <DropdownField
+          value={null}
+          items={STRING_ITEMS}
+          onBlur={onBlur}
+        />,
+      );
+
+      fireEvent.click(screen.getByRole("combobox"));
+
+      await vi.waitFor(() => {
+        expect(screen.getByRole("option", { name: "Alice" })).toBeDefined();
+      });
+
+      const dismissLayer = document.querySelector(
+        "[data-osdk-portal-dismiss-layer]",
+      );
+      if (!(dismissLayer instanceof HTMLElement)) {
+        throw new Error("Expected dropdown dismiss layer to be rendered");
+      }
+
+      fireEvent.pointerDown(dismissLayer);
+
+      await vi.waitFor(() => {
+        expect(onBlur).toHaveBeenCalled();
+      });
+    });
+
+    it("calls onBlur when a value is selected in single-select", async () => {
+      const onBlur = vi.fn();
+      const onChange = vi.fn();
+      render(
+        <DropdownField
+          value={null}
+          items={STRING_ITEMS}
+          onChange={onChange}
+          onBlur={onBlur}
+        />,
+      );
+
+      fireEvent.click(screen.getByRole("combobox"));
+
+      await vi.waitFor(() => {
+        expect(screen.getByRole("option", { name: "Alice" })).toBeDefined();
+      });
+
+      fireEvent.click(screen.getByRole("option", { name: "Alice" }));
+
+      await vi.waitFor(() => {
+        expect(onBlur).toHaveBeenCalled();
+      });
+    });
+
+    it("calls onBlur when searchable popover closes via dismiss layer", async () => {
+      const onBlur = vi.fn();
+      render(
+        <DropdownField
+          value={null}
+          items={STRING_ITEMS}
+          isSearchable={true}
+          onBlur={onBlur}
+        />,
+      );
+
+      fireEvent.click(screen.getByRole("combobox"));
+
+      await vi.waitFor(() => {
+        expect(screen.getByRole("option", { name: "Alice" })).toBeDefined();
+      });
+
+      const dismissLayer = document.querySelector(
+        "[data-osdk-portal-dismiss-layer]",
+      );
+      if (!(dismissLayer instanceof HTMLElement)) {
+        throw new Error("Expected dropdown dismiss layer to be rendered");
+      }
+
+      fireEvent.pointerDown(dismissLayer);
+
+      await vi.waitFor(() => {
+        expect(onBlur).toHaveBeenCalled();
+      });
+    });
+
+    it("calls onBlur when a value is selected in multi-select", async () => {
+      const onBlur = vi.fn();
+      const onChange = vi.fn();
+      render(
+        <DropdownField<string, true>
+          value={[]}
+          items={STRING_ITEMS}
+          onChange={onChange}
+          isSearchable={true}
+          isMultiple={true}
+          onBlur={onBlur}
+        />,
+      );
+
+      fireEvent.click(screen.getByRole("combobox"));
+
+      await vi.waitFor(() => {
+        expect(screen.getByRole("option", { name: "Alice" })).toBeDefined();
+      });
+
+      fireEvent.click(screen.getByRole("option", { name: "Alice" }));
+
+      await vi.waitFor(() => {
+        expect(onBlur).toHaveBeenCalled();
+      });
+    });
+  });
+
   describe("clear button", () => {
     it("shows clear button in select when a value is selected", () => {
       render(<DropdownField value="Alice" items={STRING_ITEMS} />);
