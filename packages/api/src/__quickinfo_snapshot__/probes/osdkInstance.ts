@@ -21,17 +21,17 @@ import type { FooInterfaceApiTest } from "../../test/FooInterfaceApiTest.js";
 // === Default and common variants ===
 
 /** A bare Osdk.Instance — what users get when iterating fetchPage results without options. */
-declare const probe_default: Osdk.Instance<EmployeeApiTest>;
+declare const osdkInstance_default: Osdk.Instance<EmployeeApiTest>;
 
 /** An instance with $select narrowing the property set to a subset. */
-declare const probe_select_subset: Osdk.Instance<
+declare const osdkInstance_select_subset: Osdk.Instance<
   EmployeeApiTest,
   never,
   "fullName" | "employeeId"
 >;
 
 /** An instance with derived properties added via withProperties. */
-declare const probe_with_rdps: Osdk.Instance<
+declare const osdkInstance_with_rdps: Osdk.Instance<
   EmployeeApiTest,
   never,
   "employeeId",
@@ -41,16 +41,16 @@ declare const probe_with_rdps: Osdk.Instance<
 // === OPTIONS variants ===
 
 /** An instance fetched with $includeRid: true — exposes $rid. */
-declare const probe_with_rid: Osdk.Instance<EmployeeApiTest, "$rid">;
+declare const osdkInstance_with_rid: Osdk.Instance<EmployeeApiTest, "$rid">;
 
 /** An instance fetched with $includeAllBaseObjectProperties: true. */
-declare const probe_all_base_props: Osdk.Instance<
+declare const osdkInstance_all_base_props: Osdk.Instance<
   EmployeeApiTest,
   "$allBaseProperties"
 >;
 
 /** An instance fetched with $includePropertySecurities: true. */
-declare const probe_property_securities: Osdk.Instance<
+declare const osdkInstance_property_securities: Osdk.Instance<
   EmployeeApiTest,
   "$propertySecurities"
 >;
@@ -58,7 +58,9 @@ declare const probe_property_securities: Osdk.Instance<
 // === Interface-typed instance ===
 
 /** An instance whose Q is an interface rather than an object type. */
-declare const probe_interface_default: Osdk.Instance<FooInterfaceApiTest>;
+declare const osdkInstance_interface_default: Osdk.Instance<
+  FooInterfaceApiTest
+>;
 
 // === $as cast ===
 
@@ -66,6 +68,6 @@ declare const probe_interface_default: Osdk.Instance<FooInterfaceApiTest>;
 // constraint default `<NEW_Q extends InterfaceDefinition>(...) => ...`.
 declare const _$as: Osdk.Instance<EmployeeApiTest>["$as"];
 /** The result of instance.$as(FooInterface) — recasting to the interface view. */
-declare const probe_$as_to_interface: ReturnType<
+declare const osdkInstance_$as_to_interface_result: ReturnType<
   typeof _$as<FooInterfaceApiTest>
 >;

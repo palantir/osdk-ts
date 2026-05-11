@@ -24,18 +24,21 @@ import * as path from "node:path";
 import * as ts from "typescript";
 
 export interface RenderQuickInfoProbesOptions {
-  /** Absolute paths to probes files containing `declare const probe_*: T;` declarations. */
+  /** Absolute paths to probes files containing `declare const <name>: T;` declarations. Identifiers beginning with `_` are treated as helpers and skipped. */
   probesPaths: string[];
   /** Absolute path to a tsconfig.json that can compile the probes files. */
   tsconfigPath: string;
 }
 
 /**
- * Walks every `declare const probe_*: <Type>;` declaration across the given
+ * Walks every `declare const <name>: <Type>;` declaration across the given
  * probes files, renders its type via the TypeScript compiler API, and
  * pretty-prints the result through dprint. Returns a map keyed by probes
  * path; each value is the rendered, dprint-formatted snapshot content for
  * that file (one `type <name> = ...;` declaration per probe).
+ *
+ * Identifiers beginning with `_` are treated as construction helpers (e.g.
+ * instantiation-expression aliases) and skipped.
  *
  * All probes files share one TS program, so types imported by multiple
  * files are parsed and checked only once.
@@ -109,7 +112,7 @@ function extractProbes(
     for (const decl of stmt.declarationList.declarations) {
       if (!ts.isIdentifier(decl.name)) continue;
       const name = decl.name.text;
-      if (!name.startsWith("probe_")) continue;
+      if (name.startsWith("_")) continue;
       const symbol = checker.getSymbolAtLocation(decl.name);
       if (symbol == null) continue;
       const type = checker.getTypeOfSymbolAtLocation(symbol, decl.name);

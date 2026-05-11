@@ -4,19 +4,19 @@
 // See packages/api/src/__quickinfo_snapshot__/README.md for details.
 
 /** The filter union allowed for an array property (multiplicity = true) of strings. */
-type probe_array_filter_of_string =
+type where_arrayFilter_string =
   | ArrayFilter.$contains<string>
   | ArrayFilter.$isNull<string>;
 
 /** The fallback filter union for property types without a dedicated filter (e.g. attachment, mediaReference). */
-type probe_base_filter_of_string =
+type where_baseFilter_string =
   | BaseFilter.$eq<string>
   | BaseFilter.$ne<string>
   | BaseFilter.$in<string>
   | BaseFilter.$isNull<string>;
 
 /** The filter union allowed for a boolean property. */
-type probe_boolean_filter =
+type where_booleanFilter =
   | boolean
   | BooleanFilter.$eq
   | BooleanFilter.$ne
@@ -24,7 +24,7 @@ type probe_boolean_filter =
   | BooleanFilter.$isNull;
 
 /** The filter union allowed for a datetime/timestamp property. */
-type probe_datetime_filter =
+type where_datetimeFilter =
   | string
   | DatetimeFilter.$eq
   | DatetimeFilter.$ne
@@ -36,13 +36,13 @@ type probe_datetime_filter =
   | DatetimeFilter.$lte;
 
 /** The filter union allowed for a geopoint/geoshape property. */
-type probe_geo_filter =
+type where_geoFilter =
   | GeoFilter.$within
   | GeoFilter.$intersects
   | GeoFilter.$isNull;
 
 /** The filter union allowed for a numeric-typed property (integer/long/double/float/short/byte/decimal). */
-type probe_number_filter =
+type where_numberFilter =
   | number
   | NumberFilter.$eq
   | NumberFilter.$ne
@@ -54,7 +54,7 @@ type probe_number_filter =
   | NumberFilter.$lte;
 
 /** The filter union allowed for a string-typed property in a where clause. */
-type probe_string_filter =
+type where_stringFilter =
   | string
   | StringFilter.$eq
   | StringFilter.$ne

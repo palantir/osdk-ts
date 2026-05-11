@@ -32,31 +32,34 @@ type AggregateBuilder = DerivedProperty.AggregateBuilder<EmployeeApiTest, true>;
 // the actual signature TS shows on hover.
 
 /** builder.where — narrows the candidate object set before chaining. */
-declare const probe_builder_where: Builder["where"];
+declare const withProperties_builder_where: Builder["where"];
 
 /** builder.pivotTo — follows a link to another object/interface, branching builder constraints. */
-declare const probe_builder_pivotTo: Builder["pivotTo"];
+declare const withProperties_builder_pivotTo: Builder["pivotTo"];
 
 /** builder.selectProperty — terminal step that picks a property of the current object set. */
-declare const probe_builder_selectProperty: Builder["selectProperty"];
+declare const withProperties_builder_selectProperty: Builder["selectProperty"];
 
 /** aggregateBuilder.aggregate — terminal step on the constrained branch. */
-declare const probe_aggregate_builder_aggregate: AggregateBuilder["aggregate"];
+declare const withProperties_aggregateBuilder_aggregate:
+  AggregateBuilder["aggregate"];
 
 /** aggregateBuilder.where — same narrowing surface, but returns an AggregateBuilder. */
-declare const probe_aggregate_builder_where: AggregateBuilder["where"];
+declare const withProperties_aggregateBuilder_where: AggregateBuilder["where"];
 
 // Force instantiation of the generic Creator so we capture its post-call shape
 // rather than the raw constraint default.
 declare const _creator: DerivedProperty.Creator<EmployeeApiTest, "integer">;
 /** The value entry in withProperties({ myProp: <here> }) — a (builder) => Definition callback. */
-declare const probe_creator: typeof _creator;
+declare const withProperties_creator: typeof _creator;
 
 /** The argument the user receives in (builder) => — equals the Builder above. */
-declare const probe_creator_callback_arg: Parameters<typeof _creator>[0];
+declare const withProperties_creator_baseObjectSet_param: Parameters<
+  typeof _creator
+>[0];
 
 /** The return type of the (builder) => ... callback for an integer property. */
-declare const probe_creator_return: ReturnType<typeof _creator>;
+declare const withProperties_creator_result: ReturnType<typeof _creator>;
 
 /** The full clause object accepted by withProperties({...}). */
-declare const probe_clause: DerivedProperty.Clause<EmployeeApiTest>;
+declare const withProperties_clause: DerivedProperty.Clause<EmployeeApiTest>;

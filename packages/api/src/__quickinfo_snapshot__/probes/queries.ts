@@ -28,36 +28,40 @@ import type { FooInterfaceApiTest } from "../../test/FooInterfaceApiTest.js";
 // === Param shapes (what users pass into a query) ===
 
 /** What an object-typed query parameter accepts. */
-declare const probe_param_object: QueryParam.ObjectType<EmployeeApiTest>;
+declare const queryParam_objectType: QueryParam.ObjectType<EmployeeApiTest>;
 
 /** What an interface-typed query parameter accepts. */
-declare const probe_param_interface: QueryParam.InterfaceType<
+declare const queryParam_interfaceType: QueryParam.InterfaceType<
   FooInterfaceApiTest
 >;
 
 /** What an objectSet-typed query parameter accepts. */
-declare const probe_param_objectSet: QueryParam.ObjectSetType<EmployeeApiTest>;
+declare const queryParam_objectSetType: QueryParam.ObjectSetType<
+  EmployeeApiTest
+>;
 
 /** A primitive (string) query parameter. */
-declare const probe_param_primitive_string: QueryParam.PrimitiveType<"string">;
+declare const queryParam_primitiveType_string: QueryParam.PrimitiveType<
+  "string"
+>;
 
 /** A primitive (timestamp) query parameter — separate from datetime in client mappings. */
-declare const probe_param_primitive_timestamp: QueryParam.PrimitiveType<
+declare const queryParam_primitiveType_timestamp: QueryParam.PrimitiveType<
   "timestamp"
 >;
 
 /** A range key over an integer aggregation bucket. */
-declare const probe_param_range_integer: QueryParam.RangeKey<"integer">;
+declare const queryParam_rangeKey_integer: QueryParam.RangeKey<"integer">;
 
 /** A 2D aggregation parameter — string buckets, double values. */
-declare const probe_param_2d_aggregation:
+declare const queryParam_twoDimensionalAggregationType_string_double:
   QueryParam.TwoDimensionalAggregationType<
     "string",
     "double"
   >;
 
 /** A 3D aggregation parameter — string outer buckets, range-of-integer inner buckets, double values. */
-declare const probe_param_3d_aggregation:
+declare const queryParam_threeDimensionalAggregationType_string_rangeKey_integer_double:
   QueryParam.ThreeDimensionalAggregationType<
     "string",
     QueryParam.RangeKey<"integer">,
@@ -67,40 +71,40 @@ declare const probe_param_3d_aggregation:
 // === Result shapes (what users receive when a query resolves) ===
 
 /** What an object-typed query result yields — an OsdkBase view, not a full Osdk.Instance. */
-declare const probe_result_object: QueryResult.ObjectType<EmployeeApiTest>;
+declare const queryResult_objectType: QueryResult.ObjectType<EmployeeApiTest>;
 
 /** What an interface-typed query result yields. */
-declare const probe_result_interface: QueryResult.InterfaceType<
+declare const queryResult_interfaceType: QueryResult.InterfaceType<
   FooInterfaceApiTest
 >;
 
 /** What an objectSet-typed query result yields. */
-declare const probe_result_objectSet: QueryResult.ObjectSetType<
+declare const queryResult_objectSetType: QueryResult.ObjectSetType<
   EmployeeApiTest
 >;
 
 /** A primitive (string) query result. */
-declare const probe_result_primitive_string: QueryResult.PrimitiveType<
+declare const queryResult_primitiveType_string: QueryResult.PrimitiveType<
   "string"
 >;
 
 /** A primitive (timestamp) query result — separate from datetime in wire mappings. */
-declare const probe_result_primitive_timestamp: QueryResult.PrimitiveType<
+declare const queryResult_primitiveType_timestamp: QueryResult.PrimitiveType<
   "timestamp"
 >;
 
 /** A media reference query result — surfaced as the Media interface. */
-declare const probe_result_media: QueryResult.MediaType;
+declare const queryResult_mediaType: QueryResult.MediaType;
 
 /** A 2D aggregation result — string buckets, double values. */
-declare const probe_result_2d_aggregation:
+declare const queryResult_twoDimensionalAggregationType_string_double:
   QueryResult.TwoDimensionalAggregationType<
     "string",
     "double"
   >;
 
 /** A 3D aggregation result — string outer buckets, range-of-integer inner buckets, double values. */
-declare const probe_result_3d_aggregation:
+declare const queryResult_threeDimensionalAggregationType_string_rangeKey_integer_double:
   QueryResult.ThreeDimensionalAggregationType<
     "string",
     QueryResult.RangeKey<"integer">,

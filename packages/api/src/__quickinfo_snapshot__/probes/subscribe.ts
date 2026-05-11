@@ -25,35 +25,35 @@ import type { EmployeeApiTest } from "../../test/EmployeeApiTest.js";
 type Listener = ObjectSetSubscription.Listener<EmployeeApiTest>;
 
 /** The argument of listener.onChange — emitted when an object enters or leaves the set. */
-declare const probe_onChange_payload: Parameters<
+declare const subscribe_listener_onChange_objectUpdate_param: Parameters<
   NonNullable<Listener["onChange"]>
 >[0];
 
 /** The argument of listener.onError — emitted on a fatal subscription failure. */
-declare const probe_onError_payload: Parameters<
+declare const subscribe_listener_onError_errors_param: Parameters<
   NonNullable<Listener["onError"]>
 >[0];
 
 /** The argument tuple of listener.onOutOfDate — refresh signal, no payload. */
-declare const probe_onOutOfDate_params: Parameters<
+declare const subscribe_listener_onOutOfDate_params: Parameters<
   NonNullable<Listener["onOutOfDate"]>
 >;
 
 /** The argument tuple of listener.onSuccessfulSubscription — handshake signal, no payload. */
-declare const probe_onSuccessfulSubscription_params: Parameters<
+declare const subscribe_listener_onSuccessfulSubscription_params: Parameters<
   NonNullable<Listener["onSuccessfulSubscription"]>
 >;
 
 type Options = ObjectSetSubscription.Options<EmployeeApiTest>;
 
 /** The `properties` field of subscribe options — restricts which property keys updates may carry. */
-declare const probe_options_properties: Options["properties"];
+declare const subscribe_opts_properties: Options["properties"];
 
 /** The `includeRid` field of subscribe options — toggles `$rid` exposure on update objects. */
-declare const probe_options_includeRid: Options["includeRid"];
+declare const subscribe_opts_includeRid: Options["includeRid"];
 
 /** Same `includeRid` field, narrowed to a property subset that excludes geotime references. */
-declare const probe_options_includeRid_narrow: ObjectSetSubscription.Options<
+declare const subscribe_opts_narrow_includeRid: ObjectSetSubscription.Options<
   EmployeeApiTest,
   "fullName" | "employeeId",
   true

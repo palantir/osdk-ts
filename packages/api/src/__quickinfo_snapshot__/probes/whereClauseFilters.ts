@@ -28,22 +28,22 @@ import type { NumberFilter } from "../../aggregate/NumberFilter.js";
 import type { StringFilter } from "../../aggregate/StringFilter.js";
 
 /** The filter union allowed for a string-typed property in a where clause. */
-declare const probe_string_filter: StringFilter;
+declare const where_stringFilter: StringFilter;
 
 /** The filter union allowed for a numeric-typed property (integer/long/double/float/short/byte/decimal). */
-declare const probe_number_filter: NumberFilter;
+declare const where_numberFilter: NumberFilter;
 
 /** The filter union allowed for a datetime/timestamp property. */
-declare const probe_datetime_filter: DatetimeFilter;
+declare const where_datetimeFilter: DatetimeFilter;
 
 /** The filter union allowed for a boolean property. */
-declare const probe_boolean_filter: BooleanFilter;
+declare const where_booleanFilter: BooleanFilter;
 
 /** The filter union allowed for a geopoint/geoshape property. */
-declare const probe_geo_filter: GeoFilter;
+declare const where_geoFilter: GeoFilter;
 
 /** The filter union allowed for an array property (multiplicity = true) of strings. */
-declare const probe_array_filter_of_string: ArrayFilter<string>;
+declare const where_arrayFilter_string: ArrayFilter<string>;
 
 /** The fallback filter union for property types without a dedicated filter (e.g. attachment, mediaReference). */
-declare const probe_base_filter_of_string: BaseFilter<string>;
+declare const where_baseFilter_string: BaseFilter<string>;

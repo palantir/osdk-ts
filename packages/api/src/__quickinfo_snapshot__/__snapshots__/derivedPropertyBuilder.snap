@@ -4,7 +4,7 @@
 // See packages/api/src/__quickinfo_snapshot__/README.md for details.
 
 /** aggregateBuilder.aggregate — terminal step on the constrained branch. */
-type probe_aggregate_builder_aggregate = <
+type withProperties_aggregateBuilder_aggregate = <
   V extends ValidAggregationKeys<EmployeeApiTest, "withPropertiesAggregate">,
 >(
   aggregationSpecifier: V,
@@ -79,12 +79,12 @@ type probe_aggregate_builder_aggregate = <
 >;
 
 /** aggregateBuilder.where — same narrowing surface, but returns an AggregateBuilder. */
-type probe_aggregate_builder_where = (
+type withProperties_aggregateBuilder_where = (
   clause: WhereClause<EmployeeApiTest>,
 ) => DerivedProperty.AggregateBuilder<EmployeeApiTest, true>;
 
 /** builder.pivotTo — follows a link to another object/interface, branching builder constraints. */
-type probe_builder_pivotTo = <L extends "lead" | "peeps">(
+type withProperties_builder_pivotTo = <L extends "lead" | "peeps">(
   type: L,
 ) =>
   {
@@ -98,7 +98,9 @@ type probe_builder_pivotTo = <L extends "lead" | "peeps">(
     >;
 
 /** builder.selectProperty — terminal step that picks a property of the current object set. */
-type probe_builder_selectProperty = <R extends PropertyKeys<EmployeeApiTest>>(
+type withProperties_builder_selectProperty = <
+  R extends PropertyKeys<EmployeeApiTest>,
+>(
   propertyName: R,
 ) => DefinitionForType<
   EmployeeApiTest,
@@ -176,17 +178,17 @@ type probe_builder_selectProperty = <R extends PropertyKeys<EmployeeApiTest>>(
 >;
 
 /** builder.where — narrows the candidate object set before chaining. */
-type probe_builder_where = (
+type withProperties_builder_where = (
   clause: WhereClause<EmployeeApiTest>,
 ) => DerivedProperty.SelectPropertyBuilder<EmployeeApiTest, false>;
 
 /** The full clause object accepted by withProperties({...}). */
-type probe_clause = {
+type withProperties_clause = {
   [key: string]: DerivedProperty.Creator<EmployeeApiTest, SimplePropertyDef>;
 };
 
 /** The value entry in withProperties({ myProp: <here> }) — a (builder) => Definition callback. */
-type probe_creator = (
+type withProperties_creator = (
   baseObjectSet: DerivedProperty.Builder<EmployeeApiTest, false>,
 ) =>
   | DerivedProperty.Definition<"integer", EmployeeApiTest>
@@ -194,13 +196,13 @@ type probe_creator = (
   | DerivedProperty.DatetimePropertyDefinition<"integer", EmployeeApiTest>;
 
 /** The argument the user receives in (builder) => — equals the Builder above. */
-type probe_creator_callback_arg = DerivedProperty.Builder<
+type withProperties_creator_baseObjectSet_param = DerivedProperty.Builder<
   EmployeeApiTest,
   false
 >;
 
 /** The return type of the (builder) => ... callback for an integer property. */
-type probe_creator_return =
+type withProperties_creator_result =
   | DerivedProperty.Definition<"integer", EmployeeApiTest>
   | DerivedProperty.NumericPropertyDefinition<"integer", EmployeeApiTest>
   | DerivedProperty.DatetimePropertyDefinition<"integer", EmployeeApiTest>;

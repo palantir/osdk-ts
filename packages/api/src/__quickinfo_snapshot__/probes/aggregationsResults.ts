@@ -20,13 +20,13 @@ import type { EmployeeApiTest } from "../../test/EmployeeApiTest.js";
 // === No groupBy ===
 
 /** The result of objectSet.aggregate({ $select: { $count: "unordered" } }). */
-declare const probe_count_only: AggregationsResults<
+declare const aggregate_result_count_only: AggregationsResults<
   EmployeeApiTest,
   { $select: { $count: "unordered" } }
 >;
 
 /** Aggregation across one property with multiple metrics. */
-declare const probe_single_prop_multi_metrics: AggregationsResults<
+declare const aggregate_result_single_prop_multi_metrics: AggregationsResults<
   EmployeeApiTest,
   {
     $select: {
@@ -38,7 +38,7 @@ declare const probe_single_prop_multi_metrics: AggregationsResults<
 >;
 
 /** Aggregation across multiple properties, including $count. */
-declare const probe_mixed_props: AggregationsResults<
+declare const aggregate_result_mixed_props: AggregationsResults<
   EmployeeApiTest,
   {
     $select: {
@@ -52,7 +52,7 @@ declare const probe_mixed_props: AggregationsResults<
 // === With groupBy ===
 
 /** Aggregation grouped by a single property — result becomes an array of $group plus aggregations. */
-declare const probe_with_groupBy: AggregationsResults<
+declare const aggregate_result_groupBy_basic: AggregationsResults<
   EmployeeApiTest,
   {
     $select: { $count: "unordered" };
@@ -61,7 +61,7 @@ declare const probe_with_groupBy: AggregationsResults<
 >;
 
 /** GroupBy with $includeNullValue: true — the group key becomes nullable. */
-declare const probe_groupBy_includeNullValue: AggregationsResults<
+declare const aggregate_result_groupBy_includeNullValue: AggregationsResults<
   EmployeeApiTest,
   {
     $select: { $count: "unordered" };
@@ -70,7 +70,7 @@ declare const probe_groupBy_includeNullValue: AggregationsResults<
 >;
 
 /** GroupBy a numeric property by $ranges — group becomes a startValue/endValue pair. */
-declare const probe_groupBy_ranges: AggregationsResults<
+declare const aggregate_result_groupBy_ranges: AggregationsResults<
   EmployeeApiTest,
   {
     $select: { $count: "unordered" };
@@ -81,7 +81,7 @@ declare const probe_groupBy_ranges: AggregationsResults<
 >;
 
 /** GroupBy a numeric property by $fixedWidth — group is the bucket's numeric value. */
-declare const probe_groupBy_fixedWidth: AggregationsResults<
+declare const aggregate_result_groupBy_fixedWidth: AggregationsResults<
   EmployeeApiTest,
   {
     $select: { $count: "unordered" };

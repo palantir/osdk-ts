@@ -47,16 +47,17 @@ snapshot now shows the part you actually wanted to pin.
 ## Layout
 
 - `probeUtils.ts` — the reusable renderer. Loads probes files via the
-  TypeScript compiler API, walks `declare const probe_*: T;`
-  declarations, and returns one TS-formatted snapshot string per
-  probes file.
+  TypeScript compiler API, walks every `declare const <name>: T;`
+  declaration (skipping identifiers prefixed with `_`, which are
+  construction helpers), and returns one TS-formatted snapshot string
+  per probes file.
 - `probes/<surface>.ts` — one file per type-graph surface we want to
   pin (e.g. `probes/objectSet.ts`, `probes/osdkInstance.ts`).
 - `quickInfoTypes.test.ts` — single test entry point. Auto-discovers every
   `probes/*.ts` file and asserts each one against
   `__snapshots__/<surface>.snap` via `toMatchFileSnapshot`.
 - `__snapshots__/<surface>.snap` — one snapshot file per surface,
-  containing `type probe_<name> = ...;` declarations with their JSDoc
+  containing `type <name> = ...;` declarations with their JSDoc
   descriptions. Each file is syntactically valid TypeScript so
   reviewers can read it like source.
 
@@ -68,7 +69,7 @@ fails loudly if a JSDoc is missing.
 
 ```ts
 /** The clause argument of objectSet.where(...). */
-declare const probe_where_clause_param: Parameters<
+declare const objectSet_where_clause_param: Parameters<
   ObjectSet<EmployeeApiTest>["where"]
 >[0];
 ```
@@ -77,12 +78,25 @@ In the snapshot file, each probe lands as `/** <description> */` plus
 `type <probe_name> = <rendered>;`, so the snapshot reads like a
 documented TypeScript module.
 
+Helpers used to construct a probe's type expression (e.g. an
+instantiation-expression alias) are prefixed with `_` and are skipped by
+the renderer:
+
+```ts
+declare const _withProperties: ObjectSet<EmployeeApiTest>["withProperties"];
+declare const objectSet_withProperties_result: ReturnType<
+  typeof _withProperties<{ mom: "integer" }>
+>;
+```
+
 ### Type-utility cheat sheet
 
 Useful built-ins for sculpting the type you want to snapshot:
 
 - `Parameters<F>[N]` — the Nth parameter type of a function/method.
   Example: `Parameters<ObjectSet<E>["where"]>[0]` for the clause arg.
+- `Parameters<F>` — the whole argument tuple. Useful for zero-arg
+  functions where there's no `[N]` to index.
 - `ReturnType<F>` — the return type of a function/method.
 - `Awaited<T>` — unwrap a `Promise<X>` to `X`.
 - `typeof <value>` — reference a value's type. Combine with TS 4.7+
@@ -91,6 +105,71 @@ Useful built-ins for sculpting the type you want to snapshot:
   See `_withProperties` in `probes/objectSet.ts` for an example.
 - Index access (`Foo["bar"]`, `Tuple[0]`) — drill into an
   object/tuple.
+
+## Naming convention
+
+Probe names are derived mechanically from the type expression. The form
+is `<anchor>_<path>[_<role>]`, all snake-separated; each step is the
+source identifier with its camelCase preserved (`fetchPage`, `onChange`,
+`groupBy`, `includeRid`).
+
+**Anchor.** Fixed per file. Where one user-facing entry naturally
+factors out, use it:
+
+| File                        | Anchor                                      |
+| --------------------------- | ------------------------------------------- |
+| `objectSet.ts`              | `objectSet`                                 |
+| `subscribe.ts`              | `subscribe`                                 |
+| `osdkInstance.ts`           | `osdkInstance`                              |
+| `whereClauseFilters.ts`     | `where`                                     |
+| `aggregationsResults.ts`    | `aggregate`                                 |
+| `derivedPropertyBuilder.ts` | `withProperties`                            |
+| `actions.ts`                | _(none — use the type identifier directly)_ |
+| `queries.ts`                | _(none — use the type identifier directly)_ |
+
+`actions.ts` and `queries.ts` probe several sibling namespaces
+(`ActionParam.*`, `ApplyActionOptions`, `ActionEditResponse`, …), so no
+single anchor factors out — name each probe after its source type
+identifier (`actionParam_objectType`, `applyActionOptions`,
+`queryResult_primitiveType_string`).
+
+**Path.** Each `.field` or `["field"]` access from the anchor inward
+becomes a `_field` step. **Always use the source identifier**, including
+parameter names from method signatures — `clause`, `req`, `listener`,
+`opts`, `objectUpdate`, `errors`. The signature is the spec; we don't
+invent prose substitutes.
+
+**Role suffix.** Describes the type-operator at the leaf:
+
+- `Parameters<F>[N]` → `_param` (one specific parameter; the previous
+  path step already names which one via the signature)
+- `Parameters<F>` (whole tuple, used for zero-arg functions) → `_params`
+- `ReturnType<F>` or `Awaited<ReturnType<F>>` → `_result`
+- `NonNullable<X>` is transparent — no name effect
+- A plain field access with no I/O wrapper gets no role suffix
+
+**Variants by type argument.** Where a probe varies a generic from its
+sibling (e.g. an `ObjectSet` with derived properties, an `Options`
+narrowed to a property subset), append a free-form descriptor at the
+step that introduces the variant — not at the end. `_with_rdp` sits
+right after `objectSet`; `_narrow` sits right after `opts`.
+
+### Worked examples
+
+| Type expression                                         | Probe name                                       |
+| ------------------------------------------------------- | ------------------------------------------------ |
+| `ObjectSet<E>`                                          | `objectSet`                                      |
+| `Parameters<ObjectSet<E>["where"]>[0]`                  | `objectSet_where_clause_param`                   |
+| `Parameters<ObjectSet<E>["subscribe"]>[0]`              | `objectSet_subscribe_listener_param`             |
+| `Awaited<ReturnType<ObjectSet<E>["fetchPage"]>>`        | `objectSet_fetchPage_result`                     |
+| `Parameters<NonNullable<Listener["onChange"]>>[0]`      | `subscribe_listener_onChange_objectUpdate_param` |
+| `Parameters<NonNullable<Listener["onOutOfDate"]>>`      | `subscribe_listener_onOutOfDate_params`          |
+| `Options["properties"]`                                 | `subscribe_opts_properties`                      |
+| `Options<E, "fullName"\|"id", true>["includeRid"]`      | `subscribe_opts_narrow_includeRid`               |
+| `ObjectSet<E, { mom: "integer" }>`                      | `objectSet_with_rdp`                             |
+| `Parameters<ObjectSet<E, {mom:"integer"}>["where"]>[0]` | `objectSet_with_rdp_where_clause_param`          |
+| `ActionParam.ObjectType<E>`                             | `actionParam_objectType`                         |
+| `ApplyActionOptions`                                    | `applyActionOptions`                             |
 
 ## How to add a probe
 

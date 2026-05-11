@@ -3,8 +3,11 @@
 // Update: pnpm updateSnapshots --filter=@osdk/api
 // See packages/api/src/__quickinfo_snapshot__/README.md for details.
 
+/** A bare ObjectSet<EmployeeApiTest> value. */
+type objectSet = ObjectSet<EmployeeApiTest, never>;
+
 /** The req argument of objectSet.aggregate(...). */
-type probe_aggregate_param =
+type objectSet_aggregate_req_param =
   & AggregateOpts<
     {
       __DefinitionMetadata?:
@@ -55,7 +58,7 @@ type probe_aggregate_param =
   };
 
 /** The result of objectSet.asyncIter(). */
-type probe_asyncIter_result = AsyncIterableIterator<
+type objectSet_asyncIter_result = AsyncIterableIterator<
   | Osdk.Instance<EmployeeApiTest, never, PropertyKeys<EmployeeApiTest>, {}>
   | (
     & ObjectIdentifiers<EmployeeApiTest>
@@ -110,7 +113,7 @@ type probe_asyncIter_result = AsyncIterableIterator<
 >;
 
 /** The awaited result of objectSet.fetchPageWithErrors() — Result-wrapped envelope around the fetchPage shape. */
-type probe_fetchPageWithErrors_result =
+type objectSet_fetchPageWithErrors_result =
   | ErrorResult
   | OkResult<
     PageResult<
@@ -169,7 +172,7 @@ type probe_fetchPageWithErrors_result =
   >;
 
 /** The awaited result of objectSet.fetchPage(). */
-type probe_fetchPage_result = PageResult<
+type objectSet_fetchPage_result = PageResult<
   | Osdk.Instance<EmployeeApiTest, never, PropertyKeys<EmployeeApiTest>, {}>
   | (
     & ObjectIdentifiers<EmployeeApiTest>
@@ -223,14 +226,8 @@ type probe_fetchPage_result = PageResult<
   )
 >;
 
-/** A bare ObjectSet<EmployeeApiTest> value. */
-type probe_objectSet = ObjectSet<EmployeeApiTest, never>;
-
-/** An ObjectSet with a derived property mom: integer. */
-type probe_objectSet_with_rdp = ObjectSet<EmployeeApiTest, { mom: "integer" }>;
-
 /** The listener argument of objectSet.subscribe(...). */
-type probe_subscribe_listener_param = ObjectSetSubscription.Listener<
+type objectSet_subscribe_listener_param = ObjectSetSubscription.Listener<
   {
     __DefinitionMetadata?:
       | { properties: {}; props?: {} | undefined }
@@ -247,7 +244,7 @@ type probe_subscribe_listener_param = ObjectSetSubscription.Listener<
 >;
 
 /** The clause argument of objectSet.where(...). */
-type probe_where_clause_param =
+type objectSet_where_clause_param =
   | OrWhereClause<
     {
       __DefinitionMetadata?:
@@ -292,8 +289,17 @@ type probe_where_clause_param =
     skillSetEmbedding?: BaseFilter<string> | undefined;
   };
 
+/** The result of objectSet.withProperties({ mom: ..., dad: ... }). */
+type objectSet_withProperties_result = ObjectSet<
+  EmployeeApiTest,
+  { mom: "integer"; dad: "string" | undefined }
+>;
+
+/** An ObjectSet with a derived property mom: integer. */
+type objectSet_with_rdp = ObjectSet<EmployeeApiTest, { mom: "integer" }>;
+
 /** The clause argument of .where(...) on an ObjectSet with a derived mom. */
-type probe_where_clause_with_rdp =
+type objectSet_with_rdp_where_clause_param =
   | OrWhereClause<
     {
       __DefinitionMetadata?: {
@@ -341,9 +347,3 @@ type probe_where_clause_with_rdp =
     skillSet?: StringFilter | undefined;
     skillSetEmbedding?: BaseFilter<string> | undefined;
   };
-
-/** The result of objectSet.withProperties({ mom: ..., dad: ... }). */
-type probe_withProperties_return = ObjectSet<
-  EmployeeApiTest,
-  { mom: "integer"; dad: "string" | undefined }
->;

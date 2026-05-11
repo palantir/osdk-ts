@@ -20,48 +20,48 @@ import type { EmployeeApiTest } from "../../test/EmployeeApiTest.js";
 // === No derived properties ===
 
 /** A bare ObjectSet<EmployeeApiTest> value. */
-declare const probe_objectSet: ObjectSet<EmployeeApiTest>;
+declare const objectSet: ObjectSet<EmployeeApiTest>;
 
 /** The clause argument of objectSet.where(...). */
-declare const probe_where_clause_param: Parameters<
+declare const objectSet_where_clause_param: Parameters<
   ObjectSet<EmployeeApiTest>["where"]
 >[0];
 
 /** The listener argument of objectSet.subscribe(...). */
-declare const probe_subscribe_listener_param: Parameters<
+declare const objectSet_subscribe_listener_param: Parameters<
   ObjectSet<EmployeeApiTest>["subscribe"]
 >[0];
 
 /** The awaited result of objectSet.fetchPage(). */
-declare const probe_fetchPage_result: Awaited<
+declare const objectSet_fetchPage_result: Awaited<
   ReturnType<ObjectSet<EmployeeApiTest>["fetchPage"]>
 >;
 
 /** The awaited result of objectSet.fetchPageWithErrors() — Result-wrapped envelope around the fetchPage shape. */
-declare const probe_fetchPageWithErrors_result: Awaited<
+declare const objectSet_fetchPageWithErrors_result: Awaited<
   ReturnType<ObjectSet<EmployeeApiTest>["fetchPageWithErrors"]>
 >;
 
 /** The result of objectSet.asyncIter(). */
-declare const probe_asyncIter_result: ReturnType<
+declare const objectSet_asyncIter_result: ReturnType<
   ObjectSet<EmployeeApiTest>["asyncIter"]
 >;
 
 /** The req argument of objectSet.aggregate(...). */
-declare const probe_aggregate_param: Parameters<
+declare const objectSet_aggregate_req_param: Parameters<
   ObjectSet<EmployeeApiTest>["aggregate"]
 >[0];
 
 // === With derived properties ===
 
 /** An ObjectSet with a derived property mom: integer. */
-declare const probe_objectSet_with_rdp: ObjectSet<
+declare const objectSet_with_rdp: ObjectSet<
   EmployeeApiTest,
   { mom: "integer" }
 >;
 
 /** The clause argument of .where(...) on an ObjectSet with a derived mom. */
-declare const probe_where_clause_with_rdp: Parameters<
+declare const objectSet_with_rdp_where_clause_param: Parameters<
   ObjectSet<EmployeeApiTest, { mom: "integer" }>["where"]
 >[0];
 
@@ -69,6 +69,6 @@ declare const probe_where_clause_with_rdp: Parameters<
 // constraint default `{ [x: string]: SimplePropertyDef; }`.
 declare const _withProperties: ObjectSet<EmployeeApiTest>["withProperties"];
 /** The result of objectSet.withProperties({ mom: ..., dad: ... }). */
-declare const probe_withProperties_return: ReturnType<
+declare const objectSet_withProperties_result: ReturnType<
   typeof _withProperties<{ mom: "integer"; dad: "string" | undefined }>
 >;

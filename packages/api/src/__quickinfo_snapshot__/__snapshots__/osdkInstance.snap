@@ -4,7 +4,7 @@
 // See packages/api/src/__quickinfo_snapshot__/README.md for details.
 
 /** The result of instance.$as(FooInterface) — recasting to the interface view. */
-type probe_$as_to_interface =
+type osdkInstance_$as_to_interface_result =
   & ObjectIdentifiers<FooInterfaceApiTest>
   & {
     readonly $objectSpecifier: ObjectSpecifier<FooInterfaceApiTest>;
@@ -42,7 +42,7 @@ type probe_$as_to_interface =
   };
 
 /** An instance fetched with $includeAllBaseObjectProperties: true. */
-type probe_all_base_props =
+type osdkInstance_all_base_props =
   & ObjectIdentifiers<EmployeeApiTest>
   & {
     readonly $objectSpecifier: ObjectSpecifier<EmployeeApiTest>;
@@ -92,7 +92,7 @@ type probe_all_base_props =
   };
 
 /** A bare Osdk.Instance — what users get when iterating fetchPage results without options. */
-type probe_default =
+type osdkInstance_default =
   & ObjectIdentifiers<EmployeeApiTest>
   & {
     readonly $objectSpecifier: ObjectSpecifier<EmployeeApiTest>;
@@ -142,7 +142,7 @@ type probe_default =
   };
 
 /** An instance whose Q is an interface rather than an object type. */
-type probe_interface_default =
+type osdkInstance_interface_default =
   & ObjectIdentifiers<FooInterfaceApiTest>
   & {
     readonly $objectSpecifier: ObjectSpecifier<FooInterfaceApiTest>;
@@ -190,7 +190,7 @@ type probe_interface_default =
   };
 
 /** An instance fetched with $includePropertySecurities: true. */
-type probe_property_securities =
+type osdkInstance_property_securities =
   & ObjectIdentifiers<EmployeeApiTest>
   & {
     readonly $objectSpecifier: ObjectSpecifier<EmployeeApiTest>;
@@ -261,7 +261,7 @@ type probe_property_securities =
   };
 
 /** An instance with $select narrowing the property set to a subset. */
-type probe_select_subset =
+type osdkInstance_select_subset =
   & ObjectIdentifiers<EmployeeApiTest>
   & {
     readonly $objectSpecifier: ObjectSpecifier<EmployeeApiTest>;
@@ -306,7 +306,7 @@ type probe_select_subset =
   };
 
 /** An instance with derived properties added via withProperties. */
-type probe_with_rdps =
+type osdkInstance_with_rdps =
   & ObjectIdentifiers<EmployeeApiTest>
   & {
     readonly $objectSpecifier: ObjectSpecifier<EmployeeApiTest>;
@@ -346,7 +346,7 @@ type probe_with_rdps =
   };
 
 /** An instance fetched with $includeRid: true — exposes $rid. */
-type probe_with_rid =
+type osdkInstance_with_rid =
   & ObjectIdentifiers<EmployeeApiTest>
   & {
     readonly $objectSpecifier: ObjectSpecifier<EmployeeApiTest>;
