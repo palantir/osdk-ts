@@ -14,12 +14,17 @@
  * limitations under the License.
  */
 
+import React from "react";
 import {
   defaultConfig,
   type TagBadgeParameters,
 } from "storybook-addon-tag-badges/manager-helpers";
 import { addons, types } from "storybook/manager-api";
-import { ADDON_ID } from "./addons/brand-theme-extractor/constants.js";
+import {
+  ADDON_ID,
+  PANEL_ID,
+} from "./addons/brand-theme-extractor/constants.js";
+import { Panel } from "./addons/brand-theme-extractor/Panel.js";
 import { ThemeToolbar } from "./addons/brand-theme-extractor/ThemeToolbar.js";
 
 addons.setConfig({
@@ -73,7 +78,7 @@ addons.register(
   },
 );
 
-// Brand Theme Extractor toolbar
+// Brand Theme Extractor panel
 addons.register(ADDON_ID, () => {
   addons.add(`${ADDON_ID}/theme-toolbar`, {
     type: types.TOOL,
@@ -81,5 +86,11 @@ addons.register(ADDON_ID, () => {
     match: ({ viewMode, tabId }) =>
       Boolean(viewMode?.match(/^(story|docs)$/)) && !tabId,
     render: ThemeToolbar,
+  });
+
+  addons.add(PANEL_ID, {
+    type: types.PANEL,
+    title: "Brand Theme",
+    render: ({ active }) => React.createElement(Panel, { active: !!active }),
   });
 });
