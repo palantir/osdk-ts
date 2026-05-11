@@ -25,7 +25,8 @@ const defaultProps = {
   autoSize: false,
   sidebarOpen: false,
   onPageChange: vi.fn(),
-  onScaleChange: vi.fn(),
+  onZoomIn: vi.fn(),
+  onZoomOut: vi.fn(),
   onAutoSizeToggle: vi.fn(),
   onSearchOpen: vi.fn(),
   onSidebarToggle: vi.fn(),
@@ -133,23 +134,23 @@ describe("PdfViewerToolbar", () => {
     expect(input.value).toBe("3");
   });
 
-  it("should call onScaleChange when zoom buttons are clicked", () => {
-    const onScaleChange = vi.fn();
+  it("should call onZoomIn and onZoomOut when zoom buttons are clicked", () => {
+    const onZoomIn = vi.fn();
+    const onZoomOut = vi.fn();
     render(
       <PdfViewerToolbar
         {...defaultProps}
         scale={1.0}
-        onScaleChange={onScaleChange}
+        onZoomIn={onZoomIn}
+        onZoomOut={onZoomOut}
       />,
     );
 
     fireEvent.click(screen.getByLabelText("Zoom in"));
-    expect(onScaleChange).toHaveBeenCalledWith(1.25);
-
-    onScaleChange.mockClear();
+    expect(onZoomIn).toHaveBeenCalled();
 
     fireEvent.click(screen.getByLabelText("Zoom out"));
-    expect(onScaleChange).toHaveBeenCalledWith(0.75);
+    expect(onZoomOut).toHaveBeenCalled();
   });
 
   it("should display scale as percentage", () => {

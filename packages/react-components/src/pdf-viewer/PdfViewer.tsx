@@ -131,7 +131,8 @@ export const BasePdfViewer: React.ForwardRefExoticComponent<
           autoSize={viewer.autoSize}
           sidebarOpen={viewer.sidebarOpen}
           onPageChange={viewer.scrollToPage}
-          onScaleChange={viewer.setScale}
+          onZoomIn={viewer.zoomIn}
+          onZoomOut={viewer.zoomOut}
           onAutoSizeToggle={viewer.toggleAutoSize}
           onSearchOpen={viewer.search.openSearch}
           onSidebarToggle={viewer.toggleSidebar}

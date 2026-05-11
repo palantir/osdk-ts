@@ -207,7 +207,8 @@ function ConnectedPdfView(): React.ReactElement {
         autoSize={ctx.autoSize}
         sidebarOpen={ctx.sidebarOpen}
         onPageChange={ctx.scrollToPage}
-        onScaleChange={ctx.setScale}
+        onZoomIn={ctx.zoomIn}
+        onZoomOut={ctx.zoomOut}
         onAutoSizeToggle={ctx.toggleAutoSize}
         onSearchOpen={ctx.search.openSearch}
         onSidebarToggle={ctx.toggleSidebar}

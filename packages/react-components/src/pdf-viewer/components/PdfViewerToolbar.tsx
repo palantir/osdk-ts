@@ -31,7 +31,7 @@ import {
 } from "@blueprintjs/icons";
 import classnames from "classnames";
 import React, { useCallback, useEffect, useState } from "react";
-import { MAX_SCALE, MIN_SCALE, SCALE_STEP } from "../constants.js";
+import { MAX_SCALE, MIN_SCALE } from "../constants.js";
 import styles from "./PdfViewerToolbar.module.css";
 
 export interface PdfViewerToolbarProps {
@@ -41,7 +41,8 @@ export interface PdfViewerToolbarProps {
   autoSize: boolean;
   sidebarOpen: boolean;
   onPageChange: (page: number) => void;
-  onScaleChange: (scale: number) => void;
+  onZoomIn: () => void;
+  onZoomOut: () => void;
   onAutoSizeToggle: () => void;
   onSearchOpen: () => void;
   onSidebarToggle: () => void;
@@ -63,7 +64,8 @@ export function PdfViewerToolbar({
   autoSize,
   sidebarOpen,
   onPageChange,
-  onScaleChange,
+  onZoomIn,
+  onZoomOut,
   onAutoSizeToggle,
   onSearchOpen,
   onSidebarToggle,
@@ -125,16 +127,6 @@ export function PdfViewerToolbar({
     setPageInputValue(String(currentPage));
   }, [currentPage]);
 
-  const handleZoomIn = useCallback(() => {
-    const newScale = Math.min(scale + SCALE_STEP, MAX_SCALE);
-    onScaleChange(newScale);
-  }, [scale, onScaleChange]);
-
-  const handleZoomOut = useCallback(() => {
-    const newScale = Math.max(scale - SCALE_STEP, MIN_SCALE);
-    onScaleChange(newScale);
-  }, [scale, onScaleChange]);
-
   const scalePercent = `${Math.round(scale * 100)}%`;
 
   return (
@@ -190,7 +182,7 @@ export function PdfViewerToolbar({
       <div className={styles.toolbarGroup}>
         <Button
           className={styles.toolbarButton}
-          onClick={handleZoomOut}
+          onClick={onZoomOut}
           disabled={scale <= MIN_SCALE}
           aria-label="Zoom out"
           title="Zoom out"
@@ -201,7 +193,7 @@ export function PdfViewerToolbar({
         <span className={styles.scaleDisplay}>{scalePercent}</span>
         <Button
           className={styles.toolbarButton}
-          onClick={handleZoomIn}
+          onClick={onZoomIn}
           disabled={scale >= MAX_SCALE}
           aria-label="Zoom in"
           title="Zoom in"
