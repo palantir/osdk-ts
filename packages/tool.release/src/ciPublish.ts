@@ -20,6 +20,10 @@ import { existsSync } from "fs";
 import { readFile } from "fs/promises";
 import { join } from "path";
 import semver from "semver";
+import {
+  findUnreleasablePackages,
+  markPackagesPrivate,
+} from "./findUnreleasablePackages.js";
 
 async function ciPublish(): Promise<void> {
   let tag = "latest";
@@ -54,6 +58,12 @@ async function ciPublish(): Promise<void> {
       stdio: "inherit",
       cwd: repoRoot,
     });
+
+    const unreleasable = await findUnreleasablePackages(repoRoot);
+    if (unreleasable.length > 0) {
+      await markPackagesPrivate(unreleasable);
+    }
+
     await execa(
       "pnpm",
       ["publish", "--no-git-checks", "-r", "--report-summary", "--tag", tag],
