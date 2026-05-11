@@ -106,7 +106,7 @@ export class MockManager {
       id: objectMockId,
       type: "object",
       matcher: {
-        objectType,
+        objectType: objectType,
         primaryKey: String(primaryKey),
       },
       response: {
@@ -118,7 +118,7 @@ export class MockManager {
       cacheKey: {
         type: "object",
         apiName: objectType,
-        primaryKey,
+        primaryKey: primaryKey,
         otherKeys: [objectType, primaryKey],
       },
     });
