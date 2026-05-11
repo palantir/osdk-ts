@@ -2014,25 +2014,33 @@ export const NoValueRendering: Story = {
 // Hydrating saved filter state via initialFilterStates
 // ---------------------------------------------------------------------------
 
+const locationCitySingleSelectFilter: FilterDefinitionUnion<Employee> = {
+  type: "PROPERTY",
+  id: "locationCity-single",
+  key: "locationCity",
+  label: "Location City (single)",
+  filterComponent: "SINGLE_SELECT",
+  filterState: { type: "SELECT", selectedValues: [] },
+};
+
 const SAVED_FILTER_STATES = new Map<string, FilterState>([
-  // "Marketing" exists in the mock employee dataset; "Research" is NOT defined
-  // in the dataset — it simulates a value that had rows in the past but
-  // currently has zero matches. Both should appear as selected.
+  // "Research", "Chief Scientist", and "Berlin" are NOT in the mock employee
+  // dataset — they simulate saved selections that currently have zero matching
+  // rows. Each filter type still renders them so users can see and clear them.
+  // Note: ghost values in one filter cascade into other filters' aggregation
+  // queries, so all counts show 0. This is a known limitation tracked separately.
   ["department", { type: "EXACT_MATCH", values: ["Marketing", "Research"] }],
-  // "Chief Scientist" is NOT in the dataset — demonstrates multi-select chips
-  // for values that currently have zero matches.
   ["jobTitle-multi", {
     type: "SELECT",
-    selectedValues: ["Manager", "Chief Scientist"],
+    selectedValues: ["Marketing Manager", "Chief Scientist"],
   }],
-  // "Research" again for single-select — demonstrates the dropdown retains it.
-  ["department-single", { type: "SELECT", selectedValues: ["Research"] }],
+  ["locationCity-single", { type: "SELECT", selectedValues: ["Berlin"] }],
 ]);
 
 const INITIAL_STATE_FILTER_DEFINITIONS: FilterDefinitionUnion<Employee>[] = [
   departmentFilter,
   jobTitleMultiSelectFilter,
-  departmentSingleSelectFilter,
+  locationCitySingleSelectFilter,
 ];
 
 function WithInitialFilterStatesStory(
@@ -2084,10 +2092,14 @@ export const WithInitialFilterStates: Story = {
           + "Demonstrated across LISTOGRAM, MULTI_SELECT, and SINGLE_SELECT.",
       },
       source: {
-        code: `const savedStates = new Map([
+        code:
+          `// "Research", "Chief Scientist", and "Berlin" are not in the current
+// dataset — they represent saved selections with zero matching rows
+// today. The filter list still shows them so users can see and clear them.
+const savedStates = new Map([
   ["department", { type: "EXACT_MATCH", values: ["Marketing", "Research"] }],
-  ["jobTitle-multi", { type: "SELECT", selectedValues: ["Manager", "Chief Scientist"] }],
-  ["department-single", { type: "SELECT", selectedValues: ["Research"] }],
+  ["jobTitle-multi", { type: "SELECT", selectedValues: ["Marketing Manager", "Chief Scientist"] }],
+  ["locationCity-single", { type: "SELECT", selectedValues: ["Berlin"] }],
 ]);
 
 <FilterList
