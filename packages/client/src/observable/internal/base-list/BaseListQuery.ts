@@ -810,6 +810,7 @@ export abstract class BaseListQuery<
         )
       ) {
         batch.delete(objectCacheKey, "loaded");
+        batch.changes.deleteObject(objectCacheKey);
       }
     });
   }
