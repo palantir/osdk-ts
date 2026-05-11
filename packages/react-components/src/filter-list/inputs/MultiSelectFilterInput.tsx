@@ -26,6 +26,7 @@ import { MultiSelectInput } from "../base/inputs/MultiSelectInput.js";
 import type { FilterState } from "../FilterListItemApi.js";
 import { usePropertyAggregation } from "../hooks/usePropertyAggregation.js";
 import { coerceToStringArray } from "../utils/coerceFilterValue.js";
+import { readIncludeNull } from "../utils/filterValues.js";
 
 interface MultiSelectFilterInputProps<Q extends ObjectTypeDefinition> {
   objectType: Q;
@@ -58,9 +59,7 @@ function MultiSelectFilterInputInner<Q extends ObjectTypeDefinition>({
     [filterState],
   );
   const isExcluding = filterState?.isExcluding ?? false;
-  const includeNull = filterState?.type === "SELECT"
-    ? filterState.includeNull ?? false
-    : false;
+  const includeNull = readIncludeNull(filterState);
 
   const handleClearAll = useCallback(() => {
     onFilterStateChanged({

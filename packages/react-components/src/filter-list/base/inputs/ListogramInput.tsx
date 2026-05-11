@@ -156,6 +156,11 @@ function ListogramInputInner({
             const handleRowToggle = isNull
               ? toggleNull
               : () => toggleValue(value);
+            const label = isNull
+              ? <NoValueLabel className={styles.noValueLabel} />
+              : value === ""
+              ? <EmptyStringLabel className={styles.noValueLabel} />
+              : (renderValue?.(value) ?? value);
 
             return (
               <Button
@@ -189,11 +194,7 @@ function ListogramInputInner({
                   className={styles.label}
                   data-excluding={(isExcluding && rowSelected) || undefined}
                 >
-                  {isNull
-                    ? <NoValueLabel className={styles.noValueLabel} />
-                    : value === ""
-                    ? <EmptyStringLabel className={styles.noValueLabel} />
-                    : (renderValue?.(value) ?? value)}
+                  {label}
                 </span>
                 {showCount && displayMode !== "minimal" && (
                   <span className={styles.count}>{count.toLocaleString()}</span>

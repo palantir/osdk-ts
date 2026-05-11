@@ -19,11 +19,11 @@ import classnames from "classnames";
 import React, { memo, useCallback, useMemo, useState } from "react";
 import { Combobox } from "../../../base-components/combobox/Combobox.js";
 import type { PropertyAggregationValue } from "../../types/AggregationTypes.js";
-import { isNullRow } from "../../utils/filterValues.js";
 import { EmptyStringLabel } from "./EmptyStringLabel.js";
 import { NullValueWrapper } from "./NullValueWrapper.js";
 import sharedStyles from "./shared.module.css";
 import styles from "./TextTagsInput.module.css";
+import { usePartitionedAggregationRows } from "./usePartitionedAggregationRows.js";
 
 const TAG_SEPARATOR_PATTERN = /[,\n]/;
 
@@ -92,15 +92,7 @@ function TextTagsInputInner({
 }: TextTagsInputProps): React.ReactElement {
   const [inputValue, setInputValue] = useState("");
 
-  const dataRows = useMemo(
-    () => suggestions.filter((row) => !isNullRow(row)),
-    [suggestions],
-  );
-
-  const nullRow = useMemo(
-    () => suggestions.find(isNullRow),
-    [suggestions],
-  );
+  const { dataRows, nullRow } = usePartitionedAggregationRows(suggestions);
 
   const filteredSuggestions = useMemo(() => {
     if (!suggestionLimit) return [];

@@ -18,11 +18,11 @@ import classnames from "classnames";
 import React, { memo, useCallback, useMemo } from "react";
 import { Combobox } from "../../../base-components/combobox/Combobox.js";
 import type { PropertyAggregationValue } from "../../types/AggregationTypes.js";
-import { isNullRow } from "../../utils/filterValues.js";
 import { EmptyStringLabel } from "./EmptyStringLabel.js";
 import { NullValueWrapper } from "./NullValueWrapper.js";
 import sharedStyles from "./shared.module.css";
 import styles from "./SingleSelectInput.module.css";
+import { usePartitionedAggregationRows } from "./usePartitionedAggregationRows.js";
 
 interface SingleSelectInputProps {
   values: PropertyAggregationValue[];
@@ -69,15 +69,7 @@ function SingleSelectInputInner({
     [onChange],
   );
 
-  const dataRows = useMemo(
-    () => values.filter((row) => !isNullRow(row)),
-    [values],
-  );
-
-  const nullRow = useMemo(
-    () => values.find(isNullRow),
-    [values],
-  );
+  const { dataRows, nullRow } = usePartitionedAggregationRows(values);
 
   const items = useMemo(
     () => dataRows.map(({ value }) => value),

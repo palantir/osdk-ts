@@ -26,6 +26,7 @@ import { TextTagsInput } from "../base/inputs/TextTagsInput.js";
 import type { FilterState } from "../FilterListItemApi.js";
 import { usePropertyAggregation } from "../hooks/usePropertyAggregation.js";
 import { coerceToStringArray } from "../utils/coerceFilterValue.js";
+import { readIncludeNull } from "../utils/filterValues.js";
 
 interface TextTagsFilterInputProps<Q extends ObjectTypeDefinition> {
   objectType: Q;
@@ -54,9 +55,7 @@ function TextTagsFilterInputInner<Q extends ObjectTypeDefinition>({
     [filterState],
   );
   const isExcluding = filterState?.isExcluding ?? false;
-  const includeNull = filterState?.type === "EXACT_MATCH"
-    ? filterState.includeNull ?? false
-    : false;
+  const includeNull = readIncludeNull(filterState);
 
   const handleClearAll = useCallback(() => {
     onFilterStateChanged({

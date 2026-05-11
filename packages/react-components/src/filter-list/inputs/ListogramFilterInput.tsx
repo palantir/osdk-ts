@@ -26,6 +26,7 @@ import { ListogramInput } from "../base/inputs/ListogramInput.js";
 import type { FilterState } from "../FilterListItemApi.js";
 import { usePropertyAggregation } from "../hooks/usePropertyAggregation.js";
 import { coerceToStringArray } from "../utils/coerceFilterValue.js";
+import { readIncludeNull } from "../utils/filterValues.js";
 
 interface ListogramFilterInputProps<Q extends ObjectTypeDefinition> {
   objectType: Q;
@@ -66,9 +67,7 @@ function ListogramFilterInputInner<Q extends ObjectTypeDefinition>({
     [filterState],
   );
   const isExcluding = filterState?.isExcluding ?? false;
-  const includeNull = filterState?.type === "EXACT_MATCH"
-    ? filterState.includeNull ?? false
-    : false;
+  const includeNull = readIncludeNull(filterState);
 
   const handleClearAll = useCallback(() => {
     onFilterStateChanged({

@@ -26,6 +26,7 @@ import { SingleSelectInput } from "../base/inputs/SingleSelectInput.js";
 import type { FilterState } from "../FilterListItemApi.js";
 import { usePropertyAggregation } from "../hooks/usePropertyAggregation.js";
 import { coerceToString } from "../utils/coerceFilterValue.js";
+import { readIncludeNull } from "../utils/filterValues.js";
 
 interface SingleSelectFilterInputProps<Q extends ObjectTypeDefinition> {
   objectType: Q;
@@ -58,9 +59,7 @@ function SingleSelectFilterInputInner<Q extends ObjectTypeDefinition>({
     [filterState],
   );
   const isExcluding = filterState?.isExcluding ?? false;
-  const includeNull = filterState?.type === "SELECT"
-    ? filterState.includeNull ?? false
-    : false;
+  const includeNull = readIncludeNull(filterState);
 
   const handleClearAll = useCallback(() => {
     onFilterStateChanged({
