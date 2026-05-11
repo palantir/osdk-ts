@@ -48,6 +48,39 @@ function createMockEventBus() {
 // to avoid infinite useEffect re-runs.
 const MOCK_DOCUMENT = {} as PDFDocumentProxy;
 
+function mockRect(el: Element, rect: Partial<DOMRect>): void {
+  vi.spyOn(el, "getBoundingClientRect").mockReturnValue({
+    x: 0,
+    y: 0,
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    width: 0,
+    height: 0,
+    toJSON: () => ({}),
+    ...rect,
+  } as DOMRect);
+}
+
+function createMockContainer(): HTMLDivElement {
+  const container = document.createElement("div");
+  mockRect(container, { width: 800, height: 1000 });
+  return container;
+}
+
+function createPageDiv(rect: Partial<DOMRect>): HTMLDivElement {
+  const div = document.createElement("div");
+  mockRect(div, { width: 612, height: 792, ...rect });
+  return div;
+}
+
+// pdfjs uses an affine transform of the form [scale, 0, 0, -scale, 0, pageHeight*scale]
+// for a non-rotated page. The annotation layer multiplies points by this matrix.
+function pageTransform(scale: number, pageHeightPdf: number): number[] {
+  return [scale, 0, 0, -scale, 0, pageHeightPdf * scale];
+}
+
 describe("usePdfAnnotationPortals", () => {
   it("should start with empty portal targets", () => {
     const pdfViewerRef = { current: null } as RefObject<PDFViewer | null>;
@@ -62,11 +95,17 @@ describe("usePdfAnnotationPortals", () => {
 
   it("should add portal target when pagerendered fires", () => {
     const eventBus = createMockEventBus();
-    const div = document.createElement("div");
+    const container = createMockContainer();
+    const div = createPageDiv({ left: 10, top: 20, width: 612, height: 792 });
     const pdfViewer = {
+      container,
       getPageView: vi.fn(() => ({
         div,
-        viewport: { viewBox: [0, 0, 612, 792], scale: 1.5 },
+        viewport: {
+          viewBox: [0, 0, 612, 792],
+          scale: 1.5,
+          transform: pageTransform(1.5, 792),
+        },
       })),
     } as unknown as PDFViewer;
 
@@ -82,30 +121,44 @@ describe("usePdfAnnotationPortals", () => {
     });
 
     expect(result.current).toHaveLength(1);
-    expect(result.current[0]).toEqual({
+    expect(result.current[0]).toMatchObject({
       pageNumber: 1,
-      container: div,
+      left: 10,
+      top: 20,
+      width: 612,
+      height: 792,
       pageHeight: 792,
       scale: 1.5,
     });
+    expect(result.current[0].transform).toEqual(pageTransform(1.5, 792));
   });
 
   it("should sort portal targets by page number", () => {
     const eventBus = createMockEventBus();
-    const div1 = document.createElement("div");
-    const div3 = document.createElement("div");
+    const container = createMockContainer();
+    const div1 = createPageDiv({});
+    const div3 = createPageDiv({});
     const pdfViewer = {
+      container,
       getPageView: vi.fn((pageIndex: number) => {
         if (pageIndex === 0) {
           return {
             div: div1,
-            viewport: { viewBox: [0, 0, 612, 792], scale: 1.0 },
+            viewport: {
+              viewBox: [0, 0, 612, 792],
+              scale: 1.0,
+              transform: pageTransform(1.0, 792),
+            },
           };
         }
         if (pageIndex === 2) {
           return {
             div: div3,
-            viewport: { viewBox: [0, 0, 612, 792], scale: 1.0 },
+            viewport: {
+              viewBox: [0, 0, 612, 792],
+              scale: 1.0,
+              transform: pageTransform(1.0, 792),
+            },
           };
         }
         return undefined;
@@ -134,17 +187,23 @@ describe("usePdfAnnotationPortals", () => {
 
   it("should replace existing entry for same page number", () => {
     const eventBus = createMockEventBus();
-    const div1 = document.createElement("div");
-    const div1Updated = document.createElement("div");
+    const container = createMockContainer();
+    const div1 = createPageDiv({});
+    const div1Updated = createPageDiv({});
     let currentPageView: {
       div: HTMLDivElement;
-      viewport: { viewBox: number[]; scale: number };
+      viewport: { viewBox: number[]; scale: number; transform: number[] };
     } = {
       div: div1,
-      viewport: { viewBox: [0, 0, 612, 792], scale: 1.0 },
+      viewport: {
+        viewBox: [0, 0, 612, 792],
+        scale: 1.0,
+        transform: pageTransform(1.0, 792),
+      },
     };
 
     const pdfViewer = {
+      container,
       getPageView: vi.fn(() => currentPageView),
     } as unknown as PDFViewer;
 
@@ -162,10 +221,13 @@ describe("usePdfAnnotationPortals", () => {
     expect(result.current).toHaveLength(1);
     expect(result.current[0].scale).toBe(1.0);
 
-    // Update the page view to have different scale
     currentPageView = {
       div: div1Updated,
-      viewport: { viewBox: [0, 0, 612, 792], scale: 2.0 },
+      viewport: {
+        viewBox: [0, 0, 612, 792],
+        scale: 2.0,
+        transform: pageTransform(2.0, 792),
+      },
     };
 
     act(() => {
@@ -174,15 +236,54 @@ describe("usePdfAnnotationPortals", () => {
 
     expect(result.current).toHaveLength(1);
     expect(result.current[0].scale).toBe(2.0);
-    expect(result.current[0].container).toBe(div1Updated);
+    expect(result.current[0].transform).toEqual(pageTransform(2.0, 792));
+  });
+
+  it("should drop entry when pagecleanup fires", () => {
+    const eventBus = createMockEventBus();
+    const container = createMockContainer();
+    const div = createPageDiv({});
+    const pdfViewer = {
+      container,
+      getPageView: vi.fn(() => ({
+        div,
+        viewport: {
+          viewBox: [0, 0, 612, 792],
+          scale: 1.0,
+          transform: pageTransform(1.0, 792),
+        },
+      })),
+    } as unknown as PDFViewer;
+
+    const pdfViewerRef = { current: pdfViewer } as RefObject<PDFViewer>;
+    const eventBusRef = { current: eventBus } as RefObject<EventBus>;
+
+    const { result } = renderHook(() =>
+      usePdfAnnotationPortals(pdfViewerRef, eventBusRef, MOCK_DOCUMENT)
+    );
+
+    act(() => {
+      eventBus._emit("pagerendered", { pageNumber: 1 });
+    });
+    expect(result.current).toHaveLength(1);
+
+    act(() => {
+      eventBus._emit("pagecleanup", { pageNumber: 1 });
+    });
+    expect(result.current).toEqual([]);
   });
 
   it("should skip if page view has no div", () => {
     const eventBus = createMockEventBus();
     const pdfViewer = {
+      container: createMockContainer(),
       getPageView: vi.fn(() => ({
         div: null,
-        viewport: { viewBox: [0, 0, 612, 792], scale: 1.0 },
+        viewport: {
+          viewBox: [0, 0, 612, 792],
+          scale: 1.0,
+          transform: pageTransform(1.0, 792),
+        },
       })),
     } as unknown as PDFViewer;
 
@@ -203,9 +304,40 @@ describe("usePdfAnnotationPortals", () => {
   it("should skip if page view has no viewport", () => {
     const eventBus = createMockEventBus();
     const pdfViewer = {
+      container: createMockContainer(),
       getPageView: vi.fn(() => ({
         div: document.createElement("div"),
         viewport: null,
+      })),
+    } as unknown as PDFViewer;
+
+    const pdfViewerRef = { current: pdfViewer } as RefObject<PDFViewer>;
+    const eventBusRef = { current: eventBus } as RefObject<EventBus>;
+
+    const { result } = renderHook(() =>
+      usePdfAnnotationPortals(pdfViewerRef, eventBusRef, MOCK_DOCUMENT)
+    );
+
+    act(() => {
+      eventBus._emit("pagerendered", { pageNumber: 1 });
+    });
+
+    expect(result.current).toEqual([]);
+  });
+
+  it("should skip if page div has zero size", () => {
+    const eventBus = createMockEventBus();
+    const container = createMockContainer();
+    const div = createPageDiv({ width: 0, height: 0 });
+    const pdfViewer = {
+      container,
+      getPageView: vi.fn(() => ({
+        div,
+        viewport: {
+          viewBox: [0, 0, 612, 792],
+          scale: 1.0,
+          transform: pageTransform(1.0, 792),
+        },
       })),
     } as unknown as PDFViewer;
 

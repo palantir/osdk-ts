@@ -35,6 +35,12 @@ function createAnnotation(
   } as PdfAnnotation;
 }
 
+// pdfjs's viewport.transform for a non-rotated page: scales and flips y.
+// Applied to (x, y): (scale*x, scale*(pageHeight - y)).
+function pageTransform(scale: number, pageHeight: number): number[] {
+  return [scale, 0, 0, -scale, 0, pageHeight * scale];
+}
+
 describe("PdfViewerAnnotationLayer", () => {
   it("should render an annotation for each item", () => {
     const annotations = [
@@ -48,6 +54,7 @@ describe("PdfViewerAnnotationLayer", () => {
         annotations={annotations}
         pageHeight={792}
         scale={1.0}
+        transform={pageTransform(1.0, 792)}
       />,
     );
 
@@ -64,6 +71,7 @@ describe("PdfViewerAnnotationLayer", () => {
         annotations={[]}
         pageHeight={792}
         scale={1.0}
+        transform={pageTransform(1.0, 792)}
       />,
     );
 
@@ -81,6 +89,7 @@ describe("PdfViewerAnnotationLayer", () => {
         annotations={[annotation]}
         pageHeight={792}
         scale={1.0}
+        transform={pageTransform(1.0, 792)}
       />,
     );
 
@@ -104,6 +113,7 @@ describe("PdfViewerAnnotationLayer", () => {
         annotations={[annotation]}
         pageHeight={792}
         scale={2.0}
+        transform={pageTransform(2.0, 792)}
       />,
     );
 
@@ -126,6 +136,7 @@ describe("PdfViewerAnnotationLayer", () => {
         annotations={[annotation]}
         pageHeight={792}
         scale={1.0}
+        transform={pageTransform(1.0, 792)}
         onAnnotationClick={onClick}
       />,
     );
@@ -148,6 +159,7 @@ describe("PdfViewerAnnotationLayer", () => {
         annotations={[annotation]}
         pageHeight={792}
         scale={1.0}
+        transform={pageTransform(1.0, 792)}
         onAnnotationClick={onClick}
       />,
     );
@@ -170,6 +182,7 @@ describe("PdfViewerAnnotationLayer", () => {
         annotations={[annotation]}
         pageHeight={792}
         scale={1.0}
+        transform={pageTransform(1.0, 792)}
         onAnnotationClick={onClick}
       />,
     );
@@ -190,6 +203,7 @@ describe("PdfViewerAnnotationLayer", () => {
         annotations={[annotation]}
         pageHeight={792}
         scale={1.0}
+        transform={pageTransform(1.0, 792)}
       />,
     );
 
@@ -207,6 +221,7 @@ describe("PdfViewerAnnotationLayer", () => {
         annotations={[annotation]}
         pageHeight={792}
         scale={1.0}
+        transform={pageTransform(1.0, 792)}
       />,
     );
 
@@ -226,6 +241,7 @@ describe("PdfViewerAnnotationLayer", () => {
         annotations={[annotation]}
         pageHeight={792}
         scale={1.0}
+        transform={pageTransform(1.0, 792)}
       />,
     );
 
@@ -243,6 +259,7 @@ describe("PdfViewerAnnotationLayer", () => {
         annotations={[annotation]}
         pageHeight={792}
         scale={1.0}
+        transform={pageTransform(1.0, 792)}
       />,
     );
 
@@ -261,6 +278,7 @@ describe("PdfViewerAnnotationLayer", () => {
         annotations={[annotation]}
         pageHeight={792}
         scale={1.0}
+        transform={pageTransform(1.0, 792)}
       />,
     );
 
@@ -279,6 +297,7 @@ describe("PdfViewerAnnotationLayer", () => {
           annotation: PdfAnnotation;
           scale: number;
           pageHeight: number;
+          transform: number[];
         },
       ) => <span data-testid="custom-content">Scaled: {scale}</span>,
     );
@@ -287,12 +306,14 @@ describe("PdfViewerAnnotationLayer", () => {
       type: "custom",
       render: renderFn,
     });
+    const transform = pageTransform(1.5, 792);
 
     const { container } = render(
       <PdfViewerAnnotationLayer
         annotations={[annotation]}
         pageHeight={792}
         scale={1.5}
+        transform={transform}
       />,
     );
 
@@ -300,6 +321,7 @@ describe("PdfViewerAnnotationLayer", () => {
       annotation,
       scale: 1.5,
       pageHeight: 792,
+      transform,
     });
     const customContent = container.querySelector(
       "[data-testid='custom-content']",
@@ -321,6 +343,7 @@ describe("PdfViewerAnnotationLayer", () => {
         annotations={[annotation]}
         pageHeight={792}
         scale={1.0}
+        transform={pageTransform(1.0, 792)}
       />,
     );
 
@@ -344,6 +367,7 @@ describe("PdfViewerAnnotationLayer", () => {
         annotations={[annotation]}
         pageHeight={792}
         scale={1.0}
+        transform={pageTransform(1.0, 792)}
         onAnnotationClick={onClick}
       />,
     );
