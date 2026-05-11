@@ -68,7 +68,7 @@ export function usePdfViewerSync({
       return;
     }
     pdfViewer.currentScaleValue = PAGE_WIDTH_SCALE_VALUE;
-  }, [pdfViewerRef, autoSize]);
+  }, [pdfViewerRef, autoSize, document]);
 
   // ResizeObserver: re-apply page-width on container resize when auto-size is active
   useEffect(function observeContainerResize() {
@@ -86,7 +86,7 @@ export function usePdfViewerSync({
     return () => {
       observer.disconnect();
     };
-  }, [containerRef, pdfViewerRef, autoSize]);
+  }, [containerRef, pdfViewerRef, autoSize, document]);
 
   // Listen to PDFViewer events → React state
   useEffect(function subscribeViewerEvents() {
