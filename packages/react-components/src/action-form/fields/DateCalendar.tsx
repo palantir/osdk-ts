@@ -101,20 +101,13 @@ export default function DateCalendar({
 
   const fromYear = min != null ? min.getFullYear() : DEFAULT_FROM_YEAR;
   const toYear = max != null ? max.getFullYear() : DEFAULT_TO_YEAR;
-  const today = new Date();
-  // Compare at midnight so the Today button stays enabled when min/max are
-  // set to today's date at midnight (the common case for date-only bounds).
-  const todayMidnight = new Date(
-    today.getFullYear(),
-    today.getMonth(),
-    today.getDate(),
-  );
-  const isTodaySelectable = isDateInRange(todayMidnight, min, max);
+  const today = getLocalToday();
+  const isTodaySelectable = isDateInRange(today, min, max);
   const handleTodayClick = useCallback(() => {
     if (!isTodaySelectable) {
       return;
     }
-    onSelect(new Date());
+    onSelect(getLocalToday());
   }, [isTodaySelectable, onSelect]);
 
   const calendarFooter = (
@@ -132,7 +125,11 @@ export default function DateCalendar({
           {todayButtonText}
         </ActionButton>
         {onClear != null && (
-          <ActionButton type="button" appearance="minimal" onClick={onClear}>
+          <ActionButton
+            type="button"
+            appearance="minimal"
+            onClick={onClear}
+          >
             {clearButtonText}
           </ActionButton>
         )}
@@ -162,4 +159,12 @@ export default function DateCalendar({
       fixedWeeks={true}
     />
   );
+}
+
+function getLocalToday(): Date {
+  const today = new Date();
+  // Date-only picker actions should match calendar-day selection, which emits
+  // local midnight rather than the current wall-clock time.
+  today.setHours(0, 0, 0, 0);
+  return today;
 }

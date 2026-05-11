@@ -29,7 +29,7 @@
     --osdk-datetime-calendar-font-size
   );
 
-  --osdk-datetime-calendar-day-color: var(--osdk-typography-color-default);
+  --osdk-datetime-calendar-day-color: var(--osdk-typography-color-default-rest);
   --osdk-datetime-calendar-day-hover-bg: var(
     --osdk-surface-background-color-default-hover
   );
@@ -49,8 +49,9 @@
   --osdk-datetime-calendar-selected-hover-bg: var(--osdk-intent-primary-hover);
 
   /* Calendar today */
-  --osdk-datetime-calendar-today-border: 1px solid
-    var(--osdk-input-border-color);
+  --osdk-datetime-calendar-today-font-weight: var(
+    --osdk-typography-weight-bold
+  );
 
   /* Calendar range middle (days between start and end) */
   --osdk-datetime-calendar-range-middle-bg: color-mix(
