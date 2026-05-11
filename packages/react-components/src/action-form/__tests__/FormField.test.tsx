@@ -23,8 +23,21 @@ describe("FormField", () => {
   afterEach(cleanup);
 
   describe("error display", () => {
+    it("reserves an error slot even when no error is shown", () => {
+      const { container } = render(
+        <FormField fieldKey="name" label="Name">
+          <input id="name" />
+        </FormField>,
+      );
+
+      expect(
+        container.querySelector("[data-osdk-form-field-error-slot]"),
+      ).not.toBeNull();
+      expect(screen.queryByRole("alert")).toBeNull();
+    });
+
     it("shows error message with alert role", () => {
-      render(
+      const { container } = render(
         <FormField fieldKey="name" label="Name" error="This field is required">
           <input id="name" />
         </FormField>,
@@ -32,6 +45,11 @@ describe("FormField", () => {
 
       const alert = screen.getByRole("alert");
       expect(alert.textContent).toBe("This field is required");
+      expect(
+        container
+          .querySelector("[data-osdk-form-field-error-slot]")
+          ?.contains(alert),
+      ).toBe(true);
     });
 
     it("does not render alert when no error", () => {

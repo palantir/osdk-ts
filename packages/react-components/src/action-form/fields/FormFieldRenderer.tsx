@@ -32,6 +32,7 @@ import { NumberInputField } from "./NumberInputField.js";
 import { ObjectSelectField } from "./ObjectSelectField.js";
 import { ObjectSetField } from "./ObjectSetField.js";
 import { RadioButtonsField } from "./RadioButtonsField.js";
+import { SwitchField } from "./SwitchField.js";
 import { TextAreaField } from "./TextAreaField.js";
 import { TextInputField } from "./TextInputField.js";
 
@@ -159,6 +160,17 @@ function renderFieldComponent(
         <RadioButtonsField
           id={fieldDefinition.fieldKey}
           value={value}
+          onChange={onChange}
+          error={error}
+          {...fieldDefinition.fieldComponentProps}
+        />
+      );
+    case "SWITCH":
+      return (
+        <SwitchField
+          id={fieldDefinition.fieldKey}
+          label={fieldDefinition.label}
+          value={!!value}
           onChange={onChange}
           error={error}
           {...fieldDefinition.fieldComponentProps}
