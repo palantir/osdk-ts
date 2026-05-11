@@ -15,12 +15,18 @@
  */
 
 import type { ObjectSet, ObjectTypeDefinition, PropertyKeys } from "@osdk/api";
+import { useOsdkAggregation } from "@osdk/react";
 import { cleanup, render, screen } from "@testing-library/react";
 import React from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { FilterState } from "../FilterListItemApi.js";
 import { LinkedPropertyInput } from "../inputs/LinkedPropertyInput.js";
 import type { LinkedPropertyFilterDefinition } from "../types/LinkedFilterTypes.js";
+
+vi.mock("@osdk/react", () => ({
+  useOsdkAggregation: vi.fn(),
+  useRegisterUserAgent: vi.fn(),
+}));
 
 const MockLinkedObjectType = {
   apiName: "Office",
@@ -204,6 +210,118 @@ describe("LinkedPropertyInput", () => {
       );
 
       expect(mockObjectSet.pivotTo).toHaveBeenCalledWith("primaryOffice");
+    });
+  });
+
+  describe("ghost initialFilterStates values", () => {
+    function mockAggregationData(
+      groups: Array<{ name: string; count: number }>,
+    ): void {
+      vi.mocked(useOsdkAggregation).mockReturnValue({
+        data: groups.map((g) => ({
+          $group: { name: g.name },
+          $count: g.count,
+        })),
+        isLoading: false,
+        error: null,
+        refetch: vi.fn(),
+      } as unknown as ReturnType<typeof useOsdkAggregation>);
+    }
+
+    it("renders ghost selected value as a chip in MULTI_SELECT", () => {
+      mockAggregationData([]);
+      const mockObjectSet = createMockObjectSet();
+
+      render(
+        <LinkedPropertyInput
+          objectSet={mockObjectSet}
+          definition={createDefinition("MULTI_SELECT")}
+          filterState={{
+            type: "linkedProperty",
+            linkedFilterState: {
+              type: "SELECT",
+              selectedValues: ["Research"],
+            },
+          }}
+          onFilterStateChanged={vi.fn()}
+        />,
+      );
+
+      // Without the fix, values.length === 0 shows "No options available"
+      // and the Combobox never mounts — no chip, no way to see the selection.
+      expect(screen.queryByText("No options available")).toBeNull();
+      expect(screen.getByText("Research")).toBeDefined();
+    });
+
+    it("mounts combobox for ghost selected value in SINGLE_SELECT", () => {
+      mockAggregationData([]);
+      const mockObjectSet = createMockObjectSet();
+
+      render(
+        <LinkedPropertyInput
+          objectSet={mockObjectSet}
+          definition={createDefinition("SINGLE_SELECT")}
+          filterState={{
+            type: "linkedProperty",
+            linkedFilterState: {
+              type: "SELECT",
+              selectedValues: ["Research"],
+            },
+          }}
+          onFilterStateChanged={vi.fn()}
+        />,
+      );
+
+      // Without the fix, values.length === 0 renders "No options available"
+      // and the Combobox never mounts. With the fix, the ghost value makes
+      // values.length > 0, so the search input renders instead.
+      expect(screen.queryByText("No options available")).toBeNull();
+      expect(screen.getByLabelText("Select name")).toBeDefined();
+    });
+
+    it("renders ghost selected value as a checked row with count 0 in LISTOGRAM", () => {
+      mockAggregationData([{ name: "Marketing", count: 5 }]);
+      const mockObjectSet = createMockObjectSet();
+
+      const definition = {
+        ...createDefinition("LISTOGRAM"),
+        linkedFilterState: { type: "EXACT_MATCH" as const, values: [] },
+        filterState: {
+          type: "linkedProperty" as const,
+          linkedFilterState: {
+            type: "EXACT_MATCH" as const,
+            values: [],
+          },
+        },
+      } as LinkedPropertyFilterDefinition<
+        ObjectTypeDefinition,
+        string,
+        ObjectTypeDefinition,
+        PropertyKeys<ObjectTypeDefinition>
+      >;
+
+      render(
+        <LinkedPropertyInput
+          objectSet={mockObjectSet}
+          definition={definition}
+          filterState={{
+            type: "linkedProperty",
+            linkedFilterState: {
+              type: "EXACT_MATCH",
+              values: ["Marketing", "Research"],
+            },
+          }}
+          onFilterStateChanged={vi.fn()}
+        />,
+      );
+
+      // Both rows render — "Marketing" from aggregation, "Research" synthesized
+      const marketingRow = screen.getByRole("button", { name: /Marketing/ });
+      const researchRow = screen.getByRole("button", { name: /Research/ });
+
+      expect(marketingRow.getAttribute("aria-pressed")).toBe("true");
+      expect(researchRow.getAttribute("aria-pressed")).toBe("true");
+      expect(researchRow.textContent).toContain("0");
     });
   });
 
