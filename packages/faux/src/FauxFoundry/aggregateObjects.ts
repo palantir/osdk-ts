@@ -232,8 +232,12 @@ function compareValue(
   if (target === undefined) {
     return 1;
   }
-  if (typeof value === "number" && typeof target === "number") {
-    return value - target;
+  if (typeof value === "number" || typeof target === "number") {
+    const numValue = Number(value);
+    const numTarget = Number(target);
+    if (!isNaN(numValue) && !isNaN(numTarget)) {
+      return numValue - numTarget;
+    }
   }
   const strValue = String(value);
   const strTarget = String(target);
@@ -256,7 +260,7 @@ function numericAgg(
 ): AggregationMetricResultV2 {
   const values = getNumericValues(objects, field);
   const value = values.length === 0 ? undefined : compute(values);
-  return { name, value: value as number };
+  return { name, value };
 }
 
 function computeSingleMetric(
@@ -274,7 +278,7 @@ function computeSingleMetric(
       return numericAgg(
         objects,
         field,
-        aggregation.name ?? `${aggregation.field}.min`,
+        aggregation.name ?? `${field}.min`,
         vals => Math.min(...vals),
       );
     }

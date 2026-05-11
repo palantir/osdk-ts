@@ -49,8 +49,8 @@ export const createObjectSetHandlers = (
 
       return aggregateObjects(
         objects,
-        body.aggregation ?? [],
-        body.groupBy ?? [],
+        body.aggregation,
+        body.groupBy,
       );
     },
   ),
