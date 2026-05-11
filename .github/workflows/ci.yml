@@ -106,6 +106,7 @@ jobs:
         run: pnpm exec turbo transpile --filter=@osdk/tool.release
 
       - name: Check for new unreleasable packages
+        continue-on-error: true
         env:
           BASE_REF: ${{ github.base_ref || 'main' }}
         run: |

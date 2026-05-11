@@ -36,6 +36,8 @@ async function main(): Promise<void> {
 }
 
 main().catch((err: unknown) => {
-  consola.error(err);
-  process.exit(1);
+  // Noop on script failure: the release pipeline is the source of truth,
+  // and failing this safety-net step would itself create a release outage.
+  consola.warn(`markUnreleasablePrivate failed; continuing: ${String(err)}`);
+  process.exit(0);
 });

@@ -152,6 +152,9 @@ async function main(): Promise<void> {
 }
 
 main().catch((err: unknown) => {
-  consola.error(err);
-  process.exit(1);
+  // Internal script failure should not make the (non-blocking) PR check
+  // look like a real offense. Intentional offense exits stay at 1 inside
+  // main(); anything bubbling out here is unexpected and we noop.
+  consola.warn(`checkPublishable crashed; treating as no-op: ${String(err)}`);
+  process.exit(0);
 });

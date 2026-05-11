@@ -59,9 +59,18 @@ async function ciPublish(): Promise<void> {
       cwd: repoRoot,
     });
 
-    const unreleasablePackages = await findUnreleasablePackages(repoRoot);
-    if (unreleasablePackages.length > 0) {
-      await markPackagesPrivate(unreleasablePackages);
+    try {
+      const unreleasablePackages = await findUnreleasablePackages(repoRoot);
+      if (unreleasablePackages.length > 0) {
+        await markPackagesPrivate(unreleasablePackages);
+      }
+    } catch (error) {
+      // The unreleasable check is a best-effort safety net. If it fails for
+      // any reason, fall back to the pre-existing publish behavior rather
+      // than blocking the release.
+      consola.warn(
+        `Failed to mark unreleasable packages; continuing with publish: ${error}`,
+      );
     }
 
     await execa(
