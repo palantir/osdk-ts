@@ -16,10 +16,11 @@
 
 import { Button } from "@base-ui/react/button";
 import classnames from "classnames";
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import type { BaseFilterListProps } from "./BaseFilterListApi.js";
 import { ExpandIcon } from "./FilterIcons.js";
 import styles from "./FilterList.module.css";
+import { FilterListBoundaryProvider } from "./FilterListBoundaryContext.js";
 import { FilterListContent } from "./FilterListContent.js";
 import { FilterListHeader } from "./FilterListHeader.js";
 
@@ -50,6 +51,10 @@ export function BaseFilterList<D>(
     renderAddFilterButton,
   } = props;
 
+  const [boundaryElement, setBoundaryElement] = useState<HTMLDivElement | null>(
+    null,
+  );
+
   const showHeader = title || titleIcon || showResetButton
     || showActiveFilterCount || onCollapsedChange;
 
@@ -79,55 +84,58 @@ export function BaseFilterList<D>(
         </div>
       )}
       <div
+        ref={setBoundaryElement}
         className={classnames(
           styles.expandedContent,
           isCollapsed && styles.hiddenContent,
         )}
         data-active-count={activeFilterCount}
       >
-        {showHeader && (
-          <FilterListHeader
-            title={title}
-            titleIcon={titleIcon}
-            collapsed={collapsed}
-            onCollapsedChange={onCollapsedChange}
-            showResetButton={showResetButton}
-            onReset={onReset}
-            showActiveFilterCount={showActiveFilterCount}
-            activeFilterCount={activeFilterCount}
-            hasVisibilityChanges={hasVisibilityChanges}
-          />
-        )}
+        <FilterListBoundaryProvider value={boundaryElement}>
+          {showHeader && (
+            <FilterListHeader
+              title={title}
+              titleIcon={titleIcon}
+              collapsed={collapsed}
+              onCollapsedChange={onCollapsedChange}
+              showResetButton={showResetButton}
+              onReset={onReset}
+              showActiveFilterCount={showActiveFilterCount}
+              activeFilterCount={activeFilterCount}
+              hasVisibilityChanges={hasVisibilityChanges}
+            />
+          )}
 
-        <div className={styles.scrollableContent}>
-          <FilterListContent
-            filterDefinitions={filterDefinitions}
-            filterStates={filterStates}
-            onFilterStateChanged={onFilterStateChanged}
-            onFilterRemoved={onFilterRemoved}
-            onOrderChange={onOrderChange}
-            renderInput={renderInput}
-            getFilterKey={getFilterKey}
-            getFilterLabel={getFilterLabel}
-            enableSorting={enableSorting}
-          />
-        </div>
-
-        {showAddButton && (
-          <div className={styles.addButtonContainer}>
-            {renderAddFilterButton
-              ? renderAddFilterButton()
-              : (
-                <Button
-                  type="button"
-                  className={styles.addButton}
-                  onClick={onFilterAdded}
-                >
-                  + Add filter
-                </Button>
-              )}
+          <div className={styles.scrollableContent}>
+            <FilterListContent
+              filterDefinitions={filterDefinitions}
+              filterStates={filterStates}
+              onFilterStateChanged={onFilterStateChanged}
+              onFilterRemoved={onFilterRemoved}
+              onOrderChange={onOrderChange}
+              renderInput={renderInput}
+              getFilterKey={getFilterKey}
+              getFilterLabel={getFilterLabel}
+              enableSorting={enableSorting}
+            />
           </div>
-        )}
+
+          {showAddButton && (
+            <div className={styles.addButtonContainer}>
+              {renderAddFilterButton
+                ? renderAddFilterButton()
+                : (
+                  <Button
+                    type="button"
+                    className={styles.addButton}
+                    onClick={onFilterAdded}
+                  >
+                    + Add filter
+                  </Button>
+                )}
+            </div>
+          )}
+        </FilterListBoundaryProvider>
       </div>
     </div>
   );

@@ -19,9 +19,11 @@ import React, { memo, useCallback, useMemo } from "react";
 import { Combobox } from "../../../base-components/combobox/Combobox.js";
 import type { PropertyAggregationValue } from "../../types/AggregationTypes.js";
 import { isEmptyValue } from "../../utils/filterValues.js";
+import { useFilterListBoundary } from "../FilterListBoundaryContext.js";
 import styles from "./MultiSelectInput.module.css";
 import { NoValueLabel } from "./NoValueLabel.js";
 import sharedStyles from "./shared.module.css";
+import { useStableData } from "./useStableData.js";
 
 interface MultiSelectInputProps {
   values: PropertyAggregationValue[];
@@ -50,6 +52,8 @@ function MultiSelectInputInner({
   ariaLabel = "Search values",
   renderValue,
 }: MultiSelectInputProps): React.ReactElement {
+  const collisionBoundary = useFilterListBoundary();
+
   const handleValueChange = useCallback(
     (newValues: string[] | null) => {
       onChange(newValues ?? []);
@@ -57,14 +61,16 @@ function MultiSelectInputInner({
     [onChange],
   );
 
+  const stableValues = useStableData(values, isLoading);
+
   const items = useMemo(
-    () => values.map(({ value }) => value),
-    [values],
+    () => stableValues.map(({ value }) => value),
+    [stableValues],
   );
 
   const countByValue = useMemo(
-    () => new Map(values.map(({ value, count }) => [value, count])),
-    [values],
+    () => new Map(stableValues.map(({ value, count }) => [value, count])),
+    [stableValues],
   );
 
   const comboboxFilter = useMemo(
@@ -128,7 +134,7 @@ function MultiSelectInputInner({
     <div
       className={classnames(styles.multiSelect, className)}
       style={style}
-      data-loading={isLoading}
+      data-loading={isLoading && stableValues.length > 0}
     >
       {error && (
         <div className={sharedStyles.errorMessage}>
@@ -136,13 +142,13 @@ function MultiSelectInputInner({
         </div>
       )}
 
-      {!error && values.length === 0 && (
+      {!error && stableValues.length === 0 && (
         <div className={sharedStyles.emptyMessage}>
           {isLoading ? "Loading options..." : "No options available"}
         </div>
       )}
 
-      {(values.length > 0 || isLoading) && (
+      {stableValues.length > 0 && (
         <Combobox.Root<string, true>
           multiple={true}
           value={selectedValues}
@@ -150,18 +156,12 @@ function MultiSelectInputInner({
           items={items}
           filter={comboboxFilter}
         >
-          {isLoading && (
-            <div className={sharedStyles.loadingMessage}>
-              Updating...
-            </div>
-          )}
-
           <Combobox.Chips>
             <Combobox.Value>{renderChips}</Combobox.Value>
           </Combobox.Chips>
 
           <Combobox.Portal>
-            <Combobox.Positioner>
+            <Combobox.Positioner collisionBoundary={collisionBoundary}>
               <Combobox.Popup>
                 <Combobox.Empty>No matching options</Combobox.Empty>
                 <Combobox.List>{renderItem}</Combobox.List>

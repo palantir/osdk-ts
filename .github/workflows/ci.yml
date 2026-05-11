@@ -75,7 +75,7 @@ jobs:
 
   build:
     name: Build and Test
-    timeout-minutes: 25
+    timeout-minutes: 30
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -311,4 +311,25 @@ jobs:
             gh api "repos/${{ github.repository }}/issues/comments/$COMMENT_ID" -X PATCH -f body="$(cat /tmp/comment.md)"
           else
             gh pr comment "${{ github.event.pull_request.number }}" -F /tmp/comment.md
+          fi
+
+  ci-build:
+    name: ci-build
+    if: ${{ always() }}
+    needs: [build, e2e, cspell]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify dependent jobs succeeded
+        run: |
+          if [[ "${{ needs.build.result }}" != "success" ]]; then
+            echo "build did not succeed: ${{ needs.build.result }}"
+            exit 1
+          fi
+          if [[ "${{ needs.e2e.result }}" != "success" ]]; then
+            echo "e2e did not succeed: ${{ needs.e2e.result }}"
+            exit 1
+          fi
+          if [[ "${{ needs.cspell.result }}" != "success" ]]; then
+            echo "cspell did not succeed: ${{ needs.cspell.result }}"
+            exit 1
           fi

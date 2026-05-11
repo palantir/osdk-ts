@@ -19,9 +19,11 @@ import React, { memo, useCallback, useMemo } from "react";
 import { Combobox } from "../../../base-components/combobox/Combobox.js";
 import type { PropertyAggregationValue } from "../../types/AggregationTypes.js";
 import { isEmptyValue } from "../../utils/filterValues.js";
+import { useFilterListBoundary } from "../FilterListBoundaryContext.js";
 import { NoValueLabel } from "./NoValueLabel.js";
 import sharedStyles from "./shared.module.css";
 import styles from "./SingleSelectInput.module.css";
+import { useStableData } from "./useStableData.js";
 
 interface SingleSelectInputProps {
   values: PropertyAggregationValue[];
@@ -52,6 +54,8 @@ function SingleSelectInputInner({
   ariaLabel = "Select value",
   renderValue,
 }: SingleSelectInputProps): React.ReactElement {
+  const collisionBoundary = useFilterListBoundary();
+
   const handleValueChange = useCallback(
     (value: string | null) => {
       onChange(value ?? undefined);
@@ -59,14 +63,16 @@ function SingleSelectInputInner({
     [onChange],
   );
 
+  const stableValues = useStableData(values, isLoading);
+
   const items = useMemo(
-    () => values.map(({ value }) => value),
-    [values],
+    () => stableValues.map(({ value }) => value),
+    [stableValues],
   );
 
   const countByValue = useMemo(
-    () => new Map(values.map(({ value, count }) => [value, count])),
-    [values],
+    () => new Map(stableValues.map(({ value, count }) => [value, count])),
+    [stableValues],
   );
 
   const comboboxFilter = useMemo(
@@ -104,27 +110,21 @@ function SingleSelectInputInner({
     <div
       className={classnames(styles.singleSelect, className)}
       style={style}
-      data-loading={isLoading}
+      data-loading={isLoading && stableValues.length > 0}
     >
-      {isLoading && (
-        <div className={sharedStyles.loadingMessage}>
-          Loading options...
-        </div>
-      )}
-
       {error && (
         <div className={sharedStyles.errorMessage}>
           Error loading options: {error.message}
         </div>
       )}
 
-      {!isLoading && !error && values.length === 0 && (
+      {!error && stableValues.length === 0 && (
         <div className={sharedStyles.emptyMessage}>
-          No options available
+          {isLoading ? "Loading options..." : "No options available"}
         </div>
       )}
 
-      {(values.length > 0 || isLoading) && (
+      {stableValues.length > 0 && (
         <div className={styles.selectContainer}>
           <Combobox.Root<string>
             value={selectedValue ?? null}
@@ -140,7 +140,7 @@ function SingleSelectInputInner({
               <Combobox.Clear className={styles.clearButton} />
             )}
             <Combobox.Portal>
-              <Combobox.Positioner>
+              <Combobox.Positioner collisionBoundary={collisionBoundary}>
                 <Combobox.Popup>
                   <Combobox.Empty>No matching options</Combobox.Empty>
                   <Combobox.List>{renderItem}</Combobox.List>

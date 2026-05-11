@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  defaultConfig,
-  type TagBadgeParameters,
-} from "storybook-addon-tag-badges/manager-helpers";
+import type { TagBadgeParameters } from "storybook-addon-tag-badges/manager-helpers";
 import { addons } from "storybook/manager-api";
 
 addons.setConfig({
@@ -40,7 +37,6 @@ addons.setConfig({
         toolbar: true,
       },
     },
-    ...defaultConfig,
   ] satisfies TagBadgeParameters,
 });
 

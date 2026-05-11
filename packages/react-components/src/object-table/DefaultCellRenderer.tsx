@@ -24,6 +24,13 @@ import { isCellEditable } from "./utils/editableUtils.js";
 import { getCellId } from "./utils/getCellId.js";
 import { shouldShowEditableCell } from "./utils/shouldShowEditableCell.js";
 
+function toDisplayValue(value: unknown): React.ReactNode {
+  if (typeof value === "boolean") {
+    return String(value);
+  }
+  return value as React.ReactNode;
+}
+
 export function renderDefaultCell<TData extends RowData>(
   cellContext: CellContext<TData, unknown>,
 ): React.ReactNode {
@@ -57,12 +64,12 @@ export function renderDefaultCell<TData extends RowData>(
     if (meta?.isInEditMode) {
       return (
         <span className={styles.nonEditableCellInEditMode}>
-          {cellValue as React.ReactNode}
+          {toDisplayValue(cellValue)}
         </span>
       );
     }
 
-    return <>{cellValue}</>;
+    return <>{toDisplayValue(cellValue)}</>;
   }
 
   const rowId = cellContext.row.id;
