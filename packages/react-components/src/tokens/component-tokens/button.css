@@ -24,6 +24,21 @@
   );
   --osdk-button-secondary-border-color: var(--osdk-surface-border-color-default);
 
+  /* Minimal Button */
+  --osdk-button-minimal-bg: transparent;
+  --osdk-button-minimal-bg-hover: var(
+    --osdk-surface-background-color-default-hover
+  );
+  --osdk-button-minimal-bg-active: var(
+    --osdk-surface-background-color-default-active
+  );
+  --osdk-button-minimal-border: none;
+  --osdk-button-minimal-shadow: none;
+  --osdk-button-secondary-minimal-color: var(
+    --osdk-typography-color-default-rest
+  );
+  --osdk-button-primary-minimal-color: var(--osdk-button-primary-bg);
+
   /* Success Button */
   --osdk-button-success-color: var(--osdk-intent-success-foreground);
   --osdk-button-success-bg: var(--osdk-intent-success-rest);

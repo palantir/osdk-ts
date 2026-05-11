@@ -1,5 +1,18 @@
 # @osdk/client
 
+## 2.17.0
+
+### Minor Changes
+
+- 147166c: fix typing so `$loadPropertySecurityMetadata: true` is accepted on the experimental `fetchPageByRid` client method, and `$propertySecurities` is properly typed on returned objects.
+
+### Patch Changes
+
+- Updated dependencies [147166c]
+  - @osdk/api@2.17.0
+  - @osdk/client.unstable@2.17.0
+  - @osdk/generator-converters@2.17.0
+
 ## 2.16.0
 
 ### Minor Changes

@@ -16,7 +16,7 @@
 
 import { Error as ErrorIcon } from "@blueprintjs/icons";
 import classNames from "classnames";
-import React, { memo, useCallback, useMemo, useState } from "react";
+import React, { memo, useCallback, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { ActionButton } from "../base-components/action-button/ActionButton.js";
 import { SkeletonBar } from "../base-components/skeleton/SkeletonBar.js";
@@ -41,8 +41,8 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
   className,
   submitButtonText = "Submit",
   submitButtonVariant = "primary",
-  portalContainer,
 }: BaseFormProps): React.ReactElement {
+  const portalContainerRef = useRef<HTMLFormElement>(null);
   const isControlled = controlledFormState != null;
 
   const allFieldDefinitions = useMemo(
@@ -83,25 +83,21 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
       : "Submission failed"
     : undefined;
 
-  const handleFormSubmit = useCallback(
-    async (e: React.FormEvent) => {
-      e.preventDefault();
-      setHasAttemptedSubmit(true);
+  const submitForm = useCallback(async () => {
+    setHasAttemptedSubmit(true);
 
-      const isValid = await trigger();
-      if (!isValid) {
-        return;
-      }
+    const isValid = await trigger();
+    if (!isValid) {
+      return;
+    }
 
-      // In controlled mode, always submit the controlled state, not RHF's
-      // internal state. Between a user keystroke and the parent re-rendering,
-      // RHF's store may hold the user-typed value rather than the parent's
-      // value. Using controlledFormState directly preserves the existing
-      // guarantee that controlled mode submits the parent's state.
-      await executeSubmit(controlledFormState ?? getValues());
-    },
-    [trigger, executeSubmit, controlledFormState, getValues],
-  );
+    // In controlled mode, always submit the controlled state, not RHF's
+    // internal state. Between a user keystroke and the parent re-rendering,
+    // RHF's store may hold the user-typed value rather than the parent's
+    // value. Using controlledFormState directly preserves the existing
+    // guarantee that controlled mode submits the parent's state.
+    await executeSubmit(controlledFormState ?? getValues());
+  }, [trigger, executeSubmit, controlledFormState, getValues]);
 
   const handleFieldChange = useCallback(
     (fieldKey: string, value: unknown) => {
@@ -110,8 +106,6 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
     },
     [clearError, onFieldValueChange],
   );
-
-  const isFormPending = isPending || isSubmitting;
 
   const labelByFieldKey = useMemo(
     () => new Map(allFieldDefinitions.map((d) => [d.fieldKey, d.label])),
@@ -127,11 +121,18 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
   const buttonErrorMessage = areErrorsPresent
     ? "Some fields are invalid"
     : submissionErrorMessage;
+  const isFormPending = isPending || isSubmitting;
+  const isSubmitButtonDisabled = isSubmitDisabled
+    || (hasAttemptedSubmit && areErrorsPresent);
 
   return (
     <form
+      ref={portalContainerRef}
       className={classNames(styles.osdkForm, className)}
-      onSubmit={handleFormSubmit}
+      // Workshop widgets can run in iframes without `allow-forms`, where
+      // native form submission is blocked. Keep the form landmark, but do not
+      // wire any form-level submit handlers; the submit button invokes our
+      // JavaScript submit path directly.
     >
       {formTitle != null && <FormHeader title={formTitle} />}
       {isLoading && allFieldDefinitions.length === 0 && (
@@ -152,7 +153,7 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
                 fieldDef={item.definition}
                 control={control}
                 onExternalChange={handleFieldChange}
-                portalContainer={portalContainer}
+                portalContainer={portalContainerRef}
               />
             );
           }
@@ -172,7 +173,7 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
                   fieldDef={fieldDef}
                   control={control}
                   onExternalChange={handleFieldChange}
-                  portalContainer={portalContainer}
+                  portalContainer={portalContainerRef}
                 />
               ))}
             </FormSection>
@@ -184,11 +185,11 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
         <div className={styles.osdkFormSubmitButton}>
           <SubmitButton
             isPending={isFormPending}
-            isSubmitDisabled={isSubmitDisabled
-              || (hasAttemptedSubmit && areErrorsPresent)}
+            isSubmitDisabled={isSubmitButtonDisabled}
             errorMessage={buttonErrorMessage}
             buttonText={submitButtonText}
             buttonVariant={submitButtonVariant}
+            onClick={submitForm}
           />
         </div>
       </div>
@@ -255,6 +256,7 @@ interface SubmitButtonProps {
   errorMessage: string | undefined;
   buttonText: string;
   buttonVariant: "primary" | "secondary";
+  onClick: () => void;
 }
 
 const SubmitButton = memo(function SubmitButtonFn({
@@ -263,13 +265,15 @@ const SubmitButton = memo(function SubmitButtonFn({
   errorMessage,
   buttonText,
   buttonVariant,
+  onClick,
 }: SubmitButtonProps): React.ReactElement {
   const buttonLabel = isPending ? "Submitting\u2026" : buttonText;
   const button = (
     <ActionButton
-      type="submit"
+      type="button"
       variant={buttonVariant}
       disabled={isSubmitDisabled || isPending}
+      onClick={onClick}
     >
       {buttonLabel}
     </ActionButton>

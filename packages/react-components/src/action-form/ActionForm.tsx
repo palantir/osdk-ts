@@ -52,6 +52,7 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
 >({
   actionDefinition,
   formTitle,
+  showFormTitle = false,
   formFieldDefinitions,
   formState: controlledFormState,
   onFormStateChange,
@@ -60,7 +61,6 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
   onValidationResponse,
   onSuccess,
   onError,
-  portalContainer,
 }: ActionFormProps<Q>): React.ReactElement {
   const {
     applyAction: osdkApplyAction,
@@ -98,15 +98,17 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
       // RendererFieldDefinition is a discriminated union keyed by fieldComponent.
       // TypeScript can't verify that the spread preserves the fieldComponent ↔
       // fieldComponentProps pairing, but FormFieldDefinition guarantees it.
-      return formFieldDefinitions.map(
-        (def) =>
-          ({
-            ...def,
-            fieldKey: String(def.fieldKey),
-            fieldType: parameters?.[String(def.fieldKey)]?.type,
-            defaultValue: def.defaultValue,
-          }) as RendererFieldDefinition,
-      );
+      return formFieldDefinitions.map((def) => {
+        const { defaultValue, ...fieldDefinition } = def;
+        return {
+          ...fieldDefinition,
+          fieldKey: String(def.fieldKey),
+          fieldType: parameters?.[String(def.fieldKey)]?.type,
+          fieldComponentProps: defaultValue === undefined
+            ? def.fieldComponentProps
+            : { ...def.fieldComponentProps, defaultValue },
+        } as RendererFieldDefinition;
+      });
     }, [formFieldDefinitions, parameters]);
 
   const rendererFieldDefinitions = useMemo(
@@ -229,8 +231,9 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
     ],
   );
 
-  const resolvedTitle = formTitle ?? metadata?.displayName
-    ?? actionDefinition.apiName;
+  const resolvedTitle = showFormTitle
+    ? (formTitle ?? metadata?.displayName ?? actionDefinition.apiName)
+    : undefined;
 
   const commonProps = {
     formTitle: resolvedTitle,
@@ -240,7 +243,6 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
     isPending,
     isLoading: metadataLoading,
     onFieldValueChange: handleFieldValueChange,
-    portalContainer,
   };
 
   if (!isControlled) {
