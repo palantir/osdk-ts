@@ -142,7 +142,14 @@ export interface BaseFilterState {
   isExcluding?: boolean;
 
   /**
-   * If true, include objects that have no value
+   * If true, include objects whose value is SQL null (no value set).
+   *
+   * Applies to SELECT, EXACT_MATCH, NUMBER_RANGE, and DATE_RANGE filter
+   * states. Treated as orthogonal to literal selected values: e.g. a SELECT
+   * filter with `selectedValues: [""]` and `includeNull: true` matches both
+   * the literal empty string AND SQL null; `selectedValues: [""]` alone
+   * matches only the literal empty string.
+   *
    * @default false
    */
   includeNull?: boolean;

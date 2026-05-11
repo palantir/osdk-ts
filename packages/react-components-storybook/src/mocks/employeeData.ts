@@ -341,7 +341,7 @@ export const employeeData: BaseServerObject[] = [
     "locationCity": "Berlin",
     "workerType": "Employee",
     "employeeNumber": 657495039,
-    "department": "Operations",
+    "department": null,
     "primaryOfficeId": "89bdd23c-62f8-4d7f-ab2a-442f04da6ce3",
     "adUsername": "yuki.torres",
     "businessTitle": "Operations Manager",

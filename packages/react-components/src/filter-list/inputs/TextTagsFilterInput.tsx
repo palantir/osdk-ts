@@ -54,12 +54,16 @@ function TextTagsFilterInputInner<Q extends ObjectTypeDefinition>({
     [filterState],
   );
   const isExcluding = filterState?.isExcluding ?? false;
+  const includeNull = filterState?.type === "EXACT_MATCH"
+    ? filterState.includeNull ?? false
+    : false;
 
   const handleClearAll = useCallback(() => {
     onFilterStateChanged({
       type: "EXACT_MATCH",
       values: [],
       isExcluding,
+      includeNull: false,
     });
   }, [onFilterStateChanged, isExcluding]);
 
@@ -69,9 +73,22 @@ function TextTagsFilterInputInner<Q extends ObjectTypeDefinition>({
         type: "EXACT_MATCH",
         values,
         isExcluding,
+        includeNull,
       });
     },
-    [onFilterStateChanged, isExcluding],
+    [onFilterStateChanged, isExcluding, includeNull],
+  );
+
+  const handleIncludeNullChange = useCallback(
+    (include: boolean) => {
+      onFilterStateChanged({
+        type: "EXACT_MATCH",
+        values: tags,
+        isExcluding,
+        includeNull: include,
+      });
+    },
+    [onFilterStateChanged, tags, isExcluding],
   );
 
   const aggregationOptions = useMemo(
@@ -100,6 +117,8 @@ function TextTagsFilterInputInner<Q extends ObjectTypeDefinition>({
         error={error}
         tags={tags}
         onChange={handleChange}
+        includeNull={includeNull}
+        onIncludeNullChange={handleIncludeNullChange}
       />
     </FilterInputExcludeRow>
   );

@@ -16,84 +16,81 @@
 
 import { describe, expect, it } from "vitest";
 import type { PropertyAggregationValue } from "../../types/AggregationTypes.js";
-import { dedupeEmptyAggregationRows, isEmptyValue } from "../filterValues.js";
+import { dedupeAggregationRows, isNullRow } from "../filterValues.js";
 
 describe("filterValues", () => {
-  describe("isEmptyValue", () => {
-    it.each(
-      [
-        [null, true],
-        [undefined, true],
-        ["", true],
-        [" ", false],
-        ["   ", false],
-        ["\t\n", false],
-        ["foo", false],
-        ["  foo  ", false],
-        ["0", false],
-      ] as const,
-    )("isEmptyValue(%j) === %s", (input, expected) => {
-      expect(isEmptyValue(input)).toBe(expected);
+  describe("isNullRow", () => {
+    it("returns true only when row.isNull === true", () => {
+      expect(isNullRow({ value: "", count: 1, isNull: true })).toBe(true);
+      expect(isNullRow({ value: "", count: 1, isNull: false })).toBe(false);
+      expect(isNullRow({ value: "", count: 1 })).toBe(false);
+      expect(isNullRow({ value: "foo", count: 1 })).toBe(false);
+      expect(isNullRow({ value: "foo", count: 1, isNull: true })).toBe(true);
     });
   });
 
-  describe("dedupeEmptyAggregationRows", () => {
-    it("returns the input unchanged when no empty rows are present", () => {
+  describe("dedupeAggregationRows", () => {
+    it("returns the input unchanged when each row has a distinct key", () => {
       const input: PropertyAggregationValue[] = [
         { value: "alpha", count: 3 },
         { value: "beta", count: 1 },
       ];
-      expect(dedupeEmptyAggregationRows(input)).toEqual(input);
+      expect(dedupeAggregationRows(input)).toEqual(input);
     });
 
-    it("merges separate null and empty-string rows into one", () => {
+    it("merges multiple null rows into one but never with literal empty", () => {
       const input: PropertyAggregationValue[] = [
         { value: "", count: 2, isNull: true },
         { value: "alpha", count: 5 },
-        { value: "", count: 3 },
+        { value: "", count: 3, isNull: true },
+        { value: "", count: 4 },
       ];
-      expect(dedupeEmptyAggregationRows(input)).toEqual([
+      expect(dedupeAggregationRows(input)).toEqual([
         { value: "", count: 5, isNull: true },
+        { value: "alpha", count: 5 },
+        { value: "", count: 4 },
+      ]);
+    });
+
+    it("merges multiple literal empty rows into one", () => {
+      const input: PropertyAggregationValue[] = [
+        { value: "", count: 2 },
+        { value: "alpha", count: 5 },
+        { value: "", count: 3, isNull: false },
+      ];
+      expect(dedupeAggregationRows(input)).toEqual([
+        { value: "", count: 5 },
         { value: "alpha", count: 5 },
       ]);
     });
 
-    it("places the merged row at the position of the first empty row", () => {
+    it("keeps null, literal empty, and whitespace strings as separate rows", () => {
+      const input: PropertyAggregationValue[] = [
+        { value: "", count: 2, isNull: true },
+        { value: "", count: 4 },
+        { value: " ", count: 3 },
+        { value: "\t", count: 1 },
+        { value: "alpha", count: 5 },
+      ];
+      expect(dedupeAggregationRows(input)).toEqual(input);
+    });
+
+    it("preserves the position of the first occurrence of each key", () => {
       const input: PropertyAggregationValue[] = [
         { value: "alpha", count: 5 },
         { value: "", count: 2, isNull: true },
         { value: "beta", count: 1 },
-        { value: "", count: 3 },
+        { value: "", count: 3, isNull: true },
       ];
-      const result = dedupeEmptyAggregationRows(input);
-      expect(result).toEqual([
+      expect(dedupeAggregationRows(input)).toEqual([
         { value: "alpha", count: 5 },
         { value: "", count: 5, isNull: true },
         { value: "beta", count: 1 },
       ]);
-    });
-
-    it("leaves whitespace-only strings as their own rows", () => {
-      const input: PropertyAggregationValue[] = [
-        { value: "alpha", count: 5 },
-        { value: "   ", count: 4 },
-        { value: "\t", count: 2 },
-      ];
-      expect(dedupeEmptyAggregationRows(input)).toEqual(input);
     });
 
     it("returns an empty array when given an empty array", () => {
-      expect(dedupeEmptyAggregationRows([])).toEqual([]);
-    });
-
-    it("does not insert an empty row when emptyCount is 0", () => {
-      const input: PropertyAggregationValue[] = [
-        { value: "", count: 0 },
-        { value: "alpha", count: 5 },
-      ];
-      expect(dedupeEmptyAggregationRows(input)).toEqual([
-        { value: "alpha", count: 5 },
-      ]);
+      expect(dedupeAggregationRows([])).toEqual([]);
     });
   });
 });

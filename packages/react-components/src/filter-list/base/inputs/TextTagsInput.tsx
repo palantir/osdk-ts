@@ -19,8 +19,9 @@ import classnames from "classnames";
 import React, { memo, useCallback, useMemo, useState } from "react";
 import { Combobox } from "../../../base-components/combobox/Combobox.js";
 import type { PropertyAggregationValue } from "../../types/AggregationTypes.js";
-import { isEmptyValue } from "../../utils/filterValues.js";
-import { NoValueLabel } from "./NoValueLabel.js";
+import { isNullRow } from "../../utils/filterValues.js";
+import { EmptyStringLabel } from "./EmptyStringLabel.js";
+import { NullValueWrapper } from "./NullValueWrapper.js";
 import sharedStyles from "./shared.module.css";
 import styles from "./TextTagsInput.module.css";
 
@@ -36,12 +37,12 @@ const TagItem = memo(function TagItem({ tag, onRemove }: TagItemProps) {
     onRemove(tag);
   }, [tag, onRemove]);
 
-  const isEmpty = isEmptyValue(tag);
-  const displayLabel = isEmpty ? "No value" : tag;
+  const isEmptyString = tag === "";
+  const displayLabel = isEmptyString ? "(empty)" : tag;
 
   return (
     <span className={sharedStyles.tag}>
-      {isEmpty ? <NoValueLabel /> : tag}
+      {isEmptyString ? <EmptyStringLabel /> : tag}
       <Button
         type="button"
         className={sharedStyles.tagRemove}
@@ -60,6 +61,12 @@ interface TextTagsInputProps {
   error: Error | null;
   tags: string[];
   onChange: (tags: string[]) => void;
+  /**
+   * Whether the SQL-null suggestion is currently selected. Tracked separately
+   * from `tags`; the null row never appears as a chip.
+   */
+  includeNull?: boolean;
+  onIncludeNullChange?: (include: boolean) => void;
   className?: string;
   style?: React.CSSProperties;
   placeholder?: string;
@@ -74,6 +81,8 @@ function TextTagsInputInner({
   error,
   tags,
   onChange,
+  includeNull,
+  onIncludeNullChange,
   className,
   style,
   placeholder = "Add a tag...",
@@ -83,10 +92,20 @@ function TextTagsInputInner({
 }: TextTagsInputProps): React.ReactElement {
   const [inputValue, setInputValue] = useState("");
 
+  const dataRows = useMemo(
+    () => suggestions.filter((row) => !isNullRow(row)),
+    [suggestions],
+  );
+
+  const nullRow = useMemo(
+    () => suggestions.find(isNullRow),
+    [suggestions],
+  );
+
   const filteredSuggestions = useMemo(() => {
     if (!suggestionLimit) return [];
     const lowerInput = inputValue.toLowerCase();
-    return suggestions
+    return dataRows
       .filter(
         (s) =>
           (!inputValue.trim()
@@ -94,7 +113,7 @@ function TextTagsInputInner({
           && !tags.includes(s.value),
       )
       .slice(0, suggestionLimit);
-  }, [suggestions, inputValue, tags, suggestionLimit]);
+  }, [dataRows, inputValue, tags, suggestionLimit]);
 
   const addTag = useCallback(
     (tag: string) => {
@@ -162,7 +181,10 @@ function TextTagsInputInner({
     [tags, onChange],
   );
 
-  return (
+  const showNullToggle = nullRow !== undefined
+    && onIncludeNullChange !== undefined;
+
+  const body = (
     <div
       className={classnames(styles.textTags, className)}
       style={style}
@@ -218,7 +240,8 @@ function TextTagsInputInner({
                 )
                 : filteredSuggestions.map(({ value, count }) => (
                   <Combobox.Item key={value} value={value}>
-                    {value} ({count.toLocaleString()})
+                    {value === "" ? <EmptyStringLabel /> : value}{" "}
+                    ({count.toLocaleString()})
                   </Combobox.Item>
                 ))}
             </Combobox.Popup>
@@ -233,6 +256,22 @@ function TextTagsInputInner({
       )}
     </div>
   );
+
+  if (showNullToggle) {
+    return (
+      <NullValueWrapper
+        nullCount={nullRow.count}
+        isLoading={isLoading}
+        error={error}
+        includeNull={includeNull}
+        onIncludeNullChange={onIncludeNullChange}
+      >
+        {body}
+      </NullValueWrapper>
+    );
+  }
+
+  return body;
 }
 
 export const TextTagsInput = memo(

@@ -19,10 +19,8 @@ import classnames from "classnames";
 import React, { memo, useCallback, useMemo, useState } from "react";
 import { Checkbox } from "../../../base-components/checkbox/Checkbox.js";
 import type { PropertyAggregationValue } from "../../types/AggregationTypes.js";
-import {
-  filterValuesBySearch,
-  isEmptyValue,
-} from "../../utils/filterValues.js";
+import { filterValuesBySearch, isNullRow } from "../../utils/filterValues.js";
+import { EmptyStringLabel } from "./EmptyStringLabel.js";
 import styles from "./ListogramInput.module.css";
 import { ListogramSkeleton } from "./ListogramSkeleton.js";
 import { NoValueLabel } from "./NoValueLabel.js";
@@ -38,6 +36,13 @@ interface ListogramInputProps {
   error: Error | null;
   selectedValues: string[];
   onChange: (values: string[]) => void;
+  /**
+   * Whether the SQL-null row is currently selected. Bound to the filter
+   * state's `includeNull` field. When `onIncludeNullChange` is omitted, the
+   * null row is rendered but acts as a no-op control.
+   */
+  includeNull?: boolean;
+  onIncludeNullChange?: (include: boolean) => void;
   colorMap?: Record<string, string>;
   displayMode?: ListogramDisplayMode;
   showCount?: boolean;
@@ -56,6 +61,8 @@ function ListogramInputInner({
   error,
   selectedValues,
   onChange,
+  includeNull,
+  onIncludeNullChange,
   colorMap,
   displayMode = "full",
   showCount = true,
@@ -83,22 +90,32 @@ function ListogramInputInner({
     [selectedValues, selectedSet, onChange],
   );
 
+  const toggleNull = useCallback(() => {
+    onIncludeNullChange?.(!includeNull);
+  }, [includeNull, onIncludeNullChange]);
+
+  const isRowSelected = useCallback(
+    (row: PropertyAggregationValue): boolean =>
+      isNullRow(row) ? includeNull === true : selectedSet.has(row.value),
+    [includeNull, selectedSet],
+  );
+
   const filteredValues = useMemo(() => {
     if (searchQuery) {
       return filterValuesBySearch(
         stableValues,
         searchQuery,
-        (v) => renderValue?.(v.value) ?? v.value,
+        (v) => isNullRow(v) ? "" : (renderValue?.(v.value) ?? v.value),
       );
     }
     return stableValues;
   }, [stableValues, searchQuery, renderValue]);
 
   const sortedValues = useMemo(() => {
-    const selected = filteredValues.filter((v) => selectedSet.has(v.value));
-    const unselected = filteredValues.filter((v) => !selectedSet.has(v.value));
+    const selected = filteredValues.filter((v) => isRowSelected(v));
+    const unselected = filteredValues.filter((v) => !isRowSelected(v));
     return [...selected, ...unselected];
-  }, [filteredValues, selectedSet]);
+  }, [filteredValues, isRowSelected]);
 
   const displayValues = useMemo(() => {
     if (isExpanded || !maxVisibleItems) return sortedValues;
@@ -129,18 +146,24 @@ function ListogramInputInner({
 
       {filteredValues.length > 0 && (
         <div className={styles.container}>
-          {displayValues.map(({ value, count }) => {
+          {displayValues.map((row) => {
+            const { value, count } = row;
             const percentage = maxCount > 0 ? (count / maxCount) * 100 : 0;
-            const perRowColor = colorMap?.[value];
-            const isEmpty = isEmptyValue(value);
+            const isNull = isNullRow(row);
+            const perRowColor = isNull ? undefined : colorMap?.[value];
+            const rowSelected = isRowSelected(row);
+            const rowKey = isNull ? "__osdk_null__" : `v:${value}`;
+            const handleRowToggle = isNull
+              ? toggleNull
+              : () => toggleValue(value);
 
             return (
               <Button
-                key={value}
+                key={rowKey}
                 className={styles.row}
                 // eslint-disable-next-line react/jsx-no-bind
-                onClick={() => toggleValue(value)}
-                aria-pressed={selectedSet.has(value)}
+                onClick={handleRowToggle}
+                aria-pressed={rowSelected}
                 style={perRowColor || percentage > 0
                   ? ({
                     "--osdk-filter-listogram-bar-fill-scale": percentage / 100,
@@ -157,19 +180,19 @@ function ListogramInputInner({
                   onClick={(e) => e.stopPropagation()}
                 >
                   <Checkbox
-                    checked={selectedSet.has(value)}
-                    // eslint-disable-next-line react/jsx-no-bind
-                    onCheckedChange={() => toggleValue(value)}
+                    checked={rowSelected}
+                    onCheckedChange={handleRowToggle}
                     isExcluding={isExcluding}
                   />
                 </span>
                 <span
                   className={styles.label}
-                  data-excluding={(isExcluding && selectedSet.has(value))
-                    || undefined}
+                  data-excluding={(isExcluding && rowSelected) || undefined}
                 >
-                  {isEmpty
+                  {isNull
                     ? <NoValueLabel className={styles.noValueLabel} />
+                    : value === ""
+                    ? <EmptyStringLabel className={styles.noValueLabel} />
                     : (renderValue?.(value) ?? value)}
                 </span>
                 {showCount && displayMode !== "minimal" && (

@@ -18,9 +18,10 @@ import classnames from "classnames";
 import React, { memo, useCallback, useMemo } from "react";
 import { Combobox } from "../../../base-components/combobox/Combobox.js";
 import type { PropertyAggregationValue } from "../../types/AggregationTypes.js";
-import { isEmptyValue } from "../../utils/filterValues.js";
+import { isNullRow } from "../../utils/filterValues.js";
+import { EmptyStringLabel } from "./EmptyStringLabel.js";
 import styles from "./MultiSelectInput.module.css";
-import { NoValueLabel } from "./NoValueLabel.js";
+import { NullValueWrapper } from "./NullValueWrapper.js";
 import sharedStyles from "./shared.module.css";
 
 interface MultiSelectInputProps {
@@ -29,6 +30,13 @@ interface MultiSelectInputProps {
   error: Error | null;
   selectedValues: string[];
   onChange: (values: string[]) => void;
+  /**
+   * Whether the SQL-null row is currently selected. Bound to the filter
+   * state's `includeNull` field. Distinct from a literal `""` selection,
+   * which lives in `selectedValues`.
+   */
+  includeNull?: boolean;
+  onIncludeNullChange?: (include: boolean) => void;
   className?: string;
   style?: React.CSSProperties;
   placeholder?: string;
@@ -43,6 +51,8 @@ function MultiSelectInputInner({
   error,
   selectedValues,
   onChange,
+  includeNull,
+  onIncludeNullChange,
   className,
   style,
   placeholder = "Select values...",
@@ -57,14 +67,24 @@ function MultiSelectInputInner({
     [onChange],
   );
 
-  const items = useMemo(
-    () => values.map(({ value }) => value),
+  const dataRows = useMemo(
+    () => values.filter((row) => !isNullRow(row)),
     [values],
   );
 
-  const countByValue = useMemo(
-    () => new Map(values.map(({ value, count }) => [value, count])),
+  const nullRow = useMemo(
+    () => values.find(isNullRow),
     [values],
+  );
+
+  const items = useMemo(
+    () => dataRows.map(({ value }) => value),
+    [dataRows],
+  );
+
+  const countByValue = useMemo(
+    () => new Map(dataRows.map(({ value, count }) => [value, count])),
+    [dataRows],
   );
 
   const comboboxFilter = useMemo(
@@ -78,13 +98,13 @@ function MultiSelectInputInner({
 
   const renderItem = useCallback(
     (value: string) => {
-      const isEmpty = isEmptyValue(value);
+      const isEmptyString = value === "";
       return (
         <Combobox.Item key={value} value={value}>
           <Combobox.ItemIndicator />
           <span className={styles.itemLabel}>
-            {isEmpty
-              ? <NoValueLabel />
+            {isEmptyString
+              ? <EmptyStringLabel />
               : (renderValue ? renderValue(value) : value)}
           </span>
           {showCounts && (
@@ -102,14 +122,14 @@ function MultiSelectInputInner({
     (selectedItems: string[]) => (
       <>
         {selectedItems.map((value) => {
-          const isEmpty = isEmptyValue(value);
+          const isEmptyString = value === "";
           return (
             <Combobox.Chip
               key={value}
-              aria-label={isEmpty ? "No value" : value}
+              aria-label={isEmptyString ? "(empty)" : value}
             >
-              {isEmpty
-                ? <NoValueLabel />
+              {isEmptyString
+                ? <EmptyStringLabel />
                 : (renderValue ? renderValue(value) : value)}
               <Combobox.ChipRemove />
             </Combobox.Chip>
@@ -124,7 +144,10 @@ function MultiSelectInputInner({
     [placeholder, ariaLabel, renderValue],
   );
 
-  return (
+  const showNullToggle = nullRow !== undefined
+    && onIncludeNullChange !== undefined;
+
+  const combobox = (
     <div
       className={classnames(styles.multiSelect, className)}
       style={style}
@@ -136,13 +159,13 @@ function MultiSelectInputInner({
         </div>
       )}
 
-      {!error && values.length === 0 && (
+      {!error && dataRows.length === 0 && !showNullToggle && (
         <div className={sharedStyles.emptyMessage}>
           {isLoading ? "Loading options..." : "No options available"}
         </div>
       )}
 
-      {(values.length > 0 || isLoading) && (
+      {(dataRows.length > 0 || isLoading) && (
         <Combobox.Root<string, true>
           multiple={true}
           value={selectedValues}
@@ -172,6 +195,23 @@ function MultiSelectInputInner({
       )}
     </div>
   );
+
+  if (showNullToggle) {
+    return (
+      <NullValueWrapper
+        nullCount={nullRow.count}
+        isLoading={isLoading}
+        error={error}
+        includeNull={includeNull}
+        onIncludeNullChange={onIncludeNullChange}
+        showNullCount={showCounts}
+      >
+        {combobox}
+      </NullValueWrapper>
+    );
+  }
+
+  return combobox;
 }
 
 export const MultiSelectInput = memo(

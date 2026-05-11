@@ -58,12 +58,16 @@ function MultiSelectFilterInputInner<Q extends ObjectTypeDefinition>({
     [filterState],
   );
   const isExcluding = filterState?.isExcluding ?? false;
+  const includeNull = filterState?.type === "SELECT"
+    ? filterState.includeNull ?? false
+    : false;
 
   const handleClearAll = useCallback(() => {
     onFilterStateChanged({
       type: "SELECT",
       selectedValues: [],
       isExcluding,
+      includeNull: false,
     });
   }, [onFilterStateChanged, isExcluding]);
 
@@ -73,9 +77,22 @@ function MultiSelectFilterInputInner<Q extends ObjectTypeDefinition>({
         type: "SELECT",
         selectedValues,
         isExcluding,
+        includeNull,
       });
     },
-    [onFilterStateChanged, isExcluding],
+    [onFilterStateChanged, isExcluding, includeNull],
+  );
+
+  const handleIncludeNullChange = useCallback(
+    (include: boolean) => {
+      onFilterStateChanged({
+        type: "SELECT",
+        selectedValues,
+        isExcluding,
+        includeNull: include,
+      });
+    },
+    [onFilterStateChanged, selectedValues, isExcluding],
   );
 
   const aggregationOptions = useMemo(
@@ -104,6 +121,8 @@ function MultiSelectFilterInputInner<Q extends ObjectTypeDefinition>({
         error={error}
         selectedValues={selectedValues}
         onChange={handleChange}
+        includeNull={includeNull}
+        onIncludeNullChange={handleIncludeNullChange}
         showCounts={showCount}
         ariaLabel={`Search ${propertyKey} values`}
         renderValue={renderValue}

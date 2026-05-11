@@ -1982,11 +1982,13 @@ export const NoValueRendering: Story = {
     docs: {
       description: {
         story:
-          "Empty/null filter values render via the canonical `<NoValueLabel />` "
-          + "component — italic, muted, with the literal text 'No value' — across "
-          + "listogram buckets, single-select dropdown options, multi-select dropdown "
-          + "options, and multi-select chips. The mock dataset includes one Employee "
-          + "with `department: \"\"` so the No value row is visible in the listogram.",
+          "`null`, `\"\"`, and whitespace-only strings are treated as three distinct "
+          + "filter values. The null row toggles `includeNull` via a sibling control "
+          + "and renders as `<NoValueLabel />` ('No value'). Literal `\"\"` renders as "
+          + "`<EmptyStringLabel />` ('(empty)') and flows through `values` literally. "
+          + "Whitespace strings render their literal characters. The mock dataset "
+          + "includes one Employee with `department: null`, one with `department: \"\"`, "
+          + "and one with `department: \"   \"` so all three rows are visible.",
       },
     },
   },

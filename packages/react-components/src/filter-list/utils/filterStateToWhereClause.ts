@@ -149,11 +149,12 @@ function filterStateToPropertyFilter(
     }
 
     case "EXACT_MATCH": {
-      return buildValueOrNullFilter(state.values);
+      return buildValueOrNullFilter(state.values, state.includeNull ?? false);
     }
 
     case "SELECT": {
-      if (state.selectedValues.length === 0) {
+      const includeNull = state.includeNull ?? false;
+      if (state.selectedValues.length === 0 && !includeNull) {
         return undefined;
       }
       const values: (string | number | boolean)[] = state.selectedValues.map(
@@ -162,7 +163,7 @@ function filterStateToPropertyFilter(
             ? formatDateValue(v, propertyType)
             : v as string | number | boolean,
       );
-      return buildValueOrNullFilter(values);
+      return buildValueOrNullFilter(values, includeNull);
     }
 
     case "TIMELINE": {
@@ -433,29 +434,29 @@ export function buildWhereClause<Q extends ObjectTypeDefinition>(
   return { $and: clauses } as WhereClause<Q>;
 }
 
-/** Splits values into non-empty and empty, returning $isNull for empty strings. */
+/**
+ * Builds a property filter for value selection plus an optional null bucket.
+ * Literal `""` is preserved as a real value; the null bucket is gated by the
+ * explicit `includeNull` argument, never inferred from `""`.
+ */
 function buildValueOrNullFilter(
   values: (string | number | boolean)[],
+  includeNull: boolean,
 ): PropertyFilter | CompoundFilter | undefined {
-  if (values.length === 0) {
+  if (values.length === 0 && !includeNull) {
     return undefined;
   }
 
-  const nonEmpty = values.filter((v) => v !== "");
-  const hasEmpty = nonEmpty.length < values.length;
-
-  const valueClause: PropertyFilter | undefined = nonEmpty.length === 0
-    ? undefined
-    : nonEmpty.length === 1
-    ? nonEmpty[0]
-    : { $in: nonEmpty };
-
-  if (!hasEmpty) {
-    return valueClause;
+  if (values.length === 0) {
+    return { $isNull: true };
   }
 
-  if (valueClause === undefined) {
-    return { $isNull: true };
+  const valueClause: PropertyFilter = values.length === 1
+    ? values[0]
+    : { $in: values };
+
+  if (!includeNull) {
+    return valueClause;
   }
 
   return {

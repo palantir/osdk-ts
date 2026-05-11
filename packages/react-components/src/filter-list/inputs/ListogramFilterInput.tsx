@@ -66,12 +66,16 @@ function ListogramFilterInputInner<Q extends ObjectTypeDefinition>({
     [filterState],
   );
   const isExcluding = filterState?.isExcluding ?? false;
+  const includeNull = filterState?.type === "EXACT_MATCH"
+    ? filterState.includeNull ?? false
+    : false;
 
   const handleClearAll = useCallback(() => {
     onFilterStateChanged({
       type: "EXACT_MATCH",
       values: [],
       isExcluding,
+      includeNull: false,
     });
   }, [onFilterStateChanged, isExcluding]);
 
@@ -81,9 +85,22 @@ function ListogramFilterInputInner<Q extends ObjectTypeDefinition>({
         type: "EXACT_MATCH",
         values,
         isExcluding,
+        includeNull,
       });
     },
-    [onFilterStateChanged, isExcluding],
+    [onFilterStateChanged, isExcluding, includeNull],
+  );
+
+  const handleIncludeNullChange = useCallback(
+    (include: boolean) => {
+      onFilterStateChanged({
+        type: "EXACT_MATCH",
+        values: selectedValues,
+        isExcluding,
+        includeNull: include,
+      });
+    },
+    [onFilterStateChanged, selectedValues, isExcluding],
   );
 
   const sortBy = displayMode === "minimal"
@@ -116,6 +133,8 @@ function ListogramFilterInputInner<Q extends ObjectTypeDefinition>({
         error={error}
         selectedValues={selectedValues}
         onChange={handleChange}
+        includeNull={includeNull}
+        onIncludeNullChange={handleIncludeNullChange}
         colorMap={colorMap}
         displayMode={displayMode}
         showCount={showCount}

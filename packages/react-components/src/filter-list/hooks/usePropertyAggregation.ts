@@ -24,7 +24,7 @@ import type {
 import { useOsdkAggregation } from "@osdk/react";
 import { useMemo } from "react";
 import type { AggregationGroupResult } from "../utils/aggregationHelpers.js";
-import { dedupeEmptyAggregationRows } from "../utils/filterValues.js";
+import { dedupeAggregationRows } from "../utils/filterValues.js";
 
 export type { PropertyAggregationValue } from "../types/AggregationTypes.js";
 
@@ -105,15 +105,23 @@ export function usePropertyAggregation<
         maxCount = Math.max(maxCount, count);
       }
 
-      const deduped = dedupeEmptyAggregationRows(values);
+      const deduped = dedupeAggregationRows(values);
 
       const sortBy = options?.sortBy ?? "count";
+      const nullTiebreak = (
+        a: PropertyAggregationValue,
+        b: PropertyAggregationValue,
+      ) => Number(b.isNull === true) - Number(a.isNull === true);
       if (sortBy === "count") {
         deduped.sort((a, b) =>
-          b.count - a.count || a.value.localeCompare(b.value)
+          b.count - a.count
+          || a.value.localeCompare(b.value)
+          || nullTiebreak(a, b)
         );
       } else {
-        deduped.sort((a, b) => a.value.localeCompare(b.value));
+        deduped.sort((a, b) =>
+          a.value.localeCompare(b.value) || nullTiebreak(a, b)
+        );
       }
 
       if (options?.limit && deduped.length > options.limit) {

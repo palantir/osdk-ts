@@ -114,9 +114,10 @@ function LinkedPropertyInputInner<
         type: "SELECT",
         selectedValues,
         isExcluding,
+        includeNull,
       });
     },
-    [wrappedOnChange, isExcluding],
+    [wrappedOnChange, isExcluding, includeNull],
   );
 
   const onSingleSelectChange = useCallback(
@@ -125,6 +126,7 @@ function LinkedPropertyInputInner<
         type: "SELECT",
         selectedValues: selectedValue !== undefined ? [selectedValue] : [],
         isExcluding,
+        includeNull: false,
       });
     },
     [wrappedOnChange, isExcluding],
@@ -174,9 +176,10 @@ function LinkedPropertyInputInner<
         type: "EXACT_MATCH",
         values,
         isExcluding,
+        includeNull,
       });
     },
-    [wrappedOnChange, isExcluding],
+    [wrappedOnChange, isExcluding, includeNull],
   );
 
   const onDateSelectChange = useCallback(
@@ -230,6 +233,48 @@ function LinkedPropertyInputInner<
     [wrappedOnChange, innerState],
   );
 
+  const onSelectNullChange = useCallback(
+    (newIncludeNull: boolean) => {
+      const selectedValues = innerState?.type === "SELECT"
+        ? coerceToStringArray(innerState.selectedValues)
+        : [];
+      wrappedOnChange({
+        type: "SELECT",
+        selectedValues,
+        isExcluding,
+        includeNull: newIncludeNull,
+      });
+    },
+    [wrappedOnChange, innerState, isExcluding],
+  );
+
+  const onSingleSelectNullChange = useCallback(
+    (newIncludeNull: boolean) => {
+      wrappedOnChange({
+        type: "SELECT",
+        selectedValues: [],
+        isExcluding,
+        includeNull: newIncludeNull,
+      });
+    },
+    [wrappedOnChange, isExcluding],
+  );
+
+  const onExactMatchNullChange = useCallback(
+    (newIncludeNull: boolean) => {
+      const values = innerState?.type === "EXACT_MATCH"
+        ? coerceToStringArray(innerState.values)
+        : [];
+      wrappedOnChange({
+        type: "EXACT_MATCH",
+        values,
+        isExcluding,
+        includeNull: newIncludeNull,
+      });
+    },
+    [wrappedOnChange, innerState, isExcluding],
+  );
+
   const content = (() => {
     switch (definition.linkedFilterComponent) {
       case "MULTI_SELECT": {
@@ -243,6 +288,8 @@ function LinkedPropertyInputInner<
             propertyKey={linkedPropertyKey}
             selectedValues={values}
             onChange={onSelectChange}
+            includeNull={includeNull}
+            onIncludeNullChange={onSelectNullChange}
             showCount={definition.showCount}
           />
         );
@@ -259,6 +306,8 @@ function LinkedPropertyInputInner<
             propertyKey={linkedPropertyKey}
             selectedValue={value}
             onChange={onSingleSelectChange}
+            includeNull={includeNull}
+            onIncludeNullChange={onSingleSelectNullChange}
             showCount={definition.showCount}
           />
         );
@@ -335,6 +384,8 @@ function LinkedPropertyInputInner<
             propertyKey={linkedPropertyKey}
             selectedValues={selectedValues}
             onChange={onExactMatchChange}
+            includeNull={includeNull}
+            onIncludeNullChange={onExactMatchNullChange}
             searchQuery={searchQuery}
             showCount={definition.showCount}
           />
@@ -353,6 +404,8 @@ function LinkedPropertyInputInner<
             propertyKey={linkedPropertyKey}
             tags={tags}
             onChange={onExactMatchChange}
+            includeNull={includeNull}
+            onIncludeNullChange={onExactMatchNullChange}
           />
         );
       }
@@ -425,6 +478,8 @@ interface LinkedMultiSelectInputProps<Q extends ObjectTypeDefinition>
 {
   selectedValues: string[];
   onChange: (values: string[]) => void;
+  includeNull?: boolean;
+  onIncludeNullChange?: (include: boolean) => void;
   showCount?: boolean;
 }
 
@@ -434,6 +489,8 @@ function LinkedMultiSelectInput<Q extends ObjectTypeDefinition>({
   propertyKey,
   selectedValues,
   onChange,
+  includeNull,
+  onIncludeNullChange,
   showCount,
 }: LinkedMultiSelectInputProps<Q>): React.ReactElement {
   const { data, isLoading, error } = usePropertyAggregation(
@@ -448,6 +505,8 @@ function LinkedMultiSelectInput<Q extends ObjectTypeDefinition>({
       error={error}
       selectedValues={selectedValues}
       onChange={onChange}
+      includeNull={includeNull}
+      onIncludeNullChange={onIncludeNullChange}
       showCounts={showCount}
     />
   );
@@ -458,6 +517,8 @@ interface LinkedSingleSelectInputProps<Q extends ObjectTypeDefinition>
 {
   selectedValue: string | undefined;
   onChange: (value: string | undefined) => void;
+  includeNull?: boolean;
+  onIncludeNullChange?: (include: boolean) => void;
   showCount?: boolean;
 }
 
@@ -467,6 +528,8 @@ function LinkedSingleSelectInput<Q extends ObjectTypeDefinition>({
   propertyKey,
   selectedValue,
   onChange,
+  includeNull,
+  onIncludeNullChange,
   showCount,
 }: LinkedSingleSelectInputProps<Q>): React.ReactElement {
   const { data, isLoading, error } = usePropertyAggregation(
@@ -481,6 +544,8 @@ function LinkedSingleSelectInput<Q extends ObjectTypeDefinition>({
       error={error}
       selectedValue={selectedValue}
       onChange={onChange}
+      includeNull={includeNull}
+      onIncludeNullChange={onIncludeNullChange}
       showCounts={showCount}
       ariaLabel={`Select ${propertyKey as string}`}
     />
@@ -492,6 +557,8 @@ interface LinkedListogramInputProps<Q extends ObjectTypeDefinition>
 {
   selectedValues: string[];
   onChange: (values: string[]) => void;
+  includeNull?: boolean;
+  onIncludeNullChange?: (include: boolean) => void;
   searchQuery?: string;
   showCount?: boolean;
 }
@@ -502,6 +569,8 @@ function LinkedListogramInput<Q extends ObjectTypeDefinition>({
   propertyKey,
   selectedValues,
   onChange,
+  includeNull,
+  onIncludeNullChange,
   searchQuery,
   showCount,
 }: LinkedListogramInputProps<Q>): React.ReactElement {
@@ -518,6 +587,8 @@ function LinkedListogramInput<Q extends ObjectTypeDefinition>({
       error={error}
       selectedValues={selectedValues}
       onChange={onChange}
+      includeNull={includeNull}
+      onIncludeNullChange={onIncludeNullChange}
       searchQuery={searchQuery}
       showCount={showCount}
     />
@@ -529,6 +600,8 @@ interface LinkedTextTagsInputProps<Q extends ObjectTypeDefinition>
 {
   tags: string[];
   onChange: (values: string[]) => void;
+  includeNull?: boolean;
+  onIncludeNullChange?: (include: boolean) => void;
 }
 
 function LinkedTextTagsInput<Q extends ObjectTypeDefinition>({
@@ -537,6 +610,8 @@ function LinkedTextTagsInput<Q extends ObjectTypeDefinition>({
   propertyKey,
   tags,
   onChange,
+  includeNull,
+  onIncludeNullChange,
 }: LinkedTextTagsInputProps<Q>): React.ReactElement {
   const aggregationOptions = useMemo(() => ({ limit: 50 }), []);
   const { data, isLoading, error } = usePropertyAggregation(
@@ -552,6 +627,8 @@ function LinkedTextTagsInput<Q extends ObjectTypeDefinition>({
       error={error}
       tags={tags}
       onChange={onChange}
+      includeNull={includeNull}
+      onIncludeNullChange={onIncludeNullChange}
       suggestionLimit={10}
     />
   );

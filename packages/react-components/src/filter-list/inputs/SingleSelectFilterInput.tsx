@@ -58,12 +58,16 @@ function SingleSelectFilterInputInner<Q extends ObjectTypeDefinition>({
     [filterState],
   );
   const isExcluding = filterState?.isExcluding ?? false;
+  const includeNull = filterState?.type === "SELECT"
+    ? filterState.includeNull ?? false
+    : false;
 
   const handleClearAll = useCallback(() => {
     onFilterStateChanged({
       type: "SELECT",
       selectedValues: [],
       isExcluding,
+      includeNull: false,
     });
   }, [onFilterStateChanged, isExcluding]);
 
@@ -73,9 +77,24 @@ function SingleSelectFilterInputInner<Q extends ObjectTypeDefinition>({
         type: "SELECT",
         selectedValues: value !== undefined ? [value] : [],
         isExcluding,
+        includeNull: false,
       });
     },
     [onFilterStateChanged, isExcluding],
+  );
+
+  const handleIncludeNullChange = useCallback(
+    (include: boolean) => {
+      onFilterStateChanged({
+        type: "SELECT",
+        selectedValues: include
+          ? []
+          : (selectedValue !== undefined ? [selectedValue] : []),
+        isExcluding,
+        includeNull: include,
+      });
+    },
+    [onFilterStateChanged, selectedValue, isExcluding],
   );
 
   const aggregationOptions = useMemo(
@@ -104,6 +123,8 @@ function SingleSelectFilterInputInner<Q extends ObjectTypeDefinition>({
         error={error}
         selectedValue={selectedValue}
         onChange={handleChange}
+        includeNull={includeNull}
+        onIncludeNullChange={handleIncludeNullChange}
         showCounts={showCount}
         ariaLabel={`Select ${propertyKey}`}
         renderValue={renderValue}

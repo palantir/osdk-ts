@@ -905,6 +905,15 @@ Styling for filter list components including search, checkboxes, listogram, and 
 | `--osdk-filter-null-count-font-size`   | `var(--osdk-typography-size-body-small)`    | Null count font size   |
 | `--osdk-filter-null-count-color`       | `var(--osdk-typography-color-muted)`        | Null count color       |
 
+#### Empty-Value Label Tokens
+
+| Variable                                | Default Value                        | Description                                      |
+| --------------------------------------- | ------------------------------------ | ------------------------------------------------ |
+| `--osdk-filter-no-value-color`          | `var(--osdk-typography-color-muted)` | Color for the "No value" row label (SQL null)    |
+| `--osdk-filter-no-value-font-style`     | `italic`                             | Font style for the "No value" row label          |
+| `--osdk-filter-empty-string-color`      | `var(--osdk-typography-color-muted)` | Color for the "(empty)" row label (literal `""`) |
+| `--osdk-filter-empty-string-font-style` | `italic`                             | Font style for the "(empty)" row label           |
+
 #### Multi-Select Tokens
 
 | Variable                                      | Default Value                            | Description                |
