@@ -20,6 +20,7 @@ import React, { memo, useCallback, useMemo, useState } from "react";
 import { Combobox } from "../../../base-components/combobox/Combobox.js";
 import type { PropertyAggregationValue } from "../../types/AggregationTypes.js";
 import { isEmptyValue } from "../../utils/filterValues.js";
+import { useFilterListBoundary } from "../FilterListBoundaryContext.js";
 import { NoValueLabel } from "./NoValueLabel.js";
 import sharedStyles from "./shared.module.css";
 import styles from "./TextTagsInput.module.css";
@@ -81,6 +82,7 @@ function TextTagsInputInner({
   suggestionLimit = 10,
   ariaLabel = "Add tag",
 }: TextTagsInputProps): React.ReactElement {
+  const collisionBoundary = useFilterListBoundary();
   const [inputValue, setInputValue] = useState("");
 
   const filteredSuggestions = useMemo(() => {
@@ -198,7 +200,7 @@ function TextTagsInputInner({
         />
 
         <Combobox.Portal>
-          <Combobox.Positioner>
+          <Combobox.Positioner collisionBoundary={collisionBoundary}>
             <Combobox.Popup>
               {filteredSuggestions.length === 0
                 ? (
