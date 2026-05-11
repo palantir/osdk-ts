@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type React from "react";
 import { createContext, useContext } from "react";
 
 /**
@@ -23,7 +24,8 @@ import { createContext, useContext } from "react";
  */
 const FilterListBoundaryContext = createContext<Element | null>(null);
 
-export const FilterListBoundaryProvider = FilterListBoundaryContext.Provider;
+export const FilterListBoundaryProvider: React.Provider<Element | null> =
+  FilterListBoundaryContext.Provider;
 
 export function useFilterListBoundary(): Element | undefined {
   return useContext(FilterListBoundaryContext) ?? undefined;
