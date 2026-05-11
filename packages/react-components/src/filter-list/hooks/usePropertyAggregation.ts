@@ -25,6 +25,7 @@ import { useOsdkAggregation } from "@osdk/react";
 import { useMemo } from "react";
 import type { AggregationGroupResult } from "../utils/aggregationHelpers.js";
 import { dedupeEmptyAggregationRows } from "../utils/filterValues.js";
+import { mergeAggregationValues } from "../utils/mergeAggregationValues.js";
 
 export type { PropertyAggregationValue } from "../types/AggregationTypes.js";
 
@@ -37,12 +38,17 @@ export interface UsePropertyAggregationResult {
   error: Error | null;
 }
 
+const EMPTY_ACTIVE_VALUES: string[] = [];
+
 export interface UsePropertyAggregationOptions<
   Q extends ObjectTypeDefinition = ObjectTypeDefinition,
 > {
   limit?: number;
   where?: WhereClause<Q>;
   sortBy?: "count" | "value";
+  /** Selected values to include in results even when they have zero matching
+   *  rows (e.g. saved filter selections from initialFilterStates). */
+  activeValues?: string[];
 }
 
 export function usePropertyAggregation<
@@ -125,8 +131,14 @@ export function usePropertyAggregation<
     [countData, propertyKey, options?.limit, options?.sortBy],
   );
 
+  const activeValues = options?.activeValues ?? EMPTY_ACTIVE_VALUES;
+  const mergedData = useMemo(
+    () => mergeAggregationValues(result.data, activeValues),
+    [result.data, activeValues],
+  );
+
   return {
-    data: result.data,
+    data: mergedData,
     maxCount: result.maxCount,
     isLoading,
     error: error ?? null,

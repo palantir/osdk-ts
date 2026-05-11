@@ -26,7 +26,6 @@ import { SingleSelectInput } from "../base/inputs/SingleSelectInput.js";
 import type { FilterState } from "../FilterListItemApi.js";
 import { usePropertyAggregation } from "../hooks/usePropertyAggregation.js";
 import { coerceToString } from "../utils/coerceFilterValue.js";
-import { mergeAggregationValues } from "../utils/mergeAggregationValues.js";
 
 interface SingleSelectFilterInputProps<Q extends ObjectTypeDefinition> {
   objectType: Q;
@@ -80,8 +79,11 @@ function SingleSelectFilterInputInner<Q extends ObjectTypeDefinition>({
   );
 
   const aggregationOptions = useMemo(
-    () => ({ where: whereClause }),
-    [whereClause],
+    () => ({
+      where: whereClause,
+      activeValues: selectedValue != null ? [selectedValue] : undefined,
+    }),
+    [whereClause, selectedValue],
   );
 
   const { data, isLoading, error } = usePropertyAggregation(
@@ -91,28 +93,16 @@ function SingleSelectFilterInputInner<Q extends ObjectTypeDefinition>({
     aggregationOptions,
   );
 
-  // Saved filter selections (e.g. from initialFilterStates) may reference values
-  // that no longer appear in aggregation results (zero matching rows). Merge them
-  // so the UI always shows them as a visible, selectable option.
-  const selectedAsArray = useMemo(
-    () => (selectedValue != null ? [selectedValue] : []),
-    [selectedValue],
-  );
-  const mergedData = useMemo(
-    () => mergeAggregationValues(data, selectedAsArray),
-    [data, selectedAsArray],
-  );
-
   return (
     <FilterInputExcludeRow
       excludeRowOpen={excludeRowOpen}
       filterState={filterState}
       onFilterStateChanged={onFilterStateChanged}
-      totalValueCount={mergedData.length}
+      totalValueCount={data.length}
       onClearAll={handleClearAll}
     >
       <SingleSelectInput
-        values={mergedData}
+        values={data}
         isLoading={isLoading}
         error={error}
         selectedValue={selectedValue}

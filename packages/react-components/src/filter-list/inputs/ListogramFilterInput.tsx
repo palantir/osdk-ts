@@ -26,7 +26,6 @@ import { ListogramInput } from "../base/inputs/ListogramInput.js";
 import type { FilterState } from "../FilterListItemApi.js";
 import { usePropertyAggregation } from "../hooks/usePropertyAggregation.js";
 import { coerceToStringArray } from "../utils/coerceFilterValue.js";
-import { mergeAggregationValues } from "../utils/mergeAggregationValues.js";
 
 interface ListogramFilterInputProps<Q extends ObjectTypeDefinition> {
   objectType: Q;
@@ -91,8 +90,8 @@ function ListogramFilterInputInner<Q extends ObjectTypeDefinition>({
     ? "value" as const
     : "count" as const;
   const aggregationOptions = useMemo(
-    () => ({ where: whereClause, sortBy }),
-    [whereClause, sortBy],
+    () => ({ where: whereClause, sortBy, activeValues: selectedValues }),
+    [whereClause, sortBy, selectedValues],
   );
 
   const { data, maxCount, isLoading, error } = usePropertyAggregation(
@@ -102,24 +101,16 @@ function ListogramFilterInputInner<Q extends ObjectTypeDefinition>({
     aggregationOptions,
   );
 
-  // Saved filter selections (e.g. from initialFilterStates) may reference values
-  // that no longer appear in aggregation results (zero matching rows). Merge them
-  // so the UI always shows them as checked items the user can deselect.
-  const mergedData = useMemo(
-    () => mergeAggregationValues(data, selectedValues),
-    [data, selectedValues],
-  );
-
   return (
     <FilterInputExcludeRow
       excludeRowOpen={excludeRowOpen}
       filterState={filterState}
       onFilterStateChanged={onFilterStateChanged}
-      totalValueCount={mergedData.length}
+      totalValueCount={data.length}
       onClearAll={handleClearAll}
     >
       <ListogramInput
-        values={mergedData}
+        values={data}
         maxCount={maxCount}
         isLoading={isLoading}
         error={error}

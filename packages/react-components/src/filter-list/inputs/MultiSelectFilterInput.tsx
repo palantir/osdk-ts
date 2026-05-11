@@ -26,7 +26,6 @@ import { MultiSelectInput } from "../base/inputs/MultiSelectInput.js";
 import type { FilterState } from "../FilterListItemApi.js";
 import { usePropertyAggregation } from "../hooks/usePropertyAggregation.js";
 import { coerceToStringArray } from "../utils/coerceFilterValue.js";
-import { mergeAggregationValues } from "../utils/mergeAggregationValues.js";
 
 interface MultiSelectFilterInputProps<Q extends ObjectTypeDefinition> {
   objectType: Q;
@@ -80,8 +79,8 @@ function MultiSelectFilterInputInner<Q extends ObjectTypeDefinition>({
   );
 
   const aggregationOptions = useMemo(
-    () => ({ where: whereClause }),
-    [whereClause],
+    () => ({ where: whereClause, activeValues: selectedValues }),
+    [whereClause, selectedValues],
   );
 
   const { data, isLoading, error } = usePropertyAggregation(
@@ -91,24 +90,16 @@ function MultiSelectFilterInputInner<Q extends ObjectTypeDefinition>({
     aggregationOptions,
   );
 
-  // Saved filter selections (e.g. from initialFilterStates) may reference values
-  // that no longer appear in aggregation results (zero matching rows). Merge them
-  // so the UI always shows them as visible, removable chips.
-  const mergedData = useMemo(
-    () => mergeAggregationValues(data, selectedValues),
-    [data, selectedValues],
-  );
-
   return (
     <FilterInputExcludeRow
       excludeRowOpen={excludeRowOpen}
       filterState={filterState}
       onFilterStateChanged={onFilterStateChanged}
-      totalValueCount={mergedData.length}
+      totalValueCount={data.length}
       onClearAll={handleClearAll}
     >
       <MultiSelectInput
-        values={mergedData}
+        values={data}
         isLoading={isLoading}
         error={error}
         selectedValues={selectedValues}

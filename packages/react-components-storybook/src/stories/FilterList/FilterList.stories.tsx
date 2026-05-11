@@ -2023,6 +2023,32 @@ const locationCitySingleSelectFilter: FilterDefinitionUnion<Employee> = {
   filterState: { type: "SELECT", selectedValues: [] },
 };
 
+const linkedDepartmentMultiSelectFilter: FilterDefinitionUnion<Employee> = {
+  type: "LINKED_PROPERTY",
+  linkName: "lead",
+  linkedPropertyKey: "department",
+  linkedFilterComponent: "MULTI_SELECT",
+  linkedFilterState: { type: "SELECT", selectedValues: [] },
+  filterState: {
+    type: "linkedProperty",
+    linkedFilterState: { type: "SELECT", selectedValues: [] },
+  },
+  label: "Manager Department (linked multi)",
+} as FilterDefinitionUnion<Employee>;
+
+const linkedCitySingleSelectFilter: FilterDefinitionUnion<Employee> = {
+  type: "LINKED_PROPERTY",
+  linkName: "lead",
+  linkedPropertyKey: "locationCity",
+  linkedFilterComponent: "SINGLE_SELECT",
+  linkedFilterState: { type: "SELECT", selectedValues: [] },
+  filterState: {
+    type: "linkedProperty",
+    linkedFilterState: { type: "SELECT", selectedValues: [] },
+  },
+  label: "Manager City (linked single)",
+} as FilterDefinitionUnion<Employee>;
+
 const SAVED_FILTER_STATES = new Map<string, FilterState>([
   // "Research", "Chief Scientist", and "Berlin" are NOT in the mock employee
   // dataset — they simulate saved selections that currently have zero matching
@@ -2035,17 +2061,36 @@ const SAVED_FILTER_STATES = new Map<string, FilterState>([
     selectedValues: ["Marketing Manager", "Chief Scientist"],
   }],
   ["locationCity-single", { type: "SELECT", selectedValues: ["Berlin"] }],
+  // Linked property filters — ghost values are merged via mergeAggregationValues
+  // in LinkedMultiSelectInput, LinkedSingleSelectInput, and LinkedListogramInput.
+  ["linkedProperty:lead:department", {
+    type: "linkedProperty",
+    linkedFilterState: {
+      type: "SELECT",
+      selectedValues: ["Marketing", "Research"],
+    },
+  }],
+  ["linkedProperty:lead:locationCity", {
+    type: "linkedProperty",
+    linkedFilterState: { type: "SELECT", selectedValues: ["Berlin"] },
+  }],
 ]);
 
 const INITIAL_STATE_FILTER_DEFINITIONS: FilterDefinitionUnion<Employee>[] = [
   departmentFilter,
   jobTitleMultiSelectFilter,
   locationCitySingleSelectFilter,
+  linkedDepartmentMultiSelectFilter,
+  linkedCitySingleSelectFilter,
 ];
 
 function WithInitialFilterStatesStory(
   args: Partial<EmployeeFilterListProps>,
 ) {
+  const client = useOsdkClient();
+  // Linked property filters require an objectSet to call pivotTo() on.
+  const objectSet = useMemo(() => client(Employee), [client]);
+
   const [filterClause, setFilterClause] = useState<
     WhereClause<Employee> | undefined
   >(undefined);
@@ -2063,6 +2108,7 @@ function WithInitialFilterStatesStory(
         <FilterList
           {...args}
           objectType={Employee}
+          objectSet={objectSet}
           filterDefinitions={INITIAL_STATE_FILTER_DEFINITIONS}
           initialFilterStates={SAVED_FILTER_STATES}
           onFilterClauseChanged={handleFilterClauseChanged}
@@ -2089,7 +2135,8 @@ export const WithInitialFilterStates: Story = {
           + "(e.g. localStorage or URL params). Selections are restored on "
           + "mount, including values that currently have zero matching rows "
           + "— they appear with a count of 0 so users can see and clear them. "
-          + "Demonstrated across LISTOGRAM, MULTI_SELECT, and SINGLE_SELECT.",
+          + "Demonstrated across LISTOGRAM, MULTI_SELECT, SINGLE_SELECT, "
+          + "and LINKED_PROPERTY filters.",
       },
       source: {
         code:
@@ -2097,9 +2144,19 @@ export const WithInitialFilterStates: Story = {
 // dataset — they represent saved selections with zero matching rows
 // today. The filter list still shows them so users can see and clear them.
 const savedStates = new Map([
+  // Direct property filters
   ["department", { type: "EXACT_MATCH", values: ["Marketing", "Research"] }],
   ["jobTitle-multi", { type: "SELECT", selectedValues: ["Marketing Manager", "Chief Scientist"] }],
   ["locationCity-single", { type: "SELECT", selectedValues: ["Berlin"] }],
+  // Linked property filters
+  ["linkedProperty:lead:department", {
+    type: "linkedProperty",
+    linkedFilterState: { type: "SELECT", selectedValues: ["Marketing", "Research"] },
+  }],
+  ["linkedProperty:lead:locationCity", {
+    type: "linkedProperty",
+    linkedFilterState: { type: "SELECT", selectedValues: ["Berlin"] },
+  }],
 ]);
 
 <FilterList
