@@ -102,7 +102,14 @@ export default function DateCalendar({
   const fromYear = min != null ? min.getFullYear() : DEFAULT_FROM_YEAR;
   const toYear = max != null ? max.getFullYear() : DEFAULT_TO_YEAR;
   const today = new Date();
-  const isTodaySelectable = isDateInRange(today, min, max);
+  // Compare at midnight so the Today button stays enabled when min/max are
+  // set to today's date at midnight (the common case for date-only bounds).
+  const todayMidnight = new Date(
+    today.getFullYear(),
+    today.getMonth(),
+    today.getDate(),
+  );
+  const isTodaySelectable = isDateInRange(todayMidnight, min, max);
   const handleTodayClick = useCallback(() => {
     if (!isTodaySelectable) {
       return;
