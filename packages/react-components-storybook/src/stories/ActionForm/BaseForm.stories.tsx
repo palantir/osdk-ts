@@ -908,6 +908,7 @@ const multiSelectDropdownFormContent: ReadonlyArray<FormContentItem> = [
     fieldKey: "categories",
     fieldComponent: "DROPDOWN",
     label: "Categories (Select)",
+    isRequired: true,
     fieldComponentProps: {
       items: TAG_ITEMS,
       isMultiple: true,
