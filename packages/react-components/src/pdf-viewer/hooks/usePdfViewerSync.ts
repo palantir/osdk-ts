@@ -21,6 +21,7 @@ import { useCallback, useEffect, useRef } from "react";
 import {
   PAGE_CHANGING_EVENT,
   PAGE_WIDTH_SCALE_VALUE,
+  PAGES_LOADED_EVENT,
   SCALE_CHANGING_EVENT,
 } from "../constants.js";
 
@@ -61,14 +62,34 @@ export function usePdfViewerSync({
     }
   }, [pdfViewerRef, scale, autoSize]);
 
-  // Apply page-width scale when auto-size is enabled
+  // Apply page-width scale when auto-size is enabled.
+  // On initial load, pagesloaded fires after usePdfViewer sets the initial
+  // numeric scale, so we must listen for that event to apply page-width last.
+  // When toggled on later (pagesLoaded already fired), apply immediately.
   useEffect(function syncAutoSizeToViewer() {
     const pdfViewer = pdfViewerRef.current;
+    const eventBus = eventBusRef.current;
     if (pdfViewer == null || !autoSize) {
       return;
     }
-    pdfViewer.currentScaleValue = PAGE_WIDTH_SCALE_VALUE;
-  }, [pdfViewerRef, autoSize, document]);
+
+    const applyPageWidth = () => {
+      pdfViewer.currentScaleValue = PAGE_WIDTH_SCALE_VALUE;
+    };
+
+    // If pages are already rendered (pagesCount > 0), apply immediately.
+    // Otherwise wait for the pagesloaded event.
+    if (pdfViewer.pagesCount > 0) {
+      applyPageWidth();
+    }
+
+    if (eventBus != null) {
+      eventBus.on(PAGES_LOADED_EVENT, applyPageWidth);
+      return () => {
+        eventBus.off(PAGES_LOADED_EVENT, applyPageWidth);
+      };
+    }
+  }, [pdfViewerRef, eventBusRef, autoSize, document]);
 
   // ResizeObserver: re-apply page-width on container resize when auto-size is active
   useEffect(function observeContainerResize() {
