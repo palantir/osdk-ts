@@ -182,6 +182,43 @@ describe("usePdfViewerState", () => {
     expect(coreResult.setScale).toHaveBeenCalledWith(MIN_SCALE);
   });
 
+  it("should disable autoSize when zooming in", () => {
+    const { result, coreResult } = setup({ coreScale: 1.0 });
+
+    act(() => {
+      result.current.zoomIn();
+    });
+
+    expect(coreResult.setAutoSize).toHaveBeenCalledWith(false);
+  });
+
+  it("should disable autoSize when zooming out", () => {
+    const { result, coreResult } = setup({ coreScale: 1.5 });
+
+    act(() => {
+      result.current.zoomOut();
+    });
+
+    expect(coreResult.setAutoSize).toHaveBeenCalledWith(false);
+  });
+
+  // --- Auto-size ---
+
+  it("should expose autoSize from core", () => {
+    const { result } = setup();
+    expect(result.current.autoSize).toBe(false);
+  });
+
+  it("should toggle autoSize", () => {
+    const { result, coreResult } = setup();
+
+    act(() => {
+      result.current.toggleAutoSize();
+    });
+
+    expect(coreResult.setAutoSize).toHaveBeenCalledWith(true);
+  });
+
   // --- Rotation ---
 
   it("should start with rotation 0", () => {

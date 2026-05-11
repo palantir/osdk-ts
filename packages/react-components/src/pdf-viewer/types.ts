@@ -147,6 +147,7 @@ export interface PdfViewerInstanceOptions {
    * Whether auto-size (fit to width) is initially enabled.
    * When enabled, the PDF scales to fit the container width and
    * re-fits automatically on resize. Manual zoom disables auto-size.
+   * Takes precedence over {@link initialScale} when enabled.
    * @default false
    */
   initialAutoSize?: boolean;
@@ -208,6 +209,7 @@ export interface PdfViewerProps {
    * Whether auto-size (fit to width) is initially enabled.
    * When enabled, the PDF scales to fit the container width and
    * re-fits automatically on resize. Manual zoom disables auto-size.
+   * Takes precedence over {@link initialScale} when enabled.
    * @default false
    */
   initialAutoSize?: boolean;

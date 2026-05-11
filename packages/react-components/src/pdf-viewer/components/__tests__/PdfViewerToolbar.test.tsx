@@ -191,6 +191,33 @@ describe("PdfViewerToolbar", () => {
     expect(input.value).toBe("5");
   });
 
+  it("should render auto-size button with correct aria-pressed state", () => {
+    const { rerender } = render(
+      <PdfViewerToolbar {...defaultProps} autoSize={false} />,
+    );
+
+    const button = screen.getByLabelText("Fit to width");
+    expect(button.getAttribute("aria-pressed")).toBe("false");
+
+    rerender(<PdfViewerToolbar {...defaultProps} autoSize={true} />);
+
+    const activeButton = screen.getByLabelText("Disable fit to width");
+    expect(activeButton.getAttribute("aria-pressed")).toBe("true");
+  });
+
+  it("should call onAutoSizeToggle when auto-size button is clicked", () => {
+    const onAutoSizeToggle = vi.fn();
+    render(
+      <PdfViewerToolbar
+        {...defaultProps}
+        onAutoSizeToggle={onAutoSizeToggle}
+      />,
+    );
+
+    fireEvent.click(screen.getByLabelText("Fit to width"));
+    expect(onAutoSizeToggle).toHaveBeenCalled();
+  });
+
   it("should render save button when enableFormSave is true", () => {
     render(
       <PdfViewerToolbar

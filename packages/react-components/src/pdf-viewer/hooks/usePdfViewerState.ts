@@ -14,8 +14,13 @@
  * limitations under the License.
  */
 
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { MAX_SCALE, MIN_SCALE, SCALE_STEP } from "../constants.js";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  MAX_SCALE,
+  MIN_SCALE,
+  PAGE_WIDTH_SCALE_VALUE,
+  SCALE_STEP,
+} from "../constants.js";
 import type { PdfDownloadResult, SidebarMode } from "../types.js";
 import { usePdfOutline } from "./usePdfOutline.js";
 import type {
@@ -109,6 +114,21 @@ export function usePdfViewerState({
       pdfViewer.pagesRotation = rotation;
     }
   }, [core.pdfViewerRef, rotation]);
+
+  // Re-apply page-width after rotation changes while auto-size is active.
+  // Rotation changes the effective page width, so auto-size must re-fit.
+  const prevRotationRef = useRef(rotation);
+  useEffect(function reapplyAutoSizeAfterRotation() {
+    if (prevRotationRef.current === rotation) {
+      return;
+    }
+    prevRotationRef.current = rotation;
+    const pdfViewer = core.pdfViewerRef.current;
+    if (pdfViewer == null || !core.autoSize) {
+      return;
+    }
+    pdfViewer.currentScaleValue = PAGE_WIDTH_SCALE_VALUE;
+  }, [core.pdfViewerRef, core.autoSize, rotation]);
 
   // Ctrl+F keyboard shortcut
   useEffect(function registerSearchShortcut() {
