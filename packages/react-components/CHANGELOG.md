@@ -1,5 +1,26 @@
 # @osdk/react-components
 
+## 0.13.0
+
+### Minor Changes
+
+- 53e5f4f: Cap the Combobox popup at 320px (configurable via `--osdk-combobox-popup-max-height`) with overflow scrolling. Long option lists no longer push other UI off-screen — they scroll inside the popup. A short browser window still gets a smaller cap because the rule resolves to `min(320px, var(--available-height))`.
+- aca2466: Standardize "No value" rendering in FilterList — introduce a shared `NoValueLabel` component (italic, muted) used by listogram buckets, single-select and multi-select dropdown options, multi-select chips, text-tag chips, and the `NullValueWrapper` include-null row. Adds an `isEmptyValue` helper. The `NullValueWrapper` include-null row's default visual flips from upright/default-color to italic/muted so it matches the dropdown and listogram surfaces. Legacy `--osdk-filter-listogram-empty-label-color`, `--osdk-filter-listogram-empty-label-font-style`, `--osdk-filter-null-label-color`, `--osdk-filter-null-label-font-family`, `--osdk-filter-null-label-font-size`, and `--osdk-filter-null-label-line-height` tokens are honored as opt-in overrides on the listogram and null-wrapper containers; consumers who explicitly set them continue to override the new italic-muted defaults.
+- fe39be0: Stabilize per-filter where-clause references inside `useFilterListState` via deep-equality caching, so `FilterInput.memo` holds when the cross-filter context for a given filter is unchanged across selections. Eliminates redundant aggregation requests on every value selection. Internal-only — no public API changes.
+- 76ab0a3: ObjectTable: Fix bug when cell is marked edited on clicking into and out of an empty cell
+- 72e928b: ObjectTable: support per-row edit configuration via `editable: (rowData) => boolean`, add `getRowAttributes` prop for conditional row styling via data attributes, replace `editFieldConfig.fieldComponentProps` with `editFieldConfig.getFieldComponentProps(rowData)` so editor configuration can vary per row, and add a `showEditFooter` prop to opt out of the built-in edit footer.
+- 9be8339: Polish ActionForm date/time controls, boolean switch fields, form submission, popup positioning, component tokens, and FauxFoundry action typings.
+
+## 0.12.0
+
+### Minor Changes
+
+- d15d3cf: Add Blueprint-style design tokens for buttons, inputs, and table rows
+- 56c5630: Drop redundant `--config $(find-up dprint.json)` from `lint`, `fix-lint`, and `format` scripts. dprint already auto-discovers `dprint.json` by walking up from cwd; the substitution was a no-op anyway since `find-up` is an npm package, not a CLI. Also fix the `uploadMediaOntologyEdits` documentation example so its `// @ts-ignore` survives dprint reformatting (the broken `format` step had been masking this).
+- b187c09: ObjectTable: when a column has both `renderCell` and `editable: true`, use `renderCell` while not in edit mode and the editable cell only after entering edit mode (relevant for `editMode: "manual"`). Previously `renderCell` always took precedence and editable cells never appeared.
+- 7a0c187: add `onFilterVisibilityChange` callback to `FilterList` that fires when filters are reordered, added, or removed, returning all filters in display order with their visibility state. Useful for persisting filter configuration in saved states.
+- 5d0c6b7: Fix Action Form popover dismissal inside dialog portals.
+
 ## 0.11.0
 
 ### Minor Changes

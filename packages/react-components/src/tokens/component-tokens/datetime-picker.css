@@ -11,7 +11,7 @@
 
   /* Calendar */
   --osdk-datetime-calendar-font-family: var(--osdk-typography-family-default);
-  --osdk-datetime-calendar-font-size: var(--osdk-typography-size-body-small);
+  --osdk-datetime-calendar-font-size: var(--osdk-input-font-size);
   --osdk-datetime-calendar-cell-size: calc(var(--osdk-surface-spacing) * 8);
   --osdk-datetime-calendar-gap: 2px;
 
@@ -26,7 +26,7 @@
   /* Calendar weekday header */
   --osdk-datetime-calendar-weekday-color: var(--osdk-typography-color-muted);
   --osdk-datetime-calendar-weekday-font-size: var(
-    --osdk-typography-size-body-x-small
+    --osdk-datetime-calendar-font-size
   );
 
   --osdk-datetime-calendar-day-color: var(--osdk-typography-color-default);
@@ -49,9 +49,8 @@
   --osdk-datetime-calendar-selected-hover-bg: var(--osdk-intent-primary-hover);
 
   /* Calendar today */
-  --osdk-datetime-calendar-today-font-weight: var(
-    --osdk-typography-weight-bold
-  );
+  --osdk-datetime-calendar-today-border: 1px solid
+    var(--osdk-input-border-color);
 
   /* Calendar range middle (days between start and end) */
   --osdk-datetime-calendar-range-middle-bg: color-mix(

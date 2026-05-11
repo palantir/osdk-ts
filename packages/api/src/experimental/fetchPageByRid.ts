@@ -32,11 +32,12 @@ type fetchPageByRidFn = <
   const R extends boolean,
   const S extends NullabilityAdherence,
   const T extends boolean,
+  const PROPERTY_SECURITIES extends boolean = false,
 >(
   objectType: Q,
   rids: string[],
-  options?: FetchPageArgs<Q, L, R, any, S, T>,
-) => Promise<FetchPageResult<Q, L, R, S, T>>;
+  options?: FetchPageArgs<Q, L, R, any, S, T, never, {}, PROPERTY_SECURITIES>,
+) => Promise<FetchPageResult<Q, L, R, S, T, {}, PROPERTY_SECURITIES>>;
 
 export type FetchPageByRidPayload = {
   fetchPageByRid: fetchPageByRidFn;
@@ -47,10 +48,31 @@ type fetchPageByRidNoTypeFn = <
   const R extends boolean,
   const S extends NullabilityAdherence,
   const T extends boolean,
+  const PROPERTY_SECURITIES extends boolean = false,
 >(
   rids: readonly string[],
-  options?: FetchPageArgs<ObjectOrInterfaceDefinition, any, R, any, S, T>,
-) => Promise<FetchPageResult<ObjectOrInterfaceDefinition, any, R, S, T>>;
+  options?: FetchPageArgs<
+    ObjectOrInterfaceDefinition,
+    any,
+    R,
+    any,
+    S,
+    T,
+    never,
+    {},
+    PROPERTY_SECURITIES
+  >,
+) => Promise<
+  FetchPageResult<
+    ObjectOrInterfaceDefinition,
+    any,
+    R,
+    S,
+    T,
+    {},
+    PROPERTY_SECURITIES
+  >
+>;
 
 export const __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchPageByRid: Experiment<
   "2.2.0",

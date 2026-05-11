@@ -23,7 +23,7 @@ import type {
 import { BaseForm } from "@osdk/react-components/experimental";
 import { useOsdkClient } from "@osdk/react/experimental";
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import React, { useCallback, useMemo, useRef, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { fn } from "storybook/test";
 import { fauxFoundry } from "../../mocks/fauxFoundry.js";
 import { Employee } from "../../types/Employee.js";
@@ -180,8 +180,7 @@ function SubmitToast(): React.ReactElement | null {
 }
 
 const meta: Meta<BaseFormStoryProps> = {
-  title: "Experimental/BaseForm",
-  tags: ["experimental"],
+  title: "Experimental/ActionForm/Building Blocks/BaseForm",
   component: BaseForm,
   decorators: [
     (Story) => (
@@ -199,6 +198,12 @@ const meta: Meta<BaseFormStoryProps> = {
     },
     controls: {
       expanded: true,
+    },
+    docs: {
+      description: {
+        component:
+          "BaseForm is the lower-level form renderer used by ActionForm. Use it directly when you already have form content definitions or need custom form composition.",
+      },
     },
   },
   argTypes: {
@@ -475,6 +480,44 @@ export const Pending: Story = {
         code: `<BaseForm
   formContent={formContent}
   isPending={true}
+  onSubmit={(formState) => console.log("Submitted:", formState)}
+/>`,
+      },
+    },
+  },
+};
+
+const switchFormContent: ReadonlyArray<FormContentItem> = [
+  field({
+    fieldKey: "isRemote",
+    fieldComponent: "SWITCH",
+    label: "Remote employee",
+    helperText: "Use a switch for boolean settings that map to on/off state.",
+    fieldComponentProps: {},
+  }),
+];
+
+export const WithSwitch: Story = {
+  args: {
+    formTitle: "Update employee",
+    formContent: switchFormContent,
+    onSubmit: handleSubmit,
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `const formContent = [
+  {
+    fieldKey: "isRemote",
+    fieldComponent: "SWITCH",
+    label: "Remote employee",
+    fieldComponentProps: {},
+  },
+];
+
+<BaseForm
+  formTitle="Update employee"
+  formContent={formContent}
   onSubmit={(formState) => console.log("Submitted:", formState)}
 />`,
       },
@@ -865,6 +908,7 @@ const multiSelectDropdownFormContent: ReadonlyArray<FormContentItem> = [
     fieldKey: "categories",
     fieldComponent: "DROPDOWN",
     label: "Categories (Select)",
+    isRequired: true,
     fieldComponentProps: {
       items: TAG_ITEMS,
       isMultiple: true,
@@ -1037,7 +1081,6 @@ const blueprintDialogFormContent: ReadonlyArray<FormContentItem> = [
 
 function BlueprintDialogBaseForm(): React.ReactElement {
   const [isOpen, setIsOpen] = useState(false);
-  const portalContainerRef = useRef<HTMLDivElement>(null);
 
   const handleOpen = useCallback(() => {
     setIsOpen(true);
@@ -1056,13 +1099,10 @@ function BlueprintDialogBaseForm(): React.ReactElement {
         onClose={handleClose}
         title="Action form"
       >
-        <div ref={portalContainerRef}>
-          <BaseForm
-            formContent={blueprintDialogFormContent}
-            onSubmit={handleSubmit}
-            portalContainer={portalContainerRef}
-          />
-        </div>
+        <BaseForm
+          formContent={blueprintDialogFormContent}
+          onSubmit={handleSubmit}
+        />
       </Dialog>
     </>
   );
@@ -1074,20 +1114,143 @@ export const InsideBlueprintDialog: Story = {
     docs: {
       source: {
         code: `function BlueprintDialogBaseForm() {
-  const portalContainerRef = useRef(null);
-
   return (
     <Dialog isOpen={true} title="Action form">
-      <div ref={portalContainerRef}>
-        <BaseForm
-          formContent={formContent}
-          onSubmit={handleSubmit}
-          portalContainer={portalContainerRef}
-        />
-      </div>
+      <BaseForm formContent={formContent} onSubmit={handleSubmit} />
     </Dialog>
   );
 }`,
+      },
+    },
+  },
+};
+
+const scrollableDialogFormContent: ReadonlyArray<FormContentItem> = [
+  field({
+    fieldKey: "name",
+    fieldComponent: "TEXT_INPUT",
+    label: "Full Name",
+    isRequired: true,
+    fieldComponentProps: { placeholder: "Enter full name" },
+  }),
+  field({
+    fieldKey: "email",
+    fieldComponent: "TEXT_INPUT",
+    label: "Email",
+    isRequired: true,
+    fieldComponentProps: { placeholder: "user@example.com" },
+  }),
+  field({
+    fieldKey: "department",
+    fieldComponent: "DROPDOWN",
+    label: "Department",
+    fieldComponentProps: {
+      items: DEPARTMENT_ITEMS,
+      placeholder: "Select department...",
+    },
+  }),
+  field({
+    fieldKey: "startDate",
+    fieldComponent: "DATETIME_PICKER",
+    label: "Start Date",
+    fieldComponentProps: { placeholder: "Select a date" },
+  }),
+  field({
+    fieldKey: "priority",
+    fieldComponent: "DROPDOWN",
+    label: "Priority",
+    fieldComponentProps: {
+      items: DROPDOWN_ITEMS,
+      placeholder: "Select priority",
+    },
+  }),
+  field({
+    fieldKey: "isActive",
+    fieldComponent: "RADIO_BUTTONS",
+    label: "Status",
+    fieldComponentProps: {
+      options: [
+        { label: "Active", value: true },
+        { label: "Inactive", value: false },
+      ],
+    },
+  }),
+  field({
+    fieldKey: "bio",
+    fieldComponent: "TEXT_AREA",
+    label: "Bio",
+    fieldComponentProps: { placeholder: "Tell us about yourself", rows: 3 },
+  }),
+  field({
+    fieldKey: "tags",
+    fieldComponent: "DROPDOWN",
+    label: "Tags",
+    fieldComponentProps: {
+      items: TAG_ITEMS,
+      isMultiple: true,
+      isSearchable: true,
+      placeholder: "Search tags...",
+    },
+  }),
+  field({
+    fieldKey: "document",
+    fieldComponent: "FILE_PICKER",
+    label: "Resume",
+    fieldComponentProps: { accept: ".pdf,.doc,.docx" },
+  }),
+  field({
+    fieldKey: "notes",
+    fieldComponent: "TEXT_AREA",
+    label: "Additional Notes",
+    fieldComponentProps: { placeholder: "Any extra details", rows: 2 },
+  }),
+];
+
+function ScrollableDialogBaseForm(): React.ReactElement {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const handleOpen = useCallback(() => {
+    setIsOpen(true);
+  }, []);
+
+  const handleClose = useCallback(() => {
+    setIsOpen(false);
+  }, []);
+
+  return (
+    <>
+      <Button text="Open dialog" onClick={handleOpen} />
+      <Dialog
+        className="osdkBlueprintDialogForm"
+        isOpen={isOpen}
+        onClose={handleClose}
+        title="New employee"
+      >
+        <BaseForm
+          formContent={scrollableDialogFormContent}
+          onSubmit={handleSubmit}
+        />
+      </Dialog>
+    </>
+  );
+}
+
+export const ScrollableDialogForm: Story = {
+  render: () => <ScrollableDialogBaseForm />,
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "When the form has many fields inside a height-constrained container like a dialog, the fields area scrolls while the footer stays pinned at the bottom.",
+      },
+      source: {
+        code:
+          `// The footer pins automatically when the form overflows its container.
+// No extra CSS or props needed — just place BaseForm inside a
+// height-constrained parent (dialog, panel, sidebar).
+<Dialog isOpen={true} title="New employee">
+  <BaseForm formContent={manyFields} onSubmit={handleSubmit} />
+</Dialog>`,
       },
     },
   },

@@ -50,10 +50,28 @@ interface TestActionDef extends ActionDefinition<unknown> {
   };
 }
 
+interface BooleanActionDef extends ActionDefinition<unknown> {
+  __DefinitionMetadata: {
+    signatures: unknown;
+    parameters: {
+      enabled: { type: "boolean" };
+    };
+    type: "action";
+    apiName: "BooleanAction";
+    status: "ACTIVE";
+    rid: string;
+  };
+}
+
 const TestAction: TestActionDef = {
   type: "action",
   apiName: "TestAction",
 } as TestActionDef;
+
+const BooleanAction: BooleanActionDef = {
+  type: "action",
+  apiName: "BooleanAction",
+} as BooleanActionDef;
 
 const mockApplyAction = vi.fn().mockResolvedValue({
   editedObjectTypes: [],
@@ -106,18 +124,36 @@ describe("ActionForm", () => {
   });
 
   describe("form title", () => {
-    it("renders form title from metadata displayName", () => {
+    it("does not render a form title by default", () => {
       render(<ActionForm actionDefinition={TestAction} />);
+
+      expect(screen.queryByRole("heading")).toBeNull();
+    });
+
+    it("renders form title from metadata displayName when showFormTitle is true", () => {
+      render(<ActionForm actionDefinition={TestAction} showFormTitle={true} />);
 
       expect(screen.getByRole("heading").textContent).toBe("Test Action");
     });
 
-    it("renders custom form title when provided", () => {
+    it("renders custom form title when showFormTitle is true", () => {
       render(
-        <ActionForm actionDefinition={TestAction} formTitle="Custom Title" />,
+        <ActionForm
+          actionDefinition={TestAction}
+          formTitle="Custom Title"
+          showFormTitle={true}
+        />,
       );
 
       expect(screen.getByRole("heading").textContent).toBe("Custom Title");
+    });
+
+    it("does not render a form title when showFormTitle is false", () => {
+      render(
+        <ActionForm actionDefinition={TestAction} showFormTitle={false} />,
+      );
+
+      expect(screen.queryByRole("heading")).toBeNull();
     });
 
     it("falls back to apiName when metadata has no displayName", () => {
@@ -129,7 +165,7 @@ describe("ActionForm", () => {
         },
       });
 
-      render(<ActionForm actionDefinition={TestAction} />);
+      render(<ActionForm actionDefinition={TestAction} showFormTitle={true} />);
 
       expect(screen.getByRole("heading").textContent).toBe("TestAction");
     });
@@ -280,6 +316,33 @@ describe("ActionForm", () => {
 
       await vi.waitFor(() => {
         expect(onSuccess).toHaveBeenCalledWith(result);
+      });
+    });
+
+    it("submits top-level field definition default values", async () => {
+      const customDefs: Array<FormFieldDefinition<TestActionDef>> = [
+        {
+          fieldKey: "name",
+          label: "Full Name",
+          fieldComponent: "TEXT_INPUT",
+          defaultValue: "Ada Lovelace",
+          fieldComponentProps: {},
+        },
+      ];
+
+      render(
+        <ActionForm
+          actionDefinition={TestAction}
+          formFieldDefinitions={customDefs}
+        />,
+      );
+
+      fireEvent.click(screen.getByRole("button", { name: /submit/i }));
+
+      await vi.waitFor(() => {
+        expect(mockApplyAction).toHaveBeenCalledWith(
+          expect.objectContaining({ name: "Ada Lovelace" }),
+        );
       });
     });
   });

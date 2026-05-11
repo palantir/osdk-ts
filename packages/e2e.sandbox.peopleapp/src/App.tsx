@@ -13,10 +13,8 @@ function PeopleApp() {
     ? "filter-list"
     : path === "/form"
     ? "form"
-    : path === "/chat"
-    ? "chat"
-    : path === "/chat-ai-sdk"
-    ? "chat-ai-sdk"
+    : path === "/aip-agent-chat"
+    ? "aip-agent-chat"
     : "offices";
 
   return (
@@ -54,17 +52,10 @@ function PeopleApp() {
         </Button>
         <Button
           variant="tab"
-          active={activeTab === "chat"}
-          onClick={() => navigate("/chat")}
+          active={activeTab === "aip-agent-chat"}
+          onClick={() => navigate("/aip-agent-chat")}
         >
-          Chat
-        </Button>
-        <Button
-          variant="tab"
-          active={activeTab === "chat-ai-sdk"}
-          onClick={() => navigate("/chat-ai-sdk")}
-        >
-          Chat (AI SDK)
+          AipAgentChat
         </Button>
       </div>
 

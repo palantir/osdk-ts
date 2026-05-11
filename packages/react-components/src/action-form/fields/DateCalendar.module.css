@@ -28,6 +28,7 @@
 }
 
 .calendarDay {
+  position: relative;
   padding: var(--osdk-datetime-calendar-gap);
   text-align: center;
 }
@@ -80,7 +81,7 @@
 }
 
 .calendarDayButton.calendarToday {
-  font-weight: var(--osdk-datetime-calendar-today-font-weight);
+  border: var(--osdk-datetime-calendar-today-border);
 }
 
 .calendarDayButton.calendarOutside {
@@ -112,23 +113,59 @@
   }
 }
 
-
-/* Range-middle needs .calendarDayButton prefix to match specificity of
-   .calendarDayButton.calendarSelected (rdp applies both to range-middle days). */
-.calendarDayButton.calendarRangeMiddle {
+/* Day buttons are inset by cell padding; paint the range on the table cell too
+   so the range spans horizontal gaps while staying the same height as a day. */
+.calendarDay:has(.calendarRangeStart)::before,
+.calendarDay:has(.calendarRangeMiddle)::before,
+.calendarDay:has(.calendarRangeEnd)::before {
+  content: "";
+  position: absolute;
+  inset-block: var(--osdk-datetime-calendar-gap);
   background: var(--osdk-datetime-calendar-range-middle-bg);
+  pointer-events: none;
+}
+
+.calendarDay:has(.calendarRangeStart)::before {
+  inset-inline-start: 50%;
+  inset-inline-end: 0;
+}
+
+.calendarDay:has(.calendarRangeMiddle)::before {
+  inset-inline: 0;
+}
+
+.calendarDay:has(.calendarRangeEnd)::before {
+  inset-inline-start: 0;
+  inset-inline-end: 50%;
+}
+
+.calendarDay:has(.calendarRangeStart.calendarRangeEnd)::before {
+  content: none;
+}
+
+/* The table cell owns the translucent range fill. Keeping the middle button
+   transparent avoids alpha-stacking the same token over itself. */
+.calendarDayButton.calendarRangeMiddle {
+  background: transparent;
   color: var(--osdk-datetime-calendar-day-color);
   border-radius: 0;
 
   &:hover {
-    background: var(--osdk-datetime-calendar-range-middle-bg);
+    background: transparent;
     color: var(--osdk-datetime-calendar-day-hover-color);
-    filter: brightness(0.95);
   }
 
   &:active {
     color: var(--osdk-datetime-calendar-day-hover-color);
   }
+}
+
+.calendarRangeFooter {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: var(--osdk-datetime-calendar-months-gap);
+  justify-items: center;
+  padding-block-start: var(--osdk-time-picker-padding-top);
 }
 
 .calendarHidden {
@@ -213,6 +250,9 @@
 
 /* Month/year selects — borderless, matching caption text weight */
 .calendarDropdown {
+  /* Native selects otherwise reserve room for the longest option, which makes
+     the month caret drift away from short month names like "May". */
+  field-sizing: content;
   font-family: var(--osdk-datetime-calendar-font-family);
   font-size: var(--osdk-datetime-calendar-caption-font-size);
   font-weight: var(--osdk-datetime-calendar-caption-font-weight);
@@ -230,10 +270,19 @@
 }
 
 
-/* Footer — content rendered inside DayPicker's <tfoot> (constrained by the table). */
-.calendarFooter {
-  padding-top: var(--osdk-time-picker-padding-top);
-  margin-top: var(--osdk-time-picker-margin-top);
-  border-top: var(--osdk-time-picker-border-top);
+.calendarTimeFooter {
+  display: flex;
+  justify-content: center;
+  padding-block-start: var(--osdk-time-picker-padding-top);
 }
 
+.calendarActionBar {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--osdk-surface-spacing);
+  padding-block-start: var(--osdk-time-picker-padding-top);
+  padding-inline: var(--osdk-datetime-popover-padding);
+  margin-block-start: var(--osdk-time-picker-margin-top);
+  margin-inline: calc(var(--osdk-datetime-popover-padding) * -1);
+  border-block-start: var(--osdk-time-picker-border-top);
+}

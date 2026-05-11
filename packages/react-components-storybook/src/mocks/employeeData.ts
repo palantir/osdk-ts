@@ -347,7 +347,7 @@ export const employeeData: BaseServerObject[] = [
     "businessTitle": "Operations Manager",
     "locationCountry": "Germany",
     "businessArea": "Operations",
-    "emailPrimaryWork": "yuki.torres97@example.com",
+    "emailPrimaryWork": null,
     "__apiName": "Employee",
     "locationRegion": "Berlin",
     "team": "Compliance",

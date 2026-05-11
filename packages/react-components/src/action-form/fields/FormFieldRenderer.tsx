@@ -32,6 +32,7 @@ import { NumberInputField } from "./NumberInputField.js";
 import { ObjectSelectField } from "./ObjectSelectField.js";
 import { ObjectSetField } from "./ObjectSetField.js";
 import { RadioButtonsField } from "./RadioButtonsField.js";
+import { SwitchField } from "./SwitchField.js";
 import { TextAreaField } from "./TextAreaField.js";
 import { TextInputField } from "./TextInputField.js";
 
@@ -39,7 +40,9 @@ export interface FormFieldRendererProps {
   fieldDefinition: RendererFieldDefinition;
   value: unknown;
   onFieldValueChange: (value: unknown) => void;
-  onBlur: (e: React.FocusEvent<HTMLDivElement>) => void;
+  onBlur?: (e: React.FocusEvent<HTMLDivElement>) => void;
+  /** Field-level blur for fields that own their touched state (e.g. dropdowns). */
+  onFieldBlur?: () => void;
   error: string | undefined;
   portalContainer?: PortalContainer;
 }
@@ -50,6 +53,7 @@ export const FormFieldRenderer: React.FC<FormFieldRendererProps> = memo(
     value,
     onFieldValueChange,
     onBlur,
+    onFieldBlur,
     error,
     portalContainer,
   }: FormFieldRendererProps): React.ReactElement {
@@ -72,6 +76,7 @@ export const FormFieldRenderer: React.FC<FormFieldRendererProps> = memo(
           onFieldValueChange,
           error,
           portalContainer,
+          onFieldBlur,
         )}
       </FormField>
     );
@@ -84,6 +89,7 @@ function renderFieldComponent(
   onChange: (value: unknown) => void,
   error: string | undefined,
   portalContainer: PortalContainer | undefined,
+  onFieldBlur: (() => void) | undefined,
 ): React.ReactElement {
   switch (fieldDefinition.fieldComponent) {
     case "DATE_RANGE_INPUT":
@@ -135,6 +141,7 @@ function renderFieldComponent(
             fieldDefinition.fieldComponentProps,
             portalContainer,
           )}
+          onBlur={onFieldBlur}
         />
       );
     }
@@ -159,6 +166,17 @@ function renderFieldComponent(
         <RadioButtonsField
           id={fieldDefinition.fieldKey}
           value={value}
+          onChange={onChange}
+          error={error}
+          {...fieldDefinition.fieldComponentProps}
+        />
+      );
+    case "SWITCH":
+      return (
+        <SwitchField
+          id={fieldDefinition.fieldKey}
+          label={fieldDefinition.label}
+          value={!!value}
           onChange={onChange}
           error={error}
           {...fieldDefinition.fieldComponentProps}

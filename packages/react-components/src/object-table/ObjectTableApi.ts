@@ -105,10 +105,6 @@ interface SharedColumnDefinition<
   renderHeader?: () => React.ReactNode;
 }
 
-/**
- * Column definition for an editable column. Setting `editable: true`
- * unlocks `editFieldConfig` and `validateEdit`.
- */
 interface EditableColumnDefinition<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
@@ -117,15 +113,29 @@ interface EditableColumnDefinition<
     never
   >,
 > extends SharedColumnDefinition<Q, RDPs, FunctionColumns> {
-  editable: true;
+  /**
+   * `editable` can be a boolean or a predicate that receives the row's object
+   * and returns whether the cell is editable
+   */
+  editable:
+    | true
+    | ((
+      object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
+    ) => boolean);
 
   /**
    * Configuration for the cell editor component.
    *
    * When provided, the column uses the specified field component
    * (e.g. dropdown) instead of the default auto-detected text/number input.
+   *
+   * `getFieldComponentProps` receives the row's object and returns the props
+   * to pass to the field component, so editor configuration can depend on the
+   * current row.
    */
-  editFieldConfig?: EditFieldConfig;
+  editFieldConfig?: EditFieldConfig<
+    Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>
+  >;
 
   /**
    * Additional function to validate the cell value during edit.
@@ -366,6 +376,17 @@ export interface ObjectTableProps<
   editMode?: "always" | "manual";
 
   /**
+   * Whether to render the bottom edit footer that hosts the
+   * "Edit Table" / "Cancel" / "Submit Edits" buttons and the edit-state
+   * indicators (modification count, validation errors).
+   *
+   * @default true whenever the table has at least one column declared
+   * editable (i.e. any column with `editable: true` or `editable: (object) => boolean`).
+   * When `false`, the "Edit Table" and "Submit Edits" buttons will not be shown.
+   */
+  showEditFooter?: boolean;
+
+  /**
    * The default order by clause to sort the objects in the table.
    * If provided without orderBy prop, the sorting is uncontrolled.
    * If both orderBy and defaultOrderBy are provided, orderBy takes precedence.
@@ -412,7 +433,7 @@ export interface ObjectTableProps<
   ) => void;
 
   /**
-   * If provided, the button Submit Edits will be shown in the table
+   * If provided, the "Submit Edits" button will be shown in the edit footer.
    *
    * @param edits an array of edit info containing details about the edited cells
    * including the rowId, columnId, new and old values, and the row data before the edit
@@ -531,6 +552,14 @@ export interface ObjectTableProps<
    * @default 40
    */
   rowHeight?: number;
+
+  /**
+   * Returns extra HTML attributes (typically `data-*`) to apply to each
+   * row element. Use this to drive conditional row styling
+   */
+  getRowAttributes?: (
+    object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
+  ) => Record<string, string | undefined>;
 
   className?: string;
 }
