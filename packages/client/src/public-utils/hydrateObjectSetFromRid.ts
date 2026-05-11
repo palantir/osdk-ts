@@ -31,18 +31,33 @@ export function hydrateObjectSetFromRid<T extends ObjectOrInterfaceDefinition>(
   definition: T,
   rid: string,
 ): ObjectSet<T> {
+  const clientCtx = client[additionalContext];
+
+  if (definition.type === "interface") {
+    clientCtx.narrowTypeInterfaceOrObjectMapping[definition.apiName] =
+      "interface";
+
+    return createObjectSet(
+      definition,
+      clientCtx,
+      {
+        type: "asType",
+        objectSet: { type: "reference", reference: rid },
+        entityType: definition.apiName,
+      },
+    );
+  }
+
   return createObjectSet(
     definition,
-    client[additionalContext],
+    clientCtx,
     {
       type: "intersect",
       objectSets: [
-        definition.type === "interface"
-          ? { type: "interfaceBase", interfaceType: definition.apiName }
-          : {
-            type: "base",
-            objectType: definition.apiName,
-          },
+        {
+          type: "base",
+          objectType: definition.apiName,
+        },
         {
           type: "reference",
           reference: rid,
