@@ -1,5 +1,16 @@
 # @osdk/shared.test
 
+## 0.15.0
+
+### Minor Changes
+
+- 2f3271b: Camelizes action type api names
+
+### Patch Changes
+
+- @osdk/api@2.18.0
+- @osdk/generator-converters@2.18.0
+
 ## 0.14.0
 
 ### Minor Changes

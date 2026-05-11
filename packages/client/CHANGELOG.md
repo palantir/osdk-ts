@@ -1,5 +1,22 @@
 # @osdk/client
 
+## 2.18.0
+
+### Minor Changes
+
+- 69ebc43: Fix function-backed columns and lists with derived properties rendering stale values after an action edits a related object. ObjectTable's `useFunctionColumnsData` now passes the page's row PKs as `dependsOnObjects` to the underlying `useOsdkFunctions`, and function `ColumnDefinition` locators now accept an optional `dependsOn: string[]` for declaring linked object types the function reads server-side. Lists whose `withProperties` traverse linked types now also revalidate when an action edits one of those linked types. The action invalidation path fans out per-type invalidation in a single walk while the optimistic layer is still on top, so fresh values land in truth before the optimistic layer drops.
+- 85a248d: fix list hooks emitting undefined entries during deletes
+
+  • register `changes.deleted` when `propagateWrite` writes a tombstone, so list/objectset queries drop the cache key in the same batch (fixes `useOsdkObjects` + `applyAction(delete)` and optimistic deletes)
+  • same fix applied to streaming-driven removals in `BaseListQuery.onOswRemoved`
+
+### Patch Changes
+
+- @osdk/shared.test@2.14.0
+- @osdk/api@2.18.0
+- @osdk/client.unstable@2.18.0
+- @osdk/generator-converters@2.18.0
+
 ## 2.17.0
 
 ### Minor Changes
