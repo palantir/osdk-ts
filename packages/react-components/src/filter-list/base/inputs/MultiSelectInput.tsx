@@ -19,9 +19,21 @@ import React, { memo, useCallback, useMemo } from "react";
 import { Combobox } from "../../../base-components/combobox/Combobox.js";
 import type { PropertyAggregationValue } from "../../types/AggregationTypes.js";
 import { isEmptyValue } from "../../utils/filterValues.js";
+import { MultiSelectDropdownLayout } from "./MultiSelectDropdownLayout.js";
+import { MultiSelectInlineLayout } from "./MultiSelectInlineLayout.js";
 import styles from "./MultiSelectInput.module.css";
 import { NoValueLabel } from "./NoValueLabel.js";
 import sharedStyles from "./shared.module.css";
+
+/**
+ * Layout for the value list:
+ * - `"dropdown"` (default): chips inline + portaled Combobox popup. Use when
+ *   the input drives its own surface (e.g. standalone in a row).
+ * - `"inline"`: search input + always-visible value list rendered in flow.
+ *   Use when wrapping the input in your own popover so the values are
+ *   immediately visible without an extra inner trigger.
+ */
+export type MultiSelectInputLayout = "dropdown" | "inline";
 
 interface MultiSelectInputProps {
   values: PropertyAggregationValue[];
@@ -35,6 +47,7 @@ interface MultiSelectInputProps {
   showCounts?: boolean;
   ariaLabel?: string;
   renderValue?: (value: string) => string;
+  layout?: MultiSelectInputLayout;
 }
 
 function MultiSelectInputInner({
@@ -49,6 +62,7 @@ function MultiSelectInputInner({
   showCounts = true,
   ariaLabel = "Search values",
   renderValue,
+  layout = "dropdown",
 }: MultiSelectInputProps): React.ReactElement {
   const handleValueChange = useCallback(
     (newValues: string[] | null) => {
@@ -156,18 +170,20 @@ function MultiSelectInputInner({
             </div>
           )}
 
-          <Combobox.Chips>
-            <Combobox.Value>{renderChips}</Combobox.Value>
-          </Combobox.Chips>
-
-          <Combobox.Portal>
-            <Combobox.Positioner>
-              <Combobox.Popup>
-                <Combobox.Empty>No matching options</Combobox.Empty>
-                <Combobox.List>{renderItem}</Combobox.List>
-              </Combobox.Popup>
-            </Combobox.Positioner>
-          </Combobox.Portal>
+          {layout === "inline"
+            ? (
+              <MultiSelectInlineLayout
+                placeholder={placeholder}
+                ariaLabel={ariaLabel}
+                renderItem={renderItem}
+              />
+            )
+            : (
+              <MultiSelectDropdownLayout
+                renderChips={renderChips}
+                renderItem={renderItem}
+              />
+            )}
         </Combobox.Root>
       )}
     </div>

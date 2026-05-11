@@ -445,4 +445,77 @@
   /* Skeleton Loading */
   --osdk-filter-skeleton-text-height: calc(var(--osdk-surface-spacing) * 1.5);
   --osdk-filter-skeleton-count-width: calc(var(--osdk-surface-spacing) * 2.5);
+
+  /* Filter Popover (composable label + popover-trigger primitive) */
+  --osdk-filter-popover-gap: calc(var(--osdk-surface-spacing) * 1);
+  --osdk-filter-popover-stack-gap: calc(var(--osdk-surface-spacing) * 0.5);
+  --osdk-filter-popover-label-font-family: var(
+    --osdk-typography-family-default
+  );
+  --osdk-filter-popover-label-font-size: var(--osdk-typography-size-body-small);
+  --osdk-filter-popover-label-color: var(--osdk-typography-color-muted);
+  --osdk-filter-popover-trigger-width: calc(var(--osdk-surface-spacing) * 40);
+  --osdk-filter-popover-trigger-min-height: calc(
+    var(--osdk-surface-spacing) * 7
+  );
+  --osdk-filter-popover-trigger-padding: 0
+    calc(var(--osdk-surface-spacing) * 6) 0
+    calc(var(--osdk-surface-spacing) * 2);
+  --osdk-filter-popover-trigger-border-radius: var(
+    --osdk-surface-border-radius
+  );
+  --osdk-filter-popover-trigger-border-width: var(--osdk-surface-border-width);
+  --osdk-filter-popover-trigger-border-color: var(
+    --osdk-surface-border-color-default
+  );
+  --osdk-filter-popover-trigger-border-color-hover: var(
+    --osdk-typography-color-muted
+  );
+  --osdk-filter-popover-trigger-border-color-active: var(
+    --osdk-intent-primary-rest
+  );
+  --osdk-filter-popover-trigger-bg: transparent;
+  --osdk-filter-popover-trigger-color: var(--osdk-typography-color-default-rest);
+  --osdk-filter-popover-trigger-font-family: var(
+    --osdk-typography-family-default
+  );
+  --osdk-filter-popover-trigger-font-size: var(
+    --osdk-typography-size-body-small
+  );
+  --osdk-filter-popover-trigger-transition: var(
+      --osdk-emphasis-transition-duration
+    )
+    var(--osdk-emphasis-ease-default);
+  --osdk-filter-popover-trigger-focus-outline-width: var(
+    --osdk-emphasis-focus-width
+  );
+  --osdk-filter-popover-trigger-focus-outline-color: var(
+    --osdk-emphasis-focus-color
+  );
+  --osdk-filter-popover-trigger-focus-outline-offset: var(
+    --osdk-emphasis-focus-offset
+  );
+  --osdk-filter-popover-placeholder-color: var(--osdk-typography-color-muted);
+  --osdk-filter-popover-remove-right: calc(var(--osdk-surface-spacing) * 0.75);
+  --osdk-filter-popover-remove-size: calc(var(--osdk-surface-spacing) * 4);
+  --osdk-filter-popover-remove-color: var(--osdk-typography-color-muted);
+  --osdk-filter-popover-remove-border-radius: var(--osdk-surface-border-radius);
+  --osdk-filter-popover-remove-transition: var(
+      --osdk-emphasis-transition-duration
+    )
+    var(--osdk-emphasis-ease-default);
+  --osdk-filter-popover-remove-color-hover: var(
+    --osdk-typography-color-default-rest
+  );
+  --osdk-filter-popover-remove-bg-hover: var(--osdk-custom-color-gray-1);
+  --osdk-filter-popover-popup-bg: var(--osdk-background-primary);
+  --osdk-filter-popover-popup-border: var(--osdk-surface-border);
+  --osdk-filter-popover-popup-border-radius: var(--osdk-surface-border-radius);
+  --osdk-filter-popover-popup-shadow: var(--osdk-surface-shadow-2);
+  --osdk-filter-popover-popup-padding: calc(var(--osdk-surface-spacing) * 2);
+  --osdk-filter-popover-popup-min-width: calc(var(--osdk-surface-spacing) * 70);
+  --osdk-filter-popover-popup-max-width: calc(
+    var(--osdk-surface-spacing) * 120
+  );
+  --osdk-filter-popover-popup-z-index: var(--osdk-surface-z-index-3);
 }
