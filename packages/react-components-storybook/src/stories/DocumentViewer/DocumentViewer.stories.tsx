@@ -28,6 +28,8 @@ const SAMPLE_PDF_URL =
 
 const SAMPLE_DOCX_URL = `${import.meta.env.BASE_URL}notional-word-example.docx`;
 
+const SAMPLE_VIDEO_URL = `${import.meta.env.BASE_URL}example.mp4`;
+
 /**
  * Creates a sample PNG image as a Blob.
  */
@@ -117,8 +119,8 @@ const mockMarkdownMedia = createMockMedia(
 
 const mockVideoMedia = createMockMedia(
   "video/mp4",
-  () => Promise.resolve(new Response(new Blob([], { type: "video/mp4" }))),
-  "clip.mp4",
+  () => fetch(SAMPLE_VIDEO_URL),
+  "example.mp4",
 );
 
 const mockDocxMedia = createMockMedia(
@@ -256,6 +258,13 @@ export const Video: Story = {
       <DocumentViewer {...args} />
     </div>
   ),
+  parameters: {
+    msw: {
+      handlers: [
+        http.get("*/example.mp4", () => passthrough()),
+      ],
+    },
+  },
 };
 
 export const UnsupportedType: Story = {

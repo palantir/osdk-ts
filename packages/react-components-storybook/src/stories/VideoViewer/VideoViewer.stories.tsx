@@ -15,56 +15,25 @@
  */
 
 import type { Media } from "@osdk/api";
-import type {
-  BaseVideoViewerProps,
-  VideoViewerMediaProps,
-} from "@osdk/react-components/experimental/video-viewer";
-import {
-  BaseVideoViewer,
-  VideoViewer,
-} from "@osdk/react-components/experimental/video-viewer";
+import type { VideoViewerMediaProps } from "@osdk/react-components/experimental/video-viewer";
+import { VideoViewer } from "@osdk/react-components/experimental/video-viewer";
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import { http, passthrough } from "msw";
 import { fn } from "storybook/test";
 
-/**
- * Creates a minimal valid MP4 video as a blob URL.
- * Uses a tiny WebM blob that most browsers can render.
- */
-function createSampleVideoUrl(): string {
-  // A minimal 1-frame WebM video (base64-encoded)
-  const webmBase64 =
-    "GkXfo59ChoEBQveBAULygQRC84EIQoKEd2VibUKHgQJChYECGFOAZwH/////////FUmpZpkq17GDD0JATYCGQ2hyb21lV0"
-    + "WcgV2VibSBGaWxlIERhdGFTZXJ2ZXJXQdeBc2lNYXRyb3NrYSBGaWxlIEhhbmRsZXJXQdeBAAAAAAAAAABzcw";
-  try {
-    const bytes = atob(webmBase64);
-    const arr = new Uint8Array(bytes.length);
-    for (let i = 0; i < bytes.length; i++) {
-      arr[i] = bytes.charCodeAt(i);
-    }
-    return URL.createObjectURL(new Blob([arr], { type: "video/webm" }));
-  } catch {
-    // Fallback: return empty blob URL
-    return URL.createObjectURL(new Blob([], { type: "video/mp4" }));
-  }
-}
+const SAMPLE_VIDEO_URL = `${import.meta.env.BASE_URL}example.mp4`;
 
-const sampleVideoUrl = createSampleVideoUrl();
-
-function createMockVideoMedia(
-  url: string,
-  mimeType: string,
-  filename: string,
-): Media {
+function createMockMedia(url: string, filename: string): Media {
   return {
     fetchContents: () => fetch(url),
     fetchMetadata: () =>
       Promise.resolve({
         path: filename,
-        sizeBytes: 102400,
-        mediaType: mimeType,
+        sizeBytes: 0,
+        mediaType: "video/mp4",
       }),
     getMediaReference: () => ({
-      mimeType,
+      mimeType: "video/mp4",
       reference: {
         type: "mediaSetViewItem" as const,
         mediaSetViewItem: {
@@ -77,32 +46,32 @@ function createMockVideoMedia(
   };
 }
 
-// --- BaseVideoViewer stories ---
+const mockMedia = createMockMedia(SAMPLE_VIDEO_URL, "example.mp4");
 
-const baseMeta: Meta<BaseVideoViewerProps> = {
-  title: "Experimental/VideoViewer/BaseVideoViewer",
+const meta: Meta<VideoViewerMediaProps> = {
+  title: "Experimental/VideoViewer",
   tags: ["experimental"],
-  component: BaseVideoViewer,
+  component: VideoViewer,
   args: {
-    src: sampleVideoUrl,
-    mimeType: "video/webm",
+    media: mockMedia,
   },
-  render: (args: BaseVideoViewerProps) => (
+  render: (args: VideoViewerMediaProps) => (
     <div style={{ height: "400px", width: "600px" }}>
-      <BaseVideoViewer {...args} />
+      <VideoViewer media={args.media} onError={args.onError} />
     </div>
   ),
   parameters: {
     controls: { expanded: true },
+    msw: {
+      handlers: [
+        http.get("*/example.mp4", () => passthrough()),
+      ],
+    },
   },
   argTypes: {
-    src: {
-      description: "Object URL pointing to the video",
+    media: {
+      description: "The OSDK Media object to fetch video from",
       control: false,
-    },
-    mimeType: {
-      description: "MIME type for the <source> element (e.g. \"video/mp4\")",
-      control: "text",
     },
     className: {
       description: "Additional CSS class name for the root element",
@@ -116,37 +85,10 @@ const baseMeta: Meta<BaseVideoViewerProps> = {
   },
 };
 
-export default baseMeta;
-type Story = StoryObj<typeof baseMeta>;
+export default meta;
+type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
-  parameters: {
-    docs: {
-      source: {
-        code:
-          `import { BaseVideoViewer } from "@osdk/react-components/experimental/video-viewer";
-
-<BaseVideoViewer src={videoUrl} mimeType="video/mp4" />`,
-      },
-    },
-  },
-};
-
-export const WithErrorCallback: Story = {
-  args: {
-    onError: fn(),
-  },
-};
-
-export const WithMedia: StoryObj<VideoViewerMediaProps> = {
-  args: {
-    media: createMockVideoMedia(sampleVideoUrl, "video/webm", "sample.webm"),
-  },
-  render: (args: VideoViewerMediaProps) => (
-    <div style={{ height: "400px", width: "600px" }}>
-      <VideoViewer {...args} />
-    </div>
-  ),
   parameters: {
     docs: {
       source: {
@@ -156,5 +98,31 @@ export const WithMedia: StoryObj<VideoViewerMediaProps> = {
 <VideoViewer media={myOsdkMedia} />`,
       },
     },
+  },
+};
+
+export const WithErrorCallback: Story = {
+  args: {
+    media: {
+      fetchContents: () => Promise.reject(new Error("Failed to fetch video")),
+      fetchMetadata: () =>
+        Promise.resolve({
+          path: "broken.mp4",
+          sizeBytes: 0,
+          mediaType: "video/mp4",
+        }),
+      getMediaReference: () => ({
+        mimeType: "video/mp4",
+        reference: {
+          type: "mediaSetViewItem" as const,
+          mediaSetViewItem: {
+            mediaItemRid: "ri.mio.main.media-item.mock-error",
+            mediaSetRid: "ri.mio.main.media-set.mock-set",
+            mediaSetViewRid: "ri.mio.main.media-set-view.mock-view",
+          },
+        },
+      }),
+    },
+    onError: fn(),
   },
 };
