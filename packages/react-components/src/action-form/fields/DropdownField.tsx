@@ -149,14 +149,6 @@ const SelectDropdown = typedReactMemo(function SelectDropdownFn<
     [onBlur],
   );
 
-  const handleValueChange = useCallback(
-    (...args: Parameters<NonNullable<typeof onChange>>) => {
-      onChange?.(...args);
-      onBlur?.();
-    },
-    [onChange, onBlur],
-  );
-
   const handleClear = useCallback(() => {
     // SelectDropdown is always single-select, so cleared value is null.
     (onChange as ((v: V | null) => void) | undefined)?.(null);
@@ -171,7 +163,7 @@ const SelectDropdown = typedReactMemo(function SelectDropdownFn<
     <div>
       <Select.Root
         value={value}
-        onValueChange={handleValueChange}
+        onValueChange={onChange}
         open={open}
         onOpenChange={handleOpenChange}
         isItemEqualToValue={isItemEqual}
@@ -262,17 +254,32 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
     [onBlur],
   );
 
+  // Mark the field as touched on every value change so RHF revalidates
+  // immediately — especially important for multi-select where the popup
+  // stays open after toggling an item.
+  const handleValueChange: typeof onChange = useCallback(
+    (...args: Parameters<NonNullable<typeof onChange>>) => {
+      onChange?.(...args);
+      // Multi-select: popover stays open, so fire onBlur directly.
+      // Single-select: popover closes on selection, handleOpenChange(false)
+      // already fires onBlur.
+      if (isMultiple) {
+        onBlur?.();
+      }
+    },
+    [onChange, onBlur, isMultiple],
+  );
+
   const handleClear = useCallback(() => {
     // TypeScript can't narrow the conditional type `Multiple extends true ? V[] : V`
     // at runtime, so we cast through the known parameter type at this single call site.
     const cleared = isMultiple ? (EMPTY_ARRAY as V[]) : null;
-    (onChange as ((v: V[] | V | null) => void) | undefined)?.(cleared);
-    onBlur?.();
+    (handleValueChange as (v: V[] | V | null) => void)(cleared);
     // Single-select: close after clearing. Multi-select: keep open for continued selection.
     if (!isMultiple) {
       handleOpenChange(false);
     }
-  }, [isMultiple, onChange, onBlur, handleOpenChange]);
+  }, [isMultiple, handleValueChange, handleOpenChange]);
 
   const handleRemoveItem = useCallback(
     (itemToRemove: V) => {
@@ -284,26 +291,14 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
           ? !isItemEqual(v, itemToRemove)
           : v !== itemToRemove
       );
-      (onChange as ((v: V[] | V | null) => void) | undefined)?.(next);
-      onBlur?.();
+      (handleValueChange as (v: V[] | V | null) => void)(next);
     },
-    [isMultiple, value, onChange, isItemEqual, onBlur],
+    [isMultiple, value, handleValueChange, isItemEqual],
   );
 
   const handleDismiss = useCallback(() => {
     handleOpenChange(false);
   }, [handleOpenChange]);
-
-  // Mark the field as touched on every value change so RHF revalidates
-  // immediately — especially important for multi-select where the popup
-  // stays open after toggling an item.
-  const handleValueChange: typeof onChange = useCallback(
-    (...args: Parameters<NonNullable<typeof onChange>>) => {
-      onChange?.(...args);
-      onBlur?.();
-    },
-    [onChange, onBlur],
-  );
 
   const renderItem = useCallback(
     (item: V) => (
