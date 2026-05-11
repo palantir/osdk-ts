@@ -59,8 +59,8 @@ import type { MinimalClient } from "./MinimalClientContext.js";
 import { fetchPage, fetchStaticRidPage } from "./object/fetchPage.js";
 import { fetchSingle } from "./object/fetchSingle.js";
 import { createObjectSet } from "./objectSet/createObjectSet.js";
-import { ObjectSetListenerWebsocket } from "./objectSet/ObjectSetListenerWebsocket.js";
 import type { ObjectSetFactory } from "./objectSet/ObjectSetFactory.js";
+import { ObjectSetListenerWebsocket } from "./objectSet/ObjectSetListenerWebsocket.js";
 import { applyQuery } from "./queries/applyQuery.js";
 import type { QuerySignatureFromDef } from "./queries/types.js";
 
@@ -332,7 +332,10 @@ export function createClientFromContext(clientCtx: MinimalClient) {
                 .getInstance(clientCtx)
                 .subscribeWithoutType(
                   { type: "reference", reference: rid },
-                  listener,
+                  listener as ObjectSetSubscription.Listener<
+                    ObjectOrInterfaceDefinition,
+                    never
+                  >,
                   opts?.includeRid ?? false,
                 );
               return { unsubscribe };
