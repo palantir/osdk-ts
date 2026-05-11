@@ -2019,12 +2019,20 @@ const SAVED_FILTER_STATES = new Map<string, FilterState>([
   // in the dataset — it simulates a value that had rows in the past but
   // currently has zero matches. Both should appear as selected.
   ["department", { type: "EXACT_MATCH", values: ["Marketing", "Research"] }],
-  ["locationCity", { type: "EXACT_MATCH", values: ["New York"] }],
+  // "Chief Scientist" is NOT in the dataset — demonstrates multi-select chips
+  // for values that currently have zero matches.
+  ["jobTitle-multi", {
+    type: "SELECT",
+    selectedValues: ["Manager", "Chief Scientist"],
+  }],
+  // "Research" again for single-select — demonstrates the dropdown retains it.
+  ["department-single", { type: "SELECT", selectedValues: ["Research"] }],
 ]);
 
 const INITIAL_STATE_FILTER_DEFINITIONS: FilterDefinitionUnion<Employee>[] = [
   departmentFilter,
-  locationCityFilter,
+  jobTitleMultiSelectFilter,
+  departmentSingleSelectFilter,
 ];
 
 function WithInitialFilterStatesStory(
@@ -2072,12 +2080,14 @@ export const WithInitialFilterStates: Story = {
         story: "Pass `initialFilterStates` to hydrate filters from saved state "
           + "(e.g. localStorage or URL params). Selections are restored on "
           + "mount, including values that currently have zero matching rows "
-          + "— they appear with a count of 0 so users can see and clear them.",
+          + "— they appear with a count of 0 so users can see and clear them. "
+          + "Demonstrated across LISTOGRAM, MULTI_SELECT, and SINGLE_SELECT.",
       },
       source: {
         code: `const savedStates = new Map([
   ["department", { type: "EXACT_MATCH", values: ["Marketing", "Research"] }],
-  ["locationCity", { type: "EXACT_MATCH", values: ["New York"] }],
+  ["jobTitle-multi", { type: "SELECT", selectedValues: ["Manager", "Chief Scientist"] }],
+  ["department-single", { type: "SELECT", selectedValues: ["Research"] }],
 ]);
 
 <FilterList
