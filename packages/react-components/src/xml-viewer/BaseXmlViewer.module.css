@@ -1,7 +1,28 @@
-.canvas {
-  height: 100%;
-  object-fit: contain;
+.container {
+  display: flex;
+  flex-direction: column;
   width: 100%;
+  height: 100%;
+  background-color: var(--osdk-xml-viewer-bg);
+  border: var(--osdk-xml-viewer-border);
+  border-radius: var(--osdk-surface-border-radius);
+  overflow: hidden;
+}
+
+.scrollWrapper {
+  flex: 1;
+  overflow: auto;
+  padding: var(--osdk-surface-spacing);
+}
+
+.code {
+  font-family: var(--osdk-xml-viewer-font-family);
+  font-size: var(--osdk-xml-viewer-font-size);
+  line-height: var(--osdk-xml-viewer-line-height);
+  color: var(--osdk-typography-color-default-rest);
+  white-space: pre;
+  margin: 0;
+  tab-size: 2;
 }
 
 .loadingContainer {
@@ -27,10 +48,6 @@
   color: var(--osdk-typography-color-danger-rest);
 }
 
-.errorIcon {
-  flex-shrink: 0;
-}
-
 @keyframes spin {
   from {
     transform: rotate(0deg);
@@ -43,4 +60,8 @@
 .spinnerIcon {
   animation: spin 1s linear infinite;
   color: var(--osdk-typography-color-muted);
+}
+
+.errorIcon {
+  flex-shrink: 0;
 }

@@ -40,6 +40,7 @@
     "@types/react-dom": "^18.3.7",
     "@vitejs/plugin-react": "^4.3.4",
     "classnames": "^2.5.1",
+    "xlsx": "^0.18.5",
     "eslint-plugin-storybook": "^10.2.10",
     "pdf-lib": "^1.17.1",
     "react": "^18.3.1",

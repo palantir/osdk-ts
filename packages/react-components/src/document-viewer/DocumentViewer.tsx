@@ -1,0 +1,191 @@
+/*
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/* cspell:words openxmlformats officedocument wordprocessingml spreadsheetml */
+
+import { Document as DocumentIcon } from "@blueprintjs/icons";
+import classnames from "classnames";
+import React, { useMemo } from "react";
+import { DocxViewer } from "../docx-viewer/DocxViewer.js";
+import { EmailViewer } from "../email-viewer/EmailViewer.js";
+import { ExcelViewer } from "../excel-viewer/ExcelViewer.js";
+import { ImageViewer } from "../images/image-viewer/ImageViewer.js";
+import { TiffViewerMedia } from "../images/tiff-renderer/TiffViewerMedia.js";
+import { MarkdownViewerMedia } from "../markdown-renderer/MarkdownViewerMedia.js";
+import { PdfViewer } from "../pdf-viewer/PdfRenderer.js";
+import { VideoViewer } from "../video-viewer/VideoViewer.js";
+import { XmlViewer } from "../xml-viewer/XmlViewer.js";
+import styles from "./DocumentViewer.module.css";
+import type { DocumentViewerProps, ViewerType } from "./types.js";
+
+const IMAGE_MIME_TYPES = new Set([
+  "image/png",
+  "image/jpeg",
+  "image/gif",
+  "image/svg+xml",
+  "image/webp",
+  "image/bmp",
+]);
+
+const MARKDOWN_MIME_TYPES = new Set([
+  "text/markdown",
+  "text/x-markdown",
+]);
+
+const XML_MIME_TYPES = new Set([
+  "application/xml",
+  "text/xml",
+]);
+
+function getViewerType(mimeType: string): ViewerType {
+  if (mimeType === "application/pdf") {
+    return "pdf";
+  }
+  if (mimeType === "image/tiff") {
+    return "tiff";
+  }
+  if (IMAGE_MIME_TYPES.has(mimeType)) {
+    return "image";
+  }
+  if (mimeType.startsWith("video/")) {
+    return "video";
+  }
+  if (MARKDOWN_MIME_TYPES.has(mimeType)) {
+    return "markdown";
+  }
+  if (
+    mimeType
+      === "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+  ) {
+    return "docx";
+  }
+  if (
+    mimeType
+      === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+  ) {
+    return "excel";
+  }
+  if (mimeType === "message/rfc822") {
+    return "email";
+  }
+  if (XML_MIME_TYPES.has(mimeType)) {
+    return "xml";
+  }
+  return "unsupported";
+}
+
+export function DocumentViewer({
+  media,
+  className,
+  mimeTypeOverride,
+  pdfViewerProps,
+  imageViewerProps,
+  videoViewerProps,
+  tiffRendererProps,
+  markdownRendererProps,
+  docxViewerProps,
+  excelViewerProps,
+  emailViewerProps,
+  xmlViewerProps,
+}: DocumentViewerProps): React.ReactElement {
+  const mimeType = mimeTypeOverride ?? media.getMediaReference().mimeType;
+  const viewerType = useMemo(() => getViewerType(mimeType), [mimeType]);
+  const rootClassName = classnames(styles.container, className);
+
+  switch (viewerType) {
+    case "pdf":
+      return (
+        <PdfViewer
+          media={media}
+          className={rootClassName}
+          {...pdfViewerProps}
+        />
+      );
+    case "tiff":
+      return (
+        <TiffViewerMedia
+          media={media}
+          className={rootClassName}
+          {...tiffRendererProps}
+        />
+      );
+    case "image":
+      return (
+        <ImageViewer
+          media={media}
+          className={rootClassName}
+          {...imageViewerProps}
+        />
+      );
+    case "video":
+      return (
+        <VideoViewer
+          media={media}
+          className={rootClassName}
+          {...videoViewerProps}
+        />
+      );
+    case "markdown":
+      return (
+        <MarkdownViewerMedia
+          media={media}
+          className={rootClassName}
+          {...markdownRendererProps}
+        />
+      );
+    case "docx":
+      return (
+        <DocxViewer
+          media={media}
+          className={rootClassName}
+          {...docxViewerProps}
+        />
+      );
+    case "excel":
+      return (
+        <ExcelViewer
+          media={media}
+          className={rootClassName}
+          {...excelViewerProps}
+        />
+      );
+    case "email":
+      return (
+        <EmailViewer
+          media={media}
+          className={rootClassName}
+          {...emailViewerProps}
+        />
+      );
+    case "xml":
+      return (
+        <XmlViewer
+          media={media}
+          className={rootClassName}
+          {...xmlViewerProps}
+        />
+      );
+    case "unsupported":
+      return (
+        <div className={rootClassName}>
+          <div className={styles.unsupportedContainer}>
+            <DocumentIcon className={styles.unsupportedIcon} />
+            Unsupported file type: {mimeType}
+          </div>
+        </div>
+      );
+  }
+}

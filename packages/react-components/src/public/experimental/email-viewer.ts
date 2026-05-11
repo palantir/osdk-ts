@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,15 +14,19 @@
  * limitations under the License.
  */
 
-// TiffRenderer
-export { TiffRenderer } from "../../images/tiff-renderer/TiffRenderer.js";
-export type { TiffRendererProps } from "../../images/tiff-renderer/types.js";
+// BaseEmailViewer
+export { BaseEmailViewer } from "../../email-viewer/BaseEmailViewer.js";
+export type {
+  BaseEmailViewerProps,
+  EmailAddress,
+  EmailViewerMediaProps,
+  ParsedEmail,
+} from "../../email-viewer/types.js";
 
-// TiffViewerMedia (Media wrapper)
-import { TiffViewerMedia as _TiffViewerMedia } from "../../images/tiff-renderer/TiffViewerMedia.js";
+// EmailViewer (Media wrapper)
+import { EmailViewer as _EmailViewer } from "../../email-viewer/EmailViewer.js";
 import { withOsdkMetrics } from "../../util/withOsdkMetrics.js";
-export const TiffViewerMedia: typeof _TiffViewerMedia = withOsdkMetrics(
-  _TiffViewerMedia,
-  "TiffViewerMedia",
+export const EmailViewer: typeof _EmailViewer = withOsdkMetrics(
+  _EmailViewer,
+  "EmailViewer",
 );
-export type { TiffViewerMediaProps } from "../../images/tiff-renderer/TiffViewerMedia.js";

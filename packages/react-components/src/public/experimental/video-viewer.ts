@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 
-// TiffRenderer
-export { TiffRenderer } from "../../images/tiff-renderer/TiffRenderer.js";
-export type { TiffRendererProps } from "../../images/tiff-renderer/types.js";
+// BaseVideoViewer
+export { BaseVideoViewer } from "../../video-viewer/BaseVideoViewer.js";
+export type {
+  BaseVideoViewerProps,
+  VideoViewerMediaProps,
+} from "../../video-viewer/types.js";
 
-// TiffViewerMedia (Media wrapper)
-import { TiffViewerMedia as _TiffViewerMedia } from "../../images/tiff-renderer/TiffViewerMedia.js";
+// VideoViewer (Media wrapper)
 import { withOsdkMetrics } from "../../util/withOsdkMetrics.js";
-export const TiffViewerMedia: typeof _TiffViewerMedia = withOsdkMetrics(
-  _TiffViewerMedia,
-  "TiffViewerMedia",
+import { VideoViewer as _VideoViewer } from "../../video-viewer/VideoViewer.js";
+export const VideoViewer: typeof _VideoViewer = withOsdkMetrics(
+  _VideoViewer,
+  "VideoViewer",
 );
-export type { TiffViewerMediaProps } from "../../images/tiff-renderer/TiffViewerMedia.js";

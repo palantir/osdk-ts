@@ -1,0 +1,14 @@
+:root {
+  /* Excel Viewer - Container */
+  --osdk-excel-viewer-bg: var(--osdk-background-primary);
+  --osdk-excel-viewer-border: var(--osdk-surface-border);
+
+  /* Excel Viewer - Table */
+  --osdk-excel-viewer-header-bg: var(--osdk-background-secondary);
+  --osdk-excel-viewer-cell-border: var(--osdk-surface-border-color-default);
+
+  /* Excel Viewer - Sheet Tabs */
+  --osdk-excel-viewer-tab-bg: var(--osdk-background-secondary);
+  --osdk-excel-viewer-tab-active-bg: var(--osdk-background-primary);
+  --osdk-excel-viewer-tab-border: var(--osdk-surface-border);
+}
