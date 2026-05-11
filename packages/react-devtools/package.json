@@ -1,6 +1,5 @@
 {
   "name": "@osdk/react-devtools",
-  "private": true,
   "version": "0.6.0",
   "description": "Developer tools and debugging utilities for OSDK React Toolkit",
   "license": "Apache-2.0",
@@ -96,7 +95,14 @@
   "publishConfig": {
     "access": "public"
   },
-  "files": [],
+  "files": [
+    "build/esm",
+    "build/types",
+    "CHANGELOG.md",
+    "package.json",
+    "templates",
+    "*.d.ts"
+  ],
   "module": "./build/esm/index.js",
   "types": "./build/types/index.d.ts",
   "sideEffects": [
