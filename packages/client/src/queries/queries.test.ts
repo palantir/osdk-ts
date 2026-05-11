@@ -23,6 +23,7 @@ import type {
   Osdk,
   OsdkBase,
 } from "@osdk/api";
+import { __EXPERIMENTAL__NOT_SUPPORTED_YET__executeStreamingFunction } from "@osdk/api/unstable";
 import {
   $Queries,
   acceptsThreeDimensionalAggregationFunction,
@@ -641,7 +642,9 @@ describe("queries", () => {
 
       const items: number[] = [];
       for await (
-        const item of client(addOne).executeStreamingFunction({ n: 2 })
+        const item of client(
+          __EXPERIMENTAL__NOT_SUPPORTED_YET__executeStreamingFunction,
+        ).executeStreamingFunction(addOne, { n: 2 })
       ) {
         items.push(item);
       }
@@ -662,8 +665,12 @@ describe("queries", () => {
 
       const items: Array<OsdkBase<Employee>> = [];
       for await (
-        const item of client(queryTypeReturnsArrayOfObjects)
-          .executeStreamingFunction({ people: ["Brad", "George", "Ryan"] })
+        const item of client(
+          __EXPERIMENTAL__NOT_SUPPORTED_YET__executeStreamingFunction,
+        ).executeStreamingFunction(
+          queryTypeReturnsArrayOfObjects,
+          { people: ["Brad", "George", "Ryan"] },
+        )
       ) {
         items.push(item);
       }
@@ -713,7 +720,9 @@ describe("queries", () => {
       let caught: any;
       try {
         for await (
-          const _ of client(addOne).executeStreamingFunction({ n: 2 })
+          const _ of client(
+            __EXPERIMENTAL__NOT_SUPPORTED_YET__executeStreamingFunction,
+          ).executeStreamingFunction(addOne, { n: 2 })
         ) {
           // unreachable
         }
@@ -730,15 +739,21 @@ describe("queries", () => {
     });
 
     it("yields elements of an array-returning query as the element type", () => {
-      const stream = client(queryTypeReturnsArrayOfObjects)
-        .executeStreamingFunction({ people: [] });
+      const stream = client(
+        __EXPERIMENTAL__NOT_SUPPORTED_YET__executeStreamingFunction,
+      ).executeStreamingFunction(
+        queryTypeReturnsArrayOfObjects,
+        { people: [] },
+      );
       expectTypeOf<typeof stream>().toMatchTypeOf<
         AsyncIterable<OsdkBase<Employee>>
       >();
     });
 
     it("yields the scalar value for a non-array query", () => {
-      const stream = client(addOne).executeStreamingFunction({ n: 1 });
+      const stream = client(
+        __EXPERIMENTAL__NOT_SUPPORTED_YET__executeStreamingFunction,
+      ).executeStreamingFunction(addOne, { n: 1 });
       expectTypeOf<typeof stream>().toMatchTypeOf<AsyncIterable<number>>();
     });
   });

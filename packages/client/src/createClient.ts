@@ -39,6 +39,7 @@ import type {
 } from "@osdk/api/unstable";
 import {
   __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference,
+  __EXPERIMENTAL__NOT_SUPPORTED_YET__executeStreamingFunction,
   __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchOneByRid,
   __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchPageByRid,
   __EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks,
@@ -59,7 +60,6 @@ import { fetchSingle } from "./object/fetchSingle.js";
 import { createObjectSet } from "./objectSet/createObjectSet.js";
 import type { ObjectSetFactory } from "./objectSet/ObjectSetFactory.js";
 import { applyQuery } from "./queries/applyQuery.js";
-import { applyStreamingQuery } from "./queries/applyStreamingQuery.js";
 import type { QuerySignatureFromDef } from "./queries/types.js";
 
 // We import it this way to keep compatible with CJS. If we referenced the
@@ -98,17 +98,9 @@ class QueryInvoker<Q extends QueryDefinition<any>>
     queryDef: QueryDefinition<any>,
   ) {
     this.executeFunction = applyQuery.bind(undefined, clientCtx, queryDef);
-    this.executeStreamingFunction = applyStreamingQuery.bind(
-      undefined,
-      clientCtx,
-      queryDef,
-    ) as unknown as QuerySignatureFromDef<Q>["executeStreamingFunction"];
   }
 
   executeFunction: (...args: any[]) => any;
-  executeStreamingFunction: QuerySignatureFromDef<Q>[
-    "executeStreamingFunction"
-  ];
 }
 
 /** @internal */
@@ -171,13 +163,17 @@ export function createClientFromContext(clientCtx: MinimalClient) {
       | QueryDefinition<any>
       | Experiment<"2.0.8">
       | Experiment<"2.1.0">
-      | Experiment<"2.8.0">,
+      | Experiment<"2.8.0">
+      | Experiment<"2.17.0">,
   >(o: T): T extends ObjectTypeDefinition ? ObjectSet<T>
     : T extends InterfaceDefinition ? MinimalObjectSet<T>
     : T extends ActionDefinition<any> ? ActionSignatureFromDef<T>
     : T extends QueryDefinition<any> ? QuerySignatureFromDef<T>
-    : T extends Experiment<"2.0.8"> | Experiment<"2.1.0"> | Experiment<"2.8.0">
-      ? { invoke: ExperimentFns<T> }
+    : T extends
+      | Experiment<"2.0.8">
+      | Experiment<"2.1.0">
+      | Experiment<"2.8.0">
+      | Experiment<"2.17.0"> ? { invoke: ExperimentFns<T> }
     : never
   {
     if (o.type === "object" || o.type === "interface") {
@@ -198,6 +194,18 @@ export function createClientFromContext(clientCtx: MinimalClient) {
         : never) as any;
     } else if (o.type === "experiment") {
       switch (o.name) {
+        case __EXPERIMENTAL__NOT_SUPPORTED_YET__executeStreamingFunction.name:
+          return {
+            async *executeStreamingFunction(
+              query: QueryDefinition<any>,
+              params?: Record<string, any>,
+            ) {
+              const { applyStreamingQuery } = await import(
+                "./queries/applyStreamingQuery.js"
+              );
+              yield* applyStreamingQuery(clientCtx, query, params);
+            },
+          } as any;
         case __EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks.name:
           return {
             async *getBulkLinks(

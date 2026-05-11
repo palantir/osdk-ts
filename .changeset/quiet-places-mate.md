@@ -1,5 +1,6 @@
 ---
 "@osdk/client": minor
+"@osdk/api": minor
 ---
 
-Support streaming queries
+Add experimental support for streaming queries via the `__EXPERIMENTAL__NOT_SUPPORTED_YET__executeStreamingFunction` marker.
