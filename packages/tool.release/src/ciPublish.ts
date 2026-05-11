@@ -59,9 +59,9 @@ async function ciPublish(): Promise<void> {
       cwd: repoRoot,
     });
 
-    const unreleasable = await findUnreleasablePackages(repoRoot);
-    if (unreleasable.length > 0) {
-      await markPackagesPrivate(unreleasable);
+    const unreleasablePackages = await findUnreleasablePackages(repoRoot);
+    if (unreleasablePackages.length > 0) {
+      await markPackagesPrivate(unreleasablePackages);
     }
 
     await execa(

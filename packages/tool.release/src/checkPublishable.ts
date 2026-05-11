@@ -22,11 +22,11 @@ import { basename, dirname, join, resolve } from "node:path";
 import yargs from "yargs";
 import { findUnreleasablePackagesFromList } from "./findUnreleasablePackages.js";
 
-type OffenseKind = "new-package-in-pr" | "no-npm-versions";
+type UnpublishableReason = "new-package" | "no-npm-version";
 
 interface Offense {
   name: string;
-  kind: OffenseKind;
+  kind: UnpublishableReason;
   file?: string;
 }
 
@@ -36,7 +36,7 @@ function emitGithubError(message: string, file?: string): void {
 }
 
 function messageForOffense(offense: Offense): string {
-  if (offense.kind === "new-package-in-pr") {
+  if (offense.kind === "new-package") {
     return `New public package ${offense.name} cannot be merged: it has no `
       + `versions on npm. Talk to the OSDK release team to manually publish a `
       + `placeholder version and configure trusted publishing before merging `
@@ -86,7 +86,7 @@ async function findNewlyAddedNonPrivatePackages(
       continue;
     }
     offenses.push({
-      kind: "new-package-in-pr",
+      kind: "new-package",
       name: parsed.name,
       file: relPath,
     });
@@ -98,7 +98,7 @@ function dedupeOffenses(offenses: Offense[]): Offense[] {
   const byName = new Map<string, Offense>();
   for (const offense of offenses) {
     const existing = byName.get(offense.name);
-    if (!existing || offense.kind === "new-package-in-pr") {
+    if (!existing || offense.kind === "new-package") {
       byName.set(offense.name, offense);
     }
   }
@@ -132,7 +132,7 @@ async function main(): Promise<void> {
   const offenses = dedupeOffenses([
     ...newPkgOffenses,
     ...unreleasable.map((pkg): Offense => ({
-      kind: "no-npm-versions",
+      kind: "no-npm-version",
       name: pkg.name,
     })),
   ]);

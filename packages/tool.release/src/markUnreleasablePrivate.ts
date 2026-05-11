@@ -22,16 +22,16 @@ import {
 
 async function main(): Promise<void> {
   const cwd = process.cwd();
-  const unreleasable = await findUnreleasablePackages(cwd);
+  const unreleasablePackages = await findUnreleasablePackages(cwd);
 
-  if (unreleasable.length === 0) {
+  if (unreleasablePackages.length === 0) {
     consola.info("No unreleasable packages detected");
     return;
   }
 
-  await markPackagesPrivate(unreleasable);
+  await markPackagesPrivate(unreleasablePackages);
   consola.info(
-    `Marked ${unreleasable.length} unreleasable package(s) as private so publish steps skip them`,
+    `Marked ${unreleasablePackages.length} unreleasable package(s) as private so publish steps skip them`,
   );
 }
 
