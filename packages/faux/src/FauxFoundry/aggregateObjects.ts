@@ -229,7 +229,7 @@ function compareValue(
   value: unknown,
   target: string | number | undefined,
 ): number {
-  if (target === undefined) {
+  if (target == null) {
     return 1;
   }
   if (typeof value === "number" || typeof target === "number") {
