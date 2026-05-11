@@ -19,6 +19,7 @@ import React, { memo, useCallback, useMemo } from "react";
 import { Combobox } from "../../../base-components/combobox/Combobox.js";
 import type { PropertyAggregationValue } from "../../types/AggregationTypes.js";
 import { isEmptyValue } from "../../utils/filterValues.js";
+import { useFilterListBoundary } from "../FilterListBoundaryContext.js";
 import { NoValueLabel } from "./NoValueLabel.js";
 import sharedStyles from "./shared.module.css";
 import styles from "./SingleSelectInput.module.css";
@@ -52,6 +53,8 @@ function SingleSelectInputInner({
   ariaLabel = "Select value",
   renderValue,
 }: SingleSelectInputProps): React.ReactElement {
+  const collisionBoundary = useFilterListBoundary();
+
   const handleValueChange = useCallback(
     (value: string | null) => {
       onChange(value ?? undefined);
@@ -140,7 +143,7 @@ function SingleSelectInputInner({
               <Combobox.Clear className={styles.clearButton} />
             )}
             <Combobox.Portal>
-              <Combobox.Positioner>
+              <Combobox.Positioner collisionBoundary={collisionBoundary}>
                 <Combobox.Popup>
                   <Combobox.Empty>No matching options</Combobox.Empty>
                   <Combobox.List>{renderItem}</Combobox.List>

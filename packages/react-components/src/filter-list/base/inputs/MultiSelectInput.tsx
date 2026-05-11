@@ -19,6 +19,7 @@ import React, { memo, useCallback, useMemo } from "react";
 import { Combobox } from "../../../base-components/combobox/Combobox.js";
 import type { PropertyAggregationValue } from "../../types/AggregationTypes.js";
 import { isEmptyValue } from "../../utils/filterValues.js";
+import { useFilterListBoundary } from "../FilterListBoundaryContext.js";
 import styles from "./MultiSelectInput.module.css";
 import { NoValueLabel } from "./NoValueLabel.js";
 import sharedStyles from "./shared.module.css";
@@ -50,6 +51,8 @@ function MultiSelectInputInner({
   ariaLabel = "Search values",
   renderValue,
 }: MultiSelectInputProps): React.ReactElement {
+  const collisionBoundary = useFilterListBoundary();
+
   const handleValueChange = useCallback(
     (newValues: string[] | null) => {
       onChange(newValues ?? []);
@@ -161,7 +164,7 @@ function MultiSelectInputInner({
           </Combobox.Chips>
 
           <Combobox.Portal>
-            <Combobox.Positioner>
+            <Combobox.Positioner collisionBoundary={collisionBoundary}>
               <Combobox.Popup>
                 <Combobox.Empty>No matching options</Combobox.Empty>
                 <Combobox.List>{renderItem}</Combobox.List>
