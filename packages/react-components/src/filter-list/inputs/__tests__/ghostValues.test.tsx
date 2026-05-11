@@ -49,7 +49,7 @@ afterEach(() => {
 
 describe("ghost initialFilterStates values", () => {
   describe("ListogramFilterInput", () => {
-    it("renders ghost selected values that are absent from aggregation data", () => {
+    it("renders ghost selected value as a checked row with count 0", () => {
       mockAggregationData([{ name: "Marketing", count: 5 }]);
       render(
         <ListogramFilterInput
@@ -64,17 +64,21 @@ describe("ghost initialFilterStates values", () => {
         />,
       );
 
-      // "Marketing" comes from aggregation data
-      expect(screen.getByText("Marketing")).toBeDefined();
-      // "Research" is a ghost value — should still appear with count 0
-      expect(screen.getByText("Research")).toBeDefined();
-      expect(screen.getByText("0")).toBeDefined();
+      // Both rows render — "Marketing" from aggregation, "Research" synthesized
+      const marketingRow = screen.getByRole("button", { name: /Marketing/ });
+      const researchRow = screen.getByRole("button", { name: /Research/ });
+
+      // Both are pressed (selected) since both are in filterState.values
+      expect(marketingRow.getAttribute("aria-pressed")).toBe("true");
+      expect(researchRow.getAttribute("aria-pressed")).toBe("true");
+
+      // "Research" row shows count 0 (inside its own row, not just anywhere)
+      expect(researchRow.textContent).toContain("0");
     });
   });
 
   describe("MultiSelectFilterInput", () => {
-    it("renders ghost selected values when aggregation returns no matching data", () => {
-      // Empty aggregation — all selected values are ghost values
+    it("renders ghost selected value as a chip when aggregation returns empty", () => {
       mockAggregationData([]);
 
       render(
@@ -90,7 +94,9 @@ describe("ghost initialFilterStates values", () => {
         />,
       );
 
-      // Without the fix, this shows "No options available" instead of the chip
+      // Without the fix, values.length === 0 shows "No options available"
+      // and the Combobox never mounts — no chip, no way to see the selection.
+      expect(screen.queryByText("No options available")).toBeNull();
       expect(screen.getByText("Research")).toBeDefined();
     });
   });
