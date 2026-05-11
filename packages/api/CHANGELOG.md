@@ -1,5 +1,42 @@
 # @osdk/api
 
+## 2.17.0
+
+### Minor Changes
+
+- 147166c: fix typing so `$loadPropertySecurityMetadata: true` is accepted on the experimental `fetchPageByRid` client method, and `$propertySecurities` is properly typed on returned objects.
+
+## 2.16.0
+
+### Minor Changes
+
+- 56c5630: Drop redundant `--config $(find-up dprint.json)` from `lint`, `fix-lint`, and `format` scripts. dprint already auto-discovers `dprint.json` by walking up from cwd; the substitution was a no-op anyway since `find-up` is an npm package, not a CLI. Also fix the `uploadMediaOntologyEdits` documentation example so its `// @ts-ignore` survives dprint reformatting (the broken `format` step had been masking this).
+- 17d7ba2: Fill in missing `@param`, `@example`, and `@returns` tags on JSDoc across the public surface of `@osdk/api` and `@osdk/client`: `ObjectSet` methods, the derived-property `Builder` chain and `NumericExpressions` / `DatetimeExpressions` chains, the `Logger` interface, `Attachment` and `Media` accessors, `TimeSeriesProperty` / `GeotimeSeriesProperty` single-point methods, the top-level `Client` callable and `fetchMetadata`, and the `createClient` factory.
+
+## 2.15.0
+
+## 2.14.0
+
+### Minor Changes
+
+- 20e9678: Wrap `@example` JSDoc blocks in fenced ts/tsx code blocks so VS Code's Markdown renderer preserves whitespace and applies syntax highlighting.
+
+## 2.13.0
+
+## 2.12.0
+
+### Minor Changes
+
+- 91f34a9: expose .subscribe() on interface-typed object sets returned by client()
+
+## 2.11.0
+
+## 2.10.0
+
+### Minor Changes
+
+- f01a8f4: improvements(build): significant reduction in build task graphs
+
 ## 2.9.0
 
 ### Minor Changes

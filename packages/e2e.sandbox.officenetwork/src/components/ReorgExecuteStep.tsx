@@ -1,4 +1,4 @@
-import { useOsdkAction } from "@osdk/react/experimental";
+import { useOsdkAction } from "@osdk/react";
 import React from "react";
 import type { Employee, Office } from "../generatedNoCheck2/index.js";
 import { modifyEmployee } from "../generatedNoCheck2/index.js";

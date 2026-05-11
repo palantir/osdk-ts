@@ -1,0 +1,58 @@
+{
+  "$schema": "./node_modules/syncpack/schema.json",
+  "sortFirst": [
+    "name",
+    "version",
+    "private",
+    "description",
+    "license",
+    "type",
+    "main",
+    "module",
+    "types",
+    "exports",
+    "files",
+    "scripts",
+    "dependencies",
+    "devDependencies",
+    "peerDependencies",
+    "peerDependenciesMeta"
+  ],
+  "versionGroups": [
+    {
+      "label": "Use workspace:~ for local @osdk/monorepo.* packages",
+      "dependencies": [
+        "@osdk/monorepo.*"
+      ],
+      "dependencyTypes": [
+        "dev",
+        "prod"
+      ],
+      "pinVersion": "workspace:~"
+    },
+    {
+      "label": "Use workspace:^ for local peer dependencies to avoid major bumps on minor changes",
+      "dependencies": [
+        "$LOCAL"
+      ],
+      "dependencyTypes": [
+        "peer"
+      ],
+      "specifierTypes": [
+        "workspace-protocol"
+      ],
+      "pinVersion": "workspace:^"
+    },
+    {
+      "label": "Use workspace:~ for all other local packages",
+      "dependencies": [
+        "$LOCAL"
+      ],
+      "dependencyTypes": [
+        "dev",
+        "prod"
+      ],
+      "pinVersion": "workspace:~"
+    }
+  ]
+}

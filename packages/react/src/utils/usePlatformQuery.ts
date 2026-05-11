@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { Observer } from "@osdk/client/unstable-do-not-use";
+import type { Observer } from "@osdk/client/observable";
 import React from "react";
 import {
   devToolsMetadata,

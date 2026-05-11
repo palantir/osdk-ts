@@ -14,12 +14,11 @@ seed-compiler \
   --output path/to/seed-data.json
 ```
 
-| Flag | Description |
-|---|---|
+| Flag         | Description                                                                                                                                                                 |
+| ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `--metadata` | Path to the `ontology-metadata.json` file written by the SDK generator. Provides per-property wire types for format validation and per-object-type primary key field names. |
-| `--seed-dir` | Directory containing seed `.mts` files. All top-level `.mts` files are loaded, sorted by filename for deterministic output, and merged. |
-| `--output` | Path where the merged seed JSON is written. |
-
+| `--seed-dir` | Directory containing seed `.mts` files. All top-level `.mts` files are loaded, sorted by filename for deterministic output, and merged.                                     |
+| `--output`   | Path where the merged seed JSON is written.                                                                                                                                 |
 
 ## Authoring seed files
 
@@ -54,8 +53,12 @@ seed.add(Seller, { pk: "seller-001", name: "Alice" });
 
 seed.link(
   "widget-seller",
-  Product, "prod-001", "sellers",
-  Seller, "seller-001", "products",
+  Product,
+  "prod-001",
+  "sellers",
+  Seller,
+  "seller-001",
+  "products",
 );
 ```
 

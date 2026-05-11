@@ -1,5 +1,94 @@
 # @osdk/functions-testing.experimental
 
+## 0.9.0
+
+### Minor Changes
+
+- 56c5630: Drop redundant `--config $(find-up dprint.json)` from `lint`, `fix-lint`, and `format` scripts. dprint already auto-discovers `dprint.json` by walking up from cwd; the substitution was a no-op anyway since `find-up` is an npm package, not a CLI. Also fix the `uploadMediaOntologyEdits` documentation example so its `// @ts-ignore` survives dprint reformatting (the broken `format` step had been masking this).
+
+### Patch Changes
+
+- Updated dependencies [56c5630]
+- Updated dependencies [17d7ba2]
+  - @osdk/api@2.16.0
+  - @osdk/client@2.16.0
+  - @osdk/functions@1.9.0
+
+## 0.8.0
+
+### Minor Changes
+
+- d1a7d90: Accessing a link that wasn't configured on a `createMockOsdkObject` mock no longer silently returns `undefined`. The accessor now exists, and its `fetchOne()` rejects / `fetchOneWithErrors()` resolves with a descriptive error naming the link, object type, and primary key.
+- 9a06a62: Move user-facing types (`MockClient`, `StubClient`, `StubBuilderFor`, `FetchPageStubBuilder`, `FetchOneStubBuilder`, `AggregateStubBuilder`, `QueryStubBuilder`, `MockOsdkObjectOptions`) to dedicated files under `src/api/`. No public API changes.
+- 9a06a62: Fix `StubBuilderFor<T>` so `fetchOneWithErrors` / `fetchPageWithErrors` / `asyncIter` resolve to the correct stub builders instead of falling through to `AggregateStubBuilder`. Allow `Error` as a single-link stub value in `createMockOsdkObject` so link `fetchOne` rejects and `fetchOneWithErrors` returns `{ error }` (previously wrapped the Error in `{ value: ... }`, making `isOk` always true).
+
+### Patch Changes
+
+- Updated dependencies [f12977d]
+- Updated dependencies [eb36e21]
+- Updated dependencies [d892397]
+- Updated dependencies [c5a6047]
+- Updated dependencies [45be476]
+- Updated dependencies [2c51525]
+- Updated dependencies [20e9678]
+  - @osdk/client@2.14.0
+  - @osdk/functions@1.8.0
+  - @osdk/api@2.14.0
+
+## 0.7.0
+
+### Minor Changes
+
+- 9e9d948: `deepEqual` (used to match stub args in `when` / `whenQuery`) now recognizes Vitest/Jest asymmetric matchers (`expect.any(...)`, `expect.anything()`, `expect.stringContaining(...)`, `expect.objectContaining(...)`, etc.). Previously matchers were compared by raw object shape and silently never matched.
+
+### Patch Changes
+
+- Updated dependencies [19b7913]
+- Updated dependencies [01fbb74]
+- Updated dependencies [91f34a9]
+- Updated dependencies [df1a4f8]
+- Updated dependencies [46a00bc]
+- Updated dependencies [267f324]
+  - @osdk/client@2.12.0
+  - @osdk/api@2.12.0
+
+## 0.6.0
+
+### Minor Changes
+
+- 8e4472c: Add `thenThrow(error)` to `whenQuery(...)` stub builder. Lets tests explicitly configure a query's `executeFunction` to reject with a specific error, instead of only being able to exercise the implicit "no stub registered" error path.
+
+## 0.5.0
+
+### Minor Changes
+
+- 40fb8c1: Attach a `SharedClientContext` to the mock client so Foundry Platform API helpers (e.g. `Users.getCurrent(client)`) don't crash inside `foundryPlatformFetch` on an undefined `baseUrl` before a request is made. Callers mock the HTTP layer themselves (MSW, `vi.spyOn(globalThis, "fetch")`, etc.).
+
+### Patch Changes
+
+- Updated dependencies [58248f8]
+- Updated dependencies [e456da5]
+  - @osdk/client@2.11.0
+  - @osdk/api@2.11.0
+
+## 0.4.0
+
+### Minor Changes
+
+- 29ab35a: Use workspace:^ for peer dependencies to prevent changesets from propagating major bumps when a peer dep receives a minor version change. The internal codegen (`osdk-unstable-typescript generate --internal`) now emits `workspace:^` for peer deps while keeping `workspace:~` for regular/dev deps.
+- f01a8f4: improvements(build): significant reduction in build task graphs
+
+### Patch Changes
+
+- Updated dependencies [29ab35a]
+- Updated dependencies [0fb9c8a]
+- Updated dependencies [f01a8f4]
+- Updated dependencies [f34a1ce]
+- Updated dependencies [7e7f70b]
+  - @osdk/client@2.10.0
+  - @osdk/functions@1.7.0
+  - @osdk/api@2.10.0
+
 ## 0.3.0
 
 ### Minor Changes

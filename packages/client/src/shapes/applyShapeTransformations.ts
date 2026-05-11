@@ -49,7 +49,7 @@ export function applyShapeTransformations<
   const transformedProps: Record<string, unknown> = {};
   const requireProps: string[] = [];
 
-  // Phase 1-3: Filter (dropIfNull), apply defaults and transforms
+  // Phase 1-3: filter (dropIfNull), apply defaults and transforms
   // Collect require props to check after cloning
   for (const prop of Object.keys(shape.__props)) {
     const config = shape.__props[prop] as ShapePropertyConfig | undefined;
@@ -102,12 +102,11 @@ export function applyShapeTransformations<
         break;
       }
       case "require": {
-        // Collect for phase 4 - check AFTER clone with transforms applied
+        // Collect for phase 4 - check after clone with transforms applied
         requireProps.push(prop);
         break;
       }
       case "select":
-        // No transformation needed
         break;
       default: {
         const _exhaustive: never = op;
@@ -122,8 +121,8 @@ export function applyShapeTransformations<
     )
     : rawObject;
 
-  // Phase 4: Check require constraints on the TRANSFORMED object
-  // This allows withDefault + require to work together correctly
+  // Phase 4: check require constraints on the transformed object.
+  // This allows withDefault + require to work together correctly.
   const violations: NullabilityViolation[] = [];
   for (const prop of requireProps) {
     const value = (clonedObject as Record<string, unknown>)[prop];

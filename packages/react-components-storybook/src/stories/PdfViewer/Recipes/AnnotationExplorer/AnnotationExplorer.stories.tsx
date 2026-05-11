@@ -21,7 +21,7 @@ import type {
   PdfAnnotationRenderProps,
   PdfCustomAnnotation,
   PdfViewerProps,
-} from "@osdk/react-components/experimental";
+} from "@osdk/react-components/experimental/pdf-viewer";
 import {
   BasePdfViewer,
   PdfViewerAnnotationLayer,
@@ -30,7 +30,7 @@ import {
   PdfViewerToolbar,
   usePdfViewerContext,
   usePdfViewerInstance,
-} from "@osdk/react-components/experimental";
+} from "@osdk/react-components/experimental/pdf-viewer";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import React, { useCallback, useMemo, useState } from "react";
 import { createPortal } from "react-dom";

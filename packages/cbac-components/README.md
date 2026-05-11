@@ -26,22 +26,22 @@ npm install react react-dom classnames @osdk/react @osdk/react-components
 **Prerequisites:**
 
 - A configured OSDK client
-- An OsdkProvider2 wrapping your application
+- An OsdkProvider wrapping your application
 
 ## Setup
 
 ### App Setup
 
-**REQUIRED:** Wrap app with OsdkProvider2:
+**REQUIRED:** Wrap app with OsdkProvider:
 
 ```tsx
 import { createClient } from "@osdk/client";
-import { OsdkProvider2 } from "@osdk/react/experimental";
+import { OsdkProvider } from "@osdk/react";
 
 const client = createClient(/* config */);
 
 function App() {
-  return <OsdkProvider2 client={client}>{/* components */}</OsdkProvider2>;
+  return <OsdkProvider client={client}>{/* components */}</OsdkProvider>;
 }
 ```
 
@@ -56,11 +56,10 @@ Add the CBAC component styles to your application's entry CSS file:
 If using CSS layers with `@osdk/react-components`:
 
 ```css
-@layer osdk.tokens, osdk.components;
+@layer osdk.styles;
 
-@import "@osdk/react-components-styles" layer(osdk.tokens);
-@import "@osdk/react-components/styles.css" layer(osdk.components);
-@import "@osdk/cbac-components/styles.css" layer(osdk.components);
+@import "@osdk/react-components/styles.css" layer(osdk.styles);
+@import "@osdk/cbac-components/styles.css" layer(osdk.styles);
 ```
 
 ## Components

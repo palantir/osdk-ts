@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { BaseTableProps } from "@osdk/react-components/experimental";
-import { BaseTable } from "@osdk/react-components/experimental";
+import type { BaseTableProps } from "@osdk/react-components/experimental/object-table";
+import { BaseTable } from "@osdk/react-components/experimental/object-table";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import type {
   ColumnPinningState,
@@ -189,7 +189,7 @@ export const Default: Story = {
     docs: {
       source: {
         code: `
-import { BaseTable } from "@osdk/react-components/experimental";
+import { BaseTable } from "@osdk/react-components/experimental/object-table";
 import { 
   getCoreRowModel,
   useReactTable,
@@ -250,7 +250,7 @@ export const WithSorting: Story = {
     docs: {
       source: {
         code: `
-import { BaseTable } from "@osdk/react-components/experimental";
+import { BaseTable } from "@osdk/react-components/experimental/object-table";
 import {
   getCoreRowModel,
   getSortedRowModel,
@@ -319,7 +319,7 @@ export const WithColumnPinning: Story = {
     docs: {
       source: {
         code: `
-import { BaseTable } from "@osdk/react-components/experimental";
+import { BaseTable } from "@osdk/react-components/experimental/object-table";
 import {
   getCoreRowModel,
   useReactTable,
@@ -389,7 +389,7 @@ export const WithColumnResizing: Story = {
     docs: {
       source: {
         code: `
-import { BaseTable } from "@osdk/react-components/experimental";
+import { BaseTable } from "@osdk/react-components/experimental/object-table";
 import {
   getCoreRowModel,
   useReactTable,
@@ -457,7 +457,7 @@ export const WithColumnConfig: Story = {
     docs: {
       source: {
         code: `
-import { BaseTable } from "@osdk/react-components/experimental";
+import { BaseTable } from "@osdk/react-components/experimental/object-table";
 import {
   getCoreRowModel,
   getSortedRowModel,

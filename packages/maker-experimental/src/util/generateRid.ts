@@ -39,6 +39,7 @@ import type {
 type ParameterRid = string;
 import { createHash } from "crypto";
 import { toBlockShapeId } from "../cli/marketplaceSerialization/CodeBlockSpec.js";
+import type { InputMappingEntry } from "../cli/marketplaceSerialization/index.js";
 
 // Given a unique key generates a rid deterministically (from a lock file eventually)
 export type ReadableId = string & { __brand: "ReadableId" };
@@ -172,6 +173,7 @@ export interface BlockShapes {
   inputShapes: Map<ReadableId, InputShape>;
   outputShapes: Map<ReadableId, OutputShape>;
   inputShapeMetadata: Map<ReadableId, InputShapeMetadata>;
+  inputMappings: InputMappingEntry[];
 }
 
 /**
@@ -317,6 +319,18 @@ export class ReadableIdGenerator {
     supportedMarkingsType: "CBAC" | "MANDATORY",
   ): ReadableId {
     return `marking-${markingId}-${supportedMarkingsType}` as ReadableId;
+  }
+
+  static getForFunction(
+    functionApiName: string,
+  ): ReadableId {
+    return `function-${functionApiName}` as ReadableId;
+  }
+
+  static getForConsumedFunction(
+    functionApiName: string,
+  ): ReadableId {
+    return `consumed-function-${functionApiName}` as ReadableId;
   }
 }
 

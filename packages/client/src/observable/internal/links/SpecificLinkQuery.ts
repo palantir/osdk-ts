@@ -38,12 +38,14 @@ import type { Canonical } from "../Canonical.js";
 import type { Changes } from "../Changes.js";
 import type { Entry } from "../Layer.js";
 import type { OptimisticId } from "../OptimisticId.js";
+import type { Rdp } from "../RdpCanonicalizer.js";
 import type { SimpleWhereClause } from "../SimpleWhereClause.js";
 import { OrderBySortingStrategy } from "../sorting/SortingStrategy.js";
 import type { Store } from "../Store.js";
 import type { SubjectPayload } from "../SubjectPayload.js";
 import { tombstone } from "../tombstone.js";
 import {
+  INCLUDE_ALL_BASE_PROPERTIES_IDX as LINK_INCLUDE_ALL_BASE_PROPERTIES_IDX,
   SELECT_IDX as LINK_SELECT_IDX,
   type SpecificLinkCacheKey,
 } from "./SpecificLinkCacheKey.js";
@@ -127,6 +129,17 @@ export class SpecificLinkQuery extends BaseListQuery<
     return this.#select;
   }
 
+  // TODO: wire up RDP support for SpecificLinkCacheKey (needs its own slot).
+  public override get rdpConfig(): Canonical<Rdp> | undefined {
+    return undefined;
+  }
+
+  public override get includeAllBaseObjectProperties(): boolean {
+    return (
+      this.cacheKey.otherKeys[LINK_INCLUDE_ALL_BASE_PROPERTIES_IDX] === true
+    );
+  }
+
   /**
    * Implements fetchPageData from the BaseCollectionQuery template method pattern
    */
@@ -137,9 +150,13 @@ export class SpecificLinkQuery extends BaseListQuery<
     const ontologyProvider = client[additionalContext].ontologyProvider;
     const isInterface = this.#sourceTypeKind === "interface";
 
-    if (this.#orderBy && Object.keys(this.#orderBy).length > 0) {
-      let targetTypeApiName: string;
-
+    // Resolve the link target's apiName + kind once if needed for sorting or
+    // for gating the $includeAllBaseObjectProperties param. The ontology
+    // provider caches its lookups, so calling it here is cheap.
+    const hasOrderBy = this.#orderBy
+      && Object.keys(this.#orderBy).length > 0;
+    let target: { apiName: string; kind: "object" | "interface" } | undefined;
+    if (hasOrderBy || this.includeAllBaseObjectProperties) {
       if (isInterface) {
         const interfaceMetadata = await ontologyProvider.getInterfaceDefinition(
           this.#sourceApiName,
@@ -150,7 +167,10 @@ export class SpecificLinkQuery extends BaseListQuery<
             `Missing link definition for link '${this.#linkName}' on interface '${this.#sourceApiName}'`,
           );
         }
-        targetTypeApiName = linkDef.targetTypeApiName;
+        target = {
+          apiName: linkDef.targetTypeApiName,
+          kind: linkDef.targetType,
+        };
       } else {
         const objectMetadata = await ontologyProvider.getObjectDefinition(
           this.#sourceApiName,
@@ -161,11 +181,14 @@ export class SpecificLinkQuery extends BaseListQuery<
             `Missing link definition or targetType for link '${this.#linkName}' on object type '${this.#sourceApiName}'`,
           );
         }
-        targetTypeApiName = linkDef.targetType;
+        // Object link defs always target an object type.
+        target = { apiName: linkDef.targetType, kind: "object" };
       }
+    }
 
+    if (target && hasOrderBy) {
       this.sortingStrategy = new OrderBySortingStrategy(
-        targetTypeApiName,
+        target.apiName,
         this.#orderBy,
       );
     }
@@ -220,6 +243,7 @@ export class SpecificLinkQuery extends BaseListQuery<
       $orderBy?: Record<string, "asc" | "desc" | undefined>;
       $where?: Record<string, unknown>;
       $select?: readonly string[];
+      $includeAllBaseObjectProperties?: true;
     } = {
       $pageSize: this.getEffectiveFetchPageSize(),
       $nextPageToken: this.nextPageToken,
@@ -236,6 +260,12 @@ export class SpecificLinkQuery extends BaseListQuery<
 
     if (this.#whereClause && Object.keys(this.#whereClause).length > 0) {
       queryParams.$where = this.#whereClause;
+    }
+
+    // Only forward $includeAllBaseObjectProperties when the link target is an
+    // interface — for object targets the flag is a no-op on the server.
+    if (target?.kind === "interface") {
+      queryParams.$includeAllBaseObjectProperties = true;
     }
 
     const response = await linkQuery.fetchPage(queryParams);
@@ -328,21 +358,19 @@ export class SpecificLinkQuery extends BaseListQuery<
         }
 
         let targetTypeApiName: string | undefined;
-        let targetTypeKind: "object" | "interface" | undefined;
 
         if (this.#sourceTypeKind === "interface") {
           const interfaceMetadata = await ontologyProvider
             .getInterfaceDefinition(this.#sourceApiName);
-          const linkDef = interfaceMetadata.links?.[this.#linkName];
-          targetTypeApiName = linkDef?.targetTypeApiName;
-          targetTypeKind = linkDef?.targetType;
+          targetTypeApiName = interfaceMetadata.links?.[this.#linkName]
+            ?.targetTypeApiName;
         } else {
           const objectMetadata = await ontologyProvider
             .getObjectDefinition(this.#sourceApiName);
-          const linkDef = objectMetadata.links?.[this.#linkName];
-          // On object link defs, targetType is the target API name (not the kind)
-          targetTypeApiName = linkDef?.targetType;
-          targetTypeKind = "object";
+          // Object link def's `targetType` is the target API name; it can be
+          // either an object type or an interface name.
+          targetTypeApiName = objectMetadata.links?.[this.#linkName]
+            ?.targetType;
         }
 
         if (!targetTypeApiName) return;
@@ -352,14 +380,15 @@ export class SpecificLinkQuery extends BaseListQuery<
           return void await this.revalidate(true);
         }
 
-        if (targetTypeKind === "interface") {
-          const objectMetadata = await ontologyProvider.getObjectDefinition(
-            objectType,
-          );
-          if (targetTypeApiName in objectMetadata.interfaceMap) {
-            changes?.modified.add(this.cacheKey);
-            return void await this.revalidate(true);
-          }
+        // If the target is an interface, revalidate when objectType implements
+        // it. For object-typed targets, interfaceMap[objectTypeName] is always
+        // false, so this is a safe no-op.
+        const objectMetadata = await ontologyProvider.getObjectDefinition(
+          objectType,
+        );
+        if (targetTypeApiName in objectMetadata.interfaceMap) {
+          changes?.modified.add(this.cacheKey);
+          return void await this.revalidate(true);
         }
       } catch (e) {
         if (process.env.NODE_ENV !== "production") {

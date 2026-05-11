@@ -17,7 +17,7 @@
 import {
   type FilterDefinitionUnion,
   FilterList,
-} from "@osdk/react-components/experimental";
+} from "@osdk/react-components/experimental/filter-list";
 import React, { useCallback, useMemo, useState } from "react";
 import { Employee } from "../generatedNoCheck2/index.js";
 

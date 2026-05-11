@@ -905,7 +905,7 @@ export class FauxDataStore {
     const page = pageThroughResponseSearchParams(
       objects,
       getPaginationParamsFromRequest(parsedBody),
-      false,
+      true,
       loadPropertySecurities
         ? this.#propertySecurities.get(
           objectLocator(objects[0]),

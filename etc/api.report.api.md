@@ -273,8 +273,7 @@ export interface AsyncIterArgs<
 export interface Attachment {
     	fetchContents(): Promise<Response>;
     	fetchMetadata(): Promise<AttachmentMetadata>;
-    	// (undocumented)
-    rid: string;
+    	rid: string;
 }
 
 // @public (undocumented)
@@ -655,8 +654,9 @@ export type FetchPageResult<
 	R extends boolean,
 	S extends NullabilityAdherence,
 	T extends boolean = false,
-	ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<L> = {}
-> = PageResult<MaybeScore<Osdk.Instance<Q, ExtractOptions<R, S, T>, PropertyKeys<Q> extends L ? never : L>, ORDER_BY_OPTIONS>>;
+	ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<L> = {},
+	PROPERTY_SECURITIES extends boolean = false
+> = PageResult<MaybeScore<Osdk.Instance<Q, ExtractOptions<R, S, T, PROPERTY_SECURITIES>, PropertyKeys<Q> extends L ? never : L>, ORDER_BY_OPTIONS>>;
 
 // @public (undocumented)
 export type GeoFilter_Intersects = {
@@ -722,14 +722,8 @@ export interface GeoFilterOptions {
 
 // @public (undocumented)
 export interface GeotimeSeriesProperty<T extends GeoJSON.Point> {
-    	// Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
-    // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
-    // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
-    // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
-    readonly asyncIterValues: (query?: TimeSeriesQuery) => AsyncGenerator<TimeSeriesPoint<T>>;
-    	// Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
-    // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
-    readonly getAllValues: (query?: TimeSeriesQuery) => Promise<Array<TimeSeriesPoint<T>>>;
+    	readonly asyncIterValues: (query?: TimeSeriesQuery) => AsyncGenerator<TimeSeriesPoint<T>>;
+    	readonly getAllValues: (query?: TimeSeriesQuery) => Promise<Array<TimeSeriesPoint<T>>>;
     	readonly getLatestValue: () => Promise<TimeSeriesPoint<T> | undefined>;
     	readonly lastFetchedValue: TimeSeriesPoint<T> | undefined;
 }
@@ -874,25 +868,17 @@ export type LinkTypeApiNamesFor<Q extends ObjectOrInterfaceDefinition> = Extract
 
 // @public (undocumented)
 export interface Logger {
-    	// (undocumented)
-    child(bindings: Record<string, any>, options?: {
+    	child(bindings: Record<string, any>, options?: {
         		level?: string
         		msgPrefix?: string
         	}): Logger;
-    	// (undocumented)
-    debug: Logger.LogFn;
-    	// (undocumented)
-    error: Logger.LogFn;
-    	// (undocumented)
-    fatal: Logger.LogFn;
-    	// (undocumented)
-    info: Logger.LogFn;
-    	// (undocumented)
-    isLevelEnabled(level: string): boolean;
-    	// (undocumented)
-    trace: Logger.LogFn;
-    	// (undocumented)
-    warn: Logger.LogFn;
+    	debug: Logger.LogFn;
+    	error: Logger.LogFn;
+    	fatal: Logger.LogFn;
+    	info: Logger.LogFn;
+    	isLevelEnabled(level: string): boolean;
+    	trace: Logger.LogFn;
+    	warn: Logger.LogFn;
 }
 
 // @public (undocumented)
@@ -919,7 +905,8 @@ export interface Media {
     	fetchContents(): Promise<Response>;
     	fetchMetadata(): Promise<MediaMetadata_2>;
     	getMediaReference(): MediaReference;
-    	getMediaSourceLocation?(): MediaPropertyLocation;
+    	// (undocumented)
+    getMediaSourceLocation?(): MediaPropertyLocation;
 }
 
 // @public
@@ -1401,12 +1388,6 @@ export type OsdkObject<N extends string> = {
     	readonly $primaryKey: PropertyValueWireToClient[PrimaryKeyTypes]
 };
 
-// Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
-// Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
-// Warning: (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
-// Warning: (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
 // Warning: (ae-forgotten-export) The symbol "MaybeArray" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "GetCreatePropertyValueFromWire" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "MaybeNullable" needs to be exported by the entry point index.d.ts
@@ -1423,12 +1404,6 @@ export type OsdkObjectCreatePropertyType<
 // @public
 export type OsdkObjectLinksObject<O extends ObjectOrInterfaceDefinition> = ObjectTypeLinkKeysFrom2<O> extends never ? never : { readonly [L in ObjectTypeLinkKeysFrom2<O>] : OsdkObjectLinksEntry<O, L> };
 
-// Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
-// Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
-// Warning: (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
-// Warning: (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
 // Warning: (ae-forgotten-export) The symbol "GetClientPropertyValueFromWire" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
@@ -1532,8 +1507,6 @@ export interface PropertyNumberFormattingRule {
 // @public (undocumented)
 export type PropertyNumberFormattingRuleType = NumberFormatStandard | NumberFormatFixedValues | NumberFormatCurrency | NumberFormatStandardUnit | NumberFormatCustomUnit | NumberFormatAffix | NumberFormatDuration | NumberFormatScale | NumberFormatRatio;
 
-// Warning: (tsdoc-undefined-tag) The TSDoc tag "@discriminator" is not defined in this configuration
-//
 // @public
 export type PropertySecurity = ({
     	type: "propertyMarkings"
@@ -1899,14 +1872,8 @@ export interface TimeSeriesPoint<T extends string | number | GeoJSON.Point> {
 
 // @public (undocumented)
 export interface TimeSeriesProperty<T extends number | string> {
-    	// Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
-    // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
-    // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
-    // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
-    readonly asyncIterPoints: (query?: TimeSeriesQuery) => AsyncGenerator<TimeSeriesPoint<T>>;
-    	// Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
-    // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
-    readonly getAllPoints: (query?: TimeSeriesQuery) => Promise<Array<TimeSeriesPoint<T>>>;
+    	readonly asyncIterPoints: (query?: TimeSeriesQuery) => AsyncGenerator<TimeSeriesPoint<T>>;
+    	readonly getAllPoints: (query?: TimeSeriesQuery) => Promise<Array<TimeSeriesPoint<T>>>;
     	readonly getFirstPoint: () => Promise<TimeSeriesPoint<T>>;
     	readonly getLastPoint: () => Promise<TimeSeriesPoint<T>>;
 }
@@ -1982,10 +1949,6 @@ export type WirePropertyTypes = BaseWirePropertyTypes | Record<string, BaseWireP
 
 // Warnings were encountered during analysis:
 //
-// src/Definitions.ts:42:52 - (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
-// src/Definitions.ts:42:52 - (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
-// src/Definitions.ts:42:52 - (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
-// src/Definitions.ts:42:52 - (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
 // src/OsdkObjectFrom.ts:273:49 - (ae-forgotten-export) The symbol "ObjectPropertySecurities" needs to be exported by the entry point index.d.ts
 // src/aggregate/AggregateOpts.ts:25:3 - (ae-forgotten-export) The symbol "UnorderedAggregationClause" needs to be exported by the entry point index.d.ts
 // src/aggregate/AggregateOpts.ts:25:3 - (ae-forgotten-export) The symbol "OrderedAggregationClause" needs to be exported by the entry point index.d.ts

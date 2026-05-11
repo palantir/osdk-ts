@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { ObjectSet, ObjectTypeDefinition } from "@osdk/api";
-import { useOsdkAggregation } from "@osdk/react/experimental";
+import type { ObjectSet, ObjectTypeDefinition, WhereClause } from "@osdk/api";
+import { useOsdkAggregation } from "@osdk/react";
 import React, { memo, useCallback, useMemo } from "react";
 import { DateRangeInput } from "../base/inputs/DateRangeInput.js";
 import { NullValueWrapper } from "../base/inputs/NullValueWrapper.js";
@@ -32,6 +32,7 @@ interface DateRangeFilterInputProps<Q extends ObjectTypeDefinition> {
   propertyKey: string;
   filterState: FilterState | undefined;
   onFilterStateChanged: (state: FilterState) => void;
+  whereClause: WhereClause<Q>;
 }
 
 function DateRangeFilterInputInner<Q extends ObjectTypeDefinition>({
@@ -40,6 +41,7 @@ function DateRangeFilterInputInner<Q extends ObjectTypeDefinition>({
   propertyKey,
   filterState,
   onFilterStateChanged,
+  whereClause,
 }: DateRangeFilterInputProps<Q>): React.ReactElement {
   const dateRangeState = filterState?.type === "DATE_RANGE"
     ? filterState
@@ -76,11 +78,8 @@ function DateRangeFilterInputInner<Q extends ObjectTypeDefinition>({
   );
 
   const histogramArgs = useMemo(
-    () =>
-      objectSet != null
-        ? { aggregate: aggregateOptions, objectSet }
-        : { aggregate: aggregateOptions },
-    [aggregateOptions, objectSet],
+    () => ({ aggregate: aggregateOptions, objectSet, where: whereClause }),
+    [aggregateOptions, objectSet, whereClause],
   );
 
   const { data: aggregateData, isLoading: histLoading } = useOsdkAggregation(
@@ -115,21 +114,23 @@ function DateRangeFilterInputInner<Q extends ObjectTypeDefinition>({
     [],
   );
 
-  const nullWhereClause = useMemo(
-    () => createNullWhereClause<Q>(propertyKey),
-    [propertyKey],
+  // Combine null-check with cross-filter where clause so the null count
+  // reflects the filtered dataset, not the full dataset
+  const nullCountWhereClause = useMemo(
+    () =>
+      ({
+        $and: [createNullWhereClause<Q>(propertyKey), whereClause],
+      }) as WhereClause<Q>,
+    [propertyKey, whereClause],
   );
 
   const nullCountArgs = useMemo(
-    () =>
-      objectSet != null
-        ? {
-          where: nullWhereClause,
-          aggregate: nullCountAggregateOptions,
-          objectSet,
-        }
-        : { where: nullWhereClause, aggregate: nullCountAggregateOptions },
-    [nullWhereClause, nullCountAggregateOptions, objectSet],
+    () => ({
+      where: nullCountWhereClause,
+      aggregate: nullCountAggregateOptions,
+      objectSet,
+    }),
+    [nullCountWhereClause, nullCountAggregateOptions, objectSet],
   );
 
   const {

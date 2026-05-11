@@ -1,5 +1,87 @@
 # @osdk/react-components-storybook
 
+## 0.11.0
+
+### Minor Changes
+
+- 9be8339: Polish ActionForm date/time controls, boolean switch fields, form submission, popup positioning, component tokens, and FauxFoundry action typings.
+
+### Patch Changes
+
+- Updated dependencies [9be8339]
+  - @osdk/faux@0.14.0
+
+## 0.10.0
+
+### Minor Changes
+
+- 56c5630: Drop redundant `--config $(find-up dprint.json)` from `lint`, `fix-lint`, and `format` scripts. dprint already auto-discovers `dprint.json` by walking up from cwd; the substitution was a no-op anyway since `find-up` is an npm package, not a CLI. Also fix the `uploadMediaOntologyEdits` documentation example so its `// @ts-ignore` survives dprint reformatting (the broken `format` step had been masking this).
+
+### Patch Changes
+
+- Updated dependencies [56c5630]
+  - @osdk/faux@0.13.0
+
+## 0.9.0
+
+### Patch Changes
+
+- @osdk/faux@0.12.0
+
+## 0.8.0
+
+### Minor Changes
+
+- 5dc557e: Add helperText tooltip using Popover and widen type to React.ReactNode
+
+### Patch Changes
+
+- @osdk/faux@0.11.0
+
+## 0.7.0
+
+### Minor Changes
+
+- 4aeb07b: ObjectTable: add `onColumnHeaderClick(columnId)` prop that fires when a user clicks on a column header (excluding the dropdown menu trigger)
+
+### Patch Changes
+
+- @osdk/faux@0.10.0
+
+## 0.6.0
+
+### Minor Changes
+
+- d40104f: Add error icon to DatePickerCell in ObjectTable
+- 5835d51: Clean up storybook mock data and update examples
+
+### Patch Changes
+
+- Updated dependencies [df1a4f8]
+  - @osdk/faux@0.9.0
+
+## 0.5.0
+
+### Minor Changes
+
+- 83993d7: Export LoadingCells as building blocks
+
+## 0.4.0
+
+### Minor Changes
+
+- f01a8f4: improvements(build): significant reduction in build task graphs
+- aba44b8: Add date picker cell to editable ObjectTable
+- 5d8edf8: feat(tiff): Tiff Renderer
+- 9996dd6: Add dropdown field to editable ObjectTable
+- 4bce409: feat(md): markdown renderer
+
+### Patch Changes
+
+- Updated dependencies [f01a8f4]
+- Updated dependencies [1a0f772]
+  - @osdk/faux@0.8.0
+
 ## 0.3.0
 
 ### Minor Changes

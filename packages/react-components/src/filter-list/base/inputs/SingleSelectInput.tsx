@@ -18,6 +18,8 @@ import classnames from "classnames";
 import React, { memo, useCallback, useMemo } from "react";
 import { Combobox } from "../../../base-components/combobox/Combobox.js";
 import type { PropertyAggregationValue } from "../../types/AggregationTypes.js";
+import { isEmptyValue } from "../../utils/filterValues.js";
+import { NoValueLabel } from "./NoValueLabel.js";
 import sharedStyles from "./shared.module.css";
 import styles from "./SingleSelectInput.module.css";
 
@@ -33,6 +35,7 @@ interface SingleSelectInputProps {
   showClearButton?: boolean;
   showCounts?: boolean;
   ariaLabel?: string;
+  renderValue?: (value: string) => string;
 }
 
 function SingleSelectInputInner({
@@ -47,6 +50,7 @@ function SingleSelectInputInner({
   showClearButton = true,
   showCounts = false,
   ariaLabel = "Select value",
+  renderValue,
 }: SingleSelectInputProps): React.ReactElement {
   const handleValueChange = useCallback(
     (value: string | null) => {
@@ -65,19 +69,35 @@ function SingleSelectInputInner({
     [values],
   );
 
+  const comboboxFilter = useMemo(
+    () =>
+      renderValue
+        ? (itemValue: string, query: string) =>
+          renderValue(itemValue).toLowerCase().includes(query.toLowerCase())
+        : undefined,
+    [renderValue],
+  );
+
   const renderItem = useCallback(
-    (value: string) => (
-      <Combobox.Item key={value} value={value}>
-        <Combobox.ItemIndicator />
-        <span className={styles.itemLabel}>{value}</span>
-        {showCounts && (
-          <span className={styles.itemCount}>
-            ({(countByValue.get(value) ?? 0).toLocaleString()})
+    (value: string) => {
+      const isEmpty = isEmptyValue(value);
+      return (
+        <Combobox.Item key={value} value={value}>
+          <Combobox.ItemIndicator />
+          <span className={styles.itemLabel}>
+            {isEmpty
+              ? <NoValueLabel />
+              : (renderValue ? renderValue(value) : value)}
           </span>
-        )}
-      </Combobox.Item>
-    ),
-    [countByValue, showCounts],
+          {showCounts && (
+            <span className={styles.itemCount}>
+              ({(countByValue.get(value) ?? 0).toLocaleString()})
+            </span>
+          )}
+        </Combobox.Item>
+      );
+    },
+    [countByValue, showCounts, renderValue],
   );
 
   return (
@@ -110,6 +130,7 @@ function SingleSelectInputInner({
             value={selectedValue ?? null}
             onValueChange={handleValueChange}
             items={items}
+            filter={comboboxFilter}
           >
             <Combobox.SearchInput
               placeholder={placeholder}

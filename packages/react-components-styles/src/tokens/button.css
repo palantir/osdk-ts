@@ -14,4 +14,19 @@
   --osdk-button-secondary-bg-active: var(
     --osdk-surface-background-color-default-active
   );
+
+  /* Minimal Button */
+  --osdk-button-minimal-bg: transparent;
+  --osdk-button-minimal-bg-hover: var(
+    --osdk-surface-background-color-default-hover
+  );
+  --osdk-button-minimal-bg-active: var(
+    --osdk-surface-background-color-default-active
+  );
+  --osdk-button-minimal-border: none;
+  --osdk-button-minimal-shadow: none;
+  --osdk-button-secondary-minimal-color: var(
+    --osdk-typography-color-default-rest
+  );
+  --osdk-button-primary-minimal-color: var(--osdk-button-primary-bg);
 }

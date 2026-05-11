@@ -10,18 +10,18 @@ Setup required before using `@osdk/react-components` or `@osdk/cbac-components`.
 
 ```bash
 npm install @osdk/api@beta @osdk/client@beta @osdk/react@beta
-npm install @osdk/react-components@beta @osdk/react-components-styles@beta
-npm install @osdk/cbac-components@beta  # if using CBAC components
+npm install @osdk/react-components
+npm install @osdk/cbac-components # if using CBAC components
 npm install react react-dom classnames
 ```
 
 ## Configure the OSDK client
 
-Create an OSDK client and wrap your app with `OsdkProvider2`:
+Create an OSDK client and wrap your app with `OsdkProvider`:
 
 ```tsx
 import { createClient } from "@osdk/client";
-import { OsdkProvider2 } from "@osdk/react/experimental";
+import { OsdkProvider } from "@osdk/react";
 
 const client = createClient(
   "https://your-stack.palantirfoundry.com",
@@ -32,11 +32,11 @@ const client = createClient(
 );
 
 function App() {
-  return <OsdkProvider2 client={client}>{/* your app */}</OsdkProvider2>;
+  return <OsdkProvider client={client}>{/* your app */}</OsdkProvider>;
 }
 ```
 
-All component packages require an `OsdkProvider2` wrapping your app. Without it, data fetching hooks will throw.
+All component packages require an `OsdkProvider` wrapping your app. Without it, data fetching hooks will throw.
 
 ## CSS setup
 
@@ -55,24 +55,22 @@ Later layers always win when styles conflict, regardless of selector specificity
 
 ```css
 /* index.css */
-@layer osdk.tokens, osdk.components;
+@layer osdk.components, cbac.components;
 
-@import "@osdk/react-components-styles" layer(osdk.tokens);
 @import "@osdk/react-components/styles.css" layer(osdk.components);
-@import "@osdk/cbac-components/styles.css" layer(osdk.components);
+@import "@osdk/cbac-components/styles.css" layer(cbac.components); /* only needed if using CBAC components */
 ```
 
 ### With Tailwind CSS v4
 
 ```css
 /* index.css */
-@layer tailwind, osdk.tokens, osdk.components;
+@layer tailwind, osdk.components, cbac.components;
 
 @import "tailwindcss" layer(tailwind);
 
-@import "@osdk/react-components-styles" layer(osdk.tokens);
 @import "@osdk/react-components/styles.css" layer(osdk.components);
-@import "@osdk/cbac-components/styles.css" layer(osdk.components);
+@import "@osdk/cbac-components/styles.css" layer(cbac.components); /* only needed if using CBAC components */
 ```
 
 ### Custom theme overrides
@@ -80,11 +78,10 @@ Later layers always win when styles conflict, regardless of selector specificity
 Add a custom layer after the OSDK layers to override any token:
 
 ```css
-@layer osdk.tokens, osdk.components, user.brand;
+@layer osdk.components, user.brand;
 
-@import "@osdk/react-components-styles" layer(osdk.tokens);
 @import "@osdk/react-components/styles.css" layer(osdk.components);
-@import "@osdk/cbac-components/styles.css" layer(osdk.components);
+@import "@osdk/cbac-components/styles.css" layer(cbac.components); /* only needed if using CBAC components */
 @import "./user-brand.css" layer(user.brand);
 ```
 

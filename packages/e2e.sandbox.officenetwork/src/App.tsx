@@ -1,5 +1,5 @@
 import type { DerivedProperty, WhereClause } from "@osdk/api";
-import { useOsdkObjects } from "@osdk/react/experimental";
+import { useOsdkObjects } from "@osdk/react";
 import React from "react";
 import { AggregationStatsPanel } from "./components/AggregationStatsPanel.js";
 import { EmployeeFilters } from "./components/EmployeeFilters.js";

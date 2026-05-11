@@ -17,8 +17,8 @@
 import type {
   PdfAnnotation,
   PdfViewerAnnotationLayerProps,
-} from "@osdk/react-components/experimental";
-import { PdfViewerAnnotationLayer } from "@osdk/react-components/experimental";
+} from "@osdk/react-components/experimental/pdf-viewer";
+import { PdfViewerAnnotationLayer } from "@osdk/react-components/experimental/pdf-viewer";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { fn } from "storybook/test";
 

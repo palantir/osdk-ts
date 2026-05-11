@@ -50,11 +50,13 @@ import {
 import { objectSortaMatchesWhereClause as objectMatchesWhereClause } from "../objectMatchesWhereClause.js";
 import type { OptimisticId } from "../OptimisticId.js";
 import type { PivotInfo } from "../PivotCanonicalizer.js";
+import type { Rdp } from "../RdpCanonicalizer.js";
 import type { SimpleWhereClause } from "../SimpleWhereClause.js";
 import { OrderBySortingStrategy } from "../sorting/SortingStrategy.js";
 import type { Store } from "../Store.js";
 import type { SubjectPayload } from "../SubjectPayload.js";
 import {
+  INCLUDE_ALL_BASE_PROPERTIES_IDX,
   INTERSECT_IDX,
   type ListCacheKey,
   ORDER_BY_IDX,
@@ -65,6 +67,7 @@ import {
 } from "./ListCacheKey.js";
 export {
   API_NAME_IDX,
+  INCLUDE_ALL_BASE_PROPERTIES_IDX,
   INTERSECT_IDX,
   PIVOT_IDX,
   RDP_IDX,
@@ -109,6 +112,10 @@ export abstract class ListQuery extends BaseListQuery<
   // Employee.pivotTo(Office) has apiName "Employee" but fetches Office objects.
   #fetchedObjectType: string | undefined;
   #objectTypesCache: ReadonlySet<string> | undefined;
+
+  public override get rdpConfig(): Canonical<Rdp> | undefined {
+    return this.cacheKey.otherKeys[RDP_IDX];
+  }
 
   /**
    * Register changes to the cache specific to ListQuery
@@ -182,6 +189,10 @@ export abstract class ListQuery extends BaseListQuery<
 
   get canonicalPivotInfo(): Canonical<PivotInfo> | undefined {
     return this.#pivotInfo;
+  }
+
+  public override get includeAllBaseObjectProperties(): boolean {
+    return this.cacheKey.otherKeys[INCLUDE_ALL_BASE_PROPERTIES_IDX] === true;
   }
 
   get objectTypes(): ReadonlySet<string> {
@@ -308,6 +319,9 @@ export abstract class ListQuery extends BaseListQuery<
         : {}),
       ...(this.options.$loadPropertySecurityMetadata
         ? { $loadPropertySecurityMetadata: true }
+        : {}),
+      ...(this.includeAllBaseObjectProperties
+        ? { $includeAllBaseObjectProperties: true }
         : {}),
     });
 
@@ -584,6 +598,8 @@ export abstract class ListQuery extends BaseListQuery<
           [object as Osdk.Instance<any>],
           batch,
           this.rdpConfig,
+          undefined,
+          this.includeAllBaseObjectProperties,
         );
       });
     } else if (state === "REMOVED") {
@@ -652,9 +668,6 @@ export abstract class ListQuery extends BaseListQuery<
     });
   }
 
-  /**
-   * Get cache key for object.
-   */
   private getObjectCacheKey(
     obj: { $objectType: string; $primaryKey: string | number },
   ): ObjectCacheKey {

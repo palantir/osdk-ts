@@ -25,10 +25,8 @@ import type {
   WhereClause,
 } from "@osdk/api";
 
-import {
-  getWireObjectSet,
-  type ObserveObjectSetArgs,
-} from "@osdk/client/unstable-do-not-use";
+import { getWireObjectSet } from "@osdk/client";
+import type { ObserveObjectSetArgs } from "@osdk/client/observable";
 import React from "react";
 import { extractPayloadError } from "./hookUtils.js";
 import {
@@ -36,7 +34,7 @@ import {
   makeExternalStore,
   type Snapshot,
 } from "./makeExternalStore.js";
-import { OsdkContext2 } from "./OsdkContext2.js";
+import { OsdkContext } from "./OsdkContext.js";
 
 export interface UseObjectSetOptions<
   Q extends ObjectOrInterfaceDefinition,
@@ -68,7 +66,10 @@ export interface UseObjectSetOptions<
   subtract?: ObjectSet<Q>[];
 
   /**
-   * Link to pivot to (changes the type)
+   * Link to pivot to (changes the type).
+   *
+   * Cannot be combined with `streamUpdates`. The server does not support
+   * websocket subscriptions for link-traversal queries.
    */
   pivotTo?: LinkNames<Q>;
 
@@ -103,6 +104,9 @@ export interface UseObjectSetOptions<
    * When true, the object set will automatically update when matching objects are
    * added, updated, or removed.
    *
+   * Cannot be combined with `pivotTo`. The server does not support
+   * websocket subscriptions for link-traversal queries.
+   *
    * @default false
    */
   streamUpdates?: boolean;
@@ -127,11 +131,13 @@ export interface UseObjectSetOptions<
    *
    * @default true
    * @example
+   * ```tsx
    * // Dependent query - wait for filter selection
    * const { data: filteredObjects } = useObjectSet(MyObject.all(), {
    *   where: { status: selectedStatus },
-   *   enabled: !!selectedStatus
+   *   enabled: !!selectedStatus,
    * });
+   * ```
    */
   enabled?: boolean;
 }
@@ -191,6 +197,30 @@ const OBJECT_TYPE_PLACEHOLDER = "$__OBJECT__TYPE__PLACEHOLDER";
  * @param options - Options for filtering, sorting, and adding new derived properties
  * @returns Object set data with both existing and new derived properties
  */
+// pivotTo overload: streamUpdates is forbidden (the server does not support
+// websocket subscriptions for link-traversal queries).
+export function useObjectSet<
+  Q extends ObjectOrInterfaceDefinition,
+  BaseRDPs extends Record<string, SimplePropertyDef> = never,
+  RDPs extends Record<string, SimplePropertyDef> = {},
+>(
+  baseObjectSet: ObjectSet<Q, BaseRDPs> | undefined,
+  options: UseObjectSetOptions<Q, RDPs> & {
+    pivotTo: LinkNames<Q>;
+    streamUpdates?: never;
+  },
+): UseObjectSetResult<Q, RDPs>;
+
+// Non-pivotTo overload: pivotTo is forbidden to prevent fallthrough.
+export function useObjectSet<
+  Q extends ObjectOrInterfaceDefinition,
+  BaseRDPs extends Record<string, SimplePropertyDef> = never,
+  RDPs extends Record<string, SimplePropertyDef> = {},
+>(
+  baseObjectSet: ObjectSet<Q, BaseRDPs> | undefined,
+  options?: UseObjectSetOptions<Q, RDPs> & { pivotTo?: never },
+): UseObjectSetResult<Q, RDPs>;
+
 export function useObjectSet<
   Q extends ObjectOrInterfaceDefinition,
   BaseRDPs extends Record<string, SimplePropertyDef> = never,
@@ -199,7 +229,7 @@ export function useObjectSet<
   baseObjectSet: ObjectSet<Q, BaseRDPs> | undefined,
   options: UseObjectSetOptions<Q, RDPs> = {},
 ): UseObjectSetResult<Q, RDPs> {
-  const { observableClient } = React.useContext(OsdkContext2);
+  const { observableClient } = React.useContext(OsdkContext);
 
   const { enabled: enabledOption = true, streamUpdates, ...otherOptions } =
     options;
@@ -214,7 +244,8 @@ export function useObjectSet<
   const previousCompletedPayloadRef = React.useRef<
     Snapshot<ObserveObjectSetArgs<Q, RDPs>> | undefined
   >();
-
+  // TODO: Is it expected to only clear the previousCompletedPayloadRef when the object type changes?
+  // What if the same object type is queried with different filters, should we also clear the cache?
   const objectTypeChanged = previousObjectTypeRef.current !== objectTypeKey;
   if (objectTypeChanged) {
     previousObjectTypeRef.current = objectTypeKey;

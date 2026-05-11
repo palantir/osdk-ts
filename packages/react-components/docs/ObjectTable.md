@@ -7,7 +7,7 @@ A comprehensive guide for using the ObjectTable component from `@osdk/react-comp
 Before using ObjectTable, make sure you have completed the library setup described in the [README](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/README.md#setup), including:
 
 - Installing the required dependencies
-- Wrapping your app with `OsdkProvider2`
+- Wrapping your app with `OsdkProvider`
 - Adding the CSS imports
 
 ## Table of Contents
@@ -25,8 +25,11 @@ Before using ObjectTable, make sure you have completed the library setup describ
 ## Import
 
 ```typescript
-import { ObjectTable } from "@osdk/react-components/experimental";
-import type { ColumnDefinition } from "@osdk/react-components/experimental";
+import { ObjectTable } from "@osdk/react-components/experimental/object-table";
+import type {
+  ColumnDefinition,
+  EditFieldConfig,
+} from "@osdk/react-components/experimental/object-table";
 ```
 
 ## Basic Usage
@@ -36,7 +39,7 @@ import type { ColumnDefinition } from "@osdk/react-components/experimental";
 The simplest way to use ObjectTable is with just an object type:
 
 ```typescript
-import { ObjectTable } from "@osdk/react-components/experimental";
+import { ObjectTable } from "@osdk/react-components/experimental/object-table";
 import { Office } from "@YourApp/sdk";
 
 function OfficesPage() {
@@ -134,20 +137,22 @@ Each column header has a menu with items for sorting, filtering, pinning, resizi
 
 ### Interactions
 
-| Prop                    | Type                            | Description                                  |
-| ----------------------- | ------------------------------- | -------------------------------------------- |
-| `onRowClick`            | `(object) => void`              | Called when a row is clicked                 |
-| `renderCellContextMenu` | `(row, cellValue) => ReactNode` | Custom context menu for right-click on cells |
+| Prop                    | Type                                               | Description                                                                                                                          |
+| ----------------------- | -------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| `onRowClick`            | `(object) => void`                                 | Called when a row is clicked                                                                                                         |
+| `renderCellContextMenu` | `(row, cellValue) => ReactNode`                    | Custom context menu for right-click on cells                                                                                         |
+| `getRowAttributes`      | `(rowData) => Record<string, string \| undefined>` | Extra HTML attributes (typically `data-*`) applied to each `<tr>`. See [Row Attributes](#row-attributes-and-conditional-row-styling) |
 
 ### Cell Editing
 
-> **Note:** Editable cells currently support text and number data types. The editable feature allows inline editing with validation and bulk submission capabilities.
+> The editable feature allows inline editing with validation and bulk submission capabilities. Editable cells support text inputs, number inputs, and dropdown selectors.
 
-| Prop                 | Type                                          | Description                                                                                                                     |
-| -------------------- | --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| `editMode`           | `"always" \| "manual"`                        | Controls edit mode behavior. "always": Table is always in edit mode. "manual": User toggles edit mode on/off. Default: "manual" |
-| `onCellValueChanged` | `(info: CellEditInfo) => void`                | Called when a cell value is edited. The info object contains rowId, columnId, newValue, oldValue, and originalRowData           |
-| `onSubmitEdits`      | `(edits: CellEditInfo[]) => Promise<boolean>` | When provided, shows a "Submit Edits" button that calls this function with all pending edits. Return true on success            |
+| Prop                 | Type                                          | Description                                                                                                                                                                     |
+| -------------------- | --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `editMode`           | `"always" \| "manual"`                        | Controls edit mode behavior. "always": Table is always in edit mode. "manual": User toggles edit mode on/off. Default: "manual"                                                 |
+| `onCellValueChanged` | `(info: CellEditInfo) => void`                | Called when a cell value is edited. The info object contains rowId, columnId, newValue, oldValue, and originalRowData                                                           |
+| `onSubmitEdits`      | `(edits: CellEditInfo[]) => Promise<boolean>` | When provided, shows a "Submit Edits" button in the edit footer. Return true on success                                                                                         |
+| `showEditFooter`     | `boolean`                                     | Whether to render the bottom edit footer (Edit Table / Cancel / Submit Edits). Defaults to `true`. When `false`, the "Edit Table" and "Submit Edits" buttons will not be shown. |
 
 ## Column Definitions
 
@@ -164,7 +169,8 @@ type ColumnDefinition<Q, RDPs, FunctionColumns> = {
   resizable?: boolean; // Allow column resizing
   orderable?: boolean; // Allow column sorting
   filterable?: boolean; // Allow column filtering
-  editable?: boolean; // Allow inline editing for this column (currently supports text and number types)
+  editable?: boolean | ((rowData) => boolean); // Allow inline editing for this column. Pass a function to make it conditional per row
+  editFieldConfig?: EditFieldConfig; // Optional editor component config (e.g. dropdown)
   validateEdit?: (value: unknown) => Promise<string | undefined>; // Custom validation function for cell edits
   renderCell?: (object, locator) => React.ReactNode; // Custom cell renderer
   columnName?: string; // Custom column name for the header
@@ -172,7 +178,64 @@ type ColumnDefinition<Q, RDPs, FunctionColumns> = {
 };
 ```
 
-> **Note:** Editable cells currently support text and number data types. Support for other data types (date, boolean, etc.) will be added in future updates.
+#### `editable`
+
+`editable` accepts either a boolean or a function `(rowData) => boolean`:
+
+- `editable: true` — every cell in the column is editable.
+- `editable: (rowData) => boolean` — configurable per row. The function receives the row's data and returns whether the cell should be editable.
+
+```typescript
+{
+  locator: { type: "property", id: "salary" },
+  // Only editable for active employees
+  editable: (employee) => employee.status === "Active",
+}
+```
+
+When `editable` is a function, the column is still considered "potentially editable" at the table level — the bottom edit-mode bar is shown so users can enter and exit edit mode. The per-row predicate decides whether each cell renders the editor or the read-only value.
+
+#### `editFieldConfig`
+
+When `editable` is truthy, columns default to a text or number input (auto-detected from the property type). Use `editFieldConfig` to specify a different editor component.
+
+**Supported editor components:**
+
+| `fieldComponent` | Description                              | Renders                                                      |
+| ---------------- | ---------------------------------------- | ------------------------------------------------------------ |
+| `"DROPDOWN"`     | A select dropdown or searchable combobox | `Select` (default) or `Combobox` (when `isSearchable: true`) |
+| `"DATE_PICKER"`  | A date or datetime picker                | `DatetimePicker`                                             |
+
+Without `editFieldConfig`, editable columns use a text input for string properties and a number input for numeric properties (`double`, `integer`, `long`, `float`, `decimal`, `byte`, `short`).
+
+`getFieldComponentProps` receives the row's data and returns the props passed to the field component, so editor configuration can vary per row (e.g. dropdown items computed from the row's state).
+
+```typescript
+{
+  locator: { type: "property", id: "department" },
+  editable: true,
+  editFieldConfig: {
+    fieldComponent: "DROPDOWN",
+    getFieldComponentProps: (employee) => ({
+      // Allow the user to pick from departments compatible with the
+      // employee's role
+      items: getCompatibleDepartments(employee.role),
+    }),
+  },
+}
+```
+
+**Dropdown `fieldComponentProps` (returned from `getFieldComponentProps`):**
+
+| Prop                | Type                      | Default        | Description                                              |
+| ------------------- | ------------------------- | -------------- | -------------------------------------------------------- |
+| `items`             | `V[]`                     | (required)     | Available items for the dropdown                         |
+| `isSearchable`      | `boolean`                 | `false`        | Renders a searchable combobox instead of a select        |
+| `placeholder`       | `string`                  | -              | Placeholder text when no value is selected               |
+| `itemToStringLabel` | `(item: V) => string`     | `String(item)` | Converts an item to a display string                     |
+| `itemToKey`         | `(item: V) => string`     | -              | Returns a unique key for each item (used as React `key`) |
+| `isItemEqual`       | `(a: V, b: V) => boolean` | `Object.is`    | Custom equality check (required when items are objects)  |
+| `isMultiple`        | `boolean`                 | `false`        | Whether multiple values can be selected                  |
 
 #### `columnName` vs `renderHeader`
 
@@ -249,7 +312,7 @@ Displays header and cell with the provided custom renderers.
 import {
   type ColumnDefinition,
   ObjectTable,
-} from "@osdk/react-components/experimental";
+} from "@osdk/react-components/experimental/object-table";
 import { Employee } from "@YourApp/sdk";
 
 const columnDefinitions: Array<ColumnDefinition<typeof Employee>> = [
@@ -283,7 +346,7 @@ function EmployeesTable() {
 ### Example 2: Table with Multiple Selection
 
 ```typescript
-import { ObjectTable } from "@osdk/react-components/experimental";
+import { ObjectTable } from "@osdk/react-components/experimental/object-table";
 import { Employee } from "@YourApp/sdk";
 
 function EmployeesTable() {
@@ -299,7 +362,7 @@ function EmployeesTable() {
 ### Example 3: Table with Default Sorting
 
 ```typescript
-import { ObjectTable } from "@osdk/react-components/experimental";
+import { ObjectTable } from "@osdk/react-components/experimental/object-table";
 import { Employee } from "@YourApp/sdk";
 
 function EmployeesTable() {
@@ -321,7 +384,7 @@ function EmployeesTable() {
 import {
   type ColumnDefinition,
   ObjectTable,
-} from "@osdk/react-components/experimental";
+} from "@osdk/react-components/experimental/object-table";
 import { Employee } from "@YourApp/sdk";
 
 const columnDefinitions: Array<ColumnDefinition<typeof Employee>> = [
@@ -358,7 +421,7 @@ function EmployeesTable() {
 import {
   type ColumnDefinition,
   ObjectTable,
-} from "@osdk/react-components/experimental";
+} from "@osdk/react-components/experimental/object-table";
 import { Employee } from "@YourApp/sdk";
 
 const columnDefinitions: Array<ColumnDefinition<typeof Employee>> = [
@@ -405,7 +468,7 @@ const columnDefinitions: Array<ColumnDefinition<typeof Employee>> = [
 ### Example 7: Context Menu on Cell Right-Click
 
 ```typescript
-import { ObjectTable } from "@osdk/react-components/experimental";
+import { ObjectTable } from "@osdk/react-components/experimental/object-table";
 import { Employee } from "@YourApp/sdk";
 
 function EmployeesTable() {
@@ -442,7 +505,7 @@ function EmployeesTable() {
 ### Example 8: Row Click Handler
 
 ```typescript
-import { ObjectTable } from "@osdk/react-components/experimental";
+import { ObjectTable } from "@osdk/react-components/experimental/object-table";
 import { Employee } from "@YourApp/sdk";
 import { useRouter } from "next/router";
 
@@ -471,7 +534,7 @@ import { DerivedProperty } from "@osdk/client";
 import {
   type ColumnDefinition,
   ObjectTable,
-} from "@osdk/react-components/experimental";
+} from "@osdk/react-components/experimental/object-table";
 import { Employee } from "@YourApp/sdk";
 
 type RDPs = {
@@ -515,7 +578,7 @@ function EmployeesWithManagerTable() {
 ### Example 10: Controlled Sorting
 
 ```typescript
-import { ObjectTable } from "@osdk/react-components/experimental";
+import { ObjectTable } from "@osdk/react-components/experimental/object-table";
 import { Employee } from "@YourApp/sdk";
 import { useState } from "react";
 
@@ -542,7 +605,7 @@ function EmployeesTable() {
 ### Example 11: Controlled Row Selection
 
 ```typescript
-import { ObjectTable } from "@osdk/react-components/experimental";
+import { ObjectTable } from "@osdk/react-components/experimental/object-table";
 import { Employee } from "@YourApp/sdk";
 import { useState } from "react";
 
@@ -598,7 +661,7 @@ In a custom column type, you can render anything in the column by passing in ren
 import {
   type ColumnDefinition,
   ObjectTable,
-} from "@osdk/react-components/experimental";
+} from "@osdk/react-components/experimental/object-table";
 import { Employee } from "@YourApp/sdk";
 
 const columnDefinitions: Array<ColumnDefinition<typeof Employee>> = [
@@ -631,7 +694,7 @@ function EmployeesTable() {
 
 ### Example 13: Editable Table
 
-Enable inline editing with validation and bulk submission:
+Enable inline editing with validation, dropdown selectors, and bulk submission:
 
 ```typescript
 import { useOsdkAction } from "@osdk/react";
@@ -639,19 +702,18 @@ import {
   type CellEditInfo,
   type ColumnDefinition,
   ObjectTable,
-} from "@osdk/react-components/experimental";
+} from "@osdk/react-components/experimental/object-table";
 import { Employee, updateMultipleEmployees } from "@YourApp/sdk";
 
 const columnDefinitions: Array<ColumnDefinition<typeof Employee>> = [
   {
     locator: { type: "property", id: "fullName" },
-    editable: true, // Enable editing for this column
+    editable: true, // Default text input
   },
   {
     locator: { type: "property", id: "email" },
     editable: true,
     validateEdit: async (value) => {
-      // Custom validation function
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       return emailRegex.test(value as string)
         ? undefined
@@ -661,10 +723,39 @@ const columnDefinitions: Array<ColumnDefinition<typeof Employee>> = [
   {
     locator: { type: "property", id: "department" },
     editable: true,
+    editFieldConfig: {
+      fieldComponent: "DROPDOWN",
+      getFieldComponentProps: () => ({
+        items: [
+          "Engineering",
+          "Product",
+          "Design",
+          "Sales",
+          "Marketing",
+          "Finance",
+          "Human Resources",
+        ],
+      }),
+    },
   },
   {
     locator: { type: "property", id: "jobTitle" },
-    editable: false, // This column is read-only
+    editable: true,
+    editFieldConfig: {
+      fieldComponent: "DROPDOWN",
+      getFieldComponentProps: () => ({
+        items: [
+          "Software Engineer",
+          "Senior Software Engineer",
+          "Staff Engineer",
+          "Engineering Manager",
+          "Product Manager",
+          "Designer",
+        ],
+        isSearchable: true, // Renders a searchable combobox
+        placeholder: "Search job titles…",
+      }),
+    },
   },
 ];
 
@@ -722,24 +813,57 @@ function EditableEmployeesTable() {
    - `manual` (default): User clicks "Edit Table" button to enter edit mode
    - `always`: Table is always in edit mode
 
-2. **Validation**:
-   - Use `validate` prop on columns for async validation
-   - Use `onValidationError` for custom error messages
-   - Validation errors are shown with an error icon and tooltip
+2. **Editor Components**:
+   - **Text input** (default): For string properties
+   - **Number input** (auto-detected): For numeric properties (`double`, `integer`, `long`, `float`, `decimal`, `byte`, `short`)
+   - **Dropdown (Select)**: Fixed list of options via `editFieldConfig` with `fieldComponent: "DROPDOWN"`
+   - **Dropdown (Combobox)**: Searchable list via `isSearchable: true` in `fieldComponentProps`
 
-3. **Edit State Management**:
+3. **Validation**:
+   - Use `validateEdit` on columns for async validation
+   - Validation errors are shown with an error icon and tooltip
+   - Works with all editor types including dropdowns
+
+4. **Edit State Management**:
    - Edits are tracked locally until submitted
    - Modified cells are visually highlighted
    - "Cancel" button discards all pending edits
 
-4. **Bulk Submission**:
+5. **Bulk Submission**:
    - When `onSubmitEdits` is provided, a "Submit Edits" button appears
    - All edits are submitted together
    - Return `true` from `onSubmitEdits` to clear edits after successful submission
 
-5. **Data Types**:
-   - Currently supports text and number input types
-   - Number types are automatically detected from the property type
+#### Per-Row Configuration for Editable and FieldComponentProps
+
+Pass a function to `editable` to gate editing per row, and a `getFieldComponentProps` function to compute editor props from the row's data:
+
+```typescript
+import {
+  type ColumnDefinition,
+  ObjectTable,
+} from "@osdk/react-components/experimental/object-table";
+import { Employee } from "@YourApp/sdk";
+
+const columnDefinitions: Array<ColumnDefinition<typeof Employee>> = [
+  {
+    locator: { type: "property", id: "salary" },
+    // Only editable for active employees
+    editable: (employee) => employee.status === "Active",
+  },
+  {
+    locator: { type: "property", id: "department" },
+    editable: true,
+    editFieldConfig: {
+      fieldComponent: "DROPDOWN",
+      // Items depend on the employee's role
+      getFieldComponentProps: (employee) => ({
+        items: getCompatibleDepartments(employee.role),
+      }),
+    },
+  },
+];
+```
 
 ### Example 14: Custom Column Configuration Dialog
 
@@ -750,7 +874,7 @@ import {
   ColumnConfigDialog,
   type ColumnDefinition,
   ObjectTable,
-} from "@osdk/react-components/experimental";
+} from "@osdk/react-components/experimental/object-table";
 import { Employee } from "@YourApp/sdk";
 import { useCallback, useMemo, useState } from "react";
 
@@ -878,7 +1002,7 @@ Display values computed by OSDK functions (queries) alongside regular property c
 import {
   type ColumnDefinition,
   ObjectTable,
-} from "@osdk/react-components/experimental";
+} from "@osdk/react-components/experimental/object-table";
 import { Employee, getEmployeeMetrics } from "@YourApp/sdk";
 
 // Define a type map for your function columns
@@ -1045,6 +1169,63 @@ Adjust row height for better readability:
 />;
 ```
 
+### Row Attributes and Conditional Row Styling
+
+Use `getRowAttributes` to apply custom HTML attributes (typically `data-*` attributes) to each `<tr>` element. This is the recommended pattern for conditional row styling — for example, changing a row's background color based on the underlying object's state.
+
+```tsx
+import type { Osdk } from "@osdk/api";
+import { ObjectTable } from "@osdk/react-components/experimental/object-table";
+import { Employee } from "@YourApp/sdk";
+import { useCallback } from "react";
+
+function EmployeesTable() {
+  const getRowAttributes = useCallback(
+    (employee: Osdk.Instance<typeof Employee>) => ({
+      "data-status": employee.status,
+      "data-overdue": employee.daysOverdue > 0 ? "true" : undefined,
+    }),
+    [],
+  );
+
+  return (
+    <ObjectTable
+      objectType={Employee}
+      className="employees-table"
+      getRowAttributes={getRowAttributes}
+    />
+  );
+}
+```
+
+Entries whose value is `undefined` are skipped, so you can include attributes conditionally without emitting empty values.
+
+Then drive your row styling in CSS using attribute selectors. Row background colors come from `--osdk-table-row-bg-default` (and `--osdk-table-row-bg-alternate` for odd zebra rows) — overriding both on a `<tr>` for matching rows takes precedence:
+
+```css
+.employees-table tr[data-status="Inactive"] {
+  --osdk-table-row-bg-default: #f3f4f6;
+  --osdk-table-row-bg-alternate: #f3f4f6;
+  color: #6b7280;
+}
+
+.employees-table tr[data-overdue="true"] {
+  --osdk-table-row-bg-default: #fef2f2;
+  --osdk-table-row-bg-alternate: #fef2f2;
+}
+
+.employees-table tr[data-status="Active"][data-overdue="true"] {
+  --osdk-table-row-bg-default: #fffbeb;
+  --osdk-table-row-bg-alternate: #fffbeb;
+}
+```
+
+Notes:
+
+- Combine multiple attribute selectors to express priority (the most specific selector wins, per normal CSS rules).
+- The table sets its own attributes (`data-selected`, `data-focused`, `data-row-parity`, `data-pinned`) on rows and cells. Avoid using these names in `getRowAttributes` since they would override the built-in behavior.
+- `getRowAttributes` runs for every visible row, so memoize it with `useCallback` to keep referential equality across renders.
+
 ### Loading and Empty States
 
 The ObjectTable automatically handles:
@@ -1069,7 +1250,7 @@ Use TypeScript generics to ensure type safety:
 import {
   type ColumnDefinition,
   ObjectTable,
-} from "@osdk/react-components/experimental";
+} from "@osdk/react-components/experimental/object-table";
 import { Employee } from "@YourApp/sdk";
 
 type RDPs = {
@@ -1125,14 +1306,13 @@ type EmployeeProps = PropertyKeys<typeof Employee>;
 
 ### Table has no styling or looks broken
 
-- Ensure you've imported `@osdk/react-components-styles` in your main CSS file
+- Ensure you've imported `@osdk/react-components/styles.css` in your main CSS file
 - Check that the CSS import is in the correct location (application entry point)
-- Verify the CSS layer syntax is correct: `@layer osdk.tokens;` must come before the import
 - Check browser DevTools to confirm CSS custom properties are loaded
 
 ## Theming
 
-The ObjectTable (and all OSDK components) can be themed using CSS custom properties from the `@osdk/react-components-styles` package.
+The ObjectTable (and all OSDK components) can be themed using CSS custom properties included in `@osdk/react-components/styles.css`.
 
 ### Understanding Token Scopes
 
@@ -1156,10 +1336,9 @@ The ObjectTable (and all OSDK components) can be themed using CSS custom propert
 Change OSDK component styling without affecting other Blueprint components in your app:
 
 ```css
-@layer osdk.tokens, osdk.components, user.theme;
+@layer osdk.styles, user.theme;
 
-@import "@osdk/react-components/styles.css" layer(osdk.components);
-@import "@osdk/react-components-styles" layer(osdk.tokens);
+@import "@osdk/react-components/styles.css" layer(osdk.styles);
 
 @layer user.theme {
   :root {
@@ -1180,10 +1359,9 @@ Change OSDK component styling without affecting other Blueprint components in yo
 Change both Blueprint and OSDK components for consistent theming:
 
 ```css
-@layer osdk.components, osdk.tokens, user.theme;
+@layer osdk.styles, user.theme;
 
-@import "@osdk/react-components/styles.css" layer(osdk.components);
-@import "@osdk/react-components-styles" layer(osdk.tokens);
+@import "@osdk/react-components/styles.css" layer(osdk.styles);
 
 @layer user.theme {
   :root {
@@ -1270,8 +1448,7 @@ Apply custom styles to specific ObjectTable instances using the `className` prop
 
 For a complete reference of all available CSS tokens for theming, see:
 
-- [@osdk/react-components-styles CSS Variables Documentation](https://github.com/palantir/osdk-ts/blob/main/packages/react-components-styles/CSS_VARIABLES.md)
-- [@osdk/react-components-styles README](https://github.com/palantir/osdk-ts/blob/main/packages/react-components-styles/README.md)
+- [CSS Variables Documentation](./CSSVariables.md)
 
 ### Accessibility Note
 

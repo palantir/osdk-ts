@@ -31,15 +31,25 @@ import { TableEditContainer } from "./TableEditContainer.js";
 import { TableHeader } from "./TableHeader.js";
 import type { HeaderMenuFeatureFlags } from "./TableHeaderWithPopover.js";
 import { SCROLL_FETCH_THRESHOLD } from "./utils/constants.js";
-import type { CellEditInfo, EditableConfig } from "./utils/types.js";
+import { isColumnDeclaredEditable } from "./utils/editableUtils.js";
+import {
+  PortalTrackerProvider,
+  usePortalTracker,
+} from "./utils/PortalTracker.js";
+import type {
+  CellEditInfo,
+  EditableConfig,
+  EditFieldConfig,
+} from "./utils/types.js";
 
 declare module "@tanstack/react-table" {
   interface ColumnMeta<TData extends RowData = unknown, TValue = unknown> {
     columnName?: string;
     isAsyncColumn?: boolean;
     isVisible?: boolean;
-    editable?: boolean;
+    editable?: boolean | ((object: TData) => boolean);
     dataType?: string;
+    editFieldConfig?: EditFieldConfig<TData>;
     validateEdit?: (value: unknown) => Promise<string | undefined>;
   }
   interface TableMeta<TData extends RowData = unknown> {
@@ -55,6 +65,7 @@ declare module "@tanstack/react-table" {
     cellEdits?: Record<string, CellEditInfo<TData, unknown>>;
     isInEditMode?: boolean;
     validationErrors?: Map<string, string>;
+    focusedRowId?: string | null;
   }
 }
 
@@ -65,6 +76,7 @@ export interface BaseTableProps<
   isLoading?: boolean;
   fetchNextPage?: () => Promise<void>;
   onRowClick?: (row: TData) => void;
+  onColumnHeaderClick?: (columnId: string) => void;
   rowHeight?: number;
   renderCellContextMenu?: (
     row: TData,
@@ -74,9 +86,28 @@ export interface BaseTableProps<
   error?: Error;
   headerMenuFeatureFlags?: HeaderMenuFeatureFlags;
   editableConfig?: EditableConfig<TData, unknown>;
+  getRowAttributes?: (
+    object: TData,
+  ) => Record<string, string | undefined>;
+  /**
+   * Whether to render the bottom edit footer. Defaults to `true`; the
+   * footer is only rendered when the table has at least one editable
+   * column (`hasEditableColumns`).
+   */
+  showEditFooter?: boolean;
 }
 
 export function BaseTable<
+  TData extends RowData,
+>(props: BaseTableProps<TData>): ReactElement {
+  return (
+    <PortalTrackerProvider>
+      <BaseTableInner {...props} />
+    </PortalTrackerProvider>
+  );
+}
+
+function BaseTableInner<
   TData extends RowData,
 >(
   {
@@ -84,17 +115,30 @@ export function BaseTable<
     isLoading,
     fetchNextPage,
     onRowClick,
+    onColumnHeaderClick,
     rowHeight,
     renderCellContextMenu,
     className,
     error,
     headerMenuFeatureFlags,
     editableConfig,
+    getRowAttributes,
+    showEditFooter = true,
   }: BaseTableProps<TData>,
 ): ReactElement {
   const tableContainerRef = useRef<HTMLDivElement>(null);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [focusedRowId, setFocusedRowId] = useState<string | null>(null);
+  const portalTracker = usePortalTracker();
+
+  // Sync focusedRowId into table meta so cell renderers (which only
+  // receive `table`) can read it without extra prop drilling.
+  // Assigned synchronously so children see the current value in the
+  // same render pass. This is safe because meta is a mutable bag that
+  // TanStack Table never snapshots or shallow-compares.
+  if (table.options.meta) {
+    table.options.meta.focusedRowId = focusedRowId;
+  }
 
   // Using a ref to prevent duplicate fetches from rapid scroll events while a fetch is in-flight
   const fetchingRef = useRef(false);
@@ -139,23 +183,34 @@ export function BaseTable<
 
   const hasEditableColumns = table
     .getAllColumns()
-    .some(column => column.columnDef.meta?.editable === true);
+    .some((column) =>
+      isColumnDeclaredEditable(column.columnDef.meta?.editable)
+    );
 
+  // Use pointerdown instead of click to detect outside interactions.
+  // base-ui's Select renders a full-screen backdrop that intercepts
+  // pointerdown to close the popup. By the time the click event fires,
+  // the backdrop is unmounted and event.target falls through to <body>,
+  // which would incorrectly trigger the outside-click handler.
+  // At pointerdown time the backdrop is still in the DOM, so
+  // portalTracker.containsElement correctly identifies it.
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
+    const handleClickOutside = (event: PointerEvent) => {
+      const target = event.target as Node;
       if (
         tableContainerRef.current
-        && !tableContainerRef.current.contains(event.target as Node)
+        && !tableContainerRef.current.contains(target)
+        && !portalTracker?.containsElement(target)
       ) {
         setFocusedRowId(null);
       }
     };
 
-    document.addEventListener("click", handleClickOutside);
+    document.addEventListener("pointerdown", handleClickOutside);
     return () => {
-      document.removeEventListener("click", handleClickOutside);
+      document.removeEventListener("pointerdown", handleClickOutside);
     };
-  }, []);
+  }, [portalTracker]);
 
   return (
     <div className={classNames(styles.osdkTableWrapper, className)}>
@@ -179,6 +234,7 @@ export function BaseTable<
                 <TableHeader
                   table={table}
                   headerMenuFeatureFlags={headerMenuFeatureFlags}
+                  onColumnHeaderClick={onColumnHeaderClick}
                 />
                 <TableBody
                   rows={rows}
@@ -191,6 +247,7 @@ export function BaseTable<
                   focusedRowId={focusedRowId}
                   setFocusedRowId={setFocusedRowId}
                   isInEditMode={editableConfig?.editModeState.isActive}
+                  getRowAttributes={getRowAttributes}
                 />
               </>
             )}
@@ -200,7 +257,7 @@ export function BaseTable<
           <NonIdealState message={`Error Loading Data: ${error.message}`} />
         )}
       </div>
-      {hasEditableColumns && editableConfig && (
+      {showEditFooter && hasEditableColumns && editableConfig && (
         <TableEditContainer
           editableConfig={editableConfig}
           focusedRowId={focusedRowId}

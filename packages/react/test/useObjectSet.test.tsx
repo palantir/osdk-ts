@@ -22,7 +22,7 @@ import type {
 import { act, renderHook } from "@testing-library/react";
 import * as React from "react";
 import { beforeEach, describe, expect, it, vitest } from "vitest";
-import { OsdkContext2 } from "../src/new/OsdkContext2.js";
+import { OsdkContext } from "../src/new/OsdkContext.js";
 import { useObjectSet } from "../src/new/useObjectSet.js";
 
 const MockObjectType = {
@@ -72,11 +72,11 @@ describe(useObjectSet, () => {
     } as any;
 
     return ({ children }: React.PropsWithChildren) => (
-      <OsdkContext2.Provider
+      <OsdkContext.Provider
         value={{ observableClient, devtoolsEnabled: false }}
       >
         {children}
-      </OsdkContext2.Provider>
+      </OsdkContext.Provider>
     );
   };
 
@@ -431,9 +431,9 @@ describe(useObjectSet, () => {
       } as any;
 
       const wrapper = ({ children }: React.PropsWithChildren) => (
-        <OsdkContext2.Provider value={{ observableClient }}>
+        <OsdkContext.Provider value={{ observableClient }}>
           {children}
-        </OsdkContext2.Provider>
+        </OsdkContext.Provider>
       );
 
       const { rerender } = renderHook(

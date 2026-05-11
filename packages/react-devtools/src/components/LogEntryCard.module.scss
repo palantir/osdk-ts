@@ -1,0 +1,86 @@
+@use 'tokens' as t;
+@use 'mixins' as m;
+
+.logEntry {
+  @include m.dt-entrance;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 6px 12px;
+  border-bottom: 1px solid t.$border-subtle;
+  font-size: t.$font-size-base;
+  transition: background-color t.$transition-fast;
+  cursor: pointer;
+
+  &:hover {
+    background: t.$bg-hover;
+  }
+}
+
+.levelError {
+  border-left: 2px solid t.$red;
+}
+
+.levelWarn {
+  border-left: 2px solid t.$orange;
+}
+
+.levelInfo {
+  border-left: 2px solid t.$blue;
+}
+
+.levelDebug {
+  border-left: 2px solid t.$gray;
+}
+
+.levelLog {
+  border-left: 2px solid transparent;
+}
+
+.levelBadge {
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.content {
+  flex: 1;
+  min-width: 0;
+}
+
+.args {
+  font-family: t.$font-mono;
+  font-size: t.$font-size-base;
+  color: t.$text-secondary;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  line-height: 1.4;
+}
+
+.argsExpanded {
+  @include m.dt-code-block;
+  margin-top: 6px;
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.timestamp {
+  font-size: t.$font-size-xs;
+  color: t.$text-tertiary;
+  font-family: t.$font-mono;
+  white-space: nowrap;
+}
+
+.source {
+  font-size: t.$font-size-xs;
+  color: t.$text-tertiary;
+  font-family: t.$font-mono;
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

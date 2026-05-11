@@ -161,8 +161,15 @@ async function calcObjectSet(
       // suppose you have `Union(A->B->A->B, A->B)`. Now you end up with A:3, B:2,
       // but we only want A:2, B:2.
 
+      // Filter out object set types that cannot be resolved to a concrete type
+      // (e.g., reference, static). In set operations, we can determine the
+      // result type from the remaining resolvable operands.
+      const resolvableSets = os.objectSets.filter(s =>
+        s.type !== "reference" && s.type !== "static"
+      );
+
       const returnTypes = await Promise.all(
-        os.objectSets.map(async (os) => {
+        resolvableSets.map(async (os) => {
           const counts: Record<string, number> = {};
           const r = await calcObjectSet(os, { ...ctx, counts });
           return { r, counts };

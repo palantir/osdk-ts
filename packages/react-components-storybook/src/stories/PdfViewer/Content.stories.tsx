@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { PdfViewerContentProps } from "@osdk/react-components/experimental";
-import { PdfViewerContent } from "@osdk/react-components/experimental";
+import type { PdfViewerContentProps } from "@osdk/react-components/experimental/pdf-viewer";
+import { PdfViewerContent } from "@osdk/react-components/experimental/pdf-viewer";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { fn } from "storybook/test";
 

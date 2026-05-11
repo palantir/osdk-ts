@@ -170,13 +170,13 @@ export function mergeSeedOutputs(
   const seenLinks = new Set<string>();
 
   for (const output of outputs) {
-    mergeObjects(merged, output.objects, schemaMap, seenPks);
-    mergeLinks(merged, output.links, seenLinks);
+    mergeObjectsInto(merged, output.objects, schemaMap, seenPks);
+    mergeLinksInto(merged, output.links, seenLinks);
   }
   return merged;
 }
 
-function mergeObjects(
+function mergeObjectsInto(
   merged: SeedOutput,
   source: SeedOutput["objects"],
   schemaMap: SchemaMap,
@@ -206,7 +206,7 @@ function mergeObjects(
   }
 }
 
-function mergeLinks(
+function mergeLinksInto(
   merged: SeedOutput,
   source: SeedOutput["links"],
   seenLinks: Set<string>,
@@ -275,13 +275,13 @@ export function validateSeedOutput(
   output: SeedOutput,
   schemaMap: SchemaMap,
 ): void {
-  const errors = collectFormatErrors(output, schemaMap);
+  const errors = validateAndCollectFormatErrors(output, schemaMap);
   if (errors.length > 0) {
     throw new Error(formatValidationErrors(errors));
   }
 }
 
-function collectFormatErrors(
+function validateAndCollectFormatErrors(
   output: SeedOutput,
   schemaMap: SchemaMap,
 ): FormatError[] {

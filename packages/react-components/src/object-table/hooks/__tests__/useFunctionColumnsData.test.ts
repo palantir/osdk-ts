@@ -15,16 +15,14 @@
  */
 
 import type {
+  InterfaceDefinition,
   ObjectSet,
   ObjectTypeDefinition,
   Osdk,
   PropertyKeys,
   QueryDefinition,
 } from "@osdk/api";
-import {
-  useOsdkFunctions,
-  type UseOsdkFunctionsResult,
-} from "@osdk/react/experimental";
+import { useOsdkFunctions, type UseOsdkFunctionsResult } from "@osdk/react";
 import { renderHook } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { ColumnDefinition } from "../../ObjectTableApi.js";
@@ -35,9 +33,18 @@ import {
 } from "../../utils/constants.js";
 import { useFunctionColumnsData } from "../useFunctionColumnsData.js";
 
-vi.mock("@osdk/react/experimental", () => ({
-  useOsdkFunctions: vi.fn(),
-}));
+vi.mock("@osdk/react", async (importOriginal) => {
+  const actual = await importOriginal<{
+    useOsdkFunctions: typeof useOsdkFunctions;
+  }>();
+  return {
+    ...actual,
+    useOsdkFunctions: vi.fn(),
+    useRegisterUserAgent: vi.fn(),
+    useStableObjectSet: vi.fn((objectSet: unknown) => objectSet),
+    useOsdkClient: vi.fn(() => (objectType: unknown) => mockObjectSet),
+  };
+});
 
 vi.mock("../../utils/addFilterClauseToObjectSet.js", () => ({
   addFilterClauseToObjectSet: vi.fn(
@@ -58,7 +65,13 @@ const TestObjectType: ObjectTypeDefinition = {
   apiName: "TestObject",
 } as const satisfies ObjectTypeDefinition;
 
+const TestInterfaceType: InterfaceDefinition = {
+  type: "interface",
+  apiName: "TestInterface",
+} as const satisfies InterfaceDefinition;
+
 type TestObject = typeof TestObjectType;
+type TestInterface = typeof TestInterfaceType;
 type TestObjectKeys = PropertyKeys<TestObject>;
 
 interface MockQueryDef extends QueryDefinition<TestObject> {}
@@ -84,7 +97,21 @@ type FunctionColumnDef = {
   timestampColumn?: MockQueryDef;
 };
 
-const mockObjectSet = {} as ObjectSet<TestObject>;
+const createMockObjectSet = () => {
+  const obj = {};
+  Object.defineProperty(obj, "where", {
+    value: vi.fn((whereClause: unknown) => ({
+      __filteredObjectSet: true,
+      objectOrInterfaceType: TestObjectType,
+      objectSet: createMockObjectSet(),
+      whereClause,
+    })),
+    enumerable: false,
+  });
+  return obj;
+};
+
+const mockObjectSet = createMockObjectSet() as unknown as ObjectSet<TestObject>;
 
 const mockObject1 = {
   $objectType: "TestObject",
@@ -102,6 +129,11 @@ const mockObjects = [
   mockObject1,
   mockObject2,
 ] as Osdk.Instance<TestObject, "$allBaseProperties", TestObjectKeys, {}>[];
+
+const mockInterfaceObjects = [
+  mockObject1,
+  mockObject2,
+] as Osdk.Instance<TestInterface, "$allBaseProperties", TestObjectKeys, {}>[];
 
 const columnDefinitions: ColumnDefinition<
   TestObject,
@@ -126,14 +158,14 @@ describe("useFunctionColumnsData", () => {
     vi.mocked(useOsdkFunctions).mockClear();
   });
 
-  it("should return empty data when no object set is provided", () => {
+  it("should return empty data when objects array is empty", () => {
     vi.mocked(useOsdkFunctions).mockReturnValue([]);
 
     const { result } = renderHook(
       () =>
         useFunctionColumnsData({
-          objectSet: undefined,
-          objects: mockObjects,
+          objectOrInterfaceType: TestObjectType,
+          objects: [],
         }),
     );
 
@@ -145,14 +177,37 @@ describe("useFunctionColumnsData", () => {
     });
   });
 
-  it("should return empty data when objects array is empty", () => {
+  it("should disable queries when objectOrInterfaceType is an interface", () => {
+    const columnDefinitions: ColumnDefinition<
+      TestInterface,
+      {},
+      FunctionColumnDef
+    >[] = [
+      {
+        locator: {
+          type: "function",
+          id: "testColumn",
+          queryDefinition: mockQueryDefinition,
+          getFunctionParams: ((objectSet: ObjectSet<TestObject>) => ({
+            [OBJ_SET_KEY]: objectSet,
+          })) as any,
+          getKey: (obj) => `${obj.$objectType}:${obj.$primaryKey}`,
+        },
+      },
+    ];
     vi.mocked(useOsdkFunctions).mockReturnValue([]);
 
     const { result } = renderHook(
-      () => useFunctionColumnsData({ objectSet: mockObjectSet, objects: [] }),
+      () =>
+        useFunctionColumnsData({
+          objectOrInterfaceType: TestInterfaceType,
+          objects: mockInterfaceObjects,
+          columnDefinitions,
+        }),
     );
 
     expect(result.current).toEqual({});
+    // Should call with enabled=false when objectOrInterfaceType is not provided
     expect(useOsdkFunctions).toHaveBeenCalledWith({
       queries: [],
       enabled: false,
@@ -179,7 +234,7 @@ describe("useFunctionColumnsData", () => {
     const { result, rerender } = renderHook(
       () =>
         useFunctionColumnsData({
-          objectSet: mockObjectSet,
+          objectOrInterfaceType: TestObjectType,
           objects: mockObjects,
           columnDefinitions,
         }),
@@ -289,7 +344,7 @@ describe("useFunctionColumnsData", () => {
     const { result } = renderHook(
       () =>
         useFunctionColumnsData({
-          objectSet: mockObjectSet,
+          objectOrInterfaceType: TestObjectType,
           objects: mockOneObject,
           columnDefinitions,
         }),
@@ -384,7 +439,7 @@ describe("useFunctionColumnsData", () => {
     const { result } = renderHook(
       () =>
         useFunctionColumnsData({
-          objectSet: mockObjectSet,
+          objectOrInterfaceType: TestObjectType,
           objects: mockObjects,
           columnDefinitions,
         }),
@@ -465,7 +520,7 @@ describe("useFunctionColumnsData", () => {
     const { result } = renderHook(
       () =>
         useFunctionColumnsData({
-          objectSet: mockObjectSet,
+          objectOrInterfaceType: TestObjectType,
           objects: mockObjects,
           columnDefinitions,
         }),
@@ -504,7 +559,7 @@ describe("useFunctionColumnsData", () => {
     const { result } = renderHook(
       () =>
         useFunctionColumnsData({
-          objectSet: mockObjectSet,
+          objectOrInterfaceType: TestObjectType,
           objects: mockObjects,
           columnDefinitions,
         }),
@@ -543,7 +598,7 @@ describe("useFunctionColumnsData", () => {
     renderHook(
       () =>
         useFunctionColumnsData({
-          objectSet: mockObjectSet,
+          objectOrInterfaceType: TestObjectType,
           objects: mockObjects,
           columnDefinitions: nonFunctionColumns,
         }),
@@ -584,7 +639,7 @@ describe("useFunctionColumnsData", () => {
 
       renderHook(() =>
         useFunctionColumnsData({
-          objectSet: mockObjectSet,
+          objectOrInterfaceType: TestObjectType,
           objects: mockObjects,
           columnDefinitions,
         })
@@ -620,7 +675,7 @@ describe("useFunctionColumnsData", () => {
 
       renderHook(() =>
         useFunctionColumnsData({
-          objectSet: mockObjectSet,
+          objectOrInterfaceType: TestObjectType,
           objects,
           columnDefinitions,
           primaryKeyApiName: PRIMARY_KEY_API_NAME,
@@ -651,7 +706,7 @@ describe("useFunctionColumnsData", () => {
       expect(page0Params[OBJ_SET_KEY]).toEqual(
         expect.objectContaining({
           __filteredObjectSet: true,
-          objectSet: mockObjectSet,
+          objectOrInterfaceType: TestObjectType,
           whereClause: {
             [PRIMARY_KEY_API_NAME]: { $in: ["obj0", "obj1"] },
           },
@@ -662,7 +717,7 @@ describe("useFunctionColumnsData", () => {
       expect(page1Params[OBJ_SET_KEY]).toEqual(
         expect.objectContaining({
           __filteredObjectSet: true,
-          objectSet: mockObjectSet,
+          objectOrInterfaceType: TestObjectType,
           whereClause: {
             [PRIMARY_KEY_API_NAME]: { $in: ["obj2", "obj3"] },
           },
@@ -673,7 +728,7 @@ describe("useFunctionColumnsData", () => {
       expect(page2Params[OBJ_SET_KEY]).toEqual(
         expect.objectContaining({
           __filteredObjectSet: true,
-          objectSet: mockObjectSet,
+          objectOrInterfaceType: TestObjectType,
           whereClause: {
             [PRIMARY_KEY_API_NAME]: { $in: ["obj4"] },
           },
@@ -695,7 +750,7 @@ describe("useFunctionColumnsData", () => {
 
       renderHook(() =>
         useFunctionColumnsData({
-          objectSet: mockObjectSet,
+          objectOrInterfaceType: TestObjectType,
           objects,
           columnDefinitions,
           primaryKeyApiName: PRIMARY_KEY_API_NAME,
@@ -729,7 +784,7 @@ describe("useFunctionColumnsData", () => {
             getFunctionParams: ((objectSet: ObjectSet<TestObject>) => ({
               [OBJ_SET_KEY]: objectSet,
             })) as any,
-            getKey: (obj) => `${obj.$objectType}:${obj.$primaryKey}`,
+            getKey: (obj: any) => `${obj.$objectType}:${obj.$primaryKey}`,
           },
         },
         {
@@ -740,7 +795,7 @@ describe("useFunctionColumnsData", () => {
             getFunctionParams: ((objectSet: ObjectSet<TestObject>) => ({
               [OBJ_SET_KEY]: objectSet,
             })) as any,
-            getKey: (obj) => `${obj.$objectType}:${obj.$primaryKey}`,
+            getKey: (obj: any) => `${obj.$objectType}:${obj.$primaryKey}`,
           },
         },
       ];
@@ -757,7 +812,7 @@ describe("useFunctionColumnsData", () => {
 
       renderHook(() =>
         useFunctionColumnsData({
-          objectSet: mockObjectSet,
+          objectOrInterfaceType: TestObjectType,
           objects,
           columnDefinitions: multiColumnDefs,
           primaryKeyApiName: PRIMARY_KEY_API_NAME,
@@ -829,7 +884,7 @@ describe("useFunctionColumnsData", () => {
 
       const { result } = renderHook(() =>
         useFunctionColumnsData({
-          objectSet: mockObjectSet,
+          objectOrInterfaceType: TestObjectType,
           objects,
           columnDefinitions,
           primaryKeyApiName: PRIMARY_KEY_API_NAME,
@@ -876,7 +931,7 @@ describe("useFunctionColumnsData", () => {
     const { result, rerender } = renderHook(
       () =>
         useFunctionColumnsData({
-          objectSet: mockObjectSet,
+          objectOrInterfaceType: TestObjectType,
           objects: mockObjects,
           columnDefinitions,
         }),

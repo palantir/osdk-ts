@@ -21,9 +21,10 @@ import type {
   PropertyKeys,
   WhereClause,
 } from "@osdk/api";
-import { useOsdkAggregation } from "@osdk/react/experimental";
+import { useOsdkAggregation } from "@osdk/react";
 import { useMemo } from "react";
 import type { AggregationGroupResult } from "../utils/aggregationHelpers.js";
+import { dedupeEmptyAggregationRows } from "../utils/filterValues.js";
 
 export type { PropertyAggregationValue } from "../types/AggregationTypes.js";
 
@@ -69,10 +70,7 @@ export function usePropertyAggregation<
   );
 
   const aggregationArgs = useMemo(
-    () =>
-      objectSet != null
-        ? { aggregate: aggregateOptions, where: options?.where, objectSet }
-        : { aggregate: aggregateOptions, where: options?.where },
+    () => ({ aggregate: aggregateOptions, where: options?.where, objectSet }),
     [aggregateOptions, options?.where, objectSet],
   );
 
@@ -107,20 +105,22 @@ export function usePropertyAggregation<
         maxCount = Math.max(maxCount, count);
       }
 
+      const deduped = dedupeEmptyAggregationRows(values);
+
       const sortBy = options?.sortBy ?? "count";
       if (sortBy === "count") {
-        values.sort((a, b) =>
+        deduped.sort((a, b) =>
           b.count - a.count || a.value.localeCompare(b.value)
         );
       } else {
-        values.sort((a, b) => a.value.localeCompare(b.value));
+        deduped.sort((a, b) => a.value.localeCompare(b.value));
       }
 
-      if (options?.limit && values.length > options.limit) {
-        return { data: values.slice(0, options.limit), maxCount };
+      if (options?.limit && deduped.length > options.limit) {
+        return { data: deduped.slice(0, options.limit), maxCount };
       }
 
-      return { data: values, maxCount };
+      return { data: deduped, maxCount };
     },
     [countData, propertyKey, options?.limit, options?.sortBy],
   );

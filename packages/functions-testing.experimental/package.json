@@ -1,6 +1,6 @@
 {
   "name": "@osdk/functions-testing.experimental",
-  "version": "0.3.0",
+  "version": "0.9.0",
   "description": "",
   "access": "public",
   "license": "Apache-2.0",
@@ -42,8 +42,8 @@
     "check-attw": "attw --pack .",
     "check-spelling": "cspell --quiet .",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
-    "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
-    "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
+    "fix-lint": "eslint . --fix && dprint fmt",
+    "lint": "eslint . && dprint check",
     "test": "vitest run --pool=forks",
     "transpileBrowser": "monorepo.tool.transpile -f esm -m normal -t browser",
     "transpileCjs": "monorepo.tool.transpile -f cjs -m bundle -t node",
@@ -56,9 +56,9 @@
     "vitest": "^3.2.4"
   },
   "peerDependencies": {
-    "@osdk/api": "workspace:~",
-    "@osdk/client": "workspace:~",
-    "@osdk/functions": "workspace:~"
+    "@osdk/api": "workspace:^",
+    "@osdk/client": "workspace:^",
+    "@osdk/functions": "workspace:^"
   },
   "devDependencies": {
     "@microsoft/api-documenter": "^7.26.32",
@@ -66,9 +66,11 @@
     "@osdk/api": "workspace:~",
     "@osdk/client": "workspace:~",
     "@osdk/client.test.ontology": "workspace:~",
+    "@osdk/foundry.admin": "catalog:foundry-platform-typescript",
     "@osdk/functions": "workspace:~",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
+    "msw": "^2.11.1",
     "typescript": "~5.5.4"
   },
   "publishConfig": {

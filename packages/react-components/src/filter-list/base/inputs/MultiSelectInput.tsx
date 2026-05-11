@@ -18,7 +18,9 @@ import classnames from "classnames";
 import React, { memo, useCallback, useMemo } from "react";
 import { Combobox } from "../../../base-components/combobox/Combobox.js";
 import type { PropertyAggregationValue } from "../../types/AggregationTypes.js";
+import { isEmptyValue } from "../../utils/filterValues.js";
 import styles from "./MultiSelectInput.module.css";
+import { NoValueLabel } from "./NoValueLabel.js";
 import sharedStyles from "./shared.module.css";
 
 interface MultiSelectInputProps {
@@ -30,7 +32,9 @@ interface MultiSelectInputProps {
   className?: string;
   style?: React.CSSProperties;
   placeholder?: string;
+  showCounts?: boolean;
   ariaLabel?: string;
+  renderValue?: (value: string) => string;
 }
 
 function MultiSelectInputInner({
@@ -42,7 +46,9 @@ function MultiSelectInputInner({
   className,
   style,
   placeholder = "Select values...",
+  showCounts = true,
   ariaLabel = "Search values",
+  renderValue,
 }: MultiSelectInputProps): React.ReactElement {
   const handleValueChange = useCallback(
     (newValues: string[] | null) => {
@@ -61,38 +67,61 @@ function MultiSelectInputInner({
     [values],
   );
 
+  const comboboxFilter = useMemo(
+    () =>
+      renderValue
+        ? (itemValue: string, query: string) =>
+          renderValue(itemValue).toLowerCase().includes(query.toLowerCase())
+        : undefined,
+    [renderValue],
+  );
+
   const renderItem = useCallback(
-    (value: string) => (
-      <Combobox.Item key={value} value={value}>
-        <Combobox.ItemIndicator />
-        <span className={styles.itemLabel}>{value}</span>
-        <span className={styles.itemCount}>
-          ({(countByValue.get(value) ?? 0).toLocaleString()})
-        </span>
-      </Combobox.Item>
-    ),
-    [countByValue],
+    (value: string) => {
+      const isEmpty = isEmptyValue(value);
+      return (
+        <Combobox.Item key={value} value={value}>
+          <Combobox.ItemIndicator />
+          <span className={styles.itemLabel}>
+            {isEmpty
+              ? <NoValueLabel />
+              : (renderValue ? renderValue(value) : value)}
+          </span>
+          {showCounts && (
+            <span className={styles.itemCount}>
+              ({(countByValue.get(value) ?? 0).toLocaleString()})
+            </span>
+          )}
+        </Combobox.Item>
+      );
+    },
+    [countByValue, showCounts, renderValue],
   );
 
   const renderChips = useCallback(
     (selectedItems: string[]) => (
       <>
-        {selectedItems.map((value) => (
-          <Combobox.Chip
-            key={value}
-            aria-label={value}
-          >
-            {value}
-            <Combobox.ChipRemove />
-          </Combobox.Chip>
-        ))}
+        {selectedItems.map((value) => {
+          const isEmpty = isEmptyValue(value);
+          return (
+            <Combobox.Chip
+              key={value}
+              aria-label={isEmpty ? "No value" : value}
+            >
+              {isEmpty
+                ? <NoValueLabel />
+                : (renderValue ? renderValue(value) : value)}
+              <Combobox.ChipRemove />
+            </Combobox.Chip>
+          );
+        })}
         <Combobox.Input
           placeholder={selectedItems.length > 0 ? "" : placeholder}
           aria-label={ariaLabel}
         />
       </>
     ),
-    [placeholder, ariaLabel],
+    [placeholder, ariaLabel, renderValue],
   );
 
   return (
@@ -119,6 +148,7 @@ function MultiSelectInputInner({
           value={selectedValues}
           onValueChange={handleValueChange}
           items={items}
+          filter={comboboxFilter}
         >
           {isLoading && (
             <div className={sharedStyles.loadingMessage}>

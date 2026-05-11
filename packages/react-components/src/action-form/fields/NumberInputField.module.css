@@ -18,6 +18,7 @@
   display: flex;
   border-radius: var(--osdk-input-border-radius);
   border: var(--osdk-input-border-width) solid var(--osdk-input-border-color);
+  box-shadow: var(--osdk-input-shadow);
   background-color: var(--osdk-input-bg);
   transition:
     background-color var(--osdk-input-transition-duration)
@@ -33,6 +34,10 @@
     outline: var(--osdk-input-focus-width) solid var(--osdk-input-focus-color);
     outline-offset: var(--osdk-input-focus-offset);
     border-color: var(--osdk-input-border-color-focus);
+  }
+
+  &[aria-invalid] {
+    border-color: var(--osdk-input-border-color-error);
   }
 }
 

@@ -1,5 +1,210 @@
 # @osdk/react-components
 
+## 0.13.0
+
+### Minor Changes
+
+- 53e5f4f: Cap the Combobox popup at 320px (configurable via `--osdk-combobox-popup-max-height`) with overflow scrolling. Long option lists no longer push other UI off-screen — they scroll inside the popup. A short browser window still gets a smaller cap because the rule resolves to `min(320px, var(--available-height))`.
+- aca2466: Standardize "No value" rendering in FilterList — introduce a shared `NoValueLabel` component (italic, muted) used by listogram buckets, single-select and multi-select dropdown options, multi-select chips, text-tag chips, and the `NullValueWrapper` include-null row. Adds an `isEmptyValue` helper. The `NullValueWrapper` include-null row's default visual flips from upright/default-color to italic/muted so it matches the dropdown and listogram surfaces. Legacy `--osdk-filter-listogram-empty-label-color`, `--osdk-filter-listogram-empty-label-font-style`, `--osdk-filter-null-label-color`, `--osdk-filter-null-label-font-family`, `--osdk-filter-null-label-font-size`, and `--osdk-filter-null-label-line-height` tokens are honored as opt-in overrides on the listogram and null-wrapper containers; consumers who explicitly set them continue to override the new italic-muted defaults.
+- fe39be0: Stabilize per-filter where-clause references inside `useFilterListState` via deep-equality caching, so `FilterInput.memo` holds when the cross-filter context for a given filter is unchanged across selections. Eliminates redundant aggregation requests on every value selection. Internal-only — no public API changes.
+- 76ab0a3: ObjectTable: Fix bug when cell is marked edited on clicking into and out of an empty cell
+- 72e928b: ObjectTable: support per-row edit configuration via `editable: (rowData) => boolean`, add `getRowAttributes` prop for conditional row styling via data attributes, replace `editFieldConfig.fieldComponentProps` with `editFieldConfig.getFieldComponentProps(rowData)` so editor configuration can vary per row, and add a `showEditFooter` prop to opt out of the built-in edit footer.
+- 9be8339: Polish ActionForm date/time controls, boolean switch fields, form submission, popup positioning, component tokens, and FauxFoundry action typings.
+
+## 0.12.0
+
+### Minor Changes
+
+- d15d3cf: Add Blueprint-style design tokens for buttons, inputs, and table rows
+- 56c5630: Drop redundant `--config $(find-up dprint.json)` from `lint`, `fix-lint`, and `format` scripts. dprint already auto-discovers `dprint.json` by walking up from cwd; the substitution was a no-op anyway since `find-up` is an npm package, not a CLI. Also fix the `uploadMediaOntologyEdits` documentation example so its `// @ts-ignore` survives dprint reformatting (the broken `format` step had been masking this).
+- b187c09: ObjectTable: when a column has both `renderCell` and `editable: true`, use `renderCell` while not in edit mode and the editable cell only after entering edit mode (relevant for `editMode: "manual"`). Previously `renderCell` always took precedence and editable cells never appeared.
+- 7a0c187: add `onFilterVisibilityChange` callback to `FilterList` that fires when filters are reordered, added, or removed, returning all filters in display order with their visibility state. Useful for persisting filter configuration in saved states.
+- 5d0c6b7: Fix Action Form popover dismissal inside dialog portals.
+
+## 0.11.0
+
+### Minor Changes
+
+- 82c7210: update @osdk/react peer dependency range to ^2.8.0 to track its alignment with the @osdk/client fixed group
+- 203331e: GA: promote modern hooks from `@osdk/react/experimental` to the main entry, rename `@osdk/react/experimental/admin` → `@osdk/react/platform-apis`, consolidate to a single `OsdkProvider`. Promote `ObservableClient` and supporting types out of `@osdk/client/unstable-do-not-use` to a new stable `@osdk/client/observable` entry so the GA hooks no longer depend on a "do not use" entry point. The previous import paths and symbol names are kept as `@deprecated` shims so 0.x consumers can upgrade without code changes.
+
+  #### `@osdk/client` (minor)
+  - new stable entry point `@osdk/client/observable` exposes `createObservableClient`, `ObservableClient` (and its `CacheEntry`, `CacheSnapshot`, `CanonicalizedOptions`, `CanonicalizeOptionsInput`, `Observer`, `ObserveLinks`, `ObserveAggregationArgs`, `ObserveFunctionCallbackArgs`, `ObserveFunctionOptions`, `ObserveObjectCallbackArgs`, `ObserveObjectsCallbackArgs`, `ObserveObjectSetArgs`, `Unsubscribable` types), and the supporting `ActionSignatureFromDef`, `QueryParameterType`, `QueryReturnType` types
+  - these symbols are still re-exported from `@osdk/client/unstable-do-not-use` as `@deprecated` shims; new code should import from `@osdk/client/observable`
+
+  #### `@osdk/react` (minor)
+  - `OsdkProvider`, `useOsdkObjects`, `useOsdkObject`, `useOsdkAction`, `useLinks`, `useObjectSet`, `useOsdkAggregation`, `useOsdkFunction`, `useOsdkFunctions`, `useStableObjectSet`, `useRegisterUserAgent`, `useDebouncedCallback`, devtools registry re-exports are now exported directly from `@osdk/react`
+  - admin / CBAC platform hooks (`useFoundryUser`, `useCurrentFoundryUser`, `useFoundryUsersList`, `useMarkings`, `useMarkingCategories`, `useUserViewMarkings`, `useCbacBanner`, `useCbacMarkingRestrictions`) now live at `@osdk/react/platform-apis` and still require the optional `@osdk/foundry.admin` + `@osdk/foundry.core` peers
+  - the previous `OsdkProvider2` is now just `OsdkProvider`. The legacy `OsdkProvider` body is gone, but `useOsdkClient` and `useOsdkMetadata` keep working since the new provider supplies the same `client` shape
+  - `<OsdkProvider>` no longer accepts an `observableClient` prop. The provider always derives its `ObservableClient` from `client` so the two cannot diverge. Tests that need to stub the observable layer should import `TestOsdkProvider` from `@osdk/react/testing`. `OsdkProvider2` (the deprecated alias) inherits this — it also no longer accepts `observableClient`
+  - `useOsdkClient2` is unified into `useOsdkClient`; the unified hook now reads from the modern context (same `client` shape)
+  - `peerDependencies` on `@osdk/api` and `@osdk/client` resolve to `^2.15.0` so `@osdk/react@2.15` cannot install against a `@osdk/client` that lacks the new `./observable` entry
+
+  #### `@osdk/react-components` (patch)
+  - update internal imports for `@osdk/react` GA — `@osdk/react/experimental` → `@osdk/react` and `@osdk/react/experimental/admin` → `@osdk/react/platform-apis`
+  - update `QueryParameterType` import from `@osdk/client/unstable-do-not-use` → `@osdk/client/observable`
+  - bump `@osdk/react` peer range to `^2.15.0`
+
+  #### `@osdk/react-devtools` (patch)
+  - update observable-related imports from `@osdk/client/unstable-do-not-use` → `@osdk/client/observable`
+
+  #### `@osdk/cbac-components` (patch)
+  - update internal imports for `@osdk/react` GA — `@osdk/react/experimental` → `@osdk/react` and `@osdk/react/experimental/admin` → `@osdk/react/platform-apis`
+
+  #### Compatibility shims
+
+  These keep working in `@osdk/react@2.15` and `@osdk/client@2.15`, marked `@deprecated` so editors surface a strikethrough:
+  - `import { ... } from "@osdk/react/experimental"` re-exports everything now exported from `@osdk/react`, plus `OsdkProvider as OsdkProvider2` and `useOsdkClient as useOsdkClient2`
+  - `import { ... } from "@osdk/react/experimental/admin"` re-exports everything now exported from `@osdk/react/platform-apis`
+  - `import { createObservableClient, ObservableClient, ... } from "@osdk/client/unstable-do-not-use"` re-exports the symbols now in `@osdk/client/observable`
+  - `import { ... } from "@osdk/react/experimental/aip"` is unchanged — AIP is still in beta
+
+  These shims will be removed in a future major.
+
+  #### Migration
+
+  For consumers upgrading from `@osdk/react@0.x`:
+  - `import { ... } from "@osdk/react/experimental"` → `import { ... } from "@osdk/react"`
+  - `import { ... } from "@osdk/react/experimental/admin"` → `import { ... } from "@osdk/react/platform-apis"` (still requires the optional `@osdk/foundry.admin` + `@osdk/foundry.core` peers)
+  - `<OsdkProvider2 ...>` → `<OsdkProvider ...>` (the modern provider takes the bare name)
+  - if you were passing `observableClient={...}` to `<OsdkProvider>` or `<OsdkProvider2>` (in tests), import `TestOsdkProvider` from `@osdk/react/testing` and use that instead — production code does not need to change
+  - `useOsdkClient2()` → `useOsdkClient()` (the unified hook reads from the modern context — same `client` shape, no API change at the call site)
+  - bump `@osdk/client` and `@osdk/api` to `^2.15.0` to satisfy the new peer ranges
+
+  For consumers reaching directly into `@osdk/client/unstable-do-not-use` for observable APIs:
+  - `import { createObservableClient, ObservableClient, ... } from "@osdk/client/unstable-do-not-use"` → `import { ... } from "@osdk/client/observable"`
+  - the symbols moved: `createObservableClient`, `ObservableClient`, `CacheEntry`, `CacheSnapshot`, `CanonicalizedOptions`, `CanonicalizeOptionsInput`, `Observer`, `ObserveLinks`, `ObserveAggregationArgs`, `ObserveFunctionCallbackArgs`, `ObserveFunctionOptions`, `ObserveObjectCallbackArgs`, `ObserveObjectsCallbackArgs`, `ObserveObjectSetArgs`, `Unsubscribable`, `ActionSignatureFromDef`, `QueryParameterType`, `QueryReturnType`
+
+## 0.10.0
+
+### Minor Changes
+
+- b355bc3: Add CONTRIBUTING.md for @osdk/react and @osdk/react-components
+- 9b45e7b: Add form section support to BaseForm with collapsible groups, multi-column grid, and custom submit button
+- 3a4528c: Add ObjectSelect field for selecting object instances in action forms
+- 5dc557e: Add helperText tooltip using Popover and widen type to React.ReactNode
+
+### Patch Changes
+
+- Updated dependencies [f747fa3]
+- Updated dependencies [d892397]
+- Updated dependencies [c5a6047]
+- Updated dependencies [45be476]
+- Updated dependencies [b355bc3]
+- Updated dependencies [20e9678]
+  - @osdk/react@0.17.0
+
+## 0.9.0
+
+### Minor Changes
+
+- 4aeb07b: ObjectTable: add `onColumnHeaderClick(columnId)` prop that fires when a user clicks on a column header (excluding the dropdown menu trigger)
+- 7b457a5: Fix function column with derived properties
+
+### Patch Changes
+
+- Updated dependencies [aa78c78]
+- Updated dependencies [7b457a5]
+  - @osdk/react@0.16.0
+
+## 0.8.0
+
+### Minor Changes
+
+- d9b03eb: document @osdk/client version compat and install-time error recovery in AGENTS.md
+- 5a733c0: Improve DropdownField with searchable input, multi-select checkboxes, clear button, and fix Select positioning
+- 52ff28c: simplify conditional objectset aggregation args and add filtered objectset story
+- 3b8decf: Switch vitest pool from forks to threads to fix CI flake
+- a0bbaf9: fix ObjectTable zebra row colors flipping while scrolling — striping is now keyed off the row's data index instead of its DOM position
+- 5835d51: Fix type definitions in FilterList LinkedProperty and ObjectTable function column
+- d40104f: Add error icon to DatePickerCell in ObjectTable
+
+### Patch Changes
+
+- Updated dependencies [d9b03eb]
+- Updated dependencies [d8842f4]
+  - @osdk/react@0.15.0
+
+## 0.7.0
+
+### Minor Changes
+
+- 594df08: Add BaseForm storybook
+- 22b4e35: Add horizontal orientation support to RadioButtonsField
+- 83993d7: Export LoadingCells as building blocks
+- 5a45dc0: Fix stableObjectSet by using a useStableObjectSet hook
+
+### Patch Changes
+
+- Updated dependencies [5a45dc0]
+  - @osdk/react@0.14.0
+
+## 0.6.0
+
+### Minor Changes
+
+- 4f3c57c: Update docs to use new per-component experimental import paths
+
+## 0.5.0
+
+### Minor Changes
+
+- e456da5: Add Fetch-User-Agent tracing headers for React layer network calls
+
+### Patch Changes
+
+- Updated dependencies [58248f8]
+- Updated dependencies [e456da5]
+  - @osdk/react@0.13.0
+
+## 0.4.0
+
+### Minor Changes
+
+- da434c9: Merge @osdk/react-components-styles into @osdk/react-components
+
+  Design tokens and component styles are now bundled in a single package. `@osdk/react-components-styles` is deprecated and will be removed in a future release.
+
+  **Migration steps:**
+  1. Remove `@osdk/react-components-styles` from your dependencies
+  2. Replace your CSS imports:
+
+     ```css
+     /* Before */
+     @import "@osdk/react-components-styles" layer(osdk.tokens);
+     @import "@osdk/react-components/styles.css" layer(osdk.components);
+
+     /* After */
+     @import "@osdk/react-components/styles.css" layer(osdk.styles);
+     ```
+
+- e572448: Set default tooltip trigger delay to 200ms in TooltipTrigger
+- f0866c7: Pass cross-filter whereClause to DateRange and NumberRange filter inputs so histograms and null counts update when other filters are applied
+- 8e06dce: Add renderValue option to PropertyFilterDefinition for custom filter value display and search
+- 2bb6860: Add `showCount` option to filter definitions for hiding aggregation counts in dropdown options
+- f01a8f4: improvements(build): significant reduction in build task graphs
+- aba44b8: Add date picker cell to editable ObjectTable
+- 5d8edf8: feat(tiff): Tiff Renderer
+- 81ac0a1: Prevent committing overlapping date ranges and fix backspace after invalid input revert
+- 9996dd6: Add dropdown field to editable ObjectTable
+- 4bce409: feat(md): markdown renderer
+- 51739ae: Polyfill Promise.withResolvers for pdfjs-dist Node 18 test compatibility
+- 1a0f772: Show "No value" for empty filter values in ListogramInput and generate $isNull instead of $eq: "" in where clauses
+- c144b04: Add form field validation with onTouched mode, error display, and submit tooltip
+- 7f4824a: Downgrade react-markdown to ^9.0.3
+- e5a652b: Pin TZ=UTC in vitest config to prevent locale-dependent test failures
+- 0c04731: Add individual subpath exports for experimental component groups (filter-list, object-table, pdf-viewer, markdown-renderer, action-form)
+- c9c4424: Add STATIC_VALUES filter definition type for providing fixed value lists without OSDK aggregation
+- f9033fb: Consolidate onFilterClauseChanged into a single useEffect on whereClause, fixing missing callback when initialFilterStates is set and a stale closure bug in clearFilterState
+- 6c1f444: Add date-fns and date-fns-tz dependencies
+- 957a878: Rename/improve DateTimePickerField and introduce DateRangeInputField
+
+### Patch Changes
+
+- Updated dependencies [f01a8f4]
+- Updated dependencies [f34a1ce]
+  - @osdk/react@0.12.0
+
 ## 0.3.0
 
 ### Minor Changes

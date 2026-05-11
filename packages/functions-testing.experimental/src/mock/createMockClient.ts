@@ -16,15 +16,19 @@
 
 import type {
   CompileTimeMetadata,
-  InterfaceDefinition,
   ObjectOrInterfaceDefinition,
   ObjectSet,
-  ObjectTypeDefinition,
-  PageResult,
   QueryDefinition,
 } from "@osdk/api";
-import type { Client } from "@osdk/client";
+import { createPlatformClient } from "@osdk/client";
 import invariant from "tiny-invariant";
+import type {
+  MockClient,
+  ObjectSetStubCallback,
+  StubPatternCallback,
+} from "../api/MockClient.js";
+import type { QueryStubBuilder, StubBuilderFor } from "../api/StubBuilders.js";
+import type { StubClient } from "../api/StubClient.js";
 import { type MockObjectSetBranded } from "./createMockObjectSet.js";
 import {
   type Call,
@@ -36,30 +40,12 @@ import {
 
 type ClientStub = Stub & { objectType: string };
 
-type QueryStub = { queryApiName: string; params: unknown; value: unknown };
-
-type IsOsdkObject<T> = T extends { $apiName: string } ? true : false;
-
-export interface FetchPageStubBuilder<T> {
-  thenReturnObjects(objects: T[]): void;
-}
-
-export interface FetchOneStubBuilder<T> {
-  thenReturnObject(object: T): void;
-}
-
-export interface AggregateStubBuilder<T> {
-  thenReturnAggregation(result: T): void;
-}
-
-export interface QueryStubBuilder<T> {
-  thenReturn(result: T): void;
-}
-
-export type StubBuilderFor<T> = T extends PageResult<infer U>
-  ? FetchPageStubBuilder<U>
-  : IsOsdkObject<T> extends true ? FetchOneStubBuilder<T>
-  : AggregateStubBuilder<T>;
+type QueryStub = {
+  queryApiName: string;
+  params: unknown;
+  value?: unknown;
+  error?: Error;
+};
 
 type QueryReturnTypeFromDef<Q extends QueryDefinition> = ReturnType<
   CompileTimeMetadata<Q>["signature"]
@@ -69,29 +55,10 @@ type QueryParamsFromDef<Q extends QueryDefinition> =
   Parameters<CompileTimeMetadata<Q>["signature"]> extends [infer P] ? P
     : undefined;
 
-export type StubClient = {
-  <Q extends ObjectTypeDefinition>(o: Q): ObjectSet<Q>;
-  <Q extends InterfaceDefinition>(o: Q): ObjectSet<Q>;
-};
-
-export type StubPatternCallback<T> = (client: StubClient) => Promise<T>;
-
-export type ObjectSetStubCallback<Q extends ObjectOrInterfaceDefinition, T> = (
-  os: ObjectSet<Q>,
-) => Promise<T>;
-
-export interface MockClient extends Client {
-  when<T>(callback: StubPatternCallback<T>): StubBuilderFor<T>;
-  whenObjectSet<Q extends ObjectOrInterfaceDefinition, T>(
-    objectSet: ObjectSet<Q>,
-    callback: ObjectSetStubCallback<Q, T>,
-  ): StubBuilderFor<T>;
-  whenQuery<Q extends QueryDefinition>(
-    query: Q,
-    params?: QueryParamsFromDef<Q>,
-  ): QueryStubBuilder<QueryReturnTypeFromDef<Q>>;
-  clearStubs(): void;
-}
+// Well-known string key used by Foundry Platform APIs to pull the
+// SharedClientContext (baseUrl, tokenProvider, fetch) off a client. Matches
+// the value of `symbolClientContext` in `@osdk/shared.client2`.
+const SYMBOL_CLIENT_CONTEXT = "__osdkClientContext";
 
 export function createMockClient(): MockClient {
   const stubs: ClientStub[] = [];
@@ -108,6 +75,9 @@ export function createMockClient(): MockClient {
     for (const stub of queryStubs) {
       if (stub.queryApiName !== queryApiName) continue;
       if (deepEqual(stub.params, params)) {
+        if (stub.error !== undefined) {
+          throw stub.error;
+        }
         return stub.value;
       }
     }
@@ -211,6 +181,13 @@ export function createMockClient(): MockClient {
           value: result,
         });
       },
+      thenThrow: (error: Error) => {
+        queryStubs.push({
+          queryApiName: query.apiName,
+          params,
+          error,
+        });
+      },
     };
   };
 
@@ -222,6 +199,18 @@ export function createMockClient(): MockClient {
   mockClient.fetchMetadata = async () => {
     invariant(false, "fetchMetadata is not supported in mocks");
   };
+
+  // Attach a SharedClientContext so Foundry Platform API helpers
+  // (e.g. `Users.getCurrent(client)`) don't crash inside `foundryPlatformFetch`
+  // on an undefined `baseUrl` before any request is made. Callers intercept the
+  // actual HTTP layer themselves (MSW, vi.spyOn(globalThis, "fetch"), etc.).
+  Object.defineProperty(mockClient, SYMBOL_CLIENT_CONTEXT, {
+    value: createPlatformClient(
+      "https://mock.invalid/",
+      async () => "mock-token",
+    ),
+    enumerable: false,
+  });
 
   // TODO: Implement WriteableClient operations
 

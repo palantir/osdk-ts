@@ -18,8 +18,18 @@ import type { CellContext, RowData } from "@tanstack/react-table";
 import React from "react";
 import { AsyncValueCell } from "./components/AsyncValueCell.js";
 import { EditableCell } from "./EditableCell.js";
+import styles from "./EditableCell.module.css";
 import { isAsyncCellData } from "./utils/AsyncCellData.js";
+import { isCellEditable } from "./utils/editableUtils.js";
 import { getCellId } from "./utils/getCellId.js";
+import { shouldShowEditableCell } from "./utils/shouldShowEditableCell.js";
+
+function toDisplayValue(value: unknown): React.ReactNode {
+  if (typeof value === "boolean") {
+    return String(value);
+  }
+  return value as React.ReactNode;
+}
 
 export function renderDefaultCell<TData extends RowData>(
   cellContext: CellContext<TData, unknown>,
@@ -39,8 +49,27 @@ export function renderDefaultCell<TData extends RowData>(
     return <AsyncValueCell {...asyncCellData} />;
   }
 
-  if (!columnMeta?.editable || !meta?.onCellEdit || !meta?.isInEditMode) {
-    return <>{cellValue}</>;
+  const rowData = cellContext.row.original;
+  const isEditable = isCellEditable(columnMeta?.editable, rowData);
+
+  if (
+    !meta?.onCellEdit // Type guard
+    || !shouldShowEditableCell(
+      isEditable,
+      meta?.onCellEdit,
+      meta?.isInEditMode,
+    )
+  ) {
+    // Align non editable cells with the editable cells
+    if (meta?.isInEditMode) {
+      return (
+        <span className={styles.nonEditableCellInEditMode}>
+          {toDisplayValue(cellValue)}
+        </span>
+      );
+    }
+
+    return <>{toDisplayValue(cellValue)}</>;
   }
 
   const rowId = cellContext.row.id;
@@ -49,8 +78,12 @@ export function renderDefaultCell<TData extends RowData>(
 
   const cellEdits = meta.cellEdits;
   const editedValue = cellEdits?.[cellId];
-  const currentValue = editedValue?.newValue ?? cellValue;
+  // If newValue is explicitly set to null, treat it as null. Otherwise, fall back to the original cell value.
+  const currentValue = editedValue?.newValue === undefined
+    ? cellValue
+    : editedValue?.newValue;
   const validationError = meta.validationErrors?.get(cellId);
+  const isRowFocused = meta.focusedRowId === rowId;
 
   return (
     <EditableCell<TData>
@@ -58,14 +91,16 @@ export function renderDefaultCell<TData extends RowData>(
       currentValue={currentValue}
       cellId={cellId}
       dataType={columnMeta?.dataType}
+      editFieldConfig={columnMeta?.editFieldConfig}
       onCellEdit={meta.onCellEdit}
       onCellValidationError={meta.onCellValidationError}
       clearCellValidationError={meta.clearCellValidationError}
-      originalRowData={cellContext.row.original}
+      originalRowData={rowData}
       rowId={rowId}
       columnId={columnId}
       validateEdit={columnMeta?.validateEdit}
       validationError={validationError}
+      isRowFocused={isRowFocused}
     />
   );
 }

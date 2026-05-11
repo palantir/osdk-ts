@@ -513,3 +513,144 @@ describe("Two variants with different RDP configs - GC of one should not affect 
     store.cacheKeys.release(queryA.cacheKey);
   });
 });
+
+describe("ObjectsHelper variant cache keys", () => {
+  let client: Client;
+  let store: Store;
+  let emp: Osdk.Instance<Employee>;
+
+  beforeAll(async () => {
+    const testSetup = startNodeApiServer(
+      new FauxFoundry("https://stack.palantir.com/"),
+      createClient,
+    );
+    client = testSetup.client;
+
+    const fauxOntology = testSetup.fauxFoundry.getDefaultOntology();
+    ontologies.addEmployeeOntology(fauxOntology);
+
+    testSetup.fauxFoundry.getDefaultDataStore().registerObject(Employee, {
+      employeeId: 1,
+      fullName: "Alice",
+    });
+
+    emp = await client(Employee).fetchOne(1, { $includeRid: true });
+
+    return () => {
+      testSetup.apiServer.close();
+    };
+  });
+
+  beforeEach(() => {
+    store = new Store(client);
+    return () => {
+      store = undefined!;
+    };
+  });
+
+  it("returns distinct queries for different selects on the same pk", () => {
+    const q1 = store.objects.getQuery({
+      apiName: Employee,
+      pk: 1,
+      select: ["fullName"],
+    });
+    const q2 = store.objects.getQuery({
+      apiName: Employee,
+      pk: 1,
+      select: ["employeeId"],
+    });
+
+    expect(q1).not.toBe(q2);
+    expect(q1.cacheKey).not.toBe(q2.cacheKey);
+  });
+
+  it("returns the same query for canonicalized-equal selects on the same pk", () => {
+    const q1 = store.objects.getQuery({
+      apiName: Employee,
+      pk: 1,
+      select: ["fullName", "employeeId"],
+    });
+    const q2 = store.objects.getQuery({
+      apiName: Employee,
+      pk: 1,
+      select: ["employeeId", "fullName"],
+    });
+
+    expect(q1).toBe(q2);
+    expect(q1.cacheKey).toBe(q2.cacheKey);
+  });
+
+  it("returns distinct queries for different $loadPropertySecurityMetadata on the same pk", () => {
+    const q1 = store.objects.getQuery({
+      apiName: Employee,
+      pk: 1,
+    });
+    const q2 = store.objects.getQuery({
+      apiName: Employee,
+      pk: 1,
+      $loadPropertySecurityMetadata: true,
+    });
+
+    expect(q1).not.toBe(q2);
+    expect(q1.cacheKey).not.toBe(q2.cacheKey);
+  });
+
+  it("treats no-select and empty-select as the same cache key", () => {
+    const qNone = store.objects.getQuery({
+      apiName: Employee,
+      pk: 1,
+    });
+    const qEmpty = store.objects.getQuery({
+      apiName: Employee,
+      pk: 1,
+      select: [],
+    });
+
+    expect(qNone).toBe(qEmpty);
+  });
+
+  it("propagateWrite preserves sibling-variant fields when a partial-select fetch propagates", () => {
+    const queryA = store.objects.getQuery({
+      apiName: Employee,
+      pk: 1,
+      select: ["fullName"],
+    });
+    const queryB = store.objects.getQuery({
+      apiName: Employee,
+      pk: 1,
+      select: ["employeeId"],
+    });
+
+    // Make both variants observed so propagation runs.
+    store.cacheKeys.retain(queryA.cacheKey);
+    store.cacheKeys.retain(queryB.cacheKey);
+    store.subjects.get(queryA.cacheKey).subscribe(() => {});
+    store.subjects.get(queryB.cacheKey).subscribe(() => {});
+
+    // Seed variant A with the loaded "fullName" view.
+    store.batch({}, (batch) => {
+      queryA.writeToStore(emp as any, "loaded", batch, new Set(["fullName"]));
+    });
+
+    store.batch({}, (batch) => {
+      queryB.writeToStore(
+        emp as any,
+        "loaded",
+        batch,
+        new Set(["employeeId"]),
+      );
+    });
+
+    const valueA = store.getValue(queryA.cacheKey);
+    expect(valueA?.value).toEqual(
+      expect.objectContaining({
+        $primaryKey: 1,
+        fullName: "Alice",
+        employeeId: 1,
+      }),
+    );
+
+    store.cacheKeys.release(queryA.cacheKey);
+    store.cacheKeys.release(queryB.cacheKey);
+  });
+});

@@ -82,12 +82,23 @@ export interface MockOsdkObjectOptions<Q extends ObjectTypeDefinition = ObjectTy
 export interface QueryStubBuilder<T> {
     	// (undocumented)
     thenReturn(result: T): void;
+    	// (undocumented)
+    thenThrow(error: Error): void;
 }
 
 // Warning: (ae-forgotten-export) The symbol "IsOsdkObject" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
-export type StubBuilderFor<T> = T extends PageResult<infer U> ? FetchPageStubBuilder<U> : IsOsdkObject<T> extends true ? FetchOneStubBuilder<T> : AggregateStubBuilder<T>;
+export type StubBuilderFor<T> = T extends Promise<infer R> ? StubBuilderFor<R> : T extends AsyncIterableIterator<infer U> ? FetchPageStubBuilder<U> : T extends PageResult<infer U> ? FetchPageStubBuilder<U> : T extends {
+    	value: PageResult<infer U>
+    	error?: never
+} ? FetchPageStubBuilder<U> : T extends {
+    	value: infer U
+    	error?: never
+} ? (IsOsdkObject<U> extends true ? FetchOneStubBuilder<U> : AggregateStubBuilder<U>) : T extends {
+    	error: Error
+    	value?: never
+} ? never : IsOsdkObject<T> extends true ? FetchOneStubBuilder<T> : AggregateStubBuilder<T>;
 
 // @public (undocumented)
 export type StubClient = {

@@ -1,0 +1,20 @@
+.canvas {
+  height: 100%;
+  object-fit: contain;
+  width: 100%;
+}
+
+.errorContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--osdk-surface-spacing);
+  height: 100%;
+  font-family: var(--osdk-typography-family-default);
+  font-size: var(--osdk-typography-size-body-medium);
+  color: var(--osdk-typography-color-danger-rest);
+}
+
+.errorIcon {
+  flex-shrink: 0;
+}

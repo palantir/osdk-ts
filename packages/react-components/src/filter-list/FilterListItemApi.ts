@@ -273,6 +273,20 @@ export interface PropertyFilterDefinition<
   };
 
   /**
+   * Custom display function for filter values.
+   * Replaces the default string display in dropdown items, chips, and listogram rows.
+   * The returned string is also used for search matching within filter dropdowns.
+   */
+  renderValue?: (value: string) => string;
+
+  /**
+   * Show aggregation counts next to filter option values.
+   * Applies to LISTOGRAM, SINGLE_SELECT, and MULTI_SELECT components.
+   * @default true for LISTOGRAM and MULTI_SELECT, false for SINGLE_SELECT
+   */
+  showCount?: boolean;
+
+  /**
    * Controls whether this filter is rendered.
    * When false, the filter is hidden but its state is preserved.
    * @default true
