@@ -84,8 +84,8 @@ function MultiSelectFilterInputInner<Q extends ObjectTypeDefinition>({
   );
 
   const aggregationOptions = useMemo(
-    () => ({ where: whereClause }),
-    [whereClause],
+    () => ({ where: whereClause, activeValues: selectedValues }),
+    [whereClause, selectedValues],
   );
 
   const { data, isLoading, error } = usePropertyAggregation(

@@ -390,6 +390,130 @@ describe("DropdownField", () => {
     });
   });
 
+  describe("onBlur", () => {
+    it("does not call onBlur when popover opens", async () => {
+      const onBlur = vi.fn();
+      render(
+        <DropdownField
+          value={null}
+          items={STRING_ITEMS}
+          onBlur={onBlur}
+        />,
+      );
+
+      fireEvent.click(screen.getByRole("combobox"));
+
+      await vi.waitFor(() => {
+        expect(screen.getByRole("option", { name: "Alice" })).toBeDefined();
+      });
+
+      expect(onBlur).not.toHaveBeenCalled();
+    });
+
+    it("calls onBlur when popover closes", async () => {
+      const onBlur = vi.fn();
+      render(
+        <DropdownField
+          value={null}
+          items={STRING_ITEMS}
+          onBlur={onBlur}
+        />,
+      );
+
+      fireEvent.click(screen.getByRole("combobox"));
+
+      await vi.waitFor(() => {
+        expect(screen.getByRole("option", { name: "Alice" })).toBeDefined();
+      });
+
+      fireEvent.keyDown(screen.getByRole("combobox"), { key: "Escape" });
+
+      await vi.waitFor(() => {
+        expect(onBlur).toHaveBeenCalled();
+      });
+    });
+
+    it("calls onBlur when a value is selected in single-select", async () => {
+      const onBlur = vi.fn();
+      const onChange = vi.fn();
+      render(
+        <DropdownField
+          value={null}
+          items={STRING_ITEMS}
+          onChange={onChange}
+          onBlur={onBlur}
+        />,
+      );
+
+      fireEvent.click(screen.getByRole("combobox"));
+
+      await vi.waitFor(() => {
+        expect(screen.getByRole("option", { name: "Alice" })).toBeDefined();
+      });
+
+      fireEvent.click(screen.getByRole("option", { name: "Alice" }));
+
+      await vi.waitFor(() => {
+        expect(onBlur).toHaveBeenCalled();
+      });
+    });
+
+    it("calls onBlur when searchable popover closes", async () => {
+      const onBlur = vi.fn();
+      render(
+        <DropdownField
+          value={null}
+          items={STRING_ITEMS}
+          isSearchable={true}
+          onBlur={onBlur}
+        />,
+      );
+
+      const trigger = screen.getByRole("combobox");
+      fireEvent.click(trigger);
+
+      await vi.waitFor(() => {
+        expect(screen.getByRole("option", { name: "Alice" })).toBeDefined();
+      });
+
+      // Escape on the search input closes the popover
+      fireEvent.keyDown(screen.getByPlaceholderText("Search…"), {
+        key: "Escape",
+      });
+
+      await vi.waitFor(() => {
+        expect(onBlur).toHaveBeenCalled();
+      });
+    });
+
+    it("calls onBlur when a value is selected in multi-select", async () => {
+      const onBlur = vi.fn();
+      const onChange = vi.fn();
+      render(
+        <DropdownField<string, true>
+          value={[]}
+          items={STRING_ITEMS}
+          onChange={onChange}
+          isSearchable={true}
+          isMultiple={true}
+          onBlur={onBlur}
+        />,
+      );
+
+      fireEvent.click(screen.getByRole("combobox"));
+
+      await vi.waitFor(() => {
+        expect(screen.getByRole("option", { name: "Alice" })).toBeDefined();
+      });
+
+      fireEvent.click(screen.getByRole("option", { name: "Alice" }));
+
+      await vi.waitFor(() => {
+        expect(onBlur).toHaveBeenCalled();
+      });
+    });
+  });
+
   describe("clear button", () => {
     it("shows clear button in select when a value is selected", () => {
       render(<DropdownField value="Alice" items={STRING_ITEMS} />);

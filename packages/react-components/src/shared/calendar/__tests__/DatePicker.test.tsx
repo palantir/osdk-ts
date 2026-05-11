@@ -161,6 +161,55 @@ describe("DatePicker", () => {
       expect(onChange).not.toHaveBeenCalled();
     });
 
+    it("enables Today button when max is today at midnight", () => {
+      vi.useFakeTimers();
+      vi.setSystemTime(new Date(2024, 6, 4, 9, 30));
+      const onChange = vi.fn();
+      render(
+        <DatePicker
+          value={null}
+          onChange={onChange}
+          max={new Date(2024, 6, 4)}
+        />,
+      );
+      fireEvent.focus(screen.getByRole("combobox"));
+
+      const todayButton = screen.getByRole("button", {
+        name: "Today",
+      }) as HTMLButtonElement;
+      // max is today's date — the button should be enabled even though
+      // the current wall-clock time (9:30am) is after midnight.
+      expect(todayButton.disabled).toBe(false);
+      fireEvent.click(todayButton);
+
+      expect(onChange).toHaveBeenCalledTimes(1);
+      expect(onChange.mock.calls[0][0]).toEqual(new Date(2024, 6, 4));
+    });
+
+    it("preserves wall-clock time when selecting today with showTime", () => {
+      vi.useFakeTimers();
+      vi.setSystemTime(new Date(2024, 6, 4, 9, 30));
+      const onChange = vi.fn();
+      render(
+        <DatePicker
+          value={null}
+          onChange={onChange}
+          showTime={true}
+        />,
+      );
+      fireEvent.focus(screen.getByRole("combobox"));
+
+      fireEvent.click(screen.getByRole("button", { name: "Today" }));
+
+      expect(onChange).toHaveBeenCalledTimes(1);
+      const calledDate: Date = onChange.mock.calls[0][0];
+      expect(calledDate.getFullYear()).toBe(2024);
+      expect(calledDate.getMonth()).toBe(6);
+      expect(calledDate.getDate()).toBe(4);
+      expect(calledDate.getHours()).toBe(9);
+      expect(calledDate.getMinutes()).toBe(30);
+    });
+
     it("clears the selected date from the calendar action bar", () => {
       const onChange = vi.fn();
       render(

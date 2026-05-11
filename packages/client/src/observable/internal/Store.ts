@@ -313,6 +313,11 @@ export class Store {
     // keyed on srcType+srcPk+linkName, not the linked object's pk).
     promises.push(this.invalidateLinkQueriesForType(apiName));
 
+    // Function queries with explicit `dependsOnObjects` need to be told the
+    // edited PK directly — they aren't object-cache variants and so aren't
+    // reachable via objectCacheKeyRegistry.
+    promises.push(this.functions.invalidateFunctionsByObject(apiName, pk));
+
     return Promise.allSettled(promises);
   }
 

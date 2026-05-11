@@ -293,6 +293,8 @@ describe("useFunctionColumnsData", () => {
           queryDefinition: mockQueryDefinition,
           options: {
             dedupeIntervalMs: DEFAULT_FUNCTION_COLUMN_DEDUPE_INTERVAL_MS,
+            dependsOn: undefined,
+            dependsOnObjects: mockObjects,
             params: { [OBJ_SET_KEY]: mockObjectSet },
           },
         },
@@ -472,6 +474,8 @@ describe("useFunctionColumnsData", () => {
           options: {
             params: { [OBJ_SET_KEY]: mockObjectSet },
             dedupeIntervalMs: DEFAULT_FUNCTION_COLUMN_DEDUPE_INTERVAL_MS,
+            dependsOn: undefined,
+            dependsOnObjects: mockObjects,
           },
         },
         {
@@ -479,6 +483,8 @@ describe("useFunctionColumnsData", () => {
           options: {
             params: { [OBJ_SET_KEY]: mockObjectSet },
             dedupeIntervalMs: DEFAULT_FUNCTION_COLUMN_DEDUPE_INTERVAL_MS,
+            dependsOn: undefined,
+            dependsOnObjects: mockObjects,
           },
         },
       ],

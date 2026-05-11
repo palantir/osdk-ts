@@ -42,7 +42,9 @@ export interface FormFieldRendererProps {
   fieldDefinition: RendererFieldDefinition;
   value: unknown;
   onFieldValueChange: (value: unknown) => void;
-  onBlur: (e: React.FocusEvent<HTMLDivElement>) => void;
+  onBlur?: (e: React.FocusEvent<HTMLDivElement>) => void;
+  /** Field-level blur for fields that own their touched state (e.g. dropdowns). */
+  onFieldBlur?: () => void;
   error: string | undefined;
   portalContainer?: PortalContainer;
 }
@@ -53,6 +55,7 @@ export const FormFieldRenderer: React.FC<FormFieldRendererProps> = memo(
     value,
     onFieldValueChange,
     onBlur,
+    onFieldBlur,
     error,
     portalContainer,
   }: FormFieldRendererProps): React.ReactElement {
@@ -75,6 +78,7 @@ export const FormFieldRenderer: React.FC<FormFieldRendererProps> = memo(
           onFieldValueChange,
           error,
           portalContainer,
+          onFieldBlur,
         )}
       </FormField>
     );
@@ -87,6 +91,7 @@ function renderFieldComponent(
   onChange: (value: unknown) => void,
   error: string | undefined,
   portalContainer: PortalContainer | undefined,
+  onFieldBlur: (() => void) | undefined,
 ): React.ReactElement {
   switch (fieldDefinition.fieldComponent) {
     case "DATE_RANGE_INPUT":
@@ -138,6 +143,7 @@ function renderFieldComponent(
             fieldDefinition.fieldComponentProps,
             portalContainer,
           )}
+          onBlur={onFieldBlur}
         />
       );
     }

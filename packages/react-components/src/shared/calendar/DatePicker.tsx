@@ -179,6 +179,29 @@ export const DatePicker: React.NamedExoticComponent<
   const parseFn = parseDate
     ?? (showTime ? parseDatetimeFromInput : parseDateFromInput);
 
+  // Single normalization gate: when the time picker is hidden, strip
+  // hours/minutes/seconds so consumers receive a pure calendar date (local
+  // midnight). Defined before useDateEditState so the hook's commit path also
+  // goes through this gate.
+  const handleChange = useCallback(
+    (date: Date | null) => {
+      if (onChange == null) {
+        return;
+      }
+      if (date != null && !showTime) {
+        const dateOnly = new Date(
+          date.getFullYear(),
+          date.getMonth(),
+          date.getDate(),
+        );
+        onChange(dateOnly);
+      } else {
+        onChange(date);
+      }
+    },
+    [onChange, showTime],
+  );
+
   const {
     isEditing,
     displayedValue,
@@ -196,7 +219,7 @@ export const DatePicker: React.NamedExoticComponent<
     parseFn,
     min,
     max,
-    onChange,
+    onChange: handleChange,
   });
 
   // --- Input event handlers ---
@@ -304,7 +327,7 @@ export const DatePicker: React.NamedExoticComponent<
   const handleCalendarSelect = useCallback(
     (selected: Date | undefined) => {
       if (selected == null) {
-        onChange?.(null);
+        handleChange(null);
         setInputValue("");
         return;
       }
@@ -314,7 +337,7 @@ export const DatePicker: React.NamedExoticComponent<
         date.setHours(value.getHours(), value.getMinutes());
       }
 
-      onChange?.(date);
+      handleChange(date);
       setDateValue(date);
       setVisibleCalendarMonth(date);
 
@@ -323,7 +346,7 @@ export const DatePicker: React.NamedExoticComponent<
       }
     },
     [
-      onChange,
+      handleChange,
       showTime,
       value,
       shouldCloseOnSelection,
@@ -335,16 +358,16 @@ export const DatePicker: React.NamedExoticComponent<
 
   const handleTimeChange = useCallback(
     (time: Date) => {
-      onChange?.(time);
+      handleChange(time);
       setDateValue(time);
     },
-    [onChange, setDateValue],
+    [handleChange, setDateValue],
   );
 
   const handleCalendarClear = useCallback(() => {
-    onChange?.(null);
+    handleChange(null);
     setDateValue(null);
-  }, [onChange, setDateValue]);
+  }, [handleChange, setDateValue]);
 
   // --- Focus boundary handlers ---
   // Visually-hidden elements at the start/end of the popover that trap Tab

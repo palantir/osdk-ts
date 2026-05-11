@@ -445,11 +445,17 @@ function LinkedMultiSelectInput<Q extends ObjectTypeDefinition>({
   showCount,
   layout,
 }: LinkedMultiSelectInputProps<Q>): React.ReactElement {
+  const aggregationOptions = useMemo(
+    () => ({ activeValues: selectedValues }),
+    [selectedValues],
+  );
   const { data, isLoading, error } = usePropertyAggregation(
     objectType,
     propertyKey,
     objectSet,
+    aggregationOptions,
   );
+
   return (
     <MultiSelectInput
       values={data}
@@ -479,11 +485,19 @@ function LinkedSingleSelectInput<Q extends ObjectTypeDefinition>({
   onChange,
   showCount,
 }: LinkedSingleSelectInputProps<Q>): React.ReactElement {
+  const aggregationOptions = useMemo(
+    () => ({
+      activeValues: selectedValue != null ? [selectedValue] : undefined,
+    }),
+    [selectedValue],
+  );
   const { data, isLoading, error } = usePropertyAggregation(
     objectType,
     propertyKey,
     objectSet,
+    aggregationOptions,
   );
+
   return (
     <SingleSelectInput
       values={data}
@@ -515,11 +529,17 @@ function LinkedListogramInput<Q extends ObjectTypeDefinition>({
   searchQuery,
   showCount,
 }: LinkedListogramInputProps<Q>): React.ReactElement {
+  const aggregationOptions = useMemo(
+    () => ({ activeValues: selectedValues }),
+    [selectedValues],
+  );
   const { data, maxCount, isLoading, error } = usePropertyAggregation(
     objectType,
     propertyKey,
     objectSet,
+    aggregationOptions,
   );
+
   return (
     <ListogramInput
       values={data}

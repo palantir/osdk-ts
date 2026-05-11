@@ -214,6 +214,10 @@
      navigation. Keep the visual focus affordance on the active option instead
      of drawing a browser-default ring around this non-interactive wrapper. */
   outline: none;
+
+  &[data-anchor-hidden] {
+    visibility: hidden;
+  }
 }
 
 .osdkSelectPopup {

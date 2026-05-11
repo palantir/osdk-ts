@@ -20,11 +20,13 @@ import { Combobox } from "../../../base-components/combobox/Combobox.js";
 interface MultiSelectDropdownLayoutProps {
   renderChips: (selected: string[]) => React.ReactNode;
   renderItem: (value: string) => React.ReactElement;
+  collisionBoundary?: Element;
 }
 
 export function MultiSelectDropdownLayout({
   renderChips,
   renderItem,
+  collisionBoundary,
 }: MultiSelectDropdownLayoutProps): React.ReactElement {
   return (
     <>
@@ -32,7 +34,7 @@ export function MultiSelectDropdownLayout({
         <Combobox.Value>{renderChips}</Combobox.Value>
       </Combobox.Chips>
       <Combobox.Portal>
-        <Combobox.Positioner>
+        <Combobox.Positioner collisionBoundary={collisionBoundary}>
           <Combobox.Popup>
             <Combobox.Empty>No matching options</Combobox.Empty>
             <Combobox.List>{renderItem}</Combobox.List>
