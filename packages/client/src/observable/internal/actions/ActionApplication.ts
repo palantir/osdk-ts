@@ -76,6 +76,10 @@ export class ActionApplication {
       }
 
       await this.#invalidatePerObjectEdits(actionResults);
+      // Inside the try so refetches land in truth while the optimistic layer
+      // is still on top; the removal below then drops to fresh truth in one
+      // visible transition.
+      await this.#invalidatePerTypeEdits(actionResults);
     } finally {
       if (process.env.NODE_ENV !== "production") {
         logger?.debug(
@@ -86,8 +90,6 @@ export class ActionApplication {
       await removeOptimisticResult();
     }
 
-    // After optimistic removal so the refetch sees post-action server state.
-    await this.#invalidatePerTypeEdits(actionResults);
     return actionResults;
   };
 
