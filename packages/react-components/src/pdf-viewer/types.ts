@@ -143,6 +143,13 @@ export interface PdfViewerInstanceOptions {
   initialPage?: number;
   /** Initial zoom scale (default 1.0) */
   initialScale?: number;
+  /**
+   * Whether auto-size (fit to width) is initially enabled.
+   * When enabled, the PDF scales to fit the container width and
+   * re-fits automatically on resize. Manual zoom disables auto-size.
+   * @default false
+   */
+  initialAutoSize?: boolean;
   /** Whether the sidebar is initially open (default false) */
   initialSidebarOpen?: boolean;
   /** Whether the download button is shown in the toolbar */
@@ -197,6 +204,13 @@ export interface PdfViewerProps {
   initialPage?: number;
   /** Initial zoom scale (default 1.0) */
   initialScale?: number;
+  /**
+   * Whether auto-size (fit to width) is initially enabled.
+   * When enabled, the PDF scales to fit the container width and
+   * re-fits automatically on resize. Manual zoom disables auto-size.
+   * @default false
+   */
+  initialAutoSize?: boolean;
   /** Whether the sidebar is initially open (default false) */
   initialSidebarOpen?: boolean;
   /**

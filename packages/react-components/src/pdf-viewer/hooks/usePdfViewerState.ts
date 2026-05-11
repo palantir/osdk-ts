@@ -36,10 +36,12 @@ export interface UsePdfViewerStateOptions extends UsePdfViewerCoreOptions {
 }
 
 export interface UsePdfViewerStateResult extends UsePdfViewerCoreResult {
-  /** Zoom in by one step */
+  /** Zoom in by one step (disables auto-size) */
   zoomIn: () => void;
-  /** Zoom out by one step */
+  /** Zoom out by one step (disables auto-size) */
   zoomOut: () => void;
+  /** Toggle auto-size (fit to width) on or off */
+  toggleAutoSize: () => void;
 
   /** Current rotation in degrees (0, 90, 180, 270) */
   rotation: number;
@@ -71,11 +73,17 @@ export function usePdfViewerState({
   src,
   initialPage,
   initialScale,
+  initialAutoSize,
   initialSidebarOpen = false,
   sidebarMode: sidebarModeProp = "thumbnails",
   onDownload,
 }: UsePdfViewerStateOptions): UsePdfViewerStateResult {
-  const core = usePdfViewerCore({ src, initialPage, initialScale });
+  const core = usePdfViewerCore({
+    src,
+    initialPage,
+    initialScale,
+    initialAutoSize,
+  });
 
   const [rotation, setRotation] = useState(0);
   const [sidebarOpen, setSidebarOpen] = useState(initialSidebarOpen);
@@ -117,12 +125,18 @@ export function usePdfViewerState({
   }, [search.openSearch]);
 
   const zoomIn = useCallback(() => {
+    core.setAutoSize(false);
     core.setScale(Math.min(core.scale + SCALE_STEP, MAX_SCALE));
-  }, [core.scale, core.setScale]);
+  }, [core.scale, core.setScale, core.setAutoSize]);
 
   const zoomOut = useCallback(() => {
+    core.setAutoSize(false);
     core.setScale(Math.max(core.scale - SCALE_STEP, MIN_SCALE));
-  }, [core.scale, core.setScale]);
+  }, [core.scale, core.setScale, core.setAutoSize]);
+
+  const toggleAutoSize = useCallback(() => {
+    core.setAutoSize(!core.autoSize);
+  }, [core.autoSize, core.setAutoSize]);
 
   const rotateLeft = useCallback(() => {
     setRotation((prev) => (prev - 90 + 360) % 360);
@@ -166,6 +180,7 @@ export function usePdfViewerState({
     ...core,
     zoomIn,
     zoomOut,
+    toggleAutoSize,
     rotation,
     rotateLeft,
     rotateRight,
@@ -180,6 +195,7 @@ export function usePdfViewerState({
     core,
     zoomIn,
     zoomOut,
+    toggleAutoSize,
     rotation,
     rotateLeft,
     rotateRight,

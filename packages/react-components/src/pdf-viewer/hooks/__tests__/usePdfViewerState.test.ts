@@ -64,6 +64,8 @@ function createMockCoreResult(overrides: { scale?: number } = {}) {
     scrollToPage: vi.fn(),
     scale,
     setScale: vi.fn(),
+    autoSize: false,
+    setAutoSize: vi.fn(),
     portalTargets: [],
     pdfViewerRef: { current: { pagesRotation: 0 } } as unknown as RefObject<
       PDFViewer

@@ -82,8 +82,10 @@ describe("usePdfViewerSync", () => {
         usePdfViewerSync({
           pdfViewerRef,
           eventBusRef,
+          containerRef: { current: null } as RefObject<HTMLDivElement>,
           document,
           scale,
+          autoSize: false,
           onScaleChange,
           onPageChange,
         }),
@@ -163,8 +165,10 @@ describe("usePdfViewerSync", () => {
       usePdfViewerSync({
         pdfViewerRef,
         eventBusRef,
+        containerRef: { current: null } as RefObject<HTMLDivElement>,
         document: {} as PDFDocumentProxy,
         scale: 1.0,
+        autoSize: false,
         onScaleChange: vi.fn(),
         onPageChange: vi.fn(),
       })
@@ -186,8 +190,10 @@ describe("usePdfViewerSync", () => {
       usePdfViewerSync({
         pdfViewerRef,
         eventBusRef,
+        containerRef: { current: null } as RefObject<HTMLDivElement>,
         document: {} as PDFDocumentProxy,
         scale: 1.0,
+        autoSize: false,
         onScaleChange: vi.fn(),
         onPageChange,
       })

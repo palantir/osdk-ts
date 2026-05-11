@@ -27,6 +27,7 @@ import {
   Plus,
   RotatePage,
   Search,
+  ZoomToFit,
 } from "@blueprintjs/icons";
 import classnames from "classnames";
 import React, { useCallback, useEffect, useState } from "react";
@@ -37,9 +38,11 @@ export interface PdfViewerToolbarProps {
   currentPage: number;
   numPages: number;
   scale: number;
+  autoSize: boolean;
   sidebarOpen: boolean;
   onPageChange: (page: number) => void;
   onScaleChange: (scale: number) => void;
+  onAutoSizeToggle: () => void;
   onSearchOpen: () => void;
   onSidebarToggle: () => void;
   onDownload: () => void;
@@ -57,9 +60,11 @@ export function PdfViewerToolbar({
   currentPage,
   numPages,
   scale,
+  autoSize,
   sidebarOpen,
   onPageChange,
   onScaleChange,
+  onAutoSizeToggle,
   onSearchOpen,
   onSidebarToggle,
   onDownload,
@@ -203,6 +208,19 @@ export function PdfViewerToolbar({
           type="button"
         >
           <Plus size={16} />
+        </Button>
+        <Button
+          className={classnames(
+            styles.toolbarButton,
+            autoSize && styles.toolbarButtonActive,
+          )}
+          onClick={onAutoSizeToggle}
+          aria-label={autoSize ? "Disable fit to width" : "Fit to width"}
+          title={autoSize ? "Disable fit to width" : "Fit to width"}
+          aria-pressed={autoSize}
+          type="button"
+        >
+          <ZoomToFit size={16} />
         </Button>
       </div>
 

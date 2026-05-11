@@ -18,13 +18,19 @@ import type { PDFDocumentProxy } from "pdfjs-dist";
 import type { EventBus, PDFViewer } from "pdfjs-dist/web/pdf_viewer.mjs";
 import type { RefObject } from "react";
 import { useCallback, useEffect, useRef } from "react";
-import { PAGE_CHANGING_EVENT, SCALE_CHANGING_EVENT } from "../constants.js";
+import {
+  PAGE_CHANGING_EVENT,
+  PAGE_WIDTH_SCALE_VALUE,
+  SCALE_CHANGING_EVENT,
+} from "../constants.js";
 
 interface UsePdfViewerSyncOptions {
   pdfViewerRef: RefObject<PDFViewer | null>;
   eventBusRef: RefObject<EventBus | null>;
+  containerRef: RefObject<HTMLDivElement | null>;
   document: PDFDocumentProxy | undefined;
   scale: number;
+  autoSize: boolean;
   onScaleChange: (scale: number) => void;
   onPageChange: (page: number) => void;
 }
@@ -32,8 +38,10 @@ interface UsePdfViewerSyncOptions {
 export function usePdfViewerSync({
   pdfViewerRef,
   eventBusRef,
+  containerRef,
   document,
   scale,
+  autoSize,
   onScaleChange,
   onPageChange,
 }: UsePdfViewerSyncOptions): {
@@ -41,17 +49,44 @@ export function usePdfViewerSync({
 } {
   const lastScaleRef = useRef(scale);
 
-  // Sync React scale → PDFViewer
+  // Sync React scale → PDFViewer (only when not in auto-size mode)
   useEffect(function syncScaleToViewer() {
     const pdfViewer = pdfViewerRef.current;
-    if (pdfViewer == null) {
+    if (pdfViewer == null || autoSize) {
       return;
     }
     if (Math.abs(lastScaleRef.current - scale) > 0.001) {
       lastScaleRef.current = scale;
       pdfViewer.currentScale = scale;
     }
-  }, [pdfViewerRef, scale]);
+  }, [pdfViewerRef, scale, autoSize]);
+
+  // Apply page-width scale when auto-size is enabled
+  useEffect(function syncAutoSizeToViewer() {
+    const pdfViewer = pdfViewerRef.current;
+    if (pdfViewer == null || !autoSize) {
+      return;
+    }
+    pdfViewer.currentScaleValue = PAGE_WIDTH_SCALE_VALUE;
+  }, [pdfViewerRef, autoSize]);
+
+  // ResizeObserver: re-apply page-width on container resize when auto-size is active
+  useEffect(function observeContainerResize() {
+    const container = containerRef.current;
+    const pdfViewer = pdfViewerRef.current;
+    if (container == null || pdfViewer == null || !autoSize) {
+      return;
+    }
+
+    const observer = new ResizeObserver(() => {
+      pdfViewer.currentScaleValue = PAGE_WIDTH_SCALE_VALUE;
+    });
+    observer.observe(container);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [containerRef, pdfViewerRef, autoSize]);
 
   // Listen to PDFViewer events → React state
   useEffect(function subscribeViewerEvents() {
