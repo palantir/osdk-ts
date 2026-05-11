@@ -26,11 +26,13 @@ import type {
 } from "@osdk/api";
 import type React from "react";
 
-export type PortalContainer =
-  | HTMLElement
-  | ShadowRoot
-  | null
-  | React.RefObject<HTMLElement | ShadowRoot | null>;
+import type {
+  DatePickerProps,
+  DateRangePickerProps,
+} from "../shared/calendar/index.js";
+import type { PortalContainer } from "../shared/PortalDismissLayer.js";
+
+export type { PortalContainer };
 
 /**
  * A form field definition specifies configuration for a single field.
@@ -141,8 +143,8 @@ export type ValidationError =
  * Maps field types to their corresponding props
  */
 export interface FormFieldPropsByType {
-  DATE_RANGE_INPUT: DateRangeInputFieldProps;
-  DATETIME_PICKER: DatetimePickerFieldProps;
+  DATE_RANGE_INPUT: DateRangePickerProps;
+  DATETIME_PICKER: DatePickerProps;
   DROPDOWN: DropdownFieldProps<unknown, boolean>;
   FILE_PICKER: FilePickerProps;
   NUMBER_INPUT: NumberInputFieldProps;
@@ -153,119 +155,6 @@ export interface FormFieldPropsByType {
   TEXT_AREA: TextAreaFieldProps;
   TEXT_INPUT: TextInputFieldProps;
   CUSTOM: CustomFieldProps<unknown>;
-}
-
-/**
- * Datetime picker field props.
- *
- * When `formatDate` is omitted, ISO-like format is used (YYYY-MM-DD / YYYY-MM-DD HH:mm).
- */
-export interface DatetimePickerFieldProps extends BaseFormFieldProps<Date> {
-  /**
-   * The earliest date the user can select.
-   * If provided, this will be added to the field validation.
-   */
-  min?: Date;
-
-  /**
-   * The latest date the user can select.
-   * If provided, this will be added to the field validation.
-   */
-  max?: Date;
-
-  /**
-   * Whether to show time picker.
-   */
-  showTime?: boolean;
-
-  /**
-   * Whether to close the popover after selecting a date.
-   * @default true when `showTime` is false, false when `showTime` is true
-   */
-  closeOnSelection?: boolean;
-
-  /**
-   * Placeholder text shown when no value is selected.
-   */
-  placeholder?: string;
-
-  /**
-   * Formats a Date for display in the input field when not editing.
-   * When typing, the input shows the parsable format (YYYY-MM-DD or YYYY-MM-DD HH:mm).
-   * Provide a matching `parseDate` if using a custom format.
-   */
-  formatDate?: (date: Date) => string;
-
-  /**
-   * Parses a user-typed string back into a Date.
-   * Must be the inverse of `formatDate` — if `formatDate(d)` produces string `s`,
-   * then `parseDate(s)` must return an equivalent Date.
-   * When omitted, defaults to parsing "YYYY-MM-DD" (date-only) or "YYYY-MM-DD HH:mm" (with time).
-   */
-  parseDate?: (text: string) => Date | undefined;
-
-  /**
-   * Ref forwarded to the portal container element.
-   * Used to track portaled content for click-outside detection.
-   */
-  portalRef?: React.Ref<HTMLDivElement>;
-
-  /**
-   * Element that receives the date picker portal. Use this when rendering
-   * inside modal dialogs so popovers stay in the dialog's stacking and focus
-   * context instead of being appended directly to document.body.
-   */
-  portalContainer?: PortalContainer;
-}
-
-/**
- * A date range represented as a start/end tuple.
- * Either element may be `null` when the range is partially selected.
- */
-export type DateRange = readonly [Date | null, Date | null];
-
-/** Default empty range — both bounds are null. */
-export const EMPTY_RANGE: DateRange = [null, null];
-
-/**
- * Date range input field props.
- *
- * Renders two text inputs (start / end) with a shared calendar popover
- * that supports range selection.
- */
-export interface DateRangeInputFieldProps
-  extends BaseFormFieldProps<DateRange>
-{
-  /** The earliest selectable date. */
-  min?: Date;
-
-  /** The latest selectable date. */
-  max?: Date;
-
-  /** Whether to show time pickers for both dates. */
-  showTime?: boolean;
-
-  /** Placeholder text for the start date input. */
-  placeholderStart?: string;
-
-  /** Placeholder text for the end date input. */
-  placeholderEnd?: string;
-
-  /** Whether to allow start and end on the same day. @default true */
-  allowSingleDayRange?: boolean;
-
-  /** Formats a Date for display. Defaults to "YYYY-MM-DD". */
-  formatDate?: (date: Date) => string;
-
-  /** Parses a user-typed string back into a Date. */
-  parseDate?: (text: string) => Date | undefined;
-
-  /**
-   * Element that receives the date range picker portal. Use this when rendering
-   * inside modal dialogs so popovers stay in the dialog's stacking and focus
-   * context instead of being appended directly to document.body.
-   */
-  portalContainer?: PortalContainer;
 }
 
 /**

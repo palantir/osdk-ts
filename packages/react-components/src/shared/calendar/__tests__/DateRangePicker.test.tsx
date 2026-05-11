@@ -22,23 +22,23 @@ import {
   waitFor,
 } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { DateRangeInputField } from "../fields/DateRangeInputField.js";
+import { DateRangePicker } from "../DateRangePicker.js";
 
-vi.mock("../fields/LazyDateRangeCalendar.js", async () => {
+vi.mock("../LazyDateRangeCalendar.js", async () => {
   const { default: DateRangeCalendar } = await vi.importActual<
     // eslint-disable-next-line @typescript-eslint/consistent-type-imports
-    typeof import("../fields/DateRangeCalendar.js")
-  >("../fields/DateRangeCalendar.js");
+    typeof import("../DateRangeCalendar.js")
+  >("../DateRangeCalendar.js");
   return { LazyDateRangeCalendar: DateRangeCalendar };
 });
 
 afterEach(cleanup);
 
-describe("DateRangeInputField", () => {
+describe("DateRangePicker", () => {
   describe("rendering", () => {
     it("renders two inputs with placeholders", () => {
       render(
-        <DateRangeInputField
+        <DateRangePicker
           value={[null, null]}
           onChange={vi.fn()}
           placeholderStart="Start"
@@ -55,7 +55,7 @@ describe("DateRangeInputField", () => {
 
     it("renders formatted dates when value is provided", () => {
       render(
-        <DateRangeInputField
+        <DateRangePicker
           value={[new Date(2024, 0, 15), new Date(2024, 5, 30)]}
           onChange={vi.fn()}
         />,
@@ -69,7 +69,7 @@ describe("DateRangeInputField", () => {
     });
 
     it("renders empty inputs when value is null", () => {
-      render(<DateRangeInputField value={null} onChange={vi.fn()} />);
+      render(<DateRangePicker value={null} onChange={vi.fn()} />);
       const startInput = screen.getByLabelText(
         "Start date",
       ) as HTMLInputElement;
@@ -81,7 +81,7 @@ describe("DateRangeInputField", () => {
 
   describe("focus and popover", () => {
     it("opens popover when start input is focused", () => {
-      render(<DateRangeInputField value={[null, null]} onChange={vi.fn()} />);
+      render(<DateRangePicker value={[null, null]} onChange={vi.fn()} />);
       const startInput = screen.getByLabelText("Start date");
       expect(screen.queryByRole("dialog")).toBeNull();
       fireEvent.focus(startInput);
@@ -90,7 +90,7 @@ describe("DateRangeInputField", () => {
     });
 
     it("opens popover when start input is clicked", () => {
-      render(<DateRangeInputField value={[null, null]} onChange={vi.fn()} />);
+      render(<DateRangePicker value={[null, null]} onChange={vi.fn()} />);
       const startInput = screen.getByLabelText("Start date");
       expect(screen.queryByRole("dialog")).toBeNull();
       fireEvent.pointerDown(startInput);
@@ -102,7 +102,7 @@ describe("DateRangeInputField", () => {
     });
 
     it("does not render single-date calendar action buttons", () => {
-      render(<DateRangeInputField value={[null, null]} onChange={vi.fn()} />);
+      render(<DateRangePicker value={[null, null]} onChange={vi.fn()} />);
       fireEvent.focus(screen.getByLabelText("Start date"));
 
       expect(screen.queryByRole("button", { name: "Today" })).toBeNull();
@@ -110,7 +110,7 @@ describe("DateRangeInputField", () => {
     });
 
     it("opens popover when end input is focused", () => {
-      render(<DateRangeInputField value={[null, null]} onChange={vi.fn()} />);
+      render(<DateRangePicker value={[null, null]} onChange={vi.fn()} />);
       const endInput = screen.getByLabelText("End date");
       expect(screen.queryByRole("dialog")).toBeNull();
       fireEvent.focus(endInput);
@@ -127,7 +127,7 @@ describe("DateRangeInputField", () => {
 
       try {
         render(
-          <DateRangeInputField
+          <DateRangePicker
             value={[null, null]}
             onChange={vi.fn()}
             portalContainer={portalContainer}
@@ -158,7 +158,7 @@ describe("DateRangeInputField", () => {
   describe("text input editing", () => {
     it("commits start date on blur", () => {
       const onChange = vi.fn();
-      render(<DateRangeInputField value={[null, null]} onChange={onChange} />);
+      render(<DateRangePicker value={[null, null]} onChange={onChange} />);
       const startInput = screen.getByLabelText(
         "Start date",
       ) as HTMLInputElement;
@@ -175,7 +175,7 @@ describe("DateRangeInputField", () => {
     it("commits end date on blur", () => {
       const onChange = vi.fn();
       render(
-        <DateRangeInputField
+        <DateRangePicker
           value={[new Date(2024, 0, 1), null]}
           onChange={onChange}
         />,
@@ -192,7 +192,7 @@ describe("DateRangeInputField", () => {
 
     it("does not commit invalid start input on blur", () => {
       const onChange = vi.fn();
-      render(<DateRangeInputField value={[null, null]} onChange={onChange} />);
+      render(<DateRangePicker value={[null, null]} onChange={onChange} />);
       const startInput = screen.getByLabelText(
         "Start date",
       ) as HTMLInputElement;
@@ -206,7 +206,7 @@ describe("DateRangeInputField", () => {
 
     it("commits start on Enter and advances to end input", () => {
       const onChange = vi.fn();
-      render(<DateRangeInputField value={[null, null]} onChange={onChange} />);
+      render(<DateRangePicker value={[null, null]} onChange={onChange} />);
       const startInput = screen.getByLabelText(
         "Start date",
       ) as HTMLInputElement;
@@ -223,7 +223,7 @@ describe("DateRangeInputField", () => {
 
     it("reverts on Escape key", () => {
       render(
-        <DateRangeInputField
+        <DateRangePicker
           value={[new Date(2024, 0, 15), null]}
           onChange={vi.fn()}
         />,
@@ -241,7 +241,7 @@ describe("DateRangeInputField", () => {
 
   describe("error state", () => {
     it("marks input as invalid for unparsable text", () => {
-      render(<DateRangeInputField value={[null, null]} onChange={vi.fn()} />);
+      render(<DateRangePicker value={[null, null]} onChange={vi.fn()} />);
       const startInput = screen.getByLabelText("Start date");
       fireEvent.focus(startInput);
       fireEvent.change(startInput, { target: { value: "garbage" } });
@@ -251,7 +251,7 @@ describe("DateRangeInputField", () => {
 
     it("marks input as invalid for overlapping dates (end < start)", () => {
       render(
-        <DateRangeInputField
+        <DateRangePicker
           value={[new Date(2024, 5, 15), null]}
           onChange={vi.fn()}
         />,
@@ -264,7 +264,7 @@ describe("DateRangeInputField", () => {
     });
 
     it("does not show error on start input after selecting a start date via calendar", () => {
-      render(<DateRangeInputField value={[null, null]} onChange={vi.fn()} />);
+      render(<DateRangePicker value={[null, null]} onChange={vi.fn()} />);
       const startInput = screen.getByLabelText("Start date");
       fireEvent.focus(startInput);
 
@@ -277,7 +277,7 @@ describe("DateRangeInputField", () => {
     });
 
     it("clears invalid state when valid input is typed", () => {
-      render(<DateRangeInputField value={[null, null]} onChange={vi.fn()} />);
+      render(<DateRangePicker value={[null, null]} onChange={vi.fn()} />);
       const startInput = screen.getByLabelText("Start date");
       fireEvent.focus(startInput);
 
@@ -291,7 +291,7 @@ describe("DateRangeInputField", () => {
     it("reverts start input on blur when typed start would overlap end", () => {
       const onChange = vi.fn();
       render(
-        <DateRangeInputField
+        <DateRangePicker
           value={[new Date(2024, 0, 1), new Date(2024, 5, 15)]}
           onChange={onChange}
         />,
@@ -310,7 +310,7 @@ describe("DateRangeInputField", () => {
     it("reverts end input on blur when typed end would overlap start", () => {
       const onChange = vi.fn();
       render(
-        <DateRangeInputField
+        <DateRangePicker
           value={[new Date(2024, 5, 15), new Date(2024, 11, 31)]}
           onChange={onChange}
         />,
@@ -327,7 +327,7 @@ describe("DateRangeInputField", () => {
     it("reverts start input on Enter when typed start would overlap end", () => {
       const onChange = vi.fn();
       render(
-        <DateRangeInputField
+        <DateRangePicker
           value={[new Date(2024, 0, 1), new Date(2024, 5, 15)]}
           onChange={onChange}
         />,
@@ -345,7 +345,7 @@ describe("DateRangeInputField", () => {
     it("reverts end input on Enter when typed end would overlap start", () => {
       const onChange = vi.fn();
       render(
-        <DateRangeInputField
+        <DateRangePicker
           value={[new Date(2024, 5, 15), new Date(2024, 11, 31)]}
           onChange={onChange}
         />,
@@ -361,7 +361,7 @@ describe("DateRangeInputField", () => {
     it("reverts end input when same day and allowSingleDayRange is false", () => {
       const onChange = vi.fn();
       render(
-        <DateRangeInputField
+        <DateRangePicker
           value={[new Date(2024, 5, 15), new Date(2024, 11, 31)]}
           onChange={onChange}
           allowSingleDayRange={false}
@@ -379,7 +379,7 @@ describe("DateRangeInputField", () => {
 
   describe("focus management", () => {
     it("does not move focus to calendar dropdowns when popover opens via start", () => {
-      render(<DateRangeInputField value={[null, null]} onChange={vi.fn()} />);
+      render(<DateRangePicker value={[null, null]} onChange={vi.fn()} />);
       const startInput = screen.getByLabelText("Start date");
       fireEvent.focus(startInput);
 
@@ -391,7 +391,7 @@ describe("DateRangeInputField", () => {
     });
 
     it("does not move focus to calendar dropdowns when popover opens via end", () => {
-      render(<DateRangeInputField value={[null, null]} onChange={vi.fn()} />);
+      render(<DateRangePicker value={[null, null]} onChange={vi.fn()} />);
       const endInput = screen.getByLabelText("End date");
       fireEvent.focus(endInput);
 
@@ -404,7 +404,7 @@ describe("DateRangeInputField", () => {
     it("blurs end input after Enter key closes popover", () => {
       const onChange = vi.fn();
       render(
-        <DateRangeInputField
+        <DateRangePicker
           value={[new Date(2024, 0, 1), null]}
           onChange={onChange}
         />,
@@ -421,7 +421,7 @@ describe("DateRangeInputField", () => {
     });
 
     it("closes popover on Escape from start input", () => {
-      render(<DateRangeInputField value={[null, null]} onChange={vi.fn()} />);
+      render(<DateRangePicker value={[null, null]} onChange={vi.fn()} />);
       const startInput = screen.getByLabelText("Start date");
       fireEvent.focus(startInput);
       expect(startInput.getAttribute("aria-expanded")).toBe("true");
@@ -434,7 +434,7 @@ describe("DateRangeInputField", () => {
 
     it("returns focus to the active input when tabbing past end of popover", () => {
       render(
-        <DateRangeInputField
+        <DateRangePicker
           value={[new Date(2024, 0, 15), null]}
           onChange={vi.fn()}
         />,
@@ -460,7 +460,7 @@ describe("DateRangeInputField", () => {
 
     it("does not reopen the popover on the next Tab after boundary exit", () => {
       render(
-        <DateRangeInputField
+        <DateRangePicker
           value={[new Date(2024, 0, 15), null]}
           onChange={vi.fn()}
         />,
@@ -486,7 +486,7 @@ describe("DateRangeInputField", () => {
 
     it("closes popover on Escape from end input", () => {
       render(
-        <DateRangeInputField
+        <DateRangePicker
           value={[new Date(2024, 0, 1), null]}
           onChange={vi.fn()}
         />,
@@ -505,7 +505,7 @@ describe("DateRangeInputField", () => {
   describe("time picker (showTime)", () => {
     it("renders time inputs when showTime is true", () => {
       render(
-        <DateRangeInputField
+        <DateRangePicker
           value={[new Date(2024, 0, 15, 10, 30), new Date(2024, 0, 20, 14, 0)]}
           onChange={vi.fn()}
           showTime={true}
@@ -522,7 +522,7 @@ describe("DateRangeInputField", () => {
 
     it("does not render time inputs when showTime is false", () => {
       render(
-        <DateRangeInputField
+        <DateRangePicker
           value={[new Date(2024, 0, 15), null]}
           onChange={vi.fn()}
         />,
@@ -537,7 +537,7 @@ describe("DateRangeInputField", () => {
     it("calls onChange with updated start time when valid time segments blur", () => {
       const onChange = vi.fn();
       render(
-        <DateRangeInputField
+        <DateRangePicker
           value={[new Date(2024, 0, 15, 10, 0), new Date(2024, 0, 20)]}
           onChange={onChange}
           showTime={true}
@@ -568,7 +568,7 @@ describe("DateRangeInputField", () => {
     it("does not call onChange before a valid start time segment blurs", () => {
       const onChange = vi.fn();
       render(
-        <DateRangeInputField
+        <DateRangePicker
           value={[new Date(2024, 0, 15, 10, 30), new Date(2024, 0, 20, 14, 0)]}
           onChange={onChange}
           showTime={true}
@@ -586,7 +586,7 @@ describe("DateRangeInputField", () => {
     it("calls onChange with updated end time when valid time segments blur", () => {
       const onChange = vi.fn();
       render(
-        <DateRangeInputField
+        <DateRangePicker
           value={[new Date(2024, 0, 15), new Date(2024, 0, 20, 9, 0)]}
           onChange={onChange}
           showTime={true}
@@ -616,7 +616,7 @@ describe("DateRangeInputField", () => {
 
     it("shows datetime format in inputs when showTime is true", () => {
       render(
-        <DateRangeInputField
+        <DateRangePicker
           value={[new Date(2024, 0, 15, 10, 30), new Date(2024, 0, 20, 14, 0)]}
           onChange={vi.fn()}
           showTime={true}
@@ -632,7 +632,7 @@ describe("DateRangeInputField", () => {
 
     it("keeps popover open after range selection when showTime is true", () => {
       render(
-        <DateRangeInputField
+        <DateRangePicker
           value={[null, null]}
           onChange={vi.fn()}
           showTime={true}
@@ -661,7 +661,7 @@ describe("DateRangeInputField", () => {
   describe("custom format", () => {
     it("uses custom formatDate for display when not editing", () => {
       render(
-        <DateRangeInputField
+        <DateRangePicker
           value={[new Date(2024, 0, 15), null]}
           onChange={vi.fn()}
           formatDate={(d) =>
@@ -677,7 +677,7 @@ describe("DateRangeInputField", () => {
     it("uses custom parseDate for typed input", () => {
       const onChange = vi.fn();
       render(
-        <DateRangeInputField
+        <DateRangePicker
           value={[null, null]}
           onChange={onChange}
           formatDate={(d) =>
@@ -705,7 +705,7 @@ describe("DateRangeInputField", () => {
 
   describe("accessibility", () => {
     it("has combobox role and aria attributes on both inputs", () => {
-      render(<DateRangeInputField value={[null, null]} onChange={vi.fn()} />);
+      render(<DateRangePicker value={[null, null]} onChange={vi.fn()} />);
       const startInput = screen.getByLabelText("Start date");
       const endInput = screen.getByLabelText("End date");
 

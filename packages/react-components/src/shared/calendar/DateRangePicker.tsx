@@ -24,15 +24,96 @@ import {
   formatDatetimeForInput,
   parseDateFromInput,
   parseDatetimeFromInput,
-} from "../../shared/dateUtils.js";
-import { type DateRangeInputFieldProps, EMPTY_RANGE } from "../FormFieldApi.js";
+} from "../dateUtils.js";
+import {
+  type PortalContainer,
+  PortalDismissLayer,
+} from "../PortalDismissLayer.js";
 import { stopPropagation } from "./calendarShared.js";
 import commonStyles from "./DatePickerCommon.module.css";
-import styles from "./DateRangeInputField.module.css";
+import styles from "./DateRangePicker.module.css";
 import { LazyDateRangeCalendar } from "./LazyDateRangeCalendar.js";
-import { PortalDismissLayer } from "./PortalDismissLayer.js";
 import { TimePicker } from "./TimePicker.js";
 import { useDateEditState } from "./useDateEditState.js";
+
+/**
+ * A date range represented as a start/end tuple. Either element may be
+ * `null` when the range is partially selected.
+ */
+export type DateRange = readonly [Date | null, Date | null];
+
+/** Default empty range — both bounds are null. */
+export const EMPTY_RANGE: DateRange = [null, null];
+
+/**
+ * Props for the shared DateRangePicker. Used by filter-list's date-range
+ * histogram and action-form's `DATE_RANGE_INPUT` field kind. `id` and
+ * `error` are optional so non-form callers can omit them.
+ *
+ * Renders two text inputs (start / end) with a shared calendar popover
+ * supporting range selection.
+ */
+export interface DateRangePickerProps {
+  /**
+   * The HTML `id` attribute for the start input element. Used for
+   * `<label htmlFor>` association in form contexts.
+   */
+  id?: string;
+
+  /**
+   * Visual error state for the inputs. Set by form validation in
+   * action-form contexts; non-form callers typically omit it.
+   */
+  error?: string;
+
+  /** The currently-selected range, or `null` for empty. */
+  value: DateRange | null;
+
+  /** Called when the user selects or types a new range. */
+  onChange?: (value: DateRange | null) => void;
+
+  /** The earliest selectable date. */
+  min?: Date;
+
+  /** The latest selectable date. */
+  max?: Date;
+
+  /** Whether to show time pickers for both dates. */
+  showTime?: boolean;
+
+  /** Placeholder text for the start date input. */
+  placeholderStart?: string;
+
+  /** Placeholder text for the end date input. */
+  placeholderEnd?: string;
+
+  /** Whether to allow start and end on the same day. @default true */
+  allowSingleDayRange?: boolean;
+
+  /** Formats a Date for display. Defaults to "YYYY-MM-DD". */
+  formatDate?: (date: Date) => string;
+
+  /** Parses a user-typed string back into a Date. */
+  parseDate?: (text: string) => Date | undefined;
+
+  /**
+   * Element that receives the date range picker portal. Use this when
+   * rendering inside modal dialogs so popovers stay in the dialog's
+   * stacking and focus context instead of being appended directly to
+   * document.body.
+   */
+  portalContainer?: PortalContainer;
+
+  /**
+   * Popover modality. Defaults to `"trap-focus"`, which traps Tab cycling
+   * inside the calendar and renders a transparent dismiss layer over the
+   * page. Pass `false` when nesting this picker inside another popover so
+   * the inner dismiss layer doesn't intercept clicks intended for the
+   * outer popover and base-ui's default outside-click handles dismissal
+   * instead.
+   */
+  modal?: "trap-focus" | false;
+}
 
 type ActiveBoundary = "start" | "end";
 
@@ -47,9 +128,9 @@ const SHARED_INPUT_PROPS = {
   "aria-haspopup": "dialog" as const,
 } as const;
 
-export const DateRangeInputField: React.NamedExoticComponent<
-  DateRangeInputFieldProps
-> = React.memo(function DateRangeInputField({
+export const DateRangePicker: React.NamedExoticComponent<
+  DateRangePickerProps
+> = React.memo(function DateRangePicker({
   id,
   value,
   onChange,
@@ -62,7 +143,8 @@ export const DateRangeInputField: React.NamedExoticComponent<
   formatDate,
   parseDate,
   portalContainer,
-}: DateRangeInputFieldProps) {
+  modal = "trap-focus",
+}: DateRangePickerProps) {
   const shouldCloseOnSelection = !showTime;
   const popoverId = useId();
   // The range container anchors the shared popover without becoming a trigger.
@@ -460,9 +542,7 @@ export const DateRangeInputField: React.NamedExoticComponent<
     <Popover.Root
       open={isOpen}
       onOpenChange={handleOpenChange}
-      // Uses pointer-down outside dismissal so the click that opens the picker
-      // is not reinterpreted after the portal dismiss layer appears.
-      modal="trap-focus"
+      modal={modal}
     >
       <div
         ref={triggerRef}
@@ -534,6 +614,8 @@ export const DateRangeInputField: React.NamedExoticComponent<
           anchor={triggerRef}
           className={commonStyles.osdkDatePickerPositioner}
           sideOffset={4}
+          side="bottom"
+          align="start"
         >
           <Popover.Popup
             ref={popoverRef}

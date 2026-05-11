@@ -16,7 +16,7 @@
 
 /**
  * Shared constants and utilities for DateCalendar, DateRangeCalendar,
- * DatetimePickerField, and DateRangeInputField.
+ * DatePicker, and DateRangePicker.
  */
 
 import type React from "react";

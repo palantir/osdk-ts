@@ -47,7 +47,7 @@ export function TableRow<TData extends RowData>({
   getRowAttributes,
 }: TableRowProps<TData>): React.ReactElement {
   // Use the capture phase so row focus is set even when children call
-  // stopPropagation on the click event (e.g. DatetimePickerField's input).
+  // stopPropagation on the click event (e.g. DatePicker's input).
   const handleClickCapture = useCallback(() => {
     setFocusedRowId?.(row.id);
   }, [row.id, setFocusedRowId]);

@@ -20,9 +20,9 @@ import {
   formatDateForDisplay,
   formatDateForInput,
   parseDateFromInput,
-} from "../../shared/dateUtils.js";
-import type { UseDateEditStateConfig } from "../fields/useDateEditState.js";
-import { useDateEditState } from "../fields/useDateEditState.js";
+} from "../../dateUtils.js";
+import type { UseDateEditStateConfig } from "../useDateEditState.js";
+import { useDateEditState } from "../useDateEditState.js";
 
 function makeConfig(
   overrides: Partial<UseDateEditStateConfig> = {},

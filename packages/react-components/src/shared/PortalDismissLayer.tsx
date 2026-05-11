@@ -18,6 +18,16 @@ import classNames from "classnames";
 import React, { useCallback } from "react";
 import styles from "./PortalDismissLayer.module.css";
 
+/**
+ * Element that receives a portal — accepts an HTMLElement, ShadowRoot, a
+ * ref to either, `null` for default body-attachment, or `undefined`.
+ */
+export type PortalContainer =
+  | HTMLElement
+  | ShadowRoot
+  | null
+  | React.RefObject<HTMLElement | ShadowRoot | null>;
+
 interface PortalDismissLayerProps {
   className?: string;
   onDismiss: () => void;

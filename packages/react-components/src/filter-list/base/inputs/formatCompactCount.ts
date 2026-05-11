@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-export {
-  formatDateForDisplay,
-  formatDateForInput,
-  parseDateFromInput,
-} from "../../../shared/dateUtils.js";
-export { ContainsTextInput } from "./ContainsTextInput.js";
-export { DateRangeHistogramInput } from "./DateRangeHistogramInput.js";
-export { NullValueWrapper } from "./NullValueWrapper.js";
-export { NumberRangeInput } from "./NumberRangeInput.js";
-export { RangeInput } from "./RangeInput.js";
-export { ToggleInput } from "./ToggleInput.js";
+const COMPACT_NUMBER = new Intl.NumberFormat(undefined, {
+  notation: "compact",
+});
+
+/**
+ * Compact locale-aware formatter for filter-list bucket and null-row counts
+ * (e.g. "1.2K", "1.5M"). Call sites should pair this with
+ * `title={n.toLocaleString()}` so the full count remains discoverable.
+ */
+export function formatCompactCount(n: number): string {
+  return COMPACT_NUMBER.format(n);
+}

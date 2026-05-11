@@ -889,6 +889,16 @@ Styling for filter list components including search, checkboxes, listogram, and 
 | `--osdk-filter-timeline-brush-color`          | `var(--osdk-typography-color-muted)`                 | Timeline brush color             |
 | `--osdk-filter-timeline-input-font-size`      | `var(--osdk-typography-size-body-medium)`            | Timeline input font size         |
 
+#### No Value Tokens
+
+Canonical "No value" styling used by the shared `NoValueLabel` component across listogram buckets, null-value wrappers, and dropdown empty states.
+
+| Variable                            | Default Value                             | Description                     |
+| ----------------------------------- | ----------------------------------------- | ------------------------------- |
+| `--osdk-filter-no-value-color`      | `var(--osdk-typography-color-muted)`      | Canonical "No value" text color |
+| `--osdk-filter-no-value-font-style` | `italic`                                  | Canonical "No value" font style |
+| `--osdk-filter-no-value-font-size`  | `var(--osdk-typography-size-body-medium)` | Canonical "No value" font size  |
+
 #### Null Value Wrapper Tokens
 
 | Variable                               | Default Value                               | Description            |

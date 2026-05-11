@@ -111,9 +111,8 @@ export interface DropdownEditConfig<V = unknown> {
 /**
  * User-facing configuration for a date picker editor in a table cell.
  *
- * This is intentionally a standalone interface rather than re-exporting
- * `DatetimePickerFieldProps` from ActionForm, so the table API doesn't break
- * when ActionForm's prop shape changes.
+ * Standalone by design rather than re-exporting `DatePickerProps` so the
+ * table API doesn't break when the picker's prop shape changes.
  */
 export interface DatePickerEditConfig {
   /**

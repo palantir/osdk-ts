@@ -380,7 +380,7 @@ describe("LinkedPropertyInput", () => {
 
       const dateInput = screen.getByLabelText("Select date");
       expect(dateInput).toBeTruthy();
-      expect(dateInput.getAttribute("type")).toBe("date");
+      expect(dateInput.getAttribute("role")).toBe("combobox");
     });
   });
 });
