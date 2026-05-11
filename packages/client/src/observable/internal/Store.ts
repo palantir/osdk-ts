@@ -45,6 +45,7 @@ import {
   createChangedObjects,
   DEBUG_ONLY__changesToString,
 } from "./Changes.js";
+import { changesAffectObjectType } from "./changesAffectObjectType.js";
 import { FunctionsHelper } from "./function/FunctionsHelper.js";
 import { GenericCanonicalizer } from "./GenericCanonicalizer.js";
 import { IntersectCanonicalizer } from "./IntersectCanonicalizer.js";
@@ -462,7 +463,7 @@ export class Store {
           const objectType of (query as { objectTypes: ReadonlySet<string> })
             .objectTypes
         ) {
-          if (this.#changesAffectObjectType(changes, objectType)) {
+          if (changesAffectObjectType(changes, objectType)) {
             return true;
           }
         }
@@ -475,7 +476,7 @@ export class Store {
       return false;
     }
 
-    const affected = this.#changesAffectObjectType(changes, queryObjectType);
+    const affected = changesAffectObjectType(changes, queryObjectType);
 
     if (process.env.NODE_ENV !== "production") {
       this.logger?.child({ methodName: "shouldPropagateToQuery" }).debug(
@@ -541,38 +542,6 @@ export class Store {
       // Links would have apiName at a different position
     }
     return undefined;
-  }
-
-  /**
-   * Checks if changes affect a specific object type.
-   *
-   * @param changes - The changes to check
-   * @param objectType - The object type to check for
-   * @returns true if the changes include added or modified objects of this type
-   */
-  #changesAffectObjectType(changes: Changes, objectType: string): boolean {
-    // Check added objects (MultiMap.get returns an array)
-    const addedForType = changes.addedObjects.get(objectType);
-    if (addedForType && addedForType.length > 0) {
-      return true;
-    }
-
-    // Check modified objects (MultiMap.get returns an array)
-    const modifiedForType = changes.modifiedObjects.get(objectType);
-    if (modifiedForType && modifiedForType.length > 0) {
-      return true;
-    }
-
-    for (const deletedKey of changes.deleted) {
-      if (
-        deletedKey.type === "object"
-        && deletedKey.otherKeys[OBJECT_API_NAME_IDX] === objectType
-      ) {
-        return true;
-      }
-    }
-
-    return false;
   }
 
   /**

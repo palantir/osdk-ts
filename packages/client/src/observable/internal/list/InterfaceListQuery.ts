@@ -103,18 +103,33 @@ export class InterfaceListQuery extends ListQuery {
     return objectSet.where(this.canonicalWhere);
   }
 
-  async revalidateObjectType(objectType: string): Promise<boolean> {
-    if (await super.revalidateObjectType(objectType)) return true;
+  #interfaceCache = new Map<string, boolean>();
 
-    // For interface queries: also check if the invalidated concrete type
-    // implements this query's interface. e.g. invalidating "Employee"
-    // should revalidate a query for "Assignable" if Employee implements it.
+  override invalidateObjectType = async (
+    objectType: string,
+    changes: Changes | undefined,
+  ): Promise<void> => {
+    if (this.revalidateObjectType(objectType)) {
+      return this.markAffectedAndRevalidate(changes);
+    }
+    if (await this.#implementsInterface(objectType)) {
+      return this.markAffectedAndRevalidate(changes);
+    }
+  };
+
+  async #implementsInterface(objectType: string): Promise<boolean> {
+    const cached = this.#interfaceCache.get(objectType);
+    if (cached != null) {
+      return cached;
+    }
     try {
       const objectMetadata = await this.store.client.fetchMetadata({
         type: "object",
         apiName: objectType,
       });
-      return this.apiName in objectMetadata.interfaceMap;
+      const result = this.apiName in objectMetadata.interfaceMap;
+      this.#interfaceCache.set(objectType, result);
+      return result;
     } catch {
       return true;
     }
