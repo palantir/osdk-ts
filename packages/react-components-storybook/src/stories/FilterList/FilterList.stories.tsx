@@ -317,10 +317,7 @@ function WithObjectSetStory(args: Partial<EmployeeFilterListProps>) {
   );
 
   const filterDefinitions = useMemo(
-    (): FilterDefinitionUnion<Employee>[] => [
-      teamFilter,
-      locationCityFilter,
-    ],
+    (): FilterDefinitionUnion<Employee>[] => [teamFilter, locationCityFilter],
     [],
   );
 
@@ -368,18 +365,22 @@ function AddFilterModeStory(args: Partial<EmployeeFilterListProps>) {
     (): FilterDefinitionUnion<Employee>[] => [
       departmentFilter,
       teamFilter,
-      { ...fullNameFilter, isVisible: false } as FilterDefinitionUnion<
-        Employee
-      >,
-      { ...startDateFilter, isVisible: false } as FilterDefinitionUnion<
-        Employee
-      >,
-      { ...employeeNumberFilter, isVisible: false } as FilterDefinitionUnion<
-        Employee
-      >,
-      { ...locationCityFilter, isVisible: false } as FilterDefinitionUnion<
-        Employee
-      >,
+      {
+        ...fullNameFilter,
+        isVisible: false,
+      } as FilterDefinitionUnion<Employee>,
+      {
+        ...startDateFilter,
+        isVisible: false,
+      } as FilterDefinitionUnion<Employee>,
+      {
+        ...employeeNumberFilter,
+        isVisible: false,
+      } as FilterDefinitionUnion<Employee>,
+      {
+        ...locationCityFilter,
+        isVisible: false,
+      } as FilterDefinitionUnion<Employee>,
     ],
     [],
   );
@@ -1128,19 +1129,20 @@ export const WithCheckbox: Story = {
   render: (args) => <WithCheckboxStory {...args} />,
 };
 
-function CombinedWithObjectTableStory(
-  args: Partial<EmployeeFilterListProps>,
-) {
+function CombinedWithObjectTableStory(args: Partial<EmployeeFilterListProps>) {
   const [filterClause, setFilterClause] = useState<
     WhereClause<Employee> | undefined
   >(undefined);
 
   const argsOnFilterRemoved = args.onFilterRemoved;
-  const handleFilterRemoved = useCallback((filterKey: string) => {
-    // eslint-disable-next-line no-console
-    console.log("Removed filter:", filterKey);
-    argsOnFilterRemoved?.(filterKey);
-  }, [argsOnFilterRemoved]);
+  const handleFilterRemoved = useCallback(
+    (filterKey: string) => {
+      // eslint-disable-next-line no-console
+      console.log("Removed filter:", filterKey);
+      argsOnFilterRemoved?.(filterKey);
+    },
+    [argsOnFilterRemoved],
+  );
 
   const argsOnFilterClauseChanged = args.onFilterClauseChanged;
   const handleFilterClauseChanged = useCallback(
@@ -1291,17 +1293,20 @@ function WithRemovableFiltersStory(args: Partial<EmployeeFilterListProps>) {
   >(sharedFilterDefinitions);
 
   const argsOnFilterRemoved = args.onFilterRemoved;
-  const handleFilterRemoved = useCallback((filterKey: string) => {
-    setDefinitions((prev) =>
-      prev.filter((def) => {
-        if ("key" in def) {
-          return def.key !== filterKey;
-        }
-        return true;
-      })
-    );
-    argsOnFilterRemoved?.(filterKey);
-  }, [argsOnFilterRemoved]);
+  const handleFilterRemoved = useCallback(
+    (filterKey: string) => {
+      setDefinitions((prev) =>
+        prev.filter((def) => {
+          if ("key" in def) {
+            return def.key !== filterKey;
+          }
+          return true;
+        })
+      );
+      argsOnFilterRemoved?.(filterKey);
+    },
+    [argsOnFilterRemoved],
+  );
 
   return (
     <div style={SIDEBAR_STYLE}>
@@ -1528,17 +1533,20 @@ function FullFeaturedStory(
   >(sharedFilterDefinitions);
 
   const argsOnFilterRemoved = args.onFilterRemoved;
-  const handleFilterRemoved = useCallback((filterKey: string) => {
-    setDefinitions((prev) =>
-      prev.filter((def) => {
-        if ("key" in def) {
-          return def.key !== filterKey;
-        }
-        return true;
-      })
-    );
-    argsOnFilterRemoved?.(filterKey);
-  }, [argsOnFilterRemoved]);
+  const handleFilterRemoved = useCallback(
+    (filterKey: string) => {
+      setDefinitions((prev) =>
+        prev.filter((def) => {
+          if ("key" in def) {
+            return def.key !== filterKey;
+          }
+          return true;
+        })
+      );
+      argsOnFilterRemoved?.(filterKey);
+    },
+    [argsOnFilterRemoved],
+  );
 
   const argsOnReset = args.onReset;
   const handleReset = useCallback(() => {
@@ -1717,9 +1725,10 @@ function CustomNameContainsFilter({
   onFilterStateChanged,
 }: {
   filterState: { type: "custom"; customState: { value: string } };
-  onFilterStateChanged: (
-    state: { type: "custom"; customState: { value: string } },
-  ) => void;
+  onFilterStateChanged: (state: {
+    type: "custom";
+    customState: { value: string };
+  }) => void;
 }) {
   const handleChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -1778,9 +1787,10 @@ function CustomSeniorOnlyFilterItem({
   onFilterStateChanged,
 }: {
   filterState: { type: "custom"; customState: { seniorOnly: boolean } };
-  onFilterStateChanged: (
-    state: { type: "custom"; customState: { seniorOnly: boolean } },
-  ) => void;
+  onFilterStateChanged: (state: {
+    type: "custom";
+    customState: { seniorOnly: boolean };
+  }) => void;
 }) {
   const handleToggle = useCallback(() => {
     onFilterStateChanged({
@@ -1998,4 +2008,86 @@ export const NoValueRendering: Story = {
       />
     </div>
   ),
+};
+
+// ---------------------------------------------------------------------------
+// Hydrating saved filter state via initialFilterStates
+// ---------------------------------------------------------------------------
+
+const SAVED_FILTER_STATES = new Map<string, FilterState>([
+  // "Marketing" exists in the mock employee dataset; "Research" is NOT defined
+  // in the dataset — it simulates a value that had rows in the past but
+  // currently has zero matches. Both should appear as selected.
+  ["department", { type: "EXACT_MATCH", values: ["Marketing", "Research"] }],
+  ["locationCity", { type: "EXACT_MATCH", values: ["New York"] }],
+]);
+
+const INITIAL_STATE_FILTER_DEFINITIONS: FilterDefinitionUnion<Employee>[] = [
+  departmentFilter,
+  locationCityFilter,
+];
+
+function WithInitialFilterStatesStory(
+  args: Partial<EmployeeFilterListProps>,
+) {
+  const [filterClause, setFilterClause] = useState<
+    WhereClause<Employee> | undefined
+  >(undefined);
+
+  const handleFilterClauseChanged = useCallback(
+    (clause: WhereClause<Employee>) => {
+      setFilterClause(clause);
+    },
+    [],
+  );
+
+  return (
+    <div style={FLEX_ROW_STYLE}>
+      <div style={SIDEBAR_STYLE}>
+        <FilterList
+          {...args}
+          objectType={Employee}
+          filterDefinitions={INITIAL_STATE_FILTER_DEFINITIONS}
+          initialFilterStates={SAVED_FILTER_STATES}
+          onFilterClauseChanged={handleFilterClauseChanged}
+        />
+      </div>
+      <div style={FLEX_FILL_STYLE}>
+        <h4>Active where clause</h4>
+        <pre style={PRE_STYLE}>
+          {filterClause
+            ? JSON.stringify(filterClause, null, 2)
+            : "(none)"}
+        </pre>
+      </div>
+    </div>
+  );
+}
+
+export const WithInitialFilterStates: Story = {
+  name: "With initial filter states",
+  parameters: {
+    docs: {
+      description: {
+        story: "Pass `initialFilterStates` to hydrate filters from saved state "
+          + "(e.g. localStorage or URL params). Selections are restored on "
+          + "mount, including values that currently have zero matching rows "
+          + "— they appear with a count of 0 so users can see and clear them.",
+      },
+      source: {
+        code: `const savedStates = new Map([
+  ["department", { type: "EXACT_MATCH", values: ["Marketing", "Research"] }],
+  ["locationCity", { type: "EXACT_MATCH", values: ["New York"] }],
+]);
+
+<FilterList
+  objectType={Employee}
+  filterDefinitions={filterDefinitions}
+  initialFilterStates={savedStates}
+  onFilterClauseChanged={handleFilterClauseChanged}
+/>`,
+      },
+    },
+  },
+  render: (args) => <WithInitialFilterStatesStory {...args} />,
 };
