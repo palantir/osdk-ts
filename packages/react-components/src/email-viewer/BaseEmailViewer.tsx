@@ -40,6 +40,14 @@ export function BaseEmailViewer({
     if (email.html != null) {
       return (
         <div className={styles.bodyContainer}>
+          {
+            /*
+             * Security: allow-same-origin is needed so CSS within the email HTML
+             * resolves correctly. Scripts are blocked because allow-scripts is NOT
+             * set. Never add allow-scripts here — the combination of
+             * allow-same-origin + allow-scripts bypasses the sandbox entirely.
+             */
+          }
           <iframe
             className={styles.bodyIframe}
             sandbox="allow-same-origin"

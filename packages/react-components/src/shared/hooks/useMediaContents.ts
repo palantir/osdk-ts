@@ -41,6 +41,8 @@ export function useMediaContents<T>(
   const [error, setError] = useState<Error | undefined>(undefined);
   const cleanupRef = useRef(cleanup);
   cleanupRef.current = cleanup;
+  const dataRef = useRef<T | undefined>(undefined);
+  dataRef.current = data;
 
   useEffect(
     function fetchMediaContents() {
@@ -81,11 +83,10 @@ export function useMediaContents<T>(
 
   useEffect(() => {
     return () => {
-      if (data !== undefined) {
-        cleanupRef.current?.(data);
+      if (dataRef.current !== undefined) {
+        cleanupRef.current?.(dataRef.current);
       }
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return { data, loading, error };

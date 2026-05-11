@@ -58,9 +58,13 @@ export function BaseExcelViewer({
   const [activeSheetIndex, setActiveSheetIndex] = useState(0);
   const rootClassName = classnames(styles.container, className);
 
+  const safeIndex = Math.min(
+    activeSheetIndex,
+    Math.max(0, spreadsheet.sheets.length - 1),
+  );
   const activeSheet = useMemo(
-    () => spreadsheet.sheets[activeSheetIndex],
-    [spreadsheet.sheets, activeSheetIndex],
+    () => spreadsheet.sheets[safeIndex],
+    [spreadsheet.sheets, safeIndex],
   );
 
   const handleTabClick = useCallback((index: number) => {
@@ -78,7 +82,7 @@ export function BaseExcelViewer({
             <button
               key={sheet.name}
               className={classnames(styles.tab, {
-                [styles.tabActive]: index === activeSheetIndex,
+                [styles.tabActive]: index === safeIndex,
               })}
               onClick={() => handleTabClick(index)}
               type="button"

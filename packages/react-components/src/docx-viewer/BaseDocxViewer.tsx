@@ -17,7 +17,7 @@
 import { Error as ErrorIcon } from "@blueprintjs/icons";
 import classnames from "classnames";
 import { renderAsync } from "docx-preview";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import styles from "./BaseDocxViewer.module.css";
 import type { BaseDocxViewerProps } from "./types.js";
 
@@ -31,32 +31,34 @@ export function BaseDocxViewer({
   const onErrorRef = useRef(onError);
   onErrorRef.current = onError;
 
-  const renderDocx = useCallback(async () => {
+  useEffect(() => {
+    let cancelled = false;
     const container = containerRef.current;
     if (container == null) {
       return;
     }
-    try {
-      setRenderError(undefined);
-      await renderAsync(src, container, undefined, {
-        className: "docx-viewer-content",
-        inWrapper: true,
-        ignoreWidth: false,
-        ignoreHeight: false,
-        renderHeaders: true,
-        renderFooters: true,
-        renderFootnotes: true,
-        renderEndnotes: true,
-      });
-    } catch {
-      setRenderError("Failed to render document");
-      onErrorRef.current?.();
-    }
-  }, [src]);
+    setRenderError(undefined);
 
-  useEffect(() => {
-    void renderDocx();
-  }, [renderDocx]);
+    renderAsync(src, container, undefined, {
+      className: "docx-viewer-content",
+      inWrapper: true,
+      ignoreWidth: false,
+      ignoreHeight: false,
+      renderHeaders: true,
+      renderFooters: true,
+      renderFootnotes: true,
+      renderEndnotes: true,
+    }).catch(() => {
+      if (!cancelled) {
+        setRenderError("Failed to render document");
+        onErrorRef.current?.();
+      }
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [src]);
 
   const rootClassName = classnames(styles.container, className);
 
