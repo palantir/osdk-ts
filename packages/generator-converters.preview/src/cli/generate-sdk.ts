@@ -348,6 +348,47 @@ async function main(): Promise<void> {
       consola.info(
         `Merged ${importedCount} imported entity type(s) from ${argv.importJson}`,
       );
+
+      // Fix up link type references that contain unresolved temp RIDs.
+      // When a link references an imported object type, the block data converter
+      // cannot resolve the temp RID to an API name (since the imported type is not
+      // in the block data's top-level objectTypes). Build a mapping from temp RID
+      // to real API name using knownIdentifiers + import JSON, then fix up all
+      // objectTypeApiName fields in link types.
+      const ki = (blockData as any).knownIdentifiers;
+      if (ki?.objectTypes && ki?.objectTypeIds) {
+        const uuidToTempRid = new Map<string, string>();
+        for (
+          const [rid, uuid] of Object.entries(
+            ki.objectTypes as Record<string, string>,
+          )
+        ) {
+          uuidToTempRid.set(uuid, rid);
+        }
+        const tempRidToApiName = new Map<string, string>();
+        for (const apiName of Object.keys(importData.objectTypes ?? {})) {
+          const hyphenated = apiName.replace(/\./g, "-").toLowerCase();
+          const uuid = (ki.objectTypeIds as Record<string, string>)[hyphenated];
+          if (uuid) {
+            const tempRid = uuidToTempRid.get(uuid);
+            if (tempRid) {
+              tempRidToApiName.set(tempRid, apiName);
+            }
+          }
+        }
+        if (tempRidToApiName.size > 0) {
+          for (const entry of Object.values(previewMetadata.objectTypes)) {
+            for (const linkType of (entry.linkTypes ?? [])) {
+              const resolved = tempRidToApiName.get(
+                linkType.objectTypeApiName,
+              );
+              if (resolved) {
+                linkType.objectTypeApiName = resolved;
+              }
+            }
+          }
+        }
+      }
     } catch (e) {
       consola.warn(`Failed to read import JSON at ${argv.importJson}: ${e}`);
     }
