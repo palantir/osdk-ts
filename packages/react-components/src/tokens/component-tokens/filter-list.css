@@ -309,7 +309,7 @@
   --osdk-filter-null-wrapper-gap: var(--osdk-surface-spacing);
   --osdk-filter-null-row-padding: calc(var(--osdk-surface-spacing) * 1) 0;
   --osdk-filter-null-row-border-top: none;
-  --osdk-filter-null-label-gap: var(--osdk-surface-spacing);
+  --osdk-filter-null-label-gap: calc(var(--osdk-surface-spacing) * 2);
   --osdk-filter-null-count-font-family: var(--osdk-typography-family-default);
   --osdk-filter-null-count-font-size: var(--osdk-typography-size-body-small);
   --osdk-filter-null-count-color: var(--osdk-typography-color-muted);
