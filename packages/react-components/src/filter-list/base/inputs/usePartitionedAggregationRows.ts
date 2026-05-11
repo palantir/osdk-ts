@@ -18,10 +18,7 @@ import { useMemo } from "react";
 import type { PropertyAggregationValue } from "../../types/AggregationTypes.js";
 import { isNullRow } from "../../utils/filterValues.js";
 
-/**
- * Splits aggregation rows into a single optional null row (rendered as a
- * sibling toggle) and the rest (rendered as combobox/listogram items).
- */
+/** Splits the null row out from the rest of the aggregation rows. */
 export function usePartitionedAggregationRows(
   values: PropertyAggregationValue[],
 ): {

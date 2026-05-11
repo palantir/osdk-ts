@@ -18,7 +18,7 @@ import classnames from "classnames";
 import React, { memo, useCallback, useMemo } from "react";
 import { Combobox } from "../../../base-components/combobox/Combobox.js";
 import type { PropertyAggregationValue } from "../../types/AggregationTypes.js";
-import { EmptyStringLabel } from "./EmptyStringLabel.js";
+import { displayLiteralValue } from "../../utils/filterValues.js";
 import styles from "./MultiSelectInput.module.css";
 import { NullValueWrapper } from "./NullValueWrapper.js";
 import sharedStyles from "./shared.module.css";
@@ -30,11 +30,6 @@ interface MultiSelectInputProps {
   error: Error | null;
   selectedValues: string[];
   onChange: (values: string[]) => void;
-  /**
-   * Whether the SQL-null row is currently selected. Bound to the filter
-   * state's `includeNull` field. Distinct from a literal `""` selection,
-   * which lives in `selectedValues`.
-   */
   includeNull?: boolean;
   onIncludeNullChange?: (include: boolean) => void;
   className?: string;
@@ -89,24 +84,19 @@ function MultiSelectInputInner({
   );
 
   const renderItem = useCallback(
-    (value: string) => {
-      const isEmptyString = value === "";
-      return (
-        <Combobox.Item key={value} value={value}>
-          <Combobox.ItemIndicator />
-          <span className={styles.itemLabel}>
-            {isEmptyString
-              ? <EmptyStringLabel />
-              : (renderValue ? renderValue(value) : value)}
+    (value: string) => (
+      <Combobox.Item key={value} value={value}>
+        <Combobox.ItemIndicator />
+        <span className={styles.itemLabel}>
+          {renderValue ? renderValue(value) : displayLiteralValue(value)}
+        </span>
+        {showCounts && (
+          <span className={styles.itemCount}>
+            ({(countByValue.get(value) ?? 0).toLocaleString()})
           </span>
-          {showCounts && (
-            <span className={styles.itemCount}>
-              ({(countByValue.get(value) ?? 0).toLocaleString()})
-            </span>
-          )}
-        </Combobox.Item>
-      );
-    },
+        )}
+      </Combobox.Item>
+    ),
     [countByValue, showCounts, renderValue],
   );
 
@@ -114,15 +104,12 @@ function MultiSelectInputInner({
     (selectedItems: string[]) => (
       <>
         {selectedItems.map((value) => {
-          const isEmptyString = value === "";
+          const display = renderValue
+            ? renderValue(value)
+            : displayLiteralValue(value);
           return (
-            <Combobox.Chip
-              key={value}
-              aria-label={isEmptyString ? "(empty)" : value}
-            >
-              {isEmptyString
-                ? <EmptyStringLabel />
-                : (renderValue ? renderValue(value) : value)}
+            <Combobox.Chip key={value} aria-label={display}>
+              {display}
               <Combobox.ChipRemove />
             </Combobox.Chip>
           );
@@ -136,9 +123,6 @@ function MultiSelectInputInner({
     [placeholder, ariaLabel, renderValue],
   );
 
-  const showNullToggle = nullRow !== undefined
-    && onIncludeNullChange !== undefined;
-
   const combobox = (
     <div
       className={classnames(styles.multiSelect, className)}
@@ -151,7 +135,7 @@ function MultiSelectInputInner({
         </div>
       )}
 
-      {!error && dataRows.length === 0 && !showNullToggle && (
+      {!error && dataRows.length === 0 && nullRow === undefined && (
         <div className={sharedStyles.emptyMessage}>
           {isLoading ? "Loading options..." : "No options available"}
         </div>
@@ -188,8 +172,8 @@ function MultiSelectInputInner({
     </div>
   );
 
-  if (showNullToggle) {
-    return (
+  return nullRow !== undefined && onIncludeNullChange !== undefined
+    ? (
       <NullValueWrapper
         nullCount={nullRow.count}
         isLoading={isLoading}
@@ -200,10 +184,8 @@ function MultiSelectInputInner({
       >
         {combobox}
       </NullValueWrapper>
-    );
-  }
-
-  return combobox;
+    )
+    : combobox;
 }
 
 export const MultiSelectInput = memo(

@@ -18,7 +18,7 @@ import classnames from "classnames";
 import React, { memo, useCallback, useMemo } from "react";
 import { Combobox } from "../../../base-components/combobox/Combobox.js";
 import type { PropertyAggregationValue } from "../../types/AggregationTypes.js";
-import { EmptyStringLabel } from "./EmptyStringLabel.js";
+import { displayLiteralValue } from "../../utils/filterValues.js";
 import { NullValueWrapper } from "./NullValueWrapper.js";
 import sharedStyles from "./shared.module.css";
 import styles from "./SingleSelectInput.module.css";
@@ -30,11 +30,6 @@ interface SingleSelectInputProps {
   error: Error | null;
   selectedValue: string | undefined;
   onChange: (value: string | undefined) => void;
-  /**
-   * Whether the SQL-null row is currently selected. For single-select, the
-   * outer wrapper enforces exclusivity: selecting null clears
-   * `selectedValue`, and selecting a literal value clears `includeNull`.
-   */
   includeNull?: boolean;
   onIncludeNullChange?: (include: boolean) => void;
   className?: string;
@@ -91,29 +86,21 @@ function SingleSelectInputInner({
   );
 
   const renderItem = useCallback(
-    (value: string) => {
-      const isEmptyString = value === "";
-      return (
-        <Combobox.Item key={value} value={value}>
-          <Combobox.ItemIndicator />
-          <span className={styles.itemLabel}>
-            {isEmptyString
-              ? <EmptyStringLabel />
-              : (renderValue ? renderValue(value) : value)}
+    (value: string) => (
+      <Combobox.Item key={value} value={value}>
+        <Combobox.ItemIndicator />
+        <span className={styles.itemLabel}>
+          {renderValue ? renderValue(value) : displayLiteralValue(value)}
+        </span>
+        {showCounts && (
+          <span className={styles.itemCount}>
+            ({(countByValue.get(value) ?? 0).toLocaleString()})
           </span>
-          {showCounts && (
-            <span className={styles.itemCount}>
-              ({(countByValue.get(value) ?? 0).toLocaleString()})
-            </span>
-          )}
-        </Combobox.Item>
-      );
-    },
+        )}
+      </Combobox.Item>
+    ),
     [countByValue, showCounts, renderValue],
   );
-
-  const showNullToggle = nullRow !== undefined
-    && onIncludeNullChange !== undefined;
 
   const combobox = (
     <div
@@ -133,11 +120,12 @@ function SingleSelectInputInner({
         </div>
       )}
 
-      {!isLoading && !error && dataRows.length === 0 && !showNullToggle && (
-        <div className={sharedStyles.emptyMessage}>
-          No options available
-        </div>
-      )}
+      {!isLoading && !error && dataRows.length === 0 && nullRow === undefined
+        && (
+          <div className={sharedStyles.emptyMessage}>
+            No options available
+          </div>
+        )}
 
       {(dataRows.length > 0 || isLoading) && (
         <div className={styles.selectContainer}>
@@ -168,8 +156,8 @@ function SingleSelectInputInner({
     </div>
   );
 
-  if (showNullToggle) {
-    return (
+  return nullRow !== undefined && onIncludeNullChange !== undefined
+    ? (
       <NullValueWrapper
         nullCount={nullRow.count}
         isLoading={isLoading}
@@ -180,10 +168,8 @@ function SingleSelectInputInner({
       >
         {combobox}
       </NullValueWrapper>
-    );
-  }
-
-  return combobox;
+    )
+    : combobox;
 }
 
 export const SingleSelectInput = memo(

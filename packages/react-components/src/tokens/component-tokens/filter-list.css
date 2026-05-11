@@ -216,11 +216,6 @@
   --osdk-filter-no-value-color: var(--osdk-typography-color-muted);
   --osdk-filter-no-value-font-style: italic;
 
-  /* "(empty)" tokens. Used by EmptyStringLabel to render a literal "" row
-     distinctly from the null row. Defaults match the no-value styling. */
-  --osdk-filter-empty-string-color: var(--osdk-typography-color-muted);
-  --osdk-filter-empty-string-font-style: italic;
-
   --osdk-filter-listogram-bar-height: calc(var(--osdk-surface-spacing) * 2);
   --osdk-filter-listogram-bar-width: calc(var(--osdk-surface-spacing) * 12.5);
   --osdk-filter-listogram-bar-bg: var(--osdk-palette-gray-100);

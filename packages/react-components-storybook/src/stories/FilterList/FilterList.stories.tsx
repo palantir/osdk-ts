@@ -1982,13 +1982,11 @@ export const NoValueRendering: Story = {
     docs: {
       description: {
         story:
-          "`null`, `\"\"`, and whitespace-only strings are treated as three distinct "
-          + "filter values. The null row toggles `includeNull` via a sibling control "
-          + "and renders as `<NoValueLabel />` ('No value'). Literal `\"\"` renders as "
-          + "`<EmptyStringLabel />` ('(empty)') and flows through `values` literally. "
-          + "Whitespace strings render their literal characters. The mock dataset "
-          + "includes one Employee with `department: null`, one with `department: \"\"`, "
-          + "and one with `department: \"   \"` so all three rows are visible.",
+          "`null`, `\"\"`, and whitespace strings are three distinct filter values. "
+          + "null renders as 'No value' and toggles `includeNull`. Literal `\"\"` and "
+          + "whitespace strings render as their quoted literal (e.g. `\"\"`, `\"   \"`) "
+          + "and flow through `values`. The mock dataset includes one Employee each "
+          + "with `department: null`, `\"\"`, and `\"   \"`.",
       },
     },
   },

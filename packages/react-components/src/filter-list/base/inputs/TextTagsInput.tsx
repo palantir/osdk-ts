@@ -19,7 +19,7 @@ import classnames from "classnames";
 import React, { memo, useCallback, useMemo, useState } from "react";
 import { Combobox } from "../../../base-components/combobox/Combobox.js";
 import type { PropertyAggregationValue } from "../../types/AggregationTypes.js";
-import { EmptyStringLabel } from "./EmptyStringLabel.js";
+import { displayLiteralValue } from "../../utils/filterValues.js";
 import { NullValueWrapper } from "./NullValueWrapper.js";
 import sharedStyles from "./shared.module.css";
 import styles from "./TextTagsInput.module.css";
@@ -37,17 +37,15 @@ const TagItem = memo(function TagItem({ tag, onRemove }: TagItemProps) {
     onRemove(tag);
   }, [tag, onRemove]);
 
-  const isEmptyString = tag === "";
-  const displayLabel = isEmptyString ? "(empty)" : tag;
-
+  const display = displayLiteralValue(tag);
   return (
     <span className={sharedStyles.tag}>
-      {isEmptyString ? <EmptyStringLabel /> : tag}
+      {display}
       <Button
         type="button"
         className={sharedStyles.tagRemove}
         onClick={handleRemove}
-        aria-label={`Remove ${displayLabel}`}
+        aria-label={`Remove ${display}`}
       >
         ×
       </Button>
@@ -61,10 +59,6 @@ interface TextTagsInputProps {
   error: Error | null;
   tags: string[];
   onChange: (tags: string[]) => void;
-  /**
-   * Whether the SQL-null suggestion is currently selected. Tracked separately
-   * from `tags`; the null row never appears as a chip.
-   */
   includeNull?: boolean;
   onIncludeNullChange?: (include: boolean) => void;
   className?: string;
@@ -173,9 +167,6 @@ function TextTagsInputInner({
     [tags, onChange],
   );
 
-  const showNullToggle = nullRow !== undefined
-    && onIncludeNullChange !== undefined;
-
   const body = (
     <div
       className={classnames(styles.textTags, className)}
@@ -232,8 +223,7 @@ function TextTagsInputInner({
                 )
                 : filteredSuggestions.map(({ value, count }) => (
                   <Combobox.Item key={value} value={value}>
-                    {value === "" ? <EmptyStringLabel /> : value}{" "}
-                    ({count.toLocaleString()})
+                    {displayLiteralValue(value)} ({count.toLocaleString()})
                   </Combobox.Item>
                 ))}
             </Combobox.Popup>
@@ -249,8 +239,8 @@ function TextTagsInputInner({
     </div>
   );
 
-  if (showNullToggle) {
-    return (
+  return nullRow !== undefined && onIncludeNullChange !== undefined
+    ? (
       <NullValueWrapper
         nullCount={nullRow.count}
         isLoading={isLoading}
@@ -260,10 +250,8 @@ function TextTagsInputInner({
       >
         {body}
       </NullValueWrapper>
-    );
-  }
-
-  return body;
+    )
+    : body;
 }
 
 export const TextTagsInput = memo(

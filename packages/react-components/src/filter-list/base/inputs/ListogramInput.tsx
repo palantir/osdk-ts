@@ -19,8 +19,11 @@ import classnames from "classnames";
 import React, { memo, useCallback, useMemo, useState } from "react";
 import { Checkbox } from "../../../base-components/checkbox/Checkbox.js";
 import type { PropertyAggregationValue } from "../../types/AggregationTypes.js";
-import { filterValuesBySearch, isNullRow } from "../../utils/filterValues.js";
-import { EmptyStringLabel } from "./EmptyStringLabel.js";
+import {
+  displayLiteralValue,
+  filterValuesBySearch,
+  isNullRow,
+} from "../../utils/filterValues.js";
 import styles from "./ListogramInput.module.css";
 import { ListogramSkeleton } from "./ListogramSkeleton.js";
 import { NoValueLabel } from "./NoValueLabel.js";
@@ -36,11 +39,6 @@ interface ListogramInputProps {
   error: Error | null;
   selectedValues: string[];
   onChange: (values: string[]) => void;
-  /**
-   * Whether the SQL-null row is currently selected. Bound to the filter
-   * state's `includeNull` field. When `onIncludeNullChange` is omitted, the
-   * null row is rendered but acts as a no-op control.
-   */
   includeNull?: boolean;
   onIncludeNullChange?: (include: boolean) => void;
   colorMap?: Record<string, string>;
@@ -158,9 +156,7 @@ function ListogramInputInner({
               : () => toggleValue(value);
             const label = isNull
               ? <NoValueLabel className={styles.noValueLabel} />
-              : value === ""
-              ? <EmptyStringLabel className={styles.noValueLabel} />
-              : (renderValue?.(value) ?? value);
+              : (renderValue?.(value) ?? displayLiteralValue(value));
 
             return (
               <Button
