@@ -15,7 +15,7 @@
  */
 
 import type { ObjectSet, ObjectTypeDefinition, WhereClause } from "@osdk/api";
-import { useOsdkAggregation } from "@osdk/react/experimental";
+import { useOsdkAggregation } from "@osdk/react";
 import React, { memo, useCallback, useMemo } from "react";
 import { NullValueWrapper } from "../base/inputs/NullValueWrapper.js";
 import { NumberRangeInput } from "../base/inputs/NumberRangeInput.js";

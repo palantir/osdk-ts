@@ -251,31 +251,56 @@ export class ConsoleLogStore extends SubscribableStore {
         this: Console,
         ...args: unknown[]
       ) {
-        original.apply(this ?? console, args);
+        // Capture the source synchronously, before any async boundary, so the
+        // user's frame is still on the stack. The in-panel `entry.source` is
+        // canonical and accurate — verified by ConsoleLogStore.test.ts.
+        //
+        // Browser DevTools source-link attribution (the clickable link beside
+        // each console row) is decided by V8 and follows wherever the original
+        // method was *called*. Routing the call through Function.prototype.apply
+        // is best-effort; in practice the link may still resolve to the wrapper
+        // file in some Chromium versions. There is no fully-portable JS-level
+        // mitigation; if needed, prefer the panel-side source field.
+        //
+        // Reentrancy note: capture work runs in queueMicrotask, so `capturing`
+        // resets between the wrapper microtask and any nested microtask. A
+        // getter that calls console.log during serialization may therefore be
+        // captured (one extra entry, no infinite loop). Strict synchronous
+        // reentrancy guarding is incompatible with the microtask deferral that
+        // makes the source attribution improvement possible.
+        const skipCapture = store.suppressed || store.capturing
+          || isBrowserLoggerCall(args);
+        const source = skipCapture ? undefined : getCallerLocation();
 
-        if (store.suppressed || store.capturing || isBrowserLoggerCall(args)) {
+        Function.prototype.apply.call(original, this ?? console, args);
+
+        if (skipCapture) {
           return;
         }
 
-        store.capturing = true;
-        try {
-          const source = getCallerLocation();
-          const serializedArgs = capEntrySize(args.map(serializeArg));
-          const entry: ConsoleLogEntry = {
-            id: nextId(),
-            level,
-            args: serializedArgs,
-            timestamp: Date.now(),
-            ...(source !== undefined ? { source } : {}),
-          };
+        queueMicrotask(() => {
+          if (store.capturing) {
+            return;
+          }
+          store.capturing = true;
+          try {
+            const serializedArgs = capEntrySize(args.map(serializeArg));
+            const entry: ConsoleLogEntry = {
+              id: nextId(),
+              level,
+              args: serializedArgs,
+              timestamp: Date.now(),
+              ...(source !== undefined ? { source } : {}),
+            };
 
-          store.entries.push(entry);
-          store.cachedEntries = null;
-          store.scheduleNotify();
-        } catch {
-        } finally {
-          store.capturing = false;
-        }
+            store.entries.push(entry);
+            store.cachedEntries = null;
+            store.scheduleNotify();
+          } catch {
+          } finally {
+            store.capturing = false;
+          }
+        });
       };
 
       console[level] = wrapper; // eslint-disable-line no-console

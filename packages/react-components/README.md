@@ -6,6 +6,25 @@ React components for building Foundry applications. These components are Ontolog
 
 Built on top of [@osdk/react](../react), these components use OSDK hooks internally to provide ready-to-use UI elements. While @osdk/react gives you low-level hooks for data fetching, @osdk/react-components provides UI widgets for common patterns like tables and forms.
 
+## Table of Contents
+
+- [Installation](#installation)
+- [Setup](#setup)
+  - [App Setup](#app-setup)
+  - [CSS Setup](#css-setup)
+- [Components](#components)
+- [Component Architecture](#component-architecture)
+  - [Core layers](#core-layers-all-components)
+  - [Building blocks](#building-blocks-select-components)
+- [Folder Structure](#folder-structure)
+- [Custom Styling](#custom-styling)
+- [Example Usage](#example-usage)
+- [Contributing](#contributing)
+- [Development Workflow](#development-workflow)
+- [Why this package?](#why-this-package)
+- [What this package is (and isn't)](#what-this-package-is-and-isnt)
+- [License](#license)
+
 ## Installation
 
 Run the command to install:
@@ -29,22 +48,22 @@ npm install react react-dom classnames @osdk/react @osdk/client @osdk/api
 **Prerequisites:**
 
 - A configured OSDK client
-- An OsdkProvider2 wrapping your application
+- An OsdkProvider wrapping your application
 
 ## Setup
 
 ### App Setup
 
-**REQUIRED:** Wrap app with OsdkProvider2:
+**REQUIRED:** Wrap app with OsdkProvider:
 
 ```tsx
 import { createClient } from "@osdk/client";
-import { OsdkProvider2 } from "@osdk/react/experimental";
+import { OsdkProvider } from "@osdk/react";
 
 const client = createClient(/* config */);
 
 function App() {
-  return <OsdkProvider2 client={client}>{/* components */}</OsdkProvider2>;
+  return <OsdkProvider client={client}>{/* components */}</OsdkProvider>;
 }
 ```
 
@@ -106,12 +125,13 @@ Add `isolation: isolate` to your app's root element. This is required for Base U
 
 The components that this package will provide are:
 
-| Component     | Description                                                                        | Documentation                  |
-| ------------- | ---------------------------------------------------------------------------------- | ------------------------------ |
-| `ObjectTable` | Displays an Object Set as a sortable, paginated table with inline editing support  | [Guide](./docs/ObjectTable.md) |
-| `PdfViewer`   | Renders PDF documents with annotations, search, sidebar navigation, and zoom       | [Guide](./docs/PdfViewer.md)   |
-| `FilterList`  | Visualize a high-level summary of objects data to allow users to filter that data. | [Guide](./docs/FilterList.md)  |
-| `ActionForm`  | Auto-generated form for executing Ontology Actions                                 | -                              |
+| Component      | Description                                                                                     | Documentation                   |
+| -------------- | ----------------------------------------------------------------------------------------------- | ------------------------------- |
+| `ObjectTable`  | Displays an Object Set as a sortable, paginated table with inline editing support               | [Guide](./docs/ObjectTable.md)  |
+| `PdfViewer`    | Renders PDF documents with annotations, search, sidebar navigation, and zoom                    | [Guide](./docs/PdfViewer.md)    |
+| `FilterList`   | Visualize a high-level summary of objects data to allow users to filter that data.              | [Guide](./docs/FilterList.md)   |
+| `ActionForm`   | Auto-generated form for executing Ontology Actions                                              | -                               |
+| `AipAgentChat` | Chat surface backed by Foundry LMS via `useChat` — takes a `PlatformClient` and model API name. | [Guide](./docs/AipAgentChat.md) |
 
 ## Component Architecture
 
@@ -266,6 +286,12 @@ function EmployeeDirectory() {
   );
 }
 ```
+
+## Contributing
+
+Looking to contribute to the codebase? Read the [contribution guidelines](./CONTRIBUTING.md).
+
+If you use [Claude Code](https://claude.com/claude-code), run `/add-new-component` (or just describe the component you want to add) — the [`add-new-component` skill](./.claude/skills/add-new-component/SKILL.md) walks you through the API-first PR, MVP checklist, and verification loop on top of `CONTRIBUTING.md`.
 
 ## Development Workflow
 

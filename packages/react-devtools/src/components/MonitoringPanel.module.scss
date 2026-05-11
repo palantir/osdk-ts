@@ -486,6 +486,11 @@
   background: t.$green;
 }
 
+.computeFulfilledWithoutUsage {
+  background: t.$green;
+  opacity: 0.4;
+}
+
 .computeFailed {
   background: t.$red;
 }

@@ -22,95 +22,107 @@ import type {
   DataValueClientToWire,
   ObjectSet,
   ObjectTypeDefinition,
+  Osdk,
 } from "@osdk/api";
 import type React from "react";
 
+export type PortalContainer =
+  | HTMLElement
+  | ShadowRoot
+  | null
+  | React.RefObject<HTMLElement | ShadowRoot | null>;
+
 /**
- * A form field definition specifies configuration for a single field
+ * A form field definition specifies configuration for a single field.
+ * Implemented as a distributed mapped type so `fieldComponent` narrows
+ * `fieldComponentProps` to the matching component prop type.
  */
-export interface FormFieldDefinition<
+export type FormFieldDefinition<
   Q extends ActionDefinition<unknown>,
   K extends FieldKey<Q> = FieldKey<Q>,
-> {
-  /**
-   * The field's unique key
-   */
-  fieldKey: K;
+> = K extends unknown ? {
+    // Distribute over each field key so a field's key, value type, and allowed
+    // components stay correlated when K is the default union of all keys.
+    [C in ValidFormFieldForPropertyType<FieldDescriptorType<Q, K>>]: {
+      /**
+       * The field's unique key
+       */
+      fieldKey: K;
 
-  /**
-   * Display label for the field
-   */
-  label: string;
+      /**
+       * Display label for the field
+       */
+      label: string;
 
-  /**
-   * Default value of the field
-   */
-  defaultValue?: FieldValueType<Q, K>;
+      /**
+       * Default value of the field
+       */
+      defaultValue?: FieldValueType<Q, K>;
 
-  /**
-   * The form field component type to render
-   */
-  fieldComponent: ValidFormFieldForPropertyType<FieldDescriptorType<Q, K>>;
+      /**
+       * Whether the field is required
+       */
+      isRequired?: boolean;
 
-  /**
-   * Whether the field is required
-   */
-  isRequired?: boolean;
+      /**
+       * Placeholder text
+       */
+      placeholder?: string;
 
-  /**
-   * Placeholder text
-   */
-  placeholder?: string;
+      /**
+       * Additional information to display on this field.
+       * Accepts plain text or rich content (e.g. JSX with links or formatting).
+       * Rendered as a tooltip icon next to the label by default, or below the
+       * label when helperTextPlacement is "bottom".
+       */
+      helperText?: React.ReactNode;
 
-  /**
-   * Additional information to display on this field
-   * The placement of helper text depends on the value of helperTextPlacement prop
-   */
-  helperText?: string;
+      /**
+       * The placement of the helper text either below the field or in a tooltip
+       *
+       * @default "tooltip"
+       */
+      helperTextPlacement?: "bottom" | "tooltip";
 
-  /**
-   * The placement of the helper text either below the field or in a tooltip
-   *
-   * @default "tooltip"
-   */
-  helperTextPlacement?: "bottom" | "tooltip";
+      /**
+       * Whether the field is disabled
+       */
+      isDisabled?: boolean;
 
-  /**
-   * Whether the field is disabled
-   */
-  isDisabled?: boolean;
+      /**
+       * A callback to customize error messages when a built-in validation rule fails.
+       * Receives a discriminated union with the constraint data (e.g., the min value
+       * that was exceeded) so the message can reference the threshold.
+       *
+       * Return a string to override the default message, or `undefined` to keep it.
+       */
+      onValidationError?: (error: ValidationError) => string | undefined;
 
-  /**
-   * A callback to customize error messages when a built-in validation rule fails.
-   * Receives a discriminated union with the constraint data (e.g., the min value
-   * that was exceeded) so the message can reference the threshold.
-   *
-   * Return a string to override the default message, or `undefined` to keep it.
-   */
-  onValidationError?: (error: ValidationError) => string | undefined;
+      /**
+       * Additional function to validate the field.
+       *
+       * Return `undefined` if valid, or an error message string if invalid.
+       */
+      validate?: (
+        value: FieldValueType<Q, K>,
+      ) => Promise<string | undefined>;
 
-  /**
-   * Additional function to validate the field.
-   *
-   * Return `undefined` if valid, or an error message string if invalid.
-   */
-  validate?: (value: FieldValueType<Q, K>) => Promise<string | undefined>;
+      /**
+       * The form field component type to render
+       */
+      fieldComponent: C;
 
-  /**
-   * The component props for the form field.
-   * Excludes runtime props (value, onChange) which are managed by ActionForm.
-   */
-  fieldComponentProps: Omit<
-    FormFieldPropsByType[
-      ValidFormFieldForPropertyType<
-        FieldDescriptorType<Q, K>
-      >
-    ],
-    FormManagedProps<
-      ValidFormFieldForPropertyType<FieldDescriptorType<Q, K>>
-    >
-  >;
-}
+      /**
+       * The component props for the form field.
+       * Excludes runtime props (value, onChange) which are managed by ActionForm.
+       */
+      fieldComponentProps: Omit<
+        FormFieldPropsByType[C],
+        FormManagedProps<C>
+      >;
+    };
+  }[ValidFormFieldForPropertyType<FieldDescriptorType<Q, K>>]
+  : never;
 
 /**
  * A discriminated union describing which validation rule failed and the
@@ -134,8 +146,10 @@ export interface FormFieldPropsByType {
   DROPDOWN: DropdownFieldProps<unknown, boolean>;
   FILE_PICKER: FilePickerProps;
   NUMBER_INPUT: NumberInputFieldProps;
+  OBJECT_SELECT: ObjectSelectFieldProps<ObjectTypeDefinition>;
   OBJECT_SET: ObjectSetFieldProps<ObjectTypeDefinition>;
   RADIO_BUTTONS: RadioButtonsFieldProps<unknown>;
+  SWITCH: SwitchFieldProps;
   TEXT_AREA: TextAreaFieldProps;
   TEXT_INPUT: TextInputFieldProps;
   CUSTOM: CustomFieldProps<unknown>;
@@ -195,6 +209,13 @@ export interface DatetimePickerFieldProps extends BaseFormFieldProps<Date> {
    * Used to track portaled content for click-outside detection.
    */
   portalRef?: React.Ref<HTMLDivElement>;
+
+  /**
+   * Element that receives the date picker portal. Use this when rendering
+   * inside modal dialogs so popovers stay in the dialog's stacking and focus
+   * context instead of being appended directly to document.body.
+   */
+  portalContainer?: PortalContainer;
 }
 
 /**
@@ -238,6 +259,13 @@ export interface DateRangeInputFieldProps
 
   /** Parses a user-typed string back into a Date. */
   parseDate?: (text: string) => Date | undefined;
+
+  /**
+   * Element that receives the date range picker portal. Use this when rendering
+   * inside modal dialogs so popovers stay in the dialog's stacking and focus
+   * context instead of being appended directly to document.body.
+   */
+  portalContainer?: PortalContainer;
 }
 
 /**
@@ -290,6 +318,45 @@ export interface DropdownFieldProps<V, Multiple extends boolean = false>
    * Used to track portaled content for click-outside detection.
    */
   portalRef?: React.Ref<HTMLDivElement>;
+
+  /**
+   * Element that receives the dropdown portal. Use this when rendering inside
+   * modal dialogs so popups stay in the dialog's stacking and focus context
+   * instead of being appended directly to document.body.
+   */
+  portalContainer?: PortalContainer;
+
+  /**
+   * Controlled search input value. Must be provided together with `onQueryChange`.
+   */
+  query?: string;
+
+  /**
+   * Callback when the search input value changes.
+   * Can be used standalone as an event listener or together with `query`
+   * for fully controlled search state.
+   */
+  onQueryChange?: (query: string) => void;
+
+  /**
+   * When true, disables the combobox's built-in client-side filtering.
+   * Use when items are already filtered server-side (e.g. via `onQueryChange`).
+   *
+   * @default false
+   */
+  disableClientSideFiltering?: boolean;
+
+  /**
+   * Status message rendered below the search input and above the item list
+   * inside the popup. Use for loading/error/empty messages.
+   */
+  popupStatus?: React.ReactNode;
+
+  /**
+   * A React node to render after the item list.
+   * Use for infinite scroll sentinels, "load more" buttons, etc.
+   */
+  trailingItem?: React.ReactNode;
 }
 
 export interface FilePickerProps extends BaseFormFieldProps<File | File[]> {
@@ -412,6 +479,11 @@ export interface RadioButtonsFieldProps<V> extends BaseFormFieldProps<V> {
 }
 
 /**
+ * Switch field props for boolean values.
+ */
+export type SwitchFieldProps = BaseFormFieldProps<boolean>;
+
+/**
  * Option interface for radio button options
  */
 export interface Option<V> {
@@ -431,6 +503,35 @@ export interface ObjectSetFieldProps<T extends ObjectTypeDefinition>
    * @default "Object set is not defined"
    */
   emptyMessage?: string;
+}
+
+/**
+ * Object select field props for selecting object instances from the ontology.
+ * Used for action parameters that accept a single object or multiple objects.
+ *
+ * Extends DropdownFieldProps with props that ObjectSelectField
+ * manages internally (items, search, filtering) omitted from the public surface.
+ */
+export interface ObjectSelectFieldProps<
+  Q extends ObjectTypeDefinition = ObjectTypeDefinition,
+> extends
+  Omit<
+    DropdownFieldProps<Osdk.Instance<Q>>,
+    | "items"
+    | "itemToStringLabel"
+    | "itemToKey"
+    | "isItemEqual"
+    | "isSearchable"
+    | "query"
+    | "onQueryChange"
+    | "disableClientSideFiltering"
+    | "renderItemList"
+  >
+{
+  /**
+   * The object type definition to search within.
+   */
+  objectType: Q;
 }
 
 /**
@@ -528,8 +629,10 @@ export type FieldComponent =
   | "DROPDOWN"
   | "FILE_PICKER"
   | "NUMBER_INPUT"
-  | "RADIO_BUTTONS"
+  | "OBJECT_SELECT"
   | "OBJECT_SET"
+  | "RADIO_BUTTONS"
+  | "SWITCH"
   | "TEXT_AREA"
   | "TEXT_INPUT"
   | "CUSTOM";
@@ -583,7 +686,7 @@ export type RendererFieldDefinition = {
     label: string;
     isRequired?: boolean;
     placeholder?: string;
-    helperText?: string;
+    helperText?: React.ReactNode;
     helperTextPlacement?: "bottom" | "tooltip";
     validate?: (value: unknown) => Promise<string | undefined>;
     onValidationError?: (error: ValidationError) => string | undefined;
@@ -595,10 +698,11 @@ export type RendererFieldDefinition = {
  * Gets valid form field types for a given property type
  */
 export type ValidFormFieldForPropertyType<P extends FieldDescriptorType> =
-  P extends "objectSet" ? "OBJECT_SET"
-    : P extends "object" ? "DROPDOWN"
+  | "CUSTOM"
+  | (P extends { type: "objectSet" } ? "OBJECT_SET"
+    : P extends { type: "object" } ? "OBJECT_SELECT"
     : P extends "mediaReference" | "attachment" ? "FILE_PICKER"
-    : P extends "boolean" ? "RADIO_BUTTONS" | "DROPDOWN"
+    : P extends "boolean" ? "RADIO_BUTTONS" | "DROPDOWN" | "SWITCH"
     : P extends "string" ? "TEXT_INPUT" | "TEXT_AREA"
     : P extends "datetime" | "timestamp" ? "DATETIME_PICKER"
     : P extends
@@ -609,4 +713,4 @@ export type ValidFormFieldForPropertyType<P extends FieldDescriptorType> =
       | "short"
       | "byte"
       | "decimal" ? "NUMBER_INPUT"
-    : never;
+    : never);

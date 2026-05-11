@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { CacheSnapshot } from "@osdk/client/unstable-do-not-use";
+import type { CacheSnapshot } from "@osdk/client/observable";
 import type { MetricsStore } from "../store/MetricsStore.js";
 import { CacheEfficiencyAnalyzer } from "./CacheEfficiencyAnalyzer.js";
 import type { ComponentQueryRegistry } from "./ComponentQueryRegistry.js";

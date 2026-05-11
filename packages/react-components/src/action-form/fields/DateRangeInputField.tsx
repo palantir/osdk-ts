@@ -20,19 +20,17 @@ import classnames from "classnames";
 import React, { useCallback, useId, useRef, useState } from "react";
 import type { DateRange as RdpDateRange } from "react-day-picker";
 import {
-  formatDateForDisplay,
   formatDateForInput,
   formatDatetimeForInput,
-  getTimeValue,
   parseDateFromInput,
   parseDatetimeFromInput,
-  parseTimeString,
 } from "../../shared/dateUtils.js";
 import { type DateRangeInputFieldProps, EMPTY_RANGE } from "../FormFieldApi.js";
 import { stopPropagation } from "./calendarShared.js";
 import commonStyles from "./DatePickerCommon.module.css";
 import styles from "./DateRangeInputField.module.css";
 import { LazyDateRangeCalendar } from "./LazyDateRangeCalendar.js";
+import { PortalDismissLayer } from "./PortalDismissLayer.js";
 import { TimePicker } from "./TimePicker.js";
 import { useDateEditState } from "./useDateEditState.js";
 
@@ -63,14 +61,23 @@ export const DateRangeInputField: React.NamedExoticComponent<
   showTime = false,
   formatDate,
   parseDate,
+  portalContainer,
 }: DateRangeInputFieldProps) {
   const shouldCloseOnSelection = !showTime;
   const popoverId = useId();
+  // The range container anchors the shared popover without becoming a trigger.
+  // Each input is its own Popover.Trigger so the comboboxes are not nested in an
+  // interactive wrapper.
+  const triggerRef = useRef<HTMLDivElement>(null);
   const startInputRef = useRef<HTMLInputElement>(null);
   const endInputRef = useRef<HTMLInputElement>(null);
   const popoverRef = useRef<HTMLDivElement>(null);
 
   const [isOpen, setIsOpen] = useState(false);
+  // When focus returns to an input after Tab exits the popover boundary, the
+  // next input focus should not reopen the calendar before native Tab can
+  // continue to the following form field.
+  const skipReopenRef = useRef(false);
   // Tracks which input (start/end) owns the shared calendar popover.
   // Used to restore focus to the correct input when Tab-cycling through
   // focus boundaries and when the calendar selects a range endpoint.
@@ -79,10 +86,11 @@ export const DateRangeInputField: React.NamedExoticComponent<
   const [startDate, endDate] = value ?? EMPTY_RANGE;
 
   // editFormatFn produces a parsable string for typing (e.g. "2024-01-15" or "2024-01-15 14:30").
-  // displayFormatFn produces a human-readable string for idle state (e.g. "Jan 15, 2024").
+  // displayFormatFn produces the idle string. Defaults stay deterministic so
+  // users in different browser locales see the same date in form inputs.
   const editFormatFn = showTime ? formatDatetimeForInput : formatDateForInput;
   const displayFormatFn = formatDate
-    ?? (showTime ? formatDatetimeForInput : formatDateForDisplay);
+    ?? (showTime ? formatDatetimeForInput : formatDateForInput);
   const parseFn = parseDate
     ?? (showTime ? parseDatetimeFromInput : parseDateFromInput);
 
@@ -166,17 +174,64 @@ export const DateRangeInputField: React.NamedExoticComponent<
 
   // --- Focus handlers ---
 
+  const getActiveInputRef = useCallback(
+    () => activeBoundary === "start" ? startInputRef : endInputRef,
+    [activeBoundary],
+  );
+
+  const beginEditing = useCallback(
+    (boundary: ActiveBoundary) => {
+      if (boundary === "start") {
+        beginStartEditing();
+      } else {
+        beginEndEditing();
+      }
+      setActiveBoundary(boundary);
+    },
+    [beginStartEditing, beginEndEditing],
+  );
+
+  const handleInputFocus = useCallback(
+    (boundary: ActiveBoundary) => {
+      beginEditing(boundary);
+      if (skipReopenRef.current) {
+        skipReopenRef.current = false;
+        return;
+      }
+      setIsOpen(true);
+    },
+    [beginEditing],
+  );
+
   const handleStartFocus = useCallback(() => {
-    beginStartEditing();
-    setActiveBoundary("start");
-    setIsOpen(true);
-  }, [beginStartEditing]);
+    handleInputFocus("start");
+  }, [handleInputFocus]);
 
   const handleEndFocus = useCallback(() => {
-    beginEndEditing();
-    setActiveBoundary("end");
-    setIsOpen(true);
-  }, [beginEndEditing]);
+    handleInputFocus("end");
+  }, [handleInputFocus]);
+
+  const closePopoverForBoundaryExit = useCallback(() => {
+    skipReopenRef.current = true;
+    setIsOpen(false);
+    stopStartEditing();
+    stopEndEditing();
+    getActiveInputRef().current?.focus();
+  }, [getActiveInputRef, stopStartEditing, stopEndEditing]);
+
+  const handleStartPointerDown = useCallback(() => {
+    // Opening from pointer-down keeps mouse interactions in sync with focus
+    // editing before Base UI's later click trigger handler runs.
+    startInputRef.current?.focus();
+    handleStartFocus();
+  }, [handleStartFocus]);
+
+  const handleEndPointerDown = useCallback(() => {
+    // Opening from pointer-down keeps mouse interactions in sync with focus
+    // editing before Base UI's later click trigger handler runs.
+    endInputRef.current?.focus();
+    handleEndFocus();
+  }, [handleEndFocus]);
 
   // --- Blur handlers ---
 
@@ -322,27 +377,19 @@ export const DateRangeInputField: React.NamedExoticComponent<
   // --- Time handlers ---
 
   const handleStartTimeChange = useCallback(
-    (timeString: string) => {
-      const { hours, minutes } = parseTimeString(timeString);
-      const base = startDate != null
-        ? new Date(startDate.getTime())
-        : new Date();
-      base.setHours(hours, minutes, 0, 0);
-      onChange?.([base, endDate ?? null]);
-      setStartDateValue(base);
+    (time: Date) => {
+      onChange?.([time, endDate ?? null]);
+      setStartDateValue(time);
     },
-    [startDate, endDate, onChange, setStartDateValue],
+    [endDate, onChange, setStartDateValue],
   );
 
   const handleEndTimeChange = useCallback(
-    (timeString: string) => {
-      const { hours, minutes } = parseTimeString(timeString);
-      const base = endDate != null ? new Date(endDate.getTime()) : new Date();
-      base.setHours(hours, minutes, 0, 0);
-      onChange?.([startDate ?? null, base]);
-      setEndDateValue(base);
+    (time: Date) => {
+      onChange?.([startDate ?? null, time]);
+      setEndDateValue(time);
     },
-    [startDate, endDate, onChange, setEndDateValue],
+    [startDate, onChange, setEndDateValue],
   );
 
   // --- Focus boundary handlers ---
@@ -352,20 +399,20 @@ export const DateRangeInputField: React.NamedExoticComponent<
   // Start boundary (top): Shift+Tab past the first calendar element redirects
   // focus to whichever input is currently active.
   const handleStartFocusBoundary = useCallback(() => {
-    const activeRef = activeBoundary === "start" ? startInputRef : endInputRef;
-    activeRef.current?.focus();
-  }, [activeBoundary]);
+    getActiveInputRef().current?.focus();
+  }, [getActiveInputRef]);
 
   // End boundary (bottom): Two cases —
   // (1) Tab past the last calendar element (focus came from inside the popover)
-  //     → close the popover and blur both inputs.
+  //     → close the popover and return focus to the active input so the next
+  //       native Tab continues to the next form field.
   // (2) Focus entered from outside the popover (e.g. reverse Tab from the page)
   //     → redirect to the last interactive element inside the popover.
   const handleEndFocusBoundary = useCallback(
     (e: React.FocusEvent<HTMLDivElement>) => {
       const related = e.relatedTarget ?? document.activeElement;
       if (popoverRef.current?.contains(related as Node)) {
-        closePopover();
+        closePopoverForBoundaryExit();
       } else {
         const buttons = popoverRef.current?.querySelectorAll<HTMLElement>(
           "button, select",
@@ -374,7 +421,7 @@ export const DateRangeInputField: React.NamedExoticComponent<
         lastButton?.focus();
       }
     },
-    [closePopover],
+    [closePopoverForBoundaryExit],
   );
 
   // --- Calendar selected range ---
@@ -386,18 +433,18 @@ export const DateRangeInputField: React.NamedExoticComponent<
 
   const timeFooter = showTime
     ? (
-      <div className={styles.osdkDateRangeTimeRow}>
+      <>
         <TimePicker
-          value={getTimeValue(startDate)}
+          value={startDate}
           onChange={handleStartTimeChange}
           label="Start time"
         />
         <TimePicker
-          value={getTimeValue(endDate)}
+          value={endDate}
           onChange={handleEndTimeChange}
           label="End time"
         />
-      </div>
+      </>
     )
     : undefined;
 
@@ -406,11 +453,20 @@ export const DateRangeInputField: React.NamedExoticComponent<
     "aria-controls": popoverId,
   };
 
+  // Keep Popover.Trigger on each input itself. Moving it to the range wrapper
+  // would make click handling simpler, but it would also nest interactive
+  // comboboxes inside an interactive trigger and reintroduce the axe violation.
   return (
-    <Popover.Root open={isOpen} onOpenChange={handleOpenChange}>
-      <Popover.Trigger
-        nativeButton={false}
-        render={<div className={styles.osdkDateRangeContainer} />}
+    <Popover.Root
+      open={isOpen}
+      onOpenChange={handleOpenChange}
+      // Uses pointer-down outside dismissal so the click that opens the picker
+      // is not reinterpreted after the portal dismiss layer appears.
+      modal="trap-focus"
+    >
+      <div
+        ref={triggerRef}
+        className={styles.osdkDateRangeContainer}
       >
         <div
           className={classnames(
@@ -419,19 +475,25 @@ export const DateRangeInputField: React.NamedExoticComponent<
             startInvalid && commonStyles.osdkDatePickerInputWrapperError,
           )}
         >
-          <Input
-            ref={startInputRef}
-            id={id != null ? `${id}-start` : undefined}
-            value={displayedStart}
-            onValueChange={setStartInputValue}
-            onFocus={handleStartFocus}
-            onBlur={handleStartBlur}
-            onKeyDown={handleStartKeyDown}
-            placeholder={placeholderStart}
-            aria-expanded={isOpen && activeBoundary === "start"}
-            aria-label="Start date"
-            aria-invalid={startInvalid || undefined}
-            {...sharedInputProps}
+          <Popover.Trigger
+            nativeButton={false}
+            render={
+              <Input
+                ref={startInputRef}
+                id={id != null ? `${id}-start` : undefined}
+                value={displayedStart}
+                onValueChange={setStartInputValue}
+                onFocus={handleStartFocus}
+                onPointerDown={handleStartPointerDown}
+                onBlur={handleStartBlur}
+                onKeyDown={handleStartKeyDown}
+                placeholder={placeholderStart}
+                aria-expanded={isOpen && activeBoundary === "start"}
+                aria-label="Start date"
+                aria-invalid={startInvalid || undefined}
+                {...sharedInputProps}
+              />
+            }
           />
         </div>
         <div
@@ -441,24 +503,38 @@ export const DateRangeInputField: React.NamedExoticComponent<
             endInvalid && commonStyles.osdkDatePickerInputWrapperError,
           )}
         >
-          <Input
-            ref={endInputRef}
-            id={id != null ? `${id}-end` : undefined}
-            value={displayedEnd}
-            onValueChange={setEndInputValue}
-            onFocus={handleEndFocus}
-            onBlur={handleEndBlur}
-            onKeyDown={handleEndKeyDown}
-            placeholder={placeholderEnd}
-            aria-expanded={isOpen && activeBoundary === "end"}
-            aria-label="End date"
-            aria-invalid={endInvalid || undefined}
-            {...sharedInputProps}
+          <Popover.Trigger
+            nativeButton={false}
+            render={
+              <Input
+                ref={endInputRef}
+                id={id != null ? `${id}-end` : undefined}
+                value={displayedEnd}
+                onValueChange={setEndInputValue}
+                onBlur={handleEndBlur}
+                onKeyDown={handleEndKeyDown}
+                onFocus={handleEndFocus}
+                onPointerDown={handleEndPointerDown}
+                placeholder={placeholderEnd}
+                aria-expanded={isOpen && activeBoundary === "end"}
+                aria-label="End date"
+                aria-invalid={endInvalid || undefined}
+                {...sharedInputProps}
+              />
+            }
           />
         </div>
-      </Popover.Trigger>
-      <Popover.Portal>
-        <Popover.Positioner sideOffset={4}>
+      </div>
+      <Popover.Portal container={portalContainer}>
+        <PortalDismissLayer
+          className={commonStyles.osdkDatePickerDismissLayer}
+          onDismiss={closePopover}
+        />
+        <Popover.Positioner
+          anchor={triggerRef}
+          className={commonStyles.osdkDatePickerPositioner}
+          sideOffset={4}
+        >
           <Popover.Popup
             ref={popoverRef}
             className={commonStyles.osdkDatePickerPopover}
@@ -480,8 +556,8 @@ export const DateRangeInputField: React.NamedExoticComponent<
               onSelect={handleRangeSelect}
               min={min}
               max={max}
+              footer={timeFooter}
             />
-            {timeFooter}
             <div
               onFocus={handleEndFocusBoundary}
               tabIndex={0}

@@ -197,4 +197,27 @@ describe("FilterList drag and drop", () => {
     const dragHandles = screen.queryAllByLabelText(/Reorder/);
     expect(dragHandles).toHaveLength(0);
   });
+
+  it("does not fire onOrderChange when no drag occurs", async () => {
+    const definitions = createDefinitions();
+    const filterStates = createFilterStates(definitions);
+    const onOrderChange = vi.fn();
+
+    render(
+      <FilterListContent
+        filterDefinitions={definitions}
+        filterStates={filterStates}
+        onFilterStateChanged={vi.fn()}
+        onOrderChange={onOrderChange}
+        enableSorting={true}
+        renderInput={stubRenderInput}
+        getFilterKey={getFilterKey}
+        getFilterLabel={getFilterLabel}
+      />,
+    );
+
+    await screen.findAllByLabelText(/Reorder/);
+
+    expect(onOrderChange).not.toHaveBeenCalled();
+  });
 });

@@ -18,7 +18,7 @@ import type { ObjectTypeDefinition } from "@osdk/api";
 import { act, renderHook } from "@testing-library/react";
 import * as React from "react";
 import { beforeEach, describe, expect, it, vitest } from "vitest";
-import { OsdkContext2 } from "../src/new/OsdkContext2.js";
+import { OsdkContext } from "../src/new/OsdkContext.js";
 import { useOsdkObjects } from "../src/new/useOsdkObjects.js";
 
 const MockObjectType = {
@@ -38,11 +38,11 @@ describe("useOsdkObjects enabled option", () => {
     } as any;
 
     return ({ children }: React.PropsWithChildren) => (
-      <OsdkContext2.Provider
+      <OsdkContext.Provider
         value={{ observableClient, devtoolsEnabled: false }}
       >
         {children}
-      </OsdkContext2.Provider>
+      </OsdkContext.Provider>
     );
   };
 
@@ -224,6 +224,27 @@ describe("useOsdkObjects enabled option", () => {
     expect(mockInvalidateObjectType).toHaveBeenCalledWith("MockObject");
   });
 
+  it("should pass $includeAllBaseObjectProperties to observeList when true", () => {
+    const wrapper = createWrapper();
+
+    renderHook(
+      () =>
+        useOsdkObjects(MockObjectType, {
+          $includeAllBaseObjectProperties: true,
+        }),
+      { wrapper },
+    );
+
+    expect(mockObserveList).toHaveBeenCalledTimes(1);
+    expect(mockObserveList).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: MockObjectType,
+        $includeAllBaseObjectProperties: true,
+      }),
+      expect.any(Object),
+    );
+  });
+
   it("should not resubscribe when rerendered with a new inline withProperties of the same shape", () => {
     const canonicalWithProperties = { leadName: () => {} };
     const observableClient = {
@@ -236,11 +257,11 @@ describe("useOsdkObjects enabled option", () => {
     } as any;
 
     const wrapper = ({ children }: React.PropsWithChildren) => (
-      <OsdkContext2.Provider
+      <OsdkContext.Provider
         value={{ observableClient, devtoolsEnabled: false }}
       >
         {children}
-      </OsdkContext2.Provider>
+      </OsdkContext.Provider>
     );
 
     const { rerender } = renderHook(

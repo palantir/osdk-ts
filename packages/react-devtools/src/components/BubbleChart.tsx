@@ -92,11 +92,13 @@ export const BubbleChart: React.FC<BubbleChartProps> = ({
         size: visitComputeRequest(request, {
           failed: () => 40,
           fulfilled: (req) => Math.max(1, req.computeUsage) * 20,
+          fulfilledWithoutUsage: () => 20,
           pending: () => 20,
         }),
         fill: visitComputeRequest(request, {
           failed: () => "#e05252",
           fulfilled: () => "#2d8cf0",
+          fulfilledWithoutUsage: () => "#7a8693",
           pending: () => "#6b7785",
         }),
         isSelected: selectedSet

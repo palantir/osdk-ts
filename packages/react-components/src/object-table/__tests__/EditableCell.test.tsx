@@ -124,6 +124,32 @@ describe("EditableCell", () => {
     );
   });
 
+  it.each([
+    { name: "null", value: null },
+    { name: "undefined", value: undefined },
+    { name: "empty string", value: "" },
+  ])(
+    "should not commit edit when focusing/blurring a field whose value is $name without typing",
+    ({ value }) => {
+      const onCellEdit = vi.fn();
+
+      render(
+        <EditableCell
+          {...defaultProps}
+          initialValue={value}
+          currentValue={value}
+          onCellEdit={onCellEdit}
+        />,
+      );
+
+      const input = screen.getByRole("textbox");
+      fireEvent.focus(input);
+      fireEvent.blur(input);
+
+      expect(onCellEdit).not.toHaveBeenCalled();
+    },
+  );
+
   it("should not show error if validation is cancelled due to component unmount", async () => {
     vi.useFakeTimers();
     const onCellValidationError = vi.fn();

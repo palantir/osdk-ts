@@ -16,8 +16,7 @@
 
 import { type IconName, IconSize } from "@blueprintjs/icons";
 import type { ObjectSet, ObjectTypeDefinition } from "@osdk/api";
-import { useOsdkMetadata } from "@osdk/react";
-import { useObjectSet } from "@osdk/react/experimental";
+import { useObjectSet, useOsdkMetadata } from "@osdk/react";
 import classnames from "classnames";
 import React from "react";
 import {

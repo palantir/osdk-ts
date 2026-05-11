@@ -46,7 +46,7 @@ export const ObjectLoadingMetrics: React.FC<ObjectLoadingMetricsProps> = ({
   return (
     <>
       <div className={styles.metric}>
-        <span className={styles.metricLabel}>Inefficient Queries</span>
+        <span className={styles.metricLabel}>Inefficient Components</span>
         <span
           className={classNames(
             styles.metricValue,

@@ -32,8 +32,6 @@ export function getDefaultFieldDefinitions(
   );
 }
 
-const EMPTY_ITEMS: unknown[] = [];
-
 /**
  * Maps a single action parameter to its default RendererFieldDefinition.
  *
@@ -62,12 +60,24 @@ function buildFieldDefinition(
           fieldComponentProps: { value: null },
         };
       case "object":
-      case "interface":
-        // TODO: provide correct items
         return {
           ...base,
-          fieldComponent: "DROPDOWN",
-          fieldComponentProps: { items: EMPTY_ITEMS },
+          fieldComponent: "OBJECT_SELECT",
+          fieldComponentProps: {
+            // Construct a minimal ObjectTypeDefinition from the action
+            // parameter metadata. At runtime useOsdkObjects only reads
+            // type + apiName from the definition.
+            objectType: {
+              type: "object" as const,
+              apiName: paramType.object,
+            },
+          },
+        };
+      case "interface":
+        return {
+          ...base,
+          fieldComponent: "TEXT_INPUT",
+          fieldComponentProps: {},
         };
       case "struct":
         return {

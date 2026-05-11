@@ -20,7 +20,8 @@ import {
   Office,
   queryTypeReturnsArray,
 } from "@osdk/client.test.ontology";
-import { describe, expect, it } from "vitest";
+import { describe, expect, expectTypeOf, it } from "vitest";
+
 import { createMockClient } from "../createMockClient.js";
 import { createMockObjectSet } from "../createMockObjectSet.js";
 import { createMockOsdkObject } from "../createMockOsdkObject.js";
@@ -98,6 +99,14 @@ describe("createMockClient", () => {
         mockClient(Employee).where({ office: { $eq: "LA" } }).fetchPage(),
       ).rejects.toThrow();
     });
+
+    it("types: when((c) => c(T).fetchPage()) → FetchPageStubBuilder", () => {
+      const mockClient = createMockClient();
+      const builder = mockClient.when((c) => c(Employee).fetchPage());
+      expectTypeOf(builder).toHaveProperty("thenReturnObjects");
+      expectTypeOf(builder).not.toHaveProperty("thenReturnObject");
+      expectTypeOf(builder).not.toHaveProperty("thenReturnAggregation");
+    });
   });
 
   describe("fetchOne", () => {
@@ -116,6 +125,156 @@ describe("createMockClient", () => {
       expect(result.employeeId).toBe(123);
       expect(result.fullName).toBe("John");
     });
+
+    it("types: when((c) => c(T).fetchOne(pk)) → FetchOneStubBuilder", () => {
+      const mockClient = createMockClient();
+      const builder = mockClient.when((c) => c(Employee).fetchOne(1));
+      expectTypeOf(builder).toHaveProperty("thenReturnObject");
+      expectTypeOf(builder).not.toHaveProperty("thenReturnObjects");
+      expectTypeOf(builder).not.toHaveProperty("thenReturnAggregation");
+    });
+  });
+
+  describe("fetchPageWithErrors", () => {
+    it("returns ok on success and error when no stub", async () => {
+      const mockClient = createMockClient();
+      const emp = createMockOsdkObject(Employee, { employeeId: 1 });
+
+      mockClient.when((c) => c(Employee).fetchPage())
+        .thenReturnObjects([emp]);
+
+      const okResult = await mockClient(Employee).fetchPageWithErrors();
+      expect(okResult.error).toBeUndefined();
+      expect(okResult.value?.data[0]).toEqual(emp);
+
+      const errorResult = await mockClient(Office).fetchPageWithErrors();
+      expect(errorResult.error).toBeDefined();
+    });
+
+    it("accepts thenReturnObjects directly on a fetchPageWithErrors pattern", async () => {
+      const mockClient = createMockClient();
+      const emp = createMockOsdkObject(Employee, {
+        employeeId: 5,
+        fullName: "Zara",
+      });
+
+      mockClient
+        .when((c) => c(Employee).fetchPageWithErrors({ $pageSize: 10 }))
+        .thenReturnObjects([emp]);
+
+      const result = await mockClient(Employee).fetchPageWithErrors({
+        $pageSize: 10,
+      });
+      expect(result.value?.data).toEqual([emp]);
+      expect(result.error).toBeUndefined();
+    });
+
+    it("types: when((c) => c(T).fetchPageWithErrors()) → FetchPageStubBuilder (not Aggregate)", () => {
+      const mockClient = createMockClient();
+      const builder = mockClient.when((c) => c(Employee).fetchPageWithErrors());
+      expectTypeOf(builder).toHaveProperty("thenReturnObjects");
+      expectTypeOf(builder).not.toHaveProperty("thenReturnAggregation");
+      expectTypeOf(builder).not.toHaveProperty("thenReturnObject");
+    });
+  });
+
+  describe("fetchOneWithErrors", () => {
+    it("returns ok on success and error when no stub", async () => {
+      const mockClient = createMockClient();
+      const emp = createMockOsdkObject(Employee, { employeeId: 1 });
+
+      mockClient.when((c) => c(Employee).fetchOne(1)).thenReturnObject(
+        emp,
+      );
+
+      const okResult = await mockClient(Employee).fetchOneWithErrors(1);
+      expect(okResult.value).toEqual(emp);
+
+      const errorResult = await mockClient(Employee).fetchOneWithErrors(999);
+      expect(errorResult.error).toBeDefined();
+    });
+
+    it("accepts thenReturnObject directly on a fetchOneWithErrors pattern", async () => {
+      const mockClient = createMockClient();
+      const emp = createMockOsdkObject(Employee, {
+        employeeId: 7,
+        fullName: "Grace",
+      });
+
+      mockClient
+        .when((c) => c(Employee).fetchOneWithErrors(7))
+        .thenReturnObject(emp);
+
+      const result = await mockClient(Employee).fetchOneWithErrors(7);
+      expect(result.value).toEqual(emp);
+      expect(result.error).toBeUndefined();
+    });
+
+    it("surfaces stubs registered via fetchOne through fetchOneWithErrors", async () => {
+      const mockClient = createMockClient();
+      const emp = createMockOsdkObject(Employee, { employeeId: 3 });
+
+      mockClient.when((c) => c(Employee).fetchOne(3)).thenReturnObject(emp);
+
+      const result = await mockClient(Employee).fetchOneWithErrors(3);
+      expect(result.value).toEqual(emp);
+    });
+
+    it("types: when((c) => c(T).fetchOneWithErrors(pk)) → FetchOneStubBuilder (not Aggregate)", () => {
+      const mockClient = createMockClient();
+      const builder = mockClient.when((c) => c(Employee).fetchOneWithErrors(1));
+      expectTypeOf(builder).toHaveProperty("thenReturnObject");
+      expectTypeOf(builder).not.toHaveProperty("thenReturnAggregation");
+      expectTypeOf(builder).not.toHaveProperty("thenReturnObjects");
+    });
+  });
+
+  describe("asyncIter", () => {
+    it("accepts thenReturnObjects on an asyncIter pattern without casting", async () => {
+      const mockClient = createMockClient();
+      const emp1 = createMockOsdkObject(Employee, { employeeId: 1 });
+      const emp2 = createMockOsdkObject(Employee, { employeeId: 2 });
+
+      mockClient
+        .when((c) => c(Employee).asyncIter())
+        .thenReturnObjects([emp1, emp2]);
+
+      const collected: Array<{ employeeId: number | undefined }> = [];
+      for await (const emp of mockClient(Employee).asyncIter()) {
+        collected.push({ employeeId: emp.employeeId });
+      }
+
+      expect(collected).toEqual([{ employeeId: 1 }, { employeeId: 2 }]);
+    });
+
+    it("supports where + asyncIter pattern matching", async () => {
+      const mockClient = createMockClient();
+      const emp = createMockOsdkObject(Employee, {
+        employeeId: 1,
+        office: "NYC",
+      });
+
+      mockClient
+        .when((c) => c(Employee).where({ office: { $eq: "NYC" } }).asyncIter())
+        .thenReturnObjects([emp]);
+
+      const out: number[] = [];
+      for await (
+        const e of mockClient(Employee)
+          .where({ office: { $eq: "NYC" } })
+          .asyncIter()
+      ) {
+        out.push(e.employeeId!);
+      }
+      expect(out).toEqual([1]);
+    });
+
+    it("types: when((c) => c(T).asyncIter()) → FetchPageStubBuilder", () => {
+      const mockClient = createMockClient();
+      const builder = mockClient.when((c) => c(Employee).asyncIter());
+      expectTypeOf(builder).toHaveProperty("thenReturnObjects");
+      expectTypeOf(builder).not.toHaveProperty("thenReturnAggregation");
+    });
   });
 
   describe("aggregate", () => {
@@ -133,6 +292,16 @@ describe("createMockClient", () => {
       });
 
       expect(result.$count).toBe(42);
+    });
+
+    it("types: when((c) => c(T).aggregate(...)) → AggregateStubBuilder", () => {
+      const mockClient = createMockClient();
+      const builder = mockClient.when((c) =>
+        c(Employee).aggregate({ $select: { $count: "unordered" } })
+      );
+      expectTypeOf(builder).toHaveProperty("thenReturnAggregation");
+      expectTypeOf(builder).not.toHaveProperty("thenReturnObject");
+      expectTypeOf(builder).not.toHaveProperty("thenReturnObjects");
     });
   });
 
@@ -192,40 +361,6 @@ describe("createMockClient", () => {
       mockClient.clearStubs();
 
       await expect(mockClient(Employee).fetchPage()).rejects.toThrow();
-    });
-  });
-
-  describe("fetchPageWithErrors", () => {
-    it("returns ok on success and error when no stub", async () => {
-      const mockClient = createMockClient();
-      const emp = createMockOsdkObject(Employee, { employeeId: 1 });
-
-      mockClient.when((c) => c(Employee).fetchPage())
-        .thenReturnObjects([emp]);
-
-      const okResult = await mockClient(Employee).fetchPageWithErrors();
-      expect(okResult.error).toBeUndefined();
-      expect(okResult.value?.data[0]).toEqual(emp);
-
-      const errorResult = await mockClient(Office).fetchPageWithErrors();
-      expect(errorResult.error).toBeDefined();
-    });
-  });
-
-  describe("fetchOneWithErrors", () => {
-    it("returns ok on success and error when no stub", async () => {
-      const mockClient = createMockClient();
-      const emp = createMockOsdkObject(Employee, { employeeId: 1 });
-
-      mockClient.when((c) => c(Employee).fetchOne(1)).thenReturnObject(
-        emp,
-      );
-
-      const okResult = await mockClient(Employee).fetchOneWithErrors(1);
-      expect(okResult.value).toEqual(emp);
-
-      const errorResult = await mockClient(Employee).fetchOneWithErrors(999);
-      expect(errorResult.error).toBeDefined();
     });
   });
 

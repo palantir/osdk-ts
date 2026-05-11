@@ -17,7 +17,7 @@
 .osdkFormField {
   display: flex;
   flex-direction: column;
-  gap: var(--osdk-form-label-field-gap);
+  gap: var(--osdk-form-field-gap);
 }
 
 .osdkFormFieldLabel {
@@ -32,7 +32,35 @@
 
 .osdkFormFieldError {
   font-size: var(--osdk-form-error-font-size);
+  line-height: var(--osdk-form-error-line-height);
   color: var(--osdk-form-error-color);
+}
+
+.osdkFormFieldErrorSlot {
+  min-block-size: var(--osdk-form-error-reserved-block-size);
+}
+
+.osdkFormFieldLabelRow {
+  display: flex;
+  align-items: center;
+  gap: var(--osdk-form-label-row-gap);
+}
+
+.osdkFormFieldInfoIcon {
+  display: inline-flex;
+  align-items: center;
+  color: var(--osdk-form-info-icon-color);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.osdkFormFieldInfoPopup {
+  padding: var(--osdk-form-info-popup-padding);
+  background-color: var(--osdk-form-info-popup-bg);
+  border-radius: var(--osdk-surface-border-radius);
+  box-shadow: var(--osdk-form-info-popup-shadow);
+  max-width: var(--osdk-form-info-popup-max-width);
+  font-size: var(--osdk-form-info-popup-font-size);
 }
 
 .osdkFormFieldHelperText {

@@ -25,7 +25,7 @@ import type {
   ObserveObjectCallbackArgs,
   ObserveObjectsCallbackArgs,
   Unsubscribable,
-} from "@osdk/client/unstable-do-not-use";
+} from "@osdk/client/observable";
 import type { MockManager } from "../mocking/MockManager.js";
 import { MetricsStore } from "../store/MetricsStore.js";
 import type {
@@ -247,7 +247,13 @@ export class ObservableClientMonitor {
           return wrapped;
         }
 
-        return Reflect.get(target, prop);
+        const value = Reflect.get(target, prop);
+        if (typeof value === "function") {
+          const bound = value.bind(target);
+          methodCache.set(prop, bound);
+          return bound;
+        }
+        return value;
       },
     }) as ObservableClient;
   }

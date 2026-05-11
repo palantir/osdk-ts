@@ -53,15 +53,32 @@ export class ObjectsHelper extends AbstractHelper<
     const apiName = typeof options.apiName === "string"
       ? options.apiName
       : options.apiName.apiName;
-    const { pk, select, $loadPropertySecurityMetadata } = options;
+    const {
+      pk,
+      select,
+      $loadPropertySecurityMetadata,
+    } = options;
 
     const defType = getDefType(options.apiName);
+    // The flag is interface-only on the server. Drop it for object queries so
+    // they don't fragment the cache.
+    const $includeAllBaseObjectProperties = defType === "interface"
+        && options.$includeAllBaseObjectProperties
+      ? true
+      : undefined;
+
+    const canonSelect = select && select.length > 0
+      ? this.store.selectCanonicalizer.canonicalize(select)
+      : undefined;
 
     const objectCacheKey = this.cacheKeys.get<ObjectCacheKey>(
       "object",
       apiName,
       pk,
       rdpConfig ?? undefined,
+      canonSelect,
+      $loadPropertySecurityMetadata ? true : undefined,
+      $includeAllBaseObjectProperties,
     );
 
     return this.store.queries.get(objectCacheKey, () =>
@@ -75,6 +92,7 @@ export class ObjectsHelper extends AbstractHelper<
         defType,
         select,
         $loadPropertySecurityMetadata,
+        $includeAllBaseObjectProperties,
       ));
   }
 
@@ -89,11 +107,13 @@ export class ObjectsHelper extends AbstractHelper<
     batch: BatchContext,
     rdpConfig?: Canonical<Rdp> | null,
     selectFields?: ReadonlySet<string>,
+    includeAllBaseObjectProperties?: boolean,
   ): ObjectCacheKey[] {
     return values.map(v =>
       this.getQuery({
         apiName: v.$objectType ?? v.$apiName,
         pk: v.$primaryKey,
+        $includeAllBaseObjectProperties: includeAllBaseObjectProperties,
       }, rdpConfig).writeToStore(
         v as ObjectHolder,
         "loaded",
@@ -203,11 +223,21 @@ export class ObjectsHelper extends AbstractHelper<
       }
 
       const targetCurrentValue = batch.read(targetKey)?.value;
-      const merged = this.mergeForTarget(
-        value,
+      const targetHolder =
         targetCurrentValue && this.isObjectHolder(targetCurrentValue)
           ? targetCurrentValue
-          : undefined,
+          : undefined;
+
+      // Preserve target-only fields when a partial-select fetch propagates
+      // to a sibling variant, so different-select variants converge to the
+      // union rather than clobbering each other.
+      let merged = value;
+      if (selectFields?.size && targetHolder) {
+        merged = mergeSelectFields(merged, selectFields, targetHolder);
+      }
+      merged = this.mergeForTarget(
+        merged,
+        targetHolder,
         sourceCacheKey,
         targetKey,
       );

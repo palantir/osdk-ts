@@ -19,6 +19,7 @@ import type { Control } from "react-hook-form";
 import { useController } from "react-hook-form";
 import type {
   FieldComponent,
+  PortalContainer,
   RendererFieldDefinition,
 } from "../FormFieldApi.js";
 import { extractValidationRules } from "../utils/extractValidationRules.js";
@@ -28,11 +29,13 @@ export interface FieldBridgeProps {
   fieldDef: RendererFieldDefinition;
   control: Control<Record<string, unknown>>;
   onExternalChange?: (fieldKey: string, value: unknown) => void;
+  portalContainer?: PortalContainer;
 }
 const SELECT_LIKE_FIELDS: ReadonlySet<FieldComponent> = new Set<FieldComponent>(
   [
     "RADIO_BUTTONS",
     "DROPDOWN",
+    "SWITCH",
   ],
 );
 
@@ -41,6 +44,7 @@ export const FieldBridge: React.FC<FieldBridgeProps> = memo(
     fieldDef,
     control,
     onExternalChange,
+    portalContainer,
   }: FieldBridgeProps): React.ReactElement {
     const rules = useMemo(
       () => extractValidationRules(fieldDef),
@@ -92,6 +96,7 @@ export const FieldBridge: React.FC<FieldBridgeProps> = memo(
         onFieldValueChange={handleChange}
         onBlur={handleBlur}
         error={fieldError?.message}
+        portalContainer={portalContainer}
       />
     );
   },

@@ -398,15 +398,76 @@ describe("ComputeStore", () => {
     }
   });
 
-  it("should preserve no-compute-usage discriminant", () => {
+  it("fulfillWithoutUsage transitions pending to fulfilled-without-usage", () => {
     const id = store.createPendingRequest(createPendingRequestInput());
-    store.failRequest(id, { type: "no-compute-usage" });
+    store.fulfillWithoutUsage(id, {
+      responsePayloadBytes: 512,
+      responsePayloadHash: 99,
+      responsePayload: "{}",
+    });
 
     const requests = store.getRequests();
-    expect(requests[0].type).toBe("failed");
-    if (requests[0].type === "failed") {
-      expect(requests[0].error.type).toBe("no-compute-usage");
+    expect(requests).toHaveLength(1);
+    expect(requests[0].type).toBe("fulfilled-without-usage");
+
+    if (requests[0].type === "fulfilled-without-usage") {
+      expect(requests[0].responsePayloadBytes).toBe(512);
     }
+  });
+
+  it("fulfillWithoutUsage does not bump failedCount", () => {
+    const id = store.createPendingRequest(createPendingRequestInput());
+    store.fulfillWithoutUsage(id, {
+      responsePayloadBytes: 512,
+      responsePayloadHash: 99,
+      responsePayload: "{}",
+    });
+
+    const metrics = store.getMetrics();
+    expect(metrics.failedCount).toBe(0);
+    expect(metrics.fulfilledCount).toBe(0);
+    expect(metrics.fulfilledWithoutUsageCount).toBe(1);
+    expect(metrics.requestCount).toBe(1);
+  });
+
+  it("excludes no-usage requests from averageUsagePerRequest", () => {
+    const id1 = store.createPendingRequest(createPendingRequestInput());
+    store.fulfillRequest(id1, {
+      computeUsage: 100,
+      responsePayloadBytes: 1024,
+      responsePayloadHash: 1,
+      responsePayload: "{}",
+    });
+
+    const id2 = store.createPendingRequest(createPendingRequestInput());
+    store.fulfillWithoutUsage(id2, {
+      responsePayloadBytes: 1024,
+      responsePayloadHash: 2,
+      responsePayload: "{}",
+    });
+
+    const metrics = store.getMetrics();
+    expect(metrics.averageUsagePerRequest).toBe(100);
+  });
+
+  it("includes no-usage requests in averageResponseBytes", () => {
+    const id1 = store.createPendingRequest(createPendingRequestInput());
+    store.fulfillRequest(id1, {
+      computeUsage: 100,
+      responsePayloadBytes: 1000,
+      responsePayloadHash: 1,
+      responsePayload: "{}",
+    });
+
+    const id2 = store.createPendingRequest(createPendingRequestInput());
+    store.fulfillWithoutUsage(id2, {
+      responsePayloadBytes: 2000,
+      responsePayloadHash: 2,
+      responsePayload: "{}",
+    });
+
+    const metrics = store.getMetrics();
+    expect(metrics.averageResponseBytes).toBe(1500);
   });
 
   describe("referential stability", () => {
