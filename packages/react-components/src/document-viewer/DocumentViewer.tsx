@@ -29,7 +29,8 @@ import { PdfViewer } from "../pdf-viewer/PdfRenderer.js";
 import { VideoViewer } from "../video-viewer/VideoViewer.js";
 import { XmlViewer } from "../xml-viewer/XmlViewer.js";
 import styles from "./DocumentViewer.module.css";
-import type { DocumentViewerProps, ViewerType } from "./types.js";
+import type { DocumentViewerProps } from "./types.js";
+import { ViewerType } from "./types.js";
 
 const IMAGE_MIME_TYPES = new Set([
   "image/png",
@@ -52,39 +53,39 @@ const XML_MIME_TYPES = new Set([
 
 function getViewerType(mimeType: string): ViewerType {
   if (mimeType === "application/pdf") {
-    return "pdf";
+    return ViewerType.Pdf;
   }
   if (mimeType === "image/tiff") {
-    return "tiff";
+    return ViewerType.Tiff;
   }
   if (IMAGE_MIME_TYPES.has(mimeType)) {
-    return "image";
+    return ViewerType.Image;
   }
   if (mimeType.startsWith("video/")) {
-    return "video";
+    return ViewerType.Video;
   }
   if (MARKDOWN_MIME_TYPES.has(mimeType)) {
-    return "markdown";
+    return ViewerType.Markdown;
   }
   if (
     mimeType
       === "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
   ) {
-    return "docx";
+    return ViewerType.Docx;
   }
   if (
     mimeType
       === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
   ) {
-    return "excel";
+    return ViewerType.Excel;
   }
   if (mimeType === "message/rfc822") {
-    return "email";
+    return ViewerType.Email;
   }
   if (XML_MIME_TYPES.has(mimeType)) {
-    return "xml";
+    return ViewerType.Xml;
   }
-  return "unsupported";
+  return ViewerType.Unsupported;
 }
 
 export function DocumentViewer({
@@ -106,7 +107,7 @@ export function DocumentViewer({
   const rootClassName = classnames(styles.container, className);
 
   switch (viewerType) {
-    case "pdf":
+    case ViewerType.Pdf:
       return (
         <PdfViewer
           media={media}
@@ -114,7 +115,7 @@ export function DocumentViewer({
           {...pdfViewerProps}
         />
       );
-    case "tiff":
+    case ViewerType.Tiff:
       return (
         <TiffViewerMedia
           media={media}
@@ -122,7 +123,7 @@ export function DocumentViewer({
           {...tiffRendererProps}
         />
       );
-    case "image":
+    case ViewerType.Image:
       return (
         <ImageViewer
           media={media}
@@ -130,7 +131,7 @@ export function DocumentViewer({
           {...imageViewerProps}
         />
       );
-    case "video":
+    case ViewerType.Video:
       return (
         <VideoViewer
           media={media}
@@ -138,7 +139,7 @@ export function DocumentViewer({
           {...videoViewerProps}
         />
       );
-    case "markdown":
+    case ViewerType.Markdown:
       return (
         <MarkdownViewerMedia
           media={media}
@@ -146,7 +147,7 @@ export function DocumentViewer({
           {...markdownRendererProps}
         />
       );
-    case "docx":
+    case ViewerType.Docx:
       return (
         <DocxViewer
           media={media}
@@ -154,7 +155,7 @@ export function DocumentViewer({
           {...docxViewerProps}
         />
       );
-    case "excel":
+    case ViewerType.Excel:
       return (
         <ExcelViewer
           media={media}
@@ -162,7 +163,7 @@ export function DocumentViewer({
           {...excelViewerProps}
         />
       );
-    case "email":
+    case ViewerType.Email:
       return (
         <EmailViewer
           media={media}
@@ -170,7 +171,7 @@ export function DocumentViewer({
           {...emailViewerProps}
         />
       );
-    case "xml":
+    case ViewerType.Xml:
       return (
         <XmlViewer
           media={media}
@@ -178,7 +179,7 @@ export function DocumentViewer({
           {...xmlViewerProps}
         />
       );
-    case "unsupported":
+    case ViewerType.Unsupported:
       return (
         <div className={rootClassName}>
           <div className={styles.unsupportedContainer}>

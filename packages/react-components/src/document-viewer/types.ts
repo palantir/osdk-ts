@@ -25,17 +25,18 @@ import type { PdfViewerProps } from "../pdf-viewer/types.js";
 import type { BaseVideoViewerProps } from "../video-viewer/types.js";
 import type { BaseXmlViewerProps } from "../xml-viewer/types.js";
 
-export type ViewerType =
-  | "pdf"
-  | "tiff"
-  | "image"
-  | "video"
-  | "markdown"
-  | "docx"
-  | "excel"
-  | "email"
-  | "xml"
-  | "unsupported";
+export enum ViewerType {
+  Pdf = "pdf",
+  Tiff = "tiff",
+  Image = "image",
+  Video = "video",
+  Markdown = "markdown",
+  Docx = "docx",
+  Excel = "excel",
+  Email = "email",
+  Xml = "xml",
+  Unsupported = "unsupported",
+}
 
 export interface DocumentViewerProps {
   /** The Media object to render */
