@@ -1,0 +1,19 @@
+name: Check new packages
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches:
+      - main
+
+jobs:
+  check-new-packages:
+    name: Verify publishable packages exist on npm
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v6
+
+      - name: Verify publishable packages exist on npm
+        run: ./scripts/check-packages-published.sh
