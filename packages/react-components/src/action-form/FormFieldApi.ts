@@ -118,7 +118,7 @@ export type FormFieldDefinition<
        * The component props for the form field.
        * Excludes runtime props (value, onChange) which are managed by ActionForm.
        */
-      fieldComponentProps: Omit<
+      fieldComponentProps: DistributiveOmit<
         FormFieldPropsByType[C],
         FormManagedProps<C>
       >;
@@ -394,6 +394,25 @@ export interface ObjectSetFieldProps<T extends ObjectTypeDefinition>
   emptyMessage?: string;
 }
 
+type ObjectSelectDataSource<Q extends ObjectTypeDefinition> =
+  | {
+    /**
+     * The object type definition to search across.
+     */
+    objectType: Q;
+    objectSet?: never;
+  }
+  | {
+    /**
+     * A pre-scoped object set to search within.
+     *
+     * Use this when selectable options should be limited to a subset of
+     * objects. User-entered search text is applied within this set.
+     */
+    objectSet: ObjectSet<Q>;
+    objectType?: never;
+  };
+
 /**
  * Object select field props for selecting object instances from the ontology.
  * Used for action parameters that accept a single object or multiple objects.
@@ -401,10 +420,10 @@ export interface ObjectSetFieldProps<T extends ObjectTypeDefinition>
  * Extends DropdownFieldProps with props that ObjectSelectField
  * manages internally (items, search, filtering) omitted from the public surface.
  */
-export interface ObjectSelectFieldProps<
+export type ObjectSelectFieldProps<
   Q extends ObjectTypeDefinition = ObjectTypeDefinition,
-> extends
-  Omit<
+> =
+  & Omit<
     DropdownFieldProps<Osdk.Instance<Q>>,
     | "items"
     | "itemToStringLabel"
@@ -416,12 +435,7 @@ export interface ObjectSelectFieldProps<
     | "disableClientSideFiltering"
     | "renderItemList"
   >
-{
-  /**
-   * The object type definition to search within.
-   */
-  objectType: Q;
-}
+  & ObjectSelectDataSource<Q>;
 
 /**
  * Custom field props for user-defined renderers
@@ -559,6 +573,12 @@ type FormManagedProps<K extends FieldComponent> = "onChange" extends
   keyof FormFieldPropsByType[K] ? "value" | "onChange"
   : "onChange";
 
+type DistributiveOmit<T, K extends PropertyKey> = T extends unknown ? Omit<
+    T,
+    Extract<keyof T, K>
+  >
+  : never;
+
 /**
  * An OSDK-agnostic field definition used by BaseForm and FormFieldRenderer.
  * Contains only the information needed to render a single field — no generics,
@@ -579,7 +599,10 @@ export type RendererFieldDefinition = {
     helperTextPlacement?: "bottom" | "tooltip";
     validate?: (value: unknown) => Promise<string | undefined>;
     onValidationError?: (error: ValidationError) => string | undefined;
-    fieldComponentProps: Omit<FormFieldPropsByType[K], FormManagedProps<K>>;
+    fieldComponentProps: DistributiveOmit<
+      FormFieldPropsByType[K],
+      FormManagedProps<K>
+    >;
   };
 }[FieldComponent];
 

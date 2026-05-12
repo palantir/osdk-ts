@@ -216,21 +216,15 @@ function renderFieldComponent(
           {...fieldDefinition.fieldComponentProps}
         />
       );
-    case "OBJECT_SELECT":
-      return (
-        <ObjectSelectField
-          id={fieldDefinition.fieldKey}
-          value={narrowToOsdkObject(value)}
-          onChange={onChange}
-          placeholder={fieldDefinition.placeholder}
-          error={error}
-          {...fieldDefinition.fieldComponentProps}
-          portalContainer={resolvePortalContainer(
-            fieldDefinition.fieldComponentProps,
-            portalContainer,
-          )}
-        />
+    case "OBJECT_SELECT": {
+      return renderObjectSelectField(
+        fieldDefinition,
+        value,
+        onChange,
+        error,
+        portalContainer,
       );
+    }
     case "OBJECT_SET":
       return (
         <ObjectSetField
@@ -241,6 +235,49 @@ function renderFieldComponent(
     default:
       return assertUnreachableFieldComponent(fieldDefinition);
   }
+}
+
+function renderObjectSelectField(
+  fieldDefinition: Extract<
+    RendererFieldDefinition,
+    { fieldComponent: "OBJECT_SELECT" }
+  >,
+  value: unknown,
+  onChange: (value: unknown) => void,
+  error: string | undefined,
+  portalContainer: PortalContainer | undefined,
+): React.ReactElement {
+  const resolvedPortalContainer = resolvePortalContainer(
+    fieldDefinition.fieldComponentProps,
+    portalContainer,
+  );
+  const sharedProps = {
+    id: fieldDefinition.fieldKey,
+    value: narrowToOsdkObject(value),
+    onChange,
+    placeholder: fieldDefinition.placeholder,
+    error,
+  };
+
+  // Keep the two source branches separate so TypeScript preserves the
+  // objectType/objectSet exclusivity when the renderer-managed props are added.
+  if ("objectSet" in fieldDefinition.fieldComponentProps) {
+    return (
+      <ObjectSelectField
+        {...sharedProps}
+        {...fieldDefinition.fieldComponentProps}
+        portalContainer={resolvedPortalContainer}
+      />
+    );
+  }
+
+  return (
+    <ObjectSelectField
+      {...sharedProps}
+      {...fieldDefinition.fieldComponentProps}
+      portalContainer={resolvedPortalContainer}
+    />
+  );
 }
 
 function resolvePortalContainer(
