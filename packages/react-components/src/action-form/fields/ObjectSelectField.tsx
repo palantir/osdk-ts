@@ -40,27 +40,22 @@ export const ObjectSelectField: React.NamedExoticComponent<
   ObjectSelectFieldProps
 > = memo(function ObjectSelectFieldFn(props): React.ReactElement {
   const source = resolveObjectSelectSource(props);
-
-  if (source == null) {
-    return <ObjectSelectUnavailableField {...props} />;
-  }
-
-  return <ObjectSelectAvailableField {...props} source={source} />;
+  return <ObjectSelectInner {...props} source={source} />;
 });
 
 type ResolvedObjectSelectSource<Q extends ObjectTypeDefinition> =
   | { kind: "objectType"; objectType: Q; objectSet?: undefined }
   | { kind: "objectSet"; objectType: Q; objectSet: ObjectSet<Q> };
 
-type ObjectSelectAvailableFieldProps<Q extends ObjectTypeDefinition> =
+type ObjectSelectInnerProps<Q extends ObjectTypeDefinition> =
   & ObjectSelectFieldProps<Q>
   & {
     source: ResolvedObjectSelectSource<Q>;
   };
 
-const ObjectSelectAvailableField: React.NamedExoticComponent<
-  ObjectSelectAvailableFieldProps<ObjectTypeDefinition>
-> = memo(function ObjectSelectAvailableFieldFn({
+const ObjectSelectInner: React.NamedExoticComponent<
+  ObjectSelectInnerProps<ObjectTypeDefinition>
+> = memo(function ObjectSelectInnerFn({
   source,
   value,
   onChange,
@@ -153,52 +148,9 @@ const ObjectSelectAvailableField: React.NamedExoticComponent<
   );
 });
 
-const ObjectSelectUnavailableField: React.NamedExoticComponent<
-  ObjectSelectFieldProps<ObjectTypeDefinition>
-> = memo(function ObjectSelectUnavailableFieldFn({
-  value,
-  onChange,
-  error,
-  id,
-  placeholder,
-  isMultiple,
-  portalRef,
-  portalContainer,
-}): React.ReactElement {
-  const handleChange = useCallback(
-    (newValue: ObjectSelectOsdkObject | null) => {
-      onChange?.(newValue);
-    },
-    [onChange],
-  );
-
-  const handleFetchMore = useCallback(() => {}, []);
-
-  return (
-    <AsyncDropdownField
-      id={id}
-      value={value}
-      onChange={handleChange}
-      error={error}
-      items={EMPTY_OBJECT_SELECT_ITEMS}
-      itemToStringLabel={itemToStringLabel}
-      itemToKey={itemToKey}
-      isItemEqual={isItemEqual}
-      placeholder={placeholder ?? "Search…"}
-      isMultiple={isMultiple}
-      portalRef={portalRef}
-      portalContainer={portalContainer}
-      isLoading={false}
-      isSearching={false}
-      hasMore={false}
-      onFetchMore={handleFetchMore}
-    />
-  );
-});
-
 function resolveObjectSelectSource(
   props: ObjectSelectFieldProps<ObjectTypeDefinition>,
-): ResolvedObjectSelectSource<ObjectTypeDefinition> | undefined {
+): ResolvedObjectSelectSource<ObjectTypeDefinition> {
   if ("objectSet" in props && props.objectSet != null) {
     return {
       kind: "objectSet",
@@ -207,11 +159,7 @@ function resolveObjectSelectSource(
     };
   }
 
-  if ("objectType" in props && props.objectType != null) {
-    return { kind: "objectType", objectType: props.objectType };
-  }
-
-  return undefined;
+  return { kind: "objectType", objectType: props.objectType };
 }
 
 function itemToStringLabel(obj: ObjectSelectOsdkObject): string {

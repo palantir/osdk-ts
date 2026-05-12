@@ -209,45 +209,6 @@ describe("ObjectSelectField", () => {
     expect(onChange).not.toHaveBeenCalled();
   });
 
-  it("prefers the object set when malformed props include both sources", () => {
-    const objectSet = createMockObjectSet();
-    mockLoadedState();
-    const props = {
-      objectType: DIFFERENT_TYPE,
-      objectSet,
-      value: null,
-      onChange: vi.fn(),
-    } as unknown as Parameters<typeof ObjectSelectField>[0];
-    render(<ObjectSelectField {...props} />);
-
-    expect(mockUseObjectSet).toHaveBeenCalledWith(
-      objectSet,
-      expect.objectContaining({
-        enabled: true,
-      }),
-    );
-    expect(mockUseOsdkObjects).toHaveBeenCalledWith(
-      EMPLOYEE_TYPE,
-      expect.objectContaining({
-        enabled: false,
-      }),
-    );
-    expect(mockUseOsdkMetadata).toHaveBeenCalledWith(EMPLOYEE_TYPE);
-  });
-
-  it("renders no options when malformed props omit both sources", () => {
-    mockLoadedState();
-    const props = {
-      value: null,
-      onChange: vi.fn(),
-    } as unknown as Parameters<typeof ObjectSelectField>[0];
-    render(<ObjectSelectField {...props} />);
-
-    expect(mockUseObjectSet).not.toHaveBeenCalled();
-    expect(mockUseOsdkObjects).not.toHaveBeenCalled();
-    expect(mockUseOsdkMetadata).not.toHaveBeenCalled();
-  });
-
   it("displays object titles as dropdown items", async () => {
     mockLoadedState();
     renderObjectSelect();
@@ -388,7 +349,6 @@ function makeMockObject(primaryKey: number, title?: string) {
 
 /** Minimal ObjectTypeDefinition shape — useOsdkObjects only reads type + apiName at runtime. */
 const EMPLOYEE_TYPE = { type: "object" as const, apiName: "Employee" };
-const DIFFERENT_TYPE = { type: "object" as const, apiName: "Office" };
 
 function createMockObjectSet(): ObjectSet<typeof EMPLOYEE_TYPE> {
   return {
