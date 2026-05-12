@@ -335,7 +335,6 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
         inputValue={query}
         onInputValueChange={onQueryChange}
         filter={disableClientSideFiltering ? null : undefined}
-        modal={modal}
       >
         <Combobox.Trigger
           id={id}

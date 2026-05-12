@@ -248,9 +248,9 @@ export interface DropdownFieldProps<V, Multiple extends boolean = false>
   trailingItem?: React.ReactNode;
 
   /**
-   * Whether the dropdown renders a full-viewport dismiss layer.
-   * Set to `false` when the dropdown is not inside a `<label>` to avoid
-   * blocking scroll on the page.
+   * Whether the dropdown locks page scroll and renders a full-viewport
+   * dismiss layer when open. Set to `false` when the dropdown is not
+   * inside a `<label>` to allow normal page scrolling.
    *
    * @default true
    */
