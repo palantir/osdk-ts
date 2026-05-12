@@ -29,20 +29,23 @@ export function convertInterfaceProperty(
   ridGenerator: OntologyRidGenerator,
 ): [string, MarketplaceInterfacePropertyType] {
   if (isInterfaceSharedPropertyType(prop)) {
-    return [prop.sharedPropertyType.apiName, {
-      type: "sharedPropertyBasedPropertyType",
-      sharedPropertyBasedPropertyType: {
-        requireImplementation: prop.required,
-        sharedPropertyType: convertSpt(prop.sharedPropertyType, ridGenerator),
+    return [
+      ridGenerator.generateInterfacePropertyTypeRid(apiName, interfaceApiName),
+      {
+        type: "sharedPropertyBasedPropertyType",
+        sharedPropertyBasedPropertyType: {
+          requireImplementation: prop.required,
+          sharedPropertyType: convertSpt(prop.sharedPropertyType, ridGenerator),
+        },
       },
-    }];
+    ];
   } else {
     return [
       ridGenerator.generateInterfacePropertyTypeRid(apiName, interfaceApiName),
       {
         type: "interfaceDefinedPropertyType",
         interfaceDefinedPropertyType: {
-          apiName: apiName,
+          apiName,
           displayMetadata: {
             displayName: prop.displayName ?? apiName,
             visibility: prop.visibility ?? "NORMAL",
