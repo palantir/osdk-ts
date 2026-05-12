@@ -173,7 +173,7 @@ export function createOsdkObject(
     {
       [UnderlyingOsdkObject]: {
         enumerable: false,
-        value: rawObj,
+        value: simpleOsdkProperties,
       },
       [PropertySecuritiesRef]: {
         enumerable: false,
@@ -351,7 +351,6 @@ function parseWhenSecuritiesLoaded(
     return { parsedObject: rawObject, clientPropertySecurities: undefined };
   }
 
-  const parsedObject: SimpleOsdkProperties = { ...rawObject };
   const clientPropertySecurities: {
     [propName: string]: PropertySecurity[] | PropertySecurity[][];
   } = {};
@@ -389,17 +388,16 @@ function parseWhenSecuritiesLoaded(
               .map(wireToClientPropertySecurities),
           );
         });
-        parsedObject[propKey] = newVal;
+        rawObject[propKey] = newVal;
         clientPropertySecurities[propKey] = newSecurities;
-      } // Check if this is a secured property value object
-      else if (
+      } else if (
         typeof value === "object"
         && value != null
         && "value" in value
         && "propertySecurityIndex" in value
       ) {
         const securedValue = value as SecuredPropertyValue;
-        parsedObject[propKey] = securedValue.value;
+        rawObject[propKey] = securedValue.value;
 
         const securityIndex = securedValue.propertySecurityIndex;
         invariant(
@@ -413,14 +411,11 @@ function parseWhenSecuritiesLoaded(
         clientPropertySecurities[propKey] =
           wirePropertySecurities[securityIndex].disjunction
             .map(wireToClientPropertySecurities);
-      } else {
-        // Regular property without security
-        parsedObject[propKey] = value;
       }
     }
   }
 
-  return { parsedObject, clientPropertySecurities };
+  return { parsedObject: rawObject, clientPropertySecurities };
 }
 
 function wireToClientPropertySecurities(

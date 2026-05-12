@@ -264,18 +264,21 @@ describe(createOsdkInterface, () => {
       { disjunction: [{ type: "unsupportedPolicy" }] },
     ];
 
-    const simpleProps = {
-      $apiName: "Obj",
-      $objectType: "Obj",
-      $primaryKey: 1,
-      $title: "hi mom",
-      id: 1,
-      foo: { value: "hi mom", propertySecurityIndex: 0 },
-    } as unknown as SimpleOsdkProperties;
-
     const client = {} as MinimalClient;
 
+    // Construct fresh wire props per call — createOsdkObject mutates its
+    // input (see parseWhenSecuritiesLoaded and the special-property loop),
+    // so reusing the same reference across tests would fail to redefine
+    // already-installed internal symbols.
     function makeObj() {
+      const simpleProps = {
+        $apiName: "Obj",
+        $objectType: "Obj",
+        $primaryKey: 1,
+        $title: "hi mom",
+        id: 1,
+        foo: { value: "hi mom", propertySecurityIndex: 0 },
+      } as unknown as SimpleOsdkProperties;
       return createOsdkObject(
         client,
         objectDef,
@@ -317,6 +320,53 @@ describe(createOsdkInterface, () => {
     it("$clone() preserves unwrapped property values", () => {
       const obj = makeObj();
       expect(obj.$clone().foo).toBe("hi mom");
+    });
+
+    it("hydrates an attachment property that arrived wrapped in SecuredPropertyValue", () => {
+      const attObjectDef: FetchedObjectTypeDefinition = {
+        [InterfaceDefinitions]: {},
+        apiName: "Att",
+        displayName: "",
+        interfaceMap: {},
+        inverseInterfaceMap: {},
+        links: {},
+        pluralDisplayName: "",
+        primaryKeyApiName: "id",
+        primaryKeyType: "integer",
+        properties: {
+          id: { type: "integer" },
+          att: { type: "attachment" },
+        },
+        type: "object",
+        titleProperty: "id",
+        rid: "",
+        status: "ACTIVE",
+        icon: undefined,
+        visibility: undefined,
+        description: undefined,
+      };
+
+      const attProps = {
+        $apiName: "Att",
+        $objectType: "Att",
+        $primaryKey: 1,
+        $title: "1",
+        id: 1,
+        att: { value: { rid: "ri.attach.1" }, propertySecurityIndex: 0 },
+      } as unknown as SimpleOsdkProperties;
+
+      const obj = createOsdkObject(
+        client,
+        attObjectDef,
+        attProps,
+        {},
+        wireSecurities,
+      ) as unknown as Record<string, unknown> & {
+        $clone: () => Record<string, unknown>;
+      };
+
+      expect((obj.att as { rid: string }).rid).toBe("ri.attach.1");
+      expect((obj.$clone().att as { rid: string }).rid).toBe("ri.attach.1");
     });
   });
 });
