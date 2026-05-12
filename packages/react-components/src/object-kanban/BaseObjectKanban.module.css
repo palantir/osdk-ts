@@ -1,0 +1,14 @@
+.kanban {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  gap: var(--osdk-object-kanban-gap);
+  padding: var(--osdk-object-kanban-padding);
+  background: var(--osdk-object-kanban-background);
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-x: none;
+  height: 100%;
+  min-height: 0;
+  box-sizing: border-box;
+}

@@ -5,6 +5,7 @@ import { AuthCallbackPage } from "./app/auth/callback/page.js";
 import { EmployeesFilterListPage } from "./app/employees/filterListPage.js";
 import { EmployeesPage } from "./app/employees/page.js";
 import { FormPage } from "./app/form/page.js";
+import { KanbanPage } from "./app/kanban/page.js";
 import { OfficesPage } from "./app/offices/page.js";
 
 const router = createBrowserRouter([
@@ -33,6 +34,10 @@ const router = createBrowserRouter([
       {
         path: "/offices",
         element: <OfficesPage />,
+      },
+      {
+        path: "/kanban",
+        element: <KanbanPage />,
       },
       {
         path: "/form",

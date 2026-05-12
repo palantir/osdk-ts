@@ -38,6 +38,7 @@ See `@osdk/react`'s `AGENTS.md` for optional peers (`@osdk/foundry.admin`, `@osd
 
 Components are imported from their individual entry points under `@osdk/react-components/experimental/`:
 
+- `@osdk/react-components/experimental/object-kanban` — ObjectKanban, BaseObjectKanban
 - `@osdk/react-components/experimental/object-table` — ObjectTable, BaseTable, ColumnConfigDialog
 - `@osdk/react-components/experimental/filter-list` — FilterList, BaseFilterList
 - `@osdk/react-components/experimental/action-form` — ActionForm, BaseForm, and form field definitions
@@ -50,6 +51,8 @@ Components are imported from their individual entry points under `@osdk/react-co
 | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
 | **ObjectTable**        | Table for displaying OSDK object sets with sorting, filtering, inline editing, column pinning/resizing, row selection, and infinite scroll. |
 | **BaseTable**          | OSDK-agnostic base table — use when building custom data fetching on top of the table UI.                                                   |
+| **ObjectKanban**       | Horizontal kanban with one column per ObjectSet. Auto-fetches each column; cards drag between columns; fires `onCardMoved` for persistence. |
+| **BaseObjectKanban**   | OSDK-agnostic base kanban — accepts pre-loaded card data per column. Use for custom fetching or non-OSDK data sources.                      |
 | **FilterList**         | Aggregation-based filter UI for object sets with draggable reordering.                                                                      |
 | **BaseFilterList**     | OSDK-agnostic base filter list — use for custom filter implementations.                                                                     |
 | **ActionForm**         | Form for applying OSDK actions with generated or custom field definitions.                                                                  |

@@ -16,6 +16,7 @@
 @import "./tokens/component-tokens/form.css";
 @import "./tokens/component-tokens/form-section.css";
 @import "./tokens/component-tokens/input.css";
+@import "./tokens/component-tokens/object-kanban.css";
 @import "./tokens/component-tokens/object-set.css";
 @import "./tokens/component-tokens/pdf-viewer.css";
 @import "./tokens/component-tokens/radio.css";
