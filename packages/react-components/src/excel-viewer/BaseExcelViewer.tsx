@@ -19,29 +19,59 @@ import React, { useCallback, useMemo, useState } from "react";
 import styles from "./BaseExcelViewer.module.css";
 import type { BaseExcelViewerProps, SheetData } from "./types.js";
 
+/**
+ * Converts a 0-based column index to a spreadsheet column letter (0=A, 1=B, ..., 25=Z, 26=AA).
+ */
+function columnIndexToLetter(index: number): string {
+  let letter = "";
+  let num = index;
+  do {
+    const remainder = num % 26;
+    letter = String.fromCharCode(65 + remainder) + letter;
+    num = Math.floor(num / 26) - 1;
+  } while (num >= 0);
+  return letter;
+}
+
 const SheetTable: React.FunctionComponent<{ sheet: SheetData }> = React.memo(
   ({ sheet }) => {
     if (sheet.rows.length === 0) {
       return <div className={styles.emptySheet}>Empty sheet</div>;
     }
 
-    const headerRow = sheet.rows[0];
-    const dataRows = sheet.rows.slice(1);
+    const maxCols = useMemo(
+      () => sheet.rows.reduce((max, row) => Math.max(max, row.length), 0),
+      [sheet.rows],
+    );
 
     return (
       <div className={styles.tableContainer}>
         <table className={styles.table}>
-          {headerRow != null && (
-            <thead>
-              <tr>
-                {headerRow.map((cell, i) => <th key={i}>{cell}</th>)}
-              </tr>
-            </thead>
-          )}
+          <thead>
+            <tr>
+              <th className={styles.cornerCell} />
+              {Array.from(
+                { length: maxCols },
+                (_, i) => (
+                  <th key={i} className={styles.columnHeader}>
+                    {columnIndexToLetter(i)}
+                  </th>
+                ),
+              )}
+            </tr>
+          </thead>
           <tbody>
-            {dataRows.map((row, rowIndex) => (
+            {sheet.rows.map((row, rowIndex) => (
               <tr key={rowIndex}>
-                {row.map((cell, cellIndex) => <td key={cellIndex}>{cell}</td>)}
+                <td className={styles.rowHeader}>{rowIndex + 1}</td>
+                {Array.from(
+                  { length: maxCols },
+                  (_, cellIndex) => (
+                    <td key={cellIndex} className={styles.cell}>
+                      {row[cellIndex] ?? ""}
+                    </td>
+                  ),
+                )}
               </tr>
             ))}
           </tbody>
