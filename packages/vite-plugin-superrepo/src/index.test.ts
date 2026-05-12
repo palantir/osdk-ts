@@ -69,8 +69,9 @@ function writeDiscovery(root: string, kebab: string, body: object): void {
 }
 
 describe("smartClientPlugin config hook", () => {
-  it("returns undefined when no foundry.yml ancestor exists", () => {
-    expect(callConfigHook(workDir)).toBeUndefined();
+  it("throws when no foundry.yml ancestor exists", () => {
+    // The plugin only makes sense inside a superrepo
+    expect(() => callConfigHook(workDir)).toThrow(/SuperRepo/);
   });
 
   it("returns undefined when no discovery files exist", () => {

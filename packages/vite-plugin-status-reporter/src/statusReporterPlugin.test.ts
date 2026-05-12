@@ -48,13 +48,19 @@ function writeStatusDiscovery(root: string, body: object): void {
   );
 }
 
-/** Stand up a no-op HTTP server that captures POSTs to `/api/status`. */
+/**
+ * Stand up a no-op HTTP server that captures POSTs to `/api/status`. The
+ * server resolves a promise on every captured event so tests can `await`
+ * the next one deterministically — no polling, no flake under CI load.
+ */
 async function startCaptureServer(): Promise<{
   url: string;
   capture: { events: unknown[] };
+  nextEvent: () => Promise<unknown>;
   close: () => Promise<void>;
 }> {
   const capture = { events: [] as unknown[] };
+  let pendingResolve: ((value: unknown) => void) | undefined;
   const server = http.createServer((req, res) => {
     const chunks: Buffer[] = [];
     req.on("data", (chunk: Buffer) => {
@@ -64,7 +70,10 @@ async function startCaptureServer(): Promise<{
       const body = Buffer.concat(chunks).toString("utf-8");
       if (req.method === "POST" && req.url === "/api/status") {
         try {
-          capture.events.push(JSON.parse(body));
+          const event = JSON.parse(body) as unknown;
+          capture.events.push(event);
+          pendingResolve?.(event);
+          pendingResolve = undefined;
         } catch {
           // ignore malformed bodies in the test sink
         }
@@ -78,6 +87,15 @@ async function startCaptureServer(): Promise<{
   return {
     url: `http://127.0.0.1:${port}`,
     capture,
+    nextEvent: () =>
+      new Promise<unknown>((resolve) => {
+        // If a captured event is already buffered, deliver it on the next tick.
+        if (capture.events.length > 0) {
+          resolve(capture.events[capture.events.length - 1]);
+          return;
+        }
+        pendingResolve = resolve;
+      }),
     close: () =>
       new Promise<void>((resolve, reject) => {
         server.close((err) => (err ? reject(err) : resolve()));
@@ -124,11 +142,17 @@ describe("statusReporterPlugin", () => {
         { httpServer: { on: () => undefined } } as never,
       );
 
-      // PREPARING is published asynchronously via fetch; wait for the
-      // capture to land. Use a small poll loop to keep the test snappy
-      // when fakeTimers is enabled by the vitest config.
-      await waitFor(() => sink.capture.events.length >= 1, 2000);
-      expect(sink.capture.events[0]).toMatchObject({
+      // PREPARING is published asynchronously via fetch; await the first
+      // captured event deterministically (resolved by the capture server
+      // when the POST body lands). 5 s budget guards against pathological
+      // CPU starvation; the happy path resolves in ~10 ms.
+      const first = await Promise.race([
+        sink.nextEvent(),
+        new Promise<never>((_, reject) =>
+          setTimeout(() => reject(new Error("PREPARING never published")), 5000)
+        ),
+      ]);
+      expect(first).toMatchObject({
         service: "APP",
         status: "PREPARING",
         level: "INFO",
@@ -136,6 +160,32 @@ describe("statusReporterPlugin", () => {
     } finally {
       await sink.close();
     }
+  });
+
+  it("no-ops when the discovery file is missing required fields", () => {
+    // Regression guard: an earlier version silently coerced `pid` to 0
+    // when the field was absent, which then made `isPidAlive(0)` reject
+    // — same end-state, but hid schema corruption from the user. The
+    // current code rejects the file as malformed before the PID check.
+    const root = makeSuperrepo();
+    writeStatusDiscovery(root, { url: "http://127.0.0.1:1" }); // no `pid`
+    const plugin = statusReporterPlugin({ service: "APP" });
+    const configResolved = typeof plugin.configResolved === "function"
+      ? plugin.configResolved
+      : plugin.configResolved?.handler;
+    void configResolved?.call(
+      { meta: { rollupVersion: "" }, environment: undefined } as never,
+      { root, logger: { warn: () => {} } } as never,
+    );
+    const configureServer = typeof plugin.configureServer === "function"
+      ? plugin.configureServer
+      : plugin.configureServer?.handler;
+    expect(() => {
+      void configureServer?.call(
+        { meta: { rollupVersion: "" }, environment: undefined } as never,
+        { httpServer: { on: () => undefined } } as never,
+      );
+    }).not.toThrow();
   });
 
   it("no-ops silently when no foundry.yml ancestor exists", () => {
@@ -161,15 +211,3 @@ describe("statusReporterPlugin", () => {
     }).not.toThrow();
   });
 });
-
-async function waitFor(
-  predicate: () => boolean,
-  timeoutMs: number,
-): Promise<void> {
-  const deadline = Date.now() + timeoutMs;
-  while (Date.now() < deadline) {
-    if (predicate()) return;
-    await new Promise((r) => setTimeout(r, 20));
-  }
-  throw new Error(`waitFor timed out after ${timeoutMs}ms`);
-}

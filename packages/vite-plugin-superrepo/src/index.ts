@@ -22,7 +22,7 @@ import {
   type DiscoveryEntry,
   type DiscoveryService,
   findSuperrepoRoot,
-  readDiscovery,
+  inspectDiscovery,
 } from "./internal/discovery.js";
 
 /**
@@ -59,6 +59,8 @@ const PROXY_ROUTES: ReadonlyArray<{
  * Production builds are completely untouched.
  */
 export function smartClientPlugin(): Plugin {
+  const pendingWarnings: string[] = [];
+
   return {
     name: "vite-plugin-smart-client",
     apply: "serve",
@@ -71,31 +73,88 @@ export function smartClientPlugin(): Plugin {
       }
 
       const proxy: Record<string, ProxyOptions> = {};
-      const missing: DiscoveryService[] = [];
+      const palantirDir = path.join(superrepoRoot, ".palantir");
 
       for (const route of PROXY_ROUTES) {
-        const entry = readDiscovery(superrepoRoot, route.service);
-        if (!entry) {
-          missing.push(route.service);
+        const read = inspectDiscovery(superrepoRoot, route.service);
+        if (read.kind === "ok") {
+          proxy[route.prefix] = buildProxyOptions(
+            read.entry,
+            route,
+            pendingWarnings,
+          );
           continue;
         }
-        proxy[route.prefix] = buildProxyOptions(entry, route);
-      }
-
-      if (missing.length > 0) {
-        // eslint-disable-next-line no-console
-        console.warn(
-          `[osdk] vite-plugin-superrepo: no live discovery file under `
-            + `${path.join(superrepoRoot, ".palantir")} for ${
-              missing.join(", ")
-            }. `
-            + `Start the matching \`foundry start\` services and restart the dev server `
-            + `if you need them proxied.`,
-        );
+        switch (read.kind) {
+          case "missing":
+            pendingWarnings.push(
+              `no live discovery for ${route.service} under ${palantirDir}. `
+                + `Run \`foundry start ${route.service}\` and restart the dev `
+                + `server to wire up the proxy.`,
+            );
+            break;
+          case "stale":
+            pendingWarnings.push(
+              `discovery for ${route.service} is stale (recorded PID `
+                + `${read.pid} is no longer running). Restart `
+                + `\`foundry start ${route.service}\`, then restart the dev `
+                + `server.`,
+            );
+            break;
+          case "malformed":
+            pendingWarnings.push(
+              `${route.service} discovery file is corrupt (${read.reason}). `
+                + `Delete ${palantirDir}/.${route.service}-discovery.json and `
+                + `restart \`foundry start ${route.service}\`.`,
+            );
+            break;
+        }
       }
 
       if (Object.keys(proxy).length === 0) return undefined;
       return { server: { proxy } };
+    },
+
+    configResolved(resolvedConfig) {
+      for (const message of pendingWarnings) {
+        resolvedConfig.logger.warn(`[vite-plugin-superrepo] ${message}`);
+      }
+      pendingWarnings.length = 0;
+    },
+
+    configureServer(server) {
+      const superrepoRoot = findSuperrepoRoot(server.config.root);
+      if (!superrepoRoot) return;
+
+      const palantirDir = path.join(superrepoRoot, ".palantir");
+      const watchedFiles = new Set(
+        PROXY_ROUTES.map((r) => `.${r.service}-discovery.json`),
+      );
+
+      let restartTimer: ReturnType<typeof setTimeout> | undefined;
+      const scheduleRestart = () => {
+        if (restartTimer) clearTimeout(restartTimer);
+        // Coalesce inotify/FSEvents bursts (rename+write commonly emits
+        // multiple events for a single discovery file update).
+        restartTimer = setTimeout(() => {
+          restartTimer = undefined;
+          void server.restart();
+        }, 100);
+      };
+
+      // foundry-cli creates `.palantir` lazily on the first `foundry start`.
+      // Pre-create an empty dir so the watcher can attach immediately and
+      // pick up the first discovery file the moment it lands.
+      fs.mkdirSync(palantirDir, { recursive: true });
+
+      const watcher = fs.watch(palantirDir, (_event, filename) => {
+        if (filename != null && watchedFiles.has(filename)) scheduleRestart();
+      });
+
+      server.httpServer?.once("close", () => {
+        if (restartTimer) clearTimeout(restartTimer);
+        watcher.close();
+      });
     },
 
     transform(code, id) {
@@ -121,6 +180,7 @@ export function smartClientPlugin(): Plugin {
 function buildProxyOptions(
   entry: DiscoveryEntry,
   route: { prefix: string; rewrite: boolean },
+  pendingWarnings: string[],
 ): ProxyOptions {
   const isHttps = entry.url.startsWith("https://");
   const options: ProxyOptions = {
@@ -141,10 +201,9 @@ function buildProxyOptions(
       // No published CA — fall back to skipping verification. We log so the
       // user knows TLS pinning was downgraded.
       options.secure = false;
-      // eslint-disable-next-line no-console
-      console.warn(
-        `[osdk] vite-plugin-superrepo: discovery for ${entry.url} has no `
-          + `caCertPath; TLS verification disabled for this proxy.`,
+      pendingWarnings.push(
+        `discovery for ${entry.url} has no caCertPath; `
+          + `TLS verification disabled for this proxy.`,
       );
     }
   }

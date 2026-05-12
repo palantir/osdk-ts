@@ -23,6 +23,7 @@ import {
   type DiscoveryEntry,
   discoveryPath,
   findSuperrepoRoot,
+  inspectDiscovery,
   readDiscovery,
 } from "./discovery.js";
 
@@ -66,6 +67,21 @@ describe("findSuperrepoRoot", () => {
 
   it("returns undefined when no foundry.yml is reachable", () => {
     expect(findSuperrepoRoot(workDir)).toBeUndefined();
+  });
+
+  it("returns the nearest ancestor when superrepos are nested", () => {
+    // Create an outer superrepo AND an inner one — the walk-up must stop
+    // at the inner one. (Matches the Rust `find_superrepo_root` semantics.)
+    makeSuperrepo();
+    const inner = path.join(workDir, "apps", "inner");
+    fs.mkdirSync(inner, { recursive: true });
+    fs.writeFileSync(
+      path.join(inner, "foundry.yml"),
+      "minCliVersion: \"0.0.0\"\n",
+    );
+    const deeper = path.join(inner, "src");
+    fs.mkdirSync(deeper, { recursive: true });
+    expect(findSuperrepoRoot(deeper)).toBe(inner);
   });
 });
 
@@ -140,5 +156,72 @@ describe("readDiscovery", () => {
       pid: process.pid,
       url: "http://127.0.0.1:12345",
     });
+  });
+});
+
+describe("inspectDiscovery", () => {
+  it("reports 'missing' when the file does not exist", () => {
+    const root = makeSuperrepo();
+    expect(inspectDiscovery(root, "ontology")).toEqual({ kind: "missing" });
+  });
+
+  it("reports 'malformed' when JSON parsing fails", () => {
+    const root = makeSuperrepo();
+    const dir = path.join(root, DISCOVERY_DIR);
+    fs.mkdirSync(dir, { recursive: true });
+    fs.writeFileSync(path.join(dir, ".ontology-discovery.json"), "not json");
+    const r = inspectDiscovery(root, "ontology");
+    expect(r.kind).toBe("malformed");
+    if (r.kind === "malformed") expect(r.reason).toMatch(/invalid JSON/);
+  });
+
+  it("reports 'malformed' when required fields are missing", () => {
+    const root = makeSuperrepo();
+    const dir = path.join(root, DISCOVERY_DIR);
+    fs.mkdirSync(dir, { recursive: true });
+    fs.writeFileSync(
+      path.join(dir, ".ontology-discovery.json"),
+      JSON.stringify({ pid: process.pid }), // missing url
+    );
+    const r = inspectDiscovery(root, "ontology");
+    expect(r.kind).toBe("malformed");
+    if (r.kind === "malformed") expect(r.reason).toMatch(/required fields/);
+  });
+
+  it("reports 'stale' when the recorded PID is dead", () => {
+    const root = makeSuperrepo();
+    writeDiscovery(root, "ontology", { pid: 0, url: "https://127.0.0.1:1" });
+    const r = inspectDiscovery(root, "ontology");
+    expect(r.kind).toBe("stale");
+    if (r.kind === "stale") expect(r.pid).toBe(0);
+  });
+
+  it("reports 'ok' with the parsed entry for a live process", () => {
+    const root = makeSuperrepo();
+    writeDiscovery(root, "ontology", {
+      pid: process.pid,
+      url: "https://127.0.0.1:54321",
+    });
+    const r = inspectDiscovery(root, "ontology");
+    expect(r.kind).toBe("ok");
+    if (r.kind === "ok") {
+      expect(r.entry.pid).toBe(process.pid);
+      expect(r.entry.url).toBe("https://127.0.0.1:54321");
+    }
+  });
+
+  it("rejects non-finite pid (NaN, Infinity)", () => {
+    const root = makeSuperrepo();
+    const dir = path.join(root, DISCOVERY_DIR);
+    fs.mkdirSync(dir, { recursive: true });
+    fs.writeFileSync(
+      path.join(dir, ".ontology-discovery.json"),
+      // NaN cannot survive JSON, but the parser may receive a string
+      // payload that decodes to one if someone crafts the JSON manually.
+      // Verify our type guard catches `null` (which represents NaN/Infinity
+      // when JSON.stringify is involved) and similar non-finite shapes.
+      "{\"pid\": null, \"url\": \"http://127.0.0.1:1\"}",
+    );
+    expect(inspectDiscovery(root, "ontology").kind).toBe("malformed");
   });
 });

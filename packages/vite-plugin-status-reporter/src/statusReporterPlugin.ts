@@ -82,10 +82,19 @@ export function statusReporterPlugin(config: StatusReporterConfig): Plugin {
     } catch {
       return undefined;
     }
-    const pid = typeof parsed.pid === "number" ? parsed.pid : 0;
-    const url = typeof parsed.url === "string" ? parsed.url : "";
-    if (!url || !isPidAlive(pid)) return undefined;
-    return url;
+    // Match the strict validation in `vite-plugin-superrepo`'s
+    // `isDiscoveryEntry`: reject when required fields are missing or
+    // contain non-finite numbers / empty strings.
+    if (
+      typeof parsed.pid !== "number"
+      || !Number.isFinite(parsed.pid)
+      || typeof parsed.url !== "string"
+      || parsed.url.length === 0
+    ) {
+      return undefined;
+    }
+    if (!isPidAlive(parsed.pid)) return undefined;
+    return parsed.url;
   }
 
   /**
