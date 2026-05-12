@@ -159,6 +159,49 @@ describe("MultiSelectInput renderValue", () => {
   });
 });
 
+describe("ListogramInput renderValue (ReactNode)", () => {
+  const renderValueAsNode = (value: string): React.ReactNode => (
+    <a href={`/user/${value}`} data-testid={`anchor-${value}`}>
+      {LABELS[value] ?? value}
+    </a>
+  );
+
+  it("renders JSX returned from renderValue", () => {
+    render(
+      <ListogramInput
+        values={mockValues}
+        maxCount={7}
+        isLoading={false}
+        error={null}
+        selectedValues={[]}
+        onChange={vi.fn()}
+        renderValue={renderValueAsNode}
+      />,
+    );
+
+    expect(screen.getByTestId("anchor-abc-123")).toBeDefined();
+    expect(screen.getByText("Alice Smith")).toBeDefined();
+  });
+
+  it("falls back to raw value for search when renderValue returns JSX", () => {
+    render(
+      <ListogramInput
+        values={mockValues}
+        maxCount={7}
+        isLoading={false}
+        error={null}
+        selectedValues={[]}
+        onChange={vi.fn()}
+        renderValue={renderValueAsNode}
+        searchQuery="abc"
+      />,
+    );
+
+    expect(screen.getByTestId("anchor-abc-123")).toBeDefined();
+    expect(screen.queryByTestId("anchor-def-456")).toBeNull();
+  });
+});
+
 describe("SingleSelectInput renderValue", () => {
   // SingleSelectInput renders dropdown items inside a Combobox portal
   // which only mounts when opened — not testable in jsdom without

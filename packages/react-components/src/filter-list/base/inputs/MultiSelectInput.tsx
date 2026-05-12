@@ -48,7 +48,7 @@ interface MultiSelectInputProps {
   placeholder?: string;
   showCounts?: boolean;
   ariaLabel?: string;
-  renderValue?: (value: string) => string;
+  renderValue?: (value: string) => React.ReactNode;
   layout?: MultiSelectInputLayout;
 }
 
@@ -90,8 +90,13 @@ function MultiSelectInputInner({
   const comboboxFilter = useMemo(
     () =>
       renderValue
-        ? (itemValue: string, query: string) =>
-          renderValue(itemValue).toLowerCase().includes(query.toLowerCase())
+        ? (itemValue: string, query: string) => {
+          const rendered = renderValue(itemValue);
+          const searchText = typeof rendered === "string"
+            ? rendered
+            : itemValue;
+          return searchText.toLowerCase().includes(query.toLowerCase());
+        }
         : undefined,
     [renderValue],
   );
