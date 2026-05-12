@@ -39,13 +39,14 @@ interface ServiceEvent {
 }
 
 export interface StatusReporterConfig {
-  /** Service name reported in status payloads (e.g. "APP") */
+  /** Service name reported in status payloads (e.g. "APP"). */
   service: ServiceName;
-  /** Path to the gateway address file, relative to the Vite project root. */
-  gatewayAddrFile: string;
-  /** Heartbeat interval in milliseconds. Default: 30000 */
+  /** Heartbeat interval in milliseconds. Default: 30000. */
   heartbeatInterval?: number;
 }
+
+/** Discovery file written by `foundry start status-server`. */
+const STATUS_SERVER_DISCOVERY_FILE = ".palantir/.status-server-discovery.json";
 
 /**
  * Creates a Vite plugin that reports dev server lifecycle status to the
@@ -54,42 +55,51 @@ export interface StatusReporterConfig {
  * Lifecycle: PREPARING → READY (with heartbeat) → FAILED on error → STOPPED on close.
  */
 export function statusReporterPlugin(config: StatusReporterConfig): Plugin {
-  const {
-    service,
-    gatewayAddrFile,
-    heartbeatInterval = 30_000,
-  } = config;
+  const { service, heartbeatInterval = 30_000 } = config;
 
-  let resolvedAddrFile: string;
+  let viteRoot: string;
   let logger: Logger | undefined;
   let heartbeatTimer: ReturnType<typeof setInterval> | undefined;
 
   /**
-   * Reads the gateway address from the port file written by the status-server.
-   * Returns undefined if the file does not exist or is empty, allowing the
-   * plugin to silently no-op when no gateway is running.
+   * Resolve the running status server's base URL via its discovery file.
+   * Returns undefined if no foundry.yml ancestor exists, no discovery file
+   * is present, the JSON is malformed, or the recorded PID is dead.
    */
-  function readStatusAddr(): string | undefined {
+  function readStatusBaseUrl(): string | undefined {
+    const superrepoRoot = findSuperrepoRoot(viteRoot);
+    if (!superrepoRoot) return undefined;
+    const file = path.join(superrepoRoot, STATUS_SERVER_DISCOVERY_FILE);
+    let raw: string;
     try {
-      const content = fs.readFileSync(resolvedAddrFile, "utf-8").trim();
-      return content || undefined;
+      raw = fs.readFileSync(file, "utf-8");
     } catch {
       return undefined;
     }
+    let parsed: { pid?: unknown; url?: unknown };
+    try {
+      parsed = JSON.parse(raw);
+    } catch {
+      return undefined;
+    }
+    const pid = typeof parsed.pid === "number" ? parsed.pid : 0;
+    const url = typeof parsed.url === "string" ? parsed.url : "";
+    if (!url || !isPidAlive(pid)) return undefined;
+    return url;
   }
 
   /**
-   * Posts a lifecycle event to the gateway's status endpoint. This is
-   * best-effort: if the gateway is unreachable the error is logged via
-   * Vite's logger and the dev server continues normally.
+   * Posts a lifecycle event to the status server. Best-effort: if the
+   * server is unreachable the error is logged via Vite's logger and the
+   * dev server continues normally.
    */
   async function publishStatus(
     status: ServiceLifecycle,
     level: StatusLevel,
     message?: string,
   ): Promise<void> {
-    const addr = readStatusAddr();
-    if (!addr) return;
+    const base = readStatusBaseUrl();
+    if (!base) return;
 
     const event: ServiceEvent = {
       service,
@@ -100,7 +110,7 @@ export function statusReporterPlugin(config: StatusReporterConfig): Plugin {
     };
 
     try {
-      const res = await fetch(`http://${addr}/api/status`, {
+      const res = await fetch(`${base.replace(/\/$/, "")}/api/status`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(event),
@@ -134,7 +144,7 @@ export function statusReporterPlugin(config: StatusReporterConfig): Plugin {
     apply: "serve",
 
     configResolved(resolvedConfig: ResolvedConfig) {
-      resolvedAddrFile = path.resolve(resolvedConfig.root, gatewayAddrFile);
+      viteRoot = resolvedConfig.root;
       logger = resolvedConfig.logger;
     },
 
@@ -157,4 +167,26 @@ export function statusReporterPlugin(config: StatusReporterConfig): Plugin {
       });
     },
   };
+}
+
+function findSuperrepoRoot(startDir: string): string | undefined {
+  let dir = path.resolve(startDir);
+  while (true) {
+    if (fs.existsSync(path.join(dir, "foundry.yml"))) {
+      return dir;
+    }
+    const parent = path.dirname(dir);
+    if (parent === dir) return undefined;
+    dir = parent;
+  }
+}
+
+function isPidAlive(pid: number): boolean {
+  if (!Number.isInteger(pid) || pid <= 0) return false;
+  try {
+    process.kill(pid, 0);
+    return true;
+  } catch (e) {
+    return (e as NodeJS.ErrnoException).code === "EPERM";
+  }
 }
