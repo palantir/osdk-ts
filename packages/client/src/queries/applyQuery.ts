@@ -31,7 +31,7 @@ import type {
 import type { DataValue } from "@osdk/foundry.ontologies";
 import * as Queries from "@osdk/foundry.ontologies/Query";
 import invariant from "tiny-invariant";
-import { createMediaFromReference } from "../createMediaFromReference.js";
+import { createMediaFromReferenceInternal } from "../createMediaFromReference.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { createObjectSet } from "../objectSet/createObjectSet.js";
 import { hydrateAttachmentFromRidInternal } from "../public-utils/hydrateAttachmentFromRid.js";
@@ -175,7 +175,7 @@ async function remapQueryResponse<
     }
 
     case "mediaReference": {
-      return createMediaFromReference(
+      return createMediaFromReferenceInternal(
         client,
         responseValue,
       ) as unknown as QueryReturnType<
