@@ -313,6 +313,103 @@ jobs:
             gh pr comment "${{ github.event.pull_request.number }}" -F /tmp/comment.md
           fi
 
+  storybook-preview:
+    name: Storybook Preview
+    if: github.event_name == 'pull_request'
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: "pnpm"
+
+      - name: Cache Turbo
+        uses: actions/cache@v5
+        with:
+          path: .turbo/cache
+          key: turbo-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            turbo-${{ runner.os }}-
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build Storybook dependencies
+        run: pnpm --filter "@osdk/*" transpileBrowser
+
+      - name: Build Storybook
+        env:
+          STORYBOOK_BASE_PATH: /osdk-ts/storybook/pr-${{ github.event.pull_request.number }}/
+        run: pnpm --filter react-components-storybook build
+
+      - name: Deploy to gh-pages branch
+        run: |
+          PR_NUMBER=${{ github.event.pull_request.number }}
+
+          git clone --branch gh-pages --single-branch --depth 1 \
+            https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git gh-pages-temp
+
+          rm -rf "gh-pages-temp/storybook/pr-${PR_NUMBER}"
+          mkdir -p "gh-pages-temp/storybook/pr-${PR_NUMBER}"
+          cp -r packages/react-components-storybook/storybook-static/* "gh-pages-temp/storybook/pr-${PR_NUMBER}/"
+          touch "gh-pages-temp/storybook/pr-${PR_NUMBER}/.nojekyll"
+
+          cd gh-pages-temp
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Deploy Storybook preview for PR #${PR_NUMBER}" || echo "No changes to commit"
+          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git gh-pages
+
+      - name: Post PR comment
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          PR_NUMBER=${{ github.event.pull_request.number }}
+          SHORT_SHA=$(echo "${{ github.event.pull_request.head.sha }}" | cut -c1-7)
+          PREVIEW_URL="https://palantir.github.io/osdk-ts/storybook/pr-${PR_NUMBER}/"
+
+          # Find changed story files
+          git fetch origin ${{ github.event.pull_request.base.sha }} --depth=1
+          CHANGED_STORIES=$(git diff --name-only ${{ github.event.pull_request.base.sha }}..HEAD -- '*.stories.tsx' '*.stories.ts' '*.stories.mdx' | sort)
+
+          # Build comment body
+          COMMENT="## Storybook Preview\n\n"
+          COMMENT+="[View Storybook](${PREVIEW_URL})\n\n"
+          COMMENT+="### Changed stories\n"
+
+          if [ -z "$CHANGED_STORIES" ]; then
+            COMMENT+="No story files changed in this PR.\n"
+          else
+            while IFS= read -r file; do
+              COMMENT+="- \`${file}\`\n"
+            done <<< "$CHANGED_STORIES"
+          fi
+
+          COMMENT+="\n*Updated for commit ${SHORT_SHA}*"
+
+          echo -e "$COMMENT" > /tmp/storybook-comment.md
+
+          COMMENT_ID=$(gh api "repos/${{ github.repository }}/issues/${PR_NUMBER}/comments" --jq '.[] | select(.body | startswith("## Storybook Preview")) | .id' | head -1)
+          if [ -n "$COMMENT_ID" ]; then
+            gh api "repos/${{ github.repository }}/issues/comments/$COMMENT_ID" -X PATCH -f body="$(cat /tmp/storybook-comment.md)"
+          else
+            gh pr comment "${PR_NUMBER}" -F /tmp/storybook-comment.md
+          fi
+
   ci-build:
     name: ci-build
     if: ${{ always() }}
