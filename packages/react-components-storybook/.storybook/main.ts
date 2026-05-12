@@ -16,6 +16,8 @@
 
 import type { StorybookConfig } from "@storybook/react-vite";
 
+const storybookBasePath = process.env.STORYBOOK_BASE_PATH;
+
 const config: StorybookConfig = {
   stories: ["../src/**/*.stories.@(js|jsx|ts|tsx|mdx)"],
   addons: [
@@ -56,8 +58,11 @@ const config: StorybookConfig = {
       },
     })),
   async viteFinal(config) {
-    // Set base path for GitHub Pages deployment
-    if (config.mode === "production") {
+    // Set base path for GitHub Pages deployment. PR previews are published
+    // under /storybook/pr-<number>/, so CI can override the default path.
+    if (storybookBasePath != null) {
+      config.base = storybookBasePath;
+    } else if (config.mode === "production") {
       config.base = "/osdk-ts/storybook/";
     }
 

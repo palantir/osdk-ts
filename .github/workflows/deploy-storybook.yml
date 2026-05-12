@@ -12,6 +12,10 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: gh-pages-publish
+  cancel-in-progress: false
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
@@ -40,11 +44,20 @@ jobs:
         run: |          
           # Clone existing gh-pages to preserve other content
           git clone --branch gh-pages --single-branch --depth 1 https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git gh-pages-temp
-          
+
+          # Preserve PR previews nested under storybook/pr-* while replacing
+          # the main Storybook build.
+          previews_temp="$(mktemp -d)"
+          if [ -d "gh-pages-temp/storybook" ]; then
+            find gh-pages-temp/storybook -mindepth 1 -maxdepth 1 -type d -name 'pr-*' -exec cp -R {} "$previews_temp/" \;
+          fi
+
           # Update storybook content
           rm -rf gh-pages-temp/storybook
           mkdir gh-pages-temp/storybook
-          cp -r packages/react-components-storybook/storybook-static/* gh-pages-temp/storybook/
+          cp -R packages/react-components-storybook/storybook-static/. gh-pages-temp/storybook/
+          find "$previews_temp" -mindepth 1 -maxdepth 1 -type d -exec cp -R {} gh-pages-temp/storybook/ \;
+          rm -rf "$previews_temp"
           touch gh-pages-temp/storybook/.nojekyll
           
           # Commit and push changes
