@@ -30,17 +30,24 @@ export const RadioButtonsField: <V>(
   options,
   orientation,
 }: RadioButtonsFieldProps<V>): React.ReactElement {
-  const selectedLabel = useMemo(
-    () =>
-      value != null
-        ? options.find((opt) => opt.value === value)?.label
-        : undefined,
+  // Internal state identity uses the option's array index (stringified) so
+  // that `option.label` can be any ReactNode without breaking RadioGroup's
+  // string-typed `value` contract.
+  const selectedIndex = useMemo(
+    () => {
+      if (value == null) {
+        return undefined;
+      }
+      const idx = options.findIndex((opt) => opt.value === value);
+      return idx >= 0 ? String(idx) : undefined;
+    },
     [options, value],
   );
 
   const handleValueChange = useCallback(
-    (nextLabel: unknown) => {
-      const match = options.find((opt) => opt.label === nextLabel);
+    (nextIndex: unknown) => {
+      const idx = typeof nextIndex === "string" ? Number(nextIndex) : NaN;
+      const match = Number.isInteger(idx) ? options[idx] : undefined;
       onChange?.(match?.value ?? null);
     },
     [options, onChange],
@@ -51,11 +58,11 @@ export const RadioButtonsField: <V>(
       id={id}
       className={styles.osdkRadioGroup}
       data-orientation={orientation ?? "vertical"}
-      value={selectedLabel}
+      value={selectedIndex}
       onValueChange={handleValueChange}
     >
-      {options.map((option) => (
-        <RadioItem key={option.label} option={option} />
+      {options.map((option, idx) => (
+        <RadioItem key={idx} option={option} idx={idx} />
       ))}
     </RadioGroup>
   );
@@ -63,13 +70,15 @@ export const RadioButtonsField: <V>(
 
 const RadioItem = memo(function RadioItemFn({
   option,
+  idx,
 }: {
   option: Option<unknown>;
+  idx: number;
 }): React.ReactElement {
   return (
     <label className={styles.osdkRadioItem}>
       <Radio.Root
-        value={option.label}
+        value={String(idx)}
         className={styles.osdkRadioRoot}
       >
         <Radio.Indicator className={styles.osdkRadioIndicator} />

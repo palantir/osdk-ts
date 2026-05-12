@@ -327,6 +327,53 @@ describe("ObjectSelectField", () => {
       expect(popup?.textContent).toContain("99");
     });
   });
+
+  describe("itemToStringLabel as ReactNode", () => {
+    it("renders JSX returned from user-provided itemToStringLabel", async () => {
+      mockLoadedState();
+      renderObjectSelect({
+        itemToStringLabel: (obj) => (
+          <span data-testid={`obj-${obj.$primaryKey}`}>
+            ★ {obj.$title}
+          </span>
+        ),
+      });
+      await openCombobox();
+
+      await vi.waitFor(() => {
+        expect(screen.getByTestId("obj-1")).toBeDefined();
+        expect(screen.getByTestId("obj-2")).toBeDefined();
+      });
+    });
+
+    it(
+      "server-side title search still uses the title property when itemToStringLabel returns JSX",
+      async () => {
+        vi.useFakeTimers();
+        try {
+          mockLoadedState();
+          renderObjectSelect({
+            itemToStringLabel: (obj) => <span>★ {obj.$title}</span>,
+          });
+          await openCombobox();
+
+          const searchInput = screen.getByPlaceholderText("Search…");
+          fireEvent.change(searchInput, { target: { value: "Ali" } });
+
+          vi.advanceTimersByTime(300);
+
+          await vi.waitFor(() => {
+            const latestCall = mockUseOsdkObjects.mock.calls.at(-1);
+            expect(latestCall?.[1]?.where).toEqual({
+              fullName: { $containsAllTermsInOrder: "Ali" },
+            });
+          });
+        } finally {
+          vi.useRealTimers();
+        }
+      },
+    );
+  });
 });
 
 function mockMetadataLoaded(titleProperty: string = "fullName"): void {

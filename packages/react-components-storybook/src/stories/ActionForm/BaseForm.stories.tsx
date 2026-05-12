@@ -1878,3 +1878,250 @@ export const WithGridSection: Story = {
     onSubmit: handleSubmit,
   },
 };
+
+// ---------------------------------------------------------------------------
+// ReactNode rendering stories (DropdownField / ObjectSelectField /
+// RadioButtonsField) — demonstrate JSX returned from `itemToStringLabel`
+// and JSX as `Option.label`.
+// ---------------------------------------------------------------------------
+
+const DEPARTMENT_SWATCH_COLORS: Record<string, string> = {
+  Engineering: "#3b82f6",
+  Marketing: "#f97316",
+  Sales: "#10b981",
+  Finance: "#a855f7",
+  Operations: "#0ea5e9",
+  Legal: "#ef4444",
+};
+
+function SwatchDot({ color }: { color: string }): React.ReactElement {
+  return (
+    <span
+      style={{
+        display: "inline-block",
+        width: 10,
+        height: 10,
+        borderRadius: "50%",
+        marginRight: 8,
+        verticalAlign: "middle",
+        background: color,
+      }}
+    />
+  );
+}
+
+function DepartmentItem({ name }: { name: string }): React.ReactElement {
+  return (
+    <span style={{ display: "inline-flex", alignItems: "center" }}>
+      <SwatchDot color={DEPARTMENT_SWATCH_COLORS[name] ?? "#94a3b8"} />
+      <span>{name}</span>
+    </span>
+  );
+}
+
+const renderItemDropdownFormContent: ReadonlyArray<FormContentItem> = [
+  field({
+    fieldKey: "department",
+    fieldComponent: "DROPDOWN",
+    label: "Department (JSX item)",
+    fieldComponentProps: {
+      items: DEPARTMENT_ITEMS,
+      isSearchable: true,
+      placeholder: "Select department...",
+      itemToStringLabel: (item) => <DepartmentItem name={String(item)} />,
+      itemToSearchText: (item) => String(item),
+    },
+  }),
+  field({
+    fieldKey: "departments",
+    fieldComponent: "DROPDOWN",
+    label: "Departments (multi, JSX chips)",
+    fieldComponentProps: {
+      items: DEPARTMENT_ITEMS,
+      isMultiple: true,
+      isSearchable: true,
+      placeholder: "Select multiple...",
+      itemToStringLabel: (item) => <DepartmentItem name={String(item)} />,
+      itemToSearchText: (item) => String(item),
+      itemToAriaLabel: (item) => `department ${String(item)}`,
+    },
+  }),
+];
+
+export const WithDropdownRenderItem: Story = {
+  args: {
+    formContent: renderItemDropdownFormContent,
+    onSubmit: handleSubmit,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "`itemToStringLabel` may return any `ReactNode`. When it returns "
+          + "JSX, supply `itemToSearchText` (used for the combobox client-"
+          + "side filter) and optionally `itemToAriaLabel` (used on the "
+          + "multi-select chip remove button). String-returning callers "
+          + "see no behavior change.",
+      },
+      source: {
+        code: `const formContent = [
+  {
+    fieldKey: "department",
+    fieldComponent: "DROPDOWN",
+    label: "Department",
+    fieldComponentProps: {
+      items: DEPARTMENT_ITEMS,
+      isSearchable: true,
+      itemToStringLabel: (item) => <DepartmentItem name={item} />,
+      itemToSearchText: (item) => item,
+    },
+  },
+];`,
+      },
+    },
+  },
+};
+
+const renderItemRadioFormContent: ReadonlyArray<FormContentItem> = [
+  field({
+    fieldKey: "priority",
+    fieldComponent: "RADIO_BUTTONS",
+    label: "Priority (JSX labels)",
+    fieldComponentProps: {
+      options: [
+        {
+          label: (
+            <span style={{ display: "inline-flex", alignItems: "center" }}>
+              <SwatchDot color="#ef4444" />
+              High
+            </span>
+          ),
+          value: "high",
+        },
+        {
+          label: (
+            <span style={{ display: "inline-flex", alignItems: "center" }}>
+              <SwatchDot color="#f59e0b" />
+              Medium
+            </span>
+          ),
+          value: "medium",
+        },
+        {
+          label: (
+            <span style={{ display: "inline-flex", alignItems: "center" }}>
+              <SwatchDot color="#10b981" />
+              Low
+            </span>
+          ),
+          value: "low",
+        },
+      ],
+    },
+  }),
+];
+
+export const WithRadioButtonsRenderLabel: Story = {
+  args: {
+    formContent: renderItemRadioFormContent,
+    onSubmit: handleSubmit,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: "`Option.label` accepts any `ReactNode` (string or JSX). The "
+          + "Radio's internal state identity is decoupled from the label "
+          + "(it uses the option's array index), so selection by `value` "
+          + "keeps working identically.",
+      },
+      source: {
+        code: `const options = [
+  { label: <><SwatchDot color="#ef4444" /> High</>, value: "high" },
+  { label: <><SwatchDot color="#f59e0b" /> Medium</>, value: "medium" },
+  { label: <><SwatchDot color="#10b981" /> Low</>, value: "low" },
+];`,
+      },
+    },
+  },
+};
+
+function EmployeeAvatar({ name }: { name: string }): React.ReactElement {
+  const initials = name
+    .split(" ")
+    .map((part) => part[0] ?? "")
+    .slice(0, 2)
+    .join("")
+    .toUpperCase();
+  return (
+    <span style={{ display: "inline-flex", alignItems: "center" }}>
+      <span
+        style={{
+          display: "inline-flex",
+          alignItems: "center",
+          justifyContent: "center",
+          width: 22,
+          height: 22,
+          borderRadius: "50%",
+          marginRight: 8,
+          background: "#e0e7ff",
+          color: "#3730a3",
+          fontSize: 11,
+          fontWeight: 600,
+        }}
+      >
+        {initials}
+      </span>
+      <span>{name}</span>
+    </span>
+  );
+}
+
+const renderItemObjectSelectFormContent: ReadonlyArray<FormContentItem> = [
+  field({
+    fieldKey: "employee",
+    fieldComponent: "OBJECT_SELECT",
+    label: "Employee (avatar + name)",
+    fieldComponentProps: {
+      objectType: Employee,
+      placeholder: "Search employees…",
+      itemToStringLabel: (obj) => (
+        <EmployeeAvatar
+          name={typeof obj.$title === "string"
+            ? obj.$title
+            : String(obj.$primaryKey)}
+        />
+      ),
+    },
+  }),
+];
+
+export const WithObjectSelectRenderItem: Story = {
+  args: {
+    formContent: renderItemObjectSelectFormContent,
+    onSubmit: handleSubmit,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: "`ObjectSelectField` now exposes `itemToStringLabel`, "
+          + "`itemToSearchText`, and `itemToAriaLabel` for callers to "
+          + "override. When `itemToStringLabel` returns JSX, the OSDK "
+          + "server-side title search still uses the object's "
+          + "`titleProperty` — no client-side wiring needed.",
+      },
+      source: {
+        code: `const formContent = [
+  {
+    fieldKey: "employee",
+    fieldComponent: "OBJECT_SELECT",
+    label: "Employee",
+    fieldComponentProps: {
+      objectType: Employee,
+      itemToStringLabel: (obj) => <EmployeeAvatar name={obj.$title} />,
+    },
+  },
+];`,
+      },
+    },
+  },
+};

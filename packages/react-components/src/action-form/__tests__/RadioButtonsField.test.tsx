@@ -125,4 +125,74 @@ describe("RadioButtonsField", () => {
       expect(onChange).toHaveBeenCalledWith({ id: 2, name: "banana" });
     });
   });
+
+  describe("Option.label as ReactNode", () => {
+    const JSX_OPTIONS = [
+      {
+        label: <span data-testid="opt-red">★ Red</span>,
+        value: "red",
+      },
+      {
+        label: <span data-testid="opt-green">★ Green</span>,
+        value: "green",
+      },
+    ];
+
+    it("renders JSX labels", () => {
+      render(<RadioButtonsField value="red" options={JSX_OPTIONS} />);
+
+      expect(screen.getByTestId("opt-red")).toBeDefined();
+      expect(screen.getByTestId("opt-green")).toBeDefined();
+    });
+
+    it("selection by value still resolves correctly with JSX labels", () => {
+      render(<RadioButtonsField value="green" options={JSX_OPTIONS} />);
+
+      const greenRadio = screen.getByTestId("opt-green")
+        .closest("label")!
+        .querySelector("[role='radio']")!;
+      expect(greenRadio.getAttribute("aria-checked")).toBe("true");
+    });
+
+    it("onChange fires with the option value when JSX-labeled radio is clicked", () => {
+      const onChange = vi.fn();
+      render(
+        <RadioButtonsField
+          value="red"
+          options={JSX_OPTIONS}
+          onChange={onChange}
+        />,
+      );
+
+      const radios = screen.getAllByRole("radio");
+      fireEvent.click(radios[1]);
+
+      expect(onChange).toHaveBeenCalledWith("green");
+    });
+
+    it("two options with identical .value remain distinguishable by index", () => {
+      // Index-based identity means duplicate values can each render as their
+      // own selectable radio; selection by external `value` lands on the
+      // first match (findIndex semantics), but each radio is independently
+      // clickable in its own slot.
+      const dupOptions = [
+        { label: <span data-testid="dup-a">A</span>, value: "x" },
+        { label: <span data-testid="dup-b">B</span>, value: "x" },
+      ];
+      const onChange = vi.fn();
+      render(
+        <RadioButtonsField
+          value={null}
+          options={dupOptions}
+          onChange={onChange}
+        />,
+      );
+
+      const radios = screen.getAllByRole("radio");
+      expect(radios).toHaveLength(2);
+
+      fireEvent.click(radios[1]);
+      expect(onChange).toHaveBeenCalledWith("x");
+    });
+  });
 });

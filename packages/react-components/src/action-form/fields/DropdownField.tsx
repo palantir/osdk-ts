@@ -15,7 +15,7 @@
  */
 
 import { CaretDown, Cross, SmallCross, Tick } from "@blueprintjs/icons";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { Combobox } from "../../base-components/combobox/Combobox.js";
 import comboboxStyles from "../../base-components/combobox/Combobox.module.css";
 import { Select } from "../../base-components/select/Select.js";
@@ -36,7 +36,9 @@ const EMPTY_ARRAY: [] = [];
 interface InnerSelectProps<V, Multiple extends boolean>
   extends Omit<DropdownFieldProps<V, Multiple>, "isSearchable">
 {
-  itemToStringLabel: (item: V) => string;
+  itemToStringLabel: (item: V) => React.ReactNode;
+  itemToSearchText: (item: V) => string;
+  itemToAriaLabel: (item: V) => string;
   getKey: (item: V) => string;
   portalRef?: React.Ref<HTMLDivElement>;
   query?: string;
@@ -64,6 +66,8 @@ export const DropdownField: <V, Multiple extends boolean = false>(
   isMultiple,
   itemToStringLabel,
   itemToKey,
+  itemToSearchText,
+  itemToAriaLabel,
   value,
   query,
   onQueryChange,
@@ -84,9 +88,29 @@ export const DropdownField: <V, Multiple extends boolean = false>(
   const resolvedItemToStringLabel = itemToStringLabel
     ?? defaultItemToStringLabel;
 
+  const resolvedItemToSearchText = useCallback(
+    (item: V): string => {
+      if (itemToSearchText) {
+        return itemToSearchText(item);
+      }
+      const rendered = resolvedItemToStringLabel(item);
+      if (typeof rendered === "string") {
+        return rendered;
+      }
+      return itemToKey?.(item) ?? String(item);
+    },
+    [itemToSearchText, resolvedItemToStringLabel, itemToKey],
+  );
+
+  const resolvedItemToAriaLabel = useCallback(
+    (item: V): string =>
+      itemToAriaLabel?.(item) ?? resolvedItemToSearchText(item),
+    [itemToAriaLabel, resolvedItemToSearchText],
+  );
+
   const getKey = useCallback(
-    (item: V) => itemToKey?.(item) ?? resolvedItemToStringLabel(item),
-    [itemToKey, resolvedItemToStringLabel],
+    (item: V) => itemToKey?.(item) ?? resolvedItemToSearchText(item),
+    [itemToKey, resolvedItemToSearchText],
   );
 
   // Multi-select always uses Combobox for the chip-based UI because it looks better
@@ -97,6 +121,8 @@ export const DropdownField: <V, Multiple extends boolean = false>(
         isMultiple={isMultiple}
         value={normalizedValue}
         itemToStringLabel={resolvedItemToStringLabel}
+        itemToSearchText={resolvedItemToSearchText}
+        itemToAriaLabel={resolvedItemToAriaLabel}
         getKey={getKey}
         isSearchable={isSearchable}
         query={query}
@@ -115,6 +141,8 @@ export const DropdownField: <V, Multiple extends boolean = false>(
       {...rest}
       value={normalizedValue}
       itemToStringLabel={resolvedItemToStringLabel}
+      itemToSearchText={resolvedItemToSearchText}
+      itemToAriaLabel={resolvedItemToAriaLabel}
       getKey={getKey}
       modal={modal}
     />
@@ -130,6 +158,7 @@ const SelectDropdown = typedReactMemo(function SelectDropdownFn<
   onChange,
   items,
   itemToStringLabel,
+  itemToSearchText,
   getKey,
   isItemEqual,
   placeholder,
@@ -172,7 +201,7 @@ const SelectDropdown = typedReactMemo(function SelectDropdownFn<
         open={open}
         onOpenChange={handleOpenChange}
         isItemEqualToValue={isItemEqual}
-        itemToStringLabel={itemToStringLabel}
+        itemToStringLabel={itemToSearchText}
         modal={modal}
       >
         <Select.Trigger id={id} placeholder={placeholder}>
@@ -230,6 +259,8 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
   onChange,
   items,
   itemToStringLabel,
+  itemToSearchText,
+  itemToAriaLabel,
   getKey,
   isItemEqual,
   isMultiple,
@@ -321,6 +352,19 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
     [getKey, isMultiple, itemToStringLabel],
   );
 
+  const comboboxFilter = useMemo(
+    () => {
+      if (disableClientSideFiltering) {
+        return null;
+      }
+      return (itemValue: V, searchQuery: string) =>
+        itemToSearchText(itemValue).toLowerCase().includes(
+          searchQuery.toLowerCase(),
+        );
+    },
+    [disableClientSideFiltering, itemToSearchText],
+  );
+
   return (
     <div>
       <Combobox.Root
@@ -329,12 +373,12 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
         open={open}
         onOpenChange={handleOpenChange}
         multiple={isMultiple}
-        itemToStringLabel={itemToStringLabel}
+        itemToStringLabel={itemToSearchText}
         isItemEqualToValue={isItemEqual}
         items={items}
         inputValue={query}
         onInputValueChange={onQueryChange}
-        filter={disableClientSideFiltering ? null : undefined}
+        filter={comboboxFilter}
       >
         <Combobox.Trigger
           id={id}
@@ -354,7 +398,7 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
                       {itemToStringLabel(item)}
                       <span
                         role="button"
-                        aria-label={`Remove ${itemToStringLabel(item)}`}
+                        aria-label={`Remove ${itemToAriaLabel(item)}`}
                         className={comboboxStyles.osdkComboboxTriggerChipRemove}
                         onMouseDown={preventTriggerOpen}
                         onClick={() => handleRemoveItem(item)}
@@ -429,7 +473,7 @@ function preventTriggerOpen(e: React.MouseEvent): void {
   e.preventDefault();
 }
 
-function defaultItemToStringLabel<V>(item: V): string {
+function defaultItemToStringLabel<V>(item: V): React.ReactNode {
   if (item == null || typeof item !== "object") {
     return String(item);
   }

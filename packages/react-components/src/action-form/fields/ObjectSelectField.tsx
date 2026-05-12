@@ -65,6 +65,9 @@ const ObjectSelectInner: React.NamedExoticComponent<
   isMultiple,
   portalRef,
   portalContainer,
+  itemToStringLabel: itemToStringLabelProp,
+  itemToSearchText: itemToSearchTextProp,
+  itemToAriaLabel: itemToAriaLabelProp,
 }): React.ReactElement {
   // Tracks the user's search text. Cleared on selection so the selected
   // label (managed by base-ui) doesn't trigger a server-side search.
@@ -131,7 +134,9 @@ const ObjectSelectInner: React.NamedExoticComponent<
       onChange={handleChange}
       error={error}
       items={items}
-      itemToStringLabel={itemToStringLabel}
+      itemToStringLabel={itemToStringLabelProp ?? defaultItemToStringLabel}
+      itemToSearchText={itemToSearchTextProp ?? defaultItemToStringLabel}
+      itemToAriaLabel={itemToAriaLabelProp ?? defaultItemToStringLabel}
       itemToKey={itemToKey}
       isItemEqual={isItemEqual}
       placeholder={placeholder ?? "Search…"}
@@ -162,7 +167,7 @@ function resolveObjectSelectSource(
   return { kind: "objectType", objectType: props.objectType };
 }
 
-function itemToStringLabel(obj: ObjectSelectOsdkObject): string {
+function defaultItemToStringLabel(obj: ObjectSelectOsdkObject): string {
   return obj.$title ?? String(obj.$primaryKey);
 }
 

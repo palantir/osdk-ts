@@ -594,4 +594,137 @@ describe("DropdownField", () => {
       expect(screen.queryByLabelText("Clear")).toBeNull();
     });
   });
+
+  describe("itemToStringLabel as ReactNode", () => {
+    it("renders JSX returned from itemToStringLabel in select items", async () => {
+      render(
+        <DropdownField<string>
+          value={null}
+          items={STRING_ITEMS}
+          itemToStringLabel={(v) => <span data-testid={`item-${v}`}>★ {v}
+          </span>}
+        />,
+      );
+
+      fireEvent.click(screen.getByRole("combobox"));
+
+      await vi.waitFor(() => {
+        expect(screen.getByTestId("item-Alice")).toBeDefined();
+        expect(screen.getByTestId("item-Bob")).toBeDefined();
+      });
+    });
+
+    it("renders JSX in multi-select chips", () => {
+      render(
+        <DropdownField<string, true>
+          value={["Alice"]}
+          items={STRING_ITEMS}
+          isMultiple={true}
+          itemToStringLabel={(v) => <span data-testid={`chip-${v}`}>★ {v}
+          </span>}
+        />,
+      );
+
+      expect(screen.getByTestId("chip-Alice")).toBeDefined();
+    });
+
+    it("uses itemToAriaLabel for chip remove button aria-label", () => {
+      render(
+        <DropdownField<string, true>
+          value={["Alice"]}
+          items={STRING_ITEMS}
+          isMultiple={true}
+          itemToStringLabel={(v) => <span>★ {v}</span>}
+          itemToAriaLabel={(v) => `user ${v}`}
+        />,
+      );
+
+      expect(screen.getByLabelText("Remove user Alice")).toBeDefined();
+    });
+
+    it(
+      "falls back to itemToSearchText for chip aria-label when itemToAriaLabel absent",
+      () => {
+        render(
+          <DropdownField<string, true>
+            value={["Alice"]}
+            items={STRING_ITEMS}
+            isMultiple={true}
+            itemToStringLabel={(v) => <span>★ {v}</span>}
+            itemToSearchText={(v) => `search-${v}`}
+          />,
+        );
+
+        expect(screen.getByLabelText("Remove search-Alice")).toBeDefined();
+      },
+    );
+
+    it(
+      "string-returning itemToStringLabel still drives chip aria-label when no overrides",
+      () => {
+        render(
+          <DropdownField<string, true>
+            value={["Alice"]}
+            items={STRING_ITEMS}
+            isMultiple={true}
+            itemToStringLabel={(v) => v}
+          />,
+        );
+
+        expect(screen.getByLabelText("Remove Alice")).toBeDefined();
+      },
+    );
+
+    it(
+      "combobox client-side filter uses itemToSearchText when itemToStringLabel returns JSX",
+      async () => {
+        render(
+          <DropdownField<string>
+            value={null}
+            items={STRING_ITEMS}
+            isSearchable={true}
+            itemToStringLabel={(v) => (
+              <span data-testid={`item-${v}`}>★ {v}</span>
+            )}
+            itemToSearchText={(v) => v.toLowerCase()}
+          />,
+        );
+
+        fireEvent.click(screen.getByRole("combobox"));
+
+        const searchInput = await screen.findByPlaceholderText("Search…");
+        fireEvent.change(searchInput, { target: { value: "ali" } });
+
+        await vi.waitFor(() => {
+          expect(screen.queryByTestId("item-Alice")).toBeDefined();
+          expect(screen.queryByTestId("item-Bob")).toBeNull();
+          expect(screen.queryByTestId("item-Charlie")).toBeNull();
+        });
+      },
+    );
+
+    it(
+      "search falls back to string return of itemToStringLabel when no itemToSearchText",
+      async () => {
+        render(
+          <DropdownField<string>
+            value={null}
+            items={STRING_ITEMS}
+            isSearchable={true}
+            itemToStringLabel={(v) => v}
+          />,
+        );
+
+        fireEvent.click(screen.getByRole("combobox"));
+
+        const searchInput = await screen.findByPlaceholderText("Search…");
+        fireEvent.change(searchInput, { target: { value: "Bob" } });
+
+        await vi.waitFor(() => {
+          expect(screen.queryByRole("option", { name: /Bob/ })).toBeDefined();
+          expect(screen.queryByRole("option", { name: /Alice/ })).toBeNull();
+        });
+      },
+    );
+  });
 });

@@ -169,9 +169,19 @@ export interface DropdownFieldProps<V, Multiple extends boolean = false>
   items: V[];
 
   /**
-   * Converts an item to a display string. Defaults to `String()`.
+   * Converts an item to display content shown in dropdown items and chips.
+   * May return any `ReactNode` (e.g. JSX with avatars, icons, anchors).
+   * Defaults to `String(item)`, or `item.label` when items are objects with
+   * a string `.label` property.
+   *
+   * When this returns non-string JSX, `itemToSearchText` and
+   * `itemToAriaLabel` are used to derive the strings needed for the
+   * combobox's client-side filter and the multi-select chip remove
+   * button's `aria-label`. By default those fall back to `itemToKey?.(item)
+   * ?? String(item)` — set them explicitly when you want a meaningful
+   * search/aria experience alongside JSX rendering.
    */
-  itemToStringLabel?: (item: V) => string;
+  itemToStringLabel?: (item: V) => React.ReactNode;
 
   /**
    * Returns a unique string key for a list item. Used as the React `key`.
@@ -184,6 +194,22 @@ export interface DropdownFieldProps<V, Multiple extends boolean = false>
    * Required when items are objects to ensure correct selection matching.
    */
   isItemEqual?: (a: V, b: V) => boolean;
+
+  /**
+   * Returns the plain string used by the combobox's client-side filter
+   * when the user types a query. Defaults to `itemToStringLabel(item)`
+   * when that function returns a string, otherwise `itemToKey?.(item) ??
+   * String(item)`. Provide this explicitly when `itemToStringLabel`
+   * returns JSX and you want search to match against a meaningful label.
+   */
+  itemToSearchText?: (item: V) => string;
+
+  /**
+   * Returns the plain string used as the `aria-label` on the multi-select
+   * chip's remove button (e.g. `Remove ${itemToAriaLabel(item)}`).
+   * Defaults to `itemToSearchText(item)`.
+   */
+  itemToAriaLabel?: (item: V) => string;
 
   /**
    * Whether the dropdown allows searching/filtering.
@@ -382,10 +408,15 @@ export interface RadioButtonsFieldProps<V> extends BaseFormFieldProps<V> {
 export type SwitchFieldProps = BaseFormFieldProps<boolean>;
 
 /**
- * Option interface for radio button options
+ * Option interface for radio button options.
+ *
+ * `label` may be either a plain `string` or any `ReactNode` (e.g. JSX with
+ * an icon + text). When `label` is a string it is also used as the radio's
+ * accessible name; when it is JSX, ensure the rendered content provides
+ * its own accessible text (or is preceded by a visible field label).
  */
 export interface Option<V> {
-  label: string;
+  label: string | React.ReactNode;
   value: V;
 }
 
@@ -435,7 +466,6 @@ export type ObjectSelectFieldProps<
   & Omit<
     DropdownFieldProps<Osdk.Instance<Q>>,
     | "items"
-    | "itemToStringLabel"
     | "itemToKey"
     | "isItemEqual"
     | "isSearchable"
