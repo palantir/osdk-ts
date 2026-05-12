@@ -34,7 +34,7 @@ fi
 
 # Bail early if the name is already taken, so we don't 403 partway through.
 encoded="${PACKAGE_NAME//\//%2f}"
-status=$(curl -sS -I -o /dev/null -w '%{http_code}' "https://registry.npmjs.org/${encoded}") || status="000"
+status=$(curl -sS -I --connect-timeout 10 --max-time 60 -o /dev/null -w '%{http_code}' "https://registry.npmjs.org/${encoded}") || status="000"
 case "${status}" in
   404)
     ;;

@@ -15,44 +15,20 @@ REPO_ROOT="${SCRIPT_DIR}/.."
 
 cd "${REPO_ROOT}"
 
-# Workspace globs mirrored from pnpm-workspace.yaml. Keep in sync.
-WORKSPACE_DIRS=(
-  packages
-  examples
-  examples-extra
-  examples-extra/basic
-  tests
-  benchmarks
-)
-
-declare -a PACKAGE_JSONS=()
-
-for dir in "${WORKSPACE_DIRS[@]}"; do
-  if [[ -d "${dir}" ]]; then
-    while IFS= read -r pkg; do
-      PACKAGE_JSONS+=("${pkg}")
-    done < <(find "${dir}" -mindepth 2 -maxdepth 3 -name package.json -not -path "*/node_modules/*")
-  fi
-done
-
-if [[ -f docs/package.json ]]; then
-  PACKAGE_JSONS+=("docs/package.json")
-fi
-
+# Source of truth: pnpm reads pnpm-workspace.yaml and reports every workspace
+# package with its `private` flag. `--depth -1` skips dependency resolution
+# so this runs in well under a second and does not require `pnpm install`.
 declare -a MISSING=()
 declare -a CHECKED=()
 
-for pkg_json in "${PACKAGE_JSONS[@]}"; do
-  is_private=$(jq -r '.private // false' "${pkg_json}")
-  if [[ "${is_private}" == "true" ]]; then
-    continue
-  fi
-  name=$(jq -r '.name // ""' "${pkg_json}")
-  if [[ -z "${name}" ]]; then
-    continue
-  fi
+if ! command -v pnpm >/dev/null 2>&1; then
+  echo "::error::pnpm is required on PATH (got: not found)" >&2
+  exit 2
+fi
+
+while IFS= read -r name; do
   CHECKED+=("${name}")
-done
+done < <(pnpm m ls --depth -1 --json | jq -r '.[] | select(.private != true) | select(.name) | .name')
 
 if [[ ${#CHECKED[@]} -eq 0 ]]; then
   echo "No publishable packages found. Are workspace globs out of date?" >&2
@@ -75,7 +51,7 @@ for i in "${!CHECKED[@]}"; do
   if [[ ${i} -gt 0 ]]; then
     curl_config+=$'next\n'
   fi
-  curl_config+=$'url = "https://registry.npmjs.org/'"${encoded}"$'"\noutput = "/dev/null"\nhead\nwrite-out = "%{http_code}\\n"\n'
+  curl_config+=$'url = "https://registry.npmjs.org/'"${encoded}"$'"\noutput = "/dev/null"\nhead\nconnect-timeout = "10"\nmax-time = "60"\nwrite-out = "%{http_code}\\n"\n'
 done
 
 STATUSES=()
