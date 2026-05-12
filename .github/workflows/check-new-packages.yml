@@ -1,0 +1,28 @@
+name: Check new packages
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: check-new-packages-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check-new-packages:
+    name: Verify publishable packages exist on npm
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v6
+
+      - uses: pnpm/action-setup@v4
+
+      - name: Verify publishable packages exist on npm
+        run: ./scripts/check-packages-published.sh

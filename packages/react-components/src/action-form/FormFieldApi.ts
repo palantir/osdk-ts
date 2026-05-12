@@ -26,11 +26,13 @@ import type {
 } from "@osdk/api";
 import type React from "react";
 
-export type PortalContainer =
-  | HTMLElement
-  | ShadowRoot
-  | null
-  | React.RefObject<HTMLElement | ShadowRoot | null>;
+import type {
+  DatePickerProps,
+  DateRangePickerProps,
+} from "../shared/calendar/index.js";
+import type { PortalContainer } from "../shared/PortalDismissLayer.js";
+
+export type { PortalContainer };
 
 /**
  * A form field definition specifies configuration for a single field.
@@ -116,7 +118,7 @@ export type FormFieldDefinition<
        * The component props for the form field.
        * Excludes runtime props (value, onChange) which are managed by ActionForm.
        */
-      fieldComponentProps: Omit<
+      fieldComponentProps: DistributiveOmit<
         FormFieldPropsByType[C],
         FormManagedProps<C>
       >;
@@ -141,8 +143,8 @@ export type ValidationError =
  * Maps field types to their corresponding props
  */
 export interface FormFieldPropsByType {
-  DATE_RANGE_INPUT: DateRangeInputFieldProps;
-  DATETIME_PICKER: DatetimePickerFieldProps;
+  DATE_RANGE_INPUT: DateRangePickerProps;
+  DATETIME_PICKER: DatePickerProps;
   DROPDOWN: DropdownFieldProps<unknown, boolean>;
   FILE_PICKER: FilePickerProps;
   NUMBER_INPUT: NumberInputFieldProps;
@@ -153,119 +155,6 @@ export interface FormFieldPropsByType {
   TEXT_AREA: TextAreaFieldProps;
   TEXT_INPUT: TextInputFieldProps;
   CUSTOM: CustomFieldProps<unknown>;
-}
-
-/**
- * Datetime picker field props.
- *
- * When `formatDate` is omitted, ISO-like format is used (YYYY-MM-DD / YYYY-MM-DD HH:mm).
- */
-export interface DatetimePickerFieldProps extends BaseFormFieldProps<Date> {
-  /**
-   * The earliest date the user can select.
-   * If provided, this will be added to the field validation.
-   */
-  min?: Date;
-
-  /**
-   * The latest date the user can select.
-   * If provided, this will be added to the field validation.
-   */
-  max?: Date;
-
-  /**
-   * Whether to show time picker.
-   */
-  showTime?: boolean;
-
-  /**
-   * Whether to close the popover after selecting a date.
-   * @default true when `showTime` is false, false when `showTime` is true
-   */
-  closeOnSelection?: boolean;
-
-  /**
-   * Placeholder text shown when no value is selected.
-   */
-  placeholder?: string;
-
-  /**
-   * Formats a Date for display in the input field when not editing.
-   * When typing, the input shows the parsable format (YYYY-MM-DD or YYYY-MM-DD HH:mm).
-   * Provide a matching `parseDate` if using a custom format.
-   */
-  formatDate?: (date: Date) => string;
-
-  /**
-   * Parses a user-typed string back into a Date.
-   * Must be the inverse of `formatDate` — if `formatDate(d)` produces string `s`,
-   * then `parseDate(s)` must return an equivalent Date.
-   * When omitted, defaults to parsing "YYYY-MM-DD" (date-only) or "YYYY-MM-DD HH:mm" (with time).
-   */
-  parseDate?: (text: string) => Date | undefined;
-
-  /**
-   * Ref forwarded to the portal container element.
-   * Used to track portaled content for click-outside detection.
-   */
-  portalRef?: React.Ref<HTMLDivElement>;
-
-  /**
-   * Element that receives the date picker portal. Use this when rendering
-   * inside modal dialogs so popovers stay in the dialog's stacking and focus
-   * context instead of being appended directly to document.body.
-   */
-  portalContainer?: PortalContainer;
-}
-
-/**
- * A date range represented as a start/end tuple.
- * Either element may be `null` when the range is partially selected.
- */
-export type DateRange = readonly [Date | null, Date | null];
-
-/** Default empty range — both bounds are null. */
-export const EMPTY_RANGE: DateRange = [null, null];
-
-/**
- * Date range input field props.
- *
- * Renders two text inputs (start / end) with a shared calendar popover
- * that supports range selection.
- */
-export interface DateRangeInputFieldProps
-  extends BaseFormFieldProps<DateRange>
-{
-  /** The earliest selectable date. */
-  min?: Date;
-
-  /** The latest selectable date. */
-  max?: Date;
-
-  /** Whether to show time pickers for both dates. */
-  showTime?: boolean;
-
-  /** Placeholder text for the start date input. */
-  placeholderStart?: string;
-
-  /** Placeholder text for the end date input. */
-  placeholderEnd?: string;
-
-  /** Whether to allow start and end on the same day. @default true */
-  allowSingleDayRange?: boolean;
-
-  /** Formats a Date for display. Defaults to "YYYY-MM-DD". */
-  formatDate?: (date: Date) => string;
-
-  /** Parses a user-typed string back into a Date. */
-  parseDate?: (text: string) => Date | undefined;
-
-  /**
-   * Element that receives the date range picker portal. Use this when rendering
-   * inside modal dialogs so popovers stay in the dialog's stacking and focus
-   * context instead of being appended directly to document.body.
-   */
-  portalContainer?: PortalContainer;
 }
 
 /**
@@ -357,6 +246,15 @@ export interface DropdownFieldProps<V, Multiple extends boolean = false>
    * Use for infinite scroll sentinels, "load more" buttons, etc.
    */
   trailingItem?: React.ReactNode;
+
+  /**
+   * Whether the dropdown locks page scroll and renders a full-viewport
+   * dismiss layer when open. Set to `false` when the dropdown is not
+   * inside a `<label>` to allow normal page scrolling.
+   *
+   * @default true
+   */
+  modal?: boolean;
 }
 
 export interface FilePickerProps extends BaseFormFieldProps<File | File[]> {
@@ -505,6 +403,25 @@ export interface ObjectSetFieldProps<T extends ObjectTypeDefinition>
   emptyMessage?: string;
 }
 
+type ObjectSelectDataSource<Q extends ObjectTypeDefinition> =
+  | {
+    /**
+     * The object type definition to search across.
+     */
+    objectType: Q;
+    objectSet?: never;
+  }
+  | {
+    /**
+     * A pre-scoped object set to search within.
+     *
+     * Use this when selectable options should be limited to a subset of
+     * objects. User-entered search text is applied within this set.
+     */
+    objectSet: ObjectSet<Q>;
+    objectType?: never;
+  };
+
 /**
  * Object select field props for selecting object instances from the ontology.
  * Used for action parameters that accept a single object or multiple objects.
@@ -512,10 +429,10 @@ export interface ObjectSetFieldProps<T extends ObjectTypeDefinition>
  * Extends DropdownFieldProps with props that ObjectSelectField
  * manages internally (items, search, filtering) omitted from the public surface.
  */
-export interface ObjectSelectFieldProps<
+export type ObjectSelectFieldProps<
   Q extends ObjectTypeDefinition = ObjectTypeDefinition,
-> extends
-  Omit<
+> =
+  & Omit<
     DropdownFieldProps<Osdk.Instance<Q>>,
     | "items"
     | "itemToStringLabel"
@@ -527,12 +444,7 @@ export interface ObjectSelectFieldProps<
     | "disableClientSideFiltering"
     | "renderItemList"
   >
-{
-  /**
-   * The object type definition to search within.
-   */
-  objectType: Q;
-}
+  & ObjectSelectDataSource<Q>;
 
 /**
  * Custom field props for user-defined renderers
@@ -670,6 +582,12 @@ type FormManagedProps<K extends FieldComponent> = "onChange" extends
   keyof FormFieldPropsByType[K] ? "value" | "onChange"
   : "onChange";
 
+type DistributiveOmit<T, K extends PropertyKey> = T extends unknown ? Omit<
+    T,
+    Extract<keyof T, K>
+  >
+  : never;
+
 /**
  * An OSDK-agnostic field definition used by BaseForm and FormFieldRenderer.
  * Contains only the information needed to render a single field — no generics,
@@ -690,7 +608,10 @@ export type RendererFieldDefinition = {
     helperTextPlacement?: "bottom" | "tooltip";
     validate?: (value: unknown) => Promise<string | undefined>;
     onValidationError?: (error: ValidationError) => string | undefined;
-    fieldComponentProps: Omit<FormFieldPropsByType[K], FormManagedProps<K>>;
+    fieldComponentProps: DistributiveOmit<
+      FormFieldPropsByType[K],
+      FormManagedProps<K>
+    >;
   };
 }[FieldComponent];
 

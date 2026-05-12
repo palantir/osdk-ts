@@ -208,13 +208,35 @@ export interface ToggleFilterState extends BaseFilterState {
 }
 
 /**
- * A property filter definition specifies configuration for filtering on a single property
+ * Optional date display formatter. Mixed into `PropertyFilterDefinition`
+ * only when the property is `datetime` or `timestamp` — see
+ * {@link PropertyFilterDateExtras}.
  *
- * The component type C must be compatible with the property type derived from the key.
- * For example, boolean properties can only use LISTOGRAM or SINGLE_SELECT,
- * while string properties can use LISTOGRAM, TEXT_TAGS, CONTAINS_TEXT, SINGLE_SELECT, or MULTI_SELECT.
+ * `formatDate` overrides the displayed string everywhere the filter
+ * surfaces a date: the shared `DateRangePicker` / `DatePicker` idle text,
+ * the date-range histogram tooltip and period subtitle, the histogram
+ * x-tick labels (when no `formatTickLabel` is provided), the multi-date
+ * chip text, and timeline labels. The picker's internal value remains ISO
+ * `YYYY-MM-DD` so cross-locale viewers see a consistent input format
+ * regardless of `formatDate`.
+ *
+ * Receives a `Date` in local time. If the property is a UTC ISO string and
+ * you want a different timezone, do that conversion inside your callback.
  */
-export interface PropertyFilterDefinition<
+export interface DateFormattingProps {
+  formatDate?: (date: Date) => string;
+}
+
+/**
+ * Conditionally adds `formatDate` to a property filter definition only for
+ * `datetime` / `timestamp` properties. For other property types this field
+ * is typed as `never` so attempting to set it is a TypeScript error.
+ */
+export type PropertyFilterDateExtras<P extends WirePropertyTypes> = P extends
+  "datetime" | "timestamp" ? DateFormattingProps
+  : { formatDate?: never };
+
+interface PropertyFilterDefinitionBase<
   Q extends ObjectTypeDefinition,
   K extends PropertyKeys<Q> = PropertyKeys<Q>,
   C extends ValidComponentsForPropertyType<
@@ -287,6 +309,20 @@ export interface PropertyFilterDefinition<
   showCount?: boolean;
 
   /**
+   * When true, clicking a bar in the histogram replaces the filter range
+   * with that bucket's `[min, max]`. Only applies to histogram-rendering
+   * filter components (`NUMBER_RANGE` and `DATE_RANGE`); ignored on other
+   * component types.
+   *
+   * Click replaces the current range — clicking a second bar discards the
+   * previous selection. Multi-bucket selection / shift+click union is NOT
+   * supported in v1.
+   *
+   * @default false
+   */
+  clickToFilter?: boolean;
+
+  /**
    * Controls whether this filter is rendered.
    * When false, the filter is hidden but its state is preserved.
    * @default true
@@ -295,16 +331,36 @@ export interface PropertyFilterDefinition<
 }
 
 /**
- * Props for a single filter list item component.
- * Extends PropertyFilterDefinition with runtime props for rendering.
+ * A property filter definition specifies configuration for filtering on a single property
+ *
+ * The component type C must be compatible with the property type derived from the key.
+ * For example, boolean properties can only use LISTOGRAM or SINGLE_SELECT,
+ * while string properties can use LISTOGRAM, TEXT_TAGS, CONTAINS_TEXT, SINGLE_SELECT, or MULTI_SELECT.
+ *
+ * Date and datetime properties may additionally specify `formatDate` — see
+ * {@link PropertyFilterDateExtras}.
  */
-export interface FilterListItemProps<
+export type PropertyFilterDefinition<
   Q extends ObjectTypeDefinition,
   K extends PropertyKeys<Q> = PropertyKeys<Q>,
   C extends ValidComponentsForPropertyType<
     PropertyTypeFromKey<Q, K>
   > = ValidComponentsForPropertyType<PropertyTypeFromKey<Q, K>>,
-> extends PropertyFilterDefinition<Q, K, C> {
+> =
+  & PropertyFilterDefinitionBase<Q, K, C>
+  & PropertyFilterDateExtras<PropertyTypeFromKey<Q, K>>;
+
+/**
+ * Props for a single filter list item component.
+ * Extends PropertyFilterDefinition with runtime props for rendering.
+ */
+export type FilterListItemProps<
+  Q extends ObjectTypeDefinition,
+  K extends PropertyKeys<Q> = PropertyKeys<Q>,
+  C extends ValidComponentsForPropertyType<
+    PropertyTypeFromKey<Q, K>
+  > = ValidComponentsForPropertyType<PropertyTypeFromKey<Q, K>>,
+> = PropertyFilterDefinition<Q, K, C> & {
   objectSet: ObjectSet<Q>;
 
   /**
@@ -314,4 +370,4 @@ export interface FilterListItemProps<
   onFilterStateChanged: (state: FilterStateByComponentType[C]) => void;
 
   onFilterRemoved?: (key: PropertyKeys<Q>) => void;
-}
+};

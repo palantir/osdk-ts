@@ -21,6 +21,7 @@ export const EMPTY_ANNOTATION_ARRAY: PdfAnnotation[] = [];
 export const EMPTY_STRING = "";
 
 // Scale and dimension configuration
+export const PAGE_WIDTH_SCALE_VALUE = "page-width";
 export const SCALE_STEP = 0.25;
 export const MIN_SCALE = 0.25;
 export const MAX_SCALE = 5.0;

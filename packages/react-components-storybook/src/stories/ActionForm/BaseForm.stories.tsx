@@ -1702,6 +1702,74 @@ export const WithObjectSelect: Story = {
   },
 };
 
+function ScopedObjectSelectStory(): React.ReactElement {
+  const client = useOsdkClient();
+  const marketingEmployees = useMemo(
+    () =>
+      client(Employee).where({ department: "Marketing" }) as ObjectSet<
+        ObjectTypeDefinition
+      >,
+    [client],
+  );
+  const scopedObjectSelectFormContent = useMemo(
+    (): ReadonlyArray<FormContentItem> => [
+      field({
+        fieldKey: "employee",
+        fieldComponent: "OBJECT_SELECT",
+        label: "Marketing employee",
+        helperText: "This selector is scoped by an ObjectSet.",
+        fieldComponentProps: {
+          objectSet: marketingEmployees,
+          placeholder: "Search Marketing employees…",
+        },
+      }),
+    ],
+    [marketingEmployees],
+  );
+
+  return (
+    <BaseForm
+      formContent={scopedObjectSelectFormContent}
+      onSubmit={handleSubmit}
+    />
+  );
+}
+
+export const WithScopedObjectSelect: Story = {
+  render: () => <ScopedObjectSelectStory />,
+  parameters: {
+    docs: {
+      source: {
+        code: `function ScopedEmployeeForm() {
+  const client = useOsdkClient();
+  const marketingEmployees = useMemo(
+    () => client(Employee).where({ department: "Marketing" }),
+    [client],
+  );
+
+  const formContent = [
+    {
+      type: "field",
+      definition: {
+        fieldKey: "employee",
+        fieldComponent: "OBJECT_SELECT",
+        label: "Marketing employee",
+        helperText: "This selector is scoped by an ObjectSet.",
+        fieldComponentProps: {
+          objectSet: marketingEmployees,
+          placeholder: "Search Marketing employees…",
+        },
+      },
+    },
+  ];
+
+  return <BaseForm formContent={formContent} onSubmit={handleSubmit} />;
+}`,
+      },
+    },
+  },
+};
+
 export const WithSections: Story = {
   args: {
     formContent: sectionFormContent,

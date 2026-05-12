@@ -130,6 +130,22 @@ describe("DropdownField", () => {
         expect(screen.queryByRole("option", { name: "Alice" })).toBeNull();
       });
     });
+
+    it("does not render the portal dismiss layer when modal is false", async () => {
+      render(
+        <DropdownField value={null} items={STRING_ITEMS} modal={false} />,
+      );
+
+      fireEvent.click(screen.getByRole("combobox"));
+
+      await vi.waitFor(() => {
+        expect(screen.getByRole("option", { name: "Alice" })).toBeDefined();
+      });
+
+      expect(
+        document.querySelector("[data-osdk-portal-dismiss-layer]"),
+      ).toBeNull();
+    });
   });
 
   describe("multi select (Select variant)", () => {

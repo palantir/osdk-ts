@@ -25,11 +25,14 @@ import classnames from "classnames";
 import React, { memo, useCallback, useMemo } from "react";
 import { assertUnreachable } from "../../shared/assertUnreachable.js";
 import { ContainsTextInput } from "../base/inputs/ContainsTextInput.js";
-import { DateRangeInput } from "../base/inputs/DateRangeInput.js";
+import { DateRangeHistogramInput } from "../base/inputs/DateRangeHistogramInput.js";
 import styles from "../base/inputs/LinkedPropertyInput.module.css";
 import { ListogramInput } from "../base/inputs/ListogramInput.js";
 import { MultiDateInput } from "../base/inputs/MultiDateInput.js";
-import { MultiSelectInput } from "../base/inputs/MultiSelectInput.js";
+import {
+  MultiSelectInput,
+  type MultiSelectInputLayout,
+} from "../base/inputs/MultiSelectInput.js";
 import { NullValueWrapper } from "../base/inputs/NullValueWrapper.js";
 import { NumberRangeInput } from "../base/inputs/NumberRangeInput.js";
 import { SingleDateInput } from "../base/inputs/SingleDateInput.js";
@@ -66,6 +69,8 @@ interface LinkedPropertyInputProps<
   searchQuery?: string;
   className?: string;
   style?: React.CSSProperties;
+  /** Layout for `MULTI_SELECT` rendering. Forwarded to `MultiSelectInput`. */
+  layout?: MultiSelectInputLayout;
 }
 
 function LinkedPropertyInputInner<
@@ -79,6 +84,7 @@ function LinkedPropertyInputInner<
   searchQuery,
   className,
   style,
+  layout,
 }: LinkedPropertyInputProps<Q, L>): React.ReactElement {
   const linkedObjectSet = useMemo(
     () => objectSet.pivotTo(definition.linkName),
@@ -244,6 +250,7 @@ function LinkedPropertyInputInner<
             selectedValues={values}
             onChange={onSelectChange}
             showCount={definition.showCount}
+            layout={layout}
           />
         );
       }
@@ -426,6 +433,7 @@ interface LinkedMultiSelectInputProps<Q extends ObjectTypeDefinition>
   selectedValues: string[];
   onChange: (values: string[]) => void;
   showCount?: boolean;
+  layout?: MultiSelectInputLayout;
 }
 
 function LinkedMultiSelectInput<Q extends ObjectTypeDefinition>({
@@ -435,12 +443,19 @@ function LinkedMultiSelectInput<Q extends ObjectTypeDefinition>({
   selectedValues,
   onChange,
   showCount,
+  layout,
 }: LinkedMultiSelectInputProps<Q>): React.ReactElement {
+  const aggregationOptions = useMemo(
+    () => ({ activeValues: selectedValues }),
+    [selectedValues],
+  );
   const { data, isLoading, error } = usePropertyAggregation(
     objectType,
     propertyKey,
     objectSet,
+    aggregationOptions,
   );
+
   return (
     <MultiSelectInput
       values={data}
@@ -449,6 +464,7 @@ function LinkedMultiSelectInput<Q extends ObjectTypeDefinition>({
       selectedValues={selectedValues}
       onChange={onChange}
       showCounts={showCount}
+      layout={layout}
     />
   );
 }
@@ -469,11 +485,19 @@ function LinkedSingleSelectInput<Q extends ObjectTypeDefinition>({
   onChange,
   showCount,
 }: LinkedSingleSelectInputProps<Q>): React.ReactElement {
+  const aggregationOptions = useMemo(
+    () => ({
+      activeValues: selectedValue != null ? [selectedValue] : undefined,
+    }),
+    [selectedValue],
+  );
   const { data, isLoading, error } = usePropertyAggregation(
     objectType,
     propertyKey,
     objectSet,
+    aggregationOptions,
   );
+
   return (
     <SingleSelectInput
       values={data}
@@ -505,11 +529,17 @@ function LinkedListogramInput<Q extends ObjectTypeDefinition>({
   searchQuery,
   showCount,
 }: LinkedListogramInputProps<Q>): React.ReactElement {
+  const aggregationOptions = useMemo(
+    () => ({ activeValues: selectedValues }),
+    [selectedValues],
+  );
   const { data, maxCount, isLoading, error } = usePropertyAggregation(
     objectType,
     propertyKey,
     objectSet,
+    aggregationOptions,
   );
+
   return (
     <ListogramInput
       values={data}
@@ -726,7 +756,7 @@ function LinkedDateRangeInput<Q extends ObjectTypeDefinition>({
       includeNull={includeNull}
       onIncludeNullChange={onNullChange}
     >
-      <DateRangeInput
+      <DateRangeHistogramInput
         valueCountPairs={valueCountPairs}
         isLoading={histLoading}
         minValue={minValue}

@@ -74,6 +74,13 @@
   background: var(--osdk-filter-listogram-row-bg-active);
 }
 
+/* Empty/null bucket. Match NullValueWrapper's checkbox-to-label gap so an
+ * inline "No value" row in a histogram is visually consistent with the
+ * trailing "No value" row used by non-histogram filters. */
+.row[data-empty] {
+  gap: var(--osdk-filter-null-label-gap);
+}
+
 .label {
   flex: 1;
   font-family: var(--osdk-filter-listogram-label-font-family);

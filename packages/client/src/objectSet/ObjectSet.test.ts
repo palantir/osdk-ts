@@ -1236,6 +1236,8 @@ describe("ObjectSet", () => {
             | "skillSet"
             | "skillSetEmbedding"
             | "favoriteRestaurants"
+            | "employeeProfile"
+            | "performanceScores"
           >();
 
         expectTypeOf<
@@ -1268,6 +1270,8 @@ describe("ObjectSet", () => {
             | "skillSet"
             | "skillSetEmbedding"
             | "favoriteRestaurants"
+            | "employeeProfile"
+            | "performanceScores"
           >();
 
         // We don't have a proper definition that has

@@ -21,11 +21,13 @@ import type { FilterState } from "../FilterListItemApi.js";
 interface TimelineFilterInputProps {
   filterState: FilterState | undefined;
   onFilterStateChanged: (state: FilterState) => void;
+  formatDate?: (date: Date) => string;
 }
 
 function TimelineFilterInputInner({
   filterState,
   onFilterStateChanged,
+  formatDate,
 }: TimelineFilterInputProps): React.ReactElement {
   const { startDate, endDate } = useMemo(
     () =>
@@ -53,6 +55,7 @@ function TimelineFilterInputInner({
       startDate={startDate}
       endDate={endDate}
       onChange={handleChange}
+      formatDate={formatDate}
     />
   );
 }

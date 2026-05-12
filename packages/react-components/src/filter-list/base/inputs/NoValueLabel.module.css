@@ -17,4 +17,5 @@
 .noValue {
   color: var(--osdk-filter-no-value-color);
   font-style: var(--osdk-filter-no-value-font-style);
+  font-size: var(--osdk-filter-no-value-font-size);
 }

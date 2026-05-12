@@ -129,7 +129,7 @@ function EditableCellInner<TData extends RowData, CellValue = unknown>({
   }, []);
 
   const hasValidationError = validationError != null;
-  const isEdited = currentValue !== initialValue;
+  const isEdited = (currentValue ?? null) !== (initialValue ?? null);
 
   useEffect(() => {
     setInputValue(valueToString(currentValue));
@@ -248,9 +248,10 @@ function EditableCellInner<TData extends RowData, CellValue = unknown>({
 
   const handleCommit = useCallback(
     (newValue: unknown) => {
+      if ((newValue ?? null) === (currentValue ?? null)) return;
       commitEdit(newValue as CellValue);
     },
-    [commitEdit],
+    [commitEdit, currentValue],
   );
 
   const inputType = dataType && NUMBER_TYPES.includes(dataType)
