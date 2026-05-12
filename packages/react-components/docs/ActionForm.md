@@ -97,7 +97,7 @@ const fields = [
 
 ### Scoped object select fields
 
-`OBJECT_SELECT` can load options from either an object type or a pre-scoped object set. Pass `objectType` for an unfiltered selector, or pass `objectSet` to limit selectable options. Do not pass both. Search text is applied within the object set, and the current value is not automatically cleared when it is outside that set.
+`OBJECT_SELECT` can load options from either an object type or a pre-scoped object set. Pass `objectType` for an unfiltered selector, or pass `objectSet` to limit selectable options. The two are mutually exclusive. Search text is applied within the object set, and the current value is not automatically cleared when it is outside that set.
 
 ```tsx
 import { $, Employee, updateEmployee } from "@YourApp/sdk";
