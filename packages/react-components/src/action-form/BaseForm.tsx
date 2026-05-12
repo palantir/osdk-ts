@@ -30,7 +30,7 @@ import { FormHeader } from "./FormHeader.js";
 import { FormSection } from "./FormSection.js";
 
 export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
-  formTitle,
+  // formTitle,
   formContent,
   formState: controlledFormState,
   onFieldValueChange,
@@ -43,6 +43,7 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
   submitButtonVariant = "primary",
 }: BaseFormProps): React.ReactElement {
   const portalContainerRef = useRef<HTMLFormElement>(null);
+  const formTitle = "Title test second PR";
   const isControlled = controlledFormState != null;
 
   const allFieldDefinitions = useMemo(
