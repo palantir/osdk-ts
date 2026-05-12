@@ -24,6 +24,7 @@ export { NihalbCastingObjectTypeC } from './objects/NihalbCastingObjectTypeC.js'
 export { ObjectTypeWithAllPropertyTypes } from './objects/ObjectTypeWithAllPropertyTypes.js';
 export { OsdkTestObject } from './objects/OsdkTestObject.js';
 export { Person } from './objects/Person.js';
+export { ReducerTest } from './objects/ReducerTest.js';
 export { RhemmingsObjectWithGtsrProperty2 } from './objects/RhemmingsObjectWithGtsrProperty2.js';
 export { SotSensor } from './objects/SotSensor.js';
 export { StateTerritory } from './objects/StateTerritory.js';
