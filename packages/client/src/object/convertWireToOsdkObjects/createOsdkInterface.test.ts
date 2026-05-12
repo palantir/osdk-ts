@@ -14,12 +14,17 @@
  * limitations under the License.
  */
 
+import type { InterfaceMetadata } from "@osdk/api";
+import type { PropertySecurities } from "@osdk/foundry.ontologies";
 import { describe, expect, it } from "vitest";
+import type { MinimalClient } from "../../MinimalClientContext.js";
 import {
   type FetchedObjectTypeDefinition,
   InterfaceDefinitions,
 } from "../../ontology/OntologyProvider.js";
+import type { SimpleOsdkProperties } from "../SimpleOsdkProperties.js";
 import { createOsdkInterface } from "./createOsdkInterface.js";
+import { createOsdkObject } from "./createOsdkObject.js";
 import { ObjectDefRef } from "./InternalSymbols.js";
 
 describe(createOsdkInterface, () => {
@@ -216,5 +221,102 @@ describe(createOsdkInterface, () => {
         "b.asdf": "hi mom"
       }"
     `);
+  });
+
+  describe("with $loadPropertySecurityMetadata", () => {
+    const interfaceDef: InterfaceMetadata = {
+      apiName: "IFoo",
+      displayName: "",
+      links: {},
+      properties: { "asdf": { type: "string" } },
+      rid: "",
+      type: "interface",
+      implements: [],
+      description: undefined,
+    };
+
+    const objectDef: FetchedObjectTypeDefinition = {
+      [InterfaceDefinitions]: {
+        "IFoo": { def: interfaceDef },
+      },
+      apiName: "Obj",
+      displayName: "",
+      interfaceMap: { "IFoo": { "asdf": "foo" } },
+      inverseInterfaceMap: { "IFoo": { "foo": "asdf" } },
+      links: {},
+      pluralDisplayName: "",
+      primaryKeyApiName: "id",
+      primaryKeyType: "integer",
+      properties: {
+        id: { type: "integer" },
+        foo: { type: "string" },
+      },
+      type: "object",
+      titleProperty: "foo",
+      rid: "",
+      status: "ACTIVE",
+      icon: undefined,
+      visibility: undefined,
+      description: undefined,
+    };
+
+    const wireSecurities: PropertySecurities[] = [
+      { disjunction: [{ type: "unsupportedPolicy" }] },
+    ];
+
+    const simpleProps = {
+      $apiName: "Obj",
+      $objectType: "Obj",
+      $primaryKey: 1,
+      $title: "hi mom",
+      id: 1,
+      foo: { value: "hi mom", propertySecurityIndex: 0 },
+    } as unknown as SimpleOsdkProperties;
+
+    const client = {} as MinimalClient;
+
+    function makeObj() {
+      return createOsdkObject(
+        client,
+        objectDef,
+        simpleProps,
+        {},
+        wireSecurities,
+      ) as unknown as Record<string, unknown> & {
+        $as: (name: string) => Record<string, unknown>;
+        $clone: () => Record<string, unknown>;
+      };
+    }
+
+    it("$as does not throw and exposes the mapped (unwrapped) property", () => {
+      const obj = makeObj();
+      const iface = obj.$as("IFoo");
+      expect(iface.$apiName).toBe("IFoo");
+      expect(iface.asdf).toBe("hi mom");
+    });
+
+    it("$as'd interface exposes ObjectMetadata equal to the source objectDef", () => {
+      const obj = makeObj();
+      const iface = obj.$as("IFoo");
+      const metadata = iface
+        .$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata as {
+          ObjectMetadata: FetchedObjectTypeDefinition;
+        };
+      expect(metadata.ObjectMetadata).toBe(objectDef);
+    });
+
+    it("$propertySecurities resolves on both holder and interface view", () => {
+      const obj = makeObj();
+      const expectedSecurities = {
+        foo: [{ type: "unsupportedPolicy" }],
+      };
+      expect(obj.$propertySecurities).toEqual(expectedSecurities);
+      expect(obj.$as("IFoo").$propertySecurities).toEqual(expectedSecurities);
+    });
+
+    it("$clone() preserves unwrapped property values", () => {
+      const obj = makeObj();
+      expect(obj.$clone().foo).toBe("hi mom");
+    });
   });
 });

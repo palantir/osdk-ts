@@ -62,17 +62,17 @@ const specialPropertyTypes = new Set(
 // every time an object is created.
 const basePropDefs = {
   "$as": {
-    get: function(this: ObjectHolder) {
+    get(this: ObjectHolder) {
       return get$as(this[ObjectDefRef]);
     },
   },
   "$link": {
-    get: function(this: ObjectHolder) {
+    get(this: ObjectHolder) {
       return get$link(this);
     },
   },
   "$clone": {
-    value: function(
+    value(
       this: ObjectHolder,
       update: Record<string, any> | undefined,
     ) {
@@ -102,7 +102,7 @@ const basePropDefs = {
     },
   },
   "$objectSpecifier": {
-    get: function(this: ObjectHolder) {
+    get(this: ObjectHolder) {
       const rawObj = this[UnderlyingOsdkObject];
       return createObjectSpecifierFromPrimaryKey(
         this[ObjectDefRef],
@@ -112,13 +112,13 @@ const basePropDefs = {
     enumerable: true,
   },
   "$propertySecurities": {
-    get: function(this: ObjectHolder) {
+    get(this: ObjectHolder) {
       return this[PropertySecuritiesRef];
     },
     enumerable: true,
   },
   "$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata": {
-    get: function(this: ObjectHolder) {
+    get(this: ObjectHolder) {
       return {
         ObjectMetadata: this[ObjectDefRef],
       };
@@ -126,7 +126,7 @@ const basePropDefs = {
     enumerable: false,
   },
   "$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue": {
-    value: function(
+    value(
       this: ObjectHolder,
       propertyApiName: string,
       options?: FormatPropertyOptions,
@@ -173,7 +173,7 @@ export function createOsdkObject(
     {
       [UnderlyingOsdkObject]: {
         enumerable: false,
-        value: simpleOsdkProperties,
+        value: rawObj,
       },
       [PropertySecuritiesRef]: {
         enumerable: false,
