@@ -74,6 +74,8 @@ export type { ValueTypeVersion } from "./generated/type-registry/api/ValueTypeVe
 export type {
   OntologyIr,
   OntologyIrOntologyBlockDataV2,
+  OntologyIrPackagedValueType,
+  OntologyIrPackagedValueTypeMetadata,
   OntologyIrV2,
   OntologyIrValueTypeBlockData,
   OntologyIrValueTypeBlockDataEntry,
