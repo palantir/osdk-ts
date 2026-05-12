@@ -132,16 +132,6 @@ const archetypeRules = archetypes(
     },
   )
   .addArchetype(
-    "publish-guard test packages",
-    [
-      "@osdk/z-test-package",
-    ],
-    {
-      ...LIBRARY_RULES,
-      minimalChangesOnly: true,
-    },
-  )
-  .addArchetype(
     "standardLibraries",
     [
       "@osdk/foundry-config-json",
