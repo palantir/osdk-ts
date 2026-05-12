@@ -13,6 +13,11 @@
 
   /* Excel Viewer - Sheet Tabs */
   --osdk-excel-viewer-tab-bg: var(--osdk-background-secondary);
+  --osdk-excel-viewer-tab-hover-bg: var(--osdk-background-tertiary);
   --osdk-excel-viewer-tab-active-bg: var(--osdk-background-primary);
   --osdk-excel-viewer-tab-border: var(--osdk-surface-border);
+  --osdk-excel-viewer-tab-border-radius: 4px;
+  --osdk-excel-viewer-tab-padding: 4px 12px;
+  --osdk-excel-viewer-tab-bar-padding: 4px;
+  --osdk-excel-viewer-tab-gap: 2px;
 }

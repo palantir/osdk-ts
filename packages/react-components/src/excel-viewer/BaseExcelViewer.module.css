@@ -77,33 +77,40 @@
 /* Sheet tabs bar */
 .tabBar {
   display: flex;
-  gap: 0;
+  align-items: flex-end;
+  gap: var(--osdk-excel-viewer-tab-gap);
   border-top: var(--osdk-excel-viewer-tab-border);
   background-color: var(--osdk-excel-viewer-tab-bg);
   flex-shrink: 0;
   overflow-x: auto;
+  padding: var(--osdk-excel-viewer-tab-bar-padding) var(--osdk-excel-viewer-tab-bar-padding) 0;
 }
 
 .tab {
-  padding: calc(var(--osdk-surface-spacing) / 2) var(--osdk-surface-spacing);
-  border: none;
-  border-right: var(--osdk-excel-viewer-tab-border);
+  padding: var(--osdk-excel-viewer-tab-padding);
+  border: var(--osdk-excel-viewer-tab-border);
+  border-bottom: none;
+  border-radius: var(--osdk-excel-viewer-tab-border-radius) var(--osdk-excel-viewer-tab-border-radius) 0 0;
   background-color: var(--osdk-excel-viewer-tab-bg);
   font-family: var(--osdk-typography-family-default);
-  font-size: var(--osdk-typography-size-body-small);
-  color: var(--osdk-typography-color-default-rest);
+  font-size: var(--osdk-typography-size-body-x-small);
+  color: var(--osdk-typography-color-muted);
   cursor: pointer;
   white-space: nowrap;
+  position: relative;
+  top: 1px;
 }
 
 .tab:hover {
-  background-color: var(--osdk-excel-viewer-tab-active-bg);
+  background-color: var(--osdk-excel-viewer-tab-hover-bg);
+  color: var(--osdk-typography-color-default-rest);
 }
 
 .tabActive {
   background-color: var(--osdk-excel-viewer-tab-active-bg);
+  color: var(--osdk-typography-color-default-rest);
   font-weight: var(--osdk-typography-weight-bold);
-  border-bottom: 2px solid var(--osdk-intent-primary-rest);
+  border-bottom: 1px solid var(--osdk-excel-viewer-tab-active-bg);
 }
 
 .emptySheet {
