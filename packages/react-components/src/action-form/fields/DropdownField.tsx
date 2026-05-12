@@ -42,6 +42,7 @@ interface InnerSelectProps<V, Multiple extends boolean>
   query?: string;
   onQueryChange?: (query: string) => void;
   onBlur?: () => void;
+  modal?: boolean;
 }
 
 interface InnerComboboxProps<V, Multiple extends boolean>
@@ -69,6 +70,7 @@ export const DropdownField: <V, Multiple extends boolean = false>(
   disableClientSideFiltering,
   popupStatus,
   trailingItem,
+  modal = true,
   ...rest
 }: DropdownFieldProps<V, Multiple> & {
   onBlur?: () => void;
@@ -102,6 +104,7 @@ export const DropdownField: <V, Multiple extends boolean = false>(
         disableClientSideFiltering={disableClientSideFiltering}
         popupStatus={popupStatus}
         trailingItem={trailingItem}
+        modal={modal}
       />
     );
   }
@@ -113,6 +116,7 @@ export const DropdownField: <V, Multiple extends boolean = false>(
       value={normalizedValue}
       itemToStringLabel={resolvedItemToStringLabel}
       getKey={getKey}
+      modal={modal}
     />
   );
 });
@@ -132,6 +136,7 @@ const SelectDropdown = typedReactMemo(function SelectDropdownFn<
   portalRef,
   portalContainer,
   onBlur,
+  modal = true,
 }: InnerSelectProps<V, Multiple>): React.ReactElement {
   const [open, setOpen] = useState(false);
 
@@ -168,6 +173,7 @@ const SelectDropdown = typedReactMemo(function SelectDropdownFn<
         onOpenChange={handleOpenChange}
         isItemEqualToValue={isItemEqual}
         itemToStringLabel={itemToStringLabel}
+        modal={modal}
       >
         <Select.Trigger id={id} placeholder={placeholder}>
           <div className={selectStyles.osdkSelectValueContainer}>
@@ -194,7 +200,7 @@ const SelectDropdown = typedReactMemo(function SelectDropdownFn<
           </span>
         </Select.Trigger>
         <Select.Portal ref={portalRef} container={portalContainer}>
-          {open && (
+          {open && modal && (
             <PortalDismissLayer
               className={dropdownStyles.osdkSelectDismissLayer}
               onDismiss={handleDismiss}
@@ -237,6 +243,7 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
   popupStatus,
   trailingItem,
   onBlur,
+  modal = true,
 }: InnerComboboxProps<V, Multiple>): React.ReactElement {
   const [open, setOpen] = useState(false);
 
@@ -385,7 +392,7 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
           </Combobox.Icon>
         </Combobox.Trigger>
         <Combobox.Portal ref={portalRef} container={portalContainer}>
-          {open && (
+          {open && modal && (
             <PortalDismissLayer
               className={dropdownStyles.osdkComboboxDismissLayer}
               onDismiss={handleDismiss}

@@ -246,6 +246,15 @@ export interface DropdownFieldProps<V, Multiple extends boolean = false>
    * Use for infinite scroll sentinels, "load more" buttons, etc.
    */
   trailingItem?: React.ReactNode;
+
+  /**
+   * Whether the dropdown locks page scroll and renders a full-viewport
+   * dismiss layer when open. Set to `false` when the dropdown is not
+   * inside a `<label>` to allow normal page scrolling.
+   *
+   * @default true
+   */
+  modal?: boolean;
 }
 
 export interface FilePickerProps extends BaseFormFieldProps<File | File[]> {
