@@ -184,11 +184,11 @@ export type IsAny<T> = unknown extends T
 
 export type GetPropsKeys<
   Q extends ObjectOrInterfaceDefinition,
-  P,
+  P extends PropertyKeys<Q>,
   N extends boolean = false,
 > = IsNever<P> extends true ? N extends true ? never : PropertyKeys<Q>
   : IsAny<P> extends true ? PropertyKeys<Q>
-  : P & PropertyKeys<Q>;
+  : P;
 
 /**
  * Use `Osdk.Instance` or `YourType.OsdkInstance`
