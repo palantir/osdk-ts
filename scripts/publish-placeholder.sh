@@ -13,6 +13,9 @@
 #     (run `npm whoami` to confirm; `npm login` if not).
 set -euo pipefail
 
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+REPO_ROOT="${SCRIPT_DIR}/.."
+
 if [[ $# -ne 1 ]]; then
   echo "Usage: $0 @osdk/<package-name>" >&2
   exit 64
@@ -57,6 +60,12 @@ cat > "${tmp_dir}/package.json" <<EOF
   "version": "0.0.0"
 }
 EOF
+
+# Carry over the repo's .npmrc (registry, scope settings, etc.) so npm publish
+# picks up the same configuration the rest of the repo uses.
+if [[ -f "${REPO_ROOT}/.npmrc" ]]; then
+  cp "${REPO_ROOT}/.npmrc" "${tmp_dir}/.npmrc"
+fi
 
 echo "Publishing placeholder for ${PACKAGE_NAME} from ${tmp_dir}..."
 (
