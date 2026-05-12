@@ -43,6 +43,25 @@ type withProperties_aggregateBuilder_aggregate = <
             lastUpdated: PropertyDef<"timestamp", "nullable", "single">;
             skillSet: PropertyDef<"string", "nullable", "single">;
             skillSetEmbedding: PropertyDef<"vector", "nullable", "single">;
+            addressStruct: {
+              type: { street: "string"; city: "string"; zipCode: "string" };
+              nullable: true;
+              multiplicity: false;
+              mainValue: { fields: readonly ["city", "zipCode"] };
+            };
+            salaryHistory: {
+              type: "integer";
+              nullable: true;
+              multiplicity: true;
+              hasReducers: true;
+            };
+            bonusHistory: {
+              type: { year: "integer"; amount: "integer" };
+              nullable: true;
+              multiplicity: true;
+              mainValue: { fields: readonly ["amount"] };
+              hasReducers: true;
+            };
           }[N]["type"]
         >
         | undefined
@@ -70,6 +89,25 @@ type withProperties_aggregateBuilder_aggregate = <
           lastUpdated: PropertyDef<"timestamp", "nullable", "single">;
           skillSet: PropertyDef<"string", "nullable", "single">;
           skillSetEmbedding: PropertyDef<"vector", "nullable", "single">;
+          addressStruct: {
+            type: { street: "string"; city: "string"; zipCode: "string" };
+            nullable: true;
+            multiplicity: false;
+            mainValue: { fields: readonly ["city", "zipCode"] };
+          };
+          salaryHistory: {
+            type: "integer";
+            nullable: true;
+            multiplicity: true;
+            hasReducers: true;
+          };
+          bonusHistory: {
+            type: { year: "integer"; amount: "integer" };
+            nullable: true;
+            multiplicity: true;
+            mainValue: { fields: readonly ["amount"] };
+            hasReducers: true;
+          };
         }[N]["type"]
         | undefined
     : P extends "approximateDistinct" | "exactDistinct" ? "integer"
@@ -127,6 +165,25 @@ type withProperties_builder_selectProperty = <
       lastUpdated: PropertyDef<"timestamp", "nullable", "single">;
       skillSet: PropertyDef<"string", "nullable", "single">;
       skillSetEmbedding: PropertyDef<"vector", "nullable", "single">;
+      addressStruct: {
+        type: { street: "string"; city: "string"; zipCode: "string" };
+        nullable: true;
+        multiplicity: false;
+        mainValue: { fields: readonly ["city", "zipCode"] };
+      };
+      salaryHistory: {
+        type: "integer";
+        nullable: true;
+        multiplicity: true;
+        hasReducers: true;
+      };
+      bonusHistory: {
+        type: { year: "integer"; amount: "integer" };
+        nullable: true;
+        multiplicity: true;
+        mainValue: { fields: readonly ["amount"] };
+        hasReducers: true;
+      };
     }[R]["type"],
     {
       class: PropertyDef<"string", "nullable", "single">;
@@ -150,6 +207,25 @@ type withProperties_builder_selectProperty = <
       lastUpdated: PropertyDef<"timestamp", "nullable", "single">;
       skillSet: PropertyDef<"string", "nullable", "single">;
       skillSetEmbedding: PropertyDef<"vector", "nullable", "single">;
+      addressStruct: {
+        type: { street: "string"; city: "string"; zipCode: "string" };
+        nullable: true;
+        multiplicity: false;
+        mainValue: { fields: readonly ["city", "zipCode"] };
+      };
+      salaryHistory: {
+        type: "integer";
+        nullable: true;
+        multiplicity: true;
+        hasReducers: true;
+      };
+      bonusHistory: {
+        type: { year: "integer"; amount: "integer" };
+        nullable: true;
+        multiplicity: true;
+        mainValue: { fields: readonly ["amount"] };
+        hasReducers: true;
+      };
     }[R]["nullable"] extends true ? "nullable" : "non-nullable",
     {
       class: PropertyDef<"string", "nullable", "single">;
@@ -173,6 +249,25 @@ type withProperties_builder_selectProperty = <
       lastUpdated: PropertyDef<"timestamp", "nullable", "single">;
       skillSet: PropertyDef<"string", "nullable", "single">;
       skillSetEmbedding: PropertyDef<"vector", "nullable", "single">;
+      addressStruct: {
+        type: { street: "string"; city: "string"; zipCode: "string" };
+        nullable: true;
+        multiplicity: false;
+        mainValue: { fields: readonly ["city", "zipCode"] };
+      };
+      salaryHistory: {
+        type: "integer";
+        nullable: true;
+        multiplicity: true;
+        hasReducers: true;
+      };
+      bonusHistory: {
+        type: { year: "integer"; amount: "integer" };
+        nullable: true;
+        multiplicity: true;
+        mainValue: { fields: readonly ["amount"] };
+        hasReducers: true;
+      };
     }[R]["multiplicity"] extends true ? "array" : "single"
   >
 >;

@@ -257,6 +257,9 @@ type osdkInstance_property_securities =
       lastUpdated: Array<PropertySecurity>;
       skillSet: Array<PropertySecurity>;
       skillSetEmbedding: Array<PropertySecurity>;
+      addressStruct: Array<PropertySecurity>;
+      salaryHistory: Array<Array<PropertySecurity>>;
+      bonusHistory: Array<Array<PropertySecurity>>;
     };
   };
 

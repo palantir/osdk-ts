@@ -117,7 +117,29 @@ type objectSet_fetchPageWithErrors_result =
   | ErrorResult
   | OkResult<
     PageResult<
-      | Osdk.Instance<EmployeeApiTest, never, PropertyKeys<EmployeeApiTest>, {}>
+      | Osdk.Instance<
+        EmployeeApiTest,
+        never,
+        | "employeeId"
+        | "fullName"
+        | "class"
+        | "mediaReference"
+        | "attachment"
+        | "geopoint"
+        | "geotimeSeriesReference"
+        | "timeseries"
+        | "isActive"
+        | "yearsOfExperience"
+        | "rank"
+        | "performanceScore"
+        | "hourlyRate"
+        | "dateOfJoining"
+        | "lastUpdated"
+        | "skillSet"
+        | "skillSetEmbedding"
+        | undefined,
+        {}
+      >
       | (
         & ObjectIdentifiers<EmployeeApiTest>
         & {
@@ -140,7 +162,24 @@ type objectSet_fetchPageWithErrors_result =
             ConvertProps<
               EmployeeApiTest,
               NEW_Q,
-              PropertyKeys<EmployeeApiTest>,
+              | "employeeId"
+              | "fullName"
+              | "class"
+              | "mediaReference"
+              | "attachment"
+              | "geopoint"
+              | "geotimeSeriesReference"
+              | "timeseries"
+              | "isActive"
+              | "yearsOfExperience"
+              | "rank"
+              | "performanceScore"
+              | "hourlyRate"
+              | "dateOfJoining"
+              | "lastUpdated"
+              | "skillSet"
+              | "skillSetEmbedding"
+              | undefined,
               never
             >,
             {}
@@ -153,7 +192,25 @@ type objectSet_fetchPageWithErrors_result =
           ) => Osdk.Instance<
             EmployeeApiTest,
             never,
-            PropertyKeys<EmployeeApiTest> | NEW_PROPS,
+            | "employeeId"
+            | "fullName"
+            | "class"
+            | "mediaReference"
+            | "attachment"
+            | "geopoint"
+            | "geotimeSeriesReference"
+            | "timeseries"
+            | "isActive"
+            | "yearsOfExperience"
+            | "rank"
+            | "performanceScore"
+            | "hourlyRate"
+            | "dateOfJoining"
+            | "lastUpdated"
+            | "skillSet"
+            | "skillSetEmbedding"
+            | NEW_PROPS
+            | undefined,
             {}
           >;
           readonly $__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata: {
@@ -173,7 +230,29 @@ type objectSet_fetchPageWithErrors_result =
 
 /** The awaited result of objectSet.fetchPage(). */
 type objectSet_fetchPage_result = PageResult<
-  | Osdk.Instance<EmployeeApiTest, never, PropertyKeys<EmployeeApiTest>, {}>
+  | Osdk.Instance<
+    EmployeeApiTest,
+    never,
+    | "employeeId"
+    | "fullName"
+    | "class"
+    | "mediaReference"
+    | "attachment"
+    | "geopoint"
+    | "geotimeSeriesReference"
+    | "timeseries"
+    | "isActive"
+    | "yearsOfExperience"
+    | "rank"
+    | "performanceScore"
+    | "hourlyRate"
+    | "dateOfJoining"
+    | "lastUpdated"
+    | "skillSet"
+    | "skillSetEmbedding"
+    | undefined,
+    {}
+  >
   | (
     & ObjectIdentifiers<EmployeeApiTest>
     & {
@@ -196,7 +275,24 @@ type objectSet_fetchPage_result = PageResult<
         ConvertProps<
           EmployeeApiTest,
           NEW_Q,
-          PropertyKeys<EmployeeApiTest>,
+          | "employeeId"
+          | "fullName"
+          | "class"
+          | "mediaReference"
+          | "attachment"
+          | "geopoint"
+          | "geotimeSeriesReference"
+          | "timeseries"
+          | "isActive"
+          | "yearsOfExperience"
+          | "rank"
+          | "performanceScore"
+          | "hourlyRate"
+          | "dateOfJoining"
+          | "lastUpdated"
+          | "skillSet"
+          | "skillSetEmbedding"
+          | undefined,
           never
         >,
         {}
@@ -209,7 +305,25 @@ type objectSet_fetchPage_result = PageResult<
       ) => Osdk.Instance<
         EmployeeApiTest,
         never,
-        PropertyKeys<EmployeeApiTest> | NEW_PROPS,
+        | "employeeId"
+        | "fullName"
+        | "class"
+        | "mediaReference"
+        | "attachment"
+        | "geopoint"
+        | "geotimeSeriesReference"
+        | "timeseries"
+        | "isActive"
+        | "yearsOfExperience"
+        | "rank"
+        | "performanceScore"
+        | "hourlyRate"
+        | "dateOfJoining"
+        | "lastUpdated"
+        | "skillSet"
+        | "skillSetEmbedding"
+        | NEW_PROPS
+        | undefined,
         {}
       >;
       readonly $__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata: {
@@ -287,6 +401,41 @@ type objectSet_where_clause_param =
     lastUpdated?: DatetimeFilter | undefined;
     skillSet?: StringFilter | undefined;
     skillSetEmbedding?: BaseFilter<string> | undefined;
+    addressStruct?:
+      | BaseFilter.$isNull<string>
+      | (
+        | Just<
+          "street",
+          {
+            street?: StringFilter | undefined;
+            city?: StringFilter | undefined;
+            zipCode?: StringFilter | undefined;
+          }
+        >
+        | Just<
+          "city",
+          {
+            street?: StringFilter | undefined;
+            city?: StringFilter | undefined;
+            zipCode?: StringFilter | undefined;
+          }
+        >
+        | Just<
+          "zipCode",
+          {
+            street?: StringFilter | undefined;
+            city?: StringFilter | undefined;
+            zipCode?: StringFilter | undefined;
+          }
+        >
+      )
+      | undefined;
+    salaryHistory?: ArrayFilter<NumberFilter> | undefined;
+    bonusHistory?:
+      | ArrayFilter<
+        { year?: NumberFilter | undefined; amount?: NumberFilter | undefined }
+      >
+      | undefined;
   };
 
 /** The result of objectSet.withProperties({ mom: ..., dad: ... }). */
@@ -346,4 +495,39 @@ type objectSet_with_rdp_where_clause_param =
     lastUpdated?: DatetimeFilter | undefined;
     skillSet?: StringFilter | undefined;
     skillSetEmbedding?: BaseFilter<string> | undefined;
+    addressStruct?:
+      | BaseFilter.$isNull<string>
+      | (
+        | Just<
+          "street",
+          {
+            street?: StringFilter | undefined;
+            city?: StringFilter | undefined;
+            zipCode?: StringFilter | undefined;
+          }
+        >
+        | Just<
+          "city",
+          {
+            street?: StringFilter | undefined;
+            city?: StringFilter | undefined;
+            zipCode?: StringFilter | undefined;
+          }
+        >
+        | Just<
+          "zipCode",
+          {
+            street?: StringFilter | undefined;
+            city?: StringFilter | undefined;
+            zipCode?: StringFilter | undefined;
+          }
+        >
+      )
+      | undefined;
+    salaryHistory?: ArrayFilter<NumberFilter> | undefined;
+    bonusHistory?:
+      | ArrayFilter<
+        { year?: NumberFilter | undefined; amount?: NumberFilter | undefined }
+      >
+      | undefined;
   };
