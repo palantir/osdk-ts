@@ -80,15 +80,10 @@
   flex-direction: column;
   gap: var(--osdk-object-kanban-card-gap);
   padding: var(--osdk-object-kanban-card-padding);
-  background: var(--osdk-object-kanban-card-background);
   border: var(--osdk-object-kanban-card-border);
   border-radius: var(--osdk-object-kanban-card-border-radius);
 }
 
 .skeletonLine {
-  width: 100%;
-}
-
-.skeletonLineShort {
-  width: 60%;
+  height: var(--osdk-typography-size-body-medium);
 }

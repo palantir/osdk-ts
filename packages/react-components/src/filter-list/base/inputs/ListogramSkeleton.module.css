@@ -29,4 +29,15 @@
 
 .flexBar {
   flex: 1;
+  height: var(--osdk-filter-skeleton-text-height);
+}
+
+.listogramBar {
+  width: var(--osdk-filter-listogram-bar-width);
+  height: var(--osdk-filter-listogram-bar-height);
+}
+
+.countBar {
+  width: var(--osdk-filter-skeleton-count-width);
+  height: var(--osdk-filter-skeleton-text-height);
 }

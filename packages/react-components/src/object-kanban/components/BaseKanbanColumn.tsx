@@ -94,8 +94,9 @@ export function BaseKanbanColumn<
           ? (
             SKELETON_CARD_KEYS.map((key) => (
               <div key={key} className={styles.skeletonCard}>
-                <SkeletonBar className={styles.skeletonLine} />
-                <SkeletonBar className={styles.skeletonLineShort} />
+                <SkeletonBar width="100%" className={styles.skeletonLine} />
+                <SkeletonBar width="60%" className={styles.skeletonLine} />
+                <SkeletonBar width="20%" className={styles.skeletonLine} />
               </div>
             ))
           )

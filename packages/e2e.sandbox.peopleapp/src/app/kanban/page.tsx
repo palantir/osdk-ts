@@ -1,8 +1,9 @@
 import type { Osdk, PropertyKeys } from "@osdk/api";
 import { useOsdkClient } from "@osdk/react";
-import type { ObjectKanbanColumn ,
+import {
   type CardMovedInfo,
   ObjectKanban,
+  type ObjectKanbanColumn,
 } from "@osdk/react-components/experimental/object-kanban";
 import { useMemo, useState } from "react";
 import { Section } from "../../components/Section.js";
@@ -71,7 +72,7 @@ export function KanbanPage() {
     () => (info: CardMovedInfo<Employee, ColumnId>) => {
       // Moving a Foundry employee between fake "city" columns isn't a real
       // operation — log it so reviewers can confirm the callback fires.
-       
+
       console.info("ObjectKanban onCardMoved", info);
       setLastMove({
         objectPrimaryKey: info.object.$primaryKey,
