@@ -595,6 +595,68 @@ describe("ObjectsHelper variant cache keys", () => {
     expect(q1.cacheKey).not.toBe(q2.cacheKey);
   });
 
+  it("STALENESS REPRO: RDP-less variant write preserves variant A's old derived value even after non-RDP state changes", () => {
+    // Reproduces the suspected staleness bug:
+    //   - Component 1: fetches an object WITH a derived property (variant A)
+    //   - Component 2: fetches the same object WITHOUT derived properties (variant B)
+    //   - Server state changes between the two fetches
+    //   - B's fresh write propagates to A; A's derived field is preserved
+    //     from A's prior cache value, which was computed against the OLD non-RDP state.
+    //   - Result: A's view ends up with FRESH non-RDP fields + STALE derived value.
+    //
+    // We treat "office" as the derived field to stand in for a `withProperties` RDP.
+    const rdpConfig = createFakeRdpConfig("office");
+
+    const queryA = store.objects.getQuery(
+      { apiName: Employee, pk: 1 },
+      rdpConfig,
+    );
+    const queryB = store.objects.getQuery({ apiName: Employee, pk: 1 });
+
+    // Both variants observed so propagation runs.
+    store.cacheKeys.retain(queryA.cacheKey);
+    store.cacheKeys.retain(queryB.cacheKey);
+    store.subjects.get(queryA.cacheKey).subscribe(() => {});
+    store.subjects.get(queryB.cacheKey).subscribe(() => {});
+
+    // Variant A's initial fetch: derived "office" was computed against fullName "Alice".
+    const aPayload = emp.$clone({
+      fullName: "Alice",
+      office: "derived-from-Alice",
+    });
+    store.batch({}, (batch) => {
+      queryA.writeToStore(aPayload as any, "loaded", batch);
+    });
+
+    expect(store.getValue(queryA.cacheKey)?.value).toEqual(
+      expect.objectContaining({
+        fullName: "Alice",
+        office: "derived-from-Alice",
+      }),
+    );
+
+    // Server state changes: fullName goes Alice -> Bob.
+    // Variant B fetches fresh non-RDP data. Critically, B doesn't fetch any
+    // derived field, so the payload has no fresh "office" value.
+    const bPayload = emp.$clone({ fullName: "Bob" });
+    store.batch({}, (batch) => {
+      queryB.writeToStore(bPayload as any, "loaded", batch);
+    });
+
+    const valueA = store.getValue(queryA.cacheKey);
+
+    // Non-RDP fields refresh from B (this is the propagation working as intended).
+    expect(valueA?.value).toEqual(expect.objectContaining({ fullName: "Bob" }));
+
+    // The bug: derived field carries A's pre-update value, now inconsistent
+    // with fullName="Bob". A real fix would either drop it (forcing refetch)
+    // or refresh it. Today the cache silently surfaces this inconsistency.
+    expect((valueA?.value as any)?.office).toBe("derived-from-Alice");
+
+    store.cacheKeys.release(queryA.cacheKey);
+    store.cacheKeys.release(queryB.cacheKey);
+  });
+
   it("treats no-select and empty-select as the same cache key", () => {
     const qNone = store.objects.getQuery({
       apiName: Employee,
