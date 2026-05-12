@@ -40,6 +40,7 @@ export type {
   FormFieldDefinition,
   FormFieldPropsByType,
   NumberInputFieldProps,
+  ObjectSelectFieldProps,
   ObjectSetFieldProps,
   Option,
   PortalContainer,
