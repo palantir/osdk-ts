@@ -35,6 +35,10 @@ import {
   generateBackingDatasetBlockResultForLink,
   getNonEditOnlyProperties,
 } from "./generateBackingDataset.js";
+import {
+  generateValueTypeBlockResults,
+  getValueTypeInternalMappings,
+} from "./generateValueTypeBlockResults.js";
 import type { BlockGeneratorResult } from "./marketplaceSerialization/BlockGeneratorResult.js";
 import type { InputMappingEntry } from "./marketplaceSerialization/supportingTypes.js";
 
@@ -50,6 +54,7 @@ export default async function main(
   const commandLineOpts: {
     input: string;
     output: string;
+    valueTypesOutput: string;
     apiNamespace: string;
     buildDir: string;
     temporaryBlockDataFile?: string;
@@ -72,9 +77,15 @@ export default async function main(
       },
       output: {
         alias: "o",
-        describe: "Output file for BlockGeneratorResult JSON",
+        describe: "Output file for ontology BlockGeneratorResult JSON",
         type: "string",
         default: "build/block_generator_result.json",
+        coerce: path.resolve,
+      },
+      valueTypesOutput: {
+        describe: "Output file for value types BlockGeneratorResult JSON",
+        type: "string",
+        default: "build/value_types_block_generator_result.json",
         coerce: path.resolve,
       },
       apiNamespace: {
@@ -199,6 +210,14 @@ export default async function main(
   await fs.promises.writeFile(ontologyJsonPath, ontologyJson);
   consola.info(`Wrote ontology.json to ${ontologyJsonPath}`);
 
+  let valueTypeResults: BlockGeneratorResult[] = [];
+  if (ontologyIr.valueTypes.valueTypes.length > 0) {
+    valueTypeResults = await generateValueTypeBlockResults(
+      ontologyIr.valueTypes,
+      commandLineOpts.buildDir,
+    );
+  }
+
   // Collect input_mapping_entries for the ontology block
   // These map ontology inputs to datasource block outputs for objects with includeEmptyBackingDatasource
   const ontologyInputMappingEntries: InputMappingEntry[] = shapes.inputMappings;
@@ -287,6 +306,10 @@ export default async function main(
     }
   }
 
+  ontologyInputMappingEntries.push(
+    ...getValueTypeInternalMappings(ontologyIr.valueTypes, shapes.inputShapes),
+  );
+
   // Generate backing datasource BlockGeneratorResults for objects with includeEmptyBackingDatasource
   const backingDsGeneratorResults = await Promise.all(
     backingDatasourceApiNames.filter(apiName => {
@@ -358,6 +381,7 @@ export default async function main(
       blockGeneratorResult,
       ...backingDsGeneratorResults,
       ...backingDsLinkGeneratorResults,
+      ...valueTypeResults,
     ],
     null,
     2,
@@ -372,6 +396,17 @@ export default async function main(
   consola.info(
     `Block data directory: ${blockDataDir}`,
   );
+
+  if (valueTypeResults.length > 0) {
+    const valueTypeResultsJson = JSON.stringify(valueTypeResults, null, 2);
+    await fs.promises.writeFile(
+      commandLineOpts.valueTypesOutput,
+      valueTypeResultsJson,
+    );
+    consola.success(
+      `Value type BlockGeneratorResult written to ${commandLineOpts.valueTypesOutput}`,
+    );
+  }
 }
 
 async function loadOntology(
