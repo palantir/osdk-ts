@@ -66,19 +66,17 @@ describe("generateValueTypeBlockResults", () => {
 
   it("returns empty array for empty value types", async () => {
     const results = await generateValueTypeBlockResults(
-      { valueTypes: [] },
+      [],
       buildDir,
     );
     expect(results).toEqual([]);
   });
 
   it("generates one BlockGeneratorResult per value type", async () => {
-    const data: OntologyIrValueTypeBlockData = {
-      valueTypes: [
-        makeEntry("enumerated", ["0.0.1"]),
-        makeEntry("currency", ["1.0.0"]),
-      ],
-    };
+    const data = [
+      makeEntry("enumerated", ["0.0.1"]),
+      makeEntry("currency", ["1.0.0"]),
+    ];
 
     const results = await generateValueTypeBlockResults(data, buildDir);
 

@@ -60,6 +60,11 @@ export type {
 
 export type { SharedPropertyTypeGothamMapping } from "./generated/ontology-metadata/api/typemapping/__components.ts";
 
+export type {
+  OntologyIrValueTypeBlockData,
+  OntologyIrValueTypeBlockDataEntry,
+} from "./generated/type-registry-marketplace/__components.js";
+export type { ValueTypeBlockData } from "./generated/type-registry-marketplace/__components.js";
 export type { BaseType } from "./generated/type-registry/api/BaseType.js";
 export type { DataConstraint } from "./generated/type-registry/api/DataConstraint.js";
 export type { DataConstraintWrapper } from "./generated/type-registry/api/DataConstraintWrapper.js";
@@ -74,11 +79,7 @@ export type { ValueTypeVersion } from "./generated/type-registry/api/ValueTypeVe
 export type {
   OntologyIr,
   OntologyIrOntologyBlockDataV2,
-  OntologyIrPackagedValueType,
-  OntologyIrPackagedValueTypeMetadata,
   OntologyIrV2,
-  OntologyIrValueTypeBlockData,
-  OntologyIrValueTypeBlockDataEntry,
 } from "./blockDataIr.js";
 
 export type {

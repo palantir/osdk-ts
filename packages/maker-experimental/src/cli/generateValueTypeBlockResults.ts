@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import type {
-  OntologyIrPackagedValueType,
-  OntologyIrValueTypeBlockData,
-  OntologyIrValueTypeBlockDataEntry,
-} from "@osdk/client.unstable";
+import type { ValueTypeBlockData } from "@osdk/client.unstable";
 import type { InputShape, OutputShape } from "@osdk/client.unstable/api";
 import * as fs from "node:fs";
 import * as path from "node:path";
@@ -32,12 +28,12 @@ import type { InputMappingEntry } from "./marketplaceSerialization/supportingTyp
  * Port of Java's ValueTypesBlockGenerator.
  */
 export async function generateValueTypeBlockResults(
-  valueTypeBlockData: OntologyIrValueTypeBlockData,
+  bulkValueTypeBlockData: ValueTypeBlockData[],
   buildDir: string,
 ): Promise<BlockGeneratorResult[]> {
   const results: BlockGeneratorResult[] = [];
 
-  for (const entry of valueTypeBlockData.valueTypes) {
+  for (const entry of bulkValueTypeBlockData) {
     const blockIdentifier = "value-type-" + entry.metadata.apiName;
     const outputDir = path.join(buildDir, blockIdentifier);
 
@@ -45,25 +41,9 @@ export async function generateValueTypeBlockResults(
       await fs.promises.mkdir(outputDir, { recursive: true });
     }
 
-    const latestVersion = getLatestVersion(entry.versions);
-    const blockData = {
-      metadata: {
-        apiName: entry.metadata.apiName,
-        displayMetadata: entry.metadata.displayMetadata,
-        status: entry.metadata.status,
-        baseType: latestVersion.baseType,
-      },
-      versions: entry.versions.map(v => ({
-        version: v.version,
-        baseType: v.baseType,
-        constraints: v.constraints,
-        exampleValues: v.exampleValues,
-      })),
-    };
-
     await fs.promises.writeFile(
       path.join(outputDir, "value-types.json"),
-      JSON.stringify(blockData, null, 2),
+      JSON.stringify(entry, null, 2),
     );
 
     const outputs = buildOutputShapes(entry);
@@ -87,7 +67,7 @@ export async function generateValueTypeBlockResults(
 }
 
 function buildOutputShapes(
-  entry: OntologyIrValueTypeBlockDataEntry,
+  entry: ValueTypeBlockData,
 ): Map<string, OutputShape> {
   const outputs = new Map<string, OutputShape>();
 
@@ -117,11 +97,11 @@ function buildOutputShapes(
  * Compute internal value type recommendations.
  */
 export function getValueTypeInternalMappings(
-  producedValueTypes: OntologyIrValueTypeBlockData,
+  producedValueTypes: ValueTypeBlockData[],
   inputShapes: Map<string, InputShape>,
 ): InputMappingEntry[] {
   const mappings: InputMappingEntry[] = [];
-  for (const entry of producedValueTypes.valueTypes) {
+  for (const entry of producedValueTypes) {
     for (const version of entry.versions) {
       const consumedId = ReadableIdGenerator.getForConsumedValueType(
         entry.metadata.apiName,
@@ -137,29 +117,4 @@ export function getValueTypeInternalMappings(
     }
   }
   return mappings;
-}
-
-function getLatestVersion(
-  versions: OntologyIrPackagedValueType[],
-): OntologyIrPackagedValueType {
-  if (versions.length === 0) {
-    throw new Error("Value type must have at least one version");
-  }
-  return versions.reduce((latest, current) => {
-    return compareSlsVersions(current.version, latest.version) > 0
-      ? current
-      : latest;
-  });
-}
-
-function compareSlsVersions(a: string, b: string): number {
-  const partsA = a.split(".").map(Number);
-  const partsB = b.split(".").map(Number);
-  const maxLen = Math.max(partsA.length, partsB.length);
-  for (let i = 0; i < maxLen; i++) {
-    const segA = partsA[i] ?? 0;
-    const segB = partsB[i] ?? 0;
-    if (segA !== segB) return segA - segB;
-  }
-  return 0;
 }

@@ -211,7 +211,7 @@ export default async function main(
   consola.info(`Wrote ontology.json to ${ontologyJsonPath}`);
 
   let valueTypeResults: BlockGeneratorResult[] = [];
-  if (ontologyIr.valueTypes.valueTypes.length > 0) {
+  if (ontologyIr.valueTypes.length > 0) {
     valueTypeResults = await generateValueTypeBlockResults(
       ontologyIr.valueTypes,
       commandLineOpts.buildDir,
