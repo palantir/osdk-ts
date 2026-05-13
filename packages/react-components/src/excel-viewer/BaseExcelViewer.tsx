@@ -35,14 +35,14 @@ function columnIndexToLetter(index: number): string {
 
 const SheetTable: React.FunctionComponent<{ sheet: SheetData }> = React.memo(
   ({ sheet }) => {
-    if (sheet.rows.length === 0) {
-      return <div className={styles.emptySheet}>Empty sheet</div>;
-    }
-
     const maxCols = useMemo(
       () => sheet.rows.reduce((max, row) => Math.max(max, row.length), 0),
       [sheet.rows],
     );
+
+    if (sheet.rows.length === 0) {
+      return <div className={styles.emptySheet}>Empty sheet</div>;
+    }
 
     return (
       <div className={styles.tableContainer}>

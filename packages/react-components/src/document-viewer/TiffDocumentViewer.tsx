@@ -45,32 +45,28 @@ export function TiffDocumentViewer({
     enableTiffToPdf,
   );
 
-  if (loading) {
-    return (
-      <div className={className}>
+  return (
+    <div className={className}>
+      {loading && (
         <div className={styles.loadingContainer}>
           <Spin className={styles.spinnerIcon} />
           Converting document…
         </div>
-      </div>
-    );
-  }
-
-  if (viewerType === ViewerType.Pdf && pdfData != null) {
-    return (
-      <BasePdfViewer
-        src={pdfData}
-        className={className}
-        {...pdfViewerProps}
-      />
-    );
-  }
-
-  return (
-    <TiffViewerMedia
-      media={media}
-      className={className}
-      {...tiffRendererProps}
-    />
+      )}
+      {!loading && viewerType === ViewerType.Pdf && pdfData != null && (
+        <BasePdfViewer
+          src={pdfData}
+          className={className}
+          {...pdfViewerProps}
+        />
+      )}
+      {!loading && viewerType === ViewerType.Tiff && (
+        <TiffViewerMedia
+          media={media}
+          className={className}
+          {...tiffRendererProps}
+        />
+      )}
+    </div>
   );
 }

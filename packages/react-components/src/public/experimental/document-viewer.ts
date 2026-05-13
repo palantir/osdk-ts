@@ -21,7 +21,5 @@ export const DocumentViewer: typeof _DocumentViewer = withOsdkMetrics(
   _DocumentViewer,
   "DocumentViewer",
 );
-export type {
-  DocumentViewerProps,
-  ViewerType,
-} from "../../document-viewer/types.js";
+export type { DocumentViewerProps } from "../../document-viewer/types.js";
+export { ViewerType } from "../../document-viewer/types.js";
