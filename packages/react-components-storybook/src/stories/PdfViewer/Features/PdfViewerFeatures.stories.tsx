@@ -249,6 +249,22 @@ export const CustomScale: Story = {
   },
 };
 
+export const WithAutoSize: Story = {
+  args: {
+    initialAutoSize: true,
+  },
+  parameters: {
+    docs: {
+      source: {
+        code:
+          `import { PdfViewer } from "@osdk/react-components/experimental/pdf-viewer";
+
+<PdfViewer media={myMediaObject} initialAutoSize />`,
+      },
+    },
+  },
+};
+
 export const WithDownload: Story = {
   args: {
     enableDownload: true,

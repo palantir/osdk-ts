@@ -56,6 +56,7 @@ export type {
   VideoToTextOperation,
   VlmPreprocessingConfig,
 } from "../experimental/MediaTransformation.js";
+export { __EXPERIMENTAL__NOT_SUPPORTED_YET__subscribeToNoTypeObjectSet } from "../experimental/subscribeToNoTypeObjectSet.js";
 export {
   __EXPERIMENTAL__NOT_SUPPORTED_YET__transformAndWait,
   type TransformOptions,

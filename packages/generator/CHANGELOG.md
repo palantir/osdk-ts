@@ -1,5 +1,25 @@
 # @osdk/generator
 
+## 2.19.0
+
+### Minor Changes
+
+- 02c796c: Array Reducers and Struct Main Value support
+
+### Patch Changes
+
+- Updated dependencies [02c796c]
+- Updated dependencies [d962309]
+  - @osdk/generator-converters@2.19.0
+  - @osdk/api@2.19.0
+
+## 2.18.0
+
+### Patch Changes
+
+- @osdk/api@2.18.0
+- @osdk/generator-converters@2.18.0
+
 ## 2.17.0
 
 ### Patch Changes

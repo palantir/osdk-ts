@@ -1,5 +1,39 @@
 # @osdk/react-components
 
+## 0.15.0
+
+### Minor Changes
+
+- 108ac50: Cap long ActionForm select dropdowns so they scroll inside dialogs.
+- 4bc17cc: Fix editable date field incorrectly showing edited border after click-in/click-out without changes
+- 99ec28c: Fix page scroll being blocked when opening a dropdown in an editable ObjectTable
+- d10ed5e: Add rich item label rendering to ActionForm dropdown fields.
+- 47eb27c: Add object set scoping to ObjectSelectField.
+- 73738dd: Show unsupported ActionForm field types and recommend CUSTOM fields.
+
+## 0.14.0
+
+### Minor Changes
+
+- 69ebc43: Fix function-backed columns and lists with derived properties rendering stale values after an action edits a related object. ObjectTable's `useFunctionColumnsData` now passes the page's row PKs as `dependsOnObjects` to the underlying `useOsdkFunctions`, and function `ColumnDefinition` locators now accept an optional `dependsOn: string[]` for declaring linked object types the function reads server-side. Lists whose `withProperties` traverse linked types now also revalidate when an action edits one of those linked types. The action invalidation path fans out per-type invalidation in a single walk while the optimistic layer is still on top, so fresh values land in truth before the optimistic layer drops.
+- 48d5ed2: Add `AipAgentChat` component — an OSDK-aware chat surface that wraps `useChat` from `@osdk/react/experimental/aip` against a Foundry LMS model. Importing the component is sufficient; consumers do not need to import `useChat` or `foundryModel` themselves. Also exports `BaseAipAgentChat` for advanced use with consumer-managed chat state.
+- 19159ce: Add contrib skill
+- d6a3194: Show selected filter values with count 0 when they are absent from aggregation results
+- 082e4e6: Expose `FilterPopover`, `FilterInput`, and `useFilterListState` as composable primitives so consumers can build custom FilterList layouts (e.g. inline horizontal toolbars). Also exports `getFilterKey`, `getFilterLabel`, `summarizeFilterValue`, and `filterHasActiveState` helpers. See the `Experimental/FilterList/Recipes/Horizontal toolbar` story for a worked example. Also adds a pointer-hover highlight to non-disabled `Combobox` items (matches the existing `[data-highlighted]` keyboard-focus treatment).
+- 85dde6e: Dedupe empty/null aggregation rows across all FilterList property filters. `usePropertyAggregation` now collapses any combination of `null`, `undefined`, and `""` buckets returned by the backend into a single "No value" row, so dropdown, multi-select, and text-tag filters no longer show two or more "No value" entries when the underlying aggregation produces multiple empty groupings. Whitespace-only strings remain as their literal value, matching Workshop. The behavior previously lived in `ListogramInput` only; lifting it into the hook covers every consumer. Adds a shared `dedupeEmptyAggregationRows` helper exported from `utils/filterValues.ts` for downstream reuse.
+- 5165618: Fix layout flash in FilterList multi-select and single-select inputs during sibling-aggregation refetch. Previously, when a listogram checkbox toggled and triggered a refetch in sibling filters, MULTI_SELECT and SINGLE_SELECT inputs briefly stacked "Loading options..." and "Updating..." above the combobox, pushing the panel layout down and snapping back when the fetch completed. Both inputs now use the same useStableData pattern already used by ListogramInput and RangeInput: the last non-loading values are preserved across refetch so the combobox stays mounted with its prior options and chips, with no inline loading hint. The "Loading options..." empty-state still shows on genuine first load; "No options available" still shows when the aggregation resolves to empty.
+- 082e4e6: Date input fields are now shared across action-form, filter-list, and object-table. The new `shared/calendar/` module exports `DatePicker` and `DateRangePicker` (extracted from action-form's `DatetimePickerField` / `DateRangeInputField`). Filter-list date filters render the shared popover calendar instead of native `<input type="date">` so every viewer sees the same `YYYY-MM-DD` regardless of browser locale. Date-range histograms now render as SVG with axis grid lines, count labels above each bar, locale-aware short month tick labels (e.g. `Jan`/`Feb` in English, localized in other browser locales) for monthly buckets and `yyyy` for yearly, plus a period subtitle. New `formatDate` callback on date filter definitions overrides the displayed string everywhere — picker idle text, histogram tooltip, period subtitle, x-tick labels, and chip text — without affecting the underlying ISO value. New `clickToFilter` flag on `DATE_RANGE` and `NUMBER_RANGE` filters enables clicking or dragging across histogram bars to set the range; drag-to-select uses pointer events with `setPointerCapture` for touch support and `pointercancel` cleanup. The previously plumbed-but-unused `parseDate` callback was removed; the shared pickers own input parsing.
+
+  Visual polish from review feedback: the "No value" label now has its own `--osdk-filter-no-value-font-size` CSS variable so the inline empty row in a histogram and the trailing row from `NullValueWrapper` render at the same size in all contexts; the listogram empty row also matches the null-wrapper's checkbox-to-label gap. Listogram bucket counts and null-row counts now use compact number formatting (`1.2K`, `1.5M`) with the full count exposed via `title` for a11y. Filter-list inputs and `FilterPopover` triggers were bumped to body-medium to match the rest of the codebase, and `RangeInput`'s outer Clear button and `ContainsTextInput`'s inline clear-X no longer cause layout shift when toggled (always rendered with `visibility: hidden` when inactive). `DateRangePicker` now exposes a `modal` prop (mirroring `DatePicker`) so callers can nest it inside another popover without the dismiss layer swallowing outer clicks.
+
+- f45ab11: Fix filter list dropdown positioning: flip above trigger when near container bottom, hide when anchor scrolls out of view
+- 662a0c7: Pin form footer in height-constrained containers so fields scroll independently
+- 6344e8b: Strip time to local midnight in DatetimePickerField onChange when showTime is false
+- 53ffbcc: Fix styling of empty dropdown
+- 3943b67: Fix boolean properties rendering as empty in ObjectTable
+- bcf9078: Add auto-size (fit to width) toggle to PDF viewer toolbar
+- 81314f2: Fix dropdown field triggering validation when popover opens
+
 ## 0.13.0
 
 ### Minor Changes

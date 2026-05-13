@@ -19,11 +19,17 @@ import type { NullabilityAdherence } from "./object/FetchPageArgs.js";
 import { createMockObjectSet } from "./objectSet/ObjectSet.test.js";
 import type { PropertyKeys } from "./ontology/ObjectOrInterface.js";
 import type {
+  ApplyModifiersToProps,
+  MainValueTypeOf,
+  ReducedTypeOf,
+} from "./ontology/PropertyModifiers.js";
+import type {
   ConvertProps,
   ExtractOptions,
   MapPropNamesToInterface,
   Osdk,
 } from "./OsdkObjectFrom.js";
+import type { EmployeeApiTest } from "./test/EmployeeApiTest.js";
 
 describe("ExtractOptions", () => {
   describe("NullabilityAdherence Generic", () => {
@@ -305,7 +311,7 @@ describe("ExtractOptions", () => {
     it("defaults to last argument all props if any", () => {
       expectTypeOf<Osdk.Instance<quickAndDirty, never, any>>().branded
         .toEqualTypeOf<
-          Osdk.Instance<quickAndDirty, never, "name" | "foo">
+          Osdk.Instance<quickAndDirty, never, "foo" | "name">
         >();
     });
 
@@ -514,6 +520,338 @@ describe("ExtractOptions", () => {
             >
           >
         >();
+    });
+  });
+
+  describe("Osdk.Instance with modifiers", () => {
+    describe("MainValueTypeOf helper type", () => {
+      it("extracts main value struct from struct property (only main value fields)", () => {
+        type AddressStructDef = NonNullable<
+          EmployeeApiTest["__DefinitionMetadata"]
+        >["properties"]["addressStruct"];
+        // Main value fields are ["city", "zipCode"], so result is struct with those fields
+        expectTypeOf<MainValueTypeOf<AddressStructDef>>().toEqualTypeOf<{
+          city: string;
+          zipCode: string;
+        }>();
+      });
+
+      it("returns never for property without mainValue", () => {
+        type FullNameDef = NonNullable<
+          EmployeeApiTest["__DefinitionMetadata"]
+        >["properties"]["fullName"];
+        expectTypeOf<MainValueTypeOf<FullNameDef>>().toEqualTypeOf<never>();
+      });
+
+      it("extracts scalar value when mainValue has a single field (array of structs)", () => {
+        type BonusHistoryDef = NonNullable<
+          EmployeeApiTest["__DefinitionMetadata"]
+        >["properties"]["bonusHistory"];
+        // Main value field is ["amount"] (single), so wire returns the scalar value
+        expectTypeOf<MainValueTypeOf<BonusHistoryDef>>().toEqualTypeOf<
+          number
+        >();
+      });
+    });
+
+    describe("ReducedTypeOf helper type", () => {
+      it("extracts element type from array property with reducers", () => {
+        type SalaryHistoryDef = NonNullable<
+          EmployeeApiTest["__DefinitionMetadata"]
+        >["properties"]["salaryHistory"];
+        expectTypeOf<ReducedTypeOf<SalaryHistoryDef>>().toEqualTypeOf<number>();
+      });
+
+      it("returns never for property without reducers", () => {
+        type FullNameDef = NonNullable<
+          EmployeeApiTest["__DefinitionMetadata"]
+        >["properties"]["fullName"];
+        expectTypeOf<ReducedTypeOf<FullNameDef>>().toEqualTypeOf<never>();
+      });
+    });
+
+    describe("ApplyModifiersToProps helper type", () => {
+      it("transforms struct to main value struct with applyMainValue", () => {
+        type Modified = ApplyModifiersToProps<
+          EmployeeApiTest,
+          { addressStruct: "applyMainValue" }
+        >;
+        // addressStruct should be struct with only main value fields | undefined
+        expectTypeOf<Modified["addressStruct"]>().toEqualTypeOf<
+          { city: string; zipCode: string } | undefined
+        >();
+        // Other props should remain unchanged
+        expectTypeOf<Modified["fullName"]>().toEqualTypeOf<
+          string | undefined
+        >();
+        expectTypeOf<Modified["salaryHistory"]>().toEqualTypeOf<
+          number[] | undefined
+        >();
+      });
+
+      it("transforms array to single element with applyReducers", () => {
+        type Modified = ApplyModifiersToProps<
+          EmployeeApiTest,
+          { salaryHistory: "applyReducers" }
+        >;
+        // salaryHistory should be number | undefined (single element + nullable)
+        expectTypeOf<Modified["salaryHistory"]>().toEqualTypeOf<
+          number | undefined
+        >();
+        // Other props should remain unchanged
+        expectTypeOf<Modified["fullName"]>().toEqualTypeOf<
+          string | undefined
+        >();
+      });
+
+      it("transforms array of structs with applyReducersAndExtractMainValue (single field => scalar)", () => {
+        type Modified = ApplyModifiersToProps<
+          EmployeeApiTest,
+          { bonusHistory: "applyReducersAndExtractMainValue" }
+        >;
+        // bonusHistory has single mainValue field, wire returns scalar
+        expectTypeOf<Modified["bonusHistory"]>().toEqualTypeOf<
+          number | undefined
+        >();
+      });
+
+      it("handles multiple modifiers at once", () => {
+        type Modified = ApplyModifiersToProps<
+          EmployeeApiTest,
+          {
+            addressStruct: "applyMainValue";
+            salaryHistory: "applyReducers";
+          }
+        >;
+        expectTypeOf<Modified["addressStruct"]>().toEqualTypeOf<
+          { city: string; zipCode: string } | undefined
+        >();
+        expectTypeOf<Modified["salaryHistory"]>().toEqualTypeOf<
+          number | undefined
+        >();
+        // Unmodified props stay the same
+        expectTypeOf<Modified["fullName"]>().toEqualTypeOf<
+          string | undefined
+        >();
+      });
+    });
+
+    describe("Osdk.Instance with modifiers in P (property select)", () => {
+      it("returns struct with only main value fields when applyMainValue modifier applied", () => {
+        type toCheck = Osdk.Instance<
+          EmployeeApiTest,
+          never,
+          "addressStruct:applyMainValue"
+        >;
+        expectTypeOf<toCheck["addressStruct"]>().toEqualTypeOf<
+          { city: string; zipCode: string } | undefined
+        >();
+      });
+
+      it("returns single element type when applyReducers modifier applied", () => {
+        type toCheck = Osdk.Instance<
+          EmployeeApiTest,
+          never,
+          "salaryHistory:applyReducers"
+        >;
+        expectTypeOf<toCheck["salaryHistory"]>().toEqualTypeOf<
+          number | undefined
+        >();
+      });
+
+      it("returns scalar when mainValue has single field with applyReducersAndExtractMainValue", () => {
+        type toCheck = Osdk.Instance<
+          EmployeeApiTest,
+          never,
+          "bonusHistory:applyReducersAndExtractMainValue"
+        >;
+        expectTypeOf<toCheck["bonusHistory"]>().toEqualTypeOf<
+          number | undefined
+        >();
+      });
+
+      it("preserves original types when no modifiers applied", () => {
+        type toCheck = Osdk.Instance<
+          EmployeeApiTest,
+          never,
+          "addressStruct" | "salaryHistory"
+        >;
+        expectTypeOf<toCheck["addressStruct"]>().toEqualTypeOf<
+          { street: string; city: string; zipCode: string } | undefined
+        >();
+        expectTypeOf<toCheck["salaryHistory"]>().toEqualTypeOf<
+          number[] | undefined
+        >();
+      });
+
+      it("handles multiple properties with different modifiers", () => {
+        type toCheck = Osdk.Instance<
+          EmployeeApiTest,
+          never,
+          | "fullName"
+          | "addressStruct:applyMainValue"
+          | "salaryHistory:applyReducers"
+        >;
+        expectTypeOf<toCheck["fullName"]>().toEqualTypeOf<string | undefined>();
+        expectTypeOf<toCheck["addressStruct"]>().toEqualTypeOf<
+          { city: string; zipCode: string } | undefined
+        >();
+        expectTypeOf<toCheck["salaryHistory"]>().toEqualTypeOf<
+          number | undefined
+        >();
+      });
+
+      it("works with $rid option and modifiers", () => {
+        type toCheck = Osdk.Instance<
+          EmployeeApiTest,
+          "$rid",
+          "addressStruct:applyMainValue"
+        >;
+        expectTypeOf<toCheck["$rid"]>().toEqualTypeOf<string>();
+        expectTypeOf<toCheck["addressStruct"]>().toEqualTypeOf<
+          { city: string; zipCode: string } | undefined
+        >();
+      });
+    });
+
+    describe("Modifiers flow through fetchPage", () => {
+      it("applies modifiers from fetchPage args to result type", async () => {
+        const objectSet = createMockObjectSet<EmployeeApiTest>();
+
+        const result = await objectSet.fetchPage({
+          $applyModifiers: {
+            addressStruct: "applyMainValue",
+          },
+        });
+
+        type ResultType = (typeof result)["data"][0]["addressStruct"];
+        expectTypeOf<ResultType>().toEqualTypeOf<
+          { city: string; zipCode: string } | undefined
+        >();
+      });
+
+      it("applies applyReducers modifier through fetchPage", async () => {
+        const objectSet = createMockObjectSet<EmployeeApiTest>();
+
+        const result = await objectSet.fetchPage({
+          $applyModifiers: {
+            salaryHistory: "applyReducers",
+          },
+        });
+
+        // salaryHistory should be single number | undefined, not number[]
+        type ResultType = (typeof result)["data"][0]["salaryHistory"];
+        expectTypeOf<ResultType>().toEqualTypeOf<number | undefined>();
+      });
+
+      it("applies applyReducersAndExtractMainValue modifier through fetchPage", async () => {
+        const objectSet = createMockObjectSet<EmployeeApiTest>();
+
+        const result = await objectSet.fetchPage({
+          $select: ["bonusHistory"],
+          $applyModifiers: {
+            bonusHistory: "applyReducersAndExtractMainValue",
+          },
+        });
+
+        type OsdkType = (typeof result)["data"][0];
+        expectTypeOf<OsdkType>().toEqualTypeOf<
+          Osdk.Instance<
+            EmployeeApiTest,
+            never,
+            "bonusHistory:applyReducersAndExtractMainValue",
+            {}
+          >
+        >();
+        // bonusHistory has single mainValue field, wire returns scalar
+        type ResultType = (typeof result)["data"][0]["bonusHistory"];
+        expectTypeOf<ResultType>().toEqualTypeOf<number | undefined>();
+      });
+
+      it("preserves unmodified properties alongside modified ones", async () => {
+        const objectSet = createMockObjectSet<EmployeeApiTest>();
+
+        const result = await objectSet.fetchPage({
+          $applyModifiers: {
+            "addressStruct": "applyMainValue",
+          },
+        });
+
+        type Data = (typeof result)["data"][0];
+        // fullName should be unchanged
+        expectTypeOf<Data["fullName"]>().toEqualTypeOf<string | undefined>();
+        // addressStruct should be transformed
+        expectTypeOf<Data["addressStruct"]>().toEqualTypeOf<
+          { city: string; zipCode: string } | undefined
+        >();
+        // salaryHistory should be unchanged (no modifier applied)
+        expectTypeOf<Data["salaryHistory"]>().toEqualTypeOf<
+          number[] | undefined
+        >();
+      });
+
+      it("returns original types when no modifiers specified", async () => {
+        const objectSet = createMockObjectSet<EmployeeApiTest>();
+
+        const result = await objectSet.fetchPage({
+          $select: ["addressStruct", "salaryHistory"],
+        });
+
+        type Data = (typeof result)["data"][0];
+        // Should be original struct type
+        expectTypeOf<Data["addressStruct"]>().toEqualTypeOf<
+          { street: string; city: string; zipCode: string } | undefined
+        >();
+        // Should be original array type
+        expectTypeOf<Data["salaryHistory"]>().toEqualTypeOf<
+          number[] | undefined
+        >();
+      });
+
+      it("works when using $select on a modified property", async () => {
+        const objectSet = createMockObjectSet<EmployeeApiTest>();
+
+        const result = await objectSet.fetchPage({
+          $select: ["addressStruct"],
+          $applyModifiers: {
+            "addressStruct": "applyMainValue",
+          },
+        });
+
+        type OsdkType = (typeof result)["data"][0];
+        expectTypeOf<OsdkType>().toEqualTypeOf<
+          Osdk.Instance<
+            EmployeeApiTest,
+            never,
+            "addressStruct:applyMainValue",
+            {}
+          >
+        >();
+
+        type Data = (typeof result)["data"][0];
+        // addressStruct should be transformed
+        expectTypeOf<Data["addressStruct"]>().toEqualTypeOf<
+          { city: string; zipCode: string } | undefined
+        >();
+      });
+
+      it("disallows invalid modifiers in fetchPage args", async () => {
+        const objectSet = createMockObjectSet<EmployeeApiTest>();
+
+        await objectSet.fetchPage({
+          $applyModifiers: {
+            // @ts-expect-error invalid modifier value
+            addressStruct: "invalidModifier",
+          },
+        });
+
+        await objectSet.fetchPage({
+          $applyModifiers: {
+            // @ts-expect-error invalid modifier key
+            invalidProp: "applyMainValue",
+          },
+        });
+      });
     });
   });
 });

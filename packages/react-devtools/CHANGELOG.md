@@ -1,5 +1,11 @@
 # @osdk/react-devtools
 
+## 0.7.0
+
+### Minor Changes
+
+- 327aeda: Make react-devtools package private
+
 ## 0.6.0
 
 ### Minor Changes

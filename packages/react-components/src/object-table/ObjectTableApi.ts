@@ -226,6 +226,14 @@ interface FunctionColumnLocatorForKey<
    * @default 300_000 (5 minutes)
    */
   dedupeIntervalMs?: number;
+
+  /**
+   * Object type apiNames the function reads but doesn't take as a parameter (e.g.
+   * linked object types the function traverses internally). The column auto-revalidates
+   * when an action edits an object of any of these types. Param-derived types are
+   * tracked automatically and don't need to be listed here.
+   */
+  dependsOn?: string[];
 }
 
 /**

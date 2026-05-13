@@ -1,5 +1,9 @@
 # @osdk/create-app.template.vue.v2
 
+## 2.19.0
+
+## 2.18.0
+
 ## 2.17.0
 
 ## 2.16.0

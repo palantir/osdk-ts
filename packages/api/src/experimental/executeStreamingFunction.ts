@@ -42,11 +42,11 @@ type executeStreamingFunctionFn = <QD extends QueryDefinition<any>>(
 
 export const __EXPERIMENTAL__NOT_SUPPORTED_YET__executeStreamingFunction:
   Experiment<
-    "2.17.0",
+    "2.19.0",
     "__EXPERIMENTAL__NOT_SUPPORTED_YET__executeStreamingFunction",
     { executeStreamingFunction: executeStreamingFunctionFn }
   > = {
     name: "__EXPERIMENTAL__NOT_SUPPORTED_YET__executeStreamingFunction",
     type: "experiment",
-    version: "2.17.0",
+    version: "2.19.0",
   };
