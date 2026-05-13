@@ -34,6 +34,30 @@ export function extractRdpFieldNames(
   return new Set(Object.keys(rdpConfig));
 }
 
+export function baseFieldsChanged(
+  source: ObjectHolder,
+  target: ObjectHolder,
+  sourceRdpFields: ReadonlySet<string>,
+  targetRdpFields: ReadonlySet<string>,
+): boolean {
+  const sourceUnderlying = source[UnderlyingOsdkObject] as SimpleOsdkProperties;
+  const targetUnderlying = target[UnderlyingOsdkObject] as SimpleOsdkProperties;
+  const objectDef = source[ObjectDefRef];
+
+  for (const key of Object.keys(sourceUnderlying)) {
+    if (!(key in objectDef.properties)) {
+      continue;
+    }
+    if (sourceRdpFields.has(key) || targetRdpFields.has(key)) {
+      continue;
+    }
+    if (sourceUnderlying[key] !== targetUnderlying[key]) {
+      return true;
+    }
+  }
+  return false;
+}
+
 function stripRdpFields(
   value: ObjectHolder,
   rdpFields: ReadonlySet<string>,

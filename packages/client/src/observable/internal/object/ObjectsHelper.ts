@@ -29,6 +29,7 @@ import type { QuerySubscription } from "../QuerySubscription.js";
 import type { Rdp } from "../RdpCanonicalizer.js";
 import { tombstone } from "../tombstone.js";
 import {
+  baseFieldsChanged,
   mergeObjectFields,
   mergeSelectFields,
 } from "../utils/rdpFieldOperations.js";
@@ -230,6 +231,35 @@ export class ObjectsHelper extends AbstractHelper<
         targetCurrentValue && this.isObjectHolder(targetCurrentValue)
           ? targetCurrentValue
           : undefined;
+
+      // If the target variant holds RDP fields, those values were computed
+      // against the base fields the target last fetched. Stitching fresh
+      // base values from the source onto preserved RDP values produces an
+      // internally inconsistent entry. Refetch the target instead.
+      const targetRdpFields = this.store.objectCacheKeyRegistry.getRdpFieldSet(
+        targetKey,
+      );
+      if (targetRdpFields.size > 0 && targetHolder) {
+        const sourceRdpFields = this.store.objectCacheKeyRegistry
+          .getRdpFieldSet(sourceCacheKey);
+        if (
+          baseFieldsChanged(
+            value,
+            targetHolder,
+            sourceRdpFields,
+            targetRdpFields,
+          )
+        ) {
+          const targetQuery = this.store.queries.peek(targetKey);
+          if (targetQuery instanceof ObjectQuery) {
+            targetQuery.revalidate(true).catch(() => {
+              // The query surfaces refetch errors via its own status; this
+              // catch only prevents an unhandled rejection at the call site.
+            });
+          }
+          continue;
+        }
+      }
 
       // Preserve target-only fields when a partial-select fetch propagates
       // to a sibling variant, so different-select variants converge to the
