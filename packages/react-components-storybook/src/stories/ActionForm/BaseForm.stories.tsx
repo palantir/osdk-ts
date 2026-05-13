@@ -533,6 +533,59 @@ export const WithSwitch: Story = {
   },
 };
 
+const unsupportedFormContent: ReadonlyArray<FormContentItem> = [
+  field({
+    fieldKey: "structPayload",
+    fieldComponent: "UNSUPPORTED",
+    label: "Struct payload",
+    isRequired: true,
+    fieldComponentProps: {},
+  }),
+  field({
+    fieldKey: "geoshape",
+    fieldComponent: "UNSUPPORTED",
+    label: "Geoshape",
+    fieldComponentProps: {},
+  }),
+];
+
+export const WithUnsupportedFields: Story = {
+  args: {
+    formTitle: "Unsupported field types",
+    formContent: unsupportedFormContent,
+    onSubmit: handleSubmit,
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `const formContent = [
+  {
+    fieldKey: "structPayload",
+    fieldComponent: "UNSUPPORTED",
+    label: "Struct payload",
+    isRequired: true,
+    fieldComponentProps: {},
+  },
+  {
+    fieldKey: "geoshape",
+    fieldComponent: "UNSUPPORTED",
+    label: "Geoshape",
+    fieldComponentProps: {},
+  },
+];
+
+// Unsupported fields render a disabled message.
+// Use fieldComponent: "CUSTOM" when you need to collect a value for these types.
+<BaseForm
+  formTitle="Unsupported field types"
+  formContent={formContent}
+  onSubmit={(formState) => console.log("Submitted:", formState)}
+/>`,
+      },
+    },
+  },
+};
+
 const validationFormContent: ReadonlyArray<FormContentItem> = [
   field({
     fieldKey: "name",
