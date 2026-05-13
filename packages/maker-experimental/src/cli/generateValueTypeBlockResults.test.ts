@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-import type {
-  ValueTypeBlockData,
-} from "@osdk/client.unstable";
+import type { ValueTypeBlockData } from "@osdk/client.unstable";
 import type { InputShape } from "@osdk/client.unstable/api";
 import * as fs from "node:fs";
 import * as os from "node:os";
