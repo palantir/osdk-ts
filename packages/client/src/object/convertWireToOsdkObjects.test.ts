@@ -1387,33 +1387,54 @@ describe("convertWireToOsdkObjects", () => {
     });
   });
 
-  describe("with property securities", () => {
-    it("$as does not throw on objects loaded with property securities", async () => {
-      const wireEmployee = {
-        __apiName: "Employee",
-        __primaryKey: 50031,
-        __title: "Jane Doe",
-        employeeId: 50031,
-        fullName: { value: "Jane Doe", propertySecurityIndex: 0 },
-        office: { value: "SEA", propertySecurityIndex: 0 },
-      } as unknown as OntologyObjectV2;
+  it("$as on an object loaded with $loadPropertySecurityMetadata produces the full interface view, threading $propertySecurities and the standard $* props", async () => {
+    const wireEmployee = {
+      __apiName: "Employee",
+      __primaryKey: 50031,
+      __title: "Jane Doe",
+      employeeId: 50031,
+      fullName: { value: "Jane Doe", propertySecurityIndex: 0 },
+      office: { value: "SEA", propertySecurityIndex: 0 },
+    } as unknown as OntologyObjectV2;
 
-      const wireSecurities: PropertySecurities[] = [
-        { disjunction: [{ type: "unsupportedPolicy" }] },
-      ];
+    const wireSecurities: PropertySecurities[] = [
+      { disjunction: [{ type: "unsupportedPolicy" }] },
+    ];
 
-      const [holder] = await convertWireToOsdkObjects(
-        client[additionalContext],
-        [wireEmployee],
-        undefined,
-        false,
-        {},
-        wireSecurities,
-      ) as unknown as Osdk.Instance<Employee>[];
+    const [holder] = await convertWireToOsdkObjects(
+      client[additionalContext],
+      [wireEmployee],
+      undefined,
+      false,
+      {},
+      wireSecurities,
+    ) as unknown as Osdk.Instance<Employee>[];
 
-      const asFoo = holder.$as(FooInterface);
-      expect(asFoo.fooSpt).toBe("Jane Doe");
-    });
+    const asFoo = holder.$as(FooInterface);
+
+    expect(asFoo).toMatchInlineSnapshot(`
+      {
+        "$apiName": "FooInterface",
+        "$objectSpecifier": "Employee:50031",
+        "$objectType": "Employee",
+        "$primaryKey": 50031,
+        "$propertySecurities": {
+          "fullName": [
+            {
+              "type": "unsupportedPolicy",
+            },
+          ],
+          "office": [
+            {
+              "type": "unsupportedPolicy",
+            },
+          ],
+        },
+        "$title": "Jane Doe",
+        "fooIdp": "SEA",
+        "fooSpt": "Jane Doe",
+      }
+    `);
   });
 });
 

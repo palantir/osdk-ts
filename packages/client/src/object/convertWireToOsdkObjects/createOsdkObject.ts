@@ -159,7 +159,7 @@ export function createOsdkObject(
   derivedPropertyTypeByName: DerivedPropertyRuntimeMetadata = {},
   wirePropertySecurities: PropertySecurities[] | undefined = [],
 ): ObjectHolder {
-  const clientPropertySecurities = unwrapSecuredValuesInPlace(
+  const { parsedObject, clientPropertySecurities } = parseWhenSecuritiesLoaded(
     wirePropertySecurities,
     simpleOsdkProperties,
     objectDef,
@@ -167,7 +167,7 @@ export function createOsdkObject(
   );
 
   // updates the object's "hidden class/map".
-  const rawObj = simpleOsdkProperties as ObjectHolder;
+  const rawObj = parsedObject as ObjectHolder;
   Object.defineProperties(
     rawObj,
     {
@@ -336,19 +336,22 @@ function createSpecialProperty(
   }
 }
 
-function unwrapSecuredValuesInPlace(
+function parseWhenSecuritiesLoaded(
   wirePropertySecurities: PropertySecurities[] | undefined,
   rawObject: SimpleOsdkProperties,
   objectDef: FetchedObjectTypeDefinition,
   derivedPropertyTypeByName: DerivedPropertyRuntimeMetadata = {},
-):
-  | { [propName: string]: PropertySecurity[] | PropertySecurity[][] }
-  | undefined
-{
+): {
+  parsedObject: SimpleOsdkProperties;
+  clientPropertySecurities:
+    | { [propName: string]: PropertySecurity[] | PropertySecurity[][] }
+    | undefined;
+} {
   if (wirePropertySecurities == null || wirePropertySecurities.length === 0) {
-    return undefined;
+    return { parsedObject: rawObject, clientPropertySecurities: undefined };
   }
 
+  const parsedObject: SimpleOsdkProperties = rawObject;
   const clientPropertySecurities: {
     [propName: string]: PropertySecurity[] | PropertySecurity[][];
   } = {};
@@ -386,16 +389,17 @@ function unwrapSecuredValuesInPlace(
               .map(wireToClientPropertySecurities),
           );
         });
-        rawObject[propKey] = newVal;
+        parsedObject[propKey] = newVal;
         clientPropertySecurities[propKey] = newSecurities;
-      } else if (
+      } // Check if this is a secured property value object
+      else if (
         typeof value === "object"
         && value != null
         && "value" in value
         && "propertySecurityIndex" in value
       ) {
         const securedValue = value as SecuredPropertyValue;
-        rawObject[propKey] = securedValue.value;
+        parsedObject[propKey] = securedValue.value;
 
         const securityIndex = securedValue.propertySecurityIndex;
         invariant(
@@ -409,11 +413,14 @@ function unwrapSecuredValuesInPlace(
         clientPropertySecurities[propKey] =
           wirePropertySecurities[securityIndex].disjunction
             .map(wireToClientPropertySecurities);
+      } else {
+        // Regular property without security
+        parsedObject[propKey] = value;
       }
     }
   }
 
-  return clientPropertySecurities;
+  return { parsedObject, clientPropertySecurities };
 }
 
 function wireToClientPropertySecurities(
