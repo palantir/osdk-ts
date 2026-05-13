@@ -32,9 +32,11 @@ import type {
 } from "../../ObservableClient/common.js";
 import type { BatchContext } from "../BatchContext.js";
 import { getBulkObjectLoader } from "../BulkObjectLoader.js";
+import type { Canonical } from "../Canonical.js";
 import type { Changes } from "../Changes.js";
 import type { Entry } from "../Layer.js";
 import { Query } from "../Query.js";
+import type { Rdp } from "../RdpCanonicalizer.js";
 import type { Store } from "../Store.js";
 import type { SubjectPayload } from "../SubjectPayload.js";
 import { tombstone } from "../tombstone.js";
@@ -52,6 +54,7 @@ export class ObjectQuery extends Query<
   #loadPropertySecurityMetadata: boolean;
   #includeAllBaseObjectProperties: boolean;
   #implementingTypes: Set<string> | undefined;
+  #rdpConfig: Canonical<Rdp> | undefined;
 
   constructor(
     store: Store,
@@ -60,6 +63,7 @@ export class ObjectQuery extends Query<
     pk: PrimaryKeyType<ObjectTypeDefinition>,
     cacheKey: ObjectCacheKey,
     opts: CommonObserveOptions,
+    rdpConfig?: Canonical<Rdp>,
     defType: DefType = "object",
     select?: readonly string[],
     loadPropertySecurityMetadata?: boolean,
@@ -82,6 +86,7 @@ export class ObjectQuery extends Query<
     );
     this.#apiName = type;
     this.#pk = pk;
+    this.#rdpConfig = rdpConfig;
     this.#defType = defType;
     this.#select = select;
     this.#loadPropertySecurityMetadata = loadPropertySecurityMetadata ?? false;
@@ -126,7 +131,7 @@ export class ObjectQuery extends Query<
     // we're not making unnecessary network calls. This would need dedicated
     // tests separate from subscription notification tests.
 
-    const rdpConfig = this.cacheKey.otherKeys[RDP_CONFIG_IDX];
+    const rdpConfig = this.#rdpConfig;
 
     let obj: ObjectHolder;
 
@@ -185,13 +190,12 @@ export class ObjectQuery extends Query<
     selectFields?: ReadonlySet<string>,
   ): Entry<ObjectCacheKey> {
     const entry = batch.read(this.cacheKey);
-    const rdpConfig = this.cacheKey.otherKeys[RDP_CONFIG_IDX];
 
     this.store.objectCacheKeyRegistry.register(
       this.cacheKey,
       this.#apiName,
       this.#pk,
-      rdpConfig,
+      this.cacheKey.otherKeys[RDP_CONFIG_IDX],
     );
 
     this.store.objects.propagateWrite(
@@ -209,13 +213,11 @@ export class ObjectQuery extends Query<
     status: Status,
     batch: BatchContext,
   ): Entry<ObjectCacheKey> | undefined {
-    const rdpConfig = this.cacheKey.otherKeys[RDP_CONFIG_IDX];
-
     this.store.objectCacheKeyRegistry.register(
       this.cacheKey,
       this.#apiName,
       this.#pk,
-      rdpConfig,
+      this.cacheKey.otherKeys[RDP_CONFIG_IDX],
     );
 
     this.store.objects.propagateWrite(
