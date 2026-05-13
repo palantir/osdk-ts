@@ -27,7 +27,7 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { DateRangePicker } from "../../../shared/calendar/index.js";
+import { DatePicker } from "../../../shared/calendar/index.js";
 import {
   createHistogramBuckets,
   getMaxBucketCount,
@@ -932,24 +932,37 @@ function DateRangeInputs({
   minLabel,
   maxLabel,
 }: DateRangeInputsProps): React.ReactElement {
-  const handleChange = useCallback(
-    (next: readonly [Date | null, Date | null] | null) => {
-      const [start, end] = next ?? [null, null];
-      onChange(start ?? undefined, end ?? undefined);
+  // Each input drives only its own boundary. Cross-bounding via min/max
+  // prevents the user from picking a From > current To (or vice versa)
+  // without needing dual-popover overlap logic.
+  const handleMinChange = useCallback(
+    (next: Date | null) => {
+      onChange(next ?? undefined, maxValue);
     },
-    [onChange],
+    [onChange, maxValue],
   );
-  const value = useMemo<readonly [Date | null, Date | null]>(
-    () => [minValue ?? null, maxValue ?? null],
-    [minValue, maxValue],
+  const handleMaxChange = useCallback(
+    (next: Date | null) => {
+      onChange(minValue, next ?? undefined);
+    },
+    [onChange, minValue],
   );
   return (
     <div className={styles.rangeInputs}>
-      <DateRangePicker
-        value={value}
-        onChange={handleChange}
-        placeholderStart={minLabel}
-        placeholderEnd={maxLabel}
+      <DatePicker
+        value={minValue ?? null}
+        onChange={handleMinChange}
+        max={maxValue}
+        placeholder={minLabel}
+        ariaLabel={minLabel}
+        formatDate={formatDate}
+      />
+      <DatePicker
+        value={maxValue ?? null}
+        onChange={handleMaxChange}
+        min={minValue}
+        placeholder={maxLabel}
+        ariaLabel={maxLabel}
         formatDate={formatDate}
       />
     </div>

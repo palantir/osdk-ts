@@ -179,7 +179,7 @@ describe("formatDate / parseDate plumbing", () => {
     );
 
     it(
-      "keeps the DatePicker input value as ISO regardless of formatDate",
+      "honors formatDate on the From input display",
       () => {
         const min = new Date(2024, 0, 15);
         render(
@@ -192,14 +192,8 @@ describe("formatDate / parseDate plumbing", () => {
             formatDate={slashFormat}
           />,
         );
-        const startInput = screen.getByLabelText(
-          "Start date",
-        ) as HTMLInputElement;
-        // The shared DateRangePicker shows the consumer-pinned format in the
-        // idle text, but the underlying calendar value remains ISO. Tests
-        // rely on the displayed value here, which now goes through
-        // formatDate when provided.
-        expect(startInput.value).toBe(slashFormat(min));
+        const fromInput = screen.getByLabelText("From") as HTMLInputElement;
+        expect(fromInput.value).toBe(slashFormat(min));
       },
     );
 
