@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import type { QueryDefinition } from "@osdk/api";
 import type { Client } from "@osdk/client";
 import type { ObservableClient } from "@osdk/client/observable";
 import { renderHook } from "@testing-library/react";
@@ -23,11 +22,20 @@ import { describe, expect, it, vi } from "vitest";
 import { OsdkContext } from "../OsdkContext.js";
 import { useOsdkFunction } from "../useOsdkFunction.js";
 
-function createMockObservableClient(): ObservableClient {
-  return {
-    observeFunction: vi.fn().mockReturnValue({ unsubscribe: vi.fn() }),
-    invalidateFunction: vi.fn(),
+function createMockObservableClient(): {
+  client: ObservableClient;
+  observeFunction: ReturnType<typeof vi.fn>;
+  invalidateFunction: ReturnType<typeof vi.fn>;
+} {
+  const observeFunction = vi
+    .fn()
+    .mockReturnValue({ unsubscribe: vi.fn() });
+  const invalidateFunction = vi.fn();
+  const client = {
+    observeFunction,
+    invalidateFunction,
   } as unknown as ObservableClient;
+  return { client, observeFunction, invalidateFunction };
 }
 
 function createWrapper(observableClient: ObservableClient) {
@@ -49,36 +57,30 @@ function createWrapper(observableClient: ObservableClient) {
 describe("useOsdkFunction", () => {
   describe("when queryDef is undefined", () => {
     it("returns loading state without throwing or calling observeFunction", () => {
-      const observableClient = createMockObservableClient();
+      const { client, observeFunction } = createMockObservableClient();
 
       const { result } = renderHook(
-        () =>
-          useOsdkFunction(
-            undefined as unknown as QueryDefinition<unknown>,
-          ),
-        { wrapper: createWrapper(observableClient) },
+        () => useOsdkFunction(undefined),
+        { wrapper: createWrapper(client) },
       );
 
       expect(result.current.isLoading).toBe(true);
       expect(result.current.data).toBeUndefined();
       expect(result.current.error).toBeUndefined();
       expect(typeof result.current.refetch).toBe("function");
-      expect(observableClient.observeFunction).not.toHaveBeenCalled();
+      expect(observeFunction).not.toHaveBeenCalled();
     });
 
     it("refetch is a no-op when queryDef is undefined", async () => {
-      const observableClient = createMockObservableClient();
+      const { client, invalidateFunction } = createMockObservableClient();
 
       const { result } = renderHook(
-        () =>
-          useOsdkFunction(
-            undefined as unknown as QueryDefinition<unknown>,
-          ),
-        { wrapper: createWrapper(observableClient) },
+        () => useOsdkFunction(undefined),
+        { wrapper: createWrapper(client) },
       );
 
       await result.current.refetch();
-      expect(observableClient.invalidateFunction).not.toHaveBeenCalled();
+      expect(invalidateFunction).not.toHaveBeenCalled();
     });
   });
 });

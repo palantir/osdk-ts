@@ -15,7 +15,6 @@
  */
 
 import type { Client } from "@osdk/client";
-import type { Employee } from "@osdk/client.test.ontology";
 import type { ObservableClient } from "@osdk/client/observable";
 import { renderHook } from "@testing-library/react";
 import React from "react";
@@ -23,14 +22,23 @@ import { describe, expect, it, vi } from "vitest";
 import { OsdkContext } from "../OsdkContext.js";
 import { useOsdkAggregation } from "../useOsdkAggregation.js";
 
-function createMockObservableClient(): ObservableClient {
-  return {
-    observeAggregation: vi.fn().mockReturnValue({ unsubscribe: vi.fn() }),
-    invalidateObjectType: vi.fn(),
+function createMockObservableClient(): {
+  client: ObservableClient;
+  observeAggregation: ReturnType<typeof vi.fn>;
+  invalidateObjectType: ReturnType<typeof vi.fn>;
+} {
+  const observeAggregation = vi
+    .fn()
+    .mockReturnValue({ unsubscribe: vi.fn() });
+  const invalidateObjectType = vi.fn();
+  const client = {
+    observeAggregation,
+    invalidateObjectType,
     canonicalizeOptions: vi.fn().mockImplementation((options: unknown) =>
       options
     ),
   } as unknown as ObservableClient;
+  return { client, observeAggregation, invalidateObjectType };
 }
 
 function createWrapper(observableClient: ObservableClient) {
@@ -52,43 +60,36 @@ function createWrapper(observableClient: ObservableClient) {
 describe("useOsdkAggregation", () => {
   describe("when type is undefined", () => {
     it("returns loading state without throwing or calling observeAggregation", () => {
-      const observableClient = createMockObservableClient();
+      const { client, observeAggregation } = createMockObservableClient();
       const aggregateOptions = {
         $select: { $count: "unordered" as const },
       };
 
       const { result } = renderHook(
-        () =>
-          useOsdkAggregation(undefined as unknown as typeof Employee, {
-            aggregate: aggregateOptions,
-          }),
-        { wrapper: createWrapper(observableClient) },
+        () => useOsdkAggregation(undefined, { aggregate: aggregateOptions }),
+        { wrapper: createWrapper(client) },
       );
 
       expect(result.current.isLoading).toBe(true);
       expect(result.current.data).toBeUndefined();
       expect(result.current.error).toBeUndefined();
       expect(typeof result.current.refetch).toBe("function");
-      // eslint-disable-next-line @typescript-eslint/no-deprecated
-      expect(observableClient.observeAggregation).not.toHaveBeenCalled();
+      expect(observeAggregation).not.toHaveBeenCalled();
     });
 
     it("refetch is a no-op when type is undefined", async () => {
-      const observableClient = createMockObservableClient();
+      const { client, invalidateObjectType } = createMockObservableClient();
       const aggregateOptions = {
         $select: { $count: "unordered" as const },
       };
 
       const { result } = renderHook(
-        () =>
-          useOsdkAggregation(undefined as unknown as typeof Employee, {
-            aggregate: aggregateOptions,
-          }),
-        { wrapper: createWrapper(observableClient) },
+        () => useOsdkAggregation(undefined, { aggregate: aggregateOptions }),
+        { wrapper: createWrapper(client) },
       );
 
       await result.current.refetch();
-      expect(observableClient.invalidateObjectType).not.toHaveBeenCalled();
+      expect(invalidateObjectType).not.toHaveBeenCalled();
     });
   });
 });

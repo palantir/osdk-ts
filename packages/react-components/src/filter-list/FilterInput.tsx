@@ -95,6 +95,9 @@ function FilterInputInner<Q extends ObjectTypeDefinition>({
           <div data-unsupported="true">Custom filter missing renderInput</div>
         );
       }
+      if (objectType === undefined) {
+        return <></>;
+      }
       const customFilterState = filterState?.type === "custom"
         ? filterState
         : definition.filterState;

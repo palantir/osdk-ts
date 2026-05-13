@@ -253,8 +253,6 @@ export function useOsdkFunction<Q extends QueryDefinition<unknown>>(
     await observableClient.invalidateFunction(queryDef, paramsForApi);
   }, [observableClient, queryDef, paramsForApi]);
 
-  const isQueryDefMissing = queryDef === undefined;
-
   return React.useMemo(() => {
     const error = payload?.error
       ?? (payload?.status === "error"
@@ -263,10 +261,10 @@ export function useOsdkFunction<Q extends QueryDefinition<unknown>>(
 
     return {
       data: payload?.result as UseOsdkFunctionResult<Q>["data"],
-      isLoading: isQueryDefMissing || payload?.status === "loading",
+      isLoading: queryDef === undefined || payload?.status === "loading",
       error,
       lastUpdated: payload?.lastUpdated ?? 0,
       refetch,
     };
-  }, [payload, refetch, isQueryDefMissing]);
+  }, [payload, refetch, queryDef]);
 }

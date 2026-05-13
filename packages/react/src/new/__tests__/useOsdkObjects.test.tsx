@@ -15,7 +15,6 @@
  */
 
 import type { Client } from "@osdk/client";
-import type { Employee } from "@osdk/client.test.ontology";
 import type { ObservableClient } from "@osdk/client/observable";
 import { renderHook } from "@testing-library/react";
 import React from "react";
@@ -23,14 +22,21 @@ import { describe, expect, it, vi } from "vitest";
 import { OsdkContext } from "../OsdkContext.js";
 import { useOsdkObjects } from "../useOsdkObjects.js";
 
-function createMockObservableClient(): ObservableClient {
-  return {
-    observeList: vi.fn().mockReturnValue({ unsubscribe: vi.fn() }),
-    invalidateObjectType: vi.fn(),
+function createMockObservableClient(): {
+  client: ObservableClient;
+  observeList: ReturnType<typeof vi.fn>;
+  invalidateObjectType: ReturnType<typeof vi.fn>;
+} {
+  const observeList = vi.fn().mockReturnValue({ unsubscribe: vi.fn() });
+  const invalidateObjectType = vi.fn();
+  const client = {
+    observeList,
+    invalidateObjectType,
     canonicalizeOptions: vi.fn().mockImplementation((options: unknown) =>
       options
     ),
   } as unknown as ObservableClient;
+  return { client, observeList, invalidateObjectType };
 }
 
 function createWrapper(observableClient: ObservableClient) {
@@ -52,11 +58,11 @@ function createWrapper(observableClient: ObservableClient) {
 describe("useOsdkObjects", () => {
   describe("when type is undefined", () => {
     it("returns loading state without throwing or calling observeList", () => {
-      const observableClient = createMockObservableClient();
+      const { client, observeList } = createMockObservableClient();
 
       const { result } = renderHook(
-        () => useOsdkObjects(undefined as unknown as typeof Employee),
-        { wrapper: createWrapper(observableClient) },
+        () => useOsdkObjects(undefined),
+        { wrapper: createWrapper(client) },
       );
 
       expect(result.current.isLoading).toBe(true);
@@ -65,19 +71,19 @@ describe("useOsdkObjects", () => {
       expect(result.current.fetchMore).toBeUndefined();
       expect(result.current.hasMore).toBe(false);
       expect(typeof result.current.refetch).toBe("function");
-      expect(observableClient.observeList).not.toHaveBeenCalled();
+      expect(observeList).not.toHaveBeenCalled();
     });
 
     it("refetch is a no-op when type is undefined", async () => {
-      const observableClient = createMockObservableClient();
+      const { client, invalidateObjectType } = createMockObservableClient();
 
       const { result } = renderHook(
-        () => useOsdkObjects(undefined as unknown as typeof Employee),
-        { wrapper: createWrapper(observableClient) },
+        () => useOsdkObjects(undefined),
+        { wrapper: createWrapper(client) },
       );
 
       await result.current.refetch();
-      expect(observableClient.invalidateObjectType).not.toHaveBeenCalled();
+      expect(invalidateObjectType).not.toHaveBeenCalled();
     });
   });
 });
