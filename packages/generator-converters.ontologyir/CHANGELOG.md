@@ -1,5 +1,15 @@
 # @osdk/generator-converters.ontologyir
 
+## 2.19.0
+
+### Minor Changes
+
+- 46c553f: fix interface bugs
+
+### Patch Changes
+
+- @osdk/client.unstable@2.19.0
+
 ## 2.18.0
 
 ### Patch Changes

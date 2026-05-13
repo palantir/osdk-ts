@@ -1,5 +1,22 @@
 # @osdk/maker-experimental
 
+## 0.15.0
+
+### Minor Changes
+
+- 46c553f: fix interface bugs
+
+### Patch Changes
+
+- Updated dependencies [02c796c]
+- Updated dependencies [46c553f]
+- Updated dependencies [d962309]
+  - @osdk/api@2.19.0
+  - @osdk/generator-converters.ontologyir@2.19.0
+  - @osdk/maker@0.25.0
+  - @osdk/client.unstable@2.19.0
+  - @osdk/generator-converters.preview@0.9.0
+
 ## 0.14.0
 
 ### Minor Changes

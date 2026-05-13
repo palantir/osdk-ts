@@ -1,5 +1,16 @@
 # @osdk/react-components
 
+## 0.15.0
+
+### Minor Changes
+
+- 108ac50: Cap long ActionForm select dropdowns so they scroll inside dialogs.
+- 4bc17cc: Fix editable date field incorrectly showing edited border after click-in/click-out without changes
+- 99ec28c: Fix page scroll being blocked when opening a dropdown in an editable ObjectTable
+- d10ed5e: Add rich item label rendering to ActionForm dropdown fields.
+- 47eb27c: Add object set scoping to ObjectSelectField.
+- 73738dd: Show unsupported ActionForm field types and recommend CUSTOM fields.
+
 ## 0.14.0
 
 ### Minor Changes
