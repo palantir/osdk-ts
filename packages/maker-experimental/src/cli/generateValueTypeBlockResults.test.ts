@@ -15,8 +15,7 @@
  */
 
 import type {
-  OntologyIrValueTypeBlockData,
-  OntologyIrValueTypeBlockDataEntry,
+  ValueTypeBlockData,
 } from "@osdk/client.unstable";
 import type { InputShape } from "@osdk/client.unstable/api";
 import * as fs from "node:fs";
@@ -32,17 +31,16 @@ import {
 function makeEntry(
   apiName: string,
   versions: string[],
-  packageNamespace: string = "com.test",
-): OntologyIrValueTypeBlockDataEntry {
+): ValueTypeBlockData {
   return {
     metadata: {
       apiName,
-      packageNamespace,
       displayMetadata: {
         displayName: `Display ${apiName}`,
         description: `Description for ${apiName}`,
       },
       status: { type: "active", active: {} },
+      baseType: { type: "integer", integer: {} },
     },
     versions: versions.map(v => ({
       version: v,
@@ -88,9 +86,7 @@ describe("generateValueTypeBlockResults", () => {
   });
 
   it("generates output shapes for each version", async () => {
-    const data: OntologyIrValueTypeBlockData = {
-      valueTypes: [makeEntry("enumerated", ["0.0.1", "0.0.2"])],
-    };
+    const data = [makeEntry("enumerated", ["0.0.1", "0.0.2"])];
 
     const results = await generateValueTypeBlockResults(data, buildDir);
 
@@ -109,9 +105,7 @@ describe("generateValueTypeBlockResults", () => {
   });
 
   it("has empty inputs, mappings, and recommendations", async () => {
-    const data: OntologyIrValueTypeBlockData = {
-      valueTypes: [makeEntry("enumerated", ["0.0.1"])],
-    };
+    const data = [makeEntry("enumerated", ["0.0.1"])];
 
     const results = await generateValueTypeBlockResults(data, buildDir);
 
@@ -126,7 +120,7 @@ describe("generateValueTypeBlockResults", () => {
     entry.versions[1].baseType = { type: "integer", integer: {} };
 
     const results = await generateValueTypeBlockResults(
-      { valueTypes: [entry] },
+      [entry],
       buildDir,
     );
 
@@ -146,7 +140,7 @@ describe("generateValueTypeBlockResults", () => {
 describe("getValueTypeInternalMappings", () => {
   it("returns empty for no produced value types", () => {
     const mappings = getValueTypeInternalMappings(
-      { valueTypes: [] },
+      [],
       new Map(),
     );
     expect(mappings).toEqual([]);
@@ -154,7 +148,7 @@ describe("getValueTypeInternalMappings", () => {
 
   it("returns empty when produced value type is not consumed", () => {
     const mappings = getValueTypeInternalMappings(
-      { valueTypes: [makeEntry("enumerated", ["0.0.1"])] },
+      [makeEntry("enumerated", ["0.0.1"])],
       new Map(),
     );
     expect(mappings).toEqual([]);
@@ -183,7 +177,7 @@ describe("getValueTypeInternalMappings", () => {
     });
 
     const mappings = getValueTypeInternalMappings(
-      { valueTypes: [makeEntry("enumerated", ["0.0.1"])] },
+      [makeEntry("enumerated", ["0.0.1"])],
       inputShapes,
     );
 
@@ -218,7 +212,7 @@ describe("getValueTypeInternalMappings", () => {
     }
 
     const mappings = getValueTypeInternalMappings(
-      { valueTypes: [makeEntry("enumerated", ["0.0.1", "0.0.2"])] },
+      [makeEntry("enumerated", ["0.0.1", "0.0.2"])],
       inputShapes,
     );
 
