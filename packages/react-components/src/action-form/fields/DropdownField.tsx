@@ -37,6 +37,7 @@ interface InnerSelectProps<V, Multiple extends boolean>
   extends Omit<DropdownFieldProps<V, Multiple>, "isSearchable">
 {
   itemToStringLabel: (item: V) => string;
+  renderItemLabel: (item: V) => React.ReactNode;
   getKey: (item: V) => string;
   portalRef?: React.Ref<HTMLDivElement>;
   query?: string;
@@ -63,6 +64,7 @@ export const DropdownField: <V, Multiple extends boolean = false>(
   isSearchable = false,
   isMultiple,
   itemToStringLabel,
+  renderItemLabel,
   itemToKey,
   value,
   query,
@@ -84,6 +86,8 @@ export const DropdownField: <V, Multiple extends boolean = false>(
   const resolvedItemToStringLabel = itemToStringLabel
     ?? defaultItemToStringLabel;
 
+  const resolvedRenderItemLabel = renderItemLabel ?? resolvedItemToStringLabel;
+
   const getKey = useCallback(
     (item: V) => itemToKey?.(item) ?? resolvedItemToStringLabel(item),
     [itemToKey, resolvedItemToStringLabel],
@@ -97,6 +101,7 @@ export const DropdownField: <V, Multiple extends boolean = false>(
         isMultiple={isMultiple}
         value={normalizedValue}
         itemToStringLabel={resolvedItemToStringLabel}
+        renderItemLabel={resolvedRenderItemLabel}
         getKey={getKey}
         isSearchable={isSearchable}
         query={query}
@@ -115,6 +120,7 @@ export const DropdownField: <V, Multiple extends boolean = false>(
       {...rest}
       value={normalizedValue}
       itemToStringLabel={resolvedItemToStringLabel}
+      renderItemLabel={resolvedRenderItemLabel}
       getKey={getKey}
       modal={modal}
     />
@@ -130,6 +136,7 @@ const SelectDropdown = typedReactMemo(function SelectDropdownFn<
   onChange,
   items,
   itemToStringLabel,
+  renderItemLabel,
   getKey,
   isItemEqual,
   placeholder,
@@ -141,6 +148,12 @@ const SelectDropdown = typedReactMemo(function SelectDropdownFn<
   const [open, setOpen] = useState(false);
 
   const hasValue = value != null;
+
+  const renderSingleSelectedItemLabel = useCallback(
+    (selectedValue: V | null) =>
+      selectedValue == null ? null : renderItemLabel(selectedValue),
+    [renderItemLabel],
+  );
 
   const handleOpenChange = useCallback(
     (nextOpen: boolean) => {
@@ -177,7 +190,7 @@ const SelectDropdown = typedReactMemo(function SelectDropdownFn<
       >
         <Select.Trigger id={id} placeholder={placeholder}>
           <div className={selectStyles.osdkSelectValueContainer}>
-            <Select.Value />
+            <Select.Value>{renderSingleSelectedItemLabel}</Select.Value>
             {placeholder != null && (
               <span className={selectStyles.osdkSelectPlaceholder}>
                 {placeholder}
@@ -208,11 +221,19 @@ const SelectDropdown = typedReactMemo(function SelectDropdownFn<
           )}
           <Select.Positioner>
             <Select.Popup>
-              {items.map((item) => (
-                <Select.Item key={getKey(item)} value={item}>
-                  {itemToStringLabel(item)}
-                </Select.Item>
-              ))}
+              {items.map((item) => {
+                const itemLabel = itemToStringLabel(item);
+                return (
+                  <Select.Item
+                    key={getKey(item)}
+                    value={item}
+                    label={itemLabel}
+                    aria-label={itemLabel}
+                  >
+                    {renderItemLabel(item)}
+                  </Select.Item>
+                );
+              })}
             </Select.Popup>
           </Select.Positioner>
         </Select.Portal>
@@ -230,6 +251,7 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
   onChange,
   items,
   itemToStringLabel,
+  renderItemLabel,
   getKey,
   isItemEqual,
   isMultiple,
@@ -250,6 +272,12 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
   const hasValue = isMultiple
     ? Array.isArray(value) && value.length > 0
     : value != null;
+
+  const renderSingleSelectedItemLabel = useCallback(
+    (selectedValue: V | null) =>
+      selectedValue == null ? null : renderItemLabel(selectedValue),
+    [renderItemLabel],
+  );
 
   const handleOpenChange = useCallback(
     (nextOpen: boolean) => {
@@ -308,17 +336,20 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
   }, [handleOpenChange]);
 
   const renderItem = useCallback(
-    (item: V) => (
-      <Combobox.Item key={getKey(item)} value={item}>
-        {isMultiple && (
-          <Combobox.ItemIndicator>
-            <Tick />
-          </Combobox.ItemIndicator>
-        )}
-        {itemToStringLabel(item)}
-      </Combobox.Item>
-    ),
-    [getKey, isMultiple, itemToStringLabel],
+    (item: V) => {
+      const itemLabel = itemToStringLabel(item);
+      return (
+        <Combobox.Item key={getKey(item)} value={item} aria-label={itemLabel}>
+          {isMultiple && (
+            <Combobox.ItemIndicator>
+              <Tick />
+            </Combobox.ItemIndicator>
+          )}
+          {renderItemLabel(item)}
+        </Combobox.Item>
+      );
+    },
+    [getKey, isMultiple, itemToStringLabel, renderItemLabel],
   );
 
   return (
@@ -351,7 +382,7 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
                       key={getKey(item)}
                       className={comboboxStyles.osdkComboboxTriggerChip}
                     >
-                      {itemToStringLabel(item)}
+                      {renderItemLabel(item)}
                       <span
                         role="button"
                         aria-label={`Remove ${itemToStringLabel(item)}`}
@@ -367,7 +398,9 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
               )
               : (
                 <>
-                  <Combobox.Value />
+                  <Combobox.Value>
+                    {renderSingleSelectedItemLabel}
+                  </Combobox.Value>
                   {!hasValue && placeholder != null && (
                     <span className={comboboxStyles.osdkComboboxPlaceholder}>
                       {placeholder}

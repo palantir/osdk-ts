@@ -169,9 +169,16 @@ export interface DropdownFieldProps<V, Multiple extends boolean = false>
   items: V[];
 
   /**
-   * Converts an item to a display string. Defaults to `String()`.
+   * Converts an item to searchable text and the default visual label. Defaults to `String()`.
+   * Use `renderItemLabel` when the visible label needs rich React content.
    */
   itemToStringLabel?: (item: V) => string;
+
+  /**
+   * Renders an item label with custom React content.
+   * `itemToStringLabel` is still used for search, accessibility, and fallback keys.
+   */
+  renderItemLabel?: (item: V) => React.ReactNode;
 
   /**
    * Returns a unique string key for a list item. Used as the React `key`.

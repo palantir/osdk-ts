@@ -62,6 +62,14 @@ const DEPARTMENT_ITEMS = [
 
 const TAG_ITEMS = ["Urgent", "Review", "Follow-up", "Archived", "Pinned"];
 
+const USER_ID_ITEMS = ["usr_ada", "usr_grace", "usr_katherine"];
+
+const USER_DIRECTORY: Record<string, { name: string; team: string }> = {
+  usr_ada: { name: "Ada Lovelace", team: "Computation" },
+  usr_grace: { name: "Grace Hopper", team: "Compilers" },
+  usr_katherine: { name: "Katherine Johnson", team: "Flight dynamics" },
+};
+
 const formContent: ReadonlyArray<FormContentItem> = [
   field({
     fieldKey: "name",
@@ -961,6 +969,78 @@ export const WithMultiSelectDropdown: Story = {
 ];
 
 // Side-by-side comparison: plain multi-Select vs searchable multi-Combobox.
+<BaseForm
+  formContent={formContent}
+  onSubmit={(formState) => console.log("Submitted:", formState)}
+/>`,
+      },
+    },
+  },
+};
+
+const richDropdownLabelFormContent: ReadonlyArray<FormContentItem> = [
+  field({
+    fieldKey: "assigneeUserId",
+    fieldComponent: "DROPDOWN",
+    label: "Assignee",
+    fieldComponentProps: {
+      items: USER_ID_ITEMS,
+      itemToStringLabel: getUserIdLabel,
+      renderItemLabel: renderUserIdLabel,
+      isSearchable: true,
+      placeholder: "Search users...",
+    },
+  }),
+  field({
+    fieldKey: "reviewerUserIds",
+    fieldComponent: "DROPDOWN",
+    label: "Reviewers",
+    fieldComponentProps: {
+      items: USER_ID_ITEMS,
+      itemToStringLabel: getUserIdLabel,
+      renderItemLabel: renderUserIdLabel,
+      isMultiple: true,
+      isSearchable: true,
+      placeholder: "Search reviewers...",
+    },
+  }),
+];
+
+export const WithRichDropdownLabels: Story = {
+  args: {
+    formContent: richDropdownLabelFormContent,
+    onSubmit: handleSubmit,
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `const userIds = ["usr_ada", "usr_grace", "usr_katherine"];
+
+const usersById = {
+  usr_ada: { name: "Ada Lovelace", team: "Computation" },
+  usr_grace: { name: "Grace Hopper", team: "Compilers" },
+  usr_katherine: { name: "Katherine Johnson", team: "Flight dynamics" },
+};
+
+const formContent = [
+  {
+    fieldKey: "assigneeUserId",
+    fieldComponent: "DROPDOWN",
+    label: "Assignee",
+    fieldComponentProps: {
+      items: userIds,
+      itemToStringLabel: (userId) => usersById[userId]?.name ?? userId,
+      renderItemLabel: (userId) => (
+        <span>
+          <strong>{usersById[userId]?.name ?? userId}</strong>
+          <span>{usersById[userId]?.team}</span>
+        </span>
+      ),
+      isSearchable: true,
+    },
+  },
+];
+
 <BaseForm
   formContent={formContent}
   onSubmit={(formState) => console.log("Submitted:", formState)}
@@ -1878,3 +1958,24 @@ export const WithGridSection: Story = {
     onSubmit: handleSubmit,
   },
 };
+function getUserIdLabel(item: unknown): string {
+  if (typeof item !== "string") {
+    return String(item);
+  }
+
+  return USER_DIRECTORY[item]?.name ?? item;
+}
+
+function renderUserIdLabel(item: unknown): React.ReactNode {
+  const userId = String(item);
+  const user = USER_DIRECTORY[userId];
+
+  return (
+    <span className="osdkRichDropdownLabel">
+      <strong>{user?.name ?? userId}</strong>
+      {user?.team != null
+        ? <span className="osdkRichDropdownDescription">{user.team}</span>
+        : null}
+    </span>
+  );
+}
