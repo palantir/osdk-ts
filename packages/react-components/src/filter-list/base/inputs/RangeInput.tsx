@@ -148,6 +148,21 @@ export interface RangeInputConfig<T> {
    * ranges.
    */
   formatDate?: (date: Date) => string;
+  /**
+   * Optional snap applied to the bucket boundaries when a histogram
+   * click/drag is committed. Returning `undefined` cancels the commit —
+   * use this when rounding would land outside the clicked bucket (e.g.
+   * an integer-typed property with a sub-unit-width bucket that contains
+   * zero integers). `isLastBucket` is `true` when `maxBucket` is the
+   * final bucket, which `createHistogramBuckets` treats as closed at the
+   * right endpoint; integer rounding uses `Math.floor` there and
+   * `Math.ceil - 1` elsewhere.
+   */
+  clampCommitRange?: (
+    min: T,
+    max: T,
+    isLastBucket: boolean,
+  ) => { min: T; max: T } | undefined;
 }
 
 export interface RangeInputProps<T> {
@@ -462,7 +477,23 @@ function RangeInputInner<T>({
           return;
         }
       }
-      onChangeRef.current(minBucket.min, maxBucket.max);
+      // Allow the config to snap the bucket boundaries (e.g. round to
+      // integers for integer-typed properties). A `undefined` return
+      // cancels the commit — e.g. an integer-typed bucket that contains
+      // zero integers shouldn't synthesize a filter outside its visual
+      // range.
+      const isLastBucket = hi === currentBuckets.length - 1;
+      const clamped = currentConfig.clampCommitRange?.(
+        minBucket.min,
+        maxBucket.max,
+        isLastBucket,
+      );
+      if (currentConfig.clampCommitRange != null && clamped == null) {
+        return;
+      }
+      const emittedMin = clamped?.min ?? minBucket.min;
+      const emittedMax = clamped?.max ?? maxBucket.max;
+      onChangeRef.current(emittedMin, emittedMax);
     },
     [],
   );

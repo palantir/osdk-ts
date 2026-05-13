@@ -15,7 +15,7 @@
  */
 
 import type { ObjectSet, ObjectTypeDefinition, WhereClause } from "@osdk/api";
-import { useOsdkAggregation } from "@osdk/react";
+import { useOsdkAggregation, useOsdkMetadata } from "@osdk/react";
 import React, { memo, useCallback, useMemo } from "react";
 import { NullValueWrapper } from "../base/inputs/NullValueWrapper.js";
 import { NumberRangeInput } from "../base/inputs/NumberRangeInput.js";
@@ -49,6 +49,19 @@ function NumberRangeFilterInputInner<Q extends ObjectTypeDefinition>({
     ? filterState
     : undefined;
   const includeNull = filterState?.includeNull;
+
+  const { metadata, loading: metadataLoading } = useOsdkMetadata(objectType);
+  const propertyType = metadata?.properties?.[propertyKey]?.type;
+  const isInteger = propertyType === "integer"
+    || propertyType === "long"
+    || propertyType === "short"
+    || propertyType === "byte";
+  // Gate `clickToFilter` on metadata being available — otherwise a
+  // commit fired during the race between aggregation and metadata
+  // (aggregation can resolve first) would emit fractional min/max for
+  // an integer-typed property because `isInteger` reads `false` until
+  // metadata lands.
+  const clickToFilterReady = clickToFilter === true && !metadataLoading;
 
   const handleNullChange = useCallback(
     (includeNull: boolean) => {
@@ -173,7 +186,8 @@ function NumberRangeFilterInputInner<Q extends ObjectTypeDefinition>({
         minValue={numberRangeState?.minValue}
         maxValue={numberRangeState?.maxValue}
         onChange={handleRangeChange}
-        clickToFilter={clickToFilter}
+        clickToFilter={clickToFilterReady}
+        isInteger={isInteger}
       />
     </NullValueWrapper>
   );

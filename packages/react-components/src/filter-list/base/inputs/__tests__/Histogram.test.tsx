@@ -576,6 +576,222 @@ describe("RangeInput SVG histogram", () => {
       },
     );
 
+    describe("isInteger rounding", () => {
+      // 40 unique integer values over range [1, 40] → bucket width 39/20 =
+      // 1.95, so bucket boundaries are fractional. Without rounding, a
+      // single-bar click would emit decimals like 1 and 2.95, which leak
+      // into the Min/Max inputs and downstream `$gte`/`$lte` clauses.
+      const integerPairs = Array.from(
+        { length: 40 },
+        (_, i) => ({ value: i + 1, count: 1 }),
+      );
+
+      it(
+        "single-bar click on integer config emits integer min/max",
+        () => {
+          const onChange = vi.fn<
+            (min: number | undefined, max: number | undefined) => void
+          >();
+          const { container } = render(
+            <NumberRangeInput
+              valueCountPairs={integerPairs}
+              isLoading={false}
+              minValue={undefined}
+              maxValue={undefined}
+              onChange={onChange}
+              clickToFilter={true}
+              isInteger={true}
+            />,
+          );
+          const rects = container.querySelectorAll(
+            "rect[class*=\"histogramBar\"]",
+          );
+          firePointerDown(rects[0]);
+          fireDocumentMouseUp();
+          expect(onChange).toHaveBeenCalledTimes(1);
+          const [min, max] = onChange.mock.calls[0];
+          expect(Number.isInteger(min)).toBe(true);
+          expect(Number.isInteger(max)).toBe(true);
+          // bucket[0] = [1, 2.95) → integers {1, 2}
+          expect(min).toBe(1);
+          expect(max).toBe(2);
+        },
+      );
+
+      it(
+        "multi-bar drag on integer config emits integer min/max",
+        () => {
+          const onChange = vi.fn<
+            (min: number | undefined, max: number | undefined) => void
+          >();
+          const { container } = render(
+            <NumberRangeInput
+              valueCountPairs={integerPairs}
+              isLoading={false}
+              minValue={undefined}
+              maxValue={undefined}
+              onChange={onChange}
+              clickToFilter={true}
+              isInteger={true}
+            />,
+          );
+          const rects = container.querySelectorAll(
+            "rect[class*=\"histogramBar\"]",
+          );
+          firePointerDown(rects[0]);
+          firePointerMove(rects[1]);
+          firePointerMove(rects[2]);
+          fireDocumentMouseUp();
+          expect(onChange).toHaveBeenCalledTimes(1);
+          const [min, max] = onChange.mock.calls[0];
+          expect(Number.isInteger(min)).toBe(true);
+          expect(Number.isInteger(max)).toBe(true);
+          // bucket[0] = [1, 2.95), bucket[2] = [4.9, 6.85) → ceil(1)=1,
+          // ceil(6.85)-1=6
+          expect(min).toBe(1);
+          expect(max).toBe(6);
+        },
+      );
+
+      it(
+        "last-bucket click on integer config emits the data max (closed right endpoint)",
+        () => {
+          // Pairs span [1, 20] so bucket width = 19/20 = 0.95. bucket[19]
+          // is the LAST bucket and `createHistogramBuckets` clamps values
+          // equal to the data max into it — i.e. it's closed at the
+          // right endpoint. ceil-minus-one would emit max=19 (NOT in this
+          // bucket); the fix uses Math.floor on the last bucket so the
+          // emission lands at 20.
+          const pairs = Array.from(
+            { length: 20 },
+            (_, i) => ({ value: i + 1, count: 1 }),
+          );
+          const onChange = vi.fn<
+            (min: number | undefined, max: number | undefined) => void
+          >();
+          const { container } = render(
+            <NumberRangeInput
+              valueCountPairs={pairs}
+              isLoading={false}
+              minValue={undefined}
+              maxValue={undefined}
+              onChange={onChange}
+              clickToFilter={true}
+              isInteger={true}
+            />,
+          );
+          const rects = container.querySelectorAll(
+            "rect[class*=\"histogramBar\"]",
+          );
+          firePointerDown(rects[rects.length - 1]);
+          fireDocumentMouseUp();
+          expect(onChange).toHaveBeenCalledTimes(1);
+          const [min, max] = onChange.mock.calls[0];
+          expect(min).toBe(20);
+          expect(max).toBe(20);
+        },
+      );
+
+      it(
+        "empty middle bucket on integer config no-ops (no onChange)",
+        () => {
+          // Only two distinct values — most middle buckets are empty
+          // sub-unit-wide windows that contain zero integers. Clicking
+          // such a bar must NOT emit a filter for an integer outside the
+          // bucket; instead the commit is dropped.
+          const pairs = [
+            { value: 1, count: 1 },
+            { value: 2, count: 1 },
+          ];
+          const onChange = vi.fn<
+            (min: number | undefined, max: number | undefined) => void
+          >();
+          const { container } = render(
+            <NumberRangeInput
+              valueCountPairs={pairs}
+              isLoading={false}
+              minValue={undefined}
+              maxValue={undefined}
+              onChange={onChange}
+              clickToFilter={true}
+              isInteger={true}
+            />,
+          );
+          const rects = container.querySelectorAll(
+            "rect[class*=\"histogramBar\"]",
+          );
+          // bucket[10] spans [1.5, 1.55) — no integer inside.
+          firePointerDown(rects[10]);
+          fireDocumentMouseUp();
+          expect(onChange).not.toHaveBeenCalled();
+        },
+      );
+
+      it(
+        "without isInteger, fractional bucket boundaries pass through unchanged",
+        () => {
+          const onChange = vi.fn<
+            (min: number | undefined, max: number | undefined) => void
+          >();
+          const { container } = render(
+            <NumberRangeInput
+              valueCountPairs={integerPairs}
+              isLoading={false}
+              minValue={undefined}
+              maxValue={undefined}
+              onChange={onChange}
+              clickToFilter={true}
+            />,
+          );
+          const rects = container.querySelectorAll(
+            "rect[class*=\"histogramBar\"]",
+          );
+          firePointerDown(rects[0]);
+          fireDocumentMouseUp();
+          expect(onChange).toHaveBeenCalledTimes(1);
+          const [min, max] = onChange.mock.calls[0];
+          expect(min).toBe(1);
+          // bucket[0].max = 1 + 1.95 = 2.95, emitted raw
+          expect(max).toBeCloseTo(2.95);
+        },
+      );
+
+      it("integer config renders Min/Max inputs with step=\"1\"", () => {
+        const { container } = render(
+          <NumberRangeInput
+            valueCountPairs={integerPairs}
+            isLoading={false}
+            minValue={undefined}
+            maxValue={undefined}
+            onChange={vi.fn()}
+            isInteger={true}
+          />,
+        );
+        const inputs = container.querySelectorAll("input[type=\"number\"]");
+        expect(inputs.length).toBe(2);
+        inputs.forEach((input) => {
+          expect(input.getAttribute("step")).toBe("1");
+        });
+      });
+
+      it("non-integer config keeps step=\"any\" on the inputs", () => {
+        const { container } = render(
+          <NumberRangeInput
+            valueCountPairs={integerPairs}
+            isLoading={false}
+            minValue={undefined}
+            maxValue={undefined}
+            onChange={vi.fn()}
+          />,
+        );
+        const inputs = container.querySelectorAll("input[type=\"number\"]");
+        expect(inputs.length).toBe(2);
+        inputs.forEach((input) => {
+          expect(input.getAttribute("step")).toBe("any");
+        });
+      });
+    });
+
     it(
       "selection band does not extend to buckets adjacent to the filter boundaries",
       () => {
