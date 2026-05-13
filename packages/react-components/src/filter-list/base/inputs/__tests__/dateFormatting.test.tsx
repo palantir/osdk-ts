@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { cleanup, render, screen } from "@testing-library/react";
 import React from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { DateRangeHistogramInput } from "../DateRangeHistogramInput.js";
 import { MultiDateInput } from "../MultiDateInput.js";
 import { TimelineInput } from "../TimelineInput.js";
 
@@ -142,82 +141,6 @@ describe("formatDate / parseDate plumbing", () => {
         ) as HTMLInputElement;
         expect(input.type).toBe("date");
         expect(input.value).toBe("2024-05-01");
-      },
-    );
-  });
-
-  describe("DateRangeHistogramInput", () => {
-    const buckets = [
-      { value: new Date(2024, 0, 1), count: 5 },
-      { value: new Date(2024, 5, 30), count: 7 },
-    ];
-
-    it(
-      "uses formatDate for the histogram bar tooltip when provided",
-      () => {
-        const { container } = render(
-          <DateRangeHistogramInput
-            valueCountPairs={buckets}
-            isLoading={false}
-            minValue={undefined}
-            maxValue={undefined}
-            onChange={vi.fn()}
-            formatDate={slashFormat}
-          />,
-        );
-        // The histogram bar tooltip is portaled to document.body when a bar
-        // is hovered, so we query there rather than the local container.
-        const rects = container.querySelectorAll(
-          "rect[class*=\"histogramBar\"]",
-        );
-        expect(rects.length).toBeGreaterThan(0);
-        fireEvent.pointerMove(rects[0], { pointerId: 1 });
-        const tooltip = document.body.querySelector("div[class*=\"tooltip\"]");
-        expect(tooltip).not.toBeNull();
-        expect(tooltip?.textContent ?? "").toMatch(/\d{2}\/\d{2}\/\d{4}/);
-      },
-    );
-
-    it(
-      "honors formatDate on the From input display",
-      () => {
-        const min = new Date(2024, 0, 15);
-        render(
-          <DateRangeHistogramInput
-            valueCountPairs={buckets}
-            isLoading={false}
-            minValue={min}
-            maxValue={undefined}
-            onChange={vi.fn()}
-            formatDate={slashFormat}
-          />,
-        );
-        const fromInput = screen.getByLabelText("From") as HTMLInputElement;
-        expect(fromInput.value).toBe(slashFormat(min));
-      },
-    );
-
-    it(
-      "uses the default tooltip format when formatDate is omitted",
-      () => {
-        const { container } = render(
-          <DateRangeHistogramInput
-            valueCountPairs={buckets}
-            isLoading={false}
-            minValue={undefined}
-            maxValue={undefined}
-            onChange={vi.fn()}
-          />,
-        );
-        const rects = container.querySelectorAll(
-          "rect[class*=\"histogramBar\"]",
-        );
-        expect(rects.length).toBeGreaterThan(0);
-        fireEvent.pointerMove(rects[0], { pointerId: 1 });
-        const tooltip = document.body.querySelector("div[class*=\"tooltip\"]");
-        expect(tooltip).not.toBeNull();
-        // ISO format when formatDate is omitted.
-        expect(tooltip?.textContent ?? "").toMatch(/^\d{4}-\d{2}-\d{2}/);
       },
     );
   });

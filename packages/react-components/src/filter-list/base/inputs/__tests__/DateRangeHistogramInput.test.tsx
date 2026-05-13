@@ -36,32 +36,36 @@ const buckets = [
   { value: new Date(2024, 5, 30), count: 7 },
 ];
 
+const slashFormat = (d: Date): string =>
+  `${String(d.getMonth() + 1).padStart(2, "0")}/${
+    String(d.getDate()).padStart(2, "0")
+  }/${d.getFullYear()}`;
+
+function renderInput(
+  props: Partial<React.ComponentProps<typeof DateRangeHistogramInput>> = {},
+) {
+  return render(
+    <DateRangeHistogramInput
+      valueCountPairs={buckets}
+      isLoading={false}
+      minValue={undefined}
+      maxValue={undefined}
+      onChange={vi.fn()}
+      {...props}
+    />,
+  );
+}
+
 describe("DateRangeHistogramInput", () => {
   it("renders independent From and To inputs", () => {
-    render(
-      <DateRangeHistogramInput
-        valueCountPairs={buckets}
-        isLoading={false}
-        minValue={undefined}
-        maxValue={undefined}
-        onChange={vi.fn()}
-      />,
-    );
+    renderInput();
     expect(screen.getByLabelText("From")).toBeDefined();
     expect(screen.getByLabelText("To")).toBeDefined();
   });
 
   describe("independent popovers", () => {
     it("opens only the From popover when From is focused", () => {
-      render(
-        <DateRangeHistogramInput
-          valueCountPairs={buckets}
-          isLoading={false}
-          minValue={undefined}
-          maxValue={undefined}
-          onChange={vi.fn()}
-        />,
-      );
+      renderInput();
       const fromInput = screen.getByLabelText("From");
       const toInput = screen.getByLabelText("To");
 
@@ -72,15 +76,7 @@ describe("DateRangeHistogramInput", () => {
     });
 
     it("opens only the To popover when To is focused", () => {
-      render(
-        <DateRangeHistogramInput
-          valueCountPairs={buckets}
-          isLoading={false}
-          minValue={undefined}
-          maxValue={undefined}
-          onChange={vi.fn()}
-        />,
-      );
+      renderInput();
       const fromInput = screen.getByLabelText("From");
       const toInput = screen.getByLabelText("To");
 
@@ -93,15 +89,7 @@ describe("DateRangeHistogramInput", () => {
 
   describe("Today and Clear actions", () => {
     it("renders Today and Clear in the From popover", () => {
-      render(
-        <DateRangeHistogramInput
-          valueCountPairs={buckets}
-          isLoading={false}
-          minValue={undefined}
-          maxValue={undefined}
-          onChange={vi.fn()}
-        />,
-      );
+      renderInput();
       fireEvent.focus(screen.getByLabelText("From"));
 
       expect(screen.getByRole("button", { name: "Today" })).toBeDefined();
@@ -109,15 +97,7 @@ describe("DateRangeHistogramInput", () => {
     });
 
     it("renders Today and Clear in the To popover", () => {
-      render(
-        <DateRangeHistogramInput
-          valueCountPairs={buckets}
-          isLoading={false}
-          minValue={undefined}
-          maxValue={undefined}
-          onChange={vi.fn()}
-        />,
-      );
+      renderInput();
       fireEvent.focus(screen.getByLabelText("To"));
 
       expect(screen.getByRole("button", { name: "Today" })).toBeDefined();
@@ -128,15 +108,7 @@ describe("DateRangeHistogramInput", () => {
       const onChange = vi.fn();
       const min = new Date(2024, 0, 15);
       const max = new Date(2024, 5, 30);
-      render(
-        <DateRangeHistogramInput
-          valueCountPairs={buckets}
-          isLoading={false}
-          minValue={min}
-          maxValue={max}
-          onChange={onChange}
-        />,
-      );
+      renderInput({ minValue: min, maxValue: max, onChange });
       fireEvent.focus(screen.getByLabelText("From"));
       fireEvent.click(screen.getByRole("button", { name: "Clear" }));
 
@@ -145,25 +117,19 @@ describe("DateRangeHistogramInput", () => {
 
     it("Today in From input sets minValue to today's date", () => {
       const onChange = vi.fn();
-      render(
-        <DateRangeHistogramInput
-          valueCountPairs={buckets}
-          isLoading={false}
-          minValue={undefined}
-          maxValue={undefined}
-          onChange={onChange}
-        />,
-      );
+      renderInput({ onChange });
       fireEvent.focus(screen.getByLabelText("From"));
       fireEvent.click(screen.getByRole("button", { name: "Today" }));
 
       expect(onChange).toHaveBeenCalledTimes(1);
       const [picked, otherBoundary] = onChange.mock.calls[0];
-      expect(picked).toBeInstanceOf(Date);
+      if (!(picked instanceof Date)) {
+        throw new Error("expected picked to be a Date");
+      }
       const today = new Date();
-      expect((picked as Date).getFullYear()).toBe(today.getFullYear());
-      expect((picked as Date).getMonth()).toBe(today.getMonth());
-      expect((picked as Date).getDate()).toBe(today.getDate());
+      expect(picked.getFullYear()).toBe(today.getFullYear());
+      expect(picked.getMonth()).toBe(today.getMonth());
+      expect(picked.getDate()).toBe(today.getDate());
       expect(otherBoundary).toBeUndefined();
     });
   });
@@ -174,15 +140,11 @@ describe("DateRangeHistogramInput", () => {
       // boundary — otherwise the viewport lands on today's date and the
       // boundary day isn't in the DOM.
       const onChange = vi.fn();
-      render(
-        <DateRangeHistogramInput
-          valueCountPairs={buckets}
-          isLoading={false}
-          minValue={new Date(2024, 0, 5)}
-          maxValue={new Date(2024, 0, 10)}
-          onChange={onChange}
-        />,
-      );
+      renderInput({
+        minValue: new Date(2024, 0, 5),
+        maxValue: new Date(2024, 0, 10),
+        onChange,
+      });
       fireEvent.focus(screen.getByLabelText("From"));
 
       // 11th is past the cross-bound. Clicking must not propagate.
@@ -192,20 +154,52 @@ describe("DateRangeHistogramInput", () => {
 
     it("blocks picking a To date before the current From", () => {
       const onChange = vi.fn();
-      render(
-        <DateRangeHistogramInput
-          valueCountPairs={buckets}
-          isLoading={false}
-          minValue={new Date(2024, 0, 20)}
-          maxValue={new Date(2024, 0, 25)}
-          onChange={onChange}
-        />,
-      );
+      renderInput({
+        minValue: new Date(2024, 0, 20),
+        maxValue: new Date(2024, 0, 25),
+        onChange,
+      });
       fireEvent.focus(screen.getByLabelText("To"));
 
       // 19th is before the cross-bound. Clicking must not propagate.
       fireEvent.click(screen.getByText("19"));
       expect(onChange).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("formatDate plumbing", () => {
+    it("uses formatDate for the histogram bar tooltip when provided", () => {
+      const { container } = renderInput({ formatDate: slashFormat });
+      // The histogram bar tooltip is portaled to document.body when a bar
+      // is hovered, so we query there rather than the local container.
+      const rects = container.querySelectorAll(
+        "rect[class*=\"histogramBar\"]",
+      );
+      expect(rects.length).toBeGreaterThan(0);
+      fireEvent.pointerMove(rects[0], { pointerId: 1 });
+      const tooltip = document.body.querySelector("div[class*=\"tooltip\"]");
+      expect(tooltip).not.toBeNull();
+      expect(tooltip?.textContent ?? "").toMatch(/\d{2}\/\d{2}\/\d{4}/);
+    });
+
+    it("honors formatDate on the From input display", () => {
+      const min = new Date(2024, 0, 15);
+      renderInput({ minValue: min, formatDate: slashFormat });
+      const fromInput = screen.getByLabelText("From") as HTMLInputElement;
+      expect(fromInput.value).toBe(slashFormat(min));
+    });
+
+    it("uses the default tooltip format when formatDate is omitted", () => {
+      const { container } = renderInput();
+      const rects = container.querySelectorAll(
+        "rect[class*=\"histogramBar\"]",
+      );
+      expect(rects.length).toBeGreaterThan(0);
+      fireEvent.pointerMove(rects[0], { pointerId: 1 });
+      const tooltip = document.body.querySelector("div[class*=\"tooltip\"]");
+      expect(tooltip).not.toBeNull();
+      // ISO format when formatDate is omitted.
+      expect(tooltip?.textContent ?? "").toMatch(/^\d{4}-\d{2}-\d{2}/);
     });
   });
 });
