@@ -218,9 +218,7 @@ describe("extractValidationRules", () => {
         isRequired: true,
         fieldComponentProps: {},
       }));
-      expect(rules.required).toBe(
-        "This field is required. Render a CUSTOM field to submit a value.",
-      );
+      expect(rules.required).toBe("This field is required");
       expect(rules.validate).toBeUndefined();
     });
   });

@@ -22,9 +22,6 @@ import type {
 
 type RhfRules = RegisterOptions<Record<string, unknown>, string>;
 
-const UNSUPPORTED_REQUIRED_FIELD_MESSAGE =
-  "This field is required. Render a CUSTOM field to submit a value.";
-
 /**
  * Derives react-hook-form validation rules from a field definition's
  * constraint props (min, max, minLength, etc.) and the optional
@@ -39,7 +36,7 @@ export function extractValidationRules(
   const rules: RhfRules = {};
 
   if (fieldDef.isRequired) {
-    rules.required = getRequiredMessage(fieldDef);
+    rules.required = getMessage(fieldDef, { type: "required" });
   }
 
   const validateFns: Record<
@@ -144,17 +141,6 @@ function getMessage(
   error: ValidationError,
 ): string {
   return fieldDef.onValidationError?.(error) ?? getDefaultMessage(error);
-}
-
-function getRequiredMessage(fieldDef: RendererFieldDefinition): string {
-  const customMessage = fieldDef.onValidationError?.({ type: "required" });
-  if (customMessage != null) {
-    return customMessage;
-  }
-  if (fieldDef.fieldComponent === "UNSUPPORTED") {
-    return UNSUPPORTED_REQUIRED_FIELD_MESSAGE;
-  }
-  return getDefaultMessage({ type: "required" });
 }
 
 function getDefaultMessage(error: ValidationError): string {
