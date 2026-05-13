@@ -467,8 +467,9 @@ function getPropTypeOrValueTypeEnum(
   }
   if (valueType.constraints.length !== 1) {
     throw new GeneratorError(
-      `Expected exactly one constraint for value type but got ${valueType.constraints.length}`,
+      "Expected exactly one constraint for value type",
       { valueTypeApiName: propertyDefinition.valueTypeApiName },
+      { constraintCount: valueType.constraints.length },
     );
   }
 

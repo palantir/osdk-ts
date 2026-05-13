@@ -119,7 +119,9 @@ export class EnhancedOntologyDefinition {
       if (!ret) {
         const [apiNamespace, shortApiName] = extractNamespace(fullApiName);
 
-        throw new GeneratorError(`Unable to find ${type}`, { fullApiName });
+        throw new GeneratorError("Unable to find entity", { fullApiName }, {
+          entityType: type,
+        });
       }
       return ret as this[K][string] as L extends true ? this[K][string]
         : ForeignType;

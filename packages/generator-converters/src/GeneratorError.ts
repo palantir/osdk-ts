@@ -16,16 +16,21 @@
 
 /**
  * An error thrown during SDK generation whose message is safe to log directly.
- * Any user-controlled data (API names, display names, etc.) must be placed in
- * `unsafeParams` rather than embedded in the message string, so that callers
- * can route it to the `unsafeParams` SLS field instead of `stacktrace`.
+ * User-controlled data (API names, display names, etc.) goes in `unsafeParams`;
+ * safe diagnostic context (RIDs, counts, type identifiers) goes in `params`.
  */
 export class GeneratorError extends Error {
-  readonly unsafeParams: Record<string, unknown>;
+  readonly params?: Record<string, unknown>;
+  readonly unsafeParams?: Record<string, unknown>;
 
-  constructor(message: string, unsafeParams: Record<string, unknown>) {
+  constructor(
+    message: string,
+    unsafeParams: Record<string, unknown>,
+    params?: Record<string, unknown>,
+  ) {
     super(message);
     this.name = "GeneratorError";
     this.unsafeParams = unsafeParams;
+    this.params = params;
   }
 }

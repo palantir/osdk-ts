@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { GeneratorError } from "@osdk/generator-converters";
 import type { SlsLogger, SlsLogParams } from "./SlsLogger.js";
 
 export async function logDuration<T>(
@@ -32,16 +33,18 @@ export async function logDuration<T>(
     });
     return result;
   } catch (e) {
-    const errorUnsafeParams = e instanceof Error && "unsafeParams" in e
-      ? (e as { unsafeParams: Record<string, unknown> }).unsafeParams
-      : undefined;
+    const structured = e instanceof GeneratorError ? e : undefined;
     logger.error(
       `${message} failed.`,
       {
-        params: { ...extraParams?.params, durationMs: Date.now() - start },
+        params: {
+          ...extraParams?.params,
+          ...structured?.params,
+          durationMs: Date.now() - start,
+        },
         unsafeParams: {
           ...extraParams?.unsafeParams,
-          ...errorUnsafeParams,
+          ...structured?.unsafeParams,
         },
       },
       e instanceof Error ? e : undefined,
