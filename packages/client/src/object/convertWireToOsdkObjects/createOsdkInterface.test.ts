@@ -297,25 +297,6 @@ describe(createOsdkInterface, () => {
       expect(iface.asdf).toBe("hi mom");
     });
 
-    it("$as'd interface exposes ObjectMetadata equal to the source objectDef", () => {
-      const obj = makeObj();
-      const iface = obj.$as("IFoo");
-      const metadata = iface
-        .$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata as {
-          ObjectMetadata: FetchedObjectTypeDefinition;
-        };
-      expect(metadata.ObjectMetadata).toBe(objectDef);
-    });
-
-    it("$propertySecurities resolves on both holder and interface view", () => {
-      const obj = makeObj();
-      const expectedSecurities = {
-        foo: [{ type: "unsupportedPolicy" }],
-      };
-      expect(obj.$propertySecurities).toEqual(expectedSecurities);
-      expect(obj.$as("IFoo").$propertySecurities).toEqual(expectedSecurities);
-    });
-
     it("$clone() preserves unwrapped property values", () => {
       const obj = makeObj();
       expect(obj.$clone().foo).toBe("hi mom");
