@@ -28,7 +28,7 @@ import { usePropertyAggregation } from "../hooks/usePropertyAggregation.js";
 import { coerceToStringArray } from "../utils/coerceFilterValue.js";
 
 interface TextTagsFilterInputProps<Q extends ObjectTypeDefinition> {
-  objectType: Q;
+  objectType: Q | undefined;
   objectSet?: ObjectSet<Q>;
   propertyKey: string;
   filterState: FilterState | undefined;

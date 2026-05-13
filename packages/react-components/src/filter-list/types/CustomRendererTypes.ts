@@ -35,7 +35,7 @@ export interface CustomFilterInputRendererProps<
   Q extends ObjectTypeDefinition,
   State extends BaseFilterState,
 > {
-  objectType: Q;
+  objectType: Q | undefined;
   objectSet?: ObjectSet<Q>;
   filterState: State;
   onFilterStateChanged: (newState: State) => void;

@@ -28,7 +28,7 @@ import { usePropertyAggregation } from "../hooks/usePropertyAggregation.js";
 import { coerceToString } from "../utils/coerceFilterValue.js";
 
 interface SingleSelectFilterInputProps<Q extends ObjectTypeDefinition> {
-  objectType: Q;
+  objectType: Q | undefined;
   objectSet?: ObjectSet<Q>;
   propertyKey: string;
   filterState: FilterState | undefined;

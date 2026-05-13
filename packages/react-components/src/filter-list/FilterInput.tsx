@@ -26,7 +26,7 @@ import { PropertyFilterInput } from "./inputs/PropertyFilterInput.js";
 import { StaticValuesFilterInput } from "./inputs/StaticValuesFilterInput.js";
 
 export interface FilterInputProps<Q extends ObjectTypeDefinition> {
-  objectType: Q;
+  objectType: Q | undefined;
   objectSet?: ObjectSet<Q>;
   definition: FilterDefinitionUnion<Q>;
   filterState: FilterState | undefined;

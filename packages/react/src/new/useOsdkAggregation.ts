@@ -137,7 +137,7 @@ export function useOsdkAggregation<
   const A extends AggregateOpts<Q>,
   RDPs extends Record<string, SimplePropertyDef> = {},
 >(
-  type: Q,
+  type: Q | undefined,
   options: UseOsdkAggregationOptions<Q, A, RDPs>,
 ): UseOsdkAggregationResult<Q, A>;
 export function useOsdkAggregation<
@@ -145,7 +145,7 @@ export function useOsdkAggregation<
   const A extends AggregateOpts<Q>,
   RDPs extends Record<string, SimplePropertyDef> = {},
 >(
-  type: Q,
+  type: Q | undefined,
   options: UseOsdkAggregationOptionsWithObjectSet<Q, A, RDPs>,
 ): UseOsdkAggregationResult<Q, A>;
 export function useOsdkAggregation<
@@ -153,7 +153,7 @@ export function useOsdkAggregation<
   const A extends AggregateOpts<Q>,
   RDPs extends Record<string, SimplePropertyDef> = {},
 >(
-  type: Q,
+  type: Q | undefined,
   options:
     | UseOsdkAggregationOptions<Q, A, RDPs>
     | UseOsdkAggregationOptionsWithObjectSet<Q, A, RDPs>,
@@ -183,8 +183,22 @@ export function useOsdkAggregation<
   const objectSetRef = React.useRef(objectSet);
   objectSetRef.current = objectSet;
 
+  const apiName = type?.apiName;
+  const typeKind = type?.type;
+
   const { subscribe, getSnapShot } = React.useMemo(
     () => {
+      if (type === undefined) {
+        return makeExternalStore<ObserveAggregationArgs<Q, A>>(
+          () => ({ unsubscribe: () => {} }),
+          devToolsMetadata({
+            hookType: "useOsdkAggregation",
+            objectType: undefined,
+            where: canonOptions.where,
+            aggregate: canonOptions.aggregate,
+          }),
+        );
+      }
       const currentObjectSet = objectSetRef.current;
       if (currentObjectSet) {
         return makeExternalStoreAsync<ObserveAggregationArgs<Q, A>>(
@@ -203,7 +217,7 @@ export function useOsdkAggregation<
             ),
           devToolsMetadata({
             hookType: "useOsdkAggregation",
-            objectType: type.apiName,
+            objectType: apiName,
             where: canonOptions.where,
             aggregate: canonOptions.aggregate,
           }),
@@ -225,7 +239,7 @@ export function useOsdkAggregation<
           ),
         devToolsMetadata({
           hookType: "useOsdkAggregation",
-          objectType: type.apiName,
+          objectType: apiName,
           where: canonOptions.where,
           aggregate: canonOptions.aggregate,
         }),
@@ -233,8 +247,8 @@ export function useOsdkAggregation<
     },
     [
       observableClient,
-      type.apiName,
-      type.type,
+      apiName,
+      typeKind,
       objectSetKey,
       canonOptions.where,
       canonOptions.withProperties,
@@ -247,8 +261,11 @@ export function useOsdkAggregation<
   const payload = React.useSyncExternalStore(subscribe, getSnapShot);
 
   const refetch = React.useCallback(async () => {
-    await observableClient.invalidateObjectType(type.apiName);
-  }, [observableClient, type.apiName]);
+    if (apiName === undefined) {
+      return;
+    }
+    await observableClient.invalidateObjectType(apiName);
+  }, [observableClient, apiName]);
 
   return React.useMemo(() => ({
     data: payload?.result as AggregationsResults<Q, A> | undefined,
