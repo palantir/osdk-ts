@@ -33,11 +33,11 @@ type subscribeToNoTypeObjectSetFn = <R extends boolean = false>(
 
 export const __EXPERIMENTAL__NOT_SUPPORTED_YET__subscribeToNoTypeObjectSet:
   Experiment<
-    "2.1.0",
+    "2.19.0",
     "__EXPERIMENTAL__NOT_SUPPORTED_YET__subscribeToNoTypeObjectSet",
     { subscribeToNoTypeObjectSet: subscribeToNoTypeObjectSetFn }
   > = {
     name: "__EXPERIMENTAL__NOT_SUPPORTED_YET__subscribeToNoTypeObjectSet",
     type: "experiment",
-    version: "2.1.0",
+    version: "2.19.0",
   };
