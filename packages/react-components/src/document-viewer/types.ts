@@ -63,4 +63,9 @@ export interface DocumentViewerProps {
   emailViewerProps?: Partial<Omit<BaseEmailViewerProps, "email">>;
   /** Props forwarded to BaseXmlViewer when rendering XML */
   xmlViewerProps?: Partial<Omit<BaseXmlViewerProps, "content">>;
+  /** File name hint for MIME type detection (e.g. "scan.tif"). Used to detect
+   *  TIFF files when the MIME type is ambiguous (e.g. application/octet-stream). */
+  fileName?: string;
+  /** When true, multi-page TIFF files are converted to PDF via MIO transform API */
+  enableTiffToPdf?: boolean;
 }

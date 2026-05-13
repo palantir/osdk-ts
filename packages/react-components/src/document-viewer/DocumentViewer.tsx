@@ -29,6 +29,7 @@ import { PdfViewer } from "../pdf-viewer/PdfRenderer.js";
 import { VideoViewer } from "../video-viewer/VideoViewer.js";
 import { XmlViewer } from "../xml-viewer/XmlViewer.js";
 import styles from "./DocumentViewer.module.css";
+import { TiffDocumentViewer } from "./TiffDocumentViewer.js";
 import type { DocumentViewerProps } from "./types.js";
 import { ViewerType } from "./types.js";
 
@@ -51,11 +52,26 @@ const XML_MIME_TYPES = new Set([
   "text/xml",
 ]);
 
-function getViewerType(mimeType: string): ViewerType {
+function isTiffFile(
+  mimeType: string,
+  fileName: string | undefined,
+): boolean {
+  if (mimeType === "image/tiff") {
+    return true;
+  }
+  const lowered = fileName?.toLowerCase();
+  return lowered?.endsWith(".tif") === true
+    || lowered?.endsWith(".tiff") === true;
+}
+
+function getViewerType(
+  mimeType: string,
+  fileName: string | undefined,
+): ViewerType {
   if (mimeType === "application/pdf") {
     return ViewerType.Pdf;
   }
-  if (mimeType === "image/tiff") {
+  if (isTiffFile(mimeType, fileName)) {
     return ViewerType.Tiff;
   }
   if (IMAGE_MIME_TYPES.has(mimeType)) {
@@ -101,9 +117,14 @@ export function DocumentViewer({
   excelViewerProps,
   emailViewerProps,
   xmlViewerProps,
+  fileName,
+  enableTiffToPdf = false,
 }: DocumentViewerProps): React.ReactElement {
   const mimeType = mimeTypeOverride ?? media.getMediaReference().mimeType;
-  const viewerType = useMemo(() => getViewerType(mimeType), [mimeType]);
+  const viewerType = useMemo(
+    () => getViewerType(mimeType, fileName),
+    [mimeType, fileName],
+  );
   const rootClassName = classnames(styles.container, className);
 
   switch (viewerType) {
@@ -116,6 +137,17 @@ export function DocumentViewer({
         />
       );
     case ViewerType.Tiff:
+      if (enableTiffToPdf) {
+        return (
+          <TiffDocumentViewer
+            media={media}
+            className={rootClassName}
+            enableTiffToPdf={enableTiffToPdf}
+            tiffRendererProps={tiffRendererProps}
+            pdfViewerProps={pdfViewerProps}
+          />
+        );
+      }
       return (
         <TiffViewerMedia
           media={media}

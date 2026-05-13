@@ -20,7 +20,7 @@ import type { Media } from "@osdk/api";
 import type { DocumentViewerProps } from "@osdk/react-components/experimental/document-viewer";
 import { DocumentViewer } from "@osdk/react-components/experimental/document-viewer";
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { http, passthrough } from "msw";
+import { http, HttpResponse, passthrough } from "msw";
 import { utils, write } from "xlsx";
 
 const SAMPLE_PDF_URL =
@@ -29,6 +29,8 @@ const SAMPLE_PDF_URL =
 const SAMPLE_DOCX_URL = `${import.meta.env.BASE_URL}notional-word-example.docx`;
 
 const SAMPLE_VIDEO_URL = `${import.meta.env.BASE_URL}example.mp4`;
+
+const SAMPLE_TIFF_URL = `${import.meta.env.BASE_URL}multi-page-tiff.tiff`;
 
 /**
  * Creates a sample PNG image as a Blob.
@@ -176,6 +178,12 @@ function createMockExcelMedia(): Media {
 
 const mockExcelMedia = createMockExcelMedia();
 
+const mockTiffMedia = createMockMedia(
+  "image/tiff",
+  () => fetch(SAMPLE_TIFF_URL),
+  "multi-page-tiff.tiff",
+);
+
 const mockUnsupportedMedia = createMockMedia(
   "application/octet-stream",
   () => Promise.resolve(new Response("")),
@@ -312,6 +320,68 @@ export const Xml: Story = {
       <DocumentViewer {...args} />
     </div>
   ),
+};
+
+export const Tiff: Story = {
+  args: {
+    media: mockTiffMedia,
+  },
+  parameters: {
+    msw: {
+      handlers: [
+        http.get("*/multi-page-tiff.tiff", () => passthrough()),
+      ],
+    },
+  },
+};
+
+export const TiffWithPdfConversion: Story = {
+  args: {
+    media: mockTiffMedia,
+    enableTiffToPdf: true,
+    fileName: "multi-page-tiff.tiff",
+  },
+  parameters: {
+    msw: {
+      handlers: [
+        http.get("*/multi-page-tiff.tiff", () => passthrough()),
+        http.get("*/compressed.tracemonkey-pldi-09.pdf", () => passthrough()),
+        // Mock MIO transform API: submit job
+        http.post("*/api/v2/mediasets/*/items/*/transform", () => {
+          return HttpResponse.json({
+            jobId: "mock-job-id",
+            status: "SUCCESSFUL",
+          });
+        }),
+        // Mock MIO transform API: get result — must be before getStatus
+        // since the status route pattern also matches the /result suffix
+        http.get(
+          "*/api/v2/mediasets/*/items/*/transformationJobs/*/result",
+          async () => {
+            const pdf = await fetch(SAMPLE_PDF_URL);
+            const buffer = await pdf.arrayBuffer();
+            return new HttpResponse(buffer, {
+              headers: { "Content-Type": "application/pdf" },
+            });
+          },
+        ),
+        // Mock MIO transform API: get status
+        http.get("*/api/v2/mediasets/*/items/*/transformationJobs/*", () => {
+          return HttpResponse.json({ status: "SUCCESSFUL" });
+        }),
+      ],
+    },
+    docs: {
+      source: {
+        code:
+          `import { DocumentViewer } from "@osdk/react-components/experimental/document-viewer";
+
+// Multi-page TIFFs are detected and converted to PDF via MIO transform API
+// Falls back to TiffRenderer if transform fails or for single-page TIFFs
+<DocumentViewer media={myMedia} enableTiffToPdf fileName="scan.tiff" />`,
+      },
+    },
+  },
 };
 
 export const WithMimeTypeOverride: Story = {
