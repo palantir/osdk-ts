@@ -100,7 +100,7 @@ export async function applyQuery<
   return remappedResponse as QueryReturnType<CompileTimeMetadata<QD>["output"]>;
 }
 
-async function remapQueryParams(
+export async function remapQueryParams(
   params: { [parameterId: string]: any },
   client: MinimalClient,
   paramTypes: Record<string, QueryParameterDefinition<any>>,
@@ -116,7 +116,7 @@ async function remapQueryParams(
   return parameterMap;
 }
 
-async function remapQueryResponse<
+export async function remapQueryResponse<
   Q extends ObjectTypeDefinition,
   T extends QueryDataTypeDefinition<Q | never>,
 >(
@@ -314,7 +314,7 @@ async function remapQueryResponse<
   return responseValue as QueryReturnType<typeof responseDataType>;
 }
 
-async function getRequiredDefinitions(
+export async function getRequiredDefinitions(
   dataType: QueryDataTypeDefinition,
   client: MinimalClient,
 ): Promise<Map<string, ObjectOrInterfaceDefinition>> {

@@ -40,6 +40,7 @@ import type {
 } from "@osdk/api/unstable";
 import {
   __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference,
+  __EXPERIMENTAL__NOT_SUPPORTED_YET__executeStreamingFunction,
   __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchOneByRid,
   __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchPageByRid,
   __EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks,
@@ -196,6 +197,18 @@ export function createClientFromContext(clientCtx: MinimalClient) {
         : never) as any;
     } else if (o.type === "experiment") {
       switch (o.name) {
+        case __EXPERIMENTAL__NOT_SUPPORTED_YET__executeStreamingFunction.name:
+          return {
+            async *executeStreamingFunction(
+              query: QueryDefinition<any>,
+              params?: Record<string, any>,
+            ) {
+              const { applyStreamingQuery } = await import(
+                "./queries/applyStreamingQuery.js"
+              );
+              yield* applyStreamingQuery(clientCtx, query, params);
+            },
+          } as any;
         case __EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks.name:
           return {
             async *getBulkLinks(
