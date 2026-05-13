@@ -23,6 +23,7 @@ import type {
   NullabilityAdherence,
   ObjectOrInterfaceDefinition,
   ObjectSet,
+  ObjectSetSubscription,
   ObjectTypeDefinition,
   Osdk,
   OsdkBase,
@@ -42,6 +43,7 @@ import {
   __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchOneByRid,
   __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchPageByRid,
   __EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks,
+  __EXPERIMENTAL__NOT_SUPPORTED_YET__subscribeToNoTypeObjectSet,
   __EXPERIMENTAL__NOT_SUPPORTED_YET__transformAndWait,
 } from "@osdk/api/unstable";
 import type { ObjectSet as WireObjectSet } from "@osdk/foundry.ontologies";
@@ -58,6 +60,7 @@ import { fetchPage, fetchStaticRidPage } from "./object/fetchPage.js";
 import { fetchSingle } from "./object/fetchSingle.js";
 import { createObjectSet } from "./objectSet/createObjectSet.js";
 import type { ObjectSetFactory } from "./objectSet/ObjectSetFactory.js";
+import { ObjectSetListenerWebsocket } from "./objectSet/ObjectSetListenerWebsocket.js";
 import { applyQuery } from "./queries/applyQuery.js";
 import type { QuerySignatureFromDef } from "./queries/types.js";
 
@@ -162,13 +165,17 @@ export function createClientFromContext(clientCtx: MinimalClient) {
       | QueryDefinition<any>
       | Experiment<"2.0.8">
       | Experiment<"2.1.0">
-      | Experiment<"2.8.0">,
+      | Experiment<"2.8.0">
+      | Experiment<"2.19.0">,
   >(o: T): T extends ObjectTypeDefinition ? ObjectSet<T>
     : T extends InterfaceDefinition ? MinimalObjectSet<T>
     : T extends ActionDefinition<any> ? ActionSignatureFromDef<T>
     : T extends QueryDefinition<any> ? QuerySignatureFromDef<T>
-    : T extends Experiment<"2.0.8"> | Experiment<"2.1.0"> | Experiment<"2.8.0">
-      ? { invoke: ExperimentFns<T> }
+    : T extends
+      | Experiment<"2.0.8">
+      | Experiment<"2.1.0">
+      | Experiment<"2.8.0">
+      | Experiment<"2.19.0"> ? { invoke: ExperimentFns<T> }
     : never
   {
     if (o.type === "object" || o.type === "interface") {
@@ -310,6 +317,32 @@ export function createClientFromContext(clientCtx: MinimalClient) {
                 rids,
                 options ?? {},
               );
+            },
+          } as any;
+
+        case __EXPERIMENTAL__NOT_SUPPORTED_YET__subscribeToNoTypeObjectSet
+          .name:
+          return {
+            subscribeToNoTypeObjectSet: <R extends boolean = false>(
+              rid: string,
+              listener: ObjectSetSubscription.Listener<
+                ObjectOrInterfaceDefinition,
+                never,
+                R
+              >,
+              opts?: { includeRid?: R },
+            ) => {
+              const unsubscribe = ObjectSetListenerWebsocket
+                .getInstance(clientCtx)
+                .subscribeWithoutType(
+                  { type: "reference", reference: rid },
+                  listener as ObjectSetSubscription.Listener<
+                    ObjectOrInterfaceDefinition,
+                    never
+                  >,
+                  opts?.includeRid ?? false,
+                );
+              return { unsubscribe };
             },
           } as any;
 

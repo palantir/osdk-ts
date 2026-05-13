@@ -127,7 +127,8 @@ export interface Client extends SharedClient, OldSharedClient {
       | Experiment<"2.0.8">
       | Experiment<"2.1.0">
       | Experiment<"2.2.0">
-      | Experiment<"2.8.0">,
+      | Experiment<"2.8.0">
+      | Experiment<"2.19.0">,
   >(
     experiment: Q,
   ): ExperimentFns<Q>;
