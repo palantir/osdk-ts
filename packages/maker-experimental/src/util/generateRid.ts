@@ -127,6 +127,9 @@ export interface OntologyRidGenerator {
     apiName: string,
     interfaceTypeApiName: string,
   ): InterfacePropertyTypeRid;
+  generateIptRidFromSptRid(
+    sptRid: string,
+  ): InterfacePropertyTypeRid;
   generateStructFieldRid(
     propertyApiName: string,
     apiName: string,
@@ -747,6 +750,15 @@ export class OntologyRidGeneratorImpl implements OntologyRidGenerator {
       rid,
     );
     return rid;
+  }
+
+  generateIptRidFromSptRid(
+    sptRid: string,
+  ): InterfacePropertyTypeRid {
+    return sptRid.replace(
+      "shared-property-type",
+      "interface-property-type",
+    ) as InterfacePropertyTypeRid;
   }
 
   // Struct Field RIDs

@@ -29,6 +29,7 @@ import type {
 import type {
   AllowOntologySchemaMigrationsShape,
   InputShape,
+  InputShapeMetadata,
   InterfaceLinkTypeOutputShape,
   InterfacePropertyTypeOutputShape,
   InterfaceTypeOutputShape,
@@ -55,6 +56,13 @@ import { ObjectTypeShapeExtractor } from "./ObjectTypeShapeExtractor.js";
 
 export const MIGRATION_SHAPE_READABLE_ID: ReadableId =
   "migration-input" as ReadableId;
+
+const SPT_INPUT_SHAPE_METADATA: InputShapeMetadata = {
+  isOptional: false,
+  isAccessedInReconcile: true,
+  reconcileAccessRequirements: "RESOURCE_EXISTENCE_REQUIRED",
+  preallocateAccessRequirements: "RESOURCE_PREALLOCATION_REQUIRED",
+};
 
 /**
  * Helper to create LocalizedTitleAndDescription with empty localizations
@@ -104,6 +112,7 @@ export async function getShapes(
     extractInterfaceType(
       allBlockShapes.outputShapes,
       allBlockShapes.inputShapes,
+      allBlockShapes.inputShapeMetadata,
       ontologyBlockDataV2.knownIdentifiers,
       outputSharedPropertyTypeRids,
       multiInterfaceSptApiNames,
@@ -198,6 +207,7 @@ export async function getShapes(
 function extractInterfaceType(
   outputShapeMap: Map<ReadableId, OutputShape>,
   inputShapeMap: Map<ReadableId, InputShape>,
+  inputShapeMetadataMap: Map<ReadableId, InputShapeMetadata>,
   knownMarketplaceIdentifiers: KnownMarketplaceIdentifiers,
   outputSharedPropertyTypeRids: Set<string>,
   multiInterfaceSptApiNames: Set<string>,
@@ -205,17 +215,13 @@ function extractInterfaceType(
   ridGenerator: OntologyRidGenerator,
 ): void {
   const interfaceReadableId = getReadableIdForInterface(interfaceType.apiName);
-  // Build propertiesV2 from propertiesV3 entries
+  // Build propertiesV2 from propertiesV3 entries using knownMarketplaceIdentifiers
   const propertiesV2: string[] = [];
-  for (
-    const [propertyRid, _property] of Object.entries(
-      interfaceType.propertiesV3 ?? {},
-    )
-  ) {
-    const readableId = ridGenerator.getInterfacePropertyTypeRids().inverse()
-      .get(propertyRid);
-    if (readableId) {
-      propertiesV2.push(ridGenerator.toBlockInternalId(readableId));
+  for (const iptRid of Object.keys(interfaceType.propertiesV3 ?? {})) {
+    const blockInternalId = knownMarketplaceIdentifiers.interfacePropertyTypes
+      ?.[iptRid];
+    if (blockInternalId) {
+      propertiesV2.push(blockInternalId);
     }
   }
 
@@ -271,6 +277,7 @@ function extractInterfaceType(
           sharedPropertyType: sharedPropInputShape,
         },
       );
+      inputShapeMetadataMap.set(sptReadableId, SPT_INPUT_SHAPE_METADATA);
     }
   }
 
@@ -383,7 +390,7 @@ function getInterfacePropertyTypeOutputShape(
  * Returns the set of SPT api names that are used by more than one interface type.
  * For these SPTs, the shape ID must not include the interface api name to avoid RID collisions.
  */
-function getMultiInterfaceSptApiNames(
+export function getMultiInterfaceSptApiNames(
   interfaces: Record<string, InterfaceTypeBlockDataV2>,
 ): Set<string> {
   const seen = new Set<string>();
