@@ -159,7 +159,7 @@ export function createOsdkObject(
   derivedPropertyTypeByName: DerivedPropertyRuntimeMetadata = {},
   wirePropertySecurities: PropertySecurities[] | undefined = [],
 ): ObjectHolder {
-  const { parsedObject, clientPropertySecurities } = parseWhenSecuritiesLoaded(
+  const clientPropertySecurities = unwrapSecuredValuesInPlace(
     wirePropertySecurities,
     simpleOsdkProperties,
     objectDef,
@@ -167,7 +167,7 @@ export function createOsdkObject(
   );
 
   // updates the object's "hidden class/map".
-  const rawObj = parsedObject as ObjectHolder;
+  const rawObj = simpleOsdkProperties as ObjectHolder;
   Object.defineProperties(
     rawObj,
     {
@@ -336,19 +336,17 @@ function createSpecialProperty(
   }
 }
 
-function parseWhenSecuritiesLoaded(
+function unwrapSecuredValuesInPlace(
   wirePropertySecurities: PropertySecurities[] | undefined,
   rawObject: SimpleOsdkProperties,
   objectDef: FetchedObjectTypeDefinition,
   derivedPropertyTypeByName: DerivedPropertyRuntimeMetadata = {},
-): {
-  parsedObject: SimpleOsdkProperties;
-  clientPropertySecurities:
-    | { [propName: string]: PropertySecurity[] | PropertySecurity[][] }
-    | undefined;
-} {
+):
+  | { [propName: string]: PropertySecurity[] | PropertySecurity[][] }
+  | undefined
+{
   if (wirePropertySecurities == null || wirePropertySecurities.length === 0) {
-    return { parsedObject: rawObject, clientPropertySecurities: undefined };
+    return undefined;
   }
 
   const clientPropertySecurities: {
@@ -415,7 +413,7 @@ function parseWhenSecuritiesLoaded(
     }
   }
 
-  return { parsedObject: rawObject, clientPropertySecurities };
+  return clientPropertySecurities;
 }
 
 function wireToClientPropertySecurities(

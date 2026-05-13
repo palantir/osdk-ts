@@ -266,11 +266,13 @@ describe(createOsdkInterface, () => {
 
     const client = {} as MinimalClient;
 
-    // Construct fresh wire props per call — createOsdkObject mutates its
-    // input (see parseWhenSecuritiesLoaded and the special-property loop),
-    // so reusing the same reference across tests would fail to redefine
-    // already-installed internal symbols.
+    type TestObj = Record<string, unknown> & {
+      $as: (name: string) => Record<string, unknown>;
+      $clone: () => Record<string, unknown>;
+    };
+
     function makeObj() {
+      // fresh per call: createOsdkObject mutates input
       const simpleProps = {
         $apiName: "Obj",
         $objectType: "Obj",
@@ -285,10 +287,7 @@ describe(createOsdkInterface, () => {
         simpleProps,
         {},
         wireSecurities,
-      ) as unknown as Record<string, unknown> & {
-        $as: (name: string) => Record<string, unknown>;
-        $clone: () => Record<string, unknown>;
-      };
+      ) as unknown as TestObj;
     }
 
     it("$as does not throw and exposes the mapped (unwrapped) property", () => {
@@ -324,26 +323,16 @@ describe(createOsdkInterface, () => {
 
     it("hydrates an attachment property that arrived wrapped in SecuredPropertyValue", () => {
       const attObjectDef: FetchedObjectTypeDefinition = {
+        ...objectDef,
         [InterfaceDefinitions]: {},
         apiName: "Att",
-        displayName: "",
         interfaceMap: {},
         inverseInterfaceMap: {},
-        links: {},
-        pluralDisplayName: "",
-        primaryKeyApiName: "id",
-        primaryKeyType: "integer",
         properties: {
           id: { type: "integer" },
           att: { type: "attachment" },
         },
-        type: "object",
         titleProperty: "id",
-        rid: "",
-        status: "ACTIVE",
-        icon: undefined,
-        visibility: undefined,
-        description: undefined,
       };
 
       const attProps = {
@@ -361,9 +350,7 @@ describe(createOsdkInterface, () => {
         attProps,
         {},
         wireSecurities,
-      ) as unknown as Record<string, unknown> & {
-        $clone: () => Record<string, unknown>;
-      };
+      ) as unknown as TestObj;
 
       expect((obj.att as { rid: string }).rid).toBe("ri.attach.1");
       expect((obj.$clone().att as { rid: string }).rid).toBe("ri.attach.1");
