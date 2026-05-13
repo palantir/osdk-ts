@@ -819,7 +819,7 @@ describe("BaseForm", () => {
 
       await waitFor(() => {
         expect(screen.getByRole("alert").textContent).toBe(
-          "This field is required",
+          "This field is required. Render a CUSTOM field to submit a value.",
         );
       });
       expect(onSubmit).not.toHaveBeenCalled();
@@ -846,11 +846,12 @@ describe("BaseForm", () => {
       );
 
       expect(screen.queryByDisplayValue("sensitive value")).toBeNull();
-      expect(screen.getByRole("textbox", { name: /Unsupported/ }))
-        .toHaveProperty(
-          "value",
-          "Unsupported field type. Use a CUSTOM field instead",
-        );
+      expect(
+        screen.getByRole("textbox", { name: /Unsupported/ }),
+      ).toHaveProperty(
+        "value",
+        "Unsupported field type. Use a CUSTOM field instead",
+      );
 
       fireEvent.click(screen.getByRole("button", { name: /submit/i }));
 

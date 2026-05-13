@@ -15,6 +15,7 @@
  */
 
 import type { ActionMetadata } from "@osdk/api";
+import { assertUnreachable } from "../../shared/assertUnreachable.js";
 import type { RendererFieldDefinition } from "../FormFieldApi.js";
 
 /**
@@ -132,10 +133,6 @@ function buildFieldDefinition(
         fieldComponentProps: {},
       };
     default:
-      return {
-        ...base,
-        fieldComponent: "UNSUPPORTED",
-        fieldComponentProps: {},
-      };
+      return assertUnreachable(paramType);
   }
 }

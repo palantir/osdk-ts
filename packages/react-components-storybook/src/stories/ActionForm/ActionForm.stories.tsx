@@ -316,7 +316,7 @@ export const WithUnsupportedFields: Story = {
     docs: {
       source: {
         code: `<ActionForm
-  actionDefinition={unsupportedFieldsStoryAction}
+  actionDefinition={unsupportedFieldsStoryAction.actionDefinition}
   showFormTitle={true}
 />`,
       },
