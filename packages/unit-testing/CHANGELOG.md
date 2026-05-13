@@ -1,4 +1,4 @@
-# @osdk/functions-testing.experimental
+# @osdk/unit-testing
 
 ## 0.9.0
 

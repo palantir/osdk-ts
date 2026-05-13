@@ -1,5 +1,5 @@
 {
-  "name": "@osdk/functions-testing.experimental",
+  "name": "@osdk/unit-testing",
   "version": "0.9.0",
   "description": "",
   "access": "public",
