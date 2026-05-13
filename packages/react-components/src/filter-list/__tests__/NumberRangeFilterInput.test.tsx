@@ -96,42 +96,4 @@ describe("NumberRangeFilterInput", () => {
     expect(andClauses).toContainEqual({ score: { $isNull: true } });
     expect(andClauses).toContainEqual(whereClause);
   });
-
-  describe("integer property type", () => {
-    const whereClause = {} as WhereClause<typeof MockObjectType>;
-
-    it("renders Min/Max inputs with step=\"1\" for an integer property", () => {
-      const { container } = render(
-        <NumberRangeFilterInput
-          objectType={MockObjectType}
-          propertyKey="age"
-          filterState={undefined}
-          onFilterStateChanged={vi.fn()}
-          whereClause={whereClause}
-        />,
-      );
-      const inputs = container.querySelectorAll("input[type=\"number\"]");
-      expect(inputs.length).toBe(2);
-      inputs.forEach((input) => {
-        expect(input.getAttribute("step")).toBe("1");
-      });
-    });
-
-    it("renders Min/Max inputs with step=\"any\" for a double property", () => {
-      const { container } = render(
-        <NumberRangeFilterInput
-          objectType={MockObjectType}
-          propertyKey="score"
-          filterState={undefined}
-          onFilterStateChanged={vi.fn()}
-          whereClause={whereClause}
-        />,
-      );
-      const inputs = container.querySelectorAll("input[type=\"number\"]");
-      expect(inputs.length).toBe(2);
-      inputs.forEach((input) => {
-        expect(input.getAttribute("step")).toBe("any");
-      });
-    });
-  });
 });

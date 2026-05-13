@@ -50,18 +50,12 @@ function NumberRangeFilterInputInner<Q extends ObjectTypeDefinition>({
     : undefined;
   const includeNull = filterState?.includeNull;
 
-  const { metadata, loading: metadataLoading } = useOsdkMetadata(objectType);
+  const { metadata } = useOsdkMetadata(objectType);
   const propertyType = metadata?.properties?.[propertyKey]?.type;
   const isInteger = propertyType === "integer"
     || propertyType === "long"
     || propertyType === "short"
     || propertyType === "byte";
-  // Gate `clickToFilter` on metadata being available — otherwise a
-  // commit fired during the race between aggregation and metadata
-  // (aggregation can resolve first) would emit fractional min/max for
-  // an integer-typed property because `isInteger` reads `false` until
-  // metadata lands.
-  const clickToFilterReady = clickToFilter === true && !metadataLoading;
 
   const handleNullChange = useCallback(
     (includeNull: boolean) => {
@@ -81,14 +75,16 @@ function NumberRangeFilterInputInner<Q extends ObjectTypeDefinition>({
 
   const handleRangeChange = useCallback(
     (minValue: number | undefined, maxValue: number | undefined) => {
+      const round = (v: number | undefined): number | undefined =>
+        isInteger && v !== undefined ? Math.round(v) : v;
       onFilterStateChanged({
         type: "NUMBER_RANGE",
-        minValue,
-        maxValue,
+        minValue: round(minValue),
+        maxValue: round(maxValue),
         includeNull,
       });
     },
-    [onFilterStateChanged, includeNull],
+    [onFilterStateChanged, includeNull, isInteger],
   );
 
   const aggregateOptions = useMemo(
@@ -186,8 +182,7 @@ function NumberRangeFilterInputInner<Q extends ObjectTypeDefinition>({
         minValue={numberRangeState?.minValue}
         maxValue={numberRangeState?.maxValue}
         onChange={handleRangeChange}
-        clickToFilter={clickToFilterReady}
-        isInteger={isInteger}
+        clickToFilter={clickToFilter}
       />
     </NullValueWrapper>
   );
