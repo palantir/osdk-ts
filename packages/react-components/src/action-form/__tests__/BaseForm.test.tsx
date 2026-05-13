@@ -772,4 +772,93 @@ describe("BaseForm", () => {
       });
     });
   });
+
+  describe("unsupported fields", () => {
+    it("renders a disabled text input with the unsupported field message", () => {
+      render(
+        <BaseForm
+          formContent={[
+            field({
+              fieldKey: "unsupported",
+              label: "Unsupported",
+              fieldComponent: "UNSUPPORTED",
+              fieldComponentProps: {},
+            }),
+          ]}
+          onSubmit={vi.fn()}
+        />,
+      );
+
+      const input = screen.getByRole("textbox", { name: "Unsupported" });
+      expect(input).toHaveProperty(
+        "value",
+        "Unsupported field type. Use a CUSTOM field instead",
+      );
+      expect(input).toHaveProperty("disabled", true);
+    });
+
+    it("uses the required validation message for required unsupported fields", async () => {
+      const onSubmit = vi.fn();
+
+      render(
+        <BaseForm
+          formContent={[
+            field({
+              fieldKey: "unsupported",
+              label: "Unsupported",
+              fieldComponent: "UNSUPPORTED",
+              isRequired: true,
+              fieldComponentProps: {},
+            }),
+          ]}
+          onSubmit={onSubmit}
+        />,
+      );
+
+      fireEvent.click(screen.getByRole("button", { name: /submit/i }));
+
+      await waitFor(() => {
+        expect(screen.getByRole("alert").textContent).toBe(
+          "This field is required",
+        );
+      });
+      expect(onSubmit).not.toHaveBeenCalled();
+    });
+
+    it("submits controlled form state without displaying it in unsupported fields", async () => {
+      const onSubmit = vi.fn();
+
+      render(
+        <BaseForm
+          formContent={[
+            field({
+              fieldKey: "unsupported",
+              label: "Unsupported",
+              fieldComponent: "UNSUPPORTED",
+              isRequired: true,
+              fieldComponentProps: {},
+            }),
+          ]}
+          formState={{ unsupported: "sensitive value" }}
+          onFieldValueChange={vi.fn()}
+          onSubmit={onSubmit}
+        />,
+      );
+
+      expect(screen.queryByDisplayValue("sensitive value")).toBeNull();
+      expect(screen.getByRole("textbox", { name: /Unsupported/ }))
+        .toHaveProperty(
+          "value",
+          "Unsupported field type. Use a CUSTOM field instead",
+        );
+
+      fireEvent.click(screen.getByRole("button", { name: /submit/i }));
+
+      await waitFor(() => {
+        expect(onSubmit).toHaveBeenCalledWith({
+          unsupported: "sensitive value",
+        });
+      });
+    });
+  });
 });

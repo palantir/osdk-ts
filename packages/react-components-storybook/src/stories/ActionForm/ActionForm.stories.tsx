@@ -23,9 +23,14 @@ import { ActionForm } from "@osdk/react-components/experimental";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import React, { useState } from "react";
 import { fn } from "storybook/test";
-import { updateEmployeeStoryAction } from "../../mocks/fauxFoundry.js";
+import {
+  unsupportedFieldsStoryAction,
+  updateEmployeeStoryAction,
+} from "../../mocks/fauxFoundry.js";
 
 const actionDefinition = updateEmployeeStoryAction.actionDefinition;
+const unsupportedFieldsActionDefinition =
+  unsupportedFieldsStoryAction.actionDefinition;
 
 const actionFormDefaultValueFields: ReadonlyArray<
   FormFieldDefinition<typeof actionDefinition>
@@ -292,6 +297,27 @@ export const WithFieldOverrides: Story = {
 <ActionForm
   actionDefinition={updateEmployeeStoryAction}
   formFieldDefinitions={fields}
+/>`,
+      },
+    },
+  },
+};
+
+export const WithUnsupportedFields: Story = {
+  render: () => (
+    <ActionForm
+      actionDefinition={unsupportedFieldsActionDefinition}
+      showFormTitle={true}
+      onSuccess={handleSuccess}
+      onError={errorSpy}
+    />
+  ),
+  parameters: {
+    docs: {
+      source: {
+        code: `<ActionForm
+  actionDefinition={unsupportedFieldsStoryAction}
+  showFormTitle={true}
 />`,
       },
     },

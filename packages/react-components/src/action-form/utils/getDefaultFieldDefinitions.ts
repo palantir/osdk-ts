@@ -15,7 +15,6 @@
  */
 
 import type { ActionMetadata } from "@osdk/api";
-import { assertUnreachable } from "../../shared/assertUnreachable.js";
 import type { RendererFieldDefinition } from "../FormFieldApi.js";
 
 /**
@@ -74,15 +73,10 @@ function buildFieldDefinition(
           },
         };
       case "interface":
-        return {
-          ...base,
-          fieldComponent: "TEXT_INPUT",
-          fieldComponentProps: {},
-        };
       case "struct":
         return {
           ...base,
-          fieldComponent: "TEXT_INPUT",
+          fieldComponent: "UNSUPPORTED",
           fieldComponentProps: {},
         };
     }
@@ -90,13 +84,18 @@ function buildFieldDefinition(
 
   switch (paramType) {
     case "string":
+      return {
+        ...base,
+        fieldComponent: "TEXT_INPUT",
+        fieldComponentProps: {},
+      };
     case "marking":
     case "geohash":
     case "geoshape":
     case "objectType":
       return {
         ...base,
-        fieldComponent: "TEXT_INPUT",
+        fieldComponent: "UNSUPPORTED",
         fieldComponentProps: {},
       };
     case "boolean":
@@ -133,6 +132,10 @@ function buildFieldDefinition(
         fieldComponentProps: {},
       };
     default:
-      return assertUnreachable(paramType);
+      return {
+        ...base,
+        fieldComponent: "UNSUPPORTED",
+        fieldComponentProps: {},
+      };
   }
 }
