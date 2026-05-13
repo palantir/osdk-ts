@@ -1,5 +1,12 @@
 # @osdk/api
 
+## 2.19.0
+
+### Minor Changes
+
+- 02c796c: Array Reducers and Struct Main Value support
+- d962309: Add ability to subscribe to an object set RID without a type, experimentally.
+
 ## 2.18.0
 
 ## 2.17.0
