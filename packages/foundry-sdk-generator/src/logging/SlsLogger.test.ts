@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { GeneratorError } from "@osdk/generator-converters";
 import { PassThrough } from "node:stream";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { logDuration } from "./logDuration.js";
@@ -148,18 +149,18 @@ describe("SlsLogger", () => {
     expect(entry).not.toHaveProperty("safe");
   });
 
-  it("marks records with no unsafeParams as safe:true", () => {
+  it("omits safe and unsafeParams when no unsafeParams provided", () => {
     const { stream, writes } = captureStream();
     const logger = new SlsLogger(stream);
 
     logger.info("msg", { params: { count: 5 } });
 
     const [entry] = parseEntries(writes);
-    expect(entry.safe).toBe(true);
+    expect(entry).not.toHaveProperty("safe");
     expect(entry).not.toHaveProperty("unsafeParams");
   });
 
-  it("treats empty unsafeParams as no unsafe data and marks safe:true", () => {
+  it("treats empty unsafeParams as no unsafe data", () => {
     const { stream, writes } = captureStream();
     const logger = new SlsLogger(stream);
 
@@ -167,7 +168,7 @@ describe("SlsLogger", () => {
 
     const [entry] = parseEntries(writes);
     expect(entry).not.toHaveProperty("unsafeParams");
-    expect(entry.safe).toBe(true);
+    expect(entry).not.toHaveProperty("safe");
   });
 
   it("includes stacktrace on error() with an Error", () => {
@@ -219,9 +220,7 @@ describe("logDuration", () => {
   it("propagates unsafeParams from errors that carry them", async () => {
     const { stream, writes } = captureStream();
     const logger = new SlsLogger(stream);
-    const err = Object.assign(new Error("Something failed"), {
-      unsafeParams: { apiName: "MyObject" },
-    });
+    const err = new GeneratorError("Something failed", { apiName: "MyObject" });
 
     await expect(
       logDuration(logger, "Loading", () => Promise.reject(err)),
