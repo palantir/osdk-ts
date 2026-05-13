@@ -95,6 +95,30 @@ const fields = [
 <ActionForm actionDefinition={updateEmployee} formFieldDefinitions={fields} />;
 ```
 
+### Rich dropdown labels
+
+Use `itemToStringLabel` for the dropdown's text behavior: search matching, accessibility labels, fallback item keys, and default visual text. Add `renderItemLabel` when the visible label needs richer React content while preserving the same string behavior.
+
+```tsx
+const fields = [
+  {
+    fieldKey: "assigneeUserId",
+    label: "Assignee",
+    fieldComponent: "DROPDOWN",
+    fieldComponentProps: {
+      items: userIds,
+      itemToStringLabel: (userId) => userNames[userId] ?? userId,
+      renderItemLabel: (userId) => (
+        <span>
+          <strong>{userNames[userId] ?? userId}</strong>
+          <span>{userTeams[userId]}</span>
+        </span>
+      ),
+    },
+  },
+] satisfies Array<FormFieldDefinition<typeof updateEmployee>>;
+```
+
 ### Scoped object select fields
 
 `OBJECT_SELECT` can load options from either an object type or a pre-scoped object set. Pass `objectType` for an unfiltered selector, or pass `objectSet` to limit selectable options. The two are mutually exclusive. Search text is applied within the object set, and the current value is not automatically cleared when it is outside that set.
