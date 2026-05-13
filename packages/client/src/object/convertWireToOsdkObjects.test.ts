@@ -24,6 +24,7 @@ import {
 import type {
   InterfacePropertyTypeImplementation,
   OntologyObjectV2,
+  PropertySecurities,
 } from "@osdk/foundry.ontologies";
 import { createSharedClientContext } from "@osdk/shared.client.impl";
 import { LegacyFauxFoundry, startNodeApiServer } from "@osdk/shared.test";
@@ -35,6 +36,7 @@ import {
   convertWireToOsdkObjects,
   convertWireToOsdkObjects2,
 } from "./convertWireToOsdkObjects.js";
+import { UnderlyingOsdkObject } from "./convertWireToOsdkObjects/InternalSymbols.js";
 
 describe("convertWireToOsdkObjects", () => {
   let client: Client;
@@ -1382,6 +1384,137 @@ describe("convertWireToOsdkObjects", () => {
             objAsFoo2.$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata
               .InterfaceMetadata,
           );
+      });
+    });
+  });
+
+  describe("with property securities", () => {
+    const wireSecurities: PropertySecurities[] = [
+      { disjunction: [{ type: "unsupportedPolicy" }] },
+    ];
+
+    function makeWireEmployee() {
+      return {
+        __apiName: "Employee",
+        __primaryKey: 50031,
+        __title: "Jane Doe",
+        employeeId: 50031,
+        fullName: { value: "Jane Doe", propertySecurityIndex: 0 },
+        office: { value: "SEA", propertySecurityIndex: 0 },
+      } as unknown as OntologyObjectV2;
+    }
+
+    it("$as does not throw and exposes the unwrapped mapped property", async () => {
+      const [holder] = await convertWireToOsdkObjects(
+        client[additionalContext],
+        [makeWireEmployee()],
+        undefined,
+        false,
+        {},
+        wireSecurities,
+      ) as unknown as Osdk.Instance<Employee>[];
+
+      const asFoo = holder.$as(FooInterface);
+      expect(asFoo.$apiName).toBe("FooInterface");
+      expect(asFoo.fooSpt).toBe("Jane Doe");
+      expect(asFoo.fooIdp).toBe("SEA");
+    });
+
+    it("$propertySecurities resolves on both holder and interface view", async () => {
+      const [holder] = await convertWireToOsdkObjects(
+        client[additionalContext],
+        [makeWireEmployee()],
+        undefined,
+        false,
+        {},
+        wireSecurities,
+      ) as unknown as Osdk.Instance<Employee>[];
+
+      const expectedSecurities = {
+        fullName: [{ type: "unsupportedPolicy" }],
+        office: [{ type: "unsupportedPolicy" }],
+      };
+      expect(holder.$propertySecurities).toEqual(expectedSecurities);
+      expect(holder.$as(FooInterface).$propertySecurities).toEqual(
+        expectedSecurities,
+      );
+    });
+
+    it("$clone() preserves unwrapped property values", async () => {
+      const [holder] = await convertWireToOsdkObjects(
+        client[additionalContext],
+        [makeWireEmployee()],
+        undefined,
+        false,
+        {},
+        wireSecurities,
+      ) as unknown as Osdk.Instance<Employee>[];
+
+      expect(holder.$clone().fullName).toBe("Jane Doe");
+    });
+
+    it("mutates input in place — the wire object is the holder's underlying", async () => {
+      const wireEmployee = makeWireEmployee();
+      const [holder] = await convertWireToOsdkObjects(
+        client[additionalContext],
+        [wireEmployee],
+        undefined,
+        false,
+        {},
+        wireSecurities,
+      ) as unknown as Osdk.Instance<Employee>[];
+
+      expect((holder as any)[UnderlyingOsdkObject]).toBe(wireEmployee);
+    });
+
+    it("unwraps arrays of secured property values", async () => {
+      const arraySecurities: PropertySecurities[] = [
+        { disjunction: [{ type: "unsupportedPolicy" }] },
+        {
+          disjunction: [{
+            type: "propertyMarkingSummary",
+            conjunctive: [],
+            disjunctive: [],
+            containerConjunctive: [],
+            containerDisjunctive: [],
+          }],
+        },
+      ];
+
+      const wireObj = {
+        __apiName: "objectTypeWithAllPropertyTypes",
+        __primaryKey: 50032,
+        __title: "row 50032",
+        id: 50032,
+        stringArray: [
+          { value: "NYC", propertySecurityIndex: 0 },
+          { value: "SEA", propertySecurityIndex: 1 },
+        ],
+      } as unknown as OntologyObjectV2;
+
+      const [holder] = await convertWireToOsdkObjects(
+        client[additionalContext],
+        [wireObj],
+        undefined,
+        false,
+        {},
+        arraySecurities,
+      ) as unknown as Array<
+        Osdk.Instance<typeof objectTypeWithAllPropertyTypes>
+      >;
+
+      expect(holder.stringArray).toEqual(["NYC", "SEA"]);
+      expect(holder.$propertySecurities).toEqual({
+        stringArray: [
+          [{ type: "unsupportedPolicy" }],
+          [{
+            type: "propertyMarkings",
+            conjunctive: [],
+            disjunctive: [],
+            containerConjunctive: [],
+            containerDisjunctive: [],
+          }],
+        ],
       });
     });
   });
