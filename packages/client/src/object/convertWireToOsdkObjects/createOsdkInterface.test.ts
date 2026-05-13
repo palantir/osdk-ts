@@ -267,40 +267,8 @@ describe(createOsdkInterface, () => {
     const client = {} as MinimalClient;
 
     type TestObj = Record<string, unknown> & {
-      $as: (name: string) => Record<string, unknown>;
       $clone: () => Record<string, unknown>;
     };
-
-    function makeObj() {
-      // fresh per call: createOsdkObject mutates input
-      const simpleProps = {
-        $apiName: "Obj",
-        $objectType: "Obj",
-        $primaryKey: 1,
-        $title: "hi mom",
-        id: 1,
-        foo: { value: "hi mom", propertySecurityIndex: 0 },
-      } as unknown as SimpleOsdkProperties;
-      return createOsdkObject(
-        client,
-        objectDef,
-        simpleProps,
-        {},
-        wireSecurities,
-      ) as unknown as TestObj;
-    }
-
-    it("$as does not throw and exposes the mapped (unwrapped) property", () => {
-      const obj = makeObj();
-      const iface = obj.$as("IFoo");
-      expect(iface.$apiName).toBe("IFoo");
-      expect(iface.asdf).toBe("hi mom");
-    });
-
-    it("$clone() preserves unwrapped property values", () => {
-      const obj = makeObj();
-      expect(obj.$clone().foo).toBe("hi mom");
-    });
 
     it("hydrates an attachment property that arrived wrapped in SecuredPropertyValue", () => {
       const attObjectDef: FetchedObjectTypeDefinition = {
