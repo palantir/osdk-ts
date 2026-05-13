@@ -19,6 +19,7 @@
 @import "./tokens/component-tokens/object-set.css";
 @import "./tokens/component-tokens/pdf-viewer.css";
 @import "./tokens/component-tokens/radio.css";
+@import "./tokens/component-tokens/select.css";
 @import "./tokens/component-tokens/table.css";
 @import "./tokens/component-tokens/timepicker.css";
 @import "./tokens/component-tokens/tooltip.css";
