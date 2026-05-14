@@ -18,9 +18,7 @@ import { createClient as __real } from "@osdk/client";
 import { smartClient } from "./smartClient.js";
 
 // Re-export every named binding from `@osdk/client` so this module is a
-// drop-in substitute. The explicit `export const createClient` below
-// shadows the wildcard re-export for that single name (per the ES module
-// spec, an explicit local export takes precedence over `export *`).
+// drop-in substitute
 export * from "@osdk/client";
 
 /**

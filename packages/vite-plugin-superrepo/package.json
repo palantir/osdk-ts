@@ -16,6 +16,15 @@
       "require": "./build/cjs/index.cjs",
       "default": "./build/browser/index.js"
     },
+    "./discovery": {
+      "browser": "./build/browser/public/discovery.js",
+      "import": {
+        "types": "./build/types/public/discovery.d.ts",
+        "default": "./build/esm/public/discovery.js"
+      },
+      "require": "./build/cjs/public/discovery.cjs",
+      "default": "./build/browser/public/discovery.js"
+    },
     "./osdkClient": {
       "browser": "./build/browser/public/osdkClient.js",
       "import": {

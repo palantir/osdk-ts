@@ -23,7 +23,7 @@ import {
   type DiscoveryService,
   findSuperrepoRoot,
   inspectDiscovery,
-} from "./internal/discovery.js";
+} from "./public/discovery.js";
 
 /**
  * Each entry maps a path prefix served by the Vite dev server to a
@@ -188,8 +188,7 @@ export function smartClientPlugin(): Plugin {
       // every OSDK request flows through Vite's proxy, and (b) wraps
       // the resulting client with `smartClient` so `executeFunction`
       // calls are routed to the local function runtimes. `@osdk/oauth`
-      // and any other imports are untouched. Dev-only via
-      // `apply: "serve"`.
+      // and any other imports are untouched.
       return code.replace(
         /from\s+(["'])@osdk\/client\1/,
         `from "@osdk/vite-plugin-superrepo/osdkClient"`,
@@ -198,12 +197,6 @@ export function smartClientPlugin(): Plugin {
   };
 }
 
-/**
- * Build the `ProxyOptions` for one discovered target. HTTPS targets get a
- * dedicated `https.Agent` configured with the published CA cert so we
- * properly verify the foundry-cli's self-signed certificate instead of
- * disabling TLS verification wholesale.
- */
 function buildProxyOptions(
   entry: DiscoveryEntry,
   route: { prefix: string; rewrite: boolean },
@@ -225,8 +218,6 @@ function buildProxyOptions(
       });
       options.secure = true;
     } else {
-      // No published CA — fall back to skipping verification. We log so the
-      // user knows TLS pinning was downgraded.
       options.secure = false;
       pendingWarnings.push(
         `discovery for ${entry.url} has no caCertPath; `

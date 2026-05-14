@@ -46,8 +46,6 @@ export type DiscoveryRead =
 /**
  * Walk up from `startDir` looking for `foundry.yml`. Returns the *nearest*
  * directory that contains it, or `undefined` when no such ancestor exists.
- * When superrepos are nested (e.g. an inner test fixture), this stops at
- * the innermost match — the same semantics as the Rust side.
  */
 export function findSuperrepoRoot(startDir: string): string | undefined {
   let dir = path.resolve(startDir);

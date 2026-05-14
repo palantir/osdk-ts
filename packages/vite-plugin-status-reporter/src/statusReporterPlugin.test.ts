@@ -25,7 +25,7 @@ import { statusReporterPlugin } from "./statusReporterPlugin.js";
 let workDir: string;
 
 beforeEach(() => {
-  workDir = fs.mkdtempSync(path.join(os.tmpdir(), "vps-status-test-"));
+  workDir = fs.mkdtempSync(path.join(os.tmpdir(), "plugin-status-test-"));
 });
 afterEach(() => {
   fs.rmSync(workDir, { recursive: true, force: true });

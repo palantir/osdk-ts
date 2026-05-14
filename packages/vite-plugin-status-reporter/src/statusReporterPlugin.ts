@@ -17,7 +17,7 @@
 import {
   findSuperrepoRoot,
   readDiscovery,
-} from "@osdk/vite-plugin-superrepo/internal/discovery";
+} from "@osdk/vite-plugin-superrepo/discovery";
 import type { Logger, Plugin, ResolvedConfig } from "vite";
 
 export type ServiceName =

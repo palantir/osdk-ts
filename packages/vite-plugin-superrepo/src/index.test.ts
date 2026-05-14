@@ -20,7 +20,7 @@ import path from "node:path";
 import type { ProxyOptions, UserConfig } from "vite";
 import { afterEach, beforeEach, expect, it } from "vitest";
 import { smartClientPlugin } from "./index.js";
-import { DISCOVERY_DIR } from "./internal/discovery.js";
+import { DISCOVERY_DIR } from "./public/discovery.js";
 
 let workDir: string;
 
