@@ -1,5 +1,11 @@
 # @osdk/api
 
+## 2.20.0
+
+### Minor Changes
+
+- 9eb67e4: Add experimental support for streaming queries via the `__EXPERIMENTAL__NOT_SUPPORTED_YET__executeStreamingFunction` marker.
+
 ## 2.19.0
 
 ### Minor Changes

@@ -1,5 +1,21 @@
 # @osdk/maker-experimental
 
+## 0.16.0
+
+### Minor Changes
+
+- b05a5bc: remove jiti
+- be93bc8: Support value types
+
+### Patch Changes
+
+- Updated dependencies [9eb67e4]
+  - @osdk/api@2.20.0
+  - @osdk/maker@0.26.0
+  - @osdk/client.unstable@2.20.0
+  - @osdk/generator-converters.ontologyir@2.20.0
+  - @osdk/generator-converters.preview@0.10.0
+
 ## 0.15.0
 
 ### Minor Changes
