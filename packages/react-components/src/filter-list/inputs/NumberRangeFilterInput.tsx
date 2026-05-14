@@ -75,12 +75,14 @@ function NumberRangeFilterInputInner<Q extends ObjectTypeDefinition>({
 
   const handleRangeChange = useCallback(
     (minValue: number | undefined, maxValue: number | undefined) => {
-      const round = (v: number | undefined): number | undefined =>
-        isInteger && v !== undefined ? Math.round(v) : v;
+      const coerceMin = (v: number | undefined): number | undefined =>
+        isInteger && v !== undefined ? Math.ceil(v) : v;
+      const coerceMax = (v: number | undefined): number | undefined =>
+        isInteger && v !== undefined ? Math.floor(v) : v;
       onFilterStateChanged({
         type: "NUMBER_RANGE",
-        minValue: round(minValue),
-        maxValue: round(maxValue),
+        minValue: coerceMin(minValue),
+        maxValue: coerceMax(maxValue),
         includeNull,
       });
     },
@@ -182,7 +184,7 @@ function NumberRangeFilterInputInner<Q extends ObjectTypeDefinition>({
         minValue={numberRangeState?.minValue}
         maxValue={numberRangeState?.maxValue}
         onChange={handleRangeChange}
-        clickToFilter={clickToFilter}
+        clickToFilter={clickToFilter && metadata != null}
       />
     </NullValueWrapper>
   );
