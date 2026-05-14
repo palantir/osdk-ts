@@ -168,7 +168,7 @@ function TextTagsInputInner({
     <div
       className={classnames(styles.textTags, className)}
       style={style}
-      data-loading={isLoading}
+      data-loading={isLoading && suggestions.length > 0}
     >
       {error && (
         <div className={sharedStyles.errorMessage}>

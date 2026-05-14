@@ -105,12 +105,13 @@ function SingleSelectInputInner({
   );
 
   const isNoData = !error && stableValues.length === 0;
+  const isReloading = isLoading && stableValues.length > 0;
 
   return (
     <div
       className={classnames(styles.singleSelect, className)}
       style={style}
-      data-loading={isLoading && stableValues.length > 0}
+      data-loading={isReloading}
     >
       {error && (
         <div className={sharedStyles.errorMessage}>
@@ -118,9 +119,14 @@ function SingleSelectInputInner({
         </div>
       )}
 
-      {isNoData && isLoading && <SelectInputSkeleton />}
-      {isNoData && !isLoading && (
-        <div className={sharedStyles.emptyMessage}>No options available</div>
+      {isNoData && (
+        isLoading
+          ? <SelectInputSkeleton />
+          : (
+            <div className={sharedStyles.emptyMessage}>
+              No options available
+            </div>
+          )
       )}
 
       {stableValues.length > 0 && (

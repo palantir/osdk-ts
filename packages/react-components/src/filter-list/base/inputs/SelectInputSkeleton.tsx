@@ -16,11 +16,15 @@
 
 import React, { memo } from "react";
 import { SkeletonBar } from "../../../base-components/skeleton/SkeletonBar.js";
+import sharedStyles from "./shared.module.css";
 
 export const SelectInputSkeleton = memo(
   function SelectInputSkeleton(): React.ReactElement {
     return (
       <div data-testid="select-input-skeleton">
+        <span className={sharedStyles.srOnly} role="status">
+          Loading options
+        </span>
         <SkeletonBar
           width="100%"
           height="var(--osdk-filter-skeleton-input-height)"
