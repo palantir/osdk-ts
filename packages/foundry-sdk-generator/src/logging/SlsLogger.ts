@@ -50,10 +50,9 @@ export class SlsLogger {
     this.stream = stream;
     this.envParams = {};
     const jobId = process.env.JOB_ID;
-    if (jobId) {
-      this.envParams.jobId = jobId;
-    }
-    this.traceId = process.env.TRACE_ID || undefined;
+    if (jobId) this.envParams.jobId = jobId;
+    const traceId = process.env.TRACE_ID;
+    if (traceId) this.traceId = traceId;
   }
 
   public debug(message: string, params?: SlsLogParams): void {
