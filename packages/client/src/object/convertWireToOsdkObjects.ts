@@ -129,8 +129,6 @@ export async function convertWireToOsdkObjects(
     InterfaceToObjectTypeMappingsV2
   > = {},
 ): Promise<Array<ObjectHolder | InterfaceHolder>> {
-  // remove the __ prefixed properties and convert them to $ prefixed.
-  // updates in place
   fixObjectPropertiesInPlace(objects, forceRemoveRid);
 
   // prefer V2 mappings if non-empty, otherwise fall back to V1
