@@ -27,9 +27,9 @@ import {
   OntologyEntityTypeEnum,
 } from "@osdk/maker";
 import { consola } from "consola";
-import { createJiti } from "jiti";
 import * as fs from "node:fs";
 import * as path from "node:path";
+import { pathToFileURL } from "node:url";
 import invariant from "tiny-invariant";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
@@ -431,14 +431,7 @@ async function loadOntology(
 ) {
   const result = await defineOntologyV2(
     apiNamespace,
-    async () => {
-      const jiti = createJiti(import.meta.filename, {
-        moduleCache: true,
-        debug: false,
-        importMeta: import.meta,
-      });
-      const module = await jiti.import(input);
-    },
+    async () => await import(pathToFileURL(input).href),
     functionsIrFile,
     randomnessKey,
   );
