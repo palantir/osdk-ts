@@ -308,6 +308,36 @@ export const Default: Story = {
   },
 };
 
+export const IntegerNumberRangeRounding: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story: "Repro for the integer-typed `NUMBER_RANGE` rounding fix. "
+          + "`employeeNumber` is an `integer` property, so histogram bucket "
+          + "boundaries — `(maxValue - minValue) / 20` — are usually fractional. "
+          + "Click any bar in the histogram. The Min/Max boxes must show whole "
+          + "integers (e.g. `657495073`), not fractional values "
+          + "(e.g. `657495073.4`).",
+      },
+    },
+  },
+  render: ({ objectType: _ot, objectSet: _os, ...args }) => {
+    const filterDefinitions = useMemo(
+      (): FilterDefinitionUnion<Employee>[] => [employeeNumberFilter],
+      [],
+    );
+    return (
+      <div style={SIDEBAR_STYLE}>
+        <FilterList
+          objectType={Employee}
+          filterDefinitions={filterDefinitions}
+          {...args}
+        />
+      </div>
+    );
+  },
+};
+
 function WithObjectSetStory(args: Partial<EmployeeFilterListProps>) {
   const client = useOsdkClient();
   const objectSet = useMemo(
