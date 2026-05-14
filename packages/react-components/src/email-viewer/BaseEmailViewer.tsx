@@ -46,6 +46,11 @@ export function BaseEmailViewer({
              * resolves correctly. Scripts are blocked because allow-scripts is NOT
              * set. Never add allow-scripts here — the combination of
              * allow-same-origin + allow-scripts bypasses the sandbox entirely.
+             *
+             * Known limitation: because the iframe shares the parent origin,
+             * email CSS can make outbound requests via url() (e.g. tracking
+             * pixels in background-image) and can read CSS custom properties.
+             * This is acceptable for an experimental component.
              */
           }
           <iframe
