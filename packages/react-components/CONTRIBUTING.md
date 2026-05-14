@@ -257,7 +257,7 @@ Storybook runs on `http://localhost:6006`.
    pnpm turbo check
    ```
 6. **Push and open a PR** against `main`. Fill out the PR template.
-7. **Do not force-push** amended commits during review — push new commits so reviewers can see incremental changes.
+7. **Attach a screenshot or short screen-capture video to the PR description if the change is user-visible** (new UI, visual fix, interaction change, layout tweak). Reviewers shouldn't have to check out the branch to see what changed. Pure refactors, type-only edits, and non-visible internals don't need one.
 
 ## Code Review
 
