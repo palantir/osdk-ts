@@ -39,11 +39,11 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false",
     "watch": "tsc --watch"
   },
-  "peerDependencies": {
-    "vite": "*"
-  },
   "dependencies": {
     "@osdk/vite-plugin-superrepo": "workspace:~"
+  },
+  "peerDependencies": {
+    "vite": "*"
   },
   "devDependencies": {
     "@osdk/monorepo.api-extractor": "workspace:~",

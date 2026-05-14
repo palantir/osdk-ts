@@ -26,12 +26,9 @@ import {
 } from "./internal/discovery.js";
 
 /**
- * The proxy targets `smartClient.ts` expects to be wired up. Each entry maps
- * a path prefix served by the Vite dev server to a local foundry-cli
- * service published via its `.palantir/.<service>-discovery.json` file.
- *
- * `index.test.ts` cross-references this list against the literal URLs in
- * `src/public/smartClient.ts` to catch drift.
+ * Each entry maps a path prefix served by the Vite dev server to a
+ * local foundry-cli service published via its
+ * `.palantir/.<service>-discovery.json` file.
  */
 export const PROXY_ROUTES: ReadonlyArray<{
   prefix: string;
@@ -39,10 +36,6 @@ export const PROXY_ROUTES: ReadonlyArray<{
   /** Strip the prefix before forwarding. */
   rewrite: boolean;
 }> = [
-  // The ontology service handles all three of these prefixes:
-  //  - `/api/v2/...`           REST API (used by `@osdk/client`)
-  //  - `/ontology-metadata/...` Conjure metadata (used by MetadataClient)
-  //  - `/object-set-service/...` Conjure object-set service
   { prefix: "/api/v2", service: "ontology", rewrite: false },
   { prefix: "/ontology-metadata", service: "ontology", rewrite: false },
   { prefix: "/object-set-service", service: "ontology", rewrite: false },
