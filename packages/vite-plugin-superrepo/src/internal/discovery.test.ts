@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { spawnSync } from "node:child_process";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
@@ -26,6 +27,14 @@ import {
   inspectDiscovery,
   readDiscovery,
 } from "./discovery.js";
+
+function deadPid(): number {
+  const result = spawnSync(process.execPath, ["-e", ""]);
+  if (result.pid === undefined) {
+    throw new Error("failed to spawn dead-pid helper");
+  }
+  return result.pid;
+}
 
 let workDir: string;
 
@@ -119,12 +128,21 @@ describe("readDiscovery", () => {
 
   it("returns undefined when the recorded PID is dead", () => {
     const root = makeSuperrepo();
-    // PID 0 is reserved on every supported platform.
     writeDiscovery(root, "ontology", {
-      pid: 0,
+      pid: deadPid(),
       url: "https://127.0.0.1:1",
     });
     expect(readDiscovery(root, "ontology")).toBeUndefined();
+  });
+
+  it("returns undefined when the recorded PID is invalid (0, negative, fractional)", () => {
+    // The schema rejects these before the liveness check, but the
+    // resulting `undefined` is what callers depend on.
+    const root = makeSuperrepo();
+    for (const pid of [0, -1, 1.5]) {
+      writeDiscovery(root, "ontology", { pid, url: "https://127.0.0.1:1" });
+      expect(readDiscovery(root, "ontology")).toBeUndefined();
+    }
   });
 
   it("returns undefined for malformed JSON", () => {
@@ -190,10 +208,22 @@ describe("inspectDiscovery", () => {
 
   it("reports 'stale' when the recorded PID is dead", () => {
     const root = makeSuperrepo();
-    writeDiscovery(root, "ontology", { pid: 0, url: "https://127.0.0.1:1" });
+    const pid = deadPid();
+    writeDiscovery(root, "ontology", { pid, url: "https://127.0.0.1:1" });
     const r = inspectDiscovery(root, "ontology");
     expect(r.kind).toBe("stale");
-    if (r.kind === "stale") expect(r.pid).toBe(0);
+    if (r.kind === "stale") expect(r.pid).toBe(pid);
+  });
+
+  it("reports 'malformed' (not 'stale') for invalid pid values", () => {
+    // A fractional or non-positive pid is schema-corrupt; surfacing it as
+    // "stale" would mislead the user into restarting `foundry start` when
+    // the real problem is a bad discovery file.
+    const root = makeSuperrepo();
+    for (const pid of [0, -1, 1.5]) {
+      writeDiscovery(root, "ontology", { pid, url: "https://127.0.0.1:1" });
+      expect(inspectDiscovery(root, "ontology").kind).toBe("malformed");
+    }
   });
 
   it("reports 'ok' with the parsed entry for a live process", () => {

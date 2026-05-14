@@ -17,19 +17,17 @@
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 import type { ProxyOptions, UserConfig } from "vite";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { smartClientPlugin } from "./index.js";
+import { PROXY_ROUTES, smartClientPlugin } from "./index.js";
 import { DISCOVERY_DIR } from "./internal/discovery.js";
 
 /**
- * Invoke the plugin's `config` hook directly, the way Vite would, and
- * return the partial config it produced.
- */
-/**
  * Invoke the plugin's `config` hook the way Vite would and return the
- * mutated user config (the plugin now mutates in place and returns
- * undefined; tests inspect `userConfig.server.proxy` directly).
+ * mutated user config. The plugin mutates in place (so its discovered
+ * targets override any same-named user-defined keys) and returns
+ * undefined; tests inspect `userConfig.server.proxy` directly.
  */
 function callConfigHook(
   userRoot: string,
@@ -74,9 +72,12 @@ function writeDiscovery(root: string, kebab: string, body: object): void {
 }
 
 describe("smartClientPlugin config hook", () => {
-  it("throws when no foundry.yml ancestor exists", () => {
-    // The plugin only makes sense inside a superrepo
-    expect(() => callConfigHook(workDir)).toThrow(/SuperRepo/);
+  it("no-ops silently when no foundry.yml ancestor exists", () => {
+    // The plugin only makes sense inside a superrepo, but it must not
+    // kill `vite dev` startup if it happens to be loaded elsewhere —
+    // matching how the status-reporter plugin handles the same case.
+    expect(() => callConfigHook(workDir)).not.toThrow();
+    expect(callConfigHook(workDir).server?.proxy).toBeUndefined();
   });
 
   it("leaves the user config untouched when no discovery files exist", () => {
@@ -144,7 +145,10 @@ describe("smartClientPlugin config hook", () => {
     );
   });
 
-  it("ignores stale discovery files (PID 0)", () => {
+  it("ignores discovery files with an invalid pid", () => {
+    // pid: 0 fails schema validation outright; the hook must not wire up
+    // a proxy regardless of whether the failure is classified as
+    // "malformed" or "stale".
     const root = makeSuperrepo();
     writeDiscovery(root, "ontology", { pid: 0, url: "https://127.0.0.1:1" });
     const cfg = callConfigHook(root);
@@ -298,5 +302,29 @@ export const client = createClient(foundryUrl, "rid", auth);
   it("only touches /src/client.ts", () => {
     expect(callTransform("export const client = 1;", "/abs/other.ts"))
       .toBeNull();
+  });
+});
+
+describe("PROXY_ROUTES vs smartClient.ts (drift guard)", () => {
+  it("every rewriting prefix is actually requested by smartClient.ts", () => {
+    // Only routes with `rewrite: true` correspond to URLs that
+    // `smartClient.ts` itself constructs (local function runtimes).
+    // The ontology prefixes (`/api/v2`, `/ontology-metadata`, etc.)
+    // are owned by `@osdk/client`'s internals and aren't grep-able
+    // from this file. If you add a *new* rewriting route without
+    // wiring it up in smartClient.ts (or vice versa), this fails.
+    const here = path.dirname(fileURLToPath(import.meta.url));
+    const smartClientSource = fs.readFileSync(
+      path.join(here, "public", "smartClient.ts"),
+      "utf-8",
+    );
+    for (const route of PROXY_ROUTES.filter((r) => r.rewrite)) {
+      expect(
+        smartClientSource.includes(`"${route.prefix}/`)
+          || smartClientSource.includes(`"${route.prefix}"`),
+        `PROXY_ROUTES declares ${route.prefix} but smartClient.ts never `
+          + `references it — either remove the route or wire it up.`,
+      ).toBe(true);
+    }
   });
 });

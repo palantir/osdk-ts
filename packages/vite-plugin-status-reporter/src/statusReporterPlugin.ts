@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-import fs from "node:fs";
-import path from "node:path";
+import {
+  findSuperrepoRoot,
+  readDiscovery,
+} from "@osdk/vite-plugin-superrepo/internal/discovery";
 import type { Logger, Plugin, ResolvedConfig } from "vite";
 
 export type ServiceName =
@@ -45,9 +47,6 @@ export interface StatusReporterConfig {
   heartbeatInterval?: number;
 }
 
-/** Discovery file written by `foundry start status-server`. */
-const STATUS_SERVER_DISCOVERY_FILE = ".palantir/.status-server-discovery.json";
-
 /**
  * Creates a Vite plugin that reports dev server lifecycle status to the
  * Foundry status-server gateway. Only active during development (`apply: "serve"`).
@@ -58,7 +57,7 @@ export function statusReporterPlugin(config: StatusReporterConfig): Plugin {
   const { service, heartbeatInterval = 30_000 } = config;
 
   let viteRoot: string;
-  let logger: Logger | undefined;
+  let logger: Logger;
   let heartbeatTimer: ReturnType<typeof setInterval> | undefined;
 
   /**
@@ -69,32 +68,7 @@ export function statusReporterPlugin(config: StatusReporterConfig): Plugin {
   function readStatusBaseUrl(): string | undefined {
     const superrepoRoot = findSuperrepoRoot(viteRoot);
     if (!superrepoRoot) return undefined;
-    const file = path.join(superrepoRoot, STATUS_SERVER_DISCOVERY_FILE);
-    let raw: string;
-    try {
-      raw = fs.readFileSync(file, "utf-8");
-    } catch {
-      return undefined;
-    }
-    let parsed: { pid?: unknown; url?: unknown };
-    try {
-      parsed = JSON.parse(raw);
-    } catch {
-      return undefined;
-    }
-    // Match the strict validation in `vite-plugin-superrepo`'s
-    // `isDiscoveryEntry`: reject when required fields are missing or
-    // contain non-finite numbers / empty strings.
-    if (
-      typeof parsed.pid !== "number"
-      || !Number.isFinite(parsed.pid)
-      || typeof parsed.url !== "string"
-      || parsed.url.length === 0
-    ) {
-      return undefined;
-    }
-    if (!isPidAlive(parsed.pid)) return undefined;
-    return parsed.url;
+    return readDiscovery(superrepoRoot, "status-server")?.url;
   }
 
   /**
@@ -119,14 +93,14 @@ export function statusReporterPlugin(config: StatusReporterConfig): Plugin {
     };
 
     try {
-      const res = await fetch(`${base.replace(/\/$/, "")}/api/status`, {
+      const res = await fetch(new URL("/api/status", base), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(event),
       });
       await res.body?.cancel();
     } catch (e) {
-      logger?.warn(`[status-reporter] Failed to publish status: ${e}`);
+      logger.warn(`[status-reporter] Failed to publish status: ${e}`);
     }
   }
 
@@ -176,26 +150,4 @@ export function statusReporterPlugin(config: StatusReporterConfig): Plugin {
       });
     },
   };
-}
-
-function findSuperrepoRoot(startDir: string): string | undefined {
-  let dir = path.resolve(startDir);
-  while (true) {
-    if (fs.existsSync(path.join(dir, "foundry.yml"))) {
-      return dir;
-    }
-    const parent = path.dirname(dir);
-    if (parent === dir) return undefined;
-    dir = parent;
-  }
-}
-
-function isPidAlive(pid: number): boolean {
-  if (!Number.isInteger(pid) || pid <= 0) return false;
-  try {
-    process.kill(pid, 0);
-    return true;
-  } catch (e) {
-    return (e as NodeJS.ErrnoException).code === "EPERM";
-  }
 }

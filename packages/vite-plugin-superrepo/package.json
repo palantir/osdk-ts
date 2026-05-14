@@ -25,6 +25,14 @@
       "require": "./build/cjs/public/smartClient.cjs",
       "default": "./build/browser/public/smartClient.js"
     },
+    "./internal/discovery": {
+      "import": {
+        "types": "./build/types/internal/discovery.d.ts",
+        "default": "./build/esm/internal/discovery.js"
+      },
+      "require": "./build/cjs/internal/discovery.cjs",
+      "default": "./build/esm/internal/discovery.js"
+    },
     "./*": {
       "browser": "./build/browser/public/*.js",
       "import": {

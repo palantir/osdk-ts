@@ -19,6 +19,7 @@ import http from "node:http";
 import type { AddressInfo } from "node:net";
 import os from "node:os";
 import path from "node:path";
+import type { Plugin } from "vite";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { statusReporterPlugin } from "./statusReporterPlugin.js";
 
@@ -46,6 +47,32 @@ function writeStatusDiscovery(root: string, body: object): void {
     path.join(dir, ".status-server-discovery.json"),
     JSON.stringify(body),
   );
+}
+
+/**
+ * Extract a plugin hook by name as a plain callable, normalizing over
+ * both function and object-with-`handler` shapes Vite supports. Returns
+ * a typed `(this: never, ...args: never[]) => unknown` so the test
+ * doesn't have to repeat the `as unknown as ...` dance per call site.
+ */
+function callableHook(
+  plugin: Plugin,
+  name: "configResolved" | "configureServer",
+): (this: unknown, ...args: never[]) => unknown {
+  const hook = plugin[name];
+  const fn = typeof hook === "function" ? hook : hook?.handler;
+  if (!fn) throw new Error(`statusReporterPlugin must declare \`${name}\``);
+  return fn as unknown as (this: unknown, ...args: never[]) => unknown;
+}
+
+/** Minimal ResolvedConfig the plugin's `configResolved` actually reads. */
+function fakeResolvedConfig(root: string): unknown {
+  return { root, logger: { warn: () => {} } };
+}
+
+/** Minimal ViteDevServer the plugin's `configureServer` actually reads. */
+function fakeDevServer(): unknown {
+  return { httpServer: { on: () => undefined } };
 }
 
 /**
@@ -119,28 +146,8 @@ describe("statusReporterPlugin", () => {
       writeStatusDiscovery(root, { pid: process.pid, url: sink.url });
 
       const plugin = statusReporterPlugin({ service: "APP" });
-      // Run configResolved with our temp root so it walks up to foundry.yml.
-      const configResolved = typeof plugin.configResolved === "function"
-        ? plugin.configResolved
-        : plugin.configResolved?.handler;
-      void configResolved?.call(
-        { meta: { rollupVersion: "" }, environment: undefined } as never,
-        // Only `root` and `logger` are actually read.
-        {
-          root,
-          logger: { warn: () => {} },
-        } as never,
-      );
-
-      // configureServer kicks off the PREPARING publish.
-      const configureServer = typeof plugin.configureServer === "function"
-        ? plugin.configureServer
-        : plugin.configureServer?.handler;
-      void configureServer?.call(
-        { meta: { rollupVersion: "" }, environment: undefined } as never,
-        // Minimal ViteDevServer shape: only `httpServer.on` is used here.
-        { httpServer: { on: () => undefined } } as never,
-      );
+      callableHook(plugin, "configResolved")(fakeResolvedConfig(root) as never);
+      callableHook(plugin, "configureServer")(fakeDevServer() as never);
 
       // PREPARING is published asynchronously via fetch; await the first
       // captured event deterministically (resolved by the capture server
@@ -170,44 +177,22 @@ describe("statusReporterPlugin", () => {
     const root = makeSuperrepo();
     writeStatusDiscovery(root, { url: "http://127.0.0.1:1" }); // no `pid`
     const plugin = statusReporterPlugin({ service: "APP" });
-    const configResolved = typeof plugin.configResolved === "function"
-      ? plugin.configResolved
-      : plugin.configResolved?.handler;
-    void configResolved?.call(
-      { meta: { rollupVersion: "" }, environment: undefined } as never,
-      { root, logger: { warn: () => {} } } as never,
-    );
-    const configureServer = typeof plugin.configureServer === "function"
-      ? plugin.configureServer
-      : plugin.configureServer?.handler;
+    callableHook(plugin, "configResolved")(fakeResolvedConfig(root) as never);
     expect(() => {
-      void configureServer?.call(
-        { meta: { rollupVersion: "" }, environment: undefined } as never,
-        { httpServer: { on: () => undefined } } as never,
-      );
+      callableHook(plugin, "configureServer")(fakeDevServer() as never);
     }).not.toThrow();
   });
 
   it("no-ops silently when no foundry.yml ancestor exists", () => {
     const plugin = statusReporterPlugin({ service: "APP" });
-    const configResolved = typeof plugin.configResolved === "function"
-      ? plugin.configResolved
-      : plugin.configResolved?.handler;
-    void configResolved?.call(
-      { meta: { rollupVersion: "" }, environment: undefined } as never,
-      { root: workDir, logger: { warn: () => {} } } as never,
+    callableHook(plugin, "configResolved")(
+      fakeResolvedConfig(workDir) as never,
     );
     // No discovery, no foundry.yml — publish must early-return without
     // attempting any fetch. We assert by simply running configureServer
     // and not throwing.
-    const configureServer = typeof plugin.configureServer === "function"
-      ? plugin.configureServer
-      : plugin.configureServer?.handler;
     expect(() => {
-      void configureServer?.call(
-        { meta: { rollupVersion: "" }, environment: undefined } as never,
-        { httpServer: { on: () => undefined } } as never,
-      );
+      callableHook(plugin, "configureServer")(fakeDevServer() as never);
     }).not.toThrow();
   });
 });

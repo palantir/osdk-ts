@@ -138,7 +138,8 @@ function isDiscoveryEntry(value: unknown): value is DiscoveryEntry {
   const v = value as Record<string, unknown>;
   return (
     typeof v.pid === "number"
-    && Number.isFinite(v.pid)
+    && Number.isInteger(v.pid)
+    && v.pid > 0
     && typeof v.url === "string"
     && v.url.length > 0
     && (v.caCertPath === undefined || typeof v.caCertPath === "string")

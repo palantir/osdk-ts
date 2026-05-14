@@ -42,6 +42,9 @@
   "peerDependencies": {
     "vite": "*"
   },
+  "dependencies": {
+    "@osdk/vite-plugin-superrepo": "workspace:~"
+  },
   "devDependencies": {
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",

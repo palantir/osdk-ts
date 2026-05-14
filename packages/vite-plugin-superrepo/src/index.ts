@@ -30,10 +30,10 @@ import {
  * a path prefix served by the Vite dev server to a local foundry-cli
  * service published via its `.palantir/.<service>-discovery.json` file.
  *
- * Keep this list in sync with the URLs constructed in
- * `src/public/smartClient.ts`.
+ * `index.test.ts` cross-references this list against the literal URLs in
+ * `src/public/smartClient.ts` to catch drift.
  */
-const PROXY_ROUTES: ReadonlyArray<{
+export const PROXY_ROUTES: ReadonlyArray<{
   prefix: string;
   service: DiscoveryService;
   /** Strip the prefix before forwarding. */
@@ -75,7 +75,11 @@ export function smartClientPlugin(): Plugin {
       const root = userConfig.root ?? process.cwd();
       const superrepoRoot = findSuperrepoRoot(root);
       if (!superrepoRoot) {
-        throw new Error("Running outside a SuperRepo");
+        pendingWarnings.push(
+          "running outside a SuperRepo (no `foundry.yml` ancestor found "
+            + `from ${root}); proxy routes will not be installed.`,
+        );
+        return undefined;
       }
 
       const proxy: Record<string, ProxyOptions> = {};
@@ -95,16 +99,15 @@ export function smartClientPlugin(): Plugin {
           case "missing":
             pendingWarnings.push(
               `no live discovery for ${route.service} under ${palantirDir}. `
-                + `Run \`foundry start ${route.service}\` and restart the dev `
-                + `server to wire up the proxy.`,
+                + `Run \`foundry start ${route.service}\` and the dev server `
+                + `will pick it up automatically.`,
             );
             break;
           case "stale":
             pendingWarnings.push(
               `discovery for ${route.service} is stale (recorded PID `
                 + `${read.pid} is no longer running). Restart `
-                + `\`foundry start ${route.service}\`, then restart the dev `
-                + `server.`,
+                + `\`foundry start ${route.service}\`.`,
             );
             break;
           case "malformed":
@@ -140,34 +143,47 @@ export function smartClientPlugin(): Plugin {
       if (!superrepoRoot) return;
 
       const palantirDir = path.join(superrepoRoot, ".palantir");
-      const watchedFiles = new Set(
-        PROXY_ROUTES.map((r) => `.${r.service}-discovery.json`),
+      const expectedFiles = PROXY_ROUTES.map((r) =>
+        path.join(palantirDir, `.${r.service}-discovery.json`)
       );
+      const expectedFileSet = new Set(expectedFiles);
 
       let restartTimer: ReturnType<typeof setTimeout> | undefined;
-      const scheduleRestart = () => {
+      const scheduleRestart = (): void => {
         if (restartTimer) clearTimeout(restartTimer);
-        // Coalesce inotify/FSEvents bursts (rename+write commonly emits
-        // multiple events for a single discovery file update).
+        // Coalesce rename+write bursts that commonly emit multiple events
+        // for a single discovery file update.
         restartTimer = setTimeout(() => {
           restartTimer = undefined;
           void server.restart();
         }, 100);
       };
 
-      // foundry-cli creates `.palantir` lazily on the first `foundry start`.
-      // Pre-create an empty dir so the watcher can attach immediately and
-      // pick up the first discovery file the moment it lands.
-      fs.mkdirSync(palantirDir, { recursive: true });
+      const onPathChange = (file: string): void => {
+        if (expectedFileSet.has(file)) scheduleRestart();
+      };
 
-      const watcher = fs.watch(palantirDir, (_event, filename) => {
-        if (filename != null && watchedFiles.has(filename)) scheduleRestart();
-      });
+      server.watcher.add(expectedFiles);
+      server.watcher.on("add", onPathChange);
+      server.watcher.on("change", onPathChange);
+      server.watcher.on("unlink", onPathChange);
 
-      server.httpServer?.once("close", () => {
+      const cleanup = (): void => {
         if (restartTimer) clearTimeout(restartTimer);
-        watcher.close();
-      });
+        server.watcher.off("add", onPathChange);
+        server.watcher.off("change", onPathChange);
+        server.watcher.off("unlink", onPathChange);
+      };
+
+      if (server.httpServer) {
+        server.httpServer.once("close", cleanup);
+      } else {
+        // Middleware mode: there's no httpServer to hook into and Vite
+        // exposes no plugin teardown for it. Fall back to process signals
+        // so we at least don't leak the timer when the host process exits.
+        process.once("SIGINT", cleanup);
+        process.once("SIGTERM", cleanup);
+      }
     },
 
     transform(code, id) {
