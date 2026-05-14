@@ -22,6 +22,7 @@ import { isEmptyValue } from "../../utils/filterValues.js";
 import { useFilterListBoundary } from "../FilterListBoundaryContext.js";
 import { createRenderValueFilter } from "./comboboxFilter.js";
 import { NoValueLabel } from "./NoValueLabel.js";
+import { SelectInputSkeleton } from "./SelectInputSkeleton.js";
 import sharedStyles from "./shared.module.css";
 import styles from "./SingleSelectInput.module.css";
 import { useStableData } from "./useStableData.js";
@@ -103,6 +104,8 @@ function SingleSelectInputInner({
     [countByValue, showCounts, renderValue],
   );
 
+  const isNoData = !error && stableValues.length === 0;
+
   return (
     <div
       className={classnames(styles.singleSelect, className)}
@@ -115,10 +118,9 @@ function SingleSelectInputInner({
         </div>
       )}
 
-      {!error && stableValues.length === 0 && (
-        <div className={sharedStyles.emptyMessage}>
-          {isLoading ? "Loading options..." : "No options available"}
-        </div>
+      {isNoData && isLoading && <SelectInputSkeleton />}
+      {isNoData && !isLoading && (
+        <div className={sharedStyles.emptyMessage}>No options available</div>
       )}
 
       {stableValues.length > 0 && (

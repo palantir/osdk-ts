@@ -57,7 +57,7 @@ describe("MultiSelectInput stableData", () => {
     expect(screen.queryByText("Loading options...")).toBeNull();
   });
 
-  it("shows loading message on first load with no data", () => {
+  it("shows skeleton on first load with no data", () => {
     const { rerender } = render(
       <MultiSelectInput
         values={[]}
@@ -68,7 +68,8 @@ describe("MultiSelectInput stableData", () => {
       />,
     );
 
-    expect(screen.getByText("Loading options...")).toBeDefined();
+    expect(screen.queryByTestId("select-input-skeleton")).not.toBeNull();
+    expect(screen.queryByText("Loading options...")).toBeNull();
 
     rerender(
       <MultiSelectInput
@@ -81,7 +82,7 @@ describe("MultiSelectInput stableData", () => {
     );
 
     expect(screen.getByText("No options available")).toBeDefined();
-    expect(screen.queryByText("Loading options...")).toBeNull();
+    expect(screen.queryByTestId("select-input-skeleton")).toBeNull();
   });
 
   it("transitions to empty-state when refetch resolves to no data", () => {
@@ -138,7 +139,7 @@ describe("SingleSelectInput stableData", () => {
     expect(screen.queryByText("Loading options...")).toBeNull();
   });
 
-  it("shows loading message on first load with no data", () => {
+  it("shows skeleton on first load with no data", () => {
     const { rerender } = render(
       <SingleSelectInput
         values={[]}
@@ -149,7 +150,8 @@ describe("SingleSelectInput stableData", () => {
       />,
     );
 
-    expect(screen.getByText("Loading options...")).toBeDefined();
+    expect(screen.queryByTestId("select-input-skeleton")).not.toBeNull();
+    expect(screen.queryByText("Loading options...")).toBeNull();
 
     rerender(
       <SingleSelectInput
@@ -162,7 +164,7 @@ describe("SingleSelectInput stableData", () => {
     );
 
     expect(screen.getByText("No options available")).toBeDefined();
-    expect(screen.queryByText("Loading options...")).toBeNull();
+    expect(screen.queryByTestId("select-input-skeleton")).toBeNull();
   });
 
   it("transitions to empty-state when refetch resolves to no data", () => {

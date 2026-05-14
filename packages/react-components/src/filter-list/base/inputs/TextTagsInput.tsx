@@ -227,12 +227,6 @@ function TextTagsInputInner({
           </Combobox.Positioner>
         </Combobox.Portal>
       </Combobox.Root>
-
-      {isLoading && !!suggestionLimit && (
-        <div className={sharedStyles.loadingMessage}>
-          Loading suggestions...
-        </div>
-      )}
     </div>
   );
 }

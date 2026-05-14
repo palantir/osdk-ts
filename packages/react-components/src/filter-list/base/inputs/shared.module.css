@@ -15,7 +15,6 @@
  */
 
 /* Shared message styles for filter inputs */
-.loadingMessage,
 .errorMessage,
 .emptyMessage {
   font-family: var(--osdk-filter-message-font-family);
@@ -23,7 +22,6 @@
   padding: var(--osdk-filter-message-padding);
 }
 
-.loadingMessage,
 .emptyMessage {
   color: var(--osdk-filter-message-color-muted);
 }
