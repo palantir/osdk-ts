@@ -923,6 +923,110 @@ const filterDefinitions = [
   render: (args) => <WithRenderValueStory {...args} />,
 };
 
+const DEPARTMENT_SWATCHES: Record<string, string> = {
+  Marketing: "#f97316",
+  Operations: "#3b82f6",
+  Finance: "#10b981",
+  Product: "#a855f7",
+};
+
+const SWATCH_ROW_STYLE = {
+  display: "inline-flex",
+  alignItems: "center",
+  gap: 8,
+} as const;
+
+const SWATCH_DOT_BASE_STYLE = {
+  display: "inline-block",
+  width: 10,
+  height: 10,
+  borderRadius: "50%",
+  flexShrink: 0,
+} as const;
+
+function DepartmentSwatch({ value }: { value: string }) {
+  const color = DEPARTMENT_SWATCHES[value] ?? "#94a3b8";
+  return (
+    <span style={SWATCH_ROW_STYLE}>
+      <span style={{ ...SWATCH_DOT_BASE_STYLE, background: color }} />
+      <span>{DEPARTMENT_LABELS[value] ?? value}</span>
+    </span>
+  );
+}
+
+function WithRenderValueReactNodeStory(args: Partial<EmployeeFilterListProps>) {
+  const filterDefinitions = useMemo(
+    (): FilterDefinitionUnion<Employee>[] => [
+      {
+        type: "PROPERTY",
+        id: "department-swatch",
+        key: "department",
+        label: "Department (JSX)",
+        filterComponent: "LISTOGRAM",
+        filterState: { type: "EXACT_MATCH", values: [] },
+        renderValue: (value) => <DepartmentSwatch value={value} />,
+      },
+      {
+        type: "PROPERTY",
+        id: "team-link",
+        key: "team",
+        label: "Team (anchor JSX)",
+        filterComponent: "MULTI_SELECT",
+        filterState: { type: "SELECT", selectedValues: [] },
+        renderValue: (value) => (
+          <a
+            href={`#/team/${encodeURIComponent(value)}`}
+            onClick={(event) => event.preventDefault()}
+            style={{ color: "#2563eb", textDecoration: "underline" }}
+          >
+            {value}
+          </a>
+        ),
+      },
+    ],
+    [],
+  );
+
+  return (
+    <div style={SIDEBAR_STYLE}>
+      <FilterList
+        objectType={Employee}
+        filterDefinitions={filterDefinitions}
+        {...args}
+      />
+    </div>
+  );
+}
+
+export const WithRenderValueAsReactNode: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story: "`renderValue` may return any `ReactNode`, not just a string. "
+          + "Use this to render avatars, anchors, status pills, or any "
+          + "custom JSX inside listogram rows, dropdown items, and chips. "
+          + "When the function returns non-string JSX, search matching "
+          + "falls back to the raw value.",
+      },
+      source: {
+        code: `const filterDefinitions = [
+  {
+    type: "PROPERTY",
+    key: "department",
+    label: "Department",
+    filterComponent: "LISTOGRAM",
+    filterState: { type: "EXACT_MATCH", values: [] },
+    renderValue: (value) => <DepartmentSwatch value={value} />,
+  },
+];
+
+<FilterList objectType={Employee} filterDefinitions={filterDefinitions} />`,
+      },
+    },
+  },
+  render: (args) => <WithRenderValueReactNodeStory {...args} />,
+};
+
 function WithListogramDisplayModesStory(
   args: Partial<EmployeeFilterListProps>,
 ) {

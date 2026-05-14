@@ -18,6 +18,7 @@ import { cleanup, render, screen } from "@testing-library/react";
 import React from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { PropertyAggregationValue } from "../../../types/AggregationTypes.js";
+import { createRenderValueFilter } from "../comboboxFilter.js";
 import { ListogramInput } from "../ListogramInput.js";
 import { MultiSelectInput } from "../MultiSelectInput.js";
 import { SingleSelectInput } from "../SingleSelectInput.js";
@@ -159,11 +160,104 @@ describe("MultiSelectInput renderValue", () => {
   });
 });
 
+describe("ListogramInput renderValue (ReactNode)", () => {
+  const renderValueAsNode = (value: string): React.ReactNode => (
+    <a href={`/user/${value}`} data-testid={`anchor-${value}`}>
+      {LABELS[value] ?? value}
+    </a>
+  );
+
+  it("renders JSX returned from renderValue", () => {
+    render(
+      <ListogramInput
+        values={mockValues}
+        maxCount={7}
+        isLoading={false}
+        error={null}
+        selectedValues={[]}
+        onChange={vi.fn()}
+        renderValue={renderValueAsNode}
+      />,
+    );
+
+    expect(screen.getByTestId("anchor-abc-123")).toBeDefined();
+    expect(screen.getByText("Alice Smith")).toBeDefined();
+  });
+
+  it("falls back to raw value for search when renderValue returns JSX", () => {
+    render(
+      <ListogramInput
+        values={mockValues}
+        maxCount={7}
+        isLoading={false}
+        error={null}
+        selectedValues={[]}
+        onChange={vi.fn()}
+        renderValue={renderValueAsNode}
+        searchQuery="abc"
+      />,
+    );
+
+    expect(screen.getByTestId("anchor-abc-123")).toBeDefined();
+    expect(screen.queryByTestId("anchor-def-456")).toBeNull();
+  });
+});
+
+describe("MultiSelectInput renderValue (ReactNode)", () => {
+  it("renders JSX returned from renderValue inside a selected chip", () => {
+    const renderValueAsNode = (value: string): React.ReactNode => (
+      <a href={`/user/${value}`} data-testid={`chip-anchor-${value}`}>
+        {LABELS[value] ?? value}
+      </a>
+    );
+
+    render(
+      <MultiSelectInput
+        values={mockValues}
+        isLoading={false}
+        error={null}
+        selectedValues={["abc-123"]}
+        onChange={vi.fn()}
+        renderValue={renderValueAsNode}
+      />,
+    );
+
+    expect(screen.getByTestId("chip-anchor-abc-123")).toBeDefined();
+    expect(screen.getByText("Alice Smith")).toBeDefined();
+  });
+});
+
+describe("createRenderValueFilter", () => {
+  // Covers the search-fallback behavior shared by MultiSelectInput and
+  // SingleSelectInput's `comboboxFilter`. Dropdown items live in a Combobox
+  // portal that jsdom can't mount, so the filter is tested directly.
+
+  it("matches against the rendered string when renderValue returns a string", () => {
+    const filter = createRenderValueFilter(
+      (value) => LABELS[value] ?? value,
+    );
+
+    expect(filter("abc-123", "alice")).toBe(true);
+    expect(filter("def-456", "alice")).toBe(false);
+  });
+
+  it("falls back to the raw value when renderValue returns JSX", () => {
+    const filter = createRenderValueFilter(
+      (value) => <a href={`/user/${value}`}>{LABELS[value] ?? value}</a>,
+    );
+
+    expect(filter("abc-123", "abc")).toBe(true);
+    expect(filter("abc-123", "alice")).toBe(false);
+  });
+});
+
 describe("SingleSelectInput renderValue", () => {
   // SingleSelectInput renders dropdown items inside a Combobox portal
   // which only mounts when opened — not testable in jsdom without
-  // full browser event sequences. These tests verify the component
-  // accepts the prop and renders without errors.
+  // full browser event sequences. Filter behavior (including the
+  // ReactNode fallback) is covered by the `createRenderValueFilter`
+  // tests above. These tests verify the component accepts the prop
+  // and renders without errors.
 
   it("mounts with renderValue without error", () => {
     const { container } = render(

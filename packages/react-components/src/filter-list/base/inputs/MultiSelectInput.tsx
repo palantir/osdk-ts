@@ -20,6 +20,7 @@ import { Combobox } from "../../../base-components/combobox/Combobox.js";
 import type { PropertyAggregationValue } from "../../types/AggregationTypes.js";
 import { isEmptyValue } from "../../utils/filterValues.js";
 import { useFilterListBoundary } from "../FilterListBoundaryContext.js";
+import { createRenderValueFilter } from "./comboboxFilter.js";
 import { MultiSelectDropdownLayout } from "./MultiSelectDropdownLayout.js";
 import { MultiSelectInlineLayout } from "./MultiSelectInlineLayout.js";
 import styles from "./MultiSelectInput.module.css";
@@ -48,7 +49,7 @@ interface MultiSelectInputProps {
   placeholder?: string;
   showCounts?: boolean;
   ariaLabel?: string;
-  renderValue?: (value: string) => string;
+  renderValue?: (value: string) => React.ReactNode;
   layout?: MultiSelectInputLayout;
 }
 
@@ -88,11 +89,7 @@ function MultiSelectInputInner({
   );
 
   const comboboxFilter = useMemo(
-    () =>
-      renderValue
-        ? (itemValue: string, query: string) =>
-          renderValue(itemValue).toLowerCase().includes(query.toLowerCase())
-        : undefined,
+    () => renderValue ? createRenderValueFilter(renderValue) : undefined,
     [renderValue],
   );
 
