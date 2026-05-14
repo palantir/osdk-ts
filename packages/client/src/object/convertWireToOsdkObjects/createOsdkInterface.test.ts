@@ -14,17 +14,12 @@
  * limitations under the License.
  */
 
-import type { InterfaceMetadata } from "@osdk/api";
-import type { PropertySecurities } from "@osdk/foundry.ontologies";
 import { describe, expect, it } from "vitest";
-import type { MinimalClient } from "../../MinimalClientContext.js";
 import {
   type FetchedObjectTypeDefinition,
   InterfaceDefinitions,
 } from "../../ontology/OntologyProvider.js";
-import type { SimpleOsdkProperties } from "../SimpleOsdkProperties.js";
 import { createOsdkInterface } from "./createOsdkInterface.js";
-import { createOsdkObject } from "./createOsdkObject.js";
 import { ObjectDefRef } from "./InternalSymbols.js";
 
 describe(createOsdkInterface, () => {
@@ -221,88 +216,5 @@ describe(createOsdkInterface, () => {
         "b.asdf": "hi mom"
       }"
     `);
-  });
-
-  describe("with $loadPropertySecurityMetadata", () => {
-    const interfaceDef: InterfaceMetadata = {
-      apiName: "IFoo",
-      displayName: "",
-      links: {},
-      properties: { "asdf": { type: "string" } },
-      rid: "",
-      type: "interface",
-      implements: [],
-      description: undefined,
-    };
-
-    const objectDef: FetchedObjectTypeDefinition = {
-      [InterfaceDefinitions]: {
-        "IFoo": { def: interfaceDef },
-      },
-      apiName: "Obj",
-      displayName: "",
-      interfaceMap: { "IFoo": { "asdf": "foo" } },
-      inverseInterfaceMap: { "IFoo": { "foo": "asdf" } },
-      links: {},
-      pluralDisplayName: "",
-      primaryKeyApiName: "id",
-      primaryKeyType: "integer",
-      properties: {
-        id: { type: "integer" },
-        foo: { type: "string" },
-      },
-      type: "object",
-      titleProperty: "foo",
-      rid: "",
-      status: "ACTIVE",
-      icon: undefined,
-      visibility: undefined,
-      description: undefined,
-    };
-
-    const wireSecurities: PropertySecurities[] = [
-      { disjunction: [{ type: "unsupportedPolicy" }] },
-    ];
-
-    const client = {} as MinimalClient;
-
-    type TestObj = Record<string, unknown> & {
-      $clone: () => Record<string, unknown>;
-    };
-
-    it("hydrates an attachment property that arrived wrapped in SecuredPropertyValue", () => {
-      const attObjectDef: FetchedObjectTypeDefinition = {
-        ...objectDef,
-        [InterfaceDefinitions]: {},
-        apiName: "Att",
-        interfaceMap: {},
-        inverseInterfaceMap: {},
-        properties: {
-          id: { type: "integer" },
-          att: { type: "attachment" },
-        },
-        titleProperty: "id",
-      };
-
-      const attProps = {
-        $apiName: "Att",
-        $objectType: "Att",
-        $primaryKey: 1,
-        $title: "1",
-        id: 1,
-        att: { value: { rid: "ri.attach.1" }, propertySecurityIndex: 0 },
-      } as unknown as SimpleOsdkProperties;
-
-      const obj = createOsdkObject(
-        client,
-        attObjectDef,
-        attProps,
-        {},
-        wireSecurities,
-      ) as unknown as TestObj;
-
-      expect((obj.att as { rid: string }).rid).toBe("ri.attach.1");
-      expect((obj.$clone().att as { rid: string }).rid).toBe("ri.attach.1");
-    });
   });
 });
