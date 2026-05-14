@@ -128,21 +128,45 @@ export function convertAction(
 
   const ontologyDefinition = getOntologyDefinition();
 
-  // Helper function to convert interface property values from API names to RIDs
+  // Helper function to convert interface property values from API names to RIDs.
+  // Handles two cases matching Java's convertInterfacePropertyLogicRuleValues:
+  // 1. Interface-defined properties (IDP): key matches propertiesV3 key
+  // 2. SPT-backed properties: key is the SPT's full apiName (may be namespaced)
   const convertInterfacePropertyValuesToRids = (
     interfacePropertyValues: Record<string, any>,
     allParentInterfaces: Array<InterfaceType>,
   ): Record<string, any> => {
     const result: Record<string, any> = {};
     for (const [apiName, value] of Object.entries(interfacePropertyValues)) {
+      // Case 1: Interface-defined property — key matches a propertiesV3 key
       const parentInterface = allParentInterfaces.find(maybeSourceParent =>
         maybeSourceParent.propertiesV3[apiName] !== undefined
-      )!;
-      const rid = ridGenerator.generateInterfacePropertyTypeRid(
-        apiName,
-        parentInterface.apiName,
       );
-      result[rid] = value;
+
+      if (parentInterface) {
+        const rid = ridGenerator.generateInterfacePropertyTypeRid(
+          apiName,
+          parentInterface.apiName,
+        );
+        result[rid] = value;
+      } else {
+        // Case 2: SPT-backed property — apiName is the SPT's full apiName.
+        // Look up existing SPT RID and convert to IPT RID by replacing
+        // the resource type (matching Java's getIptRidFromSptRid).
+        const sptReadableId = ReadableIdGenerator.getForSpt(apiName);
+        const sptRid = ridGenerator.getSharedPropertyTypeRids().get(
+          sptReadableId,
+        );
+        invariant(
+          sptRid,
+          `Could not find SPT RID for property "${apiName}" used in action logic rule`,
+        );
+        const iptRid = sptRid.replace(
+          "shared-property-type",
+          "interface-property-type",
+        );
+        result[iptRid] = value;
+      }
     }
     return result;
   };
