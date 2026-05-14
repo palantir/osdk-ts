@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-import type { Attachment, Media, Osdk, PropertyKeys } from "@osdk/api";
+import type {
+  Attachment,
+  Media,
+  Osdk,
+  PropertyKeys,
+  PropertySecurity,
+} from "@osdk/api";
 import {
   $ontologyRid,
   Employee,
@@ -24,6 +30,7 @@ import {
 import type {
   InterfacePropertyTypeImplementation,
   OntologyObjectV2,
+  PropertySecurities,
 } from "@osdk/foundry.ontologies";
 import { createSharedClientContext } from "@osdk/shared.client.impl";
 import { LegacyFauxFoundry, startNodeApiServer } from "@osdk/shared.test";
@@ -1384,6 +1391,70 @@ describe("convertWireToOsdkObjects", () => {
           );
       });
     });
+  });
+
+  it("$as on an object loaded with $loadPropertySecurityMetadata produces the full interface view, threading $propertySecurities and the standard $* props", async () => {
+    const wireEmployee = {
+      __apiName: "Employee",
+      __primaryKey: 50031,
+      __title: "Jane Doe",
+      employeeId: 50031,
+      fullName: { value: "Jane Doe", propertySecurityIndex: 0 },
+      office: { value: "SEA", propertySecurityIndex: 0 },
+    } as unknown as OntologyObjectV2;
+
+    const wireSecurities: PropertySecurities[] = [
+      { disjunction: [{ type: "unsupportedPolicy" }] },
+    ];
+
+    const [holder] = await convertWireToOsdkObjects(
+      client[additionalContext],
+      [wireEmployee],
+      undefined,
+      false,
+      {},
+      wireSecurities,
+    ) as unknown as Osdk.Instance<Employee, "$propertySecurities">[];
+
+    const asFoo = holder.$as(FooInterface);
+
+    expectTypeOf(asFoo).toEqualTypeOf<
+      Osdk.Instance<
+        FooInterface,
+        "$propertySecurities",
+        "fooSpt" | "fooIdp",
+        {}
+      >
+    >();
+
+    expectTypeOf(asFoo.$propertySecurities).toEqualTypeOf<{
+      fooIdp: PropertySecurity[];
+      fooSpt: PropertySecurity[];
+    }>();
+
+    expect(asFoo).toMatchInlineSnapshot(`
+      {
+        "$apiName": "FooInterface",
+        "$objectSpecifier": "Employee:50031",
+        "$objectType": "Employee",
+        "$primaryKey": 50031,
+        "$propertySecurities": {
+          "fooIdp": [
+            {
+              "type": "unsupportedPolicy",
+            },
+          ],
+          "fooSpt": [
+            {
+              "type": "unsupportedPolicy",
+            },
+          ],
+        },
+        "$title": "Jane Doe",
+        "fooIdp": "SEA",
+        "fooSpt": "Jane Doe",
+      }
+    `);
   });
 });
 
