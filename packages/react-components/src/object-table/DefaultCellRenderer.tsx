@@ -92,6 +92,7 @@ export function renderDefaultCell<TData extends RowData>(
       cellId={cellId}
       dataType={columnMeta?.dataType}
       editFieldConfig={columnMeta?.editFieldConfig}
+      cellEdits={cellEdits}
       onCellEdit={meta.onCellEdit}
       onCellValidationError={meta.onCellValidationError}
       clearCellValidationError={meta.clearCellValidationError}
