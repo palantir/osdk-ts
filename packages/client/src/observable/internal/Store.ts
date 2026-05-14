@@ -39,7 +39,6 @@ import { AggregationsHelper } from "./aggregation/AggregationsHelper.js";
 import type { BatchContext } from "./BatchContext.js";
 import { DEBUG_ONLY__cacheKeyToString } from "./CacheKey.js";
 import { CacheKeys } from "./CacheKeys.js";
-import type { Canonical } from "./Canonical.js";
 import {
   type Changes,
   createChangedObjects,
@@ -66,6 +65,7 @@ import {
   RDP_CONFIG_IDX as OBJECT_RDP_CONFIG_IDX,
 } from "./object/ObjectCacheKey.js";
 import { ObjectCacheKeyRegistry } from "./object/ObjectCacheKeyRegistry.js";
+import type { ObjectCacheRdpKey } from "./object/ObjectCacheRdpKey.js";
 import { ObjectsHelper } from "./object/ObjectsHelper.js";
 import { ObjectSetHelper } from "./objectset/ObjectSetHelper.js";
 import { ObjectSetArrayCanonicalizer } from "./ObjectSetArrayCanonicalizer.js";
@@ -73,7 +73,7 @@ import { type OptimisticId } from "./OptimisticId.js";
 import { OrderByCanonicalizer } from "./OrderByCanonicalizer.js";
 import { PivotCanonicalizer } from "./PivotCanonicalizer.js";
 import { Queries } from "./Queries.js";
-import { type Rdp, RdpCanonicalizer } from "./RdpCanonicalizer.js";
+import { RdpCanonicalizer } from "./RdpCanonicalizer.js";
 import { RidListCanonicalizer } from "./RidListCanonicalizer.js";
 import { SelectCanonicalizer } from "./SelectCanonicalizer.js";
 import type { Subjects } from "./Subjects.js";
@@ -505,7 +505,7 @@ export class Store {
    */
   #getQueryRdpConfig(
     cacheKey: KnownCacheKey,
-  ): Canonical<Rdp> | null | undefined {
+  ): ObjectCacheRdpKey | null | undefined {
     if ("otherKeys" in cacheKey && Array.isArray(cacheKey.otherKeys)) {
       if (cacheKey.type === "object") {
         return cacheKey.otherKeys[OBJECT_RDP_CONFIG_IDX];
@@ -516,7 +516,7 @@ export class Store {
       } else if (cacheKey.type === "objectSet") {
         const query = this.queries.peek(cacheKey);
         if (query) {
-          return query.rdpConfig;
+          return query.rdpCacheKey;
         }
       } else if (cacheKey.type === "mediaMetadata") {
         return undefined;
