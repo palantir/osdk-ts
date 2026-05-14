@@ -15,6 +15,8 @@ function PeopleApp() {
     ? "form"
     : path === "/aip-agent-chat"
     ? "aip-agent-chat"
+    : path === "/kanban"
+    ? "kanban"
     : "offices";
 
   return (
@@ -56,6 +58,13 @@ function PeopleApp() {
           onClick={() => navigate("/aip-agent-chat")}
         >
           AipAgentChat
+        </Button>
+        <Button
+          variant="tab"
+          active={activeTab === "kanban"}
+          onClick={() => navigate("/kanban")}
+        >
+          Kanban
         </Button>
       </div>
 

@@ -30,6 +30,7 @@ Complete reference of all CSS custom properties (variables) used in `@osdk/react
   - [Form](#form)
   - [Input](#input)
   - [Markdown Renderer](#markdown-renderer)
+  - [Object Kanban](#object-kanban)
   - [Object Set](#object-set)
   - [PDF Viewer](#pdf-viewer)
   - [Radio](#radio)
@@ -1052,6 +1053,67 @@ Styling for markdown renderer components.
 | `--osdk-markdown-renderer-blockquote-border`         | `3px solid var(--osdk-intent-primary-rest)` | Blockquote border         |
 | `--osdk-markdown-renderer-link-color`                | `var(--osdk-intent-primary-rest)`           | Link color                |
 | `--osdk-markdown-renderer-table-border`              | `var(--osdk-surface-border-color)`          | Table border color        |
+
+### Object Kanban
+
+Styling for the `ObjectKanban` and `BaseObjectKanban` components.
+
+#### Container
+
+| Variable                          | Default Value                           | Description                         |
+| --------------------------------- | --------------------------------------- | ----------------------------------- |
+| `--osdk-object-kanban-padding`    | `calc(var(--osdk-surface-spacing) * 2)` | Outer padding around the column row |
+| `--osdk-object-kanban-gap`        | `calc(var(--osdk-surface-spacing) * 2)` | Horizontal gap between columns      |
+| `--osdk-object-kanban-background` | `var(--osdk-background-secondary)`      | Background behind the column row    |
+
+#### Column
+
+| Variable                                             | Default Value                       | Description                         |
+| ---------------------------------------------------- | ----------------------------------- | ----------------------------------- |
+| `--osdk-object-kanban-column-width`                  | `320px`                             | Fixed column width                  |
+| `--osdk-object-kanban-column-min-height`             | `200px`                             | Minimum column height               |
+| `--osdk-object-kanban-column-background`             | `var(--osdk-background-primary)`    | Default column background           |
+| `--osdk-object-kanban-column-background-readonly`    | `var(--osdk-background-tertiary)`   | Background for `readOnly` columns   |
+| `--osdk-object-kanban-column-background-drop-active` | tinted primary mix                  | Highlight when a drop is hovering   |
+| `--osdk-object-kanban-column-border`                 | `var(--osdk-surface-border)`        | Column outer border                 |
+| `--osdk-object-kanban-column-border-drop-active`     | dashed primary border               | Outline shown when accepting a drop |
+| `--osdk-object-kanban-column-border-radius`          | `var(--osdk-surface-border-radius)` | Column corner radius                |
+
+#### Column header
+
+| Variable                                         | Default Value                             | Description                 |
+| ------------------------------------------------ | ----------------------------------------- | --------------------------- |
+| `--osdk-object-kanban-column-header-padding`     | `calc(var(--osdk-surface-spacing) * 1.5)` | Header padding              |
+| `--osdk-object-kanban-column-header-gap`         | `var(--osdk-surface-spacing)`             | Gap between title and count |
+| `--osdk-object-kanban-column-header-font-weight` | `var(--osdk-typography-weight-bold)`      | Header font weight          |
+| `--osdk-object-kanban-column-header-font-size`   | `var(--osdk-typography-size-body-small)`  | Header font size            |
+| `--osdk-object-kanban-column-header-color`       | `var(--osdk-typography-color-muted)`      | Header text color           |
+| `--osdk-object-kanban-column-header-count-color` | `var(--osdk-typography-color-muted)`      | Count text color            |
+
+#### Column body
+
+| Variable                                   | Default Value                 | Description                  |
+| ------------------------------------------ | ----------------------------- | ---------------------------- |
+| `--osdk-object-kanban-column-body-padding` | `var(--osdk-surface-spacing)` | Padding around the card list |
+| `--osdk-object-kanban-column-body-gap`     | `var(--osdk-surface-spacing)` | Vertical gap between cards   |
+
+#### Card
+
+| Variable                                      | Default Value                               | Description                           |
+| --------------------------------------------- | ------------------------------------------- | ------------------------------------- |
+| `--osdk-object-kanban-card-background`        | `var(--osdk-background-primary)`            | Card background                       |
+| `--osdk-object-kanban-card-border`            | `var(--osdk-surface-border)`                | Card border                           |
+| `--osdk-object-kanban-card-border-radius`     | `var(--osdk-surface-border-radius)`         | Card corner radius                    |
+| `--osdk-object-kanban-card-padding`           | `calc(var(--osdk-surface-spacing) * 1.5)`   | Card inner padding                    |
+| `--osdk-object-kanban-card-gap`               | `calc(var(--osdk-surface-spacing) * 0.5)`   | Vertical gap inside a card            |
+| `--osdk-object-kanban-card-title-font-weight` | `var(--osdk-typography-weight-bold)`        | Card title font weight                |
+| `--osdk-object-kanban-card-title-color`       | `var(--osdk-typography-color-default-rest)` | Card title color                      |
+| `--osdk-object-kanban-card-body-color`        | `var(--osdk-typography-color-muted)`        | Card body color                       |
+| `--osdk-object-kanban-card-body-font-size`    | `var(--osdk-typography-size-body-small)`    | Card body font size                   |
+| `--osdk-object-kanban-card-border-selected`   | solid primary border                        | Border for the selected card          |
+| `--osdk-object-kanban-card-shadow-selected`   | translucent primary shadow                  | Shadow for the selected card          |
+| `--osdk-object-kanban-card-shadow-dragging`   | drop shadow                                 | Shadow on the drag-overlay clone      |
+| `--osdk-object-kanban-card-opacity-dragging`  | `0.4`                                       | Opacity of the source card while held |
 
 ### Object Set
 

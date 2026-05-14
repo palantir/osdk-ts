@@ -380,6 +380,7 @@ const archetypeRules = archetypes(
         "./experimental/aip-agent-chat",
         "./experimental/filter-list",
         "./experimental/markdown-renderer",
+        "./experimental/object-kanban",
         "./experimental/object-table",
         "./experimental/pdf-viewer",
         "./experimental/tiff-renderer",

@@ -1,0 +1,89 @@
+.column {
+  display: flex;
+  flex-direction: column;
+  flex: 0 0 auto;
+  width: var(--osdk-object-kanban-column-width);
+  min-height: var(--osdk-object-kanban-column-min-height);
+  max-height: 100%;
+  background: var(--osdk-object-kanban-column-background);
+  border: var(--osdk-object-kanban-column-border);
+  border-radius: var(--osdk-object-kanban-column-border-radius);
+  transition: background-color var(--osdk-emphasis-transition-duration)
+    var(--osdk-emphasis-ease-default);
+  overflow: hidden;
+}
+
+.columnReadOnly {
+  background: var(--osdk-object-kanban-column-background-readonly);
+}
+
+.columnDropActive {
+  background: var(--osdk-object-kanban-column-background-drop-active);
+  outline: var(--osdk-object-kanban-column-border-drop-active);
+  outline-offset: calc(var(--osdk-surface-border-width) * -1);
+}
+
+.header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--osdk-object-kanban-column-header-gap);
+  padding: var(--osdk-object-kanban-column-header-padding);
+  border-bottom: var(--osdk-object-kanban-column-border);
+  font-weight: var(--osdk-object-kanban-column-header-font-weight);
+  font-size: var(--osdk-object-kanban-column-header-font-size);
+  color: var(--osdk-object-kanban-column-header-color);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  flex-shrink: 0;
+}
+
+.headerTitle {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.headerCount {
+  flex: 0 0 auto;
+  color: var(--osdk-object-kanban-column-header-count-color);
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--osdk-object-kanban-column-body-gap);
+  padding: var(--osdk-object-kanban-column-body-padding);
+  overflow-y: auto;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.emptyState {
+  padding: calc(var(--osdk-surface-spacing) * 2);
+  text-align: center;
+  color: var(--osdk-typography-color-muted);
+  font-size: var(--osdk-typography-size-body-small);
+}
+
+.errorState {
+  padding: calc(var(--osdk-surface-spacing) * 2);
+  color: var(--osdk-intent-danger-rest);
+  font-size: var(--osdk-typography-size-body-small);
+}
+
+.skeletonCard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--osdk-object-kanban-card-gap);
+  padding: var(--osdk-object-kanban-card-padding);
+  border: var(--osdk-object-kanban-card-border);
+  border-radius: var(--osdk-object-kanban-card-border-radius);
+}
+
+.skeletonLine {
+  height: var(--osdk-typography-size-body-medium);
+}

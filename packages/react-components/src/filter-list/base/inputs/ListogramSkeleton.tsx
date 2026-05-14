@@ -30,18 +30,11 @@ export function ListogramSkeleton(): React.ReactElement {
       {SKELETON_ROWS.map((row, index) => (
         <div key={index} className={styles.row}>
           <SkeletonBar
-            height="var(--osdk-filter-skeleton-text-height)"
             maxWidth={row.textWidth}
             className={styles.flexBar}
           />
-          <SkeletonBar
-            width="var(--osdk-filter-listogram-bar-width)"
-            height="var(--osdk-filter-listogram-bar-height)"
-          />
-          <SkeletonBar
-            width="var(--osdk-filter-skeleton-count-width)"
-            height="var(--osdk-filter-skeleton-text-height)"
-          />
+          <SkeletonBar className={styles.listogramBar} />
+          <SkeletonBar className={styles.countBar} />
         </div>
       ))}
     </div>

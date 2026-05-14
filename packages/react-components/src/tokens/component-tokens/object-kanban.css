@@ -1,0 +1,76 @@
+:root {
+  /* Outer container */
+  --osdk-object-kanban-padding: calc(var(--osdk-surface-spacing) * 2);
+  --osdk-object-kanban-gap: calc(var(--osdk-surface-spacing) * 2);
+  --osdk-object-kanban-background: var(--osdk-background-secondary);
+
+  /* Column */
+  --osdk-object-kanban-column-width: 320px;
+  --osdk-object-kanban-column-min-height: 200px;
+  --osdk-object-kanban-column-background: var(--osdk-background-primary);
+  --osdk-object-kanban-column-border: var(--osdk-surface-border);
+  --osdk-object-kanban-column-border-radius: var(--osdk-surface-border-radius);
+
+  /* Column header */
+  --osdk-object-kanban-column-header-padding: calc(
+    var(--osdk-surface-spacing) * 1.5
+  );
+  --osdk-object-kanban-column-header-gap: var(--osdk-surface-spacing);
+  --osdk-object-kanban-column-header-font-weight: var(
+    --osdk-typography-weight-bold
+  );
+  --osdk-object-kanban-column-header-font-size: var(
+    --osdk-typography-size-body-small
+  );
+  --osdk-object-kanban-column-header-color: var(--osdk-typography-color-muted);
+  --osdk-object-kanban-column-header-count-color: var(
+    --osdk-typography-color-muted
+  );
+
+  /* Column body */
+  --osdk-object-kanban-column-body-padding: var(--osdk-surface-spacing);
+  --osdk-object-kanban-column-body-gap: var(--osdk-surface-spacing);
+
+  /* Card */
+  --osdk-object-kanban-card-background: var(--osdk-background-primary);
+  --osdk-object-kanban-card-border: var(--osdk-surface-border);
+  --osdk-object-kanban-card-border-radius: var(--osdk-surface-border-radius);
+  --osdk-object-kanban-card-padding: calc(var(--osdk-surface-spacing) * 1.5);
+  --osdk-object-kanban-card-gap: calc(var(--osdk-surface-spacing) * 0.5);
+  --osdk-object-kanban-card-title-font-weight: var(
+    --osdk-typography-weight-bold
+  );
+  --osdk-object-kanban-card-title-color: var(
+    --osdk-typography-color-default-rest
+  );
+  --osdk-object-kanban-card-body-color: var(--osdk-typography-color-muted);
+  --osdk-object-kanban-card-body-font-size: var(
+    --osdk-typography-size-body-small
+  );
+
+  /* Selected card */
+  --osdk-object-kanban-card-border-selected: var(--osdk-surface-border-width)
+    solid var(--osdk-intent-primary-rest);
+  --osdk-object-kanban-card-shadow-selected: 0 0 0 2px
+    color-mix(in srgb, var(--osdk-intent-primary-rest) 20%, transparent);
+
+  /* Drop target highlight (a column accepting a drop) */
+  --osdk-object-kanban-column-background-drop-active: color-mix(
+    in srgb,
+    var(--osdk-intent-primary-rest) 8%,
+    var(--osdk-object-kanban-column-background)
+  );
+  --osdk-object-kanban-column-border-drop-active: var(
+    --osdk-surface-border-width
+  ) dashed var(--osdk-intent-primary-rest);
+
+  /* Read-only column (cannot accept drops) */
+  --osdk-object-kanban-column-background-readonly: var(
+    --osdk-background-tertiary
+  );
+
+  /* Dragging card */
+  --osdk-object-kanban-card-shadow-dragging: 0 8px 24px
+    color-mix(in srgb, var(--osdk-palette-black) 20%, transparent);
+  --osdk-object-kanban-card-opacity-dragging: 0.4;
+}

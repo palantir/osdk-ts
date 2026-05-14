@@ -1,0 +1,50 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--osdk-object-kanban-card-gap);
+  padding: var(--osdk-object-kanban-card-padding);
+  background: var(--osdk-object-kanban-card-background);
+  border: var(--osdk-object-kanban-card-border);
+  border-radius: var(--osdk-object-kanban-card-border-radius);
+  cursor: var(--osdk-drag-handle-cursor);
+  user-select: none;
+  transition: box-shadow var(--osdk-emphasis-transition-duration)
+      var(--osdk-emphasis-ease-default),
+    border-color var(--osdk-emphasis-transition-duration)
+      var(--osdk-emphasis-ease-default);
+}
+
+.card:focus-visible {
+  outline: var(--osdk-focus-outline);
+  outline-offset: var(--osdk-focus-visible-outline-offset);
+}
+
+.cardSelected {
+  border: var(--osdk-object-kanban-card-border-selected);
+  box-shadow: var(--osdk-object-kanban-card-shadow-selected);
+}
+
+.cardDragging {
+  opacity: var(--osdk-object-kanban-card-opacity-dragging);
+  cursor: var(--osdk-drag-handle-cursor-active);
+}
+
+.cardOverlay {
+  box-shadow: var(--osdk-object-kanban-card-shadow-dragging);
+  cursor: var(--osdk-drag-handle-cursor-active);
+}
+
+.cardTitle {
+  font-weight: var(--osdk-object-kanban-card-title-font-weight);
+  font-size: var(--osdk-typography-size-body-medium);
+  color: var(--osdk-object-kanban-card-title-color);
+  line-height: var(--osdk-typography-line-height-default);
+  word-break: break-word;
+}
+
+.cardBody {
+  font-size: var(--osdk-object-kanban-card-body-font-size);
+  color: var(--osdk-object-kanban-card-body-color);
+  line-height: var(--osdk-typography-line-height-default);
+  word-break: break-word;
+}

@@ -25,6 +25,7 @@ const sidebars: SidebarsConfig = {
       collapsed: false,
       items: [
         "ObjectTable",
+        "ObjectKanban",
         "FilterList",
         "PdfViewer",
       ],
