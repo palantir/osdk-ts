@@ -16,7 +16,7 @@
 
 import { Error as ErrorIcon, Spin } from "@blueprintjs/icons";
 import type { Media } from "@osdk/api";
-import React, { useCallback } from "react";
+import React from "react";
 import { useMediaContents } from "../../shared/hooks/useMediaContents.js";
 import { TiffRenderer } from "./TiffRenderer.js";
 import styles from "./TiffRenderer.module.css";
@@ -45,7 +45,7 @@ export function TiffViewerMedia({
 }: TiffViewerMediaProps): React.ReactElement {
   const { data: content, loading, error } = useMediaContents(
     media,
-    useCallback(transformToUint8Array, []),
+    transformToUint8Array,
   );
 
   return (

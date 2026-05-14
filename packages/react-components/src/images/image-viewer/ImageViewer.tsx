@@ -16,7 +16,7 @@
 
 import { Error as ErrorIcon, Spin } from "@blueprintjs/icons";
 import classnames from "classnames";
-import React, { useCallback } from "react";
+import React from "react";
 import { useMediaContents } from "../../shared/hooks/useMediaContents.js";
 import { BaseImageViewer } from "./BaseImageViewer.js";
 import styles from "./BaseImageViewer.module.css";
@@ -38,8 +38,8 @@ export function ImageViewer({
 }: ImageViewerMediaProps): React.ReactElement {
   const { data: src, loading, error } = useMediaContents(
     media,
-    useCallback(transformToObjectUrl, []),
-    useCallback(cleanupObjectUrl, []),
+    transformToObjectUrl,
+    cleanupObjectUrl,
   );
 
   const rootClassName = classnames(styles.container, className);

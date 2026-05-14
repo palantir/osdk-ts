@@ -17,7 +17,7 @@
 import { Error as ErrorIcon, Spin } from "@blueprintjs/icons";
 import type { Media } from "@osdk/api";
 import classnames from "classnames";
-import React, { useCallback } from "react";
+import React from "react";
 import { useMediaContents } from "../shared/hooks/useMediaContents.js";
 import { MarkdownRenderer } from "./MarkdownRenderer.js";
 import type { MarkdownRendererProps } from "./MarkdownRenderer.js";
@@ -40,7 +40,7 @@ export function MarkdownViewerMedia({
 }: MarkdownViewerMediaProps): React.ReactElement {
   const { data: content, loading, error } = useMediaContents(
     media,
-    useCallback(transformToText, []),
+    transformToText,
   );
 
   const rootClassName = classnames(

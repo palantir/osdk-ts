@@ -80,6 +80,7 @@ const SheetTable: React.FunctionComponent<{ sheet: SheetData }> = React.memo(
     );
   },
 );
+SheetTable.displayName = "SheetTable";
 
 export function BaseExcelViewer({
   spreadsheet,

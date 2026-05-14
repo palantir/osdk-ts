@@ -16,7 +16,7 @@
 
 import { Error as ErrorIcon, Spin } from "@blueprintjs/icons";
 import classnames from "classnames";
-import React, { useCallback, useMemo } from "react";
+import React, { useMemo } from "react";
 import { useMediaContents } from "../shared/hooks/useMediaContents.js";
 import { BaseVideoViewer } from "./BaseVideoViewer.js";
 import styles from "./BaseVideoViewer.module.css";
@@ -38,8 +38,8 @@ export function VideoViewer({
 }: VideoViewerMediaProps): React.ReactElement {
   const { data: src, loading, error } = useMediaContents(
     media,
-    useCallback(transformToObjectUrl, []),
-    useCallback(cleanupObjectUrl, []),
+    transformToObjectUrl,
+    cleanupObjectUrl,
   );
 
   const mimeType = useMemo(

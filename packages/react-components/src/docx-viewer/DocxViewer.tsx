@@ -16,7 +16,7 @@
 
 import { Error as ErrorIcon, Spin } from "@blueprintjs/icons";
 import classnames from "classnames";
-import React, { useCallback } from "react";
+import React from "react";
 import { useMediaContents } from "../shared/hooks/useMediaContents.js";
 import { BaseDocxViewer } from "./BaseDocxViewer.js";
 import styles from "./BaseDocxViewer.module.css";
@@ -35,7 +35,7 @@ export function DocxViewer({
 }: DocxViewerMediaProps): React.ReactElement {
   const { data: src, loading, error } = useMediaContents(
     media,
-    useCallback(transformToArrayBuffer, []),
+    transformToArrayBuffer,
   );
 
   const rootClassName = classnames(styles.container, className);

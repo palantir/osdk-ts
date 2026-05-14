@@ -46,23 +46,29 @@ export interface DocumentViewerProps {
   /** Override the auto-detected MIME type */
   mimeTypeOverride?: string;
   /** Props forwarded to BasePdfViewer when rendering PDF */
-  pdfViewerProps?: Partial<Omit<PdfViewerProps, "src">>;
+  pdfViewerProps?: Partial<Omit<PdfViewerProps, "src" | "className">>;
   /** Props forwarded to BaseImageViewer when rendering images */
-  imageViewerProps?: Partial<Omit<BaseImageViewerProps, "src">>;
+  imageViewerProps?: Partial<Omit<BaseImageViewerProps, "src" | "className">>;
   /** Props forwarded to BaseVideoViewer when rendering video */
-  videoViewerProps?: Partial<Omit<BaseVideoViewerProps, "src">>;
+  videoViewerProps?: Partial<Omit<BaseVideoViewerProps, "src" | "className">>;
   /** Props forwarded to TiffRenderer when rendering TIFF */
-  tiffRendererProps?: Partial<Omit<TiffRendererProps, "content">>;
+  tiffRendererProps?: Partial<Omit<TiffRendererProps, "content" | "className">>;
   /** Props forwarded to MarkdownRenderer when rendering markdown */
-  markdownRendererProps?: Partial<Omit<MarkdownRendererProps, "content">>;
+  markdownRendererProps?: Partial<
+    Omit<MarkdownRendererProps, "content" | "className">
+  >;
   /** Props forwarded to BaseDocxViewer when rendering DOCX */
-  docxViewerProps?: Partial<Omit<BaseDocxViewerProps, "src">>;
+  docxViewerProps?: Partial<Omit<BaseDocxViewerProps, "src" | "className">>;
   /** Props forwarded to BaseExcelViewer when rendering Excel */
-  excelViewerProps?: Partial<Omit<BaseExcelViewerProps, "spreadsheet">>;
+  excelViewerProps?: Partial<
+    Omit<BaseExcelViewerProps, "spreadsheet" | "className">
+  >;
   /** Props forwarded to BaseEmailViewer when rendering EML */
-  emailViewerProps?: Partial<Omit<BaseEmailViewerProps, "email">>;
+  emailViewerProps?: Partial<Omit<BaseEmailViewerProps, "email" | "className">>;
   /** Props forwarded to BaseXmlViewer when rendering XML */
-  xmlViewerProps?: Partial<Omit<BaseXmlViewerProps, "content">>;
+  xmlViewerProps?: Partial<
+    Omit<BaseXmlViewerProps, "content" | "className">
+  >;
   /** File name hint for MIME type detection (e.g. "scan.tif"). Used to detect
    *  TIFF files when the MIME type is ambiguous (e.g. application/octet-stream). */
   fileName?: string;

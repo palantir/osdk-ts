@@ -16,7 +16,7 @@
 
 import { Error as ErrorIcon, Spin } from "@blueprintjs/icons";
 import classnames from "classnames";
-import React, { useCallback } from "react";
+import React from "react";
 import { useMediaContents } from "../shared/hooks/useMediaContents.js";
 import { BaseEmailViewer } from "./BaseEmailViewer.js";
 import styles from "./BaseEmailViewer.module.css";
@@ -30,7 +30,7 @@ export function EmailViewer({
 }: EmailViewerMediaProps): React.ReactElement {
   const { data: email, loading, error } = useMediaContents<ParsedEmail>(
     media,
-    useCallback(parseEmailFromResponse, []),
+    parseEmailFromResponse,
   );
 
   const rootClassName = classnames(styles.container, className);
