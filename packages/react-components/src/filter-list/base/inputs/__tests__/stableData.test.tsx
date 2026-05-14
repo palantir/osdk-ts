@@ -20,6 +20,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import type { PropertyAggregationValue } from "../../../types/AggregationTypes.js";
 import { MultiSelectInput } from "../MultiSelectInput.js";
 import { SingleSelectInput } from "../SingleSelectInput.js";
+import { TextTagsInput } from "../TextTagsInput.js";
 
 afterEach(cleanup);
 
@@ -190,5 +191,65 @@ describe("SingleSelectInput stableData", () => {
 
     expect(screen.getByText("No options available")).toBeDefined();
     expect(container.querySelector("input")).toBeNull();
+  });
+});
+
+describe("TextTagsInput stableData", () => {
+  it("shows skeleton on first load with no suggestions when suggestionLimit is set", () => {
+    const { rerender } = render(
+      <TextTagsInput
+        suggestions={[]}
+        isLoading={true}
+        error={null}
+        tags={[]}
+        onChange={vi.fn()}
+        suggestionLimit={10}
+      />,
+    );
+
+    expect(screen.queryByTestId("select-input-skeleton")).not.toBeNull();
+
+    rerender(
+      <TextTagsInput
+        suggestions={[{ value: "Engineering", count: 1 }]}
+        isLoading={false}
+        error={null}
+        tags={[]}
+        onChange={vi.fn()}
+        suggestionLimit={10}
+      />,
+    );
+
+    expect(screen.queryByTestId("select-input-skeleton")).toBeNull();
+  });
+
+  it("does not show skeleton when suggestionLimit is 0", () => {
+    render(
+      <TextTagsInput
+        suggestions={[]}
+        isLoading={true}
+        error={null}
+        tags={[]}
+        onChange={vi.fn()}
+        suggestionLimit={0}
+      />,
+    );
+
+    expect(screen.queryByTestId("select-input-skeleton")).toBeNull();
+  });
+
+  it("does not show skeleton when suggestions exist", () => {
+    render(
+      <TextTagsInput
+        suggestions={[{ value: "Engineering", count: 1 }]}
+        isLoading={true}
+        error={null}
+        tags={[]}
+        onChange={vi.fn()}
+        suggestionLimit={10}
+      />,
+    );
+
+    expect(screen.queryByTestId("select-input-skeleton")).toBeNull();
   });
 });

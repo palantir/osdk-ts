@@ -151,20 +151,21 @@ function MultiSelectInputInner({
       style={style}
       data-loading={isReloading}
     >
+      <span className={sharedStyles.srOnly} role="status">
+        {isLoading ? "Loading options" : ""}
+      </span>
+
       {error && (
         <div className={sharedStyles.errorMessage}>
           Error loading options: {error.message}
         </div>
       )}
 
-      {isNoData && (
-        isLoading
-          ? <SelectInputSkeleton />
-          : (
-            <div className={sharedStyles.emptyMessage}>
-              No options available
-            </div>
-          )
+      {isNoData && isLoading && <SelectInputSkeleton />}
+      {isNoData && !isLoading && (
+        <div className={sharedStyles.emptyMessage}>
+          No options available
+        </div>
       )}
 
       {stableValues.length > 0 && (
