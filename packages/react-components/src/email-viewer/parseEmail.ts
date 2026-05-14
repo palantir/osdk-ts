@@ -16,7 +16,7 @@
 
 import type { Address } from "postal-mime";
 import PostalMime from "postal-mime";
-import type { EmailAddress, ParsedEmail } from "./types.js";
+import type { EmailAddress, ParsedEmail } from "./EmailViewerApi.js";
 
 function extractAddresses(
   addresses: Address[] | undefined,

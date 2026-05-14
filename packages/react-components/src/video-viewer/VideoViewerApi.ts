@@ -16,16 +16,23 @@
 
 import type { Media } from "@osdk/api";
 
-export interface BaseXmlViewerProps {
-  /** XML text to render */
-  content: string;
-  /** Additional CSS class name for the root element */
+export interface BaseVideoViewerProps {
+  /** Object URL pointing to the video */
+  src: string;
+  /** MIME type for the <source> element (e.g. "video/mp4")
+   * @default undefined */
+  mimeType?: string;
+  /** Additional CSS class name for the root element
+   * @default undefined */
   className?: string;
+  /** Callback when the video fails to load
+   * @default undefined */
+  onError?: () => void;
 }
 
-export interface XmlViewerMediaProps
-  extends Omit<BaseXmlViewerProps, "content">
+export interface VideoViewerMediaProps
+  extends Omit<BaseVideoViewerProps, "src">
 {
-  /** The Media object to fetch XML contents from */
+  /** The Media object to fetch video contents from */
   media: Media;
 }

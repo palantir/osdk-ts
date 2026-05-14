@@ -17,7 +17,7 @@
 import classnames from "classnames";
 import React from "react";
 import styles from "./BaseXmlViewer.module.css";
-import type { BaseXmlViewerProps } from "./types.js";
+import type { BaseXmlViewerProps } from "./XmlViewerApi.js";
 
 export function BaseXmlViewer({
   content,

@@ -17,7 +17,7 @@
 import classnames from "classnames";
 import React from "react";
 import styles from "./BaseImageViewer.module.css";
-import type { BaseImageViewerProps } from "./types.js";
+import type { BaseImageViewerProps } from "./ImageViewerApi.js";
 
 export function BaseImageViewer({
   src,

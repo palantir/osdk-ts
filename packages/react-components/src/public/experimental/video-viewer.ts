@@ -19,7 +19,7 @@ export { BaseVideoViewer } from "../../video-viewer/BaseVideoViewer.js";
 export type {
   BaseVideoViewerProps,
   VideoViewerMediaProps,
-} from "../../video-viewer/types.js";
+} from "../../video-viewer/VideoViewerApi.js";
 
 // VideoViewer (Media wrapper)
 import { withOsdkMetrics } from "../../util/withOsdkMetrics.js";

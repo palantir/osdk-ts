@@ -20,8 +20,8 @@ import React from "react";
 import { useMediaContents } from "../shared/hooks/useMediaContents.js";
 import { BaseEmailViewer } from "./BaseEmailViewer.js";
 import styles from "./BaseEmailViewer.module.css";
+import type { EmailViewerMediaProps, ParsedEmail } from "./EmailViewerApi.js";
 import { parseEmailFromResponse } from "./parseEmail.js";
-import type { EmailViewerMediaProps, ParsedEmail } from "./types.js";
 
 export function EmailViewer({
   media,

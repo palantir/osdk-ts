@@ -15,15 +15,15 @@
  */
 
 import type { Media } from "@osdk/api";
-import type { BaseDocxViewerProps } from "../docx-viewer/types.js";
-import type { BaseEmailViewerProps } from "../email-viewer/types.js";
-import type { BaseExcelViewerProps } from "../excel-viewer/types.js";
-import type { BaseImageViewerProps } from "../images/image-viewer/types.js";
+import type { BaseDocxViewerProps } from "../docx-viewer/DocxViewerApi.js";
+import type { BaseEmailViewerProps } from "../email-viewer/EmailViewerApi.js";
+import type { BaseExcelViewerProps } from "../excel-viewer/ExcelViewerApi.js";
+import type { BaseImageViewerProps } from "../images/image-viewer/ImageViewerApi.js";
 import type { TiffRendererProps } from "../images/tiff-renderer/types.js";
 import type { MarkdownRendererProps } from "../markdown-renderer/MarkdownRenderer.js";
 import type { PdfViewerProps } from "../pdf-viewer/types.js";
-import type { BaseVideoViewerProps } from "../video-viewer/types.js";
-import type { BaseXmlViewerProps } from "../xml-viewer/types.js";
+import type { BaseVideoViewerProps } from "../video-viewer/VideoViewerApi.js";
+import type { BaseXmlViewerProps } from "../xml-viewer/XmlViewerApi.js";
 
 export enum ViewerType {
   Pdf = "pdf",
@@ -41,37 +41,50 @@ export enum ViewerType {
 export interface DocumentViewerProps {
   /** The Media object to render */
   media: Media;
-  /** Additional CSS class name for the root element */
+  /** Additional CSS class name for the root element
+   * @default undefined */
   className?: string;
-  /** Override the auto-detected MIME type */
+  /** Override the auto-detected MIME type
+   * @default undefined */
   mimeTypeOverride?: string;
-  /** Props forwarded to BasePdfViewer when rendering PDF */
+  /** Props forwarded to BasePdfViewer when rendering PDF
+   * @default undefined */
   pdfViewerProps?: Partial<Omit<PdfViewerProps, "src" | "className">>;
-  /** Props forwarded to BaseImageViewer when rendering images */
+  /** Props forwarded to BaseImageViewer when rendering images
+   * @default undefined */
   imageViewerProps?: Partial<Omit<BaseImageViewerProps, "src" | "className">>;
-  /** Props forwarded to BaseVideoViewer when rendering video */
+  /** Props forwarded to BaseVideoViewer when rendering video
+   * @default undefined */
   videoViewerProps?: Partial<Omit<BaseVideoViewerProps, "src" | "className">>;
-  /** Props forwarded to TiffRenderer when rendering TIFF */
+  /** Props forwarded to TiffRenderer when rendering TIFF
+   * @default undefined */
   tiffRendererProps?: Partial<Omit<TiffRendererProps, "content" | "className">>;
-  /** Props forwarded to MarkdownRenderer when rendering markdown */
+  /** Props forwarded to MarkdownRenderer when rendering markdown
+   * @default undefined */
   markdownRendererProps?: Partial<
     Omit<MarkdownRendererProps, "content" | "className">
   >;
-  /** Props forwarded to BaseDocxViewer when rendering DOCX */
+  /** Props forwarded to BaseDocxViewer when rendering DOCX
+   * @default undefined */
   docxViewerProps?: Partial<Omit<BaseDocxViewerProps, "src" | "className">>;
-  /** Props forwarded to BaseExcelViewer when rendering Excel */
+  /** Props forwarded to BaseExcelViewer when rendering Excel
+   * @default undefined */
   excelViewerProps?: Partial<
     Omit<BaseExcelViewerProps, "spreadsheet" | "className">
   >;
-  /** Props forwarded to BaseEmailViewer when rendering EML */
+  /** Props forwarded to BaseEmailViewer when rendering EML
+   * @default undefined */
   emailViewerProps?: Partial<Omit<BaseEmailViewerProps, "email" | "className">>;
-  /** Props forwarded to BaseXmlViewer when rendering XML */
+  /** Props forwarded to BaseXmlViewer when rendering XML
+   * @default undefined */
   xmlViewerProps?: Partial<
     Omit<BaseXmlViewerProps, "content" | "className">
   >;
   /** File name hint for MIME type detection (e.g. "scan.tif"). Used to detect
-   *  TIFF files when the MIME type is ambiguous (e.g. application/octet-stream). */
+   *  TIFF files when the MIME type is ambiguous (e.g. application/octet-stream).
+   * @default undefined */
   fileName?: string;
-  /** When true, multi-page TIFF files are converted to PDF via MIO transform API */
+  /** When true, multi-page TIFF files are converted to PDF via MIO transform API
+   * @default false */
   enableTiffToPdf?: boolean;
 }

@@ -16,20 +16,18 @@
 
 import type { Media } from "@osdk/api";
 
-export interface BaseVideoViewerProps {
-  /** Object URL pointing to the video */
-  src: string;
-  /** MIME type for the <source> element (e.g. "video/mp4") */
-  mimeType?: string;
-  /** Additional CSS class name for the root element */
+export interface BaseDocxViewerProps {
+  /** DOCX file contents as an ArrayBuffer */
+  src: ArrayBuffer;
+  /** Additional CSS class name for the root element
+   * @default undefined */
   className?: string;
-  /** Callback when the video fails to load */
+  /** Callback when rendering fails
+   * @default undefined */
   onError?: () => void;
 }
 
-export interface VideoViewerMediaProps
-  extends Omit<BaseVideoViewerProps, "src">
-{
-  /** The Media object to fetch video contents from */
+export interface DocxViewerMediaProps extends Omit<BaseDocxViewerProps, "src"> {
+  /** The Media object to fetch DOCX contents from */
   media: Media;
 }

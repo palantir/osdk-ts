@@ -21,7 +21,7 @@ import { __EXPERIMENTAL__NOT_SUPPORTED_YET__transformAndWait } from "@osdk/api/u
 import { useOsdkClient } from "@osdk/react";
 import { useEffect, useRef, useState } from "react";
 import * as UTIF from "utif";
-import { ViewerType } from "../types.js";
+import { ViewerType } from "../DocumentViewerApi.js";
 
 export interface UseTiffToPdfResult {
   /** Which viewer to use: Tiff for single-page, Pdf for multi-page */
@@ -121,7 +121,11 @@ export function useTiffToPdf(
 
     detectAndTransform().catch((err: unknown) => {
       if (!cancelled) {
-        // On any error, fall back to TiffRenderer
+        // eslint-disable-next-line no-console
+        console.warn(
+          "TIFF to PDF conversion failed, falling back to TIFF renderer:",
+          err,
+        );
         setResult({
           viewerType: ViewerType.Tiff,
           pdfData: undefined,

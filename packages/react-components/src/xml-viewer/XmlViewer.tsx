@@ -20,7 +20,7 @@ import React from "react";
 import { useMediaContents } from "../shared/hooks/useMediaContents.js";
 import { BaseXmlViewer } from "./BaseXmlViewer.js";
 import styles from "./BaseXmlViewer.module.css";
-import type { XmlViewerMediaProps } from "./types.js";
+import type { XmlViewerMediaProps } from "./XmlViewerApi.js";
 
 const transformToText = async (response: Response): Promise<string> => {
   return response.text();

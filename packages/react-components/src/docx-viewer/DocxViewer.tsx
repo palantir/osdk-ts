@@ -20,7 +20,7 @@ import React from "react";
 import { useMediaContents } from "../shared/hooks/useMediaContents.js";
 import { BaseDocxViewer } from "./BaseDocxViewer.js";
 import styles from "./BaseDocxViewer.module.css";
-import type { DocxViewerMediaProps } from "./types.js";
+import type { DocxViewerMediaProps } from "./DocxViewerApi.js";
 
 const transformToArrayBuffer = async (
   response: Response,

@@ -21,7 +21,7 @@ export type {
   ExcelViewerMediaProps,
   ParsedSpreadsheet,
   SheetData,
-} from "../../excel-viewer/types.js";
+} from "../../excel-viewer/ExcelViewerApi.js";
 
 // ExcelViewer (Media wrapper)
 import { ExcelViewer as _ExcelViewer } from "../../excel-viewer/ExcelViewer.js";

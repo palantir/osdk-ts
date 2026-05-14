@@ -26,12 +26,13 @@ import { ImageViewer } from "../images/image-viewer/ImageViewer.js";
 import { TiffViewerMedia } from "../images/tiff-renderer/TiffViewerMedia.js";
 import { MarkdownViewerMedia } from "../markdown-renderer/MarkdownViewerMedia.js";
 import { PdfViewer } from "../pdf-viewer/PdfRenderer.js";
+import { assertUnreachable } from "../shared/assertUnreachable.js";
 import { VideoViewer } from "../video-viewer/VideoViewer.js";
 import { XmlViewer } from "../xml-viewer/XmlViewer.js";
 import styles from "./DocumentViewer.module.css";
+import type { DocumentViewerProps } from "./DocumentViewerApi.js";
+import { ViewerType } from "./DocumentViewerApi.js";
 import { TiffDocumentViewer } from "./TiffDocumentViewer.js";
-import type { DocumentViewerProps } from "./types.js";
-import { ViewerType } from "./types.js";
 
 const IMAGE_MIME_TYPES = new Set([
   "image/png",
@@ -220,5 +221,7 @@ export function DocumentViewer({
           </div>
         </div>
       );
+    default:
+      assertUnreachable(viewerType);
   }
 }

@@ -16,28 +16,32 @@
 
 import type { Media } from "@osdk/api";
 
-export interface SheetData {
-  /** Sheet name */
+export interface EmailAddress {
   name: string;
-  /** Rows of cell values as strings */
-  rows: readonly (readonly string[])[];
+  address: string;
 }
 
-export interface ParsedSpreadsheet {
-  /** All sheets in the workbook */
-  sheets: readonly SheetData[];
+export interface ParsedEmail {
+  subject: string | undefined;
+  from: EmailAddress | undefined;
+  to: readonly EmailAddress[];
+  cc: readonly EmailAddress[];
+  date: string | undefined;
+  html: string | undefined;
+  text: string | undefined;
 }
 
-export interface BaseExcelViewerProps {
-  /** Parsed spreadsheet data */
-  spreadsheet: ParsedSpreadsheet;
-  /** Additional CSS class name for the root element */
+export interface BaseEmailViewerProps {
+  /** Parsed email data */
+  email: ParsedEmail;
+  /** Additional CSS class name for the root element
+   * @default undefined */
   className?: string;
 }
 
-export interface ExcelViewerMediaProps
-  extends Omit<BaseExcelViewerProps, "spreadsheet">
+export interface EmailViewerMediaProps
+  extends Omit<BaseEmailViewerProps, "email">
 {
-  /** The Media object to fetch Excel contents from */
+  /** The Media object to fetch EML contents from */
   media: Media;
 }

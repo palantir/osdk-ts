@@ -20,8 +20,11 @@ import React, { useCallback } from "react";
 import { useMediaContents } from "../shared/hooks/useMediaContents.js";
 import { BaseExcelViewer } from "./BaseExcelViewer.js";
 import styles from "./BaseExcelViewer.module.css";
+import type {
+  ExcelViewerMediaProps,
+  ParsedSpreadsheet,
+} from "./ExcelViewerApi.js";
 import { parseSpreadsheetFromResponse } from "./parseSpreadsheet.js";
-import type { ExcelViewerMediaProps, ParsedSpreadsheet } from "./types.js";
 
 export function ExcelViewer({
   media,

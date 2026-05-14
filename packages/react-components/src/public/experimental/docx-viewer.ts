@@ -19,7 +19,7 @@ export { BaseDocxViewer } from "../../docx-viewer/BaseDocxViewer.js";
 export type {
   BaseDocxViewerProps,
   DocxViewerMediaProps,
-} from "../../docx-viewer/types.js";
+} from "../../docx-viewer/DocxViewerApi.js";
 
 // DocxViewer (Media wrapper)
 import { DocxViewer as _DocxViewer } from "../../docx-viewer/DocxViewer.js";

@@ -22,8 +22,8 @@ import type { TiffRendererProps } from "../images/tiff-renderer/types.js";
 import { BasePdfViewer } from "../pdf-viewer/PdfViewer.js";
 import type { PdfViewerProps } from "../pdf-viewer/types.js";
 import styles from "./DocumentViewer.module.css";
+import { ViewerType } from "./DocumentViewerApi.js";
 import { useTiffToPdf } from "./hooks/useTiffToPdf.js";
-import { ViewerType } from "./types.js";
 
 interface TiffDocumentViewerProps {
   media: Media;

@@ -20,7 +20,7 @@ import React, { useMemo } from "react";
 import { useMediaContents } from "../shared/hooks/useMediaContents.js";
 import { BaseVideoViewer } from "./BaseVideoViewer.js";
 import styles from "./BaseVideoViewer.module.css";
-import type { VideoViewerMediaProps } from "./types.js";
+import type { VideoViewerMediaProps } from "./VideoViewerApi.js";
 
 const transformToObjectUrl = async (response: Response): Promise<string> => {
   const blob = await response.blob();

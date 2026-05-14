@@ -16,20 +16,17 @@
 
 import type { Media } from "@osdk/api";
 
-export interface BaseImageViewerProps {
-  /** Object URL or data URL pointing to the image */
-  src: string;
-  /** Alt text for accessibility */
-  alt?: string;
-  /** Additional CSS class name for the root element */
+export interface BaseXmlViewerProps {
+  /** XML text to render */
+  content: string;
+  /** Additional CSS class name for the root element
+   * @default undefined */
   className?: string;
-  /** Callback when the image fails to load */
-  onError?: () => void;
 }
 
-export interface ImageViewerMediaProps
-  extends Omit<BaseImageViewerProps, "src">
+export interface XmlViewerMediaProps
+  extends Omit<BaseXmlViewerProps, "content">
 {
-  /** The Media object to fetch image contents from */
+  /** The Media object to fetch XML contents from */
   media: Media;
 }

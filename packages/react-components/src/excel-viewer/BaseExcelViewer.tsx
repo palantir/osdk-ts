@@ -17,7 +17,7 @@
 import classnames from "classnames";
 import React, { useCallback, useMemo, useState } from "react";
 import styles from "./BaseExcelViewer.module.css";
-import type { BaseExcelViewerProps, SheetData } from "./types.js";
+import type { BaseExcelViewerProps, SheetData } from "./ExcelViewerApi.js";
 
 /**
  * Converts a 0-based column index to a spreadsheet column letter (0=A, 1=B, ..., 25=Z, 26=AA).

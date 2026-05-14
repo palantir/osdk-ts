@@ -20,7 +20,7 @@ import { renderAsync } from "docx-preview";
 import React, { useEffect, useRef, useState } from "react";
 import { useEventCallback } from "../shared/hooks/useEventCallback.js";
 import styles from "./BaseDocxViewer.module.css";
-import type { BaseDocxViewerProps } from "./types.js";
+import type { BaseDocxViewerProps } from "./DocxViewerApi.js";
 
 export function BaseDocxViewer({
   src,

@@ -16,16 +16,23 @@
 
 import type { Media } from "@osdk/api";
 
-export interface BaseDocxViewerProps {
-  /** DOCX file contents as an ArrayBuffer */
-  src: ArrayBuffer;
-  /** Additional CSS class name for the root element */
+export interface BaseImageViewerProps {
+  /** Object URL or data URL pointing to the image */
+  src: string;
+  /** Alt text for accessibility
+   * @default "" */
+  alt?: string;
+  /** Additional CSS class name for the root element
+   * @default undefined */
   className?: string;
-  /** Callback when rendering fails */
+  /** Callback when the image fails to load
+   * @default undefined */
   onError?: () => void;
 }
 
-export interface DocxViewerMediaProps extends Omit<BaseDocxViewerProps, "src"> {
-  /** The Media object to fetch DOCX contents from */
+export interface ImageViewerMediaProps
+  extends Omit<BaseImageViewerProps, "src">
+{
+  /** The Media object to fetch image contents from */
   media: Media;
 }

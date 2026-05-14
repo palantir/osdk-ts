@@ -21,7 +21,7 @@ export type {
   EmailAddress,
   EmailViewerMediaProps,
   ParsedEmail,
-} from "../../email-viewer/types.js";
+} from "../../email-viewer/EmailViewerApi.js";
 
 // EmailViewer (Media wrapper)
 import { EmailViewer as _EmailViewer } from "../../email-viewer/EmailViewer.js";

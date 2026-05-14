@@ -20,7 +20,7 @@ import React from "react";
 import { useMediaContents } from "../../shared/hooks/useMediaContents.js";
 import { BaseImageViewer } from "./BaseImageViewer.js";
 import styles from "./BaseImageViewer.module.css";
-import type { ImageViewerMediaProps } from "./types.js";
+import type { ImageViewerMediaProps } from "./ImageViewerApi.js";
 
 const transformToObjectUrl = async (response: Response): Promise<string> => {
   const blob = await response.blob();

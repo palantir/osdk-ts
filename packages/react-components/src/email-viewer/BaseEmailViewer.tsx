@@ -17,10 +17,10 @@
 import classnames from "classnames";
 import React, { useMemo } from "react";
 import styles from "./BaseEmailViewer.module.css";
-import type { BaseEmailViewerProps, EmailAddress } from "./types.js";
+import type { BaseEmailViewerProps, EmailAddress } from "./EmailViewerApi.js";
 
 function formatAddress(address: EmailAddress): string {
-  if (address.name !== "") {
+  if (address.name) {
     return `${address.name} <${address.address}>`;
   }
   return address.address;

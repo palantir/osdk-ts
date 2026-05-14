@@ -19,7 +19,7 @@ export { BaseXmlViewer } from "../../xml-viewer/BaseXmlViewer.js";
 export type {
   BaseXmlViewerProps,
   XmlViewerMediaProps,
-} from "../../xml-viewer/types.js";
+} from "../../xml-viewer/XmlViewerApi.js";
 
 // XmlViewer (Media wrapper)
 import { withOsdkMetrics } from "../../util/withOsdkMetrics.js";
