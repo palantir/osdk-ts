@@ -34,6 +34,7 @@ interface SlsLogEntry {
   origin: string;
   thread: string;
   message: string;
+  safe?: true;
   params: Record<string, unknown>;
   unsafeParams?: Record<string, unknown>;
   stacktrace?: string;
@@ -95,6 +96,8 @@ export class SlsLogger {
     }
     if (params?.unsafeParams && Object.keys(params.unsafeParams).length > 0) {
       entry.unsafeParams = params.unsafeParams;
+    } else {
+      entry.safe = true;
     }
     if (error?.stack) {
       entry.stacktrace = error.stack;

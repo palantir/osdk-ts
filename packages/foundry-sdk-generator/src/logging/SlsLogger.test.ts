@@ -149,18 +149,18 @@ describe("SlsLogger", () => {
     expect(entry).not.toHaveProperty("safe");
   });
 
-  it("omits safe and unsafeParams when no unsafeParams provided", () => {
+  it("marks records with no unsafeParams as safe:true", () => {
     const { stream, writes } = captureStream();
     const logger = new SlsLogger(stream);
 
     logger.info("msg", { params: { count: 5 } });
 
     const [entry] = parseEntries(writes);
-    expect(entry).not.toHaveProperty("safe");
+    expect(entry.safe).toBe(true);
     expect(entry).not.toHaveProperty("unsafeParams");
   });
 
-  it("treats empty unsafeParams as no unsafe data", () => {
+  it("treats empty unsafeParams as no unsafe data and marks safe:true", () => {
     const { stream, writes } = captureStream();
     const logger = new SlsLogger(stream);
 
@@ -168,7 +168,7 @@ describe("SlsLogger", () => {
 
     const [entry] = parseEntries(writes);
     expect(entry).not.toHaveProperty("unsafeParams");
-    expect(entry).not.toHaveProperty("safe");
+    expect(entry.safe).toBe(true);
   });
 
   it("includes stacktrace on error() with an Error", () => {
