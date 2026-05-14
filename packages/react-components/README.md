@@ -125,13 +125,20 @@ Add `isolation: isolate` to your app's root element. This is required for Base U
 
 The components that this package will provide are:
 
-| Component      | Description                                                                                     | Documentation                   |
-| -------------- | ----------------------------------------------------------------------------------------------- | ------------------------------- |
-| `ObjectTable`  | Displays an Object Set as a sortable, paginated table with inline editing support               | [Guide](./docs/ObjectTable.md)  |
-| `PdfViewer`    | Renders PDF documents with annotations, search, sidebar navigation, and zoom                    | [Guide](./docs/PdfViewer.md)    |
-| `FilterList`   | Visualize a high-level summary of objects data to allow users to filter that data.              | [Guide](./docs/FilterList.md)   |
-| `ActionForm`   | Auto-generated form for executing Ontology Actions                                              | -                               |
-| `AipAgentChat` | Chat surface backed by Foundry LMS via `useChat` — takes a `PlatformClient` and model API name. | [Guide](./docs/AipAgentChat.md) |
+| Component        | Description                                                                                     | Documentation                     |
+| ---------------- | ----------------------------------------------------------------------------------------------- | --------------------------------- |
+| `ObjectTable`    | Displays an Object Set as a sortable, paginated table with inline editing support               | [Guide](./docs/ObjectTable.md)    |
+| `PdfViewer`      | Renders PDF documents with annotations, search, sidebar navigation, and zoom                    | [Guide](./docs/PdfViewer.md)      |
+| `FilterList`     | Visualize a high-level summary of objects data to allow users to filter that data.              | [Guide](./docs/FilterList.md)     |
+| `ActionForm`     | Auto-generated form for executing Ontology Actions                                              | -                                 |
+| `AipAgentChat`   | Chat surface backed by Foundry LMS via `useChat` — takes a `PlatformClient` and model API name. | [Guide](./docs/AipAgentChat.md)   |
+| `DocumentViewer` | Unified media viewer that auto-detects file type and renders the appropriate viewer             | [Guide](./docs/DocumentViewer.md) |
+| `DocxViewer`     | Renders DOCX files with headers, footers, footnotes, and endnotes                               | [Guide](./docs/DocxViewer.md)     |
+| `EmailViewer`    | Parses and renders EML files with headers and sandboxed HTML body                               | [Guide](./docs/EmailViewer.md)    |
+| `ExcelViewer`    | Renders Excel spreadsheets with sheet tabs and column/row headers                               | [Guide](./docs/ExcelViewer.md)    |
+| `ImageViewer`    | Renders images (PNG, JPEG, GIF, SVG, WebP, BMP)                                                 | [Guide](./docs/ImageViewer.md)    |
+| `VideoViewer`    | Renders video with native browser controls                                                      | [Guide](./docs/VideoViewer.md)    |
+| `XmlViewer`      | Renders XML content with syntax preservation                                                    | [Guide](./docs/XmlViewer.md)      |
 
 ## Component Architecture
 

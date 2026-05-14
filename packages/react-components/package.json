@@ -52,6 +52,42 @@
       "require": "./build/cjs/public/experimental/aip-agent-chat.cjs",
       "default": "./build/browser/public/experimental/aip-agent-chat.js"
     },
+    "./experimental/document-viewer": {
+      "browser": "./build/browser/public/experimental/document-viewer.js",
+      "import": {
+        "types": "./build/types/public/experimental/document-viewer.d.ts",
+        "default": "./build/esm/public/experimental/document-viewer.js"
+      },
+      "require": "./build/cjs/public/experimental/document-viewer.cjs",
+      "default": "./build/browser/public/experimental/document-viewer.js"
+    },
+    "./experimental/docx-viewer": {
+      "browser": "./build/browser/public/experimental/docx-viewer.js",
+      "import": {
+        "types": "./build/types/public/experimental/docx-viewer.d.ts",
+        "default": "./build/esm/public/experimental/docx-viewer.js"
+      },
+      "require": "./build/cjs/public/experimental/docx-viewer.cjs",
+      "default": "./build/browser/public/experimental/docx-viewer.js"
+    },
+    "./experimental/email-viewer": {
+      "browser": "./build/browser/public/experimental/email-viewer.js",
+      "import": {
+        "types": "./build/types/public/experimental/email-viewer.d.ts",
+        "default": "./build/esm/public/experimental/email-viewer.js"
+      },
+      "require": "./build/cjs/public/experimental/email-viewer.cjs",
+      "default": "./build/browser/public/experimental/email-viewer.js"
+    },
+    "./experimental/excel-viewer": {
+      "browser": "./build/browser/public/experimental/excel-viewer.js",
+      "import": {
+        "types": "./build/types/public/experimental/excel-viewer.d.ts",
+        "default": "./build/esm/public/experimental/excel-viewer.js"
+      },
+      "require": "./build/cjs/public/experimental/excel-viewer.cjs",
+      "default": "./build/browser/public/experimental/excel-viewer.js"
+    },
     "./experimental/filter-list": {
       "browser": "./build/browser/public/experimental/filter-list.js",
       "import": {
@@ -60,6 +96,15 @@
       },
       "require": "./build/cjs/public/experimental/filter-list.cjs",
       "default": "./build/browser/public/experimental/filter-list.js"
+    },
+    "./experimental/image-viewer": {
+      "browser": "./build/browser/public/experimental/image-viewer.js",
+      "import": {
+        "types": "./build/types/public/experimental/image-viewer.d.ts",
+        "default": "./build/esm/public/experimental/image-viewer.js"
+      },
+      "require": "./build/cjs/public/experimental/image-viewer.cjs",
+      "default": "./build/browser/public/experimental/image-viewer.js"
     },
     "./experimental/markdown-renderer": {
       "browser": "./build/browser/public/experimental/markdown-renderer.js",
@@ -97,6 +142,24 @@
       "require": "./build/cjs/public/experimental/tiff-renderer.cjs",
       "default": "./build/browser/public/experimental/tiff-renderer.js"
     },
+    "./experimental/video-viewer": {
+      "browser": "./build/browser/public/experimental/video-viewer.js",
+      "import": {
+        "types": "./build/types/public/experimental/video-viewer.d.ts",
+        "default": "./build/esm/public/experimental/video-viewer.js"
+      },
+      "require": "./build/cjs/public/experimental/video-viewer.cjs",
+      "default": "./build/browser/public/experimental/video-viewer.js"
+    },
+    "./experimental/xml-viewer": {
+      "browser": "./build/browser/public/experimental/xml-viewer.js",
+      "import": {
+        "types": "./build/types/public/experimental/xml-viewer.d.ts",
+        "default": "./build/esm/public/experimental/xml-viewer.js"
+      },
+      "require": "./build/cjs/public/experimental/xml-viewer.cjs",
+      "default": "./build/browser/public/experimental/xml-viewer.js"
+    },
     "./styles.css": "./build/browser/styles.css",
     "./*": {
       "browser": "./build/browser/public/*.js",
@@ -109,7 +172,7 @@
     }
   },
   "scripts": {
-    "check-attw": "attw --pack . --exclude-entrypoints ./styles.css ./experimental/action-form ./experimental/aip-agent-chat ./experimental/filter-list ./experimental/markdown-renderer ./experimental/object-table ./experimental/pdf-viewer ./experimental/tiff-renderer",
+    "check-attw": "attw --pack . --exclude-entrypoints ./styles.css ./experimental/action-form ./experimental/aip-agent-chat ./experimental/docx-viewer ./experimental/document-viewer ./experimental/email-viewer ./experimental/excel-viewer ./experimental/filter-list ./experimental/image-viewer ./experimental/markdown-renderer ./experimental/object-table ./experimental/pdf-viewer ./experimental/tiff-renderer ./experimental/video-viewer ./experimental/xml-viewer",
     "check-spelling": "cspell --quiet .",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
     "fix-lint": "eslint . --fix && dprint fmt",
@@ -132,14 +195,17 @@
     "@tanstack/react-virtual": "^3.13.13",
     "date-fns": "^2.28.0",
     "date-fns-tz": "^2.0.0",
+    "docx-preview": "^0.3.7",
     "fast-deep-equal": "^3.1.3",
     "lodash-es": "^4.17.21",
     "pdfjs-dist": "~4.8.69",
+    "postal-mime": "^2.7.4",
     "react-day-picker": "^8.10.0",
     "react-hook-form": "^7.54.0",
     "react-markdown": "^9.0.3",
     "remark-gfm": "^4.0.1",
-    "utif": "^3.1.0"
+    "utif": "^3.1.0",
+    "xlsx": "^0.18.5"
   },
   "peerDependencies": {
     "@osdk/aip-core": "workspace:^",

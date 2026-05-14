@@ -378,11 +378,18 @@ const archetypeRules = archetypes(
       attwExcludeEntrypoints: [
         "./experimental/action-form",
         "./experimental/aip-agent-chat",
+        "./experimental/docx-viewer",
+        "./experimental/document-viewer",
+        "./experimental/email-viewer",
+        "./experimental/excel-viewer",
         "./experimental/filter-list",
+        "./experimental/image-viewer",
         "./experimental/markdown-renderer",
         "./experimental/object-table",
         "./experimental/pdf-viewer",
         "./experimental/tiff-renderer",
+        "./experimental/video-viewer",
+        "./experimental/xml-viewer",
       ],
       setupFiles: ["./src/test/setupPolyfills.ts"],
       vitestEnv: {
