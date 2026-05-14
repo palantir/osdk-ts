@@ -38,10 +38,8 @@ import type {
   ObjectSet,
   OntologyObjectV2,
   SearchJsonQueryV2,
-  SearchObjectsForInterfaceRequest,
   SearchOrderByV2,
 } from "@osdk/foundry.ontologies";
-import * as OntologyInterfaces from "@osdk/foundry.ontologies/OntologyInterface";
 import * as OntologyObjectSets from "@osdk/foundry.ontologies/OntologyObjectSet";
 import invariant from "tiny-invariant";
 import { extractNamespace } from "../internal/conversions/extractNamespace.js";
@@ -263,7 +261,7 @@ export async function fetchStaticRidPage<
   );
 
   return Promise.resolve({
-    data: await client.objectFactory2(
+    data: await client.objectFactory(
       client,
       result.data,
       undefined,
@@ -303,62 +301,6 @@ async function fetchInterfacePage<
   objectSet: ObjectSet,
   useSnapshot: boolean = false,
 ): Promise<FetchPageResult<Q, L, R, S, T>> {
-  if (args.$__UNSTABLE_useOldInterfaceApis) {
-    invariant(
-      args.$loadPropertySecurityMetadata === false
-        || args.$loadPropertySecurityMetadata === undefined,
-      "`$loadPropertySecurityMetadata` is not supported with old interface APIs",
-    );
-    const baseRequestBody: SearchObjectsForInterfaceRequest = {
-      augmentedProperties: {},
-      augmentedSharedPropertyTypes: {},
-      augmentedInterfacePropertyTypes: {},
-      otherInterfaceTypes: [],
-      selectedObjectTypes: [],
-      selectedSharedPropertyTypes: args.$select ? [...args.$select] : [],
-      selectedInterfacePropertyTypes: [],
-      where: objectSetToSearchJsonV2(objectSet, interfaceType.apiName),
-    };
-
-    const requestBody = await applyFetchArgs(
-      args,
-      baseRequestBody,
-      client,
-      interfaceType,
-    );
-
-    if (requestBody.selectedSharedPropertyTypes.length > 0) {
-      const remapped = remapPropertyNames(
-        interfaceType,
-        requestBody.selectedSharedPropertyTypes,
-      );
-      requestBody.selectedSharedPropertyTypes = Array.from(remapped);
-    }
-
-    if (client.flushEdits != null) {
-      await client.flushEdits();
-    }
-
-    const result = await OntologyInterfaces
-      .search(
-        addUserAgentAndRequestContextHeaders(client, interfaceType),
-        await client.ontologyRid,
-        interfaceType.apiName,
-        requestBody,
-        { preview: true },
-      );
-
-    result.data = await client.objectFactory(
-      client,
-      result.data as OntologyObjectV2[], // drop readonly
-      interfaceType.apiName,
-      !args.$includeRid,
-      await extractRdpDefinition(client, objectSet),
-      undefined,
-    );
-    return result as any;
-  }
-
   const extractedInterfaceTypeApiName = (await extractObjectOrInterfaceType(
     client,
     objectSet,
@@ -421,7 +363,7 @@ async function fetchInterfacePage<
   );
 
   return Promise.resolve({
-    data: await client.objectFactory2(
+    data: await client.objectFactory(
       client,
       result.data,
       extractedInterfaceTypeApiName,
@@ -816,9 +758,9 @@ export async function fetchObjectPage<
       client,
       r.data as OntologyObjectV2[],
       undefined,
-      undefined,
       await extractRdpDefinition(client, objectSet),
       shouldLoadPropertySecurities ? r.propertySecurities : undefined,
+      !args.$includeRid,
       args.$select,
       false,
     ),
