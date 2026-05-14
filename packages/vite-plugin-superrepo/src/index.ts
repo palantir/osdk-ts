@@ -173,23 +173,17 @@ export function smartClientPlugin(): Plugin {
     transform(code, id) {
       if (!id.endsWith("/src/client.ts")) return null;
 
-      // Override the first argument to `createClient(...)` with
-      // `window.location.origin` so every OSDK request flows through Vite's
-      // dev-server proxy regardless of which port the dev server happens to
-      // be on. The boilerplate's `.env.development` hardcodes a foundry URL
-      // that only coincidentally matched the default dev port.
-      // OAuth (`createPublicOauthClient`) is untouched so its requests still
-      // reach the real Foundry stack.
-      return (
-        code
-          .replace(/export const client\b/, "const __rawClient")
-          .replace(/export default client\b/, "export default __rawClient")
-          .replace(
-            /createClient\(\s*[^,]+/,
-            "createClient(window.location.origin",
-          )
-        + `\nimport { smartClient as __sc } from "@osdk/vite-plugin-superrepo/smartClient";\n`
-        + `export const client = __sc(__rawClient);\n`
+      // Redirect the `@osdk/client` import to our shim. The shim
+      // re-exports the real module but replaces `createClient` with one
+      // that (a) forces `window.location.origin` as the base URL so
+      // every OSDK request flows through Vite's proxy, and (b) wraps
+      // the resulting client with `smartClient` so `executeFunction`
+      // calls are routed to the local function runtimes. `@osdk/oauth`
+      // and any other imports are untouched. Dev-only via
+      // `apply: "serve"`.
+      return code.replace(
+        /from\s+(["'])@osdk\/client\1/,
+        `from "@osdk/vite-plugin-superrepo/osdkClient"`,
       );
     },
   };

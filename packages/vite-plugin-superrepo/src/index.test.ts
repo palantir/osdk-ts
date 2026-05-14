@@ -238,41 +238,61 @@ describe("smartClientPlugin transform hook", () => {
     return callable(code, id);
   }
 
-  it("rewrites the createClient base URL to window.location.origin", () => {
+  it("redirects the @osdk/client import to the plugin shim", () => {
     const src = `
-import { createClient } from "@osdk/client";
+import { createClient, type Client } from "@osdk/client";
 const foundryUrl = "http://localhost:8080";
 const ontologyRid = "ri.ontology.main.ontology.x";
 const auth = () => "tok";
-export const client = createClient(foundryUrl, ontologyRid, auth);
+export const client: Client = createClient(foundryUrl, ontologyRid, auth);
 export default client;
 `;
     const out = callTransform(src, "/abs/app/src/client.ts");
     expect(out).not.toBeNull();
+    // The import source is rewritten; everything else is untouched.
     expect(out).toContain(
-      "createClient(window.location.origin, ontologyRid, auth)",
+      `from "@osdk/vite-plugin-superrepo/osdkClient"`,
     );
-    // The smartClient wrapper is still injected on top.
-    expect(out).toContain("smartClient as __sc");
-    expect(out).toContain("const __rawClient");
-    expect(out).toContain("export const client = __sc(__rawClient)");
+    expect(out).not.toContain(`from "@osdk/client"`);
+    expect(out).toContain("createClient(foundryUrl, ontologyRid, auth)");
+    expect(out).toContain("export const client");
+    expect(out).toContain("export default client");
   });
 
-  it("leaves OAuth client creation alone", () => {
+  it("survives non-trivial createClient call shapes", () => {
+    // A previous implementation tried to rewrite the first call argument
+    // with a regex and broke on commas inside expressions or multi-line
+    // calls. The shim-based rewrite touches only the import source, so
+    // these shapes round-trip unchanged.
+    const src = `
+import { createClient } from "@osdk/client";
+const pickUrl = (a: string, b: string) => a || b;
+export const client = createClient(
+  pickUrl(envUrl, defaultUrl),
+  ontologyRid,
+  auth,
+);
+`;
+    const out = callTransform(src, "/abs/app/src/client.ts") ?? "";
+    expect(out).toContain(`from "@osdk/vite-plugin-superrepo/osdkClient"`);
+    // The original call shape is preserved verbatim.
+    expect(out).toContain("createClient(\n  pickUrl(envUrl, defaultUrl),");
+  });
+
+  it("leaves @osdk/oauth and other imports alone", () => {
     const src = `
 import { createPublicOauthClient } from "@osdk/oauth";
+import { createClient } from "@osdk/client";
+import { something } from "@osdk/client-extras";
 const foundryUrl = "https://stack.foundry.example";
 export const auth = createPublicOauthClient("cid", foundryUrl, "/cb");
-import { createClient } from "@osdk/client";
 export const client = createClient(foundryUrl, "rid", auth);
 `;
-    const out = callTransform(src, "/abs/app/src/client.ts");
-    expect(out).toContain(
-      `createPublicOauthClient("cid", foundryUrl, "/cb")`,
-    );
-    expect(out).toContain(
-      "createClient(window.location.origin",
-    );
+    const out = callTransform(src, "/abs/app/src/client.ts") ?? "";
+    expect(out).toContain(`from "@osdk/oauth"`);
+    expect(out).toContain(`from "@osdk/client-extras"`);
+    expect(out).toContain(`from "@osdk/vite-plugin-superrepo/osdkClient"`);
+    expect(out).not.toMatch(/from\s+["']@osdk\/client["']/);
   });
 
   it("only touches /src/client.ts", () => {
