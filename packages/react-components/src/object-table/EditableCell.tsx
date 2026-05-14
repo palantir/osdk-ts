@@ -65,11 +65,12 @@ export interface EditableCellProps<TData extends RowData, CellValue = unknown> {
   validateEdit?: (value: unknown) => Promise<string | undefined>;
   editFieldConfig?: EditFieldConfig<TData>;
   /**
-   * Full table cellEdits map (keyed by `rowId-columnId`). Filtered to the
-   * current row internally and forwarded to
-   * `EditFieldConfig#getFieldComponentProps`.
+   * Pending edits for this row, keyed by `columnId`. Forwarded to
+   * `EditFieldConfig#getFieldComponentProps`. Filtering happens in
+   * `DefaultCellRenderer` so unedited rows receive a stable `undefined`
+   * reference and `React.memo` can skip them.
    */
-  cellEdits?: Record<string, CellEditInfo<TData, unknown>>;
+  rowCellEdits?: Record<string, CellEditInfo<TData, unknown>>;
   isRowFocused?: boolean;
 }
 
@@ -119,7 +120,7 @@ function EditableCellInner<TData extends RowData, CellValue = unknown>({
   validateEdit,
   validationError,
   editFieldConfig,
-  cellEdits,
+  rowCellEdits,
   isRowFocused = false,
 }: EditableCellProps<TData, CellValue>): React.ReactElement {
   const [inputValue, setInputValue] = useState<string>(
@@ -264,20 +265,6 @@ function EditableCellInner<TData extends RowData, CellValue = unknown>({
   const inputType = dataType && NUMBER_TYPES.includes(dataType)
     ? "number"
     : "text";
-
-  // Pending edits for this row, re-keyed by columnId. Recomputed only when
-  // the cellEdits map identity changes.
-  const rowCellEdits = useMemo(() => {
-    if (!cellEdits) return undefined;
-    let result: Record<string, CellEditInfo<TData, unknown>> | undefined;
-    for (const edit of Object.values(cellEdits)) {
-      if (edit.rowId === rowId) {
-        result ??= {};
-        result[edit.columnId] = edit;
-      }
-    }
-    return result;
-  }, [cellEdits, rowId]);
 
   // Compute field-component props once per (editFieldConfig, originalRowData, rowCellEdits).
   // The narrowed return type is preserved in each useMemo
