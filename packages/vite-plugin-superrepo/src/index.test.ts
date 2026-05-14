@@ -26,20 +26,25 @@ import { DISCOVERY_DIR } from "./internal/discovery.js";
  * Invoke the plugin's `config` hook directly, the way Vite would, and
  * return the partial config it produced.
  */
-function callConfigHook(userRoot: string): UserConfig | undefined {
+/**
+ * Invoke the plugin's `config` hook the way Vite would and return the
+ * mutated user config (the plugin now mutates in place and returns
+ * undefined; tests inspect `userConfig.server.proxy` directly).
+ */
+function callConfigHook(
+  userRoot: string,
+  userConfig: UserConfig = { root: userRoot },
+): UserConfig {
   const plugin = smartClientPlugin();
   const hook = plugin.config;
-  // Vite's `config` hook can also be `{ handler, order }`.
   const fn = typeof hook === "function" ? hook : hook?.handler;
   if (!fn) throw new Error("smartClientPlugin must declare a `config` hook");
-  // Cast to a plain callable to bypass rollup's `ConfigPluginContext` `this`
-  // requirement; the hook doesn't use any plugin-context fields.
   const callable = fn as unknown as (
     cfg: UserConfig,
     env: { command: "serve" | "build"; mode: string },
   ) => UserConfig | null | undefined;
-  return callable({ root: userRoot }, { command: "serve", mode: "development" })
-    ?? undefined;
+  callable(userConfig, { command: "serve", mode: "development" });
+  return userConfig;
 }
 
 let workDir: string;
@@ -74,12 +79,13 @@ describe("smartClientPlugin config hook", () => {
     expect(() => callConfigHook(workDir)).toThrow(/SuperRepo/);
   });
 
-  it("returns undefined when no discovery files exist", () => {
+  it("leaves the user config untouched when no discovery files exist", () => {
     makeSuperrepo();
-    expect(callConfigHook(workDir)).toBeUndefined();
+    const cfg = callConfigHook(workDir);
+    expect(cfg.server?.proxy).toBeUndefined();
   });
 
-  it("installs the ontology proxy when its discovery file is present", () => {
+  it("installs all three ontology prefixes when its discovery file is present", () => {
     const root = makeSuperrepo();
     writeDiscovery(root, "ontology", {
       pid: process.pid,
@@ -87,13 +93,20 @@ describe("smartClientPlugin config hook", () => {
       // No caCertPath → expect secure: false fallback.
     });
     const cfg = callConfigHook(root);
-    const proxy = cfg?.server?.proxy as Record<string, ProxyOptions>;
+    const proxy = cfg.server?.proxy as Record<string, ProxyOptions>;
     expect(proxy).toBeDefined();
-    expect(proxy["/api/v2"].target).toBe("https://127.0.0.1:51000");
-    expect(proxy["/api/v2"].changeOrigin).toBe(true);
-    expect(proxy["/api/v2"].secure).toBe(false);
-    // /api/v2 must NOT rewrite — the ontology server serves /api/v2/* directly.
-    expect(proxy["/api/v2"].rewrite).toBeUndefined();
+    // The ontology service serves three distinct prefixes: REST, Conjure
+    // metadata, and the object-set service. All three must be proxied to
+    // the same discovered target.
+    for (
+      const prefix of ["/api/v2", "/ontology-metadata", "/object-set-service"]
+    ) {
+      expect(proxy[prefix].target).toBe("https://127.0.0.1:51000");
+      expect(proxy[prefix].changeOrigin).toBe(true);
+      expect(proxy[prefix].secure).toBe(false);
+      // No rewrite — the ontology server serves these prefixes directly.
+      expect(proxy[prefix].rewrite).toBeUndefined();
+    }
   });
 
   it("strips the prefix when proxying typescript-functions", () => {
@@ -134,7 +147,8 @@ describe("smartClientPlugin config hook", () => {
   it("ignores stale discovery files (PID 0)", () => {
     const root = makeSuperrepo();
     writeDiscovery(root, "ontology", { pid: 0, url: "https://127.0.0.1:1" });
-    expect(callConfigHook(root)).toBeUndefined();
+    const cfg = callConfigHook(root);
+    expect(cfg.server?.proxy).toBeUndefined();
   });
 
   it("trusts the published CA cert when caCertPath is supplied", () => {
@@ -169,10 +183,100 @@ describe("smartClientPlugin config hook", () => {
       url: "http://127.0.0.1:53000",
     });
     const cfg = callConfigHook(root);
-    const proxy = cfg?.server?.proxy as Record<string, ProxyOptions>;
+    const proxy = cfg.server?.proxy as Record<string, ProxyOptions>;
     expect(Object.keys(proxy).sort()).toEqual([
       "/api/v2",
       "/local-python-functions",
+      "/object-set-service",
+      "/ontology-metadata",
     ]);
+  });
+
+  it("prepends its routes ahead of pre-existing user proxies", () => {
+    // Iteration order matters: vite matches by `startsWith` in insertion
+    // order, so a user-defined broad `/api` would otherwise shadow the
+    // plugin's more specific `/api/v2`.
+    const root = makeSuperrepo();
+    writeDiscovery(root, "ontology", {
+      pid: process.pid,
+      url: "https://127.0.0.1:51000",
+    });
+    const userProxy: Record<string, ProxyOptions> = {
+      "/ontology-metadata": { target: "http://wrong:1" },
+      "/api": { target: "http://wrong:2" },
+    };
+    const cfg = callConfigHook(root, {
+      root,
+      server: { proxy: userProxy },
+    });
+    const keys = Object.keys(cfg.server?.proxy as Record<string, unknown>);
+    // Plugin keys must appear before any user key.
+    const firstUserKey = keys.findIndex(k => k === "/api");
+    const lastPluginKey = keys.findIndex(k => k === "/object-set-service");
+    expect(lastPluginKey).toBeGreaterThanOrEqual(0);
+    expect(firstUserKey).toBeGreaterThan(lastPluginKey);
+    // Plugin's value wins for keys we own (mutation order via spread).
+    const proxy = cfg.server?.proxy as Record<string, ProxyOptions>;
+    expect(proxy["/ontology-metadata"].target).toBe("https://127.0.0.1:51000");
+    // User keys we don't own pass through untouched.
+    expect(proxy["/api"].target).toBe("http://wrong:2");
+  });
+});
+
+describe("smartClientPlugin transform hook", () => {
+  function callTransform(code: string, id: string): string | null {
+    const plugin = smartClientPlugin();
+    const hook = plugin.transform;
+    const fn = typeof hook === "function" ? hook : hook?.handler;
+    if (!fn) {
+      throw new Error("smartClientPlugin must declare a `transform` hook");
+    }
+    const callable = fn as unknown as (
+      c: string,
+      i: string,
+    ) => string | null;
+    return callable(code, id);
+  }
+
+  it("rewrites the createClient base URL to window.location.origin", () => {
+    const src = `
+import { createClient } from "@osdk/client";
+const foundryUrl = "http://localhost:8080";
+const ontologyRid = "ri.ontology.main.ontology.x";
+const auth = () => "tok";
+export const client = createClient(foundryUrl, ontologyRid, auth);
+export default client;
+`;
+    const out = callTransform(src, "/abs/app/src/client.ts");
+    expect(out).not.toBeNull();
+    expect(out).toContain(
+      "createClient(window.location.origin, ontologyRid, auth)",
+    );
+    // The smartClient wrapper is still injected on top.
+    expect(out).toContain("smartClient as __sc");
+    expect(out).toContain("const __rawClient");
+    expect(out).toContain("export const client = __sc(__rawClient)");
+  });
+
+  it("leaves OAuth client creation alone", () => {
+    const src = `
+import { createPublicOauthClient } from "@osdk/oauth";
+const foundryUrl = "https://stack.foundry.example";
+export const auth = createPublicOauthClient("cid", foundryUrl, "/cb");
+import { createClient } from "@osdk/client";
+export const client = createClient(foundryUrl, "rid", auth);
+`;
+    const out = callTransform(src, "/abs/app/src/client.ts");
+    expect(out).toContain(
+      `createPublicOauthClient("cid", foundryUrl, "/cb")`,
+    );
+    expect(out).toContain(
+      "createClient(window.location.origin",
+    );
+  });
+
+  it("only touches /src/client.ts", () => {
+    expect(callTransform("export const client = 1;", "/abs/other.ts"))
+      .toBeNull();
   });
 });

@@ -39,7 +39,13 @@ const PROXY_ROUTES: ReadonlyArray<{
   /** Strip the prefix before forwarding. */
   rewrite: boolean;
 }> = [
+  // The ontology service handles all three of these prefixes:
+  //  - `/api/v2/...`           REST API (used by `@osdk/client`)
+  //  - `/ontology-metadata/...` Conjure metadata (used by MetadataClient)
+  //  - `/object-set-service/...` Conjure object-set service
   { prefix: "/api/v2", service: "ontology", rewrite: false },
+  { prefix: "/ontology-metadata", service: "ontology", rewrite: false },
+  { prefix: "/object-set-service", service: "ontology", rewrite: false },
   {
     prefix: "/local-functions",
     service: "typescript-functions",
@@ -112,7 +118,14 @@ export function smartClientPlugin(): Plugin {
       }
 
       if (Object.keys(proxy).length === 0) return undefined;
-      return { server: { proxy } };
+
+      userConfig.server ??= {};
+      const existing = {
+        ...(userConfig.server.proxy ?? {}),
+      } as Record<string, ProxyOptions>;
+      for (const key of Object.keys(proxy)) delete existing[key];
+      userConfig.server.proxy = { ...proxy, ...existing };
+      return undefined;
     },
 
     configResolved(resolvedConfig) {
@@ -160,10 +173,21 @@ export function smartClientPlugin(): Plugin {
     transform(code, id) {
       if (!id.endsWith("/src/client.ts")) return null;
 
+      // Override the first argument to `createClient(...)` with
+      // `window.location.origin` so every OSDK request flows through Vite's
+      // dev-server proxy regardless of which port the dev server happens to
+      // be on. The boilerplate's `.env.development` hardcodes a foundry URL
+      // that only coincidentally matched the default dev port.
+      // OAuth (`createPublicOauthClient`) is untouched so its requests still
+      // reach the real Foundry stack.
       return (
         code
           .replace(/export const client\b/, "const __rawClient")
           .replace(/export default client\b/, "export default __rawClient")
+          .replace(
+            /createClient\(\s*[^,]+/,
+            "createClient(window.location.origin",
+          )
         + `\nimport { smartClient as __sc } from "@osdk/vite-plugin-superrepo/smartClient";\n`
         + `export const client = __sc(__rawClient);\n`
       );
