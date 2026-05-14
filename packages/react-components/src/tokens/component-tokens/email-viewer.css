@@ -1,0 +1,9 @@
+:root {
+  /* Email Viewer - Container */
+  --osdk-email-viewer-bg: var(--osdk-background-primary);
+  --osdk-email-viewer-border: var(--osdk-surface-border);
+
+  /* Email Viewer - Header */
+  --osdk-email-viewer-header-bg: var(--osdk-background-secondary);
+  --osdk-email-viewer-header-border: var(--osdk-surface-border);
+}

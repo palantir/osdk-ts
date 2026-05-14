@@ -1,5 +1,13 @@
 # @osdk/seed-helpers
 
+## 0.3.0
+
+### Patch Changes
+
+- Updated dependencies [02c796c]
+- Updated dependencies [d962309]
+  - @osdk/api@2.19.0
+
 ## 0.2.0
 
 ### Minor Changes

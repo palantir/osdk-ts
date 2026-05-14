@@ -37,6 +37,13 @@ Complete reference of all CSS custom properties (variables) used in `@osdk/react
   - [Table](#table)
   - [Time Picker](#time-picker)
   - [Tooltip](#tooltip)
+  - [Document Viewer](#document-viewer)
+  - [DOCX Viewer](#docx-viewer)
+  - [Email Viewer](#email-viewer)
+  - [Excel Viewer](#excel-viewer)
+  - [Image Viewer](#image-viewer)
+  - [Video Viewer](#video-viewer)
+  - [XML Viewer](#xml-viewer)
 - [Creating a Custom Theme](#creating-a-custom-theme)
 
 ## Overview
@@ -1315,6 +1322,100 @@ Styling for tooltip components.
 | `--osdk-tooltip-border-color` | `var(--osdk-palette-gray-4)`                                                  | Tooltip border color |
 | `--osdk-tooltip-shadow`       | `var(--osdk-surface-shadow-2)`                                                | Tooltip shadow       |
 | `--osdk-tooltip-max-width`    | `300px`                                                                       | Tooltip max width    |
+
+### Document Viewer
+
+Styling for the document viewer container.
+
+| Variable                        | Default Value                    | Description       |
+| ------------------------------- | -------------------------------- | ----------------- |
+| `--osdk-document-viewer-bg`     | `var(--osdk-background-primary)` | Viewer background |
+| `--osdk-document-viewer-border` | `var(--osdk-surface-border)`     | Viewer border     |
+
+### DOCX Viewer
+
+Styling for the DOCX viewer.
+
+| Variable                    | Default Value                    | Description       |
+| --------------------------- | -------------------------------- | ----------------- |
+| `--osdk-docx-viewer-bg`     | `var(--osdk-background-primary)` | Viewer background |
+| `--osdk-docx-viewer-border` | `var(--osdk-surface-border)`     | Viewer border     |
+
+### Email Viewer
+
+Styling for the email viewer.
+
+| Variable                            | Default Value                      | Description       |
+| ----------------------------------- | ---------------------------------- | ----------------- |
+| `--osdk-email-viewer-bg`            | `var(--osdk-background-primary)`   | Viewer background |
+| `--osdk-email-viewer-border`        | `var(--osdk-surface-border)`       | Viewer border     |
+| `--osdk-email-viewer-header-bg`     | `var(--osdk-background-secondary)` | Header background |
+| `--osdk-email-viewer-header-border` | `var(--osdk-surface-border)`       | Header border     |
+
+### Excel Viewer
+
+Styling for the Excel viewer.
+
+#### Container
+
+| Variable                     | Default Value                    | Description       |
+| ---------------------------- | -------------------------------- | ----------------- |
+| `--osdk-excel-viewer-bg`     | `var(--osdk-background-primary)` | Viewer background |
+| `--osdk-excel-viewer-border` | `var(--osdk-surface-border)`     | Viewer border     |
+
+#### Table
+
+| Variable                               | Default Value                              | Description       |
+| -------------------------------------- | ------------------------------------------ | ----------------- |
+| `--osdk-excel-viewer-header-bg`        | `var(--osdk-background-secondary)`         | Header background |
+| `--osdk-excel-viewer-header-color`     | `var(--osdk-typography-color-muted)`       | Header text color |
+| `--osdk-excel-viewer-cell-border`      | `var(--osdk-surface-border-color-default)` | Cell border color |
+| `--osdk-excel-viewer-cell-padding`     | `2px 6px`                                  | Cell padding      |
+| `--osdk-excel-viewer-col-min-width`    | `80px`                                     | Minimum col width |
+| `--osdk-excel-viewer-row-header-width` | `40px`                                     | Row header width  |
+
+#### Sheet Tabs
+
+| Variable                                | Default Value                      | Description          |
+| --------------------------------------- | ---------------------------------- | -------------------- |
+| `--osdk-excel-viewer-tab-bg`            | `var(--osdk-background-secondary)` | Tab background       |
+| `--osdk-excel-viewer-tab-hover-bg`      | `var(--osdk-background-tertiary)`  | Tab hover background |
+| `--osdk-excel-viewer-tab-active-bg`     | `var(--osdk-background-primary)`   | Active tab bg        |
+| `--osdk-excel-viewer-tab-border`        | `var(--osdk-surface-border)`       | Tab border           |
+| `--osdk-excel-viewer-tab-border-radius` | `4px`                              | Tab border radius    |
+| `--osdk-excel-viewer-tab-padding`       | `4px 12px`                         | Tab padding          |
+| `--osdk-excel-viewer-tab-bar-padding`   | `4px`                              | Tab bar padding      |
+| `--osdk-excel-viewer-tab-gap`           | `2px`                              | Gap between tabs     |
+
+### Image Viewer
+
+Styling for the image viewer.
+
+| Variable                     | Default Value                    | Description       |
+| ---------------------------- | -------------------------------- | ----------------- |
+| `--osdk-image-viewer-bg`     | `var(--osdk-background-primary)` | Viewer background |
+| `--osdk-image-viewer-border` | `var(--osdk-surface-border)`     | Viewer border     |
+
+### Video Viewer
+
+Styling for the video viewer.
+
+| Variable                     | Default Value                    | Description       |
+| ---------------------------- | -------------------------------- | ----------------- |
+| `--osdk-video-viewer-bg`     | `var(--osdk-background-primary)` | Viewer background |
+| `--osdk-video-viewer-border` | `var(--osdk-surface-border)`     | Viewer border     |
+
+### XML Viewer
+
+Styling for the XML viewer.
+
+| Variable                        | Default Value                            | Description       |
+| ------------------------------- | ---------------------------------------- | ----------------- |
+| `--osdk-xml-viewer-bg`          | `var(--osdk-background-primary)`         | Viewer background |
+| `--osdk-xml-viewer-border`      | `var(--osdk-surface-border)`             | Viewer border     |
+| `--osdk-xml-viewer-font-family` | `monospace`                              | Code font family  |
+| `--osdk-xml-viewer-font-size`   | `var(--osdk-typography-size-body-small)` | Code font size    |
+| `--osdk-xml-viewer-line-height` | `1.5`                                    | Code line height  |
 
 ## Creating a Custom Theme
 

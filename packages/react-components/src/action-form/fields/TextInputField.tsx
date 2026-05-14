@@ -15,7 +15,7 @@
  */
 
 import { Input } from "@base-ui/react/input";
-import React from "react";
+import React, { useCallback } from "react";
 import type { TextInputFieldProps } from "../FormFieldApi.js";
 import styles from "./BaseInput.module.css";
 
@@ -27,17 +27,29 @@ export function TextInputField({
   placeholder,
   minLength,
   maxLength,
+  disabled,
 }: TextInputFieldProps & { id?: string }): React.ReactElement {
+  const handleValueChange = useCallback(
+    (nextValue: string) => {
+      if (disabled === true) {
+        return;
+      }
+      onChange?.(nextValue);
+    },
+    [disabled, onChange],
+  );
+
   return (
     <Input
       id={id}
       className={styles.osdkBaseInput}
       type="text"
       value={value ?? ""}
-      onValueChange={onChange}
+      onValueChange={handleValueChange}
       placeholder={placeholder}
       minLength={minLength}
       maxLength={maxLength}
+      disabled={disabled}
       aria-invalid={error != null || undefined}
     />
   );

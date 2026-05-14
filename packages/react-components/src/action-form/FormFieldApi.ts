@@ -155,6 +155,7 @@ export interface FormFieldPropsByType {
   TEXT_AREA: TextAreaFieldProps;
   TEXT_INPUT: TextInputFieldProps;
   CUSTOM: CustomFieldProps<unknown>;
+  UNSUPPORTED: UnsupportedFieldProps;
 }
 
 /**
@@ -169,9 +170,16 @@ export interface DropdownFieldProps<V, Multiple extends boolean = false>
   items: V[];
 
   /**
-   * Converts an item to a display string. Defaults to `String()`.
+   * Converts an item to searchable text and the default visual label. Defaults to `String()`.
+   * Use `renderItemLabel` when the visible label needs rich React content.
    */
   itemToStringLabel?: (item: V) => string;
+
+  /**
+   * Renders an item label with custom React content.
+   * `itemToStringLabel` is still used for search, accessibility, and fallback keys.
+   */
+  renderItemLabel?: (item: V) => React.ReactNode;
 
   /**
    * Returns a unique string key for a list item. Used as the React `key`.
@@ -325,6 +333,11 @@ export interface TextInputFieldProps extends
   >
 {
   placeholder?: string;
+
+  /**
+   * Whether this text input is disabled.
+   */
+  disabled?: boolean;
 }
 
 /**
@@ -456,6 +469,10 @@ export interface CustomFieldProps<V> extends BaseFormFieldProps<V> {
   customRenderer: (props: BaseFormFieldProps<V>) => React.ReactNode;
 }
 
+export interface UnsupportedFieldProps
+  extends Pick<BaseFormFieldProps<string>, "id" | "error">
+{}
+
 export interface BaseFormFieldProps<V> {
   /**
    * The HTML `id` attribute for the field input element.
@@ -506,8 +523,6 @@ export type ActionParameters<Q extends ActionDefinition<unknown>> =
 
 /**
  * Extracts the value type for a specific parameter
- *
- * TODO: Re-use `BaseType`
  */
 export type FieldValueType<
   Q extends ActionDefinition<unknown>,
@@ -517,6 +532,9 @@ export type FieldValueType<
   : ActionParameters<Q>[K]["type"] extends ActionMetadata.DataType.ObjectSet<
     infer T
   > ? ActionParam.ObjectSetType<T>
+  : ActionParameters<Q>[K]["type"] extends ActionMetadata.DataType.Interface<
+    infer T
+  > ? ActionParam.InterfaceType<T>
   : ActionParameters<Q>[K]["type"] extends ActionMetadata.DataType.Struct<
     infer T
   > ? ActionParam.StructType<T>
@@ -547,7 +565,8 @@ export type FieldComponent =
   | "SWITCH"
   | "TEXT_AREA"
   | "TEXT_INPUT"
-  | "CUSTOM";
+  | "CUSTOM"
+  | "UNSUPPORTED";
 
 /**
  * Describes the data type of a form field, independent of OSDK.
@@ -622,10 +641,14 @@ export type ValidFormFieldForPropertyType<P extends FieldDescriptorType> =
   | "CUSTOM"
   | (P extends { type: "objectSet" } ? "OBJECT_SET"
     : P extends { type: "object" } ? "OBJECT_SELECT"
+    : P extends { type: "interface" } ? "UNSUPPORTED"
+    : P extends { type: "struct" } ? "UNSUPPORTED"
     : P extends "mediaReference" | "attachment" ? "FILE_PICKER"
     : P extends "boolean" ? "RADIO_BUTTONS" | "DROPDOWN" | "SWITCH"
     : P extends "string" ? "TEXT_INPUT" | "TEXT_AREA"
     : P extends "datetime" | "timestamp" ? "DATETIME_PICKER"
+    : P extends "marking" | "geohash" | "geoshape" | "objectType"
+      ? "UNSUPPORTED"
     : P extends
       | "double"
       | "integer"

@@ -64,6 +64,13 @@ export interface EditableCellProps<TData extends RowData, CellValue = unknown> {
   columnId: string;
   validateEdit?: (value: unknown) => Promise<string | undefined>;
   editFieldConfig?: EditFieldConfig<TData>;
+  /**
+   * Pending edits for this row, keyed by `columnId`. Forwarded to
+   * `EditFieldConfig#getFieldComponentProps`. Filtering happens in
+   * `DefaultCellRenderer` so unedited rows receive a stable `undefined`
+   * reference and `React.memo` can skip them.
+   */
+  rowCellEdits?: Record<string, CellEditInfo<TData, unknown>>;
   isRowFocused?: boolean;
 }
 
@@ -113,6 +120,7 @@ function EditableCellInner<TData extends RowData, CellValue = unknown>({
   validateEdit,
   validationError,
   editFieldConfig,
+  rowCellEdits,
   isRowFocused = false,
 }: EditableCellProps<TData, CellValue>): React.ReactElement {
   const [inputValue, setInputValue] = useState<string>(
@@ -258,22 +266,22 @@ function EditableCellInner<TData extends RowData, CellValue = unknown>({
     ? "number"
     : "text";
 
-  // Compute field-component props once per (editFieldConfig, originalRowData).
+  // Compute field-component props once per (editFieldConfig, originalRowData, rowCellEdits).
   // The narrowed return type is preserved in each useMemo
   const dropdownFieldProps = useMemo(
     () =>
       editFieldConfig?.fieldComponent === "DROPDOWN"
-        ? editFieldConfig.getFieldComponentProps(originalRowData)
+        ? editFieldConfig.getFieldComponentProps(originalRowData, rowCellEdits)
         : undefined,
-    [editFieldConfig, originalRowData],
+    [editFieldConfig, originalRowData, rowCellEdits],
   );
 
   const datePickerFieldProps = useMemo(
     () =>
       editFieldConfig?.fieldComponent === "DATE_PICKER"
-        ? editFieldConfig.getFieldComponentProps(originalRowData)
+        ? editFieldConfig.getFieldComponentProps(originalRowData, rowCellEdits)
         : undefined,
-    [editFieldConfig, originalRowData],
+    [editFieldConfig, originalRowData, rowCellEdits],
   );
 
   const renderFieldInput = () => {
