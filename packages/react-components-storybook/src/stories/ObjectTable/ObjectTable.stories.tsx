@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { NonIdealState } from "@blueprintjs/core";
 import type {
   DerivedProperty,
   ObjectSet,
@@ -1964,6 +1965,64 @@ return (
           {...args}
           getRowAttributes={getRowAttributes}
           className="customTableStyling"
+        />
+      </div>
+    );
+  },
+};
+
+export const CustomEmptyState: Story = {
+  args: {
+    objectType: Employee,
+    columnDefinitions: defaultEmployeeColumns,
+    renderEmptyState: () => (
+      <NonIdealState
+        icon="folder-close"
+        title="No saved PTL views found."
+      />
+    ),
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Override the default empty state with a custom render function. Useful for matching product copy or visuals (here a Blueprint `NonIdealState`).",
+      },
+      source: {
+        code: `
+import { NonIdealState } from "@blueprintjs/core";
+
+const emptyObjectSet = client(Employee).where({
+  jobProfile: "Nonexistent Role",
+});
+
+return (
+  <ObjectTable
+    objectType={Employee}
+    objectSet={emptyObjectSet}
+    renderEmptyState={() => (
+      <NonIdealState
+        icon="folder-close"
+        title="No saved PTL views found."
+      />
+    )}
+  />
+);
+`,
+      },
+    },
+  },
+  render: (args) => {
+    const client = useOsdkClient();
+    const emptyObjectSet = client(Employee).where({
+      jobProfile: "Nonexistent Role",
+    });
+
+    return (
+      <div className="object-table-container" style={{ height: "600px" }}>
+        <ObjectTable
+          {...args}
+          objectSet={emptyObjectSet}
         />
       </div>
     );
