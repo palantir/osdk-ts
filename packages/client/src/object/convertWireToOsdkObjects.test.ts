@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-import type { Attachment, Media, Osdk, PropertyKeys } from "@osdk/api";
+import type {
+  Attachment,
+  Media,
+  Osdk,
+  PropertyKeys,
+  PropertySecurity,
+} from "@osdk/api";
 import {
   $ontologyRid,
   Employee,
@@ -1408,9 +1414,23 @@ describe("convertWireToOsdkObjects", () => {
       false,
       {},
       wireSecurities,
-    ) as unknown as Osdk.Instance<Employee>[];
+    ) as unknown as Osdk.Instance<Employee, "$propertySecurities">[];
 
     const asFoo = holder.$as(FooInterface);
+
+    expectTypeOf(asFoo).toEqualTypeOf<
+      Osdk.Instance<
+        FooInterface,
+        "$propertySecurities",
+        "fooSpt" | "fooIdp",
+        {}
+      >
+    >();
+
+    expectTypeOf(asFoo.$propertySecurities).toEqualTypeOf<{
+      fooIdp: PropertySecurity[];
+      fooSpt: PropertySecurity[];
+    }>();
 
     expect(asFoo).toMatchInlineSnapshot(`
       {
@@ -1419,12 +1439,12 @@ describe("convertWireToOsdkObjects", () => {
         "$objectType": "Employee",
         "$primaryKey": 50031,
         "$propertySecurities": {
-          "fullName": [
+          "fooIdp": [
             {
               "type": "unsupportedPolicy",
             },
           ],
-          "office": [
+          "fooSpt": [
             {
               "type": "unsupportedPolicy",
             },
