@@ -25,7 +25,7 @@ export class GeneratorError extends Error {
 
   constructor(
     message: string,
-    unsafeParams: Record<string, unknown>,
+    unsafeParams?: Record<string, unknown>,
     params?: Record<string, unknown>,
   ) {
     super(message);
