@@ -18,11 +18,15 @@
 // the listener level in objectSet.ts. These probes drill into each callback
 // payload so changes to a single message variant (`onChange`'s ObjectUpdate,
 // `onError`'s payload, the refresh signals) surface independently.
+//
+// Anchor everything at `ObjectSet<E>["subscribe"]` so probes pick up the
+// same merged-Q form (`{__DefinitionMetadata?: …} & EmployeeApiTest`) users
+// actually see hovering an object set's subscribe arguments.
 
-import type { ObjectSetSubscription } from "../../objectSet/ObjectSetListener.js";
+import type { ObjectSet } from "../../objectSet/ObjectSet.js";
 import type { EmployeeApiTest } from "../../test/EmployeeApiTest.js";
 
-type Listener = ObjectSetSubscription.Listener<EmployeeApiTest>;
+type Listener = Parameters<ObjectSet<EmployeeApiTest>["subscribe"]>[0];
 
 /** The argument of listener.onChange — emitted when an object enters or leaves the set. */
 declare const subscribe_listener_onChange_objectUpdate_param: Parameters<
@@ -44,7 +48,9 @@ declare const subscribe_listener_onSuccessfulSubscription_params: Parameters<
   NonNullable<Listener["onSuccessfulSubscription"]>
 >;
 
-type Options = ObjectSetSubscription.Options<EmployeeApiTest>;
+type Options = NonNullable<
+  Parameters<ObjectSet<EmployeeApiTest>["subscribe"]>[1]
+>;
 
 /** The `properties` field of subscribe options — restricts which property keys updates may carry. */
 declare const subscribe_opts_properties: Options["properties"];
@@ -52,9 +58,11 @@ declare const subscribe_opts_properties: Options["properties"];
 /** The `includeRid` field of subscribe options — toggles `$rid` exposure on update objects. */
 declare const subscribe_opts_includeRid: Options["includeRid"];
 
+// Instantiation-expression form so we capture the post-call shape of `subscribe`
+// with explicit type parameters — what hover shows on subscribe<"fullName"|"employeeId", true>.
+declare const _subscribe: ObjectSet<EmployeeApiTest>["subscribe"];
+
 /** Same `includeRid` field, narrowed to a property subset that excludes geotime references. */
-declare const subscribe_opts_narrow_includeRid: ObjectSetSubscription.Options<
-  EmployeeApiTest,
-  "fullName" | "employeeId",
-  true
+declare const subscribe_opts_narrow_includeRid: NonNullable<
+  Parameters<typeof _subscribe<"fullName" | "employeeId", true>>[1]
 >["includeRid"];

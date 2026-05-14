@@ -36,13 +36,15 @@ const allProbes = renderQuickInfoProbes({
   tsconfigPath,
 });
 
-for (const probesFile of probesFiles) {
-  const surface = probesFile.replace(/\.ts$/, "");
-  it(surface, async () => {
-    await expect(allProbes[path.join(probesDir, probesFile)])
-      .toMatchFileSnapshot(`./__snapshots__/${surface}.snap`);
-  });
-}
+describe("quickinfo snapshots", () => {
+  for (const probesFile of probesFiles) {
+    const surface = probesFile.replace(/\.ts$/, "");
+    it(surface, async () => {
+      await expect(allProbes[path.join(probesDir, probesFile)])
+        .toMatchFileSnapshot(`./__snapshots__/${surface}.snap`);
+    });
+  }
+});
 
 // Compile-time check that every public member of `ObjectSet` is acknowledged
 // in one of these unions. When a new method is added to `ObjectSet`,
