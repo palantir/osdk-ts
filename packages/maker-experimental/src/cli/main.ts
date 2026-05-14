@@ -20,7 +20,12 @@ import type {
 } from "@osdk/client.unstable";
 import { OntologyIrToFullMetadataConverter } from "@osdk/generator-converters.ontologyir";
 import { PreviewOntologyIrConverter } from "@osdk/generator-converters.preview";
-import { cleanAndValidateLinkTypeId } from "@osdk/maker";
+import {
+  cleanAndValidateLinkTypeId,
+  getImportedTypes,
+  getOntologyDefinition,
+  OntologyEntityTypeEnum,
+} from "@osdk/maker";
 import { consola } from "consola";
 import { createJiti } from "jiti";
 import * as fs from "node:fs";
@@ -29,6 +34,7 @@ import invariant from "tiny-invariant";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import { defineOntologyV2 } from "../api/defineOntologyV2.js";
+import { getExternalRecommendations } from "../conversion/toMarketplace/RecommendationUtils.js";
 import { ReadableIdGenerator } from "../util/generateRid.js";
 import {
   generateBackingDatasetBlockResult,
@@ -197,6 +203,9 @@ export default async function main(
     functionsIrFile,
     commandLineOpts.randomnessKey,
   );
+
+  const ontologyDefinition = getOntologyDefinition();
+  const importedTypes = getImportedTypes();
 
   // Create temp directory for block data
   const blockDataDir = path.join(commandLineOpts.buildDir, "temp_block_data");
@@ -369,7 +378,12 @@ export default async function main(
     inputs: Object.fromEntries(shapes.inputShapes),
     outputs: Object.fromEntries(shapes.outputShapes),
     input_mapping_entries: ontologyInputMappingEntries,
-    external_recommendations: [],
+    external_recommendations: getExternalRecommendations(
+      ontologyIr.importedOntology,
+      ontologyDefinition[OntologyEntityTypeEnum.VALUE_TYPE],
+      importedTypes[OntologyEntityTypeEnum.VALUE_TYPE],
+      shapes.inputShapes,
+    ),
     add_on_override: undefined,
     input_shape_metadata: Object.fromEntries(shapes.inputShapeMetadata),
     block_type: "ONTOLOGY",
