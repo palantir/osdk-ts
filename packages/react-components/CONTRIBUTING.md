@@ -31,13 +31,14 @@ Thanks for your interest in contributing to `@osdk/react-components`! This docum
 
 ## Using Claude Code
 
-If you use [Claude Code](https://claude.com/claude-code), this package ships an opinionated skill that wraps this guide:
+If you use [Claude Code](https://claude.com/claude-code), this package ships opinionated skills that wrap this guide:
 
 - **`add-new-component`** — for scaffolding a fresh OSDK-aware component. Mention "create a component" / "add a component" or invoke `/add-new-component`. Adds three gates on top of this document: an API-first design checkpoint (agree on `<Name>Api.ts` before writing implementation, on the same branch), a user-supplied MVP checklist, and a verification loop driven by Playwright
+- **`edit-component`** — for fixing a bug or adding a feature to a component that already exists. Mention "fix a bug" / "add a feature to <component>" / "extend <component>" or invoke `/edit-component`. Adds a failing-test-first gate for bug fixes (TDD), a conditional API-change review when the diff touches public props, selective sub-agent fan-out (only the surfaces actually affected), and the same verification loop
 
 If a skill ever conflicts with this document, this document wins — flag the conflict.
 
-**Skill sources:** `packages/react-components/.claude/skills/add-new-component/SKILL.md` if you want to read or refine them.
+**Skill sources:** `packages/react-components/.claude/skills/add-new-component/SKILL.md` and `packages/react-components/.claude/skills/edit-component/SKILL.md` if you want to read or refine them.
 
 ## Development Setup
 

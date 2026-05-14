@@ -4,6 +4,8 @@ This documentation provides guidance for developing in `@osdk/react-components`.
 
 When the user asks to **add, create, or scaffold a new component**, invoke the `add-new-component` skill. It walks through API-first PR, MVP feature checklist, and verification loop on top of `CONTRIBUTING.md`. Do not improvise the workflow — follow the skill.
 
+When the user asks to **fix a bug, add a feature to an existing component, or otherwise change a component already shipped in this package**, invoke the `edit-component` skill. It adds a failing-test-first gate for bug fixes (TDD), a conditional API-change review when the diff touches public props, selective sub-agent fan-out, and the same verification loop. Do not improvise — follow the skill.
+
 If a skill ever conflicts with this file or `CONTRIBUTING.md`, those win — flag the conflict.
 
 ## TypeScript Best Practices

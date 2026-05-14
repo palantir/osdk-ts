@@ -291,7 +291,10 @@ function EmployeeDirectory() {
 
 Looking to contribute to the codebase? Read the [contribution guidelines](./CONTRIBUTING.md).
 
-If you use [Claude Code](https://claude.com/claude-code), run `/add-new-component` (or just describe the component you want to add) — the [`add-new-component` skill](./.claude/skills/add-new-component/SKILL.md) walks you through the API-first PR, MVP checklist, and verification loop on top of `CONTRIBUTING.md`.
+If you use [Claude Code](https://claude.com/claude-code), this package ships two skills that wrap `CONTRIBUTING.md`:
+
+- Run `/add-new-component` (or describe the component you want to add) — the [`add-new-component` skill](./.claude/skills/add-new-component/SKILL.md) walks you through the API-first PR, MVP checklist, and verification loop.
+- Run `/edit-component` (or describe the bug to fix / feature to add on an existing component) — the [`edit-component` skill](./.claude/skills/edit-component/SKILL.md) adds a failing-test-first gate for bugs, a conditional API-change review when the diff touches public props, and the same verification loop.
 
 ## Development Workflow
 
