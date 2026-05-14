@@ -15,11 +15,11 @@
  */
 
 import { describe, expect, it } from "vitest";
-import { __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition } from "./__UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition.js";
+import { wireInterfaceTypeV2ToSdkObjectDefinition } from "./wireInterfaceTypeV2ToSdkObjectDefinition.js";
 
-describe("__UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition", () => {
+describe("wireInterfaceTypeV2ToSdkObjectDefinition", () => {
   it("sorts the implements array for stable output", () => {
-    const result = __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition({
+    const result = wireInterfaceTypeV2ToSdkObjectDefinition({
       apiName: "TestInterface",
       rid: "testRid",
       displayName: "Test Interface",
@@ -39,7 +39,7 @@ describe("__UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition", () => {
   });
 
   it("sorts the implementedBy array for stable output", () => {
-    const result = __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition({
+    const result = wireInterfaceTypeV2ToSdkObjectDefinition({
       apiName: "TestInterface",
       rid: "testRid",
       displayName: "Test Interface",
@@ -59,7 +59,7 @@ describe("__UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition", () => {
   });
 
   it("preserves empty arrays", () => {
-    const result = __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition({
+    const result = wireInterfaceTypeV2ToSdkObjectDefinition({
       apiName: "TestInterface",
       rid: "testRid",
       displayName: "Test Interface",
