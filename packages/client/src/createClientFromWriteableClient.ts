@@ -17,8 +17,23 @@
 import { additionalContext, type Client } from "./Client.js";
 import { createClientWithTransaction } from "./createClient.js";
 
+/**
+ * Experimental helper method to create a new client instantiated with a transaction id
+ * Will extract the transactionId, URL, Ontology RID, and token from the original client
+ * unless overridden.
+ *
+ * @param writeableClient A client initiated with a transaction id, such as a WriteableClient
+ * @param options A set of options to override from the provided client.
+ * @returns Client instantiated on a transaction
+ */
 export function createClientFromWriteableClient(
   writeableClient: Client,
+  options?: {
+    transactionId?: string;
+    baseUrl?: string;
+    ontologyRid?: string | Promise<string>;
+    tokenProvider?: () => Promise<string>;
+  },
 ): Client {
   const ctx = writeableClient[additionalContext];
 
@@ -29,10 +44,10 @@ export function createClientFromWriteableClient(
   }
 
   return createClientWithTransaction(
-    ctx.transactionId,
+    options?.transactionId ?? ctx.transactionId,
     ctx.flushEdits,
-    ctx.baseUrl,
-    ctx.ontologyRid,
-    ctx.tokenProvider,
+    options?.baseUrl ?? ctx.baseUrl,
+    options?.ontologyRid ?? ctx.ontologyRid,
+    options?.tokenProvider ?? ctx.tokenProvider,
   );
 }
