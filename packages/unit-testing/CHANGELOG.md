@@ -1,5 +1,21 @@
 # @osdk/unit-testing
 
+## 0.10.0
+
+### Minor Changes
+
+- 46df2e9: Rename `@osdk/functions-testing.experimental` to `@osdk/unit-testing`.
+
+### Patch Changes
+
+- Updated dependencies [f90a2da]
+- Updated dependencies [9eb67e4]
+- Updated dependencies [51b3bce]
+- Updated dependencies [75f877f]
+  - @osdk/client@2.20.0
+  - @osdk/api@2.20.0
+  - @osdk/functions@1.10.0
+
 ## 0.9.0
 
 ### Minor Changes

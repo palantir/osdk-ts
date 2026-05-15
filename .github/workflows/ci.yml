@@ -253,7 +253,7 @@ jobs:
           git checkout ${{ github.event.pull_request.base.sha }}
 
       - name: Install and build (base)
-        run: pnpm install && pnpm exec turbo transpile
+        run: pnpm exec turbo clean && pnpm install && pnpm exec turbo transpile
 
       - name: Measure bundle size (base)
         run: npx size-limit --json > /tmp/base.json || true
