@@ -25,6 +25,7 @@ import { MultiSelectDropdownLayout } from "./MultiSelectDropdownLayout.js";
 import { MultiSelectInlineLayout } from "./MultiSelectInlineLayout.js";
 import styles from "./MultiSelectInput.module.css";
 import { NoValueLabel } from "./NoValueLabel.js";
+import { SelectInputSkeleton } from "./SelectInputSkeleton.js";
 import sharedStyles from "./shared.module.css";
 import { useStableData } from "./useStableData.js";
 
@@ -141,21 +142,29 @@ function MultiSelectInputInner({
     [placeholder, ariaLabel, renderValue],
   );
 
+  const isNoData = !error && stableValues.length === 0;
+  const isReloading = isLoading && stableValues.length > 0;
+
   return (
     <div
       className={classnames(styles.multiSelect, className)}
       style={style}
-      data-loading={isLoading && stableValues.length > 0}
+      data-loading={isReloading}
     >
+      <span className={sharedStyles.srOnly} role="status">
+        {isLoading ? "Loading options" : ""}
+      </span>
+
       {error && (
         <div className={sharedStyles.errorMessage}>
           Error loading options: {error.message}
         </div>
       )}
 
-      {!error && stableValues.length === 0 && (
+      {isNoData && isLoading && <SelectInputSkeleton />}
+      {isNoData && !isLoading && (
         <div className={sharedStyles.emptyMessage}>
-          {isLoading ? "Loading options..." : "No options available"}
+          No options available
         </div>
       )}
 
@@ -167,12 +176,6 @@ function MultiSelectInputInner({
           items={items}
           filter={comboboxFilter}
         >
-          {isLoading && (
-            <div className={sharedStyles.loadingMessage}>
-              Updating...
-            </div>
-          )}
-
           {layout === "inline"
             ? (
               <MultiSelectInlineLayout

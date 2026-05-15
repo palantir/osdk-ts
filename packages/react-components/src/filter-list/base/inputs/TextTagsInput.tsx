@@ -22,6 +22,7 @@ import type { PropertyAggregationValue } from "../../types/AggregationTypes.js";
 import { isEmptyValue } from "../../utils/filterValues.js";
 import { useFilterListBoundary } from "../FilterListBoundaryContext.js";
 import { NoValueLabel } from "./NoValueLabel.js";
+import { SelectInputSkeleton } from "./SelectInputSkeleton.js";
 import sharedStyles from "./shared.module.css";
 import styles from "./TextTagsInput.module.css";
 
@@ -168,8 +169,12 @@ function TextTagsInputInner({
     <div
       className={classnames(styles.textTags, className)}
       style={style}
-      data-loading={isLoading}
+      data-loading={isLoading && suggestions.length > 0}
     >
+      <span className={sharedStyles.srOnly} role="status">
+        {isLoading ? "Loading options" : ""}
+      </span>
+
       {error && (
         <div className={sharedStyles.errorMessage}>
           Error loading suggestions: {error.message}
@@ -228,10 +233,8 @@ function TextTagsInputInner({
         </Combobox.Portal>
       </Combobox.Root>
 
-      {isLoading && !!suggestionLimit && (
-        <div className={sharedStyles.loadingMessage}>
-          Loading suggestions...
-        </div>
+      {!error && suggestions.length === 0 && isLoading && !!suggestionLimit && (
+        <SelectInputSkeleton />
       )}
     </div>
   );

@@ -14,23 +14,16 @@
  * limitations under the License.
  */
 
-.textTags {
-  display: flex;
-  flex-direction: column;
-  gap: var(--osdk-filter-texttags-gap);
-  transition: opacity var(--osdk-filter-content-fade-duration);
-}
+import React from "react";
+import { SkeletonBar } from "../../../base-components/skeleton/SkeletonBar.js";
 
-.textTags[data-loading="true"] {
-  opacity: 0.5;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .textTags {
-    transition: none;
-  }
-}
-
-.input {
-  flex: 1;
+export function SelectInputSkeleton(): React.ReactElement {
+  return (
+    <div data-testid="select-input-skeleton">
+      <SkeletonBar
+        width="100%"
+        height="var(--osdk-filter-skeleton-input-height)"
+      />
+    </div>
+  );
 }
