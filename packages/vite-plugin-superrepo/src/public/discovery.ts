@@ -24,7 +24,8 @@ export type DiscoveryService =
   | "typescript-functions"
   | "python-functions"
   | "app"
-  | "status-server";
+  | "status-server"
+  | "platform-api-proxy";
 
 export interface DiscoveryEntry {
   pid: number;

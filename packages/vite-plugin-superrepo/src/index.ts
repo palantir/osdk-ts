@@ -49,6 +49,10 @@ export const PROXY_ROUTES: ReadonlyArray<{
     service: "python-functions",
     rewrite: true,
   },
+  // Catch-all platform-API prefix. Must come after the more-specific
+  // `/api/v2` ontology route above, because Vite iterates the proxy map
+  // in insertion order and picks the first `url.startsWith(prefix)` hit.
+  { prefix: "/api", service: "platform-api-proxy", rewrite: false },
 ];
 
 /**
