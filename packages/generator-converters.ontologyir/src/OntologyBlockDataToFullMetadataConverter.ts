@@ -343,6 +343,7 @@ export class OntologyBlockDataToFullMetadataConverter {
         parameters: this.getOsdkActionParametersFromBlockData(
           action,
           objectTypeLookup,
+          interfaceTypeLookup,
         ),
         operations: this.getOsdkActionOperationsFromBlockData(
           action,
@@ -486,6 +487,7 @@ export class OntologyBlockDataToFullMetadataConverter {
   static getOsdkActionParametersFromBlockData(
     action: ActionTypeBlockDataV2,
     objectTypeLookup: BlockDataApiNameLookup | undefined,
+    interfaceTypeLookup: BlockDataApiNameLookup | undefined,
   ): Record<string, Ontologies.ActionParameterV2> {
     const result: Record<string, Ontologies.ActionParameterV2> = {};
 
@@ -567,10 +569,6 @@ export class OntologyBlockDataToFullMetadataConverter {
             subType: { type: "integer" },
           };
           break;
-        case "interfaceReference":
-          throw new Error("Interface reference type not supported");
-        case "interfaceReferenceList":
-          throw new Error("Interface reference list type not supported");
         case "long":
           dataType = { type: "long" };
           break;
@@ -598,6 +596,31 @@ export class OntologyBlockDataToFullMetadataConverter {
             subType: { type: "mediaReference" },
           };
           break;
+        case "interfaceReference": {
+          const t = irParameter.type.interfaceReference;
+          dataType = {
+            type: "interfaceObject",
+            interfaceTypeApiName: resolveBlockDataApiName(
+              t.interfaceTypeRid,
+              interfaceTypeLookup,
+            ),
+          };
+          break;
+        }
+        case "interfaceReferenceList": {
+          const t = irParameter.type.interfaceReferenceList;
+          dataType = {
+            type: "array",
+            subType: {
+              type: "interfaceObject",
+              interfaceTypeApiName: resolveBlockDataApiName(
+                t.interfaceTypeRid,
+                interfaceTypeLookup,
+              ),
+            },
+          };
+          break;
+        }
         case "objectReference": {
           const t = irParameter.type.objectReference;
           dataType = {
@@ -716,8 +739,12 @@ export class OntologyBlockDataToFullMetadataConverter {
         allProperties: properties, // Same as properties for now
         propertiesV2: {},
         allPropertiesV2: {},
-        extendsInterfaces: interfaceType.extendsInterfaces.map(val => val),
-        allExtendsInterfaces: interfaceType.extendsInterfaces.map(val => val), // Same as extendsInterfaces for now
+        extendsInterfaces: interfaceType.extendsInterfaces.map(val =>
+          resolveBlockDataApiName(val, interfaceTypeLookup)
+        ),
+        allExtendsInterfaces: interfaceType.extendsInterfaces.map(val =>
+          resolveBlockDataApiName(val, interfaceTypeLookup)
+        ),
         implementedByObjectTypes: [], // Empty for now
         displayName: interfaceType.displayMetadata.displayName,
         description: interfaceType.displayMetadata.description ?? undefined,

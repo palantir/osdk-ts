@@ -538,7 +538,8 @@ function getTitleAndDescriptionForSharedPropertyType(
 ): LocalizedTitleAndDescription {
   return createLocalizedAbout(
     sharedPropertyType.displayMetadata.displayName,
-    sharedPropertyType.displayMetadata.description ?? "Shared Property Type",
+    sharedPropertyType.displayMetadata.description
+      ?? sharedPropertyType.displayMetadata.displayName,
   );
 }
 
