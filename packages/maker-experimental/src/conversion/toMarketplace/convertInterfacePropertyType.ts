@@ -29,13 +29,14 @@ export function convertInterfaceProperty(
   ridGenerator: OntologyRidGenerator,
 ): [string, MarketplaceInterfacePropertyType] {
   if (isInterfaceSharedPropertyType(prop)) {
+    const convertedSpt = convertSpt(prop.sharedPropertyType, ridGenerator);
     return [
-      ridGenerator.generateInterfacePropertyTypeRid(apiName, interfaceApiName),
+      ridGenerator.generateIptRidFromSptRid(convertedSpt.rid),
       {
         type: "sharedPropertyBasedPropertyType",
         sharedPropertyBasedPropertyType: {
           requireImplementation: prop.required,
-          sharedPropertyType: convertSpt(prop.sharedPropertyType, ridGenerator),
+          sharedPropertyType: convertedSpt,
         },
       },
     ];

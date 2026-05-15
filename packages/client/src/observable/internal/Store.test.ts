@@ -2393,7 +2393,7 @@ describe(Store, () => {
           },
         );
 
-        // the optimistic job will call createObject which triggers the `objectFactory2` of the
+        // the optimistic job will call createObject which triggers the `objectFactory` of the
         // cache context.
 
         // Perform something optimistic.

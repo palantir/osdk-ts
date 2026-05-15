@@ -18,7 +18,9 @@ import type { InterfaceMetadata } from "@osdk/api";
 import type { InterfaceType } from "@osdk/foundry.ontologies";
 import { wirePropertyV2ToSdkPropertyDefinition } from "./wirePropertyV2ToSdkPropertyDefinition.js";
 
-export function __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition(
+export { wireInterfaceTypeV2ToSdkObjectDefinition as __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition };
+
+export function wireInterfaceTypeV2ToSdkObjectDefinition(
   interfaceType: InterfaceType,
   v2: boolean,
   log?: { info: (msg: string) => void },
