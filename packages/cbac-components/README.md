@@ -8,14 +8,32 @@ These components are OSDK-aware — pass in marking IDs, and they handle data lo
 
 ## Installation
 
+> If your tooling already installs dependencies, skip this section.
+
+Use whichever package manager your project uses:
+
 ```sh
+# npm
 npm install @osdk/cbac-components@beta
+
+# pnpm
+pnpm add @osdk/cbac-components@beta
+
+# yarn
+yarn add @osdk/cbac-components@beta
 ```
 
 **Peer Dependencies:**
 
 ```sh
+# npm
 npm install react react-dom classnames @osdk/react @osdk/react-components
+
+# pnpm
+pnpm add react react-dom classnames @osdk/react @osdk/react-components
+
+# yarn
+yarn add react react-dom classnames @osdk/react @osdk/react-components
 ```
 
 - `react`, `@types/react`, `react-dom` - React 17, 18, or 19

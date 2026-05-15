@@ -34,13 +34,17 @@ import type {
 
 ## Basic Usage
 
+:::note About `@my/osdk`
+`@my/osdk` is a placeholder for **your generated SDK package** (e.g. `@your-app/sdk`). Replace it with the actual package name in your project.
+:::
+
 ### Minimal Example
 
 The simplest way to use ObjectTable is with just an object type:
 
 ```typescript
+import { Office } from "@my/osdk";
 import { ObjectTable } from "@osdk/react-components/experimental/object-table";
-import { Office } from "@YourApp/sdk";
 
 function OfficesPage() {
   return (
@@ -310,11 +314,11 @@ Displays header and cell with the provided custom renderers.
 ### Example 1: Basic Table with Custom Column Definitions
 
 ```typescript
+import { Employee } from "@my/osdk";
 import {
   type ColumnDefinition,
   ObjectTable,
 } from "@osdk/react-components/experimental/object-table";
-import { Employee } from "@YourApp/sdk";
 
 const columnDefinitions: Array<ColumnDefinition<typeof Employee>> = [
   {
@@ -347,8 +351,8 @@ function EmployeesTable() {
 ### Example 2: Table with Multiple Selection
 
 ```typescript
+import { Employee } from "@my/osdk";
 import { ObjectTable } from "@osdk/react-components/experimental/object-table";
-import { Employee } from "@YourApp/sdk";
 
 function EmployeesTable() {
   return (
@@ -363,8 +367,8 @@ function EmployeesTable() {
 ### Example 3: Table with Default Sorting
 
 ```typescript
+import { Employee } from "@my/osdk";
 import { ObjectTable } from "@osdk/react-components/experimental/object-table";
-import { Employee } from "@YourApp/sdk";
 
 function EmployeesTable() {
   return (
@@ -382,11 +386,11 @@ function EmployeesTable() {
 ### Example 4: Custom Cell Rendering
 
 ```typescript
+import { Employee } from "@my/osdk";
 import {
   type ColumnDefinition,
   ObjectTable,
 } from "@osdk/react-components/experimental/object-table";
-import { Employee } from "@YourApp/sdk";
 
 const columnDefinitions: Array<ColumnDefinition<typeof Employee>> = [
   {
@@ -419,11 +423,11 @@ function EmployeesTable() {
 ### Example 5: Custom Header Rendering
 
 ```typescript
+import { Employee } from "@my/osdk";
 import {
   type ColumnDefinition,
   ObjectTable,
 } from "@osdk/react-components/experimental/object-table";
-import { Employee } from "@YourApp/sdk";
 
 const columnDefinitions: Array<ColumnDefinition<typeof Employee>> = [
   {
@@ -469,8 +473,8 @@ const columnDefinitions: Array<ColumnDefinition<typeof Employee>> = [
 ### Example 7: Context Menu on Cell Right-Click
 
 ```typescript
+import { Employee } from "@my/osdk";
 import { ObjectTable } from "@osdk/react-components/experimental/object-table";
-import { Employee } from "@YourApp/sdk";
 
 function EmployeesTable() {
   const renderCellContextMenu = (employee: Employee, cellValue: unknown) => (
@@ -506,8 +510,8 @@ function EmployeesTable() {
 ### Example 8: Row Click Handler
 
 ```typescript
+import { Employee } from "@my/osdk";
 import { ObjectTable } from "@osdk/react-components/experimental/object-table";
-import { Employee } from "@YourApp/sdk";
 import { useRouter } from "next/router";
 
 function EmployeesTable() {
@@ -531,12 +535,12 @@ function EmployeesTable() {
 You can filter by object properties and derived properties by including them in the `WhereClause`:
 
 ```typescript
+import { Employee } from "@my/osdk";
 import { DerivedProperty } from "@osdk/client";
 import {
   type ColumnDefinition,
   ObjectTable,
 } from "@osdk/react-components/experimental/object-table";
-import { Employee } from "@YourApp/sdk";
 
 type RDPs = {
   managerName: string | undefined;
@@ -579,8 +583,8 @@ function EmployeesWithManagerTable() {
 ### Example 10: Controlled Sorting
 
 ```typescript
+import { Employee } from "@my/osdk";
 import { ObjectTable } from "@osdk/react-components/experimental/object-table";
-import { Employee } from "@YourApp/sdk";
 import { useState } from "react";
 
 function EmployeesTable() {
@@ -606,8 +610,8 @@ function EmployeesTable() {
 ### Example 11: Controlled Row Selection
 
 ```typescript
+import { Employee } from "@my/osdk";
 import { ObjectTable } from "@osdk/react-components/experimental/object-table";
-import { Employee } from "@YourApp/sdk";
 import { useState } from "react";
 
 function EmployeesTable() {
@@ -659,11 +663,11 @@ function EmployeesTable() {
 In a custom column type, you can render anything in the column by passing in renderHeader and renderCell props.
 
 ```typescript
+import { Employee } from "@my/osdk";
 import {
   type ColumnDefinition,
   ObjectTable,
 } from "@osdk/react-components/experimental/object-table";
-import { Employee } from "@YourApp/sdk";
 
 const columnDefinitions: Array<ColumnDefinition<typeof Employee>> = [
   {
@@ -698,13 +702,13 @@ function EmployeesTable() {
 Enable inline editing with validation, dropdown selectors, and bulk submission:
 
 ```typescript
+import { Employee, updateMultipleEmployees } from "@my/osdk";
 import { useOsdkAction } from "@osdk/react";
 import {
   type CellEditInfo,
   type ColumnDefinition,
   ObjectTable,
 } from "@osdk/react-components/experimental/object-table";
-import { Employee, updateMultipleEmployees } from "@YourApp/sdk";
 
 const columnDefinitions: Array<ColumnDefinition<typeof Employee>> = [
   {
@@ -840,11 +844,11 @@ function EditableEmployeesTable() {
 Pass a function to `editable` to gate editing per row, and a `getFieldComponentProps` function to compute editor props from the row's data:
 
 ```typescript
+import { Employee } from "@my/osdk";
 import {
   type ColumnDefinition,
   ObjectTable,
 } from "@osdk/react-components/experimental/object-table";
-import { Employee } from "@YourApp/sdk";
 
 const columnDefinitions: Array<ColumnDefinition<typeof Employee>> = [
   {
@@ -871,12 +875,12 @@ const columnDefinitions: Array<ColumnDefinition<typeof Employee>> = [
 Use the `ColumnConfigDialog` component to create a custom column configuration experience:
 
 ```typescript
+import { Employee } from "@my/osdk";
 import {
   ColumnConfigDialog,
   type ColumnDefinition,
   ObjectTable,
 } from "@osdk/react-components/experimental/object-table";
-import { Employee } from "@YourApp/sdk";
 import { useCallback, useMemo, useState } from "react";
 
 const initialColumnDefinitions: Array<ColumnDefinition<typeof Employee>> = [
@@ -1000,11 +1004,11 @@ This example demonstrates:
 Display values computed by OSDK functions (queries) alongside regular property columns. Function columns automatically handle loading states, caching, and deduplication.
 
 ```typescript
+import { Employee, getEmployeeMetrics } from "@my/osdk";
 import {
   type ColumnDefinition,
   ObjectTable,
 } from "@osdk/react-components/experimental/object-table";
-import { Employee, getEmployeeMetrics } from "@YourApp/sdk";
 
 // Define a type map for your function columns
 type EmployeeFunctionColumns = {
@@ -1175,9 +1179,9 @@ Adjust row height for better readability:
 Use `getRowAttributes` to apply custom HTML attributes (typically `data-*` attributes) to each `<tr>` element. This is the recommended pattern for conditional row styling — for example, changing a row's background color based on the underlying object's state.
 
 ```tsx
+import { Employee } from "@my/osdk";
 import type { Osdk } from "@osdk/api";
 import { ObjectTable } from "@osdk/react-components/experimental/object-table";
-import { Employee } from "@YourApp/sdk";
 import { useCallback } from "react";
 
 function EmployeesTable() {
@@ -1248,11 +1252,11 @@ The ObjectTable automatically implements infinite scroll pagination, with page s
 Use TypeScript generics to ensure type safety:
 
 ```typescript
+import { Employee } from "@my/osdk";
 import {
   type ColumnDefinition,
   ObjectTable,
 } from "@osdk/react-components/experimental/object-table";
-import { Employee } from "@YourApp/sdk";
 
 type RDPs = {
   managerName: string | undefined;
@@ -1275,8 +1279,8 @@ const columnDefinitions: Array<ColumnDefinition<typeof Employee, RDPs>> = [
 Let TypeScript infer types from your OSDK object type:
 
 ```typescript
+import { Employee } from "@my/osdk";
 import type { PropertyKeys } from "@osdk/client";
-import { Employee } from "@YourApp/sdk";
 
 // PropertyKeys gives you all valid property names
 type EmployeeProps = PropertyKeys<typeof Employee>;

@@ -8,9 +8,20 @@ Setup required before using `@osdk/react` hooks.
 
 ## Install dependencies
 
+:::tip If your tooling already installs dependencies, skip this step.
+:::
+
+Use whichever package manager your project uses:
+
 ```bash
-npm install @osdk/api @osdk/client @osdk/react
-npm install react react-dom
+# npm
+npm install @osdk/api @osdk/client @osdk/react react react-dom
+
+# pnpm
+pnpm add @osdk/api @osdk/client @osdk/react react react-dom
+
+# yarn
+yarn add @osdk/api @osdk/client @osdk/react react react-dom
 ```
 
 ## Configure the OSDK client
