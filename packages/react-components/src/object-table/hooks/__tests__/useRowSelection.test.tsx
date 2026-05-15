@@ -17,7 +17,6 @@
 import type { ObjectTypeDefinition, Osdk, PrimaryKeyType } from "@osdk/api";
 import { act, renderHook } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
-import type { UseRowSelectionChange } from "../useRowSelection.js";
 import { useRowSelection } from "../useRowSelection.js";
 
 const TestObjectType = {

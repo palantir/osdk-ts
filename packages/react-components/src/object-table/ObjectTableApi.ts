@@ -555,7 +555,7 @@ export interface ObjectTableProps<
   /**
    * Called when the row selection changes, with a {@link RowSelectionChange}
    * payload describing the new state.
-   * 
+   *
    * @param change The new selection state. See {@link RowSelectionChange}.
    */
   onRowSelectionChanged?: (
