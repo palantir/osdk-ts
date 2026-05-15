@@ -255,6 +255,7 @@ describe("Experimental Test Suite", () => {
                 "metadata": {
                   "apiName": "com.palantir.create-object-foo",
                   "displayMetadata": {
+                    "applyingMessage": [],
                     "configuration": {
                       "defaultLayout": "FORM",
                       "displayAndFormat": {

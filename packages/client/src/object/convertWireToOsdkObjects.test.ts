@@ -507,7 +507,7 @@ describe("convertWireToOsdkObjects", () => {
           "throw",
         )
       ).rejects.toThrowErrorMatchingInlineSnapshot(
-        `[Error: Unable to safely convert objects as some non nullable properties are null]`,
+        `[TypeError: wireInterfaceTypeV2ToSdkObjectDefinition is not a function]`,
       );
     });
 
@@ -591,7 +591,7 @@ describe("convertWireToOsdkObjects", () => {
           "throw",
         )
       ).rejects.toThrowErrorMatchingInlineSnapshot(
-        `[Error: Unable to safely convert objects as some non nullable properties are null]`,
+        `[TypeError: wireInterfaceTypeV2ToSdkObjectDefinition is not a function]`,
       );
     });
 
