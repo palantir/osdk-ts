@@ -4810,12 +4810,18 @@ importers:
       classnames:
         specifier: ^2.5.1
         version: 2.5.1
+      docx-preview:
+        specifier: ^0.3.7
+        version: 0.3.7
       eslint-plugin-storybook:
         specifier: ^10.2.10
         version: 10.2.17(eslint@9.35.0(jiti@2.5.1))(storybook@10.2.17(@testing-library/dom@10.4.0)(prettier@3.6.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(typescript@5.5.4)
       pdf-lib:
         specifier: ^1.17.1
         version: 1.17.1
+      postal-mime:
+        specifier: ^2.7.4
+        version: 2.7.4
       react:
         specifier: ^18.3.1
         version: 18.3.1
