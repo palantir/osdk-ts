@@ -334,7 +334,7 @@ const editableColumnDefinitions: ColumnDefinition<Employee>[] = [
       fieldComponent: "DROPDOWN",
       getFieldComponentProps: () => ({
         items: [true, false],
-        itemToStringLabel: (item: boolean) => {
+        itemToStringLabel: (item: boolean | undefined) => {
           if (item == null) {
             return "No Value";
           }
@@ -1619,6 +1619,28 @@ export const WithSubmitEditsButton: Story = {
           "Finance",
           "Human Resources",
         ],
+      }),
+    },
+  },
+  {
+    locator: { type: "property", id: "firstInternStartDate" },
+    editable: true,
+    renderCell: (object) => (
+      <div>
+        {object.firstInternStartDate
+          ? new Date(object.firstInternStartDate).toISOString()
+          : "No value"}
+      </div>
+    ),
+  },
+  {
+    locator: { type: "property", id: "firstFullTimeStartDate" },
+    editable: true,
+    editFieldConfig: {
+      fieldComponent: "DATE_PICKER",
+      getFieldComponentProps: () => ({
+        showTime: false,
+        placeholder: "Select date...",
       }),
     },
   },

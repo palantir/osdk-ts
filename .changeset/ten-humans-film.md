@@ -3,4 +3,4 @@
 "@osdk/react-components": patch
 ---
 
-Fix boolean dropdown field in ObjectTable
+Fix custom value rendering in ObjectTable dropdown cells for non-string item types (booleans, numbers, etc.)

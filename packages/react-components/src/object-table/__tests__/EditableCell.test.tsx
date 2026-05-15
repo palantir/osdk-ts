@@ -218,6 +218,58 @@ describe("EditableCell", () => {
       ).toBe("false");
     });
 
+    it("formats the readonly (non-focused) cell text via itemToStringLabel", () => {
+      const itemToStringLabel = vi.fn((item: boolean | undefined) => {
+        if (item == null) return "No Value";
+        return item ? "Yes" : "No";
+      });
+      const config: EditFieldConfig<{ id: number }> = {
+        fieldComponent: "DROPDOWN",
+        getFieldComponentProps: () => ({
+          items: [true, false],
+          itemToStringLabel,
+        }),
+      };
+
+      render(
+        <EditableCell
+          {...defaultProps}
+          initialValue={true}
+          currentValue={true}
+          editFieldConfig={config}
+        />,
+      );
+
+      expect(itemToStringLabel).toHaveBeenCalledWith(true);
+      expect(screen.getByText("Yes")).toBeDefined();
+    });
+
+    it("lets itemToStringLabel render an unset readonly cell", () => {
+      const itemToStringLabel = vi.fn((item: boolean | undefined) => {
+        if (item == null) return "No Value";
+        return item ? "Yes" : "No";
+      });
+      const config: EditFieldConfig<{ id: number }> = {
+        fieldComponent: "DROPDOWN",
+        getFieldComponentProps: () => ({
+          items: [true, false],
+          itemToStringLabel,
+        }),
+      };
+
+      render(
+        <EditableCell
+          {...defaultProps}
+          initialValue={null}
+          currentValue={null}
+          editFieldConfig={config}
+        />,
+      );
+
+      expect(itemToStringLabel).toHaveBeenCalled();
+      expect(screen.getByText("No Value")).toBeDefined();
+    });
+
     it("commits false when user picks the 'false' option after starting with true", async () => {
       const onCellEdit = vi.fn();
       render(
