@@ -1,0 +1,8 @@
+{
+  "extends": ["//"],
+  "tasks": {
+    "codegen": {
+      "outputs": ["build/scss-types/**/*"]
+    }
+  }
+}

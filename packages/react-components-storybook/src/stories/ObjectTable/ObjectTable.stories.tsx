@@ -2039,7 +2039,10 @@ return (
       <div className="object-table-container" style={{ height: "600px" }}>
         <ObjectTable
           {...args}
-          objectSet={emptyObjectSet}
+          objectSet={emptyObjectSet as ObjectSet<
+            typeof Employee,
+            Record<string, never>
+          >}
         />
       </div>
     );
