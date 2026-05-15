@@ -37,6 +37,7 @@ import { ToggleFilterInput } from "./ToggleFilterInput.js";
 interface PropertyFilterInputProps<Q extends ObjectTypeDefinition> {
   objectType: Q;
   objectSet?: ObjectSet<Q>;
+  baseObjectSet?: ObjectSet<Q>;
   definition: PropertyFilterDefinition<Q>;
   filterState: FilterState | undefined;
   onFilterStateChanged: (state: FilterState) => void;
@@ -49,6 +50,7 @@ interface PropertyFilterInputProps<Q extends ObjectTypeDefinition> {
 function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
   objectType,
   objectSet,
+  baseObjectSet,
   definition,
   filterState,
   onFilterStateChanged,
@@ -113,6 +115,7 @@ function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
         <SingleSelectFilterInput
           objectType={objectType}
           objectSet={objectSet}
+          baseObjectSet={baseObjectSet}
           propertyKey={definition.key}
           filterState={filterState}
           onFilterStateChanged={onFilterStateChanged}
@@ -128,6 +131,7 @@ function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
         <MultiSelectFilterInput
           objectType={objectType}
           objectSet={objectSet}
+          baseObjectSet={baseObjectSet}
           propertyKey={definition.key}
           filterState={filterState}
           onFilterStateChanged={onFilterStateChanged}
@@ -161,6 +165,7 @@ function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
         <ListogramFilterInput
           objectType={objectType}
           objectSet={objectSet}
+          baseObjectSet={baseObjectSet}
           propertyKey={definition.key}
           filterState={filterState}
           onFilterStateChanged={onFilterStateChanged}

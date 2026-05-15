@@ -204,22 +204,12 @@ function filterStateToPropertyFilter(
 }
 
 /**
- * Builds a WhereClause from filter definitions and their current states.
- *
- * The filterStates map uses string keys derived from filter definitions via
- * getFilterKey(). This ensures stable state lookups even when filters are
- * reordered or definition object references change.
- *
- * Note: The `as WhereClause<Q>` casts are necessary because we're building
- * clauses dynamically from property keys determined at runtime. TypeScript
- * cannot verify that the constructed clause structure matches the generic Q's
- * expected shape, but the structure is guaranteed to be valid by construction.
- */
-/**
  * Builds a WHERE clause fragment for a single property key from filter state.
- * Shared by PROPERTY and STATIC_VALUES filter types.
+ * Shared by PROPERTY and STATIC_VALUES filter types, and reused by
+ * `applyLinkedFilters` to construct the inner where clause on a linked
+ * object's property.
  */
-function buildPropertyKeyClause(
+export function buildPropertyKeyClause(
   key: string,
   state: FilterState,
   propertyType?: string,
@@ -253,6 +243,18 @@ export interface PropertyTypeInfo {
   multiplicity: boolean;
 }
 
+/**
+ * Builds a WhereClause from filter definitions and their current states.
+ *
+ * The filterStates map uses string keys derived from filter definitions via
+ * getFilterKey(). This ensures stable state lookups even when filters are
+ * reordered or definition object references change.
+ *
+ * Note: The `as WhereClause<Q>` casts are necessary because we're building
+ * clauses dynamically from property keys determined at runtime. TypeScript
+ * cannot verify that the constructed clause structure matches the generic Q's
+ * expected shape, but the structure is guaranteed to be valid by construction.
+ */
 export function buildWhereClause<Q extends ObjectTypeDefinition>(
   definitions: Array<FilterDefinitionUnion<Q>> | undefined,
   filterStates: Map<string, FilterState>,

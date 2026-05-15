@@ -621,11 +621,13 @@ Styling for filter list components including search, checkboxes, listogram, and 
 
 #### Content
 
-| Variable                              | Default Value                            | Description            |
-| ------------------------------------- | ---------------------------------------- | ---------------------- |
-| `--osdk-filter-list-content-gap`      | `0`                                      | Content gap            |
-| `--osdk-filter-list-empty-text-color` | `var(--osdk-typography-color-muted)`     | Empty state text color |
-| `--osdk-filter-list-empty-font-size`  | `var(--osdk-typography-size-body-small)` | Empty state font size  |
+| Variable                              | Default Value                            | Description                                                                                                            |
+| ------------------------------------- | ---------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `--osdk-filter-list-content-gap`      | `0`                                      | Content gap                                                                                                            |
+| `--osdk-filter-list-empty-text-color` | `var(--osdk-typography-color-muted)`     | Empty state text color                                                                                                 |
+| `--osdk-filter-list-empty-font-size`  | `var(--osdk-typography-size-body-small)` | Empty state font size                                                                                                  |
+| `--osdk-filter-ghost-item-opacity`    | `0.5`                                    | Opacity of MULTI_SELECT / LISTOGRAM rows whose count is zero under the narrowed scope but present in the base scope    |
+| `--osdk-filter-ghost-item-color`      | `var(--osdk-typography-color-muted)`     | Text color of MULTI_SELECT / LISTOGRAM rows whose count is zero under the narrowed scope but present in the base scope |
 
 #### Collapsed
 

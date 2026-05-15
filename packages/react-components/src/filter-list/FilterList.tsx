@@ -36,6 +36,7 @@ export function FilterList<Q extends ObjectTypeDefinition>(
   const {
     objectType,
     objectSet,
+    baseObjectSet,
     title,
     titleIcon,
     collapsed,
@@ -191,6 +192,7 @@ export function FilterList<Q extends ObjectTypeDefinition>(
       <FilterInput
         objectType={objectType}
         objectSet={objectSet}
+        baseObjectSet={baseObjectSet}
         definition={definition}
         filterState={filterState}
         onFilterStateChanged={onFilterStateChanged}
@@ -200,7 +202,7 @@ export function FilterList<Q extends ObjectTypeDefinition>(
         excludeRowOpen={excludeRowOpen}
       />
     ),
-    [objectType, objectSet, perFilterWhereClauses],
+    [objectType, objectSet, baseObjectSet, perFilterWhereClauses],
   );
 
   return (

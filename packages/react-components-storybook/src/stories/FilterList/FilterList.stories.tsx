@@ -21,7 +21,10 @@ import type {
   FilterListProps,
   FilterState,
 } from "@osdk/react-components/experimental/filter-list";
-import { FilterList } from "@osdk/react-components/experimental/filter-list";
+import {
+  applyLinkedFilters,
+  FilterList,
+} from "@osdk/react-components/experimental/filter-list";
 import { ObjectTable } from "@osdk/react-components/experimental/object-table";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useCallback, useMemo, useState } from "react";
@@ -1854,6 +1857,150 @@ const filterDefinitions = [
     },
   },
   render: (args) => <WithLinkedPropertyFiltersStory {...args} />,
+};
+
+// ---------------------------------------------------------------------------
+// Combined linked + direct filters with dual-objectSet zero-count rendering
+// ---------------------------------------------------------------------------
+
+const combinedDepartmentFilter: FilterDefinitionUnion<Employee> = {
+  type: "PROPERTY",
+  id: "combined-department",
+  key: "department",
+  label: "Department",
+  filterComponent: "LISTOGRAM",
+  filterState: { type: "EXACT_MATCH", values: [] },
+};
+
+const combinedLocationCityFilter: FilterDefinitionUnion<Employee> = {
+  type: "PROPERTY",
+  id: "combined-locationCity",
+  key: "locationCity",
+  label: "Location City",
+  filterComponent: "MULTI_SELECT",
+  filterState: { type: "SELECT", selectedValues: [] },
+};
+
+const combinedLeadNameFilter: FilterDefinitionUnion<Employee> = {
+  type: "LINKED_PROPERTY",
+  id: "combined-lead-name",
+  linkName: "lead",
+  reverseLinkName: "peeps",
+  linkedPropertyKey: "fullName",
+  linkedFilterComponent: "MULTI_SELECT",
+  linkedFilterState: { type: "SELECT", selectedValues: [] },
+  filterState: {
+    type: "linkedProperty",
+    linkedFilterState: { type: "SELECT", selectedValues: [] },
+  },
+  label: "Manager Name",
+} as FilterDefinitionUnion<Employee>;
+
+const COMBINED_LINKED_FILTER_DEFINITIONS: FilterDefinitionUnion<Employee>[] = [
+  combinedLeadNameFilter,
+  combinedDepartmentFilter,
+  combinedLocationCityFilter,
+];
+
+function CombinedWithLinkedFilterStory(
+  args: Partial<EmployeeFilterListProps>,
+) {
+  const client = useOsdkClient();
+  const baseObjectSet = useMemo(() => client(Employee), [client]);
+
+  const [filterClause, setFilterClause] = useState<
+    WhereClause<Employee> | undefined
+  >(undefined);
+  const [filterStates, setFilterStates] = useState<Map<string, FilterState>>(
+    () => new Map(),
+  );
+
+  const narrowedObjectSet = useMemo(
+    () =>
+      applyLinkedFilters(
+        baseObjectSet,
+        COMBINED_LINKED_FILTER_DEFINITIONS,
+        filterStates,
+      ),
+    [baseObjectSet, filterStates],
+  );
+
+  const argsOnFilterClauseChanged = args.onFilterClauseChanged;
+  const handleFilterClauseChanged = useCallback(
+    (clause: WhereClause<Employee>) => {
+      setFilterClause(clause);
+      argsOnFilterClauseChanged?.(clause);
+    },
+    [argsOnFilterClauseChanged],
+  );
+
+  return (
+    <div style={COMBINED_LAYOUT_STYLE}>
+      <div style={SIDEBAR_FIXED_STYLE}>
+        <FilterList
+          {...args}
+          objectType={Employee}
+          objectSet={narrowedObjectSet}
+          baseObjectSet={baseObjectSet}
+          filterDefinitions={COMBINED_LINKED_FILTER_DEFINITIONS}
+          filterClause={filterClause}
+          onFilterClauseChanged={handleFilterClauseChanged}
+          onFilterStatesChanged={setFilterStates}
+        />
+      </div>
+      <div style={FLEX_FILL_STYLE}>
+        <ObjectTable
+          objectType={Employee}
+          objectSet={narrowedObjectSet}
+          filter={filterClause}
+        />
+      </div>
+    </div>
+  );
+}
+
+export const CombinedWithLinkedFilter: Story = {
+  name: "Combined linked + direct filters (zero-count ghosts)",
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "A linked filter (Manager Name) and direct property filters coexist in "
+          + "one FilterList. The caller builds the narrowed objectSet via "
+          + "`applyLinkedFilters` and passes both scopes: `baseObjectSet` for "
+          + "linked-facet pivots (so values don't collapse) and `objectSet` for "
+          + "narrowed direct-facet counts. Direct property values present in the "
+          + "base but absent under narrowing render as greyed-out count=0 ghost "
+          + "rows.",
+      },
+      source: {
+        code: `const baseObjectSet = useMemo(() => client(Employee), [client]);
+const [filterStates, setFilterStates] = useState<Map<string, FilterState>>(
+  () => new Map(),
+);
+const narrowedObjectSet = useMemo(
+  () => applyLinkedFilters(baseObjectSet, filterDefinitions, filterStates),
+  [baseObjectSet, filterStates],
+);
+
+<FilterList
+  objectType={Employee}
+  objectSet={narrowedObjectSet}
+  baseObjectSet={baseObjectSet}
+  filterDefinitions={filterDefinitions}
+  filterClause={filterClause}
+  onFilterClauseChanged={setFilterClause}
+  onFilterStatesChanged={setFilterStates}
+/>
+<ObjectTable
+  objectType={Employee}
+  objectSet={narrowedObjectSet}
+  filter={filterClause}
+/>`,
+      },
+    },
+  },
+  render: (args) => <CombinedWithLinkedFilterStory {...args} />,
 };
 
 function CustomNameContainsFilter({

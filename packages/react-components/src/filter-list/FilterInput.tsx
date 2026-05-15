@@ -28,6 +28,13 @@ import { StaticValuesFilterInput } from "./inputs/StaticValuesFilterInput.js";
 export interface FilterInputProps<Q extends ObjectTypeDefinition> {
   objectType: Q;
   objectSet?: ObjectSet<Q>;
+  /**
+   * Optional unfiltered base object set. See {@link FilterListProps.baseObjectSet}.
+   * When provided, linked-property facets pivot from this set and direct-property
+   * facets dual-aggregate against `objectSet` and `baseObjectSet` so values
+   * present in the base but absent under narrowing render as count=0 ghosts.
+   */
+  baseObjectSet?: ObjectSet<Q>;
   definition: FilterDefinitionUnion<Q>;
   filterState: FilterState | undefined;
   onFilterStateChanged: (state: FilterState) => void;
@@ -47,6 +54,7 @@ export interface FilterInputProps<Q extends ObjectTypeDefinition> {
 function FilterInputInner<Q extends ObjectTypeDefinition>({
   objectType,
   objectSet,
+  baseObjectSet,
   definition,
   filterState,
   onFilterStateChanged,
@@ -71,6 +79,7 @@ function FilterInputInner<Q extends ObjectTypeDefinition>({
       return (
         <LinkedPropertyInput
           objectSet={objectSet}
+          baseObjectSet={baseObjectSet}
           definition={definition}
           filterState={filterState}
           onFilterStateChanged={onFilterStateChanged}
@@ -115,6 +124,7 @@ function FilterInputInner<Q extends ObjectTypeDefinition>({
         <PropertyFilterInput
           objectType={objectType}
           objectSet={objectSet}
+          baseObjectSet={baseObjectSet}
           definition={definition}
           filterState={filterState}
           onFilterStateChanged={onFilterStateChanged}

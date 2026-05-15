@@ -91,11 +91,26 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
   objectType: Q;
 
   /**
-   * Optional object set to scope aggregation queries.
-   * When provided, filter aggregations (e.g. listogram counts) are scoped to this set.
-   * When omitted, aggregations run against the full object type.
+   * Optional object set to scope aggregation queries. When omitted,
+   * aggregations run against the full object type.
    */
   objectSet?: ObjectSet<Q>;
+
+  /**
+   * Optional unfiltered base scope, paired with `objectSet` when a linked-
+   * property filter has been applied externally (see `applyLinkedFilters`).
+   *
+   * - Linked-property facets pivot from `baseObjectSet` so their value lists
+   *   don't collapse when the linked filter is active.
+   * - Direct-property facets render base-only values as count=0 greyed-out
+   *   rows when they fall out of `objectSet`'s narrowed scope.
+   *
+   * Pass the same reference as `objectSet` (or omit entirely) when no
+   * narrowing is active to avoid the dual-aggregation pass.
+   *
+   * @default undefined
+   */
+  baseObjectSet?: ObjectSet<Q>;
 
   /**
    * Optional title to display in the filter list header
@@ -137,6 +152,24 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
     definition: FilterDefinitionUnion<Q>,
     newState: FilterStateType,
   ) => void;
+
+  /**
+   * Called whenever any filter state changes, with the full map of current
+   * filter states keyed by filter key (see `getFilterKey`).
+   *
+   * Useful when:
+   * - You need a single object that captures all filter state for cache keys
+   *   or persistence. Unlike `filterClause`, this includes linked-property
+   *   filter state, which has no representation in `WhereClause`.
+   * - You want to consume the linked-property selections to build a narrowed
+   *   `ObjectSet` via `applyLinkedFilters` without accumulating per-filter
+   *   updates from `onFilterStateChanged` yourself.
+   *
+   * @param states The full map of filter states keyed by filter key. Entries
+   *   for filters with no active state are present only when the filter was
+   *   seeded with a default state.
+   */
+  onFilterStatesChanged?: (states: Map<string, FilterStateType>) => void;
 
   /**
    * Controls how filter visibility (add/remove) is managed.

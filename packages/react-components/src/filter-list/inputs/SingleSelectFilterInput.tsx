@@ -24,12 +24,13 @@ import React, { memo, useCallback, useMemo } from "react";
 import { FilterInputExcludeRow } from "../base/FilterInputExcludeRow.js";
 import { SingleSelectInput } from "../base/inputs/SingleSelectInput.js";
 import type { FilterState } from "../FilterListItemApi.js";
-import { usePropertyAggregation } from "../hooks/usePropertyAggregation.js";
+import { useDualScopeAggregation } from "../hooks/useDualScopeAggregation.js";
 import { coerceToString } from "../utils/coerceFilterValue.js";
 
 interface SingleSelectFilterInputProps<Q extends ObjectTypeDefinition> {
   objectType: Q;
   objectSet?: ObjectSet<Q>;
+  baseObjectSet?: ObjectSet<Q>;
   propertyKey: string;
   filterState: FilterState | undefined;
   onFilterStateChanged: (state: FilterState) => void;
@@ -42,6 +43,7 @@ interface SingleSelectFilterInputProps<Q extends ObjectTypeDefinition> {
 function SingleSelectFilterInputInner<Q extends ObjectTypeDefinition>({
   objectType,
   objectSet,
+  baseObjectSet,
   propertyKey,
   filterState,
   onFilterStateChanged,
@@ -78,18 +80,20 @@ function SingleSelectFilterInputInner<Q extends ObjectTypeDefinition>({
     [onFilterStateChanged, isExcluding],
   );
 
+  const selectedValues = useMemo(
+    () => selectedValue != null ? [selectedValue] : [],
+    [selectedValue],
+  );
   const aggregationOptions = useMemo(
-    () => ({
-      where: whereClause,
-      activeValues: selectedValue != null ? [selectedValue] : undefined,
-    }),
-    [whereClause, selectedValue],
+    () => ({ where: whereClause, selectedValues }),
+    [whereClause, selectedValues],
   );
 
-  const { data, isLoading, error } = usePropertyAggregation(
+  const { data, isLoading, error } = useDualScopeAggregation(
     objectType,
     propertyKey as PropertyKeys<Q>,
     objectSet,
+    baseObjectSet,
     aggregationOptions,
   );
 

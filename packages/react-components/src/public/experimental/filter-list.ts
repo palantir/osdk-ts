@@ -50,6 +50,7 @@ export type { FilterInputProps } from "../../filter-list/FilterInput.js";
 export { useFilterListState } from "../../filter-list/hooks/useFilterListState.js";
 export type { UseFilterListStateResult } from "../../filter-list/hooks/useFilterListState.js";
 
+export { applyLinkedFilters } from "../../filter-list/utils/applyLinkedFilters.js";
 export { filterHasActiveState } from "../../filter-list/utils/filterValues.js";
 export { getFilterKey } from "../../filter-list/utils/getFilterKey.js";
 export { getFilterLabel } from "../../filter-list/utils/getFilterLabel.js";

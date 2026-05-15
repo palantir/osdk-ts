@@ -108,11 +108,14 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
     filterDefinitions,
     onFilterStateChanged,
     onFilterClauseChanged,
+    onFilterStatesChanged,
     initialFilterStates,
   } = props;
   const { metadata } = useOsdkMetadata(objectType);
   const onFilterClauseChangedRef = useRef(onFilterClauseChanged);
   onFilterClauseChangedRef.current = onFilterClauseChanged;
+  const onFilterStatesChangedRef = useRef(onFilterStatesChanged);
+  onFilterStatesChangedRef.current = onFilterStatesChanged;
 
   const propertyTypes = useMemo(() => {
     const map = new Map<string, PropertyTypeInfo>();
@@ -186,6 +189,10 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
   useEffect(() => {
     onFilterClauseChangedRef.current?.(whereClause);
   }, [whereClause]);
+
+  useEffect(() => {
+    onFilterStatesChangedRef.current?.(filterStates);
+  }, [filterStates]);
 
   // Preserve per-key clause references when content hasn't changed so
   // FilterInput.memo can hold and aggregations don't refetch unnecessarily.

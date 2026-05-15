@@ -24,12 +24,13 @@ import React, { memo, useCallback, useMemo } from "react";
 import { FilterInputExcludeRow } from "../base/FilterInputExcludeRow.js";
 import { ListogramInput } from "../base/inputs/ListogramInput.js";
 import type { FilterState } from "../FilterListItemApi.js";
-import { usePropertyAggregation } from "../hooks/usePropertyAggregation.js";
+import { useDualScopeAggregation } from "../hooks/useDualScopeAggregation.js";
 import { coerceToStringArray } from "../utils/coerceFilterValue.js";
 
 interface ListogramFilterInputProps<Q extends ObjectTypeDefinition> {
   objectType: Q;
   objectSet?: ObjectSet<Q>;
+  baseObjectSet?: ObjectSet<Q>;
   propertyKey: string;
   filterState: FilterState | undefined;
   onFilterStateChanged: (state: FilterState) => void;
@@ -46,6 +47,7 @@ interface ListogramFilterInputProps<Q extends ObjectTypeDefinition> {
 function ListogramFilterInputInner<Q extends ObjectTypeDefinition>({
   objectType,
   objectSet,
+  baseObjectSet,
   propertyKey,
   filterState,
   onFilterStateChanged,
@@ -90,14 +92,15 @@ function ListogramFilterInputInner<Q extends ObjectTypeDefinition>({
     ? "value" as const
     : "count" as const;
   const aggregationOptions = useMemo(
-    () => ({ where: whereClause, sortBy, activeValues: selectedValues }),
+    () => ({ where: whereClause, sortBy, selectedValues }),
     [whereClause, sortBy, selectedValues],
   );
 
-  const { data, maxCount, isLoading, error } = usePropertyAggregation(
+  const { data, maxCount, isLoading, error } = useDualScopeAggregation(
     objectType,
     propertyKey as PropertyKeys<Q>,
     objectSet,
+    baseObjectSet,
     aggregationOptions,
   );
 

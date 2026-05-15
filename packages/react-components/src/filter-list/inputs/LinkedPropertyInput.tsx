@@ -58,6 +58,12 @@ interface LinkedPropertyInputProps<
   L extends LinkNames<Q>,
 > {
   objectSet: ObjectSet<Q>;
+  /**
+   * Optional unfiltered base scope. When provided, the pivot uses this set
+   * instead of `objectSet` so the linked-property value list reflects every
+   * value reachable in the base, not just those still in the narrowed scope.
+   */
+  baseObjectSet?: ObjectSet<Q>;
   definition: LinkedPropertyFilterDefinition<
     Q,
     L,
@@ -78,6 +84,7 @@ function LinkedPropertyInputInner<
   L extends LinkNames<Q>,
 >({
   objectSet,
+  baseObjectSet,
   definition,
   filterState,
   onFilterStateChanged,
@@ -86,9 +93,10 @@ function LinkedPropertyInputInner<
   style,
   layout,
 }: LinkedPropertyInputProps<Q, L>): React.ReactElement {
+  const pivotSource = baseObjectSet ?? objectSet;
   const linkedObjectSet = useMemo(
-    () => objectSet.pivotTo(definition.linkName),
-    [objectSet, definition.linkName],
+    () => pivotSource.pivotTo(definition.linkName),
+    [pivotSource, definition.linkName],
   );
 
   const linkedObjectType = linkedObjectSet.$objectSetInternals.def;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { WhereClause } from "@osdk/api";
+import type { ObjectSet, WhereClause } from "@osdk/api";
 import { useOsdkAggregation } from "@osdk/react";
 import { cleanup, render, screen } from "@testing-library/react";
 import React from "react";
@@ -46,6 +46,30 @@ afterEach(() => {
   cleanup();
   vi.clearAllMocks();
 });
+
+/**
+ * Provides scripted responses to two parallel `useOsdkAggregation` calls
+ * inside a filter input that uses `baseObjectSet`. The two calls differ in
+ * which `objectSet` they target; we discriminate on a `_kind` tag carried on
+ * the test fixtures (`baseSet`, `narrowedSet`) rather than on call order, so
+ * the mock is robust to hook-order refactors.
+ */
+function mockDualAggregationData(
+  narrowed: Array<{ name: string; count: number }>,
+  base: Array<{ name: string; count: number }>,
+): void {
+  const toData = (groups: Array<{ name: string; count: number }>) => ({
+    data: groups.map((g) => ({ $group: { name: g.name }, $count: g.count })),
+    isLoading: false,
+    error: null,
+    refetch: vi.fn(),
+  });
+  vi.mocked(useOsdkAggregation).mockImplementation((_objType, args) => {
+    const kind = (args as { objectSet?: { _kind?: string } }).objectSet?._kind;
+    const result = kind === "base" ? toData(base) : toData(narrowed);
+    return result as unknown as ReturnType<typeof useOsdkAggregation>;
+  });
+}
 
 describe("ghost initialFilterStates values", () => {
   describe("ListogramFilterInput", () => {
@@ -123,6 +147,114 @@ describe("ghost initialFilterStates values", () => {
       // values.length > 0, so the search input renders instead.
       expect(screen.queryByText("No options available")).toBeNull();
       expect(screen.getByLabelText("Select name")).toBeDefined();
+    });
+  });
+});
+
+describe("baseObjectSet dual aggregation", () => {
+  const narrowedSet = { _kind: "narrowed" } as unknown as ObjectSet<
+    typeof MockObjectType
+  >;
+  const baseSet = { _kind: "base" } as unknown as ObjectSet<
+    typeof MockObjectType
+  >;
+
+  describe("ListogramFilterInput", () => {
+    it("renders base-only values as count=0 ghost rows marked data-ghost", () => {
+      mockDualAggregationData(
+        [{ name: "Engineering", count: 3 }],
+        [
+          { name: "Engineering", count: 5 },
+          { name: "Marketing", count: 2 },
+          { name: "Sales", count: 1 },
+        ],
+      );
+
+      render(
+        <ListogramFilterInput
+          objectType={MockObjectType}
+          objectSet={narrowedSet}
+          baseObjectSet={baseSet}
+          propertyKey="name"
+          filterState={{ type: "EXACT_MATCH", values: [] }}
+          onFilterStateChanged={vi.fn()}
+          whereClause={EMPTY_WHERE}
+        />,
+      );
+
+      const engineeringRow = screen.getByRole("button", {
+        name: /Engineering/,
+      });
+      const marketingRow = screen.getByRole("button", { name: /Marketing/ });
+      const salesRow = screen.getByRole("button", { name: /Sales/ });
+
+      // Engineering appears in narrowed: real count, no ghost.
+      expect(engineeringRow.hasAttribute("data-ghost")).toBe(false);
+      // Marketing and Sales only exist in base: ghost rows.
+      expect(marketingRow.hasAttribute("data-ghost")).toBe(true);
+      expect(salesRow.hasAttribute("data-ghost")).toBe(true);
+    });
+
+    it("does not mark a selected value as ghost even when narrowed count is zero", () => {
+      mockDualAggregationData(
+        [],
+        [{ name: "Engineering", count: 5 }, { name: "Marketing", count: 2 }],
+      );
+
+      render(
+        <ListogramFilterInput
+          objectType={MockObjectType}
+          objectSet={narrowedSet}
+          baseObjectSet={baseSet}
+          propertyKey="name"
+          filterState={{ type: "EXACT_MATCH", values: ["Engineering"] }}
+          onFilterStateChanged={vi.fn()}
+          whereClause={EMPTY_WHERE}
+        />,
+      );
+
+      const engineeringRow = screen.getByRole("button", {
+        name: /Engineering/,
+      });
+      const marketingRow = screen.getByRole("button", { name: /Marketing/ });
+
+      // Selected zero-count rows render as selected, not ghost.
+      expect(engineeringRow.getAttribute("aria-pressed")).toBe("true");
+      expect(engineeringRow.hasAttribute("data-ghost")).toBe(false);
+      // Unselected base-only values stay ghost.
+      expect(marketingRow.hasAttribute("data-ghost")).toBe(true);
+    });
+  });
+
+  describe("MultiSelectFilterInput", () => {
+    it("registers base-only values alongside narrowed values (visible via the value count)", () => {
+      mockDualAggregationData(
+        [{ name: "Engineering", count: 3 }],
+        [
+          { name: "Engineering", count: 5 },
+          { name: "Marketing", count: 2 },
+        ],
+      );
+
+      render(
+        <MultiSelectFilterInput
+          objectType={MockObjectType}
+          objectSet={narrowedSet}
+          baseObjectSet={baseSet}
+          propertyKey="name"
+          filterState={{ type: "SELECT", selectedValues: [] }}
+          onFilterStateChanged={vi.fn()}
+          whereClause={EMPTY_WHERE}
+        />,
+      );
+
+      // Both real and base-only values are registered. The combobox starts
+      // closed, but the "of N values" count surfaced by the surrounding
+      // FilterInputExcludeRow reflects the merged value list.
+      expect(screen.queryByText("No options available")).toBeNull();
+      expect(
+        screen.getByTitle("Approximate count of unique values").textContent,
+      ).toContain("2");
     });
   });
 });

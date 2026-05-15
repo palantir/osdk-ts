@@ -211,6 +211,39 @@ describe("LinkedPropertyInput", () => {
 
       expect(mockObjectSet.pivotTo).toHaveBeenCalledWith("primaryOffice");
     });
+
+    it("pivots from baseObjectSet when provided", () => {
+      const narrowed = createMockObjectSet();
+      const base = createMockObjectSet();
+
+      render(
+        <LinkedPropertyInput
+          objectSet={narrowed}
+          baseObjectSet={base}
+          definition={createDefinition("TOGGLE")}
+          filterState={undefined}
+          onFilterStateChanged={vi.fn()}
+        />,
+      );
+
+      expect(base.pivotTo).toHaveBeenCalledWith("primaryOffice");
+      expect(narrowed.pivotTo).not.toHaveBeenCalled();
+    });
+
+    it("falls back to objectSet when baseObjectSet is undefined", () => {
+      const narrowed = createMockObjectSet();
+
+      render(
+        <LinkedPropertyInput
+          objectSet={narrowed}
+          definition={createDefinition("TOGGLE")}
+          filterState={undefined}
+          onFilterStateChanged={vi.fn()}
+        />,
+      );
+
+      expect(narrowed.pivotTo).toHaveBeenCalledWith("primaryOffice");
+    });
   });
 
   describe("ghost initialFilterStates values", () => {
