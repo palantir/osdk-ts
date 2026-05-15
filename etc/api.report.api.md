@@ -266,8 +266,6 @@ export interface AsyncIterArgs<
 	MODIFIERS extends ApplyModifiersArg<Q> = {}
 > extends SelectArg<Q, K, R, S, RDP_KEYS, PROPERTY_SECURITIES>, OrderByArg<Q, PropertyKeys<Q> | RDP_KEYS, ORDER_BY_OPTIONS> {
     	// (undocumented)
-    $__UNSTABLE_useOldInterfaceApis?: boolean;
-    	// (undocumented)
     $applyModifiers?: ApplyModifiersArg<Q> & MODIFIERS & { [P in Exclude<keyof MODIFIERS, PropertyKeys<Q>>] : never };
     	// (undocumented)
     $includeAllBaseObjectProperties?: PropertyKeys<Q> extends K ? T : never;
@@ -1226,8 +1224,6 @@ export namespace ObjectSetArgs {
     		RDP_KEYS extends string = never,
     		ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<K> = never
     	> extends Select<K, RDP_KEYS>, OrderBy<ORDER_BY_OPTIONS, K> {
-        		// (undocumented)
-        $__UNSTABLE_useOldInterfaceApis?: boolean;
         		// (undocumented)
         $includeAllBaseObjectProperties?: PropertyKeys<Q> extends K ? T : never;
         	}

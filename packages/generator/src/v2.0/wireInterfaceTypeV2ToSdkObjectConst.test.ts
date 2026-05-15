@@ -18,7 +18,7 @@ import type {
   InterfaceType,
   SharedPropertyType,
 } from "@osdk/foundry.ontologies";
-import { __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition } from "@osdk/generator-converters";
+import { wireInterfaceTypeV2ToSdkObjectDefinition } from "@osdk/generator-converters";
 import { format } from "prettier";
 import { describe, expect, it } from "vitest";
 import { EnhancedInterfaceType } from "../GenerateContext/EnhancedInterfaceType.js";
@@ -27,9 +27,9 @@ import { ForeignType } from "../GenerateContext/ForeignType.js";
 import { deleteUndefineds } from "../util/deleteUndefineds.js";
 import type { WireOntologyDefinition } from "../WireOntologyDefinition.js";
 import {
-  __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst,
   getInvalidInterfaceProperties,
-} from "./UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst.js";
+  wireInterfaceTypeV2ToSdkObjectConst,
+} from "./wireInterfaceTypeV2ToSdkObjectConst.js";
 
 function simpleSpt<T extends string>(apiName: T, metadataLevel: 0 | 1 | 2 = 2) {
   return {
@@ -102,7 +102,7 @@ function simpleOntology<I extends InterfaceType>(
   } as const satisfies WireOntologyDefinition;
 }
 
-describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
+describe(wireInterfaceTypeV2ToSdkObjectConst, () => {
   it("Does not say (inherited) on properties locally defined", async () => {
     const ontology = enhanceOntology({
       sanitized: simpleOntology("ontology", [
@@ -121,7 +121,7 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
     }
 
     const formattedCode = await format(
-      __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(
+      wireInterfaceTypeV2ToSdkObjectConst(
         ontology.interfaceTypes.Bar,
         ontology,
         true,
@@ -223,7 +223,7 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
     );
 
     const formattedCode = await format(
-      __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(
+      wireInterfaceTypeV2ToSdkObjectConst(
         ontology.interfaceTypes.Foo as EnhancedInterfaceType,
         ontology,
         true,
@@ -327,7 +327,7 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
     );
 
     const formattedCode = await format(
-      __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(
+      wireInterfaceTypeV2ToSdkObjectConst(
         ontology.interfaceTypes.Foo as EnhancedInterfaceType,
         ontology,
         true,
@@ -443,7 +443,7 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
     );
 
     const formattedCode = await format(
-      __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(
+      wireInterfaceTypeV2ToSdkObjectConst(
         ontology.interfaceTypes.Foo as EnhancedInterfaceType,
         ontology,
         true,
@@ -549,7 +549,7 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
     });
 
     const formattedCode = await format(
-      __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(
+      wireInterfaceTypeV2ToSdkObjectConst(
         ontology.interfaceTypes.Child as EnhancedInterfaceType,
         ontology,
         true,
@@ -589,21 +589,21 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
     });
 
     const interfaceDefNoNamespace = deleteUndefineds(
-      __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition(
+      wireInterfaceTypeV2ToSdkObjectDefinition(
         (ontology.interfaceTypes.Child as EnhancedInterfaceType).raw,
         false,
       ),
     );
 
     const interfaceDefWithNamespaceOk = deleteUndefineds(
-      __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition(
+      wireInterfaceTypeV2ToSdkObjectDefinition(
         (ontology.interfaceTypes["com.A.myChild"] as EnhancedInterfaceType).raw,
         false,
       ),
     );
 
     const interfaceDefWithNamespaceNotOk = deleteUndefineds(
-      __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition(
+      wireInterfaceTypeV2ToSdkObjectDefinition(
         (ontology.interfaceTypes["com.A.myChildNo"] as EnhancedInterfaceType)
           .raw,
         false,

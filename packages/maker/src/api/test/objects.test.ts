@@ -3788,6 +3788,7 @@ describe("Object Types", () => {
                     "dataConstraints": {
                       "nullability": undefined,
                       "nullabilityV2": {
+                        "noEmptyCollections": true,
                         "noNulls": true,
                       },
                       "propertyTypeConstraints": [],
