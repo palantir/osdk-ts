@@ -359,20 +359,16 @@ return <ObjectTable objectType={Employee} objectSet={employeeObjectSet} />`,
   },
   render: (args) => {
     const client = useOsdkClient();
-    const employeeObjectSet: ObjectSet<typeof Employee> = client(Employee)
-      .where(
-        { jobProfile: "Marketing Manager" },
-      );
+    const employeeObjectSet = client(Employee).where({
+      jobProfile: "Marketing Manager",
+    });
 
     return (
       <div className="object-table-container" style={{ height: "600px" }}>
         <ObjectTable
           {...args}
           objectType={Employee}
-          objectSet={employeeObjectSet as ObjectSet<
-            typeof Employee,
-            Record<string, never>
-          >}
+          objectSet={employeeObjectSet}
         />
       </div>
     );
@@ -2039,10 +2035,7 @@ return (
       <div className="object-table-container" style={{ height: "600px" }}>
         <ObjectTable
           {...args}
-          objectSet={emptyObjectSet as ObjectSet<
-            typeof Employee,
-            Record<string, never>
-          >}
+          objectSet={emptyObjectSet}
         />
       </div>
     );

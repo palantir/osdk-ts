@@ -73,7 +73,7 @@ export function useObjectTableData<
   columnDefinitions?: Array<ColumnDefinition<Q, RDPs, FunctionColumns>>,
   filter?: WhereClause<Q, RDPs>,
   sorting?: SortingState,
-  objectSet?: ObjectSet<Q, RDPs>,
+  objectSet?: ObjectSet<Q>,
   objectSetOptions?: ObjectSetOptions<Q>,
   dedupeIntervalMs: number = DEFAULT_OBJECT_TABLE_DEDUPE_INTERVAL_MS,
   pageSize: number = DEFAULT_PAGE_SIZE,
