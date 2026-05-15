@@ -55,7 +55,7 @@ export function findSuperrepoRoot(startDir: string): string | undefined {
     }
     const parent = path.dirname(dir);
     // Equality at filesystem root: path.dirname("/")==="/" and
-    // path.dirname("C:\\")==="C:\\" — bounds the walk on every platform.
+    // path.dirname("C:\\")==="C:\\", which bounds the walk on every platform.
     if (parent === dir) return undefined;
     dir = parent;
   }
@@ -115,8 +115,8 @@ export function readDiscovery(
 }
 
 /**
- * Liveness check via `process.kill(pid, 0)`, which sends signal 0 — a no-op
- * that still triggers the kernel's permission check. The check succeeds
+ * Liveness check via `process.kill(pid, 0)`, which sends signal 0 (a no-op
+ * that still triggers the kernel's permission check). The check succeeds
  * iff the PID corresponds to a process the caller can see; EPERM (we lack
  * permission) is still treated as "alive". ESRCH means dead. Works on
  * Unix and Windows (Node maps `kill` accordingly).

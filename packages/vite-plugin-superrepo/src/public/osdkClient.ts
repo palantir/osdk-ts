@@ -33,7 +33,7 @@ export * from "@osdk/client";
  *     typescript/python function runtimes.
  *
  * The plugin's `transform` hook rewrites `src/client.ts`'s import of
- * `@osdk/client` to point here in dev only — production builds keep the
+ * `@osdk/client` to point here in dev only. Production builds keep the
  * real `createClient`, the real foundry URL, and no `smartClient` wrap.
  */
 export const createClient: typeof __real = (
