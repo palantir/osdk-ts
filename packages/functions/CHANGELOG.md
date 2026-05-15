@@ -1,5 +1,19 @@
 # @osdk/functions
 
+## 1.10.0
+
+### Minor Changes
+
+- 51b3bce: Modify uploadMedia to return a Media object
+
+### Patch Changes
+
+- Updated dependencies [f90a2da]
+- Updated dependencies [9eb67e4]
+- Updated dependencies [51b3bce]
+- Updated dependencies [75f877f]
+  - @osdk/client@2.20.0
+
 ## 1.9.0
 
 ### Minor Changes

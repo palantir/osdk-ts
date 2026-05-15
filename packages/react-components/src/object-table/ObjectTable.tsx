@@ -313,6 +313,7 @@ export function ObjectTable<
       onColumnHeaderClick={handleColumnHeaderClick}
       rowHeight={props.rowHeight}
       renderCellContextMenu={onRenderCellContextMenu}
+      renderEmptyState={props.renderEmptyState}
       className={props.className}
       error={error}
       headerMenuFeatureFlags={headerMenuFeatureFlags}

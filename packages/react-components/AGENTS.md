@@ -45,22 +45,36 @@ Components are imported from their individual entry points under `@osdk/react-co
 - `@osdk/react-components/experimental/tiff-renderer` — TiffRenderer
 - `@osdk/react-components/experimental/markdown-renderer` — MarkdownRenderer
 - `@osdk/react-components/experimental/aip-agent-chat` — AipAgentChat, BaseAipAgentChat
+- `@osdk/react-components/experimental/document-viewer` — DocumentViewer
+- `@osdk/react-components/experimental/docx-viewer` — DocxViewer, BaseDocxViewer
+- `@osdk/react-components/experimental/email-viewer` — EmailViewer, BaseEmailViewer
+- `@osdk/react-components/experimental/excel-viewer` — ExcelViewer, BaseExcelViewer
+- `@osdk/react-components/experimental/image-viewer` — ImageViewer, BaseImageViewer
+- `@osdk/react-components/experimental/video-viewer` — VideoViewer, BaseVideoViewer
+- `@osdk/react-components/experimental/xml-viewer` — XmlViewer, BaseXmlViewer
 
-| Component              | Description                                                                                                                                 |
-| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| **ObjectTable**        | Table for displaying OSDK object sets with sorting, filtering, inline editing, column pinning/resizing, row selection, and infinite scroll. |
-| **BaseTable**          | OSDK-agnostic base table — use when building custom data fetching on top of the table UI.                                                   |
-| **FilterList**         | Aggregation-based filter UI for object sets with draggable reordering.                                                                      |
-| **BaseFilterList**     | OSDK-agnostic base filter list — use for custom filter implementations.                                                                     |
-| **ActionForm**         | Form for applying OSDK actions with generated or custom field definitions.                                                                  |
-| **BaseForm**           | OSDK-agnostic base action form — use when supplying explicit field content and submit handling.                                             |
-| **ColumnConfigDialog** | Dialog for managing column visibility and drag-and-drop reordering.                                                                         |
-| **PdfViewer**          | PDF viewer for OSDK Media objects with toolbar, search, annotations, sidebar (thumbnails/outline), highlight mode, and form fields.         |
-| **BasePdfViewer**      | OSDK-agnostic base PDF viewer — accepts a URL or ArrayBuffer directly. Use when building custom data fetching on top of the viewer UI.      |
-| **TiffRenderer**       | TIFF image renderer — accepts a `Uint8Array` and renders onto a canvas with size validation and error handling.                             |
-| **MarkdownRenderer**   | Markdown renderer that accepts a markdown string and renders it with styled headings, code blocks, tables, and links.                       |
-| **AipAgentChat**       | Chat surface backed by Foundry LMS via `useChat`. Takes a `PlatformClient` + model API name and renders messages, composer, and streaming.  |
-| **BaseAipAgentChat**   | OSDK-agnostic base chat — accepts `messages`/`status`/`onSendMessage` directly. Use for custom chat-state plumbing.                         |
+| Component              | Description                                                                                                                                       |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **ObjectTable**        | Table for displaying OSDK object sets with sorting, filtering, inline editing, column pinning/resizing, row selection, and infinite scroll.       |
+| **BaseTable**          | OSDK-agnostic base table — use when building custom data fetching on top of the table UI.                                                         |
+| **FilterList**         | Aggregation-based filter UI for object sets with draggable reordering.                                                                            |
+| **BaseFilterList**     | OSDK-agnostic base filter list — use for custom filter implementations.                                                                           |
+| **ActionForm**         | Form for applying OSDK actions with generated or custom field definitions.                                                                        |
+| **BaseForm**           | OSDK-agnostic base action form — use when supplying explicit field content and submit handling.                                                   |
+| **ColumnConfigDialog** | Dialog for managing column visibility and drag-and-drop reordering.                                                                               |
+| **PdfViewer**          | PDF viewer for OSDK Media objects with toolbar, search, annotations, sidebar (thumbnails/outline), highlight mode, and form fields.               |
+| **BasePdfViewer**      | OSDK-agnostic base PDF viewer — accepts a URL or ArrayBuffer directly. Use when building custom data fetching on top of the viewer UI.            |
+| **TiffRenderer**       | TIFF image renderer — accepts a `Uint8Array` and renders onto a canvas with size validation and error handling.                                   |
+| **MarkdownRenderer**   | Markdown renderer that accepts a markdown string and renders it with styled headings, code blocks, tables, and links.                             |
+| **AipAgentChat**       | Chat surface backed by Foundry LMS via `useChat`. Takes a `PlatformClient` + model API name and renders messages, composer, and streaming.        |
+| **BaseAipAgentChat**   | OSDK-agnostic base chat — accepts `messages`/`status`/`onSendMessage` directly. Use for custom chat-state plumbing.                               |
+| **DocumentViewer**     | Unified media viewer that auto-detects file type (PDF, TIFF, image, video, DOCX, Excel, email, markdown, XML) and renders the appropriate viewer. |
+| **DocxViewer**         | DOCX document viewer — renders `.docx` files with headers, footers, footnotes, and endnotes.                                                      |
+| **EmailViewer**        | Email viewer — parses and renders `.eml` files with headers, HTML body (sandboxed iframe), and plain text fallback.                               |
+| **ExcelViewer**        | Excel viewer — parses and renders `.xlsx` spreadsheets with sheet tabs and column/row headers.                                                    |
+| **ImageViewer**        | Image viewer — renders images (PNG, JPEG, GIF, SVG, WebP, BMP) with object-fit contain.                                                           |
+| **VideoViewer**        | Video viewer — renders video with native browser controls.                                                                                        |
+| **XmlViewer**          | XML viewer — renders XML content with syntax preservation.                                                                                        |
 
 ## Documentation
 
