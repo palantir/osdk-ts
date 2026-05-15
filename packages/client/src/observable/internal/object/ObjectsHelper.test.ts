@@ -222,7 +222,7 @@ describe("ObjectsHelper.isKeyActive", () => {
     };
   });
 
-  it("propagateWrite propagates to a variant key with pending cleanup", () => {
+  it("propagateWrite reaches a variant key with pending cleanup", () => {
     const rdpConfig = createFakeRdpConfig("derivedAddress");
 
     // Seed key A (no RDP)
@@ -249,19 +249,15 @@ describe("ObjectsHelper.isKeyActive", () => {
     // Simulate pending cleanup (React unmount-remount cycle)
     store.pendingCleanup.set(queryB.cacheKey, 1);
 
-    // Write through key A — should propagate to B due to pending cleanup
+    // Write through key A — should reach B (refetch triggered) due to pending cleanup
     const updated = emp.$clone({ fullName: "Bob" });
     updateObject(store, updated);
 
-    // Key B should have the propagated write
+    // Key B's RDP variant gets a refetch trigger, not a direct write, so its
+    // status flips to "loading" while the cached value remains its prior data.
     const valueB = store.getValue(queryB.cacheKey);
     expect(valueB).toBeDefined();
-    expect(valueB?.value).toEqual(
-      expect.objectContaining({
-        $primaryKey: 1,
-        fullName: "Bob",
-      }),
-    );
+    expect(valueB?.status).toBe("loading");
   });
 
   it("propagateWrite skips variant key that is neither observed nor pending cleanup", () => {
@@ -320,23 +316,25 @@ describe("ObjectsHelper.isKeyActive", () => {
     subB.unsubscribe();
     store.pendingCleanup.set(queryB.cacheKey, 1);
 
-    // Should propagate while pending cleanup is active
+    // Should reach K_B while pending cleanup is active — triggers refetch on
+    // the RDP variant, which flips status to "loading" while preserving value.
     updateObject(store, emp.$clone({ fullName: "Bob" }));
+    expect(store.getValue(queryB.cacheKey)?.status).toBe("loading");
     expect(store.getValue(queryB.cacheKey)?.value).toEqual(
-      expect.objectContaining({ fullName: "Bob" }),
+      expect.objectContaining({ fullName: "Alice" }),
     );
 
     // Simulate cleanup microtask completing
     store.pendingCleanup.delete(queryB.cacheKey);
 
-    // Should NOT propagate after cleanup ran
+    // Should NOT reach K_B after cleanup ran. K_B's value remains untouched.
     updateObject(store, emp.$clone({ fullName: "Charlie" }));
     expect(store.getValue(queryB.cacheKey)?.value).toEqual(
-      expect.objectContaining({ fullName: "Bob" }),
+      expect.objectContaining({ fullName: "Alice" }),
     );
   });
 
-  it("re-subscribing before microtask flush receives latest data", async () => {
+  it("re-subscribing before microtask flush sees loading status from triggered refetch", async () => {
     const rdpConfig = createFakeRdpConfig("derivedAddress");
 
     // Seed both keys
@@ -355,10 +353,12 @@ describe("ObjectsHelper.isKeyActive", () => {
     sub1.unsubscribe();
     store.pendingCleanup.set(queryB.cacheKey, 1);
 
-    // Write new data while pending cleanup is active
+    // Write new base data while pending cleanup is active. With the RDP-variant
+    // staleness fix, this triggers a refetch on K_B instead of writing through.
     updateObject(store, emp.$clone({ fullName: "Updated" }));
 
-    // Re-subscribe (remount) — should see updated data
+    // Re-subscribe (remount) — should see a payload, with status reflecting
+    // the in-flight refetch.
     const subFn = mockSingleSubCallback();
     store.cacheKeys.retain(queryB.cacheKey);
     const sub2 = subjectB.subscribe(
@@ -367,11 +367,7 @@ describe("ObjectsHelper.isKeyActive", () => {
 
     await waitForCall(subFn);
     expect(subFn.next).toHaveBeenCalledWith(
-      expect.objectContaining({
-        value: expect.objectContaining({
-          fullName: "Updated",
-        }),
-      }),
+      expect.objectContaining({ status: "loading" }),
     );
 
     sub2.unsubscribe();
@@ -471,7 +467,7 @@ describe("Two variants with different RDP configs - GC of one should not affect 
     expect(variants.has(queryB.cacheKey)).toBe(false);
   });
 
-  it("propagateWrite still works for A after B is GC'd", () => {
+  it("propagateWrite still reaches A after B is GC'd", () => {
     const rdpConfigA = createFakeRdpConfig("fieldA");
     const rdpConfigAB = createFakeRdpConfig("fieldA", "fieldB");
 
@@ -502,13 +498,12 @@ describe("Two variants with different RDP configs - GC of one should not affect 
       1,
     )).toBe(1);
 
-    // Update via base variant — should still propagate to A
+    // Update via base variant — propagation should reach A (RDP variant) and
+    // trigger a refetch since the base field changed.
     updateObject(store, emp.$clone({ fullName: "Bob" }));
 
     const valueA = store.getValue(queryA.cacheKey);
-    expect(valueA?.value).toEqual(
-      expect.objectContaining({ $primaryKey: 1, fullName: "Bob" }),
-    );
+    expect(valueA?.status).toBe("loading");
 
     store.cacheKeys.release(queryA.cacheKey);
   });
@@ -593,6 +588,128 @@ describe("ObjectsHelper variant cache keys", () => {
 
     expect(q1).not.toBe(q2);
     expect(q1.cacheKey).not.toBe(q2.cacheKey);
+  });
+
+  it("triggers refetch on rdp variant when sibling write changes base fields", () => {
+    // "office" stands in for a withProperties RDP. A holds the derived value
+    // computed against fullName="Alice". When B writes fullName="Bob" without
+    // a derived value, propagation must refetch A rather than stitch B's fresh
+    // fullName onto A's stale derived value.
+    const rdpConfig = createFakeRdpConfig("office");
+
+    const queryA = store.objects.getQuery(
+      { apiName: Employee, pk: 1 },
+      rdpConfig,
+    );
+    const queryB = store.objects.getQuery({ apiName: Employee, pk: 1 });
+
+    store.cacheKeys.retain(queryA.cacheKey);
+    store.cacheKeys.retain(queryB.cacheKey);
+    store.subjects.get(queryA.cacheKey).subscribe(() => {});
+    store.subjects.get(queryB.cacheKey).subscribe(() => {});
+
+    const aPayload = emp.$clone({
+      fullName: "Alice",
+      office: "derived-from-Alice",
+    });
+    store.batch({}, (batch) => {
+      queryA.writeToStore(aPayload as any, "loaded", batch);
+    });
+    expect(store.getValue(queryA.cacheKey)?.status).toBe("loaded");
+
+    const bPayload = emp.$clone({ fullName: "Bob" });
+    store.batch({}, (batch) => {
+      queryB.writeToStore(bPayload as any, "loaded", batch);
+    });
+
+    expect(store.getValue(queryA.cacheKey)?.status).toBe("loading");
+    expect(store.getValue(queryA.cacheKey)?.value).toEqual(
+      expect.objectContaining({
+        fullName: "Alice",
+        office: "derived-from-Alice",
+      }),
+    );
+
+    store.cacheKeys.release(queryA.cacheKey);
+    store.cacheKeys.release(queryB.cacheKey);
+  });
+
+  it("does not refetch rdp variant when sibling write carries identical base fields", () => {
+    const rdpConfig = createFakeRdpConfig("office");
+
+    const queryA = store.objects.getQuery(
+      { apiName: Employee, pk: 1 },
+      rdpConfig,
+    );
+    const queryB = store.objects.getQuery({ apiName: Employee, pk: 1 });
+
+    store.cacheKeys.retain(queryA.cacheKey);
+    store.cacheKeys.retain(queryB.cacheKey);
+    store.subjects.get(queryA.cacheKey).subscribe(() => {});
+    store.subjects.get(queryB.cacheKey).subscribe(() => {});
+
+    const aPayload = emp.$clone({
+      fullName: "Alice",
+      office: "derived-from-Alice",
+    });
+    store.batch({}, (batch) => {
+      queryA.writeToStore(aPayload as any, "loaded", batch);
+    });
+
+    const bPayload = emp.$clone({ fullName: "Alice" });
+    store.batch({}, (batch) => {
+      queryB.writeToStore(bPayload as any, "loaded", batch);
+    });
+
+    expect(store.getValue(queryA.cacheKey)?.status).toBe("loaded");
+    expect(store.getValue(queryA.cacheKey)?.value).toEqual(
+      expect.objectContaining({
+        fullName: "Alice",
+        office: "derived-from-Alice",
+      }),
+    );
+
+    store.cacheKeys.release(queryA.cacheKey);
+    store.cacheKeys.release(queryB.cacheKey);
+  });
+
+  it("does not refetch a no-rdp target when sibling variant has rdps", () => {
+    const rdpConfig = createFakeRdpConfig("office");
+
+    const queryA = store.objects.getQuery({ apiName: Employee, pk: 1 });
+    const queryB = store.objects.getQuery(
+      { apiName: Employee, pk: 1 },
+      rdpConfig,
+    );
+
+    store.cacheKeys.retain(queryA.cacheKey);
+    store.cacheKeys.retain(queryB.cacheKey);
+    store.subjects.get(queryA.cacheKey).subscribe(() => {});
+    store.subjects.get(queryB.cacheKey).subscribe(() => {});
+
+    store.batch({}, (batch) => {
+      queryA.writeToStore(
+        emp.$clone({ fullName: "Alice" }) as any,
+        "loaded",
+        batch,
+      );
+    });
+
+    const bPayload = emp.$clone({
+      fullName: "Bob",
+      office: "derived-from-Bob",
+    });
+    store.batch({}, (batch) => {
+      queryB.writeToStore(bPayload as any, "loaded", batch);
+    });
+
+    expect(store.getValue(queryA.cacheKey)?.status).toBe("loaded");
+    expect(store.getValue(queryA.cacheKey)?.value).toEqual(
+      expect.objectContaining({ fullName: "Bob" }),
+    );
+
+    store.cacheKeys.release(queryA.cacheKey);
+    store.cacheKeys.release(queryB.cacheKey);
   });
 
   it("treats no-select and empty-select as the same cache key", () => {
