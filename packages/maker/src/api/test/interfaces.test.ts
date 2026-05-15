@@ -16,6 +16,7 @@
 
 import { beforeEach, describe, expect, it } from "vitest";
 import { defineInterface } from "../defineInterface.js";
+import { defineInterfaceActionTypeConstraint } from "../defineInterfaceActionTypeConstraint.js";
 import { defineOntology, dumpOntologyFullMetadata } from "../defineOntology.js";
 import { defineSharedPropertyType } from "../defineSpt.js";
 
@@ -69,6 +70,7 @@ describe("Interfaces", () => {
           "interfaceTypes": {
             "com.palantir.Foo": {
               "interfaceType": {
+                "actionTypeConstraints": [],
                 "apiName": "com.palantir.Foo",
                 "displayMetadata": {
                   "description": "Foo",
@@ -162,6 +164,7 @@ describe("Interfaces", () => {
           "interfaceTypes": {
             "com.palantir.bar": {
               "interfaceType": {
+                "actionTypeConstraints": [],
                 "apiName": "com.palantir.bar",
                 "displayMetadata": {
                   "description": "Bar",
@@ -361,6 +364,7 @@ describe("Interfaces", () => {
           "interfaceTypes": {
             "com.palantir.parentInterface": {
               "interfaceType": {
+                "actionTypeConstraints": [],
                 "apiName": "com.palantir.parentInterface",
                 "displayMetadata": {
                   "description": "parentInterface",
@@ -575,6 +579,7 @@ describe("Interfaces", () => {
           "interfaceTypes": {
             "com.palantir.bar": {
               "interfaceType": {
+                "actionTypeConstraints": [],
                 "apiName": "com.palantir.bar",
                 "displayMetadata": {
                   "description": "Bar",
@@ -721,6 +726,7 @@ describe("Interfaces", () => {
           "interfaceTypes": {
             "com.palantir.parentInterface": {
               "interfaceType": {
+                "actionTypeConstraints": [],
                 "apiName": "com.palantir.parentInterface",
                 "displayMetadata": {
                   "description": "parentInterface",
@@ -980,6 +986,7 @@ describe("Interfaces", () => {
         "interfaceTypes": {
           "com.palantir.childInterface": {
             "interfaceType": {
+              "actionTypeConstraints": [],
               "apiName": "com.palantir.childInterface",
               "displayMetadata": {
                 "description": "childInterface",
@@ -997,6 +1004,7 @@ describe("Interfaces", () => {
               ],
               "extendsInterfacesMetadata": [
                 {
+                  "actionTypeConstraints": [],
                   "apiName": "com.palantir.parentInterface",
                   "displayMetadata": {
                     "description": "parentInterface",
@@ -1097,6 +1105,7 @@ describe("Interfaces", () => {
           },
           "com.palantir.parentInterface": {
             "interfaceType": {
+              "actionTypeConstraints": [],
               "apiName": "com.palantir.parentInterface",
               "displayMetadata": {
                 "description": "parentInterface",
@@ -1180,6 +1189,7 @@ describe("Interfaces", () => {
         "interfaceTypes": {
           "com.palantir.parentInterface": {
             "interfaceType": {
+              "actionTypeConstraints": [],
               "apiName": "com.palantir.parentInterface",
               "displayMetadata": {
                 "description": "parentInterface",
@@ -1275,5 +1285,74 @@ describe("Interfaces", () => {
         ontologyPackageRid: null,
       });
     }, "/tmp/");
+  });
+
+  describe("Action Type Constraints", () => {
+    it("can define an action type constraint with parameter constraints", () => {
+      const iface = defineInterface({ apiName: "MyInterface" });
+
+      defineInterfaceActionTypeConstraint({
+        from: iface,
+        apiName: "myConstraint",
+        displayName: "My Constraint",
+        description: "A test constraint",
+        requireImplementation: true,
+        parameters: [
+          {
+            displayName: "Boolean Param",
+            type: { type: "boolean", boolean: {} },
+            requireImplementation: true,
+          },
+        ],
+      });
+
+      expect(iface.actionTypeConstraints).toHaveLength(1);
+      const constraint = iface.actionTypeConstraints[0];
+      expect(constraint.metadata.apiName).toBe(
+        "com.palantir.myConstraint",
+      );
+      expect(constraint.metadata.displayName).toBe("My Constraint");
+      expect(constraint.metadata.description).toBe("A test constraint");
+      expect(constraint.requireImplementation).toBe(true);
+      expect(Object.keys(constraint.parameters)).toHaveLength(1);
+
+      const paramRid = Object.keys(constraint.parameters)[0];
+      const param = constraint.parameters[paramRid];
+      expect(param.displayMetadata.displayName).toBe("Boolean Param");
+      expect(param.type).toEqual({ type: "boolean", boolean: {} });
+      expect(param.requireImplementation).toBe(true);
+    });
+
+    it("doesn't let you define duplicate action type constraints", () => {
+      const iface = defineInterface({ apiName: "MyInterface" });
+
+      defineInterfaceActionTypeConstraint({
+        from: iface,
+        apiName: "myConstraint",
+      });
+
+      expect(() => {
+        defineInterfaceActionTypeConstraint({
+          from: iface,
+          apiName: "myConstraint",
+        });
+      }).toThrowErrorMatchingInlineSnapshot(
+        `[Error: Invariant failed: Action type constraint with apiName com.palantir.myConstraint already exists on interface com.palantir.MyInterface]`,
+      );
+    });
+
+    it("defaults displayName and description", () => {
+      const iface = defineInterface({ apiName: "MyInterface" });
+
+      defineInterfaceActionTypeConstraint({
+        from: iface,
+        apiName: "myConstraint",
+      });
+
+      const constraint = iface.actionTypeConstraints[0];
+      expect(constraint.metadata.displayName).toBe("myConstraint");
+      expect(constraint.metadata.description).toBe("myConstraint");
+      expect(constraint.requireImplementation).toBe(true);
+    });
   });
 });

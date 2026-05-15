@@ -26,6 +26,8 @@ import type {
  * Gets all the action types that the interface type is associated with. E.g. actions that create an interface
  * object, edit an interface object, or use the interface as a parameter. Also returns actions that are
  * associated with an interface type that the interface type extends.
+ *
+ * This endpoint is deprecated and the bulk endpoint is preferred.
  */
 export async function getActionTypesForInterfaceType(
   ctx: ConjureContext,

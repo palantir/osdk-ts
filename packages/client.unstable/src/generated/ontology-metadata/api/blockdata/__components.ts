@@ -42,8 +42,11 @@ import type {
   GeotimeSeriesIntegrationRid as _api_GeotimeSeriesIntegrationRid,
   GroupId as _api_GroupId,
   Icon as _api_Icon,
+  InterfaceActionTypeConstraint as _api_InterfaceActionTypeConstraint,
+  InterfaceActionTypeConstraintRid as _api_InterfaceActionTypeConstraintRid,
   InterfaceLinkTypeApiName as _api_InterfaceLinkTypeApiName,
   InterfaceLinkTypeRid as _api_InterfaceLinkTypeRid,
+  InterfaceParameterConstraintRid as _api_InterfaceParameterConstraintRid,
   InterfacePropertyTypeApiName as _api_InterfacePropertyTypeApiName,
   InterfacePropertyTypeDisplayMetadata
     as _api_InterfacePropertyTypeDisplayMetadata,
@@ -73,6 +76,8 @@ import type {
   OntologyIrActionTypeStatus as _api_OntologyIrActionTypeStatus,
   OntologyIrBaseFormatter as _api_OntologyIrBaseFormatter,
   OntologyIrFormContent as _api_OntologyIrFormContent,
+  OntologyIrInterfaceActionTypeConstraint
+    as _api_OntologyIrInterfaceActionTypeConstraint,
   OntologyIrInterfacePropertyTypeType
     as _api_OntologyIrInterfacePropertyTypeType,
   OntologyIrInterfaceSharedPropertyType
@@ -245,7 +250,15 @@ export interface KnownMarketplaceIdentifiers {
   >;
   geotimeSeriesSyncs: Record<_api_GeotimeSeriesIntegrationRid, BlockInternalId>;
   groupIds: Record<_api_GroupId, BlockInternalId>;
+  interfaceActionTypeConstraints: Record<
+    _api_InterfaceActionTypeConstraintRid,
+    BlockInternalId
+  >;
   interfaceLinkTypes: Record<_api_InterfaceLinkTypeRid, BlockInternalId>;
+  interfaceParameterConstraints: Record<
+    _api_InterfaceParameterConstraintRid,
+    BlockInternalId
+  >;
   interfacePropertyTypes: Record<
     _api_InterfacePropertyTypeRid,
     BlockInternalId
@@ -403,6 +416,7 @@ export type MarketplaceInterfacePropertyType =
   | MarketplaceInterfacePropertyType_interfaceDefinedPropertyType;
 
 export interface MarketplaceInterfaceType {
+  actionTypeConstraints: Array<_api_InterfaceActionTypeConstraint>;
   apiName: _api_InterfaceTypeApiName;
   displayMetadata: MarketplaceInterfaceTypeDisplayMetadata;
   extendsInterfaces: Array<_api_InterfaceTypeRid>;
@@ -576,7 +590,15 @@ export interface OntologyIrKnownMarketplaceIdentifiers {
   >;
   geotimeSeriesSyncs: Record<GeotimeSeriesIntegrationName, BlockInternalId>;
   groupIds: Record<_api_GroupId, BlockInternalId>;
+  interfaceActionTypeConstraints: Record<
+    _api_InterfaceActionTypeConstraintRid,
+    BlockInternalId
+  >;
   interfaceLinkTypes: Record<_api_InterfaceLinkTypeApiName, BlockInternalId>;
+  interfaceParameterConstraints: Record<
+    _api_InterfaceParameterConstraintRid,
+    BlockInternalId
+  >;
   interfacePropertyTypes: Record<
     _api_InterfacePropertyTypeApiName,
     BlockInternalId
@@ -616,6 +638,8 @@ export interface OntologyIrMarketplaceActionType {
   metadata: OntologyIrMarketplaceActionTypeMetadata;
 }
 export interface OntologyIrMarketplaceActionTypeDisplayMetadata {
+  applyingMessage: Array<_api_OntologyIrActionTypeRichTextComponent>;
+  applyingMessageEnabled?: boolean | null | undefined;
   configuration?:
     | _api_ActionTypeDisplayMetadataConfiguration
     | null
@@ -691,6 +715,7 @@ export type OntologyIrMarketplaceInterfacePropertyType =
   | OntologyIrMarketplaceInterfacePropertyType_interfaceDefinedPropertyType;
 
 export interface OntologyIrMarketplaceInterfaceType {
+  actionTypeConstraints: Array<_api_OntologyIrInterfaceActionTypeConstraint>;
   apiName: _api_InterfaceTypeApiName;
   displayMetadata: MarketplaceInterfaceTypeDisplayMetadata;
   extendsInterfaces: Array<_api_InterfaceTypeApiName>;

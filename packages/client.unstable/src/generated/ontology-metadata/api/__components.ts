@@ -66,6 +66,8 @@ import type {
   MediaMetadataType as _api_types_MediaMetadataType,
   NowValue as _api_types_NowValue,
   ObjectLocator as _api_types_ObjectLocator,
+  OntologyIrBaseParameterConstraintType
+    as _api_types_OntologyIrBaseParameterConstraintType,
   OntologyIrBaseParameterType as _api_types_OntologyIrBaseParameterType,
   OntologyIrDataValue as _api_types_OntologyIrDataValue,
   OntologyIrObjectLocator as _api_types_OntologyIrObjectLocator,
@@ -1602,6 +1604,11 @@ export interface AllowedParameterValues_text {
   text: ParameterFreeTextOrEmpty;
 }
 
+export interface AllowedParameterValues_markdown {
+  type: "markdown";
+  markdown: ParameterMarkdownOrEmpty;
+}
+
 export interface AllowedParameterValues_datetime {
   type: "datetime";
   datetime: ParameterDateTimeRangeOrEmpty;
@@ -1697,6 +1704,7 @@ export type AllowedParameterValues =
   | AllowedParameterValues_user
   | AllowedParameterValues_multipassGroup
   | AllowedParameterValues_text
+  | AllowedParameterValues_markdown
   | AllowedParameterValues_datetime
   | AllowedParameterValues_boolean
   | AllowedParameterValues_objectSetRid
@@ -1763,6 +1771,11 @@ export interface AllowedParameterValuesModification_multipassGroup {
 export interface AllowedParameterValuesModification_text {
   type: "text";
   text: ParameterFreeTextOrEmpty;
+}
+
+export interface AllowedParameterValuesModification_markdown {
+  type: "markdown";
+  markdown: ParameterMarkdownOrEmpty;
 }
 
 export interface AllowedParameterValuesModification_datetime {
@@ -1860,6 +1873,7 @@ export type AllowedParameterValuesModification =
   | AllowedParameterValuesModification_user
   | AllowedParameterValuesModification_multipassGroup
   | AllowedParameterValuesModification_text
+  | AllowedParameterValuesModification_markdown
   | AllowedParameterValuesModification_datetime
   | AllowedParameterValuesModification_boolean
   | AllowedParameterValuesModification_objectSetRid
@@ -1926,6 +1940,11 @@ export interface AllowedParameterValuesRequest_multipassGroup {
 export interface AllowedParameterValuesRequest_text {
   type: "text";
   text: ParameterFreeTextOrEmpty;
+}
+
+export interface AllowedParameterValuesRequest_markdown {
+  type: "markdown";
+  markdown: ParameterMarkdownOrEmpty;
 }
 
 export interface AllowedParameterValuesRequest_datetime {
@@ -2027,6 +2046,7 @@ export type AllowedParameterValuesRequest =
   | AllowedParameterValuesRequest_user
   | AllowedParameterValuesRequest_multipassGroup
   | AllowedParameterValuesRequest_text
+  | AllowedParameterValuesRequest_markdown
   | AllowedParameterValuesRequest_datetime
   | AllowedParameterValuesRequest_boolean
   | AllowedParameterValuesRequest_objectSetRid
@@ -3110,6 +3130,90 @@ export type DatasourceIdentifier =
   | DatasourceIdentifier_directSourceRid
   | DatasourceIdentifier_derivedPropertiesSourceRid;
 
+export interface DatasourceMigrationTarget_datasetRidAndBranchId {
+  type: "datasetRidAndBranchId";
+  datasetRidAndBranchId: DatasetRidAndBranchId;
+}
+
+export interface DatasourceMigrationTarget_streamLocator {
+  type: "streamLocator";
+  streamLocator: StreamLocator;
+}
+
+export interface DatasourceMigrationTarget_restrictedViewRid {
+  type: "restrictedViewRid";
+  restrictedViewRid: RestrictedViewRid;
+}
+
+export interface DatasourceMigrationTarget_timeSeriesSyncRid {
+  type: "timeSeriesSyncRid";
+  timeSeriesSyncRid: TimeSeriesSyncRid;
+}
+
+export interface DatasourceMigrationTarget_restrictedStream {
+  type: "restrictedStream";
+  restrictedStream: RestrictedViewRid;
+}
+
+export interface DatasourceMigrationTarget_mediaSourceRids {
+  type: "mediaSourceRids";
+  mediaSourceRids: Array<MediaSourceRid>;
+}
+
+export interface DatasourceMigrationTarget_mediaSetView {
+  type: "mediaSetView";
+  mediaSetView: MediaSetViewLocator;
+}
+
+export interface DatasourceMigrationTarget_geotimeSeriesIntegrationRid {
+  type: "geotimeSeriesIntegrationRid";
+  geotimeSeriesIntegrationRid: GeotimeSeriesIntegrationRid;
+}
+
+export interface DatasourceMigrationTarget_table {
+  type: "table";
+  table: TableLocator;
+}
+
+export interface DatasourceMigrationTarget_editsOnly {
+  type: "editsOnly";
+  editsOnly: EditsOnlyRid;
+}
+
+export interface DatasourceMigrationTarget_editsOnlyV2 {
+  type: "editsOnlyV2";
+  editsOnlyV2: NewEditsOnlyDatasource;
+}
+
+export interface DatasourceMigrationTarget_directSourceRid {
+  type: "directSourceRid";
+  directSourceRid: DirectSourceRid;
+}
+
+export interface DatasourceMigrationTarget_derivedPropertiesSourceRid {
+  type: "derivedPropertiesSourceRid";
+  derivedPropertiesSourceRid: DerivedPropertiesSourceRid;
+}
+/**
+ * Union type to represent the different datasource identifiers allowed as targets for a rename datasource migration.
+ * The editsOnlyV2 placeholder is only allowed as a target for a rename datasource migration as it should only be
+ * used for newly created edits-only datasources.
+ */
+export type DatasourceMigrationTarget =
+  | DatasourceMigrationTarget_datasetRidAndBranchId
+  | DatasourceMigrationTarget_streamLocator
+  | DatasourceMigrationTarget_restrictedViewRid
+  | DatasourceMigrationTarget_timeSeriesSyncRid
+  | DatasourceMigrationTarget_restrictedStream
+  | DatasourceMigrationTarget_mediaSourceRids
+  | DatasourceMigrationTarget_mediaSetView
+  | DatasourceMigrationTarget_geotimeSeriesIntegrationRid
+  | DatasourceMigrationTarget_table
+  | DatasourceMigrationTarget_editsOnly
+  | DatasourceMigrationTarget_editsOnlyV2
+  | DatasourceMigrationTarget_directSourceRid
+  | DatasourceMigrationTarget_derivedPropertiesSourceRid;
+
 /**
  * An rid identifying a datasource for an Ontology entity. This rid is a randomly generated identifier
  * and is safe to log.
@@ -4141,6 +4245,23 @@ export interface GetActionTypesForInterfaceTypeResponse {
   nextPageToken?: GetActionTypesForInterfaceTypePageToken | null | undefined;
 }
 /**
+ * Request to get action types for multiple interfaces.
+ */
+export interface GetActionTypesForInterfaceTypesRequest {
+  interfaceTypeRids: Array<InterfaceTypeRid>;
+  versionReference?: VersionReference | null | undefined;
+}
+/**
+ * Response map only includes entries for interfaces that exist and the caller has permission to view.
+ * Missing entries indicate the interface does not exist or the caller cannot view the interface.
+ */
+export interface GetActionTypesForInterfaceTypesResponse {
+  actionTypeRidsByInterfaceTypeRid: Record<
+    InterfaceTypeRid,
+    Array<ActionTypeRid>
+  >;
+}
+/**
  * A paging token used to fetch subsequent pages. Clients should not make any assumptions about the contents of
  * the token and it should not be parsed/modified.
  */
@@ -4164,6 +4285,20 @@ export interface GetActionTypesForObjectTypeResponse {
   nextPageToken?: GetActionTypesForObjectTypePageToken | null | undefined;
   resolvedBranch: ResolvedBranch;
   totalActionTypeCount: number;
+}
+/**
+ * Request to get action types for multiple object types.
+ */
+export interface GetActionTypesForObjectTypesRequest {
+  objectTypeRids: Array<ObjectTypeRid>;
+  versionReference?: VersionReference | null | undefined;
+}
+/**
+ * Response map only includes entries for object types that exist and the caller has permission to view.
+ * Missing entries indicate the object type does not exist or the caller cannot view the object type.
+ */
+export interface GetActionTypesForObjectTypesResponse {
+  actionTypeRidsByObjectTypeRid: Record<ObjectTypeRid, Array<ActionTypeRid>>;
 }
 export interface GetEntityDelegateDatasetRequest {
   ontologyEntityRid: ObjectOrLinkTypeRid;
@@ -5042,7 +5177,8 @@ export type LanguageAnalyzer =
   | "JAPANESE"
   | "KOREAN"
   | "ARABIC"
-  | "COMBINED_ARABIC_ENGLISH";
+  | "COMBINED_ARABIC_ENGLISH"
+  | "HEBREW";
 
 /**
  * ResourceIdentifier for lime indexes.
@@ -6232,6 +6368,7 @@ export type MioEmbeddingModel = "GOOGLE_SIGLIP_2";
 export interface MissingAffectedObjectTypesForFunctionRule {
   functionRid: FunctionRid;
   functionVersion: SemanticFunctionVersion;
+  missingAffectedLinkTypes: Array<LinkTypeRid>;
   missingAffectedObjectTypes: Array<ObjectTypeRid>;
 }
 export interface MissingParameterValueType {
@@ -6363,6 +6500,13 @@ export type NestedInterfacePropertyTypeImplementation =
 export interface NestedStructFieldApiNameMapping {
   apiName: ObjectTypeFieldApiName;
   mappings: Record<StructFieldName, NestedStructFieldApiNameMapping>;
+}
+/**
+ * A constant placeholder for edits-only datasources which can be used for identifying edits-only datasources
+ * without datasourceRids, i.e. newly created edits-only datasources. There should be at most one edits-only
+ * datasource per object type.
+ */
+export interface NewEditsOnlyDatasource {
 }
 /**
  * A URL target for a newly created object.
@@ -7264,6 +7408,7 @@ export interface ObjectTypeInputSpec {
  * An interface that an object type implements and metadata on how it implements it.
  */
 export interface ObjectTypeInterfaceImplementation {
+  actionTypes: Record<InterfaceActionTypeConstraintRid, ImplementingActionType>;
   interfaceTypeApiName: InterfaceTypeApiName;
   interfaceTypeRid: InterfaceTypeRid;
   links: Record<InterfaceLinkTypeRid, Array<LinkTypeId>>;
@@ -7507,10 +7652,12 @@ export interface ObjectTypeStreamDatasourceV3 {
 /**
  * Object type datasource that is backed by a table in foundry, uniquely identified by its locator.
  * Supports edit only property types through PropertyTypeMappingInfo.
+ * Supports PropertySecurityGroups to allow grouping properties into different security levels.
  */
 export interface ObjectTypeTableDatasource {
   branchId: BranchId;
   propertyMapping: Record<PropertyTypeRid, PropertyTypeMappingInfo>;
+  propertySecurityGroups?: PropertySecurityGroups | null | undefined;
   tableRid: TableRid;
 }
 /**
@@ -8152,6 +8299,11 @@ export interface OntologyIrAllowedParameterValues_text {
   text: ParameterFreeTextOrEmpty;
 }
 
+export interface OntologyIrAllowedParameterValues_markdown {
+  type: "markdown";
+  markdown: ParameterMarkdownOrEmpty;
+}
+
 export interface OntologyIrAllowedParameterValues_datetime {
   type: "datetime";
   datetime: OntologyIrParameterDateTimeRangeOrEmpty;
@@ -8242,6 +8394,7 @@ export type OntologyIrAllowedParameterValues =
   | OntologyIrAllowedParameterValues_user
   | OntologyIrAllowedParameterValues_multipassGroup
   | OntologyIrAllowedParameterValues_text
+  | OntologyIrAllowedParameterValues_markdown
   | OntologyIrAllowedParameterValues_datetime
   | OntologyIrAllowedParameterValues_boolean
   | OntologyIrAllowedParameterValues_objectSetRid
@@ -8772,6 +8925,15 @@ export interface OntologyIrInlineActionType {
   parameterId?: ParameterId | null | undefined;
   rid: ActionTypeApiName;
 }
+export interface OntologyIrInterfaceActionTypeConstraint {
+  metadata: InterfaceActionTypeConstraintMetadata;
+  parameters: Record<
+    InterfaceParameterConstraintRid,
+    OntologyIrInterfaceParameterConstraint
+  >;
+  requireImplementation: boolean;
+  rid: InterfaceActionTypeConstraintRid;
+}
 export interface OntologyIrInterfaceArrayPropertyType {
   subtype: OntologyIrInterfacePropertyTypeType;
 }
@@ -8794,6 +8956,14 @@ export interface OntologyIrInterfaceObjectParameterStructListFieldValue {
   interfacePropertyTypeRid: InterfacePropertyTypeApiName;
   parameterId: ParameterId;
   structFieldRid: StructFieldRid;
+}
+/**
+ * Parameter constraint of an InterfaceActionTypeConstraint
+ */
+export interface OntologyIrInterfaceParameterConstraint {
+  displayMetadata: InterfaceParameterConstraintDisplayMetadata;
+  requireImplementation: boolean;
+  type: _api_types_OntologyIrBaseParameterConstraintType;
 }
 export interface OntologyIrInterfaceParameterPropertyValue {
   parameterId: ParameterId;
@@ -9867,6 +10037,10 @@ export interface OntologyIrObjectTypeGeotimeSeriesDatasource {
  * An interface that an object type implements and metadata on how it implements it.
  */
 export interface OntologyIrObjectTypeInterfaceImplementation {
+  actionTypes: Record<
+    InterfaceActionTypeConstraintRid,
+    OntologyIrImplementingActionType
+  >;
   interfaceTypeApiName: InterfaceTypeApiName;
   linksV2: Record<
     InterfaceLinkTypeApiName,
@@ -9994,10 +10168,12 @@ export interface OntologyIrObjectTypeStreamDatasourceV3 {
 /**
  * Object type datasource that is backed by a table in foundry, uniquely identified by its locator.
  * Supports edit only property types through PropertyTypeMappingInfo.
+ * Supports PropertySecurityGroups to allow grouping properties into different security levels.
  */
 export interface OntologyIrObjectTypeTableDatasource {
   branchId: BranchId;
   propertyMapping: Record<ObjectTypeFieldApiName, PropertyTypeMappingInfo>;
+  propertySecurityGroups?: OntologyIrPropertySecurityGroups | null | undefined;
   tableRid: TableRid;
 }
 /**
@@ -10566,8 +10742,7 @@ export interface OntologyIrRunAsyncFunctionEffect {
   parameterValues: Record<FunctionInputName, OntologyIrLogicRuleValue>;
 }
 /**
- * This effect calls SchedulerDeploymentsService.upsertAndRunDeployment endpoint which upserts a schedule
- * deployment and runs it. See the Scheduler API docs for more details.
+ * This effect calls SchedulerService.runScheduleOrDeploymentOnBehalf endpoint. See the Scheduler API docs for more details.
  * The synchronous effect doesn't wait for the actual schedule run to complete, it only waits for a successful
  * kick-off of the schedule run.
  */
@@ -12031,6 +12206,23 @@ export interface ParameterMandatoryMarkingOrEmpty_mandatoryMarking {
 export type ParameterMandatoryMarkingOrEmpty =
   | ParameterMandatoryMarkingOrEmpty_empty
   | ParameterMandatoryMarkingOrEmpty_mandatoryMarking;
+
+export interface ParameterMarkdown {
+  maxLength?: number | null | undefined;
+  minLength?: number | null | undefined;
+}
+export interface ParameterMarkdownOrEmpty_empty {
+  type: "empty";
+  empty: MustBeEmpty;
+}
+
+export interface ParameterMarkdownOrEmpty_markdown {
+  type: "markdown";
+  markdown: ParameterMarkdown;
+}
+export type ParameterMarkdownOrEmpty =
+  | ParameterMarkdownOrEmpty_empty
+  | ParameterMarkdownOrEmpty_markdown;
 
 export interface ParameterMediaReference {
 }
@@ -13613,8 +13805,8 @@ export interface ResolvedDefaultBranch {
   rid: OntologyBranchRid;
 }
 /**
- * All information about the shape of the interface property. For now this all comes from shared properties, but
- * in the future it can also come from property constraints defined on the interface.
+ * All information about the shape of the interface property. This can come from a shared property backing the
+ * interface property or from property constraints defined directly on the interface.
  */
 export interface ResolvedInterfacePropertyType {
   apiName: InterfacePropertyTypeApiName;
@@ -13622,6 +13814,7 @@ export interface ResolvedInterfacePropertyType {
   constraints: ResolvedInterfacePropertyTypeConstraints;
   displayMetadata: InterfacePropertyTypeDisplayMetadata;
   rid: InterfacePropertyTypeRid;
+  sharedPropertyTypeRid?: SharedPropertyTypeRid | null | undefined;
   type: InterfacePropertyTypeType;
 }
 export interface ResolvedInterfacePropertyTypeConstraints {
@@ -13759,8 +13952,7 @@ export interface RunAsyncFunctionEffectModification {
   parameterValues: Record<FunctionInputName, LogicRuleValue>;
 }
 /**
- * This effect calls SchedulerDeploymentsService.upsertAndRunDeployment endpoint which upserts a schedule
- * deployment and runs it. See the Scheduler API docs for more details.
+ * This effect calls SchedulerService.runScheduleOrDeploymentOnBehalf endpoint. See the Scheduler API docs for more details.
  * The synchronous effect doesn't wait for the actual schedule run to complete, it only waits for a successful
  * kick-off of the schedule run.
  */

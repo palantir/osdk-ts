@@ -1698,7 +1698,9 @@ export type LongValue = number;
 export interface MandatoryMarkingPicker {
 }
 export type ManyToManyLinkTypeSide = "A_SIDE" | "B_SIDE";
-
+export interface MarkdownEditor {
+  initialHeight?: number | null | undefined;
+}
 /**
  * MarkingListType specifies that this parameter must be a list of Markings.
  */
@@ -1822,6 +1824,298 @@ export interface ObjectTypeValue {
   objectTypeId: _api_ObjectTypeId;
 }
 export type OneToManyLinkTypeSide = "ONE_SIDE" | "MANY_SIDE";
+export interface OntologyIrBaseParameterConstraintType_boolean {
+  type: "boolean";
+  boolean: BooleanType;
+}
+
+export interface OntologyIrBaseParameterConstraintType_booleanList {
+  type: "booleanList";
+  booleanList: BooleanListType;
+}
+
+export interface OntologyIrBaseParameterConstraintType_integer {
+  type: "integer";
+  integer: IntegerType;
+}
+
+export interface OntologyIrBaseParameterConstraintType_integerList {
+  type: "integerList";
+  integerList: IntegerListType;
+}
+
+export interface OntologyIrBaseParameterConstraintType_long {
+  type: "long";
+  long: LongType;
+}
+
+export interface OntologyIrBaseParameterConstraintType_longList {
+  type: "longList";
+  longList: LongListType;
+}
+
+export interface OntologyIrBaseParameterConstraintType_double {
+  type: "double";
+  double: DoubleType;
+}
+
+export interface OntologyIrBaseParameterConstraintType_doubleList {
+  type: "doubleList";
+  doubleList: DoubleListType;
+}
+
+export interface OntologyIrBaseParameterConstraintType_string {
+  type: "string";
+  string: StringType;
+}
+
+export interface OntologyIrBaseParameterConstraintType_stringList {
+  type: "stringList";
+  stringList: StringListType;
+}
+
+export interface OntologyIrBaseParameterConstraintType_decimal {
+  type: "decimal";
+  decimal: DecimalType;
+}
+
+export interface OntologyIrBaseParameterConstraintType_decimalList {
+  type: "decimalList";
+  decimalList: DecimalListType;
+}
+
+export interface OntologyIrBaseParameterConstraintType_geohash {
+  type: "geohash";
+  geohash: GeohashType;
+}
+
+export interface OntologyIrBaseParameterConstraintType_geohashList {
+  type: "geohashList";
+  geohashList: GeohashListType;
+}
+
+export interface OntologyIrBaseParameterConstraintType_geoshape {
+  type: "geoshape";
+  geoshape: GeoshapeType;
+}
+
+export interface OntologyIrBaseParameterConstraintType_geoshapeList {
+  type: "geoshapeList";
+  geoshapeList: GeoshapeListType;
+}
+
+export interface OntologyIrBaseParameterConstraintType_timeSeriesReference {
+  type: "timeSeriesReference";
+  timeSeriesReference: TimeSeriesReferenceType;
+}
+
+export interface OntologyIrBaseParameterConstraintType_timestamp {
+  type: "timestamp";
+  timestamp: TimestampType;
+}
+
+export interface OntologyIrBaseParameterConstraintType_timestampList {
+  type: "timestampList";
+  timestampList: TimestampListType;
+}
+
+export interface OntologyIrBaseParameterConstraintType_date {
+  type: "date";
+  date: DateType;
+}
+
+export interface OntologyIrBaseParameterConstraintType_dateList {
+  type: "dateList";
+  dateList: DateListType;
+}
+
+export interface OntologyIrBaseParameterConstraintType_objectReference {
+  type: "objectReference";
+  objectReference: OntologyIrObjectReferenceType;
+}
+
+export interface OntologyIrBaseParameterConstraintType_objectReferenceList {
+  type: "objectReferenceList";
+  objectReferenceList: OntologyIrObjectReferenceListType;
+}
+
+export interface OntologyIrBaseParameterConstraintType_objectSetRid {
+  type: "objectSetRid";
+  objectSetRid: OntologyIrObjectSetRidType;
+}
+
+export interface OntologyIrBaseParameterConstraintType_interfaceReference {
+  type: "interfaceReference";
+  interfaceReference: OntologyIrInterfaceReferenceType;
+}
+
+export interface OntologyIrBaseParameterConstraintType_interfaceReferenceList {
+  type: "interfaceReferenceList";
+  interfaceReferenceList: OntologyIrInterfaceReferenceListType;
+}
+
+export interface OntologyIrBaseParameterConstraintType_interfaceObjectSetRid {
+  type: "interfaceObjectSetRid";
+  interfaceObjectSetRid: OntologyIrInterfaceObjectSetRidType;
+}
+
+export interface OntologyIrBaseParameterConstraintType_objectTypeReference {
+  type: "objectTypeReference";
+  objectTypeReference: ObjectTypeReferenceType;
+}
+
+export interface OntologyIrBaseParameterConstraintType_scenarioReference {
+  type: "scenarioReference";
+  scenarioReference: ScenarioReferenceType;
+}
+
+export interface OntologyIrBaseParameterConstraintType_attachment {
+  type: "attachment";
+  attachment: AttachmentType;
+}
+
+export interface OntologyIrBaseParameterConstraintType_attachmentList {
+  type: "attachmentList";
+  attachmentList: AttachmentListType;
+}
+
+export interface OntologyIrBaseParameterConstraintType_marking {
+  type: "marking";
+  marking: MarkingType;
+}
+
+export interface OntologyIrBaseParameterConstraintType_markingList {
+  type: "markingList";
+  markingList: MarkingListType;
+}
+
+export interface OntologyIrBaseParameterConstraintType_mediaReference {
+  type: "mediaReference";
+  mediaReference: MediaReferenceType;
+}
+
+export interface OntologyIrBaseParameterConstraintType_mediaReferenceList {
+  type: "mediaReferenceList";
+  mediaReferenceList: MediaReferenceListType;
+}
+
+export interface OntologyIrBaseParameterConstraintType_geotimeSeriesReference {
+  type: "geotimeSeriesReference";
+  geotimeSeriesReference: GeotimeSeriesReferenceType;
+}
+
+export interface OntologyIrBaseParameterConstraintType_geotimeSeriesReferenceList {
+  type: "geotimeSeriesReferenceList";
+  geotimeSeriesReferenceList: GeotimeSeriesReferenceListType;
+}
+
+export interface OntologyIrBaseParameterConstraintType_struct {
+  type: "struct";
+  struct: OntologyIrStructType;
+}
+
+export interface OntologyIrBaseParameterConstraintType_structList {
+  type: "structList";
+  structList: OntologyIrStructListType;
+}
+
+export interface OntologyIrBaseParameterConstraintType_anyObjectReference {
+  type: "anyObjectReference";
+  anyObjectReference: AnyObjectReferenceType;
+}
+
+export interface OntologyIrBaseParameterConstraintType_anyObjectReferenceList {
+  type: "anyObjectReferenceList";
+  anyObjectReferenceList: AnyObjectReferenceListType;
+}
+
+export interface OntologyIrBaseParameterConstraintType_anyObjectSetRid {
+  type: "anyObjectSetRid";
+  anyObjectSetRid: AnyObjectSetRidType;
+}
+
+export interface OntologyIrBaseParameterConstraintType_anyInterfaceReference {
+  type: "anyInterfaceReference";
+  anyInterfaceReference: AnyInterfaceReferenceType;
+}
+
+export interface OntologyIrBaseParameterConstraintType_anyInterfaceReferenceList {
+  type: "anyInterfaceReferenceList";
+  anyInterfaceReferenceList: AnyInterfaceReferenceListType;
+}
+
+export interface OntologyIrBaseParameterConstraintType_anyInterfaceObjectSetRid {
+  type: "anyInterfaceObjectSetRid";
+  anyInterfaceObjectSetRid: AnyInterfaceObjectSetRidType;
+}
+
+export interface OntologyIrBaseParameterConstraintType_anyStruct {
+  type: "anyStruct";
+  anyStruct: AnyStructType;
+}
+
+export interface OntologyIrBaseParameterConstraintType_anyStructList {
+  type: "anyStructList";
+  anyStructList: AnyStructListType;
+}
+/**
+ * All of the possible types for parameter constraints on InterfaceActionTypeConstraints.
+ * Includes all BaseParameterType types plus simplified constraint types that don't
+ * require specifying implementation details (e.g., object type IDs, struct field definitions).
+ * Types that require implementation details (e.g., objectReference, objectReferenceList, objectSetRid,
+ * interfaceReference, interfaceReferenceList, interfaceObjectSetRid, struct, structList) are not
+ * supported for parameter constraints yet. Use the corresponding constraint type instead (e.g.,
+ * anyObjectReference instead of objectReference).
+ */
+export type OntologyIrBaseParameterConstraintType =
+  | OntologyIrBaseParameterConstraintType_boolean
+  | OntologyIrBaseParameterConstraintType_booleanList
+  | OntologyIrBaseParameterConstraintType_integer
+  | OntologyIrBaseParameterConstraintType_integerList
+  | OntologyIrBaseParameterConstraintType_long
+  | OntologyIrBaseParameterConstraintType_longList
+  | OntologyIrBaseParameterConstraintType_double
+  | OntologyIrBaseParameterConstraintType_doubleList
+  | OntologyIrBaseParameterConstraintType_string
+  | OntologyIrBaseParameterConstraintType_stringList
+  | OntologyIrBaseParameterConstraintType_decimal
+  | OntologyIrBaseParameterConstraintType_decimalList
+  | OntologyIrBaseParameterConstraintType_geohash
+  | OntologyIrBaseParameterConstraintType_geohashList
+  | OntologyIrBaseParameterConstraintType_geoshape
+  | OntologyIrBaseParameterConstraintType_geoshapeList
+  | OntologyIrBaseParameterConstraintType_timeSeriesReference
+  | OntologyIrBaseParameterConstraintType_timestamp
+  | OntologyIrBaseParameterConstraintType_timestampList
+  | OntologyIrBaseParameterConstraintType_date
+  | OntologyIrBaseParameterConstraintType_dateList
+  | OntologyIrBaseParameterConstraintType_objectReference
+  | OntologyIrBaseParameterConstraintType_objectReferenceList
+  | OntologyIrBaseParameterConstraintType_objectSetRid
+  | OntologyIrBaseParameterConstraintType_interfaceReference
+  | OntologyIrBaseParameterConstraintType_interfaceReferenceList
+  | OntologyIrBaseParameterConstraintType_interfaceObjectSetRid
+  | OntologyIrBaseParameterConstraintType_objectTypeReference
+  | OntologyIrBaseParameterConstraintType_scenarioReference
+  | OntologyIrBaseParameterConstraintType_attachment
+  | OntologyIrBaseParameterConstraintType_attachmentList
+  | OntologyIrBaseParameterConstraintType_marking
+  | OntologyIrBaseParameterConstraintType_markingList
+  | OntologyIrBaseParameterConstraintType_mediaReference
+  | OntologyIrBaseParameterConstraintType_mediaReferenceList
+  | OntologyIrBaseParameterConstraintType_geotimeSeriesReference
+  | OntologyIrBaseParameterConstraintType_geotimeSeriesReferenceList
+  | OntologyIrBaseParameterConstraintType_struct
+  | OntologyIrBaseParameterConstraintType_structList
+  | OntologyIrBaseParameterConstraintType_anyObjectReference
+  | OntologyIrBaseParameterConstraintType_anyObjectReferenceList
+  | OntologyIrBaseParameterConstraintType_anyObjectSetRid
+  | OntologyIrBaseParameterConstraintType_anyInterfaceReference
+  | OntologyIrBaseParameterConstraintType_anyInterfaceReferenceList
+  | OntologyIrBaseParameterConstraintType_anyInterfaceObjectSetRid
+  | OntologyIrBaseParameterConstraintType_anyStruct
+  | OntologyIrBaseParameterConstraintType_anyStructList;
+
 export interface OntologyIrBaseParameterType_boolean {
   type: "boolean";
   boolean: BooleanType;
@@ -2612,6 +2906,11 @@ export interface ParameterRenderHint_valueTypeRenderHint {
   type: "valueTypeRenderHint";
   valueTypeRenderHint: DelegateToValueTypeRenderHint;
 }
+
+export interface ParameterRenderHint_markdownEditor {
+  type: "markdownEditor";
+  markdownEditor: MarkdownEditor;
+}
 /**
  * When the parameter is tied to a value type, we will enforce the type of render hint on the front end
  */
@@ -2628,7 +2927,8 @@ export type ParameterRenderHint =
   | ParameterRenderHint_resourcePicker
   | ParameterRenderHint_cbacMarkingPicker
   | ParameterRenderHint_mandatoryMarkingPicker
-  | ParameterRenderHint_valueTypeRenderHint;
+  | ParameterRenderHint_valueTypeRenderHint
+  | ParameterRenderHint_markdownEditor;
 
 export interface ParameterRequired {
 }
@@ -3062,6 +3362,7 @@ export interface TimestampType {
  */
 export type TimestampValue = string;
 export interface UserDropdown {
+  shouldRemoveListQueryAfterSelection?: boolean | null | undefined;
 }
 /**
  * UserInput is a type used to denote the user has opted for user-inputted PKs. Object creation will be handled within Actions Service.

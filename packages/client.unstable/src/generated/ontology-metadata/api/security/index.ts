@@ -19,6 +19,7 @@ export * as PropertySecurityGroupEvaluationService from "./PropertySecurityGroup
 export type {
   BackingResourceRid,
   CannotViewObjectTypeError,
+  EditsOnlyNoRid,
   EvaluatePsgForObjectInstancesRequest,
   EvaluatePsgForObjectInstancesResponse,
   GranularPolicyNotPassedError,

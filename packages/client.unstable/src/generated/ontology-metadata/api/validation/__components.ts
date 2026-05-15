@@ -307,6 +307,11 @@ export interface ActionTypeFormContentOrderingNotExactlySameAsSectionSet {
 export interface ActionTypeFunctionLocatorNotLatestPublishedOnFoundryBranch {
 }
 /**
+ * ActionType has reverts enabled and a synchronous effect.
+ */
+export interface ActionTypeHasRevertsEnabledAndSynchronousEffect {
+}
+/**
  * ActionType has reverts enabled and a synchronous webhook.
  */
 export interface ActionTypeHasRevertsEnabledAndSynchronousWebhook {
@@ -646,6 +651,11 @@ export interface ActionTypePrimaryKeyInAddObjectRuleDoesNotUseValidLogicRuleValu
 export interface ActionTypePropertyTypeDoesNotMatchMappedLogicRuleValue {
 }
 /**
+ * ActionType logic rules reference archived object types.
+ */
+export interface ActionTypeReferencesArchivedObjectTypes {
+}
+/**
  * ActionType references ontology entities which do not exist.
  */
 export interface ActionTypeReferencesNonExistentEntityTypes {
@@ -674,11 +684,6 @@ export interface ActionTypeReferencesOptionalInterfacePropertyTypesInInterfaceTy
  * ActionType updates a shared property that is not guaranteed to exist because it is optional in the interface.
  */
 export interface ActionTypeReferencesOptionalSharedPropertyTypesInInterfaceTypes {
-}
-/**
- * Action type references a schedule with parameterized pipelines disabled.
- */
-export interface ActionTypeScheduleDoesNotHaveDeploymentConfig {
 }
 /**
  * Action type references a schedule that does not exist.
@@ -945,12 +950,29 @@ export interface CreatedOrUpdatedEntityTypeReferencingNonExistentSharedPropertyT
  */
 export interface DatasourceDataSecurityWouldViolateMarkingsConstraint {
 }
+/**
+ * A modification request contains a derived datasource with the `deleted` variant, which is produced internally by OMS during link-type hard-deletion cascades and cannot be authored through normal modification paths.
+ */
+export interface DeletedDerivedDatasourceNotAllowed {
+}
 export interface EasedPipelineBuilderError {
 }
 /**
  * Edits-only object types must have property security groups.
  */
 export interface EditsOnlyObjectTypeMustHavePropertySecurityGroups {
+}
+/**
+ * Object types without backing datasources and backing security rids (i.e. ObjectTypes with edits-only
+ * datasources and no edits-only rids) must be created in projects.
+ * The object types require project-based permissions for security.
+ */
+export interface EditsOnlyObjectTypesNotInProjects {
+}
+/**
+ * EditsOnlyRid is not supported for this deployment.
+ */
+export interface EditsOnlyRidNotSupported {
 }
 export interface ErrorData {
   errorMessage: string;
@@ -1083,6 +1105,12 @@ export interface ErrorType_linkTypeToDeleteIsReferencedByExistingTypes {
   type: "linkTypeToDeleteIsReferencedByExistingTypes";
   linkTypeToDeleteIsReferencedByExistingTypes:
     LinkTypeToDeleteIsReferencedByExistingTypes;
+}
+
+export interface ErrorType_linkTypeBeingDeletedIsAnEnabledActionLogLinkType {
+  type: "linkTypeBeingDeletedIsAnEnabledActionLogLinkType";
+  linkTypeBeingDeletedIsAnEnabledActionLogLinkType:
+    LinkTypeBeingDeletedIsAnEnabledActionLogLinkType;
 }
 
 export interface ErrorType_linkTypeHasNoDatasources {
@@ -1581,6 +1609,12 @@ export interface ErrorType_objectTypeInvalidTypeChangeOfExistingDatasource {
     ObjectTypeInvalidTypeChangeOfExistingDatasource;
 }
 
+export interface ErrorType_objectTypeDatasourceTypeDowngradeWithPropertySecurityGroups {
+  type: "objectTypeDatasourceTypeDowngradeWithPropertySecurityGroups";
+  objectTypeDatasourceTypeDowngradeWithPropertySecurityGroups:
+    ObjectTypeDatasourceTypeDowngradeWithPropertySecurityGroups;
+}
+
 export interface ErrorType_objectTypeMismatchedSecurityGroupGranularPolicyOperandDataTypes {
   type: "objectTypeMismatchedSecurityGroupGranularPolicyOperandDataTypes";
   objectTypeMismatchedSecurityGroupGranularPolicyOperandDataTypes:
@@ -1754,6 +1788,16 @@ export interface ErrorType_objectTypeDatasourceUpdateModificationCannotChangeAss
   type: "objectTypeDatasourceUpdateModificationCannotChangeAssumedMarkings";
   objectTypeDatasourceUpdateModificationCannotChangeAssumedMarkings:
     ObjectTypeDatasourceUpdateModificationCannotChangeAssumedMarkings;
+}
+
+export interface ErrorType_editsOnlyRidNotSupported {
+  type: "editsOnlyRidNotSupported";
+  editsOnlyRidNotSupported: EditsOnlyRidNotSupported;
+}
+
+export interface ErrorType_deletedDerivedDatasourceNotAllowed {
+  type: "deletedDerivedDatasourceNotAllowed";
+  deletedDerivedDatasourceNotAllowed: DeletedDerivedDatasourceNotAllowed;
 }
 
 export interface ErrorType_objectTypeMediaDatasourceDoesNotReferenceExistingProperties {
@@ -2773,12 +2817,6 @@ export interface ErrorType_objectTypeInterfaceLinkNotFound {
   objectTypeInterfaceLinkNotFound: ObjectTypeInterfaceLinkNotFound;
 }
 
-export interface ErrorType_objectTypeInterfaceLinkTypeImplementedTooOften {
-  type: "objectTypeInterfaceLinkTypeImplementedTooOften";
-  objectTypeInterfaceLinkTypeImplementedTooOften:
-    ObjectTypeInterfaceLinkTypeImplementedTooOften;
-}
-
 export interface ErrorType_objectTypeRequiredInterfaceLinkTypeNotImplemented {
   type: "objectTypeRequiredInterfaceLinkTypeNotImplemented";
   objectTypeRequiredInterfaceLinkTypeNotImplemented:
@@ -2936,6 +2974,12 @@ export interface ErrorType_objectTypePrimaryKeyChangeMissingSchemaMigration {
     ObjectTypePrimaryKeyChangeMissingSchemaMigration;
 }
 
+export interface ErrorType_objectTypeTimestampPropertyMigrationNotAllowed {
+  type: "objectTypeTimestampPropertyMigrationNotAllowed";
+  objectTypeTimestampPropertyMigrationNotAllowed:
+    ObjectTypeTimestampPropertyMigrationNotAllowed;
+}
+
 export interface ErrorType_objectTypeDeletedPropertyTypeMissingSchemaMigration {
   type: "objectTypeDeletedPropertyTypeMissingSchemaMigration";
   objectTypeDeletedPropertyTypeMissingSchemaMigration:
@@ -3059,6 +3103,12 @@ export interface ErrorType_objectTypeCannotBeMdoWithStreamingDatasource {
   type: "objectTypeCannotBeMdoWithStreamingDatasource";
   objectTypeCannotBeMdoWithStreamingDatasource:
     ObjectTypeCannotBeMdoWithStreamingDatasource;
+}
+
+export interface ErrorType_objectTypeReferencesNonExistentInterfaceTypes {
+  type: "objectTypeReferencesNonExistentInterfaceTypes";
+  objectTypeReferencesNonExistentInterfaceTypes:
+    ObjectTypeReferencesNonExistentInterfaceTypes;
 }
 
 export interface ErrorType_reducersNotAllowedOnArraySubtype {
@@ -3842,6 +3892,12 @@ export interface ErrorType_actionTypeHasRevertsEnabledAndSynchronousWebhook {
     ActionTypeHasRevertsEnabledAndSynchronousWebhook;
 }
 
+export interface ErrorType_actionTypeHasRevertsEnabledAndSynchronousEffect {
+  type: "actionTypeHasRevertsEnabledAndSynchronousEffect";
+  actionTypeHasRevertsEnabledAndSynchronousEffect:
+    ActionTypeHasRevertsEnabledAndSynchronousEffect;
+}
+
 export interface ErrorType_actionTypeHasSynchronousWebhookAndSynchronousEffect {
   type: "actionTypeHasSynchronousWebhookAndSynchronousEffect";
   actionTypeHasSynchronousWebhookAndSynchronousEffect:
@@ -3851,12 +3907,6 @@ export interface ErrorType_actionTypeHasSynchronousWebhookAndSynchronousEffect {
 export interface ErrorType_actionTypeScheduleNotFound {
   type: "actionTypeScheduleNotFound";
   actionTypeScheduleNotFound: ActionTypeScheduleNotFound;
-}
-
-export interface ErrorType_actionTypeScheduleDoesNotHaveDeploymentConfig {
-  type: "actionTypeScheduleDoesNotHaveDeploymentConfig";
-  actionTypeScheduleDoesNotHaveDeploymentConfig:
-    ActionTypeScheduleDoesNotHaveDeploymentConfig;
 }
 
 export interface ErrorType_actionTypeScheduleParameterTypeMismatch {
@@ -3922,6 +3972,12 @@ export interface ErrorType_actionTypeReferencesNonExistentEntityTypes {
   type: "actionTypeReferencesNonExistentEntityTypes";
   actionTypeReferencesNonExistentEntityTypes:
     ActionTypeReferencesNonExistentEntityTypes;
+}
+
+export interface ErrorType_actionTypeReferencesArchivedObjectTypes {
+  type: "actionTypeReferencesArchivedObjectTypes";
+  actionTypeReferencesArchivedObjectTypes:
+    ActionTypeReferencesArchivedObjectTypes;
 }
 
 export interface ErrorType_actionTypeReferencesOptionalSharedPropertyTypesInInterfaceTypes {
@@ -4324,6 +4380,12 @@ export interface ErrorType_branchIndexingConfigCanOnlyBeSetForManyToManyLinkType
     BranchIndexingConfigCanOnlyBeSetForManyToManyLinkTypes;
 }
 
+export interface ErrorType_nonObjectBackedLinkTypeCannotBeArchived {
+  type: "nonObjectBackedLinkTypeCannotBeArchived";
+  nonObjectBackedLinkTypeCannotBeArchived:
+    NonObjectBackedLinkTypeCannotBeArchived;
+}
+
 export interface ErrorType_parentObjectTypeBranchIndexingConfigCanOnlyBeSetForObjectTypesPresentOnTheParentBranch {
   type:
     "parentObjectTypeBranchIndexingConfigCanOnlyBeSetForObjectTypesPresentOnTheParentBranch";
@@ -4419,6 +4481,16 @@ export interface ErrorType_compassFolderEntityResourceNameIsTooLong {
     CompassFolderEntityResourceNameIsTooLong;
 }
 
+export interface ErrorType_editsOnlyObjectTypesNotInProjects {
+  type: "editsOnlyObjectTypesNotInProjects";
+  editsOnlyObjectTypesNotInProjects: EditsOnlyObjectTypesNotInProjects;
+}
+
+export interface ErrorType_ontologyInProjectsDisallowed {
+  type: "ontologyInProjectsDisallowed";
+  ontologyInProjectsDisallowed: OntologyInProjectsDisallowed;
+}
+
 export interface ErrorType_actionLogPropertyIsNotStructButMappedAsStruct {
   type: "actionLogPropertyIsNotStructButMappedAsStruct";
   actionLogPropertyIsNotStructButMappedAsStruct:
@@ -4453,6 +4525,30 @@ export interface ErrorType_maxClassificationConstraintMustBeNonEmptyIfAllowEmpty
   maxClassificationConstraintMustBeNonEmptyIfAllowEmptyMarkingsIsFalse:
     MaxClassificationConstraintMustBeNonEmptyIfAllowEmptyMarkingsIsFalse;
 }
+
+export interface ErrorType_objectTypeArchivedObjectTypeCannotBeModified {
+  type: "objectTypeArchivedObjectTypeCannotBeModified";
+  objectTypeArchivedObjectTypeCannotBeModified:
+    ObjectTypeArchivedObjectTypeCannotBeModified;
+}
+
+export interface ErrorType_objectTypeOwningDirectWriterOnNonDirectDatasource {
+  type: "objectTypeOwningDirectWriterOnNonDirectDatasource";
+  objectTypeOwningDirectWriterOnNonDirectDatasource:
+    ObjectTypeOwningDirectWriterOnNonDirectDatasource;
+}
+
+export interface ErrorType_objectTypeCannotModifyDatasourcesOnBuilderOwned {
+  type: "objectTypeCannotModifyDatasourcesOnBuilderOwned";
+  objectTypeCannotModifyDatasourcesOnBuilderOwned:
+    ObjectTypeCannotModifyDatasourcesOnBuilderOwned;
+}
+
+export interface ErrorType_objectTypeAssumedMarkingSpecifiedWithEditsOnlyBackingResource {
+  type: "objectTypeAssumedMarkingSpecifiedWithEditsOnlyBackingResource";
+  objectTypeAssumedMarkingSpecifiedWithEditsOnlyBackingResource:
+    ObjectTypeAssumedMarkingSpecifiedWithEditsOnlyBackingResource;
+}
 /**
  * A union that represents all possible ontology modification validation errors.
  */
@@ -4478,6 +4574,7 @@ export type ErrorType =
   | ErrorType_linkTypeReferencedLinkTypesDeleted
   | ErrorType_linkTypeHasMultipleDatasources
   | ErrorType_linkTypeToDeleteIsReferencedByExistingTypes
+  | ErrorType_linkTypeBeingDeletedIsAnEnabledActionLogLinkType
   | ErrorType_linkTypeHasNoDatasources
   | ErrorType_linkTypeOneToManyWithDatasourcesNotAllowed
   | ErrorType_linkTypeInvalidOneToManyCardinalityHint
@@ -4567,6 +4664,7 @@ export type ErrorType =
   | ErrorType_objectTypeDatasourceAlreadyExists
   | ErrorType_objectTypeWithUnmappedTitleProperty
   | ErrorType_objectTypeInvalidTypeChangeOfExistingDatasource
+  | ErrorType_objectTypeDatasourceTypeDowngradeWithPropertySecurityGroups
   | ErrorType_objectTypeMismatchedSecurityGroupGranularPolicyOperandDataTypes
   | ErrorType_objectTypeNonEmptyPropertyInSecurityGroupGranularPolicyNotCondition
   | ErrorType_objectTypeUnmappedPropertiesInPropertySecurityGroup
@@ -4596,6 +4694,8 @@ export type ErrorType =
   | ErrorType_objectTypePropertyTypeMarkingMustHaveAssociatedMarkingConstraintsOnDatasource
   | ErrorType_objectTypeGpsPolicyColumnsFromRestrictedViewsAreMapped
   | ErrorType_objectTypeDatasourceUpdateModificationCannotChangeAssumedMarkings
+  | ErrorType_editsOnlyRidNotSupported
+  | ErrorType_deletedDerivedDatasourceNotAllowed
   | ErrorType_objectTypeMediaDatasourceDoesNotReferenceExistingProperties
   | ErrorType_objectTypeMediaSetViewLocatorsDoNotExist
   | ErrorType_objectTypeMediaDatasourceDoesNotReferenceMediaReferenceProperties
@@ -4767,7 +4867,6 @@ export type ErrorType =
   | ErrorType_objectTypeInterfaceImplementationUsingPrimaryKey
   | ErrorType_objectTypePropertyImplementationImplicitAndExplicit
   | ErrorType_objectTypeInterfaceLinkNotFound
-  | ErrorType_objectTypeInterfaceLinkTypeImplementedTooOften
   | ErrorType_objectTypeRequiredInterfaceLinkTypeNotImplemented
   | ErrorType_objectTypeRequiredInterfaceActionTypeConstraintNotImplemented
   | ErrorType_objectTypeInterfaceActionTypeConstraintNotFound
@@ -4796,6 +4895,7 @@ export type ErrorType =
   | ErrorType_objectTypeCbacMarkingPropertyTypeMustBeNonEmpty
   | ErrorType_objectTypeWithDerivedPropertiesMappedToGotham
   | ErrorType_objectTypePrimaryKeyChangeMissingSchemaMigration
+  | ErrorType_objectTypeTimestampPropertyMigrationNotAllowed
   | ErrorType_objectTypeDeletedPropertyTypeMissingSchemaMigration
   | ErrorType_objectTypePropertyDataTypeChangeMissingSchemaMigration
   | ErrorType_objectTypeDeletedDatasourceMissingSchemaMigration
@@ -4817,6 +4917,7 @@ export type ErrorType =
   | ErrorType_objectTypeDatasourceWithInvalidRetentionTargetSize
   | ErrorType_objectTypeDatasourceWithInvalidTimeBasedRetention
   | ErrorType_objectTypeCannotBeMdoWithStreamingDatasource
+  | ErrorType_objectTypeReferencesNonExistentInterfaceTypes
   | ErrorType_reducersNotAllowedOnArraySubtype
   | ErrorType_ruleSetBindingReferencingMissingPropertyTypeIds
   | ErrorType_ruleSetCountExceeded
@@ -4949,9 +5050,9 @@ export type ErrorType =
   | ErrorType_actionTypeApiNameConflict
   | ErrorType_actionTypeObjectParameterPropertyValueCannotReferenceStructProperty
   | ErrorType_actionTypeHasRevertsEnabledAndSynchronousWebhook
+  | ErrorType_actionTypeHasRevertsEnabledAndSynchronousEffect
   | ErrorType_actionTypeHasSynchronousWebhookAndSynchronousEffect
   | ErrorType_actionTypeScheduleNotFound
-  | ErrorType_actionTypeScheduleDoesNotHaveDeploymentConfig
   | ErrorType_actionTypeScheduleParameterTypeMismatch
   | ErrorType_actionTypeScheduleParametersMismatch
   | ErrorType_actionLogicRuleValueContainsUnknownScheduleRunRid
@@ -4963,6 +5064,7 @@ export type ErrorType =
   | ErrorType_actionTypeReferencesNonExistentInterfacePropertyTypesInInterfaceTypes
   | ErrorType_actionTypeReferencesNonExistentPropertyTypesInObjectTypes
   | ErrorType_actionTypeReferencesNonExistentEntityTypes
+  | ErrorType_actionTypeReferencesArchivedObjectTypes
   | ErrorType_actionTypeReferencesOptionalSharedPropertyTypesInInterfaceTypes
   | ErrorType_actionTypeReferencesOptionalInterfacePropertyTypesInInterfaceTypes
   | ErrorType_actionTypeActionLogConfiguredForFunctionButFunctionProvenanceIsNotSet
@@ -5033,6 +5135,7 @@ export type ErrorType =
   | ErrorType_objectEditsCannotBeCopiedForObjectTypeOnBranchNeedsRebasing
   | ErrorType_objectTypeBranchIndexingConfigCanOnlyBeSetOnNonDefaultBranches
   | ErrorType_branchIndexingConfigCanOnlyBeSetForManyToManyLinkTypes
+  | ErrorType_nonObjectBackedLinkTypeCannotBeArchived
   | ErrorType_parentObjectTypeBranchIndexingConfigCanOnlyBeSetForObjectTypesPresentOnTheParentBranch
   | ErrorType_parentLinkTypeBranchIndexingConfigCanOnlyBeSetForLinkTypesPresentOnTheParentBranch
   | ErrorType_resetSchemaMigrationsCanOnlyBeAppliedToNonDefaultBranches
@@ -5049,12 +5152,18 @@ export type ErrorType =
   | ErrorType_compassFolderEntityResourceNameContainsIllegalSubstrings
   | ErrorType_compassFolderEntityResourceNameIsIllegalValue
   | ErrorType_compassFolderEntityResourceNameIsTooLong
+  | ErrorType_editsOnlyObjectTypesNotInProjects
+  | ErrorType_ontologyInProjectsDisallowed
   | ErrorType_actionLogPropertyIsNotStructButMappedAsStruct
   | ErrorType_actionLogStructFieldMappingIncomplete
   | ErrorType_actionLogStructFieldMappingHasInconsistentCardinality
   | ErrorType_actionLogStructFieldMappingHasIncompatibleCardinality
   | ErrorType_actionLogStructFieldMappedToIncompatibleBaseType
-  | ErrorType_maxClassificationConstraintMustBeNonEmptyIfAllowEmptyMarkingsIsFalse;
+  | ErrorType_maxClassificationConstraintMustBeNonEmptyIfAllowEmptyMarkingsIsFalse
+  | ErrorType_objectTypeArchivedObjectTypeCannotBeModified
+  | ErrorType_objectTypeOwningDirectWriterOnNonDirectDatasource
+  | ErrorType_objectTypeCannotModifyDatasourcesOnBuilderOwned
+  | ErrorType_objectTypeAssumedMarkingSpecifiedWithEditsOnlyBackingResource;
 
 export interface IndeterminateErrorCategory {
 }
@@ -5501,6 +5610,11 @@ export interface InvalidTypeGroupWithIdentifier {
 export interface InvalidWorkflowWithIdentifier {
 }
 /**
+ * A link type attempting to be deleted is still an enabled Action Log link type.
+ */
+export interface LinkTypeBeingDeletedIsAnEnabledActionLogLinkType {
+}
+/**
  * Link type branch indexing config can only be set on non-default branches.
  */
 export interface LinkTypeBranchIndexingConfigCanOnlyBeSetOnNonDefaultBranches {
@@ -5761,6 +5875,11 @@ export interface MaxClassificationConstraintMustBeNonEmptyIfAllowEmptyMarkingsIs
 export interface MissingPropertySecurityGroupTypes {
 }
 /**
+ * Non-object-backed link types cannot be archived.
+ */
+export interface NonObjectBackedLinkTypeCannotBeArchived {
+}
+/**
  * Property security group names must be unique within the object type.
  */
 export interface NonUniquePropertySecurityGroupNames {
@@ -5805,6 +5924,16 @@ export interface ObjectTypeActionLogDeletionStillReferencesEnabledActionType {
  * The alias of an object type exceeds the maximum length.
  */
 export interface ObjectTypeAliasTooLong {
+}
+/**
+ * An archived object type can only be modified if the modification also unarchives it.
+ */
+export interface ObjectTypeArchivedObjectTypeCannotBeModified {
+}
+/**
+ * Assumed markings were specified in a PSG security definition, but the backing resource is an edits-only object type without a backing resource.
+ */
+export interface ObjectTypeAssumedMarkingSpecifiedWithEditsOnlyBackingResource {
 }
 /**
  * Assumed markings were specified in security definition of a property security group that does not have a backing datasource (currently this applies only to edits-only datasources).
@@ -5860,6 +5989,11 @@ export interface ObjectTypeCannotEditPrivilegedProvenance {
  * Cannot enable edits history for an object type with unsupported property types.
  */
 export interface ObjectTypeCannotEnableEditsHistoryWithUnsupportedPropertyTypes {
+}
+/**
+ * Datasources on builder-owned object types must be modified through Pipeline Builder.
+ */
+export interface ObjectTypeCannotModifyDatasourcesOnBuilderOwned {
 }
 /**
  * It is not possible to specify both 'analyzer' and 'experimental-analyzer' type classes kind.
@@ -5937,6 +6071,12 @@ export interface ObjectTypeDatasourceGeotimeSeriesIntegrationRidIsInvalid {
  * The schema for a datasource on an object type cannot be found.
  */
 export interface ObjectTypeDatasourceSchemaNotFound {
+}
+/**
+ * Cannot change this datasource from a type that supports property security groups to one that does not,
+ * because the datasource currently has property security groups configured.
+ */
+export interface ObjectTypeDatasourceTypeDowngradeWithPropertySecurityGroups {
 }
 /**
  * Object type datasources cannot have their assumed markings updated. Datasource needs to recreated with new rid, when the set of assumed marking changes.
@@ -6381,11 +6521,6 @@ export interface ObjectTypeInterfaceImplementationValueTypeDoesNotMatch {
 export interface ObjectTypeInterfaceLinkNotFound {
 }
 /**
- * Interface link type with a SINGLE cardinality is implemented more than once.
- */
-export interface ObjectTypeInterfaceLinkTypeImplementedTooOften {
-}
-/**
  * The implementation maps a parameter constraint that does not exist on the action type constraint.
  */
 export interface ObjectTypeInterfaceParameterConstraintNotFound {
@@ -6646,6 +6781,11 @@ export interface ObjectTypeOsv1WithOsv2ObjectDbsEnabled {
 export interface ObjectTypeOsv2WithMultipleClustersEnabled {
 }
 /**
+ * Owning direct writers can only be set on direct datasources.
+ */
+export interface ObjectTypeOwningDirectWriterOnNonDirectDatasource {
+}
+/**
  * The typeclass with kind `phonograph2_index_replicas` should only be present on the primary key property.
  */
 export interface ObjectTypePhonographNumberOfReplicasTypeclassMustBeOnPrimaryKey {
@@ -6847,6 +6987,11 @@ export interface ObjectTypeReferencedPropertyTypeMismatch {
  * The TypeGroup referenced in an ObjectType does not exist in the ontology.
  */
 export interface ObjectTypeReferencedTypeGroupsDoNotExist {
+}
+/**
+ * Object type implements interface types that do not exist.
+ */
+export interface ObjectTypeReferencesNonExistentInterfaceTypes {
 }
 /**
  * Required interface action type constraint is missing an implementation.
@@ -7079,6 +7224,11 @@ export interface ObjectTypeTimeseriesMetadataReferencesNonExistentProperty {
 export interface ObjectTypeTimeSeriesSyncRidIsNotTimeSeriesSync {
 }
 /**
+ * A drop-property or rename-property migration was added for a property referenced by a latest-timestamp-wins edits resolution strategy on the object type.
+ */
+export interface ObjectTypeTimestampPropertyMigrationNotAllowed {
+}
+/**
  * There is no corresponding property type for the given title property.
  */
 export interface ObjectTypeTitlePropertyTypeNotFound {
@@ -7224,6 +7374,11 @@ export interface OntologyBranchConflictsWithMain {
  * project folder.
  */
 export interface OntologyEntityCreatedInProjectWouldViolateMarkingsConstraint {
+}
+/**
+ * Creation of new ontology entities in Compass projects is disallowed by stack configuration.
+ */
+export interface OntologyInProjectsDisallowed {
 }
 export interface OntologyValidationError {
   errorData: ErrorData;
