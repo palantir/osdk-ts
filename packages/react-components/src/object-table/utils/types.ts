@@ -167,12 +167,17 @@ type EditFieldComponent = keyof EditFieldPropsByType;
 /**
  * Configuration for an editable cell's field component.
  *
- * `getFieldComponentProps` is called with the row's object so the configuration
- * can vary per row (e.g. dropdown items that depend on row state).
+ * `getFieldComponentProps` is called with the row's object and a map of any
+ * pending cell edits for the same row, keyed by `columnId`. This lets the
+ * configuration depend on row state or on other in-progress edits within the
+ * row (e.g. dropdown items that change once another column is edited).
  */
 export type EditFieldConfig<TData = unknown> = {
   [K in EditFieldComponent]: {
     fieldComponent: K;
-    getFieldComponentProps: (object: TData) => EditFieldPropsByType[K];
+    getFieldComponentProps: (
+      object: TData,
+      edits?: Record<string, CellEditInfo<TData, unknown>>,
+    ) => EditFieldPropsByType[K];
   };
 }[EditFieldComponent];

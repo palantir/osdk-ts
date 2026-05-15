@@ -59,6 +59,56 @@ export const toggleRemoteStoryAction = TypeHelpers
   .addParameter("isRemote", "boolean", false)
   .build();
 
+type ActionParameterMap = Parameters<
+  typeof TypeHelpers.createActionType
+>[0]["parameters"];
+
+const unsupportedFieldsActionParameters = {
+  structPayload: {
+    displayName: "Struct payload",
+    dataType: {
+      type: "struct",
+      fields: [
+        {
+          name: "externalId",
+          fieldType: { type: "string" },
+          required: true,
+        },
+      ],
+    },
+    required: true,
+    typeClasses: [],
+  },
+  geoshape: {
+    displayName: "Geoshape",
+    dataType: { type: "geoshape" },
+    required: false,
+    typeClasses: [],
+  },
+  classification: {
+    displayName: "Classification",
+    dataType: { type: "marking" },
+    required: false,
+    typeClasses: [],
+  },
+  objectKind: {
+    displayName: "Object type",
+    dataType: { type: "objectType" },
+    required: false,
+    typeClasses: [],
+  },
+} satisfies ActionParameterMap;
+
+export const unsupportedFieldsStoryAction = TypeHelpers
+  .actionTypeBuilder(
+    TypeHelpers.createActionType({
+      apiName: "unsupportedFieldsStoryAction",
+      displayName: "Review unsupported fields",
+      parameters: unsupportedFieldsActionParameters,
+    }),
+  )
+  .build();
+
 let isInitialized = false;
 
 export async function setupFauxFoundry(): Promise<void> {
@@ -82,6 +132,10 @@ export async function setupFauxFoundry(): Promise<void> {
   );
   fauxFoundry.getDefaultOntology().registerActionType(
     toggleRemoteStoryAction.actionTypeV2,
+    () => undefined,
+  );
+  fauxFoundry.getDefaultOntology().registerActionType(
+    unsupportedFieldsStoryAction.actionTypeV2,
     () => undefined,
   );
 

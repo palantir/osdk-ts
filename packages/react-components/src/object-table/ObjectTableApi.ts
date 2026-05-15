@@ -129,9 +129,10 @@ interface EditableColumnDefinition<
    * When provided, the column uses the specified field component
    * (e.g. dropdown) instead of the default auto-detected text/number input.
    *
-   * `getFieldComponentProps` receives the row's object and returns the props
-   * to pass to the field component, so editor configuration can depend on the
-   * current row.
+   * `getFieldComponentProps` receives the row's object and a map of any
+   * pending edits for that row (keyed by column id), and returns the props to
+   * pass to the field component. Editor configuration can depend on the
+   * current row or on other in-progress edits within the row.
    */
   editFieldConfig?: EditFieldConfig<
     Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>
@@ -553,6 +554,13 @@ export interface ObjectTableProps<
     row: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
     cellValue: unknown,
   ) => React.ReactNode;
+
+  /**
+   * Render override for the empty state. Called when the table has no
+   * rows and no error. When omitted, a default "No Data" indicator is
+   * rendered.
+   */
+  renderEmptyState?: () => React.ReactNode;
 
   /**
    * The height of each row in pixels.

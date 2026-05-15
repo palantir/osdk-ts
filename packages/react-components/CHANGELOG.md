@@ -1,5 +1,26 @@
 # @osdk/react-components
 
+## 0.16.0
+
+### Minor Changes
+
+- f62c9e2: Add DocumentViewer with MIME-type routing, ImageViewer, VideoViewer, DocxViewer, ExcelViewer, EmailViewer, XmlViewer components, and OSDK Media wrappers for TiffRenderer and MarkdownRenderer
+- 7ee1fa3: ObjectTable `EditFieldConfig.getFieldComponentProps` now receives a second `edits` argument with the row's pending cell edits (keyed by columnId), so editor configuration can react to other in-progress edits within the same row.
+- cf496ff: filter-list: round number range histogram min/max to integers for integer property types so dragging or clicking a bucket no longer emits fractional values that break downstream filters
+- bfe05b5: Widen `renderValue` return type on FilterList property and static-values filter definitions from `string` to `ReactNode` so callers can render custom React components (e.g. avatars, anchors) for filter values. When `renderValue` returns a non-string `ReactNode`, search matching falls back to the raw value.
+- 11f585d: Histogram date filter: From and To inputs now open independent single-month popovers with Today/Clear actions, replacing the shared two-month range calendar that was confusing users next to the histogram bars
+
+## 0.15.0
+
+### Minor Changes
+
+- 108ac50: Cap long ActionForm select dropdowns so they scroll inside dialogs.
+- 4bc17cc: Fix editable date field incorrectly showing edited border after click-in/click-out without changes
+- 99ec28c: Fix page scroll being blocked when opening a dropdown in an editable ObjectTable
+- d10ed5e: Add rich item label rendering to ActionForm dropdown fields.
+- 47eb27c: Add object set scoping to ObjectSelectField.
+- 73738dd: Show unsupported ActionForm field types and recommend CUSTOM fields.
+
 ## 0.14.0
 
 ### Minor Changes

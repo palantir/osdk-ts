@@ -1,5 +1,36 @@
 # @osdk/foundry-sdk-generator
 
+## 2.20.0
+
+### Patch Changes
+
+- Updated dependencies [f90a2da]
+- Updated dependencies [9eb67e4]
+- Updated dependencies [51b3bce]
+- Updated dependencies [75f877f]
+  - @osdk/client@2.20.0
+  - @osdk/api@2.20.0
+  - @osdk/generator@2.20.0
+  - @osdk/client.unstable@2.20.0
+  - @osdk/generator-utils@2.20.0
+
+## 2.19.0
+
+### Minor Changes
+
+- 02c796c: Array Reducers and Struct Main Value support
+
+### Patch Changes
+
+- Updated dependencies [02c796c]
+- Updated dependencies [2a2b672]
+- Updated dependencies [d962309]
+  - @osdk/generator@2.19.0
+  - @osdk/client@2.19.0
+  - @osdk/api@2.19.0
+  - @osdk/client.unstable@2.19.0
+  - @osdk/generator-utils@2.19.0
+
 ## 2.18.0
 
 ### Patch Changes

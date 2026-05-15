@@ -1,5 +1,39 @@
 # @osdk/client
 
+## 2.20.0
+
+### Minor Changes
+
+- f90a2da: fix $as on objects fetched with $loadPropertySecurityMetadata
+- 9eb67e4: Add experimental support for streaming queries via the `__EXPERIMENTAL__NOT_SUPPORTED_YET__executeStreamingFunction` marker.
+- 51b3bce: Modify uploadMedia to return a Media object
+- 75f877f: `createClientFromWriteableClient` now accepts an optional `options` argument to override `transactionId`, `baseUrl`, `ontologyRid`, or `tokenProvider` from the source client. `applyAction` also now throws when batch actions are invoked on a client with an active transaction id, since batch actions are not supported for staged edit functions.
+
+### Patch Changes
+
+- Updated dependencies [9eb67e4]
+  - @osdk/api@2.20.0
+  - @osdk/generator-converters@2.20.0
+  - @osdk/shared.test@2.16.0
+  - @osdk/client.unstable@2.20.0
+
+## 2.19.0
+
+### Minor Changes
+
+- 02c796c: Array Reducers and Struct Main Value support
+- 2a2b672: Add `@osdk/client/experimental` entry point exposing `createClientWithTransaction` and a new `createClientFromWriteableClient` that clones a writeable client's base URL, ontology, token provider, and transaction id while discarding its fetch implementation.
+- d962309: Add ability to subscribe to an object set RID without a type, experimentally.
+
+### Patch Changes
+
+- Updated dependencies [02c796c]
+- Updated dependencies [d962309]
+  - @osdk/generator-converters@2.19.0
+  - @osdk/shared.test@2.15.0
+  - @osdk/api@2.19.0
+  - @osdk/client.unstable@2.19.0
+
 ## 2.18.0
 
 ### Minor Changes

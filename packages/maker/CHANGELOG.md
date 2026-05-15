@@ -1,5 +1,23 @@
 # @osdk/maker
 
+## 0.26.0
+
+### Patch Changes
+
+- Updated dependencies [9eb67e4]
+  - @osdk/api@2.20.0
+  - @osdk/generator-converters.ontologyir@2.20.0
+
+## 0.25.0
+
+### Patch Changes
+
+- Updated dependencies [02c796c]
+- Updated dependencies [46c553f]
+- Updated dependencies [d962309]
+  - @osdk/api@2.19.0
+  - @osdk/generator-converters.ontologyir@2.19.0
+
 ## 0.24.0
 
 ### Minor Changes

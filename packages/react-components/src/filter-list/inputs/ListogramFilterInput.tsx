@@ -40,7 +40,7 @@ interface ListogramFilterInputProps<Q extends ObjectTypeDefinition> {
   maxVisibleItems?: number;
   searchQuery?: string;
   excludeRowOpen?: boolean;
-  renderValue?: (value: string) => string;
+  renderValue?: (value: string) => React.ReactNode;
 }
 
 function ListogramFilterInputInner<Q extends ObjectTypeDefinition>({

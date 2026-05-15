@@ -38,6 +38,9 @@ import { SwitchField } from "./SwitchField.js";
 import { TextAreaField } from "./TextAreaField.js";
 import { TextInputField } from "./TextInputField.js";
 
+const UNSUPPORTED_FIELD_MESSAGE =
+  "Unsupported field type. Use a CUSTOM field instead";
+
 export interface FormFieldRendererProps {
   fieldDefinition: RendererFieldDefinition;
   value: unknown;
@@ -117,6 +120,16 @@ function renderFieldComponent(
           placeholder={fieldDefinition.placeholder}
           error={error}
           {...fieldDefinition.fieldComponentProps}
+        />
+      );
+    case "UNSUPPORTED":
+      return (
+        <TextInputField
+          {...fieldDefinition.fieldComponentProps}
+          id={fieldDefinition.fieldKey}
+          value={UNSUPPORTED_FIELD_MESSAGE}
+          error={error}
+          disabled={true}
         />
       );
     case "TEXT_AREA":
