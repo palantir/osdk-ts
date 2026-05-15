@@ -14,10 +14,20 @@
  * limitations under the License.
  */
 
+import type {
+  OntologyIrLogicRule,
+  OntologyIrLogicRuleValue,
+} from "@osdk/client.unstable";
 import type { ActionParameter } from "../action/ActionParameter.js";
+import type { ActionParameterAllowedValues } from "../action/ActionParameterAllowedValues.js";
 import type { ActionParameterType } from "../action/ActionParameterType.js";
 import { defineAction, kebab } from "../defineAction.js";
 import { addNamespaceIfNone } from "../defineOntology.js";
+import type {
+  ActionLevelValidationV2Config,
+  ParameterValidationV2Config,
+  SectionV2Config,
+} from "./actionValidation.js";
 import type { ObjectV2Def } from "./defineObjectV2.js";
 
 export type ActionPrimitiveType =
@@ -32,7 +42,9 @@ export type ActionPrimitiveType =
   | "marking";
 
 /**
- * Simplified action parameter config for V2 APIs.
+ * Simplified action parameter config for V2 APIs. Optional `validation`
+ * field accepts the v1-shaped allowedValues / required / conditional
+ * overrides for per-parameter validation rules.
  */
 export type ActionParameterV2Config =
   | ActionPrimitiveType
@@ -42,6 +54,7 @@ export type ActionParameterV2Config =
     nullable?: boolean;
     multiplicity?: boolean;
     description?: string;
+    validation?: ParameterValidationV2Config;
   };
 
 /**
@@ -56,6 +69,12 @@ export interface ActionV2Config {
     string,
     { created: boolean; modified: boolean; deleted?: boolean }
   >;
+  /** Cross-parameter validation rules (action-level). */
+  validation?: ActionLevelValidationV2Config;
+  /** Form sections grouping parameters in the UI. */
+  sections?: Array<SectionV2Config>;
+  /** Explicit ordering of parameters in the form (default: declaration order). */
+  parameterOrdering?: Array<string>;
 }
 
 /**
@@ -66,37 +85,45 @@ export type ActionV2Def<T extends ActionV2Config = ActionV2Config> = T & {
   readonly __brand: "ActionV2Def";
 };
 
-/** Map a V2 parameter type to V1 ActionParameterType */
+function primitiveToV1(p: ActionPrimitiveType): ActionParameterType {
+  if (p === "datetime") {
+    return "date";
+  }
+  return p;
+}
+
 function toV1ParamType(param: ActionParameterV2Config): ActionParameterType {
   if (typeof param === "string") {
-    // Map V2 primitive names to V1 names
-    if (param === "datetime") return "date";
-    return param;
+    return primitiveToV1(param);
   }
-  if (param.type === "object" && param.objectType) {
+  if (param.type === "object") {
+    if (!param.objectType) {
+      throw new Error(`Action parameter type "object" requires objectType`);
+    }
     return {
       type: "objectReference",
       objectReference: {
         objectTypeId: param.objectType.__v1Def.apiName,
       },
-    } as unknown as ActionParameterType;
+    };
   }
-  if (param.type === "objectSet" && param.objectType) {
+  if (param.type === "objectSet") {
+    if (!param.objectType) {
+      throw new Error(`Action parameter type "objectSet" requires objectType`);
+    }
     return {
       type: "objectSetRid",
       objectSetRid: {
         objectTypeId: param.objectType.__v1Def.apiName,
       },
-    } as unknown as ActionParameterType;
+    };
   }
-  const baseType = param.type === "datetime" ? "date" : param.type;
-  return baseType as ActionParameterType;
+  return primitiveToV1(param.type);
 }
 
-/** Map a primitive type to V1 allowedValues */
 function getAllowedValues(
   primType: string,
-): Record<string, unknown> {
+): ActionParameterAllowedValues {
   switch (primType) {
     case "boolean":
       return { type: "boolean" };
@@ -113,13 +140,12 @@ function getAllowedValues(
     case "attachment":
       return { type: "attachment" };
     case "marking":
-      return { type: "marking" };
+      return { type: "mandatoryMarking" };
     default:
       return { type: "text" };
   }
 }
 
-/** Build V1 ActionParameter array from V2 config */
 function buildV1Parameters(
   params: Record<string, ActionParameterV2Config>,
 ): ActionParameter[] {
@@ -128,106 +154,115 @@ function buildV1Parameters(
     const primType = typeof param === "string" ? param : param.type;
     const isObjectParam = typeof param === "object"
       && (param.type === "object" || param.type === "objectSet");
+    const userValidation = typeof param === "object"
+      ? param.validation
+      : undefined;
+    const defaultRequired = !isNullable;
+    const defaultAllowedValues = isObjectParam
+      ? { type: "objectQuery" as const }
+      : getAllowedValues(primType);
     return {
       id,
       displayName: (typeof param === "object" && param.description) || id,
       type: toV1ParamType(param),
       validation: {
-        required: !isNullable,
-        allowedValues: isObjectParam
-          ? { type: "objectQuery" }
-          : getAllowedValues(primType),
+        required: userValidation?.required ?? defaultRequired,
+        allowedValues: userValidation?.allowedValues ?? defaultAllowedValues,
+        ...(userValidation?.defaultVisibility !== undefined
+          && { defaultVisibility: userValidation.defaultVisibility }),
+        ...(userValidation?.conditionalOverrides !== undefined
+          && { conditionalOverrides: userValidation.conditionalOverrides }),
       },
     } as ActionParameter;
   });
 }
 
-/** Build V1 logic rules from modifiedEntities */
-function buildV1Rules(
-  config: ActionV2Config,
-): Array<Record<string, unknown>> {
-  const rules: Array<Record<string, unknown>> = [];
+function findObjectParamId(
+  parameters: Record<string, ActionParameterV2Config>,
+  entityName: string,
+): string | undefined {
+  return Object.entries(parameters).find(
+    ([_, p]) =>
+      typeof p === "object" && p.type === "object"
+      && p.objectType?.apiName === entityName,
+  )?.[0];
+}
 
-  if (config.modifiedEntities) {
-    for (
-      const [entityName, { created, modified, deleted }] of Object.entries(
-        config.modifiedEntities,
-      )
-    ) {
-      // Find the object param that references this entity (for modify/delete)
-      const objectParamId = Object.entries(config.parameters).find(
-        ([_, p]) =>
-          typeof p === "object" && p.type === "object"
-          && p.objectType?.apiName === entityName,
-      )?.[0];
+function buildPropertyValues(
+  parameters: Record<string, ActionParameterV2Config>,
+): Record<string, OntologyIrLogicRuleValue> {
+  const propertyValues: Record<string, OntologyIrLogicRuleValue> = {};
+  for (const [paramId, param] of Object.entries(parameters)) {
+    const isObjectParam = typeof param === "object"
+      && (param.type === "object" || param.type === "objectSet");
+    if (!isObjectParam) {
+      propertyValues[paramId] = {
+        type: "parameterId",
+        parameterId: paramId,
+      };
+    }
+  }
+  return propertyValues;
+}
 
-      // Apply namespace to entity name
-      const namespacedEntityName = addNamespaceIfNone(entityName);
+function buildV1Rules(config: ActionV2Config): OntologyIrLogicRule[] {
+  const rules: OntologyIrLogicRule[] = [];
+  if (!config.modifiedEntities) {
+    throw new Error(
+      `Action "${config.apiName}" must declare modifiedEntities so the IR `
+        + `knows what to do with its parameters`,
+    );
+  }
 
-      if (deleted && objectParamId) {
-        // Delete rule
-        rules.push({
-          type: "deleteObjectRule",
-          deleteObjectRule: {
-            objectToDelete: objectParamId,
-          },
-        });
-      } else if (created && !modified) {
-        // Create rule: map all non-object params as property values
-        const propertyValues: Record<string, unknown> = {};
-        for (const [paramId, param] of Object.entries(config.parameters)) {
-          const isObjectParam = typeof param === "object"
-            && (param.type === "object" || param.type === "objectSet");
-          if (!isObjectParam) {
-            propertyValues[paramId] = {
-              type: "parameterId",
-              parameterId: paramId,
-            };
-          }
-        }
-        rules.push({
-          type: "addObjectRule",
-          addObjectRule: {
-            objectTypeId: namespacedEntityName,
-            propertyValues,
-            structFieldValues: {},
-          },
-        });
-      } else if (modified && objectParamId) {
-        // Modify rule
-        const propertyValues: Record<string, unknown> = {};
-        for (const [paramId, param] of Object.entries(config.parameters)) {
-          const isObjectParam = typeof param === "object"
-            && (param.type === "object" || param.type === "objectSet");
-          if (!isObjectParam) {
-            propertyValues[paramId] = {
-              type: "parameterId",
-              parameterId: paramId,
-            };
-          }
-        }
-        rules.push({
-          type: "modifyObjectRule",
-          modifyObjectRule: {
-            objectToModify: objectParamId,
-            propertyValues,
-            structFieldValues: {},
-          },
-        });
-      }
+  for (
+    const [entityName, { created, modified, deleted }] of Object.entries(
+      config.modifiedEntities,
+    )
+  ) {
+    const objectParamId = findObjectParamId(config.parameters, entityName);
+    const namespacedEntityName = addNamespaceIfNone(entityName);
+
+    if (deleted && objectParamId) {
+      rules.push({
+        type: "deleteObjectRule",
+        deleteObjectRule: { objectToDelete: objectParamId },
+      });
+    } else if (created && modified && objectParamId) {
+      rules.push({
+        type: "addOrModifyObjectRuleV2",
+        addOrModifyObjectRuleV2: {
+          objectToModify: objectParamId,
+          propertyValues: buildPropertyValues(config.parameters),
+          structFieldValues: {},
+        },
+      });
+    } else if (created) {
+      rules.push({
+        type: "addObjectRule",
+        addObjectRule: {
+          objectTypeId: namespacedEntityName,
+          propertyValues: buildPropertyValues(config.parameters),
+          structFieldValues: {},
+        },
+      });
+    } else if (modified && objectParamId) {
+      rules.push({
+        type: "modifyObjectRule",
+        modifyObjectRule: {
+          objectToModify: objectParamId,
+          propertyValues: buildPropertyValues(config.parameters),
+          structFieldValues: {},
+        },
+      });
     }
   }
 
-  // Fallback: if no rules could be derived, add a minimal addObjectRule
   if (rules.length === 0) {
-    rules.push({
-      type: "addObjectRule",
-      addObjectRule: {
-        objectTypeId: "unknown",
-        propertyValues: {},
-        structFieldValues: {},
-      },
-    });
+    throw new Error(
+      `Action "${config.apiName}" produced no logic rules. Check that `
+        + `modifiedEntities flags map to a valid create/modify/delete shape, `
+        + `and that modify/delete rules have a matching object parameter.`,
+    );
   }
 
   return rules;
@@ -254,13 +289,22 @@ export function defineActionV2<const T extends ActionV2Config>(
     description: config.description,
     status: "active",
     parameters: buildV1Parameters(config.parameters),
-    rules: buildV1Rules(config) as any,
+    rules: buildV1Rules(config),
     entities: {
       affectedObjectTypes,
       affectedInterfaceTypes: [],
       affectedLinkTypes: [],
       typeGroups: [],
     },
+    ...(config.validation !== undefined
+      && { actionLevelValidation: config.validation }),
+    ...(config.sections !== undefined && {
+      sections: Object.fromEntries(
+        config.sections.map(section => [section.id, section]),
+      ),
+    }),
+    ...(config.parameterOrdering !== undefined
+      && { parameterOrdering: config.parameterOrdering }),
   });
 
   return config as ActionV2Def<T>;

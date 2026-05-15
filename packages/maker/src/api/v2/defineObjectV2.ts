@@ -16,10 +16,39 @@
 
 import type { Visibility } from "@osdk/client.unstable";
 import { defineObject } from "../defineObject.js";
+import type { EditsHistoryConfig } from "../object/EditsHistoryConfig.js";
+import type { InterfaceImplementation } from "../object/InterfaceImplementation.js";
 import type { ObjectPropertyTypeUserDefinition } from "../object/ObjectPropertyTypeUserDefinition.js";
+import type { ObjectTypeDatasourceDefinition } from "../object/ObjectTypeDatasourceDefinition.js";
 import type { ObjectTypeDefinition as MakerObjectTypeDefinition } from "../object/ObjectTypeDefinition.js";
 import type { ObjectTypeStatus } from "../object/ObjectTypeStatus.js";
-import type { PropertyV2Config } from "./propertyMapping.js";
+import type { InterfaceV2Def } from "./defineInterfaceV2.js";
+import {
+  extractPropertyType,
+  type PropertyV2Config,
+} from "./propertyMapping.js";
+
+/**
+ * Entry in `ObjectV2Config.implements`. Either an `InterfaceV2Def`
+ * (auto-mapped by property name) or `{ interface, propertyMapping }`
+ * where `propertyMapping` maps interface property apiNames to object
+ * property apiNames when they don't match by name.
+ */
+export type ObjectV2ImplementsEntry =
+  | InterfaceV2Def
+  | {
+    interface: InterfaceV2Def;
+    propertyMapping: Record<string, string>;
+  };
+
+/**
+ * Object-level dataset datasource. Heavier datasource variants (derived,
+ * direct, stream, restrictedView) and granular security policies stay
+ * deferred — this v2 surface only models the basic dataset case.
+ */
+export interface ObjectV2DatasetDatasource {
+  type: "dataset";
+}
 
 /**
  * Input configuration for defineObjectV2.
@@ -34,6 +63,20 @@ export interface ObjectV2Config {
   properties: Record<string, PropertyV2Config>;
   visibility?: Visibility;
   status?: ObjectTypeStatus;
+  /**
+   * Interfaces this object implements. Pass an `InterfaceV2Def` for
+   * auto-mapping by property name, or `{ interface, propertyMapping }`
+   * to explicitly map interface properties to differently-named object
+   * properties.
+   */
+  implements?: ObjectV2ImplementsEntry[];
+  /** Configure the per-object edits-history retention. */
+  editsHistoryConfig?: EditsHistoryConfig;
+  /**
+   * Object-level dataset datasource. Only the `dataset` variant is
+   * exposed today; advanced variants and security policies are deferred.
+   */
+  datasource?: ObjectV2DatasetDatasource;
 }
 
 /**
@@ -48,8 +91,29 @@ export type ObjectV2Def<T extends ObjectV2Config = ObjectV2Config> = T & {
 };
 
 /**
- * Convert a PropertyV2Config to the V1 ObjectPropertyTypeUserDefinition format.
+ * Walk an InterfaceV2Def's `extends` chain and collect every property
+ * apiName, including from ancestor interfaces. `visited` tracks
+ * already-traversed interface apiNames so a cycle via a mutated
+ * `extends` array cannot infinite-loop.
  */
+function collectInterfaceProperties(
+  iface: InterfaceV2Def,
+  props: Set<string> = new Set(),
+  visited: Set<string> = new Set(),
+): Set<string> {
+  if (visited.has(iface.apiName)) {
+    return props;
+  }
+  visited.add(iface.apiName);
+  for (const key of Object.keys(iface.properties)) {
+    props.add(key);
+  }
+  for (const parent of iface.extends ?? []) {
+    collectInterfaceProperties(parent, props, visited);
+  }
+  return props;
+}
+
 function convertPropertyToV1(
   config: PropertyV2Config,
 ): ObjectPropertyTypeUserDefinition {
@@ -57,7 +121,7 @@ function convertPropertyToV1(
     return { type: config };
   }
   const result: ObjectPropertyTypeUserDefinition = {
-    type: config.type,
+    type: extractPropertyType(config),
   };
   if (config.array !== undefined) {
     result.array = config.array;
@@ -90,6 +154,35 @@ export function defineObjectV2<const T extends ObjectV2Config>(
     }
   }
 
+  const implementsInterfaces: InterfaceImplementation[] | undefined = config
+      .implements?.length
+    ? config.implements.map(entry => {
+      if ("__brand" in entry) {
+        // Auto-mapping by property name — walk the extends chain so
+        // inherited properties also get mapped.
+        const allInterfaceProps = collectInterfaceProperties(entry);
+        return {
+          implements: entry.__v1Def,
+          propertyMapping: Array.from(allInterfaceProps)
+            .filter(key => key in (config.properties ?? {}))
+            .map(key => ({ interfaceProperty: key, mapsTo: key })),
+        };
+      }
+      // Explicit propertyMapping
+      return {
+        implements: entry.interface.__v1Def,
+        propertyMapping: Object.entries(entry.propertyMapping).map((
+          [interfaceProperty, mapsTo],
+        ) => ({ interfaceProperty, mapsTo })),
+      };
+    })
+    : undefined;
+
+  const datasources: ObjectTypeDatasourceDefinition[] | undefined =
+    config.datasource !== undefined
+      ? [{ type: config.datasource.type }]
+      : undefined;
+
   const v1Config: MakerObjectTypeDefinition = {
     apiName: config.apiName,
     primaryKeyPropertyApiName: config.primaryKeyPropertyApiName,
@@ -100,11 +193,17 @@ export function defineObjectV2<const T extends ObjectV2Config>(
     properties: v1Properties,
     visibility: config.visibility,
     status: config.status,
+    implementsInterfaces,
+    ...(config.editsHistoryConfig !== undefined
+      && { editsHistoryConfig: config.editsHistoryConfig }),
+    ...(datasources !== undefined && { datasources }),
   };
 
   const v1Registered = defineObject(v1Config);
 
-  const result = config as ObjectV2Def<T>;
-  (result as any).__v1Def = v1Registered;
-  return result;
+  return ({
+    ...config,
+    __brand: "ObjectV2Def" as const,
+    __v1Def: v1Registered,
+  }) as ObjectV2Def<T>;
 }

@@ -198,7 +198,8 @@ export function convertAction(
               return {
                 type: "modifyInterfaceRule",
                 modifyInterfaceRule: {
-                  interfaceObjectToModify:
+                  interfaceApiName: rule.modifyInterfaceRule.interfaceApiName,
+                  interfaceObjectToModifyParameter:
                     rule.modifyInterfaceRule.interfaceObjectToModifyParameter,
                   interfacePropertyValues: convertInterfacePropertyValuesToRids(
                     rule.modifyInterfaceRule.interfacePropertyValues,
@@ -275,7 +276,9 @@ function convertFunctionBackedAction(
   for (const input of discoveredFunction.inputs) {
     if (
       input.dataType.type === "ontologyEdit" || input.dataType.type === "client"
-    ) continue;
+    ) {
+      continue;
+    }
 
     const paramId = input.name;
     parameterOrdering.push(paramId);
@@ -723,6 +726,7 @@ export function renderHintFromBaseType(
       ) {
         return { type: "userDropdown", userDropdown: {} };
       }
+      return { type: "textInput", textInput: {} };
     case "stringList":
     case "geohash":
     case "geohashList":

@@ -15,7 +15,6 @@
  */
 
 import type {
-  ActionDefinition,
   ActionMetadata,
   ObjectMetadata,
   ObjectTypeDefinition,
@@ -28,7 +27,8 @@ import type {
   ActionV2Config,
   ActionV2Def,
 } from "./defineActionV2.js";
-import type { LinkV2Config, LinkV2Def } from "./defineLinkV2.js";
+import type { InterfaceV2Config, InterfaceV2Def } from "./defineInterfaceV2.js";
+import type { LinkV2Def } from "./defineLinkV2.js";
 import type { ObjectV2Config, ObjectV2Def } from "./defineObjectV2.js";
 import type { MakerToWire, PropertyV2Config } from "./propertyMapping.js";
 import { extractPropertyType, makerToWire } from "./propertyMapping.js";
@@ -109,43 +109,27 @@ type ComputedProps<
 // ---------------------------------------------------------------------------
 
 /**
- * Build the base ObjectTypeDefinition (without links) for a given ObjectV2Def.
- * Used as the target type in ObjectMetadata.Link.
+ * Lightweight ObjectTypeDefinition for use as a link target.
+ *
+ * Holds only what `ObjectMetadata.Link<Q, M>` and the OSDK instance projection
+ * need to keep typing useful (apiName, primary-key shape, the property record).
+ * The heavy metadata fields (`displayName`, `interfaceMap`, `strictProps`,
+ * etc.) live ONLY on the top-level `FinalizedObjectDef` so they're paid for
+ * once at the call site and not multiplied across every link target.
+ *
+ * This is what closes the TS2589 wart on objects with 3+ outgoing links —
+ * before this split, resolving `flight.$link.airplane.fetchOne()` forced TS
+ * to materialize the full `BaseObjectDefMetadata` for every link target
+ * simultaneously, exceeding the depth budget.
  */
-type BaseObjectDef<T extends ObjectV2Config> = {
+interface BaseObjectDef<T extends ObjectV2Config> {
   type: "object";
   apiName: T["apiName"];
   primaryKeyApiName: T["primaryKeyPropertyApiName"];
   primaryKeyType:
     & MakerToWire<ExtractType<T["properties"][T["primaryKeyPropertyApiName"]]>>
     & string;
-  __DefinitionMetadata?: {
-    type: "object";
-    apiName: T["apiName"];
-    displayName: T["displayName"];
-    pluralDisplayName: T["pluralDisplayName"];
-    description: T extends { description: infer D extends string } ? D
-      : undefined;
-    primaryKeyApiName: T["primaryKeyPropertyApiName"];
-    primaryKeyType:
-      & MakerToWire<
-        ExtractType<T["properties"][T["primaryKeyPropertyApiName"]]>
-      >
-      & string;
-    titleProperty: T["titlePropertyApiName"];
-    icon: undefined;
-    visibility: undefined;
-    status: undefined;
-    rid: string;
-    implements: [];
-    interfaceMap: {};
-    inverseInterfaceMap: {};
-    properties: MapProperties<T["properties"], T["primaryKeyPropertyApiName"]>;
-    props: ComputedProps<T["properties"], T["primaryKeyPropertyApiName"]>;
-    strictProps: ComputedProps<T["properties"], T["primaryKeyPropertyApiName"]>;
-    links: {};
-  };
-};
+}
 
 /** Resolve an ObjectV2Def from the AllObjects map by apiName */
 type ResolveObjectByApiName<
@@ -292,7 +276,10 @@ type MapActionParams<
 
 type FinalizedObjectDef<
   T extends ObjectV2Config,
-  Links extends Record<string, ObjectMetadata.Link<any, any>>,
+  Links extends Record<
+    string,
+    ObjectMetadata.Link<ObjectTypeDefinition, boolean>
+  >,
   NS extends string = "",
 > = {
   type: "object";
@@ -358,6 +345,37 @@ type FinalizedActionDef<
 };
 
 // ---------------------------------------------------------------------------
+// Finalized interface type
+// ---------------------------------------------------------------------------
+
+/**
+ * Interface metadata is intentionally lightweight — `properties` reuses
+ * `MapProperties` (PK is unused; we pass the apiName as the "PK" sentinel
+ * so the mapped type still produces non-PK property defs), and we expose
+ * the apiName, displayName, and description via `__DefinitionMetadata`.
+ */
+type FinalizedInterfaceDef<
+  T extends InterfaceV2Config,
+  NS extends string = "",
+> = {
+  type: "interface";
+  apiName: `${NS}${T["apiName"]}`;
+  osdkMetadata: { extraUserAgent: string };
+  __DefinitionMetadata?: {
+    type: "interface";
+    apiName: `${NS}${T["apiName"]}`;
+    displayName: T["displayName"];
+    description: T extends { description: infer D extends string } ? D
+      : undefined;
+    rid: string;
+    implements: [];
+    links: {};
+    properties: MapProperties<T["properties"], "">;
+    props: ComputedProps<T["properties"], "">;
+  };
+};
+
+// ---------------------------------------------------------------------------
 // FinalizedTypes — the top-level result type
 // ---------------------------------------------------------------------------
 
@@ -366,6 +384,7 @@ export type FinalizedTypes<
   L extends readonly LinkV2Def[],
   A extends Record<string, ActionV2Def>,
   NS extends string = "",
+  I extends Record<string, InterfaceV2Def> = {},
 > =
   & {
     [K in keyof O]: FinalizedObjectDef<
@@ -376,6 +395,9 @@ export type FinalizedTypes<
   }
   & {
     [K in keyof A]: FinalizedActionDef<A[K], O, NS>;
+  }
+  & {
+    [K in keyof I]: FinalizedInterfaceDef<I[K], NS>;
   };
 
 // ---------------------------------------------------------------------------
@@ -387,12 +409,14 @@ export interface FinalizeConfig<
   L extends readonly LinkV2Def[],
   A extends Record<string, ActionV2Def>,
   NS extends string = "",
+  I extends Record<string, InterfaceV2Def> = {},
 > {
-  /** Namespace prefix for all apiNames (e.g. "com.myorg."). Matches the namespace used by defineOntology/defineOntologyV2. */
+  /** Namespace prefix for all apiNames (e.g. "com.example."). Matches the namespace used by defineOntology/defineOntologyV2. */
   namespace?: NS;
   objects: O;
   links: L;
   actions: A;
+  interfaces?: I;
 }
 
 // ---------------------------------------------------------------------------
@@ -412,9 +436,10 @@ export function finalizeTypes<
   const L extends readonly LinkV2Def[],
   const A extends Record<string, ActionV2Def>,
   const NS extends string = "",
+  const I extends Record<string, InterfaceV2Def> = {},
 >(
-  config: FinalizeConfig<O, L, A, NS>,
-): FinalizedTypes<O, L, A, NS> {
+  config: FinalizeConfig<O, L, A, NS, I>,
+): FinalizedTypes<O, L, A, NS, I> {
   const result: Record<string, unknown> = {};
   const ns = config.namespace ?? "";
 
@@ -432,6 +457,12 @@ export function finalizeTypes<
   }
 
   for (const [key, actionDef] of Object.entries(config.actions)) {
+    if (key in result) {
+      throw new Error(
+        `finalizeTypes: key "${key}" is used by both an object and an action. `
+          + `Object and action keys must be unique.`,
+      );
+    }
     result[key] = {
       type: "action",
       apiName: ns + actionDef.apiName,
@@ -439,5 +470,19 @@ export function finalizeTypes<
     };
   }
 
-  return result as FinalizedTypes<O, L, A>;
+  for (const [key, ifaceDef] of Object.entries(config.interfaces ?? {})) {
+    if (key in result) {
+      throw new Error(
+        `finalizeTypes: key "${key}" is used by both an object/action and an `
+          + `interface. Object, action, and interface keys must be unique.`,
+      );
+    }
+    result[key] = {
+      type: "interface",
+      apiName: ns + ifaceDef.apiName,
+      osdkMetadata: { extraUserAgent: "" },
+    };
+  }
+
+  return result as FinalizedTypes<O, L, A, NS, I>;
 }

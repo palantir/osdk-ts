@@ -241,6 +241,8 @@ function convertSingleRule(
 
     case "modifyInterfaceRule": {
       const r = irRule.modifyInterfaceRule;
+      // Marketplace IR uses `interfaceObjectToModifyParameter`; OSDK wire
+      // shape uses `interfaceObjectToModify`. Both are intentional.
       const result: Ontologies.ModifyInterfaceLogicRule & {
         type: "modifyInterface";
       } = {
@@ -387,6 +389,8 @@ function convertBlockDataSingleRule(
 
     case "modifyInterfaceRule": {
       const r = rule.modifyInterfaceRule;
+      // Wire shape (non-IR) uses `interfaceObjectToModify` — different from
+      // the marketplace IR shape handled in the irRule branch above.
       const result: Ontologies.ModifyInterfaceLogicRule & {
         type: "modifyInterface";
       } = {

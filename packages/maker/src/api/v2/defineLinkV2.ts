@@ -15,6 +15,7 @@
  */
 
 import { defineLink } from "../defineLink.js";
+import type { LinkType, UserLinkTypeStatus } from "../links/LinkType.js";
 import type { ObjectV2Def } from "./defineObjectV2.js";
 
 /**
@@ -32,6 +33,7 @@ export interface OneToManyLinkV2Config<
   one: A;
   toMany: B;
   manyForeignKeyProperty: string;
+  status?: UserLinkTypeStatus;
 }
 
 /**
@@ -48,27 +50,55 @@ export interface ManyToManyLinkV2Config<
   reverseApiName: string;
   many: A;
   toMany: B;
+  status?: UserLinkTypeStatus;
+}
+
+/**
+ * Intermediary (3-way) link configuration. Bridges two object types via a
+ * junction object that already has 1:M links to both sides.
+ *
+ * Requires that the two underlying 1:M links from `many` → `intermediaryObjectType`
+ * and `toMany` → `intermediaryObjectType` were defined with `defineLinkV2`
+ * first (so the LinkV2Def has its `__v1Def` reference attached).
+ */
+export interface IntermediaryLinkV2Config<
+  A extends ObjectV2Def = ObjectV2Def,
+  B extends ObjectV2Def = ObjectV2Def,
+  I extends ObjectV2Def = ObjectV2Def,
+> {
+  apiName: string;
+  reverseApiName: string;
+  many: A;
+  toMany: B;
+  intermediaryObjectType: I;
+  manyToIntermediaryLink: LinkV2Def;
+  toManyToIntermediaryLink: LinkV2Def;
+  status?: UserLinkTypeStatus;
 }
 
 export type LinkV2Config<
   A extends ObjectV2Def = ObjectV2Def,
   B extends ObjectV2Def = ObjectV2Def,
-> = OneToManyLinkV2Config<A, B> | ManyToManyLinkV2Config<A, B>;
+  I extends ObjectV2Def = ObjectV2Def,
+> =
+  | OneToManyLinkV2Config<A, B>
+  | ManyToManyLinkV2Config<A, B>
+  | IntermediaryLinkV2Config<A, B, I>;
 
 /**
  * Branded intermediate type returned by defineLinkV2.
- * Preserves the full config as a type parameter.
+ * Preserves the full config as a type parameter. `__v1Def` stores the
+ * registered v1 LinkType so an intermediary link can reference the
+ * underlying many/toMany→intermediary 1:M links.
  */
 export type LinkV2Def<C extends LinkV2Config = LinkV2Config> = C & {
   readonly __brand: "LinkV2Def";
+  readonly __v1Def: LinkType;
 };
 
-function getLinkTypeId(apiName: string, reverseApiName: string): string {
-  return `${apiName}-${reverseApiName}`;
-}
-
 /**
- * Define a link between two V2 object types.
+ * Define a link between two V2 object types. Supports three variants:
+ * one-to-many, many-to-many, and intermediary (3-way via a junction object).
  *
  * Delegates to the existing defineLink() for maker state registration,
  * then returns a branded config for use with finalizeTypes().
@@ -76,13 +106,11 @@ function getLinkTypeId(apiName: string, reverseApiName: string): string {
 export function defineLinkV2<
   const C extends LinkV2Config,
 >(config: C): LinkV2Def<C> {
-  const linkApiName = getLinkTypeId(
-    config.apiName,
-    config.reverseApiName,
-  );
+  const linkApiName = `${config.apiName}-${config.reverseApiName}`;
 
+  let v1Link: LinkType;
   if ("one" in config) {
-    defineLink({
+    v1Link = defineLink({
       apiName: linkApiName,
       one: {
         object: config.one.__v1Def,
@@ -93,9 +121,26 @@ export function defineLinkV2<
         metadata: { apiName: config.apiName },
       },
       manyForeignKeyProperty: config.manyForeignKeyProperty,
+      status: config.status,
+    });
+  } else if ("intermediaryObjectType" in config) {
+    v1Link = defineLink({
+      apiName: linkApiName,
+      many: {
+        object: config.many.__v1Def,
+        metadata: { apiName: config.apiName },
+        linkToIntermediary: config.manyToIntermediaryLink.__v1Def,
+      },
+      toMany: {
+        object: config.toMany.__v1Def,
+        metadata: { apiName: config.reverseApiName },
+        linkToIntermediary: config.toManyToIntermediaryLink.__v1Def,
+      },
+      intermediaryObjectType: config.intermediaryObjectType.__v1Def,
+      status: config.status,
     });
   } else {
-    defineLink({
+    v1Link = defineLink({
       apiName: linkApiName,
       many: {
         object: config.many.__v1Def,
@@ -105,8 +150,13 @@ export function defineLinkV2<
         object: config.toMany.__v1Def,
         metadata: { apiName: config.reverseApiName },
       },
+      status: config.status,
     });
   }
 
-  return config as LinkV2Def<C>;
+  return ({
+    ...config,
+    __brand: "LinkV2Def" as const,
+    __v1Def: v1Link,
+  }) as LinkV2Def<C>;
 }

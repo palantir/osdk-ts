@@ -2287,11 +2287,11 @@ describe("Object Types", () => {
                   "oneToMany": {
                     "cardinalityHint": "ONE_TO_MANY",
                     "manyToOneLinkMetadata": {
-                      "apiName": "passengersFromFlight",
+                      "apiName": "flightFromPassengers",
                       "displayMetadata": {
-                        "displayName": "PassengersFromFlight",
+                        "displayName": "FlightFromPassengers",
                         "groupDisplayName": "",
-                        "pluralDisplayName": "PassengersFromFlights",
+                        "pluralDisplayName": "FlightFromPassengers",
                         "visibility": "NORMAL",
                       },
                       "typeClasses": [],
@@ -2311,11 +2311,11 @@ describe("Object Types", () => {
                       },
                     ],
                     "oneToManyLinkMetadata": {
-                      "apiName": "flightFromPassengers",
+                      "apiName": "passengersFromFlight",
                       "displayMetadata": {
-                        "displayName": "FlightFromPassengers",
+                        "displayName": "PassengersFromFlight",
                         "groupDisplayName": "",
-                        "pluralDisplayName": "FlightFromPassengers",
+                        "pluralDisplayName": "PassengersFromFlights",
                         "visibility": "NORMAL",
                       },
                       "typeClasses": [],
@@ -2793,11 +2793,11 @@ describe("Object Types", () => {
                   "oneToMany": {
                     "cardinalityHint": "ONE_TO_MANY",
                     "manyToOneLinkMetadata": {
-                      "apiName": "child",
+                      "apiName": "parent",
                       "displayMetadata": {
-                        "displayName": "Child",
+                        "displayName": "Parent",
                         "groupDisplayName": "",
-                        "pluralDisplayName": "Children",
+                        "pluralDisplayName": "Parents",
                         "visibility": "NORMAL",
                       },
                       "typeClasses": [],
@@ -2817,11 +2817,11 @@ describe("Object Types", () => {
                       },
                     ],
                     "oneToManyLinkMetadata": {
-                      "apiName": "parent",
+                      "apiName": "child",
                       "displayMetadata": {
-                        "displayName": "Parent",
+                        "displayName": "Child",
                         "groupDisplayName": "",
-                        "pluralDisplayName": "Parents",
+                        "pluralDisplayName": "Children",
                         "visibility": "NORMAL",
                       },
                       "typeClasses": [],

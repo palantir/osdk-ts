@@ -17,6 +17,7 @@
 export { default as default } from "./cli/main.js";
 
 export { defineOntologyV2 } from "./api/defineOntologyV2.js";
+export type { FunctionsIr, OntologyV2Result } from "./api/defineOntologyV2.js";
 export type { BlockShapes, OntologyRidGenerator } from "./util/generateRid.js";
 
 export { defineImportObject } from "./api/importObjectType.js";
@@ -26,3 +27,10 @@ export type {
 } from "./api/types.js";
 
 export { defineFunctionBackedAction } from "./api/defineFunctionBackedAction.js";
+
+export { defineOacOntology } from "./api/defineOacOntology.js";
+export type {
+  OacOntology,
+  OacOntologyBundle,
+  OacOntologyConfig,
+} from "./api/defineOacOntology.js";

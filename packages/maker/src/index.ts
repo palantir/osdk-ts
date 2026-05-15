@@ -132,6 +132,11 @@ export { wrapWithProxy } from "./api/wrapWithProxy.js";
 export { propertyTypeTypeToOntologyIrType as convertType } from "./conversion/toMarketplace/propertyTypeTypeToOntologyIrType.js";
 
 // V2 experimental APIs — client-compatible maker definitions
+export type {
+  ActionLevelValidationV2Config,
+  ParameterValidationV2Config,
+  SectionV2Config,
+} from "./api/v2/actionValidation.js";
 export { defineActionV2 } from "./api/v2/defineActionV2.js";
 export type {
   ActionParameterV2Config,
@@ -139,8 +144,26 @@ export type {
   ActionV2Config,
   ActionV2Def,
 } from "./api/v2/defineActionV2.js";
+export {
+  defineCreateInterfaceObjectActionV2,
+  defineDeleteInterfaceObjectActionV2,
+  defineModifyInterfaceObjectActionV2,
+} from "./api/v2/defineInterfaceActions.js";
+export type { InterfaceActionV2Overrides } from "./api/v2/defineInterfaceActions.js";
+export { defineInterfaceLinkConstraintV2 } from "./api/v2/defineInterfaceLinkConstraintV2.js";
+export type {
+  InterfaceLinkConstraintManyV2Config,
+  InterfaceLinkConstraintOneV2Config,
+  InterfaceLinkConstraintV2Config,
+} from "./api/v2/defineInterfaceLinkConstraintV2.js";
+export { defineInterfaceV2 } from "./api/v2/defineInterfaceV2.js";
+export type {
+  InterfaceV2Config,
+  InterfaceV2Def,
+} from "./api/v2/defineInterfaceV2.js";
 export { defineLinkV2 } from "./api/v2/defineLinkV2.js";
 export type {
+  IntermediaryLinkV2Config,
   LinkV2Config,
   LinkV2Def,
   ManyToManyLinkV2Config,
@@ -157,6 +180,11 @@ export type {
   CreateOrModifyV2Overrides,
 } from "./api/v2/defineObjectActions.js";
 export { defineObjectV2 } from "./api/v2/defineObjectV2.js";
-export type { ObjectV2Config, ObjectV2Def } from "./api/v2/defineObjectV2.js";
+export type {
+  ObjectV2Config,
+  ObjectV2DatasetDatasource,
+  ObjectV2Def,
+  ObjectV2ImplementsEntry,
+} from "./api/v2/defineObjectV2.js";
 export { finalizeTypes } from "./api/v2/finalizeTypes.js";
 export type { FinalizeConfig, FinalizedTypes } from "./api/v2/finalizeTypes.js";

@@ -426,6 +426,10 @@ export class OntologyBlockDataToFullMetadataConverter {
         }
         case "modifyInterfaceRule": {
           const r = irLogic.modifyInterfaceRule;
+          // This converter consumes `OntologyBlockDataV2` (wire shape),
+          // whose `ModifyInterfaceRule.interfaceObjectToModify` lacks the
+          // "Parameter" suffix. The marketplace-IR sibling converter in
+          // `OntologyIrToFullMetadataConverter.ts` reads the suffix'd field.
           const parameter = action.actionType.metadata
             .parameters[r.interfaceObjectToModify];
           if (!parameter) {

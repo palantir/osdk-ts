@@ -69,10 +69,17 @@ export function convertLink(
       type: "oneToMany",
       oneToMany: {
         cardinalityHint: convertCardinality(linkType.cardinality),
-        manyToOneLinkMetadata: linkType.toMany.metadata,
+        // IR convention (counterintuitive): `oneToManyLinkMetadata` carries
+        // the apiName as it appears ON the MANY-side object; `manyToOneLink-
+        // Metadata` carries the apiName as it appears ON the ONE-side
+        // object. Confirmed against
+        // generator-converters.ontologyir/OntologyIrToFullMetadataConvert.test.ts:577-680
+        // (test inputs) and lines 3140-3328 (assertions). Don't swap these
+        // back; the field names lie about which side they live on.
+        oneToManyLinkMetadata: linkType.toMany.metadata,
+        manyToOneLinkMetadata: linkType.one.metadata,
         objectTypeRidManySide: toManyObjectRid,
         objectTypeRidOneSide: oneObjectRid,
-        oneToManyLinkMetadata: linkType.one.metadata,
         // TODO: Convert property mappings to use RIDs as keys and values
         oneSidePrimaryKeyToManySidePropertyMapping: {
           [onePkRid]: manyFkRid,

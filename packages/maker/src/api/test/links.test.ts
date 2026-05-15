@@ -94,11 +94,11 @@ describe("Link Types", () => {
                   "oneToMany": {
                     "cardinalityHint": "ONE_TO_MANY",
                     "manyToOneLinkMetadata": {
-                      "apiName": "foos",
+                      "apiName": "fizzes",
                       "displayMetadata": {
-                        "displayName": "Fizz",
+                        "displayName": "Foo",
                         "groupDisplayName": "",
-                        "pluralDisplayName": "Fizzes",
+                        "pluralDisplayName": "Foos",
                         "visibility": "NORMAL",
                       },
                       "typeClasses": [],
@@ -118,11 +118,11 @@ describe("Link Types", () => {
                       },
                     ],
                     "oneToManyLinkMetadata": {
-                      "apiName": "fizzes",
+                      "apiName": "foos",
                       "displayMetadata": {
-                        "displayName": "Foo",
+                        "displayName": "Fizz",
                         "groupDisplayName": "",
-                        "pluralDisplayName": "Foos",
+                        "pluralDisplayName": "Fizzes",
                         "visibility": "NORMAL",
                       },
                       "typeClasses": [],
@@ -1112,11 +1112,11 @@ describe("Link Types", () => {
                   "oneToMany": {
                     "cardinalityHint": "ONE_TO_MANY",
                     "manyToOneLinkMetadata": {
-                      "apiName": "bars",
+                      "apiName": "buzz1",
                       "displayMetadata": {
-                        "displayName": "Bar",
+                        "displayName": "Buzz",
                         "groupDisplayName": "",
-                        "pluralDisplayName": "Bars",
+                        "pluralDisplayName": "Buzz",
                         "visibility": "NORMAL",
                       },
                       "typeClasses": [],
@@ -1136,11 +1136,11 @@ describe("Link Types", () => {
                       },
                     ],
                     "oneToManyLinkMetadata": {
-                      "apiName": "buzz1",
+                      "apiName": "bars",
                       "displayMetadata": {
-                        "displayName": "Buzz",
+                        "displayName": "Bar",
                         "groupDisplayName": "",
-                        "pluralDisplayName": "Buzz",
+                        "pluralDisplayName": "Bars",
                         "visibility": "NORMAL",
                       },
                       "typeClasses": [],
@@ -1210,11 +1210,11 @@ describe("Link Types", () => {
                   "oneToMany": {
                     "cardinalityHint": "ONE_TO_MANY",
                     "manyToOneLinkMetadata": {
-                      "apiName": "fizzes",
+                      "apiName": "buzz2",
                       "displayMetadata": {
-                        "displayName": "Fizz",
+                        "displayName": "Buzz",
                         "groupDisplayName": "",
-                        "pluralDisplayName": "Fizzes",
+                        "pluralDisplayName": "Buzz",
                         "visibility": "NORMAL",
                       },
                       "typeClasses": [],
@@ -1234,11 +1234,11 @@ describe("Link Types", () => {
                       },
                     ],
                     "oneToManyLinkMetadata": {
-                      "apiName": "buzz2",
+                      "apiName": "fizzes",
                       "displayMetadata": {
-                        "displayName": "Buzz",
+                        "displayName": "Fizz",
                         "groupDisplayName": "",
-                        "pluralDisplayName": "Buzz",
+                        "pluralDisplayName": "Fizzes",
                         "visibility": "NORMAL",
                       },
                       "typeClasses": [],
@@ -1714,11 +1714,11 @@ describe("Link Types", () => {
                   "oneToMany": {
                     "cardinalityHint": "ONE_TO_MANY",
                     "manyToOneLinkMetadata": {
-                      "apiName": "foos",
+                      "apiName": "fizzes",
                       "displayMetadata": {
-                        "displayName": "Foos",
+                        "displayName": "Fizzes",
                         "groupDisplayName": "",
-                        "pluralDisplayName": "Foos",
+                        "pluralDisplayName": "Fizzes",
                         "visibility": "NORMAL",
                       },
                       "typeClasses": [],
@@ -1738,11 +1738,11 @@ describe("Link Types", () => {
                       },
                     ],
                     "oneToManyLinkMetadata": {
-                      "apiName": "fizzes",
+                      "apiName": "foos",
                       "displayMetadata": {
-                        "displayName": "Fizzes",
+                        "displayName": "Foos",
                         "groupDisplayName": "",
-                        "pluralDisplayName": "Fizzes",
+                        "pluralDisplayName": "Foos",
                         "visibility": "NORMAL",
                       },
                       "typeClasses": [],

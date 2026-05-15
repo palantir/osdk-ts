@@ -885,6 +885,40 @@ export class OntologyIrToFullMetadataConverter {
           };
           break;
         }
+        case "intermediary": {
+          // Intermediary links present as MANY/MANY on both ends in the
+          // OSDK surface (the junction object is queryable separately
+          // via its own 1:M links).
+          const linkDef = linkType.definition.intermediary;
+          const common = {
+            linkTypeRid:
+              `ri.${linkDef.objectTypeRidA}.${linkType.id}.${linkDef.objectTypeRidB}`,
+            status: linkStatus,
+            cardinality: "MANY" as const,
+          };
+
+          const sideA: Ontologies.LinkTypeSideV2 = {
+            ...common,
+            apiName: linkDef.objectTypeAToBLinkMetadata.apiName ?? "",
+            displayName: linkDef.objectTypeAToBLinkMetadata.displayMetadata
+              .displayName,
+            objectTypeApiName: linkDef.objectTypeRidB,
+          };
+
+          const sideB: Ontologies.LinkTypeSideV2 = {
+            ...common,
+            apiName: linkDef.objectTypeBToALinkMetadata.apiName ?? "",
+            displayName: linkDef.objectTypeBToALinkMetadata.displayMetadata
+              .displayName,
+            objectTypeApiName: linkDef.objectTypeRidA,
+          };
+
+          mappings = {
+            [linkDef.objectTypeRidA]: sideA,
+            [linkDef.objectTypeRidB]: sideB,
+          };
+          break;
+        }
         default:
           throw new Error("Unknown link definition type");
       }
@@ -973,15 +1007,21 @@ export class OntologyIrToFullMetadataConverter {
           const r = irLogic.deleteObjectRule;
           const ontologyIrParameter =
             action.actionType.metadata.parameters[r.objectToDelete];
-          if (ontologyIrParameter.type.type !== "objectReference") {
-            throw new Error("invalid parameter type");
+          if (ontologyIrParameter.type.type === "objectReference") {
+            return {
+              type: "deleteObject",
+              objectTypeApiName:
+                ontologyIrParameter.type.objectReference.objectTypeId,
+            } satisfies Ontologies.LogicRule;
           }
-
-          return {
-            type: "deleteObject",
-            objectTypeApiName:
-              ontologyIrParameter.type.objectReference.objectTypeId,
-          } satisfies Ontologies.LogicRule;
+          if (ontologyIrParameter.type.type === "interfaceReference") {
+            return {
+              type: "deleteInterfaceObject",
+              interfaceTypeApiName:
+                ontologyIrParameter.type.interfaceReference.interfaceTypeRid,
+            } satisfies Ontologies.LogicRule;
+          }
+          throw new Error("invalid parameter type");
         }
         case "modifyInterfaceRule": {
           const r = irLogic.modifyInterfaceRule;
@@ -1122,10 +1162,29 @@ export class OntologyIrToFullMetadataConverter {
             subType: { type: "integer" },
           };
           break;
-        case "interfaceReference":
-          throw new Error("Interface reference type not supported");
-        case "interfaceReferenceList":
-          throw new Error("Interface reference list type not supported");
+        case "interfaceReference": {
+          const t = irParameter.type.interfaceReference;
+          // The v1 IR populates `interfaceTypeRid` with the interface's
+          // apiName (not a true RID); the metadata field name preserves
+          // the convention established elsewhere in the converter.
+          dataType = {
+            type: "interfaceObject",
+            interfaceTypeApiName: t.interfaceTypeRid,
+          };
+          break;
+        }
+        case "interfaceReferenceList": {
+          const t = irParameter.type.interfaceReferenceList;
+          // See note above: `interfaceTypeRid` carries an apiName.
+          dataType = {
+            type: "array",
+            subType: {
+              type: "interfaceObject",
+              interfaceTypeApiName: t.interfaceTypeRid,
+            },
+          };
+          break;
+        }
         case "long":
           dataType = { type: "long" };
           break;

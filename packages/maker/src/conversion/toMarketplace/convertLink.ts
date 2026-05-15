@@ -49,10 +49,14 @@ export function convertLink(
       type: "oneToMany",
       oneToMany: {
         cardinalityHint: convertCardinality(linkType.cardinality),
-        manyToOneLinkMetadata: linkType.toMany.metadata,
+        // IR convention (counterintuitive): `oneToManyLinkMetadata` carries
+        // the apiName as it appears ON the MANY-side object; `manyToOneLink-
+        // Metadata` carries the apiName as it appears ON the ONE-side
+        // object. The field names lie about which side they live on.
+        oneToManyLinkMetadata: linkType.toMany.metadata,
+        manyToOneLinkMetadata: linkType.one.metadata,
         objectTypeRidManySide: toManyObjectApiName,
         objectTypeRidOneSide: oneObjectApiName,
-        oneToManyLinkMetadata: linkType.one.metadata,
         oneSidePrimaryKeyToManySidePropertyMapping: [{
           from: {
             apiName: oneObject.primaryKeyPropertyApiName,
