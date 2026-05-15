@@ -232,25 +232,14 @@ export class ObjectSetQuery extends BaseListQuery<
       this.#rdpInvalidationSet = invalidationSet;
     }
 
-    // When the orderBy branch above didn't run but the query has RDPs, we
-    // still need the RDP invalidation set so an action editing a traversed
-    // linked type can invalidate this query.
     if (
       this.#rdpInvalidationSet == null
       && this.#operations.withProperties != null
     ) {
-      try {
-        const wireObjectSet = getWireObjectSet(this.#composedObjectSet);
-        const { invalidationSet } = await getObjectTypesThatInvalidate(
-          this.store.client[additionalContext],
-          wireObjectSet,
-        );
-        this.#rdpInvalidationSet = invalidationSet;
-      } catch {
-        // Some ObjectSet shapes (static, reference) aren't walkable. Fall
-        // back to an empty set so we only invalidate on direct type matches.
-        this.#rdpInvalidationSet = new Set();
-      }
+      const wireObjectSet = getWireObjectSet(this.#composedObjectSet);
+      this.#rdpInvalidationSet = await this.#computeInvalidationTypes(
+        wireObjectSet,
+      );
     }
 
     // Fetch the data with pagination
@@ -472,6 +461,24 @@ export class ObjectSetQuery extends BaseListQuery<
     return { definite, uncertain };
   }
 
+  async #computeInvalidationTypes(
+    wireObjectSet: WireObjectSet,
+  ): Promise<Set<string>> {
+    try {
+      const { invalidationSet } = await getObjectTypesThatInvalidate(
+        this.store.client[additionalContext],
+        wireObjectSet,
+      );
+      return invalidationSet;
+    } catch (error) {
+      this.store.logger?.error(
+        "Failed to compute invalidation types for object set query, falling back to empty set",
+        error,
+      );
+      return new Set();
+    }
+  }
+
   #getObjectCacheKey(
     obj: { $objectType: string; $primaryKey: string | number },
   ): ObjectCacheKey {
@@ -490,7 +497,7 @@ export class ObjectSetQuery extends BaseListQuery<
   ): Promise<void> => {
     if (
       this.#objectTypes.has(objectType)
-      || !!this.#rdpInvalidationSet?.has(objectType)
+      || (this.#rdpInvalidationSet?.has(objectType) ?? false)
     ) {
       changes?.modified.add(this.cacheKey);
       return this.revalidate(true);
