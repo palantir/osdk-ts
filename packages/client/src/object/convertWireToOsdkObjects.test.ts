@@ -1097,7 +1097,6 @@ describe("convertWireToOsdkObjects", () => {
       client[additionalContext],
       [wireEmployee],
       undefined,
-      false,
       {},
       wireSecurities,
     ) as unknown as Osdk.Instance<Employee, "$propertySecurities">[];

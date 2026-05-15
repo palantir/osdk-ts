@@ -96,6 +96,7 @@ it("publishes PREPARING through the discovered status server URL", async () => {
       level: "INFO",
     });
   } finally {
+    server.closeAllConnections();
     await new Promise<void>((resolve, reject) => {
       server.close((err) => (err ? reject(err) : resolve()));
     });
