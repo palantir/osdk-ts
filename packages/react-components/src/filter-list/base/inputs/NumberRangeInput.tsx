@@ -50,6 +50,7 @@ interface NumberRangeInputProps {
   showHistogram?: boolean;
   className?: string;
   style?: React.CSSProperties;
+  clickToFilter?: boolean;
 }
 
 function NumberRangeInputInner(

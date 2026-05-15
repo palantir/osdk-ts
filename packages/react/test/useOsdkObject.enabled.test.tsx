@@ -18,7 +18,7 @@ import type { ObjectTypeDefinition, Osdk } from "@osdk/api";
 import { renderHook } from "@testing-library/react";
 import * as React from "react";
 import { beforeEach, describe, expect, it, vitest } from "vitest";
-import { OsdkContext2 } from "../src/new/OsdkContext2.js";
+import { OsdkContext } from "../src/new/OsdkContext.js";
 import { useOsdkObject } from "../src/new/useOsdkObject.js";
 
 // Mock object type definition
@@ -44,11 +44,11 @@ describe("useOsdkObject enabled option", () => {
     } as any;
 
     return ({ children }: React.PropsWithChildren) => (
-      <OsdkContext2.Provider
+      <OsdkContext.Provider
         value={{ observableClient, devtoolsEnabled: false }}
       >
         {children}
-      </OsdkContext2.Provider>
+      </OsdkContext.Provider>
     );
   };
 
@@ -127,5 +127,21 @@ describe("useOsdkObject enabled option", () => {
     rerender({ enabled: true });
 
     expect(mockObserveObject).toHaveBeenCalledTimes(1);
+  });
+
+  it("should forward $includeAllBaseObjectProperties to observeObject", () => {
+    const wrapper = createWrapper();
+
+    renderHook(
+      () =>
+        useOsdkObject(MockObjectType, "pk-777", {
+          $includeAllBaseObjectProperties: true,
+        }),
+      { wrapper },
+    );
+
+    expect(mockObserveObject).toHaveBeenCalledTimes(1);
+    const options = mockObserveObject.mock.calls[0][2];
+    expect(options.$includeAllBaseObjectProperties).toBe(true);
   });
 });

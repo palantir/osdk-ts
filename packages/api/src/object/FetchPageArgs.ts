@@ -55,7 +55,6 @@ export namespace ObjectSetArgs {
     RDP_KEYS extends string = never,
     ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<K> = never,
   > extends Select<K, RDP_KEYS>, OrderBy<ORDER_BY_OPTIONS, K> {
-    $__UNSTABLE_useOldInterfaceApis?: boolean;
     $includeAllBaseObjectProperties?: PropertyKeys<Q> extends K ? T : never;
   }
 
@@ -108,7 +107,7 @@ export interface FetchPageArgs<
   RDP_KEYS extends string = never,
   ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<K> = {},
   PROPERTY_SECURITIES extends boolean = false,
-  MODIFIERS extends ApplyModifiersArg<Q, PropertyKeys<Q>> = {},
+  MODIFIERS extends ApplyModifiersArg<Q> = {},
 > extends
   AsyncIterArgs<
     Q,
@@ -126,7 +125,7 @@ export interface FetchPageArgs<
   $nextPageToken?: string;
   $pageSize?: number;
   $applyModifiers?:
-    & ApplyModifiersArg<Q, PropertyKeys<Q>>
+    & ApplyModifiersArg<Q>
     & MODIFIERS
     & { [P in Exclude<keyof MODIFIERS, PropertyKeys<Q>>]: never };
 }
@@ -141,15 +140,14 @@ export interface AsyncIterArgs<
   RDP_KEYS extends string = never,
   ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<K> = never,
   PROPERTY_SECURITIES extends boolean = false,
-  MODIFIERS extends ApplyModifiersArg<Q, PropertyKeys<Q>> = {},
+  MODIFIERS extends ApplyModifiersArg<Q> = {},
 > extends
   SelectArg<Q, K, R, S, RDP_KEYS, PROPERTY_SECURITIES>,
   OrderByArg<Q, PropertyKeys<Q> | RDP_KEYS, ORDER_BY_OPTIONS>
 {
-  $__UNSTABLE_useOldInterfaceApis?: boolean;
   $includeAllBaseObjectProperties?: PropertyKeys<Q> extends K ? T : never;
   $applyModifiers?:
-    & ApplyModifiersArg<Q, PropertyKeys<Q>>
+    & ApplyModifiersArg<Q>
     & MODIFIERS
     & { [P in Exclude<keyof MODIFIERS, PropertyKeys<Q>>]: never };
 }

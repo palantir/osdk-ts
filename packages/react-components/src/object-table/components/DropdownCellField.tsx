@@ -65,6 +65,7 @@ function DropdownCellFieldInner({
         portalRef={portalRef}
         value={inputValue}
         onChange={onChange}
+        modal={false}
       />
     </div>
   );

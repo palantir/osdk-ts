@@ -19,7 +19,7 @@ import { EnhancedInterfaceType } from "../GenerateContext/EnhancedInterfaceType.
 import { ForeignType } from "../GenerateContext/ForeignType.js";
 import type { GenerateContext } from "../GenerateContext/GenerateContext.js";
 import { formatTs } from "../util/test/formatTs.js";
-import { __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst } from "./UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst.js";
+import { wireInterfaceTypeV2ToSdkObjectConst } from "./wireInterfaceTypeV2ToSdkObjectConst.js";
 
 /** @internal */
 export async function generatePerInterfaceDataFiles(
@@ -47,7 +47,7 @@ export async function generatePerInterfaceDataFiles(
       }";
         import { $osdkMetadata } from "../../OntologyMetadata${importExt}";
       ${
-        __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(
+        wireInterfaceTypeV2ToSdkObjectConst(
           obj,
           ontology,
           true,

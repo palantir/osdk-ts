@@ -374,7 +374,7 @@ function renderType(
         ? "\"primaryKeyValue\""
         : "primaryKeyValue";
       if (context === "actionParameter") {
-        return `${primaryKeyValue} // or myObjectInstance`;
+        return `${primaryKeyValue} /* or myObjectInstance */`;
       }
       return primaryKeyValue;
     case "objectSet":

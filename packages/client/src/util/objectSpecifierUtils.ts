@@ -60,7 +60,6 @@ export function createObjectSpecifierFromInterfaceSpecifier<
 /**
  * Extracts the primary key from an ObjectSpecifier on an OSDK object.
  *
- * @param ObjectSpecifier
  * @returns A string representing the primary key
  */
 export function extractPrimaryKeyFromObjectSpecifier(
@@ -72,7 +71,6 @@ export function extractPrimaryKeyFromObjectSpecifier(
 /**
  * Extracts the object type from an ObjectSpecifier on an OSDK object.
  *
- * @param ObjectSpecifier
  * @returns The object type extracted from the ObjectSpecifier
  */
 export function extractObjectTypeFromObjectSpecifier(

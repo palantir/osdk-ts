@@ -17,7 +17,7 @@
 import { Users } from "@osdk/foundry.admin";
 import React from "react";
 import { usePlatformQuery } from "../../../utils/usePlatformQuery.js";
-import { OsdkContext2 } from "../../OsdkContext2.js";
+import { OsdkContext } from "../../OsdkContext.js";
 
 export interface UseUserViewMarkingsOptions {
   /**
@@ -58,7 +58,7 @@ export interface UseUserViewMarkingsResult {
 export function useUserViewMarkings(
   { userId, enabled = true }: UseUserViewMarkingsOptions = {},
 ): UseUserViewMarkingsResult {
-  const { client } = React.useContext(OsdkContext2);
+  const { client } = React.useContext(OsdkContext);
 
   const handleQuery = React.useCallback(async () => {
     const resolvedUserId = userId

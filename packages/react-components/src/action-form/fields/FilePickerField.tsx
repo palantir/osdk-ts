@@ -18,6 +18,7 @@ import { Button } from "@base-ui/react/button";
 import { Cross } from "@blueprintjs/icons";
 import classnames from "classnames";
 import React, { memo, useCallback, useMemo, useRef } from "react";
+import { ActionButton } from "../../base-components/action-button/ActionButton.js";
 import type { FilePickerProps } from "../FormFieldApi.js";
 import styles from "./FilePickerField.module.css";
 
@@ -37,10 +38,30 @@ export const FilePickerField: React.FC<FilePickerProps> = memo(
     buttonText = "Browse",
   }): React.ReactElement {
     const inputRef = useRef<HTMLInputElement>(null);
+    const fileTriggerRef = useRef<HTMLButtonElement>(null);
 
     const openFileDialog = useCallback(() => {
       inputRef.current?.click();
     }, []);
+
+    const focusFileTrigger = useCallback(() => {
+      fileTriggerRef.current?.focus();
+    }, []);
+
+    const handleBrowsePointerDown = useCallback(
+      (event: React.PointerEvent<HTMLButtonElement>) => {
+        // Browse is a visual affordance inside the field, not a separate tab
+        // stop; keep the field trigger as the focused element and focus ring.
+        event.preventDefault();
+        focusFileTrigger();
+      },
+      [focusFileTrigger],
+    );
+
+    const handleBrowseClick = useCallback(() => {
+      focusFileTrigger();
+      openFileDialog();
+    }, [focusFileTrigger, openFileDialog]);
 
     const handleInputChange = useCallback(
       (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -61,7 +82,6 @@ export const FilePickerField: React.FC<FilePickerProps> = memo(
 
     const handleClear = useCallback(
       (event: React.MouseEvent) => {
-        event.stopPropagation();
         event.preventDefault();
         onChange?.(null);
         if (inputRef.current != null) {
@@ -88,21 +108,14 @@ export const FilePickerField: React.FC<FilePickerProps> = memo(
       [accept],
     );
     return (
-      // The entire component is a single tab stop (tabIndex={0}).
-      // Text and Browse are <span>s (not buttons) so they don't create
-      // extra tab stops — clicks on them bubble up to the container's onClick.
-      // The clear button is the only inner interactive element and gets its
-      // own tab stop so keyboard users can clear the selection.
       <div
-        id={id}
         className={styles.osdkFilePickerTrigger}
-        tabIndex={0}
-        role="button"
-        aria-label="Choose file"
-        onClick={openFileDialog}
-        onKeyDown={handleKeyDown}
         aria-invalid={error != null || undefined}
       >
+        {
+          /* display: none removes the input from the a11y tree entirely,
+            avoiding nested-interactive. Programmatic .click() still works. */
+        }
         <input
           ref={inputRef}
           type="file"
@@ -110,21 +123,26 @@ export const FilePickerField: React.FC<FilePickerProps> = memo(
           multiple={isMulti}
           accept={acceptString}
           onChange={handleInputChange}
-          aria-hidden="true"
           tabIndex={-1}
         />
-        <span
+        <Button
+          ref={fileTriggerRef}
+          id={id}
+          type="button"
           className={classnames(
             styles.osdkFilePickerText,
             !hasValue && styles.osdkFilePickerPlaceholder,
           )}
+          onClick={openFileDialog}
+          onKeyDown={handleKeyDown}
+          aria-label="Choose file"
+          aria-invalid={error != null || undefined}
         >
           {displayText ?? text}
-        </span>
+        </Button>
         {hasValue && (
-          // stopPropagation + preventDefault prevent the click from
-          // bubbling to the container's onClick which opens the file dialog.
           <Button
+            type="button"
             className={styles.osdkFilePickerClear}
             onClick={handleClear}
             aria-label="Clear selection"
@@ -132,7 +150,15 @@ export const FilePickerField: React.FC<FilePickerProps> = memo(
             <Cross />
           </Button>
         )}
-        <span className={styles.osdkFilePickerBrowse}>{buttonText}</span>
+        <ActionButton
+          type="button"
+          tabIndex={-1}
+          className={styles.osdkFilePickerBrowse}
+          onPointerDown={handleBrowsePointerDown}
+          onClick={handleBrowseClick}
+        >
+          {buttonText}
+        </ActionButton>
       </div>
     );
   },

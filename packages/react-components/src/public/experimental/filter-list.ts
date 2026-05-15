@@ -40,3 +40,17 @@ export {
   deserializeFilterStates,
   serializeFilterStates,
 } from "../../filter-list/utils/filterStateSerialization.js";
+
+export { FilterPopover } from "../../filter-list/base/FilterPopover.js";
+export type { FilterPopoverProps } from "../../filter-list/base/FilterPopover.js";
+
+export { FilterInput } from "../../filter-list/FilterInput.js";
+export type { FilterInputProps } from "../../filter-list/FilterInput.js";
+
+export { useFilterListState } from "../../filter-list/hooks/useFilterListState.js";
+export type { UseFilterListStateResult } from "../../filter-list/hooks/useFilterListState.js";
+
+export { filterHasActiveState } from "../../filter-list/utils/filterValues.js";
+export { getFilterKey } from "../../filter-list/utils/getFilterKey.js";
+export { getFilterLabel } from "../../filter-list/utils/getFilterLabel.js";
+export { summarizeFilterValue } from "../../filter-list/utils/summarizeFilterValue.js";

@@ -4,7 +4,7 @@ versions:
     snippets:
       reactProviderSetup:
         - template: |-
-            import { OsdkProvider2 } from "@osdk/react/experimental";
+            import { OsdkProvider } from "@osdk/react";
             import { createClient } from "@osdk/client";
 
             const client = createClient(
@@ -15,16 +15,16 @@ versions:
 
             function App() {
               return (
-                <OsdkProvider2 client={client}>
+                <OsdkProvider client={client}>
                   <YourApp />
-                </OsdkProvider2>
+                </OsdkProvider>
               );
             }
 
       reactUseOsdkObjectsBasic:
         - template: |-
             import { {{objectType}} } from "{{{packageName}}}";
-            import { useOsdkObjects } from "@osdk/react/experimental";
+            import { useOsdkObjects } from "@osdk/react";
 
             function {{objectType}}List() {
               const { data, isLoading, error, fetchMore } = useOsdkObjects({{objectType}});
@@ -47,7 +47,7 @@ versions:
       reactUseOsdkObjectsFilter:
         - template: |-
             import { {{objectType}} } from "{{{packageName}}}";
-            import { useOsdkObjects } from "@osdk/react/experimental";
+            import { useOsdkObjects } from "@osdk/react";
 
             function Filtered{{objectType}}List() {
               const { data, isLoading, error } = useOsdkObjects({{objectType}}, {
@@ -72,7 +72,7 @@ versions:
       reactUseOsdkObjectByPrimaryKey:
         - template: |-
             import { {{objectType}} } from "{{{packageName}}}";
-            import { useOsdkObject } from "@osdk/react/experimental";
+            import { useOsdkObject } from "@osdk/react";
 
             function {{objectType}}Detail({ primaryKey }: { primaryKey: string }) {
               const { object, isLoading, error } = useOsdkObject({{objectType}}, primaryKey);
@@ -93,7 +93,7 @@ versions:
       reactUseLinksBasic:
         - template: |-
             import { {{sourceObjectType}} } from "{{{packageName}}}";
-            import { useLinks } from "@osdk/react/experimental";
+            import { useLinks } from "@osdk/react";
 
             function Linked{{linkedObjectType}}({ source }: { source: {{sourceObjectType}}.OsdkInstance }) {
               const { links, isLoading, error } = useLinks(source, "{{linkApiName}}");
@@ -114,7 +114,7 @@ versions:
       reactUseOsdkActionBasic:
         - template: |-
             import { {{actionApiName}} } from "{{{packageName}}}";
-            import { useOsdkAction } from "@osdk/react/experimental";
+            import { useOsdkAction } from "@osdk/react";
 
             function {{actionApiName}}Button() {
               const { applyAction, isPending, error } = useOsdkAction({{actionApiName}});
@@ -142,7 +142,7 @@ versions:
       reactUseOsdkAggregationBasic:
         - template: |-
             import { {{objectType}} } from "{{{packageName}}}";
-            import { useOsdkAggregation } from "@osdk/react/experimental";
+            import { useOsdkAggregation } from "@osdk/react";
 
             function {{objectType}}Count() {
               const { data, isLoading, error } = useOsdkAggregation({{objectType}}, {
@@ -161,7 +161,7 @@ versions:
       reactUseOsdkObjectsEnabled:
         - template: |-
             import { {{objectType}} } from "{{{packageName}}}";
-            import { useOsdkObjects } from "@osdk/react/experimental";
+            import { useOsdkObjects } from "@osdk/react";
 
             function Conditional{{objectType}}List({ shouldFetch }: { shouldFetch: boolean }) {
               const { data, isLoading, error } = useOsdkObjects({{objectType}}, {
@@ -185,7 +185,7 @@ versions:
       loadSingleObjectGuide:
         - template: |-
             import { {{objectType}} } from "{{{packageName}}}";
-            import { useOsdkObject } from "@osdk/react/experimental";
+            import { useOsdkObject } from "@osdk/react";
 
             function {{objectType}}Detail({ primaryKey }: { primaryKey: string }) {
               const { object, isLoading, error } = useOsdkObject({{objectType}}, primaryKey);
@@ -201,7 +201,7 @@ versions:
       loadObjectPageGuide:
         - template: |-
             import { {{objectType}} } from "{{{packageName}}}";
-            import { useOsdkObjects } from "@osdk/react/experimental";
+            import { useOsdkObjects } from "@osdk/react";
 
             function {{objectType}}List() {
               const { data, isLoading, error, fetchMore } = useOsdkObjects({{objectType}}, {
@@ -222,7 +222,7 @@ versions:
       orderObjectsGuide:
         - template: |-
             import { {{objectType}} } from "{{{packageName}}}";
-            import { useOsdkObjects } from "@osdk/react/experimental";
+            import { useOsdkObjects } from "@osdk/react";
 
             function Sorted{{objectType}}List() {
               const { data, isLoading, error } = useOsdkObjects({{objectType}}, {
@@ -242,7 +242,7 @@ versions:
       searchObjectsGuide:
         - template: |-
             import { {{objectType}} } from "{{{packageName}}}";
-            import { useOsdkObjects } from "@osdk/react/experimental";
+            import { useOsdkObjects } from "@osdk/react";
 
             function Filtered{{objectType}}List() {
               const { data, isLoading, error } = useOsdkObjects({{objectType}}, {
@@ -264,7 +264,7 @@ versions:
       loadSingleObjectReference:
         - template: |-
             import { {{objectType}} } from "{{{packageName}}}";
-            import { useOsdkObject } from "@osdk/react/experimental";
+            import { useOsdkObject } from "@osdk/react";
 
             function {{objectType}}Detail({ primaryKey }: { primaryKey: string }) {
               const { object, isLoading, error } = useOsdkObject({{objectType}}, primaryKey);
@@ -280,7 +280,7 @@ versions:
       loadObjectsReference:
         - template: |-
             import { {{objectType}} } from "{{{packageName}}}";
-            import { useOsdkObjects } from "@osdk/react/experimental";
+            import { useOsdkObjects } from "@osdk/react";
 
             function {{objectType}}List() {
               const { data, isLoading, error, fetchMore } = useOsdkObjects({{objectType}}, {
@@ -301,7 +301,7 @@ versions:
       loadAllObjectsReference:
         - template: |-
             import { {{objectType}} } from "{{{packageName}}}";
-            import { useOsdkObjects } from "@osdk/react/experimental";
+            import { useOsdkObjects } from "@osdk/react";
 
             // Note: For large datasets, consider using pagination with fetchMore
             function All{{objectType}}List() {
@@ -321,7 +321,7 @@ versions:
       loadLinkedObjectReference:
         - template: |-
             import { {{sourceObjectType}} } from "{{{packageName}}}";
-            import { useLinks } from "@osdk/react/experimental";
+            import { useLinks } from "@osdk/react";
 
             function {{linkedObjectType}}Detail({ source }: { source: {{sourceObjectType}}.OsdkInstance }) {
               const { links, isLoading, error } = useLinks(source, "{{linkApiName}}");
@@ -338,7 +338,7 @@ versions:
       loadLinkedObjectsReference:
         - template: |-
             import { {{sourceObjectType}} } from "{{{packageName}}}";
-            import { useLinks } from "@osdk/react/experimental";
+            import { useLinks } from "@osdk/react";
 
             function Linked{{linkedObjectType}}List({ source }: { source: {{sourceObjectType}}.OsdkInstance }) {
               const { links, isLoading, error, fetchMore } = useLinks(source, "{{linkApiName}}");
@@ -357,7 +357,7 @@ versions:
       aggregationTemplate:
         - template: |-
             import { {{objectType}} } from "{{{packageName}}}";
-            import { useOsdkAggregation } from "@osdk/react/experimental";
+            import { useOsdkAggregation } from "@osdk/react";
 
             function {{objectType}}Aggregation() {
               const { data, isLoading, error } = useOsdkAggregation({{objectType}}, {
@@ -379,7 +379,7 @@ versions:
       countAggregationTemplate:
         - template: |-
             import { {{objectType}} } from "{{{packageName}}}";
-            import { useOsdkAggregation } from "@osdk/react/experimental";
+            import { useOsdkAggregation } from "@osdk/react";
 
             function {{objectType}}Count() {
               const { data, isLoading, error } = useOsdkAggregation({{objectType}}, {
@@ -397,7 +397,7 @@ versions:
       approximateDistinctAggregationTemplate:
         - template: |-
             import { {{objectType}} } from "{{{packageName}}}";
-            import { useOsdkAggregation } from "@osdk/react/experimental";
+            import { useOsdkAggregation } from "@osdk/react";
 
             function {{objectType}}DistinctCount() {
               const { data, isLoading, error } = useOsdkAggregation({{objectType}}, {
@@ -415,7 +415,7 @@ versions:
       exactDistinctAggregationTemplate:
         - template: |-
             import { {{objectType}} } from "{{{packageName}}}";
-            import { useOsdkAggregation } from "@osdk/react/experimental";
+            import { useOsdkAggregation } from "@osdk/react";
 
             function {{objectType}}ExactDistinctCount() {
               const { data, isLoading, error } = useOsdkAggregation({{objectType}}, {
@@ -433,7 +433,7 @@ versions:
       numericAggregationTemplate:
         - template: |-
             import { {{objectType}} } from "{{{packageName}}}";
-            import { useOsdkAggregation } from "@osdk/react/experimental";
+            import { useOsdkAggregation } from "@osdk/react";
 
             function {{objectType}}{{operation}}() {
               const { data, isLoading, error } = useOsdkAggregation({{objectType}}, {
@@ -451,7 +451,7 @@ versions:
       fixedWidthGroupByTemplate:
         - template: |-
             import { {{objectType}} } from "{{{packageName}}}";
-            import { useOsdkAggregation } from "@osdk/react/experimental";
+            import { useOsdkAggregation } from "@osdk/react";
 
             function {{objectType}}GroupedByFixedWidth() {
               const { data, isLoading, error } = useOsdkAggregation({{objectType}}, {
@@ -472,7 +472,7 @@ versions:
       durationGroupByTemplate:
         - template: |-
             import { {{objectType}} } from "{{{packageName}}}";
-            import { useOsdkAggregation } from "@osdk/react/experimental";
+            import { useOsdkAggregation } from "@osdk/react";
 
             function {{objectType}}GroupedByDuration() {
               const { data, isLoading, error } = useOsdkAggregation({{objectType}}, {
@@ -493,7 +493,7 @@ versions:
       exactGroupByTemplate:
         - template: |-
             import { {{objectType}} } from "{{{packageName}}}";
-            import { useOsdkAggregation } from "@osdk/react/experimental";
+            import { useOsdkAggregation } from "@osdk/react";
 
             function {{objectType}}GroupedByExact() {
               const { data, isLoading, error } = useOsdkAggregation({{objectType}}, {
@@ -514,7 +514,7 @@ versions:
       rangeGroupByTemplate:
         - template: |-
             import { {{objectType}} } from "{{{packageName}}}";
-            import { useOsdkAggregation } from "@osdk/react/experimental";
+            import { useOsdkAggregation } from "@osdk/react";
 
             function {{objectType}}GroupedByRange() {
               const { data, isLoading, error } = useOsdkAggregation({{objectType}}, {
@@ -537,7 +537,7 @@ versions:
       applyAction:
         - template: |-
             import { {{actionApiName}} } from "{{{packageName}}}";
-            import { useOsdkAction } from "@osdk/react/experimental";
+            import { useOsdkAction } from "@osdk/react";
 
             function {{actionApiName}}Button() {
               const { applyAction, isPending, error } = useOsdkAction({{actionApiName}});
@@ -564,7 +564,7 @@ versions:
       applyActionResponse:
         - template: |-
             import { {{actionApiName}} } from "{{{packageName}}}";
-            import { useOsdkAction } from "@osdk/react/experimental";
+            import { useOsdkAction } from "@osdk/react";
 
             function {{actionApiName}}WithResult() {
               const { applyAction, isPending, error, data } = useOsdkAction({{actionApiName}});
@@ -592,7 +592,7 @@ versions:
       validateAction:
         - template: |-
             import { {{actionApiName}} } from "{{{packageName}}}";
-            import { useOsdkAction, useDebouncedCallback } from "@osdk/react/experimental";
+            import { useOsdkAction, useDebouncedCallback } from "@osdk/react";
             import { useState } from "react";
 
             function {{actionApiName}}WithValidation() {
@@ -633,7 +633,7 @@ versions:
             // Batch actions in React should be handled with multiple hook calls
             // or by using the client directly for batch operations
             import { {{actionApiName}} } from "{{{packageName}}}";
-            import { useOsdkAction } from "@osdk/react/experimental";
+            import { useOsdkAction } from "@osdk/react";
 
             function Batch{{actionApiName}}() {
               const { applyAction, isPending } = useOsdkAction({{actionApiName}});
@@ -650,7 +650,7 @@ versions:
             }
       clientSetup:
         - template: |-
-            import { OsdkProvider2 } from "@osdk/react/experimental";
+            import { OsdkProvider } from "@osdk/react";
             import { createClient } from "@osdk/client";
 
             const client = createClient(
@@ -661,15 +661,15 @@ versions:
 
             function App() {
               return (
-                <OsdkProvider2 client={client}>
+                <OsdkProvider client={client}>
                   <YourApp />
-                </OsdkProvider2>
+                </OsdkProvider>
               );
             }
       callFunction:
         - template: |-
             import { {{funcApiName}} } from "{{{packageName}}}";
-            import { useOsdkFunction } from "@osdk/react/experimental";
+            import { useOsdkFunction } from "@osdk/react";
 
             function {{funcApiName}}Caller() {
               const { data, isLoading, error, refetch } = useOsdkFunction({{funcApiName}}, {
@@ -688,7 +688,7 @@ versions:
       executeFunction:
         - template: |-
             import { {{funcApiName}} } from "{{{packageName}}}";
-            import { useOsdkFunction } from "@osdk/react/experimental";
+            import { useOsdkFunction } from "@osdk/react";
 
             function {{funcApiName}}Executor() {
               const { data, isLoading, error, refetch } = useOsdkFunction({{funcApiName}}, {
@@ -707,7 +707,7 @@ versions:
       stringStartsWithTemplate:
         - template: |-
             import { {{objectType}} } from "{{{packageName}}}";
-            import { useOsdkObjects } from "@osdk/react/experimental";
+            import { useOsdkObjects } from "@osdk/react";
 
             function {{objectType}}StartsWith() {
               const { data, isLoading, error } = useOsdkObjects({{objectType}}, {
@@ -729,7 +729,7 @@ versions:
       containsAnyTermTemplate:
         - template: |-
             import { {{objectType}} } from "{{{packageName}}}";
-            import { useOsdkObjects } from "@osdk/react/experimental";
+            import { useOsdkObjects } from "@osdk/react";
 
             function {{objectType}}ContainsAnyTerm() {
               const { data, isLoading, error } = useOsdkObjects({{objectType}}, {
@@ -751,7 +751,7 @@ versions:
       containsAllTermsTemplate:
         - template: |-
             import { {{objectType}} } from "{{{packageName}}}";
-            import { useOsdkObjects } from "@osdk/react/experimental";
+            import { useOsdkObjects } from "@osdk/react";
 
             function {{objectType}}ContainsAllTerms() {
               const { data, isLoading, error } = useOsdkObjects({{objectType}}, {
@@ -773,7 +773,7 @@ versions:
       containsAllTermsInOrderTemplate:
         - template: |-
             import { {{objectType}} } from "{{{packageName}}}";
-            import { useOsdkObjects } from "@osdk/react/experimental";
+            import { useOsdkObjects } from "@osdk/react";
 
             function {{objectType}}ContainsAllTermsInOrder() {
               const { data, isLoading, error } = useOsdkObjects({{objectType}}, {
@@ -795,7 +795,7 @@ versions:
       containsTemplate:
         - template: |-
             import { {{objectType}} } from "{{{packageName}}}";
-            import { useOsdkObjects } from "@osdk/react/experimental";
+            import { useOsdkObjects } from "@osdk/react";
 
             function {{objectType}}Contains() {
               const { data, isLoading, error } = useOsdkObjects({{objectType}}, {
@@ -817,7 +817,7 @@ versions:
       equalityTemplate:
         - template: |-
             import { {{objectType}} } from "{{{packageName}}}";
-            import { useOsdkObjects } from "@osdk/react/experimental";
+            import { useOsdkObjects } from "@osdk/react";
 
             function {{objectType}}Equality() {
               const { data, isLoading, error } = useOsdkObjects({{objectType}}, {
@@ -841,7 +841,7 @@ versions:
       inFilterTemplate:
         - template: |-
             import { {{objectType}} } from "{{{packageName}}}";
-            import { useOsdkObjects } from "@osdk/react/experimental";
+            import { useOsdkObjects } from "@osdk/react";
 
             function {{objectType}}InFilter() {
               const { data, isLoading, error } = useOsdkObjects({{objectType}}, {
@@ -865,7 +865,7 @@ versions:
       rangeTemplate:
         - template: |-
             import { {{objectType}} } from "{{{packageName}}}";
-            import { useOsdkObjects } from "@osdk/react/experimental";
+            import { useOsdkObjects } from "@osdk/react";
 
             function {{objectType}}Range() {
               const { data, isLoading, error } = useOsdkObjects({{objectType}}, {
@@ -889,7 +889,7 @@ versions:
       nullTemplate:
         - template: |-
             import { {{objectType}} } from "{{{packageName}}}";
-            import { useOsdkObjects } from "@osdk/react/experimental";
+            import { useOsdkObjects } from "@osdk/react";
 
             function {{objectType}}NullFilter() {
               const { data, isLoading, error } = useOsdkObjects({{objectType}}, {
@@ -911,7 +911,7 @@ versions:
       andTemplate:
         - template: |-
             import { {{objectType}} } from "{{{packageName}}}";
-            import { useOsdkObjects } from "@osdk/react/experimental";
+            import { useOsdkObjects } from "@osdk/react";
 
             function {{objectType}}AndFilter() {
               const { data, isLoading, error } = useOsdkObjects({{objectType}}, {
@@ -939,7 +939,7 @@ versions:
       orTemplate:
         - template: |-
             import { {{objectType}} } from "{{{packageName}}}";
-            import { useOsdkObjects } from "@osdk/react/experimental";
+            import { useOsdkObjects } from "@osdk/react";
 
             function {{objectType}}OrFilter() {
               const { data, isLoading, error } = useOsdkObjects({{objectType}}, {
@@ -967,7 +967,7 @@ versions:
       notTemplate:
         - template: |-
             import { {{objectType}} } from "{{{packageName}}}";
-            import { useOsdkObjects } from "@osdk/react/experimental";
+            import { useOsdkObjects } from "@osdk/react";
 
             function {{objectType}}NotFilter() {
               const { data, isLoading, error } = useOsdkObjects({{objectType}}, {
@@ -991,7 +991,7 @@ versions:
       withinDistanceTemplate:
         - template: |-
             import { {{objectType}} } from "{{{packageName}}}";
-            import { useOsdkObjects } from "@osdk/react/experimental";
+            import { useOsdkObjects } from "@osdk/react";
 
             function {{objectType}}WithinDistance() {
               const { data, isLoading, error } = useOsdkObjects({{objectType}}, {
@@ -1013,7 +1013,7 @@ versions:
       withinBoundingBoxTemplate:
         - template: |-
             import { {{objectType}} } from "{{{packageName}}}";
-            import { useOsdkObjects } from "@osdk/react/experimental";
+            import { useOsdkObjects } from "@osdk/react";
 
             function {{objectType}}WithinBoundingBox() {
               const { data, isLoading, error } = useOsdkObjects({{objectType}}, {
@@ -1035,7 +1035,7 @@ versions:
       withinPolygonTemplate:
         - template: |-
             import { {{objectType}} } from "{{{packageName}}}";
-            import { useOsdkObjects } from "@osdk/react/experimental";
+            import { useOsdkObjects } from "@osdk/react";
 
             function {{objectType}}WithinPolygon() {
               const { data, isLoading, error } = useOsdkObjects({{objectType}}, {
@@ -1057,7 +1057,7 @@ versions:
       intersectsPolygonTemplate:
         - template: |-
             import { {{objectType}} } from "{{{packageName}}}";
-            import { useOsdkObjects } from "@osdk/react/experimental";
+            import { useOsdkObjects } from "@osdk/react";
 
             function {{objectType}}IntersectsPolygon() {
               const { data, isLoading, error } = useOsdkObjects({{objectType}}, {
@@ -1079,7 +1079,7 @@ versions:
       intersectsBboxTemplate:
         - template: |-
             import { {{objectType}} } from "{{{packageName}}}";
-            import { useOsdkObjects } from "@osdk/react/experimental";
+            import { useOsdkObjects } from "@osdk/react";
 
             function {{objectType}}IntersectsBbox() {
               const { data, isLoading, error } = useOsdkObjects({{objectType}}, {
@@ -1101,7 +1101,7 @@ versions:
       objectSetOperationsGuide:
         - template: |-
             import { {{objectType}} } from "{{{packageName}}}";
-            import { useOsdkClient, useObjectSet } from "@osdk/react/experimental";
+            import { useOsdkClient, useObjectSet } from "@osdk/react";
             import { useMemo } from "react";
 
             function {{objectType}}SetOperations() {
@@ -1128,7 +1128,7 @@ versions:
       objectSetOperationsUnion:
         - template: |-
             import { {{objectType}} } from "{{{packageName}}}";
-            import { useOsdkClient, useObjectSet } from "@osdk/react/experimental";
+            import { useOsdkClient, useObjectSet } from "@osdk/react";
             import { useMemo } from "react";
 
             function {{objectType}}Union() {
@@ -1155,7 +1155,7 @@ versions:
       objectSetOperationsSubtract:
         - template: |-
             import { {{objectType}} } from "{{{packageName}}}";
-            import { useOsdkClient, useObjectSet } from "@osdk/react/experimental";
+            import { useOsdkClient, useObjectSet } from "@osdk/react";
             import { useMemo } from "react";
 
             function {{objectType}}Subtract() {
@@ -1182,7 +1182,7 @@ versions:
       objectSetOperationsIntersect:
         - template: |-
             import { {{objectType}} } from "{{{packageName}}}";
-            import { useOsdkClient, useObjectSet } from "@osdk/react/experimental";
+            import { useOsdkClient, useObjectSet } from "@osdk/react";
             import { useMemo } from "react";
 
             function {{objectType}}Intersect() {
@@ -1209,7 +1209,7 @@ versions:
       derivedPropertyBaseExample:
         - template: |-
             import { {{sourceObjectType}} } from "{{{packageName}}}";
-            import { useOsdkClient, useObjectSet } from "@osdk/react/experimental";
+            import { useOsdkClient, useObjectSet } from "@osdk/react";
             import { useMemo } from "react";
 
             function {{sourceObjectType}}DerivedProperty() {
@@ -1235,7 +1235,7 @@ versions:
       derivedPropertyCountAggregation:
         - template: |-
             import { {{objectType}} } from "{{{packageName}}}";
-            import { useOsdkClient, useObjectSet } from "@osdk/react/experimental";
+            import { useOsdkClient, useObjectSet } from "@osdk/react";
             import { useMemo } from "react";
 
             function {{objectType}}DerivedCount() {
@@ -1261,7 +1261,7 @@ versions:
       derivedPropertyNumericAggregation:
         - template: |-
             import { {{objectType}} } from "{{{packageName}}}";
-            import { useOsdkClient, useObjectSet } from "@osdk/react/experimental";
+            import { useOsdkClient, useObjectSet } from "@osdk/react";
             import { useMemo } from "react";
 
             function {{objectType}}DerivedNumeric() {
@@ -1287,7 +1287,7 @@ versions:
       derivedPropertySelectPropertyAggregation:
         - template: |-
             import { {{objectType}} } from "{{{packageName}}}";
-            import { useOsdkClient, useObjectSet } from "@osdk/react/experimental";
+            import { useOsdkClient, useObjectSet } from "@osdk/react";
             import { useMemo } from "react";
 
             function {{objectType}}DerivedSelectProperty() {
@@ -1313,7 +1313,7 @@ versions:
       derivedPropertyApproximateDistinctAggregation:
         - template: |-
             import { {{objectType}} } from "{{{packageName}}}";
-            import { useOsdkClient, useObjectSet } from "@osdk/react/experimental";
+            import { useOsdkClient, useObjectSet } from "@osdk/react";
             import { useMemo } from "react";
 
             function {{objectType}}DerivedApproxDistinct() {
@@ -1339,7 +1339,7 @@ versions:
       derivedPropertyExactDistinctAggregation:
         - template: |-
             import { {{objectType}} } from "{{{packageName}}}";
-            import { useOsdkClient, useObjectSet } from "@osdk/react/experimental";
+            import { useOsdkClient, useObjectSet } from "@osdk/react";
             import { useMemo } from "react";
 
             function {{objectType}}DerivedExactDistinct() {
@@ -1365,7 +1365,7 @@ versions:
       derivedPropertyApproximatePercentileAggregation:
         - template: |-
             import { {{objectType}} } from "{{{packageName}}}";
-            import { useOsdkClient, useObjectSet } from "@osdk/react/experimental";
+            import { useOsdkClient, useObjectSet } from "@osdk/react";
             import { useMemo } from "react";
 
             function {{objectType}}DerivedPercentile() {
@@ -1391,7 +1391,7 @@ versions:
       derivedPropertyCollectToListAggregation:
         - template: |-
             import { {{objectType}} } from "{{{packageName}}}";
-            import { useOsdkClient, useObjectSet } from "@osdk/react/experimental";
+            import { useOsdkClient, useObjectSet } from "@osdk/react";
             import { useMemo } from "react";
 
             function {{objectType}}DerivedCollectList() {
@@ -1418,7 +1418,7 @@ versions:
       derivedPropertyCollectToSetAggregation:
         - template: |-
             import { {{objectType}} } from "{{{packageName}}}";
-            import { useOsdkClient, useObjectSet } from "@osdk/react/experimental";
+            import { useOsdkClient, useObjectSet } from "@osdk/react";
             import { useMemo } from "react";
 
             function {{objectType}}DerivedCollectSet() {
@@ -1445,7 +1445,7 @@ versions:
       loadObjectMetadataSnippet:
         - template: |-
             import { {{objectType}} } from "{{{packageName}}}";
-            import { useOsdkMetadata } from "@osdk/react/experimental";
+            import { useOsdkMetadata } from "@osdk/react";
 
             function {{objectType}}Metadata() {
               const { loading, metadata, error } = useOsdkMetadata({{objectType}});
@@ -1466,7 +1466,7 @@ versions:
       loadInterfaceMetadataSnippet:
         - template: |-
             import { {{interfaceApiName}} } from "{{{packageName}}}";
-            import { useOsdkMetadata } from "@osdk/react/experimental";
+            import { useOsdkMetadata } from "@osdk/react";
 
             function {{interfaceApiName}}Metadata() {
               const { loading, metadata, error } = useOsdkMetadata({{interfaceApiName}});
@@ -1487,7 +1487,7 @@ versions:
       loadInterfacesReference:
         - template: |-
             import { {{interfaceApiName}} } from "{{{packageName}}}";
-            import { useOsdkObjects } from "@osdk/react/experimental";
+            import { useOsdkObjects } from "@osdk/react";
 
             function {{interfaceApiName}}List() {
               const { data, isLoading, error, fetchMore } = useOsdkObjects({{interfaceApiName}}, {
@@ -1508,7 +1508,7 @@ versions:
       loadAllInterfacesReference:
         - template: |-
             import { {{interfaceApiName}} } from "{{{packageName}}}";
-            import { useOsdkObjects } from "@osdk/react/experimental";
+            import { useOsdkObjects } from "@osdk/react";
 
             function All{{interfaceApiName}}List() {
               const { data, isLoading, error, fetchMore } = useOsdkObjects({{interfaceApiName}});
@@ -1527,7 +1527,7 @@ versions:
       loadOrderedInterfacesReference:
         - template: |-
             import { {{interfaceApiName}} } from "{{{packageName}}}";
-            import { useOsdkObjects } from "@osdk/react/experimental";
+            import { useOsdkObjects } from "@osdk/react";
 
             function Ordered{{interfaceApiName}}List() {
               const { data, isLoading, error } = useOsdkObjects({{interfaceApiName}}, {
@@ -1548,7 +1548,7 @@ versions:
       searchInterfacesReference:
         - template: |-
             import { {{interfaceApiName}} } from "{{{packageName}}}";
-            import { useOsdkObjects } from "@osdk/react/experimental";
+            import { useOsdkObjects } from "@osdk/react";
 
             function Search{{interfaceApiName}}() {
               const { data, isLoading, error } = useOsdkObjects({{interfaceApiName}}, {
@@ -1571,7 +1571,7 @@ versions:
       castInterfaceToObjectReference:
         - template: |-
             import { {{objectTypeApiName}}, {{interfaceApiName}} } from "{{{packageName}}}";
-            import { useOsdkObjects } from "@osdk/react/experimental";
+            import { useOsdkObjects } from "@osdk/react";
 
             function CastInterface() {
               const { data, isLoading, error } = useOsdkObjects({{interfaceApiName}}, {
@@ -1594,7 +1594,7 @@ versions:
       subscribeToObjectSetInstructions:
         - template: |-
             import { {{objectOrInterfaceApiName}} } from "{{{packageName}}}";
-            import { useOsdkObjects } from "@osdk/react/experimental";
+            import { useOsdkObjects } from "@osdk/react";
 
             function {{objectOrInterfaceApiName}}LiveList() {
               const { data, isLoading, error } = useOsdkObjects({{objectOrInterfaceApiName}}, {
@@ -1715,7 +1715,7 @@ versions:
             }
       uploadAttachment:
         - template: |-
-            import { useOsdkClient } from "@osdk/react/experimental";
+            import { useOsdkClient } from "@osdk/react";
             import { createAttachmentUpload } from "@osdk/client";
             import { {{actionApiName}} } from "{{{packageName}}}";
 
@@ -1757,7 +1757,7 @@ versions:
             }
       uploadMedia:
         - template: |-
-            import { useOsdkClient } from "@osdk/react/experimental";
+            import { useOsdkClient } from "@osdk/react";
             import { __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference } from "@osdk/api/unstable";
             import type { MediaReference } from "@osdk/api";
             import { {{actionApiName}}, {{objectType}} } from "{{{packageName}}}";
@@ -1791,7 +1791,7 @@ versions:
             }
       uploadMediaOntologyEdits:
         - template: |-
-            import { useOsdkClient } from "@osdk/react/experimental";
+            import { useOsdkClient } from "@osdk/react";
             import { {{objectType}} } from "{{{packageName}}}";
             import { createEditBatch, uploadMedia } from "@osdk/functions";
 
@@ -1821,7 +1821,7 @@ versions:
       derivedPropertyNumericExpression:
         - template: |-
             import { {{objectType}} } from "{{{packageName}}}";
-            import { useOsdkClient, useObjectSet } from "@osdk/react/experimental";
+            import { useOsdkClient, useObjectSet } from "@osdk/react";
             import { useMemo } from "react";
 
             function {{objectType}}DerivedNumericExpression() {
@@ -1856,7 +1856,7 @@ versions:
       derivedPropertyDatetimeExpression:
         - template: |-
             import { {{objectType}} } from "{{{packageName}}}";
-            import { useOsdkClient, useObjectSet } from "@osdk/react/experimental";
+            import { useOsdkClient, useObjectSet } from "@osdk/react";
             import { useMemo } from "react";
 
             function {{objectType}}DerivedDatetimeExpression() {
@@ -1891,7 +1891,7 @@ versions:
       nearestNeighborsTextQuery:
         - template: |-
             import { {{objectType}} } from "{{{packageName}}}";
-            import { useOsdkClient, useObjectSet } from "@osdk/react/experimental";
+            import { useOsdkClient, useObjectSet } from "@osdk/react";
             import { useMemo } from "react";
 
             function {{objectType}}NearestNeighborsText() {
@@ -1915,7 +1915,7 @@ versions:
       nearestNeighborsVectorQuery:
         - template: |-
             import { {{objectType}} } from "{{{packageName}}}";
-            import { useOsdkClient, useObjectSet } from "@osdk/react/experimental";
+            import { useOsdkClient, useObjectSet } from "@osdk/react";
             import { useMemo } from "react";
 
             function {{objectType}}NearestNeighborsVector() {
@@ -1944,7 +1944,7 @@ versions:
       searchAround:
         - template: |-
             import { {{sourceObjectType}} } from "{{{packageName}}}";
-            import { useOsdkClient, useObjectSet } from "@osdk/react/experimental";
+            import { useOsdkClient, useObjectSet } from "@osdk/react";
             import { useMemo } from "react";
 
             function SearchAround{{linkedObjectType}}() {

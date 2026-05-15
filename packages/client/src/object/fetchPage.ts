@@ -38,10 +38,8 @@ import type {
   ObjectSet,
   OntologyObjectV2,
   SearchJsonQueryV2,
-  SearchObjectsForInterfaceRequest,
   SearchOrderByV2,
 } from "@osdk/foundry.ontologies";
-import * as OntologyInterfaces from "@osdk/foundry.ontologies/OntologyInterface";
 import * as OntologyObjectSets from "@osdk/foundry.ontologies/OntologyObjectSet";
 import invariant from "tiny-invariant";
 import { extractNamespace } from "../internal/conversions/extractNamespace.js";
@@ -56,7 +54,7 @@ import { resolveBaseObjectSetType } from "../util/objectSetUtils.js";
  */
 function modifierToLoadLevelType(
   modifier: PropertyModifierValue,
-): "extractMainValue" | "applyReducers" | "applyReducersAndExtractMainValue" {
+): LoadLevelType {
   switch (modifier) {
     case "applyMainValue":
       return "extractMainValue";
@@ -101,6 +99,12 @@ export function buildSelectV2(
   const entries: SelectV2Entry[] = [];
 
   if (select && select.length > 0) {
+    for (const [prop, _] of Object.entries(modifiersMap)) {
+      invariant(
+        select.includes(prop),
+        "Modified properties must be included in $select when manually specifying properties",
+      );
+    }
     for (const prop of select) {
       if (modifierProps.has(prop)) {
         entries.push({
@@ -110,16 +114,6 @@ export function buildSelectV2(
         });
       } else {
         entries.push({ type: "property", apiName: prop });
-      }
-    }
-
-    for (const [prop, modifier] of Object.entries(modifiersMap)) {
-      if (!select.includes(prop)) {
-        entries.push({
-          type: "propertyWithLoadLevel",
-          propertyIdentifier: { type: "property", apiName: prop },
-          loadLevel: { type: modifierToLoadLevelType(modifier) },
-        });
       }
     }
   } else if (hasModifiers && allProperties && allProperties.length > 0) {
@@ -210,6 +204,7 @@ export async function fetchStaticRidPage<
   R extends boolean,
   S extends NullabilityAdherence,
   T extends boolean,
+  PROPERTY_SECURITIES extends boolean = false,
 >(
   client: MinimalClient,
   rids: readonly string[],
@@ -219,7 +214,10 @@ export async function fetchStaticRidPage<
     R,
     any,
     S,
-    T
+    T,
+    never,
+    {},
+    PROPERTY_SECURITIES
   >,
   useSnapshot: boolean = false,
 ): Promise<
@@ -228,7 +226,9 @@ export async function fetchStaticRidPage<
     PropertyKeys<ObjectOrInterfaceDefinition>,
     R,
     S,
-    T
+    T,
+    {},
+    PROPERTY_SECURITIES
   >
 > {
   const shouldLoadPropertySecurities = args.$loadPropertySecurityMetadata
@@ -261,7 +261,7 @@ export async function fetchStaticRidPage<
   );
 
   return Promise.resolve({
-    data: await client.objectFactory2(
+    data: await client.objectFactory(
       client,
       result.data,
       undefined,
@@ -281,7 +281,9 @@ export async function fetchStaticRidPage<
       PropertyKeys<ObjectOrInterfaceDefinition>,
       R,
       S,
-      T
+      T,
+      {},
+      PROPERTY_SECURITIES
     >
   >;
 }
@@ -299,62 +301,6 @@ async function fetchInterfacePage<
   objectSet: ObjectSet,
   useSnapshot: boolean = false,
 ): Promise<FetchPageResult<Q, L, R, S, T>> {
-  if (args.$__UNSTABLE_useOldInterfaceApis) {
-    invariant(
-      args.$loadPropertySecurityMetadata === false
-        || args.$loadPropertySecurityMetadata === undefined,
-      "`$loadPropertySecurityMetadata` is not supported with old interface APIs",
-    );
-    const baseRequestBody: SearchObjectsForInterfaceRequest = {
-      augmentedProperties: {},
-      augmentedSharedPropertyTypes: {},
-      augmentedInterfacePropertyTypes: {},
-      otherInterfaceTypes: [],
-      selectedObjectTypes: [],
-      selectedSharedPropertyTypes: args.$select ? [...args.$select] : [],
-      selectedInterfacePropertyTypes: [],
-      where: objectSetToSearchJsonV2(objectSet, interfaceType.apiName),
-    };
-
-    const requestBody = await applyFetchArgs(
-      args,
-      baseRequestBody,
-      client,
-      interfaceType,
-    );
-
-    if (requestBody.selectedSharedPropertyTypes.length > 0) {
-      const remapped = remapPropertyNames(
-        interfaceType,
-        requestBody.selectedSharedPropertyTypes,
-      );
-      requestBody.selectedSharedPropertyTypes = Array.from(remapped);
-    }
-
-    if (client.flushEdits != null) {
-      await client.flushEdits();
-    }
-
-    const result = await OntologyInterfaces
-      .search(
-        addUserAgentAndRequestContextHeaders(client, interfaceType),
-        await client.ontologyRid,
-        interfaceType.apiName,
-        requestBody,
-        { preview: true },
-      );
-
-    result.data = await client.objectFactory(
-      client,
-      result.data as OntologyObjectV2[], // drop readonly
-      interfaceType.apiName,
-      !args.$includeRid,
-      await extractRdpDefinition(client, objectSet),
-      undefined,
-    );
-    return result as any;
-  }
-
   const extractedInterfaceTypeApiName = (await extractObjectOrInterfaceType(
     client,
     objectSet,
@@ -417,7 +363,7 @@ async function fetchInterfacePage<
   );
 
   return Promise.resolve({
-    data: await client.objectFactory2(
+    data: await client.objectFactory(
       client,
       result.data,
       extractedInterfaceTypeApiName,
@@ -443,13 +389,26 @@ export async function fetchPageInternal<
   S extends NullabilityAdherence,
   T extends boolean,
   ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<L>,
+  PROPERTY_SECURITIES extends boolean = false,
 >(
   client: MinimalClient,
   objectType: Q,
   objectSet: ObjectSet,
-  args: FetchPageArgs<Q, L, R, A, S, T, never, ORDER_BY_OPTIONS> = {},
+  args: FetchPageArgs<
+    Q,
+    L,
+    R,
+    A,
+    S,
+    T,
+    never,
+    ORDER_BY_OPTIONS,
+    PROPERTY_SECURITIES
+  > = {},
   useSnapshot: boolean = false,
-): Promise<FetchPageResult<Q, L, R, S, T, ORDER_BY_OPTIONS>> {
+): Promise<
+  FetchPageResult<Q, L, R, S, T, ORDER_BY_OPTIONS, PROPERTY_SECURITIES>
+> {
   if (objectType.type === "interface") {
     return await fetchInterfacePage(
       client,
@@ -526,12 +485,13 @@ export async function fetchPage<
   R extends boolean,
   S extends NullabilityAdherence,
   T extends boolean,
+  PROPERTY_SECURITIES extends boolean = false,
 >(
   client: MinimalClient,
   objectType: Q,
-  args: FetchPageArgs<Q, L, R, any, S, T>,
+  args: FetchPageArgs<Q, L, R, any, S, T, never, {}, PROPERTY_SECURITIES>,
   objectSet: ObjectSet = resolveBaseObjectSetType(objectType),
-): Promise<FetchPageResult<Q, L, R, S, T>> {
+): Promise<FetchPageResult<Q, L, R, S, T, {}, PROPERTY_SECURITIES>> {
   return fetchPageInternal(client, objectType, objectSet, args);
 }
 
@@ -678,7 +638,8 @@ async function applyFetchArgs<
     any,
     any,
     any,
-    ObjectSetArgs.OrderByOptions<any>
+    ObjectSetArgs.OrderByOptions<any>,
+    boolean
   >,
   body: X,
   _client: MinimalClient,
@@ -797,9 +758,9 @@ export async function fetchObjectPage<
       client,
       r.data as OntologyObjectV2[],
       undefined,
-      undefined,
       await extractRdpDefinition(client, objectSet),
       shouldLoadPropertySecurities ? r.propertySecurities : undefined,
+      !args.$includeRid,
       args.$select,
       false,
     ),

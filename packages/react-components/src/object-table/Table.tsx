@@ -31,6 +31,7 @@ import { TableEditContainer } from "./TableEditContainer.js";
 import { TableHeader } from "./TableHeader.js";
 import type { HeaderMenuFeatureFlags } from "./TableHeaderWithPopover.js";
 import { SCROLL_FETCH_THRESHOLD } from "./utils/constants.js";
+import { isColumnDeclaredEditable } from "./utils/editableUtils.js";
 import {
   PortalTrackerProvider,
   usePortalTracker,
@@ -46,9 +47,9 @@ declare module "@tanstack/react-table" {
     columnName?: string;
     isAsyncColumn?: boolean;
     isVisible?: boolean;
-    editable?: boolean;
+    editable?: boolean | ((object: TData) => boolean);
     dataType?: string;
-    editFieldConfig?: EditFieldConfig;
+    editFieldConfig?: EditFieldConfig<TData>;
     validateEdit?: (value: unknown) => Promise<string | undefined>;
   }
   interface TableMeta<TData extends RowData = unknown> {
@@ -75,6 +76,7 @@ export interface BaseTableProps<
   isLoading?: boolean;
   fetchNextPage?: () => Promise<void>;
   onRowClick?: (row: TData) => void;
+  onColumnHeaderClick?: (columnId: string) => void;
   rowHeight?: number;
   renderCellContextMenu?: (
     row: TData,
@@ -84,6 +86,21 @@ export interface BaseTableProps<
   error?: Error;
   headerMenuFeatureFlags?: HeaderMenuFeatureFlags;
   editableConfig?: EditableConfig<TData, unknown>;
+  getRowAttributes?: (
+    object: TData,
+  ) => Record<string, string | undefined>;
+  /**
+   * Whether to render the bottom edit footer. Defaults to `true`; the
+   * footer is only rendered when the table has at least one editable
+   * column (`hasEditableColumns`).
+   */
+  showEditFooter?: boolean;
+  /**
+   * Render override for the empty state. Called when the table has no
+   * rows and no error. When omitted, a default "No Data" indicator is
+   * rendered.
+   */
+  renderEmptyState?: () => React.ReactNode;
 }
 
 export function BaseTable<
@@ -104,12 +121,16 @@ function BaseTableInner<
     isLoading,
     fetchNextPage,
     onRowClick,
+    onColumnHeaderClick,
     rowHeight,
     renderCellContextMenu,
     className,
     error,
     headerMenuFeatureFlags,
     editableConfig,
+    getRowAttributes,
+    showEditFooter = true,
+    renderEmptyState,
   }: BaseTableProps<TData>,
 ): ReactElement {
   const tableContainerRef = useRef<HTMLDivElement>(null);
@@ -169,7 +190,9 @@ function BaseTableInner<
 
   const hasEditableColumns = table
     .getAllColumns()
-    .some(column => column.columnDef.meta?.editable === true);
+    .some((column) =>
+      isColumnDeclaredEditable(column.columnDef.meta?.editable)
+    );
 
   // Use pointerdown instead of click to detect outside interactions.
   // base-ui's Select renders a full-screen backdrop that intercepts
@@ -218,6 +241,7 @@ function BaseTableInner<
                 <TableHeader
                   table={table}
                   headerMenuFeatureFlags={headerMenuFeatureFlags}
+                  onColumnHeaderClick={onColumnHeaderClick}
                 />
                 <TableBody
                   rows={rows}
@@ -230,16 +254,21 @@ function BaseTableInner<
                   focusedRowId={focusedRowId}
                   setFocusedRowId={setFocusedRowId}
                   isInEditMode={editableConfig?.editModeState.isActive}
+                  getRowAttributes={getRowAttributes}
                 />
               </>
             )}
         </table>
-        {!hasData && error == null && <NonIdealState message={"No Data"} />}
+        {!hasData && error == null && (
+          renderEmptyState != null
+            ? renderEmptyState()
+            : <NonIdealState message={"No Data"} />
+        )}
         {error != null && (
           <NonIdealState message={`Error Loading Data: ${error.message}`} />
         )}
       </div>
-      {hasEditableColumns && editableConfig && (
+      {showEditFooter && hasEditableColumns && editableConfig && (
         <TableEditContainer
           editableConfig={editableConfig}
           focusedRowId={focusedRowId}

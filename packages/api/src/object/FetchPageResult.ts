@@ -69,12 +69,13 @@ export type FetchPageResult<
   S extends NullabilityAdherence,
   T extends boolean = false,
   ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<L> = {},
-  MODIFIERS extends ApplyModifiersArg<Q, PropertyKeys<Q>> = {},
+  PROPERTY_SECURITIES extends boolean = false,
+  MODIFIERS extends ApplyModifiersArg<Q> = {},
 > = PageResult<
   MaybeScore<
     Osdk.Instance<
       Q,
-      ExtractOptions<R, S, T>,
+      ExtractOptions<R, S, T, PROPERTY_SECURITIES>,
       | Exclude<PropertyKeys<Q> extends L ? never : L, keyof MODIFIERS>
       | ModifiersToSelectStrings<MODIFIERS>,
       {}

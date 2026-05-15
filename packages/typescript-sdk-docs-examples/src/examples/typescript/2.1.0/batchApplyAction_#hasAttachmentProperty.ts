@@ -20,36 +20,37 @@
 // Example: batchApplyAction (Variation: #hasAttachmentProperty)
 
 // Edit this import if your client location differs
-import { client } from "./client.js";
-import type { AttachmentUpload  } from "@osdk/api";
+import type { AttachmentUpload } from "@osdk/api";
 import { createAttachmentUpload } from "@osdk/client";
-import { documentEquipment  } from "../../../generatedNoCheck/index.js";
+import { documentEquipment } from "../../../generatedNoCheck/index.js";
+import { client } from "./client.js";
 
 async function callBatchAction() {
-    // Create attachment upload
-    const attachmentFile = await fetch("file.json");
-    const attachmentBlob = await attachmentFile.blob();
-    const attachment: AttachmentUpload = createAttachmentUpload(attachmentBlob, "myFile");
+  // Create attachment upload
+  const attachmentFile = await fetch("file.json");
+  const attachmentBlob = await attachmentFile.blob();
+  const attachment: AttachmentUpload = createAttachmentUpload(
+    attachmentBlob,
+    "myFile",
+  );
 
-    const result = await client(documentEquipment).batchApplyAction([
-            {
-                "equipmentId": "mac-1234",
-                "documentType": "invoice",
-                "documentFile": attachment,
-            },
-            {
-                "equipmentId": "mac-1234",
-                "documentType": "invoice",
-                "documentFile": attachment,
-            },
-        ],
-        {
-            $returnEdits: true,
-        }
-    );
-    if (result.type === "edits") {
-        // use the result object to report back on action results
-        const updatedObject = result.editedObjectTypes[0];
-        console.log("Updated object", updatedObject);
-    }
+  const result = await client(documentEquipment).batchApplyAction([
+    {
+      "equipmentId": "mac-1234",
+      "documentType": "invoice",
+      "documentFile": attachment,
+    },
+    {
+      "equipmentId": "mac-1234",
+      "documentType": "invoice",
+      "documentFile": attachment,
+    },
+  ], {
+    $returnEdits: true,
+  });
+  if (result.type === "edits") {
+    // use the result object to report back on action results
+    const updatedObject = result.editedObjectTypes[0];
+    console.log("Updated object", updatedObject);
+  }
 }

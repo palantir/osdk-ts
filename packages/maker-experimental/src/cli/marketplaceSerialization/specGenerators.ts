@@ -45,7 +45,7 @@ export function generateBlockSetSpec(
   codeBlocks: Record<UUID, CodeBlockSpec>,
 ): CodeBlockSetSpec {
   return {
-    version: version,
+    version,
     creationTimestamp: new Date().toISOString(),
     about: {
       fallbackDescription: productName,
@@ -79,6 +79,7 @@ export async function generateOntologyBlockSpec(
   const shapes = await getShapes(
     ontologyBlockDataV2.ontology,
     new OntologyRidGeneratorImpl(),
+    undefined,
     randomnessKey,
   );
   return {

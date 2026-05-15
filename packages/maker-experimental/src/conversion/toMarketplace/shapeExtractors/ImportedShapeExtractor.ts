@@ -44,6 +44,7 @@ import type {
 } from "../../../util/generateRid.js";
 import { ReadableIdGenerator } from "../../../util/generateRid.js";
 import { typeToMarketplaceObjectPropertyType } from "../typeVisitors.js";
+import { extractValueTypeInputShapeIfPresent } from "./IrShapeExtractor.js";
 
 function createLocalizedAbout(
   fallbackTitle: string,
@@ -70,6 +71,7 @@ export function getImportedShapes(
     inputShapes: new Map(),
     outputShapes: new Map(),
     inputShapeMetadata: new Map(),
+    inputMappings: [],
   };
 
   extractImportedObjectTypes(importedBlockData, ridGenerator, blockShapes);
@@ -498,6 +500,14 @@ function extractImportedSharedPropertyTypes(
       reconcileAccessRequirements: "RESOURCE_EXISTENCE_REQUIRED",
       preallocateAccessRequirements: "RESOURCE_PREALLOCATION_REQUIRED",
     });
+
+    extractValueTypeInputShapeIfPresent(
+      spt.valueType ?? undefined,
+      spt.displayMetadata.displayName,
+      spt.type,
+      blockShapes,
+      ridGenerator,
+    );
   }
 }
 

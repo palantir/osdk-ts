@@ -41,6 +41,7 @@ export class OntologyBlockDataToFullMetadataConverter {
     const interfaceTypeLookup = buildBlockDataInterfaceTypeLookup(blockData);
     const interfaceTypes = this.getOsdkInterfaceTypesFromBlockData(
       blockData.interfaceTypes,
+      interfaceTypeLookup,
     );
     const sharedPropertyTypes = this.getOsdkSharedPropertyTypesFromBlockData(
       blockData.sharedPropertyTypes,
@@ -362,7 +363,7 @@ export class OntologyBlockDataToFullMetadataConverter {
     objectTypeLookup: BlockDataApiNameLookup | undefined,
     interfaceTypeLookup: BlockDataApiNameLookup | undefined,
   ): Ontologies.LogicRule[] {
-    return action.actionType.actionTypeLogic.logic.rules.map(irLogic => {
+    return action.actionType.actionTypeLogic.logic.rules.flatMap(irLogic => {
       switch (irLogic.type) {
         case "addInterfaceRule": {
           const r = irLogic.addInterfaceRule;
@@ -474,6 +475,8 @@ export class OntologyBlockDataToFullMetadataConverter {
             );
           }
         }
+        case "functionRule":
+          return [];
         default:
           throw new Error("Unknown logic rule type");
       }
@@ -676,6 +679,7 @@ export class OntologyBlockDataToFullMetadataConverter {
 
   static getOsdkInterfaceTypesFromBlockData(
     interfaceBlockData: Record<string, InterfaceTypeBlockDataV2>,
+    interfaceTypeLookup: BlockDataApiNameLookup | undefined,
   ): Record<ApiName, Ontologies.InterfaceType> {
     const result: Record<ApiName, Ontologies.InterfaceType> = {};
 
@@ -694,7 +698,7 @@ export class OntologyBlockDataToFullMetadataConverter {
         const dataType = this.getOsdkPropertyTypeFromBlockData(spt.type);
         if (dataType) {
           properties[propKey] = {
-            rid,
+            rid: spt.rid,
             apiName: spt.apiName,
             displayName: spt.displayMetadata.displayName,
             description: spt.displayMetadata.description ?? undefined,
@@ -717,9 +721,13 @@ export class OntologyBlockDataToFullMetadataConverter {
         implementedByObjectTypes: [], // Empty for now
         displayName: interfaceType.displayMetadata.displayName,
         description: interfaceType.displayMetadata.description ?? undefined,
-        links: this.getOsdkInterfaceLinkTypesFromBlockData(interfaceType.links),
+        links: this.getOsdkInterfaceLinkTypesFromBlockData(
+          interfaceType.links,
+          interfaceTypeLookup,
+        ),
         allLinks: this.getOsdkInterfaceLinkTypesFromBlockData(
           interfaceType.links,
+          interfaceTypeLookup,
         ), // Same as links for now
       };
 
@@ -731,6 +739,7 @@ export class OntologyBlockDataToFullMetadataConverter {
 
   static getOsdkInterfaceLinkTypesFromBlockData(
     ilts: MarketplaceInterfaceLinkType[],
+    interfaceTypeLookup: BlockDataApiNameLookup | undefined,
   ): Record<ApiName, Ontologies.InterfaceLinkType> {
     const result: Record<ApiName, Ontologies.InterfaceLinkType> = {};
 
@@ -744,7 +753,10 @@ export class OntologyBlockDataToFullMetadataConverter {
           const interfaceType = ilt.linkedEntityTypeId.interfaceType;
           linkedEntityApiName = {
             type: "interfaceTypeApiName" as const,
-            apiName: interfaceType,
+            apiName: resolveBlockDataApiName(
+              interfaceType,
+              interfaceTypeLookup,
+            ),
           };
           break;
         }
@@ -860,13 +872,15 @@ export class OntologyBlockDataToFullMetadataConverter {
       case "marking":
         return { type: "marking" };
       case "cipherText":
-        return null;
+        return { type: "cipherText" };
       case "mediaReference":
-        return null;
+        return { type: "mediaReference" };
       case "vector":
         return null;
       case "geotimeSeriesReference":
-        return null;
+        return { type: "geotimeSeriesReference" };
+      case "timestamp":
+        return { type: "timestamp" };
       case "struct": {
         const value = type.struct;
         const ridBase = `ri.struct.${

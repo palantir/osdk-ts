@@ -602,20 +602,6 @@ describe(fetchPage, () => {
       });
     });
 
-    it("adds modifier properties not in select", () => {
-      const result = buildSelectV2(["firstName"], {
-        myStruct: "applyMainValue",
-      }, undefined);
-
-      expect(result).toHaveLength(2);
-      expect(result).toContainEqual({ type: "property", apiName: "firstName" });
-      expect(result).toContainEqual({
-        type: "propertyWithLoadLevel",
-        propertyIdentifier: { type: "property", apiName: "myStruct" },
-        loadLevel: { type: "extractMainValue" },
-      });
-    });
-
     it("uses allProperties when select is not provided but modifiers are", () => {
       const result = buildSelectV2(undefined, {
         myStruct: "applyMainValue",
@@ -625,20 +611,6 @@ describe(fetchPage, () => {
       expect(result).toContainEqual({ type: "property", apiName: "id" });
       expect(result).toContainEqual({ type: "property", apiName: "firstName" });
       expect(result).toContainEqual({ type: "property", apiName: "lastName" });
-      expect(result).toContainEqual({
-        type: "propertyWithLoadLevel",
-        propertyIdentifier: { type: "property", apiName: "myStruct" },
-        loadLevel: { type: "extractMainValue" },
-      });
-    });
-
-    it("ignores allProperties when select is provided", () => {
-      const result = buildSelectV2(["firstName"], {
-        myStruct: "applyMainValue",
-      }, ["id", "firstName", "lastName", "myStruct"]);
-
-      expect(result).toHaveLength(2);
-      expect(result).toContainEqual({ type: "property", apiName: "firstName" });
       expect(result).toContainEqual({
         type: "propertyWithLoadLevel",
         propertyIdentifier: { type: "property", apiName: "myStruct" },

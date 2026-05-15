@@ -95,7 +95,7 @@ export function propertyTypeTypeToOntologyIrInterfaceType(
       return {
         "type": "string",
         "string": {
-          analyzerOverride: undefined,
+          analyzerOverride: type.analyzerOverride,
           enableAsciiFolding: type.enableAsciiFolding,
           isLongText: type.isLongText ?? false,
           supportsEfficientLeadingWildcard:
@@ -134,7 +134,7 @@ export function propertyTypeTypeToOntologyIrInterfaceType(
 
     case (type === "mediaReference"):
       return {
-        type: type,
+        type,
         mediaReference: {},
       };
 
