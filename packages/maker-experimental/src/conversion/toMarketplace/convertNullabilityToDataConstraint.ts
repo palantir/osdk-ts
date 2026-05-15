@@ -33,8 +33,8 @@ export function convertNullabilityToDataConstraint(
       };
     }
     invariant(
-      prop.nullability?.noNulls,
-      "Marking property type has noNulls set to false, marking properties must not be nullable",
+      prop.nullability?.noNulls && prop.nullability?.noEmptyCollections,
+      "Marking property type has noNulls or noEmptyCollections set to false, marking properties must not be nullable",
     );
     return {
       propertyTypeConstraints: [],
