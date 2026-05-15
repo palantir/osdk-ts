@@ -19,7 +19,6 @@
 import { Document as DocumentIcon } from "@blueprintjs/icons";
 import classnames from "classnames";
 import React, { useMemo } from "react";
-import { DocxViewer } from "../docx-viewer/DocxViewer.js";
 import { EmailViewer } from "../email-viewer/EmailViewer.js";
 import { ExcelViewer } from "../excel-viewer/ExcelViewer.js";
 import { ImageViewer } from "../images/image-viewer/ImageViewer.js";
@@ -86,12 +85,6 @@ function getViewerType(
   }
   if (
     mimeType
-      === "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-  ) {
-    return ViewerType.Docx;
-  }
-  if (
-    mimeType
       === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
   ) {
     return ViewerType.Excel;
@@ -114,7 +107,6 @@ export function DocumentViewer({
   videoViewerProps,
   tiffRendererProps,
   markdownRendererProps,
-  docxViewerProps,
   excelViewerProps,
   emailViewerProps,
   xmlViewerProps,
@@ -178,14 +170,6 @@ export function DocumentViewer({
           media={media}
           className={rootClassName}
           {...markdownRendererProps}
-        />
-      );
-    case ViewerType.Docx:
-      return (
-        <DocxViewer
-          media={media}
-          className={rootClassName}
-          {...docxViewerProps}
         />
       );
     case ViewerType.Excel:

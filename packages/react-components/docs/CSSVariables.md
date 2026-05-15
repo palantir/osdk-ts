@@ -38,7 +38,6 @@ Complete reference of all CSS custom properties (variables) used in `@osdk/react
   - [Time Picker](#time-picker)
   - [Tooltip](#tooltip)
   - [Document Viewer](#document-viewer)
-  - [DOCX Viewer](#docx-viewer)
   - [Email Viewer](#email-viewer)
   - [Excel Viewer](#excel-viewer)
   - [Image Viewer](#image-viewer)
@@ -1331,15 +1330,6 @@ Styling for the document viewer container.
 | ------------------------------- | -------------------------------- | ----------------- |
 | `--osdk-document-viewer-bg`     | `var(--osdk-background-primary)` | Viewer background |
 | `--osdk-document-viewer-border` | `var(--osdk-surface-border)`     | Viewer border     |
-
-### DOCX Viewer
-
-Styling for the DOCX viewer.
-
-| Variable                    | Default Value                    | Description       |
-| --------------------------- | -------------------------------- | ----------------- |
-| `--osdk-docx-viewer-bg`     | `var(--osdk-background-primary)` | Viewer background |
-| `--osdk-docx-viewer-border` | `var(--osdk-surface-border)`     | Viewer border     |
 
 ### Email Viewer
 
