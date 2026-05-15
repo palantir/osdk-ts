@@ -95,6 +95,12 @@ export interface BaseTableProps<
    * column (`hasEditableColumns`).
    */
   showEditFooter?: boolean;
+  /**
+   * Render override for the empty state. Called when the table has no
+   * rows and no error. When omitted, a default "No Data" indicator is
+   * rendered.
+   */
+  renderEmptyState?: () => React.ReactNode;
 }
 
 export function BaseTable<
@@ -124,6 +130,7 @@ function BaseTableInner<
     editableConfig,
     getRowAttributes,
     showEditFooter = true,
+    renderEmptyState,
   }: BaseTableProps<TData>,
 ): ReactElement {
   const tableContainerRef = useRef<HTMLDivElement>(null);
@@ -252,7 +259,11 @@ function BaseTableInner<
               </>
             )}
         </table>
-        {!hasData && error == null && <NonIdealState message={"No Data"} />}
+        {!hasData && error == null && (
+          renderEmptyState != null
+            ? renderEmptyState()
+            : <NonIdealState message={"No Data"} />
+        )}
         {error != null && (
           <NonIdealState message={`Error Loading Data: ${error.message}`} />
         )}

@@ -1414,13 +1414,13 @@ export class OntologyIrToFullMetadataConverter {
       case "marking":
         return { type: "marking" };
       case "cipherText":
-        return null;
+        return { type: "cipherText" };
       case "mediaReference":
-        return null;
+        return { type: "mediaReference" };
       case "vector":
         return null;
       case "geotimeSeriesReference":
-        return null;
+        return { type: "geotimeSeriesReference" };
       case "struct": {
         const value = type.struct;
         const ridBase = `ri.struct.${

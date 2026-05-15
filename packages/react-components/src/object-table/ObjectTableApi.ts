@@ -556,6 +556,13 @@ export interface ObjectTableProps<
   ) => React.ReactNode;
 
   /**
+   * Render override for the empty state. Called when the table has no
+   * rows and no error. When omitted, a default "No Data" indicator is
+   * rendered.
+   */
+  renderEmptyState?: () => React.ReactNode;
+
+  /**
    * The height of each row in pixels.
    *
    * @default 40

@@ -35,7 +35,7 @@ interface SingleSelectFilterInputProps<Q extends ObjectTypeDefinition> {
   onFilterStateChanged: (state: FilterState) => void;
   whereClause: WhereClause<Q>;
   excludeRowOpen?: boolean;
-  renderValue?: (value: string) => string;
+  renderValue?: (value: string) => React.ReactNode;
   showCount?: boolean;
 }
 

@@ -20,6 +20,7 @@ import { Combobox } from "../../../base-components/combobox/Combobox.js";
 import type { PropertyAggregationValue } from "../../types/AggregationTypes.js";
 import { isEmptyValue } from "../../utils/filterValues.js";
 import { useFilterListBoundary } from "../FilterListBoundaryContext.js";
+import { createRenderValueFilter } from "./comboboxFilter.js";
 import { NoValueLabel } from "./NoValueLabel.js";
 import sharedStyles from "./shared.module.css";
 import styles from "./SingleSelectInput.module.css";
@@ -37,7 +38,7 @@ interface SingleSelectInputProps {
   showClearButton?: boolean;
   showCounts?: boolean;
   ariaLabel?: string;
-  renderValue?: (value: string) => string;
+  renderValue?: (value: string) => React.ReactNode;
 }
 
 function SingleSelectInputInner({
@@ -76,11 +77,7 @@ function SingleSelectInputInner({
   );
 
   const comboboxFilter = useMemo(
-    () =>
-      renderValue
-        ? (itemValue: string, query: string) =>
-          renderValue(itemValue).toLowerCase().includes(query.toLowerCase())
-        : undefined,
+    () => renderValue ? createRenderValueFilter(renderValue) : undefined,
     [renderValue],
   );
 
