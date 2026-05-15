@@ -18,6 +18,7 @@ import type { OntologyIrV2 } from "@osdk/client.unstable";
 import type { IDiscoveredFunction } from "@osdk/generator-converters.ontologyir";
 import type { LinkType, ObjectType } from "@osdk/maker";
 import {
+  getImportedTypes,
   getOntologyDefinition,
   initializeOntologyState,
   OntologyEntityTypeEnum,
@@ -68,7 +69,10 @@ export async function defineOntologyV2(
     );
   }
 
-  const ridGenerator = new OntologyRidGeneratorImpl(randomnessKey);
+  const ridGenerator = new OntologyRidGeneratorImpl(
+    getImportedTypes(),
+    randomnessKey,
+  );
   const ontDef = convertOntologyDefinition(
     ontologyDefinition,
     ridGenerator,
