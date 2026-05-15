@@ -263,12 +263,10 @@ export interface AsyncIterArgs<
 	RDP_KEYS extends string = never,
 	ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<K> = never,
 	PROPERTY_SECURITIES extends boolean = false,
-	MODIFIERS extends ApplyModifiersArg<Q, PropertyKeys<Q>> = {}
+	MODIFIERS extends ApplyModifiersArg<Q> = {}
 > extends SelectArg<Q, K, R, S, RDP_KEYS, PROPERTY_SECURITIES>, OrderByArg<Q, PropertyKeys<Q> | RDP_KEYS, ORDER_BY_OPTIONS> {
     	// (undocumented)
     $applyModifiers?: ApplyModifiersArg<Q> & MODIFIERS & { [P in Exclude<keyof MODIFIERS, PropertyKeys<Q>>] : never };
-    	// (undocumented)
-    $applyModifiers?: ApplyModifiersArg<Q, PropertyKeys<Q>> & MODIFIERS & { [P in Exclude<keyof MODIFIERS, PropertyKeys<Q>>] : never };
     	// (undocumented)
     $includeAllBaseObjectProperties?: PropertyKeys<Q> extends K ? T : never;
 }
@@ -642,10 +640,10 @@ export interface FetchPageArgs<
 	RDP_KEYS extends string = never,
 	ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<K> = {},
 	PROPERTY_SECURITIES extends boolean = false,
-	MODIFIERS extends ApplyModifiersArg<Q, PropertyKeys<Q>> = {}
+	MODIFIERS extends ApplyModifiersArg<Q> = {}
 > extends AsyncIterArgs<Q, K, R, A, S, T, RDP_KEYS, ORDER_BY_OPTIONS, PROPERTY_SECURITIES, MODIFIERS> {
     	// (undocumented)
-    $applyModifiers?: ApplyModifiersArg<Q, PropertyKeys<Q>> & MODIFIERS & { [P in Exclude<keyof MODIFIERS, PropertyKeys<Q>>] : never };
+    $applyModifiers?: ApplyModifiersArg<Q> & MODIFIERS & { [P in Exclude<keyof MODIFIERS, PropertyKeys<Q>>] : never };
     	// (undocumented)
     $nextPageToken?: string;
     	// (undocumented)
@@ -663,8 +661,9 @@ export type FetchPageResult<
 	S extends NullabilityAdherence,
 	T extends boolean = false,
 	ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<L> = {},
-	MODIFIERS extends ApplyModifiersArg<Q, PropertyKeys<Q>> = {}
-> = PageResult<MaybeScore<Osdk.Instance<Q, ExtractOptions<R, S, T>, Exclude<PropertyKeys<Q> extends L ? never : L, keyof MODIFIERS> | ModifiersToSelectStrings_2<MODIFIERS>, {}>, ORDER_BY_OPTIONS>>;
+	PROPERTY_SECURITIES extends boolean = false,
+	MODIFIERS extends ApplyModifiersArg<Q> = {}
+> = PageResult<MaybeScore<Osdk.Instance<Q, ExtractOptions<R, S, T, PROPERTY_SECURITIES>, Exclude<PropertyKeys<Q> extends L ? never : L, keyof MODIFIERS> | ModifiersToSelectStrings_2<MODIFIERS>, {}>, ORDER_BY_OPTIONS>>;
 
 // @public (undocumented)
 export type GeoFilter_Intersects = {
@@ -2015,10 +2014,6 @@ export type WirePropertyTypes = BaseWirePropertyTypes | Record<string, BaseWireP
 
 // Warnings were encountered during analysis:
 //
-// src/Definitions.ts:42:52 - (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
-// src/Definitions.ts:42:52 - (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
-// src/Definitions.ts:42:52 - (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
-// src/Definitions.ts:42:52 - (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
 // src/OsdkObjectFrom.ts:299:73 - (ae-forgotten-export) The symbol "OtHasNonLocalInterfaceImpl" needs to be exported by the entry point index.d.ts
 // src/OsdkObjectFrom.ts:347:49 - (ae-forgotten-export) The symbol "ObjectPropertySecurities" needs to be exported by the entry point index.d.ts
 // src/aggregate/AggregateOpts.ts:25:3 - (ae-forgotten-export) The symbol "UnorderedAggregationClause" needs to be exported by the entry point index.d.ts
