@@ -109,18 +109,22 @@ export class ObjectsHelper extends AbstractHelper<
     selectFields?: ReadonlySet<string>,
     includeAllBaseObjectProperties?: boolean,
   ): ObjectCacheKey[] {
-    return values.map(v =>
-      this.getQuery({
+    return values.map(v => {
+      // Interface-typed instances ($apiName ≠ $objectType) are InterfaceHolders.
+      // The cache requires concrete ObjectHolders, so unwrap to the underlying one.
+      const concreteHolder: ObjectHolder = v.$apiName === v.$objectType
+        ? v as ObjectHolder
+        : (v as unknown as { [UnderlyingOsdkObject]: ObjectHolder })[
+          UnderlyingOsdkObject
+        ];
+
+      return this.getQuery({
         apiName: v.$objectType ?? v.$apiName,
         pk: v.$primaryKey,
         $includeAllBaseObjectProperties: includeAllBaseObjectProperties,
-      }, rdpConfig).writeToStore(
-        v as ObjectHolder,
-        "loaded",
-        batch,
-        selectFields,
-      ).cacheKey
-    );
+      }, rdpConfig).writeToStore(concreteHolder, "loaded", batch, selectFields)
+        .cacheKey;
+    });
   }
 
   /**

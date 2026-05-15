@@ -296,6 +296,37 @@ describe("rdpFieldOperations", () => {
   });
 });
 
+describe("interface-typed object guard", () => {
+  function makeInterfaceHolder(): ObjectHolder {
+    const holder = {
+      $apiName: "IEmployee",
+      $objectType: "Employee",
+      $primaryKey: 1,
+      $title: undefined,
+      [UnderlyingOsdkObject]: {} as ObjectHolder,
+    } as unknown as ObjectHolder;
+    return holder;
+  }
+
+  it("mergeObjectFields throws a descriptive error for interface-typed source", () => {
+    const holder = makeInterfaceHolder();
+    expect(() =>
+      mergeObjectFields(holder, new Set(["rdpField1"]), new Set(), undefined)
+    ).toThrow(
+      `object 'IEmployee' is interface-typed; useLinks requires a concrete-typed source object`,
+    );
+  });
+
+  it("mergeSelectFields throws a descriptive error for interface-typed source", () => {
+    const holder = makeInterfaceHolder();
+    const existing = createTestObject({ employeeId: 1 });
+    expect(() => mergeSelectFields(holder, new Set(["fullName"]), existing))
+      .toThrow(
+        `object 'IEmployee' is interface-typed; useLinks requires a concrete-typed source object`,
+      );
+  });
+});
+
 describe("mergeSelectFields", () => {
   it("merges selected fields from source, preserves existing for unselected", () => {
     const source = createTestObject({
