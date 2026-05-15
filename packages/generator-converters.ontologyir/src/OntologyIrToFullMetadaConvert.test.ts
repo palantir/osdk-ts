@@ -847,6 +847,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                 "metadata": {
                   "apiName": "create-object-dc3distribution-center-proposal",
                   "displayMetadata": {
+                    "applyingMessage": [],
                     "configuration": {
                       "defaultLayout": "FORM",
                       "displayAndFormat": {
@@ -1132,6 +1133,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                 "metadata": {
                   "apiName": "modify-object-dc3distribution-center-proposal",
                   "displayMetadata": {
+                    "applyingMessage": [],
                     "configuration": {
                       "defaultLayout": "FORM",
                       "displayAndFormat": {
@@ -1301,6 +1303,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                 "metadata": {
                   "apiName": "delete-object-dc3distribution-center-proposal",
                   "displayMetadata": {
+                    "applyingMessage": [],
                     "configuration": {
                       "defaultLayout": "FORM",
                       "displayAndFormat": {
@@ -1521,6 +1524,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                 "metadata": {
                   "apiName": "create-object-dc3restaurant",
                   "displayMetadata": {
+                    "applyingMessage": [],
                     "configuration": {
                       "defaultLayout": "FORM",
                       "displayAndFormat": {
@@ -1806,6 +1810,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                 "metadata": {
                   "apiName": "modify-object-dc3restaurant",
                   "displayMetadata": {
+                    "applyingMessage": [],
                     "configuration": {
                       "defaultLayout": "FORM",
                       "displayAndFormat": {
@@ -1975,6 +1980,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                 "metadata": {
                   "apiName": "delete-object-dc3restaurant",
                   "displayMetadata": {
+                    "applyingMessage": [],
                     "configuration": {
                       "defaultLayout": "FORM",
                       "displayAndFormat": {
@@ -2195,6 +2201,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                 "metadata": {
                   "apiName": "create-object-dc3distribution-route-analysis",
                   "displayMetadata": {
+                    "applyingMessage": [],
                     "configuration": {
                       "defaultLayout": "FORM",
                       "displayAndFormat": {
@@ -2480,6 +2487,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                 "metadata": {
                   "apiName": "modify-object-dc3distribution-route-analysis",
                   "displayMetadata": {
+                    "applyingMessage": [],
                     "configuration": {
                       "defaultLayout": "FORM",
                       "displayAndFormat": {
@@ -2649,6 +2657,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                 "metadata": {
                   "apiName": "delete-object-dc3distribution-route-analysis",
                   "displayMetadata": {
+                    "applyingMessage": [],
                     "configuration": {
                       "defaultLayout": "FORM",
                       "displayAndFormat": {

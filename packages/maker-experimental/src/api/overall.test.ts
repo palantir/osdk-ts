@@ -983,6 +983,7 @@ describe("Experimental Test Suite", () => {
             },
           },
           extendsInterfaces: [],
+          actionTypeConstraints: [],
           status: { type: "active", active: {} },
           links: [],
           __type: OntologyEntityTypeEnum.INTERFACE_TYPE,
