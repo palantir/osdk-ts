@@ -252,8 +252,7 @@ describe("useDualScopeAggregation", () => {
       expect(result.current.error).toBe(narrowedError);
     });
 
-    it("degrades ghost rendering and warns when base aggregation errors", () => {
-      const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+    it("silently degrades ghost rendering when base aggregation errors", () => {
       const baseError = new Error("base failed");
       mockByScope(
         makeData([{ name: "Engineering", count: 3 }]),
@@ -277,9 +276,6 @@ describe("useDualScopeAggregation", () => {
       expect(values).toContain("Research");
       // No error on the public surface — narrowed succeeded.
       expect(result.current.error).toBeNull();
-      // But we did warn.
-      expect(warnSpy).toHaveBeenCalled();
-      warnSpy.mockRestore();
     });
   });
 });

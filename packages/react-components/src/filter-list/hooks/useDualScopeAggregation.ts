@@ -95,13 +95,8 @@ export function useDualScopeAggregation<
       return selectedValues.length === 0 ? undefined : selectedValues;
     }
     if (baseAggregation.error != null) {
-      if (process.env.NODE_ENV !== "production") {
-        // eslint-disable-next-line no-console
-        console.warn(
-          "[useDualScopeAggregation] base aggregation failed; ghost rendering degraded.",
-          baseAggregation.error,
-        );
-      }
+      // Base failed — ghost rendering silently degrades. The narrowed view
+      // is still correct; base-only values just won't appear as ghosts.
       return selectedValues.length === 0 ? undefined : selectedValues;
     }
     const baseValues = baseAggregation.data.map((d) => d.value);

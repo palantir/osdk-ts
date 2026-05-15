@@ -172,9 +172,8 @@ describe("applyLinkedFilters", () => {
     expect(firstIntersect.intersect).toHaveBeenCalledTimes(1);
   });
 
-  it("skips LINKED_PROPERTY filters missing reverseLinkName and warns once", () => {
+  it("skips LINKED_PROPERTY filters missing reverseLinkName silently", () => {
     const base = chainStub();
-    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
     const def = createLinkedPropertyFilterDef("manager", "name");
     // No reverseLinkName set.
 
@@ -189,8 +188,6 @@ describe("applyLinkedFilters", () => {
 
     expect(result).toBe(asObjectSet(base));
     expect(base.intersect).not.toHaveBeenCalled();
-    expect(warnSpy).toHaveBeenCalledTimes(1);
-    expect(warnSpy.mock.calls[0][0]).toContain("reverseLinkName");
   });
 
   it("ignores PROPERTY and other non-LINKED_PROPERTY definitions", () => {

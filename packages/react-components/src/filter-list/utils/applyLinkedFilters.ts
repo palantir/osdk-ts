@@ -77,7 +77,6 @@ export function applyLinkedFilters<Q extends ObjectTypeDefinition>(
   filterStates: Map<string, FilterState>,
 ): ObjectSet<Q> {
   let result = baseObjectSet;
-  let warnedAboutMissingReverse = false;
 
   for (const definition of definitions) {
     if (definition.type !== "LINKED_PROPERTY") {
@@ -98,15 +97,9 @@ export function applyLinkedFilters<Q extends ObjectTypeDefinition>(
       continue;
     }
     if (definition.reverseLinkName == null) {
-      if (
-        !warnedAboutMissingReverse && process.env.NODE_ENV !== "production"
-      ) {
-        // eslint-disable-next-line no-console
-        console.warn(
-          `[applyLinkedFilters] Skipping LINKED_PROPERTY filter "${definition.linkName}": definition is missing reverseLinkName. Add the linked object's link back to the source type to enable narrowing.`,
-        );
-        warnedAboutMissingReverse = true;
-      }
+      // Skipped silently — without reverseLinkName the helper cannot invert
+      // the pivot back to Q, so this filter contributes no narrowing. The
+      // contract is documented on LinkedPropertyFilterDefinition.reverseLinkName.
       continue;
     }
 
