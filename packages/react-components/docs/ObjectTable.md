@@ -141,6 +141,7 @@ Each column header has a menu with items for sorting, filtering, pinning, resizi
 | ----------------------- | -------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
 | `onRowClick`            | `(object) => void`                                 | Called when a row is clicked                                                                                                         |
 | `renderCellContextMenu` | `(row, cellValue) => ReactNode`                    | Custom context menu for right-click on cells                                                                                         |
+| `renderEmptyState`      | `() => ReactNode`                                  | Render override for the empty state. Called when the table has no rows and no error. Defaults to a "No Data" indicator               |
 | `getRowAttributes`      | `(rowData) => Record<string, string \| undefined>` | Extra HTML attributes (typically `data-*`) applied to each `<tr>`. See [Row Attributes](#row-attributes-and-conditional-row-styling) |
 
 ### Cell Editing
