@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { DerivedProperty } from "@osdk/api";
+import type { DerivedProperty, ObjectSet } from "@osdk/api";
 import {
   addOne,
   editTodo,
@@ -43,6 +43,7 @@ import type { Client } from "../../../Client.js";
 import { createClient } from "../../../createClient.js";
 import type { FunctionPayload } from "../../FunctionPayload.js";
 import type { ListPayload } from "../../ListPayload.js";
+import type { ObjectSetPayload } from "../../ObjectSetPayload.js";
 import type { Observer } from "../../ObservableClient/common.js";
 import { Store } from "../Store.js";
 import { mockObserver } from "../testUtils.js";
@@ -70,6 +71,8 @@ describe("ActionApplication invalidation", () => {
   let client: Client;
   let store: Store;
   let fauxFoundry: FauxFoundry;
+
+  const INITIAL_OFFICE_CAPACITY = 10;
 
   beforeAll(() => {
     const testSetup = startNodeApiServer(
@@ -120,6 +123,7 @@ describe("ActionApplication invalidation", () => {
       $apiName: "Office",
       officeId: "office-a",
       name: "Alpha Office",
+      capacity: INITIAL_OFFICE_CAPACITY,
     });
     const emp1 = dataStore.registerObject(Employee, {
       $apiName: "Employee",
@@ -278,6 +282,53 @@ describe("ActionApplication invalidation", () => {
     });
 
     subscription.unsubscribe();
+  });
+
+  describe("ObjectSetQuery RDP invalidation", () => {
+    it("revalidates an object-set list whose RDP traverses an edited object type", async () => {
+      const subFn = mockObserver<ObjectSetPayload | undefined>();
+
+      const withProperties: DerivedProperty.Clause<typeof Employee> = {
+        officeCapacity: (b) =>
+          b.pivotTo("officeLink").selectProperty("capacity"),
+      };
+      const subscription = store.objectSets.observe(
+        {
+          baseObjectSet: client(Employee) as ObjectSet<Employee>,
+          withProperties,
+          dedupeInterval: 0,
+        },
+        subFn,
+      );
+
+      // Wait for initial loaded emission with the original capacity.
+      await vi.waitFor(() => {
+        const last = subFn.next.mock.lastCall?.[0];
+        expect(last?.status).toBe("loaded");
+        expect(
+          (last?.resolvedList?.[0] as { officeCapacity?: number } | undefined)
+            ?.officeCapacity,
+        ).toBe(INITIAL_OFFICE_CAPACITY);
+      });
+
+      // Edit Office (NOT Employee). The RDP traverses officeLink → Office, so
+      // the object-set list must refetch and reflect the new capacity.
+      await store.applyAction(moveOffice, {
+        officeId: "office-a",
+        newCapacity: 99,
+        newAddress: "new-address",
+      });
+
+      await vi.waitFor(() => {
+        const last = subFn.next.mock.lastCall?.[0];
+        expect(
+          (last?.resolvedList?.[0] as { officeCapacity?: number } | undefined)
+            ?.officeCapacity,
+        ).toBe(99);
+      });
+
+      subscription.unsubscribe();
+    });
   });
 
   it("does not fan out per-type invalidation when an action throws", async () => {
