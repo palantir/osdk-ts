@@ -332,8 +332,12 @@ const editableColumnDefinitions: ColumnDefinition<Employee>[] = [
       fieldComponent: "DROPDOWN",
       getFieldComponentProps: () => ({
         items: [true, false],
-        itemToStringLabel: (item: boolean) =>
-          !item ? "No" : item ? "Yes" : "No Value",
+        itemToStringLabel: (item: boolean) => {
+          if (item == null) {
+            return "No Value";
+          }
+          return item ? "Yes" : "No";
+        },
       }),
     },
   },
@@ -1582,12 +1586,64 @@ export const WithSubmitEditsButton: Story = {
   {
     locator: { type: "property", id: "jobTitle" },
     editable: true,
+    editFieldConfig: {
+      fieldComponent: "DROPDOWN",
+      getFieldComponentProps: () => ({
+        items: [
+          "Software Engineer",
+          "Senior Software Engineer",
+          "Staff Engineer",
+          "Engineering Manager",
+          "Product Manager",
+          "Designer",
+        ],
+        isSearchable: true,
+        placeholder: "Search job titles…",
+      }),
+    },
+  },
+  {
+    locator: { type: "property", id: "department" },
+    editable: true,
+    editFieldConfig: {
+      fieldComponent: "DROPDOWN",
+      getFieldComponentProps: () => ({
+        items: [
+          "Engineering",
+          "Product",
+          "Design",
+          "Sales",
+          "Marketing",
+          "Finance",
+          "Human Resources",
+        ],
+      }),
+    },
+  },
+  // Boolean dropdown example
+  {
+    locator: { type: "property", id: "isRemote" },
+    renderCell: (object) => {
+      if (object.isRemote == null) {
+        return "No Value";
+      }
+      return object.isRemote ? "Yes" : "No";
+    },
+    editable: true,
+    editFieldConfig: {
+      fieldComponent: "DROPDOWN",
+      getFieldComponentProps: () => ({
+        items: [true, false],
+        itemToStringLabel: (item) =>
+          item === false ? "No" : item === true ? "Yes" : "No Value",
+      }),
+    },
   },
 ];
 
 return (
-  <ObjectTable 
-    objectType={Employee} 
+  <ObjectTable
+    objectType={Employee}
     columnDefinitions={columnDefinitions}
     editMode="manual"
     onCellValueChanged={(info) => {

@@ -292,6 +292,7 @@ function EditableCellInner<TData extends RowData, CellValue = unknown>({
             fieldComponentProps={dropdownFieldProps!}
             isRowFocused={isRowFocused}
             inputValue={inputValue}
+            value={currentValue}
             hasValidationError={hasValidationError}
             isEdited={isEdited}
             onChange={handleCommit}
