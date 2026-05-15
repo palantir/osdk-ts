@@ -133,7 +133,6 @@ The components that this package will provide are:
 | `ActionForm`     | Auto-generated form for executing Ontology Actions                                              | -                                 |
 | `AipAgentChat`   | Chat surface backed by Foundry LMS via `useChat` — takes a `PlatformClient` and model API name. | [Guide](./docs/AipAgentChat.md)   |
 | `DocumentViewer` | Unified media viewer that auto-detects file type and renders the appropriate viewer             | [Guide](./docs/DocumentViewer.md) |
-| `DocxViewer`     | Renders DOCX files with headers, footers, footnotes, and endnotes                               | [Guide](./docs/DocxViewer.md)     |
 | `EmailViewer`    | Parses and renders EML files with headers and sandboxed HTML body                               | [Guide](./docs/EmailViewer.md)    |
 | `ExcelViewer`    | Renders Excel spreadsheets with sheet tabs and column/row headers                               | [Guide](./docs/ExcelViewer.md)    |
 | `ImageViewer`    | Renders images (PNG, JPEG, GIF, SVG, WebP, BMP)                                                 | [Guide](./docs/ImageViewer.md)    |
