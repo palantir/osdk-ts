@@ -197,6 +197,14 @@ const meta: Meta<EmployeeTableProps> = {
         category: "Events",
       },
     },
+    onRowSelectionChanged: {
+      description:
+        "Called when the row selection changes, with a RowSelectionChange payload (selectedRowIds, selectedRows, isSelectAll, derived objectSet). Preferred over the deprecated onRowSelection callback.",
+      control: false,
+      table: {
+        category: "Events",
+      },
+    },
     renderCellContextMenu: {
       description:
         "If provided, will render this context menu when right clicking on a cell",
@@ -544,6 +552,7 @@ export const SingleSelection: Story = {
     objectType: Employee,
     columnDefinitions: defaultEmployeeColumns,
     selectionMode: "single",
+    onRowSelectionChanged: fn(),
   },
   parameters: {
     docs: {
@@ -564,6 +573,7 @@ export const MultipleSelection: Story = {
     objectType: Employee,
     columnDefinitions: defaultEmployeeColumns,
     selectionMode: "multiple",
+    onRowSelectionChanged: fn(),
   },
   parameters: {
     docs: {
@@ -854,7 +864,7 @@ export const EventListeners: Story = {
     orderBy: [{ property: "fullName", direction: "asc" }] as any,
     onRowClick: fn(),
     onColumnHeaderClick: fn(),
-    onRowSelection: fn(),
+    onRowSelectionChanged: fn(),
     onOrderByChanged: fn(),
     onColumnVisibilityChanged: fn(),
     onColumnsPinnedChanged: fn(),
@@ -873,8 +883,10 @@ export const EventListeners: Story = {
   onColumnHeaderClick={(columnId) => {
     console.log("Column header clicked:", columnId);
   }}
-  onRowSelection={(selectedRows, isSelectAll) => {
-    console.log("Row selection changed:", selectedRows, isSelectAll);
+  onRowSelectionChanged={(change) => {
+    console.log("Selection changed:", change.selectedRowIds, change.isSelectAll);
+    console.log("Selected rows:", change.selectedRows);
+    console.log("Derived objectSet:", change.objectSet);
   }}
   onOrderByChanged={(orderBy) => {
     console.log("Sort changed:", orderBy);
@@ -915,14 +927,12 @@ export const EventListeners: Story = {
       setLastEvent("onColumnHeaderClick");
     }, [args]);
 
-    const handleRowSelection = useCallback(
-      (newSelectedRows: any[], newIsSelectAll?: boolean) => {
-        args.onRowSelection?.(newSelectedRows, newIsSelectAll);
-        setSelectedRows(newSelectedRows);
-        if (newIsSelectAll !== undefined) {
-          setIsSelectAll(newIsSelectAll);
-        }
-        setLastEvent("onRowSelection");
+    const handleRowSelectionChanged = useCallback(
+      (change: any) => {
+        args.onRowSelectionChanged?.(change);
+        setSelectedRows(change.selectedRowIds);
+        setIsSelectAll(change.isSelectAll);
+        setLastEvent("onRowSelectionChanged");
       },
       [args],
     );
@@ -1002,7 +1012,7 @@ export const EventListeners: Story = {
             orderBy={orderBy}
             onRowClick={handleRowClick}
             onColumnHeaderClick={handleColumnHeaderClick}
-            onRowSelection={handleRowSelection}
+            onRowSelectionChanged={handleRowSelectionChanged}
             onOrderByChanged={handleOrderByChanged}
             onColumnVisibilityChanged={handleColumnVisibilityChanged}
             onColumnsPinnedChanged={handleColumnsPinnedChanged}
@@ -1078,19 +1088,24 @@ export const ControlledSelection: Story = {
     columnDefinitions: defaultEmployeeColumns,
     selectionMode: "multiple" as const,
     selectedRows: [],
-    onRowSelection: fn(),
+    onRowSelectionChanged: fn(),
   } as EmployeeTableProps,
   parameters: {
     docs: {
       source: {
         code: `const [selectedRows, setSelectedRows] = useState<any[]>([]);
+const [isSelectAll, setIsSelectAll] = useState(false);
 
 return (
   <ObjectTable
     objectType={Employee}
     selectionMode="multiple"
     selectedRows={selectedRows}
-    onRowSelection={setSelectedRows}
+    isAllSelected={isSelectAll}
+    onRowSelectionChanged={(change) => {
+      setSelectedRows(change.selectedRowIds);
+      setIsSelectAll(change.isSelectAll);
+    }}
   />
 );`,
       },
@@ -1101,16 +1116,13 @@ return (
       args.selectedRows ?? [],
     );
     const [isSelectAll, setIsSelectAll] = useState<boolean>(false);
-    const handleRowSelection = useCallback(
+    const handleRowSelectionChanged = useCallback(
       (
-        newSelectedRows: any[],
-        newIsSelectAll?: boolean,
+        change: { selectedRowIds: any[]; isSelectAll: boolean },
       ) => {
-        args.onRowSelection?.(newSelectedRows, newIsSelectAll);
-        setSelectedRows(newSelectedRows);
-        if (newIsSelectAll !== undefined) {
-          setIsSelectAll(newIsSelectAll);
-        }
+        args.onRowSelectionChanged?.(change as any);
+        setSelectedRows(change.selectedRowIds);
+        setIsSelectAll(change.isSelectAll);
       },
       [args],
     );
@@ -1144,7 +1156,8 @@ return (
           <ObjectTable
             {...args}
             selectedRows={selectedRows}
-            onRowSelection={handleRowSelection}
+            isAllSelected={isSelectAll}
+            onRowSelectionChanged={handleRowSelectionChanged}
           />
         </div>
       </div>
