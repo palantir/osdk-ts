@@ -44,6 +44,8 @@ uncapitalize
 unevaluable
 ungroup
 unioned
+unparseable
+unreleasable
 unresolve
 Unsubscribable
 webapi

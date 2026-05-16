@@ -72,6 +72,12 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
+      - name: Mark unreleasable packages private
+        continue-on-error: true
+        run: |
+          pnpm exec turbo transpile --filter=@osdk/tool.release
+          node ./packages/tool.release/build/esm/markUnreleasablePrivate.js
+
       - name: Build code
         run: pnpm exec turbo run build
 

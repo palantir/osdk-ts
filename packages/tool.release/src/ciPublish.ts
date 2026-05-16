@@ -20,6 +20,10 @@ import { existsSync } from "fs";
 import { readFile } from "fs/promises";
 import { join } from "path";
 import semver from "semver";
+import {
+  findUnreleasablePackages,
+  markPackagesPrivate,
+} from "./findUnreleasablePackages.js";
 
 async function ciPublish(): Promise<void> {
   let tag = "latest";
@@ -54,6 +58,21 @@ async function ciPublish(): Promise<void> {
       stdio: "inherit",
       cwd: repoRoot,
     });
+
+    try {
+      const unreleasablePackages = await findUnreleasablePackages(repoRoot);
+      if (unreleasablePackages.length > 0) {
+        await markPackagesPrivate(unreleasablePackages);
+      }
+    } catch (error) {
+      // The unreleasable check is a best-effort safety net. If it fails for
+      // any reason, fall back to the pre-existing publish behavior rather
+      // than blocking the release.
+      consola.warn(
+        `Failed to mark unreleasable packages; continuing with publish: ${error}`,
+      );
+    }
+
     await execa(
       "pnpm",
       ["publish", "--no-git-checks", "-r", "--report-summary", "--tag", tag],
