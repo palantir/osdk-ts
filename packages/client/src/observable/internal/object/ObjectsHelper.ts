@@ -16,7 +16,11 @@
 
 import type { ObjectOrInterfaceDefinition, Osdk } from "@osdk/api";
 import deepEqual from "fast-deep-equal";
-import { UnderlyingOsdkObject } from "../../../object/convertWireToOsdkObjects/InternalSymbols.js";
+import type { InterfaceHolder } from "../../../object/convertWireToOsdkObjects/InterfaceHolder.js";
+import {
+  InterfaceDefRef,
+  UnderlyingOsdkObject,
+} from "../../../object/convertWireToOsdkObjects/InternalSymbols.js";
 import type { ObjectHolder } from "../../../object/convertWireToOsdkObjects/ObjectHolder.js";
 import { getDefType } from "../../../util/interfaceUtils.js";
 import type { ObjectPayload } from "../../ObjectPayload.js";
@@ -109,14 +113,11 @@ export class ObjectsHelper extends AbstractHelper<
     selectFields?: ReadonlySet<string>,
     includeAllBaseObjectProperties?: boolean,
   ): ObjectCacheKey[] {
-    return values.map(v => {
-      // Interface-typed instances ($apiName ≠ $objectType) are InterfaceHolders.
-      // The cache requires concrete ObjectHolders, so unwrap to the underlying one.
-      const concreteHolder: ObjectHolder = v.$apiName === v.$objectType
-        ? v as ObjectHolder
-        : (v as unknown as { [UnderlyingOsdkObject]: ObjectHolder })[
-          UnderlyingOsdkObject
-        ];
+    const holders = values as Array<ObjectHolder | InterfaceHolder>;
+    return holders.map(v => {
+      const concreteHolder: ObjectHolder = InterfaceDefRef in v
+        ? v[UnderlyingOsdkObject]
+        : v;
 
       return this.getQuery({
         apiName: v.$objectType ?? v.$apiName,

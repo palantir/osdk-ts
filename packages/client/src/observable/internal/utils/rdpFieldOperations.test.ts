@@ -14,11 +14,14 @@
  * limitations under the License.
  */
 
+import type { InterfaceMetadata } from "@osdk/api";
 import { describe, expect, it } from "vitest";
 import type { MinimalClient } from "../../../MinimalClientContext.js";
 import { createOsdkObject } from "../../../object/convertWireToOsdkObjects/createOsdkObject.js";
+import type { InterfaceHolder } from "../../../object/convertWireToOsdkObjects/InterfaceHolder.js";
 import {
   ClientRef,
+  InterfaceDefRef,
   ObjectDefRef,
   UnderlyingOsdkObject,
 } from "../../../object/convertWireToOsdkObjects/InternalSymbols.js";
@@ -297,32 +300,32 @@ describe("rdpFieldOperations", () => {
 });
 
 describe("interface-typed object guard", () => {
-  function makeInterfaceHolder(): ObjectHolder {
-    const holder = {
+  function makeInterfaceHolder(): InterfaceHolder {
+    return {
       $apiName: "IEmployee",
       $objectType: "Employee",
       $primaryKey: 1,
       $title: undefined,
       [UnderlyingOsdkObject]: {} as ObjectHolder,
-    } as unknown as ObjectHolder;
-    return holder;
+      [InterfaceDefRef]: {} as InterfaceMetadata,
+    } as InterfaceHolder;
   }
 
   it("mergeObjectFields throws a descriptive error for interface-typed source", () => {
-    const holder = makeInterfaceHolder();
+    const holder = makeInterfaceHolder() as unknown as ObjectHolder;
     expect(() =>
       mergeObjectFields(holder, new Set(["rdpField1"]), new Set(), undefined)
     ).toThrow(
-      `object 'IEmployee' is interface-typed; useLinks requires a concrete-typed source object`,
+      `rdp field operations require a concrete-typed ObjectHolder; received interface-typed 'IEmployee'`,
     );
   });
 
   it("mergeSelectFields throws a descriptive error for interface-typed source", () => {
-    const holder = makeInterfaceHolder();
+    const holder = makeInterfaceHolder() as unknown as ObjectHolder;
     const existing = createTestObject({ employeeId: 1 });
     expect(() => mergeSelectFields(holder, new Set(["fullName"]), existing))
       .toThrow(
-        `object 'IEmployee' is interface-typed; useLinks requires a concrete-typed source object`,
+        `rdp field operations require a concrete-typed ObjectHolder; received interface-typed 'IEmployee'`,
       );
   });
 });

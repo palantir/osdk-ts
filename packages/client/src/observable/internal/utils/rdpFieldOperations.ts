@@ -39,7 +39,7 @@ function requireObjectDef(value: ObjectHolder): FetchedObjectTypeDefinition {
   const def = value[ObjectDefRef];
   if (!def) {
     throw new Error(
-      `object '${value.$apiName}' is interface-typed; useLinks requires a concrete-typed source object`,
+      `rdp field operations require a concrete-typed ObjectHolder; received interface-typed '${value.$apiName}'`,
     );
   }
   return def;
