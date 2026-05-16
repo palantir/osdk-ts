@@ -104,4 +104,45 @@ describe("aggregation ObjectSet support", () => {
     await query.invalidateObjectType("Employee", undefined);
     expect(revalidateSpy).not.toHaveBeenCalled();
   });
+
+  it("invalidates RDP-referenced types even without an explicit objectSet", async () => {
+    const query = store.aggregations.getQuery({
+      type: Employee,
+      where: {},
+      withProperties: {
+        officeCount: (base) => base.pivotTo("officeLink").aggregate("$count"),
+      },
+      aggregate: { $select: { $count: "unordered" } },
+    });
+
+    await query.ensureInvalidationTypesReady();
+
+    const revalidateSpy = vi.spyOn(query, "revalidate")
+      .mockResolvedValue(undefined);
+
+    await query.invalidateObjectType("Office", undefined);
+    expect(revalidateSpy).toHaveBeenCalledWith(true);
+  });
+
+  it("invalidates RDP-referenced types when objectSet is also provided", async () => {
+    const pivotedSet = client(Office).pivotTo("occupants");
+
+    const query = store.aggregations.getQueryWithObjectSet({
+      type: Employee,
+      objectSet: pivotedSet,
+      where: {},
+      withProperties: {
+        officeCount: (base) => base.pivotTo("officeLink").aggregate("$count"),
+      },
+      aggregate: { $select: { $count: "unordered" } },
+    });
+
+    await query.ensureInvalidationTypesReady();
+
+    const revalidateSpy = vi.spyOn(query, "revalidate")
+      .mockResolvedValue(undefined);
+
+    await query.invalidateObjectType("Office", undefined);
+    expect(revalidateSpy).toHaveBeenCalledWith(true);
+  });
 });
