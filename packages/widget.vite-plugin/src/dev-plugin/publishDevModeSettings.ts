@@ -77,9 +77,12 @@ export async function publishDevModeSettings(
         "foundry.config.json file not found.",
       );
     }
-    const foundryUrl = isCodeWorkspacesMode(server.config.mode)
+    const rawFoundryUrl = isCodeWorkspacesMode(server.config.mode)
       ? getCodeWorkspacesFoundryUrl()
       : foundryConfig.foundryConfig.foundryUrl;
+    const foundryUrl = rawFoundryUrl.endsWith("/")
+      ? rawFoundryUrl
+      : rawFoundryUrl + "/";
 
     const widgetSetRid = foundryConfig.foundryConfig.widgetSet.rid;
     const settingsResponse = await setWidgetSetSettings(
@@ -123,7 +126,10 @@ export async function publishDevModeSettings(
       // In Code Workspaces the preview UI automatically handles this redirect
       redirectUrl: isCodeWorkspacesMode(server.config.mode)
         ? null
-        : `${foundryUrl}/workspace/custom-widgets/preview/${widgetSetRid}`,
+        : new URL(
+          `workspace/custom-widgets/preview/${widgetSetRid}`,
+          foundryUrl,
+        ).toString(),
     }));
   } catch (error: unknown) {
     server.config.logger.error(

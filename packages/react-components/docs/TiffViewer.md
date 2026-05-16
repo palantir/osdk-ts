@@ -1,14 +1,30 @@
 # TiffRenderer
 
-A React component for rendering TIFF images from raw byte arrays.
+A React component for rendering TIFF images from raw byte arrays. Also provides an OSDK Media wrapper for fetching TIFF contents directly from Foundry.
 
 ## Import
 
 ```tsx
-import { TiffRenderer } from "@osdk/react-components/experimental/tiff-renderer";
+import {
+  TiffRenderer,
+  TiffViewerMedia,
+} from "@osdk/react-components/experimental/tiff-renderer";
 ```
 
+- **`TiffViewerMedia`** — Primary component for OSDK usage. Accepts an OSDK `Media` object, handles fetching the TIFF contents, and renders via `TiffRenderer`.
+- **`TiffRenderer`** — Lower-level component that accepts raw `Uint8Array` bytes directly.
+
 ## Usage
+
+### With OSDK Media
+
+```tsx
+import { TiffViewerMedia } from "@osdk/react-components/experimental/tiff-renderer";
+
+<TiffViewerMedia media={scan.tiffImage} />;
+```
+
+### With raw bytes
 
 ```tsx
 import { TiffRenderer } from "@osdk/react-components/experimental/tiff-renderer";
@@ -24,6 +40,14 @@ import { TiffRenderer } from "@osdk/react-components/experimental/tiff-renderer"
 | --------- | ------------ | ----------- | ----------------------------------- |
 | `content` | `Uint8Array` | (required)  | TIFF bytes to render                |
 | `onError` | `() => void` | `undefined` | Callback fired when rendering fails |
+
+### `TiffViewerMediaProps`
+
+| Prop        | Type         | Default     | Description                              |
+| ----------- | ------------ | ----------- | ---------------------------------------- |
+| `media`     | `Media`      | (required)  | The OSDK Media object to fetch TIFF from |
+| `className` | `string`     | `undefined` | CSS class applied to the root element    |
+| `onError`   | `() => void` | `undefined` | Callback fired when rendering fails      |
 
 ## Features
 

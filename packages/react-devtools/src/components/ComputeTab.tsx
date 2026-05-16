@@ -77,6 +77,12 @@ export const ComputeTab: React.FC<ComputeTabProps> = ({ computeStore }) => {
         </span>
         <span className={styles.metricSubtext}>
           {metrics.requestCount} total
+          {metrics.fulfilledWithoutUsageCount > 0 && (
+            <>
+              {", "}
+              {metrics.fulfilledWithoutUsageCount} without usage data
+            </>
+          )}
         </span>
       </div>
     </div>
@@ -115,6 +121,7 @@ export const ComputeTab: React.FC<ComputeTabProps> = ({ computeStore }) => {
           onClick={() => computeStore.toggleNetworkPaused()}
           icon={isNetworkPaused ? "play" : "pause"}
           size="small"
+          title="Block all OSDK network requests"
         >
           {isNetworkPaused ? "Resume" : "Pause"} Network
         </Button>
@@ -162,6 +169,10 @@ export const ComputeTab: React.FC<ComputeTabProps> = ({ computeStore }) => {
 
 const REQUEST_DISPLAY: Record<string, { icon: string; class: string }> = {
   "fulfilled": { icon: "\u2713", class: styles.computeFulfilled },
+  "fulfilled-without-usage": {
+    icon: "\u00b7",
+    class: styles.computeFulfilledWithoutUsage,
+  },
   "failed": { icon: "\u00d7", class: styles.computeFailed },
   "pending": { icon: "\u22ef", class: styles.computePending },
 };
@@ -216,6 +227,16 @@ const ComputeRequestItem: React.FC<ComputeRequestItemProps> = ({
                 )}
               >
                 {formatNumber(request.computeUsage)} CU
+              </span>
+              <span className={styles.operationMetric}>
+                {formatBytes(request.responsePayloadBytes)}
+              </span>
+            </>
+          )}
+          {request.type === "fulfilled-without-usage" && (
+            <>
+              <span className={styles.operationMetric}>
+                no usage data
               </span>
               <span className={styles.operationMetric}>
                 {formatBytes(request.responsePayloadBytes)}

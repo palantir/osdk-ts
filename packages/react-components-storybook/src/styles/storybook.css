@@ -50,7 +50,7 @@ body {
   margin-bottom: calc(var(--osdk-surface-spacing) * 2);
   padding: calc(var(--osdk-surface-spacing) * 2)
     calc(var(--osdk-surface-spacing) * 3);
-  background: var(--osdk-intent-success-background);
+  background: var(--osdk-intent-success-rest);
   color: var(--osdk-intent-success-foreground);
   border-radius: var(--osdk-surface-border-radius);
   font-size: var(--osdk-typography-size-body-small);
@@ -72,6 +72,8 @@ body {
 
 .osdkFormCard {
   --osdk-form-label-font-size: var(--osdk-typography-size-body-small);
+  --osdk-form-content-padding-inline: calc(var(--osdk-surface-spacing) * 4);
+  --osdk-form-content-padding-block: calc(var(--osdk-surface-spacing) * 4);
 
   max-width: 480px;
   width: 100%;
@@ -85,6 +87,14 @@ body {
   margin-bottom: calc(var(--osdk-surface-spacing) * 4);
 }
 
+.osdkBlueprintDialogForm {
+  --osdk-form-content-padding-inline: calc(var(--osdk-surface-spacing) * 4);
+  --osdk-form-content-padding-block: calc(var(--osdk-surface-spacing) * 4);
+
+  width: min(480px, calc(100vw - calc(var(--osdk-surface-spacing) * 8)));
+  max-height: calc(100vh - calc(var(--osdk-surface-spacing) * 16));
+}
+
 .osdkCustomTextarea {
   width: 100%;
   min-height: calc(var(--osdk-surface-spacing) * 15);
@@ -95,6 +105,15 @@ body {
   font-family: inherit;
 }
 
+/* Row highlight for RowAttributesForStyling story */
+.customTableStyling {
+  tr[data-highlight-row="true"] {
+    --osdk-table-row-bg-default: #f0f8ff;
+    --osdk-table-row-bg-alternate: #e8f4ff;
+    --osdk-table-row-bg-hover: #e0f0ff;
+  }
+}
+
 .osdkCodeOutput {
   margin: 0;
   padding: calc(var(--osdk-surface-spacing) * 3);
@@ -103,4 +122,16 @@ body {
   overflow: auto;
   font-size: var(--osdk-typography-size-body-small);
   max-height: 300px;
+}
+
+.osdkRichDropdownLabel {
+  display: inline-flex;
+  flex-direction: column;
+  gap: calc(var(--osdk-surface-spacing) * 0.5);
+  min-width: 0;
+}
+
+.osdkRichDropdownDescription {
+  color: var(--osdk-typography-color-muted);
+  font-size: var(--osdk-typography-size-body-small);
 }

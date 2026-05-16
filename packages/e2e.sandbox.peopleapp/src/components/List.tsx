@@ -1,5 +1,5 @@
 import type { ObjectTypeDefinition, Osdk } from "@osdk/client";
-import type { UseOsdkListResult } from "@osdk/react/experimental";
+import type { UseOsdkListResult } from "@osdk/react";
 import type { ReactNode } from "react";
 import React from "react";
 import { ErrorMessage } from "./ErrorMessage.js";

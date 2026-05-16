@@ -24,7 +24,10 @@ import type {
   DataValueClientToWire,
 } from "@osdk/api";
 import type { ActionParameterV2, ParameterId } from "@osdk/foundry.ontologies";
-import type { TH_ActionParameterV2 } from "./TH_ActionParameterV2.js";
+import type {
+  SimpleActionParamTypes,
+  TH_ActionParameterV2,
+} from "./TH_ActionParameterV2.js";
 import type { TH_ActionTypeV2 } from "./TH_ActionTypeV2.js";
 
 /**
@@ -42,7 +45,7 @@ export interface TH_ActionMetadata<
 > extends ActionMetadata {
   parameters: X extends TH_ActionTypeV2<infer P> ? {
       [K in keyof P]: P[K] extends TH_ActionParameterV2<infer APT, infer R>
-        ? (APT extends "string" | "integer" ? {
+        ? (APT extends SimpleActionParamTypes ? {
             multiplicity: false;
             nullable: R extends true ? false : true;
             type: APT;

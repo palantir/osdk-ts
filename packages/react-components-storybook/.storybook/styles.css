@@ -1,5 +1,6 @@
 @layer storybook, osdk.styles, cbac.components, themes;
 
+@import "@blueprintjs/core/lib/css/blueprint.css" layer(storybook);
 @import "../src/styles/storybook.css" layer(storybook);
 @import "@osdk/react-components/styles.css" layer(osdk.styles);
 @import "@osdk/cbac-components/styles.css" layer(cbac.components);

@@ -22,7 +22,10 @@ import type {
 } from "@osdk/api";
 import React, { memo, useCallback, useMemo } from "react";
 import { FilterInputExcludeRow } from "../base/FilterInputExcludeRow.js";
-import { MultiSelectInput } from "../base/inputs/MultiSelectInput.js";
+import {
+  MultiSelectInput,
+  type MultiSelectInputLayout,
+} from "../base/inputs/MultiSelectInput.js";
 import type { FilterState } from "../FilterListItemApi.js";
 import { usePropertyAggregation } from "../hooks/usePropertyAggregation.js";
 import { coerceToStringArray } from "../utils/coerceFilterValue.js";
@@ -35,8 +38,9 @@ interface MultiSelectFilterInputProps<Q extends ObjectTypeDefinition> {
   onFilterStateChanged: (state: FilterState) => void;
   whereClause: WhereClause<Q>;
   excludeRowOpen?: boolean;
-  renderValue?: (value: string) => string;
+  renderValue?: (value: string) => React.ReactNode;
   showCount?: boolean;
+  layout?: MultiSelectInputLayout;
 }
 
 function MultiSelectFilterInputInner<Q extends ObjectTypeDefinition>({
@@ -49,6 +53,7 @@ function MultiSelectFilterInputInner<Q extends ObjectTypeDefinition>({
   excludeRowOpen,
   renderValue,
   showCount,
+  layout,
 }: MultiSelectFilterInputProps<Q>): React.ReactElement {
   const selectedValues = useMemo(
     () =>
@@ -79,8 +84,8 @@ function MultiSelectFilterInputInner<Q extends ObjectTypeDefinition>({
   );
 
   const aggregationOptions = useMemo(
-    () => ({ where: whereClause }),
-    [whereClause],
+    () => ({ where: whereClause, activeValues: selectedValues }),
+    [whereClause, selectedValues],
   );
 
   const { data, isLoading, error } = usePropertyAggregation(
@@ -107,6 +112,7 @@ function MultiSelectFilterInputInner<Q extends ObjectTypeDefinition>({
         showCounts={showCount}
         ariaLabel={`Search ${propertyKey} values`}
         renderValue={renderValue}
+        layout={layout}
       />
     </FilterInputExcludeRow>
   );

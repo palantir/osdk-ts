@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 
-import { CaretDown, Cross, Tick } from "@blueprintjs/icons";
+import { CaretDown, Cross, SmallCross, Tick } from "@blueprintjs/icons";
 import React, { useCallback, useState } from "react";
 import { Combobox } from "../../base-components/combobox/Combobox.js";
 import comboboxStyles from "../../base-components/combobox/Combobox.module.css";
 import { Select } from "../../base-components/select/Select.js";
 import selectStyles from "../../base-components/select/Select.module.css";
+import { PortalDismissLayer } from "../../shared/PortalDismissLayer.js";
 import { typedReactMemo } from "../../shared/typedMemo.js";
 import type { DropdownFieldProps } from "../FormFieldApi.js";
+import dropdownStyles from "./DropdownField.module.css";
 
 const EMPTY_ARRAY: [] = [];
 
@@ -35,25 +37,46 @@ interface InnerSelectProps<V, Multiple extends boolean>
   extends Omit<DropdownFieldProps<V, Multiple>, "isSearchable">
 {
   itemToStringLabel: (item: V) => string;
+  renderItemLabel: (item: V) => React.ReactNode;
   getKey: (item: V) => string;
+  portalRef?: React.Ref<HTMLDivElement>;
+  query?: string;
+  onQueryChange?: (query: string) => void;
+  onBlur?: () => void;
+  modal?: boolean;
 }
 
 interface InnerComboboxProps<V, Multiple extends boolean>
-  extends DropdownFieldProps<V, Multiple>
+  extends InnerSelectProps<V, Multiple>
 {
-  itemToStringLabel: (item: V) => string;
-  getKey: (item: V) => string;
   isSearchable: boolean;
+  disableClientSideFiltering?: boolean;
+  popupStatus?: React.ReactNode;
+  trailingItem?: DropdownFieldProps<V, Multiple>["trailingItem"];
 }
 
-export function DropdownField<V, Multiple extends boolean = false>({
+export const DropdownField: <V, Multiple extends boolean = false>(
+  props: DropdownFieldProps<V, Multiple> & { onBlur?: () => void },
+) => React.ReactElement = typedReactMemo(function DropdownFieldFn<
+  V,
+  Multiple extends boolean = false,
+>({
   isSearchable = false,
   isMultiple,
   itemToStringLabel,
+  renderItemLabel,
   itemToKey,
   value,
+  query,
+  onQueryChange,
+  disableClientSideFiltering,
+  popupStatus,
+  trailingItem,
+  modal = true,
   ...rest
-}: DropdownFieldProps<V, Multiple>): React.ReactElement {
+}: DropdownFieldProps<V, Multiple> & {
+  onBlur?: () => void;
+}): React.ReactElement {
   // Ensure always controlled from first render: multi-select needs [],
   // single-select needs null. Passing undefined switches Base UI from
   // uncontrolled to controlled and triggers a warning.
@@ -62,6 +85,8 @@ export function DropdownField<V, Multiple extends boolean = false>({
 
   const resolvedItemToStringLabel = itemToStringLabel
     ?? defaultItemToStringLabel;
+
+  const resolvedRenderItemLabel = renderItemLabel ?? resolvedItemToStringLabel;
 
   const getKey = useCallback(
     (item: V) => itemToKey?.(item) ?? resolvedItemToStringLabel(item),
@@ -76,21 +101,31 @@ export function DropdownField<V, Multiple extends boolean = false>({
         isMultiple={isMultiple}
         value={normalizedValue}
         itemToStringLabel={resolvedItemToStringLabel}
+        renderItemLabel={resolvedRenderItemLabel}
         getKey={getKey}
         isSearchable={isSearchable}
+        query={query}
+        onQueryChange={onQueryChange}
+        disableClientSideFiltering={disableClientSideFiltering}
+        popupStatus={popupStatus}
+        trailingItem={trailingItem}
+        modal={modal}
       />
     );
   }
 
+  // TODO: Support trailingItem
   return (
     <SelectDropdown
       {...rest}
       value={normalizedValue}
       itemToStringLabel={resolvedItemToStringLabel}
+      renderItemLabel={resolvedRenderItemLabel}
       getKey={getKey}
+      modal={modal}
     />
   );
-}
+});
 
 const SelectDropdown = typedReactMemo(function SelectDropdownFn<
   V,
@@ -101,20 +136,46 @@ const SelectDropdown = typedReactMemo(function SelectDropdownFn<
   onChange,
   items,
   itemToStringLabel,
+  renderItemLabel,
   getKey,
   isItemEqual,
   placeholder,
   portalRef,
+  portalContainer,
+  onBlur,
+  modal = true,
 }: InnerSelectProps<V, Multiple>): React.ReactElement {
   const [open, setOpen] = useState(false);
 
   const hasValue = value != null;
 
+  const renderSingleSelectedItemLabel = useCallback(
+    (selectedValue: V | null) =>
+      selectedValue == null ? null : renderItemLabel(selectedValue),
+    [renderItemLabel],
+  );
+
+  const handleOpenChange = useCallback(
+    (nextOpen: boolean) => {
+      setOpen(nextOpen);
+      // Mark the field as touched when the popover closes so RHF validates.
+      // Opening the popover does not trigger validation.
+      if (!nextOpen) {
+        onBlur?.();
+      }
+    },
+    [onBlur],
+  );
+
   const handleClear = useCallback(() => {
     // SelectDropdown is always single-select, so cleared value is null.
     (onChange as ((v: V | null) => void) | undefined)?.(null);
-    setOpen(false);
-  }, [onChange]);
+    handleOpenChange(false);
+  }, [onChange, handleOpenChange]);
+
+  const handleDismiss = useCallback(() => {
+    handleOpenChange(false);
+  }, [handleOpenChange]);
 
   return (
     <div>
@@ -122,13 +183,14 @@ const SelectDropdown = typedReactMemo(function SelectDropdownFn<
         value={value}
         onValueChange={onChange}
         open={open}
-        onOpenChange={setOpen}
+        onOpenChange={handleOpenChange}
         isItemEqualToValue={isItemEqual}
         itemToStringLabel={itemToStringLabel}
+        modal={modal}
       >
         <Select.Trigger id={id} placeholder={placeholder}>
           <div className={selectStyles.osdkSelectValueContainer}>
-            <Select.Value />
+            <Select.Value>{renderSingleSelectedItemLabel}</Select.Value>
             {placeholder != null && (
               <span className={selectStyles.osdkSelectPlaceholder}>
                 {placeholder}
@@ -143,21 +205,35 @@ const SelectDropdown = typedReactMemo(function SelectDropdownFn<
               onMouseDown={preventTriggerOpen}
               onClick={handleClear}
             >
-              <Cross />
+              <SmallCross />
             </span>
           )}
           <span className={selectStyles.osdkSelectIcon}>
             <CaretDown />
           </span>
         </Select.Trigger>
-        <Select.Portal ref={portalRef}>
+        <Select.Portal ref={portalRef} container={portalContainer}>
+          {open && modal && (
+            <PortalDismissLayer
+              className={dropdownStyles.osdkSelectDismissLayer}
+              onDismiss={handleDismiss}
+            />
+          )}
           <Select.Positioner>
             <Select.Popup>
-              {items.map((item) => (
-                <Select.Item key={getKey(item)} value={item}>
-                  {itemToStringLabel(item)}
-                </Select.Item>
-              ))}
+              {items.map((item) => {
+                const itemLabel = itemToStringLabel(item);
+                return (
+                  <Select.Item
+                    key={getKey(item)}
+                    value={item}
+                    label={itemLabel}
+                    aria-label={itemLabel}
+                  >
+                    {renderItemLabel(item)}
+                  </Select.Item>
+                );
+              })}
             </Select.Popup>
           </Select.Positioner>
         </Select.Portal>
@@ -175,12 +251,21 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
   onChange,
   items,
   itemToStringLabel,
+  renderItemLabel,
   getKey,
   isItemEqual,
   isMultiple,
   isSearchable,
   placeholder,
   portalRef,
+  portalContainer,
+  query,
+  onQueryChange,
+  disableClientSideFiltering,
+  popupStatus,
+  trailingItem,
+  onBlur,
+  modal = true,
 }: InnerComboboxProps<V, Multiple>): React.ReactElement {
   const [open, setOpen] = useState(false);
 
@@ -188,16 +273,48 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
     ? Array.isArray(value) && value.length > 0
     : value != null;
 
+  const renderSingleSelectedItemLabel = useCallback(
+    (selectedValue: V | null) =>
+      selectedValue == null ? null : renderItemLabel(selectedValue),
+    [renderItemLabel],
+  );
+
+  const handleOpenChange = useCallback(
+    (nextOpen: boolean) => {
+      setOpen(nextOpen);
+      if (!nextOpen) {
+        onBlur?.();
+      }
+    },
+    [onBlur],
+  );
+
+  // Mark the field as touched on every value change so RHF revalidates
+  // immediately — especially important for multi-select where the popup
+  // stays open after toggling an item.
+  const handleValueChange: typeof onChange = useCallback(
+    (...args: Parameters<NonNullable<typeof onChange>>) => {
+      onChange?.(...args);
+      // Multi-select: popover stays open, so fire onBlur directly.
+      // Single-select: popover closes on selection, handleOpenChange(false)
+      // already fires onBlur.
+      if (isMultiple) {
+        onBlur?.();
+      }
+    },
+    [onChange, onBlur, isMultiple],
+  );
+
   const handleClear = useCallback(() => {
     // TypeScript can't narrow the conditional type `Multiple extends true ? V[] : V`
     // at runtime, so we cast through the known parameter type at this single call site.
     const cleared = isMultiple ? (EMPTY_ARRAY as V[]) : null;
-    (onChange as ((v: V[] | V | null) => void) | undefined)?.(cleared);
+    (handleValueChange as (v: V[] | V | null) => void)(cleared);
     // Single-select: close after clearing. Multi-select: keep open for continued selection.
     if (!isMultiple) {
-      setOpen(false);
+      handleOpenChange(false);
     }
-  }, [isMultiple, onChange]);
+  }, [isMultiple, handleValueChange, handleOpenChange]);
 
   const handleRemoveItem = useCallback(
     (itemToRemove: V) => {
@@ -209,44 +326,46 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
           ? !isItemEqual(v, itemToRemove)
           : v !== itemToRemove
       );
-      (onChange as ((v: V[] | V | null) => void) | undefined)?.(next);
+      (handleValueChange as (v: V[] | V | null) => void)(next);
     },
-    [isMultiple, value, onChange, isItemEqual],
+    [isMultiple, value, handleValueChange, isItemEqual],
   );
+
+  const handleDismiss = useCallback(() => {
+    handleOpenChange(false);
+  }, [handleOpenChange]);
 
   const renderItem = useCallback(
-    (item: V) => (
-      <Combobox.Item key={getKey(item)} value={item}>
-        {itemToStringLabel(item)}
-      </Combobox.Item>
-    ),
-    [getKey, itemToStringLabel],
-  );
-
-  const renderItemWithIndicator = useCallback(
-    (item: V) => (
-      <Combobox.Item key={getKey(item)} value={item}>
-        <Combobox.ItemIndicator>
-          <Tick />
-        </Combobox.ItemIndicator>
-        {itemToStringLabel(item)}
-      </Combobox.Item>
-    ),
-    [getKey, itemToStringLabel],
+    (item: V) => {
+      const itemLabel = itemToStringLabel(item);
+      return (
+        <Combobox.Item key={getKey(item)} value={item} aria-label={itemLabel}>
+          {isMultiple && (
+            <Combobox.ItemIndicator>
+              <Tick />
+            </Combobox.ItemIndicator>
+          )}
+          {renderItemLabel(item)}
+        </Combobox.Item>
+      );
+    },
+    [getKey, isMultiple, itemToStringLabel, renderItemLabel],
   );
 
   return (
     <div>
       <Combobox.Root
         value={value}
-        onValueChange={onChange}
+        onValueChange={handleValueChange}
         open={open}
-        onOpenChange={setOpen}
+        onOpenChange={handleOpenChange}
         multiple={isMultiple}
         itemToStringLabel={itemToStringLabel}
         isItemEqualToValue={isItemEqual}
         items={items}
-        autoHighlight={isSearchable}
+        inputValue={query}
+        onInputValueChange={onQueryChange}
+        filter={disableClientSideFiltering ? null : undefined}
       >
         <Combobox.Trigger
           id={id}
@@ -263,7 +382,7 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
                       key={getKey(item)}
                       className={comboboxStyles.osdkComboboxTriggerChip}
                     >
-                      {itemToStringLabel(item)}
+                      {renderItemLabel(item)}
                       <span
                         role="button"
                         aria-label={`Remove ${itemToStringLabel(item)}`}
@@ -279,7 +398,9 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
               )
               : (
                 <>
-                  <Combobox.Value />
+                  <Combobox.Value>
+                    {renderSingleSelectedItemLabel}
+                  </Combobox.Value>
                   {!hasValue && placeholder != null && (
                     <span className={comboboxStyles.osdkComboboxPlaceholder}>
                       {placeholder}
@@ -296,14 +417,20 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
               onMouseDown={preventTriggerOpen}
               onClick={handleClear}
             >
-              <Cross />
+              <SmallCross />
             </span>
           )}
           <Combobox.Icon>
             <CaretDown />
           </Combobox.Icon>
         </Combobox.Trigger>
-        <Combobox.Portal ref={portalRef}>
+        <Combobox.Portal ref={portalRef} container={portalContainer}>
+          {open && modal && (
+            <PortalDismissLayer
+              className={dropdownStyles.osdkComboboxDismissLayer}
+              onDismiss={handleDismiss}
+            />
+          )}
           <Combobox.Positioner>
             <Combobox.Popup>
               {isSearchable && (
@@ -311,9 +438,14 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
                   <Combobox.SearchInput placeholder="Search…" />
                 </div>
               )}
-              <Combobox.Empty>No results</Combobox.Empty>
+              {popupStatus}
+              {/* Hide "No results" when popupStatus provides its own message (e.g. "Searching…") */}
+              {popupStatus == null && (
+                <Combobox.Empty>No results</Combobox.Empty>
+              )}
               <Combobox.List>
-                {isMultiple ? renderItemWithIndicator : renderItem}
+                <Combobox.Collection>{renderItem}</Combobox.Collection>
+                {trailingItem}
               </Combobox.List>
             </Combobox.Popup>
           </Combobox.Positioner>

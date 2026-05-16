@@ -16,11 +16,11 @@
 
 import type { ActionDefinition, ActionEditResponse } from "@osdk/client";
 import { ActionValidationError } from "@osdk/client";
-import type { ObservableClient } from "@osdk/client/unstable-do-not-use";
+import type { ObservableClient } from "@osdk/client/observable";
 import { act, renderHook, waitFor } from "@testing-library/react";
 import React from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { OsdkContext2 } from "../OsdkContext2.js";
+import { OsdkContext } from "../OsdkContext.js";
 import { useOsdkAction } from "../useOsdkAction.js";
 
 const MOCK_ACTION_DEF: ActionDefinition<never> = {
@@ -51,7 +51,7 @@ function createMockObservableClient(
 function createWrapper(observableClient: ObservableClient) {
   return function Wrapper({ children }: { children: React.ReactNode }) {
     return (
-      <OsdkContext2.Provider
+      <OsdkContext.Provider
         value={{
           client: {} as never,
           observableClient,
@@ -59,7 +59,7 @@ function createWrapper(observableClient: ObservableClient) {
         }}
       >
         {children}
-      </OsdkContext2.Provider>
+      </OsdkContext.Provider>
     );
   };
 }

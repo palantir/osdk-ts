@@ -20,6 +20,10 @@ type FulfilledComputeRequest = Extract<
   ComputeRequest,
   { type: "fulfilled" }
 >;
+type FulfilledWithoutUsageComputeRequest = Extract<
+  ComputeRequest,
+  { type: "fulfilled-without-usage" }
+>;
 type PendingComputeRequest = Extract<
   ComputeRequest,
   { type: "pending" }
@@ -32,6 +36,7 @@ export const visitComputeRequest = <T>(
     pending: (request: PendingComputeRequest) => T;
     failed: (request: FailedComputeRequest) => T;
     fulfilled: (request: FulfilledComputeRequest) => T;
+    fulfilledWithoutUsage: (request: FulfilledWithoutUsageComputeRequest) => T;
   },
 ): T => {
   if (request.type === "pending") {
@@ -40,6 +45,10 @@ export const visitComputeRequest = <T>(
 
   if (request.type === "failed") {
     return visitor.failed(request);
+  }
+
+  if (request.type === "fulfilled-without-usage") {
+    return visitor.fulfilledWithoutUsage(request);
   }
 
   return visitor.fulfilled(request);

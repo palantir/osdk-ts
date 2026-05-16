@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import type {
-  Observer,
-  Unsubscribable,
-} from "@osdk/client/unstable-do-not-use";
+import type { Observer, Unsubscribable } from "@osdk/client/observable";
 import React from "react";
 
 declare const process: { env: { NODE_ENV: string } };

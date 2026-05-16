@@ -141,7 +141,7 @@ function renderType(
       return `"${offsetDate.toISOString()}"`;
     }
     case "object":
-      return `"primaryKeyValue" // or myObjectInstance`;
+      return `"primaryKeyValue" /* or myObjectInstance */`;
     case "objectSet":
       return `client(${type.objectTypeApiName}).where({ /* filter conditions */ })`;
     case "anonymousCustomType":

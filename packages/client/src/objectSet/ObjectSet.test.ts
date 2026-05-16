@@ -25,6 +25,7 @@ import type {
   ObjectTypeDefinition,
   Osdk,
   PropertyKeys,
+  PropertySecurity,
   Result,
 } from "@osdk/api";
 import { isOk } from "@osdk/api";
@@ -294,6 +295,41 @@ describe("ObjectSet", () => {
     >;
     expect(employees.data[0].$primaryKey).toBe(stubData.employee2.employeeId);
     expect(employees.data[1].$primaryKey).toBe(stubData.employee3.employeeId);
+  });
+
+  it("allows fetchPageByRid with $loadPropertySecurityMetadata", async () => {
+    const employees = await client(
+      __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchPageByRid,
+    ).fetchPageByRid(
+      Employee,
+      [stubData.unsecuredEmployee.__rid],
+      { $loadPropertySecurityMetadata: true },
+    );
+
+    expectTypeOf(employees.data[0].$propertySecurities).toMatchObjectType<
+      {
+        class: PropertySecurity[];
+        employeeId: PropertySecurity[];
+        fullName: PropertySecurity[];
+        office: PropertySecurity[];
+        startDate: PropertySecurity[];
+        employeeLocation: PropertySecurity[];
+        employeeSensor: PropertySecurity[];
+        employeeStatus: PropertySecurity[];
+        skillSet: PropertySecurity[];
+        skillSetEmbedding: PropertySecurity[];
+      }
+    >();
+
+    expectTypeOf(employees.data[0].$propertySecurities.class)
+      .toMatchTypeOf<PropertySecurity[]>();
+
+    expectTypeOf(employees.data[0].$propertySecurities.favoriteRestaurants)
+      .toMatchTypeOf<PropertySecurity[][]>();
+
+    expect(employees.data[0].$primaryKey).toBe(
+      stubData.unsecuredEmployee.__primaryKey,
+    );
   });
 
   it("check struct parsing", async () => {
@@ -1200,6 +1236,8 @@ describe("ObjectSet", () => {
             | "skillSet"
             | "skillSetEmbedding"
             | "favoriteRestaurants"
+            | "employeeProfile"
+            | "performanceScores"
           >();
 
         expectTypeOf<
@@ -1232,6 +1270,8 @@ describe("ObjectSet", () => {
             | "skillSet"
             | "skillSetEmbedding"
             | "favoriteRestaurants"
+            | "employeeProfile"
+            | "performanceScores"
           >();
 
         // We don't have a proper definition that has

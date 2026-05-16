@@ -14,15 +14,9 @@
  * limitations under the License.
  */
 
-// Side-effect style imports for vite CSS bundling.
-// Using void import() so TypeScript does not emit them in .d.ts (attw cannot resolve .scss/.css).
-void import("@blueprintjs/core/lib/css/blueprint.css");
-void import("@blueprintjs/icons/lib/css/blueprint-icons.css");
-void import("./components/MonitoringPanel.module.scss");
-void import("./components/BubbleChart.module.scss");
-void import("./components/ComponentCard.module.scss");
-void import("./components/DebuggingTab.module.scss");
-void import("./components/HookRow.module.scss");
-void import("./components/InterceptTab.module.scss");
-void import("./components/PrimitiveSelectionPanel.module.scss");
-void import("./components/CacheInspectorTab.module.scss");
+// Placeholder. scripts/build-css.mjs replaces the transpiled
+// build/esm/styles.js with a runtime-injection module that adds devtools
+// styles (including Blueprint) to document.head when the package is
+// imported.
+
+export {};

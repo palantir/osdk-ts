@@ -1,0 +1,140 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  background-color: var(--osdk-excel-viewer-bg);
+  border: var(--osdk-excel-viewer-border);
+  border-radius: var(--osdk-surface-border-radius);
+  overflow: hidden;
+}
+
+.tableContainer {
+  flex: 1;
+  overflow: auto;
+}
+
+.table {
+  border-collapse: collapse;
+  width: max-content;
+  min-width: 100%;
+  font-family: var(--osdk-typography-family-default);
+  font-size: var(--osdk-typography-size-body-small);
+  border-spacing: 0;
+}
+
+/* Column letter headers (A, B, C...) */
+.columnHeader {
+  background-color: var(--osdk-excel-viewer-header-bg);
+  border: 1px solid var(--osdk-excel-viewer-cell-border);
+  padding: var(--osdk-excel-viewer-cell-padding);
+  text-align: center;
+  font-weight: var(--osdk-typography-weight-default);
+  color: var(--osdk-excel-viewer-header-color);
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  min-width: var(--osdk-excel-viewer-col-min-width);
+  user-select: none;
+}
+
+/* Top-left corner cell */
+.cornerCell {
+  background-color: var(--osdk-excel-viewer-header-bg);
+  border: 1px solid var(--osdk-excel-viewer-cell-border);
+  position: sticky;
+  top: 0;
+  left: 0;
+  z-index: 3;
+  min-width: var(--osdk-excel-viewer-row-header-width);
+  width: var(--osdk-excel-viewer-row-header-width);
+}
+
+/* Row number headers (1, 2, 3...) */
+.rowHeader {
+  background-color: var(--osdk-excel-viewer-header-bg);
+  border: 1px solid var(--osdk-excel-viewer-cell-border);
+  padding: var(--osdk-excel-viewer-cell-padding);
+  text-align: center;
+  font-weight: var(--osdk-typography-weight-default);
+  color: var(--osdk-excel-viewer-header-color);
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  min-width: var(--osdk-excel-viewer-row-header-width);
+  width: var(--osdk-excel-viewer-row-header-width);
+  user-select: none;
+}
+
+/* Data cells */
+.cell {
+  border: 1px solid var(--osdk-excel-viewer-cell-border);
+  padding: var(--osdk-excel-viewer-cell-padding);
+  white-space: nowrap;
+  min-width: var(--osdk-excel-viewer-col-min-width);
+}
+
+/* Sheet tabs bar */
+.tabBar {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--osdk-excel-viewer-tab-gap);
+  border-top: var(--osdk-excel-viewer-tab-border);
+  background-color: var(--osdk-excel-viewer-tab-bg);
+  flex-shrink: 0;
+  overflow-x: auto;
+  padding: var(--osdk-excel-viewer-tab-bar-padding) var(--osdk-excel-viewer-tab-bar-padding) 0;
+}
+
+.tab {
+  padding: var(--osdk-excel-viewer-tab-padding);
+  border: var(--osdk-excel-viewer-tab-border);
+  border-bottom: none;
+  border-radius: var(--osdk-excel-viewer-tab-border-radius) var(--osdk-excel-viewer-tab-border-radius) 0 0;
+  background-color: var(--osdk-excel-viewer-tab-bg);
+  font-family: var(--osdk-typography-family-default);
+  font-size: var(--osdk-typography-size-body-x-small);
+  color: var(--osdk-typography-color-muted);
+  cursor: pointer;
+  white-space: nowrap;
+  position: relative;
+  top: 1px;
+}
+
+.tab:hover {
+  background-color: var(--osdk-excel-viewer-tab-hover-bg);
+  color: var(--osdk-typography-color-default-rest);
+}
+
+.tabActive {
+  background-color: var(--osdk-excel-viewer-tab-active-bg);
+  color: var(--osdk-typography-color-default-rest);
+  font-weight: var(--osdk-typography-weight-bold);
+  border-bottom: 1px solid var(--osdk-excel-viewer-tab-active-bg);
+}
+
+.emptySheet {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  font-family: var(--osdk-typography-family-default);
+  font-size: var(--osdk-typography-size-body-medium);
+  color: var(--osdk-typography-color-muted);
+}
+
+.loadingContainer {
+  composes: loadingContainer from "../shared/LoadingError.module.css";
+}
+
+.errorContainer {
+  composes: errorContainer from "../shared/LoadingError.module.css";
+}
+
+.spinnerIcon {
+  composes: spinnerIcon from "../shared/LoadingError.module.css";
+}
+
+.errorIcon {
+  composes: errorIcon from "../shared/LoadingError.module.css";
+}

@@ -23,10 +23,14 @@ import {
 import { AliasEnvironment } from "./types.js";
 import type {
   AliasesFile,
+  EgressConnection,
+  EgressConnectionValue,
   Model,
   ModelResource,
+  ModelValue,
   ResolvedAliases,
   ResourcesFile,
+  Source,
 } from "./types.js";
 
 let cachedPublishedAliases: ResolvedAliases | undefined;
@@ -44,12 +48,9 @@ function loadPublishedAliases(): ResolvedAliases {
   const aliasesFile = JSON.parse(data) as AliasesFile;
 
   cachedPublishedAliases = {
-    custom: aliasesFile.defaults.custom,
-    models: Object.fromEntries<Model>(
-      Object.entries(aliasesFile.defaults.models).map((
-        [alias, { id: identifier }],
-      ) => [alias, identifier]),
-    ),
+    custom: loadCustom(aliasesFile.defaults.custom),
+    models: loadPublishedModels(aliasesFile.defaults.models),
+    sources: loadPublishedSources(aliasesFile.defaults.egressConnections),
   };
   return cachedPublishedAliases;
 }
@@ -64,15 +65,62 @@ function loadPreviewAliases(): ResolvedAliases {
   const resourcesFile = JSON.parse(data) as ResourcesFile;
 
   return {
-    custom: resourcesFile.resources.custom,
-    models: Object.fromEntries<Model>(
-      resourcesFile.resources.models
-        .filter((model): model is ModelResource & { alias: string } =>
-          model.alias != null
-        )
-        .map(({ alias, identifier }) => [alias, identifier]),
-    ),
+    custom: loadCustom(resourcesFile.resources.custom),
+    models: loadPreviewModels(resourcesFile.resources.models),
+    sources: loadPreviewSources(resourcesFile.egress.connections),
   };
+}
+
+function loadCustom(
+  custom: Record<string, string>,
+): Record<string, string> {
+  return custom;
+}
+
+function loadPublishedModels(
+  models: Record<string, ModelValue>,
+): Record<string, Model> {
+  return Object.fromEntries<Model>(
+    Object.entries(models).map((
+      [alias, { id: identifier }],
+    ) => [alias, identifier]),
+  );
+}
+
+function loadPublishedSources(
+  egressConnections: Record<string, EgressConnectionValue>,
+): Record<string, Source> {
+  return Object.fromEntries<Source>(
+    Object.entries(egressConnections).map((
+      [alias, { id: identifier }],
+    ) => [alias, identifier]),
+  );
+}
+
+function loadPreviewModels(
+  models: ModelResource[],
+): Record<string, Model> {
+  return Object.fromEntries<Model>(
+    models
+      .filter((model): model is ModelResource & { alias: string } =>
+        model.alias != null
+      )
+      .map(({ alias, identifier }) => [alias, identifier]),
+  );
+}
+
+function loadPreviewSources(
+  connections: EgressConnection[],
+): Record<string, Source> {
+  return Object.fromEntries<Source>(
+    connections
+      .filter((
+        connection,
+      ): connection is EgressConnection & { alias: string } =>
+        connection.alias != null
+      )
+      .map(({ alias, rid }) => [alias, { rid }]),
+  );
 }
 
 export function resetPublishedCache(): void {

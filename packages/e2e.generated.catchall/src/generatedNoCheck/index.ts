@@ -60,6 +60,7 @@ export {
   ObjectTypeWithAllPropertyTypes,
   OsdkTestObject,
   Person,
+  ReducerTest,
   RhemmingsObjectWithGtsrProperty2,
   SotSensor,
   StateTerritory,

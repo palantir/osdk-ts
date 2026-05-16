@@ -24,8 +24,8 @@ import { Employee } from "../../../generatedNoCheck/index.js";
 import { client } from "./client.js";
 
 const numEmployee = await client(Employee)
-    .where({ department: { $isNull : false }})
-    .aggregate({
-        $select: { $count: "unordered" },
-        //$groupBy: { department: "exact" },
-    });
+  .where({ department: { $isNull: false } })
+  .aggregate({
+    $select: { $count: "unordered" },
+    // $groupBy: { department: "exact" },
+  });

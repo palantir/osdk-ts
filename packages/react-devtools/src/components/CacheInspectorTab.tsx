@@ -24,7 +24,7 @@ import {
   Tag,
   Tooltip,
 } from "@blueprintjs/core";
-import type { CacheEntry } from "@osdk/client/unstable-do-not-use";
+import type { CacheEntry } from "@osdk/client/observable";
 import React, { useMemo, useState } from "react";
 import { createPollingStore } from "../hooks/createPollingStore.js";
 import type { MonitorStore } from "../store/MonitorStore.js";
@@ -103,7 +103,7 @@ export const CacheInspectorTab: React.FC<CacheInspectorTabProps> = (
   const snapshotStore = React.useMemo(
     () =>
       createPollingStore(async () => {
-        const entries = await monitorStore.getCacheEntries();
+        const entries = await monitorStore.loadCacheEntries();
         const totalSize = entries.reduce(
           (sum: number, e: CacheEntry) => sum + e.metadata.size,
           0,

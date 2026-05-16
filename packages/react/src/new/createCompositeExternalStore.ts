@@ -18,7 +18,7 @@ import type { QueryDefinition } from "@osdk/api";
 import type {
   ObservableClient,
   ObserveFunctionCallbackArgs,
-} from "@osdk/client/unstable-do-not-use";
+} from "@osdk/client/observable";
 import type { Snapshot } from "./makeExternalStore.js";
 import type { FunctionQueryParams } from "./useOsdkFunctions.js";
 

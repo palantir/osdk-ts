@@ -23,5 +23,5 @@ import type { Osdk } from "@osdk/client";
 import { type Employee } from "../../../generatedNoCheck/index.js";
 
 function getFirstTimeSeriesPoint(obj: Osdk.Instance<Employee>) {
-    return obj.employeeStatus?.getFirstPoint();
+  return obj.employeeStatus?.getFirstPoint();
 }

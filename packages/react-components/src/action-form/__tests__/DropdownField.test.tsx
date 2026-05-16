@@ -14,11 +14,15 @@
  * limitations under the License.
  */
 
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  within,
+} from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { DropdownField } from "../fields/DropdownField.js";
-
-const STRING_ITEMS = ["Alice", "Bob", "Charlie"];
 
 describe("DropdownField", () => {
   afterEach(cleanup);
@@ -60,25 +64,136 @@ describe("DropdownField", () => {
     });
 
     it("uses itemToStringLabel for display", () => {
-      interface User {
-        id: number;
-        name: string;
-      }
-      const users: User[] = [
-        { id: 1, name: "Alice" },
-        { id: 2, name: "Bob" },
-      ];
-
       render(
-        <DropdownField<User>
-          value={users[0]}
-          items={users}
-          itemToStringLabel={(u) => u.name}
-          isItemEqual={(a, b) => a.id === b.id}
+        <DropdownField<TestUser>
+          value={USER_ITEMS[0]}
+          items={USER_ITEMS}
+          itemToStringLabel={testUserNameLabel}
+          isItemEqual={isSameTestUser}
         />,
       );
 
       expect(screen.getByRole("combobox").textContent).toContain("Alice");
+    });
+
+    it("renders ReactNode labels in the trigger and options", async () => {
+      render(
+        <DropdownField<TestUser>
+          value={USER_ITEMS[0]}
+          items={USER_ITEMS}
+          itemToStringLabel={testUserToStringLabel}
+          renderItemLabel={renderTestUserLabel}
+          itemToKey={testUserToKey}
+          isItemEqual={isSameTestUser}
+        />,
+      );
+
+      const trigger = screen.getByRole("combobox");
+      expect(within(trigger).getByText("Alice")).toBeDefined();
+      expect(within(trigger).getByTestId("role-1").textContent).toBe("Admin");
+
+      fireEvent.click(trigger);
+
+      await vi.waitFor(() => {
+        const option = screen.getByRole("option", { name: "Bob User" });
+        expect(within(option).getByText("Bob")).toBeDefined();
+        expect(within(option).getByTestId("role-2").textContent).toBe("User");
+      });
+    });
+
+    it("renders ReactNode labels for array-valued items", async () => {
+      render(
+        <DropdownField<ArrayItem>
+          value={ARRAY_ITEMS[0]}
+          items={ARRAY_ITEMS}
+          itemToStringLabel={arrayItemToStringLabel}
+          renderItemLabel={renderArrayItemLabel}
+          itemToKey={arrayItemToKey}
+          isItemEqual={isSameArrayItem}
+        />,
+      );
+
+      const trigger = screen.getByRole("combobox");
+      expect(within(trigger).getByText("Alice")).toBeDefined();
+      expect(within(trigger).getByTestId("array-role-Alice").textContent).toBe(
+        "Admin",
+      );
+
+      fireEvent.click(trigger);
+
+      await vi.waitFor(() => {
+        const option = screen.getByRole("option", { name: "Bob User" });
+        expect(within(option).getByText("Bob")).toBeDefined();
+        expect(within(option).getByTestId("array-role-Bob").textContent).toBe(
+          "User",
+        );
+      });
+    });
+
+    it("renders the popup portal inside the provided container", async () => {
+      const portalContainer = document.createElement("div");
+      document.body.append(portalContainer);
+
+      try {
+        render(
+          <DropdownField
+            value={null}
+            items={STRING_ITEMS}
+            portalContainer={portalContainer}
+          />,
+        );
+
+        fireEvent.click(screen.getByRole("combobox"));
+
+        await vi.waitFor(() => {
+          expect(
+            portalContainer.contains(screen.getByRole("option", {
+              name: "Alice",
+            })),
+          ).toBe(true);
+        });
+      } finally {
+        portalContainer.remove();
+      }
+    });
+
+    it("closes when pressing the portal dismiss layer", async () => {
+      render(<DropdownField value={null} items={STRING_ITEMS} />);
+
+      fireEvent.click(screen.getByRole("combobox"));
+
+      await vi.waitFor(() => {
+        expect(screen.getByRole("option", { name: "Alice" })).toBeDefined();
+      });
+
+      const dismissLayer = document.querySelector(
+        "[data-osdk-portal-dismiss-layer]",
+      );
+      if (!(dismissLayer instanceof HTMLElement)) {
+        throw new Error("Expected dropdown dismiss layer to be rendered");
+      }
+
+      fireEvent.pointerDown(dismissLayer);
+
+      await vi.waitFor(() => {
+        expect(screen.queryByRole("option", { name: "Alice" })).toBeNull();
+      });
+    });
+
+    it("does not render the portal dismiss layer when modal is false", async () => {
+      render(
+        <DropdownField value={null} items={STRING_ITEMS} modal={false} />,
+      );
+
+      fireEvent.click(screen.getByRole("combobox"));
+
+      await vi.waitFor(() => {
+        expect(screen.getByRole("option", { name: "Alice" })).toBeDefined();
+      });
+
+      expect(
+        document.querySelector("[data-osdk-portal-dismiss-layer]"),
+      ).toBeNull();
     });
   });
 
@@ -118,6 +233,90 @@ describe("DropdownField", () => {
 
       const trigger = screen.getByRole("combobox");
       expect(trigger.textContent).toContain("Alice");
+    });
+
+    it("renders ReactNode labels and filters searchable items by their text", async () => {
+      render(
+        <DropdownField<TestUser>
+          value={USER_ITEMS[0]}
+          items={USER_ITEMS}
+          itemToStringLabel={testUserToStringLabel}
+          renderItemLabel={renderTestUserLabel}
+          itemToKey={testUserToKey}
+          isItemEqual={isSameTestUser}
+          isSearchable={true}
+        />,
+      );
+
+      const trigger = screen.getByRole("combobox");
+      expect(within(trigger).getByText("Alice")).toBeDefined();
+      expect(within(trigger).getByTestId("role-1").textContent).toBe(
+        "Admin",
+      );
+
+      fireEvent.click(trigger);
+
+      await vi.waitFor(() => {
+        expect(screen.getByPlaceholderText("Search…")).toBeDefined();
+      });
+
+      fireEvent.change(screen.getByPlaceholderText("Search…"), {
+        target: { value: "Bob" },
+      });
+
+      await vi.waitFor(() => {
+        const option = screen.getByRole("option", { name: "Bob User" });
+        expect(within(option).getByText("Bob")).toBeDefined();
+        expect(
+          within(option).getByTestId("role-2").textContent,
+        ).toBe("User");
+        expect(screen.queryByRole("option", { name: "Alice Admin" }))
+          .toBeNull();
+      });
+    });
+
+    it("renders ReactNode labels for searchable array-valued items", () => {
+      render(
+        <DropdownField<ArrayItem>
+          value={ARRAY_ITEMS[0]}
+          items={ARRAY_ITEMS}
+          itemToStringLabel={arrayItemToStringLabel}
+          renderItemLabel={renderArrayItemLabel}
+          itemToKey={arrayItemToKey}
+          isItemEqual={isSameArrayItem}
+          isSearchable={true}
+        />,
+      );
+
+      const trigger = screen.getByRole("combobox");
+      expect(within(trigger).getByText("Alice")).toBeDefined();
+      expect(within(trigger).getByTestId("array-role-Alice").textContent).toBe(
+        "Admin",
+      );
+    });
+
+    it("renders ReactNode labels in multi-select chips and uses text labels for remove buttons", () => {
+      render(
+        <DropdownField<TestUser, true>
+          value={[USER_ITEMS[0]]}
+          items={USER_ITEMS}
+          itemToStringLabel={testUserToStringLabel}
+          renderItemLabel={renderTestUserLabel}
+          itemToKey={testUserToKey}
+          isItemEqual={isSameTestUser}
+          isSearchable={true}
+          isMultiple={true}
+        />,
+      );
+
+      const trigger = screen.getByRole("combobox");
+      expect(within(trigger).getByText("Alice")).toBeDefined();
+      expect(within(trigger).getByTestId("role-1").textContent).toBe(
+        "Admin",
+      );
+      expect(
+        screen.getByRole("button", { name: "Remove Alice Admin" }),
+      ).toBeDefined();
     });
 
     it("shows placeholder when no value is selected", () => {
@@ -171,6 +370,31 @@ describe("DropdownField", () => {
 
       await vi.waitFor(() => {
         expect(screen.getByPlaceholderText("Search…")).toBeDefined();
+      });
+    });
+
+    it("closes searchable popup when pressing the portal dismiss layer", async () => {
+      render(
+        <DropdownField value={null} items={STRING_ITEMS} isSearchable={true} />,
+      );
+
+      fireEvent.click(screen.getByRole("combobox"));
+
+      await vi.waitFor(() => {
+        expect(screen.getByRole("option", { name: "Alice" })).toBeDefined();
+      });
+
+      const dismissLayer = document.querySelector(
+        "[data-osdk-portal-dismiss-layer]",
+      );
+      if (!(dismissLayer instanceof HTMLElement)) {
+        throw new Error("Expected dropdown dismiss layer to be rendered");
+      }
+
+      fireEvent.pointerDown(dismissLayer);
+
+      await vi.waitFor(() => {
+        expect(screen.queryByRole("option", { name: "Alice" })).toBeNull();
       });
     });
 
@@ -236,6 +460,62 @@ describe("DropdownField", () => {
       });
     });
 
+    it("filters items to matching subset when searching", async () => {
+      render(
+        <DropdownField value={null} items={STRING_ITEMS} isSearchable={true} />,
+      );
+
+      fireEvent.click(screen.getByRole("combobox"));
+
+      await vi.waitFor(() => {
+        expect(screen.getByPlaceholderText("Search…")).toBeDefined();
+      });
+
+      fireEvent.change(screen.getByPlaceholderText("Search…"), {
+        target: { value: "Al" },
+      });
+
+      await vi.waitFor(() => {
+        expect(screen.getByRole("option", { name: "Alice" })).toBeDefined();
+        expect(screen.queryByRole("option", { name: "Bob" })).toBeNull();
+        expect(screen.queryByRole("option", { name: "Charlie" })).toBeNull();
+      });
+    });
+
+    it("filters items when portalContainer is set", async () => {
+      const portalContainer = document.createElement("div");
+      document.body.append(portalContainer);
+
+      try {
+        render(
+          <DropdownField
+            value={null}
+            items={STRING_ITEMS}
+            isSearchable={true}
+            portalContainer={portalContainer}
+          />,
+        );
+
+        fireEvent.click(screen.getByRole("combobox"));
+
+        await vi.waitFor(() => {
+          expect(screen.getByPlaceholderText("Search…")).toBeDefined();
+        });
+
+        fireEvent.change(screen.getByPlaceholderText("Search…"), {
+          target: { value: "Al" },
+        });
+
+        await vi.waitFor(() => {
+          expect(screen.getByRole("option", { name: "Alice" })).toBeDefined();
+          expect(screen.queryByRole("option", { name: "Bob" })).toBeNull();
+          expect(screen.queryByRole("option", { name: "Charlie" })).toBeNull();
+        });
+      } finally {
+        portalContainer.remove();
+      }
+    });
+
     it("marks selected items with aria-selected in multi-select", async () => {
       render(
         <DropdownField<string, true>
@@ -255,6 +535,130 @@ describe("DropdownField", () => {
 
         const bob = screen.getByRole("option", { name: /Bob/ });
         expect(bob.getAttribute("aria-selected")).toBe("false");
+      });
+    });
+  });
+
+  describe("onBlur", () => {
+    it("does not call onBlur when popover opens", async () => {
+      const onBlur = vi.fn();
+      render(
+        <DropdownField
+          value={null}
+          items={STRING_ITEMS}
+          onBlur={onBlur}
+        />,
+      );
+
+      fireEvent.click(screen.getByRole("combobox"));
+
+      await vi.waitFor(() => {
+        expect(screen.getByRole("option", { name: "Alice" })).toBeDefined();
+      });
+
+      expect(onBlur).not.toHaveBeenCalled();
+    });
+
+    it("calls onBlur when popover closes", async () => {
+      const onBlur = vi.fn();
+      render(
+        <DropdownField
+          value={null}
+          items={STRING_ITEMS}
+          onBlur={onBlur}
+        />,
+      );
+
+      fireEvent.click(screen.getByRole("combobox"));
+
+      await vi.waitFor(() => {
+        expect(screen.getByRole("option", { name: "Alice" })).toBeDefined();
+      });
+
+      fireEvent.keyDown(screen.getByRole("combobox"), { key: "Escape" });
+
+      await vi.waitFor(() => {
+        expect(onBlur).toHaveBeenCalled();
+      });
+    });
+
+    it("calls onBlur when a value is selected in single-select", async () => {
+      const onBlur = vi.fn();
+      const onChange = vi.fn();
+      render(
+        <DropdownField
+          value={null}
+          items={STRING_ITEMS}
+          onChange={onChange}
+          onBlur={onBlur}
+        />,
+      );
+
+      fireEvent.click(screen.getByRole("combobox"));
+
+      await vi.waitFor(() => {
+        expect(screen.getByRole("option", { name: "Alice" })).toBeDefined();
+      });
+
+      fireEvent.click(screen.getByRole("option", { name: "Alice" }));
+
+      await vi.waitFor(() => {
+        expect(onBlur).toHaveBeenCalled();
+      });
+    });
+
+    it("calls onBlur when searchable popover closes", async () => {
+      const onBlur = vi.fn();
+      render(
+        <DropdownField
+          value={null}
+          items={STRING_ITEMS}
+          isSearchable={true}
+          onBlur={onBlur}
+        />,
+      );
+
+      const trigger = screen.getByRole("combobox");
+      fireEvent.click(trigger);
+
+      await vi.waitFor(() => {
+        expect(screen.getByRole("option", { name: "Alice" })).toBeDefined();
+      });
+
+      // Escape on the search input closes the popover
+      fireEvent.keyDown(screen.getByPlaceholderText("Search…"), {
+        key: "Escape",
+      });
+
+      await vi.waitFor(() => {
+        expect(onBlur).toHaveBeenCalled();
+      });
+    });
+
+    it("calls onBlur when a value is selected in multi-select", async () => {
+      const onBlur = vi.fn();
+      const onChange = vi.fn();
+      render(
+        <DropdownField<string, true>
+          value={[]}
+          items={STRING_ITEMS}
+          onChange={onChange}
+          isSearchable={true}
+          isMultiple={true}
+          onBlur={onBlur}
+        />,
+      );
+
+      fireEvent.click(screen.getByRole("combobox"));
+
+      await vi.waitFor(() => {
+        expect(screen.getByRole("option", { name: "Alice" })).toBeDefined();
+      });
+
+      fireEvent.click(screen.getByRole("option", { name: "Alice" }));
+
+      await vi.waitFor(() => {
+        expect(onBlur).toHaveBeenCalled();
       });
     });
   });
@@ -317,14 +721,76 @@ describe("DropdownField", () => {
 
     it("does not show clear button in searchable combobox when no value is selected", () => {
       render(
-        <DropdownField
-          value={null}
-          items={STRING_ITEMS}
-          isSearchable={true}
-        />,
+        <DropdownField value={null} items={STRING_ITEMS} isSearchable={true} />,
       );
 
       expect(screen.queryByLabelText("Clear")).toBeNull();
     });
   });
 });
+
+const STRING_ITEMS = ["Alice", "Bob", "Charlie"];
+
+interface TestUser {
+  id: number;
+  name: string;
+  role: string;
+}
+
+const USER_ITEMS: TestUser[] = [
+  { id: 1, name: "Alice", role: "Admin" },
+  { id: 2, name: "Bob", role: "User" },
+];
+
+function testUserNameLabel(user: TestUser): string {
+  return user.name;
+}
+
+function testUserToStringLabel(user: TestUser): string {
+  return `${user.name} ${user.role}`;
+}
+
+function renderTestUserLabel(user: TestUser) {
+  return (
+    <span>
+      <strong>{user.name}</strong>
+      <span data-testid={`role-${user.id}`}>{user.role}</span>
+    </span>
+  );
+}
+
+function testUserToKey(user: TestUser): string {
+  return String(user.id);
+}
+
+function isSameTestUser(a: TestUser, b: TestUser): boolean {
+  return a.id === b.id;
+}
+
+type ArrayItem = readonly [name: string, role: string];
+
+const ARRAY_ITEMS: ArrayItem[] = [
+  ["Alice", "Admin"],
+  ["Bob", "User"],
+];
+
+function arrayItemToStringLabel(item: ArrayItem): string {
+  return `${item[0]} ${item[1]}`;
+}
+
+function renderArrayItemLabel(item: ArrayItem) {
+  return (
+    <span>
+      <strong>{item[0]}</strong>
+      <span data-testid={`array-role-${item[0]}`}>{item[1]}</span>
+    </span>
+  );
+}
+
+function arrayItemToKey(item: ArrayItem): string {
+  return item[0];
+}
+
+function isSameArrayItem(a: ArrayItem, b: ArrayItem): boolean {
+  return a[0] === b[0] && a[1] === b[1];
+}

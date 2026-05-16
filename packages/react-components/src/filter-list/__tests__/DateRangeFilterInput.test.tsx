@@ -15,14 +15,14 @@
  */
 
 import type { WhereClause } from "@osdk/api";
-import { useOsdkAggregation } from "@osdk/react/experimental";
+import { useOsdkAggregation } from "@osdk/react";
 import { cleanup, render } from "@testing-library/react";
 import React from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { DateRangeFilterInput } from "../inputs/DateRangeFilterInput.js";
 import { MockObjectType } from "./testUtils.js";
 
-vi.mock("@osdk/react/experimental", () => ({
+vi.mock("@osdk/react", () => ({
   useOsdkAggregation: vi.fn().mockReturnValue({
     data: undefined,
     isLoading: false,
