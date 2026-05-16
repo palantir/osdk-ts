@@ -14,16 +14,33 @@
  * limitations under the License.
  */
 
-import type { Attachment, Media, MediaMetadata } from "@osdk/api";
+import type {
+  Attachment,
+  Media,
+  MediaMetadata,
+  MediaPropertyLocation,
+} from "@osdk/api";
 import * as OntologiesV2 from "@osdk/foundry.ontologies";
 import { additionalContext } from "../../../Client.js";
 import type { Observer } from "../../ObservableClient/common.js";
-import type { MediaPropertyLocation } from "../../ObservableClient/MediaTypes.js";
-import { AbstractHelper } from "../AbstractHelper.js";
+import type {
+  MediaContentObserveOptions,
+  MediaContentPayload,
+} from "../../ObservableClient/MediaObservableTypes.js";
+
+import type { CacheKeys } from "../CacheKeys.js";
+import type { KnownCacheKey } from "../KnownCacheKey.js";
+import type { Store } from "../Store.js";
+import { subscribeQuery } from "../subscribeQuery.js";
 import type { UnsubscribableWrapper } from "../UnsubscribableWrapper.js";
-import type { BlobMemoryManager } from "./BlobMemoryManager.js";
 import { createBlobMemoryManager } from "./BlobMemoryManager.js";
+import {
+  isMediaPropertyLocation,
+  type MediaSource,
+} from "./fetchMediaContent.js";
 import { getMediaCacheKey } from "./getMediaCacheKey.js";
+import type { MediaContentCacheKey } from "./MediaContentCacheKey.js";
+import { MediaContentQuery } from "./MediaContentQuery.js";
 import type { MediaMetadataCacheKey } from "./MediaMetadataCacheKey.js";
 import type {
   MediaMetadataObserveOptions,
@@ -31,22 +48,24 @@ import type {
 } from "./MediaMetadataQuery.js";
 import { MediaMetadataQuery } from "./MediaMetadataQuery.js";
 
-export class MediaHelper extends AbstractHelper<
-  MediaMetadataQuery,
-  MediaMetadataObserveOptions
-> {
-  private blobManager: BlobMemoryManager = createBlobMemoryManager();
+export class MediaHelper {
+  private readonly store: Store;
+  private readonly cacheKeys: CacheKeys<KnownCacheKey>;
+  private blobManager = createBlobMemoryManager();
 
-  getCacheKey(
-    mediaOrLocation: Media | Attachment | MediaPropertyLocation,
-  ): string {
+  constructor(store: Store, cacheKeys: CacheKeys<KnownCacheKey>) {
+    this.store = store;
+    this.cacheKeys = cacheKeys;
+  }
+
+  getCacheKey(mediaOrLocation: MediaSource): string {
     return getMediaCacheKey(mediaOrLocation);
   }
 
-  private getTypedCacheKey(
+  private getMetadataCacheKey(
     coords: MediaPropertyLocation,
   ): MediaMetadataCacheKey {
-    return this.cacheKeys.get(
+    return this.cacheKeys.get<MediaMetadataCacheKey>(
       "mediaMetadata",
       coords.objectType,
       coords.primaryKey,
@@ -54,37 +73,97 @@ export class MediaHelper extends AbstractHelper<
     );
   }
 
-  getQuery(
-    options: MediaMetadataObserveOptions & { coords: MediaPropertyLocation },
-  ): MediaMetadataQuery {
-    const cacheKey = this.getTypedCacheKey(options.coords);
-    return this.store.queries.get(cacheKey, () => {
+  private getContentCacheKey(source: MediaSource): MediaContentCacheKey {
+    let objectType = "";
+    if (isMediaPropertyLocation(source)) {
+      objectType = source.objectType;
+    } else if ("getMediaSourceLocation" in source) {
+      const coords = source.getMediaSourceLocation?.();
+      if (coords) {
+        objectType = coords.objectType;
+      }
+    }
+    return this.cacheKeys.get<MediaContentCacheKey>(
+      "mediaContent",
+      objectType,
+      this.getCacheKey(source),
+    );
+  }
+
+  private resolveCoords(source: Media): MediaPropertyLocation {
+    const coords = source.getMediaSourceLocation?.();
+    if (!coords) {
+      throw new Error(
+        "Cannot observe media metadata: source has no location (transient or uploaded media)",
+      );
+    }
+    return coords;
+  }
+
+  observeMediaMetadata(
+    source: Media,
+    options: MediaMetadataObserveOptions,
+    observer: Observer<MediaMetadataPayload>,
+  ): UnsubscribableWrapper {
+    const coords = this.resolveCoords(source);
+    const cacheKey = this.getMetadataCacheKey(coords);
+
+    const query = this.store.queries.get(cacheKey, () => {
       const subject = this.store.subjects.get(cacheKey);
       return new MediaMetadataQuery(
         this.store,
         subject,
-        options.coords.objectType,
-        options.coords.primaryKey,
-        options.coords.propertyName,
+        coords.objectType,
+        coords.primaryKey,
+        coords.propertyName,
         cacheKey,
         options,
       );
     });
+
+    return subscribeQuery(this.store, query, options, observer);
   }
 
-  observeMediaMetadata(
-    coords: MediaPropertyLocation,
-    options: MediaMetadataObserveOptions,
-    observer: Observer<MediaMetadataPayload>,
-  ): UnsubscribableWrapper {
-    const query = this.getQuery({ ...options, coords });
-    return this._subscribe(query, options, observer);
+  observeMedia(
+    source: Media | Attachment,
+    options: MediaContentObserveOptions,
+    observer: Observer<MediaContentPayload>,
+  ): { unsubscribe: () => void } {
+    const cacheKey = this.getContentCacheKey(source);
+
+    const query = this.store.queries.get(cacheKey, () => {
+      const subject = this.store.subjects.get(cacheKey);
+      return new MediaContentQuery(
+        this.store,
+        subject,
+        source,
+        cacheKey,
+        options,
+        {
+          fetchContent: (s, opts) => this.fetchContent(s, opts),
+          fetchMetadata: (s) => this.fetchMetadataForSource(s),
+          blobManager: this.blobManager,
+          getCacheKey: (s) => this.getCacheKey(s),
+        },
+      );
+    });
+
+    return subscribeQuery(this.store, query, options, observer);
   }
 
-  async fetchMetadata(
-    coords: MediaPropertyLocation,
-    options?: { preview?: boolean },
-  ): Promise<MediaMetadata> {
+  invalidateMedia(source: Media | Attachment): void {
+    const typedCacheKey = this.getContentCacheKey(source);
+    const query = this.store.queries.peek(typedCacheKey);
+    if (query) {
+      query.invalidate().catch((e) => {
+        if (process.env.NODE_ENV !== "production") {
+          this.store.logger?.error("Error invalidating media", e);
+        }
+      });
+    }
+  }
+
+  async fetchMetadata(coords: MediaPropertyLocation): Promise<MediaMetadata> {
     const ontologyRid = await this.store.client[additionalContext].ontologyRid;
     const response = await OntologiesV2.MediaReferenceProperties
       .getMediaMetadata(
@@ -93,7 +172,7 @@ export class MediaHelper extends AbstractHelper<
         coords.objectType,
         String(coords.primaryKey),
         coords.propertyName,
-        { preview: options?.preview ?? true },
+        { preview: true },
       );
 
     return {
@@ -103,84 +182,49 @@ export class MediaHelper extends AbstractHelper<
     };
   }
 
+  // Fetches a blob from the server. Caching is owned by the caller
+  // (fetchMediaContent / loadDirect / loadWithPreview) so each blob has exactly
+  // one add() per cache key — calling add() here too would risk revoking a URL
+  // that another concurrent caller had already retained.
   async fetchContent(
-    mediaOrLocation: Media | Attachment | MediaPropertyLocation,
+    mediaOrLocation: MediaSource,
     options?: { preview?: boolean },
   ): Promise<Blob> {
-    const preview = options?.preview ?? true;
-    const baseCacheKey = this.getCacheKey(mediaOrLocation);
-    const cacheKey = preview ? `${baseCacheKey}:preview` : baseCacheKey;
-
-    const cached = this.blobManager.get(cacheKey);
-    if (cached) {
-      return cached;
-    }
-
     let response: Response;
 
-    const coords = this.resolveToCoords(mediaOrLocation);
-    if (coords) {
+    if ("fetchContents" in mediaOrLocation) {
+      response = await mediaOrLocation.fetchContents();
+    } else if ("rid" in mediaOrLocation) {
+      response = await OntologiesV2.Attachments.read(
+        this.store.client[additionalContext],
+        String(mediaOrLocation.rid),
+      );
+    } else {
       const ontologyRid = await this.store.client[additionalContext]
         .ontologyRid;
       response = await OntologiesV2.MediaReferenceProperties.getMediaContent(
         this.store.client[additionalContext],
         ontologyRid,
-        coords.objectType,
-        String(coords.primaryKey),
-        coords.propertyName,
-        { preview },
-      );
-    } else if ("fetchContents" in mediaOrLocation) {
-      response = await mediaOrLocation.fetchContents();
-      const arrayBuffer = await response.arrayBuffer();
-      const contentType = response.headers.get("content-type")
-        || "application/octet-stream";
-      const blob = new Blob([arrayBuffer], { type: contentType });
-      this.blobManager.add(baseCacheKey, blob);
-      return blob;
-    } else {
-      throw new Error(
-        "Cannot fetch media content: no coordinates or fetchContents",
+        mediaOrLocation.objectType,
+        String(mediaOrLocation.primaryKey),
+        mediaOrLocation.propertyName,
+        { preview: options?.preview ?? true },
       );
     }
 
     const arrayBuffer = await response.arrayBuffer();
     const contentType = response.headers.get("content-type")
       || "application/octet-stream";
-    const blob = new Blob([arrayBuffer], { type: contentType });
-
-    this.blobManager.add(cacheKey, blob);
-
-    return blob;
+    return new Blob([arrayBuffer], { type: contentType });
   }
 
-  private resolveToCoords(
-    source: Media | Attachment | MediaPropertyLocation,
-  ): MediaPropertyLocation | undefined {
-    if (
-      "objectType" in source && "primaryKey" in source
-      && "propertyName" in source
-    ) {
-      return source;
-    }
-    if ("getMediaSourceLocation" in source) {
-      return source.getMediaSourceLocation?.();
-    }
-    return undefined;
-  }
-
-  getCachedContent(
-    mediaOrLocation: Media | Attachment | MediaPropertyLocation,
-    options?: { preview?: boolean },
-  ): Blob | undefined {
-    const preview = options?.preview ?? true;
-    const baseCacheKey = this.getCacheKey(mediaOrLocation);
-    const cacheKey = preview ? `${baseCacheKey}:preview` : baseCacheKey;
+  getCachedContent(mediaOrLocation: MediaSource): Blob | undefined {
+    const cacheKey = this.getCacheKey(mediaOrLocation);
     return this.blobManager.get(cacheKey);
   }
 
   getCachedMetadata(coords: MediaPropertyLocation): MediaMetadata | undefined {
-    const typedCacheKey = this.getTypedCacheKey(coords);
+    const typedCacheKey = this.getMetadataCacheKey(coords);
     const query = this.store.queries.peek(typedCacheKey);
     if (query) {
       const entry = this.store.getValue(typedCacheKey);
@@ -190,7 +234,7 @@ export class MediaHelper extends AbstractHelper<
   }
 
   createBlobUrl(
-    mediaOrLocation: Media | Attachment | MediaPropertyLocation,
+    mediaOrLocation: MediaSource,
     options?: { preview?: boolean },
   ): string | undefined {
     const preview = options?.preview ?? true;
@@ -200,7 +244,7 @@ export class MediaHelper extends AbstractHelper<
   }
 
   releaseBlobUrl(
-    mediaOrLocation: Media | Attachment | MediaPropertyLocation,
+    mediaOrLocation: MediaSource,
     options?: { preview?: boolean },
   ): void {
     const preview = options?.preview ?? true;
@@ -209,25 +253,43 @@ export class MediaHelper extends AbstractHelper<
     this.blobManager.releaseBlobUrl(cacheKey);
   }
 
-  clearCache(
-    mediaOrLocation: Media | Attachment | MediaPropertyLocation,
-  ): void {
-    const cacheKey = this.getCacheKey(mediaOrLocation);
-
-    this.blobManager.remove(cacheKey);
-    this.blobManager.remove(`${cacheKey}:preview`);
-
-    if ("objectType" in mediaOrLocation) {
-      const typedCacheKey = this.getTypedCacheKey(mediaOrLocation);
-      this.store.queries.delete(typedCacheKey);
+  private async fetchMetadataForSource(
+    source: MediaSource,
+  ): Promise<MediaMetadata> {
+    if (isMediaPropertyLocation(source)) {
+      return this.fetchMetadata(source);
     }
+    if ("rid" in source) {
+      const meta = await source.fetchMetadata();
+      return {
+        path: meta.filename,
+        sizeBytes: meta.sizeBytes,
+        mediaType: meta.mediaType,
+      };
+    }
+    return source.fetchMetadata();
+  }
+
+  clearCache(mediaOrLocation: MediaSource): void {
+    const cacheKey = this.getCacheKey(mediaOrLocation);
+    this.blobManager.remove(cacheKey);
+
+    if (isMediaPropertyLocation(mediaOrLocation)) {
+      const metadataCacheKey = this.getMetadataCacheKey(mediaOrLocation);
+      this.store.queries.delete(metadataCacheKey);
+    }
+
+    const contentCacheKey = this.getContentCacheKey(mediaOrLocation);
+    this.store.queries.delete(contentCacheKey);
   }
 
   clearAll(): void {
     this.blobManager.clear();
 
     for (const cacheKey of this.store.queries.keys()) {
-      if (cacheKey.type === "mediaMetadata") {
+      if (
+        cacheKey.type === "mediaMetadata" || cacheKey.type === "mediaContent"
+      ) {
         this.store.queries.delete(cacheKey);
       }
     }
@@ -236,13 +298,13 @@ export class MediaHelper extends AbstractHelper<
   dispose(): void {
     this.blobManager.dispose();
 
-    for (const cacheKey of this.store.queries.keys()) {
-      if (cacheKey.type === "mediaMetadata") {
-        const query = this.store.queries.peek(cacheKey);
-        if (query) {
-          query.dispose?.();
-        }
-      }
+    // Snapshot the keys before mutating — Queries.delete (called below) mutates
+    // the underlying Map during iteration.
+    const mediaKeys = Array.from(this.store.queries.keys()).filter((key) =>
+      key.type === "mediaMetadata" || key.type === "mediaContent"
+    );
+    for (const cacheKey of mediaKeys) {
+      this.store.queries.delete(cacheKey);
     }
   }
 }

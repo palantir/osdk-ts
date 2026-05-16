@@ -28,6 +28,12 @@ export interface BlobMemoryManager {
   createBlobUrl(key: string): string | undefined;
   releaseBlobUrl(key: string): void;
   remove(key: string): void;
+  /**
+   * Drop the cache entry only if no live URL refcount points at it.
+   * Use this in invalidation paths where active observers may still be
+   * rendering the URL — `remove` would revoke the URL out from under them.
+   */
+  evictIfUnreferenced(key: string): void;
   clear(): void;
   dispose(): void;
 }
@@ -131,6 +137,13 @@ export function createBlobMemoryManager(): BlobMemoryManager {
     }
   }
 
+  function evictIfUnreferenced(key: string): void {
+    if (urlRefCounts.has(key)) {
+      return;
+    }
+    remove(key);
+  }
+
   function clear(): void {
     for (const entry of cache.values()) {
       if (entry.blobUrl) {
@@ -155,6 +168,7 @@ export function createBlobMemoryManager(): BlobMemoryManager {
     createBlobUrl,
     releaseBlobUrl,
     remove,
+    evictIfUnreferenced,
     clear,
     dispose,
   };

@@ -20,8 +20,10 @@ import type {
   ActionValidationResponse,
   AggregateOpts,
   AggregationsResults,
+  Attachment,
   CompileTimeMetadata,
   DerivedProperty,
+  Media,
   ObjectOrInterfaceDefinition,
   ObjectSet,
   ObjectTypeDefinition,
@@ -51,10 +53,12 @@ import type {
   Status,
 } from "./ObservableClient/common.js";
 import type {
+  MediaContentObserveOptions,
+  MediaContentPayload,
   MediaMetadataObserveOptions,
   MediaMetadataPayload,
 } from "./ObservableClient/MediaObservableTypes.js";
-import type { MediaPropertyLocation } from "./ObservableClient/MediaTypes.js";
+
 import type { ObserveLinks } from "./ObservableClient/ObserveLink.js";
 import type { OptimisticBuilder } from "./OptimisticBuilder.js";
 
@@ -621,10 +625,20 @@ export interface ObservableClient extends ObserveLinks {
   ) => CanonicalizedOptions<T>;
 
   observeMediaMetadata(
-    coords: MediaPropertyLocation,
+    source: Media,
     options: MediaMetadataObserveOptions,
     observer: Observer<MediaMetadataPayload>,
   ): Unsubscribable;
+
+  observeMedia(
+    source: Media | Attachment,
+    options: MediaContentObserveOptions,
+    observer: Observer<MediaContentPayload>,
+  ): Unsubscribable;
+
+  invalidateMedia(
+    source: Media | Attachment,
+  ): void;
 }
 
 export interface CanonicalizeOptionsInput<OS = ObjectSet<any, any>> {
