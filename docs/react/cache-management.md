@@ -85,38 +85,6 @@ Automatic updates don't cover:
 
 The `ObservableClient` provides methods to manually invalidate cached data.
 
-### Setup
-
-`OsdkProvider` creates its own `ObservableClient` internally — you only need to construct one yourself if you want to call invalidation methods (`invalidateObjects`, `invalidateObjectType`, `invalidateFunction`, …) from outside the React tree (for example, from a WebSocket handler in `client.ts`). In that case, create one and pass it explicitly so React and your handler share the same cache:
-
-```tsx
-// client.ts
-import { createClient } from "@osdk/client";
-import { createObservableClient } from "@osdk/client/observable";
-
-const client = createClient(
-  "https://your-stack.palantirfoundry.com",
-  "ri.ontology.main.ontology.00000000-0000-0000-0000-000000000000",
-  async () => "your-token",
-);
-
-// Create and export the observable client for invalidation
-export const observableClient = createObservableClient(client);
-export { client };
-```
-
-```tsx
-// main.tsx
-import { OsdkProvider } from "@osdk/react";
-import { client, observableClient } from "./client";
-
-ReactDOM.createRoot(document.getElementById("root")!).render(
-  <OsdkProvider client={client} observableClient={observableClient}>
-    <App />
-  </OsdkProvider>,
-);
-```
-
 ### Invalidation Methods
 
 #### Object Invalidation
