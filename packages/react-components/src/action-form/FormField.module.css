@@ -44,6 +44,11 @@
   display: flex;
   align-items: center;
   gap: var(--osdk-form-label-row-gap);
+  /* Reserve the edited pill's block size so showing it does not grow the label row. */
+  min-block-size: calc(
+    var(--osdk-typography-size-body-small) * var(--osdk-typography-line-height-default) +
+      var(--osdk-surface-spacing)
+  );
 }
 
 .osdkFormFieldEditedTag {
