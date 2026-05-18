@@ -1491,7 +1491,7 @@ export const EditableTable: Story = {
       fieldComponent: "DROPDOWN",
       getFieldComponentProps: () => ({
         items: [true, false],
-        itemToStringLabel: (item) =>
+        itemToStringLabel: (item: boolean | undefined) =>
           item === false ? "No" : item === true ? "Yes" : "No Value",
       }),
     },
@@ -1658,7 +1658,7 @@ export const WithSubmitEditsButton: Story = {
       fieldComponent: "DROPDOWN",
       getFieldComponentProps: () => ({
         items: [true, false],
-        itemToStringLabel: (item) =>
+        itemToStringLabel: (item: boolean | undefined) =>
           item === false ? "No" : item === true ? "Yes" : "No Value",
       }),
     },
